@@ -4,14 +4,13 @@
 
     npm install --save @sanity/imagetool
 
-
 ## Usage
 
 ### ImageTool widget
 
 ```js
 import React from 'react'
-import ImageTool from '@sanity/imagetool'
+import {ImageTool} from '@sanity/imagetool'
 
 class MyComponent extends React.Component {
   state = {
@@ -20,18 +19,18 @@ class MyComponent extends React.Component {
         x: 0.4,
         y: 0.3,
         height: 0.6,
-        width: 0.4
+        width: 0.4,
       },
       crop: {
         left: 0.1,
         right: 0.2,
         top: 0.1,
         bottom: 0.21,
-      }
-    }
+      },
+    },
   }
 
-  handleImageToolchange = newValue => {
+  handleImageToolchange = (newValue) => {
     this.setState({value: newValue})
   }
 
@@ -52,14 +51,14 @@ class MyComponent extends React.Component {
 ### CSS style calculator
 
 ```js
-import calculateStyles from "@sanity/imagetool/calculateStyles";
+import {calculateStyles} from '@sanity/imagetool'
 
 const styles = calculateStyles({
   hotspot: {
     x: 0.4,
     y: 0.3,
     height: 0.6,
-    width: 0.4
+    width: 0.4,
   },
   crop: {
     left: 0.1,
@@ -68,12 +67,12 @@ const styles = calculateStyles({
     bottom: 0.21,
   },
   image: {height: 100, width: 125},
-  container: {aspectRatio: 16/10},
+  container: {aspectRatio: 16 / 10},
   align: {
     x: 'left',
-    y: 'center'
-  }
-});
+    y: 'center',
+  },
+})
 ```
 
 returns an object with style objects that can be used with markup
@@ -108,6 +107,7 @@ returns an object with style objects that can be used with markup
 ```
 
 this can then be passed to jsx markup with the following structure:
+
 ```jsx
 <div style={styles.container}>
   <div style={styles.padding} />

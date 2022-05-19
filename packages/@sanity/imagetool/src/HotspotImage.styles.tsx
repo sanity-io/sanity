@@ -1,6 +1,6 @@
 import styled from 'styled-components'
 
-export const RootContainer = styled.div`
+export const HotspotImageContainer = styled.div`
   position: relative;
   width: 100%;
 `

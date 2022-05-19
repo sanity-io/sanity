@@ -10,35 +10,14 @@
       "source": "./src/_exports/index.ts",
       "require": "./lib/cjs/_exports/index.js",
       "default": "./lib/esm/_exports/index.js"
-    },
-    "./calculateStyles": {
-      "source": "./src/_exports/calculateStyles.ts",
-      "require": "./lib/cjs/_exports/calculateStyles.js",
-      "default": "./lib/esm/_exports/calculateStyles.js"
-    },
-    "./constants": {
-      "source": "./src/_exports/constants.ts",
-      "require": "./lib/cjs/_exports/constants.js",
-      "default": "./lib/esm/_exports/constants.js"
-    },
-    "./HotspotImage": {
-      "source": "./src/_exports/HotspotImage.ts",
-      "require": "./lib/cjs/_exports/HotspotImage.js",
-      "default": "./lib/esm/_exports/HotspotImage.js"
     }
   },
   "types": "./lib/dts/src/_exports/index.d.ts",
   "//": "the typesVersion config below is a workaround for TypeScript's lack of support for package exports",
   "typesVersions": {
     "*": {
-      "calculateStyles": [
-        "./lib/dts/src/_exports/calculateStyles.d.ts"
-      ],
-      "constants": [
-        "./lib/dts/src/_exports/constants.d.ts"
-      ],
-      "HotspotImage": [
-        "./lib/dts/src/_exports/HotspotImage.d.ts"
+      "_unstable": [
+        "./lib/dts/src/_exports/_unstable.d.ts"
       ]
     }
   },

@@ -10,8 +10,15 @@ const supportsTouch = typeof window !== 'undefined' && 'ontouchstart' in window
 // It handles mouse/touch events the same way
 // - `onDragStart` is called with the {x, y} positions relative from the dom node (e.g. where the mousedown event happened)
 // - `onDrag` and `onDragEnd` are both called with the {x, y} difference from the previous position
-export default function makeDragAware(Component) {
-  return class DragAware extends React.PureComponent {
+export interface DragAwareProps {
+  onDragStart: (pos: {x: number; y: number}) => void
+  onDrag: (pos: {x: number; y: number}) => void
+  onDragEnd: (pos: {x: number; y: number}) => void
+  readOnly?: boolean
+  [key: string]: any
+}
+export function makeDragAware(Component) {
+  return class DragAware extends React.PureComponent<DragAwareProps> {
     static propTypes = {
       onDragStart: PropTypes.func.isRequired,
       onDrag: PropTypes.func.isRequired,
@@ -19,6 +26,7 @@ export default function makeDragAware(Component) {
       readOnly: PropTypes.bool,
     }
 
+    domNode = null
     currentPos = null
     isDragging = false
 
@@ -36,8 +44,10 @@ export default function makeDragAware(Component) {
 
     componentWillUnmount() {
       if (supportsTouch) {
-        document.body.removeEventListener('touchmove', this.handleTouchMove, {passive: false})
-        document.body.removeEventListener('touchend', this.handleDragEnd, {passive: false})
+        document.body.removeEventListener('touchmove', this.handleTouchMove, {
+          passive: false,
+        } as any)
+        document.body.removeEventListener('touchend', this.handleDragEnd, {passive: false} as any)
         document.body.removeEventListener('touchcancel', this.handleDragCancel)
       } else {
         document.body.removeEventListener('mousemove', this.handleDrag)

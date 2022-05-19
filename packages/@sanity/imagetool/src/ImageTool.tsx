@@ -1,9 +1,9 @@
 /* eslint-disable react/jsx-filename-extension */
 import React from 'react'
 import PropTypes from 'prop-types'
-import ImageLoader from './ImageLoader'
-import ImageToolWrapped from './ImageTool'
-import Resize from './Resize'
+import {ImageLoader} from './ImageLoader'
+import {ToolCanvas} from './ToolCanvas'
+import {Resize} from './Resize'
 
 export function ImageTool(props) {
   return (
@@ -18,7 +18,7 @@ export function ImageTool(props) {
         if (image) {
           return (
             <Resize image={image} maxHeight={ImageTool.maxHeight} maxWidth={ImageTool.maxWidth}>
-              {(canvas) => <ImageToolWrapped image={canvas} {...props} />}
+              {(canvas) => <ToolCanvas image={canvas} {...props} />}
             </Resize>
           )
         }
@@ -49,5 +49,3 @@ ImageTool.propTypes = {
 
 ImageTool.maxHeight = 500
 ImageTool.maxWidth = 1000
-
-export default ImageTool

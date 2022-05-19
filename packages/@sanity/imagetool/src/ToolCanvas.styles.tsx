@@ -1,7 +1,7 @@
 import styled from 'styled-components'
-import makeDragAware from './makeDragAware'
+import {makeDragAware} from './makeDragAware'
 
-const DragAwareCanvas = makeDragAware('canvas')
+export const DragAwareCanvas = makeDragAware('canvas')
 
 export const RootContainer = styled.div`
   width: 100%;

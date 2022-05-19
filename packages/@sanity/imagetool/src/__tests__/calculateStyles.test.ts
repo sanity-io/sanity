@@ -1,4 +1,4 @@
-import calculateStyles from '../calculateStyles'
+import {calculateStyles} from '../calculateStyles'
 
 // Todo: write test for cropping container too
 

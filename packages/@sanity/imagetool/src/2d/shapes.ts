@@ -1,10 +1,14 @@
 export class Size {
+  height: number
+  width: number
   constructor(height, width) {
     this.height = height
     this.width = width
   }
 }
 export class Point {
+  x: number
+  y: number
   constructor(x, y) {
     this.x = x
     this.y = y
@@ -12,6 +16,9 @@ export class Point {
 }
 
 class HLine {
+  y: number
+  _left: number
+  _right: number
   constructor(y, left, right) {
     this.y = y
     this._left = left
@@ -32,6 +39,7 @@ class HLine {
 }
 
 class Corners {
+  rect: Rect
   constructor(rect) {
     this.rect = rect
   }
@@ -46,11 +54,15 @@ class Corners {
 }
 
 export class Rect {
+  left: number
+  top: number
+  width: number
+  height: number
   static fromEdges({left, right, top, bottom}) {
     return new Rect(left, top, 1 - left - right, 1 - top - bottom)
   }
 
-  constructor(left, top, width, height) {
+  constructor(left = 0, top = 0, width = 0, height = 0) {
     this.left = left
     this.top = top
     this.width = width

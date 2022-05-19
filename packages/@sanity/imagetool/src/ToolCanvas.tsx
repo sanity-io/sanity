@@ -4,10 +4,10 @@ import PropTypes from 'prop-types'
 // eslint-disable-next-line no-use-before-define
 import React from 'react'
 import {memoize} from 'lodash'
-import getBackingStoreRatio from './getBackingStoreRatio'
+import {getBackingStoreRatio} from './getBackingStoreRatio'
 import * as utils2d from './2d/utils'
 import {Rect} from './2d/shapes'
-import {RootContainer, CanvasContainer} from './ImageTool.styles'
+import {RootContainer, CanvasContainer} from './ToolCanvas.styles'
 
 import * as cursors from './cursors'
 import {DEFAULT_CROP, DEFAULT_HOTSPOT} from './constants'
@@ -94,7 +94,27 @@ const getDevicePixelRatio = memoize(() => {
   return devicePixelRatio / backingStoreRatio
 })
 
-export default class ImageTool extends React.PureComponent {
+interface ToolCanvasProps {
+  value: {
+    hotspot: {x: number; y: number; height: number; width: number}
+    crop: {top: number; right: number; bottom: number; left: number}
+  }
+  image: {
+    height: number
+    width: number
+  }
+  onChange: (value: {hotspot: {x: number; y: number; height: number; width: number}}) => void
+  onChangeEnd: (value: {hotspot: {x: number; y: number; height: number; width: number}}) => void
+  readOnly: boolean
+}
+interface ToolCanvasState {
+  cropping: false | string
+  resizing: boolean
+  moving: boolean
+  cropMoving: boolean
+  mousePosition: {x: number; y: number} | null
+}
+export class ToolCanvas extends React.PureComponent<ToolCanvasProps, ToolCanvasState | any> {
   static propTypes = {
     value: PropTypes.shape({
       hotspot: PropTypes.shape({
@@ -124,7 +144,11 @@ export default class ImageTool extends React.PureComponent {
     cropping: false,
     cropMoving: false,
     moving: false,
+    resizing: false,
+    mousePosition: null,
   }
+
+  canvas?: any
 
   getHotspotRect() {
     const {value, image} = this.props
@@ -249,12 +273,11 @@ export default class ImageTool extends React.PureComponent {
   emitCropMove(pos) {
     const {image, onChange, value} = this.props
     const scale = this.getScale()
-    const delta = {}
-    delta.left = (pos.x * scale) / image.width
-    delta.right = (-pos.x * scale) / image.width
-
-    delta.top = (pos.y * scale) / image.height
-    delta.bottom = (-pos.y * scale) / image.height
+    const left = (pos.x * scale) / image.width
+    const right = (-pos.x * scale) / image.width
+    const top = (pos.y * scale) / image.height
+    const bottom = (-pos.y * scale) / image.height
+    const delta = {left, right, top, bottom}
 
     if (checkCropBoundaries(value, delta)) {
       onChange(this.applyCropMoveBy(value, delta))
@@ -264,20 +287,24 @@ export default class ImageTool extends React.PureComponent {
   emitCrop(side, pos) {
     const {image, onChange, value} = this.props
     const scale = this.getScale()
-    const delta = {}
+    let left: number
+    let right: number
+    let top: number
+    let bottom: number
 
     if (side == 'left' || side === 'topLeft' || side === 'bottomLeft') {
-      delta.left = (pos.x * scale) / image.width
+      left = (pos.x * scale) / image.width
     } else if (side == 'right' || side === 'topRight' || side === 'bottomRight') {
-      delta.right = (-pos.x * scale) / image.width
+      right = (-pos.x * scale) / image.width
     }
 
     if (side == 'top' || side === 'topLeft' || side === 'topRight') {
-      delta.top = (pos.y * scale) / image.height
+      top = (pos.y * scale) / image.height
     } else if (side == 'bottom' || side === 'bottomLeft' || side === 'bottomRight') {
-      delta.bottom = (-pos.y * scale) / image.height
+      bottom = (-pos.y * scale) / image.height
     }
 
+    const delta = {left, right, top, bottom}
     const newValue = limitToBoundaries(value, delta).value
     const newDelta = limitToBoundaries(value, delta).delta
 
@@ -561,7 +588,7 @@ export default class ImageTool extends React.PureComponent {
 
     //context.globalCompositeOperation = "difference";
 
-    Object.keys(crophandles).forEach((handle) => {
+    Object.keys(crophandles).forEach((handle: any) => {
       context.fillStyle =
         this.state.cropping === handle
           ? `rgba(202, 54, 53, ${opacity})`

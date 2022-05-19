@@ -14,7 +14,7 @@ module.exports = {
   '@sanity/block-tools': './packages/@sanity/block-tools/src',
   '@sanity/code-input': './packages/@sanity/code-input/src',
   '@sanity/diff': './packages/@sanity/diff/src',
-  '@sanity/imagetool': './packages/@sanity/imagetool/src',
+  '@sanity/imagetool': './packages/@sanity/imagetool/src/_exports',
   '@sanity/mutator': './packages/@sanity/mutator/src',
   '@sanity/portable-text-editor': './packages/@sanity/portable-text-editor/src',
   '@sanity/schema': './packages/@sanity/schema/src/_exports',

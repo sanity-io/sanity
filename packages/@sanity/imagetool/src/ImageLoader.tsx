@@ -1,7 +1,21 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 
-export default class ImageLoader extends React.Component {
+interface ImageLoaderProps {
+  src: string
+  children: (props: {
+    isLoading: boolean
+    image: HTMLImageElement | null
+    error: Error | null
+  }) => React.ReactNode
+}
+interface ImageLoaderState {
+  isLoading: boolean
+  image: HTMLImageElement | null
+  error: Error | null
+}
+
+export class ImageLoader extends React.Component<ImageLoaderProps, ImageLoaderState> {
   static propTypes = {
     src: PropTypes.string.isRequired,
     children: PropTypes.func.isRequired,

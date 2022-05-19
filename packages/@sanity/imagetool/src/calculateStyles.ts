@@ -19,10 +19,10 @@ interface Options {
   container?: {aspectRatio: number} | {height: number; width: number}
   hotspot?: Hotspot
   crop?: Crop
-  align?: string
+  align?: {x: string; y: string}
 }
 
-export default function calculateStyles(options: Options = {}) {
+export function calculateStyles(options: Options = {}) {
   const imageAspect = readAspectRatio(options.image)
 
   const hotspot = options.hotspot || DEFAULT_HOTSPOT

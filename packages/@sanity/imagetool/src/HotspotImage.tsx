@@ -3,9 +3,9 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import Debug from 'debug'
 import {debounce} from 'lodash'
-import calculateStyles from './calculateStyles'
+import {calculateStyles} from './calculateStyles'
 import {DEFAULT_HOTSPOT, DEFAULT_CROP} from './constants'
-import {RootContainer} from './HotspotImage.styles'
+import {HotspotImageContainer} from './HotspotImage.styles'
 
 const debug = Debug('sanity-imagetool')
 
@@ -17,7 +17,37 @@ function getCropAspect(crop, srcAspect) {
   return cropWidth / cropHeight
 }
 
-export class HotspotImage extends React.PureComponent {
+export interface HotspotImageProps {
+  src: string
+  srcAspectRatio: number
+  srcSet?: string
+  hotspot?: {
+    _type: 'sanity.imageHotspot' | string
+    x: number
+    y: number
+    height: number
+    width: number
+  }
+  crop?: {
+    _type: 'sanity.imageCrop' | string
+    top: number
+    bottom: number
+    left: number
+    right: number
+  }
+  aspectRatio?: number | 'auto' | 'none'
+  alignX?: 'left' | 'center' | 'right'
+  alignY?: 'top' | 'center' | 'bottom'
+  className?: string
+  style?: React.CSSProperties
+  alt?: string
+  onError?: (event: React.SyntheticEvent<HTMLImageElement, Event>) => void
+  onLoad?: () => void
+}
+export interface HotspotImageState {
+  containerAspect?: number
+}
+export class HotspotImage extends React.PureComponent<HotspotImageProps, HotspotImageState> {
   static propTypes = {
     src: PropTypes.string.isRequired,
     srcAspectRatio: PropTypes.number.isRequired,
@@ -59,6 +89,9 @@ export class HotspotImage extends React.PureComponent {
     containerAspect: null,
   }
 
+  containerElement?: HTMLDivElement
+  imageElement?: HTMLImageElement
+
   componentDidMount() {
     const imageElement = this.imageElement
     // Fixes issues that may happen if the component is rendered on server and mounted after the image has finished loading
@@ -93,7 +126,7 @@ export class HotspotImage extends React.PureComponent {
   updateContainerAspect(props) {
     if (!this.containerElement) return
     if (props.aspectRatio === 'auto') {
-      const parentNode = this.containerElement.parentNode
+      const parentNode = this.containerElement.parentNode as HTMLElement
       this.setState({
         containerAspect: parentNode.offsetWidth / parentNode.offsetHeight,
       })
@@ -155,10 +188,14 @@ export class HotspotImage extends React.PureComponent {
       },
     })
     return (
-      <RootContainer className={`${className}`} style={style} ref={this.setContainerElement}>
-        <div style={targetStyles.container}>
+      <HotspotImageContainer
+        className={`${className}`}
+        style={style}
+        ref={this.setContainerElement}
+      >
+        <div style={targetStyles.container as any}>
           <div style={targetStyles.padding} />
-          <div style={targetStyles.crop}>
+          <div style={targetStyles.crop as any}>
             <img
               ref={this.setImageElement}
               src={src}
@@ -166,12 +203,11 @@ export class HotspotImage extends React.PureComponent {
               srcSet={srcSet}
               onLoad={onLoad}
               onError={onError}
-              style={targetStyles.image}
+              style={targetStyles.image as any}
             />
           </div>
         </div>
-      </RootContainer>
+      </HotspotImageContainer>
     )
   }
 }
-export default HotspotImage

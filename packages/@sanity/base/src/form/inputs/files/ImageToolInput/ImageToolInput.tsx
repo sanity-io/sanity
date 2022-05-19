@@ -1,8 +1,6 @@
 import React, {useCallback, useEffect, useState} from 'react'
 import {Image, ImageSchemaType} from '@sanity/types'
-import {ImageTool} from '@sanity/imagetool'
-import {HotspotImage} from '@sanity/imagetool/HotspotImage'
-import {DEFAULT_CROP, DEFAULT_HOTSPOT} from '@sanity/imagetool/constants'
+import {ImageTool, HotspotImage, DEFAULT_CROP, DEFAULT_HOTSPOT} from '@sanity/imagetool'
 import {Box, Card, Flex, Text, Grid, Heading, useForwardedRef} from '@sanity/ui'
 import styled from 'styled-components'
 import shallowEquals from 'shallow-equals'
@@ -176,8 +174,8 @@ export function ImageToolInput(props: ImageToolInputProps) {
                           aspectRatio={ratio}
                           src={image.src}
                           srcAspectRatio={image.width / image.height}
-                          hotspot={localValue.hotspot || DEFAULT_HOTSPOT}
-                          crop={localValue.crop || DEFAULT_CROP}
+                          hotspot={localValue.hotspot || (DEFAULT_HOTSPOT as any)}
+                          crop={localValue.crop || (DEFAULT_CROP as any)}
                         />
                       ) : (
                         <Placeholder />

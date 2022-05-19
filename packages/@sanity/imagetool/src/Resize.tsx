@@ -1,7 +1,13 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 
-export default class Resize extends React.Component {
+export interface ResizeProps {
+  image: HTMLImageElement
+  maxHeight: number
+  maxWidth: number
+  children: (canvas: HTMLCanvasElement) => React.ReactNode
+}
+export class Resize extends React.Component<ResizeProps> {
   static propTypes = {
     // eslint-disable-next-line react/forbid-prop-types
     image: PropTypes.object.isRequired,
@@ -9,6 +15,8 @@ export default class Resize extends React.Component {
     maxHeight: PropTypes.number.isRequired,
     children: PropTypes.func.isRequired,
   }
+
+  _canvas = null
 
   componentWillUnmount() {
     if (this._canvas) {
