@@ -11,11 +11,15 @@ import {canLaunchBrowser} from '../../util/canLaunchBrowser'
 import {CliCommandArguments, CliCommandContext, CliPrompter} from '../../types'
 
 interface LoginProvider {
-  id: string
   title: string
   name: string
+  id?: string
   disabled?: boolean
   type?: string
+}
+
+interface ProvidersResponse {
+  providers: LoginProvider[]
 }
 
 interface EventWithMessage {
@@ -190,7 +194,7 @@ async function getProvider({
 
   // Fetch and prompt for login provider to use
   const spin = output.spinner('Fetching providers...').start()
-  let {providers} = await client.request({uri: '/auth/providers'})
+  let {providers} = await client.request<ProvidersResponse>({uri: '/auth/providers'})
   if (experimental) {
     providers = [...providers, {name: 'sso', title: 'SSO'}]
   }
