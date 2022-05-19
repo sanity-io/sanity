@@ -2,9 +2,9 @@
 import {
   PortableTextBlock,
   PortableTextEditor,
-  usePortableTextEditor,
-  PortableTextBlock,
   TextBlock,
+  usePortableTextEditor,
+  usePortableTextEditorSelection,
 } from '@sanity/portable-text-editor'
 import {Path, isKeySegment, isKeyedObject, KeyedSegment} from '@sanity/types'
 import {useMemo} from 'react'
@@ -21,17 +21,15 @@ export function useObjectEditData(
   }
 ): ObjectEditData | null {
   const editor = usePortableTextEditor()
-  const blockKey = focusPath && isKeySegment(focusPath[0]) ? focusPath[0]._key : undefined
-  const isChild =
-    blockKey && focusPath && focusPath[1] === 'children' && isKeyedObject(focusPath[2])
-  const childKey = isChild && isKeyedObject(focusPath[2]) ? focusPath[2]._key : undefined
-  const isAnnotation = blockKey && focusPath[1] === 'markDefs'
-  const markDefKey = isAnnotation && isKeyedObject(focusPath[2]) ? focusPath[2]._key : undefined
-  const focusPathLength = focusPath.length
+  const selection = usePortableTextEditorSelection()
   return useMemo(() => {
-    // Annotations
-    if (markDefKey) {
-      const [node] = PortableTextEditor.findByPath(editor, [{_key: blockKey}])
+    const blockSegment = focusPath && isKeySegment(focusPath[0]) ? focusPath[0] : undefined
+    const isChild =
+      blockSegment && focusPath && focusPath[1] === 'children' && isKeyedObject(focusPath[2])
+    const isAnnotation = blockSegment && focusPath[1] === 'markDefs'
+    // Handle focusPath pointing to a annotated span
+    if (isAnnotation) {
+      const [node] = PortableTextEditor.findByPath(editor, focusPath.slice(0, 1))
       const block = node ? (node as PortableTextBlock) : undefined
       const markDefSegment =
         block &&
@@ -42,9 +40,11 @@ export function useObjectEditData(
           (child) => Array.isArray(child.marks) && child.marks.includes(markDefSegment._key)
         )
         if (span) {
+          const spanPath = [blockSegment, 'children', {_key: span._key}] as Path
           return {
-            editorPath: [{_key: blockKey}, 'children', {_key: span._key}],
-            formBuilderPath: [{_key: blockKey}, 'markDefs', {_key: markDefKey}],
+            editorPath: spanPath,
+            formBuilderPath: focusPath.slice(0, 3),
+            returnToSelection: selection,
             kind: 'annotation',
             editorHTMLElementRef: refs.child,
           }
@@ -52,29 +52,28 @@ export function useObjectEditData(
       }
     }
 
-    // Inline object
-    if (blockKey && childKey && focusPathLength > 3) {
-      const path = [{_key: blockKey}, 'children', {_key: childKey}]
-      return {
-        editorPath: path,
-        formBuilderPath: path,
-        kind: 'inlineObject',
-        editorHTMLElementRef: refs.child,
+    // Handle focusPath pointing to block objects or inline objects
+    if (focusPath && ((isChild && focusPath.length > 3) || (!isChild && focusPath.length > 1))) {
+      let kind: 'annotation' | 'blockObject' | 'inlineObject' = 'blockObject'
+      let path = focusPath.slice(0, 1)
+      if (isChild) {
+        kind = 'inlineObject'
+        path = path.concat(focusPath.slice(1, 3))
       }
-    }
-
-    // Block object
-    if (blockKey && !childKey && focusPathLength > 1) {
-      const path = [{_key: blockKey}]
-      return {
-        editorPath: path,
-        formBuilderPath: path,
-        kind: 'blockObject',
-        editorHTMLElementRef: refs.block,
+      const [node] = PortableTextEditor.findByPath(editor, path)
+      // Only if it actually exists
+      if (node) {
+        return {
+          editorPath: path,
+          formBuilderPath: path,
+          kind,
+          returnToSelection: selection,
+          editorHTMLElementRef: isChild ? refs.inline : refs.block,
+        }
       }
     }
     refs.child.current = null
     refs.block.current = null
     return null
-  }, [editor, blockKey, childKey, markDefKey, refs.block, refs.child, focusPathLength])
+  }, [editor, focusPath, refs.block, refs.child, refs.inline, selection])
 }
