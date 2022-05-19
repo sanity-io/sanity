@@ -22,8 +22,6 @@ const options = {
     'part:*',
     'all:part:*',
     'sanity:*',
-    // Ignore alias used in `dev/workshop`
-    '$workshop',
     ...getProjectIgnores(cwd),
   ],
   ignoreDirs: ['lib'],

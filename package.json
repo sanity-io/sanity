@@ -39,7 +39,6 @@
     "dev:starter-studio": "yarn --cwd dev/starter-studio dev",
     "dev:strict-studio": "yarn --cwd dev/strict-studio dev",
     "dev:test-studio": "yarn --cwd dev/test-studio start",
-    "dev:workshop": "yarn --cwd dev/workshop dev",
     "eslint": "eslint --ext=.js,.jsx,.mjs,.ts,.tsx --quiet",
     "etl": "cd scripts/etl && node -r dotenv-flow/config -r esbuild-register main",
     "exports:check": "lerna run exports:check",
