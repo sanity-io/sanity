@@ -14,6 +14,7 @@
 /packages/@sanity/*/node_modules
 /packages/@sanity/client/umd
 /packages/@sanity/cli/bin/sanity-cli.js
+/packages/@sanity/cli/templates
 
 test/v2-studio/dist/**
 
