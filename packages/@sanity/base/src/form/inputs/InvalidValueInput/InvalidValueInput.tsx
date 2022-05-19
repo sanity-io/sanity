@@ -54,11 +54,10 @@ export const InvalidValueInput = forwardRef(
       [onChange]
     )
 
-    const converters = useMemo(() => getConverters(value, actualType, validTypes), [
-      value,
-      actualType,
-      validTypes,
-    ])
+    const converters = useMemo(
+      () => getConverters(value, actualType, validTypes),
+      [value, actualType, validTypes]
+    )
 
     if (typeof value === 'object' && value !== null && !('_type' in value)) {
       return (
@@ -155,11 +154,10 @@ function ConvertButton({
   onConvert: (v: string | number | boolean | Record<string, unknown>) => void
   value: unknown
 }) {
-  const handleClick = useCallback(() => onConvert(converter.convert(value)), [
-    converter,
-    onConvert,
-    value,
-  ])
+  const handleClick = useCallback(
+    () => onConvert(converter.convert(value)),
+    [converter, onConvert, value]
+  )
 
   return (
     <Button

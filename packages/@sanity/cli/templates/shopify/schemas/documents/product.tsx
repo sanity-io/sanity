@@ -144,15 +144,8 @@ export default {
       variantCount: 'store.variants.length',
     },
     prepare(selection) {
-      const {
-        isDeleted,
-        optionCount,
-        previewImageUrl,
-        priceRange,
-        status,
-        title,
-        variantCount,
-      } = selection
+      const {isDeleted, optionCount, previewImageUrl, priceRange, status, title, variantCount} =
+        selection
 
       let description = [
         variantCount ? pluralize('variant', variantCount, true) : 'No variants',

@@ -67,10 +67,10 @@ export function ReferencePreview(props: {
   // Note: we can't pass the preview values as-is to the Preview-component here since it's a "prepared" value and the
   // Preview component expects the "raw"/unprepared value. By passing only _id and _type we make sure the Preview-component
   // resolve the preview value it needs (this is cached in the runtime, so not likely to cause any fetch overhead)
-  const previewStub = useMemo(() => ({_id: previewId, _type: refType.name}), [
-    previewId,
-    refType.name,
-  ])
+  const previewStub = useMemo(
+    () => ({_id: previewId, _type: refType.name}),
+    [previewId, refType.name]
+  )
 
   return (
     <Flex align="center">

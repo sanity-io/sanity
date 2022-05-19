@@ -90,12 +90,10 @@ export default class CollaborationEnvironment extends NodeEnvironment {
       value: PortableTextBlock[] | undefined
     ): Promise<void> => {
       ipc.of.socketServer.emit('payload', JSON.stringify({type: 'value', value, testId}))
-      const valueHandleA: puppeteer.ElementHandle<HTMLDivElement> = await this._pageA.waitForSelector(
-        '#pte-value'
-      )
-      const valueHandleB: puppeteer.ElementHandle<HTMLDivElement> = await this._pageB.waitForSelector(
-        '#pte-value'
-      )
+      const valueHandleA: puppeteer.ElementHandle<HTMLDivElement> =
+        await this._pageA.waitForSelector('#pte-value')
+      const valueHandleB: puppeteer.ElementHandle<HTMLDivElement> =
+        await this._pageB.waitForSelector('#pte-value')
       const readVal = (node) => {
         return node.innerText ? JSON.parse(node.innerText) : undefined
       }
@@ -116,9 +114,8 @@ export default class CollaborationEnvironment extends NodeEnvironment {
           const metaKey = isMac ? 'Meta' : 'Control'
           const editorId = ['A', 'B'][index]
           const editableHandle = await page.waitForSelector('div[contentEditable="true"]')
-          const selectionHandle: puppeteer.ElementHandle<HTMLDivElement> = await page.waitForSelector(
-            '#pte-selection'
-          )
+          const selectionHandle: puppeteer.ElementHandle<HTMLDivElement> =
+            await page.waitForSelector('#pte-selection')
           const valueHandle: puppeteer.ElementHandle<HTMLDivElement> = await page.waitForSelector(
             '#pte-value'
           )

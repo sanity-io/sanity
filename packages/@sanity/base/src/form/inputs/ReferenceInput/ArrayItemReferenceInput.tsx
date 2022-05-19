@@ -87,10 +87,9 @@ const NO_FILTER = () => true
 
 const dragHandle = <DragHandle paddingX={1} paddingY={3} />
 
-type PartialPick<T, K extends keyof T> = Omit<T, K> &
-  {
-    [P in K]?: T[K]
-  }
+type PartialPick<T, K extends keyof T> = Omit<T, K> & {
+  [P in K]?: T[K]
+}
 
 type OptionalRef = PartialPick<Reference, '_ref'>
 
@@ -232,10 +231,10 @@ export function ArrayItemReferenceInput(props: Props) {
     [handleCancelEdit]
   )
 
-  const getReferenceInfoMemo = useCallback((id) => getReferenceInfo(id, type), [
-    getReferenceInfo,
-    type,
-  ])
+  const getReferenceInfoMemo = useCallback(
+    (id) => getReferenceInfo(id, type),
+    [getReferenceInfo, type]
+  )
 
   const loadableReferenceInfo = useReferenceInfo(value?._ref, getReferenceInfoMemo)
 

@@ -143,7 +143,7 @@ export function createWithEditableAPI(
         if (focusBlock && Editor.isVoid(editor, focusBlock)) {
           throw new Error("Can't insert childs into block objects")
         }
-        const block = (toSlateValue(
+        const block = toSlateValue(
           [
             {
               _key: keyGenerator(),
@@ -158,7 +158,7 @@ export function createWithEditableAPI(
             },
           ],
           portableTextEditor
-        )[0] as unknown) as SlateElement
+        )[0] as unknown as SlateElement
         const child = block.children[0]
         Editor.insertNode(editor, child as Node)
         editor.onChange()
@@ -168,7 +168,7 @@ export function createWithEditableAPI(
         if (!editor.selection) {
           throw new Error('The editor has no selection')
         }
-        const block = (toSlateValue(
+        const block = toSlateValue(
           [
             {
               _key: keyGenerator(),
@@ -177,7 +177,7 @@ export function createWithEditableAPI(
             },
           ],
           portableTextEditor
-        )[0] as unknown) as Node
+        )[0] as unknown as Node
         Editor.insertNode(editor, block)
         editor.onChange()
         return toPortableTextRange(editor, editor.selection)?.focus.path || []

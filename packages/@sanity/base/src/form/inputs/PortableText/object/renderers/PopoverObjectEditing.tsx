@@ -165,10 +165,10 @@ function Content(
   const {element: boundaryElement} = useBoundaryElement()
   const portal = usePortal()
 
-  const handleChange = useCallback((patchEvent: PatchEvent): void => onChange(patchEvent, path), [
-    onChange,
-    path,
-  ])
+  const handleChange = useCallback(
+    (patchEvent: PatchEvent): void => onChange(patchEvent, path),
+    [onChange, path]
+  )
 
   const handleClose = useCallback(() => {
     if (isTopLayer) onClose()

@@ -29,8 +29,7 @@ const blockBase = {
     {
       _type: 'span',
       _key: 'a1',
-      text:
-        "This is a custom portable text block above an empty image block! It's the block below. There should be a nice margin below me?",
+      text: "This is a custom portable text block above an empty image block! It's the block below. There should be a nice margin below me?",
       marks: [],
     },
   ],

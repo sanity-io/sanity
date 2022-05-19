@@ -5,111 +5,107 @@ import styled, {css} from 'styled-components'
 import type {CSSObject} from 'styled-components'
 import {focusRingBorderStyle, focusRingStyle} from './styles'
 
-const Root = styled(Box)(
-  (props: {theme: Theme}): CSSObject => {
-    const {theme} = props
-    const {focusRing, input, radius} = theme.sanity
-    const color = theme.sanity.color.input
-    const space = rem(theme.sanity.space[1])
+const Root = styled(Box)((props: {theme: Theme}): CSSObject => {
+  const {theme} = props
+  const {focusRing, input, radius} = theme.sanity
+  const color = theme.sanity.color.input
+  const space = rem(theme.sanity.space[1])
 
-    return {
+  return {
+    position: 'relative',
+    borderRadius: `${radius[1]}px`,
+    color: color.default.enabled.fg,
+    backgroundColor: color.default.enabled.bg,
+    boxShadow: focusRingBorderStyle({
+      color: color.default.enabled.border,
+      width: input.border.width,
+    }),
+
+    '& > .content': {
       position: 'relative',
-      borderRadius: `${radius[1]}px`,
-      color: color.default.enabled.fg,
-      backgroundColor: color.default.enabled.bg,
+      lineHeight: 0,
+      margin: `-${space} 0 0 -${space}`,
+    },
+
+    '& > .content > div': {
+      display: 'inline-block',
+      verticalAlign: 'top',
+      padding: `${space} 0 0 ${space}`,
+    },
+
+    // enabled
+    '&:not([data-read-only])': {
+      cursor: 'text',
+    },
+
+    // hovered
+    '@media(hover:hover)': {
+      '&:not([data-disabled]):not([data-read-only]):hover': {
+        borderColor: color.default.hovered.border,
+      },
+    },
+
+    // focused
+    '&:not([data-disabled]):not([data-read-only])[data-focused]': {
+      boxShadow: focusRingStyle({
+        border: {
+          color: color.default.enabled.border,
+          width: input.border.width,
+        },
+        focusRing,
+      }),
+    },
+
+    // disabled
+    '*:disabled + &': {
+      color: color.default.disabled.fg,
+      backgroundColor: color.default.disabled.bg,
       boxShadow: focusRingBorderStyle({
-        color: color.default.enabled.border,
+        color: color.default.disabled.border,
         width: input.border.width,
       }),
-
-      '& > .content': {
-        position: 'relative',
-        lineHeight: 0,
-        margin: `-${space} 0 0 -${space}`,
-      },
-
-      '& > .content > div': {
-        display: 'inline-block',
-        verticalAlign: 'top',
-        padding: `${space} 0 0 ${space}`,
-      },
-
-      // enabled
-      '&:not([data-read-only])': {
-        cursor: 'text',
-      },
-
-      // hovered
-      '@media(hover:hover)': {
-        '&:not([data-disabled]):not([data-read-only]):hover': {
-          borderColor: color.default.hovered.border,
-        },
-      },
-
-      // focused
-      '&:not([data-disabled]):not([data-read-only])[data-focused]': {
-        boxShadow: focusRingStyle({
-          border: {
-            color: color.default.enabled.border,
-            width: input.border.width,
-          },
-          focusRing,
-        }),
-      },
-
-      // disabled
-      '*:disabled + &': {
-        color: color.default.disabled.fg,
-        backgroundColor: color.default.disabled.bg,
-        boxShadow: focusRingBorderStyle({
-          color: color.default.disabled.border,
-          width: input.border.width,
-        }),
-      },
-    }
+    },
   }
-)
+})
 
-const Input = styled.input(
-  (props: {theme: Theme}): CSSObject => {
-    const {theme} = props
-    const font = theme.sanity.fonts.text
-    const color = theme.sanity.color.input
-    const p = theme.sanity.space[2]
-    const size = theme.sanity.fonts.text.sizes[2]
+const Input = styled.input((props: {theme: Theme}): CSSObject => {
+  const {theme} = props
+  const font = theme.sanity.fonts.text
+  const color = theme.sanity.color.input
+  const p = theme.sanity.space[2]
+  const size = theme.sanity.fonts.text.sizes[2]
 
-    return {
-      appearance: 'none',
-      background: 'none',
-      border: 0,
-      borderRadius: 0,
-      outline: 'none',
-      fontSize: rem(size.fontSize),
-      lineHeight: size.lineHeight / size.fontSize,
-      fontFamily: font.family,
-      fontWeight: font.weights.regular,
-      margin: 0,
-      display: 'block',
-      minWidth: '1px',
-      maxWidth: '100%',
-      boxSizing: 'border-box',
-      paddingTop: rem(p - size.ascenderHeight),
-      paddingRight: rem(p),
-      paddingBottom: rem(p - size.descenderHeight),
-      paddingLeft: rem(p),
+  return {
+    appearance: 'none',
+    background: 'none',
+    border: 0,
+    borderRadius: 0,
+    outline: 'none',
+    fontSize: rem(size.fontSize),
+    lineHeight: size.lineHeight / size.fontSize,
+    fontFamily: font.family,
+    fontWeight: font.weights.regular,
+    margin: 0,
+    display: 'block',
+    minWidth: '1px',
+    maxWidth: '100%',
+    boxSizing: 'border-box',
+    paddingTop: rem(p - size.ascenderHeight),
+    paddingRight: rem(p),
+    paddingBottom: rem(p - size.descenderHeight),
+    paddingLeft: rem(p),
 
-      // enabled
-      '&:not(:invalid):not(:disabled)': {
-        color: color.default.enabled.fg,
-      },
+    // enabled
+    '&:not(:invalid):not(:disabled)': {
+      color: color.default.enabled.fg,
+    },
 
-      // disabled
-      '&:not(:invalid):disabled': {
-        color: color.default.disabled.fg,
-      },
-    }
+    // disabled
+    '&:not(:invalid):disabled': {
+      color: color.default.disabled.fg,
+    },
   }
-)
+})
 
 const Placeholder = styled(Box)((props: {theme: Theme}) => {
   const {theme} = props

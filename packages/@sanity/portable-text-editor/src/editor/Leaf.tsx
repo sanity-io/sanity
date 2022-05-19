@@ -30,15 +30,8 @@ type LeafProps = {
 export const Leaf = (props: LeafProps) => {
   const editor = useSlateStatic()
   const selected = useSelected()
-  const {
-    attributes,
-    children,
-    leaf,
-    portableTextFeatures,
-    keyGenerator,
-    renderChild,
-    readOnly,
-  } = props
+  const {attributes, children, leaf, portableTextFeatures, keyGenerator, renderChild, readOnly} =
+    props
   const spanRef = React.useRef(null)
   let returnedChildren = children
   const focused = (selected && editor.selection && Range.isCollapsed(editor.selection)) || false

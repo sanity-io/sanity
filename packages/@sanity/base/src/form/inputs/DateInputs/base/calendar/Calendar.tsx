@@ -47,9 +47,10 @@ export const Calendar = forwardRef(function Calendar(
     ...restProps
   } = props
 
-  const setFocusedDate = useCallback((date: Date) => onFocusedDateChange(date), [
-    onFocusedDateChange,
-  ])
+  const setFocusedDate = useCallback(
+    (date: Date) => onFocusedDateChange(date),
+    [onFocusedDateChange]
+  )
 
   const setFocusedDateMonth = useCallback(
     (month: number) => setFocusedDate(setDate(setMonth(focusedDate, month), 1)),
@@ -61,10 +62,10 @@ export const Calendar = forwardRef(function Calendar(
     [setFocusedDateMonth]
   )
 
-  const moveFocusedDate = useCallback((by: number) => setFocusedDate(addMonths(focusedDate, by)), [
-    focusedDate,
-    setFocusedDate,
-  ])
+  const moveFocusedDate = useCallback(
+    (by: number) => setFocusedDate(addMonths(focusedDate, by)),
+    [focusedDate, setFocusedDate]
+  )
 
   const setFocusedDateYear = useCallback(
     (year: number) => setFocusedDate(setYear(focusedDate, year)),
@@ -151,15 +152,17 @@ export const Calendar = forwardRef(function Calendar(
     }
   }, [ref, focusCurrentWeekDay, focusedDate])
 
-  const handleYesterdayClick = useCallback(() => handleDateChange(addDays(new Date(), -1)), [
-    handleDateChange,
-  ])
+  const handleYesterdayClick = useCallback(
+    () => handleDateChange(addDays(new Date(), -1)),
+    [handleDateChange]
+  )
 
   const handleTodayClick = useCallback(() => handleDateChange(new Date()), [handleDateChange])
 
-  const handleTomorrowClick = useCallback(() => handleDateChange(addDays(new Date(), 1)), [
-    handleDateChange,
-  ])
+  const handleTomorrowClick = useCallback(
+    () => handleDateChange(addDays(new Date(), 1)),
+    [handleDateChange]
+  )
 
   const handleNowClick = useCallback(() => onSelect(new Date()), [onSelect])
 

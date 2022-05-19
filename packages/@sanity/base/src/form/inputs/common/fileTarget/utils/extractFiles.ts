@@ -92,9 +92,9 @@ type DirectoryReader = {
 
 function walk(entry: Entry): Promise<File[]> {
   if (entry.isFile) {
-    return new Promise<File>((resolve, reject) =>
-      entry.file(resolve, reject)
-    ).then((file: File) => [file])
+    return new Promise<File>((resolve, reject) => entry.file(resolve, reject)).then(
+      (file: File) => [file]
+    )
   }
 
   if (entry.isDirectory) {

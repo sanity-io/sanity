@@ -124,10 +124,10 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
     [blockType.name, keyGenerator, portableTextFeatures.styles]
   )
 
-  const isEmpty = useMemo(() => isEqualToEmptyEditor(slateEditor.children, portableTextFeatures), [
-    portableTextFeatures,
-    slateEditor.children,
-  ])
+  const isEmpty = useMemo(
+    () => isEqualToEmptyEditor(slateEditor.children, portableTextFeatures),
+    [portableTextFeatures, slateEditor.children]
+  )
 
   const initialValue = useMemo(
     () =>
@@ -157,12 +157,10 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
   )
 
   // Update the Slate instance's plugins which are dependent on props for Editable
-  useMemo(() => withEditableAPI(withInsertData(withHotKeys(withReact(slateEditor)))), [
-    slateEditor,
-    withEditableAPI,
-    withHotKeys,
-    withInsertData,
-  ])
+  useMemo(
+    () => withEditableAPI(withInsertData(withHotKeys(withReact(slateEditor)))),
+    [slateEditor, withEditableAPI, withHotKeys, withInsertData]
+  )
 
   // Track selection (action) state
   const [isSelecting, setIsSelecting] = useState(false)

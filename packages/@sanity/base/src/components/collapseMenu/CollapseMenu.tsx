@@ -103,9 +103,10 @@ export const CollapseMenu = forwardRef(function CollapseMenu(
     [rootEl]
   )
 
-  const children = useMemo(() => React.Children.toArray(childrenProp).filter(_isReactElement), [
-    childrenProp,
-  ])
+  const children = useMemo(
+    () => React.Children.toArray(childrenProp).filter(_isReactElement),
+    [childrenProp]
+  )
 
   const menuOptionsArray = useMemo(
     // eslint-disable-next-line max-nested-callbacks
@@ -113,14 +114,15 @@ export const CollapseMenu = forwardRef(function CollapseMenu(
     [children, menuOptions]
   )
 
-  const menuIsVisible = useMemo(() => collapsed || menuOptionsArray.length > 0, [
-    collapsed,
-    menuOptionsArray.length,
-  ])
+  const menuIsVisible = useMemo(
+    () => collapsed || menuOptionsArray.length > 0,
+    [collapsed, menuOptionsArray.length]
+  )
 
-  const isInMenu = useCallback((childKey) => menuOptionsArray.some((o) => o.key === childKey), [
-    menuOptionsArray,
-  ])
+  const isInMenu = useCallback(
+    (childKey) => menuOptionsArray.some((o) => o.key === childKey),
+    [menuOptionsArray]
+  )
 
   const handleIntersection = useCallback(
     (e: IntersectionObserverEntry, child: React.ReactElement) => {

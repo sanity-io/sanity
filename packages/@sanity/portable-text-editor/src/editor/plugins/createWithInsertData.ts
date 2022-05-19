@@ -173,10 +173,9 @@ export function createWithInsertData(
         let insertedType
 
         if (html) {
-          portableText = htmlToBlocks(
-            html,
-            portableTextFeatures.types.portableText
-          ).map((block: PortableTextBlock) => normalizeBlock(block, {blockTypeName}))
+          portableText = htmlToBlocks(html, portableTextFeatures.types.portableText).map(
+            (block: PortableTextBlock) => normalizeBlock(block, {blockTypeName})
+          )
           fragment = toSlateValue(portableText, {portableTextFeatures})
           insertedType = 'HTML'
         } else {
@@ -188,10 +187,9 @@ export function createWithInsertData(
             )
             .join('')
           const textToHtml = `<html><body>${blocks}</body></html>`
-          portableText = htmlToBlocks(
-            textToHtml,
-            portableTextFeatures.types.portableText
-          ).map((block: PortableTextBlock) => normalizeBlock(block, {blockTypeName}))
+          portableText = htmlToBlocks(textToHtml, portableTextFeatures.types.portableText).map(
+            (block: PortableTextBlock) => normalizeBlock(block, {blockTypeName})
+          )
           fragment = toSlateValue(portableText, {
             portableTextFeatures,
           })
