@@ -10,9 +10,8 @@ import {resolveInitialValueForType} from '../../../templates'
 import {FileLike, UploaderResolver} from '../uploads/types'
 import {useSource} from '../../../studio'
 
-export const StudioArrayInput = forwardRef(function StudioArrayInput(
+export function StudioArrayInput(
   props: ArrayOfObjectsInputProps & {resolveUploader: UploaderResolver}
-  // ref: ForwardedRef<typeof ArrayInput>
 ) {
   const formBuilder = useFormBuilder()
   // todo abstract the client away
@@ -42,7 +41,7 @@ export const StudioArrayInput = forwardRef(function StudioArrayInput(
       client={client}
     />
   )
-})
+}
 
 export const StudioArrayOfPrimitivesInput = forwardRef(function StudioArrayOfPrimitivesInput(
   props: Omit<ArrayOfPrimitivesInputProps, 'ArrayFunctionsImpl'>,
