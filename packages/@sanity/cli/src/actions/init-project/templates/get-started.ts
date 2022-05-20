@@ -1,8 +1,8 @@
 import type {ProjectTemplate} from '../initProject'
 
 const configTemplate = `
-import {createConfig} from '@sanity/base'
-import {deskTool} from '@sanity/desk-tool'
+import {createConfig} from 'sanity'
+import {deskTool} from 'sanity/desk'
 import {tutorialLayout} from './plugins/tutorial'
 import schemaTypes from './schemas'
 

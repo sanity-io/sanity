@@ -4,8 +4,8 @@ import type {ProjectTemplate} from '../initProject'
 // @todo new document structure
 // @todo document actions
 const configTemplate = `
-import {createConfig} from '@sanity/base'
-import {deskTool} from '@sanity/desk-tool'
+import {createConfig} from 'sanity'
+import {deskTool} from 'sanity/desk'
 import {dashboard} from '@sanity/dashboard'
 import {media} from 'sanity-plugin-media'
 import {structure} from './deskStructure'
