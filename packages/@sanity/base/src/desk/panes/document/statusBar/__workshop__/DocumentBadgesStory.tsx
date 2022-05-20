@@ -1,6 +1,6 @@
 import {Container, Flex} from '@sanity/ui'
 import React, {useMemo} from 'react'
-import {DeskToolProvider} from '../../../../DeskToolProvider'
+import {DeskToolProvider} from '../../../../components'
 import {DocumentPaneNode} from '../../../../types'
 import {DocumentPaneProvider} from '../../DocumentPaneProvider'
 import {DocumentBadges} from '../sparkline/DocumentBadges'

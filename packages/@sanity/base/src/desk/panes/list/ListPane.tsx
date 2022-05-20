@@ -9,12 +9,12 @@ import {
   PaneHeader,
   usePaneLayout,
   PaneHeaderActions,
+  useDeskTool,
   BackLink,
   PaneItem,
 } from '../../components'
 import {BaseDeskToolPaneProps} from '../types'
 import {_DEBUG} from '../../constants'
-import {useDeskTool} from '../../useDeskTool'
 
 type ListPaneProps = BaseDeskToolPaneProps<'list'>
 
