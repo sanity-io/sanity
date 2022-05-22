@@ -11,7 +11,7 @@ export interface WithIntersectionProps {
 export const WithIntersection = (
   props: WithIntersectionProps & React.HTMLProps<HTMLDivElement>
 ) => {
-  const {onIntersection, io, id, ...rest} = props
+  const {onIntersection, io, id, margins, ...rest} = props
   const element = React.useRef<HTMLDivElement | null>(null)
   React.useEffect(() => {
     const el = element.current
