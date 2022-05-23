@@ -6,7 +6,7 @@ import {SLATE_TO_PORTABLE_TEXT_RANGE} from '../../utils/weakMaps'
 
 const debug = debugWithName('plugin:withPortableTextSelections')
 
-// This plugin will make sure that we emit a PT selection if slateEditor.onChange is called.
+// This plugin will make sure that we emit a PT selection whenever the editor has changed.
 export function createWithPortableTextSelections(change$: Subject<EditorChange>) {
   return function withPortableTextSelections(
     editor: PortableTextSlateEditor
@@ -32,8 +32,11 @@ export function createWithPortableTextSelections(change$: Subject<EditorChange>)
 
     const {onChange} = editor
     editor.onChange = () => {
+      const hasChanges = editor.operations.length > 0
       onChange()
-      emitSelection()
+      if (hasChanges) {
+        emitSelection()
+      }
     }
     return editor
   }
