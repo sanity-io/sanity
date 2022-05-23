@@ -1,10 +1,20 @@
-import type {Plugin} from 'vite'
+import {createHash} from 'node:crypto'
+import type {ChunkMetadata, Plugin} from 'vite'
 import {getEntryModule} from '../getEntryModule'
 import {renderDocument} from '../renderDocument'
 import {getSanityStudioConfigPath} from '../sanityConfig'
 import type {SanityMonorepo} from '../sanityMonorepo'
 
 export const virtualEntryModuleId = '@sanity-studio-entry'
+interface ViteOutputBundle {
+  [fileName: string]: ViteRenderedChunk
+}
+
+interface ViteRenderedChunk {
+  code: string
+  imports: string[]
+  viteMetadata: ChunkMetadata
+}
 
 export function sanityBuildEntries(options: {
   cwd: string
@@ -43,21 +53,20 @@ export function sanityBuildEntries(options: {
       })
     },
 
-    async generateBundle(_options, bundle) {
+    async generateBundle(_options, outputBundle) {
+      const bundle = outputBundle as unknown as ViteOutputBundle
+
       const entryFileName = this.getFileName(entryChunkRef)
-      const entryFile = bundle[entryFileName] as unknown as {
-        // TODO: figure out how to get the Vite typings for viteMetadata and imports
-        imports: string[]
-        viteMetadata: {importedCss: Set<string>}
-      }
+      const entryFile = bundle[entryFileName]
+      const entryHash = createHash('sha256').update(entryFile.code).digest('hex').slice(0, 8)
+
+      // Check all the top-level imports of the entryPoint to see if they have
+      // static CSS assets that need loading
       const css = [...entryFile.viteMetadata.importedCss]
-      // Check all the top-level imports of the entryPoint to see if they have static CSS assets that need loading
       for (const key of entryFile.imports) {
-        // Traverse all CSS assets that isn't loaded by the runtime and need <link> tags in the HTML template
-        css.push(
-          ...(bundle[key] as unknown as {viteMetadata: {importedCss: Set<string>}}).viteMetadata
-            .importedCss
-        )
+        // Traverse all CSS assets that isn't loaded by the runtime and
+        // need <link> tags in the HTML template
+        css.push(...bundle[key].viteMetadata.importedCss)
       }
 
       this.emitFile({
@@ -67,7 +76,7 @@ export function sanityBuildEntries(options: {
           monorepo,
           studioRootPath: cwd,
           props: {
-            entryPath: `${basePath}${this.getFileName(entryChunkRef)}`,
+            entryPath: `${basePath}${this.getFileName(entryChunkRef)}?v=${entryHash}`,
             css,
           },
         }),
