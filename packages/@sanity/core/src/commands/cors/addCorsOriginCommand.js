@@ -1,6 +1,6 @@
 const path = require('path')
 const fse = require('fs-extra')
-const addCorsOrigin = require('../../actions/cors/addCorsOrigin')
+const {addCorsOrigin} = require('../../actions/cors/addCorsOrigin')
 
 const helpText = `
 Options
@@ -21,6 +21,11 @@ export default {
   action: async (args, context) => {
     const {output} = context
     const [origin] = args.argsWithoutOptions
+
+    if (!origin) {
+      throw new Error('No origin specified, use `sanity cors add <origin-url>`')
+    }
+
     const flags = args.extOptions
     const isFile = await fse.pathExists(path.join(process.cwd(), origin))
     if (isFile) {
