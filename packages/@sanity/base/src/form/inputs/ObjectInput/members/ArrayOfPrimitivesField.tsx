@@ -1,20 +1,21 @@
 import React, {useCallback, useMemo, useRef} from 'react'
+import {isEqual, startsWith} from '@sanity/util/paths'
 import {FieldMember} from '../../../store/types/members'
 import {ArrayOfPrimitivesFormNode} from '../../../store/types/nodes'
 import {
   ArrayOfPrimitivesInputProps,
   MoveItemEvent,
+  RenderArrayOfPrimitivesItemCallback,
   RenderFieldCallback,
   RenderInputCallback,
-  RenderArrayOfPrimitivesItemCallback,
 } from '../../../types'
 import {FormCallbacksProvider, useFormCallbacks} from '../../../studio/contexts/FormCallbacks'
 import {useDidUpdate} from '../../../hooks/useDidUpdate'
-import {insert, PatchArg, PatchEvent, set, setIfMissing, unset} from '../../../patch'
-import {createProtoValue} from '../../../utils/createProtoValue'
+import {PatchArg, PatchEvent, set, setIfMissing, unset} from '../../../patch'
 import {ArrayFieldProps} from '../../../types/fieldProps'
-import {EMPTY_ARRAY} from '../../../utils/empty'
 import {PrimitiveValue} from '../../arrays/ArrayOfPrimitivesInput/types'
+import {useValidationMarkers} from '../../../studio/contexts/Validation'
+import {useFormFieldPresence} from '../../../studio/contexts/Presence'
 
 function move<T>(arr: T[], from: number, to: number): T[] {
   const copy = arr.slice()
@@ -72,6 +73,8 @@ export function ArrayOfPrimitivesField(props: {
   } = useFormCallbacks()
   const {member, renderField, renderInput, renderItem} = props
   const focusRef = useRef<{focus: () => void}>()
+  const rootValidation = useValidationMarkers()
+  const rootPresence = useFormFieldPresence()
 
   useDidUpdate(member.field.focused, (hadFocus, hasFocus) => {
     if (!hadFocus && hasFocus) {
@@ -168,6 +171,22 @@ export function ArrayOfPrimitivesField(props: {
     [member.field.path, onPathFocus]
   )
 
+  const presence = useMemo(() => {
+    return rootPresence.filter((item) =>
+      member.collapsed
+        ? startsWith(item.path, member.field.path)
+        : isEqual(item.path, member.field.path)
+    )
+  }, [member.collapsed, member.field.path, rootPresence])
+
+  const validation = useMemo(() => {
+    return rootValidation.filter((item) => {
+      return member.collapsed
+        ? startsWith(item.path, member.field.path)
+        : isEqual(item.path, member.field.path)
+    })
+  }, [member.collapsed, member.field.path, rootValidation])
+
   const inputProps = useMemo((): ArrayOfPrimitivesInputProps => {
     return {
       level: member.field.level,
@@ -190,10 +209,8 @@ export function ArrayOfPrimitivesField(props: {
       onRemoveItem: handleRemoveItem,
       onAppendItem: handleAppend,
       onPrependItem: handlePrepend,
-      // todo:
-      validation: EMPTY_ARRAY,
-      // todo:
-      presence: EMPTY_ARRAY,
+      validation,
+      presence,
       renderInput,
       renderItem,
       onFocusIndex: handleFocusIndex,
@@ -222,6 +239,8 @@ export function ArrayOfPrimitivesField(props: {
     handleRemoveItem,
     handleAppend,
     handlePrepend,
+    validation,
+    presence,
     renderInput,
     renderItem,
     handleFocusIndex,
@@ -243,9 +262,13 @@ export function ArrayOfPrimitivesField(props: {
       schemaType: member.field.schemaType,
       inputId: member.field.id,
       path: member.field.path,
+      presence,
+      validation,
       children: renderedInput,
     }
   }, [
+    member.name,
+    member.index,
     member.field.level,
     member.field.value,
     member.field.schemaType,
@@ -253,10 +276,10 @@ export function ArrayOfPrimitivesField(props: {
     member.field.path,
     member.collapsible,
     member.collapsed,
-    member.index,
-    member.name,
-    renderedInput,
     handleSetCollapsed,
+    presence,
+    validation,
+    renderedInput,
   ])
 
   return (

@@ -85,7 +85,13 @@ function NoopField({children}: {children: React.ReactNode}) {
 
 function PrimitiveField(field: FieldProps) {
   return (
-    <FormField level={field.level} title={field.title} description={field.description}>
+    <FormField
+      level={field.level}
+      title={field.title}
+      description={field.description}
+      __unstable_presence={field.presence}
+      validation={field.validation}
+    >
       {field.children}
     </FormField>
   )
@@ -101,6 +107,8 @@ function ObjectOrArrayField(field: ObjectFieldProps | ArrayFieldProps) {
       collapsible={field.collapsible}
       // eslint-disable-next-line react/jsx-handler-names
       onSetCollapsed={field.onSetCollapsed}
+      validation={field.validation}
+      __unstable_presence={field.presence}
     >
       {field.children}
     </FormFieldSet>

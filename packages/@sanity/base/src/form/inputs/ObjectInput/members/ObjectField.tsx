@@ -1,5 +1,6 @@
 import React, {useCallback, useMemo, useRef} from 'react'
 import {Path} from '@sanity/types'
+import {isEqual, startsWith} from '@sanity/util/paths'
 import {FieldMember} from '../../../store/types/members'
 import {ObjectFormNode} from '../../../store/types/nodes'
 import {
@@ -13,7 +14,8 @@ import {useDidUpdate} from '../../../hooks/useDidUpdate'
 import {PatchArg, PatchEvent, setIfMissing} from '../../../patch'
 import {createProtoValue} from '../../../utils/createProtoValue'
 import {ObjectFieldProps} from '../../../types/fieldProps'
-import {EMPTY_ARRAY} from '../../../utils/empty'
+import {useValidationMarkers} from '../../../studio/contexts/Validation'
+import {useFormFieldPresence} from '../../../studio/contexts/Presence'
 
 /**
  * Responsible for creating inputProps and fieldProps to pass to ´renderInput´ and ´renderField´ for an object input
@@ -34,6 +36,10 @@ export const ObjectField = function ObjectField(props: {
     onSetCollapsedFieldSet,
     onSelectFieldGroup,
   } = useFormCallbacks()
+
+  const rootValidation = useValidationMarkers()
+  const rootPresence = useFormFieldPresence()
+
   const {member, renderField, renderInput, renderItem} = props
   const focusRef = useRef<{focus: () => void}>()
 
@@ -102,6 +108,22 @@ export const ObjectField = function ObjectField(props: {
     [onSetCollapsedPath, member.field.path]
   )
 
+  const presence = useMemo(() => {
+    return rootPresence.filter((item) =>
+      member.collapsed
+        ? startsWith(item.path, member.field.path)
+        : isEqual(item.path, member.field.path)
+    )
+  }, [member.collapsed, member.field.path, rootPresence])
+
+  const validation = useMemo(() => {
+    return rootValidation.filter((item) =>
+      member.collapsed
+        ? startsWith(item.path, member.field.path)
+        : isEqual(item.path, member.field.path)
+    )
+  }, [member.collapsed, member.field.path, rootValidation])
+
   const inputProps = useMemo((): ObjectInputProps => {
     return {
       level: member.field.level,
@@ -128,9 +150,8 @@ export const ObjectField = function ObjectField(props: {
       renderField,
       renderInput,
       renderItem,
-      // todo
-      validation: EMPTY_ARRAY,
-      presence: EMPTY_ARRAY,
+      validation,
+      presence,
     }
   }, [
     member.field.level,
@@ -156,6 +177,8 @@ export const ObjectField = function ObjectField(props: {
     renderField,
     renderInput,
     renderItem,
+    validation,
+    presence,
   ])
 
   const renderedInput = useMemo(() => renderInput(inputProps), [inputProps, renderInput])
@@ -166,6 +189,8 @@ export const ObjectField = function ObjectField(props: {
       index: member.index,
       level: member.field.level,
       value: member.field.value,
+      presence,
+      validation,
       title: member.field.schemaType.title,
       description: member.field.schemaType.description,
       collapsible: member.collapsible,
@@ -177,6 +202,8 @@ export const ObjectField = function ObjectField(props: {
       children: renderedInput,
     }
   }, [
+    member.name,
+    member.index,
     member.field.level,
     member.field.value,
     member.field.schemaType,
@@ -184,10 +211,10 @@ export const ObjectField = function ObjectField(props: {
     member.field.path,
     member.collapsible,
     member.collapsed,
-    member.index,
-    member.name,
-    renderedInput,
+    presence,
+    validation,
     handleSetCollapsed,
+    renderedInput,
   ])
 
   return (

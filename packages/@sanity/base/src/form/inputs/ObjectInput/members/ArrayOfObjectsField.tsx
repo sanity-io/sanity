@@ -1,5 +1,6 @@
 import React, {useCallback, useMemo, useRef} from 'react'
 import {Path} from '@sanity/types'
+import {isEqual, startsWith} from '@sanity/util/paths'
 import {FieldMember} from '../../../store/types/members'
 import {ArrayOfObjectsFormNode} from '../../../store/types/nodes'
 import {
@@ -16,7 +17,8 @@ import {insert, PatchArg, PatchEvent, setIfMissing, unset} from '../../../patch'
 import {ArrayFieldProps} from '../../../types/fieldProps'
 import {resolveInitialValueForType} from '../../../../templates'
 import {ensureKey} from '../../../utils/ensureKey'
-import {EMPTY_ARRAY} from '../../../utils/empty'
+import {useFormFieldPresence} from '../../../studio/contexts/Presence'
+import {useValidationMarkers} from '../../../studio/contexts/Validation'
 
 /**
  * Responsible for creating inputProps and fieldProps to pass to ´renderInput´ and ´renderField´ for an array input
@@ -37,6 +39,10 @@ export function ArrayOfObjectsField(props: {
     onSetCollapsedFieldSet,
     onSelectFieldGroup,
   } = useFormCallbacks()
+
+  const rootPresence = useFormFieldPresence()
+  const rootValidation = useValidationMarkers()
+
   const {member, renderField, renderInput, renderItem} = props
   const focusRef = useRef<{focus: () => void}>()
 
@@ -161,6 +167,22 @@ export function ArrayOfObjectsField(props: {
     [member.field.path, onPathFocus]
   )
 
+  const presence = useMemo(() => {
+    return rootPresence.filter((item) =>
+      member.collapsed
+        ? startsWith(item.path, member.field.path)
+        : isEqual(item.path, member.field.path)
+    )
+  }, [member.collapsed, member.field.path, rootPresence])
+
+  const validation = useMemo(() => {
+    return rootValidation.filter((item) => {
+      return member.collapsed
+        ? startsWith(item.path, member.field.path)
+        : isEqual(item.path, member.field.path)
+    })
+  }, [member.collapsed, member.field.path, rootValidation])
+
   const inputProps = useMemo((): ArrayOfObjectsInputProps => {
     return {
       level: member.field.level,
@@ -186,10 +208,9 @@ export function ArrayOfObjectsField(props: {
       onPrependItem: handlePrependItem,
       onFocusPath: handleFocusChildPath,
       resolveInitialValue: resolveInitialValueForType,
-      // todo:
-      validation: EMPTY_ARRAY,
-      // todo:
-      presence: EMPTY_ARRAY,
+
+      validation,
+      presence,
       renderInput,
       renderField,
       renderItem,
@@ -216,6 +237,8 @@ export function ArrayOfObjectsField(props: {
     handleAppendItem,
     handlePrependItem,
     handleFocusChildPath,
+    validation,
+    presence,
     renderInput,
     renderField,
     renderItem,
@@ -237,9 +260,13 @@ export function ArrayOfObjectsField(props: {
       schemaType: member.field.schemaType,
       inputId: member.field.id,
       path: member.field.path,
+      presence,
+      validation,
       children: renderedInput,
     }
   }, [
+    member.name,
+    member.index,
     member.field.level,
     member.field.value,
     member.field.schemaType,
@@ -247,10 +274,10 @@ export function ArrayOfObjectsField(props: {
     member.field.path,
     member.collapsible,
     member.collapsed,
-    member.index,
-    member.name,
-    renderedInput,
     handleSetCollapsed,
+    presence,
+    validation,
+    renderedInput,
   ])
 
   return (

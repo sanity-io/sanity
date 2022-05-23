@@ -15,9 +15,10 @@ import {FormPatch, PatchEvent} from '../patch'
 import {ObjectMember} from '../store/types/members'
 import {ObjectFormNode} from '../store/types/nodes'
 import {EMPTY_ARRAY} from '../utils/empty'
-import {ObjectInput} from '../inputs/ObjectInput'
 import {StudioFormBuilderProvider} from './StudioFormBuilderProvider'
 import {FormCallbacksProvider} from './contexts/FormCallbacks'
+import {PresenceProvider} from './contexts/Presence'
+import {ValidationProvider} from './contexts/Validation'
 
 /**
  * @alpha
@@ -57,6 +58,8 @@ export function StudioFormBuilder(props: StudioFormBuilderProps) {
     focusPath,
     focused,
     id,
+    presence,
+    validation,
     onChange,
     onSelectFieldGroup,
     onPathFocus,
@@ -163,34 +166,38 @@ export function StudioFormBuilder(props: StudioFormBuilderProps) {
         onPathFocus={props.onPathFocus}
         onChange={props.onChange}
       >
-        <DocumentInput
-          compareValue={undefined}
-          focusRef={useRef(null)}
-          level={0}
-          id={id}
-          path={EMPTY_ARRAY}
-          collapsed={false}
-          focused={focused}
-          focusPath={focusPath}
-          onBlur={handleBlur}
-          onChange={handleChange}
-          validation={EMPTY_ARRAY}
-          presence={EMPTY_ARRAY}
-          onFocusPath={onPathFocus}
-          onFocus={handleFocus}
-          readOnly={readOnly}
-          schemaType={schemaType}
-          members={members}
-          groups={groups}
-          onSelectFieldGroup={handleSelectFieldGroup}
-          onSetCollapsed={handleSetCollapsed}
-          onSetFieldCollapsed={handleSetFieldCollapsed}
-          onSetFieldSetCollapsed={handleSetFieldSetCollapsed}
-          value={value}
-          renderInput={renderInput}
-          renderField={renderField}
-          renderItem={renderItem}
-        />
+        <PresenceProvider presence={presence}>
+          <ValidationProvider validation={validation}>
+            <DocumentInput
+              compareValue={undefined}
+              focusRef={useRef(null)}
+              level={0}
+              id={id}
+              path={EMPTY_ARRAY}
+              collapsed={false}
+              focused={focused}
+              focusPath={focusPath}
+              onBlur={handleBlur}
+              onChange={handleChange}
+              validation={EMPTY_ARRAY}
+              presence={EMPTY_ARRAY}
+              onFocusPath={onPathFocus}
+              onFocus={handleFocus}
+              readOnly={readOnly}
+              schemaType={schemaType}
+              members={members}
+              groups={groups}
+              onSelectFieldGroup={handleSelectFieldGroup}
+              onSetCollapsed={handleSetCollapsed}
+              onSetFieldCollapsed={handleSetFieldCollapsed}
+              onSetFieldSetCollapsed={handleSetFieldSetCollapsed}
+              value={value}
+              renderInput={renderInput}
+              renderField={renderField}
+              renderItem={renderItem}
+            />
+          </ValidationProvider>
+        </PresenceProvider>
       </FormCallbacksProvider>
     </StudioFormBuilderProvider>
   )

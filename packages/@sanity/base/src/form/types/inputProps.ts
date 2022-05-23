@@ -118,17 +118,20 @@ export interface StringInputProps<S extends StringSchemaType = StringSchemaType>
   extends StringFormNode<S>,
     BaseInputProps {
   onChange: (patch: FormPatch | FormPatch[] | PatchEvent) => void
+  customValidity?: string
 }
 
 export interface NumberInputProps<S extends NumberSchemaType = NumberSchemaType>
   extends NumberFormNode<S>,
     BaseInputProps {
   onChange: (patch: FormPatch | FormPatch[] | PatchEvent) => void
+  customValidity?: string
 }
 export interface BooleanInputProps<S extends BooleanSchemaType = BooleanSchemaType>
   extends BooleanFormNode<S>,
     BaseInputProps {
   onChange: (patch: FormPatch | FormPatch[] | PatchEvent) => void
+  customValidity?: string
 }
 
 export type PrimitiveInputProps = StringInputProps | BooleanInputProps | NumberInputProps

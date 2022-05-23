@@ -6,12 +6,16 @@ import {
   Path,
   SchemaType,
   StringSchemaType,
+  ValidationMarker,
 } from '@sanity/types'
+import {FormFieldPresence} from '../../presence'
 
 export interface BaseFieldProps {
   schemaType: SchemaType
   title: string | undefined
   description: string | undefined
+  presence: FormFieldPresence[]
+  validation: ValidationMarker[]
   level: number
   inputId: string
   value: unknown | undefined

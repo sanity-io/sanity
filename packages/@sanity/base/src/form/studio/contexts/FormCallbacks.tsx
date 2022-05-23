@@ -12,16 +12,18 @@ interface FormCallbacksValue {
   onSelectFieldGroup: (path: Path, fieldGroupName: string) => void
 }
 
-const FormContext = React.createContext<FormCallbacksValue | null>(null)
+const FormCallbacksContext = React.createContext<FormCallbacksValue | null>(null)
 
 export const FormCallbacksProvider = memo(function FormCallbacksProvider(
   props: FormCallbacksValue & {children: React.ReactNode}
 ) {
-  return <FormContext.Provider value={props}>{props.children}</FormContext.Provider>
+  return (
+    <FormCallbacksContext.Provider value={props}>{props.children}</FormCallbacksContext.Provider>
+  )
 })
 
 export function useFormCallbacks(): FormCallbacksValue {
-  const ctx = useContext(FormContext)
+  const ctx = useContext(FormCallbacksContext)
   if (!ctx) {
     throw new Error('Form context not provided')
   }
