@@ -189,11 +189,6 @@ export type SelectionChange = {
   selection: EditorSelection
 }
 
-export type ThrottleChange = {
-  type: 'throttle'
-  throttle: boolean
-}
-
 export type FocusChange = {
   type: 'focus'
 }
@@ -261,7 +256,6 @@ export type EditorChange =
   | ReadyChange
   | RedoChange
   | SelectionChange
-  | ThrottleChange
   | UndoChange
   | UnsetChange
   | ValueChange

@@ -1,9 +1,10 @@
 import React from 'react'
 import {ArraySchemaType, Path} from '@sanity/types'
-import {Subscription, Subject} from 'rxjs'
-import {distinctUntilChanged} from 'rxjs/operators'
+import {Subscription, Subject, defer, of, EMPTY, Observable, OperatorFunction} from 'rxjs'
+import {concatMap, distinctUntilChanged, switchMap, tap} from 'rxjs/operators'
 import {randomKey} from '@sanity/util/content'
 import {createEditor} from 'slate'
+import {debounce} from 'lodash'
 import {compileType} from '../utils/schema'
 import {getPortableTextFeatures} from '../utils/getPortableTextFeatures'
 import {PortableTextBlock, PortableTextFeatures, PortableTextChild} from '../types/portableText'
@@ -27,9 +28,23 @@ import {PortableTextEditorSelectionContext} from './hooks/usePortableTextEditorS
 import {PortableTextEditorValueContext} from './hooks/usePortableTextEditorValue'
 import {withPortableText} from './withPortableText'
 
+const FLUSH_PATCHES_DEBOUNCE_MS = 500
+
 export const defaultKeyGenerator = () => randomKey(12)
 
 const debug = debugWithName('component:PortableTextEditor')
+
+function bufferUntil<T>(emitWhen: (currentBuffer: T[]) => boolean): OperatorFunction<T, T[]> {
+  return (source: Observable<T>) =>
+    defer(() => {
+      let buffer: T[] = [] // custom buffer
+      return source.pipe(
+        tap((v) => buffer.push(v)), // add values to buffer
+        switchMap(() => (emitWhen(buffer) ? of(buffer) : EMPTY)), // emit the buffer when the condition is met
+        tap(() => (buffer = [])) // clear the buffer
+      )
+    })
+}
 
 export type PortableTextEditorProps = {
   keyGenerator?: () => string
@@ -44,6 +59,7 @@ export type PortableTextEditorProps = {
 type State = {
   invalidValueResolution: InvalidValueResolution | null
   selection: EditorSelection // This state is only used to force the selection context to update.
+  hasPendingPatches: boolean
 }
 
 // The PT editor's public API
@@ -157,7 +173,6 @@ export class PortableTextEditor extends React.Component<PortableTextEditorProps,
   public type: ArraySchemaType<PortableTextBlock>
   public portableTextFeatures: PortableTextFeatures
   public change$: EditorChanges = new Subject()
-  public isThrottling = false
   public editable?: EditableAPI
   public keyGenerator: () => string
   public maxBlocks: number | undefined
@@ -189,7 +204,11 @@ export class PortableTextEditor extends React.Component<PortableTextEditorProps,
     this.keyGenerator = props.keyGenerator || defaultKeyGenerator
 
     // Validate the Portable Text value
-    let state: State = {invalidValueResolution: null, selection: null}
+    let state: State = {
+      invalidValueResolution: null,
+      selection: null,
+      hasPendingPatches: false,
+    }
     const validation = validateValue(props.value, this.portableTextFeatures, this.keyGenerator)
     if (props.value && !validation.valid) {
       this.change$.next({type: 'loading', isLoading: false})
@@ -200,7 +219,13 @@ export class PortableTextEditor extends React.Component<PortableTextEditorProps,
       })
       state = {...state, invalidValueResolution: validation.resolution}
     }
-    this.incomingPatches$ = props.incomingPatches$
+    if (props.incomingPatches$) {
+      // Buffer incoming patches until we have submitted ours
+      this.incomingPatches$ = props.incomingPatches$.pipe(
+        bufferUntil(() => !this.state.hasPendingPatches),
+        concatMap((x) => x)
+      )
+    }
     this.maxBlocks =
       typeof props.maxBlocks === 'undefined'
         ? undefined
@@ -222,7 +247,7 @@ export class PortableTextEditor extends React.Component<PortableTextEditorProps,
     this.changeSubscription.unsubscribe()
   }
 
-  componentDidUpdate(prevProps: PortableTextEditorProps) {
+  componentDidUpdate(prevProps: PortableTextEditorProps, prevState: State) {
     if (this.props.readOnly !== prevProps.readOnly) {
       this.readOnly = this.props.readOnly || false
       this.slateInstance.readOnly = this.readOnly
@@ -242,7 +267,7 @@ export class PortableTextEditor extends React.Component<PortableTextEditorProps,
         this.portableTextFeatures,
         this.keyGenerator
       )
-      if (this.props.value && !validation.valid) {
+      if (this.props.value && !validation.valid && !prevState.invalidValueResolution) {
         this.change$.next({
           type: 'invalidValue',
           resolution: validation.resolution,
@@ -265,27 +290,20 @@ export class PortableTextEditor extends React.Component<PortableTextEditorProps,
     if (finalPatches.length > 0) {
       onChange({type: 'mutation', patches: finalPatches})
       this.pendingPatches = []
+      this.setState({hasPendingPatches: false})
       debug('Flushing', finalPatches)
     }
   }
+  private flushDebounced = debounce(this.flush, FLUSH_PATCHES_DEBOUNCE_MS)
 
   private onEditorChange = (next: EditorChange): void => {
     const {onChange} = this.props
     switch (next.type) {
       case 'patch':
         this.pendingPatches.push(next.patch)
+        this.setState({hasPendingPatches: true})
         onChange(next)
-        break
-      case 'throttle':
-        if (next.throttle !== this.isThrottling) {
-          onChange(next)
-        }
-        if (next.throttle) {
-          this.isThrottling = true
-        } else {
-          this.isThrottling = false
-          this.flush()
-        }
+        this.flushDebounced()
         break
       case 'selection':
         onChange(next)
@@ -293,7 +311,6 @@ export class PortableTextEditor extends React.Component<PortableTextEditorProps,
         break
       case 'undo':
       case 'redo':
-        this.flush()
         onChange(next)
         break
       default:
