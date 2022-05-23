@@ -54,7 +54,7 @@
   "dependencies": {
     "@sanity/icons": "^1.3.0",
     "@sanity/types": "2.29.5",
-    "@sanity/ui": "^0.37.9",
+    "@sanity/ui": "^0.37.11",
     "lodash": "^4.17.21",
     "rxjs": "^6.5.3"
   },

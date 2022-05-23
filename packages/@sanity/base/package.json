@@ -94,7 +94,7 @@
     "@sanity/schema": "2.29.3",
     "@sanity/transaction-collator": "2.29.3",
     "@sanity/types": "2.29.5",
-    "@sanity/ui": "^0.37.9",
+    "@sanity/ui": "^0.37.11",
     "@sanity/util": "2.29.5",
     "@sanity/uuid": "^3.0.1",
     "@sanity/validation": "2.30.0",

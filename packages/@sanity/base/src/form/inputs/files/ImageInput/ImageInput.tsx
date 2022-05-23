@@ -14,6 +14,7 @@ import {
 } from '@sanity/types'
 import React, {ReactNode} from 'react'
 import deepCompare from 'react-fast-compare'
+import {SanityClient} from '@sanity/client'
 import {PatchEvent, setIfMissing, unset} from '../../../patch'
 import {FIXME, ObjectInputProps} from '../../../types'
 import {PresenceOverlay} from '../../../../presence'
@@ -37,7 +38,6 @@ import {ActionsMenu} from '../common/ActionsMenu'
 import {UploadWarning} from '../common/UploadWarning'
 import {ImagePreview} from './ImagePreview'
 import {ImageActionsMenu} from './ImageActionsMenu'
-import {SanityClient} from '@sanity/client'
 
 export interface Image extends Partial<BaseImage> {
   _upload?: UploadState

@@ -31,7 +31,7 @@
     "@sanity/language-filter": "2.29.8",
     "@sanity/portable-text-editor": "2.29.8",
     "@sanity/types": "2.29.5",
-    "@sanity/ui": "^0.37.9",
+    "@sanity/ui": "^0.37.11",
     "@sanity/vision": "2.30.0",
     "bio-pv": "^1.8.1",
     "date-fns": "^2.26.1",
