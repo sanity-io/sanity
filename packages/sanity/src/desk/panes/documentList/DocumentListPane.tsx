@@ -9,7 +9,7 @@ import {useDeskToolSetting} from '../../useDeskToolSetting'
 import {BaseDeskToolPaneProps} from '../types'
 import {useSchema} from '../../../hooks'
 import {useSource, SourceProvider} from '../../../studio'
-import {DEFAULT_ORDERING, EMPTY_RECORD} from './constants'
+import {EMPTY_RECORD} from './constants'
 import {
   applyOrderingFunctions,
   getTypeNameFromSingleTypeFilter,
@@ -58,10 +58,16 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
     'layout',
     defaultLayout
   )
+  const defaultOrderingBy = useMemo(
+    () => ({
+      by: defaultOrdering,
+    }),
+    [defaultOrdering]
+  )
   const [sortOrderRaw, setSortOrder] = useDeskToolSetting<SortOrder>(
     typeName,
     'sortOrder',
-    DEFAULT_ORDERING
+    defaultOrderingBy
   )
 
   const sortWithOrderingFn =
@@ -73,7 +79,6 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
   const filterIsSimpleTypeContraint = isSimpleTypeFilter(filter)
 
   const {error, fullList, handleListChange, isLoading, items, onRetry} = useDocumentList({
-    defaultOrdering,
     filter,
     params,
     sortOrder,
