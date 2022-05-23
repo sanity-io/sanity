@@ -2,7 +2,7 @@ import type {StructureBuilder} from '@sanity/structure'
 import type {TemplateBuilder} from '@sanity/initial-value-templates'
 
 interface GetResultOptions {
-  schema: unknown
+  mockSchema: unknown
   newDocumentStructure: (structureBuilder: typeof StructureBuilder) => unknown
   initialValueTemplates: (templateBuilder: typeof TemplateBuilder) => unknown
 }
@@ -12,10 +12,10 @@ beforeEach(() => {
   jest.resetModules()
 })
 
-function getResult({schema, newDocumentStructure, initialValueTemplates}: GetResultOptions) {
+function getResult({mockSchema, newDocumentStructure, initialValueTemplates}: GetResultOptions) {
   jest.mock('part:@sanity/base/schema', () => {
     const createSchema = jest.requireActual('part:@sanity/base/schema-creator')
-    return createSchema({types: schema})
+    return createSchema({types: mockSchema})
   })
 
   jest.mock('part:@sanity/base/initial-value-templates?', () => {
@@ -38,7 +38,7 @@ function getResult({schema, newDocumentStructure, initialValueTemplates}: GetRes
 describe('getNewDocumentOptions', () => {
   it('creates an array of new document options from the `new-document-structure` part', () => {
     const newDocumentOptions = getResult({
-      schema: [
+      mockSchema: [
         {
           name: 'book',
           type: 'document',
@@ -95,7 +95,7 @@ describe('getNewDocumentOptions', () => {
     })
 
     getResult({
-      schema: [
+      mockSchema: [
         {
           name: 'book',
           type: 'document',
@@ -130,7 +130,7 @@ describe('getNewDocumentOptions', () => {
     })
 
     getResult({
-      schema: [
+      mockSchema: [
         {
           name: 'book',
           type: 'document',
@@ -164,7 +164,7 @@ describe('getNewDocumentOptions', () => {
     })
 
     getResult({
-      schema: [
+      mockSchema: [
         {
           name: 'book',
           type: 'document',
@@ -198,7 +198,7 @@ describe('getNewDocumentOptions', () => {
     })
 
     getResult({
-      schema: [
+      mockSchema: [
         {
           name: 'book',
           type: 'document',
@@ -236,7 +236,7 @@ describe('getNewDocumentOptions', () => {
     })
 
     getResult({
-      schema: [
+      mockSchema: [
         {
           name: 'book',
           type: 'document',
@@ -270,7 +270,7 @@ describe('getNewDocumentOptions', () => {
     })
 
     getResult({
-      schema: [
+      mockSchema: [
         {
           name: 'book',
           type: 'document',
@@ -311,7 +311,7 @@ describe('getNewDocumentOptions', () => {
     })
 
     getResult({
-      schema: [
+      mockSchema: [
         {
           name: 'book',
           type: 'document',
@@ -347,7 +347,7 @@ describe('getNewDocumentOptions', () => {
     })
 
     getResult({
-      schema: [
+      mockSchema: [
         {
           name: 'book',
           type: 'document',
