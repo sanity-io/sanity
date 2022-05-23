@@ -1,17 +1,21 @@
-const {upperFirst} = require('lodash')
-const logSymbols = require('log-symbols')
-const {generateHelpUrl} = require('@sanity/generate-help-url')
+import {upperFirst} from 'lodash'
+import logSymbols from 'log-symbols'
+import {generateHelpUrl} from '@sanity/generate-help-url'
+import type {CliOutputter} from '@sanity/cli'
+import type {SchemaValidationProblemGroup} from '@sanity/types'
 
 // eslint-disable-next-line no-console
-const consoleOutputter = {error: (...args) => console.error(...args)}
+const consoleOutputter = {error: (...args: unknown[]) => console.error(...args)}
 
-module.exports = class SchemaError extends Error {
-  constructor(problemGroups) {
+export class SchemaError extends Error {
+  problemGroups: SchemaValidationProblemGroup[]
+
+  constructor(problemGroups: SchemaValidationProblemGroup[]) {
     super('Schema errors encountered')
     this.problemGroups = problemGroups
   }
 
-  print(output) {
+  print(output: CliOutputter): void {
     const logger = output || consoleOutputter
     logger.error('Uh oh… found errors in schema:\n')
 
@@ -29,7 +33,7 @@ module.exports = class SchemaError extends Error {
   }
 }
 
-function getPath(path) {
+function getPath(path: SchemaValidationProblemGroup['path']) {
   return path
     .map((segment) => {
       if (segment.kind === 'type' && segment.name && segment.type) {

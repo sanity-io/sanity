@@ -1,4 +1,4 @@
-import {lazyRequire} from '@sanity/util/_internal'
+import {dynamicRequire} from '@sanity/util/_internal'
 
 const helpText = `
 Examples
@@ -10,6 +10,11 @@ export default {
   signature: '',
   group: 'graphql',
   description: 'Lists all the GraphQL endpoints deployed for this project',
-  action: lazyRequire(require.resolve('../../actions/graphql/listApisAction')),
+  action: (...args) => {
+    const {listGraphQLApis} = dynamicRequire(
+      require.resolve('../../actions/graphql/listApisAction')
+    )
+    listGraphQLApis(...args)
+  },
   helpText,
 }
