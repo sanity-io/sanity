@@ -1,5 +1,5 @@
-import {Descendant, Transforms, Element as SlateElement} from 'slate'
-import {isEqual} from 'lodash'
+import {Transforms} from 'slate'
+import {debounce, isEqual} from 'lodash'
 import isHotkey from 'is-hotkey'
 import React, {useCallback, useMemo, useState, useEffect, forwardRef, useRef} from 'react'
 import {Editable as SlateEditable, Slate, ReactEditor, withReact} from '@sanity/slate-react'
@@ -32,9 +32,6 @@ import {createWithEditableAPI, createWithHotkeys, createWithInsertData} from './
 import {useForwardedRef} from './hooks/useForwardedRef'
 
 const debug = debugWithName('component:Editable')
-
-// Weakmap for testing if we need to update the state value from a new value coming in from props
-const VALUE_TO_SLATE_VALUE: WeakMap<PortableTextBlock[], Descendant[]> = new WeakMap()
 
 const PLACEHOLDER_STYLE: React.CSSProperties = {
   opacity: 0.5,
@@ -101,8 +98,9 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
   const value = usePortableTextEditorValue()
   const ref = useForwardedRef(forwardedRef)
   const slateEditor = portableTextEditor.slateInstance
+  const valueRef = useRef<PortableTextBlock[] | undefined>(value)
 
-  const {change$, isThrottling, keyGenerator, portableTextFeatures, readOnly} = portableTextEditor
+  const {change$, keyGenerator, portableTextFeatures, readOnly} = portableTextEditor
 
   const blockType = portableTextFeatures.types.block
 
@@ -162,15 +160,21 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
     [slateEditor, withEditableAPI, withHotKeys, withInsertData]
   )
 
+  // Track composing
+  const [isComposing, setIsComposing] = useState(false)
+  const unsetIsComposingDebounced = useMemo(
+    () =>
+      debounce(() => {
+        setIsComposing(false)
+      }, 1000),
+    [setIsComposing]
+  )
+
   // Track selection (action) state
   const [isSelecting, setIsSelecting] = useState(false)
   useEffect(() => {
     slateEditor.isSelecting = isSelecting
   }, [isSelecting, slateEditor])
-
-  useEffect(() => {
-    slateEditor.isThrottling = isThrottling
-  }, [isThrottling, slateEditor])
 
   const renderElement = useCallback(
     (eProps) => (
@@ -230,71 +234,61 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
 
   // Restore value from props
   useEffect(() => {
-    if (isThrottling) {
-      debug('Not setting value from props (throttling)')
+    if (isComposing) {
+      debug('Not setting value from props (is composing)')
       return
     }
     if (isSelecting) {
       debug('Not setting value from props (is selecting)')
       return
     }
-    const fromMap = value && VALUE_TO_SLATE_VALUE.get(value)
-    if (fromMap !== slateEditor.children) {
-      let equal = true
-      const defaultValue = [placeHolderBlock]
-      const slateValueFromProps = toSlateValue(
-        getValueOrInitialValue(value, defaultValue),
-        portableTextEditor,
-        KEY_TO_SLATE_ELEMENT.get(slateEditor)
-      )
-      const val: PortableTextBlock[] = value || defaultValue
-      val.forEach((blk, index) => {
-        if (slateEditor.isTextBlock(blk)) {
-          if (!isEqual(toSlateValue([blk], portableTextEditor)[0], slateEditor.children[index])) {
-            equal = false
-          }
-        } else {
-          const blkVal = slateEditor.children[index] as SlateElement
-          if (
-            !blkVal ||
-            (blkVal &&
-              'value' in blkVal &&
-              !isEqual(blk, {_key: blkVal._key, _type: blkVal._type, ...blkVal.value}))
-          ) {
-            equal = false
-          }
+    if (valueRef.current === value) {
+      debug('Not setting value from props (same value)')
+      return
+    }
+    const defaultValue = [placeHolderBlock]
+    const slateValueFromProps = toSlateValue(
+      getValueOrInitialValue(value, defaultValue),
+      portableTextEditor
+    )
+    if (value) {
+      const originalChildren = [...slateEditor.children]
+      slateValueFromProps.forEach((n, i) => {
+        const existing = originalChildren[i]
+        if (existing && !isEqual(n, existing)) {
+          originalChildren.splice(i, 1, n)
+        } else if (!existing) {
+          originalChildren.push(n)
         }
       })
-      // Only update the new value from props if the editor is not longer equal to the props value.
-      // IME composing on Safari MacOS breaks when we replace the value like this.
-      // This will help with that - at least in single user mode.
-      debug(`Setting value from props`)
-      if (equal) {
-        debug(`Editor value is in sync`)
-      } else {
-        debug(`Updating children`)
-        slateEditor.children = slateValueFromProps
-        slateEditor.onChange()
-        VALUE_TO_SLATE_VALUE.set(val, slateEditor.children)
+      if (originalChildren.length > slateValueFromProps.length) {
+        originalChildren.splice(
+          slateValueFromProps.length,
+          slateEditor.children.length - slateValueFromProps.length
+        )
       }
-      change$.next({type: 'value', value})
+      slateEditor.children = originalChildren
+    } else {
+      slateEditor.children = slateValueFromProps
     }
+    valueRef.current = value
+    debug(`Setting value from props`)
+    slateEditor.onChange()
   }, [
-    change$,
+    isComposing,
     isSelecting,
-    isThrottling,
     placeHolderBlock,
-    blockType.name,
+    portableTextEditor,
+    setIsComposing,
     slateEditor,
     value,
-    portableTextEditor,
+    valueRef,
   ])
 
   // Restore selection from props
   useEffect(() => {
     if (
       propsSelection &&
-      !isThrottling &&
       !isEqual(propsSelection, toPortableTextRange(slateEditor, slateEditor.selection))
     ) {
       debug(`Selection from props ${JSON.stringify(propsSelection)}`)
@@ -309,7 +303,7 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [slateEditor, propsSelection]) // Note that 'isThrottling' and 'value' is deliberately left out here.
+  }, [slateEditor, propsSelection]) // Note that  'value' is deliberately left out here.
 
   // Set initial selection from props
   useEffect(() => {
@@ -465,11 +459,13 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
 
   const handleOnBeforeInput = useCallback(
     (event: Event) => {
+      setIsComposing(true)
+      unsetIsComposingDebounced()
       if (onBeforeInput) {
         onBeforeInput(event)
       }
     },
-    [onBeforeInput]
+    [unsetIsComposingDebounced, onBeforeInput]
   )
 
   const handleKeyDown = slateEditor.pteWithHotKeys
