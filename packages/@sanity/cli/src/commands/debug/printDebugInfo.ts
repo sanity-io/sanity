@@ -171,12 +171,14 @@ async function gatherProjectInfo(
   context: CliCommandContext,
   baseInfo: ConfigsWithUser
 ): Promise<ProjectInfo | null | Error> {
-  const client = context.apiClient({requireUser: false, requireProject: false})
-  const projectId = client.config().projectId
-  if (!projectId) {
+  const projectClient = context.apiClient({requireUser: false, requireProject: false})
+  const projectId = projectClient.config().projectId
+  const hasToken = Boolean(getCliToken())
+  if (!projectId || !hasToken) {
     return null
   }
 
+  const client = context.apiClient({requireUser: true, requireProject: false})
   const projectInfo = await client.projects.getById(projectId)
   if (!projectInfo) {
     return new Error(`Project specified in configuration (${projectId}) does not exist in API`)
