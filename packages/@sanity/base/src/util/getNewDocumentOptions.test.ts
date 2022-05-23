@@ -3,8 +3,8 @@ import type {TemplateBuilder} from '@sanity/initial-value-templates'
 
 interface GetResultOptions {
   mockSchema: unknown
-  newDocumentStructure: (structureBuilder: typeof StructureBuilder) => unknown
-  initialValueTemplates: (templateBuilder: typeof TemplateBuilder) => unknown
+  mockNewDocumentStructure: (structureBuilder: typeof StructureBuilder) => unknown
+  mockInitialValueTemplates: (templateBuilder: typeof TemplateBuilder) => unknown
 }
 
 beforeEach(() => {
@@ -12,7 +12,11 @@ beforeEach(() => {
   jest.resetModules()
 })
 
-function getResult({mockSchema, newDocumentStructure, initialValueTemplates}: GetResultOptions) {
+function getResult({
+  mockSchema,
+  mockNewDocumentStructure,
+  mockInitialValueTemplates,
+}: GetResultOptions) {
   jest.mock('part:@sanity/base/schema', () => {
     const createSchema = jest.requireActual('part:@sanity/base/schema-creator')
     return createSchema({types: mockSchema})
@@ -20,12 +24,12 @@ function getResult({mockSchema, newDocumentStructure, initialValueTemplates}: Ge
 
   jest.mock('part:@sanity/base/initial-value-templates?', () => {
     const {TemplateBuilder: T} = require('@sanity/initial-value-templates')
-    return initialValueTemplates(T)
+    return mockInitialValueTemplates(T)
   })
 
   jest.mock('part:@sanity/base/new-document-structure?', () => {
     const {StructureBuilder: S} = require('@sanity/structure')
-    return newDocumentStructure(S)
+    return mockNewDocumentStructure(S)
   })
 
   const {
@@ -54,7 +58,7 @@ describe('getNewDocumentOptions', () => {
         },
       ],
 
-      initialValueTemplates: (T) => [
+      mockInitialValueTemplates: (T) => [
         ...T.defaults(),
 
         T.template({
@@ -67,7 +71,7 @@ describe('getNewDocumentOptions', () => {
         }),
       ],
 
-      newDocumentStructure: (S) => [S.initialValueTemplateItem('author-developer')],
+      mockNewDocumentStructure: (S) => [S.initialValueTemplateItem('author-developer')],
     })
 
     expect(newDocumentOptions).toMatchObject([
@@ -111,10 +115,10 @@ describe('getNewDocumentOptions', () => {
         },
       ],
 
-      initialValueTemplates: (T) => T.defaults(),
+      mockInitialValueTemplates: (T) => T.defaults(),
 
       // not an array
-      newDocumentStructure: (S) => S.initialValueTemplateItem('author-developer'),
+      mockNewDocumentStructure: (S) => S.initialValueTemplateItem('author-developer'),
     })
 
     expect(consoleError.mock.calls).toEqual([
@@ -146,9 +150,9 @@ describe('getNewDocumentOptions', () => {
         },
       ],
 
-      initialValueTemplates: (T) => T.defaults(),
+      mockInitialValueTemplates: (T) => T.defaults(),
 
-      newDocumentStructure: () => ['not an object'],
+      mockNewDocumentStructure: () => ['not an object'],
     })
 
     expect(consoleError.mock.calls).toEqual([
@@ -180,9 +184,9 @@ describe('getNewDocumentOptions', () => {
         },
       ],
 
-      initialValueTemplates: (T) => T.defaults(),
+      mockInitialValueTemplates: (T) => T.defaults(),
 
-      newDocumentStructure: () => [{type: 'not-the-right-type'}],
+      mockNewDocumentStructure: () => [{type: 'not-the-right-type'}],
     })
 
     expect(consoleError.mock.calls).toEqual([
@@ -214,9 +218,9 @@ describe('getNewDocumentOptions', () => {
         },
       ],
 
-      initialValueTemplates: (T) => T.defaults(),
+      mockInitialValueTemplates: (T) => T.defaults(),
 
-      newDocumentStructure: (S) => [
+      mockNewDocumentStructure: (S) => [
         S.initialValueTemplateItem('author'),
         S.initialValueTemplateItem('book'),
         S.initialValueTemplateItem('author'),
@@ -252,9 +256,9 @@ describe('getNewDocumentOptions', () => {
         },
       ],
 
-      initialValueTemplates: (T) => T.defaults(),
+      mockInitialValueTemplates: (T) => T.defaults(),
 
-      newDocumentStructure: (S) => [S.initialValueTemplateItem('no-matching-template')],
+      mockNewDocumentStructure: (S) => [S.initialValueTemplateItem('no-matching-template')],
     })
 
     expect(consoleError.mock.calls).toEqual([
@@ -286,7 +290,7 @@ describe('getNewDocumentOptions', () => {
         },
       ],
 
-      initialValueTemplates: (T) => [
+      mockInitialValueTemplates: (T) => [
         T.template({
           id: 'has-no-schema-type',
           schemaType: "doesn't match nothing",
@@ -295,7 +299,7 @@ describe('getNewDocumentOptions', () => {
         }),
       ],
 
-      newDocumentStructure: (S) => [S.initialValueTemplateItem('has-no-schema-type')],
+      mockNewDocumentStructure: (S) => [S.initialValueTemplateItem('has-no-schema-type')],
     })
 
     expect(consoleError.mock.calls).toEqual([
@@ -329,9 +333,9 @@ describe('getNewDocumentOptions', () => {
         },
       ],
 
-      initialValueTemplates: (T) => T.defaults(),
+      mockInitialValueTemplates: (T) => T.defaults(),
 
-      newDocumentStructure: (S) => [S.initialValueTemplateItem('book')],
+      mockNewDocumentStructure: (S) => [S.initialValueTemplateItem('book')],
     })
 
     expect(consoleError.mock.calls).toEqual([
@@ -363,7 +367,7 @@ describe('getNewDocumentOptions', () => {
         },
       ],
 
-      initialValueTemplates: (T) => [
+      mockInitialValueTemplates: (T) => [
         ...T.defaults(),
         T.template({
           id: 'with-parameters',
@@ -374,7 +378,7 @@ describe('getNewDocumentOptions', () => {
         }),
       ],
 
-      newDocumentStructure: (S) => [S.initialValueTemplateItem('with-parameters')],
+      mockNewDocumentStructure: (S) => [S.initialValueTemplateItem('with-parameters')],
     })
 
     expect(consoleError.mock.calls).toEqual([
