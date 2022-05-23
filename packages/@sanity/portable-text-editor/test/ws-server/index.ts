@@ -1,23 +1,36 @@
-/* eslint-disable no-console */
 import ipc from 'node-ipc'
 import express from 'express'
 import expressWS from 'express-ws'
 import {Subject} from 'rxjs'
+import type {WebSocket} from 'ws'
 import {applyAll} from '../../src/patch/applyPatch'
-import {PortableTextBlock} from '../../src'
+import {Patch, PortableTextBlock} from '../../src'
 
 const expressApp = express()
 const {app} = expressWS(expressApp)
-const messages = new Subject()
+const messages: Subject<string> = new Subject()
 
 const PORT = 3001
 const valueMap: Record<string, PortableTextBlock[] | undefined> = {}
 const revisionMap: Record<string, string> = {}
-const editorToSocket = new WeakMap<{editorId: string; testId: string}, any>()
+const editorToSocket: Record<string, WebSocket> = {}
+const sockets: WebSocket[] = []
 
-let sockets: any = []
-const sub = messages.subscribe((next: any) => {
-  sockets.forEach((socket: any) => socket.send(next))
+const sub = messages.subscribe((next) => {
+  sockets.forEach((socket) => {
+    const data = JSON.parse(next)
+    if (data.type === 'mutation') {
+      const isOriginator = editorToSocket[data.editorId] === socket
+      const patches = data.patches.map((p: Patch) => ({
+        ...p,
+        origin: isOriginator ? 'local' : 'remote',
+      }))
+      const newData = JSON.stringify({...data, patches})
+      socket.send(newData)
+      return
+    }
+    socket.send(next)
+  })
 })
 
 ipc.config.id = 'socketServer'
@@ -52,12 +65,15 @@ app.ws('/', (s, req) => {
     )
   }
   s.on('close', () => {
-    sockets = sockets.filter((socket: any) => socket !== s)
+    const index = sockets.findIndex((socket) => socket === s)
+    if (index > -1) {
+      sockets.splice(index, 1)
+    }
   })
   s.on('message', (msg: string) => {
     const data = JSON.parse(msg)
-    if (data.type === 'hello') {
-      editorToSocket.set({editorId: data.editorId, testId: data.testId}, s)
+    if (data.type === 'hello' && data.editorId) {
+      editorToSocket[data.editorId] = s
     }
     if (data.type === 'mutation' && testId) {
       valueMap[testId] = applyAll(valueMap[testId], data.patches)
