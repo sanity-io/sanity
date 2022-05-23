@@ -23,7 +23,7 @@
     "sanity-tool"
   ],
   "dependencies": {
-    "@sanity/icons": "^1.2.8",
+    "@sanity/icons": "^1.3.0",
     "@sanity/image-url": "^1.0.1",
     "@sanity/types": "2.29.5",
     "@sanity/ui": "^0.37.9",
