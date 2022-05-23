@@ -5,7 +5,7 @@ import {useShallowUnique} from '../../utils/useShallowUnique'
 import {useUnique} from '../../utils/useUnique'
 import {useDeskToolSetting} from '../../settings'
 import {BaseDeskToolPaneProps} from '../types'
-import {DEFAULT_ORDERING, EMPTY_RECORD} from './constants'
+import {EMPTY_RECORD} from './constants'
 import {
   applyOrderingFunctions,
   getTypeNameFromSingleTypeFilter,
@@ -40,10 +40,16 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
   const typeName = useMemo(() => getTypeNameFromSingleTypeFilter(filter, params), [filter, params])
   const showIcons = displayOptions?.showIcons !== false
   const [layout, setLayout] = useDeskToolSetting<Layout>(typeName, 'layout', defaultLayout)
+  const defaultOrderingBy = useMemo(
+    () => ({
+      by: defaultOrdering,
+    }),
+    [defaultOrdering]
+  )
   const [sortOrderRaw, setSortOrder] = useDeskToolSetting<SortOrder>(
     typeName,
     'sortOrder',
-    DEFAULT_ORDERING
+    defaultOrderingBy
   )
 
   const sortWithOrderingFn =
@@ -55,7 +61,6 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
   const filterIsSimpleTypeContraint = isSimpleTypeFilter(filter)
 
   const {error, fullList, handleListChange, isLoading, items, onRetry} = useDocumentList({
-    defaultOrdering,
     filter,
     params,
     sortOrder,
