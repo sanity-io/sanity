@@ -49,7 +49,7 @@ export function sanityBuildEntries(options: {
         type: 'chunk',
         id: virtualEntryModuleId,
         name: 'studioEntry',
-        fileName: 'studioEntry.js',
+        fileName: 'static/studioEntry.js',
       })
     },
 
@@ -59,6 +59,7 @@ export function sanityBuildEntries(options: {
       const entryFileName = this.getFileName(entryChunkRef)
       const entryFile = bundle[entryFileName]
       const entryHash = createHash('sha256').update(entryFile.code).digest('hex').slice(0, 8)
+      const entryPath = [basePath.replace(/\/+$/, ''), `${entryFileName}?v=${entryHash}`].join('/')
 
       // Check all the top-level imports of the entryPoint to see if they have
       // static CSS assets that need loading
@@ -76,7 +77,7 @@ export function sanityBuildEntries(options: {
           monorepo,
           studioRootPath: cwd,
           props: {
-            entryPath: `${basePath}${this.getFileName(entryChunkRef)}?v=${entryHash}`,
+            entryPath,
             css,
           },
         }),
