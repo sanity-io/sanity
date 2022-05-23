@@ -412,7 +412,7 @@ describe('getPairPermission', () => {
 })
 
 describe('getPairPermission (live-edit)', () => {
-  it('returns granted for non-applicable operations', async () => {
+  it('returns granted for non-applicable operations except publish and unpublish', async () => {
     const getDocumentPairPermissions = setupTest({
       mockGrants: exampleGrants.viewer,
       mockLiveEdit: true,
@@ -427,10 +427,21 @@ describe('getPairPermission (live-edit)', () => {
     ).resolves.toEqual({granted: true, reason: ''})
     await expect(
       getDocumentPairPermissions({id: 'book-id', permission: 'publish', type: 'book'})
-    ).resolves.toEqual({granted: true, reason: ''})
+    ).resolves.toEqual({
+      granted: false,
+      reason:
+        'Unable to publish:\n' +
+        '\tnot allowed to update published document at its current state: No matching grants found',
+    })
     await expect(
       getDocumentPairPermissions({id: 'book-id', permission: 'unpublish', type: 'book'})
-    ).resolves.toEqual({granted: true, reason: ''})
+    ).resolves.toEqual({
+      granted: false,
+      reason:
+        'Unable to unpublish:\n' +
+        '\tnot allowed to delete published document: No matching grants found\n' +
+        '\tnot allowed to create draft document from published version: No matching grants found',
+    })
   })
 
   it("disallows `delete` if the published can't be deleted", async () => {
@@ -453,7 +464,7 @@ describe('getPairPermission (live-edit)', () => {
       granted: false,
       reason:
         'Unable to delete:\n' +
-        '\tnot allowed to delete published document (live-edit): No matching grants found',
+        '\tnot allowed to delete published document: No matching grants found',
     })
   })
 
@@ -495,7 +506,7 @@ describe('getPairPermission (live-edit)', () => {
     ).resolves.toEqual({
       granted: false,
       reason:
-        'Unable to update:\n\tnot allowed to update published document (live-edit): No matching grants found',
+        'Unable to update:\n\tnot allowed to update published document: No matching grants found',
     })
   })
 
@@ -538,7 +549,7 @@ describe('getPairPermission (live-edit)', () => {
       granted: false,
       reason:
         'Unable to duplicate:\n' +
-        '\tnot allowed to create new published document from existing document (live-edit): No matching grants found',
+        '\tnot allowed to create new draft document from existing published document: No matching grants found',
     })
   })
 
