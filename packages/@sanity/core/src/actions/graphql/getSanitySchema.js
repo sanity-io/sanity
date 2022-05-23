@@ -1,4 +1,4 @@
-const mockBrowserEnvironment = require('../../util/mockBrowserEnvironment')
+const {mockBrowserEnvironment} = require('../../util/mockBrowserEnvironment')
 
 function getSanitySchema(basePath) {
   const cleanup = mockBrowserEnvironment(basePath)

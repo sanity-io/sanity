@@ -1,4 +1,4 @@
-const mockBrowserEnvironment = require('../../util/mockBrowserEnvironment')
+const {mockBrowserEnvironment} = require('../../util/mockBrowserEnvironment')
 
 mockBrowserEnvironment(
   // eslint-disable-next-line no-process-env
