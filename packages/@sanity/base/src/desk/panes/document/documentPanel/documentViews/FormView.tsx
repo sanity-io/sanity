@@ -56,6 +56,7 @@ export function FormView(props: FormViewProps) {
     changesOpen,
     formState,
     onFocus,
+    onBlur,
     onSetCollapsedPath,
     onSetCollapsedFieldSet,
     onSetActiveFieldGroup,
@@ -102,10 +103,6 @@ export function FormView(props: FormViewProps) {
 
   //   return () => sub.unsubscribe()
   // }, [])
-
-  const handleBlur = useCallback(() => {
-    onFocus([])
-  }, [onFocus])
 
   useEffect(() => {
     const sub = documentStore.pair
@@ -182,7 +179,7 @@ export function FormView(props: FormViewProps) {
                 __internal_patchChannel={patchChannel}
                 changesOpen={changesOpen}
                 focused={formState.focused}
-                onPathBlur={handleBlur}
+                onPathBlur={onBlur}
                 onPathFocus={onFocus}
                 focusPath={formState.focusPath}
                 readOnly={isReadOnly}
