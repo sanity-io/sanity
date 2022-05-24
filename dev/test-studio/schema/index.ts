@@ -12,6 +12,7 @@ import {ptAllTheBellsAndWhistlesType} from './standard/portableText/allTheBellsA
 import blocks from './standard/portableText/blocks'
 import {ptCustomMarkersTestType} from './standard/portableText/customMarkers'
 import richTextObject from './standard/portableText/richTextObject'
+import codeinputdebug from './standard/portableText/codesnippet'
 import simpleBlock from './standard/portableText/simpleBlock'
 import manyEditors from './standard/portableText/manyEditors'
 import simpleBlockNote from './standard/portableText/simpleBlockNote'
@@ -207,6 +208,7 @@ export const schemaTypes = [
   reservedFieldNames,
   review,
   richTextObject,
+  codeinputdebug,
   select,
   simpleBlock,
   simpleBlockNote,
