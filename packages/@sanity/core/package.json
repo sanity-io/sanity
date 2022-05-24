@@ -43,6 +43,7 @@
     "chokidar": "^3.0.0",
     "configstore": "^5.0.1",
     "date-fns": "^2.16.1",
+    "console-table-printer": "^2.11.0",
     "debug": "^3.2.7",
     "deep-sort-object": "^1.0.1",
     "es6-promisify": "^6.0.0",

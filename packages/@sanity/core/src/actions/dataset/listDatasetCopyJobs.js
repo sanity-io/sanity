@@ -1,4 +1,5 @@
 import {parseISO, formatDistanceToNow, formatDistance} from 'date-fns'
+const {Table} = require('console-table-printer')
 
 module.exports = async function listDatasetCopyJobs(args, context) {
   const {apiClient, output, chalk} = context
@@ -30,8 +31,18 @@ module.exports = async function listDatasetCopyJobs(args, context) {
   }
 
   if (response && response.length > 0) {
-    output.print('Dataset copy jobs for this project:')
-    const print = []
+    const table = new Table({
+      title: 'Dataset copy jobs for this project in descending order',
+      columns: [
+        {name: 'id', title: 'Job ID', alignment: 'left'},
+        {name: 'sourceDataset', title: 'Source Dataset', alignment: 'left'},
+        {name: 'targetDataset', title: 'Target Dataset', alignment: 'left'},
+        {name: 'state', title: 'State', alignment: 'left'},
+        {name: 'withHistory', title: 'With history', alignment: 'left'},
+        {name: 'timeStarted', title: 'Time started', alignment: 'left'},
+        {name: 'timeTaken', title: 'Time taken', alignment: 'left'},
+      ],
+    })
 
     response.forEach((job) => {
       const {id, state, createdAt, updatedAt, sourceDataset, targetDataset, withHistory} = job
@@ -46,26 +57,36 @@ module.exports = async function listDatasetCopyJobs(args, context) {
         timeTaken = formatDistance(parseISO(updatedAt), parseISO(createdAt))
       }
 
-      print.push({
-        'Job ID': id,
-        State: state,
-        History: withHistory,
-        'Time started': timeStarted === '' ? '' : `${timeStarted} ago`,
-        'Time taken': timeTaken,
-        'Source dataset': sourceDataset,
-        'Target dataset': targetDataset,
-      })
+      let color
+      switch (state) {
+        case 'completed':
+          color = 'green'
+          break
+        case 'failed':
+          color = 'red'
+          break
+        case 'pending':
+          color = 'yellow'
+          break
+        default:
+          color = ''
+      }
+
+      table.addRow(
+        {
+          id,
+          state,
+          withHistory,
+          timeStarted: `${timeStarted} ago`,
+          timeTaken,
+          sourceDataset,
+          targetDataset,
+        },
+        {color}
+      )
     })
 
-    output.table(print, [
-      'Job ID',
-      'Source dataset',
-      'Target dataset',
-      'State',
-      'History',
-      'Time started',
-      'Time taken',
-    ])
+    table.printTable()
   } else {
     output.print("This project doesn't have any dataset copy jobs")
   }
