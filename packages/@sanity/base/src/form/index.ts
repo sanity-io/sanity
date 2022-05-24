@@ -27,3 +27,5 @@ export * from './useFormValue'
 
 export * from './utils/mutationPatch'
 export * from './utils/path'
+
+export {FormInput} from './FormInput'

@@ -50,6 +50,7 @@ import notitle from './debug/notitle'
 import poppers from './debug/poppers'
 import presence, {objectWithNestedArray} from './debug/presence'
 import previewImageUrlTest from './debug/previewImageUrlTest'
+import {formInputDebug} from './debug/formInputDebug'
 import previewMediaTest from './debug/previewMediaTest'
 import {previewSelectBugRepro} from './debug/previewSelectBugRepro'
 import radio from './debug/radio'
@@ -134,6 +135,7 @@ export const schemaTypes = [
   numbers,
   objectWithNestedArray,
   objects,
+  formInputDebug,
   // orderableCategoryDocumentType,
   // orderableTagDocumentType,
   poppers,
