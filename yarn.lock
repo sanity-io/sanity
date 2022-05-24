@@ -3005,10 +3005,10 @@
   resolved "https://registry.yarnpkg.com/@sanity/timed-out/-/timed-out-4.0.2.tgz#c9f61f9a1609baa1eb3e4235a24ea2a775022cdf"
   integrity sha512-NBDKGj14g9Z+bopIvZcQKWCzJq5JSrdmzRR1CS+iyA3Gm8SnIWBfZa7I3mTg2X6Nu8LQXG0EPKXdOGozLS4i3w==
 
-"@sanity/tsdoc-to-portable-text@^0.2.1":
-  version "0.2.1"
-  resolved "https://registry.yarnpkg.com/@sanity/tsdoc-to-portable-text/-/tsdoc-to-portable-text-0.2.1.tgz#351b1e62d241f30b1e1349eaed9a24c2d6864078"
-  integrity sha512-K64vKq4Xe0krbCICvZ1Q5lX60H+w65f1X3GvXupm1Mbu30IBxtOWkCATe0Dpzp5ksT3tuhPfzCY2SOAEIHRLbg==
+"@sanity/tsdoc-to-portable-text@^0.3.0":
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/@sanity/tsdoc-to-portable-text/-/tsdoc-to-portable-text-0.3.0.tgz#39a86712b33ccb3479b9db6b1d8ddc4ff1337b26"
+  integrity sha512-Zux8bjiQ/o+oXIJor0gYIwulrKmEZ6Qu5IR2fFjRKRf4g8XHnXPGQatdppkk7WgblgAvUokA/Q4NS9/WWkrn4A==
   dependencies:
     "@microsoft/api-extractor" "^7.22.2"
     "@microsoft/api-extractor-model" "^7.17.1"
