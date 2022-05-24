@@ -28,7 +28,6 @@ export const config = {
     // '@sanity/dashboard',
     '@sanity/diff',
     // '@sanity/export',
-    // '@sanity/imagetool',
     // '@sanity/import',
     // '@sanity/import-cli',
     '@sanity/mutator',

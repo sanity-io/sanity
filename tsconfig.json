@@ -1,7 +1,14 @@
 {
   "extends": "./tsconfig.settings",
-  "include": ["./babel.config.js", "./dev/aliases.js", "./scripts", "./test"],
-  "exclude": ["./test/v2-studio"],
+  "include": [
+    "./babel.config.js",
+    "./dev/aliases.js",
+    "./scripts",
+    "./test"
+  ],
+  "exclude": [
+    "./test/v2-studio"
+  ],
   "compilerOptions": {
     "allowJs": true,
     "emitDeclarationOnly": true,
@@ -12,7 +19,6 @@
     {"path": "./packages/@sanity/cli"},
     {"path": "./packages/@sanity/core"},
     {"path": "./packages/@sanity/diff"},
-    {"path": "./packages/@sanity/imagetool"},
     {"path": "./packages/@sanity/mutator"},
     {"path": "./packages/@sanity/portable-text-editor"},
     {"path": "./packages/@sanity/schema"},

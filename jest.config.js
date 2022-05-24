@@ -3,7 +3,6 @@ const JEST_PROJECTS = [
   '@sanity/core',
   '@sanity/block-tools',
   '@sanity/export',
-  '@sanity/imagetool',
   '@sanity/import',
   '@sanity/mutator',
   '@sanity/portable-text-editor',

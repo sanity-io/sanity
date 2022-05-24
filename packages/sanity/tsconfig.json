@@ -15,7 +15,6 @@
     {"path": "../@sanity/diff"},
     {"path": "../@sanity/mutator/tsconfig.lib.json"},
     {"path": "../@sanity/portable-text-editor"},
-    {"path": "../@sanity/imagetool"},
     {"path": "../@sanity/schema"},
     {"path": "../@sanity/types"},
     {"path": "../@sanity/transaction-collator"},
