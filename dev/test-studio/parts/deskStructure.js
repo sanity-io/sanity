@@ -36,6 +36,7 @@ const STANDARD_INPUT_TYPES = [
   'filesTest',
   'imagesTest',
   'numbersTest',
+  'codeinputdebug',
   'objectsTest',
   'referenceTest',
   'crossDatasetReferenceTest',

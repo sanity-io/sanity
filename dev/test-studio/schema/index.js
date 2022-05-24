@@ -15,6 +15,7 @@ import objects, {myObject} from './standard/objects'
 import {ptAllTheBellsAndWhistlesType} from './standard/portableText/allTheBellsAndWhistles'
 import blocks from './standard/portableText/blocks'
 import richTextObject from './standard/portableText/richTextObject'
+import codeinputdebug from './standard/portableText/codesnippet'
 import simpleBlock from './standard/portableText/simpleBlock'
 import simpleBlockNote from './standard/portableText/simpleBlockNote'
 import simpleBlockNoteBody from './standard/portableText/simpleBlockNoteBody'
@@ -161,6 +162,7 @@ export default createSchema({
     reservedFieldNames,
     review,
     richTextObject,
+    codeinputdebug,
     select,
     simpleBlock,
     simpleBlockNote,
