@@ -6,10 +6,11 @@ import {debounce} from 'lodash'
 import {calculateStyles} from './calculateStyles'
 import {DEFAULT_HOTSPOT, DEFAULT_CROP} from './constants'
 import {HotspotImageContainer} from './HotspotImage.styles'
+import {FIXME} from './types'
 
 const debug = Debug('sanity-imagetool')
 
-function getCropAspect(crop, srcAspect) {
+function getCropAspect(crop: FIXME, srcAspect: number) {
   const origHeight = 1 / srcAspect
   const origWidth = srcAspect * origHeight
   const cropWidth = origWidth - (crop.left + crop.right) * origWidth
@@ -45,7 +46,7 @@ export interface HotspotImageProps {
   onLoad?: () => void
 }
 export interface HotspotImageState {
-  containerAspect?: number
+  containerAspect?: number | null
 }
 export class HotspotImage extends React.PureComponent<HotspotImageProps, HotspotImageState> {
   static propTypes = {
@@ -85,7 +86,7 @@ export class HotspotImage extends React.PureComponent<HotspotImageProps, Hotspot
     aspectRatio: 'none',
   }
 
-  state = {
+  state: FIXME = {
     containerAspect: null,
   }
 
@@ -93,7 +94,7 @@ export class HotspotImage extends React.PureComponent<HotspotImageProps, Hotspot
   imageElement?: HTMLImageElement
 
   componentDidMount() {
-    const imageElement = this.imageElement
+    const imageElement: FIXME = this.imageElement
     // Fixes issues that may happen if the component is rendered on server and mounted after the image has finished loading
     // In these situations, neither the onLoad or the onError events will be called.
     // Derived from http://imagesloaded.desandro.com/
@@ -117,13 +118,13 @@ export class HotspotImage extends React.PureComponent<HotspotImageProps, Hotspot
   }
 
   // eslint-disable-next-line camelcase
-  UNSAFE_componentWillReceiveProps(nextProps) {
+  UNSAFE_componentWillReceiveProps(nextProps: FIXME) {
     if (nextProps.aspectRatio !== this.props.aspectRatio) {
       this.updateContainerAspect(nextProps)
     }
   }
 
-  updateContainerAspect(props) {
+  updateContainerAspect(props: FIXME) {
     if (!this.containerElement) return
     if (props.aspectRatio === 'auto') {
       const parentNode = this.containerElement.parentNode as HTMLElement
@@ -149,13 +150,13 @@ export class HotspotImage extends React.PureComponent<HotspotImageProps, Hotspot
     return aspectRatio
   }
 
-  setImageElement = (el) => {
+  setImageElement = (el: HTMLImageElement | undefined) => {
     this.imageElement = el
   }
 
   handleResize = debounce(() => this.updateContainerAspect(this.props))
 
-  setContainerElement = (el) => {
+  setContainerElement = (el: HTMLDivElement | undefined) => {
     this.containerElement = el
   }
 
@@ -191,19 +192,19 @@ export class HotspotImage extends React.PureComponent<HotspotImageProps, Hotspot
       <HotspotImageContainer
         className={`${className}`}
         style={style}
-        ref={this.setContainerElement}
+        ref={this.setContainerElement as FIXME}
       >
-        <div style={targetStyles.container as any}>
+        <div style={targetStyles.container as FIXME}>
           <div style={targetStyles.padding} />
-          <div style={targetStyles.crop as any}>
+          <div style={targetStyles.crop as FIXME}>
             <img
-              ref={this.setImageElement}
+              ref={this.setImageElement as FIXME}
               src={src}
               alt={alt}
               srcSet={srcSet}
               onLoad={onLoad}
               onError={onError}
-              style={targetStyles.image as any}
+              style={targetStyles.image as FIXME}
             />
           </div>
         </div>

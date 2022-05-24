@@ -1,4 +1,4 @@
 declare module '*.css' {
-  const shim: any
+  const shim: FIXME
   export default shim
 }

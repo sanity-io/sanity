@@ -1,7 +1,9 @@
+import {FIXME} from '../types'
+
 export class Size {
   height: number
   width: number
-  constructor(height, width) {
+  constructor(height: number, width: number) {
     this.height = height
     this.width = width
   }
@@ -9,7 +11,7 @@ export class Size {
 export class Point {
   x: number
   y: number
-  constructor(x, y) {
+  constructor(x: number, y: number) {
     this.x = x
     this.y = y
   }
@@ -19,7 +21,7 @@ class HLine {
   y: number
   _left: number
   _right: number
-  constructor(y, left, right) {
+  constructor(y: number, left: number, right: number) {
     this.y = y
     this._left = left
     this._right = right
@@ -40,7 +42,7 @@ class HLine {
 
 class Corners {
   rect: Rect
-  constructor(rect) {
+  constructor(rect: Rect) {
     this.rect = rect
   }
 
@@ -58,7 +60,8 @@ export class Rect {
   top: number
   width: number
   height: number
-  static fromEdges({left, right, top, bottom}) {
+  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+  static fromEdges({left, right, top, bottom}: FIXME) {
     return new Rect(left, top, 1 - left - right, 1 - top - bottom)
   }
 
@@ -69,15 +72,15 @@ export class Rect {
     this.height = height
   }
 
-  setTopLeft(left, top) {
+  setTopLeft(left: number | undefined, top: number | undefined) {
     return new Rect(left, top, this.width || 0, this.height || 0)
   }
 
-  setSize(width, height) {
+  setSize(width: number | undefined, height: number | undefined) {
     return new Rect(this.left || 0, this.top || 0, width, height)
   }
 
-  setCenter(x, y) {
+  setCenter(x: number, y: number) {
     const width = this.width || 0
     const height = this.height || 0
     return new Rect(x - width / 2, y - height / 2, width || 0, height || 0)
@@ -99,7 +102,7 @@ export class Rect {
     return this.top + this.height
   }
 
-  multiply(rect) {
+  multiply(rect: Rect) {
     return new Rect(
       (this.left || 0) + this.width * rect.left,
       (this.top || 0) + this.height * rect.top,
@@ -108,7 +111,7 @@ export class Rect {
     )
   }
 
-  grow(delta) {
+  grow(delta: number) {
     return new Rect(
       this.left - delta,
       this.top - delta,
@@ -117,11 +120,11 @@ export class Rect {
     )
   }
 
-  shrink(delta) {
+  shrink(delta: number) {
     return this.grow(-delta)
   }
 
-  cropRelative(crop) {
+  cropRelative(crop: Rect) {
     const top = this.top + crop.top * this.height
     const left = this.left + crop.left * this.width
     const height = this.height * crop.height
@@ -129,7 +132,7 @@ export class Rect {
     return new Rect(left, top, width, height)
   }
 
-  clamp(bounds) {
+  clamp(bounds: Rect) {
     // always try to fit the whole rect inside given bounds
     // adjust top, left if we can, resize if we must
     let {left, top, width, height} = this

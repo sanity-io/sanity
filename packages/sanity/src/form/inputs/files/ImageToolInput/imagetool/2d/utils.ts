@@ -1,4 +1,7 @@
-export function isPointInEllipse(point, ellipse) {
+import {FIXME} from '../types'
+import {Rect} from './shapes'
+
+export function isPointInEllipse(point: FIXME, ellipse: Rect) {
   const center = {x: ellipse.center.x, y: ellipse.center.y}
   const xradius = ellipse.width / 2
   const yradius = ellipse.height / 2
@@ -16,11 +19,11 @@ export function isPointInEllipse(point, ellipse) {
   )
 }
 
-export function isPointInCircle({x, y}, circle) {
+export function isPointInCircle({x, y}: FIXME, circle: {x: FIXME; y: FIXME; radius: FIXME}) {
   return Math.pow(x - circle.x, 2) + Math.pow(y - circle.y, 2) < Math.pow(circle.radius, 2)
 }
 
-export function isPointInRect(point, rect) {
+export function isPointInRect(point: FIXME, rect: Rect) {
   return (
     point.x >= rect.left &&
     point.x <= rect.left + rect.width &&
@@ -29,7 +32,7 @@ export function isPointInRect(point, rect) {
   )
 }
 
-export function getPointAtCircumference(radians, ellipse) {
+export function getPointAtCircumference(radians: number, ellipse: Rect) {
   return {
     x: ellipse.center.x - (ellipse.width / 2) * Math.cos(radians),
     y: ellipse.center.y - (ellipse.height / 2) * Math.sin(radians),

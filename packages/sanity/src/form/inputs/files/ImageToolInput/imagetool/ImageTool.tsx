@@ -4,8 +4,9 @@ import PropTypes from 'prop-types'
 import {ImageLoader} from './ImageLoader'
 import {ToolCanvas} from './ToolCanvas'
 import {Resize} from './Resize'
+import {FIXME} from './types'
 
-export function ImageTool(props) {
+export function ImageTool(props: FIXME) {
   return (
     <ImageLoader src={props.src}>
       {({isLoading, image, error}) => {

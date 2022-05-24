@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types'
 import React from 'react'
+import {FIXME} from './types'
 
 export interface ResizeProps {
   image: HTMLImageElement
@@ -16,7 +17,7 @@ export class Resize extends React.Component<ResizeProps> {
     children: PropTypes.func.isRequired,
   }
 
-  _canvas = null
+  _canvas: FIXME = null
 
   componentWillUnmount() {
     if (this._canvas) {
@@ -33,7 +34,7 @@ export class Resize extends React.Component<ResizeProps> {
     return this._canvas
   }
 
-  resize(image, maxHeight, maxWidth) {
+  resize(image: HTMLImageElement, maxHeight: number, maxWidth: number) {
     const canvas = this.getCanvas()
     const ratio = image.width / image.height
     const width = Math.min(image.width, maxWidth)

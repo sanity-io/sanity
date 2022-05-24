@@ -2,6 +2,7 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 import Debug from 'debug'
+import {FIXME} from './types'
 
 const debug = Debug('sanity-imagetool')
 const supportsTouch = typeof window !== 'undefined' && 'ontouchstart' in window
@@ -15,9 +16,9 @@ export interface DragAwareProps {
   onDrag: (pos: {x: number; y: number}) => void
   onDragEnd: (pos: {x: number; y: number}) => void
   readOnly?: boolean
-  [key: string]: any
+  [key: string]: FIXME
 }
-export function makeDragAware(Component) {
+export function makeDragAware(Component: FIXME) {
   return class DragAware extends React.PureComponent<DragAwareProps> {
     static propTypes = {
       onDragStart: PropTypes.func.isRequired,
@@ -26,8 +27,8 @@ export function makeDragAware(Component) {
       readOnly: PropTypes.bool,
     }
 
-    domNode = null
-    currentPos = null
+    domNode: FIXME = null
+    currentPos: FIXME = null
     isDragging = false
 
     componentDidMount() {
@@ -46,8 +47,8 @@ export function makeDragAware(Component) {
       if (supportsTouch) {
         document.body.removeEventListener('touchmove', this.handleTouchMove, {
           passive: false,
-        } as any)
-        document.body.removeEventListener('touchend', this.handleDragEnd, {passive: false} as any)
+        } as FIXME)
+        document.body.removeEventListener('touchend', this.handleDragEnd, {passive: false} as FIXME)
         document.body.removeEventListener('touchcancel', this.handleDragCancel)
       } else {
         document.body.removeEventListener('mousemove', this.handleDrag)
@@ -56,14 +57,14 @@ export function makeDragAware(Component) {
       }
     }
 
-    handleTouchMove = (event) => {
+    handleTouchMove = (event: {preventDefault: () => void}) => {
       // Disables mobile scroll by touch
       if (this.isDragging) {
         event.preventDefault()
       }
     }
 
-    handleDragStart = (event) => {
+    handleDragStart = (event: FIXME) => {
       const {onDragStart, readOnly} = this.props
 
       if (readOnly) {
@@ -85,7 +86,7 @@ export function makeDragAware(Component) {
       this.currentPos = nextPos
     }
 
-    handleDrag = (event) => {
+    handleDrag = (event: FIXME) => {
       if (!this.isDragging || this.props.readOnly) {
         return
       }
@@ -97,7 +98,7 @@ export function makeDragAware(Component) {
       this.currentPos = nextPos
     }
 
-    handleDragEnd = (event) => {
+    handleDragEnd = (event: FIXME) => {
       const {onDragEnd, readOnly} = this.props
       if (!this.isDragging || readOnly) {
         return
@@ -111,7 +112,7 @@ export function makeDragAware(Component) {
       debug('Done moving %o', nextPos)
     }
 
-    handleDragCancel = (event) => {
+    handleDragCancel = () => {
       if (!this.isDragging || this.props.readOnly) {
         return
       }
@@ -127,7 +128,7 @@ export function makeDragAware(Component) {
       this.currentPos = null
     }
 
-    setDomNode = (node) => {
+    setDomNode = (node: FIXME) => {
       this.domNode = node
     }
 
@@ -146,14 +147,14 @@ export function makeDragAware(Component) {
   }
 }
 
-function getPositionRelativeToRect(x, y, rect) {
+function getPositionRelativeToRect(x: number, y: number, rect: {left: number; top: number}) {
   return {
     x: x - rect.left,
     y: y - rect.top,
   }
 }
 
-function getPos(event) {
+function getPos(event: {touches: string | FIXME[]; clientX: FIXME; clientY: FIXME}) {
   if (supportsTouch) {
     return event.touches.length
       ? {x: event.touches[0].clientX, y: event.touches[0].clientY}
@@ -166,7 +167,7 @@ function getPos(event) {
   }
 }
 
-function diffPos(pos, otherPos) {
+function diffPos(pos: {x: FIXME; y: FIXME}, otherPos: {x: number; y: number}) {
   return {
     x: pos.x - otherPos.x,
     y: pos.y - otherPos.y,

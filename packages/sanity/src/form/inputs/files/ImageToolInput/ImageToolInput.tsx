@@ -1,6 +1,5 @@
 import React, {useCallback, useEffect, useState} from 'react'
 import {Image, ImageSchemaType} from '@sanity/types'
-import {ImageTool, HotspotImage, DEFAULT_CROP, DEFAULT_HOTSPOT} from '@sanity/imagetool'
 import {Box, Card, Flex, Text, Grid, Heading, useForwardedRef} from '@sanity/ui'
 import styled from 'styled-components'
 import shallowEquals from 'shallow-equals'
@@ -10,9 +9,10 @@ import {set} from '../../../patch'
 import {Checkerboard} from '../../../components/Checkerboard'
 import {withFocusRing} from '../../../components/withFocusRing'
 import {RatioBox} from '../common/RatioBox'
-// import {useDidUpdate} from '../../../hooks/useDidUpdate'
 import {EMPTY_ARRAY} from '../../../utils/empty'
-import {ObjectInputProps} from '../../../types'
+import {FIXME, ObjectInputProps} from '../../../types'
+import {useDidUpdate} from '../../../hooks/useDidUpdate'
+import {ImageTool, HotspotImage, DEFAULT_CROP, DEFAULT_HOTSPOT} from './imagetool'
 import {useLoadImage} from './useLoadImage'
 
 export interface ImageToolInputProps
@@ -77,13 +77,13 @@ export function ImageToolInput(props: ImageToolInputProps) {
     setLocalValue(value || DEFAULT_VALUE)
   }, [value])
 
-  // const hasFocus = focusPath[0] === 'hotspot'
+  const hasFocus = focusPath[0] === 'hotspot'
 
-  // useDidUpdate(hasFocus, (hadFocus) => {
-  //   if (!hadFocus && hasFocus) {
-  //     forwardedRef.current?.focus()
-  //   }
-  // })
+  useDidUpdate(hasFocus, (hadFocus) => {
+    if (!hadFocus && hasFocus) {
+      forwardedRef.current?.focus()
+    }
+  })
 
   const handleChangeEnd = useCallback(
     (finalValue) => {
@@ -174,8 +174,8 @@ export function ImageToolInput(props: ImageToolInputProps) {
                           aspectRatio={ratio}
                           src={image.src}
                           srcAspectRatio={image.width / image.height}
-                          hotspot={localValue.hotspot || (DEFAULT_HOTSPOT as any)}
-                          crop={localValue.crop || (DEFAULT_CROP as any)}
+                          hotspot={localValue.hotspot || (DEFAULT_HOTSPOT as FIXME)}
+                          crop={localValue.crop || (DEFAULT_CROP as FIXME)}
                         />
                       ) : (
                         <Placeholder />

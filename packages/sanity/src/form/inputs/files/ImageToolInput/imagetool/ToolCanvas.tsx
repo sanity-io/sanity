@@ -11,13 +11,14 @@ import {RootContainer, CanvasContainer} from './ToolCanvas.styles'
 
 import * as cursors from './cursors'
 import {DEFAULT_CROP, DEFAULT_HOTSPOT} from './constants'
+import {FIXME} from './types'
 
 // The margin available in all directions for drawing the crop tool
 const MARGIN_PX = 8
 const CROP_HANDLE_SIZE = 12
 const HOTSPOT_HANDLE_SIZE = 10
 
-function normalizeRect(rect) {
+function normalizeRect(rect: Rect) {
   const flippedY = rect.top > rect.bottom
   const flippedX = rect.left > rect.right
   return {
@@ -28,7 +29,10 @@ function normalizeRect(rect) {
   }
 }
 
-function checkCropBoundaries(value, delta) {
+function checkCropBoundaries(
+  value: {hotspot?: {x: number; y: number; height: number; width: number}; crop: FIXME},
+  delta: {left: FIXME; right: FIXME; top: FIXME; bottom: FIXME}
+) {
   // Make the experience a little better. Still offsets when dragging back from outside
   if (
     !value ||
@@ -43,7 +47,10 @@ function checkCropBoundaries(value, delta) {
   return true
 }
 
-function limitToBoundaries(value, delta) {
+function limitToBoundaries(
+  value: {hotspot?: {x: number; y: number; height: number; width: number}; crop: FIXME},
+  delta: {left: FIXME; right: FIXME; top: FIXME; bottom: FIXME}
+) {
   const {top, right, bottom, left} = value.crop || DEFAULT_CROP
 
   const newValue = {...value}
@@ -65,7 +72,7 @@ function limitToBoundaries(value, delta) {
   return {value: newValue, delta: newDelta}
 }
 
-function getCropCursorForHandle(handle) {
+function getCropCursorForHandle(handle: string | boolean) {
   switch (handle) {
     case 'left':
     case 'right':
@@ -90,7 +97,7 @@ function getCropCursorForHandle(handle) {
 const getDevicePixelRatio = memoize(() => {
   const devicePixelRatio = window.devicePixelRatio || 1
   const ctx = document.createElement('canvas').getContext('2d')
-  const backingStoreRatio = getBackingStoreRatio(ctx) || 1
+  const backingStoreRatio = (ctx && getBackingStoreRatio(ctx)) || 1
   return devicePixelRatio / backingStoreRatio
 })
 
@@ -114,7 +121,7 @@ interface ToolCanvasState {
   cropMoving: boolean
   mousePosition: {x: number; y: number} | null
 }
-export class ToolCanvas extends React.PureComponent<ToolCanvasProps, ToolCanvasState | any> {
+export class ToolCanvas extends React.PureComponent<ToolCanvasProps, ToolCanvasState | FIXME> {
   static propTypes = {
     value: PropTypes.shape({
       hotspot: PropTypes.shape({
@@ -148,7 +155,7 @@ export class ToolCanvas extends React.PureComponent<ToolCanvasProps, ToolCanvasS
     mousePosition: null,
   }
 
-  canvas?: any
+  canvas?: FIXME
 
   getHotspotRect() {
     const {value, image} = this.props
@@ -219,16 +226,17 @@ export class ToolCanvas extends React.PureComponent<ToolCanvasProps, ToolCanvasS
     }
   }
 
-  getActiveCropHandleFor({x, y}) {
-    const cropHandles = this.getCropHandles()
+  getActiveCropHandleFor({x, y}: FIXME) {
+    const cropHandles: FIXME = this.getCropHandles()
 
     return Object.keys(cropHandles).find((position) => {
       return utils2d.isPointInRect({x, y}, cropHandles[position])
     })
   }
 
-  applyHotspotMoveBy(value, delta) {
+  applyHotspotMoveBy(value: FIXME, delta: FIXME) {
     const currentHotspot = (value && value.hotspot) || DEFAULT_HOTSPOT
+
     return Object.assign({}, value, {
       hotspot: Object.assign({}, value.hotspot, {
         x: currentHotspot.x + delta.x,
@@ -237,7 +245,7 @@ export class ToolCanvas extends React.PureComponent<ToolCanvasProps, ToolCanvasS
     })
   }
 
-  applyHotspotResizeBy(value, delta) {
+  applyHotspotResizeBy(value: FIXME, delta: FIXME) {
     const currentHotspot = (value && value.hotspot) || DEFAULT_HOTSPOT
     return Object.assign({}, value, {
       hotspot: Object.assign({}, currentHotspot, {
@@ -247,7 +255,7 @@ export class ToolCanvas extends React.PureComponent<ToolCanvasProps, ToolCanvasS
     })
   }
 
-  applyCropMoveBy(value, delta) {
+  applyCropMoveBy(value: FIXME, delta: FIXME) {
     const currentCrop = (value && value.crop) || DEFAULT_CROP
     return Object.assign({}, value, {
       crop: Object.assign({}, value.crop, {
@@ -259,7 +267,7 @@ export class ToolCanvas extends React.PureComponent<ToolCanvasProps, ToolCanvasS
     })
   }
 
-  emitMove(pos) {
+  emitMove(pos: FIXME) {
     const {image, value, onChange} = this.props
     const scale = this.getScale()
     const delta = {
@@ -270,7 +278,7 @@ export class ToolCanvas extends React.PureComponent<ToolCanvasProps, ToolCanvasS
     onChange(this.applyHotspotMoveBy(value, delta))
   }
 
-  emitCropMove(pos) {
+  emitCropMove(pos: {x: number; y: number}) {
     const {image, onChange, value} = this.props
     const scale = this.getScale()
     const left = (pos.x * scale) / image.width
@@ -284,13 +292,13 @@ export class ToolCanvas extends React.PureComponent<ToolCanvasProps, ToolCanvasS
     }
   }
 
-  emitCrop(side, pos) {
+  emitCrop(side: string | boolean, pos: {x: number; y: number}) {
     const {image, onChange, value} = this.props
     const scale = this.getScale()
-    let left: number
-    let right: number
-    let top: number
-    let bottom: number
+    let left = 0
+    let right = 0
+    let top = 0
+    let bottom = 0
 
     if (side == 'left' || side === 'topLeft' || side === 'bottomLeft') {
       left = (pos.x * scale) / image.width
@@ -311,7 +319,7 @@ export class ToolCanvas extends React.PureComponent<ToolCanvasProps, ToolCanvasS
     onChange(this.applyCropMoveBy(newValue, newDelta))
   }
 
-  emitResize(pos) {
+  emitResize(pos: FIXME) {
     const {image, onChange, value} = this.props
     const scale = this.getScale()
 
@@ -336,7 +344,43 @@ export class ToolCanvas extends React.PureComponent<ToolCanvasProps, ToolCanvasS
     return {crop: crop, hotspot: hotspotRect}
   }
 
-  paintHotspot(context, opacity) {
+  paintHotspot(
+    context: {
+      save: () => void
+      clip: () => void
+      restore: () => void
+      scale: (arg0: number, arg1: number) => void
+      beginPath: () => void
+      globalAlpha: number
+      arc: (
+        arg0: number,
+        arg1: number,
+        arg2: number,
+        arg3: number,
+        arg4: number,
+        arg5: boolean
+      ) => void
+      strokeStyle: string
+      lineWidth: number
+      stroke: () => void
+      closePath: () => void
+      drawImage: (
+        arg0: {height: number; width: number},
+        srcLeft: number,
+        srcTop: number,
+        srcWidth: number,
+        srcHeight: number,
+        destLeft: number,
+        destTop: number,
+        destWidth: number,
+        destHeight: number
+      ) => void
+      fillStyle: string
+      fillRect: (arg0: number, arg1: number, arg2: number, arg3: number) => void
+      fill: () => void
+    },
+    opacity: number
+  ) {
     const {image, readOnly} = this.props
 
     const imageRect = new Rect().setSize(image.width, image.height)
@@ -382,9 +426,29 @@ export class ToolCanvas extends React.PureComponent<ToolCanvasProps, ToolCanvasS
       context.restore()
     }
 
-    function drawImage(...args) {
+    // eslint-disable-next-line max-params
+    function drawImage(
+      srcLeft: number,
+      srcTop: number,
+      srcWidth: number,
+      srcHeight: number,
+      destLeft: number,
+      destTop: number,
+      destWidth: number,
+      destHeight: number
+    ) {
       context.save()
-      context.drawImage(image, ...args)
+      context.drawImage(
+        image,
+        srcLeft,
+        srcTop,
+        srcWidth,
+        srcHeight,
+        destLeft,
+        destTop,
+        destWidth,
+        destHeight
+      )
       context.restore()
     }
 
@@ -427,7 +491,7 @@ export class ToolCanvas extends React.PureComponent<ToolCanvasProps, ToolCanvasS
       context.restore()
     }
 
-    function drawDragHandle(radians) {
+    function drawDragHandle(radians: number) {
       context.save()
 
       const radius = HOTSPOT_HANDLE_SIZE * scale
@@ -466,7 +530,18 @@ export class ToolCanvas extends React.PureComponent<ToolCanvasProps, ToolCanvasS
     }
   }
 
-  debug(context) {
+  debug(context: {
+    save: () => void
+    setLineDash: (arg0: number[]) => void
+    lineWidth: number
+    strokeStyle: string
+    restore: () => void
+    beginPath: () => void
+    moveTo: (arg0: FIXME, arg1: FIXME) => void
+    lineTo: (arg0: FIXME, arg1: FIXME) => void
+    stroke: () => void
+    closePath: () => void
+  }) {
     context.save()
 
     const {image} = this.props
@@ -502,15 +577,15 @@ export class ToolCanvas extends React.PureComponent<ToolCanvasProps, ToolCanvasS
 
     context.restore()
 
-    function vline(x) {
+    function vline(x: FIXME) {
       line(x, margin, x, image.height - margin)
     }
 
-    function hline(y) {
+    function hline(y: FIXME) {
       line(margin, y, image.width - margin, y)
     }
 
-    function line(x1, y1, x2, y2) {
+    function line(x1: FIXME, y1: FIXME, x2: FIXME, y2: FIXME) {
       context.beginPath()
       context.moveTo(x1, y1)
       context.lineTo(x2, y2)
@@ -519,7 +594,7 @@ export class ToolCanvas extends React.PureComponent<ToolCanvasProps, ToolCanvasS
     }
   }
 
-  paintBackground(context) {
+  paintBackground(context: FIXME) {
     const {image} = this.props
     const inner = new Rect().setSize(image.width, image.height).shrink(MARGIN_PX * this.getScale())
 
@@ -534,7 +609,7 @@ export class ToolCanvas extends React.PureComponent<ToolCanvasProps, ToolCanvasS
     context.restore()
   }
 
-  paint(context) {
+  paint(context: FIXME) {
     const {readOnly} = this.props
     context.save()
 
@@ -561,8 +636,8 @@ export class ToolCanvas extends React.PureComponent<ToolCanvasProps, ToolCanvasS
     context.restore()
   }
 
-  paintMousePosition(context) {
-    const {x, y} = this.state.mousePosition
+  paintMousePosition(context: FIXME) {
+    const {x, y} = this.state.mousePosition as FIXME
     context.beginPath()
     context.arc(x, y, 14 * this.getScale(), 0, 2 * Math.PI, false)
     context.fillStyle = 'lightblue'
@@ -570,7 +645,7 @@ export class ToolCanvas extends React.PureComponent<ToolCanvasProps, ToolCanvasS
     context.restore()
   }
 
-  paintCropBorder(context) {
+  paintCropBorder(context: FIXME) {
     const cropRect = this.getCropRect()
     context.save()
     context.beginPath()
@@ -582,13 +657,13 @@ export class ToolCanvas extends React.PureComponent<ToolCanvasProps, ToolCanvasS
     context.restore()
   }
 
-  highlightCropHandles(context, opacity) {
+  highlightCropHandles(context: FIXME, opacity: FIXME) {
     context.save()
-    const crophandles = this.getCropHandles()
+    const crophandles = this.getCropHandles() as FIXME
 
     //context.globalCompositeOperation = "difference";
 
-    Object.keys(crophandles).forEach((handle: any) => {
+    Object.keys(crophandles).forEach((handle: FIXME) => {
       context.fillStyle =
         this.state.cropping === handle
           ? `rgba(202, 54, 53, ${opacity})`
@@ -658,7 +733,7 @@ export class ToolCanvas extends React.PureComponent<ToolCanvasProps, ToolCanvasS
     }
   }
 
-  handleDragStart = ({x, y}) => {
+  handleDragStart = ({x, y}: FIXME) => {
     const mousePosition = {x: x * this.getScale(), y: y * this.getScale()}
 
     const inHotspot = utils2d.isPointInEllipse(mousePosition, this.getHotspotRect())
@@ -680,7 +755,7 @@ export class ToolCanvas extends React.PureComponent<ToolCanvasProps, ToolCanvasS
     }
   }
 
-  handleDrag = (pos) => {
+  handleDrag = (pos: {x: number; y: number}) => {
     if (this.state.cropping) {
       this.emitCrop(this.state.cropping, pos)
     } else if (this.state.cropMoving) {
@@ -692,7 +767,7 @@ export class ToolCanvas extends React.PureComponent<ToolCanvasProps, ToolCanvasS
     }
   }
 
-  handleDragEnd = (pos) => {
+  handleDragEnd = () => {
     const {onChange, onChangeEnd} = this.props
     this.setState({moving: false, resizing: false, cropping: false, cropMoving: false})
     const {hotspot, crop: rawCrop} = this.getClampedValue()
@@ -723,7 +798,11 @@ export class ToolCanvas extends React.PureComponent<ToolCanvasProps, ToolCanvasS
     this.setState({mousePosition: null})
   }
 
-  handleMouseMove = (event) => {
+  handleMouseMove = (event: {
+    target: {getBoundingClientRect: () => FIXME}
+    clientX: number
+    clientY: number
+  }) => {
     const clientRect = event.target.getBoundingClientRect()
     this.setState({
       mousePosition: {
@@ -733,7 +812,7 @@ export class ToolCanvas extends React.PureComponent<ToolCanvasProps, ToolCanvasS
     })
   }
 
-  setCanvas = (node) => {
+  setCanvas = (node: FIXME) => {
     this.canvas = node
   }
 

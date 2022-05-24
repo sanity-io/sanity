@@ -31,7 +31,7 @@ export class ImageLoader extends React.Component<ImageLoaderProps, ImageLoaderSt
     this.loadImage(this.props.src)
   }
 
-  loadImage(src) {
+  loadImage(src: string) {
     const image = new Image()
     this.setState({
       image: null,
@@ -57,7 +57,7 @@ export class ImageLoader extends React.Component<ImageLoaderProps, ImageLoaderSt
     image.src = src
   }
 
-  UNSAFE_componentWillReceiveProps(nextProps) {
+  UNSAFE_componentWillReceiveProps(nextProps: {src: string}) {
     if (nextProps.src !== this.props.src) {
       this.loadImage(nextProps.src)
     }

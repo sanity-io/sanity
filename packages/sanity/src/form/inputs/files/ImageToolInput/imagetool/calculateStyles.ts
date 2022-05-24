@@ -1,4 +1,5 @@
 import {DEFAULT_HOTSPOT, DEFAULT_CROP} from './constants'
+import {FIXME} from './types'
 
 export interface Crop {
   left: number
@@ -19,7 +20,7 @@ interface Options {
   container?: {aspectRatio: number} | {height: number; width: number}
   hotspot?: Hotspot
   crop?: Crop
-  align?: {x: string; y: string}
+  align?: {x?: string; y?: string}
 }
 
 export function calculateStyles(options: Options = {}) {
@@ -75,7 +76,7 @@ export function calculateStyles(options: Options = {}) {
   }
 }
 
-function readAspectRatio(opts) {
+function readAspectRatio(opts: FIXME) {
   if (!opts) {
     return null
   }
@@ -91,12 +92,12 @@ function readAspectRatio(opts) {
   return null
 }
 
-function round(num, decimals = 2) {
+function round(num: FIXME, decimals = 2) {
   const multiplier = Math.pow(10, decimals)
   return Math.round(num * multiplier) / multiplier
 }
 
-function calculateHotSpotCrop(sourceAspect, descriptor, spec) {
+function calculateHotSpotCrop(sourceAspect: FIXME, descriptor: FIXME, spec: FIXME) {
   const crop = descriptor.crop
   const viewportAspect = spec.aspect
   const alignment = spec.align
@@ -151,7 +152,7 @@ function calculateHotSpotCrop(sourceAspect, descriptor, spec) {
   }
 
   let method
-  let outCrop
+  let outCrop: FIXME
 
   // Do we have to letterbox this image in order to leave the hotspot area uncropped?
   if (minFullBleedScale > maxScale) {
@@ -254,16 +255,16 @@ function calculateHotSpotCrop(sourceAspect, descriptor, spec) {
   }
 }
 
-function readCropAspect(crop) {
+function readCropAspect(crop: Crop) {
   const height = 1 - crop.top - crop.bottom
   const width = 1 - crop.left - crop.right
   return width / height
 }
 
-function styleFormat(num) {
+function styleFormat(num: number) {
   return num === 0 ? 0 : `${num}%`
 }
 
-function toStylePercentage(num) {
+function toStylePercentage(num: number) {
   return styleFormat(round(num * 100))
 }
