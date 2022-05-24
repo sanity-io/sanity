@@ -8,7 +8,6 @@ import {
   isString,
   readJSONFile,
 } from '../../_helpers'
-import {config} from '../../config'
 
 const ROOT_PATH = path.resolve(__dirname, '../../../..')
 

@@ -1,5 +1,6 @@
 import path from 'path'
 import {SanityDocument} from '@sanity/client'
+import {APIPackageDocument} from '@sanity/tsdoc-to-portable-text'
 import cac from 'cac'
 import chalk from 'chalk'
 import {_parsePackageName} from './_helpers'
@@ -44,7 +45,7 @@ function main() {
           const _docs = transformTsdocToPortableText({
             scope,
             name,
-            package: pkg as SanityDocument | undefined,
+            package: pkg as APIPackageDocument | undefined,
             quiet,
             results,
             version,
