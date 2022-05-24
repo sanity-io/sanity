@@ -15,16 +15,18 @@ import {MemberField} from './inputs/ObjectInput/MemberField'
 
 const pass = ({children}: {children: React.ReactNode}) => children
 
-type AbsolutePathArg = {absolutePath: [PathSegment, ...Path]}
-type RelativePathArg = {relativePath: [PathSegment, ...Path]}
+export type FormInputAbsolutePathArg = {absolutePath: [PathSegment, ...Path]}
+export type FormInputRelativePathArg = {relativePath: [PathSegment, ...Path]}
 
-function hasAbsolutePath(a: AbsolutePathArg | RelativePathArg): a is AbsolutePathArg {
+function hasAbsolutePath(
+  a: FormInputAbsolutePathArg | FormInputRelativePathArg
+): a is FormInputAbsolutePathArg {
   return 'absolutePath' in a
 }
 
 export const FormInput = memo(function FormInput(
   props: (ArrayOfObjectsInputProps | ObjectInputProps) &
-    (RelativePathArg | AbsolutePathArg) & {
+    (FormInputRelativePathArg | FormInputAbsolutePathArg) & {
       /**
        * Whether to include the field around the input. Defaults to false
        */

@@ -130,6 +130,10 @@ export type {
   StringInputProps,
 } from '../form'
 
+export * from '../hooks/useTimeAgo'
+
+export type {TimeAgoOpts} from '../hooks'
+
 export {
   DocumentPreviewPresence,
   FieldPresence,

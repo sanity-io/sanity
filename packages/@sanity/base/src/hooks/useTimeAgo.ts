@@ -21,7 +21,7 @@ const TWENTY_SECONDS = 1000 * 20
 const ONE_MINUTE = 1000 * 60
 const ONE_HOUR = ONE_MINUTE * 60
 
-interface TimeAgoOpts {
+export interface TimeAgoOpts {
   minimal?: boolean
   agoSuffix?: boolean
 }

@@ -152,11 +152,11 @@ export type {
 } from '../form'
 
 export {
-  useEditState,
-  useValidationStatus,
-  useSyncState,
   useConnectionState,
   useDocumentOperation,
+  useEditState,
+  useSyncState,
+  useValidationStatus,
 } from '../hooks'
 
 export type {ConnectionState, SyncState, ValidationStatus} from '../hooks'

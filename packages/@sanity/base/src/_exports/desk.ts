@@ -37,25 +37,39 @@ export type {
   Tool,
 } from '../config'
 
+export {Timeline, TimelineController} from '../datastores'
+
 export type {
   AuthStateChangedMessage,
   AuthStateConfig,
   AuthStateState,
   AuthStateTokenStore,
   AuthStore,
+  Chunk,
+  CombinedDocument,
   CurrentUserError,
   CurrentUserEvent,
   CurrentUserSnapshot,
+  DocumentRemoteMutationVersionEvent,
   EditStateFor,
   MSG_AUTH_STATE_CHANGED,
+  ParsedTimeRef,
+  RemoteSnapshotVersionEvent,
+  TimelineOptions,
+  TimelineControllerOptions,
+  Transaction,
+  TransactionLogEvent,
   UserStore,
 } from '../datastores'
 
-export {deskTool} from '../desk'
+export {deskTool, useDocumentPane} from '../desk'
 
 export type {
   DefaultDocumentNodeResolver,
   DeskToolOptions,
+  PaneMenuItem,
+  PaneMenuItemGroup,
+  PaneView,
   RouterPanes,
   RouterPaneGroup,
   RouterPaneSibling,
@@ -90,7 +104,7 @@ export {
   HistoryRestoreAction,
 } from '../desk/actions'
 
-export {usePaneRouter} from '../desk/components'
+export {ConfirmDeleteDialog, usePaneRouter} from '../desk/components'
 
 export type {
   BackLinkProps,
@@ -100,6 +114,9 @@ export type {
   ParameterizedLinkProps,
   ReferenceChildLinkProps,
 } from '../desk/components'
+
+export type {DocumentPaneContextValue} from '../desk/panes/document/DocumentPaneContext'
+export type {TimelineMode} from '../desk/panes/document/types'
 
 export {
   ComponentBuilder,
@@ -180,6 +197,8 @@ export type {
   ViewBuilder,
 } from '../desk/structureBuilder'
 
+export type {Annotation} from '../field'
+
 export type {
   ArrayFieldProps,
   ArrayOfObjectsFormNode,
@@ -196,6 +215,7 @@ export type {
   BooleanFieldProps,
   BooleanFormNode,
   BooleanInputProps,
+  DocumentFormNode,
   FieldMember,
   FieldProps,
   FieldSetMember,

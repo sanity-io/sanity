@@ -99,4 +99,6 @@ export type {
 
 export * from '../form/components/formField'
 
+export type {FormInputAbsolutePathArg, FormInputRelativePathArg} from '../form/FormInput'
+
 export * from '../form/types'

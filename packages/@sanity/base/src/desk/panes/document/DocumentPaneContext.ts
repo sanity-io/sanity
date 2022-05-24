@@ -8,9 +8,6 @@ import {PaneView, PaneMenuItem, PaneMenuItemGroup} from '../../types'
 import {DocumentFormNode} from '../../../form/store/types/nodes'
 import {TimelineMode} from './types'
 
-// @todo: provide a TS type for this
-type DocumentSchema = any
-
 export interface DocumentPaneContextValue {
   actions: DocumentActionComponent[] | null
   activeViewId: string | null
@@ -21,7 +18,7 @@ export interface DocumentPaneContextValue {
   displayed: Partial<SanityDocument> | null
   documentId: string
   documentIdRaw: string
-  documentSchema: DocumentSchema | null
+  documentSchema: any | null
   documentType: string
   editState: EditStateFor | null
   focusPath: Path
