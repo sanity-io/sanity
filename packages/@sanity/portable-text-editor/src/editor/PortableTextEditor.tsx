@@ -288,10 +288,10 @@ export class PortableTextEditor extends React.Component<PortableTextEditorProps,
     const {onChange} = this.props
     const finalPatches = compactPatches(this.pendingPatches)
     if (finalPatches.length > 0) {
-      onChange({type: 'mutation', patches: finalPatches})
       this.pendingPatches = []
       this.setState({hasPendingPatches: false})
       debug('Flushing', finalPatches)
+      onChange({type: 'mutation', patches: finalPatches})
     }
   }
   private flushDebounced = debounce(this.flush, FLUSH_PATCHES_DEBOUNCE_MS)
@@ -302,7 +302,6 @@ export class PortableTextEditor extends React.Component<PortableTextEditorProps,
       case 'patch':
         this.pendingPatches.push(next.patch)
         this.setState({hasPendingPatches: true})
-        onChange(next)
         this.flushDebounced()
         break
       case 'selection':
@@ -311,7 +310,9 @@ export class PortableTextEditor extends React.Component<PortableTextEditorProps,
         break
       case 'undo':
       case 'redo':
-        onChange(next)
+        next.patches.map((p) => this.pendingPatches.push(p))
+        this.setState({hasPendingPatches: true})
+        this.flushDebounced()
         break
       default:
         onChange(next)
