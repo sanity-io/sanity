@@ -24,8 +24,7 @@ const linkType = {
   ],
   options: {
     modal: {
-      // The `modal` option also supports a `type` property and can be: 'popover' | 'dialog'
-      // type: 'popover',
+      type: 'popover',
       width: 'medium',
     },
   },
