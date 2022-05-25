@@ -17,7 +17,14 @@ const debug = debugWithName('components:Element')
 const debugRenders = false
 
 type ElementProps = {
-  attributes: string
+  attributes: {
+    'data-slate-node': 'element'
+    'data-slate-void'?: true
+    'data-slate-inline'?: true
+    contentEditable?: false
+    dir?: 'rtl'
+    ref: any
+  }
   children: ReactElement
   element: SlateElement
   portableTextFeatures: PortableTextFeatures
