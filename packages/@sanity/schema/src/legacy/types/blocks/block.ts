@@ -44,17 +44,17 @@ export const BlockType = {
     const styleField = createStyleField(styles)
     const listField = createListField(lists)
 
-    const markDefsField = subTypeDef?.marks?.annotations && {
+    const markDefsField = {
       name: 'markDefs',
       title: 'Mark definitions',
       type: 'array',
-      of: subTypeDef.marks.annotations,
+      of: marks?.annotations || DEFAULT_ANNOTATIONS,
     }
 
     // NOTE: if you update this please also update `BlockSchemaType` in`@sanity/types`
-    const fields = [childrenField, styleField, listField]
-      .concat(markDefsField || [])
-      .concat(subTypeDef.fields || [])
+    const fields = [childrenField, styleField, listField, markDefsField].concat(
+      subTypeDef.fields || []
+    )
 
     const parsed = Object.assign(pick(BLOCK_CORE, INHERITED_FIELDS), rest, {
       type: BLOCK_CORE,
