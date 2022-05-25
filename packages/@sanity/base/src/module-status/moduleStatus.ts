@@ -2,9 +2,8 @@ import type {Observable} from 'rxjs'
 import {map, shareReplay} from 'rxjs/operators'
 import {CheckModuleVersionsOptions, VersionsResponse, ModuleStatusResponse} from './types'
 
-// @todo
-// import {sanityModuleVersions} from '../legacyParts'
-const sanityModuleVersions = {}
+// @todo: Get sanity version number dynamically
+const sanityModuleVersions = {sanity: '2.29.3'}
 
 // Used to keep track of lookups to prevent multiple requests
 const CACHED_LOOKUPS = new Map<string, Observable<ModuleStatusResponse>>()
