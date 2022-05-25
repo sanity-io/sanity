@@ -1,15 +1,17 @@
+import {ValidationMarker} from '@sanity/types'
 import {Box, Card, Container} from '@sanity/ui'
 import {useAction, useBoolean} from '@sanity/ui-workshop'
 import React, {useMemo} from 'react'
-import {NodeValidation, PortableTextMarker} from '../../../../types'
+import {createSchema} from '../../../../../schema'
+import {PortableTextMarker} from '../../../../types'
 import {FormBuilderProvider} from '../../../../FormBuilderProvider'
 import {TextBlock} from '../../text'
 import {useSource} from '../../../../../studio'
 
-const errorMarker: NodeValidation = {
+const errorMarker: ValidationMarker = {
   level: 'error',
   path: [{_key: 'a'}],
-  message: 'There is an error with this text block',
+  item: {message: 'There is an error with this text block'},
 }
 
 const customMarker: PortableTextMarker = {
@@ -41,7 +43,10 @@ export function TextBlocksStory() {
     [hasMarkers]
   )
 
-  const validation: NodeValidation[] = useMemo(() => (hasErrors ? [errorMarker] : []), [hasErrors])
+  const validation: ValidationMarker[] = useMemo(
+    () => (hasErrors ? [errorMarker] : []),
+    [hasErrors]
+  )
 
   const onChange = useAction('onChange')
   const attributes = useMemo(() => ({focused: false, selected: false, path: []}), [])
@@ -56,8 +61,6 @@ export function TextBlocksStory() {
           TODO
           {/* <FormBuilderProvider {...form} onChange={onChange}>
             <TextBlock
-              markers={markers}
-              validation={validation}
               block={{...blockBase, style: 'h1'}}
               onChange={onChange}
               attributes={attributes}
@@ -67,8 +70,6 @@ export function TextBlocksStory() {
             </TextBlock>
 
             <TextBlock
-              markers={markers}
-              validation={validation}
               block={{...blockBase, style: 'normal'}}
               onChange={onChange}
               attributes={attributes}
@@ -80,8 +81,6 @@ export function TextBlocksStory() {
             </TextBlock>
 
             <TextBlock
-              markers={markers}
-              validation={validation}
               block={{...blockBase, style: 'normal', listItem: 'number', level: 1}}
               onChange={onChange}
               attributes={attributes}
@@ -91,8 +90,6 @@ export function TextBlocksStory() {
             </TextBlock>
 
             <TextBlock
-              markers={markers}
-              validation={validation}
               block={{...blockBase, style: 'normal', listItem: 'number', level: 1}}
               onChange={onChange}
               attributes={attributes}
@@ -102,8 +99,6 @@ export function TextBlocksStory() {
             </TextBlock>
 
             <TextBlock
-              markers={markers}
-              validation={validation}
               block={{...blockBase, style: 'normal', listItem: 'number', level: 3}}
               onChange={onChange}
               attributes={attributes}
@@ -113,8 +108,6 @@ export function TextBlocksStory() {
             </TextBlock>
 
             <TextBlock
-              markers={markers}
-              validation={validation}
               block={{...blockBase, style: 'normal', listItem: 'number', level: 3}}
               onChange={onChange}
               attributes={attributes}
@@ -124,8 +117,6 @@ export function TextBlocksStory() {
             </TextBlock>
 
             <TextBlock
-              markers={markers}
-              validation={validation}
               block={{...blockBase, style: 'h2'}}
               onChange={onChange}
               attributes={attributes}
@@ -135,8 +126,6 @@ export function TextBlocksStory() {
             </TextBlock>
 
             <TextBlock
-              markers={markers}
-              validation={validation}
               block={{...blockBase, style: 'normal'}}
               onChange={onChange}
               attributes={attributes}
@@ -148,8 +137,6 @@ export function TextBlocksStory() {
             </TextBlock>
 
             <TextBlock
-              markers={markers}
-              validation={validation}
               block={{...blockBase, style: 'normal', listItem: 'bullet', level: 1}}
               onChange={onChange}
               attributes={attributes}
@@ -159,8 +146,6 @@ export function TextBlocksStory() {
             </TextBlock>
 
             <TextBlock
-              markers={markers}
-              validation={validation}
               block={{...blockBase, style: 'normal', listItem: 'bullet', level: 2}}
               onChange={onChange}
               attributes={attributes}
@@ -171,8 +156,6 @@ export function TextBlocksStory() {
 
             <TextBlock
               block={{...blockBase, style: 'h3'}}
-              markers={[]}
-              validation={validation}
               onChange={onChange}
               attributes={attributes}
               readOnly={readOnly}
@@ -182,8 +165,6 @@ export function TextBlocksStory() {
 
             <TextBlock
               block={{...blockBase, style: 'normal'}}
-              markers={markers}
-              validation={validation}
               onChange={onChange}
               attributes={attributes}
               readOnly={readOnly}
@@ -195,8 +176,6 @@ export function TextBlocksStory() {
 
             <TextBlock
               block={{...blockBase, style: 'blockquote'}}
-              markers={markers}
-              validation={validation}
               onChange={onChange}
               attributes={attributes}
               readOnly={readOnly}

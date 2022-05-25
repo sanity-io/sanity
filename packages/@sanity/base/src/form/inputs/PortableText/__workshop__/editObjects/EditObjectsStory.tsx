@@ -7,7 +7,7 @@ import {FormBuilderProvider} from '../../../../FormBuilderProvider'
 import {createPatchChannel} from '../../../../patch/PatchChannel'
 import {FIXME} from '../../../../types'
 import {EMPTY_ARRAY} from '../../../../utils/empty'
-import {EditObject} from '../../object'
+// import {EditObject} from '../../object'
 import {ObjectEditData} from '../../types'
 // import {resolveInputComponent, resolvePreviewComponent} from './formBuilder'
 import {schema} from './schemaType'
@@ -146,7 +146,8 @@ export function EditObjectsStory() {
           {...formBuilder}
         >
           <PortableTextEditor onChange={handleChange} type={type as FIXME} value={value}>
-            <EditObject
+            {/* // TODO: v3 */}
+            {/* <EditObject
               focusPath={focusPath}
               validation={markers}
               objectEditData={objectEditData}
@@ -158,7 +159,7 @@ export function EditObjectsStory() {
               scrollElement={portal.boundaryElement}
               readOnly={readOnly}
               value={value}
-            />
+            /> */}
           </PortableTextEditor>
         </FormBuilderProvider> */}
       </LayerProvider>
