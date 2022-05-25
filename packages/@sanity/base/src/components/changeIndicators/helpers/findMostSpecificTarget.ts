@@ -7,7 +7,8 @@ export function findMostSpecificTarget(
   id: string,
   values: Map<string, TrackedChange | TrackedArea>
 ): TrackedChange | undefined {
-  const path = PathUtils.fromString(id.slice(id.indexOf('-') + 1))
+  const pathString = id.slice(id.indexOf('-') + 1) || '[]'
+  const path = PathUtils.fromString(pathString)
   const exactId = `${targetType}-${PathUtils.toString(path)}`
   if (values.has(exactId)) {
     return values.get(exactId) as TrackedChange
