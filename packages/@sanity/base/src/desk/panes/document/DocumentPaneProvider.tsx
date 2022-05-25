@@ -144,6 +144,16 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   const handleFocus = useCallback(
     (nextFocusPath: Path) => {
       setFocusPath(nextFocusPath)
+      onSetCollapsedPath((prevState) => {
+        let nextState = prevState
+        // eslint-disable-next-line max-nested-callbacks
+        nextFocusPath.forEach((_, pIndex) => {
+          // make sure we expand all nodes up to the root
+          // todo: make a util for this
+          nextState = setAtPath(nextState, nextFocusPath.slice(0, pIndex), false)
+        })
+        return nextState
+      })
       presenceStore.setLocation([
         {
           type: 'document',
