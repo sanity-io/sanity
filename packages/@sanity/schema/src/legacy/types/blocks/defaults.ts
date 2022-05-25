@@ -2,7 +2,7 @@ export const DEFAULT_LINK_ANNOTATION = {
   type: 'object',
   name: 'link',
   options: {
-    editModal: 'popover',
+    modal: {type: 'popover'},
   },
   fields: [
     {
