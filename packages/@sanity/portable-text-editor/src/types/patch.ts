@@ -6,12 +6,14 @@ export type Origin = 'remote' | 'local' | 'internal'
 
 export type IncPatch = {
   path: Path
+  origin?: Origin
   type: 'inc'
   value: JSONValue
 }
 
 export type DecPatch = {
   path: Path
+  origin?: Origin
   type: 'dec'
   value: JSONValue
 }
