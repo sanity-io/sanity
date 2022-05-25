@@ -7,7 +7,7 @@ interface ModalOption {
   width?: ModalWidth
 }
 
-export function getModalOption(opts: {type?: ObjectSchemaType}): ModalOption {
+export function _getModalOption(opts: {type?: ObjectSchemaType}): ModalOption {
   const {type} = opts
   const legacyEditModalOption: string | undefined = get(type, 'options.editModal')
   const modalOption: ModalOption = get(type, 'options.modal') || {}

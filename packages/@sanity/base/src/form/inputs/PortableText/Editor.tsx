@@ -30,7 +30,8 @@ interface EditorProps {
   isFullscreen: boolean
   hotkeys: HotkeyOptions
   onCopy?: OnCopyFn
-  onFocus: (nextPath: Path) => void
+  onExpand: (nextPath: Path) => void
+  onFocusPath: (nextPath: Path) => void
   onPaste?: OnPasteFn
   onToggleFullscreen: () => void
   readOnly?: boolean
@@ -53,7 +54,8 @@ export function Editor(props: EditorProps) {
     initialSelection,
     isFullscreen,
     onCopy,
-    onFocus,
+    onExpand,
+    onFocusPath,
     onPaste,
     onToggleFullscreen,
     readOnly,
@@ -136,7 +138,8 @@ export function Editor(props: EditorProps) {
         <Toolbar
           isFullscreen={isFullscreen}
           hotkeys={hotkeys}
-          onFocus={onFocus}
+          onExpand={onExpand}
+          onFocusPath={onFocusPath}
           readOnly={readOnly}
           onToggleFullscreen={onToggleFullscreen}
         />

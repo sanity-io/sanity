@@ -6,27 +6,26 @@ import {
   PortableTextEditor,
   usePortableTextEditor,
 } from '@sanity/portable-text-editor'
-import {Path} from '@sanity/types'
-import {FOCUS_TERMINATOR} from '@sanity/util/paths'
+import {
+  ValidationMarker,
+  Path,
+  isValidationErrorMarker,
+  isValidationWarningMarker,
+} from '@sanity/types'
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import styled, {css} from 'styled-components'
 import {Box, Card, Theme, Tooltip} from '@sanity/ui'
-import {
-  FIXME,
-  NodeValidation,
-  PortableTextMarker,
-  RenderCustomMarkers,
-  RenderPreviewCallback,
-} from '../../../types'
+import {PortableTextMarker, RenderCustomMarkers, FIXME, RenderPreviewCallback} from '../../../types'
 import {useFormBuilder} from '../../../useFormBuilder'
+import {EditorElement} from '../Compositor'
 import {InlineObjectToolbarPopover} from './InlineObjectToolbarPopover'
 
 interface InlineObjectProps {
   attributes: RenderAttributes
   isEditing: boolean
   markers: PortableTextMarker[]
-  validation: NodeValidation[]
-  onFocus: (path: Path) => void
+  validation: ValidationMarker[]
+  onExpand: (path: Path) => void
   readOnly?: boolean
   renderCustomMarkers?: RenderCustomMarkers
   renderPreview: RenderPreviewCallback
@@ -111,14 +110,14 @@ const TooltipBox = styled(Box)`
 
 export const InlineObject = React.forwardRef(function InlineObject(
   props: InlineObjectProps,
-  forwardedRef: React.ForwardedRef<HTMLDivElement>
+  forwardedRef: React.ForwardedRef<EditorElement>
 ) {
   const {
     attributes: {focused, selected, path},
     isEditing,
     markers,
     validation,
-    onFocus,
+    onExpand,
     readOnly,
     renderCustomMarkers,
     renderPreview,
@@ -131,11 +130,8 @@ export const InlineObject = React.forwardRef(function InlineObject(
   const refElm = useRef(null)
   const [popoverOpen, setPopoverOpen] = useState(false)
 
-  const hasError = useMemo(() => validation.some((item) => item.level === 'error'), [validation])
-  const hasWarning = useMemo(
-    () => validation.some((item) => item.level === 'warning'),
-    [validation]
-  )
+  const hasError = useMemo(() => validation.some(isValidationErrorMarker), [validation])
+  const hasWarning = useMemo(() => validation.some(isValidationWarningMarker), [validation])
   const hasValidationMarkers = validation.length > 0
 
   const tone = useMemo(() => {
@@ -171,7 +167,7 @@ export const InlineObject = React.forwardRef(function InlineObject(
 
   const markersToolTip = useMemo(
     () =>
-      validation.length > 0 ? (
+      markers.length > 0 ? (
         <Tooltip
           placement="top"
           portal="editor"
@@ -193,9 +189,9 @@ export const InlineObject = React.forwardRef(function InlineObject(
 
   const handleEditClick = useCallback((): void => {
     PortableTextEditor.blur(editor)
-    onFocus(path.concat(FOCUS_TERMINATOR))
+    onExpand(path)
     setPopoverOpen(false)
-  }, [editor, path, onFocus])
+  }, [editor, onExpand, path])
 
   const handleRemoveClick = useCallback(
     (event: React.MouseEvent<HTMLButtonElement>): void => {
@@ -231,7 +227,7 @@ export const InlineObject = React.forwardRef(function InlineObject(
         tone={tone}
         forwardedAs="span"
         contentEditable={false}
-        ref={forwardedRef}
+        ref={forwardedRef as React.ForwardedRef<HTMLDivElement>}
       >
         <span ref={refElm} onDoubleClick={handleEditClick}>
           {markersToolTip || preview}

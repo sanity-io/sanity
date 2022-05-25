@@ -4,12 +4,10 @@ import {
   PortableTextChild,
   PortableTextEditor,
   PortableTextFeatures,
-  // Type,
   usePortableTextEditor,
   usePortableTextEditorSelection,
 } from '@sanity/portable-text-editor'
 import {ObjectSchemaType, Path} from '@sanity/types'
-import {FOCUS_TERMINATOR} from '@sanity/util/paths'
 import {useCallback, useMemo} from 'react'
 import {useUnique} from '../../../../util'
 import {FIXME} from '../../../types'
@@ -40,12 +38,14 @@ export function useFeatures(): PortableTextFeatures {
 
 export function useActionGroups({
   hotkeys,
-  onFocus,
+  onExpand,
+  onFocusPath,
   resolveInitialValue,
   disabled,
 }: {
   hotkeys: HotkeyOptions
-  onFocus: (path: Path) => void
+  onExpand: (path: Path) => void
+  onFocusPath: (path: Path) => void
   resolveInitialValue: (type: ObjectSchemaType) => any
   disabled: boolean
 }): PTEToolbarActionGroup[] {
@@ -57,10 +57,11 @@ export function useActionGroups({
       const paths = PortableTextEditor.addAnnotation(editor, type as FIXME, initialValue)
       if (paths && paths.markDefPath) {
         PortableTextEditor.blur(editor)
-        onFocus(paths.markDefPath.concat(FOCUS_TERMINATOR))
+        onExpand(paths.markDefPath)
+        onFocusPath(paths.markDefPath)
       }
     },
-    [editor, onFocus, resolveInitialValue]
+    [editor, onExpand, onFocusPath, resolveInitialValue]
   )
 
   return useMemo(

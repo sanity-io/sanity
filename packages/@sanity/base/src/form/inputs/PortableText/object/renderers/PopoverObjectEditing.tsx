@@ -1,8 +1,6 @@
 /* eslint-disable react/no-unused-prop-types */
 
 import {CloseIcon} from '@sanity/icons'
-import {PortableTextBlock, PortableTextChild, Type} from '@sanity/portable-text-editor'
-import {Path, ValidationMarker, SchemaType} from '@sanity/types'
 import {
   Box,
   Button,
@@ -20,28 +18,18 @@ import {
 } from '@sanity/ui'
 import React, {useCallback, useEffect, useMemo, useState} from 'react'
 import styled from 'styled-components'
-import {FormFieldPresence, PresenceOverlay} from '../../../../../presence'
-import {PatchEvent} from '../../../../patch'
-import {FIXME, NodeValidation} from '../../../../types'
+import {PresenceOverlay} from '../../../../../presence'
+import {FIXME} from '../../../../types'
 import {POPOVER_WIDTH_TO_UI_WIDTH} from './constants'
 import {debugElement} from './debug'
 import {ModalWidth} from './types'
 
-interface PopoverObjectEditingProps {
-  editorPath: Path
-  elementRef?: React.RefObject<HTMLElement | null>
-  focusPath: Path
-  validation: NodeValidation[]
-  object: PortableTextBlock | PortableTextChild
-  onBlur: () => void
-  onChange: (patchEvent: PatchEvent, path: Path) => void
+interface PopoverEditDialogProps {
+  children: React.ReactNode
+  elementRef: React.MutableRefObject<HTMLElement | null>
   onClose: () => void
-  onFocus: (path: Path) => void
-  path: Path
-  presence: FormFieldPresence[]
-  scrollElement: HTMLElement | null
-  readOnly?: boolean
-  type: Type
+  scrollElement: HTMLElement
+  title: string | React.ReactNode
   width?: ModalWidth
 }
 
@@ -79,7 +67,7 @@ const ContentHeaderBox = styled(Box)`
 
 const POPOVER_FALLBACK_PLACEMENTS: PopoverProps['fallbackPlacements'] = ['top', 'bottom']
 
-export function PopoverObjectEditing(props: PopoverObjectEditingProps) {
+export function PopoverEditDialog(props: PopoverEditDialogProps) {
   const {width, elementRef, scrollElement} = props
   const [forceUpdate, setForceUpdate] = useState(0)
   const virtualElement = useMemo(() => {
@@ -140,46 +128,19 @@ export function PopoverObjectEditing(props: PopoverObjectEditingProps) {
 }
 
 function Content(
-  props: PopoverObjectEditingProps & {
+  props: PopoverEditDialogProps & {
     rootElement: HTMLDivElement | null
     style: React.CSSProperties
   }
 ) {
-  const {
-    focusPath,
-    validation,
-    object,
-    onBlur,
-    onChange,
-    onClose,
-    onFocus,
-    path,
-    presence,
-    readOnly,
-    rootElement,
-    style,
-    type,
-    width = 'small',
-  } = props
+  const {onClose, rootElement, style, width = 'small', title} = props
   const {isTopLayer} = useLayer()
   const {element: boundaryElement} = useBoundaryElement()
   const portal = usePortal()
 
-  const handleChange = useCallback(
-    (patchEvent: PatchEvent): void => onChange(patchEvent, path),
-    [onChange, path]
-  )
-
   const handleClose = useCallback(() => {
     if (isTopLayer) onClose()
   }, [isTopLayer, onClose])
-
-  const handleFocus = useCallback(
-    (pathOrEvent?: Path | React.FocusEvent) => {
-      onFocus(Array.isArray(pathOrEvent) ? pathOrEvent : [])
-    },
-    [onFocus]
-  )
 
   const handleKeyDown = useCallback(
     (event: KeyboardEvent) => {
@@ -203,7 +164,7 @@ function Content(
         <ContentHeaderBox padding={1}>
           <Flex align="center">
             <Box flex={1} padding={2}>
-              <Text weight="semibold">{type.title}</Text>
+              <Text weight="semibold">{title}</Text>
             </Box>
 
             <Button icon={CloseIcon} mode="bleed" onClick={handleClose} padding={2} />
@@ -212,22 +173,7 @@ function Content(
         <ContentScrollerBox flex={1}>
           <PresenceOverlay margins={[0, 0, 1, 0]}>
             <Box padding={3}>
-              <PortalProvider element={portal.elements?.default}>
-                TODO
-                {/* <FormBuilderInput
-                  focusPath={focusPath}
-                  level={0}
-                  validation={validation}
-                  onBlur={onBlur}
-                  onChange={handleChange}
-                  onFocus={handleFocus}
-                  path={path}
-                  presence={presence}
-                  readOnly={readOnly || type.readOnly}
-                  type={type as SchemaType}
-                  value={object}
-                /> */}
-              </PortalProvider>
+              <PortalProvider element={portal.elements?.default}>{props.children}</PortalProvider>
             </Box>
           </PresenceOverlay>
         </ContentScrollerBox>

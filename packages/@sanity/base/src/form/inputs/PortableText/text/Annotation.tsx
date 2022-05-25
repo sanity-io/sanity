@@ -7,13 +7,13 @@ import {
   usePortableTextEditor,
 } from '@sanity/portable-text-editor'
 import {ValidationMarker, Path} from '@sanity/types'
-import {FOCUS_TERMINATOR} from '@sanity/util/paths'
 import {Box, Theme, ThemeColorToneKey, Tooltip} from '@sanity/ui'
 import React, {SyntheticEvent, useCallback, useMemo, useRef, useState} from 'react'
 import styled, {css} from 'styled-components'
-import {NodeValidation, PortableTextMarker, RenderCustomMarkers} from '../../../types'
+import {PortableTextMarker, RenderCustomMarkers} from '../../../types'
 import {DefaultMarkers} from '../_legacyDefaultParts/Markers'
 import {useFormBuilder} from '../../../useFormBuilder'
+import {EditorElement} from '../Compositor'
 import {AnnotationToolbarPopover} from './AnnotationToolbarPopover'
 
 interface AnnotationProps {
@@ -22,8 +22,8 @@ interface AnnotationProps {
   hasError: boolean
   hasWarning: boolean
   markers: PortableTextMarker[]
-  validation: NodeValidation[]
-  onFocus: (path: Path) => void
+  validation: ValidationMarker[]
+  onExpand: (path: Path) => void
   renderCustomMarkers?: RenderCustomMarkers
   type: Type
   readOnly?: boolean
@@ -67,7 +67,7 @@ const TooltipBox = styled(Box).attrs({forwardedAs: 'span'})`
 
 export const Annotation = React.forwardRef(function Annotation(
   props: AnnotationProps,
-  forwardedRef: React.ForwardedRef<HTMLSpanElement>
+  forwardedRef: React.ForwardedRef<EditorElement>
 ) {
   const {
     attributes,
@@ -76,7 +76,7 @@ export const Annotation = React.forwardRef(function Annotation(
     hasWarning,
     markers,
     validation,
-    onFocus,
+    onExpand,
     renderCustomMarkers,
     scrollElement,
     readOnly,
@@ -128,15 +128,16 @@ export const Annotation = React.forwardRef(function Annotation(
       event.preventDefault()
       event.stopPropagation()
       PortableTextEditor.blur(editor)
-      onFocus(markDefPath.concat(FOCUS_TERMINATOR))
+      onExpand(markDefPath)
     },
-    [editor, markDefPath, onFocus]
+    [editor, markDefPath, onExpand]
   )
 
   const handleRemoveClick = useCallback(
     (event: React.MouseEvent<HTMLButtonElement>): void => {
       event.preventDefault()
       event.stopPropagation()
+
       PortableTextEditor.removeAnnotation(editor, type)
       PortableTextEditor.focus(editor)
     },

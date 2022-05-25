@@ -1,13 +1,15 @@
 import {PortableTextBlock, RenderAttributes} from '@sanity/portable-text-editor'
-import {isKeySegment, ValidationMarker} from '@sanity/types'
+import {ValidationMarker} from '@sanity/types'
 import {Box, ResponsivePaddingProps, Tooltip} from '@sanity/ui'
 import React, {useCallback, useMemo, useState} from 'react'
-import {NodeValidation, PortableTextMarker, RenderCustomMarkers} from '../../../types'
-import {PatchArg, PatchEvent} from '../../../patch'
+import {isEqual} from 'lodash'
+import {PortableTextMarker, RenderCustomMarkers} from '../../../types'
+import {PatchArg} from '../../../patch'
 import {useFormBuilder} from '../../../useFormBuilder'
 import {BlockActions} from '../BlockActions'
 import {ReviewChangesHighlightBlock, StyledChangeIndicatorWithProvidedFullPath} from '../_common'
 import {RenderBlockActionsCallback} from '../types'
+import {EditorElement} from '../Compositor'
 import {TEXT_STYLE_PADDING} from './constants'
 import {
   BlockActionsInner,
@@ -25,11 +27,11 @@ import {TEXT_STYLES} from './textStyles'
 export interface TextBlockProps {
   attributes: RenderAttributes
   block: PortableTextBlock
-  blockRef?: React.RefObject<HTMLDivElement>
+  blockRef?: React.RefObject<EditorElement>
   children: React.ReactNode
   isFullscreen?: boolean
   markers: PortableTextMarker[]
-  validation: NodeValidation[]
+  validation: ValidationMarker[]
   onChange: (...patches: PatchArg[]) => void
   readOnly?: boolean
   renderBlockActions?: RenderBlockActionsCallback
@@ -65,46 +67,23 @@ export function TextBlock(props: TextBlockProps): React.ReactElement {
 
   const handleOnHasChanges = useCallback((changed: boolean) => setHasChanges(changed), [])
 
-  // These are custom markers that are only for this block
-  const blockMarkers = useMemo(
-    () =>
-      markers.filter(
-        (marker) =>
-          marker.path.length === 1 &&
-          isKeySegment(marker.path[0]) &&
-          marker.path[0]._key === blockKey
-      ),
-
-    [blockKey, markers]
-  )
-
-  // These are validation markers that are only for the block level (things further up, like
-  // annotations and inline objects are dealt with in their respective components)
-  const blockValidation = useMemo(
+  const errorMessages = useMemo(
     () =>
       validation.filter(
-        (marker) =>
-          marker.path.length === 1 &&
-          isKeySegment(marker.path[0]) &&
-          marker.path[0]._key === blockKey
+        (marker) => marker.level === 'error' && isEqual(marker.path.slice(1), attributes.path)
       ),
-
-    [blockKey, validation]
-  )
-
-  const errorMessages = useMemo(
-    () => blockValidation.filter((marker) => marker.level === 'error'),
-    [blockValidation]
+    [attributes.path, validation]
   )
 
   const warningMessages = useMemo(
-    () => blockValidation.filter((marker) => marker.level === 'warning'),
-    [blockValidation]
+    () =>
+      validation.filter(
+        (marker) => marker.level === 'warning' && isEqual(marker.path.slice(1), attributes.path)
+      ),
+    [attributes.path, validation]
   )
 
-  // const hasCustomMarkers =
-  //   Boolean(renderCustomMarkers) && blockValidation.filter((m) => !isValidationMarker(m)).length > 0
-  const hasMarkers = markers.length > 0
+  const hasMarkers = Boolean(renderCustomMarkers) && markers.length > 0
   const hasErrors = errorMessages.length > 0
   const hasWarnings = warningMessages.length > 0
 
@@ -168,8 +147,8 @@ export function TextBlock(props: TextBlockProps): React.ReactElement {
               tooltipEnabled && (
                 <TooltipBox padding={2}>
                   <Markers
-                    markers={blockMarkers}
-                    validation={blockValidation}
+                    markers={markers}
+                    validation={validation}
                     renderCustomMarkers={renderCustomMarkers}
                   />
                 </TooltipBox>
@@ -185,7 +164,7 @@ export function TextBlock(props: TextBlockProps): React.ReactElement {
               data-custom-markers={hasMarkers ? '' : undefined}
               data-testid="text-block__text"
               spellCheck={spellCheck}
-              ref={blockRef}
+              ref={blockRef as React.RefObject<HTMLDivElement>}
             >
               {text}
             </TextRoot>

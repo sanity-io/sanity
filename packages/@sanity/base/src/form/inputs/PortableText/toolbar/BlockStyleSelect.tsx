@@ -98,14 +98,6 @@ export const BlockStyleSelect = memo(function BlockStyleSelect(
     return emptyStyle.title
   }, [activeItems])
 
-  // Set focus back into the editor when the new value get's in
-  useEffect(() => {
-    if (changed) {
-      PortableTextEditor.focus(editor)
-      setChanged(false)
-    }
-  }, [activeItems, changed, editor])
-
   const handleChange = useCallback(
     (item: BlockStyleItem): void => {
       if (focusBlock && item.style !== focusBlock.style) {
@@ -160,6 +152,15 @@ export const BlockStyleSelect = memo(function BlockStyleSelect(
     ),
     [_disabled, activeItems, handleChange, items, renderOption]
   )
+
+  // Set focus back into the editor when the new value get's in
+  // This must be the last registered hook or it will not be able to focus properly.
+  useEffect(() => {
+    if (changed) {
+      PortableTextEditor.focus(editor)
+      setChanged(false)
+    }
+  }, [activeItems, changed, editor])
 
   return (
     <MenuButtonMemo

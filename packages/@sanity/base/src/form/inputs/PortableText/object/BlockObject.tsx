@@ -4,21 +4,24 @@ import {
   RenderAttributes,
   EditorSelection,
 } from '@sanity/portable-text-editor'
-import {isKeySegment, Path, ObjectSchemaType} from '@sanity/types'
-import {FOCUS_TERMINATOR} from '@sanity/util/paths'
+import {
+  isKeySegment,
+  ValidationMarker,
+  Path,
+  isValidationErrorMarker,
+  isValidationWarningMarker,
+  isValidationInfoMarker,
+  ObjectSchemaType,
+} from '@sanity/types'
 import {Tooltip, Flex, ResponsivePaddingProps} from '@sanity/ui'
 import React, {useCallback, useMemo, useRef, useState} from 'react'
 import {PatchArg} from '../../../patch'
-import {
-  NodeValidation,
-  PortableTextMarker,
-  RenderCustomMarkers,
-  RenderPreviewCallback,
-} from '../../../types'
+import {PortableTextMarker, RenderCustomMarkers, RenderPreviewCallback} from '../../../types'
 import {RenderBlockActionsCallback} from '../types'
 import {BlockActions} from '../BlockActions'
 import {ReviewChangesHighlightBlock, StyledChangeIndicatorWithProvidedFullPath} from '../_common'
 import {useFormBuilder} from '../../../useFormBuilder'
+import {EditorElement} from '../Compositor'
 import {BlockObjectPreview} from './BlockObjectPreview'
 import {
   Root,
@@ -34,12 +37,14 @@ import {
 interface BlockObjectProps {
   attributes: RenderAttributes
   block: PortableTextBlock
-  blockRef?: React.RefObject<HTMLDivElement>
+  blockRef?: React.RefObject<EditorElement>
   editor: PortableTextEditor
   markers: PortableTextMarker[]
-  validation: NodeValidation[]
+  validation: ValidationMarker[]
   isFullscreen?: boolean
   onChange: (...patches: PatchArg[]) => void
+  onCollapse: (path: Path) => void
+  onExpand: (path: Path) => void
   onFocus: (path: Path) => void
   readOnly?: boolean
   renderBlockActions?: RenderBlockActionsCallback
@@ -61,7 +66,7 @@ export const BlockObject = React.forwardRef(function BlockObject(
     markers,
     validation,
     onChange,
-    onFocus,
+    onExpand,
     readOnly,
     renderBlockActions,
     renderCustomMarkers,
@@ -79,8 +84,8 @@ export const BlockObject = React.forwardRef(function BlockObject(
   const handleOnHasChanges = useCallback((changed: boolean) => setHasChanges(changed), [])
 
   const handleEdit = useCallback(() => {
-    onFocus(path.concat(FOCUS_TERMINATOR))
-  }, [onFocus, path])
+    onExpand(path)
+  }, [onExpand, path])
 
   const handleDoubleClickToOpen = useCallback(
     (e) => {
@@ -139,16 +144,16 @@ export const BlockObject = React.forwardRef(function BlockObject(
   const blockValidationMarkers = useMemo(
     () =>
       validation.filter(
-        (marker) => isKeySegment(marker.path[0]) && marker.path[0]._key === block._key
+        (marker) => isKeySegment(marker.path[1]) && marker.path[1]._key === block._key
       ),
 
     [block._key, validation]
   )
 
   const hasMarkers = Boolean(blockValidationMarkers.length > 0)
-  const hasErrors = blockValidationMarkers.some((v) => v.level === 'error')
-  const hasWarnings = blockValidationMarkers.some((v) => v.level === 'warning')
-  const hasInfo = blockValidationMarkers.some((v) => v.level === 'info')
+  const hasErrors = validation.some(isValidationErrorMarker)
+  const hasWarnings = validation.some(isValidationWarningMarker)
+  const hasInfo = validation.some(isValidationInfoMarker)
 
   const isImagePreview = type?.type?.name === 'image'
 
@@ -190,7 +195,9 @@ export const BlockObject = React.forwardRef(function BlockObject(
               ref={elementRef}
               tone={tone}
             >
-              <BlockPreview ref={blockRef}>{blockPreview}</BlockPreview>
+              <BlockPreview ref={blockRef as React.RefObject<HTMLDivElement>}>
+                {blockPreview}
+              </BlockPreview>
             </Root>
           </Tooltip>
         </PreviewContainer>

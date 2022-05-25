@@ -1,4 +1,4 @@
-import {ArraySchemaType, Path} from '@sanity/types'
+import {ArraySchemaType, ObjectSchemaType, Path} from '@sanity/types'
 import {
   EditorChange,
   OnCopyFn,
@@ -7,27 +7,48 @@ import {
   PortableTextBlock,
   PortableTextEditor,
   HotkeyOptions,
-  EditorSelection,
   InvalidValue,
+  EditorSelection,
 } from '@sanity/portable-text-editor'
-import {FOCUS_TERMINATOR} from '@sanity/util/paths'
 import React, {useEffect, useState, useMemo, useCallback, useRef, useImperativeHandle} from 'react'
 import {Subject} from 'rxjs'
 import {Box, Text, useToast} from '@sanity/ui'
 import scrollIntoView from 'scroll-into-view-if-needed'
+import {startsWith} from '@sanity/util/paths'
+import {throttle} from 'lodash'
 import {FormPatch as FormBuilderPatch} from '../../patch'
 import type {
   ArrayOfObjectsInputProps,
+  FieldMember,
+  ObjectMember,
   FIXME,
   PortableTextMarker,
   RenderCustomMarkers,
+  ArrayOfObjectsMember,
 } from '../../types'
+import {useFormCallbacks} from '../../studio/contexts/FormCallbacks'
+import {ObjectFormNode} from '../../types'
+import {useDocumentPane} from '../../../desk/panes/document/useDocumentPane'
+import {isMemberArrayOfObjects} from '../ObjectInput/members/asserters'
 import {EMPTY_ARRAY} from '../../utils/empty'
 import {Compositor} from './Compositor'
 import {InvalidValue as RespondToInvalidContent} from './InvalidValue'
 import {usePatches} from './usePatches'
 import {VisibleOnFocusButton} from './VisibleOnFocusButton'
 import {RenderBlockActionsCallback} from './types'
+
+export type ObjectMemberType = ArrayOfObjectsMember<
+  ObjectFormNode<
+    {
+      [x: string]: unknown
+    },
+    ObjectSchemaType
+  >
+>
+
+function isFieldMember(member: ObjectMember): member is FieldMember<ObjectFormNode> {
+  return member.kind === 'field'
+}
 
 /**
  * @alpha
@@ -48,6 +69,8 @@ export interface PortableTextInputProps
  * @alpha
  */
 export function PortableTextInput(props: PortableTextInputProps) {
+  const {onSetCollapsedPath} = useFormCallbacks()
+
   const {
     focused,
     focusPath,
@@ -64,11 +87,8 @@ export function PortableTextInput(props: PortableTextInputProps) {
     path,
     renderBlockActions,
     renderCustomMarkers,
-    renderItem,
     schemaType: type,
     value,
-    // onBlur,
-    // onFocus,
     onFocusPath,
     readOnly,
   } = props
@@ -120,45 +140,91 @@ export function PortableTextInput(props: PortableTextInputProps) {
     })
   }, [remotePatchSubject, subscribe])
 
+  const onCollapse = useCallback(
+    (p: Path) => {
+      onSetCollapsedPath(p, true)
+    },
+    [onSetCollapsedPath]
+  )
+
+  const onExpand = useCallback(
+    (childPath: Path) => {
+      onSetCollapsedPath(path.concat(childPath), false)
+    },
+    [onSetCollapsedPath, path]
+  )
+
+  const portableTextMembers = useMemo((): ObjectMemberType[] => {
+    return members.flatMap((m) => {
+      let returned: ObjectMemberType[] = []
+      // Object blocks or normal blocks with validation
+      if (m.item.schemaType.name !== 'block' || m.item.schemaType.validation) {
+        returned.push(m)
+      }
+      // Inline objects
+      const childrenField = m.item.members.find((f) => f.kind === 'field' && f.name === 'children')
+      if (
+        childrenField &&
+        childrenField.kind === 'field' &&
+        isMemberArrayOfObjects(childrenField)
+      ) {
+        returned = [
+          ...returned,
+          ...childrenField.field.members.filter(
+            (cM: ObjectMemberType) => 'item' in cM && cM.item.schemaType.name !== 'span'
+          ),
+        ]
+      }
+      // Markdefs
+      const markDefArrayMember = m.item.members
+        .filter(isFieldMember)
+        .find((f) => f.name === 'markDefs')
+
+      if (markDefArrayMember) {
+        returned = [
+          ...returned,
+          ...(markDefArrayMember.field.members as unknown as ObjectMemberType[]), // TODO: fix correct typing on this
+        ]
+      }
+      return returned
+    })
+  }, [members])
+
+  // Sets the focusPath from editor selection
+  const setFocusPathThrottled = useMemo(
+    () =>
+      throttle(
+        (sel: EditorSelection) => {
+          if (sel) onFocusPath(sel.focus.path)
+          else {
+            onFocusPath(EMPTY_ARRAY)
+          }
+        },
+        300,
+        {trailing: true, leading: true}
+      ),
+    [onFocusPath]
+  )
+
   // Handle editor changes
   const handleEditorChange = useCallback(
     (change: EditorChange): void => {
       switch (change.type) {
         case 'mutation':
-          setTimeout(() => {
-            onChange(change.patches as FormBuilderPatch[])
-          })
+          onChange(change.patches as FormBuilderPatch[])
           break
         case 'selection':
-          if (
-            editorRef.current &&
-            shouldSetEditorFormBuilderFocus(
-              editorRef.current,
-              change.selection,
-              focusPath || EMPTY_ARRAY
-            )
-          ) {
-            if (change.selection?.focus.path) {
-              onFocusPath(change.selection?.focus.path)
-            }
-          }
+          setFocusPathThrottled(change.selection)
           break
         case 'focus':
           setHasFocus(true)
-          onFocusPath(
-            (editorRef.current && PortableTextEditor.getSelection(editorRef.current)?.focus.path) ||
-              []
-          )
-
           break
         case 'blur':
           setHasFocus(false)
           break
         case 'undo':
         case 'redo':
-          setTimeout(() => {
-            onChange(change.patches as FormBuilderPatch[])
-          })
+          onChange(change.patches as FormBuilderPatch[])
           break
         case 'invalidValue':
           setInvalidValue(change)
@@ -168,12 +234,11 @@ export function PortableTextInput(props: PortableTextInputProps) {
             status: change.level,
             description: change.description,
           })
-
           break
         default:
       }
     },
-    [focusPath, editorRef, onChange, onFocusPath, toast]
+    [onChange, toast, setFocusPathThrottled]
   )
 
   const handleFocusSkipperClick = useCallback(() => {
@@ -201,8 +266,8 @@ export function PortableTextInput(props: PortableTextInputProps) {
     return null
   }, [handleEditorChange, handleIgnoreValidation, invalidValue])
 
-  // Scroll to *the field* (not the editor) into view if we have focus in the field.
-  // For internal editor scrolling see useScrollToFocusFromOutside and useScrollSelectionIntoView in
+  // Scroll to *the field* (not the editor content) into view if we have focus in the field.
+  // For editor content scrolling see useScrollToFocusFromOutside and useScrollSelectionIntoView in
   // the Compositor component.
   useEffect(() => {
     if (focusPath && focusPath.length > 0 && innerElementRef.current) {
@@ -211,6 +276,13 @@ export function PortableTextInput(props: PortableTextInputProps) {
       })
     }
   }, [focusPath])
+
+  const {validation} = useDocumentPane()
+  const objectValidation = useMemo(() => {
+    return portableTextMembers
+      .flatMap((m) => validation.filter((v) => startsWith(m.item.path, v.path)))
+      .filter(Boolean)
+  }, [portableTextMembers, validation])
 
   return (
     <Box ref={innerElementRef}>
@@ -233,40 +305,30 @@ export function PortableTextInput(props: PortableTextInputProps) {
         >
           <Compositor
             {...props}
+            portableTextMembers={portableTextMembers}
             focusPath={focusPath}
             focused={focused}
             hasFocus={hasFocus}
             hotkeys={hotkeys}
             isFullscreen={isFullscreen}
             markers={markers}
-            members={members}
             onChange={onChange}
+            onFocusPath={onFocusPath}
+            onCollapse={onCollapse}
             onCopy={onCopy}
+            onExpand={onExpand}
             onInsert={onInsert}
             onPaste={onPaste}
             onCollapse={onCollapse}
             onExpand={onExpand}
             onToggleFullscreen={handleToggleFullscreen}
-            patches$={remotePatchSubject}
             renderBlockActions={renderBlockActions}
             renderCustomMarkers={renderCustomMarkers}
-            renderItem={renderItem}
             value={value}
+            validation={objectValidation}
           />
         </PortableTextEditor>
       )}
     </Box>
-  )
-}
-
-function shouldSetEditorFormBuilderFocus(
-  editor: PortableTextEditor,
-  selection: EditorSelection | undefined,
-  focusPath: Path
-) {
-  return (
-    selection && // If we have something selected
-    focusPath.slice(-1)[0] !== FOCUS_TERMINATOR && // Not if in transition to open modal
-    PortableTextEditor.isObjectPath(editor, focusPath) === false // Not if this is pointing to an embedded object
   )
 }

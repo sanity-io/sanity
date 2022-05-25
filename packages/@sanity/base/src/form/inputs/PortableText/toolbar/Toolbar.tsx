@@ -25,7 +25,8 @@ interface ToolbarProps {
   hotkeys: HotkeyOptions
   isFullscreen: boolean
   readOnly?: boolean
-  onFocus: (path: Path) => void
+  onExpand: (path: Path) => void
+  onFocusPath: (path: Path) => void
   onToggleFullscreen: () => void
 }
 
@@ -149,7 +150,7 @@ const InnerToolbar = memo(function InnerToolbar({
 })
 
 export function Toolbar(props: ToolbarProps) {
-  const {hotkeys, isFullscreen, readOnly, onFocus, onToggleFullscreen} = props
+  const {hotkeys, isFullscreen, readOnly, onExpand, onFocusPath, onToggleFullscreen} = props
   const features = useFeatures()
   const editor = usePortableTextEditor()
   const selection = usePortableTextEditorSelection()
@@ -202,9 +203,12 @@ export function Toolbar(props: ToolbarProps) {
       const initialValue = await resolveInitialValue(type)
       const path = PortableTextEditor.insertBlock(editor, type as FIXME, initialValue)
       PortableTextEditor.blur(editor)
-      if (path) onFocus(path.concat(FOCUS_TERMINATOR))
+      if (path) {
+        onFocusPath(path)
+        onExpand(path)
+      }
     },
-    [editor, onFocus, resolveInitialValue]
+    [editor, onExpand, onFocusPath, resolveInitialValue]
   )
 
   const handleInsertInline = useCallback(
@@ -212,12 +216,21 @@ export function Toolbar(props: ToolbarProps) {
       const initialValue = await resolveInitialValue(type)
       const path = PortableTextEditor.insertChild(editor, type as FIXME, initialValue)
       PortableTextEditor.blur(editor)
-      if (path) onFocus(path.concat(FOCUS_TERMINATOR))
+      if (path) {
+        onFocusPath(path)
+        onExpand(path)
+      }
     },
-    [editor, onFocus, resolveInitialValue]
+    [editor, onExpand, onFocusPath, resolveInitialValue]
   )
 
-  const actionGroups = useActionGroups({hotkeys, onFocus, resolveInitialValue, disabled: true})
+  const actionGroups = useActionGroups({
+    hotkeys,
+    onExpand,
+    onFocusPath,
+    resolveInitialValue,
+    disabled: true,
+  })
 
   const blockStyles = useMemo(() => getBlockStyles(features), [features])
 
