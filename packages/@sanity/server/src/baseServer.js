@@ -40,7 +40,10 @@ export function getBaseServer() {
   return express()
 }
 
-export function getDocumentElement({project, basePath, hashes, isSanityMonorepo}, props = {}) {
+export function getDocumentElement(
+  {project, basePath, hashes, isSanityMonorepo, lang},
+  props = {}
+) {
   const assetHashes = hashes || {}
 
   // Project filesystem base path
@@ -56,6 +59,7 @@ export function getDocumentElement({project, basePath, hashes, isSanityMonorepo}
           scripts: ['js/vendor.bundle.js', 'js/app.bundle.js'].map((item) =>
             assetify(item, assetHashes)
           ),
+          lang,
         },
         props
       )
