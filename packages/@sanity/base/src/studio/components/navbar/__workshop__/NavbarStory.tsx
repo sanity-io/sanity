@@ -10,11 +10,11 @@ import {Card} from '@sanity/ui'
 import {useBoolean, useString} from '@sanity/ui-workshop'
 import React, {useMemo, useState} from 'react'
 import styled from 'styled-components'
-import {createConfig, Tool} from '../../config'
-import {isNonNullable} from '../../util/isNonNullable'
-import {isTruthy} from '../../util/isTruthy'
-import {Navbar} from '../components/navbar'
-import {StudioProvider} from '../StudioProvider'
+import {createConfig, Tool} from '../../../../config'
+import {isNonNullable} from '../../../../util/isNonNullable'
+import {isTruthy} from '../../../../util/isTruthy'
+import {Navbar} from '..'
+import {StudioProvider} from '../../../StudioProvider'
 
 const SearchFullscreenPortalCard = styled(Card)`
   display: flex;

@@ -1,11 +1,11 @@
 import {UnknownIcon} from '@sanity/icons'
 import React, {forwardRef, useMemo, useState} from 'react'
+import {startCase} from 'lodash'
 import {CollapseMenu, CollapseMenuButton} from '../../../../components/collapseMenu'
 import {useRovingFocus} from '../../../../components/rovingFocus'
-import {StateLink, useRouterState} from '../../../../router'
 import {useColorScheme} from '../../../colorScheme'
 import {Tool} from '../../../../config'
-import {startCase} from 'lodash'
+import {ToolLink, ToolLinkProps} from './ToolLink'
 
 interface ToolCollapseMenuProps {
   activeToolName?: string
@@ -14,9 +14,7 @@ interface ToolCollapseMenuProps {
 
 export function ToolCollapseMenu(props: ToolCollapseMenuProps) {
   const {activeToolName, tools} = props
-  const routerState = useRouterState()
   const {scheme} = useColorScheme()
-
   const [collapseMenuEl, setCollapseMenuEl] = useState<HTMLDivElement | null>(null)
 
   useRovingFocus({
@@ -41,30 +39,19 @@ export function ToolCollapseMenu(props: ToolCollapseMenuProps) {
         const title = tool?.title || startCase(tool.name) || undefined
 
         const Link = forwardRef(function Link(
-          linkProps: unknown,
+          linkProps: ToolLinkProps,
           ref: React.Ref<HTMLAnchorElement>
         ) {
-          return (
-            <StateLink
-              {...linkProps}
-              ref={ref}
-              state={{
-                ...routerState,
-                tool: tool.name,
-                [tool.name]: undefined,
-              }}
-            />
-          )
+          return <ToolLink {...linkProps} ref={ref} name={tool.name} />
         })
 
         return (
           <CollapseMenuButton
             as={Link}
             collapsedProps={{tooltipText: tool.title}}
-            data-as="a"
             icon={tool.icon || UnknownIcon}
             // eslint-disable-next-line react/no-array-index-key
-            key={index}
+            key={`${tool.name}-${index}`}
             mode="bleed"
             selected={activeToolName === tool.name}
             text={title}
@@ -72,7 +59,7 @@ export function ToolCollapseMenu(props: ToolCollapseMenuProps) {
           />
         )
       }),
-    [activeToolName, routerState, scheme, tools]
+    [activeToolName, scheme, tools]
   )
 
   return (

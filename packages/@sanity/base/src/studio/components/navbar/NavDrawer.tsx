@@ -49,16 +49,15 @@ const InnerCard = styled(Card)`
   }
 `
 
-interface SideMenuProps {
+interface NavDrawerProps {
   activeToolName?: string
   isOpen: boolean
   onClose: () => void
-  onSwitchTool: () => void
   tools: Tool[]
 }
 
-export const SideMenu = memo(function SideMenu(props: SideMenuProps) {
-  const {activeToolName, isOpen, onClose, onSwitchTool, tools} = props
+export const NavDrawer = memo(function NavDrawer(props: NavDrawerProps) {
+  const {activeToolName, isOpen, onClose, tools} = props
   const [closeButtonElement, setCloseButtonElement] = useState<HTMLButtonElement | null>(null)
   const [innerCardElement, setInnerCardElement] = useState<HTMLDivElement | null>(null)
   const tabIndex = isOpen ? 0 : -1
@@ -74,10 +73,6 @@ export const SideMenu = memo(function SideMenu(props: SideMenuProps) {
   const handleLogout = useCallback(() => {
     auth.controller.logout()
   }, [auth.controller])
-
-  const handleOnSwitchTool = useCallback(() => {
-    if (onSwitchTool) onSwitchTool()
-  }, [onSwitchTool])
 
   useRovingFocus({
     rootElement: innerCardElement,
@@ -142,9 +137,9 @@ export const SideMenu = memo(function SideMenu(props: SideMenuProps) {
         <Box flex={1} overflow="auto" padding={[3, 3, 4]}>
           <ToolMenu
             activeToolName={activeToolName}
-            context="sidebar"
-            isSidebarOpen={isOpen}
-            onSidebarClose={handleOnSwitchTool}
+            closeDrawer={onClose}
+            context="drawer"
+            isDrawerOpen={isOpen}
             tools={tools}
           />
         </Box>

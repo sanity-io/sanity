@@ -14,7 +14,7 @@ export interface StateLinkProps {
  * @public
  */
 export const StateLink = forwardRef(function StateLink(
-  props: StateLinkProps & React.HTMLProps<HTMLAnchorElement>,
+  props: StateLinkProps & Omit<React.HTMLProps<HTMLAnchorElement>, 'href'>,
   ref: React.ForwardedRef<HTMLAnchorElement>
 ) {
   const {onClick, replace, state, target, toIndex = false, ...restProps} = props

@@ -174,14 +174,16 @@ export type {
 } from '../router'
 
 export {
-  useColorScheme,
-  useConfig,
-  useSource,
-  useWorkspace,
   renderStudio,
   SourceProvider,
   Studio,
   StudioProvider,
+  ToolLink,
+  ToolMenu,
+  useColorScheme,
+  useConfig,
+  useSource,
+  useWorkspace,
   WorkspaceProvider,
 } from '../studio'
 
@@ -189,6 +191,7 @@ export type {
   SourceProviderProps,
   StudioProps,
   StudioProviderProps,
+  ToolLinkProps,
   ToolMenuProps,
   WorkspaceProviderProps,
 } from '../studio'

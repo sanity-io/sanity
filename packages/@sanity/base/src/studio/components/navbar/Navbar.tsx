@@ -7,17 +7,18 @@ import React, {
   isValidElement,
   useMemo,
   useEffect,
+  useRef,
 } from 'react'
 import {isValidElementType} from 'react-is'
 import {startCase} from 'lodash'
 import styled from 'styled-components'
 import {useWorkspace} from '../../workspace'
 import {useColorScheme} from '../../colorScheme'
-import {useRouterState, useStateLink} from '../../../router'
+import {RouterState, useRouter, useStateLink} from '../../../router'
 import {UserMenu} from './userMenu'
 import {NewDocumentButton} from './NewDocumentButton'
 import {PresenceMenu} from './presence'
-import {SideMenu} from './SideMenu'
+import {NavDrawer} from './NavDrawer'
 import {SearchField} from './search'
 // import {WorkspaceMenu} from './workspace'
 import {ToolMenu as DefaultToolMenu} from './tools/ToolMenu'
@@ -53,8 +54,6 @@ const LeftFlex = styled(Flex)`
   width: max-content;
 `
 
-const noop = () => null
-
 interface NavbarProps {
   onSearchOpenChange: (open: boolean) => void
   fullscreenSearchPortalEl: HTMLElement | null
@@ -63,7 +62,7 @@ interface NavbarProps {
 export function Navbar(props: NavbarProps) {
   const {fullscreenSearchPortalEl, onSearchOpenChange} = props
   const {name, logo, navbar, tools, ...workspace} = useWorkspace()
-  const routerState = useRouterState()
+  const {state: routerState} = useRouter()
   const ToolMenu = navbar?.components?.ToolMenu || DefaultToolMenu
   const {scheme} = useColorScheme()
   const rootLink = useStateLink({state: {}})
@@ -71,9 +70,19 @@ export function Navbar(props: NavbarProps) {
   const activeToolName = typeof routerState.tool === 'string' ? routerState.tool : undefined
 
   const [searchOpen, setSearchOpen] = useState<boolean>(false)
-  const [sideMenuOpen, setSideMenuOpen] = useState<boolean>(false)
+  const [drawerOpen, setDrawerOpen] = useState<boolean>(false)
 
-  const [sideMenuButtonEl, setSideMenuButtonEl] = useState<HTMLButtonElement | null>(null)
+  const routerStateRef = useRef<RouterState>(routerState)
+
+  useEffect(() => {
+    if (routerStateRef.current.tool !== routerState.tool) {
+      setDrawerOpen(false)
+    }
+
+    routerStateRef.current = routerState
+  }, [routerState])
+
+  const [drawerButtonEl, setDrawerButtonEl] = useState<HTMLButtonElement | null>(null)
   const [searchInputElement, setSearchInputElement] = useState<HTMLInputElement | null>(null)
   const [searchOpenButtonEl, setSearchOpenButtonEl] = useState<HTMLButtonElement | null>(null)
   const [searchCloseButtonEl, setSearchCloseButtonEl] = useState<HTMLButtonElement | null>(null)
@@ -112,13 +121,13 @@ export function Navbar(props: NavbarProps) {
     searchOpenButtonEl?.focus()
   }, [searchOpenButtonEl])
 
-  const handleCloseSideMenu = useCallback(() => {
-    setSideMenuOpen(false)
-    sideMenuButtonEl?.focus()
-  }, [sideMenuButtonEl])
+  const handleCloseDrawer = useCallback(() => {
+    setDrawerOpen(false)
+    drawerButtonEl?.focus()
+  }, [drawerButtonEl])
 
-  const handleOpenSideMenu = useCallback(() => {
-    setSideMenuOpen(true)
+  const handleOpenDrawer = useCallback(() => {
+    setDrawerOpen(true)
   }, [])
 
   const rootLinkContent = (() => {
@@ -154,8 +163,8 @@ export function Navbar(props: NavbarProps) {
                 <Button
                   mode="bleed"
                   icon={MenuIcon}
-                  onClick={handleOpenSideMenu}
-                  ref={setSideMenuButtonEl}
+                  onClick={handleOpenDrawer}
+                  ref={setDrawerButtonEl}
                 />
               </Box>
             )}
@@ -224,9 +233,9 @@ export function Navbar(props: NavbarProps) {
                 <ToolMenu
                   activeToolName={activeToolName}
                   context="topbar"
-                  isSidebarOpen={false}
-                  onSidebarClose={noop}
+                  isDrawerOpen={false}
                   tools={tools}
+                  closeDrawer={handleCloseDrawer}
                 />
               </Card>
             )}
@@ -272,11 +281,10 @@ export function Navbar(props: NavbarProps) {
       </Card>
 
       {!shouldRender.tools && (
-        <SideMenu
+        <NavDrawer
           activeToolName={activeToolName}
-          isOpen={sideMenuOpen}
-          onClose={handleCloseSideMenu}
-          onSwitchTool={handleCloseSideMenu}
+          isOpen={drawerOpen}
+          onClose={handleCloseDrawer}
           tools={tools}
         />
       )}

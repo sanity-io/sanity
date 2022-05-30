@@ -4,26 +4,19 @@ import {ToolCollapseMenu} from './ToolCollapseMenu'
 import {ToolVerticalMenu} from './ToolVerticalMenu'
 
 export interface ToolMenuProps {
-  context: 'sidebar' | 'topbar'
-  isSidebarOpen: boolean
-  onSidebarClose: () => void
-  tools: Tool[]
   activeToolName?: string
+  context: 'drawer' | 'topbar'
+  isDrawerOpen: boolean
+  tools: Tool[]
+  closeDrawer: () => void
 }
 
 export function ToolMenu(props: ToolMenuProps) {
-  const {activeToolName, context, isSidebarOpen, onSidebarClose, tools} = props
+  const {context, isDrawerOpen, ...restProps} = props
 
-  if (context === 'sidebar') {
-    return (
-      <ToolVerticalMenu
-        activeToolName={activeToolName}
-        isVisible={isSidebarOpen}
-        onSwitchTool={onSidebarClose}
-        tools={tools}
-      />
-    )
+  if (context === 'drawer') {
+    return <ToolVerticalMenu isVisible={isDrawerOpen} {...restProps} />
   }
 
-  return <ToolCollapseMenu activeToolName={activeToolName} tools={tools} />
+  return <ToolCollapseMenu {...restProps} />
 }
