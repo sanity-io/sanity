@@ -142,9 +142,6 @@ export default {
 
     const targetDatasetName = await (targetDataset ||
       promptForDatasetName(prompt, {message: 'Target dataset name:'}))
-    if (existingDatasets.includes(targetDatasetName)) {
-      throw new Error(`Target dataset "${targetDatasetName}" already exists`)
-    }
 
     const err = validateDatasetName(targetDatasetName)
     if (err) {
