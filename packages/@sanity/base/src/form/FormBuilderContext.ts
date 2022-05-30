@@ -1,13 +1,19 @@
-import {AssetSource, SanityDocument, Schema} from '@sanity/types'
+import {AssetSource, ObjectSchemaType, Path, SanityDocument, SchemaType} from '@sanity/types'
 import {createContext} from 'react'
+import {PatchChannel} from './patch'
 import {
   FormBuilderArrayFunctionComponent,
   FormBuilderCustomMarkersComponent,
   FormBuilderFilterFieldFn,
   FormBuilderMarkersComponent,
+  FormFieldGroup,
   FormPreviewComponentResolver,
+  InputProps,
+  ObjectMember,
+  RenderArrayOfObjectsItemCallback,
+  RenderFieldCallback,
+  RenderInputCallback,
 } from './types'
-import {PatchChannel} from './patch/PatchChannel'
 
 /**
  * @alpha
@@ -33,8 +39,24 @@ export interface FormBuilderContextValue {
     }
     getDocument: () => SanityDocument | undefined
     patchChannel: PatchChannel
+    resolveInputComponent: (options: {schemaType: SchemaType}) => React.ComponentType<InputProps>
     resolvePreviewComponent: FormPreviewComponentResolver
   }
+
+  autoFocus?: boolean
+  changesOpen?: boolean
+  compareValue: {[field in string]: unknown} | undefined
+  focusPath: Path
+  focused?: boolean
+  groups: FormFieldGroup[]
+  id: string
+  members: ObjectMember[]
+  readOnly?: boolean
+  renderField: RenderFieldCallback
+  renderInput: RenderInputCallback
+  renderItem: RenderArrayOfObjectsItemCallback
+  schemaType: ObjectSchemaType
+  value: {[field in string]: unknown} | undefined
 }
 
 /**

@@ -4,11 +4,15 @@ import {ObjectSchemaType, Path} from '@sanity/types'
 import {useLayoutEffect, useMemo, useRef} from 'react'
 import {pathFor} from '@sanity/util/paths'
 import {useCurrentUser} from '../../datastores'
-import {StateTree} from '../types'
+import {StateTree, ObjectFormNode} from '../types'
 import {prepareFormProps, FIXME_SanityDocument} from './formState'
-
 import {immutableReconcile} from './utils/immutableReconcile'
 import {DocumentFormNode} from './types/nodes'
+
+export type FormState<
+  T extends {[key in string]: unknown} = {[key in string]: unknown},
+  S extends ObjectSchemaType = ObjectSchemaType
+> = ObjectFormNode<T, S>
 
 export function useFormState<
   T extends {[key in string]: unknown} = {[key in string]: unknown},
@@ -30,7 +34,7 @@ export function useFormState<
     openPath: Path
     focusPath: Path
   }
-) {
+): FormState<T, S> | null {
   // note: feel free to move these state pieces out of this hook
   const currentUser = useCurrentUser()
 
@@ -54,7 +58,7 @@ export function useFormState<
       path: pathFor([]),
       level: 0,
       currentUser,
-    })
+    }) as ObjectFormNode<T, S> // TODO: remove type cast
 
     const reconciled = immutableReconcile(prev.current, next)
     prev.current = reconciled

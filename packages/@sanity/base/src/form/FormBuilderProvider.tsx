@@ -1,17 +1,28 @@
-import {AssetSource} from '@sanity/types'
+/* eslint-disable camelcase */
+
+import {AssetSource, ObjectSchemaType, Path, SchemaType, ValidationMarker} from '@sanity/types'
 import React, {useEffect, useMemo, useRef} from 'react'
 import {Source} from '../config'
-import {FIXME, FormBuilderFilterFieldFn} from './types'
+import {FormFieldPresence} from '../presence'
 import {FormBuilderContext, FormBuilderContextValue} from './FormBuilderContext'
-import {PatchChannel} from './patch/PatchChannel'
+import {
+  FIXME,
+  FormBuilderFilterFieldFn,
+  FormFieldGroup,
+  InputProps,
+  ObjectMember,
+  RenderArrayOfObjectsItemCallback,
+  RenderFieldCallback,
+  RenderInputCallback,
+} from './types'
 import {DefaultArrayInputFunctions} from './inputs/arrays/common/ArrayFunctions'
 import {DefaultMarkers} from './inputs/PortableText/_legacyDefaultParts/Markers'
 import {DefaultCustomMarkers} from './inputs/PortableText/_legacyDefaultParts/CustomMarkers'
-import {FileSource, ImageSource} from './studio/DefaultAssetSource'
-import {PatchEvent} from './patch'
-
-const defaultFileAssetSources = [FileSource]
-const defaultImageAssetSources = [ImageSource]
+import {PatchChannel, PatchEvent} from './patch'
+import {FormCallbacksProvider} from './studio/contexts/FormCallbacks'
+import {PresenceProvider} from './studio/contexts/Presence'
+import {ValidationProvider} from './studio/contexts/Validation'
+import {defaultFileAssetSources, defaultImageAssetSources} from './defaults'
 
 type SourceFormBuilder = Source['formBuilder']
 
@@ -20,11 +31,37 @@ export interface FormBuilderProviderProps extends SourceFormBuilder {
    * @internal
    */
   __internal_patchChannel?: PatchChannel // eslint-disable-line camelcase
-
+  /**
+   * @internal
+   */
+  __internal_resolveInputComponent: (options: {
+    schemaType: SchemaType
+  }) => React.ComponentType<InputProps>
+  autoFocus?: boolean
+  changesOpen?: boolean
   children?: React.ReactNode
+  compareValue: {[field in string]: unknown} | undefined
   filterField?: FormBuilderFilterFieldFn
+  focusPath: Path
+  focused?: boolean
+  groups: FormFieldGroup[]
+  id: string
+  members: ObjectMember[]
   onChange: (event: PatchEvent) => void
-  value?: FIXME
+  onPathBlur: (path: Path) => void
+  onPathFocus: (path: Path) => void
+  onPathOpen: (path: Path) => void
+  onFieldGroupSelect: (path: Path, groupName: string) => void
+  onSetFieldSetCollapsed: (path: Path, collapsed: boolean) => void
+  onSetPathCollapsed: (path: Path, collapsed: boolean) => void
+  presence: FormFieldPresence[]
+  readOnly?: boolean
+  renderField: RenderFieldCallback
+  renderInput: RenderInputCallback
+  renderItem: RenderArrayOfObjectsItemCallback
+  schemaType: ObjectSchemaType
+  validation: ValidationMarker[]
+  value: {[field in string]: unknown} | undefined
 }
 
 const missingPatchChannel: PatchChannel = {
@@ -41,13 +78,35 @@ const missingPatchChannel: PatchChannel = {
 export function FormBuilderProvider(props: FormBuilderProviderProps) {
   const {
     __internal_patchChannel: patchChannel = missingPatchChannel,
+    __internal_resolveInputComponent: resolveInputComponent,
+    autoFocus,
+    changesOpen,
     children,
+    compareValue,
     file,
     filterField,
+    focusPath,
+    focused,
+    groups,
+    id,
     image,
+    members,
     onChange,
+    onFieldGroupSelect,
+    onPathBlur,
+    onPathFocus,
+    onPathOpen,
+    onSetFieldSetCollapsed,
+    onSetPathCollapsed,
+    presence,
+    readOnly,
+    renderField,
+    renderInput,
+    renderItem,
     resolvePreviewComponent,
+    schemaType,
     unstable,
+    validation,
     value: documentValue,
   } = props
 
@@ -75,19 +134,80 @@ export function FormBuilderProvider(props: FormBuilderProviderProps) {
       image: {
         assetSources: image?.assetSources
           ? _ensureArrayOfSources(image.assetSources) || defaultImageAssetSources
-          : defaultFileAssetSources,
+          : defaultImageAssetSources,
         directUploads: image?.directUploads !== false,
       },
-      getDocument: () => documentValueRef.current,
+      getDocument: () => documentValueRef.current as FIXME,
       onChange,
-      resolvePreviewComponent: (schemaType) => resolvePreviewComponent({schemaType}),
+      resolveInputComponent,
+      resolvePreviewComponent: (_schemaType) => resolvePreviewComponent({schemaType: _schemaType}),
     }),
-    [file, filterField, image, onChange, patchChannel, resolvePreviewComponent, unstable]
+    [
+      file,
+      filterField,
+      image,
+      onChange,
+      patchChannel,
+      resolveInputComponent,
+      resolvePreviewComponent,
+      unstable,
+    ]
   )
 
-  const formBuilder: FormBuilderContextValue = useMemo(() => ({__internal}), [__internal])
+  const formBuilder: FormBuilderContextValue = useMemo(
+    () => ({
+      __internal,
+      autoFocus,
+      changesOpen,
+      compareValue,
+      focusPath,
+      focused,
+      groups,
+      id,
+      members,
+      readOnly,
+      renderField,
+      renderInput,
+      renderItem,
+      schemaType,
+      value: documentValue,
+    }),
+    [
+      __internal,
+      autoFocus,
+      changesOpen,
+      compareValue,
+      documentValue,
+      focusPath,
+      focused,
+      groups,
+      id,
+      members,
+      readOnly,
+      renderField,
+      renderInput,
+      renderItem,
+      schemaType,
+    ]
+  )
 
-  return <FormBuilderContext.Provider value={formBuilder}>{children}</FormBuilderContext.Provider>
+  return (
+    <FormBuilderContext.Provider value={formBuilder}>
+      <FormCallbacksProvider
+        onChange={onChange}
+        onFieldGroupSelect={onFieldGroupSelect}
+        onPathBlur={onPathBlur}
+        onPathFocus={onPathFocus}
+        onPathOpen={onPathOpen}
+        onSetPathCollapsed={onSetPathCollapsed}
+        onSetFieldSetCollapsed={onSetFieldSetCollapsed}
+      >
+        <PresenceProvider presence={presence}>
+          <ValidationProvider validation={validation}>{children}</ValidationProvider>
+        </PresenceProvider>
+      </FormCallbacksProvider>
+    </FormBuilderContext.Provider>
+  )
 }
 
 function _ensureArrayOfSources(sources: unknown): AssetSource[] | null {

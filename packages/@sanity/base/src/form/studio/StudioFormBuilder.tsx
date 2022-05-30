@@ -1,54 +1,41 @@
-/* eslint-disable react/jsx-handler-names */
 import {ObjectSchemaType, Path, ValidationMarker} from '@sanity/types'
 import React, {ComponentType, useCallback, useMemo, useRef} from 'react'
-
-import {useSource} from '../../studio'
-import {
-  ObjectInputProps,
-  RenderArrayOfObjectsItemCallback,
-  RenderFieldCallback,
-  RenderInputCallback,
-} from '../types'
-import {PatchChannel} from '../patch/PatchChannel'
 import {FormFieldPresence} from '../../presence'
-import {FormPatch, PatchEvent} from '../patch'
+import {FormPatch, PatchChannel, PatchEvent} from '../patch'
 import {ObjectMember} from '../store/types/members'
 import {ObjectFormNode} from '../store/types/nodes'
+import {ObjectInputProps} from '../types'
+import {useFormBuilder} from '../useFormBuilder'
 import {EMPTY_ARRAY} from '../utils/empty'
 import {StudioFormBuilderProvider} from './StudioFormBuilderProvider'
-import {FormCallbacksProvider} from './contexts/FormCallbacks'
-import {PresenceProvider} from './contexts/Presence'
-import {ValidationProvider} from './contexts/Validation'
+import {useFormCallbacks} from './contexts/FormCallbacks'
 
 /**
  * @alpha
  */
 export interface StudioFormBuilderProps extends ObjectFormNode {
-  id: string
-  focused: boolean | undefined
-  changesOpen: boolean
-  onPathBlur: (path: Path) => void
-  onPathFocus: (path: Path) => void
-  onSetCollapsedPath: (path: Path, collapsed: boolean) => void
-  onSetCollapsedFieldSet: (path: Path, collapsed: boolean) => void
-  onSelectFieldGroup: (path: Path, groupName: string) => void
-
-  onPathOpen: (path: Path) => void
-
-  focusPath: Path
-
-  schemaType: ObjectSchemaType
-  value: {[field in string]: unknown} | undefined
-  onChange: (changeEvent: PatchEvent) => void
   /**
    * @internal Considered internal – do not use.
    */
   __internal_patchChannel: PatchChannel // eslint-disable-line camelcase
   autoFocus?: boolean
-  readOnly?: boolean
-  presence: FormFieldPresence[]
-  validation: ValidationMarker[]
+  changesOpen: boolean
+  focusPath: Path
+  focused: boolean | undefined
+  id: string
   members: ObjectMember[]
+  onChange: (changeEvent: PatchEvent) => void
+  onPathBlur: (path: Path) => void
+  onPathFocus: (path: Path) => void
+  onPathOpen: (path: Path) => void
+  onFieldGroupSelect: (path: Path, groupName: string) => void
+  onSetFieldSetCollapsed: (path: Path, collapsed: boolean) => void
+  onSetPathCollapsed: (path: Path, collapsed: boolean) => void
+  presence: FormFieldPresence[]
+  readOnly?: boolean
+  schemaType: ObjectSchemaType
+  validation: ValidationMarker[]
+  value: {[field in string]: unknown} | undefined
 }
 
 /**
@@ -57,160 +44,165 @@ export interface StudioFormBuilderProps extends ObjectFormNode {
 export function StudioFormBuilder(props: StudioFormBuilderProps) {
   const {
     __internal_patchChannel: patchChannel,
-    // compareValue,
+    autoFocus,
+    changesOpen,
+    compareValue,
     focusPath,
     focused,
-    id,
-    presence,
-    validation,
-    onChange,
-    onSelectFieldGroup,
-    onPathFocus,
-    onPathBlur,
-    onSetCollapsedPath,
-    onSetCollapsedFieldSet,
-    onPathOpen,
-    members,
     groups,
+    id,
+    members,
+    onChange,
+    onPathBlur,
+    onPathFocus,
+    onPathOpen,
+    onFieldGroupSelect,
+    onSetFieldSetCollapsed,
+    onSetPathCollapsed,
+    presence,
     readOnly,
     schemaType,
+    validation,
     value,
   } = props
 
-  const {resolveFieldComponent, resolveInputComponent, resolveItemComponent} =
-    useSource().formBuilder
+  return (
+    <StudioFormBuilderProvider
+      __internal_patchChannel={patchChannel}
+      autoFocus={autoFocus}
+      changesOpen={changesOpen}
+      compareValue={compareValue}
+      focusPath={focusPath}
+      focused={focused}
+      groups={groups}
+      id={id}
+      members={members}
+      onChange={onChange}
+      onPathBlur={onPathBlur}
+      onPathFocus={onPathFocus}
+      onPathOpen={onPathOpen}
+      onFieldGroupSelect={onFieldGroupSelect}
+      onSetFieldSetCollapsed={onSetFieldSetCollapsed}
+      onSetPathCollapsed={onSetPathCollapsed}
+      presence={presence}
+      readOnly={readOnly}
+      schemaType={schemaType}
+      validation={validation}
+      value={value}
+    >
+      <RootInput />
+    </StudioFormBuilderProvider>
+  )
+}
 
-  const handleBlur = useCallback(
-    (event: React.FocusEvent) => {
-      onPathBlur([])
-    },
-    [onPathBlur]
-  )
-  const handleFocus = useCallback(
-    (event: React.FocusEvent) => {
-      onPathFocus([])
-    },
-    [onPathFocus]
-  )
-  const handleSelectFieldGroup = useCallback(
-    (groupName: string) => {
-      onSelectFieldGroup([], groupName)
-    },
-    [onSelectFieldGroup]
-  )
+function RootInput() {
+  const {
+    __internal,
+    compareValue,
+    focused,
+    focusPath,
+    groups,
+    id,
+    members,
+    readOnly,
+    schemaType,
+    value,
+    renderInput,
+    renderField,
+    renderItem,
+  } = useFormBuilder()
 
-  const handleCollapse = useCallback(() => onSetCollapsedPath([], true), [onSetCollapsedPath])
-  const handleExpand = useCallback(() => onSetCollapsedPath([], false), [onSetCollapsedPath])
+  const {resolveInputComponent} = __internal
 
-  const handleCollapseField = useCallback(
-    (fieldName: string) => onSetCollapsedPath([fieldName], true),
-    [onSetCollapsedPath]
-  )
-  const handleExpandField = useCallback(
-    (fieldName: string) => onSetCollapsedPath([fieldName], false),
-    [onSetCollapsedPath]
-  )
-  const onOpenField = useCallback((fieldName: string) => onPathOpen([fieldName]), [onPathOpen])
-  const onCloseField = useCallback((fieldName: string) => onPathOpen([]), [onPathOpen])
+  const {
+    onChange,
+    onPathBlur,
+    onPathFocus,
+    onPathOpen,
+    onFieldGroupSelect,
+    onSetFieldSetCollapsed,
+    onSetPathCollapsed,
+  } = useFormCallbacks()
 
-  const handleCollapseFieldSet = useCallback(
-    (fieldSetName: string) => onSetCollapsedFieldSet([fieldSetName], true),
-    [onSetCollapsedFieldSet]
-  )
-  const handleExpandFieldSet = useCallback(
-    (fieldSetName: string) => onSetCollapsedFieldSet([fieldSetName], false),
-    [onSetCollapsedFieldSet]
-  )
+  const handleBlur = useCallback(() => onPathBlur(EMPTY_ARRAY), [onPathBlur])
 
-  const handleChange = useCallback(
-    (patch: FormPatch | FormPatch[] | PatchEvent) => {
-      onChange(PatchEvent.from(patch))
-    },
-    [onChange]
-  )
-
-  const renderInput: RenderInputCallback = useCallback(
-    (inputProps) => {
-      const Input = resolveInputComponent({schemaType: inputProps.schemaType})
-      return <Input {...inputProps} />
-    },
-    [resolveInputComponent]
-  )
-
-  const renderField: RenderFieldCallback = useCallback(
-    (field) => {
-      const Field = resolveFieldComponent({schemaType: field.schemaType})
-      return <Field {...field} />
-    },
-    [resolveFieldComponent]
-  )
-
-  const renderItem: RenderArrayOfObjectsItemCallback = useCallback(
-    (item) => {
-      const Item = resolveItemComponent({schemaType: item.schemaType})
-      return <Item {...item} />
-    },
-    [resolveItemComponent]
-  )
+  const handleFocus = useCallback(() => onPathFocus(EMPTY_ARRAY), [onPathFocus])
 
   const DocumentInput = useMemo(
     () => resolveInputComponent({schemaType}) as ComponentType<ObjectInputProps>,
     [resolveInputComponent, schemaType]
   )
 
+  const handleChange = useCallback(
+    (patch: FormPatch | FormPatch[] | PatchEvent) => onChange(PatchEvent.from(patch)),
+    [onChange]
+  )
+
+  const handleSelectFieldGroup = useCallback(
+    (groupName: string) => onFieldGroupSelect(EMPTY_ARRAY, groupName),
+    [onFieldGroupSelect]
+  )
+
+  const handleCollapse = useCallback(() => onSetPathCollapsed([], true), [onSetPathCollapsed])
+  const handleExpand = useCallback(() => onSetPathCollapsed([], false), [onSetPathCollapsed])
+
+  const handleCollapseField = useCallback(
+    (fieldName: string) => onSetPathCollapsed([fieldName], true),
+    [onSetPathCollapsed]
+  )
+  const handleExpandField = useCallback(
+    (fieldName: string) => onSetPathCollapsed([fieldName], false),
+    [onSetPathCollapsed]
+  )
+  const handleOpenField = useCallback((fieldName: string) => onPathOpen([fieldName]), [onPathOpen])
+  const handleCloseField = useCallback(() => onPathOpen([]), [onPathOpen])
+
+  const handleCollapseFieldSet = useCallback(
+    (fieldSetName: string) => onSetFieldSetCollapsed([fieldSetName], true),
+    [onSetFieldSetCollapsed]
+  )
+  const handleExpandFieldSet = useCallback(
+    (fieldSetName: string) => onSetFieldSetCollapsed([fieldSetName], false),
+    [onSetFieldSetCollapsed]
+  )
+
   return (
-    <StudioFormBuilderProvider
-      __internal_patchChannel={patchChannel}
-      onChange={props.onChange}
+    <DocumentInput
+      compareValue={compareValue}
+      focusRef={useRef(null)}
+      level={0}
+      id={id}
+      path={EMPTY_ARRAY}
+      collapsed={false}
+      focused={focused}
+      focusPath={focusPath}
+      onBlur={handleBlur}
+      onChange={handleChange}
+      onCloseField={handleCloseField}
+      onCollapse={handleCollapse}
+      onCollapseField={handleCollapseField}
+      onCollapseFieldSet={handleCollapseFieldSet}
+      onExpand={handleExpand}
+      onExpandField={handleExpandField}
+      onExpandFieldSet={handleExpandFieldSet}
+      onOpenField={handleOpenField}
+      onSelectFieldGroup={handleSelectFieldGroup}
+      validation={EMPTY_ARRAY}
+      presence={EMPTY_ARRAY}
+      onFocusPath={onPathFocus}
+      onFocus={handleFocus}
+      readOnly={readOnly}
+      schemaType={schemaType}
+      members={members}
+      groups={groups}
+      // onFieldGroupSelect={handleSelectFieldGroup}
+      // onSetCollapsed={handleSetCollapsed}
+      // onSetFieldCollapsed={handleSetFieldCollapsed}
+      // onSetFieldSetCollapsed={handleSetFieldSetCollapsed}
       value={value}
-    >
-      <FormCallbacksProvider
-        onSetPathCollapsed={props.onSetCollapsedPath}
-        onSetFieldSetCollapsed={props.onSetCollapsedFieldSet}
-        onFieldGroupSelect={props.onSelectFieldGroup}
-        onPathOpen={props.onPathOpen}
-        onPathBlur={props.onPathBlur}
-        onPathFocus={props.onPathFocus}
-        onChange={props.onChange}
-      >
-        <PresenceProvider presence={presence}>
-          <ValidationProvider validation={validation}>
-            <DocumentInput
-              compareValue={undefined}
-              focusRef={useRef(null)}
-              level={0}
-              id={id}
-              path={EMPTY_ARRAY}
-              collapsed={false}
-              focused={focused}
-              focusPath={focusPath}
-              onBlur={handleBlur}
-              onChange={handleChange}
-              validation={EMPTY_ARRAY}
-              presence={EMPTY_ARRAY}
-              onFocusPath={onPathFocus}
-              onFocus={handleFocus}
-              readOnly={readOnly}
-              schemaType={schemaType}
-              members={members}
-              groups={groups}
-              onSelectFieldGroup={handleSelectFieldGroup}
-              onCollapse={handleCollapse}
-              onExpand={handleExpand}
-              onCollapseField={handleCollapseField}
-              onExpandField={handleExpandField}
-              onOpenField={onOpenField}
-              onCloseField={onCloseField}
-              onCollapseFieldSet={handleCollapseFieldSet}
-              onExpandFieldSet={handleExpandFieldSet}
-              value={value}
-              renderInput={renderInput}
-              renderField={renderField}
-              renderItem={renderItem}
-            />
-          </ValidationProvider>
-        </PresenceProvider>
-      </FormCallbacksProvider>
-    </StudioFormBuilderProvider>
+      renderInput={renderInput}
+      renderField={renderField}
+      renderItem={renderItem}
+    />
   )
 }

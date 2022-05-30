@@ -192,9 +192,9 @@ export function FormView(props: FormViewProps) {
                 value={formState.value}
                 onChange={handleChange}
                 onPathOpen={onPathOpen}
-                onSetCollapsedPath={onSetCollapsedPath}
-                onSetCollapsedFieldSet={onSetCollapsedFieldSet}
-                onSelectFieldGroup={onSetActiveFieldGroup}
+                onSetPathCollapsed={onSetCollapsedPath}
+                onSetFieldSetCollapsed={onSetCollapsedFieldSet}
+                onFieldGroupSelect={onSetActiveFieldGroup}
               />
             )
           ) : (

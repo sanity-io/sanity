@@ -14,7 +14,12 @@ import {
   schemaListOptions,
   DUMMY_DOCUMENT_ID,
 } from './_common/data'
-import {TypeTester, FilterFieldInput, FormDebugger, FormBuilderTester} from './_common'
+import {
+  TypeTester,
+  FilterFieldInput,
+  FormDebugger,
+  // FormBuilderTester
+} from './_common'
 
 const patchChannel = createPatchChannel()
 
@@ -158,13 +163,8 @@ export default function ExampleStory() {
 
             {isTypeTester && <TypeTester readOnly={isReadOnly} />}
 
-            <FormBuilderTester
-              patchChannel={patchChannel}
-              value={documentValue}
-              isChangesOpen={isChangesOpen}
-            >
-              <>TODO</>
-              {/* <FormBuilderInput
+            <>TODO</>
+            {/* <FormBuilderInput
                 type={documentType!}
                 onChange={isUseMutator ? handleChangeMutator : handleChange}
                 level={0}
@@ -180,7 +180,6 @@ export default function ExampleStory() {
                 validation={[]}
                 presence={[]}
               /> */}
-            </FormBuilderTester>
           </Stack>
           {isDebug && (
             <Stack space={4} column={6}>
