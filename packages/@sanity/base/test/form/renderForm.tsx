@@ -3,13 +3,13 @@
 import React from 'react'
 import {Path} from '@sanity/types'
 import {render} from '@testing-library/react'
-import {createConfig} from '../../config'
-import {FormBuilderFilterFieldFn, FIXME} from '../types'
-import {useSchema} from '../../hooks'
-import {StudioProvider} from '../../studio'
-import {createPatchChannel} from '../patch/PatchChannel'
-import {StudioFormBuilder} from '../studio/StudioFormBuilder'
-import {createMockSanityClient} from './mocks/sanityClient'
+import {createConfig} from '../../src/config'
+import {FormBuilderFilterFieldFn, FIXME} from '../../src/form/types'
+import {StudioProvider, useSource} from '../../src/studio'
+import {createPatchChannel} from '../../src/form/patch/PatchChannel'
+import {StudioFormBuilder} from '../../src/form/studio/StudioFormBuilder'
+import {useSchema} from '../../src/hooks'
+// import {createMockSanityClient} from '../mocks/mockSanityClient'
 
 export function renderForm(props: {
   filterField?: FormBuilderFilterFieldFn
@@ -31,7 +31,7 @@ export function renderForm(props: {
   const onChange = jest.fn()
   const onFocus = jest.fn()
 
-  const client = createMockSanityClient() as FIXME
+  // const client = createMockSanityClient() as FIXME
 
   const schemaTypes = [typeDef]
 

@@ -4,16 +4,21 @@ import {ObjectSchemaType, SchemaType} from '@sanity/types'
 import {render} from '@testing-library/react'
 import {noop} from 'lodash'
 import React, {forwardRef} from 'react'
-import {useSchema} from '../../hooks'
-import {StudioProvider, useSource} from '../../studio'
-import {createConfig} from '../../config'
-import {FIXME, InputProps, FormInputComponentResolver, FormPreviewComponentResolver} from '../types'
-import {route, RouterProvider} from '../../router'
-import {FormBuilderProvider} from '../FormBuilderProvider'
-import {ObjectInput} from '../inputs/ObjectInput'
-import {createPatchChannel} from '../patch/PatchChannel'
-import {ReviewChangesContextProvider} from '../studio/contexts/reviewChanges/ReviewChangesProvider'
-import {is} from '../utils/is'
+import {StudioProvider, useSource} from '../../src/studio'
+import {createConfig} from '../../src/config'
+import {
+  FIXME,
+  InputProps,
+  FormInputComponentResolver,
+  FormPreviewComponentResolver,
+} from '../../src/form/types'
+import {route, RouterProvider} from '../../src/router'
+import {FormBuilderProvider} from '../../src/form/FormBuilderProvider'
+import {ObjectInput} from '../../src/form/inputs/ObjectInput'
+import {createPatchChannel} from '../../src/form/patch/PatchChannel'
+import {ReviewChangesContextProvider} from '../../src/form/studio/contexts/reviewChanges/ReviewChangesProvider'
+import {is} from '../../src/form/utils/is'
+import {useSchema} from '../../src/hooks'
 
 const GenericInput = forwardRef(function GenericInput(
   props: InputProps,
