@@ -1,7 +1,7 @@
 import {addHook} from 'pirates'
 import jsdomGlobal from 'jsdom-global'
 import resolveFrom from 'resolve-from'
-import registerBabelLoader from './registerBabelLoader'
+import {register as registerESBuild} from 'esbuild-register/dist/node'
 
 const jsdomDefaultHtml = `<!doctype html>
 <html>
@@ -21,9 +21,12 @@ export function mockBrowserEnvironment(basePath: string): () => void {
     }
   )
 
-  registerBabelLoader(basePath)
+  const {unregister: unregisterESBuild} = registerESBuild({
+    target: 'node14',
+  })
 
   return function cleanupBrowserEnvironment() {
+    unregisterESBuild()
     cleanupFileLoader()
     globalCleanup()
     windowCleanup()

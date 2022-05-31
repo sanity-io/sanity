@@ -14,7 +14,7 @@ import pkgDir from 'pkg-dir'
  * and ensures we can resolve the actual module before trying to spawn the
  * worker thread.
  *
- * @param workerPath _RELATIVE_ path (relative to `src`/`lib`) to the worker
+ * @param workerPath - _RELATIVE_ path (relative to `src`/`lib`) to the worker
  * @returns Full, absolute path to the worker
  * @internal
  */

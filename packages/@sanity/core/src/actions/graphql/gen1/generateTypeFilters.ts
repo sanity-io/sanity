@@ -1,6 +1,17 @@
-const {flatten} = require('lodash')
+import {flatten} from 'lodash'
+import {isNonUnion} from '../helpers'
+import type {
+  ConvertedField,
+  ConvertedFieldDefinition,
+  ConvertedType,
+  ConvertedUnion,
+  InputFilterField,
+  InputObjectType,
+} from '../types'
 
-const filterCreators = {
+type FilterCreator = (field: ConvertedField) => InputFilterField[]
+
+const filterCreators: Record<string, FilterCreator> = {
   ID: createIdFilters,
   String: createStringFilters,
   Url: createStringFilters,
@@ -12,51 +23,51 @@ const filterCreators = {
   Object: createObjectFilters,
 }
 
-function generateTypeFilters(types) {
-  const queryable = types.filter(
-    (type) => type.type === 'Object' && type.interfaces && type.interfaces.includes('Document')
-  )
+export function generateTypeFilters(types: (ConvertedType | ConvertedUnion)[]): InputObjectType[] {
+  const queryable = types
+    .filter(isNonUnion)
+    .filter(
+      (type) => type.type === 'Object' && type.interfaces && type.interfaces.includes('Document')
+    )
 
   return queryable.map((type) => {
     const name = `${type.name}Filter`
     const fields = flatten(type.fields.map(createFieldFilters)).filter(Boolean)
-    return {name, kind: 'InputObject', fields: fields.concat(getDocumentFilters(type))}
+    return {name, kind: 'InputObject', fields: [...fields, ...getDocumentFilters()]}
   })
 }
 
-function createFieldFilters(field) {
+function createFieldFilters(field: ConvertedField) {
   if (filterCreators[field.type]) {
     return filterCreators[field.type](field)
   }
 
   if (field.kind === 'List') {
-    return createListFilters(field)
+    return createListFilters()
   }
 
   if (field.isReference) {
     return createReferenceFilters(field)
   }
 
-  return createInlineTypeFilters(field)
+  return createInlineTypeFilters()
 }
 
-function getFieldName(field, modifier = '') {
+function getFieldName(field: ConvertedField, modifier = '') {
   const suffix = modifier ? `_${modifier}` : ''
   return `${field.fieldName}${suffix}`
 }
 
-function getDocumentFilters(type) {
-  return (
-    [
-      {
-        fieldName: 'references',
-        type: 'ID',
-        description: 'All documents references the given document ID',
-        constraint: {
-          comparator: 'REFERENCES',
-        },
+function getDocumentFilters(): InputFilterField[] {
+  return [
+    {
+      fieldName: 'references',
+      type: 'ID',
+      description: 'All documents references the given document ID',
+      constraint: {
+        comparator: 'REFERENCES',
       },
-    ],
+    },
     {
       fieldName: 'is_draft',
       type: 'Boolean',
@@ -65,11 +76,11 @@ function getDocumentFilters(type) {
         field: '_id',
         comparator: 'IS_DRAFT',
       },
-    }
-  )
+    },
+  ]
 }
 
-function createEqualityFilter(field) {
+function createEqualityFilter(field: ConvertedFieldDefinition): InputFilterField {
   return {
     fieldName: getFieldName(field),
     type: field.type,
@@ -81,7 +92,7 @@ function createEqualityFilter(field) {
   }
 }
 
-function createInequalityFilter(field) {
+function createInequalityFilter(field: ConvertedFieldDefinition): InputFilterField {
   return {
     fieldName: getFieldName(field, 'not'),
     type: field.type,
@@ -93,11 +104,11 @@ function createInequalityFilter(field) {
   }
 }
 
-function createDefaultFilters(field) {
+function createDefaultFilters(field: ConvertedFieldDefinition): InputFilterField[] {
   return [createEqualityFilter(field), createInequalityFilter(field)]
 }
 
-function createGtLtFilters(field) {
+function createGtLtFilters(field: ConvertedFieldDefinition): InputFilterField[] {
   return [
     {
       fieldName: getFieldName(field, 'lt'),
@@ -138,20 +149,21 @@ function createGtLtFilters(field) {
   ]
 }
 
-function createBooleanFilters(field) {
+function createBooleanFilters(field: ConvertedFieldDefinition): InputFilterField[] {
   return createDefaultFilters(field)
 }
 
-function createIdFilters(field) {
+function createIdFilters(field: ConvertedFieldDefinition): InputFilterField[] {
   return createStringFilters(field)
 }
 
-function createDateFilters(field) {
+function createDateFilters(field: ConvertedFieldDefinition): InputFilterField[] {
   return createDefaultFilters(field).concat(createGtLtFilters(field))
 }
 
-function createStringFilters(field) {
-  return createDefaultFilters(field).concat([
+function createStringFilters(field: ConvertedFieldDefinition): InputFilterField[] {
+  return [
+    ...createDefaultFilters(field),
     {
       fieldName: getFieldName(field, 'matches'),
       type: 'String',
@@ -187,29 +199,26 @@ function createStringFilters(field) {
         comparator: 'NOT_IN',
       },
     },
-  ])
+  ]
 }
 
-function createNumberFilters(field) {
+function createNumberFilters(field: ConvertedFieldDefinition): InputFilterField[] {
   return createDefaultFilters(field).concat(createGtLtFilters(field))
 }
 
-function createObjectFilters(field) {
-  // @todo
+function createObjectFilters(field: ConvertedFieldDefinition): InputFilterField[] {
   return []
 }
 
-function createListFilters(field) {
-  // @todo
+function createListFilters(): InputFilterField[] {
   return []
 }
 
-function createInlineTypeFilters(field) {
-  // @todo
+function createInlineTypeFilters(): InputFilterField[] {
   return []
 }
 
-function createReferenceFilters(field) {
+function createReferenceFilters(field: ConvertedFieldDefinition): InputFilterField[] {
   return [
     {
       fieldName: getFieldName(field),
@@ -221,5 +230,3 @@ function createReferenceFilters(field) {
     },
   ]
 }
-
-module.exports = generateTypeFilters

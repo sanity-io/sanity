@@ -1,7 +1,9 @@
-const pluralize = require('pluralize')
-const {startCase, upperFirst} = require('lodash')
+import pluralize from 'pluralize'
+import {startCase, upperFirst} from 'lodash'
+import type {ConvertedType, ConvertedUnion, InputObjectType, QueryDefinition} from '../types'
+import {isNonUnion} from '../helpers'
 
-function pluralizeTypeName(name) {
+function pluralizeTypeName(name: string): string {
   const words = startCase(name).split(' ')
   const last = words[words.length - 1]
   const plural = pluralize(last.toLowerCase())
@@ -9,11 +11,16 @@ function pluralizeTypeName(name) {
   return words.join('')
 }
 
-function generateTypeQueries(types, filters) {
-  const queries = []
-  const queryable = types.filter(
-    (type) => type.type === 'Object' && type.interfaces && type.interfaces.includes('Document')
-  )
+export function generateTypeQueries(
+  types: (ConvertedType | ConvertedUnion)[],
+  filters: InputObjectType[]
+): QueryDefinition[] {
+  const queries: QueryDefinition[] = []
+  const queryable = types
+    .filter(isNonUnion)
+    .filter(
+      (type) => type.type === 'Object' && type.interfaces && type.interfaces.includes('Document')
+    )
 
   // Single ID-based result lookup queries
   queryable.forEach((type) => {
@@ -51,7 +58,7 @@ function generateTypeQueries(types, filters) {
         children: {type: type.name, isNullable: false},
       },
       args: hasFilter
-        ? [{name: 'where', type: filterName, isFieldFilter: true}].concat(getLimitOffsetArgs())
+        ? [{name: 'where', type: filterName, isFieldFilter: true}, ...getLimitOffsetArgs()]
         : getLimitOffsetArgs(),
     })
   })
@@ -59,7 +66,7 @@ function generateTypeQueries(types, filters) {
   return queries
 }
 
-function getLimitOffsetArgs() {
+function getLimitOffsetArgs(): QueryDefinition['args'] {
   return [
     {
       name: 'limit',
@@ -75,5 +82,3 @@ function getLimitOffsetArgs() {
     },
   ]
 }
-
-module.exports = generateTypeQueries

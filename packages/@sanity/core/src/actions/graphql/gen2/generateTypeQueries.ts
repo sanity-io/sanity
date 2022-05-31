@@ -1,12 +1,15 @@
-const {upperFirst} = require('lodash')
+import {upperFirst} from 'lodash'
+import {isDocumentType} from '../helpers'
+import type {ConvertedType, ConvertedUnion, InputObjectType, QueryDefinition} from '../types'
 
-function generateTypeQueries(types, sortings) {
-  const queries = []
-  const queryable = types.filter(
-    (type) => type.type === 'Object' && type.interfaces && type.interfaces.includes('Document')
-  )
-
-  const isSortable = (type) => sortings.some((sorting) => sorting.name === `${type.name}Sorting`)
+export function generateTypeQueries(
+  types: (ConvertedType | ConvertedUnion)[],
+  sortings: InputObjectType[]
+): QueryDefinition[] {
+  const queries: QueryDefinition[] = []
+  const queryable = types.filter(isDocumentType)
+  const isSortable = (type: ConvertedType) =>
+    sortings.some((sorting) => sorting.name === `${type.name}Sorting`)
 
   // A document of any type
   queries.push({
@@ -54,6 +57,21 @@ function generateTypeQueries(types, sortings) {
 
   // Fetch all of type
   queryable.forEach((type) => {
+    const sorting: QueryDefinition['args'] = []
+    if (isSortable(type)) {
+      sorting.push({
+        name: 'sort',
+        type: {
+          kind: 'List',
+          isNullable: true,
+          children: {
+            type: `${type.name}Sorting`,
+            isNullable: false,
+          },
+        },
+      })
+    }
+
     queries.push({
       fieldName: `all${upperFirst(type.name)}`,
       filter: `_type == "${type.originalName || type.name}"`,
@@ -68,17 +86,7 @@ function generateTypeQueries(types, sortings) {
           type: `${type.name}Filter`,
           isFieldFilter: true,
         },
-        isSortable(type) && {
-          name: 'sort',
-          type: {
-            kind: 'List',
-            isNullable: true,
-            children: {
-              type: `${type.name}Sorting`,
-              isNullable: false,
-            },
-          },
-        },
+        ...sorting,
         {
           name: 'limit',
           type: 'Int',
@@ -91,11 +99,9 @@ function generateTypeQueries(types, sortings) {
           description: 'Offset at which to start returning documents from',
           isFieldFilter: false,
         },
-      ].filter(Boolean),
+      ],
     })
   })
 
   return queries
 }
-
-module.exports = generateTypeQueries

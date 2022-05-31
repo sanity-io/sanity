@@ -1,11 +1,9 @@
 import {orderBy} from 'lodash'
-
 import {extractFromSanitySchema} from '../../src/actions/graphql/extractFromSanitySchema'
-import generateSchema from '../../src/actions/graphql/gen3'
-
+import type {ApiSpecification} from '../../src/actions/graphql/types'
 import testStudioSchema from './fixtures/test-studio'
 
-describe('GraphQL - Generation 3', () => {
+describe('GraphQL - Schema extraction', () => {
   beforeEach(() => {
     jest.useFakeTimers()
     jest.resetModules()
@@ -18,32 +16,25 @@ describe('GraphQL - Generation 3', () => {
   /**
    * @jest-environment jsdom
    */
-  it('Should be able to generate graphql schema', () => {
+  it('Should be able to extract schema', () => {
     const extracted = extractFromSanitySchema(testStudioSchema, {
       nonNullDocumentFields: false,
     })
 
-    const schema = generateSchema(extracted)
-
-    expect(schema.generation).toBe('gen3')
-    expect(sortGraphQLSchema(schema)).toMatchSnapshot()
+    expect(sortExtracted(extracted)).toMatchSnapshot()
   })
 })
 
-function sortGraphQLSchema(schema: any) {
+function sortExtracted(schema: ApiSpecification) {
   const interfaces = orderBy(schema.interfaces, (iface) => iface.name).map((iface) => ({
     ...iface,
     fields: orderBy(iface.fields, (field) => field.fieldName),
   }))
-  const queries = orderBy(schema.queries, (query) => query.fieldName).map((query) => ({
-    ...query,
-    args: orderBy(query.args, (arg) => arg.name),
-  }))
 
   const types = orderBy(schema.types, (type) => type.name).map((type) => ({
     ...type,
-    fields: orderBy(type.fields, (field) => field.fieldName),
+    fields: orderBy((type as any).fields, (field) => field.fieldName),
   }))
 
-  return {interfaces, queries, types, generation: schema.generation}
+  return {interfaces, types}
 }

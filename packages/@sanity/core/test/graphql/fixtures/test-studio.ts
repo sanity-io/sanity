@@ -1,6 +1,4 @@
-// import createSchema from '@sanity/base/schema-creator'
 import Schema from '@sanity/schema'
-// eslint-disable-next-line import/no-unresolved
 
 export default Schema.compile({
   types: [

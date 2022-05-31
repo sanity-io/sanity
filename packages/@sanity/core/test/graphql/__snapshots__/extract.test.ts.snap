@@ -1,0 +1,1401 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`GraphQL - Schema extraction Should be able to extract schema 1`] = `
+Object {
+  "interfaces": Array [
+    Object {
+      "description": "A Sanity document",
+      "fields": Array [
+        Object {
+          "description": "Date the document was created",
+          "fieldName": "_createdAt",
+          "isNullable": true,
+          "type": "Datetime",
+        },
+        Object {
+          "description": "Document ID",
+          "fieldName": "_id",
+          "isNullable": true,
+          "type": "ID",
+        },
+        Object {
+          "description": "Current document revision",
+          "fieldName": "_rev",
+          "isNullable": true,
+          "type": "String",
+        },
+        Object {
+          "description": "Document type",
+          "fieldName": "_type",
+          "isNullable": true,
+          "type": "String",
+        },
+        Object {
+          "description": "Date the document was last modified",
+          "fieldName": "_updatedAt",
+          "isNullable": true,
+          "type": "Datetime",
+        },
+      ],
+      "kind": "Interface",
+      "name": "Document",
+    },
+  ],
+  "types": Array [
+    Object {
+      "description": undefined,
+      "fields": Array [
+        Object {
+          "description": "Date the document was created",
+          "fieldName": "_createdAt",
+          "isNullable": true,
+          "type": "Datetime",
+        },
+        Object {
+          "description": "Document ID",
+          "fieldName": "_id",
+          "isNullable": true,
+          "type": "ID",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "_key",
+          "type": "String",
+        },
+        Object {
+          "description": "Current document revision",
+          "fieldName": "_rev",
+          "isNullable": true,
+          "type": "String",
+        },
+        Object {
+          "description": "Document type",
+          "fieldName": "_type",
+          "isNullable": true,
+          "type": "String",
+        },
+        Object {
+          "description": "Date the document was last modified",
+          "fieldName": "_updatedAt",
+          "isNullable": true,
+          "type": "Datetime",
+        },
+        Object {
+          "children": Object {
+            "type": "String",
+          },
+          "description": undefined,
+          "fieldName": "awards",
+          "kind": "List",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "bestFriend",
+          "isReference": true,
+          "type": "Author",
+        },
+        Object {
+          "fieldName": "image",
+          "type": "Image",
+        },
+        Object {
+          "children": Object {
+            "type": "Block",
+          },
+          "description": undefined,
+          "fieldName": "minimalBlockRaw",
+          "isRawAlias": true,
+          "kind": "List",
+          "originalName": "minimalBlock",
+          "type": "JSON",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "name",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "role",
+          "type": "String",
+        },
+      ],
+      "interfaces": Array [
+        "Document",
+      ],
+      "kind": "Type",
+      "name": "Author",
+      "originalName": "author",
+      "type": "Object",
+    },
+    Object {
+      "description": undefined,
+      "fields": Array [
+        Object {
+          "description": undefined,
+          "fieldName": "_key",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "_type",
+          "type": "String",
+        },
+        Object {
+          "children": Object {
+            "type": "Span",
+          },
+          "description": undefined,
+          "fieldName": "children",
+          "kind": "List",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "list",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "style",
+          "type": "String",
+        },
+      ],
+      "kind": "Type",
+      "name": "Block",
+      "originalName": "block",
+      "type": "Object",
+    },
+    Object {
+      "description": undefined,
+      "fields": Array [
+        Object {
+          "description": undefined,
+          "fieldName": "_key",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "_type",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "code",
+          "type": "Text",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "filename",
+          "type": "String",
+        },
+        Object {
+          "children": Object {
+            "type": "Float",
+          },
+          "description": undefined,
+          "fieldName": "highlightedLines",
+          "kind": "List",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "language",
+          "type": "String",
+        },
+      ],
+      "kind": "Type",
+      "name": "Code",
+      "originalName": "code",
+      "type": "Object",
+    },
+    Object {
+      "description": undefined,
+      "fields": Array [
+        Object {
+          "description": undefined,
+          "fieldName": "_key",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "_type",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "alpha",
+          "type": "Float",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "hex",
+          "type": "String",
+        },
+        Object {
+          "fieldName": "hsl",
+          "type": "HslaColor",
+        },
+        Object {
+          "fieldName": "hsv",
+          "type": "HsvaColor",
+        },
+        Object {
+          "fieldName": "rgb",
+          "type": "RgbaColor",
+        },
+      ],
+      "kind": "Type",
+      "name": "Color",
+      "originalName": "color",
+      "type": "Object",
+    },
+    Object {
+      "description": undefined,
+      "fields": Array [
+        Object {
+          "description": "Date the document was created",
+          "fieldName": "_createdAt",
+          "isNullable": true,
+          "type": "Datetime",
+        },
+        Object {
+          "description": "Document ID",
+          "fieldName": "_id",
+          "isNullable": true,
+          "type": "ID",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "_key",
+          "type": "String",
+        },
+        Object {
+          "description": "Current document revision",
+          "fieldName": "_rev",
+          "isNullable": true,
+          "type": "String",
+        },
+        Object {
+          "description": "Document type",
+          "fieldName": "_type",
+          "isNullable": true,
+          "type": "String",
+        },
+        Object {
+          "description": "Date the document was last modified",
+          "fieldName": "_updatedAt",
+          "isNullable": true,
+          "type": "Datetime",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "title",
+          "type": "String",
+        },
+      ],
+      "interfaces": Array [
+        "Document",
+      ],
+      "kind": "Type",
+      "name": "DocumentActionsTest",
+      "originalName": "documentActionsTest",
+      "type": "Object",
+    },
+    Object {
+      "description": undefined,
+      "fields": Array [
+        Object {
+          "description": undefined,
+          "fieldName": "_key",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "_type",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "asset",
+          "isReference": true,
+          "type": "SanityFileAsset",
+        },
+      ],
+      "kind": "Type",
+      "name": "File",
+      "originalName": "file",
+      "type": "Object",
+    },
+    Object {
+      "description": undefined,
+      "fields": Array [
+        Object {
+          "description": undefined,
+          "fieldName": "_key",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "_type",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "alt",
+          "type": "Float",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "lat",
+          "type": "Float",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "lng",
+          "type": "Float",
+        },
+      ],
+      "kind": "Type",
+      "name": "Geopoint",
+      "originalName": "geopoint",
+      "type": "Object",
+    },
+    Object {
+      "description": undefined,
+      "fields": Array [
+        Object {
+          "description": undefined,
+          "fieldName": "_key",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "_type",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "a",
+          "type": "Float",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "h",
+          "type": "Float",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "l",
+          "type": "Float",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "s",
+          "type": "Float",
+        },
+      ],
+      "kind": "Type",
+      "name": "HslaColor",
+      "originalName": "hslaColor",
+      "type": "Object",
+    },
+    Object {
+      "description": undefined,
+      "fields": Array [
+        Object {
+          "description": undefined,
+          "fieldName": "_key",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "_type",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "a",
+          "type": "Float",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "h",
+          "type": "Float",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "s",
+          "type": "Float",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "v",
+          "type": "Float",
+        },
+      ],
+      "kind": "Type",
+      "name": "HsvaColor",
+      "originalName": "hsvaColor",
+      "type": "Object",
+    },
+    Object {
+      "description": undefined,
+      "fields": Array [
+        Object {
+          "description": undefined,
+          "fieldName": "_key",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "_type",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "asset",
+          "isReference": true,
+          "type": "SanityImageAsset",
+        },
+        Object {
+          "fieldName": "crop",
+          "type": "SanityImageCrop",
+        },
+        Object {
+          "fieldName": "hotspot",
+          "type": "SanityImageHotspot",
+        },
+      ],
+      "kind": "Type",
+      "name": "Image",
+      "originalName": "image",
+      "type": "Object",
+    },
+    Object {
+      "description": undefined,
+      "fields": Array [
+        Object {
+          "description": undefined,
+          "fieldName": "_key",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "_type",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "asset",
+          "isReference": true,
+          "type": "MuxVideoAsset",
+        },
+      ],
+      "kind": "Type",
+      "name": "MuxVideo",
+      "originalName": "mux.video",
+      "type": "Object",
+    },
+    Object {
+      "description": undefined,
+      "fields": Array [
+        Object {
+          "description": undefined,
+          "fieldName": "_key",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "_type",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "assetId",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "filename",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "playbackId",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "status",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "thumbTime",
+          "type": "Float",
+        },
+      ],
+      "kind": "Type",
+      "name": "MuxVideoAsset",
+      "originalName": "mux.videoAsset",
+      "type": "Object",
+    },
+    Object {
+      "description": undefined,
+      "fields": Array [
+        Object {
+          "description": undefined,
+          "fieldName": "_key",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "_type",
+          "type": "String",
+        },
+        Object {
+          "children": Object {
+            "type": "ObjectWithNestedArray",
+          },
+          "description": undefined,
+          "fieldName": "arrayNo1",
+          "kind": "List",
+        },
+        Object {
+          "children": Object {
+            "type": "ObjectWithNestedArray",
+          },
+          "description": undefined,
+          "fieldName": "arrayNo11",
+          "kind": "List",
+        },
+        Object {
+          "children": Object {
+            "type": "ObjectWithNestedArray",
+          },
+          "description": undefined,
+          "fieldName": "arrayNo13",
+          "kind": "List",
+        },
+        Object {
+          "children": Object {
+            "type": "ObjectWithNestedArray",
+          },
+          "description": undefined,
+          "fieldName": "arrayNo15",
+          "kind": "List",
+        },
+        Object {
+          "children": Object {
+            "type": "ObjectWithNestedArray",
+          },
+          "description": undefined,
+          "fieldName": "arrayNo17",
+          "kind": "List",
+        },
+        Object {
+          "children": Object {
+            "type": "ObjectWithNestedArray",
+          },
+          "description": undefined,
+          "fieldName": "arrayNo19",
+          "kind": "List",
+        },
+        Object {
+          "children": Object {
+            "type": "ObjectWithNestedArray",
+          },
+          "description": undefined,
+          "fieldName": "arrayNo3",
+          "kind": "List",
+        },
+        Object {
+          "children": Object {
+            "type": "ObjectWithNestedArray",
+          },
+          "description": undefined,
+          "fieldName": "arrayNo5",
+          "kind": "List",
+        },
+        Object {
+          "children": Object {
+            "type": "ObjectWithNestedArray",
+          },
+          "description": undefined,
+          "fieldName": "arrayNo7",
+          "kind": "List",
+        },
+        Object {
+          "children": Object {
+            "type": "ObjectWithNestedArray",
+          },
+          "description": undefined,
+          "fieldName": "arrayNo9",
+          "kind": "List",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "fieldNo0",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "fieldNo10",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "fieldNo12",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "fieldNo14",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "fieldNo16",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "fieldNo18",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "fieldNo2",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "fieldNo4",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "fieldNo6",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "fieldNo8",
+          "type": "String",
+        },
+      ],
+      "kind": "Type",
+      "name": "ObjectWithNestedArray",
+      "originalName": "objectWithNestedArray",
+      "type": "Object",
+    },
+    Object {
+      "description": undefined,
+      "fields": Array [
+        Object {
+          "description": undefined,
+          "fieldName": "_key",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "_type",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "calculated",
+          "type": "Float",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "nominal",
+          "type": "Float",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "optimistic",
+          "type": "Float",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "pessimistic",
+          "type": "Float",
+        },
+      ],
+      "kind": "Type",
+      "name": "PertEstimate",
+      "originalName": "pertEstimate",
+      "type": "Object",
+    },
+    Object {
+      "description": undefined,
+      "fields": Array [
+        Object {
+          "description": "Date the document was created",
+          "fieldName": "_createdAt",
+          "isNullable": true,
+          "type": "Datetime",
+        },
+        Object {
+          "description": "Document ID",
+          "fieldName": "_id",
+          "isNullable": true,
+          "type": "ID",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "_key",
+          "type": "String",
+        },
+        Object {
+          "description": "Current document revision",
+          "fieldName": "_rev",
+          "isNullable": true,
+          "type": "String",
+        },
+        Object {
+          "description": "Document type",
+          "fieldName": "_type",
+          "isNullable": true,
+          "type": "String",
+        },
+        Object {
+          "description": "Date the document was last modified",
+          "fieldName": "_updatedAt",
+          "isNullable": true,
+          "type": "Datetime",
+        },
+        Object {
+          "children": Object {
+            "type": "String",
+          },
+          "description": undefined,
+          "fieldName": "primitives",
+          "kind": "List",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "title",
+          "type": "String",
+        },
+      ],
+      "interfaces": Array [
+        "Document",
+      ],
+      "kind": "Type",
+      "name": "Poppers",
+      "originalName": "poppers",
+      "type": "Object",
+    },
+    Object {
+      "description": undefined,
+      "fields": Array [
+        Object {
+          "description": undefined,
+          "fieldName": "_key",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "_type",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "a",
+          "type": "Float",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "b",
+          "type": "Float",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "g",
+          "type": "Float",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "r",
+          "type": "Float",
+        },
+      ],
+      "kind": "Type",
+      "name": "RgbaColor",
+      "originalName": "rgbaColor",
+      "type": "Object",
+    },
+    Object {
+      "description": undefined,
+      "fields": Array [
+        Object {
+          "description": undefined,
+          "fieldName": "_key",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "_type",
+          "type": "String",
+        },
+        Object {
+          "description": "The unique ID for the asset within the originating source so you can programatically find back to it",
+          "fieldName": "id",
+          "type": "String",
+        },
+        Object {
+          "description": "A canonical name for the source this asset is originating from",
+          "fieldName": "name",
+          "type": "String",
+        },
+        Object {
+          "description": "A URL to find more information about this asset in the originating source",
+          "fieldName": "url",
+          "type": "String",
+        },
+      ],
+      "kind": "Type",
+      "name": "SanityAssetSourceData",
+      "originalName": "sanity.assetSourceData",
+      "type": "Object",
+    },
+    Object {
+      "description": undefined,
+      "fields": Array [
+        Object {
+          "description": "Date the document was created",
+          "fieldName": "_createdAt",
+          "isNullable": true,
+          "type": "Datetime",
+        },
+        Object {
+          "description": "Document ID",
+          "fieldName": "_id",
+          "isNullable": true,
+          "type": "ID",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "_key",
+          "type": "String",
+        },
+        Object {
+          "description": "Current document revision",
+          "fieldName": "_rev",
+          "isNullable": true,
+          "type": "String",
+        },
+        Object {
+          "description": "Document type",
+          "fieldName": "_type",
+          "isNullable": true,
+          "type": "String",
+        },
+        Object {
+          "description": "Date the document was last modified",
+          "fieldName": "_updatedAt",
+          "isNullable": true,
+          "type": "Datetime",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "altText",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "assetId",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "description",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "extension",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "label",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "mimeType",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "originalFilename",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "path",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "sha1hash",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "size",
+          "type": "Float",
+        },
+        Object {
+          "fieldName": "source",
+          "type": "SanityAssetSourceData",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "title",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "url",
+          "type": "String",
+        },
+      ],
+      "interfaces": Array [
+        "Document",
+      ],
+      "kind": "Type",
+      "name": "SanityFileAsset",
+      "originalName": "sanity.fileAsset",
+      "type": "Object",
+    },
+    Object {
+      "description": undefined,
+      "fields": Array [
+        Object {
+          "description": "Date the document was created",
+          "fieldName": "_createdAt",
+          "isNullable": true,
+          "type": "Datetime",
+        },
+        Object {
+          "description": "Document ID",
+          "fieldName": "_id",
+          "isNullable": true,
+          "type": "ID",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "_key",
+          "type": "String",
+        },
+        Object {
+          "description": "Current document revision",
+          "fieldName": "_rev",
+          "isNullable": true,
+          "type": "String",
+        },
+        Object {
+          "description": "Document type",
+          "fieldName": "_type",
+          "isNullable": true,
+          "type": "String",
+        },
+        Object {
+          "description": "Date the document was last modified",
+          "fieldName": "_updatedAt",
+          "isNullable": true,
+          "type": "Datetime",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "altText",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "assetId",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "description",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "extension",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "label",
+          "type": "String",
+        },
+        Object {
+          "fieldName": "metadata",
+          "type": "SanityImageMetadata",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "mimeType",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "originalFilename",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "path",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "sha1hash",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "size",
+          "type": "Float",
+        },
+        Object {
+          "fieldName": "source",
+          "type": "SanityAssetSourceData",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "title",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "uploadId",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "url",
+          "type": "String",
+        },
+      ],
+      "interfaces": Array [
+        "Document",
+      ],
+      "kind": "Type",
+      "name": "SanityImageAsset",
+      "originalName": "sanity.imageAsset",
+      "type": "Object",
+    },
+    Object {
+      "description": undefined,
+      "fields": Array [
+        Object {
+          "description": undefined,
+          "fieldName": "_key",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "_type",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "bottom",
+          "type": "Float",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "left",
+          "type": "Float",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "right",
+          "type": "Float",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "top",
+          "type": "Float",
+        },
+      ],
+      "kind": "Type",
+      "name": "SanityImageCrop",
+      "originalName": "sanity.imageCrop",
+      "type": "Object",
+    },
+    Object {
+      "description": undefined,
+      "fields": Array [
+        Object {
+          "description": undefined,
+          "fieldName": "_key",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "_type",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "aspectRatio",
+          "type": "Float",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "height",
+          "type": "Float",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "width",
+          "type": "Float",
+        },
+      ],
+      "kind": "Type",
+      "name": "SanityImageDimensions",
+      "originalName": "sanity.imageDimensions",
+      "type": "Object",
+    },
+    Object {
+      "description": undefined,
+      "fields": Array [
+        Object {
+          "description": undefined,
+          "fieldName": "_key",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "_type",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "height",
+          "type": "Float",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "width",
+          "type": "Float",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "x",
+          "type": "Float",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "y",
+          "type": "Float",
+        },
+      ],
+      "kind": "Type",
+      "name": "SanityImageHotspot",
+      "originalName": "sanity.imageHotspot",
+      "type": "Object",
+    },
+    Object {
+      "description": undefined,
+      "fields": Array [
+        Object {
+          "description": undefined,
+          "fieldName": "_key",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "_type",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "blurHash",
+          "type": "String",
+        },
+        Object {
+          "fieldName": "dimensions",
+          "type": "SanityImageDimensions",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "hasAlpha",
+          "type": "Boolean",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "isOpaque",
+          "type": "Boolean",
+        },
+        Object {
+          "fieldName": "location",
+          "type": "Geopoint",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "lqip",
+          "type": "String",
+        },
+        Object {
+          "fieldName": "palette",
+          "type": "SanityImagePalette",
+        },
+      ],
+      "kind": "Type",
+      "name": "SanityImageMetadata",
+      "originalName": "sanity.imageMetadata",
+      "type": "Object",
+    },
+    Object {
+      "description": undefined,
+      "fields": Array [
+        Object {
+          "description": undefined,
+          "fieldName": "_key",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "_type",
+          "type": "String",
+        },
+        Object {
+          "fieldName": "darkMuted",
+          "type": "SanityImagePaletteSwatch",
+        },
+        Object {
+          "fieldName": "darkVibrant",
+          "type": "SanityImagePaletteSwatch",
+        },
+        Object {
+          "fieldName": "dominant",
+          "type": "SanityImagePaletteSwatch",
+        },
+        Object {
+          "fieldName": "lightMuted",
+          "type": "SanityImagePaletteSwatch",
+        },
+        Object {
+          "fieldName": "lightVibrant",
+          "type": "SanityImagePaletteSwatch",
+        },
+        Object {
+          "fieldName": "muted",
+          "type": "SanityImagePaletteSwatch",
+        },
+        Object {
+          "fieldName": "vibrant",
+          "type": "SanityImagePaletteSwatch",
+        },
+      ],
+      "kind": "Type",
+      "name": "SanityImagePalette",
+      "originalName": "sanity.imagePalette",
+      "type": "Object",
+    },
+    Object {
+      "description": undefined,
+      "fields": Array [
+        Object {
+          "description": undefined,
+          "fieldName": "_key",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "_type",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "background",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "foreground",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "population",
+          "type": "Float",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "title",
+          "type": "String",
+        },
+      ],
+      "kind": "Type",
+      "name": "SanityImagePaletteSwatch",
+      "originalName": "sanity.imagePaletteSwatch",
+      "type": "Object",
+    },
+    Object {
+      "description": undefined,
+      "fields": Array [
+        Object {
+          "description": undefined,
+          "fieldName": "_key",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "_type",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "current",
+          "type": "String",
+        },
+      ],
+      "kind": "Type",
+      "name": "Slug",
+      "originalName": "slug",
+      "type": "Object",
+    },
+    Object {
+      "description": undefined,
+      "fields": Array [
+        Object {
+          "description": undefined,
+          "fieldName": "_key",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "_type",
+          "type": "String",
+        },
+        Object {
+          "children": Object {
+            "type": "String",
+          },
+          "description": undefined,
+          "fieldName": "marks",
+          "kind": "List",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "text",
+          "type": "String",
+        },
+      ],
+      "kind": "Type",
+      "name": "Span",
+      "originalName": "span",
+      "type": "Object",
+    },
+  ],
+}
+`;

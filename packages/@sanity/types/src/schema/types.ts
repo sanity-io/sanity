@@ -364,7 +364,7 @@ export interface SchemaValidationProblemGroup {
 export interface Schema {
   _original?: {
     name: string
-    types: any[]
+    types: SchemaTypeDefinition[]
   }
   _registry: {[typeName: string]: any}
   _validation?: SchemaValidationProblemGroup[]

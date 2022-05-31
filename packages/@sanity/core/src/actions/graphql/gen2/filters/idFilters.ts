@@ -1,29 +1,31 @@
-function createStringFilters() {
+import type {InputObjectType} from '../../types'
+
+export function createIdFilters(): InputObjectType {
   return {
-    name: 'StringFilter',
+    name: 'IDFilter',
     kind: 'InputObject',
     isConstraintFilter: true,
     fields: [
       {
         fieldName: 'eq',
-        type: 'String',
+        type: 'ID',
         description: 'Checks if the value is equal to the given input.',
       },
       {
         fieldName: 'neq',
-        type: 'String',
+        type: 'ID',
         description: 'Checks if the value is not equal to the given input.',
       },
       {
         fieldName: 'matches',
-        type: 'String',
+        type: 'ID',
         description: 'Checks if the value matches the given word/words.',
       },
       {
         fieldName: 'in',
         kind: 'List',
         children: {
-          type: 'String',
+          type: 'ID',
           isNullable: false,
         },
         description: 'Checks if the value is equal to one of the given values.',
@@ -32,7 +34,7 @@ function createStringFilters() {
         fieldName: 'nin',
         kind: 'List',
         children: {
-          type: 'String',
+          type: 'ID',
           isNullable: false,
         },
         description: 'Checks if the value is not equal to one of the given values.',
@@ -40,5 +42,3 @@ function createStringFilters() {
     ],
   }
 }
-
-module.exports = createStringFilters

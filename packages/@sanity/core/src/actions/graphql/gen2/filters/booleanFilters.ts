@@ -1,4 +1,6 @@
-function createBooleanFilters() {
+import type {InputObjectType} from '../../types'
+
+export function createBooleanFilters(): InputObjectType {
   return {
     name: 'BooleanFilter',
     kind: 'InputObject',
@@ -17,5 +19,3 @@ function createBooleanFilters() {
     ],
   }
 }
-
-module.exports = createBooleanFilters

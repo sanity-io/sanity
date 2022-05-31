@@ -196,6 +196,56 @@ export interface SanityJson {
   }
 }
 
+export interface GraphQLAPIConfig {
+  /**
+   * Path to a schema to auto-generate GraphQL API from.
+   * The path is relative to the config file, or can be an absolute path
+   */
+  schemaPath: string
+
+  /**
+   * Dataset to deploy the GraphQL API to
+   *
+   * Optional, defaults to the value of `api.dataset`
+   */
+  dataset?: string
+
+  /**
+   * API tag for this API - allows deploying multiple different APIs to a single dataset
+   *
+   * Optional, defaults to `default`
+   */
+  tag?: string
+
+  /**
+   * Whether or not to deploy a "GraphQL Playground" to the API url - an HTML interface that allows
+   * running queries and introspecting the schema from the browser. Note that this interface is not
+   * secured in any way, but as the schema definition and API route is generally open, this does not
+   * expose any more information than is otherwise available - it only makes it more discoverable.
+   *
+   * Optional, defaults to `true`
+   */
+  playground?: boolean
+
+  /**
+   * Generation of API to auto-generate from schema. New APIs should use the latest (`gen3`).
+   *
+   * Optional, defaults to `gen3`
+   */
+  generation?: 'gen3' | 'gen2' | 'gen1'
+
+  /**
+   * Define document interface fields (`_id`, `_type` etc) as non-nullable.
+   * If you never use a document type as an object (within other documents) in your schemas,
+   * you can (and probably should) set this to `true`. Because a document type _could_ be used
+   * inside other documents, it is by default set to `false`, as in these cases these fields
+   * _can_ be null.
+   *
+   * Optional, defaults to `false`
+   */
+  nonNullDocumentFields?: boolean
+}
+
 export interface CliConfig {
   api?: CliApiConfig
 
@@ -207,6 +257,8 @@ export interface CliConfig {
     hostname?: string
     port?: number
   }
+
+  graphql?: GraphQLAPIConfig[]
 
   // @todo
   vite?: (config: any) => any

@@ -1,41 +1,41 @@
-function createDateFilters() {
+import type {InputObjectType} from '../../types'
+
+export function createIntegerFilters(): InputObjectType {
   return {
-    name: 'DateFilter',
+    name: 'IntFilter',
     kind: 'InputObject',
     isConstraintFilter: true,
     fields: [
       {
         fieldName: 'eq',
-        type: 'Date',
+        type: 'Int',
         description: 'Checks if the value is equal to the given input.',
       },
       {
         fieldName: 'neq',
-        type: 'Date',
+        type: 'Int',
         description: 'Checks if the value is not equal to the given input.',
       },
       {
         fieldName: 'gt',
-        type: 'Date',
+        type: 'Int',
         description: 'Checks if the value is greater than the given input.',
       },
       {
         fieldName: 'gte',
-        type: 'Date',
+        type: 'Int',
         description: 'Checks if the value is greater than or equal to the given input.',
       },
       {
         fieldName: 'lt',
-        type: 'Date',
+        type: 'Int',
         description: 'Checks if the value is lesser than the given input.',
       },
       {
         fieldName: 'lte',
-        type: 'Date',
+        type: 'Int',
         description: 'Checks if the value is lesser than or equal to the given input.',
       },
     ],
   }
 }
-
-module.exports = createDateFilters

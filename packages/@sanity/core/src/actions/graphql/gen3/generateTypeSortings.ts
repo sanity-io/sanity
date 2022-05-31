@@ -1,3 +1,12 @@
+import {isDocumentType, isNonUnion} from '../helpers'
+import type {
+  ConvertedDocumentType,
+  ConvertedEnum,
+  ConvertedType,
+  ConvertedUnion,
+  InputObjectType,
+} from '../types'
+
 const builtInTypes = [
   'Boolean',
   'Date',
@@ -11,7 +20,7 @@ const builtInTypes = [
   'Url',
 ]
 
-const builtInSortingEnum = {
+const builtInSortingEnum: ConvertedEnum = {
   name: 'SortOrder',
   kind: 'Enum',
   values: [
@@ -28,8 +37,10 @@ const builtInSortingEnum = {
   ],
 }
 
-function generateTypeSortings(types) {
-  const objectTypes = types.filter(
+export function generateTypeSortings(
+  types: (ConvertedType | ConvertedUnion)[]
+): (InputObjectType | ConvertedEnum)[] {
+  const objectTypes = types.filter(isNonUnion).filter(
     (type) =>
       type.type === 'Object' &&
       !['Block', 'Span'].includes(type.name) && // TODO: What do we do with blocks?
@@ -37,19 +48,19 @@ function generateTypeSortings(types) {
       !builtInTypes.includes(type.name)
   )
   const documentTypes = types.filter(
-    (type) => type.type === 'Object' && type.interfaces && type.interfaces.includes('Document')
+    (type): type is ConvertedDocumentType => type.name === 'Document' || isDocumentType(type)
   )
 
-  const hasFields = (type) => type.fields.length > 0
+  const hasFields = (type: InputObjectType) => type.fields.length > 0
 
   const objectTypeSortings = createObjectTypeSortings(objectTypes)
   const documentTypeSortings = createDocumentTypeSortings(documentTypes)
-  const allSortings = [].concat(objectTypeSortings, documentTypeSortings).filter(hasFields)
+  const allSortings = [...objectTypeSortings, ...documentTypeSortings].filter(hasFields)
 
-  return allSortings.concat(builtInSortingEnum)
+  return [...allSortings, builtInSortingEnum]
 }
 
-function createObjectTypeSortings(objectTypes) {
+function createObjectTypeSortings(objectTypes: ConvertedType[]): InputObjectType[] {
   return objectTypes.map((objectType) => ({
     name: `${objectType.name}Sorting`,
     kind: 'InputObject',
@@ -63,7 +74,7 @@ function createObjectTypeSortings(objectTypes) {
   }))
 }
 
-function createDocumentTypeSortings(documentTypes) {
+function createDocumentTypeSortings(documentTypes: ConvertedType[]): InputObjectType[] {
   return documentTypes.map((documentType) => ({
     name: `${documentType.name}Sorting`,
     kind: 'InputObject',
@@ -76,5 +87,3 @@ function createDocumentTypeSortings(documentTypes) {
       })),
   }))
 }
-
-module.exports = generateTypeSortings

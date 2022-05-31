@@ -1,18 +1,27 @@
-const {upperFirst} = require('lodash')
+import {upperFirst} from 'lodash'
+import {isDocumentType, isUnion} from '../helpers'
+import type {ConvertedType, ConvertedUnion, InputObjectType, QueryDefinition} from '../types'
 
-function generateTypeQueries(types, sortings) {
-  const queries = []
-  const documentTypes = types.filter(
-    (type) => type.type === 'Object' && type.interfaces && type.interfaces.includes('Document')
-  )
+export function generateTypeQueries(
+  types: (ConvertedType | ConvertedUnion)[],
+  sortings: InputObjectType[]
+): QueryDefinition[] {
+  const queries: QueryDefinition[] = []
+  const documentTypes = types.filter(isDocumentType)
 
   const documentTypeNames = documentTypes.map((docType) =>
     JSON.stringify(docType.originalName || docType.name)
   )
   const documentsFilter = `_type in [${documentTypeNames.join(', ')}]`
 
-  const queryable = [...documentTypes, types.find((type) => type.name === 'Document')]
-  const isSortable = (type) => sortings.some((sorting) => sorting.name === `${type.name}Sorting`)
+  const documentInterface = types.find((type) => type.name === 'Document')
+  if (!documentInterface || isUnion(documentInterface)) {
+    throw new Error('Failed to find document interface')
+  }
+
+  const queryable = [...documentTypes, documentInterface]
+  const isSortable = (type: ConvertedType) =>
+    sortings.some((sorting) => sorting.name === `${type.name}Sorting`)
 
   // Single ID-based result lookup queries
   queryable.forEach((type) => {
@@ -39,6 +48,21 @@ function generateTypeQueries(types, sortings) {
 
   // Fetch all of type
   queryable.forEach((type) => {
+    const sorting: QueryDefinition['args'] = []
+    if (isSortable(type)) {
+      sorting.push({
+        name: 'sort',
+        type: {
+          kind: 'List',
+          isNullable: true,
+          children: {
+            type: `${type.name}Sorting`,
+            isNullable: false,
+          },
+        },
+      })
+    }
+
     queries.push({
       fieldName: `all${upperFirst(type.name)}`,
       filter:
@@ -56,17 +80,7 @@ function generateTypeQueries(types, sortings) {
           type: `${type.name}Filter`,
           isFieldFilter: true,
         },
-        isSortable(type) && {
-          name: 'sort',
-          type: {
-            kind: 'List',
-            isNullable: true,
-            children: {
-              type: `${type.name}Sorting`,
-              isNullable: false,
-            },
-          },
-        },
+        ...sorting,
         {
           name: 'limit',
           type: 'Int',
@@ -79,11 +93,9 @@ function generateTypeQueries(types, sortings) {
           description: 'Offset at which to start returning documents from',
           isFieldFilter: false,
         },
-      ].filter(Boolean),
+      ],
     })
   })
 
   return queries
 }
-
-module.exports = generateTypeQueries

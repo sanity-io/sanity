@@ -1,4 +1,6 @@
-function createDocumentFilters() {
+import type {InputObjectType} from '../../types'
+
+export function createDocumentFilters(): InputObjectType {
   return {
     name: 'Sanity_DocumentFilter',
     kind: 'InputObject',
@@ -17,5 +19,3 @@ function createDocumentFilters() {
     ],
   }
 }
-
-module.exports = createDocumentFilters
