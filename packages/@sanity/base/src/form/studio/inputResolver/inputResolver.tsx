@@ -87,6 +87,7 @@ function NoopField({children}: {children: React.ReactNode}) {
 function PrimitiveField(field: FieldProps) {
   return (
     <FormField
+      data-testid={`field-${field.inputId}`}
       level={field.level}
       title={field.title}
       description={field.description}
@@ -101,6 +102,7 @@ function PrimitiveField(field: FieldProps) {
 function ObjectOrArrayField(field: ObjectFieldProps | ArrayFieldProps) {
   return (
     <FormFieldSet
+      data-testid={`field-${field.inputId}`}
       level={field.level}
       title={field.title}
       description={field.description}

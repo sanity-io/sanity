@@ -22,7 +22,7 @@ interface TestInputProps {
   readOnly?: boolean
   renderBlockActions?: RenderBlockActionsCallback
   renderCustomMarkers?: RenderCustomMarkers
-  schema: Schema
+  // schema: Schema
   type: PTType
   value?: PortableTextBlock[]
   withError?: boolean
@@ -180,50 +180,52 @@ export function TestInput(props: TestInputProps) {
     setValue(props.value || [])
   }, [props.value])
 
-  return (
-    <FormBuilderProvider
-      __internal_patchChannel={patchChannel}
-      onChange={onChange}
-      value={value}
-      {...formBuilder}
-    >
-      <ReviewChangesContextProvider changesOpen={false}>
-        {/* <Box
-          style={{
-           width: '300px',
-           height: '300px',
-           position: 'absolute',
-           bottom: 0,
-           zIndex: 9999,
-           padding: 10,
-           left: 0,
-          }}
-          >
-          <Box marginBottom={3}>
-           <Heading size={1}>FocusPath</Heading>
-          </Box>
-          <Box>
-           <Code size={5}>{JSON.stringify(focusPath, null, 2)}</Code>
-          </Box>
-          </Box> */}
-        <>TODO</>
-        {/* <PortableTextInput
-          focusPath={focusPath}
-          hotkeys={hotkeys}
-          level={1}
-          markers={markers}
-          validation={validation}
-          onBlur={onBlur}
-          onChange={onChange}
-          onFocus={onFocus}
-          presence={presence}
-          readOnly={readOnly}
-          renderBlockActions={renderBlockActions}
-          renderCustomMarkers={renderCustomMarkers}
-          type={props.type as any}
-          value={value}
-        /> */}
-      </ReviewChangesContextProvider>
-    </FormBuilderProvider>
-  )
+  return <>TODO</>
+
+  // return (
+  //   <FormBuilderProvider
+  //     __internal_patchChannel={patchChannel}
+  //     onChange={onChange}
+  //     value={value}
+  //     {...formBuilder}
+  //   >
+  //     <ReviewChangesContextProvider changesOpen={false}>
+  //       {/* <Box
+  //         style={{
+  //          width: '300px',
+  //          height: '300px',
+  //          position: 'absolute',
+  //          bottom: 0,
+  //          zIndex: 9999,
+  //          padding: 10,
+  //          left: 0,
+  //         }}
+  //         >
+  //         <Box marginBottom={3}>
+  //          <Heading size={1}>FocusPath</Heading>
+  //         </Box>
+  //         <Box>
+  //          <Code size={5}>{JSON.stringify(focusPath, null, 2)}</Code>
+  //         </Box>
+  //         </Box> */}
+  //       <>TODO</>
+  //       {/* <PortableTextInput
+  //         focusPath={focusPath}
+  //         hotkeys={hotkeys}
+  //         level={1}
+  //         markers={markers}
+  //         validation={validation}
+  //         onBlur={onBlur}
+  //         onChange={onChange}
+  //         onFocus={onFocus}
+  //         presence={presence}
+  //         readOnly={readOnly}
+  //         renderBlockActions={renderBlockActions}
+  //         renderCustomMarkers={renderCustomMarkers}
+  //         type={props.type as any}
+  //         value={value}
+  //       /> */}
+  //     </ReviewChangesContextProvider>
+  //   </FormBuilderProvider>
+  // )
 }

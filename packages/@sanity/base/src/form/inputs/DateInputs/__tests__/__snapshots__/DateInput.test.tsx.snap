@@ -1,0 +1,13 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`emits onChange on correct format if a valid value has been typed 1`] = `
+Array [
+  Array [
+    Object {
+      "path": Array [],
+      "type": "set",
+      "value": "2021-03-28",
+    },
+  ],
+]
+`;

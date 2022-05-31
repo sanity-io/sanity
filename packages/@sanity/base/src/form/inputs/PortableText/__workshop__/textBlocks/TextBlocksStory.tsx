@@ -57,7 +57,8 @@ export function TextBlocksStory() {
     <Box padding={4}>
       <Container width={1}>
         <Card padding={3} shadow={1} overflow="auto" style={{maxHeight: '100%'}}>
-          <FormBuilderProvider {...formBuilder} onChange={onChange}>
+          TODO
+          {/* <FormBuilderProvider {...formBuilder} onChange={onChange}>
             <TextBlock
               markers={markers}
               validation={validation}
@@ -208,7 +209,7 @@ export function TextBlocksStory() {
               has been the industry's standard dummy text ever since the 1500s, when an unknown
               printer took a galley of type and scrambled it to make a type specimen book.
             </TextBlock>
-          </FormBuilderProvider>
+          </FormBuilderProvider> */}
         </Card>
       </Container>
     </Box>

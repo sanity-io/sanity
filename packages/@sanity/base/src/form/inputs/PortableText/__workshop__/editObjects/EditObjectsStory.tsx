@@ -138,7 +138,8 @@ export function EditObjectsStory() {
   return (
     <PortalProvider __unstable_elements={{default: portal.element}}>
       <LayerProvider>
-        <FormBuilderProvider
+        TODO
+        {/* <FormBuilderProvider
           __internal_patchChannel={patchChannel}
           onChange={handleChange}
           value={value}
@@ -159,7 +160,7 @@ export function EditObjectsStory() {
               value={value}
             />
           </PortableTextEditor>
-        </FormBuilderProvider>
+        </FormBuilderProvider> */}
       </LayerProvider>
     </PortalProvider>
   )

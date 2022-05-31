@@ -471,7 +471,7 @@ export class ImageInput extends React.PureComponent<ImageInputProps, ImageInputS
     const fieldMarkers = validation.filter((marker) => marker.path[0] === field.name)
 
     return (
-      <>TODO</>
+      <div key={field.name}>TODO</div>
       // <ImageInputField
       //   key={field.name}
       //   field={field}

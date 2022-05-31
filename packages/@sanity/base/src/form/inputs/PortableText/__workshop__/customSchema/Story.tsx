@@ -21,7 +21,8 @@ export default function Story() {
       <Card height="fill" padding={4} sizing="border">
         <Flex align="center" height="fill" justify="center">
           <Container width={1}>
-            <TestInput
+            <>TODO</>
+            {/* <TestInput
               readOnly={readOnly}
               schema={schema}
               type={portableTextType as FIXME}
@@ -31,7 +32,7 @@ export default function Story() {
               withCustomMarkers={withCustomMarkers}
               renderCustomMarkers={renderCustomMarkers}
               renderBlockActions={renderBlockActions}
-            />
+            /> */}
           </Container>
         </Flex>
       </Card>

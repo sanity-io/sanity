@@ -1,29 +1,13 @@
+import {defineType} from '@sanity/types'
 import userEvent from '@testing-library/user-event'
-import {renderObjectInput} from '../../../test/renderInput'
+import React from 'react'
+import {renderObjectInput} from '../../../../../test/form'
+import {ObjectInput} from '../ObjectInput'
 
-// This mock is needed to prevent the "not wrapped in act()" error from React testing library.
-// The reason is that the `useCurrentUser` is used by `ObjectInput` to figure out which fields are
-// hidden, and using this hook causes the `ObjectInput` to render again once the user is loaded.
-//
-// NOTE!
-// We can remove this mock when `ObjectInput` no longer uses `useCurrentUser`.
-jest.mock('@sanity/base/hooks', () => {
-  const hooks = jest.requireActual('@sanity/base/hooks')
-
-  return {
-    ...hooks,
-    useCurrentUser: jest.fn().mockImplementation(() => ({
-      value: null,
-      error: null,
-      isLoading: false,
-    })),
-  }
-})
-
-const fieldsetsTestType = {
+const fieldsetsTestType = defineType({
   title: 'Fieldsets test',
   name: 'fieldsetsTest',
-  type: 'document',
+  type: 'object',
   fieldsets: [
     {name: 'withDefaults', title: 'Fieldset with defaults'},
     {
@@ -44,12 +28,13 @@ const fieldsetsTestType = {
       fieldset: 'collapsibleWithDefaults',
     },
   ],
-}
+})
 
 describe('fieldset with default options', () => {
   it('renders fields in a <fieldset element and includes a <legend', () => {
     const {result} = renderObjectInput({
-      type: fieldsetsTestType,
+      fieldDefinition: fieldsetsTestType,
+      render: (inputProps) => <ObjectInput {...inputProps} />,
     })
 
     const fieldset = result.queryByTestId('fieldset-withDefaults')
@@ -65,8 +50,10 @@ describe('fieldset with default options', () => {
 
   it('does not render a toggle button for the fieldset legend ', () => {
     const {result} = renderObjectInput({
-      type: fieldsetsTestType,
+      fieldDefinition: fieldsetsTestType,
+      render: (inputProps) => <ObjectInput {...inputProps} />,
     })
+
     const fieldset = result.container.querySelector('fieldset')
     expect(fieldset).toBeVisible()
     const legend = fieldset!.querySelector('legend')
@@ -78,8 +65,10 @@ describe('fieldset with default options', () => {
 describe('collapsible fieldset with default options', () => {
   it('renders fields in a <fieldset element and includes a <legend', () => {
     const {result} = renderObjectInput({
-      type: fieldsetsTestType,
+      fieldDefinition: fieldsetsTestType,
+      render: (inputProps) => <ObjectInput {...inputProps} />,
     })
+
     const fieldset = result.queryByTestId('fieldset-collapsibleWithDefaults')
     expect(fieldset).toBeVisible()
     expect(fieldset!.tagName).toBe('FIELDSET')
@@ -90,8 +79,10 @@ describe('collapsible fieldset with default options', () => {
 
   it('renders a button for the fieldset legend ', () => {
     const {result} = renderObjectInput({
-      type: fieldsetsTestType,
+      fieldDefinition: fieldsetsTestType,
+      render: (inputProps) => <ObjectInput {...inputProps} />,
     })
+
     const fieldset = result.queryByTestId('fieldset-collapsibleWithDefaults')
     expect(fieldset).toBeVisible()
     const toggleButton = fieldset!.querySelector('legend button')
@@ -100,8 +91,10 @@ describe('collapsible fieldset with default options', () => {
 
   it('renders collapsed initially', () => {
     const {result} = renderObjectInput({
-      type: fieldsetsTestType,
+      fieldDefinition: fieldsetsTestType,
+      render: (inputProps) => <ObjectInput {...inputProps} />,
     })
+
     const fieldset = result.queryByTestId('fieldset-collapsibleWithDefaults')
     expect(fieldset).toBeVisible()
     const field1 = result.queryByTestId('input-collapsibleWithDefaults1')
@@ -110,18 +103,21 @@ describe('collapsible fieldset with default options', () => {
 
   it('expands if focus path targets a field inside the fieldset', () => {
     const {result} = renderObjectInput({
-      props: {
-        focusPath: ['collapsibleWithDefaults1'],
-      },
-      type: fieldsetsTestType,
+      fieldDefinition: fieldsetsTestType,
+      render: (inputProps) => (
+        <ObjectInput {...inputProps} focusPath={['collapsibleWithDefaults1']} />
+      ),
     })
+
     expect(result.queryByTestId('input-collapsibleWithDefaults1')).toBeVisible()
   })
 
   it('emits a focus path targeting the field when clicking toggle button', () => {
     const {onFocus, result} = renderObjectInput({
-      type: fieldsetsTestType,
+      fieldDefinition: fieldsetsTestType,
+      render: (inputProps) => <ObjectInput {...inputProps} />,
     })
+
     const fieldset = result.queryByTestId('fieldset-collapsibleWithDefaults')
     expect(fieldset).toBeVisible()
     const toggleButton = fieldset!.querySelector('legend button')
@@ -135,10 +131,11 @@ describe('collapsible fieldset with default options', () => {
   })
 
   it('toggles collapse/expand despite focus path targeting field inside', () => {
-    const innerFieldPath = ['collapsibleWithDefaults1']
     const {rerender, result} = renderObjectInput({
-      props: {focusPath: innerFieldPath},
-      type: fieldsetsTestType,
+      fieldDefinition: fieldsetsTestType,
+      render: (inputProps) => (
+        <ObjectInput {...inputProps} focusPath={['collapsibleWithDefaults1']} />
+      ),
     })
 
     const fieldset = result.queryByTestId('fieldset-collapsibleWithDefaults')
@@ -156,14 +153,17 @@ describe('collapsible fieldset with default options', () => {
     expect(result.queryByTestId('input-collapsibleWithDefaults1')).toBeVisible()
 
     // move focus to another field should keep it open
-    rerender({focusPath: []})
+    rerender((inputProps) => <ObjectInput {...inputProps} focusPath={[]} />)
+
     expect(result.queryByTestId('input-collapsibleWithDefaults1')).toBeVisible()
 
     // collapse again
     userEvent.click(toggleButton!)
 
     // move focus to a field inside again should make it expand
-    rerender({focusPath: innerFieldPath})
+    rerender((inputProps) => (
+      <ObjectInput {...inputProps} focusPath={['collapsibleWithDefaults1']} />
+    ))
     expect(result.queryByTestId('input-collapsibleWithDefaults1')).toBeVisible()
   })
 
@@ -173,8 +173,10 @@ describe('collapsible fieldset with default options', () => {
     // in some cases create "focus jumps"
 
     const {onFocus, result} = renderObjectInput({
-      props: {focusPath: ['collapsibleWithDefaults1']},
-      type: fieldsetsTestType,
+      fieldDefinition: fieldsetsTestType,
+      render: (inputProps) => (
+        <ObjectInput {...inputProps} focusPath={['collapsibleWithDefaults1']} />
+      ),
     })
 
     const fieldset = result.queryByTestId('fieldset-collapsibleWithDefaults')

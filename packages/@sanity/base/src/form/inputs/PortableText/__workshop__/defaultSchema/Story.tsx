@@ -91,44 +91,46 @@ function TestForm() {
     return <>Type not found</>
   }
 
-  return (
-    <StudioFormBuilderProvider
-      __internal_patchChannel={patchChannel}
-      onChange={handleChange}
-      value={value}
-    >
-      <PortableTextInput
-        compareValue={compareValue}
-        focusPath={focusPath}
-        focusRef={focusRef}
-        id="test"
-        level={0}
-        members={members}
-        onAppendItem={handleAppendItem}
-        onBlur={handleBlur}
-        onChange={handleChange}
-        onFocus={handleFocus}
-        onFocusPath={setFocusPath}
-        onInsert={handleInsert}
-        onMoveItem={handleMoveItem}
-        onPrependItem={handlePrependItem}
-        onRemoveItem={handleRemoveItem}
-        onCollapse={handleCollapse}
-        onOpenItem={handleOpenItem}
-        onCloseItem={handleCloseItem}
-        onExpand={handleExpand}
-        onCollapseItem={handleCollapseItem}
-        onExpandItem={handleExpandItem}
-        path={path}
-        presence={presence}
-        renderField={renderField}
-        renderInput={renderInput}
-        renderItem={renderItem}
-        resolveInitialValue={resolveInitialValue}
-        schemaType={type as ArraySchemaType}
-        validation={validation}
-        value={value}
-      />
-    </StudioFormBuilderProvider>
-  )
+  return <>TODO</>
+
+  // return (
+  //   <StudioFormBuilderProvider
+  //     __internal_patchChannel={patchChannel}
+  //     onChange={handleChange}
+  //     value={value}
+  //   >
+  //     <PortableTextInput
+  //       compareValue={compareValue}
+  //       focusPath={focusPath}
+  //       focusRef={focusRef}
+  //       id="test"
+  //       level={0}
+  //       members={members}
+  //       onAppendItem={handleAppendItem}
+  //       onBlur={handleBlur}
+  //       onChange={handleChange}
+  //       onFocus={handleFocus}
+  //       onFocusPath={setFocusPath}
+  //       onInsert={handleInsert}
+  //       onMoveItem={handleMoveItem}
+  //       onPrependItem={handlePrependItem}
+  //       onRemoveItem={handleRemoveItem}
+  //       onCollapse={handleCollapse}
+  //       onOpenItem={handleOpenItem}
+  //       onCloseItem={handleCloseItem}
+  //       onExpand={handleExpand}
+  //       onCollapseItem={handleCollapseItem}
+  //       onExpandItem={handleExpandItem}
+  //       path={path}
+  //       presence={presence}
+  //       renderField={renderField}
+  //       renderInput={renderInput}
+  //       renderItem={renderItem}
+  //       resolveInitialValue={resolveInitialValue}
+  //       schemaType={type as ArraySchemaType}
+  //       validation={validation}
+  //       value={value}
+  //     />
+  //   </StudioFormBuilderProvider>
+  // )
 }

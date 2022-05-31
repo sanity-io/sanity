@@ -1,93 +1,69 @@
-import {fireEvent, render} from '@testing-library/react'
+import {defineType} from '@sanity/types'
+import {fireEvent} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
+import {renderStringInput} from '../../../../../test/form'
+import {DateInput} from '../DateInput'
 
-import {LayerProvider, studioTheme, ThemeProvider} from '@sanity/ui'
-import {DateInput, DateInputProps} from '../DateInput'
-import {FIXME} from '../../../types'
-
-function renderInput(
-  props: Omit<
-    DateInputProps,
-    | 'focusPath'
-    | 'inputProps'
-    | 'type'
-    | 'onFocus'
-    | 'onChange'
-    | 'validation'
-    | 'level'
-    | 'presence'
-  >
-) {
-  const onFocus = jest.fn()
-  const onChange = jest.fn()
-
-  const {container} = render(
-    <ThemeProvider scheme="light" theme={studioTheme}>
-      <LayerProvider>
-        <DateInput
-          onFocus={onFocus}
-          onChange={onChange}
-          validation={[]}
-          level={0}
-          presence={[]}
-          {...props}
-        />
-      </LayerProvider>
-    </ThemeProvider>
-  )
-
-  const textInput = container.querySelector('input') as HTMLInputElement
-
-  return {onChange, onFocus, textInput}
-}
-
-// Note: for the tests to be deterministic we need this to ensure tests are run in a predefined timezone
+// NOTE: for the tests to be deterministic we need this to ensure tests are run in a predefined timezone
 // see globalSetup in jest config for details about how this is set up
 test('timezone for the test environment should be set to America/Los_Angeles', () => {
   expect(Intl.DateTimeFormat().resolvedOptions().timeZone).toBe('America/Los_Angeles')
 })
 
 test('does not emit onChange after invalid value has been typed', () => {
-  const {textInput, onChange} = renderInput({} as any)
+  const {onChange, result} = renderStringInput({
+    fieldDefinition: defineType({
+      type: 'date',
+      name: 'test',
+    }),
+    render: (inputProps) => <DateInput {...inputProps} />,
+  })
 
-  userEvent.type(textInput, 'this is invalid')
-  expect(textInput?.value).toBe('this is invalid')
+  const input = result.container.querySelector('input')!
+
+  userEvent.type(input, 'this is invalid')
+  expect(input.value).toBe('this is invalid')
   expect(onChange.mock.calls.length).toBe(0)
 
-  fireEvent.blur(textInput)
+  fireEvent.blur(input)
 
   expect(onChange.mock.calls.length).toBe(0)
 })
 
 test('emits onChange on correct format if a valid value has been typed', () => {
-  const {textInput, onChange} = renderInput({} as any)
+  const {onChange, result} = renderStringInput({
+    fieldDefinition: defineType({
+      type: 'date',
+      name: 'test',
+    }),
+    render: (inputProps) => <DateInput {...inputProps} />,
+  })
 
-  // note: the date is entered and displayed in local timezone
-  userEvent.type(textInput, '2021-03-28')
-  expect(textInput?.value).toBe('2021-03-28')
+  const input = result.container.querySelector('input')!
 
-  fireEvent.blur(textInput)
+  // NOTE: the date is entered and displayed in local timezone
+  userEvent.type(input, '2021-03-28')
+  expect(input.value).toBe('2021-03-28')
 
-  // note: the date is entered and displayed in local timezone but stored in utc
-  expect(onChange.mock.calls).toMatchInlineSnapshot(`
-    Array [
-      Array [
-        PatchEvent {
-          "patches": Array [
-            Object {
-              "path": Array [],
-              "type": "set",
-              "value": "2021-03-28",
-            },
-          ],
-        },
-      ],
-    ]
-  `)
+  fireEvent.blur(input)
+
+  // NOTE: the date is entered and displayed in local timezone but stored in utc
+  expect(onChange.mock.calls).toMatchSnapshot()
 })
 
 test('formatting of deserialized value', () => {
-  const {textInput} = renderInput({value: '2021-03-28'} as any)
-  expect(textInput?.value).toBe('2021-03-28')
+  const {result} = renderStringInput({
+    fieldDefinition: defineType({
+      type: 'date',
+      name: 'test',
+    }),
+    props: {documentValue: {test: '2021-03-28'}},
+    render: (inputProps) => <DateInput {...inputProps} />,
+  })
+
+  const input = result.container.querySelector('input')!
+
+  // const {textInput} = renderInput({value: '2021-03-28'} as any)
+  expect(input.value).toBe('2021-03-28')
 })

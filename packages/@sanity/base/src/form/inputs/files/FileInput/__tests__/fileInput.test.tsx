@@ -1,35 +1,13 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
-import {FileAsset, FileSchemaType, SchemaType} from '@sanity/types'
+import {FileAsset, FileSchemaType} from '@sanity/types'
 import {fireEvent, waitFor} from '@testing-library/react'
 import React from 'react'
-import {EMPTY, Observable, of} from 'rxjs'
-import {UploadOptions} from '../../../../studio/uploads/types'
-import {renderInput} from '../../../../test/renderInput'
-import {FIXME} from '../../../../types'
-import {FileInput, FileInputProps} from '../FileInput'
-import {SanityClient} from '@sanity/client'
+import {Observable, of} from 'rxjs'
+import {renderFileInput} from '../../../../../../test/form'
+import {FileInput} from '../FileInput'
 
-const fileTestType = {
-  name: 'fileTest',
-  type: 'document',
-  title: 'File test',
-  description: 'Different test cases of file fields',
-  fields: [
-    {
-      name: 'title',
-      title: 'Title',
-      type: 'string',
-    },
-    {
-      name: 'someFile',
-      title: 'A simple file',
-      type: 'file',
-    },
-  ],
-}
-
-const observeAssetStub = (id: string): Observable<FileAsset> =>
+const observeAssetStub = (): Observable<FileAsset> =>
   of({
     originalFilename: 'cats.txt',
     url: 'https://cdn.sanity.io/files/ppsg7ml5/test/26db46ec62059d6cd491b4343afaecc92ff1b4d5.txt',
@@ -37,38 +15,19 @@ const observeAssetStub = (id: string): Observable<FileAsset> =>
     _id: 'file-26db46ec62059d6cd491b4343afaecc92ff1b4d5-txt',
     _rev: 'slQurnjRhOy7Fj3dkfUHei',
     _type: 'sanity.fileAsset',
-  } as FIXME)
-
-const resolveUploaderStub = () => ({
-  priority: 1,
-  type: 'file',
-  accepts: 'file/*',
-  upload: (client: SanityClient, file: File, type?: SchemaType, options?: UploadOptions) => EMPTY,
-})
-
-const defaultProps: Partial<FileInputProps> = {
-  assetSources: [{} as FIXME],
-  compareValue: {},
-  directUploads: true,
-  path: ['file'],
-  level: 1,
-  observeAsset: observeAssetStub,
-  resolveUploader: resolveUploaderStub,
-  value: {},
-}
-
-function render(props?: Partial<FileInputProps>) {
-  return renderInput<any>({
-    props,
-    render: (renderProps) => <FileInput {...defaultProps} {...renderProps} />,
-    type: fileTestType,
-  })
-}
+  } as FileAsset)
 
 describe('FileInput with empty state', () => {
   it('renders an empty input as default', () => {
-    // const {queryByTestId, queryByText} = render(<FileInput />)
-    const {result} = render()
+    const {result} = renderFileInput({
+      fieldDefinition: {
+        name: 'someFile',
+        title: 'A simple file',
+        type: 'file',
+      },
+      observeAsset: observeAssetStub,
+      render: (inputProps) => <FileInput {...inputProps} />,
+    })
 
     expect(result.queryByTestId('file-button-input')!.getAttribute('value')).toBe('')
     expect(result.queryByText('Drag or paste file here')).toBeInTheDocument()
@@ -81,16 +40,29 @@ describe('FileInput with empty state', () => {
   /* assetSources - adds a list of sources that a user can pick from when browsing */
 
   it('renders the browse button when it has at least one element in assetSources', () => {
-    const {result} = render()
+    const {result} = renderFileInput({
+      fieldDefinition: {
+        name: 'someFile',
+        title: 'A simple file',
+        type: 'file',
+      },
+      observeAsset: observeAssetStub,
+      render: (inputProps) => <FileInput {...inputProps} />,
+    })
 
     expect(result.queryByTestId('file-input-upload-button')).toBeInTheDocument()
     expect(result.queryByTestId('file-input-browse-button')).toBeInTheDocument()
   })
 
   it('renders only the upload button when it has no assetSources', () => {
-    // const {queryByTestId} = render(<FileInput assetSources={[]} />)
-    const {result} = render({
-      assetSources: [],
+    const {result} = renderFileInput({
+      fieldDefinition: {
+        name: 'someFile',
+        title: 'A simple file',
+        type: 'file',
+      },
+      observeAsset: observeAssetStub,
+      render: (inputProps) => <FileInput {...inputProps} assetSources={[]} />,
     })
 
     expect(result.queryByTestId('file-input-upload-button')).toBeInTheDocument()
@@ -98,12 +70,18 @@ describe('FileInput with empty state', () => {
   })
 
   it('renders the browse button with a tooltip when it has at least one element in assetSources', async () => {
-    // const {queryByTestId} = render(
-    //   <FileInput assetSources={[{name: 'source1'}, {name: 'source2'}]} />
-    // )
-    const {result} = render({
-      assetSources: [{name: 'source1'}, {name: 'source2'}] as FIXME,
+    const {result} = renderFileInput({
+      fieldDefinition: {
+        name: 'someFile',
+        title: 'A simple file',
+        type: 'file',
+      },
+      observeAsset: observeAssetStub,
+      render: (inputProps) => (
+        <FileInput {...inputProps} assetSources={[{name: 'source1'}, {name: 'source2'}] as any} />
+      ),
     })
+
     const browseButton = result.queryByTestId('file-input-multi-browse-button')
 
     expect(result.queryByTestId('file-input-upload-button')).toBeInTheDocument()
@@ -120,19 +98,30 @@ describe('FileInput with empty state', () => {
   /* directUploads - allows for user to upload files directly (default is true) */
 
   it('renders the upload button as disabled when directUploads is false', () => {
-    // const {queryByTestId} = render(<FileInput directUploads={false} />)
-    const {result} = render({
-      directUploads: false,
+    const {result} = renderFileInput({
+      fieldDefinition: {
+        name: 'someFile',
+        title: 'A simple file',
+        type: 'file',
+      },
+      observeAsset: observeAssetStub,
+      render: (inputProps) => <FileInput {...inputProps} directUploads={false} />,
     })
+
     expect(result.queryByTestId('file-input-upload-button')!.getAttribute('data-disabled')).toBe(
       'true'
     )
   })
 
   it('has default text that mentions that you cannot upload files when directUploads is false', () => {
-    // const {queryByText} = render(<FileInput directUploads={false} />)
-    const {result} = render({
-      directUploads: false,
+    const {result} = renderFileInput({
+      fieldDefinition: {
+        name: 'someFile',
+        title: 'A simple file',
+        type: 'file',
+      },
+      observeAsset: observeAssetStub,
+      render: (inputProps) => <FileInput {...inputProps} directUploads={false} />,
     })
 
     expect(result.queryByText(`Can't upload files here`)).toBeInTheDocument()
@@ -141,17 +130,30 @@ describe('FileInput with empty state', () => {
   /* readOnly - the file input is read only or not */
 
   it('the upload button is disabled when the input is readOnly', () => {
-    // const {queryByTestId} = render(<FileInput readOnly />)
-    const {result} = render({readOnly: true})
+    const {result} = renderFileInput({
+      fieldDefinition: {
+        name: 'someFile',
+        title: 'A simple file',
+        type: 'file',
+      },
+      observeAsset: observeAssetStub,
+      render: (inputProps) => <FileInput {...inputProps} readOnly />,
+    })
+
     expect(result.queryByTestId('file-input-upload-button')!.getAttribute('data-disabled')).toBe(
       'true'
     )
   })
 
   it('does not allow for browsing when input is readOnly', () => {
-    // const {queryByTestId} = render(<FileInput readOnly />)
-    const {result} = render({
-      readOnly: true,
+    const {result} = renderFileInput({
+      fieldDefinition: {
+        name: 'someFile',
+        title: 'A simple file',
+        type: 'file',
+      },
+      observeAsset: observeAssetStub,
+      render: (inputProps) => <FileInput {...inputProps} readOnly />,
     })
 
     expect(result.queryByTestId('file-input-browse-button')!.getAttribute('data-disabled')).toBe(
@@ -160,10 +162,16 @@ describe('FileInput with empty state', () => {
   })
 
   it('does not allow for upload when input is readOnly', async () => {
-    // const {queryByTestId, queryByText} = render(<FileInput readOnly />)
-    const {result} = render({
-      readOnly: true,
+    const {result} = renderFileInput({
+      fieldDefinition: {
+        name: 'someFile',
+        title: 'A simple file',
+        type: 'file',
+      },
+      observeAsset: observeAssetStub,
+      render: (inputProps) => <FileInput {...inputProps} readOnly />,
     })
+
     const input = result.queryByTestId('file-button-input')
 
     fireEvent.change(input!, {
@@ -190,9 +198,14 @@ describe('FileInput with asset', () => {
   }
 
   it('renders the right url as default when it has asset', () => {
-    // const {queryByText} = render(<FileInput value={value} />)
-    const {result} = render({
-      value,
+    const {result} = renderFileInput({
+      fieldDefinition: {
+        name: 'someFile',
+        title: 'A simple file',
+        type: 'file',
+      },
+      observeAsset: observeAssetStub,
+      render: (inputProps) => <FileInput {...inputProps} value={value} />,
     })
 
     expect(result.queryByText('cats.txt')).toBeInTheDocument()
@@ -207,9 +220,19 @@ describe('FileInput with asset', () => {
 
   it('renders the browse button in the file menu when it has at least one element in assetSources', async () => {
     // const {queryByTestId} = render(<FileInput value={value} />)
-    const {result} = render({
-      value,
+    // const {result} = render({
+    //   value,
+    // })
+    const {result} = renderFileInput({
+      fieldDefinition: {
+        name: 'someFile',
+        title: 'A simple file',
+        type: 'file',
+      },
+      observeAsset: observeAssetStub,
+      render: (inputProps) => <FileInput {...inputProps} value={value} />,
     })
+
     fireEvent.click(result.queryByTestId('options-menu-button')!)
 
     await waitFor(() => {
@@ -218,11 +241,16 @@ describe('FileInput with asset', () => {
   })
 
   it('renders the browse button in the file menu when it has no assetSources', async () => {
-    // const {queryByTestId} = render(<FileInput value={value} assetSources={[]} />)
-    const {result} = render({
-      assetSources: [],
-      value,
+    const {result} = renderFileInput({
+      fieldDefinition: {
+        name: 'someFile',
+        title: 'A simple file',
+        type: 'file',
+      },
+      observeAsset: observeAssetStub,
+      render: (inputProps) => <FileInput {...inputProps} assetSources={[]} value={value} />,
     })
+
     fireEvent.click(result.queryByTestId('options-menu-button')!)
 
     await waitFor(() => {
@@ -232,9 +260,20 @@ describe('FileInput with asset', () => {
   })
 
   it('renders the multiple browse buttons in the file menu when it has multiple assetSources', async () => {
-    const {result} = render({
-      assetSources: [{name: 'source1'}, {name: 'source2'}] as FIXME,
-      value,
+    const {result} = renderFileInput({
+      fieldDefinition: {
+        name: 'someFile',
+        title: 'A simple file',
+        type: 'file',
+      },
+      observeAsset: observeAssetStub,
+      render: (inputProps) => (
+        <FileInput
+          {...inputProps}
+          assetSources={[{name: 'source1'}, {name: 'source2'}] as any}
+          value={value}
+        />
+      ),
     })
 
     fireEvent.click(result.queryByTestId('options-menu-button')!)
@@ -248,10 +287,14 @@ describe('FileInput with asset', () => {
   /* directUploads - allows for user to upload files directly (default is true) */
 
   it('renders the upload button as disabled when directUploads is false', async () => {
-    // const {queryByTestId} = render(<FileInput value={value} directUploads={false} />)
-    const {result} = render({
-      directUploads: false,
-      value,
+    const {result} = renderFileInput({
+      fieldDefinition: {
+        name: 'someFile',
+        title: 'A simple file',
+        type: 'file',
+      },
+      observeAsset: observeAssetStub,
+      render: (inputProps) => <FileInput {...inputProps} directUploads={false} value={value} />,
     })
 
     fireEvent.click(result.queryByTestId('options-menu-button')!)
@@ -266,10 +309,14 @@ describe('FileInput with asset', () => {
   /* readOnly - the files input is read only or not */
 
   it('the upload button in the dropdown menu is disabled when the input is readOnly', async () => {
-    // const {queryByTestId} = render(<FileInput value={value} readOnly />)
-    const {result} = render({
-      readOnly: true,
-      value,
+    const {result} = renderFileInput({
+      fieldDefinition: {
+        name: 'someFile',
+        title: 'A simple file',
+        type: 'file',
+      },
+      observeAsset: observeAssetStub,
+      render: (inputProps) => <FileInput {...inputProps} readOnly value={value} />,
     })
 
     fireEvent.click(result.queryByTestId('options-menu-button')!)
@@ -282,11 +329,16 @@ describe('FileInput with asset', () => {
   })
 
   it('does not allow for browsing when input is readOnly', async () => {
-    // const {queryByTestId} = render(<FileInput value={value} readOnly />)
-    const {result} = render({
-      readOnly: true,
-      value,
+    const {result} = renderFileInput({
+      fieldDefinition: {
+        name: 'someFile',
+        title: 'A simple file',
+        type: 'file',
+      },
+      observeAsset: observeAssetStub,
+      render: (inputProps) => <FileInput {...inputProps} readOnly value={value} />,
     })
+
     fireEvent.click(result.queryByTestId('options-menu-button')!)
 
     await waitFor(() => {
@@ -295,14 +347,23 @@ describe('FileInput with asset', () => {
   })
 
   it('does not allow for browsing with multiple sources when input is readOnly', async () => {
-    // const {queryByTestId} = render(
-    //   <FileInput value={value} assetSources={[{name: 'source1'}, {name: 'source2'}]} readOnly />
-    // )
-    const {result} = render({
-      assetSources: [{name: 'source1'}, {name: 'source2'}] as FIXME,
-      readOnly: true,
-      value,
+    const {result} = renderFileInput({
+      fieldDefinition: {
+        name: 'someFile',
+        title: 'A simple file',
+        type: 'file',
+      },
+      observeAsset: observeAssetStub,
+      render: (inputProps) => (
+        <FileInput
+          {...inputProps}
+          assetSources={[{name: 'source1'}, {name: 'source2'}] as any}
+          readOnly
+          value={value}
+        />
+      ),
     })
+
     fireEvent.click(result.queryByTestId('options-menu-button')!)
 
     await waitFor(() => {
@@ -316,11 +377,16 @@ describe('FileInput with asset', () => {
   })
 
   it('does not allow for clearing the input it is readOnly', async () => {
-    // const {queryByTestId} = render(<FileInput value={value} readOnly />)
-    const {result} = render({
-      readOnly: true,
-      value,
+    const {result} = renderFileInput({
+      fieldDefinition: {
+        name: 'someFile',
+        title: 'A simple file',
+        type: 'file',
+      },
+      observeAsset: observeAssetStub,
+      render: (inputProps) => <FileInput {...inputProps} readOnly value={value} />,
     })
+
     fireEvent.click(result.queryByTestId('options-menu-button')!)
 
     await waitFor(() => {
@@ -350,10 +416,27 @@ describe('FileInput with asset', () => {
       },
     }
 
-    const {result} = render({
-      readOnly: true,
-      schemaType: fileType as any as FileSchemaType,
-      value,
+    // const {result} = render({
+    //   readOnly: true,
+    //   schemaType: fileType as any as FileSchemaType,
+    //   value,
+    // })
+
+    const {result} = renderFileInput({
+      fieldDefinition: {
+        name: 'someFile',
+        title: 'A simple file',
+        type: 'file',
+      },
+      observeAsset: observeAssetStub,
+      render: (inputProps) => (
+        <FileInput
+          {...inputProps}
+          readOnly
+          schemaType={fileType as any as FileSchemaType}
+          value={value}
+        />
+      ),
     })
 
     fireEvent.click(result.queryByTestId('options-menu-button')!)

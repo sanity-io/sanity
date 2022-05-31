@@ -1,40 +1,17 @@
 /* eslint-disable camelcase */
 
 import {act, waitForElementToBeRemoved, within} from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import React from 'react'
 import {Observable, of} from 'rxjs'
-import userEvent from '@testing-library/user-event'
-import {
-  CrossDatasetReferenceInput,
-  CrossDatasetReferenceInputProps,
-} from '../CrossDatasetReferenceInput'
+import {renderCrossDatasetReferenceInput} from '../../../../../test/form'
+import {CrossDatasetReferenceInput} from '../CrossDatasetReferenceInput'
 import {SearchHit} from '../types'
-import {renderInput} from '../../../test/renderInput'
-
-const EMPTY_SEARCH = () => of([])
 
 const AVAILABLE = {
   available: true,
   reason: 'READABLE',
 } as const
-
-const defaultProps: Partial<CrossDatasetReferenceInputProps> = {
-  validation: [],
-  level: 0,
-  focusPath: [],
-  presence: [],
-  onSearch: EMPTY_SEARCH,
-}
-
-function renderCDReferenceInput(options: {
-  props?: Partial<CrossDatasetReferenceInputProps>
-  type: any
-}) {
-  return renderInput<any>({
-    ...options,
-    render: (props) => <CrossDatasetReferenceInput {...defaultProps} {...props} />,
-  })
-}
 
 describe('render states', () => {
   test('it renders the autocomplete when no value is given', () => {
@@ -49,12 +26,8 @@ describe('render states', () => {
       })
     }
 
-    const {result} = renderCDReferenceInput({
-      props: {
-        getReferenceInfo,
-      },
-
-      type: {
+    const {result} = renderCrossDatasetReferenceInput({
+      fieldDefinition: {
         name: 'productReference',
         type: 'crossDatasetReference',
         dataset: 'products',
@@ -66,6 +39,10 @@ describe('render states', () => {
             preview: {},
           },
         ],
+      } as any,
+      getReferenceInfo,
+      render: (inputProps) => {
+        return <CrossDatasetReferenceInput {...inputProps} />
       },
     })
 
@@ -84,19 +61,15 @@ describe('render states', () => {
       })
     )
 
-    const {result} = renderCDReferenceInput({
-      props: {
-        focusPath: ['_ref'],
-        getReferenceInfo,
-        value: {
-          _type: 'productReference',
-          _ref: 'foo',
-          _dataset: 'foo',
-          _projectId: 'foo',
-        },
-      },
+    const value = {
+      _type: 'productReference',
+      _ref: 'foo',
+      _dataset: 'foo',
+      _projectId: 'foo',
+    }
 
-      type: {
+    const {result} = renderCrossDatasetReferenceInput({
+      fieldDefinition: {
         name: 'productReference',
         type: 'crossDatasetReference',
         dataset: 'products',
@@ -104,10 +77,14 @@ describe('render states', () => {
         to: [
           {
             type: 'product',
-            __experimental_search: [{path: 'title'}],
             preview: {},
+            __experimental_search: [{path: 'title'}],
           },
         ],
+      } as any,
+      getReferenceInfo,
+      render: (inputProps) => {
+        return <CrossDatasetReferenceInput {...inputProps} focusPath={['_ref']} value={value} />
       },
     })
 
@@ -126,25 +103,25 @@ describe('render states', () => {
       })
     )
 
-    const {result} = renderCDReferenceInput({
-      props: {
-        focusPath: ['_ref'],
-        getReferenceInfo,
-        value: {
-          _type: 'reference',
-          _ref: 'someActor',
-          _dataset: 'otherDataset',
-          _projectId: 'otherProject',
-        },
-      },
+    const value = {
+      _type: 'reference',
+      _ref: 'someActor',
+      _dataset: 'otherDataset',
+      _projectId: 'otherProject',
+    }
 
-      type: {
+    const {result} = renderCrossDatasetReferenceInput({
+      fieldDefinition: {
         name: 'productReference',
         type: 'crossDatasetReference',
         dataset: 'products',
         projectId: 'abcxyz',
         weak: true,
         to: [{type: 'product', __experimental_search: [{path: 'title'}], preview: {}}],
+      } as any,
+      getReferenceInfo,
+      render: (inputProps) => {
+        return <CrossDatasetReferenceInput {...inputProps} focusPath={['_ref']} value={value} />
       },
     })
 
@@ -171,19 +148,17 @@ describe('user interaction happy paths', () => {
         },
       })
 
-    const {onChange, result} = renderCDReferenceInput({
-      props: {
-        getReferenceInfo,
-        onSearch: handleSearch,
-      },
-
-      type: {
+    const {onChange, result} = renderCrossDatasetReferenceInput({
+      getReferenceInfo,
+      onSearch: handleSearch,
+      fieldDefinition: {
         name: 'productReference',
         type: 'crossDatasetReference',
         dataset: 'products',
         projectId: 'abcxyz',
         to: [{type: 'product', __experimental_search: [{path: 'title'}], preview: {}}],
-      },
+      } as any,
+      render: (inputProps) => <CrossDatasetReferenceInput {...inputProps} />,
     })
 
     const autocomplete = await result.findByTestId('autocomplete')
@@ -245,25 +220,26 @@ describe('user interaction happy paths', () => {
         },
       })
 
-    const {onChange, onFocus, rerender, result} = renderCDReferenceInput({
-      props: {
-        getReferenceInfo,
-        onSearch: handleSearch,
-        value: {
-          _type: 'productReference',
-          _ref: 'some-product',
-          _dataset: 'products',
-          _projectId: 'abcxyz',
-        },
-      },
+    const value = {
+      _type: 'productReference',
+      _ref: 'some-product',
+      _dataset: 'products',
+      _projectId: 'abcxyz',
+    }
 
-      type: {
+    const {onChange, onPathFocus, rerender, result} = renderCrossDatasetReferenceInput({
+      getReferenceInfo,
+      onSearch: handleSearch,
+
+      fieldDefinition: {
         name: 'productReference',
         type: 'crossDatasetReference',
         dataset: 'products',
         projectId: 'abcxyz',
         to: [{type: 'product', __experimental_search: [{path: 'title'}], preview: {}}],
-      },
+      } as any,
+
+      render: (inputProps) => <CrossDatasetReferenceInput {...inputProps} value={value} />,
     })
 
     const preview = result.getByTestId('preview')
@@ -272,12 +248,14 @@ describe('user interaction happy paths', () => {
     menuButton.click()
     const replaceMenuItem = result.getByTestId('menu-item-replace')
     replaceMenuItem.click()
-    expect(onFocus).toHaveBeenCalledTimes(1)
-    expect(onFocus).toHaveBeenCalledWith(['_ref'])
+    expect(onPathFocus).toHaveBeenCalledTimes(1)
+    expect(onPathFocus).toHaveBeenCalledWith(['_ref'])
 
-    rerender({
-      focusPath: ['_ref'],
-    })
+    rerender((inputProps) => <CrossDatasetReferenceInput {...inputProps} focusPath={['_ref']} />)
+
+    // rerender({
+    //   focusPath: ['_ref'],
+    // })
 
     const autocomplete = result.getByTestId('autocomplete')
     userEvent.type(autocomplete, 'foo')
@@ -328,24 +306,25 @@ describe('user interaction happy paths', () => {
         },
       })
 
-    const {onChange, result} = renderCDReferenceInput({
-      props: {
-        getReferenceInfo,
-        value: {
-          _type: 'productReference',
-          _ref: 'some-product',
-          _dataset: 'products',
-          _projectId: 'abcxyz',
-        },
-      },
+    const value = {
+      _type: 'productReference',
+      _ref: 'some-product',
+      _dataset: 'products',
+      _projectId: 'abcxyz',
+    }
 
-      type: {
+    const {onChange, result} = renderCrossDatasetReferenceInput({
+      getReferenceInfo,
+
+      fieldDefinition: {
         name: 'productReference',
         type: 'crossDatasetReference',
         dataset: 'products',
         projectId: 'abcxyz',
         to: [{type: 'product', __experimental_search: [{path: 'title'}], preview: {}}],
-      },
+      } as any,
+
+      render: (inputProps) => <CrossDatasetReferenceInput {...inputProps} value={value} />,
     })
 
     const preview = result.getByTestId('preview')
@@ -358,12 +337,8 @@ describe('user interaction happy paths', () => {
     expect(onChange).toHaveBeenCalledTimes(1)
     expect(onChange.mock.calls[0]).toEqual([
       {
-        patches: [
-          {
-            path: [],
-            type: 'unset',
-          },
-        ],
+        path: [],
+        type: 'unset',
       },
     ])
   })

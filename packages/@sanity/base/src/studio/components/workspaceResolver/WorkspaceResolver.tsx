@@ -63,7 +63,7 @@ export function WorkspaceResolver({children, loadingScreen}: WorkspaceResolverPr
   useEffect(() => {
     const {activeWorkspace} = __internal
 
-    combineLatest(
+    const workspace$ = combineLatest(
       activeWorkspace.sources.map((source) =>
         source.pipe(
           catchError((err) => {
@@ -72,32 +72,34 @@ export function WorkspaceResolver({children, loadingScreen}: WorkspaceResolverPr
           })
         )
       )
-    )
-      .pipe(
-        map((results): Source[] => {
-          const errors = results.filter((result) => result instanceof ConfigResolutionError)
-          if (errors.length) {
-            throw new ConfigResolutionError({
-              name: activeWorkspace.name,
-              causes: errors,
-              type: 'workspace',
-            })
-          }
-
-          return results as Source[]
-        }),
-        map(
-          ([rootSource, ...restOfSources]): Workspace => ({
-            ...activeWorkspace,
-            ...rootSource,
-            unstable_sources: [rootSource, ...restOfSources],
+    ).pipe(
+      map((results): Source[] => {
+        const errors = results.filter((result) => result instanceof ConfigResolutionError)
+        if (errors.length) {
+          throw new ConfigResolutionError({
+            name: activeWorkspace.name,
+            causes: errors,
+            type: 'workspace',
           })
-        )
+        }
+
+        return results as Source[]
+      }),
+      map(
+        ([rootSource, ...restOfSources]): Workspace => ({
+          ...activeWorkspace,
+          ...rootSource,
+          unstable_sources: [rootSource, ...restOfSources],
+        })
       )
-      .subscribe({
-        next: setWorkspace,
-        error: handleError,
-      })
+    )
+
+    const sub = workspace$.subscribe({
+      next: setWorkspace,
+      error: handleError,
+    })
+
+    return () => sub.unsubscribe()
   }, [__internal, locationStore])
 
   const {router, tools} = useMemo(() => {

@@ -25,13 +25,13 @@ export default function ReferenceInputStory() {
       <Flex align="center" height="fill" justify="center" padding={4} sizing="border">
         <Container width={0}>
           <ReviewChangesContextProvider changesOpen={false}>
-            <StudioFormBuilderProvider
+            TODO
+            {/* <StudioFormBuilderProvider
               __internal_patchChannel={patchChannel}
               onChange={onChange}
               value={value}
             >
-              <>TODO</>
-              {/* <FormBuilderInput
+              <FormBuilderInput
                 focusPath={focusPath}
                 level={1}
                 onBlur={onBlur}
@@ -42,8 +42,8 @@ export default function ReferenceInputStory() {
                 type={schemaType}
                 validation={[]}
                 value={undefined}
-              /> */}
-            </StudioFormBuilderProvider>
+              />
+            </StudioFormBuilderProvider> */}
           </ReviewChangesContextProvider>
         </Container>
       </Flex>

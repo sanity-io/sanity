@@ -1,0 +1,166 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`publish execute calls createOrReplace with _revision_lock_pseudo_field_ if there is an already published document 1`] = `
+Object {
+  "listen": Array [],
+  "observable": Object {
+    "fetch": Array [],
+    "getDocuments": Array [],
+    "listen": Array [],
+    "request": Array [],
+  },
+  "request": Array [],
+  "transaction": Array [
+    Object {
+      "commit": Array [
+        Array [
+          Object {
+            "tag": "document.publish",
+          },
+        ],
+      ],
+      "create": Array [],
+      "createOrReplace": Array [
+        Array [
+          Object {
+            "_createdAt": "2021-09-14T22:48:02.303Z",
+            "_id": "my-id",
+            "_rev": "exampleRev",
+            "_type": "example",
+            "newValue": "hey",
+          },
+        ],
+      ],
+      "delete": Array [
+        Array [
+          "drafts.my-id",
+        ],
+      ],
+      "id": 1,
+      "patch": Array [
+        Array [
+          "my-id",
+          Object {
+            "ifRevisionID": "exampleRev",
+            "unset": Array [
+              "_revision_lock_pseudo_field_",
+            ],
+          },
+        ],
+      ],
+    },
+  ],
+}
+`;
+
+exports[`publish execute removes the \`_updatedAt\` field 1`] = `
+Object {
+  "listen": Array [],
+  "observable": Object {
+    "fetch": Array [],
+    "getDocuments": Array [],
+    "listen": Array [],
+    "request": Array [],
+  },
+  "request": Array [],
+  "transaction": Array [
+    Object {
+      "commit": Array [
+        Array [
+          Object {
+            "tag": "document.publish",
+          },
+        ],
+      ],
+      "create": Array [
+        Array [
+          Object {
+            "_createdAt": "2021-09-14T22:48:02.303Z",
+            "_id": "my-id",
+            "_rev": "exampleRev",
+            "_type": "example",
+            "newValue": "hey",
+          },
+        ],
+      ],
+      "createOrReplace": Array [],
+      "delete": Array [
+        Array [
+          "drafts.my-id",
+        ],
+      ],
+      "id": 1,
+      "patch": Array [],
+    },
+  ],
+}
+`;
+
+exports[`publish execute takes in any and strengthens references where _strengthenOnPublish is true 1`] = `
+Object {
+  "listen": Array [],
+  "observable": Object {
+    "fetch": Array [],
+    "getDocuments": Array [],
+    "listen": Array [],
+    "request": Array [],
+  },
+  "request": Array [],
+  "transaction": Array [
+    Object {
+      "commit": Array [
+        Array [
+          Object {
+            "tag": "document.publish",
+          },
+        ],
+      ],
+      "create": Array [
+        Array [
+          Object {
+            "_createdAt": "2021-09-14T22:48:02.303Z",
+            "_id": "my-id",
+            "_rev": "exampleRev",
+            "_type": "my-type",
+            "inAn": Array [
+              Object {
+                "_key": "my-key",
+                "_ref": "my-ref-in-an-",
+                "_type": "reference",
+              },
+              Object {
+                "_key": "my-other-key",
+                "_type": "nestedObj",
+                "myRef": Object {
+                  "_ref": "my-ref-in-an--nested",
+                },
+              },
+              Object {
+                "_ref": "my-ref-in-an--no-key",
+                "_type": "reference",
+              },
+            ],
+            "notToBeStrengthened": Object {
+              "_ref": "my-ref",
+              "_type": "reference",
+              "_weak": true,
+            },
+            "simpleRef": Object {
+              "_ref": "my-ref",
+              "_type": "reference",
+            },
+          },
+        ],
+      ],
+      "createOrReplace": Array [],
+      "delete": Array [
+        Array [
+          "drafts.my-id",
+        ],
+      ],
+      "id": 1,
+      "patch": Array [],
+    },
+  ],
+}
+`;

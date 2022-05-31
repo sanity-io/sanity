@@ -1,3 +1,10 @@
-export * from './renderForm'
-export * from './renderInput'
-export * from './renderNode'
+export * from './renderArrayOfObjectsInput'
+export * from './renderBooleanInput'
+export * from './renderCrossDatasetReferenceInput'
+export * from './renderFileInput'
+export * from './renderImageInput'
+export * from './renderNumberInput'
+export * from './renderObjectInput'
+export * from './renderStringInput'
+
+export * from './TestProvider'
