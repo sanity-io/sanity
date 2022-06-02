@@ -39,13 +39,11 @@ export function useFeatures(): PortableTextFeatures {
 export function useActionGroups({
   hotkeys,
   onExpand,
-  onFocusPath,
   resolveInitialValue,
   disabled,
 }: {
   hotkeys: HotkeyOptions
   onExpand: (path: Path) => void
-  onFocusPath: (path: Path) => void
   resolveInitialValue: (type: ObjectSchemaType) => any
   disabled: boolean
 }): PTEToolbarActionGroup[] {
@@ -58,10 +56,9 @@ export function useActionGroups({
       if (paths && paths.markDefPath) {
         PortableTextEditor.blur(editor)
         onExpand(paths.markDefPath)
-        onFocusPath(paths.markDefPath)
       }
     },
-    [editor, onExpand, onFocusPath, resolveInitialValue]
+    [editor, onExpand, resolveInitialValue]
   )
 
   return useMemo(

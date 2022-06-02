@@ -227,7 +227,6 @@ export function Toolbar(props: ToolbarProps) {
   const actionGroups = useActionGroups({
     hotkeys,
     onExpand,
-    onFocusPath,
     resolveInitialValue,
     disabled: true,
   })
