@@ -4,7 +4,7 @@ import {SchemaType} from '@sanity/types'
 import {ImageInput, ImageInputProps} from '../../inputs/files/ImageInput'
 import {useFormBuilder} from '../../useFormBuilder'
 import {useDocumentPreviewStore} from '../../../datastores'
-import {useSource} from '../../../studio'
+import {useClient} from '../../../hooks'
 import {resolveUploader as defaultResolveUploader} from '../uploads/resolveUploader'
 import {FileLike} from '../uploads/types'
 import {observeImageAsset} from './client-adapters/assets'
@@ -23,7 +23,7 @@ export function StudioImageInput(props: StudioImageInputProps) {
   const sourcesFromSchema = props.schemaType.options?.sources
   const {image} = useFormBuilder().__internal
   const documentPreviewStore = useDocumentPreviewStore()
-  const {client} = useSource()
+  const client = useClient()
   const versionedClient = useMemo(() => client.withConfig({apiVersion: '1'}), [client])
   const formBuilder = useFormBuilder()
   const supportsImageUploads = formBuilder.__internal.image.directUploads

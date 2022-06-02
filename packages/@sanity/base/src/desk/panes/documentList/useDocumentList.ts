@@ -2,7 +2,7 @@ import {VirtualListChangeOpts} from '@sanity/ui'
 import {useEffect, useState, useCallback, useMemo, useRef} from 'react'
 import {of} from 'rxjs'
 import {filter as filterEvents} from 'rxjs/operators'
-import {useSource} from '../../../studio'
+import {useClient} from '../../../hooks'
 import {DocumentListPaneItem, QueryResult, SortOrder, SortOrderBy} from './types'
 import {removePublishedWithDrafts, toOrderClause} from './helpers'
 import {DEFAULT_ORDERING, FULL_LIST_LIMIT, PARTIAL_PAGE_LIMIT} from './constants'
@@ -30,7 +30,7 @@ interface DocumentListState {
  */
 export function useDocumentList(opts: UseDocumentListOpts): DocumentListState {
   const {apiVersion, defaultOrdering, filter, params, sortOrder} = opts
-  const {client} = useSource()
+  const client = useClient()
   const [fullList, setFullList] = useState(false)
   const fullListRef = useRef(fullList)
   const [result, setResult] = useState<QueryResult | null>(null)

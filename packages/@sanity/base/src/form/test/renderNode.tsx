@@ -4,6 +4,7 @@ import {ObjectSchemaType, SchemaType} from '@sanity/types'
 import {render} from '@testing-library/react'
 import {noop} from 'lodash'
 import React, {forwardRef} from 'react'
+import {useSchema} from '../../hooks'
 import {StudioProvider, useSource} from '../../studio'
 import {createConfig} from '../../config'
 import {FIXME, InputProps, FormInputComponentResolver, FormPreviewComponentResolver} from '../types'
@@ -66,7 +67,8 @@ export function renderNode(options: {
   const patchChannel = createPatchChannel()
 
   function Tester(props: any) {
-    const {schema, formBuilder} = useSource()
+    const schema = useSchema()
+    const {formBuilder} = useSource()
     const schemaErrors = schema._validation?.some((m) =>
       m.problems.some((p) => p.severity === 'error')
     )

@@ -1,6 +1,6 @@
 import React, {useCallback, useMemo} from 'react'
 import {Button, Card, Code, Grid, Stack, Text} from '@sanity/ui'
-import {useSource} from '../../../studio'
+import {useSchema} from '../../../hooks'
 import {PatchEvent, setIfMissing, unset} from '../../patch'
 import {Alert} from '../../components/Alert'
 import {Details} from '../../components/Details'
@@ -65,7 +65,7 @@ function UnsetItemButton({
  * but the schema has a named type
  */
 export function UntypedValueInput({validTypes, value, onChange}: UntypedValueInputProps) {
-  const {schema} = useSource()
+  const schema = useSchema()
   const isSingleValidType = validTypes.length === 1
   const isHoistedType = schema.has(validTypes[0])
 

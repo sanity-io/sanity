@@ -1,12 +1,12 @@
 import {Box, Card, Code, Container, Flex, Stack, Text} from '@sanity/ui'
 import {useBoolean, useNumber, useString} from '@sanity/ui-workshop'
 import React from 'react'
+import {useSchema} from '../../hooks'
 import {SanityPreview} from '../../preview'
-import {useSource} from '../../studio'
 import {useDocumentSearchResults} from '../useDocumentSearchResults'
 
 export default function DevStory() {
-  const source = useSource()
+  const schema = useSchema()
   const includeDrafts = useBoolean('Include drafts', true)
   const query = useString('Query', 'grrm', 'Props') ?? ''
   const limit = useNumber('Limit', 10, 'Props') || 1
@@ -17,7 +17,7 @@ export default function DevStory() {
       <Container width={1}>
         <Stack space={2}>
           {results.value.map((result) => {
-            const type = source.schema.get(result.hit._type)
+            const type = schema.get(result.hit._type)
 
             if (!type) {
               return (

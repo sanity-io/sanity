@@ -1,11 +1,10 @@
 import React, {forwardRef, useMemo} from 'react'
 import {Inline, Label, ResponsivePaddingProps} from '@sanity/ui'
 import {PreviewCard} from '../../../../components/PreviewCard'
-import {useDocumentPresence} from '../../../../hooks'
+import {useDocumentPresence, useSchema} from '../../../../hooks'
 import {DocumentPreviewPresence} from '../../../../presence'
 import {IntentLink} from '../../../../router'
 import {SanityPreview} from '../../../../preview'
-import {useSource} from '../../../source'
 import {getPublishedId} from '../../../../util'
 import {WeightedHit} from '../../../../search/weighted/types'
 
@@ -20,8 +19,8 @@ export function SearchItem(props: SearchItemProps) {
   const {hit, resultIndex} = data
   const publishedId = getPublishedId(documentId)
   const documentPresence = useDocumentPresence(publishedId)
-  const source = useSource()
-  const schemaType = source.schema.get(hit._type)
+  const schema = useSchema()
+  const schemaType = schema.get(hit._type)
 
   const LinkComponent = useMemo(
     () =>

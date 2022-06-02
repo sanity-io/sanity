@@ -4,7 +4,7 @@ import {FileInput, FileInputProps} from '../../inputs/files/FileInput'
 import {resolveUploader as defaultResolveUploader} from '../uploads/resolveUploader'
 import {useFormBuilder} from '../../useFormBuilder'
 import {useDocumentPreviewStore} from '../../../datastores'
-import {useSource} from '../../../studio'
+import {useClient} from '../../../hooks'
 import {FileLike} from '../uploads/types'
 import {observeFileAsset} from './client-adapters/assets'
 
@@ -17,7 +17,7 @@ export function StudioFileInput(props: StudioFileInputProps) {
   const sourcesFromSchema = props.schemaType.options?.sources
   const documentPreviewStore = useDocumentPreviewStore()
   const {file: fileConfig} = useFormBuilder().__internal
-  const {client} = useSource()
+  const client = useClient()
 
   const resolveUploader = useCallback(
     (type: SchemaType, file: FileLike) => {

@@ -18,7 +18,7 @@ import {ArrayItemReferenceInput} from '../../../inputs/ReferenceInput/ArrayItemR
 import {EditReferenceEvent} from '../../../inputs/ReferenceInput/types'
 import {InsertEvent} from '../../../inputs/arrays/ArrayOfObjectsInput/types'
 import {useDocumentPreviewStore} from '../../../../datastores'
-import {useSource} from '../../../../studio'
+import {useClient, useSchema} from '../../../../hooks'
 import {useReferenceInputOptions} from '../../contexts'
 import {FIXME, ObjectInputProps} from '../../../types'
 import {useFormValue} from '../../../useFormValue'
@@ -67,7 +67,8 @@ type SearchError = {
 }
 
 export function StudioArrayItemReferenceInput(props: SanityArrayItemReferenceInputProps) {
-  const {schema, client} = useSource()
+  const client = useClient()
+  const schema = useSchema()
   const documentPreviewStore = useDocumentPreviewStore()
   const searchClient = useMemo(() => client.withConfig({apiVersion: '2021-03-25'}), [client])
   const {path, schemaType} = props

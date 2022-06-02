@@ -2,8 +2,8 @@ import React, {useCallback} from 'react'
 import {Card, Text, Flex} from '@sanity/ui'
 import {Asset as AssetType, SanityDocument} from '@sanity/types'
 import {SanityPreview} from '../../../preview'
-import {useSource} from '../../../studio'
 import {IntentLink} from '../../../router'
+import {useSchema} from '../../../hooks'
 
 export const DocumentList = ({
   asset,
@@ -45,7 +45,7 @@ export const DocumentList = ({
 }
 
 const DocumentLink = ({document}: {document: SanityDocument}) => {
-  const source = useSource()
+  const schema = useSchema()
 
   const LinkComponent = useCallback(
     (linkProps: Omit<React.HTMLProps<HTMLAnchorElement>, 'ref'>) => (
@@ -69,7 +69,7 @@ const DocumentLink = ({document}: {document: SanityDocument}) => {
         <SanityPreview
           layout="default"
           value={{_type: 'reference', _ref: document._id}}
-          type={source.schema.get(document._type)!}
+          type={schema.get(document._type)!}
         />
       </Flex>
     </Card>

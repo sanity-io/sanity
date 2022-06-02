@@ -3,7 +3,7 @@ import React, {useState, useEffect, useRef, useCallback, useMemo} from 'react'
 import styled from 'styled-components'
 import {Button, useToast} from '@sanity/ui'
 import {Asset as AssetType} from '@sanity/types'
-import {useSource} from '../../../studio'
+import {useClient} from '../../../hooks'
 import {FullscreenSpinner} from '../../components/FullscreenSpinner'
 import {Checkerboard} from '../../components/Checkerboard'
 import {AssetUsageDialog} from './AssetUsageDialog'
@@ -60,7 +60,7 @@ const MenuContainer = styled.div`
 `
 
 export const AssetThumb = React.memo(function AssetThumb(props: AssetProps) {
-  const {client} = useSource()
+  const client = useClient()
   const versionedClient = useMemo(() => client.withConfig({apiVersion: '1'}), [client])
   const toast = useToast()
   const deleteRef$ = useRef<Subscription>()

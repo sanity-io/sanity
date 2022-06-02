@@ -2,7 +2,7 @@ import {UnknownIcon} from '@sanity/icons'
 import {Box, Button, Inline, Text, Tooltip} from '@sanity/ui'
 import {partition, uniqBy} from 'lodash'
 import React, {memo, useCallback, useMemo} from 'react'
-import {useSource} from '../../../studio'
+import {useTemplates} from '../../../hooks'
 import {InitialValueTemplateItem} from '../../../templates'
 import {DeskToolPaneActionHandler, PaneMenuItem, PaneMenuItemGroup} from '../../types'
 import {IntentButton} from '../IntentButton'
@@ -46,7 +46,7 @@ export const PaneHeaderActions = memo(
     menuItemGroups = emptyArray,
     actionHandlers = emptyObject,
   }: PaneHeaderActionsProps) => {
-    const source = useSource()
+    const templates = useTemplates()
 
     const handleAction = useCallback(
       (item: PaneMenuItem) => {
@@ -100,7 +100,7 @@ export const PaneHeaderActions = memo(
           if (!templateId) return null
 
           // eslint-disable-next-line max-nested-callbacks
-          const template = source.templates.find((t) => t.id === templateId)
+          const template = templates.find((t) => t.id === templateId)
           // the template doesn't exist then the action might be disabled
           if (!template) return null
 
@@ -130,7 +130,7 @@ export const PaneHeaderActions = memo(
 
           return initialValueTemplateItem
         })
-    }, [menuItems, source])
+    }, [menuItems, templates])
 
     const combinedInitialValueTemplates = useMemo(() => {
       // this de-dupes create actions

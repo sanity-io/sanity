@@ -2,6 +2,7 @@ import {PortalProvider, useToast} from '@sanity/ui'
 import React, {memo, Fragment, useState, useEffect, useCallback} from 'react'
 import styled from 'styled-components'
 import isHotkey from 'is-hotkey'
+import {useSchema} from '../../../hooks'
 import {useRouter} from '../../../router'
 import {LOADING_PANE} from '../../constants'
 import {LoadingPane, DeskToolPane} from '../../panes'
@@ -10,7 +11,6 @@ import {useResolvedPanes} from '../../structureResolvers'
 import {PaneNode} from '../../types'
 import {PaneLayout} from '../pane'
 import {useDeskTool} from '../DeskToolProvider'
-import {useSource} from '../../../studio'
 import {NoDocumentTypesScreen} from './NoDocumentTypesScreen'
 
 interface DeskToolProps {
@@ -30,7 +30,7 @@ const isSaveHotkey = isHotkey('mod+s')
 export const DeskTool = memo(function DeskTool({onPaneChange}: DeskToolProps) {
   const {navigate} = useRouter()
   const {push: pushToast} = useToast()
-  const {schema} = useSource()
+  const schema = useSchema()
   const {layoutCollapsed, setLayoutCollapsed} = useDeskTool()
   const {paneDataItems, resolvedPanes, routerPanes} = useResolvedPanes()
 

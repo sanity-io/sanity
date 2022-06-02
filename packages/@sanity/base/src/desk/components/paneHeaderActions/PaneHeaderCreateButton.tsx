@@ -5,8 +5,8 @@ import {Schema} from '@sanity/types'
 import {IntentButton} from '../IntentButton'
 import {useTemplatePermissions, TemplatePermissionsResult} from '../../../datastores'
 import {IntentLink} from '../../../router'
-import {useSource} from '../../../studio'
 import {Template, InitialValueTemplateItem} from '../../../templates'
+import {useSchema, useTemplates} from '../../../hooks'
 import {InsufficientPermissionsMessageTooltip} from './InsufficientPermissionsMessageTooltip'
 
 export type PaneHeaderIntentProps = React.ComponentProps<typeof IntentButton>['intent']
@@ -42,7 +42,8 @@ interface PaneHeaderCreateButtonProps {
 }
 
 export function PaneHeaderCreateButton({templateItems}: PaneHeaderCreateButtonProps) {
-  const source = useSource()
+  const schema = useSchema()
+  const templates = useTemplates()
 
   const [templatePermissions, isTemplatePermissionsLoading] = useTemplatePermissions({
     templateItems,
@@ -84,7 +85,7 @@ export function PaneHeaderCreateButton({templateItems}: PaneHeaderCreateButtonPr
     const firstItem = templateItems[0]
     const permissions = permissionsById[firstItem.id]
     const disabled = !permissions?.granted
-    const intent = getIntent(source.schema, source.templates, firstItem)
+    const intent = getIntent(schema, templates, firstItem)
     if (!intent) return null
 
     return (
@@ -124,8 +125,8 @@ export function PaneHeaderCreateButton({templateItems}: PaneHeaderCreateButtonPr
           {templateItems.map((item, itemIndex) => {
             const permissions = permissionsById[item.id]
             const disabled = !permissions?.granted
-            const intent = getIntent(source.schema, source.templates, item)
-            const template = source.templates.find((t) => t.id === item.templateId)
+            const intent = getIntent(schema, templates, item)
+            const template = templates.find((t) => t.id === item.templateId)
             if (!template || !intent) return null
 
             const Link = forwardRef((linkProps, linkRef: React.ForwardedRef<never>) =>

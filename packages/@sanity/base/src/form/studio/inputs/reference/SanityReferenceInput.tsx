@@ -16,7 +16,7 @@ import * as adapter from '../client-adapters/reference'
 import {ReferenceInput} from '../../../inputs/ReferenceInput/ReferenceInput'
 import {CreateOption, EditReferenceEvent} from '../../../inputs/ReferenceInput/types'
 import {useDocumentPreviewStore} from '../../../../datastores'
-import {useSource} from '../../../../studio'
+import {useClient, useSchema} from '../../../../hooks'
 import {useReferenceInputOptions} from '../../contexts'
 import {FIXME, ObjectInputProps} from '../../../types'
 import {useFormValue} from '../../../useFormValue'
@@ -60,7 +60,8 @@ type SearchError = {
 }
 
 export function SanityReferenceInput(props: StudioReferenceInputProps) {
-  const {client, schema} = useSource()
+  const client = useClient()
+  const schema = useSchema()
   const documentPreviewStore = useDocumentPreviewStore()
   const searchClient = useMemo(() => client.withConfig({apiVersion: '2021-03-25'}), [client])
   const {path, schemaType} = props

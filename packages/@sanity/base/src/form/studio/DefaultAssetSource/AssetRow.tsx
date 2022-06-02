@@ -4,8 +4,7 @@ import styled, {css} from 'styled-components'
 import {Button, Box, Card, Flex, Stack, Label, Text, Tooltip, Grid, useToast} from '@sanity/ui'
 import {DocumentIcon, ChevronUpIcon, ChevronDownIcon, LinkIcon, TrashIcon} from '@sanity/icons'
 import {Asset as AssetType} from '@sanity/types'
-import {useTimeAgo} from '../../../hooks'
-import {useSource} from '../../../studio'
+import {useClient, useTimeAgo} from '../../../hooks'
 import {FIXME} from '../../types'
 import {prettyBytes} from './prettyBytes'
 import {AssetUsageDialog} from './AssetUsageDialog'
@@ -116,7 +115,7 @@ const STYLES_ASSETMENU_WRAPPER = {
 const DISABLED_DELETE_TITLE = 'Cannot delete current file'
 
 export const AssetRow = (props: RowProps) => {
-  const {client} = useSource()
+  const client = useClient()
   const versionedClient = useMemo(() => client.withConfig({apiVersion: '1'}), [client])
   const toast = useToast()
   const deleteRef$ = useRef<Subscription>()

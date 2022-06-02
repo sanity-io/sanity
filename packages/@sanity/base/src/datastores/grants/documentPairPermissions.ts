@@ -7,8 +7,9 @@ import {snapshotPair} from '../document/document-pair/snapshotPair'
 import {getDraftId, getPublishedId} from '../../util/draftUtils'
 import {useSource} from '../../studio'
 import {useGrantsStore} from '../datastores'
-import {GrantsStore, PermissionCheckResult} from './types'
 import {PartialExcept} from '../../util/PartialExcept'
+import {useClient, useSchema} from '../../hooks'
+import {GrantsStore, PermissionCheckResult} from './types'
 
 function getSchemaType(schema: Schema, typeName: string): SchemaType {
   const type = schema.get(typeName)
@@ -266,7 +267,8 @@ export function useDocumentPairPermissions({
 }: PartialExcept<DocumentPairPermissionsOptions, 'id' | 'type' | 'permission'>): ReturnType<
   typeof useDocumentPairPermissionsFromHookFactory
 > {
-  const {client, schema} = useSource()
+  const client = useClient()
+  const schema = useSchema()
   const grantsStore = useGrantsStore()
 
   return useDocumentPairPermissionsFromHookFactory({

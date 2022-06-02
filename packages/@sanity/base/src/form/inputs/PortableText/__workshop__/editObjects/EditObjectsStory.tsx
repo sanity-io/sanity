@@ -38,7 +38,7 @@ export function EditObjectsStory() {
   const kind = useSelect('Kind', TYPE_OPTIONS, 'annotation') || 'annotation'
 
   const portal = usePortal()
-  const source = useSource()
+  const {formBuilder} = useSource()
 
   const {editorPath, focusPath} = useMemo(() => {
     if (!open) {
@@ -142,7 +142,7 @@ export function EditObjectsStory() {
           __internal_patchChannel={patchChannel}
           onChange={handleChange}
           value={value}
-          {...source.formBuilder}
+          {...formBuilder}
         >
           <PortableTextEditor onChange={handleChange} type={type as FIXME} value={value}>
             <EditObject

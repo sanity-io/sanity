@@ -9,7 +9,7 @@ import {
   share,
   switchMap,
 } from 'rxjs/operators'
-import {useSource} from '../studio'
+import {useClient, useSchema} from '../hooks'
 import {isNonNullable} from '../util'
 import {createSearch} from './search'
 import {WeightedHit} from './weighted/types'
@@ -47,7 +47,8 @@ export function useDocumentSearchResults(props: {
   limit?: number
   query: string
 }): DocumentSearchResultsState {
-  const {client, schema} = useSource()
+  const client = useClient()
+  const schema = useSchema()
   const {includeDrafts = false, limit = 1000, query: queryProp} = props
   const [state, setState] = useState<DocumentSearchResultsState>(EMPTY_STATE)
   const paramsSubject = useMemo(() => new Subject<DocumentSearchParams>(), [])

@@ -5,7 +5,8 @@ import React, {useCallback, useMemo, useRef, useState} from 'react'
 import {ArraySchemaType, Path} from '@sanity/types'
 import {createMockSanityClient} from '../../../../../../test/mocks/mockSanityClient'
 import {createConfig} from '../../../../../config'
-import {StudioProvider, useSource} from '../../../../../studio'
+import {useSchema} from '../../../../../hooks'
+import {StudioProvider} from '../../../../../studio'
 import {PortableTextInput} from '../../PortableTextInput'
 import {createPatchChannel} from '../../../../patch/PatchChannel'
 import {StudioFormBuilderProvider} from '../../../../studio/StudioFormBuilderProvider'
@@ -43,7 +44,7 @@ export default function Story() {
 }
 
 function TestForm() {
-  const {schema} = useSource()
+  const schema = useSchema()
   // const readOnly = useBoolean('Read only', false)
   // const withError = useBoolean('With error', false)
   // const withWarning = useBoolean('With warning', false)

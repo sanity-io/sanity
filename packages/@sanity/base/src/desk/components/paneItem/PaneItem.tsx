@@ -4,9 +4,8 @@ import {Text} from '@sanity/ui'
 import React, {forwardRef, useCallback, useEffect, useMemo, useState} from 'react'
 import {PreviewCard} from '../../../components/PreviewCard'
 import {useDocumentPreviewStore} from '../../../datastores'
-import {useDocumentPresence} from '../../../hooks'
+import {useDocumentPresence, useSchema} from '../../../hooks'
 import {SanityDefaultPreview} from '../../../preview'
-import {useSource} from '../../../studio'
 import {MissingSchemaType} from '../MissingSchemaType'
 import {usePaneRouter} from '../paneRouter'
 import {PaneItemPreview} from './PaneItemPreview'
@@ -40,11 +39,11 @@ export function getIconWithFallback(
 
 export function PaneItem(props: PaneItemProps) {
   const {icon, id, layout = 'default', pressed, schemaType, selected, title, value} = props
-  const source = useSource()
+  const schema = useSchema()
   const documentPreviewStore = useDocumentPreviewStore()
   const {ChildLink} = usePaneRouter()
   const documentPresence = useDocumentPresence(id)
-  const hasSchemaType = Boolean(schemaType && schemaType.name && source.schema.get(schemaType.name))
+  const hasSchemaType = Boolean(schemaType && schemaType.name && schema.get(schemaType.name))
   const previewValue = useMemo(() => ({title}), [title])
   const [clicked, setClicked] = useState<boolean>(false)
 

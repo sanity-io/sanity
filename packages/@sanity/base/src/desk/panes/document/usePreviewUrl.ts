@@ -12,9 +12,7 @@ const isSanityDocument = (value: unknown): value is SanityDocument =>
 export function usePreviewUrl(value: Partial<SanityDocument> | undefined): string | undefined {
   const [previewUrl, setPreviewUrl] = useState<string | undefined>(undefined)
   const [error, setError] = useState<unknown>(null)
-  const {
-    document: {resolveProductionUrl},
-  } = useSource()
+  const {resolveProductionUrl} = useSource().document
   const value$ = useAsObservable(value)
 
   if (error) throw error

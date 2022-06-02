@@ -5,17 +5,17 @@ import {ArrayInput} from '../../inputs/arrays/ArrayOfObjectsInput'
 import {ArrayOfPrimitivesInput} from '../../inputs/arrays/ArrayOfPrimitivesInput'
 import * as is from '../../utils/is'
 import {useFormBuilder} from '../../useFormBuilder'
+import {useClient} from '../../../hooks'
 import {ArrayOfObjectsInputProps, ArrayOfPrimitivesInputProps} from '../../types'
 import {resolveInitialValueForType} from '../../../templates'
 import {FileLike, UploaderResolver} from '../uploads/types'
-import {useSource} from '../../../studio'
 
 export function StudioArrayInput(
   props: ArrayOfObjectsInputProps & {resolveUploader: UploaderResolver}
 ) {
   const formBuilder = useFormBuilder()
   // todo abstract the client away
-  const {client} = useSource()
+  const client = useClient()
   const supportsImageUploads = formBuilder.__internal.image.directUploads
   const supportsFileUploads = formBuilder.__internal.file.directUploads
 

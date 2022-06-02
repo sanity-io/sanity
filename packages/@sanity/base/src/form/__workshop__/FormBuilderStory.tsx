@@ -1,9 +1,8 @@
 import {Path} from '@sanity/types'
 import {Card, Container} from '@sanity/ui'
 import React, {useCallback, useMemo, useState} from 'react'
-import {useSource} from '../../studio'
 import {useUnique} from '../../util'
-import {useDocumentOperation, useEditState, useValidationStatus} from '../../hooks'
+import {useDocumentOperation, useEditState, useSchema, useValidationStatus} from '../../hooks'
 import {StudioFormBuilder} from '../studio/StudioFormBuilder'
 import {createPatchChannel} from '../patch/PatchChannel'
 
@@ -16,7 +15,7 @@ export default function FormBuilderStory() {
     []
   )
 
-  const {schema} = useSource()
+  const schema = useSchema()
   const schemaType = schema.get(documentType)
   const editState = useEditState(documentId, documentType)
   const {patch}: any = useDocumentOperation(documentId, documentType)

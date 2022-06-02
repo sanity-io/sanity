@@ -6,19 +6,19 @@ import {omit} from 'lodash'
 import React, {useCallback, useEffect, useMemo, useState} from 'react'
 import {useMemoObservable} from 'react-rx'
 import {ChangeFieldWrapper} from '../../components/changeIndicators'
-import {useSource} from '../../studio'
 import {
   ChangeList,
   DocumentChangeContext,
   DocumentChangeContextInstance,
   ObjectDiff,
 } from '../../field'
-import {useConnectionState, useEditState} from '../../hooks'
+import {useClient, useConnectionState, useEditState, useSchema} from '../../hooks'
 import {useInitialValue} from '../document/useInitialValue'
 import {useHistoryStore} from '../datastores'
 
 export default function HistoryTimelineStory() {
-  const {client, schema} = useSource()
+  const client = useClient()
+  const schema = useSchema()
   const documentId = useMemo(() => 'test', [])
   const documentType = useMemo(() => 'author', [])
   const schemaType = schema.get(documentType)

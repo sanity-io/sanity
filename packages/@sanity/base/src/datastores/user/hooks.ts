@@ -4,9 +4,7 @@ import {LoadableState, useLoadable} from '../../util/useLoadable'
 import {useSource} from '../../studio'
 
 export function useUser(userId: string): LoadableState<User | null> {
-  const {
-    __internal: {userStore},
-  } = useSource()
+  const {userStore} = useSource().__internal
 
   const user$ = useMemo(() => userStore.observable.getUser(userId), [userId, userStore])
 

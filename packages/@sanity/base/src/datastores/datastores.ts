@@ -1,6 +1,7 @@
 /* eslint-disable camelcase */
 
 import {useMemo} from 'react'
+import {useClient, useSchema, useTemplates} from '../hooks'
 import {useSource, useWorkspace} from '../studio'
 import {createDocumentPreviewStore, DocumentPreviewStore} from '../preview'
 import {
@@ -17,10 +18,8 @@ import {useResourceCache} from './ResourceCacheProvider'
 import {createSettingsStore, SettingsStore} from './settings'
 
 export function useGrantsStore(): GrantsStore {
-  const {
-    client,
-    __internal: {userStore},
-  } = useSource()
+  const client = useClient()
+  const {userStore} = useSource().__internal
   const resourceCache = useResourceCache()
 
   return useMemo(() => {
@@ -41,7 +40,7 @@ export function useGrantsStore(): GrantsStore {
 }
 
 export function useHistoryStore(): HistoryStore {
-  const {client} = useSource()
+  const client = useClient()
   const resourceCache = useResourceCache()
 
   return useMemo(() => {
@@ -62,7 +61,7 @@ export function useHistoryStore(): HistoryStore {
 }
 
 export function useDocumentPreviewStore(): DocumentPreviewStore {
-  const {client} = useSource()
+  const client = useClient()
   const resourceCache = useResourceCache()
   const crossProjectTokenStore = useCrossProjectTokenStore()
 
@@ -84,7 +83,7 @@ export function useDocumentPreviewStore(): DocumentPreviewStore {
 }
 
 export function useCrossProjectTokenStore() {
-  const {client} = useSource()
+  const client = useClient()
   const resourceCache = useResourceCache()
 
   return useMemo(() => {
@@ -105,7 +104,9 @@ export function useCrossProjectTokenStore() {
 }
 
 export function useDocumentStore(): DocumentStore {
-  const {client, schema, templates} = useSource()
+  const client = useClient()
+  const schema = useSchema()
+  const templates = useTemplates()
   const resourceCache = useResourceCache()
   const historyStore = useHistoryStore()
   const documentPreviewStore = useDocumentPreviewStore()
@@ -135,9 +136,7 @@ export function useDocumentStore(): DocumentStore {
 }
 
 export function useConnectionStatusStore(): ConnectionStatusStore {
-  const {
-    __internal: {bifur},
-  } = useSource()
+  const {bifur} = useSource().__internal
   const resourceCache = useResourceCache()
 
   return useMemo(() => {
@@ -158,9 +157,7 @@ export function useConnectionStatusStore(): ConnectionStatusStore {
 }
 
 export function usePresenceStore(): PresenceStore {
-  const {
-    __internal: {bifur, userStore},
-  } = useSource()
+  const {bifur, userStore} = useSource().__internal
   const resourceCache = useResourceCache()
   const connectionStatusStore = useConnectionStatusStore()
 
@@ -182,7 +179,7 @@ export function usePresenceStore(): PresenceStore {
 }
 
 export function useProjectStore(): ProjectStore {
-  const {client} = useSource()
+  const client = useClient()
   const resourceCache = useResourceCache()
 
   return useMemo(() => {

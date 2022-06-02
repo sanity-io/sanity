@@ -5,7 +5,8 @@ import {Path} from '@sanity/types'
 import {render} from '@testing-library/react'
 import {createConfig} from '../../config'
 import {FormBuilderFilterFieldFn, FIXME} from '../types'
-import {StudioProvider, useSource} from '../../studio'
+import {useSchema} from '../../hooks'
+import {StudioProvider} from '../../studio'
 import {createPatchChannel} from '../patch/PatchChannel'
 import {StudioFormBuilder} from '../studio/StudioFormBuilder'
 import {createMockSanityClient} from './mocks/sanityClient'
@@ -43,7 +44,7 @@ export function renderForm(props: {
   })
 
   function Tester(testerProps: {focusPath: Path}) {
-    const {schema} = useSource()
+    const schema = useSchema()
     const docType = schema.get(typeDef.name)
 
     return (

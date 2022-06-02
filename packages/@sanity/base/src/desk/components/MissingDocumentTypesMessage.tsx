@@ -4,7 +4,7 @@ import {WarningOutlineIcon} from '@sanity/icons'
 import {useSource} from '../../studio'
 
 export function MissingDocumentTypesMessage() {
-  const source = useSource()
+  const {name: sourceName} = useSource()
 
   return (
     <Card height="fill">
@@ -19,7 +19,7 @@ export function MissingDocumentTypesMessage() {
               </Box>
               <Stack flex={1} marginLeft={3} space={3}>
                 <Text as="h1" size={1} weight="bold">
-                  No schema types in the <em>{source.name}</em> source!
+                  No schema types in the <em>{sourceName}</em> source!
                 </Text>
                 <Text as="p" muted size={1}>
                   Please add schema types in your source configuration.

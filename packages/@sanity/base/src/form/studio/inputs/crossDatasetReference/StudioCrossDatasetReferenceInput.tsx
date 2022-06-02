@@ -13,8 +13,8 @@ import {catchError, mergeMap} from 'rxjs/operators'
 import {Box, Stack, Text, TextSkeleton} from '@sanity/ui'
 import {CrossDatasetReferenceInput} from '../../../inputs/CrossDatasetReferenceInput'
 import {Alert} from '../../../components/Alert'
-import {useSource} from '../../../../studio'
 import {useDocumentPreviewStore} from '../../../../datastores'
+import {useClient, useProjectId} from '../../../../hooks'
 import {FIXME, ObjectInputProps} from '../../../types'
 import {useFormValue} from '../../../useFormValue'
 import {search} from './datastores/search'
@@ -64,7 +64,8 @@ type SearchError = {
 
 export function StudioCrossDatasetReferenceInput(props: StudioCrossDatasetReferenceInputProps) {
   const {path, schemaType} = props
-  const {client, projectId} = useSource()
+  const client = useClient()
+  const projectId = useProjectId()
   const documentPreviewStore = useDocumentPreviewStore()
 
   const isCurrentProject = projectId === schemaType.projectId

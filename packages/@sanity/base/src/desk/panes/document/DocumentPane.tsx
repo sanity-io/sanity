@@ -21,7 +21,7 @@ import {LoadingPane} from '../loading'
 import {ChangeConnectorRoot} from '../../../components/changeIndicators'
 import {useZIndex} from '../../../components/zOffsets'
 import {isDev} from '../../../environment'
-import {useDocumentType} from '../../../hooks'
+import {useDocumentType, useTemplates} from '../../../hooks'
 import {useSource, SourceProvider} from '../../../studio'
 import {usePaneRouter, useDeskTool} from '../../components'
 import {useTemplatePermissions} from '../../../datastores'
@@ -67,21 +67,21 @@ export const DocumentPane = memo(function DocumentPane(props: DocumentPaneProvid
 
 function DocumentPaneInner(props: DocumentPaneProviderProps) {
   const {pane, paneKey} = props
-  const {document} = useSource()
+  const {resolveNewDocumentOptions} = useSource().document
   const paneRouter = usePaneRouter()
   const options = usePaneOptions(pane.options, paneRouter.params)
   const {documentType, isLoaded: isDocumentLoaded} = useDocumentType(options.id, options.type)
 
   const templateItems = useMemo(() => {
     if (documentType) {
-      return document.resolveNewDocumentOptions({
+      return resolveNewDocumentOptions({
         type: 'document',
         documentId: options.id,
         schemaType: documentType,
       })
     }
     return []
-  }, [document, documentType, options.id])
+  }, [documentType, options.id, resolveNewDocumentOptions])
 
   const [templatePermissions, isTemplatePermissionsLoading] = useTemplatePermissions({
     templateItems,
@@ -157,7 +157,7 @@ function usePaneOptions(
   options: DocumentPaneOptions,
   params: Record<string, string | undefined> = {}
 ): DocumentPaneOptions {
-  const source = useSource()
+  const templates = useTemplates()
 
   return useMemo(() => {
     // The document type is provided, so return
@@ -167,7 +167,7 @@ function usePaneOptions(
 
     // Attempt to derive document type from the template configuration
     const templateName = options.template || params.template
-    const template = templateName ? source.templates.find((t) => t.id === templateName) : undefined
+    const template = templateName ? templates.find((t) => t.id === templateName) : undefined
     const documentType = template?.schemaType
 
     // No document type was found in a template
@@ -177,7 +177,7 @@ function usePaneOptions(
 
     // The template provided the document type, so modify the pane’s `options` property
     return {...options, type: documentType}
-  }, [options, params.template, source.templates])
+  }, [options, params.template, templates])
 }
 
 function mergeDocumentType(

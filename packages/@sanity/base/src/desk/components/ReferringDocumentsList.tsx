@@ -1,9 +1,9 @@
 import {EditIcon} from '@sanity/icons'
 import {Box, Card, Flex, Stack, Text} from '@sanity/ui'
 import React, {useCallback, useMemo} from 'react'
+import {useSchema} from '../../hooks'
 import {SanityPreview} from '../../preview'
 import {useRouter} from '../../router'
-import {useSource} from '../../studio'
 
 export interface ReferringDocumentsListProps {
   documents: Record<string, any>[]
@@ -29,14 +29,14 @@ interface DocumentPreviewLinkProps {
 
 function DocumentPreviewLink(props: DocumentPreviewLinkProps) {
   const {document} = props
-  const source = useSource()
+  const schema = useSchema()
   const router = useRouter()
   const intent = useMemo(
     () => ({action: 'edit', params: {id: document._id, type: document._type}}),
     [document]
   )
   const href = router.resolveIntentLink(intent.action, intent.params)
-  const schemaType = source.schema.get(document._type)
+  const schemaType = schema.get(document._type)
 
   const handleClick = useCallback(
     (event) => {

@@ -4,10 +4,10 @@ import styled, {css} from 'styled-components'
 import {PaneContent, useDeskTool, usePaneLayout} from '../../../components'
 import {ScrollContainer} from '../../../../components/scroll'
 import {useDocumentValuePermissions} from '../../../../datastores'
-import {useSource} from '../../../../studio'
 import {getPublishedId, getDraftId} from '../../../../util'
 import {useDocumentPane} from '../useDocumentPane'
 import {InspectDialog} from '../inspectDialog'
+import {useSchema} from '../../../../hooks'
 import {ReferenceChangedBanner} from './ReferenceChangedBanner'
 import {PermissionCheckBanner} from './PermissionCheckBanner'
 import {FormView} from './documentViews'
@@ -35,7 +35,7 @@ const Scroller = styled(ScrollContainer)<{$disabled: boolean}>(({$disabled}) => 
 
 export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
   const {footerHeight, isInspectOpen, rootElement} = props
-  const source = useSource()
+  const schema = useSchema()
   const {
     activeViewId,
     displayed,
@@ -57,8 +57,8 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
 
   const requiredPermission = value._createdAt ? 'update' : 'create'
   const liveEdit = useMemo(
-    () => Boolean(source.schema.get(documentType)?.liveEdit),
-    [documentType, source.schema]
+    () => Boolean(schema.get(documentType)?.liveEdit),
+    [documentType, schema]
   )
   const docId = value._id ? value._id : 'dummy-id'
   const docPermissionsInput = useMemo(() => {

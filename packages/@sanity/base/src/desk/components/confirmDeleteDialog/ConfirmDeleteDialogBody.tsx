@@ -8,8 +8,8 @@ import {
 } from '@sanity/icons'
 import {useToast, Text, Box, Button, Flex, Label, Card, Stack} from '@sanity/ui'
 import {CopyToClipboard} from 'react-copy-to-clipboard'
+import {useSchema} from '../../../hooks'
 import {SanityDefaultPreview} from '../../../preview'
-import {useSource} from '../../../studio'
 import {ReferencePreviewLink} from './ReferencePreviewLink'
 import {ReferringDocuments} from './useReferringDocuments'
 import {
@@ -41,7 +41,7 @@ export function ConfirmDeleteDialogBody({
   projectIds,
   onReferenceLinkClick,
 }: DeletionConfirmationDialogBodyProps) {
-  const {schema} = useSource()
+  const schema = useSchema()
   const toast = useToast()
 
   const renderPreviewItem = useCallback(

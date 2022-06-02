@@ -1,8 +1,7 @@
 import {ValidationMarker} from '@sanity/types'
 import {Box, Card, Container} from '@sanity/ui'
 import {useAction, useBoolean} from '@sanity/ui-workshop'
-import React, {useCallback, useMemo} from 'react'
-import {createSchema} from '../../../../../schema'
+import React, {useMemo} from 'react'
 import {PortableTextMarker} from '../../../../types'
 import {FormBuilderProvider} from '../../../../FormBuilderProvider'
 import {TextBlock} from '../../text'
@@ -35,11 +34,6 @@ const blockBase = {
   ],
 }
 
-const schema = createSchema({
-  name: 'test',
-  types: [],
-})
-
 export function TextBlocksStory() {
   const hasErrors = useBoolean('Has errors', false)
   const hasMarkers = useBoolean('Has markers', false)
@@ -57,13 +51,13 @@ export function TextBlocksStory() {
   const attributes = useMemo(() => ({focused: false, selected: false, path: []}), [])
   const readOnly = false
 
-  const source = useSource()
+  const {formBuilder} = useSource()
 
   return (
     <Box padding={4}>
       <Container width={1}>
         <Card padding={3} shadow={1} overflow="auto" style={{maxHeight: '100%'}}>
-          <FormBuilderProvider {...source.formBuilder} onChange={onChange}>
+          <FormBuilderProvider {...formBuilder} onChange={onChange}>
             <TextBlock
               markers={markers}
               validation={validation}

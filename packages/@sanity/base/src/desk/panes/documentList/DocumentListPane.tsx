@@ -6,6 +6,7 @@ import {_DEBUG} from '../../constants'
 import {useUnique} from '../../../util'
 import {useDeskToolSetting} from '../../useDeskToolSetting'
 import {BaseDeskToolPaneProps} from '../types'
+import {useSchema} from '../../../hooks'
 import {useSource, SourceProvider} from '../../../studio'
 import {DEFAULT_ORDERING, EMPTY_RECORD} from './constants'
 import {
@@ -35,7 +36,8 @@ function useShallowUnique<ValueType>(value: ValueType): ValueType {
  */
 export const DocumentListPane = memo(function DocumentListPane(props: DocumentListPaneProps) {
   const {childItemId, index, isActive, isSelected, pane, paneKey} = props
-  const {schema, name: parentSourceName} = useSource()
+  const schema = useSchema()
+  const {name: parentSourceName} = useSource()
   const {
     defaultLayout = 'default',
     displayOptions,

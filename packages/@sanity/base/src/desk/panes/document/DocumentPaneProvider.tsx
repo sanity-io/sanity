@@ -8,9 +8,12 @@ import {useMemoObservable} from 'react-rx'
 import {PaneMenuItem} from '../../types'
 import {useHistoryStore, useInitialValue, usePresenceStore} from '../../../datastores'
 import {
+  useClient,
   useConnectionState,
   useDocumentOperation,
   useEditState,
+  useSchema,
+  useTemplates,
   useValidationStatus,
 } from '../../../hooks'
 import {isDev} from '../../../environment'
@@ -35,12 +38,10 @@ const emptyObject = {} as Record<string, string | undefined>
 // eslint-disable-next-line complexity, max-statements
 export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   const {children, index, pane, paneKey} = props
-  const {
-    client,
-    schema,
-    templates,
-    document: {actions: documentActions, badges: documentBadges},
-  } = useSource()
+  const client = useClient()
+  const schema = useSchema()
+  const templates = useTemplates()
+  const {actions: documentActions, badges: documentBadges} = useSource().document
   const historyStore = useHistoryStore()
   const presenceStore = usePresenceStore()
   const paneRouter = usePaneRouter()

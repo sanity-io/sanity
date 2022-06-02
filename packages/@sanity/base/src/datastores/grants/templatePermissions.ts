@@ -1,14 +1,14 @@
 import {Observable, combineLatest, from, of} from 'rxjs'
 import {switchMap, map} from 'rxjs/operators'
 import {Schema} from '@sanity/types'
+import {useSchema, useTemplates} from '../../hooks'
 import {resolveInitialValue, Template, InitialValueTemplateItem} from '../../templates'
-import {useSource} from '../../studio'
 import {createHookFromObservableFactory} from '../../util/createHookFromObservableFactory'
 import {getDraftId, getPublishedId} from '../../util/draftUtils'
 import {useGrantsStore} from '../datastores'
+import {PartialExcept} from '../../util/PartialExcept'
 import {GrantsStore, PermissionCheckResult} from './types'
 import {getDocumentValuePermissions} from './documentValuePermissions'
-import {PartialExcept} from '../../util/PartialExcept'
 
 export interface TemplatePermissionsResult<TInitialValue = Record<string, unknown>>
   extends PermissionCheckResult,
@@ -128,7 +128,8 @@ export function useTemplatePermissions({
 }: PartialExcept<TemplatePermissionsOptions, 'templateItems'>): ReturnType<
   typeof useTemplatePermissionsFromHookFactory
 > {
-  const {templates, schema} = useSource()
+  const schema = useSchema()
+  const templates = useTemplates()
   const grantsStore = useGrantsStore()
 
   return useTemplatePermissionsFromHookFactory({
