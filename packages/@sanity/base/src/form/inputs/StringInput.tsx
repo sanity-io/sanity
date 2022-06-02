@@ -1,14 +1,11 @@
-import React, {useMemo} from 'react'
-import {isValidationErrorMarker} from '@sanity/types'
+import React from 'react'
 import {TextInput} from '@sanity/ui'
 import {set, unset} from '../patch'
 import {StringInputProps} from '../types'
 
 export function StringInput(props: StringInputProps) {
-  const {value, readOnly, id, focusRef, validation, schemaType, onFocus, onBlur, onChange} = props
+  const {value, readOnly, id, focusRef, schemaType, onFocus, onBlur, onChange} = props
   const placeholder = schemaType.placeholder
-  const errors = useMemo(() => validation.filter(isValidationErrorMarker), [validation])
-
   const handleChange = React.useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
       const inputValue = event.currentTarget.value
@@ -20,7 +17,7 @@ export function StringInput(props: StringInputProps) {
   return (
     <TextInput
       id={id}
-      customValidity={errors.length > 0 ? errors[0].item.message : ''}
+      customValidity={props.customValidity}
       value={value || ''}
       readOnly={Boolean(readOnly)}
       placeholder={placeholder}

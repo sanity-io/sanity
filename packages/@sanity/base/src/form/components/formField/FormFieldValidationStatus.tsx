@@ -2,15 +2,15 @@
 
 import {hues} from '@sanity/color'
 import {ErrorOutlineIcon, InfoOutlineIcon, WarningOutlineIcon} from '@sanity/icons'
-import {isValidationErrorMarker, isValidationWarningMarker, ValidationMarker} from '@sanity/types'
 import {Box, Flex, Placement, Stack, Text, Tooltip} from '@sanity/ui'
 import React, {useMemo} from 'react'
+import {NodeValidation} from '../../types/common'
 
 export interface FormFieldValidationStatusProps {
   /**
    * @alpha
    */
-  validation?: ValidationMarker[]
+  validation?: NodeValidation[]
   /**
    * @alpha
    */
@@ -75,7 +75,7 @@ export function FormFieldValidationStatus(props: FormFieldValidationStatusProps)
             <>
               {validation.map((item, itemIndex) => (
                 // eslint-disable-next-line react/no-array-index-key
-                <FormFieldValidationStatusItem item={item} key={itemIndex} />
+                <FormFieldValidationStatusItem validation={item} key={itemIndex} />
               ))}
             </>
           )}
@@ -94,22 +94,22 @@ export function FormFieldValidationStatus(props: FormFieldValidationStatusProps)
   )
 }
 
-function FormFieldValidationStatusItem(props: {item: ValidationMarker}) {
-  const {item} = props
+function FormFieldValidationStatusItem(props: {validation: NodeValidation}) {
+  const {validation} = props
 
   const statusIcon = useMemo(() => {
-    if (item.level === 'error') return VALIDATION_ICONS.error
-    if (item.level === 'warning') return VALIDATION_ICONS.warning
-    if (item.level === 'info') return VALIDATION_ICONS.info
+    if (validation.level === 'error') return VALIDATION_ICONS.error
+    if (validation.level === 'warning') return VALIDATION_ICONS.warning
+    if (validation.level === 'info') return VALIDATION_ICONS.info
     return undefined
-  }, [item])
+  }, [validation])
 
   const statusColor = useMemo(() => {
-    if (item.level === 'error') return VALIDATION_COLORS.error
-    if (item.level === 'warning') return VALIDATION_COLORS.warning
-    if (item.level === 'info') return VALIDATION_COLORS.info
+    if (validation.level === 'error') return VALIDATION_COLORS.error
+    if (validation.level === 'warning') return VALIDATION_COLORS.warning
+    if (validation.level === 'info') return VALIDATION_COLORS.info
     return undefined
-  }, [item])
+  }, [validation])
 
   return (
     <Flex>
@@ -120,16 +120,16 @@ function FormFieldValidationStatusItem(props: {item: ValidationMarker}) {
       </Box>
       <Box flex={1}>
         <Text muted size={1}>
-          {item.item.message}
+          {validation.message}
         </Text>
       </Box>
     </Flex>
   )
 }
 
-function FormFieldValidationSummary({validation}: {validation: ValidationMarker[]}) {
-  const errorMarkers = validation.filter(isValidationErrorMarker)
-  const warningMarkers = validation.filter(isValidationWarningMarker)
+function FormFieldValidationSummary({validation}: {validation: NodeValidation[]}) {
+  const errorMarkers = validation.filter((item) => item.level === 'error')
+  const warningMarkers = validation.filter((item) => item.level === 'warning')
   const errorLen = errorMarkers.length
   const warningLen = warningMarkers.length
 

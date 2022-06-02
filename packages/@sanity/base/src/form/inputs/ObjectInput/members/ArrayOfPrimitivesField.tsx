@@ -1,9 +1,10 @@
 import React, {useCallback, useMemo, useRef} from 'react'
-import {isEqual, startsWith} from '@sanity/util/paths'
 import {FieldMember} from '../../../store/types/members'
 import {ArrayOfPrimitivesFormNode} from '../../../store/types/nodes'
 import {
+  ArrayOfPrimitivesFieldProps,
   ArrayOfPrimitivesInputProps,
+  FIXME,
   MoveItemEvent,
   RenderArrayOfPrimitivesItemCallback,
   RenderFieldCallback,
@@ -12,10 +13,7 @@ import {
 import {FormCallbacksProvider, useFormCallbacks} from '../../../studio/contexts/FormCallbacks'
 import {useDidUpdate} from '../../../hooks/useDidUpdate'
 import {PatchArg, PatchEvent, set, setIfMissing, unset} from '../../../patch'
-import {ArrayFieldProps} from '../../../types/fieldProps'
 import {PrimitiveValue} from '../../arrays/ArrayOfPrimitivesInput/types'
-import {useValidationMarkers} from '../../../studio/contexts/Validation'
-import {useFormFieldPresence} from '../../../studio/contexts/Presence'
 
 function move<T>(arr: T[], from: number, to: number): T[] {
   const copy = arr.slice()
@@ -74,8 +72,6 @@ export function ArrayOfPrimitivesField(props: {
   } = useFormCallbacks()
   const {member, renderField, renderInput, renderItem} = props
   const focusRef = useRef<{focus: () => void}>()
-  const rootValidation = useValidationMarkers()
-  const rootPresence = useFormFieldPresence()
 
   useDidUpdate(member.field.focused, (hadFocus, hasFocus) => {
     if (!hadFocus && hasFocus) {
@@ -179,22 +175,6 @@ export function ArrayOfPrimitivesField(props: {
     [member.field.path, onPathFocus]
   )
 
-  const presence = useMemo(() => {
-    return rootPresence.filter((item) =>
-      member.collapsed
-        ? startsWith(item.path, member.field.path)
-        : isEqual(item.path, member.field.path)
-    )
-  }, [member.collapsed, member.field.path, rootPresence])
-
-  const validation = useMemo(() => {
-    return rootValidation.filter((item) => {
-      return member.collapsed
-        ? startsWith(item.path, member.field.path)
-        : isEqual(item.path, member.field.path)
-    })
-  }, [member.collapsed, member.field.path, rootValidation])
-
   const inputProps = useMemo((): ArrayOfPrimitivesInputProps => {
     return {
       level: member.field.level,
@@ -217,8 +197,8 @@ export function ArrayOfPrimitivesField(props: {
       onRemoveItem: handleRemoveItem,
       onAppendItem: handleAppend,
       onPrependItem: handlePrepend,
-      validation,
-      presence,
+      validation: member.field.validation,
+      presence: member.field.presence,
       renderInput,
       renderItem,
       onFocusIndex: handleFocusIndex,
@@ -236,6 +216,8 @@ export function ArrayOfPrimitivesField(props: {
     member.field.path,
     member.field.focusPath,
     member.field.focused,
+    member.field.validation,
+    member.field.presence,
     member.collapsible,
     member.collapsed,
     handleBlur,
@@ -247,8 +229,6 @@ export function ArrayOfPrimitivesField(props: {
     handleRemoveItem,
     handleAppend,
     handlePrepend,
-    validation,
-    presence,
     renderInput,
     renderItem,
     handleFocusIndex,
@@ -256,7 +236,7 @@ export function ArrayOfPrimitivesField(props: {
 
   const renderedInput = useMemo(() => renderInput(inputProps), [inputProps, renderInput])
 
-  const fieldProps = useMemo((): ArrayFieldProps => {
+  const fieldProps = useMemo((): ArrayOfPrimitivesFieldProps => {
     return {
       name: member.name,
       index: member.index,
@@ -271,8 +251,8 @@ export function ArrayOfPrimitivesField(props: {
       schemaType: member.field.schemaType,
       inputId: member.field.id,
       path: member.field.path,
-      presence,
-      validation,
+      presence: member.field.presence,
+      validation: member.field.validation,
       children: renderedInput,
     }
   }, [
@@ -283,11 +263,12 @@ export function ArrayOfPrimitivesField(props: {
     member.field.schemaType,
     member.field.id,
     member.field.path,
+    member.field.presence,
+    member.field.validation,
     member.collapsible,
     member.collapsed,
-    handleSetCollapsed,
-    presence,
-    validation,
+    handleExpand,
+    handleCollapse,
     renderedInput,
   ])
 
@@ -301,7 +282,7 @@ export function ArrayOfPrimitivesField(props: {
       onPathBlur={onPathBlur}
       onPathFocus={onPathFocus}
     >
-      {useMemo(() => renderField(fieldProps), [fieldProps, renderField])}
+      {useMemo(() => renderField(fieldProps as FIXME), [fieldProps, renderField])}
     </FormCallbacksProvider>
   )
 }

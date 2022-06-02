@@ -7,8 +7,8 @@ import {
 import React, {useCallback, useMemo} from 'react'
 import {Badge, Box, Button, Card, Flex, Menu, MenuButton, MenuItem, Text, Tooltip} from '@sanity/ui'
 import styled from 'styled-components'
-import {isValidationErrorMarker, isValidationWarningMarker, SchemaType} from '@sanity/types'
 import {useId} from '@reach/auto-id'
+import {SchemaType} from '@sanity/types'
 import {FormFieldValidationStatus} from '../../../../components/formField'
 import {FieldPresence} from '../../../../../presence'
 import {DragHandle} from '../../common/DragHandle'
@@ -17,9 +17,9 @@ import {createProtoValue} from '../ArrayInput'
 import {InsertMenu} from '../InsertMenu'
 import {FIXME} from '../../../../types'
 import {EMPTY_ARRAY} from '../../../../utils/empty'
+import {FormNodePreview} from '../../../../FormNodePreview'
 import {ItemWithMissingType} from './ItemWithMissingType'
 import {ItemLayoutProps} from './ItemLayoutProps'
-import {FormNodePreview} from '../../../../FormNodePreview'
 
 const dragHandle = <DragHandle grid padding={2} mode="ghost" />
 
@@ -107,8 +107,8 @@ export const CellItem = React.forwardRef(function ItemCell(
     ...rest
   } = props
 
-  const hasError = validation.filter(isValidationErrorMarker).length > 0
-  const hasWarning = validation.filter(isValidationWarningMarker).length > 0
+  const hasError = validation.filter((item) => item.level === 'error').length > 0
+  const hasWarning = validation.filter((item) => item.level === 'warning').length > 0
 
   const tone = useMemo(() => {
     if (!value._key) {

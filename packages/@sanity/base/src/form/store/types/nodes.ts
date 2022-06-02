@@ -7,6 +7,7 @@ import {
   SchemaType,
   StringSchemaType,
 } from '@sanity/types'
+import {NodePresence, NodeValidation} from '../../types/common'
 import {ArrayOfObjectsMember, ArrayOfPrimitivesMember, ObjectMember} from './members'
 import {FormFieldGroup} from './fieldGroup'
 
@@ -19,6 +20,8 @@ export interface BaseFormNode<T = unknown, S extends SchemaType = SchemaType> {
 
   // state
   compareValue: T | undefined
+  presence: NodePresence[]
+  validation: NodeValidation[]
   value: T | undefined
   readOnly?: boolean
   focused?: boolean
@@ -32,6 +35,8 @@ export interface ObjectFormNode<
   groups: FormFieldGroup[]
 
   focusPath: Path
+  collapsible?: boolean
+  collapsed?: boolean
 }
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
@@ -46,6 +51,8 @@ export interface ArrayOfObjectsFormNode<
 > extends BaseFormNode<T, S> {
   members: ArrayOfObjectsMember[]
 
+  collapsible?: boolean
+  collapsed?: boolean
   focusPath: Path
 }
 

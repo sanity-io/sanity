@@ -1,10 +1,11 @@
 /* eslint-disable camelcase */
 
-import {ObjectSchemaType, Path} from '@sanity/types'
+import {ObjectSchemaType, Path, ValidationMarker} from '@sanity/types'
 import {useLayoutEffect, useMemo, useRef} from 'react'
 import {pathFor} from '@sanity/util/paths'
 import {useCurrentUser} from '../../datastores'
 import {StateTree, ObjectFormNode} from '../types'
+import {FormFieldPresence} from '../../presence'
 import {prepareFormProps, FIXME_SanityDocument} from './formState'
 import {immutableReconcile} from './utils/immutableReconcile'
 import {DocumentFormNode} from './types/nodes'
@@ -22,17 +23,21 @@ export function useFormState<
   {
     value,
     fieldGroupState,
-    expandedFieldSets,
+    collapsedFieldSets,
     collapsedPaths,
     focusPath,
     openPath,
+    presence,
+    validation,
   }: {
     fieldGroupState?: StateTree<string> | undefined
-    expandedFieldSets?: StateTree<boolean> | undefined
+    collapsedFieldSets?: StateTree<boolean> | undefined
     collapsedPaths?: StateTree<boolean> | undefined
     value: Partial<FIXME_SanityDocument>
     openPath: Path
     focusPath: Path
+    presence: FormFieldPresence[]
+    validation: ValidationMarker[]
   }
 ): FormState<T, S> | null {
   // note: feel free to move these state pieces out of this hook
@@ -50,7 +55,7 @@ export function useFormState<
       schemaType,
       document: value,
       fieldGroupState,
-      collapsedFieldSets: expandedFieldSets,
+      collapsedFieldSets,
       collapsedPaths,
       value,
       focusPath,
@@ -58,6 +63,8 @@ export function useFormState<
       path: pathFor([]),
       level: 0,
       currentUser,
+      presence,
+      validation,
     }) as ObjectFormNode<T, S> // TODO: remove type cast
 
     const reconciled = immutableReconcile(prev.current, next)
@@ -68,10 +75,12 @@ export function useFormState<
     schemaType,
     value,
     fieldGroupState,
-    expandedFieldSets,
+    collapsedFieldSets,
     collapsedPaths,
     focusPath,
     openPath,
     currentUser,
+    presence,
+    validation,
   ])
 }

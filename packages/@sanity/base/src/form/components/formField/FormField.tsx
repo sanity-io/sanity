@@ -1,15 +1,14 @@
 /* eslint-disable camelcase */
 
-import {ValidationMarker} from '@sanity/types'
 import {Stack} from '@sanity/ui'
 import React, {memo} from 'react'
 
-import {FormFieldHeader} from './FormFieldHeader'
 import {
   ChangeIndicator,
   ChangeIndicatorContextProvidedProps,
 } from '../../../components/changeIndicators'
-import {FormFieldPresence} from '../../../presence'
+import {NodePresence, NodeValidation} from '../../types/common'
+import {FormFieldHeader} from './FormFieldHeader'
 
 export interface FormFieldProps {
   /**
@@ -19,11 +18,11 @@ export interface FormFieldProps {
   /**
    * @alpha
    */
-  validation?: ValidationMarker[]
+  validation?: NodeValidation[]
   /**
    * @alpha
    */
-  __unstable_presence?: FormFieldPresence[]
+  __unstable_presence?: NodePresence[]
   children: React.ReactNode
   description?: React.ReactNode
   /**

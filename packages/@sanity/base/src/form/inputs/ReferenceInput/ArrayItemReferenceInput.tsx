@@ -9,7 +9,7 @@ import React, {
   useRef,
   useState,
 } from 'react'
-import {isValidationErrorMarker, Reference, SchemaType} from '@sanity/types'
+import {Reference, SchemaType} from '@sanity/types'
 import {
   EllipsisVerticalIcon,
   LaunchIcon as OpenInNewTabIcon,
@@ -280,7 +280,7 @@ export function ArrayItemReferenceInput(props: Props) {
 
   const {push} = useToast()
 
-  const errors = useMemo(() => validation.filter(isValidationErrorMarker), [validation])
+  const errors = useMemo(() => validation.filter((item) => item.level === 'error'), [validation])
 
   const pressed = selectedState === 'pressed'
   const selected = selectedState === 'selected'

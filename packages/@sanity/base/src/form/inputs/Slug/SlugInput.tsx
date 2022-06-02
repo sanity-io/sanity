@@ -43,7 +43,7 @@ export function SlugInput(props: SlugInputProps) {
     props
   const sourceField = schemaType.options?.source
   const inputId = useId()
-  const errors = useMemo(() => validation.filter(isValidationErrorMarker), [validation])
+  const errors = useMemo(() => validation.filter((item) => item.level === 'error'), [validation])
 
   const updateSlug = useCallback(
     (nextSlug) => {
@@ -91,7 +91,7 @@ export function SlugInput(props: SlugInputProps) {
           <TextInput
             id={inputId}
             ref={focusRef}
-            customValidity={errors.length > 0 ? errors[0].item.message : ''}
+            customValidity={errors.length > 0 ? errors[0].message : ''}
             disabled={isUpdating}
             onChange={handleChange}
             onFocus={onFocus}

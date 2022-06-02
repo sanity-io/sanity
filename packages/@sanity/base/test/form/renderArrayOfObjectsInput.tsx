@@ -52,6 +52,8 @@ export function renderArrayOfObjectsInput(options: {
       onPrependItem,
       onRemoveItem,
       path,
+      validation: [],
+      presence: [],
       renderField: () => <>TODO</>,
       renderInput: () => <>TODO</>,
       renderItem: () => <>TODO</>,

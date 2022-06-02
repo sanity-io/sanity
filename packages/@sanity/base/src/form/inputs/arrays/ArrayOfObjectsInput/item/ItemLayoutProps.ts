@@ -1,6 +1,6 @@
-import {ValidationMarker, SchemaType} from '@sanity/types'
+import {SchemaType} from '@sanity/types'
 import React from 'react'
-import {FormFieldPresence} from '../../../../../presence'
+import {NodePresence, NodeValidation} from '../../../../types'
 
 export interface ItemLayoutProps {
   isSortable: boolean
@@ -13,6 +13,6 @@ export interface ItemLayoutProps {
   onFocus?: (event: React.FocusEvent) => void
   onRemove: () => void
   onInsert: (event: {items: unknown[]; position: 'before' | 'after'}) => void
-  presence: FormFieldPresence[]
-  validation?: ValidationMarker[]
+  presence: NodePresence[]
+  validation?: NodeValidation[]
 }

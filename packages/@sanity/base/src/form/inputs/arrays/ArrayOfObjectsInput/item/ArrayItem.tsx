@@ -1,22 +1,20 @@
-import {isReferenceSchemaType, SchemaType, ValidationMarker} from '@sanity/types'
-import {pathFor, startsWith} from '@sanity/util/paths'
+import {isReferenceSchemaType, Path, SchemaType} from '@sanity/types'
 import {Box} from '@sanity/ui'
-import React, {memo, useCallback, useMemo, useRef} from 'react'
+import React, {memo, useCallback, useRef} from 'react'
 import {
   ChangeIndicatorScope,
   ContextProvidedChangeIndicator,
 } from '../../../../../components/changeIndicators'
 import {ArrayMember} from '../types'
-import {EMPTY_ARRAY} from '../../../../utils/empty'
 import {useScrollIntoViewOnFocusWithin} from '../../../../hooks/useScrollIntoViewOnFocusWithin'
 import {useDidUpdate} from '../../../../hooks/useDidUpdate'
 import {FIXME} from '../../../../types'
+import {useChildPresence} from '../../../../studio/contexts/Presence'
 import {RowItem} from './RowItem'
 import {CellItem} from './CellItem'
 
 export interface ArrayItemProps {
   index: number
-  itemKey: string | undefined
   onInsert: (event: {items: unknown[]; position: 'before' | 'after'}) => void
   onRemove: (value: ArrayMember) => void
   onFocus: (event: React.FocusEvent) => void
@@ -25,6 +23,7 @@ export interface ArrayItemProps {
   schemaType: SchemaType
   focused?: boolean
   open: boolean
+  path: Path
   insertableTypes: SchemaType[]
   readOnly?: boolean
   presence: FIXME[]
@@ -39,8 +38,8 @@ export const ArrayItem = memo(function ArrayItem(props: ArrayItemProps) {
     insertableTypes,
     schemaType,
     index,
-    itemKey,
     open,
+    path,
     onClick,
     readOnly,
     presence = [],
@@ -64,7 +63,7 @@ export const ArrayItem = memo(function ArrayItem(props: ArrayItemProps) {
     }
   })
 
-  const itemPath = useMemo(() => pathFor([itemKey ? {_key: itemKey} : index]), [index, itemKey])
+  const childPresence = useChildPresence(path)
 
   const handleRemove = useCallback(() => onRemove(value!), [onRemove, value])
 
@@ -73,28 +72,6 @@ export const ArrayItem = memo(function ArrayItem(props: ArrayItemProps) {
 
   const isGrid = schemaType.options?.layout === 'grid'
   const ItemComponent = isGrid ? CellItem : RowItem
-
-  const itemValidation = React.useMemo(
-    () => validation.filter((marker: ValidationMarker) => startsWith(itemPath, marker.path)),
-    [itemPath, validation]
-  )
-
-  const scopedValidation: ValidationMarker[] = useMemo(
-    () =>
-      itemValidation.length === 0
-        ? EMPTY_ARRAY
-        : itemValidation.map((marker) => {
-            if (marker.path.length <= 1) {
-              return marker
-            }
-            const level = marker.level === 'error' ? 'errors' : 'warnings'
-            return {
-              ...marker,
-              item: marker.item.cloneWithMessage?.(`Contains ${level}`),
-            } as ValidationMarker
-          }),
-    [itemValidation]
-  )
 
   const isReference = schemaType && isReferenceSchemaType(schemaType)
 
@@ -107,8 +84,8 @@ export const ArrayItem = memo(function ArrayItem(props: ArrayItemProps) {
       readOnly={readOnly}
       type={schemaType}
       insertableTypes={insertableTypes}
-      presence={presence}
-      validation={scopedValidation}
+      presence={open ? presence : childPresence}
+      validation={validation}
       isSortable={isSortable}
       onInsert={onInsert}
       onClick={onClick}
@@ -119,7 +96,7 @@ export const ArrayItem = memo(function ArrayItem(props: ArrayItemProps) {
 
   return (
     <>
-      <ChangeIndicatorScope path={itemPath}>
+      <ChangeIndicatorScope path={path}>
         <ContextProvidedChangeIndicator compareDeep disabled={open && !isReference}>
           {isGrid ? (
             // grid should be rendered without a margin

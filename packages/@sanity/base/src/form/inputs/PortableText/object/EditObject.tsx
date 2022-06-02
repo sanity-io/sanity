@@ -18,7 +18,7 @@ import {FormFieldPresence} from '../../../../presence'
 import {applyAll} from '../../../patch/simplePatch'
 import {ObjectEditData} from '../types'
 import {EMPTY_ARRAY} from '../../../utils/empty'
-import {FIXME} from '../../../types'
+import {FIXME, NodeValidation} from '../../../types'
 import {DefaultObjectEditing} from './renderers/DefaultObjectEditing'
 import {PopoverObjectEditing} from './renderers/PopoverObjectEditing'
 import {getModalOption} from './helpers'
@@ -29,7 +29,7 @@ const THROTTLE_MS = 300
 
 export interface EditObjectProps {
   focusPath: Path
-  validation: ValidationMarker[]
+  validation: NodeValidation[]
   objectEditData: ObjectEditData | null
   onBlur: () => void
   onChange: (patchEvent: PatchEvent, editPath: Path) => void

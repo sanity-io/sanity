@@ -1,14 +1,10 @@
 import React, {useCallback, useMemo, useRef} from 'react'
-import {isEqual, startsWith} from '@sanity/util/paths'
-import {isValidationErrorMarker} from '@sanity/types'
 import {FieldMember} from '../../../store/types/members'
 import {PrimitiveInputProps, RenderFieldCallback, RenderInputCallback} from '../../../types'
 import {PrimitiveFieldProps} from '../../../types/fieldProps'
 import {useFormCallbacks} from '../../../studio/contexts/FormCallbacks'
 import {useDidUpdate} from '../../../hooks/useDidUpdate'
 import {FormPatch, PatchEvent} from '../../../patch'
-import {useValidationMarkers} from '../../../studio/contexts/Validation'
-import {useFormFieldPresence} from '../../../studio/contexts/Presence'
 
 /**
  * Responsible for creating inputProps and fieldProps to pass to ´renderInput´ and ´renderField´ for a primitive field/input
@@ -23,8 +19,6 @@ export function PrimitiveField(props: {
   const focusRef = useRef<{focus: () => void}>()
 
   const {onPathBlur, onPathFocus, onChange} = useFormCallbacks()
-  const rootValidation = useValidationMarkers()
-  const rootPresence = useFormFieldPresence()
 
   useDidUpdate(member.field.focused, (hadFocus, hasFocus) => {
     if (!hadFocus && hasFocus) {
@@ -53,29 +47,13 @@ export function PrimitiveField(props: {
     [onChange, member.name]
   )
 
-  const presence = useMemo(() => {
-    return rootPresence.filter((item) =>
-      member.collapsed
-        ? startsWith(item.path, member.field.path)
-        : isEqual(item.path, member.field.path)
-    )
-  }, [member.collapsed, member.field.path, rootPresence])
-
-  const validation = useMemo(() => {
-    return rootValidation.filter((item) => {
-      return member.collapsed
-        ? startsWith(item.path, member.field.path)
-        : isEqual(item.path, member.field.path)
-    })
-  }, [member.collapsed, member.field.path, rootValidation])
-
   const customValidity = useMemo(
     () =>
-      validation
-        .filter(isValidationErrorMarker)
-        .map((v) => v.item.message)
+      member.field.validation
+        .filter((item) => item.level === 'error')
+        .map((item) => item.message)
         .join(''),
-    [validation]
+    [member.field.validation]
   )
 
   const inputProps = useMemo((): PrimitiveInputProps => {
@@ -92,8 +70,8 @@ export function PrimitiveField(props: {
       focused: member.field.focused,
       level: member.field.level,
       onChange: handleChange,
-      validation,
-      presence,
+      validation: member.field.validation,
+      presence: member.field.presence,
       customValidity,
     }
   }, [
@@ -106,10 +84,10 @@ export function PrimitiveField(props: {
     member.field.path,
     member.field.focused,
     member.field.level,
+    member.field.validation,
+    member.field.presence,
     handleFocus,
     handleChange,
-    validation,
-    presence,
     customValidity,
   ])
 
@@ -126,20 +104,20 @@ export function PrimitiveField(props: {
       description: member.field.schemaType.description,
       inputId: member.field.id,
       path: member.field.path,
-      validation,
-      presence,
+      validation: member.field.validation,
+      presence: member.field.presence,
       children: renderedInput,
     }
   }, [
+    member.name,
+    member.index,
     member.field.level,
     member.field.value,
     member.field.schemaType,
     member.field.id,
-    validation,
-    presence,
     member.field.path,
-    member.index,
-    member.name,
+    member.field.validation,
+    member.field.presence,
     renderedInput,
   ])
 

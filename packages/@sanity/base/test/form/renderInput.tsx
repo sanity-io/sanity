@@ -6,6 +6,8 @@ import {
   createPatchChannel,
   FieldMember,
   FIXME,
+  NodePresence,
+  NodeValidation,
   PatchArg,
   PatchEvent,
   StudioFormBuilderProvider,
@@ -14,7 +16,6 @@ import {
 import {FormState} from '../../src/form/store/useFormState'
 import {EMPTY_ARRAY} from '../../src/form/utils/empty'
 import {useSchema} from '../../src/hooks'
-import {FormFieldPresence} from '../../src/presence'
 import {createSchema} from '../../src/schema'
 import {createMockSanityClient} from '../mocks/mockSanityClient'
 import {TestProvider} from './TestProvider'
@@ -37,10 +38,10 @@ export interface TestRenderInputProps {
   onPathBlur: (path: Path) => void
   onPathFocus: (path: Path) => void
   path: Path
-  presence: FormFieldPresence[]
+  presence: NodePresence[]
   readOnly: boolean | undefined
   schemaType: SchemaType
-  validation: ValidationMarker[]
+  validation: NodeValidation[]
   value: unknown
 }
 
@@ -90,8 +91,10 @@ export function renderInput(props: {
       value: documentValue as any,
       focusPath,
       collapsedPaths: undefined,
-      expandedFieldSets: undefined,
+      collapsedFieldSets: undefined,
       fieldGroupState: undefined,
+      presence,
+      validation,
       openPath,
     })
 
@@ -145,10 +148,10 @@ export function renderInput(props: {
             onPathBlur,
             onPathFocus,
             path,
-            presence,
             readOnly,
             schemaType,
-            validation,
+            validation: formState.validation,
+            presence: formState.presence,
             value: formState.value?.[name],
           },
           {client, formState}

@@ -1,5 +1,7 @@
 /* eslint-disable react/no-unused-prop-types */
-import React, {useContext, createContext} from 'react'
+import React, {useContext, createContext, useMemo} from 'react'
+import {Path} from '@sanity/types'
+import {startsWith} from '@sanity/util/paths'
 import {FormFieldPresence} from '../../../presence'
 
 const PresenceContext = createContext<FormFieldPresence[]>([])
@@ -19,4 +21,9 @@ export function useFormFieldPresence(): FormFieldPresence[] {
     throw new Error('Form context not provided')
   }
   return ctx
+}
+
+export function useChildPresence(path: Path): FormFieldPresence[] {
+  const presence = useFormFieldPresence()
+  return useMemo(() => presence.filter((item) => startsWith(path, item.path)), [path, presence])
 }

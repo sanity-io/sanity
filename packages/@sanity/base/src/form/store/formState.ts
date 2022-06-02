@@ -8,11 +8,13 @@ import {
   ObjectField,
   ObjectSchemaType,
   Path,
+  ValidationMarker,
 } from '@sanity/types'
 
 import {castArray, pick} from 'lodash'
 import {isEqual, pathFor, startsWith, toString, trimChildPath} from '@sanity/util/paths'
 import {FIXME} from '../types'
+import {FormFieldPresence} from '../../presence'
 import {StateTree} from './types/state'
 import {callConditionalProperties, callConditionalProperty} from './conditional-property'
 import {MAX_FIELD_DEPTH} from './constants'
@@ -67,8 +69,8 @@ function prepareFieldState(props: {
     const fieldValue = (parent.value as any)?.[field.name] as Record<string, unknown> | undefined
 
     const fieldGroupState = parent.fieldGroupState?.children?.[field.name]
-    const collapsedPaths = parent.collapsedPaths?.children?.[field.name]
-    const collapsedFieldSets = parent.collapsedFieldSets?.children?.[field.name]
+    const scopedCollapsedPaths = parent.collapsedPaths?.children?.[field.name]
+    const scopedCollapsedFieldsets = parent.collapsedFieldSets?.children?.[field.name]
 
     const inputState = prepareObjectInputState({
       schemaType: field.type,
@@ -76,22 +78,20 @@ function prepareFieldState(props: {
       parent: parent.value,
       document: parent.document,
       value: fieldValue,
+      presence: parent.presence,
+      validation: parent.validation,
       fieldGroupState,
       path: fieldPath,
       level: fieldLevel,
       focusPath: parent.focusPath,
       openPath: parent.openPath,
-      collapsedPaths: collapsedPaths,
-      collapsedFieldSets: collapsedFieldSets,
+      collapsedPaths: scopedCollapsedPaths,
+      collapsedFieldSets: scopedCollapsedFieldsets,
     })
 
     if (inputState === null) {
       return null
     }
-
-    const defaultCollapsedState = getCollapsedWithDefaults(field.type.options, fieldLevel)
-
-    const collapsed = collapsedPaths ? collapsedPaths.value : defaultCollapsedState.collapsed
 
     return {
       kind: 'field',
@@ -99,8 +99,8 @@ function prepareFieldState(props: {
       name: field.name,
       index: index,
       open: startsWith(fieldPath, parent.openPath),
-      collapsible: defaultCollapsedState.collapsible,
-      collapsed,
+      collapsible: inputState.collapsible,
+      collapsed: inputState.collapsed,
       field: inputState,
     }
   } else if (isArraySchemaType(field.type)) {
@@ -119,6 +119,8 @@ function prepareFieldState(props: {
       fieldGroupState,
       focusPath: parent.focusPath,
       openPath: parent.openPath,
+      presence: parent.presence,
+      validation: parent.validation,
       collapsedPaths: scopedCollapsedPaths,
       collapsedFieldSets: scopedCollapsedFieldSets,
       level: fieldLevel,
@@ -137,13 +139,14 @@ function prepareFieldState(props: {
 
       open: startsWith(fieldPath, parent.openPath),
 
-      // todo: support for arrays
       collapsible: false,
       collapsed: false,
       // note: this is what we actually end up passing down as to the next input component
       field: inputState,
     }
   } else {
+    // primitive fields
+
     const fieldValue = (parent.value as any)?.[field.name] as undefined | boolean | string | number
 
     // note: we *only* want to call the conditional props here, as it's handled by the prepare<Object|Array>InputProps otherwise
@@ -162,6 +165,12 @@ function prepareFieldState(props: {
       return null
     }
 
+    const presence = parent.presence.filter((item) => isEqual(item.path, fieldPath))
+
+    const validation = parent.validation
+      .filter((item) => isEqual(item.path, fieldPath))
+      .map((v) => ({level: v.level, message: v.item.message, path: v.path}))
+
     return {
       kind: 'field',
       key: `field-${field.name}`,
@@ -169,7 +178,6 @@ function prepareFieldState(props: {
       index: index,
 
       open: startsWith(fieldPath, parent.openPath),
-
       collapsible: false,
       collapsed: false,
       field: {
@@ -182,6 +190,8 @@ function prepareFieldState(props: {
         focused: isEqual(parent.focusPath, [field.name]),
         readOnly: parent.readOnly || fieldConditionalProps.readOnly,
         value: fieldValue,
+        presence,
+        validation,
       },
     }
   }
@@ -198,6 +208,8 @@ interface RawState<SchemaType, T> {
   path: Path
   openPath: Path
   focusPath: Path
+  presence: FormFieldPresence[]
+  validation: ValidationMarker[]
   fieldGroupState?: StateTree<string>
   collapsedPaths?: StateTree<boolean>
   collapsedFieldSets?: StateTree<boolean>
@@ -287,7 +299,7 @@ function prepareObjectInputState<T>(
       return [fieldState]
     }
 
-    // actual fieldset
+    // it's an actual fieldset
     const fieldsetFieldNames = fieldSet.fields.map((f) => f.name)
     const fieldsetHidden = callConditionalProperty(fieldSet.hidden, {
       currentUser: props.currentUser,
@@ -301,20 +313,25 @@ function prepareObjectInputState<T>(
     }
 
     const fieldsetMembers = fieldSet.fields.flatMap((field): FieldMember[] => {
-      const fieldMember = prepareFieldState({
+      const fieldState = prepareFieldState({
         field,
         parent: parentProps,
         index,
       })
-      return fieldMember !== null && isFieldEnabledByGroupFilter(groups, field, selectedGroup)
-        ? [fieldMember]
-        : []
+      if (fieldState === null || !isFieldEnabledByGroupFilter(groups, field, selectedGroup)) {
+        return []
+      }
+      return [fieldState]
     })
 
     // if all members of the fieldset is hidden, the fieldset should effectively also be hidden
     if (fieldsetMembers.length === 0) {
       return []
     }
+
+    const collapsed =
+      (props.collapsedFieldSets?.children || {})[fieldSet.name]?.value ??
+      fieldSet.options?.collapsed
 
     return [
       {
@@ -329,16 +346,19 @@ function prepareObjectInputState<T>(
           level: props.level + 1,
           fields: fieldsetMembers,
           collapsible: fieldSet.options?.collapsible,
-          collapsed:
-            (fieldSet.options?.collapsible === true &&
-              (props.collapsedFieldSets?.children || {})[fieldSet.name]?.value) ||
-            fieldSet.options?.collapsed,
+          collapsed,
         },
       },
     ]
   })
 
   const hasFieldGroups = schemaTypeGroupConfig.length > 0
+
+  const presence = props.presence.filter((item) => isEqual(item.path, props.path))
+
+  const validation = props.validation
+    .filter((item) => isEqual(item.path, props.path))
+    .map((v) => ({level: v.level, message: v.item.message, path: v.path}))
 
   return {
     compareValue: undefined,
@@ -350,6 +370,8 @@ function prepareObjectInputState<T>(
     level: props.level,
     focused: isEqual(props.path, props.focusPath),
     focusPath: trimChildPath(props.path, props.focusPath),
+    presence,
+    validation,
     members,
     groups: hasFieldGroups ? groups : [],
   }
@@ -380,14 +402,24 @@ function prepareArrayInputState<T extends unknown[]>(
   // Todo: improve error handling at the parent level so that the value here is either undefined or an array
   const items = Array.isArray(props.value) ? props.value : []
 
-  // todo: support expanded/collapsed for arrays as well
-  const defaultCollapsedState = getCollapsedWithDefaults({}, props.level)
-
   // todo: guard against mixed arrays
   const isArrayOfObjects = props.schemaType.of.every((memberType) => isObjectSchemaType(memberType))
   const prepareMember = isArrayOfObjects
     ? prepareArrayOfObjectsMember
     : prepareArrayOfPrimitivesMember
+
+  const defaultCollapsedState = getCollapsedWithDefaults(
+    props.schemaType.options as FIXME,
+    props.level
+  )
+  const collapsed = props.collapsedPaths
+    ? props.collapsedPaths.value
+    : defaultCollapsedState.collapsed
+
+  const presence = props.presence.filter((item) => isEqual(item.path, props.path))
+  const validation = props.validation
+    .filter((item) => isEqual(item.path, props.path))
+    .map((v) => ({level: v.level, message: v.item.message, path: v.path}))
 
   return {
     compareValue: undefined,
@@ -399,6 +431,10 @@ function prepareArrayInputState<T extends unknown[]>(
     path: props.path,
     id: toString(props.path),
     level: props.level,
+    collapsed,
+    collapsible: defaultCollapsedState.collapsible,
+    validation,
+    presence,
     members: items.flatMap(
       (item, index) => prepareMember({arrayItem: item, parent: props, index}) as FIXME
     ),
@@ -444,6 +480,8 @@ function prepareArrayOfObjectsMember(props: {
       openPath: parent.openPath,
       currentUser: parent.currentUser,
       collapsedPaths: collapsedItemPaths,
+      presence: parent.presence,
+      validation: parent.validation,
     },
     false
   )
@@ -495,6 +533,8 @@ function prepareArrayOfPrimitivesMember(props: {
         readOnly: false, // todo
         focused: isEqual(parent.path, parent.focusPath),
         path: itemPath,
+        presence: [], // todo
+        validation: [], // todo
         schemaType: itemType as FIXME,
         value: itemValue as FIXME,
       },

@@ -1,4 +1,3 @@
-import {useId} from '@reach/auto-id'
 import React, {forwardRef, useCallback, useImperativeHandle, useMemo, useRef} from 'react'
 import {set, unset} from '../patch'
 import {TagInput} from '../components/tagInput'
@@ -10,7 +9,7 @@ export const TagsArrayInput = forwardRef(function TagsArrayInput(
   props: TagsArrayInputProps,
   ref: React.Ref<{focus: () => void}>
 ) {
-  const {id, validation, onChange, onFocus, readOnly, value = []} = props
+  const {id, onChange, onFocus, readOnly, value = []} = props
   const tagInputValue = useMemo(() => value?.map((v) => ({value: v})), [value])
   const inputRef = useRef<HTMLInputElement | null>(null)
 

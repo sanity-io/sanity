@@ -13,7 +13,7 @@ import {useFormCallbacks} from './contexts/FormCallbacks'
 /**
  * @alpha
  */
-export interface StudioFormBuilderProps extends ObjectFormNode {
+export interface StudioFormBuilderProps extends Omit<ObjectFormNode, 'presence' | 'validation'> {
   /**
    * @internal Considered internal – do not use.
    */
@@ -85,9 +85,9 @@ export function StudioFormBuilder(props: StudioFormBuilderProps) {
       onSetFieldSetCollapsed={onSetFieldSetCollapsed}
       onSetPathCollapsed={onSetPathCollapsed}
       presence={presence}
+      validation={validation}
       readOnly={readOnly}
       schemaType={schemaType}
-      validation={validation}
       value={value}
     >
       <RootInput />

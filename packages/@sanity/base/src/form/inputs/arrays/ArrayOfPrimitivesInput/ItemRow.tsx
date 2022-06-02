@@ -1,17 +1,14 @@
 import React, {useCallback, useMemo} from 'react'
 import {Box, Button, Card, Flex, Menu, MenuButton, MenuItem} from '@sanity/ui'
-import {isValidationErrorMarker, isValidationWarningMarker, SchemaType} from '@sanity/types'
+import {SchemaType} from '@sanity/types'
 import {CopyIcon as DuplicateIcon, EllipsisVerticalIcon, TrashIcon} from '@sanity/icons'
 import {useId} from '@reach/auto-id'
 import {FormFieldValidationStatus} from '../../../components/formField'
-import {FieldPresence} from '../../../../presence'
-import {PatchEvent, set} from '../../../patch'
 import {DragHandle} from '../common/DragHandle'
 import {ItemWithMissingType} from '../ArrayOfObjectsInput/item/ItemWithMissingType'
 import {InsertMenu} from '../ArrayOfObjectsInput/InsertMenu'
-import {FIXME} from '../../../types'
-import {getEmptyValue} from './getEmptyValue'
 import {PrimitiveItemProps} from '../../../types/itemProps'
+import {getEmptyValue} from './getEmptyValue'
 
 const dragHandle = <DragHandle paddingX={1} paddingY={3} />
 
@@ -42,8 +39,8 @@ export const ItemRow = React.forwardRef(function ItemRow(
     schemaType,
   } = props
 
-  const hasError = validation.filter(isValidationErrorMarker).length > 0
-  const hasWarning = validation.filter(isValidationWarningMarker).length > 0
+  const hasError = validation.filter((item) => item.level === 'error').length > 0
+  const hasWarning = validation.filter((item) => item.level === 'warning').length > 0
 
   const showValidationStatus = !readOnly && validation.length > 0 && !schemaType?.title
 

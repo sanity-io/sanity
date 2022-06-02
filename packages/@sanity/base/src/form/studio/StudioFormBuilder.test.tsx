@@ -64,9 +64,11 @@ describe('StudioFormBuilder', () => {
         value,
         focusPath,
         collapsedPaths: undefined,
-        expandedFieldSets: undefined,
+        collapsedFieldSets: undefined,
         fieldGroupState: undefined,
         openPath,
+        presence: [],
+        validation: [],
       })
 
       const formBuilderProps: StudioFormBuilderProps = useMemo(

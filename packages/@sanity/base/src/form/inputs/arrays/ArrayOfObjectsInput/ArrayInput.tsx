@@ -13,6 +13,7 @@ import React from 'react'
 import {map} from 'rxjs/operators'
 import {Subscription} from 'rxjs'
 import {randomKey, resolveTypeName} from '@sanity/util/content'
+import {SanityClient} from '@sanity/client'
 import {Uploader, UploaderResolver, UploadEvent} from '../../../studio/uploads/types'
 import {isDev} from '../../../../environment'
 import {Alert} from '../../../components/Alert'
@@ -24,13 +25,12 @@ import {ItemProps} from '../../../types/itemProps'
 import {DefaultArrayInputFunctions} from '../common/ArrayFunctions'
 import {ArrayOfObjectsInputProps} from '../../../types'
 import {isObjectItemProps} from '../../../types/asserters'
+import {withFocusRing} from '../../../components/withFocusRing'
 import type {ArrayMember, InsertEvent} from './types'
 import {uploadTarget} from './uploadTarget/uploadTarget'
 import {isEmpty} from './item/helpers'
 import {ArrayItem} from './item/ArrayItem'
 import {MemberItem} from './MemberItem'
-import {withFocusRing} from '../../../components/withFocusRing'
-import {SanityClient} from '@sanity/client'
 
 type Toast = {push: (params: ToastParams) => void}
 
@@ -143,6 +143,17 @@ export class ArrayInput extends React.PureComponent<ArrayInputProps> {
     }
   }
 
+  handleBlur = (event: React.FocusEvent) => {
+    const {onBlur} = this.props
+    // We want to handle blur when the array input *itself* element receives
+    // blur, not when a child element receives blur, but React has decided
+    // to let focus events bubble, so this workaround is needed
+    // Background: https://github.com/facebook/react/issues/6410#issuecomment-671915381
+    if (event.currentTarget === event.target && event.currentTarget === this._focusArea) {
+      onBlur(event)
+    }
+  }
+
   removeItem(item: ArrayMember) {
     const {onChange, onFocusPath, value} = this.props
 
@@ -249,7 +260,7 @@ export class ArrayInput extends React.PureComponent<ArrayInputProps> {
       throw new Error('Expected item to be of object type')
     }
 
-    const {id, schemaType, renderInput} = this.props
+    const {id, schemaType} = this.props
 
     if (isReferenceSchemaType(itemProps.schemaType)) {
       return itemProps.children
@@ -258,7 +269,6 @@ export class ArrayInput extends React.PureComponent<ArrayInputProps> {
       <>
         <ArrayItem
           validation={itemProps.validation}
-          itemKey={itemProps.key}
           readOnly={itemProps.readOnly}
           onInsert={itemProps.onInsert}
           onRemove={itemProps.onRemove}
@@ -269,8 +279,9 @@ export class ArrayInput extends React.PureComponent<ArrayInputProps> {
           value={itemProps.value as ArrayMember}
           focused={itemProps.focused}
           open={itemProps.open}
+          path={itemProps.path}
           onClick={itemProps.onOpen}
-          presence={[]}
+          presence={itemProps.presence}
         >
           {itemProps.open ? (
             <Dialog
@@ -378,6 +389,9 @@ export class ArrayInput extends React.PureComponent<ArrayInputProps> {
           types={schemaType.of}
           resolveUploader={resolveUploader}
           onUpload={this.handleUpload}
+          onFocus={this.handleFocus}
+          onBlur={this.handleBlur}
+          ref={this.setFocusArea}
           tabIndex={0}
         >
           <Stack data-ui="ArrayInput__content" space={3}>

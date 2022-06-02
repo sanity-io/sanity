@@ -1,16 +1,16 @@
-import {ValidationMarker} from '@sanity/types'
 import {Box, Card, Container} from '@sanity/ui'
 import {useAction, useBoolean} from '@sanity/ui-workshop'
 import React, {useMemo} from 'react'
-import {PortableTextMarker} from '../../../../types'
+import {NodeValidation, PortableTextMarker} from '../../../../types'
+
 import {FormBuilderProvider} from '../../../../FormBuilderProvider'
 import {TextBlock} from '../../text'
 import {useSource} from '../../../../../studio'
 
-const errorMarker: ValidationMarker = {
+const errorMarker: NodeValidation = {
   level: 'error',
   path: [{_key: 'a'}],
-  item: {message: 'There is an error with this text block'},
+  message: 'There is an error with this text block',
 }
 
 const customMarker: PortableTextMarker = {
@@ -42,10 +42,7 @@ export function TextBlocksStory() {
     [hasMarkers]
   )
 
-  const validation: ValidationMarker[] = useMemo(
-    () => (hasErrors ? [errorMarker] : []),
-    [hasErrors]
-  )
+  const validation: NodeValidation[] = useMemo(() => (hasErrors ? [errorMarker] : []), [hasErrors])
 
   const onChange = useAction('onChange')
   const attributes = useMemo(() => ({focused: false, selected: false, path: []}), [])

@@ -9,14 +9,12 @@ import {Delay} from '../../../../components/Delay'
 import {useDocumentPresence, useDocumentStore} from '../../../../../datastores'
 import {
   createPatchChannel,
-  FormBuilderFilterFieldFn,
   fromMutationPatches,
   PatchEvent,
   PatchMsg,
   StudioFormBuilder,
 } from '../../../../../form'
 import {PresenceOverlay} from '../../../../../presence'
-// TODO
 import {
   DocumentMutationEvent,
   DocumentRebaseEvent,

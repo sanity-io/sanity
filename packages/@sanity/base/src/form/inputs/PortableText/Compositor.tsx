@@ -300,8 +300,8 @@ export function Compositor(props: InputProps) {
         (marker) => isKeySegment(marker.path[2]) && marker.path[2]._key === annotation._key
       )
 
-      const hasError = annotationValidation.some(isValidationErrorMarker)
-      const hasWarning = annotationValidation.some(isValidationWarningMarker)
+      const hasError = annotationValidation.some((item) => item.level === 'error')
+      const hasWarning = annotationValidation.some((item) => item.level === 'warning')
       return (
         <Annotation
           attributes={attributes}

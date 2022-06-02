@@ -1,15 +1,14 @@
 import React, {useCallback, useMemo, useRef} from 'react'
 import {Path} from '@sanity/types'
-import {isEqual, startsWith} from '@sanity/util/paths'
 import {FieldMember} from '../../../store/types/members'
 import {ArrayOfObjectsFormNode} from '../../../store/types/nodes'
 import {
   ArrayOfObjectsInputProps,
   InsertItemEvent,
   MoveItemEvent,
+  RenderArrayOfObjectsItemCallback,
   RenderFieldCallback,
   RenderInputCallback,
-  RenderArrayOfObjectsItemCallback,
 } from '../../../types'
 import {FormCallbacksProvider, useFormCallbacks} from '../../../studio/contexts/FormCallbacks'
 import {useDidUpdate} from '../../../hooks/useDidUpdate'
@@ -17,8 +16,6 @@ import {insert, PatchArg, PatchEvent, setIfMissing, unset} from '../../../patch'
 import {ArrayFieldProps} from '../../../types/fieldProps'
 import {resolveInitialValueForType} from '../../../../templates'
 import {ensureKey} from '../../../utils/ensureKey'
-import {useFormFieldPresence} from '../../../studio/contexts/Presence'
-import {useValidationMarkers} from '../../../studio/contexts/Validation'
 
 /**
  * Responsible for creating inputProps and fieldProps to pass to ´renderInput´ and ´renderField´ for an array input
@@ -40,9 +37,6 @@ export function ArrayOfObjectsField(props: {
     onPathOpen,
     onFieldGroupSelect,
   } = useFormCallbacks()
-
-  const rootPresence = useFormFieldPresence()
-  const rootValidation = useValidationMarkers()
 
   const {member, renderField, renderInput, renderItem} = props
   const focusRef = useRef<{focus: () => void}>()
@@ -166,13 +160,15 @@ export function ArrayOfObjectsField(props: {
   const handleOpenItem = useCallback(
     (itemKey: string) => {
       onPathOpen(member.field.path.concat({_key: itemKey}))
+      onSetPathCollapsed(member.field.path, false)
     },
-    [onPathOpen, member.field.path]
+    [onPathOpen, member.field.path, onSetPathCollapsed]
   )
 
   const handleCloseItem = useCallback(() => {
     onPathOpen(member.field.path)
-  }, [onPathOpen, member.field.path])
+    onSetPathCollapsed(member.field.path, true)
+  }, [onPathOpen, member.field.path, onSetPathCollapsed])
 
   const handleRemoveItem = useCallback(
     (itemKey: string) => {
@@ -187,22 +183,6 @@ export function ArrayOfObjectsField(props: {
     },
     [member.field.path, onPathFocus]
   )
-
-  const presence = useMemo(() => {
-    return rootPresence.filter((item) =>
-      member.collapsed
-        ? startsWith(item.path, member.field.path)
-        : isEqual(item.path, member.field.path)
-    )
-  }, [member.collapsed, member.field.path, rootPresence])
-
-  const validation = useMemo(() => {
-    return rootValidation.filter((item) => {
-      return member.collapsed
-        ? startsWith(item.path, member.field.path)
-        : isEqual(item.path, member.field.path)
-    })
-  }, [member.collapsed, member.field.path, rootValidation])
 
   const inputProps = useMemo((): ArrayOfObjectsInputProps => {
     return {
@@ -237,8 +217,8 @@ export function ArrayOfObjectsField(props: {
       onFocusPath: handleFocusChildPath,
       resolveInitialValue: resolveInitialValueForType,
 
-      validation,
-      presence,
+      validation: member.field.validation,
+      presence: member.field.presence,
       renderInput,
       renderField,
       renderItem,
@@ -254,6 +234,8 @@ export function ArrayOfObjectsField(props: {
     member.field.focusPath,
     member.field.focused,
     member.field.path,
+    member.field.validation,
+    member.field.presence,
     handleBlur,
     handleExpand,
     handleCollapse,
@@ -269,8 +251,6 @@ export function ArrayOfObjectsField(props: {
     handleAppendItem,
     handlePrependItem,
     handleFocusChildPath,
-    validation,
-    presence,
     renderInput,
     renderField,
     renderItem,
@@ -293,8 +273,8 @@ export function ArrayOfObjectsField(props: {
       schemaType: member.field.schemaType,
       inputId: member.field.id,
       path: member.field.path,
-      presence,
-      validation,
+      presence: member.field.presence,
+      validation: member.field.validation,
       children: renderedInput,
     }
   }, [
@@ -305,10 +285,12 @@ export function ArrayOfObjectsField(props: {
     member.field.schemaType,
     member.field.id,
     member.field.path,
+    member.field.presence,
+    member.field.validation,
     member.collapsible,
     member.collapsed,
-    presence,
-    validation,
+    handleCollapse,
+    handleExpand,
     renderedInput,
   ])
 

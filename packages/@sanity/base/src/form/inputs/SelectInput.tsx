@@ -1,8 +1,8 @@
 import {useId} from '@reach/auto-id'
-import {isTitledListValue, isValidationErrorMarker, TitledListValue} from '@sanity/types'
-import {Inline, Stack, Card, Text, Select, Flex, Radio, Box} from '@sanity/ui'
+import {isTitledListValue, TitledListValue} from '@sanity/types'
+import {Box, Card, Flex, Inline, Radio, Select, Stack, Text} from '@sanity/ui'
 import {capitalize} from 'lodash'
-import React, {useMemo, useCallback, forwardRef} from 'react'
+import React, {forwardRef, useCallback, useMemo} from 'react'
 import {PatchEvent, set, unset} from '../patch'
 import {StringInputProps} from '../types'
 
@@ -18,14 +18,13 @@ export const SelectInput = React.forwardRef(function SelectInput(
   props: StringInputProps,
   forwardedRef: React.ForwardedRef<HTMLSelectElement | HTMLInputElement>
 ) {
-  const {value, readOnly, validation, schemaType, level, onChange, onFocus} = props
+  const {value, readOnly, customValidity, schemaType, onChange, onFocus} = props
   const items = useMemo(
     () => (schemaType.options?.list || []).map(toSelectItem),
     [schemaType.options?.list]
   )
   const currentItem = items.find((item) => item.value === value)
   const isRadio = schemaType.options && schemaType.options.layout === 'radio'
-  const errors = useMemo(() => validation.filter(isValidationErrorMarker), [validation])
 
   const itemFromOptionValue = useCallback(
     (optionValue) => {
@@ -78,7 +77,7 @@ export const SelectInput = React.forwardRef(function SelectInput(
       ref={forwardedRef as React.ForwardedRef<HTMLInputElement>}
       readOnly={readOnly}
       onFocus={onFocus}
-      customValidity={errors?.[0]?.item.message}
+      customValidity={customValidity}
     />
   ) : (
     <Select
@@ -87,7 +86,7 @@ export const SelectInput = React.forwardRef(function SelectInput(
       id={inputId}
       ref={forwardedRef as React.ForwardedRef<HTMLSelectElement>}
       readOnly={readOnly}
-      customValidity={errors?.[0]?.item.message}
+      customValidity={customValidity}
       value={optionValueFromItem(currentItem)}
     >
       {[EMPTY_ITEM, ...items].map((item, i) => (

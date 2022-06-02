@@ -2,19 +2,19 @@
 
 import React, {memo} from 'react'
 import {Box, Flex} from '@sanity/ui'
-import {ValidationMarker} from '@sanity/types'
-import {FieldPresence, FormFieldPresence} from '../../../presence'
+import {FieldPresence} from '../../../presence'
+import {NodePresence, NodeValidation} from '../../types'
 import {FormFieldHeaderText} from './FormFieldHeaderText'
 
 export interface FormFieldHeaderProps {
   /**
    * @alpha
    */
-  validation?: ValidationMarker[]
+  validation?: NodeValidation[]
   /**
    * @alpha
    */
-  __unstable_presence?: FormFieldPresence[]
+  __unstable_presence?: NodePresence[]
   description?: React.ReactNode
   /**
    * The unique ID used to target the actual input element

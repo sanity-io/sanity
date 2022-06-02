@@ -22,7 +22,7 @@ import React, {useCallback, useEffect, useMemo, useState} from 'react'
 import styled from 'styled-components'
 import {FormFieldPresence, PresenceOverlay} from '../../../../../presence'
 import {PatchEvent} from '../../../../patch'
-import {FIXME} from '../../../../types'
+import {FIXME, NodeValidation} from '../../../../types'
 import {POPOVER_WIDTH_TO_UI_WIDTH} from './constants'
 import {debugElement} from './debug'
 import {ModalWidth} from './types'
@@ -31,7 +31,7 @@ interface PopoverObjectEditingProps {
   editorPath: Path
   elementRef?: React.RefObject<HTMLElement | null>
   focusPath: Path
-  validation: ValidationMarker[]
+  validation: NodeValidation[]
   object: PortableTextBlock | PortableTextChild
   onBlur: () => void
   onChange: (patchEvent: PatchEvent, path: Path) => void

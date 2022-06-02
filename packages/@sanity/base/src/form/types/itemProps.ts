@@ -5,9 +5,9 @@ import {
   Path,
   SchemaType,
   StringSchemaType,
-  ValidationMarker,
 } from '@sanity/types'
 import React from 'react'
+import {NodePresence, NodeValidation} from './common'
 
 export interface BaseItemProps {
   schemaType: SchemaType
@@ -32,7 +32,8 @@ export interface BaseItemProps {
 
   children: React.ReactNode | null
 
-  validation: ValidationMarker[]
+  validation: NodeValidation[]
+  presence: NodePresence[]
 }
 
 export interface ObjectItemProps extends BaseItemProps {

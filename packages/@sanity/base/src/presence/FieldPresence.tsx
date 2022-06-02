@@ -3,6 +3,7 @@ import {sortBy, uniqBy} from 'lodash'
 import {AvatarCounter, AvatarPosition} from '@sanity/ui'
 import {useId} from '@reach/auto-id'
 import {UserAvatar} from '../components/UserAvatar'
+import {NodePresence} from '../form'
 import {
   AVATAR_DISTANCE,
   AVATAR_SIZE,
@@ -13,11 +14,10 @@ import {splitRight} from './utils'
 import {FlexWrapper, InnerBox} from './FieldPresence.styled'
 import {FormFieldPresenceContext} from './context'
 import {PresenceTooltip} from './PresenceTooltip'
-import {FormFieldPresence} from './types'
 import {useReporter} from './overlay/tracker'
 
 export interface FieldPresenceProps {
-  presence: FormFieldPresence[]
+  presence: NodePresence[]
   maxAvatars: number
 }
 
@@ -56,7 +56,7 @@ export function FieldPresenceWithoutOverlay(props: FieldPresenceProps) {
 
 export interface FieldPresenceInnerProps {
   maxAvatars?: number
-  presence: FormFieldPresence[]
+  presence: NodePresence[]
   stack?: boolean
   position?: AvatarPosition
   animateArrowFrom?: AvatarPosition

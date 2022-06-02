@@ -11,7 +11,7 @@ import {FOCUS_TERMINATOR} from '@sanity/util/paths'
 import {Box, Theme, ThemeColorToneKey, Tooltip} from '@sanity/ui'
 import React, {SyntheticEvent, useCallback, useMemo, useRef, useState} from 'react'
 import styled, {css} from 'styled-components'
-import {PortableTextMarker, RenderCustomMarkers} from '../../../types'
+import {NodeValidation, PortableTextMarker, RenderCustomMarkers} from '../../../types'
 import {DefaultMarkers} from '../_legacyDefaultParts/Markers'
 import {useFormBuilder} from '../../../useFormBuilder'
 import {AnnotationToolbarPopover} from './AnnotationToolbarPopover'
@@ -22,7 +22,7 @@ interface AnnotationProps {
   hasError: boolean
   hasWarning: boolean
   markers: PortableTextMarker[]
-  validation: ValidationMarker[]
+  validation: NodeValidation[]
   onFocus: (path: Path) => void
   renderCustomMarkers?: RenderCustomMarkers
   type: Type

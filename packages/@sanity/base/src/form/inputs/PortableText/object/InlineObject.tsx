@@ -6,17 +6,12 @@ import {
   PortableTextEditor,
   usePortableTextEditor,
 } from '@sanity/portable-text-editor'
-import {
-  ValidationMarker,
-  Path,
-  isValidationErrorMarker,
-  isValidationWarningMarker,
-} from '@sanity/types'
+import {Path} from '@sanity/types'
 import {FOCUS_TERMINATOR} from '@sanity/util/paths'
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import styled, {css} from 'styled-components'
 import {Box, Card, Theme, Tooltip} from '@sanity/ui'
-import {PortableTextMarker, RenderCustomMarkers, FIXME} from '../../../types'
+import {PortableTextMarker, RenderCustomMarkers, FIXME, NodeValidation} from '../../../types'
 import {FormNodePreview} from '../../../FormNodePreview'
 import {useFormBuilder} from '../../../useFormBuilder'
 import {InlineObjectToolbarPopover} from './InlineObjectToolbarPopover'
@@ -25,7 +20,7 @@ interface InlineObjectProps {
   attributes: RenderAttributes
   isEditing: boolean
   markers: PortableTextMarker[]
-  validation: ValidationMarker[]
+  validation: NodeValidation[]
   onFocus: (path: Path) => void
   readOnly?: boolean
   renderCustomMarkers?: RenderCustomMarkers
@@ -129,8 +124,11 @@ export const InlineObject = React.forwardRef(function InlineObject(
   const refElm = useRef(null)
   const [popoverOpen, setPopoverOpen] = useState(false)
 
-  const hasError = useMemo(() => validation.some(isValidationErrorMarker), [validation])
-  const hasWarning = useMemo(() => validation.some(isValidationWarningMarker), [validation])
+  const hasError = useMemo(() => validation.some((item) => item.level === 'error'), [validation])
+  const hasWarning = useMemo(
+    () => validation.some((item) => item.level === 'warning'),
+    [validation]
+  )
   const hasValidationMarkers = validation.length > 0
 
   const tone = useMemo(() => {

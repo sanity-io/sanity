@@ -6,7 +6,6 @@ import {
   Path,
   SchemaType,
   StringSchemaType,
-  ValidationMarker,
 } from '@sanity/types'
 import * as React from 'react'
 import {FormPatch, PatchEvent} from '../patch'
@@ -19,7 +18,6 @@ import {
   ObjectFormNode,
   StringFormNode,
 } from '../store/types/nodes'
-import {FormFieldPresence} from '../../presence'
 import {
   RenderArrayOfObjectsItemCallback,
   RenderArrayOfPrimitivesItemCallback,
@@ -35,9 +33,6 @@ export interface BaseInputProps {
 
   onFocus: (event: React.FocusEvent) => void
   onBlur: (event: React.FocusEvent) => void
-
-  validation: ValidationMarker[]
-  presence: FormFieldPresence[]
 }
 
 export interface ObjectInputProps<

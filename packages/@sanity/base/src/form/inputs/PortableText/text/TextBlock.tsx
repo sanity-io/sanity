@@ -2,7 +2,7 @@ import {PortableTextBlock, RenderAttributes} from '@sanity/portable-text-editor'
 import {isKeySegment, ValidationMarker} from '@sanity/types'
 import {Box, ResponsivePaddingProps, Tooltip} from '@sanity/ui'
 import React, {useCallback, useMemo, useState} from 'react'
-import {PortableTextMarker, RenderCustomMarkers} from '../../../types'
+import {NodeValidation, PortableTextMarker, RenderCustomMarkers} from '../../../types'
 import {PatchArg, PatchEvent} from '../../../patch'
 import {useFormBuilder} from '../../../useFormBuilder'
 import {BlockActions} from '../BlockActions'
@@ -29,7 +29,7 @@ export interface TextBlockProps {
   children: React.ReactNode
   isFullscreen?: boolean
   markers: PortableTextMarker[]
-  validation: ValidationMarker[]
+  validation: NodeValidation[]
   onChange: (...patches: PatchArg[]) => void
   readOnly?: boolean
   renderBlockActions?: RenderBlockActionsCallback

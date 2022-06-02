@@ -1,16 +1,17 @@
 import React, {useCallback, useEffect} from 'react'
 import {useId} from '@reach/auto-id'
-import {Path, ValidationMarker, SchemaType} from '@sanity/types'
+import {Path} from '@sanity/types'
 import {PortableTextBlock, Type, PortableTextChild} from '@sanity/portable-text-editor'
 import {Box, Dialog, PortalProvider, useLayer, usePortal} from '@sanity/ui'
 import {PatchEvent} from '../../../../patch'
 import {FormFieldPresence, PresenceOverlay} from '../../../../../presence'
+import {NodeValidation} from '../../../../types'
 import {DIALOG_WIDTH_TO_UI_WIDTH} from './constants'
 import {ModalWidth} from './types'
 
 interface DefaultObjectEditingProps {
   focusPath: Path
-  validation: ValidationMarker[]
+  validation: NodeValidation[]
   object: PortableTextBlock | PortableTextChild
   onBlur: () => void
   onChange: (patchEvent: PatchEvent, path: Path) => void

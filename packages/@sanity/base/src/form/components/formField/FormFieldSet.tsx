@@ -1,17 +1,17 @@
 /* eslint-disable camelcase */
 
-import {ValidationMarker} from '@sanity/types'
 import {Box, Flex, Grid, rem, Stack, Text, Theme, useForwardedRef} from '@sanity/ui'
-import React, {forwardRef, useState, useCallback, useEffect, useMemo} from 'react'
+import React, {forwardRef, useCallback, useMemo} from 'react'
 import styled, {css} from 'styled-components'
-import {FormFieldValidationStatus} from './FormFieldValidationStatus'
-import {FormFieldSetLegend} from './FormFieldSetLegend'
-import {focusRingStyle} from './styles'
 import {
   ChangeIndicator,
   ChangeIndicatorContextProvidedProps,
 } from '../../../components/changeIndicators'
-import {FieldPresence, FormFieldPresence} from '../../../presence'
+import {FieldPresence} from '../../../presence'
+import {NodePresence, NodeValidation} from '../../types'
+import {FormFieldValidationStatus} from './FormFieldValidationStatus'
+import {FormFieldSetLegend} from './FormFieldSetLegend'
+import {focusRingStyle} from './styles'
 
 export interface FormFieldSetProps {
   /**
@@ -21,7 +21,7 @@ export interface FormFieldSetProps {
   /**
    * @alpha
    */
-  __unstable_presence?: FormFieldPresence[]
+  __unstable_presence?: NodePresence[]
   children: React.ReactNode | (() => React.ReactNode)
   collapsed?: boolean
   collapsible?: boolean
@@ -37,7 +37,7 @@ export interface FormFieldSetProps {
   /**
    * @alpha
    */
-  validation?: ValidationMarker[]
+  validation?: NodeValidation[]
 }
 
 function getChildren(children: React.ReactNode | (() => React.ReactNode)): React.ReactNode {

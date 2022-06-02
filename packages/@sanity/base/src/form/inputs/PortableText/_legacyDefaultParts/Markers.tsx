@@ -1,14 +1,13 @@
 import {ErrorOutlineIcon, InfoOutlineIcon, WarningOutlineIcon} from '@sanity/icons'
-import {ValidationMarker} from '@sanity/types'
 import {Box, Flex, Stack, Text, Theme} from '@sanity/ui'
 import React from 'react'
 import styled, {css} from 'styled-components'
-import {PortableTextMarker, RenderCustomMarkers} from '../../../types'
+import {NodeValidation, PortableTextMarker, RenderCustomMarkers} from '../../../types'
 import {useFormBuilder} from '../../../useFormBuilder'
 
 export interface MarkersProps {
   markers: PortableTextMarker[]
-  validation: ValidationMarker[]
+  validation: NodeValidation[]
   renderCustomMarkers?: RenderCustomMarkers
 }
 
@@ -51,7 +50,7 @@ export function DefaultMarkers(props: MarkersProps) {
   return (
     <Stack space={1}>
       {validation.length > 0 &&
-        validation.map(({item, level}, index) => (
+        validation.map(({message, level}, index) => (
           // eslint-disable-next-line react/no-array-index-key
           <Flex key={`validationItem-${index}`}>
             <Box marginRight={2} marginBottom={index + 1 === validation.length ? 0 : 2}>
@@ -65,7 +64,7 @@ export function DefaultMarkers(props: MarkersProps) {
               </IconText>
             </Box>
             <Box>
-              <Text size={1}>{item?.message || 'Error'}</Text>
+              <Text size={1}>{message || 'Error'}</Text>
             </Box>
           </Flex>
         ))}

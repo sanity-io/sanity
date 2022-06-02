@@ -1,6 +1,5 @@
-import React, {ForwardedRef, useMemo} from 'react'
-import {useId} from '@reach/auto-id'
-import {isValidationErrorMarker, TextSchemaType} from '@sanity/types'
+import React, {ForwardedRef} from 'react'
+import {TextSchemaType} from '@sanity/types'
 import {TextArea} from '@sanity/ui'
 import styled from 'styled-components'
 import {set, unset} from '../patch'
@@ -18,8 +17,7 @@ export const TextInput = React.forwardRef(function TextInput(
   props: TextInputProps,
   forwardedRef: ForwardedRef<HTMLTextAreaElement>
 ) {
-  const {value, id, validation, schemaType, readOnly, onFocus, onBlur, onChange} = props
-  const errors = useMemo(() => validation.filter(isValidationErrorMarker), [validation])
+  const {value, id, customValidity, schemaType, readOnly, onFocus, onBlur, onChange} = props
 
   const handleChange = React.useCallback(
     (event) => {
@@ -32,7 +30,7 @@ export const TextInput = React.forwardRef(function TextInput(
   return (
     <StyledTextArea
       id={id}
-      customValidity={errors && errors.length > 0 ? errors[0].item.message : ''}
+      customValidity={customValidity}
       value={value || ''}
       readOnly={Boolean(readOnly)}
       placeholder={schemaType.placeholder}

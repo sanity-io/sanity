@@ -6,16 +6,16 @@ import {
   Path,
   SchemaType,
   StringSchemaType,
-  ValidationMarker,
 } from '@sanity/types'
-import {FormFieldPresence} from '../../presence'
+import {ArrayOfObjectsInputProps, ArrayOfPrimitivesInputProps, ObjectInputProps} from './inputProps'
+import {NodePresence, NodeValidation} from './common'
 
 export interface BaseFieldProps {
   schemaType: SchemaType
   title: string | undefined
   description: string | undefined
-  presence: FormFieldPresence[]
-  validation: ValidationMarker[]
+  presence: NodePresence[]
+  validation: NodeValidation[]
   level: number
   inputId: string
   value: unknown | undefined
@@ -38,6 +38,15 @@ export interface ObjectFieldProps extends BaseFieldProps {
 }
 
 export interface ArrayFieldProps extends BaseFieldProps {
+  schemaType: ArraySchemaType
+  value: unknown[] | undefined
+  collapsed?: boolean
+  collapsible?: boolean
+  onCollapse: () => void
+  onExpand: () => void
+}
+
+export interface ArrayOfPrimitivesFieldProps extends BaseFieldProps {
   schemaType: ArraySchemaType
   value: unknown[] | undefined
   collapsed?: boolean

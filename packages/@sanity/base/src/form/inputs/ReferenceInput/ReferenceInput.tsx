@@ -227,7 +227,7 @@ export function ReferenceInput(props: ReferenceInputProps) {
 
   const {push} = useToast()
 
-  const errors = useMemo(() => validation.filter(isValidationErrorMarker), [validation])
+  const errors = useMemo(() => validation.filter((item) => item.level === 'error'), [validation])
 
   const pressed = selectedState === 'pressed'
   const selected = selectedState === 'selected'

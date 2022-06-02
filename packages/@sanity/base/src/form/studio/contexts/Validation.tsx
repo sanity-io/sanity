@@ -1,6 +1,8 @@
 /* eslint-disable react/no-unused-prop-types */
-import {ValidationMarker} from '@sanity/types'
-import React, {useContext, createContext} from 'react'
+import React, {createContext, useContext, useMemo} from 'react'
+import {Path, ValidationMarker} from '@sanity/types'
+import {startsWith} from '@sanity/util/paths'
+import {NodeValidation} from '../../types'
 
 const ValidationContext = createContext<ValidationMarker[]>([])
 
@@ -21,4 +23,19 @@ export function useValidationMarkers(): ValidationMarker[] {
     throw new Error('Form context not provided')
   }
   return ctx
+}
+
+export function useChildValidation(path: Path): NodeValidation[] {
+  const validation = useValidationMarkers()
+  return useMemo(
+    () =>
+      validation
+        .filter((item) => startsWith(path, item.path))
+        .map((marker) => ({
+          message: marker.item.message,
+          level: marker.level,
+          path: marker.path,
+        })),
+    [path, validation]
+  )
 }

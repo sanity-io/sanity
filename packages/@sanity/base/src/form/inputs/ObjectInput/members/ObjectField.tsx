@@ -14,8 +14,6 @@ import {useDidUpdate} from '../../../hooks/useDidUpdate'
 import {PatchArg, PatchEvent, setIfMissing} from '../../../patch'
 import {createProtoValue} from '../../../utils/createProtoValue'
 import {ObjectFieldProps} from '../../../types/fieldProps'
-import {useValidationMarkers} from '../../../studio/contexts/Validation'
-import {useFormFieldPresence} from '../../../studio/contexts/Presence'
 
 /**
  * Responsible for creating inputProps and fieldProps to pass to ´renderInput´ and ´renderField´ for an object input
@@ -37,9 +35,6 @@ export const ObjectField = function ObjectField(props: {
     onSetFieldSetCollapsed,
     onFieldGroupSelect,
   } = useFormCallbacks()
-
-  const rootValidation = useValidationMarkers()
-  const rootPresence = useFormFieldPresence()
 
   const {member, renderField, renderInput, renderItem} = props
   const focusRef = useRef<{focus: () => void}>()
@@ -142,22 +137,6 @@ export const ObjectField = function ObjectField(props: {
     [onFieldGroupSelect, member.field.path]
   )
 
-  const presence = useMemo(() => {
-    return rootPresence.filter((item) =>
-      member.collapsed
-        ? startsWith(item.path, member.field.path)
-        : isEqual(item.path, member.field.path)
-    )
-  }, [member.collapsed, member.field.path, rootPresence])
-
-  const validation = useMemo(() => {
-    return rootValidation.filter((item) =>
-      member.collapsed
-        ? startsWith(item.path, member.field.path)
-        : isEqual(item.path, member.field.path)
-    )
-  }, [member.collapsed, member.field.path, rootValidation])
-
   const inputProps = useMemo((): ObjectInputProps => {
     return {
       level: member.field.level,
@@ -165,6 +144,8 @@ export const ObjectField = function ObjectField(props: {
       members: member.field.members,
       value: member.field.value,
       readOnly: member.field.readOnly,
+      validation: member.field.validation,
+      presence: member.field.presence,
       onCollapse: handleCollapse,
       onExpand: handleExpand,
       schemaType: member.field.schemaType,
@@ -189,14 +170,14 @@ export const ObjectField = function ObjectField(props: {
       renderField,
       renderInput,
       renderItem,
-      validation,
-      presence,
     }
   }, [
     member.field.level,
     member.field.members,
     member.field.value,
     member.field.readOnly,
+    member.field.validation,
+    member.field.presence,
     member.field.schemaType,
     member.field.compareValue,
     member.field.id,
@@ -209,6 +190,8 @@ export const ObjectField = function ObjectField(props: {
     handleCollapse,
     handleExpand,
     handleSelectFieldGroup,
+    handleOpenField,
+    handleCloseField,
     handleCollapseField,
     handleExpandField,
     handleExpandFieldSet,
@@ -219,8 +202,6 @@ export const ObjectField = function ObjectField(props: {
     renderField,
     renderInput,
     renderItem,
-    validation,
-    presence,
   ])
 
   const renderedInput = useMemo(() => renderInput(inputProps), [inputProps, renderInput])
@@ -231,8 +212,8 @@ export const ObjectField = function ObjectField(props: {
       index: member.index,
       level: member.field.level,
       value: member.field.value,
-      presence,
-      validation,
+      validation: member.field.validation,
+      presence: member.field.presence,
       title: member.field.schemaType.title,
       description: member.field.schemaType.description,
 
@@ -256,14 +237,14 @@ export const ObjectField = function ObjectField(props: {
     member.index,
     member.field.level,
     member.field.value,
+    member.field.validation,
+    member.field.presence,
     member.field.schemaType,
     member.field.id,
     member.field.path,
     member.collapsible,
     member.collapsed,
     member.open,
-    presence,
-    validation,
     handleCollapse,
     handleExpand,
     handleOpen,

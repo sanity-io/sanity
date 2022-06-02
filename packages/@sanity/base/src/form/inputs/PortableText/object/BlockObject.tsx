@@ -5,20 +5,12 @@ import {
   RenderAttributes,
   EditorSelection,
 } from '@sanity/portable-text-editor'
-import {
-  isKeySegment,
-  ValidationMarker,
-  Path,
-  isValidationErrorMarker,
-  isValidationWarningMarker,
-  isValidationInfoMarker,
-  ObjectSchemaType,
-} from '@sanity/types'
+import {isKeySegment, Path, ObjectSchemaType} from '@sanity/types'
 import {FOCUS_TERMINATOR} from '@sanity/util/paths'
 import {Tooltip, Flex, ResponsivePaddingProps} from '@sanity/ui'
 import React, {useCallback, useMemo, useRef, useState} from 'react'
 import {PatchArg, PatchEvent} from '../../../patch'
-import {PortableTextMarker, RenderCustomMarkers} from '../../../types'
+import {NodeValidation, PortableTextMarker, RenderCustomMarkers} from '../../../types'
 import {RenderBlockActionsCallback} from '../types'
 import {BlockActions} from '../BlockActions'
 import {ReviewChangesHighlightBlock, StyledChangeIndicatorWithProvidedFullPath} from '../_common'
@@ -41,7 +33,7 @@ interface BlockObjectProps {
   blockRef?: React.RefObject<HTMLDivElement>
   editor: PortableTextEditor
   markers: PortableTextMarker[]
-  validation: ValidationMarker[]
+  validation: NodeValidation[]
   isFullscreen?: boolean
   onChange: (...patches: PatchArg[]) => void
   onFocus: (path: Path) => void
@@ -147,9 +139,9 @@ export const BlockObject = React.forwardRef(function BlockObject(
   )
 
   const hasMarkers = Boolean(blockValidationMarkers.length > 0)
-  const hasErrors = blockValidationMarkers.some(isValidationErrorMarker)
-  const hasWarnings = blockValidationMarkers.some(isValidationWarningMarker)
-  const hasInfo = blockValidationMarkers.some(isValidationInfoMarker)
+  const hasErrors = blockValidationMarkers.some((v) => v.level === 'error')
+  const hasWarnings = blockValidationMarkers.some((v) => v.level === 'warning')
+  const hasInfo = blockValidationMarkers.some((v) => v.level === 'info')
 
   const isImagePreview = type?.type?.name === 'image'
 

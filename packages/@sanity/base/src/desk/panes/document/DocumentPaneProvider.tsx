@@ -6,7 +6,12 @@ import {fromString as pathFromString} from '@sanity/util/paths'
 import isHotkey from 'is-hotkey'
 import {useMemoObservable} from 'react-rx'
 import {PaneMenuItem} from '../../types'
-import {useHistoryStore, useInitialValue, usePresenceStore} from '../../../datastores'
+import {
+  DocumentPresence,
+  useHistoryStore,
+  useInitialValue,
+  usePresenceStore,
+} from '../../../datastores'
 import {
   useClient,
   useConnectionState,
@@ -114,6 +119,16 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   // TODO: this may cause a lot of churn. May be a good idea to prevent these
   // requests unless the menu is open somehow
   const previewUrl = usePreviewUrl(value)
+
+  const [presence, setPresence] = useState<DocumentPresence[]>([])
+  useEffect(() => {
+    const subscription = presenceStore.documentPresence(documentId).subscribe((nextPresence) => {
+      setPresence(nextPresence)
+    })
+    return () => {
+      subscription.unsubscribe()
+    }
+  }, [documentId, presenceStore])
 
   const hasValue = Boolean(value)
   const menuItems = useMemo(
@@ -264,7 +279,9 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     focusPath,
     openPath,
     collapsedPaths,
-    expandedFieldSets: collapsedFieldSets,
+    presence,
+    validation,
+    collapsedFieldSets: collapsedFieldSets,
     fieldGroupState,
   })
 

@@ -1,17 +1,11 @@
-import {
-  ArraySchemaType,
-  ObjectField,
-  ObjectSchemaType,
-  Path,
-  SchemaType,
-  ValidationMarker,
-} from '@sanity/types'
+import {ArraySchemaType, ObjectField, ObjectSchemaType, Path, SchemaType} from '@sanity/types'
 import React from 'react'
 import {PatchEvent} from '../patch'
 import {PreviewProps} from '../../components/previews'
 import {InputProps} from './inputProps'
 import {FieldProps} from './fieldProps'
 import {ItemProps} from './itemProps'
+import {NodeValidation} from './common'
 
 export type FIXME = any
 
@@ -54,7 +48,7 @@ export type FormBuilderCustomMarkersComponent = React.ComponentType<{markers: Po
 export type FormBuilderMarkersComponent = React.ComponentType<{
   markers: PortableTextMarker[]
   renderCustomMarkers?: RenderCustomMarkers
-  validation: ValidationMarker[]
+  validation: NodeValidation[]
 }>
 
 /**

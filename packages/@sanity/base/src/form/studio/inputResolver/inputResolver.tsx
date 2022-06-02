@@ -9,12 +9,13 @@ import {
 } from '@sanity/types'
 import React from 'react'
 import {
-  FIXME,
+  ArrayFieldProps,
+  FieldMember,
   FieldProps,
+  FIXME,
   InputProps,
   ItemProps,
   ObjectFieldProps,
-  ArrayFieldProps,
 } from '../../types'
 import * as is from '../../utils/is'
 import {FormField, FormFieldSet} from '../../components/formField'
@@ -91,8 +92,8 @@ function PrimitiveField(field: FieldProps) {
       level={field.level}
       title={field.title}
       description={field.description}
-      __unstable_presence={field.presence}
       validation={field.validation}
+      __unstable_presence={field.presence}
     >
       {field.children}
     </FormField>

@@ -1,11 +1,7 @@
 /* eslint-disable complexity, max-nested-callbacks, no-nested-ternary */
 
 import React, {useCallback, useMemo, useRef, useState} from 'react'
-import {
-  CrossDatasetReference,
-  CrossDatasetReferenceSchemaType,
-  isValidationErrorMarker,
-} from '@sanity/types'
+import {CrossDatasetReference, CrossDatasetReferenceSchemaType} from '@sanity/types'
 import {EllipsisVerticalIcon, ResetIcon as ClearIcon, SyncIcon as ReplaceIcon} from '@sanity/icons'
 import {concat, Observable, of} from 'rxjs'
 import {useId} from '@reach/auto-id'
@@ -25,10 +21,8 @@ import {
   useToast,
 } from '@sanity/ui'
 import {useObservableCallback} from 'react-rx'
-import {ChangeIndicatorForFieldPath} from '../../../components/changeIndicators'
 import {FIXME, ObjectInputProps} from '../../types'
 import {set, unset} from '../../patch'
-// import {useDidUpdate} from '../../hooks/useDidUpdate'
 import {AlertStrip} from '../../components/AlertStrip'
 import {useOnClickOutside} from '../../hooks/useOnClickOutside'
 import {isNonNullable} from '../../utils/isNonNullable'
@@ -169,7 +163,7 @@ export function CrossDatasetReferenceInput(props: CrossDatasetReferenceInputProp
 
   const {push} = useToast()
 
-  const errors = useMemo(() => validation.filter(isValidationErrorMarker), [validation])
+  const errors = useMemo(() => validation.filter((item) => item.level === 'error'), [validation])
 
   const handleFocus = useCallback(
     (event) => {
