@@ -50,7 +50,7 @@
     "postinstall": "husky install",
     "prettier": "prettier '**/*.{ts,js,tsx,jsx}'",
     "prettify": "lerna run clean && yarn prettier --write",
-    "publish": "RELEASE_TAG=purple-unicorn yarn publish-tag",
+    "publish-purple-unicorn": "RELEASE_TAG=purple-unicorn yarn publish-tag",
     "publish-when-v3-is-ready": "yarn build && lerna publish --exact",
     "publish-canary": "RELEASE_TAG=canary yarn publish-tag",
     "publish-current-branch": "RELEASE_TAG=`git rev-parse --abbrev-ref HEAD | sed 's/\\//\\_/g'` yarn publish-tag",
