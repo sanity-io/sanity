@@ -1,3 +1,6 @@
+/**
+ * @jest-environment node
+ */
 import {Observable, Subject} from 'rxjs'
 import {CurrentUser} from '@sanity/types'
 import {take} from 'rxjs/operators'
@@ -58,13 +61,14 @@ describe('resolveConfig', () => {
     const [firstWorkspaceRootSource] = firstWorkspace.sources
     expect(firstWorkspaceRootSource).toMatchObject({
       dataset: 'first',
-      name: 'root',
+      name: 'default',
       projectId: 'myProject',
       schema: {},
-      // notice the subscribe method, this is how to resolve the rest of the
-      // config which requires auth and resolves the user asynchronously
-      subscribe: {},
     })
+
+    // notice the subscribe method, this is how to resolve the rest of the
+    // config which requires auth and resolves the user asynchronously
+    expect(typeof firstWorkspaceRootSource.subscribe).toBe('function')
 
     // second workspace
     expect(secondWorkspace.sources).toHaveLength(2)
@@ -72,7 +76,7 @@ describe('resolveConfig', () => {
 
     expect(secondWorkspaceRootSource).toMatchObject({
       dataset: 'second',
-      name: 'root',
+      name: 'second',
       projectId: 'myProject',
       schema: {},
       subscribe: {},
@@ -82,8 +86,11 @@ describe('resolveConfig', () => {
       name: 'additionalSource',
       projectId: 'anotherProject',
       schema: {},
-      subscribe: {},
     })
+
+    // notice the subscribe method, this is how to resolve the rest of the
+    // config which requires auth and resolves the user asynchronously
+    expect(typeof secondWorkspaceAdditionalSource.subscribe).toBe('function')
   })
 
   it('returns subscribe-able sources that resolve the full source', async () => {
@@ -112,12 +119,10 @@ describe('resolveConfig', () => {
 
     expect(source).toMatchObject({
       schema: {},
-      unstable_auth: {},
       client: {},
       dataset: 'production',
       projectId: 'myProject',
       tools: [],
-      previewUrl: {},
     })
   })
 
