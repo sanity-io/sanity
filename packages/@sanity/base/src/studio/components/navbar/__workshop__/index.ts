@@ -7,4 +7,9 @@ export default defineScope('base/studio/navbar', 'Navbar', [
     title: 'Navbar',
     component: lazy(() => import('./NavbarStory')),
   },
+  {
+    name: 'changelog-dialog',
+    title: 'ChangelogDialog',
+    component: lazy(() => import('./ChangelogDialogStory')),
+  },
 ])
