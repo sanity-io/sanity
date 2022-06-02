@@ -32,6 +32,9 @@ export function SourceProvider({children, ...props}: SourceProviderProps) {
   )
 }
 
+/**
+ * @deprecated INTERNAL USE ONLY
+ */
 export function useSource() {
   const source = useContext(SourceContext)
   if (!source) throw new Error('Could not find `source` context')

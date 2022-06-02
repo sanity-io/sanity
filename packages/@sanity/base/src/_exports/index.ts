@@ -152,10 +152,16 @@ export type {
 } from '../form'
 
 export {
+  useClient,
   useConnectionState,
+  useDataset,
   useDocumentOperation,
   useEditState,
+  useProjectId,
+  useSchema,
   useSyncState,
+  useTemplates,
+  useTools,
   useValidationStatus,
 } from '../hooks'
 
