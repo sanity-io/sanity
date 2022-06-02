@@ -37,6 +37,7 @@ export function MemberItem(props: MemberItemProps) {
     onPathBlur,
     onPathFocus,
     onChange,
+    onOpenPath,
     onSetCollapsedPath,
     onSetCollapsedFieldSet,
     onSelectFieldGroup,
@@ -79,13 +80,58 @@ export function MemberItem(props: MemberItemProps) {
     },
     [onChange, member.item.schemaType, member.key]
   )
+  const handleCollapse = useCallback(() => {
+    onSetCollapsedPath(member.item.path, true)
+  }, [onSetCollapsedPath, member.item.path])
 
-  const handleSetCollapsed = useCallback(
-    (collapsed: boolean) => {
-      onSetCollapsedPath(member.item.path, collapsed)
+  const handleExpand = useCallback(() => {
+    onSetCollapsedPath(member.item.path, false)
+  }, [onSetCollapsedPath, member.item.path])
+
+  const handleCollapseField = useCallback(
+    (fieldName: string) => {
+      onSetCollapsedPath(member.item.path.concat(fieldName), true)
     },
     [onSetCollapsedPath, member.item.path]
   )
+  const handleExpandField = useCallback(
+    (fieldName: string) => {
+      onSetCollapsedPath(member.item.path.concat(fieldName), false)
+    },
+    [onSetCollapsedPath, member.item.path]
+  )
+  const handleCloseField = useCallback(
+    (fieldName: string) => {
+      onOpenPath(member.item.path.concat(fieldName))
+    },
+    [onOpenPath, member.item.path]
+  )
+  const handleOpenField = useCallback(
+    (fieldName: string) => {
+      onOpenPath(member.item.path)
+    },
+    [onOpenPath, member.item.path]
+  )
+  const handleExpandFieldSet = useCallback(
+    (fieldsetName: string) => {
+      onSetCollapsedFieldSet(member.item.path.concat(fieldsetName), false)
+    },
+    [onSetCollapsedFieldSet, member.item.path]
+  )
+  const handleCollapseFieldSet = useCallback(
+    (fieldsetName: string) => {
+      onSetCollapsedFieldSet(member.item.path.concat(fieldsetName), true)
+    },
+    [onSetCollapsedFieldSet, member.item.path]
+  )
+
+  const handleOpen = useCallback(() => {
+    onOpenPath(member.item.path)
+  }, [onOpenPath, member.item.path])
+
+  const handleClose = useCallback(() => {
+    onOpenPath(member.item.path.slice(0, -1))
+  }, [onOpenPath, member.item.path])
 
   const handleSelectFieldGroup = useCallback(
     (groupName: string) => {
@@ -94,33 +140,25 @@ export function MemberItem(props: MemberItemProps) {
     [onSelectFieldGroup, member.item.path]
   )
 
-  const handleSetFieldSetCollapsed = useCallback(
-    (itemsetName: string, collapsed: boolean) => {
-      onSetCollapsedFieldSet(member.item.path, collapsed)
-    },
-    [onSetCollapsedFieldSet, member.item.path]
-  )
-  const handleSetFieldCollapsed = useCallback(
-    (itemName: string, collapsed: boolean) => {
-      onSetCollapsedPath(member.item.path.concat(itemName), collapsed)
-    },
-    [onSetCollapsedPath, member.item.path]
-  )
-
   const inputProps = useMemo((): ObjectInputProps => {
     return {
       level: member.item.level,
       members: member.item.members,
       value: member.item.value,
       readOnly: member.item.readOnly,
-      onSetCollapsed: handleSetCollapsed,
+      onExpand: handleExpand,
+      onCollapse: handleCollapse,
+      onExpandFieldSet: handleExpandFieldSet,
+      onCollapseFieldSet: handleCollapseFieldSet,
+      onExpandField: handleExpandField,
+      onOpenField: handleOpenField,
+      onCloseField: handleCloseField,
+      onCollapseField: handleCollapseField,
+      onSelectFieldGroup: handleSelectFieldGroup,
       schemaType: member.item.schemaType,
       compareValue: member.item.compareValue,
       focusRef: focusRef,
       id: member.item.id,
-      onSelectFieldGroup: handleSelectFieldGroup,
-      onSetFieldSetCollapsed: handleSetFieldSetCollapsed,
-      onSetFieldCollapsed: handleSetFieldCollapsed,
       onBlur: handleBlur,
       onFocus: handleFocus,
       onFocusPath: handleFocusChildPath,
@@ -150,10 +188,13 @@ export function MemberItem(props: MemberItemProps) {
     member.item.focused,
     member.item.groups,
     member.collapsed,
-    handleSetCollapsed,
+    handleExpand,
+    handleCollapse,
+    handleExpandFieldSet,
+    handleCollapseFieldSet,
+    handleExpandField,
+    handleCollapseField,
     handleSelectFieldGroup,
-    handleSetFieldSetCollapsed,
-    handleSetFieldCollapsed,
     handleBlur,
     handleFocus,
     handleFocusChildPath,
@@ -198,13 +239,17 @@ export function MemberItem(props: MemberItemProps) {
       schemaType: member.item.schemaType,
       onInsert,
       onRemove,
+      open: member.open,
+      onOpen: handleOpen,
+      onClose: handleClose,
+      onExpand: handleExpand,
+      onCollapse: handleCollapse,
       validation: EMPTY_ARRAY,
       readOnly: member.item.readOnly,
       focused: member.item.focused,
       onFocus: handleFocus,
       inputId: member.item.id,
       path: member.item.path,
-      onSetCollapsed: handleSetCollapsed,
       children: renderedInput,
     }
   }, [
@@ -219,10 +264,14 @@ export function MemberItem(props: MemberItemProps) {
     member.item.path,
     member.collapsible,
     member.collapsed,
+    member.open,
     onInsert,
     onRemove,
+    handleOpen,
+    handleClose,
+    handleExpand,
+    handleCollapse,
     handleFocus,
-    handleSetCollapsed,
     renderedInput,
   ])
 
@@ -230,6 +279,7 @@ export function MemberItem(props: MemberItemProps) {
     <FormCallbacksProvider
       onSelectFieldGroup={onSelectFieldGroup}
       onChange={handleChange}
+      onOpenPath={onOpenPath}
       onSetCollapsedFieldSet={onSetCollapsedFieldSet}
       onSetCollapsedPath={onSetCollapsedPath}
       onPathBlur={onPathBlur}

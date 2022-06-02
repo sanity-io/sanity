@@ -1,7 +1,7 @@
 import React, {memo, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {ObjectSchemaType, Path, SanityDocument} from '@sanity/types'
 import {omit} from 'lodash'
-import {useToast} from '@sanity/ui'
+import {useToast, Text, Box, Flex, Card} from '@sanity/ui'
 import {fromString as pathFromString} from '@sanity/util/paths'
 import isHotkey from 'is-hotkey'
 import {useMemoObservable} from 'react-rx'
@@ -20,6 +20,7 @@ import {useDeskTool, usePaneRouter} from '../../components'
 import {PatchEvent, StateTree, toMutationPatches} from '../../../form'
 import {useFormState} from '../../../form/store/useFormState'
 import {setAtPath} from '../../../form/store/stateTreeHelper'
+import {getExpandOperations} from '../../../form/store/utils/getExpandOperations'
 import {DocumentPaneContext, DocumentPaneContextValue} from './DocumentPaneContext'
 import {getMenuItems} from './menuItems'
 import {DocumentPaneProviderProps} from './types'
@@ -144,16 +145,6 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   const handleFocus = useCallback(
     (nextFocusPath: Path) => {
       setFocusPath(nextFocusPath)
-      onSetCollapsedPath((prevState) => {
-        let nextState = prevState
-        // eslint-disable-next-line max-nested-callbacks
-        nextFocusPath.forEach((_, pIndex) => {
-          // make sure we expand all nodes up to the root
-          // todo: make a util for this
-          nextState = setAtPath(nextState, nextFocusPath.slice(0, pIndex), false)
-        })
-        return nextState
-      })
       presenceStore.setLocation([
         {
           type: 'document',
@@ -248,6 +239,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
 
   const handleInspectClose = useCallback(() => toggleInspect(false), [toggleInspect])
 
+  const [openPath, onSetOpenPath] = useState<Path>([])
   const [fieldGroupState, onSetFieldGroupState] = useState<StateTree<string>>()
   const [collapsedPaths, onSetCollapsedPath] = useState<StateTree<boolean>>()
   const [collapsedFieldSets, onSetCollapsedFieldSets] = useState<StateTree<boolean>>()
@@ -269,10 +261,33 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   const formState = useFormState(documentSchema, {
     value,
     focusPath,
+    openPath,
     collapsedPaths,
     expandedFieldSets: collapsedFieldSets,
     fieldGroupState,
   })
+
+  const formStateRef = useRef(formState)
+  formStateRef.current = formState
+
+  const handleOpenPath = useCallback(
+    (path: Path) => {
+      const ops = getExpandOperations(formStateRef.current!, path)
+      ops.forEach((op) => {
+        if (op.type === 'expandPath') {
+          onSetCollapsedPath((prevState) => setAtPath(prevState, op.path, false))
+        }
+        if (op.type === 'expandFieldSet') {
+          onSetCollapsedFieldSets((prevState) => setAtPath(prevState, op.path, false))
+        }
+        if (op.type === 'setSelectedGroup') {
+          onSetFieldGroupState((prevState) => setAtPath(prevState, op.path, op.groupName))
+        }
+      })
+      onSetOpenPath(path)
+    },
+    [formStateRef]
+  )
 
   const documentPane: DocumentPaneContextValue = {
     actions,
@@ -292,6 +307,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     onBlur: handleBlur,
     onChange: handleChange,
     onFocus: handleFocus,
+    onPathOpen: handleOpenPath,
     onHistoryClose: handleHistoryClose,
     onHistoryOpen: handleHistoryOpen,
     onInspectClose: handleInspectClose,

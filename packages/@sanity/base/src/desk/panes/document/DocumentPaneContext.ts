@@ -37,6 +37,7 @@ export interface DocumentPaneContextValue {
   onMenuAction: (item: PaneMenuItem) => void
   onPaneClose: () => void
   onPaneSplit: () => void
+  onPathOpen: (path: Path) => void
   onSetActiveFieldGroup: (path: Path, groupName: string) => void
   onSetCollapsedPath: (path: Path, expanded: boolean) => void
   onSetCollapsedFieldSet: (path: Path, expanded: boolean) => void

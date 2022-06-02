@@ -67,6 +67,7 @@ export function ArrayOfPrimitivesField(props: {
     onPathBlur,
     onPathFocus,
     onChange,
+    onOpenPath,
     onSetCollapsedPath,
     onSetCollapsedFieldSet,
     onSelectFieldGroup,
@@ -109,6 +110,13 @@ export function ArrayOfPrimitivesField(props: {
     },
     [onSetCollapsedPath, member.field.path]
   )
+
+  const handleCollapse = useCallback(() => {
+    onSetCollapsedPath(member.field.path, true)
+  }, [onSetCollapsedPath, member.field.path])
+  const handleExpand = useCallback(() => {
+    onSetCollapsedPath(member.field.path, false)
+  }, [onSetCollapsedPath, member.field.path])
 
   const setValue = useCallback(
     (nextValue: PrimitiveValue[]) => {
@@ -258,7 +266,8 @@ export function ArrayOfPrimitivesField(props: {
       description: member.field.schemaType.description,
       collapsible: member.collapsible,
       collapsed: member.collapsed,
-      onSetCollapsed: handleSetCollapsed,
+      onExpand: handleExpand,
+      onCollapse: handleCollapse,
       schemaType: member.field.schemaType,
       inputId: member.field.id,
       path: member.field.path,
@@ -286,6 +295,7 @@ export function ArrayOfPrimitivesField(props: {
     <FormCallbacksProvider
       onSelectFieldGroup={onSelectFieldGroup}
       onChange={handleChange}
+      onOpenPath={onOpenPath}
       onSetCollapsedFieldSet={onSetCollapsedFieldSet}
       onSetCollapsedPath={onSetCollapsedPath}
       onPathBlur={onPathBlur}

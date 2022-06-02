@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-handler-names */
 import {
   ArraySchemaType,
   isBooleanSchemaType,
@@ -105,8 +106,8 @@ function ObjectOrArrayField(field: ObjectFieldProps | ArrayFieldProps) {
       description={field.description}
       collapsed={field.collapsed}
       collapsible={field.collapsible}
-      // eslint-disable-next-line react/jsx-handler-names
-      onSetCollapsed={field.onSetCollapsed}
+      onCollapse={field.onCollapse}
+      onExpand={field.onExpand}
       validation={field.validation}
       __unstable_presence={field.presence}
     >

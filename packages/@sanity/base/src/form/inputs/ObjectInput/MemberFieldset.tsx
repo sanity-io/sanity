@@ -8,6 +8,7 @@ import {
 } from '../../types'
 import {FieldSetMember} from '../../store/types/members'
 import {FormFieldSet} from '../../components/formField/FormFieldSet'
+import {useFormCallbacks} from '../../studio/contexts/FormCallbacks'
 import {MemberField} from './MemberField'
 
 export const MemberFieldset = memo(function MemberFieldset(props: {
@@ -15,16 +16,18 @@ export const MemberFieldset = memo(function MemberFieldset(props: {
   renderField: RenderFieldCallback
   renderInput: RenderInputCallback
   renderItem: RenderArrayOfObjectsItemCallback
-  onSetFieldSetCollapsed: (fieldsetName: string, collapsed: boolean) => void
 }) {
-  const {member, renderField, renderInput, renderItem, onSetFieldSetCollapsed} = props
+  const {member, renderField, renderInput, renderItem} = props
 
-  const handleSetCollapsed = useCallback(
-    (collapsed: boolean) => {
-      onSetFieldSetCollapsed(member.fieldSet.name, collapsed)
-    },
-    [member.fieldSet.name, onSetFieldSetCollapsed]
-  )
+  const {onSetCollapsedFieldSet} = useFormCallbacks()
+
+  const handleCollapse = useCallback(() => {
+    onSetCollapsedFieldSet(member.fieldSet.path, true)
+  }, [member.fieldSet.path, onSetCollapsedFieldSet])
+
+  const handleExpand = useCallback(() => {
+    onSetCollapsedFieldSet(member.fieldSet.path, false)
+  }, [member.fieldSet.path, onSetCollapsedFieldSet])
 
   return (
     <FormFieldSet
@@ -33,7 +36,8 @@ export const MemberFieldset = memo(function MemberFieldset(props: {
       level={member.fieldSet.level}
       collapsible={member.fieldSet.collapsible}
       collapsed={member.fieldSet.collapsed}
-      onSetCollapsed={handleSetCollapsed}
+      onCollapse={handleCollapse}
+      onExpand={handleExpand}
     >
       {member.fieldSet.fields.map((fieldsetMember) => (
         <MemberField

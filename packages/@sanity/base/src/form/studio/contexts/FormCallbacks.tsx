@@ -7,6 +7,7 @@ interface FormCallbacksValue {
   onChange: (patchEvent: PatchEvent) => void
   onPathFocus: (path: Path) => void
   onPathBlur: (path: Path) => void
+  onOpenPath: (path: Path) => void
   onSetCollapsedPath: (path: Path, collapsed: boolean) => void
   onSetCollapsedFieldSet: (path: Path, collapsed: boolean) => void
   onSelectFieldGroup: (path: Path, fieldGroupName: string) => void

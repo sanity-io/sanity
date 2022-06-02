@@ -59,7 +59,8 @@ export function PortableTextInput(props: PortableTextInputProps) {
     onCopy,
     onInsert,
     onPaste,
-    onSetCollapsed,
+    onCollapse,
+    onExpand,
     path,
     renderBlockActions,
     renderCustomMarkers,
@@ -243,7 +244,8 @@ export function PortableTextInput(props: PortableTextInputProps) {
             onCopy={onCopy}
             onInsert={onInsert}
             onPaste={onPaste}
-            onSetCollapsed={onSetCollapsed}
+            onCollapse={onCollapse}
+            onExpand={onExpand}
             onToggleFullscreen={handleToggleFullscreen}
             patches$={remotePatchSubject}
             renderBlockActions={renderBlockActions}

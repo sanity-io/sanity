@@ -1,6 +1,6 @@
 import React, {memo, useCallback, useMemo} from 'react'
 import {isEqual, startsWith, trimLeft} from '@sanity/util/paths'
-import {isKeySegment, Path, PathSegment} from '@sanity/types'
+import {isKeySegment, Path} from '@sanity/types'
 import {
   ArrayOfObjectsInputProps,
   FieldMember,
@@ -15,8 +15,8 @@ import {MemberField} from './inputs/ObjectInput/MemberField'
 
 const pass = ({children}: {children: React.ReactNode}) => children
 
-export type FormInputAbsolutePathArg = {absolutePath: [PathSegment, ...Path]}
-export type FormInputRelativePathArg = {relativePath: [PathSegment, ...Path]}
+export type FormInputAbsolutePathArg = {absolutePath: Path}
+export type FormInputRelativePathArg = {relativePath: Path}
 
 function hasAbsolutePath(
   a: FormInputAbsolutePathArg | FormInputRelativePathArg

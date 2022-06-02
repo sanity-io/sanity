@@ -30,7 +30,7 @@ export default {
       title: 'myObject.first',
     },
   },
-  fieldsets: [{name: 'recursive', title: 'Recursive', options: {collapsable: true}}],
+  fieldsets: [{name: 'recursive', title: 'Recursive', options: {collapsible: true}}],
   fields: [
     {
       name: 'myObject',

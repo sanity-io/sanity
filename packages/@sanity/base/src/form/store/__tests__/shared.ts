@@ -10,6 +10,7 @@ export const DEFAULT_PROPS = {
   hidden: false,
   readOnly: false,
   currentUser: MOCK_USER,
+  openPath: [],
   onSetCollapsedField: noop,
   onSetCollapsedFieldSet: noop,
   onSetActiveFieldGroupAtPath: noop,

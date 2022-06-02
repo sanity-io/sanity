@@ -83,7 +83,7 @@ export class ArrayInput extends React.PureComponent<ArrayInputProps> {
   }
 
   handleInsert = (event: InsertEvent) => {
-    const {onFocusPath, resolveInitialValue} = this.props
+    const {onFocusPath, onOpenItem, resolveInitialValue} = this.props
     this.setState({isResolvingInitialValue: true})
     const memberType = this.getMemberTypeOfItem(event.item)
 
@@ -117,7 +117,7 @@ export class ArrayInput extends React.PureComponent<ArrayInputProps> {
         if (event.edit === false) {
           onFocusPath([{_key: event.item._key}])
         } else {
-          this.openItem(event.item._key)
+          onOpenItem(event.item._key)
         }
       })
   }
@@ -141,11 +141,6 @@ export class ArrayInput extends React.PureComponent<ArrayInputProps> {
     if (event.currentTarget === event.target && event.currentTarget === this._focusArea) {
       onFocus(event)
     }
-  }
-
-  openItem = (key: string) => {
-    const {onSetItemCollapsed} = this.props
-    onSetItemCollapsed(key, false)
   }
 
   removeItem(item: ArrayMember) {
@@ -249,46 +244,42 @@ export class ArrayInput extends React.PureComponent<ArrayInputProps> {
     }
   }
 
-  handleFocusItem = (itemKey: string) => {
-    this.openItem(itemKey)
-  }
-
-  renderItem = (item: ItemProps) => {
-    if (!isObjectItemProps(item)) {
+  renderItem = (itemProps: ItemProps) => {
+    if (!isObjectItemProps(itemProps)) {
       throw new Error('Expected item to be of object type')
     }
 
     const {id, schemaType, renderInput} = this.props
 
-    if (isReferenceSchemaType(item.schemaType)) {
-      return item.children
+    if (isReferenceSchemaType(itemProps.schemaType)) {
+      return itemProps.children
     }
     return (
       <>
         <ArrayItem
-          validation={item.validation}
-          itemKey={item.key}
-          readOnly={item.readOnly}
-          onInsert={item.onInsert}
-          onRemove={item.onRemove}
-          onFocus={item.onFocus}
-          index={item.index}
-          schemaType={item.schemaType}
+          validation={itemProps.validation}
+          itemKey={itemProps.key}
+          readOnly={itemProps.readOnly}
+          onInsert={itemProps.onInsert}
+          onRemove={itemProps.onRemove}
+          onFocus={itemProps.onFocus}
+          index={itemProps.index}
+          schemaType={itemProps.schemaType}
           insertableTypes={schemaType.of}
-          value={item.value as ArrayMember}
-          focused={item.focused}
-          expanded={item.collapsed === false}
-          onClick={() => item.onSetCollapsed(false)}
+          value={itemProps.value as ArrayMember}
+          focused={itemProps.focused}
+          open={itemProps.open}
+          onClick={itemProps.onOpen}
           presence={[]}
         >
-          {item.collapsed === false ? (
+          {itemProps.open ? (
             <Dialog
               width={1}
-              header={`Edit ${item.schemaType.title}`}
-              id={`${id}-item-${item.key}-dialog`}
-              onClose={() => item.onSetCollapsed(true)}
+              header={`Edit ${itemProps.schemaType.title}`}
+              id={`${id}-item-${itemProps.key}-dialog`}
+              onClose={itemProps.onClose}
             >
-              <Box padding={4}>{item.children}</Box>
+              <Box padding={4}>{itemProps.children}</Box>
             </Dialog>
           ) : null}
         </ArrayItem>

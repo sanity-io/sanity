@@ -61,8 +61,12 @@ function TestForm() {
   const handleMoveItem = useAction('onMoveItem')
   const handlePrependItem = useAction('onPrependItem')
   const handleRemoveItem = useAction('onRemoveItem')
-  const handleSetCollapsed = useAction('onSetCollapsed')
-  const handleSetItemCollapsed = useAction('onSetItemCollapsed')
+  const handleOpenItem = useAction('onOpenItem')
+  const handleCloseItem = useAction('onCloseItem')
+  const handleExpand = useAction('onExpand')
+  const handleCollapse = useAction('onCollapse')
+  const handleCollapseItem = useAction('onCollapseItem')
+  const handleExpandItem = useAction('onExpandItem')
   const members: ArrayOfObjectsMember[] = useMemo(() => [], [])
   const path = useMemo(() => [], [])
   const presence = useMemo(() => [], [])
@@ -108,8 +112,12 @@ function TestForm() {
         onMoveItem={handleMoveItem}
         onPrependItem={handlePrependItem}
         onRemoveItem={handleRemoveItem}
-        onSetCollapsed={handleSetCollapsed}
-        onSetItemCollapsed={handleSetItemCollapsed}
+        onCollapse={handleCollapse}
+        onOpenItem={handleOpenItem}
+        onCloseItem={handleCloseItem}
+        onExpand={handleExpand}
+        onCollapseItem={handleCollapseItem}
+        onExpandItem={handleExpandItem}
         path={path}
         presence={presence}
         renderField={renderField}

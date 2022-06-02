@@ -17,6 +17,8 @@ export interface ArrayOfObjectsMember<Node extends ObjectFormNode = ObjectFormNo
   // note: ObjectInputProps.collapsed always follows the array item collapsed state
   // this means you cannot have an expanded array item with a collapsed object inside it
 
+  open: boolean
+
   item: Node
 }
 
@@ -32,6 +34,8 @@ export interface ArrayOfPrimitivesMember<Node extends PrimitiveFormNode = Primit
   // collapsed: undefined | boolean
   // collapsible: true
 
+  open: boolean
+
   // note: ObjectInputProps.collapsed always follows the array item collapsed state
   // this means you cannot have an expanded array item with a collapsed object inside it
   item: Node
@@ -44,6 +48,7 @@ export interface FieldMember<Node extends BaseFormNode = BaseFormNode> {
   index: number
   collapsed: boolean | undefined
   collapsible: boolean | undefined
+  open: boolean
   field: Node
 }
 

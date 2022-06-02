@@ -21,8 +21,9 @@ export default {
     {name: 'field3', type: 'string', group: 'group1'},
     {name: 'field4', type: 'string', group: ['group1', 'group2']},
     {
-      name: 'fieldGroup',
+      name: 'collapsibleObject',
       type: 'object',
+      options: {collapsible: true, collapsed: true},
       group: 'group1',
       fields: [
         {
@@ -31,7 +32,9 @@ export default {
         },
         {
           name: 'groupField2',
+          title: 'Group field 2 (required)',
           type: 'string',
+          validation: (Rule) => Rule.required(),
         },
       ],
     },

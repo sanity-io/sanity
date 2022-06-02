@@ -37,6 +37,7 @@ export function ArrayOfObjectsField(props: {
     onChange,
     onSetCollapsedPath,
     onSetCollapsedFieldSet,
+    onOpenPath,
     onSelectFieldGroup,
   } = useFormCallbacks()
 
@@ -140,12 +141,38 @@ export function ArrayOfObjectsField(props: {
     [member.name, onChange]
   )
 
-  const handleSetCollapsed = useCallback(
-    (collapsed: boolean) => {
-      onSetCollapsedPath(member.field.path, collapsed)
+  const handleCollapse = useCallback(() => {
+    onSetCollapsedPath(member.field.path, true)
+  }, [onSetCollapsedPath, member.field.path])
+
+  const handleExpand = useCallback(() => {
+    onSetCollapsedPath(member.field.path, false)
+  }, [onSetCollapsedPath, member.field.path])
+
+  const handleCollapseItem = useCallback(
+    (itemKey: string) => {
+      onSetCollapsedPath(member.field.path.concat({_key: itemKey}), true)
     },
     [onSetCollapsedPath, member.field.path]
   )
+
+  const handleExpandItem = useCallback(
+    (itemKey: string) => {
+      onSetCollapsedPath(member.field.path.concat({_key: itemKey}), false)
+    },
+    [onSetCollapsedPath, member.field.path]
+  )
+
+  const handleOpenItem = useCallback(
+    (itemKey: string) => {
+      onOpenPath(member.field.path.concat({_key: itemKey}))
+    },
+    [onOpenPath, member.field.path]
+  )
+
+  const handleCloseItem = useCallback(() => {
+    onOpenPath(member.field.path)
+  }, [onOpenPath, member.field.path])
 
   const handleRemoveItem = useCallback(
     (itemKey: string) => {
@@ -154,12 +181,6 @@ export function ArrayOfObjectsField(props: {
     [onChange, member.field.path]
   )
 
-  const handleSetItemCollapsed = useCallback(
-    (itemKey: string, collapsed: boolean) => {
-      onSetCollapsedPath(member.field.path.concat({_key: itemKey}), collapsed)
-    },
-    [onSetCollapsedPath, member.field.path]
-  )
   const handleFocusChildPath = useCallback(
     (path: Path) => {
       onPathFocus(member.field.path.concat(path))
@@ -190,16 +211,23 @@ export function ArrayOfObjectsField(props: {
       members: member.field.members,
       value: member.field.value as any,
       readOnly: member.field.readOnly,
-      onSetCollapsed: handleSetCollapsed,
       schemaType: member.field.schemaType,
       compareValue: member.field.compareValue as any,
       focusRef: focusRef,
       id: member.field.id,
-      onSetItemCollapsed: handleSetItemCollapsed,
+      onExpand: handleExpand,
+      onCollapse: handleCollapse,
+      onExpandItem: handleExpandItem,
+      onCollapseItem: handleCollapseItem,
+      onCloseItem: handleCloseItem,
+      onOpenItem: handleOpenItem,
+
       onFocus: handleFocus,
-      path: member.field.path,
       focusPath: member.field.focusPath,
       focused: member.field.focused,
+
+      path: member.field.path,
+
       onChange: handleChange,
       onInsert: handleInsert,
       onMoveItem: handleMoveItem,
@@ -223,12 +251,16 @@ export function ArrayOfObjectsField(props: {
     member.field.schemaType,
     member.field.compareValue,
     member.field.id,
-    member.field.path,
     member.field.focusPath,
     member.field.focused,
+    member.field.path,
     handleBlur,
-    handleSetCollapsed,
-    handleSetItemCollapsed,
+    handleExpand,
+    handleCollapse,
+    handleExpandItem,
+    handleCollapseItem,
+    handleCloseItem,
+    handleOpenItem,
     handleFocus,
     handleChange,
     handleInsert,
@@ -256,7 +288,8 @@ export function ArrayOfObjectsField(props: {
       description: member.field.schemaType.description,
       collapsible: member.collapsible,
       collapsed: member.collapsed,
-      onSetCollapsed: handleSetCollapsed,
+      onCollapse: handleCollapse,
+      onExpand: handleExpand,
       schemaType: member.field.schemaType,
       inputId: member.field.id,
       path: member.field.path,
@@ -274,7 +307,6 @@ export function ArrayOfObjectsField(props: {
     member.field.path,
     member.collapsible,
     member.collapsed,
-    handleSetCollapsed,
     presence,
     validation,
     renderedInput,
@@ -286,6 +318,7 @@ export function ArrayOfObjectsField(props: {
       onChange={handleChange}
       onSetCollapsedFieldSet={onSetCollapsedFieldSet}
       onSetCollapsedPath={onSetCollapsedPath}
+      onOpenPath={onOpenPath}
       onPathBlur={onPathBlur}
       onPathFocus={onPathFocus}
     >

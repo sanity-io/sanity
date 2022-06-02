@@ -9,7 +9,7 @@ import {
   ValidationMarker,
 } from '@sanity/types'
 import * as React from 'react'
-import {FormPatch, FormSetPatch, FormUnsetPatch, PatchEvent} from '../patch'
+import {FormPatch, PatchEvent} from '../patch'
 
 import {
   ArrayOfObjectsFormNode,
@@ -21,10 +21,10 @@ import {
 } from '../store/types/nodes'
 import {FormFieldPresence} from '../../presence'
 import {
-  RenderFieldCallback,
-  RenderInputCallback,
   RenderArrayOfObjectsItemCallback,
   RenderArrayOfPrimitivesItemCallback,
+  RenderFieldCallback,
+  RenderInputCallback,
 } from './renderCallback'
 import {InsertItemEvent, MoveItemEvent} from './event'
 import {FormFieldGroup} from './fieldGroups'
@@ -51,12 +51,21 @@ export interface ObjectInputProps<
   onChange: (patch: FormPatch | FormPatch[] | PatchEvent) => void
 
   collapsed: boolean | undefined
-  onSetCollapsed: (collapsed: boolean) => void
-  onSetFieldCollapsed: (fieldName: string, collapsed: boolean) => void
-  onSetFieldSetCollapsed: (fieldsetName: string, collapsed: boolean) => void
+  onCollapse: () => void
+  onExpand: () => void
+  onCollapseField: (fieldName: string) => void
+  onExpandField: (fieldName: string) => void
+
+  onCollapseFieldSet: (fieldSetName: string) => void
+  onExpandFieldSet: (fieldSetName: string) => void
+
+  onSelectFieldGroup: (groupName: string) => void
 
   onFocusPath: (path: Path) => void
-  onSelectFieldGroup: (groupName: string) => void
+
+  // for object inputs using modal open/close semantics for fields
+  onOpenField: (fieldName: string) => void
+  onCloseField: (fieldName: string) => void
 
   renderInput: RenderInputCallback
   renderField: RenderFieldCallback
@@ -68,6 +77,7 @@ export interface ArrayOfObjectsInputProps<
   S extends ArraySchemaType = ArraySchemaType
 > extends ArrayOfObjectsFormNode<T[], S>,
     BaseInputProps {
+  // Data manipulation callbacks special for array inputs
   onChange: (patch: FormPatch | FormPatch[] | PatchEvent) => void
   onAppendItem: (item: T) => void
   onPrependItem: (item: T) => void
@@ -80,10 +90,16 @@ export interface ArrayOfObjectsInputProps<
   onFocusPath: (path: Path) => void
 
   // note: not a priority to support collapsible arrays right now
-  onSetCollapsed: (collapsed: boolean) => void
+  onCollapse: () => void
+  onExpand: () => void
 
-  // this opens/close items
-  onSetItemCollapsed: (itemKey: string, collapsed: boolean) => void
+  // for array inputs using expand/collapse semantics for items
+  onCollapseItem: (itemKey: string) => void
+  onExpandItem: (itemKey: string) => void
+
+  // for array inputs using modal open/close semantics for items
+  onOpenItem: (itemKey: string) => void
+  onCloseItem: (itemKey: string) => void
 
   renderInput: RenderInputCallback
   renderItem: RenderArrayOfObjectsItemCallback

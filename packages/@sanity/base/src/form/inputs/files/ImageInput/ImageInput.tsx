@@ -285,17 +285,21 @@ export class ImageInput extends React.PureComponent<ImageInputProps, ImageInputS
   }
 
   handleOpenDialog = () => {
-    const {schemaType, onSetFieldCollapsed} = this.props
+    const {schemaType, onExpandField} = this.props
     const groups = this.getGroupedFields(schemaType)
     const firstDialogField = this.isImageToolEnabled() ? groups.imagetool[0] : groups.dialog[0]
     if (firstDialogField) {
-      onSetFieldCollapsed(firstDialogField.name, false)
+      onExpandField(firstDialogField.name)
     }
   }
 
   handleCloseDialog = () => {
-    const {onSetCollapsed} = this.props
-    onSetCollapsed(true)
+    const {schemaType, onCollapseField} = this.props
+    const groups = this.getGroupedFields(schemaType)
+    const firstDialogField = this.isImageToolEnabled() ? groups.imagetool[0] : groups.dialog[0]
+    if (firstDialogField) {
+      onCollapseField(firstDialogField.name)
+    }
   }
 
   handleSelectAssetFromSource = (assetFromSource: AssetFromSource[]) => {
@@ -818,7 +822,6 @@ export class ImageInput extends React.PureComponent<ImageInputProps, ImageInputS
           __unstable_presence={isDialogOpen ? EMPTY_ARRAY : fieldPresence}
           description={schemaType.description}
           level={fieldGroups.highlighted.length > 0 ? level : 0}
-          onSetCollapsed={() => console.warn('todo')}
           title={schemaType.title}
           validation={validation}
         >

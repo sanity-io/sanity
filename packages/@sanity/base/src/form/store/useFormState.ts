@@ -21,11 +21,13 @@ export function useFormState<
     expandedFieldSets,
     collapsedPaths,
     focusPath,
+    openPath,
   }: {
     fieldGroupState?: StateTree<string> | undefined
     expandedFieldSets?: StateTree<boolean> | undefined
     collapsedPaths?: StateTree<boolean> | undefined
     value: Partial<FIXME_SanityDocument>
+    openPath: Path
     focusPath: Path
   }
 ) {
@@ -48,6 +50,7 @@ export function useFormState<
       collapsedPaths,
       value,
       focusPath,
+      openPath,
       path: pathFor([]),
       level: 0,
       currentUser,
@@ -64,6 +67,7 @@ export function useFormState<
     expandedFieldSets,
     collapsedPaths,
     focusPath,
+    openPath,
     currentUser,
   ])
 }

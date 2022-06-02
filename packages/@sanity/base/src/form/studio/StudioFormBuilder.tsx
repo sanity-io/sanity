@@ -32,6 +32,9 @@ export interface StudioFormBuilderProps extends ObjectFormNode {
   onSetCollapsedPath: (path: Path, collapsed: boolean) => void
   onSetCollapsedFieldSet: (path: Path, collapsed: boolean) => void
   onSelectFieldGroup: (path: Path, groupName: string) => void
+
+  onOpenPath: (path: Path) => void
+
   focusPath: Path
 
   schemaType: ObjectSchemaType
@@ -66,6 +69,7 @@ export function StudioFormBuilder(props: StudioFormBuilderProps) {
     onPathBlur,
     onSetCollapsedPath,
     onSetCollapsedFieldSet,
+    onOpenPath,
     members,
     groups,
     readOnly,
@@ -95,11 +99,27 @@ export function StudioFormBuilder(props: StudioFormBuilderProps) {
     [onSelectFieldGroup]
   )
 
-  const handleSetCollapsed = useCallback(
-    (collapsed: boolean) => {
-      onSetCollapsedPath([], collapsed)
-    },
+  const handleCollapse = useCallback(() => onSetCollapsedPath([], true), [onSetCollapsedPath])
+  const handleExpand = useCallback(() => onSetCollapsedPath([], false), [onSetCollapsedPath])
+
+  const handleCollapseField = useCallback(
+    (fieldName: string) => onSetCollapsedPath([fieldName], true),
     [onSetCollapsedPath]
+  )
+  const handleExpandField = useCallback(
+    (fieldName: string) => onSetCollapsedPath([fieldName], false),
+    [onSetCollapsedPath]
+  )
+  const onOpenField = useCallback((fieldName: string) => onOpenPath([fieldName]), [onOpenPath])
+  const onCloseField = useCallback((fieldName: string) => onOpenPath([]), [onOpenPath])
+
+  const handleCollapseFieldSet = useCallback(
+    (fieldSetName: string) => onSetCollapsedFieldSet([fieldSetName], true),
+    [onSetCollapsedFieldSet]
+  )
+  const handleExpandFieldSet = useCallback(
+    (fieldSetName: string) => onSetCollapsedFieldSet([fieldSetName], false),
+    [onSetCollapsedFieldSet]
   )
 
   const handleChange = useCallback(
@@ -107,20 +127,6 @@ export function StudioFormBuilder(props: StudioFormBuilderProps) {
       onChange(PatchEvent.from(patch))
     },
     [onChange]
-  )
-
-  const handleSetFieldCollapsed = useCallback(
-    (fieldName: string, collapsed: boolean) => {
-      onSetCollapsedPath([fieldName], collapsed)
-    },
-    [onSetCollapsedPath]
-  )
-
-  const handleSetFieldSetCollapsed = useCallback(
-    (fieldSetName: string, collapsed: boolean) => {
-      onSetCollapsedFieldSet([fieldSetName], collapsed)
-    },
-    [onSetCollapsedFieldSet]
   )
 
   const renderInput: RenderInputCallback = useCallback(
@@ -162,6 +168,7 @@ export function StudioFormBuilder(props: StudioFormBuilderProps) {
         onSetCollapsedPath={props.onSetCollapsedPath}
         onSetCollapsedFieldSet={props.onSetCollapsedFieldSet}
         onSelectFieldGroup={props.onSelectFieldGroup}
+        onOpenPath={props.onOpenPath}
         onPathBlur={props.onPathBlur}
         onPathFocus={props.onPathFocus}
         onChange={props.onChange}
@@ -188,9 +195,14 @@ export function StudioFormBuilder(props: StudioFormBuilderProps) {
               members={members}
               groups={groups}
               onSelectFieldGroup={handleSelectFieldGroup}
-              onSetCollapsed={handleSetCollapsed}
-              onSetFieldCollapsed={handleSetFieldCollapsed}
-              onSetFieldSetCollapsed={handleSetFieldSetCollapsed}
+              onCollapse={handleCollapse}
+              onExpand={handleExpand}
+              onCollapseField={handleCollapseField}
+              onExpandField={handleExpandField}
+              onOpenField={onOpenField}
+              onCloseField={onCloseField}
+              onCollapseFieldSet={handleCollapseFieldSet}
+              onExpandFieldSet={handleExpandFieldSet}
               value={value}
               renderInput={renderInput}
               renderField={renderField}

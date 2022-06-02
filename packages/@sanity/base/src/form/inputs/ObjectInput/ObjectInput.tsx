@@ -21,7 +21,6 @@ export const ObjectInput = memo(function ObjectInput(props: ObjectInputProps) {
     id,
     path,
     onSelectFieldGroup,
-    onSetFieldSetCollapsed,
   } = props
 
   const renderedUnknownFields = useMemo(() => {
@@ -73,7 +72,6 @@ export const ObjectInput = memo(function ObjectInput(props: ObjectInputProps) {
             renderInput={renderInput}
             renderField={renderField}
             renderItem={renderItem}
-            onSetFieldSetCollapsed={onSetFieldSetCollapsed}
           />
         )
       })}

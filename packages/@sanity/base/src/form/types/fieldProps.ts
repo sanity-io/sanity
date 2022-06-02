@@ -30,7 +30,11 @@ export interface ObjectFieldProps extends BaseFieldProps {
   value: {[field in string]: unknown} | undefined
   collapsed?: boolean
   collapsible?: boolean
-  onSetCollapsed: (collapsed: boolean) => void
+  onCollapse: () => void
+  onExpand: () => void
+  open: boolean
+  onClose: () => void
+  onOpen: () => void
 }
 
 export interface ArrayFieldProps extends BaseFieldProps {
@@ -38,7 +42,8 @@ export interface ArrayFieldProps extends BaseFieldProps {
   value: unknown[] | undefined
   collapsed?: boolean
   collapsible?: boolean
-  onSetCollapsed: (collapsed: boolean) => void
+  onCollapse: () => void
+  onExpand: () => void
 }
 
 export interface NumberFieldProps extends BaseFieldProps {

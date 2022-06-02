@@ -39,7 +39,11 @@ export interface ObjectItemProps extends BaseItemProps {
   schemaType: ObjectSchemaType
   collapsed: boolean | undefined
   collapsible: boolean
-  onSetCollapsed: (collapsed: boolean) => void
+  onCollapse: () => void
+  onExpand: () => void
+  open: boolean
+  onClose: () => void
+  onOpen: () => void
 }
 
 export type ItemProps = ObjectItemProps | PrimitiveItemProps

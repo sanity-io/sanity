@@ -24,7 +24,7 @@ export interface ArrayItemProps {
   value: ArrayMember
   schemaType: SchemaType
   focused?: boolean
-  expanded: boolean
+  open: boolean
   insertableTypes: SchemaType[]
   readOnly?: boolean
   presence: FIXME[]
@@ -40,7 +40,7 @@ export const ArrayItem = memo(function ArrayItem(props: ArrayItemProps) {
     schemaType,
     index,
     itemKey,
-    expanded,
+    open,
     onClick,
     readOnly,
     presence = [],
@@ -55,7 +55,7 @@ export const ArrayItem = memo(function ArrayItem(props: ArrayItemProps) {
   const innerElementRef = useRef<HTMLDivElement | null>(null)
 
   // this is here to make sure the item is visible if it's being edited behind a modal
-  useScrollIntoViewOnFocusWithin(innerElementRef, expanded)
+  useScrollIntoViewOnFocusWithin(innerElementRef, open)
 
   useDidUpdate(focused, (hadFocus, hasFocus) => {
     if (!hadFocus && hasFocus && innerElementRef.current) {
@@ -100,7 +100,7 @@ export const ArrayItem = memo(function ArrayItem(props: ArrayItemProps) {
 
   const item = (
     <ItemComponent
-      aria-selected={expanded}
+      aria-selected={open}
       index={index}
       onFocus={onFocus}
       value={value}
@@ -120,7 +120,7 @@ export const ArrayItem = memo(function ArrayItem(props: ArrayItemProps) {
   return (
     <>
       <ChangeIndicatorScope path={itemPath}>
-        <ContextProvidedChangeIndicator compareDeep disabled={expanded && !isReference}>
+        <ContextProvidedChangeIndicator compareDeep disabled={open && !isReference}>
           {isGrid ? (
             // grid should be rendered without a margin
             item

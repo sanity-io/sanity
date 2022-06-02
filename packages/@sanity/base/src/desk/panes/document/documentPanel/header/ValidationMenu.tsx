@@ -33,7 +33,7 @@ const BUTTON_PROPS: Record<'error' | 'warning' | 'info', ButtonProps> = {
 
 export function ValidationMenu(props: ValidationMenuProps) {
   const {boundaryElement, isOpen, setOpen} = props
-  const {documentSchema, onFocus, validation} = useDocumentPane()
+  const {documentSchema, onFocus, onPathOpen, validation} = useDocumentPane()
   const id = useId()
   const hasValidationMarkers = validation.length > 0
   const hasErrorMarkers = validation.some(isValidationErrorMarker)
@@ -68,7 +68,7 @@ export function ValidationMenu(props: ValidationMenuProps) {
             documentType={documentSchema}
             validation={validation}
             onClose={handleClose}
-            onFocus={onFocus}
+            onFocus={onPathOpen}
           />
         </Menu>
       }

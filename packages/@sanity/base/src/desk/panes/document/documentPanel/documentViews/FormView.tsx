@@ -58,6 +58,7 @@ export function FormView(props: FormViewProps) {
     onFocus,
     onBlur,
     onSetCollapsedPath,
+    onPathOpen,
     onSetCollapsedFieldSet,
     onSetActiveFieldGroup,
   } = useDocumentPane()
@@ -190,6 +191,7 @@ export function FormView(props: FormViewProps) {
                 validation={validation}
                 value={formState.value}
                 onChange={handleChange}
+                onOpenPath={onPathOpen}
                 onSetCollapsedPath={onSetCollapsedPath}
                 onSetCollapsedFieldSet={onSetCollapsedFieldSet}
                 onSelectFieldGroup={onSetActiveFieldGroup}
