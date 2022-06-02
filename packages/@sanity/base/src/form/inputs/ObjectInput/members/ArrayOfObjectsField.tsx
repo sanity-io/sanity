@@ -35,10 +35,10 @@ export function ArrayOfObjectsField(props: {
     onPathBlur,
     onPathFocus,
     onChange,
-    onSetCollapsedPath,
-    onSetCollapsedFieldSet,
-    onOpenPath,
-    onSelectFieldGroup,
+    onSetPathCollapsed,
+    onSetFieldSetCollapsed,
+    onPathOpen,
+    onFieldGroupSelect,
   } = useFormCallbacks()
 
   const rootPresence = useFormFieldPresence()
@@ -142,37 +142,37 @@ export function ArrayOfObjectsField(props: {
   )
 
   const handleCollapse = useCallback(() => {
-    onSetCollapsedPath(member.field.path, true)
-  }, [onSetCollapsedPath, member.field.path])
+    onSetPathCollapsed(member.field.path, true)
+  }, [onSetPathCollapsed, member.field.path])
 
   const handleExpand = useCallback(() => {
-    onSetCollapsedPath(member.field.path, false)
-  }, [onSetCollapsedPath, member.field.path])
+    onSetPathCollapsed(member.field.path, false)
+  }, [onSetPathCollapsed, member.field.path])
 
   const handleCollapseItem = useCallback(
     (itemKey: string) => {
-      onSetCollapsedPath(member.field.path.concat({_key: itemKey}), true)
+      onSetPathCollapsed(member.field.path.concat({_key: itemKey}), true)
     },
-    [onSetCollapsedPath, member.field.path]
+    [onSetPathCollapsed, member.field.path]
   )
 
   const handleExpandItem = useCallback(
     (itemKey: string) => {
-      onSetCollapsedPath(member.field.path.concat({_key: itemKey}), false)
+      onSetPathCollapsed(member.field.path.concat({_key: itemKey}), false)
     },
-    [onSetCollapsedPath, member.field.path]
+    [onSetPathCollapsed, member.field.path]
   )
 
   const handleOpenItem = useCallback(
     (itemKey: string) => {
-      onOpenPath(member.field.path.concat({_key: itemKey}))
+      onPathOpen(member.field.path.concat({_key: itemKey}))
     },
-    [onOpenPath, member.field.path]
+    [onPathOpen, member.field.path]
   )
 
   const handleCloseItem = useCallback(() => {
-    onOpenPath(member.field.path)
-  }, [onOpenPath, member.field.path])
+    onPathOpen(member.field.path)
+  }, [onPathOpen, member.field.path])
 
   const handleRemoveItem = useCallback(
     (itemKey: string) => {
@@ -314,11 +314,11 @@ export function ArrayOfObjectsField(props: {
 
   return (
     <FormCallbacksProvider
-      onSelectFieldGroup={onSelectFieldGroup}
+      onFieldGroupSelect={onFieldGroupSelect}
       onChange={handleChange}
-      onSetCollapsedFieldSet={onSetCollapsedFieldSet}
-      onSetCollapsedPath={onSetCollapsedPath}
-      onOpenPath={onOpenPath}
+      onSetFieldSetCollapsed={onSetFieldSetCollapsed}
+      onSetPathCollapsed={onSetPathCollapsed}
+      onPathOpen={onPathOpen}
       onPathBlur={onPathBlur}
       onPathFocus={onPathFocus}
     >

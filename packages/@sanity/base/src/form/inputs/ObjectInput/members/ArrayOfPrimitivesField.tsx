@@ -67,10 +67,10 @@ export function ArrayOfPrimitivesField(props: {
     onPathBlur,
     onPathFocus,
     onChange,
-    onOpenPath,
-    onSetCollapsedPath,
-    onSetCollapsedFieldSet,
-    onSelectFieldGroup,
+    onPathOpen,
+    onSetPathCollapsed,
+    onSetFieldSetCollapsed,
+    onFieldGroupSelect,
   } = useFormCallbacks()
   const {member, renderField, renderInput, renderItem} = props
   const focusRef = useRef<{focus: () => void}>()
@@ -106,17 +106,17 @@ export function ArrayOfPrimitivesField(props: {
 
   const handleSetCollapsed = useCallback(
     (collapsed: boolean) => {
-      onSetCollapsedPath(member.field.path, collapsed)
+      onSetPathCollapsed(member.field.path, collapsed)
     },
-    [onSetCollapsedPath, member.field.path]
+    [onSetPathCollapsed, member.field.path]
   )
 
   const handleCollapse = useCallback(() => {
-    onSetCollapsedPath(member.field.path, true)
-  }, [onSetCollapsedPath, member.field.path])
+    onSetPathCollapsed(member.field.path, true)
+  }, [onSetPathCollapsed, member.field.path])
   const handleExpand = useCallback(() => {
-    onSetCollapsedPath(member.field.path, false)
-  }, [onSetCollapsedPath, member.field.path])
+    onSetPathCollapsed(member.field.path, false)
+  }, [onSetPathCollapsed, member.field.path])
 
   const setValue = useCallback(
     (nextValue: PrimitiveValue[]) => {
@@ -293,11 +293,11 @@ export function ArrayOfPrimitivesField(props: {
 
   return (
     <FormCallbacksProvider
-      onSelectFieldGroup={onSelectFieldGroup}
+      onFieldGroupSelect={onFieldGroupSelect}
       onChange={handleChange}
-      onOpenPath={onOpenPath}
-      onSetCollapsedFieldSet={onSetCollapsedFieldSet}
-      onSetCollapsedPath={onSetCollapsedPath}
+      onPathOpen={onPathOpen}
+      onSetFieldSetCollapsed={onSetFieldSetCollapsed}
+      onSetPathCollapsed={onSetPathCollapsed}
       onPathBlur={onPathBlur}
       onPathFocus={onPathFocus}
     >

@@ -32,10 +32,10 @@ export const ObjectField = function ObjectField(props: {
     onPathBlur,
     onPathFocus,
     onChange,
-    onOpenPath,
-    onSetCollapsedPath,
-    onSetCollapsedFieldSet,
-    onSelectFieldGroup,
+    onPathOpen,
+    onSetPathCollapsed,
+    onSetFieldSetCollapsed,
+    onFieldGroupSelect,
   } = useFormCallbacks()
 
   const rootValidation = useValidationMarkers()
@@ -83,63 +83,63 @@ export const ObjectField = function ObjectField(props: {
   )
 
   const handleCollapse = useCallback(() => {
-    onSetCollapsedPath(member.field.path, true)
-  }, [onSetCollapsedPath, member.field.path])
+    onSetPathCollapsed(member.field.path, true)
+  }, [onSetPathCollapsed, member.field.path])
 
   const handleExpand = useCallback(() => {
-    onSetCollapsedPath(member.field.path, false)
-  }, [onSetCollapsedPath, member.field.path])
+    onSetPathCollapsed(member.field.path, false)
+  }, [onSetPathCollapsed, member.field.path])
 
   const handleCollapseField = useCallback(
     (fieldName: string) => {
-      onSetCollapsedPath(member.field.path.concat(fieldName), true)
+      onSetPathCollapsed(member.field.path.concat(fieldName), true)
     },
-    [onSetCollapsedPath, member.field.path]
+    [onSetPathCollapsed, member.field.path]
   )
   const handleExpandField = useCallback(
     (fieldName: string) => {
-      onSetCollapsedPath(member.field.path.concat(fieldName), false)
+      onSetPathCollapsed(member.field.path.concat(fieldName), false)
     },
-    [onSetCollapsedPath, member.field.path]
+    [onSetPathCollapsed, member.field.path]
   )
   const handleOpenField = useCallback(
     (fieldName: string) => {
-      onOpenPath(member.field.path.concat(fieldName))
+      onPathOpen(member.field.path.concat(fieldName))
     },
-    [onOpenPath, member.field.path]
+    [onPathOpen, member.field.path]
   )
   const handleCloseField = useCallback(
     (fieldName: string) => {
-      onOpenPath(member.field.path)
+      onPathOpen(member.field.path)
     },
-    [onOpenPath, member.field.path]
+    [onPathOpen, member.field.path]
   )
   const handleExpandFieldSet = useCallback(
     (fieldsetName: string) => {
-      onSetCollapsedFieldSet(member.field.path.concat(fieldsetName), false)
+      onSetFieldSetCollapsed(member.field.path.concat(fieldsetName), false)
     },
-    [onSetCollapsedFieldSet, member.field.path]
+    [onSetFieldSetCollapsed, member.field.path]
   )
   const handleCollapseFieldSet = useCallback(
     (fieldsetName: string) => {
-      onSetCollapsedFieldSet(member.field.path.concat(fieldsetName), true)
+      onSetFieldSetCollapsed(member.field.path.concat(fieldsetName), true)
     },
-    [onSetCollapsedFieldSet, member.field.path]
+    [onSetFieldSetCollapsed, member.field.path]
   )
 
   const handleOpen = useCallback(() => {
-    onOpenPath(member.field.path)
-  }, [onOpenPath, member.field.path])
+    onPathOpen(member.field.path)
+  }, [onPathOpen, member.field.path])
 
   const handleClose = useCallback(() => {
-    onOpenPath(member.field.path.slice(0, -1))
-  }, [onOpenPath, member.field.path])
+    onPathOpen(member.field.path.slice(0, -1))
+  }, [onPathOpen, member.field.path])
 
   const handleSelectFieldGroup = useCallback(
     (groupName: string) => {
-      onSelectFieldGroup(member.field.path, groupName)
+      onFieldGroupSelect(member.field.path, groupName)
     },
-    [onSelectFieldGroup, member.field.path]
+    [onFieldGroupSelect, member.field.path]
   )
 
   const presence = useMemo(() => {
@@ -273,11 +273,11 @@ export const ObjectField = function ObjectField(props: {
 
   return (
     <FormCallbacksProvider
-      onSelectFieldGroup={onSelectFieldGroup}
+      onFieldGroupSelect={onFieldGroupSelect}
       onChange={handleChange}
-      onSetCollapsedFieldSet={onSetCollapsedFieldSet}
-      onOpenPath={onOpenPath}
-      onSetCollapsedPath={onSetCollapsedPath}
+      onSetFieldSetCollapsed={onSetFieldSetCollapsed}
+      onPathOpen={onPathOpen}
+      onSetPathCollapsed={onSetPathCollapsed}
       onPathBlur={onPathBlur}
       onPathFocus={onPathFocus}
     >

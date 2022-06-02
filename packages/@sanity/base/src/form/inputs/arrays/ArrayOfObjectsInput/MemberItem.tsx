@@ -37,10 +37,10 @@ export function MemberItem(props: MemberItemProps) {
     onPathBlur,
     onPathFocus,
     onChange,
-    onOpenPath,
-    onSetCollapsedPath,
-    onSetCollapsedFieldSet,
-    onSelectFieldGroup,
+    onPathOpen,
+    onSetPathCollapsed,
+    onSetFieldSetCollapsed,
+    onFieldGroupSelect,
   } = useFormCallbacks()
 
   useDidUpdate(member.item.focused, (hadFocus, hasFocus) => {
@@ -81,63 +81,63 @@ export function MemberItem(props: MemberItemProps) {
     [onChange, member.item.schemaType, member.key]
   )
   const handleCollapse = useCallback(() => {
-    onSetCollapsedPath(member.item.path, true)
-  }, [onSetCollapsedPath, member.item.path])
+    onSetPathCollapsed(member.item.path, true)
+  }, [onSetPathCollapsed, member.item.path])
 
   const handleExpand = useCallback(() => {
-    onSetCollapsedPath(member.item.path, false)
-  }, [onSetCollapsedPath, member.item.path])
+    onSetPathCollapsed(member.item.path, false)
+  }, [onSetPathCollapsed, member.item.path])
 
   const handleCollapseField = useCallback(
     (fieldName: string) => {
-      onSetCollapsedPath(member.item.path.concat(fieldName), true)
+      onSetPathCollapsed(member.item.path.concat(fieldName), true)
     },
-    [onSetCollapsedPath, member.item.path]
+    [onSetPathCollapsed, member.item.path]
   )
   const handleExpandField = useCallback(
     (fieldName: string) => {
-      onSetCollapsedPath(member.item.path.concat(fieldName), false)
+      onSetPathCollapsed(member.item.path.concat(fieldName), false)
     },
-    [onSetCollapsedPath, member.item.path]
+    [onSetPathCollapsed, member.item.path]
   )
   const handleCloseField = useCallback(
     (fieldName: string) => {
-      onOpenPath(member.item.path.concat(fieldName))
+      onPathOpen(member.item.path.concat(fieldName))
     },
-    [onOpenPath, member.item.path]
+    [onPathOpen, member.item.path]
   )
   const handleOpenField = useCallback(
     (fieldName: string) => {
-      onOpenPath(member.item.path)
+      onPathOpen(member.item.path)
     },
-    [onOpenPath, member.item.path]
+    [onPathOpen, member.item.path]
   )
   const handleExpandFieldSet = useCallback(
     (fieldsetName: string) => {
-      onSetCollapsedFieldSet(member.item.path.concat(fieldsetName), false)
+      onSetFieldSetCollapsed(member.item.path.concat(fieldsetName), false)
     },
-    [onSetCollapsedFieldSet, member.item.path]
+    [onSetFieldSetCollapsed, member.item.path]
   )
   const handleCollapseFieldSet = useCallback(
     (fieldsetName: string) => {
-      onSetCollapsedFieldSet(member.item.path.concat(fieldsetName), true)
+      onSetFieldSetCollapsed(member.item.path.concat(fieldsetName), true)
     },
-    [onSetCollapsedFieldSet, member.item.path]
+    [onSetFieldSetCollapsed, member.item.path]
   )
 
   const handleOpen = useCallback(() => {
-    onOpenPath(member.item.path)
-  }, [onOpenPath, member.item.path])
+    onPathOpen(member.item.path)
+  }, [onPathOpen, member.item.path])
 
   const handleClose = useCallback(() => {
-    onOpenPath(member.item.path.slice(0, -1))
-  }, [onOpenPath, member.item.path])
+    onPathOpen(member.item.path.slice(0, -1))
+  }, [onPathOpen, member.item.path])
 
   const handleSelectFieldGroup = useCallback(
     (groupName: string) => {
-      onSelectFieldGroup(member.item.path, groupName)
+      onFieldGroupSelect(member.item.path, groupName)
     },
-    [onSelectFieldGroup, member.item.path]
+    [onFieldGroupSelect, member.item.path]
   )
 
   const inputProps = useMemo((): ObjectInputProps => {
@@ -277,11 +277,11 @@ export function MemberItem(props: MemberItemProps) {
 
   return (
     <FormCallbacksProvider
-      onSelectFieldGroup={onSelectFieldGroup}
+      onFieldGroupSelect={onFieldGroupSelect}
       onChange={handleChange}
-      onOpenPath={onOpenPath}
-      onSetCollapsedFieldSet={onSetCollapsedFieldSet}
-      onSetCollapsedPath={onSetCollapsedPath}
+      onPathOpen={onPathOpen}
+      onSetFieldSetCollapsed={onSetFieldSetCollapsed}
+      onSetPathCollapsed={onSetPathCollapsed}
       onPathBlur={onPathBlur}
       onPathFocus={onPathFocus}
     >

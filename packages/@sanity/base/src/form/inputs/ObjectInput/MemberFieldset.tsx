@@ -19,15 +19,15 @@ export const MemberFieldset = memo(function MemberFieldset(props: {
 }) {
   const {member, renderField, renderInput, renderItem} = props
 
-  const {onSetCollapsedFieldSet} = useFormCallbacks()
+  const {onSetFieldSetCollapsed} = useFormCallbacks()
 
   const handleCollapse = useCallback(() => {
-    onSetCollapsedFieldSet(member.fieldSet.path, true)
-  }, [member.fieldSet.path, onSetCollapsedFieldSet])
+    onSetFieldSetCollapsed(member.fieldSet.path, true)
+  }, [member.fieldSet.path, onSetFieldSetCollapsed])
 
   const handleExpand = useCallback(() => {
-    onSetCollapsedFieldSet(member.fieldSet.path, false)
-  }, [member.fieldSet.path, onSetCollapsedFieldSet])
+    onSetFieldSetCollapsed(member.fieldSet.path, false)
+  }, [member.fieldSet.path, onSetFieldSetCollapsed])
 
   return (
     <FormFieldSet
