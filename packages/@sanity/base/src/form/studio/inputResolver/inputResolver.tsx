@@ -119,6 +119,31 @@ function ObjectOrArrayField(field: ObjectFieldProps | ArrayFieldProps) {
   )
 }
 
+function ImageOrFileField(field: ObjectFieldProps) {
+  // unless the hotspot tool dialog is open we want to show whoever is in there as the field presence
+  const hotspotField = field.inputProps.members.find(
+    (member): member is FieldMember => member.kind === 'field' && member.name === 'hotspot'
+  )
+  const presence = hotspotField?.open
+    ? field.presence
+    : field.presence.concat(hotspotField?.field.presence || [])
+  return (
+    <FormFieldSet
+      level={field.level}
+      title={field.title}
+      description={field.description}
+      collapsed={field.collapsed}
+      collapsible={field.collapsible}
+      onCollapse={field.onCollapse}
+      onExpand={field.onExpand}
+      validation={field.validation}
+      __unstable_presence={presence}
+    >
+      {field.children}
+    </FormFieldSet>
+  )
+}
+
 export function defaultResolveFieldComponent(
   schemaType: SchemaType
 ): React.ComponentType<FieldProps> {
@@ -126,6 +151,10 @@ export function defaultResolveFieldComponent(
 
   if (isBooleanSchemaType(schemaType)) {
     return NoopField
+  }
+
+  if (getTypeChain(schemaType, new Set()).some((t) => t.name === 'image' || t.name === 'file')) {
+    return ImageOrFileField as React.ComponentType<FieldProps>
   }
 
   if (schemaType.jsonType !== 'object' && schemaType.jsonType !== 'array') {

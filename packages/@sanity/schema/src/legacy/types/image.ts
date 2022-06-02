@@ -38,9 +38,10 @@ export const ImageType = {
 
     lazyGetter(parsed, 'fields', () => {
       return fields.map((fieldDef) => {
-        const {name, ...type} = fieldDef
+        const {name, fieldset, ...type} = fieldDef
         return {
           name: name,
+          fieldset,
           type: extendMember(type),
         }
       })

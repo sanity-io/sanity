@@ -1,6 +1,6 @@
 import React, {MouseEventHandler, ReactNode, useState} from 'react'
 
-import {EllipsisVerticalIcon, EditIcon} from '@sanity/icons'
+import {EllipsisVerticalIcon, CropIcon} from '@sanity/icons'
 import {Menu, Popover, useClickOutside} from '@sanity/ui'
 import {MenuActionsWrapper, ButtonContainer} from './ImageActionsMenu.styled'
 
@@ -27,7 +27,7 @@ export function ImageActionsMenu(props: Props) {
     <MenuActionsWrapper data-buttons space={1} padding={2}>
       {showEdit && (
         <ButtonContainer
-          icon={EditIcon}
+          icon={CropIcon}
           mode="ghost"
           onClick={onEdit}
           data-testid="options-menu-edit-details"

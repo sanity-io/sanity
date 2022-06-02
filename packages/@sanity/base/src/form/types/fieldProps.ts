@@ -35,6 +35,7 @@ export interface ObjectFieldProps extends BaseFieldProps {
   open: boolean
   onClose: () => void
   onOpen: () => void
+  inputProps: ObjectInputProps
 }
 
 export interface ArrayFieldProps extends BaseFieldProps {
@@ -44,6 +45,7 @@ export interface ArrayFieldProps extends BaseFieldProps {
   collapsible?: boolean
   onCollapse: () => void
   onExpand: () => void
+  inputProps: ArrayOfObjectsInputProps
 }
 
 export interface ArrayOfPrimitivesFieldProps extends BaseFieldProps {
@@ -53,6 +55,7 @@ export interface ArrayOfPrimitivesFieldProps extends BaseFieldProps {
   collapsible?: boolean
   onCollapse: () => void
   onExpand: () => void
+  inputProps: ArrayOfPrimitivesInputProps
 }
 
 export interface NumberFieldProps extends BaseFieldProps {

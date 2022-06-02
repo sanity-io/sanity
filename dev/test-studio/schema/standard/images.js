@@ -30,29 +30,27 @@ export default {
     },
     {
       name: 'mainImage',
-      title: 'Image',
+      title: 'Main Image',
       type: 'image',
       description:
         'Image hotspot should be possible to change. Caption should be visible in image field, full description should be editable in modal',
       options: {
         hotspot: true,
       },
+      fieldsets: [
+        {name: 'details', title: 'Details', options: {collapsible: true, collapsed: true}},
+      ],
       fields: [
         {
           name: 'caption',
           type: 'string',
           title: 'Caption',
-          options: {
-            isHighlighted: true,
-          },
         },
         {
           name: 'detailedCaption',
           type: 'string',
           title: 'Detailed caption',
-          options: {
-            isHighlighted: true,
-          },
+          fieldset: 'details',
           hidden: ({parent}) => !parent?.caption,
         },
         {
@@ -60,13 +58,12 @@ export default {
           type: 'string',
           title:
             'This is a rather longish title for a field. It should still work. This is a rather longish title for a field. It should still work.',
-          options: {
-            isHighlighted: true,
-          },
+          fieldset: 'details',
         },
         {
           name: 'description',
           type: 'string',
+          fieldset: 'details',
           title: 'Full description',
         },
       ],
@@ -77,20 +74,33 @@ export default {
       type: 'file',
     },
     {
-      name: 'fileWithFields',
-      title: 'File with additional fields',
-      type: 'file',
+      name: 'imageWithAdditionalFields',
+      title: 'Image with additional fields',
+      type: 'image',
+      fieldsets: [
+        {
+          name: 'less-important',
+          title: 'Less important fields',
+          options: {collapsible: true, collapsed: true},
+        },
+      ],
       fields: [
         {
           title: 'Description',
           name: 'description',
           type: 'string',
-          options: {isHighlighted: true},
         },
         {
-          title: 'Not so important',
-          name: 'notsoimportant',
+          title: 'Less important',
+          name: 'lessImportant',
           type: 'string',
+          fieldset: 'less-important',
+        },
+        {
+          title: 'Less important too',
+          name: 'lessImportant2',
+          type: 'string',
+          fieldset: 'less-important',
         },
       ],
     },
@@ -150,10 +160,7 @@ export default {
         {
           name: 'image',
           type: 'image',
-          title: 'Image in image',
-          options: {
-            isHighlighted: true,
-          },
+          title: 'Image field in image',
         },
         {
           name: 'description',

@@ -254,6 +254,7 @@ export function ArrayOfPrimitivesField(props: {
       presence: member.field.presence,
       validation: member.field.validation,
       children: renderedInput,
+      inputProps,
     }
   }, [
     member.name,
@@ -270,6 +271,7 @@ export function ArrayOfPrimitivesField(props: {
     handleExpand,
     handleCollapse,
     renderedInput,
+    inputProps,
   ])
 
   return (

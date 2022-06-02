@@ -1,30 +1,27 @@
-/* eslint-disable import/no-unresolved */
+/* eslint-disable import/no-unresolved,react/jsx-handler-names */
 
 import {Box, Button, Card, Dialog, Menu, MenuButton, MenuItem, Stack, ToastParams} from '@sanity/ui'
-import {get, groupBy, uniqueId} from 'lodash'
+import {get} from 'lodash'
 import {Observable, Subscription} from 'rxjs'
 import {ChevronDownIcon, ImageIcon, SearchIcon} from '@sanity/icons'
 import {
-  ImageAsset,
   AssetFromSource,
-  Image as BaseImage,
-  ImageSchemaType,
-  ObjectField,
   AssetSource,
+  Image as BaseImage,
+  ImageAsset,
+  ImageSchemaType,
 } from '@sanity/types'
 import React, {ReactNode} from 'react'
 import deepCompare from 'react-fast-compare'
 import {SanityClient} from '@sanity/client'
 import {PatchEvent, setIfMissing, unset} from '../../../patch'
-import {FIXME, ObjectInputProps} from '../../../types'
+import {FieldMember, FIXME, InputProps, ObjectInputProps} from '../../../types'
 import {PresenceOverlay} from '../../../../presence'
-import {ChangeIndicatorForFieldPath} from '../../../../components/changeIndicators'
-import {FormFieldSet} from '../../../components/formField'
 import {ImperativeToast} from '../../../../components/transitional'
 import {
-  UploaderResolver,
   ResolvedUploader,
   Uploader,
+  UploaderResolver,
   UploadOptions,
 } from '../../../studio/uploads/types'
 import {UploadPlaceholder} from '../common/UploadPlaceholder'
@@ -32,12 +29,16 @@ import {WithReferencedAsset} from '../../../utils/WithReferencedAsset'
 import {FileTarget} from '../common/styles'
 import {ImageUrlBuilder, UploadState} from '../types'
 import {UploadProgress} from '../common/UploadProgress'
-import {EMPTY_ARRAY} from '../../../utils/empty'
 import {handleSelectAssetFromSource} from '../common/assetSource'
 import {ActionsMenu} from '../common/ActionsMenu'
 import {UploadWarning} from '../common/UploadWarning'
-import {ImagePreview} from './ImagePreview'
+import {ImageToolInput} from '../ImageToolInput'
+import {MemberField} from '../../ObjectInput/MemberField'
+import {MemberFieldset} from '../../ObjectInput/MemberFieldset'
+import {ChangeIndicatorForFieldPath} from '../../../../components/changeIndicators'
+import {FormInput} from '../../../FormInput'
 import {ImageActionsMenu} from './ImageActionsMenu'
+import {ImagePreview} from './ImagePreview'
 
 export interface Image extends Partial<BaseImage> {
   _upload?: UploadState
@@ -78,29 +79,14 @@ type Focusable = {
   offsetHeight: number
 }
 
-interface FieldGroups {
-  asset: ObjectField[]
-  imagetool: ObjectField[]
-  highlighted: ObjectField[]
-  dialog: ObjectField[]
-  imageToolAndDialog: ObjectField[]
-}
-
-const EMPTY_FIELD_GROUPS: FieldGroups = {
-  asset: [],
-  imagetool: [],
-  highlighted: [],
-  dialog: [],
-  imageToolAndDialog: [],
+function passThrough({children}: {children?: React.ReactNode}) {
+  return children
 }
 
 const ASSET_FIELD_PATH = ['asset']
 
 export class ImageInput extends React.PureComponent<ImageInputProps, ImageInputState> {
-  _inputId = uniqueId('ImageInput')
-
   _assetElementRef: null | Focusable = null
-  _fieldGroupsMemo: null | FieldGroups = null
   uploadSubscription: null | Subscription = null
 
   state: ImageInputState = {
@@ -285,21 +271,13 @@ export class ImageInput extends React.PureComponent<ImageInputProps, ImageInputS
   }
 
   handleOpenDialog = () => {
-    const {schemaType, onExpandField} = this.props
-    const groups = this.getGroupedFields(schemaType)
-    const firstDialogField = this.isImageToolEnabled() ? groups.imagetool[0] : groups.dialog[0]
-    if (firstDialogField) {
-      onExpandField(firstDialogField.name)
-    }
+    const {onOpenField} = this.props
+    onOpenField('hotspot')
   }
 
   handleCloseDialog = () => {
-    const {schemaType, onCollapseField} = this.props
-    const groups = this.getGroupedFields(schemaType)
-    const firstDialogField = this.isImageToolEnabled() ? groups.imagetool[0] : groups.dialog[0]
-    if (firstDialogField) {
-      onCollapseField(firstDialogField.name)
-    }
+    const {onCloseField} = this.props
+    onCloseField('hotspot')
   }
 
   handleSelectAssetFromSource = (assetFromSource: AssetFromSource[]) => {
@@ -314,20 +292,6 @@ export class ImageInput extends React.PureComponent<ImageInputProps, ImageInputS
     })
 
     this.setState({selectedAssetSource: null})
-  }
-
-  hasFileTargetFocus() {
-    return this.props.focusPath?.[0] === 'asset'
-  }
-
-  handleFileTargetFocus = () => {
-    const {onFocusPath} = this.props
-    onFocusPath(['asset'])
-  }
-
-  handleFileTargetBlur = (event: React.FocusEvent) => {
-    const {onBlur} = this.props
-    onBlur(event)
   }
 
   handleFilesOver = (hoveringFiles: FileInfo[]) => {
@@ -373,31 +337,15 @@ export class ImageInput extends React.PureComponent<ImageInputProps, ImageInputS
     this.setState({selectedAssetSource: null})
   }
 
-  renderDialogFields(fields: ObjectField[]) {
-    const {
-      value,
-      // compareValue,
-      // focusPath,
-      // onFocus,
-      // level,
-      // type,
-      // onChange,
-      // readOnly,
-      presence,
-      // imageUrlBuilder,
-      // validation,
-    } = this.props
+  renderHotspotInput = (hotspotInputProps: InputProps) => {
+    const {value, compareValue, id, imageUrlBuilder} = this.props
 
     const withImageTool = this.isImageToolEnabled() && value && value.asset
 
-    const imageToolPresence = withImageTool
-      ? presence.filter((item) => item.path[0] === 'hotspot')
-      : EMPTY_ARRAY
-
     return (
       <Dialog
-        header="Edit details"
-        id={`${this._inputId}_dialog`}
+        header="Edit hotspot and crop"
+        id={`${id}_dialog`}
         onClose={this.handleCloseDialog}
         width={1}
         __unstable_autoFocus={false}
@@ -406,23 +354,14 @@ export class ImageInput extends React.PureComponent<ImageInputProps, ImageInputS
           <Box padding={4}>
             <Stack space={5}>
               {withImageTool && value?.asset && (
-                <>TODO</>
-                // <ImageToolInput
-                //   type={type}
-                //   level={level}
-                //   readOnly={Boolean(readOnly)}
-                //   imageUrl={imageUrlBuilder.image(value.asset).url()}
-                //   value={value as FIXME}
-                //   focusPath={focusPath}
-                //   presence={imageToolPresence}
-                //   onFocus={onFocus}
-                //   compareValue={compareValue as FIXME}
-                //   onChange={onChange}
-                //   validation={validation}
-                // />
+                <ImageToolInput
+                  {...this.props}
+                  imageUrl={imageUrlBuilder.image(value.asset).url()}
+                  value={value as FIXME}
+                  presence={hotspotInputProps.presence}
+                  compareValue={compareValue as FIXME}
+                />
               )}
-
-              {this.renderFields(fields)}
             </Stack>
           </Box>
         </PresenceOverlay>
@@ -460,36 +399,6 @@ export class ImageInput extends React.PureComponent<ImageInputProps, ImageInputS
     )
   }
 
-  renderFields(fields: ObjectField[]) {
-    return fields.map((field) => this.renderField(field))
-  }
-
-  renderField(field: ObjectField) {
-    const {value, level, focusPath, onFocus, readOnly, onBlur, compareValue, presence, validation} =
-      this.props
-    const fieldValue = value?.[field.name]
-    const fieldMarkers = validation.filter((marker) => marker.path[0] === field.name)
-
-    return (
-      <div key={field.name}>TODO</div>
-      // <ImageInputField
-      //   key={field.name}
-      //   field={field}
-      //   parentValue={value}
-      //   value={fieldValue}
-      //   onChange={this.handleFieldChange}
-      //   onFocus={onFocus}
-      //   compareValue={compareValue}
-      //   onBlur={onBlur}
-      //   readOnly={Boolean(readOnly || field.type.readOnly)}
-      //   focusPath={focusPath}
-      //   level={level}
-      //   presence={presence}
-      //   validation={fieldMarkers}
-      // />
-    )
-  }
-
   renderAssetMenu() {
     const {
       value,
@@ -509,9 +418,7 @@ export class ImageInput extends React.PureComponent<ImageInputProps, ImageInputS
 
     const accept = get(schemaType, 'options.accept', 'image/*')
 
-    const fieldGroups = this.getGroupedFields(schemaType)
-    const showAdvancedEditButton =
-      value && (fieldGroups.dialog.length > 0 || (asset && this.isImageToolEnabled()))
+    const showAdvancedEditButton = value && asset && this.isImageToolEnabled()
 
     let browseMenuItem: ReactNode =
       assetSources && assetSources.length === 0 ? null : (
@@ -576,14 +483,14 @@ export class ImageInput extends React.PureComponent<ImageInputProps, ImageInputS
   }
 
   renderBrowser() {
-    const {assetSources, readOnly, directUploads} = this.props
+    const {assetSources, readOnly, directUploads, id} = this.props
 
     if (assetSources && assetSources.length === 0) return null
 
     if (assetSources && assetSources.length > 1 && !readOnly && directUploads) {
       return (
         <MenuButton
-          id={`${this._inputId}_assetImageButton`}
+          id={`${id}_assetImageButton`}
           button={
             <Button
               mode="ghost"
@@ -722,160 +629,145 @@ export class ImageInput extends React.PureComponent<ImageInputProps, ImageInputS
     this.toast = toast
   }
 
-  getGroupedFields(type: ImageSchemaType): FieldGroups {
-    if (!this._fieldGroupsMemo) {
-      const fieldGroups = groupBy(type.fields, (field) => {
-        if (field.name === 'asset') {
-          return 'asset'
-        }
-        if (field.name === 'hotspot' || field.name === 'crop') {
-          return 'imagetool'
-        }
-        return (field.type as FIXME)?.options?.isHighlighted ? 'highlighted' : 'dialog'
-      })
-
-      this._fieldGroupsMemo = {
-        ...EMPTY_FIELD_GROUPS,
-        ...fieldGroups,
-        imageToolAndDialog: [...(fieldGroups.imagetool || []), ...(fieldGroups.dialog || [])],
-      }
-    }
-    return this._fieldGroupsMemo
-  }
-
-  componentDidUpdate(prevProps: ImageInputProps) {
-    const {focusPath: prevFocusPath = []} = prevProps
-    const {focusPath: currentFocusPath = []} = this.props
-    if (prevFocusPath[0] !== 'asset' && currentFocusPath[0] === 'asset') {
-      this._assetElementRef?.focus()
-    }
-  }
-
-  componentWillUnmount() {
-    const {id} = this.props
-
-    window.localStorage.removeItem(`imageHeight:${id}`)
-  }
-
-  hasChangeInFields(fields: ObjectField[]) {
+  hasChangeInFields(members: FieldMember[]) {
     const {value, compareValue} = this.props
 
-    return fields.some((field) => !deepCompare(value?.[field.name], compareValue?.[field.name]))
+    return members.some((member) => !deepCompare(value?.[member.name], compareValue?.[member.name]))
+  }
+
+  getFileTone() {
+    const {schemaType, value, readOnly, directUploads, resolveUploader} = this.props
+
+    const {hoveringFiles} = this.state
+
+    const acceptedFiles = hoveringFiles.filter((file) => resolveUploader(schemaType, file))
+    const rejectedFilesCount = hoveringFiles.length - acceptedFiles.length
+
+    if (hoveringFiles.length > 0) {
+      if (rejectedFilesCount > 0 || !directUploads) {
+        return 'critical'
+      }
+    }
+
+    if (!value?._upload && !readOnly && hoveringFiles.length > 0) {
+      return 'primary'
+    }
+
+    if (readOnly) {
+      return 'transparent'
+    }
+
+    return value?._upload && value?.asset ? 'transparent' : 'default'
+  }
+
+  renderAsset() {
+    const {value, compareValue, readOnly, onFocus, onBlur} = this.props
+
+    const {hoveringFiles, isStale} = this.state
+
+    const hasValueOrUpload = Boolean(value?._upload || value?.asset)
+
+    // todo: convert this to a functional component and use this with useCallback
+    //  it currently has to return a new function on every render in order to pick up state from this component
+    return (inputProps: InputProps) => (
+      <>
+        {isStale && (
+          <Box marginBottom={2}>
+            <UploadWarning onClearStale={this.handleClearUploadState} />
+          </Box>
+        )}
+
+        <ChangeIndicatorForFieldPath
+          path={ASSET_FIELD_PATH}
+          hasFocus={inputProps.focused}
+          isChanged={
+            value?.asset?._ref !== compareValue?.asset?._ref
+            // ||              this.hasChangeInFields(groupedMembers.imageToolAndDialog)
+          }
+        >
+          {/* not uploading */}
+          {!value?._upload && (
+            <FileTarget
+              tabIndex={0}
+              disabled={Boolean(readOnly)}
+              ref={this.setFocusElement}
+              onFiles={this.handleSelectFiles}
+              onFilesOver={this.handleFilesOver}
+              onFilesOut={this.handleFilesOut}
+              onFocus={onFocus}
+              onBlur={onBlur}
+              tone={this.getFileTone()}
+              $border={hasValueOrUpload || hoveringFiles.length > 0}
+              style={{padding: 1}}
+              sizing="border"
+              radius={2}
+            >
+              {!value?.asset && this.renderUploadPlaceholder()}
+              {!value?._upload && value?.asset && (
+                <div style={{position: 'relative'}}>
+                  {this.renderAssetMenu()}
+                  {this.renderPreview()}
+                </div>
+              )}
+            </FileTarget>
+          )}
+
+          {/* uploading */}
+          {value?._upload && this.renderUploadState(value._upload)}
+        </ChangeIndicatorForFieldPath>
+      </>
+    )
   }
 
   render() {
-    const {
-      schemaType,
-      value,
-      compareValue,
-      readOnly,
-      level,
-      validation,
-      presence,
-      focusPath = EMPTY_ARRAY,
-      directUploads,
-      resolveUploader,
-    } = this.props
-    const {hoveringFiles, selectedAssetSource, isStale} = this.state
+    const {members, renderInput, renderField, renderItem} = this.props
 
-    const fieldGroups = this.getGroupedFields(schemaType)
+    const {selectedAssetSource} = this.state
 
-    // Get presence items for people who are either at the asset field, or at fields shown behind the dialog
-    const fieldPresence = presence.filter(
-      (item) =>
-        item.path[0] === 'asset' ||
-        fieldGroups.imageToolAndDialog.some((field) => item.path[0] === field.name)
+    // we use the hotspot field as the "owner" of both hotspot and crop
+    const hotspotField = members.find(
+      (member): member is FieldMember => member.kind === 'field' && member.name === 'hotspot'
     )
-
-    const isDialogOpen =
-      focusPath.length > 0 &&
-      fieldGroups.dialog.concat(fieldGroups.imagetool).some((field) => focusPath[0] === field.name)
-
-    function getFileTone() {
-      const acceptedFiles = hoveringFiles.filter((file) => resolveUploader(schemaType, file))
-      const rejectedFilesCount = hoveringFiles.length - acceptedFiles.length
-
-      if (hoveringFiles.length > 0) {
-        if (rejectedFilesCount > 0 || !directUploads) {
-          return 'critical'
-        }
-      }
-
-      if (!value?._upload && !readOnly && hoveringFiles.length > 0) {
-        return 'primary'
-      }
-
-      if (readOnly) {
-        return 'transparent'
-      }
-
-      return value?._upload && value?.asset ? 'transparent' : 'default'
-    }
-    const hasValueOrUpload = Boolean(value?._upload || value?.asset)
 
     return (
       <>
         <ImperativeToast ref={this.setToast} />
 
-        <FormFieldSet
-          __unstable_changeIndicator={false}
-          __unstable_presence={isDialogOpen ? EMPTY_ARRAY : fieldPresence}
-          description={schemaType.description}
-          level={fieldGroups.highlighted.length > 0 ? level : 0}
-          title={schemaType.title}
-          validation={validation}
-        >
-          <div>
-            {isStale && (
-              <Box marginBottom={2}>
-                <UploadWarning onClearStale={this.handleClearUploadState} />
-              </Box>
-            )}
+        {members.map((member) => {
+          if (member.kind === 'field' && (member.name === 'crop' || member.name === 'hotspot')) {
+            // we're rendering these separately
+            return null
+          }
 
-            <ChangeIndicatorForFieldPath
-              path={ASSET_FIELD_PATH}
-              hasFocus={this.hasFileTargetFocus()}
-              isChanged={
-                value?.asset?._ref !== compareValue?.asset?._ref ||
-                this.hasChangeInFields(fieldGroups.imageToolAndDialog)
-              }
-            >
-              {/* not uploading */}
-              {!value?._upload && (
-                <FileTarget
-                  tabIndex={0}
-                  disabled={Boolean(readOnly)}
-                  ref={this.setFocusElement}
-                  onFiles={this.handleSelectFiles}
-                  onFilesOver={this.handleFilesOver}
-                  onFilesOut={this.handleFilesOut}
-                  onFocus={this.handleFileTargetFocus}
-                  onBlur={this.handleFileTargetBlur}
-                  tone={getFileTone()}
-                  $border={hasValueOrUpload || hoveringFiles.length > 0}
-                  style={{padding: 1}}
-                  sizing="border"
-                  radius={2}
-                >
-                  {!value?.asset && this.renderUploadPlaceholder()}
-                  {!value?._upload && value?.asset && (
-                    <>
-                      {this.renderAssetMenu()}
-                      {this.renderPreview()}
-                    </>
-                  )}
-                </FileTarget>
-              )}
-
-              {/* uploading */}
-              {value?._upload && this.renderUploadState(value._upload)}
-            </ChangeIndicatorForFieldPath>
-          </div>
-
-          {this.renderFields(fieldGroups.highlighted)}
-          {isDialogOpen && this.renderDialogFields(fieldGroups.dialog)}
-          {selectedAssetSource && this.renderAssetSource()}
-        </FormFieldSet>
+          if (member.kind === 'field') {
+            return (
+              <MemberField
+                key={member.key}
+                member={member}
+                renderInput={member.name === 'asset' ? this.renderAsset() : renderInput}
+                renderField={member.name === 'asset' ? passThrough : renderField}
+                renderItem={renderItem}
+              />
+            )
+          }
+          return (
+            <MemberFieldset
+              key={member.key}
+              member={member}
+              renderInput={renderInput}
+              renderField={renderField}
+              renderItem={renderItem}
+            />
+          )
+        })}
+        {hotspotField?.open && (
+          <FormInput
+            {...this.props}
+            absolutePath={hotspotField.field.path}
+            renderInput={this.renderHotspotInput}
+          />
+        )}
+        {selectedAssetSource && this.renderAssetSource()}
       </>
     )
   }

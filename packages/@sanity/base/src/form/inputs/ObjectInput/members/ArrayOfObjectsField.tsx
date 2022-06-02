@@ -276,6 +276,7 @@ export function ArrayOfObjectsField(props: {
       presence: member.field.presence,
       validation: member.field.validation,
       children: renderedInput,
+      inputProps,
     }
   }, [
     member.name,
@@ -292,6 +293,7 @@ export function ArrayOfObjectsField(props: {
     handleCollapse,
     handleExpand,
     renderedInput,
+    inputProps,
   ])
 
   return (

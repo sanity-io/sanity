@@ -231,6 +231,7 @@ export const ObjectField = function ObjectField(props: {
       inputId: member.field.id,
       path: member.field.path,
       children: renderedInput,
+      inputProps,
     }
   }, [
     member.name,
@@ -250,6 +251,7 @@ export const ObjectField = function ObjectField(props: {
     handleOpen,
     handleClose,
     renderedInput,
+    inputProps,
   ])
 
   return (
