@@ -4,7 +4,7 @@ import {map, shareReplay} from 'rxjs/operators'
 import {CurrentUser, Schema} from '@sanity/types'
 import {studioTheme} from '@sanity/ui'
 import {startCase} from 'lodash'
-import {fromSanityClient} from '@sanity/bifur-client'
+import {BifurClient, fromSanityClient} from '@sanity/bifur-client'
 import {createSchema} from '../schema'
 import {AuthStore, createAuthStore, createUserStore, UserStore} from '../datastores'
 import {AuthController, AuthError, createAuthController} from '../auth'
@@ -181,7 +181,6 @@ function resolveSource({
   userStore,
 }: ResolveSourceOptions): Source {
   const {dataset, projectId} = config
-  const bifur = fromSanityClient(client as SanityClientLike)
   const errors: unknown[] = []
 
   const context = {
@@ -341,6 +340,24 @@ function resolveSource({
     })
   }
 
+  // The bifur client currently throws errors on construction in non-browser environments,
+  // due to the use of the `window` global. Because we want to use the `resolveConfig`
+  // method in a node.js environment, we will defer the construction of the client until
+  // it is attempted to be accessed (using a property getter). Remove this once the client
+  // works isomorphically, or handles this internally
+  let bifur: BifurClient | undefined
+  function getBifurClient(): BifurClient {
+    if (typeof WebSocket === 'undefined') {
+      throw new Error('Bifur client is not available without a `WebSocket`')
+    }
+
+    if (!bifur) {
+      bifur = fromSanityClient(client as SanityClientLike)
+    }
+
+    return bifur
+  }
+
   const source: Source = {
     name: config.name,
     title: config.title || startCase(config.name),
@@ -448,7 +465,9 @@ function resolveSource({
 
     __internal: {
       auth,
-      bifur,
+      get bifur() {
+        return getBifurClient()
+      },
       userStore,
       staticInitialValueTemplateItems,
     },
