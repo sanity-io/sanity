@@ -1,49 +1,39 @@
-import {PortableTextEditor, usePortableTextEditor} from '@sanity/portable-text-editor'
+import {usePortableTextEditor} from '@sanity/portable-text-editor'
 import {Path} from '@sanity/types'
 import {startsWith} from '@sanity/util/paths'
 import {useEffect, useRef} from 'react'
 import scrollIntoView from 'scroll-into-view-if-needed'
-import {EditorElementWeakMap} from '../Compositor'
-import {ObjectMemberType} from '../PortableTextInput'
+import {usePortableTextMemberItems} from './usePortableTextMembers'
 
 interface Props {
-  elementRefs: EditorElementWeakMap
-  portableTextMembers: ObjectMemberType[]
+  path: Path
   focusPath: Path
   scrollElement: HTMLElement | null
 }
 
 // This hook will scroll related editor item into view when the focusPath is pointing to a embedded object.
 export function useScrollToFocusFromOutside(props: Props): void {
-  const {elementRefs, portableTextMembers, focusPath, scrollElement} = props
+  const {focusPath, path, scrollElement} = props
   const targetPath = useRef<Path | null>(null)
   const editor = usePortableTextEditor()
+  const portableTextMemberItems = usePortableTextMemberItems()
 
   // This will scroll to the relevant block with focusPath pointing to an embedded object inside.
   useEffect(() => {
-    if (targetPath.current === focusPath) {
-      return
-    }
-    const member = portableTextMembers.find(
-      (m) => 'item' in m && startsWith(m.item.path.slice(1), focusPath)
+    const memberItem = portableTextMemberItems.find((m) =>
+      startsWith(m.member.item.path.slice(path.length), focusPath)
     )
-    if (!member) {
-      return
-    }
-    const elmRef = elementRefs.get(member.item.path)
-    if (elmRef && elmRef.current && member && focusPath.length > 0) {
+    if (
+      memberItem &&
+      memberItem.member.collapsed === false &&
+      memberItem.elementRef?.current &&
+      focusPath.length > 0
+    ) {
       targetPath.current = focusPath
-      scrollIntoView(elmRef.current, {
+      scrollIntoView(memberItem.elementRef?.current, {
         boundary: scrollElement,
         scrollMode: 'if-needed',
       })
-      // Select the editor node  in the editor if the editor is missing a selection
-      if (!PortableTextEditor.getSelection(editor)) {
-        const editorPath = member.item.path.slice(1)
-        const point = {path: editorPath, offset: 0}
-        const selection = {anchor: point, focus: point}
-        PortableTextEditor.select(editor, selection)
-      }
     }
-  }, [editor, elementRefs, focusPath, portableTextMembers, scrollElement])
+  }, [editor, focusPath, path.length, portableTextMemberItems, scrollElement])
 }
