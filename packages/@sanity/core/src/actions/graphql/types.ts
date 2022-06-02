@@ -45,7 +45,7 @@ export interface ConvertedType {
 }
 
 export interface ConvertedDocumentType extends ConvertedType {
-  interfaces: [doc: 'Document', ...string: string[]]
+  interfaces: ['Document', ...string[]]
 }
 
 export interface ConvertedInterface {
