@@ -10,12 +10,19 @@ import {
   InvalidValue,
   EditorSelection,
 } from '@sanity/portable-text-editor'
-import React, {useEffect, useState, useMemo, useCallback, useRef, useImperativeHandle} from 'react'
+import React, {
+  useEffect,
+  useState,
+  useMemo,
+  useCallback,
+  useRef,
+  useImperativeHandle,
+  createRef,
+} from 'react'
 import {Subject} from 'rxjs'
 import {Box, Text, useToast} from '@sanity/ui'
 import scrollIntoView from 'scroll-into-view-if-needed'
-import {startsWith} from '@sanity/util/paths'
-import {throttle} from 'lodash'
+import {debounce} from 'lodash'
 import {FormPatch as FormBuilderPatch} from '../../patch'
 import type {
   ArrayOfObjectsInputProps,
@@ -28,14 +35,15 @@ import type {
 } from '../../types'
 import {useFormCallbacks} from '../../studio/contexts/FormCallbacks'
 import {ObjectFormNode} from '../../types'
-import {useDocumentPane} from '../../../desk/panes/document/useDocumentPane'
 import {isMemberArrayOfObjects} from '../ObjectInput/members/asserters'
 import {EMPTY_ARRAY} from '../../utils/empty'
-import {Compositor} from './Compositor'
+import {Compositor, EditorElement} from './Compositor'
 import {InvalidValue as RespondToInvalidContent} from './InvalidValue'
 import {usePatches} from './usePatches'
 import {VisibleOnFocusButton} from './VisibleOnFocusButton'
 import {RenderBlockActionsCallback} from './types'
+import {PortableTextMarkersProvider} from './contexts/PortableTextMarkers'
+import {PortableTextMemberItemsProvider} from './contexts/PortableTextMembers'
 
 export type ObjectMemberType = ArrayOfObjectsMember<
   ObjectFormNode<
@@ -46,7 +54,13 @@ export type ObjectMemberType = ArrayOfObjectsMember<
   >
 >
 
-function isFieldMember(member: ObjectMember): member is FieldMember<ObjectFormNode> {
+export interface PortableTextMemberItem {
+  key: string
+  member: ObjectMemberType
+  elementRef?: React.MutableRefObject<EditorElement> | undefined
+}
+
+export function isFieldMember(member: ObjectMember): member is FieldMember<ObjectFormNode> {
   return member.kind === 'field'
 }
 
@@ -64,33 +78,33 @@ export interface PortableTextInputProps
 }
 
 /**
- * An outer React PureComponent Class purely to satisfy the form-builder's need for 'blur' and 'focus' class methods.
+ * The root Portable Text Input component
  *
  * @alpha
  */
 export function PortableTextInput(props: PortableTextInputProps) {
-  const {onSetCollapsedPath} = useFormCallbacks()
-
   const {
     focused,
     focusPath,
     focusRef,
     hotkeys,
-    markers = [],
+    markers = EMPTY_ARRAY,
     members,
     onChange,
     onCopy,
+    onFocusPath,
     onInsert,
     onPaste,
+    onCollapseItem,
     onCollapse,
     onExpand,
+    onExpandItem,
     path,
+    readOnly,
     renderBlockActions,
     renderCustomMarkers,
     schemaType: type,
     value,
-    onFocusPath,
-    readOnly,
   } = props
 
   // Make the PTE focusable from the outside
@@ -109,6 +123,7 @@ export function PortableTextInput(props: PortableTextInputProps) {
   const [invalidValue, setInvalidValue] = useState<InvalidValue | null>(null)
   const [isFullscreen, setIsFullscreen] = useState(false)
   const toast = useToast()
+  const portableTextMemberItemsRef: React.MutableRefObject<PortableTextMemberItem[]> = useRef([])
 
   // Memoized patch stream
   const remotePatchSubject: Subject<EditorPatch> = useMemo(() => new Subject(), [])
@@ -140,22 +155,9 @@ export function PortableTextInput(props: PortableTextInputProps) {
     })
   }, [remotePatchSubject, subscribe])
 
-  const onCollapse = useCallback(
-    (p: Path) => {
-      onSetCollapsedPath(p, true)
-    },
-    [onSetCollapsedPath]
-  )
-
-  const onExpand = useCallback(
-    (childPath: Path) => {
-      onSetCollapsedPath(path.concat(childPath), false)
-    },
-    [onSetCollapsedPath, path]
-  )
-
-  const portableTextMembers = useMemo((): ObjectMemberType[] => {
-    return members.flatMap((m) => {
+  // Populate the portableTextMembers Map
+  const portableTextMemberItems: PortableTextMemberItem[] = useMemo(() => {
+    const ptMembers = members.flatMap((m) => {
       let returned: ObjectMemberType[] = []
       // Object blocks or normal blocks with validation
       if (m.item.schemaType.name !== 'block' || m.item.schemaType.validation) {
@@ -188,22 +190,36 @@ export function PortableTextInput(props: PortableTextInputProps) {
       }
       return returned
     })
-  }, [members])
+    // Create new items or update existing ones
+    const items = ptMembers.map((r) => {
+      const key = JSON.stringify(r.item.path.slice(path.length))
+      const existingItem = portableTextMemberItemsRef.current.find((ref) => ref.key === key)
+      if (existingItem) {
+        existingItem.member = r
+        return existingItem
+      }
+      return {
+        key,
+        member: r,
+        elementRef: createRef<EditorElement>(),
+      }
+    })
+    portableTextMemberItemsRef.current = items
+    return items
+  }, [members, path])
 
-  // Sets the focusPath from editor selection
+  // Sets the focusPath from editor selection (when typing, moving the cursor, clicking around)
+  // This doesn't neeed to be immediate, so debounce it as it impacts performance.
   const setFocusPathThrottled = useMemo(
     () =>
-      throttle(
+      debounce(
         (sel: EditorSelection) => {
-          if (sel) onFocusPath(sel.focus.path)
-          else {
-            onFocusPath(EMPTY_ARRAY)
-          }
+          if (sel && hasFocus) onFocusPath(sel.focus.path)
         },
-        300,
+        1000,
         {trailing: true, leading: true}
       ),
-    [onFocusPath]
+    [hasFocus, onFocusPath]
   )
 
   // Handle editor changes
@@ -247,7 +263,7 @@ export function PortableTextInput(props: PortableTextInputProps) {
     }
   }, [editorRef])
 
-  const handleIgnoreValidation = useCallback((): void => {
+  const handleIgnoreInvalidValue = useCallback((): void => {
     setIgnoreValidationError(true)
   }, [])
 
@@ -257,17 +273,17 @@ export function PortableTextInput(props: PortableTextInputProps) {
         <Box marginBottom={2}>
           <RespondToInvalidContent
             onChange={handleEditorChange}
-            onIgnore={handleIgnoreValidation}
+            onIgnore={handleIgnoreInvalidValue}
             resolution={invalidValue.resolution}
           />
         </Box>
       )
     }
     return null
-  }, [handleEditorChange, handleIgnoreValidation, invalidValue])
+  }, [handleEditorChange, handleIgnoreInvalidValue, invalidValue])
 
-  // Scroll to *the field* (not the editor content) into view if we have focus in the field.
-  // For editor content scrolling see useScrollToFocusFromOutside and useScrollSelectionIntoView in
+  // Scroll *the field* (not the editor content) into view if we have focus in the field.
+  // For scrolling to particular editor content see useScrollToFocusFromOutside and useScrollSelectionIntoView in
   // the Compositor component.
   useEffect(() => {
     if (focusPath && focusPath.length > 0 && innerElementRef.current) {
@@ -276,13 +292,6 @@ export function PortableTextInput(props: PortableTextInputProps) {
       })
     }
   }, [focusPath])
-
-  const {validation} = useDocumentPane()
-  const objectValidation = useMemo(() => {
-    return portableTextMembers
-      .flatMap((m) => validation.filter((v) => startsWith(m.item.path, v.path)))
-      .filter(Boolean)
-  }, [portableTextMembers, validation])
 
   return (
     <Box ref={innerElementRef}>
@@ -294,40 +303,36 @@ export function PortableTextInput(props: PortableTextInputProps) {
 
       {!ignoreValidationError && respondToInvalidContent}
       {(!invalidValue || ignoreValidationError) && (
-        <PortableTextEditor
-          ref={editorRef}
-          incomingPatches$={remotePatch$}
-          onChange={handleEditorChange}
-          maxBlocks={undefined} // TODO: from schema?
-          readOnly={readOnly}
-          type={type as FIXME}
-          value={value}
-        >
-          <Compositor
-            {...props}
-            portableTextMembers={portableTextMembers}
-            focusPath={focusPath}
-            focused={focused}
-            hasFocus={hasFocus}
-            hotkeys={hotkeys}
-            isFullscreen={isFullscreen}
-            markers={markers}
-            onChange={onChange}
-            onFocusPath={onFocusPath}
-            onCollapse={onCollapse}
-            onCopy={onCopy}
-            onExpand={onExpand}
-            onInsert={onInsert}
-            onPaste={onPaste}
-            onCollapse={onCollapse}
-            onExpand={onExpand}
-            onToggleFullscreen={handleToggleFullscreen}
-            renderBlockActions={renderBlockActions}
-            renderCustomMarkers={renderCustomMarkers}
-            value={value}
-            validation={objectValidation}
-          />
-        </PortableTextEditor>
+        <PortableTextMarkersProvider markers={markers}>
+          <PortableTextMemberItemsProvider memberItems={portableTextMemberItems}>
+            <PortableTextEditor
+              ref={editorRef}
+              incomingPatches$={remotePatch$}
+              onChange={handleEditorChange}
+              maxBlocks={undefined} // TODO: from schema?
+              readOnly={readOnly}
+              type={type as FIXME}
+              value={value}
+            >
+              <Compositor
+                {...props}
+                focused={focused}
+                focusPath={focusPath}
+                hasFocus={hasFocus}
+                hotkeys={hotkeys}
+                isFullscreen={isFullscreen}
+                onChange={onChange}
+                onCopy={onCopy}
+                onInsert={onInsert}
+                onPaste={onPaste}
+                onToggleFullscreen={handleToggleFullscreen}
+                renderBlockActions={renderBlockActions}
+                renderCustomMarkers={renderCustomMarkers}
+                value={value}
+              />
+            </PortableTextEditor>
+          </PortableTextMemberItemsProvider>
+        </PortableTextMarkersProvider>
       )}
     </Box>
   )

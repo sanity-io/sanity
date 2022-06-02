@@ -177,8 +177,22 @@ export function AnnotationToolbarPopover(props: AnnotationToolbarPopoverProps) {
                 {title}
               </Text>
             </Box>
-            <Button ref={editButtonRef} icon={EditIcon} mode="bleed" onClick={onEdit} padding={2} />
-            <Button icon={TrashIcon} mode="bleed" padding={2} onClick={onDelete} tone="critical" />
+            <Button
+              ref={editButtonRef}
+              icon={EditIcon}
+              mode="bleed"
+              onClick={onEdit}
+              padding={2}
+              alt="Edit annotation"
+            />
+            <Button
+              icon={TrashIcon}
+              mode="bleed"
+              padding={2}
+              onClick={onDelete}
+              tone="critical"
+              alt="Remove annotation"
+            />
           </Inline>
         </Box>
       }

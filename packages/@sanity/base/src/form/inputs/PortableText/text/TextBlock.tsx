@@ -1,15 +1,15 @@
 import {PortableTextBlock, RenderAttributes} from '@sanity/portable-text-editor'
-import {ValidationMarker} from '@sanity/types'
 import {Box, ResponsivePaddingProps, Tooltip} from '@sanity/ui'
 import React, {useCallback, useMemo, useState} from 'react'
-import {isEqual} from 'lodash'
-import {PortableTextMarker, RenderCustomMarkers} from '../../../types'
+import {RenderCustomMarkers} from '../../../types'
 import {PatchArg} from '../../../patch'
 import {useFormBuilder} from '../../../useFormBuilder'
 import {BlockActions} from '../BlockActions'
 import {ReviewChangesHighlightBlock, StyledChangeIndicatorWithProvidedFullPath} from '../_common'
 import {RenderBlockActionsCallback} from '../types'
-import {EditorElement} from '../Compositor'
+import {useMemberValidation} from '../hooks/useMemberValidation'
+import {usePortableTextMarkers} from '../hooks/usePortableTextMarkers'
+import {usePortableTextMemberItem} from '../hooks/usePortableTextMembers'
 import {TEXT_STYLE_PADDING} from './constants'
 import {
   BlockActionsInner,
@@ -27,11 +27,8 @@ import {TEXT_STYLES} from './textStyles'
 export interface TextBlockProps {
   attributes: RenderAttributes
   block: PortableTextBlock
-  blockRef?: React.RefObject<EditorElement>
   children: React.ReactNode
   isFullscreen?: boolean
-  markers: PortableTextMarker[]
-  validation: ValidationMarker[]
   onChange: (...patches: PatchArg[]) => void
   readOnly?: boolean
   renderBlockActions?: RenderBlockActionsCallback
@@ -39,15 +36,15 @@ export interface TextBlockProps {
   spellCheck?: boolean
 }
 
-export function TextBlock(props: TextBlockProps): React.ReactElement {
+export const TextBlock = React.forwardRef(function TextBlock(
+  props: TextBlockProps,
+  forwardedRef: React.ForwardedRef<HTMLDivElement>
+) {
   const {
-    attributes,
+    attributes: {path, focused},
     block,
-    blockRef,
     children,
     isFullscreen,
-    markers,
-    validation,
     onChange,
     readOnly,
     renderBlockActions,
@@ -57,8 +54,8 @@ export function TextBlock(props: TextBlockProps): React.ReactElement {
   const {Markers} = useFormBuilder().__internal.components
   const [reviewChangesHovered, setReviewChangesHovered] = useState<boolean>(false)
   const [hasChanges, setHasChanges] = useState<boolean>(false)
-
-  const {focused} = attributes
+  const markers = usePortableTextMarkers(path)
+  const member = usePortableTextMemberItem(JSON.stringify(path))
 
   const blockKey = block._key
 
@@ -67,27 +64,11 @@ export function TextBlock(props: TextBlockProps): React.ReactElement {
 
   const handleOnHasChanges = useCallback((changed: boolean) => setHasChanges(changed), [])
 
-  const errorMessages = useMemo(
-    () =>
-      validation.filter(
-        (marker) => marker.level === 'error' && isEqual(marker.path.slice(1), attributes.path)
-      ),
-    [attributes.path, validation]
-  )
-
-  const warningMessages = useMemo(
-    () =>
-      validation.filter(
-        (marker) => marker.level === 'warning' && isEqual(marker.path.slice(1), attributes.path)
-      ),
-    [attributes.path, validation]
-  )
+  const {memberValidation, hasError, hasWarning, hasInfo} = useMemberValidation(member?.member)
 
   const hasMarkers = Boolean(renderCustomMarkers) && markers.length > 0
-  const hasErrors = errorMessages.length > 0
-  const hasWarnings = warningMessages.length > 0
 
-  const tooltipEnabled = hasErrors || hasWarnings || hasMarkers
+  const tooltipEnabled = hasError || hasWarning || hasMarkers || hasInfo
 
   const blockPath = useMemo(() => [{_key: blockKey}], [blockKey])
 
@@ -134,13 +115,18 @@ export function TextBlock(props: TextBlockProps): React.ReactElement {
     return TEXT_STYLE_PADDING[block.style] || {paddingY: 2}
   }, [block])
 
+  let boundaryElement: HTMLDivElement | undefined
+  if (forwardedRef && 'current' in forwardedRef) {
+    boundaryElement = forwardedRef.current || undefined
+  }
+
   return (
     <Box data-testid="text-block" {...outerPaddingProps}>
       <TextBlockFlexWrapper data-testid="text-block__wrapper">
         <Box flex={1} {...innerPaddingProps}>
           <Tooltip
             placement="top"
-            boundaryElement={blockRef?.current}
+            boundaryElement={boundaryElement}
             portal="editor"
             disabled={!tooltipEnabled}
             content={
@@ -148,7 +134,7 @@ export function TextBlock(props: TextBlockProps): React.ReactElement {
                 <TooltipBox padding={2}>
                   <Markers
                     markers={markers}
-                    validation={validation}
+                    validation={memberValidation}
                     renderCustomMarkers={renderCustomMarkers}
                   />
                 </TooltipBox>
@@ -157,14 +143,14 @@ export function TextBlock(props: TextBlockProps): React.ReactElement {
           >
             <TextRoot
               $level={block.level}
-              data-error={hasErrors ? '' : undefined}
-              data-warning={hasWarnings ? '' : undefined}
+              data-error={hasError ? '' : undefined}
+              data-warning={hasWarning ? '' : undefined}
               data-list-item={block.listItem}
               // @todo: rename to `data-markers`
               data-custom-markers={hasMarkers ? '' : undefined}
               data-testid="text-block__text"
               spellCheck={spellCheck}
-              ref={blockRef as React.RefObject<HTMLDivElement>}
+              ref={forwardedRef}
             >
               {text}
             </TextRoot>
@@ -207,4 +193,4 @@ export function TextBlock(props: TextBlockProps): React.ReactElement {
       </TextBlockFlexWrapper>
     </Box>
   )
-}
+})

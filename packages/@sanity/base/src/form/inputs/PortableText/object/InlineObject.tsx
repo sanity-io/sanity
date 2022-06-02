@@ -5,26 +5,22 @@ import {
   RenderAttributes,
   PortableTextEditor,
   usePortableTextEditor,
+  usePortableTextEditorSelection,
 } from '@sanity/portable-text-editor'
-import {
-  ValidationMarker,
-  Path,
-  isValidationErrorMarker,
-  isValidationWarningMarker,
-} from '@sanity/types'
-import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import {Path} from '@sanity/types'
+import React, {useCallback, useEffect, useMemo, useState} from 'react'
 import styled, {css} from 'styled-components'
 import {Box, Card, Theme, Tooltip} from '@sanity/ui'
-import {PortableTextMarker, RenderCustomMarkers, FIXME, RenderPreviewCallback} from '../../../types'
+import {RenderCustomMarkers, FIXME, RenderPreviewCallback} from '../../../types'
 import {useFormBuilder} from '../../../useFormBuilder'
 import {EditorElement} from '../Compositor'
+import {usePortableTextMarkers} from '../hooks/usePortableTextMarkers'
+import {useMemberValidation} from '../hooks/useMemberValidation'
+import {usePortableTextMemberItem} from '../hooks/usePortableTextMembers'
 import {InlineObjectToolbarPopover} from './InlineObjectToolbarPopover'
 
 interface InlineObjectProps {
   attributes: RenderAttributes
-  isEditing: boolean
-  markers: PortableTextMarker[]
-  validation: ValidationMarker[]
   onExpand: (path: Path) => void
   readOnly?: boolean
   renderCustomMarkers?: RenderCustomMarkers
@@ -59,6 +55,10 @@ function rootStyle({theme}: {theme: Theme}) {
     &[data-focused] {
       box-shadow: inset 0 0 0 1px ${color.selectable?.primary.selected.border};
       color: ${color.selectable?.primary.pressed.fg};
+    }
+
+    &[data-selected] {
+      background-color: ${color.selectable?.primary.pressed.bg};
     }
 
     &:not([data-focused]):not([data-selected]) {
@@ -114,9 +114,6 @@ export const InlineObject = React.forwardRef(function InlineObject(
 ) {
   const {
     attributes: {focused, selected, path},
-    isEditing,
-    markers,
-    validation,
     onExpand,
     readOnly,
     renderCustomMarkers,
@@ -127,12 +124,12 @@ export const InlineObject = React.forwardRef(function InlineObject(
   } = props
   const {Markers} = useFormBuilder().__internal.components
   const editor = usePortableTextEditor()
-  const refElm = useRef(null)
-  const [popoverOpen, setPopoverOpen] = useState(false)
-
-  const hasError = useMemo(() => validation.some(isValidationErrorMarker), [validation])
-  const hasWarning = useMemo(() => validation.some(isValidationWarningMarker), [validation])
-  const hasValidationMarkers = validation.length > 0
+  const editorSelection = usePortableTextEditorSelection()
+  const markers = usePortableTextMarkers(path)
+  const memberItem = usePortableTextMemberItem(JSON.stringify(path))
+  const {memberValidation, hasError, hasWarning} = useMemberValidation(memberItem?.member)
+  const hasValidationMarkers = memberValidation.length > 0
+  const [showPopover, setShowPopover] = useState(false)
 
   const tone = useMemo(() => {
     if (hasError) {
@@ -146,9 +143,14 @@ export const InlineObject = React.forwardRef(function InlineObject(
     if (selected || focused) {
       return 'primary'
     }
-
     return undefined
   }, [focused, hasError, hasWarning, selected])
+
+  useEffect(() => {
+    if (memberItem?.elementRef?.current) {
+      setShowPopover(!readOnly && focused && selected)
+    }
+  }, [focused, selected, editorSelection, memberItem?.elementRef, readOnly])
 
   const preview = useMemo(
     () => (
@@ -167,15 +169,15 @@ export const InlineObject = React.forwardRef(function InlineObject(
 
   const markersToolTip = useMemo(
     () =>
-      markers.length > 0 ? (
+      markers.length > 0 || memberValidation.length > 0 ? (
         <Tooltip
-          placement="top"
+          placement="bottom"
           portal="editor"
           content={
             <TooltipBox padding={2}>
               <Markers
                 markers={markers}
-                validation={validation}
+                validation={memberValidation}
                 renderCustomMarkers={renderCustomMarkers}
               />
             </TooltipBox>
@@ -184,19 +186,14 @@ export const InlineObject = React.forwardRef(function InlineObject(
           {preview}
         </Tooltip>
       ) : undefined,
-    [Markers, markers, validation, preview, renderCustomMarkers]
+    [Markers, markers, memberValidation, preview, renderCustomMarkers]
   )
-
-  const handleEditClick = useCallback((): void => {
-    PortableTextEditor.blur(editor)
-    onExpand(path)
-    setPopoverOpen(false)
-  }, [editor, onExpand, path])
 
   const handleRemoveClick = useCallback(
     (event: React.MouseEvent<HTMLButtonElement>): void => {
       event.preventDefault()
       event.stopPropagation()
+      setShowPopover(false)
       const point = {path, offset: 0}
       const selection = {anchor: point, focus: point}
       PortableTextEditor.delete(editor, selection, {mode: 'children'})
@@ -205,15 +202,11 @@ export const InlineObject = React.forwardRef(function InlineObject(
     [editor, path]
   )
 
-  useEffect(() => {
-    if (isEditing) {
-      setPopoverOpen(false)
-    } else if (focused) {
-      setPopoverOpen(true)
-    } else {
-      setPopoverOpen(false)
-    }
-  }, [editor, focused, isEditing, selected])
+  const handleEditClick = useCallback((): void => {
+    setShowPopover(false)
+    PortableTextEditor.blur(editor)
+    onExpand(path)
+  }, [editor, onExpand, path])
 
   return (
     <>
@@ -227,20 +220,20 @@ export const InlineObject = React.forwardRef(function InlineObject(
         tone={tone}
         forwardedAs="span"
         contentEditable={false}
-        ref={forwardedRef as React.ForwardedRef<HTMLDivElement>}
+        ref={memberItem?.elementRef as React.RefObject<HTMLDivElement>}
       >
-        <span ref={refElm} onDoubleClick={handleEditClick}>
+        <span ref={forwardedRef} onDoubleClick={handleEditClick}>
           {markersToolTip || preview}
         </span>
       </Root>
-      {!readOnly && !isEditing && (
+      {showPopover && (
         <InlineObjectToolbarPopover
+          open={showPopover}
+          setOpen={setShowPopover}
           onDelete={handleRemoveClick}
           onEdit={handleEditClick}
-          open={popoverOpen}
-          referenceElement={refElm.current}
+          referenceElement={memberItem?.elementRef?.current || null}
           scrollElement={scrollElement}
-          setOpen={setPopoverOpen}
           title={type?.title || type.name}
         />
       )}

@@ -89,6 +89,7 @@ export function InlineObjectToolbarPopover(props: InlineObjectToolbarPopoverProp
                 onClick={onEdit}
                 padding={2}
                 ref={editButtonRef}
+                alt="Edit object"
               />
               <Button
                 icon={TrashIcon}
@@ -96,12 +97,13 @@ export function InlineObjectToolbarPopover(props: InlineObjectToolbarPopoverProp
                 padding={2}
                 onClick={onDelete}
                 tone="critical"
+                alt="Remove object"
               />
             </Inline>
           </Box>
         }
         fallbackPlacements={POPOVER_FALLBACK_PLACEMENTS}
-        open={open}
+        open
         placement="top"
         portal="editor"
         referenceElement={referenceElement}

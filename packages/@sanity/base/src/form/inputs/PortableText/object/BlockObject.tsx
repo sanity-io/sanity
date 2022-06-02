@@ -3,25 +3,20 @@ import {
   PortableTextBlock,
   RenderAttributes,
   EditorSelection,
+  usePortableTextEditor,
 } from '@sanity/portable-text-editor'
-import {
-  isKeySegment,
-  ValidationMarker,
-  Path,
-  isValidationErrorMarker,
-  isValidationWarningMarker,
-  isValidationInfoMarker,
-  ObjectSchemaType,
-} from '@sanity/types'
+import {ObjectSchemaType} from '@sanity/types'
 import {Tooltip, Flex, ResponsivePaddingProps} from '@sanity/ui'
 import React, {useCallback, useMemo, useRef, useState} from 'react'
 import {PatchArg} from '../../../patch'
-import {PortableTextMarker, RenderCustomMarkers, RenderPreviewCallback} from '../../../types'
+import {RenderCustomMarkers, RenderPreviewCallback} from '../../../types'
 import {RenderBlockActionsCallback} from '../types'
 import {BlockActions} from '../BlockActions'
 import {ReviewChangesHighlightBlock, StyledChangeIndicatorWithProvidedFullPath} from '../_common'
 import {useFormBuilder} from '../../../useFormBuilder'
-import {EditorElement} from '../Compositor'
+import {useMemberValidation} from '../hooks/useMemberValidation'
+import {usePortableTextMarkers} from '../hooks/usePortableTextMarkers'
+import {usePortableTextMemberItem} from '../hooks/usePortableTextMembers'
 import {BlockObjectPreview} from './BlockObjectPreview'
 import {
   Root,
@@ -37,15 +32,9 @@ import {
 interface BlockObjectProps {
   attributes: RenderAttributes
   block: PortableTextBlock
-  blockRef?: React.RefObject<EditorElement>
-  editor: PortableTextEditor
-  markers: PortableTextMarker[]
-  validation: ValidationMarker[]
   isFullscreen?: boolean
   onChange: (...patches: PatchArg[]) => void
-  onCollapse: (path: Path) => void
-  onExpand: (path: Path) => void
-  onFocus: (path: Path) => void
+  onOpenItem: (itemKey: string) => void
   readOnly?: boolean
   renderBlockActions?: RenderBlockActionsCallback
   renderCustomMarkers?: RenderCustomMarkers
@@ -53,20 +42,13 @@ interface BlockObjectProps {
   type: ObjectSchemaType
 }
 
-export const BlockObject = React.forwardRef(function BlockObject(
-  props: BlockObjectProps,
-  forwardedRef: React.ForwardedRef<HTMLDivElement>
-) {
+export function BlockObject(props: BlockObjectProps) {
   const {
     attributes: {focused, selected, path},
     block,
-    blockRef,
-    editor,
     isFullscreen,
-    markers,
-    validation,
     onChange,
-    onExpand,
+    onOpenItem,
     readOnly,
     renderBlockActions,
     renderCustomMarkers,
@@ -77,6 +59,9 @@ export const BlockObject = React.forwardRef(function BlockObject(
   const elementRef = useRef<HTMLDivElement | null>(null)
   const [reviewChangesHovered, setReviewChangesHovered] = useState<boolean>(false)
   const [hasChanges, setHasChanges] = useState<boolean>(false)
+  const markers = usePortableTextMarkers(path)
+  const editor = usePortableTextEditor()
+  const memberItem = usePortableTextMemberItem(JSON.stringify(path))
 
   const handleMouseOver = useCallback(() => setReviewChangesHovered(true), [])
   const handleMouseOut = useCallback(() => setReviewChangesHovered(false), [])
@@ -84,8 +69,10 @@ export const BlockObject = React.forwardRef(function BlockObject(
   const handleOnHasChanges = useCallback((changed: boolean) => setHasChanges(changed), [])
 
   const handleEdit = useCallback(() => {
-    onExpand(path)
-  }, [onExpand, path])
+    if (memberItem) {
+      onOpenItem(memberItem.member.item.id)
+    }
+  }, [onOpenItem, memberItem])
 
   const handleDoubleClickToOpen = useCallback(
     (e) => {
@@ -97,13 +84,17 @@ export const BlockObject = React.forwardRef(function BlockObject(
     [editor, handleEdit]
   )
 
-  const handleDelete = useCallback(() => {
-    const sel: EditorSelection = {focus: {path, offset: 0}, anchor: {path, offset: 0}}
-    PortableTextEditor.delete(editor, sel, {mode: 'blocks'})
-    // The focus seems to get stuck somehow on the dropdown menu.
-    // Setting focus like this seems to avoid that.
-    setTimeout(() => PortableTextEditor.focus(editor))
-  }, [editor, path])
+  const handleDelete = useCallback(
+    (e) => {
+      e.stopPropagation()
+      e.preventDefault()
+      const sel: EditorSelection = {focus: {path, offset: 0}, anchor: {path, offset: 0}}
+      PortableTextEditor.delete(editor, sel, {mode: 'blocks'})
+      // Focus will not stick unless this is done through a timeout when deleted through clicking the menu button.
+      setTimeout(() => PortableTextEditor.focus(editor))
+    },
+    [editor, path]
+  )
 
   const blockPreview = useMemo(() => {
     return (
@@ -140,29 +131,18 @@ export const BlockObject = React.forwardRef(function BlockObject(
     return {paddingX: 3}
   }, [isFullscreen, renderBlockActions])
 
-  // These are marker that is only for the block level (things further up, like annotations and inline objects are dealt with in their respective components)
-  const blockValidationMarkers = useMemo(
-    () =>
-      validation.filter(
-        (marker) => isKeySegment(marker.path[1]) && marker.path[1]._key === block._key
-      ),
+  const {memberValidation, hasError, hasWarning, hasInfo} = useMemberValidation(memberItem?.member)
 
-    [block._key, validation]
-  )
+  const hasMarkers = Boolean(markers.length > 0)
 
-  const hasMarkers = Boolean(blockValidationMarkers.length > 0)
-  const hasErrors = validation.some(isValidationErrorMarker)
-  const hasWarnings = validation.some(isValidationWarningMarker)
-  const hasInfo = validation.some(isValidationInfoMarker)
-
-  const isImagePreview = type?.type?.name === 'image'
+  const isImagePreview = memberItem?.member.item.schemaType.name === 'image'
 
   const blockPath = useMemo(() => [{_key: block._key}], [block._key])
 
-  const tooltipEnabled = hasErrors || hasWarnings || hasInfo || (hasMarkers && renderCustomMarkers)
+  const tooltipEnabled = hasError || hasWarning || hasInfo || (hasMarkers && renderCustomMarkers)
 
   return (
-    <Flex paddingBottom={1} marginY={3} contentEditable={false} ref={forwardedRef}>
+    <Flex paddingBottom={1} marginY={3} contentEditable={false}>
       <InnerFlex flex={1}>
         <PreviewContainer flex={1} {...innerPaddingProps}>
           <Tooltip
@@ -174,7 +154,7 @@ export const BlockObject = React.forwardRef(function BlockObject(
                 <TooltipBox padding={2}>
                   <Markers
                     markers={markers}
-                    validation={validation}
+                    validation={memberValidation}
                     renderCustomMarkers={renderCustomMarkers}
                   />
                 </TooltipBox>
@@ -184,18 +164,18 @@ export const BlockObject = React.forwardRef(function BlockObject(
             <Root
               data-focused={focused ? '' : undefined}
               data-image-preview={isImagePreview ? '' : undefined}
-              data-invalid={hasErrors ? '' : undefined}
+              data-invalid={hasError ? '' : undefined}
               data-markers={hasMarkers && renderCustomMarkers ? '' : undefined}
               data-selected={selected ? '' : undefined}
               data-testid="pte-block-object"
-              data-warning={hasWarnings ? '' : undefined}
+              data-warning={hasWarning ? '' : undefined}
               flex={1}
               onDoubleClick={handleDoubleClickToOpen}
               padding={isImagePreview ? 0 : 1}
               ref={elementRef}
               tone={tone}
             >
-              <BlockPreview ref={blockRef as React.RefObject<HTMLDivElement>}>
+              <BlockPreview ref={memberItem?.elementRef as React.RefObject<HTMLDivElement>}>
                 {blockPreview}
               </BlockPreview>
             </Root>
@@ -236,4 +216,4 @@ export const BlockObject = React.forwardRef(function BlockObject(
       </InnerFlex>
     </Flex>
   )
-})
+}

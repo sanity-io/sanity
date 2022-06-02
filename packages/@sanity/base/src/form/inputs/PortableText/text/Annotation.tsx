@@ -3,32 +3,30 @@ import {
   PortableTextChild,
   PortableTextEditor,
   RenderAttributes,
-  Type,
   usePortableTextEditor,
+  usePortableTextEditorSelection,
 } from '@sanity/portable-text-editor'
-import {ValidationMarker, Path} from '@sanity/types'
+import {ObjectSchemaType, Path} from '@sanity/types'
 import {Box, Theme, ThemeColorToneKey, Tooltip} from '@sanity/ui'
-import React, {SyntheticEvent, useCallback, useMemo, useRef, useState} from 'react'
+import React, {SyntheticEvent, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import styled, {css} from 'styled-components'
-import {PortableTextMarker, RenderCustomMarkers} from '../../../types'
+import {FIXME, RenderCustomMarkers} from '../../../types'
 import {DefaultMarkers} from '../_legacyDefaultParts/Markers'
 import {useFormBuilder} from '../../../useFormBuilder'
-import {EditorElement} from '../Compositor'
+import {useMemberValidation} from '../hooks/useMemberValidation'
+import {usePortableTextMarkers} from '../hooks/usePortableTextMarkers'
+import {usePortableTextMemberItem} from '../hooks/usePortableTextMembers'
 import {AnnotationToolbarPopover} from './AnnotationToolbarPopover'
 
 interface AnnotationProps {
   attributes: RenderAttributes
   children: JSX.Element
-  hasError: boolean
-  hasWarning: boolean
-  markers: PortableTextMarker[]
-  validation: ValidationMarker[]
   onExpand: (path: Path) => void
-  renderCustomMarkers?: RenderCustomMarkers
-  type: Type
   readOnly?: boolean
-  value: PortableTextChild
+  renderCustomMarkers?: RenderCustomMarkers
   scrollElement: HTMLElement | null
+  type: ObjectSchemaType
+  value: PortableTextChild
 }
 
 const Root = styled.span<{$toneKey?: Exclude<ThemeColorToneKey, 'transparent'>}>(
@@ -65,17 +63,10 @@ const TooltipBox = styled(Box).attrs({forwardedAs: 'span'})`
   max-width: 250px;
 `
 
-export const Annotation = React.forwardRef(function Annotation(
-  props: AnnotationProps,
-  forwardedRef: React.ForwardedRef<EditorElement>
-) {
+export const Annotation = function Annotation(props: AnnotationProps) {
   const {
-    attributes,
+    attributes: {focused, path, selected},
     children,
-    hasError,
-    hasWarning,
-    markers,
-    validation,
     onExpand,
     renderCustomMarkers,
     scrollElement,
@@ -84,11 +75,18 @@ export const Annotation = React.forwardRef(function Annotation(
     value,
   } = props
   const {Markers = DefaultMarkers} = useFormBuilder().__internal.components
-  const {path} = attributes
   const annotationRef = useRef<HTMLElement>(null)
   const editor = usePortableTextEditor()
-  const markDefPath = useMemo(() => [path[0], 'markDefs', {_key: value._key}], [path, value._key])
+  const editorSelection = usePortableTextEditorSelection()
+  const markDefPath = useMemo(
+    () => [path[0]].concat(['markDefs', {_key: value._key}]),
+    [path, value._key]
+  )
   const [textElement, setTextElement] = useState<HTMLSpanElement | null>(null)
+  const memberItem = usePortableTextMemberItem(JSON.stringify(markDefPath))
+  const {memberValidation, hasError, hasWarning} = useMemberValidation(memberItem?.member)
+  const markers = usePortableTextMarkers(path)
+  const [showPopover, setShowPopover] = useState(false)
 
   const text = useMemo(
     () => (
@@ -100,19 +98,28 @@ export const Annotation = React.forwardRef(function Annotation(
     [children]
   )
 
+  useEffect(() => {
+    setShowPopover(true)
+  }, [editorSelection])
+
+  useEffect(() => {
+    if (memberItem?.elementRef?.current) {
+      setShowPopover(!readOnly && focused && selected)
+    }
+  }, [focused, selected, memberItem?.elementRef, readOnly])
+
   const markersToolTip = useMemo(
     () =>
-      markers.length > 0 ? (
+      memberValidation.length > 0 || markers.length > 0 ? (
         <Tooltip
-          placement="top"
-          boundaryElement={annotationRef.current}
+          placement="bottom"
           portal="default"
           content={
             <TooltipBox padding={2}>
               <Markers
                 markers={markers}
                 renderCustomMarkers={renderCustomMarkers}
-                validation={validation}
+                validation={memberValidation}
               />
             </TooltipBox>
           }
@@ -120,31 +127,31 @@ export const Annotation = React.forwardRef(function Annotation(
           <span>{text}</span>
         </Tooltip>
       ) : undefined,
-    [Markers, markers, renderCustomMarkers, text, validation]
+    [Markers, markers, renderCustomMarkers, text, memberValidation]
   )
 
   const handleEditClick = useCallback(
     (event: SyntheticEvent): void => {
+      setShowPopover(false)
+      PortableTextEditor.blur(editor)
       event.preventDefault()
       event.stopPropagation()
-      PortableTextEditor.blur(editor)
       onExpand(markDefPath)
     },
-    [editor, markDefPath, onExpand]
+    [editor, onExpand, markDefPath]
   )
 
   const handleRemoveClick = useCallback(
     (event: React.MouseEvent<HTMLButtonElement>): void => {
       event.preventDefault()
       event.stopPropagation()
-
-      PortableTextEditor.removeAnnotation(editor, type)
+      PortableTextEditor.removeAnnotation(editor, type as FIXME)
       PortableTextEditor.focus(editor)
     },
     [editor, type]
   )
 
-  const isLink = value?._type === 'link'
+  const isLink = type.name === 'link'
 
   const toneKey = useMemo(() => {
     if (hasError) {
@@ -172,10 +179,10 @@ export const Annotation = React.forwardRef(function Annotation(
       data-warning={hasWarning ? '' : undefined}
       data-custom-markers={hasCustomMarkers ? '' : undefined}
     >
-      <span ref={forwardedRef}>{markersToolTip || text}</span>
-      {!readOnly && (
+      <span ref={memberItem?.elementRef}>{markersToolTip || text}</span>
+      {showPopover && (
         <AnnotationToolbarPopover
-          focused={attributes.focused}
+          focused={focused}
           textElement={textElement}
           annotationElement={annotationRef?.current}
           scrollElement={scrollElement}
@@ -186,4 +193,4 @@ export const Annotation = React.forwardRef(function Annotation(
       )}
     </Root>
   )
-})
+}

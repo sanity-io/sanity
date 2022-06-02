@@ -1,4 +1,4 @@
-import React, {useEffect, useState, useMemo, useCallback, createRef} from 'react'
+import React, {useEffect, useState, useMemo, useCallback} from 'react'
 import {
   EditorSelection,
   OnCopyFn,
@@ -9,13 +9,7 @@ import {
   HotkeyOptions,
   RenderAttributes,
 } from '@sanity/portable-text-editor'
-import {
-  isKeySegment,
-  isValidationErrorMarker,
-  isValidationWarningMarker,
-  ObjectSchemaType,
-  Path,
-} from '@sanity/types'
+import {ObjectSchemaType, Path} from '@sanity/types'
 import {
   BoundaryElementProvider,
   Portal,
@@ -25,7 +19,7 @@ import {
   usePortal,
 } from '@sanity/ui'
 import {ChangeIndicatorWithProvidedFullPath} from '../../../components/changeIndicators'
-import {ArrayOfObjectsInputProps, FIXME, PortableTextMarker, RenderCustomMarkers} from '../../types'
+import {ArrayOfObjectsInputProps, FIXME, RenderCustomMarkers} from '../../types'
 import {ActivateOnFocus} from '../../components/ActivateOnFocus/ActivateOnFocus'
 import {EMPTY_ARRAY} from '../../utils/empty'
 import {FormInput} from '../../FormInput'
@@ -35,24 +29,19 @@ import {Annotation, TextBlock} from './text'
 import {RenderBlockActionsCallback} from './types'
 import {Editor} from './Editor'
 import {ExpandedLayer, Root} from './Compositor.styles'
-import {useScrollSelectionIntoView} from './hooks/useScrollSelectionIntoView'
 import {useHotkeys} from './hooks/useHotKeys'
-import {ObjectEditModal} from './ObjectEditModal'
+import {ObjectEditModal} from './object/renderers/ObjectEditModal'
 import {useScrollToFocusFromOutside} from './hooks/useScrollToFocusFromOutside'
-import {ObjectMemberType} from './PortableTextInput'
+import {usePortableTextMemberItems} from './hooks/usePortableTextMembers'
 
 interface InputProps extends ArrayOfObjectsInputProps<PortableTextBlock> {
   hasFocus: boolean
   hotkeys?: HotkeyOptions
   isFullscreen: boolean
-  markers: PortableTextMarker[]
-  members: ObjectMemberType[]
-  onCollapse: (path: Path) => void
   onCopy?: OnCopyFn
-  onExpand: (path: Path) => void
   onPaste?: OnPasteFn
   onToggleFullscreen: () => void
-  portableTextMembers: ObjectMemberType[]
+  path: Path
   renderBlockActions?: RenderBlockActionsCallback
   renderCustomMarkers?: RenderCustomMarkers
 }
@@ -69,18 +58,16 @@ export function Compositor(props: InputProps) {
     hasFocus,
     hotkeys,
     isFullscreen,
-    markers,
     onChange,
-    onCollapse,
     onCopy,
-    onExpand,
+    onOpenItem,
+    onCloseItem,
     onFocusPath,
     onPaste,
     onToggleFullscreen,
-    portableTextMembers,
+    path,
     renderBlockActions,
     renderCustomMarkers,
-    validation,
     value,
     readOnly,
     renderPreview,
@@ -92,28 +79,14 @@ export function Compositor(props: InputProps) {
   const [isActive, setIsActive] = useState(false)
   const [wrapperElement, setWrapperElement] = useState<HTMLDivElement | null>(null)
   const [scrollElement, setScrollElement] = useState<HTMLElement | null>(null)
-
-  const collapsedObjectMembers = useMemo(
-    () =>
-      portableTextMembers.filter(
-        (m) => m.collapsed === false && m.item.schemaType.name !== 'block'
-      ),
-    [portableTextMembers]
-  )
+  const portableTextMemberItems = usePortableTextMemberItems()
 
   const {element: boundaryElement} = useBoundaryElement()
 
-  const elementRefs = useMemo(() => new WeakMap<Path, React.MutableRefObject<EditorElement>>(), [])
-
-  // This is what PortableTextEditor will use to scroll the content into view when editing
-  // inside the editor
-  const scrollSelectionIntoView = useScrollSelectionIntoView(scrollElement)
-
   // This will scroll to the relevant content according to the focusPath set
   useScrollToFocusFromOutside({
-    elementRefs,
-    portableTextMembers,
     focusPath,
+    path,
     scrollElement,
   })
 
@@ -175,28 +148,13 @@ export function Compositor(props: InputProps) {
       attributes: RenderAttributes,
       defaultRender: (b: PortableTextBlock) => JSX.Element
     ) => {
-      const member = portableTextMembers.find((m) => m.key === block._key)
-      const elmRef = member ? setMemberElementRef(member.item.path, elementRefs) : undefined
-
       const isTextBlock = block._type === ptFeatures.types.block.name
-      const blockMarkers = markers.filter(
-        (msg) =>
-          isKeySegment(msg.path[1]) && msg.path[1]._key === block._key && msg.path.length === 2
-      )
-
-      const blockValidation = validation.filter(
-        (msg) => isKeySegment(msg.path[1]) && msg.path[1]._key === block._key
-      )
-
       if (isTextBlock) {
         return (
           <TextBlock
             attributes={attributes}
             block={block}
-            blockRef={elmRef}
             isFullscreen={isFullscreen}
-            markers={blockMarkers}
-            validation={blockValidation}
             onChange={onChange}
             readOnly={readOnly}
             renderBlockActions={hasContent ? renderBlockActions : undefined}
@@ -211,34 +169,22 @@ export function Compositor(props: InputProps) {
         <BlockObject
           attributes={attributes}
           block={block}
-          blockRef={elmRef}
-          editor={editor}
           isFullscreen={isFullscreen}
-          markers={blockMarkers}
           onChange={onChange}
-          onCollapse={onCollapse}
-          onExpand={onExpand}
-          onFocus={onFocusPath}
+          onOpenItem={onOpenItem}
           readOnly={readOnly}
           renderBlockActions={hasContent ? renderBlockActions : undefined}
           renderCustomMarkers={hasContent ? renderCustomMarkers : undefined}
           renderPreview={renderPreview}
           type={blockType}
-          validation={blockValidation}
         />
       )
     },
     [
-      editor,
-      elementRefs,
       hasContent,
       isFullscreen,
-      markers,
-      portableTextMembers,
       onChange,
-      onCollapse,
-      onExpand,
-      onFocusPath,
+      onOpenItem,
       ptFeatures.types.block.name,
       readOnly,
       renderBlockActions,
@@ -251,31 +197,15 @@ export function Compositor(props: InputProps) {
   const renderChild = useCallback(
     (child, childType, attributes, defaultRender) => {
       const isSpan = child._type === ptFeatures.types.span.name
-
       if (isSpan) {
-        return <span>{defaultRender(child)}</span>
+        return defaultRender(child)
       }
-
-      const childMarkers = markers.filter(
-        (marker) => isKeySegment(marker.path[3]) && marker.path[3]._key === child._key
-      )
-
-      const childValidation = validation.filter(
-        (marker) => isKeySegment(marker.path[3]) && marker.path[3]._key === child._key
-      )
-
-      const member = portableTextMembers.find((m) => m.key === child._key)
-      const elmRef = member ? setMemberElementRef(member.item.path, elementRefs) : undefined
 
       return (
         <InlineObject
           attributes={attributes}
-          isEditing={Boolean(member && member.collapsed === false)}
-          markers={childMarkers}
-          validation={childValidation}
-          onExpand={onExpand}
+          onOpenItem={onOpenItem}
           readOnly={readOnly}
-          ref={elmRef}
           renderCustomMarkers={renderCustomMarkers}
           scrollElement={scrollElement}
           type={childType}
@@ -285,68 +215,43 @@ export function Compositor(props: InputProps) {
       )
     },
     [
-      elementRefs,
-      markers,
-      portableTextMembers,
-      onExpand,
+      onOpenItem,
       ptFeatures.types.span.name,
       readOnly,
       renderCustomMarkers,
       renderPreview,
       scrollElement,
-      validation,
     ]
   )
 
   const renderAnnotation = useCallback(
     (annotation, annotationType, attributes, defaultRender) => {
-      const annotationMarkers = markers.filter(
-        (marker) => isKeySegment(marker.path[3]) && marker.path[3]._key === annotation._key
-      )
-
-      const annotationValidation = validation.filter(
-        (marker) => isKeySegment(marker.path[3]) && marker.path[3]._key === annotation._key
-      )
-
-      const hasError = annotationValidation.some(isValidationErrorMarker)
-      const hasWarning = annotationValidation.some(isValidationWarningMarker)
-
-      const member = portableTextMembers.find((m) => m.key === annotation._key)
-
-      const elmRef = member ? setMemberElementRef(member.item.path, elementRefs) : undefined
-
       return (
         <Annotation
           attributes={attributes}
-          hasError={hasError}
-          hasWarning={hasWarning}
-          markers={annotationMarkers}
-          onExpand={onExpand}
+          onOpenItem={onOpenItem}
           readOnly={readOnly}
-          ref={elmRef}
           renderCustomMarkers={renderCustomMarkers}
           scrollElement={scrollElement}
-          type={annotationType}
-          validation={annotationValidation}
           value={annotation}
+          type={annotationType}
         >
           {defaultRender()}
         </Annotation>
       )
     },
-    [
-      elementRefs,
-      markers,
-      onExpand,
-      portableTextMembers,
-      readOnly,
-      renderCustomMarkers,
-      scrollElement,
-      validation,
-    ]
+    [onOpenItem, readOnly, renderCustomMarkers, scrollElement]
   )
 
   const [portalElement, setPortalElement] = useState<HTMLDivElement | null>(null)
+
+  const expandedMemberItems = useMemo(
+    () =>
+      portableTextMemberItems.filter(
+        (m) => m.member.collapsed === false && m.member.item.schemaType.name !== 'block'
+      ),
+    [portableTextMemberItems]
+  )
 
   const editorNode = useMemo(
     () => (
@@ -354,7 +259,7 @@ export function Compositor(props: InputProps) {
         hotkeys={editorHotkeys}
         initialSelection={initialSelection}
         isFullscreen={isFullscreen}
-        onExpand={onExpand}
+        onOpenItem={onOpenItem}
         onFocusPath={onFocusPath}
         onCopy={onCopy}
         onPaste={onPaste}
@@ -365,7 +270,6 @@ export function Compositor(props: InputProps) {
         renderChild={renderChild}
         setPortalElement={setPortalElement}
         scrollElement={scrollElement}
-        scrollSelectionIntoView={scrollSelectionIntoView}
         setScrollElement={setScrollElement}
       />
     ),
@@ -378,7 +282,7 @@ export function Compositor(props: InputProps) {
       isActive,
       isFullscreen,
       onCopy,
-      onExpand,
+      onOpenItem,
       onFocusPath,
       onPaste,
       readOnly,
@@ -386,49 +290,43 @@ export function Compositor(props: InputProps) {
       renderBlock,
       renderChild,
       scrollElement,
-      scrollSelectionIntoView,
     ]
   )
 
   const boundaryElm = isFullscreen ? scrollElement : boundaryElement
 
   const handleObjectEditModalClose = useCallback(
-    (path) => {
-      onCollapse(path)
-      PortableTextEditor.focus(editor)
-      const editorSel = PortableTextEditor.getSelection(editor)
-      if (editorSel) {
-        onFocusPath(editorSel.focus.path)
-      }
+    (objectPath) => {
+      onCloseItem(objectPath)
     },
-    [editor, onCollapse, onFocusPath]
+    [onCloseItem]
   )
 
-  const children = boundaryElm && (
-    <>
-      {editorNode}
-      <BoundaryElementProvider element={boundaryElm}>
-        {collapsedObjectMembers.map((dMember) => {
-          const elmRef = elementRefs.get(dMember.item.path)
-          // NOTE: elmRef may not be created yet if this is a newly inserted object or if it's not yet expanded.
-          if (elmRef) {
-            return (
-              <ObjectEditModal
-                key={dMember.key}
-                member={dMember}
-                onClose={handleObjectEditModalClose}
-                scrollElement={boundaryElm}
-                elementRef={elmRef}
-              >
-                {/* TODO: fix types */}
-                <FormInput absolutePath={dMember.item.path as FIXME} {...(props as FIXME)} />
-              </ObjectEditModal>
-            )
-          }
-          return null
-        })}
-      </BoundaryElementProvider>
-    </>
+  const children = useMemo(
+    () =>
+      boundaryElm && (
+        <>
+          {editorNode}
+          <BoundaryElementProvider element={boundaryElm}>
+            {expandedMemberItems.map((dMemberItem) => {
+              return (
+                <ObjectEditModal
+                  key={dMemberItem.member.key}
+                  memberItem={dMemberItem}
+                  onClose={handleObjectEditModalClose}
+                  scrollElement={boundaryElm}
+                >
+                  <FormInput
+                    absolutePath={dMemberItem.member.item.path as FIXME}
+                    {...(props as FIXME)}
+                  />
+                </ObjectEditModal>
+              )
+            })}
+          </BoundaryElementProvider>
+        </>
+      ),
+    [boundaryElm, editorNode, expandedMemberItems, handleObjectEditModalClose, props]
   )
 
   const portal = usePortal()
@@ -469,13 +367,4 @@ export function Compositor(props: InputProps) {
       </ActivateOnFocus>
     </PortalProvider>
   )
-}
-
-function setMemberElementRef(path: Path, elementRefs: EditorElementWeakMap) {
-  let elmRef = elementRefs.get(path)
-  if (!elmRef) {
-    elmRef = createRef<EditorElement>()
-    elementRefs.set(path, elmRef)
-  }
-  return elmRef
 }

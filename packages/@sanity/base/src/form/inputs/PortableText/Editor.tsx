@@ -7,12 +7,11 @@ import {
   RenderDecoratorFunction,
   OnPasteFn,
   OnCopyFn,
-  ScrollSelectionIntoViewFunction,
   EditorSelection,
 } from '@sanity/portable-text-editor'
 import {Path} from '@sanity/types'
-import {BoundaryElementProvider, useBoundaryElement, useLayer} from '@sanity/ui'
-import React, {useCallback, useEffect, useMemo, useRef} from 'react'
+import {BoundaryElementProvider, useBoundaryElement, useGlobalKeyDown, useLayer} from '@sanity/ui'
+import React, {useCallback, useMemo, useRef} from 'react'
 import {Toolbar} from './toolbar'
 import {Decorator} from './text'
 import {
@@ -24,6 +23,7 @@ import {
   ToolbarCard,
 } from './Editor.styles'
 import {useSpellcheck} from './hooks/useSpellCheck'
+// import {useScrollSelectionIntoView} from './hooks/useScrollSelectionIntoView'
 
 interface EditorProps {
   initialSelection?: EditorSelection
@@ -39,7 +39,6 @@ interface EditorProps {
   renderBlock: RenderBlockFunction
   renderChild: RenderChildFunction
   scrollElement: HTMLElement | null
-  scrollSelectionIntoView: ScrollSelectionIntoViewFunction
   setPortalElement?: (portalElement: HTMLDivElement | null) => void
   setScrollElement: (scrollElement: HTMLElement | null) => void
 }
@@ -63,7 +62,6 @@ export function Editor(props: EditorProps) {
     renderBlock,
     renderChild,
     scrollElement,
-    scrollSelectionIntoView,
     setPortalElement,
     setScrollElement,
   } = props
@@ -72,23 +70,20 @@ export function Editor(props: EditorProps) {
 
   const {element: boundaryElement} = useBoundaryElement()
 
-  useEffect(() => {
-    if (!isTopLayer || !isFullscreen) return undefined
-
-    const handleGlobalKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
-        event.preventDefault()
-        event.stopPropagation()
-        onToggleFullscreen()
-      }
-    }
-
-    window.addEventListener('keydown', handleGlobalKeyDown)
-
-    return () => {
-      window.removeEventListener('keydown', handleGlobalKeyDown)
-    }
-  }, [isFullscreen, isTopLayer, onToggleFullscreen])
+  // Let escape close fullscreen mode
+  useGlobalKeyDown(
+    useCallback(
+      (event: KeyboardEvent) => {
+        if (!isTopLayer || !isFullscreen) {
+          return
+        }
+        if (event.key === 'Escape') {
+          onToggleFullscreen()
+        }
+      },
+      [onToggleFullscreen, isFullscreen, isTopLayer]
+    )
+  )
 
   // Keep the editor focused even though we are clicking on the background or the toolbar of the editor.
   const handleMouseDown = useCallback((event: React.SyntheticEvent) => {
@@ -100,6 +95,8 @@ export function Editor(props: EditorProps) {
 
   const renderPlaceholder = useCallback(() => <>Empty</>, [])
   const spellcheck = useSpellcheck()
+
+  // const scrollSelectionIntoView = useScrollSelectionIntoView(scrollElement)
 
   const editable = useMemo(
     () => (
@@ -113,7 +110,7 @@ export function Editor(props: EditorProps) {
         renderChild={renderChild}
         renderDecorator={renderDecorator}
         renderPlaceholder={renderPlaceholder}
-        scrollSelectionIntoView={scrollSelectionIntoView}
+        // scrollSelectionIntoView={scrollSelectionIntoView}
         selection={initialSelection}
         spellCheck={spellcheck}
       />
@@ -127,7 +124,7 @@ export function Editor(props: EditorProps) {
       renderBlock,
       renderChild,
       renderPlaceholder,
-      scrollSelectionIntoView,
+      // scrollSelectionIntoView,
       spellcheck,
     ]
   )

@@ -14,11 +14,11 @@ import {
   MenuItem,
   useGlobalKeyDown,
 } from '@sanity/ui'
-import React, {forwardRef, ReactElement, useCallback, useMemo, useRef} from 'react'
+import React, {forwardRef, MouseEvent, ReactElement, useCallback, useMemo, useRef} from 'react'
 import {useId} from '@reach/auto-id'
 import {isImage, ObjectSchemaType} from '@sanity/types'
 import {IntentLink} from '../../../../router'
-import {RenderPreviewCallback} from '../../../types'
+import {FIXME, RenderPreviewCallback} from '../../../types'
 
 interface BlockObjectPreviewProps {
   focused: boolean
@@ -26,7 +26,7 @@ interface BlockObjectPreviewProps {
   value: PortableTextBlock
   readOnly?: boolean
   onClickingEdit: () => void
-  onClickingDelete: () => void
+  onClickingDelete: (event: MouseEvent) => void
   renderPreview: RenderPreviewCallback
 }
 
@@ -43,12 +43,12 @@ export function BlockObjectPreview(props: BlockObjectPreviewProps): ReactElement
   const menuButtonId = useId() || ''
   const menuButton = useRef<HTMLButtonElement | null>(null)
   const isTabbing = useRef<boolean>(false)
-  const isCustomPreviewComponent = Boolean((type.preview as any)?.component)
+  const isCustomPreviewComponent = Boolean((type.preview as FIXME)?.component)
   const isImageType = isImage(value)
 
   const referenceLink = useMemo(
     () =>
-      forwardRef(function ReferenceLink(linkProps: any, ref: any) {
+      forwardRef(function ReferenceLink(linkProps: FIXME, ref: FIXME) {
         return <IntentLink {...linkProps} intent="edit" params={{id: value._ref}} ref={ref} />
       }),
     [value?._ref]
@@ -63,8 +63,8 @@ export function BlockObjectPreview(props: BlockObjectPreviewProps): ReactElement
           return
         }
         if (event.key === 'Escape') {
-          event.preventDefault()
-          event.stopPropagation()
+          // event.preventDefault()
+          // event.stopPropagation()
           isTabbing.current = false
           PortableTextEditor.focus(editor)
         }
