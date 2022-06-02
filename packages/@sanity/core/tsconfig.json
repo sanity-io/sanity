@@ -10,5 +10,10 @@
     "allowJs": true,
     "jsx": "react"
   },
-  "references": [{"path": "../server/tsconfig.lib.json"}, {"path": "../cli"}, {"path": "../types"}]
+  "references": [
+    {"path": "../server/tsconfig.lib.json"},
+    {"path": "../cli"},
+    {"path": "../types"},
+    {"path": "../../sanity"}
+  ]
 }
