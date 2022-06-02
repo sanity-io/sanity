@@ -4,6 +4,7 @@ import React, {useMemo} from 'react'
 import {NodeValidation, PortableTextMarker} from '../../../../types'
 import {FormBuilderProvider} from '../../../../FormBuilderProvider'
 import {TextBlock} from '../../text'
+import {useSource} from '../../../../../studio'
 
 const errorMarker: NodeValidation = {
   level: 'error',
