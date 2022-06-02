@@ -1,6 +1,6 @@
 import {isPlainObject} from 'lodash'
 import React, {useCallback, useMemo} from 'react'
-import {useSource, ValidationMarker} from 'sanity'
+import {useClient, ValidationMarker} from 'sanity'
 import {FormPatch, PatchEvent, set, setIfMissing} from 'sanity/form'
 import {Box} from '@sanity/ui'
 import * as PathUtils from '@sanity/util/paths'
@@ -30,7 +30,7 @@ interface SlugQueryResult {
 
 export const LinkAnnotationInput = (props: LinkAnnotationInputProps) => {
   const {type, value, onChange, onBlur, onFocus, validation} = props
-  const {client} = useSource()
+  const client = useClient()
   const versionedClient = useMemo(() => client.withConfig({apiVersion: '2021-03-01'}), [client])
   const referenceArticleField = type.fields.find((field) => field.name === 'reference')
   const urlField = type.fields.find((field) => field.name === 'href')

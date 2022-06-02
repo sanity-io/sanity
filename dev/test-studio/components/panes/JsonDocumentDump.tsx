@@ -1,4 +1,4 @@
-import {useSource} from '@sanity/base'
+import {useClient} from '@sanity/base'
 import {SanityDocument} from '@sanity/types'
 import {Box, Code, Flex, Spinner, Text} from '@sanity/ui'
 import React, {
@@ -16,7 +16,7 @@ export const JsonDocumentDump = forwardRef(function JsonDocumentDump(
   ref: React.ForwardedRef<{actionHandlers: Record<string, () => void>}>
 ) {
   const {itemId} = props
-  const {client} = useSource()
+  const client = useClient()
   const [state, setState] = useState<{document?: SanityDocument; isLoading: boolean}>({
     isLoading: true,
   })
