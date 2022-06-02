@@ -1,4 +1,4 @@
-import {useSource} from '@sanity/base'
+import {useClient} from '@sanity/base'
 import {SanityDocument} from '@sanity/types'
 import {Box, Text, Tooltip} from '@sanity/ui'
 import React, {useEffect, useState} from 'react'
@@ -6,7 +6,7 @@ import styles from './AuthorAnnotation.module.css'
 
 export default function AuthorAnnotation(props: {_ref?: string; children?: React.ReactNode}) {
   const {_ref, children} = props
-  const {client} = useSource()
+  const client = useClient()
 
   const [state, setState] = useState<{author: SanityDocument | null}>({
     author: null,
