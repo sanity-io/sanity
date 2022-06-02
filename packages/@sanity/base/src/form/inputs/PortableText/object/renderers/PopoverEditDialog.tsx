@@ -13,20 +13,21 @@ import {
   useBoundaryElement,
   useClickOutside,
   useElementRect,
-  useLayer,
+  useGlobalKeyDown,
   usePortal,
 } from '@sanity/ui'
 import React, {useCallback, useEffect, useMemo, useState} from 'react'
 import styled from 'styled-components'
 import {PresenceOverlay} from '../../../../../presence'
 import {FIXME} from '../../../../types'
+import {EditorElement} from '../../Compositor'
 import {POPOVER_WIDTH_TO_UI_WIDTH} from './constants'
 import {debugElement} from './debug'
 import {ModalWidth} from './types'
 
 interface PopoverEditDialogProps {
   children: React.ReactNode
-  elementRef: React.MutableRefObject<HTMLElement | null>
+  elementRef?: React.MutableRefObject<EditorElement>
   onClose: () => void
   scrollElement: HTMLElement
   title: string | React.ReactNode
@@ -68,7 +69,19 @@ const ContentHeaderBox = styled(Box)`
 const POPOVER_FALLBACK_PLACEMENTS: PopoverProps['fallbackPlacements'] = ['top', 'bottom']
 
 export function PopoverEditDialog(props: PopoverEditDialogProps) {
-  const {width, elementRef, scrollElement} = props
+  const {width, elementRef, onClose, scrollElement} = props
+
+  useGlobalKeyDown(
+    useCallback(
+      (event: KeyboardEvent) => {
+        if (event.key === 'Escape') {
+          onClose()
+        }
+      },
+      [onClose]
+    )
+  )
+
   const [forceUpdate, setForceUpdate] = useState(0)
   const virtualElement = useMemo(() => {
     if (!elementRef?.current?.getBoundingClientRect()) {
@@ -81,9 +94,8 @@ export function PopoverEditDialog(props: PopoverEditDialogProps) {
         return elementRef.current?.getBoundingClientRect() || null
       },
     }
-
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [elementRef, forceUpdate])
+  }, [elementRef?.current, forceUpdate])
 
   const [rootElement, setRootElement] = useState<HTMLDivElement | null>(null)
   const boundaryElement = useBoundaryElement()
@@ -134,29 +146,10 @@ function Content(
   }
 ) {
   const {onClose, rootElement, style, width = 'small', title} = props
-  const {isTopLayer} = useLayer()
   const {element: boundaryElement} = useBoundaryElement()
   const portal = usePortal()
 
-  const handleClose = useCallback(() => {
-    if (isTopLayer) onClose()
-  }, [isTopLayer, onClose])
-
-  const handleKeyDown = useCallback(
-    (event: KeyboardEvent) => {
-      if (event.key === 'Escape') handleClose()
-    },
-    [handleClose]
-  )
-
-  useClickOutside(handleClose, [rootElement], boundaryElement)
-
-  useEffect(() => {
-    window.addEventListener('keydown', handleKeyDown)
-    return () => {
-      window.removeEventListener('keydown', handleKeyDown)
-    }
-  }, [handleKeyDown])
+  useClickOutside(onClose, [rootElement], boundaryElement)
 
   return (
     <ContentContainer style={style} width={POPOVER_WIDTH_TO_UI_WIDTH[width]}>
@@ -167,7 +160,7 @@ function Content(
               <Text weight="semibold">{title}</Text>
             </Box>
 
-            <Button icon={CloseIcon} mode="bleed" onClick={handleClose} padding={2} />
+            <Button icon={CloseIcon} mode="bleed" onClick={onClose} padding={2} />
           </Flex>
         </ContentHeaderBox>
         <ContentScrollerBox flex={1}>

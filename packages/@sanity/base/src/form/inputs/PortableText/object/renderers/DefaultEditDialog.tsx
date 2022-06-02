@@ -1,6 +1,6 @@
-import React, {useCallback, useEffect} from 'react'
+import React from 'react'
 import {useId} from '@reach/auto-id'
-import {Box, Dialog, PortalProvider, useLayer, usePortal} from '@sanity/ui'
+import {Box, Dialog, PortalProvider, usePortal} from '@sanity/ui'
 import {PresenceOverlay} from '../../../../../presence'
 import {DIALOG_WIDTH_TO_UI_WIDTH} from './constants'
 import {ModalWidth} from './types'
@@ -16,29 +16,11 @@ export function DefaultEditDialog(props: DefaultEditDialogProps) {
   const {onClose, children, title, width = 'medium'} = props
 
   const dialogId = useId()
-  const {isTopLayer} = useLayer()
   const portal = usePortal()
-
-  const handleClose = useCallback(() => {
-    if (isTopLayer) onClose()
-  }, [isTopLayer, onClose])
-
-  const handleKeyDown = useCallback(
-    (event: KeyboardEvent) => {
-      if (event.key === 'Escape') handleClose()
-    },
-    [handleClose]
-  )
-
-  useEffect(() => {
-    window.addEventListener('keydown', handleKeyDown)
-    return () => {
-      window.removeEventListener('keydown', handleKeyDown)
-    }
-  }, [handleKeyDown])
 
   return (
     <Dialog
+      __unstable_autoFocus
       id={dialogId || ''}
       onClose={onClose}
       onClickOutside={onClose}
