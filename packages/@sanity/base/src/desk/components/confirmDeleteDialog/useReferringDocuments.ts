@@ -143,29 +143,40 @@ const useInternalReferences = createHookFromObservableFactory(
 )
 
 const useCrossDatasetReferences = createHookFromObservableFactory(
-  (documentId: string, context: {crossProjectTokenStore: CrossProjectTokenStore}) => {
+  (
+    documentId: string,
+    context: {crossProjectTokenStore: CrossProjectTokenStore},
+    versionedClient: SanityClient
+  ) => {
     const {crossProjectTokenStore} = context
-    const {client} = useSource()
-    const versionedClient = useMemo(() => client.withConfig({apiVersion: '2022-03-07'}), [])
 
     return getVisiblePoll$().pipe(
       switchMap(() =>
-        fetchCrossDatasetReferences(documentId, {versionedClient, crossProjectTokenStore})
+        fetchCrossDatasetReferences(documentId, {
+          versionedClient,
+          crossProjectTokenStore,
+        })
       )
     )
   }
 )
 
 export function useReferringDocuments(documentId: string): ReferringDocuments {
+  const {client} = useSource()
+  const versionedClient = useMemo(() => client.withConfig({apiVersion: '2022-03-07'}), [client])
+
   const documentStore = useDocumentStore()
   const crossProjectTokenStore = useCrossProjectTokenStore()
   const publishedId = getPublishedId(documentId)
+
   const [internalReferences, isInternalReferencesLoading] = useInternalReferences(publishedId, {
     documentStore,
   })
+
   const [crossDatasetReferences, isCrossDatasetReferencesLoading] = useCrossDatasetReferences(
     publishedId,
-    {crossProjectTokenStore}
+    {crossProjectTokenStore},
+    versionedClient
   )
 
   const projectIds = useMemo(() => {
