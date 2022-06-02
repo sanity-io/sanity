@@ -130,7 +130,7 @@ export function createFieldsets(typeDef, fields) {
         const fieldset = fieldsetsByName[field.fieldset]
         if (!fieldset) {
           throw new Error(
-            `Group '${field.fieldset}' is not defined in schema for type '${typeDef.name}'`
+            `Fieldset '${field.fieldset}' is not defined in schema for type '${typeDef.name}'`
           )
         }
         fieldset.fields.push(field)
