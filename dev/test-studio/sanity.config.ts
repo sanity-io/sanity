@@ -29,11 +29,11 @@ export default createConfig({
   //     ToolMenu: ToolMenu,
   //   },
   // },
-  form: {
-    unstable: {
-      CustomMarkers,
-      Markers,
-    },
+  formBuilder: {
+    // unstable: {
+    //   CustomMarkers,
+    //   Markers,
+    // },
     image: {
       assetSources: [imageAssetSource],
     },
