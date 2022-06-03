@@ -91,6 +91,7 @@ export function CodeInput(props: CodeInputProps) {
     renderField,
     renderInput,
     renderItem,
+    renderPreview,
     schemaType: type,
     value,
   } = props
@@ -302,6 +303,7 @@ export function CodeInput(props: CodeInputProps) {
           renderItem={renderItem}
           renderField={renderField}
           renderInput={renderLanguageInput}
+          renderPreview={renderPreview}
         />
       )}
 
@@ -311,6 +313,7 @@ export function CodeInput(props: CodeInputProps) {
           renderItem={renderItem}
           renderField={renderField}
           renderInput={renderInput}
+          renderPreview={renderPreview}
         />
       )}
 
@@ -320,6 +323,7 @@ export function CodeInput(props: CodeInputProps) {
           renderInput={renderCodeInput}
           renderItem={renderItem}
           renderField={renderField}
+          renderPreview={renderPreview}
         />
       )}
     </Stack>
