@@ -8,7 +8,7 @@ import {DiffFromTo} from './DiffFromTo'
 const FallbackPreview: FieldPreviewComponent<React.ReactNode> = ({value, schemaType}) => {
   return (
     <Box padding={2}>
-      <SanityPreview type={schemaType} value={value as any} layout="default" />
+      <SanityPreview schemaType={schemaType} value={value as any} layout="default" />
     </Box>
   )
 }

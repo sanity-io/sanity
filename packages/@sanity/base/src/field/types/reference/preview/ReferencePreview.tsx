@@ -11,6 +11,6 @@ const ReferenceWrapper = styled.div`
 
 export const ReferencePreview: FieldPreviewComponent<Reference> = ({value, schemaType}) => (
   <Box as={ReferenceWrapper} padding={2}>
-    <SanityPreview type={schemaType} value={value} layout="default" />
+    <SanityPreview schemaType={schemaType} value={value} layout="default" />
   </Box>
 )

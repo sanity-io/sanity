@@ -6,12 +6,10 @@ import {useDocumentPreviewStore} from '../../../datastores'
 export function useRefPreview(
   value: Reference | undefined | null,
   schemaType: SchemaType
-): Partial<SanityDocument> | PreviewValue | undefined {
+): PreviewValue | null | undefined {
   const documentPreviewStore = useDocumentPreviewStore()
 
-  const [preview, setPreview] = useState<Partial<SanityDocument> | PreviewValue | undefined>(
-    undefined
-  )
+  const [preview, setPreview] = useState<PreviewValue | null | undefined>(undefined)
 
   useEffect(() => {
     let subscription: Subscription

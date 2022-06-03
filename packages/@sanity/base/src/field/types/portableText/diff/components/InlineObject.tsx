@@ -53,7 +53,7 @@ export function InlineObject({diff, object, schemaType, ...restProps}: InlineObj
 
   return (
     <InlineObjectWrapper>
-      <SanityPreview type={schemaType} value={object as any} layout="inline" />
+      <SanityPreview schemaType={schemaType} value={object as any} layout="inline" />
     </InlineObjectWrapper>
   )
 }
@@ -144,7 +144,7 @@ function InlineObjectWithDiff({
         <PreviewContainer>
           <DiffTooltip annotations={annotations} description={`${diff.action} inline object`}>
             <InlineBox>
-              <SanityPreview type={schemaType} value={object as any} layout="inline" />
+              <SanityPreview schemaType={schemaType} value={object as any} layout="inline" />
               <Flex align="center" paddingX={1}>
                 <InlineText size={0}>
                   <ChevronDownIcon />

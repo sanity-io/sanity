@@ -98,7 +98,7 @@ function ItemPreview({value, memberType}: {memberType?: SchemaType; value: unkno
       {typeof value === 'string' || typeof value === 'number' ? (
         value
       ) : (
-        <SanityPreview type={memberType!} value={value as any} layout="default" />
+        <SanityPreview schemaType={memberType!} value={value as any} layout="default" />
       )}
     </Box>
   )
