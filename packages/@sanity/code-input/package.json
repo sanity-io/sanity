@@ -85,7 +85,7 @@
     "@sanity/types": "^2.14",
     "@sanity/util": "2.27",
     "prop-types": "^15.6 || ^16",
-    "react": "^16.9 || ^17",
+    "react": "^16.9 || ^17 || ^18",
     "styled-components": "^5.2.0"
   },
   "bugs": {

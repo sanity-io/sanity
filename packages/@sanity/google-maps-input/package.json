@@ -67,8 +67,8 @@
   },
   "peerDependencies": {
     "@sanity/base": "^2.0.0",
-    "react": "^16.9 || ^17",
-    "react-dom": "^16.9 || ^17",
+    "react": "^16.9 || ^17 || ^18",
+    "react-dom": "^16.9 || ^17 || ^18",
     "styled-components": "^5.2.0"
   },
   "repository": {

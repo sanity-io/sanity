@@ -164,8 +164,8 @@
   },
   "peerDependencies": {
     "prop-types": "^15.6 || ^16",
-    "react": "^16.9 || ^17",
-    "react-dom": "^16.9 || ^17",
+    "react": "^16.9 || ^17 || ^18",
+    "react-dom": "^16.9 || ^17 || ^18",
     "styled-components": "^5.2.0"
   }
 }
