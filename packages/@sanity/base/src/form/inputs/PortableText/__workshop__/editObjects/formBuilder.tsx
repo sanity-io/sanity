@@ -1,7 +1,10 @@
 import {TextArea, Theme} from '@sanity/ui'
 import React, {useCallback} from 'react'
 import styled, {css} from 'styled-components'
-import {FormInputComponentResolver, InputProps} from '../../../../types'
+import {
+  // FormInputComponentResolver,
+  InputProps,
+} from '../../../../types'
 import {set} from '../../../../patch'
 
 const DebugTextArea = styled(TextArea)(({theme}: {theme: Theme}) => {
@@ -32,12 +35,12 @@ function DebugInput(props: InputProps) {
   )
 }
 
-export const resolveInputComponent: FormInputComponentResolver = () => {
-  return DebugInput
-}
+// export const resolveInputComponent: FormInputComponentResolver = () => {
+//   return DebugInput
+// }
 
-export const resolvePreviewComponent = () => {
-  return function PreviewAny() {
-    return <div>preview</div>
-  }
-}
+// export const resolvePreviewComponent = () => {
+//   return function PreviewAny() {
+//     return <div>preview</div>
+//   }
+// }

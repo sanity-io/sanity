@@ -4,7 +4,7 @@ import styled, {css} from 'styled-components'
 import {SchemaType} from '@sanity/types'
 import {PortableTextInput} from '../../PortableTextInput'
 import {defaultResolveInputComponent} from '../../../../studio/inputResolver/inputResolver'
-import {SanityFormBuilderConfig} from '../../../../../config'
+import {SanityFormConfig} from '../../../../../config'
 import {InputProps} from '../../../../types'
 
 const DebugTextArea = styled(TextArea)(({theme}: {theme: Theme}) => {
@@ -35,7 +35,7 @@ const DebugInput = forwardRef(function DebugInput(props: InputProps, ref) {
 
 export function inputResolver(
   input: SchemaType,
-  formBuilder: SanityFormBuilderConfig
+  form: SanityFormConfig
 ): React.ComponentType<InputProps> {
   if (!input.type) {
     throw new Error('inputResolver: missing subtype')

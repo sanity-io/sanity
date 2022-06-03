@@ -2,7 +2,7 @@ import {PortableTextBlock, Type as PTType} from '@sanity/portable-text-editor'
 import {Path, Schema, ValidationMarker} from '@sanity/types'
 import React, {useCallback, useEffect, useMemo, useState} from 'react'
 import {
-  FormInputComponentResolver,
+  // FormInputComponentResolver,
   PortableTextMarker,
   RenderCustomMarkers,
 } from '../../../../types'
@@ -43,7 +43,7 @@ export function TestInput(props: TestInputProps) {
     withWarning = false,
     withCustomMarkers = false,
   } = props
-  const {formBuilder} = useSource()
+  const {form} = useSource()
   const [value, setValue] = useState<PortableTextBlock[]>(valueProp)
   const [focusPath, setFocusPath] = useState<Path>([])
   const blockType = useMemo(() => type.of?.find((t) => t.type?.name === 'block'), [type])
@@ -52,10 +52,10 @@ export function TestInput(props: TestInputProps) {
   const [markers, setMarkers] = useState<PortableTextMarker[]>([])
   const [validation, setValidation] = useState<ValidationMarker[]>([])
 
-  const resolveInputComponent: FormInputComponentResolver = useCallback(
-    (_type) => inputResolver(_type, formBuilder),
-    [formBuilder]
-  )
+  // const resolveInputComponent: FormInputComponentResolver = useCallback(
+  //   (_type) => inputResolver(_type, form),
+  //   [form]
+  // )
 
   const onFocus = useCallback((pathOrEvent?: Path | React.FocusEvent) => {
     setFocusPath(Array.isArray(pathOrEvent) ? pathOrEvent : [])

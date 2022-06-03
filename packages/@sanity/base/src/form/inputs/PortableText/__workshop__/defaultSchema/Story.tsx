@@ -74,6 +74,7 @@ function TestForm() {
   const renderField = useCallback(() => <>TODO</>, [])
   const renderInput = useCallback(() => <>TODO</>, [])
   const renderItem = useCallback(() => <>TODO</>, [])
+  const renderPreview = useCallback(() => <>TODO</>, [])
   const resolveInitialValue = useCallback(() => Promise.resolve({} as any), [])
   const validation = useMemo(() => [], [])
 

@@ -9,7 +9,7 @@ import {FIXME} from '../../../../types'
 import {EMPTY_ARRAY} from '../../../../utils/empty'
 import {EditObject} from '../../object'
 import {ObjectEditData} from '../../types'
-import {resolveInputComponent, resolvePreviewComponent} from './formBuilder'
+// import {resolveInputComponent, resolvePreviewComponent} from './formBuilder'
 import {schema} from './schemaType'
 
 const TYPE_OPTIONS: Record<string, 'annotation' | 'blockObject' | 'inlineObject'> = {
@@ -38,7 +38,7 @@ export function EditObjectsStory() {
   const kind = useSelect('Kind', TYPE_OPTIONS, 'annotation') || 'annotation'
 
   const portal = usePortal()
-  const {formBuilder} = useSource()
+  const {form} = useSource()
 
   const {editorPath, focusPath} = useMemo(() => {
     if (!open) {

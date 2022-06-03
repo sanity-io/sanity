@@ -47,14 +47,14 @@ export function TextBlocksStory() {
   const attributes = useMemo(() => ({focused: false, selected: false, path: []}), [])
   const readOnly = false
 
-  const {formBuilder} = useSource()
+  const {form} = useSource()
 
   return (
     <Box padding={4}>
       <Container width={1}>
         <Card padding={3} shadow={1} overflow="auto" style={{maxHeight: '100%'}}>
           TODO
-          {/* <FormBuilderProvider {...formBuilder} onChange={onChange}>
+          {/* <FormBuilderProvider {...form} onChange={onChange}>
             <TextBlock
               markers={markers}
               validation={validation}
