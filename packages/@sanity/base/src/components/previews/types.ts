@@ -1,47 +1,40 @@
-import {ImageUrlFitMode, SchemaType} from '@sanity/types'
+import {ImageUrlFitMode, PreviewValue, Reference, SanityDocumentLike} from '@sanity/types'
+import {ComponentType, ReactNode} from 'react'
 
 export type PortableTextPreviewLayoutKey = 'block' | 'blockImage' | 'inline'
 
-export type GeneralPreviewLayoutKey =
-  | 'default'
-  | 'card' // deprecated
-  | 'media'
-  | 'detail'
+export type GeneralPreviewLayoutKey = 'default' | 'media' | 'detail'
 
 export type PreviewLayoutKey = GeneralPreviewLayoutKey | PortableTextPreviewLayoutKey
 
 export type PreviewMediaDimensions = {
-  width?: number
-  height?: number
-  fit?: ImageUrlFitMode
   aspect?: number
   dpr?: number
+  fit?: ImageUrlFitMode
+  height?: number
+  width?: number
 }
 
+/**
+ * @alpha
+ */
 export interface PreviewProps<TLayoutKey = PreviewLayoutKey> {
-  actions?: React.ReactNode | React.ComponentType<{layout: TLayoutKey}>
-  children?: React.ReactNode
-  extendedPreview?: React.ReactNode
-  fallbackTitle?: React.ReactNode
+  actions?: ReactNode | ComponentType<{layout: TLayoutKey}>
+  children?: ReactNode
+  description?: ReactNode | ComponentType<{layout: TLayoutKey}>
+  fallbackTitle?: ReactNode
   isPlaceholder?: boolean
+  layout?: TLayoutKey
+  media?: ReactNode | ComponentType<{dimensions: PreviewMediaDimensions; layout: TLayoutKey}>
   mediaDimensions?: PreviewMediaDimensions
-  media?:
-    | React.ReactNode
-    | React.ComponentType<{
-        dimensions: PreviewMediaDimensions
-        layout: TLayoutKey
-      }>
   progress?: number
-  status?: React.ReactNode | React.ComponentType<{layout: TLayoutKey}>
-  title?: React.ReactNode | React.ComponentType<{layout: TLayoutKey}>
-  subtitle?: React.ReactNode | React.ComponentType<{layout: TLayoutKey}>
-  description?: React.ReactNode | React.ComponentType<{layout: TLayoutKey}>
+  status?: ReactNode | ComponentType<{layout: TLayoutKey}>
+  subtitle?: ReactNode | ComponentType<{layout: TLayoutKey}>
+  title?: ReactNode | ComponentType<{layout: TLayoutKey}>
+  value?: PreviewValue | SanityDocumentLike | Reference | null
+  withBorder?: boolean
   withRadius?: boolean
   withShadow?: boolean
-  withBorder?: boolean
-  type?: SchemaType
-  value?: unknown
-  layout?: TLayoutKey
 }
 
-export type PreviewComponent = React.ComponentType<PreviewProps>
+export type PreviewComponent = ComponentType<PreviewProps>

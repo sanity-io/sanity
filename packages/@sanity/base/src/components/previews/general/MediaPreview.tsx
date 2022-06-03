@@ -34,12 +34,6 @@ export function MediaPreview(props: MediaPreviewProps) {
     title,
     withBorder = true,
     withRadius = true,
-    // unused
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    type: _type,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    value: _value,
-    ...restProps
   } = props
 
   const aspect = mediaDimensions.aspect || 1
@@ -69,7 +63,7 @@ export function MediaPreview(props: MediaPreviewProps) {
   }, [subtitle, title])
 
   return (
-    <RootBox data-testid="media-preview" overflow="hidden" flex={1} {...restProps}>
+    <RootBox data-testid="media-preview" overflow="hidden" flex={1}>
       <div style={STYLES_PADDER} />
 
       <Tooltip content={tooltipContent} disabled={!tooltipContent} placement="top" portal>

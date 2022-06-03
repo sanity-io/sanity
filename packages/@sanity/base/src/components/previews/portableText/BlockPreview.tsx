@@ -28,7 +28,6 @@ export function BlockPreview(props: PreviewProps<'block'>) {
     media,
     status,
     children,
-    extendedPreview,
   } = props
 
   return (
@@ -71,8 +70,6 @@ export function BlockPreview(props: PreviewProps<'block'>) {
       </HeaderFlex>
 
       {children && <div data-testid="block-preview__children">{children}</div>}
-
-      {extendedPreview && <div data-testid="block-preview__extended">{extendedPreview}</div>}
     </Stack>
   )
 }
