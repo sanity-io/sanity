@@ -10,7 +10,7 @@ type Props = {
   originalFilename: string
   onClick?: () => void
   muted?: boolean
-  disabled: boolean
+  disabled?: boolean
   isMenuOpen: boolean
   onMenuOpen: (flag: boolean) => void
 }
