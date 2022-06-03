@@ -17,6 +17,7 @@ import {
   defaultResolveItemComponent,
   defaultResolvePreviewComponent,
 } from '../form/studio/inputResolver/inputResolver'
+import {ImageSource, FileSource} from '../form/studio/DefaultAssetSource'
 import {Source, SourceOptions, Config, ResolvedConfig} from './types'
 import {
   schemaTypesReducer,
@@ -435,7 +436,7 @@ function resolveSource({
         assetSources: resolveConfigProperty({
           config,
           context,
-          initialValue: [],
+          initialValue: [FileSource],
           propertyName: 'formBuilder.file.assetSources',
           reducer: fileAssetSourceResolver,
         }),
@@ -450,7 +451,7 @@ function resolveSource({
         assetSources: resolveConfigProperty({
           config,
           context,
-          initialValue: [],
+          initialValue: [ImageSource],
           propertyName: 'formBuilder.image.assetSources',
           reducer: imageAssetSourceResolver,
         }),
