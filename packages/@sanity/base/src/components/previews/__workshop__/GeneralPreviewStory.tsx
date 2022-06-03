@@ -84,7 +84,7 @@ export default function GeneralPreviewStory() {
             selected={interactive ? selected : undefined}
             style={{lineHeight: 0}}
           >
-            {createElement(component as React.ComponentType<PreviewProps<string>>, {
+            {createElement(component as React.ComponentType<PreviewProps>, {
               description,
               isPlaceholder,
               media,
