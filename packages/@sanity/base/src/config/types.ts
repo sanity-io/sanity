@@ -10,6 +10,7 @@ import type {
 import type React from 'react'
 import type {Observable} from 'rxjs'
 import type {BifurClient} from '@sanity/bifur-client'
+import {ReactNode} from 'react'
 import type {
   FormBuilderArrayFunctionComponent,
   FormBuilderCustomMarkersComponent,
@@ -17,6 +18,10 @@ import type {
   InputProps,
   FieldProps,
   ItemProps,
+  RenderFieldCallback,
+  RenderInputCallback,
+  RenderItemCallback,
+  RenderPreviewCallback,
 } from '../form'
 import type {AuthStore, UserStore} from '../datastores'
 import type {AuthController} from '../auth'
@@ -47,7 +52,7 @@ export type AssetSourceResolver = ComposableOption<AssetSource[], ConfigContext>
 /**
  * @alpha
  */
-export interface SanityFormBuilderConfig {
+export interface SanityFormConfig {
   /**
    * these have not been migrated over
    */
@@ -76,33 +81,15 @@ export interface SanityFormBuilderConfig {
     // TODO: this option needs more thought on composition and availability
     directUploads?: boolean
   }
-  resolve?: {
-    input?: FormBuilderInputComponentResolver
-    field?: FormBuilderFieldComponentResolver
-    item?: FormBuilderItemComponentResolver
-    preview?: FormBuilderPreviewComponentResolver
-  }
+
+  renderInput?: (props: InputProps, next: RenderInputCallback) => ReactNode
+  renderField?: (props: FieldProps, next: RenderFieldCallback) => ReactNode
+  renderItem?: (props: ItemProps, next: RenderItemCallback) => ReactNode
+  renderPreview?: (
+    props: PreviewProps & {schemaType: SchemaType},
+    next: RenderPreviewCallback
+  ) => ReactNode
 }
-
-export type FormBuilderInputComponentResolver = ComposableOption<
-  React.ComponentType<InputProps>,
-  FormBuilderComponentResolverContext
->
-
-export type FormBuilderFieldComponentResolver = ComposableOption<
-  React.ComponentType<FieldProps>,
-  FormBuilderComponentResolverContext
->
-
-export type FormBuilderItemComponentResolver = ComposableOption<
-  React.ComponentType<ItemProps>,
-  FormBuilderComponentResolverContext
->
-
-export type FormBuilderPreviewComponentResolver = ComposableOption<
-  React.ComponentType<PreviewProps>,
-  FormBuilderComponentResolverContext
->
 
 export interface FormBuilderComponentResolverContext extends ConfigContext {
   schemaType: SchemaType
@@ -189,7 +176,7 @@ export interface PluginOptions {
   // components?: ComponentPluginOptions
   document?: DocumentPluginOptions
   tools?: Tool[] | ComposableOption<Tool[], ConfigContext>
-  formBuilder?: SanityFormBuilderConfig
+  form?: SanityFormConfig
 }
 
 export type ConfigPropertyReducer<TValue, TContext> = (
@@ -275,13 +262,7 @@ export interface Source {
     ) => Promise<string | undefined>
     resolveNewDocumentOptions: (context: NewDocumentCreationContext) => InitialValueTemplateItem[]
   }
-  formBuilder: {
-    resolveInputComponent: (options: {schemaType: SchemaType}) => React.ComponentType<InputProps>
-    resolveFieldComponent: (options: {schemaType: SchemaType}) => React.ComponentType<FieldProps>
-    resolveItemComponent: (options: {schemaType: SchemaType}) => React.ComponentType<ItemProps>
-    resolvePreviewComponent: (options: {
-      schemaType: SchemaType
-    }) => React.ComponentType<PreviewProps<string>>
+  form: {
     file: {
       assetSources: AssetSource[]
       directUploads: boolean
@@ -290,6 +271,12 @@ export interface Source {
       assetSources: AssetSource[]
       directUploads: boolean
     }
+
+    renderInput: (props: InputProps) => ReactNode
+    renderField: (props: FieldProps) => ReactNode
+    renderItem: (props: ItemProps) => ReactNode
+    renderPreview: (props: PreviewProps & {schemaType: SchemaType}) => ReactNode
+
     /**
      * these have not been migrated over and are not merged by the form builder
      */

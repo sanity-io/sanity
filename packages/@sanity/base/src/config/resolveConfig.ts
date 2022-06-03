@@ -1,4 +1,5 @@
 /* eslint-disable max-nested-callbacks */
+
 import createClient, {SanityClient} from '@sanity/client'
 import {map, shareReplay} from 'rxjs/operators'
 import {CurrentUser, Schema} from '@sanity/types'
@@ -10,13 +11,6 @@ import {AuthStore, createAuthStore, createUserStore, UserStore} from '../datasto
 import {AuthController, AuthError, createAuthController} from '../auth'
 import {InitialValueTemplateItem, Template, TemplateResponse} from '../templates'
 import {isNonNullable} from '../util'
-// TODO: consider re-exporting this in side of `../form`
-import {
-  defaultResolveFieldComponent,
-  defaultResolveInputComponent,
-  defaultResolveItemComponent,
-  defaultResolvePreviewComponent,
-} from '../form/studio/inputResolver/inputResolver'
 import {ImageSource, FileSource} from '../form/studio/DefaultAssetSource'
 import {Source, SourceOptions, Config, ResolvedConfig} from './types'
 import {
@@ -29,16 +23,16 @@ import {
   initialDocumentBadges,
   documentBadgesReducer,
   newDocumentOptionsResolver,
-  inputComponentResolver,
-  fieldComponentResolver,
-  itemComponentResolver,
   fileAssetSourceResolver,
   imageAssetSourceResolver,
-  previewComponentResolver,
 } from './configPropertyReducers'
 import {resolveConfigProperty} from './resolveConfigProperty'
 import {ConfigResolutionError} from './ConfigResolutionError'
 import {SchemaError} from './SchemaError'
+import {_createRenderField} from './form/_renderField'
+import {_createRenderInput} from './form/_renderInput'
+import {_createRenderItem} from './form/_renderItem'
+import {_createRenderPreview} from './form/_renderPreview'
 
 type ParamsOf<T> = T extends (arg: infer U) => unknown ? U : never
 type SanityClientLike = ParamsOf<typeof fromSanityClient>
@@ -103,6 +97,7 @@ export function resolveConfig(config: Config): ResolvedConfig {
         )
 
         if (schemaValidationProblemGroups && schemaErrors?.length) {
+          console.error(schemaValidationProblemGroups)
           // TODO: consider using the `ConfigResolutionError`
           throw new SchemaError(schema)
         }
@@ -396,42 +391,16 @@ function resolveSource({
         }),
       resolveNewDocumentOptions,
     },
-    formBuilder: {
+    form: {
       unstable: {
-        ...config.formBuilder?.unstable,
+        ...config.form?.unstable,
       },
-      resolveInputComponent: ({schemaType}) =>
-        resolveConfigProperty({
-          config,
-          context: {...context, schemaType},
-          initialValue: defaultResolveInputComponent(schemaType),
-          propertyName: 'formBuilder',
-          reducer: inputComponentResolver,
-        }),
-      resolveFieldComponent: ({schemaType}) =>
-        resolveConfigProperty({
-          config,
-          context: {...context, schemaType},
-          initialValue: defaultResolveFieldComponent(schemaType),
-          propertyName: 'formBuilder',
-          reducer: fieldComponentResolver,
-        }),
-      resolveItemComponent: ({schemaType}) =>
-        resolveConfigProperty({
-          config,
-          context: {...context, schemaType},
-          initialValue: defaultResolveItemComponent(schemaType),
-          propertyName: 'formBuilder',
-          reducer: itemComponentResolver,
-        }),
-      resolvePreviewComponent: ({schemaType}) =>
-        resolveConfigProperty({
-          config,
-          context: {...context, schemaType},
-          initialValue: defaultResolvePreviewComponent(schemaType),
-          propertyName: 'formBuilder',
-          reducer: previewComponentResolver,
-        }),
+
+      renderField: _createRenderField(config),
+      renderInput: _createRenderInput(config),
+      renderItem: _createRenderItem(config),
+      renderPreview: _createRenderPreview(config),
+
       file: {
         assetSources: resolveConfigProperty({
           config,
@@ -443,9 +412,7 @@ function resolveSource({
         directUploads:
           // TODO: consider refactoring this to `noDirectUploads` or similar
           // default value for this is `true`
-          config.formBuilder?.file?.directUploads === undefined
-            ? true
-            : config.formBuilder.file.directUploads,
+          config.form?.file?.directUploads === undefined ? true : config.form.file.directUploads,
       },
       image: {
         assetSources: resolveConfigProperty({
@@ -458,9 +425,7 @@ function resolveSource({
         directUploads:
           // TODO: consider refactoring this to `noDirectUploads` or similar
           // default value for this is `true`
-          config.formBuilder?.file?.directUploads === undefined
-            ? true
-            : config.formBuilder.file.directUploads,
+          config.form?.file?.directUploads === undefined ? true : config.form.file.directUploads,
       },
     },
 
