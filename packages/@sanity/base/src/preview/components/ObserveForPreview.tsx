@@ -1,50 +1,42 @@
-import {PreviewValue, SchemaType} from '@sanity/types'
-import React from 'react'
+import {PreviewValue, SanityDocumentLike, SchemaType} from '@sanity/types'
+import React, {ReactElement} from 'react'
 import {withPropsStream} from 'react-props-stream'
 import shallowEquals from 'shallow-equals'
-import {
-  distinctUntilChanged,
-  filter,
-  map,
-  publishReplay,
-  refCount,
-  switchMap,
-  tap,
-} from 'rxjs/operators'
+import {distinctUntilChanged, map, publishReplay, refCount, switchMap} from 'rxjs/operators'
 import {concat, of, Observable} from 'rxjs'
 import type {Previewable, SortOrdering} from '../types'
 import {ObserveForPreviewFn} from '../documentPreviewStore'
+import {useDocumentPreviewStore} from '../../datastores'
+import {_memoizeBy} from './_helpers'
 
-function isNonNullable<T>(value: T): value is NonNullable<T> {
-  return value !== null && value !== undefined
-}
-
-// Will track a memo of the value as long as the isActive$ stream emits true,
-// and emit the memoized value after it switches to to false
-
-// (disclaimer: there's probably a better way to do this)
-function memoizeBy<T>(isActive$: Observable<boolean>) {
-  return (producer$: Observable<T>) => {
-    let memo: T
-    return isActive$.pipe(
-      distinctUntilChanged(),
-      switchMap(
-        (isActive): Observable<T> =>
-          isActive ? producer$.pipe(tap((v) => (memo = v))) : of(memo).pipe(filter(isNonNullable))
-      )
-    )
-  }
-}
-
-type OuterProps = {
+export interface ObserveForPreviewProps {
+  children: (props: {
+    error?: Error
+    isLoading: boolean
+    result: {type: SchemaType; snapshot: SanityDocumentLike | PreviewValue | null | undefined}
+  }) => ReactElement
   isActive: boolean
-  value: Previewable
-  type: SchemaType
-  children: (props: any) => React.ReactElement
+
   ordering?: SortOrdering
-  observeForPreview: ObserveForPreviewFn
+  schemaType: SchemaType
+  value: Previewable
 }
-const connect = (props$: Observable<OuterProps>): Observable<ReceivedProps> => {
+
+interface ReceivedProps {
+  snapshot: PreviewValue | null | undefined
+  type: SchemaType
+  isLoading: boolean
+  error?: Error
+  children: (props: {
+    error?: Error
+    isLoading: boolean
+    result: {type: SchemaType; snapshot: PreviewValue | null | undefined}
+  }) => ReactElement
+}
+
+const connect = (
+  props$: Observable<ObserveForPreviewProps & {observeForPreview: ObserveForPreviewFn}>
+): Observable<ReceivedProps> => {
   const sharedProps$ = props$.pipe(publishReplay(1), refCount())
 
   const isActive$ = sharedProps$.pipe(map((props) => props.isActive !== false))
@@ -55,46 +47,47 @@ const connect = (props$: Observable<OuterProps>): Observable<ReceivedProps> => {
       concat(
         of<ReceivedProps>({
           isLoading: true,
-          type: props.type,
+          type: props.schemaType,
           snapshot: null,
           children: props.children,
         }),
         props
           .observeForPreview(
             props.value,
-            props.type,
+            props.schemaType,
             props.ordering ? {ordering: props.ordering} : {}
           )
           .pipe(
             map((result) => ({
               isLoading: false,
-              type: props.type,
+              type: props.schemaType,
               snapshot: result.snapshot,
               children: props.children,
             }))
           )
       )
     ),
-    memoizeBy(isActive$)
+    _memoizeBy(isActive$)
   )
 }
 
-type ReceivedProps = {
-  snapshot: PreviewValue | null | undefined
-  type: SchemaType
-  isLoading: boolean
-  error?: Error
-  children: (props: any) => React.ReactElement
-}
-export default withPropsStream<OuterProps, ReceivedProps>(
-  connect,
-  function ObserveForPreview(props: ReceivedProps) {
-    const {type, error, snapshot, isLoading, children} = props
+const ObserveForPreviewInner = withPropsStream<
+  ObserveForPreviewProps & {observeForPreview: ObserveForPreviewFn},
+  ReceivedProps
+>(connect, (props: ReceivedProps) => {
+  const {type, error, snapshot, isLoading, children} = props
 
-    return children({
-      error,
-      isLoading,
-      result: {type, snapshot},
-    })
-  }
-)
+  return children({
+    error,
+    isLoading,
+    result: {type, snapshot},
+  })
+})
+
+export function ObserveForPreview(props: ObserveForPreviewProps) {
+  const documentPreviewStore = useDocumentPreviewStore()
+
+  return (
+    <ObserveForPreviewInner {...props} observeForPreview={documentPreviewStore.observeForPreview} />
+  )
+}

@@ -1,59 +1,58 @@
 import {SchemaType} from '@sanity/types'
-import React, {useCallback} from 'react'
-import type {SortOrdering} from '../types'
-import {useDocumentPreviewStore} from '../../datastores'
+import React from 'react'
+import {PreviewProps} from '../../components/previews'
+import {SortOrdering} from '../types'
+import {ObserveForPreview} from './ObserveForPreview'
+import {RenderPreviewSnapshotProps} from './RenderPreviewSnapshot'
 import {WithVisibility} from './WithVisibility'
-import ObserveForPreview from './ObserveForPreview'
 
 const HIDE_DELAY = 20 * 1000
 
-interface Props {
-  type: SchemaType
-  value: any
+export interface PreviewSubscriberProps extends Omit<PreviewProps, 'value'> {
+  children: (props: RenderPreviewSnapshotProps) => React.ReactElement
   ordering?: SortOrdering
-  children: (props: any) => React.ReactElement
-  layout?: string
+  schemaType: SchemaType
+  value: NonNullable<PreviewProps['value']>
 }
 
-export function PreviewSubscriber(props: Props) {
-  const documentPreviewStore = useDocumentPreviewStore()
-
-  const renderChild = useCallback(
-    (isVisible: boolean) => {
-      const {children, type, value, ordering, ...restProps} = props
-
-      // isVisible may be null which means undetermined
-      return isVisible === null ? null : (
-        <ObserveForPreview
-          isActive={isVisible === true}
-          observeForPreview={documentPreviewStore.observeForPreview}
-          type={type}
-          value={value}
-          ordering={ordering}
-        >
-          {({result, error, isLoading}) =>
-            children({
-              ...restProps,
-              snapshot: result.snapshot,
-              isLoading,
-              isLive: true,
-              error,
-              type,
-              ordering,
-            })
-          }
-        </ObserveForPreview>
-      )
-    },
-    [documentPreviewStore, props]
-  )
-
-  // Disable visibility for 'inline' and 'block' types which is used in the block editor (for now)
+export function PreviewSubscriber(props: PreviewSubscriberProps) {
+  // Disable visibility for `inline`, `block` and `blockImage` types which are used in the block
+  // editor (for now).
   // This led to strange side effects inside the block editor, and needs to be disabled for now.
   // https://github.com/sanity-io/sanity/pull/1411
-  if (props.layout && ['inline', 'block'].includes(props.layout)) {
-    return renderChild(true)
+  if (props.layout && ['inline', 'block', 'blockImage'].includes(props.layout)) {
+    return <VisiblePreview {...props} isVisible />
   }
 
-  return <WithVisibility hideDelay={HIDE_DELAY}>{renderChild}</WithVisibility>
+  return (
+    <WithVisibility hideDelay={HIDE_DELAY}>
+      {(isVisible) =>
+        // isVisible may be null which means undetermined
+        isVisible !== null && <VisiblePreview {...props} isVisible={isVisible === true} />
+      }
+    </WithVisibility>
+  )
+}
+
+function VisiblePreview(props: PreviewSubscriberProps & {isVisible: boolean}) {
+  const {children, isVisible, ordering, schemaType, value, ...restProps} = props
+
+  return (
+    <ObserveForPreview
+      isActive={isVisible === true}
+      ordering={ordering}
+      schemaType={schemaType}
+      value={value}
+    >
+      {({error, isLoading, result}) =>
+        children({
+          ...restProps,
+          error,
+          snapshot: result.snapshot,
+          isLoading,
+          schemaType,
+        })
+      }
+    </ObserveForPreview>
+  )
 }

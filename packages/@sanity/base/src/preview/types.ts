@@ -1,18 +1,11 @@
-import {
-  PreviewConfig,
-  PreviewValue,
-  Reference,
-  SanityDocument,
-  SanityDocumentLike,
-  SchemaType,
-} from '@sanity/types'
+import {PreviewConfig, PreviewValue, Reference, SanityDocumentLike, SchemaType} from '@sanity/types'
 import {Observable} from 'rxjs'
 
 export type {SortOrdering, PrepareViewOptions} from '@sanity/types'
 
 export type Id = string
 
-export type Previewable = SanityDocumentLike | Reference
+export type Previewable = PreviewValue | SanityDocumentLike | Reference
 
 // @todo: unify with content path from @sanity/types
 export type Path = FieldName[]
@@ -80,13 +73,13 @@ export interface DocumentPreview {
 
 export interface PreparedSnapshot {
   type?: PreviewableType
-  snapshot: undefined | PreviewValue
+  snapshot: PreviewValue | null | undefined
 }
 
 export type ObserveDocumentTypeFromIdFn = (id: string) => Observable<string | undefined>
 
 export interface ObservePathsFn {
   (value: Previewable | Id, paths: (string | Path)[], apiConfig?: ApiConfig): Observable<
-    Partial<SanityDocument> | Reference | string | null
+    PreviewValue | SanityDocumentLike | Reference | string | null
   >
 }

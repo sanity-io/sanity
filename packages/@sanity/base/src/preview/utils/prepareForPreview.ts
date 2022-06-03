@@ -1,7 +1,7 @@
 import {
   isTitledListValue,
   PreviewValue,
-  SanityDocument,
+  SanityDocumentLike,
   SchemaType,
   TitledListValue,
 } from '@sanity/types'
@@ -19,12 +19,12 @@ type SelectedValue = Record<string, unknown>
 
 export type PrepareInvocationResult = {
   selectedValue?: SelectedValue
-  returnValue: null | PreviewValue | SelectedValue
+  returnValue: null | PreviewValue
   errors: Error[]
 }
 
 const errorCollector = (() => {
-  let errorsByType: Record<string, {error: Error; type: SchemaType; value: any}[]> = {}
+  let errorsByType: Record<string, {error: Error; type: SchemaType; value: SelectedValue}[]> = {}
 
   return {
     add: (type: SchemaType, value: SelectedValue, error: Error) => {
@@ -48,7 +48,7 @@ const reportErrors = debounce(() => {
   const uniqueErrors = flatten(
     Object.keys(errorsByType).map((typeName) => {
       const entries = errorsByType[typeName]
-      return uniqBy(entries, (entry: any) => entry.error.message)
+      return uniqBy(entries, (entry) => entry.error.message)
     })
   )
   const errorCount = uniqueErrors.length
@@ -67,10 +67,10 @@ const reportErrors = debounce(() => {
     const entries = errorsByType[typeName]
     const first = entries[0]
     console.group(`Check the preview config for schema type "${typeName}": %o`, first.type.preview)
-    const uniqued = uniqBy(entries, (entry: any) => entry.error.message)
-    uniqued.forEach((entry: any) => {
-      if (entry.error.type === 'returnValueError') {
-        const hasPrepare = typeof entry.type.preview.prepare === 'function'
+    const uniqued = uniqBy(entries, (entry) => entry.error.message)
+    uniqued.forEach((entry) => {
+      if ((entry.error as any).type === 'returnValueError') {
+        const hasPrepare = typeof entry.type.preview?.prepare === 'function'
         const {value, error} = entry
         console.log(
           `Encountered an invalid ${
@@ -82,7 +82,7 @@ const reportErrors = debounce(() => {
         )
         console.error(error)
       }
-      if (entry.error.type === 'prepareError') {
+      if ((entry.error as any).type === 'prepareError') {
         const {value, error} = entry
         console.log('Encountered an error when calling prepare(%o):', value)
         console.error(error)
@@ -95,29 +95,31 @@ const reportErrors = debounce(() => {
   /* eslint-enable no-console */
 }, 1000)
 
-const isRenderable = (fieldName: string) => (value: unknown) => {
-  const type = typeof value
-  if (
-    value === null ||
-    type === 'undefined' ||
-    type === 'string' ||
-    type === 'number' ||
-    type === 'boolean'
-  ) {
-    return EMPTY
+const isRenderable =
+  (fieldName: string) =>
+  (value: unknown): Error[] => {
+    const type = typeof value
+    if (
+      value === null ||
+      type === 'undefined' ||
+      type === 'string' ||
+      type === 'number' ||
+      type === 'boolean'
+    ) {
+      return EMPTY
+    }
+    return [
+      assignType(
+        'returnValueError',
+        new Error(
+          `The "${fieldName}" field should be a string, number, boolean, undefined or null, instead saw ${inspect(
+            value
+          )}`
+        )
+      ),
+    ]
   }
-  return [
-    assignType(
-      'returnValueError',
-      new Error(
-        `The "${fieldName}" field should be a string, number, boolean, undefined or null, instead saw ${inspect(
-          value
-        )}`
-      )
-    ),
-  ]
-}
-const FIELD_NAME_VALIDATORS: Record<string, (value: unknown) => any[]> = {
+const FIELD_NAME_VALIDATORS: Record<string, (value: unknown) => Error[]> = {
   media: () => {
     // not sure how to validate media as it would  possibly involve executing a function and check the
     // return value
@@ -157,8 +159,8 @@ function assignType(type: string, error: Error) {
   return Object.assign(error, {type})
 }
 
-function validatePreparedValue(preparedValue: any) {
-  if (!isPlainObject(preparedValue)) {
+function validatePreparedValue(preparedValue: PreviewValue | null) {
+  if (!isPlainObject(preparedValue) || preparedValue === null) {
     return [
       assignType(
         'returnValueError',
@@ -170,8 +172,9 @@ function validatePreparedValue(preparedValue: any) {
       ),
     ]
   }
-  return Object.keys(preparedValue).reduce((acc: any, fieldName) => {
-    return [...acc, ...validateFieldValue(fieldName, preparedValue[fieldName])]
+
+  return Object.entries(preparedValue).reduce<Error[]>((acc, [fieldName, fieldValue]) => {
+    return [...acc, ...validateFieldValue(fieldName, fieldValue)]
   }, EMPTY)
 }
 
@@ -255,12 +258,12 @@ export function prepareForPreview(
   rawValue: unknown,
   type: SchemaType,
   viewOptions: PrepareViewOptions = {}
-): Partial<SanityDocument> | PreviewValue {
+): SanityDocumentLike | PreviewValue {
   const hasCustomPrepare = typeof type.preview?.prepare === 'function'
   const selection: Record<string, string> = type.preview?.select || {}
   const targetKeys = Object.keys(selection)
 
-  const selectedValue = targetKeys.reduce<Record<string, any>>((acc, key) => {
+  const selectedValue = targetKeys.reduce<Record<string, unknown>>((acc, key) => {
     // Find the field the value belongs to
     const typeWithFields = 'fields' in type ? type : null
     const targetFieldName = selection[key]

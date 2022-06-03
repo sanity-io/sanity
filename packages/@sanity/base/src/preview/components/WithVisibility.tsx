@@ -26,14 +26,6 @@ const documentVisibility$ = concat(
   isVisible$
 ).pipe(distinctUntilChanged(), publishReplay(1), refCount())
 
-// type Props = {
-//   // How long to wait before signalling hide
-//   hideDelay: number
-//   element?: string
-//   style?: React.CSSProperties
-//   children: (isVisible: boolean) => React.ReactNode
-// }
-
 export interface WithVisibilityProps {
   // How long to wait before signalling hide
   hideDelay: number
@@ -45,10 +37,6 @@ export interface WithVisibilityProps {
 export interface WithVisibilityState {
   isVisible: boolean
 }
-
-// type State = {
-//   isVisible: boolean
-// }
 
 export class WithVisibility extends React.Component<WithVisibilityProps, WithVisibilityState> {
   element: React.RefObject<HTMLElement> = createRef()

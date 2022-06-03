@@ -1,17 +1,19 @@
-import {SchemaType, SanityDocument} from '@sanity/types'
+import {SchemaType, PreviewValue, SanityDocumentLike} from '@sanity/types'
 import React from 'react'
 import {PreviewSubscriber} from './PreviewSubscriber'
 
-interface PreviewFieldsProps {
-  document: Partial<SanityDocument>
-  type: SchemaType
-  children: (snapshot: Partial<SanityDocument>) => React.ReactNode
+export interface PreviewFieldsProps {
+  children: (snapshot: PreviewValue | SanityDocumentLike) => React.ReactNode
+  value: SanityDocumentLike
+  schemaType: SchemaType
 }
 
 export function PreviewFields(props: PreviewFieldsProps) {
+  const {children, schemaType, value} = props
+
   return (
-    <PreviewSubscriber value={props.document} type={props.type}>
-      {({snapshot}) => <>{snapshot ? props.children(snapshot) : null}</>}
+    <PreviewSubscriber value={value} schemaType={schemaType}>
+      {({snapshot}) => <>{snapshot ? children(snapshot) : null}</>}
     </PreviewSubscriber>
   )
 }

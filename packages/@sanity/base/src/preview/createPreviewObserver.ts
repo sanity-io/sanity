@@ -23,7 +23,12 @@ export function isReference(value: unknown): value is {_ref: string} {
 export function createPreviewObserver(context: {
   observeDocumentTypeFromId: (id: string, apiConfig?: ApiConfig) => Observable<string | undefined>
   observePaths: (value: Previewable, paths: Path[], apiConfig?: ApiConfig) => any
-}) {
+}): (
+  value: Previewable,
+  type: PreviewableType,
+  viewOptions?: PrepareViewOptions,
+  apiConfig?: ApiConfig
+) => Observable<PreparedSnapshot> {
   const {observeDocumentTypeFromId, observePaths} = context
 
   return function observeForPreview(
@@ -90,6 +95,6 @@ export function createPreviewObserver(context: {
       type,
       snapshot:
         value && isRecord(value) ? invokePrepare(type, value, viewOptions).returnValue : null,
-    }) as any
+    })
   }
 }

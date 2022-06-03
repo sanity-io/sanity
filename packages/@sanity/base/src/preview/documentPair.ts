@@ -10,7 +10,12 @@ import {create_preview_availability} from './availability'
 export function create_preview_documentPair(
   versionedClient: SanityClient,
   observePaths: ObservePathsFn
-) {
+): {
+  observePathsDocumentPair: <T extends SanityDocument = SanityDocument>(
+    id: PublishedId,
+    paths: Path[]
+  ) => Observable<DraftsModelDocument<T>>
+} {
   const {observeDocumentPairAvailability} = create_preview_availability(
     versionedClient,
     observePaths
@@ -58,9 +63,10 @@ export function create_preview_documentPair(
                 '_type' in publishedSnapshot &&
                 publishedSnapshot._type) ||
               null
+
             return {
               id: publishedId,
-              type,
+              type: typeof type === 'string' ? type : null,
               draft: {
                 availability: availability.draft,
                 snapshot: draftSnapshot as T,

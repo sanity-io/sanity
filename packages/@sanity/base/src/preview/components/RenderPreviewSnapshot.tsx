@@ -1,60 +1,62 @@
-import React from 'react'
-import {
-  isReferenceSchemaType,
-  PreviewValue,
-  SanityDocument,
-  SchemaType,
-  SortOrdering,
-} from '@sanity/types'
+import React, {ComponentType} from 'react'
+import {isReferenceSchemaType, PreviewValue, SanityDocumentLike, SchemaType} from '@sanity/types'
 import {get} from 'lodash'
-import {customPreviewResolver} from '../../TODO'
+import {PreviewLayoutKey, PreviewProps} from '../../components/previews'
 import {isRecord} from '../../util/isRecord'
 import {SanityDefaultPreview} from './SanityDefaultPreview'
 
-interface RenderPreviewSnapshotProps {
+export interface RenderPreviewSnapshotProps extends PreviewProps {
   error?: Error
-  isLive: boolean
   isLoading: boolean
-  layout?: 'default' | 'detail' | 'card' | 'media' | 'inline' | 'block'
-  ordering?: SortOrdering
-  snapshot: Partial<SanityDocument> | PreviewValue | null
-  type: SchemaType
+  layout?: PreviewLayoutKey
+  snapshot?: SanityDocumentLike | PreviewValue | null
+  schemaType: SchemaType
 }
 
-function resolvePreview(type: SchemaType) {
+function resolvePreview(type: SchemaType): ComponentType<
+  PreviewProps & {
+    error?: Error
+    icon?: ComponentType
+    isLoading?: boolean
+    schemaType?: SchemaType
+  }
+> {
   const fromPreview = get(type, 'preview.component')
 
   if (fromPreview) {
     return fromPreview
   }
 
-  const custom = customPreviewResolver && customPreviewResolver(type)
-
-  return custom || SanityDefaultPreview
+  return SanityDefaultPreview as ComponentType<
+    PreviewProps & {
+      error?: Error
+      icon?: ComponentType
+      isLoading?: boolean
+      schemaType?: SchemaType
+    }
+  >
 }
 
 export function RenderPreviewSnapshot(props: RenderPreviewSnapshotProps) {
-  const {snapshot, type, isLoading, layout, ...rest} = props
-  const PreviewComponent = resolvePreview(type)
-
-  // TODO: Bjoerge: Check for image type with "is()"
-  const renderAsBlockImage = layout === 'block' && type && type.name === 'image'
+  const {snapshot, schemaType, isLoading, ...restProps} = props
+  const PreviewComponent = resolvePreview(schemaType)
   const typeName = isRecord(snapshot?._internalMeta) ? snapshot?._internalMeta._type : undefined
   const icon =
-    (isReferenceSchemaType(type) && type.to.find((t) => t.name === typeName)?.icon) || type.icon
+    (isReferenceSchemaType(schemaType) && schemaType.to.find((t) => t.name === typeName)?.icon) ||
+    schemaType.icon
 
-  const preview = (
+  const preview = snapshot ? (
     <PreviewComponent
       media={icon}
-      {...rest}
-      _renderAsBlockImage={renderAsBlockImage}
+      {...restProps}
       icon={icon}
       isLoading={isLoading}
       isPlaceholder={!snapshot}
-      // isPlaceholder={isLoading}
-      layout={layout}
-      value={snapshot}
+      schemaType={schemaType}
+      value={snapshot || undefined}
     />
+  ) : (
+    <></>
   )
 
   return preview
