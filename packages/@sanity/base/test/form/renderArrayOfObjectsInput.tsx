@@ -1,6 +1,12 @@
 import {Schema, ArraySchemaType} from '@sanity/types'
 import React from 'react'
 import {ArrayOfObjectsFormNode, ArrayOfObjectsInputProps, FieldMember} from '../../src/form'
+import {
+  defaultRenderField,
+  defaultRenderInput,
+  defaultRenderItem,
+  defaultRenderPreview,
+} from '../../src/form/studio/defaults'
 import {renderInput, TestRenderInputContext, TestRenderInputProps} from './renderInput'
 import {TestRenderProps} from './types'
 
@@ -36,7 +42,6 @@ export function renderArrayOfObjectsInput(options: {
     context: TestRenderInputContext
   ): ArrayOfObjectsInputProps {
     const {compareValue, focusPath, path, schemaType, value, ...restProps} = baseProps
-
     const {formState} = context
     const fieldMember = formState.members?.find(
       (member) => member.kind === 'field' && member.name === fieldDefinition.name
@@ -61,11 +66,10 @@ export function renderArrayOfObjectsInput(options: {
       onPrependItem,
       onRemoveItem,
       path,
-      validation: [],
-      presence: [],
-      renderField: () => <>TODO</>,
-      renderInput: () => <>TODO</>,
-      renderItem: () => <>TODO</>,
+      renderField: defaultRenderField,
+      renderInput: defaultRenderInput,
+      renderItem: defaultRenderItem,
+      renderPreview: defaultRenderPreview,
       resolveInitialValue,
       schemaType: schemaType as ArraySchemaType,
       value: value as any[],

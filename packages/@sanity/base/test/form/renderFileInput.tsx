@@ -2,7 +2,7 @@ import {Schema, FileSchemaType, AssetSource} from '@sanity/types'
 import React from 'react'
 import {EMPTY} from 'rxjs'
 import {FileInputProps} from '../../src/form/inputs/files/FileInput'
-import {FieldMember, ObjectFormNode, ObjectInputProps} from '../../src/form'
+import {ObjectInputProps} from '../../src/form'
 import {renderObjectInput} from './renderObjectInput'
 import {TestRenderProps} from './types'
 import {TestRenderInputContext} from './renderInput'
@@ -41,38 +41,28 @@ export function renderFileInput(options: {
   } = options
 
   function transformProps(
-    baseProps: ObjectInputProps,
+    inputProps: ObjectInputProps,
     context: TestRenderInputContext
   ): FileInputProps {
-    const {schemaType, ...restProps} = baseProps
-    const {client, formState} = context
-    const fieldMember = formState.members?.find(
-      (member) => member.kind === 'field' && member.name === fieldDefinition.name
-    ) as FieldMember<ObjectFormNode> | undefined
-    const field = fieldMember?.field
+    const {schemaType, value, ...restProps} = inputProps
+    const {client} = context
 
     return {
       ...restProps,
       assetSources,
       client,
-      collapsed: false,
       directUploads: true,
-      groups: field?.groups || [],
-      members: field?.members || [],
       observeAsset,
-      renderField: () => <>TODO</>,
-      renderInput: () => <>TODO</>,
-      renderItem: () => <>TODO</>,
       resolveUploader,
       schemaType: schemaType as FileSchemaType,
-      value: baseProps.value as Record<string, any>,
+      value: value as Record<string, any>,
     }
   }
 
   const result = renderObjectInput({
     fieldDefinition: fieldDefinition as Schema.TypeDefinition<'object'>,
     props,
-    render: (baseProps, context) => initialRender(transformProps(baseProps, context), context),
+    render: (inputProps, context) => initialRender(transformProps(inputProps, context), context),
   })
 
   function rerender(subsequentRender: TestRenderFileInputCallback) {

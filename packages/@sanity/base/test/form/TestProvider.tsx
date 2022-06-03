@@ -3,35 +3,25 @@
 import React, {useMemo} from 'react'
 import {SanityClient} from '@sanity/client'
 import {LayerProvider, studioTheme, ThemeProvider, ToastProvider} from '@sanity/ui'
-import {Schema, SchemaType} from '@sanity/types'
+import {Schema} from '@sanity/types'
 import {createAuthController} from '../../src/auth'
 import {Source, Workspace} from '../../src/config'
 import {createAuthStore, createUserStore} from '../../src/datastores'
-import {FieldProps, InputProps} from '../../src/form'
 import {SourceProvider, WorkspaceProvider} from '../../src/studio'
 import {createMockBifurClient} from '../mocks/mockBifur'
 import {
-  defaultResolveFieldComponent,
-  defaultResolveInputComponent,
-  defaultResolveItemComponent,
-} from '../../src/form/studio/inputResolver/inputResolver'
-
-function DummyPreview() {
-  return <div data-testid="dummy-preview">dummy-preview</div>
-}
-
-function resolveDummyPreviewComponent() {
-  return DummyPreview
-}
+  defaultRenderField,
+  defaultRenderInput,
+  defaultRenderItem,
+  defaultRenderPreview,
+} from '../../src/form/studio/defaults'
 
 export function TestProvider(props: {
   children?: React.ReactNode
   client: SanityClient
-  resolveFieldComponent?: (options: {schemaType: SchemaType}) => React.ComponentType<FieldProps>
-  resolveInputComponent?: (options: {schemaType: SchemaType}) => React.ComponentType<InputProps>
   schema: Schema
 }) {
-  const {children, client, resolveFieldComponent, resolveInputComponent, schema} = props
+  const {children, client, schema} = props
 
   const currentUser: Workspace['currentUser'] = useMemo(
     () => ({
@@ -44,14 +34,8 @@ export function TestProvider(props: {
     []
   )
 
-  const formBuilder: Workspace['formBuilder'] = useMemo(
+  const form: Workspace['form'] = useMemo(
     () => ({
-      resolveFieldComponent:
-        resolveFieldComponent || (({schemaType}) => defaultResolveFieldComponent(schemaType)),
-      resolveInputComponent:
-        resolveInputComponent || (({schemaType}) => defaultResolveInputComponent(schemaType)),
-      resolveItemComponent: ({schemaType}) => defaultResolveItemComponent(schemaType),
-      resolvePreviewComponent: resolveDummyPreviewComponent,
       file: {
         assetSources: [],
         directUploads: false,
@@ -60,8 +44,12 @@ export function TestProvider(props: {
         assetSources: [],
         directUploads: false,
       },
+      renderField: defaultRenderField,
+      renderInput: defaultRenderInput,
+      renderItem: defaultRenderItem,
+      renderPreview: defaultRenderPreview,
     }),
-    [resolveFieldComponent, resolveInputComponent]
+    []
   )
 
   const projectId = 'test'
@@ -116,7 +104,7 @@ export function TestProvider(props: {
       currentUser,
       dataset: 'test',
       document: documentConfig,
-      formBuilder,
+      form,
       name: 'test',
       projectId,
       schema,
@@ -124,17 +112,7 @@ export function TestProvider(props: {
       title: 'Test',
       tools,
     }),
-    [
-      __internal,
-      client,
-      currentUser,
-      documentConfig,
-      formBuilder,
-      projectId,
-      schema,
-      templates,
-      tools,
-    ]
+    [__internal, client, currentUser, documentConfig, form, projectId, schema, templates, tools]
   )
 
   const workspace: Workspace = useMemo(
@@ -145,7 +123,7 @@ export function TestProvider(props: {
       currentUser,
       dataset: 'test',
       document: documentConfig,
-      formBuilder,
+      form,
       name: 'test',
       projectId,
       schema,
@@ -155,7 +133,7 @@ export function TestProvider(props: {
       tools,
       unstable_sources: [source],
     }),
-    [__internal, client, currentUser, documentConfig, formBuilder, schema, source, templates, tools]
+    [__internal, client, currentUser, documentConfig, form, schema, source, templates, tools]
   )
 
   return (

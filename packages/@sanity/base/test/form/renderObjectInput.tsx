@@ -1,6 +1,12 @@
 import {Schema, ObjectSchemaType} from '@sanity/types'
 import React from 'react'
 import {FieldMember, ObjectFormNode, ObjectInputProps} from '../../src/form'
+import {
+  defaultRenderField,
+  defaultRenderInput,
+  defaultRenderItem,
+  defaultRenderPreview,
+} from '../../src/form/studio/defaults'
 import {renderInput, TestRenderInputContext, TestRenderInputProps} from './renderInput'
 import {TestRenderProps} from './types'
 
@@ -24,7 +30,7 @@ export function renderObjectInput(options: {
   const onExpandField = jest.fn()
   const onExpandFieldSet = jest.fn()
   const onOpenField = jest.fn()
-  const onSelectFieldGroup = jest.fn()
+  const onFieldGroupSelect = jest.fn()
 
   function transformProps(
     inputProps: TestRenderInputProps,
@@ -50,13 +56,14 @@ export function renderObjectInput(options: {
       onExpand,
       onExpandField,
       onExpandFieldSet,
+      onFieldGroupSelect,
       onFocusPath: onPathFocus,
       onOpenField,
-      onSelectFieldGroup,
       path,
-      renderField: () => <>TODO</>,
-      renderInput: () => <>TODO</>,
-      renderItem: () => <>TODO</>,
+      renderField: defaultRenderField,
+      renderInput: defaultRenderInput,
+      renderItem: defaultRenderItem,
+      renderPreview: defaultRenderPreview,
       schemaType: schemaType as ObjectSchemaType,
       value: value as Record<string, any>,
     }

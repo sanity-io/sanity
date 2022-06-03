@@ -3,7 +3,7 @@ import React from 'react'
 import {EMPTY} from 'rxjs'
 import {ImageInputProps} from '../../src/form/inputs/files/ImageInput'
 import {ImageUrlBuilder} from '../../src/form/inputs/files/types'
-import {FieldMember, ObjectFormNode, ObjectInputProps} from '../../src/form'
+import {ObjectInputProps} from '../../src/form'
 import {renderObjectInput} from './renderObjectInput'
 import {TestRenderProps} from './types'
 import {TestRenderInputContext} from './renderInput'
@@ -26,38 +26,29 @@ export function renderImageInput(options: {
   const resolveUploader = () => null
 
   function transformProps(
-    baseProps: ObjectInputProps,
+    inputProps: ObjectInputProps,
     context: TestRenderInputContext
   ): ImageInputProps {
-    const {schemaType, ...restProps} = baseProps
-    const {client, formState} = context
-    const fieldMember = formState.members?.find(
-      (member) => member.kind === 'field' && member.name === fieldDefinition.name
-    ) as FieldMember<ObjectFormNode> | undefined
-    const field = fieldMember?.field
+    const {schemaType, value, ...restProps} = inputProps
+    const {client} = context
 
     return {
       ...restProps,
       assetSources,
       client,
       collapsed: false,
-      groups: field?.groups || [],
       imageUrlBuilder,
-      members: field?.members || [],
       observeAsset,
-      renderField: () => <>TODO</>,
-      renderInput: () => <>TODO</>,
-      renderItem: () => <>TODO</>,
       resolveUploader,
       schemaType: schemaType as ImageSchemaType,
-      value: baseProps.value as Record<string, any>,
+      value: value as Record<string, any>,
     }
   }
 
   const result = renderObjectInput({
     fieldDefinition: fieldDefinition as Schema.TypeDefinition<'object'>,
     props,
-    render: (baseProps, context) => initialRender(transformProps(baseProps, context), context),
+    render: (inputProps, context) => initialRender(transformProps(inputProps, context), context),
   })
 
   function rerender(subsequentRender: TestRenderImageInputCallback) {
