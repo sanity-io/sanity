@@ -1,20 +1,23 @@
 import {FolderIcon, WarningOutlineIcon} from '@sanity/icons'
-import {SchemaType, SanityDocument} from '@sanity/types'
+import {SchemaType, SanityDocumentLike} from '@sanity/types'
 import {Box, Card, Container, Stack} from '@sanity/ui'
 import {assignWith} from 'lodash'
 import {combineLatest, Observable, of} from 'rxjs'
 import {map, startWith} from 'rxjs/operators'
 import React, {useEffect, useMemo, useState} from 'react'
+import {useSelect} from '@sanity/ui-workshop'
 import {useSchema} from '../../hooks'
+import {PreviewLayoutKey} from '../../components/previews'
 import {useDocumentPreviewStore} from '../../datastores'
 import {getDraftId, getPublishedId} from '../../util/draftUtils'
 import {DocumentPreviewStore} from '../documentPreviewStore'
 import {SanityDefaultPreview} from '../components/SanityDefaultPreview'
+import {WORKSHOP_PREVIEW_LAYOUT} from './constants'
 
 interface PreviewState {
   isLoading?: boolean
-  draft?: Partial<SanityDocument> | null
-  published?: Partial<SanityDocument> | null
+  draft?: SanityDocumentLike | null
+  published?: SanityDocumentLike | null
 }
 
 interface PreviewValue {
@@ -29,15 +32,21 @@ interface PreviewValue {
 }
 
 export default function PreviewStory() {
+  const layout = useSelect('Layout', WORKSHOP_PREVIEW_LAYOUT, 'default')
+
   return (
     <Box padding={4}>
       <Container width={0}>
         <Stack space={2}>
-          <Card border padding={2} radius={1}>
-            <DocumentPreview id="test" type="author" />
+          <Card border style={{lineHeight: 0}}>
+            <DocumentPreview id="test" layout={layout} type="author" />
           </Card>
-          <Card border padding={2} radius={1}>
-            <DocumentPreview id="8ab96211-501c-45e3-9eb0-4ed1da1b50df" type="author" />
+          <Card border style={{lineHeight: 0}}>
+            <DocumentPreview
+              id="8ab96211-501c-45e3-9eb0-4ed1da1b50df"
+              layout={layout}
+              type="author"
+            />
           </Card>
         </Stack>
       </Container>
@@ -45,8 +54,8 @@ export default function PreviewStory() {
   )
 }
 
-function DocumentPreview(props: {id: string; type: string}) {
-  const {id, type} = props
+function DocumentPreview(props: {id: string; layout?: PreviewLayoutKey; type: string}) {
+  const {id, layout, type} = props
   const previewState = useDocumentPreviewState({id, type})
   const schema = useSchema()
   const schemaType = schema.get(type)
@@ -54,10 +63,7 @@ function DocumentPreview(props: {id: string; type: string}) {
 
   const value = previewState
     ? getValueWithFallback({
-        value:
-          previewState.draft ||
-          previewState.published ||
-          ({_id: 'test', _type: 'test'} as SanityDocument),
+        value: previewState.draft || previewState.published || {_id: 'test', _type: 'test'},
         draft: previewState.draft,
         published: previewState.published,
       })
@@ -67,7 +73,7 @@ function DocumentPreview(props: {id: string; type: string}) {
     return <div>No preview value</div>
   }
 
-  return <SanityDefaultPreview icon={icon} value={value} />
+  return <SanityDefaultPreview icon={icon} layout={layout} value={value} />
 }
 
 /**
@@ -86,7 +92,7 @@ function getIconWithFallback(
   return icon || (schemaType && schemaType.icon) || defaultIcon || false
 }
 
-function getMissingDocumentFallback(item: Partial<SanityDocument>): PreviewValue {
+function getMissingDocumentFallback(item: SanityDocumentLike): PreviewValue {
   return {
     title: (
       <span style={{fontStyle: 'italic'}}>
@@ -107,10 +113,10 @@ function getValueWithFallback({
   draft,
   published,
 }: {
-  value: Partial<SanityDocument>
-  draft?: Partial<SanityDocument> | null
-  published?: Partial<SanityDocument> | null
-}): PreviewValue | Partial<SanityDocument> {
+  value: SanityDocumentLike
+  draft?: SanityDocumentLike | null
+  published?: SanityDocumentLike | null
+}): PreviewValue | SanityDocumentLike {
   const snapshot = draft || published
 
   if (!snapshot) {
