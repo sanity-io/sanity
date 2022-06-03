@@ -20,7 +20,6 @@ import {
   DocumentRebaseEvent,
 } from '../../../../../datastores/document/buffered-doc/types'
 
-const EMPTY_ARRAY: any[] = []
 interface FormViewProps {
   granted: boolean
   hidden: boolean
@@ -46,12 +45,11 @@ export function FormView(props: FormViewProps) {
     documentId,
     documentSchema,
     documentType,
-    focusPath,
     onChange: _handleChange,
     historyController,
     validation,
     ready,
-    changesOpen,
+    // changesOpen,
     formState,
     onFocus,
     onBlur,
@@ -170,29 +168,25 @@ export function FormView(props: FormViewProps) {
               </Box>
             ) : (
               <StudioFormBuilder
-                path={EMPTY_ARRAY}
-                level={0}
-                compareValue={undefined}
-                autoFocus
-                id="root"
                 __internal_patchChannel={patchChannel}
-                changesOpen={changesOpen}
+                compareValue={compareValue as any}
+                focusPath={formState.focusPath}
                 focused={formState.focused}
+                groups={formState.groups}
+                id="root"
+                members={formState.members}
+                onChange={handleChange}
+                onFieldGroupSelect={onSetActiveFieldGroup}
                 onPathBlur={onBlur}
                 onPathFocus={onFocus}
-                focusPath={formState.focusPath}
-                readOnly={isReadOnly}
-                members={formState.members}
-                groups={formState.groups}
-                schemaType={formState.schemaType}
+                onPathOpen={onPathOpen}
+                onSetFieldSetCollapsed={onSetCollapsedFieldSet}
+                onSetPathCollapsed={onSetCollapsedPath}
                 presence={presence}
+                readOnly={isReadOnly}
+                schemaType={formState.schemaType}
                 validation={validation}
                 value={formState.value}
-                onChange={handleChange}
-                onPathOpen={onPathOpen}
-                onSetPathCollapsed={onSetCollapsedPath}
-                onSetFieldSetCollapsed={onSetCollapsedFieldSet}
-                onFieldGroupSelect={onSetActiveFieldGroup}
               />
             )
           ) : (

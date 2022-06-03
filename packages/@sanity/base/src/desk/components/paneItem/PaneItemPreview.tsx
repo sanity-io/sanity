@@ -5,18 +5,18 @@ import {isNumber, isString} from 'lodash'
 import {Inline} from '@sanity/ui'
 import {PublishedStatus} from '../PublishedStatus'
 import {DraftStatus} from '../DraftStatus'
-import {PreviewLayoutKey} from '../../../components/previews'
+import {GeneralPreviewLayoutKey} from '../../../components/previews'
 import {DocumentPreviewPresence} from '../../../presence'
 import {DocumentPreviewStore, SanityDefaultPreview} from '../../../preview'
 import {isRecord} from '../../../util'
+import {DocumentPresence} from '../../../datastores'
 import {PaneItemPreviewState} from './types'
 import {getPreviewStateObservable, getValueWithFallback} from './helpers'
-import {DocumentPresence} from '../../../datastores'
 
 export interface PaneItemPreviewProps {
   documentPreviewStore: DocumentPreviewStore
   icon: React.ComponentType | false
-  layout: PreviewLayoutKey
+  layout: GeneralPreviewLayoutKey
   presence?: DocumentPresence[]
   schemaType: SchemaType
   value: SanityDocument

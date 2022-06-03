@@ -5,8 +5,6 @@ export interface DocumentListPaneItem extends SanityDocument {
   hasDraft: boolean
 }
 
-export type Layout = 'default' | 'detail' | 'card' | 'media'
-
 export type SortOrderBy = {field: string; direction: 'asc' | 'desc'; mapWith?: string}
 
 export type SortOrder = {

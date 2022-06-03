@@ -6,13 +6,14 @@ import {PreviewCard} from '../../../components/PreviewCard'
 import {useDocumentPreviewStore} from '../../../datastores'
 import {useDocumentPresence, useSchema} from '../../../hooks'
 import {SanityDefaultPreview} from '../../../preview'
+import {GeneralPreviewLayoutKey} from '../../../components/previews'
 import {MissingSchemaType} from '../MissingSchemaType'
 import {usePaneRouter} from '../paneRouter'
 import {PaneItemPreview} from './PaneItemPreview'
 
 interface PaneItemProps {
   id: string
-  layout?: 'inline' | 'block' | 'default' | 'card' | 'media' | 'detail'
+  layout?: GeneralPreviewLayoutKey
   icon?: React.ComponentType<any> | false
   pressed?: boolean
   selected?: boolean

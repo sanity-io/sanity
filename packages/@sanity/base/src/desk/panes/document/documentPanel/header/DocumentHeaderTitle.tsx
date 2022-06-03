@@ -1,9 +1,9 @@
 import React from 'react'
-import {SanityDocument} from '@sanity/types'
+import {PreviewValue, SanityDocument} from '@sanity/types'
 import {PreviewFields} from '../../../../../preview'
 import {useDocumentPane} from '../../useDocumentPane'
 
-function renderTitle({title}: Partial<SanityDocument>) {
+function renderTitle({title}: Partial<SanityDocument> | PreviewValue) {
   return title ? <>{title}</> : <em>Untitled</em>
 }
 
@@ -23,7 +23,7 @@ export function DocumentHeaderTitle() {
   }
 
   return (
-    <PreviewFields document={value} type={documentSchema}>
+    <PreviewFields value={value} schemaType={documentSchema}>
       {renderTitle}
     </PreviewFields>
   )

@@ -1,6 +1,7 @@
 // import {EditStateFor} from '../../'
 import {SchemaType, SanityDocument} from '@sanity/types'
 import {Subscribable} from 'rxjs'
+import {GeneralPreviewLayoutKey} from '../../components/previews'
 import {InitialValueTemplateItem} from '../../templates'
 import {
   DefaultDocumentNodeResolver,
@@ -190,7 +191,7 @@ export interface DocumentPaneNode extends BaseResolvedPaneNode<'document'> {
 }
 
 export interface DocumentListPaneNode extends BaseResolvedPaneNode<'documentList'> {
-  defaultLayout?: 'default' | 'detail' | 'card' | 'media'
+  defaultLayout?: GeneralPreviewLayoutKey
   displayOptions?: {showIcons?: boolean}
   initialValueTemplates?: InitialValueTemplateItem[]
   options: {
@@ -223,7 +224,7 @@ export interface PaneListItemDivider {
 }
 
 export interface ListPaneNode extends BaseResolvedPaneNode<'list'> {
-  defaultLayout?: 'inline' | 'block' | 'default' | 'card' | 'media' | 'detail'
+  defaultLayout?: GeneralPreviewLayoutKey
   displayOptions?: {showIcons?: boolean}
   items?: Array<PaneListItem | PaneListItemDivider>
   // TODO: mark as unstable or remove

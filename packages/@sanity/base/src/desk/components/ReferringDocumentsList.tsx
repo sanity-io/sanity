@@ -59,7 +59,7 @@ function DocumentPreviewLink(props: DocumentPreviewLinkProps) {
     <Card as="a" href={href} onClick={handleClick} padding={1} radius={2}>
       <Flex align="center">
         <Box flex={1}>
-          <SanityPreview layout="default" type={schemaType} value={document as any} />
+          <SanityPreview layout="default" schemaType={schemaType} value={document as any} />
         </Box>
         {document._hasDraft && (
           <Box marginLeft={3}>

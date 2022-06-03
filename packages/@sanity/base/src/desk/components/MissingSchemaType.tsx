@@ -1,10 +1,11 @@
 import {WarningOutlineIcon} from '@sanity/icons'
 import {SanityDocument} from '@sanity/types'
 import React from 'react'
+import {GeneralPreviewLayoutKey} from '../../components/previews'
 import {SanityDefaultPreview} from '../../preview'
 
 export interface MissingSchemaTypeProps {
-  layout?: 'inline' | 'block' | 'default' | 'card' | 'media'
+  layout?: GeneralPreviewLayoutKey
   value: SanityDocument
 }
 

@@ -17,7 +17,8 @@ import {SanityDocument} from '@sanity/types'
 import {Delay, PaneContent, usePane, usePaneLayout, PaneItem} from '../../components'
 import {useSchema} from '../../../hooks'
 import {getPublishedId} from '../../../util'
-import {DocumentListPaneItem, Layout} from './types'
+import {GeneralPreviewLayoutKey} from '../../../components/previews'
+import {DocumentListPaneItem} from './types'
 import {getDocumentKey} from './helpers'
 import {FULL_LIST_LIMIT} from './constants'
 
@@ -29,7 +30,7 @@ interface DocumentListPaneContentProps {
   isActive?: boolean
   isLoading: boolean
   items: DocumentListPaneItem[] | null
-  layout?: Layout
+  layout?: GeneralPreviewLayoutKey
   onListChange: (opts: VirtualListChangeOpts) => void
   onRetry?: (event: unknown) => void
   showIcons: boolean

@@ -1,6 +1,7 @@
 import React, {memo, useMemo, useRef} from 'react'
 import {Card, Code} from '@sanity/ui'
 import shallowEquals from 'shallow-equals'
+import {GeneralPreviewLayoutKey} from '../../../components/previews'
 import {Pane} from '../../components/pane'
 import {_DEBUG} from '../../constants'
 import {useUnique} from '../../../util'
@@ -16,7 +17,7 @@ import {
 } from './helpers'
 import {DocumentListPaneContent} from './DocumentListPaneContent'
 import {DocumentListPaneHeader} from './DocumentListPaneHeader'
-import {Layout, SortOrder} from './types'
+import {SortOrder} from './types'
 import {useDocumentList} from './useDocumentList'
 
 type DocumentListPaneProps = BaseDeskToolPaneProps<'documentList'>
@@ -52,7 +53,11 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
   const sourceName = pane.source
   const typeName = useMemo(() => getTypeNameFromSingleTypeFilter(filter, params), [filter, params])
   const showIcons = displayOptions?.showIcons !== false
-  const [layout, setLayout] = useDeskToolSetting<Layout>(typeName, 'layout', defaultLayout)
+  const [layout, setLayout] = useDeskToolSetting<GeneralPreviewLayoutKey>(
+    typeName,
+    'layout',
+    defaultLayout
+  )
   const [sortOrderRaw, setSortOrder] = useDeskToolSetting<SortOrder>(
     typeName,
     'sortOrder',

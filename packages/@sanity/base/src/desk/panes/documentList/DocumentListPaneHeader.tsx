@@ -1,17 +1,18 @@
 import {ArrowLeftIcon} from '@sanity/icons'
 import {Button} from '@sanity/ui'
 import React, {memo, useMemo} from 'react'
+import {GeneralPreviewLayoutKey} from '../../../components/previews'
+import {InitialValueTemplateItem} from '../../../templates'
 import {PaneMenuItem, PaneMenuItemGroup, DeskToolPaneActionHandler} from '../../types'
 import {BackLink, PaneHeader, PaneHeaderActions, useDeskTool} from '../../components'
-import {InitialValueTemplateItem} from '../../../templates'
-import {Layout, SortOrder} from './types'
+import {SortOrder} from './types'
 
 interface DocumentListPaneHeaderProps {
   index: number
   initialValueTemplates?: InitialValueTemplateItem[]
   menuItems?: PaneMenuItem[]
   menuItemGroups?: PaneMenuItemGroup[]
-  setLayout: (layout: Layout) => void
+  setLayout: (layout: GeneralPreviewLayoutKey) => void
   setSortOrder: (sortOrder: SortOrder) => void
   title: string
 }
@@ -30,7 +31,7 @@ export const DocumentListPaneHeader = memo(
 
     const actionHandlers = useMemo((): Record<string, DeskToolPaneActionHandler> => {
       return {
-        setLayout: ({layout: value}: {layout: Layout}) => {
+        setLayout: ({layout: value}: {layout: GeneralPreviewLayoutKey}) => {
           setLayout(value)
         },
         setSortOrder: (sort: SortOrder) => {
