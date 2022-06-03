@@ -22,7 +22,7 @@ export const BooleanInput = React.forwardRef(function BooleanInput(
   props: BooleanInputProps,
   ref: React.ForwardedRef<HTMLInputElement>
 ) {
-  const {id, value, schemaType, readOnly, onFocus, onChange} = props
+  const {id, value, schemaType, readOnly, onBlur, onFocus, onChange} = props
   const layout = schemaType.options?.layout || 'switch'
 
   const handleChange = useCallback(
@@ -47,6 +47,7 @@ export const BooleanInput = React.forwardRef(function BooleanInput(
               ref={ref}
               label={schemaType.title}
               readOnly={Boolean(readOnly)}
+              onBlur={onBlur}
               onChange={handleChange}
               onFocus={onFocus}
               indeterminate={indeterminate}
