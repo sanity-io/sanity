@@ -54,6 +54,7 @@ export type {
 } from '../desk'
 
 export * from '../desk/structureBuilder'
+export {ConfirmDeleteDialog} from '../desk/components/confirmDeleteDialog'
 
 export * from '../field'
 export * from '../field/diff/components/ChangeBreadcrumb'
