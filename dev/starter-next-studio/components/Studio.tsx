@@ -13,33 +13,27 @@ export default function StudioRoot({basePath}: {basePath: string}) {
   const config = useMemo(
     () =>
       createConfig({
+        basePath,
         plugins: [deskTool()],
-        project: {
-          name: 'Next.js Starter',
-          basePath,
+        name: 'Next.js Starter',
+        projectId: 'ppsg7ml5',
+        dataset: 'test',
+        schema: {
+          types: [
+            {
+              type: 'document',
+              name: 'post',
+              title: 'Post',
+              fields: [
+                {
+                  type: 'string',
+                  name: 'title',
+                  title: 'Title',
+                },
+              ],
+            },
+          ],
         },
-        sources: [
-          {
-            name: 'default',
-            projectId: 'ppsg7ml5',
-            dataset: 'test',
-            title: 'Default',
-            schemaTypes: [
-              {
-                type: 'document',
-                name: 'post',
-                title: 'Post',
-                fields: [
-                  {
-                    type: 'string',
-                    name: 'title',
-                    title: 'Title',
-                  },
-                ],
-              },
-            ],
-          },
-        ],
       }),
     [basePath]
   )

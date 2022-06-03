@@ -108,7 +108,7 @@ function LocationProvider({history, children}: Omit<LocationProviderProps, 'noRo
   )
 
   const [activeWorkspace, setActiveWorkspace] = useState(() =>
-    findActiveWorkspace(document.location)
+    typeof document === 'undefined' ? workspaces[0] : findActiveWorkspace(document.location)
   )
 
   const locationStore = useMemo(() => createLocationStore({history}), [history])
