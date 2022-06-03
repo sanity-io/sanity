@@ -46,7 +46,7 @@ export function SearchItem(props: SearchItemProps) {
     <PreviewCard data-as="a" as={LinkComponent} onClick={onClick} {...restProps} radius={2}>
       <SanityPreview
         layout="default"
-        type={schemaType}
+        schemaType={schemaType}
         status={
           <Inline space={3}>
             {documentPresence && documentPresence.length > 0 && (
