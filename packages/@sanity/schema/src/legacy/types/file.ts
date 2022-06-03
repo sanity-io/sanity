@@ -29,7 +29,7 @@ export const FileType = {
   extend(subTypeDef, extendMember) {
     const options = {...(subTypeDef.options || DEFAULT_OPTIONS)}
 
-    const fields = (subTypeDef.fields || []).concat([ASSET_FIELD]).filter(Boolean)
+    const fields = [ASSET_FIELD, ...(subTypeDef.fields || [])]
 
     const parsed = Object.assign(pick(FILE_CORE, OVERRIDABLE_FIELDS), subTypeDef, {
       type: FILE_CORE,
@@ -39,9 +39,10 @@ export const FileType = {
 
     lazyGetter(parsed, 'fields', () => {
       return fields.map((fieldDef) => {
-        const {name, ...type} = fieldDef
+        const {name, fieldset, ...type} = fieldDef
         return {
           name: name,
+          fieldset,
           type: extendMember(type),
         }
       })
