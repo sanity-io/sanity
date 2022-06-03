@@ -26,24 +26,36 @@ export default {
       name: 'fileWithFields',
       title: 'File with additional fields',
       type: 'file',
+      fieldsets: [
+        {
+          name: 'less-important',
+          title: 'Less important fields',
+          options: {collapsible: true, collapsed: true},
+        },
+      ],
       fields: [
         {
           title: 'Description',
           name: 'description',
           type: 'string',
-          options: {isHighlighted: true},
         },
         {
           title: 'Additional description',
           name: 'additionalDescription',
           type: 'string',
-          options: {isHighlighted: true},
           hidden: ({parent}) => !parent?.description,
         },
         {
-          title: 'Not so important',
-          name: 'notsoimportant',
+          title: 'Less important',
+          name: 'lessImportant',
           type: 'string',
+          fieldset: 'less-important',
+        },
+        {
+          title: 'Less important too',
+          name: 'lessImportant2',
+          type: 'string',
+          fieldset: 'less-important',
         },
       ],
     },
