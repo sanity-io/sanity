@@ -17,7 +17,6 @@ import {createProtoValue} from '../ArrayInput'
 import {InsertMenu} from '../InsertMenu'
 import {FIXME} from '../../../../types'
 import {EMPTY_ARRAY} from '../../../../utils/empty'
-import {FormNodePreview} from '../../../../FormNodePreview'
 import {ItemWithMissingType} from './ItemWithMissingType'
 import {ItemLayoutProps} from './ItemLayoutProps'
 
@@ -103,6 +102,7 @@ export const CellItem = React.forwardRef(function ItemCell(
     readOnly,
     presence,
     onRemove,
+    renderPreview,
     validation = EMPTY_ARRAY,
     ...rest
   } = props
@@ -161,13 +161,13 @@ export const CellItem = React.forwardRef(function ItemCell(
           onFocus={onFocus}
           __unstable_focusRing
         >
-          <FormNodePreview
-            layout="media"
-            value={value}
-            type={type}
-            withRadius={false}
-            withBorder={false}
-          />
+          {renderPreview({
+            layout: 'media',
+            schemaType: type,
+            value,
+            withBorder: false,
+            withRadius: false,
+          })}
         </PreviewCard>
       ) : (
         <MissingTypeBox flex={1}>

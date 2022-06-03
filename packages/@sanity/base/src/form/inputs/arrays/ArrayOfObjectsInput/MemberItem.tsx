@@ -7,6 +7,7 @@ import {
   RenderFieldCallback,
   RenderInputCallback,
   RenderArrayOfObjectsItemCallback,
+  RenderPreviewCallback,
 } from '../../../types'
 import {ArrayOfObjectsMember} from '../../../store/types/members'
 import {ObjectItemProps} from '../../../types/itemProps'
@@ -14,7 +15,6 @@ import {FormCallbacksProvider, useFormCallbacks} from '../../../studio/contexts/
 import {insert, PatchArg, PatchEvent, setIfMissing, unset} from '../../../patch'
 import {createProtoValue} from '../../../utils/createProtoValue'
 import {ensureKey} from '../../../utils/ensureKey'
-import {EMPTY_ARRAY} from '../../../utils/empty'
 
 /**
  * @alpha
@@ -24,6 +24,7 @@ export interface MemberItemProps {
   renderItem: RenderArrayOfObjectsItemCallback
   renderField: RenderFieldCallback
   renderInput: RenderInputCallback
+  renderPreview: RenderPreviewCallback
 }
 
 /**
@@ -31,7 +32,7 @@ export interface MemberItemProps {
  */
 export function MemberItem(props: MemberItemProps) {
   const focusRef = useRef<{focus: () => void}>()
-  const {member, renderItem, renderInput, renderField} = props
+  const {member, renderItem, renderInput, renderField, renderPreview} = props
 
   const {
     onPathBlur,
@@ -49,19 +50,13 @@ export function MemberItem(props: MemberItemProps) {
     }
   })
 
-  const handleBlur = useCallback(
-    (event: React.FocusEvent) => {
-      onPathBlur(member.item.path)
-    },
-    [member.item.path, onPathBlur]
-  )
+  const handleBlur = useCallback(() => {
+    onPathBlur(member.item.path)
+  }, [member.item.path, onPathBlur])
 
-  const handleFocus = useCallback(
-    (event: React.FocusEvent) => {
-      onPathFocus(member.item.path)
-    },
-    [member.item.path, onPathFocus]
-  )
+  const handleFocus = useCallback(() => {
+    onPathFocus(member.item.path)
+  }, [member.item.path, onPathFocus])
 
   const handleFocusChildPath = useCallback(
     (path: Path) => {
@@ -106,12 +101,9 @@ export function MemberItem(props: MemberItemProps) {
     },
     [onPathOpen, member.item.path]
   )
-  const handleOpenField = useCallback(
-    (fieldName: string) => {
-      onPathOpen(member.item.path)
-    },
-    [onPathOpen, member.item.path]
-  )
+  const handleOpenField = useCallback(() => {
+    onPathOpen(member.item.path)
+  }, [onPathOpen, member.item.path])
   const handleExpandFieldSet = useCallback(
     (fieldsetName: string) => {
       onSetFieldSetCollapsed(member.item.path.concat(fieldsetName), false)
@@ -142,69 +134,71 @@ export function MemberItem(props: MemberItemProps) {
 
   const inputProps = useMemo((): ObjectInputProps => {
     return {
-      level: member.item.level,
-      members: member.item.members,
-      value: member.item.value,
-      readOnly: member.item.readOnly,
-      onExpand: handleExpand,
-      onCollapse: handleCollapse,
-      onExpandFieldSet: handleExpandFieldSet,
-      onCollapseFieldSet: handleCollapseFieldSet,
-      onExpandField: handleExpandField,
-      onOpenField: handleOpenField,
-      onCloseField: handleCloseField,
-      onCollapseField: handleCollapseField,
-      onSelectFieldGroup: handleSelectFieldGroup,
-      schemaType: member.item.schemaType,
+      collapsed: member.collapsed,
       compareValue: member.item.compareValue,
-      focusRef: focusRef,
-      id: member.item.id,
-      onBlur: handleBlur,
-      onFocus: handleFocus,
-      onFocusPath: handleFocusChildPath,
-      path: member.item.path,
       focusPath: member.item.focusPath,
+      focusRef: focusRef,
       focused: member.item.focused,
       groups: member.item.groups,
+      id: member.item.id,
+      level: member.item.level,
+      members: member.item.members,
+      onBlur: handleBlur,
       onChange: handleChange,
-      collapsed: member.collapsed,
+      onCloseField: handleCloseField,
+      onCollapse: handleCollapse,
+      onCollapseField: handleCollapseField,
+      onCollapseFieldSet: handleCollapseFieldSet,
+      onExpand: handleExpand,
+      onExpandField: handleExpandField,
+      onExpandFieldSet: handleExpandFieldSet,
+      onFieldGroupSelect: handleSelectFieldGroup,
+      onFocus: handleFocus,
+      onFocusPath: handleFocusChildPath,
+      onOpenField: handleOpenField,
+      path: member.item.path,
+      presence: member.item.presence,
+      readOnly: member.item.readOnly,
       renderField,
       renderInput,
       renderItem,
+      renderPreview,
+      schemaType: member.item.schemaType,
       validation: member.item.validation,
-      presence: member.item.presence,
+      value: member.item.value,
     }
   }, [
-    member.item.level,
-    member.item.members,
-    member.item.value,
-    member.item.readOnly,
-    member.item.schemaType,
+    handleBlur,
+    handleChange,
+    handleCloseField,
+    handleCollapse,
+    handleCollapseField,
+    handleCollapseFieldSet,
+    handleExpand,
+    handleExpandField,
+    handleExpandFieldSet,
+    handleFocus,
+    handleFocusChildPath,
+    handleOpenField,
+    handleSelectFieldGroup,
+    member.collapsed,
     member.item.compareValue,
-    member.item.id,
-    member.item.path,
     member.item.focusPath,
     member.item.focused,
     member.item.groups,
-    member.item.validation,
+    member.item.id,
+    member.item.level,
+    member.item.members,
+    member.item.path,
     member.item.presence,
-    member.collapsed,
-    handleExpand,
-    handleCollapse,
-    handleExpandFieldSet,
-    handleCollapseFieldSet,
-    handleExpandField,
-    handleOpenField,
-    handleCloseField,
-    handleCollapseField,
-    handleSelectFieldGroup,
-    handleBlur,
-    handleFocus,
-    handleFocusChildPath,
-    handleChange,
+    member.item.readOnly,
+    member.item.schemaType,
+    member.item.validation,
+    member.item.value,
     renderField,
     renderInput,
     renderItem,
+    renderPreview,
   ])
 
   const renderedInput = useMemo(() => renderInput(inputProps), [inputProps, renderInput])

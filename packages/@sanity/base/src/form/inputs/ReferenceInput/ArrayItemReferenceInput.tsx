@@ -121,6 +121,7 @@ export function ArrayItemReferenceInput(props: Props) {
     onFocusPath,
     readOnly,
     focusRef,
+    renderPreview,
   } = props
 
   const forwardedRef = useForwardedRef(focusRef)
@@ -360,12 +361,17 @@ export function ArrayItemReferenceInput(props: Props) {
       return (
         <PreviewCard as="button" type="button" radius={2}>
           <Box paddingX={3} paddingY={1}>
-            <OptionPreview getReferenceInfo={getReferenceInfoMemo} id={id} type={type} />
+            <OptionPreview
+              getReferenceInfo={getReferenceInfoMemo}
+              id={id}
+              renderPreview={renderPreview}
+              type={type}
+            />
           </Box>
         </PreviewCard>
       )
     },
-    [type, getReferenceInfoMemo]
+    [type, getReferenceInfoMemo, renderPreview]
   )
 
   const OpenLink = useMemo(
@@ -513,6 +519,7 @@ export function ArrayItemReferenceInput(props: Props) {
                   <PreviewReferenceValue
                     value={value}
                     referenceInfo={loadableReferenceInfo}
+                    renderPreview={renderPreview}
                     type={type}
                   />
                 </StyledPreviewCard>

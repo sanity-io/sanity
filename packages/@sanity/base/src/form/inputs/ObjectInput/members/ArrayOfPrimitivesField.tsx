@@ -9,6 +9,7 @@ import {
   RenderArrayOfPrimitivesItemCallback,
   RenderFieldCallback,
   RenderInputCallback,
+  RenderPreviewCallback,
 } from '../../../types'
 import {FormCallbacksProvider, useFormCallbacks} from '../../../studio/contexts/FormCallbacks'
 import {useDidUpdate} from '../../../hooks/useDidUpdate'
@@ -60,6 +61,7 @@ export function ArrayOfPrimitivesField(props: {
   renderField: RenderFieldCallback
   renderInput: RenderInputCallback
   renderItem: RenderArrayOfPrimitivesItemCallback
+  renderPreview: RenderPreviewCallback
 }) {
   const {
     onPathBlur,
@@ -70,7 +72,7 @@ export function ArrayOfPrimitivesField(props: {
     onSetFieldSetCollapsed,
     onFieldGroupSelect,
   } = useFormCallbacks()
-  const {member, renderField, renderInput, renderItem} = props
+  const {member, renderField, renderInput, renderItem, renderPreview} = props
   const focusRef = useRef<{focus: () => void}>()
 
   useDidUpdate(member.field.focused, (hadFocus, hasFocus) => {
@@ -204,6 +206,7 @@ export function ArrayOfPrimitivesField(props: {
       onFocusIndex: handleFocusIndex,
       collapsible: member.collapsible,
       collapsed: member.collapsed,
+      renderPreview,
     }
   }, [
     member.field.level,
@@ -232,6 +235,7 @@ export function ArrayOfPrimitivesField(props: {
     renderInput,
     renderItem,
     handleFocusIndex,
+    renderPreview,
   ])
 
   const renderedInput = useMemo(() => renderInput(inputProps), [inputProps, renderInput])

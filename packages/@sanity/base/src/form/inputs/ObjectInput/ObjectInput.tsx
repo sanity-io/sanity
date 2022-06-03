@@ -16,11 +16,12 @@ export const ObjectInput = memo(function ObjectInput(props: ObjectInputProps) {
     renderInput,
     renderField,
     renderItem,
+    renderPreview,
     level,
     value,
     id,
     path,
-    onSelectFieldGroup,
+    onFieldGroupSelect,
   } = props
 
   const renderedUnknownFields = useMemo(() => {
@@ -46,7 +47,7 @@ export const ObjectInput = memo(function ObjectInput(props: ObjectInputProps) {
         <FieldGroupTabsWrapper $level={level} data-testid="field-groups">
           <FieldGroupTabs
             inputId={id}
-            onClick={onSelectFieldGroup}
+            onClick={onFieldGroupSelect}
             groups={groups}
             shouldAutoFocus={path.length === 0}
           />
@@ -62,6 +63,7 @@ export const ObjectInput = memo(function ObjectInput(props: ObjectInputProps) {
               renderInput={renderInput}
               renderField={renderField}
               renderItem={renderItem}
+              renderPreview={renderPreview}
             />
           )
         }
@@ -72,6 +74,7 @@ export const ObjectInput = memo(function ObjectInput(props: ObjectInputProps) {
             renderInput={renderInput}
             renderField={renderField}
             renderItem={renderItem}
+            renderPreview={renderPreview}
           />
         )
       })}

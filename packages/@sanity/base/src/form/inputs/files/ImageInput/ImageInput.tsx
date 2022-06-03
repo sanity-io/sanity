@@ -10,6 +10,7 @@ import {
   Image as BaseImage,
   ImageAsset,
   ImageSchemaType,
+  UploadState,
 } from '@sanity/types'
 import React, {ReactNode} from 'react'
 import deepCompare from 'react-fast-compare'
@@ -27,7 +28,7 @@ import {
 import {UploadPlaceholder} from '../common/UploadPlaceholder'
 import {WithReferencedAsset} from '../../../utils/WithReferencedAsset'
 import {FileTarget} from '../common/styles'
-import {ImageUrlBuilder, UploadState} from '../types'
+import {ImageUrlBuilder} from '../types'
 import {UploadProgress} from '../common/UploadProgress'
 import {handleSelectAssetFromSource} from '../common/assetSource'
 import {ActionsMenu} from '../common/ActionsMenu'
@@ -720,7 +721,7 @@ export class ImageInput extends React.PureComponent<ImageInputProps, ImageInputS
   }
 
   render() {
-    const {members, renderInput, renderField, renderItem} = this.props
+    const {members, renderInput, renderField, renderItem, renderPreview} = this.props
 
     const {selectedAssetSource} = this.state
 
@@ -747,6 +748,7 @@ export class ImageInput extends React.PureComponent<ImageInputProps, ImageInputS
                 renderInput={member.name === 'asset' ? this.renderAsset() : renderInput}
                 renderField={member.name === 'asset' ? passThrough : renderField}
                 renderItem={renderItem}
+                renderPreview={renderPreview}
               />
             )
           }
@@ -757,6 +759,7 @@ export class ImageInput extends React.PureComponent<ImageInputProps, ImageInputS
               renderInput={renderInput}
               renderField={renderField}
               renderItem={renderItem}
+              renderPreview={renderPreview}
             />
           )
         })}

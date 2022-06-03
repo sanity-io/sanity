@@ -1,7 +1,6 @@
 import {
   PortableTextEditor,
   PortableTextBlock,
-  Type,
   RenderAttributes,
   EditorSelection,
 } from '@sanity/portable-text-editor'
@@ -9,8 +8,13 @@ import {isKeySegment, Path, ObjectSchemaType} from '@sanity/types'
 import {FOCUS_TERMINATOR} from '@sanity/util/paths'
 import {Tooltip, Flex, ResponsivePaddingProps} from '@sanity/ui'
 import React, {useCallback, useMemo, useRef, useState} from 'react'
-import {PatchArg, PatchEvent} from '../../../patch'
-import {NodeValidation, PortableTextMarker, RenderCustomMarkers} from '../../../types'
+import {PatchArg} from '../../../patch'
+import {
+  NodeValidation,
+  PortableTextMarker,
+  RenderCustomMarkers,
+  RenderPreviewCallback,
+} from '../../../types'
 import {RenderBlockActionsCallback} from '../types'
 import {BlockActions} from '../BlockActions'
 import {ReviewChangesHighlightBlock, StyledChangeIndicatorWithProvidedFullPath} from '../_common'
@@ -40,6 +44,7 @@ interface BlockObjectProps {
   readOnly?: boolean
   renderBlockActions?: RenderBlockActionsCallback
   renderCustomMarkers?: RenderCustomMarkers
+  renderPreview: RenderPreviewCallback
   type: ObjectSchemaType
 }
 
@@ -60,6 +65,7 @@ export const BlockObject = React.forwardRef(function BlockObject(
     readOnly,
     renderBlockActions,
     renderCustomMarkers,
+    renderPreview,
     type,
   } = props
   const {Markers} = useFormBuilder().__internal.components
@@ -103,9 +109,10 @@ export const BlockObject = React.forwardRef(function BlockObject(
         readOnly={readOnly}
         onClickingDelete={handleDelete}
         onClickingEdit={handleEdit}
+        renderPreview={renderPreview}
       />
     )
-  }, [focused, type, block, readOnly, handleDelete, handleEdit])
+  }, [focused, type, block, readOnly, handleDelete, handleEdit, renderPreview])
 
   const tone = selected || focused ? 'primary' : 'default'
 

@@ -6,7 +6,6 @@ import {resolveTypeName} from '@sanity/util/content'
 import {FormFieldSet} from '../../../components/formField'
 import {set, unset} from '../../../patch'
 import {ArrayOfPrimitivesInputProps, FIXME} from '../../../types'
-import {FormNodePreview} from '../../../FormNodePreview'
 import {ItemWithMissingType} from '../ArrayOfObjectsInput/item/ItemWithMissingType'
 import {Item, List} from '../common/list'
 import {useConditionalReadOnly} from '../../../../conditional-property/conditionalReadOnly'
@@ -96,7 +95,17 @@ export class OptionsArrayInput extends React.PureComponent<OptionsArrayInputProp
   }
 
   render() {
-    const {schemaType, validation, value, level, presence, onFocus, onBlur, readOnly} = this.props
+    const {
+      schemaType,
+      validation,
+      value,
+      level,
+      presence,
+      onFocus,
+      onBlur,
+      readOnly,
+      renderPreview,
+    } = this.props
     const options: any[] = schemaType.options?.list || []
 
     // note: direction was never documented and makes more sense to use "grid" for it too
@@ -128,11 +137,11 @@ export class OptionsArrayInput extends React.PureComponent<OptionsArrayInputProp
                     </Box>
                   ) : (
                     <Box marginLeft={2}>
-                      <FormNodePreview
-                        layout="grid"
-                        type={optionType}
-                        value={resolveValueWithLegacyOptionsSupport(option)}
-                      />
+                      {renderPreview({
+                        layout: 'media',
+                        schemaType: optionType,
+                        value: resolveValueWithLegacyOptionsSupport(option),
+                      })}
                     </Box>
                   ))}
 

@@ -9,7 +9,6 @@ import {
 } from '@sanity/types'
 import * as React from 'react'
 import {FormPatch, PatchEvent} from '../patch'
-
 import {
   ArrayOfObjectsFormNode,
   ArrayOfPrimitivesFormNode,
@@ -23,6 +22,7 @@ import {
   RenderArrayOfPrimitivesItemCallback,
   RenderFieldCallback,
   RenderInputCallback,
+  RenderPreviewCallback,
 } from './renderCallback'
 import {InsertItemEvent, MoveItemEvent} from './event'
 import {FormFieldGroup} from './fieldGroups'
@@ -54,7 +54,7 @@ export interface ObjectInputProps<
   onCollapseFieldSet: (fieldSetName: string) => void
   onExpandFieldSet: (fieldSetName: string) => void
 
-  onSelectFieldGroup: (groupName: string) => void
+  onFieldGroupSelect: (groupName: string) => void
 
   onFocusPath: (path: Path) => void
 
@@ -65,6 +65,7 @@ export interface ObjectInputProps<
   renderInput: RenderInputCallback
   renderField: RenderFieldCallback
   renderItem: RenderArrayOfObjectsItemCallback
+  renderPreview: RenderPreviewCallback
 }
 
 export interface ArrayOfObjectsInputProps<
@@ -96,9 +97,10 @@ export interface ArrayOfObjectsInputProps<
   onOpenItem: (itemKey: string) => void
   onCloseItem: (itemKey: string) => void
 
+  renderField: RenderFieldCallback
   renderInput: RenderInputCallback
   renderItem: RenderArrayOfObjectsItemCallback
-  renderField: RenderFieldCallback
+  renderPreview: RenderPreviewCallback
 }
 
 export type ArrayOfPrimitivesElementType<T extends any[]> = T extends (infer K)[] ? K : unknown
@@ -123,6 +125,7 @@ export interface ArrayOfPrimitivesInputProps<
 
   renderInput: RenderInputCallback
   renderItem: RenderArrayOfPrimitivesItemCallback
+  renderPreview: RenderPreviewCallback
 }
 
 export interface StringInputProps<S extends StringSchemaType = StringSchemaType>

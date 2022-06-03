@@ -5,8 +5,9 @@ import {AccessDeniedIcon, EditIcon, HelpCircleIcon, PublishIcon} from '@sanity/i
 import {TextWithTone} from '../../../components/TextWithTone'
 import {DocumentPreviewPresence} from '../../../presence'
 import {useDocumentPresence} from '../../../hooks'
-import {FormNodePreview} from '../../FormNodePreview'
 import {DocumentAvailability} from '../../../preview'
+import {RenderPreviewCallback} from '../../types'
+import {PreviewLayoutKey} from '../../../components/previews'
 import {DocumentPreview} from './types'
 import {TimeAgo} from './utils/TimeAgo'
 
@@ -43,10 +44,11 @@ export function ReferencePreview(props: {
   id: string
   preview: {draft: DocumentPreview | undefined; published: DocumentPreview | undefined}
   refType: ObjectSchemaType
-  layout: string
+  layout: PreviewLayoutKey
+  renderPreview: RenderPreviewCallback
   showTypeLabel: boolean
 }) {
-  const {availability, id, layout, preview, refType, showTypeLabel} = props
+  const {availability, id, layout, preview, refType, renderPreview, showTypeLabel} = props
 
   const theme = useRootTheme()
   const documentPresence = useDocumentPresence(id)
@@ -76,7 +78,11 @@ export function ReferencePreview(props: {
     <Flex align="center">
       {availability.available ? (
         <Box flex={1}>
-          <FormNodePreview type={refType} value={previewStub} layout={layout} />
+          {renderPreview({
+            layout,
+            schemaType: refType,
+            value: previewStub,
+          })}
         </Box>
       ) : (
         <Box flex={1}>

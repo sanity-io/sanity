@@ -1,17 +1,18 @@
 import React from 'react'
 import {Reference, ReferenceSchemaType} from '@sanity/types'
 import {Box, Flex, Inline, Label, Stack, TextSkeleton} from '@sanity/ui'
-import {FormNodePreview} from '../../FormNodePreview'
+import {RenderPreviewCallback} from '../../types'
 import {ReferencePreview} from './ReferencePreview'
 import {Loadable} from './useReferenceInfo'
 import {ReferenceInfo} from './types'
 
 export function PreviewReferenceValue(props: {
   referenceInfo: Loadable<ReferenceInfo>
+  renderPreview: RenderPreviewCallback
   type: ReferenceSchemaType
   value: Reference
 }) {
-  const {referenceInfo, type, value} = props
+  const {referenceInfo, renderPreview, type, value} = props
 
   if (referenceInfo.isLoading || referenceInfo.error) {
     return (
@@ -36,7 +37,11 @@ export function PreviewReferenceValue(props: {
       return (
         <Flex align="center">
           <Box flex={1}>
-            <FormNodePreview type={refType} value={stub} layout="default" />
+            {renderPreview({
+              layout: 'default',
+              schemaType: refType,
+              value: stub,
+            })}
           </Box>
           <Box>
             <Inline space={4}>
@@ -71,6 +76,7 @@ export function PreviewReferenceValue(props: {
       layout="default"
       preview={referenceInfo.result.preview}
       refType={refType}
+      renderPreview={renderPreview}
       showTypeLabel={showTypeLabel}
     />
   )

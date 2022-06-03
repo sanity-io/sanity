@@ -5,6 +5,7 @@ import {
   RenderInputCallback,
   RenderArrayOfObjectsItemCallback,
   FIXME,
+  RenderPreviewCallback,
 } from '../../types'
 import {ArrayOfObjectsField} from './members/ArrayOfObjectsField'
 import {PrimitiveField} from './members/PrimitiveField'
@@ -21,10 +22,11 @@ export interface MemberFieldProps {
   renderField: RenderFieldCallback
   renderInput: RenderInputCallback
   renderItem: RenderArrayOfObjectsItemCallback
+  renderPreview: RenderPreviewCallback
 }
 
 export const MemberField = memo(function MemberField(props: MemberFieldProps) {
-  const {member, renderField, renderInput, renderItem} = props
+  const {member, renderField, renderInput, renderItem, renderPreview} = props
 
   if (isMemberObject(member)) {
     // this field is of an object type
@@ -34,6 +36,7 @@ export const MemberField = memo(function MemberField(props: MemberFieldProps) {
         renderField={renderField}
         renderInput={renderInput}
         renderItem={renderItem}
+        renderPreview={renderPreview}
       />
     )
   }
@@ -46,6 +49,7 @@ export const MemberField = memo(function MemberField(props: MemberFieldProps) {
         renderInput={renderInput}
         // todo: these have different signatures, so renderItem for a primitive input should not be the same as renderItem in array of object inputs
         renderItem={renderItem as FIXME}
+        renderPreview={renderPreview}
       />
     )
   }
@@ -57,6 +61,7 @@ export const MemberField = memo(function MemberField(props: MemberFieldProps) {
         renderField={renderField}
         renderInput={renderInput}
         renderItem={renderItem}
+        renderPreview={renderPreview}
       />
     )
   }

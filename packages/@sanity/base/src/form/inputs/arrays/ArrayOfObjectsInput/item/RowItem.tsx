@@ -23,7 +23,6 @@ import {randomKey} from '../../common/randomKey'
 import {createProtoValue} from '../ArrayInput'
 import {InsertMenu} from '../InsertMenu'
 import {EMPTY_ARRAY} from '../../../../utils/empty'
-import {FormNodePreview} from '../../../../FormNodePreview'
 import {ItemWithMissingType} from './ItemWithMissingType'
 import {ItemLayoutProps} from './ItemLayoutProps'
 import {RowWrapper} from './components/RowWrapper'
@@ -48,6 +47,7 @@ export const RowItem = React.forwardRef(function RegularItem(
     onInsert,
     insertableTypes,
     onRemove,
+    renderPreview,
     validation = EMPTY_ARRAY,
     ...rest
   } = props
@@ -108,15 +108,14 @@ export const RowItem = React.forwardRef(function RegularItem(
             onFocus={onFocus}
             __unstable_focusRing
           >
-            <FormNodePreview
-              layout={
+            {renderPreview({
+              layout:
                 type.options && 'layout' in type.options && type.options?.layout === 'grid'
                   ? 'media'
-                  : 'default'
-              }
-              value={value}
-              type={type}
-            />
+                  : 'default',
+              schemaType: type,
+              value,
+            })}
           </Card>
         ) : (
           <Box flex={1}>

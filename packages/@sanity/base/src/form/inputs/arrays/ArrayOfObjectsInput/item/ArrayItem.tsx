@@ -8,27 +8,28 @@ import {
 import {ArrayMember} from '../types'
 import {useScrollIntoViewOnFocusWithin} from '../../../../hooks/useScrollIntoViewOnFocusWithin'
 import {useDidUpdate} from '../../../../hooks/useDidUpdate'
-import {FIXME} from '../../../../types'
+import {FIXME, RenderPreviewCallback} from '../../../../types'
 import {useChildPresence} from '../../../../studio/contexts/Presence'
 import {RowItem} from './RowItem'
 import {CellItem} from './CellItem'
 
 export interface ArrayItemProps {
+  children: React.ReactNode
+  focused?: boolean
   index: number
+  insertableTypes: SchemaType[]
+  onClick: () => void
+  onFocus: (event: React.FocusEvent) => void
   onInsert: (event: {items: unknown[]; position: 'before' | 'after'}) => void
   onRemove: (value: ArrayMember) => void
-  onFocus: (event: React.FocusEvent) => void
-  onClick: () => void
-  value: ArrayMember
-  schemaType: SchemaType
-  focused?: boolean
   open: boolean
   path: Path
-  insertableTypes: SchemaType[]
-  readOnly?: boolean
   presence: FIXME[]
+  readOnly?: boolean
+  renderPreview: RenderPreviewCallback
+  schemaType: SchemaType
   validation: FIXME[]
-  children: React.ReactNode
+  value: ArrayMember
 }
 
 // This renders the item / preview of unexpanded array items
@@ -49,6 +50,7 @@ export const ArrayItem = memo(function ArrayItem(props: ArrayItemProps) {
     onInsert,
     onFocus,
     children,
+    renderPreview,
   } = props
 
   const innerElementRef = useRef<HTMLDivElement | null>(null)
@@ -91,6 +93,7 @@ export const ArrayItem = memo(function ArrayItem(props: ArrayItemProps) {
       onClick={onClick}
       onRemove={handleRemove}
       ref={innerElementRef}
+      renderPreview={renderPreview}
     />
   )
 

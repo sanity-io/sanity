@@ -8,6 +8,7 @@ import {
   RenderArrayOfObjectsItemCallback,
   RenderFieldCallback,
   RenderInputCallback,
+  RenderPreviewCallback,
 } from './types'
 import {MemberItem} from './inputs/arrays/ArrayOfObjectsInput/MemberItem'
 import {isArrayInputProps, isObjectInputProps} from './utils/asserters'
@@ -105,6 +106,10 @@ const FormInputInner = memo(function FormInputInner(
     [absolutePath, destinationRenderField, props.includeField]
   )
 
+  const renderPreview: RenderPreviewCallback = useCallback(() => {
+    return null // TODO
+  }, [])
+
   if (isArrayInputProps(props)) {
     const childPath = trimLeft(props.path, absolutePath)
 
@@ -129,6 +134,7 @@ const FormInputInner = memo(function FormInputInner(
         renderInput={renderInput}
         renderField={renderField}
         renderItem={pass}
+        renderPreview={renderPreview}
       />
     )
   }
@@ -155,6 +161,7 @@ const FormInputInner = memo(function FormInputInner(
         renderInput={renderInput}
         renderField={renderField}
         renderItem={pass}
+        renderPreview={renderPreview}
       />
     )
   }

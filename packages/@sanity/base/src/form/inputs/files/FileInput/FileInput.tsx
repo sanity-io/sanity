@@ -2,20 +2,20 @@
 
 import React, {ReactNode} from 'react'
 import {Observable, Subscription} from 'rxjs'
-import {get, uniqueId} from 'lodash'
+import {get} from 'lodash'
 import {
   AssetFromSource,
   AssetSource,
   File as BaseFile,
   FileAsset,
   FileSchemaType,
+  UploadState,
 } from '@sanity/types'
 import {ImageIcon, SearchIcon} from '@sanity/icons'
 import {
   Box,
   Button,
   Card,
-  Dialog,
   Menu,
   MenuButton,
   MenuItem,
@@ -26,7 +26,6 @@ import {SanityClient} from '@sanity/client'
 import {WithReferencedAsset} from '../../../utils/WithReferencedAsset'
 import {Uploader, UploaderResolver, UploadOptions} from '../../../studio/uploads/types'
 import {FileInfo, FileTarget} from '../common/styles'
-import {UploadState} from '../types'
 import {UploadProgress} from '../common/UploadProgress'
 import {handleSelectAssetFromSource} from '../common/assetSource'
 import {ActionsMenu} from '../common/ActionsMenu'
@@ -579,7 +578,7 @@ export class FileInput extends React.PureComponent<FileInputProps, FileInputStat
   }
 
   render() {
-    const {members, renderItem, renderInput, renderField} = this.props
+    const {members, renderItem, renderInput, renderField, renderPreview} = this.props
     const {selectedAssetSource} = this.state
 
     return (
@@ -599,6 +598,7 @@ export class FileInput extends React.PureComponent<FileInputProps, FileInputStat
                 renderInput={member.name === 'asset' ? this.renderAsset() : renderInput}
                 renderField={member.name === 'asset' ? passThrough : renderField}
                 renderItem={renderItem}
+                renderPreview={renderPreview}
               />
             )
           }
@@ -609,6 +609,7 @@ export class FileInput extends React.PureComponent<FileInputProps, FileInputStat
               renderInput={renderInput}
               renderField={renderField}
               renderItem={renderItem}
+              renderPreview={renderPreview}
             />
           )
         })}

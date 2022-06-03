@@ -19,6 +19,7 @@ import {
 } from '../../types'
 import * as is from '../../utils/is'
 import {FormField, FormFieldSet} from '../../components/formField'
+import {PreviewProps} from '../../../components/previews'
 import {SanityPreview} from '../../../preview'
 import {resolveReferenceInput} from './resolveReferenceInput'
 import {resolveArrayInput} from './resolveArrayInput'
@@ -173,8 +174,10 @@ export function defaultResolveItemComponent(
 }
 
 // TODO: add PreviewProps interface
-export function defaultResolvePreviewComponent(schemaType: SchemaType): React.ComponentType<any> {
+export function defaultResolvePreviewComponent(
+  schemaType: SchemaType
+): React.ComponentType<PreviewProps> {
   if (schemaType.components?.preview) return schemaType.components.preview
 
-  return SanityPreview
+  return SanityPreview as any // TODO
 }

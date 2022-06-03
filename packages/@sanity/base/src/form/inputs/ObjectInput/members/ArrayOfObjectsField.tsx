@@ -9,6 +9,7 @@ import {
   RenderArrayOfObjectsItemCallback,
   RenderFieldCallback,
   RenderInputCallback,
+  RenderPreviewCallback,
 } from '../../../types'
 import {FormCallbacksProvider, useFormCallbacks} from '../../../studio/contexts/FormCallbacks'
 import {useDidUpdate} from '../../../hooks/useDidUpdate'
@@ -27,6 +28,7 @@ export function ArrayOfObjectsField(props: {
   renderField: RenderFieldCallback
   renderInput: RenderInputCallback
   renderItem: RenderArrayOfObjectsItemCallback
+  renderPreview: RenderPreviewCallback
 }) {
   const {
     onPathBlur,
@@ -38,7 +40,7 @@ export function ArrayOfObjectsField(props: {
     onFieldGroupSelect,
   } = useFormCallbacks()
 
-  const {member, renderField, renderInput, renderItem} = props
+  const {member, renderField, renderInput, renderItem, renderPreview} = props
   const focusRef = useRef<{focus: () => void}>()
 
   useDidUpdate(member.field.focused, (hadFocus, hasFocus) => {
@@ -47,19 +49,13 @@ export function ArrayOfObjectsField(props: {
     }
   })
 
-  const handleBlur = useCallback(
-    (event: React.FocusEvent) => {
-      onPathBlur(member.field.path)
-    },
-    [member.field.path, onPathBlur]
-  )
+  const handleBlur = useCallback(() => {
+    onPathBlur(member.field.path)
+  }, [member.field.path, onPathBlur])
 
-  const handleFocus = useCallback(
-    (event: React.FocusEvent) => {
-      onPathFocus(member.field.path)
-    },
-    [member.field.path, onPathFocus]
-  )
+  const handleFocus = useCallback(() => {
+    onPathFocus(member.field.path)
+  }, [member.field.path, onPathFocus])
 
   const handleChange = useCallback(
     (event: PatchEvent | PatchArg) => {
@@ -222,6 +218,7 @@ export function ArrayOfObjectsField(props: {
       renderInput,
       renderField,
       renderItem,
+      renderPreview,
     }
   }, [
     member.field.level,
@@ -254,6 +251,7 @@ export function ArrayOfObjectsField(props: {
     renderInput,
     renderField,
     renderItem,
+    renderPreview,
   ])
 
   const renderedInput = useMemo(() => renderInput(inputProps), [inputProps, renderInput])

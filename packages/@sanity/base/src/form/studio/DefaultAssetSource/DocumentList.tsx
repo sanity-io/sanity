@@ -69,7 +69,7 @@ const DocumentLink = ({document}: {document: SanityDocument}) => {
         <SanityPreview
           layout="default"
           value={{_type: 'reference', _ref: document._id}}
-          type={schema.get(document._type)!}
+          schemaType={schema.get(document._type)!}
         />
       </Flex>
     </Card>

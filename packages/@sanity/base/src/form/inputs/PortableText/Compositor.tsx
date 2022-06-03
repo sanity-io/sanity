@@ -79,6 +79,7 @@ export function Compositor(props: InputProps) {
     readOnly,
     onFocus,
     onFocusPath,
+    renderPreview,
     ...restProps
   } = props
 
@@ -225,6 +226,7 @@ export function Compositor(props: InputProps) {
           ref={useBlockObjectElementRef ? blockObjectElementRef : undefined}
           renderBlockActions={hasContent ? renderBlockActions : undefined}
           renderCustomMarkers={hasContent ? renderCustomMarkers : undefined}
+          renderPreview={renderPreview}
           type={blockType}
         />
       )
@@ -236,11 +238,12 @@ export function Compositor(props: InputProps) {
       isFullscreen,
       markers,
       onChange,
-      onFocus,
+      onFocusPath,
       ptFeatures.types.block.name,
       readOnly,
       renderBlockActions,
       renderCustomMarkers,
+      renderPreview,
       validation,
     ]
   )
@@ -275,6 +278,7 @@ export function Compositor(props: InputProps) {
           scrollElement={scrollElement}
           type={childType}
           value={child}
+          renderPreview={renderPreview}
         />
       )
     },
@@ -282,10 +286,11 @@ export function Compositor(props: InputProps) {
       editObjectKey,
       markers,
       validation,
-      onFocus,
+      onFocusPath,
       ptFeatures.types.span.name,
       readOnly,
       renderCustomMarkers,
+      renderPreview,
       scrollElement,
     ]
   )
@@ -320,7 +325,7 @@ export function Compositor(props: InputProps) {
         </Annotation>
       )
     },
-    [markers, onFocus, readOnly, renderCustomMarkers, scrollElement, validation]
+    [markers, onFocusPath, readOnly, renderCustomMarkers, scrollElement, validation]
   )
 
   const [portalElement, setPortalElement] = useState<HTMLDivElement | null>(null)
@@ -354,7 +359,7 @@ export function Compositor(props: InputProps) {
       isActive,
       isFullscreen,
       onCopy,
-      onFocus,
+      onFocusPath,
       onPaste,
       readOnly,
       renderAnnotation,

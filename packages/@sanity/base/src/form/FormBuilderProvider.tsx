@@ -1,6 +1,6 @@
 /* eslint-disable camelcase */
 
-import {AssetSource, ObjectSchemaType, Path, SchemaType, ValidationMarker} from '@sanity/types'
+import {AssetSource, ObjectSchemaType, Path, ValidationMarker} from '@sanity/types'
 import React, {useEffect, useMemo, useRef} from 'react'
 import {Source} from '../config'
 import {FormFieldPresence} from '../presence'
@@ -9,11 +9,11 @@ import {
   FIXME,
   FormBuilderFilterFieldFn,
   FormFieldGroup,
-  InputProps,
   ObjectMember,
-  RenderArrayOfObjectsItemCallback,
   RenderFieldCallback,
   RenderInputCallback,
+  RenderItemCallback,
+  RenderPreviewCallback,
 } from './types'
 import {DefaultArrayInputFunctions} from './inputs/arrays/common/ArrayFunctions'
 import {DefaultMarkers} from './inputs/PortableText/_legacyDefaultParts/Markers'
@@ -24,42 +24,38 @@ import {PresenceProvider} from './studio/contexts/Presence'
 import {ValidationProvider} from './studio/contexts/Validation'
 import {defaultFileAssetSources, defaultImageAssetSources} from './defaults'
 
-type SourceFormBuilder = Source['formBuilder']
-
-export interface FormBuilderProviderProps extends SourceFormBuilder {
+export interface FormBuilderProviderProps {
   /**
    * @internal
    */
   __internal_patchChannel?: PatchChannel // eslint-disable-line camelcase
-  /**
-   * @internal
-   */
-  __internal_resolveInputComponent: (options: {
-    schemaType: SchemaType
-  }) => React.ComponentType<InputProps>
   autoFocus?: boolean
   changesOpen?: boolean
   children?: React.ReactNode
   compareValue: {[field in string]: unknown} | undefined
+  file: Source['form']['file']
   filterField?: FormBuilderFilterFieldFn
   focusPath: Path
   focused?: boolean
   groups: FormFieldGroup[]
   id: string
+  image: Source['form']['image']
   members: ObjectMember[]
   onChange: (event: PatchEvent) => void
+  onFieldGroupSelect: (path: Path, groupName: string) => void
   onPathBlur: (path: Path) => void
   onPathFocus: (path: Path) => void
   onPathOpen: (path: Path) => void
-  onFieldGroupSelect: (path: Path, groupName: string) => void
   onSetFieldSetCollapsed: (path: Path, collapsed: boolean) => void
   onSetPathCollapsed: (path: Path, collapsed: boolean) => void
   presence: FormFieldPresence[]
   readOnly?: boolean
   renderField: RenderFieldCallback
   renderInput: RenderInputCallback
-  renderItem: RenderArrayOfObjectsItemCallback
+  renderItem: RenderItemCallback
+  renderPreview: RenderPreviewCallback
   schemaType: ObjectSchemaType
+  unstable?: Source['form']['unstable']
   validation: ValidationMarker[]
   value: {[field in string]: unknown} | undefined
 }
@@ -78,7 +74,6 @@ const missingPatchChannel: PatchChannel = {
 export function FormBuilderProvider(props: FormBuilderProviderProps) {
   const {
     __internal_patchChannel: patchChannel = missingPatchChannel,
-    __internal_resolveInputComponent: resolveInputComponent,
     autoFocus,
     changesOpen,
     children,
@@ -103,7 +98,7 @@ export function FormBuilderProvider(props: FormBuilderProviderProps) {
     renderField,
     renderInput,
     renderItem,
-    resolvePreviewComponent,
+    renderPreview,
     schemaType,
     unstable,
     validation,
@@ -139,19 +134,8 @@ export function FormBuilderProvider(props: FormBuilderProviderProps) {
       },
       getDocument: () => documentValueRef.current as FIXME,
       onChange,
-      resolveInputComponent,
-      resolvePreviewComponent: (_schemaType) => resolvePreviewComponent({schemaType: _schemaType}),
     }),
-    [
-      file,
-      filterField,
-      image,
-      onChange,
-      patchChannel,
-      resolveInputComponent,
-      resolvePreviewComponent,
-      unstable,
-    ]
+    [file, filterField, image, onChange, patchChannel, unstable]
   )
 
   const formBuilder: FormBuilderContextValue = useMemo(
@@ -169,6 +153,7 @@ export function FormBuilderProvider(props: FormBuilderProviderProps) {
       renderField,
       renderInput,
       renderItem,
+      renderPreview,
       schemaType,
       value: documentValue,
     }),
@@ -187,6 +172,7 @@ export function FormBuilderProvider(props: FormBuilderProviderProps) {
       renderField,
       renderInput,
       renderItem,
+      renderPreview,
       schemaType,
     ]
   )

@@ -1,29 +1,32 @@
+/* eslint-disable camelcase */
+/* eslint-disable react/jsx-handler-names */
+
 import {ObjectSchemaType, Path, ValidationMarker} from '@sanity/types'
-import React, {ComponentType, useCallback, useMemo, useRef} from 'react'
+import React, {useCallback, useRef} from 'react'
 import {FormFieldPresence} from '../../presence'
 import {FormPatch, PatchChannel, PatchEvent} from '../patch'
-import {ObjectMember} from '../store/types/members'
 import {ObjectFormNode} from '../store/types/nodes'
 import {ObjectInputProps} from '../types'
-import {useFormBuilder} from '../useFormBuilder'
 import {EMPTY_ARRAY} from '../utils/empty'
+import {useFormBuilder} from '../useFormBuilder'
 import {StudioFormBuilderProvider} from './StudioFormBuilderProvider'
 import {useFormCallbacks} from './contexts/FormCallbacks'
 
 /**
  * @alpha
  */
-export interface StudioFormBuilderProps extends Omit<ObjectFormNode, 'presence' | 'validation'> {
+export interface StudioFormBuilderProps
+  extends Omit<ObjectFormNode, 'level' | 'path' | 'presence' | 'validation'> {
   /**
    * @internal Considered internal – do not use.
    */
-  __internal_patchChannel: PatchChannel // eslint-disable-line camelcase
+  __internal_patchChannel: PatchChannel
+
   autoFocus?: boolean
-  changesOpen: boolean
+  changesOpen?: boolean
   focusPath: Path
   focused: boolean | undefined
   id: string
-  members: ObjectMember[]
   onChange: (changeEvent: PatchEvent) => void
   onPathBlur: (path: Path) => void
   onPathFocus: (path: Path) => void
@@ -82,8 +85,8 @@ export function StudioFormBuilder(props: StudioFormBuilderProps) {
       onPathFocus={onPathFocus}
       onPathOpen={onPathOpen}
       onFieldGroupSelect={onFieldGroupSelect}
-      onSetFieldSetCollapsed={onSetFieldSetCollapsed}
       onSetPathCollapsed={onSetPathCollapsed}
+      onSetFieldSetCollapsed={onSetFieldSetCollapsed}
       presence={presence}
       validation={validation}
       readOnly={readOnly}
@@ -97,112 +100,114 @@ export function StudioFormBuilder(props: StudioFormBuilderProps) {
 
 function RootInput() {
   const {
-    __internal,
-    compareValue,
-    focused,
     focusPath,
+    focused,
     groups,
     id,
     members,
     readOnly,
+    renderField,
+    renderInput,
+    renderItem,
+    renderPreview,
     schemaType,
     value,
-    renderInput,
-    renderField,
-    renderItem,
   } = useFormBuilder()
-
-  const {resolveInputComponent} = __internal
 
   const {
     onChange,
+    onFieldGroupSelect,
     onPathBlur,
     onPathFocus,
     onPathOpen,
-    onFieldGroupSelect,
     onSetFieldSetCollapsed,
     onSetPathCollapsed,
   } = useFormCallbacks()
 
+  const handleCollapseField = useCallback(
+    (fieldName: string) => onSetPathCollapsed([fieldName], true),
+    [onSetPathCollapsed]
+  )
+
+  const handleExpandField = useCallback(
+    (fieldName: string) => onSetPathCollapsed([fieldName], false),
+    [onSetPathCollapsed]
+  )
+
   const handleBlur = useCallback(() => onPathBlur(EMPTY_ARRAY), [onPathBlur])
 
   const handleFocus = useCallback(() => onPathFocus(EMPTY_ARRAY), [onPathFocus])
-
-  const DocumentInput = useMemo(
-    () => resolveInputComponent({schemaType}) as ComponentType<ObjectInputProps>,
-    [resolveInputComponent, schemaType]
-  )
 
   const handleChange = useCallback(
     (patch: FormPatch | FormPatch[] | PatchEvent) => onChange(PatchEvent.from(patch)),
     [onChange]
   )
 
+  const focusRef = useRef(null)
+
   const handleSelectFieldGroup = useCallback(
     (groupName: string) => onFieldGroupSelect(EMPTY_ARRAY, groupName),
     [onFieldGroupSelect]
   )
 
-  const handleCollapse = useCallback(() => onSetPathCollapsed([], true), [onSetPathCollapsed])
-  const handleExpand = useCallback(() => onSetPathCollapsed([], false), [onSetPathCollapsed])
+  const handleCollapse = useCallback(
+    () => onSetPathCollapsed(EMPTY_ARRAY, true),
+    [onSetPathCollapsed]
+  )
 
-  const handleCollapseField = useCallback(
-    (fieldName: string) => onSetPathCollapsed([fieldName], true),
+  const handleExpand = useCallback(
+    () => onSetPathCollapsed(EMPTY_ARRAY, false),
     [onSetPathCollapsed]
   )
-  const handleExpandField = useCallback(
-    (fieldName: string) => onSetPathCollapsed([fieldName], false),
-    [onSetPathCollapsed]
-  )
+
   const handleOpenField = useCallback((fieldName: string) => onPathOpen([fieldName]), [onPathOpen])
+
   const handleCloseField = useCallback(() => onPathOpen([]), [onPathOpen])
 
   const handleCollapseFieldSet = useCallback(
     (fieldSetName: string) => onSetFieldSetCollapsed([fieldSetName], true),
     [onSetFieldSetCollapsed]
   )
+
   const handleExpandFieldSet = useCallback(
     (fieldSetName: string) => onSetFieldSetCollapsed([fieldSetName], false),
     [onSetFieldSetCollapsed]
   )
 
-  return (
-    <DocumentInput
-      compareValue={compareValue}
-      focusRef={useRef(null)}
-      level={0}
-      id={id}
-      path={EMPTY_ARRAY}
-      collapsed={false}
-      focused={focused}
-      focusPath={focusPath}
-      onBlur={handleBlur}
-      onChange={handleChange}
-      onCloseField={handleCloseField}
-      onCollapse={handleCollapse}
-      onCollapseField={handleCollapseField}
-      onCollapseFieldSet={handleCollapseFieldSet}
-      onExpand={handleExpand}
-      onExpandField={handleExpandField}
-      onExpandFieldSet={handleExpandFieldSet}
-      onOpenField={handleOpenField}
-      onSelectFieldGroup={handleSelectFieldGroup}
-      validation={EMPTY_ARRAY}
-      presence={EMPTY_ARRAY}
-      onFocusPath={onPathFocus}
-      onFocus={handleFocus}
-      readOnly={readOnly}
-      schemaType={schemaType}
-      members={members}
-      groups={groups}
-      // onFieldGroupSelect={handleSelectFieldGroup}
-      // onSetCollapsed={handleSetCollapsed}
-      // onSetFieldCollapsed={handleSetFieldCollapsed}
-      // onSetFieldSetCollapsed={handleSetFieldSetCollapsed}
-      value={value}
-      renderInput={renderInput}
-      renderField={renderField}
-      renderItem={renderItem}
-    />
-  )
+  const rootInputProps: ObjectInputProps = {
+    collapsed: false,
+    compareValue: undefined,
+    focusPath,
+    focusRef,
+    focused,
+    groups,
+    id,
+    level: 0,
+    members,
+    onBlur: handleBlur,
+    onChange: handleChange,
+    onCloseField: handleCloseField,
+    onCollapse: handleCollapse,
+    onCollapseField: handleCollapseField,
+    onCollapseFieldSet: handleCollapseFieldSet,
+    onExpand: handleExpand,
+    onExpandField: handleExpandField,
+    onExpandFieldSet: handleExpandFieldSet,
+    onFocus: handleFocus,
+    onFocusPath: onPathFocus,
+    onOpenField: handleOpenField,
+    onFieldGroupSelect: handleSelectFieldGroup,
+    path: EMPTY_ARRAY,
+    presence: EMPTY_ARRAY,
+    readOnly,
+    renderField,
+    renderInput,
+    renderItem,
+    renderPreview,
+    schemaType,
+    validation: EMPTY_ARRAY,
+    value,
+  }
+
+  return <>{renderInput(rootInputProps)}</>
 }

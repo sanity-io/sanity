@@ -1,4 +1,4 @@
-import {ArraySchemaType, ObjectField, ObjectSchemaType, Path, SchemaType} from '@sanity/types'
+import {ArraySchemaType, ObjectField, ObjectSchemaType, Path} from '@sanity/types'
 import React from 'react'
 import {PatchEvent} from '../patch'
 import {PreviewProps} from '../../components/previews'
@@ -60,6 +60,7 @@ export type FormBuilderInputComponentMap = Record<
     field?: React.ComponentType<FieldProps>
     item?: React.ComponentType<ItemProps>
     input?: React.ComponentType<InputProps>
+    preview?: React.ComponentType<PreviewProps>
   }
 >
 
@@ -84,17 +85,3 @@ export interface FormArrayInputFunctionsProps<SchemaType extends ArraySchemaType
 export interface FormBuilderFilterFieldFn {
   (type: ObjectSchemaType, field: ObjectField, selectedLanguageIds: string[]): boolean
 }
-
-/**
- * @alpha
- */
-export type FormInputComponentResolver = (
-  type: SchemaType
-) => React.ComponentType<InputProps> | undefined
-
-/**
- * @alpha
- */
-export type FormPreviewComponentResolver = (
-  type: SchemaType
-) => React.ComponentType<PreviewProps<string>> | null | false | undefined

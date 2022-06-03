@@ -11,8 +11,13 @@ import {FOCUS_TERMINATOR} from '@sanity/util/paths'
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import styled, {css} from 'styled-components'
 import {Box, Card, Theme, Tooltip} from '@sanity/ui'
-import {PortableTextMarker, RenderCustomMarkers, FIXME, NodeValidation} from '../../../types'
-import {FormNodePreview} from '../../../FormNodePreview'
+import {
+  FIXME,
+  NodeValidation,
+  PortableTextMarker,
+  RenderCustomMarkers,
+  RenderPreviewCallback,
+} from '../../../types'
 import {useFormBuilder} from '../../../useFormBuilder'
 import {InlineObjectToolbarPopover} from './InlineObjectToolbarPopover'
 
@@ -24,6 +29,7 @@ interface InlineObjectProps {
   onFocus: (path: Path) => void
   readOnly?: boolean
   renderCustomMarkers?: RenderCustomMarkers
+  renderPreview: RenderPreviewCallback
   scrollElement: HTMLElement | null
   type: Type
   value: PortableTextChild
@@ -115,6 +121,7 @@ export const InlineObject = React.forwardRef(function InlineObject(
     onFocus,
     readOnly,
     renderCustomMarkers,
+    renderPreview,
     scrollElement,
     type,
     value,
@@ -150,16 +157,16 @@ export const InlineObject = React.forwardRef(function InlineObject(
   const preview = useMemo(
     () => (
       <PreviewSpan>
-        <FormNodePreview
-          type={type as FIXME}
-          value={value}
-          fallbackTitle="Click to edit"
-          layout="inline"
-        />
+        {renderPreview({
+          fallbackTitle: 'Click to edit',
+          layout: 'inline',
+          schemaType: type as FIXME,
+          value,
+        })}
       </PreviewSpan>
     ),
 
-    [type, value]
+    [renderPreview, type, value]
   )
 
   const markersToolTip = useMemo(

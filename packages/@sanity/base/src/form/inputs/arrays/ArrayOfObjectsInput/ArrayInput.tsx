@@ -260,7 +260,7 @@ export class ArrayInput extends React.PureComponent<ArrayInputProps> {
       throw new Error('Expected item to be of object type')
     }
 
-    const {id, schemaType} = this.props
+    const {id, renderPreview, schemaType} = this.props
 
     if (isReferenceSchemaType(itemProps.schemaType)) {
       return itemProps.children
@@ -282,6 +282,7 @@ export class ArrayInput extends React.PureComponent<ArrayInputProps> {
           path={itemProps.path}
           onClick={itemProps.onOpen}
           presence={itemProps.presence}
+          renderPreview={renderPreview}
         >
           {itemProps.open ? (
             <Dialog
@@ -307,6 +308,7 @@ export class ArrayInput extends React.PureComponent<ArrayInputProps> {
       members,
       renderField,
       renderInput,
+      renderPreview,
       resolveUploader,
     } = this.props
 
@@ -413,6 +415,7 @@ export class ArrayInput extends React.PureComponent<ArrayInputProps> {
                           renderItem={this.renderItem}
                           renderField={renderField}
                           renderInput={renderInput}
+                          renderPreview={renderPreview}
                         />
                       </Item>
                     )

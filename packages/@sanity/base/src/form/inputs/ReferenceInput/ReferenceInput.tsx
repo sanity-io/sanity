@@ -96,6 +96,7 @@ export function ReferenceInput(props: ReferenceInputProps) {
     validation,
     focusRef,
     value,
+    renderPreview,
   } = props
 
   const [searchState, setSearchState] = useState<SearchState>(INITIAL_SEARCH_STATE)
@@ -305,14 +306,19 @@ export function ReferenceInput(props: ReferenceInputProps) {
       const id = option.hit.draft?._id || option.hit.published?._id
 
       return (
-        <StyledPreviewCard forwardedAs="button" type="button" radius={2}>
+        <StyledPreviewCard forwardedAs="button" type="button" radius={2} tone="inherit">
           <Box paddingX={3} paddingY={1}>
-            <OptionPreview getReferenceInfo={getReferenceInfoMemo} id={id} type={schemaType} />
+            <OptionPreview
+              getReferenceInfo={getReferenceInfoMemo}
+              id={id}
+              renderPreview={renderPreview}
+              type={schemaType}
+            />
           </Box>
         </StyledPreviewCard>
       )
     },
-    [schemaType, getReferenceInfoMemo]
+    [schemaType, getReferenceInfoMemo, renderPreview]
   )
 
   const OpenLink = useMemo(
@@ -445,7 +451,7 @@ export function ReferenceInput(props: ReferenceInputProps) {
                 ? 'transparent'
                 : loadableReferenceInfo.error || errors.length > 0
                 ? 'critical'
-                : 'default'
+                : 'inherit'
             }
           >
             <Flex align="center" padding={1}>
@@ -471,6 +477,7 @@ export function ReferenceInput(props: ReferenceInputProps) {
               >
                 <PreviewReferenceValue
                   referenceInfo={loadableReferenceInfo}
+                  renderPreview={renderPreview}
                   type={schemaType}
                   value={value}
                 />

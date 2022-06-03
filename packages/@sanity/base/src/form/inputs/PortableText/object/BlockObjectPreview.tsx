@@ -2,7 +2,6 @@ import {EditIcon, LinkIcon, TrashIcon, EyeOpenIcon, EllipsisVerticalIcon} from '
 import {
   PortableTextBlock,
   PortableTextEditor,
-  // Type,
   usePortableTextEditor,
 } from '@sanity/portable-text-editor'
 import {
@@ -15,12 +14,11 @@ import {
   MenuItem,
   useGlobalKeyDown,
 } from '@sanity/ui'
-import React, {forwardRef, useCallback, useMemo, useRef} from 'react'
+import React, {forwardRef, ReactElement, useCallback, useMemo, useRef} from 'react'
 import {useId} from '@reach/auto-id'
-import {ObjectSchemaType} from '@sanity/types'
+import {isImage, ObjectSchemaType} from '@sanity/types'
 import {IntentLink} from '../../../../router'
-import {FIXME} from '../../../types'
-import {FormNodePreview} from '../../../FormNodePreview'
+import {RenderPreviewCallback} from '../../../types'
 
 interface BlockObjectPreviewProps {
   focused: boolean
@@ -29,6 +27,7 @@ interface BlockObjectPreviewProps {
   readOnly?: boolean
   onClickingEdit: () => void
   onClickingDelete: () => void
+  renderPreview: RenderPreviewCallback
 }
 
 const POPOVER_PROPS: MenuButtonProps['popover'] = {
@@ -38,15 +37,14 @@ const POPOVER_PROPS: MenuButtonProps['popover'] = {
   tone: 'default',
 }
 
-const LAYOUT = 'block'
-
-export function BlockObjectPreview(props: BlockObjectPreviewProps) {
-  const {focused, value, type, readOnly, onClickingEdit, onClickingDelete} = props
+export function BlockObjectPreview(props: BlockObjectPreviewProps): ReactElement {
+  const {focused, value, type, readOnly, onClickingEdit, onClickingDelete, renderPreview} = props
   const editor = usePortableTextEditor()
   const menuButtonId = useId() || ''
   const menuButton = useRef<HTMLButtonElement | null>(null)
   const isTabbing = useRef<boolean>(false)
   const isCustomPreviewComponent = Boolean((type.preview as any)?.component)
+  const isImageType = isImage(value)
 
   const referenceLink = useMemo(
     () =>
@@ -117,12 +115,25 @@ export function BlockObjectPreview(props: BlockObjectPreviewProps) {
     return (
       <Flex>
         <Box flex={1}>
-          <FormNodePreview type={type as FIXME} value={value} layout={LAYOUT} />
+          {renderPreview({
+            layout: isImageType ? 'blockImage' : 'block',
+            schemaType: type,
+            value,
+          })}
         </Box>
         <Box marginLeft={1}>{actions}</Box>
       </Flex>
     )
   }
 
-  return <FormNodePreview actions={actions} type={type as FIXME} value={value} layout={LAYOUT} />
+  return (
+    <>
+      {renderPreview({
+        actions,
+        layout: isImageType ? 'blockImage' : 'block',
+        schemaType: type,
+        value,
+      })}
+    </>
+  )
 }

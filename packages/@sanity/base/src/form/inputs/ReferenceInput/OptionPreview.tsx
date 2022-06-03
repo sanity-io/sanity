@@ -4,6 +4,7 @@ import {ReferenceSchemaType} from '@sanity/types'
 import {Stack, Text, TextSkeleton} from '@sanity/ui'
 import {Observable} from 'rxjs'
 import {Alert} from '../../components/Alert'
+import {RenderPreviewCallback} from '../../types'
 import {ReferenceInfo} from './types'
 import {useReferenceInfo} from './useReferenceInfo'
 import {ReferencePreview} from './ReferencePreview'
@@ -11,15 +12,14 @@ import {ReferencePreview} from './ReferencePreview'
 /**
  * Used to preview a referenced type
  * Takes the reference type as props
- * @param props
- * @constructor
  */
 export function OptionPreview(props: {
   id: string
   type: ReferenceSchemaType
   getReferenceInfo: (id: string) => Observable<ReferenceInfo>
+  renderPreview: RenderPreviewCallback
 }) {
-  const {getReferenceInfo, id: documentId} = props
+  const {getReferenceInfo, id: documentId, renderPreview} = props
   const {isLoading, result: referenceInfo, error} = useReferenceInfo(documentId, getReferenceInfo)
 
   if (isLoading) {
@@ -74,6 +74,7 @@ export function OptionPreview(props: {
         layout="default"
         preview={referenceInfo.preview}
         refType={refType}
+        renderPreview={renderPreview}
         showTypeLabel={props.type.to.length > 1}
       />
     )
