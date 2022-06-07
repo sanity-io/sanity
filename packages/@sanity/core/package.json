@@ -49,7 +49,7 @@
     "get-it": "^5.2.1",
     "jsdom": "^12.0.0",
     "jsdom-global": "^3.0.2",
-    "json-lexer": "^1.1.1",
+    "json-lexer": "^1.2.0",
     "json5": "^1.0.1",
     "lodash": "^4.17.21",
     "log-symbols": "^2.2.0",
@@ -68,7 +68,7 @@
   },
   "devDependencies": {
     "@sanity/cli": "2.30.0",
-    "@sanity/client": "^3.2.0",
+    "@sanity/client": "^3.3.2",
     "@types/fs-extra": "^7.0.0",
     "@types/log-symbols": "^2.0.0",
     "@types/resolve-from": "^4.0.0",
