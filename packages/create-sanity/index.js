@@ -2,4 +2,5 @@
 const cli = require.resolve('@sanity/cli/bin/sanity')
 const childProcess = require('child_process')
 
-childProcess.fork(cli, ['init'], {stdio: 'inherit'})
+const args = process.argv.slice(2)
+childProcess.spawn(cli, ['init', ...args], {stdio: 'inherit'})
