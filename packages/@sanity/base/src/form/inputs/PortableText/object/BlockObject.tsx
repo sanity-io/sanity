@@ -5,7 +5,7 @@ import {
   EditorSelection,
   usePortableTextEditor,
 } from '@sanity/portable-text-editor'
-import {ObjectSchemaType} from '@sanity/types'
+import {ObjectSchemaType, Path} from '@sanity/types'
 import {Tooltip, Flex, ResponsivePaddingProps} from '@sanity/ui'
 import React, {useCallback, useMemo, useRef, useState} from 'react'
 import {PatchArg} from '../../../patch'
@@ -34,7 +34,7 @@ interface BlockObjectProps {
   block: PortableTextBlock
   isFullscreen?: boolean
   onChange: (...patches: PatchArg[]) => void
-  onOpenItem: (itemKey: string) => void
+  onOpenItem: (path: Path) => void
   readOnly?: boolean
   renderBlockActions?: RenderBlockActionsCallback
   renderCustomMarkers?: RenderCustomMarkers
@@ -70,7 +70,7 @@ export function BlockObject(props: BlockObjectProps) {
 
   const handleEdit = useCallback(() => {
     if (memberItem) {
-      onOpenItem(memberItem.member.item.id)
+      onOpenItem(memberItem.member.item.path)
     }
   }, [onOpenItem, memberItem])
 

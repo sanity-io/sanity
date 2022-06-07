@@ -30,10 +30,11 @@ interface EditorProps {
   isFullscreen: boolean
   hotkeys: HotkeyOptions
   onCopy?: OnCopyFn
-  onExpand: (nextPath: Path) => void
+  onOpenItem: (path: Path) => void
   onFocusPath: (nextPath: Path) => void
   onPaste?: OnPasteFn
   onToggleFullscreen: () => void
+  path: Path
   readOnly?: boolean
   renderAnnotation: RenderAnnotationFunction
   renderBlock: RenderBlockFunction
@@ -53,10 +54,11 @@ export function Editor(props: EditorProps) {
     initialSelection,
     isFullscreen,
     onCopy,
-    onExpand,
     onFocusPath,
+    onOpenItem,
     onPaste,
     onToggleFullscreen,
+    path,
     readOnly,
     renderAnnotation,
     renderBlock,
@@ -129,13 +131,20 @@ export function Editor(props: EditorProps) {
     ]
   )
 
+  const handleToolBarOnExpand = useCallback(
+    (relativePath: Path) => {
+      onOpenItem(path.concat(relativePath))
+    },
+    [onOpenItem, path]
+  )
+
   return (
     <Root $fullscreen={isFullscreen} data-testid="pt-editor" onMouseDown={handleMouseDown}>
       <ToolbarCard data-testid="pt-editor__toolbar-card" shadow={1}>
         <Toolbar
           isFullscreen={isFullscreen}
           hotkeys={hotkeys}
-          onExpand={onExpand}
+          onExpand={handleToolBarOnExpand}
           onFocusPath={onFocusPath}
           readOnly={readOnly}
           onToggleFullscreen={onToggleFullscreen}

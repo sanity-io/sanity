@@ -245,10 +245,10 @@ export function Compositor(props: InputProps) {
 
   const [portalElement, setPortalElement] = useState<HTMLDivElement | null>(null)
 
-  const expandedMemberItems = useMemo(
+  const openMemberItems = useMemo(
     () =>
       portableTextMemberItems.filter(
-        (m) => m.member.collapsed === false && m.member.item.schemaType.name !== 'block'
+        (m) => m.member.open === true && m.member.item.schemaType.name !== 'block'
       ),
     [portableTextMemberItems]
   )
@@ -264,6 +264,7 @@ export function Compositor(props: InputProps) {
         onCopy={onCopy}
         onPaste={onPaste}
         onToggleFullscreen={handleToggleFullscreen}
+        path={path}
         readOnly={isActive === false || readOnly}
         renderAnnotation={renderAnnotation}
         renderBlock={renderBlock}
@@ -285,6 +286,7 @@ export function Compositor(props: InputProps) {
       onOpenItem,
       onFocusPath,
       onPaste,
+      path,
       readOnly,
       renderAnnotation,
       renderBlock,
@@ -295,25 +297,18 @@ export function Compositor(props: InputProps) {
 
   const boundaryElm = isFullscreen ? scrollElement : boundaryElement
 
-  const handleObjectEditModalClose = useCallback(
-    (objectPath) => {
-      onCloseItem(objectPath)
-    },
-    [onCloseItem]
-  )
-
   const children = useMemo(
     () =>
       boundaryElm && (
         <>
           {editorNode}
           <BoundaryElementProvider element={boundaryElm}>
-            {expandedMemberItems.map((dMemberItem) => {
+            {openMemberItems.map((dMemberItem) => {
               return (
                 <ObjectEditModal
                   key={dMemberItem.member.key}
                   memberItem={dMemberItem}
-                  onClose={handleObjectEditModalClose}
+                  onClose={onCloseItem}
                   scrollElement={boundaryElm}
                 >
                   <FormInput
@@ -326,7 +321,7 @@ export function Compositor(props: InputProps) {
           </BoundaryElementProvider>
         </>
       ),
-    [boundaryElm, editorNode, expandedMemberItems, handleObjectEditModalClose, props]
+    [boundaryElm, editorNode, openMemberItems, onCloseItem, props]
   )
 
   const portal = usePortal()

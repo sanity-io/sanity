@@ -21,7 +21,7 @@ import {InlineObjectToolbarPopover} from './InlineObjectToolbarPopover'
 
 interface InlineObjectProps {
   attributes: RenderAttributes
-  onExpand: (path: Path) => void
+  onOpenItem: (path: Path) => void
   readOnly?: boolean
   renderCustomMarkers?: RenderCustomMarkers
   renderPreview: RenderPreviewCallback
@@ -114,7 +114,7 @@ export const InlineObject = React.forwardRef(function InlineObject(
 ) {
   const {
     attributes: {focused, selected, path},
-    onExpand,
+    onOpenItem,
     readOnly,
     renderCustomMarkers,
     renderPreview,
@@ -205,8 +205,10 @@ export const InlineObject = React.forwardRef(function InlineObject(
   const handleEditClick = useCallback((): void => {
     setShowPopover(false)
     PortableTextEditor.blur(editor)
-    onExpand(path)
-  }, [editor, onExpand, path])
+    if (memberItem) {
+      onOpenItem(memberItem.member.item.path)
+    }
+  }, [editor, memberItem, onOpenItem])
 
   return (
     <>

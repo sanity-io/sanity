@@ -21,7 +21,7 @@ import {AnnotationToolbarPopover} from './AnnotationToolbarPopover'
 interface AnnotationProps {
   attributes: RenderAttributes
   children: JSX.Element
-  onExpand: (path: Path) => void
+  onOpenItem: (path: Path) => void
   readOnly?: boolean
   renderCustomMarkers?: RenderCustomMarkers
   scrollElement: HTMLElement | null
@@ -67,7 +67,7 @@ export const Annotation = function Annotation(props: AnnotationProps) {
   const {
     attributes: {focused, path, selected},
     children,
-    onExpand,
+    onOpenItem,
     renderCustomMarkers,
     scrollElement,
     readOnly,
@@ -136,9 +136,11 @@ export const Annotation = function Annotation(props: AnnotationProps) {
       PortableTextEditor.blur(editor)
       event.preventDefault()
       event.stopPropagation()
-      onExpand(markDefPath)
+      if (memberItem) {
+        onOpenItem(memberItem.member.item.path)
+      }
     },
-    [editor, onExpand, markDefPath]
+    [editor, memberItem, onOpenItem]
   )
 
   const handleRemoveClick = useCallback(

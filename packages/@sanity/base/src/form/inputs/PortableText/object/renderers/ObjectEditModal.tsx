@@ -3,7 +3,6 @@ import {
   PortableTextEditor,
   usePortableTextEditor,
 } from '@sanity/portable-text-editor'
-import {Path} from '@sanity/types'
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {_getModalOption} from '../helpers'
 import {isFieldMember, PortableTextMemberItem} from '../../PortableTextInput'
@@ -13,7 +12,7 @@ import {PopoverEditDialog} from './PopoverEditDialog'
 export function ObjectEditModal(props: {
   children: React.ReactNode
   memberItem: PortableTextMemberItem
-  onClose: (path: Path) => void
+  onClose: () => void
   scrollElement: HTMLElement
 }) {
   const {memberItem, onClose, scrollElement} = props
@@ -24,14 +23,12 @@ export function ObjectEditModal(props: {
   const initialSelection = useRef<EditorSelection | null>(PortableTextEditor.getSelection(editor))
 
   const handleClose = useCallback(() => {
-    if (memberItem.member.collapsed === false) {
-      onClose(memberItem.member.item.path)
-      // Force a new selection here as the selection is a callback dep. for showing the popup
-      PortableTextEditor.select(editor, null)
-      PortableTextEditor.focus(editor)
-      PortableTextEditor.select(editor, initialSelection.current)
-    }
-  }, [editor, initialSelection, memberItem.member.collapsed, memberItem.member.item.path, onClose])
+    onClose()
+    // Force a new selection here as the selection is a callback dep. for showing the popup
+    PortableTextEditor.select(editor, null)
+    PortableTextEditor.focus(editor)
+    PortableTextEditor.select(editor, initialSelection.current)
+  }, [editor, onClose])
 
   const title = <>Edit {memberItem.member.item.schemaType.title}</>
 
