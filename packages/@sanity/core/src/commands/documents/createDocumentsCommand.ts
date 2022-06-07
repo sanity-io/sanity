@@ -1,8 +1,8 @@
 import path from 'path'
+import fs from 'fs/promises'
 import os from 'os'
 import type {CliCommandDefinition} from '@sanity/cli'
 import type {SanityClient, MultipleMutationResult, Mutation} from '@sanity/client'
-import fse from 'fs-extra'
 import json5 from 'json5'
 import execa from 'execa'
 import chokidar from 'chokidar'
@@ -75,7 +75,7 @@ const createDocumentsCommand: CliCommandDefinition<CreateFlags> = {
 
     if (file) {
       const contentPath = path.resolve(process.cwd(), file)
-      const content = json5.parse(await fse.readFile(contentPath, 'utf8'))
+      const content = json5.parse(await fs.readFile(contentPath, 'utf8'))
       const result = await writeDocuments(content, operation, client)
       output.print(getResultMessage(result, operation))
       return
@@ -87,7 +87,8 @@ const createDocumentsCommand: CliCommandDefinition<CreateFlags> = {
     const tmpFile = path.join(os.tmpdir(), 'sanity-cli', `${docId}.${ext}`)
     const stringify = useJson5 ? json5.stringify : JSON.stringify
     const defaultValue = (id && (await client.getDocument(id))) || {_id: docId, _type: 'specify-me'}
-    await fse.outputFile(tmpFile, stringify(defaultValue, null, 2))
+    await fs.mkdir(path.join(os.tmpdir(), 'sanity-cli'), {recursive: true})
+    await fs.writeFile(tmpFile, stringify(defaultValue, null, 2), 'utf8')
 
     const editor = getEditor()
     if (watch) {
@@ -105,13 +106,13 @@ const createDocumentsCommand: CliCommandDefinition<CreateFlags> = {
       // While in normal mode, we just want to wait for the editor to close and run the thing once
       execa.sync(editor.bin, editor.args.concat(tmpFile), {stdio: 'inherit'})
       await readAndPerformCreatesFromFile(tmpFile)
-      await fse.unlink(tmpFile).catch(noop)
+      await fs.unlink(tmpFile).catch(noop)
     }
 
     async function readAndPerformCreatesFromFile(filePath: string) {
       let content
       try {
-        content = json5.parse(await fse.readFile(filePath, 'utf8'))
+        content = json5.parse(await fs.readFile(filePath, 'utf8'))
       } catch (err) {
         output.error(`Failed to read input: ${err.message}`)
         return
@@ -138,7 +139,7 @@ const createDocumentsCommand: CliCommandDefinition<CreateFlags> = {
 
 function registerUnlinkOnSigInt(tmpFile: string) {
   process.on('SIGINT', async () => {
-    await fse.unlink(tmpFile).catch(noop)
+    await fs.unlink(tmpFile).catch(noop)
     // eslint-disable-next-line no-process-exit
     process.exit(130)
   })

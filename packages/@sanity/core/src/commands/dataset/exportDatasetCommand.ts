@@ -1,6 +1,6 @@
 import path from 'path'
+import fs from 'fs/promises'
 import type {CliCommandDefinition, CliPrompter} from '@sanity/cli'
-import fse from 'fs-extra'
 import prettyMs from 'pretty-ms'
 import {pathTools} from '@sanity/util'
 import exportDataset from '@sanity/export'
@@ -183,17 +183,17 @@ async function getOutputPath(
     ? destination
     : path.resolve(process.cwd(), destination)
 
-  let dstStats = await fse.stat(dstPath).catch(noop)
+  let dstStats = await fs.stat(dstPath).catch(noop)
   const looksLikeFile = dstStats ? dstStats.isFile() : path.basename(dstPath).indexOf('.') !== -1
 
   if (!dstStats) {
     const createPath = looksLikeFile ? path.dirname(dstPath) : dstPath
 
-    await fse.mkdirs(createPath)
+    await fs.mkdir(createPath, {recursive: true})
   }
 
   const finalPath = looksLikeFile ? dstPath : path.join(dstPath, `${dataset}.tar.gz`)
-  dstStats = await fse.stat(finalPath).catch(noop)
+  dstStats = await fs.stat(finalPath).catch(noop)
 
   if (!flags.overwrite && dstStats && dstStats.isFile()) {
     const shouldOverwrite = await prompt.single({

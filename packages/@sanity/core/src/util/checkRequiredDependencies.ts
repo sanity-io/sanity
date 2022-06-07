@@ -1,10 +1,10 @@
 import path from 'path'
+import {access, readFile} from 'fs/promises'
 import execa from 'execa'
 import semver, {SemVer} from 'semver'
 import resolveFrom from 'resolve-from'
-import {readJSON, access} from 'fs-extra'
 import oneline from 'oneline'
-import type {CliCommandContext} from '@sanity/cli'
+import type {CliCommandContext, PackageJson} from '@sanity/cli'
 
 const defaultStudioManifestProps: PartialPackageManifest = {
   name: 'studio',
@@ -171,7 +171,7 @@ async function readPackageManifest(
 ): Promise<PackageManifest> {
   let manifest: unknown
   try {
-    manifest = {...defaults, ...(await readJSON(packageJsonPath))}
+    manifest = {...defaults, ...(await readPackageJson(packageJsonPath))}
   } catch (err) {
     throw new Error(`Failed to read "${packageJsonPath}": ${err.message}`)
   }
@@ -245,10 +245,13 @@ function isComparableRange(range: string): boolean {
   return /^[\^~]?\d+(\.\d+)?(\.\d+)?$/.test(range)
 }
 
+function readPackageJson(filePath: string): Promise<PackageJson> {
+  return readFile(filePath, 'utf8').then((res) => JSON.parse(res))
+}
+
 /**
- * fs-extra `fse.exists` seems both incorrectly typed (callback based) and is
- * deprecated because it's a potential race condition to check for a file and
- * then use it. In this situation we're fine with this potentially happening.
+ * fs.exists is deprecated because it's a potential race condition to check for a file
+ * and then use it. In this situation we're fine with this potentially happening.
  *
  * @param filePath - Path to file we want to check for the existance of
  * @returns True if it exists, false otherwise

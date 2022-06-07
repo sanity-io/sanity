@@ -1,8 +1,9 @@
 import path from 'path'
+import fs from 'fs/promises'
+import {createReadStream} from 'fs'
 import type {CliCommandContext, CliCommandDefinition, CliOutputter} from '@sanity/cli'
 import getIt from 'get-it'
 import {promise} from 'get-it/middleware'
-import fse from 'fs-extra'
 import sanityImport from '@sanity/import'
 import padStart from 'lodash/padStart'
 import prettyMs from 'pretty-ms'
@@ -127,7 +128,7 @@ const importDatasetCommand: CliCommandDefinition = {
       inputStream = await getUrlStream(file)
     } else {
       const sourceFile = path.resolve(process.cwd(), file)
-      const fileStats = await fse.stat(sourceFile).catch(() => null)
+      const fileStats = await fs.stat(sourceFile).catch(() => null)
       if (!fileStats) {
         throw new Error(`${sourceFile} does not exist or is not readable`)
       }
@@ -137,7 +138,7 @@ const importDatasetCommand: CliCommandDefinition = {
         inputStream = sourceFile
       } else {
         assetsBase = path.dirname(sourceFile)
-        inputStream = await fse.createReadStream(sourceFile)
+        inputStream = await createReadStream(sourceFile)
       }
     }
 

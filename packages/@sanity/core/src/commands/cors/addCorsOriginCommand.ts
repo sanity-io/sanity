@@ -1,6 +1,6 @@
+import fs from 'fs'
 import path from 'path'
 import type {CliCommandDefinition} from '@sanity/cli'
-import fse from 'fs-extra'
 import {addCorsOrigin} from '../../actions/cors/addCorsOrigin'
 
 const helpText = `
@@ -28,7 +28,9 @@ const addCorsOriginCommand: CliCommandDefinition = {
     }
 
     const flags = args.extOptions
-    const isFile = await fse.pathExists(path.join(process.cwd(), origin))
+
+    // eslint-disable-next-line no-sync
+    const isFile = await fs.existsSync(path.join(process.cwd(), origin))
     if (isFile) {
       output.warn(`Origin "${origin}?" Remember to quote values (sanity cors add "*")`)
     }
