@@ -1,18 +1,19 @@
+import type {CliCommandDefinition} from '@sanity/cli'
 import {lazyRequire} from '@sanity/util/_internal'
 
 const helpText = `
 Options
-  --with-user-token Preload access token from CLI config into 'part:@sanity/base/client' part
+  --with-user-token Prime access token from CLI config into getCliClient()
   --mock-browser-env Mocks a browser-like environment using jsdom
 
 Examples
   # Run the script at some/script.js in Sanity context
   sanity exec some/script.js
 
-  # Run the script at migrations/fullname.js and configure \`part:@sanity/base/client\`
-  # to include the current user's token
-  sanity exec migrations/fullname.js --with-user-token
-  
+  # Run the script at migrations/fullname.ts and configure \`getCliClient()\`
+  # from \`sanity/cli\`to include the current user's token
+  sanity exec migrations/fullname.ts --with-user-token
+
   # Run the script at scripts/browserScript.js in a mock browser environment
   sanity exec scripts/browserScript.js --mock-browser-env
 
@@ -23,10 +24,12 @@ Examples
   sanity exec --mock-browser-env myscript.js -- --dry-run positional-argument
 `
 
-export default {
+export const execCommand: CliCommandDefinition = {
   name: 'exec',
   signature: 'SCRIPT',
   description: 'Runs a script in Sanity context',
   helpText,
   action: lazyRequire(require.resolve('../../actions/exec/execScript')),
 }
+
+export default execCommand

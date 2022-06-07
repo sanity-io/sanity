@@ -1,9 +1,5 @@
-const ConfigStore = require('configstore')
-const client = require('part:@sanity/base/client?')
-
-if (!client) {
-  throw new Error('--with-user-token specified, but @sanity/base is not a plugin in this project')
-}
+import ConfigStore from 'configstore'
+import {getCliClient} from 'sanity/cli'
 
 // eslint-disable-next-line no-process-env
 const sanityEnv = (process.env.SANITY_INTERNAL_ENV || '').toLowerCase()
@@ -21,5 +17,5 @@ if (!token) {
   )
 }
 
-// Reconfigure client and silence the warning about configuring it globally
-client.config({token}, true)
+// eslint-disable-next-line camelcase
+getCliClient.__internal__getToken = () => token
