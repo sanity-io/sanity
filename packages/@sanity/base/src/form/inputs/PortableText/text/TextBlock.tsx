@@ -1,6 +1,6 @@
 import {PortableTextBlock, RenderAttributes} from '@sanity/portable-text-editor'
 import {Box, ResponsivePaddingProps, Tooltip} from '@sanity/ui'
-import React, {useCallback, useMemo, useState} from 'react'
+import React, {RefObject, useCallback, useMemo, useState} from 'react'
 import {RenderCustomMarkers} from '../../../types'
 import {PatchArg} from '../../../patch'
 import {useFormBuilder} from '../../../useFormBuilder'
@@ -36,10 +36,7 @@ export interface TextBlockProps {
   spellCheck?: boolean
 }
 
-export const TextBlock = React.forwardRef(function TextBlock(
-  props: TextBlockProps,
-  forwardedRef: React.ForwardedRef<HTMLDivElement>
-) {
+export function TextBlock(props: TextBlockProps) {
   const {
     attributes: {path, focused},
     block,
@@ -55,7 +52,7 @@ export const TextBlock = React.forwardRef(function TextBlock(
   const [reviewChangesHovered, setReviewChangesHovered] = useState<boolean>(false)
   const [hasChanges, setHasChanges] = useState<boolean>(false)
   const markers = usePortableTextMarkers(path)
-  const member = usePortableTextMemberItem(JSON.stringify(path))
+  const memberItem = usePortableTextMemberItem(JSON.stringify(path))
 
   const blockKey = block._key
 
@@ -64,7 +61,7 @@ export const TextBlock = React.forwardRef(function TextBlock(
 
   const handleOnHasChanges = useCallback((changed: boolean) => setHasChanges(changed), [])
 
-  const {memberValidation, hasError, hasWarning, hasInfo} = useMemberValidation(member?.member)
+  const {memberValidation, hasError, hasWarning, hasInfo} = useMemberValidation(memberItem?.member)
 
   const hasMarkers = Boolean(renderCustomMarkers) && markers.length > 0
 
@@ -115,18 +112,16 @@ export const TextBlock = React.forwardRef(function TextBlock(
     return TEXT_STYLE_PADDING[block.style] || {paddingY: 2}
   }, [block])
 
-  let boundaryElement: HTMLDivElement | undefined
-  if (forwardedRef && 'current' in forwardedRef) {
-    boundaryElement = forwardedRef.current || undefined
-  }
-
   return (
     <Box data-testid="text-block" {...outerPaddingProps}>
       <TextBlockFlexWrapper data-testid="text-block__wrapper">
-        <Box flex={1} {...innerPaddingProps}>
+        <Box
+          flex={1}
+          {...innerPaddingProps}
+          ref={memberItem?.elementRef as RefObject<HTMLDivElement>}
+        >
           <Tooltip
             placement="top"
-            boundaryElement={boundaryElement}
             portal="editor"
             disabled={!tooltipEnabled}
             content={
@@ -150,7 +145,6 @@ export const TextBlock = React.forwardRef(function TextBlock(
               data-custom-markers={hasMarkers ? '' : undefined}
               data-testid="text-block__text"
               spellCheck={spellCheck}
-              ref={forwardedRef}
             >
               {text}
             </TextRoot>
@@ -193,4 +187,4 @@ export const TextBlock = React.forwardRef(function TextBlock(
       </TextBlockFlexWrapper>
     </Box>
   )
-})
+}

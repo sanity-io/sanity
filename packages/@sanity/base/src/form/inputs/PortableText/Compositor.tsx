@@ -85,8 +85,7 @@ export function Compositor(props: InputProps) {
 
   // This will scroll to the relevant content according to the focusPath set
   useScrollToFocusFromOutside({
-    focusPath,
-    path,
+    onCloseItem,
     scrollElement,
   })
 
