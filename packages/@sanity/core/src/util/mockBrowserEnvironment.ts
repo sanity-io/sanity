@@ -10,6 +10,13 @@ const jsdomDefaultHtml = `<!doctype html>
 </html>`
 
 export function mockBrowserEnvironment(basePath: string): () => void {
+  // Guard against double-registering
+  if (global && global.window && '__mockedBySanity' in global.window) {
+    return () => {
+      /* intentional noop */
+    }
+  }
+
   const domCleanup = jsdomGlobal(jsdomDefaultHtml, {url: 'http://localhost:3333/'})
   const windowCleanup = () => global.window.close()
   const globalCleanup = provideFakeGlobals(basePath)
@@ -35,6 +42,7 @@ export function mockBrowserEnvironment(basePath: string): () => void {
 }
 
 const getFakeGlobals = (basePath: string) => ({
+  __mockedBySanity: true,
   requestAnimationFrame: setImmediate,
   cancelAnimationFrame: clearImmediate,
   requestIdleCallback: setImmediate,
