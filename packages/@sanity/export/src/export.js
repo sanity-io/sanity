@@ -1,10 +1,11 @@
 const os = require('os')
 const path = require('path')
 const zlib = require('zlib')
-const fse = require('fs-extra')
+const fs = require('fs')
 const miss = require('mississippi')
 const split = require('split2')
 const archiver = require('archiver')
+const rimraf = require('./util/rimraf')
 const debug = require('./debug')
 const AssetHandler = require('./AssetHandler')
 const stringifyStream = require('./stringifyStream')
@@ -35,7 +36,7 @@ function exportDataset(opts) {
   const prefix = `${opts.dataset}-export-${slugDate}`
   const tmpDir = path.join(os.tmpdir(), prefix)
   const cleanup = () =>
-    fse.remove(tmpDir).catch((err) => {
+    rimraf(tmpDir).catch((err) => {
       debug(`Error while cleaning up temporary files: ${err.message}`)
     })
 
@@ -54,7 +55,7 @@ function exportDataset(opts) {
     outputStream = options.outputPath
   } else {
     outputStream =
-      options.outputPath === '-' ? process.stdout : fse.createWriteStream(options.outputPath)
+      options.outputPath === '-' ? process.stdout : fs.createWriteStream(options.outputPath)
   }
 
   let assetStreamHandler = assetHandler.noop

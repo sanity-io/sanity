@@ -1,15 +1,15 @@
 const os = require('os')
 const path = require('path')
-const fse = require('fs-extra')
 const miss = require('mississippi')
 const split = require('split2')
+const rimraf = require('../src/util/rimraf')
 const {getAssetHandler, arrayToStream} = require('./helpers')
 
 const docById = (docs, id) => docs.find((doc) => doc._id === id)
 
 describe('asset handler', () => {
   afterAll(async () => {
-    await fse.remove(path.join(os.tmpdir(), 'asset-handler-tests'))
+    await rimraf(path.join(os.tmpdir(), 'asset-handler-tests'))
   })
 
   test('can rewrite documents / queue downloads', (done) => {

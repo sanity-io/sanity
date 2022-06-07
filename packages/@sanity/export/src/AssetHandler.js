@@ -1,13 +1,14 @@
 const path = require('path')
 const crypto = require('crypto')
 const {parse: parseUrl, format: formatUrl} = require('url')
-const fse = require('fs-extra')
+const {mkdirSync, createWriteStream} = require('fs')
 const miss = require('mississippi')
 const PQueue = require('p-queue')
 const {omit, noop} = require('lodash')
 const pkg = require('../package.json')
 const requestStream = require('./requestStream')
 const debug = require('./debug')
+const rimraf = require('./util/rimraf')
 
 const EXCLUDE_PROPS = ['_id', '_type', 'assetId', 'extension', 'mimeType', 'path', 'url']
 const ACTION_REMOVE = 'remove'
@@ -112,8 +113,8 @@ class AssetHandler {
     }
 
     /* eslint-disable no-sync */
-    fse.ensureDirSync(path.join(this.tmpDir, 'files'))
-    fse.ensureDirSync(path.join(this.tmpDir, 'images'))
+    mkdirSync(path.join(this.tmpDir, 'files'), {recursive: true})
+    mkdirSync(path.join(this.tmpDir, 'images'), {recursive: true})
     /* eslint-enable no-sync */
     this.assetDirsCreated = true
   }
@@ -195,7 +196,7 @@ class AssetHandler {
 
       const detailsString = `Details:\n - ${details.filter(Boolean).join('\n - ')}`
 
-      await fse.unlink(tmpPath)
+      await rimraf(tmpPath)
       this.queue.clear()
 
       const error = new Error(
@@ -306,7 +307,7 @@ function writeHashedStream(filePath, stream) {
   })
 
   return new Promise((resolve, reject) =>
-    miss.pipe(stream, hasher, fse.createWriteStream(filePath), (err) => {
+    miss.pipe(stream, hasher, createWriteStream(filePath), (err) => {
       if (err) {
         reject(err)
         return
