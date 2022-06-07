@@ -1,11 +1,11 @@
 const fs = require('fs')
+const os = require('os')
 const path = require('path')
 const miss = require('mississippi')
 const gunzipMaybe = require('gunzip-maybe')
 const peek = require('peek-stream')
 const isTar = require('is-tar')
 const tar = require('tar-fs')
-const tempy = require('tempy')
 const globby = require('globby')
 const debug = require('debug')('sanity:import:stream')
 const {noop} = require('lodash')
@@ -13,7 +13,7 @@ const getJsonStreamer = require('./util/getJsonStreamer')
 
 module.exports = (stream, options, importers) =>
   new Promise((resolve, reject) => {
-    const outputPath = path.join(tempy.directory(), 'sanity-import')
+    const outputPath = path.join(os.tmpdir(), 'sanity-import')
     debug('Importing from stream')
 
     let isTarStream = false

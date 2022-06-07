@@ -1,4 +1,4 @@
-const fse = require('fs-extra')
+const fs = require('fs')
 const noop = require('lodash/noop')
 const defaults = require('lodash/defaults')
 
@@ -83,7 +83,7 @@ function isValidInput(input) {
 function isDirectory(path) {
   try {
     // eslint-disable-next-line no-sync
-    const stats = fse.statSync(path)
+    const stats = fs.statSync(path)
     return stats.isDirectory()
   } catch (err) {
     return false

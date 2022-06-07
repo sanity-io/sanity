@@ -1,8 +1,10 @@
 const path = require('path')
-const fse = require('fs-extra')
+const fs = require('fs')
 const globby = require('globby')
 const getFileUrl = require('file-url')
 const debug = require('debug')('sanity:import:folder')
+const readJson = require('./util/readJson')
+const rimraf = require('./util/rimraf')
 
 module.exports = async function importFromFolder(fromDir, options, importers) {
   debug('Importing from folder %s', fromDir)
@@ -15,12 +17,12 @@ module.exports = async function importFromFolder(fromDir, options, importers) {
     throw new Error(`More than one .ndjson file found in ${fromDir} - only one is supported`)
   }
 
-  const assetMap = await fse.readJson(path.join(fromDir, 'assets.json')).catch(() => ({}))
+  const assetMap = await readJson(path.join(fromDir, 'assets.json')).catch(() => ({}))
 
   const dataFile = dataFiles[0]
   debug('Importing from file %s', dataFile)
 
-  const stream = fse.createReadStream(dataFile)
+  const stream = fs.createReadStream(dataFile)
   const images = await globby('images/*', {cwd: fromDir, absolute: true})
   const files = await globby('files/*', {cwd: fromDir, absolute: true})
   const unreferencedAssets = []
@@ -33,7 +35,7 @@ module.exports = async function importFromFolder(fromDir, options, importers) {
   const result = await importers.fromStream(stream, streamOptions, importers)
 
   if (options.deleteOnComplete) {
-    await fse.remove(fromDir)
+    await rimraf(fromDir)
   }
 
   return result

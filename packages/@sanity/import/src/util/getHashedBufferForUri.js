@@ -1,5 +1,5 @@
 const crypto = require('crypto')
-const {URL} = require('whatwg-url')
+const {URL} = require('url')
 const miss = require('mississippi')
 const getUri = require('get-uri')
 const getIt = require('get-it')
