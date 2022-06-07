@@ -1,6 +1,7 @@
-const path = require('path')
-const fse = require('fs-extra')
-const {addCorsOrigin} = require('../../actions/cors/addCorsOrigin')
+import path from 'path'
+import type {CliCommandDefinition} from '@sanity/cli'
+import fse from 'fs-extra'
+import {addCorsOrigin} from '../../actions/cors/addCorsOrigin'
 
 const helpText = `
 Options
@@ -12,7 +13,7 @@ Examples
   sanity cors add http://localhost:3000 --no-credentials
 `
 
-export default {
+const addCorsOriginCommand: CliCommandDefinition = {
   name: 'add',
   group: 'cors',
   signature: '[ORIGIN]',
@@ -38,3 +39,5 @@ export default {
     }
   },
 }
+
+export default addCorsOriginCommand

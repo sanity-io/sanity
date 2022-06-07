@@ -1,10 +1,13 @@
+import type {CliCommandContext, CliCommandDefinition} from '@sanity/cli'
+import type {CorsOrigin} from './types'
+
 const helpText = `
 Examples
   sanity cors delete
   sanity cors delete http://localhost:3000
 `
 
-export default {
+const deleteCorsOriginCommand: CliCommandDefinition = {
   name: 'delete',
   group: 'cors',
   signature: '[ORIGIN]',
@@ -24,12 +27,14 @@ export default {
   },
 }
 
-async function promptForOrigin(specified, context) {
+export default deleteCorsOriginCommand
+
+async function promptForOrigin(specified: string | undefined, context: CliCommandContext) {
   const specifiedOrigin = specified && specified.toLowerCase()
   const {prompt, apiClient} = context
   const client = apiClient({requireUser: true, requireProject: true})
 
-  const origins = await client.request({url: '/cors'})
+  const origins = await client.request<CorsOrigin[]>({url: '/cors'})
   if (specifiedOrigin) {
     const selected = origins.filter((origin) => origin.origin.toLowerCase() === specifiedOrigin)[0]
     if (!selected) {
