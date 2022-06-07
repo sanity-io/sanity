@@ -54,7 +54,7 @@
     "lodash": "^4.17.21",
     "log-symbols": "^2.2.0",
     "oneline": "^1.0.3",
-    "opn": "^5.2.0",
+    "open": "^8.4.0",
     "path-exists": "^3.0.0",
     "pirates": "^4.0.0",
     "pluralize": "^7.0.0",

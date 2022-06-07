@@ -1,7 +1,11 @@
-export default {
+import type {CliCommandDefinition} from '@sanity/cli'
+import type {Hook} from './types'
+
+const listHooksCommand: CliCommandDefinition = {
   name: 'list',
   group: 'hook',
   signature: '',
+  helpText: '',
   description: 'List hooks for a given project',
   action: async (args, context) => {
     const {apiClient, output} = context
@@ -9,7 +13,10 @@ export default {
 
     let hooks
     try {
-      hooks = await client.clone().config({apiVersion: '2021-10-04'}).request({uri: '/hooks'})
+      hooks = await client
+        .clone()
+        .config({apiVersion: '2021-10-04'})
+        .request<Hook[]>({uri: '/hooks'})
     } catch (err) {
       throw new Error(`Hook list retrieval failed:\n${err.message}`)
     }
@@ -31,3 +38,5 @@ export default {
     })
   },
 }
+
+export default listHooksCommand

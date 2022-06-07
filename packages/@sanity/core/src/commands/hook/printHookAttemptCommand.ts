@@ -1,7 +1,11 @@
-export default {
+import type {CliCommandDefinition} from '@sanity/cli'
+import type {DeliveryAttempt} from './types'
+
+const printHookAttemptCommand: CliCommandDefinition = {
   name: 'attempt',
   group: 'hook',
   signature: 'ATTEMPT_ID',
+  helpText: '',
   description: 'Print details of a given webhook delivery attempt',
   action: async (args, context) => {
     const {apiClient, output} = context
@@ -10,7 +14,7 @@ export default {
 
     let attempt
     try {
-      attempt = await client.request({uri: `/hooks/attempts/${attemptId}`})
+      attempt = await client.request<DeliveryAttempt>({uri: `/hooks/attempts/${attemptId}`})
     } catch (err) {
       throw new Error(`Hook attempt retrieval failed:\n${err.message}`)
     }
@@ -32,7 +36,13 @@ export default {
   },
 }
 
-export function formatFailure(attempt, {includeHelp} = {}) {
+export default printHookAttemptCommand
+
+export function formatFailure(
+  attempt: DeliveryAttempt,
+  options: {includeHelp?: boolean} = {}
+): string {
+  const {includeHelp} = options
   const {id, failureReason, resultCode} = attempt
   const help = includeHelp ? `(run \`sanity hook attempt ${id}\` for details)` : ''
   switch (failureReason) {
@@ -49,7 +59,7 @@ export function formatFailure(attempt, {includeHelp} = {}) {
   return 'Unknown error'
 }
 
-export function getStatus(attempt) {
+export function getStatus(attempt: DeliveryAttempt): string {
   if (attempt.isFailure) {
     return 'Failed'
   }
