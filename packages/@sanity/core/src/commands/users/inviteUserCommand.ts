@@ -1,4 +1,6 @@
-const prettifyQuotaError = require('../../util/prettifyQuotaError')
+import type {CliCommandDefinition, CliPrompter} from '@sanity/cli'
+import {prettifyQuotaError} from '../../util/prettifyQuotaError'
+import type {Role} from './types'
 
 const helpText = `
 Options
@@ -15,7 +17,11 @@ Examples
   sanity users invite pippi@sanity.io --role administrator
 `
 
-export default {
+interface InviteFlags {
+  role?: string
+}
+
+const inviteUserCommand: CliCommandDefinition<InviteFlags> = {
   name: 'invite',
   group: 'users',
   signature: '[EMAIL]',
@@ -28,7 +34,7 @@ export default {
 
     const client = apiClient().clone().config({useProjectHostname: false, apiVersion: '2021-06-07'})
     const {projectId} = client.config()
-    const roles = (await client.request({uri: `/projects/${projectId}/roles`})).filter(
+    const roles = (await client.request<Role[]>({uri: `/projects/${projectId}/roles`})).filter(
       (role) => role.appliesToUsers
     )
     const email = selectedEmail || (await promptForEmail(prompt))
@@ -57,7 +63,9 @@ export default {
   },
 }
 
-function promptForEmail(prompt) {
+export default inviteUserCommand
+
+function promptForEmail(prompt: CliPrompter): Promise<string> {
   return prompt.single({
     type: 'input',
     message: 'Email to invite:',
@@ -72,7 +80,7 @@ function promptForEmail(prompt) {
   })
 }
 
-function promptForRole(prompt, roles) {
+function promptForRole(prompt: CliPrompter, roles: Role[]): Promise<string> {
   return prompt.single({
     type: 'list',
     message: 'Which role should the user have?',

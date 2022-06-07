@@ -1,4 +1,6 @@
 import {sortBy, size} from 'lodash'
+import type {CliCommandDefinition} from '@sanity/cli'
+import type {Invite, PartialProjectResponse, User} from './types'
 
 const sortFields = ['id', 'name', 'role', 'date']
 
@@ -20,7 +22,7 @@ Examples
   sanity users list --sort role
 `
 
-export default {
+const listUsersCommand: CliCommandDefinition = {
   name: 'list',
   group: 'users',
   signature: '',
@@ -52,24 +54,25 @@ export default {
     const [pendingInvitations, project] = await Promise.all([
       invitations
         ? globalClient
-            .request({uri: `/invitations/project/${projectId}`, useGlobalApi})
+            .request<Invite[]>({uri: `/invitations/project/${projectId}`, useGlobalApi})
             .then(getPendingInvitations)
         : [],
-      globalClient.request({uri: `/projects/${projectId}`, useGlobalApi}),
+      globalClient.request<PartialProjectResponse>({uri: `/projects/${projectId}`, useGlobalApi}),
     ])
 
     const memberIds = project.members.map((member) => member.id)
     const users = await globalClient
-      .request({uri: `/users/${memberIds.join(',')}`, useGlobalApi})
-      .then(arrayify)
+      .request<User | User[]>({uri: `/users/${memberIds.join(',')}`, useGlobalApi})
+      .then((user) => (Array.isArray(user) ? user : [user]))
 
-    const members = project.members
+    const projectMembers = project.members
       .map((member) => ({
         ...member,
         ...getUserProps(users.find((candidate) => candidate.id === member.id)),
       }))
       .filter((member) => !member.isRobot || robots)
-      .concat(pendingInvitations)
+
+    const members = [...projectMembers, ...pendingInvitations]
 
     const ordered = sortBy(
       members.map(({id, name, role, date}) => [id, name, role, date]),
@@ -83,7 +86,7 @@ export default {
       sortFields.map((str) => size(str))
     )
 
-    const printRow = (row) => {
+    const printRow = (row: string[]) => {
       const isInvite = row[0] === '<pending>'
       const textRow = row.map((col, i) => `${col}`.padEnd(maxWidths[i])).join('   ')
       return isInvite ? chalk.dim(textRow) : textRow
@@ -94,16 +97,12 @@ export default {
   },
 }
 
-function arrayify(obj) {
-  return Array.isArray(obj) ? obj : [obj]
-}
-
-function getUserProps(user) {
+function getUserProps(user: User | undefined) {
   const {displayName: name, createdAt: date} = user || {}
-  return {name, date}
+  return {name: name || '', date: date || ''}
 }
 
-function getPendingInvitations(invitations) {
+function getPendingInvitations(invitations: Invite[]) {
   return invitations
     .filter((invite) => !invite.isAccepted && !invite.isRevoked && !invite.acceptedByUserId)
     .map((invite) => ({
@@ -113,3 +112,5 @@ function getPendingInvitations(invitations) {
       date: invite.createdAt,
     }))
 }
+
+export default listUsersCommand
