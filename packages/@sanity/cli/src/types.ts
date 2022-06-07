@@ -80,6 +80,7 @@ export interface CliBaseCommandContext {
   corePath?: string
   chalk: typeof chalk
   commandRunner: CliCommandRunner
+  fromInitCommand?: boolean
 }
 export interface CliV2CommandContext extends CliBaseCommandContext {
   sanityMajorVersion: 2

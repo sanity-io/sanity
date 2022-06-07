@@ -1,11 +1,12 @@
-import promptForDatasetName from '../../../actions/dataset/datasetNamePrompt'
-import promptForDatasetAliasName from '../../../actions/dataset/alias/datasetAliasNamePrompt'
-import validateDatasetAliasName from '../../../actions/dataset/alias/validateDatasetAliasName'
-import validateDatasetName from '../../../actions/dataset/validateDatasetName'
+import type {CliCommandAction} from '@sanity/cli'
+import {promptForDatasetName} from '../../../actions/dataset/datasetNamePrompt'
+import {promptForDatasetAliasName} from '../../../actions/dataset/alias/promptForDatasetAliasName'
+import {validateDatasetAliasName} from '../../../actions/dataset/alias/validateDatasetAliasName'
+import {validateDatasetName} from '../../../actions/dataset/validateDatasetName'
 import * as aliasClient from './datasetAliasesClient'
 import {ALIAS_PREFIX} from './datasetAliasesClient'
 
-export default async (args, context) => {
+export const linkAliasHandler: CliCommandAction = async (args, context) => {
   const {apiClient, output, prompt} = context
   const [, alias, targetDataset] = args.argsWithoutOptions
   const flags = args.extOptions

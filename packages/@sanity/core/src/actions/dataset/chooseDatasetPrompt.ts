@@ -1,7 +1,11 @@
+import type {CliCommandContext} from '@sanity/cli'
 import {debug} from '../../debug'
-import promptForDatasetName from './datasetNamePrompt'
+import {promptForDatasetName} from './datasetNamePrompt'
 
-export default async (context, options = {}) => {
+export async function chooseDatasetPrompt(
+  context: CliCommandContext,
+  options: {message?: string; allowCreation?: boolean} = {}
+): Promise<string> {
   const {apiClient, prompt} = context
   const {message, allowCreation} = options
   const client = apiClient()

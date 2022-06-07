@@ -1,10 +1,11 @@
 import path from 'path'
+import type {CliCommandDefinition, CliPrompter} from '@sanity/cli'
 import fse from 'fs-extra'
 import prettyMs from 'pretty-ms'
 import {pathTools} from '@sanity/util'
 import exportDataset from '@sanity/export'
-import chooseDatasetPrompt from '../../actions/dataset/chooseDatasetPrompt'
-import validateDatasetName from '../../actions/dataset/validateDatasetName'
+import {chooseDatasetPrompt} from '../../actions/dataset/chooseDatasetPrompt'
+import {validateDatasetName} from '../../actions/dataset/validateDatasetName'
 
 const noop = () => null
 
@@ -25,7 +26,67 @@ Examples
   sanity dataset export staging staging.tar.gz --types products,shops
 `
 
-export default {
+interface ExportFlags {
+  raw?: boolean
+  assets?: boolean
+  drafts?: boolean
+  compress?: boolean
+  overwrite?: boolean
+  types?: string
+  'asset-concurrency'?: string
+}
+
+interface ParsedExportFlags {
+  raw?: boolean
+  assets?: boolean
+  drafts?: boolean
+  compress?: boolean
+  overwrite?: boolean
+  types?: string[]
+  assetConcurrency?: number
+}
+
+function parseFlags(rawFlags: ExportFlags): ParsedExportFlags {
+  const flags: ParsedExportFlags = {}
+  if (rawFlags.types) {
+    flags.types = `${rawFlags.types}`.split(',')
+  }
+
+  if (rawFlags['asset-concurrency']) {
+    flags.assetConcurrency = parseInt(rawFlags['asset-concurrency'], 10)
+  }
+
+  if (typeof rawFlags.raw !== 'undefined') {
+    flags.raw = Boolean(rawFlags.raw)
+  }
+
+  if (typeof rawFlags.assets !== 'undefined') {
+    flags.assets = Boolean(rawFlags.assets)
+  }
+
+  if (typeof rawFlags.drafts !== 'undefined') {
+    flags.drafts = Boolean(rawFlags.drafts)
+  }
+
+  if (typeof rawFlags.compress !== 'undefined') {
+    flags.compress = Boolean(rawFlags.compress)
+  }
+
+  if (typeof rawFlags.overwrite !== 'undefined') {
+    flags.overwrite = Boolean(rawFlags.overwrite)
+  }
+
+  return flags
+}
+
+interface ProgressEvent {
+  step: string
+  update?: boolean
+  current: number
+  total: number
+}
+
+const exportDatasetCommand: CliCommandDefinition<ExportFlags> = {
   name: 'export',
   group: 'dataset',
   signature: '[NAME] [DESTINATION]',
@@ -35,16 +96,8 @@ export default {
     const {apiClient, output, chalk, workDir, prompt} = context
     const client = apiClient()
     const [targetDataset, targetDestination] = args.argsWithoutOptions
-    const flags = args.extOptions
+    const flags = parseFlags(args.extOptions)
     const {absolutify} = pathTools
-
-    if (flags.types) {
-      flags.types = `${flags.types}`.split(',')
-    }
-
-    if (flags['asset-concurrency']) {
-      flags.assetConcurrency = parseInt(flags['asset-concurrency'], 10)
-    }
 
     let dataset = targetDataset ? `${targetDataset}` : null
     if (!dataset) {
@@ -85,7 +138,7 @@ export default {
 
     let currentStep = 'Exporting documents...'
     let spinner = output.spinner(currentStep).start()
-    const onProgress = (progress) => {
+    const onProgress = (progress: ProgressEvent) => {
       if (progress.step !== currentStep) {
         spinner.succeed()
         spinner = output.spinner(progress.step).start()
@@ -116,7 +169,12 @@ export default {
 }
 
 // eslint-disable-next-line complexity
-async function getOutputPath(destination, dataset, prompt, flags) {
+async function getOutputPath(
+  destination: string,
+  dataset: string,
+  prompt: CliPrompter,
+  flags: ParsedExportFlags
+) {
   if (destination === '-') {
     return '-'
   }
@@ -151,3 +209,5 @@ async function getOutputPath(destination, dataset, prompt, flags) {
 
   return finalPath
 }
+
+export default exportDatasetCommand

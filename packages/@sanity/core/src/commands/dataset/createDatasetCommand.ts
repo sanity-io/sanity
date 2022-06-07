@@ -1,6 +1,7 @@
+import type {CliCommandDefinition, CliOutputter, CliPrompter} from '@sanity/cli'
 import {debug} from '../../debug'
-import promptForDatasetName from '../../actions/dataset/datasetNamePrompt'
-import validateDatasetName from '../../actions/dataset/validateDatasetName'
+import {promptForDatasetName} from '../../actions/dataset/datasetNamePrompt'
+import {validateDatasetName} from '../../actions/dataset/validateDatasetName'
 
 const helpText = `
 Options
@@ -12,9 +13,13 @@ Examples
   sanity dataset create <name> --visibility private
 `
 
-const allowedModes = ['private', 'public']
+const allowedModes = ['private', 'public', 'custom']
 
-export default {
+interface CreateFlags {
+  visibility?: 'private' | 'public' | 'custom'
+}
+
+const createDatasetCommand: CliCommandDefinition<CreateFlags> = {
   name: 'create',
   group: 'dataset',
   signature: '[NAME]',
@@ -60,8 +65,8 @@ export default {
   },
 }
 
-async function promptForDatasetVisibility(prompt, output) {
-  const mode = await prompt.single({
+async function promptForDatasetVisibility(prompt: CliPrompter, output: CliOutputter) {
+  const mode = await prompt.single<'public' | 'private'>({
     type: 'list',
     message: 'Dataset visibility',
     choices: [
@@ -84,3 +89,5 @@ async function promptForDatasetVisibility(prompt, output) {
 
   return mode
 }
+
+export default createDatasetCommand

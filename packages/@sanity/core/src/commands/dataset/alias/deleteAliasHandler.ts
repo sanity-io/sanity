@@ -1,8 +1,9 @@
-import validateDatasetAliasName from '../../../actions/dataset/alias/validateDatasetAliasName'
+import type {CliCommandAction} from '@sanity/cli'
+import {validateDatasetAliasName} from '../../../actions/dataset/alias/validateDatasetAliasName'
 import * as aliasClient from './datasetAliasesClient'
 import {ALIAS_PREFIX} from './datasetAliasesClient'
 
-export default async (args, context) => {
+export const deleteAliasHandler: CliCommandAction = async (args, context) => {
   const {apiClient, prompt, output} = context
   const [, ds] = args.argsWithoutOptions
   const client = apiClient()

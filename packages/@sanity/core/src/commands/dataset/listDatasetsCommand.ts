@@ -1,8 +1,10 @@
-import listAliasesHandler from './alias/listAliasesHandler'
+import type {CliCommandDefinition} from '@sanity/cli'
+import {listAliasesHandler} from './alias/listAliasesHandler'
 
-export default {
+const listDatasetsCommand: CliCommandDefinition = {
   name: 'list',
   group: 'dataset',
+  helpText: '',
   signature: '',
   description: 'List datasets of your project',
   action: async (args, context) => {
@@ -15,3 +17,5 @@ export default {
     await listAliasesHandler(args, context)
   },
 }
+
+export default listDatasetsCommand

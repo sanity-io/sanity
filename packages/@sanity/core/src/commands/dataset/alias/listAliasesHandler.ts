@@ -1,7 +1,8 @@
+import type {CliCommandAction} from '@sanity/cli'
 import * as aliasClient from './datasetAliasesClient'
 import {ALIAS_PREFIX} from './datasetAliasesClient'
 
-export default async (args, context) => {
+export const listAliasesHandler: CliCommandAction = async (args, context) => {
   const {apiClient, output} = context
   const client = apiClient()
 

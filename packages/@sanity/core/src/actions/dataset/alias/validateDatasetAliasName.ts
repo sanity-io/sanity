@@ -1,6 +1,6 @@
 const MAX_DATASET_NAME_LENGTH = 64
 
-module.exports = (datasetName) => {
+export function validateDatasetAliasName(datasetName: string): false | string {
   if (!datasetName) {
     return 'Alias name is missing'
   }

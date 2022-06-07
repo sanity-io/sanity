@@ -1,15 +1,16 @@
 import path from 'path'
+import type {CliCommandContext, CliCommandDefinition, CliOutputter} from '@sanity/cli'
 import getIt from 'get-it'
 import {promise} from 'get-it/middleware'
 import fse from 'fs-extra'
 import sanityImport from '@sanity/import'
 import padStart from 'lodash/padStart'
 import prettyMs from 'pretty-ms'
-import chooseDatasetPrompt from '../../actions/dataset/chooseDatasetPrompt'
-import validateDatasetName from '../../actions/dataset/validateDatasetName'
+import {chooseDatasetPrompt} from '../../actions/dataset/chooseDatasetPrompt'
+import {validateDatasetName} from '../../actions/dataset/validateDatasetName'
 import {debug} from '../../debug'
 
-const yellow = (str) => `\u001b[33m${str}\u001b[39m`
+const yellow = (str: string) => `\u001b[33m${str}\u001b[39m`
 
 const helpText = `
 Options
@@ -38,7 +39,57 @@ Examples
   sanity dataset import https://some.url/moviedb.tar.gz moviedb --replace
 `
 
-export default {
+interface ImportFlags {
+  'allow-assets-in-different-dataset'?: boolean
+  'allow-failing-assets'?: boolean
+  'asset-concurrency'?: boolean
+  'replace-assets'?: boolean
+  replace?: boolean
+  missing?: boolean
+}
+
+interface ParsedImportFlags {
+  allowAssetsInDifferentDataset?: boolean
+  allowFailingAssets?: boolean
+  assetConcurrency?: boolean
+  replaceAssets?: boolean
+  replace?: boolean
+  missing?: boolean
+}
+
+interface ProgressEvent {
+  step: string
+  total?: number
+  current?: number
+}
+
+interface ImportWarning {
+  type?: string
+  url?: string
+}
+
+function toBoolIfSet(flag: unknown): boolean | undefined {
+  return typeof flag === 'undefined' ? undefined : Boolean(flag)
+}
+
+function parseFlags(rawFlags: ImportFlags): ParsedImportFlags {
+  const allowAssetsInDifferentDataset = toBoolIfSet(rawFlags['allow-assets-in-different-dataset'])
+  const allowFailingAssets = toBoolIfSet(rawFlags['allow-failing-assets'])
+  const assetConcurrency = toBoolIfSet(rawFlags['asset-concurrency'])
+  const replaceAssets = toBoolIfSet(rawFlags['replace-assets'])
+  const replace = toBoolIfSet(rawFlags.replace)
+  const missing = toBoolIfSet(rawFlags.missing)
+  return {
+    allowAssetsInDifferentDataset,
+    allowFailingAssets,
+    assetConcurrency,
+    replaceAssets,
+    replace,
+    missing,
+  }
+}
+
+const importDatasetCommand: CliCommandDefinition = {
   name: 'import',
   group: 'dataset',
   signature: '[FILE | FOLDER | URL] [TARGET_DATASET]',
@@ -47,11 +98,10 @@ export default {
   // eslint-disable-next-line max-statements
   action: async (args, context) => {
     const {apiClient, output, chalk, fromInitCommand} = context
+    const flags = parseFlags(args.extOptions)
+    const {allowAssetsInDifferentDataset, allowFailingAssets, assetConcurrency, replaceAssets} =
+      flags
 
-    const allowAssetsInDifferentDataset = args.extOptions['allow-assets-in-different-dataset']
-    const allowFailingAssets = args.extOptions['allow-failing-assets']
-    const assetConcurrency = args.extOptions['asset-concurrency']
-    const replaceAssets = args.extOptions['replace-assets']
     const operation = getMutationOperation(args.extOptions)
     const client = apiClient()
 
@@ -93,19 +143,21 @@ export default {
 
     const importClient = client.clone().config({dataset: targetDataset})
 
-    let currentStep
-    let currentProgress
-    let stepStart
-    let spinInterval
-    let percent
+    let currentStep: string | undefined
+    let currentProgress: ReturnType<CliOutputter['spinner']> | undefined
+    let stepStart: number | undefined
+    let spinInterval: NodeJS.Timeout | null = null
+    let percent: string | undefined
 
-    function onProgress(opts) {
+    function onProgress(opts: ProgressEvent) {
       const lengthComputable = opts.total
       const sameStep = opts.step == currentStep
       percent = getPercentage(opts)
 
       if (lengthComputable && opts.total === opts.current) {
-        clearInterval(spinInterval)
+        if (spinInterval) {
+          clearInterval(spinInterval)
+        }
         spinInterval = null
       }
 
@@ -138,15 +190,21 @@ export default {
         const timeSpent = prettyMs(Date.now() - prevStepStart, {
           secondsDecimalDigits: 2,
         })
-        currentProgress.text = `${percent}${opts.step} (${timeSpent})`
+
+        if (currentProgress) {
+          currentProgress.text = `${percent}${opts.step} (${timeSpent})`
+        }
       }, 60)
     }
 
-    function endTask({success}) {
-      clearInterval(spinInterval)
+    function endTask({success}: {success: boolean}) {
+      if (spinInterval) {
+        clearInterval(spinInterval)
+      }
+
       spinInterval = null
 
-      if (success) {
+      if (success && stepStart && currentProgress) {
         const timeSpent = prettyMs(Date.now() - stepStart, {
           secondsDecimalDigits: 2,
         })
@@ -196,7 +254,8 @@ export default {
         '',
       ].join('\n')
 
-      const error = new Error(message)
+      // @todo SUBCLASS ERROR?
+      const error = new Error(message) as any
       error.details = err.details
       error.response = err.response
       error.responseBody = err.responseBody
@@ -206,7 +265,7 @@ export default {
   },
 }
 
-async function determineTargetDataset(target, context) {
+async function determineTargetDataset(target: string, context: CliCommandContext) {
   const {apiClient, output, prompt} = context
   const client = apiClient()
 
@@ -246,7 +305,7 @@ async function determineTargetDataset(target, context) {
   return targetDataset
 }
 
-function getMutationOperation(flags) {
+function getMutationOperation(flags: ParsedImportFlags) {
   const {replace, missing} = flags
   if (replace && missing) {
     throw new Error('Cannot use both --replace and --missing')
@@ -263,21 +322,21 @@ function getMutationOperation(flags) {
   return 'create'
 }
 
-function getPercentage(opts) {
-  if (!opts.total) {
+function getPercentage(opts: ProgressEvent) {
+  if (!opts.total || typeof opts.current === 'undefined') {
     return ''
   }
 
   const percent = Math.floor((opts.current / opts.total) * 100)
-  return `[${padStart(percent, 3, ' ')}%] `
+  return `[${padStart(`${percent}`, 3, ' ')}%] `
 }
 
-function getUrlStream(url) {
+function getUrlStream(url: string) {
   const request = getIt([promise({onlyBody: true})])
   return request({url, stream: true})
 }
 
-function printWarnings(warnings, output) {
+function printWarnings(warnings: ImportWarning[], output: CliOutputter) {
   const assetFails = warnings.filter((warn) => warn.type === 'asset')
 
   if (!assetFails.length) {
@@ -292,3 +351,5 @@ function printWarnings(warnings, output) {
     warn(`  ${warning.url}`)
   })
 }
+
+export default importDatasetCommand

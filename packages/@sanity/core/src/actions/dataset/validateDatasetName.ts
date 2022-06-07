@@ -1,6 +1,6 @@
 const MAX_DATASET_NAME_LENGTH = 64
 
-module.exports = (datasetName) => {
+export function validateDatasetName(datasetName: string): false | string {
   if (!datasetName) {
     return 'Dataset name is missing'
   }

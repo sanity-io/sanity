@@ -1,8 +1,9 @@
+import type {SanityClient} from '@sanity/client'
+import type {CliCommandDefinition, CliOutputter} from '@sanity/cli'
 import EventSource from '@sanity/eventsource'
 import {Observable} from 'rxjs'
-import chalk from 'chalk'
-import promptForDatasetName from '../../actions/dataset/datasetNamePrompt'
-import validateDatasetName from '../../actions/dataset/validateDatasetName'
+import {promptForDatasetName} from '../../actions/dataset/datasetNamePrompt'
+import {validateDatasetName} from '../../actions/dataset/validateDatasetName'
 import {debug} from '../../debug'
 
 const helpText = `
@@ -20,12 +21,23 @@ Examples
   sanity dataset copy --attach <job-id>
 `
 
-const progress = (url) => {
-  return new Observable((observer) => {
+interface CopyProgressStreamEvent {
+  type: 'reconnect' | string
+  progress?: number
+}
+
+interface CopyFlags {
+  attach?: string
+  detach?: boolean
+  'skip-history'?: boolean
+}
+
+const progress = (url: string) => {
+  return new Observable<CopyProgressStreamEvent>((observer) => {
     let progressSource = new EventSource(url)
     let stopped = false
 
-    function onError(error) {
+    function onError(error: unknown) {
       if (progressSource) {
         progressSource.close()
       }
@@ -38,13 +50,13 @@ const progress = (url) => {
       progressSource = new EventSource(url)
     }
 
-    function onChannelError(error) {
+    function onChannelError(error: MessageEvent) {
       stopped = true
       progressSource.close()
       observer.error(error)
     }
 
-    function onMessage(event) {
+    function onMessage(event: MessageEvent) {
       const data = JSON.parse(event.data)
       if (data.state === 'failed') {
         debug('Job failed. Data: %o', event)
@@ -74,7 +86,7 @@ const progress = (url) => {
   })
 }
 
-const followProgress = (jobId, client, output) => {
+const followProgress = (jobId: string, client: SanityClient, output: CliOutputter) => {
   let currentProgress = 0
 
   const spinner = output.spinner({}).start()
@@ -99,14 +111,14 @@ const followProgress = (jobId, client, output) => {
   })
 }
 
-export default {
+const copyDatasetCommand: CliCommandDefinition<CopyFlags> = {
   name: 'copy',
   group: 'dataset',
   signature: '[SOURCE_DATASET] [TARGET_DATASET]',
   helpText,
   description: 'Copies a dataset including its assets to a new dataset',
   action: async (args, context) => {
-    const {apiClient, output, prompt} = context
+    const {apiClient, output, prompt, chalk} = context
     const flags = args.extOptions
     const client = apiClient()
 
@@ -180,3 +192,5 @@ export default {
     }
   },
 }
+
+export default copyDatasetCommand

@@ -1,8 +1,10 @@
-import validateDatasetName from '../../actions/dataset/validateDatasetName'
+import type {CliCommandDefinition} from '@sanity/cli'
+import {validateDatasetName} from '../../actions/dataset/validateDatasetName'
 
-export default {
+const datasetVisibilityCommand: CliCommandDefinition = {
   name: 'visibility',
   group: 'dataset',
+  helpText: '',
   signature: 'get/set [dataset] [mode]',
   description: 'Set visibility of a dataset',
   action: async (args, context) => {
@@ -58,7 +60,9 @@ export default {
       )
     }
 
-    await client.datasets.edit(dataset, {aclMode})
+    await client.datasets.edit(dataset, {aclMode: aclMode as 'public' | 'private'})
     output.print('Dataset visibility changed')
   },
 }
+
+export default datasetVisibilityCommand

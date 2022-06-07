@@ -1,8 +1,9 @@
+import type {CliCommandDefinition} from '@sanity/cli'
 import oneline from 'oneline'
-import createAliasHandler from './createAliasHandler'
-import deleteAliasHandler from './deleteAliasHandler'
-import unlinkAliasHandler from './unlinkAliasHandler'
-import linkAliasHandler from './linkAliasHandler'
+import {createAliasHandler} from './createAliasHandler'
+import {deleteAliasHandler} from './deleteAliasHandler'
+import {unlinkAliasHandler} from './unlinkAliasHandler'
+import {linkAliasHandler} from './linkAliasHandler'
 
 const helpText = `
 Below are examples of the alias subcommand
@@ -29,7 +30,7 @@ Un-link Alias
   sanity dataset alias unlink <alias-name>
 `
 
-export default {
+const aliasCommand: CliCommandDefinition = {
   name: 'alias',
   group: 'dataset',
   signature: 'SUBCOMMAND [ALIAS_NAME, TARGET_DATASET]',
@@ -58,3 +59,5 @@ export default {
     }
   },
 }
+
+export default aliasCommand

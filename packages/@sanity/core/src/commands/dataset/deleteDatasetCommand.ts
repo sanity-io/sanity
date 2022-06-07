@@ -1,8 +1,10 @@
-import validateDatasetName from '../../actions/dataset/validateDatasetName'
+import type {CliCommandDefinition} from '@sanity/cli'
+import {validateDatasetName} from '../../actions/dataset/validateDatasetName'
 
-export default {
+const deleteDatasetCommand: CliCommandDefinition = {
   name: 'delete',
   group: 'dataset',
+  helpText: '',
   signature: '[datasetName]',
   description: 'Delete a dataset within your project',
   action: async (args, context) => {
@@ -28,10 +30,9 @@ export default {
       },
     })
 
-    return apiClient()
-      .datasets.delete(dataset)
-      .then(() => {
-        output.print('Dataset deleted successfully')
-      })
+    await apiClient().datasets.delete(dataset)
+    output.print('Dataset deleted successfully')
   },
 }
+
+export default deleteDatasetCommand
