@@ -117,7 +117,7 @@ export class ArrayInput extends React.PureComponent<ArrayInputProps> {
         if (event.edit === false) {
           onFocusPath([{_key: event.item._key}])
         } else {
-          onOpenItem(event.item._key)
+          onOpenItem(event.item.path)
         }
       })
   }

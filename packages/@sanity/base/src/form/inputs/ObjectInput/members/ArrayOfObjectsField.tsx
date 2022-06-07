@@ -154,11 +154,11 @@ export function ArrayOfObjectsField(props: {
   )
 
   const handleOpenItem = useCallback(
-    (itemKey: string) => {
-      onPathOpen(member.field.path.concat({_key: itemKey}))
-      onSetPathCollapsed(member.field.path, false)
+    (path: Path) => {
+      onPathOpen(path)
+      onSetPathCollapsed(path, false)
     },
-    [onPathOpen, member.field.path, onSetPathCollapsed]
+    [onPathOpen, onSetPathCollapsed]
   )
 
   const handleCloseItem = useCallback(() => {

@@ -94,8 +94,8 @@ export interface ArrayOfObjectsInputProps<
   onExpandItem: (itemKey: string) => void
 
   // for array inputs using modal open/close semantics for items
-  onOpenItem: (itemKey: string) => void
-  onCloseItem: (itemKey: string) => void
+  onOpenItem: (path: Path) => void
+  onCloseItem: () => void
 
   renderField: RenderFieldCallback
   renderInput: RenderInputCallback
