@@ -1,5 +1,5 @@
 import type {CliCommandDefinition} from '@sanity/cli'
-import {lazyRequire} from '@sanity/util/_internal'
+import {lazyRequire} from '../../util/lazyRequire'
 
 const helpText = `
 Notes

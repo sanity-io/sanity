@@ -229,9 +229,3 @@ function normalizeIndexTupleSegment(segment: string): IndexTuple {
   const [from, to] = segment.split(':').map((seg) => (seg === '' ? seg : Number(seg)))
   return [from, to]
 }
-
-/**
- *
- * @deprecated use import {randomKey} from '@sanity/util/content instead
- */
-export {randomKey} from './content'

@@ -2,7 +2,7 @@ import path from 'path'
 import fs from 'fs/promises'
 import type {CliCommandDefinition, CliPrompter} from '@sanity/cli'
 import prettyMs from 'pretty-ms'
-import {pathTools} from '@sanity/util'
+import {absolutify} from '@sanity/util/fs'
 import exportDataset from '@sanity/export'
 import {chooseDatasetPrompt} from '../../actions/dataset/chooseDatasetPrompt'
 import {validateDatasetName} from '../../actions/dataset/validateDatasetName'
@@ -97,7 +97,6 @@ const exportDatasetCommand: CliCommandDefinition<ExportFlags> = {
     const client = apiClient()
     const [targetDataset, targetDestination] = args.argsWithoutOptions
     const flags = parseFlags(args.extOptions)
-    const {absolutify} = pathTools
 
     let dataset = targetDataset ? `${targetDataset}` : null
     if (!dataset) {

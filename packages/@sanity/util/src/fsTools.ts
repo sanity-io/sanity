@@ -1,10 +1,10 @@
-import * as path from 'path'
-import * as os from 'os'
-import fse from 'fs-extra'
+import path from 'node:path'
+import os from 'node:os'
+import fs from 'node:fs/promises'
 
-export async function pathIsEmpty(dir: string) {
+export async function pathIsEmpty(dir: string): Promise<boolean> {
   try {
-    const content = await fse.readdir(absolutify(dir))
+    const content = await fs.readdir(absolutify(dir))
     return content.length === 0
   } catch (err) {
     if (err.code === 'ENOENT') {
@@ -15,7 +15,7 @@ export async function pathIsEmpty(dir: string) {
   }
 }
 
-export function expandHome(filePath: string) {
+export function expandHome(filePath: string): string {
   if (
     filePath.charCodeAt(0) === 126
     /* ~ */
@@ -34,7 +34,7 @@ export function expandHome(filePath: string) {
   return filePath
 }
 
-export function absolutify(dir: string) {
+export function absolutify(dir: string): string {
   const pathName = expandHome(dir)
   return path.isAbsolute(pathName) ? pathName : path.resolve(process.cwd(), pathName)
 }

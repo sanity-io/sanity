@@ -4,27 +4,18 @@ import open from 'open'
 import chalk from 'chalk'
 import EventSource from 'eventsource'
 import type {SanityClient} from '@sanity/client'
-import {parseJson} from '@sanity/util/_internal'
 import {getCliToken} from '../../util/clientWrapper'
 import {getUserConfig} from '../../util/getUserConfig'
 import {canLaunchBrowser} from '../../util/canLaunchBrowser'
 import {CliCommandArguments, CliCommandContext, CliPrompter} from '../../types'
-
-interface LoginProvider {
-  title: string
-  name: string
-  id?: string
-  disabled?: boolean
-  type?: string
-}
-
-interface ProvidersResponse {
-  providers: LoginProvider[]
-}
-
-interface EventWithMessage {
-  message?: string
-}
+import type {
+  EventWithMessage,
+  ListenFailureMessage,
+  ListenMessageData,
+  ListenToken,
+  LoginProvider,
+  ProvidersResponse,
+} from './types'
 
 export interface LoginFlags {
   sso?: string
@@ -123,10 +114,8 @@ function getAuthChannel(baseUrl: string, provider: LoginProvider, iv: string): E
 }
 
 function getAuthInfo(es: EventSource): Promise<{secret: string; url: string}> {
-  const wantedProps = ['secret', 'url']
-  const values: Record<string, string> = {secret: '', url: ''}
+  const values = {secret: '', url: ''}
   return new Promise((resolve, reject) => {
-    let numProps = 0
     es.addEventListener('error', (err: MessageEvent | EventWithMessage) => {
       es.close()
       const message = 'message' in err && typeof err.message === 'string' ? err.message : ''
@@ -134,14 +123,21 @@ function getAuthInfo(es: EventSource): Promise<{secret: string; url: string}> {
     })
 
     es.addEventListener('message', (msg) => {
-      const data = parseJson(msg.data, {})
-      if (!wantedProps.includes(data.type)) {
+      const data = parseJson<ListenMessageData | null>(msg.data, null)
+      if (!data || !('type' in data)) {
         return
       }
 
-      values[data.type] = data[data.type]
-      if (++numProps === wantedProps.length) {
-        resolve(values as {secret: string; url: string})
+      if (data.type === 'secret') {
+        values.secret = data.secret
+      } else if (data.type === 'url') {
+        values.url = data.url
+      } else {
+        return
+      }
+
+      if (values.secret && values.url) {
+        resolve(values)
       }
     })
   })
@@ -151,18 +147,24 @@ function getAuthToken(es: EventSource): Promise<string> {
   return new Promise((resolve, reject) => {
     es.addEventListener('success', (msg) => {
       es.close()
-      const data = parseJson(msg.data, {})
+      const data = parseJson<ListenToken | null>(msg.data, null)
+      if (!data || !data.token) {
+        reject(new Error('Failed to get token from `success`-message'))
+        return
+      }
+
       resolve(data.token)
     })
 
     es.addEventListener('failure', (msg) => {
       es.close()
-      const data = parseJson(msg.data, {})
-      const error = new Error(data.message) as any
-      Object.keys(data).forEach((key) => {
-        error[key] = data[key]
+
+      const data = parseJson<ListenFailureMessage>(msg.data, {
+        type: 'error',
+        message: 'Unknown error',
       })
-      reject(error)
+
+      reject(new Error(data.message))
     })
   })
 }
@@ -270,4 +272,12 @@ async function promptProviders(
   })
 
   return providers.find((prov) => prov.title === provider) || providers[0]
+}
+
+function parseJson<T = any>(json: string, defaultVal: T): T {
+  try {
+    return JSON.parse(json)
+  } catch (err) {
+    return defaultVal
+  }
 }

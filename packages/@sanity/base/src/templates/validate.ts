@@ -1,4 +1,5 @@
-import {randomKey, toString as pathToString} from '@sanity/util/paths'
+import {toString as pathToString} from '@sanity/util/paths'
+import {randomKey} from '@sanity/util/content'
 import {Schema} from '@sanity/types'
 import {TemplateParameter, Template} from './types'
 import {isRecord} from './util/isRecord'

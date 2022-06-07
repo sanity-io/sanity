@@ -1,5 +1,6 @@
-import {addPluginToManifest} from '@sanity/util/_internal'
-import type {CliCommandContext, CliCommandArguments} from '../../types'
+import fs from 'node:fs/promises'
+import path from 'node:path'
+import type {CliCommandContext, CliCommandArguments, SanityJson} from '../../types'
 import type {InitFlags} from '../../commands/init/initCommand'
 import {debug} from '../../debug'
 import {bootstrapFromTemplate} from './bootstrapFromTemplate'
@@ -101,4 +102,17 @@ async function bootstrapFromUrl(context: CliCommandContext, url: string): Promis
   }
 
   output.print(`\nSuccess! Plugin initialized at ${outputPath}`)
+}
+
+async function addPluginToManifest(sanityDir: string, pluginName: string): Promise<SanityJson> {
+  const manifestPath = path.join(sanityDir, 'sanity.json')
+  const manifest = JSON.parse(await fs.readFile(manifestPath, 'utf8'))
+
+  manifest.plugins = manifest.plugins || []
+  if (manifest.plugins.indexOf(pluginName) === -1) {
+    manifest.plugins.push(pluginName)
+  }
+
+  await fs.writeFile(manifestPath, JSON.stringify(manifest, null, 2))
+  return manifest
 }

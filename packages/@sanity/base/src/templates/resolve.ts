@@ -9,8 +9,7 @@ import {
   InitialValueProperty,
   InitialValueResolver,
 } from '@sanity/types'
-import {isEmpty, resolveTypeName} from '@sanity/util/content'
-import {randomKey} from '@sanity/util/paths'
+import {randomKey, isEmpty, resolveTypeName} from '@sanity/util/content'
 import {isRecord} from './util/isRecord'
 import {Template} from './types'
 import {validateInitialObjectValue} from './validate'

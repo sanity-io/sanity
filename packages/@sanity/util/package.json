@@ -12,10 +12,10 @@
       "require": "./lib/index.cjs",
       "default": "./lib/index.js"
     },
-    "./_internal": {
-      "source": "./src/_internal.ts",
-      "require": "./lib/_internal.cjs",
-      "default": "./lib/_internal.js"
+    "./fs": {
+      "source": "./src/fsTools.ts",
+      "require": "./lib/fsTools.cjs",
+      "default": "./lib/fsTools.js"
     },
     "./content": {
       "source": "./src/content/index.ts",
@@ -36,8 +36,8 @@
   "//": "the typesVersion config below is a workaround for TypeScript's lack of support for package exports",
   "typesVersions": {
     "*": {
-      "_internal": [
-        "./lib/dts/src/_internal.d.ts"
+      "fs": [
+        "./lib/dts/src/fsTools.d.ts"
       ],
       "content": [
         "./lib/dts/src/content/index.d.ts"
@@ -61,7 +61,7 @@
     "watch": "../../../bin/pkg-utils bundle --target node --tsconfig tsconfig.lib.json --watch"
   },
   "engines": {
-    "node": ">=12.0.0"
+    "node": ">=14.0.0"
   },
   "repository": {
     "type": "git",
@@ -84,12 +84,8 @@
   "homepage": "https://www.sanity.io/",
   "dependencies": {
     "@sanity/types": "2.29.5",
-    "dotenv": "^10.0.0",
-    "fs-extra": "^7.0.0",
     "get-random-values": "^1.2.2",
-    "lodash": "^4.17.21",
-    "moment": "^2.19.1",
-    "resolve-from": "^5.0.0"
+    "moment": "^2.19.1"
   },
   "devDependencies": {
     "@types/moment": "^2.13.0",

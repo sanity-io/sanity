@@ -9,7 +9,14 @@ const requireFunc: typeof require =
   typeof __webpack_require__ === 'function' ? __non_webpack_require__ : require
 /* eslint-enable camelcase, no-undef */
 
-export function dynamicRequire<T = any>(request: string): T {
+function dynamicRequire<T = any>(request: string): T {
   const mod = requireFunc(request)
   return mod.__esModule && mod.default ? mod.default : mod
+}
+
+export function lazyRequire(id: string) {
+  return (...args: any[]) => {
+    const mod = dynamicRequire(id)
+    return mod(...args)
+  }
 }

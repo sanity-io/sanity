@@ -6,7 +6,7 @@ import promise from 'get-it/lib-node/middleware/promise'
 import decompress from 'decompress'
 import resolveFrom from 'resolve-from'
 import validateNpmPackageName from 'validate-npm-package-name'
-import {pathTools} from '@sanity/util'
+import {absolutify, pathIsEmpty} from '@sanity/util/fs'
 import * as pkg from '../../../package.json'
 import {readJson} from '../../util/readJson'
 import {dynamicRequire} from '../../util/dynamicRequire'
@@ -14,7 +14,6 @@ import {SanityJson} from '../../types'
 import {debug} from '../../debug'
 import {CliCommandContext} from '../..'
 
-const {absolutify, pathIsEmpty} = pathTools
 const request = getIt([promise()])
 
 interface TemplateManifest {

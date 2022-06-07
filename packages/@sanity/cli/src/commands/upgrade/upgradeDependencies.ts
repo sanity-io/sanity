@@ -6,7 +6,6 @@ import rimrafCb from 'rimraf'
 import semver from 'semver'
 import resolveFrom from 'resolve-from'
 import {padStart, noop} from 'lodash'
-import {readLocalManifest} from '@sanity/util/_internal'
 import type {CliCommandAction, PackageJson} from '../../types'
 import {
   findSanityModuleVersions,
@@ -263,4 +262,17 @@ function getModulePath(modName: string, fromPath: string): string | undefined {
   const manifestFile = `${modName.replace(/\//g, path.sep)}/package.json`
   const manifestPath = resolveFrom.silent(fromPath, manifestFile)
   return manifestPath ? path.dirname(manifestPath) : undefined
+}
+
+async function readLocalManifest(dirName: string, fileName = 'package.json') {
+  try {
+    const content = await fs.readFile(path.join(dirName, fileName), 'utf8')
+    return JSON.parse(content)
+  } catch (err) {
+    if (err.code === 'ENOENT') {
+      return {}
+    }
+
+    throw new Error(`Error while attempting to read projects "${fileName}":\n${err.message}`)
+  }
 }
