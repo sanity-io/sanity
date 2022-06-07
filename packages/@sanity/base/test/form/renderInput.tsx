@@ -1,5 +1,5 @@
 import {SanityClient} from '@sanity/client'
-import {ObjectSchemaType, Path, Schema, SchemaType, ValidationMarker} from '@sanity/types'
+import {ObjectSchemaType, Path, Schema, SchemaType} from '@sanity/types'
 import {render} from '@testing-library/react'
 import React, {FocusEvent} from 'react'
 import {
