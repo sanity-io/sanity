@@ -8,7 +8,7 @@ type ListApisResponse = {
   generation: string
 }[]
 
-export async function listGraphQLApis(
+export default async function listGraphQLApis(
   args: CliCommandArguments<Record<string, never>>,
   context: CliCommandContext
 ): Promise<void> {
@@ -21,7 +21,7 @@ export async function listGraphQLApis(
 
   let endpoints: ListApisResponse | undefined
   try {
-    endpoints = await await client.request<ListApisResponse>({
+    endpoints = await client.request<ListApisResponse>({
       url: '/apis/graphql',
       method: 'GET',
     })

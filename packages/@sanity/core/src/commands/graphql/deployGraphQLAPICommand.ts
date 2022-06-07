@@ -1,3 +1,4 @@
+import type {CliCommandDefinition} from '@sanity/cli'
 import {lazyRequire} from '@sanity/util/_internal'
 
 const helpText = `
@@ -21,7 +22,7 @@ Examples
   sanity graphql deploy --dry-run
 `
 
-export default {
+const deployGraphQLAPICommand: CliCommandDefinition = {
   name: 'deploy',
   signature: '',
   group: 'graphql',
@@ -29,3 +30,5 @@ export default {
   action: lazyRequire(require.resolve('../../actions/graphql/deployApiAction')),
   helpText,
 }
+
+export default deployGraphQLAPICommand
