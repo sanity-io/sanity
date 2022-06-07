@@ -137,17 +137,16 @@ export function EditObjectsStory() {
 
   return (
     <PortalProvider __unstable_elements={{default: portal.element}}>
-      <LayerProvider>
+      {/* <LayerProvider>
         TODO
-        {/* <FormBuilderProvider
+        <FormBuilderProvider
           __internal_patchChannel={patchChannel}
           onChange={handleChange}
           value={value}
           {...formBuilder}
         >
           <PortableTextEditor onChange={handleChange} type={type as FIXME} value={value}>
-            {/* // TODO: v3 */}
-            {/* <EditObject
+            <EditObject
               focusPath={focusPath}
               validation={markers}
               objectEditData={objectEditData}
@@ -159,10 +158,10 @@ export function EditObjectsStory() {
               scrollElement={portal.boundaryElement}
               readOnly={readOnly}
               value={value}
-            /> */}
+            />
           </PortableTextEditor>
-        </FormBuilderProvider> */}
-      </LayerProvider>
+        </FormBuilderProvider>
+      </LayerProvider> */}
     </PortalProvider>
   )
 }
