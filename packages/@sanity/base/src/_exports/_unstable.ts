@@ -1,8 +1,11 @@
 export type {AuthController, SanityAuthProvider, SanityUser} from '../auth'
 
+export {resolveConfig} from '../config'
+
 export type {
   AssetSourceResolver,
   ComposableOption,
+  Config,
   ConfigContext,
   DocumentActionsContext,
   FormBuilderComponentResolverContext,
@@ -12,6 +15,7 @@ export type {
   FormBuilderPreviewComponentResolver,
   NewDocumentCreationContext,
   PartialContext,
+  ResolvedConfig,
   ResolveProductionUrlContext,
   SanityFormBuilderConfig,
   Source,

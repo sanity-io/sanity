@@ -144,3 +144,9 @@ export interface ConvertedEnum {
     value: unknown
   }[]
 }
+
+export interface SchemaDefinitionish {
+  name: string
+  type: string
+  fields?: SchemaDefinitionish[]
+}

@@ -1,12 +1,37 @@
-import path from 'path'
-import {existsSync} from 'fs'
+import {Worker, isMainThread, parentPort, workerData, MessagePort} from 'node:worker_threads'
+import oneline from 'oneline'
+import {isPlainObject} from 'lodash'
 import type {CliCommandContext, CliV3CommandContext, GraphQLAPIConfig} from '@sanity/cli'
 import type {Schema} from '@sanity/types'
-import {getSanitySchema} from './getSanitySchema'
+import {createSchema, ResolvedConfig} from 'sanity/_unstable'
+import {getStudioConfig} from '../../util/getStudioConfig'
+import {SchemaDefinitionish} from './types'
 
-export interface ResolvedGraphQLAPI extends GraphQLAPIConfig {
+interface ResolvedSerializableProperties {
+  projectId: string
+  dataset: string
+  schemaTypes: SchemaDefinitionish[]
+}
+interface ResolvedSourceProperties {
+  projectId: string
+  dataset: string
   schema: Schema
-  schemaPathResolved: string
+}
+
+export type TypeResolvedGraphQLAPI = Omit<GraphQLAPIConfig, 'workspace' | 'source'> &
+  ResolvedSerializableProperties
+
+export type ResolvedGraphQLAPI = Omit<GraphQLAPIConfig, 'workspace' | 'source'> &
+  ResolvedSourceProperties
+
+if (!isMainThread && parentPort) {
+  getGraphQLAPIsForked(parentPort)
+}
+
+async function getGraphQLAPIsForked(parent: MessagePort): Promise<void> {
+  const {cliConfig, cliConfigPath, workDir} = workerData
+  const resolved = await resolveGraphQLApis({cliConfig, cliConfigPath, workDir})
+  parent.postMessage(resolved)
 }
 
 export async function getGraphQLAPIs(cliContext: CliCommandContext): Promise<ResolvedGraphQLAPI[]> {
@@ -14,93 +39,183 @@ export async function getGraphQLAPIs(cliContext: CliCommandContext): Promise<Res
     throw new Error('Expected Sanity studio of version 3 or above')
   }
 
-  const {cliConfigPath = '', cliConfig} = cliContext
-  const defaultDataset = cliConfig?.api?.dataset
-  const configBasePath = path.dirname(cliConfigPath || '')
-  const configuredApis = getGraphQLApiConfig(cliContext)
-
-  const apis: ResolvedGraphQLAPI[] = []
-  let index = 0
-  for (const apiDefinition of configuredApis) {
-    const schemaPath = resolveSchemaPath(apiDefinition, index, configBasePath)
-    const schema = await getSanitySchema(schemaPath)
-    apis.push({
-      dataset: defaultDataset,
-      tag: 'default',
-      ...apiDefinition,
-      schema,
-      schemaPathResolved: schemaPath,
-    })
-    index++
+  if (!isMainThread) {
+    throw new Error('getGraphQLAPIs() must be called from the main thread')
   }
 
-  return apis
+  const defaultSchema = createSchema({name: 'default', types: []})
+  const defaultTypes = defaultSchema.getTypeNames()
+  const isCustomType = (type: SchemaDefinitionish) => !defaultTypes.includes(type.name)
+
+  const apis = await getApisWithSchemaTypes(cliContext)
+  const resolved = apis.map(
+    ({schemaTypes, ...api}): ResolvedSourceProperties => ({
+      schema: createSchema({name: 'default', types: schemaTypes.filter(isCustomType)}),
+      ...api,
+    })
+  )
+
+  return resolved
 }
 
-function resolveSchemaPath(
-  apiDefinition: GraphQLAPIConfig,
-  index: number,
-  configBasePath: string
-): string {
-  if (typeof apiDefinition.schemaPath !== 'string') {
-    throw new Error(`GraphQL API at index ${index} does not have a valid "schemaPath"`)
+function getApisWithSchemaTypes(cliContext: CliCommandContext): Promise<TypeResolvedGraphQLAPI[]> {
+  return new Promise<TypeResolvedGraphQLAPI[]>((resolve, reject) => {
+    const {cliConfig, cliConfigPath, workDir} = cliContext
+    const worker = new Worker(__filename, {workerData: {cliConfig, cliConfigPath, workDir}})
+    worker.on('message', resolve)
+    worker.on('error', reject)
+    worker.on('exit', (code) => {
+      if (code !== 0) reject(new Error(`Worker stopped with exit code ${code}`))
+    })
+  })
+}
+
+function resolveGraphQLApis({
+  cliConfig,
+  cliConfigPath,
+  workDir,
+}: Pick<CliV3CommandContext, 'cliConfig' | 'cliConfigPath' | 'workDir'>): TypeResolvedGraphQLAPI[] {
+  const studioConfig = getStudioConfig({basePath: workDir})
+  const workspaces = studioConfig.__internal.workspaces
+  const numSources = workspaces.reduce((count, workspace) => count + workspace.sources.length, 0)
+  const multiSource = numSources > 1
+  const multiWorkspace = workspaces.length > 1
+  const hasGraphQLConfig = Boolean(cliConfig?.graphql)
+
+  if (workspaces.length === 0) {
+    throw new Error('No studio configuration found')
   }
 
-  const schemaPath: string = path.isAbsolute(apiDefinition.schemaPath)
-    ? apiDefinition.schemaPath
-    : path.resolve(configBasePath, apiDefinition.schemaPath)
+  if (numSources === 0) {
+    throw new Error('No sources (project ID / dataset) configured')
+  }
 
-  const schemaExt = path.extname(schemaPath)
-  const hasCodeExt = /\.(js|ts)x?$/i.test(schemaExt)
+  // We can only automatically configure if there is a single workspace + source in play
+  if ((multiWorkspace || multiSource) && !hasGraphQLConfig) {
+    throw new Error(oneline`
+      Multiple workspaces/sources configured.
+      You must define an array of GraphQL APIs in ${cliConfigPath || 'sanity.cli.js'}
+      and specify which workspace/source to use.
+    `)
+  }
 
-  if (hasCodeExt) {
-    if (!existsSync(schemaPath)) {
+  // No config is defined, but we have a single workspace + source, so use that
+  if (!hasGraphQLConfig) {
+    const {projectId, dataset, schema} = workspaces[0].sources[0]
+    return [{schemaTypes: getStrippedSchemaTypes(schema), projectId, dataset}]
+  }
+
+  // Explicity defined config
+  const apiDefs = validateCliConfig(cliConfig?.graphql || [])
+  return resolveGraphQLAPIsFromConfig(apiDefs, studioConfig)
+}
+
+function resolveGraphQLAPIsFromConfig(
+  apiDefs: GraphQLAPIConfig[],
+  studioConfig: ResolvedConfig
+): TypeResolvedGraphQLAPI[] {
+  const resolvedApis: TypeResolvedGraphQLAPI[] = []
+  const workspaces = studioConfig.__internal.workspaces
+
+  for (const apiDef of apiDefs) {
+    const {workspace: workspaceName, source: sourceName} = apiDef
+    if (!workspaceName && workspaces.length > 0) {
       throw new Error(
-        `Could not resolve schema file at "${schemaPath}" for GraphQL API at index ${index}`
+        'Must define `workspace` name in GraphQL API config when multiple workspaces are defined'
       )
     }
 
-    return schemaPath
+    // If we only have a single workspace defined, we can assume that is the intended one,
+    // even if no `workspace` is defined for the GraphQL API
+    const workspace =
+      !workspaceName && workspaces.length === 1
+        ? workspaces[0]
+        : workspaces.find((space) => space.name === (workspaceName || 'default'))
+
+    if (!workspace) {
+      throw new Error(`Workspace "${workspaceName || 'default'}" not found`)
+    }
+
+    // If we only have a single source defined, we can assume that is the intended one,
+    // even if no `source` is defined for the GraphQL API
+    const source =
+      !sourceName && workspace.sources.length === 1
+        ? workspace.sources[0]
+        : workspace.sources.find((src) => src.name === (sourceName || 'default'))
+
+    if (!source) {
+      throw new Error(
+        `Source "${sourceName || 'default'}" not found in workspace "${workspaceName || 'default'}"`
+      )
+    }
+
+    resolvedApis.push({
+      ...apiDef,
+      dataset: source.dataset,
+      projectId: source.projectId,
+      schemaTypes: getStrippedSchemaTypes(source.schema),
+    })
   }
 
-  const resolvedPath = [
-    `${schemaPath}.js`,
-    `${schemaPath}.jsx`,
-    `${schemaPath}.ts`,
-    `${schemaPath}.tsx`,
-    `${schemaPath}/index.js`,
-    `${schemaPath}/index.jsx`,
-    `${schemaPath}/index.ts`,
-    `${schemaPath}/index.tsx`,
-  ].find((candidate) => existsSync(candidate))
-
-  if (!resolvedPath) {
-    throw new Error(
-      `Could not resolve schema file at "${schemaPath}" for GraphQL API at index ${index}`
-    )
-  }
-
-  return resolvedPath
+  return resolvedApis
 }
 
-function getGraphQLApiConfig(cliContext: CliV3CommandContext): GraphQLAPIConfig[] {
-  const config = cliContext.cliConfig
-
-  if (!config) {
-    throw new Error('No CLI configuration found (`sanity.cli.(js|ts)`)')
+function validateCliConfig(
+  config: GraphQLAPIConfig[],
+  configPath = 'sanity.cli.js'
+): GraphQLAPIConfig[] {
+  if (!Array.isArray(config)) {
+    throw new Error(`"graphql" key in "${configPath}" must be an array if defined`)
   }
 
-  if (config.graphql && !Array.isArray(config.graphql)) {
-    throw new Error(`"graphql" key in "${cliContext.cliConfigPath}" must be an array if defined`)
+  if (config.length === 0) {
+    throw new Error(`No GraphQL APIs defined in "${configPath}"`)
   }
 
-  if (!config.graphql || (Array.isArray(config.graphql) && config.graphql.length === 0)) {
-    throw new Error(`No GraphQL APIs defined in "${cliContext.cliConfigPath}"`)
-  }
-
-  return config.graphql
+  return config
 }
 
 function isModernCliConfig(config: CliCommandContext): config is CliV3CommandContext {
   return config.sanityMajorVersion >= 3
+}
+
+function getStrippedSchemaTypes(schema: Schema): SchemaDefinitionish[] {
+  const schemaDef = schema._original || {types: []}
+  return schemaDef.types.map((type) => stripType(type))
+}
+
+function stripType(input: unknown): SchemaDefinitionish {
+  return strip(input) as SchemaDefinitionish
+}
+
+function strip(input: unknown): unknown {
+  if (Array.isArray(input)) {
+    return input.map((item) => strip(item)).filter((item) => typeof item !== 'undefined')
+  }
+
+  if (isPlainishObject(input)) {
+    return Object.keys(input).reduce((stripped, key) => {
+      stripped[key] = strip(input[key])
+      return stripped
+    }, {} as Record<string, unknown>)
+  }
+
+  return isBasicType(input) ? input : undefined
+}
+
+function isPlainishObject(input: unknown): input is Record<string, unknown> {
+  return isPlainObject(input)
+}
+
+function isBasicType(input: unknown): boolean {
+  const type = typeof input
+  if (type === 'boolean' || type === 'number' || type === 'string') {
+    return true
+  }
+
+  if (type !== 'object') {
+    return false
+  }
+
+  return Array.isArray(input) || input === null || isPlainishObject(input)
 }

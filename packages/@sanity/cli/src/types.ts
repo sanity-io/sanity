@@ -198,17 +198,18 @@ export interface SanityJson {
 
 export interface GraphQLAPIConfig {
   /**
-   * Path to a schema to auto-generate GraphQL API from.
-   * The path is relative to the config file, or can be an absolute path
+   * Name of workspace containing the schema to deploy
+   *
+   * Optional, defaults to `default` (eg the one used if no `name` is defined)
    */
-  schemaPath: string
+  workspace?: string
 
   /**
-   * Dataset to deploy the GraphQL API to
+   * Name of source containing the schema to deploy, within the configured workspace
    *
-   * Optional, defaults to the value of `api.dataset`
+   * Optional, defaults to `default` (eg the one used if no `name` is defined)
    */
-  dataset?: string
+  source?: string
 
   /**
    * API tag for this API - allows deploying multiple different APIs to a single dataset

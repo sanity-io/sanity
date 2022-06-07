@@ -1,5 +1,4 @@
 /* eslint-disable no-process-env, no-process-exit, max-statements */
-import path from 'path'
 import {get} from 'lodash'
 import yargs from 'yargs/yargs'
 import type {SanityClient} from '@sanity/client'
@@ -31,8 +30,8 @@ const ignoredWarnings: string[] = ['OPTIONAL_INPUT_FIELD_ADDED']
 const ignoredBreaking: string[] = []
 
 interface DeployTask {
-  schemaPath: string
   dataset: string
+  projectId: string
   tag: string
   enablePlayground: boolean
   schema: GeneratedApiSpecification
@@ -47,7 +46,7 @@ export default async function deployGraphQLApiAction(
   const flags = await parseCliFlags(args)
   const {force, dryRun} = flags
 
-  const {apiClient, output, prompt, chalk} = context
+  const {apiClient, output, prompt} = context
 
   let spinner
 
@@ -71,16 +70,8 @@ export default async function deployGraphQLApiAction(
   for (const apiDef of apiDefs) {
     index++
 
-    const {
-      dataset,
-      playground,
-      tag = 'default',
-      nonNullDocumentFields,
-      schema,
-      schemaPathResolved: schemaPath,
-    } = apiDef
-
-    const apiName = [apiDef.dataset, apiDef.tag].join('/')
+    const {projectId, dataset, playground, tag = 'default', nonNullDocumentFields, schema} = apiDef
+    const apiName = [dataset, tag].join('/')
     spinner = output.spinner(`Generating GraphQL API: ${apiName}`).start()
 
     let generation: string | undefined = apiDef.generation
@@ -88,7 +79,12 @@ export default async function deployGraphQLApiAction(
       throw new Error(`No dataset specified for API at index ${index}`)
     }
 
-    const {currentGeneration, playgroundEnabled} = await getCurrentSchemaProps(client, dataset, tag)
+    const projectClient = client.clone().config({projectId})
+    const {currentGeneration, playgroundEnabled} = await getCurrentSchemaProps(
+      projectClient,
+      dataset,
+      tag
+    )
     generation = await resolveApiGeneration({
       currentGeneration,
       specifiedGeneration: generation,
@@ -96,7 +92,6 @@ export default async function deployGraphQLApiAction(
       force,
       output,
       prompt,
-      chalk,
     })
 
     if (!generation) {
@@ -138,7 +133,7 @@ export default async function deployGraphQLApiAction(
 
     let valid: ValidationResponse | undefined
     try {
-      valid = await client.request<ValidationResponse>({
+      valid = await projectClient.request<ValidationResponse>({
         url: `/apis/graphql/${dataset}/${tag}/validate`,
         method: 'POST',
         body: {enablePlayground, schema: apiSpec},
@@ -188,11 +183,11 @@ export default async function deployGraphQLApiAction(
     }
 
     deployTasks.push({
+      projectId,
       dataset,
       tag,
       enablePlayground,
       schema: apiSpec,
-      schemaPath,
     })
   }
 
@@ -200,17 +195,17 @@ export default async function deployGraphQLApiAction(
   output.print('')
 
   for (const task of deployTasks) {
-    const {dataset, tag, schema, schemaPath, enablePlayground} = task
-    const relativePath = path.relative(context.workDir, schemaPath)
+    const {dataset, tag, schema, projectId, enablePlayground} = task
 
-    output.print(`Schema:  ${relativePath}`)
+    output.print(`Project: ${projectId}`)
     output.print(`Dataset: ${dataset}`)
     output.print(`Tag:     ${tag}`)
 
     spinner = output.spinner('Deploying GraphQL API').start()
 
     try {
-      const response = await client.request<DeployResponse>({
+      const projectClient = client.clone().config({projectId})
+      const response = await projectClient.request<DeployResponse>({
         url: `/apis/graphql/${dataset}/${tag}`,
         method: 'PUT',
         body: {enablePlayground, schema},
@@ -218,7 +213,9 @@ export default async function deployGraphQLApiAction(
       })
 
       spinner.stop()
-      const apiUrl = client.getUrl(response.location.replace(/^\/(v1|v\d{4}-\d{2}-\d{2})\//, '/'))
+      const apiUrl = projectClient.getUrl(
+        response.location.replace(/^\/(v1|v\d{4}-\d{2}-\d{2})\//, '/')
+      )
       output.print(`URL:     ${apiUrl}`)
       spinner.start('Deployed!').succeed()
       output.print('')
@@ -370,7 +367,6 @@ async function resolveApiGeneration({
   force,
   output,
   prompt,
-  chalk,
 }: {
   index: number
   currentGeneration?: string
@@ -378,7 +374,6 @@ async function resolveApiGeneration({
   force?: boolean
   output: CliOutputter
   prompt: CliPrompter
-  chalk: CliCommandContext['chalk']
 }): Promise<string | undefined> {
   // a) If no API is currently deployed:
   //    use the specificed one from config, or use whichever generation is the latest
