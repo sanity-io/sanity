@@ -77,6 +77,7 @@
     "@babel/preset-typescript": "^7.16.0",
     "@babel/register": "^7.16.0",
     "@babel/runtime": "7.16.3",
+    "@rexxars/babel-plugin-inline-json-import": "^0.3.4",
     "@rollup/plugin-babel": "^5.3.0",
     "@rollup/plugin-commonjs": "^21.0.1",
     "@rollup/plugin-json": "^4.1.0",

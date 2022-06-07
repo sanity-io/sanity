@@ -8,6 +8,7 @@ const path = require('path')
 // eslint-disable-next-line no-sync
 const babelrc = JSON.parse(fs.readFileSync(path.join(__dirname, '.babelrc'), 'utf8'))
 
-module.exports = Object.assign({}, babelrc, {
-  babelrcRoots: ['.'].concat(require('./lerna.json').packages),
-})
+module.exports = {
+  ...babelrc,
+  babelrcRoots: ['.', ...require('./lerna.json').packages],
+}

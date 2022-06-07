@@ -15,5 +15,9 @@
     "@babel/preset-typescript",
     "@babel/preset-react"
   ],
-  "plugins": ["lodash", "@babel/plugin-proposal-class-properties"]
+  "plugins": [
+    "lodash",
+    "@babel/plugin-proposal-class-properties",
+    ["@rexxars/inline-json-import", {"match": "/sanity/package.json"}]
+  ]
 }
