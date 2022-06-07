@@ -1,3 +1,4 @@
+import type {CliCommandDefinition} from '@sanity/cli'
 import {lazyRequire} from '@sanity/util/_internal'
 
 const helpText = `
@@ -13,10 +14,12 @@ Examples
   sanity start --port=1942
 `
 
-export default {
+const startCommand: CliCommandDefinition = {
   name: 'start',
   signature: '[--port <port>] [--host <host>]',
-  description: 'Starts a web server for the Content Studio',
+  description: 'Starts a web server for the Sanity Studio',
   action: lazyRequire(require.resolve('../../actions/start/startAction')),
   helpText,
 }
+
+export default startCommand
