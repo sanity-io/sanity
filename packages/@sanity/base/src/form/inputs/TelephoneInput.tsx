@@ -9,7 +9,7 @@ export const TelephoneInput = React.forwardRef(function TelephoneInput(
   props: TelephoneInputProps,
   forwardedRef: React.ForwardedRef<HTMLInputElement>
 ) {
-  const {value, id, readOnly, schemaType, customValidity, onFocus, onBlur, onChange} = props
+  const {value, id, readOnly, schemaType, validationError, onFocus, onBlur, onChange} = props
 
   const handleChange = React.useCallback(
     (event) => {
@@ -24,7 +24,7 @@ export const TelephoneInput = React.forwardRef(function TelephoneInput(
       type="tel"
       inputMode="tel"
       id={id}
-      customValidity={customValidity}
+      customValidity={validationError}
       value={value || ''}
       readOnly={Boolean(readOnly)}
       placeholder={schemaType.placeholder}

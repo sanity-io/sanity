@@ -47,14 +47,15 @@ export function PrimitiveField(props: {
     [onChange, member.name]
   )
 
-  const customValidity = useMemo(
-    () =>
-      member.field.validation
-        .filter((item) => item.level === 'error')
-        .map((item) => item.message)
-        .join(''),
-    [member.field.validation]
-  )
+  const validationError =
+    useMemo(
+      () =>
+        member.field.validation
+          .filter((item) => item.level === 'error')
+          .map((item) => item.message)
+          .join('\n'),
+      [member.field.validation]
+    ) || undefined
 
   const inputProps = useMemo((): PrimitiveInputProps => {
     return {
@@ -72,7 +73,7 @@ export function PrimitiveField(props: {
       onChange: handleChange,
       validation: member.field.validation,
       presence: member.field.presence,
-      customValidity,
+      validationError,
     }
   }, [
     handleBlur,
@@ -88,7 +89,7 @@ export function PrimitiveField(props: {
     member.field.presence,
     handleFocus,
     handleChange,
-    customValidity,
+    validationError,
   ])
 
   const renderedInput = useMemo(() => renderInput(inputProps), [inputProps, renderInput])

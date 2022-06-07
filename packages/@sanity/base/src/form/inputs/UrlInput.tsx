@@ -11,7 +11,7 @@ export const UrlInput = React.forwardRef(function UrlInput(
   props: UrlInputProps,
   forwardedRef: React.ForwardedRef<HTMLInputElement>
 ) {
-  const {value, id, readOnly, schemaType, customValidity, onFocus, onBlur, onChange} = props
+  const {value, id, readOnly, schemaType, validationError, onFocus, onBlur, onChange} = props
 
   const handleChange = React.useCallback(
     (event) => {
@@ -28,7 +28,7 @@ export const UrlInput = React.forwardRef(function UrlInput(
       type={inputType}
       inputMode="url"
       id={id}
-      customValidity={customValidity}
+      customValidity={validationError}
       value={value || ''}
       readOnly={Boolean(readOnly)}
       placeholder={schemaType.placeholder}

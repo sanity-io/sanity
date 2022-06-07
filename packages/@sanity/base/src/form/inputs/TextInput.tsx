@@ -17,7 +17,7 @@ export const TextInput = React.forwardRef(function TextInput(
   props: TextInputProps,
   forwardedRef: ForwardedRef<HTMLTextAreaElement>
 ) {
-  const {value, id, customValidity, schemaType, readOnly, onFocus, onBlur, onChange} = props
+  const {value, id, validationError, schemaType, readOnly, onFocus, onBlur, onChange} = props
 
   const handleChange = React.useCallback(
     (event) => {
@@ -30,7 +30,7 @@ export const TextInput = React.forwardRef(function TextInput(
   return (
     <StyledTextArea
       id={id}
-      customValidity={customValidity}
+      customValidity={validationError}
       value={value || ''}
       readOnly={Boolean(readOnly)}
       placeholder={schemaType.placeholder}

@@ -10,7 +10,7 @@ export const NumberInput = React.forwardRef(function NumberInput(
   props: NumberInputProps,
   forwardedRef: React.ForwardedRef<HTMLInputElement>
 ) {
-  const {value = '', readOnly, customValidity, schemaType, onFocus, onChange} = props
+  const {value = '', readOnly, validationError, schemaType, onFocus, onChange} = props
   const id = useId()
 
   // Show numpad on mobile if only positive numbers is preferred
@@ -31,7 +31,7 @@ export const NumberInput = React.forwardRef(function NumberInput(
       step="any"
       inputMode={onlyPositiveNumber ? 'numeric' : 'text'}
       id={id}
-      customValidity={customValidity}
+      customValidity={validationError}
       value={value}
       readOnly={Boolean(readOnly)}
       placeholder={schemaType.placeholder}

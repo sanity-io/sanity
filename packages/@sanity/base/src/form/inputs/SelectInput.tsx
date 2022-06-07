@@ -18,7 +18,7 @@ export const SelectInput = React.forwardRef(function SelectInput(
   props: StringInputProps,
   forwardedRef: React.ForwardedRef<HTMLSelectElement | HTMLInputElement>
 ) {
-  const {value, readOnly, customValidity, schemaType, onChange, onFocus} = props
+  const {value, readOnly, validationError, schemaType, onChange, onFocus} = props
   const items = useMemo(
     () => (schemaType.options?.list || []).map(toSelectItem),
     [schemaType.options?.list]
@@ -77,7 +77,7 @@ export const SelectInput = React.forwardRef(function SelectInput(
       ref={forwardedRef as React.ForwardedRef<HTMLInputElement>}
       readOnly={readOnly}
       onFocus={onFocus}
-      customValidity={customValidity}
+      customValidity={validationError}
     />
   ) : (
     <Select
@@ -86,7 +86,7 @@ export const SelectInput = React.forwardRef(function SelectInput(
       id={inputId}
       ref={forwardedRef as React.ForwardedRef<HTMLSelectElement>}
       readOnly={readOnly}
-      customValidity={customValidity}
+      customValidity={validationError}
       value={optionValueFromItem(currentItem)}
     >
       {[EMPTY_ITEM, ...items].map((item, i) => (

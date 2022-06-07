@@ -9,7 +9,7 @@ export const EmailInput = React.forwardRef(function EmailInput(
   props: EmailInputProps,
   forwardedRef: React.ForwardedRef<HTMLInputElement>
 ) {
-  const {id, value, readOnly, schemaType, customValidity, onFocus, onBlur, onChange} = props
+  const {id, value, readOnly, schemaType, validationError, onFocus, onBlur, onChange} = props
 
   const handleChange = React.useCallback(
     (event) => {
@@ -24,7 +24,7 @@ export const EmailInput = React.forwardRef(function EmailInput(
       type="email"
       inputMode="email"
       id={id}
-      customValidity={customValidity}
+      customValidity={validationError}
       value={value || ''}
       readOnly={Boolean(readOnly)}
       placeholder={schemaType.placeholder}

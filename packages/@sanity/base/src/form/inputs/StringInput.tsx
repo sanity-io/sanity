@@ -4,7 +4,8 @@ import {set, unset} from '../patch'
 import {StringInputProps} from '../types'
 
 export function StringInput(props: StringInputProps) {
-  const {value, readOnly, id, focusRef, schemaType, onFocus, onBlur, onChange} = props
+  const {value, readOnly, id, focusRef, schemaType, validationError, onFocus, onBlur, onChange} =
+    props
   const placeholder = schemaType.placeholder
   const handleChange = React.useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -17,7 +18,7 @@ export function StringInput(props: StringInputProps) {
   return (
     <TextInput
       id={id}
-      customValidity={props.customValidity}
+      customValidity={validationError}
       value={value || ''}
       readOnly={Boolean(readOnly)}
       placeholder={placeholder}

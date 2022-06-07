@@ -129,20 +129,27 @@ export interface StringInputProps<S extends StringSchemaType = StringSchemaType>
   extends StringFormNode<S>,
     BaseInputProps {
   onChange: (patch: FormPatch | FormPatch[] | PatchEvent) => void
-  customValidity?: string
+  validationError?: string
 }
 
 export interface NumberInputProps<S extends NumberSchemaType = NumberSchemaType>
   extends NumberFormNode<S>,
     BaseInputProps {
   onChange: (patch: FormPatch | FormPatch[] | PatchEvent) => void
-  customValidity?: string
+  validationError?: string
 }
 export interface BooleanInputProps<S extends BooleanSchemaType = BooleanSchemaType>
   extends BooleanFormNode<S>,
     BaseInputProps {
   onChange: (patch: FormPatch | FormPatch[] | PatchEvent) => void
-  customValidity?: string
+
+  /**
+   * A shorthand aggregation of any validation errors the input currently have
+   * Will be falsey if no error.
+   * In the case of multiple errors it will be a newline delimited string of each error message
+   * For advanced use cases use the ´validation´ prop which contains more levels and details
+   */
+  validationError?: string
 }
 
 export type PrimitiveInputProps = StringInputProps | BooleanInputProps | NumberInputProps
