@@ -1,3 +1,4 @@
+import type {CliCommandDefinition} from '@sanity/cli'
 import {lazyRequire} from '@sanity/util/_internal'
 
 const helpText = `
@@ -11,10 +12,12 @@ Examples
   sanity deploy --no-minify --source-maps
 `
 
-export default {
+const deployCommand: CliCommandDefinition = {
   name: 'deploy',
   signature: '[SOURCE_DIR] [--no-build]  [--source-maps] [--no-minify]',
   description: 'Deploys a statically built Sanity studio',
   action: lazyRequire(require.resolve('../../actions/deploy/deployAction')),
   helpText,
 }
+
+export default deployCommand
