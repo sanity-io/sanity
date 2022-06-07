@@ -1,3 +1,4 @@
+import type {CliCommandDefinition, CliCommandGroupDefinition} from '@sanity/cli'
 import buildCommand from './build/buildCommand'
 import checkCommand from './check/checkCommand'
 import configCheckCommand from './config/configCheckCommand'
@@ -39,7 +40,7 @@ import usersGroup from './users/usersGroup'
 import inviteUserCommand from './users/inviteUserCommand'
 import listUsersCommand from './users/listUsersCommand'
 
-export default [
+const coreCommands: (CliCommandDefinition | CliCommandGroupDefinition)[] = [
   buildCommand,
   checkCommand,
   configCheckCommand,
@@ -81,3 +82,5 @@ export default [
   uninstallCommand,
   execCommand,
 ]
+
+export default coreCommands

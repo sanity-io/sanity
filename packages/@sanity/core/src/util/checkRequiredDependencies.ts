@@ -4,7 +4,7 @@ import semver, {SemVer} from 'semver'
 import resolveFrom from 'resolve-from'
 import {readJSON, access} from 'fs-extra'
 import oneline from 'oneline'
-import type {CliCommandContext} from '../types'
+import type {CliCommandContext} from '@sanity/cli'
 
 const defaultStudioManifestProps: PartialPackageManifest = {
   name: 'studio',
@@ -114,8 +114,8 @@ export async function checkRequiredDependencies(context: CliCommandContext): Pro
 /**
  * Read the declared peer dependencies of the installed `@sanity/base` module
  *
- * @param studioPath Path to the studio, in order to resolve `@sanity/base`
- * @returns Object of peer dependencies (name => version), if any
+ * @param studioPath - Path to the studio, in order to resolve `@sanity/base`
+ * @returns Object of peer dependencies (`{[name]: version}`), if any
  */
 async function readBasePeerDependencies(
   studioPath: string
@@ -149,8 +149,8 @@ async function readBasePeerDependencies(
 /**
  * Reads the version number of the _installed_ module, or returns `null` if not found
  *
- * @param studioPath Path of the studio
- * @param moduleName Name of module to get installed version for
+ * @param studioPath - Path of the studio
+ * @param moduleName - Name of module to get installed version for
  * @returns Version number, of null
  */
 async function readModuleVersion(studioPath: string, moduleName: string): Promise<string | null> {
@@ -162,7 +162,7 @@ async function readModuleVersion(studioPath: string, moduleName: string): Promis
  * Read the `package.json` file at the given path and return an object that guarantees
  * the presence of name, version, dependencies, dev dependencies and peer dependencies
  *
- * @param packageJsonPath Path to package.json to read
+ * @param packageJsonPath - Path to package.json to read
  * @returns Reduced package.json with guarantees for name, version and dependency fields
  */
 async function readPackageManifest(
@@ -189,8 +189,8 @@ async function readPackageManifest(
  * prompting the user whether to use yarn or npm. If a `yarn.lock` file
  * is found in the working directory, we will default the choice to yarn
  *
- * @param dependencies Object of dependencies (package name => version)
- * @param context CLI context
+ * @param dependencies - Object of dependencies `({[package name]: version})`
+ * @param context - CLI context
  */
 async function installDependenciesWithPrompt(
   dependencies: Record<string, string>,
@@ -250,7 +250,7 @@ function isComparableRange(range: string): boolean {
  * deprecated because it's a potential race condition to check for a file and
  * then use it. In this situation we're fine with this potentially happening.
  *
- * @param filePath Path to file we want to check for the existance of
+ * @param filePath - Path to file we want to check for the existance of
  * @returns True if it exists, false otherwise
  */
 function fileExists(filePath: string): Promise<boolean> {

@@ -1,7 +1,7 @@
 import yargs from 'yargs/yargs'
 import {hideBin} from 'yargs/helpers'
+import type {CliCommandArguments, CliCommandContext} from '@sanity/cli'
 import {colorizeJson} from '../../util/colorizeJson'
-import type {CliCommandArguments, CliCommandContext} from '../../types'
 
 const helpText = `
 Run a query against the projects configured dataset

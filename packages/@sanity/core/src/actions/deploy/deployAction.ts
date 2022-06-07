@@ -3,7 +3,7 @@ import zlib from 'zlib'
 import {promises as fs} from 'fs'
 import tar from 'tar-fs'
 import type {SanityClient} from '@sanity/client'
-import type {CliCommandArguments, CliCommandContext} from '../../types'
+import type {CliCommandArguments, CliCommandContext} from '@sanity/cli'
 import buildSanityStudio, {BuildSanityStudioCommandFlags} from '../build/buildAction'
 
 interface DeployStudioActionFlags extends BuildSanityStudioCommandFlags {
@@ -64,9 +64,9 @@ export default async function deployStudio(
 
     studioHostname = await prompt.single({
       type: 'input',
-      filter: (inp) => inp.replace(/\.sanity\.studio$/i, ''),
+      filter: (inp: string) => inp.replace(/\.sanity\.studio$/i, ''),
       message: 'Studio hostname (<value>.sanity.studio):',
-      validate: (name) => validateHostname(name, client),
+      validate: (name: string) => validateHostname(name, client),
     })
   }
 
