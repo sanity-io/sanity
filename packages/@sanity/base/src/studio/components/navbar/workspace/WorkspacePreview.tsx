@@ -1,48 +1,94 @@
-import {CheckmarkIcon} from '@sanity/icons'
-import {Flex, Stack, Box, Text, Card} from '@sanity/ui'
+import {HelpCircleIcon, ChevronRightIcon} from '@sanity/icons'
+import {Flex, Box, Text, Card, Tooltip} from '@sanity/ui'
 import React from 'react'
-import styled, {css} from 'styled-components'
+import styled from 'styled-components'
+import {WorkspaceSummary} from '../../../../config'
+import {useActiveWorkspace} from '../../../activeWorkspaceMatcher'
 
-export const MediaCard = styled(Card)(({color}: {color?: string}) => {
-  return css`
-    /* @todo: figure out what color to use */
-    background-color: ${color || 'magenta'};
-    width: 27px;
-    height: 27px;
-  `
-})
+const StyledCard = styled(Card)`
+  display: flex !important;
+  align-items: center;
+  gap: 0.5rem;
+`
+
+const IconWrapper = styled(Box)`
+  width: 32px;
+  height: 32px;
+  & > * {
+    width: 100%;
+  }
+`
 
 interface WorkspacePreviewProps {
-  color?: string
-  selected?: boolean
-  subtitle?: string
-  title: string
+  workspace: WorkspaceSummary
+  state: 'logged-in' | 'logged-out' | 'no-access'
+  onSelectWorkspace: () => void
 }
 
-export function WorkspacePreview(props: WorkspacePreviewProps) {
-  const {color, selected, subtitle, title} = props
+export function WorkspacePreview({workspace, state, onSelectWorkspace}: WorkspacePreviewProps) {
+  const {name, icon, title, subtitle, projectId, dataset} = workspace
+  const {activeWorkspace} = useActiveWorkspace()
+  const clickable = state === 'logged-in' || state === 'logged-out'
 
   return (
-    <Flex align="center" flex="none">
-      <MediaCard radius={2} color={color} />
-
-      <Stack flex={1} paddingLeft={2} space={1}>
-        <Text size={1} textOverflow="ellipsis" weight="semibold">
-          {title}
-        </Text>
-
-        {subtitle && (
-          <Text muted size={1} textOverflow="ellipsis">
-            {subtitle}
+    <li>
+      <StyledCard
+        __unstable_focusRing
+        {...(clickable
+          ? {
+              'data-as': 'button',
+              forwardedAs: 'button',
+              onClick: onSelectWorkspace,
+            }
+          : null)}
+        padding={2}
+        pressed={name === activeWorkspace.name}
+      >
+        <IconWrapper>{icon}</IconWrapper>
+        <Flex direction="column" flex="auto" gap={2}>
+          <Text weight="semibold">{title}</Text>
+          <Text muted size={1}>
+            {subtitle || (
+              <>
+                <span title={`Project ID: ${projectId}`}>{projectId}</span> |{' '}
+                <span title={`Dataset: ${dataset}`}>{dataset}</span>
+              </>
+            )}
           </Text>
-        )}
-      </Stack>
+        </Flex>
+        <Box flex="none" paddingRight={clickable ? 0 : 2}>
+          <Text muted size={1}>
+            {state === 'logged-in' && <>{/* intentionally blank */}</>}
+            {state === 'logged-out' && <em>Signed out</em>}
 
-      <Box paddingLeft={3} paddingRight={1}>
-        <Text hidden={!selected} size={1}>
-          <CheckmarkIcon />
-        </Text>
-      </Box>
-    </Flex>
+            {state === 'no-access' && (
+              <>
+                <em>{<>No access&nbsp;&nbsp;</>}</em>
+                <Tooltip
+                  content={
+                    <Card padding={2} style={{width: 128}}>
+                      <Text size={1}>
+                        You are signed out of this workspace and it is not configured for manual
+                        sign in.
+                      </Text>
+                    </Card>
+                  }
+                >
+                  <HelpCircleIcon />
+                </Tooltip>
+              </>
+            )}
+          </Text>
+        </Box>
+
+        {state === 'logged-out' && (
+          <Box flex="none">
+            <Text size={2}>
+              <ChevronRightIcon />
+            </Text>
+          </Box>
+        )}
+      </StyledCard>
+    </li>
   )
 }

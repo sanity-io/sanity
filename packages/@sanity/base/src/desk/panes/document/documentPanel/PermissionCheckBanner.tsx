@@ -16,9 +16,12 @@ interface PermissionCheckBannerProps {
 
 export function PermissionCheckBanner({granted, requiredPermission}: PermissionCheckBannerProps) {
   const currentUser = useCurrentUser()
-  const plural = currentUser.roles?.length !== 1
+  const plural = currentUser?.roles?.length !== 1
 
-  const roles = join(currentUser.roles?.map((r) => <code key={r.name}>{r.title}</code>) || [], ', ')
+  const roles = join(
+    currentUser?.roles?.map((r) => <code key={r.name}>{r.title}</code>) || [],
+    ', '
+  )
 
   if (granted) return null
 

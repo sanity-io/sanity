@@ -1,13 +1,13 @@
 import {Layer, Card, Flex, Text, Box, Button, Stack, useGlobalKeyDown} from '@sanity/ui'
 import {CloseIcon, LeaveIcon} from '@sanity/icons'
-import React, {memo, useCallback, useEffect, useState} from 'react'
+import React, {memo, useEffect, useState} from 'react'
 import styled from 'styled-components'
 import {UserAvatar} from '../../../components/UserAvatar'
 import {useWorkspace} from '../../workspace'
 import {useRovingFocus} from '../../../components/rovingFocus'
 import {Tool} from '../../../config'
-// import {WorkspaceMenu} from './workspace'
 import {ToolMenu as DefaultToolMenu} from './tools/ToolMenu'
+import {WorkspaceMenu} from './workspace'
 
 const Root = styled(Layer)`
   position: fixed;
@@ -62,17 +62,9 @@ export const NavDrawer = memo(function NavDrawer(props: NavDrawerProps) {
   const [innerCardElement, setInnerCardElement] = useState<HTMLDivElement | null>(null)
   const tabIndex = isOpen ? 0 : -1
 
-  const {
-    currentUser,
-    __internal: {auth},
-    navbar,
-  } = useWorkspace()
+  const {currentUser, navbar, auth} = useWorkspace()
 
   const {ToolMenu = DefaultToolMenu} = navbar?.components || {}
-
-  const handleLogout = useCallback(() => {
-    auth.controller.logout()
-  }, [auth.controller])
 
   useRovingFocus({
     rootElement: innerCardElement,
@@ -111,8 +103,8 @@ export const NavDrawer = memo(function NavDrawer(props: NavDrawerProps) {
                     <UserAvatar size={1} user="me" />
                   </Box>
 
-                  <Box flex={1} marginLeft={2} title={currentUser.name || currentUser.email}>
-                    <Text textOverflow="ellipsis">{currentUser.name || currentUser.email}</Text>
+                  <Box flex={1} marginLeft={2} title={currentUser?.name || currentUser?.email}>
+                    <Text textOverflow="ellipsis">{currentUser?.name || currentUser?.email}</Text>
                   </Box>
                 </Flex>
               </Flex>
@@ -129,12 +121,11 @@ export const NavDrawer = memo(function NavDrawer(props: NavDrawerProps) {
               </Box>
             </Flex>
 
-            {/* @todo: fix workspace implementation */}
-            {/* <WorkspaceMenu /> */}
+            <WorkspaceMenu />
           </Stack>
         </Card>
 
-        <Box flex={1} overflow="auto" padding={[3, 3, 4]}>
+        <Box flex="auto" overflow="auto" padding={[3, 3, 4]}>
           <ToolMenu
             activeToolName={activeToolName}
             closeDrawer={onClose}
@@ -144,18 +135,21 @@ export const NavDrawer = memo(function NavDrawer(props: NavDrawerProps) {
           />
         </Box>
 
-        <Card padding={[3, 3, 4]} borderTop>
-          <Stack>
-            <Button
-              iconRight={LeaveIcon}
-              justify="flex-start"
-              mode="bleed"
-              onClick={handleLogout}
-              tabIndex={tabIndex}
-              text="Sign out"
-            />
-          </Stack>
-        </Card>
+        {auth.logout && (
+          <Card flex="none" padding={[3, 3, 4]} borderTop>
+            <Stack>
+              <Button
+                iconRight={LeaveIcon}
+                justify="flex-start"
+                mode="bleed"
+                // eslint-disable-next-line react/jsx-handler-names
+                onClick={auth.logout}
+                tabIndex={tabIndex}
+                text="Sign out"
+              />
+            </Stack>
+          </Card>
+        )}
       </InnerCard>
     </Root>
   )

@@ -1,14 +1,10 @@
 /* eslint-disable camelcase */
 
 import {first} from 'rxjs/operators'
-// import {createStructureBuilder} from '../../../../structure'
+import {SanityClient} from '@sanity/client'
 import {prepareTemplates, defaultTemplatesForSchema} from '../../../templates'
 import {createMockSanityClient} from '../../../../test/mocks/mockSanityClient'
-import {createAuthController} from '../../../auth'
 import {createSchema} from '../../../schema'
-import {createAuthStore} from '../../authState'
-import {__tmp_crossWindowMessaging} from '../../crossWindowMessaging'
-import {createUserStore} from '../../user'
 import {requiresApproval} from '../debug/exampleGrants'
 import {createGrantsStore} from '../grantsStore'
 import {getTemplatePermissions} from '../templatePermissions'
@@ -48,16 +44,10 @@ const templates = prepareTemplates(schema, [
 describe('getTemplatePermissions', () => {
   it('takes in a list of `InitialValueTemplateItem`s and returns an observable of `TemplatePermissionsResult` in a record', async () => {
     const client = createMockSanityClient({requests: {'/acl': requiresApproval}})
-    const authenticationFetcher = createAuthController({client: client as any})
-    const crossWindowMessaging = __tmp_crossWindowMessaging({projectId: 'test'})
-    const authStore = createAuthStore({crossWindowMessaging, projectId: 'test'})
-    const userStore = createUserStore({
-      authStore,
-      client: client as any,
-      authController: authenticationFetcher,
-      projectId: 'foo',
+    const grantsStore = createGrantsStore({
+      client: client as unknown as SanityClient,
+      currentUser: null,
     })
-    const grantsStore = createGrantsStore(client as any, userStore)
 
     const permissions = getTemplatePermissions({
       grantsStore,

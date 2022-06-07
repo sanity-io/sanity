@@ -1,5 +1,5 @@
-import {WorkspaceOptions, Config} from './types'
+import {Config} from './types'
 
-export function createConfig(config: WorkspaceOptions | WorkspaceOptions[]): Config {
-  return {type: 'sanity-config', __internal: config}
+export function createConfig<T extends Config>(config: T): T {
+  return config
 }

@@ -27,6 +27,7 @@ export interface DocumentPaneContextValue {
   documentType: string
   editState: EditStateFor | null
   focusPath: Path
+  // TODO: rename this for consistency
   historyController: TimelineController
   index: number
   inspectOpen: boolean

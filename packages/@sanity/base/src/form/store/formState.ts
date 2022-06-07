@@ -201,7 +201,7 @@ interface RawState<SchemaType, T> {
   schemaType: SchemaType
   value?: T
   document: FIXME_SanityDocument
-  currentUser: Omit<CurrentUser, 'role'>
+  currentUser: Omit<CurrentUser, 'role'> | null
   parent?: unknown
   hidden?: boolean
   readOnly?: boolean

@@ -4,7 +4,7 @@ import {catchError, distinctUntilChanged, map, scan, switchMap} from 'rxjs/opera
 import shallowEquals from 'shallow-equals'
 import {useUnique} from './useUnique'
 
-type LoadingTuple<T> = [T, boolean]
+export type LoadingTuple<T> = [T, boolean]
 
 type ReactHook<TArgs extends unknown[], TResult> = (...args: TArgs) => TResult
 

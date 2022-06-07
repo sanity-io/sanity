@@ -1,20 +1,23 @@
-import {isEqual} from 'lodash'
+import {escapeRegExp, isEqual} from 'lodash'
 import {Observable} from 'rxjs'
 import {map, filter, scan, shareReplay, distinctUntilChanged} from 'rxjs/operators'
+import {History, Location} from 'history'
 import {Tool} from '../../config'
 import {Router} from '../../router'
-import {LocationStore} from './location'
 import {decodeUrlState, isNonNullable, resolveDefaultState, resolveIntentState} from './helpers'
 import {RouterEvent} from './types'
 
 interface RouterEventStreamOptions {
-  locationStore: LocationStore
+  unstable_history: History
   router: Router
   tools: Tool[]
 }
 
+/**
+ * @internal
+ */
 export function createRouterEventStream({
-  locationStore,
+  unstable_history: history,
   router,
   tools,
 }: RouterEventStreamOptions): Observable<RouterEvent> {
@@ -27,13 +30,7 @@ export function createRouterEventStream({
       )
 
       if (redirectState?.type === 'state') {
-        const newUrl = router.encode(redirectState.state)
-
-        locationStore.navigate.call({
-          path: newUrl,
-          replace: true,
-        })
-
+        history.replace(router.encode(redirectState.state))
         return null
       }
     }
@@ -46,11 +43,7 @@ export function createRouterEventStream({
       const defaultState = resolveDefaultState(tools, event.state)
 
       if (defaultState && defaultState !== event.state) {
-        locationStore.navigate.call({
-          path: router.encode(defaultState),
-          replace: true,
-        })
-
+        history.replace(router.encode(defaultState))
         return null
       }
     }
@@ -58,8 +51,20 @@ export function createRouterEventStream({
     return event
   }
 
-  const state$: Observable<RouterEvent> = locationStore.event$.pipe(
-    map((event) => decodeUrlState(router, event)),
+  const state$: Observable<RouterEvent> = new Observable<Location>((observer) => {
+    history.listen((location) => observer.next(location))
+
+    // emit on mount
+    observer.next(history.location)
+  }).pipe(
+    // this is necessary to prevent emissions intended for other workspaces.
+    //
+    // this regex ends with a `(\\/|$)` (forward slash or end) to prevent false
+    // matches where the pathname is a false subset of the current pathname.
+    filter(({pathname}) =>
+      new RegExp(`^${escapeRegExp(router.getBasePath())}(\\/|$)`, 'i').test(pathname)
+    ),
+    map(({pathname}) => decodeUrlState(router, pathname)),
     scan(maybeHandleIntent, null),
     filter(isNonNullable),
     map(maybeRedirectDefaultState),

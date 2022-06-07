@@ -19,7 +19,7 @@ interface SingleConditionalPropertyResult {
 export interface ConditionalPropertyCallbackContext {
   parent?: unknown
   document?: Record<string, unknown>
-  currentUser: Omit<CurrentUser, 'role'>
+  currentUser: Omit<CurrentUser, 'role'> | null
   value: unknown
 }
 

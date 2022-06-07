@@ -16,27 +16,49 @@ import {PresenceStore, __tmp_wrap_presenceStore} from './presence'
 import {createProjectStore, ProjectStore} from './project'
 import {useResourceCache} from './ResourceCacheProvider'
 import {createSettingsStore, SettingsStore} from './settings'
+import {createUserStore, useCurrentUser, UserStore} from './user'
+
+export function useUserStore(): UserStore {
+  const {client, currentUser} = useSource()
+  const resourceCache = useResourceCache()
+
+  return useMemo(() => {
+    const userStore =
+      resourceCache.get<UserStore>({
+        namespace: 'userStore',
+        dependencies: [client, currentUser],
+      }) || createUserStore({client, currentUser})
+
+    resourceCache.set({
+      namespace: 'userStore',
+      dependencies: [client, currentUser],
+      value: userStore,
+    })
+
+    return userStore
+  }, [client, currentUser, resourceCache])
+}
 
 export function useGrantsStore(): GrantsStore {
-  const client = useClient()
-  const {userStore} = useSource().__internal
+  const {client} = useSource()
+  const currentUser = useCurrentUser()
   const resourceCache = useResourceCache()
 
   return useMemo(() => {
     const grantsStore =
       resourceCache.get<GrantsStore>({
         namespace: 'grantsStore',
-        dependencies: [client, userStore],
-      }) || createGrantsStore(client, userStore)
+        dependencies: [client, currentUser],
+      }) || createGrantsStore({client, currentUser})
 
     resourceCache.set({
       namespace: 'grantsStore',
-      dependencies: [client, userStore],
+      dependencies: [client, currentUser],
       value: grantsStore,
     })
 
     return grantsStore
-  }, [client, resourceCache, userStore])
+  }, [client, currentUser, resourceCache])
 }
 
 export function useHistoryStore(): HistoryStore {
@@ -157,8 +179,11 @@ export function useConnectionStatusStore(): ConnectionStatusStore {
 }
 
 export function usePresenceStore(): PresenceStore {
-  const {bifur, userStore} = useSource().__internal
+  const {
+    __internal: {bifur},
+  } = useSource()
   const resourceCache = useResourceCache()
+  const userStore = useUserStore()
   const connectionStatusStore = useConnectionStatusStore()
 
   return useMemo(() => {

@@ -1,8 +1,7 @@
 import {Tool} from '../../config'
 import {RouterState, Router} from '../../router'
 import {isRecord} from '../../util/isRecord'
-import {LocationEvent} from './location'
-import {RouterEvent} from './types'
+import {RouterEvent, RouterStateEvent} from './types'
 import {getOrderedTools} from './util/getOrderedTools'
 
 function resolveUrlStateWithDefaultTool(tools: Tool[], state: Record<string, unknown> | null) {
@@ -100,11 +99,11 @@ export function resolveIntentState(
   }
 }
 
-export function decodeUrlState(rootRouter: Router, locationEvent: LocationEvent): RouterEvent {
+export function decodeUrlState(rootRouter: Router, pathname: string): RouterStateEvent {
   return {
     type: 'state',
-    state: rootRouter.decode(locationEvent.location.pathname) || {},
-    isNotFound: rootRouter.isNotFound(locationEvent.location.pathname),
+    state: rootRouter.decode(pathname) || {},
+    isNotFound: rootRouter.isNotFound(pathname),
   }
 }
 

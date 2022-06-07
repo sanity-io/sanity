@@ -52,17 +52,9 @@ export type {
 export {createConfig, createPlugin} from '../config'
 
 export type {
-  AuthStateChangedMessage,
-  AuthStateState,
-  AuthStateConfig,
-  AuthStateTokenStore,
   AuthStore,
-  CurrentUserError,
-  CurrentUserEvent,
-  CurrentUserSnapshot,
   EditStateFor,
   GuardedOperation,
-  MSG_AUTH_STATE_CHANGED,
   Operation,
   OperationsAPI,
   UserStore,
@@ -180,14 +172,13 @@ export type {
 export {
   renderStudio,
   SourceProvider,
-  Studio,
   StudioProvider,
   ToolLink,
   ToolMenu,
   useColorScheme,
-  useConfig,
   useSource,
   useWorkspace,
+  useWorkspaces,
   WorkspaceProvider,
 } from '../studio'
 

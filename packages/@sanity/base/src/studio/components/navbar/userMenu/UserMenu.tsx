@@ -51,11 +51,7 @@ const getProviderTitle = (provider?: string) => {
 }
 
 export function UserMenu() {
-  const {
-    __internal: {auth},
-    currentUser,
-    projectId,
-  } = useWorkspace()
+  const {currentUser, projectId, auth} = useWorkspace()
   const {scheme, setScheme} = useColorScheme()
 
   const providerTitle = getProviderTitle(currentUser?.provider)
@@ -73,10 +69,6 @@ export function UserMenu() {
   const handleToggleScheme = useCallback(() => {
     setScheme(scheme === 'dark' ? 'light' : 'dark')
   }, [scheme, setScheme])
-
-  const handleLogout = useCallback(() => {
-    auth.controller.logout()
-  }, [auth.controller])
 
   return (
     <MenuButton
@@ -120,11 +112,11 @@ export function UserMenu() {
 
               <Stack space={2} flex={1}>
                 <Text size={1} weight="semibold" textOverflow="ellipsis">
-                  {currentUser.name}
+                  {currentUser?.name}
                 </Text>
 
                 <Text size={1} muted textOverflow="ellipsis">
-                  {currentUser.email}
+                  {currentUser?.email}
                 </Text>
               </Stack>
             </Flex>
@@ -148,9 +140,17 @@ export function UserMenu() {
             icon={CogIcon}
           />
 
-          <MenuDivider />
-
-          <MenuItem iconRight={LeaveIcon} onClick={handleLogout} text="Sign out" />
+          {auth.logout && (
+            <>
+              <MenuDivider />
+              <MenuItem
+                iconRight={LeaveIcon}
+                text="Sign out"
+                disabled={!auth.logout}
+                {...(auth.logout && {onClick: auth.logout})}
+              />
+            </>
+          )}
         </StyledMenu>
       }
       popover={popoverProps}

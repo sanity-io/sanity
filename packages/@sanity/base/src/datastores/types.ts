@@ -7,7 +7,6 @@ import {HistoryStore} from './history'
 import {PresenceStore} from './presence'
 import {ProjectStore} from './project'
 import {SettingsStore} from './settings/types'
-import {UserStore} from './user'
 
 export interface DatastoresContext {
   config: Config
@@ -23,5 +22,4 @@ export interface Datastores {
   presenceStore: PresenceStore
   projectStore: ProjectStore
   settingsStore: SettingsStore
-  userStore: UserStore
 }

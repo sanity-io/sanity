@@ -1,443 +1,84 @@
-/* eslint-disable max-nested-callbacks */
+import {combineLatest, Observable} from 'rxjs'
+import {first, map} from 'rxjs/operators'
+import {CurrentUser} from '@sanity/types'
+import {SanityClient} from '@sanity/client'
+import {createMockAuthStore} from '../datastores'
+import {Config, Source, Workspace, WorkspaceOptions} from './types'
+import {prepareConfig} from './prepareConfig'
 
-import createClient, {SanityClient} from '@sanity/client'
-import {map, shareReplay} from 'rxjs/operators'
-import {CurrentUser, Schema} from '@sanity/types'
-import {studioTheme} from '@sanity/ui'
-import {startCase} from 'lodash'
-import {BifurClient, fromSanityClient} from '@sanity/bifur-client'
-import {createSchema} from '../schema'
-import {AuthStore, createAuthStore, createUserStore, UserStore} from '../datastores'
-import {AuthController, AuthError, createAuthController} from '../auth'
-import {InitialValueTemplateItem, Template, TemplateResponse} from '../templates'
-import {isNonNullable} from '../util'
-import {ImageSource, FileSource} from '../form/studio/DefaultAssetSource'
-import {Source, SourceOptions, Config, ResolvedConfig} from './types'
-import {
-  schemaTypesReducer,
-  resolveProductionUrlReducer,
-  toolsReducer,
-  schemaTemplatesReducer,
-  documentActionsReducer,
-  initialDocumentActions,
-  initialDocumentBadges,
-  documentBadgesReducer,
-  newDocumentOptionsResolver,
-  fileAssetSourceResolver,
-  imageAssetSourceResolver,
-} from './configPropertyReducers'
-import {resolveConfigProperty} from './resolveConfigProperty'
-import {ConfigResolutionError} from './ConfigResolutionError'
-import {SchemaError} from './SchemaError'
-import {_createRenderField} from './form/_renderField'
-import {_createRenderInput} from './form/_renderInput'
-import {_createRenderItem} from './form/_renderItem'
-import {_createRenderPreview} from './form/_renderPreview'
+/**
+ * PRIMARILY FOR TESTING PURPOSES.
+ *
+ * Fully resolves a configuration including subscribing to all sources and
+ * workspaces from a config. Returns an `Observable` that waits till all sources
+ * emit once before emitting an array of fully resolved sources and workspaces.
+ *
+ * @alpha
+ */
+export function resolveConfig(config: Config): Observable<Workspace[]> {
+  const {workspaces} = prepareConfig(config)
 
-type ParamsOf<T> = T extends (arg: infer U) => unknown ? U : never
-type SanityClientLike = ParamsOf<typeof fromSanityClient>
-
-export function resolveConfig(config: Config): ResolvedConfig {
-  const workspaces = Array.isArray(config.__internal) ? config.__internal : [config.__internal]
-  type WorkspaceResult = ResolvedConfig['__internal']['workspaces'][number]
-
-  const results = workspaces.map(
-    ({unstable_sources: nestedSources = [], ...rootSource}): WorkspaceResult => {
-      const sources = [rootSource as SourceOptions, ...nestedSources]
-
-      const resolvedSources = sources.map((source) => {
-        const clientFactory = source.unstable_clientFactory ?? createClient
-        const projectId = source.projectId
-        const dataset = source.dataset
-
-        const client = clientFactory({
-          apiVersion: '1',
-          dataset,
-          projectId,
-          useCdn: false,
-          withCredentials: true,
-        })
-
-        const auth = {
-          controller: createAuthController({client, config: source.unstable_auth}),
-          store: createAuthStore({projectId}),
-        }
-        const userStore = createUserStore({
-          authStore: auth.store,
-          authController: auth.controller,
-          projectId,
-          client,
-        })
-
-        let schemaTypes
-        try {
-          schemaTypes = resolveConfigProperty({
-            propertyName: 'schema.types',
-            config: source,
-            context: {client, projectId, dataset},
-            initialValue: [],
-            reducer: schemaTypesReducer,
+  return combineLatest(
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    workspaces.flatMap((workspaceSummary) =>
+      combineLatest(workspaceSummary.__internal.sources.map(({source}) => source)).pipe(
+        map(
+          (sources): Workspace => ({
+            ...workspaceSummary,
+            ...sources[0],
+            unstable_sources: sources,
+            type: 'workspace',
           })
-        } catch (e) {
-          throw new ConfigResolutionError({
-            name: source.name,
-            type: 'source',
-            causes: [e],
-          })
-        }
-
-        const schema = createSchema({
-          name: source.name,
-          types: schemaTypes,
-        })
-
-        const schemaValidationProblemGroups = schema._validation
-        const schemaErrors = schemaValidationProblemGroups?.filter(
-          (msg) => !!msg.problems.find((p) => p.severity === 'error')
         )
-
-        if (schemaValidationProblemGroups && schemaErrors?.length) {
-          console.error(schemaValidationProblemGroups)
-          // TODO: consider using the `ConfigResolutionError`
-          throw new SchemaError(schema)
-        }
-
-        const resolvedSource$ = userStore.me.pipe(
-          map((currentUser) => {
-            if (!currentUser) {
-              throw new AuthError({
-                message: 'Current user from user store was falsy.',
-                authController: auth.controller,
-                sourceOptions: source,
-              })
-            }
-
-            return currentUser
-          }),
-          map((currentUser) =>
-            resolveSource({
-              config: source,
-              client,
-              currentUser,
-              userStore,
-              schema,
-              auth,
-            })
-          ),
-          shareReplay(1)
-        )
-
-        return Object.assign(resolvedSource$, {
-          projectId,
-          dataset,
-          name: source.name,
-          schema,
-          subscribe: resolvedSource$.subscribe.bind(resolvedSource$),
-        })
-      })
-
-      const workspaceResult: WorkspaceResult = {
-        ...rootSource,
-        type: 'partially-resolved-workspace',
-        basePath: rootSource.basePath || '/',
-        theme: rootSource.theme || studioTheme,
-        sources: resolvedSources,
-      }
-
-      return workspaceResult
-    }
+      )
+    )
   )
-
-  return {
-    type: 'resolved-sanity-config',
-    __internal: {
-      workspaces: results,
-    },
-  }
 }
 
-interface ResolveSourceOptions {
-  config: SourceOptions
-  schema: Schema
-  client: SanityClient
-  currentUser: CurrentUser
-  userStore: UserStore
-  auth: {
-    controller: AuthController
-    store: AuthStore
-  }
+type CreateWorkspaceFromConfigOptions =
+  | WorkspaceOptions
+  | (WorkspaceOptions & {currentUser: CurrentUser; client: SanityClient})
+
+/**
+ * PRIMARILY FOR TESTING PURPOSES.
+ *
+ * This will create a fully resolved workspace from a config and optionally
+ * allows a `client` and `currentUser` override. This exists primarily for
+ * testing purposes. If you need to use a workspace, we recommend using the
+ * `useWorkspace` hook to grab the fully resolved workspace from the
+ * `StudioProvider`
+ *
+ * @alpha
+ */
+export async function createWorkspaceFromConfig(
+  options: CreateWorkspaceFromConfigOptions
+): Promise<Workspace> {
+  const [workspace] = await resolveConfig({
+    ...options,
+    ...('client' in options &&
+      'currentUser' in options && {
+        auth: createMockAuthStore(options),
+      }),
+  })
+    .pipe(first())
+    .toPromise()
+
+  return workspace
 }
 
-function resolveSource({
-  config,
-  client,
-  currentUser,
-  schema,
-  auth,
-  userStore,
-}: ResolveSourceOptions): Source {
-  const {dataset, projectId} = config
-  const errors: unknown[] = []
-
-  const context = {
-    client,
-    currentUser,
-    dataset,
-    projectId,
-    schema,
-  }
-
-  let templates!: Source['templates']
-  try {
-    templates = resolveConfigProperty({
-      config,
-      context,
-      propertyName: 'schema.templates',
-      reducer: schemaTemplatesReducer,
-      initialValue: schema
-        .getTypeNames()
-        .filter((typeName) => !/^sanity\./.test(typeName))
-        .map((typeName) => schema.get(typeName))
-        .filter(isNonNullable)
-        .filter((schemaType) => schemaType.type?.name === 'document')
-        .map((schemaType) => {
-          const template: Template = {
-            id: schemaType.name,
-            schemaType: schemaType.name,
-            title: schemaType.title || schemaType.name,
-            icon: schemaType.icon,
-            value: schemaType.initialValue || {_type: schemaType.name},
-          }
-
-          return template
-        }),
-    })
-    // TODO: validate templates
-    // TODO: validate that each one has a unique template ID
-  } catch (e) {
-    errors.push(e)
-  }
-
-  let tools!: Source['tools']
-  try {
-    tools = resolveConfigProperty({
-      config,
-      context,
-      initialValue: [],
-      propertyName: 'tools',
-      reducer: toolsReducer,
-    })
-  } catch (e) {
-    errors.push(e)
-  }
-
-  const initialTemplatesResponses = templates
-    // filter out the ones with parameters to fill
-    .filter((template) => !template.parameters?.length)
-    .map(
-      (template): TemplateResponse => ({
-        templateId: template.id,
-        description: template.description,
-        icon: template.icon,
-        title: template.title,
-      })
-    )
-
-  const templateMap = templates.reduce((acc, template) => {
-    acc.set(template.id, template)
-    return acc
-  }, new Map<string, Template>())
-
-  // TODO: extract this function
-  const resolveNewDocumentOptions: Source['document']['resolveNewDocumentOptions'] = (
-    creationContext
-  ) => {
-    const {schemaType: schemaTypeName} = creationContext
-
-    const templateResponses = resolveConfigProperty({
-      config,
-      context: {...context, creationContext},
-      initialValue: initialTemplatesResponses,
-      propertyName: 'document.resolveNewDocumentOptions',
-      reducer: newDocumentOptionsResolver,
-    })
-
-    const templateErrors: unknown[] = []
-
-    // TODO: validate template responses
-    // ensure there is a matching template per each one
-    if (templateErrors.length) {
-      throw new ConfigResolutionError({
-        name: config.name,
-        // TODO: figure out this name
-        type: 'source',
-        causes: templateErrors,
-      })
-    }
-
-    return (
-      templateResponses
-        // take the template responses and transform them into the formal
-        // `InitialValueTemplateItem`
-        .map((response, index): InitialValueTemplateItem => {
-          const template = templateMap.get(response.templateId)
-          if (!template) {
-            throw new Error(`Could not find template with ID \`${response.templateId}\``)
-          }
-
-          const schemaType = schema.get(template.schemaType)
-
-          if (!schemaType) {
-            throw new Error(
-              `Could not find matching schema type \`${template.schemaType}\` for template \`${template.id}\``
-            )
-          }
-
-          const title = response.title || template.title
-          // Don't show the type name as subtitle if it's the same as the template name
-          const defaultSubtitle = schemaType?.title === title ? undefined : schemaType?.title
-
-          return {
-            id: `${response.templateId}-${index}`,
-            templateId: response.templateId,
-            type: 'initialValueTemplateItem',
-            title,
-            subtitle: response.subtitle || defaultSubtitle,
-            description: response.description || template.description,
-            icon: response.icon || template.icon || schemaType?.icon,
-            initialDocumentId: response.initialDocumentId,
-            parameters: response.parameters,
-            schemaType: template.schemaType,
-          }
-        })
-        .filter((item) => {
-          // if we are in a creationContext where there is no schema type,
-          // then keep everything
-          if (!schemaTypeName) return true
-
-          // else only keep the `schemaType`s that match the creationContext
-          return schemaTypeName === templateMap.get(item.templateId)?.schemaType
-        })
-    )
-  }
-
-  let staticInitialValueTemplateItems!: InitialValueTemplateItem[]
-  try {
-    staticInitialValueTemplateItems = resolveNewDocumentOptions({type: 'global'})
-  } catch (e) {
-    errors.push(e)
-  }
-
-  if (errors.length) {
-    throw new ConfigResolutionError({
-      name: config.name,
-      type: 'source',
-      causes: errors,
-    })
-  }
-
-  // The bifur client currently throws errors on construction in non-browser environments,
-  // due to the use of the `window` global. Because we want to use the `resolveConfig`
-  // method in a node.js environment, we will defer the construction of the client until
-  // it is attempted to be accessed (using a property getter). Remove this once the client
-  // works isomorphically, or handles this internally
-  let bifur: BifurClient | undefined
-  function getBifurClient(): BifurClient {
-    if (typeof WebSocket === 'undefined') {
-      throw new Error('Bifur client is not available without a `WebSocket`')
-    }
-
-    if (!bifur) {
-      bifur = fromSanityClient(client as SanityClientLike)
-    }
-
-    return bifur
-  }
-
-  const source: Source = {
-    name: config.name,
-    title: config.title || startCase(config.name),
-    schema,
-    client,
-    dataset,
-    projectId,
-    tools,
-    currentUser,
-    templates,
-    document: {
-      actions: (partialContext) =>
-        resolveConfigProperty({
-          config,
-          context: {...context, ...partialContext},
-          initialValue: initialDocumentActions,
-          propertyName: 'document.actions',
-          reducer: documentActionsReducer,
-        }),
-      badges: (partialContext) =>
-        resolveConfigProperty({
-          config,
-          context: {...context, ...partialContext},
-          initialValue: initialDocumentBadges,
-          propertyName: 'document.badges',
-          reducer: documentBadgesReducer,
-        }),
-      resolveProductionUrl: (partialContext) =>
-        resolveConfigProperty({
-          config,
-          context: {...context, ...partialContext},
-          initialValue: undefined,
-          propertyName: 'resolveProductionUrl',
-          asyncReducer: resolveProductionUrlReducer,
-        }),
-      resolveNewDocumentOptions,
-    },
-    form: {
-      unstable: {
-        ...config.form?.unstable,
-      },
-
-      renderField: _createRenderField(config),
-      renderInput: _createRenderInput(config),
-      renderItem: _createRenderItem(config),
-      renderPreview: _createRenderPreview(config),
-
-      file: {
-        assetSources: resolveConfigProperty({
-          config,
-          context,
-          initialValue: [FileSource],
-          propertyName: 'formBuilder.file.assetSources',
-          reducer: fileAssetSourceResolver,
-        }),
-        directUploads:
-          // TODO: consider refactoring this to `noDirectUploads` or similar
-          // default value for this is `true`
-          config.form?.file?.directUploads === undefined ? true : config.form.file.directUploads,
-      },
-      image: {
-        assetSources: resolveConfigProperty({
-          config,
-          context,
-          initialValue: [ImageSource],
-          propertyName: 'formBuilder.image.assetSources',
-          reducer: imageAssetSourceResolver,
-        }),
-        directUploads:
-          // TODO: consider refactoring this to `noDirectUploads` or similar
-          // default value for this is `true`
-          config.form?.file?.directUploads === undefined ? true : config.form.file.directUploads,
-      },
-    },
-
-    __internal: {
-      auth,
-      get bifur() {
-        return getBifurClient()
-      },
-      userStore,
-      staticInitialValueTemplateItems,
-    },
-  }
-
-  return source
+/**
+ * PRIMARILY FOR TESTING PURPOSES.
+ *
+ * This will create a fully resolved source from a config and optionally
+ * allows a `client` and `currentUser` override. This exists primarily for
+ * testing purposes. If you need to use a source, we recommend using the
+ * `useSource` hook to grab the fully resolved source from the `StudioProvider`
+ *
+ * @alpha
+ */
+export async function createSourceFromConfig(
+  options: CreateWorkspaceFromConfigOptions
+): Promise<Source> {
+  const workspace = await createWorkspaceFromConfig(options)
+  return workspace.unstable_sources[0]
 }

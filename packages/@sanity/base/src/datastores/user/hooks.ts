@@ -1,17 +1,20 @@
-import {useMemo} from 'react'
 import {CurrentUser, User} from '@sanity/types'
-import {LoadableState, useLoadable} from '../../util/useLoadable'
+import {from} from 'rxjs'
 import {useSource} from '../../studio'
+import {useUserStore} from '../datastores'
+import {createHookFromObservableFactory, LoadingTuple} from '../../util'
+import {UserStore} from './userStore'
 
-export function useUser(userId: string): LoadableState<User | null> {
-  const {userStore} = useSource().__internal
+const useUserViaUserStore = createHookFromObservableFactory(
+  (userStore: UserStore, userId: string) => from(userStore.getUser(userId))
+)
 
-  const user$ = useMemo(() => userStore.observable.getUser(userId), [userId, userStore])
-
-  return useLoadable(user$, null)
+export function useUser(userId: string): LoadingTuple<User | null | undefined> {
+  const userStore = useUserStore()
+  return useUserViaUserStore(userStore, userId)
 }
 
-export function useCurrentUser(): CurrentUser {
+export function useCurrentUser(): CurrentUser | null {
   const {currentUser} = useSource()
   return currentUser
 }

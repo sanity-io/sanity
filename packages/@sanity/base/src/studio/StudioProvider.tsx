@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {Fragment, useMemo} from 'react'
 import Refractor from 'react-refractor'
 import bash from 'refractor/lang/bash'
 import javascript from 'refractor/lang/javascript'
@@ -6,20 +6,18 @@ import json from 'refractor/lang/json'
 import jsx from 'refractor/lang/jsx'
 import typescript from 'refractor/lang/typescript'
 import {History} from 'history'
-import {LayerProvider, ThemeColorSchemeKey, ToastProvider} from '@sanity/ui'
+import {ThemeColorSchemeKey} from '@sanity/ui'
 import {Config} from '../config'
 import {UserColorManagerProvider} from '../user-color'
 import {ResourceCacheProvider} from '../datastores/ResourceCacheProvider'
-import {ConfigProvider} from './config'
 import {ColorSchemeProvider} from './colorScheme'
-import {LocationProvider} from './location'
+import {ActiveWorkspaceMatcher} from './activeWorkspaceMatcher'
 import {StudioThemeProvider} from './StudioThemeProvider'
 import {StudioErrorBoundary} from './StudioErrorBoundary'
-import {WorkspaceResolver} from './components'
-import {LoadingScreen} from './screens'
+import {WorkspaceLoader} from './workspaceLoader'
+import {ConfigErrorsScreen, LoadingScreen, NotAuthenticatedScreen, NotFoundScreen} from './screens'
+import {WorkspacesProvider} from './workspaces'
 import {AuthBoundary} from './AuthBoundary'
-import {LoginScreen} from './screens/login'
-import {Z_OFFSET} from './constants'
 
 Refractor.registerLanguage(bash)
 Refractor.registerLanguage(javascript)
@@ -30,39 +28,52 @@ Refractor.registerLanguage(typescript)
 export interface StudioProviderProps {
   children: React.ReactNode
   config: Config
-  history?: History
   onSchemeChange?: (nextScheme: ThemeColorSchemeKey) => void
   scheme?: ThemeColorSchemeKey
+  unstable_history?: History
+  unstable_noAuthBoundary?: boolean
 }
 
 export function StudioProvider({
   children,
   config,
-  history,
   onSchemeChange,
   scheme,
+  unstable_history: history,
+  unstable_noAuthBoundary: noAuthBoundary,
 }: StudioProviderProps) {
+  const ConditionalAuthBoundary = useMemo(
+    () => (noAuthBoundary ? Fragment : AuthBoundary),
+    [noAuthBoundary]
+  )
+
   return (
-    <ConfigProvider config={config}>
+    <WorkspacesProvider config={config}>
       <ColorSchemeProvider onSchemeChange={onSchemeChange} scheme={scheme}>
         <StudioErrorBoundary>
-          <LocationProvider history={history} noRoute={<>no route</>}>
+          <ActiveWorkspaceMatcher
+            unstable_history={history}
+            NotFoundComponent={NotFoundScreen}
+            LoadingComponent={LoadingScreen}
+          >
             <StudioThemeProvider>
-              <ToastProvider paddingY={7} zOffset={Z_OFFSET.toast}>
-                <LayerProvider>
-                  <UserColorManagerProvider>
-                    <AuthBoundary loginScreen={LoginScreen}>
-                      <WorkspaceResolver loadingScreen={<LoadingScreen />}>
-                        <ResourceCacheProvider>{children}</ResourceCacheProvider>
-                      </WorkspaceResolver>
-                    </AuthBoundary>
-                  </UserColorManagerProvider>
-                </LayerProvider>
-              </ToastProvider>
+              <UserColorManagerProvider>
+                <ConditionalAuthBoundary
+                  LoadingComponent={LoadingScreen}
+                  NotAuthenticatedComponent={NotAuthenticatedScreen}
+                >
+                  <WorkspaceLoader
+                    LoadingComponent={LoadingScreen}
+                    ConfigErrorsComponent={ConfigErrorsScreen}
+                  >
+                    <ResourceCacheProvider>{children}</ResourceCacheProvider>
+                  </WorkspaceLoader>
+                </ConditionalAuthBoundary>
+              </UserColorManagerProvider>
             </StudioThemeProvider>
-          </LocationProvider>
+          </ActiveWorkspaceMatcher>
         </StudioErrorBoundary>
       </ColorSchemeProvider>
-    </ConfigProvider>
+    </WorkspacesProvider>
   )
 }

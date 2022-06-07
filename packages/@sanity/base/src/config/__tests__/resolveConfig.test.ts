@@ -1,138 +1,212 @@
-/**
- * @jest-environment node
- */
-import {Observable, Subject} from 'rxjs'
-import {CurrentUser} from '@sanity/types'
-import {take} from 'rxjs/operators'
-import {resolveConfig} from '../resolveConfig'
-import {createConfig} from '../createConfig'
-import {createUserStore} from '../../datastores/user'
-
-// @ts-expect-error this is the mocked value
-const userSubject = createUserStore().me as Subject<CurrentUser>
-
-jest.mock('../../auth', () => ({
-  createAuthController: () => ({mockAuthController: true}),
-}))
-
-jest.mock('../../datastores/authState', () => ({
-  createAuthStore: () => ({mockAuthStore: true}),
-}))
-
-jest.mock('../../datastores/user', () => {
-  const Rx = require('rxjs')
-  const me = new Rx.ReplaySubject(1)
-
-  return {
-    createUserStore: () => ({me}),
-  }
-})
+import createClient from '@sanity/client'
+import {of} from 'rxjs'
+import {bufferTime, first} from 'rxjs/operators'
+import {createMockAuthStore} from '../../datastores'
+import {resolveConfig, createWorkspaceFromConfig, createSourceFromConfig} from '../resolveConfig'
 
 describe('resolveConfig', () => {
-  it('partially resolves workspace configurations with multi-source support', () => {
-    const config = createConfig([
+  it('returns an observable that emits an array of fully resolved workspaces', async () => {
+    const projectId = 'ppsg7ml5'
+    const dataset = 'production'
+    const client = createClient({
+      projectId,
+      apiVersion: '2021-06-07',
+      dataset,
+      useCdn: false,
+    })
+
+    const [workspace] = await resolveConfig({
+      name: 'default',
+      dataset,
+      projectId,
+      auth: createMockAuthStore({client, currentUser: null}),
+    })
+      .pipe(first())
+      .toPromise()
+
+    expect(workspace).toMatchObject({
+      type: 'workspace',
+      name: 'default',
+      projectId: 'ppsg7ml5',
+      dataset: 'production',
+      unstable_sources: [
+        {
+          dataset: 'production',
+          name: 'default',
+          projectId: 'ppsg7ml5',
+        },
+      ],
+    })
+  })
+
+  it('emits a new value if the auth stores emit a new auth state', async () => {
+    const projectId = 'ppsg7ml5'
+    const dataset = 'production'
+    const client = createClient({
+      projectId,
+      apiVersion: '2021-06-07',
+      dataset,
+      useCdn: false,
+    })
+
+    const results = await resolveConfig({
+      name: 'default',
+      dataset,
+      projectId,
+      auth: {
+        state: of(
+          {authenticated: true, client, currentUser: null},
+          {
+            authenticated: true,
+            client,
+            currentUser: {
+              id: 'test',
+              name: 'test',
+              email: 'hello@example.com',
+              role: '',
+              roles: [],
+            },
+          }
+        ),
+      },
+    })
+      // this will buffer the results emitted in the observable into an array
+      .pipe(bufferTime(50))
+      .toPromise()
+
+    expect(results).toHaveLength(2)
+    const [firstResult, secondResult] = results
+
+    expect(firstResult).toMatchObject([
       {
         name: 'default',
-        projectId: 'myProject',
-        dataset: 'first',
-      },
-      {
-        name: 'second',
-        projectId: 'myProject',
-        dataset: 'second',
+        projectId: 'ppsg7ml5',
+        dataset: 'production',
+        currentUser: null,
         unstable_sources: [
           {
-            projectId: 'anotherProject',
-            dataset: 'products',
-            name: 'additionalSource',
+            dataset: 'production',
+            name: 'default',
+            projectId: 'ppsg7ml5',
           },
         ],
       },
     ])
 
-    // `resolveConfig` returns partially resolved workspaces and sources synchronously
-    const result = resolveConfig(config)
-    const {workspaces} = result.__internal
-    expect(workspaces).toHaveLength(2)
-    const [firstWorkspace, secondWorkspace] = workspaces
-
-    // first workspace
-    expect(firstWorkspace.sources).toHaveLength(1)
-    const [firstWorkspaceRootSource] = firstWorkspace.sources
-    expect(firstWorkspaceRootSource).toMatchObject({
-      dataset: 'first',
-      name: 'default',
-      projectId: 'myProject',
-      schema: {},
-    })
-
-    // notice the subscribe method, this is how to resolve the rest of the
-    // config which requires auth and resolves the user asynchronously
-    expect(typeof firstWorkspaceRootSource.subscribe).toBe('function')
-
-    // second workspace
-    expect(secondWorkspace.sources).toHaveLength(2)
-    const [secondWorkspaceRootSource, secondWorkspaceAdditionalSource] = secondWorkspace.sources
-
-    expect(secondWorkspaceRootSource).toMatchObject({
-      dataset: 'second',
-      name: 'second',
-      projectId: 'myProject',
-      schema: {},
-      subscribe: {},
-    })
-    expect(secondWorkspaceAdditionalSource).toMatchObject({
-      dataset: 'products',
-      name: 'additionalSource',
-      projectId: 'anotherProject',
-      schema: {},
-    })
-
-    // notice the subscribe method, this is how to resolve the rest of the
-    // config which requires auth and resolves the user asynchronously
-    expect(typeof secondWorkspaceAdditionalSource.subscribe).toBe('function')
+    expect(secondResult).toMatchObject([
+      {
+        type: 'workspace',
+        name: 'default',
+        projectId: 'ppsg7ml5',
+        dataset: 'production',
+        // note the extra user here
+        currentUser: {
+          id: 'test',
+          name: 'test',
+          email: 'hello@example.com',
+        },
+        unstable_sources: [
+          {
+            dataset: 'production',
+            name: 'default',
+            projectId: 'ppsg7ml5',
+          },
+        ],
+      },
+    ])
   })
-
-  it('returns subscribe-able sources that resolve the full source', async () => {
-    const config = createConfig({
-      name: 'default',
-      projectId: 'myProject',
-      dataset: 'production',
-    })
-
-    const [partiallyResolvedWorkspace] = resolveConfig(config).__internal.workspaces
-    const [rootSource] = partiallyResolvedWorkspace.sources
-
-    setTimeout(() => {
-      userSubject.next({
-        email: 'user@example.com',
-        id: 'exampleUserId',
-        name: 'name',
-        roles: [{name: 'admin', title: 'Admin'}],
-        role: 'admin',
-      })
-    })
-
-    const source = await new Observable((observer) => rootSource.subscribe(observer))
-      .pipe(take(1))
-      .toPromise()
-
-    expect(source).toMatchObject({
-      schema: {},
-      client: {},
-      dataset: 'production',
-      projectId: 'myProject',
-      tools: [],
-    })
-  })
-
-  it.todo('throws a MissingAuthError if there is no user')
-  it.todo('throws errors with breadcrumbs')
-  it.todo('collects multiple workspaces and sources errors at once')
 })
 
-describe('configuration properties', () => {
-  it.todo('schema.types')
-  it.todo('previewUrl')
-  it.todo('tools')
+describe('createWorkspaceFromConfig', () => {
+  it('creates a promise that resolves to a full workspace', async () => {
+    const projectId = 'ppsg7ml5'
+    const dataset = 'production'
+
+    const workspace = await createWorkspaceFromConfig({
+      projectId,
+      dataset,
+      name: 'default',
+    })
+
+    expect(workspace).toMatchObject({
+      type: 'workspace',
+      name: 'default',
+      projectId: 'ppsg7ml5',
+      dataset: 'production',
+      currentUser: null,
+      unstable_sources: [
+        {
+          dataset: 'production',
+          name: 'default',
+          projectId: 'ppsg7ml5',
+        },
+      ],
+    })
+  })
+
+  it('allows overriding the `currentUser` and `client`', async () => {
+    const projectId = 'ppsg7ml5'
+    const dataset = 'production'
+    const client = createClient({
+      projectId,
+      apiVersion: '2021-06-07',
+      dataset,
+      useCdn: false,
+    })
+    const currentUser = {
+      id: 'test',
+      name: 'test',
+      email: 'hello@example.com',
+      role: '',
+      roles: [],
+    }
+
+    const workspace = await createWorkspaceFromConfig({
+      projectId,
+      dataset,
+      name: 'default',
+      client,
+      currentUser,
+    })
+
+    expect(workspace).toMatchObject({
+      type: 'workspace',
+      name: 'default',
+      projectId: 'ppsg7ml5',
+      dataset: 'production',
+      currentUser: {
+        id: 'test',
+        name: 'test',
+        email: 'hello@example.com',
+      },
+      unstable_sources: [
+        {
+          dataset: 'production',
+          name: 'default',
+          projectId: 'ppsg7ml5',
+        },
+      ],
+    })
+  })
+})
+
+describe('createSourceFromConfig', () => {
+  it('calls `createWorkspaceFromConfig` and returns the first source', async () => {
+    const projectId = 'ppsg7ml5'
+    const dataset = 'production'
+
+    const source = await createSourceFromConfig({
+      projectId,
+      dataset,
+      name: 'default',
+    })
+
+    expect(source).toMatchObject({
+      type: 'source',
+      name: 'default',
+      projectId: 'ppsg7ml5',
+      dataset: 'production',
+      currentUser: null,
+    })
+  })
 })

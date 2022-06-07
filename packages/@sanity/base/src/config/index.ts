@@ -1,6 +1,7 @@
 export * from './createConfig'
 export * from './createPlugin'
 export * from './types'
+export * from './prepareConfig'
 export * from './resolveConfig'
 export * from './ConfigPropertyError'
 export * from './ConfigResolutionError'

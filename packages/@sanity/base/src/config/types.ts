@@ -23,8 +23,7 @@ import type {
   RenderItemCallback,
   RenderPreviewCallback,
 } from '../form'
-import type {AuthStore, UserStore} from '../datastores'
-import type {AuthController} from '../auth'
+import type {AuthStore} from '../datastores'
 import type {StudioTheme} from '../theme'
 import type {InitialValueTemplateItem, Template, TemplateResponse} from '../templates'
 import type {Router, RouterState} from '../router'
@@ -123,8 +122,8 @@ export type AsyncComposableOption<TValue, TContext> = (
 export interface ConfigContext {
   projectId: string
   dataset: string
-  currentUser: CurrentUser
   schema: Schema
+  currentUser: CurrentUser | null
   client: SanityClient
 }
 
@@ -196,7 +195,8 @@ export type Plugin<TOptions = void> = (options: TOptions) => PluginOptions
 export interface WorkspaceOptions extends SourceOptions {
   basePath?: string
   subtitle?: string
-  logo?: React.ComponentType<{'aria-label'?: string}>
+  logo?: React.ComponentType
+  icon?: React.ComponentType
   navbar?: {
     components?: {
       ToolMenu: React.ComponentType<ToolMenuProps>
@@ -217,7 +217,7 @@ export interface SourceOptions extends PluginOptions {
   /**
    * @alpha
    */
-  unstable_auth?: SanityAuthConfig
+  auth?: AuthStore
 
   /**
    * @alpha
@@ -245,15 +245,19 @@ export type PartialContext<TContext extends ConfigContext> = Pick<
 >
 
 export interface Source {
+  type: 'source'
   name: string
   title: string
   projectId: string
   dataset: string
   schema: Schema
   templates: Template[]
-  client: SanityClient
   tools: Tool[]
-  currentUser: CurrentUser
+  client: SanityClient
+  currentUser: CurrentUser | null
+  authenticated: boolean
+  auth: AuthStore
+
   document: {
     actions: (props: PartialContext<DocumentActionsContext>) => DocumentActionComponent[]
     badges: (props: PartialContext<DocumentActionsContext>) => DocumentBadgeComponent[]
@@ -287,76 +291,59 @@ export interface Source {
     }
   }
   __internal: {
-    auth: {
-      controller: AuthController
-      store: AuthStore
-    }
     bifur: BifurClient
-    userStore: UserStore
     staticInitialValueTemplateItems: InitialValueTemplateItem[]
   }
 }
 
-export interface Workspace extends Source {
+export interface WorkspaceSummary {
+  type: 'workspace-summary'
+  name: string
+  title: string
+  logo?: React.ReactNode
+  icon: React.ReactNode
+  subtitle?: string
+  basePath: string
+  auth: AuthStore
+  projectId: string
+  dataset: string
+  theme: StudioTheme
+  /**
+   * @internal
+   * @deprecated not actually deprecated but don't use or you'll be fired
+   */
+  __internal: {
+    sources: Array<{
+      name: string
+      projectId: string
+      dataset: string
+      title: string
+      auth: AuthStore
+      source: Observable<Source>
+    }>
+  }
+}
+
+export interface Workspace extends Omit<Source, 'type'> {
+  type: 'workspace'
   basePath: string
   subtitle?: string
-  logo?: React.ComponentType | React.ReactNode
+  logo?: React.ReactNode
+  icon: React.ReactNode
   navbar?: {
     components?: {
       ToolMenu?: React.ComponentType<ToolMenuProps>
     }
   }
-  theme: StudioTheme
   /**
    * @alpha
    */
   unstable_sources: Source[]
 }
 
-export interface ResolvedConfig {
-  type: 'resolved-sanity-config'
+export type Config = WorkspaceOptions | WorkspaceOptions[]
 
-  /**
-   * @internal
-   * @deprecated not actually deprecated but don't use or you'll be fired
-   */
-  __internal: {
-    workspaces: PartiallyResolvedWorkspace[]
-  }
-}
-
-export interface Config {
-  type: 'sanity-config'
-
-  /**
-   * @internal
-   * @deprecated not actually deprecated but don't use or you'll be fired
-   */
-  __internal: WorkspaceOptions | WorkspaceOptions[]
-}
-
-/**
- * @internal
- */
-interface PartiallyResolvedWorkspace {
-  type: 'partially-resolved-workspace'
-  basePath: string
-  name: string
-  title?: string
-  subtitle?: string
-  logo?: React.ComponentType<{'aria-label'?: string}>
-  navbar?: {
-    components?: {
-      ToolMenu?: React.ComponentType<ToolMenuProps>
-    }
-  }
-  theme: StudioTheme
-  sources: Array<
-    {
-      name: string
-      projectId: string
-      dataset: string
-      schema: Schema
-    } & Observable<Source>
-  >
+export interface PreparedConfig {
+  type: 'prepared-config'
+  workspaces: WorkspaceSummary[]
 }

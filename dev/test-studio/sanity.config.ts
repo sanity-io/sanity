@@ -1,25 +1,19 @@
 import {codeInput} from '@sanity/code-input'
 import {BookIcon} from '@sanity/icons'
-import {createConfig} from 'sanity'
+import {createConfig, createPlugin} from 'sanity'
 import {deskTool} from 'sanity/desk'
 import {imageAssetSource} from './assetSources'
 import {Branding} from './components/Branding'
 import {CustomMarkers} from './components/formBuilder/CustomMarkers'
-// import {LanguageFilter} from './components/deskTool/LanguageFilter'
 import {Markers} from './components/formBuilder/Markers'
-// import {ToolMenu} from './components/navbar'
 import {resolveDocumentActions as documentActions} from './documentActions'
 import {resolveInitialValueTemplates} from './initialValueTemplates'
 import {schemaTypes} from './schema'
 import {defaultDocumentNode, structure, newDocumentOptions} from './structure'
 import {workshopTool} from './workshop'
 
-export default createConfig({
-  name: 'default',
-  title: 'Test Studio',
-  logo: Branding,
-  projectId: 'ppsg7ml5',
-  dataset: 'test',
+const sharedSettings = createPlugin({
+  name: 'sharedSettings',
   schema: {
     types: schemaTypes,
     templates: resolveInitialValueTemplates,
@@ -65,3 +59,24 @@ export default createConfig({
     }),
   ],
 })
+
+export default createConfig([
+  {
+    name: 'default',
+    title: 'Test Studio',
+    logo: Branding,
+    projectId: 'ppsg7ml5',
+    dataset: 'test',
+    plugins: [sharedSettings()],
+    basePath: '/test',
+  },
+  {
+    name: 'Playground',
+    title: 'Test Studio (playground)',
+    logo: Branding,
+    projectId: 'ppsg7ml5',
+    dataset: 'playground',
+    plugins: [sharedSettings()],
+    basePath: '/playground',
+  },
+])

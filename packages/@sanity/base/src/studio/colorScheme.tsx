@@ -1,5 +1,5 @@
 import React, {createContext, useContext, useEffect, useMemo, useState} from 'react'
-import {ThemeColorSchemeKey, usePrefersDark} from '@sanity/ui'
+import {studioTheme, ThemeColorSchemeKey, ThemeProvider, usePrefersDark} from '@sanity/ui'
 
 const ColorSchemeContext = createContext<{
   scheme: ThemeColorSchemeKey
@@ -29,7 +29,17 @@ export function ColorSchemeProvider({
 
   const colorScheme = useMemo(() => ({scheme, setScheme}), [scheme])
 
-  return <ColorSchemeContext.Provider value={colorScheme}>{children}</ColorSchemeContext.Provider>
+  return (
+    <ColorSchemeContext.Provider value={colorScheme}>
+      {/* Note: this is a fallback ThemeProvider that is for any components */}
+      {/* that may render before the StudioThemeProvider renders. this is */}
+      {/* required because the StudioThemeProvider has a dependence on the */}
+      {/* active workspace provided via the ActiveWorkspaceMatcher */}
+      <ThemeProvider scheme={scheme} theme={studioTheme}>
+        {children}
+      </ThemeProvider>
+    </ColorSchemeContext.Provider>
+  )
 }
 
 export function useColorScheme() {

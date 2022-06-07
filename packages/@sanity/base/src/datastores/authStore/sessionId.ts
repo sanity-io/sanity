@@ -1,6 +1,6 @@
 const sidPattern = /sid=[^&]{20,}/
 
-export function consumeSessionId(): string | null {
+function consumeSessionId(): string | null {
   // Are we in a browser-like environment?
   if (typeof window === 'undefined' || typeof window.location !== 'object') {
     return null
@@ -24,3 +24,8 @@ export function consumeSessionId(): string | null {
 
   return sid
 }
+
+// this module consumes the session ID as a side-effect as soon as its loaded
+// to remove the session ID from the history (vs waiting to remove the sid hash
+// until react mounts)
+export const sessionId = consumeSessionId()

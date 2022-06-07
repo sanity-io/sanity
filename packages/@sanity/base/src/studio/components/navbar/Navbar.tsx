@@ -14,15 +14,16 @@ import {startCase} from 'lodash'
 import styled from 'styled-components'
 import {useWorkspace} from '../../workspace'
 import {useColorScheme} from '../../colorScheme'
-import {RouterState, useRouter, useStateLink} from '../../../router'
+import {RouterState, useRouterState, useStateLink} from '../../../router'
+import {useWorkspaces} from '../../workspaces'
 import {UserMenu} from './userMenu'
 import {NewDocumentButton} from './NewDocumentButton'
 import {PresenceMenu} from './presence'
 import {NavDrawer} from './NavDrawer'
 import {SearchField} from './search'
-//  import {WorkspaceMenu} from './workspace'
 import {ToolMenu as DefaultToolMenu} from './tools/ToolMenu'
 import {ChangelogButton} from './changelog'
+import {WorkspaceMenu} from './workspace'
 
 const RootLayer = styled(Layer)`
   min-height: auto;
@@ -63,7 +64,8 @@ interface NavbarProps {
 export function Navbar(props: NavbarProps) {
   const {fullscreenSearchPortalEl, onSearchOpenChange} = props
   const {name, logo, navbar, tools, ...workspace} = useWorkspace()
-  const {state: routerState} = useRouter()
+  const workspaces = useWorkspaces()
+  const routerState = useRouterState()
   const ToolMenu = navbar?.components?.ToolMenu || DefaultToolMenu
   const {scheme} = useColorScheme()
   const rootLink = useStateLink({state: {}})
@@ -95,10 +97,10 @@ export function Navbar(props: NavbarProps) {
       collapsedPresenceMenu: mediaIndex <= 1,
       loginStatus: mediaIndex > 1,
       searchFullscreen: mediaIndex <= 1,
-      spaces: mediaIndex >= 3,
+      spaces: mediaIndex >= 3 && workspaces.length > 1,
       tools: mediaIndex >= 3,
     }),
-    [mediaIndex]
+    [mediaIndex, workspaces.length]
   )
   const formattedName = typeof name === 'string' && name !== 'root' ? startCase(name) : null
   const title = workspace.title || formattedName || 'Studio'
@@ -189,12 +191,11 @@ export function Navbar(props: NavbarProps) {
 
             {!shouldRender.brandingCenter && <Box marginRight={1}>{brandingComponent}</Box>}
 
-            {/* @todo: fix workspace implementation  */}
-            {/* {shouldRender.spaces && (
-                <Card marginRight={2} borderRight paddingRight={1}>
-                  <WorkspaceMenu />
-                </Card>
-              )} */}
+            {shouldRender.spaces && (
+              <Box marginRight={2}>
+                <WorkspaceMenu />
+              </Box>
+            )}
 
             <Box marginRight={shouldRender.brandingCenter ? undefined : 2}>
               <NewDocumentButton />

@@ -1,5 +1,6 @@
 const supportsLocalStorage = (() => {
-  const key = '__tmp__can_use'
+  const key = '__tmp_supports_local_storage'
+
   try {
     if (typeof localStorage === 'undefined') {
       return false
@@ -15,7 +16,7 @@ const supportsLocalStorage = (() => {
 
 const memStore: Record<string, string> = {}
 
-export function set(key: string, value: string): void {
+export function setItem(key: string, value: string): void {
   if (supportsLocalStorage) {
     localStorage[key] = value
   } else {
@@ -23,11 +24,11 @@ export function set(key: string, value: string): void {
   }
 }
 
-export function get(key: string): string | undefined {
+export function getItem(key: string): string | undefined {
   return supportsLocalStorage ? localStorage[key] : memStore[key]
 }
 
-export function del(key: string): void {
+export function removeItem(key: string): void {
   if (supportsLocalStorage) {
     localStorage.removeItem(key)
   } else {

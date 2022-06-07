@@ -96,9 +96,9 @@ const StaticUserAvatar = forwardRef(function StaticUserAvatar(
 })
 
 function UserAvatarLoader({user, ...loadedProps}: Omit<UserAvatarProps, 'user'> & {user: string}) {
-  const {isLoading, error, value} = useUser(user)
+  const [value] = useUser(user)
 
-  if (isLoading || error || !value) {
+  if (!value) {
     // @todo How do we handle this?
     return null
   }

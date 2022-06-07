@@ -36,19 +36,11 @@ export type {
 export {Timeline, TimelineController} from '../datastores'
 
 export type {
-  AuthStateChangedMessage,
-  AuthStateConfig,
-  AuthStateState,
-  AuthStateTokenStore,
   AuthStore,
   Chunk,
   CombinedDocument,
-  CurrentUserError,
-  CurrentUserEvent,
-  CurrentUserSnapshot,
   DocumentRemoteMutationVersionEvent,
   EditStateFor,
-  MSG_AUTH_STATE_CHANGED,
   ParsedTimeRef,
   RemoteSnapshotVersionEvent,
   TimelineOptions,

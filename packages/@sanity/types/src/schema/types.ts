@@ -391,7 +391,7 @@ export interface ConditionalPropertyCallbackContext {
   parent: any
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   value: any
-  currentUser: Omit<CurrentUser, 'role'>
+  currentUser: Omit<CurrentUser, 'role'> | null
 }
 
 export type ConditionalPropertyCallback = (context: ConditionalPropertyCallbackContext) => boolean

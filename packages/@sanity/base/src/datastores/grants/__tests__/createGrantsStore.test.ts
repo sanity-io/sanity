@@ -1,6 +1,5 @@
 import {SanityClient} from '@sanity/client'
 import {first} from 'rxjs/operators'
-import {UserStore} from '../../user'
 import {createGrantsStore} from '../grantsStore'
 import {viewer} from '../debug/exampleGrants'
 
@@ -31,14 +30,6 @@ function createMockClient(data: {requests?: Record<string, any>} = {}): SanityCl
   return mockClient as any
 }
 
-function createMockUserStore(): UserStore {
-  const userStore = {
-    getCurrentUser: () => Promise.resolve({id: 'example-user-id'}),
-  }
-
-  return userStore as any
-}
-
 describe('checkDocumentPermission', () => {
   it('takes in a permission and document and returns an observable of PermissionCheckResult', async () => {
     const client = createMockClient({
@@ -47,8 +38,7 @@ describe('checkDocumentPermission', () => {
       },
     })
 
-    const userStore = createMockUserStore()
-    const {checkDocumentPermission} = createGrantsStore(client, userStore)
+    const {checkDocumentPermission} = createGrantsStore({client, currentUser: null})
 
     await expect(
       checkDocumentPermission('create', {_id: 'example-id', _type: 'book'})

@@ -1,19 +1,22 @@
 import React from 'react'
-import {ThemeProvider} from '@sanity/ui'
-import {useLocation} from './location'
+import {ThemeProvider, LayerProvider, ToastProvider} from '@sanity/ui'
+import {useActiveWorkspace} from './activeWorkspaceMatcher'
 import {useColorScheme} from './colorScheme'
+import {Z_OFFSET} from './constants'
 
 interface StudioThemeProviderProps {
   children: React.ReactChild
 }
 
 export function StudioThemeProvider({children}: StudioThemeProviderProps) {
-  const theme = useLocation().__internal.activeWorkspace.theme
+  const theme = useActiveWorkspace().activeWorkspace.theme
   const {scheme} = useColorScheme()
 
   return (
     <ThemeProvider scheme={scheme} theme={theme}>
-      {children}
+      <ToastProvider paddingY={7} zOffset={Z_OFFSET.toast}>
+        <LayerProvider>{children}</LayerProvider>
+      </ToastProvider>
     </ThemeProvider>
   )
 }
