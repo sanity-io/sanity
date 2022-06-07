@@ -161,6 +161,13 @@ export default {
       output.print(
         `Copying dataset ${chalk.green(sourceDatasetName)} to ${chalk.green(targetDatasetName)}...`
       )
+
+      if (!shouldSkipHistory) {
+        output.print(
+          `Note: You can run this command with flag '--skip-history'. The flag will reduce copy time in larger datasets.`
+        )
+      }
+
       output.print(`Job ${chalk.green(response.jobId)} started`)
 
       if (flags.detach) {
