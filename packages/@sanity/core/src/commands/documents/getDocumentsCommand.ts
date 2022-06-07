@@ -1,4 +1,5 @@
-const colorizeJson = require('../../util/colorizeJson')
+import type {CliCommandDefinition} from '@sanity/cli'
+import {colorizeJson} from '../../util/colorizeJson'
 
 const helpText = `
 Get and print a document from the projects configured dataset
@@ -15,7 +16,12 @@ Examples
   sanity documents get 'myDocId'
 `
 
-export default {
+interface GetDocumentFlags {
+  pretty?: boolean
+  dataset?: string
+}
+
+const getDocumentsCommand: CliCommandDefinition<GetDocumentFlags> = {
   name: 'get',
   group: 'documents',
   signature: '[DOCUMENT_ID]',
@@ -44,3 +50,5 @@ export default {
     }
   },
 }
+
+export default getDocumentsCommand

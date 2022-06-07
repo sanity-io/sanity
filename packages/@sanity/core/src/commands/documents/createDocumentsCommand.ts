@@ -1,11 +1,24 @@
-const os = require('os')
-const path = require('path')
-const fse = require('fs-extra')
-const json5 = require('json5')
-const execa = require('execa')
-const chokidar = require('chokidar')
-const {isPlainObject, isEqual, noop} = require('lodash')
-const {uuid} = require('@sanity/uuid')
+import path from 'path'
+import os from 'os'
+import type {CliCommandDefinition} from '@sanity/cli'
+import type {SanityClient, MultipleMutationResult, Mutation} from '@sanity/client'
+import fse from 'fs-extra'
+import json5 from 'json5'
+import execa from 'execa'
+import chokidar from 'chokidar'
+import {isPlainObject, isEqual, noop} from 'lodash'
+import {uuid} from '@sanity/uuid'
+
+type MutationOperationName = 'create' | 'createOrReplace' | 'createIfNotExists'
+
+interface CreateFlags {
+  dataset?: string
+  replace?: boolean
+  missing?: boolean
+  watch?: boolean
+  json5?: boolean
+  id?: string
+}
 
 const helpText = `
 Options
@@ -33,7 +46,7 @@ Examples
   sanity documents create --id myDocId --watch --replace --json5
 `
 
-export default {
+const createDocumentsCommand: CliCommandDefinition<CreateFlags> = {
   name: 'create',
   group: 'documents',
   signature: '[FILE]',
@@ -55,7 +68,7 @@ export default {
       throw new Error('Cannot use --id when specifying a file path')
     }
 
-    let operation = 'create'
+    let operation: MutationOperationName = 'create'
     if (replace || missing) {
       operation = replace ? 'createOrReplace' : 'createIfNotExists'
     }
@@ -95,7 +108,7 @@ export default {
       await fse.unlink(tmpFile).catch(noop)
     }
 
-    async function readAndPerformCreatesFromFile(filePath) {
+    async function readAndPerformCreatesFromFile(filePath: string) {
       let content
       try {
         content = json5.parse(await fse.readFile(filePath, 'utf8'))
@@ -123,7 +136,7 @@ export default {
   },
 }
 
-function registerUnlinkOnSigInt(tmpFile) {
+function registerUnlinkOnSigInt(tmpFile: string) {
   process.on('SIGINT', async () => {
     await fse.unlink(tmpFile).catch(noop)
     // eslint-disable-next-line no-process-exit
@@ -131,33 +144,61 @@ function registerUnlinkOnSigInt(tmpFile) {
   })
 }
 
-function writeDocuments(documents, operation, client) {
+function writeDocuments(
+  documents: {_id?: string; _type: string} | {_id?: string; _type: string}[],
+  operation: MutationOperationName,
+  client: SanityClient
+) {
   const docs = Array.isArray(documents) ? documents : [documents]
-  if (!docs.length === 0) {
+  if (docs.length === 0) {
     throw new Error('No documents provided')
   }
 
-  docs.forEach(validateDocument)
-  return client.transaction(docs.map((doc) => ({[operation]: doc}))).commit()
+  const mutations = docs.map((doc, index): Mutation => {
+    validateDocument(doc, index, docs)
+    if (
+      operation !== 'create' &&
+      operation !== 'createIfNotExists' &&
+      operation !== 'createOrReplace'
+    ) {
+      throw new Error(`Unsupported operation "${operation}"`)
+    }
+
+    return {create: doc}
+  })
+
+  return client.transaction(mutations).commit()
 }
 
-function validateDocument(doc, index, arr) {
+function validateDocument(doc: unknown, index: number, arr: unknown[]) {
   const isSingle = arr.length === 1
 
   if (!isPlainObject(doc)) {
     throw new Error(getErrorMessage('must be an object', index, isSingle))
   }
 
-  if (typeof doc._type !== 'string') {
+  if (!isSanityDocumentish(doc)) {
     throw new Error(getErrorMessage('must have a `_type` property of type string', index, isSingle))
   }
 }
 
-function getErrorMessage(message, index, isSingle) {
+function isSanityDocumentish(doc: unknown): doc is {_type: string} {
+  return (
+    doc !== null &&
+    typeof doc === 'object' &&
+    '_type' in doc &&
+    typeof (doc as any)._type === 'string'
+  )
+}
+
+function getErrorMessage(message: string, index: number, isSingle: boolean): string {
   return isSingle ? `Document ${message}` : `Document at index ${index} ${message}`
 }
 
-function getResultMessage(result, operation) {
+function getResultMessage(
+  result: MultipleMutationResult,
+  operation: MutationOperationName
+): string {
   const joiner = '\n  - '
   if (operation === 'createOrReplace') {
     return `Upserted:\n  - ${result.results.map((res) => res.id).join(joiner)}`
@@ -168,14 +209,15 @@ function getResultMessage(result, operation) {
   }
 
   // "Missing" (createIfNotExists)
-  const {created, skipped} = result.results.reduce(
-    (acc, res) => {
-      const mod = res.operation === 'update' ? 'skipped' : 'created'
-      acc[mod].push(res.id)
-      return acc
-    },
-    {created: [], skipped: []}
-  )
+  const created: string[] = []
+  const skipped: string[] = []
+  for (const res of result.results) {
+    if (res.operation === 'update') {
+      skipped.push(res.id)
+    } else {
+      created.push(res.id)
+    }
+  }
 
   if (created.length > 0 && skipped.length > 0) {
     return [
@@ -194,6 +236,8 @@ function getEditor() {
   // eslint-disable-next-line no-process-env
   const editor = process.env.VISUAL || process.env.EDITOR || defaultEditor
   const args = editor.split(/\s+/)
-  const bin = args.shift()
+  const bin = args.shift() || ''
   return {bin, args}
 }
+
+export default createDocumentsCommand

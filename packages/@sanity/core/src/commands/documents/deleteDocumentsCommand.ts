@@ -1,3 +1,4 @@
+import type {CliCommandDefinition} from '@sanity/cli'
 import pluralize from 'pluralize'
 
 const helpText = `
@@ -20,7 +21,11 @@ Example
   sanity documents delete doc1 doc2
 `
 
-export default {
+interface DeleteFlags {
+  dataset?: string
+}
+
+const deleteDocumentsCommand: CliCommandDefinition<DeleteFlags> = {
   name: 'delete',
   group: 'documents',
   signature: '[ID] [...IDS]',
@@ -56,3 +61,5 @@ export default {
     }
   },
 }
+
+export default deleteDocumentsCommand

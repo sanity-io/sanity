@@ -1,6 +1,6 @@
 import yargs from 'yargs/yargs'
 import {hideBin} from 'yargs/helpers'
-import colorizeJson from '../../util/colorizeJson'
+import {colorizeJson} from '../../util/colorizeJson'
 import type {CliCommandArguments, CliCommandContext} from '../../types'
 
 const helpText = `
