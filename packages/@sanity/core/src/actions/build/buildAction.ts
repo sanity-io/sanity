@@ -6,7 +6,7 @@ import {buildStaticFiles, ChunkModule, ChunkStats} from '@sanity/server'
 import chalk from 'chalk'
 import rimrafCallback from 'rimraf'
 import type {CliCommandArguments, CliCommandContext} from '@sanity/cli'
-import checkStudioDependencyVersions from '../../util/checkStudioDependencyVersions'
+import {checkStudioDependencyVersions} from '../../util/checkStudioDependencyVersions'
 import {checkRequiredDependencies} from '../../util/checkRequiredDependencies'
 import {getTimer} from '../../util/timing'
 

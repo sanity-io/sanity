@@ -4,7 +4,7 @@ import path from 'path'
 import {DevServerOptions, startDevServer} from '@sanity/server'
 import type {CliConfig, CliCommandArguments, CliCommandContext} from '@sanity/cli'
 import {getTimer} from '../../util/timing'
-import checkStudioDependencyVersions from '../../util/checkStudioDependencyVersions'
+import {checkStudioDependencyVersions} from '../../util/checkStudioDependencyVersions'
 import {checkRequiredDependencies} from '../../util/checkRequiredDependencies'
 
 interface StartDevServerCommandFlags {

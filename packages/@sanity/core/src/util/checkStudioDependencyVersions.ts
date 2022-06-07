@@ -1,8 +1,19 @@
-const fs = require('fs')
-const path = require('path')
-const semver = require('semver')
-const resolveFrom = require('resolve-from')
-const {generateHelpUrl} = require('@sanity/generate-help-url')
+import fs from 'fs'
+import path from 'path'
+import semver, {SemVer} from 'semver'
+import resolveFrom from 'resolve-from'
+import {generateHelpUrl} from '@sanity/generate-help-url'
+import type {PackageJson} from '@sanity/cli'
+
+interface PackageInfo {
+  name: string
+  supported: string[]
+  deprecatedBelow: null | string
+  installed: SemVer
+  isUnsupported: boolean
+  isDeprecated: boolean
+  isUntested: boolean
+}
 
 // NOTE: when doing changes here, also remember to update versions in help docs at
 // https://admin.sanity.io/desk/docs;helpArticle;upgrade-packages
@@ -11,19 +22,24 @@ const PACKAGES = [
   {name: 'react-dom', supported: ['^17'], deprecatedBelow: null},
 ]
 
-module.exports = (workDir) => {
+export function checkStudioDependencyVersions(workDir: string): void {
   const manifest = readPackageJson(path.join(workDir, 'package.json'))
-  const dependencies = Object.assign({}, manifest.dependencies, manifest.devDependencies)
+  const dependencies = {...manifest.dependencies, ...manifest.devDependencies}
 
-  const installedPackages = PACKAGES.map((pkg) => {
-    if (!dependencies[pkg.name]) {
-      return null
+  const packageInfo = PACKAGES.map((pkg): PackageInfo | false => {
+    const dependency = dependencies[pkg.name]
+    if (!dependency) {
+      return false
     }
 
     const manifestPath = resolveFrom.silent(workDir, path.join(pkg.name, 'package.json'))
     const installed = semver.coerce(
-      manifestPath ? readPackageJson(manifestPath).version : dependencies[pkg].replace(/[\D.]/g, '')
+      manifestPath ? readPackageJson(manifestPath).version : dependency.replace(/[\D.]/g, '')
     )
+
+    if (!installed) {
+      return false
+    }
 
     const supported = pkg.supported.join(' || ')
 
@@ -39,7 +55,7 @@ module.exports = (workDir) => {
 
     // "Deprecated" in that we will stop supporting it at some point in the near future,
     // so users should be prompted to upgrade
-    const isDeprecated = pkg.deprecatedBelow && semver.ltr(installed, pkg.deprecatedBelow)
+    const isDeprecated = pkg.deprecatedBelow ? semver.ltr(installed, pkg.deprecatedBelow) : false
 
     return {
       ...pkg,
@@ -48,8 +64,9 @@ module.exports = (workDir) => {
       isDeprecated,
       isUntested,
     }
-  }).filter(Boolean)
+  })
 
+  const installedPackages = packageInfo.filter((inp): inp is PackageInfo => inp !== false)
   const unsupported = installedPackages.filter((pkg) => pkg.isUnsupported)
   const deprecated = installedPackages.filter((pkg) => !pkg.isUnsupported && pkg.isDeprecated)
   const untested = installedPackages.filter((pkg) => pkg.isUntested)
@@ -93,7 +110,7 @@ You _may_ encounter bugs while using these versions.
   }
 }
 
-function listPackages(pkgs) {
+function listPackages(pkgs: PackageInfo[]) {
   return pkgs
     .map(
       (pkg) =>
@@ -104,11 +121,11 @@ function listPackages(pkgs) {
     .join('\n  ')
 }
 
-function getUpgradeInstructions(pkgs) {
+function getUpgradeInstructions(pkgs: PackageInfo[]) {
   const inst = pkgs
     .map((pkg) => {
       const [highestSupported] = pkg.supported
-        .map((version) => semver.coerce(version).version)
+        .map((version) => (semver.coerce(version) || {version: ''}).version)
         .sort(semver.rcompare)
 
       return `"${pkg.name}@${highestSupported}"`
@@ -126,11 +143,11 @@ function getUpgradeInstructions(pkgs) {
 Read more at ${generateHelpUrl('upgrade-packages')}`
 }
 
-function getDowngradeInstructions(pkgs) {
+function getDowngradeInstructions(pkgs: PackageInfo[]) {
   const inst = pkgs
     .map((pkg) => {
       const [highestSupported] = pkg.supported
-        .map((version) => semver.coerce(version).version)
+        .map((version) => (semver.coerce(version) || {version: ''}).version)
         .sort(semver.rcompare)
 
       return `"${pkg.name}@${highestSupported}"`
@@ -146,7 +163,7 @@ function getDowngradeInstructions(pkgs) {
   npm install ${inst}`
 }
 
-function readPackageJson(filePath) {
+function readPackageJson(filePath: string): PackageJson {
   try {
     // eslint-disable-next-line no-sync
     return JSON.parse(fs.readFileSync(filePath, 'utf8'))
