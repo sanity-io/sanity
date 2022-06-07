@@ -3,7 +3,7 @@ import React from 'react'
 import {EMPTY} from 'rxjs'
 import {ImageInputProps} from '../../src/form/inputs/files/ImageInput'
 import {ImageUrlBuilder} from '../../src/form/inputs/files/types'
-import {ObjectInputProps} from '../../src/form'
+import {FieldMember, ObjectFormNode, ObjectInputProps} from '../../src/form'
 import {renderObjectInput} from './renderObjectInput'
 import {TestRenderProps} from './types'
 import {TestRenderInputContext} from './renderInput'
@@ -30,16 +30,20 @@ export function renderImageInput(options: {
     context: TestRenderInputContext
   ): ImageInputProps {
     const {schemaType, ...restProps} = baseProps
-    const {client} = context
+    const {client, formState} = context
+    const fieldMember = formState.members?.find(
+      (member) => member.kind === 'field' && member.name === fieldDefinition.name
+    ) as FieldMember<ObjectFormNode> | undefined
+    const field = fieldMember?.field
 
     return {
       ...restProps,
       assetSources,
       client,
       collapsed: false,
-      groups: [],
+      groups: field?.groups || [],
       imageUrlBuilder,
-      members: [],
+      members: field?.members || [],
       observeAsset,
       renderField: () => <>TODO</>,
       renderInput: () => <>TODO</>,

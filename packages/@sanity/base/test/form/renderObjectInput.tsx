@@ -1,6 +1,6 @@
 import {Schema, ObjectSchemaType} from '@sanity/types'
 import React from 'react'
-import {ObjectInputProps} from '../../src/form'
+import {FieldMember, ObjectFormNode, ObjectInputProps} from '../../src/form'
 import {renderInput, TestRenderInputContext, TestRenderInputProps} from './renderInput'
 import {TestRenderProps} from './types'
 
@@ -26,15 +26,23 @@ export function renderObjectInput(options: {
   const onOpenField = jest.fn()
   const onSelectFieldGroup = jest.fn()
 
-  function transformProps(inputProps: TestRenderInputProps): ObjectInputProps {
+  function transformProps(
+    inputProps: TestRenderInputProps,
+    context: TestRenderInputContext
+  ): ObjectInputProps {
+    const {formState} = context
     const {compareValue, onPathFocus, path, schemaType, value, ...restProps} = inputProps
+    const fieldMember = formState.members?.find(
+      (member) => member.kind === 'field' && member.name === fieldDefinition.name
+    ) as FieldMember<ObjectFormNode> | undefined
+    const field = fieldMember?.field
 
     return {
       ...restProps,
       collapsed: false,
       compareValue: compareValue as Record<string, any>,
-      groups: [],
-      members: [],
+      groups: field?.groups || [],
+      members: field?.members || [],
       onCloseField,
       onCollapse,
       onCollapseField,
@@ -57,11 +65,13 @@ export function renderObjectInput(options: {
   const result = renderInput({
     fieldDefinition,
     props,
-    render: (inputProps, context) => initialRender(transformProps(inputProps), context),
+    render: (inputProps, context) => initialRender(transformProps(inputProps, context), context),
   })
 
   function rerender(subsequentRender: TestRenderObjectInputCallback) {
-    result.rerender((inputProps, context) => subsequentRender(transformProps(inputProps), context))
+    result.rerender((inputProps, context) =>
+      subsequentRender(transformProps(inputProps, context), context)
+    )
   }
 
   return {...result, rerender}

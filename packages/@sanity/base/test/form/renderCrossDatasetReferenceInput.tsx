@@ -29,7 +29,7 @@ export function renderCrossDatasetReferenceInput(options: {
     render: initialRender,
   } = options
 
-  function transformProps(baseProps: ObjectInputProps) {
+  function transformProps(baseProps: ObjectInputProps, _context: TestRenderInputContext) {
     const {compareValue, schemaType, value, ...restProps} = baseProps
 
     return {
@@ -45,11 +45,13 @@ export function renderCrossDatasetReferenceInput(options: {
   const result = renderObjectInput({
     fieldDefinition: fieldDefinition as Schema.TypeDefinition<'object'>,
     props,
-    render: (baseProps, context) => initialRender(transformProps(baseProps), context),
+    render: (baseProps, context) => initialRender(transformProps(baseProps, context), context),
   })
 
   function rerender(subsequentRender: TestRenderCrossDatasetReferenceInputCallback) {
-    result.rerender((baseProps, context) => subsequentRender(transformProps(baseProps), context))
+    result.rerender((baseProps, context) =>
+      subsequentRender(transformProps(baseProps, context), context)
+    )
   }
 
   return {...result, rerender}

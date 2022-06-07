@@ -2,7 +2,7 @@ import {Schema, FileSchemaType, AssetSource} from '@sanity/types'
 import React from 'react'
 import {EMPTY} from 'rxjs'
 import {FileInputProps} from '../../src/form/inputs/files/FileInput'
-import {ObjectInputProps} from '../../src/form'
+import {FieldMember, ObjectFormNode, ObjectInputProps} from '../../src/form'
 import {renderObjectInput} from './renderObjectInput'
 import {TestRenderProps} from './types'
 import {TestRenderInputContext} from './renderInput'
@@ -45,7 +45,11 @@ export function renderFileInput(options: {
     context: TestRenderInputContext
   ): FileInputProps {
     const {schemaType, ...restProps} = baseProps
-    const {client} = context
+    const {client, formState} = context
+    const fieldMember = formState.members?.find(
+      (member) => member.kind === 'field' && member.name === fieldDefinition.name
+    ) as FieldMember<ObjectFormNode> | undefined
+    const field = fieldMember?.field
 
     return {
       ...restProps,
@@ -53,8 +57,8 @@ export function renderFileInput(options: {
       client,
       collapsed: false,
       directUploads: true,
-      groups: [],
-      members: [],
+      groups: field?.groups || [],
+      members: field?.members || [],
       observeAsset,
       renderField: () => <>TODO</>,
       renderInput: () => <>TODO</>,

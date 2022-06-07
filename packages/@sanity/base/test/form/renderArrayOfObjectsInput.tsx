@@ -1,7 +1,7 @@
 import {Schema, ArraySchemaType} from '@sanity/types'
 import React from 'react'
-import {ArrayOfObjectsInputProps} from '../../src/form'
-import {renderInput, TestRenderInputProps} from './renderInput'
+import {ArrayOfObjectsFormNode, ArrayOfObjectsInputProps, FieldMember} from '../../src/form'
+import {renderInput, TestRenderInputContext, TestRenderInputProps} from './renderInput'
 import {TestRenderProps} from './types'
 
 export type TestRenderArrayOfObjectInputCallback = (
@@ -31,14 +31,23 @@ export function renderArrayOfObjectsInput(options: {
   let initialValueId = 0
   const resolveInitialValue = () => Promise.resolve({_key: String(initialValueId++)})
 
-  function transformProps(baseProps: TestRenderInputProps): ArrayOfObjectsInputProps {
+  function transformProps(
+    baseProps: TestRenderInputProps,
+    context: TestRenderInputContext
+  ): ArrayOfObjectsInputProps {
     const {compareValue, focusPath, path, schemaType, value, ...restProps} = baseProps
+
+    const {formState} = context
+    const fieldMember = formState.members?.find(
+      (member) => member.kind === 'field' && member.name === fieldDefinition.name
+    ) as FieldMember<ArrayOfObjectsFormNode> | undefined
+    const field = fieldMember?.field
 
     return {
       ...restProps,
       compareValue: compareValue as any[],
       focusPath,
-      members: [],
+      members: field?.members || [],
       onAppendItem,
       onCloseItem,
       onCollapse,
@@ -66,11 +75,11 @@ export function renderArrayOfObjectsInput(options: {
   const ret = renderInput({
     fieldDefinition,
     props,
-    render: (inputProps) => render(transformProps(inputProps)),
+    render: (inputProps, context) => render(transformProps(inputProps, context)),
   })
 
   function rerender(renderFn: TestRenderArrayOfObjectInputCallback) {
-    return ret.rerender((inputProps) => renderFn(transformProps(inputProps)))
+    return ret.rerender((inputProps, context) => renderFn(transformProps(inputProps, context)))
   }
 
   return {...ret, onAppendItem, rerender}
