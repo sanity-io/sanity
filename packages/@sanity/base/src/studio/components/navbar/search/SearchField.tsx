@@ -28,7 +28,6 @@ export function SearchField(props: SearchFieldProps) {
 
   const results = useDocumentSearchResults({
     includeDrafts: true,
-    limit: 30,
     query: query || '',
   })
 
