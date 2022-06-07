@@ -1,5 +1,5 @@
-import fs from 'node:fs/promises'
-import path from 'node:path'
+import fs from 'fs/promises'
+import path from 'path'
 import type {CliCommandContext, CliCommandArguments, SanityJson} from '../../types'
 import type {InitFlags} from '../../commands/init/initCommand'
 import {debug} from '../../debug'

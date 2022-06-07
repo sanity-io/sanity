@@ -1,4 +1,4 @@
-import {createHash} from 'node:crypto'
+import {createHash} from 'crypto'
 import type {ChunkMetadata, Plugin} from 'vite'
 import {getEntryModule} from '../getEntryModule'
 import {renderDocument} from '../renderDocument'
