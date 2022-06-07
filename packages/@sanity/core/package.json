@@ -24,11 +24,6 @@
     "core"
   ],
   "dependencies": {
-    "@babel/plugin-proposal-class-properties": "^7.16.0",
-    "@babel/preset-env": "^7.16.4",
-    "@babel/preset-react": "^7.16.0",
-    "@babel/preset-typescript": "^7.16.0",
-    "@babel/register": "^7.16.0",
     "@sanity/eventsource": "^3.0.1",
     "@sanity/export": "2.29.3",
     "@sanity/generate-help-url": "^3.0.0",
@@ -42,10 +37,8 @@
     "chokidar": "^3.5.3",
     "configstore": "^5.0.1",
     "debug": "^3.2.7",
-    "deep-sort-object": "^1.0.1",
     "esbuild-register": "^3.3.2",
     "execa": "^2.0.0",
-    "fs-extra": "^7.0.0",
     "get-it": "^5.2.1",
     "jsdom": "^12.0.0",
     "jsdom-global": "^3.0.2",
@@ -55,7 +48,6 @@
     "log-symbols": "^2.2.0",
     "oneline": "^1.0.3",
     "open": "^8.4.0",
-    "path-exists": "^3.0.0",
     "pirates": "^4.0.0",
     "pluralize": "^7.0.0",
     "pretty-ms": "^7.0.1",
@@ -69,7 +61,6 @@
   "devDependencies": {
     "@sanity/cli": "2.30.0",
     "@sanity/client": "^3.3.2",
-    "@types/fs-extra": "^7.0.0",
     "@types/log-symbols": "^2.0.0",
     "@types/resolve-from": "^4.0.0",
     "@types/rimraf": "^3.0.2",
