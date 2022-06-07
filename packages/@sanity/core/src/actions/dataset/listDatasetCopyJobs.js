@@ -25,7 +25,7 @@ module.exports = async function listDatasetCopyJobs(args, context) {
     if (error.statusCode) {
       output.error(`${chalk.red(`Dataset copy list failed:\n${error.response.body.message}`)}\n`)
     } else {
-      output.print(`${chalk.red(`Dataset copy list failed:\n${error.message}`)}\n`)
+      output.error(`${chalk.red(`Dataset copy list failed:\n${error.message}`)}\n`)
     }
   }
 
