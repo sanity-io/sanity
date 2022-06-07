@@ -1,3 +1,5 @@
+/* eslint-disable no-sync */
+
 /**
  * Reads the Sanity CLI config from one of the following files (in preferred order):
  *   - sanity.cli.js
@@ -12,7 +14,7 @@
  * file will not bleed into the current CLI process directly.
  */
 import path from 'path'
-import {promises as fs} from 'fs'
+import fs from 'fs'
 import {Worker} from 'worker_threads'
 import {register} from 'esbuild-register/dist/node'
 import type {CliConfig, SanityJson} from '../types'
@@ -41,7 +43,7 @@ export async function getCliConfig(
   const {unregister} = register()
 
   try {
-    const v3Config = await getSanityCliConfig(cwd)
+    const v3Config = getSanityCliConfig(cwd)
     if (v3Config) {
       return v3Config
     }
@@ -52,6 +54,11 @@ export async function getCliConfig(
   } finally {
     unregister()
   }
+}
+
+export function getCliConfigSync(cwd: string): CliConfigResult | null {
+  const v3Config = getSanityCliConfig(cwd)
+  return v3Config ? v3Config : getSanityJsonConfig(cwd)
 }
 
 async function getCliConfigForked(cwd: string): Promise<CliConfigResult | null> {
@@ -76,29 +83,25 @@ async function getCliConfigForked(cwd: string): Promise<CliConfigResult | null> 
   })
 }
 
-async function getSanityJsonConfig(cwd: string): Promise<CliConfigResult | null> {
+function getSanityJsonConfig(cwd: string): CliConfigResult | null {
   const configPath = path.join(cwd, 'sanity.json')
-  const exists = await fs.stat(configPath).then(yes, nope)
 
-  if (!exists) {
+  if (!fs.existsSync(configPath)) {
     return null
   }
 
   return {
-    config: await loadJsonConfig(configPath),
+    config: loadJsonConfig(configPath),
     path: configPath,
     version: 2,
   }
 }
 
-async function getSanityCliConfig(cwd: string): Promise<CliConfigResult | null> {
+function getSanityCliConfig(cwd: string): CliConfigResult | null {
   const jsConfigPath = path.join(cwd, 'sanity.cli.js')
   const tsConfigPath = path.join(cwd, 'sanity.cli.ts')
 
-  const [js, ts] = await Promise.all([
-    fs.stat(jsConfigPath).then(yes, nope),
-    fs.stat(tsConfigPath).then(yes, nope),
-  ])
+  const [js, ts] = [fs.existsSync(jsConfigPath), fs.existsSync(tsConfigPath)]
 
   if (!js && !ts) {
     return null
@@ -123,9 +126,9 @@ async function getSanityCliConfig(cwd: string): Promise<CliConfigResult | null> 
   }
 }
 
-async function loadJsonConfig(filePath: string): Promise<SanityJson | null> {
+function loadJsonConfig(filePath: string): SanityJson | null {
   try {
-    const content = await fs.readFile(filePath, 'utf8')
+    const content = fs.readFileSync(filePath, 'utf8')
     return JSON.parse(content)
   } catch (err) {
     console.error(`Error reading "${filePath}": ${err.message}`)
@@ -153,12 +156,4 @@ function warn(warning: string) {
   } else {
     console.warn(warning)
   }
-}
-
-function yes() {
-  return true
-}
-
-function nope() {
-  return false
 }

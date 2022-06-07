@@ -1,6 +1,5 @@
 /* eslint-disable no-console, no-process-exit, no-sync */
 import path from 'path'
-import fs from 'fs/promises'
 import chalk from 'chalk'
 import dotenv from 'dotenv'
 import resolveFrom from 'resolve-from'
@@ -9,8 +8,8 @@ import {parseArguments} from './util/parseArguments'
 import {mergeCommands} from './util/mergeCommands'
 import {getCliRunner} from './CommandRunner'
 import {baseCommands} from './commands'
+import {hasStudioConfig, resolveRootDir} from './util/resolveRootDir'
 import {neatStack} from './util/neatStack'
-import {debug} from './debug'
 
 const sanityEnv = process.env.SANITY_INTERNAL_ENV || 'production' // eslint-disable-line no-process-env
 const knownEnvs = ['development', 'staging', 'production']
@@ -22,7 +21,13 @@ export async function runCli(cliRoot: string, {cliVersion}: {cliVersion: string}
   const args = parseArguments()
   const isInit = args.groupOrCommand === 'init' && args.argsWithoutOptions[0] !== 'plugin'
   const cwd = getCurrentWorkingDirectory()
-  const workDir = (isInit ? process.cwd() : await resolveRootDir(cwd)) || process.cwd()
+  let workDir: string | undefined
+  try {
+    workDir = isInit ? process.cwd() : resolveRootDir(cwd)
+  } catch (err) {
+    console.error(chalk.red(err.message))
+    process.exit(1)
+  }
 
   // Try to load .env files from the sanity studio directory
   // eslint-disable-next-line no-process-env
@@ -106,67 +111,6 @@ function getCurrentWorkingDirectory(): string {
   }
 
   return pwd
-}
-
-/**
- * Resolve project root directory, falling back to cwd if it cannot be found
- */
-async function resolveRootDir(cwd: string) {
-  try {
-    return (await resolveProjectRoot(cwd)) || cwd
-  } catch (err) {
-    console.warn(
-      chalk.red(['Error occurred trying to resolve project root:', err.message].join('\n'))
-    )
-    process.exit(1)
-  }
-
-  return false
-}
-
-async function hasStudioConfig(basePath: string): Promise<boolean> {
-  const buildConfigs = await Promise.all([
-    fileExists(path.join(basePath, 'studio.config.js')),
-    fileExists(path.join(basePath, 'studio.config.ts')),
-    isSanityV2StudioRoot(basePath),
-  ])
-
-  return buildConfigs.some(Boolean)
-}
-
-async function isSanityV2StudioRoot(basePath: string): Promise<boolean> {
-  try {
-    const content = await fs.readFile(path.join(basePath, 'sanity.json'), 'utf8')
-    const sanityJson = JSON.parse(content)
-    const isRoot = Boolean(sanityJson?.root)
-    if (isRoot) {
-      debug('Found Sanity v2 studio root at %s', basePath)
-    }
-    return isRoot
-  } catch (err) {
-    return false
-  }
-}
-
-async function resolveProjectRoot(basePath: string, iterations = 0): Promise<string | false> {
-  if (await hasStudioConfig(basePath)) {
-    return basePath
-  }
-
-  const parentDir = path.resolve(basePath, '..')
-  if (parentDir === basePath || iterations > 30) {
-    // Reached root (or max depth), give up
-    return false
-  }
-
-  return resolveProjectRoot(parentDir, iterations + 1)
-}
-
-function fileExists(filePath: string) {
-  return fs.access(filePath).then(
-    () => true,
-    () => false
-  )
 }
 
 function installUnhandledRejectionsHandler() {

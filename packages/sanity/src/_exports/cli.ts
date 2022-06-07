@@ -1,2 +1,2 @@
-export {createCliConfig} from '@sanity/cli'
+export {createCliConfig, getCliClient} from '@sanity/cli'
 export type {CliConfig} from '@sanity/cli'
