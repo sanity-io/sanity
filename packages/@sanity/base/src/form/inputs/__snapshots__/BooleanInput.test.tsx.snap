@@ -19,7 +19,7 @@ Array [
         "isTrusted": true,
       },
       "relatedTarget": Document {
-        "__reactEvents$6uzfku9s5lc": Set {
+        "__reactEvents$xmmzqfxmhxr": Set {
           "selectionchange__bubble",
           "selectionchange__capture",
         },
@@ -45,7 +45,7 @@ Array [
         label="Switch"
         type="checkbox"
       />,
-      "timeStamp": 1654259249838,
+      "timeStamp": 1654699349989,
       "type": "blur",
       "view": [Window],
     },
@@ -90,7 +90,7 @@ Array [
         label="Switch"
         type="checkbox"
       />,
-      "timeStamp": 1654259249778,
+      "timeStamp": 1654699349904,
       "type": "focus",
       "view": [Window],
     },
@@ -135,7 +135,7 @@ Array [
         label="Switch"
         type="checkbox"
       />,
-      "timeStamp": 1654259249717,
+      "timeStamp": 1654699349834,
       "type": "focus",
       "view": [Window],
     },

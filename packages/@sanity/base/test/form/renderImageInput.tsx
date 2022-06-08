@@ -13,7 +13,7 @@ export type TestRenderImageInputCallback = (
   context: TestRenderInputContext
 ) => React.ReactElement
 
-export function renderImageInput(options: {
+export async function renderImageInput(options: {
   fieldDefinition: Schema.TypeDefinition<'image'>
   props?: TestRenderProps
   render: TestRenderImageInputCallback
@@ -45,7 +45,7 @@ export function renderImageInput(options: {
     }
   }
 
-  const result = renderObjectInput({
+  const result = await renderObjectInput({
     fieldDefinition: fieldDefinition as Schema.TypeDefinition<'object'>,
     props,
     render: (inputProps, context) => initialRender(transformProps(inputProps, context), context),

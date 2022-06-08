@@ -61,8 +61,8 @@ const defs = {
 }
 
 describe('collapsible behavior', () => {
-  it('does not render collapsible fields on objects configured with collapsed: true', () => {
-    const {result} = renderObjectInput({
+  it('does not render collapsible fields on objects configured with collapsed: true', async () => {
+    const {result} = await renderObjectInput({
       fieldDefinition: defs.collapsibleTest,
       render: (inputProps) => <ObjectInput {...inputProps} />,
     })
@@ -71,8 +71,8 @@ describe('collapsible behavior', () => {
     expect(collapsibleField).toBeNull()
   })
 
-  it('renders collapsible fields with collapsed: true if given a focus path that targets it', () => {
-    const {result} = renderObjectInput({
+  it('renders collapsible fields with collapsed: true if given a focus path that targets it', async () => {
+    const {result} = await renderObjectInput({
       fieldDefinition: defs.collapsibleTest,
       render: (inputProps) => (
         <ObjectInput {...inputProps} focusPath={['collapsibleAndCollapsedByDefault', 'field1']} />
@@ -83,10 +83,10 @@ describe('collapsible behavior', () => {
     expect(collapsibleField).toBeVisible()
   })
 
-  it('toggles the collapsible field when clicking the expand/collapse button', () => {
+  it('toggles the collapsible field when clicking the expand/collapse button', async () => {
     const firstFieldPath = ['collapsibleAndCollapsedByDefault', 'field1']
 
-    const {onFocus, rerender, result} = renderObjectInput({
+    const {onFocus, rerender, result} = await renderObjectInput({
       fieldDefinition: defs.collapsibleTest,
       render: (inputProps) => <ObjectInput {...inputProps} />,
     })
@@ -106,8 +106,8 @@ describe('collapsible behavior', () => {
     expect(result.queryByTestId('input-field1')).toBeNull()
   })
 
-  it('does not show hidden fields', () => {
-    const {result} = renderObjectInput({
+  it('does not show hidden fields', async () => {
+    const {result} = await renderObjectInput({
       fieldDefinition: defs.hiddenTest,
       render: (inputProps) => <ObjectInput {...inputProps} />,
     })
@@ -130,10 +130,10 @@ describe('collapsible behavior', () => {
   //   expect(result.queryByTestId('input-thisMayBeVisible')).toBeNull()
   // })
 
-  it("expands a field that's been manually collapsed when receiving a focus path that targets it", () => {
+  it("expands a field that's been manually collapsed when receiving a focus path that targets it", async () => {
     const firstFieldPath = ['collapsibleAndCollapsedByDefault', 'field1']
 
-    const {onFocus, rerender, result} = renderObjectInput({
+    const {onFocus, rerender, result} = await renderObjectInput({
       fieldDefinition: defs.collapsibleTest,
       render: (inputProps) => <ObjectInput {...inputProps} />,
     })
@@ -170,10 +170,10 @@ describe('collapsible behavior', () => {
 })
 
 describe('focus handling', () => {
-  it('calling .focus() on its ref puts focus on DOM node for its first field', () => {
+  it('calling .focus() on its ref puts focus on DOM node for its first field', async () => {
     const inputRef = createRef<any>()
 
-    const {result} = renderObjectInput({
+    const {result} = await renderObjectInput({
       fieldDefinition: defs.focusTest,
       render: (inputProps) => <ObjectInput {...inputProps} focusRef={inputRef} />,
     })
@@ -183,8 +183,8 @@ describe('focus handling', () => {
     expect(result.queryByTestId('input-title')?.querySelector('input')).toHaveFocus()
   })
 
-  it('updates input focus based on passed focusPath', () => {
-    const {result} = renderObjectInput({
+  it('updates input focus based on passed focusPath', async () => {
+    const {result} = await renderObjectInput({
       fieldDefinition: defs.focusTest,
       render: (inputProps) => <ObjectInput {...inputProps} focusPath={['focusTest', 'field1']} />,
     })
@@ -192,11 +192,11 @@ describe('focus handling', () => {
     expect(result.queryByTestId('input-field1')?.querySelector('input')).toHaveFocus()
   })
 
-  it('emits an `onFocus()` event with the focus path of the first field when the imperative .focus() method is invoked', () => {
+  it('emits an `onFocus()` event with the focus path of the first field when the imperative .focus() method is invoked', async () => {
     // Note: this depends on the underlying native input component forwarding it's received onFocus prop
     const inputRef = createRef<any>()
 
-    const {onFocus} = renderObjectInput({
+    const {onFocus} = await renderObjectInput({
       fieldDefinition: defs.focusTest,
       render: (inputProps) => <ObjectInput {...inputProps} focusRef={inputRef} />,
     })

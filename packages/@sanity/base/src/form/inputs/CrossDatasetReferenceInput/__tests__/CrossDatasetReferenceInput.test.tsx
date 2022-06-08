@@ -14,7 +14,7 @@ const AVAILABLE = {
 } as const
 
 describe('render states', () => {
-  test('it renders the autocomplete when no value is given', () => {
+  test('it renders the autocomplete when no value is given', async () => {
     const getReferenceInfo = ({_id: id, _type: type}: {_id: string; _type?: string}) => {
       return of({
         id,
@@ -26,7 +26,7 @@ describe('render states', () => {
       })
     }
 
-    const {result} = renderCrossDatasetReferenceInput({
+    const {result} = await renderCrossDatasetReferenceInput({
       fieldDefinition: {
         name: 'productReference',
         type: 'crossDatasetReference',
@@ -49,7 +49,7 @@ describe('render states', () => {
     expect(result.queryByTestId('autocomplete')).toBeInTheDocument()
   })
 
-  test('it renders the autocomplete when it has a value but focus is on the _ref', () => {
+  test('it renders the autocomplete when it has a value but focus is on the _ref', async () => {
     const getReferenceInfo = jest.fn().mockReturnValue(
       of({
         _id: 'foo',
@@ -68,7 +68,7 @@ describe('render states', () => {
       _projectId: 'foo',
     }
 
-    const {result} = renderCrossDatasetReferenceInput({
+    const {result} = await renderCrossDatasetReferenceInput({
       fieldDefinition: {
         name: 'productReference',
         type: 'crossDatasetReference',
@@ -91,7 +91,7 @@ describe('render states', () => {
     expect(result.getByTestId('autocomplete')).toBeInTheDocument()
   })
 
-  test.skip('a warning is displayed if the reference value is strong while the schema says it should be weak', () => {
+  test.skip('a warning is displayed if the reference value is strong while the schema says it should be weak', async () => {
     const getReferenceInfo = jest.fn().mockReturnValue(
       of({
         _id: 'foo',
@@ -110,7 +110,7 @@ describe('render states', () => {
       _projectId: 'otherProject',
     }
 
-    const {result} = renderCrossDatasetReferenceInput({
+    const {result} = await renderCrossDatasetReferenceInput({
       fieldDefinition: {
         name: 'productReference',
         type: 'crossDatasetReference',
@@ -148,7 +148,7 @@ describe('user interaction happy paths', () => {
         },
       })
 
-    const {onChange, result} = renderCrossDatasetReferenceInput({
+    const {onChange, result} = await renderCrossDatasetReferenceInput({
       getReferenceInfo,
       onSearch: handleSearch,
       fieldDefinition: {
@@ -227,7 +227,7 @@ describe('user interaction happy paths', () => {
       _projectId: 'abcxyz',
     }
 
-    const {onChange, onPathFocus, rerender, result} = renderCrossDatasetReferenceInput({
+    const {onChange, onPathFocus, rerender, result} = await renderCrossDatasetReferenceInput({
       getReferenceInfo,
       onSearch: handleSearch,
 
@@ -295,7 +295,7 @@ describe('user interaction happy paths', () => {
     ])
   })
 
-  test('an input with an existing value support clearing the value', () => {
+  test('an input with an existing value support clearing the value', async () => {
     const getReferenceInfo = ({_id: id}: {_id: string}) =>
       of({
         id,
@@ -313,7 +313,7 @@ describe('user interaction happy paths', () => {
       _projectId: 'abcxyz',
     }
 
-    const {onChange, result} = renderCrossDatasetReferenceInput({
+    const {onChange, result} = await renderCrossDatasetReferenceInput({
       getReferenceInfo,
 
       fieldDefinition: {

@@ -16,9 +16,8 @@ import {
 import {FormState} from '../../src/form/store/useFormState'
 import {EMPTY_ARRAY} from '../../src/form/utils/empty'
 import {useSchema} from '../../src/hooks'
-import {createSchema} from '../../src/schema'
 import {createMockSanityClient} from '../mocks/mockSanityClient'
-import {TestProvider} from './TestProvider'
+import {createTestProvider} from './TestProvider'
 import {TestRenderProps} from './types'
 
 export interface TestRenderInputContext {
@@ -50,7 +49,7 @@ export type TestRenderInputCallback = (
   context: TestRenderInputContext
 ) => React.ReactElement
 
-export function renderInput(props: {
+export async function renderInput(props: {
   fieldDefinition: Schema.TypeDefinition
   props?: TestRenderProps
   render: TestRenderInputCallback
@@ -60,6 +59,23 @@ export function renderInput(props: {
 
   const client = createMockSanityClient() as unknown as SanityClient
   const patchChannel = createPatchChannel()
+  const TestProvider = await createTestProvider({
+    client,
+    config: {
+      name: 'default',
+      projectId: 'test',
+      dataset: 'test',
+      schema: {
+        types: [
+          {
+            type: 'document',
+            name: 'test',
+            fields: [fieldDefinition],
+          },
+        ],
+      },
+    },
+  })
 
   const focusRef = jest.fn()
   const onBlur = jest.fn()
@@ -160,20 +176,15 @@ export function renderInput(props: {
     )
   }
 
-  const schema = createSchema({
-    name: 'test',
-    types: [{type: 'document', name: 'test', fields: [fieldDefinition]}],
-  })
-
   const result = render(
-    <TestProvider client={client} schema={schema}>
+    <TestProvider>
       <TestForm {...initialTestProps} render={initialRender} />
     </TestProvider>
   )
 
   function rerender(subsequentRender: TestRenderInputCallback) {
     render(
-      <TestProvider client={client} schema={schema}>
+      <TestProvider>
         <TestForm {...initialTestProps} render={subsequentRender} />
       </TestProvider>
     )

@@ -8,6 +8,13 @@ import {sessionId} from './sessionId'
 import * as storage from './storage'
 import {createLoginComponent} from './createLoginComponent'
 
+export interface AuthProvider {
+  name: string
+  title: string
+  url: string
+  logo?: string
+}
+
 interface AuthStoreOptions {
   projectId: string
   dataset: string
@@ -31,12 +38,7 @@ interface AuthStoreOptions {
   /**
    * The custom provider implementations
    */
-  providers?: Array<{
-    name: string
-    title: string
-    url: string
-    logo?: string
-  }>
+  providers?: AuthProvider[]
 }
 
 const getStorageKey = (projectId: string) => {

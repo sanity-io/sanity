@@ -9,7 +9,7 @@ const defs = {
 
 describe('NumberInput', () => {
   it('renders the number input field', async () => {
-    const {result} = renderNumberInput({
+    const {result} = await renderNumberInput({
       fieldDefinition: defs.num,
       render: (inputProps) => <NumberInput {...inputProps} />,
     })
@@ -19,8 +19,8 @@ describe('NumberInput', () => {
     expect(input).toHaveAttribute('type', 'number')
   })
 
-  it('accepts decimals by default', () => {
-    const {result} = renderNumberInput({
+  it('accepts decimals by default', async () => {
+    const {result} = await renderNumberInput({
       fieldDefinition: defs.num,
       render: (inputProps) => <NumberInput {...inputProps} />,
     })

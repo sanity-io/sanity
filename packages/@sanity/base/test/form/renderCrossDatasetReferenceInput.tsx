@@ -14,7 +14,7 @@ export type TestRenderCrossDatasetReferenceInputCallback = (
   context: TestRenderInputContext
 ) => React.ReactElement
 
-export function renderCrossDatasetReferenceInput(options: {
+export async function renderCrossDatasetReferenceInput(options: {
   fieldDefinition: Schema.TypeDefinition<'reference'>
   getReferenceInfo: CrossDatasetReferenceInputProps['getReferenceInfo']
   onSearch?: CrossDatasetReferenceInputProps['onSearch']
@@ -42,7 +42,7 @@ export function renderCrossDatasetReferenceInput(options: {
     }
   }
 
-  const result = renderObjectInput({
+  const result = await renderObjectInput({
     fieldDefinition: fieldDefinition as Schema.TypeDefinition<'object'>,
     props,
     render: (baseProps, context) => initialRender(transformProps(baseProps, context), context),

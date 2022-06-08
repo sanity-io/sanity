@@ -14,7 +14,7 @@ export type TestRenderArrayOfObjectInputCallback = (
   inputProps: ArrayOfObjectsInputProps
 ) => React.ReactElement
 
-export function renderArrayOfObjectsInput(options: {
+export async function renderArrayOfObjectsInput(options: {
   fieldDefinition: Schema.TypeDefinition<'array'>
   props?: TestRenderProps
   render: TestRenderArrayOfObjectInputCallback
@@ -76,7 +76,7 @@ export function renderArrayOfObjectsInput(options: {
     }
   }
 
-  const ret = renderInput({
+  const ret = await renderInput({
     fieldDefinition,
     props,
     render: (inputProps, context) => render(transformProps(inputProps, context)),

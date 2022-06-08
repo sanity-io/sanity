@@ -54,8 +54,8 @@ const defs = {
   },
 }
 
-it('renders the boolean input field', () => {
-  const {result} = renderBooleanInput({
+it('renders the boolean input field', async () => {
+  const {result} = await renderBooleanInput({
     fieldDefinition: defs.booleanTest,
     render: (inputProps) => <BooleanInput {...inputProps} />,
   })
@@ -67,8 +67,8 @@ it('renders the boolean input field', () => {
 })
 
 describe('Mouse accessibility', () => {
-  it('emits onFocus when clicked', () => {
-    const {onFocus, result} = renderBooleanInput({
+  it('emits onFocus when clicked', async () => {
+    const {onFocus, result} = await renderBooleanInput({
       fieldDefinition: defs.booleanTest,
       render: (inputProps) => <BooleanInput {...inputProps} />,
     })
@@ -78,8 +78,8 @@ describe('Mouse accessibility', () => {
     expect(onFocus.mock.calls).toMatchSnapshot()
   })
 
-  it('emits onChange when clicked', () => {
-    const {onChange, result} = renderBooleanInput({
+  it('emits onChange when clicked', async () => {
+    const {onChange, result} = await renderBooleanInput({
       fieldDefinition: defs.booleanTest,
       render: (inputProps) => <BooleanInput {...inputProps} />,
     })
@@ -92,8 +92,8 @@ describe('Mouse accessibility', () => {
 })
 
 describe('Keyboard accessibility', () => {
-  it('emits onFocus when tabbing to input', () => {
-    const {onFocus, result} = renderBooleanInput({
+  it('emits onFocus when tabbing to input', async () => {
+    const {onFocus, result} = await renderBooleanInput({
       fieldDefinition: defs.booleanTest,
       render: (inputProps) => <BooleanInput {...inputProps} />,
     })
@@ -105,8 +105,8 @@ describe('Keyboard accessibility', () => {
     expect(onFocus.mock.calls).toMatchSnapshot()
   })
 
-  it('emits onChange when pressing enter', () => {
-    const {onChange, result} = renderBooleanInput({
+  it('emits onChange when pressing enter', async () => {
+    const {onChange, result} = await renderBooleanInput({
       fieldDefinition: defs.booleanTest,
       render: (inputProps) => <BooleanInput {...inputProps} />,
     })
@@ -117,8 +117,8 @@ describe('Keyboard accessibility', () => {
     expect(onChange.mock.calls).toMatchSnapshot()
   })
 
-  it('emits onBlur when navigating away from field', () => {
-    const {onBlur, result} = renderBooleanInput({
+  it('emits onBlur when navigating away from field', async () => {
+    const {onBlur, result} = await renderBooleanInput({
       fieldDefinition: defs.booleanTest,
       render: (inputProps) => <BooleanInput {...inputProps} />,
     })
@@ -134,8 +134,8 @@ describe('Keyboard accessibility', () => {
 })
 
 describe('Layout options', () => {
-  it('renders a switch (default)', () => {
-    const {result} = renderBooleanInput({
+  it('renders a switch (default)', async () => {
+    const {result} = await renderBooleanInput({
       fieldDefinition: defs.booleanTest,
       render: (inputProps) => <BooleanInput {...inputProps} />,
     })
@@ -144,8 +144,8 @@ describe('Layout options', () => {
     expect(input).toBeDefined()
   })
 
-  it('renders a checkbox', () => {
-    const {result} = renderBooleanInput({
+  it('renders a checkbox', async () => {
+    const {result} = await renderBooleanInput({
       fieldDefinition: defs.booleanTest,
       render: (inputProps) => <BooleanInput {...inputProps} />,
     })
@@ -156,8 +156,8 @@ describe('Layout options', () => {
 })
 
 describe('readOnly property', () => {
-  it('makes field read-only', () => {
-    const {onChange, result} = renderBooleanInput({
+  it('makes field read-only', async () => {
+    const {onChange, result} = await renderBooleanInput({
       fieldDefinition: defs.booleanReadOnly,
       render: (inputProps) => <BooleanInput {...inputProps} readOnly />,
     })
@@ -175,8 +175,8 @@ describe('readOnly property', () => {
     expect(input).not.toHaveFocus()
   })
 
-  it('does not make field read-only with callback', () => {
-    const {onChange, result} = renderBooleanInput({
+  it('does not make field read-only with callback', async () => {
+    const {onChange, result} = await renderBooleanInput({
       fieldDefinition: defs.readOnlyCallback,
       render: (inputProps) => <BooleanInput {...inputProps} />,
     })
@@ -196,8 +196,8 @@ describe('readOnly property', () => {
     expect(onChange.mock.calls).toMatchSnapshot()
   })
 
-  it.skip('makes field read-only based on value in document', () => {
-    const {onChange, result} = renderBooleanInput({
+  it.skip('makes field read-only based on value in document', async () => {
+    const {onChange, result} = await renderBooleanInput({
       fieldDefinition: defs.readOnlyWithDocument,
       props: {documentValue: {title: 'Hello, world'}},
       render: (inputProps) => <BooleanInput {...inputProps} />,
@@ -223,11 +223,11 @@ describe('hidden property', () => {
         fieldDefinition: defs.booleanHidden,
         render: (inputProps) => <BooleanInput {...inputProps} />,
       })
-    ).toThrow('no field member: booleanHidden')
+    ).rejects.toThrow('no field member: booleanHidden')
   })
 
-  it('does not hide field with callback', () => {
-    const {result} = renderBooleanInput({
+  it('does not hide field with callback', async () => {
+    const {result} = await renderBooleanInput({
       fieldDefinition: defs.hiddenCallback,
       render: (inputProps) => <BooleanInput {...inputProps} />,
     })
@@ -243,6 +243,6 @@ describe('hidden property', () => {
         props: {documentValue: {title: 'Hello, world'}},
         render: (inputProps) => <BooleanInput {...inputProps} />,
       })
-    ).toThrow('no field member: hiddenWithDocument')
+    ).rejects.toThrow('no field member: hiddenWithDocument')
   })
 })

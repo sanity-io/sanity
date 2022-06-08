@@ -1,7 +1,5 @@
-// import {UnknownIcon} from '@sanity/icons'
-// import {SanityMonogram} from '@sanity/logos'
 import React from 'react'
-import {SanityAuthProvider} from '../../../auth'
+import {AuthProvider} from './createAuthStore'
 
 const GithubLogo = () => (
   <svg
@@ -42,7 +40,7 @@ const GoogleLogo = () => (
   </svg>
 )
 
-function CustomLogo(props: {provider: SanityAuthProvider}) {
+function CustomLogo(props: {provider: AuthProvider}) {
   const {provider} = props
 
   return (
@@ -50,7 +48,7 @@ function CustomLogo(props: {provider: SanityAuthProvider}) {
   ) as any
 }
 
-export const providerLogos: Record<string, React.ComponentType<{provider: SanityAuthProvider}>> = {
+export const providerLogos: Record<string, React.ComponentType<{provider: AuthProvider}>> = {
   google: GoogleLogo,
   github: GithubLogo,
   custom: CustomLogo,

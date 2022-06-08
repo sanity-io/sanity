@@ -1,5 +1,3 @@
-export type {AuthController, SanityAuthProvider, SanityUser} from '../auth'
-
 export type {
   GeneralPreviewLayoutKey,
   PortableTextPreviewLayoutKey,

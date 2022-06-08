@@ -8,7 +8,7 @@ export type TestRenderStringInputCallback = (
   context: TestRenderInputContext
 ) => React.ReactElement
 
-export function renderStringInput(options: {
+export async function renderStringInput(options: {
   fieldDefinition: Schema.TypeDefinition<'date' | 'datetime' | 'string' | 'url'>
   props?: TestRenderProps
   render: TestRenderStringInputCallback
@@ -26,7 +26,7 @@ export function renderStringInput(options: {
     }
   }
 
-  const result = renderInput({
+  const result = await renderInput({
     fieldDefinition,
     props,
     render: (inputProps, context) => render(transformProps(inputProps), context),

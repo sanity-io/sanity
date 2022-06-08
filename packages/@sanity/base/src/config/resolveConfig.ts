@@ -7,8 +7,6 @@ import {Config, Source, Workspace, WorkspaceOptions} from './types'
 import {prepareConfig} from './prepareConfig'
 
 /**
- * PRIMARILY FOR TESTING PURPOSES.
- *
  * Fully resolves a configuration including subscribing to all sources and
  * workspaces from a config. Returns an `Observable` that waits till all sources
  * emit once before emitting an array of fully resolved sources and workspaces.

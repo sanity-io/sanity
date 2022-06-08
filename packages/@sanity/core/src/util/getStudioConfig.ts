@@ -1,7 +1,9 @@
 /* eslint-disable no-sync */
 import fs from 'fs'
 import path from 'path'
-import {resolveConfig, Config, ResolvedConfig} from 'sanity/_unstable'
+import {first} from 'rxjs/operators'
+import {Workspace} from 'sanity'
+import {resolveConfig, Config} from 'sanity/_unstable'
 import {mockBrowserEnvironment} from './mockBrowserEnvironment'
 
 const candidates = [
@@ -14,10 +16,13 @@ const candidates = [
 /**
  * Note: Don't run this on the main thread, use it a forked process
  */
-export function getStudioConfig(options: {configPath?: string; basePath: string}): ResolvedConfig {
-  const {basePath, configPath: cfgPath} = options
+export async function getStudioConfig(options: {
+  configPath?: string
+  basePath: string
+}): Promise<Workspace[]> {
+  let workspaces: Workspace[] | undefined
 
-  let resolved: ResolvedConfig | undefined
+  const {basePath, configPath: cfgPath} = options
 
   let cleanup
   try {
@@ -45,11 +50,11 @@ export function getStudioConfig(options: {configPath?: string; basePath: string}
       throw new Error(`Failed to load configuration file "${configPath}":\n${err.message}`)
     }
 
-    if (!config || !('type' in config) || config.type !== 'sanity-config') {
+    if (!config) {
       throw new Error('Configuration did not export expected config shape')
     }
 
-    resolved = resolveConfig(config)
+    workspaces = await resolveConfig(config).pipe(first()).toPromise()
   } catch (error) {
     if (cleanup) {
       cleanup()
@@ -60,9 +65,9 @@ export function getStudioConfig(options: {configPath?: string; basePath: string}
 
   cleanup()
 
-  if (!resolved) {
+  if (!workspaces) {
     throw new Error('Failed to resolve configuration')
   }
 
-  return resolved
+  return workspaces
 }

@@ -133,8 +133,8 @@ const defs = {
 // }
 
 describe('ImageInput with empty state', () => {
-  it.skip('renders an empty input as default', () => {
-    const {result} = renderImageInput({
+  it.skip('renders an empty input as default', async () => {
+    const {result} = await renderImageInput({
       fieldDefinition: defs.mainImage,
       render: (inputProps) => <ImageInput {...inputProps} />,
     })

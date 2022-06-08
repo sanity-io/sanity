@@ -1,5 +1,3 @@
-export type {AuthController, SanityAuthProvider, SanityUser} from '../auth'
-
 export {resolveConfig} from '../config'
 
 export type {
@@ -11,7 +9,6 @@ export type {
   FormBuilderComponentResolverContext,
   NewDocumentCreationContext,
   PartialContext,
-  ResolvedConfig,
   ResolveProductionUrlContext,
   SanityFormConfig,
   Source,

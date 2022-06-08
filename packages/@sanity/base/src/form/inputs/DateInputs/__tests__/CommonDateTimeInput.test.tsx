@@ -28,10 +28,10 @@ function serialize(date: Date): string {
   return date.toISOString()
 }
 
-function renderInput() {
+async function renderInput() {
   const onChange = jest.fn()
 
-  const ret = renderStringInput({
+  const ret = await renderStringInput({
     fieldDefinition: defineType({
       type: 'datetime',
       name: 'test',
@@ -63,8 +63,8 @@ test('timezone for the test environment should be set to America/Los_Angeles', (
   expect(Intl.DateTimeFormat().resolvedOptions().timeZone).toBe('America/Los_Angeles')
 })
 
-test('does not emit onChange after invalid value has been typed', () => {
-  const {result, onChange} = renderInput()
+test('does not emit onChange after invalid value has been typed', async () => {
+  const {result, onChange} = await renderInput()
   const input = result.container.querySelector('input')!
 
   userEvent.type(input, 'this is invalid')
@@ -76,8 +76,8 @@ test('does not emit onChange after invalid value has been typed', () => {
   expect(onChange.mock.calls.length).toBe(0)
 })
 
-test('emits onChange on correct format if a valid value has been typed', () => {
-  const {result, onChange} = renderInput()
+test('emits onChange on correct format if a valid value has been typed', async () => {
+  const {result, onChange} = await renderInput()
   const input = result.container.querySelector('input')!
 
   // NOTE: the date is entered and displayed in local timezone (which is hardcoded to America/Los_Angeles)

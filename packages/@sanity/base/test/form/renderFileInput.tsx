@@ -23,7 +23,7 @@ export type TestRenderFileInputCallback = (
   context: TestRenderInputContext
 ) => React.ReactElement
 
-export function renderFileInput(options: {
+export async function renderFileInput(options: {
   assetSources?: FileInputProps['assetSources']
   fieldDefinition: Schema.TypeDefinition<'file'>
   observeAsset?: FileInputProps['observeAsset']
@@ -59,7 +59,7 @@ export function renderFileInput(options: {
     }
   }
 
-  const result = renderObjectInput({
+  const result = await renderObjectInput({
     fieldDefinition: fieldDefinition as Schema.TypeDefinition<'object'>,
     props,
     render: (inputProps, context) => initialRender(transformProps(inputProps, context), context),

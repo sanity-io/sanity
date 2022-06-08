@@ -1,7 +1,5 @@
 /* eslint-disable camelcase */
 
-export type {AuthController, SanityAuthProvider, SanityUser} from '../auth'
-
 export type {
   DefaultPreviewProps,
   GeneralPreviewLayoutKey,

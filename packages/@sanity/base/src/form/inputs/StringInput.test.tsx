@@ -4,8 +4,8 @@ import {renderStringInput} from '../../../test/form/renderStringInput'
 import {StringInput} from './StringInput'
 
 describe('StringInput', () => {
-  it('renders input value', () => {
-    const {result} = renderStringInput({
+  it('renders input value', async () => {
+    const {result} = await renderStringInput({
       render: (inputProps) => <StringInput {...inputProps} value="test" />,
       fieldDefinition: {
         type: 'string',
@@ -19,8 +19,8 @@ describe('StringInput', () => {
     expect(input?.value).toBe('test')
   })
 
-  it('emits onFocus', () => {
-    const {onFocus, result} = renderStringInput({
+  it('emits onFocus', async () => {
+    const {onFocus, result} = await renderStringInput({
       render: (inputProps) => <StringInput {...inputProps} value="test" />,
       fieldDefinition: {
         type: 'string',
@@ -36,8 +36,8 @@ describe('StringInput', () => {
     expect(onFocus.mock.calls).toHaveLength(1)
   })
 
-  it('emits `set` patch', () => {
-    const {onChange, result} = renderStringInput({
+  it('emits `set` patch', async () => {
+    const {onChange, result} = await renderStringInput({
       render: (inputProps) => <StringInput {...inputProps} value="tes" />,
       fieldDefinition: {
         type: 'string',
@@ -53,8 +53,8 @@ describe('StringInput', () => {
     expect(onChange.mock.calls).toEqual([[{type: 'set', path: [], value: 'test'}]])
   })
 
-  it('emits `unset` patch', () => {
-    const {onChange, result} = renderStringInput({
+  it('emits `unset` patch', async () => {
+    const {onChange, result} = await renderStringInput({
       render: (inputProps) => <StringInput {...inputProps} value="t" />,
       fieldDefinition: {
         type: 'string',

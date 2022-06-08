@@ -3,7 +3,8 @@ import oneline from 'oneline'
 import {isPlainObject} from 'lodash'
 import type {CliCommandContext, CliV3CommandContext, GraphQLAPIConfig} from '@sanity/cli'
 import type {Schema} from '@sanity/types'
-import {createSchema, ResolvedConfig} from 'sanity/_unstable'
+import {createSchema} from 'sanity/_unstable'
+import {Workspace} from 'sanity'
 import {getStudioConfig} from '../../util/getStudioConfig'
 import {SchemaDefinitionish} from './types'
 
@@ -70,14 +71,18 @@ function getApisWithSchemaTypes(cliContext: CliCommandContext): Promise<TypeReso
   })
 }
 
-function resolveGraphQLApis({
+async function resolveGraphQLApis({
   cliConfig,
   cliConfigPath,
   workDir,
-}: Pick<CliV3CommandContext, 'cliConfig' | 'cliConfigPath' | 'workDir'>): TypeResolvedGraphQLAPI[] {
-  const studioConfig = getStudioConfig({basePath: workDir})
-  const workspaces = studioConfig.__internal.workspaces
-  const numSources = workspaces.reduce((count, workspace) => count + workspace.sources.length, 0)
+}: Pick<CliV3CommandContext, 'cliConfig' | 'cliConfigPath' | 'workDir'>): Promise<
+  TypeResolvedGraphQLAPI[]
+> {
+  const workspaces = await getStudioConfig({basePath: workDir})
+  const numSources = workspaces.reduce(
+    (count, workspace) => count + workspace.unstable_sources.length,
+    0
+  )
   const multiSource = numSources > 1
   const multiWorkspace = workspaces.length > 1
   const hasGraphQLConfig = Boolean(cliConfig?.graphql)
@@ -101,21 +106,20 @@ function resolveGraphQLApis({
 
   // No config is defined, but we have a single workspace + source, so use that
   if (!hasGraphQLConfig) {
-    const {projectId, dataset, schema} = workspaces[0].sources[0]
+    const {projectId, dataset, schema} = workspaces[0].unstable_sources[0]
     return [{schemaTypes: getStrippedSchemaTypes(schema), projectId, dataset}]
   }
 
   // Explicity defined config
   const apiDefs = validateCliConfig(cliConfig?.graphql || [])
-  return resolveGraphQLAPIsFromConfig(apiDefs, studioConfig)
+  return resolveGraphQLAPIsFromConfig(apiDefs, workspaces)
 }
 
 function resolveGraphQLAPIsFromConfig(
   apiDefs: GraphQLAPIConfig[],
-  studioConfig: ResolvedConfig
+  workspaces: Workspace[]
 ): TypeResolvedGraphQLAPI[] {
   const resolvedApis: TypeResolvedGraphQLAPI[] = []
-  const workspaces = studioConfig.__internal.workspaces
 
   for (const apiDef of apiDefs) {
     const {workspace: workspaceName, source: sourceName} = apiDef
@@ -139,9 +143,9 @@ function resolveGraphQLAPIsFromConfig(
     // If we only have a single source defined, we can assume that is the intended one,
     // even if no `source` is defined for the GraphQL API
     const source =
-      !sourceName && workspace.sources.length === 1
-        ? workspace.sources[0]
-        : workspace.sources.find((src) => src.name === (sourceName || 'default'))
+      !sourceName && workspace.unstable_sources.length === 1
+        ? workspace.unstable_sources[0]
+        : workspace.unstable_sources.find((src) => src.name === (sourceName || 'default'))
 
     if (!source) {
       throw new Error(

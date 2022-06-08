@@ -18,8 +18,8 @@ const observeAssetStub = (): Observable<FileAsset> =>
   } as FileAsset)
 
 describe('FileInput with empty state', () => {
-  it('renders an empty input as default', () => {
-    const {result} = renderFileInput({
+  it('renders an empty input as default', async () => {
+    const {result} = await renderFileInput({
       fieldDefinition: {
         name: 'someFile',
         title: 'A simple file',
@@ -39,8 +39,8 @@ describe('FileInput with empty state', () => {
 
   /* assetSources - adds a list of sources that a user can pick from when browsing */
 
-  it('renders the browse button when it has at least one element in assetSources', () => {
-    const {result} = renderFileInput({
+  it('renders the browse button when it has at least one element in assetSources', async () => {
+    const {result} = await renderFileInput({
       fieldDefinition: {
         name: 'someFile',
         title: 'A simple file',
@@ -54,8 +54,8 @@ describe('FileInput with empty state', () => {
     expect(result.queryByTestId('file-input-browse-button')).toBeInTheDocument()
   })
 
-  it('renders only the upload button when it has no assetSources', () => {
-    const {result} = renderFileInput({
+  it('renders only the upload button when it has no assetSources', async () => {
+    const {result} = await renderFileInput({
       fieldDefinition: {
         name: 'someFile',
         title: 'A simple file',
@@ -70,7 +70,7 @@ describe('FileInput with empty state', () => {
   })
 
   it('renders the browse button with a tooltip when it has at least one element in assetSources', async () => {
-    const {result} = renderFileInput({
+    const {result} = await renderFileInput({
       fieldDefinition: {
         name: 'someFile',
         title: 'A simple file',
@@ -97,8 +97,8 @@ describe('FileInput with empty state', () => {
 
   /* directUploads - allows for user to upload files directly (default is true) */
 
-  it('renders the upload button as disabled when directUploads is false', () => {
-    const {result} = renderFileInput({
+  it('renders the upload button as disabled when directUploads is false', async () => {
+    const {result} = await renderFileInput({
       fieldDefinition: {
         name: 'someFile',
         title: 'A simple file',
@@ -113,8 +113,8 @@ describe('FileInput with empty state', () => {
     )
   })
 
-  it('has default text that mentions that you cannot upload files when directUploads is false', () => {
-    const {result} = renderFileInput({
+  it('has default text that mentions that you cannot upload files when directUploads is false', async () => {
+    const {result} = await renderFileInput({
       fieldDefinition: {
         name: 'someFile',
         title: 'A simple file',
@@ -129,8 +129,8 @@ describe('FileInput with empty state', () => {
 
   /* readOnly - the file input is read only or not */
 
-  it('the upload button is disabled when the input is readOnly', () => {
-    const {result} = renderFileInput({
+  it('the upload button is disabled when the input is readOnly', async () => {
+    const {result} = await renderFileInput({
       fieldDefinition: {
         name: 'someFile',
         title: 'A simple file',
@@ -145,8 +145,8 @@ describe('FileInput with empty state', () => {
     )
   })
 
-  it('does not allow for browsing when input is readOnly', () => {
-    const {result} = renderFileInput({
+  it('does not allow for browsing when input is readOnly', async () => {
+    const {result} = await renderFileInput({
       fieldDefinition: {
         name: 'someFile',
         title: 'A simple file',
@@ -162,7 +162,7 @@ describe('FileInput with empty state', () => {
   })
 
   it('does not allow for upload when input is readOnly', async () => {
-    const {result} = renderFileInput({
+    const {result} = await renderFileInput({
       fieldDefinition: {
         name: 'someFile',
         title: 'A simple file',
@@ -197,8 +197,8 @@ describe('FileInput with asset', () => {
     _type: 'file',
   }
 
-  it('renders the right url as default when it has asset', () => {
-    const {result} = renderFileInput({
+  it('renders the right url as default when it has asset', async () => {
+    const {result} = await renderFileInput({
       fieldDefinition: {
         name: 'someFile',
         title: 'A simple file',
@@ -223,7 +223,7 @@ describe('FileInput with asset', () => {
     // const {result} = render({
     //   value,
     // })
-    const {result} = renderFileInput({
+    const {result} = await renderFileInput({
       fieldDefinition: {
         name: 'someFile',
         title: 'A simple file',
@@ -241,7 +241,7 @@ describe('FileInput with asset', () => {
   })
 
   it('renders the browse button in the file menu when it has no assetSources', async () => {
-    const {result} = renderFileInput({
+    const {result} = await renderFileInput({
       fieldDefinition: {
         name: 'someFile',
         title: 'A simple file',
@@ -260,7 +260,7 @@ describe('FileInput with asset', () => {
   })
 
   it('renders the multiple browse buttons in the file menu when it has multiple assetSources', async () => {
-    const {result} = renderFileInput({
+    const {result} = await renderFileInput({
       fieldDefinition: {
         name: 'someFile',
         title: 'A simple file',
@@ -287,7 +287,7 @@ describe('FileInput with asset', () => {
   /* directUploads - allows for user to upload files directly (default is true) */
 
   it('renders the upload button as disabled when directUploads is false', async () => {
-    const {result} = renderFileInput({
+    const {result} = await renderFileInput({
       fieldDefinition: {
         name: 'someFile',
         title: 'A simple file',
@@ -309,7 +309,7 @@ describe('FileInput with asset', () => {
   /* readOnly - the files input is read only or not */
 
   it('the upload button in the dropdown menu is disabled when the input is readOnly', async () => {
-    const {result} = renderFileInput({
+    const {result} = await renderFileInput({
       fieldDefinition: {
         name: 'someFile',
         title: 'A simple file',
@@ -329,7 +329,7 @@ describe('FileInput with asset', () => {
   })
 
   it('does not allow for browsing when input is readOnly', async () => {
-    const {result} = renderFileInput({
+    const {result} = await renderFileInput({
       fieldDefinition: {
         name: 'someFile',
         title: 'A simple file',
@@ -347,7 +347,7 @@ describe('FileInput with asset', () => {
   })
 
   it('does not allow for browsing with multiple sources when input is readOnly', async () => {
-    const {result} = renderFileInput({
+    const {result} = await renderFileInput({
       fieldDefinition: {
         name: 'someFile',
         title: 'A simple file',
@@ -377,7 +377,7 @@ describe('FileInput with asset', () => {
   })
 
   it('does not allow for clearing the input it is readOnly', async () => {
-    const {result} = renderFileInput({
+    const {result} = await renderFileInput({
       fieldDefinition: {
         name: 'someFile',
         title: 'A simple file',
@@ -422,7 +422,7 @@ describe('FileInput with asset', () => {
     //   value,
     // })
 
-    const {result} = renderFileInput({
+    const {result} = await renderFileInput({
       fieldDefinition: {
         name: 'someFile',
         title: 'A simple file',

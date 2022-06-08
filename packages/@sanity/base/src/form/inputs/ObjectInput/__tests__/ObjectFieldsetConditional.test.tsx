@@ -100,8 +100,8 @@ const dummyDocument = {
 }
 
 describe('Fieldset with readOnly and hidden', () => {
-  it('does not render because the hidden property is set to true', () => {
-    const {result} = renderObjectInput({
+  it('does not render because the hidden property is set to true', async () => {
+    const {result} = await renderObjectInput({
       fieldDefinition: fieldsetsTestType,
       props: {documentValue: dummyDocument},
       render: (inputProps) => <ObjectInput {...inputProps} />,
@@ -111,8 +111,8 @@ describe('Fieldset with readOnly and hidden', () => {
     expect(inputContainer).toBeNull()
   })
 
-  it('does render because the hidden property is set to false', () => {
-    const {result} = renderObjectInput({
+  it('does render because the hidden property is set to false', async () => {
+    const {result} = await renderObjectInput({
       fieldDefinition: fieldsetsTestType,
       props: {documentValue: dummyDocument},
       render: (inputProps) => <ObjectInput {...inputProps} />,
@@ -122,8 +122,8 @@ describe('Fieldset with readOnly and hidden', () => {
     expect(inputContainer).not.toBeNull()
   })
 
-  it('does not render because the hidden property callback returns true', () => {
-    const {result} = renderObjectInput({
+  it('does not render because the hidden property callback returns true', async () => {
+    const {result} = await renderObjectInput({
       fieldDefinition: fieldsetsTestType,
       props: {documentValue: dummyDocument},
       render: (inputProps) => <ObjectInput {...inputProps} />,
@@ -133,8 +133,8 @@ describe('Fieldset with readOnly and hidden', () => {
     expect(inputContainer).toBeNull()
   })
 
-  it('does render because the hidden property callback returns false', () => {
-    const {result} = renderObjectInput({
+  it('does render because the hidden property callback returns false', async () => {
+    const {result} = await renderObjectInput({
       fieldDefinition: fieldsetsTestType,
       props: {documentValue: dummyDocument},
       render: (inputProps) => <ObjectInput {...inputProps} />,
@@ -144,8 +144,8 @@ describe('Fieldset with readOnly and hidden', () => {
     expect(inputContainer).not.toBeNull()
   })
 
-  it('input in fieldset is read only because the fieldsets readOnly property is set to true', () => {
-    const {result} = renderObjectInput({
+  it('input in fieldset is read only because the fieldsets readOnly property is set to true', async () => {
+    const {result} = await renderObjectInput({
       fieldDefinition: fieldsetsTestType,
       props: {documentValue: dummyDocument},
       render: (inputProps) => <ObjectInput {...inputProps} />,
@@ -156,8 +156,8 @@ describe('Fieldset with readOnly and hidden', () => {
     expect(input).toHaveAttribute('readonly')
   })
 
-  it('input in fieldset is not read only because the fieldsets readOnly property is set to false', () => {
-    const {result} = renderObjectInput({
+  it('input in fieldset is not read only because the fieldsets readOnly property is set to false', async () => {
+    const {result} = await renderObjectInput({
       fieldDefinition: fieldsetsTestType,
       props: {documentValue: dummyDocument},
       render: (inputProps) => <ObjectInput {...inputProps} />,
@@ -168,8 +168,8 @@ describe('Fieldset with readOnly and hidden', () => {
     expect(input).not.toHaveAttribute('readonly')
   })
 
-  it('input in fieldset is read only because the fieldsets readOnly property callback returns true', () => {
-    const {result} = renderObjectInput({
+  it('input in fieldset is read only because the fieldsets readOnly property callback returns true', async () => {
+    const {result} = await renderObjectInput({
       fieldDefinition: fieldsetsTestType,
       props: {documentValue: dummyDocument},
       render: (inputProps) => <ObjectInput {...inputProps} />,
@@ -180,8 +180,8 @@ describe('Fieldset with readOnly and hidden', () => {
     expect(input).toHaveAttribute('readonly')
   })
 
-  it('input in fieldset is not read only because the fieldsets readOnly property callback returns false', () => {
-    const {result} = renderObjectInput({
+  it('input in fieldset is not read only because the fieldsets readOnly property callback returns false', async () => {
+    const {result} = await renderObjectInput({
       fieldDefinition: fieldsetsTestType,
       props: {documentValue: dummyDocument},
       render: (inputProps) => <ObjectInput {...inputProps} />,

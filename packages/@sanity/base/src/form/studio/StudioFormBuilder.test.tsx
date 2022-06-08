@@ -5,34 +5,40 @@ import {defineType, Path} from '@sanity/types'
 import {render} from '@testing-library/react'
 import React, {useMemo} from 'react'
 import {createMockSanityClient} from '../../../test/mocks/mockSanityClient'
-import {TestProvider} from '../../../test/form'
-import {createSchema} from '../../schema'
+import {createTestProvider} from '../../../test/form'
 import {createPatchChannel} from '../patch'
 import {useFormState} from '../store/useFormState'
 import {EMPTY_ARRAY} from '../utils/empty'
+import {useWorkspace} from '../../studio'
 import {StudioFormBuilder, StudioFormBuilderProps} from './StudioFormBuilder'
 
-const schema = createSchema({
-  name: 'test',
-  types: [
-    defineType({
-      type: 'document',
-      name: 'test',
-      title: 'Test',
-      fields: [
-        {
-          type: 'string',
-          name: 'title',
-          title: 'Title',
-        },
-      ],
-    }),
-  ],
-})
+const schemaTypes = [
+  defineType({
+    type: 'document',
+    name: 'test',
+    title: 'Test',
+    fields: [
+      {
+        type: 'string',
+        name: 'title',
+        title: 'Title',
+      },
+    ],
+  }),
+]
 
 describe('StudioFormBuilder', () => {
   it('should render a studio form', async () => {
     const client = createMockSanityClient() as unknown as SanityClient
+    const TestProvider = await createTestProvider({
+      client,
+      config: {
+        name: 'default',
+        projectId: 'test',
+        dataset: 'test',
+        schema: {types: schemaTypes},
+      },
+    })
 
     const focusPath: Path = []
     const openPath: Path = []
@@ -48,6 +54,7 @@ describe('StudioFormBuilder', () => {
     const onSetPathCollapsed = jest.fn()
 
     function TestForm() {
+      const {schema} = useWorkspace()
       const schemaType = schema.get('test')
 
       if (!schemaType) {
@@ -103,7 +110,7 @@ describe('StudioFormBuilder', () => {
     }
 
     const result = render(
-      <TestProvider client={client} schema={schema}>
+      <TestProvider>
         <TestForm />
       </TestProvider>
     )

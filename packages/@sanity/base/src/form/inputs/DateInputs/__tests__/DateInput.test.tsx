@@ -11,8 +11,8 @@ test('timezone for the test environment should be set to America/Los_Angeles', (
   expect(Intl.DateTimeFormat().resolvedOptions().timeZone).toBe('America/Los_Angeles')
 })
 
-test('does not emit onChange after invalid value has been typed', () => {
-  const {onChange, result} = renderStringInput({
+test('does not emit onChange after invalid value has been typed', async () => {
+  const {onChange, result} = await renderStringInput({
     fieldDefinition: defineType({
       type: 'date',
       name: 'test',
@@ -31,8 +31,8 @@ test('does not emit onChange after invalid value has been typed', () => {
   expect(onChange.mock.calls.length).toBe(0)
 })
 
-test('emits onChange on correct format if a valid value has been typed', () => {
-  const {onChange, result} = renderStringInput({
+test('emits onChange on correct format if a valid value has been typed', async () => {
+  const {onChange, result} = await renderStringInput({
     fieldDefinition: defineType({
       type: 'date',
       name: 'test',
@@ -52,8 +52,8 @@ test('emits onChange on correct format if a valid value has been typed', () => {
   expect(onChange.mock.calls).toMatchSnapshot()
 })
 
-test('formatting of deserialized value', () => {
-  const {result} = renderStringInput({
+test('formatting of deserialized value', async () => {
+  const {result} = await renderStringInput({
     fieldDefinition: defineType({
       type: 'date',
       name: 'test',

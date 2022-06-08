@@ -5,7 +5,7 @@ import {TestRenderProps} from './types'
 
 export type TestRenderBooleanInputCallback = (inputProps: BooleanInputProps) => React.ReactElement
 
-export function renderBooleanInput(options: {
+export async function renderBooleanInput(options: {
   fieldDefinition: Schema.TypeDefinition<'boolean'>
   props?: TestRenderProps
   render: TestRenderBooleanInputCallback
@@ -23,7 +23,7 @@ export function renderBooleanInput(options: {
     }
   }
 
-  const result = renderInput({
+  const result = await renderInput({
     fieldDefinition,
     props,
     render: (inputProps) => initialRender(tranformProps(inputProps)),
