@@ -1,41 +1,28 @@
-import {
-  isValidationErrorMarker,
-  isValidationInfoMarker,
-  isValidationWarningMarker,
-} from '@sanity/types'
-import {EMPTY_ARRAY} from '@sanity/ui-workshop'
-import {isEqual, startsWith} from '@sanity/util/paths'
 import {useMemo} from 'react'
-import {useValidationMarkers} from '../../../studio/contexts/Validation'
 import {ArrayOfObjectsMember, ObjectFormNode} from '../../../types'
+import {EMPTY_ARRAY} from '../../../utils/empty'
+import {useChildValidation} from '../../../studio/contexts/Validation'
+
+const NONEXISTENT_PATH = ['@@_NONEXISTENT_PATH_@@']
 
 export function useMemberValidation(member: ArrayOfObjectsMember<ObjectFormNode> | undefined) {
-  const documentValidation = useValidationMarkers()
-  const memberValidation = useMemo(
-    () =>
-      member
-        ? documentValidation.filter((item) => {
-            // For regular blocks, only if the path is for the block itself (and not pointing to someting inside it)
-            if (member.item.schemaType.name === 'block') {
-              return isEqual(item.path, member.item.path)
-            }
-            return startsWith(member.item.path, item.path)
-          })
-        : EMPTY_ARRAY,
-    [documentValidation, member]
-  )
+  const memberValidation = member?.item.validation || EMPTY_ARRAY
 
+  const childValidation = useChildValidation(member?.item.path || NONEXISTENT_PATH)
   const [hasError, hasWarning, hasInfo] = useMemo(
     () => [
-      memberValidation.filter(isValidationErrorMarker).length > 0,
-      memberValidation.filter(isValidationWarningMarker).length > 0,
-      memberValidation.filter(isValidationInfoMarker).length > 0,
+      memberValidation.filter((v) => v.level === 'error').length > 0,
+      memberValidation.filter((v) => v.level === 'warning').length > 0,
+      memberValidation.filter((v) => v.level === 'info').length > 0,
     ],
     [memberValidation]
   )
-  const result = useMemo(
-    () => ({memberValidation, hasError, hasWarning, hasInfo}),
-    [hasError, hasWarning, hasInfo, memberValidation]
-  )
-  return result
+  return useMemo(() => {
+    return {
+      memberValidation: member?.open ? memberValidation : memberValidation.concat(childValidation),
+      hasError,
+      hasWarning,
+      hasInfo,
+    }
+  }, [member, memberValidation, childValidation, hasError, hasWarning, hasInfo])
 }
