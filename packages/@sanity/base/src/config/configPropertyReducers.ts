@@ -32,7 +32,7 @@ export const initialDocumentActions = [
 
 export const schemaTypesReducer: ConfigPropertyReducer<
   Schema.TypeDefinition[],
-  Omit<ConfigContext, 'schema' | 'currentUser'>
+  Omit<ConfigContext, 'schema' | 'currentUser' | 'client'>
 > = (prev, {schema}, context) => {
   const schemaTypes = schema?.types
 

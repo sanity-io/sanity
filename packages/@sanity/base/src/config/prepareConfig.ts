@@ -72,42 +72,40 @@ export function prepareConfig(config: Config): PreparedConfig {
 
         const auth = source.auth || createAuthStore({dataset, projectId})
 
+        let schemaTypes
+        try {
+          schemaTypes = resolveConfigProperty({
+            propertyName: 'schema.types',
+            config: source,
+            context: {projectId, dataset},
+            initialValue: [],
+            reducer: schemaTypesReducer,
+          })
+        } catch (e) {
+          throw new ConfigResolutionError({
+            name: source.name,
+            type: 'source',
+            causes: [e],
+          })
+        }
+
+        const schema = createSchema({
+          name: source.name,
+          types: schemaTypes,
+        })
+
+        const schemaValidationProblemGroups = schema._validation
+        const schemaErrors = schemaValidationProblemGroups?.filter(
+          (msg) => !!msg.problems.find((p) => p.severity === 'error')
+        )
+
+        if (schemaValidationProblemGroups && schemaErrors?.length) {
+          // TODO: consider using the `ConfigResolutionError`
+          throw new SchemaError(schema)
+        }
+
         const source$ = auth.state.pipe(
           map(({client, authenticated, currentUser}) => {
-            let schemaTypes
-            try {
-              schemaTypes = resolveConfigProperty({
-                propertyName: 'schema.types',
-                config: source,
-                // TODO: remove client as a param and hoist this schema to make
-                // it available in the `WorkspaceInfo` type
-                context: {client, projectId, dataset},
-                initialValue: [],
-                reducer: schemaTypesReducer,
-              })
-            } catch (e) {
-              throw new ConfigResolutionError({
-                name: source.name,
-                type: 'source',
-                causes: [e],
-              })
-            }
-
-            const schema = createSchema({
-              name: source.name,
-              types: schemaTypes,
-            })
-
-            const schemaValidationProblemGroups = schema._validation
-            const schemaErrors = schemaValidationProblemGroups?.filter(
-              (msg) => !!msg.problems.find((p) => p.severity === 'error')
-            )
-
-            if (schemaValidationProblemGroups && schemaErrors?.length) {
-              // TODO: consider using the `ConfigResolutionError`
-              throw new SchemaError(schema)
-            }
-
             return resolveSource({
               config: source,
               client,
@@ -126,6 +124,7 @@ export function prepareConfig(config: Config): PreparedConfig {
           dataset: source.dataset,
           title: source.title || startCase(source.name),
           auth,
+          schema,
         })
       })
 
@@ -136,6 +135,7 @@ export function prepareConfig(config: Config): PreparedConfig {
         auth: resolvedSources[0].auth,
         basePath: rootSource.basePath || '/',
         dataset: rootSource.dataset,
+        schema: resolvedSources[0].schema,
         icon: normalizeLogo(
           rootSource.icon,
           title,

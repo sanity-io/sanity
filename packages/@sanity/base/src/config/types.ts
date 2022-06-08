@@ -132,7 +132,10 @@ export type TemplateResolver = ComposableOption<Template[], ConfigContext>
 export interface SchemaPluginOptions {
   types?:
     | SchemaTypeDefinition[]
-    | ComposableOption<SchemaTypeDefinition[], Omit<ConfigContext, 'schema' | 'currentUser'>>
+    | ComposableOption<
+        SchemaTypeDefinition[],
+        Omit<ConfigContext, 'schema' | 'currentUser' | 'client'>
+      >
   templates?: Template[] | TemplateResolver
 }
 
@@ -308,6 +311,7 @@ export interface WorkspaceSummary {
   projectId: string
   dataset: string
   theme: StudioTheme
+  schema: Schema
   /**
    * @internal
    * @deprecated not actually deprecated but don't use or you'll be fired
@@ -319,6 +323,7 @@ export interface WorkspaceSummary {
       dataset: string
       title: string
       auth: AuthStore
+      schema: Schema
       source: Observable<Source>
     }>
   }
