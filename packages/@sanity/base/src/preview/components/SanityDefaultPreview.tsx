@@ -122,10 +122,10 @@ export function SanityDefaultPreview(props: SanityDefaultPreviewProps): ReactEle
   }, [icon, mediaProp, renderIcon, renderMedia])
 
   return createElement(component, {
-    // imageUrl: _upload?.previewImage,
+    imageUrl: _upload?.previewImage,
+    progress: _upload?.progress,
     ...restProps,
     media,
-    progress: _upload?.progress,
     description,
     title,
     subtitle,

@@ -24,6 +24,7 @@ export interface PreviewProps<TLayoutKey = PreviewLayoutKey> {
   description?: ReactNode | ComponentType<{layout: TLayoutKey}>
   error?: Error | null
   fallbackTitle?: ReactNode
+  imageUrl?: string
   isPlaceholder?: boolean
   layout?: TLayoutKey
   media?: ReactNode | ComponentType<{dimensions: PreviewMediaDimensions; layout: TLayoutKey}>

@@ -1,4 +1,4 @@
-import {SchemaType} from '@sanity/types'
+import {isImage, SchemaType} from '@sanity/types'
 import React, {createElement, CSSProperties, useCallback, useMemo, useState} from 'react'
 import {PreviewProps} from '../../components/previews'
 import {Previewable, SortOrdering} from '../types'
@@ -19,7 +19,7 @@ export function SanityPreview(props: SanityPreviewProps & {style?: CSSProperties
     ordering,
     schemaType,
     style: styleProp,
-    value: params,
+    value: valueProp,
     ...restProps
   } = props
   const component = _resolvePreviewComponent(schemaType)
@@ -38,7 +38,7 @@ export function SanityPreview(props: SanityPreviewProps & {style?: CSSProperties
     enabled: isPTE || visibility,
     ordering,
     schemaType,
-    value: params,
+    value: valueProp,
   })
 
   const setRef = useCallback((refValue: HTMLDivElement | null) => {
@@ -61,7 +61,7 @@ export function SanityPreview(props: SanityPreviewProps & {style?: CSSProperties
         error,
         isPlaceholder: !value,
         layout,
-        media: value?.media,
+        media: isImage(valueProp) ? valueProp : value?.media,
         schemaType,
         title: value?.title,
         subtitle: value?.subtitle,
