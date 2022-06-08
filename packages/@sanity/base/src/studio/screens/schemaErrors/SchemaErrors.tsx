@@ -3,7 +3,6 @@ import {
   Box,
   Breadcrumbs,
   Card,
-  Code,
   Container,
   Flex,
   Heading,
@@ -14,11 +13,19 @@ import {
 import {generateHelpUrl} from '@sanity/generate-help-url'
 import {SchemaValidationProblemGroup} from '@sanity/types'
 import React, {useMemo} from 'react'
+import styled from 'styled-components'
 
 const TONES: Record<'error' | 'warning', ThemeColorToneKey> = {
   error: 'critical',
   warning: 'caution',
 }
+
+const SegmentSpan = styled.code`
+  && {
+    background: none;
+    color: inherit;
+  }
+`
 
 export function SchemaErrors(props: {problemGroups: SchemaValidationProblemGroup[]}) {
   const {problemGroups} = props
@@ -36,25 +43,37 @@ export function SchemaErrors(props: {problemGroups: SchemaValidationProblemGroup
   }, [problemGroups])
 
   return (
-    <Card height="fill" style={{minHeight: '100%'}}>
-      <Container>
-        <Box padding={4} paddingTop={[4, 5, 6, 7]}>
+    <Card height="fill" paddingY={[4, 5, 6, 7]} sizing="border" style={{minHeight: '100%'}}>
+      <Container width={1}>
+        <Box>
           <Heading as="h1">Schema errors</Heading>
         </Box>
 
-        <Stack as="ul" padding={4} space={4}>
+        <Stack as="ul" marginTop={5} space={4}>
           {items.map(({group, problem}, i) => {
+            const isError = problem.severity === 'error'
+            const isWarning = problem.severity === 'warning'
+
             return (
-              <Card key={i} radius={2} tone={TONES[problem.severity]}>
-                <Flex padding={4}>
+              <Card border key={i} padding={4} radius={2} tone={TONES[problem.severity]}>
+                <Flex>
                   <Box marginRight={3}>
                     <Text muted size={1}>
-                      {problem.severity === 'error' && <ErrorOutlineIcon />}
-                      {problem.severity === 'warning' && <WarningOutlineIcon />}
+                      {isError && <ErrorOutlineIcon />}
+                      {isWarning && <WarningOutlineIcon />}
                     </Text>
                   </Box>
 
                   <Box flex={1}>
+                    <Text size={1} weight="semibold">
+                      {isError && <>Schema error</>}
+                      {isWarning && <>Schema warning</>}
+                    </Text>
+                  </Box>
+                </Flex>
+
+                <Box marginTop={4}>
+                  <Card border overflow="auto" padding={2} tone="inherit">
                     <Breadcrumbs
                       separator={
                         <Text muted size={1}>
@@ -65,43 +84,43 @@ export function SchemaErrors(props: {problemGroups: SchemaValidationProblemGroup
                       {group.path.map((segment, j) => {
                         if (segment.kind === 'type') {
                           return (
-                            <Code key={j} size={1}>
-                              <strong>{segment.name}</strong>: <code>{segment.type}</code>
-                            </Code>
+                            <Text key={j} size={1}>
+                              <SegmentSpan>{`${_renderSegmentName(segment.name)}:${
+                                segment.type
+                              }`}</SegmentSpan>
+                            </Text>
                           )
                         }
 
                         if (segment.kind === 'property') {
                           return (
-                            <Code key={j} size={1}>
-                              <strong>{segment.name}</strong>
-                            </Code>
+                            <Text key={j} size={1}>
+                              <SegmentSpan>{segment.name}</SegmentSpan>
+                            </Text>
                           )
                         }
 
                         return null
                       })}
                     </Breadcrumbs>
-                  </Box>
-                </Flex>
+                  </Card>
+                </Box>
 
-                <Card borderTop tone="inherit" />
-
-                <Box as="ul" padding={4}>
+                <Box as="ul" marginTop={4}>
                   <Box as="li">
                     <Stack space={3}>
-                      <Code size={1} style={{whiteSpace: 'pre-wrap'}}>
+                      <Text muted size={1}>
                         {problem.message}
-                      </Code>
+                      </Text>
 
                       {problem.helpId && (
-                        <Text>
+                        <Text muted size={1}>
                           <a
                             href={generateHelpUrl(problem.helpId)}
                             target="_blank"
                             rel="noopener noreferrer"
                           >
-                            View documentation
+                            View documentation &rarr;
                           </a>
                         </Text>
                       )}
@@ -115,4 +134,14 @@ export function SchemaErrors(props: {problemGroups: SchemaValidationProblemGroup
       </Container>
     </Card>
   )
+}
+
+function _renderSegmentName(str: string) {
+  if (str.startsWith('<unnamed_type_@_index')) {
+    const parts = str.slice(1, -1).split('_')
+
+    return `[${parts[4]}]`
+  }
+
+  return str
 }
