@@ -11,6 +11,7 @@ import {useResolvedPanes} from '../../structureResolvers'
 import {PaneNode} from '../../types'
 import {PaneLayout} from '../pane'
 import {useDeskTool} from '../../useDeskTool'
+import {_isCustomDocumentTypeDefinition} from '../../../util'
 import {NoDocumentTypesScreen} from './NoDocumentTypesScreen'
 
 interface DeskToolProps {
@@ -80,9 +81,7 @@ export const DeskTool = memo(function DeskTool({onPaneChange}: DeskToolProps) {
     return () => window.removeEventListener('keydown', handleGlobalKeyDown)
   }, [pushToast])
 
-  const hasDefinedDocumentTypes = schema._original?.types.some((def) => {
-    return def.type === 'document' && !def.name.startsWith('sanity.')
-  })
+  const hasDefinedDocumentTypes = schema._original?.types.some(_isCustomDocumentTypeDefinition)
 
   if (!hasDefinedDocumentTypes) {
     return <NoDocumentTypesScreen />
