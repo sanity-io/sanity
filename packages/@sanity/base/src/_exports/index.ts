@@ -150,6 +150,7 @@ export type {
 export {
   useClient,
   useConnectionState,
+  useCurrentUser,
   useDataset,
   useDocumentOperation,
   useEditState,
