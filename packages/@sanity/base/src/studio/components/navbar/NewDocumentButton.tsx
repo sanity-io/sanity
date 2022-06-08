@@ -54,7 +54,7 @@ export function NewDocumentButton() {
 
   const tooltipContent = useMemo(() => {
     if (!hasNewDocumentOptions) {
-      return <Text size={1}>You need a schema to create a new document</Text>
+      return <Text size={1}>No document types</Text>
     }
 
     if (canCreateDocument) {
@@ -99,6 +99,9 @@ export function NewDocumentButton() {
             mode="bleed"
             onClick={handleOpen}
             ref={setNewDocumentButtonEl}
+            style={{
+              cursor: !canCreateDocument || !hasNewDocumentOptions ? 'not-allowed' : undefined,
+            }}
           />
         </Box>
       </Tooltip>
