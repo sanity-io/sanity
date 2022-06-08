@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {StrictMode} from 'react'
 import {createRoot} from 'react-dom/client'
 import {Studio} from 'sanity'
 import config from './sanity.config'
@@ -8,7 +8,7 @@ console.log('Rendering studio in React 18 strict mode')
 
 const root = createRoot(document.getElementById('sanity'))
 root.render(
-  <React.StrictMode>
+  <StrictMode>
     <Studio config={config} />
-  </React.StrictMode>
+  </StrictMode>
 )
