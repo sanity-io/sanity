@@ -12,11 +12,9 @@ export function useScrollToFocusFromOutside(props: Props): void {
   const {scrollElement, onCloseItem} = props
   const portableTextMemberItems = usePortableTextMemberItems()
 
-  // This will scroll to the relevant block with focusPath pointing to an embedded object inside.
+  // This will scroll to the relevant editor node which has a member that is openend.
   useEffect(() => {
-    const memberItem = portableTextMemberItems.find(
-      (item) => item.member.open && item.member.collapsed === false
-    )
+    const memberItem = portableTextMemberItems.find((item) => item.member.open)
     if (!memberItem) {
       return
     }
