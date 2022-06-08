@@ -189,7 +189,6 @@ export function Compositor(props: InputProps) {
       renderBlockActions,
       renderCustomMarkers,
       renderPreview,
-      validation,
     ]
   )
 
