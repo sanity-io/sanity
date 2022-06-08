@@ -35,7 +35,7 @@ export function useChildValidation(path: Path): NodeValidation[] {
           message: marker.item.message,
           level: marker.level,
           path: marker.path,
-        })),
+        })) as NodeValidation[],
     [path, validation]
   )
 }
