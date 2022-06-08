@@ -52,10 +52,13 @@ export default function normalizeBlock(
         previousChild.text += child.text
         return acc
       }
-      acc.push(child)
+      acc.push({...child})
       return acc
     }, [])
     .map((child) => {
+      if (!child) {
+        throw new Error('missing child')
+      }
       child._key = `${block._key}${newIndex++}`
       if (child._type === 'span' && !child.marks) {
         child.marks = []
