@@ -3,6 +3,7 @@ import {Text, Flex, Autocomplete, Box, PortalProvider} from '@sanity/ui'
 import {SearchIcon} from '@sanity/icons'
 import styled from 'styled-components'
 import {useDocumentSearchResults} from '../../../../search'
+import {getPublishedId} from '../../../../util'
 import {SearchFullscreenContent} from './SearchFullscreenContent'
 import {SearchItem} from './SearchItem'
 import {SearchPopoverContent} from './SearchPopoverContent'
@@ -40,14 +41,16 @@ export function SearchField(props: SearchFieldProps) {
   const renderOption = useCallback(
     (option) => {
       const {data} = option.payload
+      const documentId = getPublishedId(data.hit._id)
+      const documentType = data.hit._type
 
       return (
         <SearchItem
-          data={data}
           key={data.hit._id}
           onClick={handleClickItem}
           padding={2}
-          documentId={data.hit._id}
+          documentId={documentId}
+          documentType={documentType}
         />
       )
     },

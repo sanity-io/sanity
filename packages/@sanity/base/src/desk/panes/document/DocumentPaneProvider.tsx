@@ -1,7 +1,7 @@
 import React, {memo, useCallback, useEffect, useMemo, useRef, useState} from 'react'
-import {ObjectSchemaType, Path, SanityDocument} from '@sanity/types'
+import {ObjectSchemaType, Path, SanityDocument, SanityDocumentLike} from '@sanity/types'
 import {omit} from 'lodash'
-import {useToast, Text, Box, Flex, Card} from '@sanity/ui'
+import {useToast} from '@sanity/ui'
 import {fromString as pathFromString} from '@sanity/util/paths'
 import isHotkey from 'is-hotkey'
 import {useMemoObservable} from 'react-rx'
@@ -81,9 +81,8 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   const editState = useEditState(documentId, documentType)
   const {validation: validationRaw} = useValidationStatus(documentId, documentType)
   const connectionState = useConnectionState(documentId, documentType)
-  const documentSchema = schema.get(documentType) as ObjectSchemaType
-  const value: Partial<SanityDocument> =
-    editState?.draft || editState?.published || initialValue.value
+  const schemaType = schema.get(documentType) as ObjectSchemaType | undefined
+  const value: SanityDocumentLike = editState?.draft || editState?.published || initialValue.value
   const actions = useMemo(
     () => documentActions({schemaType: documentType, documentId}),
     [documentActions, documentId, documentType]
@@ -274,7 +273,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     []
   )
 
-  const formState = useFormState(documentSchema, {
+  const formState = useFormState(schemaType!, {
     value,
     focusPath,
     openPath,
@@ -317,7 +316,6 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     displayed,
     documentId,
     documentIdRaw,
-    documentSchema,
     documentType,
     editState,
     focusPath,
@@ -344,6 +342,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     paneKey,
     previewUrl,
     ready,
+    schemaType: schemaType!,
     setTimelineMode,
     setTimelineRange,
     timeline,

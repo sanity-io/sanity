@@ -197,13 +197,13 @@ function mergeDocumentType(
 function InnerDocumentPane() {
   const {
     changesOpen,
-    documentSchema,
     documentType,
     onFocus,
     onHistoryOpen,
     onKeyUp,
     inspectOpen,
     paneKey,
+    schemaType,
     value,
   } = useDocumentPane()
   const {features} = useDeskTool()
@@ -247,7 +247,7 @@ function InnerDocumentPane() {
   }, [changesOpen, features.reviewChanges, rootElement])
 
   const children = useMemo(() => {
-    if (!documentSchema) {
+    if (!schemaType) {
       return (
         <ErrorPane
           flex={2.5}
@@ -312,13 +312,13 @@ function InnerDocumentPane() {
     changesOpen,
     changesPanel,
     documentPanel,
-    documentSchema,
     documentType,
     footer,
     onFocus,
     onHistoryOpen,
     layoutCollapsed,
     paneKey,
+    schemaType,
     value,
     zOffsets.portal,
   ])

@@ -11,16 +11,8 @@ import {PaneItemPreviewState} from './types'
 export const isLiveEditEnabled = (schemaType: SchemaType) => schemaType.liveEdit === true
 
 export const getMissingDocumentFallback = (item: SanityDocument): PreviewValue => ({
-  title: (
-    <span style={{fontStyle: 'italic'}}>
-      {item.title ? String(item.title) : 'Missing document'}
-    </span>
-  ),
-  subtitle: (
-    <span style={{fontStyle: 'italic'}}>
-      {item.title ? `Missing document ID: ${item._id}` : `Document ID: ${item._id}`}
-    </span>
-  ),
+  title: <em>{item.title ? String(item.title) : 'Missing document'}</em>,
+  subtitle: <em>{item.title ? `Missing document ID: ${item._id}` : `Document ID: ${item._id}`}</em>,
   media: WarningOutlineIcon,
 })
 
@@ -32,7 +24,7 @@ export const getValueWithFallback = ({
   value: SanityDocument
   draft?: Partial<SanityDocument> | PreviewValue | null
   published?: Partial<SanityDocument> | PreviewValue | null
-}): PreviewValue | SanityDocument => {
+}): PreviewValue => {
   const snapshot = draft || published
 
   if (!snapshot) {
@@ -41,7 +33,7 @@ export const getValueWithFallback = ({
 
   return assignWith({}, snapshot, value, (objValue, srcValue) => {
     return typeof srcValue === 'undefined' ? objValue : srcValue
-  })
+  }) as PreviewValue
 }
 
 export function getPreviewStateObservable(

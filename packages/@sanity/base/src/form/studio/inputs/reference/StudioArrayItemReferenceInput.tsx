@@ -90,7 +90,7 @@ export function StudioArrayItemReferenceInput(props: SanityArrayItemReferenceInp
     (searchString: string) =>
       from(resolveUserDefinedFilter(schemaType.options, documentRef.current, path)).pipe(
         mergeMap(({filter, params}) =>
-          adapter.search(searchClient, searchString, schemaType, {
+          adapter.referenceSearch(searchClient, searchString, schemaType, {
             ...schemaType.options,
             filter,
             params,

@@ -77,7 +77,7 @@ export class PaneItemPreview extends React.Component<PaneItemPreviewProps, PaneI
 
     return (
       <SanityDefaultPreview
-        value={getValueWithFallback({value, draft, published})}
+        {...getValueWithFallback({value, draft, published})}
         isPlaceholder={isLoading}
         icon={icon}
         layout={layout}

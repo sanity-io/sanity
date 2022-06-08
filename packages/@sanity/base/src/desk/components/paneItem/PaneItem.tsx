@@ -45,7 +45,6 @@ export function PaneItem(props: PaneItemProps) {
   const {ChildLink} = usePaneRouter()
   const documentPresence = useDocumentPresence(id)
   const hasSchemaType = Boolean(schemaType && schemaType.name && schema.get(schemaType.name))
-  const previewValue = useMemo(() => ({title}), [title])
   const [clicked, setClicked] = useState<boolean>(false)
 
   const preview = useMemo(() => {
@@ -75,7 +74,7 @@ export function PaneItem(props: PaneItemProps) {
         }
         icon={getIconWithFallback(icon, schemaType, FolderIcon)}
         layout={layout}
-        value={previewValue}
+        title={title}
       />
     )
   }, [
@@ -83,8 +82,8 @@ export function PaneItem(props: PaneItemProps) {
     hasSchemaType,
     icon,
     layout,
-    previewValue,
     schemaType,
+    title,
     value,
     documentPresence,
   ])

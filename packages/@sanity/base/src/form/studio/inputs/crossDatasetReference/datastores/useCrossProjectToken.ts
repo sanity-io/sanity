@@ -21,7 +21,13 @@ export function useCrossProjectToken(
 
   return useMemoObservable(() => {
     return documentPreviewStore
-      .observePaths(crossProjectTokenStore.getTokenDocumentId({projectId, tokenId}), ['token'])
+      .observePaths(
+        {
+          _type: 'reference',
+          _ref: crossProjectTokenStore.getTokenDocumentId({projectId, tokenId}),
+        },
+        ['token']
+      )
       .pipe(
         map((documentValue) => {
           const value: Record<string, unknown> | undefined = isRecord(documentValue)

@@ -1,3 +1,4 @@
+import {SanityDocumentLike} from '@sanity/types'
 import {useEffect, useMemo, useState} from 'react'
 import {useUnique} from '../../util/useUnique'
 import {useDocumentStore} from '../datastores'
@@ -15,7 +16,11 @@ export function useInitialValue(props: {
   const {documentId, documentType, templateName, templateParams: templateParamsRaw} = props
   const templateParams = useUnique(templateParamsRaw)
   const documentStore = useDocumentStore()
-  const defaultValue = useMemo(() => ({_type: documentType}), [documentType])
+
+  const defaultValue: SanityDocumentLike = useMemo(
+    () => ({_id: documentId, _type: documentType}),
+    [documentId, documentType]
+  )
 
   const [state, setState] = useState<InitialValueState>({
     loading: false,

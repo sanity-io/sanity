@@ -8,8 +8,8 @@ import {useDocumentPresence} from '../../../hooks'
 import {DocumentAvailability} from '../../../preview'
 import {RenderPreviewCallback} from '../../types'
 import {PreviewLayoutKey} from '../../../components/previews'
-import {DocumentPreview} from './types'
 import {TimeAgo} from './utils/TimeAgo'
+import {ReferenceInfo} from './types'
 
 function UnavailableMessage(props: {icon: ComponentType; children: ReactNode; title: ReactNode}) {
   const Icon = props.icon
@@ -42,7 +42,7 @@ function UnavailableMessage(props: {icon: ComponentType; children: ReactNode; ti
 export function ReferencePreview(props: {
   availability: DocumentAvailability
   id: string
-  preview: {draft: DocumentPreview | undefined; published: DocumentPreview | undefined}
+  preview: ReferenceInfo['preview']
   refType: ObjectSchemaType
   layout: PreviewLayoutKey
   renderPreview: RenderPreviewCallback
@@ -137,7 +137,7 @@ export function ReferencePreview(props: {
                 content={
                   <Box padding={2}>
                     <Text size={1}>
-                      {preview.published ? (
+                      {preview.published?._updatedAt ? (
                         <>
                           Published <TimeAgo time={preview.published._updatedAt} />
                         </>
@@ -164,9 +164,9 @@ export function ReferencePreview(props: {
                 content={
                   <Box padding={2}>
                     <Text size={1}>
-                      {preview.draft ? (
+                      {preview.draft?._updatedAt ? (
                         <>
-                          Edited <TimeAgo time={preview.draft?._updatedAt} />
+                          Edited <TimeAgo time={preview.draft._updatedAt} />
                         </>
                       ) : (
                         <>No unpublished edits</>

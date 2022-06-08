@@ -1,5 +1,3 @@
-/* eslint-disable max-nested-callbacks */
-
 import {map, switchMap} from 'rxjs/operators'
 import {CrossDatasetReferenceSchemaType} from '@sanity/types'
 import {combineLatest, Observable, of} from 'rxjs'
@@ -10,12 +8,11 @@ import {
   getPreviewPaths,
   prepareForPreview,
   DocumentAvailability,
+  Previewable,
 } from '../../../../../preview'
-import {
-  CrossDatasetReferenceInfo,
-  DocumentPreview,
-} from '../../../../inputs/CrossDatasetReferenceInput/types'
+import {CrossDatasetReferenceInfo} from '../../../../inputs/CrossDatasetReferenceInput/types'
 import {FIXME} from '../../../../types'
+import {isRecord} from '../../../../../util'
 
 const REQUEST_TAG_BASE = 'cross-dataset-refs'
 
@@ -48,8 +45,6 @@ export function createGetReferenceInfo(context: {
   /**
    * Takes an id and a reference schema type, returns metadata about it
    * Assumption: _id is always published id
-   * @param id
-   * @param referenceType
    */
   return function getReferenceInfo(
     doc: {_id: string; _type?: string}, // pass {_id, _type} instead and we can skip the `fetchType`
@@ -86,7 +81,7 @@ export function createGetReferenceInfo(context: {
         ]
 
         const publishedPreview$ = documentPreviewStore
-          .observePaths(doc._id, previewPaths, apiConfig)
+          .observePaths(doc as Previewable, previewPaths, apiConfig)
           .pipe(
             map((result) => (result ? prepareForPreview(result, refSchemaType as FIXME) : result))
           )
@@ -98,7 +93,7 @@ export function createGetReferenceInfo(context: {
               id: doc._id,
               availability: AVAILABILITY_READABLE,
               preview: {
-                published: publishedPreview as DocumentPreview,
+                published: isRecord(publishedPreview) ? publishedPreview : undefined,
               },
             }
           })

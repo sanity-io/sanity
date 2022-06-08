@@ -1,7 +1,7 @@
-import {fromEvent, of} from 'rxjs'
-import {debounceTime, share} from 'rxjs/operators'
+import {EMPTY, fromEvent} from 'rxjs'
+import {shareReplay} from 'rxjs/operators'
 
 export const scroll$ =
   typeof window === 'undefined'
-    ? of({})
-    : fromEvent(window, 'scroll', {passive: true, capture: true}).pipe(debounceTime(200), share())
+    ? EMPTY
+    : fromEvent(window, 'scroll', {passive: true, capture: true}).pipe(shareReplay(1))

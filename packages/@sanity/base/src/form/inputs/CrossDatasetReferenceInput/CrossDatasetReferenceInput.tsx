@@ -27,7 +27,7 @@ import {AlertStrip} from '../../components/AlertStrip'
 import {useOnClickOutside} from '../../hooks/useOnClickOutside'
 import {isNonNullable} from '../../utils/isNonNullable'
 import {getPublishedId} from '../../../util'
-import {CrossDatasetReferenceInfo, SearchHit, SearchState} from './types'
+import {CrossDatasetReferenceInfo, CrossDatasetSearchHit, SearchState} from './types'
 import {OptionPreview} from './OptionPreview'
 import {GetReferenceInfoFn, useReferenceInfo} from './useReferenceInfo'
 import {PreviewReferenceValue} from './PreviewReferenceValue'
@@ -45,7 +45,7 @@ export interface CrossDatasetReferenceInputProps
     doc: {_id: string; _type?: string},
     type: CrossDatasetReferenceSchemaType
   ) => Observable<CrossDatasetReferenceInfo>
-  onSearch: (query: string) => Observable<SearchHit[]>
+  onSearch: (query: string) => Observable<CrossDatasetSearchHit[]>
 }
 
 const NO_FILTER = () => true

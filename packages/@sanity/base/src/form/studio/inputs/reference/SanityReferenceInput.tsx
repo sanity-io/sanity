@@ -14,7 +14,7 @@ import {catchError, mergeMap} from 'rxjs/operators'
 import {isNonNullable} from '../../../../util'
 import * as adapter from '../client-adapters/reference'
 import {ReferenceInput} from '../../../inputs/ReferenceInput/ReferenceInput'
-import {CreateOption, EditReferenceEvent} from '../../../inputs/ReferenceInput/types'
+import {CreateReferenceOption, EditReferenceEvent} from '../../../inputs/ReferenceInput/types'
 import {useDocumentPreviewStore} from '../../../../datastores'
 import {useClient, useSchema} from '../../../../hooks'
 import {useReferenceInputOptions} from '../../contexts'
@@ -81,7 +81,7 @@ export function SanityReferenceInput(props: StudioReferenceInputProps) {
     (searchString: string) =>
       from(resolveUserDefinedFilter(schemaType.options, documentRef.current, path)).pipe(
         mergeMap(({filter, params}) =>
-          adapter.search(searchClient, searchString, schemaType, {
+          adapter.referenceSearch(searchClient, searchString, schemaType, {
             ...schemaType.options,
             filter,
             params,
@@ -144,7 +144,7 @@ export function SanityReferenceInput(props: StudioReferenceInputProps) {
       (initialValueTemplateItems || [])
         // eslint-disable-next-line max-nested-callbacks
         .filter((i) => schemaType.to.some((_refType) => _refType.name === i.template?.schemaType))
-        .map((item): CreateOption | undefined =>
+        .map((item): CreateReferenceOption | undefined =>
           item.template?.schemaType
             ? {
                 id: item.id,
@@ -165,12 +165,17 @@ export function SanityReferenceInput(props: StudioReferenceInputProps) {
     )
   }, [disableNew, initialValueTemplateItems, schemaType.to])
 
+  const getReferenceInfo = useCallback(
+    (id, _type) => adapter.getReferenceInfo(documentPreviewStore, id, _type),
+    [documentPreviewStore]
+  )
+
   return (
     <ReferenceInput
       {...props}
       onSearch={handleSearch}
       liveEdit={isDocumentLiveEdit}
-      getReferenceInfo={(id, _type) => adapter.getReferenceInfo(documentPreviewStore, id, _type)}
+      getReferenceInfo={getReferenceInfo}
       selectedState={selectedState}
       editReferenceLinkComponent={EditReferenceLink}
       createOptions={createOptions}

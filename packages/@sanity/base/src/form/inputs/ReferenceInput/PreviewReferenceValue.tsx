@@ -1,7 +1,8 @@
 import React from 'react'
 import {Reference, ReferenceSchemaType} from '@sanity/types'
-import {Box, Flex, Inline, Label, Stack, TextSkeleton} from '@sanity/ui'
+import {Box, Flex, Inline, Label, Stack} from '@sanity/ui'
 import {RenderPreviewCallback} from '../../types'
+import {SanityDefaultPreview} from '../../../preview'
 import {ReferencePreview} from './ReferencePreview'
 import {Loadable} from './useReferenceInfo'
 import {ReferenceInfo} from './types'
@@ -15,25 +16,24 @@ export function PreviewReferenceValue(props: {
   const {referenceInfo, renderPreview, type, value} = props
 
   if (referenceInfo.isLoading || referenceInfo.error) {
-    return (
-      <Stack space={2} padding={1}>
-        <TextSkeleton style={{maxWidth: 320}} radius={1} animated={!referenceInfo.error} />
-        <TextSkeleton style={{maxWidth: 200}} radius={1} size={1} animated={!referenceInfo.error} />
-      </Stack>
-    )
+    return <SanityDefaultPreview isPlaceholder />
   }
+
   const showTypeLabel = type.to.length > 1
 
-  if (referenceInfo.result.availability.reason === 'NOT_FOUND' && value._strengthenOnPublish) {
+  if (referenceInfo.result?.availability.reason === 'NOT_FOUND' && value._strengthenOnPublish) {
     const refType = type.to.find((toType) => toType.name === value?._strengthenOnPublish?.type)
     if (!refType) {
       return <div>Invalid reference type</div>
     }
     if (value._strengthenOnPublish) {
-      const stub = {
-        _id: value._ref,
-        _type: value._strengthenOnPublish?.type,
-      }
+      const stub = value._strengthenOnPublish?.type
+        ? {
+            _id: value._ref,
+            _type: value._strengthenOnPublish?.type,
+          }
+        : value
+
       return (
         <Flex align="center">
           <Box flex={1}>
@@ -71,10 +71,10 @@ export function PreviewReferenceValue(props: {
 
   return (
     <ReferencePreview
-      availability={referenceInfo.result.availability}
+      availability={referenceInfo.result?.availability}
       id={value._ref}
       layout="default"
-      preview={referenceInfo.result.preview}
+      preview={referenceInfo.result?.preview}
       refType={refType}
       renderPreview={renderPreview}
       showTypeLabel={showTypeLabel}

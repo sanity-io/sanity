@@ -79,7 +79,7 @@ export const uploadFileAsset = (client: SanityClient, file: File | Blob, options
 
 // note: there's currently 100% overlap between the ImageAsset document and the FileAsset documents as per interface required by the image and file input
 function observeAssetDoc(documentPreviewStore: DocumentPreviewStore, id: string) {
-  return documentPreviewStore.observePaths(id, [
+  return documentPreviewStore.observePaths({_type: 'reference', _ref: id}, [
     'originalFilename',
     'url',
     'metadata',

@@ -1,28 +1,29 @@
-import {PreviewValue, SanityDocument} from '@sanity/types'
+import {SanityDocumentLike} from '@sanity/types'
 import React from 'react'
 import {useSchema} from '../../hooks'
-import {PreviewFields} from '../../preview'
+import {unstable_useDocumentPreview as useDocumentPreview} from '../../preview'
 
 export interface DocTitleProps {
-  document: Partial<Omit<SanityDocument, '_type'>> & {_type: SanityDocument['_type']}
-}
-
-function renderTitle({title}: Partial<SanityDocument> | PreviewValue) {
-  return <>{title || 'Untitled'}</>
+  document: SanityDocumentLike
 }
 
 export function DocTitle(props: DocTitleProps) {
-  const {document} = props
+  const {document: documentValue} = props
   const schema = useSchema()
-  const schemaType = schema.get(document._type)
+  const schemaType = schema.get(documentValue._type)
+
+  const {error, value} = useDocumentPreview({
+    schemaType: schemaType!,
+    value: documentValue,
+  })
 
   if (!schemaType) {
-    return <>&lt;Missing type&gt;</>
+    return <code>Unknown schema type: {documentValue._type}</code>
   }
 
-  return (
-    <PreviewFields value={document} schemaType={schemaType}>
-      {renderTitle}
-    </PreviewFields>
-  )
+  if (error) {
+    return <>Error: {error.message}</>
+  }
+
+  return <>{value?.title || <span style={{color: 'var(--card-muted-fg-color)'}}>Untitled</span>}</>
 }

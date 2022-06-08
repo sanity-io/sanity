@@ -11,7 +11,7 @@ import type {
   AvailabilityResponse,
   DocumentAvailability,
   DraftsModelDocumentAvailability,
-  Path,
+  Previewable,
 } from './types'
 import {debounceCollect} from './utils/debounceCollect'
 import {
@@ -25,20 +25,19 @@ export function create_preview_availability(
   versionedClient: SanityClient,
   observePaths: ObservePathsFn
 ): {
-  observeDocumentPairAvailability(id: string): Observable<DraftsModelDocumentAvailability>
+  observeDocumentPairAvailability(value: Previewable): Observable<DraftsModelDocumentAvailability>
 } {
   /**
    * Returns an observable of metadata for a given drafts model document
-   * @param id document id
    */
   function observeDocumentPairAvailability(
-    id: string
+    value: Previewable
   ): Observable<DraftsModelDocumentAvailability> {
-    const draftId = getDraftId(id)
-    const publishedId = getPublishedId(id)
+    const draftId = getDraftId('_id' in value ? value._id : value._ref)
+    const publishedId = getPublishedId('_id' in value ? value._id : value._ref)
     return combineLatest([
-      observeDocumentAvailability(draftId),
-      observeDocumentAvailability(publishedId),
+      observeDocumentAvailability({_type: 'reference', _ref: draftId}),
+      observeDocumentAvailability({_type: 'reference', _ref: publishedId}),
     ]).pipe(
       distinctUntilChanged(shallowEquals),
       map(([draftReadability, publishedReadability]) => {
@@ -53,12 +52,14 @@ export function create_preview_availability(
   /**
    * Observable of metadata for the document with the given id
    * If we can't read a document it is either because it's not readable or because it doesn't exist
-   * @param id
+   *
    * @internal
    */
-  function observeDocumentAvailability(id: string): Observable<DocumentAvailability> {
+  function observeDocumentAvailability(value: Previewable): Observable<DocumentAvailability> {
+    const id = '_id' in value ? value._id : value._ref
+
     // check for existence
-    return observePaths(id, [['_rev']]).pipe(
+    return observePaths(value, [['_rev']]).pipe(
       map((res) => isRecord(res) && Boolean('_rev' in res && res?._rev)),
       distinctUntilChanged(),
       switchMap((hasRev) => {

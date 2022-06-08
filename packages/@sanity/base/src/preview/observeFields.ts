@@ -173,7 +173,10 @@ export function create_preview_observeFields(context: {
 
   function crossDatasetListenFields(id: Id, fields: Path[], apiConfig: ApiConfig) {
     const token$ = observePaths(
-      crossProjectTokenStore.getTokenDocumentId({projectId: apiConfig.projectId}),
+      {
+        _type: 'reference',
+        _ref: crossProjectTokenStore.getTokenDocumentId({projectId: apiConfig.projectId}),
+      },
       ['token']
     ).pipe(map((document) => (document as any)?.token as string | undefined))
     return combineLatest([token$, visiblePoll$.pipe(startWith(0))]).pipe(

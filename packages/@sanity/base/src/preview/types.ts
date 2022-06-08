@@ -5,7 +5,15 @@ export type {SortOrdering, PrepareViewOptions} from '@sanity/types'
 
 export type Id = string
 
-export type Previewable = PreviewValue | SanityDocumentLike | Reference
+export type Previewable = (SanityDocumentLike | Reference) & {
+  /**
+   * optional object used to attach meta data to the prepared result.
+   * currently used to add a flag for the invalid preview error fallback and
+   * insufficient permissions fallback
+   * @internal
+   */
+  _internalMeta?: {type?: string}
+}
 
 // @todo: unify with content path from @sanity/types
 export type Path = FieldName[]
@@ -50,7 +58,7 @@ export interface DraftsModelDocumentAvailability {
   draft: DocumentAvailability
 }
 
-export interface DraftsModelDocument<T extends DocumentPreview = DocumentPreview> {
+export interface DraftsModelDocument<T extends SanityDocumentLike = SanityDocumentLike> {
   id: string
   type: string | null
   draft: {
@@ -63,14 +71,6 @@ export interface DraftsModelDocument<T extends DocumentPreview = DocumentPreview
   }
 }
 
-export interface DocumentPreview {
-  _id: string
-  _type: string
-  _updatedAt?: string
-  _createdAt?: string
-  _rev?: string
-}
-
 export interface PreparedSnapshot {
   type?: PreviewableType
   snapshot: PreviewValue | null | undefined
@@ -79,7 +79,7 @@ export interface PreparedSnapshot {
 export type ObserveDocumentTypeFromIdFn = (id: string) => Observable<string | undefined>
 
 export interface ObservePathsFn {
-  (value: Previewable | Id, paths: (string | Path)[], apiConfig?: ApiConfig): Observable<
+  (value: Previewable, paths: (string | Path)[], apiConfig?: ApiConfig): Observable<
     PreviewValue | SanityDocumentLike | Reference | string | null
   >
 }

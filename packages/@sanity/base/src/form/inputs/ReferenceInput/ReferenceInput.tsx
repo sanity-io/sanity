@@ -9,7 +9,7 @@ import React, {
   useRef,
   useState,
 } from 'react'
-import {isValidationErrorMarker, Reference} from '@sanity/types'
+// import {isValidationErrorMarker, Reference} from '@sanity/types'
 import {
   EllipsisVerticalIcon,
   LaunchIcon as OpenInNewTabIcon,
@@ -50,7 +50,7 @@ import {useOnClickOutside} from '../../hooks/useOnClickOutside'
 import {FIXME} from '../../types'
 import {getPublishedId} from '../../../util'
 import {IntentLink} from '../../../router'
-import {ReferenceInputProps, CreateOption, SearchState} from './types'
+import {ReferenceInputProps, CreateReferenceOption, ReferenceSearchState} from './types'
 import {OptionPreview} from './OptionPreview'
 import {useReferenceInfo} from './useReferenceInfo'
 import {PreviewReferenceValue} from './PreviewReferenceValue'
@@ -64,7 +64,7 @@ const StyledPreviewCard = styled(PreviewCard)`
   min-height: 36px;
 `
 
-const INITIAL_SEARCH_STATE: SearchState = {
+const INITIAL_SEARCH_STATE: ReferenceSearchState = {
   hits: [],
   isLoading: false,
 }
@@ -99,9 +99,9 @@ export function ReferenceInput(props: ReferenceInputProps) {
     renderPreview,
   } = props
 
-  const [searchState, setSearchState] = useState<SearchState>(INITIAL_SEARCH_STATE)
+  const [searchState, setSearchState] = useState<ReferenceSearchState>(INITIAL_SEARCH_STATE)
 
-  const handleCreateNew = (option: CreateOption) => {
+  const handleCreateNew = (option: CreateReferenceOption) => {
     const id = uuid()
 
     const patches = [
@@ -275,7 +275,7 @@ export function ReferenceInput(props: ReferenceInputProps) {
       ),
 
       scan(
-        (prevState, nextState): SearchState => ({...prevState, ...nextState}),
+        (prevState, nextState): ReferenceSearchState => ({...prevState, ...nextState}),
         INITIAL_SEARCH_STATE
       ),
 

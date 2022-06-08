@@ -1,12 +1,11 @@
-import {useCallback, useEffect, useLayoutEffect, useRef, useState} from 'react'
-import {catchError, concatMap, map, startWith, tap} from 'rxjs/operators'
-import {Observable, of, Subscription} from 'rxjs'
-import {useMemoObservable} from 'react-rx'
+import {useCallback, useMemo} from 'react'
+import {catchError, concatMap, map, startWith} from 'rxjs/operators'
+import {Observable, of, Subject} from 'rxjs'
+import {useObservable} from 'react-rx'
 import {usePrevious} from '../../hooks/usePrevious'
 import {ReferenceInfo} from './types'
 
-// eslint-disable-next-line @typescript-eslint/no-empty-function
-const noop = () => {}
+const noop = () => undefined
 
 const INITIAL_LOADING_STATE: Loadable<ReferenceInfo> = {
   isLoading: true,
@@ -33,27 +32,29 @@ export function useReferenceInfo(
   id: string | undefined,
   getReferenceInfo: GetReferenceInfo
 ): Loadable<ReferenceInfo> {
-  const [retryAttempt, setRetryAttempt] = useState<number>(0)
+  // NOTE: this is a small message queue to handle retries
+  const msgSubject = useMemo(() => new Subject<{type: 'retry'}>(), [])
+  const msg$ = useMemo(() => msgSubject.asObservable(), [msgSubject])
 
   const retry = useCallback(() => {
-    setRetryAttempt((current) => current + 1)
-  }, [])
+    msgSubject.next({type: 'retry'})
+  }, [msgSubject])
 
-  const referenceInfo = useMemoObservable(
+  const stream$ = useMemo(
     () =>
-      of(id).pipe(
+      msg$.pipe(
+        map(() => id),
         concatMap((refId: string | undefined) =>
           refId
             ? getReferenceInfo(refId).pipe(
-                map(
-                  (result) =>
-                    ({
-                      isLoading: false,
-                      result,
-                      error: undefined,
-                      retry,
-                    } as const)
-                ),
+                map((result) => {
+                  return {
+                    isLoading: false,
+                    result,
+                    error: undefined,
+                    retry,
+                  } as const
+                }),
                 startWith(INITIAL_LOADING_STATE),
                 catchError((err: Error) => {
                   console.error(err)
@@ -63,9 +64,16 @@ export function useReferenceInfo(
             : of(EMPTY_STATE)
         )
       ),
-    [retryAttempt, getReferenceInfo, id, retry],
-    INITIAL_LOADING_STATE
+    [getReferenceInfo, id, retry, msg$]
   )
+
+  const referenceInfo = useObservable(stream$, INITIAL_LOADING_STATE)
+
+  // const referenceInfo = useMemoObservable(
+  //   () => stream$,
+  //   [retryAttempt, getReferenceInfo, id, retry],
+  //   INITIAL_LOADING_STATE
+  // )
 
   // workaround for a "bug" with useMemoObservable that doesn't
   // return the initial value upon resubscription

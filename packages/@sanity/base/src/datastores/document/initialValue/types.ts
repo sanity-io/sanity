@@ -1,4 +1,4 @@
-import {SanityDocument} from '@sanity/types'
+import {SanityDocumentLike} from '@sanity/types'
 
 export interface InitialValueLoadingMsg {
   type: 'loading'
@@ -6,7 +6,7 @@ export interface InitialValueLoadingMsg {
 
 export interface InitialValueSuccessMsg {
   type: 'success'
-  value: Partial<SanityDocument> | null
+  value: SanityDocumentLike | null
 }
 
 export interface InitialValueErrorMsg {
@@ -19,5 +19,5 @@ export type InitialValueMsg = InitialValueLoadingMsg | InitialValueSuccessMsg | 
 export interface InitialValueState {
   loading: boolean
   error: Error | null
-  value: Partial<SanityDocument>
+  value: SanityDocumentLike
 }

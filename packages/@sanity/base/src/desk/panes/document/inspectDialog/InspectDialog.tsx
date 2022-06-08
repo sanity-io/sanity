@@ -6,7 +6,7 @@ import {DocTitle} from '../../../components'
 import {useDeskToolSetting} from '../../../useDeskToolSetting'
 import {useDocumentPane} from '../useDocumentPane'
 import {VIEW_MODE_PARSED, VIEW_MODE_RAW, VIEW_MODES} from './constants'
-import {isDocumentWithType, isExpanded, maybeSelectAll, select, toggleExpanded} from './helpers'
+import {isDocumentLike, isExpanded, maybeSelectAll, select, toggleExpanded} from './helpers'
 import {JSONInspectorWrapper} from './InspectDialog.styles'
 import {Search} from './Search'
 
@@ -43,7 +43,7 @@ export function InspectDialog(props: InspectDialogProps) {
     <Dialog
       id={`${dialogIdPrefix}dialog`}
       header={
-        isDocumentWithType(value) ? (
+        isDocumentLike(value) ? (
           <>
             Inspecting{' '}
             <em>

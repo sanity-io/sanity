@@ -1,6 +1,6 @@
-import {SanityDocument} from '@sanity/types'
+import {SanityDocumentLike} from '@sanity/types'
 import HLRU from 'hashlru'
-import {isRecord} from '../../../../util'
+import {isRecord, isString} from '../../../../util'
 
 const lru = HLRU(1000)
 
@@ -55,8 +55,6 @@ export function maybeSelectAll(event: any): void {
   selectElement(event.currentTarget)
 }
 
-export function isDocumentWithType(
-  value: Partial<SanityDocument> | null
-): value is Partial<SanityDocument> & {_type: SanityDocument['_type']} {
-  return typeof value?._type === 'string'
+export function isDocumentLike(value: unknown): value is SanityDocumentLike {
+  return isRecord(value) && isString(value._id) && isString(value._type)
 }

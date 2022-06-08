@@ -10,7 +10,7 @@ function trimChildPath(path: Path, childPath: Path) {
 }
 
 export interface PresenceScopeProps {
-  readOnly: boolean
+  readOnly?: boolean
   path: Path
   children: React.ReactNode
 }

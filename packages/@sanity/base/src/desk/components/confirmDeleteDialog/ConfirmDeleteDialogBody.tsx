@@ -55,11 +55,9 @@ export function ConfirmDeleteDialogBody({
         // Padding added to match the ReferencePreviewLink styling
         <Box padding={2}>
           <SanityDefaultPreview
-            value={{
-              title: 'Preview Unavailable',
-              subtitle: `ID: ${item._id}`,
-              media: <UnknownIcon />,
-            }}
+            icon={UnknownIcon}
+            title="Preview Unavailable"
+            subtitle={`ID: ${item._id}`}
             layout="default"
           />
         </Box>

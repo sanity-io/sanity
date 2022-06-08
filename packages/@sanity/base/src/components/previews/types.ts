@@ -1,4 +1,4 @@
-import {ImageUrlFitMode, PreviewValue, Reference, SanityDocumentLike} from '@sanity/types'
+import {ImageUrlFitMode} from '@sanity/types'
 import {ComponentType, ReactNode} from 'react'
 
 export type PortableTextPreviewLayoutKey = 'block' | 'blockImage' | 'inline'
@@ -22,6 +22,7 @@ export interface PreviewProps<TLayoutKey = PreviewLayoutKey> {
   actions?: ReactNode | ComponentType<{layout: TLayoutKey}>
   children?: ReactNode
   description?: ReactNode | ComponentType<{layout: TLayoutKey}>
+  error?: Error | null
   fallbackTitle?: ReactNode
   isPlaceholder?: boolean
   layout?: TLayoutKey
@@ -31,7 +32,7 @@ export interface PreviewProps<TLayoutKey = PreviewLayoutKey> {
   status?: ReactNode | ComponentType<{layout: TLayoutKey}>
   subtitle?: ReactNode | ComponentType<{layout: TLayoutKey}>
   title?: ReactNode | ComponentType<{layout: TLayoutKey}>
-  value?: PreviewValue | SanityDocumentLike | Reference | null
+  value?: unknown
   withBorder?: boolean
   withRadius?: boolean
   withShadow?: boolean

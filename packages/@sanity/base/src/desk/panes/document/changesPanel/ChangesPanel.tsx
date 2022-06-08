@@ -27,7 +27,7 @@ const Scroller = styled(ScrollContainer)`
 `
 
 export function ChangesPanel(): React.ReactElement | null {
-  const {documentId, documentSchema, onHistoryClose, historyController, value} = useDocumentPane()
+  const {documentId, onHistoryClose, historyController, schemaType, value} = useDocumentPane()
   const {collapsed} = usePane()
   const scrollRef = useRef<HTMLDivElement | null>(null)
   const historyState = historyController.selectionState
@@ -39,13 +39,13 @@ export function ChangesPanel(): React.ReactElement | null {
   const documentContext: DocumentChangeContextInstance = React.useMemo(
     () => ({
       documentId,
-      schemaType: documentSchema,
+      schemaType,
       FieldWrapper: ChangeFieldWrapper,
       rootDiff: diff,
       isComparingCurrent,
       value,
     }),
-    [documentId, documentSchema, diff, isComparingCurrent, value]
+    [documentId, diff, isComparingCurrent, schemaType, value]
   )
 
   const changeAnnotations = React.useMemo(
@@ -121,7 +121,7 @@ function Content({
   documentContext: DocumentChangeContextInstance
   loading: boolean
 }) {
-  const {documentSchema} = useDocumentPane()
+  const {schemaType} = useDocumentPane()
 
   if (loading) {
     return <LoadingContent />
@@ -133,7 +133,7 @@ function Content({
 
   return (
     <DocumentChangeContext.Provider value={documentContext}>
-      <ChangeList diff={diff} schemaType={documentSchema} />
+      <ChangeList diff={diff} schemaType={schemaType} />
     </DocumentChangeContext.Provider>
   )
 }

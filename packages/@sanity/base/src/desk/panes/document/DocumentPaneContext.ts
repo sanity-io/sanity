@@ -1,4 +1,10 @@
-import {ValidationMarker, Path, SanityDocument} from '@sanity/types'
+import {
+  ValidationMarker,
+  Path,
+  SanityDocument,
+  ObjectSchemaType,
+  SanityDocumentLike,
+} from '@sanity/types'
 import {createContext} from 'react'
 import {EditStateFor, TimelineController, Timeline} from '../../../datastores'
 import {PatchEvent} from '../../../form'
@@ -18,7 +24,6 @@ export interface DocumentPaneContextValue {
   displayed: Partial<SanityDocument> | null
   documentId: string
   documentIdRaw: string
-  documentSchema: any | null
   documentType: string
   editState: EditStateFor | null
   focusPath: Path
@@ -44,6 +49,7 @@ export interface DocumentPaneContextValue {
   paneKey: string
   previewUrl?: string | null
   ready: boolean
+  schemaType: ObjectSchemaType
   setTimelineMode: (mode: TimelineMode) => void
   setTimelineRange(since: string | null, rev: string | null): void
   source?: string
@@ -51,7 +57,7 @@ export interface DocumentPaneContextValue {
   timelineMode: TimelineMode
   title: string | null
   validation: ValidationMarker[]
-  value: Partial<SanityDocument>
+  value: SanityDocumentLike
   views: PaneView[]
   formState: DocumentFormNode | null
 }

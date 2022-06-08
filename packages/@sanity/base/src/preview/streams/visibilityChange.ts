@@ -1,7 +1,7 @@
-import {fromEvent, of} from 'rxjs'
-import {share} from 'rxjs/operators'
+import {EMPTY, fromEvent, Observable} from 'rxjs'
+import {shareReplay} from 'rxjs/operators'
 
-export const visibilityChange$ =
+export const visibilityChange$: Observable<Event> =
   typeof window === 'undefined'
-    ? of({} as any)
-    : fromEvent(document, 'visibilitychange').pipe(share())
+    ? EMPTY
+    : fromEvent(document, 'visibilitychange').pipe(shareReplay(1))

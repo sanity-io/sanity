@@ -38,8 +38,16 @@ export function getInitialValueStream(
   documentPreviewStore: DocumentPreviewStore,
   opts: InitialValueOptions
 ): Observable<InitialValueMsg> {
-  const draft$ = documentPreviewStore.observePaths(getDraftId(opts.documentId), ['_type'])
-  const published$ = documentPreviewStore.observePaths(getPublishedId(opts.documentId), ['_type'])
+  const draft$ = documentPreviewStore.observePaths(
+    {_type: 'reference', _ref: getDraftId(opts.documentId)},
+    ['_type']
+  )
+
+  const published$ = documentPreviewStore.observePaths(
+    {_type: 'reference', _ref: getPublishedId(opts.documentId)},
+    ['_type']
+  )
+
   const value$ = merge(
     draft$.pipe(map((draft) => ({draft}))),
     published$.pipe(map((published) => ({published})))

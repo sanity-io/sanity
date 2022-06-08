@@ -1,11 +1,11 @@
-import {map, mergeMap, switchMap} from 'rxjs/operators'
+import {map, mergeMap, startWith, switchMap} from 'rxjs/operators'
 import {ReferenceFilterSearchOptions, ReferenceSchemaType} from '@sanity/types'
 import {combineLatest, EMPTY, Observable, of} from 'rxjs'
 import {SanityClient} from '@sanity/client'
 import {DocumentPreviewStore, getPreviewPaths, prepareForPreview} from '../../../../preview'
 import {createWeightedSearch} from '../../../../search'
-import {getIdPair, CollatedHit, getDraftId, collate} from '../../../../util'
-import {DocumentPreview, ReferenceInfo} from '../../../inputs/ReferenceInput/types'
+import {getIdPair, CollatedHit, getDraftId, collate, isRecord} from '../../../../util'
+import {ReferenceInfo, ReferenceSearchHit} from '../../../inputs/ReferenceInput/types'
 
 const READABLE = {
   available: true,
@@ -24,8 +24,6 @@ const NOT_FOUND = {
 
 /**
  * Takes an id and a reference schema type, returns metadata about it
- * @param id
- * @param referenceType
  */
 export function getReferenceInfo(
   documentPreviewStore: DocumentPreviewStore,
@@ -34,15 +32,21 @@ export function getReferenceInfo(
 ): Observable<ReferenceInfo> {
   const {publishedId, draftId} = getIdPair(id)
 
-  return documentPreviewStore.unstable_observeDocumentPairAvailability(id).pipe(
-    switchMap(({draft: draftAvailability, published: publishedAvailability}) => {
-      if (!draftAvailability.available && !publishedAvailability.available) {
+  const pairAvailability$ = documentPreviewStore.unstable_observeDocumentPairAvailability({
+    _type: 'reference',
+    _ref: id,
+  })
+
+  return pairAvailability$.pipe(
+    switchMap((pairAvailability) => {
+      if (!pairAvailability.draft.available && !pairAvailability.published.available) {
         // combine availability of draft + published
         const availability =
-          draftAvailability.reason === 'PERMISSION_DENIED' ||
-          publishedAvailability.reason === 'PERMISSION_DENIED'
+          pairAvailability.draft.reason === 'PERMISSION_DENIED' ||
+          pairAvailability.published.reason === 'PERMISSION_DENIED'
             ? PERMISSION_DENIED
             : NOT_FOUND
+
         // short circuit, neither draft nor published is available so no point in trying to get preview
         return of({
           id,
@@ -54,14 +58,20 @@ export function getReferenceInfo(
           },
         } as const)
       }
-      return combineLatest([
+
+      const draftRef = {_type: 'reference', _ref: draftId}
+      const publishedRef = {_type: 'reference', _ref: publishedId}
+
+      const typeName$ = combineLatest([
         documentPreviewStore.observeDocumentTypeFromId(draftId),
         documentPreviewStore.observeDocumentTypeFromId(publishedId),
       ]).pipe(
-        switchMap(([draftTypeName, publishedTypeName]) => {
-          // assume draft + published are always same type
-          const typeName = draftTypeName || publishedTypeName
+        // assume draft + published are always same type
+        map(([draftTypeName, publishedTypeName]) => draftTypeName || publishedTypeName)
+      )
 
+      return typeName$.pipe(
+        switchMap((typeName) => {
           if (!typeName) {
             // we have already asserted that either the draft or the published document is readable, so
             // if we get here we can't read the _type, so we're likely to be in an inconsistent state
@@ -73,35 +83,64 @@ export function getReferenceInfo(
           // get schema type for the referenced document
           const refSchemaType = referenceType.to.find((memberType) => memberType.name === typeName)!
 
+          if (!refSchemaType) {
+            return EMPTY
+          }
+
           const previewPaths = [
-            ...(getPreviewPaths(refSchemaType.preview) || []),
+            ...(getPreviewPaths(refSchemaType?.preview) || []),
             ['_updatedAt'],
             ['_createdAt'],
           ]
 
-          const draftPreview$ = documentPreviewStore
-            .observePaths(draftId, previewPaths)
-            .pipe(map((result) => (result ? prepareForPreview(result, refSchemaType) : result)))
+          const draftPreview$ = documentPreviewStore.observePaths(draftRef, previewPaths).pipe(
+            map((result) =>
+              result
+                ? {
+                    _id: draftId,
+                    ...prepareForPreview(result, refSchemaType),
+                  }
+                : undefined
+            ),
+            startWith(undefined)
+          )
+
           const publishedPreview$ = documentPreviewStore
-            .observePaths(publishedId, previewPaths)
-            .pipe(map((result) => (result ? prepareForPreview(result, refSchemaType) : result)))
-          return combineLatest([draftPreview$, publishedPreview$]).pipe(
-            map(([draftPreview, publishedPreview]): ReferenceInfo => {
+            .observePaths(publishedRef, previewPaths)
+            .pipe(
+              map((result) =>
+                result
+                  ? {
+                      _id: publishedId,
+                      ...prepareForPreview(result, refSchemaType),
+                    }
+                  : undefined
+              ),
+              startWith(undefined)
+            )
+
+          const value$ = combineLatest([draftPreview$, publishedPreview$]).pipe(
+            map(([draft, published]) => ({draft, published}))
+          )
+
+          return value$.pipe(
+            map((value): ReferenceInfo => {
               const availability =
                 // eslint-disable-next-line no-nested-ternary
-                draftAvailability.available || publishedAvailability.available
+                pairAvailability.draft.available || pairAvailability.published.available
                   ? READABLE
-                  : draftAvailability.reason === 'PERMISSION_DENIED' ||
-                    publishedAvailability.reason === 'PERMISSION_DENIED'
+                  : pairAvailability.draft.reason === 'PERMISSION_DENIED' ||
+                    pairAvailability.published.reason === 'PERMISSION_DENIED'
                   ? PERMISSION_DENIED
                   : NOT_FOUND
+
               return {
                 type: typeName,
                 id: publishedId,
                 availability,
                 preview: {
-                  draft: draftPreview as DocumentPreview,
-                  published: publishedPreview as DocumentPreview,
+                  draft: isRecord(value.draft) ? value.draft : undefined,
+                  published: isRecord(value.published) ? value.published : undefined,
                 },
               }
             })
@@ -112,18 +151,11 @@ export function getReferenceInfo(
   )
 }
 
-interface SearchHit {
-  id: string
-  type: string
-  draft?: {_id: string; _type: string}
-  published?: {_id: string; _type: string}
-}
-
 /**
  * when we get a search result it may not include all [draft, published] id pairs for documents matching the
  * query. For example: searching for "potato" may yield a hit in the draft, but not the published (or vice versa)
+ *
  * This method takes a list of collated search hits and returns an array of the missing "counterpart" ids
- * @param collatedHits
  */
 function getCounterpartIds(collatedHits: CollatedHit[]): string[] {
   return collatedHits
@@ -144,12 +176,12 @@ function getExistingCounterparts(client: SanityClient, ids: string[]) {
     : client.observable.fetch(`*[_id in $ids]._id`, {ids}, {tag: 'get-counterpart-ids'})
 }
 
-export function search(
+export function referenceSearch(
   client: SanityClient,
   textTerm: string,
   type: ReferenceSchemaType,
   options: ReferenceFilterSearchOptions
-): Observable<SearchHit[]> {
+): Observable<ReferenceSearchHit[]> {
   const searchWeighted = createWeightedSearch(type.to, client, options)
   return searchWeighted(textTerm, {includeDrafts: true}).pipe(
     map((results) => results.map((result) => result.hit)),

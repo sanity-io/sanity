@@ -9,14 +9,14 @@ export interface ReferenceInfo {
   type: string | undefined
   availability: DocumentAvailability
   preview: {
-    draft: DocumentPreview | undefined
-    published: DocumentPreview | undefined
+    draft: (PreviewValue & {_id: string; _createdAt?: string; _updatedAt?: string}) | undefined
+    published: (PreviewValue & {_id: string; _createdAt?: string; _updatedAt?: string}) | undefined
   }
 }
 
 export interface ReferenceTemplate {
   id: string
-  params?: ReferenceParams
+  params?: Record<string, string | number | boolean>
 }
 
 export interface EditReferenceEvent {
@@ -25,9 +25,7 @@ export interface EditReferenceEvent {
   template: ReferenceTemplate
 }
 
-export type ReferenceParams = Record<string, string | number | boolean>
-
-export interface CreateOption {
+export interface CreateReferenceOption {
   id: string
   title: string
   icon?: React.ReactNode | React.ComponentType
@@ -39,22 +37,15 @@ export interface CreateOption {
   }
 }
 
-export interface DocumentPreview extends PreviewValue {
-  _id: string
-  _type: string
-  _createdAt: string
-  _updatedAt: string
-}
-
-export interface SearchState {
-  hits: SearchHit[]
+export interface ReferenceSearchState {
+  hits: ReferenceSearchHit[]
   searchString?: string
   isLoading: boolean
 }
 
-export type SearchFunction = (query: string) => Observable<SearchHit[]>
+export type ReferenceSearchFunction = (query: string) => Observable<ReferenceSearchHit[]>
 
-export interface SearchHit {
+export interface ReferenceSearchHit {
   id: string
   type: string
   draft?: {_id: string; _type: string}
@@ -65,9 +56,9 @@ export interface ReferenceInputProps<Value = Reference>
   extends ObjectInputProps<Value, ReferenceSchemaType> {
   suffix?: ReactNode
   liveEdit?: boolean
-  onSearch: SearchFunction
+  onSearch: ReferenceSearchFunction
   selectedState?: 'selected' | 'pressed' | 'none'
-  createOptions: CreateOption[]
+  createOptions: CreateReferenceOption[]
   editReferenceLinkComponent: React.ComponentType<{
     children: React.ReactNode
     documentId: string

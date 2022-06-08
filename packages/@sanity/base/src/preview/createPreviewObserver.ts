@@ -43,7 +43,9 @@ export function createPreviewObserver(context: {
       if (!isCrossDatasetReference(value)) {
         return observableOf({snapshot: undefined})
       }
+
       const refApiConfig = {projectId: value._projectId, dataset: value._dataset}
+
       return observeDocumentTypeFromId(value._ref, refApiConfig).pipe(
         switchMap((typeName) => {
           if (typeName) {

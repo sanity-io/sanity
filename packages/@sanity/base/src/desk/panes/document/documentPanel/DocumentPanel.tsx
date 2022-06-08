@@ -40,12 +40,12 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
     activeViewId,
     displayed,
     documentId,
-    documentSchema,
     documentType,
     editState,
     value,
     views,
     ready,
+    schemaType,
   } = useDocumentPane()
   const {collapsed: layoutCollapsed} = usePaneLayout()
   const parentPortal = usePortal()
@@ -106,17 +106,9 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
         },
         documentId,
         options: activeView.options,
-        schemaType: documentSchema,
+        schemaType,
       }),
-    [
-      activeView,
-      displayed,
-      documentId,
-      documentSchema,
-      editState?.draft,
-      editState?.published,
-      value,
-    ]
+    [activeView, displayed, documentId, editState?.draft, editState?.published, schemaType, value]
   )
 
   // Scroll to top as `documentId` changes

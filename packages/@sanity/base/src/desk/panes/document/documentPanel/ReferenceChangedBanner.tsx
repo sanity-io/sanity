@@ -80,7 +80,7 @@ export const ReferenceChangedBanner = memo(() => {
         // then emit the values from watching the published ID's path
         documentPreviewStore
           .unstable_observePathsDocumentPair(
-            publishedId,
+            {_type: 'reference', _ref: publishedId},
             (keyedSegmentIndex === -1 ? path : path.slice(0, keyedSegmentIndex)) as string[][]
           )
           .pipe(

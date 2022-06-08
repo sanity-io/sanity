@@ -12,7 +12,10 @@ export function useDocumentValues<T = Record<string, unknown>>(
   const documentValues$ = useMemo(
     () =>
       documentId
-        ? (documentPreviewStore.observePaths(documentId, paths) as Observable<T>)
+        ? (documentPreviewStore.observePaths(
+            {_type: 'reference', _ref: documentId},
+            paths
+          ) as Observable<T>)
         : of(undefined),
     [documentId, documentPreviewStore, paths]
   )

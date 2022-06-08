@@ -2,9 +2,9 @@ import {SanityClient} from '@sanity/client'
 import {combineLatest, Observable, of} from 'rxjs'
 import {map, switchMap} from 'rxjs/operators'
 import {SanityDocument} from '@sanity/types'
-import {getIdPair, PublishedId} from '../util/draftUtils'
+import {getIdPair} from '../util/draftUtils'
 import {isRecord} from '../util/isRecord'
-import {DraftsModelDocument, ObservePathsFn, Path} from './types'
+import {DraftsModelDocument, ObservePathsFn, Path, Previewable} from './types'
 import {create_preview_availability} from './availability'
 
 export function create_preview_documentPair(
@@ -12,7 +12,7 @@ export function create_preview_documentPair(
   observePaths: ObservePathsFn
 ): {
   observePathsDocumentPair: <T extends SanityDocument = SanityDocument>(
-    id: PublishedId,
+    value: Previewable,
     paths: Path[]
   ) => Observable<DraftsModelDocument<T>>
 } {
@@ -26,17 +26,17 @@ export function create_preview_documentPair(
   return {observePathsDocumentPair}
 
   function observePathsDocumentPair<T extends SanityDocument = SanityDocument>(
-    id: PublishedId,
+    value: Previewable,
     paths: Path[]
   ): Observable<DraftsModelDocument<T>> {
-    const {draftId, publishedId} = getIdPair(id)
+    const {draftId, publishedId} = getIdPair('_id' in value ? value._id : value._ref)
 
-    return observeDocumentPairAvailability(id).pipe(
+    return observeDocumentPairAvailability(value).pipe(
       switchMap((availability) => {
         if (!availability.draft.available && !availability.published.available) {
           // short circuit, neither draft nor published is available so no point in trying to get a snapshot
           return of({
-            id,
+            id: publishedId,
             type: null,
             draft: {
               availability: availability.draft,
@@ -52,8 +52,8 @@ export function create_preview_documentPair(
         const snapshotPaths = [...paths, ...ALWAYS_INCLUDED_SNAPSHOT_PATHS]
 
         return combineLatest([
-          observePaths(draftId, snapshotPaths),
-          observePaths(publishedId, snapshotPaths),
+          observePaths({_type: 'reference', _ref: draftId}, snapshotPaths),
+          observePaths({_type: 'reference', _ref: publishedId}, snapshotPaths),
         ]).pipe(
           map(([draftSnapshot, publishedSnapshot]) => {
             // note: assume type is always the same

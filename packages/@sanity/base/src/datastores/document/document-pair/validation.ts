@@ -48,7 +48,7 @@ const listenDocumentExists = (
   id: string
 ): Observable<boolean> =>
   previewStore
-    .unstable_observeDocumentPairAvailability(id)
+    .unstable_observeDocumentPairAvailability({_type: 'reference', _ref: id})
     .pipe(map(({published}) => published.available))
 
 export const validation = memoize(

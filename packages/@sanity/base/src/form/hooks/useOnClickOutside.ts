@@ -4,7 +4,10 @@ import {RefObject, useEffect} from 'react'
 // There is currently a bug in the `useClickOutside` hook from @sanity/ui that requires the refs to be passed as
 // actual HTML elements instead of mutable refs. This requires the consumer to store elements in component state
 // which adds quite a bit of cruft and isn't always feasible
-export function useOnClickOutside(refs: RefObject<HTMLElement>[], handler: (event: Event) => void) {
+export function useOnClickOutside(
+  refs: RefObject<HTMLElement>[],
+  handler: (event: Event) => void
+): void {
   useEffect(() => {
     const listener = (event: Event) => {
       const target = event.target

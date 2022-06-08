@@ -1,5 +1,5 @@
 import React, {ComponentType, createElement, ReactNode, useMemo} from 'react'
-import {CrossDatasetType} from '@sanity/types'
+import {CrossDatasetType, PreviewValue} from '@sanity/types'
 import {Box, Flex, Inline, Label, Text, Tooltip} from '@sanity/ui'
 import {AccessDeniedIcon, HelpCircleIcon, LaunchIcon} from '@sanity/icons'
 import imageUrlBuilder from '@sanity/image-url'
@@ -7,7 +7,6 @@ import {DefaultPreview, PreviewMediaDimensions} from '../../../components/previe
 import {TextWithTone} from '../../../components/TextWithTone'
 import {FIXME} from '../../types'
 import {DocumentAvailability} from '../../../preview'
-import {DocumentPreview} from './types'
 
 function UnavailableMessage(props: {icon: ComponentType; children: ReactNode; title: ReactNode}) {
   const Icon = props.icon
@@ -42,7 +41,7 @@ export function CrossDatasetReferencePreview(props: {
   id: string
   hasStudioUrl?: boolean
   showStudioUrlIcon?: boolean
-  preview: {published: DocumentPreview | undefined}
+  preview: {published: PreviewValue | undefined}
   dataset: string
   projectId: string
   refType?: CrossDatasetType

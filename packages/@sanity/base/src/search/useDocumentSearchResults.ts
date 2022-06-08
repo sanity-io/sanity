@@ -95,5 +95,9 @@ export function useDocumentSearchResults(props: {
     }
   }, [state$])
 
+  useEffect(() => {
+    console.log('search', state)
+  }, [state])
+
   return state
 }

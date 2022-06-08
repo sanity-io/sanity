@@ -5,13 +5,13 @@ import React, {ComponentProps} from 'react'
 import {AddIcon} from '@sanity/icons'
 import {Box, Button, Menu, MenuButton, MenuItem, Tooltip} from '@sanity/ui'
 import {InsufficientPermissionsMessage} from '../../../components/InsufficientPermissionsMessage'
-import {CreateOption} from './types'
+import {CreateReferenceOption} from './types'
 
 interface Props extends ComponentProps<typeof Button> {
   id: string
-  createOptions: CreateOption[]
+  createOptions: CreateReferenceOption[]
   menuRef: React.RefObject<HTMLDivElement>
-  onCreate: (option: CreateOption) => void
+  onCreate: (option: CreateReferenceOption) => void
 }
 
 function ConditionalTooltip(

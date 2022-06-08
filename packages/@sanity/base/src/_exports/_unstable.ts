@@ -158,7 +158,6 @@ export {SanityDefaultPreview, SanityPreview} from '../preview'
 export type {
   ApiConfig,
   DocumentAvailability,
-  DocumentPreview,
   DocumentPreviewStore,
   DraftsModelDocument,
   DraftsModelDocumentAvailability,

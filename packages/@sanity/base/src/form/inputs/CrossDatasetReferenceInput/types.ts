@@ -1,37 +1,25 @@
+import {PreviewValue} from '@sanity/types'
 import {Observable} from 'rxjs'
-import {
-  // CrossDatasetReference,
-  // CrossDatasetReferenceSchemaType,
-  // ValidationMarker,
-  // Path,
-  PreviewValue,
-} from '@sanity/types'
 import {DocumentAvailability} from '../../../preview'
-// import {FormFieldPresence} from '@sanity/base/presence'
-// import PatchEvent from '../../PatchEvent'
 
 export interface CrossDatasetReferenceInfo {
   id: string
   type: string | undefined
   availability: DocumentAvailability | null
   preview: {
-    published: DocumentPreview | undefined
+    published: PreviewValue | undefined
   }
 }
 
-export type ReferenceParams = Record<string, string | number | boolean>
-
-export type DocumentPreview = PreviewValue
-
 export interface SearchState {
-  hits: SearchHit[]
+  hits: CrossDatasetSearchHit[]
   searchString?: string
   isLoading: boolean
 }
 
-export type SearchFunction = (query: string) => Observable<SearchHit[]>
+export type CrossDatasetSearchFunction = (query: string) => Observable<CrossDatasetSearchHit[]>
 
-export interface SearchHit {
+export interface CrossDatasetSearchHit {
   id: string
   type: string
   published: undefined | {_id: string; _type: string}

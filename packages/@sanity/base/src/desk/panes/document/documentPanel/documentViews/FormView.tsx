@@ -43,7 +43,6 @@ export function FormView(props: FormViewProps) {
     compareValue,
     displayed: value,
     documentId,
-    documentSchema,
     documentType,
     onChange: _handleChange,
     historyController,
@@ -57,12 +56,13 @@ export function FormView(props: FormViewProps) {
     onPathOpen,
     onSetCollapsedFieldSet,
     onSetActiveFieldGroup,
+    schemaType,
   } = useDocumentPane()
   const documentStore = useDocumentStore()
   const {revTime: rev} = historyController
   // const [{filterField}, setState] = useState<FormViewState>(INITIAL_STATE)
 
-  const hasTypeMismatch = value !== null && value._type !== documentSchema.name
+  const hasTypeMismatch = value !== null && value._type !== schemaType.name
   const isNonExistent = !value || !value._id
   const presence = useDocumentPresence(documentId)
 
@@ -79,10 +79,10 @@ export function FormView(props: FormViewProps) {
       !ready ||
       rev !== null ||
       !granted ||
-      !isActionEnabled(documentSchema, 'update') ||
-      (isNonExistent && !isActionEnabled(documentSchema, 'create'))
+      !isActionEnabled(schemaType, 'update') ||
+      (isNonExistent && !isActionEnabled(schemaType, 'create'))
     )
-  }, [formState, ready, rev, granted, documentSchema, isNonExistent])
+  }, [formState, ready, rev, granted, isNonExistent, schemaType])
 
   const handleChange = useCallback(
     (patchEvent: PatchEvent) => {

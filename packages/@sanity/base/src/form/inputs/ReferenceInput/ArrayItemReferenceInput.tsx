@@ -58,7 +58,7 @@ import {InsertMenu} from '../arrays/ArrayOfObjectsInput/InsertMenu'
 import {useOnClickOutside} from '../../hooks/useOnClickOutside'
 import {FIXME} from '../../types'
 import {getPublishedId} from '../../../util'
-import {ReferenceInputProps, CreateOption, SearchState} from './types'
+import {ReferenceInputProps, CreateReferenceOption, ReferenceSearchState} from './types'
 import {OptionPreview} from './OptionPreview'
 import {useReferenceInfo} from './useReferenceInfo'
 import {PreviewReferenceValue} from './PreviewReferenceValue'
@@ -72,7 +72,7 @@ const StyledPreviewCard = styled(PreviewCard)`
   min-height: 36px;
 `
 
-const INITIAL_SEARCH_STATE: SearchState = {
+const INITIAL_SEARCH_STATE: ReferenceSearchState = {
   hits: [],
   isLoading: false,
 }
@@ -126,9 +126,9 @@ export function ArrayItemReferenceInput(props: Props) {
 
   const forwardedRef = useForwardedRef(focusRef)
 
-  const [searchState, setSearchState] = useState<SearchState>(INITIAL_SEARCH_STATE)
+  const [searchState, setSearchState] = useState<ReferenceSearchState>(INITIAL_SEARCH_STATE)
 
-  const handleCreateNew = (option: CreateOption) => {
+  const handleCreateNew = (option: CreateReferenceOption) => {
     const id = uuid()
 
     const patches = [
@@ -328,7 +328,7 @@ export function ArrayItemReferenceInput(props: Props) {
       ),
 
       scan(
-        (prevState, nextState): SearchState => ({...prevState, ...nextState}),
+        (prevState, nextState): ReferenceSearchState => ({...prevState, ...nextState}),
         INITIAL_SEARCH_STATE
       ),
 

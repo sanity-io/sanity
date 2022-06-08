@@ -1,14 +1,8 @@
-import {
-  isTitledListValue,
-  PreviewValue,
-  SanityDocumentLike,
-  SchemaType,
-  TitledListValue,
-} from '@sanity/types'
+import {isTitledListValue, PreviewValue, SchemaType, TitledListValue} from '@sanity/types'
 import {debounce, flatten, get, isPlainObject, pick, uniqBy} from 'lodash'
 import {INVALID_PREVIEW_FALLBACK} from '../constants'
 import {isPortableTextArray, extractTextFromBlocks} from '../utils/portableText'
-import type {PrepareViewOptions, PreviewableType} from '../types'
+import {PrepareViewOptions, PreviewableType} from '../types'
 import {isRecord} from '../../util/isRecord'
 import {keysOf} from './keysOf'
 
@@ -258,7 +252,7 @@ export function prepareForPreview(
   rawValue: unknown,
   type: SchemaType,
   viewOptions: PrepareViewOptions = {}
-): SanityDocumentLike | PreviewValue {
+): PreviewValue & {_createdAt?: string; _updatedAt?: string} {
   const hasCustomPrepare = typeof type.preview?.prepare === 'function'
   const selection: Record<string, string> = type.preview?.select || {}
   const targetKeys = Object.keys(selection)
