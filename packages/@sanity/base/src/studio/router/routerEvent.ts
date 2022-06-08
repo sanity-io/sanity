@@ -51,6 +51,8 @@ export function createRouterEventStream({
     return event
   }
 
+  const routerBasePath = router.getBasePath()
+
   const state$: Observable<RouterEvent> = new Observable<Location>((observer) => {
     history.listen((location) => observer.next(location))
 
@@ -62,7 +64,9 @@ export function createRouterEventStream({
     // this regex ends with a `(\\/|$)` (forward slash or end) to prevent false
     // matches where the pathname is a false subset of the current pathname.
     filter(({pathname}) =>
-      new RegExp(`^${escapeRegExp(router.getBasePath())}(\\/|$)`, 'i').test(pathname)
+      routerBasePath === '/'
+        ? true
+        : new RegExp(`^${escapeRegExp(routerBasePath)}(\\/|$)`, 'i').test(pathname)
     ),
     map(({pathname}) => decodeUrlState(router, pathname)),
     scan(maybeHandleIntent, null),

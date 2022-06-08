@@ -112,7 +112,7 @@ export function matchWorkspace<TWorkspace extends WorkspaceLike>({
     // matches where the pathname is a false subset of the current pathname.
     // e.g. if the `workspace.basePath` is `/base/foobar` and the current
     // pathname is `/base/foo`, then that should not be a match
-    if (new RegExp(`^${escapeRegExp(basePath)}(\\/|$)`, 'i').test(pathname)) {
+    if (new RegExp(`^${escapeRegExp(basePath)}(\\/|$)`, 'i').test(pathname) || basePath === '/') {
       return {type: 'match', workspace}
     }
   }
