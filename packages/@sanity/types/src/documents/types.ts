@@ -11,11 +11,13 @@ export interface SanityDocument {
  * Similar to `SanityDocument` but only requires the `_id` and `_type`
  * @see SanityDocument
  */
-export interface SanityDocumentLike
-  extends Omit<SanityDocument, '_createdAt' | '_updatedAt' | '_rev'> {
+export interface SanityDocumentLike {
+  _id: string
+  _type: string
   _createdAt?: string
   _updatedAt?: string
   _rev?: string
+  [key: string]: unknown
 }
 
 export interface TypedObject {
