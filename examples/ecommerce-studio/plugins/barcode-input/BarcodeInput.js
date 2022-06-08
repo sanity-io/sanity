@@ -3,7 +3,7 @@
 import React, {useState} from 'react'
 import PropTypes from 'prop-types'
 import Barcode from 'react-barcode'
-import {FormFieldSet} from '@sanity/base/components'
+import {FormFieldSet} from 'sanity/_unstable'
 import {Box} from '@sanity/ui'
 import {setIfMissing} from '@sanity/form-builder'
 // import {FormBuilderInput} from '@sanity/form-builder/lib/FormBuilderInput'
@@ -32,7 +32,7 @@ const ErrorMessage = styled.div`
 const BarcodeInput = React.forwardRef(function BarcodeInput(props, ref) {
   const {
     level,
-    type,
+    schemaType,
     value,
     readOnly,
     markers,
@@ -46,9 +46,9 @@ const BarcodeInput = React.forwardRef(function BarcodeInput(props, ref) {
   const [valid, setValid] = useState(true)
   const handleFieldChange = React.useCallback(
     (field, patchEvent) => {
-      onChange(patchEvent.prefixAll(field.name).prepend(setIfMissing({_type: type.name})))
+      onChange(patchEvent.prefixAll(field.name).prepend(setIfMissing({_type: schemaType.name})))
     },
-    [onChange, type.name]
+    [onChange, schemaType.name]
   )
 
   const handleValid = (validState) => {
@@ -58,9 +58,9 @@ const BarcodeInput = React.forwardRef(function BarcodeInput(props, ref) {
   return (
     <FormFieldSet
       level={level}
-      title={type.title}
-      description={type.description}
-      legend={type.title}
+      title={schemaType.title}
+      description={schemaType.description}
+      legend={schemaType.title}
     >
       <BarcodeRoot isValid={valid}>
         {value && value.barcode && (
@@ -74,7 +74,7 @@ const BarcodeInput = React.forwardRef(function BarcodeInput(props, ref) {
         {!valid && <ErrorMessage>Not valid {value.format}</ErrorMessage>}
       </BarcodeRoot>
       <FieldWrapper>
-        {type.fields.map((field) => (
+        {schemaType.fields.map((field) => (
           <>TODO</>
           // <FormBuilderInput
           //   key={field.name}
@@ -102,7 +102,7 @@ BarcodeInput.propTypes = {
   level: PropTypes.number,
   value: PropTypes.object,
   onChange: PropTypes.func,
-  type: PropTypes.object,
+  schemaType: PropTypes.object,
   onFocus: PropTypes.func,
   onBlur: PropTypes.func,
 }

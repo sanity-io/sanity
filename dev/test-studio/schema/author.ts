@@ -26,7 +26,7 @@ export default {
     },
     prepare({title, media, awards, role: roleName}: any) {
       const role = roleName ? AUTHOR_ROLES.find((option) => option.value === roleName) : undefined
-      const awardsText = Array.isArray(awards) && awards.join(', ')
+      const awardsText = Array.isArray(awards) && awards.filter(Boolean).join(', ')
 
       return {
         title: typeof title === 'string' ? title : undefined,

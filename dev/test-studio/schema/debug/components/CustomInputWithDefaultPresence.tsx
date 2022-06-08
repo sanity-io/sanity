@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {useCallback} from 'react'
 import {range} from 'lodash'
 import {ObjectInputProps, set, setIfMissing} from '@sanity/base/form'
 import {FieldPresence, PresenceScope} from '@sanity/base/_unstable'
@@ -8,13 +8,13 @@ export const CustomInputWithDefaultPresence = React.forwardRef(
     props: ObjectInputProps<Record<string, any>>,
     ref: React.ForwardedRef<HTMLDivElement>
   ) {
-    const {inputProps, value, type, onChange} = props
+    const {onFocus, onFocusPath, value, onChange, presence, readOnly, schemaType} = props
 
-    const {onFocus, readOnly} = inputProps
+    // const {onFocus, readOnly} = inputProps
 
-    const handleRootFocus = React.useCallback(
+    const handleRootFocus = useCallback(
       (event) => {
-        if (event.currentTarget.element === ref) onFocus()
+        if (event.currentTarget.element === ref) onFocus(event)
       },
       [onFocus, ref]
     )
@@ -22,9 +22,9 @@ export const CustomInputWithDefaultPresence = React.forwardRef(
     return (
       <>
         <div tabIndex={-1} ref={ref} onFocus={handleRootFocus}>
-          <div>{type.title}</div>
+          <div>{schemaType.title}</div>
           <div>
-            <em>{type.description}</em>
+            <em>{schemaType.description}</em>
           </div>
           <div style={{display: 'flex', flexWrap: 'wrap'}}>
             {range(4).map((row) =>
@@ -39,7 +39,7 @@ export const CustomInputWithDefaultPresence = React.forwardRef(
                       <div style={{position: 'absolute', left: -24}}>
                         <PresenceScope path={path} readOnly={readOnly}>
                           {/* Show presence items for this particular cell */}
-                          <FieldPresence maxAvatars={3} />
+                          <FieldPresence presence={presence} maxAvatars={3} />
                         </PresenceScope>
                       </div>
                       <input
@@ -47,14 +47,14 @@ export const CustomInputWithDefaultPresence = React.forwardRef(
                         size={8}
                         value={((value || {})[rowField] || {})[cellField]}
                         onChange={(e) => {
-                          onChange(
+                          onChange([
                             setIfMissing({}),
                             setIfMissing({}, [rowField]),
-                            set(e.currentTarget.value, path)
-                          )
+                            set(e.currentTarget.value, path),
+                          ])
                         }}
                         onFocus={() => {
-                          onFocus(path)
+                          onFocusPath(path)
                         }}
                       />
                     </div>
