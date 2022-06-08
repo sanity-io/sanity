@@ -1,6 +1,17 @@
 /* eslint-disable import/no-unresolved,react/jsx-handler-names */
 
-import {Box, Button, Card, Dialog, Menu, MenuButton, MenuItem, Stack, ToastParams} from '@sanity/ui'
+import {
+  Box,
+  Button,
+  Card,
+  Dialog,
+  Menu,
+  MenuButton,
+  MenuButtonProps,
+  MenuItem,
+  Stack,
+  ToastParams,
+} from '@sanity/ui'
 import {get} from 'lodash'
 import {Observable, Subscription} from 'rxjs'
 import {ChevronDownIcon, ImageIcon, SearchIcon} from '@sanity/icons'
@@ -85,6 +96,8 @@ function passThrough({children}: {children?: React.ReactNode}) {
 }
 
 const ASSET_FIELD_PATH = ['asset']
+
+const ASSET_IMAGE_MENU_POPOVER: MenuButtonProps['popover'] = {portal: true}
 
 export class ImageInput extends React.PureComponent<ImageInputProps, ImageInputState> {
   _assetElementRef: null | Focusable = null
@@ -520,6 +533,7 @@ export class ImageInput extends React.PureComponent<ImageInputProps, ImageInputS
               })}
             </Menu>
           }
+          popover={ASSET_IMAGE_MENU_POPOVER}
         />
       )
     }
