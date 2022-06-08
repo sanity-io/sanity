@@ -19,6 +19,7 @@ export const STANDARD_INPUT_TYPES = [
 
 export const STANDARD_PORTABLE_TEXT_INPUT_TYPES = [
   'pt_allTheBellsAndWhistles',
+  'pt_customMarkersTest',
   'blocksTest',
   // 'richTextObject',
   'simpleBlock',

@@ -10,6 +10,7 @@ import numbers from './standard/numbers'
 import objects, {myObject} from './standard/objects'
 import {ptAllTheBellsAndWhistlesType} from './standard/portableText/allTheBellsAndWhistles'
 import blocks from './standard/portableText/blocks'
+import {ptCustomMarkersTestType} from './standard/portableText/customMarkers'
 import richTextObject from './standard/portableText/richTextObject'
 import simpleBlock from './standard/portableText/simpleBlock'
 import simpleBlockNote from './standard/portableText/simpleBlockNote'
@@ -144,6 +145,7 @@ export const schemaTypes = [
   previewMediaTest,
   previewSelectBugRepro,
   ptAllTheBellsAndWhistlesType,
+  ptCustomMarkersTestType,
   radio,
   readOnly,
   recursive,
