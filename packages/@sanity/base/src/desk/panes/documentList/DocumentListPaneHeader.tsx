@@ -4,7 +4,8 @@ import React, {memo, useMemo} from 'react'
 import {GeneralPreviewLayoutKey} from '../../../components/previews'
 import {InitialValueTemplateItem} from '../../../templates'
 import {PaneMenuItem, PaneMenuItemGroup, DeskToolPaneActionHandler} from '../../types'
-import {BackLink, PaneHeader, PaneHeaderActions, useDeskTool} from '../../components'
+import {BackLink, PaneHeader, PaneHeaderActions} from '../../components'
+import {useDeskTool} from '../../useDeskTool'
 import {SortOrder} from './types'
 
 interface DocumentListPaneHeaderProps {

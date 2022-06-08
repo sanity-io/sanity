@@ -10,7 +10,7 @@ import {getWaitMessages} from '../../panes/loading/getWaitMessages'
 import {useResolvedPanes} from '../../structureResolvers'
 import {PaneNode} from '../../types'
 import {PaneLayout} from '../pane'
-import {useDeskTool} from '../DeskToolProvider'
+import {useDeskTool} from '../../useDeskTool'
 import {NoDocumentTypesScreen} from './NoDocumentTypesScreen'
 
 interface DeskToolProps {

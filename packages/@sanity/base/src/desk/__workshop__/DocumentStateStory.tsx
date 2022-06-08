@@ -5,7 +5,7 @@ import {useEditState, useValidationStatus, useConnectionState} from '../../hooks
 import {useSource} from '../../studio'
 import {useUnique} from '../../util'
 import {DocumentActionDescription, DocumentActionComponent, DocumentActionProps} from '../actions'
-import {DeskToolProvider} from '../components'
+import {DeskToolProvider} from '../DeskToolProvider'
 import {DocumentPaneProvider} from '../panes'
 import {DocumentPaneNode} from '../types'
 

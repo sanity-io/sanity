@@ -1,15 +1,33 @@
-// import {EditStateFor} from '../../'
 import {SchemaType, SanityDocument} from '@sanity/types'
 import {Subscribable} from 'rxjs'
-import {GeneralPreviewLayoutKey} from '../../components/previews'
-import {InitialValueTemplateItem} from '../../templates'
+import {GeneralPreviewLayoutKey} from '../components/previews'
+import {ConfigContext} from '../config'
+import {InitialValueTemplateItem} from '../templates'
 import {
   DefaultDocumentNodeResolver,
   StructureBuilder,
   StructureContext,
   UserComponent,
-} from '../structureBuilder'
-import {ConfigContext} from '../../config'
+} from './structureBuilder'
+
+export interface DeskToolFeatures {
+  /**
+   * @beta
+   */
+  backButton: boolean
+  reviewChanges: boolean
+  splitPanes: boolean
+  splitViews: boolean
+}
+
+export interface DeskToolContextValue {
+  features: DeskToolFeatures
+  layoutCollapsed: boolean
+  setLayoutCollapsed: (layoutCollapsed: boolean) => void
+
+  rootPaneNode: UnresolvedPaneNode
+  structureContext: StructureContext
+}
 
 // export type DocumentActionsResolver = (editState: EditStateFor) => DocumentActionComponent[]
 

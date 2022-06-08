@@ -1,7 +1,6 @@
 export * from './pane'
 export * from './paneHeaderActions'
 export * from './deskTool'
-export * from './DeskToolProvider'
 export * from './confirmDeleteDialog'
 export * from './TimeAgo'
 export * from './paneRouter'

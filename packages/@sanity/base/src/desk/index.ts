@@ -6,3 +6,5 @@ export * from './panes/document/useDocumentPane'
 export type {DefaultDocumentNodeResolver, StructureBuilder} from './structureBuilder'
 
 export * from './types'
+
+export * from './DeskToolProvider'

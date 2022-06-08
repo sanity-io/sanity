@@ -1,38 +1,8 @@
-import React, {createContext, useMemo, useState, useContext} from 'react'
-import {useSource} from '../../studio'
-import {
-  createStructureBuilder,
-  DefaultDocumentNodeResolver,
-  StructureContext,
-} from '../structureBuilder'
-import {StructureResolver, UnresolvedPaneNode} from '../types'
-
-export interface DeskToolFeatures {
-  /**
-   * @beta
-   */
-  backButton: boolean
-  reviewChanges: boolean
-  splitPanes: boolean
-  splitViews: boolean
-}
-
-export interface DeskToolContextValue {
-  features: DeskToolFeatures
-  layoutCollapsed: boolean
-  setLayoutCollapsed: (layoutCollapsed: boolean) => void
-
-  rootPaneNode: UnresolvedPaneNode
-  structureContext: StructureContext
-}
-
-const DeskToolContext = createContext<DeskToolContextValue | null>(null)
-
-export function useDeskTool(id?: string): DeskToolContextValue {
-  const deskTool = useContext(DeskToolContext)
-  if (!deskTool) throw new Error(`DeskTool: missing context value ${id}`)
-  return deskTool
-}
+import React, {useMemo, useState} from 'react'
+import {useSource} from '../studio'
+import {DeskToolContext} from './DeskToolContext'
+import {createStructureBuilder, DefaultDocumentNodeResolver} from './structureBuilder'
+import {StructureResolver, UnresolvedPaneNode} from './types'
 
 interface DeskToolProviderProps {
   structure?: StructureResolver
