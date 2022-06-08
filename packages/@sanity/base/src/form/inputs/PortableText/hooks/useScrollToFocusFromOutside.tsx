@@ -1,4 +1,3 @@
-import {Path} from '@sanity/types'
 import {useEffect} from 'react'
 import scrollIntoView from 'scroll-into-view-if-needed'
 import {usePortableTextMemberItems} from './usePortableTextMembers'
@@ -15,7 +14,9 @@ export function useScrollToFocusFromOutside(props: Props): void {
 
   // This will scroll to the relevant block with focusPath pointing to an embedded object inside.
   useEffect(() => {
-    const memberItem = portableTextMemberItems.find((item) => item.member.open)
+    const memberItem = portableTextMemberItems.find(
+      (item) => item.member.open && item.member.collapsed === false
+    )
     if (!memberItem) {
       return
     }

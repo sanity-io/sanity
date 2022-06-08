@@ -247,7 +247,7 @@ export function Compositor(props: InputProps) {
   const openMemberItems = useMemo(
     () =>
       portableTextMemberItems.filter(
-        (m) => m.member.open === true && m.member.item.schemaType.name !== 'block'
+        (m) => m.member.open && m.member.item.schemaType.name !== 'block'
       ),
     [portableTextMemberItems]
   )
