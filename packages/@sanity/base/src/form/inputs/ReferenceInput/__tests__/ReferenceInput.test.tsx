@@ -5,10 +5,9 @@ import {LayerProvider, studioTheme, ThemeProvider, ToastProvider} from '@sanity/
 import {of} from 'rxjs'
 import {noop} from 'lodash'
 import {Reference} from '@sanity/types'
-import {AvailabilityReason} from '../../../../preview'
 import {RouterProvider, route} from '../../../../router'
 import {ReferenceInput} from '../ReferenceInput'
-import {DocumentPreview, ReferenceInfo, ReferenceInputProps} from '../types'
+import {ReferenceInfo, ReferenceInputProps} from '../types'
 
 const EMPTY_SEARCH = () => of([])
 
@@ -114,7 +113,7 @@ describe('if schema type is a strong reference', () => {
           availability: AVAILABLE,
           preview: {
             published: undefined,
-            draft: DRAFT_PREVIEW as DocumentPreview,
+            draft: DRAFT_PREVIEW as any,
           },
         }}
       />
@@ -133,7 +132,7 @@ describe('if schema type is a strong reference', () => {
           availability: AVAILABLE,
           preview: {
             published: undefined,
-            draft: DRAFT_PREVIEW as DocumentPreview,
+            draft: DRAFT_PREVIEW as any,
           },
         }}
       />
@@ -154,8 +153,8 @@ describe('if schema type is a weak reference', () => {
           type: 'actorReference',
           availability: UNAVAILABLE_NOT_FOUND,
           preview: {
-            published: PUBLISHED_PREVIEW as DocumentPreview,
-            draft: DRAFT_PREVIEW as DocumentPreview,
+            published: PUBLISHED_PREVIEW as any,
+            draft: DRAFT_PREVIEW as any,
           },
         }}
       />
@@ -174,8 +173,8 @@ describe('if schema type is a weak reference', () => {
           type: 'actorReference',
           availability: AVAILABLE,
           preview: {
-            published: PUBLISHED_PREVIEW as DocumentPreview,
-            draft: DRAFT_PREVIEW as DocumentPreview,
+            published: PUBLISHED_PREVIEW as any,
+            draft: DRAFT_PREVIEW as any,
           },
         }}
       />

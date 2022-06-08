@@ -6,7 +6,7 @@ import React from 'react'
 import {Observable, of} from 'rxjs'
 import {renderCrossDatasetReferenceInput} from '../../../../../test/form'
 import {CrossDatasetReferenceInput} from '../CrossDatasetReferenceInput'
-import {SearchHit} from '../types'
+import {CrossDatasetSearchHit} from '../types'
 
 const AVAILABLE = {
   available: true,
@@ -131,7 +131,7 @@ describe('render states', () => {
 
 describe('user interaction happy paths', () => {
   test.skip('an input without a value support searching for references and emits patches when a reference is chosen', async () => {
-    const handleSearch = jest.fn<Observable<SearchHit[]>, [string]>().mockReturnValue(
+    const handleSearch = jest.fn<Observable<CrossDatasetSearchHit[]>, [string]>().mockReturnValue(
       of([
         {id: 'one', type: 'product', published: {_id: 'one', _type: 'product'}},
         {id: 'two', type: 'product', published: {_id: 'two', _type: 'product'}},
@@ -203,7 +203,7 @@ describe('user interaction happy paths', () => {
   })
 
   test('an input with an existing value support replacing the value, and emits patches when a new reference is chosen', async () => {
-    const handleSearch = jest.fn<Observable<SearchHit[]>, [string]>().mockReturnValue(
+    const handleSearch = jest.fn<Observable<CrossDatasetSearchHit[]>, [string]>().mockReturnValue(
       of([
         {id: 'one', type: 'product', published: {_id: 'one', _type: 'product'}},
         {id: 'two', type: 'product', published: {_id: 'two', _type: 'product'}},

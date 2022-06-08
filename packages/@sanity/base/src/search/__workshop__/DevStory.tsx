@@ -32,7 +32,13 @@ export default function DevStory() {
             return (
               <Card border key={result.hit._id}>
                 <Box padding={2}>
-                  <SanityPreview schemaType={type} value={{_id: result.hit._id}} />
+                  <SanityPreview
+                    schemaType={type}
+                    value={{
+                      _type: result.hit._type,
+                      _id: result.hit._id,
+                    }}
+                  />
                 </Box>
 
                 <Card tone="transparent">
