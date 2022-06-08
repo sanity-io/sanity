@@ -1,5 +1,4 @@
 import type {ReactNode} from 'react'
-import {UploadState} from '../upload'
 import type {SortOrdering} from './types'
 
 export interface PrepareViewOptions {
@@ -11,6 +10,7 @@ export interface PreviewValue {
   subtitle?: ReactNode
   description?: ReactNode
   media?: ReactNode
+  imageUrl?: string
 }
 
 export interface PreviewConfig {
