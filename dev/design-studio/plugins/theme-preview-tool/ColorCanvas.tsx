@@ -1,4 +1,4 @@
-import {SanityTool} from 'sanity'
+import {Tool} from 'sanity'
 import {
   Box,
   Card,
@@ -50,7 +50,7 @@ function useFeatures() {
   return useContext(FeaturesContext)
 }
 
-export function ColorCanvas(props: {tool: SanityTool}) {
+export function ColorCanvas(props: {tool: Tool}) {
   const {features: featuresProp = {}} = props.tool.options
   const features = useMemo(() => ({...defaultFeatures, featuresProp}), [featuresProp])
   const {theme} = useRootTheme()
