@@ -4,7 +4,7 @@ import {ObjectInputProps} from '../../types'
 import {UnknownFields} from './UnknownFields'
 import {FieldGroupTabsWrapper} from './ObjectInput.styled'
 import {FieldGroupTabs} from './fieldGroups/FieldGroupTabs'
-import {MemberFieldset} from './MemberFieldset'
+import {MemberFieldSet} from './MemberFieldset'
 import {MemberField} from './MemberField'
 
 export const ObjectInput = memo(function ObjectInput(props: ObjectInputProps) {
@@ -68,7 +68,7 @@ export const ObjectInput = memo(function ObjectInput(props: ObjectInputProps) {
           )
         }
         return (
-          <MemberFieldset
+          <MemberFieldSet
             key={member.key}
             member={member}
             renderInput={renderInput}

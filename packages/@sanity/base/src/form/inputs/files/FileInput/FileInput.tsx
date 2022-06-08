@@ -37,7 +37,7 @@ import {ChangeIndicatorForFieldPath} from '../../../../components/changeIndicato
 import {ImperativeToast} from '../../../../components/transitional'
 import {PatchEvent, setIfMissing, unset} from '../../../patch'
 import {MemberField} from '../../ObjectInput/MemberField'
-import {MemberFieldset} from '../../ObjectInput/MemberFieldset'
+import {MemberFieldSet} from '../../ObjectInput/MemberFieldset'
 import {CardOverlay, FlexContainer} from './styles'
 import {FileDetails} from './FileDetails'
 import {FileSkeleton} from './FileSkeleton'
@@ -603,7 +603,7 @@ export class FileInput extends React.PureComponent<FileInputProps, FileInputStat
             )
           }
           return (
-            <MemberFieldset
+            <MemberFieldSet
               key={member.key}
               member={member}
               renderInput={renderInput}

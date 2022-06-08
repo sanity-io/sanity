@@ -35,7 +35,7 @@ import {ActionsMenu} from '../common/ActionsMenu'
 import {UploadWarning} from '../common/UploadWarning'
 import {ImageToolInput} from '../ImageToolInput'
 import {MemberField} from '../../ObjectInput/MemberField'
-import {MemberFieldset} from '../../ObjectInput/MemberFieldset'
+import {MemberFieldSet} from '../../ObjectInput/MemberFieldset'
 import {ChangeIndicatorForFieldPath} from '../../../../components/changeIndicators'
 import {FormInput} from '../../../FormInput'
 import {ImageActionsMenu} from './ImageActionsMenu'
@@ -753,7 +753,7 @@ export class ImageInput extends React.PureComponent<ImageInputProps, ImageInputS
             )
           }
           return (
-            <MemberFieldset
+            <MemberFieldSet
               key={member.key}
               member={member}
               renderInput={renderInput}

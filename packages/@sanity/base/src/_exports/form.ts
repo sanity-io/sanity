@@ -69,7 +69,7 @@ export type {
 } from '../form/inputs/PortableText/types'
 
 // export {MemberField} from '../form/inputs/ObjectInput/MemberField'
-export {MemberFieldset} from '../form/inputs/ObjectInput/MemberFieldset'
+export {MemberFieldSet} from '../form/inputs/ObjectInput/MemberFieldset'
 export {ObjectInput} from '../form/inputs/ObjectInput'
 
 export * from '../form/inputs/arrays/ArrayOfObjectsInput/MemberItem'

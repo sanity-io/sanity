@@ -10,7 +10,7 @@ import {FormFieldSet} from '../../components/formField/FormFieldSet'
 import {useFormCallbacks} from '../../studio/contexts/FormCallbacks'
 import {MemberField} from './MemberField'
 
-export const MemberFieldset = memo(function MemberFieldset(props: {
+export const MemberFieldSet = memo(function MemberFieldSet(props: {
   member: FieldSetMember
   renderField: RenderFieldCallback
   renderInput: RenderInputCallback
