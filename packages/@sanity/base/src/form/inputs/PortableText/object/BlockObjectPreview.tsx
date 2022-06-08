@@ -16,9 +16,10 @@ import {
 } from '@sanity/ui'
 import React, {forwardRef, MouseEvent, ReactElement, useCallback, useMemo, useRef} from 'react'
 import {useId} from '@reach/auto-id'
-import {isImage, ObjectSchemaType} from '@sanity/types'
+import {ObjectSchemaType} from '@sanity/types'
 import {IntentLink} from '../../../../router'
 import {FIXME, RenderPreviewCallback} from '../../../types'
+import {is} from '../../../utils/is'
 
 interface BlockObjectPreviewProps {
   focused: boolean
@@ -44,7 +45,7 @@ export function BlockObjectPreview(props: BlockObjectPreviewProps): ReactElement
   const menuButton = useRef<HTMLButtonElement | null>(null)
   const isTabbing = useRef<boolean>(false)
   const isCustomPreviewComponent = Boolean((type.preview as FIXME)?.component)
-  const isImageType = isImage(value)
+  const isImageType = is('image', type)
 
   const referenceLink = useMemo(
     () =>
