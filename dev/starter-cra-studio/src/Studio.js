@@ -1,37 +1,33 @@
 /* eslint-disable react/jsx-filename-extension */
 /* eslint-disable react/react-in-jsx-scope */
+
 import {createConfig, Studio} from 'sanity'
 import {deskTool} from 'sanity/desk'
 
 const config = createConfig({
   plugins: [deskTool()],
-  project: {
-    name: 'CRA Starter',
+  name: 'default',
+  projectId: 'ppsg7ml5',
+  dataset: 'test',
+  title: 'Default',
+  schema: {
+    types: [
+      {
+        type: 'document',
+        name: 'post',
+        title: 'Post',
+        fields: [
+          {
+            type: 'string',
+            name: 'title',
+            title: 'Title',
+          },
+        ],
+      },
+    ],
   },
-  sources: [
-    {
-      name: 'default',
-      projectId: 'ppsg7ml5',
-      dataset: 'test',
-      title: 'Default',
-      schemaTypes: [
-        {
-          type: 'document',
-          name: 'post',
-          title: 'Post',
-          fields: [
-            {
-              type: 'string',
-              name: 'title',
-              title: 'Title',
-            },
-          ],
-        },
-      ],
-    },
-  ],
 })
 
-export default function CraStudio() {
+export function CraStudio() {
   return <Studio config={config} />
 }

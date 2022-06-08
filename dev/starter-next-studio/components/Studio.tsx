@@ -1,7 +1,8 @@
 /* eslint-disable react/react-in-jsx-scope */
+
+import {useMemo} from 'react'
 import {createConfig, Studio} from 'sanity'
 import {deskTool} from 'sanity/desk'
-import {useMemo} from 'react'
 
 if (typeof window !== 'undefined') {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
