@@ -127,8 +127,8 @@ export const InlineObject = React.forwardRef(function InlineObject(
   const editorSelection = usePortableTextEditorSelection()
   const markers = usePortableTextMarkers(path)
   const memberItem = usePortableTextMemberItem(JSON.stringify(path))
-  const {memberValidation, hasError, hasWarning} = useMemberValidation(memberItem?.member)
-  const hasValidationMarkers = memberValidation.length > 0
+  const {validation, hasError, hasWarning} = useMemberValidation(memberItem?.member)
+  const hasValidationMarkers = validation.length > 0
   const [showPopover, setShowPopover] = useState(false)
 
   const tone = useMemo(() => {
@@ -169,7 +169,7 @@ export const InlineObject = React.forwardRef(function InlineObject(
 
   const markersToolTip = useMemo(
     () =>
-      markers.length > 0 || memberValidation.length > 0 ? (
+      markers.length > 0 || validation.length > 0 ? (
         <Tooltip
           placement="bottom"
           portal="editor"
@@ -177,7 +177,7 @@ export const InlineObject = React.forwardRef(function InlineObject(
             <TooltipBox padding={2}>
               <Markers
                 markers={markers}
-                validation={memberValidation}
+                validation={validation}
                 renderCustomMarkers={renderCustomMarkers}
               />
             </TooltipBox>
@@ -186,7 +186,7 @@ export const InlineObject = React.forwardRef(function InlineObject(
           {preview}
         </Tooltip>
       ) : undefined,
-    [Markers, markers, memberValidation, preview, renderCustomMarkers]
+    [Markers, markers, validation, preview, renderCustomMarkers]
   )
 
   const handleRemoveClick = useCallback(

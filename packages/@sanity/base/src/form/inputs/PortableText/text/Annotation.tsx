@@ -84,7 +84,7 @@ export const Annotation = function Annotation(props: AnnotationProps) {
   )
   const [textElement, setTextElement] = useState<HTMLSpanElement | null>(null)
   const memberItem = usePortableTextMemberItem(JSON.stringify(markDefPath))
-  const {memberValidation, hasError, hasWarning} = useMemberValidation(memberItem?.member)
+  const {validation, hasError, hasWarning} = useMemberValidation(memberItem?.member)
   const markers = usePortableTextMarkers(path)
   const [showPopover, setShowPopover] = useState(false)
 
@@ -110,7 +110,7 @@ export const Annotation = function Annotation(props: AnnotationProps) {
 
   const markersToolTip = useMemo(
     () =>
-      memberValidation.length > 0 || markers.length > 0 ? (
+      validation.length > 0 || markers.length > 0 ? (
         <Tooltip
           placement="bottom"
           portal="default"
@@ -119,7 +119,7 @@ export const Annotation = function Annotation(props: AnnotationProps) {
               <Markers
                 markers={markers}
                 renderCustomMarkers={renderCustomMarkers}
-                validation={memberValidation}
+                validation={validation}
               />
             </TooltipBox>
           }
@@ -127,7 +127,7 @@ export const Annotation = function Annotation(props: AnnotationProps) {
           <span>{text}</span>
         </Tooltip>
       ) : undefined,
-    [Markers, markers, renderCustomMarkers, text, memberValidation]
+    [Markers, markers, renderCustomMarkers, text, validation]
   )
 
   const handleEditClick = useCallback(

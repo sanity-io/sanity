@@ -61,7 +61,7 @@ export function TextBlock(props: TextBlockProps) {
 
   const handleOnHasChanges = useCallback((changed: boolean) => setHasChanges(changed), [])
 
-  const {memberValidation, hasError, hasWarning, hasInfo} = useMemberValidation(memberItem?.member)
+  const {validation, hasError, hasWarning, hasInfo} = useMemberValidation(memberItem?.member)
 
   const hasMarkers = Boolean(renderCustomMarkers) && markers.length > 0
 
@@ -129,7 +129,7 @@ export function TextBlock(props: TextBlockProps) {
                 <TooltipBox padding={2}>
                   <Markers
                     markers={markers}
-                    validation={memberValidation}
+                    validation={validation}
                     renderCustomMarkers={renderCustomMarkers}
                   />
                 </TooltipBox>

@@ -1,4 +1,4 @@
-import {ArraySchemaType, ObjectSchemaType, Path} from '@sanity/types'
+import {ArraySchemaType, ObjectSchemaType} from '@sanity/types'
 import {
   EditorChange,
   OnCopyFn,
@@ -33,7 +33,6 @@ import type {
   RenderCustomMarkers,
   ArrayOfObjectsMember,
 } from '../../types'
-import {useFormCallbacks} from '../../studio/contexts/FormCallbacks'
 import {ObjectFormNode} from '../../types'
 import {isMemberArrayOfObjects} from '../ObjectInput/members/asserters'
 import {EMPTY_ARRAY} from '../../utils/empty'
@@ -95,10 +94,6 @@ export function PortableTextInput(props: PortableTextInputProps) {
     onFocusPath,
     onInsert,
     onPaste,
-    onCollapseItem,
-    onCollapse,
-    onExpand,
-    onExpandItem,
     path,
     readOnly,
     renderBlockActions,
@@ -160,7 +155,7 @@ export function PortableTextInput(props: PortableTextInputProps) {
     const ptMembers = members.flatMap((m) => {
       let returned: ObjectMemberType[] = []
       // Object blocks or normal blocks with validation
-      if (m.item.schemaType.name !== 'block' || m.item.schemaType.validation) {
+      if (m.item.schemaType.name !== 'block' || m.item.validation.length > 0) {
         returned.push(m)
       }
       // Inline objects

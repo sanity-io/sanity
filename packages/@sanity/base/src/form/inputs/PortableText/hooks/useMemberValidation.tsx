@@ -7,22 +7,25 @@ const NONEXISTENT_PATH = ['@@_NONEXISTENT_PATH_@@']
 
 export function useMemberValidation(member: ArrayOfObjectsMember<ObjectFormNode> | undefined) {
   const memberValidation = member?.item.validation || EMPTY_ARRAY
-
   const childValidation = useChildValidation(member?.item.path || NONEXISTENT_PATH)
+  const validation =
+    member?.item.schemaType.name === 'block'
+      ? memberValidation
+      : memberValidation.concat(childValidation)
   const [hasError, hasWarning, hasInfo] = useMemo(
     () => [
-      memberValidation.filter((v) => v.level === 'error').length > 0,
-      memberValidation.filter((v) => v.level === 'warning').length > 0,
-      memberValidation.filter((v) => v.level === 'info').length > 0,
+      validation.filter((v) => v.level === 'error').length > 0,
+      validation.filter((v) => v.level === 'warning').length > 0,
+      validation.filter((v) => v.level === 'info').length > 0,
     ],
-    [memberValidation]
+    [validation]
   )
   return useMemo(() => {
     return {
-      memberValidation: member?.open ? memberValidation : memberValidation.concat(childValidation),
+      validation,
       hasError,
       hasWarning,
       hasInfo,
     }
-  }, [member, memberValidation, childValidation, hasError, hasWarning, hasInfo])
+  }, [validation, hasError, hasWarning, hasInfo])
 }

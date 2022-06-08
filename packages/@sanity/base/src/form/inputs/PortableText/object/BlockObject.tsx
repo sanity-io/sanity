@@ -131,7 +131,7 @@ export function BlockObject(props: BlockObjectProps) {
     return {paddingX: 3}
   }, [isFullscreen, renderBlockActions])
 
-  const {memberValidation, hasError, hasWarning, hasInfo} = useMemberValidation(memberItem?.member)
+  const {validation, hasError, hasWarning, hasInfo} = useMemberValidation(memberItem?.member)
 
   const hasMarkers = Boolean(markers.length > 0)
 
@@ -154,7 +154,7 @@ export function BlockObject(props: BlockObjectProps) {
                 <TooltipBox padding={2}>
                   <Markers
                     markers={markers}
-                    validation={memberValidation}
+                    validation={validation}
                     renderCustomMarkers={renderCustomMarkers}
                   />
                 </TooltipBox>
