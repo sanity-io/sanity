@@ -29,7 +29,7 @@ export default createConfig({
   //     ToolMenu: ToolMenu,
   //   },
   // },
-  formBuilder: {
+  form: {
     // unstable: {
     //   CustomMarkers,
     //   Markers,
