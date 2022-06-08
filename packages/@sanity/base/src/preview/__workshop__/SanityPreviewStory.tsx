@@ -1,6 +1,7 @@
 import {Box, Card, Container} from '@sanity/ui'
 import {useSelect} from '@sanity/ui-workshop'
 import React, {useMemo} from 'react'
+import {Image, ObjectSchemaType} from '@sanity/types'
 import {useSchema} from '../../hooks'
 import {PreviewLayoutKey} from '../../components/previews'
 import {SanityPreview} from '../components/SanityPreview'
@@ -16,17 +17,45 @@ const LAYOUT_OPTIONS: Record<string, PreviewLayoutKey> = {
   BlockImage: 'blockImage',
 }
 
+const VALUE_TYPES: Record<string, 'document' | 'image'> = {
+  Document: 'document',
+  Image: 'image',
+}
+
 export default function SanityPreviewStory() {
   const layout = useSelect('Layout', LAYOUT_OPTIONS)
+  const type = useSelect('Value type', VALUE_TYPES)
+
   const schema = useSchema()
-  const schemaType = schema.get('author')!
-  const value: Previewable = useMemo(() => ({_id: 'grrm', _type: 'author'}), [])
+  const schemaType = useMemo(() => {
+    if (type === 'image') {
+      return (schema.get('imagesTest') as ObjectSchemaType).fields.find(
+        (f) => f.name === 'mainImage'
+      )!.type
+    }
+
+    return schema.get('author')!
+  }, [schema, type])
+
+  const value: Previewable | Image = useMemo(() => {
+    if (type === 'image') {
+      return {
+        _type: 'image',
+        asset: {
+          _ref: 'image-4af4353791af3fd4594c59f5bdc9f5f4a4aba3db-6240x4160-jpg',
+          _type: 'reference',
+        },
+      }
+    }
+
+    return {_id: 'grrm', _type: 'author'}
+  }, [type])
 
   return (
     <Box padding={4}>
       <Container width={1}>
         <Card border padding={2} radius={2} style={{lineHeight: 0}}>
-          <SanityPreview layout={layout} schemaType={schemaType} value={value} />
+          <SanityPreview layout={layout} schemaType={schemaType} value={value as Previewable} />
         </Card>
       </Container>
     </Box>
