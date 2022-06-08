@@ -16,7 +16,7 @@ export function NoDocumentTypesScreen() {
               </Box>
               <Stack flex={1} marginLeft={3} space={3}>
                 <Text as="h1" size={1} weight="bold">
-                  No document types!
+                  No document types
                 </Text>
                 <Text as="p" muted size={1}>
                   Please define at least one document type in your schema.
