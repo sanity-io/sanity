@@ -544,7 +544,7 @@ function prepareArrayOfPrimitivesMember(props: {
 
 export type FIXME_SanityDocument = Record<string, unknown>
 
-export function prepareFormProps<T extends FIXME_SanityDocument>(
+export function prepareFormState<T extends FIXME_SanityDocument>(
   props: RawState<ObjectSchemaType, T>
 ): ObjectFormNode | null {
   return prepareObjectInputState(props)

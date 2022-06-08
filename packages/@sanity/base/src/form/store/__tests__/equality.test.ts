@@ -1,6 +1,6 @@
 import {ConditionalProperty} from '@sanity/types'
 import Schema from '@sanity/schema'
-import {prepareFormProps} from '../formState'
+import {prepareFormState} from '../formState'
 import {DEFAULT_PROPS} from './shared'
 
 function getBookType(properties: {
@@ -75,13 +75,13 @@ test('it doesnt return new object equalities given the same input', () => {
   const document = {_id: 'test', _type: 'foo'}
   const bookType = getBookType({})
 
-  const state1 = prepareFormProps({
+  const state1 = prepareFormState({
     ...DEFAULT_PROPS,
     schemaType: bookType,
     document,
   })
 
-  const state2 = prepareFormProps({
+  const state2 = prepareFormState({
     ...DEFAULT_PROPS,
     schemaType: bookType,
     document,

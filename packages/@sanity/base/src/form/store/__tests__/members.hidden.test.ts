@@ -1,6 +1,6 @@
 import Schema from '@sanity/schema'
 import {ConditionalProperty, ObjectSchemaType} from '@sanity/types'
-import {prepareFormProps} from '../formState'
+import {prepareFormState} from '../formState'
 import {DEFAULT_PROPS} from './shared'
 
 // eslint-disable-next-line no-empty-function,@typescript-eslint/no-empty-function
@@ -78,7 +78,7 @@ test('it omits the hidden member field from the members array', () => {
   const bookType: ObjectSchemaType = getBookType({
     subtitle: {hidden: () => true},
   })
-  const result = prepareFormProps({
+  const result = prepareFormState({
     ...DEFAULT_PROPS,
     schemaType: bookType,
     document: {_id: 'foo', _type: 'book'},
@@ -96,7 +96,7 @@ test('it omits nested hidden members from the members array', () => {
   const bookType = getBookType({
     author: {hidden: () => true},
   })
-  const result = prepareFormProps({
+  const result = prepareFormState({
     ...DEFAULT_PROPS,
     schemaType: bookType,
     document: {_id: 'foo', _type: 'book'},
@@ -116,7 +116,7 @@ test('it "upward propagates" hidden fields', () => {
     authorFirstName: {hidden: () => true},
     authorLastName: {hidden: () => true},
   })
-  const result = prepareFormProps({
+  const result = prepareFormState({
     schemaType: bookType,
     document: {_id: 'foo', _type: 'book'},
     ...DEFAULT_PROPS,

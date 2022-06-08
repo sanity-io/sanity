@@ -6,7 +6,7 @@ import {pathFor} from '@sanity/util/paths'
 import {useCurrentUser} from '../../datastores'
 import {StateTree, ObjectFormNode} from '../types'
 import {FormFieldPresence} from '../../presence'
-import {prepareFormProps, FIXME_SanityDocument} from './formState'
+import {prepareFormState, FIXME_SanityDocument} from './formState'
 import {immutableReconcile} from './utils/immutableReconcile'
 import {DocumentFormNode} from './types/nodes'
 
@@ -51,7 +51,7 @@ export function useFormState<
 
   return useMemo(() => {
     // console.time('derive form state')
-    const next = prepareFormProps({
+    const next = prepareFormState({
       schemaType,
       document: value,
       fieldGroupState,
