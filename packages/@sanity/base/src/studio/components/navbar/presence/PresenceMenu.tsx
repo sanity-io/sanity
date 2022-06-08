@@ -14,7 +14,7 @@ import {
 import React, {useMemo} from 'react'
 import styled from 'styled-components'
 import {UserAvatar} from '../../../../components/UserAvatar'
-import {useGlobalPresence} from '../../../../hooks'
+import {useGlobalPresence} from '../../../../datastores'
 import {useColorScheme} from '../../../colorScheme'
 import {useWorkspace} from '../../../workspace'
 import {StatusButton} from '../../StatusButton'

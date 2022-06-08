@@ -3,10 +3,8 @@ import {RevertIcon} from '@sanity/icons'
 import React, {useCallback, useContext, useMemo, useState} from 'react'
 import {SanityDocument} from '@sanity/client'
 import {ObjectSchemaType} from '@sanity/types'
-import {
-  useDocumentOperation,
-  unstable_useConditionalProperty as useConditionalProperty,
-} from '../../../hooks'
+import {unstable_useConditionalProperty as useConditionalProperty} from '../../../conditional-property'
+import {useDocumentOperation} from '../../../hooks'
 import {ObjectDiff, ChangeNode, FieldOperationsAPI} from '../../types'
 import {DiffContext} from '../contexts/DiffContext'
 import {buildObjectChangeList} from '../changes/buildChangeList'

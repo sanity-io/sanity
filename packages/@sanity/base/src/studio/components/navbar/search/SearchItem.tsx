@@ -1,10 +1,11 @@
 import React, {forwardRef, useMemo} from 'react'
 import {Inline, Label, ResponsivePaddingProps} from '@sanity/ui'
 import {PreviewCard} from '../../../../components/PreviewCard'
-import {useDocumentPresence, useSchema} from '../../../../hooks'
+import {useSchema} from '../../../../hooks'
 import {DocumentPreviewPresence} from '../../../../presence'
 import {IntentLink} from '../../../../router'
 import {SanityPreview} from '../../../../preview'
+import {useDocumentPresence} from '../../../../datastores'
 
 interface SearchItemProps extends ResponsivePaddingProps {
   onClick?: () => void

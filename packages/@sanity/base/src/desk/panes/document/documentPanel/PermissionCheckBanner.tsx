@@ -2,7 +2,7 @@ import React from 'react'
 import {Box, Card, Container, Flex, Text} from '@sanity/ui'
 import {ReadOnlyIcon} from '@sanity/icons'
 import styled from 'styled-components'
-import {useCurrentUser} from '../../../../hooks'
+import {useCurrentUser} from '../../../../datastores'
 
 const Root = styled(Card)`
   position: relative;

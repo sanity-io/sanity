@@ -69,6 +69,8 @@ export type {
   WrappedOperation,
 } from '../datastores'
 
+export {useCurrentUser, useUser} from '../datastores'
+
 export type {
   ActionComponent,
   DocumentActionComponent,
@@ -150,7 +152,6 @@ export type {
 export {
   useClient,
   useConnectionState,
-  useCurrentUser,
   useDataset,
   useDocumentOperation,
   useEditState,
@@ -216,4 +217,4 @@ export type {
   TypeTarget,
 } from '../templates'
 
-export type {DraftId, Opaque, PublishedId} from '../util'
+export type {DraftId, LoadableState, Opaque, PublishedId} from '../util'

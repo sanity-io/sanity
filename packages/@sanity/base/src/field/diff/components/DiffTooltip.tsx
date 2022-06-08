@@ -3,9 +3,10 @@ import React from 'react'
 import {Tooltip, TooltipProps, Text, Stack, Flex, Inline, Label} from '@sanity/ui'
 import {LegacyLayerProvider} from '../../../components/transitional'
 import {UserAvatar} from '../../../components/UserAvatar'
-import {useUser, useTimeAgo} from '../../../hooks'
+import {useTimeAgo} from '../../../hooks'
 import {AnnotationDetails, Diff} from '../../types'
 import {getAnnotationAtPath, useAnnotationColor} from '../annotations'
+import {useUser} from '../../../datastores'
 
 export interface DiffTooltipProps extends TooltipProps {
   children: React.ReactElement

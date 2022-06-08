@@ -1,19 +1,12 @@
 import {CheckmarkIcon, PublishIcon} from '@sanity/icons'
 import React, {useCallback, useEffect, useState} from 'react'
 import {isValidationErrorMarker} from '@sanity/types'
-import {
-  useSyncState,
-  useDocumentOperation,
-  useValidationStatus,
-  useCurrentUser,
-} from '../../../hooks'
-// import {TimeAgo} from '../components/TimeAgo'
-// import {useDocumentPane} from '../panes/document/useDocumentPane'
+import {useSyncState, useDocumentOperation, useValidationStatus} from '../../../hooks'
 import {DocumentActionComponent} from '../types'
 import {InsufficientPermissionsMessage} from '../../../components/InsufficientPermissionsMessage'
 import {TimeAgo} from '../../components'
 import {useDocumentPane} from '../../panes/document/useDocumentPane'
-import {useDocumentPairPermissions} from '../../../datastores'
+import {useCurrentUser, useDocumentPairPermissions} from '../../../datastores'
 
 const DISABLED_REASON_TITLE = {
   LIVE_EDIT_ENABLED: 'Cannot publish since liveEdit is enabled for this document type',
