@@ -1,4 +1,5 @@
 {
+  "private": true,
   "name": "@sanity/google-maps-input",
   "version": "2.30.0",
   "description": "Sanity plugin providing input handlers for geo-related input types using Google Maps",

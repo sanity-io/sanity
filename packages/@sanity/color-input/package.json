@@ -1,4 +1,5 @@
 {
+  "private": true,
   "name": "@sanity/color-input",
   "version": "2.30.0",
   "description": "Color input",

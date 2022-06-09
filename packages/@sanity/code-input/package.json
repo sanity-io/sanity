@@ -1,4 +1,5 @@
 {
+  "private": true,
   "name": "@sanity/code-input",
   "version": "2.30.0",
   "description": "Ace editor for editing code",
