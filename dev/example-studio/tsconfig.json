@@ -7,8 +7,7 @@
     "outDir": "./build"
   },
   "references": [
-    {"path": "../../packages/@sanity/base/tsconfig.lib.json"},
-    {"path": "../../packages/@sanity/desk-tool"},
+    {"path": "../../packages/sanity/tsconfig.lib.json"},
     {"path": "../../packages/@sanity/types"}
   ]
 }

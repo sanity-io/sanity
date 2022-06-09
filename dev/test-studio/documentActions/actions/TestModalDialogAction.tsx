@@ -1,4 +1,4 @@
-import {DocumentActionComponent, DocumentActionDescription} from '@sanity/base'
+import {DocumentActionComponent, DocumentActionDescription} from 'sanity'
 import {CopyIcon} from '@sanity/icons'
 import {Button, Grid, Text, useToast} from '@sanity/ui'
 import React, {useCallback, useMemo, useState} from 'react'

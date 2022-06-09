@@ -1,5 +1,4 @@
 import React from 'react'
-import PropTypes from 'prop-types'
 import {Spinner} from '@sanity/ui'
 
 // Waits for X ms before showing a spinner
@@ -20,10 +19,6 @@ class DelayedSpinner extends React.PureComponent {
   render() {
     return this.state.show ? <Spinner muted /> : null
   }
-}
-
-DelayedSpinner.propTypes = {
-  delay: PropTypes.number,
 }
 
 DelayedSpinner.defaultProps = {

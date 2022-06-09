@@ -1,5 +1,5 @@
-import {ObjectInputProps, set, unset} from '@sanity/base/form'
-import {isValidationErrorMarker, ObjectSchemaType} from '@sanity/types'
+import {ObjectInputProps, set, unset} from 'sanity/form'
+import {isValidationError, ObjectSchemaType} from 'sanity'
 import {Select} from '@sanity/ui'
 import React, {useCallback, useState} from 'react'
 
@@ -22,7 +22,7 @@ export const CustomObjectSelectInput = React.forwardRef(function CustomObjectSel
   const {value, schemaType, onChange, readOnly, validation} = props
 
   const items = (schemaType.options && schemaType.options.list) || EMPTY_ARRAY
-  const errors = validation.filter(isValidationErrorMarker)
+  const errors = validation.filter(isValidationError)
   const [inputId] = useState(() => String(++objectSelectInputIdx))
 
   const handleChange = useCallback(
@@ -40,7 +40,7 @@ export const CustomObjectSelectInput = React.forwardRef(function CustomObjectSel
       id={inputId}
       ref={forwardedRef}
       readOnly={readOnly}
-      customValidity={errors?.[0]?.item.message}
+      customValidity={errors?.[0]?.message}
       value={value?.value || ''}
     >
       {[{title: '', value: undefined}, ...items].map((item, i) => (

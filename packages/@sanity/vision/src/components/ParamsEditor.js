@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 /* eslint-disable import/no-unassigned-import */
 import React from 'react'
-import PropTypes from 'prop-types'
 import classNames from 'classnames'
 import {debounce} from 'lodash'
 import isPlainObject from '../util/isPlainObject'
@@ -68,14 +67,6 @@ class ParamsEditor extends React.PureComponent {
       />
     )
   }
-}
-
-ParamsEditor.propTypes = {
-  className: PropTypes.string,
-  classNameInvalid: PropTypes.string,
-  onExecute: PropTypes.func.isRequired,
-  onChange: PropTypes.func.isRequired,
-  value: PropTypes.string,
 }
 
 ParamsEditor.defaultProps = {

@@ -8,7 +8,6 @@
     "isolatedModules": false
   },
   "references": [
-    {"path": "../../packages/@sanity/base/tsconfig.lib.json"},
     {"path": "../../packages/@sanity/types"},
     {"path": "../../packages/sanity/tsconfig.lib.json"}
   ]

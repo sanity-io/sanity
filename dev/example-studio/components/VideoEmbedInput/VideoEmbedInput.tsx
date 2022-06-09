@@ -1,6 +1,6 @@
 import React from 'react'
-import {PatchEvent, set, unset} from '@sanity/base/form'
-import {SanityPreview as Preview} from '@sanity/base/_unstable'
+import {PatchEvent, set, unset} from 'sanity/form'
+import {SanityPreview as Preview} from 'sanity/_unstable'
 import getVideoId from 'get-video-id'
 import humanizeList from 'humanize-list'
 import {ReferenceSchemaType} from '@sanity/types'

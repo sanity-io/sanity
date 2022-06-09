@@ -1,5 +1,5 @@
-import {useClient} from '@sanity/base'
-import {set, unset, setIfMissing, ObjectInputProps} from '@sanity/base/form'
+import {useClient} from 'sanity'
+import {set, unset, setIfMissing, ObjectInputProps} from 'sanity/form'
 import imageUrlBuilder from '@sanity/image-url'
 import {Reference, ReferenceSchemaType} from '@sanity/types'
 import {Button, Spinner} from '@sanity/ui'
@@ -18,6 +18,7 @@ export const AuthorReferenceInput = forwardRef(function AuthorReferenceInput(
   props: ObjectInputProps<Reference, ReferenceSchemaType>,
   ref: React.ForwardedRef<any>
 ) {
+  // @todo fix
   const {inputProps, type, value} = props
   const {readOnly} = inputProps
   const client = useClient()

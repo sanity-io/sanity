@@ -187,6 +187,7 @@ function parseJson<T = any>(json: string): T | undefined {
 }
 
 function getSanityVersion(workDir: string): string {
+  // This is only used in v2, thus `@sanity/base`
   const basePkg = resolveFrom.silent(workDir, '@sanity/base/package.json')
   return basePkg ? dynamicRequire(basePkg).version : pkg.version
 }

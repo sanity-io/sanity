@@ -1,7 +1,7 @@
 import React from 'react'
-import {FormInput} from '@sanity/base/form'
+import {FormInput} from 'sanity/form'
 import {Grid} from '@sanity/ui'
-import {ObjectInputProps} from '@sanity/base'
+import {ObjectInputProps} from 'sanity'
 
 export const formInputDebug = {
   name: 'formInputDebug',

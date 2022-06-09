@@ -4,8 +4,8 @@ import {scopes} from './scopes'
 export const config = defineConfig({
   collections: [
     {
-      name: 'base',
-      title: '@sanity/base',
+      name: 'sanity',
+      title: 'sanity',
     },
     {
       name: 'default-layout',

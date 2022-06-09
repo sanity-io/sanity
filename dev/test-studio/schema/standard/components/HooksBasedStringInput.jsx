@@ -1,4 +1,4 @@
-import {set} from '@sanity/base/form'
+import {set} from 'sanity/form'
 import React from 'react'
 import PropTypes from 'prop-types'
 

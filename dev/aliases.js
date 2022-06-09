@@ -10,9 +10,7 @@
 module.exports = {
   // NOTE: do not use regex in the module expressions,
   // because they will be escaped by the jest config
-  '@sanity/base': './packages/@sanity/base/src/_exports',
   '@sanity/block-tools': './packages/@sanity/block-tools/src',
-  '@sanity/code-input': './packages/@sanity/code-input/src',
   '@sanity/diff': './packages/@sanity/diff/src',
   '@sanity/imagetool': './packages/@sanity/imagetool/src/_exports',
   '@sanity/mutator': './packages/@sanity/mutator/src',

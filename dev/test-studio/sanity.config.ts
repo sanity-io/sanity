@@ -1,4 +1,4 @@
-import {codeInput} from '@sanity/code-input'
+//import {codeInput} from '@sanity/code-input'
 import {BookIcon} from '@sanity/icons'
 import {createConfig, createPlugin} from 'sanity'
 import {deskTool} from 'sanity/desk'
@@ -37,7 +37,7 @@ const sharedSettings = createPlugin({
     newDocumentOptions,
   },
   plugins: [
-    codeInput(),
+    // codeInput(),
     deskTool({
       // TODO:
       // components: {
@@ -51,7 +51,7 @@ const sharedSettings = createPlugin({
     }),
     workshopTool({
       collections: [
-        {name: 'base', title: '@sanity/base'},
+        {name: 'sanity', title: 'sanity'},
         {name: 'default-layout', title: '@sanity/default-layout'},
         {name: 'desk-tool', title: '@sanity/desk-tool'},
         {name: 'form-builder', title: '@sanity/form-builder'},

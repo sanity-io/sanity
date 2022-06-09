@@ -1,5 +1,4 @@
 import React from 'react'
-import PropTypes from 'prop-types'
 import request from '../util/request'
 
 // Yeah, inheritance and all that. Deal with it.
@@ -37,10 +36,6 @@ class LoadingContainer extends React.PureComponent {
       this.subscriptions.pop().unsubscribe()
     }
   }
-}
-
-LoadingContainer.contextTypes = {
-  client: PropTypes.shape({fetch: PropTypes.func}).isRequired,
 }
 
 export default LoadingContainer

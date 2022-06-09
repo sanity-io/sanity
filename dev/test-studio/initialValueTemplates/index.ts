@@ -1,4 +1,4 @@
-import {Template} from '@sanity/base'
+import {Template} from 'sanity'
 
 export const resolveInitialValueTemplates: Template[] = [
   {

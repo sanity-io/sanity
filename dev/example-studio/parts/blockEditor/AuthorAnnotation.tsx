@@ -1,4 +1,4 @@
-import {useClient} from '@sanity/base'
+import {useClient} from 'sanity'
 import {SanityDocument} from '@sanity/types'
 import {Box, Text, Tooltip} from '@sanity/ui'
 import React, {useEffect, useState} from 'react'

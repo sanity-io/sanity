@@ -1,6 +1,6 @@
-import {route} from '@sanity/base/router'
-import SanityVision from './SanityVision'
+import {route} from 'sanity'
 import {EyeOpenIcon} from '@sanity/icons'
+import SanityVision from './SanityVision'
 
 export default {
   router: route.create('/*'),

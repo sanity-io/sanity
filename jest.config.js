@@ -1,6 +1,6 @@
 const JEST_PROJECTS = [
+  'sanity',
   '@sanity/core',
-  '@sanity/base',
   '@sanity/block-tools',
   '@sanity/export',
   '@sanity/imagetool',

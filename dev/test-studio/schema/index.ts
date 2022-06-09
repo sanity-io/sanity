@@ -92,6 +92,40 @@ import species from './species'
 import conditionalFieldset from './ci/conditionalFieldset'
 import validationTest from './ci/validationCI'
 
+// @todo temporary, until code input is v3 compatible
+const codeInputType = {
+  name: 'code',
+  type: 'object',
+  fields: [
+    {
+      name: 'language',
+      title: 'Language',
+      type: 'string',
+    },
+    {
+      name: 'filename',
+      title: 'Filename',
+      type: 'string',
+    },
+    {
+      title: 'Code',
+      name: 'code',
+      type: 'text',
+    },
+    {
+      title: 'Highlighted lines',
+      name: 'highlightedLines',
+      type: 'array',
+      of: [
+        {
+          type: 'number',
+          title: 'Highlighted line',
+        },
+      ],
+    },
+  ],
+}
+
 export const schemaTypes = [
   actions,
   arrays,
@@ -101,7 +135,7 @@ export const schemaTypes = [
   booleans,
   button,
   code,
-  // codeInputType,
+  codeInputType, // @todo temporary, until code input is v3 compatible
   color,
   conditionalFields,
   conditionalFieldset,

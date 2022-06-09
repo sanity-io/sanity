@@ -1,13 +1,12 @@
 /* eslint-disable complexity */
 import React from 'react'
-import PropTypes from 'prop-types'
 import queryString from 'query-string'
 import SplitPane from 'react-split-pane'
 import {PlayIcon, StopIcon, CopyIcon} from '@sanity/icons'
 import isHotkey from 'is-hotkey'
 import {Flex, Card, Stack, Box, Hotkeys, Select, Text, TextInput, Tooltip, Grid} from '@sanity/ui'
 import studioClient from 'part:@sanity/base/client'
-import {FormFieldValidationStatus} from '@sanity/base/components'
+import {FormFieldValidationStatus} from 'sanity'
 import config from 'config:@sanity/vision'
 import {storeState, getState} from '../util/localState'
 import {parseApiQueryString} from '../util/parseApiQueryString'
@@ -714,15 +713,6 @@ class VisionGui extends React.PureComponent {
       </Root>
     )
   }
-}
-
-VisionGui.propTypes = {
-  schema: PropTypes.object,
-  datasets: PropTypes.arrayOf(
-    PropTypes.shape({
-      name: PropTypes.string,
-    })
-  ),
 }
 
 export default VisionGui

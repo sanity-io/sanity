@@ -1,6 +1,6 @@
 {
   "extends": "../../tsconfig.settings",
-  "include": ["./src/", "./package.json"],
+  "include": ["./package.json", "./src", "./typings"],
   "exclude": [
     "./src/**/__fixtures__/*",
     "./src/**/__mocks__/*",
@@ -13,12 +13,18 @@
     "declarationDir": "./lib/dts/",
     "rootDir": "./",
     "outDir": "./lib/dts/",
-    "resolveJsonModule": true,
-    "jsx": "react"
+    "jsx": "react",
+
+    // For package.json import
+    "resolveJsonModule": true
   },
   "references": [
-    {"path": "../@sanity/base/tsconfig.lib.json"},
-    {"path": "../@sanity/cli/tsconfig.lib.json"},
-    {"path": "../@sanity/types"}
+    {"path": "../@sanity/diff"},
+    {"path": "../@sanity/mutator/tsconfig.lib.json"},
+    {"path": "../@sanity/schema"},
+    {"path": "../@sanity/types"},
+    {"path": "../@sanity/transaction-collator"},
+    {"path": "../@sanity/util/tsconfig.lib.json"},
+    {"path": "../@sanity/validation/tsconfig.lib.json"}
   ]
 }

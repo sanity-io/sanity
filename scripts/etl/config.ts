@@ -22,16 +22,12 @@ export const config = {
   },
 
   workspace: [
-    // 'sanity',
-
-    '@sanity/base',
+    'sanity',
     '@sanity/block-tools',
-    '@sanity/code-input',
     '@sanity/core',
     // '@sanity/dashboard',
     '@sanity/diff',
     // '@sanity/export',
-    '@sanity/google-maps-input',
     // '@sanity/imagetool',
     // '@sanity/import',
     // '@sanity/import-cli',

@@ -1,5 +1,5 @@
-import {createConfig} from '@sanity/base'
-import {deskTool} from '@sanity/base/desk'
+import {createConfig} from 'sanity'
+import {deskTool} from 'sanity/desk'
 import {codeInput} from '@sanity/code-input'
 import {schemaTypes} from './schemas'
 

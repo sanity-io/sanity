@@ -33,9 +33,9 @@ export async function checkRequiredDependencies(context: CliCommandContext): Pro
       await readModuleVersion(studioPath, 'styled-components'),
     ])
 
-  // If the `@sanity/base` package.json does not have a `styled-components` peer dependency
-  // declared, the user is probably running an old version of `@sanity/base`. This is a bit
-  // of an indeterminate state, so we'll just have to accept it and assume things will work.
+  // If the `sanity` package.json does not have a `styled-components` peer dependency declared,
+  // the user is probably running an old version of `sanity`. This is a bit of an indeterminate state,
+  // so we'll just have to accept it and assume things will work.
   const wantedStyledComponentsVersionRange = basePeerDependencies['styled-components']
   if (!wantedStyledComponentsVersionRange) {
     return {didInstall: false}
@@ -74,7 +74,7 @@ export async function checkRequiredDependencies(context: CliCommandContext): Pro
   }
 
   // The declared version should be semver-compatible with the version specified as a
-  // peer dependency in `@sanity/base`. If not, we should tell the user to change it.
+  // peer dependency in `sanity`. If not, we should tell the user to change it.
   //
   // Exception: Ranges are hard to compare. `>=5.0.0 && <=5.3.2 || ^6`... Comparing this
   // to anything is going to be challenging, so only compare "simple" ranges/versions
@@ -85,7 +85,7 @@ export async function checkRequiredDependencies(context: CliCommandContext): Pro
   ) {
     output.warn(oneline`
       Declared version of styled-components (${declaredStyledComponentsVersion})
-      is not compatible with the version required by @sanity/base (${wantedStyledComponentsVersionRange}).
+      is not compatible with the version required by sanity (${wantedStyledComponentsVersionRange}).
       This might cause problems!
     `)
   }
@@ -99,11 +99,11 @@ export async function checkRequiredDependencies(context: CliCommandContext): Pro
   }
 
   // The studio should have an _installed_ version of `styled-components`, and it should
-  // be semver compatible with the version specified in `@sanity/base` peer dependencies.
+  // be semver compatible with the version specified in `sanity` peer dependencies.
   if (!semver.satisfies(installedStyledComponentsVersion, wantedStyledComponentsVersionRange)) {
     output.warn(oneline`
       Installed version of styled-components (${installedStyledComponentsVersion})
-      is not compatible with the version required by @sanity/base (${wantedStyledComponentsVersionRange}).
+      is not compatible with the version required by sanity (${wantedStyledComponentsVersionRange}).
       This might cause problems!
     `)
   }
@@ -112,9 +112,9 @@ export async function checkRequiredDependencies(context: CliCommandContext): Pro
 }
 
 /**
- * Read the declared peer dependencies of the installed `@sanity/base` module
+ * Read the declared peer dependencies of the installed `sanity` module
  *
- * @param studioPath - Path to the studio, in order to resolve `@sanity/base`
+ * @param studioPath - Path to the studio, in order to resolve `sanity`
  * @returns Object of peer dependencies (`{[name]: version}`), if any
  */
 async function readBasePeerDependencies(
@@ -123,9 +123,9 @@ async function readBasePeerDependencies(
   let manifestPath: string | null = null
   let dirPath = studioPath
 
-  // Look for `node_modules/@sanity/base/package.json` in this directory, or any parent directory
+  // Look for `node_modules/sanity/package.json` in this directory, or any parent directory
   while (manifestPath === null && dirPath !== '/') {
-    const searchPath = path.resolve(dirPath, 'node_modules/@sanity/base/package.json')
+    const searchPath = path.resolve(dirPath, 'node_modules/sanity/package.json')
     const exists = await fileExists(searchPath)
 
     if (exists) {
@@ -135,10 +135,10 @@ async function readBasePeerDependencies(
     }
   }
 
-  // If we can't resolve the manifest path, that means `@sanity/base` is not installed
+  // If we can't resolve the manifest path, that means `sanity` is not installed
   if (!manifestPath) {
     throw new Error(
-      'Failed to resolve @sanity/base/package.json - please install dependencies with `npm install` or `yarn install`'
+      'Failed to resolve sanity/package.json - please install dependencies with `npm install` or `yarn install`'
     )
   }
 

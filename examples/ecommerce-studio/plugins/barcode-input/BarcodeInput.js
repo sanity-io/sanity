@@ -1,11 +1,10 @@
 // Copied from packages/@sanity/cli/templates/ecommerce/plugins/barcode-input/BarcodeInput.js
 
 import React, {useState} from 'react'
-import PropTypes from 'prop-types'
 import Barcode from 'react-barcode'
 import {FormFieldSet} from 'sanity/_unstable'
 import {Box} from '@sanity/ui'
-import {setIfMissing} from '@sanity/form-builder'
+import {setIfMissing} from '@sanity/form-builder' // @todo fix
 // import {FormBuilderInput} from '@sanity/form-builder/lib/FormBuilderInput'
 import styled from 'styled-components'
 
@@ -97,14 +96,5 @@ const BarcodeInput = React.forwardRef(function BarcodeInput(props, ref) {
     </FormFieldSet>
   )
 })
-
-BarcodeInput.propTypes = {
-  level: PropTypes.number,
-  value: PropTypes.object,
-  onChange: PropTypes.func,
-  schemaType: PropTypes.object,
-  onFocus: PropTypes.func,
-  onBlur: PropTypes.func,
-}
 
 export default BarcodeInput

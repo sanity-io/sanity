@@ -313,3 +313,9 @@ export type SlugIsUniqueValidator = (
   slug: string,
   options: ValidationContext & {defaultIsUnique: SlugIsUniqueValidator}
 ) => boolean | Promise<boolean>
+
+export interface NodeValidation {
+  level: 'error' | 'warning' | 'info'
+  message: string
+  path: Path
+}

@@ -1,3 +1,0 @@
-{
-  "ignore": ["$SANITY_STUDIO_CONFIG$", "@self/config"]
-}

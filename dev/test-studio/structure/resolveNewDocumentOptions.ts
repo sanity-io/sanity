@@ -1,4 +1,4 @@
-import {NewDocumentOptionsResolver} from '@sanity/base'
+import {NewDocumentOptionsResolver} from 'sanity'
 
 export const newDocumentOptions: NewDocumentOptionsResolver = (prev, {creationContext}) => {
   if (creationContext.type === 'structure' && creationContext.schemaType === 'book') {

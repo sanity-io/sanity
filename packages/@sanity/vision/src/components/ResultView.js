@@ -1,5 +1,4 @@
 import React from 'react'
-import PropTypes from 'prop-types'
 import ReactJsonView from 'react-json-view'
 import {ReactJsonViewContainer} from './ResultView.styled'
 
@@ -23,10 +22,6 @@ function ResultView(props) {
   ) : (
     <pre>{data === null ? 'null' : data.toString()}</pre>
   )
-}
-
-ResultView.propTypes = {
-  data: PropTypes.any,
 }
 
 export default ResultView

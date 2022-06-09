@@ -10,7 +10,7 @@ const defaults = {isSupported: true, isUpToDate: true, outdated: []}
 
 describe('module status', () => {
   test('can fetch module status from api', async () => {
-    const installed = {'@sanity/base': basePkg.version}
+    const installed = {sanity: basePkg.version}
     const mockClient = getMockClient()
     const status = await checkModuleStatus({
       client: mockClient,
@@ -22,7 +22,7 @@ describe('module status', () => {
   })
 
   test('prevents multiple calls to api while resolving', async () => {
-    const installed = {'@sanity/base': '2.1337.0'}
+    const installed = {sanity: '2.1337.0'}
     const mockClient = getMockClient()
 
     const call1 = checkModuleStatus({
@@ -43,7 +43,7 @@ describe('module status', () => {
   })
 
   test('uses cache after first resolve', async () => {
-    const installed = {'@sanity/base': '2.1338.0'}
+    const installed = {sanity: '2.1338.0'}
     const mockClient = getMockClient()
 
     const status1 = await checkModuleStatus({
@@ -78,7 +78,7 @@ describe('useModuleStatus', () => {
   })
 
   test('has loading state', async () => {
-    const installed = {'@sanity/base': '3.0.0'}
+    const installed = {sanity: '3.0.0'}
     const mockClient = getMockClient()
 
     function StatusDumper() {
@@ -99,12 +99,12 @@ describe('useModuleStatus', () => {
     )
     await act(nextTick)
     expect(container!.textContent).toMatchInlineSnapshot(
-      `"{\\"isLoading\\":false,\\"value\\":{\\"isSupported\\":true,\\"isUpToDate\\":true,\\"outdated\\":[],\\"installed\\":{\\"@sanity/base\\":\\"3.0.0\\"}},\\"error\\":null}"`
+      `"{\\"isLoading\\":false,\\"value\\":{\\"isSupported\\":true,\\"isUpToDate\\":true,\\"outdated\\":[],\\"installed\\":{\\"sanity\\":\\"3.0.0\\"}},\\"error\\":null}"`
     )
   })
 
   test('has no loading state when cached', async () => {
-    const installed = {'@sanity/base': '3.0.1'}
+    const installed = {sanity: '3.0.1'}
     const mockClient = getMockClient()
     const options = {
       client: mockClient,
@@ -125,7 +125,7 @@ describe('useModuleStatus', () => {
     })
 
     expect(container!.textContent).toMatchInlineSnapshot(
-      `"{\\"isLoading\\":false,\\"value\\":{\\"isSupported\\":true,\\"isUpToDate\\":true,\\"outdated\\":[],\\"installed\\":{\\"@sanity/base\\":\\"3.0.1\\"}},\\"error\\":null}"`
+      `"{\\"isLoading\\":false,\\"value\\":{\\"isSupported\\":true,\\"isUpToDate\\":true,\\"outdated\\":[],\\"installed\\":{\\"sanity\\":\\"3.0.1\\"}},\\"error\\":null}"`
     )
   })
 })

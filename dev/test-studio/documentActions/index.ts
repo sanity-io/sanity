@@ -1,4 +1,4 @@
-import {DocumentActionsResolver} from '@sanity/base'
+import {DocumentActionsResolver} from 'sanity'
 import {TestConfirmDialogAction} from './actions/TestConfirmDialogAction'
 import {TestModalDialogAction} from './actions/TestModalDialogAction'
 import {TestPopoverDialogAction} from './actions/TestPopoverDialogAction'

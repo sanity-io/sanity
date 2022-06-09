@@ -11,7 +11,7 @@
     "watch": "../../../bin/pkg-utils transpile --target node --tsconfig tsconfig.lib.json --watch"
   },
   "engines": {
-    "node": ">=12.0.0"
+    "node": ">=14.0.0"
   },
   "repository": {
     "type": "git",
@@ -46,15 +46,15 @@
     "vite": "^2.7.2"
   },
   "devDependencies": {
-    "@sanity/base": "2.30.0",
+    "sanity": "2.29.3",
     "get-it": "^5.2.1",
     "react": "17.0.2",
     "react-dom": "17.0.2",
     "rimraf": "^3.0.2"
   },
   "peerDependencies": {
-    "@sanity/base": "^2.23.0",
-    "react": "^17",
-    "react-dom": "^17"
+    "sanity": "^2.29.3",
+    "react": "^17 || ^18",
+    "react-dom": "^17 || ^18"
   }
 }

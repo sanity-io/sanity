@@ -6,7 +6,7 @@ import {useRouter} from './useRouter'
  *
  * @example
  * ```tsx
- * import {useIntentLink} from '@sanity/base'
+ * import {useIntentLink} from 'sanity'
  *
  * const {handleClick, href} = useIntentLink({
  *   intent: 'edit',

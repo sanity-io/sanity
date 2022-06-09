@@ -21,7 +21,7 @@ export interface RouterProviderProps {
  *   route,
  *   RouterProvider,
  *   RouterState
- * } from '@sanity/base'
+ * } from 'sanity'
  * import {useCallback, useMemo} from 'react'
  *
  * function Root() {

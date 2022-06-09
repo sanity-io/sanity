@@ -123,7 +123,7 @@ function getDocumentHtml(studioRootPath: string, props?: DocumentProps): string 
 }
 
 function getDocumentComponent(studioRootPath: string) {
-  const {DefaultDocument} = require('@sanity/base')
+  const {DefaultDocument} = require('sanity')
   const userDefined = tryLoadDocumentComponent(studioRootPath)
 
   if (userDefined) {
@@ -136,7 +136,7 @@ function getDocumentComponent(studioRootPath: string) {
 
     parentPort?.postMessage({
       type: 'warning',
-      message: `Component at ${userDefined.path} did not have a default export that is a React component, using default document component from "@sanity/base"`,
+      message: `Component at ${userDefined.path} did not have a default export that is a React component, using default document component from "sanity"`,
     })
   }
 

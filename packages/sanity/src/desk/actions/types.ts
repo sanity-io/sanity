@@ -19,7 +19,7 @@ export interface DocumentActionComponent extends ActionComponent<DocumentActionP
    * with another. E.g.:
    *
    * ```js
-   * import {createConfig} from '@sanity/base'
+   * import {createConfig} from 'sanity'
    * import {MyPublishAction} from '...'
    *
    * export default createConfig({

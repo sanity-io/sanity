@@ -8,7 +8,7 @@ import {
   UsersIcon,
 } from '@sanity/icons'
 import {uuid} from '@sanity/uuid'
-import {StructureResolver} from '@sanity/base'
+import {StructureResolver} from 'sanity/desk'
 import {DebugPane} from '../components/panes/debug'
 import {JsonDocumentDump} from '../components/panes/JsonDocumentDump'
 import {_buildTypeGroup} from './_buildTypeGroup'

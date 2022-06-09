@@ -1,6 +1,5 @@
 import React from 'react'
-import {FormFieldSet} from '@sanity/base/_unstable'
-import {PatchArg, PatchEvent, unset, set, setIfMissing} from '@sanity/base/form'
+import {PatchArg, PatchEvent, unset, set, setIfMissing, FormFieldSet} from 'sanity/form'
 import {io, Viewer} from 'bio-pv'
 import {Button, Select, Spinner, Stack, Text, TextInput} from '@sanity/ui'
 import {ObjectSchemaType} from '@sanity/types'

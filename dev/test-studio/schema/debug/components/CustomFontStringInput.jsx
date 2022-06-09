@@ -1,15 +1,8 @@
-import {set} from '@sanity/base/form'
-import PropTypes from 'prop-types'
+import {set} from 'sanity/form'
 import React from 'react'
 import styles from './CustomFontStringInput.module.css'
 
 export default class CustomStringInput extends React.Component {
-  static propTypes = {
-    value: PropTypes.string,
-    type: PropTypes.object,
-    onChange: PropTypes.func,
-  }
-
   handleChange = (event) => {
     this.props.onChange(set(event.target.value))
   }

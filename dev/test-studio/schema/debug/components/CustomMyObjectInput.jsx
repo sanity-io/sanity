@@ -1,14 +1,7 @@
 import React from 'react'
-import PropTypes from 'prop-types'
-import {set, setIfMissing} from '@sanity/base/form'
+import {set, setIfMissing} from 'sanity/form'
 
 export default class CustomMyObjectInput extends React.Component {
-  static propTypes = {
-    value: PropTypes.object,
-    type: PropTypes.object,
-    onChange: PropTypes.func,
-  }
-
   handleChange = (field, event) => {
     const {type, onChange} = this.props
     onChange(setIfMissing({_type: type.name}), set(event.target.value, [field.name]))

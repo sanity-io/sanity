@@ -8,14 +8,10 @@
     "outDir": "./node_modules/.sanity-monorepo/dts/"
   },
   "references": [
-    {"path": "./packages/@sanity/base"},
     {"path": "./packages/@sanity/block-tools"},
     {"path": "./packages/@sanity/cli"},
-    {"path": "./packages/@sanity/code-input"},
-    {"path": "./packages/@sanity/color-input"},
     {"path": "./packages/@sanity/core"},
     {"path": "./packages/@sanity/diff"},
-    {"path": "./packages/@sanity/google-maps-input"},
     {"path": "./packages/@sanity/imagetool"},
     {"path": "./packages/@sanity/mutator"},
     {"path": "./packages/@sanity/portable-text-editor"},

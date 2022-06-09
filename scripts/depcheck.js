@@ -99,7 +99,7 @@ depcheck(cwd, options).then((unused) => {
 })
 
 const IMPLICIT_DEPS = {
-  '@sanity/base': ['styled-components', 'react'],
+  sanity: ['styled-components', 'react'],
   recast: '@babel/parser', // recast/parsers/typescript implicitly requires @babel/parser
 }
 

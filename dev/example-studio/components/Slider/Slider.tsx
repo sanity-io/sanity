@@ -1,5 +1,5 @@
-import {PatchEvent, set, unset} from '@sanity/base/form'
-import {NumberSchemaType, Path} from '@sanity/types'
+import {PatchEvent, set, unset} from 'sanity/form'
+import {NumberSchemaType, Path} from 'sanity'
 import React, {useCallback} from 'react'
 import styles from './Slider.module.css'
 

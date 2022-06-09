@@ -1,9 +1,9 @@
 import type {Observable} from 'rxjs'
 import {map, shareReplay} from 'rxjs/operators'
+import {SANITY_VERSION} from '../version'
 import {CheckModuleVersionsOptions, VersionsResponse, ModuleStatusResponse} from './types'
 
-// @todo: Get sanity version number dynamically
-const sanityModuleVersions = {sanity: '2.29.3'}
+const sanityModuleVersions = {sanity: SANITY_VERSION}
 
 // Used to keep track of lookups to prevent multiple requests
 const CACHED_LOOKUPS = new Map<string, Observable<ModuleStatusResponse>>()
@@ -13,7 +13,7 @@ const CACHED_LOOKUPS = new Map<string, Observable<ModuleStatusResponse>>()
  * to date and/or supported, and if they are outdated; which versions are is
  * the latest available on npm vs which ones are installed locally.
  *
- * @param options Options to use for resolving module status
+ * @param options - Options to use for resolving module status
  * @internal Not a stable API yet
  */
 export function checkModuleStatus(
@@ -47,7 +47,7 @@ export function checkModuleStatus(
 /**
  * Returns the currently installed version of the given module
  *
- * @param moduleName Name of module to get version number for
+ * @param moduleName - Name of module to get version number for
  * @internal Not a stable API yet
  */
 export function getInstalledModuleVersion(moduleName: string): string | undefined {
@@ -56,8 +56,8 @@ export function getInstalledModuleVersion(moduleName: string): string | undefine
 }
 
 /**
- * Builds to: {m: ['@sanity/base@2.14.0', '@sanity/desk-tool@2.13.4']}
- * Serializes to: ?m=@sanity/base@2.14.0&m=@sanity/desk-tool@2.13.4
+ * Builds to: `{m: ['sanity@3.0.2', '@sanity/vision@3.14.3']}`
+ * Serializes to: `?m=sanity@3.0.2&m=@sanity/vision@3.14.3`
  */
 function buildQueryString(versions: Record<string, string>): {m: string[]} {
   return {
@@ -76,7 +76,7 @@ function getInstalledModules(): Record<string, string> {
   // the latest module versions, by pretending we're using an outdated module
   const fakeOutdatedModule = false
   if (fakeOutdatedModule) {
-    return {...sanityModuleVersions, '@sanity/base': '1.118.0'}
+    return {...sanityModuleVersions, '@sanity/vision': '1.118.0'}
   }
 
   return sanityModuleVersions

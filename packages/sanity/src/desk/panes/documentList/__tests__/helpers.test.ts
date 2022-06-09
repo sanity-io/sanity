@@ -64,10 +64,6 @@ const mockSchema = Schema.compile({
   ],
 })
 
-jest.mock('part:@sanity/base/schema', () => {
-  return mockSchema
-})
-
 describe('applyOrderingFunctions()', () => {
   test('does not apply to orderings with mapper', () => {
     const ordering = {by: [{field: 'title', direction: 'desc' as const, mapWith: 'upper'}]}

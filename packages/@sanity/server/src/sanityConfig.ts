@@ -4,7 +4,7 @@ import fs from 'fs/promises'
 /**
  * Resolves the path to the studio configuration file, prefering
  * `sanity.config.js`, but allowing `sanity.config.ts`. Falls back to the
- * default studio configuration exported by `@sanity/base`
+ * default studio configuration exported by `sanity`
  *
  * @internal
  */

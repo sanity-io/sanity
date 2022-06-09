@@ -21,10 +21,11 @@ export interface ZIndexContextValue {
   /** Used by: Tooltip */
   popover: number | number[]
 
-  /** Used by: @sanity/google-maps-input */
+  /** Used by: `@sanity/google-maps-input` */
   modal: number | number[]
 
-  /** Used by: `movingItem` in packages/@sanity/base/src/styles/layout/helpers.css */
+  /** @todo this path does not seem to be correct - fix?  */
+  /** Used by: `movingItem` in packages/sanity/src/styles/layout/helpers.css */
   movingItem: number | number[]
 
   /** Used for shadow behind the navbar search, and behind sidemenu */

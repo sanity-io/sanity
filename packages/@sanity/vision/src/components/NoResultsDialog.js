@@ -1,5 +1,4 @@
 import React from 'react'
-import PropTypes from 'prop-types'
 import {Box, Code, Text, Stack} from '@sanity/ui'
 
 function NoResultsDialog(props) {
@@ -13,11 +12,6 @@ function NoResultsDialog(props) {
       </Stack>
     </Box>
   )
-}
-
-NoResultsDialog.propTypes = {
-  query: PropTypes.string.isRequired,
-  dataset: PropTypes.string.isRequired,
 }
 
 export default NoResultsDialog

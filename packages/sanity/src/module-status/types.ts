@@ -51,21 +51,21 @@ export interface CheckModuleVersionsOptions {
   /**
    * Whether or not to use cached responses
    *
-   * @default true
+   * @defaultValue true
    */
   useCache?: boolean
 
   /**
-   * Object of {moduleName: installedVersionNumber} to check status of
+   * Object of `{moduleName: installedVersionNumber}` to check status of
    *
-   * @default object Automatically inferred from environment
+   * @defaultValue object Automatically inferred from environment
    */
   moduleVersions?: Record<string, string>
 }
 
 export interface OutdatedPackage {
   /**
-   * Outdated module name, eg `@sanity/base`
+   * Outdated module name, eg `@sanity/vision`
    */
   name: string
 
@@ -129,7 +129,7 @@ export interface VersionsResponse {
 
 export interface ModuleStatusResponse extends VersionsResponse {
   /**
-   * Object of {moduleName: installedVersionNumber}
+   * Object of `{moduleName: installedVersionNumber}`
    */
   installed: Record<string, string>
 }

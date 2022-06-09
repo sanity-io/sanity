@@ -1,5 +1,4 @@
 import React from 'react'
-import PropTypes from 'prop-types'
 import {Box, Stack} from '@sanity/ui'
 import QueryErrorDetails from './QueryErrorDetails'
 import {ErrorCode} from './QueryErrorDialog.styled'
@@ -13,10 +12,6 @@ function QueryErrorDialog(props) {
       </Stack>
     </Box>
   )
-}
-
-QueryErrorDialog.propTypes = {
-  error: PropTypes.instanceOf(Error),
 }
 
 export default QueryErrorDialog

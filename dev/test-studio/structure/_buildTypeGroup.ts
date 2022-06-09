@@ -1,4 +1,4 @@
-import {StructureBuilder} from '@sanity/base'
+import {StructureBuilder} from 'sanity/desk'
 import {Schema} from '@sanity/types'
 import {isObject} from 'lodash'
 

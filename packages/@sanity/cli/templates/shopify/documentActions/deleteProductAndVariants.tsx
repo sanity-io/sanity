@@ -3,10 +3,10 @@
  *
  * Learn more: https://www.sanity.io/docs/document-actions
  */
-import {useRouter} from '@sanity/base/router'
+import {useRouter} from 'sanity' // @todo make this work
 import {TrashIcon} from '@sanity/icons'
 import {Stack, Text, useToast} from '@sanity/ui'
-import sanityClient from 'part:@sanity/base/client'
+import sanityClient from 'part:@sanity/base/client' // @todo make this work
 import React, {useState} from 'react'
 import {SANITY_API_VERSION} from '../constants'
 

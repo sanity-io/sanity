@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 /* eslint-disable import/no-unassigned-import */
 import React from 'react'
-import PropTypes from 'prop-types'
 import {UnControlled as BaseReactCodeMirror} from 'react-codemirror2'
 import CodeMirror from 'codemirror'
 import styled from 'styled-components'
@@ -104,15 +103,6 @@ class QueryEditor extends React.PureComponent {
       />
     )
   }
-}
-
-QueryEditor.propTypes = {
-  onExecute: PropTypes.func.isRequired,
-  onChange: PropTypes.func.isRequired,
-  value: PropTypes.string,
-  schema: PropTypes.object,
-  className: PropTypes.string,
-  onHeightChange: PropTypes.func,
 }
 
 QueryEditor.defaultProps = {

@@ -1,5 +1,4 @@
-import {UserComponent} from '@sanity/base/structure'
-import {usePaneRouter} from '@sanity/desk-tool'
+import {UserComponent, usePaneRouter} from 'sanity/desk'
 import {ChevronDownIcon, ChevronRightIcon, ControlsIcon, LinkIcon} from '@sanity/icons'
 import {Box, Card, Code, Flex, Stack, Text} from '@sanity/ui'
 import React, {useMemo} from 'react'

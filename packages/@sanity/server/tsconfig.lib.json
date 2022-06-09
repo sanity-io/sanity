@@ -8,5 +8,5 @@
     "rootDir": "./",
     "outDir": "./lib/dts/"
   },
-  "references": [{"path": "../base/tsconfig.lib.json"}]
+  "references": [{"path": "../../sanity/tsconfig.lib.json"}]
 }

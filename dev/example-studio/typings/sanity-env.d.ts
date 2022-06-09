@@ -1,5 +1,5 @@
 declare module '$SANITY_STUDIO_CONFIG$' {
-  import {SanityConfig} from '@sanity/base'
+  import {SanityConfig} from 'sanity'
 
   const config: SanityConfig
 

@@ -1,5 +1,5 @@
 import {ComposeIcon, DropIcon, ImageIcon} from '@sanity/icons'
-import {BlockEditor} from '@sanity/base/form'
+import {BlockEditor} from 'sanity/form'
 import React from 'react'
 
 const CustomEditor = React.forwardRef((props, ref) => {

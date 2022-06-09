@@ -1,7 +1,7 @@
 import React from 'react'
-import PropTypes from 'prop-types'
 import {Box} from '@sanity/ui'
 import {ErrorCode} from './QueryErrorDialog.styled'
+
 function QueryErrorDetails(props) {
   const details = {...props.error.details, ...mapToLegacyDetails(props.error.details)}
   if (!details.line) {
@@ -40,19 +40,6 @@ function dashLine(column, columnEnd) {
   const line = '-'.repeat(column)
   const hats = `^`.repeat(columnEnd ? columnEnd - column : 1)
   return `${line}${hats}`
-}
-
-QueryErrorDetails.propTypes = {
-  error: PropTypes.shape({
-    details: PropTypes.shape({
-      line: PropTypes.string,
-      lineNumber: PropTypes.number,
-      column: PropTypes.number,
-      start: PropTypes.number,
-      end: PropTypes.number,
-      query: PropTypes.string,
-    }),
-  }),
 }
 
 export default QueryErrorDetails
