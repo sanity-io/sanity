@@ -4,12 +4,6 @@ import {useMemo} from 'react'
 import {createConfig, Studio} from 'sanity'
 import {deskTool} from 'sanity/desk'
 
-if (typeof window !== 'undefined') {
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
-  window.setImmediate = window.setTimeout
-}
-
 export default function StudioRoot({basePath}: {basePath: string}) {
   const config = useMemo(
     () =>

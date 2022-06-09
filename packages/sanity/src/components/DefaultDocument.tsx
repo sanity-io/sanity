@@ -16,11 +16,6 @@ const globalStyles = `
   }
 `
 
-const globalScript = `
-// Polyfill
-window.setImmediate = setTimeout;
-`
-
 export interface DefaultDocumentProps {
   entryPath: string
   css?: string[]
@@ -48,7 +43,6 @@ export function DefaultDocument(props: DefaultDocumentProps) {
       </head>
       <body>
         <div id="sanity" />
-        <script>{globalScript}</script>
         <script type="module" src={entryPath} />
       </body>
     </html>
