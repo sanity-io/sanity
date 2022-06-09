@@ -1,5 +1,5 @@
 // @todo REPLACE ME ONCE WE GO LIVE
-const V3_TAG = 'purple-unicorn'
+const V3_TAG = 'dev-preview'
 
 export default {
   // Dependencies for a default Sanity installation
