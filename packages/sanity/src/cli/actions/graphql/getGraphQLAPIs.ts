@@ -3,10 +3,10 @@ import oneline from 'oneline'
 import {isPlainObject} from 'lodash'
 import type {CliCommandContext, CliV3CommandContext, GraphQLAPIConfig} from '@sanity/cli'
 import type {Schema} from '@sanity/types'
-import {createSchema} from 'sanity/_unstable'
-import {Workspace} from 'sanity'
 import {getStudioConfig} from '../../util/getStudioConfig'
-import {SchemaDefinitionish} from './types'
+import {createSchema} from '../../../schema'
+import type {Workspace} from '../../../config'
+import type {SchemaDefinitionish} from './types'
 
 interface ResolvedSerializableProperties {
   projectId: string

@@ -2,8 +2,7 @@
 import fs from 'fs'
 import path from 'path'
 import {first} from 'rxjs/operators'
-import {Workspace} from 'sanity'
-import {resolveConfig, Config} from 'sanity/_unstable'
+import {resolveConfig, Config, Workspace} from '../../config'
 import {mockBrowserEnvironment} from './mockBrowserEnvironment'
 
 const candidates = [

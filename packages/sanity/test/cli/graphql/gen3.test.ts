@@ -1,11 +1,11 @@
 import {orderBy} from 'lodash'
 
-import {extractFromSanitySchema} from '../../src/actions/graphql/extractFromSanitySchema'
-import generateSchema from '../../src/actions/graphql/gen2'
+import {extractFromSanitySchema} from '../../../src/cli/actions/graphql/extractFromSanitySchema'
+import generateSchema from '../../../src/cli/actions/graphql/gen3'
 
 import testStudioSchema from './fixtures/test-studio'
 
-describe('GraphQL - Generation 2', () => {
+describe('GraphQL - Generation 3', () => {
   beforeEach(() => {
     jest.useFakeTimers()
     jest.resetModules()
@@ -25,7 +25,7 @@ describe('GraphQL - Generation 2', () => {
 
     const schema = generateSchema(extracted)
 
-    expect(schema.generation).toBe('gen2')
+    expect(schema.generation).toBe('gen3')
     expect(sortGraphQLSchema(schema)).toMatchSnapshot()
   })
 })

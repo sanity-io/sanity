@@ -17,7 +17,7 @@
   "scripts": {
     "bootstrap": "yarn install && yarn build:cli",
     "build": "yarn build:dts && lerna run --scope '{@sanity/*,sanity}' build",
-    "build:cli": "yarn build:dts && lerna run --scope '@sanity/{cli,core,export,import,mutator,server,types,util}' --scope sanity build",
+    "build:cli": "yarn build:dts && lerna run --scope '@sanity/{cli,export,import,mutator,server,types,util}' --scope sanity build",
     "build:dts": "tsc --build",
     "clean": "lerna run --scope '{@sanity/*,sanity}' clean",
     "check:versions": "node scripts/normalizeDependencyVersions.js",

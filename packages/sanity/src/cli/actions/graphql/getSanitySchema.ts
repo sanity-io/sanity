@@ -3,8 +3,8 @@
  */
 import path from 'path'
 import {fork, Serializable} from 'child_process'
-import {createSchema} from 'sanity/_unstable'
 import type {SchemaTypeDefinition, Schema} from '@sanity/types'
+import {createSchema} from '../../../schema'
 
 type ExpectedResult = TypesResult | ErrorResult
 
