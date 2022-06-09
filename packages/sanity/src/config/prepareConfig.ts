@@ -11,6 +11,7 @@ import {createSchema} from '../schema'
 import {AuthStore, createAuthStore} from '../datastores'
 import {InitialValueTemplateItem, Template, TemplateResponse} from '../templates'
 import {isNonNullable} from '../util'
+import {defaultFileAssetSources, defaultImageAssetSources} from '../form/defaults'
 import {Source, SourceOptions, Config, WorkspaceSummary, PreparedConfig} from './types'
 import {
   schemaTypesReducer,
@@ -385,7 +386,7 @@ function resolveSource({
         assetSources: resolveConfigProperty({
           config,
           context,
-          initialValue: [],
+          initialValue: defaultFileAssetSources,
           propertyName: 'formBuilder.file.assetSources',
           reducer: fileAssetSourceResolver,
         }),
@@ -398,7 +399,7 @@ function resolveSource({
         assetSources: resolveConfigProperty({
           config,
           context,
-          initialValue: [],
+          initialValue: defaultImageAssetSources,
           propertyName: 'formBuilder.image.assetSources',
           reducer: imageAssetSourceResolver,
         }),
