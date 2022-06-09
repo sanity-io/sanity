@@ -17,6 +17,11 @@ import {CliCommandContext} from '../..'
 
 const rimraf = util.promisify(rimrafCb)
 
+const unsupportedMessage = `
+\`sanity upgrade\` is not supported as of sanity v3.
+Use npm-check-updates or similar (https://www.npmjs.com/package/npm-check-updates)
+`.trim()
+
 export interface UpgradeCommandFlags {
   range?: string
   tag?: string
@@ -26,7 +31,11 @@ export interface UpgradeCommandFlags {
 
 const upgradeDependencies: CliCommandAction<UpgradeCommandFlags> =
   async function upgradeDependencies(args, context) {
-    const {output, workDir, yarn, chalk} = context
+    const {output, workDir, yarn, chalk, sanityMajorVersion} = context
+    if (sanityMajorVersion >= 3) {
+      throw new Error(unsupportedMessage)
+    }
+
     const {extOptions, argsWithoutOptions} = args
     const modules = argsWithoutOptions.slice()
     const {range, tag} = extOptions

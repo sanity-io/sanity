@@ -31,6 +31,7 @@ const upgradeCommand: CliCommandDefinition = {
   signature: '[--tag DIST_TAG] [--range SEMVER_RANGE] [--save-exact]',
   description: 'Upgrades all (or some) Sanity modules to their latest versions',
   action: upgradeDependencies,
+  hideFromHelp: true,
   helpText,
 }
 
