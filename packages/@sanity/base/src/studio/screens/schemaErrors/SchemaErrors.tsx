@@ -1,15 +1,5 @@
 import {ErrorOutlineIcon, WarningOutlineIcon} from '@sanity/icons'
-import {
-  Box,
-  Breadcrumbs,
-  Card,
-  Container,
-  Flex,
-  Heading,
-  Stack,
-  Text,
-  ThemeColorToneKey,
-} from '@sanity/ui'
+import {Box, Breadcrumbs, Card, Flex, Heading, Stack, Text, ThemeColorToneKey} from '@sanity/ui'
 import {generateHelpUrl} from '@sanity/generate-help-url'
 import {SchemaValidationProblemGroup} from '@sanity/types'
 import React, {useMemo} from 'react'
@@ -43,96 +33,92 @@ export function SchemaErrors(props: {problemGroups: SchemaValidationProblemGroup
   }, [problemGroups])
 
   return (
-    <Card height="fill" paddingY={[4, 5, 6, 7]} sizing="border" style={{minHeight: '100%'}}>
-      <Container width={1}>
-        <Box>
-          <Heading as="h1">Schema errors</Heading>
-        </Box>
+    <Stack space={5}>
+      <Heading as="h1">Schema errors</Heading>
 
-        <Stack as="ul" marginTop={5} space={4}>
-          {items.map(({group, problem}, i) => {
-            const isError = problem.severity === 'error'
-            const isWarning = problem.severity === 'warning'
+      <Stack as="ul" space={4}>
+        {items.map(({group, problem}, i) => {
+          const isError = problem.severity === 'error'
+          const isWarning = problem.severity === 'warning'
 
-            return (
-              <Card border key={i} padding={4} radius={2} tone={TONES[problem.severity]}>
-                <Flex>
-                  <Box marginRight={3}>
-                    <Text muted size={1}>
-                      {isError && <ErrorOutlineIcon />}
-                      {isWarning && <WarningOutlineIcon />}
-                    </Text>
-                  </Box>
-
-                  <Box flex={1}>
-                    <Text size={1} weight="semibold">
-                      {isError && <>Schema error</>}
-                      {isWarning && <>Schema warning</>}
-                    </Text>
-                  </Box>
-                </Flex>
-
-                <Box marginTop={4}>
-                  <Card border overflow="auto" padding={2} tone="inherit">
-                    <Breadcrumbs
-                      separator={
-                        <Text muted size={1}>
-                          &rarr;
-                        </Text>
-                      }
-                    >
-                      {group.path.map((segment, j) => {
-                        if (segment.kind === 'type') {
-                          return (
-                            <Text key={j} size={1}>
-                              <SegmentSpan>{`${_renderSegmentName(segment.name)}:${
-                                segment.type
-                              }`}</SegmentSpan>
-                            </Text>
-                          )
-                        }
-
-                        if (segment.kind === 'property') {
-                          return (
-                            <Text key={j} size={1}>
-                              <SegmentSpan>{segment.name}</SegmentSpan>
-                            </Text>
-                          )
-                        }
-
-                        return null
-                      })}
-                    </Breadcrumbs>
-                  </Card>
+          return (
+            <Card border key={i} padding={4} radius={2} tone={TONES[problem.severity]}>
+              <Flex>
+                <Box marginRight={3}>
+                  <Text muted size={1}>
+                    {isError && <ErrorOutlineIcon />}
+                    {isWarning && <WarningOutlineIcon />}
+                  </Text>
                 </Box>
 
-                <Box as="ul" marginTop={4}>
-                  <Box as="li">
-                    <Stack space={3}>
+                <Box flex={1}>
+                  <Text size={1} weight="semibold">
+                    {isError && <>Schema error</>}
+                    {isWarning && <>Schema warning</>}
+                  </Text>
+                </Box>
+              </Flex>
+
+              <Box marginTop={4}>
+                <Card border overflow="auto" padding={2} tone="inherit">
+                  <Breadcrumbs
+                    separator={
                       <Text muted size={1}>
-                        {problem.message}
+                        &rarr;
                       </Text>
+                    }
+                  >
+                    {group.path.map((segment, j) => {
+                      if (segment.kind === 'type') {
+                        return (
+                          <Text key={j} size={1}>
+                            <SegmentSpan>{`${_renderSegmentName(segment.name)}:${
+                              segment.type
+                            }`}</SegmentSpan>
+                          </Text>
+                        )
+                      }
 
-                      {problem.helpId && (
-                        <Text muted size={1}>
-                          <a
-                            href={generateHelpUrl(problem.helpId)}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                          >
-                            View documentation &rarr;
-                          </a>
-                        </Text>
-                      )}
-                    </Stack>
-                  </Box>
+                      if (segment.kind === 'property') {
+                        return (
+                          <Text key={j} size={1}>
+                            <SegmentSpan>{segment.name}</SegmentSpan>
+                          </Text>
+                        )
+                      }
+
+                      return null
+                    })}
+                  </Breadcrumbs>
+                </Card>
+              </Box>
+
+              <Box as="ul" marginTop={4}>
+                <Box as="li">
+                  <Stack space={3}>
+                    <Text muted size={1}>
+                      {problem.message}
+                    </Text>
+
+                    {problem.helpId && (
+                      <Text muted size={1}>
+                        <a
+                          href={generateHelpUrl(problem.helpId)}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          View documentation &rarr;
+                        </a>
+                      </Text>
+                    )}
+                  </Stack>
                 </Box>
-              </Card>
-            )
-          })}
-        </Stack>
-      </Container>
-    </Card>
+              </Box>
+            </Card>
+          )
+        })}
+      </Stack>
+    </Stack>
   )
 }
 

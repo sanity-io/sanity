@@ -1,5 +1,5 @@
 import {Schema, SchemaValidationProblemPath} from '@sanity/types'
-import {Card} from '@sanity/ui'
+import {Card, Container} from '@sanity/ui'
 import React, {useEffect} from 'react'
 import {isProd} from '../../../environment'
 import {SchemaErrors} from './SchemaErrors'
@@ -17,8 +17,10 @@ export function SchemaErrorsScreen({schema}: SchemaErrorsScreenProps) {
   useEffect(() => _reportWarnings(schema), [schema])
 
   return (
-    <Card height="fill">
-      <SchemaErrors problemGroups={groupsWithErrors} />
+    <Card height="fill" overflow="auto" paddingY={[4, 5, 6, 7]} paddingX={4} sizing="border">
+      <Container width={1}>
+        <SchemaErrors problemGroups={groupsWithErrors} />
+      </Container>
     </Card>
   )
 }
