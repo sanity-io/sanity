@@ -1,91 +1,41 @@
 {
   "styles": [
-    {
-      "title": "Normal",
-      "value": "normal"
-    },
-    {
-      "title": "Heading 1",
-      "value": "h1"
-    },
-    {
-      "title": "Heading 2",
-      "value": "h2"
-    },
-    {
-      "title": "Heading 3",
-      "value": "h3"
-    },
-    {
-      "title": "Heading 4",
-      "value": "h4"
-    },
-    {
-      "title": "Heading 5",
-      "value": "h5"
-    },
-    {
-      "title": "Heading 6",
-      "value": "h6"
-    },
-    {
-      "title": "Quote",
-      "value": "blockquote"
-    }
+    {"title": "Normal", "value": "normal"},
+    {"title": "Heading 1", "value": "h1"},
+    {"title": "Heading 2", "value": "h2"},
+    {"title": "Heading 3", "value": "h3"},
+    {"title": "Heading 4", "value": "h4"},
+    {"title": "Heading 5", "value": "h5"},
+    {"title": "Heading 6", "value": "h6"},
+    {"title": "Quote", "value": "blockquote"}
   ],
   "decorators": [
-    {
-      "title": "Strong",
-      "value": "strong"
-    },
-    {
-      "title": "Emphasis",
-      "value": "em"
-    },
-    {
-      "title": "Code",
-      "value": "code"
-    },
-    {
-      "title": "Underline",
-      "value": "underline"
-    },
-    {
-      "title": "Strike",
-      "value": "strike-through"
-    }
+    {"title": "Strong", "value": "strong"},
+    {"title": "Emphasis", "value": "em"},
+    {"title": "Code", "value": "code"},
+    {"title": "Underline", "value": "underline"},
+    {"title": "Strike", "value": "strike-through"}
   ],
   "annotations": [
     {
       "title": "Link",
       "type": {
         "jsonType": "object",
-        "type": {
-          "name": "object",
-          "type": null,
-          "jsonType": "object"
-        },
+        "type": {"name": "object", "type": null, "jsonType": "object"},
         "name": "link",
         "fields": [
           {
             "name": "href",
             "type": {
               "jsonType": "string",
-              "type": {
-                "name": "url",
-                "title": "Url",
-                "type": null,
-                "jsonType": "string"
-              },
+              "type": {"name": "url", "title": "Url", "type": null, "jsonType": "string"},
               "name": "url",
               "title": "Url",
               "preview": {}
             }
           }
         ],
-        "options": {
-          "editModal": "popover"
-        },
+        "options": {"modal": {"type": "popover"}},
         "title": "Link",
         "orderings": [],
         "fieldsets": [
@@ -95,12 +45,7 @@
               "name": "href",
               "type": {
                 "jsonType": "string",
-                "type": {
-                  "name": "url",
-                  "title": "Url",
-                  "type": null,
-                  "jsonType": "string"
-                },
+                "type": {"name": "url", "title": "Url", "type": null, "jsonType": "string"},
                 "name": "url",
                 "title": "Url",
                 "preview": {}
@@ -109,43 +54,24 @@
           }
         ],
         "groups": [],
-        "preview": {
-          "select": {
-            "href": "href"
-          }
-        }
+        "preview": {"select": {"href": "href"}}
       },
       "value": "link"
     }
   ],
   "lists": [
-    {
-      "title": "Bullet",
-      "value": "bullet"
-    },
-    {
-      "title": "Numbered",
-      "value": "number"
-    }
+    {"title": "Bullet", "value": "bullet"},
+    {"title": "Numbered", "value": "number"}
   ],
   "types": {
     "block": {
       "jsonType": "array",
-      "type": {
-        "name": "array",
-        "type": null,
-        "jsonType": "array",
-        "of": []
-      },
+      "type": {"name": "array", "type": null, "jsonType": "array", "of": []},
       "name": "array",
       "title": "Body",
       "of": [
         {
-          "type": {
-            "name": "block",
-            "type": null,
-            "jsonType": "object"
-          },
+          "type": {"name": "block", "type": null, "jsonType": "object"},
           "name": "block",
           "jsonType": "object",
           "options": {},
@@ -154,21 +80,12 @@
               "name": "children",
               "type": {
                 "jsonType": "array",
-                "type": {
-                  "name": "array",
-                  "type": null,
-                  "jsonType": "array",
-                  "of": []
-                },
+                "type": {"name": "array", "type": null, "jsonType": "array", "of": []},
                 "name": "array",
                 "title": "Content",
                 "of": [
                   {
-                    "type": {
-                      "name": "span",
-                      "type": null,
-                      "jsonType": "object"
-                    },
+                    "type": {"name": "span", "type": null, "jsonType": "object"},
                     "name": "span",
                     "jsonType": "object",
                     "fields": [
@@ -176,22 +93,13 @@
                         "name": "marks",
                         "type": {
                           "jsonType": "array",
-                          "type": {
-                            "name": "array",
-                            "type": null,
-                            "jsonType": "array",
-                            "of": []
-                          },
+                          "type": {"name": "array", "type": null, "jsonType": "array", "of": []},
                           "name": "array",
                           "title": "Marks",
                           "of": [
                             {
                               "jsonType": "string",
-                              "type": {
-                                "name": "string",
-                                "type": null,
-                                "jsonType": "string"
-                              },
+                              "type": {"name": "string", "type": null, "jsonType": "string"},
                               "name": "string",
                               "preview": {}
                             }
@@ -202,11 +110,7 @@
                         "name": "text",
                         "type": {
                           "jsonType": "string",
-                          "type": {
-                            "name": "string",
-                            "type": null,
-                            "jsonType": "string"
-                          },
+                          "type": {"name": "string", "type": null, "jsonType": "string"},
                           "name": "string",
                           "title": "Text",
                           "preview": {}
@@ -216,11 +120,7 @@
                     "annotations": [
                       {
                         "jsonType": "object",
-                        "type": {
-                          "name": "object",
-                          "type": null,
-                          "jsonType": "object"
-                        },
+                        "type": {"name": "object", "type": null, "jsonType": "object"},
                         "name": "link",
                         "fields": [
                           {
@@ -239,9 +139,7 @@
                             }
                           }
                         ],
-                        "options": {
-                          "editModal": "popover"
-                        },
+                        "options": {"modal": {"type": "popover"}},
                         "title": "Link",
                         "orderings": [],
                         "fieldsets": [
@@ -265,43 +163,19 @@
                           }
                         ],
                         "groups": [],
-                        "preview": {
-                          "select": {
-                            "href": "href"
-                          }
-                        }
+                        "preview": {"select": {"href": "href"}}
                       }
                     ],
                     "decorators": [
-                      {
-                        "title": "Strong",
-                        "value": "strong"
-                      },
-                      {
-                        "title": "Emphasis",
-                        "value": "em"
-                      },
-                      {
-                        "title": "Code",
-                        "value": "code"
-                      },
-                      {
-                        "title": "Underline",
-                        "value": "underline"
-                      },
-                      {
-                        "title": "Strike",
-                        "value": "strike-through"
-                      }
+                      {"title": "Strong", "value": "strong"},
+                      {"title": "Emphasis", "value": "em"},
+                      {"title": "Code", "value": "code"},
+                      {"title": "Underline", "value": "underline"},
+                      {"title": "Strike", "value": "strike-through"}
                     ],
                     "options": {},
                     "marks": [],
-                    "preview": {
-                      "select": {
-                        "text": "text",
-                        "marks": "marks"
-                      }
-                    }
+                    "preview": {"select": {"text": "text", "marks": "marks"}}
                   }
                 ]
               }
@@ -310,47 +184,19 @@
               "name": "style",
               "type": {
                 "jsonType": "string",
-                "type": {
-                  "name": "string",
-                  "type": null,
-                  "jsonType": "string"
-                },
+                "type": {"name": "string", "type": null, "jsonType": "string"},
                 "name": "string",
                 "title": "Style",
                 "options": {
                   "list": [
-                    {
-                      "title": "Normal",
-                      "value": "normal"
-                    },
-                    {
-                      "title": "Heading 1",
-                      "value": "h1"
-                    },
-                    {
-                      "title": "Heading 2",
-                      "value": "h2"
-                    },
-                    {
-                      "title": "Heading 3",
-                      "value": "h3"
-                    },
-                    {
-                      "title": "Heading 4",
-                      "value": "h4"
-                    },
-                    {
-                      "title": "Heading 5",
-                      "value": "h5"
-                    },
-                    {
-                      "title": "Heading 6",
-                      "value": "h6"
-                    },
-                    {
-                      "title": "Quote",
-                      "value": "blockquote"
-                    }
+                    {"title": "Normal", "value": "normal"},
+                    {"title": "Heading 1", "value": "h1"},
+                    {"title": "Heading 2", "value": "h2"},
+                    {"title": "Heading 3", "value": "h3"},
+                    {"title": "Heading 4", "value": "h4"},
+                    {"title": "Heading 5", "value": "h5"},
+                    {"title": "Heading 6", "value": "h6"},
+                    {"title": "Quote", "value": "blockquote"}
                   ]
                 },
                 "preview": {}
@@ -360,51 +206,89 @@
               "name": "list",
               "type": {
                 "jsonType": "string",
-                "type": {
-                  "name": "string",
-                  "type": null,
-                  "jsonType": "string"
-                },
+                "type": {"name": "string", "type": null, "jsonType": "string"},
                 "name": "string",
                 "title": "List type",
                 "options": {
                   "list": [
-                    {
-                      "title": "Bullet",
-                      "value": "bullet"
-                    },
-                    {
-                      "title": "Numbered",
-                      "value": "number"
-                    }
+                    {"title": "Bullet", "value": "bullet"},
+                    {"title": "Numbered", "value": "number"}
                   ]
                 },
                 "preview": {}
               }
+            },
+            {
+              "name": "markDefs",
+              "type": {
+                "jsonType": "array",
+                "type": {"name": "array", "type": null, "jsonType": "array", "of": []},
+                "name": "array",
+                "title": "Mark definitions",
+                "of": [
+                  {
+                    "jsonType": "object",
+                    "type": {"name": "object", "type": null, "jsonType": "object"},
+                    "name": "link",
+                    "fields": [
+                      {
+                        "name": "href",
+                        "type": {
+                          "jsonType": "string",
+                          "type": {
+                            "name": "url",
+                            "title": "Url",
+                            "type": null,
+                            "jsonType": "string"
+                          },
+                          "name": "url",
+                          "title": "Url",
+                          "preview": {}
+                        }
+                      }
+                    ],
+                    "options": {"modal": {"type": "popover"}},
+                    "title": "Link",
+                    "orderings": [],
+                    "fieldsets": [
+                      {
+                        "single": true,
+                        "field": {
+                          "name": "href",
+                          "type": {
+                            "jsonType": "string",
+                            "type": {
+                              "name": "url",
+                              "title": "Url",
+                              "type": null,
+                              "jsonType": "string"
+                            },
+                            "name": "url",
+                            "title": "Url",
+                            "preview": {}
+                          }
+                        }
+                      }
+                    ],
+                    "groups": [],
+                    "preview": {"select": {"href": "href"}}
+                  }
+                ]
+              }
             }
           ],
-          "preview": {
-            "select": {}
-          }
+          "preview": {"select": {}}
         },
         {
           "jsonType": "object",
-          "type": {
-            "name": "object",
-            "type": null,
-            "jsonType": "object"
-          },
+          "type": {"name": "object", "type": null, "jsonType": "object"},
           "name": "code",
           "fields": [
             {
               "name": "code",
               "type": {
                 "jsonType": "string",
-                "type": {
-                  "name": "text",
-                  "type": null,
-                  "jsonType": "string"
-                },
+                "type": {"name": "text", "type": null, "jsonType": "string"},
                 "name": "text",
                 "title": "Code",
                 "preview": {}
@@ -414,11 +298,7 @@
               "name": "language",
               "type": {
                 "jsonType": "string",
-                "type": {
-                  "name": "string",
-                  "type": null,
-                  "jsonType": "string"
-                },
+                "type": {"name": "string", "type": null, "jsonType": "string"},
                 "name": "string",
                 "title": "Language",
                 "preview": {}
@@ -428,22 +308,13 @@
               "name": "highlightedLines",
               "type": {
                 "jsonType": "array",
-                "type": {
-                  "name": "array",
-                  "type": null,
-                  "jsonType": "array",
-                  "of": []
-                },
+                "type": {"name": "array", "type": null, "jsonType": "array", "of": []},
                 "name": "array",
                 "title": "Highlighted lines",
                 "of": [
                   {
                     "jsonType": "number",
-                    "type": {
-                      "name": "number",
-                      "type": null,
-                      "jsonType": "number"
-                    },
+                    "type": {"name": "number", "type": null, "jsonType": "number"},
                     "name": "number",
                     "title": "Highlighted line",
                     "preview": {}
@@ -458,12 +329,7 @@
             {
               "name": "language",
               "title": "Language",
-              "by": [
-                {
-                  "field": "language",
-                  "direction": "asc"
-                }
-              ]
+              "by": [{"field": "language", "direction": "asc"}]
             }
           ],
           "fieldsets": [
@@ -473,11 +339,7 @@
                 "name": "code",
                 "type": {
                   "jsonType": "string",
-                  "type": {
-                    "name": "text",
-                    "type": null,
-                    "jsonType": "string"
-                  },
+                  "type": {"name": "text", "type": null, "jsonType": "string"},
                   "name": "text",
                   "title": "Code",
                   "preview": {}
@@ -490,11 +352,7 @@
                 "name": "language",
                 "type": {
                   "jsonType": "string",
-                  "type": {
-                    "name": "string",
-                    "type": null,
-                    "jsonType": "string"
-                  },
+                  "type": {"name": "string", "type": null, "jsonType": "string"},
                   "name": "string",
                   "title": "Language",
                   "preview": {}
@@ -507,22 +365,13 @@
                 "name": "highlightedLines",
                 "type": {
                   "jsonType": "array",
-                  "type": {
-                    "name": "array",
-                    "type": null,
-                    "jsonType": "array",
-                    "of": []
-                  },
+                  "type": {"name": "array", "type": null, "jsonType": "array", "of": []},
                   "name": "array",
                   "title": "Highlighted lines",
                   "of": [
                     {
                       "jsonType": "number",
-                      "type": {
-                        "name": "number",
-                        "type": null,
-                        "jsonType": "number"
-                      },
+                      "type": {"name": "number", "type": null, "jsonType": "number"},
                       "name": "number",
                       "title": "Highlighted line",
                       "preview": {}
@@ -533,20 +382,12 @@
             }
           ],
           "groups": [],
-          "preview": {
-            "select": {
-              "title": "language"
-            }
-          }
+          "preview": {"select": {"title": "language"}}
         }
       ]
     },
     "span": {
-      "type": {
-        "name": "span",
-        "type": null,
-        "jsonType": "object"
-      },
+      "type": {"name": "span", "type": null, "jsonType": "object"},
       "name": "span",
       "jsonType": "object",
       "fields": [
@@ -554,22 +395,13 @@
           "name": "marks",
           "type": {
             "jsonType": "array",
-            "type": {
-              "name": "array",
-              "type": null,
-              "jsonType": "array",
-              "of": []
-            },
+            "type": {"name": "array", "type": null, "jsonType": "array", "of": []},
             "name": "array",
             "title": "Marks",
             "of": [
               {
                 "jsonType": "string",
-                "type": {
-                  "name": "string",
-                  "type": null,
-                  "jsonType": "string"
-                },
+                "type": {"name": "string", "type": null, "jsonType": "string"},
                 "name": "string",
                 "preview": {}
               }
@@ -580,11 +412,7 @@
           "name": "text",
           "type": {
             "jsonType": "string",
-            "type": {
-              "name": "string",
-              "type": null,
-              "jsonType": "string"
-            },
+            "type": {"name": "string", "type": null, "jsonType": "string"},
             "name": "string",
             "title": "Text",
             "preview": {}
@@ -594,32 +422,21 @@
       "annotations": [
         {
           "jsonType": "object",
-          "type": {
-            "name": "object",
-            "type": null,
-            "jsonType": "object"
-          },
+          "type": {"name": "object", "type": null, "jsonType": "object"},
           "name": "link",
           "fields": [
             {
               "name": "href",
               "type": {
                 "jsonType": "string",
-                "type": {
-                  "name": "url",
-                  "title": "Url",
-                  "type": null,
-                  "jsonType": "string"
-                },
+                "type": {"name": "url", "title": "Url", "type": null, "jsonType": "string"},
                 "name": "url",
                 "title": "Url",
                 "preview": {}
               }
             }
           ],
-          "options": {
-            "editModal": "popover"
-          },
+          "options": {"modal": {"type": "popover"}},
           "title": "Link",
           "orderings": [],
           "fieldsets": [
@@ -629,12 +446,7 @@
                 "name": "href",
                 "type": {
                   "jsonType": "string",
-                  "type": {
-                    "name": "url",
-                    "title": "Url",
-                    "type": null,
-                    "jsonType": "string"
-                  },
+                  "type": {"name": "url", "title": "Url", "type": null, "jsonType": "string"},
                   "name": "url",
                   "title": "Url",
                   "preview": {}
@@ -643,64 +455,32 @@
             }
           ],
           "groups": [],
-          "preview": {
-            "select": {
-              "href": "href"
-            }
-          }
+          "preview": {"select": {"href": "href"}}
         }
       ],
       "decorators": [
-        {
-          "title": "Strong",
-          "value": "strong"
-        },
-        {
-          "title": "Emphasis",
-          "value": "em"
-        },
-        {
-          "title": "Code",
-          "value": "code"
-        },
-        {
-          "title": "Underline",
-          "value": "underline"
-        },
-        {
-          "title": "Strike",
-          "value": "strike-through"
-        }
+        {"title": "Strong", "value": "strong"},
+        {"title": "Emphasis", "value": "em"},
+        {"title": "Code", "value": "code"},
+        {"title": "Underline", "value": "underline"},
+        {"title": "Strike", "value": "strike-through"}
       ],
       "options": {},
       "marks": [],
-      "preview": {
-        "select": {
-          "text": "text",
-          "marks": "marks"
-        }
-      }
+      "preview": {"select": {"text": "text", "marks": "marks"}}
     },
     "inlineObjects": [],
     "blockObjects": [
       {
         "jsonType": "object",
-        "type": {
-          "name": "object",
-          "type": null,
-          "jsonType": "object"
-        },
+        "type": {"name": "object", "type": null, "jsonType": "object"},
         "name": "code",
         "fields": [
           {
             "name": "code",
             "type": {
               "jsonType": "string",
-              "type": {
-                "name": "text",
-                "type": null,
-                "jsonType": "string"
-              },
+              "type": {"name": "text", "type": null, "jsonType": "string"},
               "name": "text",
               "title": "Code",
               "preview": {}
@@ -710,11 +490,7 @@
             "name": "language",
             "type": {
               "jsonType": "string",
-              "type": {
-                "name": "string",
-                "type": null,
-                "jsonType": "string"
-              },
+              "type": {"name": "string", "type": null, "jsonType": "string"},
               "name": "string",
               "title": "Language",
               "preview": {}
@@ -724,22 +500,13 @@
             "name": "highlightedLines",
             "type": {
               "jsonType": "array",
-              "type": {
-                "name": "array",
-                "type": null,
-                "jsonType": "array",
-                "of": []
-              },
+              "type": {"name": "array", "type": null, "jsonType": "array", "of": []},
               "name": "array",
               "title": "Highlighted lines",
               "of": [
                 {
                   "jsonType": "number",
-                  "type": {
-                    "name": "number",
-                    "type": null,
-                    "jsonType": "number"
-                  },
+                  "type": {"name": "number", "type": null, "jsonType": "number"},
                   "name": "number",
                   "title": "Highlighted line",
                   "preview": {}
@@ -754,12 +521,7 @@
           {
             "name": "language",
             "title": "Language",
-            "by": [
-              {
-                "field": "language",
-                "direction": "asc"
-              }
-            ]
+            "by": [{"field": "language", "direction": "asc"}]
           }
         ],
         "fieldsets": [
@@ -769,11 +531,7 @@
               "name": "code",
               "type": {
                 "jsonType": "string",
-                "type": {
-                  "name": "text",
-                  "type": null,
-                  "jsonType": "string"
-                },
+                "type": {"name": "text", "type": null, "jsonType": "string"},
                 "name": "text",
                 "title": "Code",
                 "preview": {}
@@ -786,11 +544,7 @@
               "name": "language",
               "type": {
                 "jsonType": "string",
-                "type": {
-                  "name": "string",
-                  "type": null,
-                  "jsonType": "string"
-                },
+                "type": {"name": "string", "type": null, "jsonType": "string"},
                 "name": "string",
                 "title": "Language",
                 "preview": {}
@@ -803,22 +557,13 @@
               "name": "highlightedLines",
               "type": {
                 "jsonType": "array",
-                "type": {
-                  "name": "array",
-                  "type": null,
-                  "jsonType": "array",
-                  "of": []
-                },
+                "type": {"name": "array", "type": null, "jsonType": "array", "of": []},
                 "name": "array",
                 "title": "Highlighted lines",
                 "of": [
                   {
                     "jsonType": "number",
-                    "type": {
-                      "name": "number",
-                      "type": null,
-                      "jsonType": "number"
-                    },
+                    "type": {"name": "number", "type": null, "jsonType": "number"},
                     "name": "number",
                     "title": "Highlighted line",
                     "preview": {}
@@ -829,11 +574,7 @@
           }
         ],
         "groups": [],
-        "preview": {
-          "select": {
-            "title": "language"
-          }
-        }
+        "preview": {"select": {"title": "language"}}
       }
     ]
   }

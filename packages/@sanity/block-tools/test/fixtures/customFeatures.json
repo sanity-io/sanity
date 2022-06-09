@@ -121,6 +121,34 @@
               "preview": {}
             }
           }
+        ],
+        "fieldsets": [
+          {
+            "single": true,
+            "field": {
+              "name": "_ref",
+              "type": {
+                "jsonType": "string",
+                "type": {"name": "string", "type": null, "jsonType": "string"},
+                "name": "string",
+                "title": "Referenced document ID",
+                "preview": {}
+              }
+            }
+          },
+          {
+            "single": true,
+            "field": {
+              "name": "_weak",
+              "type": {
+                "jsonType": "boolean",
+                "type": {"name": "boolean", "type": null, "jsonType": "boolean"},
+                "name": "boolean",
+                "title": "Weak reference",
+                "preview": {}
+              }
+            }
+          }
         ]
       },
       "value": "author"
@@ -313,6 +341,34 @@
                                 "preview": {}
                               }
                             }
+                          ],
+                          "fieldsets": [
+                            {
+                              "single": true,
+                              "field": {
+                                "name": "_ref",
+                                "type": {
+                                  "jsonType": "string",
+                                  "type": {"name": "string", "type": null, "jsonType": "string"},
+                                  "name": "string",
+                                  "title": "Referenced document ID",
+                                  "preview": {}
+                                }
+                              }
+                            },
+                            {
+                              "single": true,
+                              "field": {
+                                "name": "_weak",
+                                "type": {
+                                  "jsonType": "boolean",
+                                  "type": {"name": "boolean", "type": null, "jsonType": "boolean"},
+                                  "name": "boolean",
+                                  "title": "Weak reference",
+                                  "preview": {}
+                                }
+                              }
+                            }
                           ]
                         }
                       ],
@@ -353,6 +409,165 @@
                   "title": "List type",
                   "options": {"list": [{"title": "Numbered", "value": "number"}]},
                   "preview": {}
+                }
+              },
+              {
+                "name": "markDefs",
+                "type": {
+                  "jsonType": "array",
+                  "type": {"name": "array", "type": null, "jsonType": "array", "of": []},
+                  "name": "array",
+                  "title": "Mark definitions",
+                  "of": [
+                    {
+                      "jsonType": "object",
+                      "type": {"name": "reference", "type": null, "jsonType": "object"},
+                      "name": "author",
+                      "title": "Author",
+                      "to": [
+                        {
+                          "jsonType": "object",
+                          "type": {
+                            "jsonType": "object",
+                            "type": {"name": "document", "type": null, "jsonType": "object"},
+                            "name": "author",
+                            "fields": [
+                              {
+                                "name": "name",
+                                "type": {
+                                  "jsonType": "string",
+                                  "type": {"name": "string", "type": null, "jsonType": "string"},
+                                  "name": "string",
+                                  "title": "Name",
+                                  "preview": {}
+                                }
+                              }
+                            ],
+                            "title": "Author",
+                            "options": {},
+                            "orderings": [
+                              {
+                                "name": "name",
+                                "title": "Name",
+                                "by": [{"field": "name", "direction": "asc"}]
+                              }
+                            ],
+                            "fieldsets": [
+                              {
+                                "single": true,
+                                "field": {
+                                  "name": "name",
+                                  "type": {
+                                    "jsonType": "string",
+                                    "type": {"name": "string", "type": null, "jsonType": "string"},
+                                    "name": "string",
+                                    "title": "Name",
+                                    "preview": {}
+                                  }
+                                }
+                              }
+                            ],
+                            "groups": [],
+                            "preview": {"select": {"title": "name"}}
+                          },
+                          "name": "author",
+                          "fields": [
+                            {
+                              "name": "name",
+                              "type": {
+                                "jsonType": "string",
+                                "type": {"name": "string", "type": null, "jsonType": "string"},
+                                "name": "string",
+                                "title": "Name",
+                                "preview": {}
+                              }
+                            }
+                          ],
+                          "title": "Author",
+                          "options": {},
+                          "orderings": [
+                            {
+                              "name": "name",
+                              "title": "Name",
+                              "by": [{"field": "name", "direction": "asc"}]
+                            }
+                          ],
+                          "fieldsets": [
+                            {
+                              "single": true,
+                              "field": {
+                                "name": "name",
+                                "type": {
+                                  "jsonType": "string",
+                                  "type": {"name": "string", "type": null, "jsonType": "string"},
+                                  "name": "string",
+                                  "title": "Name",
+                                  "preview": {}
+                                }
+                              }
+                            }
+                          ],
+                          "groups": [],
+                          "preview": {"select": {"title": "name"}},
+                          "__experimental_search": [
+                            {"weight": 1, "path": ["_id"]},
+                            {"weight": 1, "path": ["_type"]},
+                            {"weight": 10, "path": ["name"]}
+                          ]
+                        }
+                      ],
+                      "fields": [
+                        {
+                          "name": "_ref",
+                          "type": {
+                            "jsonType": "string",
+                            "type": {"name": "string", "type": null, "jsonType": "string"},
+                            "name": "string",
+                            "title": "Referenced document ID",
+                            "preview": {}
+                          }
+                        },
+                        {
+                          "name": "_weak",
+                          "type": {
+                            "jsonType": "boolean",
+                            "type": {"name": "boolean", "type": null, "jsonType": "boolean"},
+                            "name": "boolean",
+                            "title": "Weak reference",
+                            "preview": {}
+                          }
+                        }
+                      ],
+                      "fieldsets": [
+                        {
+                          "single": true,
+                          "field": {
+                            "name": "_ref",
+                            "type": {
+                              "jsonType": "string",
+                              "type": {"name": "string", "type": null, "jsonType": "string"},
+                              "name": "string",
+                              "title": "Referenced document ID",
+                              "preview": {}
+                            }
+                          }
+                        },
+                        {
+                          "single": true,
+                          "field": {
+                            "name": "_weak",
+                            "type": {
+                              "jsonType": "boolean",
+                              "type": {"name": "boolean", "type": null, "jsonType": "boolean"},
+                              "name": "boolean",
+                              "title": "Weak reference",
+                              "preview": {}
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  ]
                 }
               }
             ],
@@ -526,6 +741,34 @@
                               "preview": {}
                             }
                           }
+                        ],
+                        "fieldsets": [
+                          {
+                            "single": true,
+                            "field": {
+                              "name": "_ref",
+                              "type": {
+                                "jsonType": "string",
+                                "type": {"name": "string", "type": null, "jsonType": "string"},
+                                "name": "string",
+                                "title": "Referenced document ID",
+                                "preview": {}
+                              }
+                            }
+                          },
+                          {
+                            "single": true,
+                            "field": {
+                              "name": "_weak",
+                              "type": {
+                                "jsonType": "boolean",
+                                "type": {"name": "boolean", "type": null, "jsonType": "boolean"},
+                                "name": "boolean",
+                                "title": "Weak reference",
+                                "preview": {}
+                              }
+                            }
+                          }
                         ]
                       }
                     ],
@@ -566,6 +809,165 @@
                 "title": "List type",
                 "options": {"list": [{"title": "Numbered", "value": "number"}]},
                 "preview": {}
+              }
+            },
+            {
+              "name": "markDefs",
+              "type": {
+                "jsonType": "array",
+                "type": {"name": "array", "type": null, "jsonType": "array", "of": []},
+                "name": "array",
+                "title": "Mark definitions",
+                "of": [
+                  {
+                    "jsonType": "object",
+                    "type": {"name": "reference", "type": null, "jsonType": "object"},
+                    "name": "author",
+                    "title": "Author",
+                    "to": [
+                      {
+                        "jsonType": "object",
+                        "type": {
+                          "jsonType": "object",
+                          "type": {"name": "document", "type": null, "jsonType": "object"},
+                          "name": "author",
+                          "fields": [
+                            {
+                              "name": "name",
+                              "type": {
+                                "jsonType": "string",
+                                "type": {"name": "string", "type": null, "jsonType": "string"},
+                                "name": "string",
+                                "title": "Name",
+                                "preview": {}
+                              }
+                            }
+                          ],
+                          "title": "Author",
+                          "options": {},
+                          "orderings": [
+                            {
+                              "name": "name",
+                              "title": "Name",
+                              "by": [{"field": "name", "direction": "asc"}]
+                            }
+                          ],
+                          "fieldsets": [
+                            {
+                              "single": true,
+                              "field": {
+                                "name": "name",
+                                "type": {
+                                  "jsonType": "string",
+                                  "type": {"name": "string", "type": null, "jsonType": "string"},
+                                  "name": "string",
+                                  "title": "Name",
+                                  "preview": {}
+                                }
+                              }
+                            }
+                          ],
+                          "groups": [],
+                          "preview": {"select": {"title": "name"}}
+                        },
+                        "name": "author",
+                        "fields": [
+                          {
+                            "name": "name",
+                            "type": {
+                              "jsonType": "string",
+                              "type": {"name": "string", "type": null, "jsonType": "string"},
+                              "name": "string",
+                              "title": "Name",
+                              "preview": {}
+                            }
+                          }
+                        ],
+                        "title": "Author",
+                        "options": {},
+                        "orderings": [
+                          {
+                            "name": "name",
+                            "title": "Name",
+                            "by": [{"field": "name", "direction": "asc"}]
+                          }
+                        ],
+                        "fieldsets": [
+                          {
+                            "single": true,
+                            "field": {
+                              "name": "name",
+                              "type": {
+                                "jsonType": "string",
+                                "type": {"name": "string", "type": null, "jsonType": "string"},
+                                "name": "string",
+                                "title": "Name",
+                                "preview": {}
+                              }
+                            }
+                          }
+                        ],
+                        "groups": [],
+                        "preview": {"select": {"title": "name"}},
+                        "__experimental_search": [
+                          {"weight": 1, "path": ["_id"]},
+                          {"weight": 1, "path": ["_type"]},
+                          {"weight": 10, "path": ["name"]}
+                        ]
+                      }
+                    ],
+                    "fields": [
+                      {
+                        "name": "_ref",
+                        "type": {
+                          "jsonType": "string",
+                          "type": {"name": "string", "type": null, "jsonType": "string"},
+                          "name": "string",
+                          "title": "Referenced document ID",
+                          "preview": {}
+                        }
+                      },
+                      {
+                        "name": "_weak",
+                        "type": {
+                          "jsonType": "boolean",
+                          "type": {"name": "boolean", "type": null, "jsonType": "boolean"},
+                          "name": "boolean",
+                          "title": "Weak reference",
+                          "preview": {}
+                        }
+                      }
+                    ],
+                    "fieldsets": [
+                      {
+                        "single": true,
+                        "field": {
+                          "name": "_ref",
+                          "type": {
+                            "jsonType": "string",
+                            "type": {"name": "string", "type": null, "jsonType": "string"},
+                            "name": "string",
+                            "title": "Referenced document ID",
+                            "preview": {}
+                          }
+                        }
+                      },
+                      {
+                        "single": true,
+                        "field": {
+                          "name": "_weak",
+                          "type": {
+                            "jsonType": "boolean",
+                            "type": {"name": "boolean", "type": null, "jsonType": "boolean"},
+                            "name": "boolean",
+                            "title": "Weak reference",
+                            "preview": {}
+                          }
+                        }
+                      }
+                    ]
+                  }
+                ]
               }
             }
           ],
@@ -715,6 +1117,34 @@
                 "name": "boolean",
                 "title": "Weak reference",
                 "preview": {}
+              }
+            }
+          ],
+          "fieldsets": [
+            {
+              "single": true,
+              "field": {
+                "name": "_ref",
+                "type": {
+                  "jsonType": "string",
+                  "type": {"name": "string", "type": null, "jsonType": "string"},
+                  "name": "string",
+                  "title": "Referenced document ID",
+                  "preview": {}
+                }
+              }
+            },
+            {
+              "single": true,
+              "field": {
+                "name": "_weak",
+                "type": {
+                  "jsonType": "boolean",
+                  "type": {"name": "boolean", "type": null, "jsonType": "boolean"},
+                  "name": "boolean",
+                  "title": "Weak reference",
+                  "preview": {}
+                }
               }
             }
           ]
