@@ -23,7 +23,7 @@ import {NavDrawer} from './NavDrawer'
 import {SearchField} from './search'
 import {ToolMenu as DefaultToolMenu} from './tools/ToolMenu'
 import {ChangelogButton} from './changelog'
-import {WorkspaceMenu} from './workspace'
+import {WorkspaceMenuButton} from './workspace'
 
 const RootLayer = styled(Layer)`
   min-height: auto;
@@ -97,7 +97,7 @@ export function Navbar(props: NavbarProps) {
       collapsedPresenceMenu: mediaIndex <= 1,
       loginStatus: mediaIndex > 1,
       searchFullscreen: mediaIndex <= 1,
-      spaces: mediaIndex >= 3 && workspaces.length > 1,
+      workspaces: mediaIndex >= 3 && workspaces.length > 1,
       tools: mediaIndex >= 3,
     }),
     [mediaIndex, workspaces.length]
@@ -191,9 +191,9 @@ export function Navbar(props: NavbarProps) {
 
             {!shouldRender.brandingCenter && <Box marginRight={1}>{brandingComponent}</Box>}
 
-            {shouldRender.spaces && (
+            {shouldRender.workspaces && (
               <Box marginRight={2}>
-                <WorkspaceMenu />
+                <WorkspaceMenuButton />
               </Box>
             )}
 

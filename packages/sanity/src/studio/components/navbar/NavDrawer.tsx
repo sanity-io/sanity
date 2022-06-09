@@ -121,7 +121,7 @@ export const NavDrawer = memo(function NavDrawer(props: NavDrawerProps) {
               </Box>
             </Flex>
 
-            <WorkspaceMenuButton />
+            <WorkspaceMenuButton text="Select workspace" justify="flex-start" />
           </Stack>
         </Card>
 
