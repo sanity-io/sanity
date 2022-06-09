@@ -12,8 +12,8 @@ Options
   --attach <job-id> Attach to the running copy process to show progress
   --skip-history Don't preserve document history on copy
   --list Lists all dataset copy jobs corresponding to a certain criteria.
-  --offset Start position in the list of jobs. Default 0.
-  --limit Maximum number of jobs returned. Default 10. Maximum 1000.
+  --offset Start position in the list of jobs. Default 0. With --list.
+  --limit Maximum number of jobs returned. Default 10. Maximum 1000. With --list.
 
 Examples
   sanity dataset copy
