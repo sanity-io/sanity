@@ -7,7 +7,7 @@ import {useWorkspace} from '../../workspace'
 import {useRovingFocus} from '../../../components/rovingFocus'
 import {Tool} from '../../../config'
 import {ToolMenu as DefaultToolMenu} from './tools/ToolMenu'
-import {WorkspaceMenu} from './workspace'
+import {WorkspaceMenuButton} from './workspace'
 
 const Root = styled(Layer)`
   position: fixed;
@@ -121,7 +121,7 @@ export const NavDrawer = memo(function NavDrawer(props: NavDrawerProps) {
               </Box>
             </Flex>
 
-            <WorkspaceMenu />
+            <WorkspaceMenuButton />
           </Stack>
         </Card>
 
