@@ -332,9 +332,11 @@ function prepareObjectInputState<T>(
       return []
     }
 
+    const defaultCollapsedState = getCollapsedWithDefaults(fieldSet.options, props.level)
+
     const collapsed =
       (props.collapsedFieldSets?.children || {})[fieldSet.name]?.value ??
-      fieldSet.options?.collapsed
+      defaultCollapsedState.collapsed
 
     return [
       {
@@ -348,7 +350,7 @@ function prepareObjectInputState<T>(
           hidden: false,
           level: props.level + 1,
           fields: fieldsetMembers,
-          collapsible: fieldSet.options?.collapsible,
+          collapsible: defaultCollapsedState?.collapsible,
           collapsed,
         },
       },
