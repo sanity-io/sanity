@@ -1,9 +1,8 @@
 import {parseISO, formatDistanceToNow, formatDistance} from 'date-fns'
 const {Table} = require('console-table-printer')
 
-module.exports = async function listDatasetCopyJobs(args, context) {
+export default async function listDatasetCopyJobs(flags, context) {
   const {apiClient, output, chalk} = context
-  const flags = args.extOptions
   const client = apiClient()
   const projectId = client.config().projectId
   const query = {}
