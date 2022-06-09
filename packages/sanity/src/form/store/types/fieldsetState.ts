@@ -1,4 +1,5 @@
 import {Path} from '@sanity/types'
+import {FieldError} from './memberErrors'
 import {FieldMember} from './members'
 
 export interface FieldsetState {
@@ -10,5 +11,5 @@ export interface FieldsetState {
   hidden?: boolean
   collapsible?: boolean
   collapsed?: boolean
-  fields: FieldMember[]
+  members: (FieldMember | FieldError)[]
 }

@@ -1,9 +1,12 @@
 import {FieldsetState} from './fieldsetState'
 import {BaseFormNode, ObjectFormNode, PrimitiveFormNode} from './nodes'
+import {ArrayItemError, FieldError} from './memberErrors'
 
-export type ObjectMember = FieldMember | FieldSetMember
+export type ObjectMember = FieldMember | FieldSetMember | FieldError
+export type ArrayOfObjectsMember = ArrayOfObjectsItemMember | ArrayItemError
+export type ArrayOfPrimitivesMember = ArrayOfPrimitivesItemMember | ArrayItemError
 
-export interface ArrayOfObjectsMember<Node extends ObjectFormNode = ObjectFormNode> {
+export interface ArrayOfObjectsItemMember<Node extends ObjectFormNode = ObjectFormNode> {
   kind: 'item'
   key: string
   index: number
@@ -22,7 +25,7 @@ export interface ArrayOfObjectsMember<Node extends ObjectFormNode = ObjectFormNo
   item: Node
 }
 
-export interface ArrayOfPrimitivesMember<Node extends PrimitiveFormNode = PrimitiveFormNode> {
+export interface ArrayOfPrimitivesItemMember<Node extends PrimitiveFormNode = PrimitiveFormNode> {
   kind: 'item'
   // note: there's no persistent handle on primitive items, so our only option is to use the index as key here
   key: string

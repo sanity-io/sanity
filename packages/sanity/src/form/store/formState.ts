@@ -2,19 +2,24 @@
 
 import {
   ArraySchemaType,
+  BooleanSchemaType,
   CurrentUser,
   isArraySchemaType,
   isObjectSchemaType,
+  NumberSchemaType,
   ObjectField,
   ObjectSchemaType,
   Path,
+  StringSchemaType,
   ValidationMarker,
 } from '@sanity/types'
 
 import {castArray, pick} from 'lodash'
 import {isEqual, pathFor, startsWith, toString, trimChildPath} from '@sanity/util/paths'
-import {FIXME} from '../types'
+import {resolveTypeName} from '@sanity/util/content'
+import {FIXME, PrimitiveFormNode} from '../types'
 import {FormFieldPresence} from '../../presence'
+import {isRecord} from '../../util'
 import {StateTree} from './types/state'
 import {callConditionalProperties, callConditionalProperty} from './conditional-property'
 import {MAX_FIELD_DEPTH} from './constants'
@@ -28,6 +33,9 @@ import {
 import {ArrayOfObjectsFormNode, ArrayOfPrimitivesFormNode, ObjectFormNode} from './types/nodes'
 import {FormFieldGroup} from './types/fieldGroup'
 import {getCollapsedWithDefaults} from './utils/getCollapsibleOptions'
+import {FieldError} from './types/memberErrors'
+
+type PrimitiveSchemaType = BooleanSchemaType | NumberSchemaType | StringSchemaType
 
 const ALL_FIELDS_GROUP = {
   name: 'all-fields',
@@ -53,20 +61,93 @@ function isFieldEnabledByGroupFilter(
   return castArray(field.group).includes(currentGroup.name)
 }
 
+function isArrayOfObjectsSchemaType(schemaType: ArraySchemaType) {
+  return schemaType.of.every((memberType) => isObjectSchemaType(memberType))
+}
+
+function isAcceptedObjectValue(value: any): value is Record<string, unknown> | undefined {
+  return typeof value === 'undefined' || isRecord(value)
+}
+
+function isValidArrayOfObjectsValue(value: any): value is unknown[] | undefined {
+  return typeof value === 'undefined' || Array.isArray(value)
+}
+
+function isValidArrayOfPrimitivesValue(
+  value: any
+): value is (boolean | number | string)[] | undefined {
+  return typeof value === 'undefined' || Array.isArray(value)
+}
+
+function everyItemIsObject(value: unknown[]): value is object[] {
+  return value.length === 0 || value.every((item) => isRecord(item))
+}
+
+function findDuplicateKeyEntries(array: {_key: string}[]) {
+  const seenKeys = new Set<string>()
+  return array.reduce((acc: [index: number, key: string][], item, index) => {
+    if (seenKeys.has(item._key)) {
+      acc.push([index, item._key])
+    }
+    seenKeys.add(item._key)
+    return acc
+  }, [])
+}
+
+function hasKey<T extends object>(value: T): value is T & {_key: string} {
+  return '_key' in value
+}
+function everyItemHasKey<T extends object>(array: T[]): array is (T & {_key: string})[] {
+  return array?.every((item) => isRecord(item) && hasKey(item))
+}
+
 /*
  * Takes a field in context of a parent object and returns prepared props for it
  */
-function prepareFieldState(props: {
+function prepareFieldMember(props: {
   field: ObjectField
   parent: RawState<ObjectSchemaType, unknown>
   index: number
-}): FieldMember | null {
+}): ObjectMember | null {
   const {parent, field, index} = props
   const fieldPath = pathFor([...parent.path, field.name])
   const fieldLevel = parent.level + 1
 
+  const parentValue = parent.value
+  if (!isAcceptedObjectValue(parentValue)) {
+    // Note: we validate each field, before passing it recursively to this function so getting this error means that the
+    // ´prepareFormState´ function itself has been called with a non-object value
+    throw new Error('Unexpected non-object value')
+  }
+
   if (isObjectSchemaType(field.type)) {
-    const fieldValue = (parent.value as any)?.[field.name] as Record<string, unknown> | undefined
+    const fieldValue = parentValue?.[field.name]
+    if (!isAcceptedObjectValue(fieldValue)) {
+      return {
+        kind: 'error',
+        key: field.name,
+        fieldName: field.name,
+        error: {
+          type: 'INCOMPATIBLE_TYPE',
+          expectedSchemaType: field.type,
+          resolvedValueType: resolveTypeName(fieldValue),
+          value: fieldValue,
+        },
+      }
+    }
+
+    // todo: consider requiring a _type annotation for object values on fields as well
+    // if (resolvedValueType !== field.type.name) {
+    //   return {
+    //     kind: 'error',
+    //     key: field.name,
+    //     error: {
+    //       type: 'TYPE_ANNOTATION_MISMATCH',
+    //       expectedSchemaType: field.type,
+    //       resolvedValueType,
+    //     },
+    //   }
+    // }
 
     const fieldGroupState = parent.fieldGroupState?.children?.[field.name]
     const scopedCollapsedPaths = parent.collapsedPaths?.children?.[field.name]
@@ -104,52 +185,164 @@ function prepareFieldState(props: {
       field: inputState,
     }
   } else if (isArraySchemaType(field.type)) {
-    const fieldValue = (parent.value as any)?.[field.name] as unknown[] | undefined
+    const fieldValue = parentValue?.[field.name] as unknown[] | undefined
+    if (isArrayOfObjectsSchemaType(field.type)) {
+      const hasValue = typeof fieldValue !== 'undefined'
+      if (hasValue && !isValidArrayOfObjectsValue(fieldValue)) {
+        const resolvedValueType = resolveTypeName(fieldValue)
 
-    const fieldGroupState = parent.fieldGroupState?.children?.[field.name]
-    const scopedCollapsedPaths = parent.collapsedPaths?.children?.[field.name]
-    const scopedCollapsedFieldSets = parent.collapsedFieldSets?.children?.[field.name]
+        return {
+          kind: 'error',
+          key: field.name,
+          fieldName: field.name,
+          error: {
+            type: 'INCOMPATIBLE_TYPE',
+            expectedSchemaType: field.type,
+            resolvedValueType,
+            value: fieldValue,
+          },
+        }
+      }
 
-    const inputState = prepareArrayInputState({
-      schemaType: field.type,
-      parent: parent.value,
-      currentUser: parent.currentUser,
-      document: parent.document,
-      value: fieldValue,
-      fieldGroupState,
-      focusPath: parent.focusPath,
-      openPath: parent.openPath,
-      presence: parent.presence,
-      validation: parent.validation,
-      collapsedPaths: scopedCollapsedPaths,
-      collapsedFieldSets: scopedCollapsedFieldSets,
-      level: fieldLevel,
-      path: fieldPath,
-    })
+      if (hasValue && !everyItemIsObject(fieldValue)) {
+        return {
+          kind: 'error',
+          key: field.name,
+          fieldName: field.name,
+          error: {
+            type: 'MIXED_ARRAY',
+            schemaType: field.type,
+          },
+        }
+      }
 
-    if (inputState === null) {
-      return null
-    }
+      if (hasValue && !everyItemHasKey(fieldValue)) {
+        return {
+          kind: 'error',
+          key: field.name,
+          fieldName: field.name,
+          error: {
+            type: 'MISSING_KEYS',
+            value: fieldValue,
+            schemaType: field.type,
+          },
+        }
+      }
 
-    return {
-      kind: 'field',
-      key: `field-${field.name}`,
-      name: field.name,
-      index: index,
+      const duplicateKeyEntries = hasValue ? findDuplicateKeyEntries(fieldValue) : []
+      if (duplicateKeyEntries.length > 0) {
+        return {
+          kind: 'error',
+          key: field.name,
+          fieldName: field.name,
+          error: {
+            type: 'DUPLICATE_KEYS',
+            duplicates: duplicateKeyEntries,
+            schemaType: field.type,
+          },
+        }
+      }
 
-      open: startsWith(fieldPath, parent.openPath),
+      const fieldGroupState = parent.fieldGroupState?.children?.[field.name]
+      const scopedCollapsedPaths = parent.collapsedPaths?.children?.[field.name]
+      const scopedCollapsedFieldSets = parent.collapsedFieldSets?.children?.[field.name]
 
-      // todo: consider support for collapsible arrays
-      collapsible: false,
-      collapsed: false,
-      // note: this is what we actually end up passing down as to the next input component
-      field: inputState,
+      const fieldState = prepareArrayOfObjectsInputState({
+        schemaType: field.type,
+        parent: parent.value,
+        currentUser: parent.currentUser,
+        document: parent.document,
+        value: fieldValue,
+        fieldGroupState,
+        focusPath: parent.focusPath,
+        openPath: parent.openPath,
+        presence: parent.presence,
+        validation: parent.validation,
+        collapsedPaths: scopedCollapsedPaths,
+        collapsedFieldSets: scopedCollapsedFieldSets,
+        level: fieldLevel,
+        path: fieldPath,
+      })
+
+      if (fieldState === null) {
+        return null
+      }
+
+      return {
+        kind: 'field',
+        key: `field-${field.name}`,
+        name: field.name,
+        index: index,
+
+        open: startsWith(fieldPath, parent.openPath),
+
+        collapsible: false,
+        collapsed: false,
+        // note: this is what we actually end up passing down as to the next input component
+        field: fieldState,
+      }
+    } else {
+      // array of primitives
+      if (!isValidArrayOfPrimitivesValue(fieldValue)) {
+        const resolvedValueType = resolveTypeName(fieldValue)
+
+        return {
+          kind: 'error',
+          key: field.name,
+          fieldName: field.name,
+          error: {
+            type: 'INCOMPATIBLE_TYPE',
+            expectedSchemaType: field.type,
+            resolvedValueType,
+            value: fieldValue,
+          },
+        }
+      }
+
+      const fieldGroupState = parent.fieldGroupState?.children?.[field.name]
+      const scopedCollapsedPaths = parent.collapsedPaths?.children?.[field.name]
+      const scopedCollapsedFieldSets = parent.collapsedFieldSets?.children?.[field.name]
+
+      const fieldState = prepareArrayOfPrimitivesInputState({
+        schemaType: field.type,
+        parent: parent.value,
+        currentUser: parent.currentUser,
+        document: parent.document,
+        value: fieldValue,
+        fieldGroupState,
+        focusPath: parent.focusPath,
+        openPath: parent.openPath,
+        presence: parent.presence,
+        validation: parent.validation,
+        collapsedPaths: scopedCollapsedPaths,
+        collapsedFieldSets: scopedCollapsedFieldSets,
+        level: fieldLevel,
+        path: fieldPath,
+      })
+
+      if (fieldState === null) {
+        return null
+      }
+
+      return {
+        kind: 'field',
+        key: `field-${field.name}`,
+        name: field.name,
+        index: index,
+
+        open: startsWith(fieldPath, parent.openPath),
+
+        // todo: consider support for collapsible arrays
+        collapsible: false,
+        collapsed: false,
+        // note: this is what we actually end up passing down as to the next input component
+        field: fieldState,
+      }
     }
   } else {
     // primitive fields
 
-    const fieldValue = (parent.value as any)?.[field.name] as undefined | boolean | string | number
-
+    const fieldValue = parentValue?.[field.name] as undefined | boolean | string | number
     // note: we *only* want to call the conditional props here, as it's handled by the prepare<Object|Array>InputProps otherwise
     const fieldConditionalProps = callConditionalProperties(
       field.type,
@@ -166,11 +359,12 @@ function prepareFieldState(props: {
       return null
     }
 
-    const presence = parent.presence.filter((item) => isEqual(item.path, fieldPath))
-
-    const validation = parent.validation
-      .filter((item) => isEqual(item.path, fieldPath))
-      .map((v) => ({level: v.level, message: v.item.message, path: v.path}))
+    const fieldState = preparePrimitiveInputState({
+      ...parent,
+      value: fieldValue as boolean | string | number | undefined,
+      schemaType: field.type as PrimitiveSchemaType,
+      path: fieldPath,
+    })
 
     return {
       kind: 'field',
@@ -183,19 +377,7 @@ function prepareFieldState(props: {
       // todo: consider support for collapsible primitive fields
       collapsible: false,
       collapsed: false,
-      field: {
-        // note: this is what we actually end up passing down as to the next input component
-        path: fieldPath,
-        schemaType: field.type,
-        compareValue: undefined, // todo
-        level: fieldLevel,
-        id: toString(fieldPath),
-        focused: isEqual(parent.focusPath, [field.name]),
-        readOnly: parent.readOnly || fieldConditionalProps.readOnly,
-        value: fieldValue,
-        presence,
-        validation,
-      },
+      field: fieldState,
     }
   }
 }
@@ -288,18 +470,18 @@ function prepareObjectInputState<T>(
   const members = normalizedSchemaMembers.flatMap((fieldSet, index): ObjectMember[] => {
     if (fieldSet.single) {
       // "single" means not part of a fieldset
-      const fieldState = prepareFieldState({
+      const fieldMember = prepareFieldMember({
         field: fieldSet.field,
         parent: parentProps,
         index,
       })
       if (
-        fieldState === null ||
+        fieldMember === null ||
         !isFieldEnabledByGroupFilter(groups, fieldSet.field, selectedGroup)
       ) {
         return []
       }
-      return [fieldState]
+      return [fieldMember]
     }
 
     // it's an actual fieldset
@@ -315,12 +497,14 @@ function prepareObjectInputState<T>(
       return []
     }
 
-    const fieldsetMembers = fieldSet.fields.flatMap((field): FieldMember[] => {
-      const fieldState = prepareFieldState({
+    const fieldsetMembers = fieldSet.fields.flatMap((field): (FieldMember | FieldError)[] => {
+      const fieldState = prepareFieldMember({
         field,
         parent: parentProps,
         index,
-      })
+
+        // the explicit type cast here is ok - we know that a fieldset can not have fieldsets
+      }) as FieldMember | FieldError | null
       if (fieldState === null || !isFieldEnabledByGroupFilter(groups, field, selectedGroup)) {
         return []
       }
@@ -349,7 +533,7 @@ function prepareObjectInputState<T>(
           description: fieldSet.description,
           hidden: false,
           level: props.level + 1,
-          fields: fieldsetMembers,
+          members: fieldsetMembers,
           collapsible: defaultCollapsedState?.collapsible,
           collapsed,
         },
@@ -381,10 +565,9 @@ function prepareObjectInputState<T>(
     groups: hasFieldGroups ? groups : [],
   }
 }
-
-function prepareArrayInputState<T extends unknown[]>(
+function prepareArrayOfPrimitivesInputState<T extends (boolean | string | number)[]>(
   props: RawState<ArraySchemaType, T>
-): ArrayOfObjectsFormNode | ArrayOfPrimitivesFormNode | null {
+): ArrayOfPrimitivesFormNode | null {
   if (props.level === MAX_FIELD_DEPTH) {
     return null
   }
@@ -407,11 +590,63 @@ function prepareArrayInputState<T extends unknown[]>(
   // Todo: improve error handling at the parent level so that the value here is either undefined or an array
   const items = Array.isArray(props.value) ? props.value : []
 
-  // todo: guard against mixed arrays
-  const isArrayOfObjects = props.schemaType.of.every((memberType) => isObjectSchemaType(memberType))
-  const prepareMember = isArrayOfObjects
-    ? prepareArrayOfObjectsMember
-    : prepareArrayOfPrimitivesMember
+  const defaultCollapsedState = getCollapsedWithDefaults(
+    props.schemaType.options as FIXME,
+    props.level
+  )
+  const collapsed = props.collapsedPaths
+    ? props.collapsedPaths.value
+    : defaultCollapsedState.collapsed
+
+  const presence = props.presence.filter((item) => isEqual(item.path, props.path))
+  const validation = props.validation
+    .filter((item) => isEqual(item.path, props.path))
+    .map((v) => ({level: v.level, message: v.item.message, path: v.path}))
+
+  return {
+    compareValue: undefined,
+    value: props.value as T,
+    readOnly,
+    schemaType: props.schemaType,
+    focused: isEqual(props.path, props.focusPath),
+    focusPath: trimChildPath(props.path, props.focusPath),
+    path: props.path,
+    id: toString(props.path),
+    level: props.level,
+    collapsed,
+    collapsible: defaultCollapsedState.collapsible,
+    validation,
+    presence,
+    members: items.flatMap((item, index) =>
+      prepareArrayOfPrimitivesMember({arrayItem: item, parent: props, index})
+    ),
+  }
+}
+
+function prepareArrayOfObjectsInputState<T extends {_key: string}[]>(
+  props: RawState<ArraySchemaType, T>
+): ArrayOfObjectsFormNode | null {
+  if (props.level === MAX_FIELD_DEPTH) {
+    return null
+  }
+
+  const conditionalFieldContext = {
+    value: props.value,
+    parent: props.parent,
+    document: props.document,
+    currentUser: props.currentUser,
+  }
+  const {hidden, readOnly} = callConditionalProperties(props.schemaType, conditionalFieldContext, [
+    'hidden',
+    'readOnly',
+  ])
+
+  if (hidden) {
+    return null
+  }
+
+  // Todo: improve error handling at the parent level so that the value here is either undefined or an array
+  const items = Array.isArray(props.value) ? props.value : []
 
   const defaultCollapsedState = getCollapsedWithDefaults(
     props.schemaType.options as FIXME,
@@ -441,7 +676,7 @@ function prepareArrayInputState<T extends unknown[]>(
     validation,
     presence,
     members: items.flatMap(
-      (item, index) => prepareMember({arrayItem: item, parent: props, index}) as FIXME
+      (item, index) => prepareArrayOfObjectsMember({arrayItem: item, parent: props, index}) as FIXME
     ),
   }
 }
@@ -450,31 +685,37 @@ function prepareArrayInputState<T extends unknown[]>(
  * Takes a field in context of a parent object and returns prepared props for it
  */
 function prepareArrayOfObjectsMember(props: {
-  arrayItem: unknown
+  arrayItem: {_key: string}
   parent: RawState<ArraySchemaType, unknown>
   index: number
-}): ArrayOfObjectsMember[] {
+}): ArrayOfObjectsMember {
   const {arrayItem, parent, index} = props
-  const itemType = getItemType(parent.schemaType, arrayItem)
 
-  // todo: more graceful handling of this
+  const itemType = getItemType(parent.schemaType, arrayItem) as ObjectSchemaType
+
+  const key = arrayItem._key
+
   if (!itemType) {
-    throw new Error('Item type not allowed by the array type schema definition')
+    const itemTypeName = resolveTypeName(arrayItem)
+    return {
+      kind: 'error',
+      key,
+      index,
+      error: {
+        type: 'INVALID_ITEM_TYPE',
+        resolvedValueType: itemTypeName,
+        value: arrayItem,
+        validTypes: parent.schemaType.of,
+      },
+    }
   }
-
-  if (!isObjectSchemaType(itemType)) {
-    throw new Error('Unexpected non-object schema type included in array')
-  }
-
-  // todo: validate _key
-  const key = (arrayItem as any)?._key
 
   const itemPath = pathFor([...parent.path, {_key: key}])
   const itemLevel = parent.level + 1
 
   const collapsedItemPaths = parent.collapsedPaths?.children?.[key]
 
-  const result = prepareObjectInputState(
+  const itemState = prepareObjectInputState(
     {
       schemaType: itemType,
       level: itemLevel,
@@ -493,17 +734,15 @@ function prepareArrayOfObjectsMember(props: {
 
   const defaultCollapsedState = getCollapsedWithDefaults(itemType.options, itemLevel)
   const collapsed = collapsedItemPaths?.value ?? defaultCollapsedState.collapsed
-  return [
-    {
-      kind: 'item',
-      key,
-      index,
-      open: startsWith(itemPath, parent.openPath),
-      collapsed: collapsed,
-      collapsible: true,
-      item: result,
-    },
-  ]
+  return {
+    kind: 'item',
+    key,
+    index,
+    open: startsWith(itemPath, parent.openPath),
+    collapsed: collapsed,
+    collapsible: true,
+    item: itemState,
+  }
 }
 
 /*
@@ -513,38 +752,71 @@ function prepareArrayOfPrimitivesMember(props: {
   arrayItem: unknown
   parent: RawState<ArraySchemaType, unknown>
   index: number
-}): ArrayOfPrimitivesMember[] {
+}): ArrayOfPrimitivesMember {
   const {arrayItem, parent, index} = props
   const itemType = getPrimitiveItemType(parent.schemaType, arrayItem)
-
-  // todo: more graceful handling of this
-  if (!itemType) {
-    throw new Error('Item type not allowed by the array type schema definition')
-  }
 
   const itemPath = pathFor([...parent.path, index])
   const itemValue = (parent.value as unknown[] | undefined)?.[index] as string | boolean | number
   const itemLevel = parent.level + 1
-  return [
-    {
-      kind: 'item',
-      key: String(index),
+
+  // Best effort attempt to make a stable key for each item in the array
+  // Since items may be reordered and change at any time, there's no way to reliably address each item uniquely
+  // This is a "best effort"-attempt at making sure we don't re-use internal state for item inputs
+  // when items are added to or removed from the array
+  const key = `${itemType?.name || 'invalid-type'}-${String(index)}`
+
+  if (!itemType) {
+    return {
+      kind: 'error',
+      key,
       index,
-      open: isEqual(itemPath, parent.openPath),
-      item: {
-        compareValue: undefined,
-        level: itemLevel,
-        id: toString(itemPath),
-        readOnly: false, // todo
-        focused: isEqual(parent.path, parent.focusPath),
-        path: itemPath,
-        presence: [], // todo
-        validation: [], // todo
-        schemaType: itemType as FIXME,
-        value: itemValue as FIXME,
+      error: {
+        type: 'INVALID_ITEM_TYPE',
+        validTypes: parent.schemaType.of,
+        resolvedValueType: resolveTypeName(itemType),
+        value: itemValue,
       },
-    },
-  ]
+    }
+  }
+  const item = preparePrimitiveInputState({
+    ...parent,
+    path: itemPath,
+    schemaType: itemType as PrimitiveSchemaType,
+    level: itemLevel,
+    value: itemValue,
+  })
+
+  return {
+    kind: 'item',
+    key,
+    index,
+    open: isEqual(itemPath, parent.openPath),
+    item,
+  }
+}
+
+function preparePrimitiveInputState<SchemaType extends PrimitiveSchemaType>(
+  props: RawState<SchemaType, unknown>
+): PrimitiveFormNode {
+  const presence = props.presence.filter((item) => isEqual(item.path, props.path))
+
+  const validation = props.validation
+    .filter((item) => isEqual(item.path, props.path))
+    .map((v) => ({level: v.level, message: v.item.message, path: v.path}))
+
+  return {
+    schemaType: props.schemaType,
+    value: props.value,
+    compareValue: undefined,
+    level: props.level,
+    id: toString(props.path),
+    readOnly: props.readOnly,
+    focused: isEqual(props.path, props.focusPath),
+    path: props.path,
+    presence,
+    validation,
+  } as PrimitiveFormNode
 }
 
 export type FIXME_SanityDocument = Record<string, unknown>

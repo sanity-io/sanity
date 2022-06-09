@@ -1,6 +1,13 @@
 import {isKeySegment, isObjectSchemaType, Path} from '@sanity/types'
 import {castArray} from 'lodash'
-import {ArrayOfObjectsFormNode, FieldMember, FieldSetMember, ObjectFormNode} from '../../../form'
+import {
+  ArrayOfObjectsFormNode,
+  ArrayOfObjectsItemMember,
+  ArrayOfPrimitivesItemMember,
+  FieldMember,
+  FieldSetMember,
+  ObjectFormNode,
+} from '../../../form'
 import {isMemberArrayOfObjects} from '../../../form/inputs/ObjectInput/members/asserters'
 
 // eslint-disable-next-line @typescript-eslint/ban-types
@@ -33,7 +40,10 @@ export function getExpandOperations(state: ObjectFormNode, path: Path): Operatio
 
   const fieldsetMember = state.members.find(
     (member): member is FieldSetMember =>
-      member.kind === 'fieldSet' && member.fieldSet.fields.some((field) => field.name === fieldName)
+      member.kind === 'fieldSet' &&
+      member.fieldSet.members.some(
+        (field): field is FieldMember => field.kind === 'field' && field.name === fieldName
+      )
   )
 
   const ops: Operation[] = [{type: 'expandPath', path}]
@@ -80,7 +90,9 @@ function expandArrayPath(state: ArrayOfObjectsFormNode, path: Path): Operation[]
     throw new Error('Expected path segment to be an object with a _key property')
   }
 
-  const foundMember = state.members.find((member) => member.key === segment._key)
+  const foundMember = state.members.find(
+    (member): member is ArrayOfObjectsItemMember => member.key === segment._key
+  )
 
   if (!foundMember) {
     // tried to open a member that does not exist in the form state - it's likely hidden
