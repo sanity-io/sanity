@@ -122,7 +122,7 @@ function promptForOrigin(prompt: CliPrompter): Promise<string> {
 }
 
 function filterOrigin(origin: string): string | null {
-  if (origin === '*' || origin === 'file:///*') {
+  if (origin === '*' || origin === 'file:///*' || origin === 'null') {
     return origin
   }
 
@@ -146,7 +146,7 @@ function filterOrigin(origin: string): string | null {
 }
 
 function validateOrigin(origin: string | null, givenOrigin: string): true | string {
-  if (origin === '*' || origin === 'file:///*') {
+  if (origin === '*' || origin === 'file:///*' || origin === 'null') {
     return true
   }
 
