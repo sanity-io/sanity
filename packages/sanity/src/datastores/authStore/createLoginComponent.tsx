@@ -1,19 +1,10 @@
 import {SanityClient} from '@sanity/client'
-import {Box, Button, Flex, Heading, Spinner, Text} from '@sanity/ui'
+import {Button, Flex, Heading, Spinner, Stack, Text} from '@sanity/ui'
 import React, {useEffect, useState} from 'react'
 import {Observable} from 'rxjs'
-import styled from 'styled-components'
 import {createHookFromObservableFactory} from '../../util'
+import {providerLogos} from './providerLogos'
 import {LoginComponentProps} from './types'
-
-const IconWrapperBig = styled(Box)`
-  width: 64px;
-  height: 64px;
-  align-self: center;
-  & > * {
-    width: 100%;
-  }
-`
 
 interface GetProvidersOptions {
   client: SanityClient
@@ -109,7 +100,7 @@ export function createLoginComponent({
 }: CreateLoginComponentOptions) {
   const useClient = createHookFromObservableFactory(getClient)
 
-  function LoginComponent({projectId, title, icon, basePath}: LoginComponentProps) {
+  function LoginComponent({projectId, basePath}: LoginComponentProps) {
     const [providers, setProviders] = useState<Provider[] | null>(null)
     const [error, setError] = useState<unknown>(null)
     if (error) throw error
@@ -137,24 +128,23 @@ export function createLoginComponent({
         basePath,
       })
 
+    const loading = !providers || redirectUrl
+
     useEffect(() => {
       if (redirectUrl) {
         window.location.href = redirectUrl
       }
     }, [redirectUrl])
 
-    if (!providers || redirectUrl) {
+    if (loading) {
       return (
         <Flex
-          justify="center"
           align="center"
           direction="column"
           gap={4}
-          padding={4}
-          // this matches the height of the default fully loaded login component
-          // with the typical 3 providers. if more or less providers are
-          // provided, there will be a slight layout shift
-          style={{minHeight: 208}}
+          justify="center"
+          padding={6}
+          sizing="border"
         >
           <Text muted>Loading…</Text>
           <Spinner muted />
@@ -163,24 +153,16 @@ export function createLoginComponent({
     }
 
     return (
-      <>
-        <Flex
-          justify="center"
-          direction="column"
-          paddingX={4}
-          paddingTop={4}
-          marginBottom={2}
-          gap={2}
-        >
-          <IconWrapperBig>{icon}</IconWrapperBig>
-          <Heading size={1} align="center" as="h1">
-            Sign in to {title}
-          </Heading>
-        </Flex>
-        <Flex gap={2} padding={2} direction="column">
+      <Stack space={4}>
+        <Heading align="center" size={1}>
+          Choose login provider
+        </Heading>
+
+        <Stack space={2}>
           {providers.map((provider, index) => (
             <Button
               // eslint-disable-next-line react/no-array-index-key
+              icon={providerLogos[provider.name]}
               key={`${provider.url}_${index}`}
               as="a"
               href={createHrefForProvider({
@@ -193,8 +175,8 @@ export function createLoginComponent({
               text={provider.title}
             />
           ))}
-        </Flex>
-      </>
+        </Stack>
+      </Stack>
     )
   }
 
