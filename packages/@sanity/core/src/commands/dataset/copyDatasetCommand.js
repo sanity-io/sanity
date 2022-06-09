@@ -90,8 +90,9 @@ const followProgress = (jobId, client, output) => {
 
       spinner.text = `Copy in progress: ${currentProgress}%`
     },
-    error: (err) => {
-      spinner.fail(`There was an error copying the dataset: ${err.message}`)
+    error: (event) => {
+      spinner.fail()
+      throw new Error(`There was an error copying dataset: ${event.data}`)
     },
     complete: () => {
       spinner.succeed('Copy finished.')
