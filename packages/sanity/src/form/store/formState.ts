@@ -139,6 +139,7 @@ function prepareFieldState(props: {
 
       open: startsWith(fieldPath, parent.openPath),
 
+      // todo: consider support for collapsible arrays
       collapsible: false,
       collapsed: false,
       // note: this is what we actually end up passing down as to the next input component
@@ -178,6 +179,8 @@ function prepareFieldState(props: {
       index: index,
 
       open: startsWith(fieldPath, parent.openPath),
+
+      // todo: consider support for collapsible primitive fields
       collapsible: false,
       collapsed: false,
       field: {
