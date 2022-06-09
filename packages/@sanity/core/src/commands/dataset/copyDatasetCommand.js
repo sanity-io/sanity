@@ -113,7 +113,7 @@ export default {
   signature: '[SOURCE_DATASET] [TARGET_DATASET]',
   helpText,
   description:
-    'Manages dataset copy jobs, including starting a new copy job, listing copy jobs and following the progress of a running copy job',
+    'Manages dataset copying, including starting a new copy job, listing copy jobs and following the progress of a running copy job',
   action: async (args, context) => {
     const {apiClient, output, prompt} = context
     const flags = args.extOptions
