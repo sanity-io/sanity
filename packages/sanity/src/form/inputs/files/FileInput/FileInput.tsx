@@ -38,6 +38,7 @@ import {ImperativeToast} from '../../../../components/transitional'
 import {PatchEvent, setIfMissing, unset} from '../../../patch'
 import {MemberField} from '../../ObjectInput/MemberField'
 import {MemberFieldSet} from '../../ObjectInput/MemberFieldset'
+import {MemberFieldError} from '../../ObjectInput/MemberFieldError'
 import {CardOverlay, FlexContainer} from './styles'
 import {FileDetails} from './FileDetails'
 import {FileSkeleton} from './FileSkeleton'
@@ -602,16 +603,23 @@ export class FileInput extends React.PureComponent<FileInputProps, FileInputStat
               />
             )
           }
-          return (
-            <MemberFieldSet
-              key={member.key}
-              member={member}
-              renderInput={renderInput}
-              renderField={renderField}
-              renderItem={renderItem}
-              renderPreview={renderPreview}
-            />
-          )
+          if (member.kind === 'fieldSet') {
+            return (
+              <MemberFieldSet
+                key={member.key}
+                member={member}
+                renderInput={renderInput}
+                renderField={renderField}
+                renderItem={renderItem}
+                renderPreview={renderPreview}
+              />
+            )
+          }
+          if (member.kind === 'error') {
+            return <MemberFieldError member={member} />
+          }
+          //@ts-expect-error all possible cases should be covered
+          return <>Unknown member kind: ${member.kind}</>
         })}
         {selectedAssetSource && this.renderAssetSource()}
       </>

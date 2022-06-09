@@ -1,11 +1,11 @@
 import {useMemo} from 'react'
-import {ArrayOfObjectsMember, ObjectFormNode} from '../../../types'
+import {ArrayOfObjectsItemMember, ObjectFormNode} from '../../../types'
 import {EMPTY_ARRAY} from '../../../utils/empty'
 import {useChildValidation} from '../../../studio/contexts/Validation'
 
 const NONEXISTENT_PATH = ['@@_NONEXISTENT_PATH_@@']
 
-export function useMemberValidation(member: ArrayOfObjectsMember<ObjectFormNode> | undefined) {
+export function useMemberValidation(member: ArrayOfObjectsItemMember<ObjectFormNode> | undefined) {
   const memberValidation = member?.item.validation || EMPTY_ARRAY
   const childValidation = useChildValidation(member?.item.path || NONEXISTENT_PATH)
   const validation =

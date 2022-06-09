@@ -31,9 +31,8 @@ import type {
   FIXME,
   PortableTextMarker,
   RenderCustomMarkers,
-  ArrayOfObjectsMember,
 } from '../../types'
-import {ObjectFormNode} from '../../types'
+import {ArrayOfObjectsItemMember, ObjectFormNode} from '../../types'
 import {isMemberArrayOfObjects} from '../ObjectInput/members/asserters'
 import {EMPTY_ARRAY} from '../../utils/empty'
 import {Compositor, EditorElement} from './Compositor'
@@ -44,7 +43,7 @@ import {RenderBlockActionsCallback} from './types'
 import {PortableTextMarkersProvider} from './contexts/PortableTextMarkers'
 import {PortableTextMemberItemsProvider} from './contexts/PortableTextMembers'
 
-export type ObjectMemberType = ArrayOfObjectsMember<
+export type ObjectMemberType = ArrayOfObjectsItemMember<
   ObjectFormNode<
     {
       [x: string]: unknown
@@ -153,6 +152,9 @@ export function PortableTextInput(props: PortableTextInputProps) {
   // Populate the portableTextMembers Map
   const portableTextMemberItems: PortableTextMemberItem[] = useMemo(() => {
     const ptMembers = members.flatMap((m) => {
+      if (m.kind === 'error') {
+        return []
+      }
       let returned: ObjectMemberType[] = []
       // Object blocks or normal blocks with validation
       if (m.item.schemaType.name !== 'block' || m.item.validation.length > 0) {
@@ -168,7 +170,7 @@ export function PortableTextInput(props: PortableTextInputProps) {
         returned = [
           ...returned,
           ...childrenField.field.members.filter(
-            (cM: ObjectMemberType) => 'item' in cM && cM.item.schemaType.name !== 'span'
+            (cM): cM is ObjectMemberType => cM.kind === 'item' && cM.item.schemaType.name !== 'span'
           ),
         ]
       }

@@ -2,24 +2,22 @@ import * as React from 'react'
 import {useCallback, useMemo, useRef} from 'react'
 import {useDidUpdate} from '../../../hooks/useDidUpdate'
 import {
-  ArrayOfPrimitivesMember,
+  ArrayOfPrimitivesItemMember,
   FIXME,
   PrimitiveInputProps,
-  RenderInputCallback,
   RenderArrayOfPrimitivesItemCallback,
+  RenderInputCallback,
 } from '../../../types'
 import {PrimitiveItemProps} from '../../../types/itemProps'
 import {useFormCallbacks} from '../../../studio/contexts/FormCallbacks'
 import {insert, PatchArg, PatchEvent, set, unset} from '../../../patch'
-import {ensureKey} from '../../../utils/ensureKey'
-import {EMPTY_ARRAY} from '../../../utils/empty'
 import {getEmptyValue} from './getEmptyValue'
 
 /**
  * @alpha
  */
 export interface PrimitiveMemberItemProps {
-  member: ArrayOfPrimitivesMember
+  member: ArrayOfPrimitivesItemMember
   renderItem: RenderArrayOfPrimitivesItemCallback
   renderInput: RenderInputCallback
 }
@@ -81,9 +79,8 @@ export function PrimitiveMemberItem(props: PrimitiveMemberItemProps) {
       path: member.item.path,
       focused: member.item.focused,
       onChange: handleChange,
-      // todo
-      validation: EMPTY_ARRAY,
-      presence: EMPTY_ARRAY,
+      validation: member.item.validation,
+      presence: member.item.presence,
     }
   }, [
     member.item.level,
@@ -94,6 +91,8 @@ export function PrimitiveMemberItem(props: PrimitiveMemberItemProps) {
     member.item.id,
     member.item.path,
     member.item.focused,
+    member.item.validation,
+    member.item.presence,
     handleBlur,
     handleFocus,
     handleChange,
@@ -138,6 +137,8 @@ export function PrimitiveMemberItem(props: PrimitiveMemberItemProps) {
     member.item.level,
     member.item.value,
     member.item.schemaType,
+    member.item.presence,
+    member.item.validation,
     member.item.readOnly,
     member.item.focused,
     member.item.id,

@@ -23,7 +23,7 @@ import {applyAll} from '../../../patch/applyPatch'
 import {PatchEvent, setIfMissing, unset} from '../../../patch'
 import {ItemProps} from '../../../types/itemProps'
 import {DefaultArrayInputFunctions} from '../common/ArrayFunctions'
-import {ArrayOfObjectsInputProps} from '../../../types'
+import {ArrayOfObjectsInputProps, ArrayOfObjectsMember} from '../../../types'
 import {isObjectItemProps} from '../../../types/asserters'
 import {withFocusRing} from '../../../components/withFocusRing'
 import type {ArrayMember, InsertEvent} from './types'
@@ -31,6 +31,7 @@ import {uploadTarget} from './uploadTarget/uploadTarget'
 import {isEmpty} from './item/helpers'
 import {ArrayItem} from './item/ArrayItem'
 import {MemberItem} from './MemberItem'
+import {MemberError} from './MemberError'
 
 type Toast = {push: (params: ToastParams) => void}
 
@@ -215,12 +216,6 @@ export class ArrayInput extends React.PureComponent<ArrayInputProps> {
     this._focusArea = el
   }
 
-  handleFixMissingKeys = () => {
-    const {onChange, value = []} = this.props
-    const patches = (value || []).map((val, i) => setIfMissing(randomKey(), [i, '_key']))
-
-    onChange(patches)
-  }
   setToast = (toast: any | null) => {
     this.toast = toast
   }
@@ -299,18 +294,29 @@ export class ArrayInput extends React.PureComponent<ArrayInputProps> {
     )
   }
 
+  renderMember(member: ArrayOfObjectsMember) {
+    const {renderField, renderInput, renderPreview} = this.props
+    if (member.kind === 'item') {
+      return (
+        <MemberItem
+          member={member}
+          renderItem={this.renderItem}
+          renderField={renderField}
+          renderInput={renderInput}
+          renderPreview={renderPreview}
+        />
+      )
+    }
+
+    if (member.kind === 'error') {
+      return <MemberError member={member} />
+    }
+    //@ts-expect-error all possible cases should be covered
+    return <>Unknown member kind: ${member.kind}</>
+  }
+
   render() {
-    const {
-      schemaType,
-      onChange,
-      value = [],
-      readOnly,
-      members,
-      renderField,
-      renderInput,
-      renderPreview,
-      resolveUploader,
-    } = this.props
+    const {schemaType, onChange, value = [], readOnly, members, resolveUploader} = this.props
 
     const {isResolvingInitialValue} = this.state
 
@@ -348,45 +354,10 @@ export class ArrayInput extends React.PureComponent<ArrayInputProps> {
     }
 
     const options = schemaType.options || {}
-    const hasMissingKeys = value.some((item) => !item._key)
-    const isSortable = options.sortable !== false && !hasMissingKeys
+    const isSortable = options.sortable !== false
     const isGrid = options.layout === 'grid'
     return (
       <Stack space={3}>
-        {hasMissingKeys && (
-          <Alert
-            status="warning"
-            suffix={
-              <Stack padding={2}>
-                <Button
-                  onClick={this.handleFixMissingKeys}
-                  text="Add missing keys"
-                  tone="caution"
-                />
-              </Stack>
-            }
-            title={<>Missing keys</>}
-          >
-            <Text as="p" muted size={1}>
-              Some items in the list are missing their keys. This must be fixed in order to edit the
-              list.
-            </Text>
-
-            <Details marginTop={4} open={isDev} title={<>Developer info</>}>
-              <Stack space={3}>
-                <Text as="p" muted size={1}>
-                  This usually happens when items are created using an API client, and the{' '}
-                  <code>_key</code> property has not been included.
-                </Text>
-
-                <Text as="p" muted size={1}>
-                  The value of the <code>_key</code> property must be a unique string.
-                </Text>
-              </Stack>
-            </Details>
-          </Alert>
-        )}
-
         <UploadTarget
           types={schemaType.of}
           resolveUploader={resolveUploader}
@@ -410,13 +381,7 @@ export class ArrayInput extends React.PureComponent<ArrayInputProps> {
                   {members.map((member, index) => {
                     return (
                       <Item key={member.key} isSortable={isSortable} isGrid={isGrid} index={index}>
-                        <MemberItem
-                          member={member}
-                          renderItem={this.renderItem}
-                          renderField={renderField}
-                          renderInput={renderInput}
-                          renderPreview={renderPreview}
-                        />
+                        {this.renderMember(member)}
                       </Item>
                     )
                   })}

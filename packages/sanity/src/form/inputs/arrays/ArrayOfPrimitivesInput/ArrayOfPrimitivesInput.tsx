@@ -5,6 +5,7 @@ import {Card, Stack} from '@sanity/ui'
 import {ArrayOfPrimitivesInputProps, FormArrayInputFunctionsProps} from '../../../types'
 import {Item, List} from '../common/list'
 import {PrimitiveItemProps} from '../../../types/itemProps'
+import {MemberError} from '../ArrayOfObjectsInput/MemberError'
 import {getEmptyValue} from './getEmptyValue'
 
 import {PrimitiveValue} from './types'
@@ -172,24 +173,27 @@ export class ArrayOfPrimitivesInput extends React.PureComponent<DefaultArrayOfPr
             <Card padding={1} border>
               <List onSortEnd={this.handleSortEnd} isSortable={isSortable}>
                 {members.map((member, index) => {
-                  // Best effort attempt to make a stable key for each item in the array
-                  // Since items may be reordered and change at any time, there's no way to reliably address each item uniquely
-                  // This is a "best effort"-attempt at making sure we don't re-use internal state for item inputs
-                  // when items gets added or removed to the array
-                  return (
-                    <Item
-                      key={member.key}
-                      index={index}
-                      data-item-index={index}
-                      isSortable={isSortable}
-                    >
-                      <PrimitiveMemberItem
-                        member={member}
-                        renderInput={renderInput}
-                        renderItem={this.renderItem}
-                      />
-                    </Item>
-                  )
+                  if (member.kind === 'item') {
+                    return (
+                      <Item
+                        key={member.key}
+                        index={index}
+                        data-item-index={index}
+                        isSortable={isSortable}
+                      >
+                        <PrimitiveMemberItem
+                          member={member}
+                          renderInput={renderInput}
+                          renderItem={this.renderItem}
+                        />
+                      </Item>
+                    )
+                  }
+                  if (member.kind === 'error') {
+                    return <MemberError key={member.key} member={member} />
+                  }
+                  //@ts-expect-error all possible cases should be covered
+                  return <>Unknown member kind: ${member.kind}</>
                 })}
               </List>
             </Card>

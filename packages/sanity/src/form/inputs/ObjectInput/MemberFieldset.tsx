@@ -9,6 +9,7 @@ import {FieldSetMember} from '../../store/types/members'
 import {FormFieldSet} from '../../components/formField/FormFieldSet'
 import {useFormCallbacks} from '../../studio/contexts/FormCallbacks'
 import {MemberField} from './MemberField'
+import {MemberFieldError} from './MemberFieldError'
 
 export const MemberFieldSet = memo(function MemberFieldSet(props: {
   member: FieldSetMember
@@ -39,16 +40,21 @@ export const MemberFieldSet = memo(function MemberFieldSet(props: {
       onCollapse={handleCollapse}
       onExpand={handleExpand}
     >
-      {member.fieldSet.fields.map((fieldsetMember) => (
-        <MemberField
-          member={fieldsetMember}
-          renderField={renderField}
-          renderInput={renderInput}
-          renderItem={renderItem}
-          renderPreview={renderPreview}
-          key={fieldsetMember.key}
-        />
-      ))}
+      {member.fieldSet.members.map((fieldsetMember) => {
+        if (fieldsetMember.kind === 'error') {
+          return <MemberFieldError key={member.key} member={fieldsetMember} />
+        }
+        return (
+          <MemberField
+            member={fieldsetMember}
+            renderField={renderField}
+            renderInput={renderInput}
+            renderItem={renderItem}
+            renderPreview={renderPreview}
+            key={fieldsetMember.key}
+          />
+        )
+      })}
     </FormFieldSet>
   )
 })

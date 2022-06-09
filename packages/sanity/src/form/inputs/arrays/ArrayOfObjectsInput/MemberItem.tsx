@@ -8,8 +8,8 @@ import {
   RenderInputCallback,
   RenderArrayOfObjectsItemCallback,
   RenderPreviewCallback,
+  ArrayOfObjectsItemMember,
 } from '../../../types'
-import {ArrayOfObjectsMember} from '../../../store/types/members'
 import {ObjectItemProps} from '../../../types/itemProps'
 import {FormCallbacksProvider, useFormCallbacks} from '../../../studio/contexts/FormCallbacks'
 import {insert, PatchArg, PatchEvent, setIfMissing, unset} from '../../../patch'
@@ -20,7 +20,7 @@ import {ensureKey} from '../../../utils/ensureKey'
  * @alpha
  */
 export interface MemberItemProps {
-  member: ArrayOfObjectsMember
+  member: ArrayOfObjectsItemMember
   renderItem: RenderArrayOfObjectsItemCallback
   renderField: RenderFieldCallback
   renderInput: RenderInputCallback

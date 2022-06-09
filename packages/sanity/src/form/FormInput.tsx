@@ -13,6 +13,7 @@ import {
 import {MemberItem} from './inputs/arrays/ArrayOfObjectsInput/MemberItem'
 import {isArrayInputProps, isObjectInputProps} from './utils/asserters'
 import {MemberField} from './inputs/ObjectInput/MemberField'
+import {MemberError} from './inputs/arrays/ArrayOfObjectsInput/MemberError'
 
 const pass = ({children}: {children: React.ReactNode}) => children
 
@@ -127,7 +128,9 @@ const FormInputInner = memo(function FormInputInner(
         </div>
       )
     }
-
+    if (itemMember.kind === 'error') {
+      return <MemberError member={itemMember} />
+    }
     return (
       <MemberItem
         member={itemMember}

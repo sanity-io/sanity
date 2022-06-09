@@ -49,6 +49,7 @@ import {MemberField} from '../../ObjectInput/MemberField'
 import {MemberFieldSet} from '../../ObjectInput/MemberFieldset'
 import {ChangeIndicatorForFieldPath} from '../../../../components/changeIndicators'
 import {FormInput} from '../../../FormInput'
+import {MemberFieldError} from '../../ObjectInput/MemberFieldError'
 import {ImageActionsMenu} from './ImageActionsMenu'
 import {ImagePreview} from './ImagePreview'
 
@@ -766,16 +767,24 @@ export class ImageInput extends React.PureComponent<ImageInputProps, ImageInputS
               />
             )
           }
-          return (
-            <MemberFieldSet
-              key={member.key}
-              member={member}
-              renderInput={renderInput}
-              renderField={renderField}
-              renderItem={renderItem}
-              renderPreview={renderPreview}
-            />
-          )
+
+          if (member.kind === 'fieldSet') {
+            return (
+              <MemberFieldSet
+                key={member.key}
+                member={member}
+                renderInput={renderInput}
+                renderField={renderField}
+                renderItem={renderItem}
+                renderPreview={renderPreview}
+              />
+            )
+          }
+          if (member.kind === 'error') {
+            return <MemberFieldError member={member} />
+          }
+          //@ts-expect-error all possible cases should be covered
+          return <>Unknown member kind: ${member.kind}</>
         })}
         {hotspotField?.open && (
           <FormInput
