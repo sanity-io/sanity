@@ -1,94 +1,87 @@
-import {HelpCircleIcon, ChevronRightIcon} from '@sanity/icons'
-import {Flex, Box, Text, Card, Tooltip} from '@sanity/ui'
-import React from 'react'
+import {CheckmarkIcon} from '@sanity/icons'
+import {Flex, Stack, Box, Text, Card} from '@sanity/ui'
+import React, {createElement, isValidElement, useMemo} from 'react'
+import {isValidElementType} from 'react-is'
 import styled from 'styled-components'
-import {WorkspaceSummary} from '../../../../config'
-import {useActiveWorkspace} from '../../../activeWorkspaceMatcher'
 
-const StyledCard = styled(Card)`
-  display: flex !important;
-  align-items: center;
-  gap: 0.5rem;
-`
+const STATE_TITLES = {
+  'logged-in': '',
+  'logged-out': 'Signed out',
+  'no-access': '',
+}
 
-const IconWrapper = styled(Box)`
-  width: 32px;
-  height: 32px;
-  & > * {
+export const MediaCard = styled(Card)`
+  width: 35px;
+  height: 35px;
+
+  svg {
     width: 100%;
+    height: 100%;
   }
 `
 
-interface WorkspacePreviewProps {
-  workspace: WorkspaceSummary
-  state: 'logged-in' | 'logged-out' | 'no-access'
-  onSelectWorkspace: () => void
+const createIcon = (icon: React.ComponentType | React.ReactNode) => {
+  if (isValidElementType(icon)) return createElement(icon)
+  if (isValidElement(icon)) return icon
+  return undefined
 }
 
-export function WorkspacePreview({workspace, state, onSelectWorkspace}: WorkspacePreviewProps) {
-  const {name, icon, title, subtitle, projectId, dataset} = workspace
-  const {activeWorkspace} = useActiveWorkspace()
-  const clickable = state === 'logged-in' || state === 'logged-out'
+export interface WorkspacePreviewProps {
+  icon?: React.ComponentType | React.ReactNode
+  iconRight?: React.ComponentType | React.ReactNode
+  selected?: boolean
+  state?: 'logged-in' | 'logged-out' | 'no-access'
+  subtitle?: string
+  title: string
+}
+
+export function WorkspacePreview(props: WorkspacePreviewProps) {
+  const {state, subtitle, selected, title, icon, iconRight} = props
+
+  const iconComponent = useMemo(() => createIcon(icon), [icon])
+  const iconRightComponent = useMemo(() => createIcon(iconRight), [iconRight])
 
   return (
-    <li>
-      <StyledCard
-        __unstable_focusRing
-        {...(clickable
-          ? {
-              'data-as': 'button',
-              forwardedAs: 'button',
-              onClick: onSelectWorkspace,
-            }
-          : null)}
-        padding={2}
-        pressed={name === activeWorkspace.name}
-      >
-        <IconWrapper>{icon}</IconWrapper>
-        <Flex direction="column" flex="auto" gap={2}>
-          <Text weight="semibold">{title}</Text>
-          <Text muted size={1}>
-            {subtitle || (
-              <>
-                <span title={`Project ID: ${projectId}`}>{projectId}</span> |{' '}
-                <span title={`Dataset: ${dataset}`}>{dataset}</span>
-              </>
-            )}
-          </Text>
-        </Flex>
-        <Box flex="none" paddingRight={clickable ? 0 : 2}>
-          <Text muted size={1}>
-            {state === 'logged-in' && <>{/* intentionally blank */}</>}
-            {state === 'logged-out' && <em>Signed out</em>}
+    <Flex align="center" flex="none" gap={3}>
+      <MediaCard radius={2} tone="transparent">
+        {iconComponent}
+      </MediaCard>
 
-            {state === 'no-access' && (
-              <>
-                <em>{<>No access&nbsp;&nbsp;</>}</em>
-                <Tooltip
-                  content={
-                    <Card padding={2} style={{width: 128}}>
-                      <Text size={1}>
-                        You are signed out of this workspace and it is not configured for manual
-                        sign in.
-                      </Text>
-                    </Card>
-                  }
-                >
-                  <HelpCircleIcon />
-                </Tooltip>
-              </>
-            )}
+      <Stack flex={1} space={2}>
+        <Text textOverflow="ellipsis" weight="medium">
+          {title}
+        </Text>
+
+        {subtitle && (
+          <Text muted size={1} textOverflow="ellipsis">
+            {subtitle}
+          </Text>
+        )}
+      </Stack>
+
+      {state && STATE_TITLES[state] && (
+        <Box paddingLeft={1}>
+          <Text size={1} muted textOverflow="ellipsis">
+            {STATE_TITLES[state]}
           </Text>
         </Box>
+      )}
 
-        {state === 'logged-out' && (
-          <Box flex="none">
-            <Text size={2}>
-              <ChevronRightIcon />
+      {(selected || iconRightComponent) && (
+        <Flex align="center" gap={4} paddingLeft={3} paddingRight={2}>
+          {selected && (
+            <Text size={1} muted>
+              <CheckmarkIcon />
             </Text>
-          </Box>
-        )}
-      </StyledCard>
-    </li>
+          )}
+
+          {iconRightComponent && (
+            <Text size={1} muted>
+              {iconRightComponent}
+            </Text>
+          )}
+        </Flex>
+      )}
+    </Flex>
   )
 }

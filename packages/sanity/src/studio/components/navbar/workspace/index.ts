@@ -1,2 +1,3 @@
-export * from './WorkspaceSwitcher'
-export * from './WorkspaceMenu'
+export * from './WorkspaceAuth'
+export * from './WorkspaceMenuButton'
+export * from './WorkspacePreview'
