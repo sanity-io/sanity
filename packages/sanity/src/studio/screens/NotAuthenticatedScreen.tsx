@@ -1,24 +1,15 @@
-import {Flex, Card} from '@sanity/ui'
+import {Flex, Card, Container} from '@sanity/ui'
 import React from 'react'
-import styled from 'styled-components'
-import {WorkspaceSwitcher} from '../components/navbar/workspace'
-
-const StyledWorkspaceSwitcher = styled(WorkspaceSwitcher)`
-  margin: auto;
-  width: 350px;
-  max-width: 100%;
-`
+import {WorkspaceAuth} from '../components/navbar/workspace'
 
 export function NotAuthenticatedScreen() {
   return (
-    <Flex
-      direction="column"
-      height="fill"
-      // TODO: currently this card is here to accommodate dark mode vs light
-      // mode backgrounds, however that logic should probably exist globally
-      as={Card}
-    >
-      <StyledWorkspaceSwitcher />
-    </Flex>
+    <Card height="fill">
+      <Flex align="center" justify="center" height="fill">
+        <Container width={0}>
+          <WorkspaceAuth />
+        </Container>
+      </Flex>
+    </Card>
   )
 }
