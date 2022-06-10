@@ -24,9 +24,11 @@ export function ActiveWorkspaceMatcher({
   children,
   LoadingComponent,
   NotFoundComponent,
-  ...props
+  unstable_history: historyProp,
 }: ActiveWorkspaceMatcherProps) {
   const [error, setError] = useState<unknown>(null)
+
+  // Throw error to closest error boundary
   if (error) throw error
 
   const workspaces = useWorkspaces()
@@ -34,16 +36,14 @@ export function ActiveWorkspaceMatcher({
   const [activeWorkspace, setActiveWorkspace] = useState<WorkspaceSummary | null>(null)
   const [notFound, setNotFound] = useState(false)
 
-  const history = useMemo(() => {
-    return props.unstable_history || createHistory()
-  }, [props.unstable_history])
+  const history = useMemo(() => historyProp || createHistory(), [historyProp])
 
   useEffect(() => {
     const pathname$ = new Observable<string>((observer) => {
       const unlisten = history.listen((location) => observer.next(location.pathname))
-      if (typeof document !== 'undefined') {
-        observer.next(document.location.pathname)
-      }
+
+      // Emit initial pathname
+      observer.next(history.location.pathname || '/')
 
       return unlisten
     })
