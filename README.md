@@ -5,7 +5,7 @@
 </p>
 
 <p align="center">
-  <img alt="" src="https://img.shields.io/npm/v/@sanity/base">
+  <img alt="" src="https://img.shields.io/npm/v/sanity">
   <img alt="" src="https://img.shields.io/npm/dm/@sanity/client">
   <img alt="" src="https://img.shields.io/npm/l/@sanity/client.svg">
   <a aria-label="Join the community on Slack" href="https://slack.sanity.io">
@@ -32,7 +32,6 @@ Or go to [sanity.io/get-started](https://www.sanity.io/get-started) to get start
 
 - Watch the [getting started video on YouTube](https://www.youtube.com/watch?v=2ceM_tSus_M&lc=z224vtt5nqq1cbcf2acdp43aylzlb5jhft1kmuafltxw03c010c).
 - Check out our [guides](https://www.sanity.io/guides) and [plugins](https://www.sanity.io/plugins) and start building.
-
 
 ## Table of contents
 
