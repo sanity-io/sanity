@@ -10,6 +10,8 @@ const WORKSHOP_SCOPES_PATH = path.resolve(WORKSHOP_SRC_PATH, 'scopes.js')
 const WORKSHOP_PATTERNS = [
   path.resolve(ROOT_PATH, 'packages/@sanity/*/src/**/__workshop__/index.ts'),
   path.resolve(ROOT_PATH, 'packages/@sanity/*/src/**/__workshop__/index.tsx'),
+  path.resolve(ROOT_PATH, 'packages/*/src/**/__workshop__/index.ts'),
+  path.resolve(ROOT_PATH, 'packages/*/src/**/__workshop__/index.tsx'),
 ]
 
 // start watcher

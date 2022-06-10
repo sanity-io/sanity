@@ -7,12 +7,13 @@ import {useLocationStore} from './useLocationStore'
 
 export function WorkshopTool(props: {tool: Tool<WorkshopOptions>}) {
   const {tool} = props
+  const toolName = tool.options?.name || 'workshop'
 
   const {scheme, setScheme} = useColorScheme()
   const {basePath} = useWorkspace()
 
   const locationStore = useLocationStore({
-    baseUrl: `${basePath}/${tool.options?.name || 'workshop'}`,
+    baseUrl: `${basePath}/${toolName}`,
   })
 
   return (

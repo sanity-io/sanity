@@ -29,6 +29,6 @@ export const config = defineConfig({
   },
   frameUrl: '/workshop/frame/',
   plugins: [perfPlugin(), a11yPlugin()],
-  scopes,
+  scopes: scopes.filter(Boolean),
   title: 'Studio Workshop',
 })
