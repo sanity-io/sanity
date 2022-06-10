@@ -123,14 +123,14 @@ export interface RouterPaneSiblingContext {
   }
 }
 
-type MenuItem = ReturnType<ReturnType<StructureBuilder['menuItem']>['serialize']>
+export type DeskToolMenuItem = ReturnType<ReturnType<StructureBuilder['menuItem']>['serialize']>
 
 /**
  * Represents what can be passed into `menuItems` inside of desk-tool panes
  *
  * @see BaseResolvedPaneNode
  */
-export interface PaneMenuItem extends MenuItem {
+export interface PaneMenuItem extends DeskToolMenuItem {
   // TODO: these would be great options in the `MenuItemBuilder`
   // currently, they are only used in the `DocumentPaneProvider`
   isDisabled?: boolean

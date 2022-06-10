@@ -22,7 +22,7 @@ export * from './studio'
 
 export * from './types'
 
-export {useFormState} from './store/useFormState'
+export * from './store/useFormState'
 export * from './useFormValue'
 
 export * from './utils/mutationPatch'

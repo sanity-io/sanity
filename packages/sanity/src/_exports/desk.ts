@@ -29,36 +29,46 @@ export type {
   Source,
   TemplateResolver,
   Tool,
+  WorkspaceSummary,
 } from '../config'
 
 export {Timeline, TimelineController} from '../datastores'
 
 export type {
+  AuthState,
   AuthStore,
   Chunk,
   CombinedDocument,
+  DocumentRemoteMutationEvent,
   DocumentRemoteMutationVersionEvent,
   EditStateFor,
+  LoginComponentProps,
+  MendozaEffectPair,
+  MendozaPatch,
   ParsedTimeRef,
+  RemoteSnapshotEvent,
   RemoteSnapshotVersionEvent,
-  TimelineOptions,
+  SnapshotEvent,
   TimelineControllerOptions,
+  TimelineOptions,
   Transaction,
   TransactionLogEvent,
   UserStore,
+  WithVersion,
 } from '../datastores'
 
 export {deskTool, useDocumentPane} from '../desk'
 
 export type {
   DefaultDocumentNodeResolver,
+  DeskToolMenuItem,
   DeskToolOptions,
   PaneMenuItem,
   PaneMenuItemGroup,
   PaneView,
-  RouterPanes,
   RouterPaneGroup,
   RouterPaneSibling,
+  RouterPanes,
   StructureBuilder,
   StructureResolver,
 } from '../desk'
@@ -91,6 +101,8 @@ export {
 } from '../desk/actions'
 
 export {ConfirmDeleteDialog, usePaneRouter} from '../desk/components'
+
+export type {ConfirmDeleteDialogProps} from '../desk/components'
 
 export type {
   BackLinkProps,
@@ -183,7 +195,7 @@ export type {
   ViewBuilder,
 } from '../desk/structureBuilder'
 
-export type {Annotation} from '../field'
+export type {Annotation, AnnotationDetails, ChunkType} from '../field'
 
 export type {
   ArrayFieldProps,
@@ -224,6 +236,8 @@ export type {
   InsertItemEvent,
   ItemProps,
   MoveItemEvent,
+  NodePresence,
+  NodeValidation,
   NumberFieldProps,
   NumberFormNode,
   NumberInputProps,
@@ -242,6 +256,8 @@ export type {
   RenderCustomMarkers,
   RenderFieldCallback,
   RenderInputCallback,
+  RenderItemCallback,
+  RenderPreviewCallback,
   StringFieldProps,
   StringFormNode,
   StringInputProps,
@@ -269,3 +285,5 @@ export type {
   TemplateResponse,
   TypeTarget,
 } from '../templates'
+
+export type {StudioTheme} from '../theme'

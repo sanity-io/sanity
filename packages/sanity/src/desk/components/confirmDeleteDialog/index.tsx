@@ -1,12 +1,14 @@
 import React, {useCallback, useState} from 'react'
 import {Box, Flex, Button, Dialog, Text, ErrorBoundary} from '@sanity/ui'
 import {useId} from '@reach/auto-id'
-import {ConfirmDeleteDialog} from './ConfirmDeleteDialog'
+import {ConfirmDeleteDialog, ConfirmDeleteDialogProps} from './ConfirmDeleteDialog'
+
+export type {ConfirmDeleteDialogProps}
 
 type ArgType<T> = T extends (arg: infer U) => unknown ? U : never
 type ErrorInfo = ArgType<React.ComponentProps<typeof ErrorBoundary>['onCatch']>
 
-function ConfirmDeleteDialogContainer(props: React.ComponentProps<typeof ConfirmDeleteDialog>) {
+function ConfirmDeleteDialogContainer(props: ConfirmDeleteDialogProps) {
   const id = useId()
   const [error, setError] = useState<ErrorInfo | null>(null)
   const handleRetry = useCallback(() => setError(null), [])

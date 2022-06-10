@@ -46,9 +46,7 @@ interface InputProps extends ArrayOfObjectsInputProps<PortableTextBlock> {
   renderCustomMarkers?: RenderCustomMarkers
 }
 
-export type EditorElement = HTMLDivElement | HTMLSpanElement | null
-
-export type EditorElementWeakMap = WeakMap<Path, React.MutableRefObject<EditorElement>>
+export type PortableTextEditorElement = HTMLDivElement | HTMLSpanElement | null
 
 const ACTIVATE_ON_FOCUS_MESSAGE = <Text weight="semibold">Click to activate</Text>
 

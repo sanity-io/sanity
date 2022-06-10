@@ -46,14 +46,17 @@ export type {
   Tool,
   Workspace,
   WorkspaceOptions,
+  WorkspaceSummary,
 } from '../config'
 
 export {createConfig, createPlugin} from '../config'
 
 export type {
+  AuthState,
   AuthStore,
   EditStateFor,
   GuardedOperation,
+  LoginComponentProps,
   Operation,
   OperationsAPI,
   UserStore,
@@ -118,6 +121,8 @@ export type {
   InsertItemEvent,
   ItemProps,
   MoveItemEvent,
+  NodePresence,
+  NodeValidation,
   NumberFieldProps,
   NumberInputProps,
   NumberFormNode,
@@ -135,6 +140,8 @@ export type {
   RenderCustomMarkers,
   RenderFieldCallback,
   RenderInputCallback,
+  RenderItemCallback,
+  RenderPreviewCallback,
   StringFieldProps,
   StringInputProps,
   StringFormNode,
@@ -196,8 +203,6 @@ export {defaultTheme} from '../theme'
 
 export type {Template, TemplateResponse} from '../templates'
 
-export {getDraftId, getPublishedId} from '../util'
-
 export type {
   ArrayFieldDefinition,
   FieldDefinition,
@@ -207,4 +212,15 @@ export type {
   TypeTarget,
 } from '../templates'
 
-export type {DraftId, LoadableState, Opaque, PublishedId} from '../util'
+export {getDraftId, getPublishedId} from '../util'
+
+export type {
+  DraftId,
+  ErrorState,
+  LoadingTuple,
+  LoadedState,
+  LoadingState,
+  LoadableState,
+  Opaque,
+  PublishedId,
+} from '../util'

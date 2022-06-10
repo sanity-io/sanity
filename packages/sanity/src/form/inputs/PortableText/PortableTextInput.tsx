@@ -35,7 +35,7 @@ import type {
 import {ArrayOfObjectsItemMember, ObjectFormNode} from '../../types'
 import {isMemberArrayOfObjects} from '../ObjectInput/members/asserters'
 import {EMPTY_ARRAY} from '../../utils/empty'
-import {Compositor, EditorElement} from './Compositor'
+import {Compositor, PortableTextEditorElement} from './Compositor'
 import {InvalidValue as RespondToInvalidContent} from './InvalidValue'
 import {usePatches} from './usePatches'
 import {VisibleOnFocusButton} from './VisibleOnFocusButton'
@@ -55,7 +55,7 @@ export type ObjectMemberType = ArrayOfObjectsItemMember<
 export interface PortableTextMemberItem {
   key: string
   member: ObjectMemberType
-  elementRef?: React.MutableRefObject<EditorElement> | undefined
+  elementRef?: React.MutableRefObject<PortableTextEditorElement> | undefined
 }
 
 export function isFieldMember(member: ObjectMember): member is FieldMember<ObjectFormNode> {
@@ -198,7 +198,7 @@ export function PortableTextInput(props: PortableTextInputProps) {
       return {
         key,
         member: r,
-        elementRef: createRef<EditorElement>(),
+        elementRef: createRef<PortableTextEditorElement>(),
       }
     })
     portableTextMemberItemsRef.current = items

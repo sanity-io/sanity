@@ -4,7 +4,7 @@ import DataLoader from 'dataloader'
 import raf from 'raf'
 import {isRecord} from '../../util'
 
-interface UserStoreOptions {
+export interface UserStoreOptions {
   client: SanityClient
   currentUser: CurrentUser | null
 }

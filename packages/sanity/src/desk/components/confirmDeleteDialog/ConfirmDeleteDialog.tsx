@@ -22,7 +22,7 @@ export const LoadingContainer = styled(Flex).attrs({
   height: 300px;
 `
 
-interface ReferencingDocumentsProps {
+export interface ConfirmDeleteDialogProps {
   /**
    * Incoming document ID used to find other referencing documents. This
    * field respects draft IDs (e.g. if you pass in a published ID when one
@@ -53,7 +53,7 @@ export function ConfirmDeleteDialog({
   action = 'delete',
   onCancel,
   onConfirm,
-}: ReferencingDocumentsProps) {
+}: ConfirmDeleteDialogProps) {
   const dialogId = `deletion-confirmation-${useId()}`
   const {internalReferences, crossDatasetReferences, isLoading, totalCount, projectIds} =
     useReferringDocuments(id)

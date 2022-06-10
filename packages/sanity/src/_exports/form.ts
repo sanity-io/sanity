@@ -61,6 +61,8 @@ export type {Annotation, AnnotationDetails, Chunk, ChunkType} from '../field'
 
 export * from '../form'
 
+export type {PortableTextEditorElement} from '../form/inputs/PortableText/Compositor'
+
 export type {
   RenderBlockActionsCallback,
   RenderBlockActionsProps,

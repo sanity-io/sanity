@@ -13,7 +13,7 @@ import styled, {css} from 'styled-components'
 import {Box, Card, Theme, Tooltip} from '@sanity/ui'
 import {RenderCustomMarkers, FIXME, RenderPreviewCallback} from '../../../types'
 import {useFormBuilder} from '../../../useFormBuilder'
-import {EditorElement} from '../Compositor'
+import {PortableTextEditorElement} from '../Compositor'
 import {usePortableTextMarkers} from '../hooks/usePortableTextMarkers'
 import {useMemberValidation} from '../hooks/useMemberValidation'
 import {usePortableTextMemberItem} from '../hooks/usePortableTextMembers'
@@ -110,7 +110,7 @@ const TooltipBox = styled(Box)`
 
 export const InlineObject = React.forwardRef(function InlineObject(
   props: InlineObjectProps,
-  forwardedRef: React.ForwardedRef<EditorElement>
+  forwardedRef: React.ForwardedRef<PortableTextEditorElement>
 ) {
   const {
     attributes: {focused, selected, path},

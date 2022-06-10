@@ -2,17 +2,31 @@ export {resolveConfig} from '../config'
 
 export type {
   AssetSourceResolver,
+  AsyncComposableOption,
   ComposableOption,
   Config,
   ConfigContext,
   DocumentActionsContext,
+  DocumentActionsResolver,
+  DocumentBadgesContext,
+  DocumentBadgesResolver,
+  DocumentPluginOptions,
   FormBuilderComponentResolverContext,
   NewDocumentCreationContext,
+  NewDocumentOptionsContext,
+  NewDocumentOptionsResolver,
   PartialContext,
+  PluginOptions,
   ResolveProductionUrlContext,
   SanityFormConfig,
+  SchemaPluginOptions,
   Source,
+  SourceOptions,
+  TemplateResolver,
   Tool,
+  Workspace,
+  WorkspaceOptions,
+  WorkspaceSummary,
 } from '../config'
 
 export * from '../components/DefaultDocument'
@@ -52,6 +66,7 @@ export type {
 
 export * from '../desk/structureBuilder'
 export {ConfirmDeleteDialog} from '../desk/components/confirmDeleteDialog'
+export type {ConfirmDeleteDialogProps} from '../desk/components/confirmDeleteDialog'
 
 export * from '../field'
 export * from '../field/diff/components/ChangeBreadcrumb'
@@ -106,6 +121,8 @@ export type {
   InsertItemEvent,
   ItemProps,
   MoveItemEvent,
+  NodePresence,
+  NodeValidation,
   NumberFieldProps,
   NumberFormNode,
   NumberInputProps,
@@ -123,6 +140,8 @@ export type {
   RenderCustomMarkers,
   RenderFieldCallback,
   RenderInputCallback,
+  RenderItemCallback,
+  RenderPreviewCallback,
   StringFieldProps,
   StringFormNode,
   StringInputProps,
@@ -173,6 +192,8 @@ export type {
 export * from '../router'
 export * from '../schema'
 
+export type {ToolMenuProps} from '../studio'
+
 export type {
   ArrayFieldDefinition,
   FieldDefinition,
@@ -184,6 +205,8 @@ export type {
   TypeTarget,
 } from '../templates'
 
+export type {StudioTheme} from '../theme'
+
 export * from '../user-color'
 
 export type {
@@ -191,6 +214,7 @@ export type {
   LoadableState,
   LoadedState,
   LoadingState,
+  LoadingTuple,
   Opaque,
   PartialExcept,
   PublishedId,

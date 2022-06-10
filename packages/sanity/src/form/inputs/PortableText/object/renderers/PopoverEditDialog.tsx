@@ -20,14 +20,14 @@ import React, {useCallback, useEffect, useMemo, useState} from 'react'
 import styled from 'styled-components'
 import {PresenceOverlay} from '../../../../../presence'
 import {FIXME} from '../../../../types'
-import {EditorElement} from '../../Compositor'
+import {PortableTextEditorElement} from '../../Compositor'
 import {POPOVER_WIDTH_TO_UI_WIDTH} from './constants'
 import {debugElement} from './debug'
 import {ModalWidth} from './types'
 
 interface PopoverEditDialogProps {
   children: React.ReactNode
-  elementRef?: React.MutableRefObject<EditorElement>
+  elementRef?: React.MutableRefObject<PortableTextEditorElement>
   onClose: () => void
   scrollElement: HTMLElement
   title: string | React.ReactNode

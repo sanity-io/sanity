@@ -15,7 +15,7 @@ export interface AuthProvider {
   logo?: string
 }
 
-interface AuthStoreOptions {
+export interface AuthStoreOptions {
   projectId: string
   dataset: string
   /**
@@ -98,7 +98,10 @@ const getCurrentUser = async (client: SanityClient) => {
   }
 }
 
-function createAuthStore({
+/**
+ * @internal
+ */
+export function _createAuthStore({
   projectId,
   dataset,
   loginMethod = 'dual',
@@ -217,6 +220,9 @@ function hash(value: unknown): string {
   )
 }
 
-const memoizedCreateAuthStore = memoize(createAuthStore, hash)
+/**
+ * @public
+ */
+const createAuthStore = memoize(_createAuthStore, hash)
 
-export {memoizedCreateAuthStore as createAuthStore}
+export {createAuthStore}
