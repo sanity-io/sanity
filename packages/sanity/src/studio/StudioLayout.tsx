@@ -57,7 +57,7 @@ export function StudioLayout() {
   }, [])
 
   useEffect(() => {
-    if (errorChannel) return undefined
+    if (!errorChannel) return undefined
 
     return errorChannel.subscribe((msg: any) => {
       console.error(msg.error)
