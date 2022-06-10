@@ -11,5 +11,8 @@
     "jsx": "react",
     "resolveJsonModule": true
   },
-  "references": [{"path": "../types"}]
+  "references": [
+    {"path": "../types"},
+    {"path": "../../sanity"}
+  ]
 }
