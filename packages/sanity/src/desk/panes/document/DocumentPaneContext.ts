@@ -42,7 +42,7 @@ export interface DocumentPaneContextValue {
   onKeyUp: (event: React.KeyboardEvent<HTMLDivElement>) => void
   onMenuAction: (item: PaneMenuItem) => void
   onPaneClose: () => void
-  onPaneSplit: () => void
+  onPaneSplit?: () => void
   onPathOpen: (path: Path) => void
   onSetActiveFieldGroup: (path: Path, groupName: string) => void
   onSetCollapsedPath: (path: Path, expanded: boolean) => void
