@@ -1,5 +1,5 @@
 import React, {useCallback, useEffect, useState} from 'react'
-import {Image, ImageSchemaType} from '@sanity/types'
+import type {Image, ImageSchemaType} from '@sanity/types'
 import {Box, Card, Flex, Text, Grid, Heading, useForwardedRef} from '@sanity/ui'
 import styled from 'styled-components'
 import shallowEquals from 'shallow-equals'
@@ -10,7 +10,7 @@ import {Checkerboard} from '../../../components/Checkerboard'
 import {withFocusRing} from '../../../components/withFocusRing'
 import {RatioBox} from '../common/RatioBox'
 import {EMPTY_ARRAY} from '../../../utils/empty'
-import {FIXME, ObjectInputProps} from '../../../types'
+import type {ObjectInputProps} from '../../../types'
 import {useDidUpdate} from '../../../hooks/useDidUpdate'
 import {ImageTool, HotspotImage, DEFAULT_CROP, DEFAULT_HOTSPOT} from './imagetool'
 import {useLoadImage} from './useLoadImage'
@@ -174,8 +174,8 @@ export function ImageToolInput(props: ImageToolInputProps) {
                           aspectRatio={ratio}
                           src={image.src}
                           srcAspectRatio={image.width / image.height}
-                          hotspot={localValue.hotspot || (DEFAULT_HOTSPOT as FIXME)}
-                          crop={localValue.crop || (DEFAULT_CROP as FIXME)}
+                          hotspot={localValue.hotspot || DEFAULT_HOTSPOT}
+                          crop={localValue.crop || DEFAULT_CROP}
                         />
                       ) : (
                         <Placeholder />

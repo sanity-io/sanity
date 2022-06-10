@@ -1,12 +1,15 @@
-/* eslint-disable react/jsx-filename-extension */
 import React from 'react'
-import PropTypes from 'prop-types'
 import {ImageLoader} from './ImageLoader'
 import {ToolCanvas} from './ToolCanvas'
 import {Resize} from './Resize'
-import {FIXME} from './types'
+import type {ToolCanvasProps} from './types'
 
-export function ImageTool(props: FIXME) {
+export interface ImageToolProps extends Omit<ToolCanvasProps, 'image'> {
+  image?: HTMLCanvasElement
+  src: string
+}
+
+export function ImageTool(props: ImageToolProps) {
   return (
     <ImageLoader src={props.src}>
       {({isLoading, image, error}) => {
@@ -27,25 +30,6 @@ export function ImageTool(props: FIXME) {
       }}
     </ImageLoader>
   )
-}
-
-ImageTool.propTypes = {
-  src: PropTypes.string.isRequired,
-  value: PropTypes.shape({
-    hotspot: PropTypes.shape({
-      x: PropTypes.number,
-      y: PropTypes.number,
-      height: PropTypes.number,
-      width: PropTypes.number,
-    }),
-  }),
-  image: PropTypes.shape({
-    height: PropTypes.number,
-    width: PropTypes.number,
-  }),
-  onChange: PropTypes.func,
-  onChangeEnd: PropTypes.func,
-  readOnly: PropTypes.bool,
 }
 
 ImageTool.maxHeight = 500

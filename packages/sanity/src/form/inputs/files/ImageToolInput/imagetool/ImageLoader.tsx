@@ -1,4 +1,3 @@
-import PropTypes from 'prop-types'
 import React from 'react'
 
 interface ImageLoaderProps {
@@ -16,12 +15,7 @@ interface ImageLoaderState {
 }
 
 export class ImageLoader extends React.Component<ImageLoaderProps, ImageLoaderState> {
-  static propTypes = {
-    src: PropTypes.string.isRequired,
-    children: PropTypes.func.isRequired,
-  }
-
-  state = {
+  state: ImageLoaderState = {
     isLoading: true,
     image: null,
     error: null,
@@ -57,7 +51,7 @@ export class ImageLoader extends React.Component<ImageLoaderProps, ImageLoaderSt
     image.src = src
   }
 
-  UNSAFE_componentWillReceiveProps(nextProps: {src: string}) {
+  UNSAFE_componentWillReceiveProps(nextProps: ImageLoaderProps) {
     if (nextProps.src !== this.props.src) {
       this.loadImage(nextProps.src)
     }

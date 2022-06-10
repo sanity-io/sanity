@@ -1,6 +1,4 @@
-import PropTypes from 'prop-types'
 import React from 'react'
-import {FIXME} from './types'
 
 export interface ResizeProps {
   image: HTMLImageElement
@@ -8,16 +6,9 @@ export interface ResizeProps {
   maxWidth: number
   children: (canvas: HTMLCanvasElement) => React.ReactNode
 }
-export class Resize extends React.Component<ResizeProps> {
-  static propTypes = {
-    // eslint-disable-next-line react/forbid-prop-types
-    image: PropTypes.object.isRequired,
-    maxWidth: PropTypes.number.isRequired,
-    maxHeight: PropTypes.number.isRequired,
-    children: PropTypes.func.isRequired,
-  }
 
-  _canvas: FIXME = null
+export class Resize extends React.Component<ResizeProps> {
+  _canvas: HTMLCanvasElement | null = null
 
   componentWillUnmount() {
     if (this._canvas) {
@@ -48,8 +39,10 @@ export class Resize extends React.Component<ResizeProps> {
     canvas.height = targetHeight
 
     const ctx = canvas.getContext('2d')
+    if (ctx) {
+      ctx.drawImage(image, 0, 0, image.width, image.height, 0, 0, targetWidth, targetHeight)
+    }
 
-    ctx.drawImage(image, 0, 0, image.width, image.height, 0, 0, targetWidth, targetHeight)
     return canvas
   }
 

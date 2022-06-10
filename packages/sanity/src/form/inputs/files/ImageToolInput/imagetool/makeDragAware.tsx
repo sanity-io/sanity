@@ -1,11 +1,13 @@
-/* eslint-disable react/jsx-filename-extension */
-import PropTypes from 'prop-types'
 import React from 'react'
 import Debug from 'debug'
-import {FIXME} from './types'
+import type {Coordinate} from './types'
 
 const debug = Debug('sanity-imagetool')
 const supportsTouch = typeof window !== 'undefined' && 'ontouchstart' in window
+
+type PositionableEvent =
+  | {touches: React.TouchEvent['touches'] | TouchEvent['touches']}
+  | {clientX: number; clientY: number}
 
 // Returns a component that emits `onDragStart, `onDrag` and `onDragEnd` events.
 // It handles mouse/touch events the same way
@@ -16,19 +18,13 @@ export interface DragAwareProps {
   onDrag: (pos: {x: number; y: number}) => void
   onDragEnd: (pos: {x: number; y: number}) => void
   readOnly?: boolean
-  [key: string]: FIXME
+  [key: string]: unknown | undefined
 }
-export function makeDragAware(Component: FIXME) {
-  return class DragAware extends React.PureComponent<DragAwareProps> {
-    static propTypes = {
-      onDragStart: PropTypes.func.isRequired,
-      onDrag: PropTypes.func.isRequired,
-      onDragEnd: PropTypes.func.isRequired,
-      readOnly: PropTypes.bool,
-    }
 
-    domNode: FIXME = null
-    currentPos: FIXME = null
+export function makeDragAware(Component: 'canvas') {
+  return class DragAware extends React.PureComponent<DragAwareProps> {
+    domNode: HTMLCanvasElement | null = null
+    currentPos: Coordinate | null = null
     isDragging = false
 
     componentDidMount() {
@@ -45,10 +41,8 @@ export function makeDragAware(Component: FIXME) {
 
     componentWillUnmount() {
       if (supportsTouch) {
-        document.body.removeEventListener('touchmove', this.handleTouchMove, {
-          passive: false,
-        } as FIXME)
-        document.body.removeEventListener('touchend', this.handleDragEnd, {passive: false} as FIXME)
+        document.body.removeEventListener('touchmove', this.handleTouchMove)
+        document.body.removeEventListener('touchend', this.handleDragEnd)
         document.body.removeEventListener('touchcancel', this.handleDragCancel)
       } else {
         document.body.removeEventListener('mousemove', this.handleDrag)
@@ -57,17 +51,17 @@ export function makeDragAware(Component: FIXME) {
       }
     }
 
-    handleTouchMove = (event: {preventDefault: () => void}) => {
+    handleTouchMove = (event: TouchEvent | MouseEvent) => {
       // Disables mobile scroll by touch
       if (this.isDragging) {
         event.preventDefault()
       }
     }
 
-    handleDragStart = (event: FIXME) => {
+    handleDragStart = (event: PositionableEvent) => {
       const {onDragStart, readOnly} = this.props
 
-      if (readOnly) {
+      if (readOnly || !this.domNode) {
         return
       }
 
@@ -86,10 +80,11 @@ export function makeDragAware(Component: FIXME) {
       this.currentPos = nextPos
     }
 
-    handleDrag = (event: FIXME) => {
-      if (!this.isDragging || this.props.readOnly) {
+    handleDrag = (event: PositionableEvent) => {
+      if (!this.isDragging || this.props.readOnly || !this.currentPos) {
         return
       }
+
       const {onDrag} = this.props
       const nextPos = getPos(event)
       const diff = diffPos(nextPos, this.currentPos)
@@ -98,9 +93,9 @@ export function makeDragAware(Component: FIXME) {
       this.currentPos = nextPos
     }
 
-    handleDragEnd = (event: FIXME) => {
+    handleDragEnd = (event: MouseEvent | TouchEvent) => {
       const {onDragEnd, readOnly} = this.props
-      if (!this.isDragging || readOnly) {
+      if (!this.isDragging || readOnly || !this.domNode) {
         return
       }
       const nextPos = getPos(event)
@@ -113,9 +108,10 @@ export function makeDragAware(Component: FIXME) {
     }
 
     handleDragCancel = () => {
-      if (!this.isDragging || this.props.readOnly) {
+      if (!this.isDragging || this.props.readOnly || !this.currentPos || !this.domNode) {
         return
       }
+
       const {onDragEnd} = this.props
       this.isDragging = false
       onDragEnd(
@@ -125,10 +121,11 @@ export function makeDragAware(Component: FIXME) {
           this.domNode.getBoundingClientRect()
         )
       )
+
       this.currentPos = null
     }
 
-    setDomNode = (node: FIXME) => {
+    setDomNode = (node: HTMLCanvasElement) => {
       this.domNode = node
     }
 
@@ -154,9 +151,9 @@ function getPositionRelativeToRect(x: number, y: number, rect: {left: number; to
   }
 }
 
-function getPos(event: {touches: string | FIXME[]; clientX: FIXME; clientY: FIXME}) {
-  if (supportsTouch) {
-    return event.touches.length
+function getPos(event: PositionableEvent): Coordinate {
+  if ('touches' in event) {
+    return event.touches.length > 0
       ? {x: event.touches[0].clientX, y: event.touches[0].clientY}
       : {x: 0, y: 0}
   }
@@ -167,7 +164,7 @@ function getPos(event: {touches: string | FIXME[]; clientX: FIXME; clientY: FIXM
   }
 }
 
-function diffPos(pos: {x: FIXME; y: FIXME}, otherPos: {x: number; y: number}) {
+function diffPos(pos: Coordinate, otherPos: Coordinate): Coordinate {
   return {
     x: pos.x - otherPos.x,
     y: pos.y - otherPos.y,

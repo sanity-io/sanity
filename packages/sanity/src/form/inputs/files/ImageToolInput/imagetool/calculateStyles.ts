@@ -1,33 +1,47 @@
+import type {CSSProperties} from 'react'
 import {DEFAULT_HOTSPOT, DEFAULT_CROP} from './constants'
-import {FIXME} from './types'
-
-export interface Crop {
-  left: number
-  bottom: number
-  right: number
-  top: number
-}
-
-export interface Hotspot {
-  width: number
-  height: number
-  x: number
-  y: number
-}
+import {Crop, Hotspot, CropMethod, CropAndHotspot} from './types'
 
 interface Options {
   image?: {aspectRatio: number} | {height: number; width: number}
   container?: {aspectRatio: number} | {height: number; width: number}
   hotspot?: Hotspot
   crop?: Crop
-  align?: {x?: string; y?: string}
+  align?: CropAlignment
 }
 
-export function calculateStyles(options: Options = {}) {
-  const imageAspect = readAspectRatio(options.image)
+interface CSSBox {
+  width: number
+  height: number
+  left: number
+  top: number
+}
+
+interface CropAlignment {
+  x: 'left' | 'right' | 'center'
+  y: 'top' | 'bottom' | 'center'
+}
+
+interface HotspotCropStyleResult {
+  crop: CSSBox
+  image: CSSBox
+  method: CropMethod
+}
+
+export interface CalculatedStyles {
+  container: CSSProperties
+  padding: CSSProperties
+  crop: CSSProperties
+  image: CSSProperties
+  debug: {
+    result: HotspotCropStyleResult
+  }
+}
+
+export function calculateStyles(options: Options = {}): CalculatedStyles {
+  const imageAspect = readAspectRatio(options.image) || 1
 
   const hotspot = options.hotspot || DEFAULT_HOTSPOT
-
   const crop = options.crop || DEFAULT_CROP
   const containerAspect = readAspectRatio(options.container) || imageAspect * readCropAspect(crop)
 
@@ -36,10 +50,7 @@ export function calculateStyles(options: Options = {}) {
   const result = calculateHotSpotCrop(
     imageAspect,
     {hotspot, crop},
-    {
-      aspect: containerAspect,
-      align,
-    }
+    {aspect: containerAspect, align}
   )
 
   const containerHeight = styleFormat(round(100 / containerAspect))
@@ -76,28 +87,36 @@ export function calculateStyles(options: Options = {}) {
   }
 }
 
-function readAspectRatio(opts: FIXME) {
+function readAspectRatio(opts: Options['image']): number | null {
   if (!opts) {
     return null
   }
-  if (opts.hasOwnProperty('aspectRatio')) {
+
+  if ('aspectRatio' in opts) {
     return opts.aspectRatio
   }
-  if (opts.hasOwnProperty('height') || opts.hasOwnProperty('width')) {
+
+  if ('height' in opts || 'width' in opts) {
     if (typeof opts.height !== 'number' && typeof opts.width !== 'number') {
       throw new Error(`Height and width must be numbers, got ${JSON.stringify(opts)}`)
     }
+
     return opts.width / opts.height
   }
+
   return null
 }
 
-function round(num: FIXME, decimals = 2) {
+function round(num: number, decimals = 2): number {
   const multiplier = Math.pow(10, decimals)
   return Math.round(num * multiplier) / multiplier
 }
 
-function calculateHotSpotCrop(sourceAspect: FIXME, descriptor: FIXME, spec: FIXME) {
+function calculateHotSpotCrop(
+  sourceAspect: number,
+  descriptor: CropAndHotspot,
+  spec: {aspect: number; align: CropAlignment}
+): HotspotCropStyleResult {
   const crop = descriptor.crop
   const viewportAspect = spec.aspect
   const alignment = spec.align
@@ -151,8 +170,8 @@ function calculateHotSpotCrop(sourceAspect: FIXME, descriptor: FIXME, spec: FIXM
     minFullBleedScale = cropAspect / viewportAspect // At this scale the viewport is filled exactly in the height while cutting away from the sides
   }
 
-  let method
-  let outCrop: FIXME
+  let method: CropMethod
+  let outCrop: CSSBox
 
   // Do we have to letterbox this image in order to leave the hotspot area uncropped?
   if (minFullBleedScale > maxScale) {
@@ -171,6 +190,10 @@ function calculateHotSpotCrop(sourceAspect: FIXME, descriptor: FIXME, spec: FIXM
     outCrop = {
       width: letterboxScale,
       height: (letterboxScale / cropAspect) * viewportAspect,
+
+      // Gets overwritten further down
+      left: 0,
+      top: 0,
     }
 
     const hotspotLeft = hotspot.x * outCrop.width - (hotspot.width * outCrop.width) / 2
