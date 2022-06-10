@@ -1,6 +1,6 @@
 import {useCallback, useMemo} from 'react'
 import {catchError, concatMap, map, startWith} from 'rxjs/operators'
-import {Observable, of, Subject} from 'rxjs'
+import {concat, Observable, of, Subject} from 'rxjs'
 import {useObservable} from 'react-rx'
 import {usePrevious} from '../../hooks/usePrevious'
 import {ReferenceInfo} from './types'
@@ -42,7 +42,7 @@ export function useReferenceInfo(
 
   const stream$ = useMemo(
     () =>
-      msg$.pipe(
+      concat(of(null), msg$).pipe(
         map(() => id),
         concatMap((refId: string | undefined) =>
           refId
