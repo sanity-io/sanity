@@ -17,7 +17,6 @@
   "references": [
     {"path": "./packages/@sanity/block-tools"},
     {"path": "./packages/@sanity/cli"},
-    {"path": "./packages/@sanity/core"},
     {"path": "./packages/@sanity/diff"},
     {"path": "./packages/@sanity/mutator"},
     {"path": "./packages/@sanity/portable-text-editor"},
