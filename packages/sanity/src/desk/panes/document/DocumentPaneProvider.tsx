@@ -357,7 +357,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   useEffect(() => {
     if (connectionState === 'reconnecting') {
       pushToast({
-        id: 'desk-tool/reconnecting',
+        id: 'sanity/desk/reconnecting',
         status: 'warning',
         title: <>Connection lost. Reconnecting…</>,
       })

@@ -1,7 +1,7 @@
 import {defineScope} from '@sanity/ui-workshop'
 import {lazy} from 'react'
 
-export default defineScope('base/studio/navbar', 'Navbar', [
+export default defineScope('sanity/studio/navbar', 'Navbar', [
   {
     name: 'navbar',
     title: 'Navbar',

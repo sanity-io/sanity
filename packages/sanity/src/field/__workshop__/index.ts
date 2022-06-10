@@ -1,7 +1,7 @@
 import {defineScope} from '@sanity/ui-workshop'
 import {lazy} from 'react'
 
-export default defineScope('base/field', 'Field', [
+export default defineScope('sanity/field', 'Field', [
   {
     name: 'change-breadcrumb',
     title: 'Change Breadcrumb',

@@ -1,7 +1,7 @@
 import {defineScope} from '@sanity/ui-workshop'
 import {lazy} from 'react'
 
-export default defineScope('form-builder/core', 'Core', [
+export default defineScope('sanity/form/core', 'Core', [
   {
     name: 'example',
     title: 'Example',

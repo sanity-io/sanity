@@ -1,7 +1,7 @@
 import {defineScope} from '@sanity/ui-workshop'
 import {lazy} from 'react'
 
-export default defineScope('desk-tool/pane', 'Pane', [
+export default defineScope('sanity/desk/pane', 'Pane', [
   {
     name: 'example',
     title: 'Example',

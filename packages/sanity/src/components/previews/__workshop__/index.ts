@@ -1,7 +1,7 @@
 import {defineScope} from '@sanity/ui-workshop'
 import {lazy} from 'react'
 
-export default defineScope('base/previews', 'Previews', [
+export default defineScope('sanity/previews', 'Previews', [
   {
     name: 'general',
     title: 'General preview',

@@ -1,7 +1,7 @@
 import {defineScope} from '@sanity/ui-workshop'
 import {lazy} from 'react'
 
-export default defineScope('desk-tool/status-bar', 'StatusBar', [
+export default defineScope('sanity/desk/status-bar', 'StatusBar', [
   {
     name: 'document-actions',
     title: 'Document actions',

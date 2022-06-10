@@ -1,7 +1,7 @@
 import {defineScope} from '@sanity/ui-workshop'
 import {lazy} from 'react'
 
-export default defineScope('desk-tool/core', 'Core', [
+export default defineScope('sanity/desk/core', 'Core', [
   {
     name: 'resolve-panes',
     title: 'Resolve panes',
