@@ -87,7 +87,7 @@ export function UserMenu() {
         <StyledMenu>
           <Card padding={2}>
             <Box marginBottom={3}>
-              <Label size={0} muted>
+              <Label size={1} muted>
                 Signed in as
               </Label>
             </Box>
