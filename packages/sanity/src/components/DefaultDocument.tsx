@@ -1,5 +1,6 @@
 import React from 'react'
 import {Favicons} from './Favicons'
+import {GlobalErrorHandler} from './globalErrorHandler'
 
 const globalStyles = `
   html {
@@ -35,6 +36,8 @@ export function DefaultDocument(props: DefaultDocumentProps) {
         <Favicons basePath={basePath} />
 
         <title>Sanity Studio</title>
+
+        <GlobalErrorHandler />
 
         {css.map((href) => (
           <link key={href} rel="stylesheet" href={href} />
