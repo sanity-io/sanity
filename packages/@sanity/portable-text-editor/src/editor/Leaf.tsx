@@ -11,12 +11,13 @@ import {
 import {debugWithName} from '../utils/debug'
 import {DefaultAnnotation} from './nodes/DefaultAnnotation'
 import {DraggableChild} from './DraggableChild'
+import {ElementAttributes} from './Element'
 
 const debug = debugWithName('components:Leaf')
 const debugRenders = false
 
 type LeafProps = {
-  attributes: string
+  attributes: ElementAttributes
   children: ReactElement
   keyGenerator: () => string
   leaf: Element

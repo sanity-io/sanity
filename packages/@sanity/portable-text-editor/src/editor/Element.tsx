@@ -16,15 +16,17 @@ import {DraggableChild} from './DraggableChild'
 const debug = debugWithName('components:Element')
 const debugRenders = false
 
+export interface ElementAttributes {
+  'data-slate-node': 'element'
+  'data-slate-void'?: true
+  'data-slate-inline'?: true
+  contentEditable?: false
+  dir?: 'rtl'
+  ref: any
+}
+
 type ElementProps = {
-  attributes: {
-    'data-slate-node': 'element'
-    'data-slate-void'?: true
-    'data-slate-inline'?: true
-    contentEditable?: false
-    dir?: 'rtl'
-    ref: any
-  }
+  attributes: ElementAttributes
   children: ReactElement
   element: SlateElement
   portableTextFeatures: PortableTextFeatures
