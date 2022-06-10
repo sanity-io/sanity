@@ -26,12 +26,11 @@ import {DefaultArrayInputFunctions} from '../common/ArrayFunctions'
 import {ArrayOfObjectsInputProps, ArrayOfObjectsMember} from '../../../types'
 import {isObjectItemProps} from '../../../types/asserters'
 import {withFocusRing} from '../../../components/withFocusRing'
+import {MemberItem, MemberItemError} from '../../../members'
 import type {ArrayMember, InsertEvent} from './types'
 import {uploadTarget} from './uploadTarget/uploadTarget'
 import {isEmpty} from './item/helpers'
 import {ArrayItem} from './item/ArrayItem'
-import {MemberItem} from './MemberItem'
-import {MemberError} from './MemberError'
 
 type Toast = {push: (params: ToastParams) => void}
 
@@ -309,7 +308,7 @@ export class ArrayInput extends React.PureComponent<ArrayInputProps> {
     }
 
     if (member.kind === 'error') {
-      return <MemberError member={member} />
+      return <MemberItemError member={member} />
     }
     //@ts-expect-error all possible cases should be covered
     return <>Unknown member kind: ${member.kind}</>

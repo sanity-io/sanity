@@ -11,7 +11,7 @@ export * from './studio/focusManagers/SimpleFocusManager'
 export * from './inputs/PortableText/PortableTextInput'
 export {PortableTextInput as BlockEditor} from './inputs/PortableText/PortableTextInput'
 
-export * from './inputs/ObjectInput/MemberField'
+export * from './members'
 
 export * from './patch/PatchChannel'
 export * from './patch/PatchEvent'

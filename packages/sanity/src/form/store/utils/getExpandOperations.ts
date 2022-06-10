@@ -3,12 +3,11 @@ import {castArray} from 'lodash'
 import {
   ArrayOfObjectsFormNode,
   ArrayOfObjectsItemMember,
-  ArrayOfPrimitivesItemMember,
   FieldMember,
   FieldSetMember,
   ObjectFormNode,
 } from '../../../form'
-import {isMemberArrayOfObjects} from '../../../form/inputs/ObjectInput/members/asserters'
+import {isMemberArrayOfObjects} from '../../members/fields/asserters'
 
 // eslint-disable-next-line @typescript-eslint/ban-types
 interface ExpandPathOperation {

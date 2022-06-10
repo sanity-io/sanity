@@ -1,21 +1,17 @@
 import React, {memo} from 'react'
-import {FieldMember} from '../../store/types/members'
 import {
   RenderFieldCallback,
   RenderInputCallback,
   RenderArrayOfObjectsItemCallback,
   FIXME,
+  FieldMember,
   RenderPreviewCallback,
-} from '../../types'
-import {ArrayOfObjectsField} from './members/ArrayOfObjectsField'
-import {PrimitiveField} from './members/PrimitiveField'
-import {ObjectField} from './members/ObjectField'
-import {ArrayOfPrimitivesField} from './members/ArrayOfPrimitivesField'
-import {
-  isMemberArrayOfObjects,
-  isMemberArrayOfPrimitives,
-  isMemberObject,
-} from './members/asserters'
+} from '../types'
+import {ArrayOfObjectsField} from './fields/ArrayOfObjectsField'
+import {PrimitiveField} from './fields/PrimitiveField'
+import {ObjectField} from './fields/ObjectField'
+import {ArrayOfPrimitivesField} from './fields/ArrayOfPrimitivesField'
+import {isMemberArrayOfObjects, isMemberArrayOfPrimitives, isMemberObject} from './fields/asserters'
 
 export interface MemberFieldProps {
   member: FieldMember

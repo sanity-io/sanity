@@ -1,8 +1,8 @@
 import React from 'react'
-import {ArrayItemError} from '../../../store/types/memberErrors'
-import {ItemWithMissingType} from './item/ItemWithMissingType'
+import {ItemWithMissingType} from '../inputs/arrays/ArrayOfObjectsInput/item/ItemWithMissingType'
+import {ArrayItemError} from '../store/types/memberErrors'
 
-export function MemberError(props: {member: ArrayItemError}) {
+export function MemberItemError(props: {member: ArrayItemError}) {
   const {member} = props
 
   if (member.error.type === 'INVALID_ITEM_TYPE') {

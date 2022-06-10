@@ -1,20 +1,20 @@
 import * as React from 'react'
 import {useCallback, useMemo, useRef} from 'react'
 import {Path} from '@sanity/types'
-import {useDidUpdate} from '../../../hooks/useDidUpdate'
+import {FormCallbacksProvider, useFormCallbacks} from '../studio/contexts/FormCallbacks'
+import {useDidUpdate} from '../hooks/useDidUpdate'
 import {
+  ArrayOfObjectsItemMember,
   ObjectInputProps,
+  ObjectItemProps,
+  RenderArrayOfObjectsItemCallback,
   RenderFieldCallback,
   RenderInputCallback,
-  RenderArrayOfObjectsItemCallback,
   RenderPreviewCallback,
-  ArrayOfObjectsItemMember,
-} from '../../../types'
-import {ObjectItemProps} from '../../../types/itemProps'
-import {FormCallbacksProvider, useFormCallbacks} from '../../../studio/contexts/FormCallbacks'
-import {insert, PatchArg, PatchEvent, setIfMissing, unset} from '../../../patch'
-import {createProtoValue} from '../../../utils/createProtoValue'
-import {ensureKey} from '../../../utils/ensureKey'
+} from '../types'
+import {insert, PatchArg, PatchEvent, setIfMissing, unset} from '../patch'
+import {createProtoValue} from '../utils/createProtoValue'
+import {ensureKey} from '../utils/ensureKey'
 
 /**
  * @alpha

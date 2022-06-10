@@ -1,19 +1,19 @@
 import React, {useCallback, useMemo, useRef} from 'react'
 import {Path} from '@sanity/types'
-import {FieldMember} from '../../../store/types/members'
-import {ObjectFormNode} from '../../../store/types/nodes'
+import {useDidUpdate} from '../../hooks/useDidUpdate'
 import {
+  FieldMember,
+  ObjectFieldProps,
+  ObjectFormNode,
   ObjectInputProps,
   RenderArrayOfObjectsItemCallback,
   RenderFieldCallback,
   RenderInputCallback,
   RenderPreviewCallback,
-} from '../../../types'
-import {FormCallbacksProvider, useFormCallbacks} from '../../../studio/contexts/FormCallbacks'
-import {useDidUpdate} from '../../../hooks/useDidUpdate'
-import {PatchArg, PatchEvent, setIfMissing} from '../../../patch'
-import {createProtoValue} from '../../../utils/createProtoValue'
-import {ObjectFieldProps} from '../../../types/fieldProps'
+} from '../../types'
+import {PatchArg, PatchEvent, setIfMissing} from '../../patch'
+import {FormCallbacksProvider, useFormCallbacks} from '../../studio/contexts/FormCallbacks'
+import {createProtoValue} from '../../utils/createProtoValue'
 
 /**
  * Responsible for creating inputProps and fieldProps to pass to ´renderInput´ and ´renderField´ for an object input

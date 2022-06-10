@@ -33,8 +33,8 @@ import type {
   RenderCustomMarkers,
 } from '../../types'
 import {ArrayOfObjectsItemMember, ObjectFormNode} from '../../types'
-import {isMemberArrayOfObjects} from '../ObjectInput/members/asserters'
 import {EMPTY_ARRAY} from '../../utils/empty'
+import {isMemberArrayOfObjects} from '../../members/fields/asserters'
 import {Compositor, PortableTextEditorElement} from './Compositor'
 import {InvalidValue as RespondToInvalidContent} from './InvalidValue'
 import {usePatches} from './usePatches'

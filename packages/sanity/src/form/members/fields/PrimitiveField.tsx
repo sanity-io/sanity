@@ -1,10 +1,14 @@
 import React, {useCallback, useMemo, useRef} from 'react'
-import {FieldMember} from '../../../store/types/members'
-import {PrimitiveInputProps, RenderFieldCallback, RenderInputCallback} from '../../../types'
-import {PrimitiveFieldProps} from '../../../types/fieldProps'
-import {useFormCallbacks} from '../../../studio/contexts/FormCallbacks'
-import {useDidUpdate} from '../../../hooks/useDidUpdate'
-import {FormPatch, PatchEvent} from '../../../patch'
+import {
+  FieldMember,
+  PrimitiveFieldProps,
+  PrimitiveInputProps,
+  RenderFieldCallback,
+  RenderInputCallback,
+} from '../../types'
+import {FormPatch, PatchEvent} from '../../patch'
+import {useDidUpdate} from '../../hooks/useDidUpdate'
+import {useFormCallbacks} from '../../studio/contexts/FormCallbacks'
 
 /**
  * Responsible for creating inputProps and fieldProps to pass to ´renderInput´ and ´renderField´ for a primitive field/input

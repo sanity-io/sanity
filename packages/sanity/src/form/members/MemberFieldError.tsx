@@ -1,11 +1,11 @@
 import React, {useCallback} from 'react'
 import {Box} from '@sanity/ui'
-import {FieldError} from '../../store/types/memberErrors'
-import {useFormCallbacks} from '../../studio/contexts/FormCallbacks'
-import {InvalidValueInput} from '../InvalidValueInput'
-import {PatchEvent} from '../../patch'
-import {MissingKeysAlert} from '../arrays/errors/MissingKeysAlert'
-import {DuplicateKeysAlert} from '../arrays/errors/DuplicateKeysAlert'
+import {FieldError} from '../store/types/memberErrors'
+import {useFormCallbacks} from '../studio/contexts/FormCallbacks'
+import {PatchEvent} from '../patch'
+import {InvalidValueInput} from '../inputs/InvalidValueInput'
+import {MissingKeysAlert} from '../inputs/arrays/errors/MissingKeysAlert'
+import {DuplicateKeysAlert} from '../inputs/arrays/errors/DuplicateKeysAlert'
 
 export function MemberFieldError(props: {member: FieldError}) {
   const {member} = props

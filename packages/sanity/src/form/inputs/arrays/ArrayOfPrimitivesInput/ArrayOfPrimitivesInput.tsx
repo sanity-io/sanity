@@ -5,7 +5,7 @@ import {Card, Stack} from '@sanity/ui'
 import {ArrayOfPrimitivesInputProps, FormArrayInputFunctionsProps} from '../../../types'
 import {Item, List} from '../common/list'
 import {PrimitiveItemProps} from '../../../types/itemProps'
-import {MemberError} from '../ArrayOfObjectsInput/MemberError'
+import {MemberItemError} from '../../../members'
 import {getEmptyValue} from './getEmptyValue'
 
 import {PrimitiveValue} from './types'
@@ -190,7 +190,7 @@ export class ArrayOfPrimitivesInput extends React.PureComponent<DefaultArrayOfPr
                     )
                   }
                   if (member.kind === 'error') {
-                    return <MemberError key={member.key} member={member} />
+                    return <MemberItemError key={member.key} member={member} />
                   }
                   //@ts-expect-error all possible cases should be covered
                   return <>Unknown member kind: ${member.kind}</>

@@ -1,20 +1,20 @@
 import React, {useCallback, useMemo, useRef} from 'react'
-import {FieldMember} from '../../../store/types/members'
-import {ArrayOfPrimitivesFormNode} from '../../../store/types/nodes'
 import {
   ArrayOfPrimitivesFieldProps,
+  ArrayOfPrimitivesFormNode,
   ArrayOfPrimitivesInputProps,
+  FieldMember,
   FIXME,
   MoveItemEvent,
   RenderArrayOfPrimitivesItemCallback,
   RenderFieldCallback,
   RenderInputCallback,
   RenderPreviewCallback,
-} from '../../../types'
-import {FormCallbacksProvider, useFormCallbacks} from '../../../studio/contexts/FormCallbacks'
-import {useDidUpdate} from '../../../hooks/useDidUpdate'
-import {PatchArg, PatchEvent, set, setIfMissing, unset} from '../../../patch'
-import {PrimitiveValue} from '../../arrays/ArrayOfPrimitivesInput/types'
+} from '../../types'
+import {FormCallbacksProvider, useFormCallbacks} from '../../studio/contexts/FormCallbacks'
+import {useDidUpdate} from '../../hooks/useDidUpdate'
+import {PatchArg, PatchEvent, set, setIfMissing, unset} from '../../patch'
+import {PrimitiveValue} from '../../inputs/arrays/ArrayOfPrimitivesInput/types'
 
 function move<T>(arr: T[], from: number, to: number): T[] {
   const copy = arr.slice()
