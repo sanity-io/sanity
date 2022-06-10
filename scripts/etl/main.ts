@@ -20,8 +20,9 @@ function main() {
     .option('--quiet', '[boolean] print only crucial logs')
     .action(async (pattern, options) => {
       const workspace = pattern
-        ? config.workspace.filter((p) => p.includes(pattern))
-        : config.workspace
+        ? config.workspace.filter((p) => p === pattern)
+        : // .filter((p) => p.includes(pattern))
+          config.workspace
 
       const quiet = Boolean(options.quiet)
 
