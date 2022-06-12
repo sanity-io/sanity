@@ -75,6 +75,8 @@ export * from '../form/members/MemberFieldError'
 export * from '../form/members/MemberItem'
 
 export * from '../form/inputs/ObjectInput'
+export {StudioArrayInput as ArrayOfObjectsInput} from '../form/studio/inputs/StudioArrayInput'
+export * from '../form/inputs/arrays/ArrayOfObjectsInput'
 
 export * from '../form/inputs/arrays/ArrayOfPrimitivesInput/PrimitiveMemberItem'
 

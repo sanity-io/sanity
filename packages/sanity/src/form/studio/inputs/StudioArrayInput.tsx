@@ -8,11 +8,9 @@ import {useFormBuilder} from '../../useFormBuilder'
 import {useClient} from '../../../hooks'
 import {ArrayOfObjectsInputProps, ArrayOfPrimitivesInputProps} from '../../types'
 import {resolveInitialValueForType} from '../../../templates'
-import {FileLike, UploaderResolver} from '../uploads/types'
+import {FileLike} from '../uploads/types'
 
-export function StudioArrayInput(
-  props: ArrayOfObjectsInputProps & {resolveUploader: UploaderResolver}
-) {
+export function StudioArrayInput(props: ArrayOfObjectsInputProps) {
   const formBuilder = useFormBuilder()
   // todo abstract the client away
   const client = useClient()
