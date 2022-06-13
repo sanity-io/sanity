@@ -15,7 +15,7 @@ export type Type = {
 
 export type PortableTextType = Type & {
   options?: {
-    editModal?: 'modal' | 'fullscreen'
+    modal?: {type?: 'dialog' | 'popover'; width?: number | number[] | 'auto'}
     sortable?: boolean
     layout?: 'grid'
   }
