@@ -23,7 +23,7 @@ export interface DefaultDocumentProps {
   basePath?: string
 }
 const EMPTY_ARRAY: never[] = []
-export function DefaultDocument(props: DefaultDocumentProps) {
+export function DefaultDocument(props: DefaultDocumentProps): React.ReactElement {
   const {entryPath, css = EMPTY_ARRAY, basePath = '/'} = props
   return (
     <html lang="en">
