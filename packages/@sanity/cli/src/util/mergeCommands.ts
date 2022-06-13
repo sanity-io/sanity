@@ -1,7 +1,12 @@
 import {find} from 'lodash'
 import semver from 'semver'
 import chalk from 'chalk'
-import type {CliCommandDefinition, CliCommandGroupDefinition, SanityCore} from '../types'
+import type {
+  CliCommandDefinition,
+  CliCommandGroupDefinition,
+  SanityCore,
+  SanityModuleInternal,
+} from '../types'
 import {dynamicRequire} from './dynamicRequire'
 import {getUpgradeCommand} from './getUpgradeCommand'
 import {isCommandGroup} from './isCommandGroup'
@@ -22,8 +27,10 @@ export function mergeCommands(
   }
 
   const {cwd, workDir, cliVersion} = options
-  const core = dynamicRequire<SanityCore>(corePath)
+  const coreImport = dynamicRequire<SanityCore | SanityModuleInternal>(corePath)
   const coercedCliVersion = semver.coerce(cliVersion) || ''
+  const moduleName = /@sanity[/\\]core/.test(corePath) ? '@sanity/core' : 'sanity'
+  const core = 'cliProjectCommands' in coreImport ? coreImport.cliProjectCommands : coreImport
 
   if (
     core.requiredCliVersionRange &&
@@ -32,7 +39,7 @@ export function mergeCommands(
     const upgradeCmd = chalk.yellow(getUpgradeCommand({cwd, workDir}))
     /* eslint-disable no-console, no-process-exit */
     console.error(
-      `The version of @sanity/core installed in this project requires @sanity/cli @ ${chalk.green(
+      `The version of the \`${moduleName}\` installed in this project requires @sanity/cli @ ${chalk.green(
         core.requiredCliVersionRange
       )}. Currently installed version is ${chalk.red(
         cliVersion

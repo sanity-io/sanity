@@ -8,8 +8,11 @@ import {parseArguments} from './util/parseArguments'
 import {mergeCommands} from './util/mergeCommands'
 import {getCliRunner} from './CommandRunner'
 import {baseCommands} from './commands'
-import {hasStudioConfig, resolveRootDir} from './util/resolveRootDir'
 import {neatStack} from './util/neatStack'
+import {resolveRootDir} from './util/resolveRootDir'
+import {CliConfigResult, getCliConfig} from './util/getCliConfig'
+import {CommandRunnerOptions} from './types'
+import {debug} from './debug'
 
 const sanityEnv = process.env.SANITY_INTERNAL_ENV || 'production' // eslint-disable-line no-process-env
 const knownEnvs = ['development', 'staging', 'production']
@@ -37,10 +40,15 @@ export async function runCli(cliRoot: string, {cliVersion}: {cliVersion: string}
   // Check if there are updates available for the CLI, and notify if there is
   await runUpdateCheck({pkg, cwd, workDir}).notify()
 
-  const options = {
+  // Try to figure out if we're in a v2 or v3 context by finding a config
+  debug(`Reading build config from "${workDir}"`)
+  const cliConfig = await getCliConfig(workDir, {forked: true})
+
+  const options: CommandRunnerOptions = {
     cliRoot: cliRoot,
     workDir: workDir,
-    corePath: await getCoreModulePath(workDir),
+    corePath: getCoreModulePath(workDir, cliConfig),
+    cliConfig,
   }
 
   warnOnNonProductionEnvironment()
@@ -73,18 +81,47 @@ export async function runCli(cliRoot: string, {cliVersion}: {cliVersion: string}
   })
 }
 
-async function getCoreModulePath(workDir: string) {
-  const pkgPath = resolveFrom.silent(workDir, '@sanity/core')
-  if (pkgPath) {
-    return pkgPath
+function getCoreModulePath(workDir: string, cliConfig: CliConfigResult | null): string | undefined {
+  const corePath = resolveFrom.silent(workDir, '@sanity/core')
+  const sanityPath = resolveFrom.silent(workDir, 'sanity/_internal')
+
+  if (sanityPath && cliConfig && cliConfig?.version >= 3) {
+    // On v3 and everything installed
+    return sanityPath
   }
 
-  if ((await hasStudioConfig(workDir)) && process.argv.indexOf('install') === -1) {
+  if (corePath && cliConfig && cliConfig?.version < 3) {
+    // On v2 and everything installed
+    return corePath
+  }
+
+  if (corePath && sanityPath) {
+    console.warn(
+      chalk.yellow('Both `@sanity/core` AND `sanity` installed - assuming Sanity v3 project.')
+    )
+
+    return sanityPath
+  }
+
+  const isInstallCommand = process.argv.indexOf('install') === -1
+
+  if (cliConfig && cliConfig?.version < 3 && !corePath && !isInstallCommand) {
     console.warn(
       chalk.yellow(
         [
-          '@sanity/core not installed in current project',
+          'The `@sanity/core` module is not installed in current project',
           'Project-specific commands not available until you run `sanity install`',
+        ].join('\n')
+      )
+    )
+  }
+
+  if (cliConfig && cliConfig.version >= 3 && !sanityPath) {
+    console.warn(
+      chalk.yellow(
+        [
+          'The `sanity` module is not installed in current project',
+          'Project-specific commands not available until you run `npm install`',
         ].join('\n')
       )
     )

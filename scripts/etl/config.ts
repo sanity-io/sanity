@@ -24,7 +24,6 @@ export const config = {
   workspace: [
     'sanity',
     '@sanity/block-tools',
-    '@sanity/core',
     // '@sanity/dashboard',
     '@sanity/diff',
     // '@sanity/export',

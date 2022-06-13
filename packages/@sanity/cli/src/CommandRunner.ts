@@ -81,9 +81,7 @@ export class CommandRunner {
     const output = this.handlers.outputter
     const prompt = this.handlers.prompter
 
-    debug(`Reading build config from "${options.workDir}"`)
-
-    const cliConfig = await getCliConfig(options.workDir, {forked: true})
+    const {cliConfig, ...commandOptions} = options
     const apiClient = getClientWrapper(
       cliConfig?.config?.api || null,
       cliConfig?.path || (cliConfig?.version === 2 ? 'sanity.json' : 'sanity.cli.js')
@@ -95,7 +93,7 @@ export class CommandRunner {
       apiClient,
       yarn: yarnWithProgress,
       chalk,
-      ...options,
+      ...commandOptions,
       commandRunner: this,
       ...getVersionedContextParams(cliConfig),
     }

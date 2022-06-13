@@ -5,10 +5,18 @@ import type {ExecaReturnValue} from 'execa'
 import type {SanityClient} from '@sanity/client'
 import type {Separator, DistinctQuestion, Answers, ChoiceCollection} from 'inquirer'
 import type {ClientRequirements} from './util/clientWrapper'
+import {CliConfigResult} from './util/getCliConfig'
 
 export interface SanityCore {
   requiredCliVersionRange: string
-  commands: CliCommandDefinition[]
+  commands: (CliCommandDefinition | CliCommandGroupDefinition)[]
+}
+
+export interface SanityModuleInternal {
+  cliProjectCommands: {
+    requiredCliVersionRange: string
+    commands: (CliCommandDefinition | CliCommandGroupDefinition)[]
+  }
 }
 
 export interface PackageJson {
@@ -117,6 +125,7 @@ export interface CliUserConfig {
 }
 
 export interface CommandRunnerOptions {
+  cliConfig: CliConfigResult | null
   cliRoot: string
   workDir: string
   corePath: string | undefined

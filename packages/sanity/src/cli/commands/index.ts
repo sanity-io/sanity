@@ -40,7 +40,7 @@ import usersGroup from './users/usersGroup'
 import inviteUserCommand from './users/inviteUserCommand'
 import listUsersCommand from './users/listUsersCommand'
 
-const coreCommands: (CliCommandDefinition | CliCommandGroupDefinition)[] = [
+const commands: (CliCommandDefinition | CliCommandGroupDefinition)[] = [
   buildCommand,
   checkCommand,
   configCheckCommand,
@@ -83,4 +83,12 @@ const coreCommands: (CliCommandDefinition | CliCommandGroupDefinition)[] = [
   execCommand,
 ]
 
-export default coreCommands
+/**
+ * @deprecated Not actually deprecated, but these are internals and should not be relied upon outside of the Sanity team
+ * @internal
+ */
+export const cliProjectCommands = {
+  // @todo probably bump to v3?
+  requiredCliVersionRange: '^2.0.0',
+  commands,
+}

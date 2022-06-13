@@ -16,7 +16,6 @@ const options = {
   ignoreMatches: [
     '@types/jest',
     '@types/webpack-env',
-    '@sanity/core', // Temporary, until we can make implicit cli/core dep work
     'ts-node',
     'config:*',
     'part:*',

@@ -4,17 +4,22 @@ import pFilter from 'p-filter'
 import deburr from 'lodash/deburr'
 import noop from 'lodash/noop'
 import type {DatasetAclMode} from '@sanity/client'
+import resolveFrom from 'resolve-from'
 
 import {debug} from '../../debug'
+import {dynamicRequire} from '../../util/dynamicRequire'
 import {getClientWrapper} from '../../util/clientWrapper'
 import {getUserConfig} from '../../util/getUserConfig'
+import {isCommandGroup} from '../../util/isCommandGroup'
 import {getProjectDefaults, ProjectDefaults} from '../../util/getProjectDefaults'
 import type {InitFlags} from '../../commands/init/initCommand'
-import type {
+import {
   CliApiClient,
   CliCommandArguments,
   CliCommandContext,
   CliCommandDefinition,
+  SanityCore,
+  SanityModuleInternal,
 } from '../../types'
 import {createProject} from '../project/createProject'
 import {login, LoginFlags} from '../login/login'
@@ -217,27 +222,11 @@ export default async function initSanity(
 
   // Prompt for dataset import (if a dataset is defined)
   if (shouldImport) {
-    // @TODO REIMPLEMENT ME @todo
-    print('Dataset importing is temporarily disabled!')
-    // @TODO REIMPLEMENT ME @todo
-
-    /*
-    // Make sure we have the required configs
-    const corePath = resolveFrom.silent(outputPath, '@sanity/core') || 'null'
-
-    debug('@sanity/core path resolved to %s', corePath)
-    debug('(from %s)', outputPath)
-    const coreModule = dynamicRequire(corePath)
-    const coreCommands = coreModule && coreModule.commands
-
-    if (!Array.isArray(coreCommands)) {
-      throw new Error('@sanity/core module failed to be resolved')
-    }
-
+    const importCommand = getImportCommand(outputPath, 3)
     await doDatasetImport({
       projectId,
       outputPath,
-      coreCommands,
+      importCommand,
       template,
       datasetName,
       context,
@@ -248,7 +237,6 @@ export default async function initSanity(
     print(`\t${chalk.cyan(`sanity dataset delete ${datasetName}`)}`)
     print('and create a new clean dataset with')
     print(`\t${chalk.cyan(`sanity dataset create <name>`)}\n`)
-    */
   }
 
   const isCurrentDir = outputPath === process.cwd()
@@ -753,15 +741,14 @@ function doDatasetImport(options: {
   template: ProjectTemplate
   datasetName: string
   context: CliCommandContext
-  coreCommands: CliCommandDefinition[]
+  importCommand: CliCommandDefinition | undefined
 }): Promise<unknown> {
-  const {outputPath, coreCommands, template, datasetName, projectId, context} = options
+  const {outputPath, importCommand, template, datasetName, projectId, context} = options
   if (!template.datasetUrl) {
     return Promise.resolve(undefined)
   }
 
-  const importCmd = coreCommands.find((cmd) => cmd.name === 'import' && cmd.group === 'dataset')
-  if (!importCmd) {
+  if (!importCommand) {
     throw new Error('Failed to find `sanity dataset import` command')
   }
 
@@ -783,7 +770,7 @@ function doDatasetImport(options: {
     fromInitCommand: true,
   }
 
-  return importCmd.action(commandArgs, commandContext)
+  return importCommand.action(commandArgs, commandContext)
 }
 
 async function getPlanFromCoupon(apiClient: CliApiClient, couponCode: string): Promise<string> {
@@ -804,4 +791,47 @@ async function getPlanFromCoupon(apiClient: CliApiClient, couponCode: string): P
   } catch (err) {
     throw err
   }
+}
+
+function getImportCommand(
+  outputPath: string,
+  studioVersion: 2 | 3
+): CliCommandDefinition | undefined {
+  if (studioVersion === 3) {
+    const pkgPath = resolveFrom.silent(outputPath, 'sanity/_internal')
+    if (!pkgPath) {
+      throw new Error('Failed to resolve `sanity` module - problem with dependency installation?')
+    }
+
+    debug('`sanity` module path resolved to %s (from %s)', pkgPath, outputPath)
+    const cliInternals = dynamicRequire<SanityModuleInternal>(pkgPath)
+    if (!('cliProjectCommands' in cliInternals)) {
+      throw new Error('Incorrect version of the `sanity` module installed')
+    }
+
+    return cliInternals.cliProjectCommands.commands.find(
+      (cmd): cmd is CliCommandDefinition =>
+        !isCommandGroup(cmd) && cmd.name === 'import' && cmd.group === 'dataset'
+    )
+  }
+
+  const pkgPath = resolveFrom.silent(outputPath, '@sanity/core')
+  if (!pkgPath) {
+    throw new Error(
+      'Failed to resolve `@sanity/core` module - problem with dependency installation?'
+    )
+  }
+
+  debug('`@sanity/core` module path resolved to %s (from %s)', pkgPath, outputPath)
+  const coreModule = dynamicRequire<SanityCore>(pkgPath)
+  const coreCommands = coreModule && coreModule.commands
+
+  if (!coreCommands || !Array.isArray(coreCommands)) {
+    throw new Error('Incorrect version of the `@sanity/core` module installed')
+  }
+
+  return coreCommands.find(
+    (cmd): cmd is CliCommandDefinition =>
+      !isCommandGroup(cmd) && cmd.name === 'import' && cmd.group === 'dataset'
+  )
 }

@@ -14,7 +14,7 @@ export function resolveRootDir(cwd: string): string {
   }
 }
 
-export function hasStudioConfig(basePath: string): boolean {
+function hasStudioConfig(basePath: string): boolean {
   const buildConfigs = [
     fileExists(path.join(basePath, 'studio.config.js')),
     fileExists(path.join(basePath, 'studio.config.ts')),
