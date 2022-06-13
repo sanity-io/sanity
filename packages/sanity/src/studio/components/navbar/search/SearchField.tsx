@@ -41,12 +41,12 @@ export function SearchField(props: SearchFieldProps) {
   const renderOption = useCallback(
     (option) => {
       const {data} = option.payload
-      const documentId = getPublishedId(data.hit._id)
+      const documentId = data.hit._id
       const documentType = data.hit._type
 
       return (
         <SearchItem
-          key={data.hit._id}
+          key={documentId}
           onClick={handleClickItem}
           padding={2}
           documentId={documentId}

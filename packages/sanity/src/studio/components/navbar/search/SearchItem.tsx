@@ -6,6 +6,7 @@ import {DocumentPreviewPresence} from '../../../../presence'
 import {IntentLink} from '../../../../router'
 import {SanityPreview} from '../../../../preview'
 import {useDocumentPresence} from '../../../../datastores'
+import {getPublishedId} from '../../../../util'
 
 interface SearchItemProps extends ResponsivePaddingProps {
   onClick?: () => void
@@ -18,7 +19,10 @@ export function SearchItem(props: SearchItemProps) {
   const documentPresence = useDocumentPresence(documentId)
   const schema = useSchema()
   const schemaType = schema.get(documentType)
-  const params = useMemo(() => ({id: documentId, type: documentType}), [documentId, documentType])
+  const params = useMemo(
+    () => ({id: getPublishedId(documentId), type: documentType}),
+    [documentId, documentType]
+  )
   const previewValue = useMemo(
     () => ({_id: documentId, _type: documentType}),
     [documentId, documentType]
