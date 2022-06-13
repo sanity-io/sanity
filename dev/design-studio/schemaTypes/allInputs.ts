@@ -155,7 +155,6 @@ const arrayOfObjectsExample = {
   description: 'List of objects',
   of: [_complexObjectType],
   options: {
-    editModal: undefined, // 'fullscreen' | 'fold' | 'popover' | undefined
     // sortable: false
   },
 }

@@ -74,7 +74,6 @@ const arrayWithPt = {
     },
   ],
   options: {
-    // editModal: undefined // 'fullscreen' | 'fold' | 'popover' | undefined
     // sortable: false
   },
 }
