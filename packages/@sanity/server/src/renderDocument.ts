@@ -118,7 +118,20 @@ function renderDocumentFromWorkerData() {
 
 function getDocumentHtml(studioRootPath: string, props?: DocumentProps): string {
   const Document = getDocumentComponent(studioRootPath)
-  const result = renderToStaticMarkup(createElement(Document, {...defaultProps, ...props}))
+
+  // NOTE: Validate the list of CSS paths so implementers of `_document.tsx` don't have to
+  // - If the path is not a full URL, check if it starts with `/`
+  //   - If not, then prepend a `/` to the string
+  const css = props?.css?.map((url) => {
+    try {
+      // If the URL is absolute, we don't need to prefix it
+      return new URL(url).toString()
+    } catch {
+      return url.startsWith('/') ? url : `/${url}`
+    }
+  })
+
+  const result = renderToStaticMarkup(createElement(Document, {...defaultProps, ...props, css}))
   return `<!DOCTYPE html>${result}`
 }
 
