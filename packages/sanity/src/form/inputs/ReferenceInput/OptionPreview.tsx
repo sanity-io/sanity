@@ -1,4 +1,6 @@
-/* eslint-disable max-nested-callbacks,no-nested-ternary */
+/* eslint-disable max-nested-callbacks */
+/* eslint-disable no-nested-ternary */
+
 import React from 'react'
 import {ReferenceSchemaType} from '@sanity/types'
 import {Stack, Text, TextSkeleton} from '@sanity/ui'

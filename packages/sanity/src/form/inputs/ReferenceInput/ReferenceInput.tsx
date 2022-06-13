@@ -101,24 +101,27 @@ export function ReferenceInput(props: ReferenceInputProps) {
 
   const [searchState, setSearchState] = useState<ReferenceSearchState>(INITIAL_SEARCH_STATE)
 
-  const handleCreateNew = (option: CreateReferenceOption) => {
-    const id = uuid()
+  const handleCreateNew = useCallback(
+    (option: CreateReferenceOption) => {
+      const id = uuid()
 
-    const patches = [
-      setIfMissing({}),
-      set(schemaType.name, ['_type']),
-      set(id, ['_ref']),
-      set(true, ['_weak']),
-      set({type: option.type, weak: schemaType.weak, template: option.template}, [
-        '_strengthenOnPublish',
-      ]),
-    ].filter(isNonNullable)
+      const patches = [
+        setIfMissing({}),
+        set(schemaType.name, ['_type']),
+        set(id, ['_ref']),
+        set(true, ['_weak']),
+        set({type: option.type, weak: schemaType.weak, template: option.template}, [
+          '_strengthenOnPublish',
+        ]),
+      ].filter(isNonNullable)
 
-    onChange(patches)
+      onChange(patches)
 
-    onEditReference({id, type: option.type, template: option.template})
-    onFocusPath([])
-  }
+      onEditReference({id, type: option.type, template: option.template})
+      onFocusPath([])
+    },
+    [onChange, onEditReference, onFocusPath, schemaType]
+  )
 
   const handleChange = useCallback(
     (id: string) => {
@@ -148,7 +151,7 @@ export function ReferenceInput(props: ReferenceInputProps) {
       onChange(patches)
       onFocusPath([])
     },
-    [searchState.hits, schemaType.name, schemaType.weak, onChange, onFocus]
+    [searchState.hits, schemaType.name, schemaType.weak, onChange, onFocusPath]
   )
 
   const handleClear = useCallback(() => {
@@ -162,7 +165,7 @@ export function ReferenceInput(props: ReferenceInputProps) {
         onFocusPath(['_ref'])
       }
     },
-    [onFocus]
+    [onFocusPath]
   )
 
   const handleAutocompleteKeyDown = useCallback(
@@ -369,6 +372,10 @@ export function ReferenceInput(props: ReferenceInputProps) {
     }
   )
 
+  const handleReplaceClick = useCallback(() => {
+    onFocusPath(['_ref'])
+  }, [onFocusPath])
+
   return (
     <Stack
       space={1}
@@ -500,9 +507,7 @@ export function ReferenceInput(props: ReferenceInputProps) {
                           <MenuItem
                             text="Replace"
                             icon={ReplaceIcon}
-                            onClick={() => {
-                              onFocusPath(['_ref'])
-                            }}
+                            onClick={handleReplaceClick}
                           />
 
                           <MenuDivider />
