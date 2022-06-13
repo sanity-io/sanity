@@ -151,7 +151,7 @@ export namespace Schema {
     sortable?: boolean
     layout?: 'tags' | 'grid'
     list?: Array<{title: string; value: TValue}>
-    editModal?: 'dialog' | 'fullscreen' | 'popover'
+    modal?: {type?: 'dialog' | 'popover'; width?: number | 'auto'}
   }
 
   export interface ArrayDefinition<TValue = unknown> extends BaseDefinitionOptions {
@@ -254,7 +254,10 @@ export namespace Schema {
     collapsible?: boolean
     collapsed?: boolean
     columns?: number
-    editModal?: 'dialog' | 'fullscreen' | 'popover'
+    modal?: {
+      type?: 'dialog' | 'popover'
+      width?: number | number[] | 'auto'
+    }
   }
 
   export interface ObjectDefinition extends BaseDefinitionOptions {
@@ -506,10 +509,7 @@ export interface ArraySchemaType<V = unknown> extends BaseSchemaType {
     layout?: V extends string ? 'tags' : 'grid'
     direction?: 'horizontal' | 'vertical'
     sortable?: boolean
-    /**
-     * @deprecated This will be removed.
-     */
-    editModal?: 'dialog' | 'fullscreen' | 'popover' | 'fold'
+    modal?: {type?: 'dialog' | 'popover'; width?: number | 'auto'}
   }
 }
 
