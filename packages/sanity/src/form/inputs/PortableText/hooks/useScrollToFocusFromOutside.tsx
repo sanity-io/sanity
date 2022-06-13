@@ -7,7 +7,7 @@ import {Path} from '@sanity/types'
 import {isEqual} from '@sanity/util/paths'
 import {useEffect} from 'react'
 import scrollIntoView from 'scroll-into-view-if-needed'
-import {isBlockType} from '../PortableTextInput'
+import {_isBlockType} from '../_helpers'
 import {usePortableTextMemberItems} from './usePortableTextMembers'
 
 interface Props {
@@ -51,7 +51,7 @@ export function useScrollToFocusFromOutside(props: Props): void {
         PortableTextEditor.focus(editor)
       }
       // Auto-close regular blocks
-      if (isBlockType(memberItem.member.item.schemaType)) {
+      if (_isBlockType(memberItem.member.item.schemaType)) {
         onCloseItem()
       }
     }

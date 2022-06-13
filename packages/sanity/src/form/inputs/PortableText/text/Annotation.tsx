@@ -16,6 +16,7 @@ import {useFormBuilder} from '../../../useFormBuilder'
 import {useMemberValidation} from '../hooks/useMemberValidation'
 import {usePortableTextMarkers} from '../hooks/usePortableTextMarkers'
 import {usePortableTextMemberItem} from '../hooks/usePortableTextMembers'
+import {pathToString} from '../../../../field/paths'
 import {AnnotationToolbarPopover} from './AnnotationToolbarPopover'
 
 interface AnnotationProps {
@@ -83,8 +84,8 @@ export const Annotation = function Annotation(props: AnnotationProps) {
     [path, value._key]
   )
   const [textElement, setTextElement] = useState<HTMLSpanElement | null>(null)
-  const memberItem = usePortableTextMemberItem(JSON.stringify(markDefPath))
-  const {validation, hasError, hasWarning} = useMemberValidation(memberItem?.member)
+  const memberItem = usePortableTextMemberItem(pathToString(markDefPath))
+  const {validation, hasError, hasWarning} = useMemberValidation(memberItem?.node)
   const markers = usePortableTextMarkers(path)
   const [showPopover, setShowPopover] = useState(false)
 
@@ -137,7 +138,7 @@ export const Annotation = function Annotation(props: AnnotationProps) {
       event.preventDefault()
       event.stopPropagation()
       if (memberItem) {
-        onOpenItem(memberItem.member.item.path)
+        onOpenItem(memberItem.node.path)
       }
     },
     [editor, memberItem, onOpenItem]

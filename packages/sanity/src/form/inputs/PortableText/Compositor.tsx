@@ -19,7 +19,7 @@ import {
   usePortal,
 } from '@sanity/ui'
 import {ChangeIndicator} from '../../../components/changeIndicators'
-import {ArrayOfObjectsInputProps, FIXME, RenderCustomMarkers} from '../../types'
+import {ArrayOfObjectsInputProps, RenderCustomMarkers} from '../../types'
 import {ActivateOnFocus} from '../../components/ActivateOnFocus/ActivateOnFocus'
 import {EMPTY_ARRAY} from '../../utils/empty'
 import {FormInput} from '../../FormInput'
@@ -33,7 +33,7 @@ import {useHotkeys} from './hooks/useHotKeys'
 import {ObjectEditModal} from './object/renderers/ObjectEditModal'
 import {useScrollToFocusFromOutside} from './hooks/useScrollToFocusFromOutside'
 import {usePortableTextMemberItems} from './hooks/usePortableTextMembers'
-import {isBlockType} from './PortableTextInput'
+import {_isBlockType} from './_helpers'
 
 interface InputProps extends ArrayOfObjectsInputProps<PortableTextBlock> {
   hasFocus: boolean
@@ -246,10 +246,7 @@ export function Compositor(props: InputProps) {
   const [portalElement, setPortalElement] = useState<HTMLDivElement | null>(null)
 
   const openMemberItems = useMemo(
-    () =>
-      portableTextMemberItems.filter(
-        (m) => m.member.open && !isBlockType(m.member.item.schemaType)
-      ),
+    () => portableTextMemberItems.filter((m) => m.member.open && !_isBlockType(m.node.schemaType)),
     [portableTextMemberItems]
   )
 
@@ -306,15 +303,13 @@ export function Compositor(props: InputProps) {
             {openMemberItems.map((dMemberItem) => {
               return (
                 <ObjectEditModal
+                  kind={dMemberItem.kind}
                   key={dMemberItem.member.key}
                   memberItem={dMemberItem}
                   onClose={onCloseItem}
                   scrollElement={boundaryElm}
                 >
-                  <FormInput
-                    absolutePath={dMemberItem.member.item.path as FIXME}
-                    {...(props as FIXME)}
-                  />
+                  <FormInput absolutePath={dMemberItem.node.path} {...(props as any)} />
                 </ObjectEditModal>
               )
             })}
