@@ -44,6 +44,7 @@ export const FormInput = memo(function FormInput(
       destinationRenderField={props.renderField}
       destinationRenderInput={props.renderInput}
       destinationRenderItem={props.renderItem}
+      destinationRenderPreview={props.renderPreview}
     />
   )
 })
@@ -58,10 +59,16 @@ const FormInputInner = memo(function FormInputInner(
     destinationRenderInput: RenderInputCallback
     destinationRenderField: RenderFieldCallback
     destinationRenderItem: RenderArrayOfObjectsItemCallback
+    destinationRenderPreview: RenderPreviewCallback
   }
 ) {
-  const {absolutePath, destinationRenderInput, destinationRenderItem, destinationRenderField} =
-    props
+  const {
+    absolutePath,
+    destinationRenderInput,
+    destinationRenderItem,
+    destinationRenderField,
+    destinationRenderPreview,
+  } = props
 
   const renderInput: RenderInputCallback = useCallback(
     (inputProps) => {
@@ -86,10 +93,17 @@ const FormInputInner = memo(function FormInputInner(
           destinationRenderInput={destinationRenderInput}
           destinationRenderItem={destinationRenderItem}
           destinationRenderField={destinationRenderField}
+          destinationRenderPreview={destinationRenderPreview}
         />
       )
     },
-    [absolutePath, destinationRenderField, destinationRenderInput, destinationRenderItem]
+    [
+      absolutePath,
+      destinationRenderField,
+      destinationRenderInput,
+      destinationRenderItem,
+      destinationRenderPreview,
+    ]
   )
 
   const renderField: RenderFieldCallback = useCallback(
@@ -104,10 +118,6 @@ const FormInputInner = memo(function FormInputInner(
     },
     [absolutePath, destinationRenderField, props.includeField]
   )
-
-  const renderPreview: RenderPreviewCallback = useCallback(() => {
-    return null // TODO
-  }, [])
 
   if (isArrayInputProps(props)) {
     const childPath = trimLeft(props.path, absolutePath)
@@ -135,7 +145,7 @@ const FormInputInner = memo(function FormInputInner(
         renderInput={renderInput}
         renderField={renderField}
         renderItem={pass}
-        renderPreview={renderPreview}
+        renderPreview={destinationRenderPreview}
       />
     )
   }
@@ -162,7 +172,7 @@ const FormInputInner = memo(function FormInputInner(
         renderInput={renderInput}
         renderField={renderField}
         renderItem={pass}
-        renderPreview={renderPreview}
+        renderPreview={destinationRenderPreview}
       />
     )
   }
