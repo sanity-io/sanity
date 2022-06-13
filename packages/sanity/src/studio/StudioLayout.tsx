@@ -63,7 +63,7 @@ export function StudioLayout() {
       console.error(msg.error)
       pushToast({
         closable: true,
-        description: msg.error.message,
+        description: msg.error?.message,
         duration: 5000,
         title: 'Uncaught error',
         status: 'error',
