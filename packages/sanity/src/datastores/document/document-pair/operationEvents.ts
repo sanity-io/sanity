@@ -106,15 +106,17 @@ export type OperationEventsListener = (
   typeName?: string
 ) => Observable<OperationSuccess | OperationError>
 
-const listenerCache = new WeakMap<SanityClient, OperationEventsListener>()
+const listenerCache = new Map<string, OperationEventsListener>()
 
 export function getOperationEvents(ctx: {
   client: SanityClient
   historyStore: HistoryStore
   schema: Schema
 }): OperationEventsListener {
-  if (listenerCache.has(ctx.client)) {
-    return listenerCache.get(ctx.client)!
+  const {dataset, projectId} = ctx.client.config()
+  const cacheKey = `${projectId}-${dataset}`
+  if (listenerCache.has(cacheKey)) {
+    return listenerCache.get(cacheKey)!
   }
 
   const result$: Observable<IntermediarySuccess | IntermediaryError> = operationCalls$.pipe(
@@ -190,7 +192,7 @@ export function getOperationEvents(ctx: {
     return ret
   }
 
-  listenerCache.set(ctx.client, listener)
+  listenerCache.set(cacheKey, listener)
 
   return listener
 }
