@@ -16,11 +16,11 @@ export async function renderNumberInput(options: {
   const {fieldDefinition, props, render: initialRender} = options
 
   function transformProps(inputProps: TestRenderInputProps): NumberInputProps {
-    const {compareValue, schemaType, value, ...restProps} = inputProps
+    const {schemaType, value, ...restProps} = inputProps
 
     return {
       ...restProps,
-      compareValue: compareValue as number,
+      changed: false,
       schemaType: schemaType as NumberSchemaType,
       value: value as number,
     }

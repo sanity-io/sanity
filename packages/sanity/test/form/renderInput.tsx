@@ -26,7 +26,6 @@ export interface TestRenderInputContext {
 }
 
 export interface TestRenderInputProps {
-  compareValue: unknown
   focusPath: Path
   focusRef: React.Ref<FIXME>
   id: string
@@ -104,6 +103,7 @@ export async function renderInput(props: {
     if (!docType) throw new Error(`no document type: test`)
 
     const formState = useFormState(docType, {
+      comparisonValue: documentValue as any,
       value: documentValue as any,
       focusPath,
       collapsedPaths: undefined,
@@ -132,7 +132,6 @@ export async function renderInput(props: {
       <StudioFormBuilderProvider
         __internal_patchChannel={patchChannel}
         changesOpen={false}
-        compareValue={formState.compareValue}
         focusPath={formState.focusPath}
         focused={formState.focused}
         groups={formState.groups || EMPTY_ARRAY}
@@ -153,7 +152,6 @@ export async function renderInput(props: {
       >
         {renderFn(
           {
-            compareValue: formState.compareValue?.[name],
             focusPath: formState.focusPath,
             focusRef,
             id: formState.id || name,

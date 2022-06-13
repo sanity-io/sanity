@@ -13,11 +13,11 @@ export async function renderBooleanInput(options: {
   const {fieldDefinition, props, render: initialRender} = options
 
   function tranformProps(inputProps: TestRenderInputProps): BooleanInputProps {
-    const {compareValue, schemaType, value, ...restProps} = inputProps
+    const {schemaType, value, ...restProps} = inputProps
 
     return {
       ...restProps,
-      compareValue: compareValue as boolean,
+      changed: false,
       schemaType: schemaType as BooleanSchemaType,
       value: value as boolean,
     }

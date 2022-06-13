@@ -41,7 +41,7 @@ export async function renderArrayOfObjectsInput(options: {
     baseProps: TestRenderInputProps,
     context: TestRenderInputContext
   ): ArrayOfObjectsInputProps {
-    const {compareValue, focusPath, path, schemaType, value, ...restProps} = baseProps
+    const {focusPath, path, schemaType, value, ...restProps} = baseProps
     const {formState} = context
     const fieldMember = formState.members?.find(
       (member) => member.kind === 'field' && member.name === fieldDefinition.name
@@ -50,7 +50,7 @@ export async function renderArrayOfObjectsInput(options: {
 
     return {
       ...restProps,
-      compareValue: compareValue as any[],
+      changed: false,
       focusPath,
       members: field?.members || [],
       onAppendItem,

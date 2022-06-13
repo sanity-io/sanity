@@ -20,7 +20,6 @@ import React, {useCallback, useState} from 'react'
 import styled from 'styled-components'
 import {
   ChangeConnectorRoot,
-  ChangeIndicatorProvider,
   ChangeIndicator,
   ChangeFieldWrapper,
 } from '../../../../components/changeIndicators'
@@ -247,14 +246,9 @@ function DebugFormField(props: {
   const {children, focusPath, path, value, compareValue} = props
 
   return (
-    <ChangeIndicatorProvider
-      path={path}
-      focusPath={focusPath}
-      value={value}
-      compareValue={compareValue}
-    >
-      <ChangeIndicator>{children}</ChangeIndicator>
-    </ChangeIndicatorProvider>
+    <ChangeIndicator path={path} isChanged={false} hasFocus={false}>
+      {children}
+    </ChangeIndicator>
   )
 }
 

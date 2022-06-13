@@ -30,11 +30,11 @@ export async function renderCrossDatasetReferenceInput(options: {
   } = options
 
   function transformProps(baseProps: ObjectInputProps, _context: TestRenderInputContext) {
-    const {compareValue, schemaType, value, ...restProps} = baseProps
+    const {changed, schemaType, value, ...restProps} = baseProps
 
     return {
       ...restProps,
-      compareValue: compareValue as CrossDatasetReferenceInputProps['compareValue'],
+      changed,
       getReferenceInfo,
       onSearch,
       schemaType: schemaType as CrossDatasetReferenceSchemaType,

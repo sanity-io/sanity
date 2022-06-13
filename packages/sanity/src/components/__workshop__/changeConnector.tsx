@@ -4,7 +4,7 @@ import React, {useCallback, useState} from 'react'
 import styled from 'styled-components'
 import {ScrollContainer} from '../scroll'
 import {ChangeFieldWrapper} from '../changeIndicators/ChangeFieldWrapper'
-import {ChangeIndicator, ChangeIndicatorProvider} from '../changeIndicators/ChangeIndicator'
+import {ChangeIndicator} from '../changeIndicators/ChangeIndicator'
 import {ChangeConnectorRoot} from '../changeIndicators/overlay/ChangeConnectorRoot'
 
 const TestContainer = styled(Container).attrs({
@@ -119,18 +119,11 @@ function DebugFormField(props: {
   const handleFocus = useCallback(() => setFocusPath(path), [path, setFocusPath])
 
   return (
-    <ChangeIndicatorProvider
-      path={path}
-      focusPath={focusPath}
-      value={value}
-      compareValue={compareValue}
-    >
-      <ChangeIndicator>
-        <Card border onBlur={handleBlur} onFocus={handleFocus} padding={3} radius={1} tabIndex={0}>
-          {children}
-        </Card>
-      </ChangeIndicator>
-    </ChangeIndicatorProvider>
+    <ChangeIndicator hasFocus={false} path={path} isChanged={false}>
+      <Card border onBlur={handleBlur} onFocus={handleFocus} padding={3} radius={1} tabIndex={0}>
+        {children}
+      </Card>
+    </ChangeIndicator>
   )
 }
 

@@ -16,11 +16,11 @@ export async function renderStringInput(options: {
   const {fieldDefinition, props, render} = options
 
   function transformProps(inputProps: TestRenderInputProps): StringInputProps {
-    const {compareValue, schemaType, value, ...restProps} = inputProps
+    const {schemaType, value, ...restProps} = inputProps
 
     return {
       ...restProps,
-      compareValue: compareValue as string,
+      changed: false,
       schemaType: schemaType as StringSchemaType,
       value: value as string,
     }

@@ -37,7 +37,7 @@ export async function renderObjectInput(options: {
     context: TestRenderInputContext
   ): ObjectInputProps {
     const {formState} = context
-    const {compareValue, onPathFocus, path, schemaType, value, ...restProps} = inputProps
+    const {onPathFocus, path, schemaType, value, ...restProps} = inputProps
     const fieldMember = formState.members?.find(
       (member) => member.kind === 'field' && member.name === fieldDefinition.name
     ) as FieldMember<ObjectFormNode> | undefined
@@ -46,7 +46,7 @@ export async function renderObjectInput(options: {
     return {
       ...restProps,
       collapsed: false,
-      compareValue: compareValue as Record<string, any>,
+      changed: false,
       groups: field?.groups || [],
       members: field?.members || [],
       onCloseField,
