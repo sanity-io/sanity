@@ -1,5 +1,5 @@
 import {SanityClient} from '@sanity/client'
-import {defer, asyncScheduler, merge, Observable, of, Subject} from 'rxjs'
+import {defer, asyncScheduler, merge, Observable, of, Subject, EMPTY} from 'rxjs'
 import {
   catchError,
   filter,
@@ -7,6 +7,7 @@ import {
   last,
   map,
   mergeMap,
+  mergeMapTo,
   share,
   switchMap,
   take,
@@ -100,20 +101,20 @@ interface IntermediaryError {
   error: any
 }
 
-export type __FindMeAName = (
+export type OperationEventsListener = (
   idPair: IdPair,
   typeName?: string
 ) => Observable<OperationSuccess | OperationError>
 
-const _cache = new WeakMap<SanityClient, __FindMeAName>()
+const listenerCache = new WeakMap<SanityClient, OperationEventsListener>()
 
 export function getOperationEvents(ctx: {
   client: SanityClient
   historyStore: HistoryStore
   schema: Schema
-}): __FindMeAName {
-  if (_cache.has(ctx.client)) {
-    return _cache.get(ctx.client)!
+}): OperationEventsListener {
+  if (listenerCache.has(ctx.client)) {
+    return listenerCache.get(ctx.client)!
   }
 
   const result$: Observable<IntermediarySuccess | IntermediaryError> = operationCalls$.pipe(
@@ -162,20 +163,18 @@ export function getOperationEvents(ctx: {
     })
   )
 
-  autoCommit$.subscribe()
-
   const cache = new Map<string, Observable<OperationSuccess | OperationError>>()
 
-  const __findMeAName = (
+  function listener(
     idPair: IdPair,
     typeName?: string
-  ): Observable<OperationSuccess | OperationError> => {
+  ): Observable<OperationSuccess | OperationError> {
     const key = `${idPair.publishedId}:${typeName}`
 
     let ret = cache.get(key)
 
     if (!ret) {
-      ret = result$.pipe(
+      ret = merge(result$, autoCommit$.pipe(mergeMapTo(EMPTY))).pipe(
         filter((result) => result.args.idPair.publishedId === idPair.publishedId),
         map((result): OperationSuccess | OperationError => {
           const {operationName, idPair: documentIds} = result.args
@@ -191,7 +190,7 @@ export function getOperationEvents(ctx: {
     return ret
   }
 
-  _cache.set(ctx.client, __findMeAName)
+  listenerCache.set(ctx.client, listener)
 
-  return __findMeAName
+  return listener
 }
