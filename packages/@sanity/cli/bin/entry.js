@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 const path = require('path')
 const {runCli} = require('../lib/cli')
 const cliVersion = require('../package.json').version

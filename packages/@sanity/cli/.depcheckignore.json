@@ -16,6 +16,7 @@
     "react-barcode",
     "react-icons",
     "react",
+    "sanity",
     "slug",
     "styled-components"
   ]

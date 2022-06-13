@@ -41,8 +41,11 @@ export async function runCli(cliRoot: string, {cliVersion}: {cliVersion: string}
   await runUpdateCheck({pkg, cwd, workDir}).notify()
 
   // Try to figure out if we're in a v2 or v3 context by finding a config
-  debug(`Reading build config from "${workDir}"`)
+  debug(`Reading CLI config from "${workDir}"`)
   const cliConfig = await getCliConfig(workDir, {forked: true})
+  if (!cliConfig) {
+    debug('No CLI config found')
+  }
 
   const options: CommandRunnerOptions = {
     cliRoot: cliRoot,
@@ -85,7 +88,15 @@ function getCoreModulePath(workDir: string, cliConfig: CliConfigResult | null): 
   const corePath = resolveFrom.silent(workDir, '@sanity/core')
   const sanityPath = resolveFrom.silent(workDir, 'sanity/_internal')
 
-  if (sanityPath && cliConfig && cliConfig?.version >= 3) {
+  if (corePath && sanityPath) {
+    console.warn(
+      chalk.yellow('Both `@sanity/core` AND `sanity` installed - assuming Sanity v3 project.')
+    )
+
+    return sanityPath
+  }
+
+  if (sanityPath) {
     // On v3 and everything installed
     return sanityPath
   }
@@ -93,14 +104,6 @@ function getCoreModulePath(workDir: string, cliConfig: CliConfigResult | null): 
   if (corePath && cliConfig && cliConfig?.version < 3) {
     // On v2 and everything installed
     return corePath
-  }
-
-  if (corePath && sanityPath) {
-    console.warn(
-      chalk.yellow('Both `@sanity/core` AND `sanity` installed - assuming Sanity v3 project.')
-    )
-
-    return sanityPath
   }
 
   const isInstallCommand = process.argv.indexOf('install') === -1

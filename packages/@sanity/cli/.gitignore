@@ -10,12 +10,9 @@
 # Dependency directories
 /node_modules
 
-# Built vendor files
-/vendor
-!/vendor/README.md
-
 # Packed version of Sanity binary
 /bin/sanity-cli.js
+/bin/sanity-cli.js.map
 
-# Dependency of opn module
+# Dependency of `open` module
 /bin/xdg-open

@@ -12,8 +12,6 @@
     "workshop:dev": "node -r esbuild-register scripts/workshop/dev.ts"
   },
   "dependencies": {
-    "@sanity/code-input": "purple-unicorn",
-    "@sanity/desk-tool": "2.30.0",
     "@sanity/icons": "^1.3.0",
     "@sanity/image-url": "^1.0.1",
     "@sanity/portable-text-editor": "2.29.8",
