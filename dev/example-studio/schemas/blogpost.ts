@@ -113,7 +113,7 @@ export default {
       title: 'Co authors',
       type: 'array',
       options: {
-        editModal: 'fold',
+        modal: {type: 'popover'},
       },
       of: [
         {

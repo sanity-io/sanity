@@ -90,7 +90,7 @@ export default {
                 type: 'reference',
                 to: {type: 'author'},
                 options: {
-                  editModal: 'popover',
+                  modal: {type: 'popover'},
                 },
                 blockEditor: {
                   icon: AuthorIcon,
@@ -137,7 +137,7 @@ export default {
               title: 'Test',
               type: 'object',
               options: {
-                editModal: 'fold',
+                modal: {type: 'popover'},
               },
               fields: [
                 {

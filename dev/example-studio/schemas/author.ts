@@ -50,7 +50,7 @@ export default {
       title: 'Related authors',
       type: 'array',
       options: {
-        editModal: 'fold',
+        modal: {type: 'popover'},
       },
       of: [
         {
