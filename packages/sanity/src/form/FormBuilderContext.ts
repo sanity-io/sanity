@@ -42,7 +42,6 @@ export interface FormBuilderContextValue {
 
   autoFocus?: boolean
   changesOpen?: boolean
-  compareValue: {[field in string]: unknown} | undefined
   focusPath: Path
   focused?: boolean
   groups: FormFieldGroup[]
