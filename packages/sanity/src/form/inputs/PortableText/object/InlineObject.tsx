@@ -17,6 +17,7 @@ import {PortableTextEditorElement} from '../Compositor'
 import {usePortableTextMarkers} from '../hooks/usePortableTextMarkers'
 import {useMemberValidation} from '../hooks/useMemberValidation'
 import {usePortableTextMemberItem} from '../hooks/usePortableTextMembers'
+import {pathToString} from '../../../../field/paths'
 import {InlineObjectToolbarPopover} from './InlineObjectToolbarPopover'
 
 interface InlineObjectProps {
@@ -126,8 +127,8 @@ export const InlineObject = React.forwardRef(function InlineObject(
   const editor = usePortableTextEditor()
   const editorSelection = usePortableTextEditorSelection()
   const markers = usePortableTextMarkers(path)
-  const memberItem = usePortableTextMemberItem(JSON.stringify(path))
-  const {validation, hasError, hasWarning} = useMemberValidation(memberItem?.member)
+  const memberItem = usePortableTextMemberItem(pathToString(path))
+  const {validation, hasError, hasWarning} = useMemberValidation(memberItem?.node)
   const hasValidationMarkers = validation.length > 0
   const [showPopover, setShowPopover] = useState(false)
 
@@ -206,7 +207,7 @@ export const InlineObject = React.forwardRef(function InlineObject(
     setShowPopover(false)
     PortableTextEditor.blur(editor)
     if (memberItem) {
-      onOpenItem(memberItem.member.item.path)
+      onOpenItem(memberItem.node.path)
     }
   }, [editor, memberItem, onOpenItem])
 

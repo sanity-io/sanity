@@ -1,18 +1,23 @@
 import {useMemo} from 'react'
-import {ArrayOfObjectsItemMember, ObjectFormNode} from '../../../store'
+import {BaseFormNode} from '../../../store'
 import {EMPTY_ARRAY} from '../../../utils/empty'
 import {useChildValidation} from '../../../studio/contexts/Validation'
-import {isBlockType} from '../PortableTextInput'
+import {_isBlockType} from '../_helpers'
 
 const NONEXISTENT_PATH = ['@@_NONEXISTENT_PATH_@@']
 
-export function useMemberValidation(member: ArrayOfObjectsItemMember<ObjectFormNode> | undefined) {
-  const memberValidation = member?.item.validation || EMPTY_ARRAY
-  const childValidation = useChildValidation(member?.item.path || NONEXISTENT_PATH)
-  const validation =
-    member && isBlockType(member.item.schemaType)
-      ? memberValidation
-      : memberValidation.concat(childValidation)
+export function useMemberValidation(member: BaseFormNode | undefined) {
+  const memberValidation = member?.validation || EMPTY_ARRAY
+  const childValidation = useChildValidation(member?.path || NONEXISTENT_PATH)
+
+  const validation = useMemo(
+    () =>
+      member?.schemaType && _isBlockType(member?.schemaType)
+        ? memberValidation
+        : memberValidation.concat(childValidation),
+    [childValidation, member, memberValidation]
+  )
+
   const [hasError, hasWarning, hasInfo] = useMemo(
     () => [
       validation.filter((v) => v.level === 'error').length > 0,
@@ -21,6 +26,7 @@ export function useMemberValidation(member: ArrayOfObjectsItemMember<ObjectFormN
     ],
     [validation]
   )
+
   return useMemo(() => {
     return {
       validation,

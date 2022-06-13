@@ -1,4 +1,4 @@
-import {ArraySchemaType, ObjectSchemaType, SchemaType} from '@sanity/types'
+import {ArraySchemaType, ObjectSchemaType} from '@sanity/types'
 import {
   EditorChange,
   OnCopyFn,
@@ -24,11 +24,16 @@ import {Box, Text, useToast} from '@sanity/ui'
 import scrollIntoView from 'scroll-into-view-if-needed'
 import {debounce} from 'lodash'
 import {FormPatch as FormBuilderPatch} from '../../patch'
-import type {FieldMember, ObjectMember, ArrayOfObjectsMember} from '../../store'
 import {ArrayOfObjectsItemMember, ObjectFormNode} from '../../store'
-import {ArrayOfObjectsInputProps, FIXME, PortableTextMarker, RenderCustomMarkers} from '../../types'
+import type {
+  ArrayOfObjectsInputProps,
+  FIXME,
+  PortableTextMarker,
+  RenderCustomMarkers,
+} from '../../types'
 import {EMPTY_ARRAY} from '../../utils/empty'
 import {isMemberArrayOfObjects} from '../../members/fields/asserters'
+import {pathToString} from '../../../field/paths'
 import {Compositor, PortableTextEditorElement} from './Compositor'
 import {InvalidValue as RespondToInvalidContent} from './InvalidValue'
 import {usePatches} from './usePatches'
@@ -36,8 +41,9 @@ import {VisibleOnFocusButton} from './VisibleOnFocusButton'
 import {RenderBlockActionsCallback} from './types'
 import {PortableTextMarkersProvider} from './contexts/PortableTextMarkers'
 import {PortableTextMemberItemsProvider} from './contexts/PortableTextMembers'
+import {_isArrayOfObjectsFieldMember, _isBlockType} from './_helpers'
 
-export type ObjectMemberType = ArrayOfObjectsItemMember<
+export type PTObjectMember = ArrayOfObjectsItemMember<
   ObjectFormNode<
     {
       [x: string]: unknown
@@ -47,26 +53,11 @@ export type ObjectMemberType = ArrayOfObjectsItemMember<
 >
 
 export interface PortableTextMemberItem {
+  kind: 'annotation' | 'object' | 'inlineObject'
   key: string
-  member: ObjectMemberType
+  member: PTObjectMember
+  node: ObjectFormNode
   elementRef?: React.MutableRefObject<PortableTextEditorElement> | undefined
-}
-
-export function isFieldMember(member: ObjectMember): member is FieldMember<ObjectFormNode> {
-  return member.kind === 'field'
-}
-
-export function isItemMember(
-  member: ArrayOfObjectsMember
-): member is ArrayOfObjectsItemMember<ObjectFormNode> {
-  return member.kind === 'item'
-}
-
-export function isBlockType(type: SchemaType): boolean {
-  if (type.type) {
-    return isBlockType(type.type)
-  }
-  return type.name === 'block'
 }
 
 /**
@@ -158,56 +149,89 @@ export function PortableTextInput(props: PortableTextInputProps) {
 
   // Populate the portableTextMembers Map
   const portableTextMemberItems: PortableTextMemberItem[] = useMemo(() => {
-    const ptMembers = members.flatMap((m) => {
-      if (m.kind === 'error') {
-        return []
-      }
-      let returned = []
-      // Object blocks or normal blocks with validation or changes
-      if (!isBlockType(m.item.schemaType) || m.item.validation.length > 0 || m.item.changed) {
-        returned.push(m)
-      }
-      // Inline objects
-      const childrenField = m.item.members.find((f) => f.kind === 'field' && f.name === 'children')
-      if (
-        childrenField &&
-        childrenField.kind === 'field' &&
-        isMemberArrayOfObjects(childrenField)
-      ) {
-        returned = [
-          ...returned,
-          ...childrenField.field.members.filter(
-            (cM) => isItemMember(cM) && cM.item.schemaType.name !== 'span'
-          ),
-        ]
-      }
-      // Markdefs
-      const markDefArrayMember = m.item.members
-        .filter(isFieldMember)
-        .find((f) => f.name === 'markDefs')
+    const result: {
+      kind: 'annotation' | 'object' | 'inlineObject'
+      member: PTObjectMember
+      node: ObjectFormNode
+    }[] = []
 
-      if (markDefArrayMember) {
-        returned = [...returned, ...markDefArrayMember.field.members]
+    for (const member of members) {
+      // ignore errors
+      // if (member.kind === 'error') {
+      // }
+
+      if (member.kind === 'item') {
+        if (!_isBlockType(member.item.schemaType)) {
+          result.push({kind: 'object', member, node: member.item})
+        }
+
+        if (member.item.validation.length > 0) {
+          result.push({kind: 'object', member, node: member.item})
+        }
+
+        if (_isBlockType(member.item.schemaType)) {
+          // Inline objects
+          const childrenField = member.item.members.find(
+            (f) => f.kind === 'field' && f.name === 'children'
+          )
+
+          if (
+            childrenField &&
+            childrenField.kind === 'field' &&
+            isMemberArrayOfObjects(childrenField)
+          ) {
+            // eslint-disable-next-line max-depth
+            for (const child of childrenField.field.members) {
+              // eslint-disable-next-line max-depth
+              if (child.kind === 'item' && child.item.schemaType.name !== 'span') {
+                result.push({kind: 'inlineObject', member: child, node: child.item})
+              }
+            }
+          }
+
+          // Markdefs
+          const markDefArrayMember = member.item.members
+            .filter(_isArrayOfObjectsFieldMember)
+            .find((f) => f.name === 'markDefs')
+
+          if (markDefArrayMember) {
+            // eslint-disable-next-line max-depth
+            for (const child of markDefArrayMember.field.members) {
+              // eslint-disable-next-line max-depth
+              if (child.kind === 'item' && child.item.schemaType.jsonType === 'object') {
+                result.push({
+                  kind: 'annotation',
+                  member: child,
+                  node: child.item,
+                })
+              }
+            }
+          }
+        }
       }
-      return returned
+    }
+
+    const items: PortableTextMemberItem[] = result.map((r) => {
+      const key = pathToString(r.node.path.slice(path.length))
+      const existingItem = portableTextMemberItemsRef.current.find((ref) => ref.key === key)
+
+      if (existingItem) {
+        existingItem.member = r.member
+        existingItem.node = r.node
+        return existingItem
+      }
+
+      return {
+        kind: r.kind,
+        key,
+        member: r.member,
+        node: r.node,
+        elementRef: createRef<PortableTextEditorElement>(),
+      }
     })
-    // Create new items or update existing ones
-    const items = ptMembers
-      .filter((cM): cM is ObjectMemberType => cM.kind === 'item')
-      .map((r) => {
-        const key = JSON.stringify(r.item.path.slice(path.length))
-        const existingItem = portableTextMemberItemsRef.current.find((ref) => ref.key === key)
-        if (existingItem) {
-          existingItem.member = r
-          return existingItem
-        }
-        return {
-          key,
-          member: r,
-          elementRef: createRef<PortableTextEditorElement>(),
-        }
-      })
+
     portableTextMemberItemsRef.current = items
+
     return items
   }, [members, path])
 

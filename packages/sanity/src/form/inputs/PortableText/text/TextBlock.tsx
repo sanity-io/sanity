@@ -10,6 +10,7 @@ import {RenderBlockActionsCallback} from '../types'
 import {useMemberValidation} from '../hooks/useMemberValidation'
 import {usePortableTextMarkers} from '../hooks/usePortableTextMarkers'
 import {usePortableTextMemberItem} from '../hooks/usePortableTextMembers'
+import {pathToString} from '../../../../field/paths'
 import {TEXT_STYLE_PADDING} from './constants'
 import {
   BlockActionsInner,
@@ -51,12 +52,12 @@ export function TextBlock(props: TextBlockProps) {
   const {Markers} = useFormBuilder().__internal.components
   const [reviewChangesHovered, setReviewChangesHovered] = useState<boolean>(false)
   const markers = usePortableTextMarkers(path)
-  const memberItem = usePortableTextMemberItem(JSON.stringify(path))
+  const memberItem = usePortableTextMemberItem(pathToString(path))
 
   const handleChangeIndicatorMouseEnter = useCallback(() => setReviewChangesHovered(true), [])
   const handleChangeIndicatorMouseLeave = useCallback(() => setReviewChangesHovered(false), [])
 
-  const {validation, hasError, hasWarning, hasInfo} = useMemberValidation(memberItem?.member)
+  const {validation, hasError, hasWarning, hasInfo} = useMemberValidation(memberItem?.node)
 
   const hasMarkers = Boolean(renderCustomMarkers) && markers.length > 0
 

@@ -17,6 +17,7 @@ import {useFormBuilder} from '../../../useFormBuilder'
 import {useMemberValidation} from '../hooks/useMemberValidation'
 import {usePortableTextMarkers} from '../hooks/usePortableTextMarkers'
 import {usePortableTextMemberItem} from '../hooks/usePortableTextMembers'
+import {pathToString} from '../../../../field/paths'
 import {BlockObjectPreview} from './BlockObjectPreview'
 import {
   Root,
@@ -60,14 +61,14 @@ export function BlockObject(props: BlockObjectProps) {
   const [reviewChangesHovered, setReviewChangesHovered] = useState<boolean>(false)
   const markers = usePortableTextMarkers(path)
   const editor = usePortableTextEditor()
-  const memberItem = usePortableTextMemberItem(JSON.stringify(path))
+  const memberItem = usePortableTextMemberItem(pathToString(path))
 
   const handleMouseOver = useCallback(() => setReviewChangesHovered(true), [])
   const handleMouseOut = useCallback(() => setReviewChangesHovered(false), [])
 
   const handleEdit = useCallback(() => {
     if (memberItem) {
-      onOpenItem(memberItem.member.item.path)
+      onOpenItem(memberItem.node.path)
     }
   }, [onOpenItem, memberItem])
 
@@ -128,11 +129,11 @@ export function BlockObject(props: BlockObjectProps) {
     return {paddingX: 3}
   }, [isFullscreen, renderBlockActions])
 
-  const {validation, hasError, hasWarning, hasInfo} = useMemberValidation(memberItem?.member)
+  const {validation, hasError, hasWarning, hasInfo} = useMemberValidation(memberItem?.node)
 
   const hasMarkers = Boolean(markers.length > 0)
 
-  const isImagePreview = memberItem?.member.item.schemaType.name === 'image'
+  const isImagePreview = memberItem?.node.schemaType.name === 'image'
 
   const tooltipEnabled = hasError || hasWarning || hasInfo || (hasMarkers && renderCustomMarkers)
 

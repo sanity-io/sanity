@@ -5,19 +5,32 @@ import {
 } from '@sanity/portable-text-editor'
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {_getModalOption} from '../helpers'
-import {isFieldMember, PortableTextMemberItem} from '../../PortableTextInput'
+import {PortableTextMemberItem} from '../../PortableTextInput'
+import {_isObjectFieldMember} from '../../_helpers'
 import {DefaultEditDialog} from './DefaultEditDialog'
 import {PopoverEditDialog} from './PopoverEditDialog'
+import {ModalType} from './types'
 
 export function ObjectEditModal(props: {
   children: React.ReactNode
+  kind: 'annotation' | 'object' | 'inlineObject'
   memberItem: PortableTextMemberItem
   onClose: () => void
   scrollElement: HTMLElement
 }) {
-  const {memberItem, onClose, scrollElement} = props
-  const {schemaType} = memberItem.member.item
-  const modalOption = useMemo(() => _getModalOption({type: schemaType}), [schemaType])
+  const {memberItem, onClose, scrollElement, kind} = props
+  const {schemaType} = memberItem.node
+  const modalOption = useMemo(() => _getModalOption({schemaType}), [schemaType])
+
+  const modalType: ModalType = useMemo(() => {
+    if (modalOption.type) return modalOption.type
+
+    // If the object is inline or an annotation, then default to "popover"
+    if (kind === 'inlineObject' || kind === 'annotation') return 'popover'
+
+    return 'dialog'
+  }, [kind, modalOption])
+
   const [firstField, setFirstField] = useState<HTMLElement | null>(null)
   const editor = usePortableTextEditor()
   const initialSelection = useRef<EditorSelection | null>(PortableTextEditor.getSelection(editor))
@@ -30,15 +43,15 @@ export function ObjectEditModal(props: {
     PortableTextEditor.select(editor, initialSelection.current)
   }, [editor, onClose])
 
-  const title = <>Edit {memberItem.member.item.schemaType.title}</>
+  const title = <>Edit {memberItem.node.schemaType.title}</>
 
   // Set focus on the first field
   useEffect(() => {
     if (firstField) {
       return
     }
-    const firstFieldMember = memberItem.member.item.members.find((m) => m.kind === 'field')
-    if (firstFieldMember && isFieldMember(firstFieldMember)) {
+    const firstFieldMember = memberItem.node.members.find((m) => m.kind === 'field')
+    if (firstFieldMember && _isObjectFieldMember(firstFieldMember)) {
       const firstFieldElm = document.getElementById(firstFieldMember.field.id) as HTMLElement | null
       if (firstFieldElm) {
         setFirstField(firstFieldElm)
@@ -47,7 +60,7 @@ export function ObjectEditModal(props: {
     }
   }, [firstField, memberItem])
 
-  if (modalOption.type === 'popover') {
+  if (modalType === 'popover') {
     return (
       <PopoverEditDialog
         elementRef={memberItem.elementRef}

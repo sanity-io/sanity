@@ -7,8 +7,8 @@ export interface ModalOption {
   width?: ModalWidth
 }
 
-export function _getModalOption(opts: {type?: ObjectSchemaType}): ModalOption {
-  const {type} = opts
+export function _getModalOption(opts: {schemaType?: ObjectSchemaType}): ModalOption {
+  const {schemaType} = opts
 
-  return (get(type, 'options.modal') || {}) as ModalOption
+  return (get(schemaType, 'options.modal') || {}) as ModalOption
 }
