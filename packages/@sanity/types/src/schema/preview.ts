@@ -14,7 +14,6 @@ export interface PreviewValue {
 }
 
 export interface PreviewConfig {
-  component?: React.ComponentType<any>
   select?: Record<string, any>
   prepare?: (value: Record<string, unknown>, viewOptions?: PrepareViewOptions) => PreviewValue
 }
