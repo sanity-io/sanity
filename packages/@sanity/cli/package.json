@@ -29,17 +29,17 @@
     "sanity": "./bin/sanity"
   },
   "scripts": {
-    "build": "run-s build:lib build:pack package-yarn",
+    "build": "run-s build:lib build:pack",
     "build:lib": "../../../bin/pkg-utils transpile --target node --tsconfig tsconfig.lib.json",
-    "build:pack": "node scripts/pack.js",
+    "build:pack": "echo ok",
     "clean": "rimraf bin/sanity-cli.js lib",
-    "package-yarn": "node -r @babel/register src/scripts/package-yarn.js",
     "prepublishOnly": "yarn build",
     "watch": "../../../bin/pkg-utils transpile --target node --tsconfig tsconfig.lib.json --watch",
     "ts": "node -r esbuild-register"
   },
   "dependencies": {
-    "esbuild-register": "^3.3.2"
+    "esbuild-register": "^3.3.2",
+    "pkg-dir": "^5.0.0"
   },
   "devDependencies": {
     "@babel/parser": "^7.17.7",
@@ -81,7 +81,7 @@
     "ora": "^5.4.1",
     "p-filter": "^2.1.0",
     "p-timeout": "^4.0.0",
-    "pkg-dir": "^5.0.0",
+    "preferred-pm": "^3.0.3",
     "promise-props-recursive": "^2.0.2",
     "recast": "^0.20.5",
     "resolve-from": "^5.0.0",

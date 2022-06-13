@@ -7,8 +7,8 @@ import type {
   SanityCore,
   SanityModuleInternal,
 } from '../types'
+import {getCliUpgradeCommand} from '../packageManager'
 import {dynamicRequire} from './dynamicRequire'
-import {getUpgradeCommand} from './getUpgradeCommand'
 import {isCommandGroup} from './isCommandGroup'
 
 export interface MergeOptions {
@@ -36,7 +36,7 @@ export function mergeCommands(
     core.requiredCliVersionRange &&
     !semver.satisfies(coercedCliVersion, core.requiredCliVersionRange)
   ) {
-    const upgradeCmd = chalk.yellow(getUpgradeCommand({cwd, workDir}))
+    const upgradeCmd = chalk.yellow(getCliUpgradeCommand({cwd, workDir}))
     /* eslint-disable no-console, no-process-exit */
     console.error(
       `The version of the \`${moduleName}\` installed in this project requires @sanity/cli @ ${chalk.green(

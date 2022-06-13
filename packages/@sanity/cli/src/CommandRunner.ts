@@ -12,12 +12,11 @@ import type {
   ResolvedCliCommand,
   SanityJson,
 } from './types'
-import {yarnWithProgress} from './actions/yarn/yarnWithProgress'
 import {prompt as cliPrompter} from './prompters/cliPrompter'
 import cliOutputter from './outputters/cliOutputter'
 import {getClientWrapper} from './util/clientWrapper'
 import {getNoSuchCommandText} from './util/noSuchCommandText'
-import {CliConfigResult, getCliConfig} from './util/getCliConfig'
+import {CliConfigResult} from './util/getCliConfig'
 import {isCommandGroup} from './util/isCommandGroup'
 import {baseCommands} from './commands'
 import {debug} from './debug'
@@ -25,6 +24,7 @@ import {
   generateCommandsDocumentation,
   generateCommandDocumentation,
 } from './util/generateCommandsDocumentation'
+import {cliPackageManager, getYarnStub} from './packageManager'
 
 interface Handlers {
   outputter: CliOutputter
@@ -91,10 +91,11 @@ export class CommandRunner {
       output,
       prompt,
       apiClient,
-      yarn: yarnWithProgress,
       chalk,
+      cliPackageManager,
       ...commandOptions,
       commandRunner: this,
+      yarn: getYarnStub({output, workDir: commandOptions.workDir}),
       ...getVersionedContextParams(cliConfig),
     }
 

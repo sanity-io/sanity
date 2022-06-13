@@ -5,9 +5,9 @@ import latestVersion from 'get-latest-version'
 import semverCompare from 'semver-compare'
 import pTimeout from 'p-timeout'
 import type {PackageJson} from '../types'
+import {getCliUpgradeCommand} from '../packageManager'
 import {debug} from '../debug'
 import {getUserConfig} from './getUserConfig'
-import {getUpgradeCommand} from './getUpgradeCommand'
 
 const MAX_BLOCKING_TIME = 300
 const TWELVE_HOURS = 1000 * 60 * 60 * 12
@@ -85,7 +85,7 @@ export function runUpdateCheck(options: UpdateCheckOptions): {notify: () => Prom
       return
     }
 
-    const upgradeCommand = getUpgradeCommand({cwd, workDir})
+    const upgradeCommand = getCliUpgradeCommand({cwd, workDir})
     const message = [
       'Update available ',
       chalk.dim(version),

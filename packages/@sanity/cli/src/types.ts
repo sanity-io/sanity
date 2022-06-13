@@ -1,11 +1,11 @@
 import type ora from 'ora'
 import type chalk from 'chalk'
 import type {Ora} from 'ora'
-import type {ExecaReturnValue} from 'execa'
 import type {SanityClient} from '@sanity/client'
 import type {Separator, DistinctQuestion, Answers, ChoiceCollection} from 'inquirer'
 import type {ClientRequirements} from './util/clientWrapper'
-import {CliConfigResult} from './util/getCliConfig'
+import type {CliConfigResult} from './util/getCliConfig'
+import type {CliPackageManager} from './packageManager'
 
 export interface SanityCore {
   requiredCliVersionRange: string
@@ -80,7 +80,7 @@ export interface CliBaseCommandContext {
   output: CliOutputter
   prompt: CliPrompter
   apiClient: CliApiClient
-  yarn: CliBundledYarn
+  yarn: CliStubbedYarn
   sanityMajorVersion: 2 | 3
   cliConfigPath?: string
   cliRoot: string
@@ -93,11 +93,13 @@ export interface CliBaseCommandContext {
 export interface CliV2CommandContext extends CliBaseCommandContext {
   sanityMajorVersion: 2
   cliConfig?: SanityJson
+  cliPackageManager?: CliPackageManager
 }
 
 export interface CliV3CommandContext extends CliBaseCommandContext {
   sanityMajorVersion: 3
   cliConfig?: CliConfig
+  cliPackageManager: CliPackageManager
 }
 
 export interface CliCommandRunner {
@@ -159,10 +161,7 @@ export interface CliYarnOptions {
   rootDir?: string
 }
 
-export type CliBundledYarn = (
-  args: string[],
-  options?: CliYarnOptions
-) => Promise<ExecaReturnValue<string>>
+export type CliStubbedYarn = (args: string[], options?: CliYarnOptions) => Promise<void>
 
 export interface CliApiConfig {
   projectId?: string

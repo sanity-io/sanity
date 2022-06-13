@@ -1,10 +1,16 @@
 import path from 'path'
-import {access, readFile} from 'fs/promises'
+import {readFile} from 'fs/promises'
 import execa from 'execa'
 import semver, {SemVer} from 'semver'
 import resolveFrom from 'resolve-from'
 import oneline from 'oneline'
 import type {CliCommandContext, PackageJson} from '@sanity/cli'
+
+/**
+ * NOTE: This is statically inlined into the compiled file by
+ * `babel-plugin-inline-json-import`
+ */
+import {peerDependencies} from '../../../package.json'
 
 const defaultStudioManifestProps: PartialPackageManifest = {
   name: 'studio',
@@ -22,24 +28,16 @@ interface CheckResult {
  * served being peer dependencies, such as react and styled-components.
  *
  * If these dependencies are not installed/declared, we want to prompt the user
- * whether or not to add them to `package.json` and install them using yarn/npm
+ * whether or not to add them to `package.json` and install them
  */
 export async function checkRequiredDependencies(context: CliCommandContext): Promise<CheckResult> {
   const {workDir: studioPath, output} = context
-  const [basePeerDependencies, studioPackageManifest, installedStyledComponentsVersion] =
-    await Promise.all([
-      await readBasePeerDependencies(studioPath),
-      await readPackageManifest(path.join(studioPath, 'package.json'), defaultStudioManifestProps),
-      await readModuleVersion(studioPath, 'styled-components'),
-    ])
+  const [studioPackageManifest, installedStyledComponentsVersion] = await Promise.all([
+    await readPackageManifest(path.join(studioPath, 'package.json'), defaultStudioManifestProps),
+    await readModuleVersion(studioPath, 'styled-components'),
+  ])
 
-  // If the `sanity` package.json does not have a `styled-components` peer dependency declared,
-  // the user is probably running an old version of `sanity`. This is a bit of an indeterminate state,
-  // so we'll just have to accept it and assume things will work.
-  const wantedStyledComponentsVersionRange = basePeerDependencies['styled-components']
-  if (!wantedStyledComponentsVersionRange) {
-    return {didInstall: false}
-  }
+  const wantedStyledComponentsVersionRange = peerDependencies['styled-components']
 
   // The studio _must_ now declare `styled-components` as a dependency. If it's not there,
   // we'll want to automatically _add it_ to the manifest and tell the user to reinstall
@@ -48,7 +46,7 @@ export async function checkRequiredDependencies(context: CliCommandContext): Pro
   if (!declaredStyledComponentsVersion) {
     const [file, ...args] = process.argv
     const deps = {'styled-components': wantedStyledComponentsVersionRange}
-    await installDependenciesWithPrompt(deps, context)
+    await installDependencies(deps, context)
 
     // Re-run the same command (sanity start/sanity build etc) after installation,
     // as it can have shifted the entire `node_modules` folder around, result in
@@ -112,41 +110,6 @@ export async function checkRequiredDependencies(context: CliCommandContext): Pro
 }
 
 /**
- * Read the declared peer dependencies of the installed `sanity` module
- *
- * @param studioPath - Path to the studio, in order to resolve `sanity`
- * @returns Object of peer dependencies (`{[name]: version}`), if any
- */
-async function readBasePeerDependencies(
-  studioPath: string
-): Promise<Record<string, string | undefined>> {
-  let manifestPath: string | null = null
-  let dirPath = studioPath
-
-  // Look for `node_modules/sanity/package.json` in this directory, or any parent directory
-  while (manifestPath === null && dirPath !== '/') {
-    const searchPath = path.resolve(dirPath, 'node_modules/sanity/package.json')
-    const exists = await fileExists(searchPath)
-
-    if (exists) {
-      manifestPath = searchPath
-    } else {
-      dirPath = path.dirname(dirPath)
-    }
-  }
-
-  // If we can't resolve the manifest path, that means `sanity` is not installed
-  if (!manifestPath) {
-    throw new Error(
-      'Failed to resolve sanity/package.json - please install dependencies with `npm install` or `yarn install`'
-    )
-  }
-
-  const {peerDependencies} = await readPackageManifest(manifestPath)
-  return peerDependencies
-}
-
-/**
  * Reads the version number of the _installed_ module, or returns `null` if not found
  *
  * @param studioPath - Path of the studio
@@ -180,8 +143,8 @@ async function readPackageManifest(
     throw new Error(`Failed to read "${packageJsonPath}": Invalid package manifest`)
   }
 
-  const {name, version, dependencies = {}, devDependencies = {}, peerDependencies = {}} = manifest
-  return {name, version, dependencies, devDependencies, peerDependencies}
+  const {name, version, dependencies = {}, devDependencies = {}} = manifest
+  return {name, version, dependencies, devDependencies}
 }
 
 /**
@@ -192,49 +155,36 @@ async function readPackageManifest(
  * @param dependencies - Object of dependencies `({[package name]: version})`
  * @param context - CLI context
  */
-async function installDependenciesWithPrompt(
+async function installDependencies(
   dependencies: Record<string, string>,
   context: CliCommandContext
 ): Promise<void> {
-  const {output, prompt, workDir, yarn} = context
-  const yarnLockExists = await fileExists(path.join(workDir, 'yarn.lock'))
-  const installPackageArgs: string[] = []
-
-  const isInteractive =
-    // eslint-disable-next-line no-process-env
-    process.stdout.isTTY && process.env.TERM !== 'dumb' && !('CI' in process.env)
+  const {output, prompt, workDir, cliPackageManager} = context
+  const packages: string[] = []
 
   output.print('The Sanity studio needs to install missing dependencies:')
   for (const [pkgName, version] of Object.entries(dependencies)) {
     const declaration = `${pkgName}@${version}`
     output.print(`- ${declaration}`)
-    installPackageArgs.push(declaration)
+    packages.push(declaration)
   }
 
-  const defaultPkgManager = yarnLockExists ? 'yarn' : 'npm'
-  const pkgManager = isInteractive
-    ? await prompt.single({
-        type: 'list',
-        message: 'Would you like to use npm or yarn to install these?',
-        choices: ['npm', 'yarn'],
-        default: defaultPkgManager,
-      })
-    : defaultPkgManager
-
-  if (pkgManager === 'yarn') {
-    await yarn(['add', ...installPackageArgs], {
-      error: output.error,
-      print: output.print,
-      rootDir: workDir,
-    })
-  } else {
-    const npmArgs = ['install', '--legacy-peer-deps', '--save', ...installPackageArgs]
-    output.print(`Running 'npm ${npmArgs.join(' ')}'`)
-    await execa('npm', npmArgs, {
-      cwd: workDir,
-      stdio: 'inherit',
-    })
+  if (!cliPackageManager) {
+    output.error(
+      'ERROR: Could not determine package manager choice - run `npm install` or equivalent'
+    )
+    return
   }
+
+  const {getPackageManagerChoice, installNewPackages} = cliPackageManager
+  const {mostOptimal, chosen: pkgManager} = await getPackageManagerChoice(workDir, {prompt})
+  if (mostOptimal && pkgManager !== mostOptimal) {
+    output.warn(
+      `WARN: This project appears to be installed with or using ${mostOptimal} - using a different package manager _may_ result in errors.`
+    )
+  }
+
+  await installNewPackages({packages, packageManager: pkgManager}, context)
 }
 
 function isPackageManifest(item: unknown): item is PartialPackageManifest {
@@ -247,19 +197,6 @@ function isComparableRange(range: string): boolean {
 
 function readPackageJson(filePath: string): Promise<PackageJson> {
   return readFile(filePath, 'utf8').then((res) => JSON.parse(res))
-}
-
-/**
- * fs.exists is deprecated because it's a potential race condition to check for a file
- * and then use it. In this situation we're fine with this potentially happening.
- *
- * @param filePath - Path to file we want to check for the existance of
- * @returns True if it exists, false otherwise
- */
-function fileExists(filePath: string): Promise<boolean> {
-  return access(filePath)
-    .then(() => true)
-    .catch(() => false)
 }
 
 interface PackageManifest extends DependencyDeclarations {
@@ -275,5 +212,4 @@ interface PartialPackageManifest extends Partial<DependencyDeclarations> {
 interface DependencyDeclarations {
   dependencies: Record<string, string | undefined>
   devDependencies: Record<string, string | undefined>
-  peerDependencies: Record<string, string | undefined>
 }

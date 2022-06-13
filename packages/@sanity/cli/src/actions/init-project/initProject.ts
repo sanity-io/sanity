@@ -21,6 +21,7 @@ import {
   SanityCore,
   SanityModuleInternal,
 } from '../../types'
+import {installDeclaredPackages, getPackageManagerChoice} from '../../packageManager'
 import {createProject} from '../project/createProject'
 import {login, LoginFlags} from '../login/login'
 import {promptForDatasetName} from './promptForDatasetName'
@@ -69,7 +70,7 @@ export default async function initSanity(
   args: CliCommandArguments<InitFlags>,
   context: CliCommandContext
 ): Promise<void> {
-  const {output, prompt, workDir, apiClient, yarn, chalk, sanityMajorVersion} = context
+  const {output, prompt, workDir, apiClient, chalk, sanityMajorVersion} = context
   const cliFlags = args.extOptions
   const unattended = cliFlags.y || cliFlags.yes
   const print = unattended ? noop : output.print
@@ -215,7 +216,8 @@ export default async function initSanity(
 
   // Now for the slow part... installing dependencies
   try {
-    await yarn(['install'], {...output, rootDir: outputPath})
+    const pkgManager = await getPackageManagerChoice(outputPath, {prompt})
+    await installDeclaredPackages(outputPath, pkgManager.chosen, context)
   } catch (err) {
     throw err
   }

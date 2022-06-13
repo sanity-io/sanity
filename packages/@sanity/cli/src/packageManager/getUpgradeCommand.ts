@@ -1,36 +1,40 @@
 import path from 'path'
-import which from 'which'
 import isInstalledGlobally from 'is-installed-globally'
 import {debug} from '../debug'
+import {getPackageManagerChoice} from './packageManagerChoice'
 
-const pkgName = '@sanity/cli'
+const cliPkgName = '@sanity/cli'
 
 interface Options {
   cwd?: string
   workDir?: string
 }
 
-export function getUpgradeCommand(options: Options = {}): string {
+export async function getCliUpgradeCommand(options: Options = {}): Promise<string> {
   let {cwd, workDir} = options
-  cwd = cwd || process.cwd()
-  workDir = workDir || cwd
+  cwd = path.resolve(cwd || process.cwd())
+  workDir = path.resolve(workDir || cwd)
 
   if (isInstalledGlobally && isInstalledUsingYarn()) {
     debug('CLI is installed globally with yarn')
-    return `yarn global add ${pkgName}`
+    return `yarn global add ${cliPkgName}`
   }
 
   if (isInstalledGlobally) {
     debug('CLI is installed globally with npm')
-    return `npm install -g ${pkgName}`
+    return `npm install -g ${cliPkgName}`
   }
 
   const cmds = cwd === workDir ? [] : [`cd ${path.relative(cwd, workDir)}`]
-  const hasGlobalYarn = Boolean(which.sync('yarn', {nothrow: true}))
-  if (hasGlobalYarn) {
-    cmds.push(`yarn upgrade ${pkgName}`)
+
+  const {chosen} = await getPackageManagerChoice(workDir, {interactive: false})
+
+  if (chosen === 'yarn') {
+    cmds.push(`yarn upgrade ${cliPkgName}`)
+  } else if (chosen === 'pnpm') {
+    cmds.push(`pnpm update ${cliPkgName}`)
   } else {
-    cmds.push(`./node_modules/.bin/sanity upgrade ${pkgName}`)
+    cmds.push(`npm update ${cliPkgName}`)
   }
 
   return cmds.join(' && ')
