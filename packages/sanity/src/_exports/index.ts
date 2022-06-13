@@ -178,6 +178,8 @@ export type {
 export {
   renderStudio,
   SourceProvider,
+  Studio,
+  StudioLayout,
   StudioProvider,
   ToolLink,
   ToolMenu,
