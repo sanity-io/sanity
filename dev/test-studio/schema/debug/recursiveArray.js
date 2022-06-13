@@ -60,7 +60,7 @@ export default {
               description:
                 'The values here should get _type == authorReference or _type == bookReference',
               options: {
-                editModal: 'fold',
+                modal: {type: 'popover'},
               },
               of: [
                 {

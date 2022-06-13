@@ -116,9 +116,9 @@ export default {
     },
     {
       name: 'arrayOfMultipleTypesPopover',
-      title: 'Array of multiple types (editModal=popover)',
+      title: 'Array of multiple types (modal.type=popover)',
       options: {
-        editModal: 'popover',
+        modal: {type: 'popover'},
       },
       type: 'array',
       of: [
@@ -148,9 +148,9 @@ export default {
     },
     {
       name: 'arrayOfMultipleTypesFullscreen',
-      title: 'Array of multiple types (editModal=fullscreen)',
+      title: 'Array of multiple types (modal.type=fullscreen)',
       options: {
-        editModal: 'fullscreen',
+        modal: {type: 'dialog', width: 'auto'},
       },
       type: 'array',
       of: [
@@ -180,9 +180,9 @@ export default {
     },
     {
       name: 'arrayOfMultipleTypesFold',
-      title: 'Array of multiple types (editModal=fold)',
+      title: 'Array of multiple types (modal.type=popover)',
       options: {
-        editModal: 'fold',
+        modal: {type: 'popover'},
       },
       type: 'array',
       of: [
