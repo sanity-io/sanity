@@ -1,10 +1,9 @@
 import React, {useCallback, useMemo, useRef} from 'react'
 import {Path} from '@sanity/types'
+import {ArrayOfObjectsFormNode, FieldMember} from '../../store'
 import {
   ArrayFieldProps,
-  ArrayOfObjectsFormNode,
   ArrayOfObjectsInputProps,
-  FieldMember,
   InsertItemEvent,
   MoveItemEvent,
   RenderArrayOfObjectsItemCallback,

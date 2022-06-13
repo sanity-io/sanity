@@ -1,8 +1,8 @@
 import * as React from 'react'
 import {useCallback, useMemo, useRef} from 'react'
 import {useDidUpdate} from '../../../hooks/useDidUpdate'
+import {ArrayOfPrimitivesItemMember} from '../../../store'
 import {
-  ArrayOfPrimitivesItemMember,
   FIXME,
   PrimitiveInputProps,
   RenderArrayOfPrimitivesItemCallback,

@@ -1,6 +1,6 @@
 import React from 'react'
+import {ArrayOfObjectsMember} from '../store'
 import {
-  ArrayOfObjectsMember,
   RenderArrayOfObjectsItemCallback,
   RenderFieldCallback,
   RenderInputCallback,
@@ -10,7 +10,7 @@ import {
 import {MemberItem} from './MemberItem'
 import {MemberItemError} from './MemberItemError'
 
-interface Props {
+export interface ArrayOfObjectsMembersProps {
   members: ArrayOfObjectsMember[]
   renderInput: RenderInputCallback
   renderField: RenderFieldCallback
@@ -18,7 +18,7 @@ interface Props {
   renderPreview: RenderPreviewCallback
 }
 
-export function ArrayOfObjectsMembers(props: Props) {
+export function ArrayOfObjectsMembers(props: ArrayOfObjectsMembersProps) {
   const {members, renderInput, renderField, renderItem, renderPreview} = props
   return (
     <>

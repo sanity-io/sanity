@@ -1,9 +1,9 @@
 import React, {memo, useCallback, useMemo} from 'react'
 import {isEqual, startsWith, trimLeft} from '@sanity/util/paths'
 import {isKeySegment, Path} from '@sanity/types'
+import {FieldMember} from './store'
 import {
   ArrayOfObjectsInputProps,
-  FieldMember,
   ObjectInputProps,
   RenderArrayOfObjectsItemCallback,
   RenderFieldCallback,

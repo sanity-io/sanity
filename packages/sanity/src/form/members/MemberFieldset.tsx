@@ -1,6 +1,6 @@
 import React, {memo, useCallback} from 'react'
+import {FieldSetMember} from '../store'
 import {
-  FieldSetMember,
   RenderArrayOfObjectsItemCallback,
   RenderFieldCallback,
   RenderInputCallback,

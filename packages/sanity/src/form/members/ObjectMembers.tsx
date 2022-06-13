@@ -1,6 +1,6 @@
 import React from 'react'
+import {ObjectMember} from '../store'
 import {
-  ObjectMember,
   RenderInputCallback,
   RenderFieldCallback,
   RenderPreviewCallback,
@@ -11,7 +11,7 @@ import {MemberField} from './MemberField'
 import {MemberFieldError} from './MemberFieldError'
 import {MemberFieldSet} from './MemberFieldset'
 
-interface Props {
+export interface ObjectMembersProps {
   members: ObjectMember[]
   renderInput: RenderInputCallback
   renderField: RenderFieldCallback
@@ -19,7 +19,7 @@ interface Props {
   renderPreview: RenderPreviewCallback
 }
 
-export function ObjectMembers(props: Props) {
+export function ObjectMembers(props: ObjectMembersProps) {
   const {members, renderInput, renderField, renderItem, renderPreview} = props
   return (
     <>

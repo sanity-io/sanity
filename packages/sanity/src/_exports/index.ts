@@ -85,12 +85,15 @@ export {PatchEvent} from '../form'
 
 export type {
   ArrayFieldProps,
+  ArrayItemError,
   ArrayOfObjectsFormNode,
   ArrayOfObjectsInputProps,
+  ArrayOfObjectsItemMember,
   ArrayOfObjectsMember,
   ArrayOfPrimitivesElementType,
   ArrayOfPrimitivesFormNode,
   ArrayOfPrimitivesInputProps,
+  ArrayOfPrimitivesItemMember,
   ArrayOfPrimitivesMember,
   BaseFieldProps,
   BaseInputProps,
@@ -99,6 +102,8 @@ export type {
   BooleanFieldProps,
   BooleanFormNode,
   BooleanInputProps,
+  DuplicateKeysError,
+  FieldError,
   FieldMember,
   FieldProps,
   FieldSetMember,
@@ -117,9 +122,13 @@ export type {
   FormSetIfMissingPatch,
   FormSetPatch,
   FormUnsetPatch,
+  IncompatibleTypeError,
   InputProps,
   InsertItemEvent,
+  InvalidItemTypeError,
   ItemProps,
+  MissingKeysError,
+  MixedArray,
   MoveItemEvent,
   NodePresence,
   NodeValidation,
@@ -145,6 +154,8 @@ export type {
   StringFieldProps,
   StringInputProps,
   StringFormNode,
+  TypeAnnotationMismatchError,
+  UndeclaredMembersError,
 } from '../form'
 
 export {

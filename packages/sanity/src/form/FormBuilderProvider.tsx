@@ -9,12 +9,12 @@ import {
   FIXME,
   FormBuilderFilterFieldFn,
   FormFieldGroup,
-  ObjectMember,
   RenderFieldCallback,
   RenderInputCallback,
   RenderItemCallback,
   RenderPreviewCallback,
 } from './types'
+import {ObjectMember} from './store'
 import {DefaultArrayInputFunctions} from './inputs/arrays/common/ArrayFunctions'
 import {DefaultMarkers} from './inputs/PortableText/_legacyDefaultParts/Markers'
 import {DefaultCustomMarkers} from './inputs/PortableText/_legacyDefaultParts/CustomMarkers'

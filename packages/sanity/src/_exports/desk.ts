@@ -1,3 +1,5 @@
+/* eslint-disable camelcase */
+
 export type {
   GeneralPreviewLayoutKey,
   PortableTextPreviewLayoutKey,
@@ -199,12 +201,16 @@ export type {Annotation, AnnotationDetails, ChunkType} from '../field'
 
 export type {
   ArrayFieldProps,
+  ArrayInputProps,
+  ArrayItemError,
   ArrayOfObjectsFormNode,
   ArrayOfObjectsInputProps,
+  ArrayOfObjectsItemMember,
   ArrayOfObjectsMember,
   ArrayOfPrimitivesElementType,
   ArrayOfPrimitivesFormNode,
   ArrayOfPrimitivesInputProps,
+  ArrayOfPrimitivesItemMember,
   ArrayOfPrimitivesMember,
   BaseFieldProps,
   BaseFormNode,
@@ -214,6 +220,8 @@ export type {
   BooleanFormNode,
   BooleanInputProps,
   DocumentFormNode,
+  DuplicateKeysError,
+  FieldError,
   FieldMember,
   FieldProps,
   FieldSetMember,
@@ -232,9 +240,13 @@ export type {
   FormSetIfMissingPatch,
   FormSetPatch,
   FormUnsetPatch,
+  IncompatibleTypeError,
   InputProps,
   InsertItemEvent,
+  InvalidItemTypeError,
   ItemProps,
+  MissingKeysError,
+  MixedArray,
   MoveItemEvent,
   NodePresence,
   NodeValidation,
@@ -261,7 +273,18 @@ export type {
   StringFieldProps,
   StringFormNode,
   StringInputProps,
+  TypeAnnotationMismatchError,
+  UndeclaredMembersError,
+  _ArrayInput_ArrayMember,
 } from '../form'
+
+export type {
+  FileLike,
+  UploadEvent,
+  UploadOptions,
+  Uploader,
+  UploaderResolver,
+} from '../form/studio/uploads/types'
 
 export type {FormFieldPresence} from '../presence'
 

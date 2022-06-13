@@ -1,9 +1,8 @@
 import React, {useCallback, useMemo, useRef} from 'react'
+import {ArrayOfPrimitivesFormNode, FieldMember} from '../../store'
 import {
   ArrayOfPrimitivesFieldProps,
-  ArrayOfPrimitivesFormNode,
   ArrayOfPrimitivesInputProps,
-  FieldMember,
   FIXME,
   MoveItemEvent,
   RenderArrayOfPrimitivesItemCallback,

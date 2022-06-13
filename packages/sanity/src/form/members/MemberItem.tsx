@@ -3,8 +3,8 @@ import {useCallback, useMemo, useRef} from 'react'
 import {Path} from '@sanity/types'
 import {FormCallbacksProvider, useFormCallbacks} from '../studio/contexts/FormCallbacks'
 import {useDidUpdate} from '../hooks/useDidUpdate'
+import {ArrayOfObjectsItemMember} from '../store'
 import {
-  ArrayOfObjectsItemMember,
   ObjectInputProps,
   ObjectItemProps,
   RenderArrayOfObjectsItemCallback,

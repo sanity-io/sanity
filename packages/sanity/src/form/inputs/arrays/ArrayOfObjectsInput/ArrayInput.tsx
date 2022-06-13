@@ -1,4 +1,6 @@
-/* eslint-disable react/default-props-match-prop-types,react/jsx-handler-names */
+/* eslint-disable camelcase */
+/* eslint-disable react/default-props-match-prop-types */
+/* eslint-disable react/jsx-handler-names */
 
 import {
   isKeySegment,
@@ -20,21 +22,22 @@ import {Alert} from '../../../components/Alert'
 import {Details} from '../../../components/Details'
 import {Item, List} from '../common/list'
 import {applyAll} from '../../../patch/applyPatch'
-import {PatchEvent, setIfMissing, unset} from '../../../patch'
+import {PatchEvent, unset} from '../../../patch'
 import {ItemProps} from '../../../types/itemProps'
 import {DefaultArrayInputFunctions} from '../common/ArrayFunctions'
-import {ArrayOfObjectsInputProps, ArrayOfObjectsMember} from '../../../types'
+import {ArrayOfObjectsMember} from '../../../store'
+import {ArrayOfObjectsInputProps} from '../../../types'
 import {isObjectItemProps} from '../../../types/asserters'
 import {withFocusRing} from '../../../components/withFocusRing'
 import {MemberItem, MemberItemError} from '../../../members'
-import type {ArrayMember, InsertEvent} from './types'
+import type {_ArrayInput_ArrayMember, _InsertEvent} from './types'
 import {uploadTarget} from './uploadTarget/uploadTarget'
 import {isEmpty} from './item/helpers'
 import {ArrayItem} from './item/ArrayItem'
 
 type Toast = {push: (params: ToastParams) => void}
 
-export function createProtoValue(type: SchemaType): ArrayMember {
+export function createProtoValue(type: SchemaType): _ArrayInput_ArrayMember {
   if (!isObjectSchemaType(type)) {
     throw new Error(
       `Invalid item type: "${type.type}". Default array input can only contain objects (for now)`
@@ -45,28 +48,31 @@ export function createProtoValue(type: SchemaType): ArrayMember {
   return type.name === 'object' ? {_key} : {_type: type.name, _key}
 }
 
-interface State {
+/**
+ * @internal
+ */
+export interface _ArrayInputState {
   isResolvingInitialValue: boolean
 }
 
 const UploadTarget = uploadTarget(withFocusRing(Card))
 
-interface ArrayInputProps extends ArrayOfObjectsInputProps<ArrayMember> {
+export interface ArrayInputProps extends ArrayOfObjectsInputProps<_ArrayInput_ArrayMember> {
   resolveUploader: UploaderResolver
   client: SanityClient
 }
 
 export class ArrayInput extends React.PureComponent<ArrayInputProps> {
   _focusArea: HTMLElement | null = null
-  toast: Toast | null = null
+  toast: any | null = null
 
   uploadSubscriptions: Record<string, Subscription> = {}
-  state: State = {
+  state: _ArrayInputState = {
     isResolvingInitialValue: false,
   }
 
   insert = (
-    item: ArrayMember,
+    item: _ArrayInput_ArrayMember,
     position: 'before' | 'after',
     referenceItem: number | KeyedSegment
   ) => {
@@ -74,15 +80,15 @@ export class ArrayInput extends React.PureComponent<ArrayInputProps> {
     onInsert({items: [item], position, referenceItem})
   }
 
-  handlePrepend = (value: ArrayMember) => {
+  handlePrepend = (value: _ArrayInput_ArrayMember) => {
     this.handleInsert({item: value, position: 'before', referenceItem: 0})
   }
 
-  handleAppend = (value: ArrayMember) => {
+  handleAppend = (value: _ArrayInput_ArrayMember) => {
     this.handleInsert({item: value, position: 'after', referenceItem: -1})
   }
 
-  handleInsert = (event: InsertEvent) => {
+  handleInsert = (event: _InsertEvent) => {
     const {onFocusPath, onOpenItem, resolveInitialValue} = this.props
     this.setState({isResolvingInitialValue: true})
     const memberType = this.getMemberTypeOfItem(event.item)
@@ -122,13 +128,13 @@ export class ArrayInput extends React.PureComponent<ArrayInputProps> {
       })
   }
 
-  getMemberTypeOfItem(item: ArrayMember): SchemaType | undefined {
+  getMemberTypeOfItem(item: _ArrayInput_ArrayMember): SchemaType | undefined {
     const {schemaType} = this.props
     const itemTypeName = resolveTypeName(item)
     return schemaType.of.find((memberType) => memberType.name === itemTypeName)
   }
 
-  handleRemoveItem = (item: ArrayMember) => {
+  handleRemoveItem = (item: _ArrayInput_ArrayMember) => {
     this.removeItem(item)
   }
 
@@ -154,7 +160,7 @@ export class ArrayInput extends React.PureComponent<ArrayInputProps> {
     }
   }
 
-  removeItem(item: ArrayMember) {
+  removeItem(item: _ArrayInput_ArrayMember) {
     const {onChange, onFocusPath, value} = this.props
 
     // create a patch for removing the item
@@ -270,7 +276,7 @@ export class ArrayInput extends React.PureComponent<ArrayInputProps> {
           index={itemProps.index}
           schemaType={itemProps.schemaType}
           insertableTypes={schemaType.of}
-          value={itemProps.value as ArrayMember}
+          value={itemProps.value as _ArrayInput_ArrayMember}
           focused={itemProps.focused}
           open={itemProps.open}
           path={itemProps.path}

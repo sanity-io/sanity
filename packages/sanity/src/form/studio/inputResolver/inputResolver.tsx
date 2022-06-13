@@ -8,9 +8,9 @@ import {
   StringSchemaType,
 } from '@sanity/types'
 import React from 'react'
+import {FieldMember} from '../../store'
 import {
   ArrayFieldProps,
-  FieldMember,
   FieldProps,
   FIXME,
   InputProps,

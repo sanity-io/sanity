@@ -1,5 +1,5 @@
 import {useMemo} from 'react'
-import {ArrayOfObjectsItemMember, ObjectFormNode} from '../../../types'
+import {ArrayOfObjectsItemMember, ObjectFormNode} from '../../../store'
 import {EMPTY_ARRAY} from '../../../utils/empty'
 import {useChildValidation} from '../../../studio/contexts/Validation'
 

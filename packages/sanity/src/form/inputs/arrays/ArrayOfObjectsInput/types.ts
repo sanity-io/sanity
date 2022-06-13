@@ -1,19 +1,24 @@
+/* eslint-disable camelcase */
+
 import type {ComponentType} from 'react'
 import {KeyedSegment, Path} from '@sanity/types'
 
 export type ModalType = 'modal' | 'fullscreen' | string
 
-export type ArrayMember = {
+/**
+ * @internal
+ */
+export type _ArrayInput_ArrayMember = {
   _type?: string
   _key: string
   [key: string]: any
 }
 
 /**
- *  @deprecated
- *  */
-export interface InsertEvent {
-  item: ArrayMember
+ * @internal
+ */
+export interface _InsertEvent {
+  item: _ArrayInput_ArrayMember
   position: 'before' | 'after'
   referenceItem: KeyedSegment | number
   edit?: boolean

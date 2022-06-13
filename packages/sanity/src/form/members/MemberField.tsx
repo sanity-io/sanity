@@ -1,10 +1,10 @@
 import React, {memo} from 'react'
+import {FieldMember} from '../store'
 import {
   RenderFieldCallback,
   RenderInputCallback,
   RenderArrayOfObjectsItemCallback,
   FIXME,
-  FieldMember,
   RenderPreviewCallback,
 } from '../types'
 import {ArrayOfObjectsField} from './fields/ArrayOfObjectsField'

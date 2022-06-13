@@ -7,12 +7,12 @@ import {
   FormBuilderFilterFieldFn,
   FormBuilderMarkersComponent,
   FormFieldGroup,
-  ObjectMember,
   RenderFieldCallback,
   RenderInputCallback,
   RenderItemCallback,
   RenderPreviewCallback,
 } from './types'
+import {ObjectMember} from './store'
 
 /**
  * @alpha

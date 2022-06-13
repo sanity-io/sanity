@@ -1,10 +1,9 @@
 import React, {useCallback, useMemo, useRef} from 'react'
 import {Path} from '@sanity/types'
 import {useDidUpdate} from '../../hooks/useDidUpdate'
+import {FieldMember, ObjectFormNode} from '../../store'
 import {
-  FieldMember,
   ObjectFieldProps,
-  ObjectFormNode,
   ObjectInputProps,
   RenderArrayOfObjectsItemCallback,
   RenderFieldCallback,

@@ -1,3 +1,5 @@
+/* eslint-disable camelcase */
+
 import {isReferenceSchemaType, Path, SchemaType} from '@sanity/types'
 import {Box} from '@sanity/ui'
 import React, {memo, useCallback, useRef} from 'react'
@@ -5,7 +7,7 @@ import {
   ChangeIndicatorScope,
   ContextProvidedChangeIndicator,
 } from '../../../../../components/changeIndicators'
-import {ArrayMember} from '../types'
+import {_ArrayInput_ArrayMember} from '../types'
 import {useScrollIntoViewOnFocusWithin} from '../../../../hooks/useScrollIntoViewOnFocusWithin'
 import {useDidUpdate} from '../../../../hooks/useDidUpdate'
 import {FIXME, RenderPreviewCallback} from '../../../../types'
@@ -21,7 +23,7 @@ export interface ArrayItemProps {
   onClick: () => void
   onFocus: (event: React.FocusEvent) => void
   onInsert: (event: {items: unknown[]; position: 'before' | 'after'}) => void
-  onRemove: (value: ArrayMember) => void
+  onRemove: (value: _ArrayInput_ArrayMember) => void
   open: boolean
   path: Path
   presence: FIXME[]
@@ -29,7 +31,7 @@ export interface ArrayItemProps {
   renderPreview: RenderPreviewCallback
   schemaType: SchemaType
   validation: FIXME[]
-  value: ArrayMember
+  value: _ArrayInput_ArrayMember
 }
 
 // This renders the item / preview of unexpanded array items

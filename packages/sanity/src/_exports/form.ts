@@ -90,6 +90,14 @@ export type {
   SimpleFocusManagerState,
 } from '../form/studio'
 
+export type {
+  FileLike,
+  UploadEvent,
+  UploadOptions,
+  Uploader,
+  UploaderResolver,
+} from '../form/studio/uploads/types'
+
 export type {FormFieldPresence} from '../presence'
 
 export type {

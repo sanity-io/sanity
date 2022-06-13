@@ -1,16 +1,21 @@
+/* eslint-disable camelcase */
+
 import {ArraySchemaType, isReferenceSchemaType, SchemaType} from '@sanity/types'
 import React, {ForwardedRef, forwardRef, useMemo} from 'react'
 import {ArrayOfObjectsInputProps, FormBuilderFilterFieldFn, InputProps} from '../../../../types'
-import {ArrayMember, ReferenceItemComponentType} from '../types'
+import {_ArrayInput_ArrayMember, ReferenceItemComponentType} from '../types'
 
 interface ItemFormProps
-  extends Omit<ArrayOfObjectsInputProps<ArrayMember, ArraySchemaType>, 'level' | 'value'> {
+  extends Omit<
+    ArrayOfObjectsInputProps<_ArrayInput_ArrayMember, ArraySchemaType>,
+    'level' | 'value'
+  > {
   // onInsert?: (event: InsertEvent) => void
   insertableTypes?: SchemaType[]
   ReferenceItemComponent: ReferenceItemComponentType
   filterField: FormBuilderFilterFieldFn
   isSortable: boolean
-  value: ArrayMember
+  value: _ArrayInput_ArrayMember
 }
 
 export const ItemForm = forwardRef(function ItemForm(props: ItemFormProps, ref: ForwardedRef<any>) {

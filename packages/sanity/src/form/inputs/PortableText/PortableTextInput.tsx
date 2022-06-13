@@ -32,7 +32,7 @@ import type {
   PortableTextMarker,
   RenderCustomMarkers,
 } from '../../types'
-import {ArrayOfObjectsItemMember, ObjectFormNode} from '../../types'
+import {ArrayOfObjectsItemMember, ObjectFormNode} from '../../store'
 import {EMPTY_ARRAY} from '../../utils/empty'
 import {isMemberArrayOfObjects} from '../../members/fields/asserters'
 import {Compositor, PortableTextEditorElement} from './Compositor'

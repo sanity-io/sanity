@@ -13,14 +13,13 @@ import {
   StringSchemaType,
   ValidationMarker,
 } from '@sanity/types'
-
 import {castArray, pick} from 'lodash'
 import {isEqual, pathFor, startsWith, toString, trimChildPath} from '@sanity/util/paths'
 import {resolveTypeName} from '@sanity/util/content'
-import {FIXME, PrimitiveFormNode} from '../types'
+import {FIXME} from '../types'
 import {FormFieldPresence} from '../../presence'
 import {isRecord} from '../../util'
-import {StateTree} from './types/state'
+import {PrimitiveFormNode, StateTree} from './types'
 import {callConditionalProperties, callConditionalProperty} from './conditional-property'
 import {MAX_FIELD_DEPTH} from './constants'
 import {getItemType, getPrimitiveItemType} from './utils/getItemType'
