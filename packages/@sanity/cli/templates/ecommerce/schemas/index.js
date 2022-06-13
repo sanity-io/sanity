@@ -8,7 +8,7 @@ import localeString from './locale/localeString'
 import localeText from './locale/localeText'
 import localeBlockContent from './locale/localeBlockContent'
 
-export default [
+export const schemaTypes = [
   // Document types
   product,
   vendor,

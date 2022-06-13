@@ -7,7 +7,7 @@ import screening from './screening'
 import plotSummary from './plotSummary'
 import plotSummaries from './plotSummaries'
 
-export default [
+export const schemaTypes = [
   // Document types
   movie,
   person,

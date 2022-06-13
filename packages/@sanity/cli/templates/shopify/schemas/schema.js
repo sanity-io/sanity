@@ -1,8 +1,3 @@
-// First, we must import the schema creator
-import createSchema from 'part:@sanity/base/schema-creator'
-// Then import schema types from any plugins that might expose them
-import schemaTypes from 'all:part:@sanity/base/schema-type'
-
 // Rich text annotations used in the block content editor
 import annotationLinkEmail from './annotations/linkEmail'
 import annotationLinkExternal from './annotations/linkExternal'
@@ -41,43 +36,37 @@ import shopifyProduct from './objects/shopifyProduct'
 import shopifyProductVariant from './objects/shopifyProductVariant'
 
 // Build the schemas and export to the Sanity Studio app
-export default createSchema({
-  // We name our schema
-  name: 'default',
-  // Then proceed to concatenate our document type
-  // to the ones provided by any plugins that are installed
-  types: schemaTypes.concat([
-    // Annotations
-    annotationLinkEmail,
-    annotationLinkExternal,
-    annotationLinkInternal,
-    annotationProduct,
-    // Document types
-    articleEditorial,
-    articleInfo,
-    collection,
-    product,
-    productVariant,
-    // Singleton document types
-    home,
-    settings,
-    // Block content
-    body,
-    // Objects
-    blockImage,
-    blockInlineProduct,
-    blockInlineProductMarginalia,
-    blockProduct,
-    linkExternal,
-    linkInternal,
-    placeholderString,
-    productOption,
-    productWithVariant,
-    proxyString,
-    seoProduct,
-    seoSingleton,
-    seoStandard,
-    shopifyProduct,
-    shopifyProductVariant,
-  ]),
-})
+export const schemaTypes = [
+  // Annotations
+  annotationLinkEmail,
+  annotationLinkExternal,
+  annotationLinkInternal,
+  annotationProduct,
+  // Document types
+  articleEditorial,
+  articleInfo,
+  collection,
+  product,
+  productVariant,
+  // Singleton document types
+  home,
+  settings,
+  // Block content
+  body,
+  // Objects
+  blockImage,
+  blockInlineProduct,
+  blockInlineProductMarginalia,
+  blockProduct,
+  linkExternal,
+  linkInternal,
+  placeholderString,
+  productOption,
+  productWithVariant,
+  proxyString,
+  seoProduct,
+  seoSingleton,
+  seoStandard,
+  shopifyProduct,
+  shopifyProductVariant,
+]

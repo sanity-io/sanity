@@ -1,7 +1,0 @@
-{
-  "compilerOptions": {
-    "esModuleInterop": true,
-    "jsx": "react"
-  },
-  "include": ["./node_modules/sanity/types/**/*.ts", "./**/*.ts", "./**/*.tsx"]
-}

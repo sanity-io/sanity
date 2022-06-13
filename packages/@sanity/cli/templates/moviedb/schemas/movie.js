@@ -31,6 +31,14 @@ export default {
       type: 'datetime',
     },
     {
+      name: 'poster',
+      title: 'Poster Image',
+      type: 'image',
+      options: {
+        hotspot: true,
+      },
+    },
+    {
       name: 'externalId',
       title: 'External ID',
       type: 'number',
@@ -39,14 +47,6 @@ export default {
       name: 'popularity',
       title: 'Popularity',
       type: 'number',
-    },
-    {
-      name: 'poster',
-      title: 'Poster Image',
-      type: 'image',
-      options: {
-        hotspot: true,
-      },
     },
     {
       name: 'castMembers',

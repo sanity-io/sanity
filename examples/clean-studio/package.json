@@ -18,11 +18,6 @@
     "clean-studio"
   ],
   "dependencies": {
-    "@sanity/cli": "2.30.0",
-    "@sanity/core": "2.30.0",
-    "@sanity/default-layout": "2.30.0",
-    "@sanity/default-login": "2.30.0",
-    "@sanity/vision": "2.30.0",
     "react": "17.0.2",
     "react-dom": "17.0.2",
     "sanity": "2.29.3",
@@ -35,6 +30,6 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/sanity-io/sanity.git",
-    "directory": "packages/clean-studio"
+    "directory": "examples/clean-studio"
   }
 }

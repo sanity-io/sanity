@@ -19,15 +19,7 @@
     "movies-studio"
   ],
   "dependencies": {
-    "@sanity/cli": "2.30.0",
-    "@sanity/core": "2.30.0",
-    "@sanity/default-layout": "2.30.0",
-    "@sanity/default-login": "2.30.0",
-    "@sanity/desk-tool": "2.30.0",
-    "@sanity/form-builder": "2.30.0",
-    "@sanity/google-maps-input": "2.30.0",
-    "@sanity/production-preview": "2.29.3",
-    "@sanity/vision": "2.30.0",
+    "@sanity/google-maps-input": "studio-v3",
     "react": "17.0.2",
     "react-dom": "17.0.2",
     "sanity": "2.29.3",
@@ -40,6 +32,6 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/sanity-io/sanity.git",
-    "directory": "packages/movies-studio"
+    "directory": "examples/movies-studio"
   }
 }
