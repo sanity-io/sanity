@@ -21,6 +21,7 @@ export function useFormState<
 >(
   schemaType: ObjectSchemaType,
   {
+    comparisonValue,
     value,
     fieldGroupState,
     collapsedFieldSets,
@@ -34,6 +35,7 @@ export function useFormState<
     collapsedFieldSets?: StateTree<boolean> | undefined
     collapsedPaths?: StateTree<boolean> | undefined
     value: Partial<FIXME_SanityDocument>
+    comparisonValue: Partial<FIXME_SanityDocument>
     openPath: Path
     focusPath: Path
     presence: FormFieldPresence[]
@@ -58,6 +60,7 @@ export function useFormState<
       collapsedFieldSets,
       collapsedPaths,
       value,
+      comparisonValue,
       focusPath,
       openPath,
       path: pathFor([]),
@@ -77,6 +80,7 @@ export function useFormState<
     fieldGroupState,
     collapsedFieldSets,
     collapsedPaths,
+    comparisonValue,
     focusPath,
     openPath,
     currentUser,

@@ -447,7 +447,6 @@ export function ArrayItemReferenceInput(props: Props) {
             <FormField
               validation={validation}
               __unstable_presence={presence}
-              __unstable_changeIndicator={false}
               inputId={inputId}
               title={type.title}
               level={level}

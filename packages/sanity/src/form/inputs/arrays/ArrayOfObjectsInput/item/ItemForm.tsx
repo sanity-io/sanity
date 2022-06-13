@@ -31,7 +31,7 @@ export const ItemForm = forwardRef(function ItemForm(props: ItemFormProps, ref: 
     presence,
     onChange,
     onInsert,
-    compareValue,
+    changed,
     onFocus,
     onBlur,
     readOnly,
@@ -69,7 +69,7 @@ export const ItemForm = forwardRef(function ItemForm(props: ItemFormProps, ref: 
     //   onFocus={onFocus}
     //   onBlur={onBlur}
     //   inputComponent={Input}
-    //   compareValue={compareValue}
+    //   changed={changed}
     //   focusPath={focusPath}
     //   readOnly={readOnly || type.readOnly || false}
     //   validation={validation}

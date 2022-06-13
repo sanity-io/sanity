@@ -69,6 +69,7 @@ describe('StudioFormBuilder', () => {
 
       const formState = useFormState(schemaType, {
         value,
+        comparisonValue: value,
         focusPath,
         collapsedPaths: undefined,
         collapsedFieldSets: undefined,
@@ -82,7 +83,7 @@ describe('StudioFormBuilder', () => {
         () => ({
           __internal_patchChannel: patchChannel,
           changesOpen: false,
-          compareValue: formState?.compareValue,
+          changed: false,
           focused: formState?.focused,
           focusPath: formState?.focusPath || EMPTY_ARRAY,
           groups: formState?.groups || EMPTY_ARRAY,

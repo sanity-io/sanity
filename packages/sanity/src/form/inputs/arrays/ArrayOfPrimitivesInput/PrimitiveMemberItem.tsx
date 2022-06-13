@@ -67,11 +67,11 @@ export function PrimitiveMemberItem(props: PrimitiveMemberItemProps) {
 
   const inputProps = useMemo((): PrimitiveInputProps => {
     return {
+      changed: member.item.changed,
       level: member.item.level,
       value: member.item.value as FIXME,
       readOnly: member.item.readOnly,
       schemaType: member.item.schemaType as FIXME,
-      compareValue: member.item.compareValue,
       focusRef: focusRef,
       id: member.item.id,
       onBlur: handleBlur,
@@ -87,12 +87,12 @@ export function PrimitiveMemberItem(props: PrimitiveMemberItemProps) {
     member.item.value,
     member.item.readOnly,
     member.item.schemaType,
-    member.item.compareValue,
     member.item.id,
     member.item.path,
     member.item.focused,
     member.item.validation,
     member.item.presence,
+    member.item.changed,
     handleBlur,
     handleFocus,
     handleChange,

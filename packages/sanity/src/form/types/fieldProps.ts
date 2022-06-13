@@ -22,6 +22,7 @@ export interface BaseFieldProps {
   path: Path
   name: string
   index: number
+  changed: boolean
   children: React.ReactNode
 }
 

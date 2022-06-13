@@ -3,10 +3,6 @@
 import {Box, Flex, Grid, rem, Stack, Text, Theme, useForwardedRef} from '@sanity/ui'
 import React, {forwardRef, useCallback, useMemo} from 'react'
 import styled, {css} from 'styled-components'
-import {
-  ChangeIndicator,
-  ChangeIndicatorContextProvidedProps,
-} from '../../../components/changeIndicators'
 import {FieldPresence} from '../../../presence'
 import {NodePresence, NodeValidation} from '../../types'
 import {FormFieldValidationStatus} from './FormFieldValidationStatus'
@@ -14,10 +10,6 @@ import {FormFieldSetLegend} from './FormFieldSetLegend'
 import {focusRingStyle} from './styles'
 
 export interface FormFieldSetProps {
-  /**
-   * @alpha
-   */
-  __unstable_changeIndicator?: ChangeIndicatorContextProvidedProps | boolean
   /**
    * @alpha
    */
@@ -54,7 +46,7 @@ const Root = styled(Box).attrs({forwardedAs: 'fieldset'})`
 `
 
 const Content = styled(Box)<{
-  /**
+  /*
    * @note: The dollar sign ($) prefix is a `styled-components` convention for
    * denoting transient props. See:
    * https://styled-components.com/docs/api#transient-props
@@ -88,7 +80,6 @@ export const FormFieldSet = forwardRef(function FormFieldSet(
   ref: React.ForwardedRef<HTMLDivElement>
 ) {
   const {
-    __unstable_changeIndicator: changeIndicator = false,
     validation = EMPTY_ARRAY,
     __unstable_presence: presence = EMPTY_ARRAY,
     children,
@@ -130,16 +121,10 @@ export const FormFieldSet = forwardRef(function FormFieldSet(
     }
     return (
       <Grid columns={columns} gapX={4} gapY={5}>
-        {changeIndicator ? (
-          <ChangeIndicator {...(changeIndicator === true ? {} : changeIndicator)}>
-            {getChildren(children)}
-          </ChangeIndicator>
-        ) : (
-          getChildren(children)
-        )}
+        {getChildren(children)}
       </Grid>
     )
-  }, [changeIndicator, children, collapsed, columns])
+  }, [children, collapsed, columns])
 
   return (
     <Root data-level={level} {...restProps}>

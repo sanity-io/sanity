@@ -37,6 +37,7 @@ export interface BaseItemProps {
 }
 
 export interface ObjectItemProps extends BaseItemProps {
+  changed: boolean
   schemaType: ObjectSchemaType
   collapsed: boolean | undefined
   collapsible: boolean

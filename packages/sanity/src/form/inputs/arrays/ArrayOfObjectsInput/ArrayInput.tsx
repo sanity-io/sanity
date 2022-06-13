@@ -268,6 +268,7 @@ export class ArrayInput extends React.PureComponent<ArrayInputProps> {
     return (
       <>
         <ArrayItem
+          changed={itemProps.changed}
           validation={itemProps.validation}
           readOnly={itemProps.readOnly}
           onInsert={itemProps.onInsert}

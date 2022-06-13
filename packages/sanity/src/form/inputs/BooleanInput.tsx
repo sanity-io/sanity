@@ -21,7 +21,7 @@ export const BooleanInput = React.forwardRef(function BooleanInput(
   props: BooleanInputProps,
   ref: React.ForwardedRef<HTMLInputElement>
 ) {
-  const {id, value, schemaType, readOnly, onBlur, onFocus, onChange} = props
+  const {id, value, schemaType, readOnly, onBlur, onFocus, onChange, path, focused, changed} = props
   const layout = schemaType.options?.layout || 'switch'
 
   const handleChange = useCallback(
@@ -37,7 +37,7 @@ export const BooleanInput = React.forwardRef(function BooleanInput(
   const LayoutSpecificInput = layout === 'checkbox' ? Checkbox : Switch
 
   return (
-    <ChangeIndicator>
+    <ChangeIndicator path={path} isChanged={changed} hasFocus={!!focused}>
       <Card border radius={1}>
         <Flex>
           <ZeroLineHeightBox padding={3}>

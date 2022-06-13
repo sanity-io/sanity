@@ -31,6 +31,7 @@ import type {
   FIXME,
   PortableTextMarker,
   RenderCustomMarkers,
+  ArrayOfObjectsMember,
 } from '../../types'
 import {ArrayOfObjectsItemMember, ObjectFormNode} from '../../store'
 import {EMPTY_ARRAY} from '../../utils/empty'
@@ -60,6 +61,12 @@ export interface PortableTextMemberItem {
 
 export function isFieldMember(member: ObjectMember): member is FieldMember<ObjectFormNode> {
   return member.kind === 'field'
+}
+
+export function isItemMember(
+  member: ArrayOfObjectsMember
+): member is ArrayOfObjectsItemMember<ObjectFormNode> {
+  return member.kind === 'item'
 }
 
 /**
@@ -155,9 +162,9 @@ export function PortableTextInput(props: PortableTextInputProps) {
       if (m.kind === 'error') {
         return []
       }
-      let returned: ObjectMemberType[] = []
-      // Object blocks or normal blocks with validation
-      if (m.item.schemaType.name !== 'block' || m.item.validation.length > 0) {
+      let returned = []
+      // Object blocks or normal blocks with validation or changes
+      if (m.item.schemaType.name !== 'block' || m.item.validation.length > 0 || m.item.changed) {
         returned.push(m)
       }
       // Inline objects
@@ -170,7 +177,7 @@ export function PortableTextInput(props: PortableTextInputProps) {
         returned = [
           ...returned,
           ...childrenField.field.members.filter(
-            (cM): cM is ObjectMemberType => cM.kind === 'item' && cM.item.schemaType.name !== 'span'
+            (cM) => isItemMember(cM) && cM.item.schemaType.name !== 'span'
           ),
         ]
       }
@@ -180,41 +187,40 @@ export function PortableTextInput(props: PortableTextInputProps) {
         .find((f) => f.name === 'markDefs')
 
       if (markDefArrayMember) {
-        returned = [
-          ...returned,
-          ...(markDefArrayMember.field.members as unknown as ObjectMemberType[]), // TODO: fix correct typing on this
-        ]
+        returned = [...returned, ...markDefArrayMember.field.members]
       }
       return returned
     })
     // Create new items or update existing ones
-    const items = ptMembers.map((r) => {
-      const key = JSON.stringify(r.item.path.slice(path.length))
-      const existingItem = portableTextMemberItemsRef.current.find((ref) => ref.key === key)
-      if (existingItem) {
-        existingItem.member = r
-        return existingItem
-      }
-      return {
-        key,
-        member: r,
-        elementRef: createRef<PortableTextEditorElement>(),
-      }
-    })
+    const items = ptMembers
+      .filter((cM): cM is ObjectMemberType => cM.kind === 'item')
+      .map((r) => {
+        const key = JSON.stringify(r.item.path.slice(path.length))
+        const existingItem = portableTextMemberItemsRef.current.find((ref) => ref.key === key)
+        if (existingItem) {
+          existingItem.member = r
+          return existingItem
+        }
+        return {
+          key,
+          member: r,
+          elementRef: createRef<EditorElement>(),
+        }
+      })
     portableTextMemberItemsRef.current = items
     return items
   }, [members, path])
 
   // Sets the focusPath from editor selection (when typing, moving the cursor, clicking around)
-  // This doesn't neeed to be immediate, so debounce it as it impacts performance.
-  const setFocusPathThrottled = useMemo(
+  // This doesn't need to be immediate, so debounce it as it impacts performance.
+  const setFocusPathDebounced = useMemo(
     () =>
       debounce(
         (sel: EditorSelection) => {
           if (sel && hasFocus) onFocusPath(sel.focus.path)
         },
-        1000,
-        {trailing: true, leading: true}
+        500,
+        {trailing: true, leading: false}
       ),
     [hasFocus, onFocusPath]
   )
@@ -227,7 +233,7 @@ export function PortableTextInput(props: PortableTextInputProps) {
           onChange(change.patches as FormBuilderPatch[])
           break
         case 'selection':
-          setFocusPathThrottled(change.selection)
+          setFocusPathDebounced(change.selection)
           break
         case 'focus':
           setHasFocus(true)
@@ -251,7 +257,7 @@ export function PortableTextInput(props: PortableTextInputProps) {
         default:
       }
     },
-    [onChange, toast, setFocusPathThrottled]
+    [onChange, toast, setFocusPathDebounced]
   )
 
   const handleFocusSkipperClick = useCallback(() => {

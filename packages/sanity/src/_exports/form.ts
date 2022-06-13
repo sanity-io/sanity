@@ -5,7 +5,7 @@ export type {
   PreviewMediaDimensions,
   PreviewProps,
 } from '../components/previews'
-export type {ChangeIndicatorContextProvidedProps} from '../components/changeIndicators'
+export type {ChangeIndicatorProps} from '../components/changeIndicators'
 
 export {Timeline, TimelineController} from '../datastores'
 

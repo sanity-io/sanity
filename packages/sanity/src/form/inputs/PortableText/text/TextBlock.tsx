@@ -50,24 +50,17 @@ export function TextBlock(props: TextBlockProps) {
   } = props
   const {Markers} = useFormBuilder().__internal.components
   const [reviewChangesHovered, setReviewChangesHovered] = useState<boolean>(false)
-  const [hasChanges, setHasChanges] = useState<boolean>(false)
   const markers = usePortableTextMarkers(path)
   const memberItem = usePortableTextMemberItem(JSON.stringify(path))
 
-  const blockKey = block._key
-
-  const handleMouseOver = useCallback(() => setReviewChangesHovered(true), [])
-  const handleMouseOut = useCallback(() => setReviewChangesHovered(false), [])
-
-  const handleOnHasChanges = useCallback((changed: boolean) => setHasChanges(changed), [])
+  const handleChangeIndicatorMouseEnter = useCallback(() => setReviewChangesHovered(true), [])
+  const handleChangeIndicatorMouseLeave = useCallback(() => setReviewChangesHovered(false), [])
 
   const {validation, hasError, hasWarning, hasInfo} = useMemberValidation(memberItem?.member)
 
   const hasMarkers = Boolean(renderCustomMarkers) && markers.length > 0
 
   const tooltipEnabled = hasError || hasWarning || hasMarkers || hasInfo
-
-  const blockPath = useMemo(() => [{_key: blockKey}], [blockKey])
 
   const text = useMemo(() => {
     const TextStyle = TEXT_STYLES[block.style] || TEXT_STYLES.normal
@@ -165,19 +158,17 @@ export function TextBlock(props: TextBlockProps) {
             </BlockActionsOuter>
           )}
 
-          {isFullscreen && (
+          {isFullscreen && memberItem && (
             <ChangeIndicatorWrapper
-              onMouseOver={handleMouseOver}
-              onMouseOut={handleMouseOut}
-              $hasChanges={Boolean(hasChanges)}
+              $hasChanges={memberItem.member.item.changed}
+              onMouseEnter={handleChangeIndicatorMouseEnter}
+              onMouseLeave={handleChangeIndicatorMouseLeave}
             >
               <StyledChangeIndicatorWithProvidedFullPath
-                compareDeep
-                value={block}
                 hasFocus={focused}
-                path={blockPath}
+                isChanged={memberItem.member.item.changed}
+                path={memberItem.member.item.path}
                 withHoverEffect={false}
-                onHasChanges={handleOnHasChanges}
               />
             </ChangeIndicatorWrapper>
           )}

@@ -19,12 +19,12 @@ export interface BaseFormNode<T = unknown, S extends SchemaType = SchemaType> {
   path: Path
 
   // state
-  compareValue: T | undefined
   presence: NodePresence[]
   validation: NodeValidation[]
   value: T | undefined
   readOnly?: boolean
   focused?: boolean
+  changed: boolean
 }
 
 export interface ObjectFormNode<

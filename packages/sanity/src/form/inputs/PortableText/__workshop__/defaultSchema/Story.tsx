@@ -53,7 +53,7 @@ function TestForm() {
   const type = schema.get('body')
   const patchChannel = useMemo(() => createPatchChannel(), [])
   const [focusPath, setFocusPath] = useState<Path>([])
-  const compareValue = undefined
+  const changed = false
   const focusRef = useRef()
   const handleAppendItem = useAction('onAppendItem')
   const handleBlur = useAction('onBlur')

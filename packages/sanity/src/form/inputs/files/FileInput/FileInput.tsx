@@ -9,6 +9,7 @@ import {
   File as BaseFile,
   FileAsset,
   FileSchemaType,
+  Path,
   UploadState,
 } from '@sanity/types'
 import {ImageIcon, SearchIcon} from '@sanity/icons'
@@ -33,10 +34,10 @@ import {PlaceholderText} from '../common/PlaceholderText'
 import {UploadPlaceholder} from '../common/UploadPlaceholder'
 import {UploadWarning} from '../common/UploadWarning'
 import {FIXME, InputProps, ObjectInputProps} from '../../../types'
-import {ChangeIndicatorForFieldPath} from '../../../../components/changeIndicators'
 import {ImperativeToast} from '../../../../components/transitional'
 import {PatchEvent, setIfMissing, unset} from '../../../patch'
 import {MemberField, MemberFieldError, MemberFieldSet} from '../../../members'
+import {ChangeIndicator} from '../../../../components/changeIndicators'
 import {CardOverlay, FlexContainer} from './styles'
 import {FileDetails} from './FileDetails'
 import {FileSkeleton} from './FileSkeleton'
@@ -73,6 +74,7 @@ const ASSET_FIELD_PATH = ['asset']
 
 export class FileInput extends React.PureComponent<FileInputProps, FileInputState> {
   _focusRef: Focusable | null = null
+  _assetFieldPath: Path
   uploadSubscription: Subscription | null = null
 
   state: FileInputState = {
@@ -81,6 +83,11 @@ export class FileInput extends React.PureComponent<FileInputProps, FileInputStat
     hoveringFiles: [],
     isStale: false,
     isMenuOpen: false,
+  }
+
+  constructor(props: FileInputProps) {
+    super(props)
+    this._assetFieldPath = props.path.concat(ASSET_FIELD_PATH)
   }
 
   toast: {push: (params: ToastParams) => void} | null = null
@@ -294,7 +301,7 @@ export class FileInput extends React.PureComponent<FileInputProps, FileInputStat
   }
 
   renderAsset() {
-    const {value, onFocus, onBlur, compareValue, readOnly} = this.props
+    const {value, onFocus, onBlur, changed, readOnly} = this.props
     const {hoveringFiles, isStale} = this.state
     const hasValueOrUpload = Boolean(value?._upload || value?.asset)
 
@@ -307,13 +314,10 @@ export class FileInput extends React.PureComponent<FileInputProps, FileInputStat
             <UploadWarning onClearStale={this.handleClearUploadState} />
           </Box>
         )}
-        <ChangeIndicatorForFieldPath
-          path={ASSET_FIELD_PATH}
-          hasFocus={inputProps.focused}
-          isChanged={
-            value?.asset?._ref !== compareValue?.asset?._ref
-            // ||              this.hasChangeInFields(groupedMembers.imageToolAndDialog)
-          }
+        <ChangeIndicator
+          path={this._assetFieldPath}
+          hasFocus={!!inputProps.focused}
+          isChanged={changed}
         >
           {/* not uploading */}
           {!value?._upload && (
@@ -344,7 +348,7 @@ export class FileInput extends React.PureComponent<FileInputProps, FileInputStat
 
           {/* uploading */}
           {value?._upload && this.renderUploadState(value._upload)}
-        </ChangeIndicatorForFieldPath>
+        </ChangeIndicator>
       </>
     )
   }

@@ -32,7 +32,6 @@ export interface CrossDatasetSearchHit {
 //   focusPath: Path
 //   readOnly?: boolean
 //   onSearch: SearchFunction
-//   compareValue?: CrossDatasetReference
 //   onFocus?: (path: Path) => void
 //   onBlur?: () => void
 //   getReferenceInfo: (

@@ -49,7 +49,6 @@ export function StudioFormBuilder(props: StudioFormBuilderProps) {
     __internal_patchChannel: patchChannel,
     autoFocus,
     changesOpen,
-    compareValue,
     focusPath,
     focused,
     groups,
@@ -74,7 +73,6 @@ export function StudioFormBuilder(props: StudioFormBuilderProps) {
       __internal_patchChannel={patchChannel}
       autoFocus={autoFocus}
       changesOpen={changesOpen}
-      compareValue={compareValue}
       focusPath={focusPath}
       focused={focused}
       groups={groups}
@@ -176,9 +174,9 @@ function RootInput() {
 
   const rootInputProps: ObjectInputProps = {
     collapsed: false,
-    compareValue: undefined,
     focusPath,
     focusRef,
+    changed: members.some((m) => m.kind === 'field' && m.field.changed),
     focused,
     groups,
     id,

@@ -38,7 +38,7 @@ import {useObservableCallback} from 'react-rx'
 import {uuid} from '@sanity/uuid'
 import styled from 'styled-components'
 // import {ChangeIndicatorForFieldPath, FormField, PreviewCard} from '../../../components'
-import {ChangeIndicatorForFieldPath} from '../../../components/changeIndicators'
+import {ChangeIndicator} from '../../../components/changeIndicators'
 import {PreviewCard} from '../../../components/PreviewCard'
 import {set, setIfMissing, unset} from '../../patch'
 import {EMPTY_ARRAY} from '../../utils/empty'
@@ -81,6 +81,8 @@ export function ReferenceInput(props: ReferenceInputProps) {
     createOptions,
     editReferenceLinkComponent: EditReferenceLink,
     focusPath = EMPTY_ARRAY,
+    focused,
+    path,
     getReferenceInfo,
     liveEdit,
     onChange,
@@ -90,7 +92,7 @@ export function ReferenceInput(props: ReferenceInputProps) {
     schemaType,
     onFocus,
     onBlur,
-    compareValue,
+    changed,
     readOnly,
     onFocusPath,
     validation,
@@ -400,11 +402,7 @@ export function ReferenceInput(props: ReferenceInputProps) {
               </Text>
             </Alert>
           ) : null}
-          <ChangeIndicatorForFieldPath
-            path={REF_PATH}
-            hasFocus={focusPath?.[0] === '_ref'}
-            isChanged={value?._ref !== compareValue?._ref}
-          >
+          <ChangeIndicator path={REF_PATH} hasFocus={!!focused} isChanged={changed}>
             <AutocompleteContainer ref={autocompletePopoverReferenceElementRef}>
               <ReferenceAutocomplete
                 data-testid="autocomplete"
@@ -442,14 +440,10 @@ export function ReferenceInput(props: ReferenceInputProps) {
                 />
               )}
             </AutocompleteContainer>
-          </ChangeIndicatorForFieldPath>
+          </ChangeIndicator>
         </Stack>
       ) : (
-        <ChangeIndicatorForFieldPath
-          path={REF_PATH}
-          hasFocus={focusPath?.[0] === '_ref'}
-          isChanged={value?._ref !== compareValue?._ref}
-        >
+        <ChangeIndicator path={path} hasFocus={!!focused} isChanged={changed}>
           <Card
             border
             radius={1}
@@ -601,7 +595,7 @@ export function ReferenceInput(props: ReferenceInputProps) {
               </AlertStrip>
             )}
           </Card>
-        </ChangeIndicatorForFieldPath>
+        </ChangeIndicator>
       )}
     </Stack>
   )

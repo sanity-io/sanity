@@ -152,7 +152,7 @@ export const ChangeIndicatorWrapper = styled.div<{$hasChanges: boolean}>(
     return css`
       position: absolute;
       width: ${space[2]}px;
-      right: 0;
+      right: ${space[1]}px;
       top: -${space[1]}px;
       bottom: -${space[1]}px;
       padding-left: ${space[1]}px;

@@ -140,7 +140,7 @@ export const ObjectField = function ObjectField(props: {
       onCollapse: handleCollapse,
       onExpand: handleExpand,
       schemaType: member.field.schemaType,
-      compareValue: member.field.compareValue,
+      changed: member.field.changed,
       focusRef: focusRef,
       id: member.field.id,
       collapsed: member.collapsed,
@@ -171,7 +171,7 @@ export const ObjectField = function ObjectField(props: {
     member.field.validation,
     member.field.presence,
     member.field.schemaType,
-    member.field.compareValue,
+    member.field.changed,
     member.field.id,
     member.field.path,
     member.field.focusPath,
@@ -216,6 +216,7 @@ export const ObjectField = function ObjectField(props: {
       onExpand: handleExpand,
 
       open: member.open,
+      changed: member.field.changed,
 
       onOpen: handleOpen,
       onClose: handleClose,

@@ -18,7 +18,7 @@ import {
   useBoundaryElement,
   usePortal,
 } from '@sanity/ui'
-import {ChangeIndicatorWithProvidedFullPath} from '../../../components/changeIndicators'
+import {ChangeIndicator} from '../../../components/changeIndicators'
 import {ArrayOfObjectsInputProps, FIXME, RenderCustomMarkers} from '../../types'
 import {ActivateOnFocus} from '../../components/ActivateOnFocus/ActivateOnFocus'
 import {EMPTY_ARRAY} from '../../utils/empty'
@@ -52,7 +52,9 @@ const ACTIVATE_ON_FOCUS_MESSAGE = <Text weight="semibold">Click to activate</Tex
 
 export function Compositor(props: InputProps) {
   const {
+    changed,
     focusPath = EMPTY_ARRAY,
+    focused,
     hasFocus,
     hotkeys,
     isFullscreen,
@@ -83,6 +85,7 @@ export function Compositor(props: InputProps) {
 
   // This will scroll to the relevant content according to the focusPath set
   useScrollToFocusFromOutside({
+    fieldPath: path,
     onCloseItem,
     scrollElement,
   })
@@ -331,7 +334,6 @@ export function Compositor(props: InputProps) {
 
     [portal.element, portalElement, wrapperElement]
   )
-
   return (
     <PortalProvider __unstable_elements={portalElements}>
       <ActivateOnFocus
@@ -339,11 +341,11 @@ export function Compositor(props: InputProps) {
         onActivate={handleActivate}
         isOverlayActive={!isActive}
       >
-        <ChangeIndicatorWithProvidedFullPath
-          compareDeep
-          value={value}
-          hasFocus={hasFocus}
-          path={EMPTY_ARRAY}
+        <ChangeIndicator
+          disabled={isFullscreen}
+          hasFocus={!!focused}
+          isChanged={changed}
+          path={path}
         >
           <Root data-focused={hasFocus ? '' : undefined} data-read-only={readOnly ? '' : undefined}>
             <div data-wrapper="" ref={setWrapperElement}>
@@ -354,7 +356,7 @@ export function Compositor(props: InputProps) {
             </div>
             <div data-border="" />
           </Root>
-        </ChangeIndicatorWithProvidedFullPath>
+        </ChangeIndicator>
       </ActivateOnFocus>
     </PortalProvider>
   )

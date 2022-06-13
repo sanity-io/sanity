@@ -1,3 +1,4 @@
+/* eslint-disable max-statements */
 /* eslint-disable camelcase, no-else-return */
 
 import {
@@ -13,7 +14,8 @@ import {
   StringSchemaType,
   ValidationMarker,
 } from '@sanity/types'
-import {castArray, pick} from 'lodash'
+
+import {castArray, pick, isEqual as _isEqual} from 'lodash'
 import {isEqual, pathFor, startsWith, toString, trimChildPath} from '@sanity/util/paths'
 import {resolveTypeName} from '@sanity/util/content'
 import {FIXME} from '../types'
@@ -111,8 +113,8 @@ function prepareFieldMember(props: {
   const {parent, field, index} = props
   const fieldPath = pathFor([...parent.path, field.name])
   const fieldLevel = parent.level + 1
-
   const parentValue = parent.value
+  const parentComparisonValue = parent.comparisonValue
   if (!isAcceptedObjectValue(parentValue)) {
     // Note: we validate each field, before passing it recursively to this function so getting this error means that the
     // ´prepareFormState´ function itself has been called with a non-object value
@@ -121,6 +123,8 @@ function prepareFieldMember(props: {
 
   if (isObjectSchemaType(field.type)) {
     const fieldValue = parentValue?.[field.name]
+    const fieldComparisonValue =
+      (isRecord(parentComparisonValue) && parentComparisonValue?.[field.name]) || undefined
     if (!isAcceptedObjectValue(fieldValue)) {
       return {
         kind: 'error',
@@ -158,6 +162,8 @@ function prepareFieldMember(props: {
       parent: parent.value,
       document: parent.document,
       value: fieldValue,
+      changed: !_isEqual(fieldValue, fieldComparisonValue),
+      comparisonValue: fieldComparisonValue,
       presence: parent.presence,
       validation: parent.validation,
       fieldGroupState,
@@ -185,6 +191,9 @@ function prepareFieldMember(props: {
     }
   } else if (isArraySchemaType(field.type)) {
     const fieldValue = parentValue?.[field.name] as unknown[] | undefined
+    const fieldComparisonValue =
+      isRecord(parentComparisonValue) &&
+      ((parentComparisonValue?.[field.name] || undefined) as unknown[] | undefined)
     if (isArrayOfObjectsSchemaType(field.type)) {
       const hasValue = typeof fieldValue !== 'undefined'
       if (hasValue && !isValidArrayOfObjectsValue(fieldValue)) {
@@ -252,6 +261,8 @@ function prepareFieldMember(props: {
         currentUser: parent.currentUser,
         document: parent.document,
         value: fieldValue,
+        changed: !_isEqual(fieldValue, fieldComparisonValue),
+        comparisonValue: fieldComparisonValue as FIXME,
         fieldGroupState,
         focusPath: parent.focusPath,
         openPath: parent.openPath,
@@ -303,6 +314,8 @@ function prepareFieldMember(props: {
       const scopedCollapsedFieldSets = parent.collapsedFieldSets?.children?.[field.name]
 
       const fieldState = prepareArrayOfPrimitivesInputState({
+        changed: !_isEqual(fieldComparisonValue, fieldValue),
+        comparisonValue: fieldComparisonValue as FIXME,
         schemaType: field.type,
         parent: parent.value,
         currentUser: parent.currentUser,
@@ -342,6 +355,9 @@ function prepareFieldMember(props: {
     // primitive fields
 
     const fieldValue = parentValue?.[field.name] as undefined | boolean | string | number
+    const fieldComparisonValue =
+      isRecord(parentComparisonValue) &&
+      (parentComparisonValue?.[field.name] as undefined | boolean | string | number)
     // note: we *only* want to call the conditional props here, as it's handled by the prepare<Object|Array>InputProps otherwise
     const fieldConditionalProps = callConditionalProperties(
       field.type,
@@ -360,6 +376,7 @@ function prepareFieldMember(props: {
 
     const fieldState = preparePrimitiveInputState({
       ...parent,
+      comparisonValue: fieldComparisonValue,
       value: fieldValue as boolean | string | number | undefined,
       schemaType: field.type as PrimitiveSchemaType,
       path: fieldPath,
@@ -384,6 +401,8 @@ function prepareFieldMember(props: {
 interface RawState<SchemaType, T> {
   schemaType: SchemaType
   value?: T
+  comparisonValue?: T
+  changed?: boolean
   document: FIXME_SanityDocument
   currentUser: Omit<CurrentUser, 'role'> | null
   parent?: unknown
@@ -549,8 +568,8 @@ function prepareObjectInputState<T>(
     .map((v) => ({level: v.level, message: v.item.message, path: v.path}))
 
   return {
-    compareValue: undefined,
     value: props.value as Record<string, unknown> | undefined,
+    changed: !_isEqual(props.value, props.comparisonValue),
     schemaType: props.schemaType,
     readOnly: props.readOnly,
     path: props.path,
@@ -572,6 +591,7 @@ function prepareArrayOfPrimitivesInputState<T extends (boolean | string | number
   }
 
   const conditionalFieldContext = {
+    comparisonValue: props.comparisonValue,
     value: props.value,
     parent: props.parent,
     document: props.document,
@@ -601,9 +621,11 @@ function prepareArrayOfPrimitivesInputState<T extends (boolean | string | number
   const validation = props.validation
     .filter((item) => isEqual(item.path, props.path))
     .map((v) => ({level: v.level, message: v.item.message, path: v.path}))
-
+  const members = items.flatMap((item, index) =>
+    prepareArrayOfPrimitivesMember({arrayItem: item, parent: props, index})
+  )
   return {
-    compareValue: undefined,
+    changed: members.some((m) => m.kind === 'item' && m.item.changed), // TODO: is this correct? There could be field and fieldsets here?
     value: props.value as T,
     readOnly,
     schemaType: props.schemaType,
@@ -616,9 +638,7 @@ function prepareArrayOfPrimitivesInputState<T extends (boolean | string | number
     collapsible: defaultCollapsedState.collapsible,
     validation,
     presence,
-    members: items.flatMap((item, index) =>
-      prepareArrayOfPrimitivesMember({arrayItem: item, parent: props, index})
-    ),
+    members,
   }
 }
 
@@ -660,8 +680,16 @@ function prepareArrayOfObjectsInputState<T extends {_key: string}[]>(
     .filter((item) => isEqual(item.path, props.path))
     .map((v) => ({level: v.level, message: v.item.message, path: v.path}))
 
+  const members = items.flatMap((item, index) =>
+    prepareArrayOfObjectsMember({
+      arrayItem: item,
+      parent: props,
+      index,
+    })
+  )
+
   return {
-    compareValue: undefined,
+    changed: members.some((m) => m.kind === 'item' && m.item.changed),
     value: props.value as T,
     readOnly,
     schemaType: props.schemaType,
@@ -674,9 +702,7 @@ function prepareArrayOfObjectsInputState<T extends {_key: string}[]>(
     collapsible: defaultCollapsedState.collapsible,
     validation,
     presence,
-    members: items.flatMap(
-      (item, index) => prepareArrayOfObjectsMember({arrayItem: item, parent: props, index}) as FIXME
-    ),
+    members,
   }
 }
 
@@ -713,13 +739,18 @@ function prepareArrayOfObjectsMember(props: {
   const itemLevel = parent.level + 1
 
   const collapsedItemPaths = parent.collapsedPaths?.children?.[key]
-
+  const comparisonValue =
+    (Array.isArray(parent.comparisonValue) &&
+      parent.comparisonValue.find((i) => i._key === arrayItem._key)) ||
+    undefined
   const itemState = prepareObjectInputState(
     {
       schemaType: itemType,
       level: itemLevel,
       document: parent.document,
       value: arrayItem,
+      comparisonValue,
+      changed: !_isEqual(arrayItem, comparisonValue),
       path: itemPath,
       focusPath: parent.focusPath,
       openPath: parent.openPath,
@@ -757,6 +788,10 @@ function prepareArrayOfPrimitivesMember(props: {
 
   const itemPath = pathFor([...parent.path, index])
   const itemValue = (parent.value as unknown[] | undefined)?.[index] as string | boolean | number
+  const itemComparisonValue = (parent.comparisonValue as unknown[] | undefined)?.[index] as
+    | string
+    | boolean
+    | number
   const itemLevel = parent.level + 1
 
   // Best effort attempt to make a stable key for each item in the array
@@ -784,6 +819,7 @@ function prepareArrayOfPrimitivesMember(props: {
     schemaType: itemType as PrimitiveSchemaType,
     level: itemLevel,
     value: itemValue,
+    comparisonValue: itemComparisonValue,
   })
 
   return {
@@ -806,8 +842,8 @@ function preparePrimitiveInputState<SchemaType extends PrimitiveSchemaType>(
 
   return {
     schemaType: props.schemaType,
+    changed: props.value !== props.comparisonValue,
     value: props.value,
-    compareValue: undefined,
     level: props.level,
     id: toString(props.path),
     readOnly: props.readOnly,

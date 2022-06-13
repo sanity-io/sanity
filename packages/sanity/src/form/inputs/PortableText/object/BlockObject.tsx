@@ -58,15 +58,12 @@ export function BlockObject(props: BlockObjectProps) {
   const {Markers} = useFormBuilder().__internal.components
   const elementRef = useRef<HTMLDivElement | null>(null)
   const [reviewChangesHovered, setReviewChangesHovered] = useState<boolean>(false)
-  const [hasChanges, setHasChanges] = useState<boolean>(false)
   const markers = usePortableTextMarkers(path)
   const editor = usePortableTextEditor()
   const memberItem = usePortableTextMemberItem(JSON.stringify(path))
 
   const handleMouseOver = useCallback(() => setReviewChangesHovered(true), [])
   const handleMouseOut = useCallback(() => setReviewChangesHovered(false), [])
-
-  const handleOnHasChanges = useCallback((changed: boolean) => setHasChanges(changed), [])
 
   const handleEdit = useCallback(() => {
     if (memberItem) {
@@ -137,8 +134,6 @@ export function BlockObject(props: BlockObjectProps) {
 
   const isImagePreview = memberItem?.member.item.schemaType.name === 'image'
 
-  const blockPath = useMemo(() => [{_key: block._key}], [block._key])
-
   const tooltipEnabled = hasError || hasWarning || hasInfo || (hasMarkers && renderCustomMarkers)
 
   return (
@@ -194,20 +189,17 @@ export function BlockObject(props: BlockObjectProps) {
           </BlockActionsInner>
         </BlockActionsOuter>
 
-        {isFullscreen && (
+        {isFullscreen && memberItem && (
           <ChangeIndicatorWrapper
-            contentEditable={false}
             onMouseOver={handleMouseOver}
-            onMouseLeave={handleMouseOut}
-            $hasChanges={Boolean(hasChanges)}
+            onMouseOut={handleMouseOut}
+            $hasChanges={memberItem.member.item.changed}
           >
             <StyledChangeIndicatorWithProvidedFullPath
-              compareDeep
-              value={block}
-              hasFocus={focused}
-              path={blockPath}
               withHoverEffect={false}
-              onHasChanges={handleOnHasChanges}
+              hasFocus={focused}
+              path={memberItem.member.item.path}
+              isChanged={memberItem.member.item.changed}
             />
           </ChangeIndicatorWrapper>
         )}

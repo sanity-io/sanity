@@ -67,7 +67,7 @@ export function PrimitiveField(props: {
       value: member.field.value as any,
       readOnly: member.field.readOnly,
       schemaType: member.field.schemaType as any,
-      compareValue: member.field.compareValue as any,
+      changed: member.field.changed,
       focusRef: focusRef,
       id: member.field.id,
       onFocus: handleFocus,
@@ -84,13 +84,13 @@ export function PrimitiveField(props: {
     member.field.value,
     member.field.readOnly,
     member.field.schemaType,
-    member.field.compareValue,
     member.field.id,
     member.field.path,
     member.field.focused,
     member.field.level,
     member.field.validation,
     member.field.presence,
+    member.field.changed,
     handleFocus,
     handleChange,
     validationError,
@@ -112,6 +112,7 @@ export function PrimitiveField(props: {
       validation: member.field.validation,
       presence: member.field.presence,
       children: renderedInput,
+      changed: member.field.changed,
     }
   }, [
     member.name,
@@ -123,6 +124,7 @@ export function PrimitiveField(props: {
     member.field.path,
     member.field.validation,
     member.field.presence,
+    member.field.changed,
     renderedInput,
   ])
 

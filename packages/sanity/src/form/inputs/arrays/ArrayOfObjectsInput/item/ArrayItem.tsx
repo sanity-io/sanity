@@ -3,11 +3,8 @@
 import {isReferenceSchemaType, Path, SchemaType} from '@sanity/types'
 import {Box} from '@sanity/ui'
 import React, {memo, useCallback, useRef} from 'react'
-import {
-  ChangeIndicatorScope,
-  ContextProvidedChangeIndicator,
-} from '../../../../../components/changeIndicators'
-import {_ArrayInput_ArrayMember} from '../types'
+import {ChangeIndicator} from '../../../../../components/changeIndicators'
+import {ArrayMember} from '../types'
 import {useScrollIntoViewOnFocusWithin} from '../../../../hooks/useScrollIntoViewOnFocusWithin'
 import {useDidUpdate} from '../../../../hooks/useDidUpdate'
 import {FIXME, RenderPreviewCallback} from '../../../../types'
@@ -18,6 +15,7 @@ import {CellItem} from './CellItem'
 export interface ArrayItemProps {
   children: React.ReactNode
   focused?: boolean
+  changed: boolean
   index: number
   insertableTypes: SchemaType[]
   onClick: () => void
@@ -37,6 +35,7 @@ export interface ArrayItemProps {
 // This renders the item / preview of unexpanded array items
 export const ArrayItem = memo(function ArrayItem(props: ArrayItemProps) {
   const {
+    changed,
     value,
     insertableTypes,
     schemaType,
@@ -101,16 +100,19 @@ export const ArrayItem = memo(function ArrayItem(props: ArrayItemProps) {
 
   return (
     <>
-      <ChangeIndicatorScope path={path}>
-        <ContextProvidedChangeIndicator compareDeep disabled={open && !isReference}>
-          {isGrid ? (
-            // grid should be rendered without a margin
-            item
-          ) : (
-            <Box marginX={1}>{item}</Box>
-          )}
-        </ContextProvidedChangeIndicator>
-      </ChangeIndicatorScope>
+      <ChangeIndicator
+        path={path}
+        disabled={open && !isReference}
+        isChanged={changed}
+        hasFocus={!!focused}
+      >
+        {isGrid ? (
+          // grid should be rendered without a margin
+          item
+        ) : (
+          <Box marginX={1}>{item}</Box>
+        )}
+      </ChangeIndicator>
       {children}
     </>
   )

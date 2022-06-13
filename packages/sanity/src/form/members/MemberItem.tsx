@@ -135,7 +135,7 @@ export function MemberItem(props: MemberItemProps) {
   const inputProps = useMemo((): ObjectInputProps => {
     return {
       collapsed: member.collapsed,
-      compareValue: member.item.compareValue,
+      changed: member.item.changed,
       focusPath: member.item.focusPath,
       focusRef: focusRef,
       focused: member.item.focused,
@@ -182,7 +182,7 @@ export function MemberItem(props: MemberItemProps) {
     handleOpenField,
     handleSelectFieldGroup,
     member.collapsed,
-    member.item.compareValue,
+    member.item.changed,
     member.item.focusPath,
     member.item.focused,
     member.item.groups,
@@ -249,6 +249,7 @@ export function MemberItem(props: MemberItemProps) {
       inputId: member.item.id,
       path: member.item.path,
       children: renderedInput,
+      changed: member.item.changed,
     }
   }, [
     member.key,
@@ -262,6 +263,7 @@ export function MemberItem(props: MemberItemProps) {
     member.item.focused,
     member.item.id,
     member.item.path,
+    member.item.changed,
     member.collapsible,
     member.collapsed,
     member.open,

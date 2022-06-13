@@ -21,7 +21,6 @@ export interface StudioFormBuilderProviderProps {
   autoFocus?: boolean
   changesOpen?: boolean
   children?: React.ReactNode
-  compareValue: {[field in string]: unknown} | undefined
   focusPath: Path
   focused: boolean | undefined
   groups: FormFieldGroup[]
@@ -52,7 +51,6 @@ export function StudioFormBuilderProvider(props: StudioFormBuilderProviderProps)
     autoFocus,
     changesOpen,
     children,
-    compareValue,
     focusPath,
     focused,
     groups,
@@ -79,7 +77,6 @@ export function StudioFormBuilderProvider(props: StudioFormBuilderProviderProps)
       __internal_patchChannel={patchChannel}
       autoFocus={autoFocus}
       changesOpen={changesOpen}
-      compareValue={compareValue}
       file={file}
       focusPath={focusPath}
       focused={focused}

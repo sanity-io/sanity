@@ -2,8 +2,7 @@ import React, {useCallback, useEffect, useState} from 'react'
 import type {Image, ImageSchemaType} from '@sanity/types'
 import {Box, Card, Flex, Text, Grid, Heading, useForwardedRef} from '@sanity/ui'
 import styled from 'styled-components'
-import shallowEquals from 'shallow-equals'
-import {ChangeIndicatorForFieldPath} from '../../../../components/changeIndicators'
+import {ChangeIndicator} from '../../../../components/changeIndicators'
 import {FormField} from '../../../components/formField'
 import {set} from '../../../patch'
 import {Checkerboard} from '../../../components/Checkerboard'
@@ -52,8 +51,9 @@ export function ImageToolInput(props: ImageToolInputProps) {
   const {
     imageUrl,
     value,
-    compareValue,
+    changed,
     level,
+    path,
     focusPath = EMPTY_ARRAY,
     presence,
     onChange,
@@ -119,18 +119,14 @@ export function ImageToolInput(props: ImageToolInputProps) {
       title="Hotspot &amp; crop"
       level={level}
       description="Adjust the rectangle to crop image. Adjust the circle to specify the area that should always be visible."
-      __unstable_changeIndicator={false}
       __unstable_presence={presence}
     >
       <div>
         <CheckerboardWithFocusRing tabIndex={0} ref={forwardedRef} onFocus={handleFocus}>
-          <ChangeIndicatorForFieldPath
-            path={HOTSPOT_PATH}
+          <ChangeIndicator
+            path={path.concat(HOTSPOT_PATH)}
             hasFocus={focusPath[0] === 'hotspot'}
-            isChanged={
-              !shallowEquals(value?.crop, compareValue?.crop) ||
-              !shallowEquals(compareValue?.hotspot, value?.hotspot)
-            }
+            isChanged={changed}
           >
             <RatioBox ratio={3 / 2}>
               {(isImageLoading || imageLoadError) && (
@@ -157,7 +153,7 @@ export function ImageToolInput(props: ImageToolInputProps) {
                 </Box>
               )}
             </RatioBox>
-          </ChangeIndicatorForFieldPath>
+          </ChangeIndicator>
         </CheckerboardWithFocusRing>
         <Box marginTop={3}>
           <Grid columns={PREVIEW_ASPECT_RATIOS.length} gap={1}>

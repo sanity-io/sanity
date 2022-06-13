@@ -32,7 +32,6 @@ export interface FormBuilderProviderProps {
   autoFocus?: boolean
   changesOpen?: boolean
   children?: React.ReactNode
-  compareValue: {[field in string]: unknown} | undefined
   file: Source['form']['file']
   filterField?: FormBuilderFilterFieldFn
   focusPath: Path
@@ -77,7 +76,6 @@ export function FormBuilderProvider(props: FormBuilderProviderProps) {
     autoFocus,
     changesOpen,
     children,
-    compareValue,
     file,
     filterField,
     focusPath,
@@ -143,7 +141,6 @@ export function FormBuilderProvider(props: FormBuilderProviderProps) {
       __internal,
       autoFocus,
       changesOpen,
-      compareValue,
       focusPath,
       focused,
       groups,
@@ -161,7 +158,6 @@ export function FormBuilderProvider(props: FormBuilderProviderProps) {
       __internal,
       autoFocus,
       changesOpen,
-      compareValue,
       documentValue,
       focusPath,
       focused,

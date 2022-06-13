@@ -21,6 +21,7 @@ import {
   Image as BaseImage,
   ImageAsset,
   ImageSchemaType,
+  Path,
   UploadState,
 } from '@sanity/types'
 import React, {ReactNode} from 'react'
@@ -46,7 +47,7 @@ import {handleSelectAssetFromSource} from '../common/assetSource'
 import {ActionsMenu} from '../common/ActionsMenu'
 import {UploadWarning} from '../common/UploadWarning'
 import {ImageToolInput} from '../ImageToolInput'
-import {ChangeIndicatorForFieldPath} from '../../../../components/changeIndicators'
+import {ChangeIndicator} from '../../../../components/changeIndicators'
 import {FormInput} from '../../../FormInput'
 import {MemberField, MemberFieldError, MemberFieldSet} from '../../../members'
 import {ImageActionsMenu} from './ImageActionsMenu'
@@ -101,6 +102,7 @@ const ASSET_IMAGE_MENU_POPOVER: MenuButtonProps['popover'] = {portal: true}
 
 export class ImageInput extends React.PureComponent<ImageInputProps, ImageInputState> {
   _assetElementRef: null | Focusable = null
+  _assetPath: Path
   uploadSubscription: null | Subscription = null
 
   state: ImageInputState = {
@@ -109,6 +111,11 @@ export class ImageInput extends React.PureComponent<ImageInputProps, ImageInputS
     hoveringFiles: [],
     isStale: false,
     isMenuOpen: false,
+  }
+
+  constructor(props: ImageInputProps) {
+    super(props)
+    this._assetPath = props.path.concat(ASSET_FIELD_PATH)
   }
 
   toast: {push: (params: ToastParams) => void} | null = null
@@ -352,7 +359,7 @@ export class ImageInput extends React.PureComponent<ImageInputProps, ImageInputS
   }
 
   renderHotspotInput = (hotspotInputProps: InputProps) => {
-    const {value, compareValue, id, imageUrlBuilder} = this.props
+    const {value, changed, id, imageUrlBuilder} = this.props
 
     const withImageTool = this.isImageToolEnabled() && value && value.asset
 
@@ -373,7 +380,7 @@ export class ImageInput extends React.PureComponent<ImageInputProps, ImageInputS
                   imageUrl={imageUrlBuilder.image(value.asset).url()}
                   value={value as FIXME}
                   presence={hotspotInputProps.presence}
-                  compareValue={compareValue as FIXME}
+                  changed={changed}
                 />
               )}
             </Stack>
@@ -644,12 +651,6 @@ export class ImageInput extends React.PureComponent<ImageInputProps, ImageInputS
     this.toast = toast
   }
 
-  hasChangeInFields(members: FieldMember[]) {
-    const {value, compareValue} = this.props
-
-    return members.some((member) => !deepCompare(value?.[member.name], compareValue?.[member.name]))
-  }
-
   getFileTone() {
     const {schemaType, value, readOnly, directUploads, resolveUploader} = this.props
 
@@ -676,7 +677,7 @@ export class ImageInput extends React.PureComponent<ImageInputProps, ImageInputS
   }
 
   renderAsset() {
-    const {value, compareValue, readOnly, onFocus, onBlur} = this.props
+    const {value, changed, readOnly, onFocus, onBlur} = this.props
 
     const {hoveringFiles, isStale} = this.state
 
@@ -692,13 +693,10 @@ export class ImageInput extends React.PureComponent<ImageInputProps, ImageInputS
           </Box>
         )}
 
-        <ChangeIndicatorForFieldPath
-          path={ASSET_FIELD_PATH}
-          hasFocus={inputProps.focused}
-          isChanged={
-            value?.asset?._ref !== compareValue?.asset?._ref
-            // ||              this.hasChangeInFields(groupedMembers.imageToolAndDialog)
-          }
+        <ChangeIndicator
+          path={inputProps.path.concat(ASSET_FIELD_PATH)}
+          hasFocus={!!inputProps.focused}
+          isChanged={inputProps.changed}
         >
           {/* not uploading */}
           {!value?._upload && (
@@ -729,7 +727,7 @@ export class ImageInput extends React.PureComponent<ImageInputProps, ImageInputS
 
           {/* uploading */}
           {value?._upload && this.renderUploadState(value._upload)}
-        </ChangeIndicatorForFieldPath>
+        </ChangeIndicator>
       </>
     )
   }

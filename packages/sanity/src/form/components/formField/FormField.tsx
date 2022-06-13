@@ -3,18 +3,10 @@
 import {Stack} from '@sanity/ui'
 import React, {memo} from 'react'
 
-import {
-  ChangeIndicator,
-  ChangeIndicatorContextProvidedProps,
-} from '../../../components/changeIndicators'
 import {NodePresence, NodeValidation} from '../../types/common'
 import {FormFieldHeader} from './FormFieldHeader'
 
 export interface FormFieldProps {
-  /**
-   * @alpha
-   */
-  __unstable_changeIndicator?: ChangeIndicatorContextProvidedProps | boolean
   /**
    * @alpha
    */
@@ -40,7 +32,6 @@ export const FormField = memo(function FormField(
   props: FormFieldProps & Omit<React.HTMLProps<HTMLDivElement>, 'as' | 'height' | 'ref'>
 ) {
   const {
-    __unstable_changeIndicator: changeIndicator = true,
     validation,
     __unstable_presence: presence,
     children,
@@ -50,15 +41,6 @@ export const FormField = memo(function FormField(
     title,
     ...restProps
   } = props
-
-  let content = children
-
-  if (changeIndicator) {
-    const changeIndicatorProps = typeof changeIndicator === 'object' ? changeIndicator : {}
-
-    content = <ChangeIndicator {...changeIndicatorProps}>{children}</ChangeIndicator>
-  }
-
   return (
     <Stack {...restProps} data-level={level} space={1}>
       {/*
@@ -75,7 +57,7 @@ export const FormField = memo(function FormField(
         />
       )}
 
-      <div>{content}</div>
+      <div>{children}</div>
     </Stack>
   )
 })
