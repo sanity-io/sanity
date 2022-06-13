@@ -58,14 +58,15 @@ export function SanityPreview(props: SanityPreviewProps & {style?: CSSProperties
     <div ref={setRef} style={style}>
       {createElement(component, {
         ...restProps,
+        description: value?.description,
         error,
         isPlaceholder: !value,
         layout,
         media: isImage(valueProp) ? valueProp : value?.media,
         schemaType,
-        title: value?.title,
         subtitle: value?.subtitle,
-        description: value?.description,
+        title: value?.title,
+        value,
       })}
     </div>
   )
