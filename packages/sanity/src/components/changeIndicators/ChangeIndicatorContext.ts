@@ -3,16 +3,16 @@ import {Path} from '@sanity/types'
 
 export interface ChangeIndicatorContextValue {
   value?: unknown
-  compareValue: unknown
   focusPath: Path
   path: Path
   fullPath: Path
+  isChanged: boolean
 }
 
 export const ChangeIndicatorContext: React.Context<ChangeIndicatorContextValue> =
   React.createContext({
-    compareValue: undefined,
     path: [],
     fullPath: [],
     focusPath: [],
+    isChanged: false,
   } as ChangeIndicatorContextValue)

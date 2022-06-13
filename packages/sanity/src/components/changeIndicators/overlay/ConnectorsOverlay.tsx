@@ -9,11 +9,11 @@ import {scrollIntoView} from '../helpers/scrollIntoView'
 import {DEBUG_LAYER_BOUNDS} from '../constants'
 import {getOffsetsTo} from '../helpers/getOffsetsTo'
 import {TrackedArea, TrackedChange, useReportedValues} from '../tracker'
+import {Reported} from '../../react-track-elements'
 import {Connector} from './Connector'
 import {DebugLayers} from './DebugLayers'
 import {useResizeObserver} from './useResizeObserver'
 import {SvgWrapper} from './ConnectorsOverlay.styled'
-import {Reported} from '../../react-track-elements'
 
 export interface Rect {
   height: number
@@ -147,7 +147,7 @@ interface ConnectorGroupProps {
   field: TrackedChange & {id: string; rect: Rect; bounds: Rect}
   change: TrackedChange & {id: string; rect: Rect; bounds: Rect}
   setHovered: (id: string | null) => void
-  onSetFocus: (nextFocusPath: Path) => void
+  onSetFocus: (path: Path) => void
 }
 
 function ConnectorGroup(props: ConnectorGroupProps) {
@@ -156,7 +156,6 @@ function ConnectorGroup(props: ConnectorGroupProps) {
   const onConnectorClick = useCallback(() => {
     scrollIntoView(field)
     scrollIntoView(change)
-
     onSetFocus(field.path)
   }, [field, change, onSetFocus])
 
