@@ -9,7 +9,7 @@ import {
   Text,
   useElementRect,
 } from '@sanity/ui'
-import React, {memo, useMemo, useState} from 'react'
+import React, {memo, useCallback, useMemo, useState} from 'react'
 import styled from 'styled-components'
 import {fromString as pathFromString} from '@sanity/util/paths'
 import {Path} from '@sanity/types'
@@ -200,6 +200,7 @@ function InnerDocumentPane() {
     changesOpen,
     documentType,
     onFocus,
+    onPathOpen,
     onHistoryOpen,
     onKeyUp,
     inspectOpen,
@@ -246,6 +247,14 @@ function InnerDocumentPane() {
       </BoundaryElementProvider>
     )
   }, [changesOpen, features.reviewChanges, rootElement])
+
+  const onConnectorSetFocus = useCallback(
+    (path: Path) => {
+      onPathOpen(path)
+      onFocus(path)
+    },
+    [onPathOpen, onFocus]
+  )
 
   const children = useMemo(() => {
     if (!schemaType) {
@@ -298,7 +307,7 @@ function InnerDocumentPane() {
               data-testid="change-connector-root"
               isReviewChangesOpen={changesOpen}
               onOpenReviewChanges={onHistoryOpen}
-              onSetFocus={onFocus}
+              onSetFocus={onConnectorSetFocus}
             >
               {documentPanel}
               {changesPanel}
@@ -315,7 +324,7 @@ function InnerDocumentPane() {
     documentPanel,
     documentType,
     footer,
-    onFocus,
+    onConnectorSetFocus,
     onHistoryOpen,
     layoutCollapsed,
     paneKey,
