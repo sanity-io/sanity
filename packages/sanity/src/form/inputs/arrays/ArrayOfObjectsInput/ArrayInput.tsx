@@ -120,11 +120,10 @@ export class ArrayInput extends React.PureComponent<ArrayInputProps> {
       )
       .finally(() => {
         this.setState({isResolvingInitialValue: false})
-        if (event.edit === false) {
-          onFocusPath([{_key: event.item._key}])
-        } else {
-          onOpenItem(event.item.path)
+        if (event.edit !== false) {
+          onOpenItem(this.props.path.concat([{_key: event.item._key}]))
         }
+        onFocusPath([{_key: event.item._key}])
       })
   }
 
