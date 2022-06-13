@@ -21,7 +21,6 @@ import styled from 'styled-components'
 import {PresenceOverlay} from '../../../../../presence'
 import {FIXME} from '../../../../types'
 import {PortableTextEditorElement} from '../../Compositor'
-import {POPOVER_WIDTH_TO_UI_WIDTH} from './constants'
 import {debugElement} from './debug'
 import {ModalWidth} from './types'
 
@@ -145,14 +144,14 @@ function Content(
     style: React.CSSProperties
   }
 ) {
-  const {onClose, rootElement, style, width = 'small', title} = props
+  const {onClose, rootElement, style, width = 0, title} = props
   const {element: boundaryElement} = useBoundaryElement()
   const portal = usePortal()
 
   useClickOutside(onClose, [rootElement], boundaryElement)
 
   return (
-    <ContentContainer style={style} width={POPOVER_WIDTH_TO_UI_WIDTH[width]}>
+    <ContentContainer style={style} width={width}>
       <Flex direction="column" flex={1}>
         <ContentHeaderBox padding={1}>
           <Flex align="center">

@@ -1,2 +1,2 @@
 export type ModalType = 'popover' | 'dialog'
-export type ModalWidth = 'small' | 'medium' | 'large' | 'full'
+export type ModalWidth = number | number[] | 'auto'

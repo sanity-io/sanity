@@ -1,3 +1,4 @@
+import {defineType} from '@sanity/types'
 import {createSchema} from '../../../../../schema'
 
 const linkType = {
@@ -13,11 +14,11 @@ const linkType = {
   ],
 
   options: {
-    editModal: 'fold', // 'fullscreen' | 'popover' | 'fold'
+    modal: {type: 'popover'},
   },
 }
 
-const myObjectBlockType = {
+const myObjectBlockType = defineType({
   type: 'object',
   name: 'myObjectBlock',
   title: 'My object block',
@@ -30,9 +31,9 @@ const myObjectBlockType = {
   ],
 
   options: {
-    editModal: 'fullscreen', // 'fullscreen' | 'popover' | 'fold'
+    modal: {type: 'dialog', width: 'auto'},
   },
-}
+})
 
 const myInlineObjectType = {
   type: 'object',
@@ -47,7 +48,7 @@ const myInlineObjectType = {
   ],
 
   options: {
-    editModal: 'popover', // 'fullscreen' | 'popover' | 'fold'
+    modal: {type: 'popover'},
   },
 }
 

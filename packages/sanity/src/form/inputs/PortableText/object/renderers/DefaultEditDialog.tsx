@@ -2,7 +2,6 @@ import React from 'react'
 import {useId} from '@reach/auto-id'
 import {Box, Dialog, PortalProvider, usePortal} from '@sanity/ui'
 import {PresenceOverlay} from '../../../../../presence'
-import {DIALOG_WIDTH_TO_UI_WIDTH} from './constants'
 import {ModalWidth} from './types'
 
 interface DefaultEditDialogProps {
@@ -13,7 +12,7 @@ interface DefaultEditDialogProps {
 }
 
 export function DefaultEditDialog(props: DefaultEditDialogProps) {
-  const {onClose, children, title, width = 'medium'} = props
+  const {onClose, children, title, width = 1} = props
 
   const dialogId = useId()
   const portal = usePortal()
@@ -26,7 +25,7 @@ export function DefaultEditDialog(props: DefaultEditDialogProps) {
       onClickOutside={onClose}
       header={title}
       portal="default"
-      width={DIALOG_WIDTH_TO_UI_WIDTH[width]}
+      width={width}
     >
       <PresenceOverlay margins={[0, 0, 1, 0]}>
         <Box padding={4}>

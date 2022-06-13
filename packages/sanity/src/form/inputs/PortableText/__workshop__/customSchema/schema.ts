@@ -39,7 +39,7 @@ const someObject = {
   type: 'object',
   name: 'someObject',
   options: {
-    // editModal: 'fullscreen',
+    // modal: {type: 'dialog', width: 'auto'},
     modal: {
       type: 'dialog',
       size: 'full',
