@@ -102,6 +102,13 @@ function everyItemHasKey<T extends object>(array: T[]): array is (T & {_key: str
   return array?.every((item) => isRecord(item) && hasKey(item))
 }
 
+function isChangedValue(value: any, comparisonValue: any) {
+  if (value && !comparisonValue) {
+    return true
+  }
+  return !_isEqual(value, comparisonValue)
+}
+
 /*
  * Takes a field in context of a parent object and returns prepared props for it
  */
@@ -163,7 +170,7 @@ function prepareFieldMember(props: {
       parent: parent.value,
       document: parent.document,
       value: fieldValue,
-      changed: !_isEqual(fieldValue, fieldComparisonValue),
+      changed: isChangedValue(fieldValue, fieldComparisonValue),
       comparisonValue: fieldComparisonValue,
       presence: parent.presence,
       validation: parent.validation,
@@ -262,7 +269,7 @@ function prepareFieldMember(props: {
         currentUser: parent.currentUser,
         document: parent.document,
         value: fieldValue,
-        changed: !_isEqual(fieldValue, fieldComparisonValue),
+        changed: isChangedValue(fieldValue, fieldComparisonValue),
         comparisonValue: fieldComparisonValue as FIXME,
         fieldGroupState,
         focusPath: parent.focusPath,
@@ -315,7 +322,7 @@ function prepareFieldMember(props: {
       const scopedCollapsedFieldSets = parent.collapsedFieldSets?.children?.[field.name]
 
       const fieldState = prepareArrayOfPrimitivesInputState({
-        changed: !_isEqual(fieldComparisonValue, fieldValue),
+        changed: isChangedValue(fieldValue, fieldComparisonValue),
         comparisonValue: fieldComparisonValue as FIXME,
         schemaType: field.type,
         parent: parent.value,
@@ -402,7 +409,7 @@ function prepareFieldMember(props: {
 interface RawState<SchemaType, T> {
   schemaType: SchemaType
   value?: T
-  comparisonValue?: T
+  comparisonValue?: T | null
   changed?: boolean
   document: FIXME_SanityDocument
   currentUser: Omit<CurrentUser, 'role'> | null
@@ -570,7 +577,7 @@ function prepareObjectInputState<T>(
 
   return {
     value: props.value as Record<string, unknown> | undefined,
-    changed: !_isEqual(props.value, props.comparisonValue),
+    changed: isChangedValue(props.value, props.comparisonValue),
     schemaType: props.schemaType,
     readOnly: props.readOnly,
     path: props.path,
@@ -751,7 +758,7 @@ function prepareArrayOfObjectsMember(props: {
       document: parent.document,
       value: arrayItem,
       comparisonValue,
-      changed: !_isEqual(arrayItem, comparisonValue),
+      changed: isChangedValue(arrayItem, comparisonValue),
       path: itemPath,
       focusPath: parent.focusPath,
       openPath: parent.openPath,
@@ -842,7 +849,7 @@ function preparePrimitiveInputState<SchemaType extends PrimitiveSchemaType>(
     .map((v) => ({level: v.level, message: v.item.message, path: v.path}))
   return {
     schemaType: props.schemaType,
-    changed: props.value !== props.comparisonValue,
+    changed: isChangedValue(props.value, props.comparisonValue),
     value: props.value,
     level: props.level,
     id: toString(props.path),

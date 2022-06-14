@@ -35,7 +35,7 @@ export function useFormState<
     collapsedFieldSets?: StateTree<boolean> | undefined
     collapsedPaths?: StateTree<boolean> | undefined
     value: Partial<FIXME_SanityDocument>
-    comparisonValue: Partial<FIXME_SanityDocument>
+    comparisonValue: Partial<FIXME_SanityDocument> | null
     openPath: Path
     focusPath: Path
     presence: FormFieldPresence[]

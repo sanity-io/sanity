@@ -276,7 +276,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
 
   const formState = useFormState(schemaType!, {
     value,
-    comparisonValue: compareValue || value,
+    comparisonValue: compareValue,
     focusPath,
     openPath,
     collapsedPaths,
