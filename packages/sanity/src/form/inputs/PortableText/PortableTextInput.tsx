@@ -1,4 +1,4 @@
-import {ArraySchemaType, ObjectSchemaType} from '@sanity/types'
+import {ArraySchemaType, ObjectSchemaType, SchemaType} from '@sanity/types'
 import {
   EditorChange,
   OnCopyFn,
@@ -60,6 +60,13 @@ export function isItemMember(
   member: ArrayOfObjectsMember
 ): member is ArrayOfObjectsItemMember<ObjectFormNode> {
   return member.kind === 'item'
+}
+
+export function isBlockType(type: SchemaType): boolean {
+  if (type.type) {
+    return isBlockType(type.type)
+  }
+  return type.name === 'block'
 }
 
 /**
@@ -157,7 +164,7 @@ export function PortableTextInput(props: PortableTextInputProps) {
       }
       let returned = []
       // Object blocks or normal blocks with validation or changes
-      if (m.item.schemaType.name !== 'block' || m.item.validation.length > 0 || m.item.changed) {
+      if (!isBlockType(m.item.schemaType) || m.item.validation.length > 0 || m.item.changed) {
         returned.push(m)
       }
       // Inline objects

@@ -33,6 +33,7 @@ import {useHotkeys} from './hooks/useHotKeys'
 import {ObjectEditModal} from './object/renderers/ObjectEditModal'
 import {useScrollToFocusFromOutside} from './hooks/useScrollToFocusFromOutside'
 import {usePortableTextMemberItems} from './hooks/usePortableTextMembers'
+import {isBlockType} from './PortableTextInput'
 
 interface InputProps extends ArrayOfObjectsInputProps<PortableTextBlock> {
   hasFocus: boolean
@@ -247,7 +248,7 @@ export function Compositor(props: InputProps) {
   const openMemberItems = useMemo(
     () =>
       portableTextMemberItems.filter(
-        (m) => m.member.open && m.member.item.schemaType.name !== 'block'
+        (m) => m.member.open && !isBlockType(m.member.item.schemaType)
       ),
     [portableTextMemberItems]
   )
