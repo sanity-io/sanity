@@ -8,18 +8,19 @@ import {schemaTypes} from './schemas'
 
 export default createConfig({
   name: '%sourceName%',
+  title: '%projectName%',
 
   projectId: '%projectId%',
   dataset: '%dataset%',
 
   plugins: [
     deskTool(),
-    //googleMapsInput()
+    //googleMapsInput(),
   ],
 
   schema: {
-    types: schemaTypes
-  }
+    types: schemaTypes,
+  },
 })
 `
 

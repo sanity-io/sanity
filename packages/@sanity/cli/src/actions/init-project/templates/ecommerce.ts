@@ -8,18 +8,19 @@ import {schemaTypes} from './schemas'
 
 export default createConfig({
   name: '%sourceName%',
+  title: '%projectName%',
 
   projectId: '%projectId%',
   dataset: '%dataset%',
 
   plugins: [
     deskTool(),
-    barcode()
+    barcode(),
   ],
 
   schema: {
-    types: schemaTypes
-  }
+    types: schemaTypes,
+  },
 })
 `
 

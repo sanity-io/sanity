@@ -7,22 +7,20 @@ import {tutorialLayout} from './plugins/tutorial'
 import {schemaTypes} from './schemas'
 
 export default createConfig({
+  name: '%sourceName%',
+  title: '%projectName%',
+
+  projectId: '%projectId%',
+  dataset: '%dataset%',
+
   plugins: [
     deskTool(),
-    tutorialLayout()
+    tutorialLayout(),
   ],
-  project: {
-    name: '%projectName%'
+
+  schema: {
+    types: schemaTypes,
   },
-  sources: [
-    {
-      name: '%sourceName%',
-      title: '%sourceTitle%',
-      projectId: '%projectId%',
-      dataset: '%dataset%',
-      schemaTypes
-    },
-  ],
 })
 `
 
