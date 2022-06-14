@@ -1,6 +1,5 @@
 {
   "name": "depcheck-test",
-  "version": "2.30.0",
-  "private": true,
-  "dependencies": {}
+  "version": "3.0.0-dev-preview.0",
+  "private": true
 }
