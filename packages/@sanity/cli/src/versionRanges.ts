@@ -12,8 +12,9 @@ export default {
     'react-dom': '^17.0.0',
     'styled-components': '^5.2.0',
 
-    // Linting
+    // Linting/tooling
     '@sanity/eslint-config-studio': 'latest',
     eslint: '^8.6.0',
+    prettier: 'latest',
   },
 }

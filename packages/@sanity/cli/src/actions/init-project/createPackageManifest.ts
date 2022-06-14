@@ -30,6 +30,13 @@ export function createPackageManifest(
     },
 
     ...deps,
+
+    prettier: {
+      semi: false,
+      printWidth: 100,
+      bracketSpacing: false,
+      singleQuote: true,
+    },
   }
 
   return serializeManifest(pkg)
