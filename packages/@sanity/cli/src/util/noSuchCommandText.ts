@@ -22,7 +22,7 @@ const coreCommands = [
 ]
 
 const helpText = `
-Run the command again within a Sanity project directory, where "@sanity/core"
+Run the command again within a Sanity project directory, where "sanity"
 is installed as a dependency.`
 
 export function getNoSuchCommandText(
