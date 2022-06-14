@@ -60,14 +60,18 @@ export function StudioLayout() {
     if (!errorChannel) return undefined
 
     return errorChannel.subscribe((msg: any) => {
-      console.error(msg.error)
-      pushToast({
-        closable: true,
-        description: msg.error?.message,
-        duration: 5000,
-        title: 'Uncaught error',
-        status: 'error',
-      })
+      // NOTE: if the "ResizeObserver loop limit exceeded" error is thrown by the browser,
+      // then the error will be `null`. We ignore this error.
+      if (msg.error) {
+        console.error(msg.error)
+        pushToast({
+          closable: true,
+          description: msg.error.message,
+          duration: 5000,
+          title: 'Uncaught error',
+          status: 'error',
+        })
+      }
     })
   }, [pushToast])
 
