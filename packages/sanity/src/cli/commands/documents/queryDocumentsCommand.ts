@@ -3,13 +3,15 @@ import {hideBin} from 'yargs/helpers'
 import type {CliCommandArguments, CliCommandContext} from '@sanity/cli'
 import {colorizeJson} from '../../util/colorizeJson'
 
+const defaultApiVersion = 'v2022-06-01'
+
 const helpText = `
 Run a query against the projects configured dataset
 
 Options
   --pretty colorized JSON output
   --dataset NAME to override dataset
-  --api-version API version to use (defaults to \`v1\`)
+  --api-version API version to use (defaults to \`${defaultApiVersion}\`)
 
 Environment variables
   \`SANITY_CLI_QUERY_API_VERSION\` - will use the defined API version,
@@ -52,14 +54,14 @@ export default {
     }
 
     if (!apiVersion) {
-      output.warn(chalk.yellow('--api-version not specified, using `v1`'))
+      output.warn(chalk.yellow(`--api-version not specified, using \`${defaultApiVersion}\``))
     }
 
     const baseClient = apiClient().clone()
     const {dataset: originalDataset} = baseClient.config()
     const client = baseClient.config({
       dataset: dataset || originalDataset,
-      apiVersion: apiVersion || 'v1',
+      apiVersion: apiVersion || defaultApiVersion,
     })
 
     try {
@@ -77,9 +79,9 @@ export default {
 
 function parseCliFlags(args: CliCommandArguments<CliQueryCommandFlags>) {
   // eslint-disable-next-line no-process-env
-  const defaultApiVersion = process.env.SANITY_CLI_QUERY_API_VERSION
+  const fallbackApiVersion = process.env.SANITY_CLI_QUERY_API_VERSION
   return yargs(hideBin(args.argv || process.argv).slice(2))
     .option('pretty', {type: 'boolean', default: false})
     .option('dataset', {type: 'string'})
-    .option('api-version', {type: 'string', default: defaultApiVersion}).argv
+    .option('api-version', {type: 'string', default: fallbackApiVersion}).argv
 }
