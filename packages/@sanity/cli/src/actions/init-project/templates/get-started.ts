@@ -4,7 +4,7 @@ const configTemplate = `
 import {createConfig} from 'sanity'
 import {deskTool} from 'sanity/desk'
 import {tutorialLayout} from './plugins/tutorial'
-import schemaTypes from './schemas'
+import {schemaTypes} from './schemas'
 
 export default createConfig({
   plugins: [

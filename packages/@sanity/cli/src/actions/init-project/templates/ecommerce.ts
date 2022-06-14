@@ -4,7 +4,7 @@ const configTemplate = `
 import {createConfig} from 'sanity'
 import {deskTool} from 'sanity/desk'
 import {barcode} from './plugins/barcode
-import schemaTypes from './schemas'
+import {schemaTypes} from './schemas'
 
 export default createConfig({
   name: '%sourceName%',

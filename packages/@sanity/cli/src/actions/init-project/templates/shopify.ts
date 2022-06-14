@@ -9,7 +9,7 @@ import {deskTool} from 'sanity/desk'
 import {dashboard} from '@sanity/dashboard'
 import {media} from 'sanity-plugin-media'
 import {structure} from './deskStructure'
-import schemaTypes from './schemas'
+import {schemaTypes} from './schemas'
 
 export default createConfig({
   plugins: [
