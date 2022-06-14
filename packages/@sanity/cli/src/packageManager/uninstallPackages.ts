@@ -30,7 +30,6 @@ export async function uninstallPackages(
     output.print(`Running 'yarn ${yarnArgs.join(' ')}'`)
     result = await execa('yarn', yarnArgs, execOptions)
   } else if (packageManager === 'pnpm') {
-    // @todo check if correct command is 'remove'
     const pnpmArgs = ['remove', ...packages]
     output.print(`Running 'pnpm ${pnpmArgs.join(' ')}'`)
     result = await execa('pnpm', pnpmArgs, execOptions)
