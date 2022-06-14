@@ -56,7 +56,7 @@ export async function getPackageManagerChoice(
     type: 'list',
     choices: await getAvailablePackageManagers(rootDir),
     default: preferred,
-    message: `Package manager to use for install dependencies?${messageSuffix}`,
+    message: `Package manager to use for installing dependencies?${messageSuffix}`,
   })
 
   return {chosen, mostOptimal: preferred}
