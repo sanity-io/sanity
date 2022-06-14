@@ -303,7 +303,7 @@ export default async function initSanity(
         client.projects.list(),
         client.request({uri: '/organizations'}),
       ])
-      projects = allProjects
+      projects = allProjects.sort((a, b) => b.createdAt.localeCompare(a.createdAt))
       organizations = allOrgs
       spinner.succeed()
     } catch (err) {
