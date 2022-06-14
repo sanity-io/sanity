@@ -1,6 +1,6 @@
 import {createConfig} from 'sanity'
 import {deskTool} from 'sanity/desk'
-import {schemaTypes} from '../../packages/sanity/templates/clean/schemas'
+import {schemaTypes} from '../../packages/@sanity/cli/templates/clean/schemas'
 
 export default createConfig({
   name: 'default',
