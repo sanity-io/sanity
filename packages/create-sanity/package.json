@@ -4,7 +4,7 @@
   "description": "Initialize a new Sanity project",
   "bin": "index.js",
   "engines": {
-    "node": ">=12.0.0"
+    "node": ">=14.0.0"
   },
   "keywords": [
     "sanity",

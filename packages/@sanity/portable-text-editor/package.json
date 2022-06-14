@@ -14,7 +14,7 @@
   "types": "./lib/dts/src/index.d.ts",
   "author": "Sanity.io <hello@sanity.io>",
   "engines": {
-    "node": ">=12.0.0"
+    "node": ">=14.0.0"
   },
   "license": "MIT",
   "scripts": {
