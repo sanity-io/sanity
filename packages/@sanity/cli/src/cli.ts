@@ -11,6 +11,7 @@ import {baseCommands} from './commands'
 import {neatStack} from './util/neatStack'
 import {resolveRootDir} from './util/resolveRootDir'
 import {CliConfigResult, getCliConfig} from './util/getCliConfig'
+import {getInstallCommand} from './packageManager'
 import {CommandRunnerOptions} from './types'
 import {debug} from './debug'
 
@@ -50,7 +51,7 @@ export async function runCli(cliRoot: string, {cliVersion}: {cliVersion: string}
   const options: CommandRunnerOptions = {
     cliRoot: cliRoot,
     workDir: workDir,
-    corePath: getCoreModulePath(workDir, cliConfig),
+    corePath: await getCoreModulePath(workDir, cliConfig),
     cliConfig,
   }
 
@@ -84,7 +85,10 @@ export async function runCli(cliRoot: string, {cliVersion}: {cliVersion: string}
   })
 }
 
-function getCoreModulePath(workDir: string, cliConfig: CliConfigResult | null): string | undefined {
+async function getCoreModulePath(
+  workDir: string,
+  cliConfig: CliConfigResult | null
+): Promise<string | undefined> {
   const corePath = resolveFrom.silent(workDir, '@sanity/core')
   const sanityPath = resolveFrom.silent(workDir, 'sanity/_internal')
 
@@ -109,22 +113,24 @@ function getCoreModulePath(workDir: string, cliConfig: CliConfigResult | null): 
   const isInstallCommand = process.argv.indexOf('install') === -1
 
   if (cliConfig && cliConfig?.version < 3 && !corePath && !isInstallCommand) {
+    const installCmd = await getInstallCommand({workDir})
     console.warn(
       chalk.yellow(
         [
           'The `@sanity/core` module is not installed in current project',
-          'Project-specific commands not available until you run `sanity install`',
+          `Project-specific commands not available until you run \`${installCmd}\``,
         ].join('\n')
       )
     )
   }
 
   if (cliConfig && cliConfig.version >= 3 && !sanityPath) {
+    const installCmd = await getInstallCommand({workDir})
     console.warn(
       chalk.yellow(
         [
           'The `sanity` module is not installed in current project',
-          'Project-specific commands not available until you run `npm install`',
+          `Project-specific commands not available until you run \`${installCmd}\``,
         ].join('\n')
       )
     )
