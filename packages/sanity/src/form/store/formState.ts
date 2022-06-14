@@ -123,8 +123,9 @@ function prepareFieldMember(props: {
 
   if (isObjectSchemaType(field.type)) {
     const fieldValue = parentValue?.[field.name]
-    const fieldComparisonValue =
-      (isRecord(parentComparisonValue) && parentComparisonValue?.[field.name]) || undefined
+    const fieldComparisonValue = isRecord(parentComparisonValue)
+      ? parentComparisonValue?.[field.name]
+      : undefined
     if (!isAcceptedObjectValue(fieldValue)) {
       return {
         kind: 'error',
@@ -191,9 +192,9 @@ function prepareFieldMember(props: {
     }
   } else if (isArraySchemaType(field.type)) {
     const fieldValue = parentValue?.[field.name] as unknown[] | undefined
-    const fieldComparisonValue =
-      isRecord(parentComparisonValue) &&
-      ((parentComparisonValue?.[field.name] || undefined) as unknown[] | undefined)
+    const fieldComparisonValue = isRecord(parentComparisonValue)
+      ? parentComparisonValue?.[field.name]
+      : undefined
     if (isArrayOfObjectsSchemaType(field.type)) {
       const hasValue = typeof fieldValue !== 'undefined'
       if (hasValue && !isValidArrayOfObjectsValue(fieldValue)) {
@@ -355,9 +356,9 @@ function prepareFieldMember(props: {
     // primitive fields
 
     const fieldValue = parentValue?.[field.name] as undefined | boolean | string | number
-    const fieldComparisonValue =
-      isRecord(parentComparisonValue) &&
-      (parentComparisonValue?.[field.name] as undefined | boolean | string | number)
+    const fieldComparisonValue = isRecord(parentComparisonValue)
+      ? parentComparisonValue?.[field.name]
+      : undefined
     // note: we *only* want to call the conditional props here, as it's handled by the prepare<Object|Array>InputProps otherwise
     const fieldConditionalProps = callConditionalProperties(
       field.type,
@@ -839,7 +840,6 @@ function preparePrimitiveInputState<SchemaType extends PrimitiveSchemaType>(
   const validation = props.validation
     .filter((item) => isEqual(item.path, props.path))
     .map((v) => ({level: v.level, message: v.item.message, path: v.path}))
-
   return {
     schemaType: props.schemaType,
     changed: props.value !== props.comparisonValue,
