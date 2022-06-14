@@ -22,6 +22,7 @@ import {
   SanityCore,
   SanityModuleInternal,
 } from '../../types'
+import type {PackageManager} from '../../packageManager/packageManagerChoice'
 import {installDeclaredPackages, getPackageManagerChoice} from '../../packageManager'
 import {createProject} from '../project/createProject'
 import {login, LoginFlags} from '../login/login'
@@ -240,15 +241,22 @@ export default async function initSanity(
     }
   }
 
+  const startCommandMap: Record<PackageManager, string> = {
+    yarn: 'yarn start',
+    npm: 'npm start',
+    pnpm: 'pnpm start',
+    manual: 'npm start',
+  }
+  const startCommand = startCommandMap[pkgManager.chosen]
+
   const isCurrentDir = outputPath === process.cwd()
-  const runCommand = pkgManager.chosen === 'pnpm' ? 'pnpm run start' : `${pkgManager.chosen} start`
   if (isCurrentDir) {
     print(`\n${chalk.green('Success!')} Now, use this command to continue:\n`)
-    print(`${chalk.cyan(runCommand)} - to run Sanity Studio\n`)
+    print(`${chalk.cyan(startCommand)} - to run Sanity Studio\n`)
   } else {
     print(`\n${chalk.green('Success!')} Now, use these commands to continue:\n`)
     print(`First: ${chalk.cyan(`cd ${outputPath}`)} - to enter project’s directory`)
-    print(`Then: ${chalk.cyan(runCommand)} - to run Sanity Studio\n`)
+    print(`Then: ${chalk.cyan(startCommand)} - to run Sanity Studio\n`)
   }
 
   if (await hasGlobalCli()) {
