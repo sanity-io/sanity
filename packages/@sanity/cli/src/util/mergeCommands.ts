@@ -17,11 +17,11 @@ export interface MergeOptions {
   cliVersion: string
 }
 
-export function mergeCommands(
+export async function mergeCommands(
   baseCommands: (CliCommandDefinition | CliCommandGroupDefinition)[],
   corePath: string | undefined,
   options: MergeOptions
-): (CliCommandDefinition | CliCommandGroupDefinition)[] {
+): Promise<(CliCommandDefinition | CliCommandGroupDefinition)[]> {
   if (!corePath) {
     return baseCommands
   }
@@ -36,7 +36,7 @@ export function mergeCommands(
     core.requiredCliVersionRange &&
     !semver.satisfies(coercedCliVersion, core.requiredCliVersionRange)
   ) {
-    const upgradeCmd = chalk.yellow(getCliUpgradeCommand({cwd, workDir}))
+    const upgradeCmd = chalk.yellow(await getCliUpgradeCommand({cwd, workDir}))
     /* eslint-disable no-console, no-process-exit */
     console.error(
       `The version of the \`${moduleName}\` installed in this project requires @sanity/cli @ ${chalk.green(

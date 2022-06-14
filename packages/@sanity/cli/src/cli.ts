@@ -59,7 +59,7 @@ export async function runCli(cliRoot: string, {cliVersion}: {cliVersion: string}
   warnOnInferredProjectDir(isInit, cwd, workDir)
 
   const core = args.coreOptions
-  const commands = mergeCommands(baseCommands, options.corePath, {cliVersion, cwd, workDir})
+  const commands = await mergeCommands(baseCommands, options.corePath, {cliVersion, cwd, workDir})
 
   if (core.v || core.version) {
     console.log(`${pkg.name} version ${pkg.version}`)
