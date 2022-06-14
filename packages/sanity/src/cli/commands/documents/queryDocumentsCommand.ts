@@ -67,12 +67,19 @@ export default {
       output.warn(chalk.yellow(`--api-version not specified, using \`${defaultApiVersion}\``))
     }
 
+    const requireDataset = !dataset
     const requireProject = !project
     const requireUser = !anonymous
 
     if (requireProject && !cliConfig?.api?.projectId) {
       throw new Error(
         'No project configured in CLI config - either configure one, or use `--project` flag'
+      )
+    }
+
+    if (requireDataset && !cliConfig?.api?.dataset) {
+      throw new Error(
+        'No dataset configured in CLI config - either configure one, or use `--dataset` flag'
       )
     }
 
