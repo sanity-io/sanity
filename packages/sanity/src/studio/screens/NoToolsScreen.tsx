@@ -21,7 +21,7 @@ export function NoToolsScreen() {
                 <Text as="p" muted size={1}>
                   Please configure a tool in your Studio configuration.
                 </Text>
-                <Text as="p" muted size={1}>
+                <Text as="p" hidden muted size={1}>
                   <a href="">Learn how to add a tool &rarr;</a>
                 </Text>
               </Stack>

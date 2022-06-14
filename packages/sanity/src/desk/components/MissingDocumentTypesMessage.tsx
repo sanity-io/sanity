@@ -25,7 +25,13 @@ export function MissingDocumentTypesMessage() {
                   Please add schema types in your source configuration.
                 </Text>
                 <Text as="p" muted size={1}>
-                  <a href="">Learn how to add a schema types &rarr;</a>
+                  <a
+                    href="https://beta.sanity.io/docs/platform/studio/config"
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    Learn how to add a schema types &rarr;
+                  </a>
                 </Text>
               </Stack>
             </Flex>

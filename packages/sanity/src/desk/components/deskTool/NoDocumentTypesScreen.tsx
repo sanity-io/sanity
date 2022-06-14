@@ -22,7 +22,13 @@ export function NoDocumentTypesScreen() {
                   Please define at least one document type in your schema.
                 </Text>
                 <Text as="p" muted size={1}>
-                  <a href="">Learn how to add a document type &rarr;</a>
+                  <a
+                    href="https://beta.sanity.io/docs/platform/studio/config"
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    Learn how to add a document type &rarr;
+                  </a>
                 </Text>
               </Stack>
             </Flex>
