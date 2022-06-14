@@ -2,6 +2,7 @@ import React, {forwardRef, useCallback, useImperativeHandle, useMemo, useRef} fr
 import {set, unset} from '../patch'
 import {TagInput} from '../components/tagInput'
 import {ArrayOfPrimitivesInputProps} from '../types'
+import {ChangeIndicator} from '../../components/changeIndicators'
 
 export type TagsArrayInputProps = ArrayOfPrimitivesInputProps<string[]>
 
@@ -9,7 +10,7 @@ export const TagsArrayInput = forwardRef(function TagsArrayInput(
   props: TagsArrayInputProps,
   ref: React.Ref<{focus: () => void}>
 ) {
-  const {id, onChange, onFocus, readOnly, value = []} = props
+  const {id, onChange, onFocus, readOnly, value = [], path, focused, changed} = props
   const tagInputValue = useMemo(() => value?.map((v) => ({value: v})), [value])
   const inputRef = useRef<HTMLInputElement | null>(null)
 
@@ -25,13 +26,15 @@ export const TagsArrayInput = forwardRef(function TagsArrayInput(
   }))
 
   return (
-    <TagInput
-      id={id}
-      onChange={handleChange}
-      onFocus={onFocus}
-      readOnly={readOnly}
-      ref={inputRef}
-      value={tagInputValue}
-    />
+    <ChangeIndicator path={path} isChanged={changed} hasFocus={!!focused}>
+      <TagInput
+        id={id}
+        onChange={handleChange}
+        onFocus={onFocus}
+        readOnly={readOnly}
+        ref={inputRef}
+        value={tagInputValue}
+      />
+    </ChangeIndicator>
   )
 })

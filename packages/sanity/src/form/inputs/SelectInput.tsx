@@ -3,6 +3,7 @@ import {isTitledListValue, TitledListValue} from '@sanity/types'
 import {Box, Card, Flex, Inline, Radio, Select, Stack, Text} from '@sanity/ui'
 import {capitalize} from 'lodash'
 import React, {forwardRef, useCallback, useMemo} from 'react'
+import {ChangeIndicator} from '../../components/changeIndicators'
 import {PatchEvent, set, unset} from '../patch'
 import {StringInputProps} from '../types'
 
@@ -18,7 +19,8 @@ export const SelectInput = React.forwardRef(function SelectInput(
   props: StringInputProps,
   forwardedRef: React.ForwardedRef<HTMLSelectElement | HTMLInputElement>
 ) {
-  const {value, readOnly, validationError, schemaType, onChange, onFocus} = props
+  const {value, readOnly, validationError, schemaType, onChange, onFocus, path, changed, focused} =
+    props
   const items = useMemo(
     () => (schemaType.options?.list || []).map(toSelectItem),
     [schemaType.options?.list]
@@ -67,7 +69,7 @@ export const SelectInput = React.forwardRef(function SelectInput(
     [handleChange, itemFromOptionValue]
   )
 
-  return isRadio ? (
+  const content = isRadio ? (
     <RadioSelect
       inputId={inputId}
       items={items}
@@ -95,6 +97,11 @@ export const SelectInput = React.forwardRef(function SelectInput(
         </option>
       ))}
     </Select>
+  )
+  return (
+    <ChangeIndicator path={path} isChanged={changed} hasFocus={!!focused}>
+      {content}
+    </ChangeIndicator>
   )
 })
 

@@ -2,6 +2,7 @@ import React, {useCallback} from 'react'
 import {format, parse} from '@sanity/util/legacyDateFormat'
 import {set, unset} from '../../patch'
 import {StringInputProps} from '../../types'
+import {ChangeIndicator} from '../../../components/changeIndicators'
 import {CommonDateTimeInput} from './CommonDateTimeInput'
 
 interface ParsedOptions {
@@ -32,7 +33,7 @@ const deserialize = (value: string) => parse(value, VALUE_FORMAT)
 const serialize = (date: Date) => format(date, VALUE_FORMAT)
 
 export function DateInput(props: DateInputProps) {
-  const {id, readOnly, level, onChange, presence, schemaType, focusRef, validation, value} = props
+  const {id, readOnly, onChange, schemaType, focusRef, path, focused, changed, value} = props
   const {dateFormat} = parseOptions(schemaType.options)
 
   const handleChange = useCallback(
@@ -50,18 +51,20 @@ export function DateInput(props: DateInputProps) {
   )
 
   return (
-    <CommonDateTimeInput
-      deserialize={deserialize}
-      formatInputValue={formatInputValue}
-      id={id}
-      onChange={handleChange}
-      parseInputValue={parseInputValue}
-      placeholder={schemaType.placeholder}
-      readOnly={readOnly}
-      ref={focusRef}
-      selectTime={false}
-      serialize={serialize}
-      value={value}
-    />
+    <ChangeIndicator path={path} isChanged={changed} hasFocus={!!focused}>
+      <CommonDateTimeInput
+        deserialize={deserialize}
+        formatInputValue={formatInputValue}
+        id={id}
+        onChange={handleChange}
+        parseInputValue={parseInputValue}
+        placeholder={schemaType.placeholder}
+        readOnly={readOnly}
+        ref={focusRef}
+        selectTime={false}
+        serialize={serialize}
+        value={value}
+      />
+    </ChangeIndicator>
   )
 }

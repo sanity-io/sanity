@@ -1,6 +1,7 @@
 import {format, parse} from '@sanity/util/legacyDateFormat'
 import {getMinutes, setMinutes, parseISO} from 'date-fns'
 import React, {useCallback} from 'react'
+import {ChangeIndicator} from '../../../components/changeIndicators'
 import {set, unset} from '../../patch'
 import {StringInputProps} from '../../types'
 import {CommonDateTimeInput} from './CommonDateTimeInput'
@@ -64,7 +65,7 @@ function enforceTimeStep(dateString: string, timeStep: number) {
 }
 
 export function DateTimeInput(props: DateTimeInputProps) {
-  const {readOnly, id, onChange, presence, focusRef, schemaType, validation, value} = props
+  const {changed, focused, focusRef, id, onChange, path, readOnly, schemaType, value} = props
 
   const {dateFormat, timeFormat, timeStep} = parseOptions(schemaType.options)
 
@@ -91,19 +92,21 @@ export function DateTimeInput(props: DateTimeInputProps) {
   )
 
   return (
-    <CommonDateTimeInput
-      deserialize={deserialize}
-      formatInputValue={formatInputValue}
-      id={id}
-      onChange={handleChange}
-      parseInputValue={parseInputValue}
-      placeholder={schemaType.placeholder}
-      readOnly={readOnly}
-      ref={focusRef}
-      selectTime
-      serialize={serialize}
-      timeStep={timeStep}
-      value={value}
-    />
+    <ChangeIndicator path={path} isChanged={changed} hasFocus={!!focused}>
+      <CommonDateTimeInput
+        deserialize={deserialize}
+        formatInputValue={formatInputValue}
+        id={id}
+        onChange={handleChange}
+        parseInputValue={parseInputValue}
+        placeholder={schemaType.placeholder}
+        readOnly={readOnly}
+        ref={focusRef}
+        selectTime
+        serialize={serialize}
+        timeStep={timeStep}
+        value={value}
+      />
+    </ChangeIndicator>
   )
 }

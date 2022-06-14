@@ -4,6 +4,7 @@ import {TextArea} from '@sanity/ui'
 import styled from 'styled-components'
 import {set, unset} from '../patch'
 import {StringInputProps} from '../types'
+import {ChangeIndicator} from '../../components/changeIndicators'
 
 export type TextInputProps = StringInputProps<TextSchemaType>
 
@@ -17,7 +18,19 @@ export const TextInput = React.forwardRef(function TextInput(
   props: TextInputProps,
   forwardedRef: ForwardedRef<HTMLTextAreaElement>
 ) {
-  const {value, id, validationError, schemaType, readOnly, onFocus, onBlur, onChange} = props
+  const {
+    changed,
+    focused,
+    id,
+    onBlur,
+    onChange,
+    onFocus,
+    path,
+    readOnly,
+    schemaType,
+    validationError,
+    value,
+  } = props
 
   const handleChange = React.useCallback(
     (event) => {
@@ -28,17 +41,19 @@ export const TextInput = React.forwardRef(function TextInput(
   )
 
   return (
-    <StyledTextArea
-      id={id}
-      customValidity={validationError}
-      value={value || ''}
-      readOnly={Boolean(readOnly)}
-      placeholder={schemaType.placeholder}
-      onChange={handleChange}
-      onFocus={onFocus}
-      onBlur={onBlur}
-      rows={typeof schemaType.rows === 'number' ? schemaType.rows : 10}
-      ref={forwardedRef}
-    />
+    <ChangeIndicator path={path} isChanged={changed} hasFocus={!!focused}>
+      <StyledTextArea
+        id={id}
+        customValidity={validationError}
+        value={value || ''}
+        readOnly={Boolean(readOnly)}
+        placeholder={schemaType.placeholder}
+        onChange={handleChange}
+        onFocus={onFocus}
+        onBlur={onBlur}
+        rows={typeof schemaType.rows === 'number' ? schemaType.rows : 10}
+        ref={forwardedRef}
+      />
+    </ChangeIndicator>
   )
 })
