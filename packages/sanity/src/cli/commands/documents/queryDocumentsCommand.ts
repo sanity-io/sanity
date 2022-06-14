@@ -11,6 +11,7 @@ Run a query against the projects configured dataset
 Options
   --pretty colorized JSON output
   --dataset NAME to override dataset
+  --project PROJECT to override project ID
   --api-version API version to use (defaults to \`${defaultApiVersion}\`)
 
 Environment variables
@@ -31,6 +32,7 @@ Examples
 interface CliQueryCommandFlags {
   pretty?: boolean
   dataset?: string
+  project?: string
   apiVersion?: string
 }
 
@@ -45,8 +47,13 @@ export default {
     context: CliCommandContext
   ): Promise<void> => {
     // Reparsing arguments for improved control of flags
-    const {pretty, dataset, 'api-version': apiVersion} = await parseCliFlags(args)
-    const {apiClient, output, chalk} = context
+    const {
+      pretty,
+      dataset,
+      project,
+      'api-version': apiVersion,
+    } = await parseCliFlags(args)
+    const {apiClient, output, chalk, cliConfig} = context
     const [query] = args.argsWithoutOptions
 
     if (!query) {
@@ -57,9 +64,19 @@ export default {
       output.warn(chalk.yellow(`--api-version not specified, using \`${defaultApiVersion}\``))
     }
 
-    const baseClient = apiClient().clone()
-    const {dataset: originalDataset} = baseClient.config()
+    const requireProject = !project
+
+    if (requireProject && !cliConfig?.api?.projectId) {
+      throw new Error(
+        'No project configured in CLI config - either configure one, or use `--project` flag'
+      )
+    }
+
+    const baseClient = apiClient({requireProject}).clone()
+    const {dataset: originalDataset, projectId: originalProjectId} = baseClient.config()
+
     const client = baseClient.config({
+      projectId: project || originalProjectId,
       dataset: dataset || originalDataset,
       apiVersion: apiVersion || defaultApiVersion,
     })
@@ -83,5 +100,6 @@ function parseCliFlags(args: CliCommandArguments<CliQueryCommandFlags>) {
   return yargs(hideBin(args.argv || process.argv).slice(2))
     .option('pretty', {type: 'boolean', default: false})
     .option('dataset', {type: 'string'})
+    .option('project', {type: 'string'})
     .option('api-version', {type: 'string', default: fallbackApiVersion}).argv
 }
