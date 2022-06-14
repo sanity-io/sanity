@@ -1,5 +1,5 @@
 import path from 'path'
-import {createCliConfig} from '@sanity/cli'
+import {createCliConfig} from 'sanity/cli'
 import {UserConfig} from 'vite'
 
 export default createCliConfig({
