@@ -48,7 +48,7 @@ export function runUpdateCheck(options: UpdateCheckOptions): {notify: () => Prom
     printResult(result)
   }
 
-  function printCachedResult(): false {
+  async function printCachedResult(): Promise<false> {
     debug('Max time (%dms) reached waiting for latest version info', MAX_BLOCKING_TIME)
     hasPrintedResult = true
 
@@ -67,11 +67,11 @@ export function runUpdateCheck(options: UpdateCheckOptions): {notify: () => Prom
     }
 
     debug('Printing cached latest version result')
-    printResult(cached)
+    await printResult(cached)
     return false
   }
 
-  function printResult(newVersion: string | false) {
+  async function printResult(newVersion: string | false) {
     hasPrintedResult = true
 
     const lastUpdated = userConfig.get('cliLastUpdateNag') || 0
@@ -85,7 +85,7 @@ export function runUpdateCheck(options: UpdateCheckOptions): {notify: () => Prom
       return
     }
 
-    const upgradeCommand = getCliUpgradeCommand({cwd, workDir})
+    const upgradeCommand = await getCliUpgradeCommand({cwd, workDir})
     const message = [
       'Update available ',
       chalk.dim(version),
