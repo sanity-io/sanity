@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "sanity-test-studio",
-  "version": "3.0.0-dev-preview.6",
+  "version": "3.0.0-dev-preview.8",
   "scripts": {
     "build": "run-s workshop:build sanity:build",
     "dev": "run-p workshop:dev sanity:dev",

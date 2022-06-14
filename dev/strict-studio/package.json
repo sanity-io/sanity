@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "sanity-strict-studio",
-  "version": "3.0.0-dev-preview.6",
+  "version": "3.0.0-dev-preview.8",
   "scripts": {
     "build": "sanity build",
     "dev": "sanity start",

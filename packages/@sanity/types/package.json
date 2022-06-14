@@ -1,6 +1,6 @@
 {
   "name": "@sanity/types",
-  "version": "3.0.0-dev-preview.5",
+  "version": "3.0.0-dev-preview.8",
   "description": "Type definitions for common Sanity data structures",
   "source": "./src/index.ts",
   "main": "./lib/index.cjs",

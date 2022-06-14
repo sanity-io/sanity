@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "design-studio",
-  "version": "3.0.0-dev-preview.6",
+  "version": "3.0.0-dev-preview.8",
   "description": "Sanity Design Studio",
   "main": "package.json",
   "author": "Sanity.io <hello@sanity.io>",
