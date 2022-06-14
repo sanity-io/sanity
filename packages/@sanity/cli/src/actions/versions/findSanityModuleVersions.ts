@@ -102,7 +102,7 @@ function filterSanityModules(manifest: Partial<PackageJson>): Record<string, str
   }
 
   return Object.keys(dependencies)
-    .filter((mod) => mod.startsWith('@sanity/'))
+    .filter((mod) => mod.startsWith('@sanity/') || mod === 'sanity')
     .filter((mod) => !PACKAGES_TO_EXCLUDE.includes(mod))
     .sort()
     .reduce((versions, dependency) => {
@@ -170,7 +170,7 @@ function isPinnedVersion(version: string): boolean {
 }
 
 /**
- * `2.27.3-cookieless-auth.34+8ba9c1504` =>
+ * `2.27.3-cookieless-auth.34+8ba9c1504` →
  * `2.27.3-cookieless-auth.34`
  */
 function trimHash(version: string) {

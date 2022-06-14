@@ -38,10 +38,9 @@ export function getFormatters(versions: ModuleVersionResult[]): {
   )
 
   const formatName = (name: string): string =>
-    padEnd(name, nameLength + 1).replace(
-      /^@sanity\/(.*?)(\s|$)/,
-      `${chalk.yellow('@sanity/')}${chalk.cyan('$1')}$2`
-    )
+    padEnd(name, nameLength + 1)
+      .replace(/^@sanity\/(.*?)(\s|$)/, `${chalk.yellow('@sanity/')}${chalk.cyan('$1')}$2`)
+      .replace(/^sanity(\s|$)/, `${chalk.yellow('sanity')}$1`)
 
   return {nameLength, versionLength, formatName}
 }
