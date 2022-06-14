@@ -5,6 +5,7 @@ import deburr from 'lodash/deburr'
 import noop from 'lodash/noop'
 import type {DatasetAclMode} from '@sanity/client'
 import resolveFrom from 'resolve-from'
+import which from 'which'
 
 import {debug} from '../../debug'
 import {dynamicRequire} from '../../util/dynamicRequire'
@@ -215,12 +216,8 @@ export default async function initSanity(
   }
 
   // Now for the slow part... installing dependencies
-  try {
-    const pkgManager = await getPackageManagerChoice(outputPath, {prompt})
-    await installDeclaredPackages(outputPath, pkgManager.chosen, context)
-  } catch (err) {
-    throw err
-  }
+  const pkgManager = await getPackageManagerChoice(outputPath, {prompt})
+  await installDeclaredPackages(outputPath, pkgManager.chosen, context)
 
   // Prompt for dataset import (if a dataset is defined)
   if (shouldImport) {
@@ -234,27 +231,32 @@ export default async function initSanity(
       context,
     })
 
-    print('')
-    print('If you want to delete the imported data, use')
-    print(`  ${chalk.cyan(`sanity dataset delete ${datasetName}`)}`)
-    print('and create a new clean dataset with')
-    print(`  ${chalk.cyan(`sanity dataset create <name>`)}\n`)
+    if (await hasGlobalCli()) {
+      print('')
+      print('If you want to delete the imported data, use')
+      print(`  ${chalk.cyan(`sanity dataset delete ${datasetName}`)}`)
+      print('and create a new clean dataset with')
+      print(`  ${chalk.cyan(`sanity dataset create <name>`)}\n`)
+    }
   }
 
   const isCurrentDir = outputPath === process.cwd()
+  const runCommand = pkgManager.chosen === 'pnpm' ? 'pnpm run start' : `${pkgManager.chosen} start`
   if (isCurrentDir) {
     print(`\n${chalk.green('Success!')} Now, use this command to continue:\n`)
-    print(`${chalk.cyan('sanity start')} - to run Sanity Studio\n`)
+    print(`${chalk.cyan(runCommand)} - to run Sanity Studio\n`)
   } else {
     print(`\n${chalk.green('Success!')} Now, use these commands to continue:\n`)
     print(`First: ${chalk.cyan(`cd ${outputPath}`)} - to enter project’s directory`)
-    print(`Then: ${chalk.cyan('sanity start')} - to run Sanity Studio\n`)
+    print(`Then: ${chalk.cyan(runCommand)} - to run Sanity Studio\n`)
   }
 
-  print(`Other helpful commands`)
-  print(`sanity docs - to open the documentation in a browser`)
-  print(`sanity manage - to open the project settings in a browser`)
-  print(`sanity help - to explore the CLI manual`)
+  if (await hasGlobalCli()) {
+    print(`Other helpful commands`)
+    print(`sanity docs - to open the documentation in a browser`)
+    print(`sanity manage - to open the project settings in a browser`)
+    print(`sanity help - to explore the CLI manual`)
+  }
 
   const sendInvite =
     isFirstProject &&
@@ -839,4 +841,13 @@ function getImportCommand(
     (cmd): cmd is CliCommandDefinition =>
       !isCommandGroup(cmd) && cmd.name === 'import' && cmd.group === 'dataset'
   )
+}
+
+async function hasGlobalCli(): Promise<boolean> {
+  try {
+    const globalCliPath = await which('sanity')
+    return Boolean(globalCliPath)
+  } catch (err) {
+    return false
+  }
 }
