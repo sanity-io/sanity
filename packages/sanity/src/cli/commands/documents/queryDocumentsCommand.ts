@@ -12,6 +12,7 @@ Options
   --pretty colorized JSON output
   --dataset NAME to override dataset
   --project PROJECT to override project ID
+  --anonymous Send the query without any authorization token
   --api-version API version to use (defaults to \`${defaultApiVersion}\`)
 
 Environment variables
@@ -31,6 +32,7 @@ Examples
 
 interface CliQueryCommandFlags {
   pretty?: boolean
+  anonymous?: boolean
   dataset?: string
   project?: string
   apiVersion?: string
@@ -51,6 +53,7 @@ export default {
       pretty,
       dataset,
       project,
+      anonymous,
       'api-version': apiVersion,
     } = await parseCliFlags(args)
     const {apiClient, output, chalk, cliConfig} = context
@@ -65,6 +68,7 @@ export default {
     }
 
     const requireProject = !project
+    const requireUser = !anonymous
 
     if (requireProject && !cliConfig?.api?.projectId) {
       throw new Error(
@@ -72,7 +76,7 @@ export default {
       )
     }
 
-    const baseClient = apiClient({requireProject}).clone()
+    const baseClient = apiClient({requireProject, requireUser}).clone()
     const {dataset: originalDataset, projectId: originalProjectId} = baseClient.config()
 
     const client = baseClient.config({
@@ -101,5 +105,6 @@ function parseCliFlags(args: CliCommandArguments<CliQueryCommandFlags>) {
     .option('pretty', {type: 'boolean', default: false})
     .option('dataset', {type: 'string'})
     .option('project', {type: 'string'})
+    .option('anonymous', {type: 'boolean', default: false})
     .option('api-version', {type: 'string', default: fallbackApiVersion}).argv
 }
