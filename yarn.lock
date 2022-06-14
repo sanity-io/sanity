@@ -2999,11 +2999,12 @@
   integrity sha512-wtMYcV5GIDIhVyF/jjmdwq1GdlK07dRL40XMns73VbrFI7FteRltxv48bhYVZPcLkRXb0SHjpDS/icj9/yzbVA==
 
 "@sanity/google-maps-input@studio-v3":
-  version "3.0.0-studio-v3.0"
-  resolved "https://registry.yarnpkg.com/@sanity/google-maps-input/-/google-maps-input-3.0.0-studio-v3.0.tgz#c41798b8a18698dbd6c2a25dd8f0f041b1a1c89b"
-  integrity sha512-yKtTJdLbRwR8mj4KWwodlm7MYMkUz6d2t+UEV3Qahe39zxFuyv/SHwe848i6dRskv5oX+ubpyP61BZ4WhxF54g==
+  version "3.0.0-studio-v3.1"
+  resolved "https://registry.yarnpkg.com/@sanity/google-maps-input/-/google-maps-input-3.0.0-studio-v3.1.tgz#5e61049682d4177af778e4dd94a9b83d1e3b3776"
+  integrity sha512-pdcdav6Zc680fQafdN47Z8A/rZdfu57+zXySHFxMVuicVVi5r55GWBWt/s+vGkJjLey5QQItPvo7jjFZteP3cQ==
   dependencies:
     "@sanity/icons" "^1.2.8"
+    "@sanity/incompatible-plugin" "^0.0.1-studio-v3.1"
     "@sanity/ui" "^0.37.8"
     lodash "^4.17.21"
     rxjs "^6.5.3"
@@ -3025,6 +3026,15 @@
   dependencies:
     debug "^3.2.7"
     lodash "^4.17.15"
+
+"@sanity/incompatible-plugin@^0.0.1-studio-v3.1":
+  version "0.0.1-studio-v3.1"
+  resolved "https://registry.yarnpkg.com/@sanity/incompatible-plugin/-/incompatible-plugin-0.0.1-studio-v3.1.tgz#ee722df57839df39691fde57102ecd0ab88c09e2"
+  integrity sha512-JK0FgXTWpXGxyFsN1+vRXf7pqwyQPi3U2cYccJJfULkC+7yB1XMj8NdRdVmxRxSp2ya9QG3JtMbfO/MIn6s3cA==
+  dependencies:
+    "@sanity/icons" "^1.3.0"
+    "@sanity/ui" "^0.37.0"
+    react-copy-to-clipboard "^5.0.0"
 
 "@sanity/initial-value-templates@2.29.5":
   version "2.29.5"
@@ -3165,7 +3175,7 @@
     pako "^2.0.4"
     segmented-property "^3.0.3"
 
-"@sanity/ui@^0.37.11", "@sanity/ui@^0.37.8", "@sanity/ui@^0.37.9":
+"@sanity/ui@^0.37.0", "@sanity/ui@^0.37.11", "@sanity/ui@^0.37.8", "@sanity/ui@^0.37.9":
   version "0.37.12"
   resolved "https://registry.yarnpkg.com/@sanity/ui/-/ui-0.37.12.tgz#9b8fb197a988f5914b59d62559679665f26a5904"
   integrity sha512-TWsNnJsG/DETZyc0EqxOjxKJKaTQttDVz5i27LJkNpYv+f/G/ABuO/voroFffgkjA3jf/VZiz8VY4O5AdXsOLQ==
@@ -5601,7 +5611,7 @@ browserify-zlib@^0.1.4:
   dependencies:
     pako "~0.2.0"
 
-browserslist@^4.0.0, browserslist@^4.14.5, browserslist@^4.16.6, browserslist@^4.18.1, browserslist@^4.20.2, browserslist@^4.20.3:
+browserslist@^4.0.0, browserslist@^4.14.5, browserslist@^4.16.6, browserslist@^4.18.1, browserslist@^4.20.2, browserslist@^4.20.3, browserslist@^4.20.4:
   version "4.20.4"
   resolved "https://registry.yarnpkg.com/browserslist/-/browserslist-4.20.4.tgz#98096c9042af689ee1e0271333dbc564b8ce4477"
   integrity sha512-ok1d+1WpnU24XYN7oC3QWgTyMhY/avPJ/r9T00xxvUOIparA/gc+UPUMaod3i+G6s+nI2nUb9xZ5k794uIwShw==
@@ -6225,9 +6235,9 @@ colord@^2.9.1:
   integrity sha512-Uqbg+J445nc1TKn4FoDPS6ZZqAvEDnwrH42yo8B40JSOgSLxMZ/gt3h4nmCtPLQeXhjJJkqBx7SCY35WnIixaQ==
 
 colorette@^2.0.10, colorette@^2.0.16:
-  version "2.0.17"
-  resolved "https://registry.yarnpkg.com/colorette/-/colorette-2.0.17.tgz#5dd4c0d15e2984b7433cb4a9f2ead45063b80c47"
-  integrity sha512-hJo+3Bkn0NCHybn9Tu35fIeoOKGOk5OCC32y4Hz2It+qlCO2Q3DeQ1hRn/tDDMQKRYUEzqsl7jbF6dYKjlE60g==
+  version "2.0.18"
+  resolved "https://registry.yarnpkg.com/colorette/-/colorette-2.0.18.tgz#4c260bcf86437ce94fa58e2e49a83b623f3c4d66"
+  integrity sha512-rHDY1i4V4JBCXHnHwaVyA202CKSj2kUrjI5cSJQbTdnFeI4ShV3e19Fe7EQfzL2tjSrvYyWugdGAtEc1lLvGDg==
 
 colors@~1.2.1:
   version "1.2.5"
@@ -6531,17 +6541,17 @@ copy-to-clipboard@^3.3.1:
     toggle-selection "^1.0.6"
 
 core-js-compat@^3.21.0, core-js-compat@^3.22.1:
-  version "3.22.8"
-  resolved "https://registry.yarnpkg.com/core-js-compat/-/core-js-compat-3.22.8.tgz#46fa34ce1ddf742acd7f95f575f66bbb21e05d62"
-  integrity sha512-pQnwg4xtuvc2Bs/5zYQPaEYYSuTxsF7LBWF0SvnVhthZo/Qe+rJpcEekrdNK5DWwDJ0gv0oI9NNX5Mppdy0ctg==
+  version "3.23.0"
+  resolved "https://registry.yarnpkg.com/core-js-compat/-/core-js-compat-3.23.0.tgz#324191a23bfbd229802718dcc1d213414b244624"
+  integrity sha512-i4FgbtahOArZBEteiL+czI5N/bp17w16bXmLagGThdA2zuX1a5X4HbBmOVD7ERRtk3wMtPOFEmlXpVV4lsvwNw==
   dependencies:
-    browserslist "^4.20.3"
+    browserslist "^4.20.4"
     semver "7.0.0"
 
 core-js-pure@^3.20.2, core-js-pure@^3.8.1:
-  version "3.22.8"
-  resolved "https://registry.yarnpkg.com/core-js-pure/-/core-js-pure-3.22.8.tgz#f2157793b58719196ccf9673cc14f3683adc0957"
-  integrity sha512-bOxbZIy9S5n4OVH63XaLVXZ49QKicjowDx/UELyJ68vxfCRpYsbyh/WNZNfEfAk+ekA8vSjt+gCDpvh672bc3w==
+  version "3.23.0"
+  resolved "https://registry.yarnpkg.com/core-js-pure/-/core-js-pure-3.23.0.tgz#f27426a6144a37484cfc5fd8b56eecc5180cd393"
+  integrity sha512-ksjJc/xVTQzT2q6trPja2qWynMEaGO36rDui2SiqLPYab9TmPgT8nIVcre/yscviPCSweUdCDGKe4MsQA9w1zQ==
 
 core-js@^2.4.0, core-js@^2.5.0:
   version "2.6.12"
@@ -6549,9 +6559,9 @@ core-js@^2.4.0, core-js@^2.5.0:
   integrity sha512-Kb2wC0fvsWfQrgk8HU5lW6U/Lcs8+9aaYcy4ZFc6DDlo4nZ7n70dEgE5rtR0oG6ufKDUnrwfWL1mXR5ljDatrQ==
 
 core-js@^3.19.2:
-  version "3.22.8"
-  resolved "https://registry.yarnpkg.com/core-js/-/core-js-3.22.8.tgz#23f860b1fe60797cc4f704d76c93fea8a2f60631"
-  integrity sha512-UoGQ/cfzGYIuiq6Z7vWL1HfkE9U9IZ4Ub+0XSiJTCzvbZzgPA69oDF2f+lgJ6dFFLEdjW5O6svvoKzXX23xFkA==
+  version "3.23.0"
+  resolved "https://registry.yarnpkg.com/core-js/-/core-js-3.23.0.tgz#9e33448c8fd3b02ad023d85bd6e85da6335b5cc4"
+  integrity sha512-v2/hZoRcRrvQiBoGsHwmRdr+S4oICKcjA6xb2qjVurin6TpcDC1X2CIDa8rdu/d5n8RT/Sdoos2IlnpQ1rXs5A==
 
 core-util-is@1.0.2:
   version "1.0.2"
@@ -7699,9 +7709,9 @@ ejs@^3.1.6:
     jake "^10.8.5"
 
 electron-to-chromium@^1.4.147:
-  version "1.4.152"
-  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.4.152.tgz#7dedbe8f3dc1c597088982a203f392e60f7ee90a"
-  integrity sha512-jk4Ju5SGZAQQJ1iI4Rgru7dDlvkQPLpNPWH9gIZmwCD4YteA5Bbk1xPcPDUf5jUYs3e1e80RXdi8XgKQZaigeg==
+  version "1.4.154"
+  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.4.154.tgz#d69c60499fc467a6c59591d29183e520afbc78a1"
+  integrity sha512-GbV9djOkrnj6xmW+YYVVEI3VCQnJ0pnSTu7TW2JyjKd5cakoiSaG5R4RbEtfaD92GsY10DzbU3GYRe+IOA9kqA==
 
 element-resize-detector@^1.1.14:
   version "1.2.4"
@@ -14793,9 +14803,9 @@ prettier-linter-helpers@^1.0.0:
     fast-diff "^1.1.2"
 
 prettier@^2.5.1:
-  version "2.6.2"
-  resolved "https://registry.yarnpkg.com/prettier/-/prettier-2.6.2.tgz#e26d71a18a74c3d0f0597f55f01fb6c06c206032"
-  integrity sha512-PkUpF+qoXTqhOeWL9fu7As8LXsIUZ1WYaJiY/a7McAQzxjk82OF0tibkFXVCDImZtWxbvojFjerkiLb0/q8mew==
+  version "2.7.0"
+  resolved "https://registry.yarnpkg.com/prettier/-/prettier-2.7.0.tgz#a4fdae07e5596c51c9857ea676cd41a0163879d6"
+  integrity sha512-nwoX4GMFgxoPC6diHvSwmK/4yU8FFH3V8XWtLQrbj4IBsK2pkYhG4kf/ljF/haaZ/aii+wNJqISrCDPgxGWDVQ==
 
 pretty-bytes@^4.0.2:
   version "4.0.2"
@@ -15213,7 +15223,7 @@ react-codemirror2@^6.0.0:
   resolved "https://registry.yarnpkg.com/react-codemirror2/-/react-codemirror2-6.0.1.tgz#7daba40795eb2a52637926b6fe0b73a6e9090723"
   integrity sha512-rutEKVgvFhWcy/GeVA1hFbqrO89qLqgqdhUr7YhYgIzdyICdlRQv+ztuNvOFQMXrO0fLt0VkaYOdMdYdQgsSUA==
 
-react-copy-to-clipboard@^5.0.4:
+react-copy-to-clipboard@^5.0.0, react-copy-to-clipboard@^5.0.4:
   version "5.1.0"
   resolved "https://registry.yarnpkg.com/react-copy-to-clipboard/-/react-copy-to-clipboard-5.1.0.tgz#09aae5ec4c62750ccb2e6421a58725eabc41255c"
   integrity sha512-k61RsNgAayIJNoy9yDsYzDe/yAZAzEbEgcz3DZMhF686LEyukcE1hzurxe85JandPUG+yTfGVFzuEw3xt8WP/A==

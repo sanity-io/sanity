@@ -32,12 +32,15 @@ export async function mergeCommands(
   const moduleName = /@sanity[/\\]core/.test(corePath) ? '@sanity/core' : 'sanity'
   const core = 'cliProjectCommands' in coreImport ? coreImport.cliProjectCommands : coreImport
 
+  // @todo the resolving of `sanity`/`@sanity/core` here might find global installs,
+  // which can lead to incorrect versioning being reported. We should only run this
+  // check if we are within a project dir, and even then only if it is not global
+  /*
   if (
     core.requiredCliVersionRange &&
     !semver.satisfies(coercedCliVersion, core.requiredCliVersionRange)
   ) {
     const upgradeCmd = chalk.yellow(await getCliUpgradeCommand({cwd, workDir}))
-    /* eslint-disable no-console, no-process-exit */
     console.error(
       `The version of the \`${moduleName}\` installed in this project requires @sanity/cli @ ${chalk.green(
         core.requiredCliVersionRange
@@ -46,8 +49,8 @@ export async function mergeCommands(
       )}.\n\nPlease upgrade by running:\n\n  ${upgradeCmd}\n\n`
     )
     process.exit(1)
-    /* eslint-enable no-console, no-process-exit */
   }
+  */
 
   const merged = baseCommands.concat(core.commands).map(addDefaultGroup)
 

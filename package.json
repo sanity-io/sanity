@@ -52,7 +52,7 @@
     "prettier": "prettier '**/*.{ts,js,tsx,jsx}'",
     "prettify": "lerna run clean && yarn prettier --write",
     "prettify:dts": "prettier --loglevel warn --write packages/@sanity/*/lib/dts && prettier --loglevel warn --write packages/*/lib/dts",
-    "publish-dev-preview": "echo '>>> yarn build && lerna publish --pre-dist-tag dev-preview --preid dev-preview ???'",
+    "publish-dev-preview": "RELEASE_TAG=dev-preview yarn publish-tag",
     "publish-purple-unicorn": "RELEASE_TAG=purple-unicorn yarn publish-tag",
     "publish-when-v3-is-ready": "yarn build && lerna publish --exact",
     "publish-canary": "RELEASE_TAG=canary yarn publish-tag",
