@@ -236,9 +236,9 @@ export default async function initSanity(
 
     print('')
     print('If you want to delete the imported data, use')
-    print(`\t${chalk.cyan(`sanity dataset delete ${datasetName}`)}`)
+    print(`  ${chalk.cyan(`sanity dataset delete ${datasetName}`)}`)
     print('and create a new clean dataset with')
-    print(`\t${chalk.cyan(`sanity dataset create <name>`)}\n`)
+    print(`  ${chalk.cyan(`sanity dataset create <name>`)}\n`)
   }
 
   const isCurrentDir = outputPath === process.cwd()
