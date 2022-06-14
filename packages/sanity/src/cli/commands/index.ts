@@ -88,7 +88,6 @@ const commands: (CliCommandDefinition | CliCommandGroupDefinition)[] = [
  * @internal
  */
 export const cliProjectCommands = {
-  // @todo probably bump to v3?
-  requiredCliVersionRange: '^2.0.0',
+  requiredCliVersionRange: '^3.0.0',
   commands,
 }
