@@ -24,16 +24,9 @@ import {Box, Text, useToast} from '@sanity/ui'
 import scrollIntoView from 'scroll-into-view-if-needed'
 import {debounce} from 'lodash'
 import {FormPatch as FormBuilderPatch} from '../../patch'
-import type {
-  ArrayOfObjectsInputProps,
-  FieldMember,
-  ObjectMember,
-  FIXME,
-  PortableTextMarker,
-  RenderCustomMarkers,
-  ArrayOfObjectsMember,
-} from '../../types'
+import type {FieldMember, ObjectMember, ArrayOfObjectsMember} from '../../store'
 import {ArrayOfObjectsItemMember, ObjectFormNode} from '../../store'
+import {ArrayOfObjectsInputProps, FIXME, PortableTextMarker, RenderCustomMarkers} from '../../types'
 import {EMPTY_ARRAY} from '../../utils/empty'
 import {isMemberArrayOfObjects} from '../../members/fields/asserters'
 import {Compositor, PortableTextEditorElement} from './Compositor'
@@ -204,7 +197,7 @@ export function PortableTextInput(props: PortableTextInputProps) {
         return {
           key,
           member: r,
-          elementRef: createRef<EditorElement>(),
+          elementRef: createRef<PortableTextEditorElement>(),
         }
       })
     portableTextMemberItemsRef.current = items
