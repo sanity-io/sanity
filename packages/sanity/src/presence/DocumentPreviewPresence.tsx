@@ -12,7 +12,6 @@ export interface DocumentPreviewPresenceProps {
 
 const PRESENCE_MENU_POPOVER_PROPS: TooltipProps = {
   portal: true,
-  scheme: 'light',
 }
 
 const AvatarStackCard = styled(Card)(({theme, $selected}: {theme: Theme; $selected?: boolean}) => {
