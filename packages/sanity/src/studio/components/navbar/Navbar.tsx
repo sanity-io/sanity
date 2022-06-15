@@ -1,5 +1,15 @@
 import {CloseIcon, MenuIcon, SearchIcon} from '@sanity/icons'
-import {Box, Button, Card, Flex, Layer, Text, useGlobalKeyDown, useMediaIndex} from '@sanity/ui'
+import {
+  Box,
+  Button,
+  Card,
+  Flex,
+  Layer,
+  Text,
+  Tooltip,
+  useGlobalKeyDown,
+  useMediaIndex,
+} from '@sanity/ui'
 import React, {
   createElement,
   useCallback,
@@ -76,14 +86,17 @@ export function Navbar(props: NavbarProps) {
   const [drawerOpen, setDrawerOpen] = useState<boolean>(false)
 
   const routerStateRef = useRef<RouterState>(routerState)
+  const workspaceNameRef = useRef<string>(name)
 
+  // Close the NavDrawer when changing tool or workspace
   useEffect(() => {
-    if (routerStateRef.current.tool !== routerState.tool) {
+    if (routerStateRef.current.tool !== routerState.tool || name !== workspaceNameRef.current) {
       setDrawerOpen(false)
     }
 
     routerStateRef.current = routerState
-  }, [routerState])
+    workspaceNameRef.current = name
+  }, [name, routerState])
 
   const [drawerButtonEl, setDrawerButtonEl] = useState<HTMLButtonElement | null>(null)
   const [searchInputElement, setSearchInputElement] = useState<HTMLInputElement | null>(null)
@@ -193,7 +206,20 @@ export function Navbar(props: NavbarProps) {
 
             {shouldRender.workspaces && (
               <Box marginRight={2}>
-                <WorkspaceMenuButton />
+                <Tooltip
+                  content={
+                    <Box padding={2}>
+                      <Text size={1}>Select workspace</Text>
+                    </Box>
+                  }
+                  placement="bottom"
+                  portal
+                  scheme={scheme}
+                >
+                  <Box>
+                    <WorkspaceMenuButton />
+                  </Box>
+                </Tooltip>
               </Box>
             )}
 
