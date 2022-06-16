@@ -11,5 +11,6 @@ export interface FieldsetState {
   hidden?: boolean
   collapsible?: boolean
   collapsed?: boolean
+  columns?: number | number[]
   members: (FieldMember | FieldError)[]
 }

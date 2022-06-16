@@ -562,6 +562,7 @@ function prepareObjectInputState<T>(
           members: fieldsetMembers,
           collapsible: defaultCollapsedState?.collapsible,
           collapsed,
+          columns: fieldSet?.options?.columns,
         },
       },
     ]
