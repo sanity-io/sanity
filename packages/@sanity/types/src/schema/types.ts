@@ -384,6 +384,7 @@ export interface SortOrderingItem {
 
 export type SortOrdering = {
   title: string
+  name: string
   by: SortOrderingItem[]
 }
 export interface ConditionalPropertyCallbackContext {
