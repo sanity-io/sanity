@@ -1,5 +1,4 @@
 import React, {useState} from 'react'
-import PropTypes from 'prop-types'
 import Barcode from 'react-barcode'
 import {FormFieldSet} from '@sanity/base/components'
 import {Box} from '@sanity/ui'
@@ -94,14 +93,5 @@ const BarcodeInput = React.forwardRef(function BarcodeInput(props, ref) {
     </FormFieldSet>
   )
 })
-
-BarcodeInput.propTypes = {
-  level: PropTypes.number,
-  value: PropTypes.object,
-  onChange: PropTypes.func,
-  type: PropTypes.object,
-  onFocus: PropTypes.func,
-  onBlur: PropTypes.func,
-}
 
 export default BarcodeInput

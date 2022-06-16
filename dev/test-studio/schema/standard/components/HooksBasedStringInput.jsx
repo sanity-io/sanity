@@ -1,6 +1,5 @@
 import {set} from 'sanity/form'
 import React from 'react'
-import PropTypes from 'prop-types'
 
 export const HooksBasedStringInput = React.forwardRef((props, ref) => {
   const {value, type, onChange} = props
@@ -35,8 +34,3 @@ export const HooksBasedStringInput = React.forwardRef((props, ref) => {
 })
 
 HooksBasedStringInput.displayName = 'HooksBasedStringInput'
-HooksBasedStringInput.propTypes = {
-  value: PropTypes.string,
-  type: PropTypes.object,
-  onChange: PropTypes.func,
-}
