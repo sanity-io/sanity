@@ -1,4 +1,4 @@
-import getRandomValues from 'get-random-values'
+import getRandomValues from 'get-random-values-esm'
 
 // WHATWG crypto RNG - https://w3c.github.io/webcrypto/Overview.html
 function whatwgRNG(length = 16) {

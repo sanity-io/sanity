@@ -1,4 +1,4 @@
-import getRandomValues from 'get-random-values'
+import getRandomValues from 'get-random-values-esm'
 
 const getByteHexTable = (() => {
   let table: any[]

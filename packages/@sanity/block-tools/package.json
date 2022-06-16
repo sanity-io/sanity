@@ -34,7 +34,7 @@
   "author": "Sanity.io <hello@sanity.io>",
   "license": "MIT",
   "dependencies": {
-    "get-random-values": "^1.2.2",
+    "get-random-values-esm": "^1.0.0",
     "lodash": "^4.17.21"
   },
   "devDependencies": {

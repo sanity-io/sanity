@@ -84,7 +84,7 @@
   "homepage": "https://www.sanity.io/",
   "dependencies": {
     "@sanity/types": "3.0.0-dev-preview.8",
-    "get-random-values": "^1.2.2",
+    "get-random-values-esm": "^1.0.0",
     "moment": "^2.19.1"
   },
   "devDependencies": {
