@@ -11,7 +11,7 @@
     "@sanity/ui",
     "@sanity/uuid",
     "lodash.get",
-    "pluralize",
+    "pluralize-esm",
     "prop-types",
     "react-barcode",
     "react-icons",

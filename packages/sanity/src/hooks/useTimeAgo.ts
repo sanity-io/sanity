@@ -9,7 +9,7 @@ import {
   differenceInMonths,
   differenceInYears,
 } from 'date-fns'
-import pluralize from 'pluralize'
+import pluralize from 'pluralize-esm'
 
 interface TimeSpec {
   timestamp: string

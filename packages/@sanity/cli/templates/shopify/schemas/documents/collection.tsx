@@ -1,5 +1,5 @@
 import {PackageIcon} from '@sanity/icons'
-import pluralize from 'pluralize'
+import pluralize from 'pluralize-esm'
 
 export default {
   name: 'collection',

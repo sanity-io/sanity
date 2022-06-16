@@ -1,4 +1,4 @@
-import pluralize from 'pluralize'
+import pluralize from 'pluralize-esm'
 import {startCase, upperFirst} from 'lodash'
 import type {ConvertedType, ConvertedUnion, InputObjectType, QueryDefinition} from '../types'
 import {isNonUnion} from '../helpers'

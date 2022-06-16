@@ -41,7 +41,7 @@ const shopifyTemplate: ProjectTemplate = {
   dependencies: {
     '@sanity/dashboard': '^2.21.7',
     'lodash.get': '^4.4.2',
-    pluralize: '^8.0.0',
+    'pluralize-esm': '^9.0.2',
     'react-time-ago': '7.1.3',
     slug: '^5.1.0',
     'sanity-plugin-dashboard-widget-shopify': '^0.1.7',
