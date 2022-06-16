@@ -1,5 +1,5 @@
-import React, {memo, useMemo} from 'react'
-import {Stack} from '@sanity/ui'
+import React, {memo, useCallback, useMemo} from 'react'
+import {Grid, Stack} from '@sanity/ui'
 import {ObjectInputProps} from '../../types'
 import {ObjectMembers} from '../../members'
 import {UnknownFields} from './UnknownFields'
@@ -23,6 +23,8 @@ export const ObjectInput = memo(function ObjectInput(props: ObjectInputProps) {
     onFieldGroupSelect,
   } = props
 
+  const {columns} = schemaType.options || {}
+
   const renderedUnknownFields = useMemo(() => {
     if (!schemaType.fields) {
       return null
@@ -40,6 +42,19 @@ export const ObjectInput = memo(function ObjectInput(props: ObjectInputProps) {
     return <UnknownFields fieldNames={unknownFields} value={value} onChange={onChange} />
   }, [onChange, schemaType.fields, value])
 
+  const renderObjectMembers = useCallback(
+    () => (
+      <ObjectMembers
+        members={members}
+        renderInput={renderInput}
+        renderField={renderField}
+        renderItem={renderItem}
+        renderPreview={renderPreview}
+      />
+    ),
+    [members, renderField, renderInput, renderItem, renderPreview]
+  )
+
   return (
     <Stack space={5}>
       {groups.length > 0 ? (
@@ -53,13 +68,14 @@ export const ObjectInput = memo(function ObjectInput(props: ObjectInputProps) {
         </FieldGroupTabsWrapper>
       ) : null}
 
-      <ObjectMembers
-        members={members}
-        renderInput={renderInput}
-        renderField={renderField}
-        renderItem={renderItem}
-        renderPreview={renderPreview}
-      />
+      {columns ? (
+        <Grid columns={columns} gap={4} marginTop={1}>
+          {renderObjectMembers()}
+        </Grid>
+      ) : (
+        renderObjectMembers()
+      )}
+
       {renderedUnknownFields}
     </Stack>
   )
