@@ -33,6 +33,36 @@ export default {
   fieldsets: [{name: 'recursive', title: 'Recursive', options: {collapsible: true}}],
   fields: [
     {
+      type: 'object',
+      name: 'objectWithColumns',
+      title: 'Object with columns',
+      options: {
+        columns: 4,
+      },
+      fields: [
+        {
+          type: 'string',
+          title: 'String 1',
+          name: 'string1',
+        },
+        {
+          type: 'string',
+          title: 'String 2',
+          name: 'string2',
+        },
+        {
+          type: 'number',
+          title: 'Number 1',
+          name: 'number1',
+        },
+        {
+          type: 'number',
+          title: 'Number 2',
+          name: 'number2',
+        },
+      ],
+    },
+    {
       name: 'myObject',
       type: 'myObject',
       title: 'MyObject',
