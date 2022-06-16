@@ -1,8 +1,7 @@
 import React, {useMemo} from 'react'
-import {Box, Flex, Tooltip} from '@sanity/ui'
+import {Box, Flex, Stack, Text, Tooltip} from '@sanity/ui'
 import {UserAvatar} from '../components/UserAvatar'
 import {NodePresence} from '../form'
-import {TextWrapper} from './PresenceTooltip.styled'
 
 interface PresenceTooltipProps {
   children?: React.ReactElement
@@ -20,19 +19,17 @@ export function PresenceTooltip(props: PresenceTooltipProps) {
 
   const content = useMemo(
     () => (
-      <Box padding={1}>
+      <Stack padding={1}>
         {items.map((item) => (
-          <Box key={item.user.id} padding={1}>
-            <Flex align="center">
-              <div>
-                <UserAvatar user={item.user} status="online" />
-              </div>
+          <Flex align="center" gap={2} padding={1} key={item.user.id}>
+            <div>
+              <UserAvatar user={item.user} status="online" />
+            </div>
 
-              <TextWrapper>{item.user.displayName}</TextWrapper>
-            </Flex>
-          </Box>
+            <Text size={1}>{item.user.displayName}</Text>
+          </Flex>
         ))}
-      </Box>
+      </Stack>
     ),
     [items]
   )
