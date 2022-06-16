@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "react": "17.0.2",
-    "sanity": "3.0.0-dev-preview.6",
+    "sanity": "3.0.0-dev-preview.8",
     "styled-components": "^5.2.0"
   }
 }
