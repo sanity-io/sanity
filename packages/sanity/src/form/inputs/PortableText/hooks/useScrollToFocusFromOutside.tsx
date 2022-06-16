@@ -7,6 +7,7 @@ import {Path} from '@sanity/types'
 import {isEqual} from '@sanity/util/paths'
 import {useEffect} from 'react'
 import scrollIntoView from 'scroll-into-view-if-needed'
+import {isBlockType} from '../PortableTextInput'
 import {usePortableTextMemberItems} from './usePortableTextMembers'
 
 interface Props {
@@ -24,7 +25,10 @@ export function useScrollToFocusFromOutside(props: Props): void {
 
   // This will scroll to the relevant editor node which has a member that is opened.
   useEffect(() => {
-    const memberItem = portableTextMemberItems.find((item) => item.member.open)
+    // Find the openened member that is most spesific (longest path).
+    const memberItem = portableTextMemberItems
+      .filter((item) => item.member.open)
+      .sort((a, b) => b.member.item.path.length - a.member.item.path.length)[0]
     if (!memberItem) {
       return
     }
@@ -47,7 +51,7 @@ export function useScrollToFocusFromOutside(props: Props): void {
         PortableTextEditor.focus(editor)
       }
       // Auto-close regular blocks
-      if (memberItem.member.item.schemaType.name === 'block') {
+      if (isBlockType(memberItem.member.item.schemaType)) {
         onCloseItem()
       }
     }
