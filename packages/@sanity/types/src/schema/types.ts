@@ -185,6 +185,7 @@ export namespace Schema {
   }
 
   export interface DateOptions {
+    calendarTodayLabel?: string
     dateFormat?: string
   }
 
@@ -194,6 +195,7 @@ export namespace Schema {
   }
 
   export interface DatetimeOptions {
+    calendarTodayLabel?: string
     dateFormat?: string
     timeFormat?: string
     timeStep?: number
