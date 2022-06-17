@@ -15240,6 +15240,14 @@ react-rx@^1.0.0-beta.6:
   dependencies:
     observable-callback "^1.0.1"
 
+react-rx@^2.0.3:
+  version "2.0.3"
+  resolved "https://registry.yarnpkg.com/react-rx/-/react-rx-2.0.3.tgz#129f15ff80e8149f9e275d69f04655dd1ca5c27e"
+  integrity sha512-dkhOaajFkMdPNDbN+Jhzb8BjJHUg1t4iUajJ7BZ4U86VTnhesNlxrANpiI9iKBxF6aB9VtKPPGRm/Kn3l5Gp2A==
+  dependencies:
+    observable-callback "^1.0.1"
+    use-sync-external-store "^1.2.0"
+
 react-scripts@5.0.0:
   version "5.0.0"
   resolved "https://registry.yarnpkg.com/react-scripts/-/react-scripts-5.0.0.tgz#6547a6d7f8b64364ef95273767466cc577cb4b60"
@@ -18260,6 +18268,11 @@ use-sidecar@^1.1.2:
   dependencies:
     detect-node-es "^1.1.0"
     tslib "^2.0.0"
+
+use-sync-external-store@^1.2.0:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/use-sync-external-store/-/use-sync-external-store-1.2.0.tgz#7dbefd6ef3fe4e767a0cf5d7287aacfb5846928a"
+  integrity sha512-eEgnFxGQ1Ife9bzYs6VLi8/4X6CObHMw9Qr9tPY43iKwsPw8xE8+EFsf/2cFZ5S3esXgpWgtSCtLNS41F+sKPA==
 
 use@^3.1.0:
   version "3.1.1"
