@@ -2,11 +2,13 @@ import {SortOrdering} from '@sanity/types'
 
 export const ORDER_BY_UPDATED_AT: SortOrdering = {
   title: 'Last edited',
+  name: 'lastEditedDesc',
   by: [{field: '_updatedAt', direction: 'desc'}],
 }
 
 export const ORDER_BY_CREATED_AT: SortOrdering = {
   title: 'Created',
+  name: 'lastCreatedDesc',
   by: [{field: '_createdAt', direction: 'desc'}],
 }
 
