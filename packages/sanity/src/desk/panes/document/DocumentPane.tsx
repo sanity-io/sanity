@@ -74,15 +74,10 @@ function DocumentPaneInner(props: DocumentPaneProviderProps) {
   const {documentType, isLoaded: isDocumentLoaded} = useDocumentType(options.id, options.type)
 
   const templateItems = useMemo(() => {
-    if (documentType) {
-      return resolveNewDocumentOptions({
-        type: 'document',
-        documentId: options.id,
-        schemaType: documentType,
-      })
-    }
-    return []
-  }, [documentType, options.id, resolveNewDocumentOptions])
+    return resolveNewDocumentOptions({
+      type: 'global',
+    })
+  }, [resolveNewDocumentOptions])
 
   const [templatePermissions, isTemplatePermissionsLoading] = useTemplatePermissions({
     templateItems,
