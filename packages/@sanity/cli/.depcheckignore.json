@@ -16,6 +16,10 @@
     "react-icons",
     "react",
     "slug",
-    "styled-components"
+    "styled-components",
+    "@portabletext/react",
+    "@sanity/image-url",
+    "react-fast-compare",
+    "rxjs"
   ]
 }
