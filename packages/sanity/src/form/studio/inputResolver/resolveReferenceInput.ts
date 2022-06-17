@@ -1,6 +1,6 @@
 import {ReferenceSchemaType} from '@sanity/types'
 import {once} from 'lodash'
-import {SanityReferenceInput} from '../inputs/reference/SanityReferenceInput'
+import {StudioReferenceInput} from '../inputs/reference/StudioReferenceInput'
 
 /* eslint-disable no-console */
 const warnInputTypeNotSupported = once(() =>
@@ -20,5 +20,5 @@ export function resolveReferenceInput(type: ReferenceSchemaType) {
   if ('searchable' in options) {
     warnSearchableOptionNotSupported()
   }
-  return SanityReferenceInput
+  return StudioReferenceInput
 }

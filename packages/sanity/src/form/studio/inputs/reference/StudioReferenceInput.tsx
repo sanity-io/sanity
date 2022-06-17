@@ -59,7 +59,7 @@ type SearchError = {
   }
 }
 
-export function SanityReferenceInput(props: StudioReferenceInputProps) {
+export function StudioReferenceInput(props: StudioReferenceInputProps) {
   const client = useClient()
   const schema = useSchema()
   const documentPreviewStore = useDocumentPreviewStore()
@@ -143,7 +143,11 @@ export function SanityReferenceInput(props: StudioReferenceInputProps) {
     return (
       (initialValueTemplateItems || [])
         // eslint-disable-next-line max-nested-callbacks
-        .filter((i) => schemaType.to.some((_refType) => _refType.name === i.template?.schemaType))
+        .filter((i) => {
+          return schemaType.to.some((_refType) => {
+            return _refType.name === i.template?.schemaType
+          })
+        })
         .map((item): CreateReferenceOption | undefined =>
           item.template?.schemaType
             ? {
