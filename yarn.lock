@@ -15079,13 +15079,6 @@ react-refresh@^0.13.0:
   resolved "https://registry.yarnpkg.com/react-refresh/-/react-refresh-0.13.0.tgz#cbd01a4482a177a5da8d44c9755ebb1f26d5a1c1"
   integrity sha512-XP8A9BT0CpRBD+NYLLeIhld/RqG9+gktUjW1FkE+Vm7OCinbG1SshcK5tb9ls4kzvjZr9mOQc7HYgBngEyPAXg==
 
-react-rx@^1.0.0-beta.6:
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/react-rx/-/react-rx-1.0.1.tgz#3b0eca34a6eb0088666ecb39cdd26a283d576fd1"
-  integrity sha512-ywhmYW5gGN2X2zb5NHleOJotjmAcPD55IATKas9ZhErGnAjG/hfGWOpVZIP4QN08fb1HixKwpSLQOZnMQRk0xQ==
-  dependencies:
-    observable-callback "^1.0.1"
-
 react-rx@^2.0.3:
   version "2.0.3"
   resolved "https://registry.yarnpkg.com/react-rx/-/react-rx-2.0.3.tgz#129f15ff80e8149f9e275d69f04655dd1ca5c27e"
