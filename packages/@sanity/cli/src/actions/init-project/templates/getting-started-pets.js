@@ -1,6 +1,10 @@
 export const dependencies = {
   'sanity-plugin-asset-source-unsplash': '^0.2.1',
   'sanity-plugin-media': '^1.4.10',
+  '@sanity/icons': '^1.2.6',
+  '@portabletext/react': '^1.0.6',
+  'react-fast-compare': '^3.2.0',
+  rxjs: '^6.5.3',
 }
 
 export const generateSanityManifest = (base) => ({
