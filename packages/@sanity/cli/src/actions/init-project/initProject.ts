@@ -568,13 +568,10 @@ export default async function initSanity(
           value: 'moviedb',
           name: 'Movie project (schema + sample data)',
         },
-        /*
-        @todo Re-enable when migrated
         {
           value: 'ecommerce',
           name: 'E-commerce (schema + sample data)',
         },
-        */
         {
           value: 'blog',
           name: 'Blog (schema)',

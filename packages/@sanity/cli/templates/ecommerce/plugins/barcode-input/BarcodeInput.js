@@ -1,9 +1,9 @@
+// Copied from packages/@sanity/cli/templates/ecommerce/plugins/barcode-input/BarcodeInput.js
+
 import React, {useState} from 'react'
+import {Box, Text} from '@sanity/ui'
+import {MemberField} from 'sanity/form'
 import Barcode from 'react-barcode'
-import {FormFieldSet} from '@sanity/base/components'
-import {Box} from '@sanity/ui'
-import {setIfMissing} from '@sanity/form-builder'
-import {FormBuilderInput} from '@sanity/form-builder/lib/FormBuilderInput'
 import styled from 'styled-components'
 
 const BarcodeRoot = styled(Box)`
@@ -20,78 +20,43 @@ const FieldWrapper = styled.div`
   grid-gap: 1em;
 `
 
-const ErrorMessage = styled.div`
+const ErrorMessage = styled(Text)`
   color: #e66666;
   text-align: center;
   padding: 1em;
 `
 
-const BarcodeInput = React.forwardRef(function BarcodeInput(props, ref) {
-  const {
-    level,
-    type,
-    value,
-    readOnly,
-    markers,
-    presence,
-    compareValue,
-    focusPath,
-    onFocus,
-    onBlur,
-    onChange,
-  } = props
+export const BarcodeInput = function BarcodeInput(props) {
+  const {value, renderInput, renderItem, renderPreview, renderField, members} = props
   const [valid, setValid] = useState(true)
-  const handleFieldChange = React.useCallback(
-    (field, patchEvent) => {
-      onChange(patchEvent.prefixAll(field.name).prepend(setIfMissing({_type: type.name})))
-    },
-    [onChange, type.name]
-  )
 
-  const handleValid = (validState) => {
-    setValid(validState)
-  }
+  const memberFields = members.filter((member) => member.kind === 'field')
 
   return (
-    <FormFieldSet
-      level={level}
-      title={type.title}
-      description={type.description}
-      legend={type.title}
-    >
-      <BarcodeRoot isValid={valid}>
+    <>
+      <BarcodeRoot>
         {value && value.barcode && (
           <Barcode
             textAlign="center"
             value={value.barcode}
             format={value.format || ''}
-            valid={handleValid} // eslint-disable-line react/jsx-handler-names
+            valid={setValid}
           />
         )}
-        {!valid && <ErrorMessage>Not valid {value.format}</ErrorMessage>}
+        {!valid && <ErrorMessage>Not a valid {value?.format}</ErrorMessage>}
       </BarcodeRoot>
       <FieldWrapper>
-        {type.fields.map((field) => (
-          <FormBuilderInput
-            key={field.name}
-            description={field.type.description}
-            title={field.type.title}
-            type={field.type}
-            value={value && value[field.name]}
-            compareValue={compareValue}
-            path={[field.name]}
-            focusPath={focusPath}
-            readOnly={readOnly || field.type.readOnly}
-            presence={presence}
-            markers={markers}
-            onFocus={onFocus}
-            onBlur={onBlur}
-            onChange={(patchEvent) => handleFieldChange(field, patchEvent)}
+        {memberFields.map((member) => (
+          <MemberField
+            key={member.key}
+            member={member}
+            renderInput={renderInput}
+            renderField={renderField}
+            renderItem={renderItem}
+            renderPreview={renderPreview}
           />
         ))}
       </FieldWrapper>
-    </FormFieldSet>
+    </>
   )
-})
-
-export default BarcodeInput
+}

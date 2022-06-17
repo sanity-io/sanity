@@ -3,7 +3,7 @@ import type {ProjectTemplate} from '../initProject'
 const configTemplate = `
 import {createConfig} from 'sanity'
 import {deskTool} from 'sanity/desk'
-import {barcode} from './plugins/barcode
+import {barcodeInput} from './plugins/barcode
 import {schemaTypes} from './schemas'
 
 export default createConfig({
@@ -15,7 +15,7 @@ export default createConfig({
 
   plugins: [
     deskTool(),
-    barcode(),
+    barcodeInput(),
   ],
 
   schema: {
