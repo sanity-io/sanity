@@ -1,7 +1,5 @@
-import React from 'react';
+import React from 'react'
 
-const humanIcon = () => (
-  <img src="/static/icons/human.png" alt="Human icon"/>
-);
+const humanIcon = () => <img src="/static/icons/human.png" alt="Human icon" />
 
-export default humanIcon;
+export default humanIcon

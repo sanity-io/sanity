@@ -1,56 +1,51 @@
-import { EyeOpenIcon } from "@sanity/icons";
-import { ArticlePreview } from "../components/views/ArticlePreview";
-import { getPriceRangeFromProducts } from "../utils/product";
-import S from "@sanity/desk-tool/structure-builder";
-import articleIcon from "../components/icons/articleIcon";
+import {EyeOpenIcon} from '@sanity/icons'
+import {ArticlePreview} from '../components/views/ArticlePreview'
+import {getPriceRangeFromProducts} from '../utils/product'
+import S from '@sanity/desk-tool/structure-builder'
+import articleIcon from '../components/icons/articleIcon'
 
 export default {
-  name: "article",
-  type: "document",
-  title: "Article",
+  name: 'article',
+  type: 'document',
+  title: 'Article',
   icon: articleIcon,
-  views: [
-    S.view
-      .component(ArticlePreview)
-      .title("Preview")
-      .icon(EyeOpenIcon),
-  ],
+  views: [S.view.component(ArticlePreview).title('Preview').icon(EyeOpenIcon)],
   fields: [
     {
-      name: "title",
-      type: "string",
-      title: "Title",
+      name: 'title',
+      type: 'string',
+      title: 'Title',
     },
     {
-      name: "author",
-      type: "reference",
-      title: "Author",
-      to: [{ type: "human" }],
+      name: 'author',
+      type: 'reference',
+      title: 'Author',
+      to: [{type: 'human'}],
     },
     {
-      name: "body",
-      title: "Body",
-      type: "array",
+      name: 'body',
+      title: 'Body',
+      type: 'array',
       of: [
-        { type: "block" },
-        { type: "image", options: { hotspot: true } },
+        {type: 'block'},
+        {type: 'image', options: {hotspot: true}},
         {
-          type: "object",
-          title: "Shoppable Products",
-          name: "products",
+          type: 'object',
+          title: 'Shoppable Products',
+          name: 'products',
           preview: {
             select: {
               // Pick the first product image to show
               // This special syntax can be used to tell the studio to automatically resolve the reference before getting the image
-              firstProductVariantMedia: "products.0.variants.0.picture",
+              firstProductVariantMedia: 'products.0.variants.0.picture',
               // Pick all product names
-              productName0: "products.0.name",
-              productName1: "products.1.name",
-              productName2: "products.2.name",
+              productName0: 'products.0.name',
+              productName1: 'products.1.name',
+              productName2: 'products.2.name',
               // Pick the variants field from all referenced products
-              productVariants0: "products.0.variants",
-              productVariants1: "products.1.variants",
-              productVariants2: "products.2.variants",
+              productVariants0: 'products.0.variants',
+              productVariants1: 'products.1.variants',
+              productVariants2: 'products.2.variants',
             },
             prepare({
               firstProductVariantMedia,
@@ -66,41 +61,37 @@ export default {
                 .filter(Boolean)
 
                 // Gather product variants so we can get price range from them
-                .join(", ");
-              const productVariants = [
-                productVariants0,
-                productVariants1,
-                productVariants2,
-              ]
+                .join(', ')
+              const productVariants = [productVariants0, productVariants1, productVariants2]
                 .filter(Boolean)
                 .map((row) => ({
                   variants: Object.values(row),
-                }));
-              const priceRange = getPriceRangeFromProducts(productVariants);
+                }))
+              const priceRange = getPriceRangeFromProducts(productVariants)
 
               return {
                 title: productNames,
                 media: firstProductVariantMedia,
                 subtitle: priceRange,
-              };
+              }
             },
           },
           fields: [
             {
-              name: "introduction",
-              title: "Introduction",
-              type: "simpleBlockContent",
+              name: 'introduction',
+              title: 'Introduction',
+              type: 'simpleBlockContent',
             },
             {
-              name: "products",
-              title: "Products",
-              description: "Pick between 1 and 3 products to highlight",
-              type: "array",
+              name: 'products',
+              title: 'Products',
+              description: 'Pick between 1 and 3 products to highlight',
+              type: 'array',
               validation: (Rule) => Rule.required().min(1).max(3),
               of: [
                 {
-                  type: "reference",
-                  to: [{ type: "product" }],
+                  type: 'reference',
+                  to: [{type: 'product'}],
                 },
               ],
             },
@@ -109,4 +100,4 @@ export default {
       ],
     },
   ],
-};
+}

@@ -1,15 +1,12 @@
-import React, { useMemo } from "react";
-import { Box, Flex, Grid, Label, Heading, Card, Text, Stack } from "@sanity/ui";
-import PropTypes from "prop-types";
-import { BlockText } from "./BlockText";
-import {
-  useIdPair,
-  useListeningQuery,
-} from "../../plugins/listening-query/listening-query-hook";
+import React, {useMemo} from 'react'
+import {Box, Flex, Grid, Label, Heading, Card, Text, Stack} from '@sanity/ui'
+import PropTypes from 'prop-types'
+import {BlockText} from './BlockText'
+import {useIdPair, useListeningQuery} from '../../plugins/listening-query/listening-query-hook'
 
-import { Picture } from "./PetPreviewComponents";
-import { Layout } from "./components/layout";
-import { GridList } from "./components";
+import {Picture} from './PetPreviewComponents'
+import {Layout} from './components/layout'
+import {GridList} from './components'
 /**
  * Renders thecurrently displayed document as formatted JSON as a
  * simple little "webpage" using:
@@ -17,11 +14,11 @@ import { GridList } from "./components";
  * - @sanity/image-url
  */
 export function HumanPreview(props) {
-  const document = props.document.displayed;
+  const document = props.document.displayed
   if (!document) {
-    return null;
+    return null
   }
-  return <HumanPreviewInner document={document} />;
+  return <HumanPreviewInner document={document} />
 }
 
 // Resolve the pets references so we can list them in the preview
@@ -36,44 +33,44 @@ const blockJoins = `
       }
     }
   }
-`;
+`
 
-function queryFor({ draftId, publishedId }) {
+function queryFor({draftId, publishedId}) {
   return draftId || publishedId
     ? `{
-    ${draftId ? `"draft":  * [_id == $draftId][0]${blockJoins},` : ""}
-    ${publishedId ? `"published":  * [_id == $id][0]${blockJoins},` : ""}
+    ${draftId ? `"draft":  * [_id == $draftId][0]${blockJoins},` : ''}
+    ${publishedId ? `"published":  * [_id == $id][0]${blockJoins},` : ''}
   }`
-    : undefined;
+    : undefined
 }
 
 function useListenForRef(id) {
-  const ids = useIdPair(id);
-  const query = queryFor(ids);
-  const { data } = useListeningQuery(query, ids);
+  const ids = useIdPair(id)
+  const query = queryFor(ids)
+  const {data} = useListeningQuery(query, ids)
 
-  const { draft, published } = data ?? {};
-  return draft ?? published;
+  const {draft, published} = data ?? {}
+  return draft ?? published
 }
 
-export function HumanPreviewInner({ document }) {
-  const { _id } = document;
-  const resolvedDocument = useListenForRef(_id);
+export function HumanPreviewInner({document}) {
+  const {_id} = document
+  const resolvedDocument = useListenForRef(_id)
   const petsListItems = useMemo(
     () =>
-    resolvedDocument?.pets?.filter(Boolean).map((pet) => ({
+      resolvedDocument?.pets?.filter(Boolean).map((pet) => ({
         _id: pet._id,
         title: pet.name,
         image: pet?.picture,
       })),
     [resolvedDocument?.pets]
-  );
+  )
 
   if (!resolvedDocument) {
-    return null;
+    return null
   }
 
-  const { picture, name, bio } = resolvedDocument;
+  const {picture, name, bio} = resolvedDocument
 
   return (
     <Layout>
@@ -88,7 +85,7 @@ export function HumanPreviewInner({ document }) {
         </Box>
         <Box paddingX={4}>
           <Heading as="h1" size={4}>
-            {name ?? "Gimme a name!"}
+            {name ?? 'Gimme a name!'}
           </Heading>
         </Box>
         {bio?.length && (
@@ -96,9 +93,7 @@ export function HumanPreviewInner({ document }) {
             <BlockText value={bio} />
           </Box>
         )}
-        {petsListItems?.length > 0 && (
-          <GridList heading="Pets" items={petsListItems} />
-        )}
+        {petsListItems?.length > 0 && <GridList heading="Pets" items={petsListItems} />}
         {/*
         <Box paddingX={4}>
             <Heading size={3}>Pets</Heading>
@@ -121,7 +116,7 @@ export function HumanPreviewInner({ document }) {
         */}
       </Stack>
     </Layout>
-  );
+  )
 }
 
 HumanPreview.propTypes = {
@@ -130,8 +125,8 @@ HumanPreview.propTypes = {
     draft: PropTypes.object,
     published: PropTypes.object,
   }),
-};
+}
 
 HumanPreview.propTypes = {
   document: PropTypes.object,
-};
+}

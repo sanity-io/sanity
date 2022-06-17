@@ -1,9 +1,9 @@
-import React from "react";
-import { Card, Stack, Text, Grid, Box, Label } from "@sanity/ui";
-import { urlFor } from "../../../helpers/image-url-builder";
-import styled from "styled-components";
+import React from 'react'
+import {Card, Stack, Text, Grid, Box, Label} from '@sanity/ui'
+import {urlFor} from '../../../helpers/image-url-builder'
+import styled from 'styled-components'
 
-export function MetadataList({ items = [] }) {
+export function MetadataList({items = []}) {
   return (
     <Box>
       <Grid columns={2} gap={5}>
@@ -20,24 +20,22 @@ export function MetadataList({ items = [] }) {
                   {item.value}
                 </Text>
               )}
-              {item?.image && (
-                <ImageAndCaption image={item.image} caption={item?.imageCaption} />
-              )}
+              {item?.image && <ImageAndCaption image={item.image} caption={item?.imageCaption} />}
             </Stack>
           </Box>
         ))}
       </Grid>
     </Box>
-  );
+  )
 }
 
-function ImageAndCaption({ image, caption }) {
+function ImageAndCaption({image, caption}) {
   if (!caption) {
     return (
       <Card radius={6} overflow="hidden">
         <Image width="200" src={urlFor(image).width(200).height(200)} alt="" />
       </Card>
-    );
+    )
   }
 
   return (
@@ -54,18 +52,14 @@ function ImageAndCaption({ image, caption }) {
       fallbackPlacements="left"
     >
       <Card radius={6} overflow="hidden">
-        <Image
-          width="200"
-          src={urlFor(image).width(200).height(200)}
-          alt=""
-        />
+        <Image width="200" src={urlFor(image).width(200).height(200)} alt="" />
       </Card>
     </Tooltip>
-  );
+  )
 }
 
 const Image = styled.img`
   aspect-ratio: 1;
   display: block;
   width: 100%;
-`;
+`

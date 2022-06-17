@@ -1,6 +1,5 @@
-import S from "@sanity/desk-tool/structure-builder";
-import {EditIcon} from '@sanity/icons';
-
+import S from '@sanity/desk-tool/structure-builder'
+import {EditIcon} from '@sanity/icons'
 
 /**
  * ## Install
@@ -49,20 +48,19 @@ export const getDocumentNodeWithViews = ({schemaType}) => {
     .filter((listItem) => listItem.spec.schemaType.name === schemaType)
     .map((listItem) => {
       // schema is the compiled Studio schema object
-      const schema = listItem.spec.schemaType;
+      const schema = listItem.spec.schemaType
 
-
-      const views = schema?.views;
-      let viewList = views ? (Array.isArray(views) ? [...views] : [views]) : [];
+      const views = schema?.views
+      let viewList = views ? (Array.isArray(views) ? [...views] : [views]) : []
 
       // If the schema has views set, we create a default document node
       if (viewList.length) {
-        viewList = [S.view.form().title("Edit").icon(EditIcon), ...viewList];
-        return S.document().views(viewList);
+        viewList = [S.view.form().title('Edit').icon(EditIcon), ...viewList]
+        return S.document().views(viewList)
       }
-      return undefined;
-    });
+      return undefined
+    })
 
   // If schemaType did not have views field, we return undefined: then the regular form builder view will be used as normal
-  return matchingTypes.length ? matchingTypes[0] : undefined;
-};
+  return matchingTypes.length ? matchingTypes[0] : undefined
+}

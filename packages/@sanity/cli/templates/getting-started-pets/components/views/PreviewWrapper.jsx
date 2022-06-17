@@ -1,8 +1,8 @@
-import React from "react";
-import { Flex, Card, Inline, Text, Heading } from "@sanity/ui";
-import styled from "styled-components";
+import React from 'react'
+import {Flex, Card, Inline, Text, Heading} from '@sanity/ui'
+import styled from 'styled-components'
 
-export function PreviewWrapper({ children }) {
+export function PreviewWrapper({children}) {
   return (
     <Background paddingX={3} paddingY={5} justify="center">
       <Canvas radius={6}>
@@ -16,28 +16,33 @@ export function PreviewWrapper({ children }) {
           </nav>
         </Flex>
 
-        <main>
-          {children}
-        </main>
+        <main>{children}</main>
 
-        <Flex as="footer" direction="column" align="center" padding={4} paddingTop={6} marginBottom={4}>
-          <img src="/static/madeWithSanity.svg" alt="my logo"/>
+        <Flex
+          as="footer"
+          direction="column"
+          align="center"
+          padding={4}
+          paddingTop={6}
+          marginBottom={4}
+        >
+          <img src="/static/madeWithSanity.svg" alt="my logo" />
         </Flex>
       </Canvas>
     </Background>
-  );
+  )
 }
 
 const Background = styled(Flex)`
   background: #1c2430;
-`;
+`
 
 const Canvas = styled(Card)`
   background: #fff0eb;
   max-width: 390px;
-`;
+`
 
 const Title = styled(Heading)`
   font-style: italic;
   font-weight: 900;
-`;
+`

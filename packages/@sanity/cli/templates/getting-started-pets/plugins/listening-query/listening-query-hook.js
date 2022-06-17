@@ -1,10 +1,10 @@
-import { useEffect, useState, useRef, useMemo } from "react";
-import documentStore from "part:@sanity/base/datastore/document";
-import { catchError, distinctUntilChanged } from "rxjs/operators";
-import isEqual from "react-fast-compare";
+import {useEffect, useState, useRef, useMemo} from 'react'
+import documentStore from 'part:@sanity/base/datastore/document'
+import {catchError, distinctUntilChanged} from 'rxjs/operators'
+import isEqual from 'react-fast-compare'
 
-const DEFAULT_PARAMS = {};
-const DEFAULT_OPTIONS = { apiVersion: `v2022-05-09` };
+const DEFAULT_PARAMS = {}
+const DEFAULT_OPTIONS = {apiVersion: `v2022-05-09`}
 
 /**
  * Sets up a listening query for the provided query.
@@ -25,15 +25,11 @@ const DEFAULT_OPTIONS = { apiVersion: `v2022-05-09` };
  * @param options options to send to documentStore.listenQuery
  * @returns {{data: unknown, loading: boolean, error: boolean}}
  */
-export function useListeningQuery(
-  query,
-  params = DEFAULT_PARAMS,
-  options = DEFAULT_OPTIONS
-) {
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(false);
-  const [data, setData] = useState(null);
-  const subscription = useRef(null);
+export function useListeningQuery(query, params = DEFAULT_PARAMS, options = DEFAULT_OPTIONS) {
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(false)
+  const [data, setData] = useState(null)
+  const subscription = useRef(null)
 
   useEffect(() => {
     if (query) {
@@ -42,43 +38,39 @@ export function useListeningQuery(
         .pipe(
           distinctUntilChanged(isEqual),
           catchError((err) => {
-            console.error(err);
-            setError(err);
-            setLoading(false);
-            setData(null);
+            console.error(err)
+            setError(err)
+            setLoading(false)
+            setData(null)
 
-            return err;
+            return err
           })
         )
         .subscribe((documents) => {
-          setData((current) =>
-            isEqual(current, documents) ? current : documents
-          );
-          setLoading(false);
-          setError(false);
-        });
+          setData((current) => (isEqual(current, documents) ? current : documents))
+          setLoading(false)
+          setError(false)
+        })
     }
 
     return () => {
-      return subscription.current
-        ? subscription.current.unsubscribe()
-        : undefined;
-    };
-  }, [query, params, options]);
+      return subscription.current ? subscription.current.unsubscribe() : undefined
+    }
+  }, [query, params, options])
 
-  return { loading, error, data };
+  return {loading, error, data}
 }
 
 /**
  * Need to make a pair of id returned as a stable referencable objects, otherwise listener will be remade
  */
 export function useIdPair(id) {
-  const publishedId = useMemo(() => id?.replace("drafts.", ""), [id]);
+  const publishedId = useMemo(() => id?.replace('drafts.', ''), [id])
   return useMemo(
     () => ({
       draftId: publishedId ? `drafts.${publishedId}` : undefined,
       id: publishedId,
     }),
     [publishedId]
-  );
+  )
 }

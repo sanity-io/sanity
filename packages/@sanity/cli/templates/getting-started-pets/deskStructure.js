@@ -1,22 +1,22 @@
 // /deskStructure.js
-import S from "@sanity/desk-tool/structure-builder";
-import { CogIcon as SettingsIcon } from "@sanity/icons";
-import { getDocumentNodeWithViews } from "./plugins/views-in-schema/documentNodeWithViews";
+import S from '@sanity/desk-tool/structure-builder'
+import {CogIcon as SettingsIcon} from '@sanity/icons'
+import {getDocumentNodeWithViews} from './plugins/views-in-schema/documentNodeWithViews'
 
-export const getDefaultDocumentNode = getDocumentNodeWithViews;
-const excludedDocumentTypes = ["siteSettings", "media.tag"];
+export const getDefaultDocumentNode = getDocumentNodeWithViews
+const excludedDocumentTypes = ['siteSettings', 'media.tag']
 
 export default () =>
   S.list()
-    .title("Content")
+    .title('Content')
     .items([
       S.documentListItem()
-        .title("Settings")
-        .id("siteSettings")
-        .schemaType("siteSettings")
+        .title('Settings')
+        .id('siteSettings')
+        .schemaType('siteSettings')
         .icon(SettingsIcon),
       S.divider(),
       ...S.documentTypeListItems().filter(
         (listItem) => !excludedDocumentTypes.includes(listItem.getId())
       ),
-    ]);
+    ])

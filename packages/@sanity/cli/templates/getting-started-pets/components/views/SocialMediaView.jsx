@@ -1,31 +1,31 @@
-import React from "react";
-import { Card, Flex, Box, Label, Stack, Heading, Text } from "@sanity/ui";
-import PropTypes from "prop-types";
-import { urlFor } from "../../helpers/image-url-builder";
-import styled from "styled-components";
+import React from 'react'
+import {Card, Flex, Box, Label, Stack, Heading, Text} from '@sanity/ui'
+import PropTypes from 'prop-types'
+import {urlFor} from '../../helpers/image-url-builder'
+import styled from 'styled-components'
 
 /**
  * Displays the currently displayed document as Social Media cards
  */
 export function SocialMediaView(props) {
-  const doc = props.document.displayed;
+  const doc = props.document.displayed
   if (!doc) {
-    return null;
+    return null
   }
 
   return (
     <Flex padding={5}>
-      <Box marginX={"auto"}>
+      <Box marginX={'auto'}>
         <Flex direction="column" justify="center" align="left" gap={5}>
           <Stack space={3}>
             <Label size={2} as="h2">
               Twitter - Mobile
             </Label>
-            <Card border radius={2} style={{ width: 224 }}>
+            <Card border radius={2} style={{width: 224}}>
               {doc.ogimage?.asset ? (
-                <Card style={{ width: 224 }}>
+                <Card style={{width: 224}}>
                   <img
-                    style={{ width: 224, height: 224 }}
+                    style={{width: 224, height: 224}}
                     src={urlFor(doc.ogimage).width(448).height(448).url()}
                     alt="OG Image preview"
                   />
@@ -35,7 +35,7 @@ export function SocialMediaView(props) {
                         Sanity.io
                       </Text>
                       <Text size={2} weight="medium">
-                        {doc.title ?? "Title not specified"}
+                        {doc.title ?? 'Title not specified'}
                       </Text>
                     </Stack>
                   </Box>
@@ -51,19 +51,17 @@ export function SocialMediaView(props) {
             </Label>
             <Card border radius={2}>
               {doc.ogimage?.asset ? (
-                <Card style={{ width: 584 }}>
+                <Card style={{width: 584}}>
                   <img
-                    style={{ width: 584, height: 220 }}
+                    style={{width: 584, height: 220}}
                     src={urlFor(doc.ogimage).width(1168).height(440).url()}
                     alt="OG Image preview"
                   />
                   <Box padding={4}>
                     <Stack space={3}>
-                      <Heading size={1}>
-                        {doc.title ?? "Title not specified"}
-                      </Heading>
+                      <Heading size={1}>{doc.title ?? 'Title not specified'}</Heading>
                       <TextWithEllipsis size={1}>
-                        {doc.description ?? "Description not specified"}
+                        {doc.description ?? 'Description not specified'}
                       </TextWithEllipsis>
                       <Text size={1} muted>
                         Sanity.io
@@ -82,20 +80,18 @@ export function SocialMediaView(props) {
             </Label>
             <Card border radius={2}>
               {doc.ogimage?.asset ? (
-                <Card style={{ width: 584 }}>
+                <Card style={{width: 584}}>
                   <img
-                    style={{ width: 584, height: 274 }}
+                    style={{width: 584, height: 274}}
                     src={urlFor(doc.ogimage).width(1168).height(548).url()}
                     alt="OG Image preview"
                   />
                   <Box padding={4}>
                     <Stack space={3}>
                       <Label>Sanity.io</Label>
-                      <Heading size={1}>
-                        {doc.title ?? "Title not specified"}
-                      </Heading>
+                      <Heading size={1}>{doc.title ?? 'Title not specified'}</Heading>
                       <TextWithEllipsis size={1}>
-                        {doc.description ?? "Description not specified"}
+                        {doc.description ?? 'Description not specified'}
                       </TextWithEllipsis>
                     </Stack>
                   </Box>
@@ -108,7 +104,7 @@ export function SocialMediaView(props) {
         </Flex>
       </Box>
     </Flex>
-  );
+  )
 }
 
 SocialMediaView.propTypes = {
@@ -117,7 +113,7 @@ SocialMediaView.propTypes = {
     draft: PropTypes.object,
     published: PropTypes.object,
   }),
-};
+}
 
 const TextWithEllipsis = styled(Text)`
   width: 100%;
@@ -126,4 +122,4 @@ const TextWithEllipsis = styled(Text)`
     overflow: hidden;
     text-overflow: ellipsis;
   }
-`;
+`

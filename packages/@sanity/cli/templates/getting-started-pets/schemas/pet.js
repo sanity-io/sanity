@@ -1,84 +1,81 @@
-import { JsonView } from "../components/views/JsonView";
-import { DocumentIcon, EyeOpenIcon, StarIcon } from "@sanity/icons";
-import S from "@sanity/desk-tool/structure-builder";
-import { PetPreview } from "../components/views/PetPreview";
-import { RangeInput } from "../components/inputs/RangeInput";
-import { CharacterCount } from "../components/inputs/CharacterCount";
-import petIcon from "../components/icons/petIcon";
+import {JsonView} from '../components/views/JsonView'
+import {DocumentIcon, EyeOpenIcon, StarIcon} from '@sanity/icons'
+import S from '@sanity/desk-tool/structure-builder'
+import {PetPreview} from '../components/views/PetPreview'
+import {RangeInput} from '../components/inputs/RangeInput'
+import {CharacterCount} from '../components/inputs/CharacterCount'
+import petIcon from '../components/icons/petIcon'
 
 export default {
-  name: "pet",
-  type: "document",
-  title: "Pet",
+  name: 'pet',
+  type: 'document',
+  title: 'Pet',
   icon: petIcon,
 
   views: [
-    S.view
-      .component(PetPreview)
-      .title("Preview")
-      .icon(EyeOpenIcon),
-    S.view.component(JsonView).title("JSON").icon(DocumentIcon),
+    S.view.component(PetPreview).title('Preview').icon(EyeOpenIcon),
+    S.view.component(JsonView).title('JSON').icon(DocumentIcon),
   ],
 
   groups: [
     {
-      name: "favourites",
-      title: "Favourites",
+      name: 'favourites',
+      title: 'Favourites',
       icon: StarIcon,
     },
   ],
 
   fields: [
     {
-      name: "name",
-      type: "string",
-      title: "Name",
+      name: 'name',
+      type: 'string',
+      title: 'Name',
     },
     {
-      name: "shortDescription",
+      name: 'shortDescription',
       description:
-        "This field uses a custom input component to insert a character count. There is no limit to how you can customise your inputs with Sanity.",
-      type: "text",
-      title: "Short description",
+        'This field uses a custom input component to insert a character count. There is no limit to how you can customise your inputs with Sanity.',
+      type: 'text',
+      title: 'Short description',
       inputComponent: CharacterCount,
       validation: (Rule) => Rule.max(100),
     },
     {
-      name: "birthday",
+      name: 'birthday',
       description:
         "This is a date input. You can customise it too. Hours? Time zones? Custom calendar? You've got it.",
-      type: "date",
-      title: "Date of birth",
+      type: 'date',
+      title: 'Date of birth',
     },
     {
-      name: "weight",
+      name: 'weight',
       description:
         "That's a number input. Sanity supports all the default HTML inputs, and much more.",
-      type: "number",
-      title: "Weight (kg)",
+      type: 'number',
+      title: 'Weight (kg)',
     },
     {
-      title: "Hair",
-      name: "hair",
+      title: 'Hair',
+      name: 'hair',
       description:
         "This field is used to  conditionally show and hide the next field. Only if a pet has hair or fur, you can set its fluffiness level. 'hair' is used as a default value.",
-      type: "string",
+      type: 'string',
       options: {
         list: [
-          { title: "Hairless", value: "Hairless" },
-          { title: "Hair", value: "Hair" },
-          { title: "Fur", value: "Fur" },
+          {title: 'Hairless', value: 'Hairless'},
+          {title: 'Hair', value: 'Hair'},
+          {title: 'Fur', value: 'Fur'},
         ], // <-- predefined values
-        layout: "radio", // <-- defaults to 'dropdown'
+        layout: 'radio', // <-- defaults to 'dropdown'
       },
-      initialValue: "hair",
+      initialValue: 'hair',
     },
     {
-      name: "fluffiness",
+      name: 'fluffiness',
       description:
         "That's yet another custom input. You can build whatever input you need, even the most crazy one!",
-      type: "number",
-      title: "Fluffiness level",
+      type: 'number',
+      title: 'Fluffiness level',
       inputComponent: RangeInput,
       options: {
         range: {
@@ -87,28 +84,28 @@ export default {
           step: 1,
         },
       },
-      hidden: ({ parent }) => parent?.hair === "hairless",
+      hidden: ({parent}) => parent?.hair === 'hairless',
     },
     {
-      name: "picture",
-      title: "Picture",
-      type: "image",
+      name: 'picture',
+      title: 'Picture',
+      type: 'image',
       options: {
         hotspot: true, // <-- Defaults to false
       },
       fields: [
         {
-          name: "caption",
-          type: "string",
-          title: "Caption",
+          name: 'caption',
+          type: 'string',
+          title: 'Caption',
           options: {
             isHighlighted: true, // <-- make this field easily accessible
           },
         },
         {
-          name: "alt",
-          type: "string",
-          title: "Alt text",
+          name: 'alt',
+          type: 'string',
+          title: 'Alt text',
           options: {
             isHighlighted: true, // <-- make this field easily accessible
           },
@@ -116,42 +113,40 @@ export default {
       ],
     },
     {
-      name: "human",
-      description: "This is a single reference field…",
-      type: "reference",
-      title: "Human",
-      to: [{ type: "human" }],
+      name: 'human',
+      description: 'This is a single reference field…',
+      type: 'reference',
+      title: 'Human',
+      to: [{type: 'human'}],
     },
     {
-      name: "friends",
-      description: "…and this is an array of references!",
-      type: "array",
-      title: "Friends",
-      of: [{ type: "reference", to: [{ type: "pet" }] }],
+      name: 'friends',
+      description: '…and this is an array of references!',
+      type: 'array',
+      title: 'Friends',
+      of: [{type: 'reference', to: [{type: 'pet'}]}],
     },
     {
-      name: "description",
-      title: "Description",
-      type: "array",
-      of: [{ type: "block" }, { type: "image", options: { hotspot: true } }],
+      name: 'description',
+      title: 'Description',
+      type: 'array',
+      of: [{type: 'block'}, {type: 'image', options: {hotspot: true}}],
     },
     {
-      name: "toys",
-      title: "Favourite toys",
-      description:
-        "Ordered list where the first item will be the first position",
-      type: "array",
-      of: [{ type: "reference", to: [{ type: "product" }] }],
-      group: "favourites",
+      name: 'toys',
+      title: 'Favourite toys',
+      description: 'Ordered list where the first item will be the first position',
+      type: 'array',
+      of: [{type: 'reference', to: [{type: 'product'}]}],
+      group: 'favourites',
     },
     {
-      name: "treats",
-      title: "Favourite treats",
-      description:
-        "Ordered list where the first item will be the first position",
-      type: "array",
-      of: [{ type: "reference", to: [{ type: "product" }] }],
-      group: "favourites",
+      name: 'treats',
+      title: 'Favourite treats',
+      description: 'Ordered list where the first item will be the first position',
+      type: 'array',
+      of: [{type: 'reference', to: [{type: 'product'}]}],
+      group: 'favourites',
     },
   ],
-};
+}

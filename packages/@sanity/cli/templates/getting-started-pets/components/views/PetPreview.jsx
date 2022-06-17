@@ -1,52 +1,39 @@
-import React, { useMemo } from "react";
-import {
-  Box,
-  Flex,
-  Label,
-  Heading,
-  Text,
-  Card,
-  Grid,
-  Stack,
-  Tooltip,
-} from "@sanity/ui";
-import PropTypes from "prop-types";
-import { BlockText } from "./BlockText";
-import {
-  useIdPair,
-  useListeningQuery,
-} from "../../plugins/listening-query/listening-query-hook";
-import { GridBox, Picture } from "./PetPreviewComponents";
-import { Layout, Divider, GridList, MetadataList } from "./components";
+import React, {useMemo} from 'react'
+import {Box, Flex, Label, Heading, Text, Card, Grid, Stack, Tooltip} from '@sanity/ui'
+import PropTypes from 'prop-types'
+import {BlockText} from './BlockText'
+import {useIdPair, useListeningQuery} from '../../plugins/listening-query/listening-query-hook'
+import {GridBox, Picture} from './PetPreviewComponents'
+import {Layout, Divider, GridList, MetadataList} from './components'
 
 export function PetPreview(props) {
-  const doc = props.document.displayed;
+  const doc = props.document.displayed
   if (!doc) {
-    return null;
+    return null
   }
-  return <PetPreviewInner doc={doc} />;
+  return <PetPreviewInner doc={doc} />
 }
 
-function queryFor({ draftId, publishedId }) {
+function queryFor({draftId, publishedId}) {
   return draftId || publishedId
     ? `{
-    ${draftId ? '"draft":  * [_id == $draftId][0],' : ""}
-    ${publishedId ? '"published":  * [_id == $id][0],' : ""}
+    ${draftId ? '"draft":  * [_id == $draftId][0],' : ''}
+    ${publishedId ? '"published":  * [_id == $id][0],' : ''}
   }`
-    : undefined;
+    : undefined
 }
 
 function useListenForRef(id) {
-  const ids = useIdPair(id);
-  const query = queryFor(ids);
-  const { data } = useListeningQuery(query, ids);
+  const ids = useIdPair(id)
+  const query = queryFor(ids)
+  const {data} = useListeningQuery(query, ids)
 
-  const { draft, published } = data ?? {};
-  return draft ?? published;
+  const {draft, published} = data ?? {}
+  return draft ?? published
 }
 
-export function PetPreviewInner({ doc }) {
-  const resolvedDocument = useListenForRef(doc._id);
+export function PetPreviewInner({doc}) {
+  const resolvedDocument = useListenForRef(doc._id)
   const {
     name,
     description,
@@ -60,41 +47,41 @@ export function PetPreviewInner({ doc }) {
     picture,
     human,
     hair,
-  } = resolvedDocument || {};
+  } = resolvedDocument || {}
 
   const metadata = useMemo(() => {
-    const metadataList = [];
+    const metadataList = []
 
     if (birthday) {
       metadataList.push({
         title: 'Born 🎁"',
         value: birthday,
-      });
+      })
     }
 
     if (hair) {
       metadataList.push({
-        title: "Hairstyle 🐩",
+        title: 'Hairstyle 🐩',
         value: hair,
-      });
+      })
     }
 
     metadataList.push({
-      title: "Fluffiness 🐑",
-      value: hair !== "hairless" ? fluffiness : "No fluff!",
-    });
+      title: 'Fluffiness 🐑',
+      value: hair !== 'hairless' ? fluffiness : 'No fluff!',
+    })
 
     metadataList.push({
-      title: "Weight 💪",
-      value: weight ? `${weight} kg` : "Unknown 🤔",
-    });
+      title: 'Weight 💪',
+      value: weight ? `${weight} kg` : 'Unknown 🤔',
+    })
 
     return metadataList
-  }, [birthday, fluffiness, hair, weight]);
+  }, [birthday, fluffiness, hair, weight])
 
   const favouriteProducts = useMemo(() => {
     return []
-  }, []);
+  }, [])
 
   if (!resolvedDocument) {
     return null
@@ -104,7 +91,6 @@ export function PetPreviewInner({ doc }) {
   // const favoriteTreatsReferenceDocument = useListenForRef(treats?.[0]?._ref);
   // const favoriteToysReferenceDocument = useListenForRef(toys?.[0]?._ref);
   // const bffReferenceDocument = useListenForRef(friends?.[0]?._ref);
-
 
   return (
     <Layout>
@@ -120,7 +106,7 @@ export function PetPreviewInner({ doc }) {
 
         <Box>
           <Heading as="h1" size={4}>
-            {name ?? "Gimme a name!"}
+            {name ?? 'Gimme a name!'}
           </Heading>
         </Box>
 
@@ -222,12 +208,9 @@ export function PetPreviewInner({ doc }) {
 
         <Divider />
 
-        {(favouriteProducts?.length > 0) && (
+        {favouriteProducts?.length > 0 && (
           <Box>
-            <GridList
-              heading="Favorite toys & treats"
-              items={favouriteProducts}
-            />
+            <GridList heading="Favorite toys & treats" items={favouriteProducts} />
           </Box>
         )}
 
@@ -267,7 +250,7 @@ export function PetPreviewInner({ doc }) {
         */}
       </Stack>
     </Layout>
-  );
+  )
 }
 
 PetPreview.propTypes = {
@@ -276,8 +259,8 @@ PetPreview.propTypes = {
     draft: PropTypes.object,
     published: PropTypes.object,
   }),
-};
+}
 
 PetPreviewInner.propTypes = {
   doc: PropTypes.object,
-};
+}

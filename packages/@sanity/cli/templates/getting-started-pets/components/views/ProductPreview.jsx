@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, {useState, useCallback} from 'react'
 import {
   Box,
   Button,
@@ -12,16 +12,13 @@ import {
   Stack,
   Select,
   Avatar,
-} from "@sanity/ui";
-import PropTypes from "prop-types";
-import { urlFor } from "../../helpers/image-url-builder";
-import { BlockText } from "./BlockText";
-import {
-  useIdPair,
-  useListeningQuery,
-} from "../../plugins/listening-query/listening-query-hook";
+} from '@sanity/ui'
+import PropTypes from 'prop-types'
+import {urlFor} from '../../helpers/image-url-builder'
+import {BlockText} from './BlockText'
+import {useIdPair, useListeningQuery} from '../../plugins/listening-query/listening-query-hook'
 
-import { Picture } from "./PetPreviewComponents";
+import {Picture} from './PetPreviewComponents'
 /**
  * Renders thecurrently displayed document as formatted JSON as a
  * simple little "webpage" using:
@@ -30,34 +27,28 @@ import { Picture } from "./PetPreviewComponents";
  * - @sanity/image-url
  */
 export function ProductPreview(props) {
-  const doc = props.document.displayed;
+  const doc = props.document.displayed
   if (!doc) {
-    return null;
+    return null
   }
-  return <ProductPreviewInner doc={doc} />;
+  return <ProductPreviewInner doc={doc} />
 }
 
-export function ProductPreviewInner({ doc }) {
-  const { name, description, variants, price, material } = doc;
-  const [currentVariant, setCurrentVariant] = useState(
-    variants ? variants[0] : undefined
-  );
+export function ProductPreviewInner({doc}) {
+  const {name, description, variants, price, material} = doc
+  const [currentVariant, setCurrentVariant] = useState(variants ? variants[0] : undefined)
 
   const onValueChange = (event) => {
-    const variant = variants.find((v) => v.name === event.currentTarget.value);
+    const variant = variants.find((v) => v.name === event.currentTarget.value)
 
-    setCurrentVariant(variant);
-  };
+    setCurrentVariant(variant)
+  }
 
   return (
     <Flex direction="column" gap={5} padding={4} maxLength={20}>
       <Flex direction="column">
         <Box>
-          <Picture
-            picture={currentVariant?.picture}
-            size={400}
-            borderPercentage={10}
-          />
+          <Picture picture={currentVariant?.picture} size={400} borderPercentage={10} />
           {currentVariant?.picture?.caption && (
             <Box marginLeft={5} marginY={3}>
               <Label>{currentVariant?.picture?.caption}</Label>
@@ -66,21 +57,19 @@ export function ProductPreviewInner({ doc }) {
         </Box>
       </Flex>
 
-      <Heading size={4}>{name ?? "Gimme a name!"}</Heading>
+      <Heading size={4}>{name ?? 'Gimme a name!'}</Heading>
 
       <Flex gap={2}>
         <Card flex={1}>
           <Stack space={3}>
             <Label>Price</Label>
-            <Text>
-              {currentVariant?.price ? `$${currentVariant?.price}` : "not set"}
-            </Text>
+            <Text>{currentVariant?.price ? `$${currentVariant?.price}` : 'not set'}</Text>
           </Stack>
         </Card>
         <Card flex={[1, 2, 3]} marginLeft={[2, 2, 3, 4]}>
           <Stack space={3}>
             <Label>Material</Label>
-            <Text>{material || "-"}</Text>
+            <Text>{material || '-'}</Text>
           </Stack>
         </Card>
       </Flex>
@@ -101,7 +90,7 @@ export function ProductPreviewInner({ doc }) {
                     <option key={variant.id} value={variant.name}>
                       {variant.name}
                     </option>
-                  );
+                  )
                 })}
               </Select>
             </Stack>
@@ -118,7 +107,7 @@ export function ProductPreviewInner({ doc }) {
                   ))}
                 </Select>
               ) : (
-                "single size"
+                'single size'
               )}
             </Stack>
           </Card>
@@ -150,7 +139,7 @@ export function ProductPreviewInner({ doc }) {
         </Flex>
       )}
     </Flex>
-  );
+  )
 }
 
 ProductPreview.propTypes = {
@@ -159,8 +148,8 @@ ProductPreview.propTypes = {
     draft: PropTypes.object,
     published: PropTypes.object,
   }),
-};
+}
 
 ProductPreview.propTypes = {
   doc: PropTypes.object,
-};
+}
