@@ -1,8 +1,8 @@
-import { SimpleHumanPreview } from "../components/views/SimpleHumanPreview";
+import { HumanPreview } from "../components/views/HumanPreview";
 import { JsonView } from "../components/views/JsonView";
 import { DocumentIcon, EyeOpenIcon } from "@sanity/icons";
 import S from "@sanity/desk-tool/structure-builder";
-import {UsersIcon} from '@sanity/icons'
+import humanIcon from "../components/icons/humanIcon";
 
 export default {
   name: "human",
@@ -10,12 +10,12 @@ export default {
   title: "Human",
   views: [
     S.view
-      .component(SimpleHumanPreview)
-      .title("Simple preview")
+      .component(HumanPreview)
+      .title("Preview")
       .icon(EyeOpenIcon),
     S.view.component(JsonView).title("JSON").icon(DocumentIcon),
   ],
-  icon: UsersIcon,
+  icon: humanIcon,
   fields: [
     {
       name: "name",
@@ -57,15 +57,17 @@ export default {
     select: {
       name: "name",
       pets: "pets",
+      media: "picture",
     },
     prepare(selection) {
-      const { name, pets } = selection;
-      const petsLength = pets?.length || 0
-      const suffixPets = petsLength === 1 ? 'pet' : 'pets';
-      const heartSuffix = petsLength > 0 ? '❤️' : '💔'
+      const { name, pets, media } = selection;
+      const petsLength = pets?.length || 0;
+      const suffixPets = petsLength === 1 ? "pet" : "pets";
+      const heartSuffix = petsLength > 0 ? "❤️" : "💔";
       return {
         title: name,
-        subtitle:  `${`${petsLength || 0} ${suffixPets}`} ${heartSuffix}`,
+        subtitle: `${`${petsLength || 0} ${suffixPets}`} ${heartSuffix}`,
+        media: media,
       };
     },
   },

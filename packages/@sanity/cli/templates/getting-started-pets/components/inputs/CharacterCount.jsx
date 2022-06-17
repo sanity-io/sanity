@@ -1,7 +1,7 @@
 import React, { forwardRef } from "react";
 import { FormField } from "@sanity/base/components";
 import PatchEvent, { set, unset } from "@sanity/form-builder/PatchEvent";
-import { TextInput, Flex, Text, Stack } from "@sanity/ui";
+import { TextArea, Flex, Text, Stack } from "@sanity/ui";
 import PropTypes from "prop-types";
 
 /**
@@ -48,7 +48,7 @@ export const CharacterCount = forwardRef(function CharacterCount(props, ref) {
       __unstable_presence={presence} // Handles presence avatars
     >
       <Stack space={2}>
-        <TextInput
+        <TextArea
           value={value ? value : ""} // Current field value
           readOnly={readOnly} // If "readOnly" is defined make this field read only
           placeholder={placeholder} // If placeholder is defined, display placeholder text
