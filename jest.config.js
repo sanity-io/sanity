@@ -11,6 +11,7 @@ const JEST_PROJECTS = [
   '@sanity/validation',
 ]
 
+// eslint-disable-next-line tsdoc/syntax
 /** @type {import('@jest/types').Config.InitialOptions} */
 module.exports = {
   projects: JEST_PROJECTS.map((pkgName) => `<rootDir>/packages/${pkgName}`),
