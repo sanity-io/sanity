@@ -17,7 +17,7 @@ export interface FormFieldSetProps {
   children: React.ReactNode | (() => React.ReactNode)
   collapsed?: boolean
   collapsible?: boolean
-  columns?: number
+  columns?: number | number[]
   description?: React.ReactNode
   /**
    * The nesting level of the form field set
