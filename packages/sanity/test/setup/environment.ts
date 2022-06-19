@@ -2,11 +2,17 @@ export {}
 
 // get rid of context warning
 const warn = console.warn
+const error = console.error
 window.console = {
   ...window.console,
   warn: (...args: any[]) => {
     if (!/No context provided/.test(args[0])) {
       warn(...args)
+    }
+  },
+  error: (...args: any[]) => {
+    if (!/flushSync/.test(args[0])) {
+      error(...args)
     }
   },
 }
