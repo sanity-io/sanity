@@ -17,6 +17,10 @@ const SegmentSpan = styled.code`
   }
 `
 
+const ErrorMessageText = styled(Text)`
+  white-space: pre-line;
+`
+
 export function SchemaErrors(props: {problemGroups: SchemaValidationProblemGroup[]}) {
   const {problemGroups} = props
 
@@ -96,9 +100,9 @@ export function SchemaErrors(props: {problemGroups: SchemaValidationProblemGroup
               <Box as="ul" marginTop={4}>
                 <Box as="li">
                   <Stack space={3}>
-                    <Text muted size={1}>
+                    <ErrorMessageText muted size={1}>
                       {problem.message}
-                    </Text>
+                    </ErrorMessageText>
 
                     {problem.helpId && (
                       <Text muted size={1}>
