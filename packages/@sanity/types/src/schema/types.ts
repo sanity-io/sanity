@@ -559,7 +559,12 @@ export type BlockChildrenObjectField = {name: 'children'} & ObjectField<ArraySch
  * Note: this does _not_ represent the schema definition shape.
  */
 export interface SpanSchemaType extends Omit<ObjectSchemaType, 'fields'> {
-  annotations: SchemaType[]
+  annotations: (ObjectSchemaType & {
+    blockEditor?: {
+      icon?: string | ComponentType
+      render?: ComponentType
+    }
+  })[]
   decorators: TitledListValue<string>[]
   // the first field will always be the `marks` field and the second will
   // always be the `text` field
