@@ -14,8 +14,7 @@ Let's start with a complete example:
 
 ```js
 import Schema from '@sanity/schema'
-import blockTools from '@sanity/block-tools'
-
+import {htmlToBlocks} from '@sanity/block-tools'
 
 // Start with compiling a schema we can work against
 const defaultSchema = Schema.compile({
@@ -28,29 +27,26 @@ const defaultSchema = Schema.compile({
         {
           title: 'Title',
           type: 'string',
-          name: 'title'
+          name: 'title',
         },
         {
           title: 'Body',
           name: 'body',
           type: 'array',
-          of: [{type: 'block'}]
-        }
-      ]
-    }
-  ]
+          of: [{type: 'block'}],
+        },
+      ],
+    },
+  ],
 })
 
 // The compiled schema type for the content type that holds the block array
-const blockContentType = defaultSchema.get('blogPost')
-  .fields.find(field => field.name === 'body').type
-
+const blockContentType = defaultSchema
+  .get('blogPost')
+  .fields.find((field) => field.name === 'body').type
 
 // Convert HTML to block array
-const blocks = blockTools.htmlToBlocks(
-  '<html><body><h1>Hello world!</h1><body></html>',
-  blockContentType
-)
+const blocks = htmlToBlocks('<html><body><h1>Hello world!</h1><body></html>', blockContentType)
 // Outputs
 //
 //  {
@@ -64,33 +60,31 @@ const blocks = blockTools.htmlToBlocks(
 //    ]
 //  }
 
-
 // Get the feature-set of a blockContentType
 const features = blockTools.getBlockContentFeatures(blockContentType)
-
 ```
 
 ## Methods
 
-### ``htmlToBlocks(html, blockContentType, options)`` (html deserializer)
+### `htmlToBlocks(html, blockContentType, options)` (html deserializer)
 
 This will deserialize the input html (string) into blocks.
 
 #### Params
 
-##### ``blockContentType``
+##### `blockContentType`
 
 A compiled version of the block content schema type.
 When you give this option, the deserializer will respect the schema when deserializing to blocks.
 I.e. if the schema doesn't allow h2-styles, all h2 html-elements will deserialized to normal styled blocks.
 
-##### ``options``
+##### `options`
 
-###### ``parseHtml``
+###### `parseHtml`
+
 The HTML-deserialization is done by default by the browser's native DOMParser.
-On the server side you can give the function ``parseHtml``
+On the server side you can give the function `parseHtml`
 that parses the html into a DOMParser compatible model / API.
-
 
 ###### JSDOM example
 
@@ -102,14 +96,12 @@ const blocks = blockTools.htmlToBlocks(
   '<html><body><h1>Hello world!</h1><body></html>',
   blockContentType,
   {
-    parseHtml: html => new JSDOM(html).window.document
+    parseHtml: (html) => new JSDOM(html).window.document,
   }
 )
-
-
 ```
 
-##### ``rules``
+##### `rules`
 
 You may add your own rules to deal with special HTML cases.
 
@@ -118,9 +110,8 @@ blockTools.htmlToBlocks(
   '<html><body><pre><code>const foo = "bar"</code></pre></body></html>',
   blockContentType,
   {
-    parseHtml: html => new JSDOM(html),
+    parseHtml: (html) => new JSDOM(html),
     rules: [
-
       // Special rule for code blocks
       {
         deserialize(el, next, block) {
@@ -128,28 +119,27 @@ blockTools.htmlToBlocks(
             return undefined
           }
           const code = el.children[0]
-          const childNodes = code && code.tagName.toLowerCase() === 'code'
-            ? code.childNodes
-            : el.childNodes
+          const childNodes =
+            code && code.tagName.toLowerCase() === 'code' ? code.childNodes : el.childNodes
           let text = ''
-          childNodes.forEach(node => {
+          childNodes.forEach((node) => {
             text += node.textContent
           })
           // Return this as an own block (via block helper function), instead of appending it to a default block's children
           return block({
             _type: 'code',
             language: 'javascript',
-            text: text
+            text: text,
           })
-        }
-      }
-    ]
+        },
+      },
+    ],
   }
 )
-
 ```
 
-### ``normalizeBlock(block, [options={}])``
+### `normalizeBlock(block, [options={}])`
+
 Normalize a block object structure to make sure it has what it needs.
 
 ```js
@@ -160,13 +150,15 @@ const partialBlock = {
     {
       _type: 'span',
       text: 'Foobar',
-      marks: ['strong', 'df324e2qwe']
-    }
-  ]
+      marks: ['strong', 'df324e2qwe'],
+    },
+  ],
 }
 normalizeBlock(partialBlock, {alowedDecorators: ['strong']})
 ```
+
 Will produce
+
 ```
 {
   _key: 'randomKey0',
@@ -183,7 +175,7 @@ Will produce
 }
 ```
 
-### ``getBlockContentFeatures(blockContentType)``
+### `getBlockContentFeatures(blockContentType)`
 
 Will return an object with the features enabled for the input block content type.
 
