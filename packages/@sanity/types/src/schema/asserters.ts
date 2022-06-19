@@ -6,7 +6,7 @@ import type {
   ReferenceSchemaType,
   SpanSchemaType,
   TitledListValue,
-  SpanChildrenObjectField,
+  BlockChildrenObjectField,
   StyleObjectField,
   ListObjectField,
   BooleanSchemaType,
@@ -79,7 +79,7 @@ export function isBlockSchemaType(type: unknown): type is BlockSchemaType {
 
   const [maybeSpanChildren, maybeStyle, maybeList] = type.fields
   return (
-    isSpanChildrenObjectField(maybeSpanChildren) &&
+    isBlockChildrenObjectField(maybeSpanChildren) &&
     isStyleObjectField(maybeStyle) &&
     isListObjectField(maybeList)
   )
@@ -97,7 +97,7 @@ export function isListObjectField(field: unknown): field is ListObjectField {
   return isRecord(field.type) && field.type.jsonType === 'string'
 }
 
-export function isSpanChildrenObjectField(field: unknown): field is SpanChildrenObjectField {
+export function isBlockChildrenObjectField(field: unknown): field is BlockChildrenObjectField {
   if (!isRecord(field)) return false
   if (field.name !== 'children') return false
   if (!isArraySchemaType(field.type)) return false

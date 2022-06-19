@@ -548,10 +548,10 @@ export type StyleObjectField = {name: 'style'} & ObjectField<StringSchemaType>
 export type ListObjectField = {name: 'list'} & ObjectField<StringSchemaType>
 
 /**
- * A specific `ObjectField` for span `children` in `BlockSchemaType`
+ * The specific `children` field of a `block` type (`BlockSchemaType`)
  * @see BlockSchemaType
  */
-export type SpanChildrenObjectField = {name: 'children'} & ObjectField<ArraySchemaType>
+export type BlockChildrenObjectField = {name: 'children'} & ObjectField<ArraySchemaType>
 
 /**
  * Represents the compiled schema shape for `span`s for portable text.
@@ -573,8 +573,8 @@ export interface SpanSchemaType extends Omit<ObjectSchemaType, 'fields'> {
  */
 export interface BlockSchemaType extends ObjectSchemaType {
   fields: [
-    // the first 3 field are always span children, styles, and lists
-    SpanChildrenObjectField,
+    // the first 3 field are always block children, styles, and lists
+    BlockChildrenObjectField,
     StyleObjectField,
     ListObjectField,
     // then it could be any additional fields the user could add
