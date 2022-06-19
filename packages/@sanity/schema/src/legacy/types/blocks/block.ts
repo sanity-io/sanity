@@ -51,7 +51,8 @@ export const BlockType = {
       of: marks?.annotations || DEFAULT_ANNOTATIONS,
     }
 
-    // NOTE: if you update this please also update `BlockSchemaType` in`@sanity/types`
+    // NOTE: if you update this (EVEN THE ORDER OF FIELDS) you _NEED TO_ also
+    // update `BlockSchemaType`, `isBlockSchemaType` and similar in `@sanity/types`
     const fields = [childrenField, styleField, listField, markDefsField].concat(
       subTypeDef.fields || []
     )
