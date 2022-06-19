@@ -48,9 +48,9 @@ export function StudioProvider({
   )
 
   return (
-    <WorkspacesProvider config={config}>
-      <ColorSchemeProvider onSchemeChange={onSchemeChange} scheme={scheme}>
-        <StudioErrorBoundary>
+    <ColorSchemeProvider onSchemeChange={onSchemeChange} scheme={scheme}>
+      <StudioErrorBoundary>
+        <WorkspacesProvider config={config}>
           <ActiveWorkspaceMatcher
             unstable_history={history}
             NotFoundComponent={NotFoundScreen}
@@ -72,8 +72,8 @@ export function StudioProvider({
               </UserColorManagerProvider>
             </StudioThemeProvider>
           </ActiveWorkspaceMatcher>
-        </StudioErrorBoundary>
-      </ColorSchemeProvider>
-    </WorkspacesProvider>
+        </WorkspacesProvider>
+      </StudioErrorBoundary>
+    </ColorSchemeProvider>
   )
 }
