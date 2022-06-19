@@ -1,11 +1,14 @@
 import {JSDOM} from 'jsdom'
+import {BlockTestFn} from '../types'
 import defaultSchema from '../../../fixtures/defaultSchema'
+import {DeserializerRule} from '../../../../src/types'
+import {isElement} from '../../../../src/HtmlDeserializer/helpers'
 
 const blockContentType = defaultSchema
   .get('blogPost')
   .fields.find((field: any) => field.name === 'body').type
 
-export default (html: string, blockTools: any, commonOptions: any) => {
+const testFn: BlockTestFn = (html, blockTools, commonOptions) => {
   const findElement = (nodes: any, target: any) =>
     nodes.find((i: ChildNode) => i.nodeName.toLowerCase() === target)
 
@@ -27,11 +30,10 @@ export default (html: string, blockTools: any, commonOptions: any) => {
     }
   }
 
-  const rules = [
+  const rules: DeserializerRule[] = [
     {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      deserialize(el: Element, next: any, block: any) {
-        if (el.tagName.toLowerCase() === 'cta') {
+      deserialize(el, next, block) {
+        if (isElement(el) && el.tagName.toLowerCase() === 'cta') {
           const items = Array.from(el.childNodes)
           return block(getCtaBlock(items))
         }
@@ -45,3 +47,5 @@ export default (html: string, blockTools: any, commonOptions: any) => {
   }
   return blockTools.htmlToBlocks(html, blockContentType, options)
 }
+
+export default testFn

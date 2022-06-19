@@ -1,9 +1,12 @@
 import customSchema from '../../../fixtures/customSchema'
+import type {BlockTestFn} from '../types'
 
 const blockContentType = customSchema
   .get('blogPost')
-  .fields.find((field) => field.name === 'body').type
+  .fields.find((field: any) => field.name === 'body').type
 
-export default (html, blockTools, commonOptions) => {
+const testFn: BlockTestFn = (html, blockTools, commonOptions) => {
   return blockTools.htmlToBlocks(html, blockContentType, commonOptions)
 }
+
+export default testFn

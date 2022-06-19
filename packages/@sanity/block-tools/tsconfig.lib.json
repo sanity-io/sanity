@@ -10,9 +10,6 @@
   ],
   "compilerOptions": {
     "composite": true,
-    // -- strictness options we need to disable in a transition period.
-    "noImplicitAny": false,
-    "strictNullChecks": false,
     // --
     "jsx": "react",
     "declarationDir": "./lib/dts/",

@@ -1,7 +1,8 @@
 const toString = Object.prototype.toString
-// Copied from https://github.com/ForbesLindesay/type-of, but inlined to have fine grained control
 
-export default function resolveJsType(val) {
+// Copied from https://github.com/ForbesLindesay/type-of
+// but inlined to have fine grained control
+export function resolveJsType(val: unknown) {
   switch (toString.call(val)) {
     case '[object Function]':
       return 'function'
@@ -18,20 +19,6 @@ export default function resolveJsType(val) {
     default:
   }
 
-  if (typeof val == 'object' && val && typeof val.length == 'number') {
-    try {
-      if (typeof val.callee == 'function') {
-        // eslint-disable-line max-depth
-        return 'arguments'
-      }
-    } catch (ex) {
-      if (ex instanceof TypeError) {
-        // eslint-disable-line max-depth
-        return 'arguments'
-      }
-    }
-  }
-
   if (val === null) {
     return 'null'
   }
@@ -40,7 +27,12 @@ export default function resolveJsType(val) {
     return 'undefined'
   }
 
-  if (val && val.nodeType === 1) {
+  if (
+    val &&
+    typeof val === 'object' &&
+    'nodeType' in val &&
+    (val as {nodeType: unknown}).nodeType === 1
+  ) {
     return 'element'
   }
 

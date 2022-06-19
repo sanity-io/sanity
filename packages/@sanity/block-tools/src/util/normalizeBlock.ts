@@ -1,25 +1,56 @@
+import {Block, Span, isSpan} from '@sanity/types'
 import {isEqual} from 'lodash'
-import randomKey from './randomKey'
+import {TypedObject} from '../types'
+import {randomKey} from './randomKey'
 
-// For a block with _type 'block' (text), join spans where possible
-export default function normalizeBlock(
-  block,
-  options: {allowedDecorators?: string[]; blockTypeName?: string} = {}
-) {
-  let newIndex = 0
-  if (!block._key) {
-    block._key = randomKey(12)
+/**
+ * Block normalization options
+ *
+ * @public
+ */
+export interface BlockNormalizationOptions {
+  /**
+   * Decorator names that are allowed within portable text blocks, eg `em`, `strong`
+   */
+  allowedDecorators?: string[]
+
+  /**
+   * Name of the portable text block type, if not `block`
+   */
+  blockTypeName?: string
+}
+
+/**
+ * Normalizes a block by ensuring it has a `_key` property. If the block is a
+ * portable text block, additional normalization is applied:
+ *
+ * - Ensures it has `children` and `markDefs` properties
+ * - Ensures it has at least one child (adds an empty span if empty)
+ * - Joins sibling spans that has the same marks
+ * - Removes decorators that are not allowed according to the schema
+ * - Removes marks that have no annotation definition
+ *
+ * @param node - The block to normalize
+ * @param options - Options for normalization process. See {@link BlockNormalizationOptions}
+ * @returns Normalized block
+ * @public
+ */
+export function normalizeBlock(
+  node: TypedObject,
+  options: BlockNormalizationOptions = {}
+): Omit<TypedObject | Block<TypedObject | Span>, '_key'> & {_key: string} {
+  if (node._type !== (options.blockTypeName || 'block')) {
+    return '_key' in node ? (node as TypedObject & {_key: string}) : {...node, _key: randomKey(12)}
   }
-  if (block._type !== (options.blockTypeName || 'block')) {
-    return block
+
+  const block: Omit<Block<TypedObject | Span>, 'style'> = {
+    _key: randomKey(12),
+    children: [],
+    markDefs: [],
+    ...node,
   }
-  if (!block.children) {
-    block.children = []
-  }
-  if (!block.markDefs) {
-    block.markDefs = []
-  }
-  const lastChild = block.children.slice(-1)[0]
+
+  const lastChild = block.children[block.children.length - 1]
   if (!lastChild) {
     // A block must at least have an empty span type child
     block.children = [
@@ -32,46 +63,56 @@ export default function normalizeBlock(
     ]
     return block
   }
-  let usedMarkDefs = []
+
+  const usedMarkDefs: string[] = []
   const allowedDecorators =
-    options.allowedDecorators &&
-    Array.isArray(options.allowedDecorators) &&
-    options.allowedDecorators
+    options.allowedDecorators && Array.isArray(options.allowedDecorators)
+      ? options.allowedDecorators
+      : false
+
   block.children = block.children
     .reduce((acc, child) => {
-      const previousChild = acc.slice(-1)[0]
+      const previousChild = acc[acc.length - 1]
       if (
         previousChild &&
-        child._type === 'span' &&
-        previousChild._type === 'span' &&
+        isSpan(child) &&
+        isSpan(previousChild) &&
         isEqual(previousChild.marks, child.marks)
       ) {
         if (lastChild && lastChild === child && child.text === '' && block.children.length > 1) {
           return acc
         }
+
         previousChild.text += child.text
         return acc
       }
-      acc.push({...child})
+      acc.push(child)
       return acc
-    }, [])
-    .map((child) => {
+    }, [] as (TypedObject | Span)[])
+    .map((child, index) => {
       if (!child) {
         throw new Error('missing child')
       }
-      child._key = `${block._key}${newIndex++}`
-      if (child._type === 'span' && !child.marks) {
-        child.marks = []
+
+      child._key = `${block._key}${index}`
+      if (isSpan(child)) {
+        if (!child.marks) {
+          child.marks = []
+        } else if (allowedDecorators) {
+          child.marks = child.marks.filter((mark) => {
+            const isAllowed = allowedDecorators.includes(mark)
+            const isUsed = block.markDefs.some((def) => def._key === mark)
+            return isAllowed || isUsed
+          })
+        }
+
+        usedMarkDefs.push(...child.marks)
       }
-      if (allowedDecorators && child._type === 'span') {
-        child.marks = child.marks.filter(
-          (mark) => allowedDecorators.includes(mark) || block.markDefs.find((def) => def._key)
-        )
-      }
-      usedMarkDefs = usedMarkDefs.concat(child.marks)
+
       return child
     })
-  // Remove leftover markDefs
+
+  // Remove leftover (unused) markDefs
   block.markDefs = block.markDefs.filter((markDef) => usedMarkDefs.includes(markDef._key))
   return block
 }

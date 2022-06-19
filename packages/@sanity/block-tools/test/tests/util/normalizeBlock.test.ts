@@ -1,5 +1,5 @@
 import * as assert from 'assert'
-import normalizeBlock from '../../../src/util/normalizeBlock'
+import {normalizeBlock} from '../../../src/util/normalizeBlock'
 
 describe('normalizeBlock', () => {
   it('will normalize a block', () => {
@@ -33,11 +33,11 @@ describe('normalizeBlock', () => {
       markDefs: [],
     })
     assert.deepEqual(normalizeBlock(block, {allowedDecorators: ['strong']}), {
-      _key: 'randomKey0',
+      _key: 'randomKey1',
       _type: 'block',
       children: [
         {
-          _key: 'randomKey00',
+          _key: 'randomKey10',
           _type: 'span',
           marks: [],
           text: 'Foobar',
