@@ -1,5 +1,16 @@
+import type {ArraySchemaType, Block, MarkDefinition} from '@sanity/types'
 import {flatten} from 'lodash'
-import resolveJsType from '../util/resolveJsType'
+import {findBlockType} from '../util/findBlockType'
+import {resolveJsType} from '../util/resolveJsType'
+import type {
+  ArbitraryTypedObject,
+  DeserializerRule,
+  HtmlDeserializerOptions,
+  PlaceholderAnnotation,
+  PlaceholderDecorator,
+  TypedObject,
+} from '../types'
+import {createRules} from './rules'
 import {
   createRuleOptions,
   defaultParseHtml,
@@ -8,36 +19,30 @@ import {
   trimWhitespace,
   preprocess,
   tagName,
+  isNodeList,
+  isMinimalSpan,
+  isPlaceholderDecorator,
+  isPlaceholderAnnotation,
+  isMinimalBlock,
 } from './helpers'
-import createRules from './rules'
-
-/**
- * A internal variable to keep track of annotation mark definitions
- *
- */
 
 /**
  * HTML Deserializer
  *
  */
 export default class HtmlDeserializer {
-  blockContentType: any
-  rules: any[]
-  parseHtml: (html: string) => any
-  _markDefs = []
+  blockContentType: ArraySchemaType
+  rules: DeserializerRule[]
+  parseHtml: (html: string) => HTMLElement
+  _markDefs: MarkDefinition[] = []
+
   /**
    * Create a new serializer respecting a Sanity block content type's schema
    *
-   * @param {Object} options
-   *   @property {Object} blockContentType
-   *      A compiled version of the block content schema type
-   *   @property {Array} rules
-   *      Optional rules working on the HTML (will be ruled first)
-   *   @property {Function} parseHtml
-   *      API compatible model as returned from DOMParser for using server side.
+   * @param blockContentType - Schema type for array containing _at least_ a block child type
+   * @param options - Options for the deserialization process
    */
-
-  constructor(blockContentType, options: any = {}) {
+  constructor(blockContentType: ArraySchemaType, options: HtmlDeserializerOptions = {}) {
     const {rules = []} = options
     if (!blockContentType) {
       throw new Error("Parameter 'blockContentType' is required")
@@ -55,21 +60,22 @@ export default class HtmlDeserializer {
   /**
    * Deserialize HTML.
    *
-   * @param {String} html
-   * @return {Array}
+   * @param html - The HTML to deserialize, as a string
+   * @returns Array of blocks - either portable text blocks or other allowed blocks
    */
-  deserialize = (html) => {
+  deserialize = (html: string): TypedObject[] => {
     this._markDefs = []
     const {parseHtml} = this
     const fragment = parseHtml(html)
-    const children = Array.from(fragment.childNodes)
+    const children = Array.from(fragment.childNodes) as HTMLElement[]
     // Ensure that there are no blocks within blocks, and trim whitespace
     const blocks = trimWhitespace(
       flattenNestedBlocks(ensureRootIsBlocks(this.deserializeElements(children)))
     )
+
     if (this._markDefs.length > 0) {
       blocks
-        .filter((block) => block._type === 'block')
+        .filter((block): block is Block => block._type === 'block')
         .forEach((block) => {
           block.markDefs = block.markDefs || []
           block.markDefs = block.markDefs.concat(
@@ -79,8 +85,13 @@ export default class HtmlDeserializer {
           )
         })
     }
+
     // Set back the potentially hoisted block type
     const type = this.blockContentType.of.find(findBlockType)
+    if (!type) {
+      return blocks
+    }
+
     return blocks.map((block) => {
       if (block._type === 'block') {
         block._type = type.name
@@ -92,101 +103,88 @@ export default class HtmlDeserializer {
   /**
    * Deserialize an array of DOM elements.
    *
-   * @param {Array} elements
-   * @return {Array}
+   * @param elements - Array of DOM elements to deserialize
+   * @returns
    */
-  deserializeElements = (elements = []) => {
-    let nodes = []
-    elements.forEach((element, index) => {
-      const node = this.deserializeElement(element)
-      switch (resolveJsType(node)) {
-        case 'array':
-          nodes = nodes.concat(node)
-          break
-        case 'object':
-          nodes.push(node)
-          break
-        default:
-          throw new Error(`Don't know what to do with: ${JSON.stringify(node)}`)
-      }
+  deserializeElements = (elements: Node[] = []): TypedObject[] => {
+    let nodes: TypedObject[] = []
+    elements.forEach((element) => {
+      nodes = nodes.concat(this.deserializeElement(element))
     })
     return nodes
   }
 
   /**
-   * Deserialize a DOM element.
+   * Deserialize a DOM element
    *
-   * @param {Object} element
-   * @return {Any}
+   * @param element - Deserialize a DOM element
+   * @returns
    */
-  // eslint-disable-next-line complexity
-  deserializeElement = (element) => {
-    let node
-    if (!element.tagName) {
-      element.tagName = ''
-    }
-
-    const next = (elements) => {
-      let _elements = elements
-      if (Object.prototype.toString.call(_elements) == '[object NodeList]') {
-        _elements = Array.from(_elements)
+  deserializeElement = (element: Node): TypedObject | TypedObject[] => {
+    const next = (elements: Node | Node[] | NodeList): TypedObject | TypedObject[] | undefined => {
+      if (isNodeList(elements)) {
+        return this.deserializeElements(Array.from(elements))
       }
 
-      switch (resolveJsType(_elements)) {
-        case 'array':
-          return this.deserializeElements(_elements)
-        case 'object':
-          return this.deserializeElement(_elements)
-        case 'null':
-        case 'undefined':
-          return undefined
-        default:
-          throw new Error(`The \`next\` argument was called with invalid children: "${_elements}".`)
+      if (Array.isArray(elements)) {
+        return this.deserializeElements(elements)
       }
+
+      if (!elements) {
+        return undefined
+      }
+
+      return this.deserializeElement(elements)
     }
 
-    const block = (props) => {
+    const block = (props: ArbitraryTypedObject) => {
       return {
         _type: '__block',
         block: props,
       }
     }
 
+    let node
     for (let i = 0; i < this.rules.length; i++) {
       const rule = this.rules[i]
       if (!rule.deserialize) {
         continue
       }
+
       const ret = rule.deserialize(element, next, block)
       const type = resolveJsType(ret)
 
-      if (type != 'array' && type != 'object' && type != 'null' && type != 'undefined') {
+      if (type !== 'array' && type !== 'object' && type !== 'null' && type !== 'undefined') {
         throw new Error(`A rule returned an invalid deserialized representation: "${node}".`)
       }
 
       if (ret === undefined) {
         continue
       } else if (ret === null) {
-        return null
-      } else if (ret._type === '__decorator') {
+        throw new Error('Deserializer rule returned `null`')
+      } else if (Array.isArray(ret)) {
+        node = ret
+      } else if (isPlaceholderDecorator(ret)) {
         node = this.deserializeDecorator(ret)
-      } else if (ret._type === '__annotation') {
+      } else if (isPlaceholderAnnotation(ret)) {
         node = this.deserializeAnnotation(ret)
       } else {
         node = ret
       }
+
       // Set list level on list item
-      if (ret && ret._type === 'block' && ret.listItem) {
-        let parent = element.parentNode.parentNode
-        while (tagName(parent) === 'li') {
-          parent = parent.parentNode.parentNode
-          ret.level++
+      if (ret && !Array.isArray(ret) && isMinimalBlock(ret) && 'listItem' in ret) {
+        let parent = element.parentNode?.parentNode
+        while (parent && tagName(parent) === 'li') {
+          parent = parent.parentNode?.parentNode
+          ret.level = ret.level ? ret.level + 1 : 1
         }
       }
+
       // Set newlines on spans orginating from a block element within a blockquote
-      if (ret && ret._type === 'block' && ret.style === 'blockquote') {
+      if (ret && !Array.isArray(ret) && isMinimalBlock(ret) && ret.style === 'blockquote') {
         ret.children.forEach((child, index) => {
-          if (child._type === 'span' && child.text === '\r') {
+          if (isMinimalSpan(child) && child.text === '\r') {
             child.text = '\n\n'
             if (index === 0 || index === ret.children.length - 1) {
               ret.children.splice(index, 1)
@@ -196,29 +194,31 @@ export default class HtmlDeserializer {
       }
       break
     }
-    return node || next(element.childNodes)
+
+    return node || next(element.childNodes) || []
   }
 
   /**
    * Deserialize a `__decorator` type
    * (an internal made up type to process decorators exclusively)
    *
-   * @param {Object} decorator
-   * @return {Array}
+   * @param decorator -
+   * @returns array of ...
    */
-  deserializeDecorator = (decorator) => {
+  deserializeDecorator = (decorator: PlaceholderDecorator): TypedObject[] => {
     const {name} = decorator
-    const applyDecorator = (node) => {
-      if (node._type === '__decorator') {
+    const applyDecorator = (node: TypedObject) => {
+      if (isPlaceholderDecorator(node)) {
         return this.deserializeDecorator(node)
-      } else if (node._type === 'span') {
+      } else if (isMinimalSpan(node)) {
         node.marks = node.marks || []
         if (node.text.trim()) {
           // Only apply marks if this is an actual text
           node.marks.unshift(name)
         }
-      } else if (node.children) {
-        node.children = node.children.map(applyDecorator)
+      } else if ('children' in node && Array.isArray((node as Block).children)) {
+        const block = node as any
+        block.children = block.children.map(applyDecorator)
       }
       return node
     }
@@ -229,30 +229,31 @@ export default class HtmlDeserializer {
       }
       children.push(ret)
       return children
-    }, [])
+    }, [] as TypedObject[])
   }
 
   /**
    * Deserialize a `__annotation` object.
    * (an internal made up type to process annotations exclusively)
    *
-   * @param {Object} annotation
-   * @return {Array}
+   * @param annotation -
+   * @returns Array of...
    */
-  deserializeAnnotation = (annotation) => {
+  deserializeAnnotation = (annotation: PlaceholderAnnotation): TypedObject[] => {
     const {markDef} = annotation
     this._markDefs.push(markDef)
-    const applyAnnotation = (node) => {
-      if (node._type === '__annotation') {
+    const applyAnnotation = (node: TypedObject) => {
+      if (isPlaceholderAnnotation(node)) {
         return this.deserializeAnnotation(node)
-      } else if (node._type === 'span') {
+      } else if (isMinimalSpan(node)) {
         node.marks = node.marks || []
         if (node.text.trim()) {
           // Only apply marks if this is an actual text
           node.marks.unshift(markDef._key)
         }
-      } else if (node.children) {
-        node.children = node.children.map(applyAnnotation)
+      } else if ('children' in node && Array.isArray((node as Block).children)) {
+        const block = node as any
+        block.children = block.children.map(applyAnnotation)
       }
       return node
     }
@@ -263,18 +264,6 @@ export default class HtmlDeserializer {
       }
       children.push(ret)
       return children
-    }, [])
+    }, [] as TypedObject[])
   }
-}
-
-function findBlockType(type) {
-  if (type.type) {
-    return findBlockType(type.type)
-  }
-
-  if (type.name === 'block') {
-    return type
-  }
-
-  return null
 }

@@ -4,7 +4,7 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return !!value && (typeof value == 'object' || typeof value == 'function')
 }
 
-export function isBlock(value: unknown): value is Block {
+export function isBlock<T = Span>(value: unknown): value is Block<T> {
   return (
     isRecord(value) &&
     typeof value._type === 'string' && // block types can be named, so expect anything here.

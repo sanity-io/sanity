@@ -1,17 +1,19 @@
+import {BlockTestFn} from '../types'
 import defaultSchema from '../../../fixtures/defaultSchema'
+import {isElement} from '../../../../src/HtmlDeserializer/helpers'
 
 const blockContentType = defaultSchema
   .get('blogPost')
-  .fields.find((field) => field.name === 'body').type
+  .fields.find((field: any) => field.name === 'body').type
 
-export default (html, blockTools, commonOptions) => {
+const testFn: BlockTestFn = (html, blockTools, commonOptions) => {
   return blockTools.htmlToBlocks(html, blockContentType, {
     ...commonOptions,
     rules: [
       {
         // Special case for code blocks (wrapped in pre and code tag)
         deserialize(el, next, block) {
-          if (el.tagName.toLowerCase() !== 'pre') {
+          if (!isElement(el) || el.tagName.toLowerCase() !== 'pre') {
             return undefined
           }
           const code = el.children[0]
@@ -31,3 +33,5 @@ export default (html, blockTools, commonOptions) => {
     ],
   })
 }
+
+export default testFn

@@ -1,54 +1,46 @@
+import type {ArraySchemaType, Block, Span} from '@sanity/types'
 import blockContentTypeFeatures from './util/blockContentTypeFeatures'
 import HtmlDeserializer from './HtmlDeserializer'
-import {SLATE_DEFAULT_BLOCK} from './constants'
-import _normalizeBlock from './util/normalizeBlock'
-import _randomKey from './util/randomKey'
+import {normalizeBlock} from './util/normalizeBlock'
+import {BlockContentFeatures, HtmlDeserializerOptions, TypedObject} from './types'
 
 /**
- * BlockTools - various tools for Sanity block content
+ * Convert HTML to blocks respecting the block content type's schema
  *
- * @param {Object} blockContentType
- *    The compiled schema for the block content type to work with
- *
+ * @param html - The HTML to convert to blocks
+ * @param blockContentType - A compiled version of the schema type for the block content
+ * @param options - Options for deserializing HTML to blocks
+ * @returns Array of blocks
+ * @public
  */
-const blockContentFunctions = {
-  /**
-   * Convert HTML to blocks respecting the block content type's schema
-   *
-   * @param {String} html
-   *
-   * @param {Object} options
-   *   @property {Object} blockContentType
-   *      A compiled version of the schema type for the block content
-   *   @property {Array} rules
-   *      Optional rules working on the HTML (will be ruled first)
-   *   @property {Function} parseHtml
-   *      API compatible model as returned from DOMParser for using server side.
-   * @returns {Array} Blocks
-   */
-  htmlToBlocks(html, blockContentType, options = {}) {
-    const deserializer = new HtmlDeserializer(blockContentType, options)
-    return deserializer.deserialize(html).map(_normalizeBlock)
-  },
-  /**
-   * Returns the feature-set of a compiled block content type.
-   *
-   * @param {Object} blockContentType
-   * @returns {Object} The feature-set
-   */
-  getBlockContentFeatures(blockContentType) {
-    return blockContentTypeFeatures(blockContentType)
-  },
-
-  randomKey(length) {
-    return _randomKey(length)
-  },
+export function htmlToBlocks(
+  html: string,
+  blockContentType: ArraySchemaType,
+  options: HtmlDeserializerOptions = {}
+): (TypedObject | Block<TypedObject | Span>)[] {
+  const deserializer = new HtmlDeserializer(blockContentType, options)
+  return deserializer.deserialize(html).map((block) => normalizeBlock(block))
 }
 
-export default blockContentFunctions
+/**
+ * Normalize and extract features of an schema type containing a block type
+ *
+ * @param blockContentType - Schema type for the block type
+ * @returns Returns the featureset of a compiled block content type.
+ * @public
+ */
+export function getBlockContentFeatures(blockContentType: ArraySchemaType): BlockContentFeatures {
+  return blockContentTypeFeatures(blockContentType)
+}
 
-export const EDITOR_DEFAULT_BLOCK_TYPE = SLATE_DEFAULT_BLOCK
-export const htmlToBlocks = blockContentFunctions.htmlToBlocks
-export const getBlockContentFeatures = blockContentFunctions.getBlockContentFeatures
-export const normalizeBlock = _normalizeBlock
-export const randomKey = _randomKey
+export {normalizeBlock}
+export {randomKey} from './util/randomKey'
+export type {TypedObject, HtmlDeserializerOptions, BlockContentFeatures}
+export type {
+  ResolvedAnnotationType,
+  DeserializerRule,
+  HtmlParser,
+  ArbitraryTypedObject,
+  BlockEditorSchemaProps,
+} from './types'
+export type {BlockNormalizationOptions} from './util/normalizeBlock'

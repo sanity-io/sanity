@@ -1,22 +1,31 @@
+import {ArraySchemaType, Block, isBlock} from '@sanity/types'
 import {isEqual} from 'lodash'
 import {DEFAULT_BLOCK} from '../constants'
+import {resolveJsType} from '../util/resolveJsType'
+import type {
+  BlockEnabledFeatures,
+  HtmlParser,
+  MinimalBlock,
+  MinimalSpan,
+  PlaceholderAnnotation,
+  PlaceholderDecorator,
+  TypedObject,
+} from '../types'
 import blockContentTypeFeatures from '../util/blockContentTypeFeatures'
-import resolveJsType from '../util/resolveJsType'
 import preprocessors from './preprocessors'
 
 /**
  * A utility function to create the options needed for the various rule sets,
  * based on the structure of the blockContentType
  *
- * @param {Object} The compiled schema type for the block content
- * @return {Object}
+ * @param blockContentType - Schema type for array containing _at least_ a block child type
+ * @returns
  */
-export function createRuleOptions(blockContentType) {
+export function createRuleOptions(blockContentType: ArraySchemaType): BlockEnabledFeatures {
   const features = blockContentTypeFeatures(blockContentType)
-  const mapItem = (item) => item.value
-  const enabledBlockStyles = features.styles.map(mapItem)
-  const enabledSpanDecorators = features.decorators.map(mapItem)
-  const enabledBlockAnnotations = features.annotations.map(mapItem)
+  const enabledBlockStyles = features.styles.map((item) => item.value || item.title)
+  const enabledSpanDecorators = features.decorators.map((item) => item.value || item.title)
+  const enabledBlockAnnotations = features.annotations.map((item) => item.value || item.title || '')
   return {
     enabledBlockStyles,
     enabledSpanDecorators,
@@ -25,20 +34,21 @@ export function createRuleOptions(blockContentType) {
 }
 
 /**
- * A utility function that always return a lowerCase version of the element.tagName
+ * Utility function that always return a lowerCase version of the element.tagName
  *
- * @param {Object} DOMParser element
- * @return {String} Lowercase tagName for that element
+ * @param el - Element to get tag name for
+ * @returns Lowercase tagName for that element, or undefined if not an element
  */
-export function tagName(el) {
-  if (!el || el.nodeType !== 1) {
-    return undefined
+export function tagName(el: HTMLElement | Node | null): string | undefined {
+  if (el && 'tagName' in el) {
+    return el.tagName.toLowerCase()
   }
-  return el.tagName.toLowerCase()
+
+  return undefined
 }
 
 // TODO: make this plugin-style
-export function preprocess(html, parseHtml) {
+export function preprocess(html: string, parseHtml: HtmlParser): Document {
   const compactHtml = html
     .trim() // Trim whitespace
     .replace(/\s\s+/g, ' ') // Remove multiple whitespace
@@ -53,10 +63,9 @@ export function preprocess(html, parseHtml) {
 /**
  * A default `parseHtml` function that returns the html using `DOMParser`.
  *
- * @param {String} html
- * @return {Object}
+ * @returns HTML Parser based on `DOMParser`
  */
-export function defaultParseHtml() {
+export function defaultParseHtml(): HtmlParser {
   if (resolveJsType(DOMParser) === 'undefined') {
     throw new Error(
       'The native `DOMParser` global which the `Html` deserializer uses by ' +
@@ -69,16 +78,16 @@ export function defaultParseHtml() {
   }
 }
 
-export function flattenNestedBlocks(blocks) {
+export function flattenNestedBlocks(blocks: TypedObject[]): TypedObject[] {
   let depth = 0
-  const flattened = []
-  const traverse = (_nodes) => {
-    const toRemove = []
-    _nodes.forEach((node, i) => {
+  const flattened: TypedObject[] = []
+  const traverse = (nodes: TypedObject[]) => {
+    const toRemove: TypedObject[] = []
+    nodes.forEach((node) => {
       if (depth === 0) {
         flattened.push(node)
       }
-      if (node._type === 'block') {
+      if (isBlock(node)) {
         if (depth > 0) {
           toRemove.push(node)
           flattened.push(node)
@@ -88,11 +97,11 @@ export function flattenNestedBlocks(blocks) {
       }
       if (node._type === '__block') {
         toRemove.push(node)
-        flattened.push(node.block)
+        flattened.push((node as any).block)
       }
     })
     toRemove.forEach((node) => {
-      _nodes.splice(_nodes.indexOf(node), 1)
+      nodes.splice(nodes.indexOf(node), 1)
     })
     depth--
   }
@@ -100,31 +109,39 @@ export function flattenNestedBlocks(blocks) {
   return flattened
 }
 
-function nextSpan(block, child, index) {
+function nextSpan(block: Block, index: number) {
   const next = block.children[index + 1]
   return next && next._type === 'span' ? next : null
 }
-function prevSpan(block, child, index) {
+
+function prevSpan(block: Block, index: number) {
   const prev = block.children[index - 1]
   return prev && prev._type === 'span' ? prev : null
 }
 
-function isWhiteSpaceChar(text) {
+function isWhiteSpaceChar(text: string) {
   return ['\xa0', ' '].includes(text)
 }
 
-export function trimWhitespace(blocks) {
+/**
+ * NOTE: _mutates_ passed blocks!
+ *
+ * @param blocks - Array of blocks to trim whitespace for
+ * @returns
+ */
+export function trimWhitespace(blocks: TypedObject[]): TypedObject[] {
   blocks.forEach((block) => {
-    if (!block.children) {
+    if (!isBlock(block)) {
       return
     }
+
     // eslint-disable-next-line complexity
     block.children.forEach((child, index) => {
       if (child._type !== 'span') {
         return
       }
-      const nextChild = nextSpan(block, child, index)
-      const prevChild = prevSpan(block, child, index)
+      const nextChild = nextSpan(block, index)
+      const prevChild = prevSpan(block, index)
       if (index === 0) {
         child.text = child.text.replace(/^[^\S\n]+/g, '')
       }
@@ -161,10 +178,11 @@ export function trimWhitespace(blocks) {
       }
     })
   })
+
   return blocks
 }
 
-export function ensureRootIsBlocks(blocks) {
+export function ensureRootIsBlocks(blocks: TypedObject[]): TypedObject[] {
   return blocks.reduce((memo, node, i, original) => {
     if (node._type === 'block') {
       memo.push(node)
@@ -172,13 +190,13 @@ export function ensureRootIsBlocks(blocks) {
     }
 
     if (node._type === '__block') {
-      memo.push(node.block)
+      memo.push((node as any).block)
       return memo
     }
 
-    if (i > 0 && original[i - 1]._type !== 'block' && memo[memo.length - 1]._type === 'block') {
-      const block = memo[memo.length - 1]
-      block.children.push(node)
+    const lastBlock = memo[memo.length - 1]
+    if (i > 0 && !isBlock(original[i - 1]) && isBlock<TypedObject>(lastBlock)) {
+      lastBlock.children.push(node)
       return memo
     }
 
@@ -189,5 +207,29 @@ export function ensureRootIsBlocks(blocks) {
 
     memo.push(block)
     return memo
-  }, [])
+  }, [] as TypedObject[])
+}
+
+export function isNodeList(node: unknown): node is NodeList {
+  return Object.prototype.toString.call(node) == '[object NodeList]'
+}
+
+export function isMinimalSpan(node: TypedObject): node is MinimalSpan {
+  return node._type === 'span'
+}
+
+export function isMinimalBlock(node: TypedObject): node is MinimalBlock {
+  return node._type === 'block'
+}
+
+export function isPlaceholderDecorator(node: TypedObject): node is PlaceholderDecorator {
+  return node._type === '__decorator'
+}
+
+export function isPlaceholderAnnotation(node: TypedObject): node is PlaceholderAnnotation {
+  return node._type === '__annotation'
+}
+
+export function isElement(node: Node): node is Element {
+  return node.nodeType === 1
 }

@@ -1,4 +1,6 @@
-import randomKey from '../../util/randomKey'
+import type {ArraySchemaType} from '@sanity/types'
+import {randomKey} from '../../util/randomKey'
+import {isElement, tagName} from '../helpers'
 import {
   DEFAULT_BLOCK,
   DEFAULT_SPAN,
@@ -8,10 +10,11 @@ import {
   HTML_LIST_CONTAINER_TAGS,
   HTML_LIST_ITEM_TAGS,
   HTML_DECORATOR_TAGS,
+  PartialBlock,
 } from '../../constants'
-import {tagName} from '../helpers'
+import {BlockEnabledFeatures, DeserializerRule} from '../../types'
 
-export function resolveListItem(listNodeTagName) {
+export function resolveListItem(listNodeTagName: string): string {
   let listStyle
   switch (listNodeTagName) {
     case 'ul':
@@ -26,15 +29,17 @@ export function resolveListItem(listNodeTagName) {
   return listStyle
 }
 
-export default function createHTMLRules(blockContentType, options: any = {}) {
+export default function createHTMLRules(
+  blockContentType: ArraySchemaType,
+  options: BlockEnabledFeatures
+): DeserializerRule[] {
   return [
     // Text nodes
     {
-      // eslint-disable-next-line complexity
       deserialize(el) {
         const isValidWhiteSpace =
           el.nodeType === 3 &&
-          el.textContent.replace(/[\r\n]/g, ' ').replace(/\s\s+/g, ' ') === ' ' &&
+          (el.textContent || '').replace(/[\r\n]/g, ' ').replace(/\s\s+/g, ' ') === ' ' &&
           el.nextSibling &&
           el.nextSibling.nodeType !== 3 &&
           el.previousSibling &&
@@ -45,7 +50,7 @@ export default function createHTMLRules(blockContentType, options: any = {}) {
           return {
             ...DEFAULT_SPAN,
             marks: [],
-            text: el.textContent.replace(/\s\s+/g, ' '),
+            text: (el.textContent || '').replace(/\s\s+/g, ' '),
           }
         }
         return undefined
@@ -56,11 +61,22 @@ export default function createHTMLRules(blockContentType, options: any = {}) {
         if (tagName(el) !== 'blockquote') {
           return undefined
         }
-        const blocks = {...HTML_BLOCK_TAGS, ...HTML_HEADER_TAGS}
+        const blocks: Record<string, PartialBlock | undefined> = {
+          ...HTML_BLOCK_TAGS,
+          ...HTML_HEADER_TAGS,
+        }
         delete blocks.blockquote
-        const children = []
+
+        const children: HTMLElement[] = []
         el.childNodes.forEach((node, index) => {
-          if (node.nodeType === 1 && Object.keys(blocks).includes(node.localName.toLowerCase())) {
+          if (
+            node.nodeType === 1 &&
+            Object.keys(blocks).includes((node as Element).localName.toLowerCase())
+          ) {
+            if (!el.ownerDocument) {
+              return
+            }
+
             const span = el.ownerDocument.createElement('span')
             span.appendChild(el.ownerDocument.createTextNode('\r'))
             node.childNodes.forEach((cn) => {
@@ -71,7 +87,7 @@ export default function createHTMLRules(blockContentType, options: any = {}) {
             }
             children.push(span)
           } else {
-            children.push(node)
+            children.push(node as HTMLElement)
           }
         })
 
@@ -85,8 +101,12 @@ export default function createHTMLRules(blockContentType, options: any = {}) {
     }, // Block elements
     {
       deserialize(el, next) {
-        const blocks = {...HTML_BLOCK_TAGS, ...HTML_HEADER_TAGS}
-        let block = blocks[tagName(el)]
+        const blocks: Record<string, PartialBlock | undefined> = {
+          ...HTML_BLOCK_TAGS,
+          ...HTML_HEADER_TAGS,
+        }
+        const tag = tagName(el)
+        let block = tag ? blocks[tag] : undefined
         if (!block) {
           return undefined
         }
@@ -106,8 +126,8 @@ export default function createHTMLRules(blockContentType, options: any = {}) {
     }, // Ignore span tags
     {
       deserialize(el, next) {
-        const span = HTML_SPAN_TAGS[tagName(el)]
-        if (!span) {
+        const tag = tagName(el)
+        if (!tag || !(tag in HTML_SPAN_TAGS)) {
           return undefined
         }
         return next(el.childNodes)
@@ -124,15 +144,15 @@ export default function createHTMLRules(blockContentType, options: any = {}) {
     }, // Ignore list containers
     {
       deserialize(el, next) {
-        const listContainer = HTML_LIST_CONTAINER_TAGS[tagName(el)]
-        if (!listContainer) {
+        const tag = tagName(el)
+        if (!tag || !(tag in HTML_LIST_CONTAINER_TAGS)) {
           return undefined
         }
         return next(el.childNodes)
       },
     }, // Deal with br's
     {
-      deserialize(el, next) {
+      deserialize(el) {
         if (tagName(el) === 'br') {
           return {
             ...DEFAULT_SPAN,
@@ -144,11 +164,14 @@ export default function createHTMLRules(blockContentType, options: any = {}) {
     }, // Deal with list items
     {
       deserialize(el, next) {
-        const listItem = HTML_LIST_ITEM_TAGS[tagName(el)]
-        if (!listItem || !el.parentNode || !HTML_LIST_CONTAINER_TAGS[tagName(el.parentNode)]) {
+        const tag = tagName(el)
+        const listItem = tag ? HTML_LIST_ITEM_TAGS[tag] : undefined
+        const parentTag = tagName(el.parentNode) || ''
+        if (!listItem || !el.parentNode || !HTML_LIST_CONTAINER_TAGS[parentTag]) {
           return undefined
         }
-        listItem.listItem = resolveListItem(tagName(el.parentNode))
+
+        listItem.listItem = resolveListItem(parentTag)
         return {
           ...listItem,
           children: next(el.childNodes),
@@ -157,7 +180,7 @@ export default function createHTMLRules(blockContentType, options: any = {}) {
     }, // Deal with decorators
     {
       deserialize(el, next) {
-        const decorator = HTML_DECORATOR_TAGS[tagName(el)]
+        const decorator = HTML_DECORATOR_TAGS[tagName(el) || '']
         if (!decorator || !options.enabledSpanDecorators.includes(decorator)) {
           return undefined
         }
@@ -175,7 +198,7 @@ export default function createHTMLRules(blockContentType, options: any = {}) {
           return undefined
         }
         const linkEnabled = options.enabledBlockAnnotations.includes('link')
-        const href = el.getAttribute('href')
+        const href = isElement(el) && el.getAttribute('href')
         if (!href) {
           return next(el.childNodes)
         }

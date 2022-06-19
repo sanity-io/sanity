@@ -1,40 +1,42 @@
-import {_XPathResult} from './index'
+import {_XPathResult} from './xpathResult'
 
-function isWordHtml(html) {
-  return /(class="?Mso|style=(?:"|')[^"]*?\bmso-|w:WordDocument|<o:\w+>|<\/font>)/.test(html)
+const WORD_HTML_REGEX = /(class="?Mso|style=(?:"|')[^"]*?\bmso-|w:WordDocument|<o:\w+>|<\/font>)/
+
+// xPaths for elements that will be removed from the document
+const unwantedPaths = [
+  '//o:p',
+  "//span[@style='mso-list:Ignore']",
+  "//span[@style='mso-list: Ignore']",
+]
+
+// xPaths for elements that needs to be remapped into other tags
+const mappedPaths = [
+  "//p[@class='MsoTocHeading']",
+  "//p[@class='MsoTitle']",
+  "//p[@class='MsoToaHeading']",
+  "//p[@class='MsoSubtitle']",
+  "//span[@class='MsoSubtleEmphasis']",
+  "//span[@class='MsoIntenseEmphasis']",
+]
+
+// Which HTML element(s) to map the elements matching mappedPaths into
+const elementMap: Record<string, string[] | undefined> = {
+  MsoTocHeading: ['h3'],
+  MsoTitle: ['h1'],
+  MsoToaHeading: ['h2'],
+  MsoSubtitle: ['h5'],
+  MsoSubtleEmphasis: ['span', 'em'],
+  MsoIntenseEmphasis: ['span', 'em', 'strong'],
+  // Remove cruft
 }
 
-export default (html, doc) => {
+function isWordHtml(html: string) {
+  return WORD_HTML_REGEX.test(html)
+}
+
+export default (html: string, doc: Document): Document => {
   if (!isWordHtml(html)) {
     return doc
-  }
-
-  // xPaths for elements that will be removed from the document
-  const unwantedPaths = [
-    '//o:p',
-    "//span[@style='mso-list:Ignore']",
-    "//span[@style='mso-list: Ignore']",
-  ]
-
-  // xPaths for elements that needs to be remapped into other tags
-  const mappedPaths = [
-    "//p[@class='MsoTocHeading']",
-    "//p[@class='MsoTitle']",
-    "//p[@class='MsoToaHeading']",
-    "//p[@class='MsoSubtitle']",
-    "//span[@class='MsoSubtleEmphasis']",
-    "//span[@class='MsoIntenseEmphasis']",
-  ]
-
-  // Which HTML element(s) to map the elements matching mappedPaths into
-  const elementMap = {
-    MsoTocHeading: ['h3'],
-    MsoTitle: ['h1'],
-    MsoToaHeading: ['h2'],
-    MsoSubtitle: ['h5'],
-    MsoSubtleEmphasis: ['span', 'em'],
-    MsoIntenseEmphasis: ['span', 'em', 'strong'],
-    // Remove cruft
   }
 
   const unwantedNodes = doc.evaluate(
@@ -49,9 +51,12 @@ export default (html, doc) => {
     _XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE,
     null
   )
+
   for (let i = unwantedNodes.snapshotLength - 1; i >= 0; i--) {
     const unwanted = unwantedNodes.snapshotItem(i)
-    unwanted.parentNode.removeChild(unwanted)
+    if (unwanted?.parentNode) {
+      unwanted.parentNode.removeChild(unwanted)
+    }
   }
 
   // Transform mapped elements into what they should be mapped to
@@ -63,9 +68,13 @@ export default (html, doc) => {
     null
   )
   for (let i = mappedElements.snapshotLength - 1; i >= 0; i--) {
-    const mappedElm = mappedElements.snapshotItem(i)
+    const mappedElm = mappedElements.snapshotItem(i) as HTMLElement
     const tags = elementMap[mappedElm.className]
-    const text = new Text(mappedElm.textContent)
+    const text = new Text(mappedElm.textContent || '')
+    if (!tags) {
+      continue
+    }
+
     const parentElement = document.createElement(tags[0])
     let parent = parentElement
     let child = parentElement
@@ -75,7 +84,7 @@ export default (html, doc) => {
       parent = child
     })
     child.appendChild(text)
-    mappedElm.parentNode.replaceChild(parentElement, mappedElm)
+    mappedElm?.parentNode?.replaceChild(parentElement, mappedElm)
   }
 
   return doc
