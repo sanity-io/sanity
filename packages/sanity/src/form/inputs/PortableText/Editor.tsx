@@ -23,8 +23,7 @@ import {
   ToolbarCard,
 } from './Editor.styles'
 import {useSpellcheck} from './hooks/useSpellCheck'
-// import {useScrollSelectionIntoView} from './hooks/useScrollSelectionIntoView'
-
+import {useScrollSelectionIntoView} from './hooks/useScrollSelectionIntoView'
 interface EditorProps {
   initialSelection?: EditorSelection
   isFullscreen: boolean
@@ -98,7 +97,7 @@ export function Editor(props: EditorProps) {
   const renderPlaceholder = useCallback(() => <>Empty</>, [])
   const spellcheck = useSpellcheck()
 
-  // const scrollSelectionIntoView = useScrollSelectionIntoView(scrollElement)
+  const scrollSelectionIntoView = useScrollSelectionIntoView(scrollElement)
 
   const editable = useMemo(
     () => (
@@ -112,7 +111,7 @@ export function Editor(props: EditorProps) {
         renderChild={renderChild}
         renderDecorator={renderDecorator}
         renderPlaceholder={renderPlaceholder}
-        // scrollSelectionIntoView={scrollSelectionIntoView}
+        scrollSelectionIntoView={scrollSelectionIntoView}
         selection={initialSelection}
         spellCheck={spellcheck}
       />
@@ -126,7 +125,7 @@ export function Editor(props: EditorProps) {
       renderBlock,
       renderChild,
       renderPlaceholder,
-      // scrollSelectionIntoView,
+      scrollSelectionIntoView,
       spellcheck,
     ]
   )
