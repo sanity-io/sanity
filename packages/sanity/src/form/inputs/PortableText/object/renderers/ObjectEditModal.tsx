@@ -51,7 +51,7 @@ export function ObjectEditModal(props: {
       return
     }
     const firstFieldMember = memberItem.node.members.find((m) => m.kind === 'field')
-    if (firstFieldMember && _isObjectFieldMember(firstFieldMember)) {
+    if (firstFieldMember && firstFieldMember.kind === 'field') {
       const firstFieldElm = document.getElementById(firstFieldMember.field.id) as HTMLElement | null
       if (firstFieldElm) {
         setFirstField(firstFieldElm)
