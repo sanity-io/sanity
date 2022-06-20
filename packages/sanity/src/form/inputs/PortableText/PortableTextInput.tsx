@@ -51,9 +51,8 @@ export type PTObjectMember = ArrayOfObjectsItemMember<
     ObjectSchemaType
   >
 >
-
 export interface PortableTextMemberItem {
-  kind: 'annotation' | 'object' | 'inlineObject'
+  kind: 'annotation' | 'textBlock' | 'objectBlock' | 'inlineObject'
   key: string
   member: PTObjectMember
   node: ObjectFormNode
@@ -150,23 +149,18 @@ export function PortableTextInput(props: PortableTextInputProps) {
   // Populate the portableTextMembers Map
   const portableTextMemberItems: PortableTextMemberItem[] = useMemo(() => {
     const result: {
-      kind: 'annotation' | 'object' | 'inlineObject'
+      kind: PortableTextMemberItem['kind']
       member: PTObjectMember
       node: ObjectFormNode
     }[] = []
 
     for (const member of members) {
-      // ignore errors
-      // if (member.kind === 'error') {
-      // }
-
       if (member.kind === 'item') {
         if (!_isBlockType(member.item.schemaType)) {
-          result.push({kind: 'object', member, node: member.item})
-        }
-
-        if (member.item.validation.length > 0) {
-          result.push({kind: 'object', member, node: member.item})
+          result.push({kind: 'objectBlock', member, node: member.item})
+        } else if (member.item.validation.length > 0) {
+          // Only text blocks that have validation
+          result.push({kind: 'textBlock', member, node: member.item})
         }
 
         if (_isBlockType(member.item.schemaType)) {
