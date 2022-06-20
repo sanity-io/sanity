@@ -1,3 +1,4 @@
+export const datasetUrl = 'https://public.sanity.io/pets-example-dataset-2022-06-20.tar.gz'
 export const dependencies = {
   'sanity-plugin-asset-source-unsplash': '^0.2.1',
   'sanity-plugin-media': '^1.4.10',
