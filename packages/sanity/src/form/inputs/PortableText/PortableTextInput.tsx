@@ -158,8 +158,8 @@ export function PortableTextInput(props: PortableTextInputProps) {
       if (member.kind === 'item') {
         if (!_isBlockType(member.item.schemaType)) {
           result.push({kind: 'objectBlock', member, node: member.item})
-        } else if (member.item.validation.length > 0) {
-          // Only text blocks that have validation
+        } else if (member.item.validation.length > 0 || member.item.changed) {
+          // Only text blocks that have validation or changes
           result.push({kind: 'textBlock', member, node: member.item})
         }
 
