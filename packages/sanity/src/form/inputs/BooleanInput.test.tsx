@@ -1,6 +1,6 @@
 import userEvent from '@testing-library/user-event'
 import {defineType} from '@sanity/types'
-import React from 'react'
+import React, { ComponentType } from 'react'
 import {renderBooleanInput} from '../../../test/form/renderBooleanInput'
 import {BooleanInput} from './BooleanInput'
 
@@ -75,7 +75,6 @@ describe('Mouse accessibility', () => {
     const input = result.container.querySelector('input[id="booleanTest"]')
     userEvent.click(input!)
     expect(onFocus).toBeCalled()
-    expect(onFocus.mock.calls).toMatchSnapshot()
   })
 
   it('emits onChange when clicked', async () => {
@@ -87,7 +86,6 @@ describe('Mouse accessibility', () => {
     const input = result.container.querySelector('input[id="booleanTest"]')
     userEvent.click(input!)
     expect(onChange).toBeCalled()
-    expect(onChange.mock.calls).toMatchSnapshot()
   })
 })
 
@@ -102,7 +100,6 @@ describe('Keyboard accessibility', () => {
     userEvent.tab({focusTrap: result.container})
     expect(input).toHaveFocus()
     expect(onFocus).toBeCalled()
-    expect(onFocus.mock.calls).toMatchSnapshot()
   })
 
   it('emits onChange when pressing enter', async () => {
@@ -114,7 +111,6 @@ describe('Keyboard accessibility', () => {
     userEvent.tab({focusTrap: result.container})
     userEvent.keyboard('{space}')
     expect(onChange).toBeCalled()
-    expect(onChange.mock.calls).toMatchSnapshot()
   })
 
   it('emits onBlur when navigating away from field', async () => {
@@ -129,7 +125,6 @@ describe('Keyboard accessibility', () => {
     expect(input).not.toHaveFocus()
 
     expect(onBlur).toBeCalled()
-    expect(onBlur.mock.calls).toMatchSnapshot()
   })
 })
 
@@ -193,7 +188,6 @@ describe('readOnly property', () => {
     userEvent.tab({focusTrap: result.container})
     userEvent.keyboard('{space}')
     expect(onChange).toBeCalled()
-    expect(onChange.mock.calls).toMatchSnapshot()
   })
 
   it.skip('makes field read-only based on value in document', async () => {
@@ -215,7 +209,7 @@ describe('readOnly property', () => {
     expect(input).not.toHaveFocus()
   })
 })
-
+declare const t: ComponentType<{}>
 describe('hidden property', () => {
   it('hides field', () => {
     expect(() =>
