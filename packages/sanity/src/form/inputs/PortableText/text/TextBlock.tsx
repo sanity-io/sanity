@@ -143,39 +143,40 @@ export function TextBlock(props: TextBlockProps) {
               {text}
             </TextRoot>
           </Tooltip>
-        </Box>
-        <BlockExtrasContainer contentEditable={false}>
-          {renderBlockActions && (
-            <BlockActionsOuter marginRight={1}>
-              <BlockActionsInner>
-                {focused && !readOnly && (
-                  <BlockActions
-                    onChange={onChange}
-                    block={block}
-                    renderBlockActions={renderBlockActions}
+          <div contentEditable={false}>
+            <BlockExtrasContainer>
+              {renderBlockActions && (
+                <BlockActionsOuter marginRight={1}>
+                  <BlockActionsInner>
+                    {focused && !readOnly && (
+                      <BlockActions
+                        onChange={onChange}
+                        block={block}
+                        renderBlockActions={renderBlockActions}
+                      />
+                    )}
+                  </BlockActionsInner>
+                </BlockActionsOuter>
+              )}
+
+              {isFullscreen && memberItem && (
+                <ChangeIndicatorWrapper
+                  $hasChanges={memberItem.member.item.changed}
+                  onMouseEnter={handleChangeIndicatorMouseEnter}
+                  onMouseLeave={handleChangeIndicatorMouseLeave}
+                >
+                  <StyledChangeIndicatorWithProvidedFullPath
+                    hasFocus={focused}
+                    isChanged={memberItem.member.item.changed}
+                    path={memberItem.member.item.path}
+                    withHoverEffect={false}
                   />
-                )}
-              </BlockActionsInner>
-            </BlockActionsOuter>
-          )}
-
-          {isFullscreen && memberItem && (
-            <ChangeIndicatorWrapper
-              $hasChanges={memberItem.member.item.changed}
-              onMouseEnter={handleChangeIndicatorMouseEnter}
-              onMouseLeave={handleChangeIndicatorMouseLeave}
-            >
-              <StyledChangeIndicatorWithProvidedFullPath
-                hasFocus={focused}
-                isChanged={memberItem.member.item.changed}
-                path={memberItem.member.item.path}
-                withHoverEffect={false}
-              />
-            </ChangeIndicatorWrapper>
-          )}
-        </BlockExtrasContainer>
-
-        {reviewChangesHovered && <ReviewChangesHighlightBlock />}
+                </ChangeIndicatorWrapper>
+              )}
+            </BlockExtrasContainer>
+            {reviewChangesHovered && <ReviewChangesHighlightBlock />}
+          </div>
+        </Box>
       </TextBlockFlexWrapper>
     </Box>
   )
