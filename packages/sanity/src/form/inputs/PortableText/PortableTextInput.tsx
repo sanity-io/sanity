@@ -124,8 +124,7 @@ export function PortableTextInput(props: PortableTextInputProps) {
 
   const handleToggleFullscreen = useCallback(() => {
     setIsFullscreen((v) => !v)
-    if (editorRef.current) PortableTextEditor.focus(editorRef.current)
-  }, [editorRef])
+  }, [])
 
   // Reset invalidValue if new value is coming in from props
   useEffect(() => {
