@@ -576,6 +576,10 @@ function prepareObjectInputState<T>(
     .filter((item) => isEqual(item.path, props.path))
     .map((v) => ({level: v.level, message: v.item.message, path: v.path}))
 
+  if (members.length === 0) {
+    return null
+  }
+
   return {
     value: props.value as Record<string, unknown> | undefined,
     changed: isChangedValue(props.value, props.comparisonValue),
