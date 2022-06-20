@@ -94,10 +94,10 @@ export function Compositor(props: InputProps) {
 
   // Set as active whenever we have focus inside the editor.
   useEffect(() => {
-    if (hasFocus || focusPath.length > 1) {
+    if (hasFocus) {
       setIsActive(true)
     }
-  }, [hasFocus, focusPath])
+  }, [hasFocus])
 
   const handleToggleFullscreen = useCallback(() => {
     PortableTextEditor.blur(editor)
