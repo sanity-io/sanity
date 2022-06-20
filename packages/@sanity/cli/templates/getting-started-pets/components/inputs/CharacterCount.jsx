@@ -1,8 +1,8 @@
-import React, {forwardRef} from 'react'
-import {FormField} from '@sanity/base/components'
-import PatchEvent, {set, unset} from '@sanity/form-builder/PatchEvent'
-import {TextArea, Flex, Text, Stack} from '@sanity/ui'
-import PropTypes from 'prop-types'
+import React, { forwardRef } from "react";
+import { FormField } from "@sanity/base/components";
+import PatchEvent, { set, unset } from "@sanity/form-builder/PatchEvent";
+import { TextArea, Flex, Text, Stack } from "@sanity/ui";
+import PropTypes from "prop-types";
 
 /**
  * ## What does it do
@@ -30,15 +30,15 @@ export const CharacterCount = forwardRef(function CharacterCount(props, ref) {
     onFocus, // Method to handle focus state
     onBlur, // Method to handle blur state
     onChange,
-  } = props
+  } = props;
 
   const handleChange = React.useCallback(
     (event) => {
-      const inputValue = event.currentTarget.value
-      onChange(PatchEvent.from(inputValue ? set(inputValue) : unset()))
+      const inputValue = event.currentTarget.value;
+      onChange(PatchEvent.from(inputValue ? set(inputValue) : unset()));
     },
     [onChange]
-  )
+  );
 
   return (
     <FormField
@@ -49,7 +49,7 @@ export const CharacterCount = forwardRef(function CharacterCount(props, ref) {
     >
       <Stack space={2}>
         <TextArea
-          value={value ? value : ''} // Current field value
+          value={value ? value : ""} // Current field value
           readOnly={readOnly} // If "readOnly" is defined make this field read only
           placeholder={placeholder} // If placeholder is defined, display placeholder text
           onFocus={onFocus} // Handles focus events
@@ -65,8 +65,8 @@ export const CharacterCount = forwardRef(function CharacterCount(props, ref) {
         </Flex>
       </Stack>
     </FormField>
-  )
-})
+  );
+});
 
 CharacterCount.propTypes = {
   onChange: PropTypes.func,
@@ -78,4 +78,4 @@ CharacterCount.propTypes = {
   placeholder: PropTypes.string,
   onFocus: PropTypes.func,
   onBlur: PropTypes.func,
-}
+};

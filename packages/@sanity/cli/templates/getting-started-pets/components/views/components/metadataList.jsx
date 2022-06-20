@@ -1,9 +1,9 @@
-import React from 'react'
-import {Card, Stack, Text, Grid, Box, Label} from '@sanity/ui'
-import {urlFor} from '../../../helpers/image-url-builder'
-import styled from 'styled-components'
+import React from "react";
+import { Card, Flex, Stack, Text, Grid, Box, Label, Tooltip } from "@sanity/ui";
+import { urlFor } from "../../../helpers/image-url-builder";
+import styled from "styled-components";
 
-export function MetadataList({items = []}) {
+export function MetadataList({ items = [] }) {
   return (
     <Box>
       <Grid columns={2} gap={5}>
@@ -20,22 +20,30 @@ export function MetadataList({items = []}) {
                   {item.value}
                 </Text>
               )}
-              {item?.image && <ImageAndCaption image={item.image} caption={item?.imageCaption} />}
+              {item?.image && (
+                <ImageWrapper><ImageAndCaption image={item.image} caption={item?.imageCaption} /></ImageWrapper>
+              )}
+              {item?.images?.length && (
+                <Flex gap={2}>
+                  {item.images.map(({image, imageCaption}, index) => (<ImageWrapper key={index}><ImageAndCaption image={image} caption={imageCaption} /></ImageWrapper>))}
+                </Flex>
+              )}
             </Stack>
           </Box>
         ))}
       </Grid>
     </Box>
-  )
+  );
 }
 
-function ImageAndCaption({image, caption}) {
+function ImageAndCaption({ image, caption }) {
+    const size = 50
   if (!caption) {
     return (
-      <Card radius={6} overflow="hidden">
-        <Image width="200" src={urlFor(image).width(200).height(200)} alt="" />
+      <Card>
+        <Image loading="lazy" $width={size} src={urlFor(image).width(size * 2).height(size * 2)} alt="" />
       </Card>
-    )
+    );
   }
 
   return (
@@ -48,18 +56,29 @@ function ImageAndCaption({image, caption}) {
         </Box>
       }
       portal
-      placement="left"
-      fallbackPlacements="left"
+      placement="bottom"
+      fallbackPlacements={["right", "left"]}
     >
-      <Card radius={6} overflow="hidden">
-        <Image width="200" src={urlFor(image).width(200).height(200)} alt="" />
+      <Card>
+        <Image
+          $width={size}
+          loading="lazy"
+          src={urlFor(image).width(size * 2).height(size * 2)}
+          alt=""
+        />
       </Card>
     </Tooltip>
-  )
+  );
 }
+
+const ImageWrapper = styled(Box)`
+    max-width: 50px;
+    border-radius: 50%;
+    overflow: hidden;
+`;
 
 const Image = styled.img`
   aspect-ratio: 1;
   display: block;
   width: 100%;
-`
+`;

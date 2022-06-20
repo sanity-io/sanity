@@ -1,5 +1,7 @@
-import React from 'react'
+import React from 'react';
 
-const productIcon = () => <img src="/static/icons/product.png" alt="Product icon" />
+const productIcon = () => (
+  <img src="/static/icons/product.png" alt="Product icon"/>
+);
 
-export default productIcon
+export default productIcon;

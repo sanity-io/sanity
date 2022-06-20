@@ -1,12 +1,22 @@
-import React, {useMemo} from 'react'
-import {Box, Flex, Grid, Label, Heading, Card, Text, Stack} from '@sanity/ui'
-import PropTypes from 'prop-types'
-import {BlockText} from './BlockText'
-import {useIdPair, useListeningQuery} from '../../plugins/listening-query/listening-query-hook'
+import React, { useMemo } from "react";
+import { Box, Label, Heading, Stack } from "@sanity/ui";
+import PropTypes from "prop-types";
+import { BlockText } from "./BlockText";
+import { useListenForRef } from "../../plugins/listening-query/listening-query-hook";
+import { GridList, Picture, Layout } from "./components";
 
-import {Picture} from './PetPreviewComponents'
-import {Layout} from './components/layout'
-import {GridList} from './components'
+/* This will fetch the content, and will include the draft if it exists
+The content, in this case will be split into different properties from the human schema:
+pets (Pet array)
+  Documentation: https://www.sanity.io/docs/data-listening-query */
+const query = `* [_id == "drafts." + $id || _id == $id]{
+  ...,
+  "pets": pets[] {
+    ...(* [_type == "pet" && _id == "drafts." + ^._ref || _id == ^._ref]| order(_updatedAt desc) [0])
+  },
+} | order(_updatedAt desc) [0]
+`;
+
 /**
  * Renders thecurrently displayed document as formatted JSON as a
  * simple little "webpage" using:
@@ -14,48 +24,15 @@ import {GridList} from './components'
  * - @sanity/image-url
  */
 export function HumanPreview(props) {
-  const document = props.document.displayed
+  const document = props.document.displayed;
   if (!document) {
-    return null
+    return null;
   }
-  return <HumanPreviewInner document={document} />
+  return <HumanPreviewInner document={document} />;
 }
 
-// Resolve the pets references so we can list them in the preview
-const blockJoins = `
- {
-  ...,
-  "pets": pets[]-> 
-    {
-      name, 
-      picture { 
-        asset->
-      }
-    }
-  }
-`
-
-function queryFor({draftId, publishedId}) {
-  return draftId || publishedId
-    ? `{
-    ${draftId ? `"draft":  * [_id == $draftId][0]${blockJoins},` : ''}
-    ${publishedId ? `"published":  * [_id == $id][0]${blockJoins},` : ''}
-  }`
-    : undefined
-}
-
-function useListenForRef(id) {
-  const ids = useIdPair(id)
-  const query = queryFor(ids)
-  const {data} = useListeningQuery(query, ids)
-
-  const {draft, published} = data ?? {}
-  return draft ?? published
-}
-
-export function HumanPreviewInner({document}) {
-  const {_id} = document
-  const resolvedDocument = useListenForRef(_id)
+export function HumanPreviewInner({ document }) {
+  const resolvedDocument = useListenForRef(document?._id, query); // fetch the draft or published document with the current doc id and the query
   const petsListItems = useMemo(
     () =>
       resolvedDocument?.pets?.filter(Boolean).map((pet) => ({
@@ -64,59 +41,34 @@ export function HumanPreviewInner({document}) {
         image: pet?.picture,
       })),
     [resolvedDocument?.pets]
-  )
+  );
 
-  if (!resolvedDocument) {
-    return null
-  }
-
-  const {picture, name, bio} = resolvedDocument
+  const { picture, name, bio } = resolvedDocument || {};
 
   return (
     <Layout>
-      <Stack space={5}>
-        <Box paddingX={4}>
+      <Stack space={5} paddingX={4}>
+        <Box>
           <Picture picture={picture} size={400} />
           {picture?.caption && (
-            <Box marginLeft={5} marginY={3}>
-              <Label as="p">{picture?.caption}</Label>
+            <Box marginY={3}>
+              <Label as="p" align="center">
+                {picture?.caption}
+              </Label>
             </Box>
           )}
         </Box>
-        <Box paddingX={4}>
-          <Heading as="h1" size={4}>
-            {name ?? 'Gimme a name!'}
-          </Heading>
-        </Box>
-        {bio?.length && (
-          <Box paddingX={4}>
-            <BlockText value={bio} />
-          </Box>
-        )}
-        {petsListItems?.length > 0 && <GridList heading="Pets" items={petsListItems} />}
-        {/*
-        <Box paddingX={4}>
-            <Heading size={3}>Pets</Heading>
 
-            <Grid columns={2} gap={4}>
-              {pets?.filter(Boolean).map((pet) => (
-                <Box key={pet}>
-                  <Stack space={3}>
-                    <Picture
-                      size={400}
-                      borderPercentage={50}
-                      picture={pet?.picture}
-                    />
-                    <Text size={1}>{pet.name}</Text>
-                  </Stack>
-                </Box>
-              ))}
-            </Grid>
-          </Box>
-        */}
+        <Heading as="h1" size={4}>
+          {name ?? "Gimme a name!"}
+        </Heading>
+        {bio?.length && <BlockText value={bio} />}
+        {petsListItems?.length > 0 && (
+          <GridList heading="Pets" items={petsListItems} />
+        )}
       </Stack>
     </Layout>
-  )
+  );
 }
 
 HumanPreview.propTypes = {
@@ -125,8 +77,8 @@ HumanPreview.propTypes = {
     draft: PropTypes.object,
     published: PropTypes.object,
   }),
-}
+};
 
 HumanPreview.propTypes = {
   document: PropTypes.object,
-}
+};

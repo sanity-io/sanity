@@ -1,39 +1,45 @@
-import React, {useMemo} from 'react'
-import {Box, Flex, Label, Heading, Text, Card, Grid, Stack, Tooltip} from '@sanity/ui'
-import PropTypes from 'prop-types'
-import {BlockText} from './BlockText'
-import {useIdPair, useListeningQuery} from '../../plugins/listening-query/listening-query-hook'
-import {GridBox, Picture} from './PetPreviewComponents'
-import {Layout, Divider, GridList, MetadataList} from './components'
+import React, { useMemo } from "react";
+import { Box, Label, Heading, Text, Stack } from "@sanity/ui";
+import PropTypes from "prop-types";
+import { BlockText } from "./BlockText";
+import { useListenForRef } from "../../plugins/listening-query/listening-query-hook";
+import { Layout, Divider, GridList, MetadataList, Picture } from "./components";
 
+/* This will fetch the content, and will include the draft if it exists
+The content, in this case will be split into different properties from the pet schema:
+toys (Product array), friends (Pet array), and human (Human) 
+  Documentation: https://www.sanity.io/docs/data-listening-query */
+const query = `
+  * [_id == "drafts." + $id || _id == $id]{
+    ...,
+    "toys": toys[] {
+      ...(* [_type == "product" && _id == "drafts." + ^._ref || _id == ^._ref]| order(_updatedAt desc) [0])
+    },
+    "friends": friends[] {
+      ...(* [_type == "pet" && _id == "drafts." + ^._ref || _id == ^._ref]| order(_updatedAt desc) [0])
+    },
+    "human": human {
+      ...(* [_type == "human" && _id == "drafts." + ^._ref || _id == ^._ref]| order(_updatedAt desc) [0])
+    },
+  } | order(_updatedAt desc) [0]
+`;
+
+/**
+ * Renders the currently displayed document as a
+ * simple little "webpage" using:
+ * - @sanity/ui
+ * - @sanity/image-url
+ */
 export function PetPreview(props) {
-  const doc = props.document.displayed
-  if (!doc) {
-    return null
+  const document = props.document.displayed;
+  if (!document) {
+    return null;
   }
-  return <PetPreviewInner doc={doc} />
+  return <PetPreviewInner document={document} />;
 }
 
-function queryFor({draftId, publishedId}) {
-  return draftId || publishedId
-    ? `{
-    ${draftId ? '"draft":  * [_id == $draftId][0],' : ''}
-    ${publishedId ? '"published":  * [_id == $id][0],' : ''}
-  }`
-    : undefined
-}
-
-function useListenForRef(id) {
-  const ids = useIdPair(id)
-  const query = queryFor(ids)
-  const {data} = useListeningQuery(query, ids)
-
-  const {draft, published} = data ?? {}
-  return draft ?? published
-}
-
-export function PetPreviewInner({doc}) {
-  const resolvedDocument = useListenForRef(doc._id)
+export function PetPreviewInner({ document }) {
+  const resolvedDocument = useListenForRef(document?._id, query); // fetch the draft or published document with the current doc id and the query
   const {
     name,
     description,
@@ -42,55 +48,73 @@ export function PetPreviewInner({doc}) {
     birthday,
     fluffiness,
     toys,
-    treats,
     friends,
     picture,
     human,
     hair,
-  } = resolvedDocument || {}
+  } = resolvedDocument || {};
 
+  // holds the birthday, fluffiness, hair type and weight for the current pet
   const metadata = useMemo(() => {
-    const metadataList = []
+    const metadataList = [];
 
     if (birthday) {
       metadataList.push({
-        title: 'Born 🎁"',
+        title: "Born 🎁",
         value: birthday,
-      })
+      });
     }
 
     if (hair) {
       metadataList.push({
-        title: 'Hairstyle 🐩',
+        title: "Hairstyle 🐩",
         value: hair,
-      })
+      });
     }
 
-    metadataList.push({
-      title: 'Fluffiness 🐑',
-      value: hair !== 'hairless' ? fluffiness : 'No fluff!',
-    })
+    if (fluffiness || hair === "hairless") {
+      metadataList.push({
+        title: "Fluffiness 🐑",
+        value: hair !== "hairless" ? fluffiness : "No fluff!",
+      });
+    }
 
-    metadataList.push({
-      title: 'Weight 💪',
-      value: weight ? `${weight} kg` : 'Unknown 🤔',
-    })
+    if (weight) {
+      metadataList.push({
+        title: "Weight 💪",
+        value: weight ? `${weight} kg` : "Unknown 🤔",
+      });
+    }
 
-    return metadataList
-  }, [birthday, fluffiness, hair, weight])
+    if (human) {
+      metadataList.push({
+        title: "Human",
+        image: human?.picture,
+        imageCaption: human?.name,
+      });
+    }
+
+    if (friends?.length > 0) {
+      metadataList.push({
+        title: `My ${friends.length === 1 ? `BFF` : `BFFs`} 👯‍♀️`,
+        images: [
+          ...friends.map(({ name, picture }) => ({
+            image: picture,
+            imageCaption: name,
+          })),
+        ],
+      });
+    }
+
+    return metadataList;
+  }, [birthday, fluffiness, hair, weight]);
 
   const favouriteProducts = useMemo(() => {
-    return []
-  }, [])
-
-  if (!resolvedDocument) {
-    return null
-  }
-
-  // const humanReferenceDocument = useListenForRef(human?._ref);
-  // const favoriteTreatsReferenceDocument = useListenForRef(treats?.[0]?._ref);
-  // const favoriteToysReferenceDocument = useListenForRef(toys?.[0]?._ref);
-  // const bffReferenceDocument = useListenForRef(friends?.[0]?._ref);
+    return toys?.map(({ name, variants }) => ({
+      title: name,
+      image: variants?.[0]?.picture,
+    }));
+  }, [toys]);
 
   return (
     <Layout>
@@ -98,19 +122,25 @@ export function PetPreviewInner({doc}) {
         <Box>
           <Picture picture={picture} size={400} />
           {picture?.caption && (
-            <Box marginLeft={5} marginY={3}>
-              <Label as="p">{picture?.caption}</Label>
+            <Box marginY={3}>
+              <Label as="p" align="center">
+                {picture?.caption}
+              </Label>
             </Box>
           )}
         </Box>
 
         <Box>
           <Heading as="h1" size={4}>
-            {name ?? 'Gimme a name!'}
+            {name ?? "Gimme a name!"}
           </Heading>
         </Box>
 
-        {shortDescription?.length && <Label as="p">{shortDescription}</Label>}
+        {shortDescription?.length && (
+          <Text as="p" cite>
+            {shortDescription}
+          </Text>
+        )}
 
         {description?.length && (
           <Box>
@@ -122,135 +152,19 @@ export function PetPreviewInner({doc}) {
 
         {metadata.length > 0 && <MetadataList items={metadata} />}
 
-        {/*
-      <Stack space={4}>
-          <Flex>
-            <Card>
-              <Grid columns={3} gap={5}>
-                <GridBox text={"Born 🎁"} value={birthday ?? " "} />
-
-                <GridBox text={"Hairstyle 🐩"} value={hair} />
-
-                <GridBox
-                  text={"Fluffiness 🐑"}
-                  value={hair !== "hairless" ? fluffiness : "No fluff!"}
-                />
-
-                <GridBox
-                  text={"Weight 💪"}
-                  value={weight ? `${weight} kg` : "Unknown 🤔"}
-                />
-
-                {bffReferenceDocument && (
-                  <Box>
-                    <Label>My BFF 👯‍♀️ </Label>
-                    <Flex marginTop={2} direction="column">
-                      <Tooltip
-                        content={
-                          <Box padding={2}>
-                            <Text muted size={1}>
-                              {bffReferenceDocument?.name}
-                            </Text>
-                          </Box>
-                        }
-                        portal
-                        placement="left"
-                        fallbackPlacements="left"
-                      >
-                        <Box marginTop={1} size={2}>
-                          <Text>
-                            <Picture
-                              size={50}
-                              borderPercentage={50}
-                              picture={bffReferenceDocument?.picture}
-                            />
-                          </Text>
-                        </Box>
-                      </Tooltip>
-                    </Flex>
-                  </Box>
-                )}
-
-                {humanReferenceDocument && (
-                  <Box>
-                    <Label>Human 👁</Label>
-                    <Flex marginTop={2} direction="column">
-                      <Tooltip
-                        content={
-                          <Box padding={2}>
-                            <Text muted size={1}>
-                              {humanReferenceDocument?.name}
-                            </Text>
-                          </Box>
-                        }
-                        fallbackPlacements={["right", "left"]}
-                        portal
-                        placement="left"
-                      >
-                        <Box marginTop={1}>
-                          <Text>
-                            <Picture
-                              size={50}
-                              borderPercentage={50}
-                              picture={humanReferenceDocument?.picture}
-                            />
-                          </Text>
-                        </Box>
-                      </Tooltip>
-                    </Flex>
-                  </Box>
-                )}
-              </Grid>
-            </Card>
-          </Flex>
-        </Stack>
-        */}
-
         <Divider />
 
         {favouriteProducts?.length > 0 && (
           <Box>
-            <GridList heading="Favorite toys & treats" items={favouriteProducts} />
+            <GridList
+              heading="Favorite toys & treats"
+              items={favouriteProducts}
+            />
           </Box>
         )}
-
-        {/*
-          <Box marginBottom={2}>
-              <Label size={4}>Favorite products</Label>
-            </Box>
-            <Flex direction="row">
-              {favoriteToysReferenceDocument && (
-                <Flex marginRight={2} marginTop={2} direction="column">
-                  <Picture
-                    picture={favoriteToysReferenceDocument?.variants[0].picture}
-                    size={150}
-                    borderPercentage={20}
-                  />
-                  <Box marginTop={2} marginLeft={2}>
-                    <Text>{favoriteToysReferenceDocument?.name}</Text>
-                  </Box>
-                </Flex>
-              )}
-
-              {favoriteTreatsReferenceDocument && (
-                <Flex marginTop={2} direction="column">
-                  <Picture
-                    picture={
-                      favoriteTreatsReferenceDocument?.variants[0].picture
-                    }
-                    size={150}
-                    borderPercentage={20}
-                  />
-                  <Box marginTop={2} marginLeft={2}>
-                    <Text>{favoriteTreatsReferenceDocument?.name}</Text>
-                  </Box>
-                </Flex>
-              )}
-            </Flex>
-        */}
       </Stack>
     </Layout>
-  )
+  );
 }
 
 PetPreview.propTypes = {
@@ -259,8 +173,8 @@ PetPreview.propTypes = {
     draft: PropTypes.object,
     published: PropTypes.object,
   }),
-}
+};
 
 PetPreviewInner.propTypes = {
-  doc: PropTypes.object,
-}
+  document: PropTypes.object,
+};

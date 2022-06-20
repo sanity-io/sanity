@@ -1,17 +1,17 @@
-import React from 'react'
-import {Card, Flex, Text, Grid, Box, Label} from '@sanity/ui'
-import {urlFor} from '../../../helpers/image-url-builder'
-import styled from 'styled-components'
+import React from "react";
+import { Card, Flex, Text, Grid, Box, Label } from "@sanity/ui";
+import { urlFor } from "../../../helpers/image-url-builder";
+import styled from "styled-components";
 
 const Image = styled.img`
   aspect-ratio: 1;
   display: block;
   width: 100%;
-`
+`;
 
-export function GridList({heading, items = []}) {
+export function GridList({ heading, items = [] }) {
   return (
-    <Box paddingX={4}>
+    <Box>
       {heading && (
         <Box marginBottom={3}>
           <Label as="h2">{heading}</Label>
@@ -22,7 +22,11 @@ export function GridList({heading, items = []}) {
           <Box key={item._id}>
             {item?.image && (
               <Card radius={6} marginBottom={2} overflow="hidden">
-                <Image width="200" src={urlFor(item.image).width(200).height(200)} alt="" />
+                <Image
+                  width="200"
+                  src={urlFor(item.image).width(200).height(200)}
+                  alt=""
+                />
               </Card>
             )}
             {item.title && (
@@ -34,5 +38,5 @@ export function GridList({heading, items = []}) {
         ))}
       </Grid>
     </Box>
-  )
+  );
 }

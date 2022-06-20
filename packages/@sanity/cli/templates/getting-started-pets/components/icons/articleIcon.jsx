@@ -1,5 +1,7 @@
-import React from 'react'
+import React from 'react';
 
-const articleIcon = () => <img src="/static/icons/article.png" alt="Article icon" />
+const articleIcon = () => (
+  <img src="/static/icons/article.png" alt="Article icon" />
+);
 
-export default articleIcon
+export default articleIcon;
