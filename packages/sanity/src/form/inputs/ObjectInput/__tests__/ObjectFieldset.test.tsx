@@ -3,6 +3,7 @@ import userEvent from '@testing-library/user-event'
 import React from 'react'
 import {renderObjectInput} from '../../../../../test/form'
 import {ObjectInput} from '../ObjectInput'
+import {FieldProps} from '../../../types'
 
 const fieldsetsTestType = defineType({
   title: 'Fieldsets test',
@@ -32,11 +33,20 @@ const fieldsetsTestType = defineType({
 
 describe('fieldset with default options', () => {
   it('renders fields in a <fieldset element and includes a <legend', async () => {
+    function FieldWithTestId(props: FieldProps) {
+      return <div data-testid={`input-${props.name}`}>{props.children}</div>
+    }
     const {result} = await renderObjectInput({
       fieldDefinition: fieldsetsTestType,
-      render: (inputProps) => <ObjectInput {...inputProps} />,
+      render: (inputProps) => {
+        return (
+          <ObjectInput
+            {...inputProps}
+            renderField={(fieldProps) => <FieldWithTestId {...fieldProps} />}
+          />
+        )
+      },
     })
-
     const fieldset = result.queryByTestId('fieldset-withDefaults')
     expect(fieldset).toBeVisible()
     expect(fieldset!.tagName).toBe('FIELDSET')
