@@ -22,7 +22,7 @@ Here are some features that we already have set up so you can explore at your ow
 <img alt="displays two cat pictures with different dimensions, focused on a twitter header on mobile versus the same header on desktop" src="static/readMeImages/ImageInput.png" width="400" height="450">
 </p>
 
-- **Image input: use unsplashed and media plugins from the jump!**: You can test out how the unsplashed and media plugins are used and explore how to they were set them up ([documentation](https://www.sanity.io/plugins?category=assetSource))
+- **Image input: use Unsplash and Media browser plugins from the start!**: You can test out how the Unsplash and Media browser plugins are used and explore how to they were set them up ([documentation](https://www.sanity.io/plugins?category=assetSource))
 
 <p align="center">
 <img alt="image input with a dropdown list that shows options for different asset sources: including unsplashed and media" src="static/readMeImages/AssetSource.png" width="400" height="250">
