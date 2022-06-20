@@ -31,7 +31,7 @@ import {Editor} from './Editor'
 import {ExpandedLayer, Root} from './Compositor.styles'
 import {useHotkeys} from './hooks/useHotKeys'
 import {ObjectEditModal} from './object/renderers/ObjectEditModal'
-import {useScrollToFocusFromOutside} from './hooks/useScrollToFocusFromOutside'
+import {useScrollToOpenedMember} from './hooks/useScrollToOpenedMember'
 import {usePortableTextMemberItems} from './hooks/usePortableTextMembers'
 import {_isBlockType} from './_helpers'
 
@@ -84,11 +84,12 @@ export function Compositor(props: InputProps) {
 
   const {element: boundaryElement} = useBoundaryElement()
 
-  // This will scroll to the relevant content according to the focusPath set
-  useScrollToFocusFromOutside({
-    fieldPath: path,
-    onCloseItem,
+  // Scroll to the DOM element of the "opened" portable text member when relevant.
+  useScrollToOpenedMember({
+    hasFocus,
+    editorRootPath: path,
     scrollElement,
+    onCloseItem,
   })
 
   // Set as active whenever we have focus inside the editor.
