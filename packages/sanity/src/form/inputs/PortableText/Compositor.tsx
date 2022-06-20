@@ -100,8 +100,10 @@ export function Compositor(props: InputProps) {
   }, [hasFocus, focusPath])
 
   const handleToggleFullscreen = useCallback(() => {
+    PortableTextEditor.blur(editor)
     onToggleFullscreen()
-  }, [onToggleFullscreen])
+    PortableTextEditor.focus(editor)
+  }, [onToggleFullscreen, editor])
 
   const hotkeysWithFullscreenToggle = useMemo(
     () => ({
