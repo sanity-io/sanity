@@ -207,6 +207,12 @@ export interface SanityJson {
 
 export interface GraphQLAPIConfig {
   /**
+   * ID of GraphQL API. Only (currently) required when using the `--api` flag
+   * for `sanity graphql deploy`, in order to only deploy a specific API.
+   */
+  id?: string
+
+  /**
    * Name of workspace containing the schema to deploy
    *
    * Optional, defaults to `default` (eg the one used if no `name` is defined)
