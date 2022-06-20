@@ -24,6 +24,7 @@ const generations = {
   gen3,
 }
 
+const apiIdRegex = /^[a-z0-9_-]+$/
 const isInteractive = process.stdout.isTTY && process.env.TERM !== 'dumb' && !('CI' in process.env)
 
 const ignoredWarnings: string[] = ['OPTIONAL_INPUT_FIELD_ADDED']
@@ -44,7 +45,7 @@ export default async function deployGraphQLApiAction(
 ): Promise<void> {
   // Reparsing CLI flags for better control of binary flags
   const flags = await parseCliFlags(args)
-  const {force, dryRun} = flags
+  const {force, dryRun, api: onlyApis} = flags
 
   const {apiClient, output, prompt} = context
 
@@ -59,15 +60,46 @@ export default async function deployGraphQLApiAction(
   const deployTasks: DeployTask[] = []
 
   const apiNames = new Set<string>()
+  const apiIds = new Set<string>()
   for (const apiDef of apiDefs) {
-    const apiName = [apiDef.dataset, apiDef.tag].join('/')
+    const apiName = [apiDef.dataset, apiDef.tag || 'default'].join('/')
     if (apiNames.has(apiName)) {
       throw new Error(`Multiple GraphQL APIs with the same dataset and tag found (${apiName})`)
     }
+
+    if (apiDef.id) {
+      if (typeof apiDef.id !== 'string' || !apiIdRegex.test(apiDef.id)) {
+        throw new Error(
+          `Invalid GraphQL API id "${apiDef.id}" - only a-z, 0-9, underscore and dashes are allowed`
+        )
+      }
+
+      if (apiIds.has(apiDef.id)) {
+        throw new Error(`Multiple GraphQL APIs with the same ID found (${apiDef.id})`)
+      }
+
+      apiIds.add(apiDef.id)
+    }
+
+    apiNames.add(apiName)
+  }
+
+  for (const apiId of onlyApis || []) {
+    if (!apiDefs.some((apiDef) => apiDef.id === apiId)) {
+      throw new Error(`GraphQL API with id "${apiId}" not found`)
+    }
+  }
+
+  if (onlyApis) {
+    output.warn(`Deploying only specified APIs: ${onlyApis.join(', ')}`)
   }
 
   let index = -1
   for (const apiDef of apiDefs) {
+    if (onlyApis && (!apiDef.id || !onlyApis.includes(apiDef.id))) {
+      continue
+    }
+
     index++
 
     const {projectId, dataset, playground, tag = 'default', nonNullDocumentFields, schema} = apiDef
@@ -305,6 +337,7 @@ async function getCurrentSchemaProps(
 
 function parseCliFlags(args: {argv?: string[]}) {
   return yargs(hideBin(args.argv || process.argv).slice(2))
+    .option('api', {type: 'string', array: true})
     .option('dataset', {type: 'string'})
     .option('tag', {type: 'string', default: 'default'})
     .option('generation', {type: 'string'})
