@@ -1,9 +1,9 @@
-import React, { useMemo } from "react";
-import { Box, Label, Heading, Stack } from "@sanity/ui";
-import PropTypes from "prop-types";
-import { BlockText } from "./BlockText";
-import { useListenForRef } from "../../plugins/listening-query/listening-query-hook";
-import { GridList, Picture, Layout } from "./components";
+import React, {useMemo} from 'react'
+import {Box, Label, Heading, Stack} from '@sanity/ui'
+import PropTypes from 'prop-types'
+import {BlockText} from './BlockText'
+import {useListenForRef} from '../../plugins/listening-query/listening-query-hook'
+import {GridList, Picture, Layout} from './components'
 
 /* This will fetch the content, and will include the draft if it exists
 The content, in this case will be split into different properties from the human schema:
@@ -15,7 +15,7 @@ const query = `* [_id == "drafts." + $id || _id == $id]{
     ...(* [_type == "pet" && _id == "drafts." + ^._ref || _id == ^._ref]| order(_updatedAt desc) [0])
   },
 } | order(_updatedAt desc) [0]
-`;
+`
 
 /**
  * Renders thecurrently displayed document as formatted JSON as a
@@ -24,15 +24,15 @@ const query = `* [_id == "drafts." + $id || _id == $id]{
  * - @sanity/image-url
  */
 export function HumanPreview(props) {
-  const document = props.document.displayed;
+  const document = props.document.displayed
   if (!document) {
-    return null;
+    return null
   }
-  return <HumanPreviewInner document={document} />;
+  return <HumanPreviewInner document={document} />
 }
 
-export function HumanPreviewInner({ document }) {
-  const resolvedDocument = useListenForRef(document?._id, query); // fetch the draft or published document with the current doc id and the query
+export function HumanPreviewInner({document}) {
+  const resolvedDocument = useListenForRef(document?._id, query) // fetch the draft or published document with the current doc id and the query
   const petsListItems = useMemo(
     () =>
       resolvedDocument?.pets?.filter(Boolean).map((pet) => ({
@@ -41,9 +41,9 @@ export function HumanPreviewInner({ document }) {
         image: pet?.picture,
       })),
     [resolvedDocument?.pets]
-  );
+  )
 
-  const { picture, name, bio } = resolvedDocument || {};
+  const {picture, name, bio} = resolvedDocument || {}
 
   return (
     <Layout>
@@ -60,15 +60,13 @@ export function HumanPreviewInner({ document }) {
         </Box>
 
         <Heading as="h1" size={4}>
-          {name ?? "Gimme a name!"}
+          {name ?? 'Gimme a name!'}
         </Heading>
         {bio?.length && <BlockText value={bio} />}
-        {petsListItems?.length > 0 && (
-          <GridList heading="Pets" items={petsListItems} />
-        )}
+        {petsListItems?.length > 0 && <GridList heading="Pets" items={petsListItems} />}
       </Stack>
     </Layout>
-  );
+  )
 }
 
 HumanPreview.propTypes = {
@@ -77,8 +75,8 @@ HumanPreview.propTypes = {
     draft: PropTypes.object,
     published: PropTypes.object,
   }),
-};
+}
 
 HumanPreview.propTypes = {
   document: PropTypes.object,
-};
+}

@@ -1,17 +1,8 @@
-import React, { useState } from "react";
-import {
-  Box,
-  Button,
-  Flex,
-  Label,
-  Heading,
-  Text,
-  Stack,
-  Select,
-} from "@sanity/ui";
-import PropTypes from "prop-types";
-import { BlockText } from "./BlockText";
-import { Layout, Picture } from "./components";
+import React, {useState} from 'react'
+import {Box, Button, Flex, Label, Heading, Text, Stack, Select} from '@sanity/ui'
+import PropTypes from 'prop-types'
+import {BlockText} from './BlockText'
+import {Layout, Picture} from './components'
 
 /**
  * Renders thecurrently displayed document as formatted JSON as a
@@ -21,24 +12,22 @@ import { Layout, Picture } from "./components";
  * - @sanity/image-url
  */
 export function ProductPreview(props) {
-  const document = props.document.displayed;
+  const document = props.document.displayed
   if (!document) {
-    return null;
+    return null
   }
-  return <ProductPreviewInner document={document} />;
+  return <ProductPreviewInner document={document} />
 }
 
-export function ProductPreviewInner({ document }) {
-  const { name, description, variants, material } = document;
-  const [currentVariant, setCurrentVariant] = useState(
-    variants ? variants[0] : undefined
-  );
+export function ProductPreviewInner({document}) {
+  const {name, description, variants, material} = document
+  const [currentVariant, setCurrentVariant] = useState(variants ? variants[0] : undefined)
 
   const onValueChange = (event) => {
-    const variant = variants.find((v) => v.name === event.currentTarget.value);
+    const variant = variants.find((v) => v.name === event.currentTarget.value)
 
-    setCurrentVariant(variant);
-  };
+    setCurrentVariant(variant)
+  }
 
   return (
     <Layout>
@@ -54,23 +43,19 @@ export function ProductPreviewInner({ document }) {
           )}
         </Box>
 
-        <Heading size={4}>{name ?? "Gimme a name!"}</Heading>
+        <Heading size={4}>{name ?? 'Gimme a name!'}</Heading>
 
         <Flex gap={2}>
           <Box flex={1}>
             <Stack space={3}>
               <Label>Price</Label>
-              <Text>
-                {currentVariant?.price
-                  ? `$${currentVariant?.price}`
-                  : "Not set"}
-              </Text>
+              <Text>{currentVariant?.price ? `$${currentVariant?.price}` : 'Not set'}</Text>
             </Stack>
           </Box>
           <Box flex={[3]}>
             <Stack space={3}>
               <Label>Material</Label>
-              <Text as="p">{material || "-"}</Text>
+              <Text as="p">{material || '-'}</Text>
             </Stack>
           </Box>
         </Flex>
@@ -91,7 +76,7 @@ export function ProductPreviewInner({ document }) {
                       <option key={variant.id} value={variant.name}>
                         {variant.name}
                       </option>
-                    );
+                    )
                   })}
                 </Select>
               </Stack>
@@ -121,11 +106,7 @@ export function ProductPreviewInner({ document }) {
               </Select>
             </Box>
             <Box display="flex" flex={3}>
-              <Button
-                align="center"
-                text="Add to Cart"
-                style={{ width: "100%" }}
-              />
+              <Button align="center" text="Add to Cart" style={{width: '100%'}} />
             </Box>
           </Flex>
         </Stack>
@@ -133,7 +114,7 @@ export function ProductPreviewInner({ document }) {
         {description?.length && <BlockText value={description} />}
       </Stack>
     </Layout>
-  );
+  )
 }
 
 ProductPreview.propTypes = {
@@ -142,8 +123,8 @@ ProductPreview.propTypes = {
     draft: PropTypes.object,
     published: PropTypes.object,
   }),
-};
+}
 
 ProductPreview.propTypes = {
   doc: PropTypes.object,
-};
+}

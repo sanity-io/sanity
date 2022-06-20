@@ -1,11 +1,11 @@
-import React, { useMemo } from "react";
-import { Box, Stack, Label, Heading } from "@sanity/ui";
-import PropTypes from "prop-types";
-import { BlockText } from "./BlockText";
-import styled from "styled-components";
-import { useListenForRef } from "../../plugins/listening-query/listening-query-hook";
-import { Layout } from "./components/layout";
-import { MetadataList } from "./components";
+import React, {useMemo} from 'react'
+import {Box, Stack, Label, Heading} from '@sanity/ui'
+import PropTypes from 'prop-types'
+import {BlockText} from './BlockText'
+import styled from 'styled-components'
+import {useListenForRef} from '../../plugins/listening-query/listening-query-hook'
+import {Layout} from './components/layout'
+import {MetadataList} from './components'
 
 /* This will fetch the content, and will include the draft if it exists
 The content, in this case will be split into different properties from the article schema:
@@ -26,7 +26,7 @@ const query = `* [_id == "drafts." + $id || _id == $id]{
       }
     }
   } | order(_updatedAt desc) [0]
-`;
+`
 
 /**
  * Renders the currently displayed document as a
@@ -36,63 +36,63 @@ const query = `* [_id == "drafts." + $id || _id == $id]{
  * - @sanity/image-url
  */
 export function ArticlePreview(props) {
-  const document = props.document.displayed;
+  const document = props.document.displayed
   if (!document) {
-    return null;
+    return null
   }
-  return <ArticlePreviewInner document={document} />;
+  return <ArticlePreviewInner document={document} />
 }
 
-function ArticlePreviewInner({ document }) {
-  const resolvedDocument = useListenForRef(document?._id, query); // fetch the draft or published document with the current doc id and the query
-  const { title, author, body, _createdAt } = resolvedDocument || {};
+function ArticlePreviewInner({document}) {
+  const resolvedDocument = useListenForRef(document?._id, query) // fetch the draft or published document with the current doc id and the query
+  const {title, author, body, _createdAt} = resolvedDocument || {}
   const formattedAuthorAndDate = useMemo(() => {
-    const parts = [];
+    const parts = []
     if (!_createdAt && !author) {
-      return null;
+      return null
     }
 
     if (author) {
-      parts.push(author.name);
+      parts.push(author.name)
     }
 
     if (_createdAt) {
       parts.push(
-        new Intl.DateTimeFormat("en-US", {
-          year: "numeric",
-          month: "long",
-          day: "2-digit",
+        new Intl.DateTimeFormat('en-US', {
+          year: 'numeric',
+          month: 'long',
+          day: '2-digit',
         }).format(new Date(_createdAt))
-      );
+      )
     }
 
-    return parts.join(", ");
-  }, [author, _createdAt]);
+    return parts.join(', ')
+  }, [author, _createdAt])
 
   const metadata = useMemo(() => {
-    const metadataList = [];
+    const metadataList = []
 
     if (_createdAt) {
       metadataList.push({
-        title: "Published",
-        value: new Intl.DateTimeFormat("en-US", {
-          year: "numeric",
-          month: "long",
-          day: "2-digit",
+        title: 'Published',
+        value: new Intl.DateTimeFormat('en-US', {
+          year: 'numeric',
+          month: 'long',
+          day: '2-digit',
         }).format(new Date(_createdAt)),
-      });
+      })
     }
 
     if (author) {
       metadataList.push({
-        title: "By",
+        title: 'By',
         image: author?.picture,
         imageCaption: author?.name,
-      });
+      })
     }
 
-    return metadataList;
-  }, [author, _createdAt]);
+    return metadataList
+  }, [author, _createdAt])
 
   return (
     <Layout>
@@ -112,7 +112,7 @@ function ArticlePreviewInner({ document }) {
           </Box>
         )}
         <Heading as="h1" size={4}>
-          {title ?? "Gimme a title!"}
+          {title ?? 'Gimme a title!'}
         </Heading>
       </Header>
 
@@ -122,7 +122,7 @@ function ArticlePreviewInner({ document }) {
         {metadata.length > 0 && <MetadataList items={metadata} />}
       </Stack>
     </Layout>
-  );
+  )
 }
 
 ArticlePreview.propTypes = {
@@ -131,7 +131,7 @@ ArticlePreview.propTypes = {
     draft: PropTypes.object,
     published: PropTypes.object,
   }),
-};
+}
 
 const Header = styled(Box)`
   background-color: #ffd6c8;
@@ -143,4 +143,4 @@ const Header = styled(Box)`
   * {
     color: #cd4b1f;
   }
-`;
+`

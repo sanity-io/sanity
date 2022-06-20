@@ -1,5 +1,5 @@
-import React from "react";
-import { Flex, Heading } from "@sanity/ui";
+import React from 'react'
+import {Flex, Heading} from '@sanity/ui'
 
 export function Divider() {
   return (
@@ -8,5 +8,5 @@ export function Divider() {
         ***
       </Heading>
     </Flex>
-  );
+  )
 }
