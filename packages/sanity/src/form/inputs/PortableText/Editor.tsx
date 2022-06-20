@@ -145,7 +145,6 @@ export function Editor(props: EditorProps) {
           isFullscreen={isFullscreen}
           hotkeys={hotkeys}
           onExpand={handleToolBarOnExpand}
-          onFocusPath={onFocusPath}
           readOnly={readOnly}
           onToggleFullscreen={onToggleFullscreen}
         />

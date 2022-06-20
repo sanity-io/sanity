@@ -25,7 +25,6 @@ interface ToolbarProps {
   isFullscreen: boolean
   readOnly?: boolean
   onExpand: (path: Path) => void
-  onFocusPath: (path: Path) => void
   onToggleFullscreen: () => void
 }
 
@@ -149,7 +148,7 @@ const InnerToolbar = memo(function InnerToolbar({
 })
 
 export function Toolbar(props: ToolbarProps) {
-  const {hotkeys, isFullscreen, readOnly, onExpand, onFocusPath, onToggleFullscreen} = props
+  const {hotkeys, isFullscreen, readOnly, onExpand, onToggleFullscreen} = props
   const features = useFeatures()
   const editor = usePortableTextEditor()
   const selection = usePortableTextEditorSelection()
@@ -201,26 +200,24 @@ export function Toolbar(props: ToolbarProps) {
     async (type: ObjectSchemaType) => {
       const initialValue = await resolveInitialValue(type)
       const path = PortableTextEditor.insertBlock(editor, type as FIXME, initialValue)
-      PortableTextEditor.blur(editor)
       if (path) {
-        onFocusPath(path)
+        PortableTextEditor.blur(editor)
         onExpand(path)
       }
     },
-    [editor, onExpand, onFocusPath, resolveInitialValue]
+    [editor, onExpand, resolveInitialValue]
   )
 
   const handleInsertInline = useCallback(
     async (type: ObjectSchemaType) => {
       const initialValue = await resolveInitialValue(type)
       const path = PortableTextEditor.insertChild(editor, type as FIXME, initialValue)
-      PortableTextEditor.blur(editor)
       if (path) {
-        onFocusPath(path)
+        PortableTextEditor.blur(editor)
         onExpand(path)
       }
     },
-    [editor, onExpand, onFocusPath, resolveInitialValue]
+    [editor, onExpand, resolveInitialValue]
   )
 
   const actionGroups = useActionGroups({
