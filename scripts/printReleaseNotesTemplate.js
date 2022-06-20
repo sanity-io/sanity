@@ -1,7 +1,16 @@
-const CHANGELOG_COMMAND =
-  "git log --pretty=format:'%aN | %s | %h' --abbrev-commit --reverse $(git describe --abbrev=0)..origin/next"
-
 const execa = require('execa')
+const yargs = require('yargs')
+const {hideBin} = require('yargs/helpers')
+
+const flags = yargs(hideBin(process.argv)).argv
+
+const isFromV3 =
+  execa.commandSync('git rev-parse --abbrev-ref HEAD', {shell: true}).stdout.trim() === 'v3'
+
+const BASE_BRANCH = isFromV3 ? 'v3' : 'next'
+const PREV_RELEASE =
+  flags.from || execa.commandSync('git describe --abbrev=0', {shell: true}).stdout.trim()
+const CHANGELOG_COMMAND = `git log --pretty=format:'%aN | %s | %h' --abbrev-commit --reverse ${PREV_RELEASE}..origin/${BASE_BRANCH}`
 
 const TEMPLATE = `
 Upgrade the Command Line Interface (CLI) with:
