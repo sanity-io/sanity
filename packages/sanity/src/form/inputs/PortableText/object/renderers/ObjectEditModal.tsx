@@ -6,14 +6,13 @@ import {
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {_getModalOption} from '../helpers'
 import {PortableTextMemberItem} from '../../PortableTextInput'
-import {_isObjectFieldMember} from '../../_helpers'
 import {DefaultEditDialog} from './DefaultEditDialog'
 import {PopoverEditDialog} from './PopoverEditDialog'
 import {ModalType} from './types'
 
 export function ObjectEditModal(props: {
   children: React.ReactNode
-  kind: 'annotation' | 'object' | 'inlineObject'
+  kind: PortableTextMemberItem['kind']
   memberItem: PortableTextMemberItem
   onClose: () => void
   scrollElement: HTMLElement
