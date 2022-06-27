@@ -1,5 +1,5 @@
+import type {ObjectDiff, ObjectInput, DiffOptions} from '../types'
 import {replaceProperty} from '../helpers'
-import {ObjectDiff, ObjectInput, DiffOptions} from '../types'
 import {diffInput, removedInput, addedInput} from './diffInput'
 
 const ignoredFields = new Set(['_id', '_type', '_createdAt', '_updatedAt', '_rev', '_weak'])

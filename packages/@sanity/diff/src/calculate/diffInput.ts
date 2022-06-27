@@ -1,4 +1,4 @@
-import {
+import type {
   Diff,
   Input,
   ArrayInput,
@@ -14,6 +14,15 @@ import {diffTypeChange} from './diffTypeChange'
 import {diffObject, removedObject, addedObject} from './diffObject'
 import {diffBoolean, diffNumber} from './diffSimple'
 
+/**
+ * Takes a `from` and `to` input and calulates a diff between the two
+ *
+ * @param fromInput - The source (`from`) input - use {@link wrap | the wrap() method} to generate an "input"
+ * @param toInput - The destination (`to`) input - use {@link wrap | the wrap() method} to generate an "input"
+ * @param options - Options for the diffing process - currently no options are defined
+ * @returns A diff object representing the change
+ * @public
+ */
 export function diffInput<A>(
   fromInput: Input<A>,
   toInput: Input<A>,

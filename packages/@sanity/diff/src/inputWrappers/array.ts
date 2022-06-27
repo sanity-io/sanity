@@ -1,4 +1,4 @@
-import {ArrayInput, Input} from '../types'
+import type {ArrayInput, Input} from '../types'
 import {wrap} from './index'
 
 export default class ArrayWrapper<A> implements ArrayInput<A> {

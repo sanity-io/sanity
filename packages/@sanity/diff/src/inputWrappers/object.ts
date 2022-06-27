@@ -1,4 +1,4 @@
-import {ObjectInput, Input} from '../types'
+import type {ObjectInput, Input} from '../types'
 import {wrap} from './index'
 
 export default class ObjectWrapper<A> implements ObjectInput<A> {

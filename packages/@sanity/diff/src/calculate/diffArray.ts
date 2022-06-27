@@ -1,4 +1,4 @@
-import {ArrayDiff, ArrayInput, ItemDiff, DiffOptions} from '../types'
+import type {ArrayDiff, ArrayInput, ItemDiff, DiffOptions} from '../types'
 import {replaceProperty} from '../helpers'
 import {diffInput, removedInput, addedInput} from './diffInput'
 import {getLongestCommonSubsequence} from './lcs'
