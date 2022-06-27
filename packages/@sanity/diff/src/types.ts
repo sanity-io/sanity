@@ -10,7 +10,7 @@ export type Input<T> =
   | ObjectInput<T>
   | ArrayInput<T>
 
-interface BaseInput<A> {
+export interface BaseInput<A> {
   annotation: A
 }
 
@@ -82,7 +82,11 @@ type UnchangedDiff<A, V> = {
   toValue: V
 }
 
-type FullDiff<A, V> = AddedDiff<A, V> | RemovedDiff<A, V> | ChangedDiff<A, V> | UnchangedDiff<A, V>
+export type FullDiff<A, V> =
+  | AddedDiff<A, V>
+  | RemovedDiff<A, V>
+  | ChangedDiff<A, V>
+  | UnchangedDiff<A, V>
 
 export type StringDiff<A> = FullDiff<A, string> & {type: 'string'; segments: StringDiffSegment<A>[]}
 export type NumberDiff<A> = FullDiff<A, number> & {type: 'number'}
