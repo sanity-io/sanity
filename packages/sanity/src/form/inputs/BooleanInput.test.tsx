@@ -1,6 +1,6 @@
 import userEvent from '@testing-library/user-event'
 import {defineType} from '@sanity/types'
-import React, { ComponentType } from 'react'
+import React, {ComponentType} from 'react'
 import {renderBooleanInput} from '../../../test/form/renderBooleanInput'
 import {BooleanInput} from './BooleanInput'
 
@@ -209,7 +209,7 @@ describe('readOnly property', () => {
     expect(input).not.toHaveFocus()
   })
 })
-declare const t: ComponentType<{}>
+declare const t: ComponentType<any>
 describe('hidden property', () => {
   it('hides field', () => {
     expect(() =>
