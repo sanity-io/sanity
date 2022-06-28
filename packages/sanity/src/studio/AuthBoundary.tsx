@@ -1,22 +1,26 @@
 import React, {useEffect, useState} from 'react'
-import {LoadingScreen, NotAuthenticatedScreen} from './screens'
+import {LoadingScreen, AuthenticateScreen, NotAuthenticatedScreen} from './screens'
 import {useActiveWorkspace} from './activeWorkspaceMatcher'
 
 interface AuthBoundaryProps {
   children: React.ReactNode
-  NotAuthenticatedComponent?: React.ComponentType
+  AuthenticateComponent?: React.ComponentType
   LoadingComponent?: React.ComponentType
+  NotAuthenticatedComponent?: React.ComponentType
 }
 
 export function AuthBoundary({
   children,
-  NotAuthenticatedComponent = NotAuthenticatedScreen,
+  AuthenticateComponent = AuthenticateScreen,
   LoadingComponent = LoadingScreen,
+  NotAuthenticatedComponent = NotAuthenticatedScreen,
 }: AuthBoundaryProps) {
   const [error, handleError] = useState<unknown>(null)
   if (error) throw error
 
-  const [loggedIn, setLoggedIn] = useState<'logged-in' | 'logged-out' | 'loading'>('loading')
+  const [loggedIn, setLoggedIn] = useState<'logged-in' | 'logged-out' | 'loading' | 'unauthorized'>(
+    'loading'
+  )
   const {activeWorkspace} = useActiveWorkspace()
 
   useEffect(() => {
@@ -25,16 +29,27 @@ export function AuthBoundary({
 
   useEffect(() => {
     activeWorkspace.auth.state.subscribe({
-      next: ({authenticated}) => setLoggedIn(authenticated ? 'logged-in' : 'logged-out'),
+      next: ({authenticated, currentUser}) => {
+        if (currentUser?.roles?.length === 0) {
+          setLoggedIn('unauthorized')
+
+          return
+        }
+
+        setLoggedIn(authenticated ? 'logged-in' : 'logged-out')
+      },
       error: handleError,
     })
   }, [activeWorkspace])
 
   if (loggedIn === 'loading') return <LoadingComponent />
-  // NOTE: there is currently a bug where the `NotAuthenticatedComponent` will
+
+  if (loggedIn === 'unauthorized') return <NotAuthenticatedComponent />
+
+  // NOTE: there is currently a bug where the `AuthenticateComponent` will
   // flash after the first login with cookieless mode. See `createAuthStore`
   // for details
-  if (loggedIn === 'logged-out') return <NotAuthenticatedComponent />
+  if (loggedIn === 'logged-out') return <AuthenticateComponent />
 
   return <>{children}</>
 }
