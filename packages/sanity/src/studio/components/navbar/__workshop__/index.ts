@@ -12,4 +12,9 @@ export default defineScope('sanity/studio/navbar', 'Navbar', [
     title: 'ChangelogDialog',
     component: lazy(() => import('./ChangelogDialogStory')),
   },
+  {
+    name: 'nav-banner',
+    title: 'NavBanner',
+    component: lazy(() => import('./NavBannerStory')),
+  },
 ])

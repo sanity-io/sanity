@@ -5,6 +5,7 @@ import {
   Card,
   Flex,
   Layer,
+  Stack,
   Text,
   Tooltip,
   useGlobalKeyDown,
@@ -27,6 +28,7 @@ import {useColorScheme} from '../../colorScheme'
 import {RouterState, useRouterState, useStateLink} from '../../../router'
 import {useWorkspaces} from '../../workspaces'
 import {isDev} from '../../../environment'
+import {useNetworkStatus} from '../../hooks'
 import {UserMenu} from './userMenu'
 import {NewDocumentButton} from './NewDocumentButton'
 import {PresenceMenu} from './presence'
@@ -36,6 +38,7 @@ import {ToolMenu as DefaultToolMenu} from './tools/ToolMenu'
 import {ChangelogButton} from './changelog'
 import {WorkspaceMenuButton} from './workspace'
 import {ConfigIssuesButton} from './configIssues/ConfigIssuesButton'
+import {NavBanner} from './NavBanner'
 
 const RootLayer = styled(Layer)`
   min-height: auto;
@@ -83,6 +86,8 @@ export function Navbar(props: NavbarProps) {
   const rootLink = useStateLink({state: {}})
   const mediaIndex = useMediaIndex()
   const activeToolName = typeof routerState.tool === 'string' ? routerState.tool : undefined
+
+  const networkStatus = useNetworkStatus()
 
   const [searchOpen, setSearchOpen] = useState<boolean>(false)
   const [drawerOpen, setDrawerOpen] = useState<boolean>(false)
@@ -183,145 +188,160 @@ export function Navbar(props: NavbarProps) {
   )
 
   return (
-    <RootLayer zOffset={100} data-search-open={searchOpen}>
-      <Card
-        scheme="dark"
-        shadow={scheme === 'dark' ? 1 : undefined}
-        style={{lineHeight: 0}}
-        padding={2}
-        sizing="border"
-        data-ui="Navbar"
-      >
-        <Flex align="center" justify="space-between">
-          <LeftFlex align="center" flex={shouldRender.brandingCenter ? undefined : 1}>
-            {!shouldRender.tools && (
-              <Box marginRight={1}>
-                <Button
-                  mode="bleed"
-                  icon={MenuIcon}
-                  onClick={handleOpenDrawer}
-                  ref={setDrawerButtonEl}
-                />
-              </Box>
-            )}
-
-            {!shouldRender.brandingCenter && <Box marginRight={1}>{brandingComponent}</Box>}
-
-            {shouldRender.workspaces && (
-              <Box marginRight={2}>
-                <Tooltip
-                  content={
-                    <Box padding={2}>
-                      <Text size={1}>Select workspace</Text>
-                    </Box>
-                  }
-                  placement="bottom"
-                  portal
-                  scheme={scheme}
-                >
-                  <Box>
-                    <WorkspaceMenuButton />
-                  </Box>
-                </Tooltip>
-              </Box>
-            )}
-
-            <Box marginRight={shouldRender.brandingCenter ? undefined : 2}>
-              <NewDocumentButton />
-            </Box>
-
-            {(searchOpen || !shouldRender.searchFullscreen) && (
-              <SearchCard
-                data-fullscreen={shouldRender.searchFullscreen}
-                data-ui="SearchRoot"
-                flex={1}
-                padding={shouldRender.searchFullscreen ? 2 : undefined}
-                scheme={shouldRender.searchFullscreen ? 'light' : undefined}
-                shadow={shouldRender.searchFullscreen ? 1 : undefined}
-              >
-                <Flex>
-                  <Box flex={1} marginRight={shouldRender.tools ? undefined : [1, 1, 2]}>
-                    <SearchField
-                      fullScreen={shouldRender.searchFullscreen}
-                      onSearchItemClick={handleCloseSearch}
-                      portalElement={fullscreenSearchPortalEl}
-                      setSearchInputElement={setSearchInputElement}
-                      relatedElements={searchRelatedElements}
-                    />
-                  </Box>
-
-                  {shouldRender.searchFullscreen && (
-                    <Button
-                      aria-label="Close search"
-                      icon={CloseIcon}
-                      mode="bleed"
-                      onClick={handleCloseSearch}
-                      ref={setSearchCloseButtonEl}
-                    />
-                  )}
-                </Flex>
-              </SearchCard>
-            )}
-
-            {shouldRender.tools && (
-              <Card borderRight flex={1} marginX={2} overflow="visible" paddingRight={1}>
-                <ToolMenu
-                  activeToolName={activeToolName}
-                  context="topbar"
-                  isDrawerOpen={false}
-                  tools={tools}
-                  closeDrawer={handleCloseDrawer}
-                />
-              </Card>
-            )}
-          </LeftFlex>
-
-          {shouldRender.brandingCenter && <Box marginX={1}>{brandingComponent}</Box>}
-
-          <Flex align="center">
-            {shouldRender.changelog && (
-              <Box marginRight={1}>
-                <ChangelogButton />
-              </Box>
-            )}
-
-            {shouldRender.configIssues && (
-              <Box marginRight={2}>
-                <ConfigIssuesButton />
-              </Box>
-            )}
-
-            <Box marginRight={1}>
-              <PresenceMenu collapse={shouldRender.collapsedPresenceMenu} />
-            </Box>
-
-            {shouldRender.tools && (
-              <Box>
-                <UserMenu />
-              </Box>
-            )}
-
-            {shouldRender.searchFullscreen && (
-              <Button
-                aria-label="Open search"
-                icon={SearchIcon}
-                mode="bleed"
-                onClick={handleOpenSearch}
-                ref={setSearchOpenButtonEl}
-              />
-            )}
-          </Flex>
-        </Flex>
-      </Card>
-
-      {!shouldRender.tools && (
-        <NavDrawer
-          activeToolName={activeToolName}
-          isOpen={drawerOpen}
-          onClose={handleCloseDrawer}
-          tools={tools}
+    <Stack>
+      {networkStatus === 'offline' && (
+        <NavBanner
+          title="Network connection lost"
+          description="Your changes will not be saved. Please connect to a network to continue editing."
+          iconSymbol="warning-outline"
+          tone="caution"
         />
       )}
-    </RootLayer>
+
+      <RootLayer zOffset={100} data-search-open={searchOpen}>
+        <Card
+          scheme="dark"
+          shadow={scheme === 'dark' ? 1 : undefined}
+          style={{lineHeight: 0}}
+          padding={2}
+          sizing="border"
+          data-ui="Navbar"
+        >
+          <Flex align="center" justify="space-between">
+            <LeftFlex align="center" flex={shouldRender.brandingCenter ? undefined : 1}>
+              {!shouldRender.tools && (
+                <Box marginRight={1}>
+                  <Button
+                    mode="bleed"
+                    icon={MenuIcon}
+                    onClick={handleOpenDrawer}
+                    ref={setDrawerButtonEl}
+                  />
+                </Box>
+              )}
+
+              {!shouldRender.brandingCenter && <Box marginRight={1}>{brandingComponent}</Box>}
+
+              {shouldRender.workspaces && (
+                <Box marginRight={2}>
+                  <Tooltip
+                    content={
+                      <Box padding={2}>
+                        <Text size={1}>Select workspace</Text>
+                      </Box>
+                    }
+                    placement="bottom"
+                    portal
+                    scheme={scheme}
+                  >
+                    <Box>
+                      <WorkspaceMenuButton />
+                    </Box>
+                  </Tooltip>
+                </Box>
+              )}
+
+              <Box marginRight={shouldRender.brandingCenter ? undefined : 2}>
+                <NewDocumentButton />
+              </Box>
+
+              {(searchOpen || !shouldRender.searchFullscreen) && (
+                <SearchCard
+                  data-fullscreen={shouldRender.searchFullscreen}
+                  data-ui="SearchRoot"
+                  flex={1}
+                  padding={shouldRender.searchFullscreen ? 2 : undefined}
+                  scheme={shouldRender.searchFullscreen ? 'light' : undefined}
+                  shadow={shouldRender.searchFullscreen ? 1 : undefined}
+                >
+                  <Flex>
+                    <Box flex={1} marginRight={shouldRender.tools ? undefined : [1, 1, 2]}>
+                      <SearchField
+                        fullScreen={shouldRender.searchFullscreen}
+                        onSearchItemClick={handleCloseSearch}
+                        portalElement={fullscreenSearchPortalEl}
+                        setSearchInputElement={setSearchInputElement}
+                        relatedElements={searchRelatedElements}
+                      />
+                    </Box>
+
+                    {shouldRender.searchFullscreen && (
+                      <Button
+                        aria-label="Close search"
+                        icon={CloseIcon}
+                        mode="bleed"
+                        onClick={handleCloseSearch}
+                        ref={setSearchCloseButtonEl}
+                      />
+                    )}
+                  </Flex>
+                </SearchCard>
+              )}
+
+              {shouldRender.tools && (
+                <Card borderRight flex={1} marginX={2} overflow="visible" paddingRight={1}>
+                  <ToolMenu
+                    activeToolName={activeToolName}
+                    context="topbar"
+                    isDrawerOpen={false}
+                    tools={tools}
+                    closeDrawer={handleCloseDrawer}
+                  />
+                </Card>
+              )}
+            </LeftFlex>
+
+            {shouldRender.brandingCenter && <Box marginX={1}>{brandingComponent}</Box>}
+
+            <Flex align="center">
+              {shouldRender.changelog && (
+                <Box marginRight={1}>
+                  <ChangelogButton />
+                </Box>
+              )}
+
+              <Box marginRight={1}>
+                <PresenceMenu collapse={shouldRender.collapsedPresenceMenu} />
+              </Box>
+
+              {shouldRender.configIssues && (
+                <Box marginRight={2}>
+                  <ConfigIssuesButton />
+                </Box>
+              )}
+
+              <Box marginRight={1}>
+                <PresenceMenu collapse={shouldRender.collapsedPresenceMenu} />
+              </Box>
+
+              {shouldRender.tools && (
+                <Box>
+                  <UserMenu />
+                </Box>
+              )}
+
+              {shouldRender.searchFullscreen && (
+                <Button
+                  aria-label="Open search"
+                  icon={SearchIcon}
+                  mode="bleed"
+                  onClick={handleOpenSearch}
+                  ref={setSearchOpenButtonEl}
+                />
+              )}
+            </Flex>
+          </Flex>
+        </Card>
+
+        {!shouldRender.tools && (
+          <NavDrawer
+            activeToolName={activeToolName}
+            isOpen={drawerOpen}
+            onClose={handleCloseDrawer}
+            tools={tools}
+          />
+        )}
+      </RootLayer>
+    </Stack>
   )
 }
