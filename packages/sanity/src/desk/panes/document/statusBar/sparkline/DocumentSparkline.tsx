@@ -1,5 +1,5 @@
 import {Box, Flex, useElementRect} from '@sanity/ui'
-import React, {useEffect, useMemo, useState, memo, useLayoutEffect} from 'react'
+import React, {useEffect, useMemo, useState, memo, useLayoutEffect, useCallback} from 'react'
 import {useSyncState} from '../../../../../hooks'
 import {useDocumentPane} from '../../useDocumentPane'
 import {DocumentBadges} from './DocumentBadges'
@@ -37,7 +37,7 @@ export const DocumentSparkline = memo(function DocumentSparkline() {
 
   // eslint-disable-next-line consistent-return
   useEffect(() => {
-    if (status === 'syncing') {
+    if (status === 'syncing' && !syncState.isSyncing) {
       // status changed to 'syncing', schedule an update to set it to 'saved'
       const timerId = setTimeout(() => setStatus('saved'), SYNCING_TIMEOUT)
       return () => clearTimeout(timerId)
@@ -47,7 +47,7 @@ export const DocumentSparkline = memo(function DocumentSparkline() {
       const timerId = setTimeout(() => setStatus(null), SAVED_TIMEOUT)
       return () => clearTimeout(timerId)
     }
-  }, [status, lastUpdated])
+  }, [status, lastUpdated, syncState.isSyncing])
 
   useLayoutEffect(() => {
     // clear sync status when documentId changes
