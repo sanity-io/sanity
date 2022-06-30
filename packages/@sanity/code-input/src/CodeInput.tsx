@@ -1,7 +1,7 @@
 import React, {useCallback, useEffect, useImperativeHandle, useRef} from 'react'
 import {FormFieldPresence} from '@sanity/base/presence'
 import {FormField, FormFieldSet} from '@sanity/base/components'
-import {Path} from '@sanity/types'
+import {Marker, Path} from '@sanity/types'
 import {Card, Select, TextInput} from '@sanity/ui'
 import * as PathUtils from '@sanity/util/paths'
 import {ChangeIndicatorProvider} from '@sanity/base/change-indicators'
@@ -61,6 +61,7 @@ export interface CodeInputProps {
   readOnly?: boolean
   type: CodeInputType
   value?: CodeInputValue
+  markers: Marker[]
 }
 
 // Returns a string with the mode name if supported (because aliases), otherwise false
@@ -95,6 +96,7 @@ const CodeInput = React.forwardRef(
       level,
       readOnly,
       focusPath,
+      markers,
     } = props
 
     useImperativeHandle(ref, () => ({
@@ -434,6 +436,7 @@ const CodeInput = React.forwardRef(
         description={type.description}
         level={level}
         __unstable_changeIndicator={false}
+        __unstable_markers={markers}
       >
         {!type.options?.language && renderLanguageAlternatives()}
         {type?.options?.withFilename && renderFilenameInput()}
