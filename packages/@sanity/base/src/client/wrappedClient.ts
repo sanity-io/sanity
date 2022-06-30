@@ -11,7 +11,7 @@
  * client.fetch(...)
  * ```
  */
-import sanityClient from '@sanity/client'
+import sanityClient, {ClientConfig, SanityClient} from '@sanity/client'
 import {generateHelpUrl} from '@sanity/generate-help-url'
 import config from 'config:sanity'
 import configureClient from 'part:@sanity/base/configure-client?'
@@ -60,7 +60,7 @@ export const wrappedClient = {
     return configuredClient.clientConfig
   },
 
-  withConfig: (newConfig) => {
+  withConfig: (newConfig: Partial<ClientConfig>): SanityClient => {
     if (!newConfig || !newConfig.apiVersion) {
       throw new Error(
         `Client \`withConfig()\` called without an \`apiVersion\` - see ${generateHelpUrl(
@@ -77,7 +77,7 @@ export const wrappedClient = {
         const currentHasToken = Boolean(newClient.config().token)
         const nextHasToken = Boolean(token)
         if (currentHasToken !== nextHasToken) {
-          newClient.config({...newConfig, token})
+          newClient.config({...newConfig, token, ignoreBrowserTokenWarning: true})
         }
       })
     }
