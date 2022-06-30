@@ -89,7 +89,7 @@ export default {
             {
               name: 'products',
               title: 'Products',
-              description: 'Pick between 1 and 3 products to highlight',
+              description: 'Pick between 1 and 3 products to highlight in the preview tab.',
               type: 'array',
               validation: (Rule) => Rule.required().min(1).max(3),
               of: [
