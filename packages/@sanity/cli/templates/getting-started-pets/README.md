@@ -28,13 +28,13 @@ Here are some features that we already have set up so you can explore at your ow
 <img alt="image input with a dropdown list that shows options for different asset sources: including unsplashed and media" src="static/readMeImages/AssetSource.png" width="400" height="250">
 </p>
 
-- **Array input types**: you can see how the array inputs were used (in conjunction with references in places) and how we were able to use them in the previews by using groq ([documentation](https://www.sanity.io/docs/array-type))
+- **Array input types**: you can see how the array inputs were used (in conjunction with references in places) and how we were able to use them in the previews by using GROQ ([documentation](https://www.sanity.io/docs/array-type))
 
 <p align="center">
 <img alt="array input with a list of favourite toys with a preview of the range of their prices" src="static/readMeImages/ArrayInput.png" width="400" height="200">
 </p>
 
-- **GROQ**: See how we've used groq in the previews to fetch data and how we've read it on the rendering of the component. In the examples, we make sure that you can not only fetch the last published version but the drafts that haven't been published as well ([documentation](https://www.sanity.io/docs/query-cheat-sheet))
+- **GROQ**: See how we've used GROQ in the previews to fetch data and how we've read it on the rendering of the component. In the examples, we make sure that you can not only fetch the last published version but the drafts that haven't been published as well ([documentation](https://www.sanity.io/docs/query-cheat-sheet))
 
 If you want to explore more:
 
