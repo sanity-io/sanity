@@ -34,7 +34,7 @@ export default {
     {
       name: 'shortDescription',
       description:
-        'This field uses a custom react component to count the characters in the input. You can easily customize your input fields with your own components.',
+        'This field uses a custom React component to count the characters in the input. You can easily customize your input fields with your own components.',
       type: 'text',
       title: 'Short description',
       inputComponent: CharacterCount,

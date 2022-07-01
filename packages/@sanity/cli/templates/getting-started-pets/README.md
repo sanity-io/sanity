@@ -19,7 +19,7 @@ Here are some features that we already have set up so you can explore at your ow
 - **Image input: crop and hotspot (and how that affects different elements)**: With the hotspot and crop tool in the image input you can very quickly narrow down to which part of the image you want to focus on without having to upload different assets ([documentation](https://www.sanity.io/docs/image-type#hotspot-3e6da78954a8))
 
 <p align="center">
-<img alt="displays two cat pictures with different dimensions, focused on a twitter header on mobile versus the same header on desktop" src="static/readMeImages/ImageInput.png" width="400" height="450">
+<img alt="displays two cat pictures with different dimensions, focused on a Twitter header on mobile versus the same header on desktop" src="static/readMeImages/ImageInput.png" width="400" height="450">
 </p>
 
 - **Image input: use Unsplash and Media browser plugins from the start!**: You can test out how the Unsplash and Media browser plugins are used and explore how to use them ([documentation](https://www.sanity.io/plugins?category=assetSource))

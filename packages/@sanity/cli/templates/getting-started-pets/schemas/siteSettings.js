@@ -56,7 +56,7 @@ export default {
       name: 'blurb',
       title: 'Blurb',
       description:
-        'This field allows you to compose rich text. The big difference between this field and the rest is the level of customization (rich text) allowed. You can also customize and extend it further with react components.',
+        'This field allows you to compose rich text. The big difference between this field and the rest is the level of customization (rich text) allowed. You can also customize and extend it further with React components.',
       type: 'array',
       of: [{type: 'block'}],
     },
@@ -80,7 +80,7 @@ export default {
     {
       name: 'ogimage',
       description:
-        'This image is used in three different use cases and sizes (twitter, twitter desktop and facebook banner). Edit to adjust the crop & hotspot of the image. Hit the 👉 Preview 👈 tab to see how it performs in different sizes. Recommended size: 1200x630px.',
+        'This image is used in three different use cases and sizes (Twitter, Twitter desktop and Facebook banner). Edit to adjust the crop & hotspot of the image. Hit the 👉 Preview 👈 tab to see how it performs in different sizes. Recommended size: 1200x630px.',
       title: 'OG Image',
       type: 'image',
       options: {
