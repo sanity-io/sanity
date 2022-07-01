@@ -34,7 +34,7 @@ export default {
   fields: [
     {
       name: 'title',
-      description: 'This field outputs a string',
+      description: 'This field is the title of your application.',
       title: 'Title',
       type: 'string',
       group: 'seo',
@@ -44,11 +44,11 @@ export default {
       title: 'SEO Description',
       type: 'text',
       description:
-        'This field also outputs a string buts its suited for longer text. If you need text with markup and structured data, use block text, as the next field below 👇',
+        "This field is the description of your application! It's suited for simple, and direct (SEO-focused) text. If you need markup and structured data, use block text, as the next field below 👇",
       inputComponent: CharacterCount,
       validation: (Rule) =>
         Rule.max(150).warning(
-          'Shorter is usually better for the SEO purposes, try to keep it under 150 characters'
+          'Shorter is usually better for SEO purposes. Try to keep it under 150 characters.'
         ),
       group: 'seo',
     },
@@ -56,14 +56,14 @@ export default {
       name: 'blurb',
       title: 'Blurb',
       description:
-        "This field allows you to compose rich text. What makes it special is that content is stored as an array of JSON objects describing the rich text content. It's customisable and extensible.",
+        'This field allows you to compose rich text. The big difference between this field and the rest is the level of customization (rich text) allowed. You can also customize and extend it further with React components.',
       type: 'array',
       of: [{type: 'block'}],
     },
     {
       name: 'logo',
       description:
-        'This is a simple image field. You can add as many custom fields to it as you need, such as description, author or alt text.',
+        'This is a simple image field. You can add as many custom fields to it as you need (such as description, author, or alt text).',
       title: 'Logo',
       type: 'image',
       fields: [
@@ -80,7 +80,7 @@ export default {
     {
       name: 'ogimage',
       description:
-        'Recommended size: 1200x630px.  Edit to adjust crop & hotspot of the image. Hit the 👉 Preview 👈 tab to see how it performs in different sizes.',
+        'This image is used in three different use cases and sizes (Twitter, Twitter desktop and Facebook banner). Edit to adjust the crop & hotspot of the image. Hit the 👉 Preview 👈 tab to see how it performs in different sizes. Recommended size: 1200x630px.',
       title: 'OG Image',
       type: 'image',
       options: {
@@ -91,7 +91,7 @@ export default {
     {
       name: 'socialMedia',
       description:
-        'This is an array of references. References allow you to connect documents with one another. Referenced documents are indepented but you can add, edit and remix them directly from here.',
+        'This is an array of references. References allow you to connect different documents without leaving the current document. Referenced documents are independent, but you can add and edit them directly from here.',
       title: 'Social media',
       type: 'array',
       of: [{type: 'reference', to: [{type: 'link'}]}],

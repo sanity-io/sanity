@@ -1,4 +1,4 @@
-import {CreditCardIcon, EyeOpenIcon, DocumentIcon} from '@sanity/icons'
+import {EyeOpenIcon, DocumentIcon} from '@sanity/icons'
 import {ProductPreview} from '../components/views/ProductPreview'
 import S from '@sanity/desk-tool/structure-builder'
 import {JsonView} from '../components/views/JsonView'

@@ -34,7 +34,7 @@ export default {
     {
       name: 'shortDescription',
       description:
-        'This field uses a custom input component to insert a character count. There is no limit to how you can customise your inputs with Sanity.',
+        'This field uses a custom React component to count the characters in the input. You can easily customize your input fields with your own components.',
       type: 'text',
       title: 'Short description',
       inputComponent: CharacterCount,
@@ -49,14 +49,13 @@ export default {
     {
       name: 'birthday',
       description:
-        "This is a date input. You can customise it too. Hours? Time zones? Custom calendar? You've got it.",
+        "This is a date input. You can customize it too. Hours? Time zones? Custom calendar? You've got it.",
       type: 'date',
       title: 'Date of birth',
     },
     {
       name: 'weight',
-      description:
-        "That's a number input. Sanity supports all the default HTML inputs, and much more.",
+      description: 'This is a number input. Sanity supports the default HTML inputs and much more.',
       type: 'number',
       title: 'Weight (kg)',
     },
@@ -64,7 +63,7 @@ export default {
       title: 'Hair',
       name: 'hair',
       description:
-        "This field is used to  conditionally show and hide the next field. Only if a pet has hair or fur, you can set its fluffiness level. 'hair' is used as a default value.",
+        "This field conditionally shows and hides the fluffiness field. You can set a pet's fluffiness level only when a pet has hair or fur. 'hair' is used as the default value.",
       type: 'string',
       options: {
         list: [
@@ -79,7 +78,7 @@ export default {
     {
       name: 'fluffiness',
       description:
-        "That's yet another custom input. You can build whatever input you need, even the most crazy one!",
+        "This is yet another custom input! It will be hidden depending on the option picked on the 'hair' field.",
       type: 'number',
       title: 'Fluffiness level',
       inputComponent: RangeInput,
@@ -135,7 +134,8 @@ export default {
     {
       name: 'toys',
       title: 'Favourite toys & treats',
-      description: 'Ordered list where the first item will be the first position',
+      description:
+        'This is an ordered list where the first item will appear in the first position within the preview.',
       type: 'array',
       of: [{type: 'reference', to: [{type: 'product'}]}],
       group: 'favourites',

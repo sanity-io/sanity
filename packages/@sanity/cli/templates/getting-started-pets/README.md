@@ -19,22 +19,22 @@ Here are some features that we already have set up so you can explore at your ow
 - **Image input: crop and hotspot (and how that affects different elements)**: With the hotspot and crop tool in the image input you can very quickly narrow down to which part of the image you want to focus on without having to upload different assets ([documentation](https://www.sanity.io/docs/image-type#hotspot-3e6da78954a8))
 
 <p align="center">
-<img alt="displays two cat pictures with different dimensions, focused on a twitter header on mobile versus the same header on desktop" src="static/readMeImages/ImageInput.png" width="400" height="450">
+<img alt="displays two cat pictures with different dimensions, focused on a Twitter header on mobile versus the same header on desktop" src="static/readMeImages/ImageInput.png" width="400" height="450">
 </p>
 
-- **Image input: use Unsplash and Media browser plugins from the start!**: You can test out how the Unsplash and Media browser plugins are used and explore how to they were set them up ([documentation](https://www.sanity.io/plugins?category=assetSource))
+- **Image input: use Unsplash and Media browser plugins from the start!**: You can test out how the Unsplash and Media browser plugins are used and explore how to use them ([documentation](https://www.sanity.io/plugins?category=assetSource))
 
 <p align="center">
 <img alt="image input with a dropdown list that shows options for different asset sources: including unsplashed and media" src="static/readMeImages/AssetSource.png" width="400" height="250">
 </p>
 
-- **Array input types**: you can see how the array inputs were used (in conjunction with references in places) and how we were able to use them in the previews by using groq ([documentation](https://www.sanity.io/docs/array-type))
+- **Array input types**: you can see how the array inputs were used (in conjunction with references in places) and how we were able to use them in the previews by using GROQ ([documentation](https://www.sanity.io/docs/array-type))
 
 <p align="center">
 <img alt="array input with a list of favourite toys with a preview of the range of their prices" src="static/readMeImages/ArrayInput.png" width="400" height="200">
 </p>
 
-- **GROQ**: See how we've used groq in the previews to fetch data and how we've read it on the rendering of the component. In the examples, we make sure that you can not only fetch the published last version but the drafts that haven't been published as well ([documentation](https://www.sanity.io/docs/query-cheat-sheet))
+- **GROQ**: See how we've used GROQ in the previews to fetch data and how we've read it on the rendering of the component. In the examples, we make sure that you can not only fetch the last published version but the drafts that haven't been published as well ([documentation](https://www.sanity.io/docs/query-cheat-sheet))
 
 If you want to explore more:
 
