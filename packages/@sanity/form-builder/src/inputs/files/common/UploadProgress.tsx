@@ -18,7 +18,7 @@ const STALE_UPLOAD_MS = 1000 * 60 * 2 // 2 minutes
 const elapsedMs = (date: string): number => new Date().getTime() - new Date(date).getTime()
 
 export function UploadProgress({uploadState, onCancel, onStale, height}: Props) {
-  const filename = uploadState.file.name
+  const filename = uploadState.file?.name ?? '...'
 
   useEffect(() => {
     if (elapsedMs(uploadState.updated) > STALE_UPLOAD_MS) {
@@ -34,7 +34,7 @@ export function UploadProgress({uploadState, onCancel, onStale, height}: Props) 
             <Text size={1}>
               <Inline space={2}>
                 Uploading
-                <CodeWrapper size={1}>{filename ? filename : '...'}</CodeWrapper>
+                <CodeWrapper size={1}>{filename}</CodeWrapper>
               </Inline>
             </Text>
           </Flex>
