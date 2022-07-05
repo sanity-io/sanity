@@ -163,7 +163,7 @@
     "react-is": "^17.0.2",
     "react-props-stream": "^1.0.0",
     "react-refractor": "^2.1.6",
-    "react-rx": "^2.0.3",
+    "react-rx": "^2.0.4",
     "react-sortable-hoc": "^2.0.0",
     "refractor": "^3.6.0",
     "resolve-from": "^5.0.0",
