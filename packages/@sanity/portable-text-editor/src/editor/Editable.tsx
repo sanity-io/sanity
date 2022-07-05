@@ -182,9 +182,10 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
         readOnly={readOnly}
         renderBlock={renderBlock}
         renderChild={renderChild}
+        spellCheck={spellCheck}
       />
     ),
-    [portableTextFeatures, readOnly, renderBlock, renderChild]
+    [portableTextFeatures, readOnly, renderBlock, renderChild, spellCheck]
   )
 
   const renderLeaf = useCallback(
