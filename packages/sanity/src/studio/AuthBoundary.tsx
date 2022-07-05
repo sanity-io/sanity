@@ -28,7 +28,7 @@ export function AuthBoundary({
   }, [activeWorkspace.auth])
 
   useEffect(() => {
-    activeWorkspace.auth.state.subscribe({
+    const subscription = activeWorkspace.auth.state.subscribe({
       next: ({authenticated, currentUser}) => {
         if (currentUser?.roles?.length === 0) {
           setLoggedIn('unauthorized')
@@ -40,6 +40,10 @@ export function AuthBoundary({
       },
       error: handleError,
     })
+
+    return () => {
+      subscription.unsubscribe()
+    }
   }, [activeWorkspace])
 
   if (loggedIn === 'loading') return <LoadingComponent />

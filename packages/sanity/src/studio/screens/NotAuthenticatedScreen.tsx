@@ -20,12 +20,16 @@ export function NotAuthenticatedScreen() {
   }, [activeWorkspace.auth])
 
   useEffect(() => {
-    activeWorkspace.auth.state.subscribe({
+    const subscription = activeWorkspace.auth.state.subscribe({
       next: ({currentUser: user}) => {
         setCurrentUser(user)
       },
       error: handleError,
     })
+
+    return () => {
+      subscription.unsubscribe()
+    }
   }, [activeWorkspace])
 
   return (
