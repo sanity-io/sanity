@@ -203,8 +203,6 @@ export function ArrayOfPrimitivesField(props: {
       renderInput,
       renderItem,
       onFocusIndex: handleFocusIndex,
-      collapsible: member.collapsible,
-      collapsed: member.collapsed,
       renderPreview,
     }
   }, [

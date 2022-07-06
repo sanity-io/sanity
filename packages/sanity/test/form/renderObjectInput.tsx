@@ -45,15 +45,12 @@ export async function renderObjectInput(options: {
 
     return {
       ...restProps,
-      collapsed: false,
       changed: false,
       groups: field?.groups || [],
       members: field?.members || [],
       onCloseField,
-      onCollapse,
       onCollapseField,
       onCollapseFieldSet,
-      onExpand,
       onExpandField,
       onExpandFieldSet,
       onFieldGroupSelect,

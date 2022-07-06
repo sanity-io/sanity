@@ -173,7 +173,6 @@ function RootInput() {
   )
 
   const rootInputProps: ObjectInputProps = {
-    collapsed: false,
     focusPath,
     focusRef,
     changed: members.some((m) => m.kind === 'field' && m.field.changed),
@@ -185,10 +184,8 @@ function RootInput() {
     onBlur: handleBlur,
     onChange: handleChange,
     onCloseField: handleCloseField,
-    onCollapse: handleCollapse,
     onCollapseField: handleCollapseField,
     onCollapseFieldSet: handleCollapseFieldSet,
-    onExpand: handleExpand,
     onExpandField: handleExpandField,
     onExpandFieldSet: handleExpandFieldSet,
     onFocus: handleFocus,

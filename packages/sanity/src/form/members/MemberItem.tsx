@@ -134,7 +134,6 @@ export function MemberItem(props: MemberItemProps) {
 
   const inputProps = useMemo((): ObjectInputProps => {
     return {
-      collapsed: member.collapsed,
       changed: member.item.changed,
       focusPath: member.item.focusPath,
       focusRef: focusRef,
@@ -146,10 +145,8 @@ export function MemberItem(props: MemberItemProps) {
       onBlur: handleBlur,
       onChange: handleChange,
       onCloseField: handleCloseField,
-      onCollapse: handleCollapse,
       onCollapseField: handleCollapseField,
       onCollapseFieldSet: handleCollapseFieldSet,
-      onExpand: handleExpand,
       onExpandField: handleExpandField,
       onExpandFieldSet: handleExpandFieldSet,
       onFieldGroupSelect: handleSelectFieldGroup,

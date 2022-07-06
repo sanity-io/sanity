@@ -35,8 +35,6 @@ export interface ObjectFormNode<
   groups: FormFieldGroup[]
 
   focusPath: Path
-  collapsible?: boolean
-  collapsed?: boolean
 }
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
@@ -51,8 +49,6 @@ export interface ArrayOfObjectsFormNode<
 > extends BaseFormNode<T, S> {
   members: ArrayOfObjectsMember[]
 
-  collapsible?: boolean
-  collapsed?: boolean
   focusPath: Path
 }
 
@@ -63,8 +59,6 @@ export interface ArrayOfPrimitivesFormNode<
   members: ArrayOfPrimitivesMember[]
 
   focusPath: Path
-  collapsed: boolean | undefined
-  collapsible: boolean | undefined
 }
 
 export type BooleanFormNode<S extends BooleanSchemaType = BooleanSchemaType> = BaseFormNode<

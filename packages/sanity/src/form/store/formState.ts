@@ -187,15 +187,20 @@ function prepareFieldMember(props: {
       return null
     }
 
+    const defaultCollapsedState = getCollapsedWithDefaults(field.type.options as FIXME, fieldLevel)
+    const collapsed = scopedCollapsedPaths
+      ? scopedCollapsedPaths.value
+      : defaultCollapsedState.collapsed
+
     return {
       kind: 'field',
       key: `field-${field.name}`,
       name: field.name,
       index: index,
       open: startsWith(fieldPath, parent.openPath),
-      collapsible: inputState.collapsible,
-      collapsed: inputState.collapsed,
       field: inputState,
+      collapsed,
+      collapsible: defaultCollapsedState.collapsible,
     }
   } else if (isArraySchemaType(field.type)) {
     const fieldValue = parentValue?.[field.name] as unknown[] | undefined
@@ -622,14 +627,6 @@ function prepareArrayOfPrimitivesInputState<T extends (boolean | string | number
   // Todo: improve error handling at the parent level so that the value here is either undefined or an array
   const items = Array.isArray(props.value) ? props.value : []
 
-  const defaultCollapsedState = getCollapsedWithDefaults(
-    props.schemaType.options as FIXME,
-    props.level
-  )
-  const collapsed = props.collapsedPaths
-    ? props.collapsedPaths.value
-    : defaultCollapsedState.collapsed
-
   const presence = props.presence.filter((item) => isEqual(item.path, props.path))
   const validation = props.validation
     .filter((item) => isEqual(item.path, props.path))
@@ -647,8 +644,6 @@ function prepareArrayOfPrimitivesInputState<T extends (boolean | string | number
     path: props.path,
     id: toString(props.path),
     level: props.level,
-    collapsed,
-    collapsible: defaultCollapsedState.collapsible,
     validation,
     presence,
     members,
@@ -680,14 +675,6 @@ function prepareArrayOfObjectsInputState<T extends {_key: string}[]>(
   // Todo: improve error handling at the parent level so that the value here is either undefined or an array
   const items = Array.isArray(props.value) ? props.value : []
 
-  const defaultCollapsedState = getCollapsedWithDefaults(
-    props.schemaType.options as FIXME,
-    props.level
-  )
-  const collapsed = props.collapsedPaths
-    ? props.collapsedPaths.value
-    : defaultCollapsedState.collapsed
-
   const presence = props.presence.filter((item) => isEqual(item.path, props.path))
   const validation = props.validation
     .filter((item) => isEqual(item.path, props.path))
@@ -711,8 +698,6 @@ function prepareArrayOfObjectsInputState<T extends {_key: string}[]>(
     path: props.path,
     id: toString(props.path),
     level: props.level,
-    collapsed,
-    collapsible: defaultCollapsedState.collapsible,
     validation,
     presence,
     members,
