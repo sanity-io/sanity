@@ -1,3 +1,13 @@
+import {SchemaType} from '@sanity/types'
+
+/**
+ * @internal
+ */
+export interface SearchParams {
+  query: string
+  schemas: SchemaType[]
+}
+
 /**
  * @internal
  */

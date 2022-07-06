@@ -11,6 +11,8 @@ const searchClient = versionedClient.withConfig({
   apiVersion: '2021-03-25',
 })
 
+export type {SearchParams} from './weighted/types'
+
 export default createWeightedSearch(getSearchableTypes(schema), searchClient, {
   unique: true,
   tag: 'search.global',

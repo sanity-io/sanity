@@ -8,7 +8,14 @@ import {joinPath} from '../../util/searchUtils'
 import {tokenize} from '../common/tokenize'
 import {removeDupes} from '../../util/draftUtils'
 import {applyWeights} from './applyWeights'
-import {WeightedHit, WeightedSearchOptions, SearchOptions, SearchPath, SearchHit} from './types'
+import {
+  WeightedHit,
+  WeightedSearchOptions,
+  SearchOptions,
+  SearchPath,
+  SearchHit,
+  SearchParams,
+} from './types'
 
 const combinePaths = flow([flatten, union, compact])
 
@@ -30,27 +37,36 @@ export function createWeightedSearch(
   options: WeightedSearchOptions = {}
 ): (query: string, opts?: SearchOptions) => Observable<WeightedHit[]> {
   const {filter, params, tag} = options
-  const searchSpec = types.map((type) => ({
-    typeName: type.name,
-    paths: type.__experimental_search.map((config) => ({
-      weight: config.weight,
-      path: joinPath(config.path),
-      mapWith: config.mapWith,
-    })),
-  }))
-
-  const combinedSearchPaths = combinePaths(
-    searchSpec.map((configForType) => configForType.paths.map((opt) => pathWithMapper(opt)))
-  )
-
-  const selections = searchSpec.map((spec) => {
-    const constraint = `_type == "${spec.typeName}" => `
-    const selection = `{ ${spec.paths.map((cfg, i) => `"w${i}": ${pathWithMapper(cfg)}`)} }`
-    return `${constraint}${selection}`
-  })
 
   // this is the actual search function that takes the search string and returns the hits
-  return function search(queryString: string, searchOpts: SearchOptions = {}) {
+  // supports string as search param to be backwards compatible
+  return function search(searchParams: string | SearchParams, searchOpts: SearchOptions = {}) {
+    const searchTypes =
+      // eslint-disable-next-line no-nested-ternary
+      typeof searchParams === 'string' || !searchParams.schemas.length
+        ? types
+        : searchParams.schemas
+
+    const searchSpec = searchTypes.map((type) => ({
+      typeName: type.name,
+      paths: type.__experimental_search.map((config) => ({
+        weight: config.weight,
+        path: joinPath(config.path),
+        mapWith: config.mapWith,
+      })),
+    }))
+
+    const combinedSearchPaths = combinePaths(
+      searchSpec.map((configForType) => configForType.paths.map((opt) => pathWithMapper(opt)))
+    )
+
+    const selections = searchSpec.map((spec) => {
+      const constraint = `_type == "${spec.typeName}" => `
+      const selection = `{ ${spec.paths.map((cfg, i) => `"w${i}": ${pathWithMapper(cfg)}`)} }`
+      return `${constraint}${selection}`
+    })
+
+    const queryString = typeof searchParams === 'string' ? searchParams : searchParams.query
     const terms = uniq(compact(tokenize(toLower(queryString))))
     const constraints = terms
       .map((term, i) => combinedSearchPaths.map((joinedPath) => `${joinedPath} match $t${i}`))
