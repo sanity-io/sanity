@@ -5,7 +5,7 @@ var fs = require('fs')
 var path = require('path')
 var readPkgUp = require('read-pkg-up')
 
-var expectedPath = path.join(__dirname, '..', 'node_modules', '.bin', 'sanity')
+var expectedPath = __dirname.indexOf('.pnpm') ?  path.join(__dirname, '../../../', 'node_modules', '.bin', 'sanity') :  path.join(__dirname, '..', 'node_modules', '.bin', 'sanity')
 if (fs.existsSync(expectedPath)) {
   require(expectedPath)
 } else {
