@@ -15,65 +15,76 @@ import {
 } from 'rxjs/operators'
 import {concat, EMPTY, Observable, of, timer} from 'rxjs'
 import search from 'part:@sanity/base/search'
+import type {SearchParams} from '@sanity/base'
 import {SearchHit, SearchState} from './types'
 
-type SearchFunction = (query: string) => Observable<SearchHit[]>
+type SearchFunction = (params: SearchParams) => Observable<SearchHit[]>
 
 const INITIAL_SEARCH_STATE: SearchState = {
   hits: [],
   loading: false,
   error: null,
-  searchString: '',
+  query: '',
+  schemas: [],
 }
 
 function nonNullable<T>(v: T): v is NonNullable<T> {
   return v !== null
 }
 
-export function useSearch(): {
-  handleSearch: (searchString: string) => void
+export function useSearch(
+  initialState = INITIAL_SEARCH_STATE
+): {
+  handleSearch: (params: string | SearchParams) => void
   handleClearSearch: () => void
   searchState: SearchState
 } {
-  const [searchState, setSearchState] = useState<SearchState>(INITIAL_SEARCH_STATE)
+  const [searchState, setSearchState] = useState(initialState)
 
-  const onSearch: SearchFunction = useCallback((query) => {
-    return query === '' ? of([]) : search(query)
+  const onSearch: SearchFunction = useCallback((params) => {
+    return params.query === '' && !params.schemas.length ? of([]) : search(params)
   }, [])
 
-  const handleQueryChange = useObservableCallback((inputValue$: Observable<string | null>) => {
-    return inputValue$.pipe(
-      distinctUntilChanged(),
-      filter(nonNullable),
-      switchMap((searchString) =>
-        concat(
-          of({hits: [], error: null, loading: true, searchString: searchString}),
-          timer(100).pipe(mergeMapTo(EMPTY)),
-          onSearch(searchString).pipe(
-            map((hits) => ({hits})),
-            catchError((error) => {
-              return of({hits: [], error: error, loading: false, searchString: searchString})
-            })
-          ),
-          of({loading: false})
-        )
-      ),
-      scan((prevState, nextState): SearchState => {
-        return {...prevState, ...nextState}
-      }, INITIAL_SEARCH_STATE),
-      tap(setSearchState)
-    )
-  }, [])
+  const handleQueryChange = useObservableCallback(
+    (inputValue$: Observable<SearchParams | null>) => {
+      return inputValue$.pipe(
+        distinctUntilChanged(),
+        filter(nonNullable),
+        switchMap((params) =>
+          concat(
+            of({...INITIAL_SEARCH_STATE, loading: true, ...params}),
+            timer(100).pipe(mergeMapTo(EMPTY)),
+            onSearch(params).pipe(
+              map((hits) => ({hits})),
+              catchError((error) => {
+                return of({
+                  ...INITIAL_SEARCH_STATE,
+                  error: error,
+                  loading: false,
+                  ...params,
+                })
+              })
+            ),
+            of({loading: false})
+          )
+        ),
+        scan((prevState, nextState): SearchState => {
+          return {...prevState, ...nextState}
+        }, INITIAL_SEARCH_STATE),
+        tap(setSearchState)
+      )
+    },
+    []
+  )
 
   const handleClearSearch = useCallback(() => {
     setSearchState(INITIAL_SEARCH_STATE)
-    handleQueryChange('') // cancel current request
+    handleQueryChange(INITIAL_SEARCH_STATE) // cancel current request
   }, [handleQueryChange])
 
   const handleSearch = useCallback(
-    (searchString: string) => {
-      handleQueryChange(searchString)
-    },
+    (params: string | SearchParams) =>
+      handleQueryChange(typeof params === 'string' ? {query: params, schemas: []} : params),
     [handleQueryChange]
   )
 

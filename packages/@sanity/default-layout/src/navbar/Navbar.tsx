@@ -20,6 +20,7 @@ import {versionedClient} from '../versionedClient'
 import Branding from './branding/Branding'
 import {ChangelogContainer} from './changelog'
 import {PresenceMenu, LoginStatus, SearchField} from '.'
+import {OmnisearchField} from './search/findability-temp/OmnisearchField'
 
 interface NavbarProps {
   createMenuIsOpen: boolean
@@ -294,6 +295,7 @@ export const Navbar = memo(function Navbar(props: NavbarProps) {
                       portalElement={searchPortalElement}
                       relatedElements={searchRelatedElements}
                     />
+                    <OmnisearchField portalElement={searchPortalElement} />
                   </Box>
                   {shouldRender.searchFullscreen && (
                     <Button

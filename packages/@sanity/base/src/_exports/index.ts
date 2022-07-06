@@ -15,3 +15,5 @@ export type {
   DocumentActionPopoverDialogProps,
   DocumentActionProps,
 } from '../actions/utils/types'
+
+export type {SearchParams} from '../search'
