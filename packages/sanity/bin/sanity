@@ -1,14 +1,25 @@
 #!/usr/bin/env node
-/* eslint-disable import/no-dynamic-require, no-sync, no-var, no-console, no-process-exit */
+/* eslint-disable import/no-dynamic-require, no-sync, no-console, no-process-exit */
 
-var fs = require('fs')
-var path = require('path')
-var readPkgUp = require('read-pkg-up')
+const fs = require('fs')
+const path = require('path')
+const readPkgUp = require('read-pkg-up')
 
-var expectedPath = __dirname.indexOf('.pnpm') ?  path.join(__dirname, '../../../', 'node_modules', '.bin', 'sanity') :  path.join(__dirname, '..', 'node_modules', '.bin', 'sanity')
+const expectedPath = path.join(__dirname, '..', 'node_modules', '.bin', 'sanity')
+
 if (fs.existsSync(expectedPath)) {
-  require(expectedPath)
+  isNodeScript(expectedPath).then(isScript => {
+    if (isScript) {
+      require(expectedPath)
+    } else {
+      runFromCli()
+    }
+  })
 } else {
+  runFromCli()
+}
+
+function runFromCli() {
   getSanityCliPath()
     .then((cliPath) => require(path.join(cliPath, 'bin', 'sanity')))
     .catch((err) => {
@@ -18,11 +29,21 @@ if (fs.existsSync(expectedPath)) {
 }
 
 async function getSanityCliPath() {
-  var modulePath = require.resolve('@sanity/cli')
-  var pkg = await readPkgUp({cwd: path.dirname(modulePath)})
+  const modulePath = require.resolve('@sanity/cli')
+  const pkg = await readPkgUp({cwd: path.dirname(modulePath)})
   if (pkg) {
     return path.dirname(pkg.path)
   }
 
   throw new Error('Failed to resolve @sanity/cli path')
+}
+
+async function isNodeScript(scriptPath) {
+  const file = await fs.promises.open(scriptPath)
+  const {buffer} = await file.read({length: 256})
+  await file.close()
+
+  const content = buffer.toString('utf8')
+  const firstLine = content.trimStart().slice(0, content.indexOf('\n'))
+  return firstLine.endsWith('node')
 }
