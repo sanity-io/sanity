@@ -209,34 +209,3 @@ describe('readOnly property', () => {
     expect(input).not.toHaveFocus()
   })
 })
-declare const t: ComponentType<any>
-describe('hidden property', () => {
-  it('hides field', async () => {
-    await expect(() =>
-      renderBooleanInput({
-        fieldDefinition: defs.booleanHidden,
-        render: (inputProps) => <BooleanInput {...inputProps} />,
-      })
-    ).rejects.toThrow('no field member: booleanHidden')
-  })
-
-  it('does not hide field with callback', async () => {
-    const {result} = await renderBooleanInput({
-      fieldDefinition: defs.hiddenCallback,
-      render: (inputProps) => <BooleanInput {...inputProps} />,
-    })
-    const input = result.container.querySelector('input[id="hiddenCallback"]')
-
-    expect(input).toBeDefined()
-  })
-
-  it.skip('hides field based on value in document', async () => {
-    await expect(() =>
-      renderBooleanInput({
-        fieldDefinition: defs.hiddenWithDocument,
-        props: {documentValue: {title: 'Hello, world'}},
-        render: (inputProps) => <BooleanInput {...inputProps} />,
-      })
-    ).rejects.toThrow('no field member: hiddenWithDocument')
-  })
-})
