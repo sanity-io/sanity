@@ -211,8 +211,8 @@ describe('readOnly property', () => {
 })
 declare const t: ComponentType<any>
 describe('hidden property', () => {
-  it('hides field', () => {
-    expect(() =>
+  it('hides field', async () => {
+    await expect(() =>
       renderBooleanInput({
         fieldDefinition: defs.booleanHidden,
         render: (inputProps) => <BooleanInput {...inputProps} />,
@@ -230,8 +230,8 @@ describe('hidden property', () => {
     expect(input).toBeDefined()
   })
 
-  it.skip('hides field based on value in document', () => {
-    expect(() =>
+  it.skip('hides field based on value in document', async () => {
+    await expect(() =>
       renderBooleanInput({
         fieldDefinition: defs.hiddenWithDocument,
         props: {documentValue: {title: 'Hello, world'}},
