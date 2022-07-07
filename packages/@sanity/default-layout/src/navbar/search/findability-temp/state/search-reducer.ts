@@ -27,7 +27,8 @@ export const INITIAL_SEARCH_STATE: SearchReducerState = {
   },
 }
 
-export type UpdateSearchState = {type: 'UPDATE_SEARCH_STATE'; state: SearchResult}
+export type UpdateSearchState = {type: 'UPDATE_SEARCH_RESULT'; result: Partial<SearchResult>}
+export type AppendHits = {type: 'APPEND_HITS'; hits: SearchHit[]}
 export type SetTerms = {type: 'SET_TERMS'; terms: SearchTerms}
 export type FreeTextUpdated = {type: 'TEXT_QUERY'; query: string}
 export type ClearTypes = {type: 'CLEAR_TYPES'}
@@ -35,6 +36,7 @@ export type AddType = {type: 'ADD_TYPE'; schemaType: ObjectSchemaType}
 export type RemoveType = {type: 'REMOVE_TYPE'; schemaType: ObjectSchemaType}
 export type SearchAction =
   | UpdateSearchState
+  | AppendHits
   | SetTerms
   | FreeTextUpdated
   | ClearTypes
@@ -43,10 +45,21 @@ export type SearchAction =
 
 function searchReducer(state: SearchReducerState, action: SearchAction): SearchReducerState {
   switch (action.type) {
-    case 'UPDATE_SEARCH_STATE':
+    case 'UPDATE_SEARCH_RESULT':
       return {
         ...state,
-        result: action.state,
+        result: {
+          ...state.result,
+          ...action.result,
+        },
+      }
+    case 'APPEND_HITS':
+      return {
+        ...state,
+        result: {
+          ...state.result,
+          hits: [...state.result.hits, ...action.hits],
+        },
       }
     case 'SET_TERMS':
       return {

@@ -7,7 +7,7 @@
   "scripts": {
     "coverage": "nyc --report=lcov --report=text _mocha -- test/**/*.test.js",
     "clean": "rimraf lib .nyc_output coverage",
-    "posttest": "npm run type-check"
+    "test": "jest"
   },
   "repository": {
     "type": "git",

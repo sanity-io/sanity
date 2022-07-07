@@ -2,7 +2,7 @@ import type {SearchTerms} from '@sanity/base'
 import {ObjectSchemaType, SchemaType} from '@sanity/types'
 
 const SEARCH_TERMS_KEY = 'search-terms:recent'
-const MAX_RECENT_SEARCHES = 5
+export const MAX_RECENT_SEARCHES = 5
 // might come in handy in the future
 const CURRENT_VERSION = 1
 
@@ -19,7 +19,7 @@ interface StoredSearchTerms {
 }
 
 function getRecentStoredSearchTerms(): StoredSearchTerms {
-  const recentString = localStorage.getItem(SEARCH_TERMS_KEY)
+  const recentString = window.localStorage.getItem(SEARCH_TERMS_KEY)
   return recentString
     ? (JSON.parse(recentString) as StoredSearchTerms)
     : {version: CURRENT_VERSION, recentSearches: []}
@@ -52,10 +52,10 @@ export function addSearchTerm(searchTerm: SearchTerms): void {
     version: CURRENT_VERSION,
     recentSearches: [
       saveTerm,
-      ...getRecentStoredSearchTerms().recentSearches.filter(
-        (r) => JSON.stringify(r.terms) !== comparator
-      ),
+      ...getRecentStoredSearchTerms().recentSearches.filter((r) => {
+        return JSON.stringify(r.terms) !== comparator
+      }),
     ].slice(0, MAX_RECENT_SEARCHES),
   }
-  localStorage.setItem(SEARCH_TERMS_KEY, JSON.stringify(newRecent))
+  window.localStorage.setItem(SEARCH_TERMS_KEY, JSON.stringify(newRecent))
 }
