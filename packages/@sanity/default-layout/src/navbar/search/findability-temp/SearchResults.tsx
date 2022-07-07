@@ -1,6 +1,5 @@
-import {Card, Flex, MenuItem, Spinner, Stack, Text} from '@sanity/ui'
+import {Button, Flex, Spinner, Stack, Text} from '@sanity/ui'
 import React, {useCallback, useEffect, useState} from 'react'
-import {getPublishedId} from 'part:@sanity/base/util/draft-utils'
 import {SearchTerms} from '@sanity/base'
 import schema from 'part:@sanity/base/schema'
 import {useSearch} from '../useSearch'
@@ -9,6 +8,7 @@ import {addSearchTerm, getRecentSearchTerms} from './local-storage/search-store'
 import {RecentSearchItem} from './RecentSearchItem'
 import {showNoResults, showRecentSearches, showResults} from './state/search-selectors'
 import {SearchResultItem} from './SearchResultItem'
+import {TypeNames} from './TypeNames'
 
 interface SearchResultsProps {
   onResultClick: () => void
@@ -20,7 +20,7 @@ const SEARCH_LIMIT = 5
 export function SearchResults(props: SearchResultsProps) {
   const {onResultClick, onRecentSearchClick} = props
 
-  const {state, dispatch} = useSyncedSearch()
+  const {state, dispatch, loadMore} = useSyncedSearch()
   const {terms, result} = state
   const {hits, loading, error} = result
 
@@ -57,32 +57,30 @@ export function SearchResults(props: SearchResultsProps) {
       {showNoResults(state) && (
         <Flex justify="center" padding={3}>
           <Text>
-            No results for <strong>"{terms.query}"</strong> in{' '}
-            {terms.types.length > 0
-              ? terms.types.map((i) => i.title ?? i.name).join(', ')
-              : 'all document types'}
+            No results for <strong>"{terms.query}"</strong> in <TypeNames types={terms.types} />
           </Text>
         </Flex>
       )}
 
-      {loading && (
+      {showResults(state) && (
         <Flex justify="center" padding={3}>
-          <Spinner />
+          <Text>
+            Showing results for <strong>"{terms.query}"</strong> in{' '}
+            <TypeNames types={terms.types} />
+          </Text>
         </Flex>
       )}
 
-      {!loading && error && (
-        <Flex justify="center" padding={3}>
-          <Card padding={2} tone="critical">
-            Search failed. An unexpected error occurred.
-          </Card>
-        </Flex>
+      {showResults(state) && (
+        <>
+          {hits.map((hit) => (
+            <SearchResultItem key={hit.hit._id} hit={hit} onClick={handleResultClick} />
+          ))}
+          {!loading && (
+            <Button text="More" onClick={loadMore} mode="ghost" title="Load more search results" />
+          )}
+        </>
       )}
-
-      {showResults(state) &&
-        hits.map((hit) => (
-          <SearchResultItem key={hit.hit._id} hit={hit} onClick={handleResultClick} />
-        ))}
 
       {showRecentSearches(state) &&
         recentSearches?.map((recentSearch) => (
@@ -92,6 +90,12 @@ export function SearchResults(props: SearchResultsProps) {
             onClick={handleRecentSearchClick}
           />
         ))}
+
+      {loading && (
+        <Flex justify="center" padding={3}>
+          <Spinner />
+        </Flex>
+      )}
     </Stack>
   )
 }
@@ -109,14 +113,33 @@ function useSyncedSearch() {
 
   useEffect(() => {
     dispatch({
-      type: 'UPDATE_SEARCH_STATE',
-      state: {
+      type: 'UPDATE_SEARCH_RESULT',
+      result: {
+        hits: [],
+        loading: true,
+        error: null,
+      },
+    })
+  }, [terms, dispatch])
+
+  useEffect(() => {
+    if (syncState.hits) {
+      dispatch({
+        type: 'APPEND_HITS',
         hits: syncState.hits,
+      })
+    }
+  }, [syncState.hits, dispatch])
+
+  useEffect(() => {
+    dispatch({
+      type: 'UPDATE_SEARCH_RESULT',
+      result: {
         loading: syncState.loading,
         error: syncState.error,
       },
     })
-  }, [syncState, dispatch])
+  }, [syncState.error, syncState.loading, dispatch])
 
   useEffect(() => {
     if (Object.keys(terms).some((key) => terms[key] !== syncState.terms[key])) {
@@ -128,5 +151,15 @@ function useSyncedSearch() {
     }
   }, [terms, syncState.terms, handleSearch])
 
-  return {state, dispatch}
+  const loadMore = useCallback(() => {
+    if (!state.result.loading) {
+      handleSearch({
+        ...terms,
+        limit: SEARCH_LIMIT,
+        offset: state.result.hits.length,
+      })
+    }
+  }, [handleSearch, terms, state.result.hits.length, state.result.loading])
+
+  return {state, dispatch, loadMore}
 }

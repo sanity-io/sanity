@@ -44,26 +44,24 @@ export function TypeFilter() {
           value={typeFilter}
           onChange={filterChanged}
         />
-        {types.map((type) => (
+        {/*        {types.map((type) => (
           <TypeItem key={type.name} selected type={type} />
-        ))}
-        {types.length > 0 && (
-          <>
-            <Button
-              mode="bleed"
-              text="Clear"
-              tone="primary"
-              fontSize={1}
-              padding={2}
-              onClick={clearTypes}
-              disabled={types.length === 0}
-              data-name="type-filter-button"
-            />
-            <MenuDivider />
-          </>
-        )}
+        ))}*/}
+
+        <Button
+          mode="bleed"
+          text="Clear"
+          tone="primary"
+          fontSize={1}
+          padding={2}
+          onClick={clearTypes}
+          disabled={types.length === 0}
+          data-name="type-filter-button"
+        />
+        <MenuDivider />
+
         {documentTypes.map((type) => (
-          <TypeItem key={type.name} selected={false} type={type} />
+          <TypeItem key={type.name} selected={types.includes(type)} type={type} />
         ))}
         {!documentTypes.length && (
           <Card>

@@ -94,14 +94,16 @@ export function createWeightedSearch(
     const selection = selections.length > 0 ? `...select(${selections.join(',\n')})` : ''
     const query = `*[${filters.join('&&')}][$__offset...$__limit]{_type, _id, ${selection}}`
 
+    const offset = searchTerms.offset ?? 0
+    const limit = (searchTerms.limit ?? searchOpts.limit ?? 1000) + offset
     return client.observable
       .fetch(
         query,
         {
           ...toGroqParams(terms),
           __types: searchSpec.map((spec) => spec.typeName),
-          __limit: searchTerms.limit ?? searchOpts.limit ?? 1000,
-          __offset: searchTerms.offset ?? 0,
+          __limit: limit,
+          __offset: offset,
           ...(params || {}),
         },
         {tag}
