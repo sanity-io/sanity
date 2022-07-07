@@ -1,14 +1,16 @@
-import type {SearchParams} from '@sanity/base'
-import {SchemaType} from '@sanity/types'
+import type {SearchTerms} from '@sanity/base'
+import {ObjectSchemaType, SchemaType} from '@sanity/types'
 
 const SEARCH_TERMS_KEY = 'search-terms:recent'
 const MAX_RECENT_SEARCHES = 5
 // might come in handy in the future
 const CURRENT_VERSION = 1
 
+export type RecentSearch = SearchTerms & {__recentTimestamp: number}
+
 interface StoredSearchTerm {
-  created: Date
-  term: Omit<SearchParams, 'schemas'> & {schemaNames: string[]}
+  created: string
+  terms: Omit<SearchTerms, 'types'> & {typeNames: string[]}
 }
 
 interface StoredSearchTerms {
@@ -25,28 +27,33 @@ function getRecentStoredSearchTerms(): StoredSearchTerms {
 
 export function getRecentSearchTerms(schema: {
   get: (typeName: string) => SchemaType | undefined
-}): SearchParams[] {
-  return getRecentStoredSearchTerms().recentSearches.map((r) => ({
-    query: r.term.query,
-    schemas: r.term.schemaNames.map((n) => schema.get(n)).filter((s): s is SchemaType => !!s),
-  }))
+}): RecentSearch[] {
+  return getRecentStoredSearchTerms()
+    .recentSearches.filter((r) => !!r.terms)
+    .map((r) => ({
+      __recentTimestamp: new Date(r.created).getTime(),
+      query: r.terms.query,
+      types: r.terms.typeNames
+        .map((typeName) => schema.get(typeName))
+        .filter((s): s is ObjectSchemaType => s && s.jsonType === 'object'),
+    }))
 }
 
-export function addSearchTerm(searchTerm: SearchParams): void {
+export function addSearchTerm(searchTerm: SearchTerms): void {
   const saveTerm: StoredSearchTerm = {
-    created: new Date(),
-    term: {
+    created: new Date().toISOString(),
+    terms: {
       query: searchTerm.query,
-      schemaNames: searchTerm.schemas.map((s) => s.name),
+      typeNames: searchTerm.types.map((s) => s.name),
     },
   }
-  const comparator = JSON.stringify(saveTerm.term)
+  const comparator = JSON.stringify(saveTerm.terms)
   const newRecent: StoredSearchTerms = {
     version: CURRENT_VERSION,
     recentSearches: [
       saveTerm,
       ...getRecentStoredSearchTerms().recentSearches.filter(
-        (r) => JSON.stringify(r.term) !== comparator
+        (r) => JSON.stringify(r.terms) !== comparator
       ),
     ].slice(0, MAX_RECENT_SEARCHES),
   }

@@ -1,11 +1,13 @@
-import {SchemaType} from '@sanity/types'
+import {ObjectSchemaType} from '@sanity/types'
 
 /**
  * @internal
  */
-export interface SearchParams {
+export interface SearchTerms {
   query: string
-  schemas: SchemaType[]
+  types: ObjectSchemaType[]
+  limit?: number
+  offset?: number
 }
 
 /**

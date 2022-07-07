@@ -1,31 +1,33 @@
 import React, {useCallback, useMemo, useRef, useState} from 'react'
 import styled from 'styled-components'
-import {SchemaType} from '@sanity/types'
+import {ObjectSchemaType, SchemaType} from '@sanity/types'
 import schema from 'part:@sanity/base/schema'
 import {SearchIcon} from '@sanity/icons'
 import {Button, Card, Flex, Menu, MenuDivider, MenuItem, Text, TextInput} from '@sanity/ui'
 import {CheckedSquareIcon, UncheckedSquareIcon} from './Icons'
 import {useSearchDispatch, useSearchState} from './state/SearchContext'
-import {getSelectableTypes} from './state/search-reducer'
+import {getSelectableTypes} from './state/search-selectors'
 
 const TypeMenu = styled(Menu)`
   overflow-y: auto;
   overflow-x: hidden;
-  max-height: calc(100vh - 80px);
+  max-height: calc(100vh - 100px);
   width: 250px;
 `
 
 export function TypeFilter() {
   const [typeFilter, setTypeFilter] = useState('')
   const dispatch = useSearchDispatch()
-  const {schemas: selectedTypes} = useSearchState()
+  const {
+    terms: {types},
+  } = useSearchState()
 
-  const documentTypes = useMemo(() => getSelectableTypes(schema, selectedTypes, typeFilter), [
+  const documentTypes = useMemo(() => getSelectableTypes(schema, types, typeFilter), [
     typeFilter,
-    selectedTypes,
+    types,
   ])
 
-  const clearTypes = useCallback(() => dispatch({type: 'CLEAR_SCHEMAS'}), [dispatch])
+  const clearTypes = useCallback(() => dispatch({type: 'CLEAR_TYPES'}), [dispatch])
 
   const filterChanged = useCallback(
     (e: React.KeyboardEvent<HTMLInputElement>) => setTypeFilter(e.currentTarget.value),
@@ -42,10 +44,10 @@ export function TypeFilter() {
           value={typeFilter}
           onChange={filterChanged}
         />
-        {selectedTypes.map((type) => (
+        {types.map((type) => (
           <TypeItem key={type.name} selected type={type} />
         ))}
-        {selectedTypes.length > 0 && (
+        {types.length > 0 && (
           <>
             <Button
               mode="bleed"
@@ -54,7 +56,7 @@ export function TypeFilter() {
               fontSize={1}
               padding={2}
               onClick={clearTypes}
-              disabled={selectedTypes.length === 0}
+              disabled={types.length === 0}
               data-name="type-filter-button"
             />
             <MenuDivider />
@@ -75,7 +77,7 @@ export function TypeFilter() {
   )
 }
 
-function TypeItem(props: {selected: boolean; type: SchemaType}) {
+function TypeItem(props: {selected: boolean; type: ObjectSchemaType}) {
   const {selected, type} = props
   const dispatch = useSearchDispatch()
   const ref = useRef<HTMLDivElement>()
@@ -89,12 +91,12 @@ function TypeItem(props: {selected: boolean; type: SchemaType}) {
   }, [])
 
   const selectType = useCallback(() => {
-    dispatch({type: 'ADD_SCHEMA', schema: type})
+    dispatch({type: 'ADD_TYPE', schemaType: type})
     focusSibling()
   }, [dispatch, type, focusSibling])
 
   const unselectType = useCallback(() => {
-    dispatch({type: 'REMOVE_SCHEMA', schema: type})
+    dispatch({type: 'REMOVE_TYPE', schemaType: type})
     focusSibling()
   }, [dispatch, type, focusSibling])
 

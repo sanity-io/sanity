@@ -16,4 +16,4 @@ export type {
   DocumentActionProps,
 } from '../actions/utils/types'
 
-export type {SearchParams} from '../search'
+export type {SearchTerms} from '../search'

@@ -1,10 +1,21 @@
 import {CloseCircleIcon, FilterIcon, SearchIcon} from '@sanity/icons'
-import {Box, Button, Card, Flex, Menu, Stack, TextInput, useClickOutside} from '@sanity/ui'
-import React, {useCallback, useEffect, useRef, useState} from 'react'
+import {
+  Box,
+  Button,
+  Card,
+  Flex,
+  Menu,
+  Stack,
+  TextInput,
+  useClickOutside,
+  useGlobalKeyDown,
+} from '@sanity/ui'
+import React, {MutableRefObject, useCallback, useEffect, useRef, useState} from 'react'
 import styled from 'styled-components'
 import {TypeFilter} from './TypeFilter'
 import {useSearchDispatch, useSearchState} from './state/SearchContext'
 import {SearchResults} from './SearchResults'
+import {isEscape, isSearchHotKey} from './utils/search-hotkeys'
 
 const DialogCard = styled(Card)`
   position: absolute;
@@ -21,12 +32,13 @@ export interface OmnisearchPopoverProps {
 export function OmnisearchPopover(props: OmnisearchPopoverProps) {
   const {close} = props
   const [dialogEl, setDialogEl] = useState<HTMLDivElement>()
-  const [resultKey, setResultKey] = useState<string>(`${Math.random()}`)
   const openedInput = useRef<HTMLInputElement>()
-  useClickOutside(close, [dialogEl])
   const dispatch = useSearchDispatch()
-  const {query, schemas, searchState} = useSearchState()
+  const {terms} = useSearchState()
   const [filterOpen, setFilterOpen] = useState(false)
+
+  useSearchHotkeyListener(openedInput)
+  useClickOutside(close, [dialogEl])
 
   const queryChanged = useCallback(
     (e: React.KeyboardEvent<HTMLInputElement>) =>
@@ -35,7 +47,7 @@ export function OmnisearchPopover(props: OmnisearchPopoverProps) {
   )
 
   const clearTerms = useCallback(
-    () => dispatch({type: 'SET_TERMS', terms: {query: '', schemas: []}}),
+    () => dispatch({type: 'SET_TERMS', terms: {query: '', types: []}}),
     [dispatch]
   )
 
@@ -47,14 +59,8 @@ export function OmnisearchPopover(props: OmnisearchPopoverProps) {
   }, [])
 
   useEffect(() => {
-    if (searchState.loading) {
-      //setResultKey(`${Math.random()}`)
-    }
-  }, [searchState])
-
-  useEffect(() => {
-    setFilterOpen((current) => current || schemas.length > 0)
-  }, [schemas])
+    setFilterOpen((current) => current || terms.types.length > 0)
+  }, [terms.types])
 
   return (
     <DialogCard
@@ -65,7 +71,7 @@ export function OmnisearchPopover(props: OmnisearchPopoverProps) {
       overflow="hidden"
       ref={setDialogEl}
     >
-      <Menu key={resultKey}>
+      <Menu>
         <Stack flex={1} overflow="hidden">
           <Card flex={1} border>
             <Flex flex={1}>
@@ -75,7 +81,7 @@ export function OmnisearchPopover(props: OmnisearchPopoverProps) {
                   ref={openedInput}
                   icon={SearchIcon}
                   placeholder="Search"
-                  value={query ?? ''}
+                  value={terms.query}
                   onChange={queryChanged}
                 />
               </Box>
@@ -96,4 +102,18 @@ export function OmnisearchPopover(props: OmnisearchPopoverProps) {
       </Menu>
     </DialogCard>
   )
+}
+
+function useSearchHotkeyListener(input: MutableRefObject<HTMLInputElement>) {
+  const handleGlobalKeyDown = useCallback(
+    (event: KeyboardEvent) => {
+      if (isSearchHotKey(event)) {
+        event.preventDefault()
+        input.current?.focus()
+      }
+    },
+    [input]
+  )
+
+  useGlobalKeyDown(handleGlobalKeyDown)
 }
