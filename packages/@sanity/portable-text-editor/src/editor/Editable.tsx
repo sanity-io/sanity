@@ -1,8 +1,8 @@
 import {BaseRange, Transforms} from 'slate'
 import {debounce, isEqual} from 'lodash'
 import isHotkey from 'is-hotkey'
-import React, {useCallback, useMemo, useState, useEffect, forwardRef, useRef} from 'react'
-import {Editable as SlateEditable, Slate, ReactEditor, withReact} from '@sanity/slate-react'
+import React, {forwardRef, useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import {Editable as SlateEditable, ReactEditor, Slate, withReact} from '@sanity/slate-react'
 import {
   EditorSelection,
   OnBeforeInputFn,
@@ -30,6 +30,7 @@ import {usePortableTextEditorValue} from './hooks/usePortableTextEditorValue'
 import {PortableTextEditor} from './PortableTextEditor'
 import {createWithEditableAPI, createWithHotkeys, createWithInsertData} from './plugins'
 import {useForwardedRef} from './hooks/useForwardedRef'
+import {RenderElementProps} from '@sanity/slate-react/dist/components/editable'
 
 const debug = debugWithName('component:Editable')
 
@@ -179,7 +180,7 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
   }, [isSelecting, slateEditor])
 
   const renderElement = useCallback(
-    (eProps) => (
+    (eProps: RenderElementProps) => (
       <Element
         {...eProps}
         portableTextFeatures={portableTextFeatures}

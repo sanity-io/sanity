@@ -54,6 +54,7 @@ export type PortableTextEditorProps = {
   readOnly?: boolean
   type: ArraySchemaType<PortableTextBlock>
   value?: PortableTextBlock[]
+  children: React.ReactNode
 }
 
 type State = {

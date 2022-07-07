@@ -1,6 +1,6 @@
 import React, {ReactElement, SyntheticEvent, useCallback} from 'react'
 import {Element, Range, Text} from 'slate'
-import {useSelected, useSlateStatic} from '@sanity/slate-react'
+import {RenderLeafProps, useSelected, useSlateStatic} from '@sanity/slate-react'
 import {uniq} from 'lodash'
 import {PortableTextBlock, PortableTextFeatures, TextBlock} from '../types/portableText'
 import {
@@ -11,14 +11,11 @@ import {
 import {debugWithName} from '../utils/debug'
 import {DefaultAnnotation} from './nodes/DefaultAnnotation'
 import {DraggableChild} from './DraggableChild'
-import {ElementAttributes} from './Element'
 
 const debug = debugWithName('components:Leaf')
 const debugRenders = false
 
-type LeafProps = {
-  attributes: ElementAttributes
-  children: ReactElement
+type LeafProps = RenderLeafProps & {
   keyGenerator: () => string
   leaf: Element
   portableTextFeatures: PortableTextFeatures
