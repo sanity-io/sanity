@@ -290,7 +290,7 @@ declare module 'part:@sanity/base/schema-creator'
 declare module 'part:@sanity/base/schema-type'
 declare module 'part:@sanity/base/search' {
   import type {Observable} from 'rxjs'
-  import type {SearchParams} from '@sanity/base'
+  import type {SearchTerms} from '@sanity/base'
 
   declare const search: (queryStr: string | SearchParams) => Observable
   export default search

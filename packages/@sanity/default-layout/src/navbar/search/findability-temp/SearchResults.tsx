@@ -1,28 +1,111 @@
-import {Box, Button, Flex, MenuItem, Spinner, Stack, Text} from '@sanity/ui'
-import {ClockIcon} from '@sanity/icons'
+import {Card, Flex, MenuItem, Spinner, Stack, Text} from '@sanity/ui'
 import React, {useCallback, useEffect, useState} from 'react'
 import {getPublishedId} from 'part:@sanity/base/util/draft-utils'
-import {SearchParams} from '@sanity/base'
+import {SearchTerms} from '@sanity/base'
 import schema from 'part:@sanity/base/schema'
-import {SchemaType} from '@sanity/types'
 import {useSearch} from '../useSearch'
-import {SearchItem} from '../SearchItem'
 import {useSearchDispatch, useSearchState} from './state/SearchContext'
 import {addSearchTerm, getRecentSearchTerms} from './local-storage/search-store'
+import {RecentSearchItem} from './RecentSearchItem'
+import {showNoResults, showRecentSearches, showResults} from './state/search-selectors'
+import {SearchResultItem} from './SearchResultItem'
 
 interface SearchResultsProps {
   onResultClick: () => void
   onRecentSearchClick: () => void
 }
 
+const SEARCH_LIMIT = 5
+
 export function SearchResults(props: SearchResultsProps) {
   const {onResultClick, onRecentSearchClick} = props
-  const {schemas, searchState, query} = useSearchState()
-  const {hits, loading, error} = searchState
 
-  const dispatch = useSearchDispatch()
+  const {state, dispatch} = useSyncedSearch()
+  const {terms, result} = state
+  const {hits, loading, error} = result
+
   const [recentSearches, setResentSearches] = useState(() => getRecentSearchTerms(schema))
-  const {handleSearch, searchState: syncState} = useSearch({schemas, query, ...searchState})
+
+  const handleResultClick = useCallback(() => {
+    addSearchTerm(terms)
+    setResentSearches(getRecentSearchTerms(schema))
+    onResultClick()
+  }, [onResultClick, terms])
+
+  const handleRecentSearchClick = useCallback(
+    (searchTerms: SearchTerms) => {
+      // announce states
+      // no results
+      // maybe not results
+      //announce naviagion to recent search
+
+      // LOOK INTO sanity ui hover focus issue
+      dispatch({type: 'SET_TERMS', terms: searchTerms})
+      addSearchTerm(searchTerms)
+      setResentSearches(getRecentSearchTerms(schema))
+      onRecentSearchClick()
+    },
+    [dispatch, onRecentSearchClick]
+  )
+
+  return (
+    <Stack
+      flex={1}
+      style={{maxHeight: 'calc(100vh - 100px)'}}
+      overflow={!loading && hits.length ? 'auto' : undefined}
+    >
+      {showNoResults(state) && (
+        <Flex justify="center" padding={3}>
+          <Text>
+            No results for <strong>"{terms.query}"</strong> in{' '}
+            {terms.types.length > 0
+              ? terms.types.map((i) => i.title ?? i.name).join(', ')
+              : 'all document types'}
+          </Text>
+        </Flex>
+      )}
+
+      {loading && (
+        <Flex justify="center" padding={3}>
+          <Spinner />
+        </Flex>
+      )}
+
+      {!loading && error && (
+        <Flex justify="center" padding={3}>
+          <Card padding={2} tone="critical">
+            Search failed. An unexpected error occurred.
+          </Card>
+        </Flex>
+      )}
+
+      {showResults(state) &&
+        hits.map((hit) => (
+          <SearchResultItem key={hit.hit._id} hit={hit} onClick={handleResultClick} />
+        ))}
+
+      {showRecentSearches(state) &&
+        recentSearches?.map((recentSearch) => (
+          <RecentSearchItem
+            key={recentSearch.__recentTimestamp}
+            value={recentSearch}
+            onClick={handleRecentSearchClick}
+          />
+        ))}
+    </Stack>
+  )
+}
+
+function useSyncedSearch() {
+  const state = useSearchState()
+  const dispatch = useSearchDispatch()
+  const {terms, result} = state
+
+  const {handleSearch, searchState: syncState} = useSearch({
+    searchString: terms.query,
+    ...result,
+    terms,
+  })
 
   useEffect(() => {
     dispatch({
@@ -36,109 +119,14 @@ export function SearchResults(props: SearchResultsProps) {
   }, [syncState, dispatch])
 
   useEffect(() => {
-    if (query !== syncState.query || schemas !== syncState.schemas) {
-      handleSearch({query, schemas})
+    if (Object.keys(terms).some((key) => terms[key] !== syncState.terms[key])) {
+      handleSearch({
+        ...terms,
+        limit: SEARCH_LIMIT,
+        offset: 0,
+      })
     }
-  }, [schemas, query, syncState, handleSearch])
+  }, [terms, syncState.terms, handleSearch])
 
-  const handleResultClick = useCallback(() => {
-    addSearchTerm({query, schemas})
-    setResentSearches(getRecentSearchTerms(schema))
-    onResultClick()
-  }, [onResultClick, query, schemas])
-
-  const handleRecentSearchClick = useCallback(
-    (term: SearchParams) => {
-      dispatch({type: 'SET_TERMS', terms: term})
-      addSearchTerm(term)
-      setResentSearches(getRecentSearchTerms(schema))
-      onRecentSearchClick()
-    },
-    [dispatch, onRecentSearchClick]
-  )
-
-  return (
-    <Stack
-      flex={1}
-      style={{maxHeight: 'calc(100vh - 80px)'}}
-      overflow={!loading && hits.length ? 'auto' : undefined}
-    >
-      {hits.length === 0 && query !== '' && !loading && (
-        <Flex justify="center" padding={3}>
-          <Text>
-            No results for <strong>"{query}"</strong> in{' '}
-            {schemas.length > 0
-              ? schemas.map((i) => i.title ?? i.name).join(', ')
-              : 'all document types'}
-          </Text>
-        </Flex>
-      )}
-      {loading && (
-        <Flex justify="center" padding={3}>
-          <Spinner />
-        </Flex>
-      )}
-
-      {!loading &&
-        hits.slice(0, 50).map((hit) => (
-          <MenuItem key={hit.hit._id} onClick={handleResultClick} padding={1}>
-            <SearchItem
-              data={hit}
-              key={hit.hit._id}
-              padding={2}
-              documentId={getPublishedId(hit.hit._id) || ''}
-            />
-          </MenuItem>
-        ))}
-
-      {!loading &&
-        query === '' &&
-        !schemas.length &&
-        recentSearches?.map((term) => (
-          <MenuItem
-            key={JSON.stringify({query: term.query, schemas: term.schemas.map((s) => s.name)})}
-            onClick={() => handleRecentSearchClick(term)}
-          >
-            <Button
-              style={{width: '100%'}}
-              justify={'flex-start'}
-              mode="bleed"
-              icon={ClockIcon}
-              text={
-                <Box wrap="wrap" style={{whiteSpace: 'normal'}}>
-                  <strong>"{term.query}"</strong> in <SchemaNames schemas={term.schemas} />
-                </Box>
-              }
-            />
-          </MenuItem>
-        ))}
-    </Stack>
-  )
-}
-
-function title(schemaType: SchemaType) {
-  return schemaType.title ?? schemaType.name
-}
-
-function SchemaNames({schemas}: {schemas: SchemaType[]}) {
-  if (!schemas.length) {
-    return <>all document types</>
-  }
-  if (schemas.length === 1) {
-    return <strong>{title(schemas[0])}</strong>
-  }
-  return (
-    <>
-      {schemas.map((schemaType, i) => {
-        const titleString = title(schemaType)
-        const element = <strong key={titleString}>{titleString}</strong>
-        if (i < schemas.length - 2) {
-          return <React.Fragment key={titleString}>{element}, </React.Fragment>
-        } else if (i === schemas.length - 1) {
-          return <React.Fragment key={titleString}> and {element}</React.Fragment>
-        }
-        return element
-      })}
-    </>
-  )
+  return {state, dispatch}
 }

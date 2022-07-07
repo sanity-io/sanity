@@ -14,8 +14,14 @@ import {
   SearchOptions,
   SearchPath,
   SearchHit,
-  SearchParams,
+  SearchTerms,
 } from './types'
+
+type ObjectSchema = {
+  name: string
+  // eslint-disable-next-line camelcase
+  __experimental_search: ObjectSchemaType['__experimental_search']
+}
 
 const combinePaths = flow([flatten, union, compact])
 
@@ -30,9 +36,21 @@ const toGroqParams = (terms: string[]): Record<string, string> => {
 const pathWithMapper = ({mapWith, path}: SearchPath): string =>
   mapWith ? `${mapWith}(${path})` : path
 
+function getSearchTerms(
+  searchParams: string | SearchTerms,
+  types: ObjectSchema[]
+): Omit<SearchTerms, 'types'> & {types: ObjectSchema[]} {
+  if (typeof searchParams === 'string') {
+    return {
+      query: searchParams,
+      types: types,
+    }
+  }
+  return searchParams.types.length ? searchParams : {...searchParams, types}
+}
+
 export function createWeightedSearch(
-  // eslint-disable-next-line camelcase
-  types: {name: string; __experimental_search: ObjectSchemaType['__experimental_search']}[],
+  types: ObjectSchema[],
   client: SanityClient,
   options: WeightedSearchOptions = {}
 ): (query: string, opts?: SearchOptions) => Observable<WeightedHit[]> {
@@ -40,14 +58,9 @@ export function createWeightedSearch(
 
   // this is the actual search function that takes the search string and returns the hits
   // supports string as search param to be backwards compatible
-  return function search(searchParams: string | SearchParams, searchOpts: SearchOptions = {}) {
-    const searchTypes =
-      // eslint-disable-next-line no-nested-ternary
-      typeof searchParams === 'string' || !searchParams.schemas.length
-        ? types
-        : searchParams.schemas
-
-    const searchSpec = searchTypes.map((type) => ({
+  return function search(searchParams: string | SearchTerms, searchOpts: SearchOptions = {}) {
+    const searchTerms = getSearchTerms(searchParams, types)
+    const searchSpec = searchTerms.types.map((type) => ({
       typeName: type.name,
       paths: type.__experimental_search.map((config) => ({
         weight: config.weight,
@@ -66,8 +79,7 @@ export function createWeightedSearch(
       return `${constraint}${selection}`
     })
 
-    const queryString = typeof searchParams === 'string' ? searchParams : searchParams.query
-    const terms = uniq(compact(tokenize(toLower(queryString))))
+    const terms = uniq(compact(tokenize(toLower(searchTerms.query))))
     const constraints = terms
       .map((term, i) => combinedSearchPaths.map((joinedPath) => `${joinedPath} match $t${i}`))
       .filter((constraint) => constraint.length > 0)
@@ -80,7 +92,7 @@ export function createWeightedSearch(
     ].filter(Boolean)
 
     const selection = selections.length > 0 ? `...select(${selections.join(',\n')})` : ''
-    const query = `*[${filters.join('&&')}][0...$__limit]{_type, _id, ${selection}}`
+    const query = `*[${filters.join('&&')}][$__offset...$__limit]{_type, _id, ${selection}}`
 
     return client.observable
       .fetch(
@@ -88,7 +100,8 @@ export function createWeightedSearch(
         {
           ...toGroqParams(terms),
           __types: searchSpec.map((spec) => spec.typeName),
-          __limit: searchOpts.limit ?? 1000,
+          __limit: searchTerms.limit ?? searchOpts.limit ?? 1000,
+          __offset: searchTerms.offset ?? 0,
           ...(params || {}),
         },
         {tag}

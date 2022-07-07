@@ -1,8 +1,8 @@
 import React, {createContext, Dispatch, PropsWithChildren, useContext} from 'react'
-import {INITIAL_SEARCH_STATE, SearchAction, SearchState, useSearchReducer} from './search-reducer'
+import {INITIAL_SEARCH_STATE, SearchAction, SearchResult, useSearchReducer} from './search-reducer'
 
 export interface SearchContextValue {
-  state: SearchState
+  state: SearchResult
   dispatch: Dispatch<SearchAction>
 }
 

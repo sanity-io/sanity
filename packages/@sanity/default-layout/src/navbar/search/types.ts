@@ -1,4 +1,4 @@
-import type {SearchParams} from '@sanity/base'
+import type {SearchTerms} from '@sanity/base'
 
 export interface SearchHit {
   _id: string
@@ -7,8 +7,11 @@ export interface SearchHit {
   hit: {_id: string; _type: string}
 }
 
-export interface SearchState extends SearchParams {
+export interface SearchState {
   hits: SearchHit[]
   loading: boolean
   error: Error | null
+  terms: SearchTerms
+  /** @deprecated use terms.query */
+  searchString: string
 }
