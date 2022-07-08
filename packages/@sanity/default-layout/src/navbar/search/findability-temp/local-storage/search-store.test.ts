@@ -71,33 +71,3 @@ describe('search-store', () => {
     })
   })
 })
-
-/* eslint-disable @typescript-eslint/no-explicit-any */
-class LocalStorageMock implements Storage {
-  private store: Record<string, string> = {}
-
-  clear() {
-    this.store = {}
-  }
-
-  getItem(key: string) {
-    return this.store[key] || null
-  }
-
-  setItem(key: string, value: any) {
-    this.store[key] = String(value)
-  }
-
-  removeItem(key) {
-    delete this.store[key]
-  }
-
-  [name: string]: any
-
-  readonly length: number
-
-  key(index: number): string | null {
-    return Object.keys(this.store)[index]
-  }
-}
-/* eslint-enable @typescript-eslint/no-explicit-any */
