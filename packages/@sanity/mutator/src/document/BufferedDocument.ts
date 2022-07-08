@@ -47,6 +47,9 @@ class Commit {
 
 const mutReducerFn = (acc: Mut[], mut: Mutation): Mut[] => acc.concat(mut.mutations)
 
+/**
+ * @internal
+ */
 export class BufferedDocument {
   private mutations: Mutation[]
 
@@ -63,7 +66,7 @@ export class BufferedDocument {
   /**
    * Commits that are waiting to be delivered to the server
    */
-  commits: Commit[]
+  private commits: Commit[]
 
   /**
    * Local mutations that are not scheduled to be committed yet
