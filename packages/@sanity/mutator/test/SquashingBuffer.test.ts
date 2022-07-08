@@ -1,14 +1,16 @@
-import SquashingBuffer from '../src/document/SquashingBuffer'
-import Mutation from '../src/document/Mutation'
+import type {PatchMutationOperation} from '@sanity/types'
+import type {Mut} from '../src/document/types'
+import {SquashingBuffer} from '../src/document/SquashingBuffer'
+import {Mutation} from '../src/document/Mutation'
 
-function add(sb, op) {
+function add(sb: SquashingBuffer, op: Mut) {
   const mut = new Mutation({
     mutations: [op],
   })
   sb.add(mut)
 }
 
-function patch(sb, patchDetails) {
+function patch(sb: SquashingBuffer, patchDetails: PatchMutationOperation) {
   add(sb, {patch: patchDetails})
 }
 
@@ -45,8 +47,8 @@ test('assigning non-string values to string field', () => {
   const sb = new SquashingBuffer(initial)
   patch(sb, {id: '1', set: {a: 42}})
   const mut = sb.purge('txn_id')
-  const final = mut.apply(initial)
-  expect(final.a).toBe(42)
+  const final = mut && mut.apply(initial)
+  expect(final?.a).toBe(42)
 })
 
 test('stashing of changes when unoptimizable operations arrive', () => {
@@ -59,7 +61,7 @@ test('stashing of changes when unoptimizable operations arrive', () => {
 
   patch(sb, {id: '1', set: {c: 'Change after stash'}})
   const mut = sb.purge('txn_id')
-  const final = mut.apply(initial)
+  const final = mut && mut.apply(initial)
   expect(final).toEqual({
     _id: '1',
     _type: 'test',
@@ -84,11 +86,11 @@ test('de-duplicate createIfNotExists', () => {
   const tx = sb.purge('txn_id')
 
   // Check that one of the creates were removed:
-  const creates = tx.mutations.filter((mut) => !!mut.createIfNotExists)
-  expect(1).toEqual(creates.length) // Only a single create mutation expected
+  const creates = tx && tx.mutations.filter((mut) => 'createIfNotExists' in mut)
+  expect(creates).toHaveLength(1) // Only a single create mutation expected
 
   // And that the final state still applies:
-  const final = tx.apply(initial)
+  const final = tx && tx.apply(initial)
   expect(final).toEqual({
     _id: '1',
     _type: 'test',
@@ -102,7 +104,7 @@ test('de-duplicate createIfNotExists', () => {
   // Make sure a new patch is respected:
   add(sb, {createIfNotExists: {_id: '1', _type: 'test', a: 'A string value', c: 'Changed'}})
   const tx2 = sb.purge('txn_id')
-  expect(tx2.mutations.length).toBe(1)
+  expect(tx2 && tx2.mutations.length).toBe(1)
 })
 
 test('de-duplicate create respects deletes', () => {
@@ -117,6 +119,9 @@ test('de-duplicate create respects deletes', () => {
   patch(sb, {id: '1', set: {a: {b: 'A wrapped value'}}})
 
   const tx = sb.purge('txn_id')
+  if (!tx) {
+    throw new Error('buffer purge did not result in a mutation')
+  }
   tx.params.timestamp = '2021-01-01T12:34:55Z'
 
   const creates = tx.mutations.filter((mut) => !!mut.createIfNotExists)
@@ -148,6 +153,10 @@ test('de-duplicate create respects rebasing', () => {
   patch(sb, {id: '1', set: {a: {b: 'A wrapped value'}}})
 
   const tx = sb.purge('txn_id')
+  if (!tx) {
+    throw new Error('buffer purge did not result in a mutation')
+  }
+
   const creates = tx.mutations.filter((mut) => !!mut.createIfNotExists)
   expect(creates.length).toBe(1) // Only a single create mutation expected
   const final = tx.apply(initial)
@@ -168,6 +177,10 @@ test('rebase with generated diff-match-patches', () => {
   const initial = {_id: '1', _type: 'test', a: 'A rebased string value!'}
   sb.rebase(initial)
   const mut = sb.purge('txn_id')
+  if (!mut) {
+    throw new Error('buffer purge did not result in a mutation')
+  }
+
   const final = mut.apply(initial)
   expect(final).toEqual({
     _id: '1',

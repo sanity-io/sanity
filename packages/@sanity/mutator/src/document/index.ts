@@ -1,5 +1,5 @@
-import Document from './Document'
-import Mutation from './Mutation'
-import BufferedDocument from './BufferedDocument'
+export {Document} from './Document'
+export {Mutation, type MutationParams} from './Mutation'
+export {BufferedDocument} from './BufferedDocument'
 
-export {Document, Mutation, BufferedDocument}
+export type {Doc, Mut} from './types'

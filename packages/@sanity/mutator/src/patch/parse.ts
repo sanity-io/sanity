@@ -1,63 +1,74 @@
-import SetPatch from './SetPatch'
-import IncPatch from './IncPatch'
-import InsertPatch from './InsertPatch'
-import SetIfMissingPatch from './SetIfMissingPatch'
-import UnsetPatch from './UnsetPatch'
-import DiffMatchPatch from './DiffMatchPatch'
-import {Patch} from './Patcher'
+import {SetPatch} from './SetPatch'
+import {IncPatch} from './IncPatch'
+import {InsertPatch} from './InsertPatch'
+import {SetIfMissingPatch} from './SetIfMissingPatch'
+import {UnsetPatch} from './UnsetPatch'
+import {DiffMatchPatch} from './DiffMatchPatch'
+import type {PatchTypes, SingleDocumentPatch} from './types'
 
-// Parses a Gradient patch into our own personal patch implementations
-export default function parse(patch: any): Patch[] {
-  const result = []
+// Parses a content lake patch into our own personal patch implementations
+export function parsePatch(patch: SingleDocumentPatch | SingleDocumentPatch[]): PatchTypes[] {
+  const result: PatchTypes[] = []
   if (Array.isArray(patch)) {
-    return patch.reduce((r, p) => r.concat(parse(p)), result)
+    return patch.reduce((r, p) => r.concat(parsePatch(p)), result)
   }
-  if (patch.set) {
-    Object.keys(patch.set).forEach((path) => {
-      result.push(new SetPatch(patch.id, path, patch.set[path]))
+
+  const {set, setIfMissing, unset, diffMatchPatch, inc, dec, insert} = patch
+  if (set) {
+    Object.keys(set).forEach((path) => {
+      result.push(new SetPatch(patch.id, path, set[path]))
     })
   }
-  if (patch.setIfMissing) {
-    Object.keys(patch.setIfMissing).forEach((path) => {
-      result.push(new SetIfMissingPatch(patch.id, path, patch.setIfMissing[path]))
+
+  if (setIfMissing) {
+    Object.keys(setIfMissing).forEach((path) => {
+      result.push(new SetIfMissingPatch(patch.id, path, setIfMissing[path]))
     })
   }
-  // TODO: merge
-  if (patch.unset) {
-    patch.unset.forEach((path) => {
+
+  if (unset) {
+    unset.forEach((path) => {
       result.push(new UnsetPatch(patch.id, path))
     })
   }
-  if (patch.diffMatchPatch) {
-    Object.keys(patch.diffMatchPatch).forEach((path) => {
-      result.push(new DiffMatchPatch(patch.id, path, patch.diffMatchPatch[path]))
+
+  if (diffMatchPatch) {
+    Object.keys(diffMatchPatch).forEach((path) => {
+      result.push(new DiffMatchPatch(patch.id, path, diffMatchPatch[path]))
     })
   }
-  if (patch.inc) {
-    Object.keys(patch.inc).forEach((path) => {
-      result.push(new IncPatch(patch.id, path, patch.inc[path]))
+
+  if (inc) {
+    Object.keys(inc).forEach((path) => {
+      result.push(new IncPatch(patch.id, path, inc[path]))
     })
   }
-  if (patch.dec) {
-    Object.keys(patch.dec).forEach((path) => {
-      result.push(new IncPatch(patch.id, path, -patch.dec[path]))
+
+  if (dec) {
+    Object.keys(dec).forEach((path) => {
+      result.push(new IncPatch(patch.id, path, -dec[path]))
     })
   }
-  if (patch.insert) {
+
+  if (insert) {
     let location: string
     let path: string
-    const spec = patch.insert
-    if (spec.before) {
+    const spec = insert
+    if ('before' in spec) {
       location = 'before'
       path = spec.before
-    } else if (spec.after) {
+    } else if ('after' in spec) {
       location = 'after'
       path = spec.after
-    } else if (spec.replace) {
+    } else if ('replace' in spec) {
       location = 'replace'
       path = spec.replace
+    } else {
+      throw new Error('Invalid insert patch')
     }
+
     result.push(new InsertPatch(patch.id, location, path, spec.items))
   }
+
   return result
 }

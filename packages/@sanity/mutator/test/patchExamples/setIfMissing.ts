@@ -1,6 +1,6 @@
-/* eslint-disable id-length, quote-props */
+import type {PatchExample} from './types'
 
-export default [
+const examples: PatchExample[] = [
   {
     name: 'Simple path setIfMissing, value not missing',
     before: {
@@ -9,6 +9,7 @@ export default [
       },
     },
     patch: {
+      id: 'a',
       setIfMissing: {
         'a.b': 10,
       },
@@ -27,6 +28,7 @@ export default [
       },
     },
     patch: {
+      id: 'a',
       setIfMissing: {
         'a.c': 10,
       },
@@ -47,6 +49,7 @@ export default [
       ],
     },
     patch: {
+      id: 'a',
       setIfMissing: {
         '..[p=="Thorvald Meyers gt."].zz.zzz': 100,
       },
@@ -71,6 +74,7 @@ export default [
       ],
     },
     patch: {
+      id: 'a',
       setIfMissing: {
         '..[street=="Thorvald Meyers gate"].location.lon': 61,
       },
@@ -91,3 +95,5 @@ export default [
     },
   },
 ]
+
+export default examples

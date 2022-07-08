@@ -5,9 +5,6 @@
     "composite": true,
     "declarationDir": "./lib/dts/",
     "rootDir": "./",
-    "outDir": "./lib/dts/",
-
-    // TODO: remove this
-    "strict": false
+    "outDir": "./lib/dts/"
   }
 }

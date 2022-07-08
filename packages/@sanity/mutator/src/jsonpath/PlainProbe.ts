@@ -1,12 +1,17 @@
+import {isRecord} from '../util'
+import type {Probe} from './Probe'
+
 // A default implementation of a probe for vanilla JS _values
-export default class PlainProbe {
-  _value: any
-  path: Array<any>
-  constructor(_value: any, path?: Array<any>) {
-    this._value = _value
+export class PlainProbe implements Probe {
+  _value: unknown
+  path: (string | number)[]
+
+  constructor(value: unknown, path?: (string | number)[]) {
+    this._value = value
     this.path = path || []
   }
-  containerType() {
+
+  containerType(): 'array' | 'object' | 'primitive' {
     if (Array.isArray(this._value)) {
       return 'array'
     } else if (this._value !== null && typeof this._value === 'object') {
@@ -16,44 +21,50 @@ export default class PlainProbe {
   }
 
   length(): number {
-    if (this.containerType() !== 'array') {
+    if (!Array.isArray(this._value)) {
       throw new Error("Won't return length of non-indexable _value")
     }
+
     return this._value.length
   }
-  getIndex(i: number): any {
-    if (this.containerType() !== 'array') {
+
+  getIndex(i: number): false | null | PlainProbe {
+    if (!Array.isArray(this._value)) {
       return false
     }
+
     if (i >= this.length()) {
       return null
     }
+
     return new PlainProbe(this._value[i], this.path.concat(i))
   }
 
   hasAttribute(key: string): boolean {
-    if (this.containerType() !== 'object') {
+    if (!isRecord(this._value)) {
       return false
     }
+
     return this._value.hasOwnProperty(key)
   }
-  attributeKeys(): Array<string> {
-    if (this.containerType() !== 'object') {
-      return []
-    }
-    return Object.keys(this._value)
+
+  attributeKeys(): string[] {
+    return isRecord(this._value) ? Object.keys(this._value) : []
   }
-  getAttribute(key: string): any {
-    if (this.containerType() !== 'object') {
+
+  getAttribute(key: string): null | PlainProbe {
+    if (!isRecord(this._value)) {
       throw new Error('getAttribute only applies to plain objects')
     }
+
     if (!this.hasAttribute(key)) {
       return null
     }
+
     return new PlainProbe(this._value[key], this.path.concat(key))
   }
 
-  get(): any {
+  get(): unknown {
     return this._value
   }
 }

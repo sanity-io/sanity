@@ -1,36 +1,53 @@
-// Converts an array of simple values (strings, numbers only) to a jsonmatch path string.
+import type {Path, PathSegment} from '@sanity/types'
+import {isRecord} from '../util'
 
 const IS_DOTTABLE = /^[a-z_$]+/
 
-function stringifySegment(segment, hasLeading) {
-  const type = typeof segment
+/**
+ * Converts a path in array form to a JSONPath string
+ *
+ * @param pathArray - Array of path segments
+ * @returns String representation of the path
+ * @internal
+ */
+export function arrayToJSONMatchPath(pathArray: Path): string {
+  let path = ''
+  pathArray.forEach((segment, index) => {
+    path += stringifySegment(segment, index === 0)
+  })
+  return path
+}
 
-  const isNumber = type === 'number'
-
-  if (isNumber) {
+// Converts an array of simple values (strings, numbers only) to a jsonmatch path string.
+function stringifySegment(
+  segment: PathSegment | Record<string, unknown>,
+  hasLeading: boolean
+): string {
+  if (typeof segment === 'number') {
     return `[${segment}]`
   }
 
-  const isObject = type === 'object' && segment !== null && segment !== undefined
-
-  if (isObject) {
+  if (isRecord(segment)) {
+    const seg = segment as Record<string, unknown>
     return Object.keys(segment)
-      .map((key) => {
-        const val = segment[key]
-        return `[${key}=="${val}"]`
-      })
+      .map((key) => (isPrimitiveValue(seg[key]) ? `[${key}=="${seg[key]}"]` : ''))
       .join('')
   }
 
-  if (IS_DOTTABLE.test(segment)) {
+  if (typeof segment === 'string' && IS_DOTTABLE.test(segment)) {
     return hasLeading ? segment : `.${segment}`
   }
 
   return `['${segment}']`
 }
 
-export default function arrayToJSONMatchPath(pathArray: Array<string | number | object>): string {
-  return pathArray.reduce((acc, segment, index) => {
-    return acc + stringifySegment(segment, index === 0)
-  }, '')
+function isPrimitiveValue(val: unknown): val is string | number | boolean {
+  switch (typeof val) {
+    case 'number':
+    case 'string':
+    case 'boolean':
+      return true
+    default:
+      return false
+  }
 }

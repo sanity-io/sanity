@@ -1,3 +1,3 @@
-import debug from 'debug'
+import debugIt from 'debug'
 
-export default debug('mutator-document')
+export const debug = debugIt('mutator-document')

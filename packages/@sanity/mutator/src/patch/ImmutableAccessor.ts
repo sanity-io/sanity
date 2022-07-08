@@ -1,92 +1,104 @@
-// An immutable probe/writer for plain JS objects that will never mutate
-// the provided _value in place. Each setter returns a new (wrapped) version
-// of the value.
-export default class ImmutableAccessor {
-  _value: any
-  path: Array<any>
-  constructor(_value: any, path?: any) {
-    this._value = _value
+import type {Probe} from '../jsonpath/Probe'
+
+/**
+ * An immutable probe/writer for plain JS objects that will never mutate
+ * the provided _value in place. Each setter returns a new (wrapped) version
+ * of the value.
+ */
+export class ImmutableAccessor implements Probe {
+  _value: unknown
+  path: (string | number)[]
+
+  constructor(value: unknown, path?: (string | number)[]) {
+    this._value = value
     this.path = path || []
   }
-  containerType() {
+
+  containerType(): 'array' | 'object' | 'primitive' {
     if (Array.isArray(this._value)) {
       return 'array'
-    } else if (this._value !== null && typeof this._value == 'object') {
+    } else if (this._value !== null && typeof this._value === 'object') {
       return 'object'
     }
     return 'primitive'
   }
 
   // Common reader, supported by all containers
-  get(): any {
+  get(): unknown {
     return this._value
   }
 
   // Array reader
   length(): number {
-    if (this.containerType() !== 'array') {
+    if (!Array.isArray(this._value)) {
       throw new Error("Won't return length of non-indexable _value")
     }
+
     return this._value.length
   }
-  getIndex(i: number): any {
-    if (this.containerType() !== 'array') {
+
+  getIndex(i: number): ImmutableAccessor | false | null {
+    if (!Array.isArray(this._value)) {
       return false
     }
+
     if (i >= this.length()) {
       return null
     }
+
     return new ImmutableAccessor(this._value[i], this.path.concat(i))
   }
 
   // Object reader
   hasAttribute(key: string): boolean {
-    if (this.containerType() !== 'object') {
-      return false
-    }
-    return this._value.hasOwnProperty(key)
+    return isRecord(this._value) ? this._value.hasOwnProperty(key) : false
   }
-  attributeKeys(): Array<string> {
-    if (this.containerType() !== 'object') {
-      return []
-    }
-    return Object.keys(this._value)
+
+  attributeKeys(): string[] {
+    return isRecord(this._value) ? Object.keys(this._value) : []
   }
-  getAttribute(key: string): any {
-    if (this.containerType() !== 'object') {
+
+  getAttribute(key: string): ImmutableAccessor | null {
+    if (!isRecord(this._value)) {
       throw new Error('getAttribute only applies to plain objects')
     }
+
     if (!this.hasAttribute(key)) {
       return null
     }
+
     return new ImmutableAccessor(this._value[key], this.path.concat(key))
   }
 
   // Common writer, supported by all containers
-  set(value) {
-    if (value === this._value) {
-      return this
-    }
-    return new ImmutableAccessor(value, this.path)
-  }
-
-  setAccessor(accessor) {
-    return accessor
+  set(value: unknown): ImmutableAccessor {
+    return value === this._value ? this : new ImmutableAccessor(value, this.path)
   }
 
   // array writer interface
-  setIndex(i: number, value: any) {
+  setIndex(i: number, value: unknown): ImmutableAccessor {
+    if (!Array.isArray(this._value)) {
+      throw new Error('setIndex only applies to arrays')
+    }
+
     if (value === this._value[i]) {
       return this
     }
+
     const nextValue = this._value.slice()
     nextValue[i] = value
     return new ImmutableAccessor(nextValue, this.path)
   }
-  setIndexAccessor(i: number, accessor) {
+
+  setIndexAccessor(i: number, accessor: ImmutableAccessor): ImmutableAccessor {
     return this.setIndex(i, accessor.get())
   }
-  unsetIndices(indices: Array<number>) {
+
+  unsetIndices(indices: number[]): ImmutableAccessor {
+    if (!Array.isArray(this._value)) {
+      throw new Error('unsetIndices only applies to arrays')
+    }
+
     const length = this._value.length
     const nextValue = []
     // Copy every _value _not_ in the indices array over to the newValue
@@ -97,46 +109,51 @@ export default class ImmutableAccessor {
     }
     return new ImmutableAccessor(nextValue, this.path)
   }
-  insertItemsAt(pos: number, items: Array<any>) {
+
+  insertItemsAt(pos: number, items: unknown[]): ImmutableAccessor {
+    if (!Array.isArray(this._value)) {
+      throw new Error('insertItemsAt only applies to arrays')
+    }
+
     let nextValue
-    if (this.length() === 0 && pos === 0) {
+    if (this._value.length === 0 && pos === 0) {
       nextValue = items
     } else {
       nextValue = this._value.slice(0, pos).concat(items).concat(this._value.slice(pos))
     }
+
     return new ImmutableAccessor(nextValue, this.path)
   }
 
   // Object writer interface
-  setAttribute(key: string, value: any) {
-    if (this.containerType() !== 'object') {
+  setAttribute(key: string, value: unknown): ImmutableAccessor {
+    if (!isRecord(this._value)) {
       throw new Error('Unable to set attribute of non-object container')
     }
+
     if (value === this._value[key]) {
       return this
     }
-    const nextValue = Object.assign({}, this._value)
-    nextValue[key] = value
+
+    const nextValue = Object.assign({}, this._value, {[key]: value})
     return new ImmutableAccessor(nextValue, this.path)
   }
-  setAttributeAccessor(key: string, accessor) {
+
+  setAttributeAccessor(key: string, accessor: ImmutableAccessor): ImmutableAccessor {
     return this.setAttribute(key, accessor.get())
   }
-  unsetAttribute(key: string) {
-    if (this.containerType() != 'object') {
+
+  unsetAttribute(key: string): ImmutableAccessor {
+    if (!isRecord(this._value)) {
       throw new Error('Unable to unset attribute of non-object container')
     }
+
     const nextValue = Object.assign({}, this._value)
     delete nextValue[key]
     return new ImmutableAccessor(nextValue, this.path)
   }
+}
 
-  // primitive writer interface
-  mutate(fn: Function) {
-    if (this.containerType() != 'primitive') {
-      throw new Error("Won't mutate container types")
-    }
-    const nextValue = fn(this._value)
-    return new ImmutableAccessor(nextValue, this.path)
-  }
+function isRecord(value: unknown): value is {[key: string]: unknown} {
+  return value !== null && typeof value === 'object'
 }
