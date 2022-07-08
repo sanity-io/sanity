@@ -9,6 +9,8 @@ import type {Doc, Mut} from './types'
  * Implements a buffer for mutations that incrementally optimises the mutations by
  * eliminating set-operations that overwrite earlier set-operations, and rewrite
  * set-operations that change strings into other strings into diffMatchPatch operations.
+ *
+ * @internal
  */
 export class SquashingBuffer {
   /**

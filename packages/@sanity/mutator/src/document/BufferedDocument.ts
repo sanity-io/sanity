@@ -7,6 +7,9 @@ import type {Doc, Mut} from './types'
 
 const ONE_MINUTE = 1000 * 60
 
+/**
+ * @internal
+ */
 export interface CommitHandlerMessage {
   mutation: Mutation
   success: () => void
@@ -56,12 +59,12 @@ export class BufferedDocument {
   /**
    * The Document we are wrapping
    */
-  private document: Document
+  document: Document
 
   /**
    * The Document with local changes applied
    */
-  private LOCAL: Doc | null
+  LOCAL: Doc | null
 
   /**
    * Commits that are waiting to be delivered to the server
@@ -71,46 +74,42 @@ export class BufferedDocument {
   /**
    * Local mutations that are not scheduled to be committed yet
    */
-  private buffer: SquashingBuffer
+  buffer: SquashingBuffer
 
   /**
    * Assignable event handler for when the buffered document applies a mutation
    */
-  private onMutation?: (message: {
-    mutation: Mutation
-    document: Doc | null
-    remote: boolean
-  }) => void
+  onMutation?: (message: {mutation: Mutation; document: Doc | null; remote: boolean}) => void
 
   /**
    * Assignable event handler for when a remote mutation happened
    */
-  private onRemoteMutation?: Document['onRemoteMutation']
+  onRemoteMutation?: Document['onRemoteMutation']
 
   /**
    * Assignable event handler for when the buffered document rebased
    */
-  private onRebase?: (localDoc: Doc | null, remoteMutations: Mut[], localMutations: Mut[]) => void
+  onRebase?: (localDoc: Doc | null, remoteMutations: Mut[], localMutations: Mut[]) => void
 
   /**
    * Assignable event handler for when the document is deleted
    */
-  private onDelete?: (doc: Doc | null) => void
+  onDelete?: (doc: Doc | null) => void
 
   /**
    * Assignable event handler for when the state of consistency changed
    */
-  private onConsistencyChanged?: (isConsistent: boolean) => void
+  onConsistencyChanged?: (isConsistent: boolean) => void
 
   /**
    * Assignable event handler for when the buffered document should commit changes
    */
-  private commitHandler?: (msg: CommitHandlerMessage) => void
+  commitHandler?: (msg: CommitHandlerMessage) => void
 
   /**
    * Whether or not we are currently commiting
    */
-  private committerRunning = false
+  committerRunning = false
 
   constructor(doc: Doc | null) {
     this.buffer = new SquashingBuffer(doc)
