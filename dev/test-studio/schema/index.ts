@@ -32,6 +32,7 @@ import button from './debug/button'
 import conditionalFields from './debug/conditionalFields'
 import customInputs from './debug/customInputs'
 import customNumber from './debug/customNumber'
+import {collapsibleObjects} from './debug/collapsibleObjects'
 import documentActions from './debug/documentActions'
 import empty from './debug/empty'
 import experiment from './debug/experiment'
@@ -160,6 +161,7 @@ export const schemaTypes = [
   hoistedPt,
   hoistedPtDocument,
   images,
+  collapsibleObjects,
   initialValuesTest,
   invalidPreviews,
   liveEdit,

@@ -667,13 +667,14 @@ export interface MultiFieldSet {
 export type Fieldset = SingleFieldSet | MultiFieldSet
 
 export interface CollapseOptions {
-  collapsable?: boolean
   collapsed?: boolean
 
-  /**
-   * @deprecated Use `collapsable`/`collapsed`
-   */
   collapsible?: boolean
+
+  /**
+   * @deprecated Use `collapsible` instead
+   */
+  collapsable?: boolean
 }
 
 export interface ReferenceSchemaType extends Omit<ObjectSchemaType, 'options'> {
