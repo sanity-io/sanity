@@ -1,5 +1,6 @@
 import {compact} from 'lodash'
-import {Expression, Matcher} from '../jsonpath'
+import {Expression} from './Expression'
+import {Matcher} from './Matcher'
 import {PlainProbe} from './PlainProbe'
 import {Probe} from './Probe'
 

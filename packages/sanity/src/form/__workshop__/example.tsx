@@ -1,7 +1,6 @@
 import {Card, Grid, Stack, useToast} from '@sanity/ui'
 import {useBoolean, useProps, useSelect} from '@sanity/ui-workshop'
 import React, {useCallback, useEffect, useMemo, useState} from 'react'
-import {Patcher} from '@sanity/mutator'
 import type {ObjectField, ObjectSchemaTypeWithOptions} from '@sanity/types'
 import {PatchEvent, createPatchChannel} from '../patch'
 import {applyAll} from '../patch/applyPatch'
@@ -63,11 +62,10 @@ export default function ExampleStory() {
     setDocumentValue((currentDocumentValue) => applyAll(currentDocumentValue, patchEvent.patches))
   }, [])
   const handleChangeMutator = useCallback((patchEvent: PatchEvent) => {
-    const patcher = new Patcher(
-      toMutationPatches(patchEvent.patches).map((patch) => ({...patch, id: DUMMY_DOCUMENT_ID}))
-    )
-
-    setDocumentValue((currentDocumentValue) => patcher.apply(currentDocumentValue))
+    // const patcher = new Patcher(
+    //   toMutationPatches(patchEvent.patches).map((patch) => ({...patch, id: DUMMY_DOCUMENT_ID}))
+    // )
+    // setDocumentValue((currentDocumentValue) => patcher.apply(currentDocumentValue))
   }, [])
   const handleBlur = useCallback(() => setFocused(false), [])
   const handleFocus = useCallback((path) => {
