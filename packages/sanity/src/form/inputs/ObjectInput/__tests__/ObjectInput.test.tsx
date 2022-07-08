@@ -1,12 +1,18 @@
-import {defineType} from '@sanity/types'
-import userEvent from '@testing-library/user-event'
-import React, {createRef} from 'react'
-import {renderObjectInput} from '../../../../../test/form'
+import {defineType, ObjectSchemaType} from '@sanity/types'
+import React from 'react'
 import {ObjectInput} from '../ObjectInput'
-
-const TOGGLE_BUTTON_SELECTOR = 'legend div'
+import {createSchema} from '../../../../schema'
+import {ObjectInputProps} from '../../../types'
+import {FormCallbacksProvider} from '../../../studio/contexts/FormCallbacks'
+import {render} from './test-utils'
 
 const defs = {
+  basic: defineType({
+    title: 'very basic object',
+    name: 'basic',
+    type: 'object',
+    fields: [{name: 'first', type: 'string'}],
+  }),
   collapsibleTest: defineType({
     title: 'Collapsible test',
     name: 'collapsibleTest',
@@ -60,149 +66,105 @@ const defs = {
   }),
 }
 
-describe('collapsible behavior', () => {
-  it('does not render collapsible fields on objects configured with collapsed: true', async () => {
-    const {result} = await renderObjectInput({
-      fieldDefinition: defs.collapsibleTest,
-      render: (inputProps) => <ObjectInput {...inputProps} />,
-    })
+function getTestSchema(name: keyof typeof defs): ObjectSchemaType {
+  return createSchema({name: 'test', types: [defs[name]]}).get(name) as ObjectSchemaType
+}
 
-    const collapsibleField = result.queryByTestId('input-field1')
-    expect(collapsibleField).toBeNull()
+// eslint-disable-next-line @typescript-eslint/no-empty-function
+function noop(...args: any[]): void {}
+function returnNull(...args: any[]): null {
+  return null
+}
+
+const noopProps: Omit<ObjectInputProps, 'schemaType'> = {
+  groups: [],
+  onChange: noop,
+  onCollapseField: noop,
+  onExpandField: noop,
+  onCollapseFieldSet: noop,
+  onExpandFieldSet: noop,
+  onFieldGroupSelect: noop,
+  onFocusPath: noop,
+  onOpenField: noop,
+  onCloseField: noop,
+  renderInput: returnNull,
+  renderField: returnNull,
+  renderItem: returnNull,
+  renderPreview: returnNull,
+  members: [],
+  focusPath: [],
+  id: 'test',
+  level: 0,
+  path: [],
+  presence: [],
+  validation: [],
+  value: {},
+  changed: false,
+  focusRef: {current: undefined},
+  onFocus: noop,
+  onBlur: noop,
+}
+
+describe('basic examples', () => {
+  it('renders as empty if given no members', () => {
+    const {container} = render(<ObjectInput {...noopProps} schemaType={getTestSchema('basic')} />)
+    expect(container).toBeEmptyDOMElement()
   })
+  it('calls renderField and renderInput for each member', () => {
+    const schemaType = getTestSchema('collapsibleTest')
+    const renderField = jest
+      .fn()
+      .mockImplementationOnce((props) => (
+        <div data-testid={`field-${props.inputId}`}>{props.children}</div>
+      ))
+    const renderInput = jest
+      .fn()
+      .mockImplementationOnce((props) => <div data-testid={`input-${props.id}`} />)
 
-  it('renders collapsible fields with collapsed: true if given a focus path that targets it', async () => {
-    const {result} = await renderObjectInput({
-      fieldDefinition: defs.collapsibleTest,
-      render: (inputProps) => (
-        <ObjectInput {...inputProps} focusPath={['collapsibleAndCollapsedByDefault', 'field1']} />
-      ),
-    })
-
-    const collapsibleField = result.queryByTestId('input-field1')
-    expect(collapsibleField).toBeVisible()
-  })
-
-  it('toggles the collapsible field when clicking the expand/collapse button', async () => {
-    const firstFieldPath = ['collapsibleAndCollapsedByDefault', 'field1']
-
-    const {onFocus, rerender, result} = await renderObjectInput({
-      fieldDefinition: defs.collapsibleTest,
-      render: (inputProps) => <ObjectInput {...inputProps} />,
-    })
-
-    expect(result.queryByTestId('input-field1')).toBeNull()
-    const button = result.container.querySelector(TOGGLE_BUTTON_SELECTOR)
-    userEvent.click(button!)
-    expect(onFocus).toHaveBeenCalledTimes(1)
-    expect(onFocus).toHaveBeenCalledWith(firstFieldPath)
-
-    rerender((inputProps) => <ObjectInput {...inputProps} focusPath={firstFieldPath} />)
-
-    expect(result.queryByTestId('input-field1')).toBeVisible()
-    userEvent.click(button!)
-    expect(onFocus).toHaveBeenCalledTimes(2)
-    expect(onFocus).toHaveBeenLastCalledWith(['collapsibleAndCollapsedByDefault'])
-    expect(result.queryByTestId('input-field1')).toBeNull()
-  })
-
-  it('does not show hidden fields', async () => {
-    const {result} = await renderObjectInput({
-      fieldDefinition: defs.hiddenTest,
-      render: (inputProps) => <ObjectInput {...inputProps} />,
-    })
-
-    expect(result.queryByTestId('input-thisIsVisible')).toBeVisible()
-    expect(result.queryByTestId('input-thisIsHidden')).toBeNull()
-    expect(result.queryByTestId('input-thisMayBeVisible')).toBeVisible()
-  })
-
-  // it('supports filtering fields based on a predicate', () => {
-  //   const filterField = (_type, field) => field.name !== 'thisMayBeVisible'
-
-  //   const {result} = renderObjectInput({
-  //     fieldDefinition: defs.hiddenTest,
-  //     render: (inputProps) => <ObjectInput {...inputProps} filterField={filterField} />,
-  //   })
-
-  //   expect(result.queryByTestId('input-thisIsVisible')).toBeVisible()
-  //   expect(result.queryByTestId('input-thisIsHidden')).toBeNull()
-  //   expect(result.queryByTestId('input-thisMayBeVisible')).toBeNull()
-  // })
-
-  it("expands a field that's been manually collapsed when receiving a focus path that targets it", async () => {
-    const firstFieldPath = ['collapsibleAndCollapsedByDefault', 'field1']
-
-    const {onFocus, rerender, result} = await renderObjectInput({
-      fieldDefinition: defs.collapsibleTest,
-      render: (inputProps) => <ObjectInput {...inputProps} />,
-    })
-
-    expect(result.queryByTestId('input-field1')).toBeNull()
-    const toggleButton = result.container.querySelector(TOGGLE_BUTTON_SELECTOR)
-    userEvent.click(toggleButton!)
-    expect(onFocus).toHaveBeenCalledTimes(1)
-    expect(onFocus).toHaveBeenCalledWith(firstFieldPath)
-
-    rerender((inputProps) => <ObjectInput {...inputProps} focusPath={firstFieldPath} />)
-
-    expect(result.queryByTestId('input-field1')).toBeVisible()
-    userEvent.click(toggleButton!)
-
-    rerender((inputProps) => (
-      <ObjectInput {...inputProps} focusPath={['collapsibleAndCollapsedByDefault']} />
-    ))
-
-    expect(result.queryByTestId('input-field1')).toBeNull()
-
-    // Focus moves into the collapsed field (this happens when e.g. deep linking)
-    rerender((inputProps) => (
-      <ObjectInput {...inputProps} focusPath={['collapsibleAndCollapsedByDefault', 'field1']} />
-    ))
-
-    expect(result.queryByTestId('input-field1')).toBeVisible()
-
-    // Note: if focus moves to another field we don't want to collapse the field again
-    rerender((inputProps) => <ObjectInput {...inputProps} focusPath={[]} />)
-
-    expect(result.queryByTestId('input-field1')).toBeVisible()
-  })
-})
-
-describe('focus handling', () => {
-  it('calling .focus() on its ref puts focus on DOM node for its first field', async () => {
-    const inputRef = createRef<any>()
-
-    const {result} = await renderObjectInput({
-      fieldDefinition: defs.focusTest,
-      render: (inputProps) => <ObjectInput {...inputProps} focusRef={inputRef} />,
-    })
-
-    expect(inputRef.current).toBeDefined()
-    inputRef.current.focus()
-    expect(result.queryByTestId('input-title')?.querySelector('input')).toHaveFocus()
-  })
-
-  it('updates input focus based on passed focusPath', async () => {
-    const {result} = await renderObjectInput({
-      fieldDefinition: defs.focusTest,
-      render: (inputProps) => <ObjectInput {...inputProps} focusPath={['focusTest', 'field1']} />,
-    })
-
-    expect(result.queryByTestId('input-field1')?.querySelector('input')).toHaveFocus()
-  })
-
-  it('emits an `onFocus()` event with the focus path of the first field when the imperative .focus() method is invoked', async () => {
-    // Note: this depends on the underlying native input component forwarding it's received onFocus prop
-    const inputRef = createRef<any>()
-
-    const {onFocus} = await renderObjectInput({
-      fieldDefinition: defs.focusTest,
-      render: (inputProps) => <ObjectInput {...inputProps} focusRef={inputRef} />,
-    })
-
-    inputRef.current.focus()
-    expect(onFocus).toHaveBeenCalledTimes(1)
-    expect(onFocus).toHaveBeenCalledWith(['title'])
+    const {queryByTestId} = render(
+      <FormCallbacksProvider
+        onFieldGroupSelect={noop}
+        onChange={noop}
+        onSetFieldSetCollapsed={noop}
+        onSetPathCollapsed={noop}
+        onPathFocus={noop}
+        onPathBlur={noop}
+        onPathOpen={noop}
+      >
+        <ObjectInput
+          {...noopProps}
+          members={[
+            {
+              kind: 'field',
+              collapsed: true,
+              name: 'first',
+              open: false,
+              collapsible: true,
+              key: 'first-field',
+              index: 0,
+              field: {
+                schemaType,
+                validation: [],
+                level: 0,
+                path: ['first'],
+                presence: [],
+                value: 'something',
+                changed: false,
+                focused: false,
+                id: 'first-field',
+                readOnly: false,
+              },
+            },
+          ]}
+          schemaType={schemaType}
+          renderInput={renderInput}
+          renderField={renderField}
+        />
+      </FormCallbacksProvider>
+    )
+    expect(queryByTestId('field-first-field')).toBeInTheDocument()
+    expect(queryByTestId('input-first-field')).toBeInTheDocument()
+    expect(renderField.mock.calls.length).toBe(1)
+    expect(renderInput.mock.calls.length).toBe(1)
   })
 })
