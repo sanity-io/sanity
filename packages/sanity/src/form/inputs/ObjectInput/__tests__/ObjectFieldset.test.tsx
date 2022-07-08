@@ -14,7 +14,7 @@ const fieldsetsTestType = defineType({
     {
       name: 'collapsibleWithDefaults',
       title: 'Collapsible fieldset with defaults',
-      options: {collapsible: true},
+      options: {collapsed: false},
     },
   ],
   fields: [
@@ -111,19 +111,8 @@ describe('collapsible fieldset with default options', () => {
     expect(field1).toBeNull()
   })
 
-  it('expands if focus path targets a field inside the fieldset', async () => {
-    const {result} = await renderObjectInput({
-      fieldDefinition: fieldsetsTestType,
-      render: (inputProps) => (
-        <ObjectInput {...inputProps} focusPath={['collapsibleWithDefaults1']} />
-      ),
-    })
-
-    expect(result.queryByTestId('input-collapsibleWithDefaults1')).toBeVisible()
-  })
-
   it('emits a focus path targeting the field when clicking toggle button', async () => {
-    const {onFocus, result} = await renderObjectInput({
+    const {onFocus, onSetFieldSetCollapsed, result} = await renderObjectInput({
       fieldDefinition: fieldsetsTestType,
       render: (inputProps) => <ObjectInput {...inputProps} />,
     })
@@ -136,45 +125,7 @@ describe('collapsible fieldset with default options', () => {
 
     expect(toggleButton).toBeDefined()
     userEvent.click(toggleButton!)
-    expect(onFocus).toHaveBeenCalledTimes(1)
-    expect(onFocus).toHaveBeenCalledWith(['collapsibleWithDefaults1'])
-  })
-
-  it('toggles collapse/expand despite focus path targeting field inside', async () => {
-    const {rerender, result} = await renderObjectInput({
-      fieldDefinition: fieldsetsTestType,
-      render: (inputProps) => (
-        <ObjectInput {...inputProps} focusPath={['collapsibleWithDefaults1']} />
-      ),
-    })
-
-    const fieldset = result.queryByTestId('fieldset-collapsibleWithDefaults')
-
-    // visible because of focus path
-    expect(result.queryByTestId('input-collapsibleWithDefaults1')).toBeVisible()
-
-    const toggleButton = fieldset!.querySelector('legend button')
-    expect(toggleButton).toBeDefined()
-    userEvent.click(toggleButton!)
-    expect(result.queryByTestId('input-collapsibleWithDefaults1')).toBeNull()
-
-    // click to expand again
-    userEvent.click(toggleButton!)
-    expect(result.queryByTestId('input-collapsibleWithDefaults1')).toBeVisible()
-
-    // move focus to another field should keep it open
-    rerender((inputProps) => <ObjectInput {...inputProps} focusPath={[]} />)
-
-    expect(result.queryByTestId('input-collapsibleWithDefaults1')).toBeVisible()
-
-    // collapse again
-    userEvent.click(toggleButton!)
-
-    // move focus to a field inside again should make it expand
-    rerender((inputProps) => (
-      <ObjectInput {...inputProps} focusPath={['collapsibleWithDefaults1']} />
-    ))
-    expect(result.queryByTestId('input-collapsibleWithDefaults1')).toBeVisible()
+    expect(onSetFieldSetCollapsed).toHaveBeenCalledTimes(1)
   })
 
   it('does not emit a new focus path when being collapsed', async () => {

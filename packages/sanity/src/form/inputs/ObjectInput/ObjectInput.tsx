@@ -55,6 +55,9 @@ export const ObjectInput = memo(function ObjectInput(props: ObjectInputProps) {
     [members, renderField, renderInput, renderItem, renderPreview]
   )
 
+  if (members.length === 0) {
+    return null
+  }
   return (
     <Stack space={5}>
       {groups.length > 0 ? (
