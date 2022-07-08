@@ -91,6 +91,8 @@ import species from './species'
 // CI documents
 import conditionalFieldset from './ci/conditionalFieldset'
 import validationTest from './ci/validationCI'
+import crossDatasetReference, {crossDatasetSubtype} from './standard/crossDatasetReference'
+import {circularCrossDatasetReferenceTest} from './debug/circularCrossDatasetReference'
 
 // @todo temporary, until code input is v3 compatible
 const codeInputType = {
@@ -188,6 +190,9 @@ export const schemaTypes = [
   recursiveObjectTest,
   recursivePopover,
   references,
+  crossDatasetReference,
+  crossDatasetSubtype,
+  circularCrossDatasetReferenceTest,
   reservedFieldNames,
   review,
   richTextObject,
