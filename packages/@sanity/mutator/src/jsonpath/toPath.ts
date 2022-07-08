@@ -1,11 +1,18 @@
-// Converts a parsed expression back into jsonpath2, roughly - mostly for use
-// with tests.
+import type {Expr} from './types'
 
-export default function toPath(expr: Object): string {
+/**
+ * Converts a parsed expression back into jsonpath2, roughly -
+ * mostly for use with tests.
+ *
+ * @param expr - Expression to convert to path
+ * @returns a string representation of the path
+ * @internal
+ */
+export function toPath(expr: Expr): string {
   return toPathInner(expr, false)
 }
 
-function toPathInner(expr: any, inUnion: boolean): string {
+function toPathInner(expr: Expr, inUnion: boolean): string {
   switch (expr.type) {
     case 'attribute':
       return expr.name
@@ -39,17 +46,16 @@ function toPathInner(expr: any, inUnion: boolean): string {
       }
 
       return `[${expr.value}]`
-    case 'constraint':
-      const inner = `${toPathInner(expr.lhs, false)} ${expr.operator} ${toPathInner(
-        expr.rhs,
-        false
-      )}`
+    case 'constraint': {
+      const rhs = expr.rhs ? ` ${toPathInner(expr.rhs, false)}` : ''
+      const inner = `${toPathInner(expr.lhs, false)} ${expr.operator}${rhs}`
 
       if (inUnion) {
         return inner
       }
 
       return `[${inner}]`
+    }
     case 'string':
       return JSON.stringify(expr.value)
     case 'path': {
@@ -57,7 +63,10 @@ function toPathInner(expr: any, inUnion: boolean): string {
       const nodes = expr.nodes.slice()
       while (nodes.length > 0) {
         const node = nodes.shift()
-        result.push(toPath(node))
+        if (node) {
+          result.push(toPath(node))
+        }
+
         const upcoming = nodes[0]
         if (upcoming && toPathInner(upcoming, false)[0] !== '[') {
           result.push('.')
@@ -66,8 +75,7 @@ function toPathInner(expr: any, inUnion: boolean): string {
       return result.join('')
     }
     case 'union':
-      const terms = expr.nodes.map((e) => toPathInner(e, true))
-      return `[${terms.join(',')}]`
+      return `[${expr.nodes.map((e) => toPathInner(e, true)).join(',')}]`
     default:
       throw new Error(`Unknown node type ${expr.type}`)
     case 'recursive':

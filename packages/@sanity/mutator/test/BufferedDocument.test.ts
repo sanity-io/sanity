@@ -1,8 +1,9 @@
-import BufferedDocumentTester from './util/BufferedDocumentTester'
+import {BufferedDocumentTester} from './util/BufferedDocumentTester'
 
 test('simple edit cycle', () => {
   new BufferedDocumentTester({
     _id: 'a',
+    _type: 't',
     _rev: '1',
     title: 'Hello',
   })
@@ -41,12 +42,12 @@ test('simple edit cycle', () => {
     .assertALL('title', 'Good bye')
     .assertALL('body', 'My friend')
     .isConsistent()
-    .end()
 })
 
 test('simple remote edit', () => {
   new BufferedDocumentTester({
     _id: 'a',
+    _type: 't',
     _rev: '1',
     numbers: [0],
   })
@@ -65,12 +66,12 @@ test('simple remote edit', () => {
     .assertLOCAL('numbers', [-1, 0])
     .assertEDGE('numbers', [-1, 0])
     .isConsistent()
-    .end()
 })
 
 test('simple edit cycle with remote edits causing rebase', () => {
   new BufferedDocumentTester({
     _id: 'a',
+    _type: 't',
     _rev: '1',
     numbers: [0],
   })
@@ -110,12 +111,12 @@ test('simple edit cycle with remote edits causing rebase', () => {
     .onMutationDidNotFire()
     .assertALL('numbers', [-1, 0, 1])
     .isConsistent()
-    .end()
 })
 
 test('document being deleted by remote', () => {
   new BufferedDocumentTester({
     _id: 'a',
+    _type: 't',
     _rev: '1',
     text: 'hello',
   })
@@ -139,11 +140,11 @@ test('document being deleted by remote', () => {
     .hasNoLocalEdits()
     .assertALLDeleted()
     .stage('when local user creates document')
-    .localMutation(null, '3', {
-      create: {_id: 'a', text: 'good morning', _createdAt: '2018-01-25T15:18:12.114Z'},
+    .localMutation(undefined, '3', {
+      create: {_id: 'a', _type: 't', text: 'good morning', _createdAt: '2018-01-25T15:18:12.114Z'},
     })
     .assert((bufDoc) => {
-      expect(typeof bufDoc.LOCAL._createdAt).toBe('string') // 'New documents must have a _createdAt time'
+      expect(typeof bufDoc?.LOCAL?._createdAt).toBe('string') // 'New documents must have a _createdAt time'
     })
     .assertLOCAL('text', 'good morning')
     .assertLOCAL('_rev', '3')
@@ -156,32 +157,32 @@ test('document being deleted by remote', () => {
     .stage('when commit succeeds')
     .commitSucceeds()
     .assertALL('text', 'good morning')
-    .end()
 })
 
 test('document being created with `createOrReplace`', () => {
   const createdAt = '2018-01-25T15:18:12.114Z'
   new BufferedDocumentTester({
     _id: 'a',
+    _type: 't',
     _rev: '1',
     text: 'hello',
   })
     .hasNoLocalEdits()
     .stage('when applying createOrReplace mutation')
-    .localMutation(null, '2', {
-      createOrReplace: {_id: 'a', text: 'good morning', _createdAt: createdAt},
+    .localMutation(undefined, '2', {
+      createOrReplace: {_id: 'a', _type: 't', text: 'good morning', _createdAt: createdAt},
     })
     .onMutationFired()
     .hasLocalEdits()
     .assertLOCAL('_createdAt', createdAt)
     .assertLOCAL('_rev', '2')
-    .end()
 })
 
 test('document being created with `createIfNotExists`', () => {
   const createdAt = '2018-01-25T15:18:12.114Z'
   new BufferedDocumentTester({
     _id: 'a',
+    _type: 't',
     _rev: '1',
     text: 'hello',
   })
@@ -190,20 +191,20 @@ test('document being created with `createIfNotExists`', () => {
       delete: {id: 'a'},
     })
     .stage('when applying createIfNotExists mutation')
-    .localMutation(null, '3', {
-      createIfNotExists: {_id: 'a', text: 'good morning', _createdAt: createdAt},
+    .localMutation(undefined, '3', {
+      createIfNotExists: {_id: 'a', _type: 't', text: 'good morning', _createdAt: createdAt},
     })
     .onMutationFired()
     .hasLocalEdits()
     .assertLOCAL('_rev', '3')
     .assertLOCAL('_createdAt', createdAt)
-    .end()
 })
 
 test('document being created with `create`', () => {
   const createdAt = '2018-01-25T15:18:12.114Z'
   new BufferedDocumentTester({
     _id: 'a',
+    _type: 't',
     _rev: '1',
     text: 'hello',
   })
@@ -212,18 +213,18 @@ test('document being created with `create`', () => {
       delete: {id: 'a'},
     })
     .stage('when applying create mutation')
-    .localMutation(null, '2', {
-      create: {_id: 'a', text: 'good morning', _createdAt: createdAt},
+    .localMutation(undefined, '2', {
+      create: {_id: 'a', _type: 't', text: 'good morning', _createdAt: createdAt},
     })
     .onMutationFired()
     .hasLocalEdits()
     .assertLOCAL('_createdAt', createdAt)
-    .end()
 })
 
 test('document being deleted by local', () => {
   new BufferedDocumentTester({
     _id: 'a',
+    _type: 't',
     _rev: '1',
     text: 'hello',
   })
@@ -242,20 +243,20 @@ test('document being deleted by local', () => {
     .commitSucceedsButMutationArriveDuringCommitProcess()
     .onMutationDidNotFire()
     .assertALLDeleted()
-    .end()
 })
 
 test('no-op-patch only changes _rev of target document', () => {
   new BufferedDocumentTester({
     _id: 'a',
+    _type: 't',
     _rev: '1',
     text: 'hello',
   })
     .hasNoLocalEdits()
     .stage('when local fires a no-op patch')
     .localMutation('1', '2', {
-      id: 'a',
       patch: {
+        id: 'a',
         unset: ['nonExistent'],
       },
     })
@@ -266,22 +267,22 @@ test('no-op-patch only changes _rev of target document', () => {
     .hasLocalEdits()
     .stage('when no-op patch commits')
     .commit()
-    .end()
 })
 
 test('remotely created documents has _rev', () => {
   new BufferedDocumentTester({
     _id: 'a',
+    _type: 't',
     _rev: '1',
   })
     .remoteMutation('1', '2', {
       delete: {id: 'a'},
     })
-    .remoteMutation(null, '2', {
+    .remoteMutation(undefined, '2', {
       create: {
         _id: 'a',
+        _type: 't',
       },
     })
     .assertHEAD('_rev', '2')
-    .end()
 })

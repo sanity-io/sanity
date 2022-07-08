@@ -1,17 +1,15 @@
-import parse from '../src/jsonpath/parse'
-import Expression from '../src/jsonpath/Expression'
-import Descender from '../src/jsonpath/Descender'
-import PlainProbe from '../src/jsonpath/PlainProbe'
+import type {Expr} from '../src/jsonpath/types'
+import {parseJsonPath} from '../src/jsonpath/parse'
+import {Expression} from '../src/jsonpath/Expression'
+import {Descender} from '../src/jsonpath/Descender'
+import {PlainProbe} from '../src/jsonpath/PlainProbe'
 
-// eslint-disable-next-line consistent-return
-function inner(jsonpath) {
-  const expr: any = parse(jsonpath)
-  if (expr.type == 'union') {
-    return expr.nodes[0]
-  }
+function inner(jsonpath: string): Expr | null {
+  const expr = parseJsonPath(jsonpath)
+  return expr.type === 'union' ? expr.nodes[0] : null
 }
 
-function expectDescendants(descendants, expected) {
+function expectDescendants(descendants: Descender[], expected: string[]) {
   const strs = descendants.map((d) => d.toString())
   expect(strs).toEqual(expected)
 }

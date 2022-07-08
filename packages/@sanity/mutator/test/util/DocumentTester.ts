@@ -1,39 +1,43 @@
 // A test jig for the Document model
-
+import type {PatchMutationOperation} from '@sanity/types'
+import type {SubmissionResponder} from '../../src/document/Document'
+import type {Doc} from '../../src/document/types'
 import {Document, Mutation} from '../../src/document'
 import {extract} from '../../src/jsonpath'
 
-export default class DocumentTester {
-  onRebaseCalled: boolean
-  onMutationCalled: boolean
-  context: any
-  staged: any
-  stagedResponders: any
-  tap: any
+export class DocumentTester {
+  onRebaseCalled = false
+  onMutationCalled = false
+  context: string
+  staged: Record<string, Mutation | undefined>
+  stagedResponders: Record<string, SubmissionResponder | undefined>
   doc: Document
-  constructor(tap, attrs) {
+
+  constructor(attrs: Doc) {
     this.doc = new Document(attrs)
     this.onRebaseCalled = false
-    this.doc.onRebase = (edge) => {
+    this.doc.onRebase = () => {
       this.onRebaseCalled = true
     }
-    this.doc.onMutation = (edge, mutation) => {
+    this.doc.onMutation = () => {
       this.onMutationCalled = true
     }
-    this.tap = tap
     this.staged = {}
     this.stagedResponders = {}
     this.context = 'initially'
   }
-  reset() {
+
+  reset(): void {
     this.onMutationCalled = false
     this.onRebaseCalled = false
   }
-  stage(title) {
+
+  stage(title: string): this {
     this.context = title
     return this
   }
-  remotePatch(fromRev, toRev, patch) {
+
+  remotePatch(fromRev: string, toRev: string, patch: PatchMutationOperation): this {
     this.reset()
     const mut = new Mutation({
       transactionId: toRev,
@@ -44,7 +48,8 @@ export default class DocumentTester {
     this.doc.arrive(mut)
     return this
   }
-  localPatch(fromRev, toRev, patch) {
+
+  localPatch(fromRev: string, toRev: string, patch: PatchMutationOperation): this {
     this.reset()
     const mut = new Mutation({
       transactionId: toRev,
@@ -58,85 +63,102 @@ export default class DocumentTester {
     this.stagedResponders[toRev] = this.doc.stage(mut)
     return this
   }
-  localSucceeded(txnId) {
+
+  localSucceeded(txnId: string): this {
+    const responder = this.stagedResponders[txnId]
+    if (!responder) {
+      throw new Error(`Missing staged responder for transaction ID "${txnId}"`)
+    }
+
     this.reset()
-    this.stagedResponders[txnId].success()
+    responder.success()
     delete this.stagedResponders[txnId]
     return this
   }
-  localFailed(txnId) {
+
+  localFailed(txnId: string): this {
+    const responder = this.stagedResponders[txnId]
+    if (!responder) {
+      throw new Error(`Missing staged responder for transaction ID "${txnId}"`)
+    }
+
     this.reset()
-    this.stagedResponders[txnId].failure()
+    responder.failure()
     delete this.stagedResponders[txnId]
     return this
   }
-  arrivedLocal(txnId) {
+
+  arrivedLocal(txnId: string): this {
     this.reset()
     const submitted = this.staged[txnId]
+    if (!submitted) {
+      throw new Error(`Missing staged changes for transaction "${txnId}"`)
+    }
+
+    // The _previousRev is a hack internal to this document tester
     const params = Object.assign({}, submitted.params)
-    params.previousRev = params._previousRev
+    params.previousRev = '_previousRev' in params ? (params as any)._previousRev : undefined
+
     const mut = new Mutation(params)
     this.doc.arrive(mut)
     return this
   }
-  assertEDGE(path, value) {
-    this.tap.same(extract(path, this.doc.EDGE)[0], value, `assert value ${path} of EDGE`)
+
+  assertEDGE(path: string, value: unknown): this {
+    expect(extract(path, this.doc.EDGE)[0]).toEqual(value)
     return this
   }
-  assertHEAD(path, value) {
-    this.tap.same(extract(path, this.doc.HEAD)[0], value, `assert value ${path} of HEAD`)
+
+  assertHEAD(path: string, value: unknown): this {
+    expect(extract(path, this.doc.HEAD)[0]).toEqual(value)
     return this
   }
-  assertBOTH(path, values) {
+
+  assertBOTH(path: string, values: unknown): this {
     this.assertHEAD(path, values)
     this.assertEDGE(path, values)
     return this
   }
-  didRebase() {
-    this.tap.ok(this.onRebaseCalled, `should rebase ${this.context}`)
+
+  didRebase(): this {
+    expect(this.onRebaseCalled).toBe(true)
     return this
   }
-  didNotRebase() {
-    this.tap.notOk(this.onRebaseCalled, `should not rebase ${this.context}`)
+
+  didNotRebase(): this {
+    expect(this.onRebaseCalled).toBe(false)
     return this
   }
-  onMutationFired() {
-    this.tap.ok(this.onMutationCalled, `should mutate ${this.context}`)
+
+  onMutationFired(): this {
+    expect(this.onMutationCalled).toBe(true)
     return this
   }
-  onMutationDidNotFire() {
-    this.tap.notOk(this.onMutationCalled, `should not mutate ${this.context}`)
+
+  onMutationDidNotFire(): this {
+    expect(this.onMutationCalled).toBe(false)
     return this
   }
-  isConsistent() {
-    this.tap.ok(this.doc.isConsistent(), `should be consistent ${this.context}`)
-    this.tap.same(this.doc.EDGE, this.doc.HEAD, `HEAD and EDGE should be equal ${this.context}`)
+
+  isConsistent(): this {
+    expect(this.doc.isConsistent()).toBe(true)
+    expect(this.doc.EDGE).toEqual(this.doc.HEAD)
     return this
   }
-  isInconsistent() {
-    this.tap.notOk(this.doc.isConsistent(), `should not be consistent ${this.context}`)
-    this.tap.notSame(
-      this.doc.EDGE,
-      this.doc.HEAD,
-      `HEAD and EDGE should be different ${this.context}`
-    )
+
+  isInconsistent(): this {
+    expect(this.doc.isConsistent()).toBe(false)
+    expect(this.doc.EDGE).not.toEqual(this.doc.HEAD)
     return this
   }
-  hasUnresolvedLocalMutations() {
-    this.tap.ok(
-      this.doc.anyUnresolvedMutations(),
-      `should be unresolved local mutations ${this.context}`
-    )
+
+  hasUnresolvedLocalMutations(): this {
+    expect(this.doc.hasUnresolvedMutations()).toBe(true)
     return this
   }
-  noUnresolvedLocalMutations() {
-    this.tap.notOk(
-      this.doc.anyUnresolvedMutations(),
-      `should be no unresolved local mutations ${this.context}`
-    )
+
+  noUnresolvedLocalMutations(): this {
+    expect(this.doc.hasUnresolvedMutations()).toBe(false)
     return this
-  }
-  end() {
-    this.tap.end()
   }
 }

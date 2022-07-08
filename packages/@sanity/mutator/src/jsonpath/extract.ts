@@ -1,6 +1,6 @@
-import extractAccessors from './extractAccessors'
+import {extractAccessors} from './extractAccessors'
 
-export default function extract(path: string, value: Object): Array<any> {
+export function extract(path: string, value: unknown): unknown[] {
   const accessors = extractAccessors(path, value)
   return accessors.map((acc) => acc.get())
 }

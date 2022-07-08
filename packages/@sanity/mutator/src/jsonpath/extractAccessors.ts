@@ -1,33 +1,37 @@
 import {compact} from 'lodash'
 import {Expression, Matcher} from '../jsonpath'
-import PlainProbe from './PlainProbe'
+import {PlainProbe} from './PlainProbe'
+import {Probe} from './Probe'
 
-export default function extract(path: string, value: Object): Array<any> {
-  const result = []
-  const appendResult = (values) => {
+export function extractAccessors(path: string, value: unknown): Probe[] {
+  const result: Probe[] = []
+  const matcher = Matcher.fromPath(path).setPayload(function appendResult(values: Probe[]) {
     result.push(...values)
-  }
-  const matcher = Matcher.fromPath(path).setPayload(appendResult)
+  })
   const accessor = new PlainProbe(value)
   descend(matcher, accessor)
   return result
 }
 
-function descend(matcher, accessor) {
+function descend(matcher: Matcher, accessor: Probe) {
   const {leads, delivery} = matcher.match(accessor)
+
   leads.forEach((lead) => {
     accessorsFromTarget(lead.target, accessor).forEach((childAccessor) => {
       descend(lead.matcher, childAccessor)
     })
   })
+
   if (delivery) {
     delivery.targets.forEach((target) => {
-      delivery.payload(accessorsFromTarget(target, accessor))
+      if (typeof delivery.payload === 'function') {
+        delivery.payload(accessorsFromTarget(target, accessor))
+      }
     })
   }
 }
 
-function accessorsFromTarget(target: Expression, accessor: PlainProbe) {
+function accessorsFromTarget(target: Expression, accessor: Probe) {
   const result = []
   if (target.isIndexReference()) {
     target.toIndicies(accessor).forEach((i) => {

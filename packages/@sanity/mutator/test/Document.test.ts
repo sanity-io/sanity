@@ -1,10 +1,9 @@
-import {Test} from 'tap'
-
-import DocumentTester from './util/DocumentTester'
+import {DocumentTester} from './util/DocumentTester'
 
 test('simple remote mutation', () => {
-  new DocumentTester(new Test(), {
+  new DocumentTester({
     _id: 'a',
+    _type: 't',
     _rev: '1',
     title: 'Hello',
   })
@@ -22,12 +21,12 @@ test('simple remote mutation', () => {
     .isConsistent()
     .assertBOTH('title', 'Good bye')
     .assertHEAD('_rev', '2')
-    .end()
 })
 
 test('simple local mutation arrives', () => {
-  new DocumentTester(new Test(), {
+  new DocumentTester({
     _id: 'a',
+    _type: 't',
     _rev: '1',
     title: 'Hello',
   })
@@ -59,12 +58,12 @@ test('simple local mutation arrives', () => {
     .onMutationDidNotFire()
     .isConsistent()
     .assertHEAD('_rev', '2')
-    .end()
 })
 
 test('local mutation submitted, but remote mutation wins the race and causes a rebase', () => {
-  new DocumentTester(new Test(), {
+  new DocumentTester({
     _id: 'a',
+    _type: 't',
     _rev: '1',
     count: 1,
   })
@@ -98,12 +97,12 @@ test('local mutation submitted, but remote mutation wins the race and causes a r
     .didNotRebase()
     .isConsistent()
     .assertBOTH('_rev', '3')
-    .end()
 })
 
 test('simple local mutation failing', () => {
-  new DocumentTester(new Test(), {
+  new DocumentTester({
     _id: 'a',
+    _type: 't',
     _rev: '1',
     title: 'Hello',
   })
@@ -128,12 +127,12 @@ test('simple local mutation failing', () => {
     .onMutationDidNotFire()
     .isConsistent()
     .assertBOTH('title', 'Hello')
-    .end()
 })
 
 test('simple local mutation arriving out of order', () => {
-  new DocumentTester(new Test(), {
+  new DocumentTester({
     _id: 'a',
+    _type: 't',
     _rev: '1',
     numbers: [],
   })
@@ -170,5 +169,4 @@ test('simple local mutation arriving out of order', () => {
     .onMutationDidNotFire()
     .isConsistent()
     .assertBOTH('numbers', [2, 1])
-    .end()
 })

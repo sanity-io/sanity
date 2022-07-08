@@ -1,13 +1,18 @@
-export default class SetPatch {
+import type {Expression} from '../jsonpath'
+import type {ImmutableAccessor} from './ImmutableAccessor'
+
+export class SetPatch {
   id: string
   path: string
-  value: any
-  constructor(id: string, path: string, value: any) {
+  value: unknown
+
+  constructor(id: string, path: string, value: unknown) {
     this.id = id
     this.path = path
     this.value = value
   }
-  apply(targets, accessor) {
+
+  apply(targets: Expression[], accessor: ImmutableAccessor): ImmutableAccessor {
     let result = accessor
     targets.forEach((target) => {
       if (target.isSelfReference()) {

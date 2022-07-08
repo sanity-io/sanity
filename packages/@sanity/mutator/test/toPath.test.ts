@@ -1,5 +1,5 @@
-import parse from '../src/jsonpath/parse'
-import toPath from '../src/jsonpath/toPath'
+import {parseJsonPath} from '../src/jsonpath/parse'
+import {toPath} from '../src/jsonpath/toPath'
 
 const cases = [
   'a.b.c',
@@ -13,6 +13,10 @@ const cases = [
 
 cases.forEach((path, i) => {
   test(`case #${i}`, () => {
-    expect(path).toEqual(toPath(parse(path)))
+    const parsed = parseJsonPath(path)
+    if (!parsed) {
+      throw new Error(`Failed to parse path "${path}"`)
+    }
+    expect(path).toEqual(toPath(parsed))
   })
 })

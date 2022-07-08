@@ -1,31 +1,25 @@
-// Descender models the state of one partial jsonpath evaluation. Head is the
-// next thing to match, tail is the upcoming things once the head is matched.
-
 import {flatten} from 'lodash'
-import Expression from './Expression'
+import {Expression} from './Expression'
+import type {Probe} from './Probe'
 
-export type Probe = {
-  containerType(): string
-  length(): number
-  getIndex(index: number): any
-  get: () => any
-  getAttribute(string): any
-  attributeKeys(): string[]
-  hasAttribute(attr: string): boolean
-}
+/**
+ * Descender models the state of one partial jsonpath evaluation. Head is the
+ * next thing to match, tail is the upcoming things once the head is matched.
+ */
+export class Descender {
+  head: Expression | null
+  tail: Expression | null
 
-export default class Descender {
-  head: Expression
-  tail: Expression
-  constructor(head: Expression, tail: Expression) {
+  constructor(head: Expression | null, tail: Expression | null) {
     this.head = head
     this.tail = tail
   }
+
   // Iterate this descender once processing any constraints that are
   // resolvable on the current value. Returns an array of new descenders
   // that are guaranteed to be without constraints in the head
-  iterate(probe: Probe): Array<Descender> {
-    let result: Array<Descender> = [this]
+  iterate(probe: Probe): Descender[] {
+    let result: Descender[] = [this]
     if (this.head && this.head.isConstraint()) {
       let anyConstraints = true
       // Keep rewriting constraints until there are none left
@@ -44,28 +38,29 @@ export default class Descender {
   }
 
   isRecursive(): boolean {
-    return this.head && this.head.isRecursive()
+    return Boolean(this.head && this.head.isRecursive())
   }
 
   hasArrived(): boolean {
     return this.head === null && this.tail === null
   }
 
-  extractRecursives(): Array<Descender> {
-    if (this.head.isRecursive()) {
+  extractRecursives(): Descender[] {
+    if (this.head && this.head.isRecursive()) {
       const term = this.head.unwrapRecursive()
       return new Descender(null, term.concat(this.tail)).descend()
     }
     return []
   }
-  iterateConstraints(probe: Probe): Array<Descender> {
+
+  iterateConstraints(probe: Probe): Descender[] {
     const head = this.head
     if (head === null || !head.isConstraint()) {
       // Not a constraint, no rewrite
       return [this]
     }
 
-    const result: Array<Descender> = []
+    const result: Descender[] = []
 
     if (probe.containerType() === 'primitive' && head.constraintTargetIsSelf()) {
       if (head.testConstraint(probe)) {
@@ -80,7 +75,8 @@ export default class Descender {
       for (let i = 0; i < length; i++) {
         // Push new descenders with constraint translated to literal indices
         // where they match
-        if (head.testConstraint(probe.getIndex(i))) {
+        const constraint = probe.getIndex(i)
+        if (constraint && head.testConstraint(constraint)) {
           result.push(new Descender(new Expression({type: 'index', value: i}), this.tail))
         }
       }
@@ -88,27 +84,32 @@ export default class Descender {
     }
 
     // The value is an object
-    if (probe.containerType() == 'object') {
-      if (this.head.constraintTargetIsSelf()) {
+    if (probe.containerType() === 'object') {
+      if (head.constraintTargetIsSelf()) {
         // There are no matches for target self ('@') on a plain object
         return []
       }
-      if (this.head.testConstraint(probe)) {
+
+      if (head.testConstraint(probe)) {
         return this.descend()
       }
+
       return result
     }
 
     return result
   }
-  descend(): Array<Descender> {
+
+  descend(): Descender[] {
     if (!this.tail) {
       return [new Descender(null, null)]
     }
+
     return this.tail.descend().map((ht) => {
       return new Descender(ht.head, ht.tail)
     })
   }
+
   toString(): string {
     const result = ['<']
     if (this.head) {

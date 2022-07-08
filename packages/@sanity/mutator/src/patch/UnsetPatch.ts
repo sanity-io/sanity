@@ -1,14 +1,19 @@
+import type {Expression} from '../jsonpath'
+import type {ImmutableAccessor} from './ImmutableAccessor'
 import {targetsToIndicies} from './util'
 
-export default class UnsetPatch {
+export class UnsetPatch {
   id: string
   path: string
-  value: any
+  value: unknown
+
   constructor(id: string, path: string) {
     this.id = id
     this.path = path
   }
-  apply(targets, accessor) {
+
+  // eslint-disable-next-line class-methods-use-this
+  apply(targets: Expression[], accessor: ImmutableAccessor): ImmutableAccessor {
     let result = accessor
     switch (accessor.containerType()) {
       case 'array':

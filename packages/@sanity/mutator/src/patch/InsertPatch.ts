@@ -1,22 +1,27 @@
 import {min, max} from 'lodash'
+import type {Expression} from '../jsonpath'
+import type {ImmutableAccessor} from './ImmutableAccessor'
 import {targetsToIndicies} from './util'
 
-export default class InsertPatch {
+export class InsertPatch {
   location: string
   path: string
-  items: Array<any>
+  items: unknown[]
   id: string
-  constructor(id: string, location: string, path: string, items: Array<any>) {
+
+  constructor(id: string, location: string, path: string, items: unknown[]) {
     this.id = id
     this.location = location
     this.path = path
     this.items = items
   }
-  apply(targets, accessor) {
+
+  apply(targets: Expression[], accessor: ImmutableAccessor): ImmutableAccessor {
     let result = accessor
     if (accessor.containerType() !== 'array') {
       throw new Error('Attempt to apply insert patch to non-array value')
     }
+
     switch (this.location) {
       case 'before': {
         const pos = minIndex(targets, accessor)
@@ -29,7 +34,7 @@ export default class InsertPatch {
         break
       }
       case 'replace': {
-        // TODO: Properly implement ranges in compliance with Gradient
+        // TODO: Properly implement ranges in compliance with content lake
         // This will only properly support single contiguous ranges
         const indicies = targetsToIndicies(targets, accessor)
         result = result.unsetIndices(indicies)
@@ -44,8 +49,9 @@ export default class InsertPatch {
   }
 }
 
-function minIndex(targets, accessor): number {
-  let result = min(targetsToIndicies(targets, accessor))
+function minIndex(targets: Expression[], accessor: ImmutableAccessor): number {
+  let result = min(targetsToIndicies(targets, accessor)) || 0
+
   // Ranges may be zero-length and not turn up in indices
   targets.forEach((target) => {
     if (target.isRange()) {
@@ -58,8 +64,9 @@ function minIndex(targets, accessor): number {
   return result
 }
 
-function maxIndex(targets, accessor): number {
-  let result = max(targetsToIndicies(targets, accessor))
+function maxIndex(targets: Expression[], accessor: ImmutableAccessor): number {
+  let result = max(targetsToIndicies(targets, accessor)) || 0
+
   // Ranges may be zero-length and not turn up in indices
   targets.forEach((target) => {
     if (target.isRange()) {

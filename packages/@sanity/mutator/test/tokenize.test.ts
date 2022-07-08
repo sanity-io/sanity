@@ -1,4 +1,4 @@
-import tokenize from '../src/jsonpath/tokenize'
+import {tokenize} from '../src/jsonpath/tokenize'
 
 const cases = {
   'a.b[7]': [
@@ -130,7 +130,7 @@ const cases = {
 
 test('Tokenization of jsonpath', () => {
   Object.keys(cases).forEach((path) => {
-    const expected = cases[path]
+    const expected = (cases as any)[path]
     if (!expected) {
       // eslint-disable-next-line no-console
       console.log(`Result of tokenizing '${path}'`, tokenize(path))

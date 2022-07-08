@@ -1,6 +1,6 @@
-/* eslint-disable id-length, quote-props */
+import type {PatchExample} from './types'
 
-export default [
+const examples: PatchExample[] = [
   {
     name: 'Simple path unset',
     before: {
@@ -10,6 +10,7 @@ export default [
       },
     },
     patch: {
+      id: 'a',
       unset: ['a.b'],
     },
     after: {
@@ -24,6 +25,7 @@ export default [
       a: [0, 10, 20, 30, 40, 50],
     },
     patch: {
+      id: 'a',
       unset: ['a[2]'],
     },
     after: {
@@ -36,6 +38,7 @@ export default [
       a: [0, 10, 20, 30, 40, 50],
     },
     patch: {
+      id: 'a',
       unset: ['a[:3]'],
     },
     after: {
@@ -48,6 +51,7 @@ export default [
       a: [0, 10, 20, 30, 40, 50],
     },
     patch: {
+      id: 'a',
       unset: ['a[103]'],
     },
     after: {
@@ -63,6 +67,7 @@ export default [
       },
     },
     patch: {
+      id: 'a',
       unset: ['a.d'],
     },
     after: {
@@ -81,6 +86,7 @@ export default [
       },
     },
     patch: {
+      id: 'a',
       unset: ['a[b,c]'],
     },
     after: {
@@ -93,6 +99,7 @@ export default [
       a: [0, 10, 20, 30, 40, 50],
     },
     patch: {
+      id: 'a',
       unset: ['a[-1]'],
     },
     after: {
@@ -105,6 +112,7 @@ export default [
       a: [0, 10, 20, 30, 40, 50],
     },
     patch: {
+      id: 'a',
       unset: ['a[-3:-1]'],
     },
     after: {
@@ -117,6 +125,7 @@ export default [
       a: [{key: 'one'}, {key: 'two'}],
     },
     patch: {
+      id: 'a',
       unset: ['a[key=="one"]'],
     },
     after: {
@@ -130,6 +139,7 @@ export default [
       b: [{key: 123}, {key: '123'}],
     },
     patch: {
+      id: 'a',
       unset: ['a[key==123]', 'b[key==123]'],
     },
     after: {
@@ -138,3 +148,5 @@ export default [
     },
   },
 ]
+
+export default examples

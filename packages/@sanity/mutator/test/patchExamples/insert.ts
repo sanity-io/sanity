@@ -1,12 +1,13 @@
-/* eslint-disable id-length, quote-props */
+import type {PatchExample} from './types'
 
-export default [
+const examples: PatchExample[] = [
   {
     name: 'Insert before index',
     before: {
       a: [0, 1, 2, 3, 4],
     },
     patch: {
+      id: 'a',
       insert: {
         before: 'a[2]',
         items: [-1, -2],
@@ -22,6 +23,7 @@ export default [
       a: [0, 1, 2, 3, 4],
     },
     patch: {
+      id: 'a',
       insert: {
         after: 'a[2]',
         items: [-1, -2],
@@ -37,6 +39,7 @@ export default [
       a: [],
     },
     patch: {
+      id: 'a',
       insert: {
         after: 'a[-1]',
         items: [-1, -2],
@@ -52,6 +55,7 @@ export default [
       addresses: [{address: 'Mogata 24'}],
     },
     patch: {
+      id: 'a',
       insert: {
         after: 'addresses[-1]',
         items: [{address: '123 Banana Rd.'}],
@@ -67,6 +71,7 @@ export default [
       scores: [1, 2, 3, 4, 5],
     },
     patch: {
+      id: 'a',
       insert: {
         replace: 'scores[1:4]',
         items: ['hello', 'man'],
@@ -82,6 +87,7 @@ export default [
       scores: [1, 2, 3, 4, 5],
     },
     patch: {
+      id: 'a',
       insert: {
         replace: 'scores[1]',
         items: [9],
@@ -97,6 +103,7 @@ export default [
       scores: [{a: 1}, {a: 2}, {a: 3}],
     },
     patch: {
+      id: 'a',
       insert: {
         replace: 'scores[1]',
         items: [{a: 'hello'}],
@@ -107,3 +114,5 @@ export default [
     },
   },
 ]
+
+export default examples

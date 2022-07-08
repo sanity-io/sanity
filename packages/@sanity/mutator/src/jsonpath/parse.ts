@@ -1,14 +1,28 @@
 // Converts a string into an abstract syntax tree representation
 
-import tokenize from './tokenize'
-import {Expr} from './Expression'
+import {tokenize} from './tokenize'
+import type {
+  AliasExpr,
+  AttributeExpr,
+  BooleanExpr,
+  ConstraintExpr,
+  IndexExpr,
+  NumberExpr,
+  PathExpr,
+  RangeExpr,
+  RecursiveExpr,
+  StringExpr,
+  Token,
+  UnionExpr,
+} from './types'
 
 // TODO: Support '*'
 
 class Parser {
-  tokens: any[]
+  tokens: Token[]
   length: number
   i: number
+
   constructor(path: string) {
     this.tokens = tokenize(path)
     this.length = this.tokens.length
@@ -33,61 +47,49 @@ class Parser {
 
   consume() {
     const result = this.peek()
-    // console.log("consumed", result)
     this.i += 1
     return result
   }
 
   // Return next token if it matches the pattern
-  probe(pattern) {
+  probe(pattern: Record<string, unknown>): Token | null {
     const token = this.peek()
-    // console.log("Probing", token, "for", pattern)
     if (!token) {
-      // console.log(" -> nay", token)
       return null
     }
-    const mismatch = Object.keys(pattern).find((key) => {
-      const value = pattern[key]
-      if (!token[key] || token[key] != value) {
-        // console.log(" -> nay", key)
-        return true
-      }
-      return false
+
+    const record = token as unknown as Record<string, unknown>
+    const match = Object.keys(pattern).every((key) => {
+      return key in token && pattern[key] === record[key]
     })
-    if (mismatch) {
-      return null
-    }
-    // console.log(" -> yay", token)
-    return token
+
+    return match ? token : null
   }
 
   // Return and consume next token if it matches the pattern
-  match(pattern) {
-    if (this.probe(pattern)) {
-      return this.consume()
-    }
-    return null
+  match(pattern: Partial<Token>): Token | null {
+    return this.probe(pattern) ? this.consume() : null
   }
 
-  parseAttribute(): Object {
+  parseAttribute(): AttributeExpr | null {
     const token = this.match({type: 'identifier'})
-    if (token) {
+    if (token && token.type === 'identifier') {
       return {
         type: 'attribute',
         name: token.name,
       }
     }
     const quoted = this.match({type: 'quoted', quote: 'single'})
-    if (quoted) {
+    if (quoted && quoted.type === 'quoted') {
       return {
         type: 'attribute',
-        name: quoted.value,
+        name: quoted.value || '',
       }
     }
     return null
   }
 
-  parseAlias(): Object {
+  parseAlias(): AliasExpr | null {
     if (this.match({type: 'keyword', symbol: '@'}) || this.match({type: 'keyword', symbol: '$'})) {
       return {
         type: 'alias',
@@ -97,9 +99,9 @@ class Parser {
     return null
   }
 
-  parseNumber(): Expr {
+  parseNumber(): NumberExpr | null {
     const token = this.match({type: 'number'})
-    if (token) {
+    if (token && token.type === 'number') {
       return {
         type: 'number',
         value: token.value,
@@ -108,7 +110,7 @@ class Parser {
     return null
   }
 
-  parseNumberValue(): Object {
+  parseNumberValue(): number | null {
     const expr = this.parseNumber()
     if (expr) {
       return expr.value
@@ -116,54 +118,59 @@ class Parser {
     return null
   }
 
-  parseSliceSelector() {
+  parseSliceSelector(): RangeExpr | IndexExpr | null {
     const start = this.i
-    const result: any = {
-      type: 'range',
-    }
-    result.start = this.parseNumberValue()
+    const rangeStart = this.parseNumberValue()
+
     const colon1 = this.match({type: 'operator', symbol: ':'})
-    if (colon1) {
-      result.end = this.parseNumberValue()
-      const colon2 = this.match({type: 'operator', symbol: ':'})
-      if (colon2) {
-        result.step = this.parseNumberValue()
+    if (!colon1) {
+      if (rangeStart === null) {
+        // Rewind, this was actually nothing
+        this.i = start
+        return null
       }
-    } else {
-      if (result.start !== null) {
-        // Unwrap, this was just a single index not followed by colon
-        return {type: 'index', value: result.start}
-      }
-      // Rewind, this was actually nothing
-      this.i = start
-      return null
+
+      // Unwrap, this was just a single index not followed by colon
+      return {type: 'index', value: rangeStart}
     }
+
+    const result: RangeExpr = {
+      type: 'range',
+      start: rangeStart,
+      end: this.parseNumberValue(),
+    }
+
+    const colon2 = this.match({type: 'operator', symbol: ':'})
+    if (colon2) {
+      result.step = this.parseNumberValue()
+    }
+
     if (result.start === null && result.end === null) {
       // rewind, this wasnt' a slice selector
       this.i = start
-      // console.log("Mising start and end of slice, rewinding")
       return null
     }
+
     return result
   }
 
-  parseValueReference(): Object {
+  parseValueReference(): AttributeExpr | RangeExpr | IndexExpr | null {
     return this.parseAttribute() || this.parseSliceSelector()
   }
 
-  parseLiteralValue(): Object {
+  parseLiteralValue(): StringExpr | BooleanExpr | NumberExpr | null {
     const literalString = this.match({type: 'quoted', quote: 'double'})
-    if (literalString) {
+    if (literalString && literalString.type === 'quoted') {
       return {
         type: 'string',
-        value: literalString.value,
+        value: literalString.value || '',
       }
     }
     const literalBoolean = this.match({type: 'boolean'})
-    if (literalBoolean) {
+    if (literalBoolean && literalBoolean.type === 'boolean') {
       return {
         type: 'boolean',
-        value: literalBoolean.symbol == 'true',
+        value: literalBoolean.symbol === 'true',
       }
     }
     return this.parseNumber()
@@ -171,12 +178,13 @@ class Parser {
 
   // TODO: Reorder constraints so that literal value is always on rhs, and variable is always
   // on lhs.
-  parseFilterExpression(): Object {
+  parseFilterExpression(): ConstraintExpr | null {
     const start = this.i
     const expr = this.parseAttribute() || this.parseAlias()
     if (!expr) {
       return null
     }
+
     if (this.match({type: 'operator', symbol: '?'})) {
       return {
         type: 'constraint',
@@ -184,17 +192,20 @@ class Parser {
         lhs: expr,
       }
     }
+
     const binOp = this.match({type: 'comparator'})
-    if (!binOp) {
+    if (!binOp || binOp.type !== 'comparator') {
       // No expression, rewind!
       this.i = start
       return null
     }
+
     const lhs = expr
     const rhs = this.parseLiteralValue()
     if (!rhs) {
       throw new Error(`Operator ${binOp.symbol} needs a literal value at the right hand side`)
     }
+
     return {
       type: 'constraint',
       operator: binOp.symbol,
@@ -203,14 +214,15 @@ class Parser {
     }
   }
 
-  parseExpression(): Object {
+  parseExpression(): ConstraintExpr | AttributeExpr | RangeExpr | IndexExpr | null {
     return this.parseFilterExpression() || this.parseValueReference()
   }
 
-  parseUnion(): Object {
+  parseUnion(): UnionExpr | null {
     if (!this.match({type: 'paren', symbol: '['})) {
       return null
     }
+
     const terms = []
     let expr = this.parseFilterExpression() || this.parsePath() || this.parseValueReference()
     while (expr) {
@@ -219,42 +231,46 @@ class Parser {
       if (this.match({type: 'paren', symbol: ']'})) {
         break
       }
+
       if (!this.match({type: 'operator', symbol: ','})) {
         throw new Error('Expected ]')
       }
+
       expr = this.parseFilterExpression() || this.parsePath() || this.parseValueReference()
       if (!expr) {
         throw new Error("Expected expression following ','")
       }
     }
-    // console.log("Union terms", terms)
-    // return unionFromTerms(terms)
+
     return {
       type: 'union',
       nodes: terms,
     }
   }
 
-  parseRecursive(): Object {
-    if (this.match({type: 'operator', symbol: '..'})) {
-      const subpath = this.parsePath()
-      if (!subpath) {
-        throw new Error("Expected path following '..' operator")
-      }
-      return {
-        type: 'recursive',
-        term: subpath,
-      }
+  parseRecursive(): RecursiveExpr | null {
+    if (!this.match({type: 'operator', symbol: '..'})) {
+      return null
     }
-    return null
+
+    const subpath = this.parsePath()
+    if (!subpath) {
+      throw new Error("Expected path following '..' operator")
+    }
+
+    return {
+      type: 'recursive',
+      term: subpath,
+    }
   }
 
-  parsePath(): Object {
-    const nodes = []
+  parsePath(): PathExpr | AttributeExpr | UnionExpr | RecursiveExpr | null {
+    const nodes: (AttributeExpr | UnionExpr | RecursiveExpr)[] = []
     const expr = this.parseAttribute() || this.parseUnion() || this.parseRecursive()
     if (!expr) {
       return null
     }
+
     nodes.push(expr)
     while (!this.EOF()) {
       if (this.match({type: 'operator', symbol: '.'})) {
@@ -278,9 +294,11 @@ class Parser {
         break
       }
     }
-    if (nodes.length == 1) {
+
+    if (nodes.length === 1) {
       return nodes[0]
     }
+
     return {
       type: 'path',
       nodes: nodes,
@@ -288,47 +306,10 @@ class Parser {
   }
 }
 
-export default function parse(path: string): any {
-  return new Parser(path).parse()
+export function parseJsonPath(path: string): PathExpr | AttributeExpr | UnionExpr | RecursiveExpr {
+  const parsed = new Parser(path).parse()
+  if (!parsed) {
+    throw new Error(`Failed to parse JSON path "${path}"`)
+  }
+  return parsed
 }
-
-// Todo: find out if these has any value (currently not in used)
-// function unionFromTerms(terms): any {
-//   let result: any = {
-//     type: 'union'
-//   }
-//   terms.forEach(term => {
-//     switch (term.type) {
-//       case 'index':
-//         result.indexes = (result.indexes || []).concat(term.value)
-//         break
-//       case 'range':
-//         result.ranges = (result.ranges || []).concat(term)
-//         break
-//       case 'path':
-//         result.paths = (result.paths || []).concat(term)
-//         break
-//       case 'constraint':
-//         result.constraints = (result.constraints || []).concat(term)
-//         break
-//       case 'union':
-//         result = mergeUnions(result, term)
-//         break
-//       default:
-//         throw new Error(`Unexpected union member of type ${term.type}`)
-//     }
-//   })
-//   if (result.indexes) {
-//     result.indexes = uniq(result.indexes)
-//   }
-//   return result
-// }
-// function mergeUnions(union1, union2): Object {
-//   const result = {
-//     type: 'union'
-//   }
-//   uniq(Object.keys(union1).concat(Object.keys(union2))).forEach(key => {
-//     result[key] = (union1[key] || []).concat(union2[key] || [])
-//   })
-//   return result
-// }

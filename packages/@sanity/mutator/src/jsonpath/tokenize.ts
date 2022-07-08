@@ -1,11 +1,19 @@
-// Tokenizes a jsonpath2 expression
+import type {
+  IdentifierToken,
+  NumberToken,
+  QuotedToken,
+  SymbolClass,
+  SymbolToken,
+  Token,
+} from './types'
 
 // TODO: Support '*'
 
 const digitChar = /[0-9]/
 const attributeCharMatcher = /^[a-zA-Z0-9_]$/
 const attributeFirstCharMatcher = /^[a-zA-Z_]$/
-const symbols = {
+
+const symbols: Record<SymbolClass, string[]> = {
   operator: ['..', '.', ',', ':', '?'],
   comparator: ['>', '>=', '<', '<=', '==', '!='],
   keyword: ['$', '@'],
@@ -13,12 +21,19 @@ const symbols = {
   paren: ['[', ']'],
 }
 
+const symbolClasses = Object.keys(symbols) as SymbolClass[]
+
+type TokenizerFn = () => Token | null
+
+/**
+ * Tokenizes a jsonpath2 expression
+ */
 class Tokenizer {
   source: string
   i: number
-  start: number
   length: number
-  tokenizers: any[]
+  tokenizers: TokenizerFn[]
+
   constructor(path: string) {
     this.source = path
     this.length = path.length
@@ -31,16 +46,17 @@ class Tokenizer {
     ].map((fn) => fn.bind(this))
   }
 
-  tokenize(): string[] {
-    const result = []
+  tokenize(): Token[] {
+    const result: Token[] = []
     while (!this.EOF()) {
-      let token
       this.chompWhitespace()
-      const found = this.tokenizers.find((tokenizer) => {
+      let token: Token | null = null
+      // @todo refactor into a simpler `.find()`?
+      const found = this.tokenizers.some((tokenizer) => {
         token = tokenizer()
-        return !!token
+        return Boolean(token)
       })
-      if (!found) {
+      if (!found || !token) {
         throw new Error(`Invalid tokens in jsonpath '${this.source}' @ ${this.i}`)
       }
       result.push(token)
@@ -48,7 +64,7 @@ class Tokenizer {
     return result
   }
 
-  takeWhile(fn: (character: string) => string): string {
+  takeWhile(fn: (character: string) => string | null): string | null {
     const start = this.i
     let result = ''
     while (!this.EOF()) {
@@ -69,7 +85,7 @@ class Tokenizer {
     return this.i >= this.length
   }
 
-  peek(): string {
+  peek(): string | null {
     if (this.EOF()) {
       return null
     }
@@ -80,10 +96,10 @@ class Tokenizer {
     if (this.i + str.length > this.length) {
       throw new Error(`Expected ${str} at end of jsonpath`)
     }
-    if (str == this.source.slice(this.i, this.i + str.length)) {
+    if (str === this.source.slice(this.i, this.i + str.length)) {
       this.i += str.length
     } else {
-      throw new Error(`Expected "${str}", but source contained "${this.source.slice(this.start)}`)
+      throw new Error(`Expected "${str}", but source contained "${this.source.slice()}`)
     }
   }
 
@@ -94,22 +110,22 @@ class Tokenizer {
     if (this.i + str.length > this.length) {
       return null
     }
-    if (str == this.source.slice(this.i, this.i + str.length)) {
+    if (str === this.source.slice(this.i, this.i + str.length)) {
       this.i += str.length
       return str
     }
     return null
   }
 
-  chompWhitespace() {
-    this.takeWhile((char) => {
-      return char == ' ' ? '' : null
+  chompWhitespace(): void {
+    this.takeWhile((char): string | null => {
+      return char === ' ' ? '' : null
     })
   }
 
-  tokenizeQuoted(): Object {
+  tokenizeQuoted(): QuotedToken | null {
     const quote = this.peek()
-    if (quote == "'" || quote == '"') {
+    if (quote === "'" || quote === '"') {
       this.consume(quote)
       let escape = false
       const inner = this.takeWhile((char) => {
@@ -117,7 +133,7 @@ class Tokenizer {
           escape = false
           return char
         }
-        if (char == '\\') {
+        if (char === '\\') {
           escape = true
           return ''
         }
@@ -130,13 +146,13 @@ class Tokenizer {
       return {
         type: 'quoted',
         value: inner,
-        quote: quote == '"' ? 'double' : 'single',
+        quote: quote === '"' ? 'double' : 'single',
       }
     }
     return null
   }
 
-  tokenizeIdentifier(): Object {
+  tokenizeIdentifier(): IdentifierToken | null {
     let first = true
     const identifier = this.takeWhile((char) => {
       if (first) {
@@ -154,17 +170,17 @@ class Tokenizer {
     return null
   }
 
-  tokenizeNumber(): Object {
+  tokenizeNumber(): NumberToken | null {
     const start = this.i
     let dotSeen = false
     let digitSeen = false
     let negative = false
-    if (this.peek() == '-') {
+    if (this.peek() === '-') {
       negative = true
       this.consume('-')
     }
     const number = this.takeWhile((char) => {
-      if (char == '.' && !dotSeen && digitSeen) {
+      if (char === '.' && !dotSeen && digitSeen) {
         dotSeen = true
         return char
       }
@@ -183,24 +199,22 @@ class Tokenizer {
     return null
   }
 
-  tokenizeSymbol(): Object {
-    let result: Object = null
-    Object.keys(symbols).find((symbolClass) => {
+  tokenizeSymbol(): SymbolToken | null {
+    for (const symbolClass of symbolClasses) {
       const patterns = symbols[symbolClass]
-      const found = patterns.find((pattern) => this.tryConsume(pattern))
-      if (found) {
-        result = {
+      const symbol = patterns.find((pattern) => this.tryConsume(pattern))
+      if (symbol) {
+        return {
           type: symbolClass,
-          symbol: found,
+          symbol,
         }
-        return true
       }
-      return false
-    })
-    return result
+    }
+
+    return null
   }
 }
 
-export default function tokenize(jsonpath) {
+export function tokenize(jsonpath: string): Token[] {
   return new Tokenizer(jsonpath).tokenize()
 }

@@ -1,6 +1,6 @@
-/* eslint-disable id-length, quote-props */
+import type {PatchExample} from './types'
 
-export default [
+const examples: PatchExample[] = [
   {
     name: 'Inc and dec',
     before: {
@@ -9,6 +9,7 @@ export default [
       c: 5,
     },
     patch: {
+      id: 'a',
       inc: {
         'a[2]': 1,
         b: 2,
@@ -24,3 +25,5 @@ export default [
     },
   },
 ]
+
+export default examples

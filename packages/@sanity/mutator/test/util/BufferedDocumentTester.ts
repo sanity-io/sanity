@@ -1,58 +1,59 @@
 // A test jig for the BufferedDocument model
-import {Test as Tap} from 'tap'
 import debugLogger from 'debug'
+import type {PatchMutationOperation} from '@sanity/types'
+import type {CommitHandlerMessage} from '../../src/document/BufferedDocument'
+import type {Doc, Mut} from '../../src/document/types'
 import {BufferedDocument, Mutation} from '../../src/document'
 import {extract} from '../../src/jsonpath'
 
 const debug = debugLogger('buffered-document-tester')
 
-export default class BufferedDocumentTester {
+export class BufferedDocumentTester {
   doc: BufferedDocument
-  context: any
-  pendingCommit: any
-  onMutationCalled: boolean
-  onRebaseCalled: boolean
-  onDeleteCalled: boolean
-  tap: any
+  context: string
+  pendingCommit: CommitHandlerMessage | null
 
-  constructor(attrs) {
+  onMutationCalled = false
+  onRebaseCalled = false
+  onDeleteCalled = false
+
+  constructor(attrs: Doc) {
     this.doc = new BufferedDocument(attrs)
     this.onRebaseCalled = false
-    this.doc.onRebase = (edge) => {
+    this.doc.onRebase = () => {
       this.onRebaseCalled = true
     }
-    this.doc.onMutation = (edge, mutation) => {
+    this.doc.onMutation = () => {
       this.onMutationCalled = true
     }
-    this.doc.onDelete = (local) => {
+    this.doc.onDelete = () => {
       this.onDeleteCalled = true
     }
     this.doc.commitHandler = (opts) => {
       this.pendingCommit = opts
     }
-    this.tap = new Tap()
     this.pendingCommit = null
     this.context = 'initially'
   }
 
-  resetState() {
+  resetState(): void {
     this.onMutationCalled = false
     this.onRebaseCalled = false
     this.onDeleteCalled = false
   }
 
-  resetDocument(doc) {
+  resetDocument(doc: Doc | null): void {
     this.resetState()
     this.doc.reset(doc)
   }
 
-  stage(title) {
+  stage(title: string): this {
     debug('Stage: %s', title)
     this.context = title
     return this
   }
 
-  remotePatch(fromRev, toRev, patch) {
+  remotePatch(fromRev: string, toRev: string, patch: PatchMutationOperation): this {
     this.resetState()
     const mut = new Mutation({
       transactionId: toRev,
@@ -64,7 +65,7 @@ export default class BufferedDocumentTester {
     return this
   }
 
-  remoteMutation(fromRev, toRev, operation) {
+  remoteMutation(fromRev: string | undefined, toRev: string, operation: Mut): this {
     this.resetState()
     const mut = new Mutation({
       transactionId: toRev,
@@ -76,7 +77,7 @@ export default class BufferedDocumentTester {
     return this
   }
 
-  localPatch(patch) {
+  localPatch(patch: PatchMutationOperation): this {
     this.resetState()
     const mut = new Mutation({
       mutations: [{patch}],
@@ -85,7 +86,7 @@ export default class BufferedDocumentTester {
     return this
   }
 
-  localMutation(fromRev, toRev, operation) {
+  localMutation(fromRev: string | undefined, toRev: string, operation: Mut): this {
     this.resetState()
     const mut = new Mutation({
       transactionId: toRev,
@@ -98,13 +99,17 @@ export default class BufferedDocumentTester {
     return this
   }
 
-  commit() {
+  commit(): this {
     this.resetState()
     this.doc.commit()
     return this
   }
 
-  commitSucceeds() {
+  commitSucceeds(): this {
+    if (!this.pendingCommit) {
+      throw new Error('`pendingCommit` not set')
+    }
+
     this.resetState()
     this.pendingCommit.success()
     // Magically this commit is based on the current HEAD revision
@@ -116,7 +121,11 @@ export default class BufferedDocumentTester {
     return this
   }
 
-  commitSucceedsButMutationArriveDuringCommitProcess() {
+  commitSucceedsButMutationArriveDuringCommitProcess(): this {
+    if (!this.pendingCommit) {
+      throw new Error('`pendingCommit` not set')
+    }
+
     this.resetState()
     // Magically this commit is based on the current HEAD revision
     if (this.doc.document.HEAD) {
@@ -128,161 +137,135 @@ export default class BufferedDocumentTester {
     return this
   }
 
-  commitFails() {
+  commitFails(): this {
+    if (!this.pendingCommit) {
+      throw new Error('`pendingCommit` not set')
+    }
+
     this.resetState()
     this.pendingCommit.failure()
     this.pendingCommit = null
     return this
   }
 
-  assertLOCAL(path, value) {
-    this.tap.same(
-      extract(path, this.doc.LOCAL)[0],
-      value,
-      `assert value ${path} of LOCAL failed ${this.context}`
-    )
+  assertLOCAL(path: string, value: unknown): this {
+    expect(extract(path, this.doc.LOCAL)[0]).toEqual(value)
     return this
   }
 
-  assertEDGE(path, value) {
-    this.tap.same(
-      extract(path, this.doc.document.EDGE)[0],
-      value,
-      `assert value ${path} of EDGE failed ${this.context}`
-    )
+  assertEDGE(path: string, value: unknown): this {
+    expect(extract(path, this.doc.document.EDGE)[0]).toEqual(value)
     return this
   }
 
-  assertHEAD(path, value) {
-    this.tap.same(
-      extract(path, this.doc.document.HEAD)[0],
-      value,
-      `assert value ${path} of HEAD failed ${this.context}`
-    )
+  assertHEAD(path: string, value: unknown): this {
+    expect(extract(path, this.doc.document.HEAD)[0]).toEqual(value)
     return this
   }
 
-  assertALL(path, values) {
+  assertALL(path: string, values: unknown): this {
     this.assertHEAD(path, values)
     this.assertEDGE(path, values)
     this.assertLOCAL(path, values)
     return this
   }
 
-  assertLOCALDeleted() {
-    this.tap.ok(this.doc.LOCAL === null, `LOCAL should be deleted ${this.context}`)
+  assertLOCALDeleted(): this {
+    expect(this.doc.LOCAL === null).toBe(true)
     return this
   }
 
-  assertEDGEDeleted() {
-    this.tap.ok(this.doc.document.EDGE === null, `EDGE should be deleted ${this.context}`)
+  assertEDGEDeleted(): this {
+    expect(this.doc.document.EDGE === null).toBe(true)
     return this
   }
 
-  assertHEADDeleted() {
-    this.tap.ok(this.doc.document.HEAD === null, `HEAD should be deleted ${this.context}`)
+  assertHEADDeleted(): this {
+    expect(this.doc.document.HEAD === null).toBe(true)
     return this
   }
 
-  assertALLDeleted() {
+  assertALLDeleted(): this {
     this.assertLOCALDeleted()
     this.assertEDGEDeleted()
     this.assertHEADDeleted()
     return this
   }
 
-  assert(cb) {
+  assert(cb: (doc: BufferedDocument | null) => void): this {
     cb(this.doc)
     return this
   }
 
-  didRebase() {
-    this.tap.ok(this.onRebaseCalled, `should rebase ${this.context}`)
+  didRebase(): this {
+    expect(this.onRebaseCalled).toBe(true)
     return this
   }
 
-  didNotRebase() {
-    this.tap.notOk(this.onRebaseCalled, `should not rebase ${this.context}`)
+  didNotRebase(): this {
+    expect(this.onRebaseCalled).toBe(false)
     return this
   }
 
-  onMutationFired() {
-    this.tap.ok(this.onMutationCalled, `should mutate ${this.context}`)
+  onMutationFired(): this {
+    expect(this.onMutationCalled).toBe(true)
     return this
   }
 
-  onMutationDidNotFire() {
-    this.tap.notOk(this.onMutationCalled, `should not mutate ${this.context}`)
+  onMutationDidNotFire(): this {
+    expect(this.onMutationCalled).toBe(false)
     return this
   }
 
-  onDeleteDidFire() {
-    this.tap.ok(this.onDeleteCalled, `should fire onDelete event ${this.context}`)
+  onDeleteDidFire(): this {
+    expect(this.onDeleteCalled).toBe(true)
     return this
   }
 
-  onDeleteDidNotFire() {
-    this.tap.notOk(this.onDeleteCalled, `should not fire onDelete event ${this.context}`)
+  onDeleteDidNotFire(): this {
+    expect(this.onDeleteCalled).toBe(false)
     return this
   }
 
-  isConsistent() {
-    this.tap.ok(this.doc.document.isConsistent(), `should be consistent ${this.context}`)
-    this.tap.same(
-      this.doc.document.EDGE,
-      this.doc.document.HEAD,
-      `HEAD and EDGE should be equal ${this.context}`
-    )
+  isConsistent(): this {
+    expect(this.doc.document.isConsistent()).toBe(true)
+    expect(this.doc.document.EDGE).toEqual(this.doc.document.HEAD)
     return this
   }
 
-  isInconsistent() {
-    this.tap.notOk(this.doc.document.isConsistent(), `should not be consistent ${this.context}`)
-    this.tap.notSame(
-      this.doc.document.EDGE,
-      this.doc.document.HEAD,
-      `HEAD and EDGE should be different ${this.context}`
-    )
+  isInconsistent(): this {
+    expect(this.doc.document.isConsistent()).toBe(false)
+    expect(this.doc.document.EDGE).not.toEqual(this.doc.document.HEAD)
     return this
   }
 
-  hasUnresolvedLocalMutations() {
-    this.tap.ok(
-      this.doc.document.anyUnresolvedMutations(),
-      `should be unresolved local mutations ${this.context}`
-    )
+  hasUnresolvedLocalMutations(): this {
+    expect(this.doc.document.hasUnresolvedMutations()).toBe(true)
     return this
   }
 
-  noUnresolvedLocalMutations() {
-    this.tap.notOk(
-      this.doc.document.anyUnresolvedMutations(),
-      `should be no unresolved local mutations ${this.context}`
-    )
+  noUnresolvedLocalMutations(): this {
+    expect(this.doc.document.hasUnresolvedMutations()).toBe(false)
     return this
   }
 
-  hasLocalEdits() {
-    this.tap.true(this.doc.buffer.hasChanges(), `should have local edits ${this.context}`)
+  hasLocalEdits(): this {
+    expect(this.doc.buffer.hasChanges()).toBe(true)
     return this
   }
 
-  hasNoLocalEdits() {
-    this.tap.false(this.doc.buffer.hasChanges(), `should not have local edits ${this.context}`)
+  hasNoLocalEdits(): this {
+    expect(this.doc.buffer.hasChanges()).toBe(false)
     return this
   }
 
-  hasPendingCommit() {
-    this.tap.ok(this.doc.committerRunning, `should have pending commits ${this.context}`)
+  hasPendingCommit(): this {
+    expect(this.doc.committerRunning).toBe(true)
     return this
   }
 
-  hasNoPendingCommit() {
-    this.tap.notOk(this.doc.committerRunning, `should not have pending commits ${this.context}`)
+  hasNoPendingCommit(): this {
+    expect(this.doc.committerRunning).toBe(false)
     return this
-  }
-
-  end() {
-    this.tap.end()
   }
 }

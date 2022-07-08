@@ -1,6 +1,6 @@
-/* eslint-disable id-length, quote-props */
+import type {PatchExample} from './types'
 
-export default [
+const examples: PatchExample[] = [
   {
     name: 'Simple path set',
     before: {
@@ -9,6 +9,7 @@ export default [
       },
     },
     patch: {
+      id: 'a',
       set: {
         'a.b': 10,
       },
@@ -27,6 +28,7 @@ export default [
       },
     },
     patch: {
+      id: 'a',
       set: {
         'a.b[0,2]': 10,
       },
@@ -45,6 +47,7 @@ export default [
       },
     },
     patch: {
+      id: 'a',
       set: {
         'a.b[@ < 20]': 10,
       },
@@ -64,6 +67,7 @@ export default [
       },
     },
     patch: {
+      id: 'a',
       set: {
         'a[b[2].c,d]': 'Hello',
       },
@@ -90,6 +94,7 @@ export default [
       ],
     },
     patch: {
+      id: 'a',
       set: {
         'animals[name=="jumping spider"].cute': true,
       },
@@ -111,6 +116,7 @@ export default [
     name: 'Set new key',
     before: {},
     patch: {
+      id: 'a',
       set: {
         a: 'hello',
       },
@@ -125,6 +131,7 @@ export default [
       a: [0, 1, 2, 3, 4, 5, 6, 7],
     },
     patch: {
+      id: 'a',
       set: {
         'a[4:]': -1,
       },
@@ -140,6 +147,7 @@ export default [
       deep: 12.3,
     },
     patch: {
+      id: 'a',
       set: {
         'a..deep': 'How deep?',
       },
@@ -156,6 +164,7 @@ export default [
       deep: 12.3,
     },
     patch: {
+      id: 'a',
       set: {
         'a..[deep == "banana"].fnah': 'How deep?',
       },
@@ -170,9 +179,14 @@ export default [
     before: {
       a: 0,
     },
-    patch: [{inc: {a: 1}}, {inc: {a: 2}}],
+    patch: [
+      {id: 'a', inc: {a: 1}},
+      {id: 'a', inc: {a: 2}},
+    ],
     after: {
       a: 3,
     },
   },
 ]
+
+export default examples

@@ -1,4 +1,4 @@
-import parse from '../src/jsonpath/parse'
+import {parseJsonPath} from '../src/jsonpath/parse'
 
 const cases = {
   a: {
@@ -155,12 +155,12 @@ const cases = {
 
 Object.keys(cases).forEach((path) => {
   test(`Parsing jsonpath ${path}`, () => {
-    const expected = cases[path]
+    const expected = (cases as any)[path]
     if (expected) {
-      expect(parse(path)).toEqual(expected)
+      expect(parseJsonPath(path)).toEqual(expected)
     } else {
       // eslint-disable-next-line no-console
-      console.log(`Result of parsing '${path}'`, JSON.stringify(parse(path)))
+      console.log(`Result of parsing '${path}'`, JSON.stringify(parseJsonPath(path)))
     }
   })
 })
