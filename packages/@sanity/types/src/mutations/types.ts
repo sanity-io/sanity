@@ -7,7 +7,7 @@ export type InsertPatch =
 export interface PatchOperations {
   set?: {[key: string]: unknown}
   setIfMissing?: {[key: string]: unknown}
-  diffMatchPatch?: {[key: string]: unknown}
+  diffMatchPatch?: {[key: string]: string}
   unset?: string[]
   inc?: {[key: string]: number}
   dec?: {[key: string]: number}
