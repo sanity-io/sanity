@@ -1,7 +1,7 @@
 import {isObject} from '../helpers'
 import {isReference} from '../reference'
-import {Image} from './types'
+import type {Image} from './types'
 
 export function isImage(value: unknown): value is Image {
-  return isObject(value) && isReference(value.asset)
+  return isObject(value) && isReference(value.asset) && value.asset._ref.startsWith('image-')
 }
