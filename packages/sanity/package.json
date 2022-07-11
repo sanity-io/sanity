@@ -120,7 +120,6 @@
     "@types/react-is": "^17.0.1",
     "@types/shallow-equals": "^1.0.0",
     "@types/speakingurl": "^13.0.3",
-    "attr-accept": "^1.1.0",
     "chalk": "^4.1.2",
     "chokidar": "^3.5.3",
     "classnames": "^2.2.5",

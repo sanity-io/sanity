@@ -1,17 +1,17 @@
-import {SchemaType} from '@sanity/types'
-import accept from 'attr-accept'
+import type {SchemaType} from '@sanity/types'
+import type {FIXME} from '../../types'
 import * as is from '../../utils/is'
-import {FIXME} from '../../types'
+import type {FileLike, Uploader} from './types'
 import {uploaders} from './uploaders'
-import {FileLike, Uploader} from './types'
+import {accepts} from './accepts'
 
 export function resolveUploader(type: SchemaType, file: FileLike): Uploader | null {
   return (
     uploaders.find((uploader) => {
       return (
         is.type(uploader.type, type) &&
-        accept(file, uploader.accepts) &&
-        accept(file, (type.options as FIXME)?.accept || '')
+        accepts(file, uploader.accepts) &&
+        accepts(file, (type.options as FIXME)?.accept || '')
       )
     }) || null
   )
