@@ -34,6 +34,15 @@ export interface RuleClass {
   new (typeDef?: SchemaType): Rule
 }
 
+/**
+ * Holds a reference to a different field
+ * Note: Only use this through {@link Rule.valueOfField}
+ */
+export interface FieldReference {
+  type: symbol
+  path: string | string[]
+}
+
 export interface Rule {
   // Note: these prop is not actually deprecated but there is better TS Doc
   // support for `@deprecated` than `@internal`
@@ -95,7 +104,7 @@ export interface Rule {
    * ]
    * ```
    */
-  valueOfField: (path: string | string[]) => {type: symbol; path: string | string[]}
+  valueOfField: (path: string | string[]) => FieldReference
   error(message?: string): Rule
   warning(message?: string): Rule
   info(message?: string): Rule
@@ -110,16 +119,16 @@ export interface Rule {
   optional(): Rule
   required(): Rule
   custom<T = unknown>(fn: CustomValidator<T>): Rule
-  min(len: number): Rule
-  max(len: number): Rule
+  min(len: number | FieldReference): Rule
+  max(len: number | FieldReference): Rule
   length(len: number): Rule
   valid(value: unknown | unknown[]): Rule
   integer(): Rule
   precision(limit: number): Rule
   positive(): Rule
   negative(): Rule
-  greaterThan(num: number): Rule
-  lessThan(num: number): Rule
+  greaterThan(num: number | FieldReference): Rule
+  lessThan(num: number | FieldReference): Rule
   uppercase(): Rule
   lowercase(): Rule
   regex(pattern: RegExp, name: string, options: {name?: string; invert?: boolean}): Rule
