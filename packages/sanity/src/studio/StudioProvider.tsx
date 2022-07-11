@@ -15,7 +15,13 @@ import {ActiveWorkspaceMatcher} from './activeWorkspaceMatcher'
 import {StudioThemeProvider} from './StudioThemeProvider'
 import {StudioErrorBoundary} from './StudioErrorBoundary'
 import {WorkspaceLoader} from './workspaceLoader'
-import {ConfigErrorsScreen, LoadingScreen, NotAuthenticatedScreen, NotFoundScreen} from './screens'
+import {
+  ConfigErrorsScreen,
+  LoadingScreen,
+  AuthenticateScreen,
+  NotFoundScreen,
+  NotAuthenticatedScreen,
+} from './screens'
 import {WorkspacesProvider} from './workspaces'
 import {AuthBoundary} from './AuthBoundary'
 
@@ -60,6 +66,7 @@ export function StudioProvider({
               <UserColorManagerProvider>
                 <ConditionalAuthBoundary
                   LoadingComponent={LoadingScreen}
+                  AuthenticateComponent={AuthenticateScreen}
                   NotAuthenticatedComponent={NotAuthenticatedScreen}
                 >
                   <WorkspaceLoader
