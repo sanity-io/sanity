@@ -2,7 +2,7 @@ import path from 'path'
 import fs from 'fs/promises'
 import chalk from 'chalk'
 import {debug} from '../../debug'
-import versionRanges from '../../versionRanges'
+import {studioDependencies} from '../../studioDependencies'
 import type {CliCommandContext} from '../../types'
 import {resolveLatestVersions} from '../../util/resolveLatestVersions'
 import {copy} from '../../util/copy'
@@ -55,17 +55,36 @@ export async function bootstrapTemplate(
 
   // Resolve latest versions of Sanity-dependencies
   spinner = output.spinner('Resolving latest module versions').start()
-  const dependencies = await resolveLatestVersions({
-    ...versionRanges.core,
+  const dependencyVersions = await resolveLatestVersions({
+    ...studioDependencies.dependencies,
+    ...studioDependencies.devDependencies,
     ...(template.dependencies || {}),
   })
   spinner.succeed()
+
+  // Use the resolved version for the given dependency
+  const dependencies = Object.keys({
+    ...studioDependencies.dependencies,
+    ...template.dependencies,
+  }).reduce((deps, dependency) => {
+    deps[dependency] = dependencyVersions[dependency]
+    return deps
+  }, {} as Record<string, string>)
+
+  const devDependencies = Object.keys({
+    ...studioDependencies.devDependencies,
+    ...template.devDependencies,
+  }).reduce((deps, dependency) => {
+    deps[dependency] = dependencyVersions[dependency]
+    return deps
+  }, {} as Record<string, string>)
 
   // Now create a package manifest (`package.json`) with the merged dependencies
   spinner = output.spinner('Creating default project files').start()
   const packageManifest = await createPackageManifest({
     name: packageName,
     dependencies,
+    devDependencies,
   })
 
   // ...and a studio config (`sanity.config.[ts|js]`)

@@ -18,7 +18,11 @@ const manifestPropOrder = [
 export function createPackageManifest(
   data: Omit<PackageJson, 'version'> & {gitRemote?: string}
 ): string {
-  const deps = data.dependencies ? {dependencies: sortObject(data.dependencies)} : {}
+  const dependencies = data.dependencies ? {dependencies: sortObject(data.dependencies)} : {}
+  const devDependencies = data.devDependencies
+    ? {devDependencies: sortObject(data.devDependencies)}
+    : {}
+
   const pkg = {
     ...getCommonManifest(data),
 
@@ -29,7 +33,8 @@ export function createPackageManifest(
       build: 'sanity build',
     },
 
-    ...deps,
+    ...dependencies,
+    ...devDependencies,
 
     prettier: {
       semi: false,

@@ -57,6 +57,7 @@ export interface InitOptions {
 export interface ProjectTemplate {
   datasetUrl?: string
   dependencies?: Record<string, string>
+  devDependencies?: Record<string, string>
   importPrompt?: string
   configTemplate?: string | ((variables: GenerateConfigOptions['variables']) => string)
 }

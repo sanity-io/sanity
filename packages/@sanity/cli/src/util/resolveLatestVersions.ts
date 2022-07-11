@@ -4,8 +4,8 @@ import promiseProps from 'promise-props-recursive'
 /**
  * Resolve the latest versions of given packages within their defined ranges
  *
- * @param pkgs {packageName: rangeOrTag}
- * @returns Object of resolved version numbers. If `rangeOrTag` is `latest`
+ * @param pkgs - `{packageName: rangeOrTag}`
+ * @returns Object of resolved version numbers
  */
 export function resolveLatestVersions(
   pkgs: Record<string, string>
