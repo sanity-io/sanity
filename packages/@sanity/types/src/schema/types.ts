@@ -26,6 +26,7 @@ export namespace Schema {
     | NumberDefinition
     | ObjectDefinition
     | ReferenceDefinition
+    | CrossDatasetReferenceDefinition
     | SlugDefinition
     | StringDefinition
     | SpanDefinition
@@ -144,6 +145,8 @@ export namespace Schema {
     ? ObjectOptions
     : T extends 'reference'
     ? ReferenceOptions
+    : T extends 'crossDatasetReference'
+    ? CrossDatasetReferenceDefinition
     : T extends 'slug'
     ? SlugOptions
     : T extends 'string'
@@ -281,6 +284,25 @@ export namespace Schema {
     type: 'reference'
     to: TypeDefinition | TypeReference | Array<TypeDefinition | TypeReference>
     weak?: boolean
+    options?: ReferenceOptions
+  }
+
+  export interface CrossDatasetReferenceDefinition extends BaseDefinitionOptions {
+    type: 'crossDatasetReference'
+    weak?: boolean
+    to: {
+      type: string
+      title?: string
+      icon?: ComponentType
+      preview?: PreviewConfig
+      // eslint-disable-next-line camelcase
+      __experimental_search?: {path: string | string[]; weight?: number; mapWith?: string}[]
+    }[]
+
+    dataset: string
+    projectId: string
+    studioUrl?: (document: {id: string; type?: string}) => string | null
+    tokenId: string
     options?: ReferenceOptions
   }
 

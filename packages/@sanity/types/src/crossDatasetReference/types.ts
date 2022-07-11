@@ -43,7 +43,7 @@ export interface CrossDatasetReferenceSchemaType extends Omit<ObjectSchemaType, 
   to: CrossDatasetType[]
   dataset: string
   projectId: string
-  studioUrl?: (document: {id: string; type?: string}) => string
+  studioUrl?: (document: {id: string; type?: string}) => string | null
   tokenId: string
   weak?: boolean
   options?: ReferenceFilterOptions
