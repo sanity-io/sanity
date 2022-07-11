@@ -16,10 +16,6 @@ export function NotAuthenticatedScreen() {
   }, [activeWorkspace])
 
   useEffect(() => {
-    activeWorkspace.auth.handleCallbackUrl?.().catch(handleError)
-  }, [activeWorkspace.auth])
-
-  useEffect(() => {
     const subscription = activeWorkspace.auth.state.subscribe({
       next: ({currentUser: user}) => {
         setCurrentUser(user)
