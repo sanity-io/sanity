@@ -38,6 +38,7 @@
     "ts": "node -r esbuild-register"
   },
   "dependencies": {
+    "esbuild": "^0.14.43",
     "esbuild-register": "^3.3.2",
     "pkg-dir": "^5.0.0"
   },
@@ -66,7 +67,6 @@
     "decompress": "^4.2.0",
     "deep-sort-object": "^1.0.1",
     "dotenv": "^10.0.0",
-    "esbuild": "^0.14.43",
     "eventsource": "^2.0.2",
     "execa": "^2.0.0",
     "get-it": "^5.2.1",
