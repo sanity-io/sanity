@@ -195,6 +195,7 @@ export namespace Schema {
   export interface DateDefinition extends BaseDefinitionOptions {
     type: 'date'
     options?: DateOptions
+    placeholder?: string
   }
 
   export interface DatetimeOptions {
@@ -207,6 +208,7 @@ export namespace Schema {
   export interface DatetimeDefinition extends BaseDefinitionOptions {
     type: 'datetime'
     options?: DatetimeOptions
+    placeholder?: string
   }
 
   export interface DocumentDefinition extends Omit<ObjectDefinition, 'type'> {
