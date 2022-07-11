@@ -212,14 +212,14 @@ export default async function initSanity(
   // Bootstrap Sanity, creating required project files, manifests etc
   await bootstrapTemplate(templateOptions, context)
 
+  // Now for the slow part... installing dependencies
+  const pkgManager = await getPackageManagerChoice(outputPath, {prompt})
+  await installDeclaredPackages(outputPath, pkgManager.chosen, context)
+
   // Try initializing a git repository
   if (useGit) {
     tryGitInit(outputPath, typeof commitMessage === 'string' ? commitMessage : undefined)
   }
-
-  // Now for the slow part... installing dependencies
-  const pkgManager = await getPackageManagerChoice(outputPath, {prompt})
-  await installDeclaredPackages(outputPath, pkgManager.chosen, context)
 
   // Prompt for dataset import (if a dataset is defined)
   if (shouldImport) {
