@@ -1,4 +1,6 @@
-export default {
+import {defineType} from 'sanity'
+
+export default defineType({
   name: 'simpleBlockNote',
   type: 'object',
   fields: [
@@ -19,4 +21,4 @@ export default {
       title: 'Notes',
     },
   ],
-}
+})

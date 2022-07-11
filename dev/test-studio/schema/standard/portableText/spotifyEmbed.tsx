@@ -1,8 +1,9 @@
 import React from 'react'
+import {defineType, PreviewProps} from 'sanity'
 
 const IFRAME_URL_RE = /^<iframe src="([^"]+)"/
 
-function parseSpotifyShareUrl(str) {
+function parseSpotifyShareUrl(str: string): {type: string; id: string} | null {
   if (str.startsWith('https://')) {
     const url = new URL(str)
     const parts = url.pathname.slice(1).split('/')
@@ -40,8 +41,8 @@ function parseSpotifyShareUrl(str) {
   return null
 }
 
-function SpotifyEmbedPreview(props) {
-  if (!props.value.url) {
+function SpotifyEmbedPreview(props: PreviewProps) {
+  if (!isValidPreview(props.value)) {
     return <div>Please provide a Spotify share URL</div>
   }
 
@@ -63,14 +64,18 @@ function SpotifyEmbedPreview(props) {
       width="300"
       height="380"
       frameBorder="0"
-      allowtransparency="true"
+      allowTransparency
       allow="encrypted-media"
       style={{width: '100%', verticalAlign: 'top'}}
     />
   )
 }
 
-export default {
+function isValidPreview(value: unknown): value is {url: string} {
+  return Boolean(value && typeof value === 'object' && typeof (value as any).url === 'string')
+}
+
+export default defineType({
   type: 'object',
   name: 'spotifyEmbed',
   title: 'Spotify Embed',
@@ -83,6 +88,8 @@ export default {
   ],
   preview: {
     select: {url: 'url'},
-    component: SpotifyEmbedPreview,
   },
-}
+  components: {
+    preview: SpotifyEmbedPreview,
+  },
+})

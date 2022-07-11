@@ -1,6 +1,8 @@
 // import {FaPuzzlePiece as icon} from 'react-icons/fa'
 
-export const myObject = {
+import {defineType} from 'sanity'
+
+export const myObject = defineType({
   type: 'object',
   name: 'myObject',
   title: 'My object',
@@ -18,9 +20,9 @@ export const myObject = {
       title: 'Second',
     },
   ],
-}
+})
 
-export default {
+export default defineType({
   name: 'objectsTest',
   type: 'document',
   title: 'Objects test',
@@ -148,9 +150,9 @@ export default {
             },
             prepare({where, what}) {
               return {
-                title: where,
-                subtitle: (what || []).join(', '),
-                media: () => (where || '').slice(0, 1),
+                title: where as string,
+                subtitle: ((what as string[]) || []).join(', '),
+                media: () => ((where as string) || '').slice(0, 1),
               }
             },
           },
@@ -175,4 +177,4 @@ export default {
       ],
     },
   ],
-}
+})

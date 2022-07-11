@@ -1,6 +1,7 @@
 import {BinaryDocumentIcon} from '@sanity/icons'
+import {defineType} from 'sanity'
 
-export default {
+export default defineType({
   name: 'filesTest',
   type: 'document',
   title: 'Files test',
@@ -74,4 +75,4 @@ export default {
       },
     },
   ],
-}
+})

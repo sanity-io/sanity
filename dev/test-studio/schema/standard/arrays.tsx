@@ -1,7 +1,8 @@
 import React from 'react'
 import {ImageIcon, OlistIcon} from '@sanity/icons'
+import {defineType} from 'sanity'
 
-export const topLevelArrayType = {
+export const topLevelArrayType = defineType({
   name: 'topLevelArrayType',
   type: 'array',
   of: [
@@ -15,9 +16,9 @@ export const topLevelArrayType = {
       preview: {select: {title: 'textContent'}},
     },
   ],
-}
+})
 
-export const topLevelPrimitiveArrayType = {
+export const topLevelPrimitiveArrayType = defineType({
   name: 'topLevelPrimitiveArrayType',
   type: 'array',
   of: [
@@ -30,9 +31,9 @@ export const topLevelPrimitiveArrayType = {
       title: 'A number',
     },
   ],
-}
+})
 
-export default {
+export default defineType({
   name: 'arraysTest',
   type: 'document',
   title: 'Arrays test',
@@ -488,7 +489,7 @@ export default {
       name: 'arrayOfSoManyDifferentTypes',
       type: 'array',
       title: 'Array of SO MANY different types',
-      describe: 'Uses custom "Add" functionality',
+      description: 'Uses custom "Add" functionality',
       of: [
         'author',
         'book',
@@ -503,4 +504,4 @@ export default {
       })),
     },
   ],
-}
+})

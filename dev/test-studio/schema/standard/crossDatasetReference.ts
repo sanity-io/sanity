@@ -1,6 +1,7 @@
 import {UserIcon, MoonIcon, BookIcon} from '@sanity/icons'
+import {defineType} from 'sanity'
 
-export const crossDatasetSubtype = {
+export const crossDatasetSubtype = defineType({
   type: 'crossDatasetReference',
   name: 'crossDatasetSubtype',
   title: 'Subtype of cross dataset references',
@@ -26,9 +27,9 @@ export const crossDatasetSubtype = {
       },
     },
   ],
-}
+})
 
-export default {
+export default defineType({
   name: 'crossDatasetReferenceTest',
   type: 'document',
   title: 'Cross dataset reference test',
@@ -240,4 +241,4 @@ export default {
       }
     },
   },
-}
+})

@@ -1,8 +1,9 @@
 import {ImagesIcon} from '@sanity/icons'
+import {defineType} from 'sanity'
 // import petsAssetSource from '../../parts/assetSources/pets'
 // import noopAssetSource from '../../parts/assetSources/noop'
 
-export const myImage = {
+export const myImage = defineType({
   name: 'myImage',
   title: 'Some image type',
   type: 'image',
@@ -13,9 +14,9 @@ export const myImage = {
       type: 'string',
     },
   ],
-}
+})
 
-export default {
+export default defineType({
   name: 'imagesTest',
   type: 'document',
   title: 'Images test',
@@ -109,7 +110,6 @@ export default {
       title: 'Field of custom image type',
       type: 'myImage',
       description: 'Should be like myImage',
-      required: true,
     },
     {
       name: 'pngImage',
@@ -189,4 +189,4 @@ export default {
       options: {sources: []},
     },
   ],
-}
+})

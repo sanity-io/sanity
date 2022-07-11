@@ -1,4 +1,6 @@
-export default {
+import {defineType} from 'sanity'
+
+export default defineType({
   name: 'simpleBlockNoteUrl',
   type: 'object',
   title: 'URL',
@@ -14,4 +16,4 @@ export default {
       url: 'url',
     },
   },
-}
+})

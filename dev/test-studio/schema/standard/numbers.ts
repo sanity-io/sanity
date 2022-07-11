@@ -1,6 +1,8 @@
 // import {TiSortNumerically as icon} from 'react-icons/ti'
 
-export default {
+import {defineType} from 'sanity'
+
+export default defineType({
   name: 'numbersTest',
   type: 'document',
   title: 'Numbers test',
@@ -64,4 +66,4 @@ export default {
       readOnly: true,
     },
   ],
-}
+})

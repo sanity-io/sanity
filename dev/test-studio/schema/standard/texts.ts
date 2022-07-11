@@ -1,6 +1,8 @@
 // import {MdFormatAlignLeft as icon} from 'react-icons/md'
 
-export default {
+import {defineType} from 'sanity'
+
+export default defineType({
   name: 'textsTest',
   type: 'document',
   title: 'Texts tests',
@@ -35,4 +37,4 @@ export default {
       readOnly: true,
     },
   ],
-}
+})

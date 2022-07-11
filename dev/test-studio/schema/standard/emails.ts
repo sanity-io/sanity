@@ -1,6 +1,7 @@
 import {EnvelopeIcon} from '@sanity/icons'
+import {defineType} from 'sanity'
 
-export default {
+export default defineType({
   name: 'emailsTest',
   type: 'document',
   title: 'Emails test',
@@ -24,4 +25,4 @@ export default {
       validation: (Rule) => Rule.required(),
     },
   ],
-}
+})

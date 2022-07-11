@@ -1,12 +1,11 @@
 import React from 'react'
-// import {MdTextFormat as icon} from 'react-icons/md'
+import {defineType} from 'sanity'
 import {HooksBasedStringInput} from './components/HooksBasedStringInput'
 
-export default {
+export default defineType({
   name: 'stringsTest',
   type: 'document',
   title: 'Strings test',
-  // icon,
   fields: [
     {
       name: 'title',
@@ -19,6 +18,7 @@ export default {
       type: 'string',
       title: 'Hooks based input',
       description: 'A string field with a custom input (using react hooks)',
+      placeholder: 'Fill me with content, please',
       components: {input: HooksBasedStringInput},
     },
     {
@@ -151,4 +151,4 @@ export default {
         }),
     },
   ],
-}
+})

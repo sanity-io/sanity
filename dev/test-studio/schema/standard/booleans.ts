@@ -1,6 +1,7 @@
 import {CheckmarkCircleIcon} from '@sanity/icons'
+import {defineType} from 'sanity'
 
-export default {
+export default defineType({
   name: 'booleansTest',
   type: 'document',
   title: 'Booleans test',
@@ -73,4 +74,4 @@ export default {
       fieldset: 'collection',
     },
   ],
-}
+})

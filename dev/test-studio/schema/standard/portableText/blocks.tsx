@@ -1,18 +1,17 @@
 import {ComposeIcon, DropIcon, ImageIcon} from '@sanity/icons'
-import {BlockEditor} from 'sanity/form'
 import React from 'react'
+import {BlockEditor, PortableTextInputProps} from 'sanity/form'
+import {defineType} from 'sanity'
 
-const CustomEditor = React.forwardRef((props, ref) => {
+function CustomEditor(props: PortableTextInputProps) {
   const {markers, value} = props
   const newMarkers = markers?.concat([
     {type: 'customMarkerTest', path: value && value[0] ? [{_key: value[0]._key}] : []},
   ])
-  return <BlockEditor {...props} markers={newMarkers} ref={ref} />
-})
-CustomEditor.displayName = 'CustomEditor'
-CustomEditor.propTypes = BlockEditor.propTypes // eslint-disable-line react/forbid-foreign-prop-types
+  return <BlockEditor {...props} markers={newMarkers} />
+}
 
-export default {
+export default defineType({
   name: 'blocksTest',
   title: 'Blocks test',
   type: 'document',
@@ -505,4 +504,4 @@ export default {
       ],
     },
   ],
-}
+})

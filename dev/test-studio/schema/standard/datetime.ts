@@ -1,6 +1,7 @@
 import {CalendarIcon} from '@sanity/icons'
+import {defineType} from 'sanity'
 
-export default {
+export default defineType({
   name: 'datetimeTest',
   type: 'document',
   title: 'Datetime test',
@@ -95,4 +96,4 @@ export default {
       ],
     },
   ],
-}
+})

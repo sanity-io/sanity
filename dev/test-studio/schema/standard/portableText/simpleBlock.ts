@@ -1,21 +1,8 @@
 import {defineType} from 'sanity'
+import {toPlainText} from '@portabletext/react'
 import {CalloutPreview} from './components/CalloutPreview'
 
-function extractTextFromBlocks(blocks) {
-  if (!blocks) {
-    return ''
-  }
-  return blocks
-    .map((block) => {
-      return block.children
-        .filter((child) => child._type === 'span')
-        .map((span) => span.text)
-        .join('')
-    })
-    .join('')
-}
-
-const linkType = {
+const linkType = defineType({
   type: 'object',
   name: 'link',
   fields: [
@@ -31,13 +18,13 @@ const linkType = {
       width: 'medium',
     },
   },
-}
+})
 
-const myStringType = {
+const myStringType = defineType({
   type: 'object',
   name: 'test',
   fields: [{type: 'string', name: 'mystring', validation: (Rule) => Rule.required()}],
-}
+})
 
 export default defineType({
   name: 'simpleBlock',
@@ -70,8 +57,8 @@ export default defineType({
             },
           ],
           validation: (Rule) =>
-            Rule.custom((block) => {
-              const text = extractTextFromBlocks([block])
+            Rule.custom<any>((block) => {
+              const text = toPlainText(block ? [block] : [])
               return text.length === 1 ? 'Please write a longer paragraph.' : true
             }),
           options: {

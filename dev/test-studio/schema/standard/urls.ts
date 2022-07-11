@@ -1,6 +1,7 @@
 import {LinkIcon} from '@sanity/icons'
+import {defineType} from 'sanity'
 
-export default {
+export default defineType({
   name: 'urlsTest',
   type: 'document',
   title: 'URLs test',
@@ -26,4 +27,4 @@ export default {
       validation: (Rule) => Rule.uri({allowRelative: true}),
     },
   ],
-}
+})

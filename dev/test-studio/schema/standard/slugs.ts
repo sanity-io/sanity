@@ -1,4 +1,6 @@
-export default {
+import {defineType} from 'sanity'
+
+export default defineType({
   name: 'slugsTest',
   type: 'document',
   title: 'Slugs test',
@@ -96,7 +98,7 @@ export default {
       description: 'Should warn the developer about deprecated field',
       options: {
         source: 'title',
-        slugifyFn: (value) =>
+        slugify: (value) =>
           value.toLocaleLowerCase().split('').reverse().join('').replace(/\s+/g, '-'),
       },
     },
@@ -128,4 +130,4 @@ export default {
       },
     },
   ],
-}
+})

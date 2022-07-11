@@ -1,6 +1,7 @@
 import {SyncIcon} from '@sanity/icons'
+import {defineField, defineType} from 'sanity'
 
-export default {
+export default defineType({
   name: 'referenceTest',
   type: 'document',
   title: 'Reference test',
@@ -37,13 +38,15 @@ export default {
       ],
     },
     {name: 'liveEditedDocument', type: 'reference', to: {type: 'thesis'}},
-    {
+    defineField({
       title: 'Book with decade filter',
       description: 'Reference will only search for books within given decade',
       name: 'filtered',
       type: 'object',
       validation: (Rule) =>
-        Rule.custom((val) => (!val || val.decade ? true : 'Must have decade defined')),
+        Rule.custom<{decade?: number}>((val) =>
+          !val || val.decade ? true : 'Must have decade defined'
+        ),
       fields: [
         {
           title: 'Decade',
@@ -54,8 +57,8 @@ export default {
             Rule.required()
               .min(0)
               .max(3000)
-              .custom((year) => {
-                return year % 10 ? 'Must be a decade, eg use 1990 instead of 1994' : true
+              .custom<number>((year) => {
+                return !year || year % 10 ? 'Must be a decade, eg use 1990 instead of 1994' : true
               }),
         },
         {
@@ -64,8 +67,8 @@ export default {
           type: 'reference',
           to: {type: 'book'},
           options: {
-            filter: (options) => {
-              const decade = options.parent && options.parent.decade
+            filter: ({parent}) => {
+              const decade = Array.isArray(parent) ? null : parent?.decade
               if (!decade) {
                 return {filter: 'false'} // && false always returns no results :)
               }
@@ -81,7 +84,7 @@ export default {
           },
         },
       ],
-    },
+    }),
     {
       name: 'arrayWithDisableCreateNew',
       type: 'array',
@@ -206,7 +209,7 @@ export default {
     },
   ],
   preview: {
-    fields: {
+    select: {
       title: 'title',
       author0: 'array.0.name',
       author1: 'array.1.name',
@@ -218,4 +221,4 @@ export default {
       }
     },
   },
-}
+})
