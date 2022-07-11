@@ -83,6 +83,9 @@ export namespace Schema {
     description?: string
     fieldset?: string
     group?: string | string[]
+    hidden?: ConditionalProperty
+    readOnly?: ConditionalProperty
+    validation?: SchemaValidationValue
   }
 
   export type ImageMetadataType = 'blurhash' | 'lqip' | 'palette' | 'exif' | 'location'
@@ -109,7 +112,7 @@ export namespace Schema {
     description?: string
     hidden?: ConditionalProperty
     readOnly?: ConditionalProperty
-    validation?: (rule: Rule) => Rule
+    validation?: SchemaValidationValue
     icon?: React.ComponentType | React.ReactNode
     components?: {
       field?: React.ComponentType<any> // @todo: use `FieldProps` here
