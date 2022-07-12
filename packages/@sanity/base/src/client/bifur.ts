@@ -1,8 +1,10 @@
-import type {ClientConfig, SanityClient} from '@sanity/client'
-import {fromSanityClient} from '@sanity/bifur-client'
-import {versionedClient} from './versionedClient'
+import {fromUrl} from '@sanity/bifur-client'
+import {authToken$} from '../datastores/authState'
+import {getVersionedClient} from './versionedClient'
 
-export const bifur = fromSanityClient(
-  // The global Sanity client is guaranteed to have a dataset, thus the type cast
-  versionedClient as SanityClient & {config(): ClientConfig & {dataset: string}}
-)
+const bifurVersionedClient = getVersionedClient('2022-06-30')
+const dataset = bifurVersionedClient.config().dataset
+
+const url = bifurVersionedClient.getUrl(`/socket/${dataset}`).replace(/^http/, 'ws')
+
+export const bifur = fromUrl(url, {token$: authToken$})

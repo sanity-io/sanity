@@ -13,3 +13,7 @@ const mockBifurClient = {
 export function fromSanityClient() {
   return mockBifurClient
 }
+
+export function fromUrl() {
+  return mockBifurClient
+}
