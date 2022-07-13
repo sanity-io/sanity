@@ -33,16 +33,22 @@
   // access it and subscribe to errors.
   window.__sanityErrorChannel = errorChannel
 
-  function _handleError(error, params) {
-    // - If there are error channel subscribers, then we notify them (no console error).
-    // - If there are no subscribers, then we log the error to the console and render the error overlay.
-    if (errorChannel.subscribers.length) {
-      errorChannel.publish({error, params})
-    } else {
-      console.error(error)
+  function _nextTick(callback) {
+    setTimeout(callback, 0)
+  }
 
-      _renderErrorOverlay(error, params)
-    }
+  function _handleError(error, params) {
+    _nextTick(function () {
+      // - If there are error channel subscribers, then we notify them (no console error).
+      // - If there are no subscribers, then we log the error to the console and render the error overlay.
+      if (errorChannel.subscribers.length) {
+        errorChannel.publish({error, params})
+      } else {
+        console.error(error)
+
+        _renderErrorOverlay(error, params)
+      }
+    })
   }
 
   var ERROR_BOX_STYLE = [
@@ -112,7 +118,7 @@
 
   // Error listener #1
   window.onerror = function (event, source, lineno, colno, error) {
-    setTimeout(function () {
+    _nextTick(function () {
       if (_caughtErrors.indexOf(error) !== -1) return
 
       _caughtErrors.push(error)
@@ -124,12 +130,12 @@
         source,
       })
 
-      setTimeout(function () {
+      _nextTick(function () {
         var idx = _caughtErrors.indexOf(error)
 
         if (idx > -1) _caughtErrors.splice(idx, 1)
-      }, 0)
-    }, 0)
+      })
+    })
 
     // IMPORTANT: this callback must return `true` to prevent the error from being rendered in
     // the browser’s console.
@@ -148,13 +154,13 @@
       colno: event.colno,
     })
 
-    setTimeout(function () {
-      setTimeout(function () {
+    _nextTick(function () {
+      _nextTick(function () {
         var idx = _caughtErrors.indexOf(event.error)
 
         if (idx > -1) _caughtErrors.splice(idx, 1)
-      }, 0)
-    }, 0)
+      })
+    })
 
     return true
   })
