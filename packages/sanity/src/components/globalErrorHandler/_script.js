@@ -3,7 +3,7 @@
 /* eslint-disable prefer-template */
 
 ;(function () {
-  var caughtErrors = []
+  var _caughtErrors = []
 
   var errorChannel = (function () {
     var subscribers = []
@@ -29,16 +29,26 @@
     return {publish, subscribe, subscribers}
   })()
 
+  // NOTE: Store the error channel instance in the global scope so that the Studio application can
+  // access it and subscribe to errors.
   window.__sanityErrorChannel = errorChannel
 
-  function _handleError(error, params) {
-    if (errorChannel.subscribers.length) {
-      errorChannel.publish({error, params})
-    } else {
-      console.error(error)
+  function _nextTick(callback) {
+    setTimeout(callback, 0)
+  }
 
-      _renderErrorOverlay(error, params)
-    }
+  function _handleError(error, params) {
+    _nextTick(function () {
+      // - If there are error channel subscribers, then we notify them (no console error).
+      // - If there are no subscribers, then we log the error to the console and render the error overlay.
+      if (errorChannel.subscribers.length) {
+        errorChannel.publish({error, params})
+      } else {
+        console.error(error)
+
+        _renderErrorOverlay(error, params)
+      }
+    })
   }
 
   var ERROR_BOX_STYLE = [
@@ -101,11 +111,17 @@
     document.body.appendChild(errorElement)
   }
 
-  window.onerror = function (event, source, lineno, colno, error) {
-    setTimeout(function () {
-      if (caughtErrors.indexOf(error) !== -1) return
+  // NOTE:
+  // Yes – we're attaching 2 error listeners below 👀
+  // This is because React makes the same error throw twice (in development mode).
+  // See: https://github.com/facebook/react/issues/10384
 
-      caughtErrors.push(error)
+  // Error listener #1
+  window.onerror = function (event, source, lineno, colno, error) {
+    _nextTick(function () {
+      if (_caughtErrors.indexOf(error) !== -1) return
+
+      _caughtErrors.push(error)
 
       _handleError(error, {
         event,
@@ -114,20 +130,23 @@
         source,
       })
 
-      setTimeout(function () {
-        var idx = caughtErrors.indexOf(error)
+      _nextTick(function () {
+        var idx = _caughtErrors.indexOf(error)
 
-        if (idx > -1) caughtErrors.splice(idx, 1)
-      }, 0)
-    }, 0)
+        if (idx > -1) _caughtErrors.splice(idx, 1)
+      })
+    })
 
+    // IMPORTANT: this callback must return `true` to prevent the error from being rendered in
+    // the browser’s console.
     return true
   }
 
+  // Error listener #2
   window.addEventListener('error', function (event) {
-    if (caughtErrors.indexOf(event.error) !== -1) return true
+    if (_caughtErrors.indexOf(event.error) !== -1) return true
 
-    caughtErrors.push(event.error)
+    _caughtErrors.push(event.error)
 
     _handleError(event.error, {
       event,
@@ -135,13 +154,13 @@
       colno: event.colno,
     })
 
-    setTimeout(function () {
-      setTimeout(function () {
-        var idx = caughtErrors.indexOf(event.error)
+    _nextTick(function () {
+      _nextTick(function () {
+        var idx = _caughtErrors.indexOf(event.error)
 
-        if (idx > -1) caughtErrors.splice(idx, 1)
-      }, 0)
-    }, 0)
+        if (idx > -1) _caughtErrors.splice(idx, 1)
+      })
+    })
 
     return true
   })
