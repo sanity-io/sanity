@@ -1,6 +1,5 @@
 import type {SearchTerms} from '@sanity/base'
-import {ControlsIcon} from '@sanity/icons'
-import {Box, Button, Flex, Inline, Label, Stack, Text} from '@sanity/ui'
+import {Box, Flex, Label, Stack, Text} from '@sanity/ui'
 import schema from 'part:@sanity/base/schema'
 import React, {useCallback, useState} from 'react'
 import {addSearchTerm, getRecentSearchTerms} from './local-storage/search-store'
@@ -9,7 +8,7 @@ import {useOmnisearch} from './state/OmnisearchContext'
 
 export function RecentSearches() {
   const [recentSearches, setRecentSearches] = useState(() => getRecentSearchTerms(schema))
-  const {dispatch, state} = useOmnisearch()
+  const {dispatch} = useOmnisearch()
 
   const handleRecentSearchClick = useCallback(
     (searchTerms: SearchTerms) => {
@@ -26,10 +25,6 @@ export function RecentSearches() {
     },
     [dispatch]
   )
-
-  const handleShowFilters = useCallback(() => {
-    dispatch({type: 'FILTERS_SHOW'})
-  }, [dispatch])
 
   return (
     <Box flex={1}>
@@ -53,33 +48,8 @@ export function RecentSearches() {
       ) : (
         <Flex align="center" direction="column" gap={2} paddingX={4} paddingY={5}>
           <Text align="center" muted size={2}>
-            Type to search all document types.
+            Your recent searches will appear here
           </Text>
-          {!state.filtersVisible && (
-            <Inline space={1}>
-              <Text muted size={2}>
-                Use the
-              </Text>
-              <Button
-                mode="bleed"
-                onClick={handleShowFilters}
-                paddingLeft={2}
-                paddingRight={1}
-                paddingY={2}
-                tone="primary"
-              >
-                <Inline space={2}>
-                  <Text size={2}>
-                    <ControlsIcon />
-                  </Text>
-                  <Text size={2}>Filter</Text>
-                </Inline>
-              </Button>
-              <Text muted size={2}>
-                to limit the number of document types
-              </Text>
-            </Inline>
-          )}
         </Flex>
       )}
     </Box>

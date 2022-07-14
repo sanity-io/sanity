@@ -1,6 +1,6 @@
 import {TextWithTone} from '@sanity/base/components'
 import {BulbOutlineIcon} from '@sanity/icons'
-import {Button, Flex, Inline, Stack, Text} from '@sanity/ui'
+import {Box, Button, Flex, Inline, Stack, Text} from '@sanity/ui'
 import React, {useCallback} from 'react'
 import {addSearchTerm} from './local-storage/search-store'
 import {SearchResultItem} from './SearchResultItem'
@@ -32,10 +32,10 @@ export function SearchResults(props: SearchResultsProps) {
   }, [onClose, terms])
 
   return (
-    <Stack flex={1} padding={1}>
+    <Box>
       {result.hits.length ? (
         // Has search results
-        <>
+        <Stack padding={1}>
           {result.hits.map((hit) => (
             <SearchResultItem key={hit.hit._id} hit={hit} onClick={handleResultClick} />
           ))}
@@ -47,7 +47,7 @@ export function SearchResults(props: SearchResultsProps) {
               title="Load more search results"
             />
           )}
-        </>
+        </Stack>
       ) : (
         // No results
         <Flex align="center" direction="column" gap={4} paddingX={4} paddingY={5}>
@@ -68,6 +68,6 @@ export function SearchResults(props: SearchResultsProps) {
           )}
         </Flex>
       )}
-    </Stack>
+    </Box>
   )
 }
