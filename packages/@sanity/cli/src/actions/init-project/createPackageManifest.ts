@@ -31,6 +31,8 @@ export function createPackageManifest(
     scripts: {
       start: 'sanity start',
       build: 'sanity build',
+      deploy: 'sanity deploy',
+      'deploy-graphql': 'sanity graphql deploy',
     },
 
     ...dependencies,
