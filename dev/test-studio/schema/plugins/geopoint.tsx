@@ -1,8 +1,9 @@
 import {EarthGlobeIcon} from '@sanity/icons'
 import React from 'react'
+import {defineType} from 'sanity'
 // import config from 'config:@sanity/google-maps-input'
 
-export default {
+export default defineType({
   name: 'geopointTest',
   type: 'document',
   title: 'Geopoint test',
@@ -59,4 +60,4 @@ export default {
       }
     },
   },
-}
+})

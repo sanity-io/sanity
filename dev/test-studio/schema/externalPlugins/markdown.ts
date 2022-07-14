@@ -1,4 +1,6 @@
-export default {
+import {defineType} from 'sanity'
+
+export default defineType({
   type: 'document',
   name: 'markdownTest',
   title: 'Markdown test',
@@ -14,4 +16,4 @@ export default {
     //   title: 'Markdown',
     // },
   ],
-}
+})

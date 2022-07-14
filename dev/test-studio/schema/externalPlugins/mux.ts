@@ -1,4 +1,6 @@
-export default {
+import {defineType} from 'sanity'
+
+export default defineType({
   title: 'Mux video post',
   name: 'muxVideoPost',
   type: 'document',
@@ -10,4 +12,4 @@ export default {
     //   type: 'mux.video',
     // },
   ],
-}
+})

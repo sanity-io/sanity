@@ -1,6 +1,7 @@
 import {CodeBlockIcon} from '@sanity/icons'
+import {defineType} from 'sanity'
 
-export default {
+export default defineType({
   name: 'codeTest',
   type: 'document',
   title: 'Code test',
@@ -43,4 +44,4 @@ export default {
       },
     },
   ],
-}
+})

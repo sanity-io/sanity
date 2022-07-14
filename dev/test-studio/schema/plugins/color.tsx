@@ -2,8 +2,9 @@
 
 import {DropIcon} from '@sanity/icons'
 import React from 'react'
+import {defineType} from 'sanity'
 
-export default {
+export default defineType({
   name: 'colorTest',
   type: 'document',
   title: 'Color',
@@ -115,4 +116,4 @@ export default {
     //   ],
     // },
   ],
-}
+})
