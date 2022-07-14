@@ -21,12 +21,14 @@ export function DialogHeader() {
   useSearchHotkeyListener(openedInput)
 
   const handleFiltersToggle = useCallback(() => dispatch({type: 'FILTERS_TOGGLE'}), [dispatch])
-  const handleQueryChanged = useCallback(
-    (e: React.KeyboardEvent<HTMLInputElement>) => {
-      dispatch({type: 'TERMS_QUERY_SET', query: e.currentTarget.value})
-    },
+  const handleQueryChange = useCallback(
+    (e: React.KeyboardEvent<HTMLInputElement>) =>
+      dispatch({type: 'TERMS_QUERY_SET', query: e.currentTarget.value}),
     [dispatch]
   )
+  const handleQueryClear = useCallback(() => {
+    dispatch({type: 'TERMS_QUERY_SET', query: ''})
+  }, [dispatch])
 
   // Immediately focus on mount
   useEffect(() => openedInput.current?.focus(), [])
@@ -38,9 +40,11 @@ export function DialogHeader() {
         <Box flex={1} padding={1}>
           <TextInput
             border={false}
+            clearButton={!!terms.query}
             fontSize={2}
             icon={loading ? <AlignedSpinner /> : SearchIcon}
-            onChange={handleQueryChanged}
+            onChange={handleQueryChange}
+            onClear={handleQueryClear}
             placeholder="Search"
             ref={openedInput}
             value={terms.query}
@@ -99,6 +103,11 @@ const AlignedSpinner = styled(Spinner)`
 const Container = styled(Box)`
   border-bottom: 1px solid ${hues.gray[100].hex};
   flex-shrink: 0;
+
+  /* TODO: remove this hack, which is currently used to vertically center <TextInput>'s clearButton */
+  [data-qa='clear-button'] {
+    display: flex;
+  }
 `
 
 const NotificationBadge = styled(Box)`

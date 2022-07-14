@@ -29,6 +29,7 @@ export function TypeFilter() {
     (e: React.KeyboardEvent<HTMLInputElement>) => setTypeFilter(e.currentTarget.value),
     [setTypeFilter]
   )
+  const handleFilterClear = useCallback(() => setTypeFilter(''), [])
 
   if (!filtersVisible) {
     return null
@@ -45,10 +46,12 @@ export function TypeFilter() {
         {/* Search */}
         {displayFilterInput && (
           <TextInput
+            clearButton={!!typeFilter}
             fontSize={1}
             icon={SearchIcon}
             muted
             onChange={handleFilterChange}
+            onClear={handleFilterClear}
             placeholder="Filter document types"
             radius={2}
             value={typeFilter}
@@ -73,30 +76,32 @@ export function TypeFilter() {
         )}
       </Box>
       {/* Clear button (bottom) */}
-      <Card
-        paddingBottom={1}
-        paddingX={1}
-        style={{position: 'sticky', bottom: 0, zIndex: 1}}
-        tone="transparent"
-      >
-        <Stack space={1}>
-          {selectedTypes.length > 0 && (
-            <Box style={{borderBottom: `1px solid ${hues.gray[200].hex}`}} />
-          )}
-          {selectedTypes.length > 0 && (
-            <Button
-              data-name="type-filter-button"
-              disabled={selectedTypes.length === 0}
-              fontSize={1}
-              mode="bleed"
-              onClick={handleClearTypes}
-              padding={3}
-              text="Clear all"
-              tone="primary"
-            />
-          )}
-        </Stack>
-      </Card>
+      {!typeFilter && (
+        <Card
+          paddingBottom={1}
+          paddingX={1}
+          style={{position: 'sticky', bottom: 0, zIndex: 1}}
+          tone="transparent"
+        >
+          <Stack space={1}>
+            {selectedTypes.length > 0 && (
+              <Box style={{borderBottom: `1px solid ${hues.gray[200].hex}`}} />
+            )}
+            {selectedTypes.length > 0 && (
+              <Button
+                data-name="type-filter-button"
+                disabled={selectedTypes.length === 0}
+                fontSize={1}
+                mode="bleed"
+                onClick={handleClearTypes}
+                padding={3}
+                text="Clear"
+                tone="primary"
+              />
+            )}
+          </Stack>
+        </Card>
+      )}
     </Container>
   )
 }
@@ -134,4 +139,9 @@ const Container = styled(Card)`
   overflow-x: hidden;
   max-width: 250px;
   width: 100%;
+
+  /* TODO: remove this hack, which is currently used to vertically center <TextInput>'s clearButton */
+  [data-qa='clear-button'] {
+    display: flex;
+  }
 `
