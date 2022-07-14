@@ -84,87 +84,96 @@ export interface PortableTextSlateEditor extends ReactEditor {
   maxBlocks: number | undefined
 
   /**
-   * Increments selected list items levels, or decrements them if @reverse is true.
+   * Increments selected list items levels, or decrements them if `reverse` is true.
    *
-   * @param {boolean} reverse
-   * @returns {boolean} True if anything was incremented in the selection
+   * @param reverse - if true, decrement instead of incrementing
+   * @returns True if anything was incremented in the selection
    */
   pteIncrementBlockLevels: (reverse?: boolean) => boolean
+
   /**
    * Toggle selected blocks as listItem
    *
-   * @param {string} listStyle
+   * @param listStyle - Style of list item to toggle on/off
    */
   pteToggleListItem: (listStyle: string) => void
+
   /**
    * Set selected block as listItem
    *
-   * @param {string} listStyle
+   * @param listStyle - Style of list item to set
    */
   pteSetListItem: (listStyle: string) => void
+
   /**
    * Unset selected block as listItem
    *
-   * @param {string} listStyle
+   * @param listStyle - Style of list item to unset
    */
   pteUnsetListItem: (listStyle: string) => void
+
   /**
    * Ends a list
    *
-   * @returns {boolean} True if a list was ended in the selection
+   * @returns True if a list was ended in the selection
    */
   pteEndList: () => boolean
+
   /**
    * Toggle marks in the selection
    *
-   * @param {string} mark
+   * @param mark - Mark to toggle on/off
    */
   pteToggleMark: (mark: string) => void
+
   /**
-   * Teset if a mark is active in the current selection
+   * Test if a mark is active in the current selection
    *
-   * @param {string} mark
+   * @param mark - Mark to check whether or not is active
    */
   pteIsMarkActive: (mark: string) => boolean
+
   /**
    * Toggle the selected block style
    *
-   * @param {string} style The style name
+   * @param style - The style name
    *
    */
   pteToggleBlockStyle: (style: string) => void
+
   /**
    * Test if the current selection has a certain block style
    *
-   * @param {string} style The style name
+   * @param style - The style name
    *
    */
   pteHasBlockStyle: (style: string) => boolean
+
   /**
    * Test if the current selection has a certain list style
    *
-   * @param {string} listStyle The liststyle name
+   * @param listStyle - Style name to check whether or not the selection has
    *
    */
   pteHasListStyle: (style: string) => boolean
+
   /**
    * Try to expand the current selection to a word
-   *
    */
   pteExpandToWord: () => void
+
   /**
    * Use hotkeys
-   *
    */
   pteWithHotKeys: (event: React.KeyboardEvent<HTMLDivElement>) => void
+
   /**
    * Undo
-   *
    */
   undo: () => void
+
   /**
    * Redo
-   *
    */
   redo: () => void
 }

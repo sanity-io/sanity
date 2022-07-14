@@ -46,24 +46,63 @@ function bufferUntil<T>(emitWhen: (currentBuffer: T[]) => boolean): OperatorFunc
     })
 }
 
-export type PortableTextEditorProps = {
-  keyGenerator?: () => string
-  maxBlocks?: number | string
+/**
+ * Props for the PortableTextEditor component
+ *
+ * @public
+ */
+export interface PortableTextEditorProps {
+  /**
+   * Function that gets called when the editor changes the value
+   */
   onChange: (change: EditorChange) => void
-  incomingPatches$?: PatchObservable
-  readOnly?: boolean
+
+  /**
+   * (Compiled) schema type for the portable text field
+   */
   type: ArraySchemaType<PortableTextBlock>
+
+  /**
+   * Maximum number of blocks to allow within the editor
+   */
+  maxBlocks?: number | string
+
+  /**
+   * Whether or not the editor should be in read-only mode
+   */
+  readOnly?: boolean
+
+  /**
+   * The current value of the portable text field
+   */
   value?: PortableTextBlock[]
+
+  /**
+   * Function used to generate keys for array items (`_key`)
+   */
+  keyGenerator?: () => string
+
+  /**
+   * Observable of incoming patches - used for undo/redo operations,
+   * adjusting editor selections on concurrent editing and similar
+   */
+  incomingPatches$?: PatchObservable
 }
 
-type State = {
+/**
+ * @internal
+ */
+export interface PortableTextEditorState {
   invalidValueResolution: InvalidValueResolution | null
   selection: EditorSelection // This state is only used to force the selection context to update.
   hasPendingPatches: boolean
 }
 
 // The PT editor's public API
-export class PortableTextEditor extends React.Component<PortableTextEditorProps, State> {
+export class PortableTextEditor extends React.Component<
+  PortableTextEditorProps,
+  PortableTextEditorState
+> {
   static activeAnnotations = (editor: PortableTextEditor): PortableTextBlock[] => {
     return editor && editor.editable ? editor.editable.activeAnnotations() : []
   }
@@ -204,7 +243,7 @@ export class PortableTextEditor extends React.Component<PortableTextEditorProps,
     this.keyGenerator = props.keyGenerator || defaultKeyGenerator
 
     // Validate the Portable Text value
-    let state: State = {
+    let state: PortableTextEditorState = {
       invalidValueResolution: null,
       selection: null,
       hasPendingPatches: false,
@@ -247,7 +286,7 @@ export class PortableTextEditor extends React.Component<PortableTextEditorProps,
     this.changeSubscription.unsubscribe()
   }
 
-  componentDidUpdate(prevProps: PortableTextEditorProps, prevState: State) {
+  componentDidUpdate(prevProps: PortableTextEditorProps, prevState: PortableTextEditorState) {
     if (this.props.readOnly !== prevProps.readOnly) {
       this.readOnly = this.props.readOnly || false
       this.slateInstance.readOnly = this.readOnly

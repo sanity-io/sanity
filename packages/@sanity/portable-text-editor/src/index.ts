@@ -1,5 +1,5 @@
 export {PortableTextEditor, defaultKeyGenerator as keyGenerator} from './editor/PortableTextEditor'
-export type {PortableTextEditorProps} from './editor/PortableTextEditor'
+export type {PortableTextEditorProps, PortableTextEditorState} from './editor/PortableTextEditor'
 export * from './types/editor'
 export * from './types/portableText'
 export * from './types/patch'
