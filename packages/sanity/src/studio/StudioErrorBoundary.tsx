@@ -9,9 +9,9 @@ interface StudioErrorBoundaryProps {
   children: React.ReactNode
 }
 
-const errorChannel = (globalScope as any).__sanityErrorChannel
+const errorChannel = globalScope.__sanityErrorChannel
 
-function isKnownError(err: unknown): boolean {
+function isKnownError(err: Error): boolean {
   if (err instanceof SchemaError) {
     return true
   }
@@ -29,10 +29,15 @@ export function StudioErrorBoundary({children}: StudioErrorBoundaryProps) {
   useEffect(() => {
     if (!errorChannel) return undefined
 
-    return errorChannel.subscribe((msg: any) => {
+    return errorChannel.subscribe((msg) => {
       // NOTE: Certain errors (such as the `ResizeObserver loop limit exceeded` error) is thrown
-      // by the browser, and does not include an `error` property. We ignore these error.
-      if (!msg.error || isKnownError(msg.error)) {
+      // by the browser, and does not include an `error` property. We ignore these errors.
+      if (!msg.error) {
+        return
+      }
+
+      // For errors that we "expect", eg have specific error screens for, do not push a toast
+      if (isKnownError(msg.error)) {
         return
       }
 

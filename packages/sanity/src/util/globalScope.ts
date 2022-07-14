@@ -1,3 +1,5 @@
+import type {GlobalErrorChannel} from '../components/globalErrorHandler'
+
 /**
  * Gets the global scope instance in a given environment.
  *
@@ -7,7 +9,7 @@
  * - The `self` variable is the global scope in workers and others
  * - The `global` variable is the global scope in Node.js
  */
-function getGlobalScope() {
+function getGlobalScope(): typeof globalThis & {__sanityErrorChannel?: GlobalErrorChannel} {
   if (typeof globalThis !== 'undefined') return globalThis
   if (typeof window !== 'undefined') return window
   if (typeof self !== 'undefined') return self
