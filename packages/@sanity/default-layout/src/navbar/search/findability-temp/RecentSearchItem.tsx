@@ -1,8 +1,8 @@
 import {ClockIcon} from '@sanity/icons'
-import {Button, Flex, Text} from '@sanity/ui'
+import {Box, Button, Flex, Text} from '@sanity/ui'
 import React, {useCallback} from 'react'
 import {RecentSearch} from './local-storage/search-store'
-import {TypeNames} from './TypeNames'
+import {TypePills} from './TypePills'
 
 export interface RecentSearchesProps {
   value: RecentSearch
@@ -18,19 +18,26 @@ export function RecentSearchItem(props: RecentSearchesProps) {
   const typesSelected = value.types.length > 0
 
   return (
-    <Button mode="bleed" onClick={handleRecentSearchClick} paddingX={3} style={{width: '100%'}}>
+    <Button
+      mode="bleed"
+      onClick={handleRecentSearchClick}
+      paddingX={3}
+      paddingY={1}
+      style={{width: '100%'}}
+    >
       <Flex align="center">
-        <Text size={2}>
-          <ClockIcon />
-        </Text>
-        <Flex align="center" gap={1} marginLeft={3}>
-          {value.query && <Text>{value.query}</Text>}
-          {value.query && typesSelected && <Text>•</Text>}
-          {typesSelected && (
-            <Text size={1}>
-              <TypeNames prefix={value.query ? 'In' : 'Everything in'} types={value.types} />
-            </Text>
+        <Box paddingY={3}>
+          <Text size={1}>
+            <ClockIcon />
+          </Text>
+        </Box>
+        <Flex align="center" flex={1} gap={3} marginLeft={3}>
+          {value.query && (
+            <Box marginLeft={1}>
+              <Text>{value.query}</Text>
+            </Box>
           )}
+          {typesSelected && <TypePills types={value.types} />}
         </Flex>
       </Flex>
     </Button>
