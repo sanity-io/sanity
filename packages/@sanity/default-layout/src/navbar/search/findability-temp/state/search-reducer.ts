@@ -1,59 +1,89 @@
 import {SearchTerms} from '@sanity/base'
 import {ObjectSchemaType} from '@sanity/types'
-import {Dispatch, ReducerState, useReducer} from 'react'
 import {SearchHit} from '../../types'
 import {sortTypes} from '../utils/helpers'
 
 export interface SearchReducerState {
-  terms: SearchTerms
+  filtersVisible: boolean
+  pageIndex: number
   result: SearchResult
+  terms: SearchTerms
 }
 
 export interface SearchResult {
+  error: Error | null
   hits: SearchHit[]
   loading: boolean
-  error: Error | null
 }
 
 export const INITIAL_SEARCH_STATE: SearchReducerState = {
-  terms: {
-    query: '',
-    types: [],
-  },
+  filtersVisible: false,
   result: {
     hits: [],
     loading: false,
     error: null,
   },
+  pageIndex: 0,
+  terms: {
+    query: '',
+    types: [],
+  },
 }
 
-export type UpdateSearchState = {type: 'UPDATE_SEARCH_RESULT'; result: Partial<SearchResult>}
-export type AppendHits = {type: 'APPEND_HITS'; hits: SearchHit[]}
-export type SetTerms = {type: 'SET_TERMS'; terms: SearchTerms}
-export type FreeTextUpdated = {type: 'TEXT_QUERY'; query: string}
-export type ClearTypes = {type: 'CLEAR_TYPES'}
-export type AddType = {type: 'ADD_TYPE'; schemaType: ObjectSchemaType}
-export type RemoveType = {type: 'REMOVE_TYPE'; schemaType: ObjectSchemaType}
-export type SearchAction =
-  | UpdateSearchState
-  | AppendHits
-  | SetTerms
-  | FreeTextUpdated
-  | ClearTypes
-  | AddType
-  | RemoveType
+export type FiltersHide = {type: 'FILTERS_HIDE'}
+export type FiltersShow = {type: 'FILTERS_SHOW'}
+export type FiltersToggle = {type: 'FILTERS_TOGGLE'}
+export type PageIncrement = {type: 'PAGE_INCREMENT'}
+export type ResultHitsAppend = {type: 'RESULT_HITS_APPEND'; hits: SearchHit[]}
+export type ResultHitsClear = {type: 'RESULT_HITS_CLEAR'}
+export type ResultSet = {type: 'RESULT_SET'; result: Partial<SearchResult>}
+export type TermsQuerySet = {type: 'TERMS_QUERY_SET'; query: string}
+export type TermsSet = {type: 'TERMS_SET'; terms: SearchTerms}
+export type TypeAdd = {type: 'TYPE_ADD'; schemaType: ObjectSchemaType}
+export type TypeRemove = {type: 'TYPE_REMOVE'; schemaType: ObjectSchemaType}
+export type TypesClear = {type: 'TYPES_CLEAR'}
 
-function searchReducer(state: SearchReducerState, action: SearchAction): SearchReducerState {
+export type SearchAction =
+  | FiltersHide
+  | FiltersShow
+  | FiltersToggle
+  | PageIncrement
+  | ResultHitsAppend
+  | ResultHitsClear
+  | ResultSet
+  | TermsQuerySet
+  | TermsSet
+  | TypeAdd
+  | TypeRemove
+  | TypesClear
+
+export function omnisearchReducer(
+  state: SearchReducerState,
+  action: SearchAction
+): SearchReducerState {
+  console.log('🔍', action)
   switch (action.type) {
-    case 'UPDATE_SEARCH_RESULT':
+    case 'FILTERS_HIDE':
       return {
         ...state,
-        result: {
-          ...state.result,
-          ...action.result,
-        },
+        filtersVisible: false,
       }
-    case 'APPEND_HITS':
+    case 'FILTERS_SHOW':
+      return {
+        ...state,
+        filtersVisible: true,
+      }
+    case 'FILTERS_TOGGLE':
+      return {
+        ...state,
+        filtersVisible: !state.filtersVisible,
+      }
+    case 'PAGE_INCREMENT':
+      return {
+        ...state,
+        pageIndex: state.pageIndex + 1,
+      }
+    case 'RESULT_HITS_APPEND':
       return {
         ...state,
         result: {
@@ -61,12 +91,24 @@ function searchReducer(state: SearchReducerState, action: SearchAction): SearchR
           hits: [...state.result.hits, ...action.hits],
         },
       }
-    case 'SET_TERMS':
+    case 'RESULT_HITS_CLEAR':
       return {
         ...state,
-        terms: action.terms,
+        pageIndex: 0,
+        result: {
+          ...state.result,
+          hits: [],
+        },
       }
-    case 'TEXT_QUERY':
+    case 'RESULT_SET':
+      return {
+        ...state,
+        result: {
+          ...state.result,
+          ...action.result,
+        },
+      }
+    case 'TERMS_QUERY_SET':
       return {
         ...state,
         terms: {
@@ -74,7 +116,12 @@ function searchReducer(state: SearchReducerState, action: SearchAction): SearchR
           query: action.query,
         },
       }
-    case 'ADD_TYPE':
+    case 'TERMS_SET':
+      return {
+        ...state,
+        terms: action.terms,
+      }
+    case 'TYPE_ADD':
       return {
         ...state,
         terms: {
@@ -82,7 +129,7 @@ function searchReducer(state: SearchReducerState, action: SearchAction): SearchR
           types: [...state.terms.types, action.schemaType].sort(sortTypes),
         },
       }
-    case 'REMOVE_TYPE':
+    case 'TYPE_REMOVE':
       return {
         ...state,
         terms: {
@@ -90,7 +137,7 @@ function searchReducer(state: SearchReducerState, action: SearchAction): SearchR
           types: state.terms.types.filter((s) => s !== action.schemaType),
         },
       }
-    case 'CLEAR_TYPES':
+    case 'TYPES_CLEAR':
       return {
         ...state,
         terms: {
@@ -101,10 +148,4 @@ function searchReducer(state: SearchReducerState, action: SearchAction): SearchR
     default:
       return state
   }
-}
-
-export function useSearchReducer(
-  initialValue: SearchReducerState = INITIAL_SEARCH_STATE
-): [ReducerState<typeof searchReducer>, Dispatch<SearchAction>] {
-  return useReducer(searchReducer, initialValue)
 }
