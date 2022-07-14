@@ -1,7 +1,7 @@
 import {flatten, isPlainObject} from 'lodash'
 import {error, HELP_IDS} from '../createValidationResult'
 import {getDupes} from '../utils/getDupes'
-import {ValidationResult} from '../../typedefs'
+import {SchemaValidationResult} from '../../typedefs'
 import {validateExperimentalSearch} from '../utils/validateExperimentalSearch'
 
 function normalizeToProp(typeDef) {
@@ -134,9 +134,9 @@ export default (typeDef, visitorContext) => {
   }
 }
 
-function getOptionErrors(typeDef: any): ValidationResult[] {
+function getOptionErrors(typeDef: any): SchemaValidationResult[] {
   const {options} = typeDef
-  const problems = [] as ValidationResult[]
+  const problems = [] as SchemaValidationResult[]
 
   problems.push(
     ...['filter', 'filterParams']

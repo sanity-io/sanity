@@ -1,11 +1,11 @@
 import type {SchemaType} from '@sanity/types'
-import type {ValidationResult} from '../../typedefs'
+import type {SchemaValidationResult} from '../../typedefs'
 import {error} from '../createValidationResult'
 
 export function validateNonObjectFieldsProp(
   typeDef: SchemaType,
   visitorContext
-): ValidationResult[] {
+): SchemaValidationResult[] {
   if (!('fields' in typeDef)) {
     return []
   }

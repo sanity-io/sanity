@@ -1,5 +1,5 @@
-import {getDupes} from '../sanity/validation/utils/getDupes'
 import {flatten, uniq} from 'lodash'
+import {getDupes} from '../sanity/validation/utils/getDupes'
 
 type SchemaType = Record<string, any>
 type SchemaTypeDef = Record<string, any>
@@ -14,7 +14,7 @@ type VisitContext = {
   getTypeNames: () => Array<string>
 }
 
-type Visitor = (typeDef: SchemaTypeDef, arg1: VisitContext) => SchemaType
+export type Visitor = (typeDef: SchemaTypeDef, arg1: VisitContext) => SchemaType
 
 const NOOP_VISITOR: Visitor = (typeDef) => typeDef
 
@@ -30,9 +30,9 @@ const TYPE_TYPE = {name: 'type', type: null}
 
 const FUTURE_RESERVED = ['any', 'time', 'date']
 
-export default function traverseSchema(
-  types: Array<SchemaTypeDef> = [],
-  coreTypes: Array<SchemaTypeDef> = [],
+export function traverseSchema(
+  types: SchemaTypeDef[] = [],
+  coreTypes: SchemaTypeDef[] = [],
   visitor: Visitor = NOOP_VISITOR
 ) {
   const coreTypesRegistry = Object.create(null)

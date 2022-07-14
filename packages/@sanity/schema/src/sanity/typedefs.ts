@@ -1,3 +1,10 @@
+import type {SchemaType} from '@sanity/types'
+
+/**
+ * @internal
+ */
+export type _FIXME_ = any
+
 export interface TypeDef {
   name: string
   type: string
@@ -6,46 +13,51 @@ export interface TypeDef {
   options?: Record<string, any>
 }
 
-export type SchemaDef = {
+export interface SchemaDef {
   name: string
-  types: Array<TypeDef>
+  types: TypeDef[]
 }
 
-export type Severity = 'warning' | 'info' | 'error'
-
-export type ValidationResult = {
-  severity: Severity
+/**
+ * @internal
+ */
+export interface SchemaValidationResult {
+  severity: 'warning' | 'info' | 'error'
   message: string
   helpId?: string
 }
 
-export type MemberValidator = (def: TypeDef) => Array<ValidationResult>
-
-export type TypeFactory = {
-  get(): TypeFactory
-  extend: (def: TypeDef) => TypeFactory
-}
-
-export type Registry = {[name: string]: TypeFactory}
-
-export type IndexedTypes = {
-  [name: string]: TypeDef
-}
-
-export type Validators = {
-  [name: string]: {
-    validate: (TypeDef, MemberValidator) => Array<ValidationResult>
-    validateMember: (def: TypeDef) => Array<ValidationResult>
-  }
-}
-
-export interface ProblemType {
-  _problems: Problem[]
-}
-
-export type Problem = ValidationResult
-
+/**
+ * @internal
+ */
 export interface TypeWithProblems {
-  path: any[]
-  problems: Problem[]
+  path: ProblemPath
+  problems: SchemaValidationResult[]
 }
+
+/**
+ * @internal
+ */
+export interface ProblemPathTypeSegment {
+  kind: 'type'
+  type: SchemaType
+  name: string
+}
+
+/**
+ * @internal
+ */
+export interface ProblemPathPropertySegment {
+  kind: 'property'
+  name: string
+}
+
+/**
+ * @internal
+ */
+export type ProblemPathSegment = ProblemPathTypeSegment | ProblemPathPropertySegment
+
+/**
+ * @internal
+ */
+export type ProblemPath = ProblemPathSegment[]

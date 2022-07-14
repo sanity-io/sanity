@@ -1,4 +1,4 @@
-import {Severity, ValidationResult} from '../typedefs'
+import type {SchemaValidationResult} from '../typedefs'
 
 // Temporary solution to ensure we have a central registry over used helpIds
 export const HELP_IDS = {
@@ -27,10 +27,10 @@ export const HELP_IDS = {
 }
 
 function createValidationResult(
-  severity: Severity,
+  severity: SchemaValidationResult['severity'],
   message: string,
   helpId: string | null
-): ValidationResult {
+): SchemaValidationResult {
   if (helpId && !Object.keys(HELP_IDS).some((id) => HELP_IDS[id] === helpId)) {
     throw new Error(
       `Used the unknown helpId "${helpId}", please add it to the array in createValidationResult.js`
@@ -43,11 +43,11 @@ function createValidationResult(
   }
 }
 
-export const error = (message: string, helpId?: string | null) =>
+export const error = (message: string, helpId?: string | null): SchemaValidationResult =>
   createValidationResult('error', message, helpId)
 
-export const warning = (message: string, helpId?: string | null) =>
+export const warning = (message: string, helpId?: string | null): SchemaValidationResult =>
   createValidationResult('warning', message, helpId)
 
-export const info = (message: string, helpId?: string | null) =>
+export const info = (message: string, helpId?: string | null): SchemaValidationResult =>
   createValidationResult('info', message, helpId)

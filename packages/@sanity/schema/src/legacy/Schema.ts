@@ -23,10 +23,12 @@ function compileRegistry(schemaDef) {
       add(defsByName[typeName])
     }
   }
+
   function extendMember(memberDef) {
     ensure(memberDef.type)
     return registry[memberDef.type].extend(memberDef, extendMember).get()
   }
+
   function add(typeDef) {
     ensure(typeDef.type)
     if (registry[typeDef.name]) {
@@ -36,26 +38,35 @@ function compileRegistry(schemaDef) {
   }
 }
 
+/**
+ * @beta
+ */
 export default class Schema {
   _original: {name: string; types: any[]}
   _registry: {[typeName: string]: any}
-  static compile(schemaDef) {
+
+  static compile(schemaDef: any): Schema {
     return new Schema(schemaDef)
   }
-  constructor(schemaDef) {
+
+  constructor(schemaDef: any) {
     this._original = schemaDef
     this._registry = compileRegistry(schemaDef)
   }
-  get name() {
+
+  get name(): string {
     return this._original.name
   }
-  get(name) {
+
+  get(name: string): any {
     return this._registry[name] && this._registry[name].get()
   }
-  has(name) {
+
+  has(name: string): boolean {
     return name in this._registry
   }
-  getTypeNames() {
+
+  getTypeNames(): string[] {
     return Object.keys(this._registry)
   }
 }

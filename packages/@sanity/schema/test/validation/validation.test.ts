@@ -1,4 +1,4 @@
-import traverseSchema from '../../src/core/traverseSchema'
+import {traverseSchema} from '../../src/core/traverseSchema'
 import object from '../../src/sanity/validation/types/object'
 import array from '../../src/sanity/validation/types/array'
 

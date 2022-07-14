@@ -1,6 +1,7 @@
-import traverseSchema from '../core/traverseSchema'
+import {traverseSchema, type Visitor} from '../core/traverseSchema'
+import type {_FIXME_} from './typedefs'
 import coreTypes from './coreTypes'
 
-export default function traverseSanitySchema(schemaTypes: Array<any>, visitor) {
+export function traverseSanitySchema(schemaTypes: _FIXME_[], visitor: Visitor) {
   return traverseSchema(schemaTypes, coreTypes, visitor)
 }

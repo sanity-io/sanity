@@ -1,25 +1,45 @@
+import type {SchemaType, SchemaTypeDefinition} from '@sanity/types'
 import {flatten, get} from 'lodash'
 import {error} from './validation/createValidationResult'
-import {TypeWithProblems} from './typedefs'
+import type {ProblemPath, ProblemPathPropertySegment, TypeWithProblems} from './typedefs'
+
+/**
+ * @internal
+ */
+export function groupProblems(types: SchemaTypeDefinition[]): TypeWithProblems[] {
+  return flatten<TypeWithProblems>(types.map((type) => getTypeProblems(type))).filter(
+    (type) => type.problems.length > 0
+  )
+}
 
 function createTypeWithMembersProblemsAccessor(
-  memberPropertyName,
-  getMembers = (type) => get(type, memberPropertyName)
+  memberPropertyName: string,
+  getMembers = (type: SchemaType) => get(type, memberPropertyName)
 ) {
-  return function getProblems(type, parentPath) {
-    const currentPath = [...parentPath, {kind: 'type', type: type.type, name: type.name}]
+  return function getProblems(type, parentPath: ProblemPath): TypeWithProblems[] {
+    const currentPath: ProblemPath = [
+      ...parentPath,
+      {kind: 'type', type: type.type, name: type.name},
+    ]
+
     const members = getMembers(type) || []
 
-    const memberProblems = Array.isArray(members)
+    const memberProblems: TypeWithProblems[][] = Array.isArray(members)
       ? members.map((memberType) => {
-          const memberPath = [...currentPath, {kind: 'property', name: memberPropertyName}]
+          const propertySegment: ProblemPathPropertySegment = {
+            kind: 'property',
+            name: memberPropertyName,
+          }
+          const memberPath: ProblemPath = [...currentPath, propertySegment]
           return getTypeProblems(memberType, memberPath)
         })
       : [
-          {
-            path: currentPath,
-            problems: [error(`Member declaration (${memberPropertyName}) is not an array`)],
-          },
+          [
+            {
+              path: currentPath,
+              problems: [error(`Member declaration (${memberPropertyName}) is not an array`)],
+            },
+          ],
         ]
 
     return [
@@ -38,7 +58,9 @@ const getObjectProblems = createTypeWithMembersProblemsAccessor('fields')
 const getImageProblems = createTypeWithMembersProblemsAccessor('fields')
 const getFileProblems = createTypeWithMembersProblemsAccessor('fields')
 const getArrayProblems = createTypeWithMembersProblemsAccessor('of')
-const getReferenceProblems = createTypeWithMembersProblemsAccessor('to', (type) => arrify(type.to))
+const getReferenceProblems = createTypeWithMembersProblemsAccessor('to', (type) =>
+  'to' in type ? arrify(type.to) : []
+)
 const getBlockAnnotationProblems = createTypeWithMembersProblemsAccessor('marks.annotations')
 const getBlockMemberProblems = createTypeWithMembersProblemsAccessor('of')
 const getBlockProblems = (type, problems) => [
@@ -55,7 +77,7 @@ function getDefaultProblems(type, path = []): TypeWithProblems[] {
   ]
 }
 
-export function getTypeProblems(type, path = []): TypeWithProblems[] {
+function getTypeProblems(type: SchemaTypeDefinition, path = []): TypeWithProblems[] {
   switch (type.type) {
     case 'object': {
       return getObjectProblems(type, path)
@@ -82,10 +104,4 @@ export function getTypeProblems(type, path = []): TypeWithProblems[] {
       return getDefaultProblems(type, path)
     }
   }
-}
-
-export default function groupProblems(types) {
-  return flatten<TypeWithProblems>(types.map((type) => getTypeProblems(type))).filter(
-    (type) => type.problems.length > 0
-  )
 }

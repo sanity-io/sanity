@@ -1,4 +1,4 @@
-import SchemaBuilder from '@sanity/schema'
+import SchemaBuilder, {type SchemaValidationResult} from '@sanity/schema'
 import {validateSchema, groupProblems} from '@sanity/schema/_internal'
 import {Schema} from '@sanity/types'
 import {inferFromSchema as inferValidation} from '@sanity/validation'
@@ -14,7 +14,7 @@ import imageDimensions from './types/imageDimensions'
 import imageMetadata from './types/imageMetadata'
 import fileAsset from './types/fileAsset'
 
-const isError = (problem: any) => problem.severity === 'error'
+const isError = (problem: SchemaValidationResult) => problem.severity === 'error'
 
 const builtinTypes = [
   assetSourceData,

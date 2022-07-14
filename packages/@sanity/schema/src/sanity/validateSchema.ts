@@ -1,4 +1,4 @@
-import traverseSchema from './traverseSchema'
+import {traverseSanitySchema} from './traverseSchema'
 import object from './validation/types/object'
 import documentVisitor from './validation/types/document'
 import reference from './validation/types/reference'
@@ -10,6 +10,7 @@ import block from './validation/types/block'
 import common from './validation/types/common'
 import rootType from './validation/types/rootType'
 import crossDatasetReference from './validation/types/crossDatasetReference'
+import {_FIXME_} from './typedefs'
 
 const typeVisitors = {
   array,
@@ -44,11 +45,11 @@ function combine(...visitors) {
   }
 }
 
-// Future improvements:
-// - Provide an easy way to determine if schema has problems of a certain class (e.g. errors)
-// Clean up the api
-export default function validateSchema(schemaTypes) {
-  return traverseSchema(schemaTypes, (schemaDef, visitorContext) => {
+/**
+ * @internal
+ */
+export function validateSchema(schemaTypes: _FIXME_) {
+  return traverseSanitySchema(schemaTypes, (schemaDef, visitorContext) => {
     const typeVisitor =
       (schemaDef && schemaDef.type && typeVisitors[schemaDef.type]) ||
       getNoopVisitor(visitorContext)
