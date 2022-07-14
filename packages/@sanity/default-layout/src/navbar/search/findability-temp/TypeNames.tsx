@@ -1,22 +1,29 @@
 import React from 'react'
 import {SchemaType} from '@sanity/types'
+import {SemiboldSpan} from './SemiboldSpan'
 
 function typeTitle(schemaType: SchemaType) {
   return schemaType.title ?? schemaType.name
 }
 
-export function TypeNames({types}: {types: SchemaType[]}) {
+export function TypeNames({prefix, types}: {prefix?: string; types: SchemaType[]}) {
   if (!types.length) {
-    return <>all document types</>
+    return null
   }
   if (types.length === 1) {
-    return <strong>{typeTitle(types[0])}</strong>
+    return (
+      <>
+        {prefix && `${prefix} `}
+        <SemiboldSpan>{typeTitle(types[0])}</SemiboldSpan>
+      </>
+    )
   }
   return (
     <>
+      {prefix && `${prefix} `}
       {types.map((schemaType, i) => {
         const title = typeTitle(schemaType)
-        const element = <strong key={title}>{title}</strong>
+        const element = <SemiboldSpan key={title}>{title}</SemiboldSpan>
         if (i < types.length - 2) {
           return <React.Fragment key={title}>{element}, </React.Fragment>
         } else if (i === types.length - 1) {

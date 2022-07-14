@@ -1,13 +1,16 @@
 import {ObjectSchemaType, SchemaType} from '@sanity/types'
 import {getRootType, sortTypes} from '../utils/helpers'
-import {SearchReducerState} from './search-reducer'
 
+/**
+ * Returns a list of all available document types filtered by a search string.
+ * Types containing the search string in its `title` or `name` will be returned.
+ */
 export function getSelectableTypes(
   schema: {
     get: (typeName: string) => SchemaType | undefined
     getTypeNames(): string[]
   },
-  selectedTypes: SchemaType[],
+  // selectedTypes: SchemaType[],
   typeFilter: string
 ): ObjectSchemaType[] {
   return (
@@ -22,16 +25,4 @@ export function getSelectableTypes(
       )
       .sort(sortTypes)
   )
-}
-
-export function showNoResults({result: {loading, hits}, terms}: SearchReducerState): boolean {
-  return hits.length === 0 && terms.query !== '' && !loading
-}
-
-export function showRecentSearches({result: {loading}, terms}: SearchReducerState): boolean {
-  return !loading && terms.query === '' && !terms.types.length
-}
-
-export function showResults({result: {hits}}: SearchReducerState): boolean {
-  return hits.length > 0
 }

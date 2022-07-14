@@ -1,116 +1,137 @@
-import React, {useCallback, useMemo, useRef, useState} from 'react'
-import styled from 'styled-components'
-import {ObjectSchemaType, SchemaType} from '@sanity/types'
+import {hues} from '@sanity/color'
+import {CheckmarkIcon, SearchIcon} from '@sanity/icons'
+import type {ObjectSchemaType} from '@sanity/types'
+import {Box, Button, Card, Stack, Text, TextInput} from '@sanity/ui'
 import schema from 'part:@sanity/base/schema'
-import {SearchIcon} from '@sanity/icons'
-import {Button, Card, Flex, Menu, MenuDivider, MenuItem, Text, TextInput} from '@sanity/ui'
-import {CheckedSquareIcon, UncheckedSquareIcon} from './Icons'
-import {useSearchDispatch, useSearchState} from './state/SearchContext'
+import React, {useCallback, useMemo, useState} from 'react'
+import styled from 'styled-components'
 import {getSelectableTypes} from './state/search-selectors'
-
-const TypeMenu = styled(Menu)`
-  overflow-y: auto;
-  overflow-x: hidden;
-  max-height: calc(100vh - 100px);
-  width: 250px;
-`
+import {useOmnisearch} from './state/OmnisearchContext'
 
 export function TypeFilter() {
   const [typeFilter, setTypeFilter] = useState('')
-  const dispatch = useSearchDispatch()
   const {
-    terms: {types},
-  } = useSearchState()
+    dispatch,
+    state: {
+      filtersVisible,
+      terms: {types: selectedTypes},
+    },
+  } = useOmnisearch()
 
-  const documentTypes = useMemo(() => getSelectableTypes(schema, types, typeFilter), [
+  const allDocumentTypes = useMemo(() => getSelectableTypes(schema, ''), [])
+  const displayFilterInput = useMemo(() => allDocumentTypes.length >= 10, [allDocumentTypes])
+  const selectableDocumentTypes = useMemo(() => getSelectableTypes(schema, typeFilter), [
     typeFilter,
-    types,
   ])
 
-  const clearTypes = useCallback(() => dispatch({type: 'CLEAR_TYPES'}), [dispatch])
-
-  const filterChanged = useCallback(
+  const handleClearTypes = useCallback(() => dispatch({type: 'TYPES_CLEAR'}), [dispatch])
+  const handleFilterChange = useCallback(
     (e: React.KeyboardEvent<HTMLInputElement>) => setTypeFilter(e.currentTarget.value),
     [setTypeFilter]
   )
 
+  if (!filtersVisible) {
+    return null
+  }
+
   return (
-    <Card tone="primary">
-      <TypeMenu space={2}>
-        <TextInput
-          icon={SearchIcon}
-          placeholder="Search types"
-          muted
-          value={typeFilter}
-          onChange={filterChanged}
-        />
-        {/*        {types.map((type) => (
-          <TypeItem key={type.name} selected type={type} />
-        ))}*/}
+    <Container tone="transparent">
+      <Card
+        paddingX={1}
+        paddingTop={1}
+        style={{position: 'sticky', top: 0, zIndex: 1}}
+        tone="transparent"
+      >
+        {/* Search */}
+        {displayFilterInput && (
+          <TextInput
+            fontSize={1}
+            icon={SearchIcon}
+            muted
+            onChange={handleFilterChange}
+            placeholder="Filter document types"
+            radius={2}
+            value={typeFilter}
+          />
+        )}
+      </Card>
+      <Box paddingBottom={1} paddingTop={displayFilterInput ? 1 : 0} paddingX={1}>
+        {/* Selectable document types */}
+        <Stack space={1}>
+          {selectableDocumentTypes.map((type) => (
+            <TypeItem key={type.name} selected={selectedTypes.includes(type)} type={type} />
+          ))}
+        </Stack>
 
-        <Button
-          mode="bleed"
-          text="Clear"
-          tone="primary"
-          fontSize={1}
-          padding={2}
-          onClick={clearTypes}
-          disabled={types.length === 0}
-          data-name="type-filter-button"
-        />
-        <MenuDivider />
-
-        {documentTypes.map((type) => (
-          <TypeItem key={type.name} selected={types.includes(type)} type={type} />
-        ))}
-        {!documentTypes.length && (
-          <Card>
-            <Text muted size={1}>
+        {/* No results */}
+        {!selectableDocumentTypes.length && (
+          <Box padding={3}>
+            <Text muted size={1} textOverflow="ellipsis">
               No types matches '{typeFilter}'.
             </Text>
-          </Card>
+          </Box>
         )}
-      </TypeMenu>
-    </Card>
+      </Box>
+      {/* Clear button (bottom) */}
+      <Card
+        paddingBottom={1}
+        paddingX={1}
+        style={{position: 'sticky', bottom: 0, zIndex: 1}}
+        tone="transparent"
+      >
+        <Stack space={1}>
+          {selectedTypes.length > 0 && (
+            <Box style={{borderBottom: `1px solid ${hues.gray[200].hex}`}} />
+          )}
+          {selectedTypes.length > 0 && (
+            <Button
+              data-name="type-filter-button"
+              disabled={selectedTypes.length === 0}
+              fontSize={1}
+              mode="bleed"
+              onClick={handleClearTypes}
+              padding={3}
+              text="Clear all"
+              tone="primary"
+            />
+          )}
+        </Stack>
+      </Card>
+    </Container>
   )
 }
 
 function TypeItem(props: {selected: boolean; type: ObjectSchemaType}) {
   const {selected, type} = props
-  const dispatch = useSearchDispatch()
-  const ref = useRef<HTMLDivElement>()
+  const {dispatch} = useOmnisearch()
 
-  const focusSibling = useCallback(() => {
-    const current = ref.current
-    const sibling = current?.nextSibling ?? current.previousSibling
-    if (sibling && 'focus' in sibling) {
-      requestAnimationFrame(() => (sibling as HTMLElement)?.focus())
-    }
-  }, [])
+  const handleAddType = useCallback(() => {
+    dispatch({type: 'TYPE_ADD', schemaType: type})
+  }, [dispatch, type])
 
-  const selectType = useCallback(() => {
-    dispatch({type: 'ADD_TYPE', schemaType: type})
-    focusSibling()
-  }, [dispatch, type, focusSibling])
-
-  const unselectType = useCallback(() => {
-    dispatch({type: 'REMOVE_TYPE', schemaType: type})
-    focusSibling()
-  }, [dispatch, type, focusSibling])
-
-  const action = selected ? unselectType : selectType
+  const handleRemoveType = useCallback(() => {
+    dispatch({type: 'TYPE_REMOVE', schemaType: type})
+  }, [dispatch, type])
 
   return (
-    <MenuItem key={type.title ?? type.name} onClick={action} ref={ref}>
-      <Flex gap={3}>
-        <Text size={1} muted>
-          {selected ? <CheckedSquareIcon /> : <UncheckedSquareIcon />}
-        </Text>
-
-        <Text size={2} textOverflow="ellipsis">
-          {type.title ?? type.name}
-        </Text>
-      </Flex>
-    </MenuItem>
+    <Button
+      fontSize={1}
+      iconRight={selected && CheckmarkIcon}
+      justify="flex-start"
+      key={type.title ?? type.name}
+      mode="bleed"
+      onClick={selected ? handleRemoveType : handleAddType}
+      selected={selected}
+      text={type.title ?? type.name}
+      tone={selected ? 'primary' : 'default'}
+    />
   )
 }
+
+const Container = styled(Card)`
+  border-left: 1px solid ${hues.gray[100].hex};
+  overflow-y: auto;
+  overflow-x: hidden;
+  max-width: 250px;
+  width: 100%;
+`
