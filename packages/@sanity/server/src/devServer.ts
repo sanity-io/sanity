@@ -12,6 +12,7 @@ import {
 import {debug} from './debug'
 import {getEntryModule} from './getEntryModule'
 import {loadSanityMonorepo} from './sanityMonorepo'
+import {getSanityStudioConfigPath} from './sanityConfig'
 
 export interface DevServerOptions {
   cwd: string
@@ -60,7 +61,8 @@ export async function startDevServer(options: DevServerOptions): Promise<DevServ
   await renderAndWriteDocument()
 
   debug('Writing app.js to runtime directory')
-  const relativeConfigLocation = path.relative(runtimeDir, path.join(cwd, 'sanity.config'))
+  const studioConfigPath = await getSanityStudioConfigPath(cwd)
+  const relativeConfigLocation = path.relative(runtimeDir, studioConfigPath)
   await fs.writeFile(path.join(runtimeDir, 'app.js'), getEntryModule({relativeConfigLocation}))
 
   debug('Resolving vite config')

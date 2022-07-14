@@ -2,31 +2,43 @@ import path from 'path'
 import fs from 'fs/promises'
 
 /**
- * Resolves the path to the studio configuration file, prefering
- * `sanity.config.js`, but allowing `sanity.config.ts`. Falls back to the
- * default studio configuration exported by `sanity`
+ * Resolves the path to the studio configuration file with the following extensions,
+ * in preferred order: '.mjs', '.js', '.ts', '.jsx', '.tsx' (aligns with vite)
+ *
+ * Falls back to the default studio configuration exported by `sanity` if none is found
  *
  * @internal
  */
-export async function getSanityStudioConfigPath(studioRootPath: string): Promise<string | null> {
-  const jsConfigPath = path.join(studioRootPath, 'sanity.config.js')
-  const tsConfigPath = path.join(studioRootPath, 'sanity.config.ts')
+export async function getSanityStudioConfigPath(studioRootPath: string): Promise<string> {
+  const configPaths = [
+    path.join(studioRootPath, 'sanity.config.mjs'),
+    path.join(studioRootPath, 'sanity.config.js'),
+    path.join(studioRootPath, 'sanity.config.ts'),
+    path.join(studioRootPath, 'sanity.config.jsx'),
+    path.join(studioRootPath, 'sanity.config.tsx'),
+  ]
 
-  const [js, ts] = await Promise.all([fileExists(jsConfigPath), fileExists(tsConfigPath)])
+  const configs = await Promise.all(
+    configPaths.map(async (configPath) => ({
+      path: configPath,
+      exists: await fileExists(configPath),
+    }))
+  )
 
-  if (!js && !ts) {
+  // No config file exists?
+  const availableConfigs = configs.filter((config) => config.exists)
+  if (availableConfigs.length === 0) {
+    console.warn('No `sanity.config.js`/`sanity.config.ts` found - using default studio config')
     return path.join(__dirname, 'defaultStudioConfig.js')
   }
 
-  if (!js && ts) {
-    return tsConfigPath
+  if (availableConfigs.length > 1) {
+    console.warn('Found multiple potential studio configs:')
+    availableConfigs.forEach((config) => console.warn(` - ${config.path}`))
+    console.warn(`Using ${availableConfigs[0].path}`)
   }
 
-  if (js && ts) {
-    console.warn('Found both `sanity.config.js` and `sanity.config.ts` - using sanity.config.js')
-  }
-
-  return jsConfigPath
+  return availableConfigs[0].path
 }
 
 /**
