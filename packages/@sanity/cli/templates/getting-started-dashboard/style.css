@@ -1,0 +1,5 @@
+/* Here you can add any CSS you'd like to use to override the Studio's defualt styles! */
+
+:global([data-ui="PaneItem"] *:not(svg) + span) {
+  box-shadow: none !important;
+}
