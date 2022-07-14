@@ -35,7 +35,7 @@ export function RecentSearches() {
               Recent searches
             </Label>
           </Box>
-          <Stack space={1}>
+          <Stack>
             {recentSearches?.map((recentSearch) => (
               <RecentSearchItem
                 key={recentSearch.__recentTimestamp}

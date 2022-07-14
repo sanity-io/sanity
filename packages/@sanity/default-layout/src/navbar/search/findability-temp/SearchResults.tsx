@@ -1,12 +1,9 @@
-import {TextWithTone} from '@sanity/base/components'
-import {BulbOutlineIcon} from '@sanity/icons'
-import {Box, Button, Flex, Inline, Stack, Text} from '@sanity/ui'
+import {Box, Button, Flex, Stack, Text} from '@sanity/ui'
+import pluralize from 'pluralize'
 import React, {useCallback} from 'react'
 import {addSearchTerm} from './local-storage/search-store'
 import {SearchResultItem} from './SearchResultItem'
-import {SemiboldSpan} from './SemiboldSpan'
 import {useOmnisearch} from './state/OmnisearchContext'
-import {TypeNames} from './TypeNames'
 
 interface SearchResultsProps {
   onRecentSearchClick?: () => void
@@ -52,20 +49,11 @@ export function SearchResults(props: SearchResultsProps) {
         // No results
         <Flex align="center" direction="column" gap={4} paddingX={4} paddingY={5}>
           <Text align="center" muted size={2}>
-            No results for <SemiboldSpan>“{terms.query}”</SemiboldSpan> in{' '}
-            {terms.types.length > 0 ? <TypeNames types={terms.types} /> : 'all document types'}
+            No results {terms.types.length > 1 ? 'across' : 'in'}{' '}
+            {terms.types.length > 0
+              ? `${terms.types.length} document ${pluralize('type', terms.types.length)}`
+              : 'all document types'}
           </Text>
-
-          {terms.types.length > 0 && (
-            <Inline space={2}>
-              <TextWithTone size={2} tone="caution">
-                <BulbOutlineIcon />
-              </TextWithTone>
-              <TextWithTone align="center" size={1} tone="caution">
-                Try adjusting the document type filter
-              </TextWithTone>
-            </Inline>
-          )}
         </Flex>
       )}
     </Box>
