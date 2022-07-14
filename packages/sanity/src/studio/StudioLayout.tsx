@@ -1,9 +1,8 @@
-import {Box, Button, Card, Code, ErrorBoundary, Flex, Heading, Spinner, useToast} from '@sanity/ui'
+import {Box, Button, Card, Code, ErrorBoundary, Flex, Heading, Spinner} from '@sanity/ui'
 import {startCase} from 'lodash'
 import React, {createElement, Suspense, useCallback, useEffect, useMemo, useState} from 'react'
 import styled from 'styled-components'
 import {RouteScope, useRouter} from '../router'
-import {globalScope} from '../util/globalScope'
 import {Navbar} from './components'
 import {NoToolsScreen} from './screens/NoToolsScreen'
 import {ToolNotFoundScreen} from './screens/ToolNotFoundScreen'
@@ -16,10 +15,7 @@ const SearchFullscreenPortalCard = styled(Card)`
   flex: 1;
 `
 
-const errorChannel = (globalScope as any).__sanityErrorChannel
-
 export function StudioLayout() {
-  const {push: pushToast} = useToast()
   const {state: routerState} = useRouter()
   const {name, title, tools} = useWorkspace()
   const activeToolName = typeof routerState.tool === 'string' ? routerState.tool : undefined
@@ -55,25 +51,6 @@ export function StudioLayout() {
   const handleToolRetry = useCallback(() => {
     setToolError(null)
   }, [])
-
-  useEffect(() => {
-    if (!errorChannel) return undefined
-
-    return errorChannel.subscribe((msg: any) => {
-      // NOTE: if the "ResizeObserver loop limit exceeded" error is thrown by the browser,
-      // then the error will be `null`. We ignore this error.
-      if (msg.error) {
-        console.error(msg.error)
-        pushToast({
-          closable: true,
-          description: msg.error.message,
-          duration: 5000,
-          title: 'Uncaught error',
-          status: 'error',
-        })
-      }
-    })
-  }, [pushToast])
 
   return (
     <Flex data-ui="ToolScreen" direction="column" height="fill">

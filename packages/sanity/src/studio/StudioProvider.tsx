@@ -6,7 +6,7 @@ import json from 'refractor/lang/json'
 import jsx from 'refractor/lang/jsx'
 import typescript from 'refractor/lang/typescript'
 import {History} from 'history'
-import {ThemeColorSchemeKey} from '@sanity/ui'
+import {ThemeColorSchemeKey, ToastProvider} from '@sanity/ui'
 import {Config} from '../config'
 import {UserColorManagerProvider} from '../user-color'
 import {ResourceCacheProvider} from '../datastores/ResourceCacheProvider'
@@ -24,6 +24,7 @@ import {
 } from './screens'
 import {WorkspacesProvider} from './workspaces'
 import {AuthBoundary} from './AuthBoundary'
+import {Z_OFFSET} from './constants'
 
 Refractor.registerLanguage(bash)
 Refractor.registerLanguage(javascript)
@@ -55,32 +56,34 @@ export function StudioProvider({
 
   return (
     <ColorSchemeProvider onSchemeChange={onSchemeChange} scheme={scheme}>
-      <StudioErrorBoundary>
-        <WorkspacesProvider config={config}>
-          <ActiveWorkspaceMatcher
-            unstable_history={history}
-            NotFoundComponent={NotFoundScreen}
-            LoadingComponent={LoadingScreen}
-          >
-            <StudioThemeProvider>
-              <UserColorManagerProvider>
-                <ConditionalAuthBoundary
-                  LoadingComponent={LoadingScreen}
-                  AuthenticateComponent={AuthenticateScreen}
-                  NotAuthenticatedComponent={NotAuthenticatedScreen}
-                >
-                  <WorkspaceLoader
+      <ToastProvider paddingY={7} zOffset={Z_OFFSET.toast}>
+        <StudioErrorBoundary>
+          <WorkspacesProvider config={config}>
+            <ActiveWorkspaceMatcher
+              unstable_history={history}
+              NotFoundComponent={NotFoundScreen}
+              LoadingComponent={LoadingScreen}
+            >
+              <StudioThemeProvider>
+                <UserColorManagerProvider>
+                  <ConditionalAuthBoundary
                     LoadingComponent={LoadingScreen}
-                    ConfigErrorsComponent={ConfigErrorsScreen}
+                    AuthenticateComponent={AuthenticateScreen}
+                    NotAuthenticatedComponent={NotAuthenticatedScreen}
                   >
-                    <ResourceCacheProvider>{children}</ResourceCacheProvider>
-                  </WorkspaceLoader>
-                </ConditionalAuthBoundary>
-              </UserColorManagerProvider>
-            </StudioThemeProvider>
-          </ActiveWorkspaceMatcher>
-        </WorkspacesProvider>
-      </StudioErrorBoundary>
+                    <WorkspaceLoader
+                      LoadingComponent={LoadingScreen}
+                      ConfigErrorsComponent={ConfigErrorsScreen}
+                    >
+                      <ResourceCacheProvider>{children}</ResourceCacheProvider>
+                    </WorkspaceLoader>
+                  </ConditionalAuthBoundary>
+                </UserColorManagerProvider>
+              </StudioThemeProvider>
+            </ActiveWorkspaceMatcher>
+          </WorkspacesProvider>
+        </StudioErrorBoundary>
+      </ToastProvider>
     </ColorSchemeProvider>
   )
 }
