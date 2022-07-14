@@ -31,7 +31,9 @@
 
   // NOTE: Store the error channel instance in the global scope so that the Studio application can
   // access it and subscribe to errors.
-  window.__sanityErrorChannel = errorChannel
+  window.__sanityErrorChannel = {
+    subscribe: errorChannel.subscribe,
+  }
 
   function _nextTick(callback) {
     setTimeout(callback, 0)
