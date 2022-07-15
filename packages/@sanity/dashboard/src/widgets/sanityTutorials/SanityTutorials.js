@@ -1,10 +1,29 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import {get} from 'lodash'
-import {Flex} from '@sanity/ui'
-import {DashboardWidget} from '../../DashboardTool'
+import {Flex, Grid, Stack, Heading, Container} from '@sanity/ui'
 import Tutorial from './Tutorial'
 import dataAdapter from './dataAdapter'
+
+const FeedItem = ({feedItem}) => {
+  // Check to see if the feed item has the content needed to render an item with a link and poster image
+  const isEmpty =
+    !feedItem.title || (!feedItem.guideOrTutorial && !feedItem.externalLink && !feedItem.feedItems)
+
+  if (isEmpty) {
+    return null
+  }
+  const subtitle = feedItem.description
+  const {guideOrTutorial = {}} = feedItem
+  return (
+    <Tutorial
+      title={feedItem.title}
+      href={createUrl(guideOrTutorial.slug, guideOrTutorial._type) || feedItem.externalLink}
+      presenterSubtitle={subtitle}
+      showPlayIcon={feedItem.hasVideo}
+      posterURL={urlBuilder.image(feedItem.poster).height(360).url()}
+    />
+  )
+}
 
 const {urlBuilder, getFeed} = dataAdapter
 
@@ -34,6 +53,7 @@ class SanityTutorials extends React.Component {
     const {templateRepoId} = this.props
     this.subscription = getFeed(templateRepoId).subscribe((response) => {
       this.setState({
+        title: response.title,
         feedItems: response.items,
       })
     })
@@ -46,44 +66,49 @@ class SanityTutorials extends React.Component {
   }
 
   render() {
-    const {feedItems} = this.state
-    const title = 'Learn about Sanity'
+    const {title = 'Learn about Sanity', feedItems} = this.state
+
+    // Filter out items and sections for layout purposes
+    const sections = feedItems.filter((i) => i._type === 'feedSection')
+    const items = feedItems.filter((i) => i._type === 'feedItem')
+
+    const columns = (length) => (length < 4 ? [1, 2, 3] : [1, 2, 3, 4])
 
     return (
-      <DashboardWidget header={title}>
-        <Flex as="ul" overflow="auto" align="stretch" paddingY={2}>
-          {feedItems?.map((feedItem, index) => {
-            if (!feedItem.title || (!feedItem.guideOrTutorial && !feedItem.externalLink)) {
-              return null
-            }
-            const presenter = feedItem.presenter || get(feedItem, 'guideOrTutorial.presenter') || {}
-            const subtitle = get(feedItem, 'category')
-            const {guideOrTutorial = {}} = feedItem
-            return (
-              <Flex
-                as="li"
-                key={feedItem._id}
-                paddingRight={index < feedItems?.length - 1 ? 1 : 3}
-                paddingLeft={index === 0 ? 3 : 0}
-                align="stretch"
-                flex="0 0 27.5%"
-                style={{minWidth: 272, width: '30%'}}
-              >
-                <Tutorial
-                  title={feedItem.title}
-                  href={
-                    createUrl(guideOrTutorial.slug, guideOrTutorial._type) || feedItem.externalLink
-                  }
-                  presenterName={presenter.name}
-                  presenterSubtitle={subtitle}
-                  showPlayIcon={feedItem.hasVideo}
-                  posterURL={urlBuilder.image(feedItem.poster).height(360).url()}
-                />
-              </Flex>
-            )
-          })}
-        </Flex>
-      </DashboardWidget>
+      <Container width={4}>
+        <Stack space={5} paddingBottom={4}>
+          {sections &&
+            sections?.length > 0 &&
+            sections.map((section) => {
+              return (
+                section?.sectionItems && (
+                  <Stack space={4} key={section._id}>
+                    <Heading>{section.title}</Heading>
+                    <Grid as="ul" columns={columns(section?.sectionItems?.length)} gap={4}>
+                      {section?.sectionItems.map((item) => (
+                        <Flex as="li" key={item._id}>
+                          <FeedItem feedItem={item} />
+                        </Flex>
+                      ))}
+                    </Grid>
+                  </Stack>
+                )
+              )
+            })}
+          {items && items.length > 0 && (
+            <Stack space={4}>
+              <Heading>{title}</Heading>
+              <Grid as="ul" columns={columns(items?.length)} gap={4}>
+                {items.map((feedItem) => (
+                  <Flex as="li" key={feedItem.id}>
+                    <FeedItem feedItem={feedItem} />
+                  </Flex>
+                ))}
+              </Grid>
+            </Stack>
+          )}
+        </Stack>
+      </Container>
     )
   }
 }
