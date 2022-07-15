@@ -62,7 +62,7 @@ export function TypeFilter() {
             muted
             onChange={handleFilterChange}
             onClear={handleFilterClear}
-            placeholder="Filter document types"
+            placeholder="Document type"
             radius={2}
             value={typeFilter}
           />
@@ -85,7 +85,7 @@ export function TypeFilter() {
         {!selectableDocumentTypes.length && (
           <Box padding={3}>
             <Text muted size={1} textOverflow="ellipsis">
-              No types matches '{typeFilter}'.
+              No matches for '{typeFilter}'.
             </Text>
           </Box>
         )}
