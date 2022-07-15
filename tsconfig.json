@@ -1,14 +1,7 @@
 {
   "extends": "./tsconfig.settings",
-  "include": [
-    "./babel.config.js",
-    "./dev/aliases.js",
-    "./scripts",
-    "./test"
-  ],
-  "exclude": [
-    "./test/v2-studio"
-  ],
+  "include": ["./babel.config.js", "./dev/aliases.js", "./scripts", "./test"],
+  "exclude": ["./test/v2-studio"],
   "compilerOptions": {
     "allowJs": true,
     "emitDeclarationOnly": true,
@@ -22,7 +15,6 @@
     {"path": "./packages/@sanity/portable-text-editor"},
     {"path": "./packages/@sanity/schema"},
     {"path": "./packages/@sanity/server"},
-    {"path": "./packages/@sanity/transaction-collator"},
     {"path": "./packages/@sanity/types"},
     {"path": "./packages/@sanity/util"},
     {"path": "./packages/@sanity/validation"},

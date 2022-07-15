@@ -15,7 +15,6 @@ module.exports = {
   '@sanity/mutator': './packages/@sanity/mutator/src',
   '@sanity/portable-text-editor': './packages/@sanity/portable-text-editor/src',
   '@sanity/schema': './packages/@sanity/schema/src/_exports',
-  '@sanity/transaction-collator': './packages/@sanity/transaction-collator/src',
   '@sanity/types': './packages/@sanity/types/src',
   '@sanity/types/parts': './packages/@sanity/types/parts',
   '@sanity/util': './packages/@sanity/util/src',

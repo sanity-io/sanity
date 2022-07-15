@@ -33,7 +33,6 @@ export const config = {
     '@sanity/portable-text-editor',
     '@sanity/schema',
     '@sanity/server',
-    '@sanity/transaction-collator',
     '@sanity/types',
     '@sanity/util',
     '@sanity/validation',

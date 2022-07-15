@@ -6,7 +6,6 @@ const JEST_PROJECTS = [
   '@sanity/mutator',
   '@sanity/portable-text-editor',
   '@sanity/schema',
-  '@sanity/transaction-collator',
   '@sanity/util',
   '@sanity/validation',
 ]
