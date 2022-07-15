@@ -22,12 +22,18 @@ export function SearchController(): null {
     onStart: () => dispatch({type: 'SEARCH_REQUEST_START'}),
   })
 
-  // Trigger search when either any terms (query or types) or current pageIndex has changed
+  const hasValidTerms = terms.types.length > 0 || terms.query !== ''
+
+  /**
+   * Trigger search when both:
+   * 1. either any terms (query or selected types) OR current pageIndex has changed
+   * 2. we have a valid, non-empty query
+   */
   useEffect(() => {
-    if (
-      Object.keys(terms).some((key) => terms[key] !== searchState.terms[key]) ||
-      pageIndex !== previousPageIndex.current
-    ) {
+    const termsChanged = Object.keys(terms).some((key) => terms[key] !== searchState.terms[key])
+    const pageIndexChanged = pageIndex !== previousPageIndex.current
+
+    if ((termsChanged || pageIndexChanged) && hasValidTerms) {
       handleSearch({
         ...terms,
         limit: SEARCH_LIMIT,
@@ -36,7 +42,16 @@ export function SearchController(): null {
 
       previousPageIndex.current = pageIndex
     }
-  }, [handleSearch, pageIndex, searchState.terms, terms])
+  }, [handleSearch, hasValidTerms, pageIndex, searchState.terms, terms])
+
+  /**
+   * Reset search hits / state when we have empty search terms (no search query or types)
+   */
+  useEffect(() => {
+    if (!hasValidTerms) {
+      dispatch({type: 'SEARCH_CLEAR'})
+    }
+  }, [dispatch, hasValidTerms, terms.query, terms.types])
 
   return null
 }
