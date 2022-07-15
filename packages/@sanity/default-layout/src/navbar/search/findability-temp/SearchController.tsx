@@ -1,3 +1,4 @@
+import type {SearchTerms} from '@sanity/base'
 import {useEffect, useRef} from 'react'
 import {SEARCH_LIMIT} from '../constants'
 import {useSearch} from '../useSearch'
@@ -9,6 +10,7 @@ export function SearchController(): null {
     state: {pageIndex, result, terms},
   } = useOmnisearch()
   const previousPageIndex = useRef<number>(0)
+  const previousTerms = useRef<SearchTerms>(null)
 
   const {handleSearch, searchState} = useSearch({
     initialState: {
@@ -28,9 +30,15 @@ export function SearchController(): null {
    * Trigger search when both:
    * 1. either any terms (query or selected types) OR current pageIndex has changed
    * 2. we have a valid, non-empty query
+   *
+   * Note that we compare inbound terms with our last local snapshot, and not the value of
+   * `searchState` from `useSearch`, as that only contains a reference to the last _executed_ request,
+   * and we may not execute searches when terms change (e.g. no search is run when terms are empty).
    */
   useEffect(() => {
-    const termsChanged = Object.keys(terms).some((key) => terms[key] !== searchState.terms[key])
+    const termsChanged = Object.keys(terms).some(
+      (key) => terms[key] !== previousTerms.current?.[key]
+    )
     const pageIndexChanged = pageIndex !== previousPageIndex.current
 
     if ((termsChanged || pageIndexChanged) && hasValidTerms) {
@@ -40,8 +48,12 @@ export function SearchController(): null {
         offset: pageIndex * SEARCH_LIMIT,
       })
 
+      // Update pageIndex snapshot only on a valid search request
       previousPageIndex.current = pageIndex
     }
+
+    // Update our terms snapshot, even if no search request was executed
+    previousTerms.current = terms
   }, [handleSearch, hasValidTerms, pageIndex, searchState.terms, terms])
 
   /**
