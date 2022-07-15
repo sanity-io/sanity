@@ -1,1 +1,1 @@
-export const SEARCH_LIMIT = 5
+export const SEARCH_LIMIT = 20

@@ -26,8 +26,8 @@ export function RecentSearchItem(props: RecentSearchesProps) {
       style={{width: '100%'}}
     >
       <Flex align="center">
-        <Box paddingY={3}>
-          <Text size={1}>
+        <Box paddingY={2}>
+          <Text size={2}>
             <ClockIcon />
           </Text>
         </Box>

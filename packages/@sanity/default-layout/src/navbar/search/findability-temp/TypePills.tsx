@@ -1,7 +1,7 @@
 import {TextWithTone} from '@sanity/base/components'
 import {hues} from '@sanity/color'
 import {SchemaType} from '@sanity/types'
-import {Card, Flex, Text} from '@sanity/ui'
+import {Box, Card, Flex, Text} from '@sanity/ui'
 import React, {useMemo} from 'react'
 import styled from 'styled-components'
 
@@ -52,9 +52,11 @@ export function TypePills({types}: {types: SchemaType[]}) {
         )
       })}
       {!!remainingCount && (
-        <Text muted size={1}>
-          +{remainingCount} more
-        </Text>
+        <Box marginLeft={1}>
+          <Text muted size={1}>
+            +{remainingCount} more
+          </Text>
+        </Box>
       )}
     </Flex>
   )

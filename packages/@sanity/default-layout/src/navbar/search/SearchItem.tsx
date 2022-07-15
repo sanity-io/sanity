@@ -34,7 +34,6 @@ export function SearchItem(props: SearchItemProps) {
             intent="edit"
             params={{id: getPublishedId(hit._id), type: type.name}}
             data-hit-index={resultIndex}
-            tabIndex={-1}
             ref={ref}
           />
         )
@@ -43,7 +42,14 @@ export function SearchItem(props: SearchItemProps) {
   )
 
   return (
-    <PreviewCard data-as="a" as={LinkComponent} onClick={onClick} {...restProps} radius={2}>
+    <PreviewCard
+      __unstable_focusRing
+      data-as="a"
+      as={LinkComponent}
+      onClick={onClick}
+      {...restProps}
+      radius={2}
+    >
       <Preview
         value={hit}
         layout="default"
