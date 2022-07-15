@@ -1,7 +1,7 @@
 import {useRovingFocus} from '@sanity/base/components'
-import {Box, Button, Flex, Stack, Text} from '@sanity/ui'
-import pluralize from 'pluralize'
+import {Box, Button, Stack} from '@sanity/ui'
 import React, {useCallback, useState} from 'react'
+import {Instructions} from './Instructions'
 import {addSearchTerm} from './local-storage/search-store'
 import {SearchResultItem} from './SearchResultItem'
 import {useOmnisearch} from './state/OmnisearchContext'
@@ -43,7 +43,15 @@ export function SearchResults(props: SearchResultsProps) {
     <Box>
       {!!result.hits.length && (
         // (Has search results)
-        <Stack padding={1} ref={setFocusRootElement} space={1}>
+        <Stack
+          padding={1}
+          ref={setFocusRootElement}
+          space={1}
+          style={{
+            opacity: result.loading ? 0.5 : 1,
+            transition: '300ms opacity',
+          }}
+        >
           {result.hits.map((hit) => (
             <SearchResultItem key={hit.hit._id} hit={hit} onClick={handleResultClick} />
           ))}
@@ -61,14 +69,7 @@ export function SearchResults(props: SearchResultsProps) {
 
       {!result.hits.length && result.loaded && (
         // (No results)
-        <Flex align="center" direction="column" gap={4} paddingX={4} paddingY={5}>
-          <Text align="center" muted size={2}>
-            No results {terms.types.length > 1 ? 'across' : 'in'}{' '}
-            {terms.types.length > 0
-              ? `${terms.types.length} document ${pluralize('type', terms.types.length)}`
-              : 'all document types'}
-          </Text>
-        </Flex>
+        <Instructions />
       )}
     </Box>
   )

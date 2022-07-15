@@ -35,7 +35,7 @@ export function DialogHeader() {
 
   return (
     <Container>
-      <Flex align="center" flex={1} gap={1}>
+      <Flex align="center" flex={1}>
         {/* Search field */}
         <Box flex={1} padding={1}>
           <TextInput
@@ -52,26 +52,19 @@ export function DialogHeader() {
         </Box>
 
         {/* Filter toggle */}
-        <Flex paddingRight={2}>
-          <Button
-            fontSize={1}
-            mode="bleed"
-            onClick={handleFiltersToggle}
-            padding={2}
-            selected={filtersVisible}
-            style={{position: 'relative'}}
-            tone="primary"
-          >
-            <Flex gap={2}>
-              <Text size={1}>
-                <ControlsIcon />
-              </Text>
-              <Text size={1} weight="medium">
-                Filter
-              </Text>
-              {terms.types.length > 0 && <NotificationBadge />}
-            </Flex>
-          </Button>
+        <Flex paddingRight={1}>
+          <Box style={{position: 'relative'}}>
+            <Button
+              icon={ControlsIcon}
+              // mode="bleed"
+              mode="ghost"
+              onClick={handleFiltersToggle}
+              padding={3}
+              selected={filtersVisible}
+              tone="default"
+            />
+            {!filtersVisible && terms.types.length > 0 && <NotificationBadge />}
+          </Box>
         </Flex>
       </Flex>
     </Container>
@@ -113,9 +106,9 @@ const Container = styled(Box)`
 const NotificationBadge = styled(Box)`
   background: ${hues.blue[700].hex};
   border-radius: 100%;
-  height: 7px;
+  height: 6px;
   position: absolute;
-  right: -1px;
-  top: 1px;
-  width: 7px;
+  right: 3px;
+  top: 3px;
+  width: 6px;
 `

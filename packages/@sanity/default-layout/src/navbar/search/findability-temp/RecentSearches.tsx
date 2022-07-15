@@ -1,8 +1,9 @@
 import type {SearchTerms} from '@sanity/base'
 import {useRovingFocus} from '@sanity/base/components'
-import {Box, Flex, Label, Stack, Text} from '@sanity/ui'
+import {Box, Label, Stack} from '@sanity/ui'
 import schema from 'part:@sanity/base/schema'
 import React, {useCallback, useState} from 'react'
+import {Instructions} from './Instructions'
 import {addSearchTerm, getRecentSearchTerms} from './local-storage/search-store'
 import {RecentSearchItem} from './RecentSearchItem'
 import {useOmnisearch} from './state/OmnisearchContext'
@@ -57,11 +58,7 @@ export function RecentSearches() {
           </Stack>
         </>
       ) : (
-        <Flex align="center" direction="column" gap={2} paddingX={4} paddingY={5}>
-          <Text align="center" muted size={2}>
-            Your recent searches will appear here
-          </Text>
-        </Flex>
+        <Instructions />
       )}
     </Box>
   )
