@@ -1,6 +1,6 @@
-import {TransactionLogEvent} from './types'
+import type {TransactionLogEventWithEffects} from '@sanity/types'
 
-type StreamResult = TransactionLogEvent | {error: {description?: string; type: string}}
+type StreamResult = TransactionLogEventWithEffects | {error: {description?: string; type: string}}
 
 export async function getJsonStream(url: string): Promise<ReadableStream<StreamResult>> {
   const options: RequestInit = {credentials: 'include'}
@@ -17,7 +17,7 @@ function getStream(response: Response): ReadableStream<StreamResult> {
   let reader: ReadableStreamDefaultReader<Uint8Array>
   let cancelled = false
 
-  return new ReadableStream<TransactionLogEvent>({
+  return new ReadableStream<TransactionLogEventWithEffects>({
     start(controller): void | PromiseLike<void> {
       reader = body.getReader()
       const decoder = new TextDecoder()

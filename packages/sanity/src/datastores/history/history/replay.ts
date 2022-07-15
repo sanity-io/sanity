@@ -1,4 +1,5 @@
-import {DocumentRemoteMutationVersionEvent, TransactionLogEvent} from './types'
+import type {TransactionLogEventWithEffects} from '@sanity/types'
+import {DocumentRemoteMutationVersionEvent} from './types'
 import {Timeline} from './Timeline'
 
 export type TraceEvent =
@@ -7,7 +8,7 @@ export type TraceEvent =
       publishedId: string
     }
   | {type: 'addRemoteMutation'; event: DocumentRemoteMutationVersionEvent}
-  | {type: 'addTranslogEntry'; event: TransactionLogEvent}
+  | {type: 'addTranslogEntry'; event: TransactionLogEventWithEffects}
   | {type: 'didReachEarliestEntry'}
   | {type: 'updateChunks'}
 

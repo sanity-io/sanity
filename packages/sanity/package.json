@@ -109,7 +109,6 @@
     "@sanity/portable-text-editor": "3.0.0-dev-preview.11",
     "@sanity/schema": "3.0.0-dev-preview.11",
     "@sanity/server": "3.0.0-dev-preview.11",
-    "@sanity/transaction-collator": "3.0.0-dev-preview.11",
     "@sanity/types": "3.0.0-dev-preview.11",
     "@sanity/ui": "^0.37.11",
     "@sanity/util": "3.0.0-dev-preview.11",

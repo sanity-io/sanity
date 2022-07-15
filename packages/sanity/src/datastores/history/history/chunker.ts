@@ -1,5 +1,6 @@
 /* eslint-disable no-nested-ternary */
-import {Transaction, MendozaEffectPair, MendozaPatch, ChunkType, Chunk} from './types'
+import type {MendozaEffectPair, MendozaPatch} from '@sanity/types'
+import type {Transaction, ChunkType, Chunk} from './types'
 
 function canMergeEdit(type: ChunkType) {
   return type === 'create' || type === 'editDraft'

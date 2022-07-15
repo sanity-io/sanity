@@ -1,8 +1,8 @@
-import {SanityDocument} from '@sanity/types'
+import type {SanityDocument, TransactionLogEventWithEffects} from '@sanity/types'
 import {applyPatch} from 'mendoza'
 import {RemoteSnapshotVersionEvent} from '../../document/document-pair/checkoutPair'
 import {Timeline} from './Timeline'
-import {TransactionLogEvent, DocumentRemoteMutationVersionEvent, CombinedDocument} from './types'
+import type {DocumentRemoteMutationVersionEvent, CombinedDocument} from './types'
 
 type VersionState = {
   id: string
@@ -24,7 +24,7 @@ function emptyVersionState(id: string): VersionState {
   }
 }
 
-function align(history: TransactionLogEvent, state: VersionState): number {
+function align(history: TransactionLogEventWithEffects, state: VersionState): number {
   const idx = state.events.findIndex((evt) => history.id === evt.transactionId)
   if (idx >= 0) {
     // Return the next event as we don't want this to be included.
@@ -121,7 +121,7 @@ export class Aligner {
     }
   }
 
-  prependHistoryEvent(evt: TransactionLogEvent): void {
+  prependHistoryEvent(evt: TransactionLogEventWithEffects): void {
     if (!this.acceptsHistory) throw new Error('cannot prepend history at this point')
 
     for (const state of Object.values(this._states)) {

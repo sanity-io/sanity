@@ -20,6 +20,7 @@ export type PatchMutationOperation = PatchOperations & MutationSelection
 
 export interface CreateMutation {
   create: {
+    _id?: string
     _type: string
     [key: string]: unknown
   }

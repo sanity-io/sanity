@@ -1,12 +1,8 @@
+import type {TransactionLogEventWithEffects} from '@sanity/types'
 import {Diff} from '@sanity/diff'
 import {applyPatch, incremental} from 'mendoza'
 import {Chunk, Annotation} from '../../../field'
-import {
-  Transaction,
-  TransactionLogEvent,
-  DocumentRemoteMutationVersionEvent,
-  CombinedDocument,
-} from './types'
+import {Transaction, DocumentRemoteMutationVersionEvent, CombinedDocument} from './types'
 import {diffValue, Meta} from './diffValue'
 import {TwoEndedArray} from './TwoEndedArray'
 import {mergeChunk, chunkFromTransaction} from './chunker'
@@ -128,7 +124,7 @@ export class Timeline {
     }
   }
 
-  addTranslogEntry(event: TransactionLogEvent): void {
+  addTranslogEntry(event: TransactionLogEventWithEffects): void {
     if (this._trace) this._trace.push({type: 'addTranslogEntry', event})
 
     this._transactions.addToBeginning({

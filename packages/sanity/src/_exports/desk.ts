@@ -45,8 +45,6 @@ export type {
   DocumentRemoteMutationVersionEvent,
   EditStateFor,
   LoginComponentProps,
-  MendozaEffectPair,
-  MendozaPatch,
   ParsedTimeRef,
   RemoteSnapshotEvent,
   RemoteSnapshotVersionEvent,
@@ -54,7 +52,6 @@ export type {
   TimelineControllerOptions,
   TimelineOptions,
   Transaction,
-  TransactionLogEvent,
   UserStore,
   WithVersion,
 } from '../datastores'

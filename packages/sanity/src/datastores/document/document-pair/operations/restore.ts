@@ -1,5 +1,5 @@
-import {MultipleMutationResult} from '@sanity/client'
-import {Observable} from 'rxjs'
+import type {SanityDocument} from '@sanity/client'
+import type {Observable} from 'rxjs'
 import {OperationArgs} from '../../types'
 import {isLiveEditEnabled} from '../utils/isLiveEditEnabled'
 
@@ -8,7 +8,7 @@ export const restore = {
   execute: (
     {historyStore, idPair, schema, typeName}: OperationArgs,
     fromRevision: string
-  ): Observable<MultipleMutationResult> => {
+  ): Observable<SanityDocument> => {
     const targetId = isLiveEditEnabled(schema, typeName) ? idPair.publishedId : idPair.draftId
     return historyStore.restore(idPair.publishedId, targetId, fromRevision)
   },

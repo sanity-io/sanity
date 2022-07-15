@@ -24,7 +24,6 @@
     {"path": "../@sanity/portable-text-editor"},
     {"path": "../@sanity/schema"},
     {"path": "../@sanity/types"},
-    {"path": "../@sanity/transaction-collator"},
     {"path": "../@sanity/util/tsconfig.lib.json"},
     {"path": "../@sanity/validation/tsconfig.lib.json"}
   ]
