@@ -21,6 +21,7 @@ export function RecentSearches() {
 
       // LOOK INTO sanity ui hover focus issue
       dispatch({type: 'TERMS_SET', terms: searchTerms})
+      dispatch({type: 'FILTERS_SHOW'})
       addSearchTerm(searchTerms)
       setRecentSearches(getRecentSearchTerms(schema))
       // onRecentSearchClick()
