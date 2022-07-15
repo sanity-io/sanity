@@ -1,5 +1,6 @@
 import {Card, Flex, studioTheme, Theme, useClickOutside} from '@sanity/ui'
 import React, {RefObject, useCallback, useEffect, useState} from 'react'
+import FocusLock from 'react-focus-lock'
 import styled, {css} from 'styled-components'
 import {DialogContent} from './DialogContent'
 import {DialogHeader} from './DialogHeader'
@@ -33,23 +34,26 @@ export function Dialog({onClose, placeholderRef}: OmnisearchPopoverProps) {
   return (
     <>
       <Overlay />
-      <DialogCard
-        data-ui="omnisearch-dialog"
-        overflow="hidden"
-        radius={2}
-        ref={setDialogEl}
-        scheme="light"
-        shadow={2}
-        x={dialogPosition.x}
-        y={dialogPosition.y}
-      >
-        <DialogHeader />
 
-        <Flex align="stretch">
-          <DialogContent />
-          <TypeFilter />
-        </Flex>
-      </DialogCard>
+      <FocusLock>
+        <DialogCard
+          data-ui="omnisearch-dialog"
+          overflow="hidden"
+          radius={2}
+          ref={setDialogEl}
+          scheme="light"
+          shadow={2}
+          x={dialogPosition.x}
+          y={dialogPosition.y}
+        >
+          <DialogHeader />
+
+          <Flex align="stretch">
+            <DialogContent />
+            <TypeFilter />
+          </Flex>
+        </DialogCard>
+      </FocusLock>
     </>
   )
 }
