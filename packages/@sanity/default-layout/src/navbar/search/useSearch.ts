@@ -6,14 +6,14 @@ import {useObservableCallback} from 'react-rx'
 import {
   distinctUntilChanged,
   catchError,
+  debounceTime,
   map,
   switchMap,
   tap,
   filter,
   scan,
-  mergeMapTo,
 } from 'rxjs/operators'
-import {concat, EMPTY, Observable, of, timer} from 'rxjs'
+import {concat, Observable, of} from 'rxjs'
 import search from 'part:@sanity/base/search'
 import type {SearchTerms} from '@sanity/base'
 import {SearchHit, SearchState} from './types'
@@ -36,7 +36,19 @@ function nonNullable<T>(v: T): v is NonNullable<T> {
 }
 
 export function useSearch(
-  initialState = INITIAL_SEARCH_STATE
+  {
+    initialState,
+    onComplete,
+    onError,
+    onStart,
+  }: {
+    initialState: SearchState
+    onComplete?: (hits: SearchHit[]) => void
+    onError?: (error: Error) => void
+    onStart?: () => void
+  } = {
+    initialState: INITIAL_SEARCH_STATE,
+  }
 ): {
   handleSearch: (params: string | SearchTerms) => void
   handleClearSearch: () => void
@@ -52,13 +64,16 @@ export function useSearch(
     return inputValue$.pipe(
       distinctUntilChanged(),
       filter(nonNullable),
+      debounceTime(300),
+      tap(onStart),
       switchMap((terms) =>
         concat(
           of({...INITIAL_SEARCH_STATE, loading: true, terms, searchString: terms.query}),
-          timer(100).pipe(mergeMapTo(EMPTY)),
           onSearch(terms).pipe(
             map((hits) => ({hits})),
+            tap(({hits}) => onComplete?.(hits)),
             catchError((error) => {
+              onError?.(error)
               return of({
                 ...INITIAL_SEARCH_STATE,
                 loading: false,

@@ -1,4 +1,5 @@
 import type {SearchTerms} from '@sanity/base'
+import {useRovingFocus} from '@sanity/base/components'
 import {Box, Flex, Label, Stack, Text} from '@sanity/ui'
 import schema from 'part:@sanity/base/schema'
 import React, {useCallback, useState} from 'react'
@@ -8,6 +9,7 @@ import {useOmnisearch} from './state/OmnisearchContext'
 
 export function RecentSearches() {
   const [recentSearches, setRecentSearches] = useState(() => getRecentSearchTerms(schema))
+  const [focusRootElement, setFocusRootElement] = useState<HTMLDivElement | null>(null)
   const {dispatch} = useOmnisearch()
 
   const handleRecentSearchClick = useCallback(
@@ -26,6 +28,14 @@ export function RecentSearches() {
     [dispatch]
   )
 
+  // Enable keyboard arrow navigation
+  useRovingFocus({
+    direction: 'vertical',
+    initialFocus: 'first',
+    loop: true,
+    rootElement: focusRootElement,
+  })
+
   return (
     <Box flex={1}>
       {recentSearches.length ? (
@@ -35,7 +45,7 @@ export function RecentSearches() {
               Recent searches
             </Label>
           </Box>
-          <Stack>
+          <Stack padding={1} ref={setFocusRootElement} space={1}>
             {recentSearches?.map((recentSearch) => (
               <RecentSearchItem
                 key={recentSearch.__recentTimestamp}

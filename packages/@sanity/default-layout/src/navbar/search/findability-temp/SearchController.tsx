@@ -8,13 +8,18 @@ export function SearchController(): null {
     dispatch,
     state: {pageIndex, result, terms},
   } = useOmnisearch()
-  const isMounted = useRef(false)
-  const previousPageIndex = useRef<number>(null)
+  const previousPageIndex = useRef<number>(0)
 
   const {handleSearch, searchState} = useSearch({
-    searchString: terms.query,
-    ...result,
-    terms,
+    initialState: {
+      searchString: terms.query,
+      ...result,
+      terms,
+    },
+    // TODO: consider re-thinking how we handle to search event callbacks
+    onComplete: (hits) => dispatch({hits, type: 'SEARCH_REQUEST_COMPLETE'}),
+    onError: (error) => dispatch({error, type: 'SEARCH_REQUEST_ERROR'}),
+    onStart: () => dispatch({type: 'SEARCH_REQUEST_START'}),
   })
 
   // Trigger search when either any terms (query or types) or current pageIndex has changed
@@ -32,40 +37,6 @@ export function SearchController(): null {
       previousPageIndex.current = pageIndex
     }
   }, [handleSearch, pageIndex, searchState.terms, terms])
-
-  // Update locally stored hits new results from search (after mount)
-  useEffect(() => {
-    if (isMounted.current && searchState.hits) {
-      dispatch({
-        hits: searchState.hits,
-        type: 'RESULT_HITS_APPEND',
-      })
-    }
-  }, [dispatch, searchState.hits])
-
-  // Clear hits when terms have changed (after mount)
-  useEffect(() => {
-    if (isMounted.current) {
-      dispatch({type: 'RESULT_HITS_CLEAR'})
-    }
-  }, [dispatch, terms])
-
-  // Update search result loading / error state (after mount)
-  useEffect(() => {
-    if (isMounted.current) {
-      dispatch({
-        result: {
-          loading: searchState.loading,
-          error: searchState.error,
-        },
-        type: 'RESULT_SET',
-      })
-    }
-  }, [dispatch, searchState.error, searchState.loading])
-
-  useEffect(() => {
-    isMounted.current = true
-  }, [])
 
   return null
 }

@@ -1,3 +1,4 @@
+import {useRovingFocus} from '@sanity/base/components'
 import {hues} from '@sanity/color'
 import {CheckmarkIcon, SearchIcon} from '@sanity/icons'
 import type {ObjectSchemaType} from '@sanity/types'
@@ -10,6 +11,7 @@ import {useOmnisearch} from './state/OmnisearchContext'
 
 export function TypeFilter() {
   const [typeFilter, setTypeFilter] = useState('')
+  const [focusRootElement, setFocusRootElement] = useState<HTMLDivElement | null>(null)
   const {
     dispatch,
     state: {
@@ -24,12 +26,20 @@ export function TypeFilter() {
     typeFilter,
   ])
 
-  const handleClearTypes = useCallback(() => dispatch({type: 'TYPES_CLEAR'}), [dispatch])
+  const handleClearTypes = useCallback(() => dispatch({type: 'TERMS_TYPES_CLEAR'}), [dispatch])
   const handleFilterChange = useCallback(
     (e: React.KeyboardEvent<HTMLInputElement>) => setTypeFilter(e.currentTarget.value),
     [setTypeFilter]
   )
   const handleFilterClear = useCallback(() => setTypeFilter(''), [])
+
+  // Enable keyboard arrow navigation
+  useRovingFocus({
+    direction: 'vertical',
+    initialFocus: 'first',
+    loop: true,
+    rootElement: focusRootElement,
+  })
 
   if (!filtersVisible) {
     return null
@@ -58,7 +68,12 @@ export function TypeFilter() {
           />
         )}
       </Card>
-      <Box paddingBottom={1} paddingTop={displayFilterInput ? 1 : 0} paddingX={1}>
+      <Box
+        paddingBottom={1}
+        paddingTop={displayFilterInput ? 1 : 0}
+        paddingX={1}
+        ref={setFocusRootElement}
+      >
         {/* Selectable document types */}
         <Stack space={1}>
           {selectableDocumentTypes.map((type) => (
@@ -75,8 +90,9 @@ export function TypeFilter() {
           </Box>
         )}
       </Box>
+
       {/* Clear button (bottom) */}
-      {!typeFilter && (
+      {!typeFilter && selectedTypes.length > 0 && (
         <Card
           paddingBottom={1}
           paddingX={1}
@@ -84,21 +100,17 @@ export function TypeFilter() {
           tone="transparent"
         >
           <Stack space={1}>
-            {selectedTypes.length > 0 && (
-              <Box style={{borderBottom: `1px solid ${hues.gray[200].hex}`}} />
-            )}
-            {selectedTypes.length > 0 && (
-              <Button
-                data-name="type-filter-button"
-                disabled={selectedTypes.length === 0}
-                fontSize={1}
-                mode="bleed"
-                onClick={handleClearTypes}
-                padding={3}
-                text="Clear"
-                tone="primary"
-              />
-            )}
+            <Box style={{borderBottom: `1px solid ${hues.gray[200].hex}`}} />
+            <Button
+              data-name="type-filter-button"
+              disabled={selectedTypes.length === 0}
+              fontSize={1}
+              mode="bleed"
+              onClick={handleClearTypes}
+              padding={3}
+              text="Clear"
+              tone="primary"
+            />
           </Stack>
         </Card>
       )}
@@ -111,11 +123,11 @@ function TypeItem(props: {selected: boolean; type: ObjectSchemaType}) {
   const {dispatch} = useOmnisearch()
 
   const handleAddType = useCallback(() => {
-    dispatch({type: 'TYPE_ADD', schemaType: type})
+    dispatch({type: 'TERMS_TYPE_ADD', schemaType: type})
   }, [dispatch, type])
 
   const handleRemoveType = useCallback(() => {
-    dispatch({type: 'TYPE_REMOVE', schemaType: type})
+    dispatch({type: 'TERMS_TYPE_REMOVE', schemaType: type})
   }, [dispatch, type])
 
   return (
