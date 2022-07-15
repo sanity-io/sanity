@@ -70,7 +70,7 @@ export function omnisearchReducer(
   state: SearchReducerState,
   action: SearchAction
 ): SearchReducerState {
-  console.log('🔍', action)
+  console.log(action.type.includes('SEARCH_REQUEST') ? '🚨' : '🔍', action)
   switch (action.type) {
     case 'FILTERS_HIDE':
       return {
