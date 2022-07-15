@@ -13,6 +13,8 @@ export function TypePills({types}: {types: SchemaType[]}) {
    * Get the first X document types, where:
    * - X is < MAX_TYPES
    * - the sum of all title characters across X types is < MAX_CHARACTERS
+   *
+   * Note that the first item is always included, regardless of title length.
    */
   const visibleTypes = useMemo(
     () =>
@@ -20,8 +22,8 @@ export function TypePills({types}: {types: SchemaType[]}) {
         (function () {
           let remaining = MAX_CHARACTERS
           return function (acc, val, index) {
-            if (remaining > 0 && index < MAX_TYPES) {
-              const title = typeTitle(val)
+            const title = typeTitle(val)
+            if (index === 0 || (remaining > title.length && index < MAX_TYPES)) {
               remaining -= title.length
               acc.push(val)
             }

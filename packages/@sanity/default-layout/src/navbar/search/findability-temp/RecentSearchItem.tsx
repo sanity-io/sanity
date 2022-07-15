@@ -33,7 +33,7 @@ export function RecentSearchItem(props: RecentSearchesProps) {
         </Box>
         <Flex align="center" flex={1} gap={3} marginLeft={3}>
           {value.query && (
-            <Box marginLeft={1}>
+            <Box marginLeft={1} style={{flexShrink: 0}}>
               <Text>{value.query}</Text>
             </Box>
           )}
