@@ -59,7 +59,7 @@ export function SearchItem(props: SearchItemProps) {
             {documentPresence && documentPresence.length > 0 && (
               <DocumentPreviewPresence presence={documentPresence} />
             )}
-            <Label size={0} muted>
+            <Label size={0} muted style={{maxWidth: '175px'}} textOverflow="ellipsis">
               {type.title}
             </Label>
           </Inline>
