@@ -1,6 +1,15 @@
-import {hues} from '@sanity/color'
+import {hues, white} from '@sanity/color'
 import {ControlsIcon, SearchIcon} from '@sanity/icons'
-import {Box, Button, Flex, Spinner, Text, TextInput, useGlobalKeyDown} from '@sanity/ui'
+import {
+  Box,
+  Button,
+  Card,
+  Flex,
+  Spinner,
+  studioTheme,
+  TextInput,
+  useGlobalKeyDown,
+} from '@sanity/ui'
 import React, {MutableRefObject, useCallback, useEffect, useRef} from 'react'
 import styled from 'styled-components'
 import {useOmnisearch} from './state/OmnisearchContext'
@@ -52,20 +61,20 @@ export function DialogHeader() {
         </Box>
 
         {/* Filter toggle */}
-        <Flex paddingRight={1}>
+        <Card borderLeft paddingX={1}>
           <Box style={{position: 'relative'}}>
             <Button
+              height="fill"
               icon={ControlsIcon}
-              // mode="bleed"
-              mode="ghost"
+              mode="bleed"
               onClick={handleFiltersToggle}
               padding={3}
               selected={filtersVisible}
               tone="default"
             />
-            {!filtersVisible && terms.types.length > 0 && <NotificationBadge />}
+            {terms.types.length > 0 && <NotificationBadge>{terms.types.length}</NotificationBadge>}
           </Box>
-        </Flex>
+        </Card>
       </Flex>
     </Container>
   )
@@ -103,12 +112,19 @@ const Container = styled(Box)`
   }
 `
 
-const NotificationBadge = styled(Box)`
+const NotificationBadge = styled.div`
+  align-items: center;
   background: ${hues.blue[700].hex};
+  color: ${white.hex};
   border-radius: 100%;
-  height: 6px;
+  display: flex;
+  font-size: calc(8 / 16 * 1rem);
+  font-weight: ${studioTheme.fonts.text.weights.semibold};
+  height: 16px;
+  justify-content: center;
+  pointer-events: none;
   position: absolute;
-  right: 3px;
-  top: 3px;
-  width: 6px;
+  right: 0;
+  top: 0;
+  width: 16px;
 `
