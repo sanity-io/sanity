@@ -1,6 +1,5 @@
 import {getPublishedId} from 'part:@sanity/base/util/draft-utils'
 import React, {useCallback, useContext} from 'react'
-import {Box} from '@sanity/ui'
 import {RouterContext} from 'part:@sanity/base/router'
 import {SearchHit} from '../types'
 import {SearchItem} from '../SearchItem'
@@ -23,13 +22,12 @@ export function SearchResultItem(props: SearchResultItemProps) {
   }, [navigateIntent, hit, onClick])
 
   return (
-    <Box key={hit.hit._id} onClick={handleResultClick}>
-      <SearchItem
-        data={hit}
-        key={hit.hit._id}
-        padding={2}
-        documentId={getPublishedId(hit.hit._id) || ''}
-      />
-    </Box>
+    <SearchItem
+      data={hit}
+      documentId={getPublishedId(hit.hit._id) || ''}
+      key={hit.hit._id}
+      onClick={handleResultClick}
+      padding={2}
+    />
   )
 }
