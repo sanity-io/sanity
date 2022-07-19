@@ -53,7 +53,7 @@ export function SearchResults(props: SearchResultsProps) {
   })
 
   return (
-    <SearchResultsWrapper loading={result.loading}>
+    <SearchResultsWrapper $loading={result.loading}>
       {result.error ? (
         <Flex align="center" direction="column" gap={3} marginY={2} padding={4}>
           <Box marginBottom={1}>
@@ -98,7 +98,7 @@ export function SearchResults(props: SearchResultsProps) {
   )
 }
 
-const SearchResultsWrapper = styled.div<{loading: boolean}>`
-  opacity: ${(props) => (props.loading ? 0.5 : 1)};
+const SearchResultsWrapper = styled.div<{$loading: boolean}>`
+  opacity: ${({$loading}) => ($loading ? 0.5 : 1)};
   transition: 300ms opacity;
 `
