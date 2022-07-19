@@ -42,7 +42,11 @@ function useSearchHotkeyListener(
     (event: KeyboardEvent) => {
       if (isSearchHotKey(event)) {
         event.preventDefault()
-        setOpened()
+        if (open) {
+          setClosed()
+        } else {
+          setOpened()
+        }
       }
       if (isEscape(event) && open) {
         setClosed()

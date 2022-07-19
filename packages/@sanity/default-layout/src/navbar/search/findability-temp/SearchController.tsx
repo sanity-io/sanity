@@ -18,7 +18,7 @@ export function SearchController(): null {
       ...result,
       terms,
     },
-    // TODO: consider re-thinking how we handle to search event callbacks
+    // TODO: consider re-thinking how we handle search event callbacks
     onComplete: (hits) => dispatch({hits, type: 'SEARCH_REQUEST_COMPLETE'}),
     onError: (error) => dispatch({error, type: 'SEARCH_REQUEST_ERROR'}),
     onStart: () => dispatch({type: 'SEARCH_REQUEST_START'}),
