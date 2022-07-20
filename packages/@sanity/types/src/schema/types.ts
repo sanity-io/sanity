@@ -236,6 +236,17 @@ export namespace Schema {
     type: 'geopoint'
   }
 
+  interface AssetFieldOptions {
+    /**
+     * @deprecated This is now the default behavior - use `fieldset` to hide fields by default
+     */
+    isHighlighted?: boolean
+  }
+
+  export type AssetFieldDefinition<TType extends Type = Type> = FieldDefinition<TType> & {
+    options?: AssetFieldOptions
+  }
+
   export interface ImageOptions extends FileOptions {
     metadata?: ImageMetadataType[]
     hotspot?: boolean
@@ -243,7 +254,7 @@ export namespace Schema {
 
   export interface ImageDefinition extends Omit<ObjectDefinition, 'type' | 'fields' | 'options'> {
     type: 'image'
-    fields?: ObjectDefinition['fields']
+    fields?: AssetFieldDefinition[]
     metadata?: ImageMetadataType[]
     hotspot?: boolean
     options?: ImageOptions

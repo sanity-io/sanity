@@ -2,7 +2,7 @@
 
 // import {SanityClient} from '@sanity/client'
 // import imageUrlBuilder from '@sanity/image-url'
-import {defineType} from '@sanity/types'
+import {ConditionalPropertyCallbackContext, defineType} from '@sanity/types'
 // import {fireEvent, waitFor} from '@testing-library/react'
 import React from 'react'
 // import {EMPTY, of} from 'rxjs'
@@ -40,7 +40,7 @@ const defs = {
         options: {
           isHighlighted: true,
         },
-        hidden: ({parent}) => !parent?.caption,
+        hidden: (context: ConditionalPropertyCallbackContext) => !context.parent?.caption,
       },
       {
         name: 'foo',
