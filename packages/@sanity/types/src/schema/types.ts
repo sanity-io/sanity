@@ -13,7 +13,7 @@ export namespace Schema {
   /**
    * The type definitions that are built into the sanity schema
    */
-  type IntrinsicTypeDefinition =
+  export type IntrinsicTypeDefinition =
     | ArrayDefinition
     | BlockDefinition
     | BooleanDefinition
@@ -335,6 +335,14 @@ export namespace Schema {
     type: 'url'
   }
 }
+
+export function defineType<TType extends string>(
+  schemaDefinition: Schema.TypeAliasDefinition
+): Schema.TypeAliasDefinition
+
+export function defineType<TType extends Schema.Type>(
+  schemaDefinition: Extract<Schema.IntrinsicTypeDefinition, {type: TType}>
+): Extract<Schema.IntrinsicTypeDefinition, {type: TType}>
 
 export function defineType<TType extends Schema.Type>(
   schemaDefinition: Schema.TypeDefinition<TType>
