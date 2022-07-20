@@ -1,10 +1,10 @@
 export default {
   widgets: [
     {
-      name: "sanity-tutorials",
+      name: 'sanity-tutorials',
       options: {
-        templateRepoId: "sanity-io/supercharged",
+        templateRepoId: 'sanity-io/supercharged',
       },
     },
   ],
-};
+}
