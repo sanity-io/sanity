@@ -16,7 +16,7 @@ import {
 import {concat, Observable, of} from 'rxjs'
 import search from 'part:@sanity/base/search'
 import type {SearchTerms} from '@sanity/base'
-import {SearchHit, SearchState} from './types'
+import {SearchHit, SearchState} from '../types'
 
 type SearchFunction = (params: SearchTerms) => Observable<SearchHit[]>
 

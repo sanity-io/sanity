@@ -1,7 +1,7 @@
 import {SearchTerms} from '@sanity/base'
 import {ObjectSchemaType} from '@sanity/types'
 import {SearchHit} from '../../types'
-import {sortTypes} from '../utils/helpers'
+import {sortTypes} from '../../utils/helpers'
 
 export interface SearchReducerState {
   filtersVisible: boolean
@@ -66,10 +66,7 @@ export type SearchAction =
   | TermsTypeRemove
   | TermsTypesClear
 
-export function omnisearchReducer(
-  state: SearchReducerState,
-  action: SearchAction
-): SearchReducerState {
+export function searchReducer(state: SearchReducerState, action: SearchAction): SearchReducerState {
   console.log(action.type.includes('SEARCH_REQUEST') ? '🚨' : '🔍', action)
   switch (action.type) {
     case 'FILTERS_HIDE':

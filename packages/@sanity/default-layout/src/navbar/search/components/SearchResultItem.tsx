@@ -1,16 +1,16 @@
 // @todo: remove the following line when part imports has been removed from this file
 ///<reference types="@sanity/types/parts" />
 
-import React, {forwardRef, useMemo} from 'react'
-import {Inline, Label, ResponsivePaddingProps} from '@sanity/ui'
+import {PreviewCard} from '@sanity/base/components'
+import {useDocumentPresence} from '@sanity/base/hooks'
+import {DocumentPreviewPresence} from '@sanity/base/presence'
 import {IntentLink} from '@sanity/base/router'
+import {Inline, Label, ResponsivePaddingProps} from '@sanity/ui'
 import Preview from 'part:@sanity/base/preview?'
 import schema from 'part:@sanity/base/schema'
 import {getPublishedId} from 'part:@sanity/base/util/draft-utils'
-import {DocumentPreviewPresence} from '@sanity/base/presence'
-import {PreviewCard} from '@sanity/base/components'
-import {useDocumentPresence} from '@sanity/base/hooks'
-import {SearchHit} from '.'
+import React, {forwardRef, useMemo} from 'react'
+import type {SearchHit} from '../types'
 
 interface SearchItemProps extends ResponsivePaddingProps {
   data: SearchHit
@@ -18,7 +18,7 @@ interface SearchItemProps extends ResponsivePaddingProps {
   documentId: string
 }
 
-export function SearchItem(props: SearchItemProps) {
+export function SearchResultItem(props: SearchItemProps) {
   const {data, documentId, onClick, ...restProps} = props
   const {hit, resultIndex} = data
   const type = schema.get(hit?._type)
@@ -59,7 +59,7 @@ export function SearchItem(props: SearchItemProps) {
             {documentPresence && documentPresence.length > 0 && (
               <DocumentPreviewPresence presence={documentPresence} />
             )}
-            <Label size={0} muted style={{maxWidth: '175px'}} textOverflow="ellipsis">
+            <Label size={0} muted style={{maxWidth: '150px'}} textOverflow="ellipsis">
               {type.title}
             </Label>
           </Inline>

@@ -3,31 +3,30 @@ import {useRovingFocus} from '@sanity/base/components'
 import {Box, Label, Stack} from '@sanity/ui'
 import schema from 'part:@sanity/base/schema'
 import React, {useCallback, useState} from 'react'
+import {addSearchTerm, getRecentSearchTerms} from '../datastores/recentSearches'
+import {useSearchState} from '../contexts/search'
 import {Instructions} from './Instructions'
-import {addSearchTerm, getRecentSearchTerms} from './local-storage/search-store'
 import {RecentSearchItem} from './RecentSearchItem'
-import {useOmnisearch} from './state/OmnisearchContext'
 
-export function RecentSearches() {
+interface RecentSearchesProps {
+  showFiltersOnClick?: boolean
+}
+
+export function RecentSearches({showFiltersOnClick}: RecentSearchesProps) {
   const [recentSearches, setRecentSearches] = useState(() => getRecentSearchTerms(schema))
   const [focusRootElement, setFocusRootElement] = useState<HTMLDivElement | null>(null)
-  const {dispatch} = useOmnisearch()
+  const {dispatch} = useSearchState()
 
   const handleRecentSearchClick = useCallback(
     (searchTerms: SearchTerms) => {
-      // announce states
-      // no results
-      // maybe not results
-      //announce naviagion to recent search
-
-      // LOOK INTO sanity ui hover focus issue
+      if (showFiltersOnClick) {
+        dispatch({type: 'FILTERS_SHOW'})
+      }
       dispatch({type: 'TERMS_SET', terms: searchTerms})
-      dispatch({type: 'FILTERS_SHOW'})
       addSearchTerm(searchTerms)
       setRecentSearches(getRecentSearchTerms(schema))
-      // onRecentSearchClick()
     },
-    [dispatch]
+    [dispatch, showFiltersOnClick]
   )
 
   // Enable keyboard arrow navigation

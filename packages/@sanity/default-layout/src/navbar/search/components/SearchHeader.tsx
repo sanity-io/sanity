@@ -1,22 +1,20 @@
 import {hues, white} from '@sanity/color'
-import {ControlsIcon, SearchIcon} from '@sanity/icons'
-import {
-  Box,
-  Button,
-  Card,
-  Flex,
-  Spinner,
-  studioTheme,
-  TextInput,
-  useGlobalKeyDown,
-} from '@sanity/ui'
-import React, {MutableRefObject, useCallback, useEffect, useRef} from 'react'
+import {CloseIcon, ControlsIcon, SearchIcon} from '@sanity/icons'
+import {Box, Button, Card, Flex, Spinner, studioTheme} from '@sanity/ui'
+import React, {useCallback, useEffect, useRef} from 'react'
 import styled from 'styled-components'
-import {useOmnisearch} from './state/OmnisearchContext'
-import {isSearchHotKey} from './utils/search-hotkeys'
+import {useSearchState} from '../contexts/search'
+import {CustomTextInput} from './CustomTextInput'
 
-export function DialogHeader() {
+interface SearchHeaderProps {
+  onClose?: () => void
+}
+
+export function SearchHeader({onClose}: SearchHeaderProps) {
   const openedInput = useRef<HTMLInputElement>()
+  const filterCloseButton = useRef<HTMLButtonElement>()
+  const isMounted = useRef(false)
+
   const {
     dispatch,
     state: {
@@ -24,10 +22,7 @@ export function DialogHeader() {
       result: {loading},
       terms,
     },
-  } = useOmnisearch()
-
-  // Focus search input when hotkey is pressed
-  useSearchHotkeyListener(openedInput)
+  } = useSearchState()
 
   const handleFiltersToggle = useCallback(() => dispatch({type: 'FILTERS_TOGGLE'}), [dispatch])
   const handleQueryChange = useCallback(
@@ -39,15 +34,26 @@ export function DialogHeader() {
     dispatch({type: 'TERMS_QUERY_SET', query: ''})
   }, [dispatch])
 
-  // Immediately focus on mount
+  // Focus text input on mount
   useEffect(() => openedInput.current?.focus(), [])
 
+  // Focus filter button (when filters are hidden after initial mount)
+  useEffect(() => {
+    if (isMounted?.current && !filtersVisible) {
+      filterCloseButton.current?.focus()
+    }
+  }, [filtersVisible])
+
+  useEffect(() => {
+    isMounted.current = true
+  }, [])
+
   return (
-    <Container>
+    <DialogWrapper flex={1}>
       <Flex align="center" flex={1}>
         {/* Search field */}
-        <Box flex={1} padding={1}>
-          <TextInput
+        <Box flex={1} padding={onClose ? 2 : 1}>
+          <CustomTextInput
             border={false}
             clearButton={!!terms.query}
             fontSize={2}
@@ -56,12 +62,13 @@ export function DialogHeader() {
             onClear={handleQueryClear}
             placeholder="Search"
             ref={openedInput}
+            smallClearButton={!!onClose}
             value={terms.query}
           />
         </Box>
 
         {/* Filter toggle */}
-        <Card borderLeft paddingX={1}>
+        <Card borderLeft padding={onClose ? 2 : 1}>
           <Box style={{position: 'relative'}}>
             <Button
               height="fill"
@@ -69,29 +76,23 @@ export function DialogHeader() {
               mode="bleed"
               onClick={handleFiltersToggle}
               padding={3}
+              ref={filterCloseButton}
               selected={filtersVisible}
               tone="default"
             />
             {terms.types.length > 0 && <NotificationBadge>{terms.types.length}</NotificationBadge>}
           </Box>
         </Card>
+
+        {/* (Fullscreen) Close button */}
+        {onClose && (
+          <Card borderLeft padding={2}>
+            <Button aria-label="Close search" icon={CloseIcon} mode="bleed" onClick={onClose} />
+          </Card>
+        )}
       </Flex>
-    </Container>
+    </DialogWrapper>
   )
-}
-
-function useSearchHotkeyListener(input: MutableRefObject<HTMLInputElement>) {
-  const handleGlobalKeyDown = useCallback(
-    (event: KeyboardEvent) => {
-      if (isSearchHotKey(event)) {
-        event.preventDefault()
-        input.current?.focus()
-      }
-    },
-    [input]
-  )
-
-  useGlobalKeyDown(handleGlobalKeyDown)
 }
 
 // TODO: find a way to reliably vertically center (and scale) custom components when used as <TextInput> icons
@@ -102,14 +103,9 @@ const AlignedSpinner = styled(Spinner)`
   }
 `
 
-const Container = styled(Box)`
+const DialogWrapper = styled(Card)`
   border-bottom: 1px solid ${hues.gray[100].hex};
   flex-shrink: 0;
-
-  /* TODO: remove this hack, which is currently used to vertically center <TextInput>'s clearButton */
-  [data-qa='clear-button'] {
-    display: flex;
-  }
 `
 
 const NotificationBadge = styled.div`

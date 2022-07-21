@@ -1,7 +1,7 @@
 import {ClockIcon} from '@sanity/icons'
 import {Box, Button, Flex, Text} from '@sanity/ui'
 import React, {useCallback} from 'react'
-import {RecentSearch} from './local-storage/search-store'
+import {RecentSearch} from '../datastores/recentSearches'
 import {TypePills} from './TypePills'
 
 export interface RecentSearchesProps {

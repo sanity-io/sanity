@@ -2,8 +2,8 @@
 ///<reference types="@sanity/types/parts" />
 
 import React, {createElement, memo, useCallback, useState, useEffect, useMemo} from 'react'
-import {SearchIcon, MenuIcon, ComposeIcon, CloseIcon} from '@sanity/icons'
-import {Button, Card, Tooltip, useMediaIndex, Text, Box, Flex, useGlobalKeyDown} from '@sanity/ui'
+import {SearchIcon, MenuIcon, ComposeIcon} from '@sanity/icons'
+import {Button, Card, Tooltip, useMediaIndex, Text, Box, Flex} from '@sanity/ui'
 import {InsufficientPermissionsMessage, LegacyLayerProvider} from '@sanity/base/components'
 import {StateLink} from '@sanity/base/router'
 import {useCurrentUser} from '@sanity/base/hooks'
@@ -19,24 +19,25 @@ import {tools} from '../config'
 import {versionedClient} from '../versionedClient'
 import Branding from './branding/Branding'
 import {ChangelogContainer} from './changelog'
-import {PresenceMenu, LoginStatus, SearchField} from '.'
-import {Omnisearch} from './search/findability-temp/Omnisearch'
+import {SearchProvider} from './search/contexts/search'
+import {SearchDialog, SearchField} from './search'
+import {PresenceMenu, LoginStatus} from '.'
 
 interface NavbarProps {
   createMenuIsOpen: boolean
   isTemplatePermissionsLoading: boolean
   onCreateButtonClick: () => void
-  onSearchOpen: (open: boolean) => void
+  onSearchFullscreenOpen: (open: boolean) => void
   onToggleMenu: () => void
   onUserLogout: () => void
-  searchPortalElement: HTMLDivElement | null
+  searchFullscreenOpen: boolean
   setCreateButtonElement?: (el: HTMLButtonElement | null) => void
   templatePermissions: TemplatePermissionsResult[] | undefined
 }
 
-const Root = styled(Card)<{$onSearchOpen: boolean}>`
+const Root = styled(Card)<{$onSearchFullscreenOpen: boolean}>`
   top: 0;
-  position: ${({$onSearchOpen}) => ($onSearchOpen ? 'sticky' : 'relative')};
+  position: relative;
   z-index: 1;
   min-height: auto;
 `
@@ -53,23 +54,6 @@ const LeftFlex = styled(Flex)`
 const CenterBox = styled(Box)``
 
 const RightFlex = styled(Flex)``
-
-const SearchCard = styled(Card)`
-  z-index: 1;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  right: 0;
-
-  &[data-fullscreen='true'] {
-    position: absolute;
-  }
-
-  &[data-fullscreen='false'] {
-    min-width: 253px;
-    max-width: 350px;
-  }
-`
 
 const SpacingBox = styled(Box)`
   &:empty {
@@ -111,22 +95,17 @@ export const Navbar = memo(function Navbar(props: NavbarProps) {
     createMenuIsOpen,
     isTemplatePermissionsLoading,
     onCreateButtonClick,
-    onSearchOpen,
+    onSearchFullscreenOpen,
     onToggleMenu,
     onUserLogout,
-    searchPortalElement,
+    searchFullscreenOpen,
     setCreateButtonElement,
     templatePermissions,
   } = props
 
-  const [searchOpen, setSearchOpen] = useState<boolean>(false)
-  const [inputElement, setInputElement] = useState<HTMLInputElement | null>(null)
-  const [searchOpenButtonElement, setSearchOpenButtonElement] = useState<HTMLButtonElement | null>(
-    null
-  )
   const [
-    searchCloseButtonElement,
-    setSearchCloseButtonElement,
+    searchFullscreenOpenButtonElement,
+    setSearchOpenButtonElement,
   ] = useState<HTMLButtonElement | null>(null)
   const {value: currentUser} = useCurrentUser()
   const mediaIndex = useMediaIndex()
@@ -161,40 +140,23 @@ export const Navbar = memo(function Navbar(props: NavbarProps) {
     [mediaIndex]
   )
 
-  useGlobalKeyDown((e) => {
-    if (e.key === 'Escape' && searchOpen) {
-      setSearchOpen(false)
-      searchOpenButtonElement?.focus()
-    }
-  })
+  // Diable fullscreen search and re-focus search button
+  const handleSearchFullscreenClose = useCallback(() => {
+    onSearchFullscreenOpen(false)
+    searchFullscreenOpenButtonElement?.focus()
+  }, [onSearchFullscreenOpen, searchFullscreenOpenButtonElement])
 
-  // @todo: explain what this does
-  const handleToggleSearchOpen = useCallback(() => {
-    setSearchOpen((prev) => {
-      if (prev) {
-        searchOpenButtonElement?.focus()
-      }
+  // Enable fullscreen search (passthrough)
+  const handleSearchFullscreenOpen = useCallback(() => {
+    onSearchFullscreenOpen(true)
+  }, [onSearchFullscreenOpen])
 
-      return !prev
-    })
-  }, [searchOpenButtonElement])
-
-  // @todo: explain what this does
+  // Disable fullscreen search on media query change (if already open)
   useEffect(() => {
-    if (onSearchOpen && !shouldRender.searchFullscreen) {
-      setSearchOpen(false)
-      onSearchOpen(false)
+    if (onSearchFullscreenOpen && !shouldRender.searchFullscreen) {
+      onSearchFullscreenOpen(false)
     }
-  }, [onSearchOpen, shouldRender.searchFullscreen])
-
-  // @todo: explain what this does
-  useEffect(() => {
-    onSearchOpen(searchOpen)
-
-    if (searchOpen) {
-      inputElement?.focus()
-    }
-  }, [inputElement, searchOpenButtonElement, onSearchOpen, searchOpen])
+  }, [onSearchFullscreenOpen, shouldRender.searchFullscreen])
 
   const LinkComponent = useCallback(
     (linkProps) => {
@@ -220,17 +182,8 @@ export const Navbar = memo(function Navbar(props: NavbarProps) {
     )
   }, [canCreateSome, currentUser, noDocumentOptions])
 
-  // The HTML elements that are part of the search view (i.e. the "close" button that is visible
-  // when in fullscreen mode on narrow devices) needs to be passed to `<Autocomplete />` so it knows
-  // how to make the search experience work properly for non-sighted users.
-  // Specifically – without passing `relatedElements`, the listbox with results will close when you
-  // TAB to focus the "close" button, and that‘s not a good experience for anyone.
-  const searchRelatedElements = useMemo(() => [searchCloseButtonElement].filter(Boolean), [
-    searchCloseButtonElement,
-  ])
-
   return (
-    <Root $onSearchOpen={searchOpen} data-ui="Navbar" padding={2} scheme="dark">
+    <Root $onSearchFullscreenOpen={searchFullscreenOpen} data-ui="Navbar" padding={2} scheme="dark">
       <Flex align="center" justify="space-between">
         <LeftFlex flex={shouldRender.brandingCenter ? undefined : 1} align="center">
           {!shouldRender.tools && (
@@ -276,42 +229,12 @@ export const Navbar = memo(function Navbar(props: NavbarProps) {
             </Tooltip>
           </LegacyLayerProvider>
 
-          <LegacyLayerProvider zOffset="navbarPopover">
-            {(searchOpen || !shouldRender.searchFullscreen) && (
-              <SearchCard
-                data-fullscreen={shouldRender.searchFullscreen}
-                data-ui="SearchRoot"
-                flex={1}
-                padding={shouldRender.searchFullscreen ? 2 : undefined}
-                scheme={shouldRender.searchFullscreen ? 'light' : undefined}
-                shadow={shouldRender.searchFullscreen ? 1 : undefined}
-              >
-                <Flex>
-                  <Box flex={1} marginRight={shouldRender.tools ? undefined : [1, 1, 2]}>
-                    {/*
-                    <SearchField
-                      fullScreen={shouldRender.searchFullscreen}
-                      inputElement={setInputElement}
-                      onSearchItemClick={handleToggleSearchOpen}
-                      portalElement={searchPortalElement}
-                      relatedElements={searchRelatedElements}
-                    />
-                    */}
-                    <Omnisearch portalElement={searchPortalElement} />
-                  </Box>
-                  {shouldRender.searchFullscreen && (
-                    <Button
-                      aria-label="Close search"
-                      icon={CloseIcon}
-                      mode="bleed"
-                      onClick={handleToggleSearchOpen}
-                      ref={setSearchCloseButtonElement}
-                    />
-                  )}
-                </Flex>
-              </SearchCard>
+          <SearchProvider>
+            {searchFullscreenOpen && shouldRender.searchFullscreen && (
+              <SearchDialog onClose={handleSearchFullscreenClose} />
             )}
-          </LegacyLayerProvider>
+            {!shouldRender.searchFullscreen && <SearchField />}
+          </SearchProvider>
 
           {shouldRender.tools && (
             <Card borderRight flex={1} marginX={2} overflow="visible" paddingRight={1}>
@@ -368,7 +291,7 @@ export const Navbar = memo(function Navbar(props: NavbarProps) {
               aria-label="Open search"
               icon={SearchIcon}
               mode="bleed"
-              onClick={handleToggleSearchOpen}
+              onClick={handleSearchFullscreenOpen}
               ref={setSearchOpenButtonElement}
             />
           )}

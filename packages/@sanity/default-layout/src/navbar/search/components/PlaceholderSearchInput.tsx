@@ -2,44 +2,45 @@
 import {SearchIcon} from '@sanity/icons'
 import {Box, Flex, Inline, KBD, TextInput} from '@sanity/ui'
 import React, {forwardRef, KeyboardEvent as ReactKeyboardEvent, Ref, useCallback} from 'react'
-import {useOmnisearch} from './state/OmnisearchContext'
-import {globalModKey, globalSearchKey} from './utils/search-hotkeys'
+import styled from 'styled-components'
+import {useSearchState} from '../contexts/search'
+import {globalModKey, globalSearchKey} from '../utils/search-hotkeys'
 
 export const PlaceholderSearchInput = forwardRef(function DummyInput(
-  {setOpened}: {setOpened: () => void},
+  {onOpen}: {onOpen: () => void},
   ref: Ref<HTMLInputElement>
 ) {
   const {
     dispatch,
     state: {terms},
-  } = useOmnisearch()
+  } = useSearchState()
 
   const handleChange = useCallback(
     (event: ReactKeyboardEvent<HTMLInputElement>) => {
       dispatch({type: 'TERMS_QUERY_SET', query: event.currentTarget.value})
-      setOpened()
+      onOpen()
     },
-    [dispatch, setOpened]
+    [dispatch, onOpen]
   )
 
   const handleKeyDown = useCallback(
     (event: ReactKeyboardEvent<HTMLInputElement>) => {
       if (event.key === 'Enter') {
-        setOpened()
+        onOpen()
       }
     },
-    [setOpened]
+    [onOpen]
   )
 
   return (
-    <Flex align="center">
+    <PlaceholderSearchInputWrapper align="center">
       <Box flex={1} style={{position: 'relative'}}>
         <TextInput
           autoComplete="off"
           icon={SearchIcon}
           id="studio-search"
           onChange={handleChange}
-          onClick={setOpened}
+          onClick={onOpen}
           onKeyDown={handleKeyDown}
           placeholder="Search"
           ref={ref}
@@ -61,6 +62,11 @@ export const PlaceholderSearchInput = forwardRef(function DummyInput(
           <KBD>{globalSearchKey.toUpperCase()}</KBD>
         </Inline>
       </Box>
-    </Flex>
+    </PlaceholderSearchInputWrapper>
   )
 })
+
+const PlaceholderSearchInputWrapper = styled(Flex)`
+  min-width: 253px;
+  max-width: 350px;
+`
