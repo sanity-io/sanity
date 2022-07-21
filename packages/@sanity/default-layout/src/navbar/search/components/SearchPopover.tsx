@@ -1,5 +1,5 @@
 import {hues} from '@sanity/color'
-import {Box, Card, Flex, studioTheme, Theme, useClickOutside, useLayer} from '@sanity/ui'
+import {Card, Flex, studioTheme, Theme, useClickOutside, useLayer} from '@sanity/ui'
 import React, {RefObject, useCallback, useEffect, useState} from 'react'
 import styled, {css} from 'styled-components'
 import {useSearchState} from '../contexts/search'

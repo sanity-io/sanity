@@ -1,5 +1,4 @@
-import {LegacyLayerProvider} from '@sanity/base/components'
-import {Box, Card, Dialog, Portal, useGlobalKeyDown, useLayer} from '@sanity/ui'
+import {Box, Card, Dialog, Portal} from '@sanity/ui'
 import React, {useCallback, useEffect, useRef} from 'react'
 import FocusLock from 'react-focus-lock'
 import styled from 'styled-components'
@@ -7,34 +6,31 @@ import {SearchContent} from './components/SearchContent'
 import {SearchHeader} from './components/SearchHeader'
 import {TypeFilters} from './components/TypeFilters'
 import {useSearchState} from './contexts/search'
+import {useSearchHotkeys} from './hooks/useSearchHotkeys'
 
 interface SearchDialogProps {
   onClose: () => void
+  onOpen: () => void
+  open: boolean
 }
 
-export function SearchDialog({onClose}: SearchDialogProps) {
+export function SearchDialog({onClose, onOpen, open}: SearchDialogProps) {
+  useSearchHotkeys({onClose, onOpen, open})
+
+  if (!open) {
+    return null
+  }
+
   return (
-    <LegacyLayerProvider zOffset="navbarPopover">
-      <Portal>
-        <FocusLock>
-          <SearchDialogContent onClose={onClose} />
-        </FocusLock>
-      </Portal>
-    </LegacyLayerProvider>
+    <Portal>
+      <FocusLock>
+        <SearchDialogContent onClose={onClose} />
+      </FocusLock>
+    </Portal>
   )
 }
 
 function SearchDialogContent({onClose}: {onClose: () => void}) {
-  const {isTopLayer} = useLayer()
-
-  useGlobalKeyDown((e) => {
-    if (!isTopLayer || !onClose) return
-
-    if (e.key === 'Escape') {
-      onClose()
-    }
-  })
-
   return (
     <FullscreenWrapper scheme="light" tone="default">
       <StickyBox flex={1}>

@@ -229,12 +229,18 @@ export const Navbar = memo(function Navbar(props: NavbarProps) {
             </Tooltip>
           </LegacyLayerProvider>
 
-          <SearchProvider>
-            {searchFullscreenOpen && shouldRender.searchFullscreen && (
-              <SearchDialog onClose={handleSearchFullscreenClose} />
-            )}
-            {!shouldRender.searchFullscreen && <SearchField />}
-          </SearchProvider>
+          <LegacyLayerProvider zOffset="navbarPopover">
+            <SearchProvider>
+              {shouldRender.searchFullscreen && (
+                <SearchDialog
+                  onClose={handleSearchFullscreenClose}
+                  onOpen={handleSearchFullscreenOpen}
+                  open={searchFullscreenOpen}
+                />
+              )}
+              {!shouldRender.searchFullscreen && <SearchField />}
+            </SearchProvider>
+          </LegacyLayerProvider>
 
           {shouldRender.tools && (
             <Card borderRight flex={1} marginX={2} overflow="visible" paddingRight={1}>
