@@ -1,14 +1,36 @@
 import type {SearchTerms} from '@sanity/base'
-import {useEffect, useRef} from 'react'
-import {SEARCH_LIMIT} from '../constants'
-import {useSearch} from '../useSearch'
-import {useOmnisearch} from './state/OmnisearchContext'
+import React, {
+  createContext,
+  Dispatch,
+  ReactNode,
+  useContext,
+  useEffect,
+  useReducer,
+  useRef,
+} from 'react'
+import {SEARCH_LIMIT} from '../../constants'
+import {useSearch} from '../../hooks/useSearch'
+import {INITIAL_SEARCH_STATE, searchReducer, SearchAction, SearchReducerState} from './reducer'
 
-export function SearchController(): null {
-  const {
-    dispatch,
-    state: {pageIndex, result, terms},
-  } = useOmnisearch()
+interface SearchContextValue {
+  dispatch: Dispatch<SearchAction>
+  state: SearchReducerState
+}
+
+const SearchContext = createContext<SearchContextValue | undefined>(undefined)
+
+interface SearchProviderProps {
+  children?: ReactNode
+}
+
+/**
+ * @internal
+ */
+export function SearchProvider({children}: SearchProviderProps) {
+  const [state, dispatch] = useReducer(searchReducer, INITIAL_SEARCH_STATE)
+
+  const {pageIndex, result, terms} = state
+
   const previousPageIndex = useRef<number>(0)
   const previousTerms = useRef<SearchTerms>(null)
 
@@ -65,5 +87,13 @@ export function SearchController(): null {
     }
   }, [dispatch, hasValidTerms, terms.query, terms.types])
 
-  return null
+  return <SearchContext.Provider value={{dispatch, state}}>{children}</SearchContext.Provider>
+}
+
+export function useSearchState() {
+  const context = useContext(SearchContext)
+  if (context === undefined) {
+    throw new Error('useSearchState must be used within an SearchProvider')
+  }
+  return context
 }

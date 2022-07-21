@@ -2,23 +2,27 @@ import {useRovingFocus} from '@sanity/base/components'
 import {hues} from '@sanity/color'
 import {CheckmarkIcon, SearchIcon} from '@sanity/icons'
 import type {ObjectSchemaType} from '@sanity/types'
-import {Box, Button, Card, Stack, Text, TextInput} from '@sanity/ui'
+import {Box, Button, Card, Stack, Text} from '@sanity/ui'
 import schema from 'part:@sanity/base/schema'
 import React, {useCallback, useMemo, useState} from 'react'
-import styled from 'styled-components'
-import {getSelectableTypes} from './state/search-selectors'
-import {useOmnisearch} from './state/OmnisearchContext'
+import styled, {css} from 'styled-components'
+import {useSearchState} from '../contexts/search'
+import {getSelectableTypes} from '../contexts/search/selectors'
+import {CustomTextInput} from './CustomTextInput'
 
-export function TypeFilter() {
+interface TypeFiltersProps {
+  small?: boolean
+}
+
+export function TypeFilters({small}: TypeFiltersProps) {
   const [typeFilter, setTypeFilter] = useState('')
   const [focusRootElement, setFocusRootElement] = useState<HTMLDivElement | null>(null)
   const {
     dispatch,
     state: {
-      filtersVisible,
       terms: {types: selectedTypes},
     },
-  } = useOmnisearch()
+  } = useSearchState()
 
   const allDocumentTypes = useMemo(() => getSelectableTypes(schema, ''), [])
   const displayFilterInput = useMemo(() => allDocumentTypes.length >= 10, [allDocumentTypes])
@@ -32,6 +36,7 @@ export function TypeFilter() {
     [setTypeFilter]
   )
   const handleFilterClear = useCallback(() => setTypeFilter(''), [])
+  const contentTopPadding = small ? 1 : 2
 
   // Enable keyboard arrow navigation
   useRovingFocus({
@@ -41,86 +46,93 @@ export function TypeFilter() {
     rootElement: focusRootElement,
   })
 
-  if (!filtersVisible) {
-    return null
-  }
-
   return (
-    <Container tone="transparent">
-      <Card
-        paddingX={1}
-        paddingTop={1}
-        style={{position: 'sticky', top: 0, zIndex: 1}}
-        tone="transparent"
-      >
-        {/* Search */}
+    <>
+      {/* Search header */}
+      <StickyCard $anchor="top" paddingX={small ? 1 : 2} paddingTop={small ? 1 : 2} tone="inherit">
         {displayFilterInput && (
-          <TextInput
+          <CustomTextInput
             clearButton={!!typeFilter}
-            fontSize={1}
+            fontSize={small ? 1 : 2}
             icon={SearchIcon}
             muted
             onChange={handleFilterChange}
             onClear={handleFilterClear}
             placeholder="Document type"
+            smallClearButton={!small}
             radius={2}
             value={typeFilter}
           />
         )}
-      </Card>
-      <Box
-        paddingBottom={1}
-        paddingTop={displayFilterInput ? 1 : 0}
-        paddingX={1}
+      </StickyCard>
+
+      <Card
+        paddingBottom={small ? 1 : 2}
+        paddingTop={displayFilterInput ? contentTopPadding : 0}
+        paddingX={small ? 1 : 2}
         ref={setFocusRootElement}
+        tone="inherit"
       >
         {/* Selectable document types */}
         <Stack space={1}>
           {selectableDocumentTypes.map((type) => (
-            <TypeItem key={type.name} selected={selectedTypes.includes(type)} type={type} />
+            <TypeItem
+              key={type.name}
+              selected={selectedTypes.includes(type)}
+              small={small}
+              type={type}
+            />
           ))}
         </Stack>
 
         {/* No results */}
         {!selectableDocumentTypes.length && (
           <Box padding={3}>
-            <Text muted size={1} textOverflow="ellipsis">
+            <Text muted size={small ? 1 : 2} textOverflow="ellipsis">
               No matches for '{typeFilter}'.
             </Text>
           </Box>
         )}
-      </Box>
+      </Card>
 
-      {/* Clear button (bottom) */}
+      {/* Clear button */}
       {!typeFilter && selectedTypes.length > 0 && (
-        <Card
-          paddingBottom={1}
-          paddingX={1}
-          style={{position: 'sticky', bottom: 0, zIndex: 1}}
-          tone="transparent"
+        <StickyCard
+          $anchor="bottom"
+          paddingBottom={small ? 1 : 2}
+          paddingX={small ? 1 : 2}
+          tone="inherit"
         >
-          <Stack space={1}>
+          <Stack space={small ? 1 : 2}>
             <Box style={{borderBottom: `1px solid ${hues.gray[200].hex}`}} />
             <Button
               data-name="type-filter-button"
               disabled={selectedTypes.length === 0}
-              fontSize={1}
+              fontSize={small ? 1 : 2}
               mode="bleed"
               onClick={handleClearTypes}
+              // padding={small ? 3 : 4}
               padding={3}
               text="Clear"
               tone="primary"
             />
           </Stack>
-        </Card>
+        </StickyCard>
       )}
-    </Container>
+    </>
   )
 }
 
-function TypeItem(props: {selected: boolean; type: ObjectSchemaType}) {
-  const {selected, type} = props
-  const {dispatch} = useOmnisearch()
+function TypeItem({
+  selected,
+  small,
+  type,
+}: {
+  selected: boolean
+  small?: boolean
+  type: ObjectSchemaType
+}) {
+  const {dispatch} = useSearchState()
 
   const handleAddType = useCallback(() => {
     dispatch({type: 'TERMS_TYPE_ADD', schemaType: type})
@@ -132,7 +144,7 @@ function TypeItem(props: {selected: boolean; type: ObjectSchemaType}) {
 
   return (
     <Button
-      fontSize={1}
+      fontSize={small ? 1 : 2}
       iconRight={selected && CheckmarkIcon}
       justify="flex-start"
       key={type.title ?? type.name}
@@ -145,15 +157,19 @@ function TypeItem(props: {selected: boolean; type: ObjectSchemaType}) {
   )
 }
 
-const Container = styled(Card)`
-  border-left: 1px solid ${hues.gray[100].hex};
-  overflow-y: auto;
-  overflow-x: hidden;
-  max-width: 250px;
-  width: 100%;
+const StickyCard = styled(Card)<{$anchor: 'bottom' | 'top'}>(({$anchor}) => {
+  return css`
+    position: sticky;
+    z-index: 1;
 
-  /* TODO: remove this hack, which is currently used to vertically center <TextInput>'s clearButton */
-  [data-qa='clear-button'] {
-    display: flex;
-  }
-`
+    ${$anchor === 'bottom' &&
+    css`
+      bottom: 0;
+    `}
+
+    ${$anchor === 'top' &&
+    css`
+      top: 0;
+    `}
+  `
+})

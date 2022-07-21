@@ -1,5 +1,5 @@
 import {ObjectSchemaType} from '@sanity/types'
-import {addSearchTerm, getRecentSearchTerms, MAX_RECENT_SEARCHES} from './search-store'
+import {addSearchTerm, getRecentSearchTerms, MAX_RECENT_SEARCHES} from './recentSearches'
 
 const dummyType = ({name: 'testSchema', jsonType: 'object'} as unknown) as ObjectSchemaType
 const dummySchema = {

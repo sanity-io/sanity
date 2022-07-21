@@ -1,12 +1,13 @@
-import {Card, Flex, studioTheme, Theme, useClickOutside} from '@sanity/ui'
+import {hues} from '@sanity/color'
+import {Box, Card, Flex, studioTheme, Theme, useClickOutside, useLayer} from '@sanity/ui'
 import React, {RefObject, useCallback, useEffect, useState} from 'react'
-import FocusLock from 'react-focus-lock'
 import styled, {css} from 'styled-components'
-import {DialogContent} from './DialogContent'
-import {DialogHeader} from './DialogHeader'
-import {TypeFilter} from './TypeFilter'
+import {useSearchState} from '../contexts/search'
+import {SearchContent} from './SearchContent'
+import {SearchHeader} from './SearchHeader'
+import {TypeFilters} from './TypeFilters'
 
-export interface OmnisearchPopoverProps {
+export interface PopoverProps {
   onClose: () => void
   placeholderRef: RefObject<HTMLInputElement>
 }
@@ -16,9 +17,11 @@ const DIALOG_SEARCH_FIELD_PADDING = 1 // Sanity UI scale
 
 const searchFieldPaddingPx = studioTheme.space[DIALOG_SEARCH_FIELD_PADDING]
 
-export function Dialog({onClose, placeholderRef}: OmnisearchPopoverProps) {
+export function SearchPopover({onClose, placeholderRef}: PopoverProps) {
   const [dialogPosition, setDialogPosition] = useState(calcDialogPosition(placeholderRef))
   const [dialogEl, setDialogEl] = useState<HTMLDivElement>()
+
+  const {zIndex} = useLayer()
 
   useClickOutside(onClose, [dialogEl])
 
@@ -33,28 +36,43 @@ export function Dialog({onClose, placeholderRef}: OmnisearchPopoverProps) {
 
   return (
     <>
-      <Overlay />
+      <Overlay style={{zIndex}} />
 
-      <FocusLock>
-        <DialogCard
-          data-ui="omnisearch-dialog"
-          overflow="hidden"
-          radius={2}
-          ref={setDialogEl}
-          scheme="light"
-          shadow={2}
-          x={dialogPosition.x}
-          y={dialogPosition.y}
-        >
-          <DialogHeader />
+      <SearchPopoverWrapper
+        data-ui="search-dialog"
+        overflow="hidden"
+        radius={2}
+        ref={setDialogEl}
+        scheme="light"
+        shadow={2}
+        style={{zIndex}}
+        x={dialogPosition.x}
+        y={dialogPosition.y}
+      >
+        <SearchHeader />
 
-          <Flex align="stretch">
-            <DialogContent />
-            <TypeFilter />
-          </Flex>
-        </DialogCard>
-      </FocusLock>
+        <Flex align="stretch">
+          <SearchContent onClose={onClose} showFiltersOnRecentSearch />
+          <SearchPopoverFilters />
+        </Flex>
+      </SearchPopoverWrapper>
     </>
+  )
+}
+
+function SearchPopoverFilters() {
+  const {
+    state: {filtersVisible},
+  } = useSearchState()
+
+  if (!filtersVisible) {
+    return null
+  }
+
+  return (
+    <TypeFilterWrapper tone="transparent">
+      <TypeFilters small />
+    </TypeFilterWrapper>
   )
 }
 
@@ -77,7 +95,7 @@ function calcDialogPosition(
   }
 }
 
-const DialogCard = styled(Card)<{x: number | null; y: number}>`
+const SearchPopoverWrapper = styled(Card)<{x: number | null; y: number}>`
   ${(props) =>
     props.x
       ? css`
@@ -93,7 +111,6 @@ const DialogCard = styled(Card)<{x: number | null; y: number}>`
   position: absolute;
   top: ${(props) => props.y}px;
   width: min(calc(100vw - ${searchFieldPaddingPx * 2}px), ${DIALOG_MAX_WIDTH}px);
-  z-index: 1000; /* TODO: don't hardcode */
 `
 
 const Overlay = styled.div`
@@ -103,5 +120,12 @@ const Overlay = styled.div`
   position: absolute;
   right: 0;
   top: 0;
-  z-index: 999; /* TODO: don't hardcode */
+`
+
+const TypeFilterWrapper = styled(Card)`
+  border-left: 1px solid ${hues.gray[100].hex};
+  max-width: 250px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  width: 100%;
 `

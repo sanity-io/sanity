@@ -1,27 +1,25 @@
 import {TextWithTone, useRovingFocus} from '@sanity/base/components'
 import {WarningOutlineIcon} from '@sanity/icons'
 import {Box, Button, Flex, Stack} from '@sanity/ui'
+import {getPublishedId} from 'part:@sanity/base/util/draft-utils'
 import React, {MouseEvent, useCallback, useState} from 'react'
 import styled from 'styled-components'
+import {addSearchTerm} from '../datastores/recentSearches'
+import {useSearchState} from '../contexts/search'
 import {Instructions} from './Instructions'
-import {addSearchTerm} from './local-storage/search-store'
 import {SearchResultItem} from './SearchResultItem'
-import {useOmnisearch} from './state/OmnisearchContext'
 
 interface SearchResultsProps {
-  onRecentSearchClick?: () => void
+  onClose: () => void
 }
 
-export function SearchResults(props: SearchResultsProps) {
-  const {onRecentSearchClick} = props
-
+export function SearchResults({onClose}: SearchResultsProps) {
   const [focusRootElement, setFocusRootElement] = useState<HTMLDivElement | null>(null)
 
   const {
     dispatch,
-    onClose,
     state: {terms, result},
-  } = useOmnisearch()
+  } = useSearchState()
 
   // Load next page and focus previous sibling
   const handleLoadMore = useCallback(
@@ -40,7 +38,6 @@ export function SearchResults(props: SearchResultsProps) {
 
   const handleResultClick = useCallback(() => {
     addSearchTerm(terms)
-    // setRecentSearches(getRecentSearchTerms(schema))
     onClose()
   }, [onClose, terms])
 
@@ -74,7 +71,13 @@ export function SearchResults(props: SearchResultsProps) {
             // (Has search results)
             <Stack padding={1} ref={setFocusRootElement} space={1}>
               {result.hits.map((hit) => (
-                <SearchResultItem key={hit.hit._id} hit={hit} onClick={handleResultClick} />
+                <SearchResultItem
+                  data={hit}
+                  documentId={getPublishedId(hit.hit._id) || ''}
+                  key={hit.hit._id}
+                  onClick={handleResultClick}
+                  padding={2}
+                />
               ))}
               {result.hasMore && (
                 <Button

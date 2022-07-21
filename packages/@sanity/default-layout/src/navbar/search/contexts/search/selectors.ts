@@ -1,5 +1,5 @@
 import {ObjectSchemaType, SchemaType} from '@sanity/types'
-import {getRootType, sortTypes} from '../utils/helpers'
+import {getRootType, sortTypes} from '../../utils/helpers'
 
 /**
  * Returns a list of all available document types filtered by a search string.

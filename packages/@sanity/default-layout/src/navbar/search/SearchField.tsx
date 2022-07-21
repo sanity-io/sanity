@@ -1,196 +1,60 @@
-import React, {useCallback, useMemo} from 'react'
-import {Text, Flex, Autocomplete, Box, PortalProvider} from '@sanity/ui'
-import {SearchIcon} from '@sanity/icons'
-import styled from 'styled-components'
-import {getPublishedId} from 'part:@sanity/base/util/draft-utils'
-import {SearchItem, useSearch, SearchPopoverContent, SearchFullscreenContent} from '.'
+import {LegacyLayerProvider} from '@sanity/base/components'
+import {Portal, useGlobalKeyDown} from '@sanity/ui'
+import React, {MutableRefObject, useCallback, useRef, useState} from 'react'
+import FocusLock from 'react-focus-lock'
+import {PlaceholderSearchInput} from './components/PlaceholderSearchInput'
+import {SearchPopover} from './components/SearchPopover'
+import {isEscape, isSearchHotKey} from './utils/search-hotkeys'
 
-interface SearchFieldProps {
-  fullScreen: boolean
-  inputElement: (el: HTMLInputElement | null) => void
-  onSearchItemClick: () => void
-  portalElement: HTMLDivElement | null
-  relatedElements?: HTMLElement[]
+export function SearchField() {
+  const placeholderInputEl = useRef<HTMLInputElement>()
+
+  const [open, setOpen] = useState(false)
+  const handleClose = useCallback(() => {
+    setOpen(false)
+  }, [setOpen])
+
+  const handleOpen = useCallback(() => setOpen(true), [setOpen])
+
+  useSearchHotkeyListener(placeholderInputEl, open, handleOpen, handleClose)
+
+  return (
+    <LegacyLayerProvider zOffset="navbarPopover">
+      <PlaceholderSearchInput onOpen={handleOpen} ref={placeholderInputEl} />
+      {open && (
+        <Portal>
+          <FocusLock>
+            <SearchPopover onClose={handleClose} placeholderRef={placeholderInputEl} />
+          </FocusLock>
+        </Portal>
+      )}
+    </LegacyLayerProvider>
+  )
 }
 
-const StyledText = styled(Text)`
-  word-break: break-word;
-`
-
-export function SearchField(props: SearchFieldProps) {
-  const {fullScreen, inputElement, onSearchItemClick, portalElement, relatedElements} = props
-  const {handleSearch, searchState} = useSearch()
-  const {hits, loading, searchString, error} = searchState
-
-  const handleClickItem = useCallback(() => {
-    if (fullScreen && onSearchItemClick) {
-      onSearchItemClick()
-    }
-  }, [fullScreen, onSearchItemClick])
-
-  const filterOption = useCallback(() => true, [])
-
-  const renderOption = useCallback(
-    (option) => {
-      const {data} = option.payload
-
-      return (
-        <SearchItem
-          data={data}
-          key={data.hit._id}
-          onClick={handleClickItem}
-          padding={2}
-          documentId={getPublishedId(data.hit._id) || ''}
-        />
-      )
+function useSearchHotkeyListener(
+  inputEl: MutableRefObject<HTMLInputElement>,
+  open: boolean,
+  setOpened: () => void,
+  setClosed: () => void
+) {
+  const handleGlobalKeyDown = useCallback(
+    (event: KeyboardEvent) => {
+      if (isSearchHotKey(event)) {
+        event.preventDefault()
+        if (open) {
+          setClosed()
+        } else {
+          setOpened()
+        }
+      }
+      if (isEscape(event) && open) {
+        setClosed()
+        inputEl.current?.focus()
+      }
     },
-    [handleClickItem]
+    [inputEl, setOpened, setClosed, open]
   )
 
-  const renderPopoverFullscreen = useCallback(
-    (popoverProps, ref) => {
-      if (!popoverProps.hidden && error) {
-        return (
-          <SearchFullscreenContent tone="critical">
-            <Flex
-              align="center"
-              flex={1}
-              height="fill"
-              justify="center"
-              padding={4}
-              sizing="border"
-            >
-              <StyledText align="center" muted>
-                {error.message}
-              </StyledText>
-            </Flex>
-          </SearchFullscreenContent>
-        )
-      }
-
-      if (!popoverProps.hidden && searchString && !loading && hits.length === 0) {
-        return (
-          <SearchFullscreenContent>
-            <Flex
-              align="center"
-              flex={1}
-              height="fill"
-              justify="center"
-              padding={4}
-              sizing="border"
-            >
-              <StyledText align="center" muted>
-                No results for <strong>‘{searchString}’</strong>
-              </StyledText>
-            </Flex>
-          </SearchFullscreenContent>
-        )
-      }
-
-      return (
-        <SearchFullscreenContent hidden={popoverProps.hidden} ref={ref}>
-          {popoverProps.content}
-        </SearchFullscreenContent>
-      )
-    },
-    [error, searchString, loading, hits]
-  )
-
-  const renderPopover = useCallback(
-    (popoverProps, ref) => {
-      if (!popoverProps.hidden && error) {
-        return (
-          <SearchPopoverContent
-            open={!popoverProps.hidden}
-            referenceElement={popoverProps.inputElement}
-            ref={ref}
-            content={
-              <Box padding={4}>
-                <Flex align="center" height="fill" justify="center">
-                  <StyledText align="center" muted>
-                    {error?.message || 'Something went wrong while searching'}
-                  </StyledText>
-                </Flex>
-              </Box>
-            }
-          />
-        )
-      }
-
-      if (!popoverProps.hidden && searchString && !loading && hits.length === 0) {
-        return (
-          <SearchPopoverContent
-            open={!popoverProps.hidden}
-            referenceElement={popoverProps.inputElement}
-            ref={ref}
-            content={
-              <Box padding={4}>
-                <Flex align="center" height="fill" justify="center">
-                  <StyledText align="center" muted>
-                    No results for <strong>“{searchString}”</strong>
-                  </StyledText>
-                </Flex>
-              </Box>
-            }
-          />
-        )
-      }
-
-      if (!popoverProps.hidden && hits.length > 0) {
-        return (
-          <SearchPopoverContent
-            open={!popoverProps.hidden}
-            referenceElement={popoverProps.inputElement}
-            ref={ref}
-            content={popoverProps.content}
-          />
-        )
-      }
-
-      return undefined
-    },
-    [error, searchString, loading, hits]
-  )
-
-  const autoComplete = useMemo(
-    () => (
-      <Autocomplete
-        filterOption={filterOption}
-        icon={SearchIcon}
-        id="studio-search"
-        key="studio-search"
-        listBox={{padding: fullScreen ? 2 : 1}}
-        loading={loading}
-        onQueryChange={handleSearch}
-        options={hits.map((hit) => {
-          return {
-            value: hit.hit._id,
-            payload: {
-              data: hit,
-            },
-          }
-        })}
-        placeholder="Search"
-        radius={2}
-        ref={inputElement}
-        relatedElements={relatedElements}
-        renderOption={renderOption}
-        renderPopover={fullScreen ? renderPopoverFullscreen : renderPopover}
-      />
-    ),
-    [
-      filterOption,
-      fullScreen,
-      handleSearch,
-      hits,
-      inputElement,
-      loading,
-      relatedElements,
-      renderOption,
-      renderPopover,
-      renderPopoverFullscreen,
-    ]
-  )
-
-  return <PortalProvider element={fullScreen ? portalElement : null}>{autoComplete}</PortalProvider>
+  useGlobalKeyDown(handleGlobalKeyDown)
 }

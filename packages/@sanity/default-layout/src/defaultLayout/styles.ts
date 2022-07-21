@@ -58,10 +58,3 @@ export const SidecarBox = styled.div`
     }
   }
 `
-
-export const PortalDiv = styled.div`
-  display: flex;
-  flex-direction: column;
-  min-height: 100%;
-  flex: 1;
-`
