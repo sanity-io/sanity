@@ -19,7 +19,8 @@ export function RecentSearches({showFiltersOnClick}: RecentSearchesProps) {
 
   const handleRecentSearchClick = useCallback(
     (searchTerms: SearchTerms) => {
-      if (showFiltersOnClick) {
+      // Optionally show filters panel if search terms are present
+      if (showFiltersOnClick && searchTerms.types.length) {
         dispatch({type: 'FILTERS_SHOW'})
       }
       dispatch({type: 'TERMS_SET', terms: searchTerms})
