@@ -3,8 +3,8 @@ import {SearchIcon} from '@sanity/icons'
 import {Box, Flex, Inline, KBD, TextInput} from '@sanity/ui'
 import React, {forwardRef, KeyboardEvent as ReactKeyboardEvent, Ref, useCallback} from 'react'
 import styled from 'styled-components'
+import {GLOBAL_SEARCH_KEY_MODIFIER, GLOBAL_SEARCH_KEY} from '../constants'
 import {useSearchState} from '../contexts/search'
-import {globalModKey, globalSearchKey} from '../utils/search-hotkeys'
 
 export const PlaceholderSearchInput = forwardRef(function DummyInput(
   {onOpen}: {onOpen: () => void},
@@ -58,8 +58,8 @@ export const PlaceholderSearchInput = forwardRef(function DummyInput(
             top: 0,
           }}
         >
-          <KBD style={{marginRight: '1px'}}>{globalModKey.toUpperCase()}</KBD>
-          <KBD>{globalSearchKey.toUpperCase()}</KBD>
+          <KBD style={{marginRight: '1px'}}>{GLOBAL_SEARCH_KEY_MODIFIER.toUpperCase()}</KBD>
+          <KBD>{GLOBAL_SEARCH_KEY.toUpperCase()}</KBD>
         </Inline>
       </Box>
     </PlaceholderSearchInputWrapper>

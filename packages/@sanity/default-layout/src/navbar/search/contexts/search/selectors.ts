@@ -1,5 +1,4 @@
 import {ObjectSchemaType, SchemaType} from '@sanity/types'
-import {getRootType, sortTypes} from '../../utils/helpers'
 
 /**
  * Returns a list of all available document types filtered by a search string.
@@ -25,4 +24,15 @@ export function getSelectableTypes(
       )
       .sort(sortTypes)
   )
+}
+
+function getRootType(type: SchemaType): SchemaType {
+  if (!type.type) {
+    return type
+  }
+  return getRootType(type.type)
+}
+
+function sortTypes(a: SchemaType, b: SchemaType): number {
+  return (a.title ?? a.name).localeCompare(b.title ?? b.name)
 }
