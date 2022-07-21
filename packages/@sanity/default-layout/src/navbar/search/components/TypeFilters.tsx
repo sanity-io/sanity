@@ -36,7 +36,6 @@ export function TypeFilters({small}: TypeFiltersProps) {
     [setTypeFilter]
   )
   const handleFilterClear = useCallback(() => setTypeFilter(''), [])
-  const contentTopPadding = small ? 1 : 2
 
   // Enable keyboard arrow navigation
   useRovingFocus({
@@ -52,6 +51,8 @@ export function TypeFilters({small}: TypeFiltersProps) {
       <StickyCard $anchor="top" paddingX={small ? 1 : 2} paddingTop={small ? 1 : 2} tone="inherit">
         {displayFilterInput && (
           <CustomTextInput
+            backgroundTone={small ? 'darker' : 'dark'}
+            border={false}
             clearButton={!!typeFilter}
             fontSize={small ? 1 : 2}
             icon={SearchIcon}
@@ -67,8 +68,8 @@ export function TypeFilters({small}: TypeFiltersProps) {
       </StickyCard>
 
       <Card
-        paddingBottom={small ? 1 : 2}
-        paddingTop={displayFilterInput ? contentTopPadding : 0}
+        paddingBottom={1}
+        paddingTop={displayFilterInput ? 1 : 0}
         paddingX={small ? 1 : 2}
         ref={setFocusRootElement}
         tone="inherit"
