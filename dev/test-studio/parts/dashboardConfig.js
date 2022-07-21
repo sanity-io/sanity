@@ -1,6 +1,13 @@
 export default {
   widgets: [
     {
+      name: 'sanity-tutorials',
+      layout: {
+        width: 'full',
+        height: 'full',
+      },
+    },
+    {
       type: '__experimental_group',
       widgets: [
         {name: 'dummy', options: {children: 'A'}},
@@ -8,12 +15,6 @@ export default {
         {name: 'dummy', options: {children: 'C'}},
         {name: 'dummy', options: {children: 'D'}},
       ],
-    },
-    {
-      name: 'sanity-tutorials',
-      layout: {
-        width: 'full',
-      },
     },
     {name: 'document-list'},
     {name: 'document-list', options: {title: 'Last edited', order: '_updatedAt desc'}},
