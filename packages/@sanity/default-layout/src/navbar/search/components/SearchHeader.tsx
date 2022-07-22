@@ -62,13 +62,13 @@ export function SearchHeader({onClose}: SearchHeaderProps) {
             onClear={handleQueryClear}
             placeholder="Search"
             ref={openedInput}
-            smallClearButton={!!onClose}
+            smallClearButton
             value={terms.query}
           />
         </Box>
 
         {/* Filter toggle */}
-        <Card borderLeft padding={onClose ? 2 : 1}>
+        <Card borderLeft={!!onClose} padding={onClose ? 2 : 1}>
           <Box style={{position: 'relative'}}>
             <Button
               height="fill"
