@@ -1,11 +1,11 @@
 import {TextWithTone, useRovingFocus} from '@sanity/base/components'
 import {WarningOutlineIcon} from '@sanity/icons'
-import {Box, Button, Flex, Stack} from '@sanity/ui'
+import {Box, Flex, Stack} from '@sanity/ui'
 import {getPublishedId} from 'part:@sanity/base/util/draft-utils'
-import React, {MouseEvent, useCallback, useState} from 'react'
+import React, {useCallback, useState} from 'react'
 import styled from 'styled-components'
-import {addSearchTerm} from '../datastores/recentSearches'
 import {useSearchState} from '../contexts/search'
+import {addSearchTerm} from '../datastores/recentSearches'
 import {Instructions} from './Instructions'
 import {SearchResultItem} from './SearchResultItem'
 
@@ -17,10 +17,10 @@ export function SearchResults({onClose}: SearchResultsProps) {
   const [focusRootElement, setFocusRootElement] = useState<HTMLDivElement | null>(null)
 
   const {
-    dispatch,
     state: {terms, result},
   } = useSearchState()
 
+  /*
   // Load next page and focus previous sibling
   const handleLoadMore = useCallback(
     (event: MouseEvent<HTMLButtonElement>) => {
@@ -35,6 +35,7 @@ export function SearchResults({onClose}: SearchResultsProps) {
     },
     [dispatch]
   )
+  */
 
   const handleResultClick = useCallback(() => {
     addSearchTerm(terms)
@@ -79,7 +80,7 @@ export function SearchResults({onClose}: SearchResultsProps) {
                   padding={2}
                 />
               ))}
-              {result.hasMore && (
+              {/*result.hasMore && (
                 <Button
                   disabled={result.loading}
                   mode="bleed"
@@ -87,7 +88,7 @@ export function SearchResults({onClose}: SearchResultsProps) {
                   text="More"
                   title="Load more search results"
                 />
-              )}
+              )*/}
             </Stack>
           )}
 
