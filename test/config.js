@@ -73,6 +73,7 @@ exports.createJestConfig = function createJestConfig({
     setupFiles: [...setupFiles, path.resolve(__dirname, './setup.ts')],
     testURL: 'http://localhost:3333',
     testEnvironment: 'jsdom',
+    moduleFileExtensions: ['js', 'jsx', 'cjs', 'ts', 'tsx', 'json', 'node'],
     globals,
     moduleNameMapper: {
       // note: order matters!
