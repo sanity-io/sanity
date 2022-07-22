@@ -41,6 +41,7 @@ export function StudioErrorBoundary({children}: StudioErrorBoundaryProps) {
         return
       }
 
+      console.error(msg.error)
       pushToast({
         closable: true,
         description: msg.error.message,
