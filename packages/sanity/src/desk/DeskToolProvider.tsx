@@ -1,6 +1,6 @@
 import React, {useMemo, useState} from 'react'
+import {useConfigContextFromSource} from '../config/useConfigContextFromSource'
 import {useSource} from '../studio'
-import type {ConfigContext, Source} from '../config'
 import {DeskToolContext} from './DeskToolContext'
 import {createStructureBuilder, DefaultDocumentNodeResolver} from './structureBuilder'
 import {StructureResolver, UnresolvedPaneNode} from './types'
@@ -9,13 +9,6 @@ interface DeskToolProviderProps {
   structure?: StructureResolver
   defaultDocumentNode?: DefaultDocumentNodeResolver
   children: React.ReactNode
-}
-
-function useConfigContextFromSource(source: Source): ConfigContext {
-  const {projectId, dataset, schema, currentUser, client} = source
-  return useMemo(() => {
-    return {projectId, dataset, schema, currentUser, client}
-  }, [projectId, dataset, schema, currentUser, client])
 }
 
 export function DeskToolProvider({
