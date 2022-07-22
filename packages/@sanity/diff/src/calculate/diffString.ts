@@ -1,13 +1,6 @@
-import {
-  diff_match_patch as DiffMatchPatch,
-  DIFF_DELETE,
-  DIFF_EQUAL,
-  DIFF_INSERT,
-} from 'diff-match-patch'
+import {makeDiff, cleanupSemantic, DiffType} from '@sanity/diff-match-patch'
 import type {StringDiffSegment, StringDiff, StringInput, DiffOptions} from '../types'
 import {replaceProperty} from '../helpers'
-
-const dmp = new DiffMatchPatch()
 
 export function diffString<A>(
   fromInput: StringInput<A>,
@@ -50,20 +43,19 @@ function buildSegments<A>(
 ): StringDiffSegment<A>[] {
   const segments: StringDiffSegment<A>[] = []
 
-  const dmpDiffs = dmp.diff_main(fromInput.value, toInput.value)
-  dmp.diff_cleanupSemantic(dmpDiffs)
+  const dmpDiffs = cleanupSemantic(makeDiff(fromInput.value, toInput.value))
 
   let fromIdx = 0
   let toIdx = 0
 
   for (const [op, text] of dmpDiffs) {
     switch (op) {
-      case DIFF_EQUAL:
+      case DiffType.EQUAL:
         segments.push({type: 'stringSegment', action: 'unchanged', text})
         fromIdx += text.length
         toIdx += text.length
         break
-      case DIFF_DELETE:
+      case DiffType.DELETE:
         for (const segment of fromInput.sliceAnnotation(fromIdx, fromIdx + text.length)) {
           segments.push({
             type: 'stringSegment',
@@ -74,7 +66,7 @@ function buildSegments<A>(
         }
         fromIdx += text.length
         break
-      case DIFF_INSERT:
+      case DiffType.INSERT:
         for (const segment of toInput.sliceAnnotation(toIdx, toIdx + text.length)) {
           segments.push({
             type: 'stringSegment',

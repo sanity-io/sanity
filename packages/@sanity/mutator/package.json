@@ -30,10 +30,9 @@
   "author": "Sanity.io <hello@sanity.io>",
   "license": "MIT",
   "dependencies": {
+    "@sanity/diff-match-patch": "^0.0.8",
     "@sanity/uuid": "^3.0.1",
-    "@types/diff-match-patch": "^1.0.32",
     "debug": "^3.2.7",
-    "diff-match-patch": "^1.0.4",
     "lodash": "^4.17.21"
   },
   "devDependencies": {

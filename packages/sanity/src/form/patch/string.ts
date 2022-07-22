@@ -1,9 +1,6 @@
-import * as DMP from 'diff-match-patch'
+import {applyPatches} from '@sanity/diff-match-patch'
 import {FormPatch} from '../patch'
 import {FIXME} from '../types'
-
-// eslint-disable-next-line new-cap
-const dmp = new DMP.diff_match_patch()
 
 const OPERATIONS = {
   replace(currentValue: unknown, nextValue: unknown) {
@@ -19,7 +16,8 @@ const OPERATIONS = {
     return undefined
   },
   diffMatchPatch(currentValue: string, nextValue: string) {
-    return dmp.patch_apply(dmp.patch_fromText(nextValue), currentValue)[0]
+    const [newValue] = applyPatches(nextValue, currentValue)[0]
+    return newValue
   },
 }
 

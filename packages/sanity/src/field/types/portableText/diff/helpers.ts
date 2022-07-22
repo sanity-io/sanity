@@ -1,11 +1,6 @@
 import {flatten, isEqual, orderBy} from 'lodash'
 import {ArraySchemaType, Block, ObjectField, ObjectSchemaType, SchemaType} from '@sanity/types'
-import {
-  diff_match_patch as DiffMatchPatch,
-  DIFF_DELETE,
-  DIFF_EQUAL,
-  DIFF_INSERT,
-} from 'diff-match-patch'
+import {cleanupEfficiency, DiffType, makeDiff} from '@sanity/diff-match-patch'
 import {
   ArrayDiff,
   DiffComponent,
@@ -23,8 +18,6 @@ import {
   PortableTextChild,
   SpanTypeSchema,
 } from './types'
-
-const dmp = new DiffMatchPatch()
 
 export const UNKNOWN_TYPE_NAME = '_UNKOWN_TYPE_'
 
@@ -270,14 +263,13 @@ export function createPortableTextDiff(
 
 function buildSegments(fromInput: string, toInput: string): StringDiffSegment[] {
   const segments: StringDiffSegment[] = []
-  const dmpDiffs = dmp.diff_main(fromInput, toInput)
-  dmp.diff_cleanupEfficiency(dmpDiffs)
+  const dmpDiffs = cleanupEfficiency(makeDiff(fromInput, toInput))
 
   let fromIdx = 0
   let toIdx = 0
   for (const [op, text] of dmpDiffs) {
     switch (op) {
-      case DIFF_EQUAL:
+      case DiffType.EQUAL:
         segments.push({
           type: 'stringSegment',
           action: 'unchanged',
@@ -286,7 +278,7 @@ function buildSegments(fromInput: string, toInput: string): StringDiffSegment[] 
         fromIdx += text.length
         toIdx += text.length
         break
-      case DIFF_DELETE:
+      case DiffType.DELETE:
         segments.push({
           type: 'stringSegment',
           action: 'removed',
@@ -295,7 +287,7 @@ function buildSegments(fromInput: string, toInput: string): StringDiffSegment[] 
         })
         fromIdx += text.length
         break
-      case DIFF_INSERT:
+      case DiffType.INSERT:
         segments.push({
           type: 'stringSegment',
           action: 'added',

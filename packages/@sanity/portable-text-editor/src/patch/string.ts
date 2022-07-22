@@ -1,7 +1,4 @@
-import * as DMP from 'diff-match-patch'
-
-// eslint-disable-next-line new-cap
-const dmp = new DMP.diff_match_patch()
+import {applyPatches} from '@sanity/diff-match-patch'
 
 type fn = (oldVal: any, newVal: any) => any
 const OPERATIONS: Record<string, fn> = {
@@ -18,7 +15,7 @@ const OPERATIONS: Record<string, fn> = {
     return undefined
   },
   diffMatchPatch(currentValue: string, nextValue: string) {
-    return dmp.patch_apply(dmp.patch_fromText(nextValue), currentValue)[0]
+    return applyPatches(nextValue, currentValue)[0]
   },
 }
 

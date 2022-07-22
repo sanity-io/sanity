@@ -12,7 +12,6 @@ import {
   ArrayDiff,
   ChangeNode,
   Diff,
-  DiffPatch,
   InsertDiffPatch,
   ItemDiff,
   ObjectDiff,
@@ -188,7 +187,7 @@ function buildMovePatches(
 }
 
 function buildUndoPatches(diff: Diff, rootDiff: ObjectDiff, path: Path): PatchOperations[] {
-  const patches = diffItem(diff.toValue, diff.fromValue, diffOptions, path) as DiffPatch[]
+  const patches = diffItem(diff.toValue, diff.fromValue, diffOptions, path)
 
   const inserts = patches
     .filter((patch): patch is InsertDiffPatch => patch.op === 'insert')

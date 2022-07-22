@@ -1,6 +1,5 @@
 /* eslint-disable max-statements */
 /* eslint-disable complexity */
-import * as DMP from 'diff-match-patch'
 import {isEqual} from 'lodash'
 import {Subject} from 'rxjs'
 import {
@@ -22,6 +21,7 @@ import {
   Text as SlateText,
   Transforms,
 } from 'slate'
+import {parsePatch} from '@sanity/diff-match-patch'
 import {isKeySegment} from '@sanity/types'
 import {insert, unset} from '../../patch/PatchEvent'
 import type {Patch} from '../../types/patch'
@@ -39,9 +39,6 @@ import {PATCHING, isPatching} from '../../utils/withoutPatching'
 import {KEY_TO_VALUE_ELEMENT} from '../../utils/weakMaps'
 
 const debug = debugWithName('plugin:withPatches')
-
-// eslint-disable-next-line new-cap
-const dmp = new DMP.diff_match_patch()
 
 export type PatchFunctions = {
   insertNodePatch: (
@@ -229,7 +226,7 @@ function adjustSelection(
       selection.focus.path[0] === blockIndex && selection.focus.path[1] === childIndex
 
     if (onSameBlock) {
-      const parsed = dmp.patch_fromText(patch.value)[0]
+      const parsed = parsePatch(patch.value)[0]
       if (parsed) {
         let testString = ''
         for (const diff of parsed.diffs) {

@@ -47,6 +47,7 @@
   },
   "dependencies": {
     "@sanity/block-tools": "3.0.0-dev-preview.12",
+    "@sanity/diff-match-patch": "^0.0.8",
     "@sanity/schema": "3.0.0-dev-preview.12",
     "@sanity/slate-react": "2.24.3",
     "@sanity/types": "3.0.0-dev-preview.12",
@@ -77,7 +78,6 @@
     "@vitejs/plugin-react": "^2.0.0",
     "babel-plugin-lodash": "^3.3.4",
     "babel-plugin-styled-components": "^1.10.7",
-    "diff-match-patch": "^1.0.4",
     "eslint": "^7.8.1",
     "express": "^4.17.1",
     "express-ws": "^5.0.2",

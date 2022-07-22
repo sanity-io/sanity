@@ -34,7 +34,7 @@
     "access": "public"
   },
   "dependencies": {
-    "diff-match-patch": "^1.0.4"
+    "@sanity/diff-match-patch": "^0.0.8"
   },
   "devDependencies": {
     "rimraf": "^3.0.2"
