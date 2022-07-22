@@ -8,8 +8,7 @@ const isEscape = isHotkey('escape')
 
 /**
  * - This hook binds a global shortcut combination, as well as the ESC key, to open / close callbacks.
- * - It listens to all document `focusin` events and will re-focus the last focused element prior to opening search.
- * - It will only update the last focused element whilst search is closed.
+ * - It listens to all document `focusout` events and will re-focus the last element that lost focus prior to opening search.
  * - It will prevent the ESC key from firing `onClose` callbacks if it's not the top most layer (i.e. if a nested dialog is mounted)
  */
 export function useSearchHotkeys({
@@ -31,7 +30,7 @@ export function useSearchHotkeys({
     }
   }, [lastFocusedEl])
 
-  const handleFocusIn = useCallback(
+  const handleFocusOut = useCallback(
     (event: FocusEvent) => {
       if (!open) {
         lastFocusedEl.current = event.target as HTMLElement
@@ -41,11 +40,11 @@ export function useSearchHotkeys({
   )
 
   useEffect(() => {
-    document.addEventListener('focusin', handleFocusIn)
+    document.addEventListener('focusout', handleFocusOut)
     return () => {
-      document.removeEventListener('focusin', handleFocusIn)
+      document.removeEventListener('focusout', handleFocusOut)
     }
-  }, [handleFocusIn])
+  }, [handleFocusOut])
 
   const handleGlobalKeyDown = useCallback(
     (event: KeyboardEvent) => {
