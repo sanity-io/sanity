@@ -30,8 +30,8 @@ export const PLUGIN_INPUT_TYPES = [
   'codeTest',
   'colorTest',
   'geopointTest',
-  'orderableCategory',
-  'orderableTag',
+  //'orderableCategory',
+  //'orderableTag',
 ]
 
 export const DEBUG_INPUT_TYPES = [
