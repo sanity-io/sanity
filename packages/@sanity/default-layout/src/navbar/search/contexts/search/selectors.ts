@@ -33,6 +33,6 @@ function getRootType(type: SchemaType): SchemaType {
   return getRootType(type.type)
 }
 
-function sortTypes(a: SchemaType, b: SchemaType): number {
+export function sortTypes(a: SchemaType, b: SchemaType): number {
   return (a.title ?? a.name).localeCompare(b.title ?? b.name)
 }

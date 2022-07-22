@@ -1,7 +1,7 @@
 import {SearchTerms} from '@sanity/base'
 import {ObjectSchemaType} from '@sanity/types'
 import {SearchHit} from '../../types'
-import {sortTypes} from '../../utils/helpers'
+import {sortTypes} from './selectors'
 
 export interface SearchReducerState {
   filtersVisible: boolean
