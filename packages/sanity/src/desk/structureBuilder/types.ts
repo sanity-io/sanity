@@ -1,5 +1,5 @@
 import {SortOrdering} from '@sanity/types'
-import {Source} from '../../config'
+import {ConfigContext, Source} from '../../config'
 import {InitialValueTemplateItem} from '../../templates'
 import {ComponentBuilder, ComponentInput} from './Component'
 import {DocumentBuilder, PartialDocumentNode} from './Document'
@@ -36,12 +36,14 @@ export interface StructureContext extends Source {
   getStructureBuilder: () => StructureBuilder
 }
 
+export interface DefaultDocumentNodeContext extends ConfigContext {
+  documentId?: string
+  schemaType: string
+}
+
 export type DefaultDocumentNodeResolver = (
   S: StructureBuilder,
-  options: {
-    documentId?: string
-    schemaType: string
-  }
+  options: DefaultDocumentNodeContext
 ) => DocumentBuilder | null | undefined
 
 export interface StructureBuilder {

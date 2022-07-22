@@ -1,7 +1,7 @@
 import {uniqueId} from 'lodash'
 import {SchemaType} from '@sanity/types'
 import {isValidElementType} from 'react-is'
-import {Source} from '../../config'
+import {Source, getConfigContextFromSource} from '../../config'
 import {getPublishedId} from '../../util'
 import {ListBuilder} from './List'
 import {
@@ -56,11 +56,14 @@ export function createStructureBuilder({
   defaultDocumentNode,
   source,
 }: StructureBuilderOptions): StructureBuilder {
+  const configContext = getConfigContextFromSource(source)
   const context: StructureContext = {
     ...source,
     getStructureBuilder: () => structureBuilder,
     resolveDocumentNode: (options) => {
-      let builder = defaultDocumentNode?.(structureBuilder, options) || new DocumentBuilder(context)
+      let builder =
+        defaultDocumentNode?.(structureBuilder, {...options, ...configContext}) ||
+        new DocumentBuilder(context)
 
       if (!builder.getId()) {
         builder = builder.id('documentEditor')

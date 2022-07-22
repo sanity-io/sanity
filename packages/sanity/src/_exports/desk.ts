@@ -60,6 +60,7 @@ export {deskTool, useDocumentPane} from '../desk'
 
 export type {
   DefaultDocumentNodeResolver,
+  DefaultDocumentNodeContext,
   DeskToolMenuItem,
   DeskToolOptions,
   PaneMenuItem,
