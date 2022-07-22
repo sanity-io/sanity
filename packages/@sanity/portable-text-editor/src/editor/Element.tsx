@@ -160,7 +160,7 @@ export const Element: FunctionComponent<ElementProps> = ({
         )
       : textBlock
     return (
-      <div {...attributes} key={element._key} className={className}>
+      <div key={element._key} {...attributes} className={className}>
         <DraggableBlock element={element} readOnly={readOnly} blockRef={blockRef}>
           <div ref={blockRef}>{propsOrDefaultRendered}</div>
         </DraggableBlock>
@@ -183,7 +183,7 @@ export const Element: FunctionComponent<ElementProps> = ({
   const renderedBlockFromProps =
     renderBlock && renderBlock(block, type, renderAttribs, defaultRender, blockRef)
   return (
-    <div {...attributes} key={element._key} className={className}>
+    <div key={element._key} {...attributes} className={className}>
       {children}
       <DraggableBlock element={element} readOnly={readOnly} blockRef={blockRef}>
         {renderedBlockFromProps && (

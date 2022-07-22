@@ -142,7 +142,7 @@ export const Leaf = (props: LeafProps) => {
   const key = leaf._key || keyGenerator()
 
   return (
-    <span {...attributes} ref={spanRef} key={key}>
+    <span key={key} {...attributes} ref={spanRef}>
       <DraggableChild element={leaf} readOnly={readOnly}>
         {returnedChildren}
       </DraggableChild>
