@@ -18,31 +18,37 @@
   "module": "./lib/esm/_exports/index.js",
   "exports": {
     ".": {
+      "types": "./lib/dts/src/_exports/index.d.ts",
       "source": "./src/_exports/index.ts",
       "require": "./lib/cjs/_exports/index.js",
       "default": "./lib/esm/_exports/index.js"
     },
     "./_unstable": {
+      "types": "./lib/dts/src/_exports/_unstable.d.ts",
       "source": "./src/_exports/_unstable.ts",
       "require": "./lib/cjs/_exports/_unstable.js",
       "default": "./lib/esm/_exports/_unstable.js"
     },
     "./_internal": {
+      "types": "./lib/dts/src/_exports/_internal.d.ts",
       "source": "./src/_exports/_internal.ts",
       "require": "./lib/cjs/_exports/_internal.js",
       "default": "./lib/esm/_exports/_internal.js"
     },
     "./cli": {
+      "types": "./lib/dts/src/_exports/cli.d.ts",
       "source": "./src/_exports/cli.ts",
       "require": "./lib/cjs/_exports/cli.js",
       "default": "./lib/esm/_exports/cli.js"
     },
     "./desk": {
+      "types": "./lib/dts/src/_exports/desk.d.ts",
       "source": "./src/_exports/desk.ts",
       "require": "./lib/cjs/_exports/desk.js",
       "default": "./lib/esm/_exports/desk.js"
     },
     "./form": {
+      "types": "./lib/dts/src/_exports/form.d.ts",
       "source": "./src/_exports/form.ts",
       "require": "./lib/cjs/_exports/form.js",
       "default": "./lib/esm/_exports/form.js"
