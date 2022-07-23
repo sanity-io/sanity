@@ -12,10 +12,35 @@ import type {
   BooleanSchemaType,
   StringSchemaType,
   NumberSchemaType,
+  SchemaType,
 } from './types'
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return !!value && (typeof value == 'object' || typeof value == 'function')
+}
+
+/**
+ * Returns wether or not the given type is a document type
+ * (eg that it was defined as `type: 'document'`)
+ *
+ * @param type - Schema type to test
+ * @returns True if type is a document type, false otherwise
+ * @public
+ */
+export function isDocumentSchemaType(type: unknown): type is ObjectSchemaType {
+  if (!isObjectSchemaType(type)) {
+    return false
+  }
+
+  let current: SchemaType | undefined = type as SchemaType
+  while (current) {
+    if (current.name === 'document') {
+      return true
+    }
+
+    current = current.type
+  }
+  return false
 }
 
 export function isObjectSchemaType(type: unknown): type is ObjectSchemaType {
