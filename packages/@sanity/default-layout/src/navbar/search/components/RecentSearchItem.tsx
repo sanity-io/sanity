@@ -1,6 +1,7 @@
 import {ClockIcon} from '@sanity/icons'
-import {Box, Button, Flex, Text} from '@sanity/ui'
+import {Box, Button, Flex, Text, Theme} from '@sanity/ui'
 import React, {useCallback} from 'react'
+import styled, {css} from 'styled-components'
 import {RecentSearch} from '../datastores/recentSearches'
 import {TypePills} from './TypePills'
 
@@ -18,7 +19,7 @@ export function RecentSearchItem(props: RecentSearchesProps) {
   const typesSelected = value.types.length > 0
 
   return (
-    <Button
+    <CustomButton
       mode="bleed"
       onClick={handleRecentSearchClick}
       paddingX={3}
@@ -40,6 +41,16 @@ export function RecentSearchItem(props: RecentSearchesProps) {
           {typesSelected && <TypePills types={value.types} />}
         </Flex>
       </Flex>
-    </Button>
+    </CustomButton>
   )
 }
+
+const CustomButton = styled(Button)(({theme}: {theme: Theme}) => {
+  const {color} = theme.sanity
+  // TODO: use idiomatic sanity/ui styling
+  return css`
+    &[aria-selected='true'] {
+      box-shadow: inset 0 0 0 1px ${color.selectable.primary.selected.border};
+    }
+  `
+})

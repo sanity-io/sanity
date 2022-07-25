@@ -1,16 +1,21 @@
 import {Box} from '@sanity/ui'
-import React from 'react'
+import React, {RefObject} from 'react'
 import styled from 'styled-components'
 import {useSearchState} from '../contexts/search'
 import {RecentSearches} from './RecentSearches'
 import {SearchResults} from './SearchResults'
 
 interface SearchContentProps {
+  menuContainerRef: RefObject<HTMLDivElement>
   onClose: () => void
   showFiltersOnRecentSearch?: boolean
 }
 
-export function SearchContent({onClose, showFiltersOnRecentSearch}: SearchContentProps) {
+export function SearchContent({
+  menuContainerRef,
+  onClose,
+  showFiltersOnRecentSearch,
+}: SearchContentProps) {
   const {
     state: {terms},
   } = useSearchState()
@@ -20,9 +25,12 @@ export function SearchContent({onClose, showFiltersOnRecentSearch}: SearchConten
   return (
     <SearchContentWrapper flex={1}>
       {hasQueryOrTypes ? (
-        <SearchResults onClose={onClose} />
+        <SearchResults onClose={onClose} menuContainerRef={menuContainerRef} />
       ) : (
-        <RecentSearches showFiltersOnClick={showFiltersOnRecentSearch} />
+        <RecentSearches
+          menuContainerRef={menuContainerRef}
+          showFiltersOnClick={showFiltersOnRecentSearch}
+        />
       )}
     </SearchContentWrapper>
   )
