@@ -173,10 +173,10 @@ const StickyCard = styled(Card)<{$anchor: 'bottom' | 'top'}>(({$anchor}) => {
 
 const TypeItemButton = styled(Button)(({theme}: {theme: Theme}) => {
   const {color} = theme.sanity
-  // TODO: use idiomatic sanity/ui styling
+  // TODO: use idiomatic sanity/ui styling, double check usage of `bg2`
   return css`
     &[aria-selected='true'] {
-      box-shadow: inset 0 0 0 1px ${color.selectable.primary.selected.border};
+      background: ${color.button.bleed.default.hovered.bg2};
     }
   `
 })
