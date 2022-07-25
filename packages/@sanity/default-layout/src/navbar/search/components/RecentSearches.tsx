@@ -1,20 +1,19 @@
 import type {SearchTerms} from '@sanity/base'
-import {useRovingFocus} from '@sanity/base/components'
 import {Box, Label, Stack} from '@sanity/ui'
 import schema from 'part:@sanity/base/schema'
-import React, {useCallback, useState} from 'react'
+import React, {RefObject, useCallback, useState} from 'react'
 import {addSearchTerm, getRecentSearchTerms} from '../datastores/recentSearches'
 import {useSearchState} from '../contexts/search'
 import {Instructions} from './Instructions'
 import {RecentSearchItem} from './RecentSearchItem'
 
 interface RecentSearchesProps {
+  menuContainerRef: RefObject<HTMLDivElement>
   showFiltersOnClick?: boolean
 }
 
-export function RecentSearches({showFiltersOnClick}: RecentSearchesProps) {
+export function RecentSearches({menuContainerRef, showFiltersOnClick}: RecentSearchesProps) {
   const [recentSearches, setRecentSearches] = useState(() => getRecentSearchTerms(schema))
-  const [focusRootElement, setFocusRootElement] = useState<HTMLDivElement | null>(null)
   const {dispatch} = useSearchState()
 
   const handleRecentSearchClick = useCallback(
@@ -30,14 +29,6 @@ export function RecentSearches({showFiltersOnClick}: RecentSearchesProps) {
     [dispatch, showFiltersOnClick]
   )
 
-  // Enable keyboard arrow navigation
-  useRovingFocus({
-    direction: 'vertical',
-    initialFocus: 'first',
-    loop: true,
-    rootElement: focusRootElement,
-  })
-
   return (
     <Box flex={1}>
       {recentSearches.length ? (
@@ -47,7 +38,7 @@ export function RecentSearches({showFiltersOnClick}: RecentSearchesProps) {
               Recent searches
             </Label>
           </Box>
-          <Stack padding={1} ref={setFocusRootElement} space={1}>
+          <Stack padding={1} ref={menuContainerRef} space={1}>
             {recentSearches?.map((recentSearch) => (
               <RecentSearchItem
                 key={recentSearch.__recentTimestamp}

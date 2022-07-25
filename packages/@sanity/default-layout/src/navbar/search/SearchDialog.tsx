@@ -6,6 +6,7 @@ import {SearchContent} from './components/SearchContent'
 import {SearchHeader} from './components/SearchHeader'
 import {TypeFilters} from './components/TypeFilters'
 import {useSearchState} from './contexts/search'
+import {useInputFocusManager} from './hooks/useInputFocusManager'
 import {useSearchHotkeys} from './hooks/useSearchHotkeys'
 
 interface SearchDialogProps {
@@ -31,13 +32,22 @@ export function SearchDialog({onClose, onOpen, open}: SearchDialogProps) {
 }
 
 function SearchDialogContent({onClose}: {onClose: () => void}) {
+  const inputRef = useRef<HTMLInputElement>(null)
+  const menuContainerRef = useRef<HTMLDivElement>(null)
+
+  const {
+    state: {result},
+  } = useSearchState()
+
+  useInputFocusManager({inputRef, menuContainerRef}, [result.loaded])
+
   return (
     <FullscreenWrapper scheme="light" tone="default">
       <StickyBox flex={1}>
-        <SearchHeader onClose={onClose} />
+        <SearchHeader inputRef={inputRef} onClose={onClose} />
       </StickyBox>
       <Box>
-        <SearchContent onClose={onClose} />
+        <SearchContent menuContainerRef={menuContainerRef} onClose={onClose} />
         <SearchDialogFilters />
       </Box>
     </FullscreenWrapper>

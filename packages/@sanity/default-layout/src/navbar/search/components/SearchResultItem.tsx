@@ -5,11 +5,12 @@ import {PreviewCard} from '@sanity/base/components'
 import {useDocumentPresence} from '@sanity/base/hooks'
 import {DocumentPreviewPresence} from '@sanity/base/presence'
 import {IntentLink} from '@sanity/base/router'
-import {Inline, Label, ResponsivePaddingProps} from '@sanity/ui'
+import {Inline, Label, ResponsivePaddingProps, Theme} from '@sanity/ui'
 import Preview from 'part:@sanity/base/preview?'
 import schema from 'part:@sanity/base/schema'
 import {getPublishedId} from 'part:@sanity/base/util/draft-utils'
 import React, {forwardRef, useMemo} from 'react'
+import styled, {css} from 'styled-components'
 import type {SearchHit} from '../types'
 
 interface SearchItemProps extends ResponsivePaddingProps {
@@ -29,7 +30,7 @@ export function SearchResultItem(props: SearchItemProps) {
       // eslint-disable-next-line @typescript-eslint/no-shadow
       forwardRef(function LinkComponent(linkProps, ref: React.ForwardedRef<HTMLAnchorElement>) {
         return (
-          <IntentLink
+          <CustomIntentLink
             {...linkProps}
             intent="edit"
             params={{id: getPublishedId(hit._id), type: type.name}}
@@ -68,3 +69,13 @@ export function SearchResultItem(props: SearchItemProps) {
     </PreviewCard>
   )
 }
+
+const CustomIntentLink = styled(IntentLink)(({theme}: {theme: Theme}) => {
+  const {color} = theme.sanity
+  // TODO: use idiomatic sanity/ui styling
+  return css`
+    &[aria-selected='true'] {
+      box-shadow: inset 0 0 0 1px ${color.selectable.primary.selected.border};
+    }
+  `
+})

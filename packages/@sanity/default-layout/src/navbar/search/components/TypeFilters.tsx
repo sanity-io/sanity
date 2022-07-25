@@ -1,13 +1,13 @@
-import {useRovingFocus} from '@sanity/base/components'
 import {hues} from '@sanity/color'
 import {CheckmarkIcon, SearchIcon} from '@sanity/icons'
 import type {ObjectSchemaType} from '@sanity/types'
-import {Box, Button, Card, Stack, Text} from '@sanity/ui'
+import {Box, Button, Card, Stack, Text, Theme} from '@sanity/ui'
 import schema from 'part:@sanity/base/schema'
-import React, {useCallback, useMemo, useState} from 'react'
+import React, {useCallback, useMemo, useRef, useState} from 'react'
 import styled, {css} from 'styled-components'
 import {useSearchState} from '../contexts/search'
 import {getSelectableTypes} from '../contexts/search/selectors'
+import {useInputFocusManager} from '../hooks/useInputFocusManager'
 import {CustomTextInput} from './CustomTextInput'
 
 interface TypeFiltersProps {
@@ -15,8 +15,10 @@ interface TypeFiltersProps {
 }
 
 export function TypeFilters({small}: TypeFiltersProps) {
+  const inputRef = useRef<HTMLInputElement>(null)
+  const menuContainerRef = useRef<HTMLDivElement>(null)
+
   const [typeFilter, setTypeFilter] = useState('')
-  const [focusRootElement, setFocusRootElement] = useState<HTMLDivElement | null>(null)
   const {
     dispatch,
     state: {
@@ -37,13 +39,7 @@ export function TypeFilters({small}: TypeFiltersProps) {
   )
   const handleFilterClear = useCallback(() => setTypeFilter(''), [])
 
-  // Enable keyboard arrow navigation
-  useRovingFocus({
-    direction: 'vertical',
-    initialFocus: 'first',
-    loop: true,
-    rootElement: focusRootElement,
-  })
+  useInputFocusManager({inputRef, menuContainerRef}, [typeFilter])
 
   return (
     <>
@@ -60,7 +56,8 @@ export function TypeFilters({small}: TypeFiltersProps) {
             onChange={handleFilterChange}
             onClear={handleFilterClear}
             placeholder="Document type"
-            smallClearButton={!small}
+            ref={inputRef}
+            smallClearButton
             radius={2}
             value={typeFilter}
           />
@@ -71,11 +68,10 @@ export function TypeFilters({small}: TypeFiltersProps) {
         paddingBottom={1}
         paddingTop={displayFilterInput ? 1 : 0}
         paddingX={small ? 1 : 2}
-        ref={setFocusRootElement}
         tone="inherit"
       >
         {/* Selectable document types */}
-        <Stack space={1}>
+        <Stack ref={menuContainerRef} space={1}>
           {selectableDocumentTypes.map((type) => (
             <TypeItem
               key={type.name}
@@ -144,7 +140,7 @@ function TypeItem({
   }, [dispatch, type])
 
   return (
-    <Button
+    <TypeItemButton
       fontSize={small ? 1 : 2}
       iconRight={selected && CheckmarkIcon}
       justify="flex-start"
@@ -172,5 +168,15 @@ const StickyCard = styled(Card)<{$anchor: 'bottom' | 'top'}>(({$anchor}) => {
     css`
       top: 0;
     `}
+  `
+})
+
+const TypeItemButton = styled(Button)(({theme}: {theme: Theme}) => {
+  const {color} = theme.sanity
+  // TODO: use idiomatic sanity/ui styling
+  return css`
+    &[aria-selected='true'] {
+      box-shadow: inset 0 0 0 1px ${color.selectable.primary.selected.border};
+    }
   `
 })

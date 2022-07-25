@@ -1,8 +1,9 @@
 import {hues} from '@sanity/color'
 import {Card, Flex, studioTheme, Theme, useClickOutside, useLayer} from '@sanity/ui'
-import React, {RefObject, useCallback, useEffect, useState} from 'react'
+import React, {RefObject, useCallback, useEffect, useRef, useState} from 'react'
 import styled, {css} from 'styled-components'
 import {useSearchState} from '../contexts/search'
+import {useInputFocusManager} from '../hooks/useInputFocusManager'
 import {SearchContent} from './SearchContent'
 import {SearchHeader} from './SearchHeader'
 import {TypeFilters} from './TypeFilters'
@@ -21,7 +22,14 @@ export function SearchPopover({onClose, placeholderRef}: PopoverProps) {
   const [dialogPosition, setDialogPosition] = useState(calcDialogPosition(placeholderRef))
   const [dialogEl, setDialogEl] = useState<HTMLDivElement>()
 
+  const inputRef = useRef<HTMLInputElement>(null)
+  const menuContainerRef = useRef<HTMLDivElement>(null)
+
   const {zIndex} = useLayer()
+
+  const {
+    state: {result},
+  } = useSearchState()
 
   useClickOutside(onClose, [dialogEl])
 
@@ -33,6 +41,8 @@ export function SearchPopover({onClose, placeholderRef}: PopoverProps) {
     window.addEventListener('resize', handleWindowResize)
     return () => window.removeEventListener('resize', handleWindowResize)
   }, [handleWindowResize])
+
+  useInputFocusManager({inputRef, menuContainerRef}, [result.loaded])
 
   return (
     <>
@@ -49,10 +59,14 @@ export function SearchPopover({onClose, placeholderRef}: PopoverProps) {
         x={dialogPosition.x}
         y={dialogPosition.y}
       >
-        <SearchHeader />
+        <SearchHeader inputRef={inputRef} />
 
         <Flex align="stretch">
-          <SearchContent onClose={onClose} showFiltersOnRecentSearch />
+          <SearchContent
+            menuContainerRef={menuContainerRef}
+            onClose={onClose}
+            showFiltersOnRecentSearch
+          />
           <SearchPopoverFilters />
         </Flex>
       </SearchPopoverWrapper>

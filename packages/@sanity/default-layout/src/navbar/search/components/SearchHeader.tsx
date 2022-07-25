@@ -1,17 +1,17 @@
 import {hues, white} from '@sanity/color'
 import {CloseIcon, ControlsIcon, SearchIcon} from '@sanity/icons'
 import {Box, Button, Card, Flex, Spinner, studioTheme} from '@sanity/ui'
-import React, {useCallback, useEffect, useRef} from 'react'
+import React, {RefObject, useCallback, useEffect, useRef} from 'react'
 import styled from 'styled-components'
 import {useSearchState} from '../contexts/search'
 import {CustomTextInput} from './CustomTextInput'
 
 interface SearchHeaderProps {
+  inputRef: RefObject<HTMLInputElement>
   onClose?: () => void
 }
 
-export function SearchHeader({onClose}: SearchHeaderProps) {
-  const openedInput = useRef<HTMLInputElement>()
+export function SearchHeader({inputRef, onClose}: SearchHeaderProps) {
   const filterCloseButton = useRef<HTMLButtonElement>()
   const isMounted = useRef(false)
 
@@ -33,9 +33,6 @@ export function SearchHeader({onClose}: SearchHeaderProps) {
   const handleQueryClear = useCallback(() => {
     dispatch({type: 'TERMS_QUERY_SET', query: ''})
   }, [dispatch])
-
-  // Focus text input on mount
-  useEffect(() => openedInput.current?.focus(), [])
 
   // Focus filter button (when filters are hidden after initial mount)
   useEffect(() => {
@@ -61,7 +58,7 @@ export function SearchHeader({onClose}: SearchHeaderProps) {
             onChange={handleQueryChange}
             onClear={handleQueryClear}
             placeholder="Search"
-            ref={openedInput}
+            ref={inputRef}
             smallClearButton
             value={terms.query}
           />

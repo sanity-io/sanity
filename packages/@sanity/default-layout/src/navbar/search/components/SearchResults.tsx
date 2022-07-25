@@ -1,8 +1,8 @@
-import {TextWithTone, useRovingFocus} from '@sanity/base/components'
+import {TextWithTone} from '@sanity/base/components'
 import {WarningOutlineIcon} from '@sanity/icons'
 import {Box, Flex, Stack} from '@sanity/ui'
 import {getPublishedId} from 'part:@sanity/base/util/draft-utils'
-import React, {useCallback, useState} from 'react'
+import React, {RefObject, useCallback} from 'react'
 import styled from 'styled-components'
 import {useSearchState} from '../contexts/search'
 import {addSearchTerm} from '../datastores/recentSearches'
@@ -10,12 +10,11 @@ import {Instructions} from './Instructions'
 import {SearchResultItem} from './SearchResultItem'
 
 interface SearchResultsProps {
+  menuContainerRef: RefObject<HTMLDivElement>
   onClose: () => void
 }
 
-export function SearchResults({onClose}: SearchResultsProps) {
-  const [focusRootElement, setFocusRootElement] = useState<HTMLDivElement | null>(null)
-
+export function SearchResults({menuContainerRef, onClose}: SearchResultsProps) {
   const {
     state: {terms, result},
   } = useSearchState()
@@ -42,14 +41,6 @@ export function SearchResults({onClose}: SearchResultsProps) {
     onClose()
   }, [onClose, terms])
 
-  // Enable keyboard arrow navigation
-  useRovingFocus({
-    direction: 'vertical',
-    initialFocus: 'first',
-    loop: false,
-    rootElement: focusRootElement,
-  })
-
   return (
     <SearchResultsWrapper $loading={result.loading}>
       {result.error ? (
@@ -70,7 +61,7 @@ export function SearchResults({onClose}: SearchResultsProps) {
         <>
           {!!result.hits.length && (
             // (Has search results)
-            <Stack padding={1} ref={setFocusRootElement} space={1}>
+            <Stack padding={1} ref={menuContainerRef} space={1}>
               {result.hits.map((hit) => (
                 <SearchResultItem
                   data={hit}
