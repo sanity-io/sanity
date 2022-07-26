@@ -159,7 +159,7 @@ export const FormFieldSet = forwardRef(
 
                   {hasValidations && (
                     <Box marginLeft={2}>
-                      <FormFieldValidationStatus fontSize={1} __unstable_markers={markers} />
+                      <FormFieldValidationStatus fontSize={1} __unstable_markers={markers} portal />
                     </Box>
                   )}
                 </Flex>
