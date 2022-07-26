@@ -1,19 +1,13 @@
-import styled, {css, createGlobalStyle} from 'styled-components'
-import {Button, Card, Box, Flex, Label, rem} from '@sanity/ui'
+import styled, {css} from 'styled-components'
+import {Button, Card, Box, Flex, Label, Theme, rem} from '@sanity/ui'
 
-export const Root = styled(Card)`
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  flex-direction: column;
-
+export const Root = styled(Flex)`
   .sidebarPanes .Pane {
-    overflow: auto;
+    overflow-y: auto;
+    overflow-x: hidden;
   }
 
-  .Resizer {
+  & .Resizer {
     background: var(--card-border-color);
     opacity: 1;
     z-index: 1;
@@ -22,11 +16,11 @@ export const Root = styled(Card)`
     border: solid transparent;
   }
 
-  .Resizer:hover {
+  & .Resizer:hover {
     border-color: var(--card-shadow-ambient-color);
   }
 
-  .Resizer.horizontal {
+  & .Resizer.horizontal {
     height: 11px;
     margin: -5px 0;
     border-width: 5px 0;
@@ -35,7 +29,7 @@ export const Root = styled(Card)`
     z-index: 4;
   }
 
-  .Resizer.vertical {
+  & .Resizer.vertical {
     width: 11px;
     margin: 0 -5px;
     border-width: 0 5px;
@@ -50,48 +44,6 @@ export const Root = styled(Card)`
   .Resizer.disabled:hover {
     border-color: transparent;
   }
-
-  .CodeMirror {
-    font-family: ${({theme}) => theme.sanity.fonts.code.family};
-    font-size: ${({theme}) => rem(theme.sanity.fonts.code.sizes[1].fontSize)};
-    line-height: inherit;
-  }
-
-  .CodeMirror-gutters {
-    border-right: 0;
-    background-color: var(--card-code-bg-color);
-  }
-
-  .CodeMirror-linenumber {
-    color: var(--card-code-fg-color);
-  }
-
-  .CodeMirror-scroll {
-    z-index: 2;
-  }
-
-  .CodeMirror-line,
-  pre.CodeMirror-line {
-    padding-left: ${({theme}) => rem(theme.sanity.space[3])};
-  }
-`
-
-export const GlobalCodeMirrorStyle = createGlobalStyle`
-  // This is for the autocomplete menu when you do ctrl-space in in the Query editor
-  .CodeMirror-hints.CodeMirror-vision {
-    z-index: 20;
-    font-family: ${({theme}) => theme.sanity.fonts.code.family};
-    font-size: ${({theme}) => rem(theme.sanity.fonts.code.sizes[1].fontSize)};
-    padding: ${({theme}) => rem(theme.sanity.space[2])};
-  }
-
-  .CodeMirror-hint {
-    padding: ${({theme}) => `${rem(theme.sanity.space[1])} ${rem(theme.sanity.space[1])}`};
-  }
-
-  .CodeMirror-hint-active {
-    background-color: var(--card-bg-color);
-  }
 `
 
 Root.displayName = 'Root'
@@ -100,7 +52,9 @@ export const Header = styled(Card)`
   border-bottom: 1px solid var(--card-border-color);
 `
 
-export const StyledLabel = styled(Label)``
+export const StyledLabel = styled(Label)`
+  flex: 1;
+`
 
 export const SplitpaneContainer = styled(Box)`
   position: relative;
@@ -145,12 +99,11 @@ export const ResultInnerContainer = styled(Box)`
   position: relative;
 `
 
-export const ResultContainer = styled(Card)`
+export const ResultContainer = styled(Card)<{$isInvalid: boolean}>`
   height: 100%;
   width: 100%;
   position: absolute;
   max-width: 100%;
-  background-color: #fff;
 
   ${({$isInvalid}) =>
     $isInvalid &&
@@ -189,7 +142,7 @@ export const TimingsContainer = styled(Box)`
 
 export const TimingsTextContainer = styled(Flex)`
   height: 100%;
-  min-height: ${({theme}) =>
+  min-height: ${({theme}: {theme: Theme}) =>
     rem(
       theme.sanity.space[3] * 2 +
         theme.sanity.fonts.text.sizes[2].lineHeight -
