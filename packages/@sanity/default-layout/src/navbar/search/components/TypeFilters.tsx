@@ -16,7 +16,7 @@ interface TypeFiltersProps {
 
 export function TypeFilters({small}: TypeFiltersProps) {
   const inputRef = useRef<HTMLInputElement>(null)
-  const menuContainerRef = useRef<HTMLDivElement>(null)
+  const childContainerRef = useRef<HTMLDivElement>(null)
 
   const [typeFilter, setTypeFilter] = useState('')
   const {
@@ -39,7 +39,7 @@ export function TypeFilters({small}: TypeFiltersProps) {
   )
   const handleFilterClear = useCallback(() => setTypeFilter(''), [])
 
-  useInputFocusManager({inputRef, menuContainerRef}, [typeFilter])
+  useInputFocusManager({childContainerRef, inputRef}, [typeFilter])
 
   return (
     <>
@@ -71,7 +71,7 @@ export function TypeFilters({small}: TypeFiltersProps) {
         tone="inherit"
       >
         {/* Selectable document types */}
-        <Stack ref={menuContainerRef} space={1}>
+        <Stack ref={childContainerRef} space={1}>
           {selectableDocumentTypes.map((type) => (
             <TypeItem
               key={type.name}
@@ -175,8 +175,17 @@ const TypeItemButton = styled(Button)(({theme}: {theme: Theme}) => {
   const {color} = theme.sanity
   // TODO: use idiomatic sanity/ui styling, double check usage of `bg2`
   return css`
+    // Sanity UI <Button> elements will automatically focus on any keypress _after_ it's been clicked.
+    // Since we don't want these buttons to ever have focus, we currently mask this.
+    // TODO: see if there's a better way to address this
+    &:focus {
+      box-shadow: none !important;
+    }
     &[aria-selected='true'] {
       background: ${color.button.bleed.default.hovered.bg2};
+      // Disable box-shadow to hide the the halo effect when we have keyboard focus over a selected <Button>
+      // TODO: see if there's a better way to address this
+      box-shadow: none;
     }
   `
 })

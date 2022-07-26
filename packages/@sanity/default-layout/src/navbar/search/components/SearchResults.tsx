@@ -10,11 +10,11 @@ import {Instructions} from './Instructions'
 import {SearchResultItem} from './SearchResultItem'
 
 interface SearchResultsProps {
-  menuContainerRef: RefObject<HTMLDivElement>
+  childContainerRef: RefObject<HTMLDivElement>
   onClose: () => void
 }
 
-export function SearchResults({menuContainerRef, onClose}: SearchResultsProps) {
+export function SearchResults({childContainerRef, onClose}: SearchResultsProps) {
   const {
     state: {terms, result},
   } = useSearchState()
@@ -61,7 +61,7 @@ export function SearchResults({menuContainerRef, onClose}: SearchResultsProps) {
         <>
           {!!result.hits.length && (
             // (Has search results)
-            <Stack padding={1} ref={menuContainerRef} space={1}>
+            <Stack padding={1} ref={childContainerRef} space={1}>
               {result.hits.map((hit) => (
                 <SearchResultItem
                   data={hit}
