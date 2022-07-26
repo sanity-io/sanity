@@ -7,7 +7,9 @@
     "rootDir": "./",
     "outDir": "./lib/dts/",
     "jsx": "react",
-    "allowJs": true,
-    "checkJs": false
-  }
+    "allowJs": false,
+    "strict": true,
+    "strictNullChecks": true
+  },
+  "references": [{"path": "../types"}, {"path": "../../sanity/tsconfig.lib.json"}]
 }

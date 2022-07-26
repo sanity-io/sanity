@@ -1,4 +1,4 @@
-export default function prefixApiVersion(version) {
+export function prefixApiVersion(version: string): string {
   if (version[0] !== 'v' && version !== 'other') {
     return `v${version}`
   }
