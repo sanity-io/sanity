@@ -1,5 +1,6 @@
 //import {codeInput} from '@sanity/code-input'
 import {BookIcon} from '@sanity/icons'
+import {visionTool} from '@sanity/vision'
 import {createConfig, createPlugin} from 'sanity'
 import {deskTool} from 'sanity/desk'
 import {imageAssetSource} from './assetSources'
@@ -56,6 +57,9 @@ const sharedSettings = createPlugin({
         {name: 'desk-tool', title: '@sanity/desk-tool'},
         {name: 'form-builder', title: '@sanity/form-builder'},
       ],
+    }),
+    visionTool({
+      defaultApiVersion: 'v1',
     }),
   ],
 })
