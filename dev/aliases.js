@@ -19,5 +19,6 @@ module.exports = {
   '@sanity/types/parts': './packages/@sanity/types/parts',
   '@sanity/util': './packages/@sanity/util/src',
   '@sanity/validation': './packages/@sanity/validation/src',
-  'sanity': "./packages/sanity/src/_exports"
+  '@sanity/vision': './packages/@sanity/vision/src',
+  sanity: './packages/sanity/src/_exports',
 }

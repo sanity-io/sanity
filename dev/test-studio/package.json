@@ -21,6 +21,7 @@
     "@sanity/ui-workshop": "^0.4.3",
     "@sanity/util": "3.0.0-dev-preview.12",
     "@sanity/uuid": "^3.0.1",
+    "@sanity/vision": "3.0.0-dev-preview.11",
     "@turf/helpers": "^6.0.1",
     "@turf/points-within-polygon": "^5.1.5",
     "chokidar": "^3.5.3",

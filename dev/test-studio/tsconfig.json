@@ -9,6 +9,7 @@
   },
   "references": [
     {"path": "../../packages/@sanity/types"},
+    {"path": "../../packages/@sanity/vision"},
     {"path": "../../packages/sanity/tsconfig.lib.json"}
   ]
 }
