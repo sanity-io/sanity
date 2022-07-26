@@ -31,6 +31,7 @@ export function SearchProvider({children}: SearchProviderProps) {
 
   const {pageIndex, result, terms} = state
 
+  const isMounted = useRef(false)
   const previousPageIndex = useRef<number>(0)
   const previousTerms = useRef<SearchTerms>(null)
 
@@ -82,9 +83,11 @@ export function SearchProvider({children}: SearchProviderProps) {
    * Reset search hits / state when we have empty search terms (no search query or types)
    */
   useEffect(() => {
-    if (!hasValidTerms) {
+    if (!hasValidTerms && isMounted?.current) {
       dispatch({type: 'SEARCH_CLEAR'})
     }
+
+    isMounted.current = true
   }, [dispatch, hasValidTerms, terms.query, terms.types])
 
   return <SearchContext.Provider value={{dispatch, state}}>{children}</SearchContext.Provider>
