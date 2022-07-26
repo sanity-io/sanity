@@ -6,7 +6,7 @@ import {SearchPopover} from './components/SearchPopover'
 import {useSearchHotkeys} from './hooks/useSearchHotkeys'
 
 export function SearchField() {
-  const placeholderInputEl = useRef<HTMLInputElement>()
+  const placeholderInputRef = useRef<HTMLInputElement>()
 
   const [open, setOpen] = useState(false)
   const handleClose = useCallback(() => {
@@ -22,11 +22,11 @@ export function SearchField() {
 
   return (
     <>
-      <PlaceholderSearchInput onOpen={handleOpen} ref={placeholderInputEl} />
+      <PlaceholderSearchInput onOpen={handleOpen} ref={placeholderInputRef} />
       {open && (
         <Portal>
           <FocusLock>
-            <SearchPopover onClose={handleClose} placeholderRef={placeholderInputEl} />
+            <SearchPopover onClose={handleClose} placeholderRef={placeholderInputRef} />
           </FocusLock>
         </Portal>
       )}

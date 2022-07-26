@@ -33,13 +33,25 @@ export function SearchDialog({onClose, onOpen, open}: SearchDialogProps) {
 
 function SearchDialogContent({onClose}: {onClose: () => void}) {
   const inputRef = useRef<HTMLInputElement>(null)
-  const menuContainerRef = useRef<HTMLDivElement>(null)
+  const childContainerRef = useRef<HTMLDivElement>(null)
 
   const {
     state: {result},
   } = useSearchState()
 
-  useInputFocusManager({inputRef, menuContainerRef}, [result.loaded])
+  // Re-focus input text when a child item is clicked
+  const handleChildItemClick = useCallback(() => {
+    inputRef?.current?.focus()
+  }, [])
+
+  useInputFocusManager(
+    {
+      childContainerRef,
+      inputRef,
+      onChildItemClick: handleChildItemClick,
+    },
+    [result.loaded]
+  )
 
   return (
     <FullscreenWrapper scheme="light" tone="default">
@@ -47,7 +59,7 @@ function SearchDialogContent({onClose}: {onClose: () => void}) {
         <SearchHeader inputRef={inputRef} onClose={onClose} />
       </StickyBox>
       <Box>
-        <SearchContent menuContainerRef={menuContainerRef} onClose={onClose} />
+        <SearchContent childContainerRef={childContainerRef} onClose={onClose} />
         <SearchDialogFilters />
       </Box>
     </FullscreenWrapper>

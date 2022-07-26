@@ -6,13 +6,13 @@ import {RecentSearches} from './RecentSearches'
 import {SearchResults} from './SearchResults'
 
 interface SearchContentProps {
-  menuContainerRef: RefObject<HTMLDivElement>
+  childContainerRef: RefObject<HTMLDivElement>
   onClose: () => void
   showFiltersOnRecentSearch?: boolean
 }
 
 export function SearchContent({
-  menuContainerRef,
+  childContainerRef,
   onClose,
   showFiltersOnRecentSearch,
 }: SearchContentProps) {
@@ -25,10 +25,10 @@ export function SearchContent({
   return (
     <SearchContentWrapper flex={1}>
       {hasQueryOrTypes ? (
-        <SearchResults onClose={onClose} menuContainerRef={menuContainerRef} />
+        <SearchResults onClose={onClose} childContainerRef={childContainerRef} />
       ) : (
         <RecentSearches
-          menuContainerRef={menuContainerRef}
+          childContainerRef={childContainerRef}
           showFiltersOnClick={showFiltersOnRecentSearch}
         />
       )}

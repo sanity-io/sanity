@@ -8,11 +8,11 @@ import {Instructions} from './Instructions'
 import {RecentSearchItem} from './RecentSearchItem'
 
 interface RecentSearchesProps {
-  menuContainerRef: RefObject<HTMLDivElement>
+  childContainerRef: RefObject<HTMLDivElement>
   showFiltersOnClick?: boolean
 }
 
-export function RecentSearches({menuContainerRef, showFiltersOnClick}: RecentSearchesProps) {
+export function RecentSearches({childContainerRef, showFiltersOnClick}: RecentSearchesProps) {
   const [recentSearches, setRecentSearches] = useState(() => getRecentSearchTerms(schema))
   const {dispatch} = useSearchState()
 
@@ -38,7 +38,7 @@ export function RecentSearches({menuContainerRef, showFiltersOnClick}: RecentSea
               Recent searches
             </Label>
           </Box>
-          <Stack padding={1} ref={menuContainerRef} space={1}>
+          <Stack padding={1} ref={childContainerRef} space={1}>
             {recentSearches?.map((recentSearch) => (
               <RecentSearchItem
                 key={recentSearch.__recentTimestamp}
