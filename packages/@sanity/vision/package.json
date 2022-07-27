@@ -28,7 +28,6 @@
     "is-hotkey": "^0.1.6",
     "json5": "^1.0.1",
     "lodash": "^4.17.15",
-    "moment": "^2.19.1",
     "query-string": "^4.3.2",
     "react-codemirror2": "^6.0.0",
     "react-json-view": "^1.21.3",
