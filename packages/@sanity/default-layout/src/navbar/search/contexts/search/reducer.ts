@@ -104,6 +104,7 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
         ...state,
         result: {
           ...state.result,
+          error: null,
           hasMore: action.hits.length > 0,
           hits: state.pageIndex > 0 ? [...state.result.hits, ...action.hits] : action.hits,
           loaded: true,
