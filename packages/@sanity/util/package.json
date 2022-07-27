@@ -85,7 +85,7 @@
   "dependencies": {
     "@sanity/types": "3.0.0-dev-preview.12",
     "get-random-values-esm": "^1.0.0",
-    "moment": "^2.19.1"
+    "moment": "^2.29.4"
   },
   "devDependencies": {
     "@types/moment": "^2.13.0",
