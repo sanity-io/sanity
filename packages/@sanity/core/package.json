@@ -68,7 +68,7 @@
     "rxjs": "^6.5.3",
     "semver": "^6.2.3",
     "tar-fs": "^1.16.0",
-    "terser": "^5.7.2",
+    "terser": "^5.14.2",
     "yargs": "^16.2.0"
   },
   "devDependencies": {
