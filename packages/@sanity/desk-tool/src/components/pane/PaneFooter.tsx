@@ -7,6 +7,7 @@ import {Root, RootCard} from './PaneFooter.styles'
 interface PaneFooterProps {
   children?: React.ReactNode
   padding?: number | number[]
+  isReferencedDocument?: boolean
 }
 
 /**
@@ -16,13 +17,13 @@ export const PaneFooter = forwardRef(function PaneFooter(
   props: PaneFooterProps,
   ref: React.ForwardedRef<HTMLDivElement>
 ) {
-  const {children, padding} = props
+  const {children, padding, isReferencedDocument} = props
   const {collapsed} = usePane()
 
   return (
     <LegacyLayerProvider zOffset="paneFooter">
       <Root data-testid="pane-footer" hidden={collapsed} ref={ref}>
-        <RootCard tone="inherit">
+        <RootCard tone={isReferencedDocument ? 'primary' : 'inherit'}>
           <Box padding={padding}>{children}</Box>
         </RootCard>
       </Root>

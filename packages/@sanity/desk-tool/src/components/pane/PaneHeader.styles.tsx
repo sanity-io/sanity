@@ -1,3 +1,4 @@
+import {LinkIcon} from '@sanity/icons'
 import {Box, Flex, Layer, rgba, TextSkeleton, Text, Theme} from '@sanity/ui'
 import styled, {css} from 'styled-components'
 
@@ -23,6 +24,10 @@ export const Layout = styled(Flex)`
   [data-collapsed] > div > & {
     transform: rotate(90deg);
   }
+`
+
+export const LinkIconBackground = styled(LinkIcon)`
+  background-color: #e8f1fe;
 `
 
 export const TitleBox = styled(Box)``

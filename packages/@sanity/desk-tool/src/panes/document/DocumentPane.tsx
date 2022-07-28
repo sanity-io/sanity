@@ -37,6 +37,7 @@ import {DocumentStatusBar} from './statusBar'
 import {useDocumentPane} from './useDocumentPane'
 import {DocumentPaneProvider} from './DocumentPaneProvider'
 import {DocumentPaneProviderProps} from './types'
+import {useDocumentsIsReferenced} from './useDocumentIsReferenced'
 
 declare const __DEV__: boolean
 
@@ -67,7 +68,8 @@ export const DocumentPane = memo(function DocumentPane(props: DocumentPaneProvid
   const [templatePermissions, isTemplatePermissionsLoading] = useUnstableTemplatePermissions(
     getNewDocumentOptions()
   )
-  const isLoaded = isDocumentLoaded && !isTemplatePermissionsLoading
+  const [isReferenced, isReferenceLoading] = useDocumentsIsReferenced(options.id)
+  const isLoaded = isDocumentLoaded && !isTemplatePermissionsLoading && !isReferenceLoading
 
   const providerProps = useMemo(() => {
     return isLoaded && documentType && options.type !== documentType
@@ -130,7 +132,7 @@ export const DocumentPane = memo(function DocumentPane(props: DocumentPaneProvid
         initialValueTemplateItems={templatePermissions}
         activePath={activePath}
       >
-        <InnerDocumentPane />
+        <InnerDocumentPane isReferencedDocument={isReferenced} />
       </Unstable_ReferenceInputOptionsProvider>
     </DocumentPaneProvider>
   )
@@ -175,7 +177,7 @@ function mergeDocumentType(
   }
 }
 
-function InnerDocumentPane() {
+function InnerDocumentPane({isReferencedDocument}: {isReferencedDocument: boolean}) {
   const {
     changesOpen,
     documentSchema,
@@ -209,11 +211,11 @@ function InnerDocumentPane() {
 
   const footer = useMemo(
     () => (
-      <PaneFooter ref={setFooterElement}>
+      <PaneFooter isReferencedDocument={isReferencedDocument} ref={setFooterElement}>
         <DocumentStatusBar actionsBoxRef={setActionsBoxElement} />
       </PaneFooter>
     ),
-    []
+    [isReferencedDocument]
   )
 
   const changesPanel = useMemo(() => {
