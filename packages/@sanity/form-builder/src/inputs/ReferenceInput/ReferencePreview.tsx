@@ -3,7 +3,7 @@ import React, {ComponentType, ReactNode, useMemo} from 'react'
 import {ObjectSchemaType} from '@sanity/types'
 import {DocumentAvailability} from '@sanity/base/_internal'
 import {Box, Flex, Inline, Label, Text, Tooltip, useRootTheme} from '@sanity/ui'
-import {AccessDeniedIcon, EditIcon, HelpCircleIcon, PublishIcon} from '@sanity/icons'
+import {AccessDeniedIcon, EditIcon, HelpCircleIcon, LinkIcon, PublishIcon} from '@sanity/icons'
 import {TextWithTone} from '@sanity/base/components'
 import {DocumentPreviewPresence} from '@sanity/base/presence'
 import {useDocumentPresence} from '@sanity/base/hooks'
@@ -79,7 +79,27 @@ export function ReferencePreview(props: {
     <Flex align="center">
       {availability.available ? (
         <Box flex={1}>
-          <Preview type={refType} value={previewStub} layout={layout} />
+          <Flex marginRight={3} align="center">
+            <Preview type={refType} value={previewStub} layout={layout} />
+            <Tooltip
+              content={
+                <Box padding={2}>
+                  <Text muted size={1}>
+                    This is a referenced document
+                  </Text>
+                </Box>
+              }
+              placement="right"
+              fallbackPlacements={['bottom']}
+              portal
+            >
+              <Flex marginLeft={2}>
+                <TextWithTone tone={'default'} size={1}>
+                  <LinkIcon />
+                </TextWithTone>
+              </Flex>
+            </Tooltip>
+          </Flex>
         </Box>
       ) : (
         <Box flex={1}>

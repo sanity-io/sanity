@@ -9,6 +9,7 @@ import {
 import {InsufficientPermissionsMessage} from '@sanity/base/components'
 import {TimeAgo} from '../components/TimeAgo'
 import {useDocumentPane} from '../panes/document/useDocumentPane'
+import {useDocumentsIsReferenced} from '../panes/document/useDocumentIsReferenced'
 
 const DISABLED_REASON_TITLE = {
   LIVE_EDIT_ENABLED: 'Cannot publish since liveEdit is enabled for this document type',
@@ -49,7 +50,7 @@ export const PublishAction: DocumentActionComponent = (props) => {
     type,
     permission: 'publish',
   })
-
+  const [isReferenced, isReferenceLoading] = useDocumentsIsReferenced(id)
   const {value: currentUser} = useCurrentUser()
 
   // eslint-disable-next-line no-nested-ternary
