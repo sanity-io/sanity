@@ -63,6 +63,17 @@ export const publish = {
 
     tx.delete(idPair.draftId)
 
-    return tx.commit({tag: 'document.publish'})
+    console.log('Delaying publish for 10s')
+    let start = 0
+    return new Promise((resolve) => setTimeout(resolve, 10000))
+      .then(() => {
+        console.log('Commiting publish operation')
+        start = Date.now()
+        return tx.commit({tag: 'document.publish'})
+      })
+      .then((res) => {
+        console.log('Publish completed, took %d ms', Date.now() - start)
+        return res
+      })
   },
 }
