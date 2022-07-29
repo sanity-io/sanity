@@ -1,7 +1,8 @@
-import {DocumentActionComponent} from '@sanity/base'
+import {DocumentActionComponent, DocumentActionConfirmDialogProps} from '@sanity/base'
 import {useSyncState, useDocumentOperation, useValidationStatus} from '@sanity/react-hooks'
-import {CheckmarkIcon, PublishIcon} from '@sanity/icons'
+import {CheckmarkIcon, CloseIcon, LinkIcon, PublishIcon} from '@sanity/icons'
 import React, {useCallback, useEffect, useState} from 'react'
+import styled from 'styled-components'
 import {
   useCurrentUser,
   unstable_useDocumentPairPermissions as useDocumentPairPermissions,
@@ -10,6 +11,7 @@ import {InsufficientPermissionsMessage} from '@sanity/base/components'
 import {TimeAgo} from '../components/TimeAgo'
 import {useDocumentPane} from '../panes/document/useDocumentPane'
 import {useDocumentsIsReferenced} from '../panes/document/useDocumentIsReferenced'
+import {Box, Flex, Heading, Stack, Text} from '@sanity/ui'
 
 const DISABLED_REASON_TITLE = {
   LIVE_EDIT_ENABLED: 'Cannot publish since liveEdit is enabled for this document type',
@@ -50,7 +52,18 @@ export const PublishAction: DocumentActionComponent = (props) => {
     type,
     permission: 'publish',
   })
-  const [isReferenced, isReferenceLoading] = useDocumentsIsReferenced(id)
+  const [isReferenced] = useDocumentsIsReferenced(id)
+  const [showConfirmPublishReferencedDocument, setShowConfirmPublishReferencedDocument] = useState(
+    false
+  )
+
+  //Deals with edge-case: if a reference is removed while the confirmation box is open, it will close
+  useCallback(() => {
+    if (isReferenced === false && showConfirmPublishReferencedDocument) {
+      setShowConfirmPublishReferencedDocument(false)
+    }
+  }, [isReferenced, showConfirmPublishReferencedDocument])
+
   const {value: currentUser} = useCurrentUser()
 
   // eslint-disable-next-line no-nested-ternary
@@ -133,6 +146,31 @@ export const PublishAction: DocumentActionComponent = (props) => {
       publish.disabled
   )
 
+  const dialog: DocumentActionConfirmDialogProps = {
+    type: 'confirm',
+    color: 'success',
+    confirmButtonIcon: CheckmarkIcon,
+    cancelButtonIcon: CloseIcon,
+    onCancel: () => setShowConfirmPublishReferencedDocument(false),
+    onConfirm: () => {
+      handle()
+      setShowConfirmPublishReferencedDocument(false)
+    },
+    message: (
+      <Stack space={3}>
+        <Flex marginBottom={2} align="center">
+          <Box marginRight={2}>
+            <LinkBox>
+              <LinkIcon fontSize={'24'} />
+            </LinkBox>
+          </Box>
+          <Heading size={1}>Referenced Document</Heading>
+        </Flex>
+        <Text>Publishing changes may affect documents that reference this document</Text>
+      </Stack>
+    ),
+  }
+
   return {
     disabled: disabled || isPermissionsLoading,
     color: 'success',
@@ -153,6 +191,15 @@ export const PublishAction: DocumentActionComponent = (props) => {
       ? null
       : title,
     shortcut: disabled || publishScheduled ? null : 'Ctrl+Alt+P',
-    onHandle: handle,
+    onHandle: isReferenced ? () => setShowConfirmPublishReferencedDocument(true) : handle,
+    dialog: showConfirmPublishReferencedDocument ? dialog : undefined,
   }
 }
+
+const LinkBox = styled.div`
+  border-color: #e8f1fe;
+  border: 1px solid grey;
+  border-radius: 50%;
+  width: 25px;
+  height: 25px;
+`

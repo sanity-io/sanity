@@ -1,4 +1,3 @@
-import {LinkIcon} from '@sanity/icons'
 import {Box, Flex, Layer, rgba, TextSkeleton, Text, Theme} from '@sanity/ui'
 import styled, {css} from 'styled-components'
 
@@ -24,10 +23,6 @@ export const Layout = styled(Flex)`
   [data-collapsed] > div > & {
     transform: rotate(90deg);
   }
-`
-
-export const LinkIconBackground = styled(LinkIcon)`
-  background-color: #e8f1fe;
 `
 
 export const TitleBox = styled(Box)``
@@ -84,3 +79,10 @@ export const TabsBox = styled(Box)(({theme}: {theme: Theme}) => {
     }
   `
 })
+
+export const LinkCircle = styled.div`
+  border: 1px solid grey;
+  border-radius: 50%;
+  width: 25px;
+  height: 25px;
+`

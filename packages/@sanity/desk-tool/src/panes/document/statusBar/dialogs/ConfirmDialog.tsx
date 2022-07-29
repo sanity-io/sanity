@@ -5,6 +5,7 @@ import {
   Flex,
   Grid,
   Popover,
+  ThemeColorProvider,
   useClickOutside,
   useGlobalKeyDown,
   useLayer,
@@ -19,15 +20,17 @@ export function ConfirmDialog(props: {
   const {dialog, referenceElement} = props
 
   return (
-    <Popover
-      content={<ConfirmDialogContent dialog={dialog} />}
-      fallbackPlacements={POPOVER_FALLBACK_PLACEMENTS}
-      open
-      placement="top"
-      portal
-      preventOverflow
-      referenceElement={referenceElement}
-    />
+    <ThemeColorProvider tone="default">
+      <Popover
+        content={<ConfirmDialogContent dialog={dialog} />}
+        fallbackPlacements={POPOVER_FALLBACK_PLACEMENTS}
+        open
+        placement="top"
+        portal
+        preventOverflow
+        referenceElement={referenceElement}
+      />
+    </ThemeColorProvider>
   )
 }
 

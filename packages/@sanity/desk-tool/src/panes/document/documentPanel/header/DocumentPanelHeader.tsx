@@ -19,7 +19,6 @@ import {DocumentHeaderTitle} from './DocumentHeaderTitle'
 export interface DocumentPanelHeaderProps {
   rootElement: HTMLDivElement | null
   isReferencedDocument?: boolean
-  isReferenceLoading?: boolean
 }
 
 const isActionButton = (item: PaneMenuItem) => Boolean(item.showAsAction)
@@ -28,7 +27,7 @@ const isMenuButton = negate(isActionButton)
 export const DocumentPanelHeader = memo(
   forwardRef(
     (
-      {rootElement, isReferencedDocument, isReferenceLoading}: DocumentPanelHeaderProps,
+      {rootElement, isReferencedDocument}: DocumentPanelHeaderProps,
       ref: React.ForwardedRef<HTMLDivElement>
     ) => {
       const {
@@ -83,7 +82,6 @@ export const DocumentPanelHeader = memo(
           }
           subActions={showVersionMenu && <TimelineMenu chunk={rev} mode="rev" />}
           isDocumentReferenced={isReferencedDocument}
-          isReferenceLoading={isReferenceLoading}
           actions={
             <Inline space={1}>
               {LanguageFilter && <LanguageFilter key="language-menu" schemaType={documentSchema} />}

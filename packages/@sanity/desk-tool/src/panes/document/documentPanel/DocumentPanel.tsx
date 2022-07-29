@@ -143,7 +143,6 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
         rootElement={rootElement}
         ref={setHeaderElement}
         isReferencedDocument={isReferencedDocument}
-        isReferenceLoading={isReferenceLoading}
       />
 
       <PaneContent>
