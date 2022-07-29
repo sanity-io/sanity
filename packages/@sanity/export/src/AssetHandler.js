@@ -168,13 +168,13 @@ class AssetHandler {
     const remoteSha1 = stream.headers['x-sanity-sha1']
     const remoteMd5 = stream.headers['x-sanity-md5']
     const hasHash = Boolean(remoteSha1 || remoteMd5)
-    const method = md5 ? 'md5' : 'sha1'
+    const method = sha1 ? 'sha1' : 'md5'
 
     let differs = false
-    if (remoteMd5 && md5) {
-      differs = remoteMd5 !== md5
-    } else if (remoteSha1 && sha1) {
+    if (remoteSha1 && sha1) {
       differs = remoteSha1 !== sha1
+    } else if (remoteMd5 && md5) {
+      differs = remoteMd5 !== md5
     }
 
     if (differs && attemptNum < 3) {
