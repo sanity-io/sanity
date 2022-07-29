@@ -1,5 +1,6 @@
-import {merge, Observable} from 'rxjs'
-import {filter, map, share} from 'rxjs/operators'
+import {interval, merge, Observable} from 'rxjs'
+import {delayWhen, filter, map, share, tap} from 'rxjs/operators'
+
 import {versionedClient} from '../../../client/versionedClient'
 import {getPairListener, ListenerEvent} from '../getPairListener'
 import {BufferedDocumentEvent, createBufferedDocument} from '../buffered-doc/createBufferedDocument'
@@ -57,13 +58,35 @@ export function checkoutPair(idPair: IdPair): Pair {
 
   const draft = createBufferedDocument(
     draftId,
-    listenerEvents$.pipe(filter(isEventForDocId(draftId))),
+    listenerEvents$.pipe(
+      filter(isEventForDocId(draftId)),
+      tap((msg) => {
+        if (msg.type === 'mutation' && (msg as any).transition === 'disappear') {
+          console.log('[repro] Draft delete mutation received')
+        }
+      })
+    ),
     commitMutations
   )
 
   const published = createBufferedDocument(
     publishedId,
-    listenerEvents$.pipe(filter(isEventForDocId(publishedId))),
+    listenerEvents$.pipe(
+      filter(isEventForDocId(publishedId)),
+      delayWhen((msg) => {
+        if (msg.type !== 'mutation') {
+          return interval(0)
+        }
+
+        console.log('[repro] Published createOrReplace received, delaying emit by 10s')
+        return interval(10000)
+      }),
+      tap((msg) => {
+        if (msg.type === 'mutation') {
+          console.log('[repro] Releasing delayed mutation event on published document')
+        }
+      })
+    ),
     commitMutations
   )
 
