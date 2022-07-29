@@ -1,9 +1,10 @@
 import React from 'react'
-import {Card, Tooltip, Text, Box} from '@sanity/ui'
+import {Tooltip, Text, Box} from '@sanity/ui'
+import {LinkIcon} from '@sanity/icons'
 
-export function ReferencedDocTooltip({icon}: {icon: JSX.Element}) {
+export function ReferencedDocTooltip() {
   return (
-    <Card marginLeft={2}>
+    <Box marginLeft={2}>
       <Text>
         <Tooltip
           content={
@@ -17,9 +18,9 @@ export function ReferencedDocTooltip({icon}: {icon: JSX.Element}) {
           fallbackPlacements={['bottom']}
           portal
         >
-          {icon}
+          <LinkIcon />
         </Tooltip>
       </Text>
-    </Card>
+    </Box>
   )
 }

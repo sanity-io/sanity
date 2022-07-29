@@ -94,7 +94,7 @@ export function ReferencePreview(props: {
               portal
             >
               <Flex marginLeft={2}>
-                <TextWithTone tone={'default'} size={1}>
+                <TextWithTone tone={'default'} size={2}>
                   <LinkIcon />
                 </TextWithTone>
               </Flex>

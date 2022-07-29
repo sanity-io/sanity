@@ -1,18 +1,9 @@
 import {LegacyLayerProvider} from '@sanity/base/components'
 import {useElementRect, Box, Card, Flex, LayerProvider} from '@sanity/ui'
 import React, {useMemo, useCallback, forwardRef} from 'react'
+import {ReferencedDocHeading} from '../paneItem/ReferencedDocHeading'
 import {usePane} from './usePane'
-import {
-  Layout,
-  Root,
-  TabsBox,
-  TitleBox,
-  TitleTextSkeleton,
-  TitleText,
-  LinkIconBackground,
-} from './PaneHeader.styles'
-import {ReferencedDocPopover} from '../paneItem/ReferencedDocPopover'
-import {ReferencedDocTooltip} from '../paneItem/ReferencedDocTooltip'
+import {Layout, Root, TabsBox, TitleBox, TitleTextSkeleton, TitleText} from './PaneHeader.styles'
 
 interface PaneHeaderProps {
   actions?: React.ReactNode
@@ -22,7 +13,6 @@ interface PaneHeaderProps {
   tabs?: React.ReactNode
   title: React.ReactNode
   isDocumentReferenced?: boolean
-  isReferenceLoading?: boolean
 }
 /**
  * @beta This API will change. DO NOT USE IN PRODUCTION.
@@ -32,16 +22,7 @@ export const PaneHeader = forwardRef(function PaneHeader(
   props: PaneHeaderProps,
   ref: React.ForwardedRef<HTMLDivElement>
 ) {
-  const {
-    actions,
-    backButton,
-    loading,
-    subActions,
-    tabs,
-    title,
-    isDocumentReferenced,
-    isReferenceLoading,
-  } = props
+  const {actions, backButton, loading, subActions, tabs, title, isDocumentReferenced} = props
   const {collapse, collapsed, expand, rootElement: paneElement} = usePane()
   const paneRect = useElementRect(paneElement || null)
 
@@ -62,23 +43,7 @@ export const PaneHeader = forwardRef(function PaneHeader(
     expand()
   }, [collapsed, expand])
 
-  //Finne ut av dette med loading..
-  const isLoading = !!isReferenceLoading || isReferenceLoading
-  //console.log('loading', !isLoading)
-  const showReferencePopover = !window.localStorage.getItem('showReferenceInfo_closedPopover')
-  const showReferencedDocumentIndicators = !collapsed && isDocumentReferenced && !isLoading
-  //console.log('show', showReferencedDocumentIndicators)
-
-  //Spør: ikonet må loade senere
-  function referenceIndicator() {
-    if (showReferencedDocumentIndicators) {
-      if (showReferencePopover) {
-        return <ReferencedDocPopover popoverElement={<LinkIconBackground />} />
-      }
-      return <ReferencedDocTooltip icon={<LinkIconBackground />} />
-    }
-    return null
-  }
+  const showReferencedDocumentIndicators = !collapsed && isDocumentReferenced
 
   return (
     <LayerProvider zOffset={100}>
@@ -104,13 +69,12 @@ export const PaneHeader = forwardRef(function PaneHeader(
                 paddingLeft={backButton ? 1 : 3}
               >
                 {loading && <TitleTextSkeleton animated radius={1} />}
-                {!loading && (
-                  <Flex>
-                    <TitleText tabIndex={0} textOverflow="ellipsis" weight="semibold">
-                      {title}
-                    </TitleText>
-                    {referenceIndicator()}
-                  </Flex>
+                {!loading && showReferencedDocumentIndicators ? (
+                  <ReferencedDocHeading title={title} />
+                ) : (
+                  <TitleText tabIndex={0} textOverflow="ellipsis" weight="semibold">
+                    {title}
+                  </TitleText>
                 )}
               </TitleBox>
 
