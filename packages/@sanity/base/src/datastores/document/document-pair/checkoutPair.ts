@@ -1,5 +1,6 @@
 import {merge, Observable} from 'rxjs'
 import {filter, map, share} from 'rxjs/operators'
+
 import {versionedClient} from '../../../client/versionedClient'
 import {getPairListener, PairListenerEvent} from '../getPairListener'
 import {BufferedDocumentEvent, createBufferedDocument} from '../buffered-doc/createBufferedDocument'

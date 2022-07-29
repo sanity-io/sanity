@@ -6,8 +6,19 @@ import {
   merge,
   ReplaySubject,
   GroupedObservable,
+  interval,
 } from 'rxjs'
-import {bufferCount, concatAll, concatMap, groupBy, map, share, skip} from 'rxjs/operators'
+import {
+  bufferCount,
+  concatAll,
+  concatMap,
+  delayWhen,
+  groupBy,
+  map,
+  share,
+  skip,
+  tap,
+} from 'rxjs/operators'
 import type {IdPair, MutationEvent, ReconnectEvent, SanityClient, WelcomeEvent} from './types'
 
 interface Snapshots {
@@ -64,6 +75,38 @@ export function getPairListener(
   return merge(
     mutations$.pipe(
       map(polyfillCounts),
+
+      tap((msg) => {
+        if (
+          msg.transition === 'disappear' &&
+          msg.documentId.startsWith('drafts') &&
+          msg.transactionId.startsWith('publish')
+        ) {
+          console.log('[repro] Draft delete mutation received')
+        }
+      }),
+
+      delayWhen((msg) => {
+        if (
+          (msg.transition === 'update' || msg.transition === 'appear') &&
+          !msg.documentId.startsWith('drafts') &&
+          msg.transactionId.startsWith('publish')
+        ) {
+          console.log('[repro] Published createOrReplace received, delaying emit by 10s')
+          return interval(10000)
+        }
+
+        return interval(0)
+      }),
+      tap((msg) => {
+        if (
+          msg.transition === 'update' &&
+          !msg.documentId.startsWith('drafts') &&
+          msg.transactionId.startsWith('publish')
+        ) {
+          console.log('[repro] Releasing delayed mutation event on published document')
+        }
+      }),
 
       // We want to group all the mutation events that were involved in a transaction together,
       // in order to keep a consistent view of draft and published document states. To know
