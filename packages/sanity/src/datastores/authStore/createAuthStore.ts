@@ -130,6 +130,7 @@ export function _createAuthStore({
         useCdn: false,
         ...(token && {token}),
         withCredentials: true,
+        requestTagPrefix: 'sanity.studio',
       })
     ),
     switchMap((client) =>
@@ -154,6 +155,7 @@ export function _createAuthStore({
         useCdn: true,
         withCredentials: true,
         apiVersion: '2021-06-07',
+        requestTagPrefix: 'sanity.studio',
       })
 
       // try to get the current user by using the cookie credentials
@@ -186,6 +188,7 @@ export function _createAuthStore({
       useCdn: true,
       withCredentials: true,
       apiVersion: '2021-06-07',
+      requestTagPrefix: 'sanity.studio',
     })
 
     clearToken(projectId)
