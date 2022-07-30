@@ -62,7 +62,7 @@ const root = {
 const circle = {
   syncing: {
     strokeDasharray: '0, 0, 23, 3, 23, 3',
-    strokeDashoffset: '10',
+    strokeDashoffset: 10,
     opacity: 1,
     transition: {
       duration: 0,
@@ -70,7 +70,7 @@ const circle = {
   },
   saved: {
     strokeDasharray: '0, 0, 23, 0, 23, 0',
-    strokeDashoffset: '10',
+    strokeDashoffset: 10,
     opacity: 1,
     transition: {
       duration: 0.2,
@@ -78,7 +78,7 @@ const circle = {
   },
   changes: {
     strokeDasharray: '0, 60, 23, 0, 23, 0',
-    strokeDashoffset: '0',
+    strokeDashoffset: 0,
     opacity: 0,
     transition: {
       duration: 0.5,
