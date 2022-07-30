@@ -2,7 +2,12 @@ import path from 'path'
 import fs from 'fs/promises'
 import os from 'os'
 import type {CliCommandDefinition} from '@sanity/cli'
-import type {SanityClient, MultipleMutationResult, Mutation} from '@sanity/client'
+import type {
+  SanityClient,
+  MultipleMutationResult,
+  Mutation,
+  IdentifiedSanityDocumentStub,
+} from '@sanity/client'
 import json5 from 'json5'
 import execa from 'execa'
 import chokidar from 'chokidar'
@@ -157,15 +162,27 @@ function writeDocuments(
 
   const mutations = docs.map((doc, index): Mutation => {
     validateDocument(doc, index, docs)
-    if (
-      operation !== 'create' &&
-      operation !== 'createIfNotExists' &&
-      operation !== 'createOrReplace'
-    ) {
-      throw new Error(`Unsupported operation "${operation}"`)
+    if (operation === 'create') {
+      return {create: doc}
     }
 
-    return {create: doc}
+    if (operation === 'createIfNotExists') {
+      if (isIdentifiedSanityDocument(doc)) {
+        return {createIfNotExists: doc}
+      }
+
+      throw new Error(`Missing required _id attribute for ${operation}`)
+    }
+
+    if (operation === 'createOrReplace') {
+      if (isIdentifiedSanityDocument(doc)) {
+        return {createOrReplace: doc}
+      }
+
+      throw new Error(`Missing required _id attribute for ${operation}`)
+    }
+
+    throw new Error(`Unsupported operation ${operation}`)
   })
 
   return client.transaction(mutations).commit()
@@ -190,6 +207,10 @@ function isSanityDocumentish(doc: unknown): doc is {_type: string} {
     '_type' in doc &&
     typeof (doc as any)._type === 'string'
   )
+}
+
+function isIdentifiedSanityDocument(doc: unknown): doc is IdentifiedSanityDocumentStub {
+  return isSanityDocumentish(doc) && '_id' in doc
 }
 
 function getErrorMessage(message: string, index: number, isSingle: boolean): string {
