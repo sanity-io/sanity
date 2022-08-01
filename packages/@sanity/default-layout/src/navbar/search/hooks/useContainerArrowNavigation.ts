@@ -1,4 +1,4 @@
-import {RefObject, useCallback, useEffect, useRef} from 'react'
+import {RefObject, useCallback, useEffect, useRef, useState} from 'react'
 
 /**
  * This hook adds keyboard events (for up arrow / down arrow / enter keys) to a specified container element.
@@ -24,7 +24,7 @@ export function useContainerArrowNavigation(
   dependencyList: ReadonlyArray<any> = []
 ): void {
   const selectedIndexRef = useRef<number>(-1)
-  const totalItemCountRef = useRef<number>(0)
+  const [childElements, setChildElements] = useState<HTMLElement[]>([])
 
   // Iterate through all menu child items, assign aria-selected state and scroll into view
   const setActiveIndex = useCallback(
@@ -56,37 +56,48 @@ export function useContainerArrowNavigation(
       if (event.key === 'ArrowDown') {
         event.preventDefault()
         const nextIndex =
-          selectedIndexRef.current < totalItemCountRef.current - 1
-            ? selectedIndexRef.current + 1
-            : 0
+          selectedIndexRef.current < childElements.length - 1 ? selectedIndexRef.current + 1 : 0
         setActiveIndex({index: nextIndex})
       }
       if (event.key === 'ArrowUp') {
         event.preventDefault()
         const nextIndex =
-          selectedIndexRef.current > 0
-            ? selectedIndexRef.current - 1
-            : totalItemCountRef.current - 1
+          selectedIndexRef.current > 0 ? selectedIndexRef.current - 1 : childElements.length - 1
         setActiveIndex({index: nextIndex})
       }
       if (event.key === 'Enter' && eventTargetElement.tagName.toLowerCase() === 'input') {
         event.preventDefault()
-        const currentElement = Array.from(childContainerRef.current?.children)[
-          selectedIndexRef.current
-        ] as HTMLElement
+        const currentElement = childElements[selectedIndexRef.current] as HTMLElement
         if (currentElement) {
           currentElement.click()
         }
       }
     },
-    [childContainerRef, setActiveIndex]
+    [childElements, setActiveIndex]
   )
 
+  const handleSetChildren = useCallback(() => {
+    const childContainerElement = childContainerRef?.current
+    if (childContainerElement) {
+      setChildElements(Array.from(childContainerElement.children) as HTMLElement[])
+    }
+  }, [childContainerRef])
+
   /**
-   * On mount and whenever dependencies are updated:
-   * - Reset active index
-   * - Recalculate children count
-   * - On all child items: disable tab indices and register click + keydown events
+   * Reset active index and and store child elements in state on initial mount and whenever dependencies are updated
+   */
+  useEffect(() => {
+    setActiveIndex({index: -1})
+    handleSetChildren()
+  }, [
+    handleSetChildren,
+    setActiveIndex,
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    ...dependencyList,
+  ])
+
+  /**
+   * Generate click and keydown events for all child items
    *
    * We assign keydown events to all children to retain up/down navigation even after a child
    * item has been clicked (and has received focus).
@@ -99,44 +110,27 @@ export function useContainerArrowNavigation(
       }
     }
 
-    const childContainerEl = childContainerRef?.current
-
-    totalItemCountRef.current = childContainerEl ? childContainerEl.childElementCount : 0
-    setActiveIndex({index: -1})
-
-    if (childContainerEl) {
-      Array.from(childContainerEl.children)?.forEach((child, index) => {
-        child.setAttribute('tabindex', '-1')
-        child.addEventListener('click', handleChildItemClick(index))
-        child.addEventListener('keydown', handleKeyDown)
-      })
-    }
+    childElements?.forEach((child, index) => {
+      child.setAttribute('tabindex', '-1')
+      child.addEventListener('click', handleChildItemClick(index))
+      child.addEventListener('keydown', handleKeyDown)
+    })
 
     return () => {
-      if (childContainerEl) {
-        Array.from(childContainerEl.children)?.forEach((child, index) => {
-          child.removeEventListener('click', handleChildItemClick(index))
-          child.removeEventListener('keydown', handleKeyDown)
-        })
-      }
+      childElements?.forEach((child, index) => {
+        child.removeEventListener('click', handleChildItemClick(index))
+        child.removeEventListener('keydown', handleKeyDown)
+      })
     }
-  }, [
-    childContainerRef,
-    handleKeyDown,
-    onChildItemClick,
-    setActiveIndex,
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    ...dependencyList,
-  ])
+  }, [childContainerRef, childElements, handleKeyDown, onChildItemClick, setActiveIndex])
 
   useEffect(() => {
-    const containerElement = containerRef?.current
-
     // Clear child active index when input element loses focus
     function handleContainerBlur() {
       setActiveIndex({index: -1})
     }
 
+    const containerElement = containerRef?.current
     containerElement?.addEventListener('keydown', handleKeyDown)
     containerElement?.addEventListener('blur', handleContainerBlur)
     return () => {
@@ -144,6 +138,26 @@ export function useContainerArrowNavigation(
       containerElement?.removeEventListener('blur', handleContainerBlur)
     }
   }, [childContainerRef, containerRef, handleKeyDown, setActiveIndex])
+
+  /**
+   * Listen to DOM mutations
+   */
+  useEffect(() => {
+    const childContainerElement = childContainerRef?.current
+
+    const mutationObserver = new MutationObserver(handleSetChildren)
+
+    if (childContainerElement) {
+      mutationObserver.observe(childContainerElement, {
+        childList: true,
+        subtree: true,
+      })
+    }
+
+    return () => {
+      mutationObserver.disconnect()
+    }
+  }, [childContainerRef, handleSetChildren])
 
   return null
 }

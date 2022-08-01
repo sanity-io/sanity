@@ -1,6 +1,6 @@
-import {ClockIcon} from '@sanity/icons'
+import {ClockIcon, CloseIcon} from '@sanity/icons'
 import {Box, Button, Flex, Text, Theme} from '@sanity/ui'
-import React, {useCallback} from 'react'
+import React, {MouseEvent, useCallback} from 'react'
 import styled, {css} from 'styled-components'
 import {RecentSearch} from '../datastores/recentSearches'
 import {TypePills} from './TypePills'
@@ -8,10 +8,11 @@ import {TypePills} from './TypePills'
 export interface RecentSearchesProps {
   value: RecentSearch
   onClick: (value: RecentSearch) => void
+  onDelete: (event: MouseEvent) => void
 }
 
 export function RecentSearchItem(props: RecentSearchesProps) {
-  const {value, onClick} = props
+  const {value, onClick, onDelete} = props
   const handleRecentSearchClick = useCallback(() => {
     onClick(value)
   }, [value, onClick])
@@ -19,10 +20,11 @@ export function RecentSearchItem(props: RecentSearchesProps) {
   const typesSelected = value.types.length > 0
 
   return (
-    <CustomButton
+    <RecentSearchItemWrapper
       mode="bleed"
       onClick={handleRecentSearchClick}
-      paddingX={3}
+      paddingLeft={3}
+      paddingRight={1}
       paddingY={1}
       style={{width: '100%'}}
     >
@@ -40,12 +42,21 @@ export function RecentSearchItem(props: RecentSearchesProps) {
           )}
           {typesSelected && <TypePills types={value.types} />}
         </Flex>
+
+        {/* TODO: this is neither semantic nor accessible, consider revising */}
+        <CloseButton onClick={onDelete}>
+          <Flex padding={2}>
+            <Text size={1}>
+              <CloseIcon />
+            </Text>
+          </Flex>
+        </CloseButton>
       </Flex>
-    </CustomButton>
+    </RecentSearchItemWrapper>
   )
 }
 
-const CustomButton = styled(Button)(({theme}: {theme: Theme}) => {
+const RecentSearchItemWrapper = styled(Button)(({theme}: {theme: Theme}) => {
   const {color} = theme.sanity
   // TODO: use idiomatic sanity/ui styling, double check usage of `bg2`
   return css`
@@ -60,3 +71,16 @@ const CustomButton = styled(Button)(({theme}: {theme: Theme}) => {
     }
   `
 })
+
+const CloseButton = styled.div`
+  opacity: 0.5;
+  visibility: hidden;
+
+  ${RecentSearchItemWrapper}:hover & {
+    visibility: visible;
+  }
+
+  &:hover {
+    opacity: 1;
+  }
+`

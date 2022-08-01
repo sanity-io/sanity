@@ -1,9 +1,13 @@
 import type {SearchTerms} from '@sanity/base'
 import {Box, Label, Stack} from '@sanity/ui'
 import schema from 'part:@sanity/base/schema'
-import React, {RefObject, useCallback, useState} from 'react'
+import React, {MouseEvent, RefObject, useCallback, useState} from 'react'
 import {useSearchState} from '../contexts/search'
-import {addSearchTerm, getRecentSearchTerms} from '../datastores/recentSearches'
+import {
+  addSearchTerm,
+  getRecentSearchTerms,
+  removeSearchTermAtIndex,
+} from '../datastores/recentSearches'
 import {Instructions} from './Instructions'
 import {RecentSearchItem} from './RecentSearchItem'
 
@@ -29,6 +33,15 @@ export function RecentSearches({childContainerRef, showFiltersOnClick}: RecentSe
     [dispatch, showFiltersOnClick]
   )
 
+  const handleRecentSearchDelete = useCallback(
+    (index: number) => (event: MouseEvent) => {
+      event.stopPropagation()
+      removeSearchTermAtIndex(index)
+      setRecentSearches(getRecentSearchTerms(schema))
+    },
+    []
+  )
+
   return (
     <Box flex={1}>
       {recentSearches.length ? (
@@ -39,10 +52,11 @@ export function RecentSearches({childContainerRef, showFiltersOnClick}: RecentSe
             </Label>
           </Box>
           <Stack padding={1} ref={childContainerRef} space={1}>
-            {recentSearches?.map((recentSearch) => (
+            {recentSearches?.map((recentSearch, index) => (
               <RecentSearchItem
                 key={recentSearch.__recentTimestamp}
                 onClick={handleRecentSearchClick}
+                onDelete={handleRecentSearchDelete(index)}
                 value={recentSearch}
               />
             ))}
