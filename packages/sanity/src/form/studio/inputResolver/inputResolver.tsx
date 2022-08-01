@@ -57,7 +57,7 @@ function getTypeChain(type: SchemaType | undefined, visited: Set<SchemaType>): S
   visited.add(type)
 
   const next = type.type ? getTypeChain(type.type, visited) : []
-  return [...next, type]
+  return [type, ...next]
 }
 
 export function defaultResolveInputComponent(
@@ -66,18 +66,22 @@ export function defaultResolveInputComponent(
   if (schemaType.components?.input) return schemaType.components.input
 
   const componentFromTypeVariants = resolveComponentFromTypeVariants(schemaType)
-  if (componentFromTypeVariants) return componentFromTypeVariants
+  if (componentFromTypeVariants) {
+    return componentFromTypeVariants
+  }
 
-  const subType =
-    // using an object + Object.values to de-dupe the type chain by type name
-    Object.values(
-      getTypeChain(schemaType, new Set()).reduce<Record<string, SchemaType>>((acc, type) => {
-        acc[type.name] = type
-        return acc
-      }, {})
-    ).find((t) => defaultInputs[t.name])
+  const typeChain = getTypeChain(schemaType, new Set())
+  const deduped = typeChain.reduce((acc, type) => {
+    acc[type.name] = type
+    return acc
+  }, {} as Record<string, SchemaType>)
 
-  if (subType) return defaultInputs[subType.name]
+  // using an object + Object.values to de-dupe the type chain by type name
+  const subType = Object.values(deduped).find((t) => defaultInputs[t.name])
+
+  if (subType) {
+    return defaultInputs[subType.name]
+  }
 
   throw new Error(`Could not find input component for schema type \`${schemaType.name}\``)
 }
