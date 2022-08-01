@@ -7,11 +7,12 @@ import {useSearchState} from '../contexts/search'
 import {CustomTextInput} from './CustomTextInput'
 
 interface SearchHeaderProps {
-  containerRef: RefObject<HTMLInputElement>
+  containerRef: RefObject<HTMLElement>
+  inputRef: RefObject<HTMLInputElement>
   onClose?: () => void
 }
 
-export function SearchHeader({containerRef, onClose}: SearchHeaderProps) {
+export function SearchHeader({containerRef, inputRef, onClose}: SearchHeaderProps) {
   const filterCloseButton = useRef<HTMLButtonElement>()
   const isMounted = useRef(false)
 
@@ -58,6 +59,7 @@ export function SearchHeader({containerRef, onClose}: SearchHeaderProps) {
             onChange={handleQueryChange}
             onClear={handleQueryClear}
             placeholder="Search"
+            ref={inputRef}
             smallClearButton
             value={terms.query}
           />

@@ -49,6 +49,12 @@ const CustomButton = styled(Button)(({theme}: {theme: Theme}) => {
   const {color} = theme.sanity
   // TODO: use idiomatic sanity/ui styling, double check usage of `bg2`
   return css`
+    // Sanity UI <Button> elements will automatically focus on any keypress _after_ it's been clicked.
+    // Since we don't want these buttons to ever have focus, we currently mask this.
+    // TODO: see if there's a better way to address this
+    &:focus {
+      box-shadow: none !important;
+    }
     &[aria-selected='true'] {
       background: ${color.button.bleed.default.hovered.bg2};
     }
