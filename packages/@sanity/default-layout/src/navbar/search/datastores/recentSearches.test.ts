@@ -1,5 +1,10 @@
 import {ObjectSchemaType} from '@sanity/types'
-import {addSearchTerm, getRecentSearchTerms, MAX_RECENT_SEARCHES} from './recentSearches'
+import {
+  addSearchTerm,
+  getRecentSearchTerms,
+  MAX_RECENT_SEARCHES,
+  removeSearchTermAtIndex,
+} from './recentSearches'
 
 const dummyType = ({name: 'testSchema', jsonType: 'object'} as unknown) as ObjectSchemaType
 const dummySchema = {
@@ -68,6 +73,46 @@ describe('search-store', () => {
       const recentTerms = getRecentSearchTerms(dummySchema)
       expect(recentTerms.length).toEqual(MAX_RECENT_SEARCHES)
       expect(recentTerms[0].query).toEqual(`${MAX_RECENT_SEARCHES + 9}`)
+    })
+
+    it('should delete saved searches by index', () => {
+      const search1 = {
+        query: '1',
+        types: [dummyType],
+      }
+      const search2 = {
+        query: '2',
+        types: [dummyType],
+      }
+
+      // Added search terms are unshifted
+      addSearchTerm(search1)
+      addSearchTerm(search2)
+
+      // This should remove search with query '2'
+      removeSearchTermAtIndex(0)
+
+      const recentTerms = getRecentSearchTerms(dummySchema)
+
+      expect(recentTerms.length).toEqual(1)
+      expect(recentTerms[0].query).toEqual('1')
+    })
+
+    it('should no-op when deleting out of range indices', () => {
+      const search1 = {
+        query: '1',
+        types: [dummyType],
+      }
+
+      addSearchTerm(search1)
+      removeSearchTermAtIndex(9000)
+
+      let recentTerms = getRecentSearchTerms(dummySchema)
+      expect(recentTerms.length).toEqual(1)
+
+      removeSearchTermAtIndex(-1)
+      recentTerms = getRecentSearchTerms(dummySchema)
+      expect(recentTerms.length).toEqual(1)
     })
   })
 })
