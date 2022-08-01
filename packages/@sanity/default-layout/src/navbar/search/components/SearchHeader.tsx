@@ -7,7 +7,7 @@ import {useSearchState} from '../contexts/search'
 import {CustomTextInput} from './CustomTextInput'
 
 interface SearchHeaderProps {
-  containerRef: RefObject<HTMLElement>
+  containerRef: RefObject<HTMLDivElement>
   inputRef: RefObject<HTMLInputElement>
   onClose?: () => void
 }
@@ -114,11 +114,11 @@ const NotificationBadge = styled.div`
   display: flex;
   font-size: calc(8 / 16 * 1rem);
   font-weight: ${studioTheme.fonts.text.weights.semibold};
-  height: 16px;
+  height: 14px;
   justify-content: center;
   pointer-events: none;
   position: absolute;
-  right: 0;
-  top: 0;
-  width: 16px;
+  right: -2px;
+  top: -2px;
+  width: 14px;
 `

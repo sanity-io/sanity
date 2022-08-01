@@ -18,7 +18,7 @@ export function useContainerArrowNavigation(
     onChildItemClick,
   }: {
     childContainerRef: RefObject<HTMLDivElement>
-    containerRef: RefObject<HTMLElement>
+    containerRef: RefObject<HTMLDivElement>
     onChildItemClick?: () => void
   },
   dependencyList: ReadonlyArray<any> = []
