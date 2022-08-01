@@ -23,7 +23,8 @@ export function SearchPopover({onClose, placeholderRef}: PopoverProps) {
   const [dialogEl, setDialogEl] = useState<HTMLDivElement>()
 
   const childContainerRef = useRef<HTMLDivElement>(null)
-  const headerContainerRef = useRef<HTMLInputElement>(null)
+  const headerContainerRef = useRef<HTMLElement>(null)
+  const headerInputRef = useRef<HTMLInputElement>(null)
 
   const {zIndex} = useLayer()
 
@@ -33,9 +34,9 @@ export function SearchPopover({onClose, placeholderRef}: PopoverProps) {
 
   useClickOutside(onClose, [dialogEl])
 
-  // Re-focus input text when a child item is clicked
+  // Re-focus header input text when a child item is clicked
   const handleChildItemClick = useCallback(() => {
-    headerContainerRef?.current?.focus()
+    headerInputRef?.current?.focus()
   }, [])
 
   const handleWindowResize = useCallback(() => {
@@ -67,7 +68,7 @@ export function SearchPopover({onClose, placeholderRef}: PopoverProps) {
         x={dialogPosition.x}
         y={dialogPosition.y}
       >
-        <SearchHeader containerRef={headerContainerRef} />
+        <SearchHeader containerRef={headerContainerRef} inputRef={headerInputRef} />
 
         <Flex align="stretch">
           <SearchContent
