@@ -160,11 +160,11 @@ export class DocumentBuilder implements Serializable<DocumentNode> {
     }
 
     if (!options || !options.type) {
-      // eslint-disable-next-line no-console
-      console.log(
-        `⚠️ Structure warning: document type (\`schemaType\`) will be required for document nodes in the near future! At:\n\n${path.join(
-          ' > '
-        )}\n`
+      throw new SerializeError(
+        'document type (`schemaType`) is required for document nodes',
+        path,
+        id,
+        hint
       )
     }
 
