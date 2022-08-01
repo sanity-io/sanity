@@ -159,16 +159,6 @@ export const structure: StructureResolver = (S, {schema}) => {
 
               S.divider(),
 
-              // A "singleton" using a document node with no schema type
-              // This is deprecated and scheduled for removal
-              S.documentListItem()
-                .id('foo-bar')
-                .title('Singleton author')
-                .schemaType('author')
-                .child(S.document().documentId('foo-bar')),
-
-              S.divider(),
-
               S.listItem()
                 .title('Anything with a title')
                 // .icon(() => <span data-sanity-icon>T</span>)
