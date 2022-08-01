@@ -6,7 +6,7 @@ import React, {RefObject, useCallback} from 'react'
 import styled from 'styled-components'
 import {useSearchState} from '../contexts/search'
 import {addSearchTerm} from '../datastores/recentSearches'
-import {Instructions} from './Instructions'
+import {NoResults} from './NoResults'
 import {SearchResultItem} from './SearchResultItem'
 
 interface SearchResultsProps {
@@ -85,7 +85,7 @@ export function SearchResults({childContainerRef, onClose}: SearchResultsProps) 
 
           {!result.hits.length && result.loaded && (
             // (No results)
-            <Instructions />
+            <NoResults />
           )}
         </>
       )}
