@@ -5,7 +5,6 @@ import {unstable_useDocumentValuePermissions as useDocumentValuePermissions} fro
 import styled, {css} from 'styled-components'
 import {SchemaType} from '@sanity/types'
 import {getPublishedId, getDraftId} from '@sanity/base/_internal'
-import {useDocumentsIsReferenced} from '../useDocumentIsReferenced'
 import {PaneContent} from '../../../components/pane'
 import {usePaneLayout} from '../../../components/pane/usePaneLayout'
 import {useDeskTool} from '../../../contexts/deskTool'
@@ -64,7 +63,6 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
   const headerRect = useElementRect(headerElement)
   const portalRef = useRef<HTMLDivElement | null>(null)
   const [documentScrollElement, setDocumentScrollElement] = useState<HTMLDivElement | null>(null)
-  const [isReferencedDocument, isReferenceLoading] = useDocumentsIsReferenced(documentId)
 
   const requiredPermission = value._createdAt ? 'update' : 'create'
   const liveEdit = useMemo(() => Boolean(getSchemaType(documentType)?.liveEdit), [documentType])
@@ -139,11 +137,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
 
   return (
     <Flex direction="column" flex={2} overflow={layoutCollapsed ? undefined : 'hidden'}>
-      <DocumentPanelHeader
-        rootElement={rootElement}
-        ref={setHeaderElement}
-        isReferencedDocument={isReferencedDocument}
-      />
+      <DocumentPanelHeader rootElement={rootElement} ref={setHeaderElement} />
 
       <PaneContent>
         <PortalProvider

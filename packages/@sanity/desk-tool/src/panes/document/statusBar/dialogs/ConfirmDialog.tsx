@@ -19,6 +19,7 @@ export function ConfirmDialog(props: {
 }) {
   const {dialog, referenceElement} = props
 
+  // Wrapping in ThemeColorProvider to avoid the ConfirmDialog inheriting tone of the footer
   return (
     <ThemeColorProvider tone="default">
       <Popover

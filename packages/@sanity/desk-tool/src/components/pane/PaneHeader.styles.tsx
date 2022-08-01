@@ -81,8 +81,16 @@ export const TabsBox = styled(Box)(({theme}: {theme: Theme}) => {
 })
 
 export const LinkCircle = styled.div`
-  border: 1px solid grey;
+  border: 1px solid var(--card-shadow-outline-color);
   border-radius: 50%;
-  width: 25px;
-  height: 25px;
+  width: 24px;
+  height: 24px;
+`
+
+export const HorizontalLine = styled.div`
+  border-top: 1px solid var(--card-shadow-outline-color);
+`
+
+export const StyledBox = styled(Box)`
+  max-width: 352px;
 `

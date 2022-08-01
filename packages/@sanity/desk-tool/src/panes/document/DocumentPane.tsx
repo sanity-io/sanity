@@ -37,7 +37,6 @@ import {DocumentStatusBar} from './statusBar'
 import {useDocumentPane} from './useDocumentPane'
 import {DocumentPaneProvider} from './DocumentPaneProvider'
 import {DocumentPaneProviderProps} from './types'
-import {useDocumentsIsReferenced} from './useDocumentIsReferenced'
 
 declare const __DEV__: boolean
 
@@ -68,8 +67,7 @@ export const DocumentPane = memo(function DocumentPane(props: DocumentPaneProvid
   const [templatePermissions, isTemplatePermissionsLoading] = useUnstableTemplatePermissions(
     getNewDocumentOptions()
   )
-  const [isReferenced, isReferenceLoading] = useDocumentsIsReferenced(options.id)
-  const isLoaded = isDocumentLoaded && !isTemplatePermissionsLoading && !isReferenceLoading
+  const isLoaded = isDocumentLoaded && !isTemplatePermissionsLoading
 
   const providerProps = useMemo(() => {
     return isLoaded && documentType && options.type !== documentType
@@ -132,7 +130,7 @@ export const DocumentPane = memo(function DocumentPane(props: DocumentPaneProvid
         initialValueTemplateItems={templatePermissions}
         activePath={activePath}
       >
-        <InnerDocumentPane isReferencedDocument={isReferenced} />
+        <InnerDocumentPane />
       </Unstable_ReferenceInputOptionsProvider>
     </DocumentPaneProvider>
   )
@@ -177,7 +175,7 @@ function mergeDocumentType(
   }
 }
 
-function InnerDocumentPane({isReferencedDocument}: {isReferencedDocument: boolean}) {
+function InnerDocumentPane() {
   const {
     changesOpen,
     documentSchema,
@@ -188,6 +186,7 @@ function InnerDocumentPane({isReferencedDocument}: {isReferencedDocument: boolea
     inspectOpen,
     paneKey,
     value,
+    documentIsReferenced,
   } = useDocumentPane()
   const {features} = useDeskTool()
   const {collapsed: layoutCollapsed} = usePaneLayout()
@@ -211,11 +210,11 @@ function InnerDocumentPane({isReferencedDocument}: {isReferencedDocument: boolea
 
   const footer = useMemo(
     () => (
-      <PaneFooter isReferencedDocument={isReferencedDocument} ref={setFooterElement}>
+      <PaneFooter isReferencedDocument={documentIsReferenced} ref={setFooterElement}>
         <DocumentStatusBar actionsBoxRef={setActionsBoxElement} />
       </PaneFooter>
     ),
-    [isReferencedDocument]
+    [documentIsReferenced]
   )
 
   const changesPanel = useMemo(() => {

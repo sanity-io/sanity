@@ -21,6 +21,7 @@ export interface DocumentPaneContextValue {
   editState: EditStateFor | null
   documentId: string
   documentIdRaw: string
+  documentIsReferenced: boolean
   documentSchema: DocumentSchema | null
   documentType: string
   focusPath: Path
