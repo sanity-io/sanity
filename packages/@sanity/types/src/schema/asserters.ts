@@ -53,6 +53,14 @@ export function isArraySchemaType(type: unknown): type is ArraySchemaType {
   return type.jsonType === 'array'
 }
 
+export function isArrayOfObjectsSchemaType(type: unknown): type is ArraySchemaType {
+  return isArraySchemaType(type) && type.of.every((memberType) => isObjectSchemaType(memberType))
+}
+
+export function isArrayOfPrimitivesSchemaType(type: unknown): type is ArraySchemaType {
+  return isArraySchemaType(type) && type.of.every((memberType) => isPrimitiveSchemaType(memberType))
+}
+
 export function isBooleanSchemaType(type: unknown): type is BooleanSchemaType {
   if (!isRecord(type)) return false
   return type.jsonType === 'boolean'
