@@ -65,16 +65,18 @@ export const PaneHeader = forwardRef(function PaneHeader(
               <TitleBox
                 flex={1}
                 onClick={handleTitleClick}
-                paddingY={3}
                 paddingLeft={backButton ? 1 : 3}
+                paddingTop={3}
               >
                 {loading && <TitleTextSkeleton animated radius={1} />}
                 {!loading && showReferencedDocumentIndicators ? (
                   <ReferencedDocHeading title={title} />
                 ) : (
-                  <TitleText tabIndex={0} textOverflow="ellipsis" weight="semibold">
-                    {title}
-                  </TitleText>
+                  <Box paddingBottom={3}>
+                    <TitleText tabIndex={0} textOverflow="ellipsis" weight="semibold">
+                      {title}
+                    </TitleText>
+                  </Box>
                 )}
               </TitleBox>
 

@@ -8,10 +8,9 @@ import {
   unstable_useDocumentPairPermissions as useDocumentPairPermissions,
 } from '@sanity/base/hooks'
 import {InsufficientPermissionsMessage} from '@sanity/base/components'
+import {Box, Flex, Heading, Stack, Text} from '@sanity/ui'
 import {TimeAgo} from '../components/TimeAgo'
 import {useDocumentPane} from '../panes/document/useDocumentPane'
-import {useDocumentsIsReferenced} from '../panes/document/useDocumentIsReferenced'
-import {Box, Flex, Heading, Stack, Text} from '@sanity/ui'
 
 const DISABLED_REASON_TITLE = {
   LIVE_EDIT_ENABLED: 'Cannot publish since liveEdit is enabled for this document type',
@@ -42,7 +41,7 @@ export const PublishAction: DocumentActionComponent = (props) => {
   const {publish}: any = useDocumentOperation(id, type)
   const validationStatus = useValidationStatus(id, type)
   const syncState = useSyncState(id, type)
-  const {changesOpen, handleHistoryOpen} = useDocumentPane()
+  const {changesOpen, handleHistoryOpen, documentIsReferenced} = useDocumentPane()
   const hasValidationErrors = validationStatus.markers.some((marker) => marker.level === 'error')
   // we use this to "schedule" publish after pending tasks (e.g. validation and sync) has completed
   const [publishScheduled, setPublishScheduled] = useState<boolean>(false)
@@ -52,17 +51,16 @@ export const PublishAction: DocumentActionComponent = (props) => {
     type,
     permission: 'publish',
   })
-  const [isReferenced] = useDocumentsIsReferenced(id)
   const [showConfirmPublishReferencedDocument, setShowConfirmPublishReferencedDocument] = useState(
     false
   )
 
   //Deals with edge-case: if a reference is removed while the confirmation box is open, it will close
   useCallback(() => {
-    if (isReferenced === false && showConfirmPublishReferencedDocument) {
+    if (documentIsReferenced === false && showConfirmPublishReferencedDocument) {
       setShowConfirmPublishReferencedDocument(false)
     }
-  }, [isReferenced, showConfirmPublishReferencedDocument])
+  }, [documentIsReferenced, showConfirmPublishReferencedDocument])
 
   const {value: currentUser} = useCurrentUser()
 
@@ -160,9 +158,9 @@ export const PublishAction: DocumentActionComponent = (props) => {
       <Stack space={3}>
         <Flex marginBottom={2} align="center">
           <Box marginRight={2}>
-            <LinkBox>
+            <LinkCircle>
               <LinkIcon fontSize={'24'} />
-            </LinkBox>
+            </LinkCircle>
           </Box>
           <Heading size={1}>Referenced Document</Heading>
         </Flex>
@@ -191,15 +189,14 @@ export const PublishAction: DocumentActionComponent = (props) => {
       ? null
       : title,
     shortcut: disabled || publishScheduled ? null : 'Ctrl+Alt+P',
-    onHandle: isReferenced ? () => setShowConfirmPublishReferencedDocument(true) : handle,
+    onHandle: documentIsReferenced ? () => setShowConfirmPublishReferencedDocument(true) : handle,
     dialog: showConfirmPublishReferencedDocument ? dialog : undefined,
   }
 }
 
-const LinkBox = styled.div`
-  border-color: #e8f1fe;
-  border: 1px solid grey;
+const LinkCircle = styled.div`
+  border: 1px solid var(--card-shadow-outline-color);
   border-radius: 50%;
-  width: 25px;
-  height: 25px;
+  width: 24px;
+  height: 24px;
 `

@@ -24,6 +24,7 @@ import {useDeskTool} from '../../contexts/deskTool'
 import {usePaneRouter} from '../../contexts/paneRouter'
 import {useUnique} from '../../utils/useUnique'
 import {versionedClient} from '../../versionedClient'
+import {useReferringDocuments} from '../../components/confirmDeleteDialog/useReferringDocuments'
 import {createObservableController} from './documentHistory/history/Controller'
 import {Timeline} from './documentHistory/history/Timeline'
 import {DocumentPaneContext, DocumentPaneContextValue} from './DocumentPaneContext'
@@ -57,6 +58,8 @@ export const DocumentPaneProvider = memo(({children, index, pane, paneKey}: Prop
   const {markers: markersRaw} = useValidationStatus(documentId, documentType)
   const connectionState = useConnectionState(documentId, documentType)
   const documentSchema = schema.get(documentType)
+  const {totalCount} = useReferringDocuments(options.id)
+  const documentIsReferenced = totalCount > 0
   const value: Partial<SanityDocument> =
     editState?.draft || editState?.published || initialValue.value
   const actions = useMemo(() => (editState ? resolveDocumentActions(editState) : null), [editState])
@@ -218,6 +221,7 @@ export const DocumentPaneProvider = memo(({children, index, pane, paneKey}: Prop
     displayed,
     documentId,
     documentIdRaw,
+    documentIsReferenced,
     documentSchema,
     documentType,
     editState,
