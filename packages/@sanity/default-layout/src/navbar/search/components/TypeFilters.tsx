@@ -108,7 +108,6 @@ export function TypeFilters({small}: TypeFiltersProps) {
               fontSize={small ? 1 : 2}
               mode="bleed"
               onClick={handleClearTypes}
-              // padding={small ? 3 : 4}
               padding={3}
               text="Clear"
               tone="primary"
