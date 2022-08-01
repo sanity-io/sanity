@@ -41,6 +41,7 @@
     "@sanity/logos": "^1.1.9",
     "@sanity/ui": "^0.37.9",
     "@sanity/util": "2.30.5",
+    "debug": "^3.2.7",
     "is-hotkey": "^0.1.6",
     "lodash": "^4.17.15",
     "react-focus-lock": "^2.5.0",
