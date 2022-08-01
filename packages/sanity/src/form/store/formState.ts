@@ -5,6 +5,7 @@ import {
   ArraySchemaType,
   BooleanSchemaType,
   CurrentUser,
+  isArrayOfObjectsSchemaType,
   isArraySchemaType,
   isObjectSchemaType,
   NumberSchemaType,
@@ -60,10 +61,6 @@ function isFieldEnabledByGroupFilter(
   }
 
   return castArray(field.group).includes(currentGroup.name)
-}
-
-function isArrayOfObjectsSchemaType(schemaType: ArraySchemaType) {
-  return schemaType.of.every((memberType) => isObjectSchemaType(memberType))
 }
 
 function isAcceptedObjectValue(value: any): value is Record<string, unknown> | undefined {
