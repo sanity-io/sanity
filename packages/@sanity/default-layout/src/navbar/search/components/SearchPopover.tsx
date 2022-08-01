@@ -23,7 +23,7 @@ export function SearchPopover({onClose, placeholderRef}: PopoverProps) {
   const [dialogEl, setDialogEl] = useState<HTMLDivElement>()
 
   const childContainerRef = useRef<HTMLDivElement>(null)
-  const headerContainerRef = useRef<HTMLElement>(null)
+  const headerContainerRef = useRef<HTMLDivElement>(null)
   const headerInputRef = useRef<HTMLInputElement>(null)
 
   const {zIndex} = useLayer()
