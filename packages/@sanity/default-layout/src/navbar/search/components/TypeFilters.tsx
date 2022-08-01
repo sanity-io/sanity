@@ -7,7 +7,7 @@ import React, {useCallback, useMemo, useRef, useState} from 'react'
 import styled, {css} from 'styled-components'
 import {useSearchState} from '../contexts/search'
 import {getSelectableTypes} from '../contexts/search/selectors'
-import {useInputFocusManager} from '../hooks/useInputFocusManager'
+import {useContainerArrowNavigation} from '../hooks/useContainerArrowNavigation'
 import {CustomTextInput} from './CustomTextInput'
 
 interface TypeFiltersProps {
@@ -15,8 +15,8 @@ interface TypeFiltersProps {
 }
 
 export function TypeFilters({small}: TypeFiltersProps) {
-  const inputRef = useRef<HTMLInputElement>(null)
   const childContainerRef = useRef<HTMLDivElement>(null)
+  const textInputRef = useRef<HTMLInputElement>(null)
 
   const [typeFilter, setTypeFilter] = useState('')
   const {
@@ -39,7 +39,7 @@ export function TypeFilters({small}: TypeFiltersProps) {
   )
   const handleFilterClear = useCallback(() => setTypeFilter(''), [])
 
-  useInputFocusManager({childContainerRef, inputRef}, [typeFilter])
+  useContainerArrowNavigation({childContainerRef, containerRef: textInputRef}, [typeFilter])
 
   return (
     <>
@@ -56,7 +56,7 @@ export function TypeFilters({small}: TypeFiltersProps) {
             onChange={handleFilterChange}
             onClear={handleFilterClear}
             placeholder="Document type"
-            ref={inputRef}
+            ref={textInputRef}
             smallClearButton
             radius={2}
             value={typeFilter}
