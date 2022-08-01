@@ -6,7 +6,7 @@ import {SearchContent} from './components/SearchContent'
 import {SearchHeader} from './components/SearchHeader'
 import {TypeFilters} from './components/TypeFilters'
 import {useSearchState} from './contexts/search'
-import {useInputFocusManager} from './hooks/useInputFocusManager'
+import {useContainerArrowNavigation} from './hooks/useContainerArrowNavigation'
 import {useSearchHotkeys} from './hooks/useSearchHotkeys'
 
 interface SearchDialogProps {
@@ -32,7 +32,7 @@ export function SearchDialog({onClose, onOpen, open}: SearchDialogProps) {
 }
 
 function SearchDialogContent({onClose}: {onClose: () => void}) {
-  const inputRef = useRef<HTMLInputElement>(null)
+  const headerContainerRef = useRef<HTMLInputElement>(null)
   const childContainerRef = useRef<HTMLDivElement>(null)
 
   const {
@@ -41,13 +41,13 @@ function SearchDialogContent({onClose}: {onClose: () => void}) {
 
   // Re-focus input text when a child item is clicked
   const handleChildItemClick = useCallback(() => {
-    inputRef?.current?.focus()
+    headerContainerRef?.current?.focus()
   }, [])
 
-  useInputFocusManager(
+  useContainerArrowNavigation(
     {
       childContainerRef,
-      inputRef,
+      containerRef: headerContainerRef,
       onChildItemClick: handleChildItemClick,
     },
     [result.loaded]
@@ -56,7 +56,7 @@ function SearchDialogContent({onClose}: {onClose: () => void}) {
   return (
     <FullscreenWrapper scheme="light" tone="default">
       <StickyBox flex={1}>
-        <SearchHeader inputRef={inputRef} onClose={onClose} />
+        <SearchHeader containerRef={headerContainerRef} onClose={onClose} />
       </StickyBox>
       <Box>
         <SearchContent childContainerRef={childContainerRef} onClose={onClose} />

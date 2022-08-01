@@ -3,7 +3,7 @@ import {Card, Flex, studioTheme, Theme, useClickOutside, useLayer} from '@sanity
 import React, {RefObject, useCallback, useEffect, useRef, useState} from 'react'
 import styled, {css} from 'styled-components'
 import {useSearchState} from '../contexts/search'
-import {useInputFocusManager} from '../hooks/useInputFocusManager'
+import {useContainerArrowNavigation} from '../hooks/useContainerArrowNavigation'
 import {SearchContent} from './SearchContent'
 import {SearchHeader} from './SearchHeader'
 import {TypeFilters} from './TypeFilters'
@@ -22,8 +22,8 @@ export function SearchPopover({onClose, placeholderRef}: PopoverProps) {
   const [dialogPosition, setDialogPosition] = useState(calcDialogPosition(placeholderRef))
   const [dialogEl, setDialogEl] = useState<HTMLDivElement>()
 
-  const inputRef = useRef<HTMLInputElement>(null)
   const childContainerRef = useRef<HTMLDivElement>(null)
+  const headerContainerRef = useRef<HTMLInputElement>(null)
 
   const {zIndex} = useLayer()
 
@@ -35,7 +35,7 @@ export function SearchPopover({onClose, placeholderRef}: PopoverProps) {
 
   // Re-focus input text when a child item is clicked
   const handleChildItemClick = useCallback(() => {
-    inputRef?.current?.focus()
+    headerContainerRef?.current?.focus()
   }, [])
 
   const handleWindowResize = useCallback(() => {
@@ -47,9 +47,10 @@ export function SearchPopover({onClose, placeholderRef}: PopoverProps) {
     return () => window.removeEventListener('resize', handleWindowResize)
   }, [handleWindowResize])
 
-  useInputFocusManager({childContainerRef, inputRef, onChildItemClick: handleChildItemClick}, [
-    result.loaded,
-  ])
+  useContainerArrowNavigation(
+    {childContainerRef, containerRef: headerContainerRef, onChildItemClick: handleChildItemClick},
+    [result.loaded]
+  )
 
   return (
     <>
@@ -66,7 +67,7 @@ export function SearchPopover({onClose, placeholderRef}: PopoverProps) {
         x={dialogPosition.x}
         y={dialogPosition.y}
       >
-        <SearchHeader inputRef={inputRef} />
+        <SearchHeader containerRef={headerContainerRef} />
 
         <Flex align="stretch">
           <SearchContent

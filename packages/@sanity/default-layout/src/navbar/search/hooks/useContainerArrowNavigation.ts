@@ -1,13 +1,24 @@
 import {RefObject, useCallback, useEffect, useRef} from 'react'
 
-export function useInputFocusManager(
+/**
+ * This hook adds keyboard events (for up arrow / down arrow / enter keys) to a specified container element.
+ *
+ * Up / down arrow key presses on the container element will cycle through all nested elements specified within a
+ * separate _child_ container element, applying `aria-selected=true` attributes accordingly.
+ *
+ * All children of this child container element will listen for the same keyboard events. They will also not be focusable.
+ *
+ * Pressing the enter key triggers a click event on the selected child element IF the currently focused element is of type <input />.
+ * Otherwise, enter presses will pass-through to the event target as normal.
+ */
+export function useContainerArrowNavigation(
   {
     childContainerRef,
-    inputRef,
+    containerRef,
     onChildItemClick,
   }: {
     childContainerRef: RefObject<HTMLDivElement>
-    inputRef: RefObject<HTMLInputElement>
+    containerRef: RefObject<HTMLElement>
     onChildItemClick?: () => void
   },
   dependencyList: ReadonlyArray<any> = []
@@ -41,6 +52,7 @@ export function useInputFocusManager(
 
   const handleKeyDown = useCallback(
     (event: KeyboardEvent) => {
+      const eventTargetElement = event.target as HTMLElement
       if (event.key === 'ArrowDown') {
         event.preventDefault()
         const nextIndex =
@@ -57,7 +69,7 @@ export function useInputFocusManager(
             : totalItemCountRef.current - 1
         setActiveIndex({index: nextIndex})
       }
-      if (event.key === 'Enter') {
+      if (event.key === 'Enter' && eventTargetElement.tagName.toLowerCase() === 'input') {
         event.preventDefault()
         const currentElement = Array.from(childContainerRef.current?.children)[
           selectedIndexRef.current
@@ -118,20 +130,20 @@ export function useInputFocusManager(
   ])
 
   useEffect(() => {
-    const inputElement = inputRef?.current
+    const containerElement = containerRef?.current
 
     // Clear child active index when input element loses focus
-    function handleInputBlur() {
+    function handleContainerBlur() {
       setActiveIndex({index: -1})
     }
 
-    inputElement?.addEventListener('keydown', handleKeyDown)
-    inputElement?.addEventListener('blur', handleInputBlur)
+    containerElement?.addEventListener('keydown', handleKeyDown)
+    containerElement?.addEventListener('blur', handleContainerBlur)
     return () => {
-      inputElement?.removeEventListener('keydown', handleKeyDown)
-      inputElement?.removeEventListener('keydown', handleInputBlur)
+      containerElement?.removeEventListener('keydown', handleKeyDown)
+      containerElement?.removeEventListener('blur', handleContainerBlur)
     }
-  }, [childContainerRef, handleKeyDown, inputRef, setActiveIndex])
+  }, [childContainerRef, containerRef, handleKeyDown, setActiveIndex])
 
   return null
 }
