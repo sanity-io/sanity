@@ -1,0 +1,9 @@
+{
+  "env": {
+    "browser": false,
+    "node": true
+  },
+  "rules": {
+    "tsdoc/syntax": "off"
+  }
+}

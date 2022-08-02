@@ -81,8 +81,8 @@ describe('collaborate editing', () => {
     ])
     const [editorA, editorB] = await getEditors()
     const desiredSelectionA = {
-      anchor: {path: [{_key: 'randomKey0'}, 'children', {_key: 'randomKey1'}], offset: 11},
-      focus: {path: [{_key: 'randomKey0'}, 'children', {_key: 'randomKey1'}], offset: 11},
+      anchor: {path: [{_key: 'randomKey0'}, 'children', {_key: 'randomKey1'}], offset: 18},
+      focus: {path: [{_key: 'randomKey0'}, 'children', {_key: 'randomKey1'}], offset: 18},
     }
     await editorA.setSelection(desiredSelectionA)
     await editorB.setSelection({
@@ -165,11 +165,11 @@ describe('collaborate editing', () => {
         ],
       },
       {
-        _key: 'B-3',
+        _key: 'B-5',
         _type: 'block',
         children: [
           {
-            _key: 'B-2',
+            _key: 'B-3',
             _type: 'span',
             marks: [],
             text: '',
@@ -183,8 +183,8 @@ describe('collaborate editing', () => {
     const selectionB = await editorB.getSelection()
     expect(selectionA).toEqual(desiredSelectionA)
     expect(selectionB).toEqual({
-      anchor: {offset: 0, path: [{_key: 'B-3'}, 'children', {_key: 'B-2'}]},
-      focus: {offset: 0, path: [{_key: 'B-3'}, 'children', {_key: 'B-2'}]},
+      anchor: {offset: 0, path: [{_key: 'B-5'}, 'children', {_key: 'B-3'}]},
+      focus: {offset: 0, path: [{_key: 'B-5'}, 'children', {_key: 'B-3'}]},
     })
   })
 
@@ -364,6 +364,41 @@ describe('collaborate editing', () => {
       },
     ])
     const [editorA, editorB] = await getEditors()
+    const valAa = await editorA.getValue()
+    const valBb = await editorB.getValue()
+    expect(valAa).toEqual(valBb)
+    expect(valAa).toMatchInlineSnapshot(`
+      Array [
+        Object {
+          "_key": "randomKey0",
+          "_type": "block",
+          "children": Array [
+            Object {
+              "_key": "randomKey1",
+              "_type": "span",
+              "marks": Array [],
+              "text": "Hello world<- I left off here. And you wrote that -> there!",
+            },
+          ],
+          "markDefs": Array [],
+          "style": "normal",
+        },
+        Object {
+          "_key": "B-3",
+          "_type": "block",
+          "children": Array [
+            Object {
+              "_key": "B-2",
+              "_type": "span",
+              "marks": Array [],
+              "text": "I'm writing here!",
+            },
+          ],
+          "markDefs": Array [],
+          "style": "normal",
+        },
+      ]
+    `)
     await editorA.setSelection({
       anchor: {path: [{_key: 'randomKey0'}, 'children', {_key: 'randomKey1'}], offset: 52},
       focus: {path: [{_key: 'randomKey0'}, 'children', {_key: 'randomKey1'}], offset: 52},
@@ -373,49 +408,158 @@ describe('collaborate editing', () => {
       focus: {offset: 17, path: [{_key: 'B-3'}, 'children', {_key: 'B-2'}]},
     })
     await editorA.pressKey('Enter')
+    await editorA.pressKey('Enter')
     await editorA.insertText('A new line appears')
     const valA = await editorA.getValue()
     const valB = await editorB.getValue()
     expect(valA).toEqual(valB)
-    expect(valA).toEqual([
-      {
-        _key: 'randomKey0',
-        _type: 'block',
-        children: [
-          {
-            _key: 'randomKey1',
-            _type: 'span',
-            marks: [],
-            text: 'Hello world<- I left off here. And you wrote that ->',
-          },
-        ],
-        markDefs: [],
-        style: 'normal',
-      },
-      {
-        _key: 'A-3',
-        _type: 'block',
-        children: [{_key: 'A-2', _type: 'span', marks: [], text: 'A new line appears there!'}],
-        markDefs: [],
-        style: 'normal',
-      },
-      {
-        _key: 'B-3',
-        _type: 'block',
-        children: [{_key: 'B-2', _type: 'span', marks: [], text: "I'm writing here!"}],
-        markDefs: [],
-        style: 'normal',
-      },
-    ])
+    expect(valA).toMatchInlineSnapshot(`
+      Array [
+        Object {
+          "_key": "randomKey0",
+          "_type": "block",
+          "children": Array [
+            Object {
+              "_key": "randomKey1",
+              "_type": "span",
+              "marks": Array [],
+              "text": "Hello world<- I left off here. And you wrote that ->",
+            },
+          ],
+          "markDefs": Array [],
+          "style": "normal",
+        },
+        Object {
+          "_key": "A-5",
+          "_type": "block",
+          "children": Array [
+            Object {
+              "_key": "A-3",
+              "_type": "span",
+              "marks": Array [],
+              "text": "",
+            },
+          ],
+          "markDefs": Array [],
+          "style": "normal",
+        },
+        Object {
+          "_key": "A-9",
+          "_type": "block",
+          "children": Array [
+            Object {
+              "_key": "A-7",
+              "_type": "span",
+              "marks": Array [],
+              "text": "A new line appears there!",
+            },
+          ],
+          "markDefs": Array [],
+          "style": "normal",
+        },
+        Object {
+          "_key": "B-3",
+          "_type": "block",
+          "children": Array [
+            Object {
+              "_key": "B-2",
+              "_type": "span",
+              "marks": Array [],
+              "text": "I'm writing here!",
+            },
+          ],
+          "markDefs": Array [],
+          "style": "normal",
+        },
+      ]
+    `)
     const selectionA = await editorA.getSelection()
     expect(selectionA).toEqual({
-      anchor: {path: [{_key: 'A-3'}, 'children', {_key: 'A-2'}], offset: 18},
-      focus: {path: [{_key: 'A-3'}, 'children', {_key: 'A-2'}], offset: 18},
+      anchor: {path: [{_key: 'A-9'}, 'children', {_key: 'A-7'}], offset: 18},
+      focus: {path: [{_key: 'A-9'}, 'children', {_key: 'A-7'}], offset: 18},
     })
     const selectionB = await editorB.getSelection()
     expect(selectionB).toEqual({
       anchor: {offset: 17, path: [{_key: 'B-3'}, 'children', {_key: 'B-2'}]},
       focus: {offset: 17, path: [{_key: 'B-3'}, 'children', {_key: 'B-2'}]},
+    })
+  })
+
+  it('diffMatchPatch works as expected', async () => {
+    await setDocumentValue([
+      {
+        _key: '26901064a3c9',
+        _type: 'block',
+        children: [
+          {
+            _key: 'b629e8140c25',
+            _type: 'span',
+            marks: [],
+            text: 'pweoirrporiwpweporiwproi wer',
+          },
+          {
+            _key: 'ef4627c1c11b',
+            _type: 'span',
+            marks: ['strong'],
+            text: 'poiwyuXty45........ytutyy666uerpwer1',
+          },
+          {
+            _key: '7d3c9bcc9c10',
+            _type: 'span',
+            marks: [],
+            text: 'weuirwer werewopri',
+          },
+        ],
+        markDefs: [],
+        style: 'normal',
+      },
+    ])
+    const selectionA = {
+      anchor: {path: [{_key: '26901064a3c9'}, 'children', {_key: 'ef4627c1c11b'}], offset: 15},
+      focus: {path: [{_key: '26901064a3c9'}, 'children', {_key: 'ef4627c1c11b'}], offset: 15},
+    }
+    const [editorA, editorB] = await getEditors()
+    await editorA.setSelection(selectionA)
+    await editorA.insertText('!')
+    const valueB = await editorB.getValue()
+    expect(valueB).toMatchInlineSnapshot(`
+      Array [
+        Object {
+          "_key": "26901064a3c9",
+          "_type": "block",
+          "children": Array [
+            Object {
+              "_key": "b629e8140c25",
+              "_type": "span",
+              "marks": Array [],
+              "text": "pweoirrporiwpweporiwproi wer",
+            },
+            Object {
+              "_key": "ef4627c1c11b",
+              "_type": "span",
+              "marks": Array [
+                "strong",
+              ],
+              "text": "poiwyuXty45....!....ytutyy666uerpwer1",
+            },
+            Object {
+              "_key": "7d3c9bcc9c10",
+              "_type": "span",
+              "marks": Array [],
+              "text": "weuirwer werewopri",
+            },
+          ],
+          "markDefs": Array [],
+          "style": "normal",
+        },
+      ]
+    `)
+    const valueA = await editorA.getValue()
+    expect(valueA).toEqual(valueB)
+    const newSelectionA = await editorA.getSelection()
+    expect(newSelectionA).toEqual({
+      anchor: {path: [{_key: '26901064a3c9'}, 'children', {_key: 'ef4627c1c11b'}], offset: 16},
+      focus: {path: [{_key: '26901064a3c9'}, 'children', {_key: 'ef4627c1c11b'}], offset: 16},
     })
   })
 })

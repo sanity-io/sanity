@@ -3,18 +3,19 @@ import {Subject} from 'rxjs'
 import {getPortableTextFeatures} from '../getPortableTextFeatures'
 import {type} from '../../editor/__tests__/PortableTextEditorTester'
 import {createOperationToPatches} from '../operationToPatches'
-import {withPortableText} from '../../editor/withPortableText'
+import {withPlugins} from '../../editor/plugins'
 import {keyGenerator} from '../..'
 import {TextBlock} from '../../types/portableText'
 
 const portableTextFeatures = getPortableTextFeatures(type)
 
 const operationToPatches = createOperationToPatches(portableTextFeatures)
-const editor = withPortableText(createEditor(), {
+const editor = withPlugins(createEditor(), {
   portableTextFeatures,
   keyGenerator,
   change$: new Subject(),
   readOnly: false,
+  syncValue: () => undefined,
 })
 
 const createDefaultValue = () =>

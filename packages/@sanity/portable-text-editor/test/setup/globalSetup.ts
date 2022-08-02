@@ -1,5 +1,5 @@
-import path from 'path'
-import {setup as setupDevServer} from 'jest-dev-server'
+const path = require('path')
+const {setup: setupDevServer} = require('jest-dev-server')
 
 const testFolderPath = path.resolve(__dirname, '..')
 
