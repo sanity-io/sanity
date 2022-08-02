@@ -80,7 +80,7 @@ function InnerPopover({onClose}: {onClose?: () => void}) {
       <HorizontalLine />
       <Box padding={3}>
         <Stack space={2}>
-          <Button onClick={onClose} tone="primary" text="Got it" />
+          <Button onClick={onClose} tone="primary" text="Got it" autoFocus />
         </Stack>
       </Box>
     </StyledBox>
