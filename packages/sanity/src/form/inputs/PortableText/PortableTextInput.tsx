@@ -117,8 +117,11 @@ export function PortableTextInput(props: PortableTextInputProps) {
   const portableTextMemberItemsRef: React.MutableRefObject<PortableTextMemberItem[]> = useRef([])
 
   // Memoized patch stream
-  const remotePatchSubject: Subject<EditorPatch> = useMemo(() => new Subject(), [])
-  const remotePatch$ = useMemo(() => remotePatchSubject.asObservable(), [remotePatchSubject])
+  const patchSubject: Subject<{
+    patches: EditorPatch[]
+    snapshot: PortableTextBlock[] | undefined
+  }> = useMemo(() => new Subject(), [])
+  const remotePatch$ = useMemo(() => patchSubject.asObservable(), [patchSubject])
 
   const innerElementRef = useRef<HTMLDivElement | null>(null)
 
@@ -133,17 +136,12 @@ export function PortableTextInput(props: PortableTextInputProps) {
     }
   }, [invalidValue, value])
 
-  // Subscribe to incoming patches
+  // Subscribe to patches
   useEffect(() => {
-    return subscribe(({patches}): void => {
-      const patchSelection =
-        patches && patches.length > 0 && patches.filter((patch) => patch.origin !== 'local')
-
-      if (patchSelection) {
-        patchSelection.map((patch) => remotePatchSubject.next(patch))
-      }
+    return subscribe(({patches, snapshot}): void => {
+      patchSubject.next({patches, snapshot})
     })
-  }, [remotePatchSubject, subscribe])
+  }, [patchSubject, subscribe])
 
   // Populate the portableTextMembers Map
   const portableTextMemberItems: PortableTextMemberItem[] = useMemo(() => {
