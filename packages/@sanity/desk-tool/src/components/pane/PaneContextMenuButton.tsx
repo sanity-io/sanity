@@ -21,6 +21,7 @@ const CONTEXT_MENU_POPOVER_PROPS: PopoverProps = {
   constrainSize: true,
   placement: 'bottom',
   portal: true,
+  tone: 'default',
 }
 
 /**
