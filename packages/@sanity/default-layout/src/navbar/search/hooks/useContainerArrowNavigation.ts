@@ -77,7 +77,6 @@ export function useContainerArrowNavigation(
     function handleClick(index: number) {
       return function () {
         inputRef.current?.focus()
-        setActiveIndex({index, scrollIntoView: false})
       }
     }
 
