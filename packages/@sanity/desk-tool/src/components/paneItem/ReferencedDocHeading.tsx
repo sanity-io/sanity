@@ -51,7 +51,9 @@ export function ReferencedDocHeading({title}: {title?: ReactNode}) {
 
       <ObserveElementResize callback={handleResize}>
         <Flex>
-          <TitleText tabIndex={0} textOverflow="ellipsis" weight="semibold" ref={documentTitleRef}>
+          {/* This empty div is added to prevent a jump of the popover pointer once the title is rendered */}
+          <div ref={documentTitleRef}>{''}</div>
+          <TitleText tabIndex={0} textOverflow="ellipsis" weight="semibold">
             <Box marginBottom={2}>{title}</Box>
           </TitleText>
           <ReferencedDocTooltip />
