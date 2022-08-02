@@ -111,13 +111,17 @@ function SearchDialogFilters() {
         onClose={handleClose}
         width={2}
       >
-        <Card tone="default">
+        <DialogContent tone="default">
           <TypeFilters />
-        </Card>
+        </DialogContent>
       </Dialog>
     </FocusLock>
   )
 }
+
+const DialogContent = styled(Card)`
+  height: 100%;
+`
 
 const FullscreenWrapper = styled(Card)`
   left: 0;
