@@ -52,4 +52,7 @@ export const ExpandedLayer = styled(Layer)`
   left: 0;
   right: 0;
   bottom: 0;
+  &:not([data-fullscreen]) {
+    position: relative;
+  }
 `

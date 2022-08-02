@@ -24,13 +24,13 @@ import {
 } from './Editor.styles'
 import {useSpellcheck} from './hooks/useSpellCheck'
 import {useScrollSelectionIntoView} from './hooks/useScrollSelectionIntoView'
+
 interface EditorProps {
   initialSelection?: EditorSelection
   isFullscreen: boolean
   hotkeys: HotkeyOptions
   onCopy?: OnCopyFn
   onOpenItem: (path: Path) => void
-  onFocusPath: (nextPath: Path) => void
   onPaste?: OnPasteFn
   onToggleFullscreen: () => void
   path: Path
@@ -53,7 +53,6 @@ export function Editor(props: EditorProps) {
     initialSelection,
     isFullscreen,
     onCopy,
-    onFocusPath,
     onOpenItem,
     onPaste,
     onToggleFullscreen,
@@ -106,6 +105,7 @@ export function Editor(props: EditorProps) {
         onCopy={onCopy}
         onPaste={onPaste}
         ref={editableRef}
+        readOnly={readOnly}
         renderAnnotation={renderAnnotation}
         renderBlock={renderBlock}
         renderChild={renderChild}
@@ -121,6 +121,7 @@ export function Editor(props: EditorProps) {
       initialSelection,
       onCopy,
       onPaste,
+      readOnly,
       renderAnnotation,
       renderBlock,
       renderChild,
@@ -139,15 +140,17 @@ export function Editor(props: EditorProps) {
 
   return (
     <Root $fullscreen={isFullscreen} data-testid="pt-editor" onMouseDown={handleMouseDown}>
-      <ToolbarCard data-testid="pt-editor__toolbar-card" shadow={1}>
-        <Toolbar
-          isFullscreen={isFullscreen}
-          hotkeys={hotkeys}
-          onExpand={handleToolBarOnExpand}
-          readOnly={readOnly}
-          onToggleFullscreen={onToggleFullscreen}
-        />
-      </ToolbarCard>
+      {!readOnly && (
+        <ToolbarCard data-testid="pt-editor__toolbar-card" shadow={1}>
+          <Toolbar
+            isFullscreen={isFullscreen}
+            hotkeys={hotkeys}
+            onExpand={handleToolBarOnExpand}
+            readOnly={readOnly}
+            onToggleFullscreen={onToggleFullscreen}
+          />
+        </ToolbarCard>
+      )}
 
       <EditableCard flex={1}>
         <Scroller ref={setScrollElement}>
