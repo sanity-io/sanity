@@ -3,7 +3,7 @@ import {CheckmarkIcon, SearchIcon} from '@sanity/icons'
 import type {ObjectSchemaType} from '@sanity/types'
 import {Box, Button, Card, Stack, Text, Theme} from '@sanity/ui'
 import schema from 'part:@sanity/base/schema'
-import React, {useCallback, useMemo, useRef, useState} from 'react'
+import React, {MouseEvent, useCallback, useMemo, useRef, useState} from 'react'
 import styled, {css} from 'styled-components'
 import {useSearchState} from '../contexts/search'
 import {getSelectableTypes} from '../contexts/search/selectors'
@@ -174,12 +174,6 @@ const TypeItemButton = styled(Button)(({theme}: {theme: Theme}) => {
   const {color} = theme.sanity
   // TODO: use idiomatic sanity/ui styling, double check usage of `bg2`
   return css`
-    // Sanity UI <Button> elements will automatically focus on any keypress _after_ it's been clicked.
-    // Since we don't want these buttons to ever have focus, we currently mask this.
-    // TODO: see if there's a better way to address this
-    &:focus {
-      box-shadow: none !important;
-    }
     &[aria-selected='true'] {
       background: ${color.button.bleed.default.hovered.bg2};
       // Disable box-shadow to hide the the halo effect when we have keyboard focus over a selected <Button>
