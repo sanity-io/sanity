@@ -1,5 +1,5 @@
 /**
- * @jest-environment ./test/setup/jsdom.jest.env.ts
+ * \@jest-environment ./test/setup/jsdom.jest.env.ts
  */
 /* eslint-disable no-irregular-whitespace */
 // eslint-disable-next-line import/no-unassigned-import
@@ -148,7 +148,7 @@ describe('plugin:withEditableAPI: .delete()', () => {
           "_type": "myTestBlockType",
           "children": Array [
             Object {
-              "_key": "1",
+              "_key": "2",
               "_type": "span",
               "marks": Array [],
               "text": "",

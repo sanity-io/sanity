@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 import React, {useCallback, useMemo, useRef, useState} from 'react'
-import {Text, Box, Card, Code} from '@sanity/ui'
+import {Text, Box, Card, Code, Stack} from '@sanity/ui'
 import styled from 'styled-components'
 import {Subject} from 'rxjs'
 import {
@@ -53,7 +53,10 @@ export const Editor = ({
   value: PortableTextBlock[] | undefined
   onMutation: (mutatingPatches: Patch[]) => void
   editorId: string
-  incomingPatches$: Subject<Patch>
+  incomingPatches$: Subject<{
+    patches: Patch[]
+    snapshot: PortableTextBlock[] | undefined
+  }>
   selection: EditorSelection | null
 }) => {
   const [selectionValue, setSelectionValue] = useState<EditorSelection | null>(selection)
@@ -134,13 +137,27 @@ export const Editor = ({
         case 'ready':
         case 'unset':
         case 'value':
-        case 'throttle':
           break
         default:
           throw new Error(`Unhandled editor change ${JSON.stringify(change)}`)
       }
     },
     [onMutation]
+  )
+
+  const editable = useMemo(
+    () => (
+      <PortableTextEditable
+        renderPlaceholder={renderPlaceholder}
+        hotkeys={HOTKEYS}
+        renderBlock={renderBlock}
+        renderDecorator={renderDecorator}
+        renderChild={renderChild}
+        selection={selection}
+        spellCheck
+      />
+    ),
+    [renderBlock, renderChild, renderDecorator, selection]
   )
 
   if (!editorId) {
@@ -152,21 +169,13 @@ export const Editor = ({
       ref={editor}
       type={portableTextType}
       onChange={handleChange}
+      incomingPatches$={incomingPatches$}
       value={value}
       keyGenerator={keyGenFn}
       readOnly={false}
-      incomingPatches$={incomingPatches$}
     >
       <Box padding={4} style={{outline: '1px solid #999'}}>
-        <PortableTextEditable
-          renderPlaceholder={renderPlaceholder}
-          hotkeys={HOTKEYS}
-          renderBlock={renderBlock}
-          renderDecorator={renderDecorator}
-          renderChild={renderChild}
-          selection={selection}
-          spellCheck
-        />
+        {editable}
       </Box>
       <Box padding={4} style={{outline: '1px solid #999'}}>
         <Code
@@ -179,6 +188,19 @@ export const Editor = ({
           {selectionString}
         </Code>
       </Box>
+      {editor.current && (
+        <Box padding={4} style={{outline: '1px solid #999'}}>
+          <Code
+            as="code"
+            size={0}
+            language="json"
+            id="pte-slate-children"
+            data-children={JSON.stringify(editor.current.slateInstance.children)}
+          >
+            {JSON.stringify(editor.current.slateInstance.children)}
+          </Code>
+        </Box>
+      )}
     </PortableTextEditor>
   )
 }

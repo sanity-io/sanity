@@ -4,6 +4,7 @@ import ipc from 'node-ipc'
 import {isEqual} from 'lodash'
 import {EditorSelection, PortableTextBlock} from '../../src'
 import {normalizeSelection} from '../../src/utils/selection'
+import {FLUSH_PATCHES_DEBOUNCE_MS} from '../../src/editor/PortableTextEditor'
 
 ipc.config.id = 'collaborative-jest-environment-ipc-client'
 ipc.config.retry = 1500
@@ -17,10 +18,14 @@ const WEB_SERVER_ROOT_URL = 'http://localhost:3000'
 const DEBUG = process.env.DEBUG || false
 
 // Wait this long for selections and a new doc revision to appear on the clients
-const SELECTION_TIMEOUT_MS = 100 // This will also be an indicator of the performance in the editor. Set it as low as possible without breaking the tests.
-const REVISION_TIMEOUT_MS = 800 // 800 seems to be the limit for the doc patching to go full circle (increase this if tests starts to time out)
+const SELECTION_TIMEOUT_MS = 50 // This will also be an indicator of the performance in the editor. Set it as low as possible without breaking the tests.
+const REVISION_TIMEOUT_MS = FLUSH_PATCHES_DEBOUNCE_MS + 300 // 300 seems to be the limit for the doc patching to go full circle (increase this if tests starts to time out)
 
 let testId: string
+
+function generateRandomInteger(min, max) {
+  return Math.floor(min + Math.random() * (max - min + 1))
+}
 
 export const delay = (time: number): Promise<void> => {
   return new Promise((resolve) => {
@@ -130,7 +135,6 @@ export default class CollaborationEnvironment extends NodeEnvironment {
             })
           }
           const getSelection = async (): Promise<EditorSelection | null> => {
-            await delay(SELECTION_TIMEOUT_MS) // Give the editor a chance to catch up first
             const selection = await selectionHandle.evaluate((node) =>
               node.innerText ? JSON.parse(node.innerText) : null
             )
@@ -159,6 +163,7 @@ export default class CollaborationEnvironment extends NodeEnvironment {
             testId,
             editorId,
             insertText: async (text: string) => {
+              await delay(generateRandomInteger(0, 100))
               await editableHandle.focus()
               await Promise.all([
                 waitForRevision(),
@@ -180,6 +185,7 @@ export default class CollaborationEnvironment extends NodeEnvironment {
               ])
             },
             pressKey: async (keyName: KeyInput, times?: number) => {
+              await delay(generateRandomInteger(0, 100))
               await editableHandle.focus()
               const pressKey = async () => {
                 await editableHandle.press(keyName)

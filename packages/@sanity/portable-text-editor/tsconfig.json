@@ -2,6 +2,7 @@
   "extends": "../../../tsconfig.settings",
   "include": ["./src/"],
   "compilerOptions": {
+    "isolatedModules": false,
     "composite": true,
     "declarationDir": "./lib/dts/",
     "rootDir": "./",
