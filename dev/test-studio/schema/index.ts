@@ -13,6 +13,7 @@ import blocks from './standard/portableText/blocks'
 import {ptCustomMarkersTestType} from './standard/portableText/customMarkers'
 import richTextObject from './standard/portableText/richTextObject'
 import simpleBlock from './standard/portableText/simpleBlock'
+import manyEditors from './standard/portableText/manyEditors'
 import simpleBlockNote from './standard/portableText/simpleBlockNote'
 import simpleBlockNoteBody from './standard/portableText/simpleBlockNoteBody'
 import simpleBlockNoteUrl from './standard/portableText/simpleBlockNoteUrl'
@@ -177,6 +178,7 @@ export const schemaTypes = [
   formInputDebug,
   // orderableCategoryDocumentType,
   // orderableTagDocumentType,
+  manyEditors,
   poppers,
   presence,
   previewImageUrlTest,
