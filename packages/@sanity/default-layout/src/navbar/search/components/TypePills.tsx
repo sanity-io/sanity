@@ -5,25 +5,23 @@ import {Box, Card, Flex, Text} from '@sanity/ui'
 import React, {useMemo} from 'react'
 import styled from 'styled-components'
 
-const MAX_CHARACTERS = 40
-const MAX_TYPES = 3
+interface TypePillsProps {
+  availableCharacters?: number
+  types: SchemaType[]
+}
 
-export function TypePills({types}: {types: SchemaType[]}) {
+export function TypePills({availableCharacters = 40, types}: TypePillsProps) {
   /**
-   * Get the first X document types, where:
-   * - X is < MAX_TYPES
-   * - the sum of all title characters across X types is < MAX_CHARACTERS
-   *
-   * Note that the first item is always included, regardless of title length.
+   * Get the first X document types, where the sum of all title characters across X types is < availableCharacters
    */
   const visibleTypes = useMemo(
     () =>
       types.reduce<SchemaType[]>(
         (function () {
-          let remaining = MAX_CHARACTERS
-          return function (acc, val, index) {
+          let remaining = availableCharacters
+          return function (acc, val) {
             const title = typeTitle(val)
-            if (index === 0 || (remaining > title.length && index < MAX_TYPES)) {
+            if (availableCharacters > title.length && remaining > title.length) {
               remaining -= title.length
               acc.push(val)
             }
@@ -32,7 +30,7 @@ export function TypePills({types}: {types: SchemaType[]}) {
         })(),
         []
       ),
-    [types]
+    [availableCharacters, types]
   )
 
   const remainingCount = types.length - visibleTypes.length
@@ -71,6 +69,5 @@ function typeTitle(schemaType: SchemaType) {
 const Pill = styled(Card)`
   background: ${hues.blue[100].hex};
   flex-shrink: 0;
-  max-width: ${MAX_CHARACTERS}ch;
   overflow: hidden;
 `
