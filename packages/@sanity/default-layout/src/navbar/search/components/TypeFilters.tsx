@@ -1,9 +1,9 @@
 import {hues} from '@sanity/color'
 import {CheckmarkIcon, SearchIcon} from '@sanity/icons'
 import type {ObjectSchemaType} from '@sanity/types'
-import {Box, Button, Card, Stack, Text, Theme} from '@sanity/ui'
+import {Box, Button, Card, Flex, Stack, Text, Theme} from '@sanity/ui'
 import schema from 'part:@sanity/base/schema'
-import React, {MouseEvent, useCallback, useMemo, useRef, useState} from 'react'
+import React, {useCallback, useMemo, useRef, useState} from 'react'
 import styled, {css} from 'styled-components'
 import {useSearchState} from '../contexts/search'
 import {getSelectableTypes} from '../contexts/search/selectors'
@@ -41,11 +41,13 @@ export function TypeFilters({small}: TypeFiltersProps) {
 
   useContainerArrowNavigation({childContainerRef, containerRef: textInputRef}, [typeFilter])
 
+  const padding = small ? 1 : 2
+
   return (
-    <>
+    <TypeFiltersWrapper direction="column">
       {/* Search header */}
-      <StickyCard $anchor="top" paddingX={small ? 1 : 2} paddingTop={small ? 1 : 2} tone="inherit">
-        {displayFilterInput && (
+      {displayFilterInput && (
+        <Card padding={padding} style={{flexShrink: 0}} tone="inherit">
           <CustomTextInput
             backgroundTone={small ? 'darker' : 'dark'}
             border={false}
@@ -61,13 +63,14 @@ export function TypeFilters({small}: TypeFiltersProps) {
             radius={2}
             value={typeFilter}
           />
-        )}
-      </StickyCard>
+        </Card>
+      )}
 
-      <Card
-        paddingBottom={1}
-        paddingTop={displayFilterInput ? 1 : 0}
-        paddingX={small ? 1 : 2}
+      <TypeFiltersContent
+        flex={1}
+        paddingBottom={padding}
+        paddingTop={displayFilterInput ? 0 : padding}
+        paddingX={padding}
         tone="inherit"
       >
         {/* Selectable document types */}
@@ -90,18 +93,13 @@ export function TypeFilters({small}: TypeFiltersProps) {
             </Text>
           </Box>
         )}
-      </Card>
+      </TypeFiltersContent>
 
       {/* Clear button */}
       {!typeFilter && selectedTypes.length > 0 && (
-        <StickyCard
-          $anchor="bottom"
-          paddingBottom={small ? 1 : 2}
-          paddingX={small ? 1 : 2}
-          tone="inherit"
-        >
-          <Stack space={small ? 1 : 2}>
-            <Box style={{borderBottom: `1px solid ${hues.gray[200].hex}`}} />
+        <ClearButtonWrapper paddingBottom={padding} paddingX={padding} tone="inherit">
+          <Stack space={padding}>
+            <Divider />
             <Button
               data-name="type-filter-button"
               disabled={selectedTypes.length === 0}
@@ -113,9 +111,9 @@ export function TypeFilters({small}: TypeFiltersProps) {
               tone="primary"
             />
           </Stack>
-        </StickyCard>
+        </ClearButtonWrapper>
       )}
-    </>
+    </TypeFiltersWrapper>
   )
 }
 
@@ -153,22 +151,13 @@ function TypeItem({
   )
 }
 
-const StickyCard = styled(Card)<{$anchor: 'bottom' | 'top'}>(({$anchor}) => {
-  return css`
-    position: sticky;
-    z-index: 1;
+const ClearButtonWrapper = styled(Card)`
+  flex-shrink: 0;
+`
 
-    ${$anchor === 'bottom' &&
-    css`
-      bottom: 0;
-    `}
-
-    ${$anchor === 'top' &&
-    css`
-      top: 0;
-    `}
-  `
-})
+const Divider = styled(Box)`
+  border-bottom: 1px solid ${hues.gray[200].hex};
+`
 
 const TypeItemButton = styled(Button)(({theme}: {theme: Theme}) => {
   const {color} = theme.sanity
@@ -182,3 +171,12 @@ const TypeItemButton = styled(Button)(({theme}: {theme: Theme}) => {
     }
   `
 })
+
+const TypeFiltersContent = styled(Card)`
+  overflow-x: hidden;
+  overflow-y: scroll;
+`
+
+const TypeFiltersWrapper = styled(Flex)`
+  height: 100%;
+`

@@ -38,8 +38,7 @@ export function useContainerArrowNavigation(
           if (childIndex === index) {
             child.setAttribute('aria-selected', 'true')
             if (scrollIntoView) {
-              // TODO: prefer `block: 'nearest'` and fix positioning issues with sticky headers / footers
-              child.scrollIntoView({block: 'center'})
+              child.scrollIntoView({block: 'nearest'})
             }
           } else {
             child.setAttribute('aria-selected', 'false')
