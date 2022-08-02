@@ -45,6 +45,12 @@ export default defineType({
       type: 'string',
     },
     {
+      name: 'arrayOfReferences',
+      title: 'Array of references to authors',
+      type: 'array',
+      of: [{type: 'reference', to: [{type: 'author'}]}],
+    },
+    {
       name: 'predefinedStringArray',
       title: 'Array of strings',
       description: 'First field in object is string with list options',
