@@ -1,4 +1,4 @@
-import React, {useEffect, useState, useMemo, useCallback} from 'react'
+import React, {useState, useMemo, useCallback} from 'react'
 import {
   EditorSelection,
   OnCopyFn,
@@ -38,7 +38,9 @@ import {_isBlockType} from './_helpers'
 interface InputProps extends ArrayOfObjectsInputProps<PortableTextBlock> {
   hasFocus: boolean
   hotkeys?: HotkeyOptions
+  isActive: boolean
   isFullscreen: boolean
+  onActivate: () => void
   onCopy?: OnCopyFn
   onPaste?: OnPasteFn
   onToggleFullscreen: () => void
@@ -49,7 +51,16 @@ interface InputProps extends ArrayOfObjectsInputProps<PortableTextBlock> {
 
 export type PortableTextEditorElement = HTMLDivElement | HTMLSpanElement | null
 
-const ACTIVATE_ON_FOCUS_MESSAGE = <Text weight="semibold">Click to activate</Text>
+function isTouchDevice() {
+  return (
+    (typeof window !== 'undefined' && 'ontouchstart' in window) ||
+    (typeof navigator !== 'undefined' && navigator.maxTouchPoints > 0)
+  )
+}
+
+const activateVerb = isTouchDevice() ? 'Tap' : 'Click'
+
+const ACTIVATE_ON_FOCUS_MESSAGE = <Text weight="semibold">{activateVerb} to activate</Text>
 
 export function Compositor(props: InputProps) {
   const {
@@ -58,12 +69,13 @@ export function Compositor(props: InputProps) {
     focused,
     hasFocus,
     hotkeys,
+    isActive,
     isFullscreen,
     onChange,
     onCopy,
+    onActivate,
     onOpenItem,
     onCloseItem,
-    onFocusPath,
     onPaste,
     onToggleFullscreen,
     path,
@@ -72,12 +84,10 @@ export function Compositor(props: InputProps) {
     value,
     readOnly,
     renderPreview,
-    // ...restProps
   } = props
 
   const editor = usePortableTextEditor()
 
-  const [isActive, setIsActive] = useState(false)
   const [wrapperElement, setWrapperElement] = useState<HTMLDivElement | null>(null)
   const [scrollElement, setScrollElement] = useState<HTMLElement | null>(null)
   const portableTextMemberItems = usePortableTextMemberItems()
@@ -91,13 +101,6 @@ export function Compositor(props: InputProps) {
     scrollElement,
     onCloseItem,
   })
-
-  // Set as active whenever we have focus inside the editor.
-  useEffect(() => {
-    if (hasFocus) {
-      setIsActive(true)
-    }
-  }, [hasFocus])
 
   const handleToggleFullscreen = useCallback(() => {
     PortableTextEditor.blur(editor)
@@ -118,17 +121,6 @@ export function Compositor(props: InputProps) {
   )
 
   const editorHotkeys = useHotkeys(hotkeysWithFullscreenToggle)
-
-  const focus = useCallback((): void => {
-    PortableTextEditor.focus(editor)
-  }, [editor])
-
-  const handleActivate = useCallback((): void => {
-    if (!isActive) {
-      setIsActive(true)
-      focus()
-    }
-  }, [focus, isActive])
 
   const ptFeatures = useMemo(() => PortableTextEditor.getPortableTextFeatures(editor), [editor])
   const hasContent = !!value
@@ -260,12 +252,11 @@ export function Compositor(props: InputProps) {
         initialSelection={initialSelection}
         isFullscreen={isFullscreen}
         onOpenItem={onOpenItem}
-        onFocusPath={onFocusPath}
         onCopy={onCopy}
         onPaste={onPaste}
         onToggleFullscreen={handleToggleFullscreen}
         path={path}
-        readOnly={isActive === false || readOnly}
+        readOnly={readOnly}
         renderAnnotation={renderAnnotation}
         renderBlock={renderBlock}
         renderChild={renderChild}
@@ -280,11 +271,9 @@ export function Compositor(props: InputProps) {
       editorHotkeys,
       handleToggleFullscreen,
       initialSelection,
-      isActive,
       isFullscreen,
       onCopy,
       onOpenItem,
-      onFocusPath,
       onPaste,
       path,
       readOnly,
@@ -333,25 +322,31 @@ export function Compositor(props: InputProps) {
 
     [portal.element, portalElement, wrapperElement]
   )
+
+  const editorLayer = useMemo(
+    () => (
+      <Portal __unstable_name={isFullscreen ? 'expanded' : 'collapsed'}>
+        <ExpandedLayer data-fullscreen={isFullscreen ? '' : undefined}>{children}</ExpandedLayer>
+      </Portal>
+    ),
+    [children, isFullscreen]
+  )
   return (
     <PortalProvider __unstable_elements={portalElements}>
       <ActivateOnFocus
         message={ACTIVATE_ON_FOCUS_MESSAGE}
-        onActivate={handleActivate}
+        onActivate={onActivate}
         isOverlayActive={!isActive}
       >
         <ChangeIndicator
           disabled={isFullscreen}
-          hasFocus={!!focused}
+          hasFocus={Boolean(focused)}
           isChanged={changed}
           path={path}
         >
           <Root data-focused={hasFocus ? '' : undefined} data-read-only={readOnly ? '' : undefined}>
             <div data-wrapper="" ref={setWrapperElement}>
-              <Portal __unstable_name={isFullscreen ? 'expanded' : 'collapsed'}>
-                {/* TODO: Can we get rid of this DOM-rerender? */}
-                {isFullscreen ? <ExpandedLayer>{children}</ExpandedLayer> : children}
-              </Portal>
+              {editorLayer}
             </div>
             <div data-border="" />
           </Root>

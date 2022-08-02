@@ -91,7 +91,7 @@ export function PortableTextInput(props: PortableTextInputProps) {
     onInsert,
     onPaste,
     path,
-    readOnly,
+    readOnly: readOnlyFromProps,
     renderBlockActions,
     renderCustomMarkers,
     schemaType: type,
@@ -113,6 +113,12 @@ export function PortableTextInput(props: PortableTextInputProps) {
   const [ignoreValidationError, setIgnoreValidationError] = useState(false)
   const [invalidValue, setInvalidValue] = useState<InvalidValue | null>(null)
   const [isFullscreen, setIsFullscreen] = useState(false)
+  const [isActive, setIsActive] = useState(false)
+
+  const readOnly = useMemo(() => {
+    return isActive ? Boolean(readOnlyFromProps) : true
+  }, [isActive, readOnlyFromProps])
+
   const toast = useToast()
   const portableTextMemberItemsRef: React.MutableRefObject<PortableTextMemberItem[]> = useRef([])
 
@@ -126,7 +132,18 @@ export function PortableTextInput(props: PortableTextInputProps) {
   const innerElementRef = useRef<HTMLDivElement | null>(null)
 
   const handleToggleFullscreen = useCallback(() => {
-    setIsFullscreen((v) => !v)
+    if (editorRef.current) {
+      const prevSel = PortableTextEditor.getSelection(editorRef.current)
+      setIsFullscreen((v) => !v)
+      setTimeout(() => {
+        if (editorRef.current) {
+          PortableTextEditor.focus(editorRef.current)
+          if (prevSel) {
+            PortableTextEditor.select(editorRef.current, {...prevSel})
+          }
+        }
+      })
+    }
   }, [])
 
   // Reset invalidValue if new value is coming in from props
@@ -311,6 +328,19 @@ export function PortableTextInput(props: PortableTextInputProps) {
     }
   }, [focusPath])
 
+  const focus = useCallback((): void => {
+    if (editorRef.current) {
+      PortableTextEditor.focus(editorRef.current)
+    }
+  }, [editorRef])
+
+  const handleActivate = useCallback((): void => {
+    if (!isActive) {
+      setIsActive(true)
+      setTimeout(() => focus()) // Setting active will trigger a re-render of the DOM entry, so call editor focus in the next tick.
+    }
+  }, [focus, isActive])
+
   return (
     <Box ref={innerElementRef}>
       {!readOnly && (
@@ -338,12 +368,15 @@ export function PortableTextInput(props: PortableTextInputProps) {
                 focusPath={focusPath}
                 hasFocus={hasFocus}
                 hotkeys={hotkeys}
+                isActive={isActive}
                 isFullscreen={isFullscreen}
+                onActivate={handleActivate}
                 onChange={onChange}
                 onCopy={onCopy}
                 onInsert={onInsert}
                 onPaste={onPaste}
                 onToggleFullscreen={handleToggleFullscreen}
+                readOnly={readOnly}
                 renderBlockActions={renderBlockActions}
                 renderCustomMarkers={renderCustomMarkers}
                 value={value}
