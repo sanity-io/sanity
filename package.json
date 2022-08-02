@@ -117,7 +117,7 @@
     "depcheck": "^1.4.3",
     "dotenv": "^10.0.0",
     "dotenv-flow": "^3.2.0",
-    "esbuild": "^0.14.31",
+    "esbuild": "^0.14.43",
     "esbuild-register": "^3.3.2",
     "eslint": "^7.8.1",
     "eslint-config-prettier": "^8.3.0",
