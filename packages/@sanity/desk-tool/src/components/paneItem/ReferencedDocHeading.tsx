@@ -34,6 +34,7 @@ export function ReferencedDocHeading({title}: {title?: ReactNode}) {
         <TitleText tabIndex={0} textOverflow="ellipsis" weight="semibold">
           {title}
         </TitleText>
+        <ReferencedDocTooltip />
       </Flex>
     )
   }
