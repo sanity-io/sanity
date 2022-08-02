@@ -33,7 +33,10 @@ export function TypeFilters({small}: TypeFiltersProps) {
     typeFilter,
   ])
 
-  const handleClearTypes = useCallback(() => dispatch({type: 'TERMS_TYPES_CLEAR'}), [dispatch])
+  const handleClearTypes = useCallback(() => {
+    inputRef?.current?.focus()
+    dispatch({type: 'TERMS_TYPES_CLEAR'})
+  }, [dispatch])
   const handleFilterChange = useCallback(
     (e: React.KeyboardEvent<HTMLInputElement>) => setTypeFilter(e.currentTarget.value),
     [setTypeFilter]
