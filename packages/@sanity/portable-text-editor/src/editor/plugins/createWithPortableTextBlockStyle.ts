@@ -4,6 +4,7 @@ import {PortableTextBlock, PortableTextFeatures} from '../../types/portableText'
 import {EditorChange, PortableTextSlateEditor} from '../../types/editor'
 import {debugWithName} from '../../utils/debug'
 import {toPortableTextRange} from '../../utils/ranges'
+import {fromSlateValue} from '../../utils/values'
 
 const debug = debugWithName('plugin:withPortableTextBlockStyle')
 
@@ -90,7 +91,14 @@ export function createWithPortableTextBlockStyle(
       })
       // Emit a new selection here (though it might be the same).
       // Toolbars and similar on the outside may rely on selection changes to update themselves.
-      change$.next({type: 'selection', selection: toPortableTextRange(editor, editor.selection)})
+      change$.next({
+        type: 'selection',
+        selection: toPortableTextRange(
+          fromSlateValue(editor.children, portableTextFeatures.types.block.name),
+          editor.selection,
+          portableTextFeatures
+        ),
+      })
       editor.onChange()
     }
     return editor

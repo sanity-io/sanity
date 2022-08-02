@@ -34,7 +34,7 @@ export function createWithHotkeys(
 ): (editor: PortableTextSlateEditor & ReactEditor) => any {
   const reservedHotkeys = ['enter', 'tab', 'shift', 'delete', 'end']
   const activeHotkeys = hotkeysFromOptions || DEFAULT_HOTKEYS // TODO: Merge where possible? A union?
-  const createDefaultBlock = () =>
+  const createEmptyBlock = () =>
     toSlateValue(
       [
         {
@@ -185,14 +185,14 @@ export function createWithHotkeys(
           const [, end] = Range.edges(editor.selection)
           const endAtEndOfNode = Editor.isEnd(editor, end, end.path)
           if (endAtEndOfNode) {
-            Editor.insertNode(editor, createDefaultBlock())
+            Editor.insertNode(editor, createEmptyBlock())
             event.preventDefault()
             return
           }
         }
         // Block object enter key
         if (focusBlock && Editor.isVoid(editor, focusBlock)) {
-          Editor.insertNode(editor, createDefaultBlock())
+          Editor.insertNode(editor, createEmptyBlock())
           event.preventDefault()
           return
         }
