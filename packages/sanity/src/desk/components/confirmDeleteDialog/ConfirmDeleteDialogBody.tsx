@@ -69,7 +69,7 @@ export function ConfirmDeleteDialogBody({
   if (internalReferences?.totalCount === 0 && crossDatasetReferences?.totalCount === 0) {
     return (
       <Text as="p">
-        Are you sure you want to delete <strong>“{documentTitle}”</strong>?
+        Are you sure you want to {action} <strong>“{documentTitle}”</strong>?
       </Text>
     )
   }
