@@ -15,11 +15,11 @@ export function useContainerArrowNavigation(
   {
     childContainerRef,
     containerRef,
-    onChildItemClick,
+    inputRef,
   }: {
     childContainerRef: RefObject<HTMLDivElement>
     containerRef: RefObject<HTMLDivElement>
-    onChildItemClick?: () => void
+    inputRef: RefObject<HTMLInputElement>
   },
   dependencyList: ReadonlyArray<any> = []
 ): void {
@@ -71,14 +71,13 @@ export function useContainerArrowNavigation(
 
   /**
    * Prevent child elements from receiving focus.
-   * Ensure that whenever a child element is clicked, the container element receives focus whenever a child element is clicked.
+   * Input element should focus whenever a child element is clicked.
    */
   useEffect(() => {
     function handleClick(index: number) {
       return function () {
-        containerRef.current?.focus()
+        inputRef.current?.focus()
         setActiveIndex({index, scrollIntoView: false})
-        onChildItemClick?.()
       }
     }
 
@@ -99,7 +98,7 @@ export function useContainerArrowNavigation(
         child.removeEventListener('mousedown', handleMouseDown)
       })
     }
-  }, [childElements, containerRef, onChildItemClick, setActiveIndex])
+  }, [childElements, inputRef, setActiveIndex])
 
   useEffect(() => {
     // Clear child active index when input element loses focus
@@ -109,19 +108,29 @@ export function useContainerArrowNavigation(
 
     function handleKeyDown(event: KeyboardEvent) {
       const eventTargetElement = event.target as HTMLElement
+      const isInputElement = eventTargetElement.tagName.toLowerCase() === 'input'
+
       if (event.key === 'ArrowDown') {
         event.preventDefault()
-        const nextIndex =
-          selectedIndexRef.current < childElements.length - 1 ? selectedIndexRef.current + 1 : 0
-        setActiveIndex({index: nextIndex})
+        if (isInputElement) {
+          const nextIndex =
+            selectedIndexRef.current < childElements.length - 1 ? selectedIndexRef.current + 1 : 0
+          setActiveIndex({index: nextIndex})
+        } else {
+          inputRef.current?.focus()
+        }
       }
       if (event.key === 'ArrowUp') {
         event.preventDefault()
-        const nextIndex =
-          selectedIndexRef.current > 0 ? selectedIndexRef.current - 1 : childElements.length - 1
-        setActiveIndex({index: nextIndex})
+        if (isInputElement) {
+          const nextIndex =
+            selectedIndexRef.current > 0 ? selectedIndexRef.current - 1 : childElements.length - 1
+          setActiveIndex({index: nextIndex})
+        } else {
+          inputRef.current?.focus()
+        }
       }
-      if (event.key === 'Enter' && eventTargetElement.tagName.toLowerCase() === 'input') {
+      if (event.key === 'Enter' && isInputElement) {
         event.preventDefault()
         const currentElement = childElements[selectedIndexRef.current] as HTMLElement
         if (currentElement) {
@@ -137,7 +146,7 @@ export function useContainerArrowNavigation(
       containerElement?.removeEventListener('keydown', handleKeyDown)
       containerElement?.removeEventListener('blur', handleContainerBlur)
     }
-  }, [childContainerRef, childElements, containerRef, setActiveIndex])
+  }, [childContainerRef, childElements, containerRef, inputRef, setActiveIndex])
 
   /**
    * Listen to DOM mutations

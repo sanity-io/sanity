@@ -34,11 +34,6 @@ export function SearchPopover({onClose, placeholderRef}: PopoverProps) {
 
   useClickOutside(onClose, [dialogEl])
 
-  // Re-focus header input text when a child item is clicked
-  const handleChildItemClick = useCallback(() => {
-    headerInputRef?.current?.focus()
-  }, [])
-
   const handleWindowResize = useCallback(() => {
     setDialogPosition(calcDialogPosition(placeholderRef))
   }, [placeholderRef])
@@ -49,7 +44,7 @@ export function SearchPopover({onClose, placeholderRef}: PopoverProps) {
   }, [handleWindowResize])
 
   useContainerArrowNavigation(
-    {childContainerRef, containerRef: headerContainerRef, onChildItemClick: handleChildItemClick},
+    {childContainerRef, containerRef: headerContainerRef, inputRef: headerInputRef},
     [result.loaded]
   )
 
