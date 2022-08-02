@@ -10,8 +10,15 @@ import {Value} from './components/Value'
 ReactDOM.render(<App />, document.getElementById('root'))
 
 export function App() {
-  const incomingPatches$ = useMemo(() => new Subject<Patch>(), [])
-  const [value, setValue] = useState<PortableTextBlock[] | undefined>(undefined)
+  const incomingPatches$ = useMemo(
+    () =>
+      new Subject<{
+        patches: Patch[]
+        snapshot: PortableTextBlock[] | undefined
+      }>(),
+    []
+  )
+  const [value, setValue] = useState<PortableTextBlock[] | undefined | null>(null)
   const [revId, setRevId] = useState<string | undefined>(undefined)
   const [selection, setSelection] = useState<EditorSelection | null>(null)
   const {editorId, testId} = useMemo(() => {
@@ -43,8 +50,11 @@ export function App() {
               }
               break
             case 'mutation':
-              if (data.editorId !== editorId && data.testId === testId) {
-                data.patches.map((patch) => incomingPatches$.next(patch))
+              if (data.testId === testId) {
+                incomingPatches$.next({
+                  patches: data.patches,
+                  snapshot: data.snapshot,
+                })
               }
               break
             default:
@@ -64,7 +74,6 @@ export function App() {
     },
     [editorId, testId, webSocket]
   )
-
   return (
     <ThemeProvider theme={studioTheme}>
       <Stack>
