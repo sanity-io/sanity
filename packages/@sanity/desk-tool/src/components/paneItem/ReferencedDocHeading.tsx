@@ -1,16 +1,30 @@
-import React, {ReactNode, useRef} from 'react'
+import React, {ReactNode, useCallback, useEffect, useRef, useState} from 'react'
 import {Popover, Box, Text, Heading, Flex, Button, Stack, ThemeColorProvider} from '@sanity/ui'
 import {LinkIcon} from '@sanity/icons'
 import {TitleText, LinkCircle, HorizontalLine, StyledBox} from '../pane/PaneHeader.styles'
 import {useDeskToolSetting} from '../../settings'
-import {ReferencedDocTooltip} from './ReferencedDocTooltip'
 
 export function ReferencedDocHeading({title}: {title?: ReactNode}) {
-  const referenceTitle = useRef(null)
+  const documentTitleRef = useRef(null)
+  const [titleBoxSize, setTitleBoxSize] = useState(0)
   const [hidePopover, setHidePopover] = useDeskToolSetting(
     'desk-tool',
     'referenced-doc-has-confirmed-dialog',
     false
+  )
+  const handleHidePopover = useCallback(() => setHidePopover(true), [setHidePopover])
+
+  // When the title container changes size (a sibling pane is opened/resized, sidebar opens),
+  // a resize observer fires this event. In order to force the info popover to reposition,
+  // we set the size of the title box to a state variable and use it as a key on the popover.
+  // Ideally, this would automatically be handled by `@sanity/ui`.
+  const handleResize = useCallback(
+    (e: ResizeObserverEntry[]) => {
+      if (!hidePopover) {
+        setTitleBoxSize(Math.floor(e[0].borderBoxSize[0].inlineSize))
+      }
+    },
+    [hidePopover, setTitleBoxSize]
   )
 
   if (hidePopover) {
@@ -19,35 +33,28 @@ export function ReferencedDocHeading({title}: {title?: ReactNode}) {
         <TitleText tabIndex={0} textOverflow="ellipsis" weight="semibold">
           {title}
         </TitleText>
-        <ReferencedDocTooltip />
       </Flex>
     )
   }
 
-  const onClose = () => {
-    setHidePopover(true)
-  }
-
   return (
     <ThemeColorProvider tone="default">
-      <Box marginLeft={2}>
-        <Popover
-          content={<InnerPopover onClose={onClose} />}
-          placement="bottom-start"
-          referenceElement={referenceTitle.current}
-          portal
-          open
-        >
-          <Box display="flex">
-            {/* This empty div is added to prevent a jump of the popover pointer once the title is rendered */}
-            <div ref={referenceTitle}>{''}</div>
-            <TitleText tabIndex={0} textOverflow="ellipsis" weight="semibold">
-              <Box marginBottom={2}>{title}</Box>
-            </TitleText>
-            <ReferencedDocTooltip />
-          </Box>
-        </Popover>
-      </Box>
+      <Popover
+        key={`popover-${titleBoxSize}`}
+        content={<InnerPopover onClose={handleHidePopover} />}
+        placement="bottom-start"
+        referenceElement={documentTitleRef.current}
+        portal
+        open
+      />
+
+      <ObserveElementResize callback={handleResize}>
+        <Flex>
+          <TitleText tabIndex={0} textOverflow="ellipsis" weight="semibold" ref={documentTitleRef}>
+            <Box marginBottom={2}>{title}</Box>
+          </TitleText>
+        </Flex>
+      </ObserveElementResize>
     </ThemeColorProvider>
   )
 }
@@ -59,7 +66,7 @@ function InnerPopover({onClose}: {onClose?: () => void}) {
         <Flex marginBottom={4} align="center">
           <Box marginRight={2}>
             <LinkCircle>
-              <LinkIcon fontSize={'24'} />
+              <LinkIcon fontSize="24" />
             </LinkCircle>
           </Box>
           <Heading size={1}>This is a referenced document</Heading>
@@ -73,5 +80,31 @@ function InnerPopover({onClose}: {onClose?: () => void}) {
         </Stack>
       </Box>
     </StyledBox>
+  )
+}
+
+function ObserveElementResize(props: {
+  children: React.ReactElement
+  callback: ResizeObserverCallback
+}) {
+  const {callback, children, ...rest} = props
+  const [el, setEl] = useState<HTMLDivElement | null>(null)
+
+  useEffect(() => {
+    if (!el || typeof ResizeObserver !== 'function') return undefined
+
+    const io = new ResizeObserver(callback)
+    io.observe(el)
+
+    return () => {
+      io.unobserve(el)
+      io.disconnect()
+    }
+  }, [el, callback])
+
+  return (
+    <div ref={setEl} {...rest}>
+      {children}
+    </div>
   )
 }
