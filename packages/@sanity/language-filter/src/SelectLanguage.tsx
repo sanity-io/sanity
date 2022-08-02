@@ -166,6 +166,7 @@ const SelectLanguage = ({
         placement="bottom"
         ref={setPopoverRef}
         referenceElement={triggerRef}
+        tone="default"
         constrainSize
         autoFocus
         portal
