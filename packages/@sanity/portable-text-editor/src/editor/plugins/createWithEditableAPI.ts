@@ -162,7 +162,17 @@ export function createWithEditableAPI(
         const child = block.children[0]
         Editor.insertNode(editor, child as Node)
         editor.onChange()
-        return toPortableTextRange(editor, editor.selection)?.focus.path || []
+        return (
+          toPortableTextRange(
+            fromSlateValue(
+              editor.children,
+              portableTextFeatures.types.block.name,
+              KEY_TO_VALUE_ELEMENT.get(editor)
+            ),
+            editor.selection,
+            portableTextFeatures
+          )?.focus.path || []
+        )
       },
       insertBlock: (type: Type, value?: {[prop: string]: any}): Path => {
         if (!editor.selection) {
@@ -180,7 +190,17 @@ export function createWithEditableAPI(
         )[0] as unknown as Node
         Editor.insertNode(editor, block)
         editor.onChange()
-        return toPortableTextRange(editor, editor.selection)?.focus.path || []
+        return (
+          toPortableTextRange(
+            fromSlateValue(
+              editor.children,
+              portableTextFeatures.types.block.name,
+              KEY_TO_VALUE_ELEMENT.get(editor)
+            ),
+            editor.selection,
+            portableTextFeatures
+          )?.focus.path || []
+        )
       },
       hasBlockStyle: (style: string): boolean => {
         try {
@@ -330,7 +350,15 @@ export function createWithEditableAPI(
                 })
                 Editor.normalize(editor)
                 editor.onChange()
-                const newSelection = toPortableTextRange(editor, editor.selection)
+                const newSelection = toPortableTextRange(
+                  fromSlateValue(
+                    editor.children,
+                    portableTextFeatures.types.block.name,
+                    KEY_TO_VALUE_ELEMENT.get(editor)
+                  ),
+                  editor.selection,
+                  portableTextFeatures
+                )
                 // eslint-disable-next-line max-depth
                 if (newSelection && typeof block._key === 'string') {
                   // Insert an empty string to continue writing non-annotated text
@@ -470,7 +498,15 @@ export function createWithEditableAPI(
           if (existing) {
             return existing
           }
-          ptRange = toPortableTextRange(editor, editor.selection)
+          ptRange = toPortableTextRange(
+            fromSlateValue(
+              editor.children,
+              portableTextFeatures.types.block.name,
+              KEY_TO_VALUE_ELEMENT.get(editor)
+            ),
+            editor.selection,
+            portableTextFeatures
+          )
           SLATE_TO_PORTABLE_TEXT_RANGE.set(editor.selection, ptRange)
         }
         return ptRange

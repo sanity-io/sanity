@@ -122,7 +122,7 @@ export function fromSlateValue(
 }
 
 export function isEqualToEmptyEditor(
-  children: Node[] | undefined,
+  children: Descendant[] | PortableTextBlock[],
   portableTextFeatures: PortableTextFeatures
 ): boolean {
   return (
@@ -177,4 +177,14 @@ export function findChildAndIndexFromPath(
     return [block.children[childIndex] as Element | Text, childIndex]
   }
   return [undefined, -1]
+}
+
+export function getValueOrInitialValue(
+  value: unknown,
+  initialValue: PortableTextBlock[]
+): PortableTextBlock[] | undefined {
+  if (value && Array.isArray(value) && value.length > 0) {
+    return value
+  }
+  return initialValue
 }

@@ -33,6 +33,7 @@ type ElementProps = {
   readOnly: boolean
   renderBlock?: RenderBlockFunction
   renderChild?: RenderChildFunction
+  spellCheck?: boolean
 }
 
 const inlineBlockStyle = {display: 'inline-block'}
@@ -50,6 +51,7 @@ export const Element: FunctionComponent<ElementProps> = ({
   readOnly,
   renderBlock,
   renderChild,
+  spellCheck,
 }) => {
   const editor = useSlateStatic()
   const selected = useSelected()
@@ -160,7 +162,7 @@ export const Element: FunctionComponent<ElementProps> = ({
         )
       : textBlock
     return (
-      <div {...attributes} key={element._key} className={className}>
+      <div {...attributes} key={element._key} className={className} spellCheck={spellCheck}>
         <DraggableBlock element={element} readOnly={readOnly} blockRef={blockRef}>
           <div ref={blockRef}>{propsOrDefaultRendered}</div>
         </DraggableBlock>

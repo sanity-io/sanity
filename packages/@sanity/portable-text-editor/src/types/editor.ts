@@ -1,6 +1,6 @@
 import {ArraySchemaType, ObjectSchemaType, Path} from '@sanity/types'
 import {Subject, Observable} from 'rxjs'
-import {Node as SlateNode, Operation as SlateOperation} from 'slate'
+import {Descendant, Node as SlateNode, Operation as SlateOperation} from 'slate'
 import {ReactEditor} from '@sanity/slate-react'
 import type {Patch} from '../types/patch'
 import {Type} from '../types/schema'
@@ -71,6 +71,8 @@ export type EditorSelection = {anchor: EditorSelectionPoint; focus: EditorSelect
 export interface PortableTextSlateEditor extends ReactEditor {
   _key: 'editor'
   _type: 'editor'
+  destroy: () => void
+  createPlaceholderBlock: () => Descendant
   editable: EditableAPI
   history: History
   insertPortableTextData: (data: DataTransfer) => boolean
@@ -78,8 +80,6 @@ export interface PortableTextSlateEditor extends ReactEditor {
   isTextBlock: (value: unknown) => value is TextBlock
   isTextSpan: (value: unknown) => value is TextSpan
   isListBlock: (value: unknown) => value is ListItem
-  isSelecting: boolean
-  isThrottling: boolean
   readOnly: boolean
   maxBlocks: number | undefined
 
@@ -294,7 +294,10 @@ export type OnCopyFn = (
   event: React.ClipboardEvent<HTMLDivElement | HTMLSpanElement>
 ) => undefined | any
 
-export type PatchObservable = Observable<Patch>
+export type PatchObservable = Observable<{
+  patches: Patch[]
+  snapshot: PortableTextBlock[] | undefined
+}>
 
 export type RenderAttributes = {
   annotations?: PortableTextBlock[]
