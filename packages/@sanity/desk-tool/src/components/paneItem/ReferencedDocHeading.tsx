@@ -3,6 +3,7 @@ import {Popover, Box, Text, Heading, Flex, Button, Stack, ThemeColorProvider} fr
 import {LinkIcon} from '@sanity/icons'
 import {TitleText, LinkCircle, HorizontalLine, StyledBox} from '../pane/PaneHeader.styles'
 import {useDeskToolSetting} from '../../settings'
+import {ReferencedDocTooltip} from './ReferencedDocTooltip'
 
 export function ReferencedDocHeading({title}: {title?: ReactNode}) {
   const documentTitleRef = useRef(null)
@@ -53,6 +54,7 @@ export function ReferencedDocHeading({title}: {title?: ReactNode}) {
           <TitleText tabIndex={0} textOverflow="ellipsis" weight="semibold" ref={documentTitleRef}>
             <Box marginBottom={2}>{title}</Box>
           </TitleText>
+          <ReferencedDocTooltip />
         </Flex>
       </ObserveElementResize>
     </ThemeColorProvider>
