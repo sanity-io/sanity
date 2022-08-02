@@ -5,7 +5,6 @@ import {getDraftId, isDraftId} from '../../util'
 import {HistoryStore} from '../history'
 import {DocumentPreviewStore} from '../../preview'
 import {Template} from '../../templates'
-import createDeprecatedAPIs from './_createDeprecatedAPIs'
 import {checkoutPair, DocumentVersionEvent, Pair} from './document-pair/checkoutPair'
 import {consistencyStatus} from './document-pair/consistencyStatus'
 import {documentEvents} from './document-pair/documentEvents'
@@ -78,9 +77,6 @@ export function createDocumentStore({
   const operationEvents = getOperationEvents(ctx)
 
   return {
-    // Todo: can be removed in ~january 2020
-    ...createDeprecatedAPIs(versionedClient),
-
     // Public API
     checkoutPair(idPair) {
       return checkoutPair(versionedClient, idPair)
