@@ -50,32 +50,6 @@ export function useContainerArrowNavigation(
     [childContainerRef]
   )
 
-  const handleKeyDown = useCallback(
-    (event: KeyboardEvent) => {
-      const eventTargetElement = event.target as HTMLElement
-      if (event.key === 'ArrowDown') {
-        event.preventDefault()
-        const nextIndex =
-          selectedIndexRef.current < childElements.length - 1 ? selectedIndexRef.current + 1 : 0
-        setActiveIndex({index: nextIndex})
-      }
-      if (event.key === 'ArrowUp') {
-        event.preventDefault()
-        const nextIndex =
-          selectedIndexRef.current > 0 ? selectedIndexRef.current - 1 : childElements.length - 1
-        setActiveIndex({index: nextIndex})
-      }
-      if (event.key === 'Enter' && eventTargetElement.tagName.toLowerCase() === 'input') {
-        event.preventDefault()
-        const currentElement = childElements[selectedIndexRef.current] as HTMLElement
-        if (currentElement) {
-          currentElement.click()
-        }
-      }
-    },
-    [childElements, setActiveIndex]
-  )
-
   const handleSetChildren = useCallback(() => {
     const childContainerElement = childContainerRef?.current
     if (childContainerElement) {
@@ -97,37 +71,64 @@ export function useContainerArrowNavigation(
   ])
 
   /**
-   * Generate click and keydown events for all child items
-   *
-   * We assign keydown events to all children to retain up/down navigation even after a child
-   * item has been clicked (and has received focus).
+   * Prevent child elements from receiving focus.
+   * Ensure that whenever a child element is clicked, the container element receives focus whenever a child element is clicked.
    */
   useEffect(() => {
-    function handleChildItemClick(index: number) {
+    function handleClick(index: number) {
       return function () {
+        containerRef.current?.focus()
         setActiveIndex({index, scrollIntoView: false})
         onChildItemClick?.()
       }
     }
 
+    // Prevent child items from receiving focus (on mouse press)
+    function handleMouseDown(event: MouseEvent) {
+      event.preventDefault()
+    }
+
     childElements?.forEach((child, index) => {
       child.setAttribute('tabindex', '-1')
-      child.addEventListener('click', handleChildItemClick(index))
-      child.addEventListener('keydown', handleKeyDown)
+      child.addEventListener('click', handleClick(index))
+      child.addEventListener('mousedown', handleMouseDown)
     })
 
     return () => {
       childElements?.forEach((child, index) => {
-        child.removeEventListener('click', handleChildItemClick(index))
-        child.removeEventListener('keydown', handleKeyDown)
+        child.removeEventListener('click', handleClick(index))
+        child.removeEventListener('mousedown', handleMouseDown)
       })
     }
-  }, [childContainerRef, childElements, handleKeyDown, onChildItemClick, setActiveIndex])
+  }, [childElements, containerRef, onChildItemClick, setActiveIndex])
 
   useEffect(() => {
     // Clear child active index when input element loses focus
     function handleContainerBlur() {
       setActiveIndex({index: -1})
+    }
+
+    function handleKeyDown(event: KeyboardEvent) {
+      const eventTargetElement = event.target as HTMLElement
+      if (event.key === 'ArrowDown') {
+        event.preventDefault()
+        const nextIndex =
+          selectedIndexRef.current < childElements.length - 1 ? selectedIndexRef.current + 1 : 0
+        setActiveIndex({index: nextIndex})
+      }
+      if (event.key === 'ArrowUp') {
+        event.preventDefault()
+        const nextIndex =
+          selectedIndexRef.current > 0 ? selectedIndexRef.current - 1 : childElements.length - 1
+        setActiveIndex({index: nextIndex})
+      }
+      if (event.key === 'Enter' && eventTargetElement.tagName.toLowerCase() === 'input') {
+        event.preventDefault()
+        const currentElement = childElements[selectedIndexRef.current] as HTMLElement
+        if (currentElement) {
+          currentElement.click()
+        }
+      }
     }
 
     const containerElement = containerRef?.current
@@ -137,7 +138,7 @@ export function useContainerArrowNavigation(
       containerElement?.removeEventListener('keydown', handleKeyDown)
       containerElement?.removeEventListener('blur', handleContainerBlur)
     }
-  }, [childContainerRef, containerRef, handleKeyDown, setActiveIndex])
+  }, [childContainerRef, childElements, containerRef, setActiveIndex])
 
   /**
    * Listen to DOM mutations
