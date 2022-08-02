@@ -40,16 +40,11 @@ function SearchDialogContent({onClose}: {onClose: () => void}) {
     state: {result},
   } = useSearchState()
 
-  // Re-focus input text when a child item is clicked
-  const handleChildItemClick = useCallback(() => {
-    headerInputRef?.current?.focus()
-  }, [])
-
   useContainerArrowNavigation(
     {
       childContainerRef,
       containerRef: headerContainerRef,
-      onChildItemClick: handleChildItemClick,
+      inputRef: headerInputRef,
     },
     [result.loaded]
   )

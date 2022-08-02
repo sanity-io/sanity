@@ -16,7 +16,8 @@ interface TypeFiltersProps {
 
 export function TypeFilters({small}: TypeFiltersProps) {
   const childContainerRef = useRef<HTMLDivElement>(null)
-  const textInputRef = useRef<HTMLInputElement>(null)
+  const headerContainerRef = useRef<HTMLDivElement>(null)
+  const inputRef = useRef<HTMLInputElement>(null)
 
   const [typeFilter, setTypeFilter] = useState('')
   const {
@@ -39,7 +40,9 @@ export function TypeFilters({small}: TypeFiltersProps) {
   )
   const handleFilterClear = useCallback(() => setTypeFilter(''), [])
 
-  useContainerArrowNavigation({childContainerRef, containerRef: textInputRef}, [typeFilter])
+  useContainerArrowNavigation({childContainerRef, containerRef: headerContainerRef, inputRef}, [
+    typeFilter,
+  ])
 
   const padding = small ? 1 : 2
 
@@ -47,7 +50,7 @@ export function TypeFilters({small}: TypeFiltersProps) {
     <TypeFiltersWrapper direction="column">
       {/* Search header */}
       {displayFilterInput && (
-        <Card padding={padding} style={{flexShrink: 0}} tone="inherit">
+        <Card padding={padding} ref={headerContainerRef} tone="inherit">
           <CustomTextInput
             backgroundTone={small ? 'darker' : 'dark'}
             border={false}
@@ -58,7 +61,7 @@ export function TypeFilters({small}: TypeFiltersProps) {
             onChange={handleFilterChange}
             onClear={handleFilterClear}
             placeholder="Document type"
-            ref={textInputRef}
+            ref={inputRef}
             smallClearButton
             radius={2}
             value={typeFilter}
@@ -97,7 +100,7 @@ export function TypeFilters({small}: TypeFiltersProps) {
 
       {/* Clear button */}
       {!typeFilter && selectedTypes.length > 0 && (
-        <ClearButtonWrapper paddingBottom={padding} paddingX={padding} tone="inherit">
+        <Card paddingBottom={padding} paddingX={padding} tone="inherit">
           <Stack space={padding}>
             <Divider />
             <Button
@@ -111,7 +114,7 @@ export function TypeFilters({small}: TypeFiltersProps) {
               tone="primary"
             />
           </Stack>
-        </ClearButtonWrapper>
+        </Card>
       )}
     </TypeFiltersWrapper>
   )
@@ -150,10 +153,6 @@ function TypeItem({
     />
   )
 }
-
-const ClearButtonWrapper = styled(Card)`
-  flex-shrink: 0;
-`
 
 const Divider = styled(Box)`
   border-bottom: 1px solid ${hues.gray[200].hex};
