@@ -1,6 +1,7 @@
 import {Element, Transforms, Node, Editor} from 'slate'
 import {PortableTextFeatures} from '../../types/portableText'
 import {PortableTextSlateEditor} from '../../types/editor'
+import {isPreservingKeys, PRESERVE_KEYS} from '../../utils/withPreserveKeys'
 
 /**
  * This plugin makes sure that every new node in the editor get a new _key prop when created
@@ -11,15 +12,23 @@ export function createWithObjectKeys(
   keyGenerator: () => string
 ) {
   return function withKeys(editor: PortableTextSlateEditor): PortableTextSlateEditor {
+    PRESERVE_KEYS.set(editor, false)
     const {apply, normalizeNode} = editor
     editor.apply = (operation) => {
       if (operation.type === 'split_node') {
-        operation.properties = {...operation.properties, _key: keyGenerator()}
+        operation.properties = {
+          ...operation.properties,
+          _key: keyGenerator(),
+        }
       }
       if (operation.type === 'insert_node') {
         // Must be given a new key or adding/removing marks while typing gets in trouble (duped keys)!
+        const withNewKey = !isPreservingKeys(editor) || !('_key' in operation.node)
         if (!Editor.isEditor(operation.node)) {
-          operation.node = {...operation.node, _key: keyGenerator()}
+          operation.node = {
+            ...operation.node,
+            ...(withNewKey ? {_key: keyGenerator()} : {}),
+          }
         }
       }
       apply(operation)

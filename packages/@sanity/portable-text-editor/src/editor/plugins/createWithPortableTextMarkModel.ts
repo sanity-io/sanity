@@ -15,7 +15,8 @@ import {PortableTextFeatures} from '../../types/portableText'
 const debug = debugWithName('plugin:withPortableTextMarkModel')
 
 export function createWithPortableTextMarkModel(
-  portableTextFeatures: PortableTextFeatures
+  portableTextFeatures: PortableTextFeatures,
+  keyGenerator: () => string
 ): (editor: PortableTextSlateEditor) => PortableTextSlateEditor {
   return function withPortableTextMarkModel(editor: PortableTextSlateEditor) {
     const {apply, normalizeNode} = editor
@@ -328,7 +329,6 @@ export function createWithPortableTextMarkModel(
 
   /**
    * Normalize re-marked spans in selection
-   * @param {Editor} editor
    */
   function mergeSpans(editor: Editor) {
     const {selection} = editor
@@ -354,7 +354,6 @@ export function createWithPortableTextMarkModel(
   /**
    * Normalize markDefs
    *
-   * @param {Editor} editor
    */
   function normalizeMarkDefs(editor: Editor) {
     const {selection} = editor

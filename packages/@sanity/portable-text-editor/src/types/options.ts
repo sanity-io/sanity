@@ -11,6 +11,7 @@ export type createEditorOptions = {
   hotkeys?: HotkeyOptions
   incomingPatches$?: PatchObservable
   readOnly: boolean
+  syncValue: () => void
 }
 
 export type HotkeyOptions = {

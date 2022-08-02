@@ -31,6 +31,7 @@ export function createOperationToPatches(
     operation: InsertTextOperation,
     beforeValue: Descendant[]
   ) {
+    debug('Operation', JSON.stringify(operation, null, 2))
     const block =
       editor.isTextBlock(editor.children[operation.path[0]]) && editor.children[operation.path[0]]
     if (!block) {
