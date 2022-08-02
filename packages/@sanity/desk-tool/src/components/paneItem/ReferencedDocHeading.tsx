@@ -1,5 +1,5 @@
 import React, {ReactNode, useCallback, useEffect, useRef, useState} from 'react'
-import {Popover, Box, Text, Heading, Flex, Button, Stack, ThemeColorProvider} from '@sanity/ui'
+import {Popover, Box, Text, Heading, Flex, Button, Stack} from '@sanity/ui'
 import {LinkIcon} from '@sanity/icons'
 import {TitleText, LinkCircle, HorizontalLine, StyledBox} from '../pane/PaneHeader.styles'
 import {useDeskToolSetting} from '../../settings'
@@ -40,12 +40,13 @@ export function ReferencedDocHeading({title}: {title?: ReactNode}) {
   }
 
   return (
-    <ThemeColorProvider tone="default">
+    <>
       <Popover
         key={`popover-${titleBoxSize}`}
         content={<InnerPopover onClose={handleHidePopover} />}
         placement="bottom-start"
         referenceElement={documentTitleRef.current}
+        tone="default"
         portal
         open
       />
@@ -60,7 +61,7 @@ export function ReferencedDocHeading({title}: {title?: ReactNode}) {
           <ReferencedDocTooltip />
         </Flex>
       </ObserveElementResize>
-    </ThemeColorProvider>
+    </>
   )
 }
 

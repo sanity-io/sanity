@@ -24,6 +24,13 @@ export interface ActionMenuButtonProps {
   disabled: boolean
 }
 
+const popoverProps: PopoverProps = {
+  placement: 'top-end',
+  portal: true,
+  preventOverflow: true,
+  tone: 'default',
+}
+
 export function ActionMenuButton(props: ActionMenuButtonProps) {
   const {actionStates, disabled} = props
   const idPrefix = useId() || ''
@@ -34,15 +41,6 @@ export function ActionMenuButton(props: ActionMenuButtonProps) {
   const handleAction = useCallback((idx: number) => {
     setActionIndex(idx)
   }, [])
-
-  const popoverProps: PopoverProps = useMemo(
-    () => ({
-      placement: 'top-end',
-      portal: true,
-      preventOverflow: true,
-    }),
-    []
-  )
 
   const currentAction = actionStates[actionIndex]
 

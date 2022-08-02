@@ -105,6 +105,7 @@ export function ValidationMenu(props: ValidationMenuProps) {
         constrainSize: true,
         preventOverflow: true,
         width: 0,
+        tone: 'default',
       }}
       placement="bottom-end"
     />

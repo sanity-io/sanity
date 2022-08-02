@@ -118,6 +118,7 @@ export function TimelineMenu({chunk, mode}: TimelineMenuProps) {
 
   return (
     <Root
+      tone="default"
       constrainSize
       content={content}
       data-ui="versionMenu"
