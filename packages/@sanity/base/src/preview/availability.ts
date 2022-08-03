@@ -2,7 +2,7 @@
 import {combineLatest, defer, from, Observable, of} from 'rxjs'
 import {distinctUntilChanged, map, mergeMap, switchMap} from 'rxjs/operators'
 import shallowEquals from 'shallow-equals'
-import {chunk, flatten, keyBy} from 'lodash'
+import {flatten, keyBy} from 'lodash'
 import {getDraftId, getPublishedId} from '../util/draftUtils'
 import {versionedClient} from '../client/versionedClient'
 import type {
@@ -17,6 +17,8 @@ import {
   AVAILABILITY_READABLE,
 } from './constants'
 import {observePaths} from './'
+
+const MAX_DOCUMENT_ID_CHUNK_SIZE = 11164
 
 /**
  * Returns an observable of metadata for a given drafts model document
@@ -62,11 +64,46 @@ function observeDocumentAvailability(id: string): Observable<DocumentAvailabilit
   )
 }
 
+/**
+ * Takes an array of document IDs and puts them into individual chunks.
+ * Because document IDs can vary greatly in size, we want to chunk by the length of the
+ * combined comma-separated ID set. We try to stay within 11164 bytes - this is about the
+ * same length the Sanity client uses for max query size, and accounts for rather large
+ * headers to be present - so this _should_ be safe.
+ *
+ * @param documentIds Unique document IDs to chunk
+ * @returns Array of document ID chunks
+ */
+function chunkDocumentIds(documentIds: string[]): string[][] {
+  let chunk: string[] = []
+  let chunkSize = 0
+
+  const chunks: string[][] = []
+
+  for (const documentId of documentIds) {
+    // Reached the max length? start a new chunk
+    if (chunkSize + documentId.length + 1 >= MAX_DOCUMENT_ID_CHUNK_SIZE) {
+      chunks.push(chunk)
+      chunk = []
+      chunkSize = 0
+    }
+
+    chunkSize += documentId.length + 1 // +1 is to account for a comma between IDs
+    chunk.push(documentId)
+  }
+
+  if (!chunks.includes(chunk)) {
+    chunks.push(chunk)
+  }
+
+  return chunks
+}
+
 const fetchDocumentReadability = debounceCollect(function fetchDocumentReadability(
   args: string[][]
 ): Observable<DocumentAvailability[]> {
   const uniqueIds = [...new Set(flatten(args))]
-  return from(chunk(uniqueIds, 300)).pipe(
+  return from(chunkDocumentIds(uniqueIds)).pipe(
     mergeMap(fetchDocumentReadabilityChunked, 10),
     map((res) => args.map(([id]) => res[uniqueIds.indexOf(id)]))
   )
