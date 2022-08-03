@@ -74,10 +74,8 @@ export function useContainerArrowNavigation(
    * Input element should focus whenever a child element is clicked.
    */
   useEffect(() => {
-    function handleClick(index: number) {
-      return function () {
-        inputRef.current?.focus()
-      }
+    function handleClick() {
+      inputRef.current?.focus()
     }
 
     // Prevent child items from receiving focus (on mouse press)
@@ -85,15 +83,15 @@ export function useContainerArrowNavigation(
       event.preventDefault()
     }
 
-    childElements?.forEach((child, index) => {
+    childElements?.forEach((child) => {
       child.setAttribute('tabindex', '-1')
-      child.addEventListener('click', handleClick(index))
+      child.addEventListener('click', handleClick)
       child.addEventListener('mousedown', handleMouseDown)
     })
 
     return () => {
-      childElements?.forEach((child, index) => {
-        child.removeEventListener('click', handleClick(index))
+      childElements?.forEach((child) => {
+        child.removeEventListener('click', handleClick)
         child.removeEventListener('mousedown', handleMouseDown)
       })
     }
@@ -139,11 +137,12 @@ export function useContainerArrowNavigation(
     }
 
     const containerElement = containerRef?.current
+    const inputElement = inputRef?.current
     containerElement?.addEventListener('keydown', handleKeyDown)
-    containerElement?.addEventListener('blur', handleContainerBlur)
+    inputElement?.addEventListener('blur', handleContainerBlur)
     return () => {
       containerElement?.removeEventListener('keydown', handleKeyDown)
-      containerElement?.removeEventListener('blur', handleContainerBlur)
+      inputElement?.removeEventListener('blur', handleContainerBlur)
     }
   }, [childContainerRef, childElements, containerRef, inputRef, setActiveIndex])
 
