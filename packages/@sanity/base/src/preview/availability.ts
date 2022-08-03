@@ -1,6 +1,6 @@
 /* eslint-disable max-nested-callbacks */
-import {combineLatest, defer, from, Observable, of} from 'rxjs'
-import {distinctUntilChanged, map, mergeMap, switchMap} from 'rxjs/operators'
+import {combineLatest, defer, from, Observable, of, forkJoin} from 'rxjs'
+import {distinctUntilChanged, map, mergeMap, switchMap, concatMap} from 'rxjs/operators'
 import shallowEquals from 'shallow-equals'
 import {chunk, flatten, keyBy} from 'lodash'
 import {getDraftId, getPublishedId} from '../util/draftUtils'
@@ -74,30 +74,37 @@ const fetchDocumentReadability = debounceCollect(function fetchDocumentReadabili
 1)
 
 function fetchDocumentReadabilityChunked(ids: string[]): Observable<DocumentAvailability[]> {
+  const chunkSize = Math.round(ids.join(',').length / 1024) // Max url length is 2048, use 1024 here to leave some extra room for the other stuff in the URL
+  const chunks = chunkSize > 1 ? chunk(ids, chunkSize) : [ids]
   return defer(() => {
-    const requestOptions = {
-      uri: versionedClient.getDataUrl('doc', ids.join(',')),
-      json: true,
-      query: {excludeContent: 'true'},
-      tag: 'preview.documents-availability',
-    }
-    return versionedClient.observable.request<AvailabilityResponse>(requestOptions).pipe(
-      map((response) => {
-        const omitted = keyBy(response.omitted || [], (entry) => entry.id)
-        return ids.map((id) => {
-          const omittedEntry = omitted[id]
-          if (!omittedEntry) {
-            // it's not omitted, so it exists and is readable
-            return AVAILABILITY_READABLE
-          }
-          if (omittedEntry.reason === 'existence') {
-            return AVAILABILITY_NOT_FOUND
-          }
-          if (omittedEntry.reason === 'permission') {
-            // it's not omitted, so it exists and is readable
-            return AVAILABILITY_PERMISSION_DENIED
-          }
-          throw new Error(`Unexpected reason for omission: "${omittedEntry.reason}"`)
+    const observables = chunks.map((_chunk) => {
+      const requestOptions = {
+        uri: versionedClient.getDataUrl('doc', _chunk.join(',')),
+        json: true,
+        query: {excludeContent: 'true'},
+        tag: 'preview.documents-availability',
+      }
+      return versionedClient.observable.request<AvailabilityResponse>(requestOptions)
+    })
+    return forkJoin(observables).pipe(
+      concatMap((responses) => {
+        return responses.map((response) => {
+          const omitted = keyBy(response.omitted || [], (entry) => entry.id)
+          return ids.map((id) => {
+            const omittedEntry = omitted[id]
+            if (!omittedEntry) {
+              // it's not omitted, so it exists and is readable
+              return AVAILABILITY_READABLE
+            }
+            if (omittedEntry.reason === 'existence') {
+              return AVAILABILITY_NOT_FOUND
+            }
+            if (omittedEntry.reason === 'permission') {
+              // it's not omitted, so it exists and is readable
+              return AVAILABILITY_PERMISSION_DENIED
+            }
+            throw new Error(`Unexpected reason for omission: "${omittedEntry.reason}"`)
+          })
         })
       })
     )
