@@ -28,6 +28,7 @@ const mockClient = {
   request: () => Promise.resolve(null),
   getUrl: (path: string) => `https://mock-project-id.api.sanity.io/v1${path}`,
   observable: {
+    fetch: () => NEVER,
     listen: () => NEVER,
   },
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
