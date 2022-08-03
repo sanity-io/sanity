@@ -76,6 +76,7 @@ function ConfirmDialogContent(props: {modal: DocumentActionConfirmModalProps}) {
             text={cancelButtonText || 'Cancel'}
           />
           <Button
+            autoFocus
             icon={confirmButtonIcon}
             onClick={onConfirm}
             text={confirmButtonText || 'Confirm'}
