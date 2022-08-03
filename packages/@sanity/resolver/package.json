@@ -33,7 +33,7 @@
   },
   "homepage": "https://www.sanity.io/",
   "devDependencies": {
-    "mock-fs": "^5.0.0",
+    "mock-fs": "5.1.2",
     "rimraf": "^2.7.1"
   },
   "dependencies": {
