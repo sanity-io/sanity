@@ -60,6 +60,17 @@ export function addSearchTerm(searchTerm: SearchTerms): void {
   window.localStorage.setItem(SEARCH_TERMS_KEY, JSON.stringify(newRecent))
 }
 
+export function removeSearchTerms(): void {
+  const searchTerms = getRecentStoredSearchTerms()
+
+  const newRecent: StoredSearchTerms = {
+    ...searchTerms,
+    recentSearches: [],
+  }
+
+  window.localStorage.setItem(SEARCH_TERMS_KEY, JSON.stringify(newRecent))
+}
+
 export function removeSearchTermAtIndex(index: number): void {
   const searchTerms = getRecentStoredSearchTerms()
 

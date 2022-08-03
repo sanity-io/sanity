@@ -1,9 +1,12 @@
 import {ClockIcon, CloseIcon} from '@sanity/icons'
-import {Box, Button, Flex, Text, Theme} from '@sanity/ui'
+import {Box, Button, Flex, Text} from '@sanity/ui'
 import React, {MouseEvent, useCallback} from 'react'
-import styled, {css} from 'styled-components'
+import styled from 'styled-components'
 import {RecentSearch} from '../datastores/recentSearches'
+import {withCommandPaletteItemStyles} from '../utils/applyCommandPaletteItemStyles'
 import {TypePills} from './TypePills'
+
+const CommandPaletteButton = withCommandPaletteItemStyles(Button)
 
 export interface RecentSearchesProps {
   value: RecentSearch
@@ -29,7 +32,7 @@ export function RecentSearchItem(props: RecentSearchesProps) {
   const typePillsAvailableCharCount = MAX_VISIBLE_TYPE_PILL_CHARS - querySubstring.length
 
   return (
-    <RecentSearchItemWrapper
+    <CommandPaletteButton
       mode="bleed"
       onClick={handleRecentSearchClick}
       paddingLeft={3}
@@ -38,7 +41,7 @@ export function RecentSearchItem(props: RecentSearchesProps) {
     >
       <Flex align="center">
         <Box paddingY={2}>
-          <Text size={2}>
+          <Text size={1}>
             <ClockIcon />
           </Text>
         </Box>
@@ -62,25 +65,15 @@ export function RecentSearchItem(props: RecentSearchesProps) {
           </Flex>
         </CloseButton>
       </Flex>
-    </RecentSearchItemWrapper>
+    </CommandPaletteButton>
   )
 }
-
-const RecentSearchItemWrapper = styled(Button)(({theme}: {theme: Theme}) => {
-  const {color} = theme.sanity
-  // TODO: use idiomatic sanity/ui styling, double check usage of `bg2`
-  return css`
-    &[aria-selected='true'] {
-      background: ${color.button.bleed.default.hovered.bg2};
-    }
-  `
-})
 
 const CloseButton = styled.div`
   opacity: 0.5;
   visibility: hidden;
 
-  ${RecentSearchItemWrapper}:hover & {
+  ${CommandPaletteButton}:hover & {
     visibility: visible;
   }
 

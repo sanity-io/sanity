@@ -125,7 +125,7 @@ const SearchPopoverWrapper = styled(Card)<{x: number | null; y: number}>`
         `}
   display: flex !important;
   flex-direction: column;
-  max-height: min(calc(100vh - ${searchFieldPaddingPx * 2}px), 700px);
+  max-height: min(calc(100vh - ${searchFieldPaddingPx * 2}px), 735px);
   position: absolute;
   top: ${(props) => props.y}px;
   width: min(calc(100vw - ${searchFieldPaddingPx * 2}px), ${DIALOG_MAX_WIDTH}px);
