@@ -33,7 +33,7 @@ export interface DocumentPaneContextValue {
   handleKeyUp: (event: React.KeyboardEvent<HTMLDivElement>) => void
   handleMenuAction: (item: PaneMenuItem) => void
   handlePaneClose: () => void
-  handlePaneSplit: () => void
+  handlePaneSplit?: () => void
   historyController: HistoryController
   index: number
   inspectOpen: boolean
