@@ -131,7 +131,7 @@ export const RegionsWithIntersections = forwardRef(function RegionsWithIntersect
         io={io}
         id="::top"
         onIntersection={onIntersection}
-        margins={margins}
+        $margins={margins}
       />
       <div>{children}</div>
       <OverlayWrapper ref={overlayRef}>
