@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import {Flex, Grid, Stack, Heading, Container, Card, Text, Box, Button} from '@sanity/ui'
+import {Flex, Grid, Stack, Heading, Container, Card, Text, Button} from '@sanity/ui'
 import Tutorial from './Tutorial'
 import dataAdapter from './dataAdapter'
 
@@ -124,7 +124,7 @@ class SanityTutorials extends React.Component {
               <Heading>{title}</Heading>
               <Grid as="ul" columns={columns(items?.length)} gap={4}>
                 {items.map((feedItem) => (
-                  <Flex as="li" key={feedItem.id}>
+                  <Flex as="li" key={feedItem._id}>
                     <FeedItem feedItem={feedItem} />
                   </Flex>
                 ))}
