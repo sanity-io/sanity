@@ -55,8 +55,8 @@ export const PublishAction: DocumentActionComponent = (props) => {
     false
   )
 
-  //Deals with edge-case: if a reference is removed while the confirmation box is open, it will close
-  useCallback(() => {
+  // Deals with edge-case: if a reference is removed while the confirmation box is open, it will close
+  useEffect(() => {
     if (documentIsReferenced === false && showConfirmPublishReferencedDocument) {
       setShowConfirmPublishReferencedDocument(false)
     }
