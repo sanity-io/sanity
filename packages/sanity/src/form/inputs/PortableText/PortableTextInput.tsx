@@ -243,6 +243,10 @@ export function PortableTextInput(props: PortableTextInputProps) {
     return items
   }, [members, path])
 
+  const hasOpenItem = useMemo(() => {
+    return portableTextMemberItems.some((item) => item.member.open)
+  }, [portableTextMemberItems])
+
   // Sets the focusPath from editor selection (when typing, moving the cursor, clicking around)
   // This doesn't need to be immediate, so debounce it as it impacts performance.
   const setFocusPathDebounced = useMemo(
@@ -317,29 +321,29 @@ export function PortableTextInput(props: PortableTextInputProps) {
     return null
   }, [handleEditorChange, handleIgnoreInvalidValue, invalidValue])
 
-  // Scroll *the field* (not the editor content) into view if we have focus in the field.
-  // For scrolling to particular editor content see useScrollToFocusFromOutside and useScrollSelectionIntoView in
-  // the Compositor component.
+  const handleActivate = useCallback((): void => {
+    if (!isActive) {
+      setIsActive(true)
+      // Focus the editor in the next tick if needed
+      // Next tick because we are in a re-rendering phase of the editor at this point (activating it).
+      if (!hasFocus) {
+        setTimeout(() => {
+          if (editorRef.current) {
+            PortableTextEditor.focus(editorRef.current)
+          }
+        })
+      }
+    }
+  }, [hasFocus, isActive])
+
+  // If the editor that has an opened item and isn't focused - scroll to the input if needed.
   useEffect(() => {
-    if (focusPath && focusPath.length > 0 && innerElementRef.current) {
+    if (!hasFocus && hasOpenItem && innerElementRef.current) {
       scrollIntoView(innerElementRef.current, {
         scrollMode: 'if-needed',
       })
     }
-  }, [focusPath])
-
-  const focus = useCallback((): void => {
-    if (editorRef.current) {
-      PortableTextEditor.focus(editorRef.current)
-    }
-  }, [editorRef])
-
-  const handleActivate = useCallback((): void => {
-    if (!isActive) {
-      setIsActive(true)
-      setTimeout(() => focus()) // Setting active will trigger a re-render of the DOM entry, so call editor focus in the next tick.
-    }
-  }, [focus, isActive])
+  }, [focused, hasFocus, hasOpenItem])
 
   return (
     <Box ref={innerElementRef}>
