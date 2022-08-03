@@ -67,7 +67,7 @@ function typeTitle(schemaType: SchemaType) {
 }
 
 const Pill = styled(Card)`
-  background: ${hues.blue[100].hex};
+  background: ${hues.blue[50].hex};
   flex-shrink: 0;
   overflow: hidden;
 `

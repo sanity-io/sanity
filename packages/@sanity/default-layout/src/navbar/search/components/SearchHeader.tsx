@@ -1,6 +1,6 @@
 import {hues, white} from '@sanity/color'
-import {CloseIcon, ControlsIcon, SearchIcon} from '@sanity/icons'
-import {Box, Button, Card, Flex, Spinner, studioTheme} from '@sanity/ui'
+import {CloseIcon, ControlsIcon, ResetIcon, SearchIcon} from '@sanity/icons'
+import {Box, Button, Card, Flex, Spinner, studioTheme, Text, Tooltip} from '@sanity/ui'
 import React, {RefObject, useCallback, useEffect, useRef} from 'react'
 import styled from 'styled-components'
 import {useSearchState} from '../contexts/search'
@@ -25,15 +25,19 @@ export function SearchHeader({containerRef, inputRef, onClose}: SearchHeaderProp
     },
   } = useSearchState()
 
+  const hasQueryOrTypes = terms.query !== '' || terms.types.length
+
   const handleFiltersToggle = useCallback(() => dispatch({type: 'FILTERS_TOGGLE'}), [dispatch])
   const handleQueryChange = useCallback(
     (e: React.KeyboardEvent<HTMLInputElement>) =>
       dispatch({type: 'TERMS_QUERY_SET', query: e.currentTarget.value}),
     [dispatch]
   )
-  const handleQueryClear = useCallback(() => {
+  const handleSearchClear = useCallback(() => {
+    inputRef?.current?.focus()
     dispatch({type: 'TERMS_QUERY_SET', query: ''})
-  }, [dispatch])
+    dispatch({type: 'TERMS_TYPES_CLEAR'})
+  }, [dispatch, inputRef])
 
   // Focus filter button (when filters are hidden after initial mount)
   useEffect(() => {
@@ -53,34 +57,72 @@ export function SearchHeader({containerRef, inputRef, onClose}: SearchHeaderProp
         <Box flex={1} padding={onClose ? 2 : 1}>
           <CustomTextInput
             border={false}
-            clearButton={!!terms.query}
             fontSize={2}
             icon={loading ? <AlignedSpinner /> : SearchIcon}
             onChange={handleQueryChange}
-            onClear={handleQueryClear}
             placeholder="Search"
             ref={inputRef}
-            smallClearButton
             value={terms.query}
           />
         </Box>
 
-        {/* Filter toggle */}
-        <Card borderLeft={!!onClose} padding={onClose ? 2 : 1}>
-          <Box style={{position: 'relative'}}>
+        {/* Reset */}
+        <Tooltip
+          content={
+            <Box padding={2}>
+              <Text muted size={1}>
+                Reset search
+              </Text>
+            </Box>
+          }
+          disabled={!hasQueryOrTypes}
+          placement="bottom"
+          portal
+        >
+          <Card padding={onClose ? 2 : 1}>
             <Button
+              disabled={!hasQueryOrTypes}
               height="fill"
-              icon={ControlsIcon}
+              icon={ResetIcon}
               mode="bleed"
-              onClick={handleFiltersToggle}
+              onClick={handleSearchClear}
               padding={3}
-              ref={filterCloseButton}
-              selected={filtersVisible}
               tone="default"
             />
-            {terms.types.length > 0 && <NotificationBadge>{terms.types.length}</NotificationBadge>}
-          </Box>
-        </Card>
+          </Card>
+        </Tooltip>
+
+        {/* Filter toggle */}
+
+        <Tooltip
+          content={
+            <Box padding={2}>
+              <Text muted size={1}>
+                {filtersVisible ? 'Hide' : 'Show'} filters
+              </Text>
+            </Box>
+          }
+          placement="bottom"
+          portal
+        >
+          <Card borderLeft={!!onClose} padding={onClose ? 2 : 1}>
+            <Box style={{position: 'relative'}}>
+              <Button
+                height="fill"
+                icon={ControlsIcon}
+                mode="bleed"
+                onClick={handleFiltersToggle}
+                padding={3}
+                ref={filterCloseButton}
+                selected={filtersVisible}
+                tone="default"
+              />
+              {terms.types.length > 0 && (
+                <NotificationBadge>{terms.types.length}</NotificationBadge>
+              )}
+            </Box>
+          </Card>
+        </Tooltip>
 
         {/* (Fullscreen) Close button */}
         {onClose && (
