@@ -5,7 +5,6 @@ import {
   Flex,
   Grid,
   Popover,
-  ThemeColorProvider,
   useClickOutside,
   useGlobalKeyDown,
   useLayer,
@@ -76,6 +75,7 @@ function ConfirmDialogContent(props: {dialog: DocumentActionConfirmDialogProps})
             text={cancelButtonText || 'Cancel'}
           />
           <Button
+            autoFocus
             icon={confirmButtonIcon}
             onClick={onConfirm}
             text={confirmButtonText || 'Confirm'}
