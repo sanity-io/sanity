@@ -1,14 +1,16 @@
-import {hues} from '@sanity/color'
 import {CheckmarkIcon, SearchIcon} from '@sanity/icons'
 import type {ObjectSchemaType} from '@sanity/types'
-import {Box, Button, Card, Flex, Stack, Text, Theme} from '@sanity/ui'
+import {Box, Button, Card, Flex, Stack, Text} from '@sanity/ui'
 import schema from 'part:@sanity/base/schema'
 import React, {useCallback, useMemo, useRef, useState} from 'react'
-import styled, {css} from 'styled-components'
+import styled from 'styled-components'
 import {useSearchState} from '../contexts/search'
 import {getSelectableTypes} from '../contexts/search/selectors'
 import {useContainerArrowNavigation} from '../hooks/useContainerArrowNavigation'
+import {withCommandPaletteItemStyles} from '../utils/applyCommandPaletteItemStyles'
 import {CustomTextInput} from './CustomTextInput'
+
+const CommandPaletteButton = withCommandPaletteItemStyles(Button)
 
 interface TypeFiltersProps {
   small?: boolean
@@ -119,7 +121,7 @@ function TypeItem({
   }, [dispatch, type])
 
   return (
-    <TypeItemButton
+    <CommandPaletteButton
       fontSize={small ? 1 : 2}
       iconRight={selected && CheckmarkIcon}
       justify="flex-start"
@@ -132,19 +134,6 @@ function TypeItem({
     />
   )
 }
-
-const TypeItemButton = styled(Button)(({theme}: {theme: Theme}) => {
-  const {color} = theme.sanity
-  // TODO: use idiomatic sanity/ui styling, double check usage of `bg2`
-  return css`
-    &[aria-selected='true'] {
-      background: ${color.button.bleed.default.hovered.bg2};
-      // Disable box-shadow to hide the the halo effect when we have keyboard focus over a selected <Button>
-      // TODO: see if there's a better way to address this
-      box-shadow: none;
-    }
-  `
-})
 
 const TypeFiltersContent = styled(Card)`
   overflow-x: hidden;

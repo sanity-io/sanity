@@ -12,12 +12,15 @@ import {getPublishedId} from 'part:@sanity/base/util/draft-utils'
 import React, {forwardRef, useMemo} from 'react'
 import styled, {css} from 'styled-components'
 import type {SearchHit} from '../types'
+import {withCommandPaletteItemStyles} from '../utils/applyCommandPaletteItemStyles'
 
 interface SearchItemProps extends ResponsivePaddingProps {
   data: SearchHit
   onClick?: () => void
   documentId: string
 }
+
+const CommandPaletteIntentLink = withCommandPaletteItemStyles(IntentLink)
 
 export function SearchResultItem(props: SearchItemProps) {
   const {data, documentId, onClick, ...restProps} = props
@@ -30,7 +33,7 @@ export function SearchResultItem(props: SearchItemProps) {
       // eslint-disable-next-line @typescript-eslint/no-shadow
       forwardRef(function LinkComponent(linkProps, ref: React.ForwardedRef<HTMLAnchorElement>) {
         return (
-          <CustomIntentLink
+          <CommandPaletteIntentLink
             {...linkProps}
             intent="edit"
             params={{id: getPublishedId(hit._id), type: type.name}}

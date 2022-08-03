@@ -4,6 +4,7 @@ import {
   getRecentSearchTerms,
   MAX_RECENT_SEARCHES,
   removeSearchTermAtIndex,
+  removeSearchTerms,
 } from './recentSearches'
 
 const dummyType = ({name: 'testSchema', jsonType: 'object'} as unknown) as ObjectSchemaType
@@ -73,6 +74,26 @@ describe('search-store', () => {
       const recentTerms = getRecentSearchTerms(dummySchema)
       expect(recentTerms.length).toEqual(MAX_RECENT_SEARCHES)
       expect(recentTerms[0].query).toEqual(`${MAX_RECENT_SEARCHES + 9}`)
+    })
+
+    it('should delete all saved searches', () => {
+      const search1 = {
+        query: '1',
+        types: [dummyType],
+      }
+      const search2 = {
+        query: '2',
+        types: [dummyType],
+      }
+
+      addSearchTerm(search1)
+      addSearchTerm(search2)
+
+      removeSearchTerms()
+
+      const recentTerms = getRecentSearchTerms(dummySchema)
+
+      expect(recentTerms.length).toEqual(0)
     })
 
     it('should delete saved searches by index', () => {

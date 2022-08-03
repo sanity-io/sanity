@@ -1,5 +1,6 @@
 import type {SearchTerms} from '@sanity/base'
-import {Box, Label, Stack} from '@sanity/ui'
+import {TrashIcon} from '@sanity/icons'
+import {Box, Button, Label, Stack} from '@sanity/ui'
 import schema from 'part:@sanity/base/schema'
 import React, {MouseEvent, RefObject, useCallback, useState} from 'react'
 import {useSearchState} from '../contexts/search'
@@ -7,10 +8,13 @@ import {
   addSearchTerm,
   getRecentSearchTerms,
   removeSearchTermAtIndex,
+  removeSearchTerms,
 } from '../datastores/recentSearches'
+import {withCommandPaletteItemStyles} from '../utils/applyCommandPaletteItemStyles'
 import {Instructions} from './Instructions'
 import {RecentSearchItem} from './RecentSearchItem'
 
+const CommandPaletteButton = withCommandPaletteItemStyles(Button)
 interface RecentSearchesProps {
   childContainerRef: RefObject<HTMLDivElement>
   showFiltersOnClick?: boolean
@@ -19,6 +23,11 @@ interface RecentSearchesProps {
 export function RecentSearches({childContainerRef, showFiltersOnClick}: RecentSearchesProps) {
   const [recentSearches, setRecentSearches] = useState(() => getRecentSearchTerms(schema))
   const {dispatch} = useSearchState()
+
+  const handleClearRecentSearchesClick = useCallback(() => {
+    removeSearchTerms()
+    setRecentSearches(getRecentSearchTerms(schema))
+  }, [])
 
   const handleRecentSearchClick = useCallback(
     (searchTerms: SearchTerms) => {
@@ -60,6 +69,15 @@ export function RecentSearches({childContainerRef, showFiltersOnClick}: RecentSe
                 value={recentSearch}
               />
             ))}
+            <CommandPaletteButton
+              justify="flex-start"
+              fontSize={1}
+              icon={TrashIcon}
+              mode="bleed"
+              onClick={handleClearRecentSearchesClick}
+              text="Clear recent searches"
+              tone="critical"
+            />
           </Stack>
         </>
       ) : (
