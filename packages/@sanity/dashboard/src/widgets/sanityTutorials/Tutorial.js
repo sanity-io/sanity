@@ -1,5 +1,4 @@
 import React from 'react'
-import PropTypes from 'prop-types'
 import {Card, Box, Flex, Text, Stack} from '@sanity/ui'
 import styled from 'styled-components'
 
@@ -86,13 +85,6 @@ const YoutubeEmbed = ({embedId}) => (
   </YoutubeContainer>
 )
 class Tutorial extends React.PureComponent {
-  static propTypes = {
-    title: PropTypes.string.isRequired,
-    posterURL: PropTypes.string,
-    href: PropTypes.string.isRequired,
-    showPlayIcon: PropTypes.bool,
-    presenterSubtitle: PropTypes.string.isRequired,
-  }
   static defaultProps = {
     posterURL: null,
     showPlayIcon: false,
