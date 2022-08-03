@@ -18,7 +18,7 @@ const query = `* [_id == "drafts." + $id || _id == $id]{
 `
 
 /**
- * Renders thecurrently displayed document as formatted JSON as a
+ * Renders the currently displayed document as formatted JSON as a
  * simple little "webpage" using:
  * - @sanity/ui
  * - @sanity/image-url
