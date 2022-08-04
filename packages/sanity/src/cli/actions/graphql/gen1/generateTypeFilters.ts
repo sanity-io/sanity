@@ -11,6 +11,7 @@ import type {
 
 type FilterCreator = (field: ConvertedField) => InputFilterField[]
 
+/* eslint-disable id-denylist */
 const filterCreators: Record<string, FilterCreator> = {
   ID: createIdFilters,
   String: createStringFilters,
@@ -22,6 +23,7 @@ const filterCreators: Record<string, FilterCreator> = {
   Date: createDateFilters,
   Object: createObjectFilters,
 }
+/* eslint-enable id-denylist */
 
 export function generateTypeFilters(types: (ConvertedType | ConvertedUnion)[]): InputObjectType[] {
   const queryable = types

@@ -17,6 +17,7 @@ const typeAliases: Record<string, string | undefined> = {
 
 type FilterCreator = () => InputObjectType
 
+/* eslint-disable id-denylist */
 const filterCreators: Record<string, FilterCreator> = {
   ID: createIdFilters,
   String: createStringFilters,
@@ -27,6 +28,7 @@ const filterCreators: Record<string, FilterCreator> = {
   Date: createDateFilters,
   Document: createDocumentFilters,
 }
+/* eslint-enable id-denylist */
 
 export function generateTypeFilters(types: (ConvertedType | ConvertedUnion)[]): InputObjectType[] {
   const builtInTypeKeys = Object.keys(filterCreators)

@@ -25,6 +25,7 @@ import arrayValidator from './validators/arrayValidator'
 import objectValidator from './validators/objectValidator'
 import dateValidator from './validators/dateValidator'
 
+/* eslint-disable id-denylist */
 const typeValidators = {
   Boolean: booleanValidator,
   Number: numberValidator,
@@ -33,6 +34,7 @@ const typeValidators = {
   Object: objectValidator,
   Date: dateValidator,
 }
+/* eslint-enable id-denylist */
 
 const getBaseType = (type: SchemaType | undefined): SchemaType | undefined => {
   return type && type.type ? getBaseType(type.type) : type

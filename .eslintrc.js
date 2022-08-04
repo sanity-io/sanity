@@ -21,6 +21,7 @@ module.exports = {
     'prettier',
   ],
   rules: {
+    'id-denylist': ['error', 'Object', 'Array', 'String', 'Number', 'Boolean', 'BigInt', 'Symbol'],
     'prettier/prettier': 'error',
     'react/jsx-filename-extension': ['error', {extensions: ['.js', '.jsx', '.tsx']}],
     'sort-imports': 'off', // prefer import/order
