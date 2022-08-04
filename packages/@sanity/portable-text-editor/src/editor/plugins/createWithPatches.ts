@@ -171,12 +171,14 @@ export function createWithPatches(
         }
 
         if (editorWasEmpty && operation.type !== 'set_selection') {
+          patches.push(setIfMissing([], []))
           patches.push(
-            setIfMissing([], []),
             insert(
               [
                 fromSlateValue(
-                  previousChildren,
+                  previousChildren.length === 0
+                    ? [editor.createPlaceholderBlock()]
+                    : previousChildren,
                   portableTextFeatures.types.block.name,
                   KEY_TO_VALUE_ELEMENT.get(editor)
                 )[0],
@@ -186,6 +188,7 @@ export function createWithPatches(
             )
           )
         }
+
         switch (operation.type) {
           case 'insert_text':
             patches = [...patches, ...insertTextPatch(editor, operation, previousChildren)]
