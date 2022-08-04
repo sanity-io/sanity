@@ -39,7 +39,7 @@
   },
   "homepage": "https://www.sanity.io/",
   "devDependencies": {
-    "@sanity/client": "^3.2.0",
+    "@sanity/client": "^3.3.3",
     "@sanity/eslint-config-studio": "^2.0.0",
     "@sanity/generate-help-url": "^3.0.0",
     "@sanity/resolver": "2.29.5",

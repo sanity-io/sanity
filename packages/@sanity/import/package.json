@@ -47,7 +47,7 @@
     "whatwg-url": "^7.0.0"
   },
   "devDependencies": {
-    "@sanity/client": "^3.2.0",
+    "@sanity/client": "^3.3.3",
     "nock": "^9.0.5",
     "rimraf": "^2.7.1"
   },

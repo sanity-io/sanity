@@ -38,7 +38,7 @@
   "dependencies": {
     "@sanity/asset-utils": "^1.2.0",
     "@sanity/base": "2.30.1",
-    "@sanity/client": "^3.2.0",
+    "@sanity/client": "^3.3.3",
     "@sanity/color": "^2.1.8",
     "@sanity/diff": "2.29.3",
     "@sanity/icons": "^1.2.6",
