@@ -29,7 +29,6 @@ module.exports = {
     './packages/@sanity/form-builder/src/FormBuilderInput',
   '@sanity/imagetool': './packages/@sanity/imagetool/src',
   '@sanity/initial-value-templates': './packages/@sanity/initial-value-templates/src',
-  '@sanity/portable-text-editor': './packages/@sanity/portable-text-editor/src',
   '@sanity/mutator': './packages/@sanity/mutator/src',
   '@sanity/resolver': './packages/@sanity/resolver/src/resolver',
 
