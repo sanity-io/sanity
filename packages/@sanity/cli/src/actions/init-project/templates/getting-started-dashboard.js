@@ -5,7 +5,7 @@ export const dependencies = {
   '@sanity/icons': '^1.2.6',
   '@portabletext/react': '^1.0.6',
   'react-fast-compare': '^3.2.0',
-  '@sanity/dashboard': '^2.22.0',
+  '@sanity/dashboard': '^2.30.3',
   rxjs: '^6.5.3',
 }
 
@@ -14,6 +14,10 @@ export const generateSanityManifest = (base) => ({
   plugins: ['@sanity/dashboard'].concat(base.plugins.concat(['asset-source-unsplash', 'media'])),
 
   parts: [
+    {
+      implements: 'part:@sanity/dashboard/config',
+      path: './dashboardConfig.js',
+    },
     {
       name: 'part:@sanity/base/schema',
       path: './schemas/schema',
@@ -29,10 +33,6 @@ export const generateSanityManifest = (base) => ({
     {
       implements: 'part:@sanity/base/theme/variables/override-style',
       path: './style.css',
-    },
-    {
-      implements: 'part:@sanity/dashboard/config',
-      path: './dashboardConfig.js',
     },
   ],
 })
