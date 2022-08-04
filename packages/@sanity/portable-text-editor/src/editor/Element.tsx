@@ -8,7 +8,7 @@ import {fromSlateValue} from '../utils/values'
 import {debugWithName} from '../utils/debug'
 import {KEY_TO_VALUE_ELEMENT} from '../utils/weakMaps'
 import TextBlock from './nodes/TextBlock'
-import Object from './nodes/DefaultObject'
+import ObjectNode from './nodes/DefaultObject'
 import {DefaultBlockObject} from './nodes/index'
 import {DraggableBlock} from './DraggableBlock'
 import {DraggableChild} from './DraggableChild'
@@ -39,7 +39,7 @@ type ElementProps = {
 const inlineBlockStyle = {display: 'inline-block'}
 
 const defaultRender = (value: PortableTextBlock) => {
-  return <Object value={value} />
+  return <ObjectNode value={value} />
 }
 
 // eslint-disable-next-line max-statements
