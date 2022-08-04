@@ -32,7 +32,6 @@
     {"path": "./packages/@sanity/initial-value-templates"},
     {"path": "./packages/@sanity/language-filter"},
     {"path": "./packages/@sanity/mutator"},
-    {"path": "./packages/@sanity/portable-text-editor"},
     {"path": "./packages/@sanity/react-hooks"},
     {"path": "./packages/@sanity/schema"},
     {"path": "./packages/@sanity/state-router"},

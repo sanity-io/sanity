@@ -1,6 +1,0 @@
-demo/
-coverage/
-test/
-.babelrc
-jest.config.js
-tsconfig.json
