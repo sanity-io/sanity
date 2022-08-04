@@ -1,3 +1,4 @@
+import {hues} from '@sanity/color'
 import {CheckmarkIcon, SearchIcon} from '@sanity/icons'
 import type {ObjectSchemaType} from '@sanity/types'
 import {Box, Button, Card, Flex, Stack, Text} from '@sanity/ui'
@@ -23,6 +24,7 @@ export function TypeFilters({small}: TypeFiltersProps) {
 
   const [typeFilter, setTypeFilter] = useState('')
   const {
+    dispatch,
     state: {
       terms: {types: selectedTypes},
     },
@@ -34,6 +36,10 @@ export function TypeFilters({small}: TypeFiltersProps) {
     typeFilter,
   ])
 
+  const handleClearTypes = useCallback(() => {
+    inputRef?.current?.focus()
+    dispatch({type: 'TERMS_TYPES_CLEAR'})
+  }, [dispatch])
   const handleFilterChange = useCallback(
     (e: React.KeyboardEvent<HTMLInputElement>) => setTypeFilter(e.currentTarget.value),
     [setTypeFilter]
@@ -97,6 +103,25 @@ export function TypeFilters({small}: TypeFiltersProps) {
           </Box>
         )}
       </TypeFiltersContent>
+
+      {/* Clear button */}
+      {!typeFilter && selectedTypes.length > 0 && (
+        <Card paddingBottom={padding} paddingX={padding} tone="inherit">
+          <Stack space={padding}>
+            <Divider />
+            <Button
+              data-name="type-filter-button"
+              disabled={selectedTypes.length === 0}
+              fontSize={small ? 1 : 2}
+              mode="bleed"
+              onClick={handleClearTypes}
+              padding={3}
+              text="Clear"
+              tone="primary"
+            />
+          </Stack>
+        </Card>
+      )}
     </TypeFiltersWrapper>
   )
 }
@@ -134,6 +159,10 @@ function TypeItem({
     />
   )
 }
+
+const Divider = styled(Box)`
+  border-bottom: 1px solid ${hues.gray[200].hex};
+`
 
 const TypeFiltersContent = styled(Card)`
   overflow-x: hidden;
