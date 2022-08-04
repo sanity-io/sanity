@@ -1,6 +1,6 @@
 import type {SanityDocument} from '@sanity/client'
 import type {Observable} from 'rxjs'
-import {OperationArgs} from '../../types'
+import type {OperationArgs} from '../../types'
 import {isLiveEditEnabled} from '../utils/isLiveEditEnabled'
 
 export const restore = {

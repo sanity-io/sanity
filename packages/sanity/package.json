@@ -101,7 +101,7 @@
     "@sanity/bifur-client": "^0.0.8",
     "@sanity/block-tools": "3.0.0-dev-preview.12",
     "@sanity/cli": "3.0.0-dev-preview.12",
-    "@sanity/client": "^3.3.2",
+    "@sanity/client": "^3.3.3",
     "@sanity/color": "^2.1.10",
     "@sanity/diff": "3.0.0-dev-preview.12",
     "@sanity/eventsource": "^3.0.1",
@@ -186,7 +186,6 @@
     "yargs": "^17.3.0"
   },
   "devDependencies": {
-    "@sanity/client": "^3.3.2",
     "@sanity/ui-workshop": "^0.4.3",
     "@testing-library/jest-dom": "^5.16.2",
     "@testing-library/react": "^11.2.5",

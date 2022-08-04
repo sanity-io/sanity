@@ -1,4 +1,4 @@
-import {OperationArgs} from '../../types'
+import type {OperationArgs} from '../../types'
 import {isLiveEditEnabled} from '../utils/isLiveEditEnabled'
 
 // todo: we could also consider exposing 'mutate' directly

@@ -1,6 +1,7 @@
-import {MultipleMutationResult} from '@sanity/client'
 import {omit} from 'lodash'
-import {OperationArgs} from '../../types'
+import type {Observable} from 'rxjs'
+import type {MultipleMutationResult} from '@sanity/client'
+import type {OperationArgs} from '../../types'
 import {isLiveEditEnabled} from '../utils/isLiveEditEnabled'
 
 export const unpublish = {
@@ -14,7 +15,7 @@ export const unpublish = {
     }
     return snapshots.published ? false : 'NOT_PUBLISHED'
   },
-  execute: ({client, idPair, snapshots}: OperationArgs): Promise<MultipleMutationResult> => {
+  execute: ({client, idPair, snapshots}: OperationArgs): Observable<MultipleMutationResult> => {
     let tx = client.observable.transaction().delete(idPair.publishedId)
 
     if (snapshots.published) {
@@ -27,6 +28,7 @@ export const unpublish = {
 
     return tx.commit({
       tag: 'document.unpublish',
+      visibility: 'async',
       // this disables referential integrity for cross-dataset references. we
       // have this set because we warn against unpublishes in the `ConfirmDeleteDialog`
       // UI. This operation is run when "unpublish anyway" is clicked
