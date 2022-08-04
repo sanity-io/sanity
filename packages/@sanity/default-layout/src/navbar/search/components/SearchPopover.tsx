@@ -141,7 +141,7 @@ const Overlay = styled.div`
 `
 
 const TypeFilterWrapper = styled(Card)`
-  border-left: 1px solid ${hues.gray[100].hex};
+  border-left: 1px solid ${hues.gray[200].hex};
   max-width: 250px;
   width: 100%;
 `

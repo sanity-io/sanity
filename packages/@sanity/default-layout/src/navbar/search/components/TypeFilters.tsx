@@ -56,7 +56,7 @@ export function TypeFilters({small}: TypeFiltersProps) {
     <TypeFiltersWrapper direction="column">
       {/* Search header */}
       {displayFilterInput && (
-        <Card padding={padding} ref={headerContainerRef} tone="inherit">
+        <SearchHeaderWrapper padding={padding} ref={headerContainerRef} tone="inherit">
           <CustomTextInput
             backgroundTone={small ? 'darker' : 'dark'}
             border={false}
@@ -72,16 +72,10 @@ export function TypeFilters({small}: TypeFiltersProps) {
             radius={2}
             value={typeFilter}
           />
-        </Card>
+        </SearchHeaderWrapper>
       )}
 
-      <TypeFiltersContent
-        flex={1}
-        paddingBottom={padding}
-        paddingTop={displayFilterInput ? 0 : padding}
-        paddingX={padding}
-        tone="inherit"
-      >
+      <TypeFiltersContent flex={1} padding={padding} tone="inherit">
         {/* Selectable document types */}
         <Stack ref={childContainerRef} space={1}>
           {selectableDocumentTypes.map((type) => (
@@ -106,9 +100,8 @@ export function TypeFilters({small}: TypeFiltersProps) {
 
       {/* Clear button */}
       {!typeFilter && selectedTypes.length > 0 && (
-        <Card paddingBottom={padding} paddingX={padding} tone="inherit">
-          <Stack space={padding}>
-            <Divider />
+        <ClearButtonWrapper padding={padding} tone="inherit">
+          <Stack>
             <Button
               data-name="type-filter-button"
               disabled={selectedTypes.length === 0}
@@ -120,7 +113,7 @@ export function TypeFilters({small}: TypeFiltersProps) {
               tone="primary"
             />
           </Stack>
-        </Card>
+        </ClearButtonWrapper>
       )}
     </TypeFiltersWrapper>
   )
@@ -160,7 +153,11 @@ function TypeItem({
   )
 }
 
-const Divider = styled(Box)`
+const ClearButtonWrapper = styled(Card)`
+  border-top: 1px solid ${hues.gray[200].hex};
+`
+
+const SearchHeaderWrapper = styled(Card)`
   border-bottom: 1px solid ${hues.gray[200].hex};
 `
 

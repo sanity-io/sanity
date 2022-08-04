@@ -1,8 +1,10 @@
 import type {SearchTerms} from '@sanity/base'
-import {TrashIcon} from '@sanity/icons'
-import {Box, Button, Label, Stack} from '@sanity/ui'
+import {TextWithTone} from '@sanity/base/components'
+import {hues} from '@sanity/color'
+import {Box, Button, Card, Inline, Label, Stack, Text} from '@sanity/ui'
 import schema from 'part:@sanity/base/schema'
 import React, {MouseEvent, RefObject, useCallback, useState} from 'react'
+import styled from 'styled-components'
 import {useSearchState} from '../contexts/search'
 import {
   addSearchTerm,
@@ -55,12 +57,12 @@ export function RecentSearches({childContainerRef, showFiltersOnClick}: RecentSe
     <Box flex={1}>
       {recentSearches.length ? (
         <>
-          <Box paddingBottom={2} paddingTop={3} paddingX={3}>
+          <Box paddingBottom={2} paddingTop={4} paddingX={3}>
             <Label muted size={1}>
               Recent searches
             </Label>
           </Box>
-          <Stack padding={1} ref={childContainerRef} space={1}>
+          <Stack paddingX={1} paddingTop={1} ref={childContainerRef} space={1}>
             {recentSearches?.map((recentSearch, index) => (
               <RecentSearchItem
                 key={recentSearch.__recentTimestamp}
@@ -69,16 +71,22 @@ export function RecentSearches({childContainerRef, showFiltersOnClick}: RecentSe
                 value={recentSearch}
               />
             ))}
-            <CommandPaletteButton
+          </Stack>
+          <Box paddingBottom={1} paddingTop={2} paddingX={1}>
+            <Button
               justify="flex-start"
               fontSize={1}
-              icon={TrashIcon}
               mode="bleed"
               onClick={handleClearRecentSearchesClick}
-              text="Clear recent searches"
-              tone="critical"
-            />
-          </Stack>
+              paddingX={2}
+              paddingY={3}
+              tone="default"
+            >
+              <Text muted size={1}>
+                Clear recent searches
+              </Text>
+            </Button>
+          </Box>
         </>
       ) : (
         <Instructions />
