@@ -47,7 +47,7 @@
     "@babel/preset-env": "^7.16.4",
     "@babel/traverse": "^7.17.3",
     "@rexxars/gitconfiglocal": "^3.0.1",
-    "@sanity/client": "^3.3.2",
+    "@sanity/client": "^3.3.3",
     "@sanity/generate-help-url": "^3.0.0",
     "@sanity/types": "3.0.0-dev-preview.12",
     "@sanity/util": "3.0.0-dev-preview.12",

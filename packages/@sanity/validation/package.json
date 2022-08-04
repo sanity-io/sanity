@@ -42,16 +42,8 @@
     "directory": "packages/@sanity/validation"
   },
   "devDependencies": {
-    "@sanity/client": "^3.3.2",
+    "@sanity/client": "^3.3.3",
     "@sanity/schema": "3.0.0-dev-preview.12"
-  },
-  "peerDependencies": {
-    "@sanity/client": "^3.2"
-  },
-  "peerDependenciesMeta": {
-    "@sanity/client": {
-      "optional": true
-    }
   },
   "dependencies": {
     "@sanity/types": "3.0.0-dev-preview.12",

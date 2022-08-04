@@ -1,6 +1,7 @@
 import {omit} from 'lodash'
-import {SanityDocument} from '@sanity/client'
-import {OperationArgs} from '../../types'
+import type {Observable} from 'rxjs'
+import type {SanityDocument} from '@sanity/client'
+import type {OperationArgs} from '../../types'
 import {getDraftId} from '../../../../util/draftUtils'
 import {isLiveEditEnabled} from '../utils/isLiveEditEnabled'
 
@@ -13,20 +14,21 @@ export const duplicate = {
   execute: (
     {client, schema, snapshots, typeName}: OperationArgs,
     dupeId: string
-  ): Promise<SanityDocument> => {
+  ): Observable<SanityDocument> => {
     const source = snapshots.draft || snapshots.published
 
     if (!source) {
       throw new Error('cannot execute on empty document')
     }
 
-    return client.create(
+    return client.observable.create(
       {
         ...omit(source, omitProps),
         _id: isLiveEditEnabled(schema, typeName) ? dupeId : getDraftId(dupeId),
         _type: source._type,
       },
       {
+        visibility: 'async',
         tag: 'document.duplicate',
       }
     )

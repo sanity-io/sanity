@@ -1,5 +1,5 @@
 import {merge, Observable} from 'rxjs'
-import {OperationArgs} from '../../types'
+import type {OperationArgs} from '../../types'
 
 export const commit = {
   disabled: (): false => false,

@@ -1,7 +1,8 @@
 import {omit} from 'lodash'
 import {isReference} from '@sanity/types'
-import {MultipleMutationResult} from '@sanity/client'
-import {OperationArgs} from '../../types'
+import type {Observable} from 'rxjs'
+import type {MultipleMutationResult} from '@sanity/client'
+import type {OperationArgs} from '../../types'
 import {isLiveEditEnabled} from '../utils/isLiveEditEnabled'
 
 function strengthenOnPublish(obj: unknown): any {
@@ -35,8 +36,8 @@ export const publish = {
     }
     return false
   },
-  execute: ({client, idPair, snapshots}: OperationArgs): Promise<MultipleMutationResult> => {
-    const tx = client.transaction()
+  execute: ({client, idPair, snapshots}: OperationArgs): Observable<MultipleMutationResult> => {
+    const tx = client.observable.transaction()
 
     if (!snapshots.draft) {
       throw new Error('cannot execute "publish" when draft is missing')
@@ -70,6 +71,6 @@ export const publish = {
 
     tx.delete(idPair.draftId)
 
-    return tx.commit({tag: 'document.publish'})
+    return tx.commit({tag: 'document.publish', visibility: 'async'})
   },
 }
