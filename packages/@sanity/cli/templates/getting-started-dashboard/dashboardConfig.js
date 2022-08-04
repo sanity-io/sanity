@@ -3,7 +3,7 @@ export default {
     {
       name: 'sanity-tutorials',
       options: {
-        templateRepoId: 'sanity-io/supercharged',
+        templateRepoId: 'sanity-io/studio-supercharged',
       },
     },
   ],
