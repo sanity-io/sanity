@@ -1,6 +1,6 @@
 import {hues, white} from '@sanity/color'
 import {CloseIcon, ControlsIcon, SearchIcon} from '@sanity/icons'
-import {Box, Button, Card, Flex, Spinner, studioTheme, Text, Tooltip} from '@sanity/ui'
+import {Box, Button, Card, Flex, Spinner, studioTheme} from '@sanity/ui'
 import React, {RefObject, useCallback, useEffect, useRef} from 'react'
 import styled from 'styled-components'
 import {useSearchState} from '../contexts/search'
@@ -66,35 +66,21 @@ export function SearchHeader({containerRef, inputRef, onClose}: SearchHeaderProp
         </Box>
 
         {/* Filter toggle */}
-        <Tooltip
-          content={
-            <Box padding={2}>
-              <Text muted size={1}>
-                Filters
-              </Text>
-            </Box>
-          }
-          placement="bottom"
-          portal
-        >
-          <Card borderLeft={!!onClose} padding={onClose ? 2 : 1}>
-            <Box style={{position: 'relative'}}>
-              <Button
-                height="fill"
-                icon={ControlsIcon}
-                mode="bleed"
-                onClick={handleFiltersToggle}
-                padding={3}
-                ref={filterCloseButton}
-                selected={filtersVisible}
-                tone="default"
-              />
-              {terms.types.length > 0 && (
-                <NotificationBadge>{terms.types.length}</NotificationBadge>
-              )}
-            </Box>
-          </Card>
-        </Tooltip>
+        <Card borderLeft={!!onClose} padding={onClose ? 2 : 1}>
+          <Box style={{position: 'relative'}}>
+            <Button
+              height="fill"
+              icon={ControlsIcon}
+              mode="bleed"
+              onClick={handleFiltersToggle}
+              padding={3}
+              ref={filterCloseButton}
+              selected={filtersVisible}
+              tone="default"
+            />
+            {terms.types.length > 0 && <NotificationBadge>{terms.types.length}</NotificationBadge>}
+          </Box>
+        </Card>
 
         {/* (Fullscreen) Close button */}
         {onClose && (
@@ -116,7 +102,7 @@ const AlignedSpinner = styled(Spinner)`
 `
 
 const DialogWrapper = styled(Card)`
-  border-bottom: 1px solid ${hues.gray[100].hex};
+  border-bottom: 1px solid ${hues.gray[200].hex};
   flex-shrink: 0;
 `
 
