@@ -12,16 +12,13 @@ export function getPortableTextFeatures(
   if (!blockType) {
     throw new Error('Block type is not defined in this schema (required)')
   }
-  const childrenField =
-    blockType &&
-    blockType.fields &&
-    (blockType.fields.find((field) => field.name === 'children') as
-      | {type: ArraySchemaType}
-      | undefined)
+  const childrenField = blockType.fields?.find((field) => field.name === 'children') as
+    | {type: ArraySchemaType}
+    | undefined
   if (!childrenField) {
     throw new Error('Children field for block type found in schema (required)')
   }
-  const ofType = childrenField.type && childrenField.type.of
+  const ofType = childrenField.type.of
   if (!ofType) {
     throw new Error('Valid types for block children not found in schema (required)')
   }
