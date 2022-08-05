@@ -6,8 +6,9 @@ import {
   createHookFromObservableFactory,
   getPublishedId,
   fetchAllCrossProjectTokens,
+  getDraftId,
 } from '@sanity/base/_internal'
-import {Observable, timer, fromEvent, EMPTY, of} from 'rxjs'
+import {Observable, timer, fromEvent, EMPTY, of, forkJoin} from 'rxjs'
 import {
   map,
   startWith,
@@ -82,6 +83,38 @@ export type ReferringDocuments = {
   }
 }
 
+interface AvailabilityResponse {
+  omitted: {id: string; reason: 'existence' | 'permission'}[]
+}
+
+function getDocumentExistence(documentId: string): Observable<string | undefined> {
+  const draftId = getDraftId(documentId)
+  const publishedId = getPublishedId(documentId)
+  const requestOptions = {
+    uri: versionedClient.getDataUrl('doc', `${draftId},${publishedId}`),
+    json: true,
+    query: {excludeContent: 'true'},
+    tag: 'use-referring-documents.document-existence',
+  }
+  return versionedClient.observable.request<AvailabilityResponse>(requestOptions).pipe(
+    map(({omitted}) => {
+      const nonExistant = omitted.filter((doc) => doc.reason === 'existence')
+      if (nonExistant.length === 2) {
+        // None of the documents exist
+        return undefined
+      }
+
+      if (nonExistant.length === 0) {
+        // Both exist, so use the published one
+        return publishedId
+      }
+
+      // If the draft does not exist, use the published ID, and vice versa
+      return nonExistant.some((doc) => doc.id === draftId) ? publishedId : draftId
+    })
+  )
+}
+
 /**
  * fetches the cross-dataset references using the client observable.request
  * method (for that requests can be automatically cancelled)
@@ -91,8 +124,17 @@ function fetchCrossDatasetReferences(
   visiblePoll$: ReturnType<typeof createVisiblePoll>
 ): Observable<ReferringDocuments['crossDatasetReferences']> {
   return visiblePoll$.pipe(
-    switchMap(() => fetchAllCrossProjectTokens()),
-    switchMap((crossProjectTokens) => {
+    switchMap(() =>
+      forkJoin({
+        checkDocumentId: getDocumentExistence(documentId),
+        crossProjectTokens: fetchAllCrossProjectTokens(),
+      })
+    ),
+    switchMap(({checkDocumentId, crossProjectTokens}) => {
+      if (!checkDocumentId) {
+        return of({totalCount: 0, references: []})
+      }
+
       const currentDataset = client.config().dataset
       const headers: Record<string, string> =
         crossProjectTokens.length > 0
@@ -105,7 +147,7 @@ function fetchCrossDatasetReferences(
 
       return versionedClient.observable
         .request({
-          url: `/data/references/${currentDataset}/documents/${documentId}/to?excludeInternalReferences=true&excludePaths=true`,
+          url: `/data/references/${currentDataset}/documents/${checkDocumentId}/to?excludeInternalReferences=true&excludePaths=true`,
           headers,
         })
         .pipe(
