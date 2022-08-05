@@ -1,5 +1,6 @@
-import React from 'react'
+import React from "react"
+import { BottleIcon } from "@sanity/icons"
 
-const productIcon = () => <img src="/static/icons/product.png" alt="Product icon" />
+const productIcon = () => <BottleIcon />
 
 export default productIcon

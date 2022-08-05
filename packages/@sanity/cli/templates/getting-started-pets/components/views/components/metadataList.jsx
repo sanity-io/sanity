@@ -51,7 +51,7 @@ function ImageAndCaption({image, caption}) {
           loading="lazy"
           $width={size}
           src={urlFor(image)
-            .width(size * 2)
+            ?.width(size * 2)
             .height(size * 2)}
           alt=""
         />
@@ -77,7 +77,7 @@ function ImageAndCaption({image, caption}) {
           $width={size}
           loading="lazy"
           src={urlFor(image)
-            .width(size * 2)
+            ?.width(size * 2)
             .height(size * 2)}
           alt=""
         />

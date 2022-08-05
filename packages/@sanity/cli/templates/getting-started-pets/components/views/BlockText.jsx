@@ -49,5 +49,5 @@ export function BlockText(props) {
 }
 
 BlockText.propTypes = {
-  value: PropTypes.object,
+  value: PropTypes.array,
 }

@@ -4,5 +4,5 @@ import imageUrlBuilder from '@sanity/image-url'
 const builder = imageUrlBuilder(sanityClient)
 
 export function urlFor(sanityImageField) {
-  return sanityImageField.asset ? builder.image(sanityImageField) : undefined
+  return sanityImageField?.asset ? builder.image(sanityImageField) : undefined
 }

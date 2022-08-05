@@ -1,5 +1,6 @@
+import {DocumentTextIcon} from '@sanity/icons'
 import React from 'react'
 
-const articleIcon = () => <img src="/static/icons/article.png" alt="Article icon" />
+const articleIcon = () => <DocumentTextIcon />
 
 export default articleIcon

@@ -34,8 +34,8 @@ export function useListeningQuery(query, params = DEFAULT_PARAMS, options = DEFA
   useEffect(() => {
     try {
       validateParams(query, params)
-    } catch (e) {
-      setError(e.message)
+    } catch (event) {
+      setError(event.message)
       return
     }
 
@@ -44,13 +44,13 @@ export function useListeningQuery(query, params = DEFAULT_PARAMS, options = DEFA
         .listenQuery(query, params, options)
         .pipe(
           distinctUntilChanged(isEqual),
-          catchError((err) => {
-            console.error(err)
-            setError(err)
+          catchError((error) => {
+            console.error(error)
+            setError(error)
             setLoading(false)
             setData(null)
 
-            return err
+            return error
           })
         )
         .subscribe((documents) => {
