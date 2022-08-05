@@ -38,13 +38,16 @@ function isWelcomeEvent(
 // todo: promote as building block for better re-use
 // todo: optimize by patching collection in-place
 export const listenQuery = (
-  query: string,
+  query: string | {fetch: string; listen: string},
   params: Params = {},
   options: ListenQueryOptions = {}
 ) => {
-  const fetchOnce$ = fetch(query, params, options)
+  const fetchQuery = typeof query === 'string' ? query : query.fetch
+  const listenerQuery = typeof query === 'string' ? query : query.listen
 
-  const events$ = listen(query, params, options).pipe(
+  const fetchOnce$ = fetch(fetchQuery, params, options)
+
+  const events$ = listen(listenerQuery, params, options).pipe(
     mergeMap((ev, i) => {
       const isFirst = i === 0
       if (isFirst && !isWelcomeEvent(ev)) {
