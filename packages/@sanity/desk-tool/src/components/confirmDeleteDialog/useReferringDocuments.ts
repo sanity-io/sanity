@@ -149,6 +149,7 @@ function fetchCrossDatasetReferences(
         .request({
           url: `/data/references/${currentDataset}/documents/${checkDocumentId}/to?excludeInternalReferences=true&excludePaths=true`,
           headers,
+          tag: 'use-referring-documents.external',
         })
         .pipe(
           catchError((e) => {
