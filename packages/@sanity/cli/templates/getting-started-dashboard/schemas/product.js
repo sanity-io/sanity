@@ -90,7 +90,7 @@ export default {
               type: 'image',
               title: 'Picture',
               options: {
-                hotspot: true, // <-- Defaults to false
+                hotspot: true,
               },
               fields: [
                 {

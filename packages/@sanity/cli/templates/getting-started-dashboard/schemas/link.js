@@ -3,7 +3,7 @@ import {LinkIcon} from '@sanity/icons'
 export default {
   title: 'Link',
   name: 'link',
-  type: 'document',
+  type: 'object',
   icon: LinkIcon,
   fields: [
     {

@@ -27,29 +27,39 @@ import {useDebouncedEffect} from '../../helpers/debounce-hooks'
  */
 
 export const RangeInput = forwardRef(function RangeInput(props, ref) {
-  const {range} = props.type.options || {}
+  const {type, markers, presence, onChange, value: receivedValue} = props
+  const {range} = type.options || {}
   const {min = 0, max = 100, step = 1} = range || {}
-
-  const value = props.value ?? min
+  const value = receivedValue ?? min
   const [visibleValue, setVisibleValue] = useState(value)
 
+  // This updates the visible value if a patch is received after component is mounted
   useEffect(() => setVisibleValue(value), [value])
 
   const handleChange = useCallback(
-    (e) => {
-      const target = e.currentTarget
-      const number = Number(target.value)
-      if (isNaN(number) || !target.validity.valid) {
-        return
-      }
-      setVisibleValue(number)
+    (newValue) => {
+      // Trigger patch only if new value is different from current value.
+      // This prevents unnecessary saving when you load a draft document
+      newValue !== value && onChange(PatchEvent.from(Patches.set(newValue)))
     },
-    [props.onChange]
+    [onChange, value]
   )
 
+  const handleInputChange = useCallback((event) => {
+    const target = event.currentTarget
+    const number = Number(target.value)
+    if (isNaN(number) || !target.validity.valid) {
+      return
+    }
+    setVisibleValue(number)
+  }, [])
+
+  // Debounce patching when visibleValue changes. This allows you to drag the slider without firing multiple patches
   useDebouncedEffect(
-    () => props.onChange(PatchEvent.from(Patches.set(visibleValue))),
-    [visibleValue, props.onChange],
+    () => {
+      handleChange(visibleValue)
+    },
+    [visibleValue],
     500
   )
 
@@ -57,10 +67,10 @@ export const RangeInput = forwardRef(function RangeInput(props, ref) {
 
   return (
     <FormField
-      title={props.type.title}
-      description={props.type.description}
-      __unstable_markers={props.markers}
-      __unstable_presence={props.presence}
+      title={type.title}
+      description={type.description}
+      __unstable_markers={markers}
+      __unstable_presence={presence}
     >
       <Flex gap={2} paddingTop={1} paddingBottom={1}>
         <Flex style={{position: 'relative'}}>
@@ -79,7 +89,7 @@ export const RangeInput = forwardRef(function RangeInput(props, ref) {
             step={step}
             ref={ref}
             value={visibleValue}
-            onChange={handleChange}
+            onChange={handleInputChange}
           />
         </Flex>
       </Flex>

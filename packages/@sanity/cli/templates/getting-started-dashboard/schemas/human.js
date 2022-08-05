@@ -24,7 +24,7 @@ export default {
       title: 'Picture',
       type: 'image',
       options: {
-        hotspot: true, // <-- Defaults to false
+        hotspot: true,
       },
       fields: [
         {

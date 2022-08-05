@@ -1,5 +1,6 @@
-import React from 'react'
+import { UserIcon } from "@sanity/icons"
+import React from "react"
 
-const humanIcon = () => <img src="/static/icons/human.png" alt="Human icon" />
+const humanIcon = () => <UserIcon />
 
 export default humanIcon

@@ -1,5 +1,6 @@
-import React from 'react'
+import { HeartIcon } from "@sanity/icons"
+import React from "react"
 
-const petIcon = () => <img src="/static/icons/pet.gif" alt="Pet icon" />
+const petIcon = () => <HeartIcon />
 
 export default petIcon

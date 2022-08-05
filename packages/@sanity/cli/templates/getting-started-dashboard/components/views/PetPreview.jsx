@@ -110,11 +110,12 @@ export function PetPreviewInner({document}) {
   }, [birthday, fluffiness, hair, weight])
 
   const favouriteProducts = useMemo(() => {
-    return toys?.map(({name, variants}) => ({
+    return toys?.map(({name, variants, _id}) => ({
       title: name,
       image: variants?.[0]?.picture,
+      _id,
     }))
-  }, [toys])
+  })
 
   return (
     <Layout>
@@ -136,11 +137,7 @@ export function PetPreviewInner({document}) {
           </Heading>
         </Box>
 
-        {shortDescription?.length && (
-          <Text as="p" cite>
-            {shortDescription}
-          </Text>
-        )}
+        {shortDescription?.length && <Text as="p">{shortDescription}</Text>}
 
         {description?.length && (
           <Box>

@@ -20,5 +20,4 @@ export default () =>
         (listItem) => !excludedDocumentTypes.includes(listItem.getId())
       ),
       S.divider(),
-      S.documentTypeListItem('link').title('Links').id('links'),
     ])
