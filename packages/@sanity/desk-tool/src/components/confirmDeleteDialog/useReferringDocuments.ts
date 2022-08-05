@@ -30,22 +30,23 @@ const versionedClient = client.withConfig({
   apiVersion: '2022-03-07',
 })
 
-const POLL_INTERVAL = 5000
+const DEFAULT_POLL_INTERVAL = 5000
 
 // only fetches when the document is visible
-const visiblePoll$ = fromEvent(document, 'visibilitychange').pipe(
-  // add empty emission to have this fire on creation
-  startWith(null),
-  map(() => document.visibilityState === 'visible'),
-  distinctUntilChanged(),
-  switchMap((visible) =>
-    visible
-      ? // using timer instead of interval since timer will emit on creation
-        timer(0, POLL_INTERVAL)
-      : EMPTY
-  ),
-  shareReplay({refCount: true, bufferSize: 1})
-)
+const createVisiblePoll = (interval?: number) =>
+  fromEvent(document, 'visibilitychange').pipe(
+    // add empty emission to have this fire on creation
+    startWith(null),
+    map(() => document.visibilityState === 'visible'),
+    distinctUntilChanged(),
+    switchMap((visible) =>
+      visible
+        ? // using timer instead of interval since timer will emit on creation
+          timer(0, interval || DEFAULT_POLL_INTERVAL)
+        : EMPTY
+    ),
+    shareReplay({refCount: true, bufferSize: 1})
+  )
 
 export type ReferringDocuments = {
   isLoading: boolean
@@ -86,7 +87,8 @@ export type ReferringDocuments = {
  * method (for that requests can be automatically cancelled)
  */
 function fetchCrossDatasetReferences(
-  documentId: string
+  documentId: string,
+  visiblePoll$: ReturnType<typeof createVisiblePoll>
 ): Observable<ReferringDocuments['crossDatasetReferences']> {
   return visiblePoll$.pipe(
     switchMap(() => fetchAllCrossProjectTokens()),
@@ -133,15 +135,19 @@ const useInternalReferences = createHookFromObservableFactory((documentId: strin
   ) as Observable<ReferringDocuments['internalReferences']>
 })
 
-const useCrossDatasetReferences = createHookFromObservableFactory((documentId: string) => {
-  return visiblePoll$.pipe(switchMap(() => fetchCrossDatasetReferences(documentId)))
-})
+const useCrossDatasetReferences = createHookFromObservableFactory(
+  (documentId: string, interval?: number) => {
+    const visiblePoll$ = createVisiblePoll(interval)
+    return visiblePoll$.pipe(switchMap(() => fetchCrossDatasetReferences(documentId, visiblePoll$)))
+  }
+)
 
-export function useReferringDocuments(documentId: string): ReferringDocuments {
+export function useReferringDocuments(documentId: string, interval?: number): ReferringDocuments {
   const publishedId = getPublishedId(documentId)
   const [internalReferences, isInternalReferencesLoading] = useInternalReferences(publishedId)
   const [crossDatasetReferences, isCrossDatasetReferencesLoading] = useCrossDatasetReferences(
-    publishedId
+    publishedId,
+    interval
   )
 
   const projectIds = useMemo(() => {
