@@ -14,6 +14,7 @@ import {Markers} from '../../../legacyParts'
 import PatchEvent from '../../../PatchEvent'
 import {BlockActions} from '../BlockActions'
 import {ReviewChangesHighlightBlock, StyledChangeIndicatorWithProvidedFullPath} from '../_common'
+import {createDebugStyle} from '../utils/debugRender'
 import {BlockObjectPreview} from './BlockObjectPreview'
 import {
   Root,
@@ -25,7 +26,6 @@ import {
   TooltipBox,
   BlockPreview,
 } from './BlockObject.styles'
-
 interface BlockObjectProps {
   attributes: RenderAttributes
   block: PortableTextBlock
@@ -161,7 +161,13 @@ export const BlockObject = React.forwardRef(function BlockObject(
   const tooltipEnabled = hasErrors || hasWarnings || hasInfo || hasMarkers
 
   return (
-    <Flex paddingBottom={1} marginY={3} contentEditable={false} ref={forwardedRef}>
+    <Flex
+      paddingBottom={1}
+      marginY={3}
+      contentEditable={false}
+      ref={forwardedRef}
+      style={createDebugStyle()}
+    >
       <InnerFlex flex={1}>
         <PreviewContainer flex={1} {...innerPaddingProps}>
           <Tooltip

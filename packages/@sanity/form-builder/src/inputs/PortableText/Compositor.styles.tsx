@@ -45,11 +45,13 @@ export const Root = styled.div(({theme}) => {
   `
 })
 
-// This element only wraps the input when in "fullscreen" mode
 export const ExpandedLayer = styled(Layer)`
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
+  &:not([data-fullscreen]) {
+    position: relative;
+  }
 `

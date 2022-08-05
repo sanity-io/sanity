@@ -1,5 +1,5 @@
 // This is transitional in order to track usage of the ActivateOnFocusPart part from within the form-builder package
-import React from 'react'
+import React, {useCallback} from 'react'
 import {
   OverlayContainer,
   FlexContainer,
@@ -17,17 +17,17 @@ interface Props {
 export default function ActivateOnFocus(props: Props) {
   const {children, message, onActivate, isOverlayActive} = props
 
-  function handleClick() {
+  const handleClick = useCallback(() => {
     if (onActivate) {
       onActivate()
     }
-  }
+  }, [onActivate])
 
-  function handleBlur() {
+  const handleBlur = useCallback(() => {
     if (onActivate && isOverlayActive) {
       onActivate()
     }
-  }
+  }, [isOverlayActive, onActivate])
 
   return (
     <OverlayContainer onClick={handleClick} onBlur={handleBlur}>

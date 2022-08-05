@@ -180,23 +180,18 @@ export const InlineObject = React.forwardRef(function InlineObject(
     [markers, preview, renderCustomMarkers]
   )
 
-  const handleEditClick = useCallback((): void => {
+  const handleEditButtonClicked = useCallback((): void => {
     PortableTextEditor.blur(editor)
     onFocus(path.concat(FOCUS_TERMINATOR))
     setPopoverOpen(false)
   }, [editor, path, onFocus])
 
-  const handleRemoveClick = useCallback(
-    (event: React.MouseEvent<HTMLButtonElement>): void => {
-      event.preventDefault()
-      event.stopPropagation()
-      const point = {path, offset: 0}
-      const selection = {anchor: point, focus: point}
-      PortableTextEditor.delete(editor, selection, {mode: 'children'})
-      PortableTextEditor.focus(editor)
-    },
-    [editor, path]
-  )
+  const handleDeleteButtonClicked = useCallback((): void => {
+    const point = {path, offset: 0}
+    const selection = {anchor: point, focus: point}
+    PortableTextEditor.delete(editor, selection, {mode: 'children'})
+    PortableTextEditor.focus(editor)
+  }, [editor, path])
 
   useEffect(() => {
     if (isEditing) {
@@ -222,14 +217,14 @@ export const InlineObject = React.forwardRef(function InlineObject(
         contentEditable={false}
         ref={forwardedRef}
       >
-        <span ref={refElm} onDoubleClick={handleEditClick}>
+        <span ref={refElm} onDoubleClick={handleEditButtonClicked}>
           {markersToolTip || preview}
         </span>
       </Root>
       {!readOnly && !isEditing && (
         <InlineObjectToolbarPopover
-          onDelete={handleRemoveClick}
-          onEdit={handleEditClick}
+          onDelete={handleDeleteButtonClicked}
+          onEdit={handleEditButtonClicked}
           open={popoverOpen}
           referenceElement={refElm.current}
           scrollElement={scrollElement}

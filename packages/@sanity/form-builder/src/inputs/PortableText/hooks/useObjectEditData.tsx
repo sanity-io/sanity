@@ -1,8 +1,11 @@
 /* eslint-disable complexity */
-import {PortableTextEditor, usePortableTextEditor} from '@sanity/portable-text-editor'
+import {
+  PortableTextEditor,
+  usePortableTextEditor,
+  PortableTextBlock,
+} from '@sanity/portable-text-editor'
 import {Path, isKeySegment, isKeyedObject} from '@sanity/types'
 import {useMemo} from 'react'
-import {PortableTextBlock} from '../../../../../portable-text-editor/src/types/portableText'
 import {ObjectEditData} from '../types'
 
 // This hook will gather the info we need to create a edit modal for some embedded object in the editor

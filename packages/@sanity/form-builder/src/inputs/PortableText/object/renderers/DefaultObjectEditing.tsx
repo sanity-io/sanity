@@ -2,7 +2,7 @@ import React, {useCallback, useEffect} from 'react'
 import {useId} from '@reach/auto-id'
 import {Path, Marker, SchemaType} from '@sanity/types'
 import {FormFieldPresence, PresenceOverlay} from '@sanity/base/presence'
-import {PortableTextBlock, Type, PortableTextChild} from '@sanity/portable-text-editor'
+import {PortableTextBlock, PortableTextChild} from '@sanity/portable-text-editor'
 import {Box, Dialog, PortalProvider, useLayer, usePortal} from '@sanity/ui'
 import {FormBuilderInput} from '../../../../FormBuilderInput'
 import {PatchEvent} from '../../../../PatchEvent'
@@ -20,7 +20,7 @@ interface DefaultObjectEditingProps {
   path: Path
   presence: FormFieldPresence[]
   readOnly: boolean
-  type: Type
+  type: SchemaType
   width?: ModalWidth
 }
 
@@ -88,7 +88,7 @@ export function DefaultObjectEditing(props: DefaultObjectEditingProps) {
               path={path}
               presence={presence}
               readOnly={readOnly || type.readOnly}
-              type={type as SchemaType}
+              type={type}
               value={object}
             />
           </PortalProvider>

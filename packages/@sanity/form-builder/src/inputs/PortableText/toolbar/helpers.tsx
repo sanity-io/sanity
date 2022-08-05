@@ -20,6 +20,7 @@ import {
 } from '@sanity/portable-text-editor'
 import {get} from 'lodash'
 import React from 'react'
+import {FIXME} from '../types'
 import {BlockItem, BlockStyleItem, PTEToolbarAction, PTEToolbarActionGroup} from './types'
 import {CustomIcon} from './CustomIcon'
 
@@ -145,21 +146,21 @@ export function getInsertMenuItems(
 ): BlockItem[] {
   const blockItems = features.types.blockObjects.map(
     (type, index): BlockItem => ({
-      handle: () => onInsertBlock(type),
-      icon: getInsertMenuIcon(type, BlockElementIcon),
+      handle: () => onInsertBlock(type as FIXME),
+      icon: getInsertMenuIcon(type as FIXME, BlockElementIcon),
       inline: false,
       key: `block-${index}`,
-      type,
+      type: type as FIXME,
     })
   )
 
   const inlineItems = features.types.inlineObjects.map(
     (type, index): BlockItem => ({
-      handle: () => onInsertInline(type),
-      icon: getInsertMenuIcon(type, InlineElementIcon),
+      handle: () => onInsertInline(type as FIXME),
+      icon: getInsertMenuIcon(type as FIXME, InlineElementIcon),
       inline: true,
       key: `inline-${index}`,
-      type,
+      type: type as FIXME,
     })
   )
 

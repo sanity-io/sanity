@@ -17,3 +17,5 @@ export type RenderBlockActions = (actions: {
   unset: () => void
   insert: (block: PortableTextBlock | PortableTextBlock[]) => void
 }) => JSX.Element
+
+export type FIXME = any
