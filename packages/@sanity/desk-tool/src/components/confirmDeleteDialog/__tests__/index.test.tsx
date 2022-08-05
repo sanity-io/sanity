@@ -44,7 +44,7 @@ jest.mock('part:@sanity/base/datastore/document', () => {
 })
 
 jest.mock('part:@sanity/base/client', () => {
-  const {NEVER, EMPTY, ReplaySubject} = require('rxjs')
+  const {NEVER, EMPTY, ReplaySubject, of: ofValue} = require('rxjs')
   const mockConfig: ClientConfig = {
     useCdn: false,
     projectId: 'mock-project-id',
@@ -52,7 +52,8 @@ jest.mock('part:@sanity/base/client', () => {
     apiVersion: '1',
   }
 
-  const requestSubject = new ReplaySubject(1)
+  const referencesSubject = new ReplaySubject(1)
+  const existenceSubject = new ReplaySubject(1)
 
   const mockClient = {
     withConfig: () => mockClient,
@@ -61,12 +62,19 @@ jest.mock('part:@sanity/base/client', () => {
     clone: () => mockClient,
     fetch: () => Promise.resolve(null),
     request: () => Promise.resolve(null),
+    getDataUrl: (op: string, path: string) =>
+      `/${op}/${mockConfig.dataset}/${path.replace(/^\//, '')}`,
     getUrl: (path: string) => `https://mock-project-id.api.sanity.io/v1${path}`,
     observable: {
       listen: () => NEVER,
-      fetch: () => EMPTY,
-      request: () => {
-        return requestSubject
+      fetch: (query: string) => {
+        return query.includes('secrets.sanity.sharedContent')
+          ? ofValue([{_id: 'secrets.sanity.sharedContent.abc123', token: 'yes'}])
+          : EMPTY
+      },
+      request: (options: {url: string} | {uri: string}) => {
+        const url = 'url' in options ? options.url : options.uri
+        return url.includes('/data/references') ? referencesSubject : existenceSubject
       },
     },
     listen: () => NEVER,
@@ -128,7 +136,8 @@ jest.mock('../../../contexts/paneRouter', () => {
 describe('ConfirmDeleteDialog', () => {
   it('loads referring documents and shows both internal and cross-dataset references', async () => {
     const listenQuery$ = documentStore.listenQuery() as Subject<any>
-    const request$ = client.observable.request({}) as Subject<any>
+    const refsRequest$ = client.observable.request({url: '/data/references'}) as Subject<any>
+    const existenceRequest$ = client.observable.request({url: '/doc/'}) as Subject<any>
 
     const {findByTestId, queryByTestId, queryByText} = render(
       <ThemeProvider theme={studioTheme}>
@@ -156,7 +165,11 @@ describe('ConfirmDeleteDialog', () => {
         ],
       })
 
-      request$.next({
+      existenceRequest$.next({
+        omitted: [],
+      })
+
+      refsRequest$.next({
         totalCount: 1,
         references: [
           {

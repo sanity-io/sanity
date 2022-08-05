@@ -8,7 +8,7 @@ import {
   fetchAllCrossProjectTokens,
   getDraftId,
 } from '@sanity/base/_internal'
-import {Observable, timer, fromEvent, EMPTY, of, forkJoin} from 'rxjs'
+import {Observable, timer, fromEvent, EMPTY, of, combineLatest} from 'rxjs'
 import {
   map,
   startWith,
@@ -125,12 +125,9 @@ function fetchCrossDatasetReferences(
 ): Observable<ReferringDocuments['crossDatasetReferences']> {
   return visiblePoll$.pipe(
     switchMap(() =>
-      forkJoin({
-        checkDocumentId: getDocumentExistence(documentId),
-        crossProjectTokens: fetchAllCrossProjectTokens(),
-      })
+      combineLatest([getDocumentExistence(documentId), fetchAllCrossProjectTokens()])
     ),
-    switchMap(({checkDocumentId, crossProjectTokens}) => {
+    switchMap(([checkDocumentId, crossProjectTokens]) => {
       if (!checkDocumentId) {
         return of({totalCount: 0, references: []})
       }

@@ -26,8 +26,11 @@ const mockClient = {
   clone: () => mockClient,
   fetch: () => Promise.resolve(null),
   request: () => Promise.resolve(null),
+  getDataUrl: (op: string, path: string) =>
+    `/${op}/${mockConfig.dataset}/${path.replace(/^\//, '')}`,
   getUrl: (path: string) => `https://mock-project-id.api.sanity.io/v1${path}`,
   observable: {
+    request: () => NEVER,
     fetch: () => NEVER,
     listen: () => NEVER,
   },
