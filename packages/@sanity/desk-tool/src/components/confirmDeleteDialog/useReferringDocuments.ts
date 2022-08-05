@@ -144,12 +144,19 @@ const useCrossDatasetReferences = createHookFromObservableFactory(
   }
 )
 
-export function useReferringDocuments(documentId: string, interval?: number): ReferringDocuments {
+export interface UseReferringDocumentsOptions {
+  externalPollInterval?: number
+}
+
+export function useReferringDocuments(
+  documentId: string,
+  options: UseReferringDocumentsOptions = {}
+): ReferringDocuments {
   const publishedId = getPublishedId(documentId)
   const [internalReferences, isInternalReferencesLoading] = useInternalReferences(publishedId)
   const [crossDatasetReferences, isCrossDatasetReferencesLoading] = useCrossDatasetReferences(
     publishedId,
-    interval
+    options.externalPollInterval
   )
 
   const projectIds = useMemo(() => {
