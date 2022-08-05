@@ -1,6 +1,6 @@
 {
   "name": "@sanity/code-input",
-  "version": "2.30.3",
+  "version": "2.30.4",
   "description": "Ace editor for editing code",
   "main": "./lib/index.js",
   "types": "./dist/dts",
@@ -21,8 +21,8 @@
   ],
   "dependencies": {
     "@reach/auto-id": "^0.13.2",
-    "@sanity/base": "2.30.3",
-    "@sanity/form-builder": "2.30.3",
+    "@sanity/base": "2.30.4",
+    "@sanity/form-builder": "2.30.4",
     "@sanity/icons": "^1.2.6",
     "@sanity/types": "2.30.3",
     "@sanity/ui": "^0.37.9",
