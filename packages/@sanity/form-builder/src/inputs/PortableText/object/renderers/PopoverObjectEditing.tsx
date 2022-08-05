@@ -1,7 +1,7 @@
 /* eslint-disable react/no-unused-prop-types */
 import {FormFieldPresence, PresenceOverlay} from '@sanity/base/presence'
 import {CloseIcon} from '@sanity/icons'
-import {PortableTextBlock, PortableTextChild, Type} from '@sanity/portable-text-editor'
+import {PortableTextBlock, PortableTextChild} from '@sanity/portable-text-editor'
 import {Path, Marker, SchemaType} from '@sanity/types'
 import {
   Box,
@@ -40,7 +40,7 @@ interface PopoverObjectEditingProps {
   presence: FormFieldPresence[]
   scrollElement: HTMLElement
   readOnly: boolean
-  type: Type
+  type: SchemaType
   width?: ModalWidth
 }
 
@@ -213,7 +213,7 @@ function Content(
                   path={path}
                   presence={presence}
                   readOnly={readOnly || type.readOnly}
-                  type={type as SchemaType}
+                  type={type}
                   value={object}
                 />
               </PortalProvider>

@@ -105,7 +105,7 @@ const PortableTextInputController = React.forwardRef(function PortableTextInputC
     onFocus,
     onPaste,
     presence,
-    readOnly,
+    readOnly: readOnlyFromProps,
     renderBlockActions,
     renderCustomMarkers,
     type,
@@ -117,18 +117,43 @@ const PortableTextInputController = React.forwardRef(function PortableTextInputC
   const [ignoreValidationError, setIgnoreValidationError] = useState(false)
   const [invalidValue, setInvalidValue] = useState(null)
   const [isFullscreen, setIsFullscreen] = useState(false)
+  const [isActive, setIsActive] = useState(false)
+
+  // Set as active whenever we have focus inside the editor.
+  useEffect(() => {
+    if (hasFocus || focusPath.length > 1) {
+      setIsActive(true)
+    }
+  }, [hasFocus, focusPath])
+
+  const readOnly = useMemo(() => {
+    return isActive ? Boolean(readOnlyFromProps) : true
+  }, [isActive, readOnlyFromProps])
 
   const toast = useToast()
 
   // Memoized patch stream
-  const patches$: Subject<EditorPatch> = useMemo(() => new Subject(), [])
-  const patchObservable = useMemo(() => patches$.asObservable(), [patches$])
+  const patchSubject: Subject<{
+    patches: EditorPatch[]
+    snapshot: PortableTextBlock[] | undefined
+  }> = useMemo(() => new Subject(), [])
+  const remotePatch$ = useMemo(() => patchSubject.asObservable(), [patchSubject])
 
   const innerElementRef = useRef<HTMLDivElement | null>(null)
 
   const handleToggleFullscreen = useCallback(() => {
-    setIsFullscreen((v) => !v)
-    PortableTextEditor.focus(ref.current)
+    if (ref.current) {
+      const prevSel = PortableTextEditor.getSelection(ref.current)
+      setIsFullscreen((v) => !v)
+      setTimeout(() => {
+        if (ref.current) {
+          PortableTextEditor.focus(ref.current)
+          if (prevSel) {
+            PortableTextEditor.select(ref.current, {...prevSel})
+          }
+        }
+      })
+    }
   }, [ref])
 
   // Reset invalidValue if new value is coming in from props
@@ -138,32 +163,37 @@ const PortableTextInputController = React.forwardRef(function PortableTextInputC
     }
   }, [invalidValue, value])
 
-  // Handle incoming patches from withPatchSubscriber HOC
-  const handleDocumentPatches = useCallback(
-    ({patches}: {patches: PatchWithOrigin[]; snapshot: PortableTextBlock[] | undefined}): void => {
-      const patchSelection =
-        patches && patches.length > 0 && patches.filter((patch) => patch.origin !== 'local')
-      if (patchSelection) {
-        patchSelection.map((patch) => patches$.next(patch))
-      }
-    },
-    [patches$]
-  )
-
   // Subscribe to incoming patches
   useEffect(() => {
-    const unsubscribe = subscribe(handleDocumentPatches)
+    const unsubscribe = subscribe(({patches, snapshot}): void => {
+      if (patches.length > 0) {
+        patchSubject.next({patches, snapshot})
+      }
+    })
     return () => unsubscribe()
-  }, [handleDocumentPatches, subscribe])
+  }, [patchSubject, subscribe])
+
+  const handleActivate = useCallback((): void => {
+    if (!isActive) {
+      setIsActive(true)
+      // Focus the editor in the next tick if needed
+      // Next tick because we are in a re-rendering phase of the editor at this point (activating it).
+      if (!hasFocus) {
+        setTimeout(() => {
+          if (ref.current) {
+            PortableTextEditor.focus(ref.current)
+          }
+        })
+      }
+    }
+  }, [hasFocus, isActive, ref])
 
   // Handle editor changes
   const handleEditorChange = useCallback(
     (change: EditorChange): void => {
       switch (change.type) {
         case 'mutation':
-          setTimeout(() => {
-            onChange(PatchEvent.from(change.patches))
-          })
+          onChange(PatchEvent.from(change.patches as Patch[]))
           break
         case 'selection':
           if (shouldSetEditorFormBuilderFocus(ref.current, change.selection, focusPath)) {
@@ -180,9 +210,7 @@ const PortableTextInputController = React.forwardRef(function PortableTextInputC
           break
         case 'undo':
         case 'redo':
-          setTimeout(() => {
-            onChange(PatchEvent.from(change.patches))
-          })
+          onChange(PatchEvent.from(change.patches as Patch[]))
           break
         case 'invalidValue':
           setInvalidValue(change)
@@ -246,7 +274,7 @@ const PortableTextInputController = React.forwardRef(function PortableTextInputC
       {(!invalidValue || ignoreValidationError) && (
         <PortableTextEditor
           ref={ref}
-          incomingPatches$={patchObservable}
+          incomingPatches$={remotePatch$}
           onChange={handleEditorChange}
           maxBlocks={undefined} // TODO: from schema?
           readOnly={readOnly}
@@ -257,14 +285,15 @@ const PortableTextInputController = React.forwardRef(function PortableTextInputC
             focusPath={focusPath}
             hasFocus={hasFocus}
             hotkeys={hotkeys}
+            isActive={isActive}
             isFullscreen={isFullscreen}
             markers={markers}
+            onActivate={handleActivate}
             onChange={onChange}
             onCopy={onCopy}
             onFocus={onFocus}
             onPaste={onPaste}
             onToggleFullscreen={handleToggleFullscreen}
-            patches$={patches$}
             presence={presence}
             readOnly={readOnly}
             renderBlockActions={renderBlockActions}

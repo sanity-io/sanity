@@ -15,7 +15,7 @@ import {
 import {debounce} from 'lodash'
 import {applyAll} from '../../../simplePatch'
 import {PatchEvent} from '../../../PatchEvent'
-import {ObjectEditData} from '../types'
+import {FIXME, ObjectEditData} from '../types'
 import {Patch} from '../../../patch/types'
 import {DefaultObjectEditing} from './renderers/DefaultObjectEditing'
 import {PopoverObjectEditing} from './renderers/PopoverObjectEditing'
@@ -103,9 +103,7 @@ export const EditObject = (props: EditObjectProps) => {
     const length = patches.length
     const _patches = compactPatches(PATCHES.get(editor).slice(0, length))
     PATCHES.set(editor, PATCHES.get(editor).slice(length))
-    setTimeout(() => {
-      onChange(PatchEvent.from(_patches), formBuilderPath)
-    })
+    onChange(PatchEvent.from(_patches as FIXME), formBuilderPath)
     cancelThrottle()
   }, [cancelThrottle, editor, formBuilderPath, onChange, timeoutInstance])
 
@@ -145,7 +143,7 @@ export const EditObject = (props: EditObjectProps) => {
         presence={presence}
         readOnly={readOnly}
         scrollElement={scrollElement}
-        type={type}
+        type={type as FIXME}
         width={modalOption.width}
       />
     )
@@ -163,7 +161,7 @@ export const EditObject = (props: EditObjectProps) => {
       path={formBuilderPath}
       presence={presence}
       readOnly={readOnly}
-      type={type}
+      type={type as FIXME}
       width={modalOption.width}
     />
   )
@@ -179,7 +177,7 @@ function findObjectAndType(
   }
   const {editorPath, formBuilderPath, kind} = objectEditData
   let object: PortableTextChild
-  let type: Type
+  let type: FIXME
 
   // Try finding the relevant block
   const blockKey =

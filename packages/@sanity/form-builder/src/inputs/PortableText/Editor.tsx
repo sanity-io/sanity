@@ -7,12 +7,12 @@ import {
   RenderDecoratorFunction,
   OnPasteFn,
   OnCopyFn,
-  ScrollSelectionIntoViewFunction,
   EditorSelection,
+  ScrollSelectionIntoViewFunction,
 } from '@sanity/portable-text-editor'
+import {BoundaryElementProvider, useBoundaryElement, useGlobalKeyDown, useLayer} from '@sanity/ui'
+import React, {useCallback, useMemo, useRef} from 'react'
 import {Path} from '@sanity/types'
-import {BoundaryElementProvider, useBoundaryElement, useLayer} from '@sanity/ui'
-import React, {useCallback, useEffect, useMemo, useRef} from 'react'
 import {Toolbar} from './toolbar'
 import {Decorator} from './text'
 import {
@@ -29,18 +29,18 @@ interface EditorProps {
   initialSelection?: EditorSelection
   isFullscreen: boolean
   hotkeys: HotkeyOptions
+  onFocus: (path: Path) => void
   onCopy?: OnCopyFn
-  onFocus: (nextPath: Path) => void
   onPaste?: OnPasteFn
   onToggleFullscreen: () => void
-  readOnly: boolean | null
+  readOnly?: boolean
   renderAnnotation: RenderAnnotationFunction
   renderBlock: RenderBlockFunction
   renderChild: RenderChildFunction
   scrollElement: HTMLElement | null
   scrollSelectionIntoView: ScrollSelectionIntoViewFunction
   setPortalElement?: (portalElement: HTMLDivElement | null) => void
-  setScrollElement: (scrollElement: HTMLElement) => void
+  setScrollElement: (scrollElement: HTMLElement | null) => void
 }
 
 const renderDecorator: RenderDecoratorFunction = (mark, mType, attributes, defaultRender) => {
@@ -52,8 +52,8 @@ export function Editor(props: EditorProps) {
     hotkeys,
     initialSelection,
     isFullscreen,
-    onCopy,
     onFocus,
+    onCopy,
     onPaste,
     onToggleFullscreen,
     readOnly,
@@ -66,31 +66,28 @@ export function Editor(props: EditorProps) {
     setScrollElement,
   } = props
   const {isTopLayer} = useLayer()
-  const editableRef = useRef<HTMLDivElement>()
+  const editableRef = useRef<HTMLDivElement | null>(null)
 
   const {element: boundaryElement} = useBoundaryElement()
 
-  useEffect(() => {
-    if (!isTopLayer || !isFullscreen) return undefined
-
-    const handleGlobalKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
-        event.preventDefault()
-        event.stopPropagation()
-        onToggleFullscreen()
-      }
-    }
-
-    window.addEventListener('keydown', handleGlobalKeyDown)
-
-    return () => {
-      window.removeEventListener('keydown', handleGlobalKeyDown)
-    }
-  }, [isFullscreen, isTopLayer, onToggleFullscreen])
+  // Let escape close fullscreen mode
+  useGlobalKeyDown(
+    useCallback(
+      (event: KeyboardEvent) => {
+        if (!isTopLayer || !isFullscreen) {
+          return
+        }
+        if (event.key === 'Escape') {
+          onToggleFullscreen()
+        }
+      },
+      [onToggleFullscreen, isFullscreen, isTopLayer]
+    )
+  )
 
   // Keep the editor focused even though we are clicking on the background or the toolbar of the editor.
   const handleMouseDown = useCallback((event: React.SyntheticEvent) => {
-    if (event.target instanceof Node && !editableRef.current.contains(event.target)) {
+    if (event.target instanceof Node && !editableRef.current?.contains(event.target)) {
       event.preventDefault()
       event.stopPropagation()
     }
@@ -106,6 +103,7 @@ export function Editor(props: EditorProps) {
         onCopy={onCopy}
         onPaste={onPaste}
         ref={editableRef}
+        readOnly={readOnly}
         renderAnnotation={renderAnnotation}
         renderBlock={renderBlock}
         renderChild={renderChild}
@@ -121,6 +119,7 @@ export function Editor(props: EditorProps) {
       initialSelection,
       onCopy,
       onPaste,
+      readOnly,
       renderAnnotation,
       renderBlock,
       renderChild,
@@ -132,15 +131,17 @@ export function Editor(props: EditorProps) {
 
   return (
     <Root $fullscreen={isFullscreen} data-testid="pt-editor" onMouseDown={handleMouseDown}>
-      <ToolbarCard data-testid="pt-editor__toolbar-card" shadow={1}>
-        <Toolbar
-          isFullscreen={isFullscreen}
-          hotkeys={hotkeys}
-          onFocus={onFocus}
-          readOnly={readOnly}
-          onToggleFullscreen={onToggleFullscreen}
-        />
-      </ToolbarCard>
+      {!readOnly && (
+        <ToolbarCard data-testid="pt-editor__toolbar-card" shadow={1}>
+          <Toolbar
+            isFullscreen={isFullscreen}
+            hotkeys={hotkeys}
+            onFocus={onFocus}
+            readOnly={readOnly}
+            onToggleFullscreen={onToggleFullscreen}
+          />
+        </ToolbarCard>
+      )}
 
       <EditableCard flex={1}>
         <Scroller ref={setScrollElement}>

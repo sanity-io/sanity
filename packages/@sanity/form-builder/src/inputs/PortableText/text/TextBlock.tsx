@@ -6,6 +6,7 @@ import {Markers} from '../../../legacyParts'
 import PatchEvent from '../../../PatchEvent'
 import {BlockActions} from '../BlockActions'
 import {RenderBlockActions, RenderCustomMarkers} from '../types'
+import {createDebugStyle} from '../utils/debugRender'
 import {ReviewChangesHighlightBlock, StyledChangeIndicatorWithProvidedFullPath} from '../_common'
 import {TEXT_STYLE_PADDING} from './constants'
 import {
@@ -103,7 +104,9 @@ export function TextBlock(props: TextBlockProps): React.ReactElement {
             <TextStyle data-list-prefix="" />
           </ListPrefixWrapper>
         )}
-        <TextStyle data-text="">{children}</TextStyle>
+        <TextStyle data-text="" style={createDebugStyle()}>
+          {children}
+        </TextStyle>
       </TextFlex>
     )
   }, [block.style, block.listItem, block.level, children])
@@ -134,6 +137,36 @@ export function TextBlock(props: TextBlockProps): React.ReactElement {
 
     return TEXT_STYLE_PADDING[block.style] || {paddingY: 2}
   }, [block])
+
+  const changeIndicator = useMemo(
+    () =>
+      isFullscreen ? (
+        <ChangeIndicatorWrapper
+          onMouseOver={handleMouseOver}
+          onMouseOut={handleMouseOut}
+          $hasChanges={hasChanges}
+        >
+          <StyledChangeIndicatorWithProvidedFullPath
+            compareDeep
+            value={block}
+            hasFocus={focused}
+            path={blockPath}
+            withHoverEffect={false}
+            onHasChanges={handleOnHasChanges}
+          />
+        </ChangeIndicatorWrapper>
+      ) : null,
+    [
+      block,
+      blockPath,
+      focused,
+      handleMouseOut,
+      handleMouseOver,
+      handleOnHasChanges,
+      hasChanges,
+      isFullscreen,
+    ]
+  )
 
   return (
     <Box data-testid="text-block" {...outerPaddingProps}>
@@ -181,24 +214,8 @@ export function TextBlock(props: TextBlockProps): React.ReactElement {
             </BlockActionsOuter>
           )}
 
-          {isFullscreen && (
-            <ChangeIndicatorWrapper
-              onMouseOver={handleMouseOver}
-              onMouseOut={handleMouseOut}
-              $hasChanges={Boolean(hasChanges)}
-            >
-              <StyledChangeIndicatorWithProvidedFullPath
-                compareDeep
-                value={block}
-                hasFocus={focused}
-                path={blockPath}
-                withHoverEffect={false}
-                onHasChanges={handleOnHasChanges}
-              />
-            </ChangeIndicatorWrapper>
-          )}
+          {changeIndicator}
         </BlockExtrasContainer>
-
         {reviewChangesHovered && <ReviewChangesHighlightBlock />}
       </TextBlockFlexWrapper>
     </Box>
