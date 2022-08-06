@@ -5,6 +5,7 @@ import {UserConfig} from 'vite'
 export default createCliConfig({
   api: {
     projectId: 'ppsg7ml5',
+    dataset: 'test',
   },
 
   vite(viteConfig: UserConfig): UserConfig {
