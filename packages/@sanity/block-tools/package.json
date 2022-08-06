@@ -40,9 +40,9 @@
   "devDependencies": {
     "@sanity/schema": "3.0.0-dev-preview.12",
     "@sanity/types": "3.0.0-dev-preview.12",
-    "@types/jsdom": "^12.0.0",
+    "@types/jsdom": "^20.0.0",
     "@types/react": "^17.0.42",
-    "jsdom": "^12.0.0"
+    "jsdom": "^20.0.0"
   },
   "directories": {
     "test": "test"
