@@ -18,7 +18,7 @@ export function NoResults() {
         <Flex align="center">
           <Inline space={2}>
             <Text muted size={1}>
-              In
+              in
             </Text>
             <TypePills types={state.terms.types} />
           </Inline>

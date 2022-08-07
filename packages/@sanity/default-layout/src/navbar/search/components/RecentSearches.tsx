@@ -1,10 +1,7 @@
 import type {SearchTerms} from '@sanity/base'
-import {TextWithTone} from '@sanity/base/components'
-import {hues} from '@sanity/color'
-import {Box, Button, Card, Inline, Label, Stack, Text} from '@sanity/ui'
+import {Box, Button, Label, Stack, Text} from '@sanity/ui'
 import schema from 'part:@sanity/base/schema'
 import React, {MouseEvent, RefObject, useCallback, useState} from 'react'
-import styled from 'styled-components'
 import {useSearchState} from '../contexts/search'
 import {
   addSearchTerm,
@@ -12,11 +9,9 @@ import {
   removeSearchTermAtIndex,
   removeSearchTerms,
 } from '../datastores/recentSearches'
-import {withCommandPaletteItemStyles} from '../utils/applyCommandPaletteItemStyles'
 import {Instructions} from './Instructions'
 import {RecentSearchItem} from './RecentSearchItem'
 
-const CommandPaletteButton = withCommandPaletteItemStyles(Button)
 interface RecentSearchesProps {
   childContainerRef: RefObject<HTMLDivElement>
   showFiltersOnClick?: boolean
@@ -72,7 +67,7 @@ export function RecentSearches({childContainerRef, showFiltersOnClick}: RecentSe
               />
             ))}
           </Stack>
-          <Box paddingBottom={1} paddingTop={2} paddingX={1}>
+          <Box padding={1}>
             <Button
               justify="flex-start"
               fontSize={1}
