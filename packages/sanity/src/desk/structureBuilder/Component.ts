@@ -1,4 +1,4 @@
-import {camelCase} from 'lodash'
+import {camelCase, startCase} from 'lodash'
 import {SerializeOptions, StructureNode, Serializable, Child} from './StructureNodes'
 import {SerializeError, HELP_URL} from './SerializeError'
 import {MenuItem, MenuItemBuilder, maybeSerializeMenuItem} from './MenuItem'
@@ -62,7 +62,15 @@ export class ComponentBuilder implements Serializable<Component> {
   }
 
   component(component: UserComponent): ComponentBuilder {
-    return this.clone({component})
+    const componentName = component.displayName || component.name
+    const newProps: BuildableComponent = {component}
+    if (componentName && !this.spec.title) {
+      newProps.title = startCase(componentName)
+    }
+    if (componentName && !this.spec.id) {
+      newProps.id = camelCase(componentName)
+    }
+    return this.clone(newProps)
   }
 
   getComponent(): BuildableComponent['component'] {

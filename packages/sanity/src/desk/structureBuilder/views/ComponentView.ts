@@ -1,3 +1,4 @@
+import {startCase, camelCase} from 'lodash'
 import {SerializeOptions} from '../StructureNodes'
 import {SerializeError, HELP_URL} from '../SerializeError'
 import {UserComponent} from '../types'
@@ -34,7 +35,15 @@ export class ComponentViewBuilder extends GenericViewBuilder<
   }
 
   component(component: UserComponent): ComponentViewBuilder {
-    return this.clone({component})
+    const componentName = component.displayName || component.name
+    const newProps: Partial<ComponentView> = {component}
+    if (componentName && !this.spec.title) {
+      newProps.title = startCase(componentName)
+    }
+    if (componentName && !this.spec.id) {
+      newProps.id = camelCase(componentName)
+    }
+    return this.clone(newProps)
   }
 
   getComponent(): Partial<ComponentView>['component'] {
@@ -55,7 +64,7 @@ export class ComponentViewBuilder extends GenericViewBuilder<
     const component = this.spec.component
     if (typeof component !== 'function') {
       throw new SerializeError(
-        '`component` is required and must be a function for `component()` view item',
+        '`component` is required and must be a function/class for `component()` view item',
         options.path,
         options.index
       ).withHelpUrl(HELP_URL.COMPONENT_REQUIRED)
