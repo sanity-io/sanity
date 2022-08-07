@@ -8,7 +8,7 @@ import styled from 'styled-components'
 import {useSearchState} from '../contexts/search'
 import {getSelectableTypes} from '../contexts/search/selectors'
 import {useContainerArrowNavigation} from '../hooks/useContainerArrowNavigation'
-import {withCommandPaletteItemStyles} from '../utils/applyCommandPaletteItemStyles'
+import {withCommandPaletteItemStyles} from '../utils/withCommandPaletteItemStyles'
 import {CustomTextInput} from './CustomTextInput'
 
 const CommandPaletteButton = withCommandPaletteItemStyles(Button)
@@ -58,7 +58,6 @@ export function TypeFilters({small}: TypeFiltersProps) {
       {displayFilterInput && (
         <SearchHeaderWrapper padding={padding} ref={headerContainerRef} tone="inherit">
           <CustomTextInput
-            backgroundTone={small ? 'darker' : 'dark'}
             border={false}
             clearButton={!!typeFilter}
             fontSize={small ? 1 : 2}

@@ -3,7 +3,7 @@ import {Box, Button, Flex, Text} from '@sanity/ui'
 import React, {MouseEvent, useCallback} from 'react'
 import styled from 'styled-components'
 import {RecentSearch} from '../datastores/recentSearches'
-import {withCommandPaletteItemStyles} from '../utils/applyCommandPaletteItemStyles'
+import {withCommandPaletteItemStyles} from '../utils/withCommandPaletteItemStyles'
 import {TypePills} from './TypePills'
 
 const CommandPaletteButton = withCommandPaletteItemStyles(Button)

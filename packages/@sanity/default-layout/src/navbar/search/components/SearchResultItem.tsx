@@ -12,7 +12,7 @@ import {getPublishedId} from 'part:@sanity/base/util/draft-utils'
 import React, {forwardRef, useMemo} from 'react'
 import styled, {css} from 'styled-components'
 import type {SearchHit} from '../types'
-import {withCommandPaletteItemStyles} from '../utils/applyCommandPaletteItemStyles'
+import {withCommandPaletteItemStyles} from '../utils/withCommandPaletteItemStyles'
 
 interface SearchItemProps extends ResponsivePaddingProps {
   data: SearchHit
