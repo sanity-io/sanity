@@ -59,7 +59,7 @@ const sharedSettings = createPlugin({
       ],
     }),
     visionTool({
-      defaultApiVersion: 'v1',
+      defaultApiVersion: '2022-08-08',
     }),
   ],
 })

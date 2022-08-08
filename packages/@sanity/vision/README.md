@@ -24,7 +24,9 @@ export default createConfig({
   // ...
   plugins: [
     vision({
+      // Note: These are both optional
       defaultApiVersion: 'v2021-10-21',
+      defaultDataset: 'some-dataset',
     }),
   ],
 })

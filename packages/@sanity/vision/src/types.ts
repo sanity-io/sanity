@@ -8,6 +8,7 @@ export interface VisionProps {
 
 export interface VisionConfig {
   defaultApiVersion: string
+  defaultDataset?: string
 }
 
 export interface VisionToolConfig extends Partial<VisionConfig> {

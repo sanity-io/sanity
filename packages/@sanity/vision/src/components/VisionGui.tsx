@@ -141,20 +141,21 @@ export class VisionGui extends React.PureComponent<VisionGuiProps, VisionGuiStat
   constructor(props: VisionGuiProps) {
     super(props)
 
-    this._localStorage = getLocalStorage(props.client.config().projectId || 'default')
+    const {client, datasets, config} = props
+    this._localStorage = getLocalStorage(client.config().projectId || 'default')
 
     const lastQuery = this._localStorage.get('query', '')
     const lastParams = this._localStorage.get('params', '{\n  \n}')
 
-    const defaultDataset = props.client.config().dataset || props.datasets[0]
-    const defaultApiVersion = prefixApiVersion(`${props.config.defaultApiVersion}`)
+    const defaultDataset = config.defaultDataset || client.config().dataset || datasets[0]
+    const defaultApiVersion = prefixApiVersion(`${config.defaultApiVersion}`)
 
     let dataset = this._localStorage.get('dataset', defaultDataset)
     let apiVersion = this._localStorage.get('apiVersion', defaultApiVersion)
     const customApiVersion = API_VERSIONS.includes(apiVersion) ? false : apiVersion
 
-    if (!this.props.datasets.some((name) => name === dataset)) {
-      dataset = defaultDataset
+    if (!datasets.includes(dataset)) {
+      dataset = datasets.includes(defaultDataset) ? defaultDataset : datasets[0]
     }
 
     if (!API_VERSIONS.includes(apiVersion)) {
