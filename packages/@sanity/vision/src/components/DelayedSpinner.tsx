@@ -14,5 +14,5 @@ export function DelayedSpinner(props: DelayedSpinnerProps) {
     return () => clearTimeout(timer)
   }, [props.delay])
 
-  return show ? <Spinner muted size={5} /> : null
+  return show ? <Spinner muted size={4} /> : null
 }

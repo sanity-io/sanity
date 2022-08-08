@@ -818,7 +818,7 @@ export class VisionGui extends React.PureComponent<VisionGuiProps, VisionGuiStat
                         <StyledLabel muted>Result</StyledLabel>
                       </Box>
                     </InputBackgroundContainer>
-                    {queryInProgress && (
+                    {(queryInProgress || (listenInProgress && listenMutations.length === 0)) && (
                       <Box marginTop={3}>
                         <DelayedSpinner />
                       </Box>
@@ -829,7 +829,7 @@ export class VisionGui extends React.PureComponent<VisionGuiProps, VisionGuiStat
                       </Box>
                     )}
                     {hasResult && <ResultView data={queryResult} />}
-                    {listenMutations && listenMutations.length > 0 && (
+                    {listenInProgress && listenMutations.length > 0 && (
                       <ResultView data={listenMutations} />
                     )}
                   </Result>
