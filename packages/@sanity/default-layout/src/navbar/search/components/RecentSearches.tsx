@@ -1,7 +1,7 @@
 import type {SearchTerms} from '@sanity/base'
-import {Box, Button, Label, Stack, Text} from '@sanity/ui'
+import {Box, Button, Label, Stack, Text, useMediaIndex} from '@sanity/ui'
 import schema from 'part:@sanity/base/schema'
-import React, {MouseEvent, RefObject, useCallback, useState} from 'react'
+import React, {MouseEvent, RefObject, useCallback, useMemo, useState} from 'react'
 import {useSearchState} from '../contexts/search'
 import {
   addSearchTerm,
@@ -20,6 +20,16 @@ interface RecentSearchesProps {
 export function RecentSearches({childContainerRef, showFiltersOnClick}: RecentSearchesProps) {
   const [recentSearches, setRecentSearches] = useState(() => getRecentSearchTerms(schema))
   const {dispatch} = useSearchState()
+
+  const mediaIndex = useMediaIndex()
+
+  const maxVisibleQueryChars = useMemo(() => {
+    return mediaIndex < 2 ? 20 : 40
+  }, [mediaIndex])
+
+  const maxVisibleTypePillChars = useMemo(() => {
+    return mediaIndex < 2 ? 20 : 40
+  }, [mediaIndex])
 
   const handleClearRecentSearchesClick = useCallback(() => {
     removeSearchTerms()
@@ -61,6 +71,8 @@ export function RecentSearches({childContainerRef, showFiltersOnClick}: RecentSe
             {recentSearches?.map((recentSearch, index) => (
               <RecentSearchItem
                 key={recentSearch.__recentTimestamp}
+                maxVisibleQueryChars={maxVisibleQueryChars}
+                maxVisibleTypePillChars={maxVisibleTypePillChars}
                 onClick={handleRecentSearchClick}
                 onDelete={handleRecentSearchDelete(index)}
                 value={recentSearch}
