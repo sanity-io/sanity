@@ -26,7 +26,7 @@ export async function installDeclaredPackages(
     output.print(`Running 'npm ${npmArgs.join(' ')}'`)
     result = await execa('npm', npmArgs, execOptions)
   } else if (packageManager === 'yarn') {
-    const yarnArgs = ['install', '--check-files']
+    const yarnArgs = ['install']
     output.print(`Running 'yarn ${yarnArgs.join(' ')}'`)
     result = await execa('yarn', yarnArgs, execOptions)
   } else if (packageManager === 'pnpm') {
