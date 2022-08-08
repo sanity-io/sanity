@@ -41,7 +41,7 @@ export const PublishAction: DocumentActionComponent = (props) => {
   const {publish}: any = useDocumentOperation(id, type)
   const validationStatus = useValidationStatus(id, type)
   const syncState = useSyncState(id, type)
-  const {changesOpen, handleHistoryOpen, documentIsReferenced} = useDocumentPane()
+  const {changesOpen, handleHistoryOpen, totalReferenceCount} = useDocumentPane()
   const hasValidationErrors = validationStatus.markers.some((marker) => marker.level === 'error')
   // we use this to "schedule" publish after pending tasks (e.g. validation and sync) has completed
   const [publishScheduled, setPublishScheduled] = useState<boolean>(false)
@@ -54,6 +54,8 @@ export const PublishAction: DocumentActionComponent = (props) => {
   const [showConfirmPublishReferencedDocument, setShowConfirmPublishReferencedDocument] = useState(
     false
   )
+
+  const documentIsReferenced = totalReferenceCount !== undefined && totalReferenceCount > 0
 
   // Deals with edge-case: if a reference is removed while the confirmation box is open, it will close
   useEffect(() => {
@@ -159,12 +161,15 @@ export const PublishAction: DocumentActionComponent = (props) => {
         <Flex marginBottom={2} align="center">
           <Box marginRight={2}>
             <LinkCircle>
-              <LinkIcon fontSize={'24'} />
+              <LinkIcon fontSize="24" />
             </LinkCircle>
           </Box>
-          <Heading size={1}>Referenced Document</Heading>
+          <Heading size={1}>
+            Referenced by {totalReferenceCount}
+            {totalReferenceCount === 1 ? ' document' : ' documents'}
+          </Heading>
         </Flex>
-        <Text>Publishing changes may affect documents that reference this document</Text>
+        <Text>Your changes will be reflected anywhere content from this document is used</Text>
       </Stack>
     ),
   }

@@ -38,7 +38,7 @@ const DocumentPanelHeader = forwardRef(function DocumentPanelHeader(
     menuItemGroups,
     ready,
     views,
-    documentIsReferenced,
+    totalReferenceCount,
   } = useDocumentPane()
   const {revTime: rev} = historyController
   const {features} = useDeskTool()
@@ -79,7 +79,7 @@ const DocumentPanelHeader = forwardRef(function DocumentPanelHeader(
         index > 0 && <Button as={BackLink} data-as="a" icon={ArrowLeftIcon} mode="bleed" />
       }
       subActions={showVersionMenu && <TimelineMenu chunk={rev} mode="rev" />}
-      isDocumentReferenced={documentIsReferenced}
+      totalReferenceCount={totalReferenceCount}
       actions={
         <Inline space={1}>
           {LanguageFilter && <LanguageFilter key="language-menu" schemaType={documentSchema} />}

@@ -186,7 +186,7 @@ function InnerDocumentPane() {
     inspectOpen,
     paneKey,
     value,
-    documentIsReferenced,
+    totalReferenceCount,
   } = useDocumentPane()
   const {features} = useDeskTool()
   const {collapsed: layoutCollapsed} = usePaneLayout()
@@ -196,6 +196,7 @@ function InnerDocumentPane() {
   const [actionsBoxElement, setActionsBoxElement] = useState<HTMLDivElement | null>(null)
   const footerRect = useElementRect(footerElement)
   const footerH = footerRect?.height
+  const documentIsReferenced = totalReferenceCount !== undefined && totalReferenceCount > 0
 
   const documentPanel = useMemo(
     () => (

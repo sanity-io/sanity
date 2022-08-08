@@ -12,7 +12,7 @@ interface PaneHeaderProps {
   subActions?: React.ReactNode
   tabs?: React.ReactNode
   title: React.ReactNode
-  isDocumentReferenced?: boolean
+  totalReferenceCount?: number
 }
 /**
  * @beta This API will change. DO NOT USE IN PRODUCTION.
@@ -22,9 +22,10 @@ export const PaneHeader = forwardRef(function PaneHeader(
   props: PaneHeaderProps,
   ref: React.ForwardedRef<HTMLDivElement>
 ) {
-  const {actions, backButton, loading, subActions, tabs, title, isDocumentReferenced} = props
+  const {actions, backButton, loading, subActions, tabs, title, totalReferenceCount} = props
   const {collapse, collapsed, expand, rootElement: paneElement} = usePane()
   const paneRect = useElementRect(paneElement || null)
+  const isDocumentReferenced = totalReferenceCount !== undefined && totalReferenceCount > 0
 
   const layoutStyle = useMemo(
     () => ({
@@ -70,7 +71,7 @@ export const PaneHeader = forwardRef(function PaneHeader(
               >
                 {loading && <TitleTextSkeleton animated radius={1} />}
                 {!loading && showReferencedDocumentIndicators ? (
-                  <ReferencedDocHeading title={title} />
+                  <ReferencedDocHeading totalReferenceCount={totalReferenceCount} title={title} />
                 ) : (
                   <Box paddingBottom={3}>
                     <TitleText tabIndex={0} textOverflow="ellipsis" weight="semibold">
