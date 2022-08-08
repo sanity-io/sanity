@@ -4,9 +4,9 @@ import {ChildResolver} from './ChildResolver'
 import {SerializeOptions, Serializable, Child, DocumentNode, EditorNode} from './StructureNodes'
 import {SerializeError, HELP_URL} from './SerializeError'
 import {validateId} from './util/validateId'
-import {View, ViewBuilder, maybeSerializeView} from './views/View'
+import {ViewBuilder, maybeSerializeView} from './views/View'
 import {form} from './views'
-import {StructureContext} from './types'
+import type {StructureContext, View} from './types'
 
 const createDocumentChildResolver =
   ({resolveDocumentNode}: StructureContext): ChildResolver =>

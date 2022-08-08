@@ -1,9 +1,11 @@
 import {SerializeOptions} from '../StructureNodes'
-import {View, GenericViewBuilder} from './View'
+import {BaseView, GenericViewBuilder} from './View'
 
-export type FormView = View
+export interface FormView extends BaseView {
+  type: 'form'
+}
 
-export class FormViewBuilder extends GenericViewBuilder<Partial<View>, FormViewBuilder> {
+export class FormViewBuilder extends GenericViewBuilder<Partial<BaseView>, FormViewBuilder> {
   protected spec: Partial<FormView>
 
   constructor(spec?: Partial<FormView>) {
@@ -12,12 +14,10 @@ export class FormViewBuilder extends GenericViewBuilder<Partial<View>, FormViewB
   }
 
   serialize(options: SerializeOptions = {path: []}): FormView {
-    const base = super.serialize(options)
-    const formView: FormView = {
-      ...base,
+    return {
+      ...super.serialize(options),
       type: 'form',
     }
-    return formView
   }
 
   clone(withSpec?: Partial<FormView>): FormViewBuilder {

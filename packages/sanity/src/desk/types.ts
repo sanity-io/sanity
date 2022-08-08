@@ -1,10 +1,12 @@
-import {SchemaType, SanityDocument} from '@sanity/types'
+import {SchemaType} from '@sanity/types'
 import {Subscribable} from 'rxjs'
 import {GeneralPreviewLayoutKey} from '../components/previews'
 import {ConfigContext} from '../config'
 import {InitialValueTemplateItem} from '../templates'
 import {
+  ComponentView,
   DefaultDocumentNodeResolver,
+  FormView,
   StructureBuilder,
   StructureContext,
   UserComponent,
@@ -171,31 +173,7 @@ export interface CustomComponentPaneNode extends BaseResolvedPaneNode<'component
   __preserveInstance?: boolean
 }
 
-export type PaneView<TOptions = unknown> =
-  | {
-      id: string
-      type: 'form'
-      title: string
-      icon?: React.ComponentType
-    }
-  | {
-      id: string
-      type: 'component'
-      title: string
-      icon?: React.ComponentType
-      options?: TOptions
-      component?: React.ComponentType<{
-        documentId: string
-        options?: TOptions
-        schemaType: SchemaType
-        document: {
-          draft: SanityDocument | null
-          displayed: Partial<SanityDocument>
-          historical: Partial<SanityDocument> | null
-          published: SanityDocument | null
-        }
-      }>
-    }
+export type PaneView = FormView | ComponentView
 
 export interface DocumentPaneNode extends BaseResolvedPaneNode<'document'> {
   options: {

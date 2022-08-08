@@ -1,20 +1,33 @@
-import {SortOrdering} from '@sanity/types'
-import {ConfigContext, Source} from '../../config'
-import {InitialValueTemplateItem} from '../../templates'
-import {ComponentBuilder, ComponentInput} from './Component'
-import {DocumentBuilder, PartialDocumentNode} from './Document'
-import {DocumentListInput, DocumentListBuilder} from './DocumentList'
-import {DocumentListItemInput, DocumentListItemBuilder} from './DocumentListItem'
-import {DocumentTypeListInput} from './DocumentTypeList'
-import {InitialValueTemplateItemBuilder} from './InitialValueTemplateItem'
-import {ListBuilder, ListInput} from './List'
-import {ListItemBuilder, ListItemInput} from './ListItem'
-import {MenuItem, MenuItemBuilder} from './MenuItem'
-import {MenuItemGroup, MenuItemGroupBuilder} from './MenuItemGroup'
-import {Divider, EditorNode} from './StructureNodes'
-import {ComponentView, ComponentViewBuilder} from './views/ComponentView'
-import {FormViewBuilder} from './views/FormView'
-import {View} from './views/View'
+import type {SanityDocument, SchemaType, SortOrdering} from '@sanity/types'
+import type {ConfigContext, Source} from '../../config'
+import type {InitialValueTemplateItem} from '../../templates'
+import type {ComponentBuilder, ComponentInput} from './Component'
+import type {DocumentBuilder, PartialDocumentNode} from './Document'
+import type {DocumentListInput, DocumentListBuilder} from './DocumentList'
+import type {DocumentListItemInput, DocumentListItemBuilder} from './DocumentListItem'
+import type {DocumentTypeListInput} from './DocumentTypeList'
+import type {InitialValueTemplateItemBuilder} from './InitialValueTemplateItem'
+import type {ListBuilder, ListInput} from './List'
+import type {ListItemBuilder, ListItemInput} from './ListItem'
+import type {MenuItem, MenuItemBuilder} from './MenuItem'
+import type {MenuItemGroup, MenuItemGroupBuilder} from './MenuItemGroup'
+import type {Divider, EditorNode} from './StructureNodes'
+import type {ComponentView, ComponentViewBuilder} from './views/ComponentView'
+import type {FormView, FormViewBuilder} from './views/FormView'
+
+export type View = FormView | ComponentView
+
+export type UserViewComponent<TOptions = Record<string, any>> = React.ComponentType<{
+  document: {
+    draft: SanityDocument | null
+    displayed: Partial<SanityDocument>
+    historical: Partial<SanityDocument> | null
+    published: SanityDocument | null
+  }
+  documentId: string
+  options: TOptions
+  schemaType: SchemaType
+}>
 
 export type UserComponent = React.ComponentType<{
   child?: ComponentBuilder
@@ -78,7 +91,7 @@ export interface StructureBuilder {
   orderingMenuItem: (ordering: SortOrdering) => MenuItemBuilder
   orderingMenuItemsForType: (type: string) => MenuItemBuilder[]
   view: {
-    form: (spec?: Partial<View>) => FormViewBuilder
+    form: (spec?: Partial<FormView>) => FormViewBuilder
     component: (
       componentOrSpec?: Partial<ComponentView> | React.ComponentType<any>
     ) => ComponentViewBuilder

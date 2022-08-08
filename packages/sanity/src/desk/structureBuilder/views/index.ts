@@ -1,4 +1,4 @@
-import {UserComponent} from '../types'
+import type {UserViewComponent} from '../types'
 import {ComponentView, ComponentViewBuilder} from './ComponentView'
 import {FormView, FormViewBuilder} from './FormView'
 
@@ -8,5 +8,5 @@ export * from './View'
 
 export const form = (spec?: Partial<FormView>): FormViewBuilder => new FormViewBuilder(spec)
 export const component = (
-  componentOrSpec?: UserComponent | Partial<ComponentView>
+  componentOrSpec?: UserViewComponent | Partial<ComponentView>
 ): ComponentViewBuilder => new ComponentViewBuilder(componentOrSpec)
