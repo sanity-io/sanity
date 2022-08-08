@@ -483,7 +483,15 @@ export class VisionGui extends React.PureComponent<VisionGuiProps, VisionGuiStat
   }
 
   handleQueryExecution() {
-    const {query, params, rawParams} = this.state
+    const {query, params, rawParams, queryInProgress} = this.state
+
+    if (queryInProgress) {
+      this.cancelQuery()
+      this.cancelListener()
+      this.setState({queryInProgress: false})
+      return true
+    }
+
     const paramsError = params instanceof Error && params
     this._localStorage.set('query', query)
     this._localStorage.set('params', rawParams)
@@ -778,11 +786,11 @@ export class VisionGui extends React.PureComponent<VisionGuiProps, VisionGuiStat
                             >
                               <ButtonFullWidth
                                 onClick={this.handleQueryExecution}
-                                icon={PlayIcon}
-                                loading={queryInProgress}
+                                type="button"
+                                icon={queryInProgress ? StopIcon : PlayIcon}
                                 disabled={listenInProgress || !hasValidParams}
-                                tone="primary"
-                                text="Fetch"
+                                tone={queryInProgress ? 'positive' : 'primary'}
+                                text={queryInProgress ? 'Cancel' : 'Fetch'}
                               />
                             </Tooltip>
                           </Box>
