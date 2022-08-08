@@ -4,16 +4,16 @@ import {HELP_URL, SerializeError} from '../SerializeError'
 import {validateId} from '../util/validateId'
 import {ComponentViewBuilder} from './ComponentView'
 import {FormViewBuilder} from './FormView'
+import {View} from '../types'
 
-export interface View {
-  type: string
+export interface BaseView {
   id: string
   title: string
   icon?: React.ComponentType | React.ReactNode
 }
 
-export abstract class GenericViewBuilder<TView extends Partial<View>, ConcreteImpl>
-  implements Serializable<View>
+export abstract class GenericViewBuilder<TView extends Partial<BaseView>, ConcreteImpl>
+  implements Serializable<BaseView>
 {
   protected spec: TView = {} as TView
 
@@ -41,7 +41,7 @@ export abstract class GenericViewBuilder<TView extends Partial<View>, ConcreteIm
     return this.spec.icon
   }
 
-  serialize(options: SerializeOptions = {path: []}): View {
+  serialize(options: SerializeOptions = {path: []}): BaseView {
     const {id, title, icon} = this.spec
     if (!id) {
       throw new SerializeError(
@@ -63,15 +63,14 @@ export abstract class GenericViewBuilder<TView extends Partial<View>, ConcreteIm
       id: validateId(id, options.path, options.index),
       title,
       icon,
-      type: 'view',
     }
   }
 
-  abstract clone(withSpec?: Partial<View>): ConcreteImpl
+  abstract clone(withSpec?: Partial<BaseView>): ConcreteImpl
 }
 
-function isSerializable(view: View | Serializable<View>): view is Serializable<View> {
-  return typeof (view as Serializable<View>).serialize === 'function'
+function isSerializable(view: BaseView | Serializable<BaseView>): view is Serializable<BaseView> {
+  return typeof (view as Serializable<BaseView>).serialize === 'function'
 }
 
 export function maybeSerializeView(

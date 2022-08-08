@@ -1,12 +1,13 @@
 import {SerializeOptions} from '../StructureNodes'
 import {SerializeError, HELP_URL} from '../SerializeError'
-import {UserComponent} from '../types'
 import {isRecord} from '../../../util'
-import {View, GenericViewBuilder} from './View'
+import type {UserViewComponent} from '../types'
+import {BaseView, GenericViewBuilder} from './View'
 
-export interface ComponentView extends View {
-  component: UserComponent
-  options: Record<string, unknown>
+export interface ComponentView<TOptions = Record<string, any>> extends BaseView {
+  type: 'component'
+  component: UserViewComponent
+  options: TOptions
 }
 
 const isComponentSpec = (spec: unknown): spec is ComponentView =>
@@ -18,7 +19,7 @@ export class ComponentViewBuilder extends GenericViewBuilder<
 > {
   protected spec: Partial<ComponentView>
 
-  constructor(componentOrSpec?: UserComponent | Partial<ComponentView>) {
+  constructor(componentOrSpec?: UserViewComponent | Partial<ComponentView>) {
     const spec = isComponentSpec(componentOrSpec) ? {...componentOrSpec} : {options: {}}
 
     super()
@@ -33,7 +34,7 @@ export class ComponentViewBuilder extends GenericViewBuilder<
     }
   }
 
-  component(component: UserComponent): ComponentViewBuilder {
+  component(component: UserViewComponent): ComponentViewBuilder {
     return this.clone({component})
   }
 

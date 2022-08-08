@@ -1,5 +1,5 @@
 import {uniqueId} from 'lodash'
-import {SchemaType} from '@sanity/types'
+import type {SchemaType} from '@sanity/types'
 import {isValidElementType} from 'react-is'
 import {Source, getConfigContextFromSource} from '../../config'
 import {getPublishedId} from '../../util'
@@ -13,7 +13,7 @@ import {MenuItemBuilder, getOrderingMenuItemsForSchemaType, getOrderingMenuItem}
 import {ListItemBuilder} from './ListItem'
 import {MenuItemGroupBuilder} from './MenuItemGroup'
 import {DocumentListBuilder} from './DocumentList'
-import {Divider} from './StructureNodes'
+import type {Divider} from './StructureNodes'
 import {DocumentBuilder, documentFromEditor, documentFromEditorWithInitialValue} from './Document'
 import {ComponentInput, ComponentBuilder} from './Component'
 import {DocumentListItemBuilder} from './DocumentListItem'
@@ -23,7 +23,7 @@ import {
   defaultInitialValueTemplateItems,
   menuItemsFromInitialValueTemplateItems,
 } from './InitialValueTemplateItem'
-import {
+import type {
   StructureBuilder,
   UserComponent,
   StructureContext,
