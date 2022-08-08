@@ -1,7 +1,7 @@
 /* eslint-disable complexity */
 import React, {ChangeEvent, type RefObject} from 'react'
 import SplitPane from 'react-split-pane'
-import type {MutationEvent, SanityClient} from '@sanity/client'
+import type {ListenEvent, MutationEvent, SanityClient} from '@sanity/client'
 import {PlayIcon, StopIcon, CopyIcon, ErrorOutlineIcon} from '@sanity/icons'
 import isHotkey from 'is-hotkey'
 import {
@@ -212,7 +212,7 @@ export class VisionGui extends React.PureComponent<VisionGuiProps, VisionGuiStat
     this.handleChangeApiVersion = this.handleChangeApiVersion.bind(this)
     this.handleCustomApiVersionChange = this.handleCustomApiVersionChange.bind(this)
     this.handleListenExecution = this.handleListenExecution.bind(this)
-    this.handleListenerMutation = this.handleListenerMutation.bind(this)
+    this.handleListenerEvent = this.handleListenerEvent.bind(this)
     this.handleQueryExecution = this.handleQueryExecution.bind(this)
     this.handleQueryChange = this.handleQueryChange.bind(this)
     this.handleParamsChange = this.handleParamsChange.bind(this)
@@ -387,12 +387,22 @@ export class VisionGui extends React.PureComponent<VisionGuiProps, VisionGuiStat
     )
   }
 
-  handleListenerMutation(mut: MutationEvent) {
+  handleListenerEvent(evt: ListenEvent<any>) {
+    if (evt.type !== 'mutation') {
+      this.props.toast.push({
+        closable: true,
+        id: 'vision-listen',
+        status: 'success',
+        title: 'Listening for mutations…',
+      })
+      return
+    }
+
     this.setState(({listenMutations}) => ({
       listenMutations:
         listenMutations.length === 50
-          ? [mut, ...listenMutations.slice(0, 49)]
-          : [mut, ...listenMutations],
+          ? [evt, ...listenMutations.slice(0, 49)]
+          : [evt, ...listenMutations],
     }))
   }
 
@@ -453,15 +463,17 @@ export class VisionGui extends React.PureComponent<VisionGuiProps, VisionGuiStat
       return
     }
 
-    this._listenSubscription = this._client.listen(query, params).subscribe({
-      next: this.handleListenerMutation,
-      error: (error) =>
-        this.setState({
-          error,
-          query,
-          listenInProgress: false,
-        }),
-    })
+    this._listenSubscription = this._client
+      .listen(query, params, {events: ['mutation', 'welcome']})
+      .subscribe({
+        next: this.handleListenerEvent,
+        error: (error) =>
+          this.setState({
+            error,
+            query,
+            listenInProgress: false,
+          }),
+      })
   }
 
   handleQueryExecution() {
