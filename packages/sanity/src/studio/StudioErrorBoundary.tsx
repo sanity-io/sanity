@@ -3,7 +3,8 @@ import {Button, Card, Code, ErrorBoundary, Heading, Stack, useToast} from '@sani
 import {SchemaError} from '../config'
 import {isRecord} from '../util'
 import {globalScope} from '../util/globalScope'
-import {SchemaErrorsScreen} from './screens'
+import {CorsOriginError} from '../datastores'
+import {CorsOriginErrorScreen, SchemaErrorsScreen} from './screens'
 
 interface StudioErrorBoundaryProps {
   children: React.ReactNode
@@ -13,6 +14,10 @@ const errorChannel = globalScope.__sanityErrorChannel
 
 function isKnownError(err: Error): boolean {
   if (err instanceof SchemaError) {
+    return true
+  }
+
+  if (err instanceof CorsOriginError) {
     return true
   }
 
@@ -42,6 +47,7 @@ export function StudioErrorBoundary({children}: StudioErrorBoundaryProps) {
       }
 
       console.error(msg.error)
+
       pushToast({
         closable: true,
         description: msg.error.message,
@@ -51,6 +57,10 @@ export function StudioErrorBoundary({children}: StudioErrorBoundaryProps) {
       })
     })
   }, [pushToast])
+
+  if (error instanceof CorsOriginError) {
+    return <CorsOriginErrorScreen projectId={error?.projectId} />
+  }
 
   if (error instanceof SchemaError) {
     return <SchemaErrorsScreen schema={error.schema} />
