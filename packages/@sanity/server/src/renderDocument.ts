@@ -114,11 +114,17 @@ function renderDocumentFromWorkerData() {
   // Require hook #2
   // Use `esbuild` to allow JSX/TypeScript and modern JS features
   // eslint-disable-next-line import/no-unassigned-import
-  require('esbuild-register/register')
+  const {unregister} = require('esbuild-register/dist/node').register({
+    target: `node${process.version.slice(1)}`,
+    loader: 'tsx',
+  })
 
   const html = getDocumentHtml(studioRootPath, props)
 
   parentPort.postMessage({type: 'result', html})
+
+  // Be polite and clean up after esbuild-register
+  unregister()
 }
 
 function getDocumentHtml(studioRootPath: string, props?: DocumentProps): string {
