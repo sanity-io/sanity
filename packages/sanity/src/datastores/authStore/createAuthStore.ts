@@ -2,6 +2,7 @@ import createClient, {SanityClient} from '@sanity/client'
 import {defer} from 'rxjs'
 import {map, shareReplay, startWith, switchMap} from 'rxjs/operators'
 import {memoize} from 'lodash'
+import {checkCors, CorsOriginError} from '../cors'
 import {AuthState, AuthStore} from './types'
 import {createBroadcastChannel} from './createBroadcastChannel'
 import {sessionId} from './sessionId'
@@ -83,6 +84,12 @@ const saveToken = ({token, projectId}: {token: string; projectId: string}): void
 }
 
 const getCurrentUser = async (client: SanityClient) => {
+  const result = await checkCors(client)
+
+  if (result?.isCorsError) {
+    throw new CorsOriginError({...result, projectId: client.config()?.projectId})
+  }
+
   try {
     const user = await client.request({
       uri: '/users/me',
