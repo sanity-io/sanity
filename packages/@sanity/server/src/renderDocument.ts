@@ -179,7 +179,10 @@ function tryLoadDocumentComponent(studioRootPath: string) {
         path: componentPath,
       }
     } catch (err) {
-      // Allow this to fail
+      // Allow "not found" errors
+      if (err.code !== 'MODULE_NOT_FOUND') {
+        throw err
+      }
     }
   }
 
