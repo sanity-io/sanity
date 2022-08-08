@@ -16,6 +16,7 @@ import {
   Tooltip,
   Grid,
   Button,
+  ToastContextValue,
 } from '@sanity/ui'
 import type {Subscription} from 'rxjs'
 import {VisionCodeMirror} from '../codemirror/VisionCodeMirror'
@@ -85,6 +86,7 @@ function calculatePaneSizeOptions(rootHeight: number): PaneSizeOptions {
 }
 
 interface VisionGuiProps extends VisionProps {
+  toast: ToastContextValue
   datasets: string[]
 }
 
@@ -539,6 +541,12 @@ export class VisionGui extends React.PureComponent<VisionGuiProps, VisionGuiStat
     try {
       el.select()
       document.execCommand('copy')
+      this.props.toast.push({
+        closable: true,
+        title: 'Copied to clipboard',
+        status: 'info',
+        id: 'vision-copy',
+      })
     } catch (err) {
       // eslint-disable-next-line no-console
       console.error('Unable to copy to clipboard :(')
