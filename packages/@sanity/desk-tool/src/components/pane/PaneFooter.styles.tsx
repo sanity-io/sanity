@@ -18,4 +18,5 @@ export const Root = styled(Layer)`
 
 export const RootCard = styled(Card)`
   padding-bottom: env(safe-area-inset-bottom);
+  z-index: 1;
 `
