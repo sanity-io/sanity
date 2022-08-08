@@ -81,9 +81,9 @@ class SanityTutorials extends React.Component {
           <Card tone="primary" padding={4} radius={2} border marginTop={4}>
             <Flex direction={['column', 'column', 'row']}>
               <Stack space={4} flex={1} paddingRight={[0, 0, 4]}>
-                <Heading>Getting started Guide</Heading>
+                <Heading>Getting started guide</Heading>
                 <Text>
-                  It’s time to learn how to build schemas, create content and connect it with other
+                  It's time to learn how to build schemas, create content, and connect it to other
                   applications.
                 </Text>
               </Stack>
@@ -94,8 +94,11 @@ class SanityTutorials extends React.Component {
                     paddingX={5}
                     tone="primary"
                     as="a"
-                    href={`https://www.sanity.io/docs?ref=dashboard-${templateRepoId || 'plugin'}`}
-                    text="Go go docs"
+                    target="_blank"
+                    href={`https://www.sanity.io/docs?ref=studio-dashboard-${
+                      templateRepoId || 'plugin'
+                    }`}
+                    text="Go to docs"
                   />
                 </Stack>
               </Flex>
