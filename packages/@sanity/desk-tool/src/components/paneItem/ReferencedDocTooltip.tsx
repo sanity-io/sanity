@@ -10,7 +10,8 @@ export function ReferencedDocTooltip({totalReferenceCount}: {totalReferenceCount
           content={
             <Box padding={2}>
               <Text muted size={1}>
-                Referenced by {totalReferenceCount} documents
+                Referenced by {totalReferenceCount}
+                {totalReferenceCount === 1 ? ' document' : ' documents'}
               </Text>
             </Box>
           }
