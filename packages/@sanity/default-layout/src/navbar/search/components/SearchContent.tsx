@@ -25,7 +25,7 @@ export function SearchContent({
   return (
     <SearchContentWrapper flex={1}>
       {hasQueryOrTypes ? (
-        <SearchResults onClose={onClose} childContainerRef={childContainerRef} />
+        <SearchResults childContainerRef={childContainerRef} onClose={onClose} />
       ) : (
         <RecentSearches
           childContainerRef={childContainerRef}
