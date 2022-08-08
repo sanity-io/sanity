@@ -274,7 +274,7 @@ export class ArrayInput extends React.PureComponent<ArrayInputProps> {
           onRemove={itemProps.onRemove}
           onFocus={itemProps.onFocus}
           index={itemProps.index}
-          schemaType={itemProps.schemaType}
+          schemaType={schemaType}
           insertableTypes={schemaType.of}
           value={itemProps.value as _ArrayInput_ArrayMember}
           focused={itemProps.focused}
