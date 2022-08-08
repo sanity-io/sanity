@@ -67,7 +67,6 @@ class SanityTutorials extends React.Component {
 
   render() {
     const {title = 'Learn about Sanity', feedItems} = this.state
-    const {templateRepoId} = this.props
 
     // Filter out items and sections for layout purposes
     const sections = feedItems.filter((i) => i._type === 'feedSection')
@@ -95,9 +94,7 @@ class SanityTutorials extends React.Component {
                     tone="primary"
                     as="a"
                     target="_blank"
-                    href={`https://www.sanity.io/docs?ref=studio-dashboard-${
-                      templateRepoId || 'plugin'
-                    }`}
+                    href="https://www.sanity.io/docs?ref=studio-dashboard"
                     text="Go to docs"
                   />
                 </Stack>
