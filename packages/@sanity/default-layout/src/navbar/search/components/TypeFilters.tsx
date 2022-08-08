@@ -1,7 +1,7 @@
 import {hues} from '@sanity/color'
 import {CheckmarkIcon, SearchIcon} from '@sanity/icons'
 import type {ObjectSchemaType} from '@sanity/types'
-import {Box, Button, Card, Flex, Stack, Text} from '@sanity/ui'
+import {Box, Button, Flex, Stack, Text} from '@sanity/ui'
 import schema from 'part:@sanity/base/schema'
 import React, {useCallback, useMemo, useRef, useState} from 'react'
 import styled from 'styled-components'
@@ -30,8 +30,6 @@ export function TypeFilters({small}: TypeFiltersProps) {
     },
   } = useSearchState()
 
-  const allDocumentTypes = useMemo(() => getSelectableTypes(schema, ''), [])
-  const displayFilterInput = useMemo(() => allDocumentTypes.length >= 10, [allDocumentTypes])
   const selectableDocumentTypes = useMemo(() => getSelectableTypes(schema, typeFilter), [
     typeFilter,
   ])
@@ -55,26 +53,24 @@ export function TypeFilters({small}: TypeFiltersProps) {
   return (
     <TypeFiltersWrapper direction="column">
       {/* Search header */}
-      {displayFilterInput && (
-        <SearchHeaderWrapper padding={padding} ref={headerContainerRef} tone="inherit">
-          <CustomTextInput
-            border={false}
-            clearButton={!!typeFilter}
-            fontSize={small ? 1 : 2}
-            icon={SearchIcon}
-            muted
-            onChange={handleFilterChange}
-            onClear={handleFilterClear}
-            placeholder="Document type"
-            ref={inputRef}
-            smallClearButton
-            radius={2}
-            value={typeFilter}
-          />
-        </SearchHeaderWrapper>
-      )}
+      <SearchHeaderWrapper padding={padding} ref={headerContainerRef}>
+        <CustomTextInput
+          border={false}
+          clearButton={!!typeFilter}
+          fontSize={small ? 1 : 2}
+          icon={SearchIcon}
+          muted
+          onChange={handleFilterChange}
+          onClear={handleFilterClear}
+          placeholder="Document type"
+          ref={inputRef}
+          smallClearButton
+          radius={2}
+          value={typeFilter}
+        />
+      </SearchHeaderWrapper>
 
-      <TypeFiltersContent flex={1} padding={padding} tone="inherit">
+      <TypeFiltersContent flex={1} padding={padding}>
         {/* Selectable document types */}
         <Stack ref={childContainerRef} space={1}>
           {selectableDocumentTypes.map((type) => (
@@ -99,7 +95,7 @@ export function TypeFilters({small}: TypeFiltersProps) {
 
       {/* Clear button */}
       {!typeFilter && selectedTypes.length > 0 && (
-        <ClearButtonWrapper padding={padding} tone="inherit">
+        <ClearButtonWrapper padding={padding}>
           <Stack>
             <Button
               data-name="type-filter-button"
@@ -152,15 +148,15 @@ function TypeItem({
   )
 }
 
-const ClearButtonWrapper = styled(Card)`
+const ClearButtonWrapper = styled(Box)`
   border-top: 1px solid ${hues.gray[200].hex};
 `
 
-const SearchHeaderWrapper = styled(Card)`
+const SearchHeaderWrapper = styled(Box)`
   border-bottom: 1px solid ${hues.gray[200].hex};
 `
 
-const TypeFiltersContent = styled(Card)`
+const TypeFiltersContent = styled(Box)`
   overflow-x: hidden;
   overflow-y: scroll;
 `
