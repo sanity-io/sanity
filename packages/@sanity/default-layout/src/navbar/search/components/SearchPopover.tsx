@@ -75,7 +75,9 @@ export function SearchPopover({onClose, placeholderRef}: PopoverProps) {
       >
         <SearchHeader inputRef={headerInputRef} />
 
-        <Flex align="stretch">
+        {/* Reverse flex direction is used ensure filters are focusable before recent searches */}
+        <Flex align="stretch" direction="row-reverse">
+          <SearchPopoverFilters />
           <SearchContentWrapper flex={1} ref={childContainerParentRef}>
             {hasValidTerms ? (
               <SearchResults
@@ -91,8 +93,6 @@ export function SearchPopover({onClose, placeholderRef}: PopoverProps) {
               />
             )}
           </SearchContentWrapper>
-
-          <SearchPopoverFilters />
         </Flex>
       </SearchPopoverWrapper>
     </>
