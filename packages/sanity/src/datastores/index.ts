@@ -1,5 +1,6 @@
 export * from './authStore'
 export * from './connection-status'
+export * from './cors'
 export * from './crossProjectToken'
 export * from './datastores'
 export * from './document'
