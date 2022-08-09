@@ -98,8 +98,8 @@ function InnerPopover(props: InnerPopoverProps) {
         </Text>
       </Box>
       <HorizontalLine />
-      <Box padding={3}>
-        <Grid columns={2} gap={1}>
+      <Box marginX={1} padding={3}>
+        <Grid columns={2} gap={3}>
           <Button
             as="a"
             target="_blank"

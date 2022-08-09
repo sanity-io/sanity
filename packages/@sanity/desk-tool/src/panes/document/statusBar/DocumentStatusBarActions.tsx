@@ -3,7 +3,7 @@
 
 import React, {memo, useCallback, useMemo, useState} from 'react'
 import {DocumentActionDescription} from '@sanity/base'
-import {Box, Flex, Tooltip, Stack, Button, Hotkeys, LayerProvider, Text} from '@sanity/ui'
+import {Box, Flex, Tooltip, Stack, Button, Hotkeys, LayerProvider, Text, Card} from '@sanity/ui'
 import {RenderActionCollectionState} from 'part:@sanity/base/actions/utils'
 import {HistoryRestoreAction} from '../../../actions/HistoryRestoreAction'
 import {useDocumentPane} from '../useDocumentPane'
@@ -46,22 +46,24 @@ function DocumentStatusBarActionsInner(props: DocumentStatusBarActionsInnerProps
       {firstActionState && (
         <LayerProvider zOffset={200}>
           <Tooltip disabled={!tooltipContent} content={tooltipContent} portal placement="top">
-            <Stack flex={1}>
-              <Button
-                data-testid={`action-${firstActionState.label}`}
-                disabled={disabled || Boolean(firstActionState.disabled)}
-                icon={firstActionState.icon}
-                // eslint-disable-next-line react/jsx-handler-names
-                onClick={firstActionState.onHandle}
-                ref={setButtonElement}
-                text={firstActionState.label}
-                tone={
-                  firstActionState.color
-                    ? LEGACY_BUTTON_COLOR_TO_TONE[firstActionState.color]
-                    : 'primary'
-                }
-              />
-            </Stack>
+            <Card flex={1}>
+              <Stack>
+                <Button
+                  data-testid={`action-${firstActionState.label}`}
+                  disabled={disabled || Boolean(firstActionState.disabled)}
+                  icon={firstActionState.icon}
+                  // eslint-disable-next-line react/jsx-handler-names
+                  onClick={firstActionState.onHandle}
+                  ref={setButtonElement}
+                  text={firstActionState.label}
+                  tone={
+                    firstActionState.color
+                      ? LEGACY_BUTTON_COLOR_TO_TONE[firstActionState.color]
+                      : 'primary'
+                  }
+                />
+              </Stack>
+            </Card>
           </Tooltip>
         </LayerProvider>
       )}
