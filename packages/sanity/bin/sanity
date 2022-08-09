@@ -8,7 +8,7 @@ const readPkgUp = require('read-pkg-up')
 const expectedPath = path.join(__dirname, '..', 'node_modules', '.bin', 'sanity')
 
 if (fs.existsSync(expectedPath)) {
-  isNodeScript(expectedPath).then(isScript => {
+  isNodeScript(expectedPath).then((isScript) => {
     if (isScript) {
       require(expectedPath)
     } else {

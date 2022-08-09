@@ -162,6 +162,7 @@
     "pluralize-esm": "^9.0.2",
     "pretty-ms": "^7.0.1",
     "raf": "^3.4.1",
+    "read-pkg-up": "^7.0.1",
     "react-copy-to-clipboard": "^5.0.4",
     "react-fast-compare": "^3.2.0",
     "react-focus-lock": "^2.8.1",

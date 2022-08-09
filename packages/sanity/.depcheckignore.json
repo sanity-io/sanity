@@ -1,0 +1,4 @@
+{
+  "//": "used by bin/sanity but for some reason not understood by depcheck",
+  "ignore": ["read-pkg-up"]
+}
