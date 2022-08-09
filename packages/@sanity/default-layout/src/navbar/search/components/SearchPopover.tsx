@@ -3,8 +3,8 @@ import {Box, Card, Flex, studioTheme, Theme, useClickOutside, useLayer} from '@s
 import React, {RefObject, useCallback, useEffect, useRef, useState} from 'react'
 import styled, {css} from 'styled-components'
 import {useSearchState} from '../contexts/search'
+import {hasSearchableTerms} from '../contexts/search/selectors'
 import {useContainerArrowNavigation} from '../hooks/useContainerArrowNavigation'
-import {isTermsSearchable} from '../utils/isTermsSearchable'
 import {RecentSearches} from './RecentSearches'
 import {SearchHeader} from './SearchHeader'
 import {SearchResults} from './SearchResults'
@@ -35,7 +35,7 @@ export function SearchPopover({onClose, placeholderRef}: PopoverProps) {
     state: {result, terms},
   } = useSearchState()
 
-  const hasSearchableTerms = isTermsSearchable(terms)
+  const hasValidTerms = hasSearchableTerms(terms)
 
   useClickOutside(onClose, [dialogEl])
 
@@ -55,7 +55,7 @@ export function SearchPopover({onClose, placeholderRef}: PopoverProps) {
       headerInputRef,
       pointerOverlayRef,
     },
-    [hasSearchableTerms, result.loaded]
+    [hasValidTerms, result.loaded]
   )
 
   return (
@@ -77,7 +77,7 @@ export function SearchPopover({onClose, placeholderRef}: PopoverProps) {
 
         <Flex align="stretch">
           <SearchContentWrapper flex={1} ref={childContainerParentRef}>
-            {hasSearchableTerms ? (
+            {hasValidTerms ? (
               <SearchResults
                 childContainerRef={childContainerRef}
                 onClose={onClose}

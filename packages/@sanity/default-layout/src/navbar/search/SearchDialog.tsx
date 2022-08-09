@@ -7,9 +7,9 @@ import {SearchHeader} from './components/SearchHeader'
 import {SearchResults} from './components/SearchResults'
 import {TypeFilters} from './components/TypeFilters'
 import {useSearchState} from './contexts/search'
+import {hasSearchableTerms} from './contexts/search/selectors'
 import {useContainerArrowNavigation} from './hooks/useContainerArrowNavigation'
 import {useSearchHotkeys} from './hooks/useSearchHotkeys'
-import {isTermsSearchable} from './utils/isTermsSearchable'
 
 interface SearchDialogProps {
   onClose: () => void
@@ -43,7 +43,7 @@ function SearchDialogContent({onClose}: {onClose: () => void}) {
     state: {result, terms},
   } = useSearchState()
 
-  const hasSearchableTerms = isTermsSearchable(terms)
+  const hasValidTerms = hasSearchableTerms(terms)
 
   useContainerArrowNavigation(
     {
@@ -52,7 +52,7 @@ function SearchDialogContent({onClose}: {onClose: () => void}) {
       headerInputRef,
       pointerOverlayRef,
     },
-    [hasSearchableTerms, result.loaded]
+    [hasValidTerms, result.loaded]
   )
 
   return (
@@ -62,7 +62,7 @@ function SearchDialogContent({onClose}: {onClose: () => void}) {
       </StickyBox>
       <Box>
         <SearchContentWrapper flex={1} ref={childContainerParentRef}>
-          {hasSearchableTerms ? (
+          {hasValidTerms ? (
             <SearchResults
               childContainerRef={childContainerRef}
               onClose={onClose}
