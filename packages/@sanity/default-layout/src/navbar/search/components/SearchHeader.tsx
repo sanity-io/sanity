@@ -92,7 +92,6 @@ export function SearchHeader({inputRef, onClose}: SearchHeaderProps) {
   )
 }
 
-// TODO: find a way to reliably vertically center (and scale) custom components when used as <TextInput> icons
 const AlignedSpinner = styled(Spinner)`
   svg {
     width: 20px;

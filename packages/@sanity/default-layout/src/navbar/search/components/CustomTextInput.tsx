@@ -29,6 +29,9 @@ const CustomTextInputWrapper = styled(Box)(({smallClearButton}: {smallClearButto
       box-shadow: none;
       display: flex; /* TODO: hack, currently used to vertically center <TextInput>'s clearButton */
       transform: ${smallClearButton ? 'scale(0.7)' : 'scale(1)'};
+      &:hover {
+        opacity: 0.5;
+      }
     }
   `
 })
