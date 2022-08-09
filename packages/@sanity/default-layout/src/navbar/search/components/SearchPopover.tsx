@@ -1,11 +1,13 @@
 import {hues} from '@sanity/color'
-import {Card, Flex, studioTheme, Theme, useClickOutside, useLayer} from '@sanity/ui'
+import {Box, Card, Flex, studioTheme, Theme, useClickOutside, useLayer} from '@sanity/ui'
 import React, {RefObject, useCallback, useEffect, useRef, useState} from 'react'
 import styled, {css} from 'styled-components'
 import {useSearchState} from '../contexts/search'
 import {useContainerArrowNavigation} from '../hooks/useContainerArrowNavigation'
-import {SearchContent} from './SearchContent'
+import {isTermsSearchable} from '../utils/isTermsSearchable'
+import {RecentSearches} from './RecentSearches'
 import {SearchHeader} from './SearchHeader'
+import {SearchResults} from './SearchResults'
 import {TypeFilters} from './TypeFilters'
 
 export interface PopoverProps {
@@ -29,8 +31,10 @@ export function SearchPopover({onClose, placeholderRef}: PopoverProps) {
   const {zIndex} = useLayer()
 
   const {
-    state: {result},
+    state: {result, terms},
   } = useSearchState()
+
+  const hasSearchableTerms = isTermsSearchable(terms)
 
   useClickOutside(onClose, [dialogEl])
 
@@ -45,7 +49,7 @@ export function SearchPopover({onClose, placeholderRef}: PopoverProps) {
 
   useContainerArrowNavigation(
     {childContainerRef, containerRef: headerContainerRef, inputRef: headerInputRef},
-    [result.loaded]
+    [hasSearchableTerms, result.loaded]
   )
 
   return (
@@ -66,11 +70,14 @@ export function SearchPopover({onClose, placeholderRef}: PopoverProps) {
         <SearchHeader containerRef={headerContainerRef} inputRef={headerInputRef} />
 
         <Flex align="stretch">
-          <SearchContent
-            childContainerRef={childContainerRef}
-            onClose={onClose}
-            showFiltersOnRecentSearch
-          />
+          <SearchContentWrapper flex={1}>
+            {hasSearchableTerms ? (
+              <SearchResults childContainerRef={childContainerRef} onClose={onClose} />
+            ) : (
+              <RecentSearches childContainerRef={childContainerRef} showFiltersOnClick />
+            )}
+          </SearchContentWrapper>
+
           <SearchPopoverFilters />
         </Flex>
       </SearchPopoverWrapper>
@@ -138,6 +145,11 @@ const Overlay = styled.div`
   position: absolute;
   right: 0;
   top: 0;
+`
+
+const SearchContentWrapper = styled(Box)`
+  overflow-x: hidden;
+  overflow-y: auto;
 `
 
 const TypeFilterWrapper = styled(Card)`

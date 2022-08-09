@@ -1,15 +1,16 @@
 import {RefObject, useCallback, useEffect, useRef, useState} from 'react'
 
 /**
- * This hook adds keyboard events (for up arrow / down arrow / enter keys) to a specified container element.
+ * This hook adds keyboard events (up arrow / down arrow / enter keys) to a specified container element.
  *
- * Up / down arrow key presses on the container element will cycle through all nested elements specified within a
+ * Up / down arrow key presses on the container element cycles through all nested elements specified within a
  * separate _child_ container element, applying `aria-selected=true` attributes accordingly.
  *
- * All children of this child container element will listen for the same keyboard events. They will also not be focusable.
+ * All children of this child container element will not be focusable, and clicking individual children will always re-focus
+ * the specified input element.
  *
- * Pressing the enter key triggers a click event on the selected child element IF the currently focused element is of type <input />.
- * Otherwise, enter presses will pass-through to the event target as normal.
+ * Pressing the enter key will trigger a click event on the selected child element IF the currently focused element is of type <input />.
+ * Otherwise, enter key presses pass-through to the event target as normal.
  */
 export function useContainerArrowNavigation(
   {
@@ -164,7 +165,12 @@ export function useContainerArrowNavigation(
     return () => {
       mutationObserver.disconnect()
     }
-  }, [childContainerRef, handleSetChildren])
+  }, [
+    childContainerRef,
+    handleSetChildren,
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    ...dependencyList,
+  ])
 
   return null
 }

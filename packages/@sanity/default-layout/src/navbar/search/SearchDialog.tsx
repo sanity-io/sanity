@@ -2,12 +2,14 @@ import {Box, Card, Dialog, Portal} from '@sanity/ui'
 import React, {useCallback, useEffect, useRef} from 'react'
 import FocusLock from 'react-focus-lock'
 import styled from 'styled-components'
-import {SearchContent} from './components/SearchContent'
+import {RecentSearches} from './components/RecentSearches'
 import {SearchHeader} from './components/SearchHeader'
+import {SearchResults} from './components/SearchResults'
 import {TypeFilters} from './components/TypeFilters'
 import {useSearchState} from './contexts/search'
 import {useContainerArrowNavigation} from './hooks/useContainerArrowNavigation'
 import {useSearchHotkeys} from './hooks/useSearchHotkeys'
+import {isTermsSearchable} from './utils/isTermsSearchable'
 
 interface SearchDialogProps {
   onClose: () => void
@@ -37,8 +39,10 @@ function SearchDialogContent({onClose}: {onClose: () => void}) {
   const headerInputRef = useRef<HTMLInputElement>(null)
 
   const {
-    state: {result},
+    state: {result, terms},
   } = useSearchState()
+
+  const hasSearchableTerms = isTermsSearchable(terms)
 
   useContainerArrowNavigation(
     {
@@ -46,7 +50,7 @@ function SearchDialogContent({onClose}: {onClose: () => void}) {
       containerRef: headerContainerRef,
       inputRef: headerInputRef,
     },
-    [result.loaded]
+    [hasSearchableTerms, result.loaded]
   )
 
   return (
@@ -59,7 +63,14 @@ function SearchDialogContent({onClose}: {onClose: () => void}) {
         />
       </StickyBox>
       <Box>
-        <SearchContent childContainerRef={childContainerRef} onClose={onClose} />
+        <SearchContentWrapper flex={1}>
+          {hasSearchableTerms ? (
+            <SearchResults childContainerRef={childContainerRef} onClose={onClose} />
+          ) : (
+            <RecentSearches childContainerRef={childContainerRef} />
+          )}
+        </SearchContentWrapper>
+
         <SearchDialogFilters />
       </Box>
     </FullscreenWrapper>
@@ -125,6 +136,11 @@ const FullscreenWrapper = styled(Card)`
   top: 0;
   width: 100%;
   z-index: 1;
+`
+
+const SearchContentWrapper = styled(Box)`
+  overflow-x: hidden;
+  overflow-y: auto;
 `
 
 const StickyBox = styled(Box)`
