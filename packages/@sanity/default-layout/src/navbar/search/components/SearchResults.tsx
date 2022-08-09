@@ -7,14 +7,16 @@ import styled from 'styled-components'
 import {useSearchState} from '../contexts/search'
 import {addSearchTerm} from '../datastores/recentSearches'
 import {NoResults} from './NoResults'
+import {PointerOverlay} from './PointerOverlay'
 import {SearchResultItem} from './SearchResultItem'
 
 interface SearchResultsProps {
   childContainerRef: RefObject<HTMLDivElement>
   onClose: () => void
+  pointerOverlayRef: RefObject<HTMLDivElement>
 }
 
-export function SearchResults({childContainerRef, onClose}: SearchResultsProps) {
+export function SearchResults({childContainerRef, onClose, pointerOverlayRef}: SearchResultsProps) {
   const {
     state: {terms, result},
   } = useSearchState()
@@ -43,6 +45,8 @@ export function SearchResults({childContainerRef, onClose}: SearchResultsProps) 
 
   return (
     <SearchResultsWrapper $loading={result.loading}>
+      <PointerOverlay ref={pointerOverlayRef} />
+
       {result.error ? (
         <Flex align="center" direction="column" gap={3} marginY={2} padding={4}>
           <Box marginBottom={1}>
@@ -95,5 +99,6 @@ export function SearchResults({childContainerRef, onClose}: SearchResultsProps) 
 
 const SearchResultsWrapper = styled.div<{$loading: boolean}>`
   opacity: ${({$loading}) => ($loading ? 0.5 : 1)};
+  position: relative;
   transition: 300ms opacity;
 `

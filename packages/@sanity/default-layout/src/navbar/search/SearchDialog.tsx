@@ -35,8 +35,9 @@ export function SearchDialog({onClose, onOpen, open}: SearchDialogProps) {
 
 function SearchDialogContent({onClose}: {onClose: () => void}) {
   const childContainerRef = useRef<HTMLDivElement>(null)
-  const headerContainerRef = useRef<HTMLDivElement>(null)
+  const childContainerParentRef = useRef<HTMLDivElement>(null)
   const headerInputRef = useRef<HTMLInputElement>(null)
+  const pointerOverlayRef = useRef<HTMLDivElement>(null)
 
   const {
     state: {result, terms},
@@ -47,8 +48,9 @@ function SearchDialogContent({onClose}: {onClose: () => void}) {
   useContainerArrowNavigation(
     {
       childContainerRef,
-      containerRef: headerContainerRef,
-      inputRef: headerInputRef,
+      childContainerParentRef,
+      headerInputRef,
+      pointerOverlayRef,
     },
     [hasSearchableTerms, result.loaded]
   )
@@ -56,18 +58,21 @@ function SearchDialogContent({onClose}: {onClose: () => void}) {
   return (
     <FullscreenWrapper scheme="light" tone="default">
       <StickyBox flex={1}>
-        <SearchHeader
-          containerRef={headerContainerRef}
-          inputRef={headerInputRef}
-          onClose={onClose}
-        />
+        <SearchHeader inputRef={headerInputRef} onClose={onClose} />
       </StickyBox>
       <Box>
-        <SearchContentWrapper flex={1}>
+        <SearchContentWrapper flex={1} ref={childContainerParentRef}>
           {hasSearchableTerms ? (
-            <SearchResults childContainerRef={childContainerRef} onClose={onClose} />
+            <SearchResults
+              childContainerRef={childContainerRef}
+              onClose={onClose}
+              pointerOverlayRef={pointerOverlayRef}
+            />
           ) : (
-            <RecentSearches childContainerRef={childContainerRef} />
+            <RecentSearches
+              childContainerRef={childContainerRef}
+              pointerOverlayRef={pointerOverlayRef}
+            />
           )}
         </SearchContentWrapper>
 

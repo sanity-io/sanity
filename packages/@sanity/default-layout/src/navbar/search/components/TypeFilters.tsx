@@ -10,6 +10,7 @@ import {getSelectableTypes} from '../contexts/search/selectors'
 import {useContainerArrowNavigation} from '../hooks/useContainerArrowNavigation'
 import {withCommandPaletteItemStyles} from '../utils/withCommandPaletteItemStyles'
 import {CustomTextInput} from './CustomTextInput'
+import {PointerOverlay} from './PointerOverlay'
 
 const CommandPaletteButton = withCommandPaletteItemStyles(Button)
 
@@ -19,8 +20,9 @@ interface TypeFiltersProps {
 
 export function TypeFilters({small}: TypeFiltersProps) {
   const childContainerRef = useRef<HTMLDivElement>(null)
-  const headerContainerRef = useRef<HTMLDivElement>(null)
+  const childContainerParentRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
+  const pointerOverlayRef = useRef<HTMLDivElement>(null)
 
   const [typeFilter, setTypeFilter] = useState('')
   const {
@@ -44,16 +46,22 @@ export function TypeFilters({small}: TypeFiltersProps) {
   )
   const handleFilterClear = useCallback(() => setTypeFilter(''), [])
 
-  useContainerArrowNavigation({childContainerRef, containerRef: headerContainerRef, inputRef}, [
-    typeFilter,
-  ])
+  useContainerArrowNavigation(
+    {
+      childContainerRef,
+      childContainerParentRef,
+      headerInputRef: inputRef,
+      pointerOverlayRef,
+    },
+    [typeFilter]
+  )
 
   const padding = small ? 1 : 2
 
   return (
     <TypeFiltersWrapper direction="column">
       {/* Search header */}
-      <SearchHeaderWrapper padding={padding} ref={headerContainerRef}>
+      <SearchHeaderWrapper padding={padding}>
         <CustomTextInput
           border={false}
           clearButton={!!typeFilter}
@@ -71,17 +79,21 @@ export function TypeFilters({small}: TypeFiltersProps) {
       </SearchHeaderWrapper>
 
       <TypeFiltersContent flex={1} padding={padding}>
-        {/* Selectable document types */}
-        <Stack ref={childContainerRef} space={1}>
-          {selectableDocumentTypes.map((type) => (
-            <TypeItem
-              key={type.name}
-              selected={selectedTypes.includes(type)}
-              small={small}
-              type={type}
-            />
-          ))}
-        </Stack>
+        <div ref={childContainerParentRef} style={{position: 'relative'}}>
+          <PointerOverlay ref={pointerOverlayRef} />
+
+          {/* Selectable document types */}
+          <Stack ref={childContainerRef} space={1}>
+            {selectableDocumentTypes.map((type) => (
+              <TypeItem
+                key={type.name}
+                selected={selectedTypes.includes(type)}
+                small={small}
+                type={type}
+              />
+            ))}
+          </Stack>
+        </div>
 
         {/* No results */}
         {!selectableDocumentTypes.length && (

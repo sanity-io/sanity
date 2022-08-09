@@ -7,12 +7,11 @@ import {useSearchState} from '../contexts/search'
 import {CustomTextInput} from './CustomTextInput'
 
 interface SearchHeaderProps {
-  containerRef: RefObject<HTMLDivElement>
   inputRef: RefObject<HTMLInputElement>
   onClose?: () => void
 }
 
-export function SearchHeader({containerRef, inputRef, onClose}: SearchHeaderProps) {
+export function SearchHeader({inputRef, onClose}: SearchHeaderProps) {
   const filterCloseButton = useRef<HTMLButtonElement>()
   const isMounted = useRef(false)
 
@@ -48,7 +47,7 @@ export function SearchHeader({containerRef, inputRef, onClose}: SearchHeaderProp
 
   return (
     <DialogWrapper flex={1}>
-      <Flex align="center" flex={1} ref={containerRef}>
+      <Flex align="center" flex={1}>
         {/* Search field */}
         <Box flex={1} padding={onClose ? 2 : 1}>
           <CustomTextInput

@@ -2,6 +2,7 @@ import type {SearchTerms} from '@sanity/base'
 import {Box, Button, Label, Stack, Text, useMediaIndex} from '@sanity/ui'
 import schema from 'part:@sanity/base/schema'
 import React, {MouseEvent, RefObject, useCallback, useMemo, useState} from 'react'
+import styled from 'styled-components'
 import {useSearchState} from '../contexts/search'
 import {
   addSearchTerm,
@@ -10,14 +11,20 @@ import {
   removeSearchTerms,
 } from '../datastores/recentSearches'
 import {Instructions} from './Instructions'
+import {PointerOverlay} from './PointerOverlay'
 import {RecentSearchItem} from './RecentSearchItem'
 
 interface RecentSearchesProps {
   childContainerRef: RefObject<HTMLDivElement>
+  pointerOverlayRef: RefObject<HTMLDivElement>
   showFiltersOnClick?: boolean
 }
 
-export function RecentSearches({childContainerRef, showFiltersOnClick}: RecentSearchesProps) {
+export function RecentSearches({
+  childContainerRef,
+  pointerOverlayRef,
+  showFiltersOnClick,
+}: RecentSearchesProps) {
   const [recentSearches, setRecentSearches] = useState(() => getRecentSearchTerms(schema))
   const {dispatch} = useSearchState()
 
@@ -59,7 +66,7 @@ export function RecentSearches({childContainerRef, showFiltersOnClick}: RecentSe
   )
 
   return (
-    <Box flex={1}>
+    <RecentSearchesWrapper flex={1}>
       {recentSearches.length ? (
         <>
           <Box paddingBottom={2} paddingTop={4} paddingX={3}>
@@ -67,18 +74,22 @@ export function RecentSearches({childContainerRef, showFiltersOnClick}: RecentSe
               Recent searches
             </Label>
           </Box>
-          <Stack paddingX={1} paddingTop={1} ref={childContainerRef} space={1}>
-            {recentSearches?.map((recentSearch, index) => (
-              <RecentSearchItem
-                key={recentSearch.__recentTimestamp}
-                maxVisibleQueryChars={maxVisibleQueryChars}
-                maxVisibleTypePillChars={maxVisibleTypePillChars}
-                onClick={handleRecentSearchClick}
-                onDelete={handleRecentSearchDelete(index)}
-                value={recentSearch}
-              />
-            ))}
-          </Stack>
+          <Box style={{position: 'relative'}}>
+            <PointerOverlay ref={pointerOverlayRef} />
+
+            <Stack paddingX={1} paddingTop={1} ref={childContainerRef} space={1}>
+              {recentSearches?.map((recentSearch, index) => (
+                <RecentSearchItem
+                  key={recentSearch.__recentTimestamp}
+                  maxVisibleQueryChars={maxVisibleQueryChars}
+                  maxVisibleTypePillChars={maxVisibleTypePillChars}
+                  onClick={handleRecentSearchClick}
+                  onDelete={handleRecentSearchDelete(index)}
+                  value={recentSearch}
+                />
+              ))}
+            </Stack>
+          </Box>
           <Box padding={1}>
             <Button
               justify="flex-start"
@@ -98,6 +109,10 @@ export function RecentSearches({childContainerRef, showFiltersOnClick}: RecentSe
       ) : (
         <Instructions />
       )}
-    </Box>
+    </RecentSearchesWrapper>
   )
 }
+
+const RecentSearchesWrapper = styled(Box)`
+  position: relative;
+`
