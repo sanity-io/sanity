@@ -1,4 +1,5 @@
-import {ObjectSchemaType, Schema, SchemaType} from '@sanity/types'
+import type {SearchTerms} from '@sanity/base'
+import type {ObjectSchemaType, Schema, SchemaType} from '@sanity/types'
 import {getSearchableTypes} from '@sanity/base/_internal'
 
 /**
@@ -10,6 +11,10 @@ export function getSelectableTypes(schema: Schema, typeFilter: string): ObjectSc
   return (getSearchableTypes(schema) as ObjectSchemaType[])
     .filter((type) => inTypeFilter(type, typeFilter))
     .sort(sortTypes)
+}
+
+export function hasSearchableTerms(terms: SearchTerms): boolean {
+  return terms.query.trim() !== '' || !!terms.types.length
 }
 
 export function sortTypes(a: SchemaType, b: SchemaType): number {

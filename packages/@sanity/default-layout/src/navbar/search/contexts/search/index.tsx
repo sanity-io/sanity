@@ -11,6 +11,7 @@ import React, {
 import {SEARCH_LIMIT} from '../../constants'
 import {useSearch} from '../../hooks/useSearch'
 import {INITIAL_SEARCH_STATE, searchReducer, SearchAction, SearchReducerState} from './reducer'
+import {hasSearchableTerms} from './selectors'
 
 interface SearchContextValue {
   dispatch: Dispatch<SearchAction>
@@ -47,7 +48,7 @@ export function SearchProvider({children}: SearchProviderProps) {
     onStart: () => dispatch({type: 'SEARCH_REQUEST_START'}),
   })
 
-  const hasValidTerms = terms.types.length > 0 || terms.query !== ''
+  const hasValidTerms = hasSearchableTerms(terms)
 
   /**
    * Trigger search when both:
@@ -80,15 +81,17 @@ export function SearchProvider({children}: SearchProviderProps) {
   }, [handleSearch, hasValidTerms, pageIndex, searchState.terms, terms])
 
   /**
-   * Reset search hits / state when we have empty search terms (no search query or types)
+   * Reset search hits / state when (after initial amount):
+   * - we have no valid search terms and
+   * - we have existing hits
    */
   useEffect(() => {
-    if (!hasValidTerms && isMounted?.current) {
+    if (!hasValidTerms && isMounted?.current && result.hits.length > 0) {
       dispatch({type: 'SEARCH_CLEAR'})
     }
 
     isMounted.current = true
-  }, [dispatch, hasValidTerms, terms.query, terms.types])
+  }, [dispatch, hasValidTerms, result.hits, terms.query, terms.types])
 
   return <SearchContext.Provider value={{dispatch, state}}>{children}</SearchContext.Provider>
 }

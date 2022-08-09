@@ -1,24 +1,24 @@
 // @todo: remove the following line when part imports has been removed from this file
 ///<reference types="@sanity/types/parts" />
 
-import {useState, useCallback} from 'react'
+import type {SearchTerms} from '@sanity/base'
+import {isEqual} from 'lodash'
+import search from 'part:@sanity/base/search'
+import {useCallback, useState} from 'react'
 import {useObservableCallback} from 'react-rx'
+import {concat, Observable, of} from 'rxjs'
 import {
-  distinctUntilChanged,
   catchError,
   debounceTime,
+  distinctUntilChanged,
+  filter,
   map,
+  scan,
   switchMap,
   tap,
-  filter,
-  scan,
 } from 'rxjs/operators'
-import {concat, Observable, of} from 'rxjs'
-import search from 'part:@sanity/base/search'
-import type {SearchTerms} from '@sanity/base'
+import {hasSearchableTerms} from '../contexts/search/selectors'
 import {SearchHit, SearchState} from '../types'
-
-type SearchFunction = (params: SearchTerms) => Observable<SearchHit[]>
 
 const INITIAL_SEARCH_STATE: SearchState = {
   hits: [],
@@ -33,6 +33,13 @@ const INITIAL_SEARCH_STATE: SearchState = {
 
 function nonNullable<T>(v: T): v is NonNullable<T> {
   return v !== null
+}
+
+function trimQuery(terms: SearchTerms) {
+  return {
+    ...terms,
+    query: terms.query.trim(),
+  }
 }
 
 export function useSearch(
@@ -56,20 +63,18 @@ export function useSearch(
 } {
   const [searchState, setSearchState] = useState(initialState)
 
-  const onSearch: SearchFunction = useCallback((params) => {
-    return params.query === '' && !params.types.length ? of([]) : search(params)
-  }, [])
-
   const handleQueryChange = useObservableCallback((inputValue$: Observable<SearchTerms | null>) => {
     return inputValue$.pipe(
-      distinctUntilChanged(),
       filter(nonNullable),
+      map(trimQuery),
+      filter(hasSearchableTerms),
+      distinctUntilChanged((prev, curr) => isEqual(prev, curr)),
       debounceTime(300),
       tap(onStart),
-      switchMap((terms) =>
-        concat(
+      switchMap((terms) => {
+        return concat(
           of({...INITIAL_SEARCH_STATE, loading: true, terms, searchString: terms.query}),
-          onSearch(terms).pipe(
+          (search(terms) as Observable<SearchHit[]>).pipe(
             map((hits) => ({hits})),
             tap(({hits}) => onComplete?.(hits)),
             catchError((error) => {
@@ -85,7 +90,7 @@ export function useSearch(
           ),
           of({loading: false})
         )
-      ),
+      }),
       scan((prevState, nextState): SearchState => {
         return {...prevState, ...nextState}
       }, INITIAL_SEARCH_STATE),
