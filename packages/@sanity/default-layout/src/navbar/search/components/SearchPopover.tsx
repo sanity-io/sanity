@@ -25,8 +25,9 @@ export function SearchPopover({onClose, placeholderRef}: PopoverProps) {
   const [dialogEl, setDialogEl] = useState<HTMLDivElement>()
 
   const childContainerRef = useRef<HTMLDivElement>(null)
-  const headerContainerRef = useRef<HTMLDivElement>(null)
+  const childContainerParentRef = useRef<HTMLDivElement>(null)
   const headerInputRef = useRef<HTMLInputElement>(null)
+  const pointerOverlayRef = useRef<HTMLDivElement>(null)
 
   const {zIndex} = useLayer()
 
@@ -48,7 +49,12 @@ export function SearchPopover({onClose, placeholderRef}: PopoverProps) {
   }, [handleWindowResize])
 
   useContainerArrowNavigation(
-    {childContainerRef, containerRef: headerContainerRef, inputRef: headerInputRef},
+    {
+      childContainerRef,
+      childContainerParentRef,
+      headerInputRef,
+      pointerOverlayRef,
+    },
     [hasSearchableTerms, result.loaded]
   )
 
@@ -67,14 +73,22 @@ export function SearchPopover({onClose, placeholderRef}: PopoverProps) {
         x={dialogPosition.x}
         y={dialogPosition.y}
       >
-        <SearchHeader containerRef={headerContainerRef} inputRef={headerInputRef} />
+        <SearchHeader inputRef={headerInputRef} />
 
         <Flex align="stretch">
-          <SearchContentWrapper flex={1}>
+          <SearchContentWrapper flex={1} ref={childContainerParentRef}>
             {hasSearchableTerms ? (
-              <SearchResults childContainerRef={childContainerRef} onClose={onClose} />
+              <SearchResults
+                childContainerRef={childContainerRef}
+                onClose={onClose}
+                pointerOverlayRef={pointerOverlayRef}
+              />
             ) : (
-              <RecentSearches childContainerRef={childContainerRef} showFiltersOnClick />
+              <RecentSearches
+                childContainerRef={childContainerRef}
+                pointerOverlayRef={pointerOverlayRef}
+                showFiltersOnClick
+              />
             )}
           </SearchContentWrapper>
 
@@ -150,6 +164,7 @@ const Overlay = styled.div`
 const SearchContentWrapper = styled(Box)`
   overflow-x: hidden;
   overflow-y: auto;
+  position: relative;
 `
 
 const TypeFilterWrapper = styled(Card)`
