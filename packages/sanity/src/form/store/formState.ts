@@ -178,6 +178,7 @@ function prepareFieldMember(props: {
       openPath: parent.openPath,
       collapsedPaths: scopedCollapsedPaths,
       collapsedFieldSets: scopedCollapsedFieldsets,
+      readOnly: parent.readOnly,
     })
 
     if (inputState === null) {
@@ -265,6 +266,17 @@ function prepareFieldMember(props: {
       const scopedCollapsedPaths = parent.collapsedPaths?.children?.[field.name]
       const scopedCollapsedFieldSets = parent.collapsedFieldSets?.children?.[field.name]
 
+      const {readOnly} = callConditionalProperties(
+        field.type,
+        {
+          value: fieldValue,
+          parent: parent.value,
+          document: parent.document,
+          currentUser: parent.currentUser,
+        },
+        ['readOnly']
+      )
+
       const fieldState = prepareArrayOfObjectsInputState({
         schemaType: field.type,
         parent: parent.value,
@@ -282,6 +294,7 @@ function prepareFieldMember(props: {
         collapsedFieldSets: scopedCollapsedFieldSets,
         level: fieldLevel,
         path: fieldPath,
+        readOnly: props.parent.readOnly || readOnly,
       })
 
       if (fieldState === null) {
@@ -323,6 +336,17 @@ function prepareFieldMember(props: {
       const scopedCollapsedPaths = parent.collapsedPaths?.children?.[field.name]
       const scopedCollapsedFieldSets = parent.collapsedFieldSets?.children?.[field.name]
 
+      const {readOnly} = callConditionalProperties(
+        field.type,
+        {
+          value: fieldValue,
+          parent: parent.value,
+          document: parent.document,
+          currentUser: parent.currentUser,
+        },
+        ['readOnly']
+      )
+
       const fieldState = prepareArrayOfPrimitivesInputState({
         changed: isChangedValue(fieldValue, fieldComparisonValue),
         comparisonValue: fieldComparisonValue as FIXME,
@@ -340,6 +364,7 @@ function prepareFieldMember(props: {
         collapsedFieldSets: scopedCollapsedFieldSets,
         level: fieldLevel,
         path: fieldPath,
+        readOnly: parent.readOnly || readOnly,
       })
 
       if (fieldState === null) {
@@ -390,6 +415,7 @@ function prepareFieldMember(props: {
       value: fieldValue as boolean | string | number | undefined,
       schemaType: field.type as PrimitiveSchemaType,
       path: fieldPath,
+      readOnly: parent.readOnly || fieldConditionalProps.readOnly,
     })
 
     return {
@@ -485,7 +511,7 @@ function prepareObjectInputState<T>(
   const parentProps: RawState<ObjectSchemaType, unknown> = {
     ...props,
     hidden,
-    readOnly,
+    readOnly: props.readOnly || readOnly,
   }
 
   // note: this is needed because not all object types gets a ´fieldsets´ property during schema parsing.
@@ -586,7 +612,7 @@ function prepareObjectInputState<T>(
     value: props.value as Record<string, unknown> | undefined,
     changed: isChangedValue(props.value, props.comparisonValue),
     schemaType: props.schemaType,
-    readOnly: props.readOnly,
+    readOnly: props.readOnly || readOnly,
     path: props.path,
     id: toString(props.path),
     level: props.level,
@@ -634,7 +660,7 @@ function prepareArrayOfPrimitivesInputState<T extends (boolean | string | number
   return {
     changed: members.some((m) => m.kind === 'item' && m.item.changed), // TODO: is this correct? There could be field and fieldsets here?
     value: props.value as T,
-    readOnly,
+    readOnly: props.readOnly || readOnly,
     schemaType: props.schemaType,
     focused: isEqual(props.path, props.focusPath),
     focusPath: trimChildPath(props.path, props.focusPath),
@@ -688,7 +714,7 @@ function prepareArrayOfObjectsInputState<T extends {_key: string}[]>(
   return {
     changed: members.some((m) => m.kind === 'item' && m.item.changed),
     value: props.value as T,
-    readOnly,
+    readOnly: props.readOnly || readOnly,
     schemaType: props.schemaType,
     focused: isEqual(props.path, props.focusPath),
     focusPath: trimChildPath(props.path, props.focusPath),
@@ -808,6 +834,18 @@ function prepareArrayOfPrimitivesMember(props: {
       },
     }
   }
+
+  const {readOnly} = callConditionalProperties(
+    itemType,
+    {
+      value: itemValue,
+      parent: parent.value,
+      document: parent.document,
+      currentUser: parent.currentUser,
+    },
+    ['readOnly']
+  )
+
   const item = preparePrimitiveInputState({
     ...parent,
     path: itemPath,
@@ -815,6 +853,7 @@ function prepareArrayOfPrimitivesMember(props: {
     level: itemLevel,
     value: itemValue,
     comparisonValue: itemComparisonValue,
+    readOnly: parent.readOnly || readOnly,
   })
 
   return {
