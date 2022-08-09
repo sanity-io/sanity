@@ -58,9 +58,10 @@ export const DocumentPaneProvider = memo(({children, index, pane, paneKey}: Prop
   const {markers: markersRaw} = useValidationStatus(documentId, documentType)
   const connectionState = useConnectionState(documentId, documentType)
   const documentSchema = schema.get(documentType)
-  const {totalCount: totalReferenceCount} = useReferringDocuments(options.id, {
+  const {totalCount, isLoading: isReferencesLoading} = useReferringDocuments(options.id, {
     externalPollInterval: 1000 * 60,
   })
+  const totalReferenceCount = isReferencesLoading ? undefined : totalCount
   const value: Partial<SanityDocument> =
     editState?.draft || editState?.published || initialValue.value
   const actions = useMemo(() => (editState ? resolveDocumentActions(editState) : null), [editState])

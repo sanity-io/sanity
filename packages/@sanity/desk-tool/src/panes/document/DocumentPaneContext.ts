@@ -47,7 +47,7 @@ export interface DocumentPaneContextValue {
   timeline: Timeline
   timelineMode: TimelineMode
   title: string | null
-  totalReferenceCount: number
+  totalReferenceCount: number | undefined
   value: Partial<SanityDocument>
   views: PaneView[]
 }
