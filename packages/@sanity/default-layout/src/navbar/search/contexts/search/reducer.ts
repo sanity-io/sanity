@@ -1,6 +1,6 @@
-import {SearchTerms} from '@sanity/base'
-import {ObjectSchemaType} from '@sanity/types'
-import {SearchHit} from '../../types'
+import type {SearchTerms} from '@sanity/base'
+import type {ObjectSchemaType} from '@sanity/types'
+import type {SearchHit} from '../../types'
 import {debugWithName} from '../../utils/debug'
 import {sortTypes} from './selectors'
 
