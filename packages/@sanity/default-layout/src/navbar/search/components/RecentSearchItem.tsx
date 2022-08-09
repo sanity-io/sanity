@@ -70,7 +70,7 @@ export function RecentSearchItem(props: RecentSearchesProps) {
 }
 
 const CloseButton = styled.div`
-  opacity: 0.5;
+  opacity: 0.8;
   visibility: hidden;
 
   ${CommandPaletteButton}:hover & {
@@ -78,6 +78,6 @@ const CloseButton = styled.div`
   }
 
   &:hover {
-    opacity: 1;
+    opacity: 0.4;
   }
 `

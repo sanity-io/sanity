@@ -49,7 +49,12 @@ export function SearchHeader({inputRef, onClose}: SearchHeaderProps) {
     <DialogWrapper flex={1}>
       <Flex align="center" flex={1}>
         {/* Search field */}
-        <Box flex={1} padding={onClose ? 2 : 1}>
+        <Box
+          flex={1}
+          paddingLeft={onClose ? 2 : 1}
+          paddingRight={onClose ? 2 : 0}
+          paddingY={onClose ? 2 : 1}
+        >
           <CustomTextInput
             border={false}
             clearButton={!!terms.query}
