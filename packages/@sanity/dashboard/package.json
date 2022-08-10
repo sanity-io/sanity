@@ -2,7 +2,7 @@
   "name": "@sanity/dashboard",
   "version": "2.30.4",
   "description": "Tool for rendering dashboard widgets",
-  "main": "./lib/DashboardTool.js",
+  "main": "./lib/index.js",
   "types": "./dist/dts",
   "author": "Sanity.io <hello@sanity.io>",
   "license": "MIT",
