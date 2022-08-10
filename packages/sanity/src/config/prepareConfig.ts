@@ -12,6 +12,7 @@ import {AuthStore, createAuthStore} from '../datastores'
 import {InitialValueTemplateItem, Template, TemplateResponse} from '../templates'
 import {isNonNullable} from '../util'
 import {defaultFileAssetSources, defaultImageAssetSources} from '../form/defaults'
+import {validateWorkspaces} from '../studio/workspaces/validateWorkspaces'
 import {
   Source,
   SourceOptions,
@@ -70,8 +71,15 @@ export function prepareConfig(config: Config): PreparedConfig {
     ? config
     : [config]
 
-  // TODO: throw if there is more than one workspace with the same name
-  // TODO: call `validateWorkspaceBasePaths`
+  try {
+    validateWorkspaces({workspaces: workspaceOptions})
+  } catch (e) {
+    throw new ConfigResolutionError({
+      name: '',
+      type: 'workspace',
+      causes: [e.message],
+    })
+  }
 
   const workspaces = workspaceOptions.map(
     ({unstable_sources: nestedSources = [], ...rootSource}): WorkspaceSummary => {
