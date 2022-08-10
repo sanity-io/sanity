@@ -53,7 +53,9 @@ export function isArraySchemaType(type: unknown): type is ArraySchemaType {
   return type.jsonType === 'array'
 }
 
-export function isArrayOfObjectsSchemaType(type: unknown): type is ArraySchemaType {
+export function isArrayOfObjectsSchemaType(
+  type: unknown
+): type is ArraySchemaType<ObjectSchemaType> {
   return isArraySchemaType(type) && type.of.every((memberType) => isObjectSchemaType(memberType))
 }
 
