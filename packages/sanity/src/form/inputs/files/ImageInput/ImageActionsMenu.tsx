@@ -50,7 +50,7 @@ export function ImageActionsMenu(props: Props) {
             {children}
           </Menu>
         }
-        portal="documentScrollElement"
+        portal
         constrainSize
         open={isMenuOpen}
       >
