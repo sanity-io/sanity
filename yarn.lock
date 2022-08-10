@@ -3026,10 +3026,10 @@
     colors "~1.2.1"
     string-argv "~0.3.1"
 
-"@sanity/asset-utils@^1.2.3":
-  version "1.2.3"
-  resolved "https://registry.yarnpkg.com/@sanity/asset-utils/-/asset-utils-1.2.3.tgz#a90c7895c6506405d64c2363db131923ba1fa6ef"
-  integrity sha512-0eOR0D6zcqd6nEmAGIJ93ibRGO6ocYzQ5aEuyYvngHy5MDDjUfC821UnF/YPIcxiMXg2DLDjWd4EPt9F8frKNQ==
+"@sanity/asset-utils@^1.2.5":
+  version "1.2.5"
+  resolved "https://registry.yarnpkg.com/@sanity/asset-utils/-/asset-utils-1.2.5.tgz#85b306b98593fbb1243ecd0402bfb349f9e37f3e"
+  integrity sha512-t1WetjlVR4hH6ppxN9KGK7her+qUJvm9f9ZTXXhhbzG0ntvajaG/tgFMFSlkm8MWVrwOm1Va/Gb6L0nPiFkMdw==
 
 "@sanity/bifur-client@^0.0.8":
   version "0.0.8"
