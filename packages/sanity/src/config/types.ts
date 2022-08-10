@@ -196,7 +196,7 @@ export type AsyncConfigPropertyReducer<TValue, TContext> = (
 export type Plugin<TOptions = void> = (options: TOptions) => PluginOptions
 
 export interface WorkspaceOptions extends SourceOptions {
-  basePath?: string
+  basePath: string
   subtitle?: string
   logo?: React.ComponentType
   icon?: React.ComponentType
@@ -346,7 +346,15 @@ export interface Workspace extends Omit<Source, 'type'> {
   unstable_sources: Source[]
 }
 
-export type Config = WorkspaceOptions | WorkspaceOptions[]
+/**
+ * If a single workspace is used, not specifying a name or basePath is acceptable
+ */
+export type SingleWorkspace = Omit<WorkspaceOptions, 'name' | 'basePath'> & {
+  name?: string
+  basePath?: string
+}
+
+export type Config = SingleWorkspace | WorkspaceOptions[]
 
 export interface PreparedConfig {
   type: 'prepared-config'

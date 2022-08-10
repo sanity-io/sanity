@@ -12,7 +12,15 @@ import {AuthStore, createAuthStore} from '../datastores'
 import {InitialValueTemplateItem, Template, TemplateResponse} from '../templates'
 import {isNonNullable} from '../util'
 import {defaultFileAssetSources, defaultImageAssetSources} from '../form/defaults'
-import {Source, SourceOptions, Config, WorkspaceSummary, PreparedConfig} from './types'
+import {
+  Source,
+  SourceOptions,
+  Config,
+  WorkspaceSummary,
+  PreparedConfig,
+  SingleWorkspace,
+  WorkspaceOptions,
+} from './types'
 import {
   schemaTypesReducer,
   resolveProductionUrlReducer,
@@ -58,7 +66,9 @@ function normalizeLogo(
  * of the Studio or for testing, use `resolveConfig`.
  */
 export function prepareConfig(config: Config): PreparedConfig {
-  const workspaceOptions = Array.isArray(config) ? config : [config]
+  const workspaceOptions: WorkspaceOptions[] | [SingleWorkspace] = Array.isArray(config)
+    ? config
+    : [config]
 
   // TODO: throw if there is more than one workspace with the same name
   // TODO: call `validateWorkspaceBasePaths`
@@ -96,8 +106,8 @@ export function prepareConfig(config: Config): PreparedConfig {
         })
 
         const schemaValidationProblemGroups = schema._validation
-        const schemaErrors = schemaValidationProblemGroups?.filter(
-          (msg) => !!msg.problems.find((p) => p.severity === 'error')
+        const schemaErrors = schemaValidationProblemGroups?.filter((msg) =>
+          msg.problems.some((p) => p.severity === 'error')
         )
 
         if (schemaValidationProblemGroups && schemaErrors?.length) {
@@ -142,7 +152,7 @@ export function prepareConfig(config: Config): PreparedConfig {
           title,
           `${rootSource.projectId} ${rootSource.dataset}`
         ),
-        name: rootSource.name,
+        name: rootSource.name || 'default',
         projectId: rootSource.projectId,
         theme: rootSource.theme || studioTheme,
         title,

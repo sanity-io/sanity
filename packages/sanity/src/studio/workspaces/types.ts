@@ -1,5 +1,5 @@
 export interface WorkspaceLike {
-  name: string
+  name?: string
   title?: string
   basePath?: string
 }

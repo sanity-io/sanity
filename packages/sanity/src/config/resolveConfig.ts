@@ -3,7 +3,7 @@ import {first, map} from 'rxjs/operators'
 import {CurrentUser} from '@sanity/types'
 import {SanityClient} from '@sanity/client'
 import {createMockAuthStore} from '../datastores/authStore/createMockAuthStore'
-import {Config, Source, Workspace, WorkspaceOptions} from './types'
+import {Config, SingleWorkspace, Source, Workspace, WorkspaceOptions} from './types'
 import {prepareConfig} from './prepareConfig'
 
 /**
@@ -34,8 +34,8 @@ export function resolveConfig(config: Config): Observable<Workspace[]> {
 }
 
 type CreateWorkspaceFromConfigOptions =
-  | WorkspaceOptions
-  | (WorkspaceOptions & {currentUser: CurrentUser; client: SanityClient})
+  | SingleWorkspace
+  | (SingleWorkspace & {currentUser: CurrentUser; client: SanityClient})
 
 /**
  * PRIMARILY FOR TESTING PURPOSES.
