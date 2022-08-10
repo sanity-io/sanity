@@ -13,7 +13,7 @@ import {matchWorkspace} from './matchWorkspace'
 interface ActiveWorkspaceMatcherProps {
   children?: React.ReactChild
   unstable_history?: History
-  NotFoundComponent: React.ComponentType
+  NotFoundComponent: React.ComponentType<{onNavigateToDefaultWorkspace: () => void}>
   LoadingComponent: React.ComponentType
 }
 
@@ -81,6 +81,11 @@ export function ActiveWorkspaceMatcher({
     [history, workspaces]
   )
 
+  const defaultWorkspaceName = workspaces[0].name
+  const handleNavigateToDefaultWorkspace = useCallback(() => {
+    setActiveWorkspaceName(defaultWorkspaceName)
+  }, [setActiveWorkspaceName, defaultWorkspaceName])
+
   const value = useMemo(
     () => ({
       __internal: {history},
@@ -90,8 +95,13 @@ export function ActiveWorkspaceMatcher({
     [history, activeWorkspace, setActiveWorkspaceName]
   )
 
-  if (notFound) return <NotFoundComponent />
-  if (!value.activeWorkspace) return <LoadingComponent />
+  if (notFound) {
+    return <NotFoundComponent onNavigateToDefaultWorkspace={handleNavigateToDefaultWorkspace} />
+  }
+
+  if (!value.activeWorkspace) {
+    return <LoadingComponent />
+  }
 
   return (
     <ActiveWorkspaceMatcherContext.Provider value={value as ActiveWorkspaceMatcherContextValue}>
