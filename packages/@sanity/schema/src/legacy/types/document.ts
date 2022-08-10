@@ -2,6 +2,7 @@ import {ObjectType} from './object'
 
 const DOCUMENT_CORE = {
   name: 'document',
+  title: 'Document',
   type: null,
   jsonType: 'object',
 }

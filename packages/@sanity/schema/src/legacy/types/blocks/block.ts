@@ -25,6 +25,7 @@ const INHERITED_FIELDS = [
 
 const BLOCK_CORE = {
   name: 'block',
+  title: 'Block',
   type: null,
   jsonType: 'object',
 }

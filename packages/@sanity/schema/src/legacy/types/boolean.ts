@@ -6,6 +6,7 @@ const OVERRIDABLE_FIELDS = [...DEFAULT_OVERRIDEABLE_FIELDS]
 
 const BOOLEAN_CORE = {
   name: 'boolean',
+  title: 'Boolean',
   type: null,
   jsonType: 'boolean',
 }

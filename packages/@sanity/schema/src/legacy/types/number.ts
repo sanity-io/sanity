@@ -6,6 +6,7 @@ const OVERRIDABLE_FIELDS = [...DEFAULT_OVERRIDEABLE_FIELDS]
 
 const NUMBER_CORE = {
   name: 'number',
+  title: 'Number',
   type: null,
   jsonType: 'number',
 }

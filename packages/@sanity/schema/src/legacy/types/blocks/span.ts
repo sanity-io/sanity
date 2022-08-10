@@ -15,6 +15,7 @@ const INHERITED_FIELDS = [
 
 const SPAN_CORE = {
   name: 'span',
+  title: 'Span',
   type: null,
   jsonType: 'object',
 }
