@@ -12,11 +12,20 @@ export const dependencies = {
 export const generateSanityManifest = (base) => ({
   ...base,
   plugins: ['@sanity/dashboard'].concat(base.plugins.concat(['asset-source-unsplash', 'media'])),
-
   parts: [
     {
       implements: 'part:@sanity/dashboard/config',
       path: './dashboardConfig.js',
+    },
+    {
+      name: 'part:@sanity/dashboard/widget/new-document-list',
+      implements: 'part:@sanity/dashboard/widget',
+      path: './widgets/new-document-list/DocumentList',
+    },
+    {
+      name: 'part:@sanity/dashboard/widget/getting-started-docs',
+      implements: 'part:@sanity/dashboard/widget',
+      path: './widgets/getting-started-docs/GettingStartedDocs',
     },
     {
       name: 'part:@sanity/base/schema',

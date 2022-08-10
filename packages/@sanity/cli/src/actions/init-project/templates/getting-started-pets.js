@@ -11,7 +11,6 @@ export const dependencies = {
 export const generateSanityManifest = (base) => ({
   ...base,
   plugins: base.plugins.concat(['asset-source-unsplash', 'media']),
-
   parts: [
     {
       name: 'part:@sanity/base/schema',
