@@ -1,11 +1,22 @@
 import React, {ReactNode, useCallback, useEffect, useRef, useState} from 'react'
-import {Popover, Box, Text, Heading, Flex, Button, Stack} from '@sanity/ui'
+import {Popover, Box, Text, Heading, Flex, Button, Grid} from '@sanity/ui'
 import {LinkIcon} from '@sanity/icons'
 import {TitleText, LinkCircle, HorizontalLine, StyledBox} from '../pane/PaneHeader.styles'
 import {useDeskToolSetting} from '../../settings'
 import {ReferencedDocTooltip} from './ReferencedDocTooltip'
 
-export function ReferencedDocHeading({title}: {title?: ReactNode}) {
+interface ReferenceDocHeadingProps {
+  title?: ReactNode
+  totalReferenceCount: number
+}
+
+interface InnerPopoverProps {
+  onClose: () => void
+  totalReferenceCount: number
+}
+
+export function ReferencedDocHeading(props: ReferenceDocHeadingProps) {
+  const {title, totalReferenceCount} = props
   const documentTitleRef = useRef(null)
   const [titleBoxSize, setTitleBoxSize] = useState(0)
   const [hidePopover, setHidePopover] = useDeskToolSetting(
@@ -34,7 +45,7 @@ export function ReferencedDocHeading({title}: {title?: ReactNode}) {
         <TitleText tabIndex={0} textOverflow="ellipsis" weight="semibold">
           {title}
         </TitleText>
-        <ReferencedDocTooltip />
+        <ReferencedDocTooltip totalReferenceCount={totalReferenceCount} />
       </Flex>
     )
   }
@@ -43,7 +54,9 @@ export function ReferencedDocHeading({title}: {title?: ReactNode}) {
     <>
       <Popover
         key={`popover-${titleBoxSize}`}
-        content={<InnerPopover onClose={handleHidePopover} />}
+        content={
+          <InnerPopover onClose={handleHidePopover} totalReferenceCount={totalReferenceCount} />
+        }
         placement="bottom-start"
         referenceElement={documentTitleRef.current}
         tone="default"
@@ -58,14 +71,15 @@ export function ReferencedDocHeading({title}: {title?: ReactNode}) {
           <TitleText tabIndex={0} textOverflow="ellipsis" weight="semibold">
             <Box marginBottom={2}>{title}</Box>
           </TitleText>
-          <ReferencedDocTooltip />
+          <ReferencedDocTooltip totalReferenceCount={totalReferenceCount} />
         </Flex>
       </ObserveElementResize>
     </>
   )
 }
 
-function InnerPopover({onClose}: {onClose?: () => void}) {
+function InnerPopover(props: InnerPopoverProps) {
+  const {onClose, totalReferenceCount} = props
   return (
     <StyledBox as="div">
       <Box margin={4}>
@@ -77,13 +91,24 @@ function InnerPopover({onClose}: {onClose?: () => void}) {
           </Box>
           <Heading size={1}>This is a referenced document</Heading>
         </Flex>
-        <Text>Changes to this type of document may affect other documents that reference it</Text>
+        <Text>
+          This document is referenced by {totalReferenceCount} other
+          {totalReferenceCount === 1 ? ' document' : ' documents'}. Changes made here will be
+          reflected anywhere content from this document is used.
+        </Text>
       </Box>
       <HorizontalLine />
-      <Box padding={3}>
-        <Stack space={2}>
+      <Box marginX={1} padding={3}>
+        <Grid columns={2} gap={3}>
+          <Button
+            as="a"
+            target="_blank"
+            mode="ghost"
+            href="https://www.sanity.io/docs/connected-content"
+            text="Learn more"
+          />
           <Button onClick={onClose} tone="primary" text="Got it" autoFocus />
-        </Stack>
+        </Grid>
       </Box>
     </StyledBox>
   )
