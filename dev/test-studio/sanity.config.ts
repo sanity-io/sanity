@@ -71,7 +71,7 @@ export default createConfig([
     basePath: '/test',
   },
   {
-    name: 'Playground',
+    name: 'playground',
     title: 'Test Studio (playground)',
     logo: Branding,
     projectId: 'ppsg7ml5',
