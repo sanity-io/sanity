@@ -19,7 +19,7 @@ export class ConfigResolutionError extends Error {
       )
 
     super(
-      `Could not resolve ${type} \`${name}\`:\n${messages
+      `Could not resolve ${type}${name ? ` \`${name}\`` : ''}:\n${messages
         .map((message) => `\t- ${message}`)
         .join('\n')}\n\n`
     )
