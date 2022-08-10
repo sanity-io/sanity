@@ -17,6 +17,7 @@ import {Subscription} from 'rxjs'
 import {randomKey, resolveTypeName} from '@sanity/util/content'
 import {SanityClient} from '@sanity/client'
 import {Uploader, UploaderResolver, UploadEvent} from '../../../studio/uploads/types'
+import {getSchemaTypeTitle} from '../../../../schema/helpers'
 import {isDev} from '../../../../environment'
 import {Alert} from '../../../components/Alert'
 import {Details} from '../../../components/Details'
@@ -264,6 +265,8 @@ export class ArrayInput extends React.PureComponent<ArrayInputProps> {
     if (isReferenceSchemaType(itemProps.schemaType)) {
       return itemProps.children
     }
+
+    const typeTitle = getSchemaTypeTitle(itemProps.schemaType)
     return (
       <>
         <ArrayItem
@@ -287,7 +290,7 @@ export class ArrayInput extends React.PureComponent<ArrayInputProps> {
           {itemProps.open ? (
             <Dialog
               width={1}
-              header={`Edit ${itemProps.schemaType.title}`}
+              header={`Edit ${typeTitle}`}
               id={`${id}-item-${itemProps.key}-dialog`}
               onClose={itemProps.onClose}
             >
