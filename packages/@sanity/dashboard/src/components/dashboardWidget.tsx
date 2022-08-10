@@ -43,16 +43,18 @@ const Content = styled(Box)`
 
 interface DashboardWidgetProps {
   header?: string
+  className?: string
   children: React.ReactNode
   footer?: React.ReactNode
+  hideFooterBorder?: boolean
 }
 
 export const DashboardWidget = forwardRef(
   (props: DashboardWidgetProps, ref: React.Ref<HTMLDivElement>) => {
-    const {header, children, footer} = props
+    const {header, children, footer, hideFooterBorder, className} = props
 
     return (
-      <Root radius={3} display="flex" ref={ref}>
+      <Root radius={3} display="flex" ref={ref} className={className}>
         {header && (
           <Header borderBottom paddingX={3} paddingY={4}>
             <Heading size={1} textOverflow="ellipsis">
@@ -60,8 +62,12 @@ export const DashboardWidget = forwardRef(
             </Heading>
           </Header>
         )}
-        {children && <Content>{children}</Content>}
-        {footer && <Footer borderTop>{footer}</Footer>}
+        {children && <Content data-name="content">{children}</Content>}
+        {footer && (
+          <Footer sizing="border" borderTop={!hideFooterBorder}>
+            {footer}
+          </Footer>
+        )}
       </Root>
     )
   }
