@@ -113,10 +113,17 @@ function renderDocumentFromWorkerData() {
 
   // Require hook #2
   // Use `esbuild` to allow JSX/TypeScript and modern JS features
-  // eslint-disable-next-line import/no-unassigned-import
   const {unregister} = require('esbuild-register/dist/node').register({
     target: `node${process.version.slice(1)}`,
-    loader: 'tsx',
+    extensions: ['.jsx', '.ts', '.tsx', '.mjs'],
+  })
+
+  // Require hook #3
+  // Same as above, but we don't want to enforce a .jsx extension for anything with JSX
+  const {unregister: unregisterJs} = require('esbuild-register/dist/node').register({
+    target: `node${process.version.slice(1)}`,
+    extensions: ['.js'],
+    loader: 'jsx',
   })
 
   const html = getDocumentHtml(studioRootPath, props)
@@ -125,6 +132,7 @@ function renderDocumentFromWorkerData() {
 
   // Be polite and clean up after esbuild-register
   unregister()
+  unregisterJs()
 }
 
 function getDocumentHtml(studioRootPath: string, props?: DocumentProps): string {
