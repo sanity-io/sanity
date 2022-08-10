@@ -88,15 +88,12 @@ describe('validateBasePaths', () => {
 
 describe('validateNames', () => {
   it('allows missing name on single workspace', () => {
-    // @ts-expect-error Types should encourage a name (shouldn't they?)
     validateNames([{basePath: '/'}])
-    // @ts-expect-error Types should encourage a name (shouldn't they?)
     validateNames([{name: undefined, basePath: '/'}])
   })
 
   it('throws if more than one workspace is defined, but one or more workspace does not have a name', () => {
     expect(() => {
-      // @ts-expect-error Types should encourage a name
       validateNames([{basePath: '/first'}, {name: 'second', basePath: '/2nd'}])
     }).toThrowErrorMatchingInlineSnapshot(
       `"All workspaces must have a \`name\`, unless only a single workspace is defined. Workspace at index 0 did not define a \`name\`."`
@@ -104,7 +101,6 @@ describe('validateNames', () => {
 
     expect(() => {
       validateNames([
-        // @ts-expect-error Types should encourage a name
         {basePath: '/first', title: 'First'},
         {name: 'second', basePath: '/2nd'},
       ])
@@ -113,7 +109,6 @@ describe('validateNames', () => {
     )
 
     expect(() => {
-      // @ts-expect-error Types should encourage a name
       validateNames([{name: 'first', basePath: '/1st'}, {basePath: '/second'}])
     }).toThrowErrorMatchingInlineSnapshot(
       `"All workspaces must have a \`name\`, unless only a single workspace is defined. Workspace at index 1 did not define a \`name\`."`
@@ -122,7 +117,6 @@ describe('validateNames', () => {
     expect(() => {
       validateNames([
         {name: 'first', basePath: '/1st'},
-        // @ts-expect-error Types should encourage a name
         {basePath: '/second', title: 'Second'},
       ])
     }).toThrowErrorMatchingInlineSnapshot(

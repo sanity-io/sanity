@@ -1,11 +1,11 @@
 import React from 'react'
 import {SanityClient} from '@sanity/client'
 import {LayerProvider, studioTheme, ThemeProvider, ToastProvider} from '@sanity/ui'
-import {createWorkspaceFromConfig, WorkspaceOptions} from '../../src/config'
+import {createWorkspaceFromConfig, SingleWorkspace} from '../../src/config'
 import {SourceProvider, WorkspaceProvider} from '../../src/studio'
 
 interface TestProviderOptions {
-  config: WorkspaceOptions
+  config: SingleWorkspace
   client: SanityClient
 }
 
