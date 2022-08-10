@@ -9,6 +9,7 @@ const OVERRIDABLE_FIELDS = [...DEFAULT_OVERRIDEABLE_FIELDS]
 
 const IMAGE_CORE = {
   name: 'image',
+  title: 'Image',
   type: null,
   jsonType: 'object',
 }

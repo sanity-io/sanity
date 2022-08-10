@@ -6,6 +6,7 @@ const OVERRIDABLE_FIELDS = [...DEFAULT_OVERRIDEABLE_FIELDS]
 
 const STRING_CORE = {
   name: 'string',
+  title: 'String',
   type: null,
   jsonType: 'string',
 }

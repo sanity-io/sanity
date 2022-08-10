@@ -19,6 +19,7 @@ export const ObjectType = {
   get() {
     return {
       name: 'object',
+      title: 'Object',
       type: null,
       jsonType: 'object',
     }

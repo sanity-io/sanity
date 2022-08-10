@@ -22,6 +22,7 @@ const OVERRIDABLE_FIELDS = [...DEFAULT_OVERRIDEABLE_FIELDS]
 
 const REFERENCE_CORE = {
   name: 'reference',
+  title: 'Reference',
   type: null,
   jsonType: 'object',
 }

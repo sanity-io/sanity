@@ -14,6 +14,7 @@ const OVERRIDABLE_FIELDS = [...DEFAULT_OVERRIDEABLE_FIELDS]
 
 const FILE_CORE = {
   name: 'file',
+  title: 'File',
   type: null,
   jsonType: 'object',
 }
