@@ -95,15 +95,15 @@ export function MemberItem(props: MemberItemProps) {
     },
     [onSetPathCollapsed, member.item.path]
   )
-  const handleCloseField = useCallback(
+  const handleCloseField = useCallback(() => {
+    onPathOpen(member.item.path)
+  }, [onPathOpen, member.item.path])
+  const handleOpenField = useCallback(
     (fieldName: string) => {
       onPathOpen(member.item.path.concat(fieldName))
     },
     [onPathOpen, member.item.path]
   )
-  const handleOpenField = useCallback(() => {
-    onPathOpen(member.item.path)
-  }, [onPathOpen, member.item.path])
   const handleExpandFieldSet = useCallback(
     (fieldsetName: string) => {
       onSetFieldSetCollapsed(member.item.path.concat(fieldsetName), false)
