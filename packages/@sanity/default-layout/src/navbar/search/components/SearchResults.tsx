@@ -1,3 +1,6 @@
+// @todo: remove the following line when part imports has been removed from this file
+///<reference types="@sanity/types/parts" />
+
 import {TextWithTone} from '@sanity/base/components'
 import {WarningOutlineIcon} from '@sanity/icons'
 import {Box, Flex, Stack} from '@sanity/ui'
@@ -8,7 +11,7 @@ import {useSearchState} from '../contexts/search'
 import {addSearchTerm} from '../datastores/recentSearches'
 import {NoResults} from './NoResults'
 import {PointerOverlay} from './PointerOverlay'
-import {SearchResultItem} from './SearchResultItem'
+import {SearchResultItem} from './searchResultItem'
 
 interface SearchResultsProps {
   childContainerRef: RefObject<HTMLDivElement>

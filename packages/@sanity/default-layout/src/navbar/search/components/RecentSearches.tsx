@@ -1,3 +1,6 @@
+// @todo: remove the following line when part imports has been removed from this file
+///<reference types="@sanity/types/parts" />
+
 import type {SearchTerms} from '@sanity/base'
 import {Box, Button, Label, Stack, Text, useMediaIndex} from '@sanity/ui'
 import schema from 'part:@sanity/base/schema'
