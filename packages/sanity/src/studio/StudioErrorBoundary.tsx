@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react'
-import {Button, Card, Code, ErrorBoundary, Heading, Stack, useToast} from '@sanity/ui'
+import {Button, Card, Code, Container, ErrorBoundary, Heading, Stack, useToast} from '@sanity/ui'
 import {SchemaError} from '../config'
 import {isRecord} from '../util'
 import {globalScope} from '../util/globalScope'
@@ -58,32 +58,41 @@ export function StudioErrorBoundary({children}: StudioErrorBoundaryProps) {
 
   if (error) {
     return (
-      <Card padding={4} tone="critical">
-        <Stack space={4}>
-          {/* TODO: better error boundary */}
+      <Card
+        height="fill"
+        overflow="auto"
+        paddingY={[4, 5, 6, 7]}
+        paddingX={4}
+        sizing="border"
+        tone="critical"
+      >
+        <Container width={3}>
+          <Stack space={4}>
+            {/* TODO: better error boundary */}
 
-          <Heading>An error occurred</Heading>
+            <Heading>An error occurred</Heading>
 
-          <div>
-            <Button
-              // eslint-disable-next-line react/jsx-no-bind
-              onClick={() => setError({error: null})}
-              text="Retry"
-              tone="default"
-            />
-          </div>
+            <div>
+              <Button
+                // eslint-disable-next-line react/jsx-no-bind
+                onClick={() => setError({error: null})}
+                text="Retry"
+                tone="default"
+              />
+            </div>
 
-          <Card border radius={2} overflow="auto" padding={4} tone="inherit">
-            <Stack space={4}>
-              {message && (
-                <Code size={1}>
-                  <strong>Error: {message}</strong>
-                </Code>
-              )}
-              {stack && <Code size={1}>{stack}</Code>}
-            </Stack>
-          </Card>
-        </Stack>
+            <Card border radius={2} overflow="auto" padding={4} tone="inherit">
+              <Stack space={4}>
+                {message && (
+                  <Code size={1}>
+                    <strong>Error: {message}</strong>
+                  </Code>
+                )}
+                {stack && <Code size={1}>{stack}</Code>}
+              </Stack>
+            </Card>
+          </Stack>
+        </Container>
       </Card>
     )
   }
