@@ -1,4 +1,4 @@
-import React, {MouseEventHandler, ReactNode, useState} from 'react'
+import React, {MouseEventHandler, ReactNode, useCallback, useState} from 'react'
 
 import {EllipsisVerticalIcon, CropIcon} from '@sanity/icons'
 import {Menu, Popover, useClickOutside} from '@sanity/ui'
@@ -15,12 +15,23 @@ interface Props {
 export function ImageActionsMenu(props: Props) {
   const {onEdit, children, showEdit, isMenuOpen, onMenuOpen} = props
   const [menuElement, setMenuRef] = useState<HTMLDivElement | null>(null)
+  const [menuButtonRef, setMenuButtonRef] = useState<HTMLButtonElement | null>(null)
 
   const handleClick = React.useCallback(() => onMenuOpen(true), [onMenuOpen])
 
   useClickOutside(
     React.useCallback(() => onMenuOpen(false), [onMenuOpen]),
     [menuElement]
+  )
+
+  const handleKeyDown = useCallback(
+    (e) => {
+      if (e.key === 'Escape') {
+        onMenuOpen(false)
+        menuButtonRef?.focus()
+      }
+    },
+    [menuButtonRef, onMenuOpen]
   )
 
   return (
@@ -33,12 +44,22 @@ export function ImageActionsMenu(props: Props) {
           data-testid="options-menu-edit-details"
         />
       )}
-      <Popover content={<Menu ref={setMenuRef}>{children}</Menu>} portal open={isMenuOpen}>
+      <Popover
+        content={
+          <Menu ref={setMenuRef} shouldFocus="first" onKeyDown={handleKeyDown}>
+            {children}
+          </Menu>
+        }
+        portal="documentScrollElement"
+        constrainSize
+        open={isMenuOpen}
+      >
         <ButtonContainer
           icon={EllipsisVerticalIcon}
           mode="ghost"
           data-testid="options-menu-button"
           onClick={handleClick}
+          ref={setMenuButtonRef}
         />
       </Popover>
     </MenuActionsWrapper>
