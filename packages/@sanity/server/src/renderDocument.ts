@@ -6,8 +6,10 @@
  * Then renders using ReactDOM to a string, which is sent back to the parent
  * process over the worker `postMessage` channel.
  */
+import fs from 'fs'
 import path from 'path'
 import {Worker, parentPort, workerData, isMainThread} from 'worker_threads'
+import chalk from 'chalk'
 import importFresh from 'import-fresh'
 import {generateHelpUrl} from '@sanity/generate-help-url'
 import {createElement} from 'react'
@@ -19,6 +21,7 @@ import {debug} from './debug'
 // Don't use threads in the jest world
 // eslint-disable-next-line no-process-env
 const useThreads = typeof process.env.JEST_WORKER_ID === 'undefined'
+const hasWarnedAbout = new Set<string>()
 
 const defaultProps = {
   entryPath: './.sanity/runtime/app.js',
@@ -49,12 +52,24 @@ export function renderDocument(options: {
     }
 
     const worker = new Worker(__filename, {
-      workerData: options,
+      workerData: {...options, shouldWarn: true},
     })
 
     worker.on('message', (msg) => {
-      if (msg.type === 'warn') {
-        console.warn(msg.message)
+      if (msg.type === 'warning') {
+        if (hasWarnedAbout.has(msg.warnKey)) {
+          return
+        }
+
+        if (Array.isArray(msg.message)) {
+          msg.message.forEach((warning: string) =>
+            console.warn(`${chalk.yellow('[warn]')} ${warning}`)
+          )
+        } else {
+          console.warn(`${chalk.yellow('[warn]')} ${msg.message}`)
+        }
+
+        hasWarnedAbout.add(msg.warnKey)
         return
       }
 
@@ -93,9 +108,7 @@ function renderDocumentFromWorkerData() {
     throw new Error('Must be used as a Worker with a valid options object in worker data')
   }
 
-  const monorepo = workerData.monorepo
-  const studioRootPath = workerData.studioRootPath
-  const props = workerData.props
+  const {monorepo, studioRootPath, props} = workerData || {}
 
   if (typeof studioRootPath !== 'string') {
     parentPort.postMessage({type: 'error', message: 'Missing/invalid `studioRootPath` option'})
@@ -158,21 +171,39 @@ function getDocumentComponent(studioRootPath: string) {
   const {DefaultDocument} = require('sanity')
   const userDefined = tryLoadDocumentComponent(studioRootPath)
 
-  if (userDefined) {
-    debug('Found user defined document component at %s', userDefined.path)
-
-    const DocumentComp = userDefined.component.default || userDefined.component
-    if (typeof DocumentComp === 'function') {
-      return DocumentComp
-    }
-
-    parentPort?.postMessage({
-      type: 'warning',
-      message: `Component at ${userDefined.path} did not have a default export that is a React component, using default document component from "sanity"`,
-    })
+  if (!userDefined) {
+    debug('Using default document component')
+    return DefaultDocument
   }
 
-  debug('Using default document component')
+  debug('Found user defined document component at %s', userDefined.path)
+
+  const DocumentComp = userDefined.component.default
+  if (typeof DocumentComp === 'function') {
+    debug('User defined document component is a function, assuming valid')
+    return DocumentComp
+  }
+
+  debug('User defined document component did not have a default export')
+  const userExports = Object.keys(userDefined.component).join(', ') || 'None'
+  const relativePath = path.relative(process.cwd(), userDefined.path)
+  const typeHint =
+    typeof userDefined.component.default === 'undefined'
+      ? ''
+      : ` (type was ${typeof userDefined.component.default})`
+
+  const warnKey = `${relativePath}/${userDefined.modified}`
+
+  parentPort?.postMessage({
+    type: 'warning',
+    message: [
+      `${relativePath} did not have a default export that is a React component${typeHint}`,
+      `Found named exports/properties: ${userExports}`.trim(),
+      `Using default document component from "sanity".`,
+    ],
+    warnKey,
+  })
+
   return DefaultDocument
 }
 
@@ -185,6 +216,8 @@ function tryLoadDocumentComponent(studioRootPath: string) {
         // eslint-disable-next-line import/no-dynamic-require
         component: importFresh<any>(componentPath),
         path: componentPath,
+        // eslint-disable-next-line no-sync
+        modified: Math.floor(fs.statSync(componentPath)?.mtimeMs),
       }
     } catch (err) {
       // Allow "not found" errors
