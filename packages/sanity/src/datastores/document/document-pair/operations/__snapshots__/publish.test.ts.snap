@@ -16,10 +16,12 @@ Object {
         Array [
           Object {
             "tag": "document.publish",
+            "visibility": "async",
           },
         ],
       ],
       "create": Array [],
+      "createIfNotExists": Array [],
       "createOrReplace": Array [
         Array [
           Object {
@@ -69,6 +71,7 @@ Object {
         Array [
           Object {
             "tag": "document.publish",
+            "visibility": "async",
           },
         ],
       ],
@@ -83,6 +86,7 @@ Object {
           },
         ],
       ],
+      "createIfNotExists": Array [],
       "createOrReplace": Array [],
       "delete": Array [
         Array [
@@ -112,6 +116,7 @@ Object {
         Array [
           Object {
             "tag": "document.publish",
+            "visibility": "async",
           },
         ],
       ],
@@ -152,6 +157,7 @@ Object {
           },
         ],
       ],
+      "createIfNotExists": Array [],
       "createOrReplace": Array [],
       "delete": Array [
         Array [

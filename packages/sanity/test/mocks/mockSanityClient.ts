@@ -4,6 +4,7 @@ export interface MockClientTransactionLog {
   id: number
   commit: any[][]
   create: any[][]
+  createIfNotExists: any[][]
   createOrReplace: any[][]
   delete: any[][]
   patch: any[][]
@@ -147,13 +148,20 @@ export function createMockSanityClient(data: {requests?: Record<string, any>} = 
 
         return of(requests[opts.uri] || requests['*'] || null)
       },
+
+      transaction: () => {
+        // $log.transaction.push(null)
+        // $log('transaction')
+
+        return _createTransaction({observable: true})
+      },
     },
 
     transaction: () => {
       // $log.transaction.push(null)
       // $log('transaction')
 
-      return _createTransaction()
+      return _createTransaction({observable: false})
     },
   }
 
@@ -162,13 +170,14 @@ export function createMockSanityClient(data: {requests?: Record<string, any>} = 
 
   return mockClient
 
-  function _createTransaction() {
+  function _createTransaction({observable}: {observable: boolean}) {
     const id = ++transactionId
 
     const $txLog: MockClientTransactionLog = {
       id,
       commit: [],
       create: [],
+      createIfNotExists: [],
       createOrReplace: [],
       delete: [],
       patch: [],
@@ -180,11 +189,16 @@ export function createMockSanityClient(data: {requests?: Record<string, any>} = 
       commit: (...args: any[]) => {
         // $log(`transaction#${id}.commit`, ...args)
         $txLog.commit.push(args)
-        return Promise.resolve({})
+        return observable ? of({}) : Promise.resolve({})
       },
       create: (...args: any[]) => {
         $txLog.create.push(args)
         // $log(`transaction#${id}.create`, ...args)
+        return tx
+      },
+      createIfNotExists: (...args: any[]) => {
+        $txLog.createIfNotExists.push(args)
+        // $log(`transaction#${id}.createIfNotExists`, ...args)
         return tx
       },
       createOrReplace: (...args: any[]) => {
