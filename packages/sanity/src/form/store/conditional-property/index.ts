@@ -1,1 +1,1 @@
-export * from './callConditionalProperty'
+export * from './resolveConditionalProperty'
