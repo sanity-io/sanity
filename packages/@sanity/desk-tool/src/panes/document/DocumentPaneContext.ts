@@ -21,7 +21,6 @@ export interface DocumentPaneContextValue {
   editState: EditStateFor | null
   documentId: string
   documentIdRaw: string
-  documentIsReferenced: boolean
   documentSchema: DocumentSchema | null
   documentType: string
   focusPath: Path
@@ -48,6 +47,7 @@ export interface DocumentPaneContextValue {
   timeline: Timeline
   timelineMode: TimelineMode
   title: string | null
+  totalReferenceCount: number | undefined
   value: Partial<SanityDocument>
   views: PaneView[]
 }

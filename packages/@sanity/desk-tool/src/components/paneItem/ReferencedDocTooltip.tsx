@@ -2,7 +2,7 @@ import React from 'react'
 import {Tooltip, Text, Box} from '@sanity/ui'
 import {LinkIcon} from '@sanity/icons'
 
-export function ReferencedDocTooltip() {
+export function ReferencedDocTooltip({totalReferenceCount}: {totalReferenceCount?: number}) {
   return (
     <Box marginLeft={2}>
       <Text>
@@ -10,7 +10,8 @@ export function ReferencedDocTooltip() {
           content={
             <Box padding={2}>
               <Text muted size={1}>
-                This is a referenced document
+                Referenced by {totalReferenceCount}
+                {totalReferenceCount === 1 ? ' document' : ' documents'}
               </Text>
             </Box>
           }

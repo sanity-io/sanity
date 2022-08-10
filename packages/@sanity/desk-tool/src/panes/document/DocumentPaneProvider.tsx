@@ -58,8 +58,10 @@ export const DocumentPaneProvider = memo(({children, index, pane, paneKey}: Prop
   const {markers: markersRaw} = useValidationStatus(documentId, documentType)
   const connectionState = useConnectionState(documentId, documentType)
   const documentSchema = schema.get(documentType)
-  const {totalCount} = useReferringDocuments(options.id, {externalPollInterval: 1000 * 60})
-  const documentIsReferenced = totalCount > 0
+  const {totalCount, isLoading: isReferencesLoading} = useReferringDocuments(options.id, {
+    externalPollInterval: 1000 * 60,
+  })
+  const totalReferenceCount = isReferencesLoading ? undefined : totalCount
   const value: Partial<SanityDocument> =
     editState?.draft || editState?.published || initialValue.value
   const actions = useMemo(() => (editState ? resolveDocumentActions(editState) : null), [editState])
@@ -221,7 +223,6 @@ export const DocumentPaneProvider = memo(({children, index, pane, paneKey}: Prop
     displayed,
     documentId,
     documentIdRaw,
-    documentIsReferenced,
     documentSchema,
     documentType,
     editState,
@@ -249,6 +250,7 @@ export const DocumentPaneProvider = memo(({children, index, pane, paneKey}: Prop
     timeline,
     timelineMode,
     title,
+    totalReferenceCount,
     value,
     views,
   }
