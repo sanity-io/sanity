@@ -26,6 +26,8 @@ import {resolveArrayInput} from './resolveArrayInput'
 import {resolveStringInput} from './resolveStringInput'
 import {resolveNumberInput} from './resolveNumberInput'
 import {defaultInputs} from './defaultInputs'
+import {getArrayFieldLevel, getObjectFieldLevel} from './helpers'
+import {isObjectField} from '../../utils/asserters'
 
 function resolveComponentFromTypeVariants(
   type: SchemaType
@@ -106,10 +108,12 @@ function PrimitiveField(field: FieldProps) {
 }
 
 function ObjectOrArrayField(field: ObjectFieldProps | ArrayFieldProps) {
+  const level = isObjectField(field) ? getObjectFieldLevel(field) : getArrayFieldLevel(field)
+
   return (
     <FormFieldSet
       data-testid={`field-${field.inputId}`}
-      level={field.level}
+      level={level}
       title={field.title}
       description={field.description}
       collapsed={field.collapsed}
@@ -132,9 +136,12 @@ function ImageOrFileField(field: ObjectFieldProps) {
   const presence = hotspotField?.open
     ? field.presence
     : field.presence.concat(hotspotField?.field.presence || [])
+
+  const level = getObjectFieldLevel(field)
+
   return (
     <FormFieldSet
-      level={field.level}
+      level={level}
       title={field.title}
       description={field.description}
       collapsed={field.collapsed}
