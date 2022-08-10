@@ -52,6 +52,8 @@ import {FormInput} from '../../../FormInput'
 import {MemberField, MemberFieldError, MemberFieldSet} from '../../../members'
 import {ImageActionsMenu} from './ImageActionsMenu'
 import {ImagePreview} from './ImagePreview'
+import {isImageSource} from '@sanity/asset-utils'
+import {InvalidImageWarning} from './InvalidImageWarning'
 
 export interface Image extends Partial<BaseImage> {
   _upload?: UploadState
@@ -339,6 +341,10 @@ export class ImageInput extends React.PureComponent<ImageInputProps, ImageInputS
     this.setState({isStale: true})
   }
 
+  handleClearField = () => {
+    this.props.onChange([unset(['asset']), unset(['crop']), unset(['hotspot'])])
+  }
+
   handleSelectFiles = (files: File[]) => {
     const {directUploads, readOnly} = this.props
     const {hoveringFiles} = this.state
@@ -394,7 +400,7 @@ export class ImageInput extends React.PureComponent<ImageInputProps, ImageInputS
     const {value, schemaType, readOnly, directUploads, imageUrlBuilder, resolveUploader} =
       this.props
 
-    if (!value) {
+    if (!value || !isImageSource(value)) {
       return null
     }
 
@@ -402,19 +408,20 @@ export class ImageInput extends React.PureComponent<ImageInputProps, ImageInputS
 
     const acceptedFiles = hoveringFiles.filter((file) => resolveUploader(schemaType, file))
     const rejectedFilesCount = hoveringFiles.length - acceptedFiles.length
+    const imageUrl = imageUrlBuilder
+      .width(2000)
+      .fit('max')
+      .image(value)
+      .dpr(getDevicePixelRatio())
+      .auto('format')
+      .url()
 
     return (
       <ImagePreview
         drag={!value?._upload && hoveringFiles.length > 0}
         isRejected={rejectedFilesCount > 0 || !directUploads}
         readOnly={readOnly}
-        src={imageUrlBuilder
-          .width(2000)
-          .fit('max')
-          .image(value)
-          .dpr(getDevicePixelRatio())
-          .auto('format')
-          .url()}
+        src={imageUrl}
         alt="Preview of uploaded image"
       />
     )
@@ -475,30 +482,36 @@ export class ImageInput extends React.PureComponent<ImageInputProps, ImageInputS
 
     return (
       <WithReferencedAsset observeAsset={observeAsset} reference={asset}>
-        {(assetDocument) => (
-          <ImageActionsMenu
-            isMenuOpen={isMenuOpen}
-            onEdit={this.handleOpenDialog}
-            showEdit={showAdvancedEditButton}
-            onMenuOpen={(isOpen) => this.setState({isMenuOpen: isOpen})}
-          >
-            <ActionsMenu
-              onUpload={this.handleSelectFiles}
-              browse={browseMenuItem}
-              onReset={this.handleRemoveButtonClick}
-              downloadUrl={imageUrlBuilder
-                .image(value.asset!)
-                .forceDownload(
-                  assetDocument.originalFilename || `download.${assetDocument.extension}`
-                )
-                .url()}
-              copyUrl={imageUrlBuilder.image(value.asset!).url()}
-              readOnly={readOnly}
-              directUploads={directUploads}
-              accept={accept}
-            />
-          </ImageActionsMenu>
-        )}
+        {({_id, originalFilename, extension}) => {
+          let copyUrl: string | undefined
+          let downloadUrl: string | undefined
+
+          if (isImageSource(value)) {
+            const filename = originalFilename || `download.${extension}`
+            downloadUrl = imageUrlBuilder.image(_id).forceDownload(filename).url()
+            copyUrl = imageUrlBuilder.image(_id).url()
+          }
+
+          return (
+            <ImageActionsMenu
+              isMenuOpen={isMenuOpen}
+              onEdit={this.handleOpenDialog}
+              showEdit={showAdvancedEditButton}
+              onMenuOpen={(isOpen) => this.setState({isMenuOpen: isOpen})}
+            >
+              <ActionsMenu
+                onUpload={this.handleSelectFiles}
+                browse={browseMenuItem}
+                onReset={this.handleRemoveButtonClick}
+                downloadUrl={downloadUrl}
+                copyUrl={copyUrl}
+                readOnly={readOnly}
+                directUploads={directUploads}
+                accept={accept}
+              />
+            </ImageActionsMenu>
+          )
+        }}
       </WithReferencedAsset>
     )
   }
@@ -677,11 +690,15 @@ export class ImageInput extends React.PureComponent<ImageInputProps, ImageInputS
   }
 
   renderAsset() {
-    const {value, changed, readOnly, onFocus, onBlur} = this.props
+    const {value, readOnly, onFocus, onBlur} = this.props
 
     const {hoveringFiles, isStale} = this.state
 
     const hasValueOrUpload = Boolean(value?._upload || value?.asset)
+
+    if (value && typeof value.asset !== 'undefined' && !value?._upload && !isImageSource(value)) {
+      return () => <InvalidImageWarning onClearValue={this.handleClearField} />
+    }
 
     // todo: convert this to a functional component and use this with useCallback
     //  it currently has to return a new function on every render in order to pick up state from this component
