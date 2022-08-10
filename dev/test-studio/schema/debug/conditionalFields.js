@@ -200,20 +200,14 @@ export default {
     {
       name: 'predefinedStringArray',
       title: 'Array of strings',
-      description: 'Some types in array are read-only',
       type: 'array',
-      of: [
-        {
-          type: 'string',
-          readOnly: ({document}) => {
-            return Boolean(document.readOnly)
-          },
-          hidden: ({document}) => {
-            return Boolean(document.hidden)
-          },
-        },
-        {type: 'number'},
-      ],
+      readOnly: ({document}) => {
+        return Boolean(document.readOnly)
+      },
+      hidden: ({document}) => {
+        return Boolean(document.hidden)
+      },
+      of: [{type: 'string'}, {type: 'number'}],
       options: {
         list: [
           {title: 'Cats', value: 'cats4ever'},
@@ -226,6 +220,7 @@ export default {
       name: 'arrayOfMultipleTypes',
       title: 'Array of multiple types',
       type: 'array',
+      readOnly: ({document}) => Boolean(document.readOnly),
       of: [
         {
           type: 'image',
