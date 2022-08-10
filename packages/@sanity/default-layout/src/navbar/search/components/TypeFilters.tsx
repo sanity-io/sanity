@@ -1,3 +1,6 @@
+// @todo: remove the following line when part imports has been removed from this file
+///<reference types="@sanity/types/parts" />
+
 import {hues} from '@sanity/color'
 import {CheckmarkIcon, SearchIcon} from '@sanity/icons'
 import type {ObjectSchemaType} from '@sanity/types'
