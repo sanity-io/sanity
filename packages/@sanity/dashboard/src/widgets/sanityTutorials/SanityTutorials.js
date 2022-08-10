@@ -77,7 +77,14 @@ class SanityTutorials extends React.Component {
     return (
       <Container width={4}>
         <Stack space={6} paddingBottom={4}>
-          <Card tone="primary" padding={4} radius={2} border marginTop={4}>
+          <Card
+            tone="primary"
+            padding={4}
+            radius={2}
+            border
+            marginTop={4}
+            data-name="sanity-tutorials-widget-docs-link"
+          >
             <Flex direction={['column', 'column', 'row']}>
               <Stack space={4} flex={1} paddingRight={[0, 0, 4]}>
                 <Heading>Getting started guide</Heading>
