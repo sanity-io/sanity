@@ -4,7 +4,7 @@ import {LinkIcon} from '@sanity/icons'
 
 export function ReferencedDocTooltip({totalReferenceCount}: {totalReferenceCount?: number}) {
   return (
-    <Box marginLeft={2}>
+    <Box marginLeft={2} marginRight={4}>
       <Text>
         <Tooltip
           content={
