@@ -51,13 +51,11 @@ export function SearchProvider({children}: SearchProviderProps) {
   const hasValidTerms = hasSearchableTerms(terms)
 
   /**
-   * Trigger search when both:
-   * 1. either any terms (query or selected types) OR current pageIndex has changed
-   * 2. we have a valid, non-empty query
+   * Trigger search when any terms (query or selected types) OR current pageIndex has changed
    *
    * Note that we compare inbound terms with our last local snapshot, and not the value of
-   * `searchState` from `useSearch`, as that only contains a reference to the last _executed_ request,
-   * and we may not execute searches when terms change (e.g. no search is run when terms are empty).
+   * `searchState` from `useSearch`, as that only contains a reference to the last fully _executed_ request.
+   * There are cases were we may not run searches when terms change (e.g. when search terms are empty / invalid).
    */
   useEffect(() => {
     const termsChanged = Object.keys(terms).some(
@@ -65,7 +63,7 @@ export function SearchProvider({children}: SearchProviderProps) {
     )
     const pageIndexChanged = pageIndex !== previousPageIndex.current
 
-    if ((termsChanged || pageIndexChanged) && hasValidTerms) {
+    if (termsChanged || pageIndexChanged) {
       handleSearch({
         ...terms,
         limit: SEARCH_LIMIT,

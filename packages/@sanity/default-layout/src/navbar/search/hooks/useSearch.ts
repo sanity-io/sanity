@@ -35,7 +35,7 @@ function nonNullable<T>(v: T): v is NonNullable<T> {
   return v !== null
 }
 
-function trimQuery(terms: SearchTerms) {
+function sanitizeTerms(terms: SearchTerms) {
   return {
     ...terms,
     query: terms.query.trim(),
@@ -66,9 +66,9 @@ export function useSearch(
   const handleQueryChange = useObservableCallback((inputValue$: Observable<SearchTerms | null>) => {
     return inputValue$.pipe(
       filter(nonNullable),
-      map(trimQuery),
+      map(sanitizeTerms),
+      distinctUntilChanged(isEqual),
       filter(hasSearchableTerms),
-      distinctUntilChanged((prev, curr) => isEqual(prev, curr)),
       debounceTime(300),
       tap(onStart),
       switchMap((terms) => {
