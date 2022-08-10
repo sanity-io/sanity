@@ -11,13 +11,13 @@ describe('validateBasePaths', () => {
     expect(() => {
       validateBasePaths([{name: 'first'}, {name: 'second', basePath: '/2nd'}])
     }).toThrowErrorMatchingInlineSnapshot(
-      `"If more than one workspace is defined, every workspace must have a \`basePath\` defined.Workspace \`first\` is missing a \`basePath\`"`
+      `"If more than one workspace is defined, every workspace must have a \`basePath\` defined. Workspace \`first\` is missing a \`basePath\`"`
     )
 
     expect(() => {
       validateBasePaths([{name: 'first', basePath: '/1st'}, {name: 'second'}])
     }).toThrowErrorMatchingInlineSnapshot(
-      `"If more than one workspace is defined, every workspace must have a \`basePath\` defined.Workspace \`second\` is missing a \`basePath\`"`
+      `"If more than one workspace is defined, every workspace must have a \`basePath\` defined. Workspace \`second\` is missing a \`basePath\`"`
     )
 
     expect(() => {
@@ -26,7 +26,7 @@ describe('validateBasePaths', () => {
         {name: 'second', basePath: ''},
       ])
     }).toThrowErrorMatchingInlineSnapshot(
-      `"If more than one workspace is defined, every workspace must have a \`basePath\` defined.Workspace \`second\` has an invalid \`basePath\` (must be a non-empty string)"`
+      `"If more than one workspace is defined, every workspace must have a \`basePath\` defined. Workspace \`second\` has an invalid \`basePath\` (must be a non-empty string)"`
     )
   })
 
