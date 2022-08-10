@@ -41,6 +41,8 @@ import {ChangeIndicator} from '../../../../components/changeIndicators'
 import {CardOverlay, FlexContainer} from './styles'
 import {FileDetails} from './FileDetails'
 import {FileSkeleton} from './FileSkeleton'
+import {isFileSource} from '@sanity/asset-utils'
+import {InvalidFileWarning} from './InvalidFileWarning'
 
 // We alias DOM File type here to distinguish it from the type of the File value
 type DOMFile = globalThis.File
@@ -145,6 +147,10 @@ export class FileInput extends React.PureComponent<FileInputProps, FileInputStat
 
   handleStaleUpload = () => {
     this.setState({isStale: true})
+  }
+
+  handleClearField = () => {
+    this.props.onChange(unset(['asset']))
   }
 
   handleSelectFiles = (files: DOMFile[]) => {
@@ -305,6 +311,10 @@ export class FileInput extends React.PureComponent<FileInputProps, FileInputStat
     const {hoveringFiles, isStale} = this.state
     const hasValueOrUpload = Boolean(value?._upload || value?.asset)
 
+    if (value && typeof value.asset !== 'undefined' && !value?._upload && !isFileSource(value)) {
+      return () => <InvalidFileWarning onClearValue={this.handleClearField} />
+    }
+
     // todo: convert this to a functional component and use this with useCallback
     //  it currently has to return a new function on every render in order to pick up state from this component
     return (inputProps: InputProps) => (
@@ -401,28 +411,37 @@ export class FileInput extends React.PureComponent<FileInputProps, FileInputStat
         observeAsset={observeAsset}
         waitPlaceholder={<FileSkeleton />}
       >
-        {(assetDocument) => (
-          <FileDetails
-            size={assetDocument.size}
-            originalFilename={
-              assetDocument?.originalFilename || `download.${assetDocument.extension}`
-            }
-            muted={!readOnly}
-            onMenuOpen={(isOpen) => this.setState({isMenuOpen: isOpen})}
-            isMenuOpen={isMenuOpen}
-          >
-            <ActionsMenu
-              onUpload={this.handleSelectFiles}
-              browse={browseMenuItem}
-              onReset={this.handleRemoveButtonClick}
-              downloadUrl={`${assetDocument.url}?dl`}
-              copyUrl={`${assetDocument.url}`}
-              readOnly={readOnly}
-              accept={accept}
-              directUploads={directUploads}
-            />
-          </FileDetails>
-        )}
+        {({originalFilename, extension, url, size}) => {
+          const filename = originalFilename || `download.${extension}`
+          let copyUrl: string | undefined
+          let downloadUrl: string | undefined
+
+          if (isFileSource(value)) {
+            downloadUrl = `${url}?dl`
+            copyUrl = url
+          }
+
+          return (
+            <FileDetails
+              size={size}
+              originalFilename={filename}
+              muted={!readOnly}
+              onMenuOpen={(isOpen) => this.setState({isMenuOpen: isOpen})}
+              isMenuOpen={isMenuOpen}
+            >
+              <ActionsMenu
+                onUpload={this.handleSelectFiles}
+                browse={browseMenuItem}
+                onReset={this.handleRemoveButtonClick}
+                downloadUrl={downloadUrl}
+                copyUrl={copyUrl}
+                readOnly={readOnly}
+                accept={accept}
+                directUploads={directUploads}
+              />
+            </FileDetails>
+          )
+        }}
       </WithReferencedAsset>
     )
   }
