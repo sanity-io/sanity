@@ -8,7 +8,7 @@ export interface ConditionalPropertyCallbackContext {
   value: unknown
 }
 
-export function callConditionalProperty(
+export function resolveConditionalProperty(
   property: ConditionalProperty,
   context: ConditionalPropertyCallbackContext
 ) {

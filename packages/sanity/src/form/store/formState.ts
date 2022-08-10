@@ -23,7 +23,7 @@ import {FIXME} from '../types'
 import {FormFieldPresence} from '../../presence'
 import {isRecord} from '../../util'
 import {PrimitiveFormNode, StateTree} from './types'
-import {callConditionalProperty} from './conditional-property'
+import {resolveConditionalProperty} from './conditional-property'
 import {MAX_FIELD_DEPTH} from './constants'
 import {getItemType, getPrimitiveItemType} from './utils/getItemType'
 import {
@@ -268,7 +268,7 @@ function prepareFieldMember(props: {
 
       const readOnly =
         parent.readOnly ||
-        callConditionalProperty(field.type.readOnly, {
+        resolveConditionalProperty(field.type.readOnly, {
           value: fieldValue,
           parent: parent.value,
           document: parent.document,
@@ -336,7 +336,7 @@ function prepareFieldMember(props: {
 
       const readOnly =
         parent.readOnly ||
-        callConditionalProperty(field.type.readOnly, {
+        resolveConditionalProperty(field.type.readOnly, {
           value: fieldValue,
           parent: parent.value,
           document: parent.document,
@@ -390,7 +390,7 @@ function prepareFieldMember(props: {
       ? parentComparisonValue?.[field.name]
       : undefined
 
-    const conditionalFieldContext = {
+    const conditionalPropertyContext = {
       value: fieldValue,
       parent: parent.value,
       document: parent.document,
@@ -398,14 +398,14 @@ function prepareFieldMember(props: {
     }
 
     // note: we *only* want to call the conditional props here, as it's handled by the prepare<Object|Array>InputProps otherwise
-    const hidden = callConditionalProperty(field.type.hidden, conditionalFieldContext)
+    const hidden = resolveConditionalProperty(field.type.hidden, conditionalPropertyContext)
 
     if (hidden) {
       return null
     }
 
     const readOnly =
-      parent.readOnly || callConditionalProperty(field.type.hidden, conditionalFieldContext)
+      parent.readOnly || resolveConditionalProperty(field.type.readOnly, conditionalPropertyContext)
 
     const fieldState = preparePrimitiveInputState({
       ...parent,
@@ -470,7 +470,7 @@ function prepareObjectInputState<T>(
     return null
   }
 
-  const conditionalFieldContext = {
+  const conditionalPropertyContext = {
     value: props.value,
     parent: props.parent,
     document: props.document,
@@ -478,20 +478,22 @@ function prepareObjectInputState<T>(
   }
 
   const hidden =
-    enableHiddenCheck && callConditionalProperty(props.schemaType.hidden, conditionalFieldContext)
+    enableHiddenCheck &&
+    resolveConditionalProperty(props.schemaType.hidden, conditionalPropertyContext)
 
   if (hidden) {
     return null
   }
 
   const readOnly =
-    props.readOnly || callConditionalProperty(props.schemaType.readOnly, conditionalFieldContext)
+    props.readOnly ||
+    resolveConditionalProperty(props.schemaType.readOnly, conditionalPropertyContext)
 
   const schemaTypeGroupConfig = props.schemaType.groups || []
   const defaultGroupName = (schemaTypeGroupConfig.find((g) => g.default) || ALL_FIELDS_GROUP)?.name
 
   const groups = [ALL_FIELDS_GROUP, ...schemaTypeGroupConfig].flatMap((group): FormFieldGroup[] => {
-    const groupHidden = callConditionalProperty(group.hidden, conditionalFieldContext)
+    const groupHidden = resolveConditionalProperty(group.hidden, conditionalPropertyContext)
     const selected = group.name === (props.fieldGroupState?.value || defaultGroupName)
     return groupHidden
       ? []
@@ -538,7 +540,7 @@ function prepareObjectInputState<T>(
 
     // it's an actual fieldset
     const fieldsetFieldNames = fieldSet.fields.map((f) => f.name)
-    const fieldsetHidden = callConditionalProperty(fieldSet.hidden, {
+    const fieldsetHidden = resolveConditionalProperty(fieldSet.hidden, {
       currentUser: props.currentUser,
       document: props.document,
       parent: props.value,
@@ -629,7 +631,7 @@ function prepareArrayOfPrimitivesInputState<T extends (boolean | string | number
     return null
   }
 
-  const conditionalFieldContext = {
+  const conditionalPropertyContext = {
     comparisonValue: props.comparisonValue,
     value: props.value,
     parent: props.parent,
@@ -637,14 +639,15 @@ function prepareArrayOfPrimitivesInputState<T extends (boolean | string | number
     currentUser: props.currentUser,
   }
 
-  const hidden = callConditionalProperty(props.schemaType.hidden, conditionalFieldContext)
+  const hidden = resolveConditionalProperty(props.schemaType.hidden, conditionalPropertyContext)
 
   if (hidden) {
     return null
   }
 
   const readOnly =
-    props.readOnly || callConditionalProperty(props.schemaType.readOnly, conditionalFieldContext)
+    props.readOnly ||
+    resolveConditionalProperty(props.schemaType.readOnly, conditionalPropertyContext)
 
   // Todo: improve error handling at the parent level so that the value here is either undefined or an array
   const items = Array.isArray(props.value) ? props.value : []
@@ -679,19 +682,21 @@ function prepareArrayOfObjectsInputState<T extends {_key: string}[]>(
     return null
   }
 
-  const conditionalFieldContext = {
+  const conditionalPropertyContext = {
     value: props.value,
     parent: props.parent,
     document: props.document,
     currentUser: props.currentUser,
   }
-  const hidden = callConditionalProperty(props.schemaType.hidden, conditionalFieldContext)
+  const hidden = resolveConditionalProperty(props.schemaType.hidden, conditionalPropertyContext)
 
   if (hidden) {
     return null
   }
+
   const readOnly =
-    props.readOnly || callConditionalProperty(props.schemaType.readOnly, conditionalFieldContext)
+    props.readOnly ||
+    resolveConditionalProperty(props.schemaType.readOnly, conditionalPropertyContext)
 
   // Todo: improve error handling at the parent level so that the value here is either undefined or an array
   const items = Array.isArray(props.value) ? props.value : []
@@ -757,6 +762,16 @@ function prepareArrayOfObjectsMember(props: {
   const itemPath = pathFor([...parent.path, {_key: key}])
   const itemLevel = parent.level + 1
 
+  const conditionalPropertyContext = {
+    value: parent.value,
+    parent: props.parent,
+    document: parent.document,
+    currentUser: parent.currentUser,
+  }
+  const readOnly =
+    parent.readOnly ||
+    resolveConditionalProperty(parent.schemaType.readOnly, conditionalPropertyContext)
+
   const collapsedItemPaths = parent.collapsedPaths?.children?.[key]
   const comparisonValue =
     (Array.isArray(parent.comparisonValue) &&
@@ -777,6 +792,7 @@ function prepareArrayOfObjectsMember(props: {
       collapsedPaths: collapsedItemPaths,
       presence: parent.presence,
       validation: parent.validation,
+      readOnly,
     },
     false
   )
@@ -835,7 +851,7 @@ function prepareArrayOfPrimitivesMember(props: {
 
   const readOnly =
     parent.readOnly ||
-    callConditionalProperty(itemType.readOnly, {
+    resolveConditionalProperty(itemType.readOnly, {
       value: itemValue,
       parent: parent.value,
       document: parent.document,
