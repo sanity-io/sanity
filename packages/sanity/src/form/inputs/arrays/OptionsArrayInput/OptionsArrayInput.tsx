@@ -3,12 +3,10 @@ import {get} from 'lodash'
 import {isTitledListValue} from '@sanity/types'
 import {Box, Checkbox, Flex, Text} from '@sanity/ui'
 import {resolveTypeName} from '@sanity/util/content'
-import {FormFieldSet} from '../../../components/formField'
 import {set, unset} from '../../../patch'
 import {ArrayOfPrimitivesInputProps, FIXME} from '../../../types'
 import {ItemWithMissingType} from '../ArrayOfObjectsInput/item/ItemWithMissingType'
 import {Item, List} from '../common/list'
-import {useConditionalReadOnly} from '../../../../conditional-property/conditionalReadOnly'
 import {ChangeIndicator} from '../../../../components/changeIndicators'
 import {resolveValueWithLegacyOptionsSupport, isLegacyOptionsItem} from './legacyOptionsSupport'
 
@@ -96,7 +94,8 @@ export class OptionsArrayInput extends React.PureComponent<OptionsArrayInputProp
   }
 
   render() {
-    const {changed, focused, onBlur, onFocus, path, renderPreview, schemaType, value} = this.props
+    const {changed, focused, onBlur, onFocus, path, renderPreview, schemaType, value, readOnly} =
+      this.props
     const options: any[] = schemaType.options?.list || []
 
     // note: direction was never documented and makes more sense to use "grid" for it too
@@ -111,6 +110,7 @@ export class OptionsArrayInput extends React.PureComponent<OptionsArrayInputProp
             const checked = inArray(value || [], resolveValueWithLegacyOptionsSupport(option))
             const disabled = !optionType
             const isTitled = isTitledListValue(option)
+
             return (
               <Item index={index} isGrid={isGrid} key={index}>
                 <Flex align="center" as="label" muted={disabled}>
@@ -120,6 +120,7 @@ export class OptionsArrayInput extends React.PureComponent<OptionsArrayInputProp
                     onChange={(e) => this.handleChange(e.currentTarget.checked, option)}
                     onFocus={() => this.handleFocus(index)}
                     onBlur={onBlur}
+                    readOnly={readOnly}
                   />
 
                   {optionType &&
