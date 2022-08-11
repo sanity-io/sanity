@@ -128,7 +128,6 @@ class Tutorial extends React.PureComponent {
           as="a"
           href={href}
           target="_blank"
-          rel="noopener noreferrer"
           style={{position: 'relative'}}
           border
           paddingBottom={2}
