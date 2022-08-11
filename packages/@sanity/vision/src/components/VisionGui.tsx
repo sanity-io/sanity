@@ -317,6 +317,12 @@ export class VisionGui extends React.PureComponent<VisionGuiProps, VisionGuiStat
           apiVersion: customApiVersion || apiVersion,
         })
         this.handleQueryExecution()
+        this.props.toast.push({
+          closable: true,
+          id: 'vision-paste',
+          status: 'info',
+          title: 'Parsed URL to query',
+        })
       }
     )
   }
