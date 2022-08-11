@@ -17,7 +17,7 @@ import {FormState} from '../../src/form/store/useFormState'
 import {EMPTY_ARRAY} from '../../src/form/utils/empty'
 import {useSchema} from '../../src/hooks'
 import {createMockSanityClient} from '../mocks/mockSanityClient'
-import {createTestProvider} from './TestProvider'
+import {createTestProvider} from '../testUtils/TestProvider'
 import {TestRenderProps} from './types'
 
 export interface TestRenderInputContext {

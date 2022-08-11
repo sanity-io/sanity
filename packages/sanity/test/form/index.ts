@@ -6,5 +6,3 @@ export * from './renderImageInput'
 export * from './renderNumberInput'
 export * from './renderObjectInput'
 export * from './renderStringInput'
-
-export * from './TestProvider'
