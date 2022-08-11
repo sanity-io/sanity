@@ -46,7 +46,7 @@ export function SearchHeader({inputRef, onClose}: SearchHeaderProps) {
   }, [])
 
   return (
-    <DialogWrapper flex={1}>
+    <SearchHeaderWrapper>
       <Flex align="center" flex={1}>
         {/* Search field */}
         <Box
@@ -93,7 +93,7 @@ export function SearchHeader({inputRef, onClose}: SearchHeaderProps) {
           </Card>
         )}
       </Flex>
-    </DialogWrapper>
+    </SearchHeaderWrapper>
   )
 }
 
@@ -104,7 +104,7 @@ const AlignedSpinner = styled(Spinner)`
   }
 `
 
-const DialogWrapper = styled(Card)`
+const SearchHeaderWrapper = styled(Box)`
   border-bottom: 1px solid ${hues.gray[200].hex};
   flex-shrink: 0;
 `

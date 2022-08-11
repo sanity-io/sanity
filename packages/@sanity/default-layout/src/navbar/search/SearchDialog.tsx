@@ -1,4 +1,4 @@
-import {Box, Card, Dialog, Portal} from '@sanity/ui'
+import {Box, Card, Dialog, Flex, Portal} from '@sanity/ui'
 import React, {useCallback, useEffect, useRef} from 'react'
 import FocusLock from 'react-focus-lock'
 import styled from 'styled-components'
@@ -6,9 +6,9 @@ import {RecentSearches} from './components/RecentSearches'
 import {SearchHeader} from './components/SearchHeader'
 import {SearchResults} from './components/SearchResults'
 import {TypeFilters} from './components/TypeFilters'
+import {CommandListProvider} from './contexts/commandList'
 import {useSearchState} from './contexts/search'
 import {hasSearchableTerms} from './contexts/search/selectors'
-import {useContainerArrowNavigation} from './hooks/useContainerArrowNavigation'
 import {useSearchHotkeys} from './hooks/useSearchHotkeys'
 
 interface SearchDialogProps {
@@ -40,45 +40,42 @@ function SearchDialogContent({onClose}: {onClose: () => void}) {
   const pointerOverlayRef = useRef<HTMLDivElement>(null)
 
   const {
-    state: {result, terms},
+    state: {recentSearches, result, terms},
   } = useSearchState()
 
   const hasValidTerms = hasSearchableTerms(terms)
 
-  useContainerArrowNavigation(
-    {
-      childContainerRef,
-      childContainerParentRef,
-      headerInputRef,
-      pointerOverlayRef,
-    },
-    [hasValidTerms, result.loaded]
-  )
-
   return (
-    <FullscreenWrapper scheme="light" tone="default">
-      <StickyBox flex={1}>
-        <SearchHeader inputRef={headerInputRef} onClose={onClose} />
-      </StickyBox>
-      <Box>
-        <SearchContentWrapper flex={1} ref={childContainerParentRef}>
-          {hasValidTerms ? (
-            <SearchResults
-              childContainerRef={childContainerRef}
-              onClose={onClose}
-              pointerOverlayRef={pointerOverlayRef}
-            />
-          ) : (
-            <RecentSearches
-              childContainerRef={childContainerRef}
-              pointerOverlayRef={pointerOverlayRef}
-            />
-          )}
-        </SearchContentWrapper>
+    <CommandListProvider
+      childContainerRef={childContainerRef}
+      childContainerParentRef={childContainerParentRef}
+      childCount={hasValidTerms ? result.hits.length : recentSearches.length}
+      headerInputRef={headerInputRef}
+      pointerOverlayRef={pointerOverlayRef}
+      wraparound={!hasValidTerms}
+    >
+      <SearchDialogContentWrapper scheme="light" tone="default">
+        <Flex direction="column" height="fill">
+          <SearchHeader inputRef={headerInputRef} onClose={onClose} />
+          <SearchContent flex={1} ref={childContainerParentRef}>
+            {hasValidTerms ? (
+              <SearchResults
+                childContainerRef={childContainerRef}
+                onClose={onClose}
+                pointerOverlayRef={pointerOverlayRef}
+              />
+            ) : (
+              <RecentSearches
+                childContainerRef={childContainerRef}
+                pointerOverlayRef={pointerOverlayRef}
+              />
+            )}
+          </SearchContent>
 
-        <SearchDialogFilters />
-      </Box>
-    </FullscreenWrapper>
+          <SearchDialogFilters />
+        </Flex>
+      </SearchDialogContentWrapper>
+    </CommandListProvider>
   )
 }
 
@@ -134,22 +131,20 @@ const DialogContent = styled(Card)`
   height: 100%;
 `
 
-const FullscreenWrapper = styled(Card)`
+const SearchDialogContentWrapper = styled(Card)`
+  height: 100vh;
+  outline: 2px solid red;
   left: 0;
-  min-height: 100vh;
-  position: absolute;
+  overflow: hidden;
+  position: fixed;
   top: 0;
   width: 100%;
   z-index: 1;
 `
 
-const SearchContentWrapper = styled(Box)`
+const SearchContent = styled(Box)`
+  height: 100%;
+  width: 100%;
   overflow-x: hidden;
   overflow-y: auto;
-`
-
-const StickyBox = styled(Box)`
-  position: sticky;
-  top: 0;
-  z-index: 1;
 `
