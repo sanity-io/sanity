@@ -1,7 +1,7 @@
 import React, {MouseEventHandler, ReactNode, useCallback, useState} from 'react'
 
 import {EllipsisVerticalIcon, CropIcon} from '@sanity/icons'
-import {Menu, Popover, useClickOutside} from '@sanity/ui'
+import {Menu, Popover, useClickOutside, useGlobalKeyDown} from '@sanity/ui'
 import {MenuActionsWrapper, ButtonContainer} from './ImageActionsMenu.styled'
 
 interface Props {
@@ -19,12 +19,11 @@ export function ImageActionsMenu(props: Props) {
 
   const handleClick = React.useCallback(() => onMenuOpen(true), [onMenuOpen])
 
-  useClickOutside(
-    React.useCallback(() => onMenuOpen(false), [onMenuOpen]),
-    [menuElement]
-  )
+  const handleClickOutside = useCallback(() => {
+    onMenuOpen(false)
+  }, [onMenuOpen])
 
-  const handleKeyDown = useCallback(
+  const handleGlobalKeyDown = useCallback(
     (e) => {
       if (e.key === 'Escape') {
         onMenuOpen(false)
@@ -33,6 +32,9 @@ export function ImageActionsMenu(props: Props) {
     },
     [menuButtonRef, onMenuOpen]
   )
+
+  useClickOutside(handleClickOutside, [menuElement])
+  useGlobalKeyDown(handleGlobalKeyDown)
 
   return (
     <MenuActionsWrapper data-buttons space={1} padding={2}>
@@ -46,7 +48,7 @@ export function ImageActionsMenu(props: Props) {
       )}
       <Popover
         content={
-          <Menu ref={setMenuRef} shouldFocus="first" onKeyDown={handleKeyDown}>
+          <Menu ref={setMenuRef} shouldFocus="first">
             {children}
           </Menu>
         }
