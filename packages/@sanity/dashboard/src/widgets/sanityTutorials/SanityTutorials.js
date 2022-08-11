@@ -87,10 +87,10 @@ class SanityTutorials extends React.Component {
           >
             <Flex direction={['column', 'column', 'row']}>
               <Stack space={4} flex={1} paddingRight={[0, 0, 4]}>
-                <Heading>Getting started guide</Heading>
-                <Text>
-                  It's time to learn how to build schemas, create content, and connect it to other
-                  applications.
+                <Heading as="h2">Getting started guide</Heading>
+                <Text as="p">
+                  {`It's time to learn how to build schemas, create content, and connect it to other
+                  applications.`}
                 </Text>
               </Stack>
               <Flex paddingTop={[4, 4, 0]} align="center">
