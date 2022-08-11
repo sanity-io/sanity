@@ -1,5 +1,5 @@
-import { HeartIcon } from "@sanity/icons"
-import React from "react"
+import {HeartIcon} from '@sanity/icons'
+import React from 'react'
 
 const petIcon = () => <HeartIcon />
 

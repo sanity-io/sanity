@@ -1,5 +1,5 @@
-import { UserIcon } from "@sanity/icons"
-import React from "react"
+import {UserIcon} from '@sanity/icons'
+import React from 'react'
 
 const humanIcon = () => <UserIcon />
 
