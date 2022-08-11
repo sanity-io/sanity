@@ -72,6 +72,8 @@ export function RecentSearches({
             <Stack paddingX={1} paddingTop={1} ref={childContainerRef} space={1}>
               {recentSearches?.map((recentSearch, index) => (
                 <RecentSearchItem
+                  data-index={index}
+                  index={index}
                   key={recentSearch.__recentTimestamp}
                   maxVisibleQueryChars={maxVisibleQueryChars}
                   maxVisibleTypePillChars={maxVisibleTypePillChars}

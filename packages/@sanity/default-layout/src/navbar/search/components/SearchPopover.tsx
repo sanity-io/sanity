@@ -2,9 +2,9 @@ import {hues} from '@sanity/color'
 import {Box, Card, Flex, studioTheme, Theme, useClickOutside, useLayer} from '@sanity/ui'
 import React, {RefObject, useCallback, useEffect, useRef, useState} from 'react'
 import styled, {css} from 'styled-components'
+import {CommandListProvider} from '../contexts/commandList'
 import {useSearchState} from '../contexts/search'
 import {hasSearchableTerms} from '../contexts/search/selectors'
-import {useContainerArrowNavigation} from '../hooks/useContainerArrowNavigation'
 import {RecentSearches} from './RecentSearches'
 import {SearchHeader} from './SearchHeader'
 import {SearchResults} from './SearchResults'
@@ -32,7 +32,7 @@ export function SearchPopover({onClose, placeholderRef}: PopoverProps) {
   const {zIndex} = useLayer()
 
   const {
-    state: {result, terms},
+    state: {recentSearches, result, terms},
   } = useSearchState()
 
   const hasValidTerms = hasSearchableTerms(terms)
@@ -48,53 +48,53 @@ export function SearchPopover({onClose, placeholderRef}: PopoverProps) {
     return () => window.removeEventListener('resize', handleWindowResize)
   }, [handleWindowResize])
 
-  useContainerArrowNavigation(
-    {
-      childContainerRef,
-      childContainerParentRef,
-      headerInputRef,
-      pointerOverlayRef,
-    },
-    [hasValidTerms, result.loaded]
-  )
-
   return (
     <>
       <Overlay style={{zIndex}} />
 
-      <SearchPopoverWrapper
-        data-ui="search-dialog"
-        overflow="hidden"
-        radius={2}
-        ref={setDialogEl}
-        scheme="light"
-        shadow={2}
-        style={{zIndex}}
-        x={dialogPosition.x}
-        y={dialogPosition.y}
+      <CommandListProvider
+        childContainerRef={childContainerRef}
+        childContainerParentRef={childContainerParentRef}
+        childCount={hasValidTerms ? result.hits.length : recentSearches.length}
+        headerInputRef={headerInputRef}
+        pointerOverlayRef={pointerOverlayRef}
+        wraparound={!hasValidTerms}
+        virtualList
       >
-        <SearchHeader inputRef={headerInputRef} />
+        <SearchPopoverWrapper
+          data-ui="search-dialog"
+          overflow="hidden"
+          radius={2}
+          ref={setDialogEl}
+          scheme="light"
+          shadow={2}
+          style={{zIndex}}
+          x={dialogPosition.x}
+          y={dialogPosition.y}
+        >
+          <SearchHeader inputRef={headerInputRef} />
 
-        {/* Reverse flex direction is used ensure filters are focusable before recent searches */}
-        <Flex align="stretch" direction="row-reverse">
-          <SearchPopoverFilters />
-          <SearchContentWrapper flex={1} ref={childContainerParentRef}>
-            {hasValidTerms ? (
-              <SearchResults
-                childContainerRef={childContainerRef}
-                onClose={onClose}
-                pointerOverlayRef={pointerOverlayRef}
-              />
-            ) : (
-              <RecentSearches
-                childContainerRef={childContainerRef}
-                pointerOverlayRef={pointerOverlayRef}
-                showFiltersOnClick
-              />
-            )}
-          </SearchContentWrapper>
-        </Flex>
-      </SearchPopoverWrapper>
+          {/* Reverse flex direction is used ensure filters are focusable before recent searches */}
+          <Flex align="stretch" direction="row-reverse">
+            <SearchPopoverFilters />
+            <SearchContentWrapper flex={1} ref={childContainerParentRef}>
+              {hasValidTerms ? (
+                <SearchResults
+                  childContainerRef={childContainerRef}
+                  onClose={onClose}
+                  pointerOverlayRef={pointerOverlayRef}
+                />
+              ) : (
+                <RecentSearches
+                  childContainerRef={childContainerRef}
+                  pointerOverlayRef={pointerOverlayRef}
+                  showFiltersOnClick
+                />
+              )}
+            </SearchContentWrapper>
+          </Flex>
+        </SearchPopoverWrapper>
+      </CommandListProvider>
     </>
   )
 }

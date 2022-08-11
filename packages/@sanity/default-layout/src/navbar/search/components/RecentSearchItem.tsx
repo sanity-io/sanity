@@ -2,13 +2,15 @@ import {ClockIcon, CloseIcon} from '@sanity/icons'
 import {Box, Button, Flex, Text} from '@sanity/ui'
 import React, {MouseEvent, useCallback} from 'react'
 import styled from 'styled-components'
+import {useCommandList} from '../contexts/commandList'
 import type {RecentSearch} from '../datastores/recentSearches'
-import {withCommandPaletteItemStyles} from '../utils/withCommandPaletteItemStyles'
+import {withCommandListItemStyles} from '../utils/withCommandListItemStyles'
 import {TypePills} from './TypePills'
 
-const CommandPaletteButton = withCommandPaletteItemStyles(Button)
+const CommandListItemButton = withCommandListItemStyles(Button)
 
 export interface RecentSearchesProps {
+  index: number
   maxVisibleQueryChars?: number // (excluding ellipses)
   maxVisibleTypePillChars?: number
   onClick: (value: RecentSearch) => void
@@ -17,11 +19,21 @@ export interface RecentSearchesProps {
 }
 
 export function RecentSearchItem(props: RecentSearchesProps) {
-  const {maxVisibleQueryChars = 40, maxVisibleTypePillChars = 40, value, onClick, onDelete} = props
+  const {
+    index,
+    maxVisibleQueryChars = 40,
+    maxVisibleTypePillChars = 40,
+    value,
+    onClick,
+    onDelete,
+  } = props
+
+  const {onChildClick, onChildMouseDown, onChildMouseEnter} = useCommandList()
 
   const handleRecentSearchClick = useCallback(() => {
+    onChildClick?.()
     onClick(value)
-  }, [value, onClick])
+  }, [onChildClick, onClick, value])
 
   const typesSelected = value.types.length > 0
 
@@ -32,9 +44,12 @@ export function RecentSearchItem(props: RecentSearchesProps) {
   const typePillsAvailableCharCount = maxVisibleTypePillChars - querySubstring.length
 
   return (
-    <CommandPaletteButton
+    <CommandListItemButton
+      data-index={index}
       mode="bleed"
       onClick={handleRecentSearchClick}
+      onMouseDown={onChildMouseDown}
+      onMouseEnter={onChildMouseEnter(index)}
       paddingLeft={3}
       paddingRight={1}
       paddingY={1}
@@ -65,7 +80,7 @@ export function RecentSearchItem(props: RecentSearchesProps) {
           </Flex>
         </CloseButton>
       </Flex>
-    </CommandPaletteButton>
+    </CommandListItemButton>
   )
 }
 
@@ -73,7 +88,7 @@ const CloseButton = styled.div`
   opacity: 0.8;
   visibility: hidden;
 
-  ${CommandPaletteButton}:hover & {
+  ${CommandListItemButton}:hover & {
     visibility: visible;
   }
 

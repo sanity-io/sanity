@@ -4,24 +4,37 @@
 import {PreviewCard} from '@sanity/base/components'
 import {useDocumentPresence} from '@sanity/base/hooks'
 import {IntentLink} from '@sanity/base/router'
-import type {ResponsivePaddingProps} from '@sanity/ui'
+import {Box, ResponsivePaddingProps} from '@sanity/ui'
 import schema from 'part:@sanity/base/schema'
 import {getPublishedId} from 'part:@sanity/base/util/draft-utils'
-import React, {forwardRef, useMemo} from 'react'
+import React, {forwardRef, MouseEvent, useMemo} from 'react'
+import type {VirtualItem} from 'react-virtual'
+import styled, {css} from 'styled-components'
 import type {SearchHit} from '../../types'
-import {withCommandPaletteItemStyles} from '../../utils/withCommandPaletteItemStyles'
+import {withCommandListItemStyles} from '../../utils/withCommandListItemStyles'
 import SearchResultItemPreview from './SearchResultItemPreview'
 
 interface SearchItemProps extends ResponsivePaddingProps {
   data: SearchHit
+  index: number
   onClick?: () => void
+  onMouseDown?: (event: MouseEvent) => void
+  onMouseEnter?: () => void
   documentId: string
+  virtualRow: VirtualItem
 }
 
-const CommandPaletteIntentLink = withCommandPaletteItemStyles(IntentLink)
+const CommandListItemIntentLink = withCommandListItemStyles(IntentLink)
 
-export function SearchResultItem(props: SearchItemProps) {
-  const {data, documentId, onClick} = props
+export function SearchResultItem({
+  data,
+  documentId,
+  index,
+  onClick,
+  onMouseDown,
+  onMouseEnter,
+  virtualRow,
+}: SearchItemProps) {
   const {hit, resultIndex} = data
   const type = schema.get(hit?._type)
   const documentPresence = useDocumentPresence(documentId)
@@ -31,7 +44,7 @@ export function SearchResultItem(props: SearchItemProps) {
       // eslint-disable-next-line @typescript-eslint/no-shadow
       forwardRef(function LinkComponent(linkProps, ref: React.ForwardedRef<HTMLAnchorElement>) {
         return (
-          <CommandPaletteIntentLink
+          <CommandListItemIntentLink
             {...linkProps}
             data-hit-index={resultIndex}
             intent="edit"
@@ -44,13 +57,38 @@ export function SearchResultItem(props: SearchItemProps) {
   )
 
   return (
-    <PreviewCard
-      as={LinkComponent} //
-      data-as="a"
-      onClick={onClick}
-      padding={2}
-    >
-      <SearchResultItemPreview documentId={hit._id} presence={documentPresence} schemaType={type} />
-    </PreviewCard>
+    <SearchResultItemWrapper $virtualRow={virtualRow} data-index={index} flex={1}>
+      <Box paddingTop={1} paddingX={1}>
+        <PreviewCard
+          as={LinkComponent}
+          data-as="a"
+          onClick={onClick}
+          onMouseDown={onMouseDown}
+          onMouseEnter={onMouseEnter}
+          padding={2}
+          radius={2}
+          tabIndex={-1}
+        >
+          <SearchResultItemPreview
+            documentId={hit._id}
+            presence={documentPresence}
+            schemaType={type}
+          />
+        </PreviewCard>
+      </Box>
+    </SearchResultItemWrapper>
   )
 }
+
+const SearchResultItemWrapper = styled(Box)<{
+  $virtualRow: VirtualItem
+}>(({$virtualRow}) => {
+  return css`
+    height: ${$virtualRow.size}px;
+    transform: translateY(${$virtualRow.start}px);
+    left: 0;
+    position: absolute;
+    top: 0;
+    width: 100%;
+  `
+})
