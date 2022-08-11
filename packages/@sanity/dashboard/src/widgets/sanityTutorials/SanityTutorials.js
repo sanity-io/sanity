@@ -20,7 +20,7 @@ const FeedItem = ({feedItem}) => {
       href={createUrl(guideOrTutorial.slug, guideOrTutorial._type) || feedItem.externalLink}
       presenterSubtitle={subtitle}
       showPlayIcon={feedItem.hasVideo}
-      posterURL={urlBuilder.image(feedItem.poster).height(360).url()}
+      posterURL={feedItem.poster ? urlBuilder.image(feedItem.poster).height(360).url() : undefined}
     />
   )
 }
