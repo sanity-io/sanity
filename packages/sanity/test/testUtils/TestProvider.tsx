@@ -3,6 +3,7 @@ import {SanityClient} from '@sanity/client'
 import {LayerProvider, studioTheme, ThemeProvider, ToastProvider} from '@sanity/ui'
 import {createWorkspaceFromConfig, SingleWorkspace} from '../../src/config'
 import {SourceProvider, WorkspaceProvider} from '../../src/studio'
+import {ResourceCacheProvider} from '../../src/datastores/ResourceCacheProvider'
 
 interface TestProviderOptions {
   config: SingleWorkspace
@@ -25,7 +26,9 @@ export async function createTestProvider({client, config}: TestProviderOptions) 
         <ToastProvider>
           <LayerProvider>
             <WorkspaceProvider workspace={workspace}>
-              <SourceProvider source={workspace.unstable_sources[0]}>{children}</SourceProvider>
+              <SourceProvider source={workspace.unstable_sources[0]}>
+                <ResourceCacheProvider>{children}</ResourceCacheProvider>
+              </SourceProvider>
             </WorkspaceProvider>
           </LayerProvider>
         </ToastProvider>
