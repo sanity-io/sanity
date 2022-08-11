@@ -107,7 +107,6 @@ export async function getViteConfig(options: ViteOptions): Promise<InlineConfig>
       emptyOutDir: false, // Rely on CLI to do this
 
       rollupOptions: {
-        perf: true,
         input: {
           main: virtualEntryModuleId,
         },

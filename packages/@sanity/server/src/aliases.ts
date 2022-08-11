@@ -9,7 +9,7 @@ import type {SanityMonorepo} from './sanityMonorepo'
 export function getAliases(opts: {monorepo?: SanityMonorepo}): Record<string, string> {
   const {monorepo} = opts
 
-  if (!monorepo) {
+  if (!monorepo?.path) {
     return {}
   }
 
