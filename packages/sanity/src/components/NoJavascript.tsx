@@ -20,7 +20,7 @@ const NoJsStyles = `
 }
 `
 
-export default function NoJavascript() {
+export function NoJavascript() {
   return (
     <noscript>
       <div className="sanity-app-no-js__root">

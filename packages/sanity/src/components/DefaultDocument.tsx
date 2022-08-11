@@ -1,6 +1,7 @@
 import React from 'react'
 import {Favicons} from './Favicons'
 import {GlobalErrorHandler} from './globalErrorHandler'
+import {NoJavascript} from './NoJavascript'
 
 const globalStyles = `
   html {
@@ -22,7 +23,9 @@ export interface DefaultDocumentProps {
   css?: string[]
   basePath?: string
 }
+
 const EMPTY_ARRAY: never[] = []
+
 export function DefaultDocument(props: DefaultDocumentProps): React.ReactElement {
   const {entryPath, css = EMPTY_ARRAY, basePath = '/'} = props
   return (
@@ -47,6 +50,7 @@ export function DefaultDocument(props: DefaultDocumentProps): React.ReactElement
       <body>
         <div id="sanity" />
         <script type="module" src={entryPath} />
+        <NoJavascript />
       </body>
     </html>
   )
