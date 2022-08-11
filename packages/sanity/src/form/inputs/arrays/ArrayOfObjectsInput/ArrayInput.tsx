@@ -266,40 +266,42 @@ export class ArrayInput extends React.PureComponent<ArrayInputProps> {
       return itemProps.children
     }
 
+    // We only want to enable focus on the array item when it is not open.
+    // This is because we want to remove the risk of focus being removed
+    // from focusable elements that you interact with inside the dialog.
+    const focused = itemProps.focused && !itemProps.open
     const typeTitle = getSchemaTypeTitle(itemProps.schemaType)
     return (
-      <>
-        <ArrayItem
-          changed={itemProps.changed}
-          validation={itemProps.validation}
-          readOnly={itemProps.readOnly}
-          onInsert={itemProps.onInsert}
-          onRemove={itemProps.onRemove}
-          onFocus={itemProps.onFocus}
-          index={itemProps.index}
-          schemaType={itemProps.schemaType}
-          layout={schemaType.options?.layout}
-          insertableTypes={schemaType.of}
-          value={itemProps.value as _ArrayInput_ArrayMember}
-          focused={itemProps.focused}
-          open={itemProps.open}
-          path={itemProps.path}
-          onClick={itemProps.onOpen}
-          presence={itemProps.presence}
-          renderPreview={renderPreview}
-        >
-          {itemProps.open ? (
-            <Dialog
-              width={1}
-              header={`Edit ${typeTitle}`}
-              id={`${id}-item-${itemProps.key}-dialog`}
-              onClose={itemProps.onClose}
-            >
-              <Box padding={4}>{itemProps.children}</Box>
-            </Dialog>
-          ) : null}
-        </ArrayItem>
-      </>
+      <ArrayItem
+        changed={itemProps.changed}
+        validation={itemProps.validation}
+        readOnly={itemProps.readOnly}
+        onInsert={itemProps.onInsert}
+        onRemove={itemProps.onRemove}
+        onFocus={itemProps.onFocus}
+        index={itemProps.index}
+        schemaType={itemProps.schemaType}
+        layout={schemaType.options?.layout}
+        insertableTypes={schemaType.of}
+        value={itemProps.value as _ArrayInput_ArrayMember}
+        focused={focused}
+        open={itemProps.open}
+        path={itemProps.path}
+        onClick={itemProps.onOpen}
+        presence={itemProps.presence}
+        renderPreview={renderPreview}
+      >
+        {itemProps.open ? (
+          <Dialog
+            width={1}
+            header={`Edit ${typeTitle}`}
+            id={`${id}-item-${itemProps.key}-dialog`}
+            onClose={itemProps.onClose}
+          >
+            <Box padding={4}>{itemProps.children}</Box>
+          </Dialog>
+        ) : null}
+      </ArrayItem>
     )
   }
 
