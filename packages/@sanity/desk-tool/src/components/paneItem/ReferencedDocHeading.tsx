@@ -42,9 +42,11 @@ export function ReferencedDocHeading(props: ReferenceDocHeadingProps) {
   if (hidePopover) {
     return (
       <Flex>
-        <TitleText tabIndex={0} textOverflow="ellipsis" weight="semibold">
-          {title}
-        </TitleText>
+        <Box paddingBottom={3}>
+          <TitleText tabIndex={0} textOverflow="ellipsis" weight="semibold">
+            {title}
+          </TitleText>
+        </Box>
         <ReferencedDocTooltip totalReferenceCount={totalReferenceCount} />
       </Flex>
     )
@@ -68,9 +70,11 @@ export function ReferencedDocHeading(props: ReferenceDocHeadingProps) {
         <Flex>
           {/* This empty div is added to prevent a jump of the popover pointer once the title is rendered */}
           <div ref={documentTitleRef}>{''}</div>
-          <TitleText tabIndex={0} textOverflow="ellipsis" weight="semibold">
-            <Box marginBottom={2}>{title}</Box>
-          </TitleText>
+          <Box marginBottom={3}>
+            <TitleText tabIndex={0} textOverflow="ellipsis" weight="semibold">
+              {title}
+            </TitleText>
+          </Box>
           <ReferencedDocTooltip totalReferenceCount={totalReferenceCount} />
         </Flex>
       </ObserveElementResize>
