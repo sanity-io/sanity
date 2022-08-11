@@ -26,6 +26,7 @@ import {useWorkspace} from '../../workspace'
 import {useColorScheme} from '../../colorScheme'
 import {RouterState, useRouterState, useStateLink} from '../../../router'
 import {useWorkspaces} from '../../workspaces'
+import {isDev} from '../../../environment'
 import {UserMenu} from './userMenu'
 import {NewDocumentButton} from './NewDocumentButton'
 import {PresenceMenu} from './presence'
@@ -34,6 +35,7 @@ import {SearchField} from './search'
 import {ToolMenu as DefaultToolMenu} from './tools/ToolMenu'
 import {ChangelogButton} from './changelog'
 import {WorkspaceMenuButton} from './workspace'
+import {ConfigIssuesButton} from './configIssues/ConfigIssuesButton'
 
 const RootLayer = styled(Layer)`
   min-height: auto;
@@ -110,6 +112,7 @@ export function Navbar(props: NavbarProps) {
       collapsedPresenceMenu: mediaIndex <= 1,
       loginStatus: mediaIndex > 1,
       searchFullscreen: mediaIndex <= 1,
+      configIssues: mediaIndex > 1 && isDev,
       workspaces: mediaIndex >= 3 && workspaces.length > 1,
       tools: mediaIndex >= 3,
     }),
@@ -279,6 +282,12 @@ export function Navbar(props: NavbarProps) {
             {shouldRender.changelog && (
               <Box marginRight={1}>
                 <ChangelogButton />
+              </Box>
+            )}
+
+            {shouldRender.configIssues && (
+              <Box marginRight={2}>
+                <ConfigIssuesButton />
               </Box>
             )}
 
