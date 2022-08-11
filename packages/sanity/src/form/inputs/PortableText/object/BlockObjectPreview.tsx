@@ -13,6 +13,7 @@ import {
   MenuButtonProps,
   MenuItem,
   useGlobalKeyDown,
+  useLayer,
 } from '@sanity/ui'
 import React, {forwardRef, MouseEvent, ReactElement, useCallback, useMemo, useRef} from 'react'
 import {useId} from '@reach/auto-id'
@@ -40,6 +41,7 @@ const POPOVER_PROPS: MenuButtonProps['popover'] = {
 
 export function BlockObjectPreview(props: BlockObjectPreviewProps): ReactElement {
   const {focused, value, type, readOnly, onClickingEdit, onClickingDelete, renderPreview} = props
+  const {isTopLayer} = useLayer()
   const editor = usePortableTextEditor()
   const menuButtonId = useId() || ''
   const menuButton = useRef<HTMLButtonElement | null>(null)
@@ -63,7 +65,7 @@ export function BlockObjectPreview(props: BlockObjectPreviewProps): ReactElement
         if (!focused) {
           return
         }
-        if (event.key === 'Escape') {
+        if (event.key === 'Escape' && isTopLayer) {
           // event.preventDefault()
           // event.stopPropagation()
           isTabbing.current = false
@@ -78,7 +80,7 @@ export function BlockObjectPreview(props: BlockObjectPreviewProps): ReactElement
           }
         }
       },
-      [focused, editor]
+      [focused, isTopLayer, editor]
     )
   )
 
