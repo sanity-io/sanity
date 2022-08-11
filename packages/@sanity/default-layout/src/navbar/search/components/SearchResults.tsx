@@ -8,7 +8,6 @@ import {getPublishedId} from 'part:@sanity/base/util/draft-utils'
 import React, {RefObject, useCallback} from 'react'
 import styled from 'styled-components'
 import {useSearchState} from '../contexts/search'
-import {addSearchTerm} from '../datastores/recentSearches'
 import {NoResults} from './NoResults'
 import {PointerOverlay} from './PointerOverlay'
 import {SearchResultItem} from './searchResultItem'
@@ -21,6 +20,7 @@ interface SearchResultsProps {
 
 export function SearchResults({childContainerRef, onClose, pointerOverlayRef}: SearchResultsProps) {
   const {
+    dispatch,
     state: {terms, result},
   } = useSearchState()
 
@@ -42,9 +42,12 @@ export function SearchResults({childContainerRef, onClose, pointerOverlayRef}: S
   */
 
   const handleResultClick = useCallback(() => {
-    addSearchTerm(terms)
+    dispatch({
+      terms,
+      type: 'RECENT_SEARCHES_ADD',
+    })
     onClose()
-  }, [onClose, terms])
+  }, [dispatch, onClose, terms])
 
   return (
     <SearchResultsWrapper $loading={result.loading}>

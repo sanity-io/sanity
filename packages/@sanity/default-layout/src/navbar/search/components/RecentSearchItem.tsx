@@ -2,7 +2,7 @@ import {ClockIcon, CloseIcon} from '@sanity/icons'
 import {Box, Button, Flex, Text} from '@sanity/ui'
 import React, {MouseEvent, useCallback} from 'react'
 import styled from 'styled-components'
-import {RecentSearch} from '../datastores/recentSearches'
+import type {RecentSearch} from '../datastores/recentSearches'
 import {withCommandPaletteItemStyles} from '../utils/withCommandPaletteItemStyles'
 import {TypePills} from './TypePills'
 

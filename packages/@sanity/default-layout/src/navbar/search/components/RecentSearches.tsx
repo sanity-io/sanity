@@ -1,18 +1,8 @@
-// @todo: remove the following line when part imports has been removed from this file
-///<reference types="@sanity/types/parts" />
-
 import type {SearchTerms} from '@sanity/base'
 import {Box, Button, Label, Stack, Text, useMediaIndex} from '@sanity/ui'
-import schema from 'part:@sanity/base/schema'
-import React, {MouseEvent, RefObject, useCallback, useMemo, useState} from 'react'
+import React, {MouseEvent, RefObject, useCallback, useMemo} from 'react'
 import styled from 'styled-components'
 import {useSearchState} from '../contexts/search'
-import {
-  addSearchTerm,
-  getRecentSearchTerms,
-  removeSearchTermAtIndex,
-  removeSearchTerms,
-} from '../datastores/recentSearches'
 import {Instructions} from './Instructions'
 import {PointerOverlay} from './PointerOverlay'
 import {RecentSearchItem} from './RecentSearchItem'
@@ -28,8 +18,10 @@ export function RecentSearches({
   pointerOverlayRef,
   showFiltersOnClick,
 }: RecentSearchesProps) {
-  const [recentSearches, setRecentSearches] = useState(() => getRecentSearchTerms(schema))
-  const {dispatch} = useSearchState()
+  const {
+    dispatch,
+    state: {recentSearches},
+  } = useSearchState()
 
   const mediaIndex = useMediaIndex()
 
@@ -42,9 +34,8 @@ export function RecentSearches({
   }, [mediaIndex])
 
   const handleClearRecentSearchesClick = useCallback(() => {
-    removeSearchTerms()
-    setRecentSearches(getRecentSearchTerms(schema))
-  }, [])
+    dispatch({type: 'RECENT_SEARCHES_REMOVE_ALL'})
+  }, [dispatch])
 
   const handleRecentSearchClick = useCallback(
     (searchTerms: SearchTerms) => {
@@ -53,8 +44,7 @@ export function RecentSearches({
         dispatch({type: 'FILTERS_SHOW'})
       }
       dispatch({type: 'TERMS_SET', terms: searchTerms})
-      addSearchTerm(searchTerms)
-      setRecentSearches(getRecentSearchTerms(schema))
+      dispatch({type: 'RECENT_SEARCHES_ADD', terms: searchTerms})
     },
     [dispatch, showFiltersOnClick]
   )
@@ -62,10 +52,9 @@ export function RecentSearches({
   const handleRecentSearchDelete = useCallback(
     (index: number) => (event: MouseEvent) => {
       event.stopPropagation()
-      removeSearchTermAtIndex(index)
-      setRecentSearches(getRecentSearchTerms(schema))
+      dispatch({type: 'RECENT_SEARCHES_REMOVE_INDEX', index})
     },
-    []
+    [dispatch]
   )
 
   return (
