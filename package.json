@@ -15,9 +15,9 @@
     "packages/sanity"
   ],
   "scripts": {
-    "bootstrap": "yarn install && yarn build:cli",
+    "bootstrap": "yarn install && yarn build:dts && yarn build:cli",
     "build": "yarn build:dts && lerna run --scope '{@sanity/*,sanity}' build",
-    "build:cli": "yarn build:dts && lerna run --scope '@sanity/{cli,export,import,mutator,server,types,util}' --scope sanity build",
+    "build:cli": "lerna run --scope '@sanity/{cli,export,import,mutator,server,types,util}' --scope sanity build",
     "build:dts": "tsc --build",
     "clean": "lerna run --scope '{@sanity/*,sanity}' clean",
     "clean:deps": "rimraf packages/@sanity/*/node_modules packages/sanity/node_modules node_modules",
@@ -68,7 +68,7 @@
     "__wip_smoke-test:cli": "yarn build && yarn publish:tarball && node -r esbuild-register test/smoke-test/cli.ts",
     "type-check": "tsc --build",
     "updated": "lerna updated",
-    "vercel-build": "yarn build && (cd dev/test-studio && yarn build)",
+    "vercel-build": "yarn build:cli && (cd dev/test-studio && yarn build)",
     "verify-format": "lerna run clean && yarn prettier -c",
     "watch": "lerna run --parallel --scope '{@sanity/*,sanity}' watch"
   },
