@@ -1,6 +1,7 @@
-import {error, HELP_IDS} from '../createValidationResult'
+import {error, HELP_IDS, warning} from '../createValidationResult'
 import {flatten} from 'lodash'
 import {getDupes} from '../utils/getDupes'
+import {coreTypeNames} from '../../coreTypes'
 
 export default (typeDef, visitorContext) => {
   // name should already have been marked
@@ -8,6 +9,43 @@ export default (typeDef, visitorContext) => {
 
   if (ofIsArray) {
     const invalid = typeDef.of.reduce((errs, def, idx) => {
+      if (typeof def.name === 'string') {
+        // If an array member has been given a "local" type name, we want to trigger an error if the given member type name
+        // is one of the builtin types
+        //
+        // The following examples should be an error (where book is an existing root level type and reference is a built-in type):
+        //  - (…) of: [{type: 'book', name: 'image'}]
+        //  - (…) of: [{type: 'book', name: 'object'}]
+        //  - (…) of: [{type: 'object', name: 'reference'}]
+        // The following examples are valid (where "address" is not defined as a global object type)
+        //  - (…) of: [{type: 'object', name: 'address'}]
+        // The following examples are redundant, but should be allowed (at least for now)
+        //  - (…) of: [{type: 'object', name: 'object'}]
+        //  - (…) of: [{type: 'image', name: 'image'}]
+
+        if (
+          // specifying the same name as the type is redundant, but should not be a hard error at this point
+          // Consider showing a warning for this and deprecate this ability eventually
+          def.name !== def.type &&
+          coreTypeNames.includes(def.name)
+        ) {
+          return errs.concat(
+            error(
+              `Found array member declaration with the same type name as a built-in type ("${def.name}"). Array members can not be given the same name as a built-in type.`,
+              HELP_IDS.ARRAY_OF_TYPE_BUILTIN_TYPE_CONFLICT
+            )
+          )
+        }
+      }
+
+      if (def.type === 'object' && def.name && visitorContext.getType(def.name)) {
+        return errs.concat(
+          warning(
+            `Found array member declaration with the same name as the global schema type "${def.name}". It's recommended to use a unique name to avoid possibly incompatible data types that shares the same name.`,
+            HELP_IDS.ARRAY_OF_TYPE_GLOBAL_TYPE_CONFLICT
+          )
+        )
+      }
       if (def.type === 'array') {
         return errs.concat(
           error(
