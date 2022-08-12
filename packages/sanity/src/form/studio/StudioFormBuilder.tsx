@@ -155,16 +155,6 @@ function RootInput() {
     [onFieldGroupSelect]
   )
 
-  const handleCollapse = useCallback(
-    () => onSetPathCollapsed(EMPTY_ARRAY, true),
-    [onSetPathCollapsed]
-  )
-
-  const handleExpand = useCallback(
-    () => onSetPathCollapsed(EMPTY_ARRAY, false),
-    [onSetPathCollapsed]
-  )
-
   const handleOpenField = useCallback((fieldName: string) => onPathOpen([fieldName]), [onPathOpen])
 
   const handleCloseField = useCallback(() => onPathOpen([]), [onPathOpen])

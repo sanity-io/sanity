@@ -120,6 +120,10 @@ describe('StudioFormBuilder', () => {
 
     const titleField = await result.findByTestId('field-title')
 
-    expect(titleField.outerHTML).toMatchSnapshot()
+    expect(removeClasses(titleField.outerHTML)).toMatchSnapshot()
   })
 })
+
+function removeClasses(html: string) {
+  return html.replace(/\s+class=".*?"/g, '')
+}
