@@ -12,8 +12,8 @@
 const os = require('os')
 const path = require('path')
 const util = require('util')
-const http = require('http')
 const {spawnSync, spawn} = require('child_process')
+const {fetch} = require('undici')
 const rimrafcb = require('rimraf')
 const chalk = require('chalk')
 
@@ -162,6 +162,21 @@ function testStartCommand({binPath, cwd, expectedTitle}) {
     const startedAt = Date.now()
     let timer
 
+    console.log('')
+    console.log(chalk.yellow(`[ Running '${process.argv[0]} ${binPath} start' in '${cwd}' ]`))
+
+    const proc = spawn(process.argv[0], [binPath, 'start'], {cwd})
+    proc.on('close', (code) => {
+      if (code && code > 0) {
+        reject(new Error(`'sanity start' failed with code ${code}`))
+        return
+      }
+
+      resolve()
+    })
+
+    scheduleConnect()
+
     function scheduleConnect() {
       if (timer) {
         clearTimeout(timer)
@@ -176,40 +191,21 @@ function testStartCommand({binPath, cwd, expectedTitle}) {
     }
 
     function tryConnect() {
-      const req = http.request('http://localhost:3333/', {timeout: 500})
-      req.on('response', (res) => {
-        if (res.statusCode !== 200) {
-          reject(new Error(`Dev server responded with HTTP ${res.statusCode}`))
-          return
-        }
+      fetch('http://localhost:3333/', {timeout: 500})
+        .then((res) => {
+          if (res.status !== 200) {
+            reject(new Error(`Dev server responded with HTTP ${res.statusCode}`))
+          }
 
-        const data = []
-        res.on('data', (buf) => data.push(buf))
-        res.on('close', () => {
-          const html = Buffer.concat(data).toString('utf8')
+          return res.text()
+        })
+        .then((html) => {
           return html.includes(`<title>${expectedTitle}`)
             ? onSuccess()
             : reject(new Error(`Did not find expected <title> in HTML:\n\n${html}`))
         })
-      })
-      req.on('timeout', scheduleConnect)
-      req.on('error', scheduleConnect)
-      req.end()
+        .catch(() => scheduleConnect())
     }
-
-    console.log('')
-    console.log(chalk.yellow(`[ Running '${process.argv[0]} ${binPath} start' in '${cwd}' ]`))
-    const start = spawn(process.argv[0], [binPath, 'start'], {cwd})
-    start.on('close', (code) => {
-      if (code && code > 0) {
-        reject(new Error(`'sanity start' failed with code ${code}`))
-        return
-      }
-
-      resolve()
-    })
-
-    scheduleConnect()
 
     function onSuccess() {
       if (timer) {
@@ -218,7 +214,7 @@ function testStartCommand({binPath, cwd, expectedTitle}) {
 
       const spentSecs = ((Date.now() - startedAt) / 1000).toFixed(2)
       console.log(chalk.yellow(`[ Dev server ready after %ss ]`), spentSecs)
-      start.kill(2)
+      proc.kill(2)
       resolve()
     }
   })
