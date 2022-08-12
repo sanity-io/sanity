@@ -93,11 +93,16 @@ async function getCoreModulePath(
   const sanityPath = resolveFrom.silent(workDir, 'sanity/_internal')
 
   if (corePath && sanityPath) {
+    const closest = corePath.startsWith(workDir) ? corePath : sanityPath
+    const assumedVersion = closest === corePath ? 'v2' : 'v3'
+
     console.warn(
-      chalk.yellow('Both `@sanity/core` AND `sanity` installed - assuming Sanity v3 project.')
+      chalk.yellow(
+        `Both \`@sanity/core\` AND \`sanity\` installed - assuming Sanity ${assumedVersion} project.`
+      )
     )
 
-    return sanityPath
+    return closest
   }
 
   if (sanityPath) {
