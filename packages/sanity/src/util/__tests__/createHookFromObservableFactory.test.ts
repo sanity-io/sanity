@@ -72,6 +72,13 @@ describe('createHookFromObservableFactory', () => {
   })
 
   it('bubbles errors throws in the observable factory', async () => {
+    // Error is hoisted. To prevent it from being printed as uncaught in terminal,
+    // we explicitly catch it and suppress it, recording that it has been called.
+    const preventer = jest.fn((evt: ErrorEvent) => evt.preventDefault())
+    if (typeof window !== 'undefined') {
+      window.addEventListener('error', preventer, false)
+    }
+
     const observableFactory = () =>
       Rx.from(
         tick().then(() => {
@@ -86,5 +93,10 @@ describe('createHookFromObservableFactory', () => {
     await waitForNextUpdate()
 
     expect(result.error?.message).toBe('test error')
+
+    if (typeof window !== 'undefined') {
+      window.removeEventListener('error', preventer, false)
+      expect(preventer).toHaveBeenCalled()
+    }
   })
 })
