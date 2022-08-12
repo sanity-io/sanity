@@ -153,6 +153,7 @@ const Container = styled(Grid)``
 
 const ContentWrapper = styled(DashboardWidget)`
   & > [data-name='content'] {
+    height: auto;
     min-height: 10.0625em;
   }
 `
