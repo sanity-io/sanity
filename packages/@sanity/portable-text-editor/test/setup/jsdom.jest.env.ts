@@ -1,4 +1,5 @@
 import JSDOMEnvironment from 'jest-environment-jsdom'
+
 export default class JSDOMEnvironmentWithDomRange extends JSDOMEnvironment {
   public async setup(): Promise<void> {
     await super.setup()

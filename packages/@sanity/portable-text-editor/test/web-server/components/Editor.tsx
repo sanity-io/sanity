@@ -1,6 +1,5 @@
-/* eslint-disable no-console */
 import React, {useCallback, useMemo, useRef, useState} from 'react'
-import {Text, Box, Card, Code, Stack} from '@sanity/ui'
+import {Text, Box, Card, Code} from '@sanity/ui'
 import styled from 'styled-components'
 import {Subject} from 'rxjs'
 import {

@@ -1,5 +1,5 @@
 import NodeEnvironment from 'jest-environment-node'
-import puppeteer, {KeyInput} from 'puppeteer'
+import puppeteer, {ElementHandle, KeyInput} from 'puppeteer'
 import ipc from 'node-ipc'
 import {isEqual} from 'lodash'
 import {EditorSelection, PortableTextBlock} from '../../src'
@@ -95,10 +95,15 @@ export default class CollaborationEnvironment extends NodeEnvironment {
       value: PortableTextBlock[] | undefined
     ): Promise<void> => {
       ipc.of.socketServer.emit('payload', JSON.stringify({type: 'value', value, testId}))
-      const valueHandleA: puppeteer.ElementHandle<HTMLDivElement> =
-        await this._pageA.waitForSelector('#pte-value')
-      const valueHandleB: puppeteer.ElementHandle<HTMLDivElement> =
-        await this._pageB.waitForSelector('#pte-value')
+      const [valueHandleA, valueHandleB] = await Promise.all([
+        this._pageA.waitForSelector('#pte-value'),
+        this._pageB.waitForSelector('#pte-value'),
+      ])
+
+      if (!valueHandleA || !valueHandleB) {
+        throw new Error('Failed to find `#pte-value` element on page')
+      }
+
       const readVal = (node) => {
         return node.innerText ? JSON.parse(node.innerText) : undefined
       }
@@ -118,12 +123,20 @@ export default class CollaborationEnvironment extends NodeEnvironment {
           const isMac = /Mac|iPod|iPhone|iPad/.test(userAgent)
           const metaKey = isMac ? 'Meta' : 'Control'
           const editorId = ['A', 'B'][index]
-          const editableHandle = await page.waitForSelector('div[contentEditable="true"]')
-          const selectionHandle: puppeteer.ElementHandle<HTMLDivElement> =
-            await page.waitForSelector('#pte-selection')
-          const valueHandle: puppeteer.ElementHandle<HTMLDivElement> = await page.waitForSelector(
-            '#pte-value'
-          )
+          const [
+            editableHandle,
+            selectionHandle,
+            valueHandle,
+          ]: (ElementHandle<HTMLDivElement> | null)[] = await Promise.all([
+            page.waitForSelector('div[contentEditable="true"]'),
+            page.waitForSelector('#pte-selection'),
+            page.waitForSelector('#pte-value'),
+          ])
+
+          if (!editableHandle || !selectionHandle || !valueHandle) {
+            throw new Error('Failed to find required editor elements')
+          }
+
           const waitForRevision = async () => {
             const revId = (Math.random() + 1).toString(36).substring(7)
             ipc.of.socketServer.emit(
