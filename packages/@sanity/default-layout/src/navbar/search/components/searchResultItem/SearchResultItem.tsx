@@ -9,7 +9,7 @@ import schema from 'part:@sanity/base/schema'
 import {getPublishedId} from 'part:@sanity/base/util/draft-utils'
 import React, {forwardRef, MouseEvent, useCallback, useMemo, useRef} from 'react'
 import type {VirtualItem} from 'react-virtual'
-import styled, {css} from 'styled-components'
+import styled from 'styled-components'
 import type {SearchHit} from '../../types'
 import {withCommandListItemStyles} from '../../utils/withCommandListItemStyles'
 import SearchResultItemPreview from './SearchResultItemPreview'
@@ -71,10 +71,13 @@ export function SearchResultItem({
 
   return (
     <SearchResultItemWrapper
-      $virtualRow={virtualRow}
       data-index={index}
       flex={1}
       onClick={handleWrapperClick}
+      style={{
+        height: `${virtualRow.size}px`,
+        transform: `translateY(${virtualRow.start}px)`,
+      }}
     >
       <Box paddingTop={1} paddingX={1}>
         <PreviewCard
@@ -99,15 +102,9 @@ export function SearchResultItem({
   )
 }
 
-const SearchResultItemWrapper = styled(Box)<{
-  $virtualRow: VirtualItem
-}>(({$virtualRow}) => {
-  return css`
-    height: ${$virtualRow.size}px;
-    transform: translateY(${$virtualRow.start}px);
-    left: 0;
-    position: absolute;
-    top: 0;
-    width: 100%;
-  `
-})
+const SearchResultItemWrapper = styled(Box)`
+  left: 0;
+  position: absolute;
+  top: 0;
+  width: 100%;
+`
