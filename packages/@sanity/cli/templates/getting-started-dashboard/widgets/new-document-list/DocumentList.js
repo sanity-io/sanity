@@ -72,7 +72,7 @@ function DocumentList(props) {
   }, [apiVersion, limit, order, query, queryParams, types])
 
   return (
-    <Container columns={[1, 1, 2, 2]} gap={4} marginBottom={3}>
+    <Container columns={[1, 1, 2, 2]} gap={4} marginBottom={5}>
       <GettingStartedDocs />
       <ContentWrapper
         hideFooterBorder
