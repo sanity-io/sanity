@@ -11,6 +11,8 @@ import {SearchResults} from './SearchResults'
 import {TypeFilters} from './TypeFilters'
 
 export interface PopoverProps {
+  childContainerRef: RefObject<HTMLDivElement>
+  initialSearchIndex?: number
   onClose: () => void
   placeholderRef: RefObject<HTMLInputElement>
 }
@@ -20,11 +22,15 @@ const DIALOG_SEARCH_FIELD_PADDING = 1 // Sanity UI scale
 
 const searchFieldPaddingPx = studioTheme.space[DIALOG_SEARCH_FIELD_PADDING]
 
-export function SearchPopover({onClose, placeholderRef}: PopoverProps) {
+export function SearchPopover({
+  childContainerRef,
+  onClose,
+  placeholderRef,
+  initialSearchIndex,
+}: PopoverProps) {
   const [dialogPosition, setDialogPosition] = useState(calcDialogPosition(placeholderRef))
   const [dialogEl, setDialogEl] = useState<HTMLDivElement>()
 
-  const childContainerRef = useRef<HTMLDivElement>(null)
   const childContainerParentRef = useRef<HTMLDivElement>(null)
   const headerInputRef = useRef<HTMLInputElement>(null)
   const pointerOverlayRef = useRef<HTMLDivElement>(null)
@@ -57,6 +63,7 @@ export function SearchPopover({onClose, placeholderRef}: PopoverProps) {
         childContainerParentRef={childContainerParentRef}
         childCount={hasValidTerms ? result.hits.length : recentSearches.length}
         headerInputRef={headerInputRef}
+        initialIndex={initialSearchIndex}
         pointerOverlayRef={pointerOverlayRef}
         wraparound={!hasValidTerms}
         virtualList
@@ -83,6 +90,7 @@ export function SearchPopover({onClose, placeholderRef}: PopoverProps) {
                   childContainerRef={childContainerRef}
                   onClose={onClose}
                   pointerOverlayRef={pointerOverlayRef}
+                  initialSearchIndex={initialSearchIndex}
                 />
               ) : (
                 <RecentSearches

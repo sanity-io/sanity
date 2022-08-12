@@ -47,6 +47,7 @@ interface CommandListProviderProps {
   childContainerParentRef: RefObject<HTMLDivElement>
   childCount: number
   headerInputRef: RefObject<HTMLInputElement>
+  initialIndex?: number
   pointerOverlayRef: RefObject<HTMLDivElement>
   virtualList?: boolean
   wraparound?: boolean
@@ -60,6 +61,7 @@ export function CommandListProvider({
   childContainerRef,
   childContainerParentRef,
   childCount,
+  initialIndex = 0,
   headerInputRef,
   pointerOverlayRef,
   virtualList,
@@ -143,8 +145,8 @@ export function CommandListProvider({
    * Set active index on initial mount and child count changes
    */
   useEffect(() => {
-    setActiveIndex({index: 0})
-  }, [childCount, setActiveIndex])
+    setActiveIndex({index: initialIndex})
+  }, [childCount, initialIndex, setActiveIndex])
 
   /**
    * Re-enable child pointer events on any mouse move event
