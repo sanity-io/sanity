@@ -247,6 +247,7 @@ export class PortableTextEditor extends React.Component<
         syncValue: this.syncValue,
       })
     }
+    // Update the maxBlocks prop
     if (this.props.maxBlocks !== prevProps.maxBlocks) {
       this.maxBlocks =
         typeof this.props.maxBlocks === 'undefined'
@@ -255,15 +256,19 @@ export class PortableTextEditor extends React.Component<
       this.slateInstance.maxBlocks = this.maxBlocks
     }
 
-    // Update the value directly from props if we are not subscribing to patches or in readOnly mode.
-    if (
+    const isInitialValue = this.state.currentValue === null
+    const shouldUpdateChangedValueFromProps =
+      !isInitialValue &&
       (!this.props.incomingPatches$ || this.readOnly) &&
       this.state.currentValue !== this.props.value
-    ) {
+
+    // Always sync if currentValue is not set
+    if (isInitialValue && this.props.value) {
       this.syncValue()
     }
-    // Initial value sync
-    if (this.state.currentValue === null && this.props.value) {
+    // Otherwise sync from props only when in readOnly mode, or we are not using incoming patches
+    // to get up to date (it will patch itself up to date in that case through the withPatches plugin)
+    else if (!isInitialValue && shouldUpdateChangedValueFromProps) {
       this.syncValue()
     }
   }
@@ -310,6 +315,7 @@ export class PortableTextEditor extends React.Component<
       retrySync(this.syncValue, callbackFn)
       return
     }
+    // If the  editor is empty and there is a new value, just set that value directly.
     if (
       isEqualToEmptyEditor(this.slateInstance.children, this.portableTextFeatures) &&
       this.props.value
@@ -327,7 +333,7 @@ export class PortableTextEditor extends React.Component<
       })
       return
     }
-
+    // Test for diffs between our state value and the incoming value.
     const isEqualToValue = !(this.props.value || []).some((blk, index) => {
       const compareBlock = toSlateValue(
         [blk],
@@ -343,6 +349,7 @@ export class PortableTextEditor extends React.Component<
       debug('Not syncing value (value is equal)')
       return
     }
+    // Value is different - validate and replace the nodes that changed.
     debug('Validating')
     const validation = validateValue(this.props.value, this.portableTextFeatures, this.keyGenerator)
     if (this.props.value && !validation.valid) {
@@ -354,7 +361,7 @@ export class PortableTextEditor extends React.Component<
       this.setState({invalidValueResolution: validation.resolution})
     }
 
-    debug('Syncing value')
+    debug('Replacing changed nodes')
 
     if (this.props.value) {
       const slateValueFromProps =
@@ -386,13 +393,6 @@ export class PortableTextEditor extends React.Component<
     this.setState({currentValue: this.props.value}, () => {
       callbackFn()
     })
-    // Set initial currentValue
-    if (!this.state.currentValue) {
-      this.setState({currentValue: this.props.value}, () => {
-        callbackFn()
-      })
-    }
-    debug('Not syncing value (is up to date)')
   }
 
   // Data storing
