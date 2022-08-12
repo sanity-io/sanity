@@ -5,7 +5,7 @@ import {TextWithTone} from '@sanity/base/components'
 import {WarningOutlineIcon} from '@sanity/icons'
 import {Box, Flex} from '@sanity/ui'
 import {getPublishedId} from 'part:@sanity/base/util/draft-utils'
-import React, {RefObject, useCallback, useRef} from 'react'
+import React, {RefObject, useCallback, useEffect, useRef} from 'react'
 import {useVirtual} from 'react-virtual'
 import styled from 'styled-components'
 import {VIRTUAL_LIST_OVERSCAN} from '../constants'
@@ -17,21 +17,28 @@ import {SearchResultItem} from './searchResultItem'
 
 interface SearchResultsProps {
   childContainerRef: RefObject<HTMLDivElement>
+  initialSearchIndex?: number
   onClose: () => void
   pointerOverlayRef: RefObject<HTMLDivElement>
 }
 
 const VIRTUAL_ITEM_HEIGHT = 55 // px
 
-export function SearchResults({childContainerRef, onClose, pointerOverlayRef}: SearchResultsProps) {
+export function SearchResults({
+  childContainerRef,
+  onClose,
+  pointerOverlayRef,
+  initialSearchIndex,
+}: SearchResultsProps) {
   const {
     dispatch,
     state: {terms, result},
   } = useSearchState()
 
   const childParentRef = useRef()
+  const isMounted = useRef(false)
 
-  const rowVirtualizer = useVirtual({
+  const {scrollToIndex, totalSize, virtualItems} = useVirtual({
     estimateSize: useCallback(() => VIRTUAL_ITEM_HEIGHT, []),
     overscan: VIRTUAL_LIST_OVERSCAN,
     parentRef: childParentRef,
@@ -57,6 +64,9 @@ export function SearchResults({childContainerRef, onClose, pointerOverlayRef}: S
   )
   */
 
+  /**
+   * Add current search terms to recent searches, trigger child item click and close search
+   */
   const handleResultClick = useCallback(() => {
     dispatch({
       terms,
@@ -65,6 +75,26 @@ export function SearchResults({childContainerRef, onClose, pointerOverlayRef}: S
     onChildClick?.()
     onClose()
   }, [dispatch, onChildClick, onClose, terms])
+
+  /**
+   * Scroll virtual list to initial index, if specified
+   */
+  useEffect(() => {
+    if (typeof initialSearchIndex === 'number' && result.hits.length) {
+      scrollToIndex(initialSearchIndex, {align: 'start'})
+    }
+  }, [initialSearchIndex, result.hits.length, scrollToIndex])
+
+  /**
+   * After initial mount: scroll virtual list to top on search query change (and after results have loaded)
+   */
+  useEffect(() => {
+    if (isMounted.current && result.loaded) {
+      scrollToIndex(0)
+    }
+
+    isMounted.current = true
+  }, [scrollToIndex, result.loaded, terms.query])
 
   return (
     <SearchResultsWrapper $loading={result.loading}>
@@ -89,12 +119,8 @@ export function SearchResults({childContainerRef, onClose, pointerOverlayRef}: S
           {!!result.hits.length && (
             // (Has search results)
             <VirtualList ref={childParentRef}>
-              <VirtualListChildren
-                $height={rowVirtualizer.totalSize}
-                paddingBottom={1}
-                ref={childContainerRef}
-              >
-                {rowVirtualizer.virtualItems.map((virtualRow) => {
+              <VirtualListChildren $height={totalSize} paddingBottom={1} ref={childContainerRef}>
+                {virtualItems.map((virtualRow) => {
                   const hit = result.hits[virtualRow.index]
                   return (
                     <SearchResultItem

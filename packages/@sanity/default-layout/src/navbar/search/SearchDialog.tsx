@@ -9,6 +9,7 @@ import {TypeFilters} from './components/TypeFilters'
 import {CommandListProvider} from './contexts/commandList'
 import {useSearchState} from './contexts/search'
 import {hasSearchableTerms} from './contexts/search/selectors'
+import {useSaveSearchIndexOnClose} from './hooks/useSaveSearchIndexOnClose'
 import {useSearchHotkeys} from './hooks/useSearchHotkeys'
 
 interface SearchDialogProps {
@@ -18,22 +19,6 @@ interface SearchDialogProps {
 }
 
 export function SearchDialog({onClose, onOpen, open}: SearchDialogProps) {
-  useSearchHotkeys({onClose, onOpen, open})
-
-  if (!open) {
-    return null
-  }
-
-  return (
-    <Portal>
-      <FocusLock>
-        <SearchDialogContent onClose={onClose} />
-      </FocusLock>
-    </Portal>
-  )
-}
-
-function SearchDialogContent({onClose}: {onClose: () => void}) {
   const childContainerRef = useRef<HTMLDivElement>(null)
   const childContainerParentRef = useRef<HTMLDivElement>(null)
   const headerInputRef = useRef<HTMLInputElement>(null)
@@ -45,36 +30,60 @@ function SearchDialogContent({onClose}: {onClose: () => void}) {
 
   const hasValidTerms = hasSearchableTerms(terms)
 
+  /**
+   * Retrieve and retain top-most search index on close
+   */
+  const {savedSearchIndex, handleClose} = useSaveSearchIndexOnClose({
+    childContainerRef,
+    onClose,
+    saveOnClose: hasValidTerms,
+  })
+
+  /**
+   * Bind hotkeys to open / close actions
+   */
+  useSearchHotkeys({onClose: handleClose, onOpen, open})
+
+  if (!open) {
+    return null
+  }
+
   return (
     <CommandListProvider
       childContainerRef={childContainerRef}
       childContainerParentRef={childContainerParentRef}
       childCount={hasValidTerms ? result.hits.length : recentSearches.length}
       headerInputRef={headerInputRef}
+      initialIndex={savedSearchIndex}
       pointerOverlayRef={pointerOverlayRef}
       wraparound={!hasValidTerms}
     >
-      <SearchDialogContentWrapper scheme="light" tone="default">
-        <Flex direction="column" height="fill">
-          <SearchHeader inputRef={headerInputRef} onClose={onClose} />
-          <SearchContent flex={1} ref={childContainerParentRef}>
-            {hasValidTerms ? (
-              <SearchResults
-                childContainerRef={childContainerRef}
-                onClose={onClose}
-                pointerOverlayRef={pointerOverlayRef}
-              />
-            ) : (
-              <RecentSearches
-                childContainerRef={childContainerRef}
-                pointerOverlayRef={pointerOverlayRef}
-              />
-            )}
-          </SearchContent>
+      <Portal>
+        <FocusLock>
+          <SearchDialogContentWrapper scheme="light" tone="default">
+            <Flex direction="column" height="fill">
+              <SearchHeader inputRef={headerInputRef} onClose={handleClose} />
+              <SearchContent flex={1} ref={childContainerParentRef}>
+                {hasValidTerms ? (
+                  <SearchResults
+                    childContainerRef={childContainerRef}
+                    onClose={handleClose}
+                    pointerOverlayRef={pointerOverlayRef}
+                    initialSearchIndex={savedSearchIndex}
+                  />
+                ) : (
+                  <RecentSearches
+                    childContainerRef={childContainerRef}
+                    pointerOverlayRef={pointerOverlayRef}
+                  />
+                )}
+              </SearchContent>
 
-          <SearchDialogFilters />
-        </Flex>
-      </SearchDialogContentWrapper>
+              <SearchDialogFilters />
+            </Flex>
+          </SearchDialogContentWrapper>
+        </FocusLock>
+      </Portal>
     </CommandListProvider>
   )
 }
