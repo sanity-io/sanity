@@ -46,7 +46,7 @@
   },
   "devDependencies": {
     "@sanity/client": "^3.3.3",
-    "nock": "^9.0.5"
+    "nock": "^13.2.9"
   },
   "repository": {
     "type": "git",
