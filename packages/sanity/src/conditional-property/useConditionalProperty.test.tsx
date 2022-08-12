@@ -1,31 +1,9 @@
 import {renderHook} from '@testing-library/react-hooks'
-import React, {useMemo} from 'react'
-// import {createMockSanityClient} from '../../test/mocks/mockSanityClient'
-import {createConfig} from '../config'
-import {StudioProvider} from '../studio'
+import {createTestProvider} from '../../test/testUtils/TestProvider'
 import {
   ConditionalPropertyProps,
   unstable_useConditionalProperty as useConditionalProperty,
 } from './useConditionalProperty'
-
-// This mock is needed to prevent the "not wrapped in act()" error from React testing library.
-// The reason is that the `useCurrentUser` is used by `ObjectInput` to figure out which fields are
-// hidden, and using this hook causes the `ObjectInput` to render again once the user is loaded.
-//
-// NOTE!
-// We can remove this mock when `ObjectInput` no longer uses `useCurrentUser`.
-jest.mock('../datastores/user/hooks', () => {
-  const hooks = jest.requireActual('../datastores/user/hooks')
-
-  return {
-    ...hooks,
-    useCurrentUser: jest.fn().mockImplementation(() => ({
-      value: {},
-      error: null,
-      isLoading: false,
-    })),
-  }
-})
 
 const dummyDocument = {
   _createdAt: '2021-11-04T15:41:48Z',
@@ -35,6 +13,15 @@ const dummyDocument = {
   _updatedAt: '2021-11-05T12:34:29Z',
   title: 'Hello world',
   isPublished: true,
+  venue: {
+    location: {lat: 37.813563, lng: -122.268812},
+    address: {
+      street: '2421 Telegraph Ave #102',
+      city: 'Oakland',
+      zip: 94612,
+      state: 'California',
+    },
+  },
 }
 
 const DEFAULT_PROPS: Omit<ConditionalPropertyProps, 'checkProperty'> = {
@@ -43,23 +30,8 @@ const DEFAULT_PROPS: Omit<ConditionalPropertyProps, 'checkProperty'> = {
   value: undefined,
   parent: {
     parentTest: 'hello',
+    siblingProp: true,
   },
-}
-
-function TestWrapper({children}: any) {
-  const config = useMemo(
-    () =>
-      createConfig({
-        // clientFactory: () => createMockSanityClient() as any,
-        name: 'test',
-        title: 'Test',
-        projectId: 'foo',
-        dataset: 'test',
-      }),
-    []
-  )
-
-  return <StudioProvider config={config}>{children}</StudioProvider>
 }
 
 afterEach(() => {
@@ -67,7 +39,9 @@ afterEach(() => {
 })
 
 describe('Conditional property resolver', () => {
-  it('calls callback function', () => {
+  /* eslint-disable max-nested-callbacks */
+  it('calls callback function', async () => {
+    const TestWrapper = await createTestProvider()
     const callbackFn = jest.fn(() => true)
 
     const {result} = renderHook(
@@ -88,11 +62,11 @@ describe('Conditional property resolver', () => {
     expect(callbackFn.mock.calls).toMatchSnapshot()
   })
 
-  it('resolves callback to true', () => {
+  it('resolves callback to true', async () => {
+    const TestWrapper = await createTestProvider()
     const {result} = renderHook(
       () =>
         useConditionalProperty({
-          // eslint-disable-next-line max-nested-callbacks
           checkProperty: jest.fn(() => true),
           ...DEFAULT_PROPS,
         }),
@@ -101,11 +75,11 @@ describe('Conditional property resolver', () => {
     expect(result.current).toBeTruthy()
   })
 
-  it('returns false with callback that returns false', () => {
+  it('returns false with callback that returns false', async () => {
+    const TestWrapper = await createTestProvider()
     const {result} = renderHook(
       () =>
         useConditionalProperty({
-          // eslint-disable-next-line max-nested-callbacks
           checkProperty: jest.fn(() => false),
           ...DEFAULT_PROPS,
         }),
@@ -114,11 +88,11 @@ describe('Conditional property resolver', () => {
     expect(result.current).toBe(false)
   })
 
-  it('returns false if document title does not match', () => {
+  it('returns false if document title does not match', async () => {
+    const TestWrapper = await createTestProvider()
     const {result} = renderHook(
       () =>
         useConditionalProperty({
-          // eslint-disable-next-line max-nested-callbacks
           checkProperty: jest.fn(({document}) => document?.title !== 'Hello world'),
           ...DEFAULT_PROPS,
         }),
@@ -127,11 +101,11 @@ describe('Conditional property resolver', () => {
     expect(result.current).toBeFalsy()
   })
 
-  it('returns true if document is published', () => {
+  it('returns true if document is published', async () => {
+    const TestWrapper = await createTestProvider()
     const {result} = renderHook(
       () =>
         useConditionalProperty({
-          // eslint-disable-next-line max-nested-callbacks
           checkProperty: jest.fn(({document}) => Boolean(document?.isPublished)),
           ...DEFAULT_PROPS,
         }),
@@ -140,24 +114,28 @@ describe('Conditional property resolver', () => {
     expect(result.current).toBeTruthy()
   })
 
-  it('returns undefined because callback returns undefined', () => {
+  it('returns undefined because callback returns undefined', async () => {
+    const consoleSpy = jest.spyOn(console, 'warn').mockImplementation(() => undefined)
+    const TestWrapper = await createTestProvider()
     const {result} = renderHook(
       () =>
         useConditionalProperty({
-          // eslint-disable-next-line max-nested-callbacks
           checkProperty: jest.fn(() => undefined) as any,
           ...DEFAULT_PROPS,
         }),
       {wrapper: TestWrapper}
     )
     expect(result.current).toBe(undefined)
+    expect(consoleSpy).toHaveBeenCalledWith(
+      'The `testKey` option is or returned `undefined`. `testKey` should return a boolean.'
+    )
   })
 
-  it('returns true because value matches', () => {
+  it('returns true because value matches', async () => {
+    const TestWrapper = await createTestProvider()
     const {result} = renderHook(
       () =>
         useConditionalProperty({
-          // eslint-disable-next-line max-nested-callbacks
           checkProperty: jest.fn(({value}) => value === 'test value'),
           ...DEFAULT_PROPS,
           value: 'test value',
@@ -167,11 +145,11 @@ describe('Conditional property resolver', () => {
     expect(result.current).toBeTruthy()
   })
 
-  it('returns false because value does not match', () => {
+  it('returns false because value does not match', async () => {
+    const TestWrapper = await createTestProvider()
     const {result} = renderHook(
       () =>
         useConditionalProperty({
-          // eslint-disable-next-line max-nested-callbacks
           checkProperty: jest.fn(({value}) => value === 'test'),
           ...DEFAULT_PROPS,
           value: 'test value',
@@ -181,6 +159,52 @@ describe('Conditional property resolver', () => {
     expect(result.current).toBeFalsy()
   })
 
-  it.todo('returns true when current user role is not administrator')
-  it.todo('returns true when sibling field is not empty')
+  it('returns true when the current user does not have role "developer"', async () => {
+    const TestWrapper = await createTestProvider()
+    const {result} = renderHook(
+      () =>
+        useConditionalProperty({
+          checkProperty: jest.fn(
+            ({currentUser}) => !currentUser?.roles.some((role) => role.name === 'developer')
+          ),
+          ...DEFAULT_PROPS,
+          value: 'test value',
+        }),
+      {wrapper: TestWrapper}
+    )
+    expect(result.current).toBeTruthy()
+  })
+
+  it('returns true when the current user has role "administrator"', async () => {
+    const TestWrapper = await createTestProvider()
+    const {result} = renderHook(
+      () =>
+        useConditionalProperty({
+          checkProperty: jest.fn(({currentUser}) =>
+            Boolean(currentUser?.roles.some((role) => role.name === 'administrator'))
+          ),
+          ...DEFAULT_PROPS,
+          value: 'test value',
+        }),
+      {wrapper: TestWrapper}
+    )
+    expect(result.current).toBeTruthy()
+  })
+
+  it('returns true when sibling field is not empty', async () => {
+    const TestWrapper = await createTestProvider()
+    const {result} = renderHook(
+      () =>
+        useConditionalProperty({
+          checkPropertyKey: 'hidden',
+          document: dummyDocument,
+          value: dummyDocument.venue.address,
+          parent: dummyDocument.venue,
+          checkProperty: jest.fn(({parent}) => Boolean(parent.location)),
+        }),
+      {wrapper: TestWrapper}
+    )
+    expect(result.current).toBeTruthy()
+  })
+  /* eslint-enable max-nested-callbacks */
 })

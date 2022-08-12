@@ -14,7 +14,7 @@ const defaultMockUser: CurrentUser = {
   name: 'Doug',
   email: 'doug@sanity.io',
   role: 'admin',
-  roles: [{name: 'admin', title: 'Admin'}],
+  roles: [{name: 'administrator', title: 'Administrator'}],
 }
 
 const defaultMockSchema: SchemaPluginOptions = {

@@ -50,7 +50,7 @@ export function useCheckCondition(
 
     if (typeof isTrueIsh === 'undefined') {
       console.warn(
-        `The \`${checkPropertyName}\` option is either a promise or a promise returning function. Async callbacks for \`${checkPropertyName}\` option is not currently supported.`
+        `The \`${checkPropertyName}\` option is or returned \`undefined\`. \`${checkPropertyName}\` should return a boolean.`
       )
     }
 
