@@ -5,6 +5,7 @@ import {useModuleStatus} from '../../../../module-status'
 import {StatusButton} from '../../StatusButton'
 import {isDev} from '../../../../environment'
 import {useClient} from '../../../../hooks'
+import {useColorScheme} from '../../../colorScheme'
 import {ChangelogDialog} from './ChangelogDialog'
 import {ChangelogAccordion} from './ChangelogAccordion'
 
@@ -21,6 +22,9 @@ export function ChangelogButton() {
       }),
     [client]
   )
+
+  // get root scheme
+  const {scheme} = useColorScheme()
 
   const {value, error, isLoading} = useModuleStatus({
     client: versionedClient,
@@ -43,9 +47,10 @@ export function ChangelogButton() {
       footer: <ChangelogAccordion defaultOpen={isDev} />,
       onClickOutside: handleClose,
       onClose: handleClose,
-      scheme: 'light',
+      // force root scheme here to "break out" of the navbar's dark scheme
+      scheme,
     }),
-    [handleClose]
+    [handleClose, scheme]
   )
 
   if (error || isLoading || isUpToDate) {
