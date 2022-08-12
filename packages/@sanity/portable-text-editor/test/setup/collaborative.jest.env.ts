@@ -82,8 +82,8 @@ export default class CollaborationEnvironment extends NodeEnvironment {
 
   public async teardown(): Promise<void> {
     await super.teardown()
-    this._browserA.close()
-    this._browserB.close()
+    this._browserA?.close()
+    this._browserB?.close()
     ipc.disconnect('socketServer')
   }
 
