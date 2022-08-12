@@ -9,7 +9,7 @@ import {TypeFilters} from './components/TypeFilters'
 import {CommandListProvider} from './contexts/commandList'
 import {useSearchState} from './contexts/search'
 import {hasSearchableTerms} from './contexts/search/selectors'
-import {useSaveSearchIndexOnClose} from './hooks/useSaveSearchIndexOnClose'
+import {useSaveSearchResultsIndexOnClose} from './hooks/useSaveSearchIndexOnClose'
 import {useSearchHotkeys} from './hooks/useSearchHotkeys'
 
 interface SearchDialogProps {
@@ -30,14 +30,16 @@ export function SearchDialog({onClose, onOpen, open}: SearchDialogProps) {
 
   const hasValidTerms = hasSearchableTerms(terms)
 
+  const {savedSearchIndex, saveSearchIndex} = useSaveSearchResultsIndexOnClose()
+
   /**
-   * Retrieve and retain top-most search index on close
+   * Store top-most search result index on close.
+   * When re-opened, we pass the saved index to our virtual list to scroll back to position.
    */
-  const {savedSearchIndex, handleClose} = useSaveSearchIndexOnClose({
-    childContainerRef,
-    onClose,
-    saveOnClose: hasValidTerms,
-  })
+  const handleClose = useCallback(() => {
+    saveSearchIndex()
+    onClose()
+  }, [onClose, saveSearchIndex])
 
   /**
    * Bind hotkeys to open / close actions

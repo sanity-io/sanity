@@ -8,7 +8,7 @@ import {getPublishedId} from 'part:@sanity/base/util/draft-utils'
 import React, {RefObject, useCallback, useEffect, useRef} from 'react'
 import {useVirtual} from 'react-virtual'
 import styled from 'styled-components'
-import {VIRTUAL_LIST_OVERSCAN} from '../constants'
+import {VIRTUAL_LIST_CHILDREN_UI_NAME, VIRTUAL_LIST_OVERSCAN} from '../constants'
 import {useCommandList} from '../contexts/commandList'
 import {useSearchState} from '../contexts/search'
 import {NoResults} from './NoResults'
@@ -119,7 +119,12 @@ export function SearchResults({
           {!!result.hits.length && (
             // (Has search results)
             <VirtualList ref={childParentRef}>
-              <VirtualListChildren $height={totalSize} paddingBottom={1} ref={childContainerRef}>
+              <VirtualListChildren
+                $height={totalSize}
+                data-ui={VIRTUAL_LIST_CHILDREN_UI_NAME}
+                paddingBottom={1}
+                ref={childContainerRef}
+              >
                 {virtualItems.map((virtualRow) => {
                   const hit = result.hits[virtualRow.index]
                   return (
