@@ -161,18 +161,18 @@ export function SearchResults({
 
 const SearchResultsWrapper = styled.div<{$loading: boolean}>`
   height: 100%;
-  width: 100%;
   opacity: ${({$loading}) => ($loading ? 0.5 : 1)};
   overflow: hidden;
   position: relative;
   transition: 300ms opacity;
+  width: 100%;
 `
 
 const VirtualList = styled(Box)`
   height: 100%;
-  width: 100%;
   overflow-x: hidden;
   overflow-y: auto;
+  width: 100%;
 `
 
 const VirtualListChildren = styled(Box)<{$height: number}>`

@@ -72,7 +72,7 @@ export function CommandListProvider({
   const enableChildContainerPointerEvents = useCallback(
     (enabled: boolean) => {
       if (pointerOverlayRef?.current) {
-        pointerOverlayRef.current.style.display = enabled ? 'none' : 'block'
+        pointerOverlayRef.current.setAttribute('data-enabled', (!enabled).toString())
       }
     },
     [pointerOverlayRef]
