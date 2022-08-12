@@ -23,11 +23,6 @@ export const generateSanityManifest = (base) => ({
       path: './widgets/new-document-list/DocumentList',
     },
     {
-      name: 'part:@sanity/dashboard/widget/getting-started-docs',
-      implements: 'part:@sanity/dashboard/widget',
-      path: './widgets/getting-started-docs/GettingStartedDocs',
-    },
-    {
       name: 'part:@sanity/base/schema',
       path: './schemas/schema',
     },

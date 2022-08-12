@@ -2,16 +2,14 @@ import PropTypes from 'prop-types'
 import React, {useCallback, useRef, useEffect, useState} from 'react'
 import {Button, Box, Flex, Card, Stack, Spinner, Text, Grid} from '@sanity/ui'
 import {DashboardWidget} from '@sanity/dashboard'
-import styled, {css, createGlobalStyle} from 'styled-components'
+import styled from 'styled-components'
 import SanityPreview from 'part:@sanity/base/preview'
 import {getPublishedId} from 'part:@sanity/base/util/draft-utils'
 import {IntentLink} from '@sanity/base/router'
 import schema from 'part:@sanity/base/schema'
-import GettingStartedDocsBase from '../getting-started-docs/GettingStartedDocs'
+import {GettingStartedDocs} from './GettingStartedDocs'
 import {OverrideVideoGridStyles} from './OverrideVideoGridStyles'
 import {getSubscription, assembleQuery} from './sanityConnector'
-
-const GettingStartedDocs = GettingStartedDocsBase.component
 
 /**
  * This file contains a custom widget created to list recent documents edited.

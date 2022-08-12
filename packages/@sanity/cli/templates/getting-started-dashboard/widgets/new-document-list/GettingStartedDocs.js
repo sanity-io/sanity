@@ -2,7 +2,7 @@ import React from 'react'
 import {Box, Flex, Card, Stack, Heading, Text} from '@sanity/ui'
 import styled, {createGlobalStyle} from 'styled-components'
 
-function GettingStartedDocs() {
+export function GettingStartedDocs() {
   return (
     <Root radius={3} display="flex">
       <Card padding={5} radius={3}>
@@ -41,11 +41,6 @@ function GettingStartedDocs() {
       <HideDocsLinksStyles />
     </Root>
   )
-}
-
-export default {
-  name: 'getting-started-docs',
-  component: GettingStartedDocs,
 }
 
 const Root = styled(Card)`

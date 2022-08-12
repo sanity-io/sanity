@@ -1,14 +1,17 @@
 export default {
+  layout: {
+    width: 'medium',
+  },
   widgets: [
-    {name: 'getting-started-docs', layout: {width: 'medium'}},
     {
       name: 'new-document-list',
       layout: {
-        width: 'large',
+        width: 'full',
       },
       options: {
         title: 'Recent documents',
         limit: 3,
+        types: ['pet', 'human', 'product', 'article', 'siteSettings'],
       },
     },
     {
