@@ -14,7 +14,7 @@ const fieldsetsTestType = defineType({
     {
       name: 'collapsibleWithDefaults',
       title: 'Collapsible fieldset with defaults',
-      options: {collapsed: false},
+      options: {collapsed: false, collapsible: true},
     },
   ],
   fields: [
