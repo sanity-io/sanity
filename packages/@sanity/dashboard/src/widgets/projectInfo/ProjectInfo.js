@@ -4,7 +4,7 @@ import {isPlainObject} from 'lodash'
 import PropTypes from 'prop-types'
 import {Box, Card, Stack, Heading, Grid, Label, Text, Code, Button} from '@sanity/ui'
 import {versionedClient} from '../../versionedClient'
-import {DashboardWidget} from '../../DashboardTool'
+import {DashboardWidget} from '../../'
 import {WidgetContainer} from '../../legacyParts'
 
 const {projectId, dataset} = versionedClient.config()

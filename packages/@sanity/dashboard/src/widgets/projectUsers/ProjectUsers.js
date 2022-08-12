@@ -5,7 +5,7 @@ import {RobotIcon} from '@sanity/icons'
 import styled from 'styled-components'
 import {DefaultPreview} from '@sanity/base/components'
 import {versionedClient} from '../../versionedClient'
-import {DashboardWidget} from '../../DashboardTool'
+import {DashboardWidget} from '../../'
 import {userStore} from '../../legacyParts'
 
 const AvatarWrapper = styled(Card)`
