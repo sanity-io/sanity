@@ -67,6 +67,7 @@ export function CommandListProvider({
   virtualList,
   wraparound = true,
 }: CommandListProviderProps) {
+  const isMounted = useRef(false)
   const selectedIndexRef = useRef<number>(null)
 
   const enableChildContainerPointerEvents = useCallback(
@@ -142,11 +143,21 @@ export function CommandListProvider({
   )
 
   /**
-   * Set active index on initial mount and child count changes
+   * Set active index on initial mount
    */
   useEffect(() => {
     setActiveIndex({index: initialIndex})
   }, [childCount, initialIndex, setActiveIndex])
+
+  /**
+   * Reset active index on child count changes (after initial mount)
+   */
+  useEffect(() => {
+    if (isMounted.current) {
+      setActiveIndex({index: 0})
+    }
+    isMounted.current = true
+  }, [childCount, setActiveIndex])
 
   /**
    * Re-enable child pointer events on any mouse move event
