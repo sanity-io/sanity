@@ -1,7 +1,6 @@
 import React, {useCallback, useState} from 'react'
-import {Box, Button, Dialog, Heading, Inline, Stack, Text, Tooltip} from '@sanity/ui'
-
-import {InfoOutlineIcon, WarningOutlineIcon} from '@sanity/icons'
+import {Box, Button, Dialog, Heading, Stack, Text, Tooltip} from '@sanity/ui'
+import {WarningOutlineIcon} from '@sanity/icons'
 import {useId} from '@reach/auto-id'
 import {useSchema} from '../../../../hooks'
 import {SchemaProblemGroups} from '../../../screens/schemaErrors/SchemaProblemGroups'
@@ -61,7 +60,15 @@ export function ConfigIssuesButton() {
 
       {isDialogOpen && (
         <Dialog
-          header="Configuration issues"
+          header={
+            <Stack space={3}>
+              <Text weight="semibold">Configuration issues</Text>
+              <Text muted size={1}>
+                Configuration checks are only performed during development and will not be visible
+                in production builds
+              </Text>
+            </Stack>
+          }
           width={2}
           onClickOutside={handleClose}
           onClose={handleClose}
@@ -70,16 +77,6 @@ export function ConfigIssuesButton() {
           id={dialogId}
         >
           <Stack space={4} padding={4}>
-            <Inline space={2} paddingY={3}>
-              <Text muted size={1}>
-                <InfoOutlineIcon />
-              </Text>
-              <Text muted size={1}>
-                Note: Configuration checks are only performed during development and will not be
-                visible in production builds
-              </Text>
-            </Inline>
-
             <Heading as="h2" size={1}>
               Found {groupsWithWarnings.length} schema warnings
             </Heading>
