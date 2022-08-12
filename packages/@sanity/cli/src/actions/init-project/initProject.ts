@@ -12,6 +12,7 @@ import {dynamicRequire} from '../../util/dynamicRequire'
 import {getClientWrapper} from '../../util/clientWrapper'
 import {getUserConfig} from '../../util/getUserConfig'
 import {isCommandGroup} from '../../util/isCommandGroup'
+import {isInteractive} from '../../util/isInteractive'
 import {getProjectDefaults, ProjectDefaults} from '../../util/getProjectDefaults'
 import type {InitFlags} from '../../commands/init/initCommand'
 import {
@@ -213,7 +214,10 @@ export default async function initSanity(
   await bootstrapTemplate(templateOptions, context)
 
   // Now for the slow part... installing dependencies
-  const pkgManager = await getPackageManagerChoice(outputPath, {prompt})
+  const pkgManager = await getPackageManagerChoice(outputPath, {
+    prompt,
+    interactive: unattended ? false : isInteractive,
+  })
   await installDeclaredPackages(outputPath, pkgManager.chosen, context)
 
   // Try initializing a git repository
