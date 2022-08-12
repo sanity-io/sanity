@@ -20,7 +20,12 @@ function WidgetContainer(props) {
     }
 
     return (
-      <div data-width={layout.width} data-height={layout.height}>
+      <div
+        data-width={layout.width}
+        data-height={layout.height}
+        data-widget-name={config.name}
+        data-name="sanity-dashboard-widget-container"
+      >
         {React.createElement(definition.component, options)}
       </div>
     )

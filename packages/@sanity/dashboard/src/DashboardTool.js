@@ -22,8 +22,6 @@ const DashboardIcon = () => (
   </svg>
 )
 
-export * from './components/dashboardWidget'
-
 export default {
   title: 'Dashboard',
   name: 'dashboard',

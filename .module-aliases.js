@@ -15,6 +15,7 @@ module.exports = {
   '@sanity/base': './packages/@sanity/base/src/_exports',
 
   '@sanity/desk-tool': './packages/@sanity/desk-tool/src/_exports',
+  '@sanity/dashboard': './packages/@sanity/dashboard/src',
 
   '@sanity/schema': './packages/@sanity/schema/src/_exports',
 

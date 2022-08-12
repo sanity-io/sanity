@@ -22,12 +22,14 @@ function canHandleIntent(intentName: string, params: Record<string, string | und
   return Boolean(
     (intentName === 'edit' && params.id) ||
       (intentName === 'create' && params.type) ||
-      (intentName === 'create' && params.template)
+      (intentName === 'create' && params.template) ||
+      (intentName === 'open-tool' && params.tool === 'desk')
   )
 }
 
 function DeskToolRoot() {
   const {intent, params, payload} = useRouterState()
+  const openIndex = intent && intent === 'open-tool'
 
   useEffect(() => {
     // Set active panes to blank on mount and unmount
@@ -44,7 +46,7 @@ function DeskToolRoot() {
 
   return (
     <ErrorBoundary onCatch={handleCatch}>
-      {intent ? (
+      {intent && !openIndex ? (
         <IntentResolver intent={intent} params={params} payload={payload} />
       ) : (
         <DeskTool onPaneChange={setActivePanes} />

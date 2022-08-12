@@ -20,7 +20,7 @@ const FeedItem = ({feedItem}) => {
       href={createUrl(guideOrTutorial.slug, guideOrTutorial._type) || feedItem.externalLink}
       presenterSubtitle={subtitle}
       showPlayIcon={feedItem.hasVideo}
-      posterURL={urlBuilder.image(feedItem.poster).height(360).url()}
+      posterURL={feedItem.poster ? urlBuilder.image(feedItem.poster).height(360).url() : undefined}
     />
   )
 }
@@ -77,13 +77,20 @@ class SanityTutorials extends React.Component {
     return (
       <Container width={4}>
         <Stack space={6} paddingBottom={4}>
-          <Card tone="primary" padding={4} radius={2} border marginTop={4}>
+          <Card
+            tone="primary"
+            padding={4}
+            radius={2}
+            border
+            marginTop={4}
+            data-name="sanity-tutorials-widget-docs-link"
+          >
             <Flex direction={['column', 'column', 'row']}>
               <Stack space={4} flex={1} paddingRight={[0, 0, 4]}>
-                <Heading>Getting started guide</Heading>
-                <Text>
-                  It's time to learn how to build schemas, create content, and connect it to other
-                  applications.
+                <Heading as="h2">Getting started guide</Heading>
+                <Text as="p">
+                  {`It's time to learn how to build schemas, create content, and connect it to other
+                  applications.`}
                 </Text>
               </Stack>
               <Flex paddingTop={[4, 4, 0]} align="center">
@@ -108,7 +115,12 @@ class SanityTutorials extends React.Component {
                 section?.sectionItems && (
                   <Stack space={4} key={section._id}>
                     <Heading>{section.title}</Heading>
-                    <Grid as="ul" columns={columns(section?.sectionItems?.length)} gap={4}>
+                    <Grid
+                      as="ul"
+                      columns={columns(section?.sectionItems?.length)}
+                      gap={4}
+                      data-name="sanity-dashboard-widget-tutorials-section"
+                    >
                       {section?.sectionItems.map((item) => (
                         <Flex as="li" key={item._id}>
                           <FeedItem feedItem={item} />

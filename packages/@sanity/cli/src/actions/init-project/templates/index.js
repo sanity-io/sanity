@@ -3,6 +3,7 @@ module.exports = {
   clean: require('./clean'),
   'get-started': require('./get-started'),
   'getting-started-pets': require('./getting-started-pets'),
+  'getting-started-dashboard': require('./getting-started-dashboard'),
   moviedb: require('./moviedb'),
   ecommerce: require('./ecommerce'),
   shopify: require('./shopify'),

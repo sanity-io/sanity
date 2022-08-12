@@ -9,9 +9,10 @@ function Dashboard() {
   }
 
   const widgetConfigs = dashboardConfig.widgets || []
+  const layoutWidth = dashboardConfig?.layout?.width || 'large'
 
   return (
-    <DashboardLayout>
+    <DashboardLayout width={layoutWidth}>
       <WidgetGroup config={{widgets: widgetConfigs}} />
     </DashboardLayout>
   )
