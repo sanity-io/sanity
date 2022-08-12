@@ -131,6 +131,7 @@ export interface ConfigContext {
 export type TemplateResolver = ComposableOption<Template[], ConfigContext>
 
 export interface SchemaPluginOptions {
+  name?: string
   types?:
     | SchemaTypeDefinition[]
     | ComposableOption<

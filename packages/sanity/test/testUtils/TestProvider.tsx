@@ -1,24 +1,18 @@
 import React from 'react'
 import {SanityClient} from '@sanity/client'
 import {LayerProvider, studioTheme, ThemeProvider, ToastProvider} from '@sanity/ui'
-import {createWorkspaceFromConfig, SingleWorkspace} from '../../src/config'
+import {SingleWorkspace} from '../../src/config'
 import {SourceProvider, WorkspaceProvider} from '../../src/studio'
 import {ResourceCacheProvider} from '../../src/datastores/ResourceCacheProvider'
+import {getMockWorkspace} from './getMockWorkspaceFromConfig'
 
 interface TestProviderOptions {
-  config: SingleWorkspace
-  client: SanityClient
+  config?: SingleWorkspace
+  client?: SanityClient
 }
 
 export async function createTestProvider({client, config}: TestProviderOptions) {
-  const currentUser = {
-    id: 'doug',
-    name: 'Doug',
-    email: 'doug@sanity.io',
-    role: 'admin',
-    roles: [{name: 'admin', title: 'Admin'}],
-  }
-  const workspace = await createWorkspaceFromConfig({...config, currentUser, client})
+  const workspace = await getMockWorkspace({client, config})
 
   function TestProvider({children}: {children: React.ReactNode}) {
     return (
