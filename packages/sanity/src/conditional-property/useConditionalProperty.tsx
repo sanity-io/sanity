@@ -1,8 +1,7 @@
 import {SanityDocument, ConditionalProperty} from '@sanity/types'
-import {useMemo} from 'react'
 import {useCurrentUser} from '../datastores'
 import {useUnique} from '../util/useUnique'
-import {omitDeprecatedRole, useCheckCondition} from './utils'
+import {useCheckCondition} from './utils'
 
 /**
  * @internal Not yet a stable API

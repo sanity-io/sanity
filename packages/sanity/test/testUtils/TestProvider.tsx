@@ -11,7 +11,7 @@ interface TestProviderOptions {
   client?: SanityClient
 }
 
-export async function createTestProvider({client, config}: TestProviderOptions) {
+export async function createTestProvider({client, config}: TestProviderOptions = {}) {
   const workspace = await getMockWorkspace({client, config})
 
   function TestProvider({children}: {children: React.ReactNode}) {
