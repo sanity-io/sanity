@@ -1,11 +1,8 @@
 import {createHash} from 'crypto'
 import type {ChunkMetadata, Plugin} from 'vite'
-import {getEntryModule} from '../getEntryModule'
-import {renderDocument} from '../renderDocument'
-import {getSanityStudioConfigPath} from '../sanityConfig'
 import type {SanityMonorepo} from '../sanityMonorepo'
+import {renderDocument} from '../renderDocument'
 
-export const virtualEntryModuleId = '@sanity-studio-entry'
 interface ViteOutputBundle {
   [fileName: string]: ViteRenderedChunk
 }
@@ -22,34 +19,18 @@ export function sanityBuildEntries(options: {
   basePath: string
 }): Plugin {
   const {cwd, monorepo, basePath} = options
-  const resolvedVirtualModuleId = `\0${virtualEntryModuleId}`
 
   let entryChunkRef: string
 
   return {
-    name: '@sanity/server/sanity-index-html',
+    name: '@sanity/server/build-entries',
     apply: 'build',
-
-    resolveId(id) {
-      return id === virtualEntryModuleId ? resolvedVirtualModuleId : undefined
-    },
-
-    load(id) {
-      if (id !== resolvedVirtualModuleId) {
-        return undefined
-      }
-
-      return getSanityStudioConfigPath(cwd).then((configPath) =>
-        getEntryModule({relativeConfigLocation: configPath || './sanity.config'})
-      )
-    },
 
     buildStart() {
       entryChunkRef = this.emitFile({
         type: 'chunk',
-        id: virtualEntryModuleId,
-        name: 'studioEntry',
-        fileName: 'static/studioEntry.js',
+        id: '.sanity/runtime/app.js',
+        name: 'sanity',
       })
     },
 

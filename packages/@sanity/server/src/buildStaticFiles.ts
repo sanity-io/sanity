@@ -2,8 +2,9 @@ import path from 'path'
 import fs from 'fs/promises'
 import {constants as fsConstants} from 'fs'
 import {build, InlineConfig} from 'vite'
-import {getViteConfig} from './getViteConfig'
+import {finalizeViteConfig, getViteConfig} from './getViteConfig'
 import {generateWebManifest} from './webManifest'
+import {writeSanityRuntime} from './runtime'
 
 export interface ChunkModule {
   name: string
@@ -39,6 +40,8 @@ export async function buildStaticFiles(
     vite: extendViteConfig,
   } = options
 
+  await writeSanityRuntime({cwd, watch: false})
+
   let viteConfig = await getViteConfig({
     cwd,
     basePath,
@@ -49,7 +52,7 @@ export async function buildStaticFiles(
   })
 
   if (extendViteConfig) {
-    viteConfig = extendViteConfig(viteConfig)
+    viteConfig = finalizeViteConfig(extendViteConfig(viteConfig))
   }
 
   // Copy files placed in /static to the built /static

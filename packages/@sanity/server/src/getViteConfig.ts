@@ -4,7 +4,7 @@ import viteReact from '@vitejs/plugin-react'
 import {getAliases} from './aliases'
 import {normalizeBasePath} from './helpers'
 import {loadSanityMonorepo} from './sanityMonorepo'
-import {sanityBuildEntries, virtualEntryModuleId} from './vite/plugin-sanity-build-entries'
+import {sanityBuildEntries} from './vite/plugin-sanity-build-entries'
 import {sanityDotWorkaroundPlugin} from './vite/plugin-sanity-dot-workaround'
 import {sanityRuntimeRewritePlugin} from './vite/plugin-sanity-runtime-rewrite'
 import {sanityFaviconsPlugin} from './vite/plugin-sanity-favicons'
@@ -108,11 +108,46 @@ export async function getViteConfig(options: ViteOptions): Promise<InlineConfig>
 
       rollupOptions: {
         input: {
-          main: virtualEntryModuleId,
+          sanity: path.join(cwd, '.sanity', 'runtime', 'app.js'),
         },
       },
     }
   }
 
   return viteConfig
+}
+
+/**
+ * Ensure Sanity entry chunk is always loaded
+ *
+ * @param config - User-modified configuration
+ * @returns Merged configuration
+ * @internal
+ */
+export function finalizeViteConfig(config: InlineConfig): InlineConfig {
+  if (typeof config.build?.rollupOptions?.input !== 'object') {
+    throw new Error(
+      'Vite config must contain `build.rollupOptions.input`, and it must be an object'
+    )
+  }
+
+  if (!config.root) {
+    throw new Error(
+      'Vite config must contain `root` property, and must point to the Sanity root directory'
+    )
+  }
+
+  return {
+    ...config,
+    build: {
+      ...config.build,
+      rollupOptions: {
+        ...config.build.rollupOptions,
+        input: {
+          ...config.build.rollupOptions.input,
+          sanity: path.join(config.root, '.sanity', 'runtime', 'app.js'),
+        },
+      },
+    },
+  }
 }
