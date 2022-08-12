@@ -76,11 +76,13 @@ if (!githubWorkspace && !skipDelete) {
 
   // Remove source and dependencies from CLI to ensure it works standalone
   if (!skipDelete) {
-    await Promise.all([
-      rimraf(path.join(basePath, 'packages', '@sanity', 'cli', 'node_modules')),
-      rimraf(path.join(basePath, 'packages', '@sanity', 'cli', 'src')),
-      rimraf(path.join(basePath, 'packages', '@sanity', 'cli', 'lib')),
-    ])
+    const deletePaths = [
+      path.join(basePath, 'packages', '@sanity', 'cli', 'node_modules'),
+      path.join(basePath, 'packages', '@sanity', 'cli', 'src'),
+      path.join(basePath, 'packages', '@sanity', 'cli', 'lib'),
+    ]
+    console.log(`Clearing directories: \n - ${deletePaths.join('\n - ')}`)
+    await Promise.all(deletePaths.map((delPath) => rimraf(delPath)))
   }
 
   // Allow running the Sanity CLI tool without specifying absolute path every time
