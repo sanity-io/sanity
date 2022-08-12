@@ -255,12 +255,15 @@ export class PortableTextEditor extends React.Component<
       this.slateInstance.maxBlocks = this.maxBlocks
     }
 
-    // Update the value if we are not subscribing to patches,
-    if (!this.props.incomingPatches$ && this.state.currentValue !== this.props.value) {
+    // Update the value directly from props if we are not subscribing to patches or in readOnly mode.
+    if (
+      (!this.props.incomingPatches$ || this.readOnly) &&
+      this.state.currentValue !== this.props.value
+    ) {
       this.syncValue()
     }
-    // Initial value sync when subscribing to patches
-    if (this.props.incomingPatches$ && this.state.currentValue === null && this.props.value) {
+    // Initial value sync
+    if (this.state.currentValue === null && this.props.value) {
       this.syncValue()
     }
   }
