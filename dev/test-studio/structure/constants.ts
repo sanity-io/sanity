@@ -1,5 +1,3 @@
-import {simpleArrayOfObjects} from '../schema/debug/simpleArrayOfObjects'
-
 export const STANDARD_INPUT_TYPES = [
   'arraysTest',
   'booleansTest',
