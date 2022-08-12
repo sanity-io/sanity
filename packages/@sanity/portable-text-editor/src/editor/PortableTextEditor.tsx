@@ -329,25 +329,13 @@ export class PortableTextEditor extends React.Component<
     }
 
     const isEqualToValue = !(this.props.value || []).some((blk, index) => {
-      if (this.slateInstance.isTextBlock(blk)) {
-        const compareBlock = toSlateValue(
-          [blk],
-          {portableTextFeatures: this.portableTextFeatures},
-          KEY_TO_SLATE_ELEMENT.get(this.slateInstance)
-        )[0]
-        if (!isEqual(compareBlock, this.slateInstance.children[index])) {
-          return true
-        }
-      } else {
-        const slateBlock = this.slateInstance.children[index]
-        if (
-          !slateBlock ||
-          (slateBlock &&
-            'value' in slateBlock &&
-            !isEqual(blk, {_key: slateBlock._key, _type: slateBlock._type, ...slateBlock.value}))
-        ) {
-          return true
-        }
+      const compareBlock = toSlateValue(
+        [blk],
+        {portableTextFeatures: this.portableTextFeatures},
+        KEY_TO_SLATE_ELEMENT.get(this.slateInstance)
+      )[0]
+      if (!isEqual(compareBlock, this.slateInstance.children[index])) {
+        return true
       }
       return false
     })
