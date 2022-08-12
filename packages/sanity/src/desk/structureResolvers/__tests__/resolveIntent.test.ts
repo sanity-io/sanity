@@ -1,10 +1,11 @@
 import {PaneNode, UnresolvedPaneNode} from '../../types'
-import {createSchema} from '../../../schema'
+import {SchemaPluginOptions} from '../../../config'
 import {createStructureBuilder, SerializeError} from '../../structureBuilder'
 import {resolveIntent} from '../resolveIntent'
 import {PaneResolutionError} from '../PaneResolutionError'
+import {getMockSource} from '../../../../test/testUtils/getMockWorkspaceFromConfig'
 
-const mockSchema = createSchema({
+const mockSchema: SchemaPluginOptions = {
   name: 'mockSchema',
   types: [
     {
@@ -32,14 +33,12 @@ const mockSchema = createSchema({
       fields: [{name: 'toggle', type: 'boolean'}],
     },
   ],
-})
+}
 
 describe('resolveIntent', () => {
   it('takes in an intent request and returns `RouterPanes` that match the request', async () => {
-    const S = createStructureBuilder({
-      initialValueTemplates: [],
-      schema: mockSchema,
-    } as any)
+    const source = await getMockSource({schema: mockSchema})
+    const S = createStructureBuilder({source})
 
     const rootPaneNode = S.list()
       .title('Content')
@@ -65,10 +64,8 @@ describe('resolveIntent', () => {
   })
 
   it('resolves singletons', async () => {
-    const S = createStructureBuilder({
-      initialValueTemplates: [],
-      schema: mockSchema,
-    } as any)
+    const source = await getMockSource({schema: mockSchema})
+    const S = createStructureBuilder({source})
 
     const rootPaneNode = S.list()
       .title('Content')
@@ -94,10 +91,8 @@ describe('resolveIntent', () => {
   })
 
   it('resolves nested singletons', async () => {
-    const S = createStructureBuilder({
-      initialValueTemplates: [],
-      schema: mockSchema,
-    } as any)
+    const source = await getMockSource({schema: mockSchema})
+    const S = createStructureBuilder({source})
 
     const rootPaneNode = S.list()
       .title('Content')
@@ -143,10 +138,8 @@ describe('resolveIntent', () => {
   })
 
   it('returns the shallowest match', async () => {
-    const S = createStructureBuilder({
-      initialValueTemplates: [],
-      schema: mockSchema,
-    } as any)
+    const source = await getMockSource({schema: mockSchema})
+    const S = createStructureBuilder({source})
 
     const rootPaneNode = S.list()
       .title('Content')
@@ -200,10 +193,8 @@ describe('resolveIntent', () => {
   })
 
   it('resolves to the fallback editor if no match is found', async () => {
-    const S = createStructureBuilder({
-      initialValueTemplates: [],
-      schema: mockSchema,
-    } as any)
+    const source = await getMockSource({schema: mockSchema})
+    const S = createStructureBuilder({source})
 
     const rootPaneNode = S.list()
       .title('Content')
@@ -226,10 +217,8 @@ describe('resolveIntent', () => {
   })
 
   it('matches document nodes that have the same ID as the target ID', async () => {
-    const S = createStructureBuilder({
-      initialValueTemplates: [],
-      schema: mockSchema,
-    } as any)
+    const source = await getMockSource({schema: mockSchema})
+    const S = createStructureBuilder({source})
 
     const rootPaneNode = S.list()
       .title('Content')
@@ -258,10 +247,8 @@ describe('resolveIntent', () => {
   })
 
   it('resolves pane nodes that implement `canHandleIntent`', async () => {
-    const S = createStructureBuilder({
-      initialValueTemplates: [],
-      schema: mockSchema,
-    } as any)
+    const source = await getMockSource({schema: mockSchema})
+    const S = createStructureBuilder({source})
 
     const list = S.list()
       .canHandleIntent(() => true)
@@ -302,10 +289,8 @@ describe('resolveIntent', () => {
   })
 
   it('bubbles (re-throws) structure errors wrapped in a PaneResolutionError', async () => {
-    const S = createStructureBuilder({
-      initialValueTemplates: [],
-      schema: mockSchema,
-    } as any)
+    const source = await getMockSource({schema: mockSchema})
+    const S = createStructureBuilder({source})
 
     const rootPaneNode = S.list().title('Content').items([
       // will give a missing ID error
