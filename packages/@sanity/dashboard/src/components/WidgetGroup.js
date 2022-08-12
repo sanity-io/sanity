@@ -81,6 +81,7 @@ function WidgetGroup(props) {
       autoFlow="dense"
       data-width={layout.width || 'auto'}
       data-height={layout.height || 'auto'}
+      data-name="sanity-dashboard-widget-group"
       gap={4}
     >
       {widgets.map((widgetConfig, index) => {

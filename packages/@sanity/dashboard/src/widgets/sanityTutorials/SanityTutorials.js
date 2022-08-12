@@ -115,7 +115,12 @@ class SanityTutorials extends React.Component {
                 section?.sectionItems && (
                   <Stack space={4} key={section._id}>
                     <Heading>{section.title}</Heading>
-                    <Grid as="ul" columns={columns(section?.sectionItems?.length)} gap={4}>
+                    <Grid
+                      as="ul"
+                      columns={columns(section?.sectionItems?.length)}
+                      gap={4}
+                      data-name="sanity-dashboard-widget-tutorials-section"
+                    >
                       {section?.sectionItems.map((item) => (
                         <Flex as="li" key={item._id}>
                           <FeedItem feedItem={item} />
