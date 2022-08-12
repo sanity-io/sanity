@@ -170,16 +170,24 @@ export function CommandListProvider({
     function handleKeyDown(event: KeyboardEvent) {
       const childElements = Array.from(childContainerRef?.current?.children || []) as HTMLElement[]
 
+      if (!childElements.length) {
+        return
+      }
+
       if (event.key === 'ArrowDown') {
         event.preventDefault()
         const wraparoundIndex = wraparound ? 0 : selectedIndexRef.current
         let nextIndex =
           selectedIndexRef.current < childCount - 1 ? selectedIndexRef.current + 1 : wraparoundIndex
 
+        /**
+         * If the next target element cannot be found (e.g. you've scrolled and it no longer exists in the DOM),
+         * select the element closest to the top of the container viewport (factoring in overscan).
+         */
         if (virtualList) {
           const foundElement = childElements.find((el) => Number(el.dataset.index) === nextIndex)
           if (!foundElement) {
-            nextIndex = Number(childElements?.[VIRTUAL_LIST_OVERSCAN].dataset.index)
+            nextIndex = Number(childElements[VIRTUAL_LIST_OVERSCAN]?.dataset?.index)
           }
         }
 
@@ -192,11 +200,15 @@ export function CommandListProvider({
         let nextIndex =
           selectedIndexRef.current > 0 ? selectedIndexRef.current - 1 : wraparoundIndex
 
+        /**
+         * If the next target element cannot be found (e.g. you've scrolled and it no longer exists in the DOM),
+         * select the element closest to the bottom of the container viewport (factoring in overscan).
+         */
         if (virtualList) {
           const foundElement = childElements.find((el) => Number(el.dataset.index) === nextIndex)
           if (!foundElement) {
             nextIndex = Number(
-              childElements?.[childElements.length - VIRTUAL_LIST_OVERSCAN].dataset.index
+              childElements[childElements.length - VIRTUAL_LIST_OVERSCAN]?.dataset?.index
             )
           }
         }
