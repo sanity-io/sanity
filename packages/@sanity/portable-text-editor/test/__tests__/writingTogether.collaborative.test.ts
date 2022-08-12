@@ -232,6 +232,12 @@ describe('collaborate editing', () => {
     await editorB.pressKey('!')
     const valA = await editorA.getValue()
     const valB = await editorB.getValue()
+
+    expect(Array.isArray(valB)).toBe(true)
+    if (!Array.isArray(valB)) {
+      throw new Error('Editor value did not return an array') // For typescript, should throw from assertion above
+    }
+
     expect(valA).toEqual(valB)
     expect(valB[1]).toEqual({
       _key: 'B-3',
@@ -306,6 +312,11 @@ describe('collaborate editing', () => {
     const valA = await editorA.getValue()
     const valB = await editorB.getValue()
     expect(valA).toEqual(valB)
+
+    if (!Array.isArray(valA)) {
+      throw new Error('Editor value did not return an array') // For typescript, shouldn't happen
+    }
+
     expect(valA[0]).toEqual({
       _key: 'randomKey0',
       _type: 'block',
