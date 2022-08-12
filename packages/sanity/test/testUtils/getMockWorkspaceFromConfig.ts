@@ -17,11 +17,6 @@ const defaultMockUser: CurrentUser = {
   roles: [{name: 'admin', title: 'Admin'}],
 }
 
-const defaultMockConfig: SingleWorkspace = {
-  projectId: 'mock-project-id',
-  dataset: 'mock-data-set',
-}
-
 const defaultMockSchema: SchemaPluginOptions = {
   name: 'mock',
   types: [
@@ -40,20 +35,24 @@ const defaultMockSchema: SchemaPluginOptions = {
   ],
 }
 
+const defaultMockConfig: SingleWorkspace = {
+  projectId: 'mock-project-id',
+  dataset: 'mock-data-set',
+  schema: defaultMockSchema,
+}
+
 export interface MockWorkspaceOptions {
-  config?: SingleWorkspace
+  config?: Partial<SingleWorkspace>
   client?: SanityClient
-  schema?: SchemaPluginOptions
   currentUser?: CurrentUser
 }
 
 export function getMockWorkspace({
-  config = defaultMockConfig,
+  config: userConfig,
   currentUser = defaultMockUser,
   client = createMockSanityClient() as any as SanityClient,
-  schema = defaultMockSchema,
 }: MockWorkspaceOptions = {}): Promise<Workspace> {
-  return createWorkspaceFromConfig({...config, currentUser, client, schema})
+  return createWorkspaceFromConfig({...defaultMockConfig, ...userConfig, currentUser, client})
 }
 
 export async function getMockSource(options: MockWorkspaceOptions = {}): Promise<Source> {
