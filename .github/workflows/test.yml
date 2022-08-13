@@ -49,6 +49,10 @@ jobs:
         id: depcheck
         run: yarn depcheck
 
+      # (for puppeteer tests)
+      - name: Install Chrome
+        uses: browser-actions/setup-chrome@latest
+
       - name: Test
         id: test
         run: yarn test
