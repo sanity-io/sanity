@@ -88,6 +88,12 @@ if (!githubWorkspace && !skipDelete) {
   // Allow running the Sanity CLI tool without specifying absolute path every time
   const binPath = path.join(basePath, 'packages', '@sanity', 'cli', 'bin', 'sanity')
 
+  // Generate required scopes file for workshop in test-studio
+  spawnCommand('npm', ['run', 'workshop:build'], {
+    cwd: path.join(basePath, 'dev', 'test-studio'),
+    stdio: 'inherit',
+  })
+
   // Test `sanity build` command in test studio with all customizations
   spawnCommand(process.argv[0], [binPath, 'build', '-y'], {
     cwd: path.join(basePath, 'dev', 'test-studio'),
