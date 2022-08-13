@@ -43,6 +43,7 @@ export type {
   SanityFormConfig as unstable_SanityFormConfig,
   SchemaError,
   SchemaPluginOptions,
+  SingleWorkspace,
   Source,
   SourceOptions,
   TemplateResolver,
