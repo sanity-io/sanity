@@ -65,22 +65,12 @@ async function _extractPackage(options: {
 
   const messages = results.reduce<ExtractorMessage[]>((acc, x) => acc.concat(x.messages), [])
 
-  for (const msg of messages) {
-    const sourceFilePath = msg.sourceFilePath && path.relative(ROOT_PATH, msg.sourceFilePath)
+  if (!quiet) {
+    const warnings: ExtractorMessage[] = messages.filter((msg) => msg.logLevel === 'warning')
 
-    if (msg.logLevel === 'error') {
-      console.log(
-        [
-          `${chalk.cyan(sourceFilePath || '?')}`,
-          `:${chalk.yellow(msg.sourceFileLine)}:${chalk.yellow(msg.sourceFileColumn)}`,
-          ` - ${chalk.red('error')} ${chalk.gray(msg.messageId)}\n`,
-          msg.text,
-          '\n',
-        ].join('')
-      )
-    }
+    for (const msg of warnings) {
+      const sourceFilePath = msg.sourceFilePath && path.relative(ROOT_PATH, msg.sourceFilePath)
 
-    if (!quiet && msg.logLevel === 'warning') {
       console.log(
         [
           `${chalk.cyan(sourceFilePath || '?')}`,
@@ -91,6 +81,20 @@ async function _extractPackage(options: {
         ].join('')
       )
     }
+  }
+
+  const errors: ExtractorMessage[] = messages.filter((msg) => msg.logLevel === 'error')
+  for (const msg of errors) {
+    const sourceFilePath = msg.sourceFilePath && path.relative(ROOT_PATH, msg.sourceFilePath)
+    console.log(
+      [
+        `${chalk.cyan(sourceFilePath || '?')}`,
+        `:${chalk.yellow(msg.sourceFileLine)}:${chalk.yellow(msg.sourceFileColumn)}`,
+        ` - ${chalk.red('error')} ${chalk.gray(msg.messageId)}\n`,
+        msg.text,
+        '\n',
+      ].join('')
+    )
   }
 
   const allSucceeded = results.every((r) => r.succeeded)
