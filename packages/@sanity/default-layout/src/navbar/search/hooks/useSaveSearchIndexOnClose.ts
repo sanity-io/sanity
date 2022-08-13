@@ -1,5 +1,9 @@
 import {useCallback, useState} from 'react'
-import {VIRTUAL_LIST_CHILDREN_UI_NAME, VIRTUAL_LIST_OVERSCAN} from '../constants'
+import {
+  VIRTUAL_LIST_CHILDREN_UI_NAME,
+  VIRTUAL_LIST_ITEM_HEIGHT,
+  VIRTUAL_LIST_UI_NAME,
+} from '../constants'
 
 export function useSaveSearchResultsIndexOnClose(): {
   saveSearchIndex: () => void
@@ -12,15 +16,14 @@ export function useSaveSearchResultsIndexOnClose(): {
    * and obtain its index.
    */
   const saveSearchIndex = useCallback(() => {
+    const listElement = document.querySelector(`[data-ui="${VIRTUAL_LIST_UI_NAME}"]`)
     const childrenElement = document.querySelector(`[data-ui="${VIRTUAL_LIST_CHILDREN_UI_NAME}"]`)
-    const topMostElement = childrenElement?.children?.[VIRTUAL_LIST_OVERSCAN] as HTMLElement
 
-    if (topMostElement) {
-      let targetIndex = Number(topMostElement.dataset.index || 0)
-      if (targetIndex <= VIRTUAL_LIST_OVERSCAN) {
-        targetIndex = 0
-      }
-      setSavedSearchIndex(targetIndex)
+    if (listElement && childrenElement) {
+      const listElementTop = listElement.getBoundingClientRect().top
+      const childrenElementTop = childrenElement?.getBoundingClientRect().top
+      const index = Math.floor((listElementTop - childrenElementTop) / VIRTUAL_LIST_ITEM_HEIGHT)
+      setSavedSearchIndex(index)
     } else {
       setSavedSearchIndex(0)
     }
