@@ -20,6 +20,7 @@ export type {
   ResolveProductionUrlContext,
   SanityFormConfig,
   SchemaPluginOptions,
+  SingleWorkspace,
   Source,
   SourceOptions,
   TemplateResolver,

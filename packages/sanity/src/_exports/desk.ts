@@ -136,6 +136,7 @@ export {
 export type {
   BaseGenericList,
   BaseIntentParams,
+  BaseView,
   BuildableComponent,
   BuildableGenericList,
   BuildableList,
@@ -191,6 +192,7 @@ export type {
   UnserializedListItem,
   UnserializedListItemChild,
   UserComponent,
+  UserViewComponent,
   View,
   ViewBuilder,
 } from '../desk/structureBuilder'
