@@ -52,6 +52,8 @@ jobs:
       # (for puppeteer tests)
       - name: Install Chrome
         uses: browser-actions/setup-chrome@latest
+        with:
+          chrome-version: stable
 
       - name: Test
         id: test
