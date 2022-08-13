@@ -10,24 +10,24 @@ import {SearchHeader} from './SearchHeader'
 import {SearchResults} from './SearchResults'
 import {TypeFilters} from './TypeFilters'
 
-export interface PopoverProps {
+export interface SearchPopoverProps {
   childContainerRef: RefObject<HTMLDivElement>
   initialSearchIndex?: number
   onClose: () => void
   placeholderRef: RefObject<HTMLInputElement>
 }
 
-const DIALOG_MAX_WIDTH = 800 // px
-const DIALOG_SEARCH_FIELD_PADDING = 1 // Sanity UI scale
+const POPOVER_MAX_WIDTH = 800 // px
+const SEARCH_FIELD_PADDING = 1 // Sanity UI scale
 
-const searchFieldPaddingPx = studioTheme.space[DIALOG_SEARCH_FIELD_PADDING]
+const searchFieldPaddingPx = studioTheme.space[SEARCH_FIELD_PADDING]
 
 export function SearchPopover({
   childContainerRef,
   onClose,
   placeholderRef,
   initialSearchIndex,
-}: PopoverProps) {
+}: SearchPopoverProps) {
   const [dialogPosition, setDialogPosition] = useState(calcDialogPosition(placeholderRef))
   const [dialogEl, setDialogEl] = useState<HTMLDivElement>()
 
@@ -135,7 +135,7 @@ function calcDialogPosition(
   // sits directly over the top of the placeholder.
   return {
     x:
-      window.innerWidth - placeholderRect.x > DIALOG_MAX_WIDTH
+      window.innerWidth - placeholderRect.x > POPOVER_MAX_WIDTH
         ? placeholderRect.x - searchFieldPaddingPx
         : null,
     y: placeholderRect.y - searchFieldPaddingPx,
@@ -157,7 +157,7 @@ const SearchPopoverWrapper = styled(Card)<{x: number | null; y: number}>`
   max-height: min(calc(100vh - ${searchFieldPaddingPx * 2}px), 735px);
   position: absolute;
   top: ${(props) => props.y}px;
-  width: min(calc(100vw - ${searchFieldPaddingPx * 2}px), ${DIALOG_MAX_WIDTH}px);
+  width: min(calc(100vw - ${searchFieldPaddingPx * 2}px), ${POPOVER_MAX_WIDTH}px);
 `
 
 const Overlay = styled.div`

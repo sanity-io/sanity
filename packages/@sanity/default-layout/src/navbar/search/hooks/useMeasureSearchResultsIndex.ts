@@ -5,7 +5,7 @@ import {
   VIRTUAL_LIST_UI_NAME,
 } from '../constants'
 
-export function useSaveSearchResultsIndexOnClose(): {
+export function useMeasureSearchResultsIndex(): {
   saveSearchIndex: () => void
   savedSearchIndex: number
 } {
