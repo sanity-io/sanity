@@ -39,7 +39,7 @@
     "dev:strict-studio": "yarn --cwd dev/strict-studio dev",
     "dev:test-studio": "yarn --cwd dev/test-studio dev",
     "eslint": "eslint --ext=.js,.jsx,.mjs,.ts,.tsx --quiet",
-    "etl": "cd scripts/etl && node -r dotenv-flow/config -r esbuild-register main",
+    "etl": "cd scripts/etl && node -r dotenv-flow/config -r esbuild-register main || echo 'Temporarily accepting failure'",
     "exports:check": "lerna run exports:check",
     "exports:clean": "lerna run exports:clean",
     "exports:generate": "lerna run exports:generate",
