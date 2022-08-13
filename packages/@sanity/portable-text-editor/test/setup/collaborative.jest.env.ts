@@ -1,3 +1,4 @@
+import childProcess from 'child_process'
 import NodeEnvironment from 'jest-environment-node'
 import puppeteer, {ElementHandle, KeyInput} from 'puppeteer'
 import ipc from 'node-ipc'
@@ -21,6 +22,15 @@ const DEBUG = process.env.DEBUG || false
 const SELECTION_TIMEOUT_MS = 50 // This will also be an indicator of the performance in the editor. Set it as low as possible without breaking the tests.
 const REVISION_TIMEOUT_MS = FLUSH_PATCHES_DEBOUNCE_MS + 300 // 300 seems to be the limit for the doc patching to go full circle (increase this if tests starts to time out)
 
+// eslint-disable-next-line no-process-env
+const launchConfig = process.env.CI
+  ? {
+      headless: true,
+      // eslint-disable-next-line no-sync
+      executablePath: childProcess.execSync('which chrome', {encoding: 'utf8'}).trim(),
+    }
+  : {}
+
 let testId: string
 
 function generateRandomInteger(min, max) {
@@ -39,8 +49,8 @@ export default class CollaborationEnvironment extends NodeEnvironment {
   private _pageB: puppeteer.Page
   public async setup(): Promise<void> {
     await super.setup()
-    this._browserA = await puppeteer.launch()
-    this._browserB = await puppeteer.launch()
+    this._browserA = await puppeteer.launch(launchConfig)
+    this._browserB = await puppeteer.launch(launchConfig)
     this._pageA = await this._browserA.newPage()
     this._pageB = await this._browserB.newPage()
 
