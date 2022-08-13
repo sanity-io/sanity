@@ -1,7 +1,7 @@
 /**
  * Standalone script to test that the sanity CLI command can run standalone
  * (without dependencies) and interact with a Sanity studio containing
- * `@sanity/core` as a dependency, using its included CLI commands.
+ * `sanity`/`@sanity/core` as a dependency, using its included CLI commands.
  *
  * While we could script this using bash (and used to), this abstracts away
  * some OS-specifics like environment variables, temporary paths and whatnot
@@ -17,7 +17,6 @@ const {fetch} = require('undici')
 const rimrafcb = require('rimraf')
 const chalk = require('chalk')
 
-const rimrafSync = rimrafcb.sync
 const rimraf = util.promisify(rimrafcb)
 
 /** Env setup / validation */
@@ -54,7 +53,7 @@ function spawnCommand(command, args, options = {}) {
 
 function cleanup() {
   console.warn(`Clearing ${tmpProjectPath}`)
-  rimrafSync(tmpProjectPath)
+  return rimraf(tmpProjectPath)
 }
 
 if (!githubWorkspace && !skipDelete) {
@@ -68,8 +67,8 @@ if (!githubWorkspace && !skipDelete) {
   // For debugging clarity
   console.log('Base path is %s', basePath)
 
-  // Schedule cleanup tasks before exiting
-  process.on('exit', cleanup)
+  // Allow running the Sanity CLI tool without specifying absolute path every time
+  const binPath = path.join(basePath, 'packages', '@sanity', 'cli', 'bin', 'sanity')
 
   // Require a clean slate at startup
   cleanup()
@@ -84,9 +83,6 @@ if (!githubWorkspace && !skipDelete) {
     console.log(`Clearing directories: \n - ${deletePaths.join('\n - ')}`)
     await Promise.all(deletePaths.map((delPath) => rimraf(delPath)))
   }
-
-  // Allow running the Sanity CLI tool without specifying absolute path every time
-  const binPath = path.join(basePath, 'packages', '@sanity', 'cli', 'bin', 'sanity')
 
   // Generate required scopes file for workshop in test-studio
   spawnCommand('npm', ['run', 'workshop:build'], {
@@ -157,8 +153,12 @@ if (!githubWorkspace && !skipDelete) {
 
   // Test `sanity start` in v2 context
   await testStartCommand({binPath, cwd: v2Path, expectedTitle: 'v2 studio'})
-})().catch((error) => {
+
+  // Clean up after ourselves 😇
+  await cleanup()
+})().catch(async (error) => {
   console.error(error)
+  await cleanup()
   process.exit(1)
 })
 
@@ -166,19 +166,17 @@ function testStartCommand({binPath, cwd, expectedTitle}) {
   return new Promise((resolve, reject) => {
     const maxWaitForServer = 120000
     const startedAt = Date.now()
+    let hasSucceeded = false
     let timer
 
     console.log('')
     console.log(chalk.yellow(`[ Running '${process.argv[0]} ${binPath} start' in '${cwd}' ]`))
 
-    const proc = spawn(process.argv[0], [binPath, 'start'], {cwd})
+    const proc = spawn(process.argv[0], [binPath, 'start'], {cwd, stdio: 'inherit'})
     proc.on('close', (code) => {
-      if (code && code > 0) {
+      if (!hasSucceeded && code && code > 0) {
         reject(new Error(`'sanity start' failed with code ${code}`))
-        return
       }
-
-      resolve()
     })
 
     scheduleConnect()
@@ -196,31 +194,37 @@ function testStartCommand({binPath, cwd, expectedTitle}) {
       timer = setTimeout(tryConnect, 1000)
     }
 
-    function tryConnect() {
-      fetch('http://localhost:3333/', {timeout: 500})
-        .then((res) => {
-          if (res.status !== 200) {
-            reject(new Error(`Dev server responded with HTTP ${res.statusCode}`))
-          }
+    async function tryConnect() {
+      let res
+      try {
+        res = await fetch('http://localhost:3333/', {timeout: 500})
+      } catch (err) {
+        scheduleConnect()
+        return
+      }
 
-          return res.text()
-        })
-        .then((html) => {
-          return html.includes(`<title>${expectedTitle}`)
-            ? onSuccess()
-            : reject(new Error(`Did not find expected <title> in HTML:\n\n${html}`))
-        })
-        .catch(() => scheduleConnect())
+      if (res.status !== 200) {
+        proc.kill()
+        reject(new Error(`Dev server responded with HTTP ${res.statusCode}`))
+        return
+      }
+
+      const html = await res.text()
+      if (html.includes(`<title>${expectedTitle}`)) {
+        onSuccess()
+        return
+      }
+
+      proc.kill()
+      reject(new Error(`Did not find expected <title> in HTML:\n\n${html}`))
     }
 
     function onSuccess() {
-      if (timer) {
-        clearTimeout(timer)
-      }
-
+      hasSucceeded = true
+      clearTimeout(timer)
       const spentSecs = ((Date.now() - startedAt) / 1000).toFixed(2)
       console.log(chalk.yellow(`[ Dev server ready after %ss ]`), spentSecs)
-      proc.kill(2)
+      proc.kill()
       resolve()
     }
   })
