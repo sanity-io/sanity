@@ -8,7 +8,12 @@ import {getPublishedId} from 'part:@sanity/base/util/draft-utils'
 import React, {RefObject, useCallback, useEffect, useRef} from 'react'
 import {useVirtual} from 'react-virtual'
 import styled from 'styled-components'
-import {VIRTUAL_LIST_CHILDREN_UI_NAME, VIRTUAL_LIST_OVERSCAN} from '../constants'
+import {
+  VIRTUAL_LIST_CHILDREN_UI_NAME,
+  VIRTUAL_LIST_ITEM_HEIGHT,
+  VIRTUAL_LIST_OVERSCAN,
+  VIRTUAL_LIST_UI_NAME,
+} from '../constants'
 import {useCommandList} from '../contexts/commandList'
 import {useSearchState} from '../contexts/search'
 import {NoResults} from './NoResults'
@@ -21,8 +26,6 @@ interface SearchResultsProps {
   onClose: () => void
   pointerOverlayRef: RefObject<HTMLDivElement>
 }
-
-const VIRTUAL_ITEM_HEIGHT = 55 // px
 
 export function SearchResults({
   childContainerRef,
@@ -39,7 +42,7 @@ export function SearchResults({
   const isMounted = useRef(false)
 
   const {scrollToIndex, totalSize, virtualItems} = useVirtual({
-    estimateSize: useCallback(() => VIRTUAL_ITEM_HEIGHT, []),
+    estimateSize: useCallback(() => VIRTUAL_LIST_ITEM_HEIGHT, []),
     overscan: VIRTUAL_LIST_OVERSCAN,
     parentRef: childParentRef,
     size: result.hits.length,
@@ -118,7 +121,7 @@ export function SearchResults({
         <>
           {!!result.hits.length && (
             // (Has search results)
-            <VirtualList ref={childParentRef}>
+            <VirtualList data-ui={VIRTUAL_LIST_UI_NAME} ref={childParentRef}>
               <VirtualListChildren
                 $height={totalSize}
                 data-ui={VIRTUAL_LIST_CHILDREN_UI_NAME}
