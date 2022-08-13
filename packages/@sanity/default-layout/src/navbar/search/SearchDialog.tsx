@@ -9,7 +9,7 @@ import {TypeFilters} from './components/TypeFilters'
 import {CommandListProvider} from './contexts/commandList'
 import {useSearchState} from './contexts/search'
 import {hasSearchableTerms} from './contexts/search/selectors'
-import {useSaveSearchResultsIndexOnClose} from './hooks/useSaveSearchIndexOnClose'
+import {useMeasureSearchResultsIndex} from './hooks/useMeasureSearchResultsIndex'
 import {useSearchHotkeys} from './hooks/useSearchHotkeys'
 
 interface SearchDialogProps {
@@ -30,11 +30,15 @@ export function SearchDialog({onClose, onOpen, open}: SearchDialogProps) {
 
   const hasValidTerms = hasSearchableTerms(terms)
 
-  const {savedSearchIndex, saveSearchIndex} = useSaveSearchResultsIndexOnClose()
+  /**
+   * Measure top-most visible search result index
+   */
+  const {savedSearchIndex, saveSearchIndex} = useMeasureSearchResultsIndex()
 
   /**
-   * Store top-most search result index on close.
-   * When re-opened, we pass the saved index to our virtual list to scroll back to position.
+   * On close:
+   * - Store top-most search result scroll index
+   * - Re-focus the last element in the studio
    */
   const handleClose = useCallback(() => {
     saveSearchIndex()

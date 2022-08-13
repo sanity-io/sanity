@@ -3,29 +3,30 @@ import React, {useCallback, useRef, useState} from 'react'
 import FocusLock from 'react-focus-lock'
 import {PlaceholderSearchInput} from './components/PlaceholderSearchInput'
 import {SearchPopover} from './components/SearchPopover'
-import {useSaveSearchResultsIndexOnClose} from './hooks/useSaveSearchIndexOnClose'
+import {useMeasureSearchResultsIndex} from './hooks/useMeasureSearchResultsIndex'
 import {useSearchHotkeys} from './hooks/useSearchHotkeys'
 
 export function SearchField() {
   const childContainerRef = useRef<HTMLDivElement>(null)
   const placeholderInputRef = useRef<HTMLInputElement>()
-
   const [open, setOpen] = useState(false)
-  const onClose = useCallback(() => {
-    setOpen(false)
-  }, [setOpen])
-  const handleOpen = useCallback(() => setOpen(true), [setOpen])
-
-  const {savedSearchIndex, saveSearchIndex} = useSaveSearchResultsIndexOnClose()
 
   /**
-   * Store top-most search result index on close.
-   * When re-opened, we pass the saved index to our virtual list to scroll back to position.
+   * Measure top-most visible search result index
+   */
+  const {savedSearchIndex, saveSearchIndex} = useMeasureSearchResultsIndex()
+
+  /**
+   * On close:
+   * - Store top-most search result scroll index
+   * - Re-focus the last element in the studio
    */
   const handleClose = useCallback(() => {
     saveSearchIndex()
-    onClose()
-  }, [onClose, saveSearchIndex])
+    setOpen(false)
+  }, [saveSearchIndex])
+
+  const handleOpen = useCallback(() => setOpen(true), [])
 
   /**
    * Bind hotkeys to open / close actions
@@ -44,9 +45,9 @@ export function SearchField() {
           <FocusLock>
             <SearchPopover
               childContainerRef={childContainerRef}
+              initialSearchIndex={savedSearchIndex}
               onClose={handleClose}
               placeholderRef={placeholderInputRef}
-              initialSearchIndex={savedSearchIndex}
             />
           </FocusLock>
         </Portal>
