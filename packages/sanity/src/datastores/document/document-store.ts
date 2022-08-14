@@ -31,7 +31,11 @@ function getIdPairFromPublished(publishedId: string): IdPair {
 export interface DocumentStore {
   checkoutPair: (idPair: IdPair) => Pair
   initialValue: (opts: InitialValueOptions) => Observable<InitialValueMsg>
-  listenQuery: (query: string, params: QueryParams, options: ListenQueryOptions) => Observable<any>
+  listenQuery: (
+    query: string | {fetch: string; listen: string},
+    params: QueryParams,
+    options: ListenQueryOptions
+  ) => Observable<any>
   resolveTypeForDocument: (id: string, specifiedType?: string) => Observable<string>
 
   pair: {

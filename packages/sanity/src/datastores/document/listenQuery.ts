@@ -51,13 +51,16 @@ function isWelcomeEvent(
 // todo: optimize by patching collection in-place
 export const listenQuery = (
   client: SanityClient,
-  query: string,
+  query: string | {fetch: string; listen: string},
   params: ListenQueryParams = {},
   options: ListenQueryOptions = {}
 ) => {
-  const fetchOnce$ = fetch(client, query, params, options)
+  const fetchQuery = typeof query === 'string' ? query : query.fetch
+  const listenerQuery = typeof query === 'string' ? query : query.listen
 
-  const events$ = listen(client, query, params, options).pipe(
+  const fetchOnce$ = fetch(client, fetchQuery, params, options)
+
+  const events$ = listen(client, listenerQuery, params, options).pipe(
     mergeMap((ev, i) => {
       const isFirst = i === 0
       if (isFirst && !isWelcomeEvent(ev)) {
