@@ -1,6 +1,6 @@
 import {hues} from '@sanity/color'
 import {Box, Card, Flex, Theme, useClickOutside, useLayer} from '@sanity/ui'
-import React, {useRef, useState} from 'react'
+import React, {useRef} from 'react'
 import styled, {css} from 'styled-components'
 import {POPOVER_INPUT_PADDING, POPOVER_MAX_HEIGHT, POPOVER_MAX_WIDTH} from '../constants'
 import {CommandListProvider} from '../contexts/commandList'
@@ -22,10 +22,8 @@ export interface SearchPopoverProps {
 }
 
 export function SearchPopover({onClose, initialSearchIndex, position}: SearchPopoverProps) {
-  const [dialogEl, setDialogEl] = useState<HTMLDivElement>()
-
   const childContainerRef = useRef<HTMLDivElement>(null)
-  const childContainerParentRef = useRef<HTMLDivElement>(null)
+  const containerRef = useRef<HTMLDivElement>(null)
   const headerInputRef = useRef<HTMLInputElement>(null)
   const pointerOverlayRef = useRef<HTMLDivElement>(null)
 
@@ -37,7 +35,7 @@ export function SearchPopover({onClose, initialSearchIndex, position}: SearchPop
 
   const hasValidTerms = hasSearchableTerms(terms)
 
-  useClickOutside(onClose, [dialogEl])
+  useClickOutside(onClose, [containerRef.current])
 
   return (
     <>
@@ -45,8 +43,8 @@ export function SearchPopover({onClose, initialSearchIndex, position}: SearchPop
 
       <CommandListProvider
         childContainerRef={childContainerRef}
-        childContainerParentRef={childContainerParentRef}
         childCount={hasValidTerms ? result.hits.length : recentSearches.length}
+        containerRef={containerRef}
         headerInputRef={headerInputRef}
         initialIndex={initialSearchIndex}
         pointerOverlayRef={pointerOverlayRef}
@@ -55,10 +53,9 @@ export function SearchPopover({onClose, initialSearchIndex, position}: SearchPop
       >
         <SearchPopoverWrapper
           $position={position}
-          data-ui="search-dialog"
           overflow="hidden"
           radius={2}
-          ref={setDialogEl}
+          ref={containerRef}
           scheme="light"
           shadow={2}
           style={{zIndex}}
@@ -68,7 +65,7 @@ export function SearchPopover({onClose, initialSearchIndex, position}: SearchPop
           {/* Reverse flex direction is used ensure filters are focusable before recent searches */}
           <Flex align="stretch" direction="row-reverse">
             <SearchPopoverFilters />
-            <SearchContentWrapper flex={1} ref={childContainerParentRef}>
+            <SearchContentWrapper flex={1}>
               {hasValidTerms ? (
                 <SearchResults
                   childContainerRef={childContainerRef}

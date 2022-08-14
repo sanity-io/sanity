@@ -20,7 +20,7 @@ interface TypeFiltersProps {
 
 export function TypeFilters({small}: TypeFiltersProps) {
   const childContainerRef = useRef<HTMLDivElement>(null)
-  const childContainerParentRef = useRef<HTMLDivElement>(null)
+  const containerRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
   const pointerOverlayRef = useRef<HTMLDivElement>(null)
 
@@ -51,12 +51,12 @@ export function TypeFilters({small}: TypeFiltersProps) {
   return (
     <CommandListProvider
       childContainerRef={childContainerRef}
-      childContainerParentRef={childContainerParentRef}
       childCount={selectableDocumentTypes.length}
+      containerRef={containerRef}
       headerInputRef={inputRef}
       pointerOverlayRef={pointerOverlayRef}
     >
-      <TypeFiltersWrapper direction="column">
+      <TypeFiltersWrapper direction="column" ref={containerRef}>
         {/* Search header */}
         <SearchHeaderWrapper padding={padding}>
           <CustomTextInput
@@ -76,7 +76,7 @@ export function TypeFilters({small}: TypeFiltersProps) {
         </SearchHeaderWrapper>
 
         <TypeFiltersContent flex={1} padding={padding}>
-          <div ref={childContainerParentRef} style={{position: 'relative'}}>
+          <TypeFiltersContentWrap>
             <PointerOverlay ref={pointerOverlayRef} />
 
             {/* Selectable document types */}
@@ -91,7 +91,7 @@ export function TypeFilters({small}: TypeFiltersProps) {
                 />
               ))}
             </Stack>
-          </div>
+          </TypeFiltersContentWrap>
 
           {/* No results */}
           {!selectableDocumentTypes.length && (
@@ -136,6 +136,10 @@ const SearchHeaderWrapper = styled(Box)`
 const TypeFiltersContent = styled(Box)`
   overflow-x: hidden;
   overflow-y: scroll;
+`
+
+const TypeFiltersContentWrap = styled.div`
+  position: relative;
 `
 
 const TypeFiltersWrapper = styled(Flex)`

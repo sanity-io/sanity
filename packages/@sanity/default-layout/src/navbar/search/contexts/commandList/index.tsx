@@ -44,8 +44,8 @@ const CommandListContext = createContext<CommandListContextValue | undefined>(un
 interface CommandListProviderProps {
   children?: ReactNode
   childContainerRef: RefObject<HTMLDivElement>
-  childContainerParentRef: RefObject<HTMLDivElement>
   childCount: number
+  containerRef: RefObject<HTMLDivElement>
   headerInputRef: RefObject<HTMLInputElement>
   initialIndex?: number
   pointerOverlayRef: RefObject<HTMLDivElement>
@@ -59,8 +59,8 @@ interface CommandListProviderProps {
 export function CommandListProvider({
   children,
   childContainerRef,
-  childContainerParentRef,
   childCount,
+  containerRef,
   initialIndex = 0,
   headerInputRef,
   pointerOverlayRef,
@@ -262,8 +262,7 @@ export function CommandListProvider({
    */
   useEffect(() => {
     function handleMarkChildenAsFocused(focused: boolean) {
-      return () =>
-        childContainerParentRef?.current?.setAttribute('data-focused', focused.toString())
+      return () => containerRef?.current?.setAttribute('data-focused', focused.toString())
     }
 
     const inputElement = headerInputRef?.current
@@ -273,7 +272,7 @@ export function CommandListProvider({
       inputElement?.removeEventListener('blur', handleMarkChildenAsFocused(false))
       inputElement?.removeEventListener('focus', handleMarkChildenAsFocused(true))
     }
-  }, [childContainerParentRef, headerInputRef])
+  }, [containerRef, headerInputRef])
 
   /**
    * Track mouse enter / leave state on child container and store state in `data-hovered` attribute on
@@ -286,8 +285,7 @@ export function CommandListProvider({
    */
   useEffect(() => {
     function handleMarkChildrenAsHovered(hovered: boolean) {
-      return () =>
-        childContainerParentRef?.current?.setAttribute('data-hovered', hovered.toString())
+      return () => containerRef?.current?.setAttribute('data-hovered', hovered.toString())
     }
 
     const childContainerElement = childContainerRef?.current
@@ -297,7 +295,7 @@ export function CommandListProvider({
       childContainerElement?.removeEventListener('mouseenter', handleMarkChildrenAsHovered(true))
       childContainerElement?.removeEventListener('mouseleave', handleMarkChildrenAsHovered(false))
     }
-  }, [childContainerRef, childContainerParentRef])
+  }, [childContainerRef, containerRef])
 
   /**
    * If this is a virtual list - re-assign aria-selected state on all child elements on any DOM mutations.
@@ -310,7 +308,8 @@ export function CommandListProvider({
       return undefined
     }
 
-    const childContainerElement = childContainerParentRef?.current
+    const childContainerElement = childContainerRef?.current
+
     const mutationObserver = new MutationObserver(handleReassignSelectedStateThrottled)
 
     if (childContainerElement) {
@@ -323,7 +322,7 @@ export function CommandListProvider({
     return () => {
       mutationObserver.disconnect()
     }
-  }, [childContainerParentRef, handleReassignSelectedStateThrottled, virtualList])
+  }, [childContainerRef, childCount, handleReassignSelectedStateThrottled, virtualList])
 
   return (
     <CommandListContext.Provider

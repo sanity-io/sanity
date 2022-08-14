@@ -20,7 +20,7 @@ interface SearchDialogProps {
 
 export function SearchDialog({onClose, onOpen, open}: SearchDialogProps) {
   const childContainerRef = useRef<HTMLDivElement>(null)
-  const childContainerParentRef = useRef<HTMLDivElement>(null)
+  const containerRef = useRef<HTMLDivElement>(null)
   const headerInputRef = useRef<HTMLInputElement>(null)
   const pointerOverlayRef = useRef<HTMLDivElement>(null)
 
@@ -57,19 +57,20 @@ export function SearchDialog({onClose, onOpen, open}: SearchDialogProps) {
   return (
     <CommandListProvider
       childContainerRef={childContainerRef}
-      childContainerParentRef={childContainerParentRef}
       childCount={hasValidTerms ? result.hits.length : recentSearches.length}
+      containerRef={containerRef}
       headerInputRef={headerInputRef}
       initialIndex={savedSearchIndex}
       pointerOverlayRef={pointerOverlayRef}
       wraparound={!hasValidTerms}
+      virtualList
     >
       <Portal>
         <FocusLock>
-          <SearchDialogContentWrapper scheme="light" tone="default">
+          <SearchDialogContentWrapper ref={containerRef} scheme="light" tone="default">
             <Flex direction="column" height="fill">
               <SearchHeader inputRef={headerInputRef} onClose={handleClose} />
-              <SearchContent flex={1} ref={childContainerParentRef}>
+              <SearchContent flex={1}>
                 {hasValidTerms ? (
                   <SearchResults
                     childContainerRef={childContainerRef}
