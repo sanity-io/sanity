@@ -58,16 +58,23 @@ export function sanityBuildEntries(options: {
 
       const entryFileName = this.getFileName(entryChunkRef)
       const entryFile = bundle[entryFileName]
+      if (!entryFile) {
+        throw new Error(`Failed to find entry file in bundle (${entryFileName})`)
+      }
+
       const entryHash = createHash('sha256').update(entryFile.code).digest('hex').slice(0, 8)
       const entryPath = [basePath.replace(/\/+$/, ''), `${entryFileName}?v=${entryHash}`].join('/')
 
-      // Check all the top-level imports of the entryPoint to see if they have
-      // static CSS assets that need loading
-      const css = [...entryFile.viteMetadata.importedCss]
-      for (const key of entryFile.imports) {
-        // Traverse all CSS assets that isn't loaded by the runtime and
-        // need <link> tags in the HTML template
-        css.push(...bundle[key].viteMetadata.importedCss)
+      let css: string[] = []
+      if (entryFile.viteMetadata?.importedCss) {
+        // Check all the top-level imports of the entryPoint to see if they have
+        // static CSS assets that need loading
+        css = [...entryFile.viteMetadata.importedCss]
+        for (const key of entryFile.imports) {
+          // Traverse all CSS assets that isn't loaded by the runtime and
+          // need <link> tags in the HTML template
+          css.push(...bundle[key].viteMetadata.importedCss)
+        }
       }
 
       this.emitFile({
