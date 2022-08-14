@@ -260,7 +260,7 @@ export class TimelineController {
   private async fetchMoreTransactions() {
     const publishedId = this.timeline.publishedId
     const draftId = this.timeline.draftId
-    const dataset = this.client.config().dataset
+    const {dataset, token} = this.client.config()
     const limit = TRANSLOG_ENTRY_LIMIT
 
     let queryParams = `tag=sanity.studio.desk.history&effectFormat=mendoza&excludeContent=true&excludeMutations=true&includeIdentifiedDocumentsOnly=true&reverse=true&limit=${limit}`
@@ -271,7 +271,7 @@ export class TimelineController {
 
     const url = `/data/history/${dataset}/transactions/${publishedId},${draftId}?${queryParams}`
 
-    const stream = await getJsonStream(this.client.getUrl(url))
+    const stream = await getJsonStream(this.client.getUrl(url), token)
     const reader = stream.getReader()
     let count = 0
 

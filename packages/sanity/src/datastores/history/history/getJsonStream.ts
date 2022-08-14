@@ -2,8 +2,13 @@ import type {TransactionLogEventWithEffects} from '@sanity/types'
 
 type StreamResult = TransactionLogEventWithEffects | {error: {description?: string; type: string}}
 
-export async function getJsonStream(url: string): Promise<ReadableStream<StreamResult>> {
-  const options: RequestInit = {credentials: 'include'}
+export async function getJsonStream(
+  url: string,
+  token: string | undefined
+): Promise<ReadableStream<StreamResult>> {
+  const options: RequestInit = token
+    ? {headers: {Authorization: `Bearer ${token}`}}
+    : {credentials: 'include'}
   const response = await fetch(url, options)
   return getStream(response)
 }
