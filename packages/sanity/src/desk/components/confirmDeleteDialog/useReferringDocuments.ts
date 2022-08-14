@@ -1,6 +1,6 @@
 import {useMemo} from 'react'
 import {ClientError, SanityClient} from '@sanity/client'
-import {Observable, timer, fromEvent, EMPTY, of} from 'rxjs'
+import {Observable, timer, fromEvent, EMPTY, of, forkJoin} from 'rxjs'
 import {
   map,
   startWith,
@@ -16,7 +16,8 @@ import {
   useCrossProjectTokenStore,
 } from '../../../datastores'
 import {useClient} from '../../../hooks'
-import {createHookFromObservableFactory, getPublishedId} from '../../../util'
+import {createHookFromObservableFactory, getPublishedId, getDraftId} from '../../../util'
+import type {AvailabilityResponse} from '../../../preview'
 
 // this is used in place of `instanceof` so the matching can be more robust and
 // won't have any issues with dual packages etc
@@ -84,6 +85,37 @@ export type ReferringDocuments = {
   }
 }
 
+function getDocumentExistence(
+  documentId: string,
+  {versionedClient}: {versionedClient: SanityClient}
+): Observable<string | undefined> {
+  const draftId = getDraftId(documentId)
+  const publishedId = getPublishedId(documentId)
+  const requestOptions = {
+    uri: versionedClient.getDataUrl('doc', `${draftId},${publishedId}`),
+    json: true,
+    query: {excludeContent: 'true'},
+    tag: 'use-referring-documents.document-existence',
+  }
+  return versionedClient.observable.request<AvailabilityResponse>(requestOptions).pipe(
+    map(({omitted}) => {
+      const nonExistant = omitted.filter((doc) => doc.reason === 'existence')
+      if (nonExistant.length === 2) {
+        // None of the documents exist
+        return undefined
+      }
+
+      if (nonExistant.length === 0) {
+        // Both exist, so use the published one
+        return publishedId
+      }
+
+      // If the draft does not exist, use the published ID, and vice versa
+      return nonExistant.some((doc) => doc.id === draftId) ? publishedId : draftId
+    })
+  )
+}
+
 /**
  * fetches the cross-dataset references using the client observable.request
  * method (for that requests can be automatically cancelled)
@@ -95,8 +127,17 @@ function fetchCrossDatasetReferences(
   const {crossProjectTokenStore, versionedClient} = context
 
   return getVisiblePoll$().pipe(
-    switchMap(() => crossProjectTokenStore.fetchAllCrossProjectTokens()),
-    switchMap((crossProjectTokens) => {
+    switchMap(() =>
+      forkJoin({
+        checkDocumentId: getDocumentExistence(documentId, context),
+        crossProjectTokens: crossProjectTokenStore.fetchAllCrossProjectTokens(),
+      })
+    ),
+    switchMap(({checkDocumentId, crossProjectTokens}) => {
+      if (!checkDocumentId) {
+        return of({totalCount: 0, references: []})
+      }
+
       const currentDataset = versionedClient.config().dataset
       const headers: Record<string, string> =
         crossProjectTokens.length > 0
@@ -109,7 +150,7 @@ function fetchCrossDatasetReferences(
 
       return versionedClient.observable
         .request({
-          url: `/data/references/${currentDataset}/documents/${documentId}/to?excludeInternalReferences=true&excludePaths=true`,
+          url: `/data/references/${currentDataset}/documents/${checkDocumentId}/to?excludeInternalReferences=true&excludePaths=true`,
           headers,
         })
         .pipe(
