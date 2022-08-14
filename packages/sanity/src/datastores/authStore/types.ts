@@ -24,6 +24,10 @@ export interface AuthStore {
    */
   state: Observable<AuthState>
   /**
+   * Emits auth tokens, or `null` if not configured to use them or they do not exist
+   */
+  token?: Observable<string | null>
+  /**
    * Custom auth stores are expected to implement a UI that initiates the user's
    * authentication. For the typical case in `createAuthStore`, this means
    * loading the providers and showing them as options to the user.

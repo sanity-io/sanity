@@ -125,10 +125,11 @@ export function _createAuthStore({
   // // emitting `state$` until the session ID has been converted to a token
   // const firstMessage = messages.pipe(first())
 
-  const state$ = messages.pipe(
+  const token$ = messages.pipe(startWith(loginMethod === 'dual' ? getToken(projectId) : null))
+
+  const state$ = token$.pipe(
     // // see above
     // debounce(() => firstMessage),
-    startWith(loginMethod === 'dual' ? getToken(projectId) : null),
     map((token) =>
       createClient({
         projectId,
@@ -138,6 +139,7 @@ export function _createAuthStore({
         ...(token && {token}),
         withCredentials: true,
         requestTagPrefix: 'sanity.studio',
+        ignoreBrowserTokenWarning: true,
       })
     ),
     switchMap((client) =>
@@ -211,6 +213,7 @@ export function _createAuthStore({
 
   return {
     handleCallbackUrl,
+    token: token$,
     state: state$,
     LoginComponent,
     logout,

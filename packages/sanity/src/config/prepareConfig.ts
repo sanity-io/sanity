@@ -4,7 +4,7 @@ import {map, shareReplay} from 'rxjs/operators'
 import {CurrentUser, Schema} from '@sanity/types'
 import {studioTheme} from '@sanity/ui'
 import {startCase} from 'lodash'
-import {fromSanityClient} from '@sanity/bifur-client'
+import {fromUrl} from '@sanity/bifur-client'
 import {createElement, isValidElement} from 'react'
 import {isValidElementType} from 'react-is'
 import {createSchema} from '../schema'
@@ -44,8 +44,6 @@ import {_createRenderInput} from './form/_renderInput'
 import {_createRenderItem} from './form/_renderItem'
 import {_createRenderPreview} from './form/_renderPreview'
 
-type ParamsOf<T> = T extends (arg: infer U) => unknown ? U : never
-type SanityClientLike = ParamsOf<typeof fromSanityClient>
 type InternalSource = WorkspaceSummary['__internal']['sources'][number]
 
 function normalizeLogo(
@@ -186,6 +184,15 @@ interface ResolveSourceOptions {
   auth: AuthStore
 }
 
+function getBifurClient(client: SanityClient, auth: AuthStore) {
+  const bifurVersionedClient = client.withConfig({apiVersion: '2022-06-30'})
+  const dataset = bifurVersionedClient.config().dataset
+
+  const url = bifurVersionedClient.getUrl(`/socket/${dataset}`).replace(/^http/, 'ws')
+
+  return fromUrl(url, auth.token ? {token$: auth.token} : {})
+}
+
 function resolveSource({
   config,
   client,
@@ -195,7 +202,7 @@ function resolveSource({
   auth,
 }: ResolveSourceOptions): Source {
   const {dataset, projectId} = config
-  const bifur = fromSanityClient(client as SanityClientLike)
+  const bifur = getBifurClient(client, auth)
   const errors: unknown[] = []
 
   const context = {
