@@ -139,7 +139,7 @@ const useInternalReferences = createHookFromObservableFactory(
     return documentStore.listenQuery(
       {fetch: fetchQuery, listen: listenQuery},
       {documentId},
-      {tag: 'use-referring-documents', transitions: ['appear', 'disappear']}
+      {tag: 'use-referring-documents', transitions: ['appear', 'disappear'], throttleTime: 5000}
     ) as Observable<ReferringDocuments['internalReferences']>
   }
 )
