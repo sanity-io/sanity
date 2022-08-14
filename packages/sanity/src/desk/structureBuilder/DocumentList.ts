@@ -50,7 +50,13 @@ const createDocumentChildResolverForItem =
   (context: StructureContext): ChildResolver =>
   (itemId: string, options: ChildResolverOptions): ItemChild | Promise<ItemChild> | undefined => {
     const parentItem = options.parent as DocumentList
-    const type = parentItem.schemaTypeName || resolveTypeForDocument(context.client, itemId)
+    const template = options.params?.template
+      ? context.templates.find((tpl) => tpl.id === options.params.template)
+      : undefined
+    const type = template
+      ? template.schemaType
+      : parentItem.schemaTypeName || resolveTypeForDocument(context.client, itemId)
+
     return Promise.resolve(type).then((schemaType) =>
       schemaType
         ? context.resolveDocumentNode({schemaType, documentId: itemId})
