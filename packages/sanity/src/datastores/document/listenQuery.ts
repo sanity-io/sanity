@@ -9,6 +9,7 @@ export type ListenQueryParams = Record<string, string | number | boolean | strin
 export interface ListenQueryOptions {
   tag?: string
   apiVersion?: string
+  throttleTime?: number
   transitions?: ('update' | 'appear' | 'disappear')[]
 }
 
@@ -93,7 +94,7 @@ export const listenQuery = (
     welcome$.pipe(take(1)),
     mutationAndReconnect$.pipe(
       filter(isRelevantEvent),
-      throttleTime(1000, asyncScheduler, {leading: true, trailing: true})
+      throttleTime(options.throttleTime || 1000, asyncScheduler, {leading: true, trailing: true})
     )
   ).pipe(exhaustMapToWithTrailing(fetchOnce$))
 }
