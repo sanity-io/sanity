@@ -1,6 +1,6 @@
 import {SanityClient} from '@sanity/client'
 import {defer, partition, merge, of, throwError, asyncScheduler, Observable} from 'rxjs'
-import {mergeMap, throttleTime, share, take} from 'rxjs/operators'
+import {mergeMap, throttleTime, share, take, filter} from 'rxjs/operators'
 import {exhaustMapToWithTrailing} from 'rxjs-exhaustmap-with-trailing'
 import {ReconnectEvent, WelcomeEvent, MutationEvent} from './types'
 
@@ -9,6 +9,7 @@ export type ListenQueryParams = Record<string, string | number | boolean | strin
 export interface ListenQueryOptions {
   tag?: string
   apiVersion?: string
+  transitions?: ('update' | 'appear' | 'disappear')[]
 }
 
 const fetch = (
@@ -80,9 +81,19 @@ export const listenQuery = (
   )
 
   const [welcome$, mutationAndReconnect$] = partition(events$, isWelcomeEvent)
+  const isRelevantEvent = (event: MutationEvent | ReconnectEvent | WelcomeEvent): boolean => {
+    if (!options.transitions || event.type !== 'mutation') {
+      return true
+    }
+
+    return options.transitions.includes(event.transition)
+  }
 
   return merge(
     welcome$.pipe(take(1)),
-    mutationAndReconnect$.pipe(throttleTime(1000, asyncScheduler, {leading: true, trailing: true}))
+    mutationAndReconnect$.pipe(
+      filter(isRelevantEvent),
+      throttleTime(1000, asyncScheduler, {leading: true, trailing: true})
+    )
   ).pipe(exhaustMapToWithTrailing(fetchOnce$))
 }
