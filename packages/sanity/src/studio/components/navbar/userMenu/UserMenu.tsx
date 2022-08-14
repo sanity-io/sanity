@@ -17,6 +17,7 @@ import {
 import React, {useCallback, useMemo} from 'react'
 import styled from 'styled-components'
 import {UserAvatar} from '../../../../components/UserAvatar'
+import {getProviderTitle} from '../../../../datastores/authStore/providerTitle'
 import {useColorScheme} from '../../../colorScheme'
 import {useWorkspace} from '../../../workspace'
 import {LoginProviderLogo} from './LoginProviderLogo'
@@ -29,26 +30,6 @@ const StyledMenu = styled(Menu)`
 const AvatarBox = styled(Box)`
   position: relative;
 `
-
-const getProviderTitle = (provider?: string) => {
-  if (provider === 'google') {
-    return 'Google'
-  }
-
-  if (provider === 'github') {
-    return 'GitHub'
-  }
-
-  if (provider === 'sanity') {
-    return 'Sanity'
-  }
-
-  if (provider?.startsWith('saml-')) {
-    return 'SAML/SSO'
-  }
-
-  return undefined
-}
 
 export function UserMenu() {
   const {currentUser, projectId, auth} = useWorkspace()

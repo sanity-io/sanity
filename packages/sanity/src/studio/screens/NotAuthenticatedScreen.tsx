@@ -1,6 +1,7 @@
 import {CurrentUser} from '@sanity/types'
 import {Button, Card, Dialog, Stack, Text} from '@sanity/ui'
 import React, {useCallback, useEffect, useState} from 'react'
+import {getProviderTitle} from '../../datastores/authStore/providerTitle'
 import {useActiveWorkspace} from '../activeWorkspaceMatcher'
 
 export function NotAuthenticatedScreen() {
@@ -28,6 +29,9 @@ export function NotAuthenticatedScreen() {
     }
   }, [activeWorkspace])
 
+  const providerTitle = getProviderTitle(currentUser?.provider)
+  const providerHelp = providerTitle ? ` through ${providerTitle}` : ''
+
   return (
     <Card height="fill">
       <Dialog
@@ -52,7 +56,7 @@ export function NotAuthenticatedScreen() {
             <strong>
               {currentUser?.name} ({currentUser?.email})
             </strong>
-            .
+            {providerHelp}.
           </Text>
         </Stack>
       </Dialog>
