@@ -21,8 +21,9 @@
       "title": "Link",
       "type": {
         "jsonType": "object",
-        "type": {"name": "object", "type": null, "jsonType": "object"},
+        "type": {"name": "object", "title": "Object", "type": null, "jsonType": "object"},
         "name": "link",
+        "title": "Link",
         "fields": [
           {
             "name": "href",
@@ -36,7 +37,6 @@
           }
         ],
         "options": {"modal": {"type": "popover"}},
-        "title": "Link",
         "orderings": [],
         "fieldsets": [
           {
@@ -71,8 +71,9 @@
       "title": "Body",
       "of": [
         {
-          "type": {"name": "block", "type": null, "jsonType": "object"},
+          "type": {"name": "block", "title": "Block", "type": null, "jsonType": "object"},
           "name": "block",
+          "title": "Block",
           "jsonType": "object",
           "options": {},
           "fields": [
@@ -85,8 +86,9 @@
                 "title": "Content",
                 "of": [
                   {
-                    "type": {"name": "span", "type": null, "jsonType": "object"},
+                    "type": {"name": "span", "title": "Span", "type": null, "jsonType": "object"},
                     "name": "span",
+                    "title": "Span",
                     "jsonType": "object",
                     "fields": [
                       {
@@ -99,8 +101,14 @@
                           "of": [
                             {
                               "jsonType": "string",
-                              "type": {"name": "string", "type": null, "jsonType": "string"},
+                              "type": {
+                                "name": "string",
+                                "title": "String",
+                                "type": null,
+                                "jsonType": "string"
+                              },
                               "name": "string",
+                              "title": "String",
                               "preview": {}
                             }
                           ]
@@ -110,7 +118,12 @@
                         "name": "text",
                         "type": {
                           "jsonType": "string",
-                          "type": {"name": "string", "type": null, "jsonType": "string"},
+                          "type": {
+                            "name": "string",
+                            "title": "String",
+                            "type": null,
+                            "jsonType": "string"
+                          },
                           "name": "string",
                           "title": "Text",
                           "preview": {}
@@ -120,8 +133,14 @@
                     "annotations": [
                       {
                         "jsonType": "object",
-                        "type": {"name": "object", "type": null, "jsonType": "object"},
+                        "type": {
+                          "name": "object",
+                          "title": "Object",
+                          "type": null,
+                          "jsonType": "object"
+                        },
                         "name": "link",
+                        "title": "Link",
                         "fields": [
                           {
                             "name": "href",
@@ -140,7 +159,6 @@
                           }
                         ],
                         "options": {"modal": {"type": "popover"}},
-                        "title": "Link",
                         "orderings": [],
                         "fieldsets": [
                           {
@@ -184,7 +202,7 @@
               "name": "style",
               "type": {
                 "jsonType": "string",
-                "type": {"name": "string", "type": null, "jsonType": "string"},
+                "type": {"name": "string", "title": "String", "type": null, "jsonType": "string"},
                 "name": "string",
                 "title": "Style",
                 "options": {
@@ -206,7 +224,7 @@
               "name": "list",
               "type": {
                 "jsonType": "string",
-                "type": {"name": "string", "type": null, "jsonType": "string"},
+                "type": {"name": "string", "title": "String", "type": null, "jsonType": "string"},
                 "name": "string",
                 "title": "List type",
                 "options": {
@@ -228,8 +246,14 @@
                 "of": [
                   {
                     "jsonType": "object",
-                    "type": {"name": "object", "type": null, "jsonType": "object"},
+                    "type": {
+                      "name": "object",
+                      "title": "Object",
+                      "type": null,
+                      "jsonType": "object"
+                    },
                     "name": "link",
+                    "title": "Link",
                     "fields": [
                       {
                         "name": "href",
@@ -248,7 +272,6 @@
                       }
                     ],
                     "options": {"modal": {"type": "popover"}},
-                    "title": "Link",
                     "orderings": [],
                     "fieldsets": [
                       {
@@ -281,14 +304,15 @@
         },
         {
           "jsonType": "object",
-          "type": {"name": "object", "type": null, "jsonType": "object"},
+          "type": {"name": "object", "title": "Object", "type": null, "jsonType": "object"},
           "name": "code",
+          "title": "Code",
           "fields": [
             {
               "name": "code",
               "type": {
                 "jsonType": "string",
-                "type": {"name": "text", "type": null, "jsonType": "string"},
+                "type": {"name": "text", "title": "Text", "type": null, "jsonType": "string"},
                 "name": "text",
                 "title": "Code",
                 "preview": {}
@@ -298,7 +322,7 @@
               "name": "language",
               "type": {
                 "jsonType": "string",
-                "type": {"name": "string", "type": null, "jsonType": "string"},
+                "type": {"name": "string", "title": "String", "type": null, "jsonType": "string"},
                 "name": "string",
                 "title": "Language",
                 "preview": {}
@@ -314,7 +338,12 @@
                 "of": [
                   {
                     "jsonType": "number",
-                    "type": {"name": "number", "type": null, "jsonType": "number"},
+                    "type": {
+                      "name": "number",
+                      "title": "Number",
+                      "type": null,
+                      "jsonType": "number"
+                    },
                     "name": "number",
                     "title": "Highlighted line",
                     "preview": {}
@@ -323,7 +352,6 @@
               }
             }
           ],
-          "title": "Code",
           "options": {},
           "orderings": [
             {
@@ -339,7 +367,7 @@
                 "name": "code",
                 "type": {
                   "jsonType": "string",
-                  "type": {"name": "text", "type": null, "jsonType": "string"},
+                  "type": {"name": "text", "title": "Text", "type": null, "jsonType": "string"},
                   "name": "text",
                   "title": "Code",
                   "preview": {}
@@ -352,7 +380,7 @@
                 "name": "language",
                 "type": {
                   "jsonType": "string",
-                  "type": {"name": "string", "type": null, "jsonType": "string"},
+                  "type": {"name": "string", "title": "String", "type": null, "jsonType": "string"},
                   "name": "string",
                   "title": "Language",
                   "preview": {}
@@ -371,7 +399,12 @@
                   "of": [
                     {
                       "jsonType": "number",
-                      "type": {"name": "number", "type": null, "jsonType": "number"},
+                      "type": {
+                        "name": "number",
+                        "title": "Number",
+                        "type": null,
+                        "jsonType": "number"
+                      },
                       "name": "number",
                       "title": "Highlighted line",
                       "preview": {}
@@ -387,8 +420,9 @@
       ]
     },
     "span": {
-      "type": {"name": "span", "type": null, "jsonType": "object"},
+      "type": {"name": "span", "title": "Span", "type": null, "jsonType": "object"},
       "name": "span",
+      "title": "Span",
       "jsonType": "object",
       "fields": [
         {
@@ -401,8 +435,9 @@
             "of": [
               {
                 "jsonType": "string",
-                "type": {"name": "string", "type": null, "jsonType": "string"},
+                "type": {"name": "string", "title": "String", "type": null, "jsonType": "string"},
                 "name": "string",
+                "title": "String",
                 "preview": {}
               }
             ]
@@ -412,7 +447,7 @@
           "name": "text",
           "type": {
             "jsonType": "string",
-            "type": {"name": "string", "type": null, "jsonType": "string"},
+            "type": {"name": "string", "title": "String", "type": null, "jsonType": "string"},
             "name": "string",
             "title": "Text",
             "preview": {}
@@ -422,8 +457,9 @@
       "annotations": [
         {
           "jsonType": "object",
-          "type": {"name": "object", "type": null, "jsonType": "object"},
+          "type": {"name": "object", "title": "Object", "type": null, "jsonType": "object"},
           "name": "link",
+          "title": "Link",
           "fields": [
             {
               "name": "href",
@@ -437,7 +473,6 @@
             }
           ],
           "options": {"modal": {"type": "popover"}},
-          "title": "Link",
           "orderings": [],
           "fieldsets": [
             {
@@ -473,14 +508,15 @@
     "blockObjects": [
       {
         "jsonType": "object",
-        "type": {"name": "object", "type": null, "jsonType": "object"},
+        "type": {"name": "object", "title": "Object", "type": null, "jsonType": "object"},
         "name": "code",
+        "title": "Code",
         "fields": [
           {
             "name": "code",
             "type": {
               "jsonType": "string",
-              "type": {"name": "text", "type": null, "jsonType": "string"},
+              "type": {"name": "text", "title": "Text", "type": null, "jsonType": "string"},
               "name": "text",
               "title": "Code",
               "preview": {}
@@ -490,7 +526,7 @@
             "name": "language",
             "type": {
               "jsonType": "string",
-              "type": {"name": "string", "type": null, "jsonType": "string"},
+              "type": {"name": "string", "title": "String", "type": null, "jsonType": "string"},
               "name": "string",
               "title": "Language",
               "preview": {}
@@ -506,7 +542,7 @@
               "of": [
                 {
                   "jsonType": "number",
-                  "type": {"name": "number", "type": null, "jsonType": "number"},
+                  "type": {"name": "number", "title": "Number", "type": null, "jsonType": "number"},
                   "name": "number",
                   "title": "Highlighted line",
                   "preview": {}
@@ -515,7 +551,6 @@
             }
           }
         ],
-        "title": "Code",
         "options": {},
         "orderings": [
           {
@@ -531,7 +566,7 @@
               "name": "code",
               "type": {
                 "jsonType": "string",
-                "type": {"name": "text", "type": null, "jsonType": "string"},
+                "type": {"name": "text", "title": "Text", "type": null, "jsonType": "string"},
                 "name": "text",
                 "title": "Code",
                 "preview": {}
@@ -544,7 +579,7 @@
               "name": "language",
               "type": {
                 "jsonType": "string",
-                "type": {"name": "string", "type": null, "jsonType": "string"},
+                "type": {"name": "string", "title": "String", "type": null, "jsonType": "string"},
                 "name": "string",
                 "title": "Language",
                 "preview": {}
@@ -563,7 +598,12 @@
                 "of": [
                   {
                     "jsonType": "number",
-                    "type": {"name": "number", "type": null, "jsonType": "number"},
+                    "type": {
+                      "name": "number",
+                      "title": "Number",
+                      "type": null,
+                      "jsonType": "number"
+                    },
                     "name": "number",
                     "title": "Highlighted line",
                     "preview": {}

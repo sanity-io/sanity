@@ -13,7 +13,7 @@
       "title": "Author",
       "type": {
         "jsonType": "object",
-        "type": {"name": "reference", "type": null, "jsonType": "object"},
+        "type": {"name": "reference", "title": "Reference", "type": null, "jsonType": "object"},
         "name": "author",
         "title": "Author",
         "to": [
@@ -21,21 +21,26 @@
             "jsonType": "object",
             "type": {
               "jsonType": "object",
-              "type": {"name": "document", "type": null, "jsonType": "object"},
+              "type": {"name": "document", "title": "Document", "type": null, "jsonType": "object"},
               "name": "author",
+              "title": "Author",
               "fields": [
                 {
                   "name": "name",
                   "type": {
                     "jsonType": "string",
-                    "type": {"name": "string", "type": null, "jsonType": "string"},
+                    "type": {
+                      "name": "string",
+                      "title": "String",
+                      "type": null,
+                      "jsonType": "string"
+                    },
                     "name": "string",
                     "title": "Name",
                     "preview": {}
                   }
                 }
               ],
-              "title": "Author",
               "options": {},
               "orderings": [
                 {"name": "name", "title": "Name", "by": [{"field": "name", "direction": "asc"}]}
@@ -47,7 +52,12 @@
                     "name": "name",
                     "type": {
                       "jsonType": "string",
-                      "type": {"name": "string", "type": null, "jsonType": "string"},
+                      "type": {
+                        "name": "string",
+                        "title": "String",
+                        "type": null,
+                        "jsonType": "string"
+                      },
                       "name": "string",
                       "title": "Name",
                       "preview": {}
@@ -59,19 +69,19 @@
               "preview": {"select": {"title": "name"}}
             },
             "name": "author",
+            "title": "Author",
             "fields": [
               {
                 "name": "name",
                 "type": {
                   "jsonType": "string",
-                  "type": {"name": "string", "type": null, "jsonType": "string"},
+                  "type": {"name": "string", "title": "String", "type": null, "jsonType": "string"},
                   "name": "string",
                   "title": "Name",
                   "preview": {}
                 }
               }
             ],
-            "title": "Author",
             "options": {},
             "orderings": [
               {"name": "name", "title": "Name", "by": [{"field": "name", "direction": "asc"}]}
@@ -83,7 +93,12 @@
                   "name": "name",
                   "type": {
                     "jsonType": "string",
-                    "type": {"name": "string", "type": null, "jsonType": "string"},
+                    "type": {
+                      "name": "string",
+                      "title": "String",
+                      "type": null,
+                      "jsonType": "string"
+                    },
                     "name": "string",
                     "title": "Name",
                     "preview": {}
@@ -105,7 +120,7 @@
             "name": "_ref",
             "type": {
               "jsonType": "string",
-              "type": {"name": "string", "type": null, "jsonType": "string"},
+              "type": {"name": "string", "title": "String", "type": null, "jsonType": "string"},
               "name": "string",
               "title": "Referenced document ID",
               "preview": {}
@@ -115,7 +130,7 @@
             "name": "_weak",
             "type": {
               "jsonType": "boolean",
-              "type": {"name": "boolean", "type": null, "jsonType": "boolean"},
+              "type": {"name": "boolean", "title": "Boolean", "type": null, "jsonType": "boolean"},
               "name": "boolean",
               "title": "Weak reference",
               "preview": {}
@@ -129,7 +144,7 @@
               "name": "_ref",
               "type": {
                 "jsonType": "string",
-                "type": {"name": "string", "type": null, "jsonType": "string"},
+                "type": {"name": "string", "title": "String", "type": null, "jsonType": "string"},
                 "name": "string",
                 "title": "Referenced document ID",
                 "preview": {}
@@ -142,7 +157,12 @@
               "name": "_weak",
               "type": {
                 "jsonType": "boolean",
-                "type": {"name": "boolean", "type": null, "jsonType": "boolean"},
+                "type": {
+                  "name": "boolean",
+                  "title": "Boolean",
+                  "type": null,
+                  "jsonType": "boolean"
+                },
                 "name": "boolean",
                 "title": "Weak reference",
                 "preview": {}
@@ -164,8 +184,9 @@
       "of": [
         {
           "type": {
-            "type": {"name": "block", "type": null, "jsonType": "object"},
+            "type": {"name": "block", "title": "Block", "type": null, "jsonType": "object"},
             "name": "customBlock",
+            "title": "Block",
             "jsonType": "object",
             "options": {},
             "fields": [
@@ -178,8 +199,9 @@
                   "title": "Content",
                   "of": [
                     {
-                      "type": {"name": "span", "type": null, "jsonType": "object"},
+                      "type": {"name": "span", "title": "Span", "type": null, "jsonType": "object"},
                       "name": "span",
+                      "title": "Span",
                       "jsonType": "object",
                       "fields": [
                         {
@@ -192,8 +214,14 @@
                             "of": [
                               {
                                 "jsonType": "string",
-                                "type": {"name": "string", "type": null, "jsonType": "string"},
+                                "type": {
+                                  "name": "string",
+                                  "title": "String",
+                                  "type": null,
+                                  "jsonType": "string"
+                                },
                                 "name": "string",
+                                "title": "String",
                                 "preview": {}
                               }
                             ]
@@ -203,7 +231,12 @@
                           "name": "text",
                           "type": {
                             "jsonType": "string",
-                            "type": {"name": "string", "type": null, "jsonType": "string"},
+                            "type": {
+                              "name": "string",
+                              "title": "String",
+                              "type": null,
+                              "jsonType": "string"
+                            },
                             "name": "string",
                             "title": "Text",
                             "preview": {}
@@ -213,7 +246,12 @@
                       "annotations": [
                         {
                           "jsonType": "object",
-                          "type": {"name": "reference", "type": null, "jsonType": "object"},
+                          "type": {
+                            "name": "reference",
+                            "title": "Reference",
+                            "type": null,
+                            "jsonType": "object"
+                          },
                           "name": "author",
                           "title": "Author",
                           "to": [
@@ -221,8 +259,14 @@
                               "jsonType": "object",
                               "type": {
                                 "jsonType": "object",
-                                "type": {"name": "document", "type": null, "jsonType": "object"},
+                                "type": {
+                                  "name": "document",
+                                  "title": "Document",
+                                  "type": null,
+                                  "jsonType": "object"
+                                },
                                 "name": "author",
+                                "title": "Author",
                                 "fields": [
                                   {
                                     "name": "name",
@@ -230,6 +274,7 @@
                                       "jsonType": "string",
                                       "type": {
                                         "name": "string",
+                                        "title": "String",
                                         "type": null,
                                         "jsonType": "string"
                                       },
@@ -239,7 +284,6 @@
                                     }
                                   }
                                 ],
-                                "title": "Author",
                                 "options": {},
                                 "orderings": [
                                   {
@@ -257,6 +301,7 @@
                                         "jsonType": "string",
                                         "type": {
                                           "name": "string",
+                                          "title": "String",
                                           "type": null,
                                           "jsonType": "string"
                                         },
@@ -271,19 +316,24 @@
                                 "preview": {"select": {"title": "name"}}
                               },
                               "name": "author",
+                              "title": "Author",
                               "fields": [
                                 {
                                   "name": "name",
                                   "type": {
                                     "jsonType": "string",
-                                    "type": {"name": "string", "type": null, "jsonType": "string"},
+                                    "type": {
+                                      "name": "string",
+                                      "title": "String",
+                                      "type": null,
+                                      "jsonType": "string"
+                                    },
                                     "name": "string",
                                     "title": "Name",
                                     "preview": {}
                                   }
                                 }
                               ],
-                              "title": "Author",
                               "options": {},
                               "orderings": [
                                 {
@@ -301,6 +351,7 @@
                                       "jsonType": "string",
                                       "type": {
                                         "name": "string",
+                                        "title": "String",
                                         "type": null,
                                         "jsonType": "string"
                                       },
@@ -325,7 +376,12 @@
                               "name": "_ref",
                               "type": {
                                 "jsonType": "string",
-                                "type": {"name": "string", "type": null, "jsonType": "string"},
+                                "type": {
+                                  "name": "string",
+                                  "title": "String",
+                                  "type": null,
+                                  "jsonType": "string"
+                                },
                                 "name": "string",
                                 "title": "Referenced document ID",
                                 "preview": {}
@@ -335,7 +391,12 @@
                               "name": "_weak",
                               "type": {
                                 "jsonType": "boolean",
-                                "type": {"name": "boolean", "type": null, "jsonType": "boolean"},
+                                "type": {
+                                  "name": "boolean",
+                                  "title": "Boolean",
+                                  "type": null,
+                                  "jsonType": "boolean"
+                                },
                                 "name": "boolean",
                                 "title": "Weak reference",
                                 "preview": {}
@@ -349,7 +410,12 @@
                                 "name": "_ref",
                                 "type": {
                                   "jsonType": "string",
-                                  "type": {"name": "string", "type": null, "jsonType": "string"},
+                                  "type": {
+                                    "name": "string",
+                                    "title": "String",
+                                    "type": null,
+                                    "jsonType": "string"
+                                  },
                                   "name": "string",
                                   "title": "Referenced document ID",
                                   "preview": {}
@@ -362,7 +428,12 @@
                                 "name": "_weak",
                                 "type": {
                                   "jsonType": "boolean",
-                                  "type": {"name": "boolean", "type": null, "jsonType": "boolean"},
+                                  "type": {
+                                    "name": "boolean",
+                                    "title": "Boolean",
+                                    "type": null,
+                                    "jsonType": "boolean"
+                                  },
                                   "name": "boolean",
                                   "title": "Weak reference",
                                   "preview": {}
@@ -387,7 +458,7 @@
                 "name": "style",
                 "type": {
                   "jsonType": "string",
-                  "type": {"name": "string", "type": null, "jsonType": "string"},
+                  "type": {"name": "string", "title": "String", "type": null, "jsonType": "string"},
                   "name": "string",
                   "title": "Style",
                   "options": {
@@ -404,7 +475,7 @@
                 "name": "list",
                 "type": {
                   "jsonType": "string",
-                  "type": {"name": "string", "type": null, "jsonType": "string"},
+                  "type": {"name": "string", "title": "String", "type": null, "jsonType": "string"},
                   "name": "string",
                   "title": "List type",
                   "options": {"list": [{"title": "Numbered", "value": "number"}]},
@@ -421,7 +492,12 @@
                   "of": [
                     {
                       "jsonType": "object",
-                      "type": {"name": "reference", "type": null, "jsonType": "object"},
+                      "type": {
+                        "name": "reference",
+                        "title": "Reference",
+                        "type": null,
+                        "jsonType": "object"
+                      },
                       "name": "author",
                       "title": "Author",
                       "to": [
@@ -429,21 +505,31 @@
                           "jsonType": "object",
                           "type": {
                             "jsonType": "object",
-                            "type": {"name": "document", "type": null, "jsonType": "object"},
+                            "type": {
+                              "name": "document",
+                              "title": "Document",
+                              "type": null,
+                              "jsonType": "object"
+                            },
                             "name": "author",
+                            "title": "Author",
                             "fields": [
                               {
                                 "name": "name",
                                 "type": {
                                   "jsonType": "string",
-                                  "type": {"name": "string", "type": null, "jsonType": "string"},
+                                  "type": {
+                                    "name": "string",
+                                    "title": "String",
+                                    "type": null,
+                                    "jsonType": "string"
+                                  },
                                   "name": "string",
                                   "title": "Name",
                                   "preview": {}
                                 }
                               }
                             ],
-                            "title": "Author",
                             "options": {},
                             "orderings": [
                               {
@@ -459,7 +545,12 @@
                                   "name": "name",
                                   "type": {
                                     "jsonType": "string",
-                                    "type": {"name": "string", "type": null, "jsonType": "string"},
+                                    "type": {
+                                      "name": "string",
+                                      "title": "String",
+                                      "type": null,
+                                      "jsonType": "string"
+                                    },
                                     "name": "string",
                                     "title": "Name",
                                     "preview": {}
@@ -471,19 +562,24 @@
                             "preview": {"select": {"title": "name"}}
                           },
                           "name": "author",
+                          "title": "Author",
                           "fields": [
                             {
                               "name": "name",
                               "type": {
                                 "jsonType": "string",
-                                "type": {"name": "string", "type": null, "jsonType": "string"},
+                                "type": {
+                                  "name": "string",
+                                  "title": "String",
+                                  "type": null,
+                                  "jsonType": "string"
+                                },
                                 "name": "string",
                                 "title": "Name",
                                 "preview": {}
                               }
                             }
                           ],
-                          "title": "Author",
                           "options": {},
                           "orderings": [
                             {
@@ -499,7 +595,12 @@
                                 "name": "name",
                                 "type": {
                                   "jsonType": "string",
-                                  "type": {"name": "string", "type": null, "jsonType": "string"},
+                                  "type": {
+                                    "name": "string",
+                                    "title": "String",
+                                    "type": null,
+                                    "jsonType": "string"
+                                  },
                                   "name": "string",
                                   "title": "Name",
                                   "preview": {}
@@ -521,7 +622,12 @@
                           "name": "_ref",
                           "type": {
                             "jsonType": "string",
-                            "type": {"name": "string", "type": null, "jsonType": "string"},
+                            "type": {
+                              "name": "string",
+                              "title": "String",
+                              "type": null,
+                              "jsonType": "string"
+                            },
                             "name": "string",
                             "title": "Referenced document ID",
                             "preview": {}
@@ -531,7 +637,12 @@
                           "name": "_weak",
                           "type": {
                             "jsonType": "boolean",
-                            "type": {"name": "boolean", "type": null, "jsonType": "boolean"},
+                            "type": {
+                              "name": "boolean",
+                              "title": "Boolean",
+                              "type": null,
+                              "jsonType": "boolean"
+                            },
                             "name": "boolean",
                             "title": "Weak reference",
                             "preview": {}
@@ -545,7 +656,12 @@
                             "name": "_ref",
                             "type": {
                               "jsonType": "string",
-                              "type": {"name": "string", "type": null, "jsonType": "string"},
+                              "type": {
+                                "name": "string",
+                                "title": "String",
+                                "type": null,
+                                "jsonType": "string"
+                              },
                               "name": "string",
                               "title": "Referenced document ID",
                               "preview": {}
@@ -558,7 +674,12 @@
                             "name": "_weak",
                             "type": {
                               "jsonType": "boolean",
-                              "type": {"name": "boolean", "type": null, "jsonType": "boolean"},
+                              "type": {
+                                "name": "boolean",
+                                "title": "Boolean",
+                                "type": null,
+                                "jsonType": "boolean"
+                              },
                               "name": "boolean",
                               "title": "Weak reference",
                               "preview": {}
@@ -574,6 +695,7 @@
             "preview": {"select": {}}
           },
           "name": "customBlock",
+          "title": "Block",
           "jsonType": "object",
           "options": {},
           "fields": [
@@ -586,8 +708,9 @@
                 "title": "Content",
                 "of": [
                   {
-                    "type": {"name": "span", "type": null, "jsonType": "object"},
+                    "type": {"name": "span", "title": "Span", "type": null, "jsonType": "object"},
                     "name": "span",
+                    "title": "Span",
                     "jsonType": "object",
                     "fields": [
                       {
@@ -600,8 +723,14 @@
                           "of": [
                             {
                               "jsonType": "string",
-                              "type": {"name": "string", "type": null, "jsonType": "string"},
+                              "type": {
+                                "name": "string",
+                                "title": "String",
+                                "type": null,
+                                "jsonType": "string"
+                              },
                               "name": "string",
+                              "title": "String",
                               "preview": {}
                             }
                           ]
@@ -611,7 +740,12 @@
                         "name": "text",
                         "type": {
                           "jsonType": "string",
-                          "type": {"name": "string", "type": null, "jsonType": "string"},
+                          "type": {
+                            "name": "string",
+                            "title": "String",
+                            "type": null,
+                            "jsonType": "string"
+                          },
                           "name": "string",
                           "title": "Text",
                           "preview": {}
@@ -621,7 +755,12 @@
                     "annotations": [
                       {
                         "jsonType": "object",
-                        "type": {"name": "reference", "type": null, "jsonType": "object"},
+                        "type": {
+                          "name": "reference",
+                          "title": "Reference",
+                          "type": null,
+                          "jsonType": "object"
+                        },
                         "name": "author",
                         "title": "Author",
                         "to": [
@@ -629,21 +768,31 @@
                             "jsonType": "object",
                             "type": {
                               "jsonType": "object",
-                              "type": {"name": "document", "type": null, "jsonType": "object"},
+                              "type": {
+                                "name": "document",
+                                "title": "Document",
+                                "type": null,
+                                "jsonType": "object"
+                              },
                               "name": "author",
+                              "title": "Author",
                               "fields": [
                                 {
                                   "name": "name",
                                   "type": {
                                     "jsonType": "string",
-                                    "type": {"name": "string", "type": null, "jsonType": "string"},
+                                    "type": {
+                                      "name": "string",
+                                      "title": "String",
+                                      "type": null,
+                                      "jsonType": "string"
+                                    },
                                     "name": "string",
                                     "title": "Name",
                                     "preview": {}
                                   }
                                 }
                               ],
-                              "title": "Author",
                               "options": {},
                               "orderings": [
                                 {
@@ -661,6 +810,7 @@
                                       "jsonType": "string",
                                       "type": {
                                         "name": "string",
+                                        "title": "String",
                                         "type": null,
                                         "jsonType": "string"
                                       },
@@ -675,19 +825,24 @@
                               "preview": {"select": {"title": "name"}}
                             },
                             "name": "author",
+                            "title": "Author",
                             "fields": [
                               {
                                 "name": "name",
                                 "type": {
                                   "jsonType": "string",
-                                  "type": {"name": "string", "type": null, "jsonType": "string"},
+                                  "type": {
+                                    "name": "string",
+                                    "title": "String",
+                                    "type": null,
+                                    "jsonType": "string"
+                                  },
                                   "name": "string",
                                   "title": "Name",
                                   "preview": {}
                                 }
                               }
                             ],
-                            "title": "Author",
                             "options": {},
                             "orderings": [
                               {
@@ -703,7 +858,12 @@
                                   "name": "name",
                                   "type": {
                                     "jsonType": "string",
-                                    "type": {"name": "string", "type": null, "jsonType": "string"},
+                                    "type": {
+                                      "name": "string",
+                                      "title": "String",
+                                      "type": null,
+                                      "jsonType": "string"
+                                    },
                                     "name": "string",
                                     "title": "Name",
                                     "preview": {}
@@ -725,7 +885,12 @@
                             "name": "_ref",
                             "type": {
                               "jsonType": "string",
-                              "type": {"name": "string", "type": null, "jsonType": "string"},
+                              "type": {
+                                "name": "string",
+                                "title": "String",
+                                "type": null,
+                                "jsonType": "string"
+                              },
                               "name": "string",
                               "title": "Referenced document ID",
                               "preview": {}
@@ -735,7 +900,12 @@
                             "name": "_weak",
                             "type": {
                               "jsonType": "boolean",
-                              "type": {"name": "boolean", "type": null, "jsonType": "boolean"},
+                              "type": {
+                                "name": "boolean",
+                                "title": "Boolean",
+                                "type": null,
+                                "jsonType": "boolean"
+                              },
                               "name": "boolean",
                               "title": "Weak reference",
                               "preview": {}
@@ -749,7 +919,12 @@
                               "name": "_ref",
                               "type": {
                                 "jsonType": "string",
-                                "type": {"name": "string", "type": null, "jsonType": "string"},
+                                "type": {
+                                  "name": "string",
+                                  "title": "String",
+                                  "type": null,
+                                  "jsonType": "string"
+                                },
                                 "name": "string",
                                 "title": "Referenced document ID",
                                 "preview": {}
@@ -762,7 +937,12 @@
                               "name": "_weak",
                               "type": {
                                 "jsonType": "boolean",
-                                "type": {"name": "boolean", "type": null, "jsonType": "boolean"},
+                                "type": {
+                                  "name": "boolean",
+                                  "title": "Boolean",
+                                  "type": null,
+                                  "jsonType": "boolean"
+                                },
                                 "name": "boolean",
                                 "title": "Weak reference",
                                 "preview": {}
@@ -787,7 +967,7 @@
               "name": "style",
               "type": {
                 "jsonType": "string",
-                "type": {"name": "string", "type": null, "jsonType": "string"},
+                "type": {"name": "string", "title": "String", "type": null, "jsonType": "string"},
                 "name": "string",
                 "title": "Style",
                 "options": {
@@ -804,7 +984,7 @@
               "name": "list",
               "type": {
                 "jsonType": "string",
-                "type": {"name": "string", "type": null, "jsonType": "string"},
+                "type": {"name": "string", "title": "String", "type": null, "jsonType": "string"},
                 "name": "string",
                 "title": "List type",
                 "options": {"list": [{"title": "Numbered", "value": "number"}]},
@@ -821,7 +1001,12 @@
                 "of": [
                   {
                     "jsonType": "object",
-                    "type": {"name": "reference", "type": null, "jsonType": "object"},
+                    "type": {
+                      "name": "reference",
+                      "title": "Reference",
+                      "type": null,
+                      "jsonType": "object"
+                    },
                     "name": "author",
                     "title": "Author",
                     "to": [
@@ -829,21 +1014,31 @@
                         "jsonType": "object",
                         "type": {
                           "jsonType": "object",
-                          "type": {"name": "document", "type": null, "jsonType": "object"},
+                          "type": {
+                            "name": "document",
+                            "title": "Document",
+                            "type": null,
+                            "jsonType": "object"
+                          },
                           "name": "author",
+                          "title": "Author",
                           "fields": [
                             {
                               "name": "name",
                               "type": {
                                 "jsonType": "string",
-                                "type": {"name": "string", "type": null, "jsonType": "string"},
+                                "type": {
+                                  "name": "string",
+                                  "title": "String",
+                                  "type": null,
+                                  "jsonType": "string"
+                                },
                                 "name": "string",
                                 "title": "Name",
                                 "preview": {}
                               }
                             }
                           ],
-                          "title": "Author",
                           "options": {},
                           "orderings": [
                             {
@@ -859,7 +1054,12 @@
                                 "name": "name",
                                 "type": {
                                   "jsonType": "string",
-                                  "type": {"name": "string", "type": null, "jsonType": "string"},
+                                  "type": {
+                                    "name": "string",
+                                    "title": "String",
+                                    "type": null,
+                                    "jsonType": "string"
+                                  },
                                   "name": "string",
                                   "title": "Name",
                                   "preview": {}
@@ -871,19 +1071,24 @@
                           "preview": {"select": {"title": "name"}}
                         },
                         "name": "author",
+                        "title": "Author",
                         "fields": [
                           {
                             "name": "name",
                             "type": {
                               "jsonType": "string",
-                              "type": {"name": "string", "type": null, "jsonType": "string"},
+                              "type": {
+                                "name": "string",
+                                "title": "String",
+                                "type": null,
+                                "jsonType": "string"
+                              },
                               "name": "string",
                               "title": "Name",
                               "preview": {}
                             }
                           }
                         ],
-                        "title": "Author",
                         "options": {},
                         "orderings": [
                           {
@@ -899,7 +1104,12 @@
                               "name": "name",
                               "type": {
                                 "jsonType": "string",
-                                "type": {"name": "string", "type": null, "jsonType": "string"},
+                                "type": {
+                                  "name": "string",
+                                  "title": "String",
+                                  "type": null,
+                                  "jsonType": "string"
+                                },
                                 "name": "string",
                                 "title": "Name",
                                 "preview": {}
@@ -921,7 +1131,12 @@
                         "name": "_ref",
                         "type": {
                           "jsonType": "string",
-                          "type": {"name": "string", "type": null, "jsonType": "string"},
+                          "type": {
+                            "name": "string",
+                            "title": "String",
+                            "type": null,
+                            "jsonType": "string"
+                          },
                           "name": "string",
                           "title": "Referenced document ID",
                           "preview": {}
@@ -931,7 +1146,12 @@
                         "name": "_weak",
                         "type": {
                           "jsonType": "boolean",
-                          "type": {"name": "boolean", "type": null, "jsonType": "boolean"},
+                          "type": {
+                            "name": "boolean",
+                            "title": "Boolean",
+                            "type": null,
+                            "jsonType": "boolean"
+                          },
                           "name": "boolean",
                           "title": "Weak reference",
                           "preview": {}
@@ -945,7 +1165,12 @@
                           "name": "_ref",
                           "type": {
                             "jsonType": "string",
-                            "type": {"name": "string", "type": null, "jsonType": "string"},
+                            "type": {
+                              "name": "string",
+                              "title": "String",
+                              "type": null,
+                              "jsonType": "string"
+                            },
                             "name": "string",
                             "title": "Referenced document ID",
                             "preview": {}
@@ -958,7 +1183,12 @@
                           "name": "_weak",
                           "type": {
                             "jsonType": "boolean",
-                            "type": {"name": "boolean", "type": null, "jsonType": "boolean"},
+                            "type": {
+                              "name": "boolean",
+                              "title": "Boolean",
+                              "type": null,
+                              "jsonType": "boolean"
+                            },
                             "name": "boolean",
                             "title": "Weak reference",
                             "preview": {}
@@ -976,8 +1206,9 @@
       ]
     },
     "span": {
-      "type": {"name": "span", "type": null, "jsonType": "object"},
+      "type": {"name": "span", "title": "Span", "type": null, "jsonType": "object"},
       "name": "span",
+      "title": "Span",
       "jsonType": "object",
       "fields": [
         {
@@ -990,8 +1221,9 @@
             "of": [
               {
                 "jsonType": "string",
-                "type": {"name": "string", "type": null, "jsonType": "string"},
+                "type": {"name": "string", "title": "String", "type": null, "jsonType": "string"},
                 "name": "string",
+                "title": "String",
                 "preview": {}
               }
             ]
@@ -1001,7 +1233,7 @@
           "name": "text",
           "type": {
             "jsonType": "string",
-            "type": {"name": "string", "type": null, "jsonType": "string"},
+            "type": {"name": "string", "title": "String", "type": null, "jsonType": "string"},
             "name": "string",
             "title": "Text",
             "preview": {}
@@ -1011,7 +1243,7 @@
       "annotations": [
         {
           "jsonType": "object",
-          "type": {"name": "reference", "type": null, "jsonType": "object"},
+          "type": {"name": "reference", "title": "Reference", "type": null, "jsonType": "object"},
           "name": "author",
           "title": "Author",
           "to": [
@@ -1019,21 +1251,31 @@
               "jsonType": "object",
               "type": {
                 "jsonType": "object",
-                "type": {"name": "document", "type": null, "jsonType": "object"},
+                "type": {
+                  "name": "document",
+                  "title": "Document",
+                  "type": null,
+                  "jsonType": "object"
+                },
                 "name": "author",
+                "title": "Author",
                 "fields": [
                   {
                     "name": "name",
                     "type": {
                       "jsonType": "string",
-                      "type": {"name": "string", "type": null, "jsonType": "string"},
+                      "type": {
+                        "name": "string",
+                        "title": "String",
+                        "type": null,
+                        "jsonType": "string"
+                      },
                       "name": "string",
                       "title": "Name",
                       "preview": {}
                     }
                   }
                 ],
-                "title": "Author",
                 "options": {},
                 "orderings": [
                   {"name": "name", "title": "Name", "by": [{"field": "name", "direction": "asc"}]}
@@ -1045,7 +1287,12 @@
                       "name": "name",
                       "type": {
                         "jsonType": "string",
-                        "type": {"name": "string", "type": null, "jsonType": "string"},
+                        "type": {
+                          "name": "string",
+                          "title": "String",
+                          "type": null,
+                          "jsonType": "string"
+                        },
                         "name": "string",
                         "title": "Name",
                         "preview": {}
@@ -1057,19 +1304,24 @@
                 "preview": {"select": {"title": "name"}}
               },
               "name": "author",
+              "title": "Author",
               "fields": [
                 {
                   "name": "name",
                   "type": {
                     "jsonType": "string",
-                    "type": {"name": "string", "type": null, "jsonType": "string"},
+                    "type": {
+                      "name": "string",
+                      "title": "String",
+                      "type": null,
+                      "jsonType": "string"
+                    },
                     "name": "string",
                     "title": "Name",
                     "preview": {}
                   }
                 }
               ],
-              "title": "Author",
               "options": {},
               "orderings": [
                 {"name": "name", "title": "Name", "by": [{"field": "name", "direction": "asc"}]}
@@ -1081,7 +1333,12 @@
                     "name": "name",
                     "type": {
                       "jsonType": "string",
-                      "type": {"name": "string", "type": null, "jsonType": "string"},
+                      "type": {
+                        "name": "string",
+                        "title": "String",
+                        "type": null,
+                        "jsonType": "string"
+                      },
                       "name": "string",
                       "title": "Name",
                       "preview": {}
@@ -1103,7 +1360,7 @@
               "name": "_ref",
               "type": {
                 "jsonType": "string",
-                "type": {"name": "string", "type": null, "jsonType": "string"},
+                "type": {"name": "string", "title": "String", "type": null, "jsonType": "string"},
                 "name": "string",
                 "title": "Referenced document ID",
                 "preview": {}
@@ -1113,7 +1370,12 @@
               "name": "_weak",
               "type": {
                 "jsonType": "boolean",
-                "type": {"name": "boolean", "type": null, "jsonType": "boolean"},
+                "type": {
+                  "name": "boolean",
+                  "title": "Boolean",
+                  "type": null,
+                  "jsonType": "boolean"
+                },
                 "name": "boolean",
                 "title": "Weak reference",
                 "preview": {}
@@ -1127,7 +1389,7 @@
                 "name": "_ref",
                 "type": {
                   "jsonType": "string",
-                  "type": {"name": "string", "type": null, "jsonType": "string"},
+                  "type": {"name": "string", "title": "String", "type": null, "jsonType": "string"},
                   "name": "string",
                   "title": "Referenced document ID",
                   "preview": {}
@@ -1140,7 +1402,12 @@
                 "name": "_weak",
                 "type": {
                   "jsonType": "boolean",
-                  "type": {"name": "boolean", "type": null, "jsonType": "boolean"},
+                  "type": {
+                    "name": "boolean",
+                    "title": "Boolean",
+                    "type": null,
+                    "jsonType": "boolean"
+                  },
                   "name": "boolean",
                   "title": "Weak reference",
                   "preview": {}
