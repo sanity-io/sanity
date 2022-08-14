@@ -133,11 +133,13 @@ const useInternalReferences = createHookFromObservableFactory(
     const {documentStore} = context
     const referencesClause = '*[references($documentId)][0...100]{_id,_type}'
     const totalClause = 'count(*[references($documentId)])'
+    const fetchQuery = `{"references":${referencesClause},"totalCount":${totalClause}}`
+    const listenQuery = '*[references($documentId)]'
 
     return documentStore.listenQuery(
-      `{"references":${referencesClause},"totalCount":${totalClause}}`,
+      {fetch: fetchQuery, listen: listenQuery},
       {documentId},
-      {tag: 'use-referring-documents'}
+      {tag: 'use-referring-documents', transitions: ['appear', 'disappear']}
     ) as Observable<ReferringDocuments['internalReferences']>
   }
 )
