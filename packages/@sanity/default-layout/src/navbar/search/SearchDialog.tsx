@@ -148,7 +148,6 @@ const DialogContent = styled(Card)`
 
 const SearchDialogContentWrapper = styled(Card)`
   height: 100vh;
-  outline: 2px solid red;
   left: 0;
   overflow: hidden;
   position: fixed;

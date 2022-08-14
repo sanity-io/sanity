@@ -1,7 +1,8 @@
 import {hues} from '@sanity/color'
-import {Box, Card, Flex, studioTheme, Theme, useClickOutside, useLayer} from '@sanity/ui'
-import React, {RefObject, useCallback, useEffect, useRef, useState} from 'react'
+import {Box, Card, Flex, Theme, useClickOutside, useLayer} from '@sanity/ui'
+import React, {useRef, useState} from 'react'
 import styled, {css} from 'styled-components'
+import {POPOVER_INPUT_PADDING, POPOVER_MAX_HEIGHT, POPOVER_MAX_WIDTH} from '../constants'
 import {CommandListProvider} from '../contexts/commandList'
 import {useSearchState} from '../contexts/search'
 import {hasSearchableTerms} from '../contexts/search/selectors'
@@ -10,27 +11,20 @@ import {SearchHeader} from './SearchHeader'
 import {SearchResults} from './SearchResults'
 import {TypeFilters} from './TypeFilters'
 
+type PopoverPosition = {
+  x: number
+  y: number
+}
 export interface SearchPopoverProps {
-  childContainerRef: RefObject<HTMLDivElement>
   initialSearchIndex?: number
   onClose: () => void
-  placeholderRef: RefObject<HTMLInputElement>
+  position: PopoverPosition
 }
 
-const POPOVER_MAX_WIDTH = 800 // px
-const SEARCH_FIELD_PADDING = 1 // Sanity UI scale
-
-const searchFieldPaddingPx = studioTheme.space[SEARCH_FIELD_PADDING]
-
-export function SearchPopover({
-  childContainerRef,
-  onClose,
-  placeholderRef,
-  initialSearchIndex,
-}: SearchPopoverProps) {
-  const [dialogPosition, setDialogPosition] = useState(calcDialogPosition(placeholderRef))
+export function SearchPopover({onClose, initialSearchIndex, position}: SearchPopoverProps) {
   const [dialogEl, setDialogEl] = useState<HTMLDivElement>()
 
+  const childContainerRef = useRef<HTMLDivElement>(null)
   const childContainerParentRef = useRef<HTMLDivElement>(null)
   const headerInputRef = useRef<HTMLInputElement>(null)
   const pointerOverlayRef = useRef<HTMLDivElement>(null)
@@ -44,15 +38,6 @@ export function SearchPopover({
   const hasValidTerms = hasSearchableTerms(terms)
 
   useClickOutside(onClose, [dialogEl])
-
-  const handleWindowResize = useCallback(() => {
-    setDialogPosition(calcDialogPosition(placeholderRef))
-  }, [placeholderRef])
-
-  useEffect(() => {
-    window.addEventListener('resize', handleWindowResize)
-    return () => window.removeEventListener('resize', handleWindowResize)
-  }, [handleWindowResize])
 
   return (
     <>
@@ -69,6 +54,7 @@ export function SearchPopover({
         virtualList
       >
         <SearchPopoverWrapper
+          $position={position}
           data-ui="search-dialog"
           overflow="hidden"
           radius={2}
@@ -76,8 +62,6 @@ export function SearchPopover({
           scheme="light"
           shadow={2}
           style={{zIndex}}
-          x={dialogPosition.x}
-          y={dialogPosition.y}
         >
           <SearchHeader inputRef={headerInputRef} />
 
@@ -123,43 +107,6 @@ function SearchPopoverFilters() {
   )
 }
 
-function calcDialogPosition(
-  ref: RefObject<HTMLInputElement>
-): {
-  x: number | null
-  y: number
-} {
-  const placeholderRect = ref.current.getBoundingClientRect()
-
-  // Offset positioning to account for dialog padding. This should ensure that our dialog search input
-  // sits directly over the top of the placeholder.
-  return {
-    x:
-      window.innerWidth - placeholderRect.x > POPOVER_MAX_WIDTH
-        ? placeholderRect.x - searchFieldPaddingPx
-        : null,
-    y: placeholderRect.y - searchFieldPaddingPx,
-  }
-}
-
-const SearchPopoverWrapper = styled(Card)<{x: number | null; y: number}>`
-  ${(props) =>
-    props.x
-      ? css`
-          left: ${props.x}px;
-        `
-      : css`
-          left: 50%;
-          transform: translateX(-50%);
-        `}
-  display: flex !important;
-  flex-direction: column;
-  max-height: min(calc(100vh - ${searchFieldPaddingPx * 2}px), 735px);
-  position: absolute;
-  top: ${(props) => props.y}px;
-  width: min(calc(100vw - ${searchFieldPaddingPx * 2}px), ${POPOVER_MAX_WIDTH}px);
-`
-
 const Overlay = styled.div`
   background-color: ${({theme}: {theme: Theme}) => theme.sanity.color.base.shadow.ambient};
   bottom: 0;
@@ -173,6 +120,24 @@ const SearchContentWrapper = styled(Box)`
   overflow-x: hidden;
   overflow-y: auto;
   position: relative;
+`
+
+const SearchPopoverWrapper = styled(Card)<{$position: PopoverPosition}>`
+  ${({$position}) =>
+    $position.x
+      ? css`
+          left: ${$position.x}px;
+        `
+      : css`
+          left: 50%;
+          transform: translateX(-50%);
+        `}
+  display: flex !important;
+  flex-direction: column;
+  max-height: min(calc(100vh - ${POPOVER_INPUT_PADDING * 2}px), ${POPOVER_MAX_HEIGHT}px);
+  position: absolute;
+  top: ${({$position}) => $position.y}px;
+  width: min(calc(100vw - ${POPOVER_INPUT_PADDING * 2}px), ${POPOVER_MAX_WIDTH}px);
 `
 
 const TypeFilterWrapper = styled(Card)`
