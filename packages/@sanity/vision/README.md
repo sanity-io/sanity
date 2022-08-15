@@ -31,3 +31,27 @@ export default createConfig({
   ],
 })
 ```
+
+### Only enabling it for development
+
+If you only want the tool available in development (eg not in deployed studios), you can import and use the `isDev` constant from the `sanity` package:
+
+```ts
+// `sanity.config.ts` / `sanity.config.js`:
+import {createConfig, isDev} from 'sanity'
+import {vision} from '@sanity/vision'
+
+const devOnlyPlugins = [vision()]
+
+export default createConfig({
+  // ...
+  plugins: [
+    // ... your other plugins here ...
+    ...(isDev ? devOnlyPlugins : []),
+  ],
+})
+```
+
+## License
+
+MIT-licensed. See LICENSE.
