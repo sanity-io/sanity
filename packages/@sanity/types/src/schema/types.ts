@@ -156,7 +156,7 @@ export namespace Schema {
   export interface ArrayOptions<TValue = unknown> {
     sortable?: boolean
     layout?: 'tags' | 'grid'
-    list?: Array<{title: string; value: TValue}>
+    list?: Array<{title: string; value: TValue} | string>
     modal?: {type?: 'dialog' | 'popover'; width?: number | 'auto'}
   }
 
