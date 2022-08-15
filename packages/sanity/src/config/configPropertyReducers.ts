@@ -18,6 +18,8 @@ import type {
   NewDocumentOptionsContext,
   ResolveProductionUrlContext,
   Tool,
+  _DocumentLanguageFilterComponent,
+  _DocumentLanguageFilterContext,
 } from './types'
 
 export const initialDocumentBadges = [LiveEditBadge]
@@ -29,6 +31,8 @@ export const initialDocumentActions = [
   DuplicateAction,
   DeleteAction,
 ]
+
+export const initialLanguageFilter: _DocumentLanguageFilterComponent[] = []
 
 export const schemaTypesReducer: ConfigPropertyReducer<
   Schema.TypeDefinition[],
@@ -159,5 +163,26 @@ export const imageAssetSourceResolver: ConfigPropertyReducer<AssetSource[], Conf
 
   throw new Error(
     `Expected \`image.assetSources\` to an array or a function but found ${typeof assetSources} instead.`
+  )
+}
+
+/**
+ * @internal
+ */
+export const _documentLanguageFilterReducer: ConfigPropertyReducer<
+  _DocumentLanguageFilterComponent[],
+  _DocumentLanguageFilterContext
+> = (prev, {document}, context) => {
+  const resolveDocumentLanguageFilter = document?.unstable_languageFilter
+  if (!resolveDocumentLanguageFilter) return prev
+
+  if (typeof resolveDocumentLanguageFilter === 'function')
+    return resolveDocumentLanguageFilter(prev, context)
+
+  if (Array.isArray(resolveDocumentLanguageFilter))
+    return [...prev, ...resolveDocumentLanguageFilter]
+
+  throw new Error(
+    `Expected \`document.actions\` to an array or a function but found ${typeof resolveDocumentLanguageFilter} instead.`
   )
 }
