@@ -7,7 +7,8 @@
     "declarationDir": "./lib/dts/",
     "rootDir": "./",
     "outDir": "./lib/dts/",
-    "jsx": "react"
+    "jsx": "react",
+    "target": "ES2019"
   },
   "references": [
     {"path": "../block-tools/tsconfig.lib.json"},
