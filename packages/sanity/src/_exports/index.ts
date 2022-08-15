@@ -13,6 +13,9 @@ export type {
 export * from '../components/DefaultDocument'
 
 export type {
+  _DocumentLanguageFilterComponent,
+  _DocumentLanguageFilterContext,
+  _DocumentLanguageFilterResolver,
   AssetSourceResolver,
   AsyncComposableOption,
   ComposableOption,

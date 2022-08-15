@@ -47,7 +47,11 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   const client = useClient()
   const schema = useSchema()
   const templates = useTemplates()
-  const {actions: documentActions, badges: documentBadges} = useSource().document
+  const {
+    actions: documentActions,
+    badges: documentBadges,
+    unstable_languageFilter: languageFilterResolver,
+  } = useSource().document
   const historyStore = useHistoryStore()
   const presenceStore = usePresenceStore()
   const paneRouter = usePaneRouter()
@@ -84,14 +88,25 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   const connectionState = useConnectionState(documentId, documentType)
   const schemaType = schema.get(documentType) as ObjectSchemaType | undefined
   const value: SanityDocumentLike = editState?.draft || editState?.published || initialValue.value
+
+  // Resolve document actions
   const actions = useMemo(
     () => documentActions({schemaType: documentType, documentId}),
     [documentActions, documentId, documentType]
   )
+
+  // Resolve document badges
   const badges = useMemo(
     () => documentBadges({schemaType: documentType, documentId}),
     [documentBadges, documentId, documentType]
   )
+
+  // Resolve document language filter
+  const languageFilter = useMemo(
+    () => languageFilterResolver({schemaType: documentType, documentId}),
+    [documentId, documentType, languageFilterResolver]
+  )
+
   const validation = useUnique(validationRaw)
   const views = useUnique(viewsProp)
   const params = paneRouter.params || emptyObject
@@ -355,6 +370,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     value,
     views,
     formState,
+    unstable_languageFilter: languageFilter,
   }
 
   useEffect(() => {

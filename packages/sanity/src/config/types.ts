@@ -6,11 +6,12 @@ import type {
   CurrentUser,
   SanityDocumentLike,
   SchemaTypeDefinition,
+  ObjectSchemaType,
 } from '@sanity/types'
 import type React from 'react'
 import type {Observable} from 'rxjs'
 import type {BifurClient} from '@sanity/bifur-client'
-import {ReactNode} from 'react'
+import {ComponentType, ReactNode} from 'react'
 import type {
   FormBuilderArrayFunctionComponent,
   FormBuilderCustomMarkersComponent,
@@ -62,12 +63,12 @@ export interface SanityFormConfig {
   }
   components?: Record<
     string,
-    | React.ComponentType<InputProps>
+    | ComponentType<InputProps>
     | {
-        input?: React.ComponentType<InputProps>
-        field?: React.ComponentType<FieldProps>
-        item?: React.ComponentType<ItemProps>
-        preview?: React.ComponentType<PreviewProps>
+        input?: ComponentType<InputProps>
+        field?: ComponentType<FieldProps>
+        item?: ComponentType<ItemProps>
+        preview?: ComponentType<PreviewProps>
       }
   >
   file?: {
@@ -98,8 +99,8 @@ export interface FormBuilderComponentResolverContext extends ConfigContext {
  * @alpha
  */
 export interface Tool<Options = any> {
-  component: React.ComponentType<{tool: Tool<Options>}>
-  icon?: React.ComponentType
+  component: ComponentType<{tool: Tool<Options>}>
+  icon?: ComponentType
   name: string
   options?: Options
   router?: Router
@@ -157,8 +158,30 @@ export interface DocumentPluginOptions {
   badges?: DocumentBadgeComponent[] | DocumentBadgesResolver
   actions?: DocumentActionComponent[] | DocumentActionsResolver
   productionUrl?: AsyncComposableOption<string | undefined, ResolveProductionUrlContext>
+  unstable_languageFilter?: _DocumentLanguageFilterResolver
   newDocumentOptions?: NewDocumentOptionsResolver
 }
+
+/**
+ * @internal
+ */
+export interface _DocumentLanguageFilterContext extends ConfigContext {
+  documentId?: string
+  schemaType: string
+}
+
+/**
+ * @internal
+ */
+export type _DocumentLanguageFilterComponent = ComponentType<{schemaType: ObjectSchemaType}>
+
+/**
+ * @internal
+ */
+export type _DocumentLanguageFilterResolver = ComposableOption<
+  _DocumentLanguageFilterComponent[],
+  _DocumentLanguageFilterContext
+>
 
 export type DocumentActionsResolver = ComposableOption<
   DocumentActionComponent[],
@@ -198,11 +221,11 @@ export type Plugin<TOptions = void> = (options: TOptions) => PluginOptions
 export interface WorkspaceOptions extends SourceOptions {
   basePath: string
   subtitle?: string
-  logo?: React.ComponentType
-  icon?: React.ComponentType
+  logo?: ComponentType
+  icon?: ComponentType
   navbar?: {
     components?: {
-      ToolMenu: React.ComponentType<ToolMenuProps>
+      ToolMenu: ComponentType<ToolMenuProps>
     }
   }
   theme?: StudioTheme
@@ -268,6 +291,9 @@ export interface Source {
       context: PartialContext<ResolveProductionUrlContext>
     ) => Promise<string | undefined>
     resolveNewDocumentOptions: (context: NewDocumentCreationContext) => InitialValueTemplateItem[]
+    unstable_languageFilter: (
+      props: PartialContext<_DocumentLanguageFilterContext>
+    ) => _DocumentLanguageFilterComponent[]
   }
   form: {
     file: {
@@ -337,7 +363,7 @@ export interface Workspace extends Omit<Source, 'type'> {
   icon: React.ReactNode
   navbar?: {
     components?: {
-      ToolMenu?: React.ComponentType<ToolMenuProps>
+      ToolMenu?: ComponentType<ToolMenuProps>
     }
   }
   /**

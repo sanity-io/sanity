@@ -1,7 +1,7 @@
 import {ArrowLeftIcon, CloseIcon, SplitVerticalIcon} from '@sanity/icons'
 import {Button, Inline} from '@sanity/ui'
 import {negate} from 'lodash'
-import React, {memo, forwardRef, useMemo} from 'react'
+import React, {createElement, memo, forwardRef, useMemo} from 'react'
 import {PaneMenuItem} from '../../../../types'
 import {PaneHeader, PaneContextMenuButton, usePaneRouter} from '../../../../components'
 import {TimelineMenu} from '../../timeline'
@@ -23,7 +23,6 @@ const isMenuButton = negate(isActionButton)
 export const DocumentPanelHeader = memo(
   forwardRef(({rootElement}: DocumentPanelHeaderProps, ref: React.ForwardedRef<HTMLDivElement>) => {
     const {
-      // documentSchema,
       onMenuAction,
       onPaneClose,
       onPaneSplit,
@@ -31,8 +30,10 @@ export const DocumentPanelHeader = memo(
       validation,
       menuItems,
       menuItemGroups,
+      schemaType,
       ready,
       views,
+      unstable_languageFilter,
     } = useDocumentPane()
     const {revTime: rev} = historyController
     const {features} = useDeskTool()
@@ -75,12 +76,17 @@ export const DocumentPanelHeader = memo(
         subActions={showVersionMenu && <TimelineMenu chunk={rev} mode="rev" />}
         actions={
           <Inline space={1}>
-            {/* TODO */}
-            {/* {components?.LanguageFilter &&
-              createElement(components.LanguageFilter, {
-                key: 'language-menu',
-                schemaType: documentSchema,
-              })} */}
+            {unstable_languageFilter.length > 0 && (
+              <>
+                {unstable_languageFilter.map((languageFilterComponent, idx) => {
+                  return createElement(languageFilterComponent, {
+                    // eslint-disable-next-line react/no-array-index-key
+                    key: `language-filter-${idx}`,
+                    schemaType,
+                  })
+                })}
+              </>
+            )}
 
             {validation.length > 0 && (
               <ValidationMenu

@@ -23,17 +23,19 @@ import {
   WorkspaceOptions,
 } from './types'
 import {
-  schemaTypesReducer,
-  resolveProductionUrlReducer,
-  toolsReducer,
-  schemaTemplatesReducer,
+  _documentLanguageFilterReducer,
   documentActionsReducer,
-  initialDocumentActions,
-  initialDocumentBadges,
   documentBadgesReducer,
-  newDocumentOptionsResolver,
   fileAssetSourceResolver,
   imageAssetSourceResolver,
+  initialDocumentActions,
+  initialDocumentBadges,
+  initialLanguageFilter,
+  newDocumentOptionsResolver,
+  resolveProductionUrlReducer,
+  schemaTemplatesReducer,
+  schemaTypesReducer,
+  toolsReducer,
 } from './configPropertyReducers'
 import {resolveConfigProperty} from './resolveConfigProperty'
 import {ConfigResolutionError} from './ConfigResolutionError'
@@ -401,6 +403,14 @@ function resolveSource({
           asyncReducer: resolveProductionUrlReducer,
         }),
       resolveNewDocumentOptions,
+      unstable_languageFilter: (partialContext) =>
+        resolveConfigProperty({
+          config,
+          context: {...context, ...partialContext},
+          initialValue: initialLanguageFilter,
+          propertyName: 'document.unstable_languageFilter',
+          reducer: _documentLanguageFilterReducer,
+        }),
     },
     form: {
       renderField: _createRenderField(config),

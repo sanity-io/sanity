@@ -6,6 +6,7 @@ import {
   SanityDocumentLike,
 } from '@sanity/types'
 import {createContext} from 'react'
+import {_DocumentLanguageFilterComponent} from '../../../config'
 import {EditStateFor, TimelineController, Timeline} from '../../../datastores'
 import {PatchEvent, StateTree} from '../../../form'
 import {DocumentActionComponent} from '../../actions'
@@ -63,6 +64,7 @@ export interface DocumentPaneContextValue {
   value: SanityDocumentLike
   views: PaneView[]
   formState: DocumentFormNode | null
+  unstable_languageFilter: _DocumentLanguageFilterComponent[]
 }
 
 export const DocumentPaneContext = createContext<DocumentPaneContextValue | null>(null)
