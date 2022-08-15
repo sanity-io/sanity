@@ -56,6 +56,7 @@ export function SearchHeader({onClose, setHeaderInputRef}: SearchHeaderProps) {
           paddingY={onClose ? 2 : 1}
         >
           <CustomTextInput
+            autoComplete="off"
             border={false}
             clearButton={!!terms.query}
             fontSize={2}
@@ -65,6 +66,7 @@ export function SearchHeader({onClose, setHeaderInputRef}: SearchHeaderProps) {
             placeholder="Search"
             ref={setHeaderInputRef}
             smallClearButton
+            spellCheck={false}
             value={terms.query}
           />
         </Box>
@@ -73,6 +75,9 @@ export function SearchHeader({onClose, setHeaderInputRef}: SearchHeaderProps) {
         <Card borderLeft={!!onClose} padding={onClose ? 2 : 1}>
           <Box style={{position: 'relative'}}>
             <Button
+              aria-controls="search-type-filters"
+              aria-expanded={filtersVisible}
+              aria-label="Filter"
               height="fill"
               icon={ControlsIcon}
               mode="bleed"

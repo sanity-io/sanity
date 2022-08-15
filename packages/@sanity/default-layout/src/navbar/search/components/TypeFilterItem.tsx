@@ -39,6 +39,7 @@ export function TypeFilterItem({index, selected, small, type}: TypeFilterItemPro
 
   return (
     <CommandListItemButton
+      aria-checked={selected}
       data-index={index}
       fontSize={small ? 1 : 2}
       iconRight={selected && CheckmarkIcon}

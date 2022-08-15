@@ -1,9 +1,7 @@
 // @todo: remove the following line when part imports has been removed from this file
 ///<reference types="@sanity/types/parts" />
 
-import {TextWithTone} from '@sanity/base/components'
-import {WarningOutlineIcon} from '@sanity/icons'
-import {Box, Flex} from '@sanity/ui'
+import {Box} from '@sanity/ui'
 import {getPublishedId} from 'part:@sanity/base/util/draft-utils'
 import React, {Dispatch, SetStateAction, useCallback, useEffect, useRef} from 'react'
 import {useVirtual} from 'react-virtual'
@@ -18,6 +16,7 @@ import {useCommandList} from '../contexts/commandList'
 import {useSearchState} from '../contexts/search'
 import {NoResults} from './NoResults'
 import {PointerOverlay} from './PointerOverlay'
+import {SearchError} from './SearchError'
 import {SearchResultItem} from './searchResultItem'
 
 interface SearchResultsProps {
@@ -100,23 +99,11 @@ export function SearchResults({
   }, [scrollToIndex, result.loaded, terms.query])
 
   return (
-    <SearchResultsWrapper $loading={result.loading}>
+    <SearchResultsWrapper aria-busy={result.loading} $loading={result.loading}>
       <PointerOverlay ref={setPointerOverlayRef} />
 
       {result.error ? (
-        <Flex align="center" direction="column" gap={3} marginY={2} padding={4}>
-          <Box marginBottom={1}>
-            <TextWithTone tone="critical">
-              <WarningOutlineIcon />
-            </TextWithTone>
-          </Box>
-          <TextWithTone size={2} tone="critical" weight="semibold">
-            Something went wrong while searching
-          </TextWithTone>
-          <TextWithTone size={1} tone="critical">
-            Please try again or check your connection
-          </TextWithTone>
-        </Flex>
+        <SearchError />
       ) : (
         <>
           {!!result.hits.length && (

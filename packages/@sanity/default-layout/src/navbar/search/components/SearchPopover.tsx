@@ -42,11 +42,14 @@ export function SearchPopover({onClose, initialSearchIndex, position}: SearchPop
       <Overlay style={{zIndex}} />
 
       <CommandListProvider
+        ariaChildrenLabel={hasValidTerms ? 'Search results' : 'Recent searches'}
+        ariaHeaderLabel="Search results"
         autoFocus
         childContainerElement={childContainerElement}
         childCount={hasValidTerms ? result.hits.length : recentSearches.length}
         containerElement={containerElement}
         headerInputElement={headerInputElement}
+        id="search-results-popover"
         initialIndex={initialSearchIndex}
         pointerOverlayElement={pointerOverlayElement}
         wraparound={!hasValidTerms}
