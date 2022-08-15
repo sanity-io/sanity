@@ -47,6 +47,7 @@ import gallery from './debug/gallery'
 import {hoistedPt, hoistedPtDocument, customBlock} from './debug/hoistedPt'
 import {initialValuesTest, superlatives} from './debug/initialValuesTest'
 import invalidPreviews from './debug/invalidPreviews'
+import {languageFilterDebugType} from './debug/languageFilter'
 import liveEdit from './debug/liveEdit'
 import localeString from './debug/localeString'
 import notitle from './debug/notitle'
@@ -167,6 +168,7 @@ export const schemaTypes = [
   collapsibleObjects,
   initialValuesTest,
   invalidPreviews,
+  languageFilterDebugType,
   liveEdit,
   localeString,
   markdown,

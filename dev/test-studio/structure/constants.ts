@@ -36,6 +36,7 @@ export const PLUGIN_INPUT_TYPES = [
 ]
 
 export const DEBUG_INPUT_TYPES = [
+  'languageFilterDebug',
   'actionsTest',
   'simpleArrayOfObjects',
   'formInputDebug',
