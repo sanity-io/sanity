@@ -1,6 +1,6 @@
 import {hues} from '@sanity/color'
 import {Box, Card, Flex, Theme, useClickOutside, useLayer} from '@sanity/ui'
-import React, {useRef} from 'react'
+import React, {useState} from 'react'
 import styled, {css} from 'styled-components'
 import {POPOVER_INPUT_PADDING, POPOVER_MAX_HEIGHT, POPOVER_MAX_WIDTH} from '../constants'
 import {CommandListProvider} from '../contexts/commandList'
@@ -22,10 +22,10 @@ export interface SearchPopoverProps {
 }
 
 export function SearchPopover({onClose, initialSearchIndex, position}: SearchPopoverProps) {
-  const childContainerRef = useRef<HTMLDivElement>(null)
-  const containerRef = useRef<HTMLDivElement>(null)
-  const headerInputRef = useRef<HTMLInputElement>(null)
-  const pointerOverlayRef = useRef<HTMLDivElement>(null)
+  const [childContainerElement, setChildContainerRef] = useState<HTMLDivElement | null>(null)
+  const [containerElement, setContainerRef] = useState<HTMLDivElement | null>(null)
+  const [headerInputElement, setHeaderInputRef] = useState<HTMLInputElement | null>(null)
+  const [pointerOverlayElement, setPointerOverlayRef] = useState<HTMLDivElement | null>(null)
 
   const {zIndex} = useLayer()
 
@@ -35,19 +35,20 @@ export function SearchPopover({onClose, initialSearchIndex, position}: SearchPop
 
   const hasValidTerms = hasSearchableTerms(terms)
 
-  useClickOutside(onClose, [containerRef.current])
+  useClickOutside(onClose, [containerElement])
 
   return (
     <>
       <Overlay style={{zIndex}} />
 
       <CommandListProvider
-        childContainerRef={childContainerRef}
+        autoFocus
+        childContainerElement={childContainerElement}
         childCount={hasValidTerms ? result.hits.length : recentSearches.length}
-        containerRef={containerRef}
-        headerInputRef={headerInputRef}
+        containerElement={containerElement}
+        headerInputElement={headerInputElement}
         initialIndex={initialSearchIndex}
-        pointerOverlayRef={pointerOverlayRef}
+        pointerOverlayElement={pointerOverlayElement}
         wraparound={!hasValidTerms}
         virtualList
       >
@@ -55,12 +56,12 @@ export function SearchPopover({onClose, initialSearchIndex, position}: SearchPop
           $position={position}
           overflow="hidden"
           radius={2}
-          ref={containerRef}
+          ref={setContainerRef}
           scheme="light"
           shadow={2}
           style={{zIndex}}
         >
-          <SearchHeader inputRef={headerInputRef} />
+          <SearchHeader setHeaderInputRef={setHeaderInputRef} />
 
           {/* Reverse flex direction is used ensure filters are focusable before recent searches */}
           <Flex align="stretch" direction="row-reverse">
@@ -68,15 +69,15 @@ export function SearchPopover({onClose, initialSearchIndex, position}: SearchPop
             <SearchContentWrapper flex={1}>
               {hasValidTerms ? (
                 <SearchResults
-                  childContainerRef={childContainerRef}
-                  onClose={onClose}
-                  pointerOverlayRef={pointerOverlayRef}
                   initialSearchIndex={initialSearchIndex}
+                  onClose={onClose}
+                  setChildContainerRef={setChildContainerRef}
+                  setPointerOverlayRef={setPointerOverlayRef}
                 />
               ) : (
                 <RecentSearches
-                  childContainerRef={childContainerRef}
-                  pointerOverlayRef={pointerOverlayRef}
+                  setChildContainerRef={setChildContainerRef}
+                  setPointerOverlayRef={setPointerOverlayRef}
                   showFiltersOnClick
                 />
               )}

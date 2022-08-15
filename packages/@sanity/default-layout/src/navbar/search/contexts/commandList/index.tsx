@@ -3,7 +3,6 @@ import React, {
   createContext,
   MouseEvent,
   ReactNode,
-  RefObject,
   useCallback,
   useContext,
   useEffect,
@@ -42,13 +41,14 @@ interface CommandListContextValue {
 const CommandListContext = createContext<CommandListContextValue | undefined>(undefined)
 
 interface CommandListProviderProps {
+  autoFocus?: boolean
   children?: ReactNode
-  childContainerRef: RefObject<HTMLDivElement>
+  childContainerElement: HTMLDivElement
   childCount: number
-  containerRef: RefObject<HTMLDivElement>
-  headerInputRef: RefObject<HTMLInputElement>
+  containerElement: HTMLDivElement
+  headerInputElement: HTMLInputElement
   initialIndex?: number
-  pointerOverlayRef: RefObject<HTMLDivElement>
+  pointerOverlayElement: HTMLDivElement
   virtualList?: boolean
   wraparound?: boolean
 }
@@ -57,13 +57,14 @@ interface CommandListProviderProps {
  * @internal
  */
 export function CommandListProvider({
+  autoFocus,
   children,
-  childContainerRef,
+  childContainerElement,
   childCount,
-  containerRef,
+  containerElement,
   initialIndex = 0,
-  headerInputRef,
-  pointerOverlayRef,
+  headerInputElement,
+  pointerOverlayElement,
   virtualList,
   wraparound = true,
 }: CommandListProviderProps) {
@@ -71,12 +72,9 @@ export function CommandListProvider({
   const selectedIndexRef = useRef<number>(null)
 
   const enableChildContainerPointerEvents = useCallback(
-    (enabled: boolean) => {
-      if (pointerOverlayRef?.current) {
-        pointerOverlayRef.current.setAttribute('data-enabled', (!enabled).toString())
-      }
-    },
-    [pointerOverlayRef]
+    (enabled: boolean) =>
+      pointerOverlayElement?.setAttribute('data-enabled', (!enabled).toString()),
+    [pointerOverlayElement]
   )
 
   /**
@@ -84,7 +82,7 @@ export function CommandListProvider({
    */
   const handleAssignSelectedState = useCallback(
     (scrollSelectedIntoView?: boolean) => {
-      const childElements = Array.from(childContainerRef?.current?.children || []) as HTMLElement[]
+      const childElements = Array.from(childContainerElement?.children || []) as HTMLElement[]
       childElements?.forEach((child) => {
         child.setAttribute('tabIndex', '-1')
         if (Number(child.dataset.index) === selectedIndexRef.current) {
@@ -97,7 +95,7 @@ export function CommandListProvider({
         }
       })
     },
-    [childContainerRef]
+    [childContainerElement]
   )
 
   const handleReassignSelectedStateThrottled = useMemo(
@@ -127,8 +125,8 @@ export function CommandListProvider({
    * Always focus header input on child item click
    */
   const handleChildClick = useCallback(() => {
-    headerInputRef.current?.focus()
-  }, [headerInputRef])
+    headerInputElement?.focus()
+  }, [headerInputElement])
 
   /**
    * Mark hovered child item as active
@@ -176,10 +174,8 @@ export function CommandListProvider({
    * Listen to keyboard events on header input element
    */
   useEffect(() => {
-    const headerInputElement = headerInputRef?.current
-
     function handleKeyDown(event: KeyboardEvent) {
-      const childElements = Array.from(childContainerRef?.current?.children || []) as HTMLElement[]
+      const childElements = Array.from(childContainerElement?.children || []) as HTMLElement[]
 
       if (!childElements.length) {
         return
@@ -242,10 +238,10 @@ export function CommandListProvider({
       headerInputElement?.removeEventListener('keydown', handleKeyDown)
     }
   }, [
-    childContainerRef,
+    childContainerElement,
     childCount,
     enableChildContainerPointerEvents,
-    headerInputRef,
+    headerInputElement,
     setActiveIndex,
     virtualList,
     wraparound,
@@ -261,18 +257,17 @@ export function CommandListProvider({
    * @see withCommandListItemStyles
    */
   useEffect(() => {
-    function handleMarkChildenAsFocused(focused: boolean) {
-      return () => containerRef?.current?.setAttribute('data-focused', focused.toString())
+    function handleMarkContainerAsFocused(focused: boolean) {
+      return () => containerElement?.setAttribute('data-focused', focused.toString())
     }
 
-    const inputElement = headerInputRef?.current
-    inputElement?.addEventListener('blur', handleMarkChildenAsFocused(false))
-    inputElement?.addEventListener('focus', handleMarkChildenAsFocused(true))
+    headerInputElement?.addEventListener('blur', handleMarkContainerAsFocused(false))
+    headerInputElement?.addEventListener('focus', handleMarkContainerAsFocused(true))
     return () => {
-      inputElement?.removeEventListener('blur', handleMarkChildenAsFocused(false))
-      inputElement?.removeEventListener('focus', handleMarkChildenAsFocused(true))
+      headerInputElement?.removeEventListener('blur', handleMarkContainerAsFocused(false))
+      headerInputElement?.removeEventListener('focus', handleMarkContainerAsFocused(true))
     }
-  }, [containerRef, headerInputRef])
+  }, [containerElement, headerInputElement])
 
   /**
    * Track mouse enter / leave state on child container and store state in `data-hovered` attribute on
@@ -285,17 +280,16 @@ export function CommandListProvider({
    */
   useEffect(() => {
     function handleMarkChildrenAsHovered(hovered: boolean) {
-      return () => containerRef?.current?.setAttribute('data-hovered', hovered.toString())
+      return () => containerElement?.setAttribute('data-hovered', hovered.toString())
     }
 
-    const childContainerElement = childContainerRef?.current
     childContainerElement?.addEventListener('mouseenter', handleMarkChildrenAsHovered(true))
     childContainerElement?.addEventListener('mouseleave', handleMarkChildrenAsHovered(false))
     return () => {
       childContainerElement?.removeEventListener('mouseenter', handleMarkChildrenAsHovered(true))
       childContainerElement?.removeEventListener('mouseleave', handleMarkChildrenAsHovered(false))
     }
-  }, [childContainerRef, containerRef])
+  }, [childContainerElement, containerElement])
 
   /**
    * If this is a virtual list - re-assign aria-selected state on all child elements on any DOM mutations.
@@ -307,8 +301,6 @@ export function CommandListProvider({
     if (!virtualList) {
       return undefined
     }
-
-    const childContainerElement = childContainerRef?.current
 
     const mutationObserver = new MutationObserver(handleReassignSelectedStateThrottled)
 
@@ -322,7 +314,16 @@ export function CommandListProvider({
     return () => {
       mutationObserver.disconnect()
     }
-  }, [childContainerRef, childCount, handleReassignSelectedStateThrottled, virtualList])
+  }, [childContainerElement, childCount, handleReassignSelectedStateThrottled, virtualList])
+
+  /**
+   * Focus header input on mount
+   */
+  useEffect(() => {
+    if (autoFocus) {
+      headerInputElement?.focus()
+    }
+  }, [autoFocus, headerInputElement])
 
   return (
     <CommandListContext.Provider

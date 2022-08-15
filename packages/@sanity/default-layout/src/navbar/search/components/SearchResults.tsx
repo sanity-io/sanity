@@ -5,7 +5,7 @@ import {TextWithTone} from '@sanity/base/components'
 import {WarningOutlineIcon} from '@sanity/icons'
 import {Box, Flex} from '@sanity/ui'
 import {getPublishedId} from 'part:@sanity/base/util/draft-utils'
-import React, {RefObject, useCallback, useEffect, useRef} from 'react'
+import React, {Dispatch, SetStateAction, useCallback, useEffect, useRef} from 'react'
 import {useVirtual} from 'react-virtual'
 import styled from 'styled-components'
 import {
@@ -21,17 +21,17 @@ import {PointerOverlay} from './PointerOverlay'
 import {SearchResultItem} from './searchResultItem'
 
 interface SearchResultsProps {
-  childContainerRef: RefObject<HTMLDivElement>
   initialSearchIndex?: number
   onClose: () => void
-  pointerOverlayRef: RefObject<HTMLDivElement>
+  setChildContainerRef: Dispatch<SetStateAction<HTMLDivElement>>
+  setPointerOverlayRef: Dispatch<SetStateAction<HTMLDivElement>>
 }
 
 export function SearchResults({
-  childContainerRef,
-  onClose,
-  pointerOverlayRef,
   initialSearchIndex,
+  onClose,
+  setChildContainerRef,
+  setPointerOverlayRef,
 }: SearchResultsProps) {
   const {
     dispatch,
@@ -101,7 +101,7 @@ export function SearchResults({
 
   return (
     <SearchResultsWrapper $loading={result.loading}>
-      <PointerOverlay ref={pointerOverlayRef} />
+      <PointerOverlay ref={setPointerOverlayRef} />
 
       {result.error ? (
         <Flex align="center" direction="column" gap={3} marginY={2} padding={4}>
@@ -126,7 +126,7 @@ export function SearchResults({
                 $height={totalSize}
                 data-ui={VIRTUAL_LIST_CHILDREN_UI_NAME}
                 paddingBottom={1}
-                ref={childContainerRef}
+                ref={setChildContainerRef}
               >
                 {virtualItems.map((virtualRow) => {
                   const hit = result.hits[virtualRow.index]

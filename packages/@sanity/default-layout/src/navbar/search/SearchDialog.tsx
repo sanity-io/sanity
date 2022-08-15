@@ -1,5 +1,5 @@
 import {Box, Card, Dialog, Flex, Portal} from '@sanity/ui'
-import React, {useCallback, useEffect, useRef} from 'react'
+import React, {useCallback, useEffect, useRef, useState} from 'react'
 import FocusLock from 'react-focus-lock'
 import styled from 'styled-components'
 import {RecentSearches} from './components/RecentSearches'
@@ -19,10 +19,10 @@ interface SearchDialogProps {
 }
 
 export function SearchDialog({onClose, onOpen, open}: SearchDialogProps) {
-  const childContainerRef = useRef<HTMLDivElement>(null)
-  const containerRef = useRef<HTMLDivElement>(null)
-  const headerInputRef = useRef<HTMLInputElement>(null)
-  const pointerOverlayRef = useRef<HTMLDivElement>(null)
+  const [childContainerElement, setChildContainerRef] = useState<HTMLDivElement | null>(null)
+  const [containerElement, setContainerRef] = useState<HTMLDivElement | null>(null)
+  const [headerInputElement, setHeaderInputRef] = useState<HTMLInputElement | null>(null)
+  const [pointerOverlayElement, setPointerOverlayRef] = useState<HTMLDivElement | null>(null)
 
   const {
     state: {recentSearches, result, terms},
@@ -56,32 +56,33 @@ export function SearchDialog({onClose, onOpen, open}: SearchDialogProps) {
 
   return (
     <CommandListProvider
-      childContainerRef={childContainerRef}
+      autoFocus
+      childContainerElement={childContainerElement}
       childCount={hasValidTerms ? result.hits.length : recentSearches.length}
-      containerRef={containerRef}
-      headerInputRef={headerInputRef}
+      containerElement={containerElement}
+      headerInputElement={headerInputElement}
       initialIndex={savedSearchIndex}
-      pointerOverlayRef={pointerOverlayRef}
+      pointerOverlayElement={pointerOverlayElement}
       wraparound={!hasValidTerms}
       virtualList
     >
       <Portal>
-        <FocusLock returnFocus>
-          <SearchDialogContentWrapper ref={containerRef} scheme="light" tone="default">
+        <FocusLock autoFocus={false} returnFocus>
+          <SearchDialogContentWrapper ref={setContainerRef} scheme="light" tone="default">
             <Flex direction="column" height="fill">
-              <SearchHeader inputRef={headerInputRef} onClose={handleClose} />
+              <SearchHeader onClose={handleClose} setHeaderInputRef={setHeaderInputRef} />
               <SearchContent flex={1}>
                 {hasValidTerms ? (
                   <SearchResults
-                    childContainerRef={childContainerRef}
-                    onClose={handleClose}
-                    pointerOverlayRef={pointerOverlayRef}
                     initialSearchIndex={savedSearchIndex}
+                    onClose={handleClose}
+                    setChildContainerRef={setChildContainerRef}
+                    setPointerOverlayRef={setPointerOverlayRef}
                   />
                 ) : (
                   <RecentSearches
-                    childContainerRef={childContainerRef}
-                    pointerOverlayRef={pointerOverlayRef}
+                    setChildContainerRef={setChildContainerRef}
+                    setPointerOverlayRef={setPointerOverlayRef}
                   />
                 )}
               </SearchContent>
@@ -125,7 +126,7 @@ function SearchDialogFilters() {
   }
 
   return (
-    <FocusLock>
+    <FocusLock autoFocus={false}>
       <Dialog
         cardRadius={1}
         contentRef={dialogRef}
