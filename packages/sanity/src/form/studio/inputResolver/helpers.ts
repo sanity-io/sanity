@@ -8,6 +8,7 @@ export function getOption(type: SchemaType, optionName: string) {
 
 const PSEUDO_OBJECTS = ['array', 'file', 'image', 'reference']
 const HIDDEN_FIELDS = ['asset', 'crop', 'hotspot', '_ref', '_weak']
+const NO_LEVEL_LAYOUTS = ['tags']
 
 export function getObjectFieldLevel(field: ObjectFieldProps): number {
   const {type, fields, options} = field.schemaType
@@ -29,8 +30,9 @@ export function getArrayFieldLevel(field: ArrayFieldProps): number {
   const {options} = field.schemaType
 
   const hasListOptions = (options?.list || [])?.length > 0
+  const isNoLevelLayout = NO_LEVEL_LAYOUTS.includes(options?.layout || '')
 
-  if (hasListOptions) {
+  if (hasListOptions && !isNoLevelLayout) {
     return field.level
   }
 
