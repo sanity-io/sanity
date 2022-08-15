@@ -39,6 +39,10 @@ jspm_packages
 # macOS finder cache file
 .DS_Store
 
+# Intellij
+.idea
+*.iml
+
 # VS Code settings
 /.vscode
 
