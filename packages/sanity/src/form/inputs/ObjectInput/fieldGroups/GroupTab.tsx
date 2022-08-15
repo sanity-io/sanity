@@ -2,13 +2,14 @@ import React, {forwardRef} from 'react'
 import {Tab} from '@sanity/ui'
 
 interface GroupType {
-  name: string
-  title: string
-  onClick?: (value: string) => void
-  autoFocus?: boolean
-  selected: boolean
   'aria-controls': string
+  autoFocus?: boolean
   disabled?: boolean
+  icon?: React.ComponentType
+  name: string
+  onClick?: (value: string) => void
+  selected: boolean
+  title: string
 }
 
 export const GroupTab = forwardRef(function GroupTab(

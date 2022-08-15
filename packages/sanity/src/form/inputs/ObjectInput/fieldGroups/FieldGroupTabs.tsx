@@ -42,14 +42,15 @@ const GroupTabs = ({
       .map((group) => {
         return (
           <GroupTab
-            key={`${inputId}-${group.name}-tab`}
             aria-controls={`${inputId}-field-group-fields`}
-            onClick={onClick}
-            name={group.name}
-            title={group.title || group.name}
-            selected={Boolean(group.selected)}
             autoFocus={shouldAutoFocus && group.selected}
             disabled={disabled}
+            icon={group?.icon}
+            key={`${inputId}-${group.name}-tab`}
+            name={group.name}
+            onClick={onClick}
+            selected={Boolean(group.selected)}
+            title={group.title || group.name}
           />
         )
       })
