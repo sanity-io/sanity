@@ -16,6 +16,7 @@ import {VIRTUAL_LIST_OVERSCAN} from '../../constants'
  * - Keyboard navigation + events (↑ / ↓ / ENTER) to children with a specified container (`childContainerRef`)
  * - Focus redirection when clicking child elements
  * - Pointer blocking when navigating with arrow keys (to ensure that only one active state is visible at any given time)
+ * - ARIA attributes to define a `combobox` header input that controls a separate `listbox`
  *
  * Requirements:
  * - All child items must have `data-index` attributes defined with their index in the list. This is to help with
@@ -41,12 +42,16 @@ interface CommandListContextValue {
 const CommandListContext = createContext<CommandListContextValue | undefined>(undefined)
 
 interface CommandListProviderProps {
+  ariaChildrenLabel: string
+  ariaHeaderLabel: string
+  ariaMultiselectable?: boolean
   autoFocus?: boolean
   children?: ReactNode
   childContainerElement: HTMLDivElement
   childCount: number
   containerElement: HTMLDivElement
   headerInputElement: HTMLInputElement
+  id: string
   initialIndex?: number
   pointerOverlayElement: HTMLDivElement
   virtualList?: boolean
@@ -57,11 +62,15 @@ interface CommandListProviderProps {
  * @internal
  */
 export function CommandListProvider({
+  ariaChildrenLabel,
+  ariaHeaderLabel,
+  ariaMultiselectable = false,
   autoFocus,
   children,
   childContainerElement,
   childCount,
   containerElement,
+  id,
   initialIndex = 0,
   headerInputElement,
   pointerOverlayElement,
@@ -77,14 +86,34 @@ export function CommandListProvider({
     [pointerOverlayElement]
   )
 
+  const getChildDescendantId = useCallback(
+    (index: number) => {
+      return `${id}-item-${index}`
+    },
+    [id]
+  )
+
   /**
    * Assign selected state on all child elements.
    */
   const handleAssignSelectedState = useCallback(
     (scrollSelectedIntoView?: boolean) => {
+      headerInputElement?.setAttribute(
+        'aria-activedescendant',
+        getChildDescendantId(selectedIndexRef.current)
+      )
+
       const childElements = Array.from(childContainerElement?.children || []) as HTMLElement[]
       childElements?.forEach((child) => {
+        // Derive id from data-index attribute - especially relevant when dealing with virtual lists
+        const childIndex = Number(child.dataset?.index)
+
+        child.setAttribute('aria-posinset', (childIndex + 1).toString())
+        child.setAttribute('aria-setsize', childCount.toString())
+        child.setAttribute('id', getChildDescendantId(childIndex))
+        child.setAttribute('role', 'option')
         child.setAttribute('tabIndex', '-1')
+
         if (Number(child.dataset.index) === selectedIndexRef.current) {
           if (scrollSelectedIntoView) {
             child.scrollIntoView({block: 'nearest'})
@@ -95,7 +124,7 @@ export function CommandListProvider({
         }
       })
     },
-    [childContainerElement]
+    [childContainerElement, childCount, getChildDescendantId, headerInputElement]
   )
 
   const handleReassignSelectedStateThrottled = useMemo(
@@ -315,6 +344,29 @@ export function CommandListProvider({
       mutationObserver.disconnect()
     }
   }, [childContainerElement, childCount, handleReassignSelectedStateThrottled, virtualList])
+
+  /**
+   * Apply initial aria attributes
+   */
+  useEffect(() => {
+    headerInputElement?.setAttribute('aria-autocomplete', 'list')
+    headerInputElement?.setAttribute('aria-expanded', 'true')
+    headerInputElement?.setAttribute('aria-controls', `${id}-children`)
+    headerInputElement?.setAttribute('aria-label', ariaHeaderLabel)
+    headerInputElement?.setAttribute('role', 'combobox')
+
+    childContainerElement?.setAttribute('aria-multiselectable', ariaMultiselectable.toString())
+    childContainerElement?.setAttribute('aria-label', ariaChildrenLabel)
+    childContainerElement?.setAttribute('id', `${id}-children`)
+    childContainerElement?.setAttribute('role', 'listbox')
+  }, [
+    ariaChildrenLabel,
+    ariaHeaderLabel,
+    ariaMultiselectable,
+    childContainerElement,
+    headerInputElement,
+    id,
+  ])
 
   /**
    * Focus header input on mount

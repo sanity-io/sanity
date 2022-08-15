@@ -50,16 +50,21 @@ export function TypeFilters({small}: TypeFiltersProps) {
 
   return (
     <CommandListProvider
+      ariaChildrenLabel="Document types"
+      ariaHeaderLabel="Filter by document type"
+      ariaMultiselectable
       childContainerElement={childContainerElement}
       childCount={selectableDocumentTypes.length}
       containerElement={containerElement}
       headerInputElement={headerInputElement}
+      id="search-type-filters"
       pointerOverlayElement={pointerOverlayElement}
     >
       <TypeFiltersWrapper direction="column" ref={setContainerRef}>
         {/* Search header */}
         <SearchHeaderWrapper padding={padding}>
           <CustomTextInput
+            autoComplete="off"
             border={false}
             clearButton={!!typeFilter}
             fontSize={small ? 1 : 2}
@@ -70,6 +75,7 @@ export function TypeFilters({small}: TypeFiltersProps) {
             placeholder="Document type"
             ref={setHeaderInputRef}
             smallClearButton
+            spellCheck={false}
             radius={2}
             value={typeFilter}
           />
@@ -108,6 +114,7 @@ export function TypeFilters({small}: TypeFiltersProps) {
           <ClearButtonWrapper padding={padding}>
             <Stack>
               <Button
+                aria-label="Clear checked filters"
                 data-name="type-filter-button"
                 disabled={selectedTypes.length === 0}
                 fontSize={small ? 1 : 2}

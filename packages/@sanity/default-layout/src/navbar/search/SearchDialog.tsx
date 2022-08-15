@@ -56,11 +56,14 @@ export function SearchDialog({onClose, onOpen, open}: SearchDialogProps) {
 
   return (
     <CommandListProvider
+      ariaChildrenLabel={hasValidTerms ? 'Search results' : 'Recent searches'}
+      ariaHeaderLabel="Search"
       autoFocus
       childContainerElement={childContainerElement}
       childCount={hasValidTerms ? result.hits.length : recentSearches.length}
       containerElement={containerElement}
       headerInputElement={headerInputElement}
+      id="search-results-dialog"
       initialIndex={savedSearchIndex}
       pointerOverlayElement={pointerOverlayElement}
       wraparound={!hasValidTerms}

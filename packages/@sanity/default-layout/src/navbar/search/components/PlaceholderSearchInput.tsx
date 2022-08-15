@@ -36,6 +36,8 @@ export const PlaceholderSearchInput = forwardRef(function DummyInput(
     <PlaceholderSearchInputWrapper align="center">
       <Box flex={1} style={{position: 'relative'}}>
         <TextInput
+          aria-autocomplete="list"
+          aria-expanded="false"
           autoComplete="off"
           icon={SearchIcon}
           id="studio-search"
@@ -44,6 +46,7 @@ export const PlaceholderSearchInput = forwardRef(function DummyInput(
           onKeyDown={handleKeyDown}
           placeholder="Search"
           ref={ref}
+          role="combobox"
           style={{paddingRight: '60px'}}
           value={terms.query}
         />
