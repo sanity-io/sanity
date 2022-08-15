@@ -1,8 +1,10 @@
+import fs from 'fs'
 import path from 'path'
 import {babel} from '@rollup/plugin-babel'
 import commonjs from '@rollup/plugin-commonjs'
 import json from '@rollup/plugin-json'
 import {nodeResolve} from '@rollup/plugin-node-resolve'
+import {parse} from 'jsonc-parser'
 import {InputOptions, ModuleFormat, OutputOptions} from 'rollup'
 import typescript from 'rollup-plugin-typescript2'
 import {sanityMonorepoPlugin} from '../sanityMonorepoPlugin'
@@ -20,6 +22,10 @@ export function buildOptions(opts: {
   tsconfig: string
 }): {inputOptions: InputOptions; outputOptions: OutputOptions} {
   const {babelConfig, build, cwd, external, input, target, tsconfig} = opts
+
+  const tsconfigBuf = fs.readFileSync(tsconfig)
+  const tsconfigOptions = parse(tsconfigBuf.toString())
+  const tsconfigTarget = tsconfigOptions?.compilerOptions?.target
 
   // see below for details on the options
   const inputOptions: InputOptions = {
@@ -49,7 +55,7 @@ export function buildOptions(opts: {
         tsconfigOverride: {
           compilerOptions: {
             module: 'ESNext',
-            target: 'esnext',
+            target: tsconfigTarget || 'esnext',
           },
         },
         typescript: require('typescript'),
