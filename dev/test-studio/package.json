@@ -1,7 +1,7 @@
 {
   "name": "test-studio",
   "private": true,
-  "version": "2.30.5",
+  "version": "2.30.6",
   "description": "A Sanity Studio for development and testing.",
   "author": "Sanity.io <hello@sanity.io>",
   "license": "MIT",
@@ -20,7 +20,7 @@
   ],
   "dependencies": {
     "@sanity/base": "2.30.5",
-    "@sanity/cli": "2.30.5",
+    "@sanity/cli": "2.30.6",
     "@sanity/code-input": "2.30.5",
     "@sanity/color": "^2.1.8",
     "@sanity/color-input": "2.30.5",
