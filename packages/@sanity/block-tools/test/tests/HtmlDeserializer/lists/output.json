@@ -126,5 +126,27 @@
       }
     ],
     "style": "normal"
+  },
+  {
+    "_key": "randomKey8",
+    "_type": "block",
+    "children": [
+      {
+        "_key": "randomKey80",
+        "_type": "span",
+        "marks": [],
+        "text": "p in li. block children are still "
+      },
+      {
+        "_key": "randomKey81",
+        "_type": "span",
+        "marks": ["strong"],
+        "text": "processed."
+      }
+    ],
+    "level": 1,
+    "listItem": "bullet",
+    "markDefs": [],
+    "style": "normal"
   }
 ]
