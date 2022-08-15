@@ -20,7 +20,7 @@ export function GridList({heading, items = []}) {
       <Grid columns={2} gap={5}>
         {items.map((item) => (
           <Box key={item._id}>
-            {item?.image && (
+            {item?.image?.asset && (
               <Card radius={6} marginBottom={2} overflow="hidden">
                 <Image width="200" src={urlFor(item.image).width(200).height(200)} alt="" />
               </Card>
