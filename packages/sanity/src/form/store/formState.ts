@@ -5,6 +5,7 @@ import {
   ArraySchemaType,
   BooleanSchemaType,
   CurrentUser,
+  FieldGroup,
   isArrayOfObjectsSchemaType,
   isArraySchemaType,
   isObjectSchemaType,
@@ -39,7 +40,7 @@ import {FieldError} from './types/memberErrors'
 
 type PrimitiveSchemaType = BooleanSchemaType | NumberSchemaType | StringSchemaType
 
-const ALL_FIELDS_GROUP = {
+const ALL_FIELDS_GROUP: FieldGroup = {
   name: 'all-fields',
   title: 'All fields',
   hidden: false,
@@ -499,9 +500,10 @@ function prepareObjectInputState<T>(
       ? []
       : [
           {
+            icon: group?.icon,
             name: group.name,
-            title: group.title,
             selected,
+            title: group.title,
           },
         ]
   })
