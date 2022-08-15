@@ -9,6 +9,7 @@ import {CustomMarkers} from './components/formBuilder/CustomMarkers'
 import {Markers} from './components/formBuilder/Markers'
 import {resolveDocumentActions as documentActions} from './documentActions'
 import {resolveInitialValueTemplates} from './initialValueTemplates'
+import {languageFilter} from './plugins/language-filter'
 import {schemaTypes} from './schema'
 import {defaultDocumentNode, structure, newDocumentOptions} from './structure'
 import {workshopTool} from './workshop'
@@ -49,6 +50,18 @@ const sharedSettings = createPlugin({
       title: 'Content',
       structure,
       defaultDocumentNode,
+    }),
+    languageFilter({
+      defaultLanguages: ['nb'],
+      supportedLanguages: [
+        {id: 'ar', title: 'Arabic'},
+        {id: 'en', title: 'English'},
+        {id: 'nb', title: 'Norwegian (bokmål)'},
+        {id: 'nn', title: 'Norwegian (nynorsk)'},
+        {id: 'pt', title: 'Portuguese'},
+        {id: 'es', title: 'Spanish'},
+      ],
+      types: ['languageFilterDebug'],
     }),
     workshopTool({
       collections: [
