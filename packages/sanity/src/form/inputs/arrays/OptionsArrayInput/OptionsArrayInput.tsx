@@ -1,6 +1,5 @@
 import React from 'react'
-import {get} from 'lodash'
-import {isTitledListValue} from '@sanity/types'
+import {get, startCase} from 'lodash'
 import {Box, Checkbox, Flex, Text} from '@sanity/ui'
 import {resolveTypeName} from '@sanity/util/content'
 import {set, unset} from '../../../patch'
@@ -109,7 +108,7 @@ export class OptionsArrayInput extends React.PureComponent<OptionsArrayInputProp
             const optionType = this.getMemberTypeOfItem(option)
             const checked = inArray(value || [], resolveValueWithLegacyOptionsSupport(option))
             const disabled = !optionType
-            const isTitled = isTitledListValue(option)
+            const title = option?.title || startCase(option?.value) || option
 
             return (
               <Item index={index} isGrid={isGrid} key={index}>
@@ -124,9 +123,9 @@ export class OptionsArrayInput extends React.PureComponent<OptionsArrayInputProp
                   />
 
                   {optionType &&
-                    (isTitled ? (
+                    (title ? (
                       <Box padding={2}>
-                        <Text>{option.title}</Text>
+                        <Text>{title}</Text>
                       </Box>
                     ) : (
                       <Box marginLeft={2}>
