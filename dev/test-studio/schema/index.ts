@@ -89,6 +89,8 @@ import mux from './externalPlugins/mux'
 import author from './author'
 import book from './book'
 import species from './species'
+import playlist from './playlist'
+import playlistTrack from './playlistTrack'
 
 // CI documents
 import conditionalFieldset from './ci/conditionalFieldset'
@@ -179,6 +181,8 @@ export const schemaTypes = [
   // orderableCategoryDocumentType,
   // orderableTagDocumentType,
   manyEditors,
+  playlist,
+  playlistTrack,
   poppers,
   presence,
   previewImageUrlTest,
