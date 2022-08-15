@@ -111,7 +111,7 @@ export default function createHTMLRules(
           return undefined
         }
         // Don't add blocks into list items
-        if (el.parentNode && tagName(el) === 'li') {
+        if (el.parentNode && tagName(el.parentNode) === 'li') {
           return next(el.childNodes)
         }
         // If style is not supported, return a defaultBlockType
