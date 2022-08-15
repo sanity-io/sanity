@@ -1,7 +1,23 @@
 import {InputProps, RenderInputCallback} from '../../form'
 import {defaultRenderInput} from '../../form/studio/defaults'
-import {SourceOptions} from '../types'
+import {PluginOptions, SourceOptions} from '../types'
 import {_RenderMiddleware} from './_types'
+
+function _collectMiddleware(
+  middlewares: _RenderMiddleware<InputProps, RenderInputCallback>[],
+  plugins: PluginOptions[]
+) {
+  for (const plugin of plugins) {
+    // Recursive
+    if (plugin.plugins) {
+      _collectMiddleware(middlewares, plugin.plugins)
+    }
+
+    if (plugin.form?.renderInput) {
+      middlewares.push(plugin.form?.renderInput)
+    }
+  }
+}
 
 /**
  * @internal
@@ -11,11 +27,7 @@ export function _createRenderInput(config: SourceOptions): RenderInputCallback {
     const middlewares: _RenderMiddleware<InputProps, RenderInputCallback>[] = []
 
     if (config.plugins) {
-      for (const plugin of config.plugins) {
-        if (plugin.form?.renderInput) {
-          middlewares.push(plugin.form?.renderInput)
-        }
-      }
+      _collectMiddleware(middlewares, config.plugins)
     }
 
     if (config.form?.renderInput) {
