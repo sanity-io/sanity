@@ -5,7 +5,7 @@ import {hues} from '@sanity/color'
 import {SearchIcon} from '@sanity/icons'
 import {Box, Button, Flex, Stack, Text} from '@sanity/ui'
 import schema from 'part:@sanity/base/schema'
-import React, {useCallback, useMemo, useRef, useState} from 'react'
+import React, {useCallback, useMemo, useState} from 'react'
 import styled from 'styled-components'
 import {CommandListProvider} from '../contexts/commandList'
 import {useSearchState} from '../contexts/search'
@@ -19,12 +19,12 @@ interface TypeFiltersProps {
 }
 
 export function TypeFilters({small}: TypeFiltersProps) {
-  const childContainerRef = useRef<HTMLDivElement>(null)
-  const containerRef = useRef<HTMLDivElement>(null)
-  const inputRef = useRef<HTMLInputElement>(null)
-  const pointerOverlayRef = useRef<HTMLDivElement>(null)
-
+  const [childContainerElement, setChildContainerRef] = useState<HTMLDivElement | null>(null)
+  const [containerElement, setContainerRef] = useState<HTMLDivElement | null>(null)
+  const [headerInputElement, setHeaderInputRef] = useState<HTMLInputElement | null>(null)
+  const [pointerOverlayElement, setPointerOverlayRef] = useState<HTMLDivElement | null>(null)
   const [typeFilter, setTypeFilter] = useState('')
+
   const {
     dispatch,
     state: {
@@ -37,9 +37,9 @@ export function TypeFilters({small}: TypeFiltersProps) {
   ])
 
   const handleClearTypes = useCallback(() => {
-    inputRef?.current?.focus()
+    headerInputElement?.focus()
     dispatch({type: 'TERMS_TYPES_CLEAR'})
-  }, [dispatch])
+  }, [dispatch, headerInputElement])
   const handleFilterChange = useCallback(
     (e: React.KeyboardEvent<HTMLInputElement>) => setTypeFilter(e.currentTarget.value),
     [setTypeFilter]
@@ -50,13 +50,13 @@ export function TypeFilters({small}: TypeFiltersProps) {
 
   return (
     <CommandListProvider
-      childContainerRef={childContainerRef}
+      childContainerElement={childContainerElement}
       childCount={selectableDocumentTypes.length}
-      containerRef={containerRef}
-      headerInputRef={inputRef}
-      pointerOverlayRef={pointerOverlayRef}
+      containerElement={containerElement}
+      headerInputElement={headerInputElement}
+      pointerOverlayElement={pointerOverlayElement}
     >
-      <TypeFiltersWrapper direction="column" ref={containerRef}>
+      <TypeFiltersWrapper direction="column" ref={setContainerRef}>
         {/* Search header */}
         <SearchHeaderWrapper padding={padding}>
           <CustomTextInput
@@ -68,7 +68,7 @@ export function TypeFilters({small}: TypeFiltersProps) {
             onChange={handleFilterChange}
             onClear={handleFilterClear}
             placeholder="Document type"
-            ref={inputRef}
+            ref={setHeaderInputRef}
             smallClearButton
             radius={2}
             value={typeFilter}
@@ -77,10 +77,10 @@ export function TypeFilters({small}: TypeFiltersProps) {
 
         <TypeFiltersContent flex={1} padding={padding}>
           <TypeFiltersContentWrap>
-            <PointerOverlay ref={pointerOverlayRef} />
+            <PointerOverlay ref={setPointerOverlayRef} />
 
             {/* Selectable document types */}
-            <Stack ref={childContainerRef} space={1}>
+            <Stack ref={setChildContainerRef} space={1}>
               {selectableDocumentTypes.map((type, index) => (
                 <TypeFilterItem
                   index={index}

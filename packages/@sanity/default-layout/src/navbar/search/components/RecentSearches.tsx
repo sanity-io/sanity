@@ -1,6 +1,6 @@
 import type {SearchTerms} from '@sanity/base'
 import {Box, Button, Label, Stack, Text, useMediaIndex} from '@sanity/ui'
-import React, {MouseEvent, RefObject, useCallback, useMemo} from 'react'
+import React, {Dispatch, MouseEvent, SetStateAction, useCallback, useMemo} from 'react'
 import styled from 'styled-components'
 import {useSearchState} from '../contexts/search'
 import {Instructions} from './Instructions'
@@ -8,14 +8,14 @@ import {PointerOverlay} from './PointerOverlay'
 import {RecentSearchItem} from './RecentSearchItem'
 
 interface RecentSearchesProps {
-  childContainerRef: RefObject<HTMLDivElement>
-  pointerOverlayRef: RefObject<HTMLDivElement>
+  setChildContainerRef: Dispatch<SetStateAction<HTMLDivElement>>
+  setPointerOverlayRef: Dispatch<SetStateAction<HTMLDivElement>>
   showFiltersOnClick?: boolean
 }
 
 export function RecentSearches({
-  childContainerRef,
-  pointerOverlayRef,
+  setChildContainerRef,
+  setPointerOverlayRef,
   showFiltersOnClick,
 }: RecentSearchesProps) {
   const {
@@ -67,9 +67,9 @@ export function RecentSearches({
             </Label>
           </Box>
           <Box style={{position: 'relative'}}>
-            <PointerOverlay ref={pointerOverlayRef} />
+            <PointerOverlay ref={setPointerOverlayRef} />
 
-            <Stack paddingX={1} paddingTop={1} ref={childContainerRef} space={1}>
+            <Stack paddingX={1} paddingTop={1} ref={setChildContainerRef} space={1}>
               {recentSearches?.map((recentSearch, index) => (
                 <RecentSearchItem
                   data-index={index}

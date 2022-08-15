@@ -1,17 +1,17 @@
 import {hues, white} from '@sanity/color'
 import {CloseIcon, ControlsIcon, SearchIcon} from '@sanity/icons'
 import {Box, Button, Card, Flex, Spinner, studioTheme} from '@sanity/ui'
-import React, {RefObject, useCallback, useEffect, useRef} from 'react'
+import React, {Dispatch, SetStateAction, useCallback, useEffect, useRef} from 'react'
 import styled from 'styled-components'
 import {useSearchState} from '../contexts/search'
 import {CustomTextInput} from './CustomTextInput'
 
 interface SearchHeaderProps {
-  inputRef: RefObject<HTMLInputElement>
   onClose?: () => void
+  setHeaderInputRef: Dispatch<SetStateAction<HTMLInputElement>>
 }
 
-export function SearchHeader({inputRef, onClose}: SearchHeaderProps) {
+export function SearchHeader({onClose, setHeaderInputRef}: SearchHeaderProps) {
   const filterCloseButton = useRef<HTMLButtonElement>()
   const isMounted = useRef(false)
 
@@ -63,7 +63,7 @@ export function SearchHeader({inputRef, onClose}: SearchHeaderProps) {
             onChange={handleQueryChange}
             onClear={handleQueryClear}
             placeholder="Search"
-            ref={inputRef}
+            ref={setHeaderInputRef}
             smallClearButton
             value={terms.query}
           />
