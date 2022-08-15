@@ -1,6 +1,6 @@
 import React from 'react'
 import {ImageIcon, OlistIcon} from '@sanity/icons'
-import {defineType} from 'sanity'
+import {defineField, defineType} from 'sanity'
 
 export const topLevelArrayType = defineType({
   name: 'topLevelArrayType',
@@ -33,6 +33,17 @@ export const topLevelPrimitiveArrayType = defineType({
   ],
 })
 
+const predefinedStringArray = defineField({
+  name: 'predefinedStringArray',
+  title: 'Array of strings',
+  description: 'First field in object is string with list options',
+  type: 'array',
+  of: [{type: 'string'}],
+  options: {
+    list: [{title: 'Cats', value: 'cats4ever'}, {title: 'Dogs', value: 'dogs4ever'}, 'Horses'],
+  },
+})
+
 export default defineType({
   name: 'arraysTest',
   type: 'document',
@@ -50,19 +61,7 @@ export default defineType({
       type: 'array',
       of: [{type: 'reference', to: [{type: 'author'}]}],
     },
-    {
-      name: 'predefinedStringArray',
-      title: 'Array of strings',
-      description: 'First field in object is string with list options',
-      type: 'array',
-      of: [{type: 'string'}],
-      options: {
-        list: [
-          {title: 'Cats', value: 'cats4ever'},
-          {title: 'Dogs', value: 'dogs4ever'},
-        ],
-      },
-    },
+    predefinedStringArray,
     {
       name: 'objectArrayWithPrefinedStringField',
       title: 'Array of objects',
