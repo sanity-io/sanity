@@ -66,7 +66,7 @@ export function SearchDialog({onClose, onOpen, open}: SearchDialogProps) {
       virtualList
     >
       <Portal>
-        <FocusLock>
+        <FocusLock returnFocus>
           <SearchDialogContentWrapper ref={containerRef} scheme="light" tone="default">
             <Flex direction="column" height="fill">
               <SearchHeader inputRef={headerInputRef} onClose={handleClose} />

@@ -62,7 +62,7 @@ export function SearchField() {
       <PlaceholderSearchInput onOpen={handleOpen} ref={setPlaceholderElement} />
       {open && (
         <Portal>
-          <FocusLock>
+          <FocusLock returnFocus>
             <SearchPopover
               initialSearchIndex={savedSearchIndex}
               onClose={handleClose}
