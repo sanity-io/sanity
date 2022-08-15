@@ -16,6 +16,7 @@ export interface ArrayItemProps {
   children: React.ReactNode
   focused?: boolean
   changed: boolean
+  layout?: 'grid'
   index: number
   insertableTypes: SchemaType[]
   onClick: () => void
@@ -43,6 +44,7 @@ export const ArrayItem = memo(function ArrayItem(props: ArrayItemProps) {
     open,
     path,
     onClick,
+    layout,
     readOnly,
     presence = [],
     validation = [],
@@ -73,7 +75,7 @@ export const ArrayItem = memo(function ArrayItem(props: ArrayItemProps) {
   const options = schemaType.options || {}
   const isSortable = !readOnly && options.sortable !== false
 
-  const isGrid = schemaType.options?.layout === 'grid'
+  const isGrid = layout === 'grid'
   const ItemComponent = isGrid ? CellItem : RowItem
 
   const isReference = schemaType && isReferenceSchemaType(schemaType)
