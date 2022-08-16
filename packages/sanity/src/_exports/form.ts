@@ -113,3 +113,6 @@ export * from '../form/components/formField'
 export type {FormInputAbsolutePathArg, FormInputRelativePathArg} from '../form/FormInput'
 
 export * from '../form/types'
+
+export type {FormBuilderContextValue} from '../form/FormBuilderContext'
+export {useFormBuilder} from '../form/useFormBuilder'
