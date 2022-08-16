@@ -66,9 +66,8 @@ export function RecentSearches({
               Recent searches
             </Label>
           </Box>
-          <Box style={{position: 'relative'}}>
+          <RecentSearchesInner>
             <PointerOverlay ref={setPointerOverlayRef} />
-
             <Stack paddingX={1} paddingTop={1} ref={setChildContainerRef} space={1}>
               {recentSearches?.map((recentSearch, index) => (
                 <RecentSearchItem
@@ -83,7 +82,7 @@ export function RecentSearches({
                 />
               ))}
             </Stack>
-          </Box>
+          </RecentSearchesInner>
           <Box padding={1}>
             <Button
               justify="flex-start"
@@ -108,5 +107,9 @@ export function RecentSearches({
 }
 
 const RecentSearchesWrapper = styled(Box)`
+  position: relative;
+`
+
+const RecentSearchesInner = styled(Box)`
   position: relative;
 `

@@ -75,6 +75,7 @@ export function SearchResultItem({
       flex={1}
       onClick={handleWrapperClick}
       style={{
+        // Kept inline to prevent styled-components from generating loads of classes on virtual list scroll
         height: `${virtualRow.size}px`,
         transform: `translateY(${virtualRow.start}px)`,
       }}

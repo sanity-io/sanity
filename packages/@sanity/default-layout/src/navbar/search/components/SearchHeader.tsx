@@ -73,7 +73,7 @@ export function SearchHeader({onClose, setHeaderInputRef}: SearchHeaderProps) {
 
         {/* Filter toggle */}
         <Card borderLeft={!!onClose} padding={onClose ? 2 : 1}>
-          <Box style={{position: 'relative'}}>
+          <FilterButton>
             <Button
               aria-controls="search-type-filters"
               aria-expanded={filtersVisible}
@@ -88,7 +88,7 @@ export function SearchHeader({onClose, setHeaderInputRef}: SearchHeaderProps) {
               tone="default"
             />
             {terms.types.length > 0 && <NotificationBadge>{terms.types.length}</NotificationBadge>}
-          </Box>
+          </FilterButton>
         </Card>
 
         {/* (Fullscreen) Close button */}
@@ -107,6 +107,10 @@ const AlignedSpinner = styled(Spinner)`
     width: 20px;
     vertical-align: bottom !important;
   }
+`
+
+const FilterButton = styled(Box)`
+  position: relative;
 `
 
 const SearchHeaderWrapper = styled(Box)`

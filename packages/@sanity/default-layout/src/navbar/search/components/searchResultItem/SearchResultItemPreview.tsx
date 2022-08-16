@@ -7,6 +7,7 @@ import type {SchemaType} from '@sanity/types'
 import {Inline, Label} from '@sanity/ui'
 import {SanityDefaultPreview} from 'part:@sanity/base/preview'
 import React, {useEffect, useMemo, useState} from 'react'
+import styled from 'styled-components'
 import {getPreviewStateObservable, getValueWithFallback} from './helpers'
 import type {SearchItemPreviewState} from './types'
 
@@ -34,9 +35,9 @@ export default function SearchResultItemPreview({
     return (
       <Inline space={3}>
         {presence && presence.length > 0 && <DocumentPreviewPresence presence={presence} />}
-        <Label size={0} muted style={{maxWidth: '150px'}} textOverflow="ellipsis">
+        <TypeLabel size={0} muted textOverflow="ellipsis">
           {schemaType.title}
-        </Label>
+        </TypeLabel>
       </Inline>
     )
   }, [presence, schemaType.title])
@@ -65,3 +66,7 @@ export default function SearchResultItemPreview({
     />
   )
 }
+
+const TypeLabel = styled(Label)`
+  max-width: 150px;
+`
