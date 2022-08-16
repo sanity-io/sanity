@@ -24,6 +24,8 @@ export function SearchDialog({onClose, onOpen, open}: SearchDialogProps) {
   const [headerInputElement, setHeaderInputRef] = useState<HTMLInputElement | null>(null)
   const [pointerOverlayElement, setPointerOverlayRef] = useState<HTMLDivElement | null>(null)
 
+  const isMountedRef = useRef(false)
+
   const {
     state: {recentSearches, result, terms},
   } = useSearchState()
@@ -33,15 +35,27 @@ export function SearchDialog({onClose, onOpen, open}: SearchDialogProps) {
   /**
    * Measure top-most visible search result index
    */
-  const {savedSearchIndex, saveSearchIndex} = useMeasureSearchResultsIndex(childContainerElement)
+  const {lastSearchIndex, resetLastSearchIndex, setLastSearchIndex} = useMeasureSearchResultsIndex(
+    childContainerElement
+  )
+
+  /**
+   * Reset last search index when visiting recent searches
+   */
+  useEffect(() => {
+    if (!hasValidTerms && isMountedRef.current) {
+      resetLastSearchIndex()
+    }
+    isMountedRef.current = true
+  }, [hasValidTerms, resetLastSearchIndex])
 
   /**
    * Store top-most search result scroll index on close
    */
   const handleClose = useCallback(() => {
-    saveSearchIndex()
+    setLastSearchIndex()
     onClose()
-  }, [onClose, saveSearchIndex])
+  }, [onClose, setLastSearchIndex])
 
   /**
    * Bind hotkeys to open / close actions
@@ -62,7 +76,7 @@ export function SearchDialog({onClose, onOpen, open}: SearchDialogProps) {
       containerElement={containerElement}
       headerInputElement={headerInputElement}
       id="search-results-dialog"
-      initialSelectedIndex={hasValidTerms ? savedSearchIndex : 0}
+      initialSelectedIndex={hasValidTerms ? lastSearchIndex : 0}
       pointerOverlayElement={pointerOverlayElement}
       virtualList={hasValidTerms}
     >

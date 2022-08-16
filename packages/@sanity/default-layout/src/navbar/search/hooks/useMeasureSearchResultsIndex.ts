@@ -4,16 +4,21 @@ import {VIRTUAL_LIST_ITEM_HEIGHT} from '../constants'
 export function useMeasureSearchResultsIndex(
   childContainerElement: HTMLDivElement
 ): {
-  saveSearchIndex: () => void
-  savedSearchIndex: number
+  lastSearchIndex: number
+  resetLastSearchIndex: () => void
+  setLastSearchIndex: () => void
 } {
-  const [savedSearchIndex, setSavedSearchIndex] = useState<number>()
+  const [lastSearchIndex, setSavedSearchIndex] = useState<number>()
+
+  const resetLastSearchIndex = useCallback(() => {
+    setSavedSearchIndex(0)
+  }, [])
 
   /**
    * Query search result children for the 'top most' visible element (factoring in overscan)
    * and obtain its index.
    */
-  const saveSearchIndex = useCallback(() => {
+  const setLastSearchIndex = useCallback(() => {
     const childContainerParentElement = childContainerElement?.parentElement
 
     if (childContainerParentElement && childContainerElement) {
@@ -29,7 +34,8 @@ export function useMeasureSearchResultsIndex(
   }, [childContainerElement])
 
   return {
-    saveSearchIndex,
-    savedSearchIndex,
+    lastSearchIndex,
+    resetLastSearchIndex,
+    setLastSearchIndex,
   }
 }

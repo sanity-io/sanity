@@ -1,7 +1,7 @@
 import {hues, white} from '@sanity/color'
 import {CloseIcon, ControlsIcon, SearchIcon} from '@sanity/icons'
 import {Box, Button, Card, Flex, Spinner, studioTheme} from '@sanity/ui'
-import React, {Dispatch, SetStateAction, useCallback, useEffect, useRef} from 'react'
+import React, {Dispatch, SetStateAction, useCallback, useEffect, useRef, useState} from 'react'
 import styled from 'styled-components'
 import {useSearchState} from '../contexts/search'
 import {CustomTextInput} from './CustomTextInput'
@@ -12,8 +12,8 @@ interface SearchHeaderProps {
 }
 
 export function SearchHeader({onClose, setHeaderInputRef}: SearchHeaderProps) {
-  const filterCloseButton = useRef<HTMLButtonElement>()
-  const isMounted = useRef(false)
+  const [filterButtonElement, setFilterButtonRef] = useState<HTMLButtonElement | null>(null)
+  const isMountedRef = useRef(false)
 
   const {
     dispatch,
@@ -36,13 +36,13 @@ export function SearchHeader({onClose, setHeaderInputRef}: SearchHeaderProps) {
 
   // Focus filter button (when filters are hidden after initial mount)
   useEffect(() => {
-    if (isMounted?.current && !filtersVisible) {
-      filterCloseButton.current?.focus()
+    if (isMountedRef?.current && !filtersVisible) {
+      filterButtonElement?.focus()
     }
-  }, [filtersVisible])
+  }, [filterButtonElement, filtersVisible])
 
   useEffect(() => {
-    isMounted.current = true
+    isMountedRef.current = true
   }, [])
 
   return (
@@ -83,7 +83,7 @@ export function SearchHeader({onClose, setHeaderInputRef}: SearchHeaderProps) {
               mode="bleed"
               onClick={handleFiltersToggle}
               padding={3}
-              ref={filterCloseButton}
+              ref={setFilterButtonRef}
               selected={filtersVisible}
               tone="default"
             />

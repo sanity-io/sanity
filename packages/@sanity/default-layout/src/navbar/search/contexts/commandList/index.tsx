@@ -36,6 +36,7 @@ interface CommandListContextValue {
   onChildClick: () => void
   onChildMouseDown: (event: MouseEvent) => void
   onChildMouseEnter: (index: number) => () => void
+  setActiveIndex: ({index, scrollIntoView}: {index: number; scrollIntoView?: boolean}) => void
   setVirtualListScrollToIndex: (
     scrollToIndex: (index: number, options: Record<string, any>) => void
   ) => void
@@ -79,9 +80,9 @@ export function CommandListProvider({
 }: CommandListProviderProps) {
   const selectedIndexRef = useRef<number>(null)
 
-  const virtualListScrollToIndex = useRef<(index: number, options?: Record<string, any>) => void>(
-    null
-  )
+  const virtualListScrollToIndexRef = useRef<
+    (index: number, options?: Record<string, any>) => void
+  >(null)
 
   /**
    * Toggle pointer overlay element which will kill existing hover states
@@ -104,10 +105,9 @@ export function CommandListProvider({
    */
   const handleAssignSelectedState = useCallback(
     (scrollSelectedIntoView?: boolean) => {
-      headerInputElement?.setAttribute(
-        'aria-activedescendant',
-        getChildDescendantId(selectedIndexRef.current)
-      )
+      const selectedIndex = selectedIndexRef?.current
+
+      headerInputElement?.setAttribute('aria-activedescendant', getChildDescendantId(selectedIndex))
 
       const childElements = Array.from(childContainerElement?.children || []) as HTMLElement[]
       childElements?.forEach((child) => {
@@ -115,22 +115,28 @@ export function CommandListProvider({
         const childIndex = Number(child.dataset?.index)
 
         child.setAttribute('aria-posinset', (childIndex + 1).toString())
+        child.setAttribute('aria-selected', (childIndex === selectedIndex).toString())
         child.setAttribute('aria-setsize', childCount.toString())
         child.setAttribute('id', getChildDescendantId(childIndex))
         child.setAttribute('role', 'option')
         child.setAttribute('tabIndex', '-1')
-
-        if (Number(child.dataset.index) === selectedIndexRef.current) {
-          if (scrollSelectedIntoView) {
-            child.scrollIntoView({block: 'nearest'})
-          }
-          child.setAttribute('aria-selected', 'true')
-        } else {
-          child.setAttribute('aria-selected', 'false')
-        }
       })
+
+      /**
+       * Scroll into view: delegate to `react-virtual` if a virtual list, otherwise use `scrollIntoView`
+       */
+      if (scrollSelectedIntoView) {
+        if (virtualList && virtualListScrollToIndexRef.current) {
+          virtualListScrollToIndexRef.current(selectedIndex, {align: 'start'})
+        } else {
+          const selectedElement = childElements.find(
+            (element) => Number(element.dataset?.index) === selectedIndex
+          )
+          selectedElement?.scrollIntoView({block: 'nearest'})
+        }
+      }
     },
-    [childContainerElement, childCount, getChildDescendantId, headerInputElement]
+    [childContainerElement, childCount, getChildDescendantId, headerInputElement, virtualList]
   )
 
   /**
@@ -183,25 +189,17 @@ export function CommandListProvider({
    */
   const handleSetVirtualListScrollToIndex = useCallback(
     (scrollToIndex: (index: number, options?: Record<string, any>) => void) => {
-      virtualListScrollToIndex.current = scrollToIndex
+      virtualListScrollToIndexRef.current = scrollToIndex
     },
     []
   )
 
   /**
-   * Update active index, scroll virtual list if applicable
+   * Set active index whenever initial index changes
    */
   useEffect(() => {
-    setActiveIndex({index: initialSelectedIndex})
-
-    if (
-      typeof initialSelectedIndex === 'number' &&
-      virtualList &&
-      virtualListScrollToIndex.current
-    ) {
-      virtualListScrollToIndex.current(initialSelectedIndex, {align: 'start'})
-    }
-  }, [initialSelectedIndex, setActiveIndex, virtualList])
+    setActiveIndex({index: initialSelectedIndex, scrollIntoView: true})
+  }, [initialSelectedIndex, setActiveIndex])
 
   /**
    * Re-enable child pointer events on any mouse move event
@@ -234,7 +232,7 @@ export function CommandListProvider({
 
         // Delegate scrolling to virtual list if necessary
         if (virtualList) {
-          virtualListScrollToIndex?.current(nextIndex)
+          virtualListScrollToIndexRef?.current(nextIndex)
           setActiveIndex({index: nextIndex, scrollIntoView: false})
         } else {
           setActiveIndex({index: nextIndex})
@@ -249,7 +247,7 @@ export function CommandListProvider({
 
         // Delegate scrolling to virtual list if necessary
         if (virtualList) {
-          virtualListScrollToIndex?.current(nextIndex)
+          virtualListScrollToIndexRef?.current(nextIndex)
           setActiveIndex({index: nextIndex, scrollIntoView: false})
         } else {
           setActiveIndex({index: nextIndex})
@@ -387,6 +385,7 @@ export function CommandListProvider({
         onChildClick: handleChildClick,
         onChildMouseDown: handleChildMouseDown,
         onChildMouseEnter: handleChildMouseEnter,
+        setActiveIndex,
         setVirtualListScrollToIndex: handleSetVirtualListScrollToIndex,
       }}
     >
