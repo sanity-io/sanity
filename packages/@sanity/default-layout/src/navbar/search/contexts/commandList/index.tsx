@@ -9,7 +9,6 @@ import React, {
   useMemo,
   useRef,
 } from 'react'
-import {VIRTUAL_LIST_OVERSCAN} from '../../constants'
 
 /**
  * This provider adds the following:
@@ -25,7 +24,7 @@ import {VIRTUAL_LIST_OVERSCAN} from '../../constants'
  * list support.
  * - All child items have to use the supplied context functions (`onChildClick` etc) to ensure consistent behaviour
  * when clicking and hovering over items, as well as preventing unwanted focus.
- * - All elements (including the pointer overlay) have to be set up and passed to this Provider.
+ * - All elements (including the pointer overlay) must be defined and passed to this Provider.
  */
 
 /**
@@ -37,6 +36,9 @@ interface CommandListContextValue {
   onChildClick: () => void
   onChildMouseDown: (event: MouseEvent) => void
   onChildMouseEnter: (index: number) => () => void
+  setVirtualListScrollToIndex: (
+    scrollToIndex: (index: number, options: Record<string, any>) => void
+  ) => void
 }
 
 const CommandListContext = createContext<CommandListContextValue | undefined>(undefined)
@@ -52,10 +54,9 @@ interface CommandListProviderProps {
   containerElement: HTMLDivElement
   headerInputElement: HTMLInputElement
   id: string
-  initialIndex?: number
+  initialSelectedIndex?: number
   pointerOverlayElement: HTMLDivElement
   virtualList?: boolean
-  wraparound?: boolean
 }
 
 /**
@@ -71,15 +72,20 @@ export function CommandListProvider({
   childCount,
   containerElement,
   id,
-  initialIndex = 0,
+  initialSelectedIndex = 0,
   headerInputElement,
   pointerOverlayElement,
   virtualList,
-  wraparound = true,
 }: CommandListProviderProps) {
-  const isMounted = useRef(false)
   const selectedIndexRef = useRef<number>(null)
 
+  const virtualListScrollToIndex = useRef<(index: number, options?: Record<string, any>) => void>(
+    null
+  )
+
+  /**
+   * Toggle pointer overlay element which will kill existing hover states
+   */
   const enableChildContainerPointerEvents = useCallback(
     (enabled: boolean) =>
       pointerOverlayElement?.setAttribute('data-enabled', (!enabled).toString()),
@@ -127,6 +133,9 @@ export function CommandListProvider({
     [childContainerElement, childCount, getChildDescendantId, headerInputElement]
   )
 
+  /**
+   * Throttled version of the above, used when DOM mutations are detected in virtual lists
+   */
   const handleReassignSelectedStateThrottled = useMemo(
     () => throttle(handleAssignSelectedState.bind(undefined, false), 200),
     [handleAssignSelectedState]
@@ -170,21 +179,29 @@ export function CommandListProvider({
   )
 
   /**
-   * Set active index on initial mount
+   * Store virtual list's scrollToIndex function
    */
-  useEffect(() => {
-    setActiveIndex({index: initialIndex})
-  }, [childCount, initialIndex, setActiveIndex])
+  const handleSetVirtualListScrollToIndex = useCallback(
+    (scrollToIndex: (index: number, options?: Record<string, any>) => void) => {
+      virtualListScrollToIndex.current = scrollToIndex
+    },
+    []
+  )
 
   /**
-   * Reset active index on child count changes (after initial mount)
+   * Update active index, scroll virtual list if applicable
    */
   useEffect(() => {
-    if (isMounted.current) {
-      setActiveIndex({index: 0})
+    setActiveIndex({index: initialSelectedIndex})
+
+    if (
+      typeof initialSelectedIndex === 'number' &&
+      virtualList &&
+      virtualListScrollToIndex.current
+    ) {
+      virtualListScrollToIndex.current(initialSelectedIndex, {align: 'start'})
     }
-    isMounted.current = true
-  }, [childCount, setActiveIndex])
+  }, [initialSelectedIndex, setActiveIndex, virtualList])
 
   /**
    * Re-enable child pointer events on any mouse move event
@@ -212,44 +229,32 @@ export function CommandListProvider({
 
       if (event.key === 'ArrowDown') {
         event.preventDefault()
-        const wraparoundIndex = wraparound ? 0 : selectedIndexRef.current
-        let nextIndex =
-          selectedIndexRef.current < childCount - 1 ? selectedIndexRef.current + 1 : wraparoundIndex
+        const nextIndex =
+          selectedIndexRef.current < childCount - 1 ? selectedIndexRef.current + 1 : 0
 
-        /**
-         * If the next target element cannot be found (e.g. you've scrolled and it no longer exists in the DOM),
-         * select the element closest to the top of the container viewport (factoring in overscan).
-         */
+        // Delegate scrolling to virtual list if necessary
         if (virtualList) {
-          const foundElement = childElements.find((el) => Number(el.dataset.index) === nextIndex)
-          if (!foundElement) {
-            nextIndex = Number(childElements[VIRTUAL_LIST_OVERSCAN]?.dataset?.index)
-          }
+          virtualListScrollToIndex?.current(nextIndex)
+          setActiveIndex({index: nextIndex, scrollIntoView: false})
+        } else {
+          setActiveIndex({index: nextIndex})
         }
 
-        setActiveIndex({index: nextIndex})
         enableChildContainerPointerEvents(false)
       }
       if (event.key === 'ArrowUp') {
         event.preventDefault()
-        const wraparoundIndex = wraparound ? childCount - 1 : selectedIndexRef.current
-        let nextIndex =
-          selectedIndexRef.current > 0 ? selectedIndexRef.current - 1 : wraparoundIndex
+        const nextIndex =
+          selectedIndexRef.current > 0 ? selectedIndexRef.current - 1 : childCount - 1
 
-        /**
-         * If the next target element cannot be found (e.g. you've scrolled and it no longer exists in the DOM),
-         * select the element closest to the bottom of the container viewport (factoring in overscan).
-         */
+        // Delegate scrolling to virtual list if necessary
         if (virtualList) {
-          const foundElement = childElements.find((el) => Number(el.dataset.index) === nextIndex)
-          if (!foundElement) {
-            nextIndex = Number(
-              childElements[childElements.length - VIRTUAL_LIST_OVERSCAN]?.dataset?.index
-            )
-          }
+          virtualListScrollToIndex?.current(nextIndex)
+          setActiveIndex({index: nextIndex, scrollIntoView: false})
+        } else {
+          setActiveIndex({index: nextIndex})
         }
 
-        setActiveIndex({index: nextIndex})
         enableChildContainerPointerEvents(false)
       }
       if (event.key === 'Enter') {
@@ -273,7 +278,6 @@ export function CommandListProvider({
     headerInputElement,
     setActiveIndex,
     virtualList,
-    wraparound,
   ])
 
   /**
@@ -383,6 +387,7 @@ export function CommandListProvider({
         onChildClick: handleChildClick,
         onChildMouseDown: handleChildMouseDown,
         onChildMouseEnter: handleChildMouseEnter,
+        setVirtualListScrollToIndex: handleSetVirtualListScrollToIndex,
       }}
     >
       {children}

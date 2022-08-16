@@ -17,7 +17,5 @@ export const POPOVER_INPUT_PADDING = studioTheme.space[1] // px
 export const POPOVER_MAX_HEIGHT = 735 // px
 export const POPOVER_MAX_WIDTH = 800 // px
 
-export const VIRTUAL_LIST_UI_NAME = 'search-results-virtual-list'
-export const VIRTUAL_LIST_CHILDREN_UI_NAME = 'search-results-virtual-list-children'
 export const VIRTUAL_LIST_ITEM_HEIGHT = 55 // px
 export const VIRTUAL_LIST_OVERSCAN = 4

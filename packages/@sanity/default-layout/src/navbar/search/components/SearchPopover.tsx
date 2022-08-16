@@ -1,11 +1,14 @@
 import {hues} from '@sanity/color'
-import {Box, Card, Flex, Theme, useClickOutside, useLayer} from '@sanity/ui'
-import React, {useState} from 'react'
+import {Box, Card, Flex, Portal, Theme, useClickOutside, useLayer} from '@sanity/ui'
+import React, {useCallback, useState} from 'react'
+import FocusLock from 'react-focus-lock'
 import styled, {css} from 'styled-components'
 import {POPOVER_INPUT_PADDING, POPOVER_MAX_HEIGHT, POPOVER_MAX_WIDTH} from '../constants'
 import {CommandListProvider} from '../contexts/commandList'
 import {useSearchState} from '../contexts/search'
 import {hasSearchableTerms} from '../contexts/search/selectors'
+import {useMeasureSearchResultsIndex} from '../hooks/useMeasureSearchResultsIndex'
+import {useSearchHotkeys} from '../hooks/useSearchHotkeys'
 import {RecentSearches} from './RecentSearches'
 import {SearchHeader} from './SearchHeader'
 import {SearchResults} from './SearchResults'
@@ -16,12 +19,13 @@ type PopoverPosition = {
   y: number
 }
 export interface SearchPopoverProps {
-  initialSearchIndex?: number
   onClose: () => void
+  onOpen: () => void
+  open: boolean
   position: PopoverPosition
 }
 
-export function SearchPopover({onClose, initialSearchIndex, position}: SearchPopoverProps) {
+export function SearchPopover({onClose, onOpen, open, position}: SearchPopoverProps) {
   const [childContainerElement, setChildContainerRef] = useState<HTMLDivElement | null>(null)
   const [containerElement, setContainerRef] = useState<HTMLDivElement | null>(null)
   const [headerInputElement, setHeaderInputRef] = useState<HTMLInputElement | null>(null)
@@ -33,62 +37,84 @@ export function SearchPopover({onClose, initialSearchIndex, position}: SearchPop
     state: {recentSearches, result, terms},
   } = useSearchState()
 
+  /**
+   * Measure top-most visible search result index
+   */
+  const {savedSearchIndex, saveSearchIndex} = useMeasureSearchResultsIndex(childContainerElement)
+
+  /**
+   * Store top-most search result scroll index on close
+   */
+  const handleClose = useCallback(() => {
+    saveSearchIndex()
+    onClose()
+  }, [onClose, saveSearchIndex])
+
+  /**
+   * Bind hotkeys to open / close actions
+   */
+  useSearchHotkeys({onClose: handleClose, onOpen, open})
+
+  useClickOutside(handleClose, [containerElement])
+
   const hasValidTerms = hasSearchableTerms(terms)
 
-  useClickOutside(onClose, [containerElement])
+  if (!open) {
+    return null
+  }
 
   return (
-    <>
-      <Overlay style={{zIndex}} />
+    <Portal>
+      <FocusLock autoFocus={false} returnFocus>
+        <Overlay style={{zIndex}} />
 
-      <CommandListProvider
-        ariaChildrenLabel={hasValidTerms ? 'Search results' : 'Recent searches'}
-        ariaHeaderLabel="Search results"
-        autoFocus
-        childContainerElement={childContainerElement}
-        childCount={hasValidTerms ? result.hits.length : recentSearches.length}
-        containerElement={containerElement}
-        headerInputElement={headerInputElement}
-        id="search-results-popover"
-        initialIndex={initialSearchIndex}
-        pointerOverlayElement={pointerOverlayElement}
-        wraparound={!hasValidTerms}
-        virtualList
-      >
-        <SearchPopoverWrapper
-          $position={position}
-          overflow="hidden"
-          radius={2}
-          ref={setContainerRef}
-          scheme="light"
-          shadow={2}
-          style={{zIndex}}
+        <CommandListProvider
+          ariaChildrenLabel={hasValidTerms ? 'Search results' : 'Recent searches'}
+          ariaHeaderLabel="Search results"
+          autoFocus
+          childContainerElement={childContainerElement}
+          childCount={hasValidTerms ? result.hits.length : recentSearches.length}
+          containerElement={containerElement}
+          headerInputElement={headerInputElement}
+          id="search-results-popover"
+          initialSelectedIndex={hasValidTerms ? savedSearchIndex : 0}
+          pointerOverlayElement={pointerOverlayElement}
+          virtualList={hasValidTerms}
         >
-          <SearchHeader setHeaderInputRef={setHeaderInputRef} />
+          <SearchPopoverWrapper
+            $position={position}
+            overflow="hidden"
+            radius={2}
+            ref={setContainerRef}
+            scheme="light"
+            shadow={2}
+            style={{zIndex}}
+          >
+            <SearchHeader setHeaderInputRef={setHeaderInputRef} />
 
-          {/* Reverse flex direction is used ensure filters are focusable before recent searches */}
-          <Flex align="stretch" direction="row-reverse">
-            <SearchPopoverFilters />
-            <SearchContentWrapper flex={1}>
-              {hasValidTerms ? (
-                <SearchResults
-                  initialSearchIndex={initialSearchIndex}
-                  onClose={onClose}
-                  setChildContainerRef={setChildContainerRef}
-                  setPointerOverlayRef={setPointerOverlayRef}
-                />
-              ) : (
-                <RecentSearches
-                  setChildContainerRef={setChildContainerRef}
-                  setPointerOverlayRef={setPointerOverlayRef}
-                  showFiltersOnClick
-                />
-              )}
-            </SearchContentWrapper>
-          </Flex>
-        </SearchPopoverWrapper>
-      </CommandListProvider>
-    </>
+            {/* Reverse flex direction is used ensure filters are focusable before recent searches */}
+            <Flex align="stretch" direction="row-reverse">
+              <SearchPopoverFilters />
+              <SearchContentWrapper flex={1}>
+                {hasValidTerms ? (
+                  <SearchResults
+                    onClose={handleClose}
+                    setChildContainerRef={setChildContainerRef}
+                    setPointerOverlayRef={setPointerOverlayRef}
+                  />
+                ) : (
+                  <RecentSearches
+                    setChildContainerRef={setChildContainerRef}
+                    setPointerOverlayRef={setPointerOverlayRef}
+                    showFiltersOnClick
+                  />
+                )}
+              </SearchContentWrapper>
+            </Flex>
+          </SearchPopoverWrapper>
+        </CommandListProvider>
+      </FocusLock>
+    </Portal>
   )
 }
 

@@ -1,11 +1,9 @@
 import {useCallback, useState} from 'react'
-import {
-  VIRTUAL_LIST_CHILDREN_UI_NAME,
-  VIRTUAL_LIST_ITEM_HEIGHT,
-  VIRTUAL_LIST_UI_NAME,
-} from '../constants'
+import {VIRTUAL_LIST_ITEM_HEIGHT} from '../constants'
 
-export function useMeasureSearchResultsIndex(): {
+export function useMeasureSearchResultsIndex(
+  childContainerElement: HTMLDivElement
+): {
   saveSearchIndex: () => void
   savedSearchIndex: number
 } {
@@ -16,18 +14,19 @@ export function useMeasureSearchResultsIndex(): {
    * and obtain its index.
    */
   const saveSearchIndex = useCallback(() => {
-    const listElement = document.querySelector(`[data-ui="${VIRTUAL_LIST_UI_NAME}"]`)
-    const childrenElement = document.querySelector(`[data-ui="${VIRTUAL_LIST_CHILDREN_UI_NAME}"]`)
+    const childContainerParentElement = childContainerElement?.parentElement
 
-    if (listElement && childrenElement) {
-      const listElementTop = listElement.getBoundingClientRect().top
-      const childrenElementTop = childrenElement?.getBoundingClientRect().top
-      const index = Math.floor((listElementTop - childrenElementTop) / VIRTUAL_LIST_ITEM_HEIGHT)
+    if (childContainerParentElement && childContainerElement) {
+      const childContainerParentElementTop = childContainerParentElement.getBoundingClientRect().top
+      const childContainerElementTop = childContainerElement.getBoundingClientRect().top
+      const index = Math.floor(
+        (childContainerParentElementTop - childContainerElementTop) / VIRTUAL_LIST_ITEM_HEIGHT
+      )
       setSavedSearchIndex(index)
     } else {
       setSavedSearchIndex(0)
     }
-  }, [])
+  }, [childContainerElement])
 
   return {
     saveSearchIndex,
