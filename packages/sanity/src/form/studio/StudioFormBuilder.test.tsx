@@ -84,6 +84,8 @@ describe('StudioFormBuilder', () => {
           __internal_patchChannel: patchChannel,
           changesOpen: false,
           changed: false,
+          collapsedFieldSets: undefined,
+          collapsedPaths: undefined,
           focused: formState?.focused,
           focusPath: formState?.focusPath || EMPTY_ARRAY,
           groups: formState?.groups || EMPTY_ARRAY,
