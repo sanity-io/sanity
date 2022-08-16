@@ -1,9 +1,11 @@
+/* eslint-disable max-statements */
 import {Editor, Transforms, Element, Path as SlatePath, Descendant} from 'slate'
 import * as DMP from 'diff-match-patch'
 import {Path, KeyedSegment, PathSegment} from '@sanity/types'
 import {isEqual} from 'lodash'
 import type {Patch, InsertPatch, UnsetPatch, SetPatch, DiffMatchPatch} from '../types/patch'
 import {PortableTextFeatures, PortableTextBlock, PortableTextChild} from '../types/portableText'
+import {applyAll} from '../patch/applyPatch'
 import {isEqualToEmptyEditor, toSlateValue} from './values'
 import {debugWithName} from './debug'
 import {KEY_TO_SLATE_ELEMENT} from './weakMaps'
@@ -166,79 +168,89 @@ export function createPatchToOperations(
       value = {}
       value[patch.path[3]] = patch.value
     }
-    debug(`Setting nodes at ${JSON.stringify(patch.path)} - ${JSON.stringify(targetPath)}`)
-    debug('Value to set', JSON.stringify(value, null, 2))
-    debugState(editor, 'before')
-    if (targetPath.length === 1) {
-      debug('Setting block property')
-      const {children, ...nextRest} = value
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const {children: prevChildren, ...prevRest} = block || {children: undefined}
-      editor.apply({
-        type: 'set_node',
-        path: targetPath,
-        properties: {...prevRest},
-        newProperties: nextRest,
-      })
-      if (block && Element.isElement(block)) {
-        block.children.forEach((c, cIndex) => {
-          editor.apply({
-            type: 'remove_node',
-            path: targetPath.concat(cIndex),
-            node: c,
+    const isTextBlock = portableTextFeatures.types.block.name === block?._type
+    if (isTextBlock) {
+      debug(`Setting nodes at ${JSON.stringify(patch.path)} - ${JSON.stringify(targetPath)}`)
+      debug('Value to set', JSON.stringify(value, null, 2))
+      debugState(editor, 'before')
+      if (targetPath.length === 1) {
+        debug('Setting block property')
+        const {children, ...nextRest} = value
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const {children: prevChildren, ...prevRest} = block || {children: undefined}
+        editor.apply({
+          type: 'set_node',
+          path: targetPath,
+          properties: {...prevRest},
+          newProperties: nextRest,
+        })
+        if (block && Element.isElement(block)) {
+          block.children.forEach((c, cIndex) => {
+            editor.apply({
+              type: 'remove_node',
+              path: targetPath.concat(cIndex),
+              node: c,
+            })
           })
+        }
+        if (Array.isArray(children)) {
+          children.forEach((c, cIndex) => {
+            editor.apply({
+              type: 'insert_node',
+              path: targetPath.concat(cIndex),
+              node: c,
+            })
+          })
+        }
+      } else if (typeof value.text === 'string') {
+        debug('Setting text property')
+        const prevSel = editor.selection && {...editor.selection}
+        editor.apply({
+          type: 'remove_text',
+          path: targetPath,
+          offset: 0,
+          text: block?.children[childIndex].text,
+        })
+        editor.apply({
+          type: 'insert_text',
+          path: targetPath,
+          offset: 0,
+          text: value.text,
+        })
+        const onSamePath = prevSel && isEqual(prevSel.focus.path, targetPath)
+        // const onSameText =
+        //   editor.selection &&
+        //   editor.selection.focus.path[0] === blockIndex &&
+        //   patch.path[3] === 'text'
+        if (onSamePath) {
+          debug('On same path, restoring previous selection')
+          Transforms.select(editor, prevSel)
+        }
+        //  else if (onSameText) {
+        //   debug('Adjusting for inserted text')
+        //   const newOffset = typeof patch.value === 'string' ? patch.value.length : 0
+        //   const point = {path: targetPath, offset: newOffset}
+        //   Transforms.select(editor, {focus: point, anchor: point})
+        // }
+      } else {
+        debug('Setting non-text property')
+        editor.apply({
+          type: 'set_node',
+          path: targetPath,
+          properties: {},
+          newProperties: value,
         })
       }
-      if (Array.isArray(children)) {
-        children.forEach((c, cIndex) => {
-          editor.apply({
-            type: 'insert_node',
-            path: targetPath.concat(cIndex),
-            node: c,
-          })
-        })
-      }
-    } else if (typeof value.text === 'string') {
-      debug('Setting text property')
-      const prevSel = editor.selection && {...editor.selection}
-      editor.apply({
-        type: 'remove_text',
-        path: targetPath,
-        offset: 0,
-        text: block?.children[childIndex].text,
-      })
-      editor.apply({
-        type: 'insert_text',
-        path: targetPath,
-        offset: 0,
-        text: value.text,
-      })
-      const onSamePath = prevSel && isEqual(prevSel.focus.path, targetPath)
-      // const onSameText =
-      //   editor.selection &&
-      //   editor.selection.focus.path[0] === blockIndex &&
-      //   patch.path[3] === 'text'
-      if (onSamePath) {
-        debug('On same path, restoring previous selection')
-        Transforms.select(editor, prevSel)
-      }
-      //  else if (onSameText) {
-      //   debug('Adjusting for inserted text')
-      //   const newOffset = typeof patch.value === 'string' ? patch.value.length : 0
-      //   const point = {path: targetPath, offset: newOffset}
-      //   Transforms.select(editor, {focus: point, anchor: point})
-      // }
-    } else {
-      debug('Setting non-text property')
-      editor.apply({
-        type: 'set_node',
-        path: targetPath,
-        properties: {},
-        newProperties: value,
-      })
+      debugState(editor, 'after')
+      return true
     }
-    debugState(editor, 'after')
-    return true
+    // If this is a object block, just set the whole block
+    else if (!isTextBlock && block) {
+      const newVal = applyAll([block.value], [patch])[0]
+      Transforms.setNodes(editor, {...block, value: newVal}, {at: [blockIndex]})
+      return true
+    }
+    return false
   }
 
   function unsetPatch(editor: Editor, patch: UnsetPatch, previousPatch?: Patch) {
@@ -257,7 +269,7 @@ export function createPatchToOperations(
       debugState(editor, 'after')
       return true
     }
-    // Blocks
+    // Single blocks
     if (patch.path.length === 1) {
       const lastKey = findLastKey(patch.path)
       const index = editor.children.findIndex((node, indx) =>
@@ -276,56 +288,71 @@ export function createPatchToOperations(
         return true
       }
     }
-    // Children
+
     const blockIndex = editor.children.findIndex((node, indx) => {
       return isKeyedSegment(patch.path[0])
         ? node._key === patch.path[0]._key
         : indx === patch.path[0]
     })
+
     const block: PortableTextBlock | undefined =
       blockIndex > -1 ? editor.children[blockIndex] : undefined
-    const childIndex =
-      block &&
-      block.children.findIndex((node: PortableTextChild, indx: number) => {
-        return isKeyedSegment(patch.path[2])
-          ? node._key === patch.path[2]._key
-          : indx === patch.path[2]
-      })
-    const targetPath = [blockIndex, childIndex]
-    const prevSel = editor.selection && {...editor.selection}
-    const onSamePath = isEqual(editor.selection?.focus.path, targetPath)
-    debug(`Removing child at path ${JSON.stringify(targetPath)}`)
-    debugState(editor, 'before')
-    if (prevSel && onSamePath && editor.isTextBlock(block)) {
-      const needToAdjust = childIndex >= prevSel.focus.path[1]
-      if (needToAdjust) {
-        const isMergeUnset =
-          previousPatch?.type === 'set' &&
-          previousPatch.path[3] === 'text' &&
-          typeof previousPatch.value === 'string' &&
-          isEqual(
-            previousPatch.value.slice(-block.children[childIndex].text.length),
-            block.children[childIndex].text
-          )
-        if (isMergeUnset) {
-          debug('Adjusting selection for merging of nodes')
-          prevSel.focus = {...prevSel.focus}
-          prevSel.focus.path = [targetPath[0], targetPath[1] - 1]
-          prevSel.focus.offset =
-            block.children[childIndex - 1].text.length -
-            block.children[childIndex].text.length +
-            prevSel.focus.offset
-          prevSel.anchor = prevSel.focus
-          Transforms.select(editor, prevSel)
-          Transforms.removeNodes(editor, {at: [blockIndex, childIndex]})
-          debugState(editor, 'after')
-          return true
+
+    const isTextBlock = portableTextFeatures.types.block.name === block?._type
+
+    // Unset on text block children
+    if (isTextBlock && patch.path[1] === 'children' && patch.path.length === 3) {
+      const childIndex =
+        block &&
+        block.children.findIndex((node: PortableTextChild, indx: number) => {
+          return isKeyedSegment(patch.path[2])
+            ? node._key === patch.path[2]._key
+            : indx === patch.path[2]
+        })
+      const targetPath = [blockIndex, childIndex]
+      const prevSel = editor.selection && {...editor.selection}
+      const onSamePath = isEqual(editor.selection?.focus.path, targetPath)
+
+      debug(`Removing child at path ${JSON.stringify(targetPath)}`)
+      debugState(editor, 'before')
+      if (prevSel && onSamePath && editor.isTextBlock(block)) {
+        const needToAdjust = childIndex >= prevSel.focus.path[1]
+        if (needToAdjust) {
+          const isMergeUnset =
+            previousPatch?.type === 'set' &&
+            previousPatch.path[3] === 'text' &&
+            typeof previousPatch.value === 'string' &&
+            isEqual(
+              previousPatch.value.slice(-block.children[childIndex].text.length),
+              block.children[childIndex].text
+            )
+          if (isMergeUnset) {
+            debug('Adjusting selection for merging of nodes')
+            prevSel.focus = {...prevSel.focus}
+            prevSel.focus.path = [targetPath[0], targetPath[1] - 1]
+            prevSel.focus.offset =
+              block.children[childIndex - 1].text.length -
+              block.children[childIndex].text.length +
+              prevSel.focus.offset
+            prevSel.anchor = prevSel.focus
+            Transforms.select(editor, prevSel)
+            Transforms.removeNodes(editor, {at: [blockIndex, childIndex]})
+            debugState(editor, 'after')
+            return true
+          }
         }
       }
+      Transforms.removeNodes(editor, {at: [blockIndex, childIndex]})
+      debugState(editor, 'after')
+      return true
     }
-    Transforms.removeNodes(editor, {at: [blockIndex, childIndex]})
-    debugState(editor, 'after')
-    return true
+    // Inside block objects - patch block and set it again
+    if (!isTextBlock && block) {
+      const newBlock = applyAll([block], [patch])[0]
+      Transforms.setNodes(editor, newBlock, {at: [blockIndex]})
+      return true
+    }
+    return false
   }
 
   let previousPatch: Patch | undefined
