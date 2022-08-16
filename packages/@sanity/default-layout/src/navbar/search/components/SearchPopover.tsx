@@ -1,6 +1,6 @@
 import {hues} from '@sanity/color'
 import {Box, Card, Flex, Portal, Theme, useClickOutside, useLayer} from '@sanity/ui'
-import React, {useCallback, useState} from 'react'
+import React, {useCallback, useEffect, useRef, useState} from 'react'
 import FocusLock from 'react-focus-lock'
 import styled, {css} from 'styled-components'
 import {POPOVER_INPUT_PADDING, POPOVER_MAX_HEIGHT, POPOVER_MAX_WIDTH} from '../constants'
@@ -31,24 +31,40 @@ export function SearchPopover({onClose, onOpen, open, position}: SearchPopoverPr
   const [headerInputElement, setHeaderInputRef] = useState<HTMLInputElement | null>(null)
   const [pointerOverlayElement, setPointerOverlayRef] = useState<HTMLDivElement | null>(null)
 
+  const isMountedRef = useRef(false)
+
   const {zIndex} = useLayer()
 
   const {
     state: {recentSearches, result, terms},
   } = useSearchState()
 
+  const hasValidTerms = hasSearchableTerms(terms)
+
   /**
    * Measure top-most visible search result index
    */
-  const {savedSearchIndex, saveSearchIndex} = useMeasureSearchResultsIndex(childContainerElement)
+  const {lastSearchIndex, resetLastSearchIndex, setLastSearchIndex} = useMeasureSearchResultsIndex(
+    childContainerElement
+  )
+
+  /**
+   * Reset last search index when visiting recent searches
+   */
+  useEffect(() => {
+    if (!hasValidTerms && isMountedRef.current) {
+      resetLastSearchIndex()
+    }
+    isMountedRef.current = true
+  }, [hasValidTerms, resetLastSearchIndex])
 
   /**
    * Store top-most search result scroll index on close
    */
   const handleClose = useCallback(() => {
-    saveSearchIndex()
+    setLastSearchIndex()
     onClose()
-  }, [onClose, saveSearchIndex])
+  }, [onClose, setLastSearchIndex])
 
   /**
    * Bind hotkeys to open / close actions
@@ -56,8 +72,6 @@ export function SearchPopover({onClose, onOpen, open, position}: SearchPopoverPr
   useSearchHotkeys({onClose: handleClose, onOpen, open})
 
   useClickOutside(handleClose, [containerElement])
-
-  const hasValidTerms = hasSearchableTerms(terms)
 
   if (!open) {
     return null
@@ -77,7 +91,7 @@ export function SearchPopover({onClose, onOpen, open, position}: SearchPopoverPr
           containerElement={containerElement}
           headerInputElement={headerInputElement}
           id="search-results-popover"
-          initialSelectedIndex={hasValidTerms ? savedSearchIndex : 0}
+          initialSelectedIndex={hasValidTerms ? lastSearchIndex : 0}
           pointerOverlayElement={pointerOverlayElement}
           virtualList={hasValidTerms}
         >

@@ -32,9 +32,9 @@ export function SearchProvider({children}: SearchProviderProps) {
 
   const {pageIndex, result, terms} = state
 
-  const isMounted = useRef(false)
-  const previousPageIndex = useRef<number>(0)
-  const previousTerms = useRef<SearchTerms>(null)
+  const isMountedRef = useRef(false)
+  const previousPageIndexRef = useRef<number>(0)
+  const previousTermsRef = useRef<SearchTerms>(null)
 
   const {handleSearch, searchState} = useSearch({
     initialState: {
@@ -59,9 +59,9 @@ export function SearchProvider({children}: SearchProviderProps) {
    */
   useEffect(() => {
     const termsChanged = Object.keys(terms).some(
-      (key) => terms[key] !== previousTerms.current?.[key]
+      (key) => terms[key] !== previousTermsRef.current?.[key]
     )
-    const pageIndexChanged = pageIndex !== previousPageIndex.current
+    const pageIndexChanged = pageIndex !== previousPageIndexRef.current
 
     if (termsChanged || pageIndexChanged) {
       handleSearch({
@@ -71,11 +71,11 @@ export function SearchProvider({children}: SearchProviderProps) {
       })
 
       // Update pageIndex snapshot only on a valid search request
-      previousPageIndex.current = pageIndex
+      previousPageIndexRef.current = pageIndex
     }
 
     // Update our terms snapshot, even if no search request was executed
-    previousTerms.current = terms
+    previousTermsRef.current = terms
   }, [handleSearch, hasValidTerms, pageIndex, searchState.terms, terms])
 
   /**
@@ -84,11 +84,11 @@ export function SearchProvider({children}: SearchProviderProps) {
    * - we have existing hits
    */
   useEffect(() => {
-    if (!hasValidTerms && isMounted?.current && result.hits.length > 0) {
+    if (!hasValidTerms && isMountedRef?.current && result.hits.length > 0) {
       dispatch({type: 'SEARCH_CLEAR'})
     }
 
-    isMounted.current = true
+    isMountedRef.current = true
   }, [dispatch, hasValidTerms, result.hits, terms.query, terms.types])
 
   return <SearchContext.Provider value={{dispatch, state}}>{children}</SearchContext.Provider>
