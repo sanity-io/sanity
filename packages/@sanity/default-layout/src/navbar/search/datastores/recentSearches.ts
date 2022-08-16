@@ -19,7 +19,10 @@ interface StoredSearchTerms {
 }
 
 function getRecentStoredSearchTerms(): StoredSearchTerms {
-  const recentString = window.localStorage.getItem(SEARCH_TERMS_KEY)
+  const recentString = supportsLocalStorage
+    ? window.localStorage.getItem(SEARCH_TERMS_KEY)
+    : undefined
+
   return recentString
     ? (JSON.parse(recentString) as StoredSearchTerms)
     : {version: CURRENT_VERSION, recentSearches: []}
@@ -40,6 +43,10 @@ export function getRecentSearchTerms(schema: {
 }
 
 export function addSearchTerm(searchTerm: SearchTerms): void {
+  if (!supportsLocalStorage) {
+    return
+  }
+
   const saveTerm: StoredSearchTerm = {
     created: new Date().toISOString(),
     terms: {
@@ -61,6 +68,10 @@ export function addSearchTerm(searchTerm: SearchTerms): void {
 }
 
 export function removeSearchTerms(): void {
+  if (!supportsLocalStorage) {
+    return
+  }
+
   const searchTerms = getRecentStoredSearchTerms()
 
   const newRecent: StoredSearchTerms = {
@@ -72,6 +83,10 @@ export function removeSearchTerms(): void {
 }
 
 export function removeSearchTermAtIndex(index: number): void {
+  if (!supportsLocalStorage) {
+    return
+  }
+
   const searchTerms = getRecentStoredSearchTerms()
 
   if (index < 0 || index > searchTerms.recentSearches.length) {
@@ -88,3 +103,18 @@ export function removeSearchTermAtIndex(index: number): void {
 
   window.localStorage.setItem(SEARCH_TERMS_KEY, JSON.stringify(newRecent))
 }
+
+const supportsLocalStorage = (() => {
+  const key = '__tmp__can_use'
+  try {
+    if (typeof localStorage === 'undefined') {
+      return false
+    }
+
+    localStorage.setItem(key, '---')
+    localStorage.removeItem(key)
+    return true
+  } catch (err) {
+    return false
+  }
+})()
