@@ -117,6 +117,9 @@ export default class CollaborationEnvironment extends NodeEnvironment {
       const readVal = (node) => {
         return node.innerText ? JSON.parse(node.innerText) : undefined
       }
+      if (valueHandleA === null || valueHandleB === null) {
+        throw new Error('Value handle is null')
+      }
       const valueA: PortableTextBlock[] | undefined = await valueHandleA.evaluate(readVal)
       const valueB: PortableTextBlock[] | undefined = await valueHandleB.evaluate(readVal)
       return new Promise<void>((resolve, reject) => {
@@ -187,7 +190,6 @@ export default class CollaborationEnvironment extends NodeEnvironment {
             editorId,
             insertText: async (text: string) => {
               await delay(generateRandomInteger(0, 100))
-              await editableHandle.focus()
               await Promise.all([
                 waitForRevision(),
                 waitForNewSelection(async () => {
@@ -209,7 +211,6 @@ export default class CollaborationEnvironment extends NodeEnvironment {
             },
             pressKey: async (keyName: KeyInput, times?: number) => {
               await delay(generateRandomInteger(0, 100))
-              await editableHandle.focus()
               const pressKey = async () => {
                 await editableHandle.press(keyName)
               }
@@ -256,7 +257,6 @@ export default class CollaborationEnvironment extends NodeEnvironment {
               await editableHandle.focus()
             },
             setSelection: async (selection: EditorSelection | null) => {
-              await editableHandle.focus()
               ipc.of.socketServer.emit(
                 'payload',
                 JSON.stringify({
