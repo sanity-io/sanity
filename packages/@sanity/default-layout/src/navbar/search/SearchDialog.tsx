@@ -36,9 +36,7 @@ export function SearchDialog({onClose, onOpen, open}: SearchDialogProps) {
   const {savedSearchIndex, saveSearchIndex} = useMeasureSearchResultsIndex()
 
   /**
-   * On close:
-   * - Store top-most search result scroll index
-   * - Re-focus the last element in the studio
+   * Store top-most search result scroll index on close
    */
   const handleClose = useCallback(() => {
     saveSearchIndex()
