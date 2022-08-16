@@ -1,4 +1,4 @@
-import React, {useCallback, useMemo, useRef, useState} from 'react'
+import React, {useCallback, useMemo, useRef, useState, useEffect} from 'react'
 import {Text, Box, Card, Code} from '@sanity/ui'
 import styled from 'styled-components'
 import {Subject} from 'rxjs'
@@ -158,6 +158,13 @@ export const Editor = ({
     ),
     [renderBlock, renderChild, renderDecorator, selection]
   )
+
+  // Make sure that the test editor is focused and out of "readOnly mode".
+  useEffect(() => {
+    if (editor.current) {
+      PortableTextEditor.focus(editor.current)
+    }
+  }, [editor])
 
   if (!editorId) {
     return null

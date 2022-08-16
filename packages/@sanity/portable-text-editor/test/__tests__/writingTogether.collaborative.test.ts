@@ -59,7 +59,10 @@ describe('collaborate editing', () => {
       anchor: {path: [{_key: 'randomKey0'}, 'children', {_key: 'randomKey1'}], offset: 11},
       focus: {path: [{_key: 'randomKey0'}, 'children', {_key: 'randomKey1'}], offset: 11},
     })
-    expect(selectionB).toEqual(null)
+    expect(selectionB).toEqual({
+      anchor: {offset: 0, path: [{_key: 'B-0'}, 'children', {_key: 'B-1'}]},
+      focus: {offset: 0, path: [{_key: 'B-0'}, 'children', {_key: 'B-1'}]},
+    })
   })
 
   it('will update value in editor A when editor B writes something', async () => {
@@ -239,7 +242,7 @@ describe('collaborate editing', () => {
     }
 
     expect(valA).toEqual(valB)
-    expect(valB[1]).toEqual({
+    expect(valB && valB[1]).toEqual({
       _key: 'B-3',
       _type: 'block',
       children: [
@@ -410,10 +413,13 @@ describe('collaborate editing', () => {
         },
       ]
     `)
-    await editorA.setSelection({
+    const newExpectedSelA = {
       anchor: {path: [{_key: 'randomKey0'}, 'children', {_key: 'randomKey1'}], offset: 52},
       focus: {path: [{_key: 'randomKey0'}, 'children', {_key: 'randomKey1'}], offset: 52},
-    })
+    }
+    await editorA.setSelection(newExpectedSelA)
+    const newSelA = await editorA.getSelection()
+    expect(newExpectedSelA).toEqual(newSelA)
     await editorB.setSelection({
       anchor: {offset: 17, path: [{_key: 'B-3'}, 'children', {_key: 'B-2'}]},
       focus: {offset: 17, path: [{_key: 'B-3'}, 'children', {_key: 'B-2'}]},

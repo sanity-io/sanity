@@ -81,7 +81,7 @@ export function App() {
           <Box marginBottom={5}>
             <Editor
               editorId={editorId}
-              value={value}
+              value={value || undefined}
               selection={selection}
               onMutation={handleMutation}
               incomingPatches$={incomingPatches$}
@@ -91,7 +91,7 @@ export function App() {
       </Stack>
       <Stack>
         <Card padding={[3, 4, 5, 6]} sizing="border">
-          <Value value={value} revId={revId} />
+          <Value value={value || undefined} revId={revId || ''} />
         </Card>
       </Stack>
     </ThemeProvider>
