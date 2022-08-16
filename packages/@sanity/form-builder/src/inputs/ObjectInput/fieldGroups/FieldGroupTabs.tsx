@@ -1,3 +1,5 @@
+/* This is disabled to work around a bug with eslint-plugin-react */
+/* eslint-disable react/no-unused-prop-types */
 import React, {ForwardedRef, forwardRef, useCallback} from 'react'
 import {ElementQuery, Select, TabList} from '@sanity/ui'
 import {FieldGroup} from '@sanity/types/src'

@@ -72,7 +72,7 @@ const DEFAULT_FILTER_FIELD = () => true
 // disable eslint false positive
 // eslint-disable-next-line react/display-name
 export const ObjectInput = memo(
-  forwardRef(function ObjectInput(props: Props, forwardedRef: ForwardedRef<HTMLDivElement>) {
+  forwardRef(function ObjectInput(fieldProps: Props, forwardedRef: ForwardedRef<HTMLDivElement>) {
     const {
       type,
       presence = EMPTY_PRESENCE,
@@ -87,7 +87,7 @@ export const ObjectInput = memo(
       onBlur,
       compareValue,
       filterField = DEFAULT_FILTER_FIELD,
-    } = props
+    } = fieldProps
 
     const {value: currentUser} = useCurrentUser()
     const {changesOpen} = useReviewChanges()
