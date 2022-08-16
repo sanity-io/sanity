@@ -116,9 +116,10 @@ export namespace Schema {
     validation?: SchemaValidationValue
     icon?: React.ComponentType | React.ReactNode
     components?: {
+      diff?: React.ComponentType<any> // @todo: use `DiffProps` here
       field?: React.ComponentType<any> // @todo: use `FieldProps` here
-      item?: React.ComponentType<any> // @todo: use `ItemProps` here
       input?: React.ComponentType<any> // @todo: use `InputProps` here
+      item?: React.ComponentType<any> // @todo: use `ItemProps` here
       preview?: React.ComponentType<any> // @todo: use `PreviewProps` here
     }
     // TODO
@@ -498,9 +499,10 @@ export interface BaseSchemaType {
   validation?: SchemaValidationValue
   preview?: PreviewConfig
   components?: {
+    diff?: React.ComponentType<any> // @todo: use `DiffProps` here
     field?: React.ComponentType<any> // @todo: use `FieldProps` here
-    item?: React.ComponentType<any> // @todo: use `ItemProps` here
     input?: React.ComponentType<any> // @todo: use `InputProps` here
+    item?: React.ComponentType<any> // @todo: use `ItemProps` here
     preview?: React.ComponentType<any> // @todo: use `PreviewProps` here
   }
 
