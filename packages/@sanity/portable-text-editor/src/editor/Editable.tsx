@@ -1,5 +1,4 @@
 import {BaseRange, Transforms} from 'slate'
-import {isEqual} from 'lodash'
 import React, {useCallback, useMemo, useEffect, forwardRef} from 'react'
 import {Editable as SlateEditable, ReactEditor, withReact} from '@sanity/slate-react'
 import {
@@ -16,14 +15,13 @@ import {
   ScrollSelectionIntoViewFunction,
 } from '../types/editor'
 import {HotkeyOptions} from '../types/options'
-import {isEqualToEmptyEditor, toSlateValue} from '../utils/values'
+import {fromSlateValue, isEqualToEmptyEditor, toSlateValue} from '../utils/values'
 import {normalizeSelection} from '../utils/selection'
-import {toPortableTextRange, toSlateRange} from '../utils/ranges'
+import {toSlateRange} from '../utils/ranges'
 import {debugWithName} from '../utils/debug'
 import {Leaf} from './Leaf'
 import {Element} from './Element'
 import {usePortableTextEditor} from './hooks/usePortableTextEditor'
-import {usePortableTextEditorValue} from './hooks/usePortableTextEditorValue'
 import {PortableTextEditor} from './PortableTextEditor'
 import {createWithEditableAPI, createWithHotkeys, createWithInsertData} from './plugins'
 import {useForwardedRef} from './hooks/useForwardedRef'
@@ -96,7 +94,6 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
   } = props
 
   const portableTextEditor = usePortableTextEditor()
-  const value = usePortableTextEditorValue()
   const ref = useForwardedRef(forwardedRef)
 
   const {
@@ -107,8 +104,8 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
   } = portableTextEditor
 
   const isEmpty = useMemo(
-    () => !value || isEqualToEmptyEditor(slateEditor.children, portableTextFeatures),
-    [portableTextFeatures, slateEditor.children, value]
+    () => isEqualToEmptyEditor(slateEditor.children, portableTextFeatures),
+    [portableTextFeatures, slateEditor.children]
   )
 
   // React/UI-spesific plugins
@@ -196,26 +193,27 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
 
   // Restore selection from props
   useEffect(() => {
-    if (
-      propsSelection &&
-      !isEqual(
-        propsSelection,
-        toPortableTextRange(value, slateEditor.selection, portableTextFeatures)
-      )
-    ) {
+    if (propsSelection) {
       debug(`Selection from props ${JSON.stringify(propsSelection)}`)
-      const normalizedSelection = normalizeSelection(propsSelection, value)
+      const normalizedSelection = normalizeSelection(
+        propsSelection,
+        fromSlateValue(slateEditor.children, portableTextFeatures.types.block.name)
+      )
       if (normalizedSelection !== null) {
         debug(`Normalized selection from props ${JSON.stringify(normalizedSelection)}`)
         const slateRange = toSlateRange(normalizedSelection, slateEditor)
         if (slateRange) {
           Transforms.select(slateEditor, slateRange)
+          // Output selection here in those cases where the editor selection was the same, and there are no set selection operations in the
+          // editor (this is usually automatically outputted by the withPortableTextSelections plugin)
+          if (!slateEditor.operations.some((o) => o.type === 'set_selection')) {
+            change$.next({type: 'selection', selection: normalizedSelection})
+          }
           slateEditor.onChange()
         }
       }
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [slateEditor, propsSelection]) // Note that  'value' is deliberately left out here.
+  }, [slateEditor, propsSelection, portableTextFeatures.types.block.name, change$])
 
   // Set initial selection from props
   useEffect(() => {
