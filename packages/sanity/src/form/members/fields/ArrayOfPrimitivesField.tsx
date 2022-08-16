@@ -218,8 +218,6 @@ export function ArrayOfPrimitivesField(props: {
     member.field.focused,
     member.field.validation,
     member.field.presence,
-    member.collapsible,
-    member.collapsed,
     handleBlur,
     handleSetCollapsed,
     handleFocus,
