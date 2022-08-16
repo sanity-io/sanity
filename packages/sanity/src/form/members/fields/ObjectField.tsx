@@ -174,10 +174,7 @@ export const ObjectField = function ObjectField(props: {
     member.field.focusPath,
     member.field.focused,
     member.field.groups,
-    member.collapsed,
     handleBlur,
-    handleCollapse,
-    handleExpand,
     handleSelectFieldGroup,
     handleOpenField,
     handleCloseField,
@@ -227,6 +224,7 @@ export const ObjectField = function ObjectField(props: {
   }, [
     member.name,
     member.index,
+    member.field.changed,
     member.field.level,
     member.field.value,
     member.field.validation,
