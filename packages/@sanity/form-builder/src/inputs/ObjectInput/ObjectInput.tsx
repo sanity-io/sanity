@@ -466,6 +466,7 @@ export const ObjectInput = memo(
               onClick={handleSelectTab}
               selectedName={selectedFieldGroupName}
               groups={filterGroups}
+              ref={forwardedRef}
               shouldAutoFocus={
                 level === 0 && (focusPath.length === 0 || focusPath[0] === FOCUS_TERMINATOR)
               }
