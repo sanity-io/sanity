@@ -23,10 +23,8 @@ export async function renderObjectInput(options: {
   const {fieldDefinition, props, render: initialRender} = options
 
   const onCloseField = jest.fn()
-  const onCollapse = jest.fn()
   const onCollapseField = jest.fn()
   const onCollapseFieldSet = jest.fn()
-  const onExpand = jest.fn()
   const onExpandField = jest.fn()
   const onExpandFieldSet = jest.fn()
   const onOpenField = jest.fn()

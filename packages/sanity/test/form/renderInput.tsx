@@ -132,6 +132,8 @@ export async function renderInput(props: {
       <StudioFormBuilderProvider
         __internal_patchChannel={patchChannel}
         changesOpen={false}
+        collapsedFieldSets={undefined}
+        collapsedPaths={undefined}
         focusPath={formState.focusPath}
         focused={formState.focused}
         groups={formState.groups || EMPTY_ARRAY}
