@@ -9,6 +9,7 @@ import {ObjectFormNode} from '../store/types/nodes'
 import {ObjectInputProps} from '../types'
 import {EMPTY_ARRAY} from '../utils/empty'
 import {useFormBuilder} from '../useFormBuilder'
+import {StateTree} from '../store'
 import {StudioFormBuilderProvider} from './StudioFormBuilderProvider'
 import {useFormCallbacks} from './contexts/FormCallbacks'
 
@@ -24,6 +25,8 @@ export interface StudioFormBuilderProps
 
   autoFocus?: boolean
   changesOpen?: boolean
+  collapsedFieldSets: StateTree<boolean> | undefined
+  collapsedPaths: StateTree<boolean> | undefined
   focusPath: Path
   focused: boolean | undefined
   id: string
@@ -49,6 +52,8 @@ export function StudioFormBuilder(props: StudioFormBuilderProps) {
     __internal_patchChannel: patchChannel,
     autoFocus,
     changesOpen,
+    collapsedFieldSets,
+    collapsedPaths,
     focusPath,
     focused,
     groups,
@@ -73,6 +78,8 @@ export function StudioFormBuilder(props: StudioFormBuilderProps) {
       __internal_patchChannel={patchChannel}
       autoFocus={autoFocus}
       changesOpen={changesOpen}
+      collapsedFieldSets={collapsedFieldSets}
+      collapsedPaths={collapsedPaths}
       focusPath={focusPath}
       focused={focused}
       groups={groups}

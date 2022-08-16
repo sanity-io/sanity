@@ -40,6 +40,8 @@ export function FormView(props: FormViewProps) {
   const {hidden, margins, granted} = props
 
   const {
+    collapsedFieldSets,
+    collapsedPaths,
     displayed: value,
     documentId,
     documentType,
@@ -168,6 +170,8 @@ export function FormView(props: FormViewProps) {
             ) : (
               <StudioFormBuilder
                 __internal_patchChannel={patchChannel}
+                collapsedFieldSets={collapsedFieldSets}
+                collapsedPaths={collapsedPaths}
                 focusPath={formState.focusPath}
                 changed={formState.changed}
                 focused={formState.focused}

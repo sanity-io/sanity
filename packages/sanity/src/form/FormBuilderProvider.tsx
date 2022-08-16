@@ -14,7 +14,7 @@ import {
   RenderItemCallback,
   RenderPreviewCallback,
 } from './types'
-import {ObjectMember} from './store'
+import {ObjectMember, StateTree} from './store'
 import {DefaultArrayInputFunctions} from './inputs/arrays/common/ArrayFunctions'
 import {DefaultMarkers} from './inputs/PortableText/_legacyDefaultParts/Markers'
 import {DefaultCustomMarkers} from './inputs/PortableText/_legacyDefaultParts/CustomMarkers'
@@ -32,6 +32,8 @@ export interface FormBuilderProviderProps {
   autoFocus?: boolean
   changesOpen?: boolean
   children?: React.ReactNode
+  collapsedFieldSets: StateTree<boolean> | undefined
+  collapsedPaths: StateTree<boolean> | undefined
   file: Source['form']['file']
   filterField?: FormBuilderFilterFieldFn
   focusPath: Path
@@ -76,6 +78,8 @@ export function FormBuilderProvider(props: FormBuilderProviderProps) {
     autoFocus,
     changesOpen,
     children,
+    collapsedFieldSets,
+    collapsedPaths,
     file,
     filterField,
     focusPath,
@@ -141,6 +145,8 @@ export function FormBuilderProvider(props: FormBuilderProviderProps) {
       __internal,
       autoFocus,
       changesOpen,
+      collapsedFieldSets,
+      collapsedPaths,
       focusPath,
       focused,
       groups,
@@ -158,6 +164,8 @@ export function FormBuilderProvider(props: FormBuilderProviderProps) {
       __internal,
       autoFocus,
       changesOpen,
+      collapsedFieldSets,
+      collapsedPaths,
       documentValue,
       focusPath,
       focused,

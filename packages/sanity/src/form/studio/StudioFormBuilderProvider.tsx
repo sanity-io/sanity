@@ -5,7 +5,7 @@ import React from 'react'
 import {useSource} from '../../studio'
 import {PatchChannel, PatchEvent} from '../patch'
 import {FormBuilderProvider} from '../FormBuilderProvider'
-import {ObjectMember} from '../store'
+import {ObjectMember, StateTree} from '../store'
 import {FormFieldGroup} from '../types'
 import {FormFieldPresence} from '../../presence'
 
@@ -21,6 +21,8 @@ export interface StudioFormBuilderProviderProps {
   autoFocus?: boolean
   changesOpen?: boolean
   children?: React.ReactNode
+  collapsedFieldSets: StateTree<boolean> | undefined
+  collapsedPaths: StateTree<boolean> | undefined
   focusPath: Path
   focused: boolean | undefined
   groups: FormFieldGroup[]
@@ -51,6 +53,8 @@ export function StudioFormBuilderProvider(props: StudioFormBuilderProviderProps)
     autoFocus,
     changesOpen,
     children,
+    collapsedFieldSets,
+    collapsedPaths,
     focusPath,
     focused,
     groups,
@@ -77,6 +81,8 @@ export function StudioFormBuilderProvider(props: StudioFormBuilderProviderProps)
       __internal_patchChannel={patchChannel}
       autoFocus={autoFocus}
       changesOpen={changesOpen}
+      collapsedFieldSets={collapsedFieldSets}
+      collapsedPaths={collapsedPaths}
       file={file}
       focusPath={focusPath}
       focused={focused}

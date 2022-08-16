@@ -12,7 +12,7 @@ import {
   RenderItemCallback,
   RenderPreviewCallback,
 } from './types'
-import {ObjectMember} from './store'
+import {ObjectMember, StateTree} from './store'
 
 /**
  * @alpha
@@ -42,6 +42,8 @@ export interface FormBuilderContextValue {
 
   autoFocus?: boolean
   changesOpen?: boolean
+  collapsedFieldSets: StateTree<boolean> | undefined
+  collapsedPaths: StateTree<boolean> | undefined
   focusPath: Path
   focused?: boolean
   groups: FormFieldGroup[]
