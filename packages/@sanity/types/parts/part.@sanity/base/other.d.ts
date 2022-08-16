@@ -292,7 +292,11 @@ declare module 'part:@sanity/base/search' {
   import type {Observable} from 'rxjs'
   import type {SearchTerms} from '@sanity/base'
 
-  declare const search: (queryStr: string | SearchParams) => Observable
+  declare const search: (
+    searchTerms: string | SearchTerms,
+    searchOpts?: SearchOptions,
+    groqComments?: string[]
+  ) => Observable
   export default search
 }
 

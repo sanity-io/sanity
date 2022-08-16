@@ -17,6 +17,7 @@ import {
   switchMap,
   tap,
 } from 'rxjs/operators'
+import {FINDABILITY_MVI} from '../constants'
 import {hasSearchableTerms} from '../contexts/search/selectors'
 import {SearchHit, SearchState} from '../types'
 
@@ -72,9 +73,14 @@ export function useSearch(
       debounceTime(300),
       tap(onStart),
       switchMap((terms) => {
+        // Comments prepended to each query for future measurement
+        const searchComments = [
+          `findability-mvi:${FINDABILITY_MVI}`,
+          `findability-selected-types:${terms.types.length}`,
+        ]
         return concat(
           of({...INITIAL_SEARCH_STATE, loading: true, terms, searchString: terms.query}),
-          (search(terms) as Observable<SearchHit[]>).pipe(
+          (search(terms, {}, searchComments) as Observable<SearchHit[]>).pipe(
             map((hits) => ({hits})),
             tap(({hits}) => onComplete?.(hits)),
             catchError((error) => {

@@ -17,7 +17,8 @@ type ObjectSchema = {
 
 type SearchFunction = (
   searchTerms: string | SearchTerms,
-  searchOpts?: SearchOptions
+  searchOpts?: SearchOptions,
+  searchComments?: string[]
 ) => Observable<WeightedHit[]>
 
 function getSearchTerms(
@@ -40,13 +41,18 @@ export function createWeightedSearch(
 ): SearchFunction {
   // this is the actual search function that takes the search string and returns the hits
   // supports string as search param to be backwards compatible
-  return function search(searchParams, searchOpts = {}) {
+  return function search(searchParams, searchOpts = {}, searchComments = []) {
     const searchTerms = getSearchTerms(searchParams, types)
     const {query, params, options: o, searchSpec, terms} = createSearchQuery(searchTerms, {
       ...commonOpts,
       ...searchOpts,
     })
-    return client.observable.fetch(query, params, o).pipe(
+
+    // Prepend optional GROQ comments to query
+    const groqComments = searchComments.map((s) => `// ${s}`).join('\n')
+    const updatedQuery = groqComments ? `${groqComments}\n${query}` : query
+
+    return client.observable.fetch(updatedQuery, params, o).pipe(
       commonOpts.unique ? map(removeDupes) : tap(),
       map((hits: SearchHit[]) => applyWeights(searchSpec, hits, terms)),
       map((hits) => sortBy(hits, (hit) => -hit.score))

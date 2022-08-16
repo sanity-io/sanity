@@ -3,6 +3,11 @@ import {studioTheme} from '@sanity/ui'
 const IS_MAC =
   typeof window != 'undefined' && /Mac|iPod|iPhone|iPad/.test(window.navigator.platform)
 
+// Findability version, prepended to every search query for future measurement
+export const FINDABILITY_MVI = 1
+
+// Max number of records to fetch per search request - intentionally set high to workaround
+// current limitations with studio search config
 export const SEARCH_LIMIT = 1000
 
 export const GLOBAL_SEARCH_KEY = 'k'
