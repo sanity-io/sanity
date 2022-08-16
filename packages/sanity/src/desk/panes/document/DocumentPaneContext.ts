@@ -7,7 +7,7 @@ import {
 } from '@sanity/types'
 import {createContext} from 'react'
 import {EditStateFor, TimelineController, Timeline} from '../../../datastores'
-import {PatchEvent} from '../../../form'
+import {PatchEvent, StateTree} from '../../../form'
 import {DocumentActionComponent} from '../../actions'
 import {DocumentBadgeComponent} from '../../badges'
 import {PaneView, PaneMenuItem, PaneMenuItemGroup} from '../../types'
@@ -19,6 +19,8 @@ export interface DocumentPaneContextValue {
   activeViewId: string | null
   badges: DocumentBadgeComponent[] | null
   changesOpen: boolean
+  collapsedFieldSets: StateTree<boolean> | undefined
+  collapsedPaths: StateTree<boolean> | undefined
   compareValue: Partial<SanityDocument> | null
   connectionState: 'connecting' | 'reconnecting' | 'connected'
   displayed: Partial<SanityDocument> | null

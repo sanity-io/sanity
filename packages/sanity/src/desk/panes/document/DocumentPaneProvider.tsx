@@ -313,6 +313,8 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     activeViewId,
     badges,
     changesOpen,
+    collapsedFieldSets,
+    collapsedPaths,
     compareValue,
     connectionState,
     displayed,
