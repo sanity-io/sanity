@@ -1,11 +1,7 @@
-import {Portal} from '@sanity/ui'
 import React, {useCallback, useEffect, useState} from 'react'
-import FocusLock from 'react-focus-lock'
 import {PlaceholderSearchInput} from './components/PlaceholderSearchInput'
 import {SearchPopover} from './components/SearchPopover'
 import {POPOVER_INPUT_PADDING, POPOVER_MAX_WIDTH} from './constants'
-import {useMeasureSearchResultsIndex} from './hooks/useMeasureSearchResultsIndex'
-import {useSearchHotkeys} from './hooks/useSearchHotkeys'
 
 export function SearchField() {
   const [placeholderElement, setPlaceholderElement] = useState<HTMLInputElement | null>(null)
@@ -15,19 +11,7 @@ export function SearchField() {
     y: number
   }>(null)
 
-  /**
-   * Measure top-most visible search result index
-   */
-  const {savedSearchIndex, saveSearchIndex} = useMeasureSearchResultsIndex()
-
-  /**
-   * Store top-most search result scroll index on close
-   */
-  const handleClose = useCallback(() => {
-    saveSearchIndex()
-    setOpen(false)
-  }, [saveSearchIndex])
-
+  const handleClose = useCallback(() => setOpen(false), [])
   const handleOpen = useCallback(() => setOpen(true), [])
 
   /**
@@ -36,15 +20,6 @@ export function SearchField() {
   const handleWindowResize = useCallback(() => {
     setPopoverPosition(calcDialogPosition(placeholderElement))
   }, [placeholderElement])
-
-  /**
-   * Bind hotkeys to open / close actions
-   */
-  useSearchHotkeys({
-    onClose: handleClose,
-    onOpen: handleOpen,
-    open,
-  })
 
   useEffect(() => {
     setPopoverPosition(calcDialogPosition(placeholderElement))
@@ -58,17 +33,12 @@ export function SearchField() {
   return (
     <>
       <PlaceholderSearchInput onOpen={handleOpen} ref={setPlaceholderElement} />
-      {open && (
-        <Portal>
-          <FocusLock autoFocus={false} returnFocus>
-            <SearchPopover
-              initialSearchIndex={savedSearchIndex}
-              onClose={handleClose}
-              position={popoverPosition}
-            />
-          </FocusLock>
-        </Portal>
-      )}
+      <SearchPopover
+        onClose={handleClose}
+        onOpen={handleOpen}
+        open={open}
+        position={popoverPosition}
+      />
     </>
   )
 }

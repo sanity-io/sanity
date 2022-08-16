@@ -33,7 +33,7 @@ export function SearchDialog({onClose, onOpen, open}: SearchDialogProps) {
   /**
    * Measure top-most visible search result index
    */
-  const {savedSearchIndex, saveSearchIndex} = useMeasureSearchResultsIndex()
+  const {savedSearchIndex, saveSearchIndex} = useMeasureSearchResultsIndex(childContainerElement)
 
   /**
    * Store top-most search result scroll index on close
@@ -62,10 +62,9 @@ export function SearchDialog({onClose, onOpen, open}: SearchDialogProps) {
       containerElement={containerElement}
       headerInputElement={headerInputElement}
       id="search-results-dialog"
-      initialIndex={savedSearchIndex}
+      initialSelectedIndex={hasValidTerms ? savedSearchIndex : 0}
       pointerOverlayElement={pointerOverlayElement}
-      wraparound={!hasValidTerms}
-      virtualList
+      virtualList={hasValidTerms}
     >
       <Portal>
         <FocusLock autoFocus={false} returnFocus>
@@ -75,7 +74,6 @@ export function SearchDialog({onClose, onOpen, open}: SearchDialogProps) {
               <SearchContent flex={1}>
                 {hasValidTerms ? (
                   <SearchResults
-                    initialSearchIndex={savedSearchIndex}
                     onClose={handleClose}
                     setChildContainerRef={setChildContainerRef}
                     setPointerOverlayRef={setPointerOverlayRef}
