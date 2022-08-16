@@ -1,6 +1,6 @@
 {
   "name": "@sanity/export",
-  "version": "3.0.0-dev-preview.13",
+  "version": "3.0.0-dev-preview.14",
   "description": "Export Sanity documents and assets",
   "main": "./lib/export.js",
   "types": "./lib/dts/src/export.d.ts",

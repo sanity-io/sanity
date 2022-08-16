@@ -1,6 +1,6 @@
 {
   "name": "@sanity/import-cli",
-  "version": "3.0.0-dev-preview.13",
+  "version": "3.0.0-dev-preview.14",
   "description": "CLI tool that imports documents from an ndjson file or URL",
   "main": "lib/sanity-import.js",
   "bin": {
@@ -28,7 +28,7 @@
   ],
   "dependencies": {
     "@sanity/client": "^3.3.3",
-    "@sanity/import": "3.0.0-dev-preview.13",
+    "@sanity/import": "3.0.0-dev-preview.14",
     "get-it": "^5.2.1",
     "meow": "^9.0.0",
     "ora": "^5.4.1",

@@ -1,6 +1,6 @@
 {
   "name": "@sanity/block-tools",
-  "version": "3.0.0-dev-preview.13",
+  "version": "3.0.0-dev-preview.14",
   "description": "Can format HTML, Slate JSON or Sanity block array into any other format.",
   "source": "./src/index.ts",
   "main": "./lib/index.cjs",
@@ -38,8 +38,8 @@
     "lodash": "^4.17.21"
   },
   "devDependencies": {
-    "@sanity/schema": "3.0.0-dev-preview.13",
-    "@sanity/types": "3.0.0-dev-preview.13",
+    "@sanity/schema": "3.0.0-dev-preview.14",
+    "@sanity/types": "3.0.0-dev-preview.14",
     "@types/jsdom": "^20.0.0",
     "@types/react": "^17.0.42",
     "jsdom": "^20.0.0"

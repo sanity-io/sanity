@@ -1,6 +1,6 @@
 {
   "name": "@sanity/util",
-  "version": "3.0.0-dev-preview.13",
+  "version": "3.0.0-dev-preview.14",
   "description": "Utilities shared across projects of Sanity",
   "source": "./src/index.ts",
   "main": "./lib/index.cjs",
@@ -83,7 +83,7 @@
   },
   "homepage": "https://www.sanity.io/",
   "dependencies": {
-    "@sanity/types": "3.0.0-dev-preview.13",
+    "@sanity/types": "3.0.0-dev-preview.14",
     "get-random-values-esm": "^1.0.0",
     "moment": "^2.29.4"
   },
