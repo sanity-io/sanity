@@ -13,6 +13,7 @@ import {
   SetNodeOperation,
   SplitNodeOperation,
 } from 'slate'
+import {debounce} from 'lodash'
 import {insert, setIfMissing, unset} from '../../patch/PatchEvent'
 import type {Patch} from '../../types/patch'
 
@@ -91,6 +92,8 @@ export function createWithPatches(
     snapshot: PortableTextBlock[] | undefined
   }>
 ): [editor: (editor: PortableTextSlateEditor) => PortableTextSlateEditor, cleanupFn: () => void] {
+  // The previous editor children are needed to figure out the _key of deleted nodes
+  // The editor.children would no longer contain that information if the node is already deleted.
   let previousChildren: Descendant[]
 
   const patchToOperations = createPatchToOperations(portableTextFeatures, keyGenerator)
@@ -107,13 +110,19 @@ export function createWithPatches(
 
       previousChildren = [...editor.children]
 
-      // Inspect incoming patches and adjust editor selection accordingly.
+      // Sync the with props.value in PortableTextEditor after we have processed batches of incoming patches.
+      // This is only for consistency checking against the props.value, so it can be debounced without problems.
+      const syncValueAfterIncomingPatches = debounce(() => syncValue(), 100, {
+        trailing: true,
+        leading: false,
+      })
+
+      // Subscribe and deal with incoming patches
       if (incomingPatches$) {
         debug('Subscribing to patches')
         patchSubscription = incomingPatches$.subscribe(({patches, snapshot}) => {
           const remotePatches = patches.filter((p) => p.origin !== 'local')
           if (remotePatches.length !== 0) {
-            const prevOperations = [...editor.operations]
             Editor.withoutNormalizing(editor, () => {
               remotePatches.forEach((patch) => {
                 debug(`Handling remote patch ${JSON.stringify(patch)}`)
@@ -131,16 +140,8 @@ export function createWithPatches(
                 })
               })
             })
-            if (editor.operations.length !== prevOperations.length) {
-              editor.onChange()
-            }
-            syncValue()
           }
-          // Always sync the value if we had local ones
-          if (patches.some((p) => p.origin === 'local')) {
-            syncValue()
-          }
-          editor.onChange()
+          syncValueAfterIncomingPatches()
         })
       }
 
@@ -153,9 +154,7 @@ export function createWithPatches(
         }
         let patches: Patch[] = []
 
-        // The previous value is needed to figure out the _key of deleted nodes. The editor.children would no
-        // longer contain that information if the node is already deleted.
-        // debug('setting previous children', operation, editor.children)
+        // Update previous children here before we apply
         previousChildren = editor.children
 
         const editorWasEmpty = isEqualToEmptyEditor(previousChildren, portableTextFeatures)
@@ -188,7 +187,6 @@ export function createWithPatches(
             )
           )
         }
-
         switch (operation.type) {
           case 'insert_text':
             patches = [...patches, ...insertTextPatch(editor, operation, previousChildren)]
