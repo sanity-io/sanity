@@ -71,7 +71,7 @@ if (!githubWorkspace && !skipDelete) {
   const binPath = path.join(basePath, 'packages', '@sanity', 'cli', 'bin', 'sanity')
 
   // Require a clean slate at startup
-  cleanup()
+  await cleanup()
 
   // Remove source and dependencies from CLI to ensure it works standalone
   if (!skipDelete) {
