@@ -12,7 +12,7 @@ export function resolveDiffComponent<D extends Diff = any>(
 
   while (itType) {
     const resolved =
-      (itType as any).diffComponent ||
+      itType?.components?.diff ||
       tryResolve(itType, parentSchemaType) ||
       defaultComponents[itType.name]
 
@@ -20,7 +20,7 @@ export function resolveDiffComponent<D extends Diff = any>(
       return resolved as DiffComponent<any>
     }
 
-    itType = itType.type as any
+    itType = itType.type
   }
 
   return defaultComponents[type.jsonType]
