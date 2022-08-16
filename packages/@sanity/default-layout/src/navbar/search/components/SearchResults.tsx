@@ -31,7 +31,6 @@ export function SearchResults({
   } = useSearchState()
 
   const childParentRef = useRef()
-  const isMountedRef = useRef(false)
 
   const {scrollToIndex, totalSize, virtualItems} = useVirtual({
     estimateSize: useCallback(() => VIRTUAL_LIST_ITEM_HEIGHT, []),
@@ -44,7 +43,6 @@ export function SearchResults({
     onChildClick,
     onChildMouseDown,
     onChildMouseEnter,
-    setActiveIndex,
     setVirtualListScrollToIndex,
   } = useCommandList()
 
@@ -84,17 +82,6 @@ export function SearchResults({
     onChildClick?.()
     onClose()
   }, [dispatch, onChildClick, onClose, terms])
-
-  /**
-   * Reset index / scroll to top whenever subsequent results are loaded in
-   * @todo Revise if/when we introduce pagination
-   */
-  useEffect(() => {
-    if (isMountedRef.current && result.loaded) {
-      setActiveIndex({index: 0, scrollIntoView: true})
-    }
-    isMountedRef.current = true
-  }, [result.loaded, setActiveIndex])
 
   return (
     <SearchResultsWrapper aria-busy={result.loading} $loading={result.loading}>

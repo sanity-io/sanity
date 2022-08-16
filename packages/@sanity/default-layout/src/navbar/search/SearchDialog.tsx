@@ -40,14 +40,19 @@ export function SearchDialog({onClose, onOpen, open}: SearchDialogProps) {
   )
 
   /**
-   * Reset last search index when visiting recent searches
+   * Reset last search index when new results are loaded, or visiting recent searches
+   * @todo Revise if/when we introduce pagination
    */
   useEffect(() => {
-    if (!hasValidTerms && isMountedRef.current) {
+    if (!isMountedRef?.current) {
+      isMountedRef.current = true
+      return
+    }
+
+    if (!hasValidTerms || result.loaded) {
       resetLastSearchIndex()
     }
-    isMountedRef.current = true
-  }, [hasValidTerms, resetLastSearchIndex])
+  }, [hasValidTerms, resetLastSearchIndex, result.loaded])
 
   /**
    * Store top-most search result scroll index on close

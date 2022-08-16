@@ -36,7 +36,6 @@ interface CommandListContextValue {
   onChildClick: () => void
   onChildMouseDown: (event: MouseEvent) => void
   onChildMouseEnter: (index: number) => () => void
-  setActiveIndex: ({index, scrollIntoView}: {index: number; scrollIntoView?: boolean}) => void
   setVirtualListScrollToIndex: (
     scrollToIndex: (index: number, options: Record<string, any>) => void
   ) => void
@@ -385,7 +384,6 @@ export function CommandListProvider({
         onChildClick: handleChildClick,
         onChildMouseDown: handleChildMouseDown,
         onChildMouseEnter: handleChildMouseEnter,
-        setActiveIndex,
         setVirtualListScrollToIndex: handleSetVirtualListScrollToIndex,
       }}
     >
