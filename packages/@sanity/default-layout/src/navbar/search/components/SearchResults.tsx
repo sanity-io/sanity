@@ -54,23 +54,6 @@ export function SearchResults({
     return () => setVirtualListScrollToIndex(null)
   }, [setVirtualListScrollToIndex, scrollToIndex])
 
-  /*
-  // Load next page and focus previous sibling
-  const handleLoadMore = useCallback(
-    (event: MouseEvent<HTMLButtonElement>) => {
-      dispatch({type: 'PAGE_INCREMENT'})
-
-      const previousSibling = event?.currentTarget?.previousElementSibling as HTMLElement
-      if (previousSibling) {
-        previousSibling.focus()
-        previousSibling.setAttribute('aria-selected', 'true')
-        previousSibling.setAttribute('tabIndex', '0')
-      }
-    },
-    [dispatch]
-  )
-  */
-
   /**
    * Add current search terms to recent searches, trigger child item click and close search
    */
@@ -110,24 +93,11 @@ export function SearchResults({
                     />
                   )
                 })}
-
-                {/*result.hasMore && (
-                <Button
-                  disabled={result.loading}
-                  mode="bleed"
-                  onClick={handleLoadMore}
-                  text="More"
-                  title="Load more search results"
-                />
-              )*/}
               </VirtualListChildren>
             </VirtualList>
           )}
 
-          {!result.hits.length && result.loaded && (
-            // (No results)
-            <NoResults />
-          )}
+          {!result.hits.length && result.loaded && <NoResults />}
         </>
       )}
     </SearchResultsWrapper>

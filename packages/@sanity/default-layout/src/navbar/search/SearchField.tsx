@@ -6,29 +6,11 @@ import {POPOVER_INPUT_PADDING, POPOVER_MAX_WIDTH} from './constants'
 export function SearchField() {
   const [placeholderElement, setPlaceholderElement] = useState<HTMLInputElement | null>(null)
   const [open, setOpen] = useState(false)
-  const [popoverPosition, setPopoverPosition] = useState<{
-    x: number
-    y: number
-  }>(null)
 
   const handleClose = useCallback(() => setOpen(false), [])
   const handleOpen = useCallback(() => setOpen(true), [])
 
-  /**
-   * Update popover position on window resize based off current placeholder input
-   */
-  const handleWindowResize = useCallback(() => {
-    setPopoverPosition(calcDialogPosition(placeholderElement))
-  }, [placeholderElement])
-
-  useEffect(() => {
-    setPopoverPosition(calcDialogPosition(placeholderElement))
-  }, [placeholderElement])
-
-  useEffect(() => {
-    window.addEventListener('resize', handleWindowResize)
-    return () => window.removeEventListener('resize', handleWindowResize)
-  }, [handleWindowResize])
+  const popoverPosition = usePopoverPosition(placeholderElement)
 
   return (
     <>
@@ -64,4 +46,29 @@ function calcDialogPosition(
         : null,
     y: placeholderRect.y - POPOVER_INPUT_PADDING,
   }
+}
+
+function usePopoverPosition(element: HTMLElement) {
+  const [popoverPosition, setPopoverPosition] = useState<{
+    x: number
+    y: number
+  }>(null)
+
+  useEffect(() => {
+    setPopoverPosition(calcDialogPosition(element))
+  }, [element])
+
+  /**
+   * Update popover position on window resize based off current placeholder input
+   */
+  const handleWindowResize = useCallback(() => {
+    setPopoverPosition(calcDialogPosition(element))
+  }, [element])
+
+  useEffect(() => {
+    window.addEventListener('resize', handleWindowResize)
+    return () => window.removeEventListener('resize', handleWindowResize)
+  }, [handleWindowResize])
+
+  return popoverPosition
 }

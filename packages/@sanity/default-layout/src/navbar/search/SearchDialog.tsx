@@ -30,7 +30,7 @@ export function SearchDialog({onClose, onOpen, open}: SearchDialogProps) {
   const isMountedRef = useRef(false)
 
   const {
-    state: {recentSearches, result, terms},
+    state: {filtersVisible, recentSearches, result, terms},
   } = useSearchState()
 
   const hasValidTerms = hasSearchableTerms(terms)
@@ -108,7 +108,7 @@ export function SearchDialog({onClose, onOpen, open}: SearchDialogProps) {
                 )}
               </SearchContent>
 
-              <SearchDialogFilters />
+              {filtersVisible && <SearchDialogFilters />}
             </Flex>
           </SearchDialogWrapper>
         </FocusLock>
@@ -118,43 +118,35 @@ export function SearchDialog({onClose, onOpen, open}: SearchDialogProps) {
 }
 
 function SearchDialogFilters() {
-  const {
-    dispatch,
-    state: {filtersVisible},
-  } = useSearchState()
+  const {dispatch} = useSearchState()
 
-  const dialogRef = useRef<HTMLDivElement>(null)
+  const [dialogElement, setDialogRef] = useState<HTMLDivElement | null>(null)
 
-  // Always hide filters on mount
+  /**
+   * Force dialog content to be 100% height
+   */
   useEffect(() => {
-    dispatch({type: 'FILTERS_HIDE'})
-  }, [dispatch])
-
-  // Force dialogs to be 100% height
-  // TODO: there has to be a better way to do this
-  useEffect(() => {
-    if (dialogRef?.current?.parentElement?.parentElement) {
-      dialogRef.current.parentElement.parentElement.style.height = '100%'
+    const dialogCardInnerElement = dialogElement?.querySelector(
+      '[data-ui="DialogCard"] > [data-ui="Card"]'
+    ) as HTMLElement
+    if (dialogCardInnerElement) {
+      dialogCardInnerElement.style.flex = '1'
     }
-  }, [filtersVisible, dialogRef])
+  }, [dialogElement])
 
   const handleClose = useCallback(() => {
     dispatch({type: 'FILTERS_HIDE'})
   }, [dispatch])
 
-  if (!filtersVisible) {
-    return null
-  }
-
   return (
     <FocusLock autoFocus={false}>
       <Dialog
         cardRadius={1}
-        contentRef={dialogRef}
         header="Filter"
         height="fill"
         id="search-filter"
         onClose={handleClose}
+        ref={setDialogRef}
         width={2}
       >
         <DialogContent tone="default">
