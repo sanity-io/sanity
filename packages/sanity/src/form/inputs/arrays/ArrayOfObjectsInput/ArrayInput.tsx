@@ -30,7 +30,7 @@ import {ArrayOfObjectsMember} from '../../../store'
 import {ArrayOfObjectsInputProps} from '../../../types'
 import {isObjectItemProps} from '../../../types/asserters'
 import {withFocusRing} from '../../../components/withFocusRing'
-import {MemberItem, MemberItemError} from '../../../members'
+import {ArrayOfObjectsItem, MemberItemError} from '../../../members'
 import type {_ArrayInput_ArrayMember, _InsertEvent} from './types'
 import {uploadTarget} from './uploadTarget/uploadTarget'
 import {isEmpty} from './item/helpers'
@@ -136,28 +136,6 @@ export class ArrayInput extends React.PureComponent<ArrayInputProps> {
 
   handleRemoveItem = (item: _ArrayInput_ArrayMember) => {
     this.removeItem(item)
-  }
-
-  handleFocus = (event: React.FocusEvent) => {
-    const {onFocus} = this.props
-    // We want to handle focus when the array input *itself* element receives
-    // focus, not when a child element receives focus, but React has decided
-    // to let focus bubble, so this workaround is needed
-    // Background: https://github.com/facebook/react/issues/6410#issuecomment-671915381
-    if (event.currentTarget === event.target && event.currentTarget === this._focusArea) {
-      onFocus(event)
-    }
-  }
-
-  handleBlur = (event: React.FocusEvent) => {
-    const {onBlur} = this.props
-    // We want to handle blur when the array input *itself* element receives
-    // blur, not when a child element receives blur, but React has decided
-    // to let focus events bubble, so this workaround is needed
-    // Background: https://github.com/facebook/react/issues/6410#issuecomment-671915381
-    if (event.currentTarget === event.target && event.currentTarget === this._focusArea) {
-      onBlur(event)
-    }
   }
 
   removeItem(item: _ArrayInput_ArrayMember) {
@@ -309,7 +287,7 @@ export class ArrayInput extends React.PureComponent<ArrayInputProps> {
     const {renderField, renderInput, renderPreview} = this.props
     if (member.kind === 'item') {
       return (
-        <MemberItem
+        <ArrayOfObjectsItem
           member={member}
           renderItem={this.renderItem}
           renderField={renderField}
@@ -327,7 +305,15 @@ export class ArrayInput extends React.PureComponent<ArrayInputProps> {
   }
 
   render() {
-    const {schemaType, onChange, value = [], readOnly, members, resolveUploader} = this.props
+    const {
+      schemaType,
+      onChange,
+      value = [],
+      readOnly,
+      members,
+      elementProps,
+      resolveUploader,
+    } = this.props
 
     const {isResolvingInitialValue} = this.state
 
@@ -373,9 +359,7 @@ export class ArrayInput extends React.PureComponent<ArrayInputProps> {
           types={schemaType.of}
           resolveUploader={resolveUploader}
           onUpload={this.handleUpload}
-          onFocus={this.handleFocus}
-          onBlur={this.handleBlur}
-          ref={this.setFocusArea}
+          {...elementProps}
           tabIndex={0}
         >
           <Stack data-ui="ArrayInput__content" space={3}>

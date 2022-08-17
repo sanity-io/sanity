@@ -3,6 +3,7 @@ import {Path} from '@sanity/types'
 import {useDidUpdate} from '../../hooks/useDidUpdate'
 import {FieldMember, ObjectFormNode} from '../../store'
 import {
+  ArrayOfObjectsInputProps,
   ObjectFieldProps,
   ObjectInputProps,
   RenderArrayOfObjectsItemCallback,
@@ -128,10 +129,20 @@ export const ObjectField = function ObjectField(props: {
     [onFieldGroupSelect, member.field.path]
   )
 
+  const elementProps = useMemo(
+    (): ArrayOfObjectsInputProps['elementProps'] => ({
+      onBlur: handleBlur,
+      onFocus: handleFocus,
+      id: member.field.id,
+      ref: focusRef,
+    }),
+    [handleBlur, handleFocus, member.field.id]
+  )
+
   const inputProps = useMemo((): ObjectInputProps => {
     return {
+      elementProps,
       level: member.field.level,
-      onBlur: handleBlur,
       members: member.field.members,
       value: member.field.value,
       readOnly: member.field.readOnly,
@@ -139,7 +150,6 @@ export const ObjectField = function ObjectField(props: {
       presence: member.field.presence,
       schemaType: member.field.schemaType,
       changed: member.field.changed,
-      focusRef: focusRef,
       id: member.field.id,
       onFieldGroupSelect: handleSelectFieldGroup,
       onOpenField: handleOpenField,
@@ -148,7 +158,6 @@ export const ObjectField = function ObjectField(props: {
       onExpandField: handleExpandField,
       onExpandFieldSet: handleExpandFieldSet,
       onCollapseFieldSet: handleCollapseFieldSet,
-      onFocus: handleFocus,
       onFocusPath: handleFocusChildPath,
       path: member.field.path,
       focusPath: member.field.focusPath,

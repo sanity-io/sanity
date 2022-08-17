@@ -1,6 +1,6 @@
 import {Schema, ObjectSchemaType} from '@sanity/types'
 import React from 'react'
-import {FieldMember, ObjectFormNode, ObjectInputProps} from '../../src/form'
+import {ComplexElementProps, FieldMember, ObjectFormNode, ObjectInputProps} from '../../src/form'
 import {
   defaultRenderField,
   defaultRenderInput,
@@ -31,7 +31,7 @@ export async function renderObjectInput(options: {
   const onFieldGroupSelect = jest.fn()
 
   function transformProps(
-    inputProps: TestRenderInputProps,
+    inputProps: TestRenderInputProps<ComplexElementProps>,
     context: TestRenderInputContext
   ): ObjectInputProps {
     const {formState} = context

@@ -1,4 +1,4 @@
-import React, {useCallback, useMemo, useRef} from 'react'
+import React, {MutableRefObject, useCallback, useMemo, useRef} from 'react'
 import {Path} from '@sanity/types'
 import {ArrayOfObjectsFormNode, FieldMember} from '../../store'
 import {
@@ -40,7 +40,7 @@ export function ArrayOfObjectsField(props: {
   } = useFormCallbacks()
 
   const {member, renderField, renderInput, renderItem, renderPreview} = props
-  const focusRef = useRef<{focus: () => void}>()
+  const focusRef = useRef<Element & {focus: () => void}>()
 
   useDidUpdate(member.field.focused, (hadFocus, hasFocus) => {
     if (!hadFocus && hasFocus) {
@@ -48,13 +48,31 @@ export function ArrayOfObjectsField(props: {
     }
   })
 
-  const handleBlur = useCallback(() => {
-    onPathBlur(member.field.path)
-  }, [member.field.path, onPathBlur])
+  const handleFocus = useCallback(
+    (event: React.FocusEvent) => {
+      // We want to handle focus when the array input *itself* element receives
+      // focus, not when a child element receives focus, but React has decided
+      // to let focus bubble, so this workaround is needed
+      // Background: https://github.com/facebook/react/issues/6410#issuecomment-671915381
+      if (event.currentTarget === event.target && event.currentTarget === focusRef.current) {
+        onPathFocus(member.field.path)
+      }
+    },
+    [member.field.path, onPathFocus]
+  )
 
-  const handleFocus = useCallback(() => {
-    onPathFocus(member.field.path)
-  }, [member.field.path, onPathFocus])
+  const handleBlur = useCallback(
+    (event: React.FocusEvent) => {
+      // We want to handle blur when the array input *itself* element receives
+      // blur, not when a child element receives blur, but React has decided
+      // to let focus events bubble, so this workaround is needed
+      // Background: https://github.com/facebook/react/issues/6410#issuecomment-671915381
+      if (event.currentTarget === event.target && event.currentTarget === focusRef.current) {
+        onPathBlur(member.field.path)
+      }
+    },
+    [member.field.path, onPathBlur]
+  )
 
   const handleChange = useCallback(
     (event: PatchEvent | PatchArg) => {
@@ -179,16 +197,24 @@ export function ArrayOfObjectsField(props: {
     [member.field.path, onPathFocus]
   )
 
+  const elementProps = useMemo(
+    (): ArrayOfObjectsInputProps['elementProps'] => ({
+      onBlur: handleBlur,
+      onFocus: handleFocus,
+      id: member.field.id,
+      ref: focusRef,
+    }),
+    [handleBlur, handleFocus, member.field.id]
+  )
+
   const inputProps = useMemo((): ArrayOfObjectsInputProps => {
     return {
       level: member.field.level,
-      onBlur: handleBlur,
       members: member.field.members,
       value: member.field.value as any,
       readOnly: member.field.readOnly,
       schemaType: member.field.schemaType,
       changed: member.field.changed,
-      focusRef: focusRef,
       id: member.field.id,
       onExpand: handleExpand,
       onCollapse: handleCollapse,
@@ -197,7 +223,6 @@ export function ArrayOfObjectsField(props: {
       onCloseItem: handleCloseItem,
       onOpenItem: handleOpenItem,
 
-      onFocus: handleFocus,
       focusPath: member.field.focusPath,
       focused: member.field.focused,
 
@@ -218,6 +243,7 @@ export function ArrayOfObjectsField(props: {
       renderField,
       renderItem,
       renderPreview,
+      elementProps: elementProps,
     }
   }, [
     member.field.level,
@@ -232,14 +258,12 @@ export function ArrayOfObjectsField(props: {
     member.field.path,
     member.field.validation,
     member.field.presence,
-    handleBlur,
     handleExpand,
     handleCollapse,
     handleExpandItem,
     handleCollapseItem,
     handleCloseItem,
     handleOpenItem,
-    handleFocus,
     handleChange,
     handleInsert,
     handleMoveItem,
@@ -251,6 +275,7 @@ export function ArrayOfObjectsField(props: {
     renderField,
     renderItem,
     renderPreview,
+    elementProps,
   ])
 
   const renderedInput = useMemo(() => renderInput(inputProps), [inputProps, renderInput])

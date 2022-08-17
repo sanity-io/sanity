@@ -3,6 +3,7 @@ import {ObjectSchemaType, Path, Schema, SchemaType} from '@sanity/types'
 import {render} from '@testing-library/react'
 import React, {FocusEvent} from 'react'
 import {
+  ComplexElementProps,
   createPatchChannel,
   FieldMember,
   FIXME,
@@ -10,6 +11,7 @@ import {
   NodeValidation,
   PatchArg,
   PatchEvent,
+  PrimitiveInputElementProps,
   StudioFormBuilderProvider,
   useFormState,
 } from '../../src/form'
@@ -25,9 +27,8 @@ export interface TestRenderInputContext {
   formState: FormState
 }
 
-export interface TestRenderInputProps {
+export interface TestRenderInputProps<ElementProps> {
   focusPath: Path
-  focusRef: React.Ref<FIXME>
   id: string
   level: number
   onBlur: (event: FocusEvent) => void
@@ -41,17 +42,18 @@ export interface TestRenderInputProps {
   schemaType: SchemaType
   validation: NodeValidation[]
   value: unknown
+  elementProps: ElementProps
 }
 
-export type TestRenderInputCallback = (
-  inputProps: TestRenderInputProps,
+export type TestRenderInputCallback<ElementProps> = (
+  inputProps: TestRenderInputProps<ElementProps>,
   context: TestRenderInputContext
 ) => React.ReactElement
 
 export async function renderInput(props: {
   fieldDefinition: Schema.TypeDefinition
   props?: TestRenderProps
-  render: TestRenderInputCallback
+  render: TestRenderInputCallback<any>
 }) {
   const {render: initialRender, fieldDefinition, props: initialTestProps} = props
   const name = fieldDefinition.name
@@ -76,10 +78,12 @@ export async function renderInput(props: {
     },
   })
 
-  const focusRef = jest.fn()
+  const focusRef = {current: null}
   const onBlur = jest.fn()
   const onChange = jest.fn()
   const onFocus = jest.fn()
+  const onDOMChange = jest.fn()
+
   const onPathBlur = jest.fn()
   const onPathFocus = jest.fn()
   const onPathOpen = jest.fn()
@@ -87,7 +91,7 @@ export async function renderInput(props: {
   const onSetFieldSetCollapsed = jest.fn()
   const onSetPathCollapsed = jest.fn()
 
-  function TestForm(renderProps: TestRenderProps & {render: TestRenderInputCallback}) {
+  function TestForm(renderProps: TestRenderProps & {render: TestRenderInputCallback<any>}) {
     const {
       documentValue,
       focusPath = EMPTY_ARRAY,
@@ -155,7 +159,6 @@ export async function renderInput(props: {
         {renderFn(
           {
             focusPath: formState.focusPath,
-            focusRef,
             id: formState.id || name,
             level,
             onBlur,
@@ -169,6 +172,13 @@ export async function renderInput(props: {
             validation: formState.validation,
             presence: formState.presence,
             value: formState.value?.[name],
+            elementProps: {
+              id: formState.id || name,
+              onBlur,
+              onFocus,
+              ref: focusRef,
+              onChange: onDOMChange,
+            },
           },
           {client, formState}
         )}
@@ -182,7 +192,7 @@ export async function renderInput(props: {
     </TestProvider>
   )
 
-  function rerender(subsequentRender: TestRenderInputCallback) {
+  function rerender(subsequentRender: TestRenderInputCallback<any>) {
     render(
       <TestProvider>
         <TestForm {...initialTestProps} render={subsequentRender} />
@@ -194,6 +204,7 @@ export async function renderInput(props: {
     focusRef,
     onBlur,
     onChange,
+    onNativeChange: onDOMChange,
     onFocus,
     onPathBlur,
     onPathFocus,

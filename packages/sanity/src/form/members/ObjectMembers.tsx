@@ -18,6 +18,10 @@ export interface ObjectMembersProps {
   renderItem: RenderArrayOfObjectsItemCallback
   renderPreview: RenderPreviewCallback
 }
+/**
+ * Convenience component for wrapping an object input
+ * @beta
+ */
 
 export function ObjectMembers(props: ObjectMembersProps) {
   const {members, renderInput, renderField, renderItem, renderPreview} = props

@@ -1,5 +1,5 @@
 import {Schema, NumberSchemaType} from '@sanity/types'
-import {NumberInputProps} from '../../src/form'
+import {NumberInputProps, PrimitiveInputElementProps} from '../../src/form'
 import {renderInput, TestRenderInputContext, TestRenderInputProps} from './renderInput'
 import {TestRenderProps} from './types'
 
@@ -15,7 +15,9 @@ export async function renderNumberInput(options: {
 }) {
   const {fieldDefinition, props, render: initialRender} = options
 
-  function transformProps(inputProps: TestRenderInputProps): NumberInputProps {
+  function transformProps(
+    inputProps: TestRenderInputProps<PrimitiveInputElementProps>
+  ): NumberInputProps {
     const {schemaType, value, ...restProps} = inputProps
 
     return {

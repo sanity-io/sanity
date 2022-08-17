@@ -6,12 +6,7 @@ import {set, unset} from '../../../patch'
 import {ArrayOfPrimitivesInputProps, FIXME} from '../../../types'
 import {ItemWithMissingType} from '../ArrayOfObjectsInput/item/ItemWithMissingType'
 import {Item, List} from '../common/list'
-import {ChangeIndicator} from '../../../../components/changeIndicators'
-import {resolveValueWithLegacyOptionsSupport, isLegacyOptionsItem} from './legacyOptionsSupport'
-
-type Focusable = {focus: () => void}
-
-const changeIndicatorOptions = {compareDeep: true}
+import {isLegacyOptionsItem, resolveValueWithLegacyOptionsSupport} from './legacyOptionsSupport'
 
 function isEqual(item: any, otherItem: any): boolean {
   if (isLegacyOptionsItem(item) || isLegacyOptionsItem(otherItem)) {
@@ -50,7 +45,7 @@ function inArray(array: unknown[], candidate: unknown) {
 type OptionsArrayInputProps = ArrayOfPrimitivesInputProps
 
 export class OptionsArrayInput extends React.PureComponent<OptionsArrayInputProps> {
-  _element: Focusable | null = null
+  _element: HTMLElement | null = null
 
   handleChange = (isChecked: boolean, optionValue: any) => {
     const {schemaType, value = []} = this.props
@@ -77,7 +72,7 @@ export class OptionsArrayInput extends React.PureComponent<OptionsArrayInputProp
     )
   }
 
-  setElement = (el: Focusable | null) => {
+  setElement = (el: HTMLElement | null) => {
     this._element = el
   }
 
@@ -93,8 +88,7 @@ export class OptionsArrayInput extends React.PureComponent<OptionsArrayInputProp
   }
 
   render() {
-    const {changed, focused, onBlur, onFocus, path, renderPreview, schemaType, value, readOnly} =
-      this.props
+    const {renderPreview, schemaType, value, readOnly, elementProps} = this.props
     const options: any[] = schemaType.options?.list || []
 
     // note: direction was never documented and makes more sense to use "grid" for it too
@@ -102,50 +96,47 @@ export class OptionsArrayInput extends React.PureComponent<OptionsArrayInputProp
       schemaType.options?.direction === 'horizontal' || schemaType.options?.layout === 'grid'
 
     return (
-      <ChangeIndicator path={path} isChanged={changed} hasFocus={!!focused}>
-        <List isGrid={isGrid}>
-          {options.map((option, index) => {
-            const optionType = this.getMemberTypeOfItem(option)
-            const checked = inArray(value || [], resolveValueWithLegacyOptionsSupport(option))
-            const disabled = !optionType
-            const title = option?.title || startCase(option?.value) || option
+      <List isGrid={isGrid} tabIndex={0} {...elementProps}>
+        {options.map((option, index) => {
+          const optionType = this.getMemberTypeOfItem(option)
+          const checked = inArray(value || [], resolveValueWithLegacyOptionsSupport(option))
+          const disabled = !optionType
+          const title = option?.title || startCase(option?.value) || option
 
-            return (
-              <Item index={index} isGrid={isGrid} key={index}>
-                <Flex align="center" as="label" muted={disabled}>
-                  <WrappedCheckbox
-                    disabled={disabled}
-                    checked={checked}
-                    onChange={(e) => this.handleChange(e.currentTarget.checked, option)}
-                    onFocus={() => this.handleFocus(index)}
-                    onBlur={onBlur}
-                    readOnly={readOnly}
-                  />
+          return (
+            <Item index={index} isGrid={isGrid} key={index}>
+              <Flex align="center" as="label" muted={disabled}>
+                <WrappedCheckbox
+                  disabled={disabled}
+                  checked={checked}
+                  onChange={(e) => this.handleChange(e.currentTarget.checked, option)}
+                  onFocus={() => this.handleFocus(index)}
+                  readOnly={readOnly}
+                />
 
-                  {optionType &&
-                    (title ? (
-                      <Box padding={2}>
-                        <Text>{title}</Text>
-                      </Box>
-                    ) : (
-                      <Box marginLeft={2}>
-                        {renderPreview({
-                          layout: 'media',
-                          schemaType: optionType,
-                          value: resolveValueWithLegacyOptionsSupport(option),
-                        })}
-                      </Box>
-                    ))}
+                {optionType &&
+                  (title ? (
+                    <Box padding={2}>
+                      <Text>{title}</Text>
+                    </Box>
+                  ) : (
+                    <Box marginLeft={2}>
+                      {renderPreview({
+                        layout: 'media',
+                        schemaType: optionType,
+                        value: resolveValueWithLegacyOptionsSupport(option),
+                      })}
+                    </Box>
+                  ))}
 
-                  {!optionType && (
-                    <ItemWithMissingType value={option} onFocus={(event) => onFocus(event)} />
-                  )}
-                </Flex>
-              </Item>
-            )
-          })}
-        </List>
-      </ChangeIndicator>
+                {!optionType && (
+                  <ItemWithMissingType value={option} onFocus={() => this.handleFocus(index)} />
+                )}
+              </Flex>
+            </Item>
+          )
+        })}
+      </List>
     )
   }
 }

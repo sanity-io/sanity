@@ -1,7 +1,8 @@
 export * from './MemberField'
 export * from './MemberFieldError'
 export * from './MemberFieldset'
-export * from './MemberItem'
+export * from './items/ArrayOfObjectsItem'
+export * from './items/ArrayOfPrimitivesItem'
 export * from './MemberItemError'
 
 export * from './ObjectMembers'

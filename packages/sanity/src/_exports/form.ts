@@ -65,17 +65,11 @@ export type {
   RenderBlockActionsProps,
 } from '../form/inputs/PortableText/types'
 
-export * from '../form/members/MemberField'
-export * from '../form/members/MemberFieldset'
-export * from '../form/members/MemberItemError'
-export * from '../form/members/MemberFieldError'
-export * from '../form/members/MemberItem'
+export * from '../form/members'
 
 export * from '../form/inputs/ObjectInput'
 export {StudioArrayInput as ArrayOfObjectsInput} from '../form/studio/inputs/StudioArrayInput'
 export * from '../form/inputs/arrays/ArrayOfObjectsInput'
-
-export * from '../form/inputs/arrays/ArrayOfPrimitivesInput/PrimitiveMemberItem'
 
 export type {FIXME_SanityDocument} from '../form/store/formState' // eslint-disable-line camelcase
 

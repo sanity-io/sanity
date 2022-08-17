@@ -1,6 +1,7 @@
-import React, {useCallback, useMemo, useRef} from 'react'
+import React, {MutableRefObject, useCallback, useMemo, useRef} from 'react'
 import {ArrayOfPrimitivesFormNode, FieldMember} from '../../store'
 import {
+  ArrayOfObjectsInputProps,
   ArrayOfPrimitivesFieldProps,
   ArrayOfPrimitivesInputProps,
   FIXME,
@@ -72,7 +73,8 @@ export function ArrayOfPrimitivesField(props: {
     onFieldGroupSelect,
   } = useFormCallbacks()
   const {member, renderField, renderInput, renderItem, renderPreview} = props
-  const focusRef = useRef<{focus: () => void}>()
+
+  const focusRef = useRef<Element & {focus: () => void}>()
 
   useDidUpdate(member.field.focused, (hadFocus, hasFocus) => {
     if (!hadFocus && hasFocus) {
@@ -80,18 +82,30 @@ export function ArrayOfPrimitivesField(props: {
     }
   })
 
-  const handleBlur = useCallback(
-    (event: React.FocusEvent) => {
-      onPathBlur(member.field.path)
-    },
-    [member.field.path, onPathBlur]
-  )
-
   const handleFocus = useCallback(
     (event: React.FocusEvent) => {
-      onPathFocus(member.field.path)
+      // We want to handle focus when the array input *itself* element receives
+      // focus, not when a child element receives focus, but React has decided
+      // to let focus bubble, so this workaround is needed
+      // Background: https://github.com/facebook/react/issues/6410#issuecomment-671915381
+      if (event.currentTarget === event.target && event.currentTarget === focusRef.current) {
+        onPathFocus(member.field.path)
+      }
     },
     [member.field.path, onPathFocus]
+  )
+
+  const handleBlur = useCallback(
+    (event: React.FocusEvent) => {
+      // We want to handle blur when the array input *itself* element receives
+      // blur, not when a child element receives blur, but React has decided
+      // to let focus events bubble, so this workaround is needed
+      // Background: https://github.com/facebook/react/issues/6410#issuecomment-671915381
+      if (event.currentTarget === event.target && event.currentTarget === focusRef.current) {
+        onPathBlur(member.field.path)
+      }
+    },
+    [member.field.path, onPathBlur]
   )
 
   const handleChange = useCallback(
@@ -176,19 +190,27 @@ export function ArrayOfPrimitivesField(props: {
     [member.field.path, onPathFocus]
   )
 
+  const elementProps = useMemo(
+    (): ArrayOfObjectsInputProps['elementProps'] => ({
+      onBlur: handleBlur,
+      onFocus: handleFocus,
+      id: member.field.id,
+      ref: focusRef,
+    }),
+    [handleBlur, handleFocus, member.field.id]
+  )
+
   const inputProps = useMemo((): ArrayOfPrimitivesInputProps => {
     return {
       level: member.field.level,
-      onBlur: handleBlur,
       members: member.field.members,
       value: member.field.value as any,
       readOnly: member.field.readOnly,
       onSetCollapsed: handleSetCollapsed,
       schemaType: member.field.schemaType,
       changed: member.field.changed,
-      focusRef: focusRef,
       id: member.field.id,
-      onFocus: handleFocus,
+      elementProps,
       path: member.field.path,
       focusPath: member.field.focusPath,
       focused: member.field.focused,
@@ -218,9 +240,8 @@ export function ArrayOfPrimitivesField(props: {
     member.field.focused,
     member.field.validation,
     member.field.presence,
-    handleBlur,
     handleSetCollapsed,
-    handleFocus,
+    elementProps,
     handleChange,
     handleInsert,
     handleMoveItem,

@@ -53,7 +53,6 @@ import {AlertStrip} from '../../components/AlertStrip'
 import {RowWrapper} from '../arrays/ArrayOfObjectsInput/item/components/RowWrapper'
 import {DragHandle} from '../arrays/common/DragHandle'
 import {_InsertEvent} from '../arrays/ArrayOfObjectsInput/types'
-import {randomKey} from '../arrays/common/randomKey'
 import {InsertMenu} from '../arrays/ArrayOfObjectsInput/InsertMenu'
 import {useOnClickOutside} from '../../hooks/useOnClickOutside'
 import {FIXME} from '../../types'
@@ -116,15 +115,13 @@ export function ArrayItemReferenceInput(props: Props) {
     editReferenceLinkComponent: EditReferenceLink,
     onEditReference,
     getReferenceInfo,
-    onBlur,
-    onFocus,
     onFocusPath,
     readOnly,
-    focusRef,
     renderPreview,
+    elementProps,
   } = props
 
-  const forwardedRef = useForwardedRef(focusRef)
+  const forwardedRef = useForwardedRef(elementProps.ref)
 
   const [searchState, setSearchState] = useState<ReferenceSearchState>(INITIAL_SEARCH_STATE)
 
@@ -220,7 +217,7 @@ export function ArrayItemReferenceInput(props: Props) {
       onChange(unset())
     }
     onFocusPath([])
-  }, [onChange, onFocus, value?._ref])
+  }, [onChange, onFocusPath, value?._ref])
 
   const handleAutocompleteKeyDown = useCallback(
     (event) => {
@@ -288,10 +285,10 @@ export function ArrayItemReferenceInput(props: Props) {
   const handleFocus = useCallback(
     (event) => {
       if (event.currentTarget === forwardedRef.current) {
-        onFocus(event)
+        elementProps.onFocus(event)
       }
     },
-    [onFocus, forwardedRef]
+    [elementProps, forwardedRef]
   )
 
   const handleAutocompleteFocus = useCallback(
@@ -454,17 +451,15 @@ export function ArrayItemReferenceInput(props: Props) {
             >
               <AutocompleteContainer ref={autocompletePopoverReferenceElementRef}>
                 <ReferenceAutocomplete
+                  {...elementProps}
                   data-testid="autocomplete"
                   loading={searchState.isLoading}
                   portalRef={autocompletePortalRef}
-                  ref={forwardedRef}
-                  id={inputId || ''}
                   options={searchState.hits.map((hit) => ({
                     value: hit.id,
                     hit: hit,
                   }))}
                   onFocus={handleAutocompleteFocus}
-                  onBlur={onBlur}
                   radius={1}
                   placeholder="Type to search"
                   onKeyDown={handleAutocompleteKeyDown}

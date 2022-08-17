@@ -1,6 +1,6 @@
 import React, {useCallback, useEffect, useState} from 'react'
 import type {Image, ImageSchemaType} from '@sanity/types'
-import {Box, Card, Flex, Text, Grid, Heading, useForwardedRef} from '@sanity/ui'
+import {Box, Card, Flex, Text, Grid, Heading} from '@sanity/ui'
 import styled from 'styled-components'
 import {ChangeIndicator} from '../../../../components/changeIndicators'
 import {FormField} from '../../../components/formField'
@@ -60,14 +60,12 @@ export function ImageToolInput(props: ImageToolInputProps) {
     schemaType,
     onFocusPath,
     readOnly,
-    focusRef,
+    elementProps,
   } = props
 
   const [localValue, setLocalValue] = useState(value || DEFAULT_VALUE)
 
   const {image, isLoading: isImageLoading, error: imageLoadError} = useLoadImage(imageUrl)
-
-  const forwardedRef = useForwardedRef(focusRef)
 
   const handleFocus = useCallback(() => {
     onFocusPath(HOTSPOT_PATH)
@@ -81,7 +79,7 @@ export function ImageToolInput(props: ImageToolInputProps) {
 
   useDidUpdate(hasFocus, (hadFocus) => {
     if (!hadFocus && hasFocus) {
-      forwardedRef.current?.focus()
+      elementProps.ref.current?.focus()
     }
   })
 
@@ -122,7 +120,7 @@ export function ImageToolInput(props: ImageToolInputProps) {
       __unstable_presence={presence}
     >
       <div>
-        <CheckerboardWithFocusRing tabIndex={0} ref={forwardedRef} onFocus={handleFocus}>
+        <CheckerboardWithFocusRing tabIndex={0} ref={elementProps.ref} onFocus={handleFocus}>
           <ChangeIndicator
             path={path.concat(HOTSPOT_PATH)}
             hasFocus={focusPath[0] === 'hotspot'}

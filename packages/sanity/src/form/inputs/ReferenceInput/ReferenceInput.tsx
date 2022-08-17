@@ -90,15 +90,13 @@ export function ReferenceInput(props: ReferenceInputProps) {
     onSearch,
     selectedState,
     schemaType,
-    onFocus,
-    onBlur,
     changed,
     readOnly,
     onFocusPath,
     validation,
-    focusRef,
     value,
     renderPreview,
+    elementProps,
   } = props
 
   const [searchState, setSearchState] = useState<ReferenceSearchState>(INITIAL_SEARCH_STATE)
@@ -195,7 +193,7 @@ export function ReferenceInput(props: ReferenceInputProps) {
   // --- focus handling
   const hasFocusAtRef = focusPath.length === 1 && focusPath[0] === '_ref'
   // todo: fixme
-  const forwardedRef = useForwardedRef(focusRef)
+  const forwardedRef = elementProps.ref
   // useDidUpdate({hasFocusAt: hasFocusAtRef, ref: value?._ref}, (prev, current) => {
   //   const refUpdated = prev?.ref !== current.ref
   //   const focusAtUpdated = prev?.hasFocusAt !== current.hasFocusAt
@@ -237,23 +235,6 @@ export function ReferenceInput(props: ReferenceInputProps) {
 
   const pressed = selectedState === 'pressed'
   const selected = selectedState === 'selected'
-  const handleFocus = useCallback(
-    (event) => {
-      if (onFocus && event.currentTarget === forwardedRef?.current) {
-        onFocus(event)
-      }
-    },
-    [forwardedRef, onFocus]
-  )
-
-  const handleAutocompleteFocus = useCallback(
-    (event) => {
-      if (onFocus && event.currentTarget === forwardedRef?.current) {
-        onFocus(event)
-      }
-    },
-    [onFocus, forwardedRef]
-  )
 
   const handleQueryChange = useObservableCallback((inputValue$: Observable<string | null>) => {
     return inputValue$.pipe(
@@ -405,18 +386,15 @@ export function ReferenceInput(props: ReferenceInputProps) {
           <ChangeIndicator path={REF_PATH} hasFocus={!!focused} isChanged={changed}>
             <AutocompleteContainer ref={autocompletePopoverReferenceElementRef}>
               <ReferenceAutocomplete
+                {...elementProps}
                 data-testid="autocomplete"
                 loading={searchState.isLoading}
-                ref={forwardedRef}
                 referenceElement={autocompletePopoverReferenceElementRef.current}
                 portalRef={autocompletePortalRef}
-                id={inputId || ''}
                 options={searchState.hits.map((hit) => ({
                   value: hit.id,
                   hit: hit,
                 }))}
-                onFocus={handleAutocompleteFocus}
-                onBlur={onBlur}
                 radius={1}
                 placeholder="Type to search"
                 onKeyDown={handleAutocompleteKeyDown}
@@ -457,6 +435,7 @@ export function ReferenceInput(props: ReferenceInputProps) {
           >
             <Flex align="center" padding={1}>
               <StyledPreviewCard
+                {...elementProps}
                 __unstable_focusRing
                 forwardedAs={EditReferenceLink as FIXME} // @todo: fix typing
                 data-as="a"
@@ -465,13 +444,11 @@ export function ReferenceInput(props: ReferenceInputProps) {
                 documentId={value?._ref}
                 documentType={refType?.name}
                 flex={1}
-                onFocus={handleFocus}
                 onKeyPress={handlePreviewKeyPress}
                 padding={1}
                 paddingRight={3}
                 pressed={pressed}
                 radius={2}
-                ref={forwardedRef}
                 selected={selected}
                 tabIndex={0}
                 tone={selected ? 'default' : 'inherit'}

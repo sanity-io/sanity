@@ -48,7 +48,7 @@ function ReferenceInputTester(
         <ToastProvider>
           <LayerProvider>
             <ReferenceInput
-              onFocus={onFocus}
+              elementProps={{onFocus, onChange, ref: {current: null}}}
               onChange={onChange}
               validation={[]}
               level={0}

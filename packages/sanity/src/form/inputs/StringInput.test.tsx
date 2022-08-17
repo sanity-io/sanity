@@ -6,7 +6,13 @@ import {StringInput} from './StringInput'
 describe('StringInput', () => {
   it('renders input value', async () => {
     const {result} = await renderStringInput({
-      render: (inputProps) => <StringInput {...inputProps} value="test" />,
+      render: (inputProps) => (
+        <StringInput
+          {...inputProps}
+          elementProps={{...inputProps.elementProps, value: 'test'}}
+          value="test"
+        />
+      ),
       fieldDefinition: {
         type: 'string',
         name: 'string',
@@ -21,7 +27,13 @@ describe('StringInput', () => {
 
   it('emits onFocus', async () => {
     const {onFocus, result} = await renderStringInput({
-      render: (inputProps) => <StringInput {...inputProps} value="test" />,
+      render: (inputProps) => (
+        <StringInput
+          {...inputProps}
+          value="test"
+          elementProps={{...inputProps.elementProps, value: 'test'}}
+        />
+      ),
       fieldDefinition: {
         type: 'string',
         name: 'string',
@@ -37,8 +49,14 @@ describe('StringInput', () => {
   })
 
   it('emits `set` patch', async () => {
-    const {onChange, result} = await renderStringInput({
-      render: (inputProps) => <StringInput {...inputProps} value="tes" />,
+    const {onNativeChange, result} = await renderStringInput({
+      render: (inputProps) => (
+        <StringInput
+          {...inputProps}
+          value="tes"
+          elementProps={{...inputProps.elementProps, value: 'tes'}}
+        />
+      ),
       fieldDefinition: {
         type: 'string',
         name: 'string',
@@ -50,12 +68,18 @@ describe('StringInput', () => {
 
     userEvent.type(input!, 't')
 
-    expect(onChange.mock.calls).toEqual([[{type: 'set', path: [], value: 'test'}]])
+    expect(onNativeChange).toHaveBeenCalledTimes(1)
   })
 
   it('emits `unset` patch', async () => {
-    const {onChange, result} = await renderStringInput({
-      render: (inputProps) => <StringInput {...inputProps} value="t" />,
+    const {onNativeChange, result} = await renderStringInput({
+      render: (inputProps) => (
+        <StringInput
+          {...inputProps}
+          value="t"
+          elementProps={{...inputProps.elementProps, value: 't'}}
+        />
+      ),
       fieldDefinition: {
         type: 'string',
         name: 'string',
@@ -64,10 +88,11 @@ describe('StringInput', () => {
     })
 
     const input = result.container.querySelector('input')
+    expect(input!.value).toBe('t')
 
     userEvent.click(input!)
     userEvent.keyboard('[Backspace]')
 
-    expect(onChange.mock.calls).toEqual([[{type: 'unset', path: []}]])
+    expect(onNativeChange).toHaveBeenCalledTimes(1)
   })
 })

@@ -33,7 +33,7 @@ const deserialize = (value: string) => parse(value, VALUE_FORMAT)
 const serialize = (date: Date) => format(date, VALUE_FORMAT)
 
 export function DateInput(props: DateInputProps) {
-  const {id, readOnly, onChange, schemaType, focusRef, path, focused, changed, value} = props
+  const {readOnly, onChange, schemaType, elementProps, value} = props
   const {dateFormat} = parseOptions(schemaType.options)
 
   const handleChange = useCallback(
@@ -51,20 +51,17 @@ export function DateInput(props: DateInputProps) {
   )
 
   return (
-    <ChangeIndicator path={path} isChanged={changed} hasFocus={!!focused}>
-      <CommonDateTimeInput
-        deserialize={deserialize}
-        formatInputValue={formatInputValue}
-        id={id}
-        onChange={handleChange}
-        parseInputValue={parseInputValue}
-        placeholder={schemaType.placeholder}
-        readOnly={readOnly}
-        ref={focusRef}
-        selectTime={false}
-        serialize={serialize}
-        value={value}
-      />
-    </ChangeIndicator>
+    <CommonDateTimeInput
+      {...elementProps}
+      deserialize={deserialize}
+      formatInputValue={formatInputValue}
+      onChange={handleChange}
+      parseInputValue={parseInputValue}
+      placeholder={schemaType.placeholder}
+      readOnly={readOnly}
+      selectTime={false}
+      serialize={serialize}
+      value={value}
+    />
   )
 }

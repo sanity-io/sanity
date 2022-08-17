@@ -1,6 +1,11 @@
 import {Schema, ArraySchemaType} from '@sanity/types'
 import React from 'react'
-import {ArrayOfObjectsFormNode, ArrayOfObjectsInputProps, FieldMember} from '../../src/form'
+import {
+  ArrayOfObjectsFormNode,
+  ArrayOfObjectsInputProps,
+  ComplexElementProps,
+  FieldMember,
+} from '../../src/form'
 import {
   defaultRenderField,
   defaultRenderInput,
@@ -38,7 +43,7 @@ export async function renderArrayOfObjectsInput(options: {
   const resolveInitialValue = () => Promise.resolve({_key: String(initialValueId++)})
 
   function transformProps(
-    baseProps: TestRenderInputProps,
+    baseProps: TestRenderInputProps<ComplexElementProps>,
     context: TestRenderInputContext
   ): ArrayOfObjectsInputProps {
     const {focusPath, path, schemaType, value, ...restProps} = baseProps

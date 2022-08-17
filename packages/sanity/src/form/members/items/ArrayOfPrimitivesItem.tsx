@@ -1,17 +1,16 @@
-import * as React from 'react'
-import {useCallback, useMemo, useRef} from 'react'
-import {useDidUpdate} from '../../../hooks/useDidUpdate'
-import {ArrayOfPrimitivesItemMember} from '../../../store'
+import React, {useCallback, useMemo, useRef} from 'react'
+import {ArrayOfPrimitivesItemMember} from '../../store'
+import {useDidUpdate} from '../../hooks/useDidUpdate'
+import {getEmptyValue} from '../../inputs/arrays/ArrayOfPrimitivesInput/getEmptyValue'
 import {
   FIXME,
   PrimitiveInputProps,
+  PrimitiveItemProps,
   RenderArrayOfPrimitivesItemCallback,
   RenderInputCallback,
-} from '../../../types'
-import {PrimitiveItemProps} from '../../../types/itemProps'
-import {useFormCallbacks} from '../../../studio/contexts/FormCallbacks'
-import {insert, PatchArg, PatchEvent, set, unset} from '../../../patch'
-import {getEmptyValue} from './getEmptyValue'
+} from '../../types'
+import {insert, PatchArg, PatchEvent, set, unset} from '../../patch'
+import {useFormCallbacks} from '../../studio/contexts/FormCallbacks'
 
 /**
  * @alpha
@@ -25,7 +24,7 @@ export interface PrimitiveMemberItemProps {
 /**
  * @alpha
  */
-export function PrimitiveMemberItem(props: PrimitiveMemberItemProps) {
+export function ArrayOfPrimitivesItem(props: PrimitiveMemberItemProps) {
   const focusRef = useRef<{focus: () => void}>()
   const {member, renderItem, renderInput} = props
 
@@ -65,6 +64,36 @@ export function PrimitiveMemberItem(props: PrimitiveMemberItemProps) {
     [onChange, member.item.schemaType, member.index]
   )
 
+  const handleNativeChange = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      const inputValue = event.currentTarget.value
+
+      onChange(PatchEvent.from(inputValue ? set(inputValue) : unset()).prefixAll(member.index))
+    },
+    [member.index, onChange]
+  )
+
+  const elementProps = useMemo(
+    (): PrimitiveInputProps['elementProps'] => ({
+      onBlur: handleBlur,
+      onFocus: handleFocus,
+      id: member.item.id,
+      ref: focusRef,
+      onChange: handleNativeChange,
+      value: String(member.item.value || ''),
+      readOnly: Boolean(member.item.readOnly),
+      placeholder: member.item.schemaType.placeholder,
+    }),
+    [
+      handleBlur,
+      handleFocus,
+      handleNativeChange,
+      member.item.id,
+      member.item.readOnly,
+      member.item.schemaType.placeholder,
+      member.item.value,
+    ]
+  )
   const inputProps = useMemo((): PrimitiveInputProps => {
     return {
       changed: member.item.changed,
@@ -72,17 +101,16 @@ export function PrimitiveMemberItem(props: PrimitiveMemberItemProps) {
       value: member.item.value as FIXME,
       readOnly: member.item.readOnly,
       schemaType: member.item.schemaType as FIXME,
-      focusRef: focusRef,
       id: member.item.id,
-      onBlur: handleBlur,
-      onFocus: handleFocus,
       path: member.item.path,
       focused: member.item.focused,
       onChange: handleChange,
       validation: member.item.validation,
       presence: member.item.presence,
+      elementProps,
     }
   }, [
+    member.item.changed,
     member.item.level,
     member.item.value,
     member.item.readOnly,
@@ -92,10 +120,8 @@ export function PrimitiveMemberItem(props: PrimitiveMemberItemProps) {
     member.item.focused,
     member.item.validation,
     member.item.presence,
-    member.item.changed,
-    handleBlur,
-    handleFocus,
     handleChange,
+    elementProps,
   ])
 
   const renderedInput = useMemo(() => renderInput(inputProps), [inputProps, renderInput])

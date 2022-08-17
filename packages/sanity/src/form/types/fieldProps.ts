@@ -7,7 +7,14 @@ import {
   SchemaType,
   StringSchemaType,
 } from '@sanity/types'
-import {ArrayOfObjectsInputProps, ArrayOfPrimitivesInputProps, ObjectInputProps} from './inputProps'
+import {
+  ArrayOfObjectsInputProps,
+  ArrayOfPrimitivesInputProps,
+  BooleanInputProps,
+  NumberInputProps,
+  ObjectInputProps,
+  StringInputProps,
+} from './inputProps'
 import {NodePresence, NodeValidation} from './common'
 
 export interface BaseFieldProps {
@@ -62,15 +69,18 @@ export interface ArrayOfPrimitivesFieldProps extends BaseFieldProps {
 export interface NumberFieldProps extends BaseFieldProps {
   schemaType: NumberSchemaType
   value: number | undefined
+  inputProps: NumberInputProps
 }
 export interface BooleanFieldProps extends BaseFieldProps {
   schemaType: BooleanSchemaType
   value: boolean | undefined
+  inputProps: BooleanInputProps
 }
 
 export interface StringFieldProps extends BaseFieldProps {
   schemaType: StringSchemaType
   value: string | undefined
+  inputProps: StringInputProps
 }
 
 export type PrimitiveFieldProps = NumberFieldProps | BooleanFieldProps | StringFieldProps

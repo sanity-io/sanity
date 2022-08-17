@@ -690,7 +690,7 @@ export class ImageInput extends React.PureComponent<ImageInputProps, ImageInputS
   }
 
   renderAsset() {
-    const {value, readOnly, onFocus, onBlur} = this.props
+    const {value, readOnly, elementProps} = this.props
 
     const {hoveringFiles, isStale} = this.state
 
@@ -718,14 +718,13 @@ export class ImageInput extends React.PureComponent<ImageInputProps, ImageInputS
           {/* not uploading */}
           {!value?._upload && (
             <FileTarget
+              {...elementProps}
               tabIndex={0}
               disabled={Boolean(readOnly)}
               ref={this.setFocusElement}
               onFiles={this.handleSelectFiles}
               onFilesOver={this.handleFilesOver}
               onFilesOut={this.handleFilesOut}
-              onFocus={onFocus}
-              onBlur={onBlur}
               tone={this.getFileTone()}
               $border={hasValueOrUpload || hoveringFiles.length > 0}
               style={{padding: 1}}
