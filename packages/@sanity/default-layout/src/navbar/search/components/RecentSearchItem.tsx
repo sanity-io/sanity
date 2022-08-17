@@ -87,11 +87,12 @@ const CloseButton = styled.div`
   opacity: 0.8;
   visibility: hidden;
 
-  ${RecentSearchItemWrapper}:hover & {
-    visibility: visible;
-  }
-
-  &:hover {
-    opacity: 0.4;
+  @media (hover: hover) {
+    ${RecentSearchItemWrapper}:hover & {
+      visibility: visible;
+    }
+    &:hover {
+      opacity: 0.4;
+    }
   }
 `

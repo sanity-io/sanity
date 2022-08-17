@@ -337,19 +337,21 @@ export function CommandListProvider({
   }, [childContainerElement, childCount, handleReassignSelectedStateThrottled, virtualList])
 
   /**
-   * Apply initial aria attributes
+   * Apply initial attributes
    */
   useEffect(() => {
+    childContainerElement?.setAttribute('aria-multiselectable', ariaMultiselectable.toString())
+    childContainerElement?.setAttribute('aria-label', ariaChildrenLabel)
+    childContainerElement?.setAttribute('id', `${id}-children`)
+    childContainerElement?.setAttribute('role', 'listbox')
+
     headerInputElement?.setAttribute('aria-autocomplete', 'list')
     headerInputElement?.setAttribute('aria-expanded', 'true')
     headerInputElement?.setAttribute('aria-controls', `${id}-children`)
     headerInputElement?.setAttribute('aria-label', ariaHeaderLabel)
     headerInputElement?.setAttribute('role', 'combobox')
 
-    childContainerElement?.setAttribute('aria-multiselectable', ariaMultiselectable.toString())
-    childContainerElement?.setAttribute('aria-label', ariaChildrenLabel)
-    childContainerElement?.setAttribute('id', `${id}-children`)
-    childContainerElement?.setAttribute('role', 'listbox')
+    pointerOverlayElement?.setAttribute('data-enabled', 'true')
   }, [
     ariaChildrenLabel,
     ariaHeaderLabel,
@@ -357,6 +359,7 @@ export function CommandListProvider({
     childContainerElement,
     headerInputElement,
     id,
+    pointerOverlayElement,
   ])
 
   /**
