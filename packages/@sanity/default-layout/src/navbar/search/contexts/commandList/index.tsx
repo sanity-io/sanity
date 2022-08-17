@@ -280,11 +280,6 @@ export function CommandListProvider({
   /**
    * Track focus / blur state on the list's input element and store state in `data-focused` attribute on
    * a separate container element.
-   *
-   * The `data-focused` attribute is used to define styles on components enriched with
-   * `withCommandListItemStyles`
-   *
-   * @see withCommandListItemStyles
    */
   useEffect(() => {
     function handleMarkContainerAsFocused(focused: boolean) {
@@ -302,11 +297,6 @@ export function CommandListProvider({
   /**
    * Track mouse enter / leave state on child container and store state in `data-hovered` attribute on
    * a separate container element.
-   *
-   * The `data-hovered` attribute is used to define styles on components enriched with
-   * `withCommandListItemStyles`
-   *
-   * @see withCommandListItemStyles
    */
   useEffect(() => {
     function handleMarkChildrenAsHovered(hovered: boolean) {

@@ -4,10 +4,7 @@ import React, {MouseEvent, useCallback} from 'react'
 import styled from 'styled-components'
 import {useCommandList} from '../contexts/commandList'
 import type {RecentSearch} from '../datastores/recentSearches'
-import {withCommandListItemStyles} from '../utils/withCommandListItemStyles'
 import {TypePills} from './TypePills'
-
-const CommandListItemButton = withCommandListItemStyles(Button)
 
 export interface RecentSearchesProps {
   index: number
@@ -44,7 +41,7 @@ export function RecentSearchItem(props: RecentSearchesProps) {
   const typePillsAvailableCharCount = maxVisibleTypePillChars - querySubstring.length
 
   return (
-    <CommandListItemButton
+    <RecentSearchItemWrapper
       data-index={index}
       mode="bleed"
       onClick={handleRecentSearchClick}
@@ -80,15 +77,17 @@ export function RecentSearchItem(props: RecentSearchesProps) {
           </Flex>
         </CloseButton>
       </Flex>
-    </CommandListItemButton>
+    </RecentSearchItemWrapper>
   )
 }
+
+const RecentSearchItemWrapper = styled(Button)``
 
 const CloseButton = styled.div`
   opacity: 0.8;
   visibility: hidden;
 
-  ${CommandListItemButton}:hover & {
+  ${RecentSearchItemWrapper}:hover & {
     visibility: visible;
   }
 

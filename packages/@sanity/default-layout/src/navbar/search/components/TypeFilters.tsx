@@ -18,6 +18,8 @@ interface TypeFiltersProps {
   small?: boolean
 }
 
+const ID = 'search-type-filters'
+
 export function TypeFilters({small}: TypeFiltersProps) {
   const [childContainerElement, setChildContainerRef] = useState<HTMLDivElement | null>(null)
   const [containerElement, setContainerRef] = useState<HTMLDivElement | null>(null)
@@ -57,10 +59,10 @@ export function TypeFilters({small}: TypeFiltersProps) {
       childCount={selectableDocumentTypes.length}
       containerElement={containerElement}
       headerInputElement={headerInputElement}
-      id="search-type-filters"
+      id={ID}
       pointerOverlayElement={pointerOverlayElement}
     >
-      <TypeFiltersWrapper direction="column" ref={setContainerRef}>
+      <TypeFiltersWrapper $lightHighlight={!small} direction="column" ref={setContainerRef}>
         {/* Search header */}
         <SearchHeaderWrapper padding={padding}>
           <CustomTextInput
@@ -149,6 +151,18 @@ const TypeFiltersContentWrap = styled.div`
   position: relative;
 `
 
-const TypeFiltersWrapper = styled(Flex)`
+const TypeFiltersWrapper = styled(Flex)<{$lightHighlight: boolean}>`
   height: 100%;
+
+  &[data-focused='true'],
+  &[data-hovered='true'] {
+    #${ID}-children {
+      [aria-selected='true'] {
+        background: ${({$lightHighlight}) =>
+          $lightHighlight ? hues.gray[50].hex : hues.gray[100].hex};
+        // Disable box-shadow to hide the halo effect when we have keyboard focus over a selected <Button>
+        box-shadow: none;
+      }
+    }
+  }
 `

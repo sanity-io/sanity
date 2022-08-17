@@ -25,6 +25,8 @@ export interface SearchPopoverProps {
   position: PopoverPosition
 }
 
+const ID = 'search-results-popover'
+
 export function SearchPopover({onClose, onOpen, open, position}: SearchPopoverProps) {
   const [childContainerElement, setChildContainerRef] = useState<HTMLDivElement | null>(null)
   const [containerElement, setContainerRef] = useState<HTMLDivElement | null>(null)
@@ -95,7 +97,7 @@ export function SearchPopover({onClose, onOpen, open, position}: SearchPopoverPr
           childCount={hasValidTerms ? result.hits.length : recentSearches.length}
           containerElement={containerElement}
           headerInputElement={headerInputElement}
-          id="search-results-popover"
+          id={ID}
           initialSelectedIndex={hasValidTerms ? lastSearchIndex : 0}
           pointerOverlayElement={pointerOverlayElement}
           virtualList={hasValidTerms}
@@ -184,6 +186,18 @@ const SearchPopoverWrapper = styled(Card)<{$position: PopoverPosition}>`
   position: absolute;
   top: ${({$position}) => $position.y}px;
   width: min(calc(100vw - ${POPOVER_INPUT_PADDING * 2}px), ${POPOVER_MAX_WIDTH}px);
+
+  &[data-focused='true'],
+  &[data-hovered='true'] {
+    #${ID}-children {
+      button[aria-selected='true'],
+      [aria-selected='true'] a {
+        background: ${hues.gray[50].hex};
+        // Disable box-shadow to hide the halo effect when we have keyboard focus over a selected <Button>
+        box-shadow: none;
+      }
+    }
+  }
 `
 
 const TypeFilterWrapper = styled(Card)`

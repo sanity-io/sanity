@@ -11,7 +11,6 @@ import React, {forwardRef, MouseEvent, useCallback, useMemo, useRef} from 'react
 import type {VirtualItem} from 'react-virtual'
 import styled from 'styled-components'
 import type {SearchHit} from '../../types'
-import {withCommandListItemStyles} from '../../utils/withCommandListItemStyles'
 import SearchResultItemPreview from './SearchResultItemPreview'
 
 interface SearchItemProps extends ResponsivePaddingProps {
@@ -23,8 +22,6 @@ interface SearchItemProps extends ResponsivePaddingProps {
   documentId: string
   virtualRow: VirtualItem
 }
-
-const CommandListItemIntentLink = withCommandListItemStyles(IntentLink)
 
 export function SearchResultItem({
   data,
@@ -45,7 +42,7 @@ export function SearchResultItem({
       // eslint-disable-next-line @typescript-eslint/no-shadow
       forwardRef(function LinkComponent(linkProps, ref: React.ForwardedRef<HTMLAnchorElement>) {
         return (
-          <CommandListItemIntentLink
+          <IntentLink
             {...linkProps}
             data-hit-index={resultIndex}
             intent="edit"
