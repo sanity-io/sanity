@@ -1,3 +1,4 @@
+import {hues} from '@sanity/color'
 import {Box, Card, Dialog, Flex, Portal} from '@sanity/ui'
 import React, {useCallback, useEffect, useRef, useState} from 'react'
 import FocusLock from 'react-focus-lock'
@@ -17,6 +18,8 @@ interface SearchDialogProps {
   onOpen: () => void
   open: boolean
 }
+
+const ID = 'search-results-dialog'
 
 export function SearchDialog({onClose, onOpen, open}: SearchDialogProps) {
   const [childContainerElement, setChildContainerRef] = useState<HTMLDivElement | null>(null)
@@ -80,14 +83,14 @@ export function SearchDialog({onClose, onOpen, open}: SearchDialogProps) {
       childCount={hasValidTerms ? result.hits.length : recentSearches.length}
       containerElement={containerElement}
       headerInputElement={headerInputElement}
-      id="search-results-dialog"
+      id={ID}
       initialSelectedIndex={hasValidTerms ? lastSearchIndex : 0}
       pointerOverlayElement={pointerOverlayElement}
       virtualList={hasValidTerms}
     >
       <Portal>
         <FocusLock autoFocus={false} returnFocus>
-          <SearchDialogContentWrapper ref={setContainerRef} scheme="light" tone="default">
+          <SearchDialogWrapper ref={setContainerRef} scheme="light" tone="default">
             <Flex direction="column" height="fill">
               <SearchHeader onClose={handleClose} setHeaderInputRef={setHeaderInputRef} />
               <SearchContent flex={1}>
@@ -107,7 +110,7 @@ export function SearchDialog({onClose, onOpen, open}: SearchDialogProps) {
 
               <SearchDialogFilters />
             </Flex>
-          </SearchDialogContentWrapper>
+          </SearchDialogWrapper>
         </FocusLock>
       </Portal>
     </CommandListProvider>
@@ -166,7 +169,7 @@ const DialogContent = styled(Card)`
   height: 100%;
 `
 
-const SearchDialogContentWrapper = styled(Card)`
+const SearchDialogWrapper = styled(Card)`
   height: 100vh;
   left: 0;
   overflow: hidden;
@@ -174,6 +177,18 @@ const SearchDialogContentWrapper = styled(Card)`
   top: 0;
   width: 100%;
   z-index: 1;
+
+  &[data-focused='true'],
+  &[data-hovered='true'] {
+    #${ID}-children {
+      button[aria-selected='true'],
+      [aria-selected='true'] a {
+        background: ${hues.gray[50].hex};
+        // Disable box-shadow to hide the halo effect when we have keyboard focus over a selected <Button>
+        box-shadow: none;
+      }
+    }
+  }
 `
 
 const SearchContent = styled(Box)`

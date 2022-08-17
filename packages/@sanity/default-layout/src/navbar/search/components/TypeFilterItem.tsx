@@ -4,9 +4,6 @@ import {Button} from '@sanity/ui'
 import React, {useCallback} from 'react'
 import {useCommandList} from '../contexts/commandList'
 import {useSearchState} from '../contexts/search'
-import {withCommandListItemStyles} from '../utils/withCommandListItemStyles'
-
-const CommandListItemButton = withCommandListItemStyles(Button)
 
 interface TypeFilterItemProps {
   index: number
@@ -38,7 +35,7 @@ export function TypeFilterItem({index, selected, small, type}: TypeFilterItemPro
   }, [handleTypeAdd, handleTypeRemove, onChildClick, selected])
 
   return (
-    <CommandListItemButton
+    <Button
       aria-checked={selected}
       data-index={index}
       fontSize={small ? 1 : 2}
