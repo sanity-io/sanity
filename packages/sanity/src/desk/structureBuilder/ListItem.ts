@@ -106,6 +106,12 @@ export class ListItemBuilder implements Serializable<ListItem> {
   }
 
   getSchemaType(): PartialListItem['schemaType'] {
+    const schemaType = this.spec.schemaType
+
+    if (typeof schemaType === 'string') {
+      return this._context.schema.get(schemaType)
+    }
+
     return this.spec.schemaType
   }
 
