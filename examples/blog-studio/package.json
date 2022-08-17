@@ -1,7 +1,7 @@
 {
   "name": "blog-studio",
   "private": true,
-  "version": "3.0.0-dev-preview.14",
+  "version": "3.0.0-dev-preview.15",
   "description": "Content studio running with schema from the blog init template",
   "main": "package.json",
   "author": "Sanity.io <hello@sanity.io>",
@@ -20,7 +20,7 @@
   "dependencies": {
     "react": "17.0.2",
     "react-dom": "17.0.2",
-    "sanity": "3.0.0-dev-preview.14",
+    "sanity": "3.0.0-dev-preview.15",
     "styled-components": "^5.2.0"
   },
   "bugs": {

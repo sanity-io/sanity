@@ -1,6 +1,6 @@
 {
   "name": "@sanity/schema",
-  "version": "3.0.0-dev-preview.14",
+  "version": "3.0.0-dev-preview.15",
   "description": "",
   "source": "./src/_exports/index.ts",
   "main": "./lib/_exports/index.cjs",
@@ -49,7 +49,7 @@
   "license": "MIT",
   "dependencies": {
     "@sanity/generate-help-url": "^3.0.0",
-    "@sanity/types": "3.0.0-dev-preview.14",
+    "@sanity/types": "3.0.0-dev-preview.15",
     "arrify": "^1.0.1",
     "humanize-list": "^1.0.1",
     "leven": "^3.1.0",
