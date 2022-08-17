@@ -1,3 +1,4 @@
+import type {Debugger} from 'debug'
 import {Patcher} from '../patch'
 import luid from './luid'
 import debug from './debug'
@@ -22,8 +23,14 @@ export default class Mutation {
   params: MutationParams
   compiled: Function
   _appliesToMissingDocument: boolean
-  constructor(options: MutationParams) {
+
+  debug: Debugger
+  isDraft: boolean
+
+  constructor(options: MutationParams, isDraft: boolean) {
     this.params = options
+    this.isDraft = isDraft
+    this.debug = debug.extend(isDraft ? 'draft' : 'published')
   }
 
   get transactionId(): string {
@@ -136,12 +143,12 @@ export default class Mutation {
     }
   }
   apply(document: Doc): Doc {
-    debug('Applying mutation %O to document %O', this.mutations, document)
+    this.debug('Applying mutation %O to document %O', this.mutations, document)
     if (!this.compiled) {
       this.compile()
     }
     const result = this.compiled(document)
-    debug('  => %O', result)
+    this.debug('  => %O', result)
     return result
   }
   static applyAll(document: Doc, mutations: Array<Mutation>): Doc {
@@ -156,6 +163,6 @@ export default class Mutation {
       (result, mutation) => result.concat(...mutation.mutations),
       []
     )
-    return new Mutation({mutations: squashed})
+    return new Mutation({mutations: squashed}, document._id.startsWith('drafts.'))
   }
 }

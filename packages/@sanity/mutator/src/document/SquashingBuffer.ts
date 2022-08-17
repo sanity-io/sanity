@@ -1,3 +1,4 @@
+import type {Debugger} from 'debug'
 import * as DiffMatchPatch from 'diff-match-patch'
 import extractWithPath from '../jsonpath/extractWithPath'
 import arrayToJSONMatchPath from '../jsonpath/arrayToJSONMatchPath'
@@ -25,11 +26,16 @@ export default class SquashingBuffer {
   staged: Array<any>
   dmp: DiffMatchPatch.diff_match_patch
 
-  constructor(doc: Doc) {
+  debug: Debugger
+  isDraft: boolean
+
+  constructor(doc: Doc, isDraft: boolean) {
+    this.isDraft = isDraft
+    this.debug = debug.extend(isDraft ? 'draft' : 'published')
     if (doc) {
-      debug('Reset mutation buffer to rev %s', doc._rev)
+      this.debug('Reset mutation buffer to rev %s', doc._rev)
     } else {
-      debug('Reset mutation buffer state to document being deleted')
+      this.debug('Reset mutation buffer state to document being deleted')
     }
     this.staged = []
     this.setOperations = {}
@@ -53,12 +59,15 @@ export default class SquashingBuffer {
     this.stashStagedOperations()
     let result = null
     if (this.out.length > 0) {
-      debug('Purged mutation buffer')
-      result = new Mutation({
-        mutations: this.out,
-        resultRev: txnId,
-        transactionId: txnId,
-      })
+      this.debug('Purged mutation buffer')
+      result = new Mutation(
+        {
+          mutations: this.out,
+          resultRev: txnId,
+          transactionId: txnId,
+        },
+        this.isDraft
+      )
     }
     this.out = []
     this.documentPresent = false
@@ -89,7 +98,7 @@ export default class SquashingBuffer {
       // If any weren't optimisable, add them to an unoptimised set-operation, then
       // stash everything.
       if (Object.keys(unoptimizable).length > 0) {
-        debug('Unoptimizable set-operation detected, purging optimization buffer')
+        this.debug('Unoptimizable set-operation detected, purging optimization buffer')
         this.staged.push({patch: {id: this.PRESTAGE._id, set: unoptimizable}})
         this.stashStagedOperations()
       }
@@ -109,7 +118,7 @@ export default class SquashingBuffer {
       return
     }
 
-    debug('Unoptimizable mutation detected, purging optimization buffer')
+    this.debug('Unoptimizable mutation detected, purging optimization buffer')
     // console.log("Unoptimizable operation, stashing", JSON.stringify(op))
     // Un-optimisable operations causes everything to be stashed
     this.staged.push(op)
@@ -190,7 +199,7 @@ export default class SquashingBuffer {
     })
     nextOps.push(...this.staged)
     if (nextOps.length > 0) {
-      this.PRESTAGE = new Mutation({mutations: nextOps}).apply(this.PRESTAGE)
+      this.PRESTAGE = new Mutation({mutations: nextOps}, this.isDraft).apply(this.PRESTAGE)
       this.staged = []
       this.setOperations = {}
     }
@@ -209,7 +218,7 @@ export default class SquashingBuffer {
     } else {
       this.BASIS = newBasis
       if (this.out) {
-        this.PRESTAGE = new Mutation({mutations: this.out}).apply(this.BASIS)
+        this.PRESTAGE = new Mutation({mutations: this.out}, this.isDraft).apply(this.BASIS)
       } else {
         this.PRESTAGE = this.BASIS
       }

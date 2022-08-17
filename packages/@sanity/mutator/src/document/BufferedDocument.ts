@@ -1,6 +1,7 @@
 // A wrapper for Document that allows the client to gather mutations on the client side and commit them
 // when it wants to.
 
+import type {Debugger} from 'debug'
 import {isEqual} from 'lodash'
 
 import Document from './Document'
@@ -55,9 +56,14 @@ export default class BufferedDocument {
   committerRunning: boolean
   onConsistencyChanged: (boolean) => void
 
-  constructor(doc) {
-    this.buffer = new SquashingBuffer(doc)
-    this.document = new Document(doc)
+  debug: Debugger
+  isDraft: boolean
+
+  constructor(doc, isDraft) {
+    this.isDraft = isDraft
+    this.debug = debug.extend(this.isDraft ? 'draft' : 'published')
+    this.buffer = new SquashingBuffer(doc, this.isDraft)
+    this.document = new Document(doc, isDraft)
     this.document.onMutation = (msg) => this.handleDocMutation(msg)
     this.document.onRemoteMutation = (mut) => this.onRemoteMutation && this.onRemoteMutation(mut)
     this.document.onRebase = (msg, remoteMutations, localMutations) =>
@@ -72,9 +78,9 @@ export default class BufferedDocument {
   // for too long, it has probably missed a notification, and should reload the document from the server
   reset(doc) {
     if (doc) {
-      debug('Document state reset to revision %s', doc._rev)
+      this.debug('Document state reset to revision %s', doc._rev)
     } else {
-      debug('Document state reset to being deleted')
+      this.debug('Document state reset to being deleted')
     }
     this.document.reset(doc)
     this.rebase([], [])
@@ -86,12 +92,12 @@ export default class BufferedDocument {
     if (this.onConsistencyChanged) {
       this.onConsistencyChanged(false)
     }
-    debug('Staged local mutation')
+    this.debug('Staged local mutation')
     this.buffer.add(mutation)
     const oldLocal = this.LOCAL
     this.LOCAL = mutation.apply(this.LOCAL)
     if (this.onMutation && oldLocal !== this.LOCAL) {
-      debug('onMutation fired')
+      this.debug('onMutation fired')
       this.onMutation({
         mutation,
         document: this.LOCAL,
@@ -105,7 +111,7 @@ export default class BufferedDocument {
 
   // Call when a mutation arrives from Sanity
   arrive(mutation: Mutation) {
-    debug('Remote mutation arrived %s -> %s', mutation.previousRev, mutation.resultRev)
+    this.debug('Remote mutation arrived %s -> %s', mutation.previousRev, mutation.resultRev)
     if (mutation.previousRev == mutation.resultRev) {
       throw new Error(
         `Mutation ${mutation.transactionId} has previousRev == resultRev (${mutation.previousRev})`
@@ -122,11 +128,11 @@ export default class BufferedDocument {
         resolve()
         return
       }
-      debug('Committing local changes')
+      this.debug('Committing local changes')
       // Collect current staged mutations into a commit and ...
       this.commits.push(new Commit([this.buffer.purge()], {resolve, reject}))
       // ... clear the table for the next commit.
-      this.buffer = new SquashingBuffer(this.LOCAL)
+      this.buffer = new SquashingBuffer(this.LOCAL, this.isDraft)
       this.performCommits()
     })
   }
@@ -158,14 +164,14 @@ export default class BufferedDocument {
 
     const responder = {
       success: () => {
-        debug('Commit succeeded')
+        this.debug('Commit succeeded')
         docResponder.success()
         commit.resolve()
         // Keep running the committer until no more commits
         this._cycleCommitter()
       },
       failure: () => {
-        debug('Commit failed')
+        this.debug('Commit failed')
         // Re stage commit
         commit.tries += 1
         if (this.LOCAL !== null) {
@@ -188,13 +194,13 @@ export default class BufferedDocument {
         // form
         this.reset(this.document.HEAD)
         // Clear the buffer of recent mutations
-        this.buffer = new SquashingBuffer(this.LOCAL)
+        this.buffer = new SquashingBuffer(this.LOCAL, this.isDraft)
 
         // Stop the committer loop
         this.committerRunning = false
       },
     }
-    debug('Posting commit')
+    this.debug('Posting commit')
     this.commitHandler({
       mutation: squashed,
       success: responder.success,
@@ -208,7 +214,7 @@ export default class BufferedDocument {
   }
 
   handleDocumentDeleted() {
-    debug('Document deleted')
+    this.debug('Document deleted')
     // If the document was just deleted, fire the onDelete event with the absolutely latest version of the document
     // before someone deleted it so that the client may revive the document in the last state the user saw it, should
     // she so desire.
@@ -222,15 +228,15 @@ export default class BufferedDocument {
   handleDocMutation(msg) {
     // If we have no local changes, we can just pass this on to the client
     if (this.commits.length == 0 && !this.buffer.hasChanges()) {
-      debug('Document mutated from remote with no local changes')
+      this.debug('Document mutated from remote with no local changes')
       this.LOCAL = this.document.EDGE
-      this.buffer = new SquashingBuffer(this.LOCAL)
+      this.buffer = new SquashingBuffer(this.LOCAL, this.isDraft)
       if (this.onMutation) {
         this.onMutation(msg)
       }
       return
     }
-    debug('Document mutated from remote with local changes')
+    this.debug('Document mutated from remote with local changes')
 
     // If there are local edits, and the document was deleted, we need to purge those local edits now
     if (this.document.EDGE === null) {
@@ -242,7 +248,7 @@ export default class BufferedDocument {
   }
 
   rebase(remoteMutations: Mutation[], localMutations: Mutation[]) {
-    debug('Rebasing document')
+    this.debug('Rebasing document')
     if (this.document.EDGE === null) {
       this.handleDocumentDeleted()
     }

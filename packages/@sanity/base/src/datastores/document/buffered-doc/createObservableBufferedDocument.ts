@@ -65,7 +65,8 @@ const getDocument = <T extends {document: any}>(event: T): T['document'] => even
 // to make it easier to work with the api provided by it
 export const createObservableBufferedDocument = (
   listenerEvent$: Observable<PairListenerEvent>,
-  commitMutations: CommitFunction
+  commitMutations: CommitFunction,
+  isDraft: boolean
 ) => {
   // Incoming local actions (e.g. a request to mutate, a request to commit pending changes, etc.)
   const actions$ = new Subject<Action>()
@@ -85,7 +86,7 @@ export const createObservableBufferedDocument = (
   const remoteMutations = new Subject<DocumentRemoteMutationEvent>()
 
   const createInitialBufferedDocument = (initialSnapshot) => {
-    const bufferedDocument = new BufferedDocument(initialSnapshot)
+    const bufferedDocument = new BufferedDocument(initialSnapshot, isDraft)
     bufferedDocument.onMutation = ({mutation, remote}) => {
       // this is called after either when:
       // 1) local mutations has been added, optimistically applied and queued for sending
@@ -175,7 +176,7 @@ export const createObservableBufferedDocument = (
     filter((ev): ev is MutationEvent => ev.type === 'mutation'),
     withLatestFrom(currentBufferedDocument$),
     map(([mutationEvent, bufferedDocument]) => {
-      bufferedDocument!.arrive(new Mutation(mutationEvent))
+      bufferedDocument!.arrive(new Mutation(mutationEvent, isDraft))
       return getUpdatedSnapshot(bufferedDocument!)
     })
   )
@@ -185,7 +186,7 @@ export const createObservableBufferedDocument = (
     withLatestFrom(currentBufferedDocument$),
     tap(([action, bufferedDocument]) => {
       if (action.type === 'mutation') {
-        bufferedDocument!.add(new Mutation({mutations: action.mutations}))
+        bufferedDocument!.add(new Mutation({mutations: action.mutations}, isDraft))
       }
       if (action.type === 'commit') {
         bufferedDocument!.commit()

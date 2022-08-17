@@ -10,6 +10,7 @@
 // TODO: When we have timestamps on mutation notifications, we can reject incoming mutations that are older
 // than the document we are seeing.
 
+import type {Debugger} from 'debug'
 import {isEqual} from 'lodash'
 import Mutation from './Mutation'
 
@@ -53,8 +54,10 @@ export default class Document {
   // we staged a new mutation, the reason is probably just because the user is typing or something. Should be used as
   // a guard agains resetting state for inconsistensy reasons.
   lastStagedAt: Date
+  debug: Debugger
 
-  constructor(doc: Doc) {
+  constructor(doc: Doc, isDraft: boolean) {
+    this.debug = debug.extend(isDraft ? 'draft' : 'published')
     this.reset(doc)
   }
 
@@ -86,7 +89,7 @@ export default class Document {
     }
     this.lastStagedAt = new Date()
 
-    debug('Staging mutation %s (pushed to pending)', mutation.transactionId)
+    this.debug('Staging mutation %s (pushed to pending)', mutation.transactionId)
     this.pending.push(mutation)
     this.EDGE = mutation.apply(this.EDGE)
 
@@ -166,7 +169,7 @@ export default class Document {
     } while (nextMut)
 
     if (this.incoming.length > 0 && debug.enabled) {
-      debug(
+      this.debug(
         'Unable to apply mutations %s',
         this.incoming.map((mut) => mut.transactionId).join(', ')
       )
@@ -191,9 +194,9 @@ export default class Document {
     // Handle onConsistencyChanged callback
     if (wasConsistent != isConsistent && this.onConsistencyChanged) {
       if (isConsistent) {
-        debug('Buffered document is inconsistent')
+        this.debug('Buffered document is inconsistent')
       } else {
-        debug('Buffered document is consistent')
+        this.debug('Buffered document is consistent')
       }
       this.onConsistencyChanged(isConsistent)
     }
@@ -204,7 +207,7 @@ export default class Document {
     if (!mut) {
       return false
     }
-    debug(
+    this.debug(
       'Applying mutation %s -> %s to rev %s',
       mut.previousRev,
       mut.resultRev,
@@ -223,16 +226,16 @@ export default class Document {
     if (this.anyUnresolvedMutations()) {
       const needRebase = this.consumeUnresolved(mut.transactionId)
       if (debug.enabled) {
-        debug(
+        this.debug(
           `Incoming mutation ${mut.transactionId} appeared while there were pending or submitted local mutations`
         )
-        debug(`Submitted txnIds: ${this.submitted.map((m) => m.transactionId).join(', ')}`)
-        debug(`Pending txnIds: ${this.pending.map((m) => m.transactionId).join(', ')}`)
-        debug(`needRebase == %s`, needRebase)
+        this.debug(`Submitted txnIds: ${this.submitted.map((m) => m.transactionId).join(', ')}`)
+        this.debug(`Pending txnIds: ${this.pending.map((m) => m.transactionId).join(', ')}`)
+        this.debug(`needRebase == %s`, needRebase)
       }
       return needRebase
     }
-    debug(
+    this.debug(
       `Remote mutation %s arrived w/o any pending or submitted local mutations`,
       mut.transactionId
     )
@@ -268,7 +271,7 @@ export default class Document {
     // If we can consume the directly upcoming mutation, we won't have to rebase
     if (this.submitted.length != 0) {
       if (this.submitted[0].transactionId == txnId) {
-        debug(
+        this.debug(
           `Remote mutation %s matches upcoming submitted mutation, consumed from 'submitted' buffer`,
           txnId
         )
@@ -277,14 +280,14 @@ export default class Document {
       }
     } else if (this.pending.length > 0 && this.pending[0].transactionId == txnId) {
       // There are no submitted, but some are pending so let's check the upcoming pending
-      debug(
+      this.debug(
         `Remote mutation %s matches upcoming pending mutation, consumed from 'pending' buffer`,
         txnId
       )
       this.pending.shift()
       return false
     }
-    debug(
+    this.debug(
       'The mutation was not the upcoming mutation, scrubbing. Pending: %d, Submitted: %d',
       this.pending.length,
       this.submitted.length
@@ -293,7 +296,11 @@ export default class Document {
     // see if we have an out of order situation
     this.submitted = this.submitted.filter((mut) => mut.transactionId != txnId)
     this.pending = this.pending.filter((mut) => mut.transactionId != txnId)
-    debug(`After scrubbing: Pending: %d, Submitted: %d`, this.pending.length, this.submitted.length)
+    this.debug(
+      `After scrubbing: Pending: %d, Submitted: %d`,
+      this.pending.length,
+      this.submitted.length
+    )
     // Whether we had it or not we have either a reordering, or an unexpected mutation
     // so must rebase
     return true

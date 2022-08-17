@@ -43,7 +43,11 @@ export const createBufferedDocument = (
   listenerEvent$: Observable<PairListenerEvent>,
   commitMutations: CommitFunction
 ): BufferedDocumentWrapper => {
-  const bufferedDocument = createObservableBufferedDocument(listenerEvent$, commitMutations)
+  const bufferedDocument = createObservableBufferedDocument(
+    listenerEvent$,
+    commitMutations,
+    documentId.startsWith('drafts.')
+  )
 
   const prepareDoc = prepare(documentId)
 
