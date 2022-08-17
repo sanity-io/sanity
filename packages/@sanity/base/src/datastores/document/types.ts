@@ -16,6 +16,7 @@ export interface MutationEvent {
   mutations: MutationPayload[]
   effects: {apply: unknown; revert: unknown}
   transition: 'update' | 'appear' | 'disappear'
+  eventNumber: {current: number; total: number}
 }
 
 export interface ReconnectEvent {
