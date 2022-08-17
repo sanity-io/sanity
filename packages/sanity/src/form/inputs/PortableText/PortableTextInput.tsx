@@ -81,7 +81,6 @@ export function PortableTextInput(props: PortableTextInputProps) {
   const {
     focused,
     focusPath,
-    focusRef,
     hotkeys,
     markers = EMPTY_ARRAY,
     members,
@@ -96,10 +95,11 @@ export function PortableTextInput(props: PortableTextInputProps) {
     renderCustomMarkers,
     schemaType: type,
     value,
+    elementProps,
   } = props
 
   // Make the PTE focusable from the outside
-  useImperativeHandle(focusRef, () => ({
+  useImperativeHandle(elementProps.ref, () => ({
     focus() {
       if (editorRef.current) {
         PortableTextEditor.focus(editorRef.current)

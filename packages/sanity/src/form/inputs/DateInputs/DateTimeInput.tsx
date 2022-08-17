@@ -65,7 +65,7 @@ function enforceTimeStep(dateString: string, timeStep: number) {
 }
 
 export function DateTimeInput(props: DateTimeInputProps) {
-  const {changed, focused, focusRef, id, onChange, path, readOnly, schemaType, value} = props
+  const {onChange, schemaType, value, elementProps} = props
 
   const {dateFormat, timeFormat, timeStep} = parseOptions(schemaType.options)
 
@@ -92,21 +92,17 @@ export function DateTimeInput(props: DateTimeInputProps) {
   )
 
   return (
-    <ChangeIndicator path={path} isChanged={changed} hasFocus={!!focused}>
-      <CommonDateTimeInput
-        deserialize={deserialize}
-        formatInputValue={formatInputValue}
-        id={id}
-        onChange={handleChange}
-        parseInputValue={parseInputValue}
-        placeholder={schemaType.placeholder}
-        readOnly={readOnly}
-        ref={focusRef}
-        selectTime
-        serialize={serialize}
-        timeStep={timeStep}
-        value={value}
-      />
-    </ChangeIndicator>
+    <CommonDateTimeInput
+      {...elementProps}
+      onChange={handleChange}
+      deserialize={deserialize}
+      formatInputValue={formatInputValue}
+      parseInputValue={parseInputValue}
+      placeholder={schemaType.placeholder}
+      selectTime
+      serialize={serialize}
+      timeStep={timeStep}
+      value={value}
+    />
   )
 }

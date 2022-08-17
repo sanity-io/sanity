@@ -58,9 +58,7 @@ export function CrossDatasetReferenceInput(props: CrossDatasetReferenceInputProp
     changed,
     focused,
     focusPath,
-    focusRef,
     getReferenceInfo,
-    onBlur,
     onChange,
     onFocusPath,
     onSearch,
@@ -69,9 +67,8 @@ export function CrossDatasetReferenceInput(props: CrossDatasetReferenceInputProp
     schemaType,
     validation,
     value,
+    elementProps,
   } = props
-
-  const forwardedRef = useForwardedRef(focusRef)
 
   const [searchState, setSearchState] = useState<SearchState>(INITIAL_SEARCH_STATE)
 
@@ -170,20 +167,20 @@ export function CrossDatasetReferenceInput(props: CrossDatasetReferenceInputProp
 
   const handleFocus = useCallback(
     (event) => {
-      if (onFocusPath && event.currentTarget === forwardedRef.current) {
+      if (onFocusPath && event.currentTarget === elementProps.ref.current) {
         onFocusPath([])
       }
     },
-    [forwardedRef, onFocusPath]
+    [elementProps.ref, onFocusPath]
   )
 
   const handleAutocompleteFocus = useCallback(
     (event) => {
-      if (onFocusPath && event.currentTarget === forwardedRef.current) {
+      if (onFocusPath && event.currentTarget === elementProps.ref.current) {
         onFocusPath(REF_PATH)
       }
     },
-    [forwardedRef, onFocusPath]
+    [elementProps.ref, onFocusPath]
   )
 
   const handleQueryChange = useObservableCallback((inputValue$: Observable<string | null>) => {
@@ -276,9 +273,9 @@ export function CrossDatasetReferenceInput(props: CrossDatasetReferenceInputProp
           <ChangeIndicator path={path} isChanged={changed} hasFocus={!!focused}>
             <div ref={autocompletePopoverReferenceElementRef}>
               <ReferenceAutocomplete
+                {...elementProps}
                 data-testid="autocomplete"
                 loading={searchState.isLoading}
-                ref={forwardedRef}
                 referenceElement={autocompletePopoverReferenceElementRef.current}
                 portalRef={autocompletePortalRef}
                 id={inputId || ''}
@@ -287,7 +284,6 @@ export function CrossDatasetReferenceInput(props: CrossDatasetReferenceInputProp
                   hit: hit,
                 }))}
                 onFocus={handleAutocompleteFocus}
-                onBlur={onBlur}
                 radius={1}
                 placeholder="Type to search"
                 onKeyDown={handleAutocompleteKeyDown}
@@ -333,7 +329,7 @@ export function CrossDatasetReferenceInput(props: CrossDatasetReferenceInputProp
                   __unstable_focusRing
                   tabIndex={0}
                   onFocus={handleFocus}
-                  ref={forwardedRef}
+                  ref={elementProps.ref}
                 >
                   <PreviewReferenceValue
                     value={value}
@@ -353,7 +349,7 @@ export function CrossDatasetReferenceInput(props: CrossDatasetReferenceInputProp
                   __unstable_focusRing
                   tabIndex={0}
                   onFocus={handleFocus}
-                  ref={forwardedRef}
+                  ref={elementProps.ref}
                 >
                   <PreviewReferenceValue
                     value={value}

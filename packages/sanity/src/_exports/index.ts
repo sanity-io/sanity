@@ -100,7 +100,6 @@ export type {
   ArrayOfPrimitivesItemMember,
   ArrayOfPrimitivesMember,
   BaseFieldProps,
-  BaseInputProps,
   BaseItemProps,
   BaseFormNode,
   BooleanFieldProps,

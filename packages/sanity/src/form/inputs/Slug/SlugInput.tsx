@@ -1,15 +1,7 @@
 import React, {useCallback, useMemo} from 'react'
-import {
-  Path,
-  SanityDocument,
-  SlugParent,
-  SlugSchemaType,
-  isValidationErrorMarker,
-  SlugSourceFn,
-} from '@sanity/types'
+import {Path, SanityDocument, SlugParent, SlugSchemaType, SlugSourceFn} from '@sanity/types'
 import * as PathUtils from '@sanity/util/paths'
-import {TextInput, Button, Flex, Box, Card, Stack} from '@sanity/ui'
-import {useId} from '@reach/auto-id'
+import {Box, Button, Card, Flex, Stack, TextInput} from '@sanity/ui'
 import {PatchEvent, set, setIfMissing, unset} from '../../patch'
 import {ObjectInputProps} from '../../types'
 import {useFormBuilder} from '../../useFormBuilder'
@@ -39,10 +31,8 @@ function getNewFromSource(
 
 export function SlugInput(props: SlugInputProps) {
   const {getDocument} = useFormBuilder().__internal
-  const {focusRef, path, value, schemaType, validation, onChange, onFocus, onFocusPath, readOnly} =
-    props
+  const {path, value, schemaType, validation, onChange, onFocusPath, readOnly, elementProps} = props
   const sourceField = schemaType.options?.source
-  const inputId = useId()
   const errors = useMemo(() => validation.filter((item) => item.level === 'error'), [validation])
 
   const updateSlug = useCallback(
@@ -82,21 +72,17 @@ export function SlugInput(props: SlugInputProps) {
     [updateSlug]
   )
 
-  const handleFocus = React.useCallback(() => onFocusPath(['current']), [onFocusPath])
-
   return (
     <Stack space={3}>
       <Flex>
         <Box flex={1}>
           <TextInput
-            id={inputId}
-            ref={focusRef}
             customValidity={errors.length > 0 ? errors[0].message : ''}
             disabled={isUpdating}
             onChange={handleChange}
-            onFocus={onFocus}
             value={value?.current || ''}
             readOnly={readOnly}
+            {...elementProps}
           />
 
           {generateState?.status === 'error' && (
@@ -112,7 +98,6 @@ export function SlugInput(props: SlugInputProps) {
               type="button"
               disabled={readOnly || isUpdating}
               onClick={handleGenerateSlug}
-              onFocus={handleFocus}
               text={generateState?.status === 'pending' ? 'Generating…' : 'Generate'}
             />
           </Box>

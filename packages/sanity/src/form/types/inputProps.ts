@@ -8,6 +8,7 @@ import {
   StringSchemaType,
 } from '@sanity/types'
 import * as React from 'react'
+import {ChangeEventHandler, FocusEventHandler, FormEventHandler} from 'react'
 import {FormPatch, PatchEvent} from '../patch'
 import {
   ArrayOfObjectsFormNode,
@@ -27,19 +28,10 @@ import {
 import {InsertItemEvent, MoveItemEvent} from './event'
 import {FormFieldGroup} from './fieldGroups'
 
-// these are the props shared by *all* inputs
-export interface BaseInputProps {
-  focusRef: React.Ref<any>
-
-  onFocus: (event: React.FocusEvent) => void
-  onBlur: (event: React.FocusEvent) => void
-}
-
 export interface ObjectInputProps<
   T = {[key in string]: unknown},
   S extends ObjectSchemaType = ObjectSchemaType
-> extends ObjectFormNode<T, S>,
-    BaseInputProps {
+> extends ObjectFormNode<T, S> {
   groups: FormFieldGroup[]
 
   // todo: consider remove PatchEvent
@@ -63,13 +55,14 @@ export interface ObjectInputProps<
   renderField: RenderFieldCallback
   renderItem: RenderArrayOfObjectsItemCallback
   renderPreview: RenderPreviewCallback
+
+  elementProps: ComplexElementProps
 }
 
 export interface ArrayOfObjectsInputProps<
   T extends {_key: string} = {_key: string},
   S extends ArraySchemaType = ArraySchemaType
-> extends ArrayOfObjectsFormNode<T[], S>,
-    BaseInputProps {
+> extends ArrayOfObjectsFormNode<T[], S> {
   // Data manipulation callbacks special for array inputs
   onChange: (patch: FormPatch | FormPatch[] | PatchEvent) => void
   onAppendItem: (item: T) => void
@@ -98,6 +91,8 @@ export interface ArrayOfObjectsInputProps<
   renderInput: RenderInputCallback
   renderItem: RenderArrayOfObjectsItemCallback
   renderPreview: RenderPreviewCallback
+
+  elementProps: ComplexElementProps
 }
 
 export type ArrayOfPrimitivesElementType<T extends any[]> = T extends (infer K)[] ? K : unknown
@@ -105,8 +100,7 @@ export type ArrayOfPrimitivesElementType<T extends any[]> = T extends (infer K)[
 export interface ArrayOfPrimitivesInputProps<
   T extends (string | boolean | number)[] = (string | boolean | number)[],
   S extends ArraySchemaType = ArraySchemaType
-> extends ArrayOfPrimitivesFormNode<T, S>,
-    BaseInputProps {
+> extends ArrayOfPrimitivesFormNode<T, S> {
   // note: not a priority to support collapsible arrays right now
   onSetCollapsed: (collapsed: boolean) => void
 
@@ -123,24 +117,43 @@ export interface ArrayOfPrimitivesInputProps<
   renderInput: RenderInputCallback
   renderItem: RenderArrayOfPrimitivesItemCallback
   renderPreview: RenderPreviewCallback
+  elementProps: ComplexElementProps
+}
+
+export interface PrimitiveInputElementProps {
+  value?: string
+  id: string
+  readOnly: boolean
+  placeholder?: string
+  onChange: FormEventHandler
+  onFocus: FocusEventHandler
+  onBlur: FocusEventHandler
+  ref: React.MutableRefObject<any>
+}
+
+export interface ComplexElementProps {
+  id: string
+  onFocus: FocusEventHandler
+  onBlur: FocusEventHandler
+  ref: React.MutableRefObject<any>
 }
 
 export interface StringInputProps<S extends StringSchemaType = StringSchemaType>
-  extends StringFormNode<S>,
-    BaseInputProps {
+  extends StringFormNode<S> {
   onChange: (patch: FormPatch | FormPatch[] | PatchEvent) => void
   validationError?: string
+  elementProps: PrimitiveInputElementProps
 }
 
 export interface NumberInputProps<S extends NumberSchemaType = NumberSchemaType>
-  extends NumberFormNode<S>,
-    BaseInputProps {
+  extends NumberFormNode<S> {
   onChange: (patch: FormPatch | FormPatch[] | PatchEvent) => void
   validationError?: string
+  elementProps: PrimitiveInputElementProps
 }
+
 export interface BooleanInputProps<S extends BooleanSchemaType = BooleanSchemaType>
-  extends BooleanFormNode<S>,
-    BaseInputProps {
+  extends BooleanFormNode<S> {
   onChange: (patch: FormPatch | FormPatch[] | PatchEvent) => void
 
   /**
@@ -150,6 +163,7 @@ export interface BooleanInputProps<S extends BooleanSchemaType = BooleanSchemaTy
    * For advanced use cases use the ´validation´ prop which contains more levels and details
    */
   validationError?: string
+  elementProps: PrimitiveInputElementProps
 }
 
 export type PrimitiveInputProps = StringInputProps | BooleanInputProps | NumberInputProps

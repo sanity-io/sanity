@@ -15,12 +15,18 @@ function toSelectItem(
 
 const EMPTY_ITEM = {title: '', value: undefined}
 
-export const SelectInput = React.forwardRef(function SelectInput(
-  props: StringInputProps,
-  forwardedRef: React.ForwardedRef<HTMLSelectElement | HTMLInputElement>
-) {
-  const {value, readOnly, validationError, schemaType, onChange, onFocus, path, changed, focused} =
-    props
+export function SelectInput(props: StringInputProps) {
+  const {
+    value,
+    readOnly,
+    validationError,
+    schemaType,
+    onChange,
+    path,
+    changed,
+    focused,
+    elementProps,
+  } = props
   const items = useMemo(
     () => (schemaType.options?.list || []).map(toSelectItem),
     [schemaType.options?.list]
@@ -71,25 +77,20 @@ export const SelectInput = React.forwardRef(function SelectInput(
 
   const content = isRadio ? (
     <RadioSelect
+      {...elementProps}
+      value={currentItem}
       inputId={inputId}
       items={items}
-      value={currentItem}
-      onChange={handleChange}
       direction={schemaType.options?.direction || 'vertical'}
-      ref={forwardedRef as React.ForwardedRef<HTMLInputElement>}
-      readOnly={readOnly}
-      onFocus={onFocus}
       customValidity={validationError}
+      onChange={handleChange}
     />
   ) : (
     <Select
-      onChange={handleSelectChange}
-      onFocus={onFocus}
-      id={inputId}
-      ref={forwardedRef as React.ForwardedRef<HTMLSelectElement>}
-      readOnly={readOnly}
+      {...elementProps}
       customValidity={validationError}
       value={optionValueFromItem(currentItem)}
+      onChange={handleSelectChange}
     >
       {[EMPTY_ITEM, ...items].map((item, i) => (
         <option key={`${i - 1}`} value={i - 1}>
@@ -103,7 +104,7 @@ export const SelectInput = React.forwardRef(function SelectInput(
       {content}
     </ChangeIndicator>
   )
-})
+}
 
 const RadioSelect = forwardRef(function RadioSelect(
   props: {

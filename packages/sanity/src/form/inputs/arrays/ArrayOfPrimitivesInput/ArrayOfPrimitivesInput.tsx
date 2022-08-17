@@ -5,12 +5,11 @@ import {Card, Stack} from '@sanity/ui'
 import {ArrayOfPrimitivesInputProps, FormArrayInputFunctionsProps} from '../../../types'
 import {Item, List} from '../common/list'
 import {PrimitiveItemProps} from '../../../types/itemProps'
-import {MemberItemError} from '../../../members'
+import {MemberItemError, ArrayOfPrimitivesItem} from '../../../members'
 import {getEmptyValue} from './getEmptyValue'
 
 import {PrimitiveValue} from './types'
 import {nearestIndexOf} from './utils/nearestIndex'
-import {PrimitiveMemberItem} from './PrimitiveMemberItem'
 import {ItemRow} from './ItemRow'
 import {ArrayOfPrimitivesFunctions} from './ArrayOfPrimitivesFunctions'
 
@@ -68,17 +67,6 @@ export class ArrayOfPrimitivesInput extends React.PureComponent<DefaultArrayOfPr
   focus() {
     if (this._element) {
       this._element.focus()
-    }
-  }
-
-  handleFocusRoot = (event: React.FocusEvent<HTMLDivElement>) => {
-    const {onFocus} = this.props
-    // We want to handle focus when the array input *itself* element receives
-    // focus, not when a child element receives focus, but React has decided
-    // to let focus bubble, so this workaround is needed
-    // Background: https://github.com/facebook/react/issues/6410#issuecomment-671915381
-    if (event.currentTarget === event.target && event.currentTarget === this._element) {
-      onFocus(event)
     }
   }
 
@@ -181,7 +169,7 @@ export class ArrayOfPrimitivesInput extends React.PureComponent<DefaultArrayOfPr
                         data-item-index={index}
                         isSortable={isSortable}
                       >
-                        <PrimitiveMemberItem
+                        <ArrayOfPrimitivesItem
                           member={member}
                           renderInput={renderInput}
                           renderItem={this.renderItem}

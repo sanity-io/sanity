@@ -39,6 +39,7 @@ type ListProps = {
   isGrid?: boolean
   onSortEnd?: (event: {newIndex: number; oldIndex: number}) => void
   children?: React.ReactNode
+  tabIndex?: number
 }
 
 export function List(props: ListProps) {

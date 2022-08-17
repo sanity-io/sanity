@@ -1,5 +1,5 @@
 import {Schema, StringSchemaType} from '@sanity/types'
-import {StringInputProps} from '../../src/form'
+import {PrimitiveInputElementProps, StringInputProps} from '../../src/form'
 import {renderInput, TestRenderInputContext, TestRenderInputProps} from './renderInput'
 import {TestRenderProps} from './types'
 
@@ -15,11 +15,17 @@ export async function renderStringInput(options: {
 }) {
   const {fieldDefinition, props, render} = options
 
-  function transformProps(inputProps: TestRenderInputProps): StringInputProps {
-    const {schemaType, value, ...restProps} = inputProps
+  function transformProps(
+    inputProps: TestRenderInputProps<PrimitiveInputElementProps>
+  ): StringInputProps {
+    const {schemaType, value, elementProps, ...restProps} = inputProps
 
     return {
       ...restProps,
+      elementProps: {
+        ...elementProps,
+        value: value as string,
+      },
       changed: false,
       schemaType: schemaType as StringSchemaType,
       value: value as string,

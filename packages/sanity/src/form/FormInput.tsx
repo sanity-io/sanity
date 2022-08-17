@@ -11,7 +11,7 @@ import {
   RenderPreviewCallback,
 } from './types'
 import {isArrayInputProps, isObjectInputProps} from './utils/asserters'
-import {MemberField, MemberItem, MemberItemError} from './members'
+import {MemberField, ArrayOfObjectsItem, MemberItemError} from './members'
 
 const pass = ({children}: {children: React.ReactNode}) => children
 
@@ -140,7 +140,7 @@ const FormInputInner = memo(function FormInputInner(
       return <MemberItemError member={itemMember} />
     }
     return (
-      <MemberItem
+      <ArrayOfObjectsItem
         member={itemMember}
         renderInput={renderInput}
         renderField={renderField}

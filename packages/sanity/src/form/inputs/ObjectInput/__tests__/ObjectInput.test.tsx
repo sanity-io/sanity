@@ -100,9 +100,7 @@ const noopProps: Omit<ObjectInputProps, 'schemaType'> = {
   validation: [],
   value: {},
   changed: false,
-  focusRef: {current: undefined},
-  onFocus: noop,
-  onBlur: noop,
+  elementProps: {ref: {current: null}, onBlur: noop, onFocus: noop, id: 'test'},
 }
 
 describe('basic examples', () => {

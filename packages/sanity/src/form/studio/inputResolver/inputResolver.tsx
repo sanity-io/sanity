@@ -28,6 +28,7 @@ import {resolveNumberInput} from './resolveNumberInput'
 import {defaultInputs} from './defaultInputs'
 import {getArrayFieldLevel, getObjectFieldLevel} from './helpers'
 import {isObjectField} from '../../utils/asserters'
+import {ChangeIndicator} from '../../../components/changeIndicators'
 
 function resolveComponentFromTypeVariants(
   type: SchemaType
@@ -102,7 +103,13 @@ function PrimitiveField(field: FieldProps) {
       validation={field.validation}
       __unstable_presence={field.presence}
     >
-      {field.children}
+      <ChangeIndicator
+        path={field.path}
+        hasFocus={Boolean(field.inputProps.focused)}
+        isChanged={field.inputProps.changed}
+      >
+        {field.children}
+      </ChangeIndicator>
     </FormField>
   )
 }

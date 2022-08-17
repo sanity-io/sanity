@@ -7,7 +7,7 @@ import {
   RenderPreviewCallback,
 } from '../types'
 
-import {MemberItem} from './MemberItem'
+import {ArrayOfObjectsItem} from './items/ArrayOfObjectsItem'
 import {MemberItemError} from './MemberItemError'
 
 export interface ArrayOfObjectsMembersProps {
@@ -18,6 +18,10 @@ export interface ArrayOfObjectsMembersProps {
   renderPreview: RenderPreviewCallback
 }
 
+/**
+ * Convenience component for wrapping an array of objects
+ * @beta
+ */
 export function ArrayOfObjectsMembers(props: ArrayOfObjectsMembersProps) {
   const {members, renderInput, renderField, renderItem, renderPreview} = props
   return (
@@ -25,7 +29,7 @@ export function ArrayOfObjectsMembers(props: ArrayOfObjectsMembersProps) {
       {members.map((member) => {
         if (member.kind === 'item') {
           return (
-            <MemberItem
+            <ArrayOfObjectsItem
               key={member.key}
               member={member}
               renderInput={renderInput}

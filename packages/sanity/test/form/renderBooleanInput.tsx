@@ -1,5 +1,5 @@
 import {Schema, BooleanSchemaType} from '@sanity/types'
-import {BooleanInputProps} from '../../src/form'
+import {BooleanInputProps, PrimitiveInputElementProps} from '../../src/form'
 import {renderInput, TestRenderInputProps} from './renderInput'
 import {TestRenderProps} from './types'
 
@@ -12,7 +12,9 @@ export async function renderBooleanInput(options: {
 }) {
   const {fieldDefinition, props, render: initialRender} = options
 
-  function tranformProps(inputProps: TestRenderInputProps): BooleanInputProps {
+  function tranformProps(
+    inputProps: TestRenderInputProps<PrimitiveInputElementProps>
+  ): BooleanInputProps {
     const {schemaType, value, ...restProps} = inputProps
 
     return {

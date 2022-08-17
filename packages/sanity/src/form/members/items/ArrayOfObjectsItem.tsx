@@ -1,9 +1,7 @@
 import * as React from 'react'
 import {useCallback, useMemo, useRef} from 'react'
 import {Path} from '@sanity/types'
-import {FormCallbacksProvider, useFormCallbacks} from '../studio/contexts/FormCallbacks'
-import {useDidUpdate} from '../hooks/useDidUpdate'
-import {ArrayOfObjectsItemMember} from '../store'
+import {useDidUpdate} from '../../hooks/useDidUpdate'
 import {
   ObjectInputProps,
   ObjectItemProps,
@@ -11,10 +9,12 @@ import {
   RenderFieldCallback,
   RenderInputCallback,
   RenderPreviewCallback,
-} from '../types'
-import {insert, PatchArg, PatchEvent, setIfMissing, unset} from '../patch'
-import {createProtoValue} from '../utils/createProtoValue'
-import {ensureKey} from '../utils/ensureKey'
+} from '../../types'
+import {insert, PatchArg, PatchEvent, setIfMissing, unset} from '../../patch'
+import {ensureKey} from '../../utils/ensureKey'
+import {FormCallbacksProvider, useFormCallbacks} from '../../studio/contexts/FormCallbacks'
+import {ArrayOfObjectsItemMember} from '../../store'
+import {createProtoValue} from '../../utils/createProtoValue'
 
 /**
  * @alpha
@@ -30,7 +30,7 @@ export interface MemberItemProps {
 /**
  * @alpha
  */
-export function MemberItem(props: MemberItemProps) {
+export function ArrayOfObjectsItem(props: MemberItemProps) {
   const focusRef = useRef<{focus: () => void}>()
   const {member, renderItem, renderInput, renderField, renderPreview} = props
 
@@ -132,17 +132,25 @@ export function MemberItem(props: MemberItemProps) {
     [onFieldGroupSelect, member.item.path]
   )
 
+  const elementProps = useMemo(
+    (): ObjectInputProps['elementProps'] => ({
+      onBlur: handleBlur,
+      onFocus: handleFocus,
+      id: member.item.id,
+      ref: focusRef,
+    }),
+    [handleBlur, handleFocus, member.item.id]
+  )
+
   const inputProps = useMemo((): ObjectInputProps => {
     return {
       changed: member.item.changed,
       focusPath: member.item.focusPath,
-      focusRef: focusRef,
       focused: member.item.focused,
       groups: member.item.groups,
       id: member.item.id,
       level: member.item.level,
       members: member.item.members,
-      onBlur: handleBlur,
       onChange: handleChange,
       onCloseField: handleCloseField,
       onCollapseField: handleCollapseField,
@@ -150,7 +158,6 @@ export function MemberItem(props: MemberItemProps) {
       onExpandField: handleExpandField,
       onExpandFieldSet: handleExpandFieldSet,
       onFieldGroupSelect: handleSelectFieldGroup,
-      onFocus: handleFocus,
       onFocusPath: handleFocusChildPath,
       onOpenField: handleOpenField,
       path: member.item.path,
@@ -163,16 +170,16 @@ export function MemberItem(props: MemberItemProps) {
       schemaType: member.item.schemaType,
       validation: member.item.validation,
       value: member.item.value,
+      elementProps: elementProps,
     }
   }, [
-    handleBlur,
+    elementProps,
     handleChange,
     handleCloseField,
     handleCollapseField,
     handleCollapseFieldSet,
     handleExpandField,
     handleExpandFieldSet,
-    handleFocus,
     handleFocusChildPath,
     handleOpenField,
     handleSelectFieldGroup,
