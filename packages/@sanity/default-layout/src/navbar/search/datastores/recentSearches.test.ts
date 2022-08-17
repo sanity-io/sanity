@@ -75,7 +75,26 @@ describe('search-store', () => {
       expect(recentTerms.length).toEqual(MAX_RECENT_SEARCHES)
       expect(recentTerms[0].query).toEqual(`${MAX_RECENT_SEARCHES + 9}`)
     })
+  })
+  describe('addSearchTerms', () => {
+    it('should trim search queries before adding', () => {
+      const search1 = {
+        query: 'foo',
+        types: [dummyType],
+      }
+      const search2 = {
+        query: ' foo ',
+        types: [dummyType],
+      }
 
+      addSearchTerm(search1)
+      addSearchTerm(search2)
+
+      const recentTerms = getRecentSearchTerms(dummySchema)
+      expect(recentTerms.length).toEqual(1)
+    })
+  })
+  describe('removeSearchTerms', () => {
     it('should delete all saved searches', () => {
       const search1 = {
         query: '1',
@@ -95,7 +114,8 @@ describe('search-store', () => {
 
       expect(recentTerms.length).toEqual(0)
     })
-
+  })
+  describe('removeSearchTermAtIndex', () => {
     it('should delete saved searches by index', () => {
       const search1 = {
         query: '1',

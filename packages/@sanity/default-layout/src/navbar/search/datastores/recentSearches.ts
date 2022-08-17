@@ -50,7 +50,7 @@ export function addSearchTerm(searchTerm: SearchTerms): void {
   const saveTerm: StoredSearchTerm = {
     created: new Date().toISOString(),
     terms: {
-      query: searchTerm.query,
+      query: searchTerm.query.trim(),
       typeNames: searchTerm.types.map((s) => s.name),
     },
   }
