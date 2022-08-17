@@ -1,6 +1,6 @@
 import {Flex, Inline, Text, Theme} from '@sanity/ui'
 import React from 'react'
-import styled, {css} from 'styled-components'
+import styled from 'styled-components'
 import {useSearchState} from '../contexts/search'
 import {TypePills} from './TypePills'
 
@@ -28,9 +28,6 @@ export function NoResults() {
   )
 }
 
-// TODO: use idiomatic sanity/ui styling - is there a better way to apply _inline_ text styles?
-const Semibold = styled.span(({theme}: {theme: Theme}) => {
-  return css`
-    font-weight: ${theme.sanity.fonts.text.weights.semibold};
-  `
-})
+const Semibold = styled.span`
+  font-weight: ${({theme}: {theme: Theme}) => theme.sanity.fonts.text.weights.semibold};
+`

@@ -8,7 +8,7 @@ import {TypePills} from './TypePills'
 
 export interface RecentSearchesProps {
   index: number
-  maxVisibleQueryChars?: number // (excluding ellipses)
+  maxVisibleQueryChars?: number
   maxVisibleTypePillChars?: number
   onClick: (value: RecentSearch) => void
   onDelete: (event: MouseEvent) => void
@@ -34,10 +34,12 @@ export function RecentSearchItem(props: RecentSearchesProps) {
 
   const typesSelected = value.types.length > 0
 
+  // Truncate search query if it exceeds max visible count
   let querySubstring = value.query?.substring(0, maxVisibleQueryChars) || ''
   querySubstring =
     value.query.length > querySubstring.length ? `${querySubstring}...` : querySubstring
 
+  // Determine how many characters are left to render type pills
   const typePillsAvailableCharCount = maxVisibleTypePillChars - querySubstring.length
 
   return (
