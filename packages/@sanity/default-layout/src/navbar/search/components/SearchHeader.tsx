@@ -4,6 +4,7 @@ import {Box, Button, Card, Flex, Spinner, studioTheme} from '@sanity/ui'
 import React, {Dispatch, SetStateAction, useCallback, useEffect, useRef, useState} from 'react'
 import styled from 'styled-components'
 import {useSearchState} from '../contexts/search'
+import {supportsTouch} from '../utils/supportsTouch'
 import {CustomTextInput} from './CustomTextInput'
 
 interface SearchHeaderProps {
@@ -36,7 +37,7 @@ export function SearchHeader({onClose, setHeaderInputRef}: SearchHeaderProps) {
 
   // Focus filter button (when filters are hidden after initial mount)
   useEffect(() => {
-    if (isMountedRef?.current && !filtersVisible) {
+    if (isMountedRef?.current && !filtersVisible && !supportsTouch) {
       filterButtonElement?.focus()
     }
   }, [filterButtonElement, filtersVisible])
