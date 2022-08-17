@@ -1,12 +1,12 @@
 import {merge, Observable} from 'rxjs'
 import {filter, map, share} from 'rxjs/operators'
 import {versionedClient} from '../../../client/versionedClient'
-import {getPairListener, ListenerEvent} from '../getPairListener'
+import {getPairListener, PairListenerEvent} from '../getPairListener'
 import {BufferedDocumentEvent, createBufferedDocument} from '../buffered-doc/createBufferedDocument'
 import {IdPair, Mutation, ReconnectEvent} from '../types'
 import {RemoteSnapshotEvent} from '../buffered-doc/types'
 
-const isEventForDocId = (id: string) => (event: ListenerEvent): boolean =>
+const isEventForDocId = (id: string) => (event: PairListenerEvent): boolean =>
   event.type !== 'reconnect' && event.documentId === id
 
 function commitMutations(mutations) {

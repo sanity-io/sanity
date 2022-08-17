@@ -8,7 +8,7 @@ import {
   SnapshotEvent,
   RemoteSnapshotEvent,
 } from './types'
-import {ListenerEvent} from '../getPairListener'
+import {PairListenerEvent} from '../getPairListener'
 import {Mutation} from '../types'
 
 export type BufferedDocumentEvent =
@@ -40,7 +40,7 @@ export interface BufferedDocumentWrapper {
 export const createBufferedDocument = (
   documentId: string,
   // consider naming it remoteEvent$
-  listenerEvent$: Observable<ListenerEvent>,
+  listenerEvent$: Observable<PairListenerEvent>,
   commitMutations: CommitFunction
 ): BufferedDocumentWrapper => {
   const bufferedDocument = createObservableBufferedDocument(listenerEvent$, commitMutations)

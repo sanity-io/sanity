@@ -19,15 +19,14 @@ export interface PairListenerOptions {
   tag?: string
 }
 
-export type {MutationEvent}
+export type PairListenerEvent = MutationEvent | ReconnectEvent | InitialSnapshotEvent
 
-export type ListenerEvent = MutationEvent | ReconnectEvent | InitialSnapshotEvent
 
 export function getPairListener(
   client: SanityClient,
   idPair: IdPair,
   options: PairListenerOptions = {}
-) {
+): Observable<PairListenerEvent> {
   const {publishedId, draftId} = idPair
   return defer(
     () =>

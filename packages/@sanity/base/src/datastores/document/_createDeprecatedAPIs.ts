@@ -3,7 +3,7 @@ import {SanityDocument} from '@sanity/types'
 import {Observable, defer, of as observableOf} from 'rxjs'
 import {concatMap, map, share} from 'rxjs/operators'
 import {createBufferedDocument} from './buffered-doc/createBufferedDocument'
-import {WelcomeEvent} from './types'
+import {WelcomeEvent, MutationEvent} from './types'
 
 function fetchDocumentSnapshot(client, id) {
   return client.observable.getDocument(id).pipe(

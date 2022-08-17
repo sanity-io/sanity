@@ -14,7 +14,8 @@ import {
   tap,
   withLatestFrom,
 } from 'rxjs/operators'
-import {ListenerEvent, MutationEvent} from '../getPairListener'
+import {PairListenerEvent} from '../getPairListener'
+import type {MutationEvent} from '../types'
 import {
   CommitFunction,
   DocumentMutationEvent,
@@ -63,7 +64,7 @@ const getDocument = <T extends {document: any}>(event: T): T['document'] => even
 // This is an observable interface for BufferedDocument in an attempt
 // to make it easier to work with the api provided by it
 export const createObservableBufferedDocument = (
-  listenerEvent$: Observable<ListenerEvent>,
+  listenerEvent$: Observable<PairListenerEvent>,
   commitMutations: CommitFunction
 ) => {
   // Incoming local actions (e.g. a request to mutate, a request to commit pending changes, etc.)
