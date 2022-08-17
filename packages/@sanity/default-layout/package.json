@@ -34,7 +34,6 @@
     "@sanity/asset-utils": "^1.2.0",
     "@sanity/base": "2.30.5",
     "@sanity/client": "^3.3.3",
-    "@sanity/color": "^2.1.8",
     "@sanity/generate-help-url": "^3.0.0",
     "@sanity/icons": "^1.2.6",
     "@sanity/image-url": "^1.0.1",

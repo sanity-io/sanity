@@ -1,4 +1,3 @@
-import {hues} from '@sanity/color'
 import {Box, Card, Flex, Portal, Theme, useClickOutside, useLayer} from '@sanity/ui'
 import React, {useCallback, useEffect, useRef, useState} from 'react'
 import FocusLock from 'react-focus-lock'
@@ -24,8 +23,6 @@ export interface SearchPopoverProps {
   open: boolean
   position: PopoverPosition
 }
-
-const ID = 'search-results-popover'
 
 export function SearchPopover({onClose, onOpen, open, position}: SearchPopoverProps) {
   const [childContainerElement, setChildContainerRef] = useState<HTMLDivElement | null>(null)
@@ -97,8 +94,9 @@ export function SearchPopover({onClose, onOpen, open, position}: SearchPopoverPr
           childCount={hasValidTerms ? result.hits.length : recentSearches.length}
           containerElement={containerElement}
           headerInputElement={headerInputElement}
-          id={ID}
+          id="search-results-popover"
           initialSelectedIndex={hasValidTerms ? lastSearchIndex : 0}
+          level={0}
           pointerOverlayElement={pointerOverlayElement}
           virtualList={hasValidTerms}
         >
@@ -186,22 +184,10 @@ const SearchPopoverWrapper = styled(Card)<{$position: PopoverPosition}>`
   position: absolute;
   top: ${({$position}) => $position.y}px;
   width: min(calc(100vw - ${POPOVER_INPUT_PADDING * 2}px), ${POPOVER_MAX_WIDTH}px);
-
-  &[data-focused='true'],
-  &[data-hovered='true'] {
-    #${ID}-children {
-      button[aria-selected='true'],
-      [aria-selected='true'] a {
-        background: ${hues.gray[50].hex};
-        // Disable box-shadow to hide the halo effect when we have keyboard focus over a selected <Button>
-        box-shadow: none;
-      }
-    }
-  }
 `
 
 const TypeFilterWrapper = styled(Card)`
-  border-left: 1px solid ${hues.gray[200].hex};
+  border-left: 1px solid ${({theme}) => theme.sanity.color.base.border};
   max-width: 250px;
   width: 100%;
 `

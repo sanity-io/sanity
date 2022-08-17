@@ -34,6 +34,7 @@ import {supportsTouch} from '../../utils/supportsTouch'
  */
 
 interface CommandListContextValue {
+  level: number
   onChildClick: () => void
   onChildMouseDown: (event: MouseEvent) => void
   onChildMouseEnter: (index: number) => () => void
@@ -56,6 +57,7 @@ interface CommandListProviderProps {
   headerInputElement: HTMLInputElement
   id: string
   initialSelectedIndex?: number
+  level: number
   pointerOverlayElement: HTMLDivElement
   virtualList?: boolean
 }
@@ -74,6 +76,7 @@ export function CommandListProvider({
   containerElement,
   id,
   initialSelectedIndex = 0,
+  level = 0,
   headerInputElement,
   pointerOverlayElement,
   virtualList,
@@ -348,6 +351,8 @@ export function CommandListProvider({
     childContainerElement?.setAttribute('id', `${id}-children`)
     childContainerElement?.setAttribute('role', 'listbox')
 
+    containerElement?.setAttribute('data-level', level.toString())
+
     headerInputElement?.setAttribute('aria-autocomplete', 'list')
     headerInputElement?.setAttribute('aria-expanded', 'true')
     headerInputElement?.setAttribute('aria-controls', `${id}-children`)
@@ -360,8 +365,10 @@ export function CommandListProvider({
     ariaHeaderLabel,
     ariaMultiselectable,
     childContainerElement,
+    containerElement,
     headerInputElement,
     id,
+    level,
     pointerOverlayElement,
   ])
 
@@ -379,6 +386,7 @@ export function CommandListProvider({
   return (
     <CommandListContext.Provider
       value={{
+        level,
         onChildClick: handleChildClick,
         onChildMouseDown: handleChildMouseDown,
         onChildMouseEnter: handleChildMouseEnter,

@@ -1,4 +1,3 @@
-import {hues, white} from '@sanity/color'
 import {CloseIcon, ControlsIcon, SearchIcon} from '@sanity/icons'
 import {Box, Button, Card, Flex, Spinner, studioTheme} from '@sanity/ui'
 import React, {Dispatch, SetStateAction, useCallback, useEffect, useRef, useState} from 'react'
@@ -115,14 +114,14 @@ const FilterButton = styled(Box)`
 `
 
 const SearchHeaderWrapper = styled(Box)`
-  border-bottom: 1px solid ${hues.gray[200].hex};
+  border-bottom: 1px solid ${({theme}) => theme.sanity.color.base.border};
   flex-shrink: 0;
 `
 
 const NotificationBadge = styled.div`
   align-items: center;
-  background: ${hues.blue[700].hex};
-  color: ${white.hex};
+  background: ${({theme}) => theme.sanity.color.selectable.primary.enabled.fg};
+  color: ${({theme}) => theme.sanity.color.selectable.primary.selected.fg};
   border-radius: 100%;
   display: flex;
   font-size: calc(8 / 16 * 1rem);

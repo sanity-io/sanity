@@ -9,7 +9,8 @@ import schema from 'part:@sanity/base/schema'
 import {getPublishedId} from 'part:@sanity/base/util/draft-utils'
 import React, {forwardRef, MouseEvent, useCallback, useMemo, useRef} from 'react'
 import type {VirtualItem} from 'react-virtual'
-import styled from 'styled-components'
+import styled, {css} from 'styled-components'
+import {useCommandList} from '../../contexts/commandList'
 import type {SearchHit} from '../../types'
 import SearchResultItemPreview from './SearchResultItemPreview'
 
@@ -36,6 +37,7 @@ export function SearchResultItem({
   const type = schema.get(hit?._type)
   const documentPresence = useDocumentPresence(documentId)
   const linkComponentRef = useRef<HTMLDivElement>(null)
+  const {level} = useCommandList()
 
   const LinkComponent = useMemo(
     () =>
@@ -68,6 +70,7 @@ export function SearchResultItem({
 
   return (
     <SearchResultItemWrapper
+      $level={level}
       data-index={index}
       flex={1}
       onClick={handleWrapperClick}
@@ -100,9 +103,20 @@ export function SearchResultItem({
   )
 }
 
-const SearchResultItemWrapper = styled(Box)`
-  left: 0;
-  position: absolute;
-  top: 0;
-  width: 100%;
-`
+const SearchResultItemWrapper = styled(Box)<{$level: number}>(({$level}) => {
+  return css`
+    left: 0;
+    position: absolute;
+    top: 0;
+    width: 100%;
+
+    [data-focused='true'][data-level='${$level}'] &,
+    [data-hovered='true'][data-level='${$level}'] & {
+      &[aria-selected='true'] a {
+        background: ${({theme}) => theme.sanity.color.button.bleed.default.hovered.bg};
+        // Disable box-shadow to hide the halo effect when we have keyboard focus over a selected <Button>
+        box-shadow: none;
+      }
+    }
+  `
+})

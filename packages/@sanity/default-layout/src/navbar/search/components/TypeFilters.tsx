@@ -1,7 +1,6 @@
 // @todo: remove the following line when part imports has been removed from this file
 ///<reference types="@sanity/types/parts" />
 
-import {hues} from '@sanity/color'
 import {SearchIcon} from '@sanity/icons'
 import {Box, Button, Flex, Stack, Text} from '@sanity/ui'
 import schema from 'part:@sanity/base/schema'
@@ -18,8 +17,6 @@ import {TypeFilterItem} from './TypeFilterItem'
 interface TypeFiltersProps {
   small?: boolean
 }
-
-const ID = 'search-type-filters'
 
 export function TypeFilters({small}: TypeFiltersProps) {
   const [childContainerElement, setChildContainerRef] = useState<HTMLDivElement | null>(null)
@@ -62,7 +59,8 @@ export function TypeFilters({small}: TypeFiltersProps) {
       childCount={selectableDocumentTypes.length}
       containerElement={containerElement}
       headerInputElement={headerInputElement}
-      id={ID}
+      id="search-type-filters"
+      level={1}
       pointerOverlayElement={pointerOverlayElement}
     >
       <TypeFiltersWrapper $lightHighlight={!small} direction="column" ref={setContainerRef}>
@@ -138,11 +136,11 @@ export function TypeFilters({small}: TypeFiltersProps) {
 }
 
 const ClearButtonWrapper = styled(Box)`
-  border-top: 1px solid ${hues.gray[200].hex};
+  border-top: 1px solid ${({theme}) => theme.sanity.color.base.border};
 `
 
 const SearchHeaderWrapper = styled(Box)`
-  border-bottom: 1px solid ${hues.gray[200].hex};
+  border-bottom: 1px solid ${({theme}) => theme.sanity.color.base.border};
 `
 
 const TypeFiltersContent = styled(Box)`
@@ -156,16 +154,4 @@ const TypeFiltersContentWrap = styled.div`
 
 const TypeFiltersWrapper = styled(Flex)<{$lightHighlight: boolean}>`
   height: 100%;
-
-  &[data-focused='true'],
-  &[data-hovered='true'] {
-    #${ID}-children {
-      [aria-selected='true'] {
-        background: ${({$lightHighlight}) =>
-          $lightHighlight ? hues.gray[50].hex : hues.gray[100].hex};
-        // Disable box-shadow to hide the halo effect when we have keyboard focus over a selected <Button>
-        box-shadow: none;
-      }
-    }
-  }
 `
