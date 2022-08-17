@@ -63,6 +63,8 @@ export function getPairListener(
 
   return merge(
     mutations$.pipe(
+      map(polyfillCounts),
+
       // We want to group all the mutation events that were involved in a transaction together,
       // in order to keep a consistent view of draft and published document states. To know
       // whether or not a transaction contained multiple mutations, we need to check the
@@ -121,4 +123,20 @@ function createGroupKey(event: MutationEvent): string {
 
 function getGroupEventCount(group: GroupedObservable<string, unknown>): number {
   return parseInt(group.key.slice(0, group.key.indexOf('#')), 10)
+}
+
+function polyfillCounts(evt: MutationEvent): MutationEvent {
+  if (!evt.eventNumber && evt.transactionId.startsWith('publish')) {
+    evt.eventNumber = {
+      current: evt.transition === 'disappear' ? 1 : 2,
+      total: 2,
+    }
+  } else if (!evt.eventNumber) {
+    evt.eventNumber = {
+      current: 1,
+      total: 1,
+    }
+  }
+
+  return evt
 }
