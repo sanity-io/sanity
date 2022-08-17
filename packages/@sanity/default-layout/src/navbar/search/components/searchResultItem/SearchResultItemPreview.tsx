@@ -4,7 +4,7 @@
 import {DocumentPresence, DocumentPreviewPresence} from '@sanity/base/presence'
 import type {SanityDocument} from '@sanity/client'
 import type {SchemaType} from '@sanity/types'
-import {Inline, Label} from '@sanity/ui'
+import {Box, Inline, Label} from '@sanity/ui'
 import {SanityDefaultPreview} from 'part:@sanity/base/preview'
 import React, {useEffect, useMemo, useState} from 'react'
 import styled from 'styled-components'
@@ -57,15 +57,29 @@ export default function SearchResultItemPreview({
   }, [document, documentId, schemaType.name])
 
   return (
-    <SanityDefaultPreview
-      isPlaceholder={document?.isLoading ?? true}
-      layout="default"
-      icon={schemaType.icon}
-      status={status}
-      value={sanityDocument}
-    />
+    <SearchResultItemPreviewWrapper>
+      <SanityDefaultPreview
+        isPlaceholder={document?.isLoading ?? true}
+        layout="default"
+        icon={schemaType.icon}
+        status={status}
+        value={sanityDocument}
+      />
+    </SearchResultItemPreviewWrapper>
   )
 }
+
+/**
+ * Brute force all nested boxes on iOS to use `background-attachment: scroll`, as
+ * `background-attachment: fixed` (what Sanity UI's <Skeleton> components) isn't yet supported on iOS Safari.
+ */
+const SearchResultItemPreviewWrapper = styled(Box)`
+  @supports (-webkit-overflow-scrolling: touch) {
+    * [data-ui='Box'] {
+      background-attachment: scroll;
+    }
+  }
+`
 
 const TypeLabel = styled(Label)`
   max-width: 150px;
