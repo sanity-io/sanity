@@ -1,4 +1,3 @@
-import {createHash} from 'crypto'
 import type {ChunkMetadata, Plugin} from 'vite'
 import type {SanityMonorepo} from '../sanityMonorepo'
 import {renderDocument} from '../renderDocument'
@@ -43,8 +42,7 @@ export function sanityBuildEntries(options: {
         throw new Error(`Failed to find entry file in bundle (${entryFileName})`)
       }
 
-      const entryHash = createHash('sha256').update(entryFile.code).digest('hex').slice(0, 8)
-      const entryPath = [basePath.replace(/\/+$/, ''), `${entryFileName}?v=${entryHash}`].join('/')
+      const entryPath = [basePath.replace(/\/+$/, ''), entryFileName].join('/')
 
       let css: string[] = []
       if (entryFile.viteMetadata?.importedCss) {
