@@ -3039,7 +3039,7 @@
     nanoid "^3.1.12"
     rxjs "^6.4.0"
 
-"@sanity/client@^3.3.2", "@sanity/client@^3.3.3":
+"@sanity/client@^3.3.3":
   version "3.3.3"
   resolved "https://registry.yarnpkg.com/@sanity/client/-/client-3.3.3.tgz#2eea3410b49365a1d5e05b4590eec4253ebe13a8"
   integrity sha512-2n4S/d49abreTa1hLehtrQ9lLR8KhnXdIb7kZajkGPGh2yWwbtMXpB7e1dxNvySmFehrJx5rtwdeO3l2IhnHBA==
@@ -3051,7 +3051,7 @@
     object-assign "^4.1.1"
     rxjs "^6.0.0"
 
-"@sanity/color@^2.1.10", "@sanity/color@^2.1.11":
+"@sanity/color@^2.1.11":
   version "2.1.11"
   resolved "https://registry.yarnpkg.com/@sanity/color/-/color-2.1.11.tgz#aed52a1c1ba0157938d5e7516811449de1a4a00e"
   integrity sha512-ZComCEDE7Y5xu/+BksJDVkAffawRWrJvoI7VdIA+szhqzYQWgLRLfsr+UBkYZMtb9a+8HyUm6Uqoo028GNGREQ==
