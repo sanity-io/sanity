@@ -1,7 +1,7 @@
 import {ClockIcon, CloseIcon} from '@sanity/icons'
 import {Box, Button, Flex, Text} from '@sanity/ui'
 import React, {MouseEvent, useCallback} from 'react'
-import styled from 'styled-components'
+import styled, {css} from 'styled-components'
 import {useCommandList} from '../contexts/commandList'
 import type {RecentSearch} from '../datastores/recentSearches'
 import {TypePills} from './TypePills'
@@ -28,7 +28,7 @@ export function RecentSearchItem(props: RecentSearchesProps) {
     onDelete,
   } = props
 
-  const {onChildClick, onChildMouseDown, onChildMouseEnter} = useCommandList()
+  const {level, onChildClick, onChildMouseDown, onChildMouseEnter} = useCommandList()
 
   const handleRecentSearchClick = useCallback(() => {
     onChildClick?.()
@@ -47,6 +47,7 @@ export function RecentSearchItem(props: RecentSearchesProps) {
 
   return (
     <RecentSearchItemWrapper
+      $level={level}
       data-index={index}
       mode="bleed"
       onClick={handleRecentSearchClick}
@@ -86,7 +87,18 @@ export function RecentSearchItem(props: RecentSearchesProps) {
   )
 }
 
-const RecentSearchItemWrapper = styled(Button)``
+const RecentSearchItemWrapper = styled(Button)<{$level: number}>(({$level}) => {
+  return css`
+    [data-focused='true'][data-level='${$level}'] &,
+    [data-hovered='true'][data-level='${$level}'] & {
+      &[aria-selected='true'] {
+        background: ${({theme}) => theme.sanity.color.button.bleed.default.hovered.bg};
+        // Disable box-shadow to hide the halo effect when we have keyboard focus over a selected <Button>
+        box-shadow: none;
+      }
+    }
+  `
+})
 
 const CloseButton = styled.div`
   opacity: 0.8;

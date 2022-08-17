@@ -1,5 +1,4 @@
 import {TextWithTone} from '@sanity/base/components'
-import {hues} from '@sanity/color'
 import {SchemaType} from '@sanity/types'
 import {Box, Card, Flex, Text} from '@sanity/ui'
 import React, {useMemo} from 'react'
@@ -69,7 +68,7 @@ function typeTitle(schemaType: SchemaType) {
 }
 
 const Pill = styled(Card)`
-  background: ${hues.blue[50].hex};
+  background: ${({theme}) => theme.sanity.color.selectable.primary.enabled.code.bg};
   flex-shrink: 0;
   overflow: hidden;
 `

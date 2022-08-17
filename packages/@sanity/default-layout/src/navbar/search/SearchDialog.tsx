@@ -1,4 +1,3 @@
-import {hues} from '@sanity/color'
 import {Box, Card, Dialog, Portal} from '@sanity/ui'
 import React, {useCallback, useEffect, useRef, useState} from 'react'
 import FocusLock from 'react-focus-lock'
@@ -18,8 +17,6 @@ interface SearchDialogProps {
   onOpen: () => void
   open: boolean
 }
-
-const ID = 'search-results-dialog'
 
 export function SearchDialog({onClose, onOpen, open}: SearchDialogProps) {
   const [childContainerElement, setChildContainerRef] = useState<HTMLDivElement | null>(null)
@@ -83,8 +80,9 @@ export function SearchDialog({onClose, onOpen, open}: SearchDialogProps) {
       childCount={hasValidTerms ? result.hits.length : recentSearches.length}
       containerElement={containerElement}
       headerInputElement={headerInputElement}
-      id={ID}
+      id="search-results-dialog"
       initialSelectedIndex={hasValidTerms ? lastSearchIndex : 0}
+      level={0}
       pointerOverlayElement={pointerOverlayElement}
       virtualList={hasValidTerms}
     >
@@ -176,18 +174,6 @@ const SearchDialogWrapper = styled(Box)`
   top: 0;
   width: 100%;
   z-index: 1;
-
-  &[data-focused='true'],
-  &[data-hovered='true'] {
-    #${ID}-children {
-      button[aria-selected='true'],
-      [aria-selected='true'] a {
-        background: ${hues.gray[50].hex};
-        // Disable box-shadow to hide the halo effect when we have keyboard focus over a selected <Button>
-        box-shadow: none;
-      }
-    }
-  }
 `
 
 const SearchContent = styled(Box)`

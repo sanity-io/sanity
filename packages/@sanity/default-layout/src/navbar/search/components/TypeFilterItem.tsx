@@ -2,6 +2,7 @@ import {CheckmarkIcon} from '@sanity/icons'
 import type {ObjectSchemaType} from '@sanity/types'
 import {Button} from '@sanity/ui'
 import React, {useCallback} from 'react'
+import styled, {css} from 'styled-components'
 import {useCommandList} from '../contexts/commandList'
 import {useSearchState} from '../contexts/search'
 
@@ -15,7 +16,7 @@ interface TypeFilterItemProps {
 export function TypeFilterItem({index, selected, small, type}: TypeFilterItemProps) {
   const {dispatch} = useSearchState()
 
-  const {onChildClick, onChildMouseDown, onChildMouseEnter} = useCommandList()
+  const {level, onChildClick, onChildMouseDown, onChildMouseEnter} = useCommandList()
 
   const handleTypeAdd = useCallback(() => {
     dispatch({type: 'TERMS_TYPE_ADD', schemaType: type})
@@ -35,7 +36,8 @@ export function TypeFilterItem({index, selected, small, type}: TypeFilterItemPro
   }, [handleTypeAdd, handleTypeRemove, onChildClick, selected])
 
   return (
-    <Button
+    <TypeFilterItemWrapper
+      $level={level}
       aria-checked={selected}
       data-index={index}
       fontSize={small ? 1 : 2}
@@ -52,3 +54,16 @@ export function TypeFilterItem({index, selected, small, type}: TypeFilterItemPro
     />
   )
 }
+
+const TypeFilterItemWrapper = styled(Button)<{$level: number}>(({$level}) => {
+  return css`
+    [data-focused='true'][data-level='${$level}'] &,
+    [data-hovered='true'][data-level='${$level}'] & {
+      &[aria-selected='true'] {
+        background: ${({theme}) => theme.sanity.color.button.bleed.default.hovered.bg};
+        // Disable box-shadow to hide the halo effect when we have keyboard focus over a selected <Button>
+        box-shadow: none;
+      }
+    }
+  `
+})
