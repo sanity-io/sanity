@@ -9,6 +9,7 @@ import React, {
   useMemo,
   useRef,
 } from 'react'
+import {supportsTouch} from '../../utils/supportsTouch'
 
 /**
  * This provider adds the following:
@@ -165,10 +166,12 @@ export function CommandListProvider({
   }, [])
 
   /**
-   * Always focus header input on child item click
+   * Always focus header input on child item click (non-touch only)
    */
   const handleChildClick = useCallback(() => {
-    headerInputElement?.focus()
+    if (!supportsTouch) {
+      headerInputElement?.focus()
+    }
   }, [headerInputElement])
 
   /**
@@ -363,11 +366,13 @@ export function CommandListProvider({
   ])
 
   /**
-   * Focus header input on mount
+   * Focus header input on mount (non-touch only)
    */
   useEffect(() => {
     if (autoFocus) {
-      headerInputElement?.focus()
+      if (!supportsTouch) {
+        headerInputElement?.focus()
+      }
     }
   }, [autoFocus, headerInputElement])
 

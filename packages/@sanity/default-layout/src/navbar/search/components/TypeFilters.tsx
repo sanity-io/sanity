@@ -10,6 +10,7 @@ import styled from 'styled-components'
 import {CommandListProvider} from '../contexts/commandList'
 import {useSearchState} from '../contexts/search'
 import {getSelectableTypes} from '../contexts/search/selectors'
+import {supportsTouch} from '../utils/supportsTouch'
 import {CustomTextInput} from './CustomTextInput'
 import {PointerOverlay} from './PointerOverlay'
 import {TypeFilterItem} from './TypeFilterItem'
@@ -39,7 +40,9 @@ export function TypeFilters({small}: TypeFiltersProps) {
   ])
 
   const handleClearTypes = useCallback(() => {
-    headerInputElement?.focus()
+    if (!supportsTouch) {
+      headerInputElement?.focus()
+    }
     dispatch({type: 'TERMS_TYPES_CLEAR'})
   }, [dispatch, headerInputElement])
   const handleFilterChange = useCallback(

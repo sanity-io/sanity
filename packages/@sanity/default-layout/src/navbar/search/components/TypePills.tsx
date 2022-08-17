@@ -10,7 +10,9 @@ interface TypePillsProps {
   types: SchemaType[]
 }
 
-export function TypePills({availableCharacters = 40, types}: TypePillsProps) {
+const DEFAULT_AVAILABLE_CHARS = 40
+
+export function TypePills({availableCharacters = DEFAULT_AVAILABLE_CHARS, types}: TypePillsProps) {
   /**
    * Get the first X document types, where the sum of all title characters across X types is < availableCharacters
    */

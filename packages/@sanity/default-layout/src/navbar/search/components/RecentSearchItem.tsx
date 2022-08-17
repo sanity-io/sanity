@@ -15,11 +15,14 @@ export interface RecentSearchesProps {
   value: RecentSearch
 }
 
+const DEFAULT_MAX_QUERY_COUNT = 40
+const DEFAULT_COMBINED_TYPE_COUNT = 40
+
 export function RecentSearchItem(props: RecentSearchesProps) {
   const {
     index,
-    maxVisibleQueryChars = 40,
-    maxVisibleTypePillChars = 40,
+    maxVisibleQueryChars = DEFAULT_MAX_QUERY_COUNT,
+    maxVisibleTypePillChars = DEFAULT_COMBINED_TYPE_COUNT,
     value,
     onClick,
     onDelete,

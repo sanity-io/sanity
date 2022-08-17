@@ -1,5 +1,5 @@
 import {hues} from '@sanity/color'
-import {Box, Card, Dialog, Flex, Portal} from '@sanity/ui'
+import {Box, Card, Dialog, Portal} from '@sanity/ui'
 import React, {useCallback, useEffect, useRef, useState} from 'react'
 import FocusLock from 'react-focus-lock'
 import styled from 'styled-components'
@@ -90,8 +90,8 @@ export function SearchDialog({onClose, onOpen, open}: SearchDialogProps) {
     >
       <Portal>
         <FocusLock autoFocus={false} returnFocus>
-          <SearchDialogWrapper ref={setContainerRef} scheme="light" tone="default">
-            <Flex direction="column" height="fill">
+          <SearchDialogWrapper ref={setContainerRef}>
+            <InnerCard display="flex" height="fill" scheme="light" tone="default">
               <SearchHeader onClose={handleClose} setHeaderInputRef={setHeaderInputRef} />
               <SearchContent flex={1}>
                 {hasValidTerms ? (
@@ -107,9 +107,8 @@ export function SearchDialog({onClose, onOpen, open}: SearchDialogProps) {
                   />
                 )}
               </SearchContent>
-
               {filtersVisible && <SearchDialogFilters />}
-            </Flex>
+            </InnerCard>
           </SearchDialogWrapper>
         </FocusLock>
       </Portal>
@@ -161,10 +160,18 @@ const DialogContent = styled(Card)`
   height: 100%;
 `
 
-const SearchDialogWrapper = styled(Card)`
-  height: 100vh;
+const InnerCard = styled(Card)`
+  flex-direction: column;
+  overflow: hidden;
+  pointer-events: all;
+  position: relative;
+`
+
+const SearchDialogWrapper = styled(Box)`
+  height: 100%;
   left: 0;
   overflow: hidden;
+  pointer-events: none;
   position: fixed;
   top: 0;
   width: 100%;
