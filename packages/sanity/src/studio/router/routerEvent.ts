@@ -1,6 +1,6 @@
 import {escapeRegExp, isEqual} from 'lodash'
-import {Observable} from 'rxjs'
-import {map, filter, scan, shareReplay, distinctUntilChanged} from 'rxjs/operators'
+import {EMPTY, Observable, of} from 'rxjs'
+import {distinctUntilChanged, filter, map, mergeScan, shareReplay} from 'rxjs/operators'
 import {History, Location} from 'history'
 import {Tool} from '../../config'
 import {Router} from '../../router'
@@ -21,7 +21,10 @@ export function createRouterEventStream({
   router,
   tools,
 }: RouterEventStreamOptions): Observable<RouterEvent> {
-  function maybeHandleIntent(prevEvent: RouterEvent | null, currentEvent: RouterEvent) {
+  function maybeHandleIntent(
+    prevEvent: RouterEvent | null,
+    currentEvent: RouterEvent
+  ): Observable<RouterEvent> {
     if (currentEvent?.type === 'state' && currentEvent.state?.intent) {
       const redirectState = resolveIntentState(
         tools,
@@ -31,11 +34,13 @@ export function createRouterEventStream({
 
       if (redirectState?.type === 'state') {
         history.replace(router.encode(redirectState.state))
-        return null
+        // This will not push anything downstream and preserve the prevEvent for the next received value
+        // Since we are calling history.replace here, a new event will be received immediately
+        return EMPTY
       }
     }
 
-    return currentEvent
+    return of(currentEvent)
   }
 
   function maybeRedirectDefaultState(event: RouterEvent) {
@@ -54,10 +59,11 @@ export function createRouterEventStream({
   const routerBasePath = router.getBasePath()
 
   const state$: Observable<RouterEvent> = new Observable<Location>((observer) => {
-    history.listen((location) => observer.next(location))
+    const unlisten = history.listen((location) => observer.next(location))
 
     // emit on mount
     observer.next(history.location)
+    return unlisten
   }).pipe(
     // this is necessary to prevent emissions intended for other workspaces.
     //
@@ -69,7 +75,7 @@ export function createRouterEventStream({
         : new RegExp(`^${escapeRegExp(routerBasePath)}(\\/|$)`, 'i').test(pathname)
     ),
     map(({pathname}) => decodeUrlState(router, pathname)),
-    scan(maybeHandleIntent, null),
+    mergeScan(maybeHandleIntent, null),
     filter(isNonNullable),
     map(maybeRedirectDefaultState),
     filter(isNonNullable),
