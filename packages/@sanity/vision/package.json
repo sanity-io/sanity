@@ -62,7 +62,6 @@
   "peerDependencies": {
     "react": "^17 || ^18",
     "react-dom": "^17 || ^18",
-    "sanity": "3.0.0-dev-preview.12",
     "styled-components": "^5.2.0"
   },
   "repository": {
