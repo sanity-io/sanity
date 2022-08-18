@@ -1,5 +1,5 @@
 import {PortableTextBlock, RenderAttributes} from '@sanity/portable-text-editor'
-import {Box, ResponsivePaddingProps, Tooltip} from '@sanity/ui'
+import {Box, Flex, ResponsivePaddingProps, Tooltip} from '@sanity/ui'
 import React, {RefObject, useCallback, useMemo, useState} from 'react'
 import {RenderCustomMarkers} from '../../../types'
 import {PatchArg} from '../../../patch'
@@ -122,74 +122,73 @@ export function TextBlock(props: TextBlockProps) {
   return (
     <Box data-testid="text-block" {...outerPaddingProps}>
       <TextBlockFlexWrapper data-testid="text-block__wrapper">
-        <Box
+        <Flex
           flex={1}
           {...innerPaddingProps}
           ref={memberItem?.elementRef as RefObject<HTMLDivElement>}
         >
-          <Tooltip
-            placement="top"
-            portal="editor"
-            disabled={!tooltipEnabled}
-            content={
-              tooltipEnabled && (
-                <TooltipBox padding={2}>
-                  <Markers
-                    markers={markers}
-                    validation={validation}
-                    renderCustomMarkers={renderCustomMarkers}
-                  />
-                </TooltipBox>
-              )
-            }
-          >
-            <TextRoot
-              $level={block.level}
-              data-error={hasError ? '' : undefined}
-              data-warning={hasWarning ? '' : undefined}
-              data-list-item={block.listItem}
-              // @todo: rename to `data-markers`
-              data-custom-markers={hasMarkers ? '' : undefined}
-              data-testid="text-block__text"
-              spellCheck={spellCheck}
+          <Box flex={1}>
+            <Tooltip
+              placement="top"
+              portal="editor"
+              disabled={!tooltipEnabled}
+              content={
+                tooltipEnabled && (
+                  <TooltipBox padding={2}>
+                    <Markers
+                      markers={markers}
+                      validation={validation}
+                      renderCustomMarkers={renderCustomMarkers}
+                    />
+                  </TooltipBox>
+                )
+              }
             >
-              {text}
-            </TextRoot>
-          </Tooltip>
-          <div contentEditable={false}>
-            <BlockExtrasContainer>
-              {renderBlockActions && (
-                <BlockActionsOuter marginRight={1}>
-                  <BlockActionsInner>
-                    {focused && !readOnly && (
-                      <BlockActions
-                        onChange={onChange}
-                        block={block}
-                        renderBlockActions={renderBlockActions}
-                      />
-                    )}
-                  </BlockActionsInner>
-                </BlockActionsOuter>
-              )}
+              <TextRoot
+                $level={block.level}
+                data-error={hasError ? '' : undefined}
+                data-warning={hasWarning ? '' : undefined}
+                data-list-item={block.listItem}
+                // @todo: rename to `data-markers`
+                data-custom-markers={hasMarkers ? '' : undefined}
+                data-testid="text-block__text"
+                spellCheck={spellCheck}
+              >
+                {text}
+              </TextRoot>
+            </Tooltip>
+          </Box>
 
-              {isFullscreen && memberItem && (
-                <ChangeIndicatorWrapper
-                  $hasChanges={memberItem.member.item.changed}
-                  onMouseEnter={handleChangeIndicatorMouseEnter}
-                  onMouseLeave={handleChangeIndicatorMouseLeave}
-                >
-                  <StyledChangeIndicatorWithProvidedFullPath
-                    hasFocus={focused}
-                    isChanged={memberItem.member.item.changed}
-                    path={memberItem.member.item.path}
-                    withHoverEffect={false}
+          <BlockExtrasContainer contentEditable={false}>
+            <BlockActionsOuter marginRight={1}>
+              <BlockActionsInner>
+                {renderBlockActions && focused && !readOnly && (
+                  <BlockActions
+                    onChange={onChange}
+                    block={block}
+                    renderBlockActions={renderBlockActions}
                   />
-                </ChangeIndicatorWrapper>
-              )}
-            </BlockExtrasContainer>
-            {reviewChangesHovered && <ReviewChangesHighlightBlock />}
-          </div>
-        </Box>
+                )}
+              </BlockActionsInner>
+            </BlockActionsOuter>
+
+            {isFullscreen && memberItem && (
+              <ChangeIndicatorWrapper
+                $hasChanges={memberItem.member.item.changed}
+                onMouseEnter={handleChangeIndicatorMouseEnter}
+                onMouseLeave={handleChangeIndicatorMouseLeave}
+              >
+                <StyledChangeIndicatorWithProvidedFullPath
+                  hasFocus={focused}
+                  isChanged={memberItem.member.item.changed}
+                  path={memberItem.member.item.path}
+                  withHoverEffect={false}
+                />
+              </ChangeIndicatorWrapper>
+            )}
+          </BlockExtrasContainer>
+          {reviewChangesHovered && <ReviewChangesHighlightBlock />}
+        </Flex>
       </TextBlockFlexWrapper>
     </Box>
   )
