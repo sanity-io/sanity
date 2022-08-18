@@ -1,17 +1,36 @@
-import {ObjectSchemaType} from '@sanity/types'
-import {
-  addSearchTerm,
-  getRecentSearchTerms,
-  MAX_RECENT_SEARCHES,
-  removeSearchTermAtIndex,
-  removeSearchTerms,
-} from './recentSearches'
+import type {SearchTerms} from '@sanity/base'
+import Schema from '@sanity/schema'
+import type {CurrentUser, ObjectSchemaType} from '@sanity/types'
+import {createRecentSearchesStore, MAX_RECENT_SEARCHES} from './recentSearches'
 
-const dummyType = ({name: 'testSchema', jsonType: 'object'} as unknown) as ObjectSchemaType
-const dummySchema = {
-  get: (name) => (name === dummyType.name ? dummyType : undefined),
+const mockSchema = Schema.compile({
+  name: 'default',
+  types: [
+    {
+      name: 'article',
+      title: 'Article',
+      type: 'document',
+      fields: [{name: 'title', type: 'string'}],
+    },
+    {
+      name: 'book',
+      title: 'Book',
+      type: 'document',
+      fields: [{name: 'title', type: 'string'}],
+    },
+  ],
+})
+const mockArticle: ObjectSchemaType = mockSchema.get('article')
+
+const mockUser: CurrentUser = {
+  id: 'mock-user',
+  name: 'mock user',
+  email: 'mockUser@example.com',
+  role: '',
+  roles: [],
 }
-const dummyUserId = 'abc123'
+
+const recentSearchesStore = createRecentSearchesStore(mockSchema, mockUser)
 
 afterEach(() => {
   window.localStorage.clear()
@@ -20,42 +39,73 @@ afterEach(() => {
 describe('search-store', () => {
   describe('getRecentSearchTerms', () => {
     it('should return empty array for empty storage', () => {
-      const recentTerms = getRecentSearchTerms({get: () => undefined}, dummyUserId)
-      expect(recentTerms).toEqual([])
+      const recentSearches = recentSearchesStore.getRecentSearchTerms()
+      expect(recentSearches).toEqual([])
+    })
+
+    it('should filter out search terms with missing document types', () => {
+      const mockInvalidType = {
+        ...mockArticle,
+        name: 'invalid',
+      }
+      const searchTerms1: SearchTerms = {
+        query: 'foo',
+        types: [mockArticle],
+      }
+      const searchTerms2: SearchTerms = {
+        query: '',
+        types: [mockInvalidType],
+      }
+      const searchTerms3: SearchTerms = {
+        query: 'bar',
+        types: [mockInvalidType],
+      }
+      const searchTerms4: SearchTerms = {
+        query: 'baz',
+        types: [mockArticle, mockInvalidType],
+      }
+      recentSearchesStore.addSearchTerm(searchTerms1)
+      recentSearchesStore.addSearchTerm(searchTerms2)
+      recentSearchesStore.addSearchTerm(searchTerms3)
+      recentSearchesStore.addSearchTerm(searchTerms4)
+      const recentTerms = recentSearchesStore.getRecentSearchTerms()
+
+      expect(recentTerms.length).toEqual(1)
     })
 
     it('should return recent terms', () => {
-      const searchTerms = {
+      const searchTerms: SearchTerms = {
         query: 'test1',
-        types: [dummyType],
+        types: [mockArticle],
       }
-      addSearchTerm(searchTerms, dummyUserId)
-      const recentTerms = getRecentSearchTerms(dummySchema, dummyUserId)
+      recentSearchesStore.addSearchTerm(searchTerms)
+      const recentTerms = recentSearchesStore.getRecentSearchTerms()
+
       expect(recentTerms.length).toEqual(1)
       expect(recentTerms[0]).toMatchObject(searchTerms)
     })
 
     it('should remove duplicate terms', () => {
-      const search1 = {
+      const search1: SearchTerms = {
         query: '1',
-        types: [dummyType],
+        types: [mockArticle],
       }
-      const search2 = {
+      const search2: SearchTerms = {
         query: '2',
-        types: [dummyType],
+        types: [mockArticle],
       }
-      addSearchTerm(search1, dummyUserId)
-      addSearchTerm(search2, dummyUserId)
+      recentSearchesStore.addSearchTerm(search1)
+      recentSearchesStore.addSearchTerm(search2)
 
-      let recentTerms = getRecentSearchTerms(dummySchema, dummyUserId)
+      let recentTerms = recentSearchesStore.getRecentSearchTerms()
       expect(recentTerms.length).toEqual(2)
       // expect reverse order
       expect(recentTerms[0]).toMatchObject(search2)
       expect(recentTerms[1]).toMatchObject(search1)
 
-      addSearchTerm(search1, dummyUserId)
+      recentSearchesStore.addSearchTerm(search1)
+      recentTerms = recentSearchesStore.getRecentSearchTerms()
 
-      recentTerms = getRecentSearchTerms(dummySchema, dummyUserId)
       // still 2 recent, since duplicate is removed
       expect(recentTerms.length).toEqual(2)
 
@@ -65,99 +115,92 @@ describe('search-store', () => {
     })
 
     it('it should limit number of saved searches', () => {
+      // eslint-disable-next-line max-nested-callbacks
       ;[...Array(MAX_RECENT_SEARCHES + 10).keys()].forEach((i) =>
-        addSearchTerm(
-          {
-            query: `${i}`,
-            types: [],
-          },
-          dummyUserId
-        )
+        recentSearchesStore.addSearchTerm({
+          query: `${i}`,
+          types: [],
+        })
       )
 
-      const recentTerms = getRecentSearchTerms(dummySchema, dummyUserId)
-      expect(recentTerms.length).toEqual(MAX_RECENT_SEARCHES)
-      expect(recentTerms[0].query).toEqual(`${MAX_RECENT_SEARCHES + 9}`)
+      const recentSearches = recentSearchesStore.getRecentSearchTerms()
+      expect(recentSearches.length).toEqual(MAX_RECENT_SEARCHES)
+      expect(recentSearches[0].query).toEqual(`${MAX_RECENT_SEARCHES + 9}`)
     })
   })
   describe('addSearchTerms', () => {
     it('should trim search queries before adding', () => {
-      const search1 = {
+      const searchTerms1: SearchTerms = {
         query: 'foo',
-        types: [dummyType],
+        types: [mockArticle],
       }
-      const search2 = {
+      const searchTerms2: SearchTerms = {
         query: ' foo ',
-        types: [dummyType],
+        types: [mockArticle],
       }
 
-      addSearchTerm(search1, dummyUserId)
-      addSearchTerm(search2, dummyUserId)
+      recentSearchesStore.addSearchTerm(searchTerms1)
+      const recentSearches = recentSearchesStore.addSearchTerm(searchTerms2)
 
-      const recentTerms = getRecentSearchTerms(dummySchema, dummyUserId)
-      expect(recentTerms.length).toEqual(1)
+      expect(recentSearches.length).toEqual(1)
     })
   })
   describe('removeSearchTerms', () => {
     it('should delete all saved searches', () => {
-      const search1 = {
+      const searchTerms1: SearchTerms = {
         query: '1',
-        types: [dummyType],
+        types: [mockArticle],
       }
-      const search2 = {
+      const searchTerms2: SearchTerms = {
         query: '2',
-        types: [dummyType],
+        types: [mockArticle],
       }
 
-      addSearchTerm(search1, dummyUserId)
-      addSearchTerm(search2, dummyUserId)
+      recentSearchesStore.addSearchTerm(searchTerms1)
+      recentSearchesStore.addSearchTerm(searchTerms2)
 
-      removeSearchTerms(dummyUserId)
+      const recentSearches = recentSearchesStore.removeSearchTerms()
 
-      const recentTerms = getRecentSearchTerms(dummySchema, dummyUserId)
-
-      expect(recentTerms.length).toEqual(0)
+      expect(recentSearches.length).toEqual(0)
     })
   })
   describe('removeSearchTermAtIndex', () => {
     it('should delete saved searches by index', () => {
-      const search1 = {
+      const searchTerms1: SearchTerms = {
         query: '1',
-        types: [dummyType],
+        types: [mockArticle],
       }
-      const search2 = {
+      const searchTerms2: SearchTerms = {
         query: '2',
-        types: [dummyType],
+        types: [mockArticle],
       }
 
       // Added search terms are unshifted
-      addSearchTerm(search1, dummyUserId)
-      addSearchTerm(search2, dummyUserId)
+      recentSearchesStore.addSearchTerm(searchTerms1)
+      recentSearchesStore.addSearchTerm(searchTerms2)
 
       // This should remove search with query '2'
-      removeSearchTermAtIndex(0, dummyUserId)
+      const recentSearches = recentSearchesStore.removeSearchTermAtIndex(0)
 
-      const recentTerms = getRecentSearchTerms(dummySchema, dummyUserId)
-
-      expect(recentTerms.length).toEqual(1)
-      expect(recentTerms[0].query).toEqual('1')
+      expect(recentSearches.length).toEqual(1)
+      expect(recentSearches[0].query).toEqual('1')
     })
 
     it('should no-op when deleting out of range indices', () => {
-      const search1 = {
+      const searchTerms: SearchTerms = {
         query: '1',
-        types: [dummyType],
+        types: [mockArticle],
       }
 
-      addSearchTerm(search1, dummyUserId)
-      removeSearchTermAtIndex(9000, dummyUserId)
+      recentSearchesStore.addSearchTerm(searchTerms)
+      recentSearchesStore.removeSearchTermAtIndex(9000)
 
-      let recentTerms = getRecentSearchTerms(dummySchema, dummyUserId)
-      expect(recentTerms.length).toEqual(1)
+      let recentSearches = recentSearchesStore.getRecentSearchTerms()
+      expect(recentSearches.length).toEqual(1)
 
-      removeSearchTermAtIndex(-1, dummyUserId)
-      recentTerms = getRecentSearchTerms(dummySchema, dummyUserId)
-      expect(recentTerms.length).toEqual(1)
+      recentSearchesStore.removeSearchTermAtIndex(-1)
+      recentSearches = recentSearchesStore.getRecentSearchTerms()
+      expect(recentSearches.length).toEqual(1)
     })
   })
 })

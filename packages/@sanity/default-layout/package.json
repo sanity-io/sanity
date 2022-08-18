@@ -49,6 +49,7 @@
     "rxjs": "^6.5.3"
   },
   "devDependencies": {
+    "@sanity/schema": "2.29.3",
     "@sanity/types": "2.30.5",
     "@sanity/ui-workshop": "^0.4.1",
     "mocha": "^5.0.1",

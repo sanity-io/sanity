@@ -28,6 +28,7 @@ export function RecentSearches({
 }: RecentSearchesProps) {
   const {
     dispatch,
+    recentSearchesStore,
     state: {recentSearches},
   } = useSearchState()
 
@@ -42,8 +43,10 @@ export function RecentSearches({
   }, [mediaIndex])
 
   const handleClearRecentSearchesClick = useCallback(() => {
-    dispatch({type: 'RECENT_SEARCHES_REMOVE_ALL'})
-  }, [dispatch])
+    // Remove terms from Local Storage
+    const updatedRecentSearches = recentSearchesStore?.removeSearchTerms()
+    dispatch({recentSearches: updatedRecentSearches, type: 'RECENT_SEARCHES_SET'})
+  }, [dispatch, recentSearchesStore])
 
   const handleRecentSearchClick = useCallback(
     (searchTerms: SearchTerms) => {
@@ -52,17 +55,21 @@ export function RecentSearches({
         dispatch({type: 'FILTERS_SHOW'})
       }
       dispatch({type: 'TERMS_SET', terms: searchTerms})
-      dispatch({type: 'RECENT_SEARCHES_ADD', terms: searchTerms})
+      // Add to Local Storage
+      const updatedRecentSearches = recentSearchesStore?.addSearchTerm(searchTerms)
+      dispatch({recentSearches: updatedRecentSearches, type: 'RECENT_SEARCHES_SET'})
     },
-    [dispatch, showFiltersOnClick]
+    [dispatch, recentSearchesStore, showFiltersOnClick]
   )
 
   const handleRecentSearchDelete = useCallback(
     (index: number) => (event: MouseEvent) => {
       event.stopPropagation()
-      dispatch({type: 'RECENT_SEARCHES_REMOVE_INDEX', index})
+      // Remove from Local Storage
+      const updatedRecentSearches = recentSearchesStore?.removeSearchTermAtIndex(index)
+      dispatch({recentSearches: updatedRecentSearches, type: 'RECENT_SEARCHES_SET'})
     },
-    [dispatch]
+    [dispatch, recentSearchesStore]
   )
 
   return (

@@ -3,16 +3,16 @@ import {Box, Button, Flex, Text} from '@sanity/ui'
 import React, {MouseEvent, useCallback} from 'react'
 import styled, {css} from 'styled-components'
 import {useCommandList} from '../contexts/commandList'
-import type {RecentSearch} from '../datastores/recentSearches'
+import type {RecentSearchTerms} from '../datastores/recentSearches'
 import {TypePills} from './TypePills'
 
 export interface RecentSearchesProps {
   index: number
   maxVisibleQueryChars?: number
   maxVisibleTypePillChars?: number
-  onClick: (value: RecentSearch) => void
+  onClick: (value: RecentSearchTerms) => void
   onDelete: (event: MouseEvent) => void
-  value: RecentSearch
+  value: RecentSearchTerms
 }
 
 const DEFAULT_MAX_QUERY_COUNT = 40
