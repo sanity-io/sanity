@@ -14,7 +14,6 @@ import {
   BoundaryElementProvider,
   Portal,
   PortalProvider,
-  Text,
   useBoundaryElement,
   usePortal,
 } from '@sanity/ui'
@@ -50,17 +49,6 @@ interface InputProps extends ArrayOfObjectsInputProps<PortableTextBlock> {
 }
 
 export type PortableTextEditorElement = HTMLDivElement | HTMLSpanElement | null
-
-function isTouchDevice() {
-  return (
-    (typeof window !== 'undefined' && 'ontouchstart' in window) ||
-    (typeof navigator !== 'undefined' && navigator.maxTouchPoints > 0)
-  )
-}
-
-const activateVerb = isTouchDevice() ? 'Tap' : 'Click'
-
-const ACTIVATE_ON_FOCUS_MESSAGE = <Text weight="semibold">{activateVerb} to activate</Text>
 
 export function Compositor(props: InputProps) {
   const {
@@ -331,11 +319,7 @@ export function Compositor(props: InputProps) {
   )
   return (
     <PortalProvider __unstable_elements={portalElements}>
-      <ActivateOnFocus
-        message={ACTIVATE_ON_FOCUS_MESSAGE}
-        onActivate={onActivate}
-        isOverlayActive={!isActive}
-      >
+      <ActivateOnFocus onActivate={onActivate} isOverlayActive={!isActive}>
         <ChangeIndicator
           disabled={isFullscreen}
           hasFocus={Boolean(focused)}

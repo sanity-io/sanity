@@ -296,12 +296,6 @@ export function PortableTextInput(props: PortableTextInputProps) {
     [onChange, toast, setFocusPathDebounced]
   )
 
-  const handleFocusSkipperClick = useCallback(() => {
-    if (editorRef.current) {
-      PortableTextEditor.focus(editorRef.current)
-    }
-  }, [editorRef])
-
   const handleIgnoreInvalidValue = useCallback((): void => {
     setIgnoreValidationError(true)
   }, [])
@@ -347,12 +341,6 @@ export function PortableTextInput(props: PortableTextInputProps) {
 
   return (
     <Box ref={innerElementRef}>
-      {!readOnly && (
-        <VisibleOnFocusButton onClick={handleFocusSkipperClick}>
-          <Text>Go to content</Text>
-        </VisibleOnFocusButton>
-      )}
-
       {!ignoreValidationError && respondToInvalidContent}
       {(!invalidValue || ignoreValidationError) && (
         <PortableTextMarkersProvider markers={markers}>
