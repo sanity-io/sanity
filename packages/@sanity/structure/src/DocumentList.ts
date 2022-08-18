@@ -181,6 +181,12 @@ export class DocumentListBuilder extends GenericListBuilder<
     const builder = new DocumentListBuilder()
     builder.spec = {...this.spec, ...(withSpec || {})}
 
+    // Since initialValueTemplatesSpecified is only set in the constructor, we need to
+    // manually copy it over to not override initialValueTemplates below
+    if (this.initialValueTemplatesSpecified) {
+      builder.initialValueTemplatesSpecified = true
+    }
+
     if (!this.initialValueTemplatesSpecified) {
       builder.spec.initialValueTemplates = inferInitialValueTemplates(builder.spec)
     }
