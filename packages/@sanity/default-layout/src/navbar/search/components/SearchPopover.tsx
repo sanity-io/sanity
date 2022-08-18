@@ -111,7 +111,7 @@ export function SearchPopover({onClose, onOpen, open, position}: SearchPopoverPr
           >
             <SearchHeader setHeaderInputRef={setHeaderInputRef} />
 
-            {/* Reverse flex direction is used ensure filters are focusable before recent searches */}
+            {/* Reverse flex direction is used to ensure filters are focusable before recent searches */}
             <Flex align="stretch" direction="row-reverse">
               <SearchPopoverFilters />
               <SearchContentWrapper flex={1}>

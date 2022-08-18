@@ -318,6 +318,13 @@ export function CommandListProvider({
   }, [childContainerElement, containerElement])
 
   /**
+   * Temporarily disable pointer events (or 'flush' existing hover states) on child count changes.
+   */
+  useEffect(() => {
+    enableChildContainerPointerEvents(false)
+  }, [childCount, enableChildContainerPointerEvents])
+
+  /**
    * If this is a virtual list - re-assign aria-selected state on all child elements on any DOM mutations.
    *
    * Useful since virtual lists will constantly mutate the DOM on scroll, and we want to ensure that
@@ -340,7 +347,7 @@ export function CommandListProvider({
     return () => {
       mutationObserver.disconnect()
     }
-  }, [childContainerElement, childCount, handleReassignSelectedStateThrottled, virtualList])
+  }, [childContainerElement, handleReassignSelectedStateThrottled, virtualList])
 
   /**
    * Apply initial attributes
