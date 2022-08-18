@@ -106,6 +106,14 @@ export default (typeDef, visitorContext) => {
     )
   }
 
+  if (typeDef?.options?.list && typeDef?.options?.layout === 'tags') {
+    problems.push(
+      warning(
+        'Found array member declaration with both tags layout and a list of predefined values. If you want to display a list of predefined values, remove the tags layout from `options`.'
+      )
+    )
+  }
+
   return {
     ...typeDef,
     of: of.map(visitorContext.visit),
