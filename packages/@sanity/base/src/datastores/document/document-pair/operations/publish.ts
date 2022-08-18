@@ -1,5 +1,7 @@
 import {omit} from 'lodash'
 import {isReference} from '@sanity/types'
+import {uuid} from '@sanity/uuid'
+
 import {versionedClient} from '../../../../client/versionedClient'
 import {OperationArgs} from '../../types'
 
@@ -63,6 +65,8 @@ export const publish = {
 
     tx.delete(idPair.draftId)
 
-    return tx.commit({tag: 'document.publish'})
+    return tx
+      .transactionId(`publish-${uuid()}`)
+      .commit({tag: 'document.publish', visibility: 'async'})
   },
 }

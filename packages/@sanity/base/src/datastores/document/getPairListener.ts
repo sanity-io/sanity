@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
 import type {SanityDocument} from '@sanity/types'
-import {defer, of as observableOf, Observable} from 'rxjs'
-import {concatMap, map} from 'rxjs/operators'
+import {defer, of as observableOf, Observable, timer} from 'rxjs'
+import {concatMap, map, mapTo, mergeMap, tap} from 'rxjs/operators'
 import type {IdPair, MutationEvent, ReconnectEvent, SanityClient, WelcomeEvent} from './types'
 
 interface Snapshots {
@@ -54,7 +54,21 @@ export function getPairListener(
             ])
           )
         : observableOf(event)
-    )
+    ),
+    concatMap((msg) => {
+      if (
+        msg.type === 'mutation' &&
+        (msg.transition === 'update' || msg.transition === 'appear') &&
+        !msg.documentId.startsWith('drafts') &&
+        msg.transactionId.startsWith('publish')
+      ) {
+        console.log('[repro] Published createOrReplace received, delaying emit by 10s')
+        return timer(1000 * 10)
+          .pipe(mapTo(msg))
+          .pipe(tap(() => console.log('releasing publish event')))
+      }
+      return observableOf(msg)
+    })
   )
 
   function fetchInitialDocumentSnapshots(): Observable<Snapshots> {
