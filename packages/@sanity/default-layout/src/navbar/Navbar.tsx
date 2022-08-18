@@ -230,7 +230,7 @@ export const Navbar = memo(function Navbar(props: NavbarProps) {
           </LegacyLayerProvider>
 
           <LegacyLayerProvider zOffset="navbarPopover">
-            <SearchProvider>
+            <SearchProvider currentUser={currentUser}>
               {shouldRender.searchFullscreen && (
                 <SearchDialog
                   onClose={handleSearchFullscreenClose}

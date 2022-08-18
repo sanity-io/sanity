@@ -2,7 +2,7 @@
 ///<reference types="@sanity/types/parts" />
 
 import type {SearchTerms} from '@sanity/base'
-import type {ObjectSchemaType} from '@sanity/types'
+import type {ObjectSchemaType, User} from '@sanity/types'
 import schema from 'part:@sanity/base/schema'
 import {
   addSearchTerm,
@@ -16,6 +16,7 @@ import {debugWithName} from '../../utils/debug'
 import {sortTypes} from './selectors'
 
 export interface SearchReducerState {
+  currentUser: User
   filtersVisible: boolean
   pageIndex: number
   recentSearches: RecentSearch[]
@@ -31,21 +32,24 @@ export interface SearchResult {
   loading: boolean
 }
 
-export const INITIAL_SEARCH_STATE: SearchReducerState = {
-  filtersVisible: false,
-  pageIndex: 0,
-  recentSearches: getRecentSearchTerms(schema),
-  result: {
-    error: null,
-    hasMore: null,
-    hits: [],
-    loaded: false,
-    loading: false,
-  },
-  terms: {
-    query: '',
-    types: [],
-  },
+export function initialSearchState(currentUser: User): SearchReducerState {
+  return {
+    currentUser,
+    filtersVisible: false,
+    pageIndex: 0,
+    recentSearches: getRecentSearchTerms(schema, currentUser.id),
+    result: {
+      error: null,
+      hasMore: null,
+      hits: [],
+      loaded: false,
+      loading: false,
+    },
+    terms: {
+      query: '',
+      types: [],
+    },
+  }
 }
 
 export type FiltersHide = {type: 'FILTERS_HIDE'}
@@ -98,6 +102,8 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
   }
   debug(prefix, action)
 
+  const currentUserId = state?.currentUser?.id
+
   switch (action.type) {
     case 'FILTERS_HIDE':
       return {
@@ -120,22 +126,22 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
         pageIndex: state.pageIndex + 1,
       }
     case 'RECENT_SEARCHES_ADD':
-      addSearchTerm(action.terms)
+      addSearchTerm(action.terms, currentUserId)
       return {
         ...state,
-        recentSearches: getRecentSearchTerms(schema),
+        recentSearches: getRecentSearchTerms(schema, currentUserId),
       }
     case 'RECENT_SEARCHES_REMOVE_ALL':
-      removeSearchTerms()
+      removeSearchTerms(currentUserId)
       return {
         ...state,
-        recentSearches: getRecentSearchTerms(schema),
+        recentSearches: getRecentSearchTerms(schema, state.currentUser.id),
       }
     case 'RECENT_SEARCHES_REMOVE_INDEX':
-      removeSearchTermAtIndex(action.index)
+      removeSearchTermAtIndex(action.index, currentUserId)
       return {
         ...state,
-        recentSearches: getRecentSearchTerms(schema),
+        recentSearches: getRecentSearchTerms(schema, currentUserId),
       }
     case 'SEARCH_CLEAR':
       return {

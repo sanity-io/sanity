@@ -1,4 +1,5 @@
 import type {SearchTerms} from '@sanity/base'
+import {User} from '@sanity/types'
 import React, {
   createContext,
   Dispatch,
@@ -10,7 +11,7 @@ import React, {
 } from 'react'
 import {SEARCH_LIMIT} from '../../constants'
 import {useSearch} from '../../hooks/useSearch'
-import {INITIAL_SEARCH_STATE, searchReducer, SearchAction, SearchReducerState} from './reducer'
+import {initialSearchState, searchReducer, SearchAction, SearchReducerState} from './reducer'
 import {hasSearchableTerms} from './selectors'
 
 interface SearchContextValue {
@@ -22,13 +23,14 @@ const SearchContext = createContext<SearchContextValue | undefined>(undefined)
 
 interface SearchProviderProps {
   children?: ReactNode
+  currentUser: User
 }
 
 /**
  * @internal
  */
-export function SearchProvider({children}: SearchProviderProps) {
-  const [state, dispatch] = useReducer(searchReducer, INITIAL_SEARCH_STATE)
+export function SearchProvider({children, currentUser}: SearchProviderProps) {
+  const [state, dispatch] = useReducer(searchReducer, initialSearchState(currentUser))
 
   const {pageIndex, result, terms} = state
 
