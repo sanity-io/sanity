@@ -11,6 +11,7 @@ const dummyType = ({name: 'testSchema', jsonType: 'object'} as unknown) as Objec
 const dummySchema = {
   get: (name) => (name === dummyType.name ? dummyType : undefined),
 }
+const dummyUserId = 'abc123'
 
 afterEach(() => {
   window.localStorage.clear()
@@ -19,7 +20,7 @@ afterEach(() => {
 describe('search-store', () => {
   describe('getRecentSearchTerms', () => {
     it('should return empty array for empty storage', () => {
-      const recentTerms = getRecentSearchTerms({get: () => undefined})
+      const recentTerms = getRecentSearchTerms({get: () => undefined}, dummyUserId)
       expect(recentTerms).toEqual([])
     })
 
@@ -28,8 +29,8 @@ describe('search-store', () => {
         query: 'test1',
         types: [dummyType],
       }
-      addSearchTerm(searchTerms)
-      const recentTerms = getRecentSearchTerms(dummySchema)
+      addSearchTerm(searchTerms, dummyUserId)
+      const recentTerms = getRecentSearchTerms(dummySchema, dummyUserId)
       expect(recentTerms.length).toEqual(1)
       expect(recentTerms[0]).toMatchObject(searchTerms)
     })
@@ -43,18 +44,18 @@ describe('search-store', () => {
         query: '2',
         types: [dummyType],
       }
-      addSearchTerm(search1)
-      addSearchTerm(search2)
+      addSearchTerm(search1, dummyUserId)
+      addSearchTerm(search2, dummyUserId)
 
-      let recentTerms = getRecentSearchTerms(dummySchema)
+      let recentTerms = getRecentSearchTerms(dummySchema, dummyUserId)
       expect(recentTerms.length).toEqual(2)
       // expect reverse order
       expect(recentTerms[0]).toMatchObject(search2)
       expect(recentTerms[1]).toMatchObject(search1)
 
-      addSearchTerm(search1)
+      addSearchTerm(search1, dummyUserId)
 
-      recentTerms = getRecentSearchTerms(dummySchema)
+      recentTerms = getRecentSearchTerms(dummySchema, dummyUserId)
       // still 2 recent, since duplicate is removed
       expect(recentTerms.length).toEqual(2)
 
@@ -65,13 +66,16 @@ describe('search-store', () => {
 
     it('it should limit number of saved searches', () => {
       ;[...Array(MAX_RECENT_SEARCHES + 10).keys()].forEach((i) =>
-        addSearchTerm({
-          query: `${i}`,
-          types: [],
-        })
+        addSearchTerm(
+          {
+            query: `${i}`,
+            types: [],
+          },
+          dummyUserId
+        )
       )
 
-      const recentTerms = getRecentSearchTerms(dummySchema)
+      const recentTerms = getRecentSearchTerms(dummySchema, dummyUserId)
       expect(recentTerms.length).toEqual(MAX_RECENT_SEARCHES)
       expect(recentTerms[0].query).toEqual(`${MAX_RECENT_SEARCHES + 9}`)
     })
@@ -87,10 +91,10 @@ describe('search-store', () => {
         types: [dummyType],
       }
 
-      addSearchTerm(search1)
-      addSearchTerm(search2)
+      addSearchTerm(search1, dummyUserId)
+      addSearchTerm(search2, dummyUserId)
 
-      const recentTerms = getRecentSearchTerms(dummySchema)
+      const recentTerms = getRecentSearchTerms(dummySchema, dummyUserId)
       expect(recentTerms.length).toEqual(1)
     })
   })
@@ -105,12 +109,12 @@ describe('search-store', () => {
         types: [dummyType],
       }
 
-      addSearchTerm(search1)
-      addSearchTerm(search2)
+      addSearchTerm(search1, dummyUserId)
+      addSearchTerm(search2, dummyUserId)
 
-      removeSearchTerms()
+      removeSearchTerms(dummyUserId)
 
-      const recentTerms = getRecentSearchTerms(dummySchema)
+      const recentTerms = getRecentSearchTerms(dummySchema, dummyUserId)
 
       expect(recentTerms.length).toEqual(0)
     })
@@ -127,13 +131,13 @@ describe('search-store', () => {
       }
 
       // Added search terms are unshifted
-      addSearchTerm(search1)
-      addSearchTerm(search2)
+      addSearchTerm(search1, dummyUserId)
+      addSearchTerm(search2, dummyUserId)
 
       // This should remove search with query '2'
-      removeSearchTermAtIndex(0)
+      removeSearchTermAtIndex(0, dummyUserId)
 
-      const recentTerms = getRecentSearchTerms(dummySchema)
+      const recentTerms = getRecentSearchTerms(dummySchema, dummyUserId)
 
       expect(recentTerms.length).toEqual(1)
       expect(recentTerms[0].query).toEqual('1')
@@ -145,14 +149,14 @@ describe('search-store', () => {
         types: [dummyType],
       }
 
-      addSearchTerm(search1)
-      removeSearchTermAtIndex(9000)
+      addSearchTerm(search1, dummyUserId)
+      removeSearchTermAtIndex(9000, dummyUserId)
 
-      let recentTerms = getRecentSearchTerms(dummySchema)
+      let recentTerms = getRecentSearchTerms(dummySchema, dummyUserId)
       expect(recentTerms.length).toEqual(1)
 
-      removeSearchTermAtIndex(-1)
-      recentTerms = getRecentSearchTerms(dummySchema)
+      removeSearchTermAtIndex(-1, dummyUserId)
+      recentTerms = getRecentSearchTerms(dummySchema, dummyUserId)
       expect(recentTerms.length).toEqual(1)
     })
   })
