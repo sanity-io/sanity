@@ -52,7 +52,10 @@ export function sanityBuildEntries(options: {
         for (const key of entryFile.imports) {
           // Traverse all CSS assets that isn't loaded by the runtime and
           // need <link> tags in the HTML template
-          css.push(...bundle[key].viteMetadata.importedCss)
+          const importedCss = bundle[key]?.viteMetadata?.importedCss
+          if (importedCss) {
+            css.push(...importedCss)
+          }
         }
       }
 
