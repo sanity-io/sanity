@@ -21,6 +21,7 @@ interface TypeFiltersProps {
 export function TypeFilters({small}: TypeFiltersProps) {
   const [childContainerElement, setChildContainerRef] = useState<HTMLDivElement | null>(null)
   const [containerElement, setContainerRef] = useState<HTMLDivElement | null>(null)
+  const [filtersContentElement, setFiltersContentRef] = useState<HTMLDivElement | null>(null)
   const [headerInputElement, setHeaderInputRef] = useState<HTMLInputElement | null>(null)
   const [pointerOverlayElement, setPointerOverlayRef] = useState<HTMLDivElement | null>(null)
   const [typeFilter, setTypeFilter] = useState('')
@@ -40,8 +41,9 @@ export function TypeFilters({small}: TypeFiltersProps) {
     if (!supportsTouch) {
       headerInputElement?.focus()
     }
+    filtersContentElement?.scrollTo(0, 0)
     dispatch({type: 'TERMS_TYPES_CLEAR'})
-  }, [dispatch, headerInputElement])
+  }, [dispatch, filtersContentElement, headerInputElement])
   const handleFilterChange = useCallback(
     (e: React.KeyboardEvent<HTMLInputElement>) => setTypeFilter(e.currentTarget.value),
     [setTypeFilter]
@@ -84,7 +86,7 @@ export function TypeFilters({small}: TypeFiltersProps) {
           />
         </SearchHeaderWrapper>
 
-        <TypeFiltersContent flex={1} padding={padding}>
+        <TypeFiltersContent flex={1} padding={padding} ref={setFiltersContentRef}>
           <TypeFiltersContentWrap>
             <PointerOverlay ref={setPointerOverlayRef} />
 
