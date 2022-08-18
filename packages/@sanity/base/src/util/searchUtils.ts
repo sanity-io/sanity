@@ -1,4 +1,4 @@
-type SearchPathSegment = string | []
+type SearchPathSegment = string | number | []
 
 const GROQ_KEYWORDS = ['match', 'in', 'asc', 'desc', 'true', 'false', 'null']
 const VALID_FIELD = /^[a-zA-Z_][a-zA-Z0-9_]*$/
@@ -18,6 +18,11 @@ export const joinPath = (pathArray: SearchPathSegment[]): string => {
     const pathSegment = pathArray[i]
     if (isEmptyArray(pathSegment)) {
       path += `[]`
+      continue
+    }
+
+    if (typeof pathSegment === 'number') {
+      path += `[${pathSegment}]`
       continue
     }
 

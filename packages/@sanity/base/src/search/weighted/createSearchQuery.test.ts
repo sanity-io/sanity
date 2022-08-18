@@ -32,6 +32,29 @@ describe('createSearchQuery', () => {
     })
   })
 
+  it('should not escape numbers in path query for basic type', () => {
+    const {query} = createSearchQuery({
+      query: 'test',
+      types: [
+        {
+          name: 'numbers-in-path',
+          __experimental_search: [
+            {
+              path: ['cover', 0, 'cards', 0, 'title'],
+              weight: 1,
+            },
+          ],
+        },
+      ],
+    })
+
+    expect(query).toEqual(
+      '*[_type in $__types && (cover[0].cards[0].title match $t0)]' +
+        '[$__offset...$__limit]' +
+        '{_type, _id, ...select(_type == "numbers-in-path" => { "w0": cover[0].cards[0].title })}'
+    )
+  })
+
   it('should have one match filter per term', () => {
     const {query, params} = createSearchQuery({
       query: 'term0 term1',

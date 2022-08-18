@@ -36,4 +36,5 @@ test('joinPath', () => {
   expect(joinPath(['match', 'in', 'asc', 'desc', 'true', 'false', 'null'])).toBe(
     '@["match"]["in"]["asc"]["desc"]["true"]["false"]["null"]'
   )
+  expect(joinPath(['cover', 0, 'cards', 0, 'title'])).toBe('cover[0].cards[0].title')
 })

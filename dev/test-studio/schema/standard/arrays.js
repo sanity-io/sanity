@@ -37,6 +37,13 @@ export default {
   type: 'document',
   title: 'Arrays test',
   icon: OlistIcon,
+  preview: {
+    select: {
+      // FIXME contentlake?? having this here slows down studio search massivly atm
+      title: 'objectArrayWithPrefinedStringField.0.stringOptions',
+      subtitle: 'title',
+    },
+  },
   fields: [
     {
       name: 'title',
