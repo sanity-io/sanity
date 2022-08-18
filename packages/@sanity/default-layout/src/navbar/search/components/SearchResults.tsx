@@ -27,6 +27,7 @@ export function SearchResults({
 }: SearchResultsProps) {
   const {
     dispatch,
+    recentSearchesStore,
     state: {terms, result},
   } = useSearchState()
 
@@ -58,13 +59,15 @@ export function SearchResults({
    * Add current search terms to recent searches, trigger child item click and close search
    */
   const handleResultClick = useCallback(() => {
+    // Add terms to Local Storage
+    const updatedRecentSearches = recentSearchesStore?.addSearchTerm(terms)
     dispatch({
-      terms,
-      type: 'RECENT_SEARCHES_ADD',
+      recentSearches: updatedRecentSearches,
+      type: 'RECENT_SEARCHES_SET',
     })
     onChildClick?.()
     onClose()
-  }, [dispatch, onChildClick, onClose, terms])
+  }, [dispatch, onChildClick, onClose, recentSearchesStore, terms])
 
   return (
     <SearchResultsWrapper aria-busy={result.loading} $loading={result.loading}>

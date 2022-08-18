@@ -1,16 +1,6 @@
-// @todo: remove the following line when part imports has been removed from this file
-///<reference types="@sanity/types/parts" />
-
 import type {SearchTerms} from '@sanity/base'
 import type {CurrentUser, ObjectSchemaType} from '@sanity/types'
-import schema from 'part:@sanity/base/schema'
-import {
-  addSearchTerm,
-  getRecentSearchTerms,
-  RecentSearch,
-  removeSearchTermAtIndex,
-  removeSearchTerms,
-} from '../../datastores/recentSearches'
+import {RecentSearchTerms} from '../../datastores/recentSearches'
 import type {SearchHit} from '../../types'
 import {debugWithName} from '../../utils/debug'
 import {sortTypes} from './selectors'
@@ -19,7 +9,7 @@ export interface SearchReducerState {
   currentUser: CurrentUser
   filtersVisible: boolean
   pageIndex: number
-  recentSearches: RecentSearch[]
+  recentSearches: RecentSearchTerms[]
   result: SearchResult
   terms: SearchTerms
 }
@@ -32,12 +22,15 @@ export interface SearchResult {
   loading: boolean
 }
 
-export function initialSearchState(currentUser: CurrentUser): SearchReducerState {
+export function initialSearchState(
+  currentUser: CurrentUser,
+  recentSearches: RecentSearchTerms[]
+): SearchReducerState {
   return {
     currentUser,
     filtersVisible: false,
     pageIndex: 0,
-    recentSearches: getRecentSearchTerms(schema, currentUser.id),
+    recentSearches,
     result: {
       error: null,
       hasMore: null,
@@ -56,9 +49,10 @@ export type FiltersHide = {type: 'FILTERS_HIDE'}
 export type FiltersShow = {type: 'FILTERS_SHOW'}
 export type FiltersToggle = {type: 'FILTERS_TOGGLE'}
 export type PageIncrement = {type: 'PAGE_INCREMENT'}
-export type RecentSearchesAdd = {terms: SearchTerms; type: 'RECENT_SEARCHES_ADD'}
-export type RecentSearchesRemoveAll = {type: 'RECENT_SEARCHES_REMOVE_ALL'}
-export type RecentSearchesRemoveIndex = {index: number; type: 'RECENT_SEARCHES_REMOVE_INDEX'}
+export type RecentSearchesSet = {
+  recentSearches: RecentSearchTerms[]
+  type: 'RECENT_SEARCHES_SET'
+}
 export type SearchClear = {type: 'SEARCH_CLEAR'}
 export type SearchRequestComplete = {
   type: 'SEARCH_REQUEST_COMPLETE'
@@ -77,9 +71,7 @@ export type SearchAction =
   | FiltersShow
   | FiltersToggle
   | PageIncrement
-  | RecentSearchesAdd
-  | RecentSearchesRemoveAll
-  | RecentSearchesRemoveIndex
+  | RecentSearchesSet
   | SearchClear
   | SearchRequestComplete
   | SearchRequestError
@@ -102,8 +94,6 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
   }
   debug(prefix, action)
 
-  const currentUserId = state?.currentUser?.id
-
   switch (action.type) {
     case 'FILTERS_HIDE':
       return {
@@ -125,23 +115,10 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
         ...state,
         pageIndex: state.pageIndex + 1,
       }
-    case 'RECENT_SEARCHES_ADD':
-      addSearchTerm(action.terms, currentUserId)
+    case 'RECENT_SEARCHES_SET':
       return {
         ...state,
-        recentSearches: getRecentSearchTerms(schema, currentUserId),
-      }
-    case 'RECENT_SEARCHES_REMOVE_ALL':
-      removeSearchTerms(currentUserId)
-      return {
-        ...state,
-        recentSearches: getRecentSearchTerms(schema, currentUserId),
-      }
-    case 'RECENT_SEARCHES_REMOVE_INDEX':
-      removeSearchTermAtIndex(action.index, currentUserId)
-      return {
-        ...state,
-        recentSearches: getRecentSearchTerms(schema, currentUserId),
+        recentSearches: action.recentSearches,
       }
     case 'SEARCH_CLEAR':
       return {
