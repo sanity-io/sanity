@@ -30,13 +30,13 @@ export function hasOptionsList(type: ArraySchemaType): boolean {
 }
 
 export function resolveArrayInput(type: ArraySchemaType): ComponentType<any> {
+  if (isStringArray(type) && isTagsArray(type)) {
+    return TagsArrayInput
+  }
+
   // Schema provides predefines list
   if (hasOptionsList(type)) {
     return OptionsArray
-  }
-
-  if (isStringArray(type) && isTagsArray(type)) {
-    return TagsArrayInput
   }
 
   // Special component for array of primitive values
