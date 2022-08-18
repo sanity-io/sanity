@@ -1,7 +1,8 @@
 import type {SearchTerms} from '@sanity/base'
 import {ObjectSchemaType, SchemaType} from '@sanity/types'
+import {versionedClient} from '../../../versionedClient'
 
-const SEARCH_TERMS_KEY = 'search-terms:recent'
+const SEARCH_TERMS_KEY = 'search-terms::recent'
 export const MAX_RECENT_SEARCHES = 5
 // might come in handy in the future
 const CURRENT_VERSION = 1
@@ -18,9 +19,15 @@ interface StoredSearchTerms {
   recentSearches: StoredSearchTerm[]
 }
 
-function getRecentStoredSearchTerms(): StoredSearchTerms {
+const {projectId, dataset} = versionedClient.config()
+
+function getLSKey(userId: string) {
+  return `${SEARCH_TERMS_KEY}__${projectId}:${dataset}:${userId}`
+}
+
+function getRecentStoredSearchTerms(userId: string): StoredSearchTerms {
   const recentString = supportsLocalStorage
-    ? window.localStorage.getItem(SEARCH_TERMS_KEY)
+    ? window.localStorage.getItem(getLSKey(userId))
     : undefined
 
   return recentString
@@ -28,10 +35,13 @@ function getRecentStoredSearchTerms(): StoredSearchTerms {
     : {version: CURRENT_VERSION, recentSearches: []}
 }
 
-export function getRecentSearchTerms(schema: {
-  get: (typeName: string) => SchemaType | undefined
-}): RecentSearch[] {
-  return getRecentStoredSearchTerms()
+export function getRecentSearchTerms(
+  schema: {
+    get: (typeName: string) => SchemaType | undefined
+  },
+  userId: string
+): RecentSearch[] {
+  return getRecentStoredSearchTerms(userId)
     .recentSearches.filter((r) => !!r.terms)
     .map((r) => ({
       __recentTimestamp: new Date(r.created).getTime(),
@@ -42,7 +52,7 @@ export function getRecentSearchTerms(schema: {
     }))
 }
 
-export function addSearchTerm(searchTerm: SearchTerms): void {
+export function addSearchTerm(searchTerm: SearchTerms, userId: string): void {
   if (!supportsLocalStorage) {
     return
   }
@@ -59,35 +69,35 @@ export function addSearchTerm(searchTerm: SearchTerms): void {
     version: CURRENT_VERSION,
     recentSearches: [
       saveTerm,
-      ...getRecentStoredSearchTerms().recentSearches.filter((r) => {
+      ...getRecentStoredSearchTerms(userId).recentSearches.filter((r) => {
         return JSON.stringify(r.terms) !== comparator
       }),
     ].slice(0, MAX_RECENT_SEARCHES),
   }
-  window.localStorage.setItem(SEARCH_TERMS_KEY, JSON.stringify(newRecent))
+  window.localStorage.setItem(getLSKey(userId), JSON.stringify(newRecent))
 }
 
-export function removeSearchTerms(): void {
+export function removeSearchTerms(userId: string): void {
   if (!supportsLocalStorage) {
     return
   }
 
-  const searchTerms = getRecentStoredSearchTerms()
+  const searchTerms = getRecentStoredSearchTerms(userId)
 
   const newRecent: StoredSearchTerms = {
     ...searchTerms,
     recentSearches: [],
   }
 
-  window.localStorage.setItem(SEARCH_TERMS_KEY, JSON.stringify(newRecent))
+  window.localStorage.setItem(getLSKey(userId), JSON.stringify(newRecent))
 }
 
-export function removeSearchTermAtIndex(index: number): void {
+export function removeSearchTermAtIndex(index: number, userId: string): void {
   if (!supportsLocalStorage) {
     return
   }
 
-  const searchTerms = getRecentStoredSearchTerms()
+  const searchTerms = getRecentStoredSearchTerms(userId)
 
   if (index < 0 || index > searchTerms.recentSearches.length) {
     return
@@ -101,7 +111,7 @@ export function removeSearchTermAtIndex(index: number): void {
     ],
   }
 
-  window.localStorage.setItem(SEARCH_TERMS_KEY, JSON.stringify(newRecent))
+  window.localStorage.setItem(getLSKey(userId), JSON.stringify(newRecent))
 }
 
 const supportsLocalStorage = (() => {
