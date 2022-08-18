@@ -24,12 +24,13 @@ import {is} from '../../../utils/is'
 
 interface BlockObjectPreviewProps {
   focused: boolean
+  isActive?: boolean
+  onClickingDelete: (event: MouseEvent) => void
+  onClickingEdit: () => void
+  readOnly?: boolean
+  renderPreview: RenderPreviewCallback
   type: ObjectSchemaType
   value: PortableTextBlock
-  readOnly?: boolean
-  onClickingEdit: () => void
-  onClickingDelete: (event: MouseEvent) => void
-  renderPreview: RenderPreviewCallback
 }
 
 const POPOVER_PROPS: MenuButtonProps['popover'] = {
@@ -40,7 +41,16 @@ const POPOVER_PROPS: MenuButtonProps['popover'] = {
 }
 
 export function BlockObjectPreview(props: BlockObjectPreviewProps): ReactElement {
-  const {focused, value, type, readOnly, onClickingEdit, onClickingDelete, renderPreview} = props
+  const {
+    focused,
+    isActive,
+    onClickingDelete,
+    onClickingEdit,
+    readOnly,
+    renderPreview,
+    type,
+    value,
+  } = props
   const {isTopLayer} = useLayer()
   const editor = usePortableTextEditor()
   const menuButtonId = useId() || ''
@@ -93,6 +103,7 @@ export function BlockObjectPreview(props: BlockObjectPreviewProps): ReactElement
           iconRight={EllipsisVerticalIcon}
           mode="bleed"
           paddingX={2}
+          tabIndex={isActive ? 0 : 1}
         />
       }
       ref={menuButton}
