@@ -33,6 +33,7 @@ import {
 interface BlockObjectProps {
   attributes: RenderAttributes
   block: PortableTextBlock
+  isActive?: boolean
   isFullscreen?: boolean
   onChange: (...patches: PatchArg[]) => void
   onOpenItem: (path: Path) => void
@@ -47,6 +48,7 @@ export function BlockObject(props: BlockObjectProps) {
   const {
     attributes: {focused, selected, path},
     block,
+    isActive,
     isFullscreen,
     onChange,
     onOpenItem,
@@ -97,16 +99,17 @@ export function BlockObject(props: BlockObjectProps) {
   const blockPreview = useMemo(() => {
     return (
       <BlockObjectPreview
-        type={type}
         focused={focused}
-        value={block}
-        readOnly={readOnly}
+        isActive={isActive}
         onClickingDelete={handleDelete}
         onClickingEdit={handleEdit}
+        readOnly={readOnly}
         renderPreview={renderPreview}
+        type={type}
+        value={block}
       />
     )
-  }, [focused, type, block, readOnly, handleDelete, handleEdit, renderPreview])
+  }, [focused, isActive, handleDelete, handleEdit, readOnly, renderPreview, type, block])
 
   const tone = selected || focused ? 'primary' : 'default'
 
