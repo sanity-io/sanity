@@ -1,15 +1,21 @@
+// @todo: remove the following line when part imports has been removed from this file
+///<reference types="@sanity/types/parts" />
+
 import type {SearchTerms} from '@sanity/base'
-import {User} from '@sanity/types'
+import {CurrentUser} from '@sanity/types'
 import React, {
   createContext,
   Dispatch,
   ReactNode,
   useContext,
   useEffect,
+  useMemo,
   useReducer,
   useRef,
 } from 'react'
+import schema from 'part:@sanity/base/schema'
 import {SEARCH_LIMIT} from '../../constants'
+import {createRecentSearchesStore, RecentSearchesStore} from '../../datastores/recentSearches'
 import {useSearch} from '../../hooks/useSearch'
 import {initialSearchState, searchReducer, SearchAction, SearchReducerState} from './reducer'
 import {hasSearchableTerms} from './selectors'
@@ -17,20 +23,30 @@ import {hasSearchableTerms} from './selectors'
 interface SearchContextValue {
   dispatch: Dispatch<SearchAction>
   state: SearchReducerState
+  recentSearchesStore?: RecentSearchesStore
 }
 
 const SearchContext = createContext<SearchContextValue | undefined>(undefined)
 
 interface SearchProviderProps {
   children?: ReactNode
-  currentUser: User
+  currentUser: CurrentUser
 }
 
 /**
  * @internal
  */
 export function SearchProvider({children, currentUser}: SearchProviderProps) {
-  const [state, dispatch] = useReducer(searchReducer, initialSearchState(currentUser))
+  // Create local storage store
+  const recentSearchesStore = createRecentSearchesStore(schema, currentUser)
+  const recentSearches = useMemo(() => recentSearchesStore.getRecentSearchTerms(), [
+    recentSearchesStore,
+  ])
+
+  const [state, dispatch] = useReducer(
+    searchReducer,
+    initialSearchState(currentUser, recentSearches)
+  )
 
   const {pageIndex, result, terms} = state
 
@@ -93,7 +109,11 @@ export function SearchProvider({children, currentUser}: SearchProviderProps) {
     isMountedRef.current = true
   }, [dispatch, hasValidTerms, result.hits, terms.query, terms.types])
 
-  return <SearchContext.Provider value={{dispatch, state}}>{children}</SearchContext.Provider>
+  return (
+    <SearchContext.Provider value={{dispatch, recentSearchesStore, state}}>
+      {children}
+    </SearchContext.Provider>
+  )
 }
 
 export function useSearchState() {
