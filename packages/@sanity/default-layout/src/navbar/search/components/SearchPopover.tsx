@@ -180,7 +180,8 @@ const SearchPopoverWrapper = styled(Card)<{$position: PopoverPosition}>`
         `}
   display: flex !important;
   flex-direction: column;
-  max-height: min(calc(100vh - ${POPOVER_INPUT_PADDING * 2}px), ${POPOVER_MAX_HEIGHT}px);
+  max-height: ${({$position}) =>
+    `min(calc(100vh - ${$position.y}px - ${POPOVER_INPUT_PADDING}px), ${POPOVER_MAX_HEIGHT}px)`};
   position: absolute;
   top: ${({$position}) => $position.y}px;
   width: min(calc(100vw - ${POPOVER_INPUT_PADDING * 2}px), ${POPOVER_MAX_WIDTH}px);
