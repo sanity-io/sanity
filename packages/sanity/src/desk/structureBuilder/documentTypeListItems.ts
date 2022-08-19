@@ -61,7 +61,7 @@ export function getDocumentTypeListItem(
   return new ListItemBuilder(context)
     .id(typeName)
     .title(title)
-    .schemaType(typeName)
+    .schemaType(type)
     .child((id, childContext) => {
       const parent = childContext.parent as Collection
       const parentItem = isList(parent)
@@ -101,7 +101,7 @@ export function getDocumentTypeList(
     .title(spec.title || title)
     .filter('_type == $type')
     .params({type: typeName})
-    .schemaType(typeName)
+    .schemaType(type)
     .showIcons(showIcons)
     .defaultOrdering(DEFAULT_SELECTED_ORDERING_OPTION.by)
     .menuItemGroups(
