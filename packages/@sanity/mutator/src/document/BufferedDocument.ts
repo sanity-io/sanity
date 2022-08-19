@@ -8,26 +8,23 @@ import Mutation from './Mutation'
 import SquashingBuffer from './SquashingBuffer'
 import debug from './debug'
 import {Doc} from './types'
+import luid from './luid'
 
 const ONE_MINUTE = 1000 * 60
 
 class Commit {
   mutations: Mutation[]
   tries: number
-  resolve: () => {}
-  reject: (error: Error) => {}
-  constructor(mutations, {resolve, reject}) {
+  constructor(mutations) {
     this.mutations = mutations
     this.tries = 0
-    this.resolve = resolve
-    this.reject = reject
   }
   apply(doc: Doc): Doc {
     return Mutation.applyAll(doc, this.mutations)
   }
-  squash(doc: Doc) {
+  squash(doc: Doc, transactionId?: string) {
     const result = Mutation.squash(doc, this.mutations)
-    result.assignRandomTransactionId()
+    result.assignTransactionId(transactionId || luid())
     return result
   }
 }
@@ -115,26 +112,23 @@ export default class BufferedDocument {
   }
 
   // Submit all mutations in the buffer to be committed
-  commit() {
-    return new Promise<void>((resolve, reject) => {
-      // Anything to commit?
-      if (!this.buffer.hasChanges()) {
-        resolve()
-        return
-      }
-      debug('Committing local changes')
-      // Collect current staged mutations into a commit and ...
-      this.commits.push(new Commit([this.buffer.purge()], {resolve, reject}))
-      // ... clear the table for the next commit.
-      this.buffer = new SquashingBuffer(this.LOCAL)
-      this.performCommits()
-    })
+  commit(transactionId?: string) {
+    // Anything to commit?
+    if (!this.buffer.hasChanges()) {
+      return
+    }
+    debug('Committing local changes')
+    // Collect current staged mutations into a commit and ...
+    this.commits.push(new Commit([this.buffer.purge()]))
+    // ... clear the table for the next commit.
+    this.buffer = new SquashingBuffer(this.LOCAL)
+    this.performCommits(transactionId)
   }
 
   // Starts the committer that will try to committ all staged commits to the database
   // by calling the commitHandler. Will keep running until all commits are successfully
   // committed.
-  performCommits() {
+  performCommits(transactionId?: string) {
     if (!this.commitHandler) {
       throw new Error('No commitHandler configured for this BufferedDocument')
     }
@@ -142,25 +136,24 @@ export default class BufferedDocument {
       // We can have only one committer at any given time
       return
     }
-    this._cycleCommitter()
+    this._cycleCommitter(transactionId)
   }
 
   // TODO: Error handling, right now retries after every error,
-  _cycleCommitter() {
+  _cycleCommitter(transactionId?: string) {
     if (this.commits.length == 0) {
       this.committerRunning = false
       return
     }
     this.committerRunning = true
     const commit = this.commits.shift()
-    const squashed = commit.squash(this.LOCAL)
+    const squashed = commit.squash(this.LOCAL, transactionId)
     const docResponder = this.document.stage(squashed, true)
 
     const responder = {
       success: () => {
         debug('Commit succeeded')
         docResponder.success()
-        commit.resolve()
         // Keep running the committer until no more commits
         this._cycleCommitter()
       },
@@ -174,13 +167,13 @@ export default class BufferedDocument {
           this.commits.unshift(commit)
         }
         docResponder.failure()
+        this.committerRunning = true
         // Todo: Need better error handling (i.e. propagate to user and provide means of retrying)
-        if (commit.tries < 200) {
-          setTimeout(() => this._cycleCommitter(), Math.min(commit.tries * 1000, ONE_MINUTE))
-        }
+        // if (commit.tries < 200) {
+        //   setTimeout(() => this._cycleCommitter(), Math.min(commit.tries * 1000, ONE_MINUTE))
+        // }
       },
       cancel: (error) => {
-        this.commits.forEach((commit) => commit.reject(error))
         // Throw away waiting commits
         this.commits = []
         // Reset back to last known state from gradient and

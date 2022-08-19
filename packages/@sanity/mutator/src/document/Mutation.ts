@@ -13,7 +13,7 @@ export type MutationParams = {
   previousRev?: string
   resultRev?: string
   mutations: Array<Mut>
-  timestamp?: String
+  timestamp?: string
   effects?: {apply: unknown; revert: unknown}
 }
 
@@ -53,8 +53,8 @@ export default class Mutation {
   get effects() {
     return this.params.effects
   }
-  assignRandomTransactionId() {
-    this.params.resultRev = this.params.transactionId = luid()
+  assignTransactionId(transactionId: string) {
+    this.params.resultRev = this.params.transactionId = transactionId
   }
   appliesToMissingDocument() {
     if (typeof this._appliesToMissingDocument !== 'undefined') {

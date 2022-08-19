@@ -102,7 +102,7 @@ const results$: Observable<IntermediarySuccess | IntermediaryError> = operationC
   groupBy((op) => op.idPair.publishedId),
   mergeMap((groups$) =>
     groups$.pipe(
-      // although it might look like a but, dropping pending async operations here is actually a feature
+      // although it might look like a bug, dropping pending async operations here is actually a feature
       // E.g. if the user types `publish` which is async and then starts patching (sync) then the publish
       // should be cancelled
       switchMap((args) =>

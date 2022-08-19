@@ -59,7 +59,7 @@ function _createDeprecatedAPIs(client) {
         share()
       )
 
-    return createBufferedDocument(documentId, serverEvents$, _doCommit)
+    return createBufferedDocument(documentId, serverEvents$)
   }
 
   function byId(documentId) {

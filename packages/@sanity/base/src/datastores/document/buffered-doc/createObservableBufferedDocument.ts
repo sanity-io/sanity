@@ -4,7 +4,6 @@ import {
   distinctUntilChanged,
   filter,
   map,
-  mergeMap,
   mergeMapTo,
   publishReplay,
   refCount,
@@ -16,7 +15,6 @@ import {
 } from 'rxjs/operators'
 import {ListenerEvent, MutationEvent} from '../getPairListener'
 import {
-  CommitFunction,
   DocumentMutationEvent,
   DocumentRebaseEvent,
   MutationPayload,
@@ -35,6 +33,13 @@ interface CommitAction {
 }
 
 type Action = MutationAction | CommitAction
+
+export interface CommitRequest {
+  success: () => void
+  failure: () => void
+  cancel: (error) => void
+  mutation: Mutation
+}
 
 // BufferedDocument.LOCAL never updates its revision due to its internal consistency checks
 // but we sometimes we need the most current _rev on the document in UI land, e.g.
@@ -62,10 +67,7 @@ const getDocument = <T extends {document: any}>(event: T): T['document'] => even
 
 // This is an observable interface for BufferedDocument in an attempt
 // to make it easier to work with the api provided by it
-export const createObservableBufferedDocument = (
-  listenerEvent$: Observable<ListenerEvent>,
-  commitMutations: CommitFunction
-) => {
+export const createObservableBufferedDocument = (listenerEvent$: Observable<ListenerEvent>) => {
   // Incoming local actions (e.g. a request to mutate, a request to commit pending changes, etc.)
   const actions$ = new Subject<Action>()
 
@@ -82,6 +84,8 @@ export const createObservableBufferedDocument = (
 
   // a stream of remote mutations with effetcs
   const remoteMutations = new Subject<DocumentRemoteMutationEvent>()
+
+  const commitRequests = new Subject<CommitRequest>()
 
   const createInitialBufferedDocument = (initialSnapshot) => {
     const bufferedDocument = new BufferedDocument(initialSnapshot)
@@ -120,24 +124,8 @@ export const createObservableBufferedDocument = (
       consistency$.next(isConsistent)
     }
 
-    bufferedDocument.commitHandler = (opts: {
-      success: () => void
-      failure: () => void
-      cancel: (error) => void
-      mutation: Mutation
-    }) => {
-      const {resultRev, ...mutation} = opts.mutation.params
-      commitMutations(mutation).then(opts.success, (error) => {
-        const isBadRequest =
-          error.name === 'ClientError' && error.statusCode >= 400 && error.statusCode <= 500
-        if (isBadRequest) {
-          opts.cancel(error)
-        } else {
-          opts.failure()
-        }
-        return Promise.reject(error)
-      })
-    }
+    bufferedDocument.commitHandler = (commitArg: CommitRequest) => commitRequests.next(commitArg)
+
     return bufferedDocument
   }
 
@@ -182,7 +170,7 @@ export const createObservableBufferedDocument = (
   // this is where the side effects mandated by local actions actually happens
   const actionHandler$ = actions$.pipe(
     withLatestFrom(currentBufferedDocument$),
-    tap(([action, bufferedDocument]) => {
+    tap(([action, bufferedDocument]: [Action, BufferedDocument]) => {
       if (action.type === 'mutation') {
         bufferedDocument!.add(new Mutation({mutations: action.mutations}))
       }
@@ -200,12 +188,13 @@ export const createObservableBufferedDocument = (
   const addMutations = (mutations: MutationPayload[]) => emitAction({type: 'mutation', mutations})
   const addMutation = (mutation: MutationPayload) => addMutations([mutation])
 
-  const commit = () => {
-    return currentBufferedDocument$.pipe(
-      take(1),
-      mergeMap((bufferedDocument) => bufferedDocument!.commit()),
-      mergeMapTo(EMPTY)
-    )
+  const commit = (transactionId?: string) => {
+    currentBufferedDocument$
+      .pipe(
+        take(1),
+        tap((bufferedDocument) => bufferedDocument!.commit(transactionId))
+      )
+      .subscribe()
   }
 
   // A stream of this document's snapshot
@@ -228,6 +217,7 @@ export const createObservableBufferedDocument = (
     updates$: merge(snapshot$, actionHandler$, mutations$, rebase$),
     consistency$: consistency$.pipe(distinctUntilChanged(), publishReplay(1), refCount()),
     remoteSnapshot$,
+    commit$: commitRequests,
     addMutation,
     addMutations,
     commit,

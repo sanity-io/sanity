@@ -1,5 +1,6 @@
-import {createObservableBufferedDocument} from './createObservableBufferedDocument'
 import {Observable} from 'rxjs'
+import {ListenerEvent} from '../getPairListener'
+import {Mutation} from '../types'
 import {
   CommitFunction,
   CommittedEvent,
@@ -8,8 +9,7 @@ import {
   SnapshotEvent,
   RemoteSnapshotEvent,
 } from './types'
-import {ListenerEvent} from '../getPairListener'
-import {Mutation} from '../types'
+import {CommitRequest, createObservableBufferedDocument} from './createObservableBufferedDocument'
 
 export type BufferedDocumentEvent =
   | SnapshotEvent
@@ -26,6 +26,7 @@ export interface BufferedDocumentWrapper {
   consistency$: Observable<boolean>
   remoteSnapshot$: Observable<RemoteSnapshotEvent>
   events: Observable<BufferedDocumentEvent>
+  commits$: Observable<CommitRequest>
   // helper functions
   patch: (patches) => Mutation[]
   create: (document) => Mutation
@@ -34,16 +35,15 @@ export interface BufferedDocumentWrapper {
   delete: () => Mutation
 
   mutate: (mutations: Mutation[]) => void
-  commit: () => Observable<never>
+  commit: () => void
 }
 
 export const createBufferedDocument = (
   documentId: string,
   // consider naming it remoteEvent$
-  listenerEvent$: Observable<ListenerEvent>,
-  commitMutations: CommitFunction
+  listenerEvent$: Observable<ListenerEvent>
 ): BufferedDocumentWrapper => {
-  const bufferedDocument = createObservableBufferedDocument(listenerEvent$, commitMutations)
+  const bufferedDocument = createObservableBufferedDocument(listenerEvent$)
 
   const prepareDoc = prepare(documentId)
 
@@ -53,6 +53,7 @@ export const createBufferedDocument = (
     events: bufferedDocument.updates$,
     consistency$: bufferedDocument.consistency$,
     remoteSnapshot$: bufferedDocument.remoteSnapshot$,
+    commits$: bufferedDocument.commit$,
 
     patch: (patches) => patches.map((patch) => ({patch: {...patch, id: documentId}})),
     create: (document) => ({create: prepareDoc(document)}),
@@ -61,6 +62,6 @@ export const createBufferedDocument = (
     delete: () => DELETE,
 
     mutate: (mutations: Mutation[]) => bufferedDocument.addMutations(mutations),
-    commit: () => bufferedDocument.commit(),
+    commit: (transactionId?: string) => bufferedDocument.commit(transactionId),
   }
 }

@@ -5,6 +5,7 @@ import {IdPair, Mutation, ReconnectEvent} from '../types'
 import {BufferedDocumentEvent} from '../buffered-doc/createBufferedDocument'
 import {SnapshotEvent} from '../buffered-doc/types'
 import {memoize} from '../utils/createMemoizer'
+import {CommitRequest} from '../buffered-doc/createObservableBufferedDocument'
 import {memoizedPair} from './memoizedPair'
 import {DocumentVersion} from './checkoutPair'
 
@@ -25,6 +26,7 @@ function withSnapshots(pair: DocumentVersion): DocumentVersionSnapshots {
       publishReplay(1),
       refCount()
     ),
+    commits$: pair.commits$,
 
     patch: pair.patch,
     create: pair.create,
@@ -38,6 +40,7 @@ function withSnapshots(pair: DocumentVersion): DocumentVersionSnapshots {
 }
 export interface DocumentVersionSnapshots {
   snapshots$: Observable<SanityDocument>
+  commits$: Observable<CommitRequest>
 
   // helper functions
   patch: (patches) => Mutation[]
@@ -47,7 +50,7 @@ export interface DocumentVersionSnapshots {
   delete: () => Mutation
 
   mutate: (mutations: Mutation[]) => void
-  commit: () => Observable<never>
+  commit: (transactionId?: string) => void
 }
 
 interface SnapshotPair {

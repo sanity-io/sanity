@@ -36,7 +36,7 @@ function getDisabledReason(
 export const PublishAction: DocumentActionComponent = (props) => {
   const {id, type, liveEdit, draft, published} = props
   const [publishState, setPublishState] = useState<'publishing' | 'published' | null>(null)
-  const {publish}: any = useDocumentOperation(id, type)
+  const {publish, commit}: any = useDocumentOperation(id, type)
   const validationStatus = useValidationStatus(id, type)
   const syncState = useSyncState(id, type)
   const {changesOpen, handleHistoryOpen} = useDocumentPane()
@@ -63,8 +63,9 @@ export const PublishAction: DocumentActionComponent = (props) => {
 
   const doPublish = useCallback(() => {
     publish.execute()
+    commit.execute()
     setPublishState('publishing')
-  }, [publish])
+  }, [commit, publish])
 
   useEffect(() => {
     if (publishScheduled && isNeitherSyncingNorValidating) {

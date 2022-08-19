@@ -1,21 +1,23 @@
-import {merge, Observable} from 'rxjs'
-import {filter, map, share} from 'rxjs/operators'
+import {EMPTY, from, merge, Observable, of} from 'rxjs'
+import {bufferTime, concatMap, filter, map, mergeMapTo, share, tap} from 'rxjs/operators'
+import {groupBy, omit} from 'lodash'
+import {MutationParams} from '@sanity/mutator/dist/dts/document/Mutation'
+import {Mut} from '@sanity/mutator/dist/dts/document/types'
 import {versionedClient} from '../../../client/versionedClient'
 import {getPairListener, ListenerEvent} from '../getPairListener'
-import {BufferedDocumentEvent, createBufferedDocument} from '../buffered-doc/createBufferedDocument'
+import {
+  BufferedDocumentEvent,
+  BufferedDocumentWrapper,
+  createBufferedDocument,
+  MutationOptions,
+} from '../buffered-doc/createBufferedDocument'
 import {IdPair, Mutation, ReconnectEvent} from '../types'
 import {RemoteSnapshotEvent} from '../buffered-doc/types'
+import {CommitRequest} from '../buffered-doc/createObservableBufferedDocument'
+import {DocumentVersionSnapshots} from './snapshotPair'
 
 const isEventForDocId = (id: string) => (event: ListenerEvent): boolean =>
   event.type !== 'reconnect' && event.documentId === id
-
-function commitMutations(mutations) {
-  return versionedClient.dataRequest('mutate', mutations, {
-    visibility: 'async',
-    returnDocuments: false,
-    tag: 'document.commit',
-  })
-}
 
 type WithVersion<T> = T & {version: 'published' | 'draft'}
 
@@ -25,6 +27,7 @@ export type RemoteSnapshotVersionEvent = WithVersion<RemoteSnapshotEvent>
 export interface DocumentVersion {
   consistency$: Observable<boolean>
   remoteSnapshot$: Observable<RemoteSnapshotVersionEvent>
+  commits$: Observable<CommitRequest>
   events: Observable<DocumentVersionEvent>
 
   patch: (patches) => Mutation[]
@@ -33,8 +36,8 @@ export interface DocumentVersion {
   createOrReplace: (document) => Mutation
   delete: () => Mutation
 
-  mutate: (mutations: Mutation[]) => void
-  commit: () => Observable<never>
+  mutate: (mutations: Mutation[], options?: MutationOptions) => void
+  commit: (transactionId?: string) => void
 }
 
 export interface Pair {
@@ -44,6 +47,39 @@ export interface Pair {
 
 function setVersion<T>(version: 'draft' | 'published') {
   return (ev: T): T & {version: 'draft' | 'published'} => ({...ev, version})
+}
+
+function commitMutations(mutations: Mut[], transactionId: string) {
+  return versionedClient.dataRequest(
+    'mutate',
+    {mutations, transactionId},
+    {
+      visibility: 'async',
+      returnDocuments: false,
+      tag: 'document.commit',
+    }
+  )
+}
+
+function submitCommitRequest(
+  mutations: Mut[],
+  transactionId: string,
+  callbacks: {cancel: (err) => void; failure: () => void; success: () => void}
+) {
+  return from(commitMutations(mutations, transactionId)).pipe(
+    tap({
+      error: (error) => {
+        const isBadRequest =
+          error.name === 'ClientError' && error.statusCode >= 400 && error.statusCode <= 500
+        if (isBadRequest) {
+          callbacks.cancel(error)
+        } else {
+          callbacks.failure()
+        }
+      },
+      next: () => callbacks.success(),
+    })
+  )
 }
 
 export function checkoutPair(idPair: IdPair): Pair {
@@ -57,26 +93,52 @@ export function checkoutPair(idPair: IdPair): Pair {
 
   const draft = createBufferedDocument(
     draftId,
-    listenerEvents$.pipe(filter(isEventForDocId(draftId))),
-    commitMutations
+    listenerEvents$.pipe(filter(isEventForDocId(draftId)))
   )
 
   const published = createBufferedDocument(
     publishedId,
-    listenerEvents$.pipe(filter(isEventForDocId(publishedId))),
-    commitMutations
+    listenerEvents$.pipe(filter(isEventForDocId(publishedId)))
+  )
+
+  const commits$ = merge(draft.commits$, published.commits$).pipe(
+    bufferTime(1000),
+    // tap(console.log),
+    filter((buf) => buf.length > 0),
+    concatMap((reqs) => {
+      const groups = groupBy(reqs, (req) => req.mutation.transactionId)
+      const transactions = Object.keys(groups).map((transactionId) => ({id: transactionId, reqs}))
+
+      return from(transactions).pipe(
+        concatMap((transaction) => {
+          const success = () => {
+            transaction.reqs.forEach((r) => r.success())
+          }
+          const failure = () => {
+            transaction.reqs.forEach((r) => r.failure())
+          }
+          const cancel = (err: Error) => {
+            transaction.reqs.forEach((r) => r.cancel(err))
+          }
+          const muts = transaction.reqs.flatMap((req) => req.mutation.params.mutations)
+          return submitCommitRequest(muts, transaction.id, {success, failure, cancel})
+        })
+      )
+    }),
+    mergeMapTo(EMPTY),
+    share()
   )
 
   return {
     draft: {
       ...draft,
-      events: merge(reconnect$, draft.events).pipe(map(setVersion('draft'))),
-      consistency$: draft.consistency$,
+      events: merge(commits$, reconnect$, draft.events).pipe(map(setVersion('draft'))),
+      consistency$: merge(commits$, draft.consistency$),
       remoteSnapshot$: draft.remoteSnapshot$.pipe(map(setVersion('draft'))),
     },
     published: {
       ...published,
-      events: merge(reconnect$, published.events).pipe(map(setVersion('published'))),
+      events: merge(commits$, reconnect$, published.events).pipe(map(setVersion('published'))),
       consistency$: published.consistency$,
       remoteSnapshot$: published.remoteSnapshot$.pipe(map(setVersion('published'))),
     },
