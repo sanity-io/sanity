@@ -41,12 +41,7 @@ export function EditPortal(props: Props) {
     }
 
     return (
-      <PopoverDialog
-        onClose={onClose}
-        referenceElement={referenceElement}
-        placement="auto"
-        title={header}
-      >
+      <PopoverDialog onClose={onClose} referenceElement={referenceElement} title={header}>
         <PresenceOverlay margins={PRESENCE_MARGINS}>{children}</PresenceOverlay>
       </PopoverDialog>
     )
