@@ -2,7 +2,7 @@ import createClient, {SanityClient} from '@sanity/client'
 import {defer} from 'rxjs'
 import {map, shareReplay, startWith, switchMap} from 'rxjs/operators'
 import {memoize} from 'lodash'
-import {checkCors, CorsOriginError} from '../cors'
+import {CorsOriginError} from '../cors'
 import {AuthState, AuthStore} from './types'
 import {createBroadcastChannel} from './createBroadcastChannel'
 import {sessionId} from './sessionId'
@@ -84,12 +84,6 @@ const saveToken = ({token, projectId}: {token: string; projectId: string}): void
 }
 
 const getCurrentUser = async (client: SanityClient) => {
-  const result = await checkCors(client)
-
-  if (result?.isCorsError) {
-    throw new CorsOriginError({...result, projectId: client.config()?.projectId})
-  }
-
   try {
     const user = await client.request({
       uri: '/users/me',
@@ -100,8 +94,30 @@ const getCurrentUser = async (client: SanityClient) => {
     // if the user came back with an id, assume it's a full CurrentUser
     return typeof user?.id === 'string' ? user : null
   } catch (err) {
-    if (err.statusCode === 401) return null
-    throw err
+    // 401 means the user had some kind of credentials, but failed to authenticate,
+    // we should clear any local token in this case and treat it as if the used was
+    // logged out
+    if (err.statusCode === 401) {
+      clearToken(client.config().projectId || '')
+      return null
+    }
+
+    // Request failed for some other reason, see if this was a CORS-error by
+    // checking the `/ping` endpoint, which allows all origins
+    const validCorsConfig = await client
+      .request({uri: '/ping', withCredentials: false, tag: 'cors-check'})
+      .then(
+        () => true,
+        () => false
+      )
+
+    // Some non-CORS error, rethrow
+    if (validCorsConfig) {
+      throw err
+    }
+
+    // Throw a specific error on CORS-errors, to allow us to show a customized dialog
+    throw new CorsOriginError({projectId: client.config()?.projectId})
   }
 }
 
