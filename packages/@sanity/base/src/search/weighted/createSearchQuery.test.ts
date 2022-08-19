@@ -32,9 +32,9 @@ describe('createSearchQuery', () => {
     })
   })
 
-  it('should not escape numbers in path query for basic type', () => {
+  it('should handle indexed array fields in an optimized manner', () => {
     const {query} = createSearchQuery({
-      query: 'test',
+      query: 'term0 term1',
       types: [
         {
           name: 'numbers-in-path',
@@ -49,8 +49,11 @@ describe('createSearchQuery', () => {
     })
 
     expect(query).toEqual(
-      '*[_type in $__types && (cover[0].cards[0].title match $t0)]' +
+      '*[_type in $__types && (cover[].cards[].title match $t0) && (cover[].cards[].title match $t1)]' +
         '[$__offset...$__limit]' +
+        // putting [number] in the first filter of a query makes the whole query unoptimized by content-lake, killing performance
+        // doing a second filter, after limiting when config contains indexed terms, fixes that at the cost of doubling query payload
+        '[(cover[0].cards[0].title match $t0) && (cover[0].cards[0].title match $t1)]' +
         '{_type, _id, ...select(_type == "numbers-in-path" => { "w0": cover[0].cards[0].title })}'
     )
   })

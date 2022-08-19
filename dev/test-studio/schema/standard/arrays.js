@@ -39,9 +39,10 @@ export default {
   icon: OlistIcon,
   preview: {
     select: {
-      // FIXME contentlake?? having this here slows down studio search massivly atm
+      // this preview config originally made the type unsearchable. The bug has since been fixed.
       title: 'objectArrayWithPrefinedStringField.0.stringOptions',
       subtitle: 'title',
+      description: 'predefinedStringsArray.0',
     },
   },
   fields: [
