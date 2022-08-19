@@ -69,11 +69,10 @@ export function getPairListener(
           )
         : observableOf(event)
     ),
-    concatMap((msg) => {
+    mergeMap((msg) => {
       if (
         msg.type === 'mutation' &&
         (msg.transition === 'update' || msg.transition === 'appear') &&
-        !msg.documentId.startsWith('drafts') &&
         msg.transactionId.startsWith('publish')
       ) {
         console.log('[repro] Published createOrReplace received, delaying emit by 10s')
