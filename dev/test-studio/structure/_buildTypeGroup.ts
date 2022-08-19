@@ -61,7 +61,7 @@ export function _buildTypeGroup(
                         })
                         .id(typeName)
                         .title(schemaType.title || typeName)
-                        .schemaType(typeName)
+                        .schemaType(schemaType)
                         .filter(`_type == $type`)
                         .params({type: typeName})
                     )
