@@ -45,6 +45,9 @@ interface CommandListContextValue {
 
 const CommandListContext = createContext<CommandListContextValue | undefined>(undefined)
 
+// Allowable tag names to pass through click events when selecting with the ENTER key
+const CLICKABLE_CHILD_TAGS: string[] = ['a', 'button']
+
 interface CommandListProviderProps {
   ariaChildrenLabel: string
   ariaHeaderLabel: string
@@ -265,9 +268,12 @@ export function CommandListProvider({
         const currentElement = childElements.find(
           (el) => Number(el.dataset.index) === selectedIndexRef.current
         )
-        if (currentElement) {
-          currentElement.click()
-        }
+
+        // Find the closest available clickable element - if not the current element, then query its children.
+        const clickableElement = CLICKABLE_CHILD_TAGS.includes(currentElement.tagName.toLowerCase())
+          ? currentElement
+          : (currentElement.querySelector(CLICKABLE_CHILD_TAGS.join(',')) as HTMLElement)
+        clickableElement?.click()
       }
     }
     headerInputElement?.addEventListener('keydown', handleKeyDown)
