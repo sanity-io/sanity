@@ -29,7 +29,7 @@ export interface DocumentVersion {
   createOrReplace: (document) => Mutation
   delete: () => Mutation
 
-  mutate: (mutations: Mutation[], options?: MutationOptions) => void
+  mutate: (mutations: Mutation[]) => void
   commit: (transactionId?: string) => void
 }
 
