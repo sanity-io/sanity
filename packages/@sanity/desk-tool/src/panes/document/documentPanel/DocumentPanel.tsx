@@ -164,6 +164,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
                 hidden={formViewHidden}
                 key={documentId + (ready ? '_ready' : '_pending')}
                 margins={margins}
+                readOnly={editState.publishing}
                 granted={Boolean(permissions?.granted)}
               />
               {activeViewNode}

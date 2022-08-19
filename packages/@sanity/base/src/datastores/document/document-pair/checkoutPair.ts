@@ -1,16 +1,27 @@
 import {EMPTY, from, merge, Observable} from 'rxjs'
-import {bufferTime, concatMap, filter, map, mergeMapTo, share, tap} from 'rxjs/operators'
+import {
+  bufferTime,
+  concatMap,
+  distinctUntilChanged,
+  filter,
+  map,
+  mergeMapTo,
+  share,
+  shareReplay,
+  startWith,
+  tap,
+} from 'rxjs/operators'
 import {groupBy} from 'lodash'
 import {Mut} from '@sanity/mutator/dist/dts/document/types'
 import {versionedClient} from '../../../client/versionedClient'
 import {getPairListener, ListenerEvent} from '../getPairListener'
 import {BufferedDocumentEvent, createBufferedDocument} from '../buffered-doc/createBufferedDocument'
-import {IdPair, Mutation, ReconnectEvent} from '../types'
+import {IdPair, Mutation, PublishEvent, ReconnectEvent} from '../types'
 import {RemoteSnapshotEvent} from '../buffered-doc/types'
 import {CommitRequest} from '../buffered-doc/createObservableBufferedDocument'
 
-const isEventForDocId = (id: string) => (event: ListenerEvent): boolean =>
-  event.type !== 'reconnect' && event.documentId === id
+const isMutationEventForDocId = (id: string) => (event: ListenerEvent): boolean =>
+  event.type !== 'reconnect' && event.type !== 'publish' && event.documentId === id
 
 type WithVersion<T> = T & {version: 'published' | 'draft'}
 
@@ -34,6 +45,7 @@ export interface DocumentVersion {
 }
 
 export interface Pair {
+  publishing: Observable<boolean>
   published: DocumentVersion
   draft: DocumentVersion
 }
@@ -84,14 +96,24 @@ export function checkoutPair(idPair: IdPair): Pair {
     ReconnectEvent
   >
 
+  const publishing = listenerEvents$.pipe(
+    filter((ev): ev is PublishEvent => ev.type === 'publish'),
+    // tap((ev) => console.log(ev.phase === 'start' ? 'DO NOT EDIT' : 'YOU MAY RESUME EDIT')),
+    map((ev) => ev.phase === 'start'),
+    // mergeMapTo(EMPTY),
+    startWith(false),
+    distinctUntilChanged(),
+    shareReplay(1)
+  )
+
   const draft = createBufferedDocument(
     draftId,
-    listenerEvents$.pipe(filter(isEventForDocId(draftId)))
+    listenerEvents$.pipe(filter(isMutationEventForDocId(draftId)))
   )
 
   const published = createBufferedDocument(
     publishedId,
-    listenerEvents$.pipe(filter(isEventForDocId(publishedId)))
+    listenerEvents$.pipe(filter(isMutationEventForDocId(publishedId)))
   )
 
   const commits$ = merge(draft.commits$, published.commits$).pipe(
@@ -122,6 +144,7 @@ export function checkoutPair(idPair: IdPair): Pair {
   )
 
   return {
+    publishing,
     draft: {
       ...draft,
       events: merge(commits$, reconnect$, draft.events).pipe(map(setVersion('draft'))),

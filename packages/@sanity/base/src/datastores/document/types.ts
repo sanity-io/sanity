@@ -22,6 +22,11 @@ export interface ReconnectEvent {
   type: 'reconnect'
 }
 
+export interface PublishEvent {
+  type: 'publish'
+  phase: 'start' | 'complete'
+}
+
 export interface IdPair {
   draftId: string
   publishedId: string
@@ -36,6 +41,7 @@ export interface Operation<Args> {
 export interface OperationArgs {
   typeName: string
   idPair: IdPair
+  publishing: boolean
   snapshots: {draft: null | SanityDocument; published: null | SanityDocument}
   draft: DocumentVersionSnapshots
   published: DocumentVersionSnapshots

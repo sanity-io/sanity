@@ -6,7 +6,7 @@ import {
   unstable_useConditionalProperty as useConditionalProperty,
 } from '@sanity/base/hooks'
 import {PresenceOverlay} from '@sanity/base/presence'
-import {Box, Container, Flex, Spinner, Text} from '@sanity/ui'
+import {Box, Container, Dialog, Flex, Spinner, Text} from '@sanity/ui'
 import afterEditorComponents from 'all:part:@sanity/desk-tool/after-editor-component'
 import documentStore from 'part:@sanity/base/datastore/document'
 import schema from 'part:@sanity/base/schema'
@@ -46,6 +46,7 @@ export function FormView(props: FormViewProps) {
   const {
     compareValue,
     displayed: value,
+    editState,
     documentId,
     documentSchema,
     documentType,
@@ -150,6 +151,21 @@ export function FormView(props: FormViewProps) {
     return (
       <PresenceOverlay margins={margins}>
         <Box as="form" onSubmit={preventDefault}>
+          {editState?.publishing && (
+            <Dialog id={`publish-message-${documentId}`}>
+              <Box padding={4}>
+                <Flex align="center" direction="column" justify="center">
+                  <Spinner muted />
+
+                  <Box marginTop={3}>
+                    <Text align="center" muted size={1}>
+                      Please wait while the document is being published…
+                    </Text>
+                  </Box>
+                </Flex>
+              </Box>
+            </Dialog>
+          )}
           {ready ? (
             <FormBuilder
               schema={schema}
@@ -159,7 +175,7 @@ export function FormView(props: FormViewProps) {
               type={documentSchema}
               presence={presence}
               filterField={filterField}
-              readOnly={isReadOnly}
+              readOnly={isReadOnly || editState?.publishing}
               onBlur={handleBlur}
               onFocus={handleFocus}
               focusPath={focusPath}
@@ -184,21 +200,21 @@ export function FormView(props: FormViewProps) {
       </PresenceOverlay>
     )
   }, [
-    compareValue,
-    documentSchema,
-    filterField,
-    focusPath,
-    handleBlur,
-    handleChange,
-    handleFocus,
     hasTypeMismatch,
     margins,
-    markers,
-    patchChannelRef,
-    presence,
     ready,
-    isReadOnly,
     value,
+    compareValue,
+    documentSchema,
+    presence,
+    filterField,
+    isReadOnly,
+    editState?.publishing,
+    handleBlur,
+    handleFocus,
+    focusPath,
+    handleChange,
+    markers,
     changesOpen,
   ])
 

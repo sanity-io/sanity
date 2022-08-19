@@ -54,6 +54,7 @@ export interface DocumentVersionSnapshots {
 }
 
 interface SnapshotPair {
+  publishing: Observable<boolean>
   draft: DocumentVersionSnapshots
   published: DocumentVersionSnapshots
 }
@@ -62,8 +63,9 @@ export const snapshotPair = memoize(
   (idPair: IdPair, typeName: string) => {
     return memoizedPair(idPair, typeName).pipe(
       map(
-        ({published, draft}): SnapshotPair => {
+        ({publishing, published, draft}): SnapshotPair => {
           return {
+            publishing,
             published: withSnapshots(published),
             draft: withSnapshots(draft),
           }

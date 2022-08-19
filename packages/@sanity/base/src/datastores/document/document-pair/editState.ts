@@ -9,6 +9,7 @@ import {operationArgs} from './operationArgs'
 export interface EditStateFor {
   id: string
   type: string
+  publishing: boolean
   draft: SanityDocument | null
   published: SanityDocument | null
   liveEdit: boolean
@@ -19,9 +20,10 @@ export const editState = memoize(
   (idPair: IdPair, typeName: string): Observable<EditStateFor> => {
     const liveEdit = isLiveEditEnabled(typeName)
     return operationArgs(idPair, typeName).pipe(
-      map(({snapshots}) => ({
+      map(({publishing, snapshots}) => ({
         id: idPair.publishedId,
         type: typeName,
+        publishing: publishing,
         draft: snapshots.draft,
         published: snapshots.published,
         liveEdit,
@@ -31,6 +33,7 @@ export const editState = memoize(
         id: idPair.publishedId,
         type: typeName,
         draft: null,
+        publishing: false,
         published: null,
         liveEdit,
         ready: false,

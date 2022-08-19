@@ -43,7 +43,7 @@ export const PublishAction: DocumentActionComponent = (props) => {
   const hasValidationErrors = validationStatus.markers.some((marker) => marker.level === 'error')
   // we use this to "schedule" publish after pending tasks (e.g. validation and sync) has completed
   const [publishScheduled, setPublishScheduled] = useState<boolean>(false)
-  const isNeitherSyncingNorValidating = !validationStatus.isValidating
+  const isNeitherSyncingNorValidating = !syncState.isSyncing && !validationStatus.isValidating
   const [permissions, isPermissionsLoading] = useDocumentPairPermissions({
     id,
     type,
@@ -63,7 +63,7 @@ export const PublishAction: DocumentActionComponent = (props) => {
 
   const doPublish = useCallback(() => {
     publish.execute()
-    // setPublishState('publishing')
+    setPublishState('publishing')
   }, [publish])
 
   useEffect(() => {
@@ -93,11 +93,11 @@ export const PublishAction: DocumentActionComponent = (props) => {
   }, [changesOpen, publishState, hasDraft, handleHistoryOpen])
 
   const handle = useCallback(() => {
-    // if (syncState.isSyncing || validationStatus.isValidating) {
-    //   setPublishScheduled(true)
-    // } else {
-    doPublish()
-    // }
+    if (syncState.isSyncing || validationStatus.isValidating) {
+      setPublishScheduled(true)
+    } else {
+      doPublish()
+    }
   }, [syncState.isSyncing, validationStatus.isValidating, doPublish])
 
   if (liveEdit) {

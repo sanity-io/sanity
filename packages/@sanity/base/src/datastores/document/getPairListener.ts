@@ -1,8 +1,15 @@
-/* eslint-disable @typescript-eslint/no-use-before-define */
+/* eslint-disable @typescript-eslint/no-use-before-define,no-console */
 import type {SanityDocument} from '@sanity/types'
-import {defer, of as observableOf, Observable, timer} from 'rxjs'
-import {concatMap, filter, map, mapTo, mergeMap, mergeScan, scan, tap} from 'rxjs/operators'
-import type {IdPair, MutationEvent, ReconnectEvent, SanityClient, WelcomeEvent} from './types'
+import {defer, Observable, of as observableOf, timer} from 'rxjs'
+import {concatMap, map, mapTo, mergeMap, scan, tap} from 'rxjs/operators'
+import type {
+  IdPair,
+  MutationEvent,
+  PublishEvent,
+  ReconnectEvent,
+  SanityClient,
+  WelcomeEvent,
+} from './types'
 
 interface Snapshots {
   draft: SanityDocument | null
@@ -21,11 +28,14 @@ export interface PairListenerOptions {
 
 export type {MutationEvent}
 
-export type ListenerEvent = MutationEvent | ReconnectEvent | InitialSnapshotEvent
+export type ListenerEvent = MutationEvent | ReconnectEvent | InitialSnapshotEvent | PublishEvent
 
 function isPublishMutation(msg: ListenerEvent): msg is MutationEvent {
   return msg.type === 'mutation' && msg.transactionId.startsWith('publish')
 }
+
+const PUBLISH_START: PublishEvent = {type: 'publish', phase: 'start'}
+const PUBLISH_COMPLETE: PublishEvent = {type: 'publish', phase: 'complete'}
 
 export function getPairListener(
   client: SanityClient,
@@ -81,13 +91,15 @@ export function getPairListener(
           if (pendingPublishMutation) {
             // got both expected messages - we can continue
             console.log('we got all pending mutations, flush the buffer')
-            return {next: mem.buffer.concat(msg), buffer: []}
+            // console.log('YOU MAY RESUME EDIT')
+            return {next: mem.buffer.concat([msg, PUBLISH_COMPLETE]), buffer: []}
           }
           // We got the first of two expected messages, buffer until we get both
           console.log(
             'We got the first of two expected publish mutations, start buffering until we get the next'
           )
-          return {next: [], buffer: [msg]}
+          // console.log('DO NOT EDIT')
+          return {next: [PUBLISH_START], buffer: [msg]}
         }
 
         if (pendingPublishMutation) {
