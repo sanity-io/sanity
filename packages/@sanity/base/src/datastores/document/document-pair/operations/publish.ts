@@ -35,19 +35,25 @@ export const publish = {
     return false
   },
   execute: ({idPair, snapshots, draft, published}: OperationArgs) => {
+    // flush any pending mutations
+    draft.commit()
+    published.commit()
+
     const value = strengthenOnPublish(omit(snapshots.draft, '_updatedAt'))
 
     if (snapshots.published) {
       // If it exists already, we only want to update it if the revision on the remote server
       // matches what our local state thinks it's at
-      published.mutate(
-        published.patch([
-          {
-            unset: ['_revision_lock_pseudo_field_'],
-            ifRevisionID: snapshots.published._rev,
-          },
-        ])
-      )
+
+      // todo: removing the following lines effectively introduces the risk of publishing over something that was published moments ago. Figure out whether it's a problem in practice.
+      // published.mutate(
+      //   published.patch([
+      //     {
+      //       unset: ['_revision_lock_pseudo_field_'],
+      //       ifRevisionID: snapshots.published._rev,
+      //     },
+      //   ])
+      // )
 
       published.mutate([
         published.createOrReplace({
@@ -72,7 +78,6 @@ export const publish = {
 
     // Make sure to post mutations on both draft and published in the same transaction
     const transactionId = `publish-${luid()}`
-
     draft.commit(transactionId)
     published.commit(transactionId)
     return of(0)

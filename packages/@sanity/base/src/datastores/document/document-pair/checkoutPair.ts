@@ -1,20 +1,13 @@
-import {EMPTY, from, merge, Observable, of} from 'rxjs'
+import {EMPTY, from, merge, Observable} from 'rxjs'
 import {bufferTime, concatMap, filter, map, mergeMapTo, share, tap} from 'rxjs/operators'
-import {groupBy, omit} from 'lodash'
-import {MutationParams} from '@sanity/mutator/dist/dts/document/Mutation'
+import {groupBy} from 'lodash'
 import {Mut} from '@sanity/mutator/dist/dts/document/types'
 import {versionedClient} from '../../../client/versionedClient'
 import {getPairListener, ListenerEvent} from '../getPairListener'
-import {
-  BufferedDocumentEvent,
-  BufferedDocumentWrapper,
-  createBufferedDocument,
-  MutationOptions,
-} from '../buffered-doc/createBufferedDocument'
+import {BufferedDocumentEvent, createBufferedDocument} from '../buffered-doc/createBufferedDocument'
 import {IdPair, Mutation, ReconnectEvent} from '../types'
 import {RemoteSnapshotEvent} from '../buffered-doc/types'
 import {CommitRequest} from '../buffered-doc/createObservableBufferedDocument'
-import {DocumentVersionSnapshots} from './snapshotPair'
 
 const isEventForDocId = (id: string) => (event: ListenerEvent): boolean =>
   event.type !== 'reconnect' && event.documentId === id
@@ -102,8 +95,7 @@ export function checkoutPair(idPair: IdPair): Pair {
   )
 
   const commits$ = merge(draft.commits$, published.commits$).pipe(
-    bufferTime(1000),
-    // tap(console.log),
+    bufferTime(0),
     filter((buf) => buf.length > 0),
     concatMap((reqs) => {
       const groups = groupBy(reqs, (req) => req.mutation.transactionId)

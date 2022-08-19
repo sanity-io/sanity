@@ -167,11 +167,10 @@ export default class BufferedDocument {
           this.commits.unshift(commit)
         }
         docResponder.failure()
-        this.committerRunning = true
         // Todo: Need better error handling (i.e. propagate to user and provide means of retrying)
-        // if (commit.tries < 200) {
-        //   setTimeout(() => this._cycleCommitter(), Math.min(commit.tries * 1000, ONE_MINUTE))
-        // }
+        if (commit.tries < 200) {
+          setTimeout(() => this._cycleCommitter(), Math.min(commit.tries * 1000, ONE_MINUTE))
+        }
       },
       cancel: (error) => {
         // Throw away waiting commits

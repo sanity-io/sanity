@@ -11,11 +11,8 @@ export const discardChanges = {
     }
     return false
   },
-  execute: ({idPair, draft}: OperationArgs) => {
+  execute: ({draft}: OperationArgs) => {
     draft.mutate([draft.delete()])
-    return versionedClient.observable
-      .transaction()
-      .delete(idPair.draftId)
-      .commit({tag: 'document.discard-changes'})
+    draft.commit()
   },
 }

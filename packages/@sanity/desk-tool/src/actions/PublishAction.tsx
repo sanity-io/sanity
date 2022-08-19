@@ -36,14 +36,14 @@ function getDisabledReason(
 export const PublishAction: DocumentActionComponent = (props) => {
   const {id, type, liveEdit, draft, published} = props
   const [publishState, setPublishState] = useState<'publishing' | 'published' | null>(null)
-  const {publish, commit}: any = useDocumentOperation(id, type)
+  const {publish}: any = useDocumentOperation(id, type)
   const validationStatus = useValidationStatus(id, type)
   const syncState = useSyncState(id, type)
   const {changesOpen, handleHistoryOpen} = useDocumentPane()
   const hasValidationErrors = validationStatus.markers.some((marker) => marker.level === 'error')
   // we use this to "schedule" publish after pending tasks (e.g. validation and sync) has completed
   const [publishScheduled, setPublishScheduled] = useState<boolean>(false)
-  const isNeitherSyncingNorValidating = !syncState.isSyncing && !validationStatus.isValidating
+  const isNeitherSyncingNorValidating = !validationStatus.isValidating
   const [permissions, isPermissionsLoading] = useDocumentPairPermissions({
     id,
     type,
@@ -63,9 +63,8 @@ export const PublishAction: DocumentActionComponent = (props) => {
 
   const doPublish = useCallback(() => {
     publish.execute()
-    commit.execute()
-    setPublishState('publishing')
-  }, [commit, publish])
+    // setPublishState('publishing')
+  }, [publish])
 
   useEffect(() => {
     if (publishScheduled && isNeitherSyncingNorValidating) {
@@ -94,11 +93,11 @@ export const PublishAction: DocumentActionComponent = (props) => {
   }, [changesOpen, publishState, hasDraft, handleHistoryOpen])
 
   const handle = useCallback(() => {
-    if (syncState.isSyncing || validationStatus.isValidating) {
-      setPublishScheduled(true)
-    } else {
-      doPublish()
-    }
+    // if (syncState.isSyncing || validationStatus.isValidating) {
+    //   setPublishScheduled(true)
+    // } else {
+    doPublish()
+    // }
   }, [syncState.isSyncing, validationStatus.isValidating, doPublish])
 
   if (liveEdit) {

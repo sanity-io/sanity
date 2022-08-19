@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
 import type {SanityDocument} from '@sanity/types'
 import {defer, of as observableOf, Observable, timer} from 'rxjs'
-import {concatMap, map, mapTo, mergeMap, tap} from 'rxjs/operators'
+import {concatMap, filter, map, mapTo, mergeMap, mergeScan, scan, tap} from 'rxjs/operators'
 import type {IdPair, MutationEvent, ReconnectEvent, SanityClient, WelcomeEvent} from './types'
 
 interface Snapshots {
@@ -22,6 +22,10 @@ export interface PairListenerOptions {
 export type {MutationEvent}
 
 export type ListenerEvent = MutationEvent | ReconnectEvent | InitialSnapshotEvent
+
+function isPublishMutation(msg: ListenerEvent): msg is MutationEvent {
+  return msg.type === 'mutation' && msg.transactionId.startsWith('publish')
+}
 
 export function getPairListener(
   client: SanityClient,
@@ -68,7 +72,35 @@ export function getPairListener(
           .pipe(tap(() => console.log('releasing publish event')))
       }
       return observableOf(msg)
-    })
+    }),
+    scan(
+      (mem: {next: ListenerEvent[]; buffer: ListenerEvent[]}, msg) => {
+        const pendingPublishMutation = mem.buffer.find((message) => isPublishMutation(message))
+        if (isPublishMutation(msg)) {
+          // we expect 2 messages for every publish transaction, so check if we have received both before continuing
+          if (pendingPublishMutation) {
+            // got both expected messages - we can continue
+            console.log('we got all pending mutations, flush the buffer')
+            return {next: mem.buffer.concat(msg), buffer: []}
+          }
+          // We got the first of two expected messages, buffer until we get both
+          console.log(
+            'We got the first of two expected publish mutations, start buffering until we get the next'
+          )
+          return {next: [], buffer: [msg]}
+        }
+
+        if (pendingPublishMutation) {
+          console.log(
+            'we got a message while waiting for the second publish mutation to arrive, put it in the buffer'
+          )
+          return {next: [], buffer: mem.buffer.concat(msg)}
+        }
+        return {next: [msg], buffer: []}
+      },
+      {next: [], buffer: []}
+    ),
+    mergeMap((v) => v.next)
   )
 
   function fetchInitialDocumentSnapshots(): Observable<Snapshots> {
