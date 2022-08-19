@@ -7,7 +7,7 @@ import {IntentLink} from '@sanity/base/router'
 import {Box, ResponsivePaddingProps} from '@sanity/ui'
 import schema from 'part:@sanity/base/schema'
 import {getPublishedId} from 'part:@sanity/base/util/draft-utils'
-import React, {forwardRef, MouseEvent, useCallback, useMemo, useRef} from 'react'
+import React, {forwardRef, MouseEvent, useMemo} from 'react'
 import type {VirtualItem} from 'react-virtual'
 import styled, {css} from 'styled-components'
 import {useCommandList} from '../../contexts/commandList'
@@ -36,7 +36,6 @@ export function SearchResultItem({
   const {hit, resultIndex} = data
   const type = schema.get(hit?._type)
   const documentPresence = useDocumentPresence(documentId)
-  const linkComponentRef = useRef<HTMLDivElement>(null)
   const {level} = useCommandList()
 
   const LinkComponent = useMemo(
@@ -56,49 +55,35 @@ export function SearchResultItem({
     [hit._id, resultIndex, type.name]
   )
 
-  /**
-   * Pass through wrapper click events to the nested child <PreviewCard> instead.
-   *
-   * Required as <CommandListProvider> will trigger click events on wrapper elements on ENTER key presses.
-   *
-   * In most cases, click events will be defined on the main wrapper component, however
-   * <SearchResultItem> is unique in that the clickable area requires padding around it.
-   */
-  const handleWrapperClick = useCallback(() => {
-    linkComponentRef?.current?.click()
-  }, [])
-
   return (
     <SearchResultItemWrapper
       $level={level}
       data-index={index}
       flex={1}
-      onClick={handleWrapperClick}
       style={{
         // Kept inline to prevent styled-components from generating loads of classes on virtual list scroll
         height: `${virtualRow.size}px`,
         transform: `translateY(${virtualRow.start}px)`,
       }}
     >
-      <Box paddingTop={1} paddingX={1}>
-        <PreviewCard
-          as={LinkComponent}
-          data-as="a"
-          onClick={onClick}
-          onMouseDown={onMouseDown}
-          onMouseEnter={onMouseEnter}
-          padding={2}
-          radius={2}
-          ref={linkComponentRef}
-          tabIndex={-1}
-        >
-          <SearchResultItemPreview
-            documentId={hit._id}
-            presence={documentPresence}
-            schemaType={type}
-          />
-        </PreviewCard>
-      </Box>
+      <PreviewCard
+        as={LinkComponent}
+        data-as="a"
+        onClick={onClick}
+        onMouseDown={onMouseDown}
+        onMouseEnter={onMouseEnter}
+        marginTop={1}
+        marginX={1}
+        padding={2}
+        radius={2}
+        tabIndex={-1}
+      >
+        <SearchResultItemPreview
+          documentId={hit._id}
+          presence={documentPresence}
+          schemaType={type}
+        />
+      </PreviewCard>
     </SearchResultItemWrapper>
   )
 }
