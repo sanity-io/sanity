@@ -60,7 +60,7 @@
     "@babel/core": "^7.16.0",
     "@babel/preset-react": "^7.16.0",
     "@babel/preset-typescript": "^7.16.0",
-    "@sanity/ui": "^0.37.11",
+    "@sanity/ui": "^0.37.16",
     "@testing-library/jest-dom": "^5.16.2",
     "@testing-library/react": "^11.2.5",
     "@types/debug": "^4.1.5",
