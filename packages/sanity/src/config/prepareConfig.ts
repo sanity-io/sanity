@@ -49,12 +49,20 @@ import {_createRenderPreview} from './form/_renderPreview'
 type InternalSource = WorkspaceSummary['__internal']['sources'][number]
 
 function normalizeLogo(
-  logo: React.ComponentType | React.ElementType | undefined,
+  logo: React.ComponentType | React.ElementType | undefined
+): JSX.Element | undefined {
+  if (isValidElementType(logo)) return createElement(logo)
+  if (isValidElement(logo)) return logo
+  return undefined
+}
+
+function normalizeIcon(
+  icon: React.ComponentType | React.ElementType | undefined,
   title: string,
   subtitle = ''
 ): JSX.Element {
-  if (isValidElementType(logo)) return createElement(logo)
-  if (isValidElement(logo)) return logo
+  if (isValidElementType(icon)) return createElement(icon)
+  if (isValidElement(icon)) return icon
   return createDefaultIcon(title, subtitle)
 }
 
@@ -155,7 +163,8 @@ export function prepareConfig(config: Config): PreparedConfig {
         basePath: rootSource.basePath || '/',
         dataset: rootSource.dataset,
         schema: resolvedSources[0].schema,
-        icon: normalizeLogo(
+        logo: normalizeLogo(rootSource.logo),
+        icon: normalizeIcon(
           rootSource.icon,
           title,
           `${rootSource.projectId} ${rootSource.dataset}`
