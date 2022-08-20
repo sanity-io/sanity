@@ -18,10 +18,10 @@
     "design-studio"
   ],
   "dependencies": {
-    "@sanity/color": "^2.1.13",
-    "@sanity/icons": "^1.3.3",
-    "@sanity/logos": "^1.1.14",
-    "@sanity/ui": "^0.37.16",
+    "@sanity/color": "^2.1.14",
+    "@sanity/icons": "^1.3.4",
+    "@sanity/logos": "^1.1.15",
+    "@sanity/ui": "^0.37.19",
     "react": "17.0.2",
     "react-dom": "17.0.2",
     "sanity": "3.0.0-dev-preview.15",
