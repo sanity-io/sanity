@@ -13,10 +13,6 @@ interface RecentSearchesProps {
   showFiltersOnClick?: boolean
 }
 
-// Max search query character count by breakpoint
-const MAX_QUERY_COUNT_SMALL = 20
-const MAX_QUERY_COUNT_LARGE = 40
-
 // Max character count of selected document types (combined) by breakpoint
 const MAX_COMBINED_TYPE_COUNT_SMALL = 20
 const MAX_COMBINED_TYPE_COUNT_LARGE = 40
@@ -33,10 +29,6 @@ export function RecentSearches({
   } = useSearchState()
 
   const mediaIndex = useMediaIndex()
-
-  const maxVisibleQueryChars = useMemo(() => {
-    return mediaIndex < 2 ? MAX_QUERY_COUNT_SMALL : MAX_QUERY_COUNT_LARGE
-  }, [mediaIndex])
 
   const maxVisibleTypePillChars = useMemo(() => {
     return mediaIndex < 2 ? MAX_COMBINED_TYPE_COUNT_SMALL : MAX_COMBINED_TYPE_COUNT_LARGE
@@ -89,7 +81,6 @@ export function RecentSearches({
                   data-index={index}
                   index={index}
                   key={recentSearch.__recentTimestamp}
-                  maxVisibleQueryChars={maxVisibleQueryChars}
                   maxVisibleTypePillChars={maxVisibleTypePillChars}
                   onClick={handleRecentSearchClick}
                   onDelete={handleRecentSearchDelete(index)}

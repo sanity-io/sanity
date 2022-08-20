@@ -8,20 +8,17 @@ import {TypePills} from './TypePills'
 
 export interface RecentSearchesProps {
   index: number
-  maxVisibleQueryChars?: number
   maxVisibleTypePillChars?: number
   onClick: (value: RecentSearchTerms) => void
   onDelete: (event: MouseEvent) => void
   value: RecentSearchTerms
 }
 
-const DEFAULT_MAX_QUERY_COUNT = 40
 const DEFAULT_COMBINED_TYPE_COUNT = 40
 
 export function RecentSearchItem(props: RecentSearchesProps) {
   const {
     index,
-    maxVisibleQueryChars = DEFAULT_MAX_QUERY_COUNT,
     maxVisibleTypePillChars = DEFAULT_COMBINED_TYPE_COUNT,
     value,
     onClick,
@@ -37,13 +34,8 @@ export function RecentSearchItem(props: RecentSearchesProps) {
 
   const typesSelected = value.types.length > 0
 
-  // Truncate search query if it exceeds max visible count
-  let querySubstring = value.query?.substring(0, maxVisibleQueryChars) || ''
-  querySubstring =
-    value.query.length > querySubstring.length ? `${querySubstring}...` : querySubstring
-
   // Determine how many characters are left to render type pills
-  const typePillsAvailableCharCount = maxVisibleTypePillChars - querySubstring.length
+  const availableCharacters = maxVisibleTypePillChars - value.query.length
 
   return (
     <RecentSearchItemWrapper
@@ -63,14 +55,16 @@ export function RecentSearchItem(props: RecentSearchesProps) {
             <ClockIcon />
           </Text>
         </Box>
-        <Flex align="center" flex={1} gap={3} marginLeft={3}>
-          {querySubstring && (
-            <Box marginLeft={1}>
-              <Text>{querySubstring}</Text>
-            </Box>
+        <Flex align="center" flex={1} gap={3} justify="flex-start" marginLeft={3}>
+          {value.query && (
+            <SearchItemQueryGroup marginLeft={1}>
+              <Text textOverflow="ellipsis">{value.query}</Text>
+            </SearchItemQueryGroup>
           )}
           {typesSelected && (
-            <TypePills availableCharacters={typePillsAvailableCharCount} types={value.types} />
+            <SearchItemPillsGroup>
+              <TypePills availableCharacters={availableCharacters} types={value.types} />
+            </SearchItemPillsGroup>
           )}
         </Flex>
 
@@ -99,6 +93,14 @@ const RecentSearchItemWrapper = styled(Button)<{$level: number}>(({$level}) => {
     }
   `
 })
+
+const SearchItemPillsGroup = styled(Box)`
+  flex-shrink: 3;
+`
+
+const SearchItemQueryGroup = styled(Box)`
+  flex-shrink: 2;
+`
 
 const CloseButton = styled.div`
   opacity: 0.8;
