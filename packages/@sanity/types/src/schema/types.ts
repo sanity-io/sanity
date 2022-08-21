@@ -11,27 +11,33 @@ import type {PreviewConfig} from './preview'
 // eslint-disable-next-line @typescript-eslint/no-namespace
 export namespace Schema {
   /**
-   * The type definitions that are built into the sanity schema
+   * This type can be extended being a interface and not a type, via declaration merging
    */
-  export type IntrinsicTypeDefinition =
-    | ArrayDefinition
-    | BlockDefinition
-    | BooleanDefinition
-    | DateDefinition
-    | DatetimeDefinition
-    | DocumentDefinition
-    | FileDefinition
-    | GeopointDefinition
-    | ImageDefinition
-    | NumberDefinition
-    | ObjectDefinition
-    | ReferenceDefinition
-    | CrossDatasetReferenceDefinition
-    | SlugDefinition
-    | StringDefinition
-    | SpanDefinition
-    | TextDefinition
-    | UrlDefinition
+  export interface IntrinsicTypeDefinition {
+    array: ArrayDefinition
+    block: BlockDefinition
+    boolean: BooleanDefinition
+    date: DateDefinition
+    datetime: DatetimeDefinition
+    document: DocumentDefinition
+    file: FileDefinition
+    geopoint: GeopointDefinition
+    image: ImageDefinition
+    number: NumberDefinition
+    object: ObjectDefinition
+    reference: ReferenceDefinition
+    crossDatasetReference: CrossDatasetReferenceDefinition
+    slug: SlugDefinition
+    span: SpanDefinition
+    text: TextDefinition
+    url: UrlDefinition
+    string: StringDefinition
+  }
+
+  /**
+   * A union of all intrinsic types allowed natively in the schema.
+   */
+  export type Type = IntrinsicTypeDefinition[keyof IntrinsicTypeDefinition]['type']
 
   /**
    * Represents a Sanity schema type definition.
@@ -40,13 +46,8 @@ export namespace Schema {
    * itself.
    */
   export type TypeDefinition<TType extends Type = Type> =
-    | Extract<IntrinsicTypeDefinition, {type: TType}>
-    | TypeAliasDefinition<TType>
-
-  /**
-   * A union of all intrinsic types allowed natively in the schema.
-   */
-  export type Type = IntrinsicTypeDefinition['type']
+    | IntrinsicTypeDefinition[TType]
+    | TypeAliasDefinition<TType, undefined> // TODO redefine this
 
   /**
    * Represents a reference to another type registered top-level in your schema.
@@ -63,9 +64,13 @@ export namespace Schema {
    * under a different name. You can also override the default type options with
    * a type alias definition.
    */
-  export interface TypeAliasDefinition<TType extends Type = Type> extends BaseDefinitionOptions {
-    type: Exclude<string, Type>
-    options?: TypeOptions<TType> & {[key: string]: unknown}
+  export interface TypeAliasDefinition<TType extends string, TAlias extends Type | undefined>
+    extends BaseDefinitionOptions {
+    type: TType extends Type ? never : TType
+    alias?: TAlias
+    options?: (TAlias extends Type ? TypeOptions<TAlias> : {[key: string]: unknown}) & {
+      [key: string]: unknown
+    }
   }
 
   /**
@@ -348,23 +353,28 @@ export namespace Schema {
   }
 }
 
-export function defineType<TType extends string>(
-  schemaDefinition: Schema.TypeAliasDefinition
-): Schema.TypeAliasDefinition
+type SchemaDef<TType extends string, TAlias extends Schema.Type> = TType extends Schema.Type
+  ? Schema.IntrinsicTypeDefinition[TType]
+  : Schema.TypeAliasDefinition<TType, TAlias>
 
-export function defineType<TType extends Schema.Type>(
-  schemaDefinition: Extract<Schema.IntrinsicTypeDefinition, {type: TType}>
-): Extract<Schema.IntrinsicTypeDefinition, {type: TType}>
-
-export function defineType<TType extends Schema.Type>(
-  schemaDefinition: Schema.TypeDefinition<TType>
-): Schema.TypeDefinition<TType> {
+export function defineType<
+  TType extends string,
+  TAlias extends Schema.Type,
+  TDefinition extends SchemaDef<TType, TAlias>
+>(
+  schemaDefinition: {
+    type: TType
+    /** Should be provided when type is a non-intrinisic type, ie type is a type alias*/
+    alias?: TAlias
+  } & TDefinition
+): typeof schemaDefinition {
   return schemaDefinition
 }
 
-export function defineField<TType extends Schema.Type>(
-  schemaField: Schema.FieldDefinition<TType>
-): Schema.FieldDefinition<TType> {
+export function defineField<
+  TType extends Schema.Type,
+  TDefinition extends Schema.FieldDefinition<TType>
+>(schemaField: TDefinition): TDefinition {
   return schemaField
 }
 

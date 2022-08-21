@@ -27,7 +27,9 @@
   "scripts": {
     "build": "../../../bin/pkg-utils bundle",
     "clean": "rimraf lib",
-    "watch": "../../../bin/pkg-utils bundle --watch"
+    "watch": "../../../bin/pkg-utils bundle --watch",
+    "test": "jest",
+    "test:watch": "jest --watchAll"
   },
   "keywords": [
     "sanity",
