@@ -32,7 +32,7 @@ export const topLevelPrimitiveArrayType = {
   ],
 }
 
-export default {
+const arraysTest = {
   name: 'arraysTest',
   type: 'document',
   title: 'Arrays test',
@@ -521,3 +521,63 @@ export default {
     },
   ],
 }
+
+export const arrayWithBrokenSearchConfig = {
+  type: 'document',
+  icon: OlistIcon,
+  name: 'arrayWithBrokenSearchConfig',
+  title: 'Search config with path with numbers',
+  // eslint-disable-next-line camelcase
+  __experimental_search: [
+    {
+      path: ['title'],
+      weight: 1,
+    },
+    {
+      //boost this to the top to test that it works
+      path: ['stringArray', 0],
+      weight: 100,
+    },
+    {
+      //boost this to the top to test that it works
+      path: ['bookArray', 0, 'title'],
+      weight: 1000,
+    },
+  ],
+  preview: {
+    select: {
+      title: 'title',
+      subtitle: 'bookArray.0.title',
+    },
+  },
+  fields: [
+    {
+      name: 'title',
+      title: 'Title',
+      type: 'string',
+      description: 'search weight: 1',
+    },
+    {
+      name: 'stringArray',
+      title: 'String array',
+      description: 'search weight: 100 for first item only',
+      type: 'array',
+      of: [{type: 'string'}],
+      options: {
+        list: [
+          {title: 'Cats', value: 'cats'},
+          {title: 'Dogs', value: 'dogs'},
+        ],
+      },
+    },
+    {
+      name: 'bookArray',
+      title: 'Book array',
+      type: 'array',
+      of: [{type: 'book'}],
+      description: 'search weight: 1000 for book title only',
+    },
+  ],
+}
+
+export default arraysTest

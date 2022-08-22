@@ -249,8 +249,9 @@ export interface ObjectSchemaType extends BaseSchemaType {
 
 export interface ExperimentalSearchPath {
   // Note: `path` is a string in the _specification_, but converted to a
-  // string array in the schema normalization/compilation step
-  path: string[]
+  // string/number array in the schema normalization/compilation step
+  // a path segment is a number when specified like array.0.prop in preview config.
+  path: (string | number)[]
   weight: number
   mapWith?: string
 }
