@@ -71,7 +71,6 @@ export function createSearchQuery(
 ): SearchQuery {
   const {filter, params, tag} = searchOpts
 
-  console.log(searchTerms.types)
   const {spec: exactSearchSpec, hasIndexedPaths} = createSearchSpec(searchTerms.types, false)
 
   const terms = uniq(compact(tokenize(toLower(searchTerms.query))))

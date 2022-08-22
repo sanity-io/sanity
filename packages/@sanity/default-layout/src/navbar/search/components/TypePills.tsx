@@ -1,12 +1,12 @@
 import {TextWithTone} from '@sanity/base/components'
-import {SchemaType} from '@sanity/types'
+import {SearchableType} from '@sanity/base'
 import {Box, Card, Flex, Text} from '@sanity/ui'
 import React, {useMemo} from 'react'
 import styled from 'styled-components'
 
 interface TypePillsProps {
   availableCharacters?: number
-  types: SchemaType[]
+  types: SearchableType[]
 }
 
 const DEFAULT_AVAILABLE_CHARS = 40 // excluding "+x more" suffix
@@ -28,7 +28,7 @@ export function TypePills({availableCharacters = DEFAULT_AVAILABLE_CHARS, types}
    */
   const visibleTypes = useMemo(
     () =>
-      types.reduce<SchemaType[]>(
+      types.reduce<SearchableType[]>(
         (function () {
           let remaining = availableCharacters
           return function (acc, val, index) {
@@ -77,6 +77,6 @@ export function TypePills({availableCharacters = DEFAULT_AVAILABLE_CHARS, types}
   )
 }
 
-function typeTitle(schemaType: SchemaType) {
+function typeTitle(schemaType: SearchableType) {
   return schemaType.title ?? schemaType.name
 }

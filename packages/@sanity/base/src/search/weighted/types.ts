@@ -15,6 +15,7 @@ export interface SearchTerms {
  */
 export interface SearchableType {
   name: string
+  title?: string
   // eslint-disable-next-line camelcase
   __experimental_search: ExperimentalSearchPath[]
 }
