@@ -6,7 +6,7 @@ import {
   unstable_useConditionalProperty as useConditionalProperty,
 } from '@sanity/base/hooks'
 import {PresenceOverlay} from '@sanity/base/presence'
-import {Box, Container, Dialog, Flex, Spinner, Text} from '@sanity/ui'
+import {Box, Container, Dialog, Flex, Inline, Spinner, Text} from '@sanity/ui'
 import afterEditorComponents from 'all:part:@sanity/desk-tool/after-editor-component'
 import documentStore from 'part:@sanity/base/datastore/document'
 import schema from 'part:@sanity/base/schema'
@@ -150,23 +150,33 @@ export function FormView(props: FormViewProps) {
 
     return (
       <PresenceOverlay margins={margins}>
+        {editState?.publishing && (
+          <div style={{position: 'absolute', top: -20}}>
+            <Inline space={2}>
+              <Spinner muted />
+              <Text align="center" muted size={1}>
+                Waiting for both publish events…
+              </Text>
+            </Inline>
+          </div>
+        )}
         <Box as="form" onSubmit={preventDefault}>
-          {editState?.publishing && (
-            <Delay ms={750}>
-              <Dialog id={`publish-message-${documentId}`}>
-                <Box padding={4}>
-                  <Flex align="center" direction="column" justify="center">
-                    <Spinner muted />
-                    <Box marginTop={3}>
-                      <Text align="center" muted size={1}>
-                        Please wait while the document is being published…
-                      </Text>
-                    </Box>
-                  </Flex>
-                </Box>
-              </Dialog>
-            </Delay>
-          )}
+          {/*{editState?.publishing && (*/}
+          {/*  <Delay ms={750}>*/}
+          {/*    <Dialog id={`publish-message-${documentId}`}>*/}
+          {/*      <Box padding={4}>*/}
+          {/*        <Flex align="center" direction="column" justify="center">*/}
+          {/*          <Spinner muted />*/}
+          {/*          <Box marginTop={3}>*/}
+          {/*            <Text align="center" muted size={1}>*/}
+          {/*              Please wait while the document is being published…*/}
+          {/*            </Text>*/}
+          {/*          </Box>*/}
+          {/*        </Flex>*/}
+          {/*      </Box>*/}
+          {/*    </Dialog>*/}
+          {/*  </Delay>*/}
+          {/*)}*/}
           {ready ? (
             <FormBuilder
               schema={schema}
@@ -176,7 +186,7 @@ export function FormView(props: FormViewProps) {
               type={documentSchema}
               presence={presence}
               filterField={filterField}
-              readOnly={isReadOnly || editState?.publishing}
+              readOnly={isReadOnly}
               onBlur={handleBlur}
               onFocus={handleFocus}
               focusPath={focusPath}
