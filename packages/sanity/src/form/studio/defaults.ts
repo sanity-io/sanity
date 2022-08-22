@@ -25,5 +25,5 @@ export const defaultRenderItem: RenderItemCallback = (props) => {
 }
 
 export const defaultRenderPreview: RenderPreviewCallback = (props) => {
-  return createElement(defaultResolvePreviewComponent(props.schemaType), props)
+  return createElement(defaultResolvePreviewComponent(), props)
 }
