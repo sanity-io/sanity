@@ -152,19 +152,20 @@ export function FormView(props: FormViewProps) {
       <PresenceOverlay margins={margins}>
         <Box as="form" onSubmit={preventDefault}>
           {editState?.publishing && (
-            <Dialog id={`publish-message-${documentId}`}>
-              <Box padding={4}>
-                <Flex align="center" direction="column" justify="center">
-                  <Spinner muted />
-
-                  <Box marginTop={3}>
-                    <Text align="center" muted size={1}>
-                      Please wait while the document is being published…
-                    </Text>
-                  </Box>
-                </Flex>
-              </Box>
-            </Dialog>
+            <Delay ms={750}>
+              <Dialog id={`publish-message-${documentId}`}>
+                <Box padding={4}>
+                  <Flex align="center" direction="column" justify="center">
+                    <Spinner muted />
+                    <Box marginTop={3}>
+                      <Text align="center" muted size={1}>
+                        Please wait while the document is being published…
+                      </Text>
+                    </Box>
+                  </Flex>
+                </Box>
+              </Dialog>
+            </Delay>
           )}
           {ready ? (
             <FormBuilder
