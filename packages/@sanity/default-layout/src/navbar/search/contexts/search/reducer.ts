@@ -1,5 +1,5 @@
-import type {SearchTerms} from '@sanity/base'
-import type {CurrentUser, ObjectSchemaType} from '@sanity/types'
+import type {SearchTerms, SearchableType} from '@sanity/base'
+import type {CurrentUser} from '@sanity/types'
 import {RecentSearchTerms} from '../../datastores/recentSearches'
 import type {SearchHit} from '../../types'
 import {debugWithName} from '../../utils/debug'
@@ -62,8 +62,8 @@ export type SearchRequestError = {type: 'SEARCH_REQUEST_ERROR'; error: Error}
 export type SearchRequestStart = {type: 'SEARCH_REQUEST_START'}
 export type TermsQuerySet = {type: 'TERMS_QUERY_SET'; query: string}
 export type TermsSet = {type: 'TERMS_SET'; terms: SearchTerms}
-export type TermsTypeAdd = {type: 'TERMS_TYPE_ADD'; schemaType: ObjectSchemaType}
-export type TermsTypeRemove = {type: 'TERMS_TYPE_REMOVE'; schemaType: ObjectSchemaType}
+export type TermsTypeAdd = {type: 'TERMS_TYPE_ADD'; schemaType: SearchableType}
+export type TermsTypeRemove = {type: 'TERMS_TYPE_REMOVE'; schemaType: SearchableType}
 export type TermsTypesClear = {type: 'TERMS_TYPES_CLEAR'}
 
 export type SearchAction =

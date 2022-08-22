@@ -1,5 +1,5 @@
+import type {SearchableType} from '@sanity/base'
 import {CheckmarkIcon} from '@sanity/icons'
-import type {ObjectSchemaType} from '@sanity/types'
 import {Button} from '@sanity/ui'
 import React, {useCallback} from 'react'
 import styled, {css} from 'styled-components'
@@ -10,7 +10,7 @@ interface TypeFilterItemProps {
   index: number
   selected: boolean
   small?: boolean
-  type: ObjectSchemaType
+  type: SearchableType
 }
 
 const TypeFilterItemButton = styled(Button)<{$level: number}>(({$level}) => {
