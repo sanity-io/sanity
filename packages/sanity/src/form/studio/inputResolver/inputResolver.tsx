@@ -21,14 +21,14 @@ import * as is from '../../utils/is'
 import {FormField, FormFieldSet} from '../../components/formField'
 import {PreviewProps} from '../../../components/previews'
 import {SanityPreview} from '../../../preview'
+import {isObjectField} from '../../utils/asserters'
+import {ChangeIndicator} from '../../../components/changeIndicators'
 import {resolveReferenceInput} from './resolveReferenceInput'
 import {resolveArrayInput} from './resolveArrayInput'
 import {resolveStringInput} from './resolveStringInput'
 import {resolveNumberInput} from './resolveNumberInput'
 import {defaultInputs} from './defaultInputs'
 import {getArrayFieldLevel, getObjectFieldLevel} from './helpers'
-import {isObjectField} from '../../utils/asserters'
-import {ChangeIndicator} from '../../../components/changeIndicators'
 
 function resolveComponentFromTypeVariants(
   type: SchemaType
@@ -191,11 +191,6 @@ export function defaultResolveItemComponent(
   return NoopField
 }
 
-// TODO: add PreviewProps interface
-export function defaultResolvePreviewComponent(
-  schemaType: SchemaType
-): React.ComponentType<PreviewProps> {
-  if (schemaType.components?.preview) return schemaType.components.preview
-
-  return SanityPreview as any // TODO
+export function defaultResolvePreviewComponent(): React.ComponentType<PreviewProps> {
+  return SanityPreview as any
 }
