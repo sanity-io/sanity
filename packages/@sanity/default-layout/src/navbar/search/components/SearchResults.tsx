@@ -20,6 +20,28 @@ interface SearchResultsProps {
   setPointerOverlayRef: Dispatch<SetStateAction<HTMLDivElement>>
 }
 
+const SearchResultsDiv = styled.div<{$loading: boolean}>`
+  height: 100%;
+  opacity: ${({$loading}) => ($loading ? 0.5 : 1)};
+  overflow: hidden;
+  position: relative;
+  transition: 300ms opacity;
+  width: 100%;
+`
+
+const VirtualListBox = styled(Box)`
+  height: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+  width: 100%;
+`
+
+const VirtualListChildBox = styled(Box)<{$height: number}>`
+  height: ${({$height}) => `${$height}px`};
+  position: relative;
+  width: 100%;
+`
+
 export function SearchResults({
   onClose,
   setChildContainerRef,
@@ -70,7 +92,7 @@ export function SearchResults({
   }, [dispatch, onChildClick, onClose, recentSearchesStore, terms])
 
   return (
-    <SearchResultsWrapper aria-busy={result.loading} $loading={result.loading}>
+    <SearchResultsDiv aria-busy={result.loading} $loading={result.loading}>
       <PointerOverlay ref={setPointerOverlayRef} />
 
       {result.error ? (
@@ -79,8 +101,8 @@ export function SearchResults({
         <>
           {!!result.hits.length && (
             // (Has search results)
-            <VirtualList ref={childParentRef}>
-              <VirtualListChildren $height={totalSize} paddingBottom={1} ref={setChildContainerRef}>
+            <VirtualListBox ref={childParentRef}>
+              <VirtualListChildBox $height={totalSize} paddingBottom={1} ref={setChildContainerRef}>
                 {virtualItems.map((virtualRow) => {
                   const hit = result.hits[virtualRow.index]
                   return (
@@ -96,35 +118,13 @@ export function SearchResults({
                     />
                   )
                 })}
-              </VirtualListChildren>
-            </VirtualList>
+              </VirtualListChildBox>
+            </VirtualListBox>
           )}
 
           {!result.hits.length && result.loaded && <NoResults />}
         </>
       )}
-    </SearchResultsWrapper>
+    </SearchResultsDiv>
   )
 }
-
-const SearchResultsWrapper = styled.div<{$loading: boolean}>`
-  height: 100%;
-  opacity: ${({$loading}) => ($loading ? 0.5 : 1)};
-  overflow: hidden;
-  position: relative;
-  transition: 300ms opacity;
-  width: 100%;
-`
-
-const VirtualList = styled(Box)`
-  height: 100%;
-  overflow-x: hidden;
-  overflow-y: auto;
-  width: 100%;
-`
-
-const VirtualListChildren = styled(Box)<{$height: number}>`
-  height: ${({$height}) => `${$height}px`};
-  position: relative;
-  width: 100%;
-`

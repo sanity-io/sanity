@@ -13,6 +13,19 @@ interface TypeFilterItemProps {
   type: ObjectSchemaType
 }
 
+const TypeFilterItemButton = styled(Button)<{$level: number}>(({$level}) => {
+  return css`
+    [data-focused='true'][data-level='${$level}'] &,
+    [data-hovered='true'][data-level='${$level}'] & {
+      &[aria-selected='true'] {
+        background: ${({theme}) => theme.sanity.color.button.bleed.default.hovered.bg};
+        // Disable box-shadow to hide the halo effect when we have keyboard focus over a selected <Button>
+        box-shadow: none;
+      }
+    }
+  `
+})
+
 export function TypeFilterItem({index, selected, small, type}: TypeFilterItemProps) {
   const {dispatch} = useSearchState()
 
@@ -36,7 +49,7 @@ export function TypeFilterItem({index, selected, small, type}: TypeFilterItemPro
   }, [handleTypeAdd, handleTypeRemove, onChildClick, selected])
 
   return (
-    <TypeFilterItemWrapper
+    <TypeFilterItemButton
       $level={level}
       aria-checked={selected}
       data-index={index}
@@ -54,16 +67,3 @@ export function TypeFilterItem({index, selected, small, type}: TypeFilterItemPro
     />
   )
 }
-
-const TypeFilterItemWrapper = styled(Button)<{$level: number}>(({$level}) => {
-  return css`
-    [data-focused='true'][data-level='${$level}'] &,
-    [data-hovered='true'][data-level='${$level}'] & {
-      &[aria-selected='true'] {
-        background: ${({theme}) => theme.sanity.color.button.bleed.default.hovered.bg};
-        // Disable box-shadow to hide the halo effect when we have keyboard focus over a selected <Button>
-        box-shadow: none;
-      }
-    }
-  `
-})

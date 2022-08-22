@@ -11,6 +11,16 @@ interface TypePillsProps {
 
 const DEFAULT_AVAILABLE_CHARS = 40 // excluding "+x more" suffix
 
+const PillCard = styled(Card)<{$collapsible?: boolean}>`
+  background: ${({theme}) => theme.sanity.color.selectable.primary.enabled.code.bg};
+  flex-shrink: ${({$collapsible}) => ($collapsible ? 1 : 0)};
+  overflow: hidden;
+`
+
+const RemainingCountBox = styled(Box)`
+  flex-shrink: 0;
+`
+
 export function TypePills({availableCharacters = DEFAULT_AVAILABLE_CHARS, types}: TypePillsProps) {
   /**
    * Get the total number of visible document types whose titles fit within `availableCharacters` count.
@@ -51,16 +61,16 @@ export function TypePills({availableCharacters = DEFAULT_AVAILABLE_CHARS, types}
         const title = typeTitle(schemaType)
 
         return (
-          <Pill $collapsible={visibleTypes.length === 1} key={title} padding={2} radius={2}>
+          <PillCard $collapsible={visibleTypes.length === 1} key={title} padding={2} radius={2}>
             <TextWithTone size={1} textOverflow="ellipsis" tone="primary" weight="medium">
               {title}
             </TextWithTone>
-          </Pill>
+          </PillCard>
         )
       })}
       {!!remainingCount && (
         <Text muted size={1}>
-          <RemainingCount marginLeft={1}>+{remainingCount} more</RemainingCount>
+          <RemainingCountBox marginLeft={1}>+{remainingCount} more</RemainingCountBox>
         </Text>
       )}
     </Flex>
@@ -70,13 +80,3 @@ export function TypePills({availableCharacters = DEFAULT_AVAILABLE_CHARS, types}
 function typeTitle(schemaType: SchemaType) {
   return schemaType.title ?? schemaType.name
 }
-
-const Pill = styled(Card)<{$collapsible?: boolean}>`
-  background: ${({theme}) => theme.sanity.color.selectable.primary.enabled.code.bg};
-  flex-shrink: ${({$collapsible}) => ($collapsible ? 1 : 0)};
-  overflow: hidden;
-`
-
-const RemainingCount = styled(Box)`
-  flex-shrink: 0;
-`

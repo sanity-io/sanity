@@ -16,6 +16,41 @@ export interface RecentSearchesProps {
 
 const DEFAULT_COMBINED_TYPE_COUNT = 40
 
+const RecentSearchItemButton = styled(Button)<{$level: number}>(({$level}) => {
+  return css`
+    [data-focused='true'][data-level='${$level}'] &,
+    [data-hovered='true'][data-level='${$level}'] & {
+      &[aria-selected='true'] {
+        background: ${({theme}) => theme.sanity.color.button.bleed.default.hovered.bg};
+        // Disable box-shadow to hide the halo effect when we have keyboard focus over a selected <Button>
+        box-shadow: none;
+      }
+    }
+  `
+})
+
+const SearchItemPillsBox = styled(Box)`
+  flex-shrink: 3;
+`
+
+const SearchItemQueryBox = styled(Box)`
+  flex-shrink: 2;
+`
+
+const CloseButtonDiv = styled.div`
+  opacity: 0.8;
+  visibility: hidden;
+
+  @media (hover: hover) {
+    ${RecentSearchItemButton}:hover & {
+      visibility: visible;
+    }
+    &:hover {
+      opacity: 0.4;
+    }
+  }
+`
+
 export function RecentSearchItem(props: RecentSearchesProps) {
   const {
     index,
@@ -38,7 +73,7 @@ export function RecentSearchItem(props: RecentSearchesProps) {
   const availableCharacters = maxVisibleTypePillChars - value.query.length
 
   return (
-    <RecentSearchItemWrapper
+    <RecentSearchItemButton
       $level={level}
       data-index={index}
       mode="bleed"
@@ -57,61 +92,26 @@ export function RecentSearchItem(props: RecentSearchesProps) {
         </Box>
         <Flex align="center" flex={1} gap={3} justify="flex-start" marginLeft={3}>
           {value.query && (
-            <SearchItemQueryGroup marginLeft={1}>
+            <SearchItemQueryBox marginLeft={1}>
               <Text textOverflow="ellipsis">{value.query}</Text>
-            </SearchItemQueryGroup>
+            </SearchItemQueryBox>
           )}
           {typesSelected && (
-            <SearchItemPillsGroup>
+            <SearchItemPillsBox>
               <TypePills availableCharacters={availableCharacters} types={value.types} />
-            </SearchItemPillsGroup>
+            </SearchItemPillsBox>
           )}
         </Flex>
 
         {/* TODO: this is neither semantic nor accessible, consider revising */}
-        <CloseButton onClick={onDelete}>
+        <CloseButtonDiv onClick={onDelete}>
           <Flex padding={2}>
             <Text size={1}>
               <CloseIcon />
             </Text>
           </Flex>
-        </CloseButton>
+        </CloseButtonDiv>
       </Flex>
-    </RecentSearchItemWrapper>
+    </RecentSearchItemButton>
   )
 }
-
-const RecentSearchItemWrapper = styled(Button)<{$level: number}>(({$level}) => {
-  return css`
-    [data-focused='true'][data-level='${$level}'] &,
-    [data-hovered='true'][data-level='${$level}'] & {
-      &[aria-selected='true'] {
-        background: ${({theme}) => theme.sanity.color.button.bleed.default.hovered.bg};
-        // Disable box-shadow to hide the halo effect when we have keyboard focus over a selected <Button>
-        box-shadow: none;
-      }
-    }
-  `
-})
-
-const SearchItemPillsGroup = styled(Box)`
-  flex-shrink: 3;
-`
-
-const SearchItemQueryGroup = styled(Box)`
-  flex-shrink: 2;
-`
-
-const CloseButton = styled.div`
-  opacity: 0.8;
-  visibility: hidden;
-
-  @media (hover: hover) {
-    ${RecentSearchItemWrapper}:hover & {
-      visibility: visible;
-    }
-    &:hover {
-      opacity: 0.4;
-    }
-  }
-`

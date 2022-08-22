@@ -1,19 +1,19 @@
 /* eslint-disable import/prefer-default-export */
 import type {SanityClient} from '@sanity/client'
-import type {ObjectSchemaType} from '@sanity/types'
 import type {Observable} from 'rxjs'
 import sortBy from 'lodash/sortBy'
 import {map, tap} from 'rxjs/operators'
 import {removeDupes} from '../../util/draftUtils'
 import {applyWeights} from './applyWeights'
-import {SearchHit, SearchOptions, SearchTerms, WeightedHit, WeightedSearchOptions} from './types'
+import {
+  SearchableType,
+  SearchHit,
+  SearchOptions,
+  SearchTerms,
+  WeightedHit,
+  WeightedSearchOptions,
+} from './types'
 import {createSearchQuery} from './createSearchQuery'
-
-type ObjectSchema = {
-  name: string
-  // eslint-disable-next-line camelcase
-  __experimental_search: ObjectSchemaType['__experimental_search']
-}
 
 type SearchFunction = (
   searchTerms: string | SearchTerms,
@@ -23,8 +23,8 @@ type SearchFunction = (
 
 function getSearchTerms(
   searchParams: string | SearchTerms,
-  types: ObjectSchema[]
-): Omit<SearchTerms, 'types'> & {types: ObjectSchema[]} {
+  types: SearchableType[]
+): Omit<SearchTerms, 'types'> & {types: SearchableType[]} {
   if (typeof searchParams === 'string') {
     return {
       query: searchParams,
@@ -35,7 +35,7 @@ function getSearchTerms(
 }
 
 export function createWeightedSearch(
-  types: ObjectSchema[],
+  types: SearchableType[],
   client: SanityClient,
   commonOpts: WeightedSearchOptions = {}
 ): SearchFunction {

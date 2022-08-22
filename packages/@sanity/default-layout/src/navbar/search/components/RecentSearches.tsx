@@ -11,16 +11,26 @@ interface RecentSearchesProps {
   setChildContainerRef: Dispatch<SetStateAction<HTMLDivElement>>
   setPointerOverlayRef: Dispatch<SetStateAction<HTMLDivElement>>
   showFiltersOnClick?: boolean
+  onClear?: () => void
 }
 
 // Max character count of selected document types (combined) by breakpoint
 const MAX_COMBINED_TYPE_COUNT_SMALL = 20
 const MAX_COMBINED_TYPE_COUNT_LARGE = 40
 
+const RecentSearchesBox = styled(Box)`
+  position: relative;
+`
+
+const RecentSearchesInnerBox = styled(Box)`
+  position: relative;
+`
+
 export function RecentSearches({
   setChildContainerRef,
   setPointerOverlayRef,
   showFiltersOnClick,
+  onClear,
 }: RecentSearchesProps) {
   const {
     dispatch,
@@ -38,7 +48,8 @@ export function RecentSearches({
     // Remove terms from Local Storage
     const updatedRecentSearches = recentSearchesStore?.removeSearchTerms()
     dispatch({recentSearches: updatedRecentSearches, type: 'RECENT_SEARCHES_SET'})
-  }, [dispatch, recentSearchesStore])
+    onClear?.()
+  }, [dispatch, recentSearchesStore, onClear])
 
   const handleRecentSearchClick = useCallback(
     (searchTerms: SearchTerms) => {
@@ -65,7 +76,7 @@ export function RecentSearches({
   )
 
   return (
-    <RecentSearchesWrapper flex={1}>
+    <RecentSearchesBox flex={1}>
       {recentSearches.length ? (
         <>
           <Box paddingBottom={2} paddingTop={4} paddingX={3}>
@@ -73,7 +84,7 @@ export function RecentSearches({
               Recent searches
             </Label>
           </Box>
-          <RecentSearchesInner>
+          <RecentSearchesInnerBox>
             <PointerOverlay ref={setPointerOverlayRef} />
             <Stack paddingX={1} paddingTop={1} ref={setChildContainerRef} space={1}>
               {recentSearches?.map((recentSearch, index) => (
@@ -88,7 +99,7 @@ export function RecentSearches({
                 />
               ))}
             </Stack>
-          </RecentSearchesInner>
+          </RecentSearchesInnerBox>
           <Box padding={1}>
             <Button
               justify="flex-start"
@@ -108,14 +119,6 @@ export function RecentSearches({
       ) : (
         <Instructions />
       )}
-    </RecentSearchesWrapper>
+    </RecentSearchesBox>
   )
 }
-
-const RecentSearchesWrapper = styled(Box)`
-  position: relative;
-`
-
-const RecentSearchesInner = styled(Box)`
-  position: relative;
-`

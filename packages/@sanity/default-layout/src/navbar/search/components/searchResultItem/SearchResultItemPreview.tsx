@@ -17,6 +17,22 @@ interface SearchResultItemPreviewProps {
   schemaType: SchemaType
 }
 
+/**
+ * Brute force all nested boxes on iOS to use `background-attachment: scroll`, as
+ * `background-attachment: fixed` (what Sanity UI's <Skeleton> components) isn't yet supported on iOS Safari.
+ */
+const SearchResultItemPreviewBox = styled(Box)`
+  @supports (-webkit-overflow-scrolling: touch) {
+    * [data-ui='Box'] {
+      background-attachment: scroll;
+    }
+  }
+`
+
+const TypeLabel = styled(Label)`
+  max-width: 150px;
+`
+
 export default function SearchResultItemPreview({
   documentId,
   presence,
@@ -57,7 +73,7 @@ export default function SearchResultItemPreview({
   }, [document, documentId, schemaType.name])
 
   return (
-    <SearchResultItemPreviewWrapper>
+    <SearchResultItemPreviewBox>
       <SanityDefaultPreview
         isPlaceholder={document?.isLoading ?? true}
         layout="default"
@@ -65,22 +81,6 @@ export default function SearchResultItemPreview({
         status={status}
         value={sanityDocument}
       />
-    </SearchResultItemPreviewWrapper>
+    </SearchResultItemPreviewBox>
   )
 }
-
-/**
- * Brute force all nested boxes on iOS to use `background-attachment: scroll`, as
- * `background-attachment: fixed` (what Sanity UI's <Skeleton> components) isn't yet supported on iOS Safari.
- */
-const SearchResultItemPreviewWrapper = styled(Box)`
-  @supports (-webkit-overflow-scrolling: touch) {
-    * [data-ui='Box'] {
-      background-attachment: scroll;
-    }
-  }
-`
-
-const TypeLabel = styled(Label)`
-  max-width: 150px;
-`

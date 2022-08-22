@@ -24,6 +24,46 @@ export interface SearchPopoverProps {
   position: PopoverPosition
 }
 
+const Overlay = styled.div`
+  background-color: ${({theme}: {theme: Theme}) => theme.sanity.color.base.shadow.ambient};
+  bottom: 0;
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+`
+
+const SearchContentBox = styled(Box)`
+  overflow-x: hidden;
+  overflow-y: auto;
+  position: relative;
+`
+
+const SearchPopoverCard = styled(Card)<{$position: PopoverPosition}>`
+  ${({$position}) =>
+    $position.x
+      ? css`
+          left: ${$position.x}px;
+        `
+      : css`
+          left: 50%;
+          transform: translateX(-50%);
+        `}
+  display: flex !important;
+  flex-direction: column;
+  max-height: ${({$position}) =>
+    `min(calc(100vh - ${$position.y}px - ${POPOVER_INPUT_PADDING}px), ${POPOVER_MAX_HEIGHT}px)`};
+  position: absolute;
+  top: ${({$position}) => $position.y}px;
+  width: min(calc(100vw - ${POPOVER_INPUT_PADDING * 2}px), ${POPOVER_MAX_WIDTH}px);
+`
+
+const TypeFilterCard = styled(Card)`
+  border-left: 1px solid ${({theme}) => theme.sanity.color.base.border};
+  max-width: 250px;
+  width: 100%;
+`
+
 export function SearchPopover({onClose, onOpen, open, position}: SearchPopoverProps) {
   const [childContainerElement, setChildContainerRef] = useState<HTMLDivElement | null>(null)
   const [containerElement, setContainerRef] = useState<HTMLDivElement | null>(null)
@@ -77,6 +117,10 @@ export function SearchPopover({onClose, onOpen, open, position}: SearchPopoverPr
 
   useClickOutside(handleClose, [containerElement])
 
+  const handleClearRecentSearches = useCallback(() => {
+    headerInputElement?.focus()
+  }, [headerInputElement])
+
   if (!open) {
     return null
   }
@@ -100,7 +144,7 @@ export function SearchPopover({onClose, onOpen, open, position}: SearchPopoverPr
           pointerOverlayElement={pointerOverlayElement}
           virtualList={hasValidTerms}
         >
-          <SearchPopoverWrapper
+          <SearchPopoverCard
             $position={position}
             overflow="hidden"
             radius={2}
@@ -114,7 +158,7 @@ export function SearchPopover({onClose, onOpen, open, position}: SearchPopoverPr
             {/* Reverse flex direction is used to ensure filters are focusable before recent searches */}
             <Flex align="stretch" direction="row-reverse">
               <SearchPopoverFilters />
-              <SearchContentWrapper flex={1}>
+              <SearchContentBox flex={1}>
                 {hasValidTerms ? (
                   <SearchResults
                     onClose={handleClose}
@@ -125,12 +169,13 @@ export function SearchPopover({onClose, onOpen, open, position}: SearchPopoverPr
                   <RecentSearches
                     setChildContainerRef={setChildContainerRef}
                     setPointerOverlayRef={setPointerOverlayRef}
+                    onClear={handleClearRecentSearches}
                     showFiltersOnClick
                   />
                 )}
-              </SearchContentWrapper>
+              </SearchContentBox>
             </Flex>
-          </SearchPopoverWrapper>
+          </SearchPopoverCard>
         </CommandListProvider>
       </FocusLock>
     </Portal>
@@ -147,48 +192,8 @@ function SearchPopoverFilters() {
   }
 
   return (
-    <TypeFilterWrapper tone="transparent">
+    <TypeFilterCard tone="transparent">
       <TypeFilters small />
-    </TypeFilterWrapper>
+    </TypeFilterCard>
   )
 }
-
-const Overlay = styled.div`
-  background-color: ${({theme}: {theme: Theme}) => theme.sanity.color.base.shadow.ambient};
-  bottom: 0;
-  left: 0;
-  position: absolute;
-  right: 0;
-  top: 0;
-`
-
-const SearchContentWrapper = styled(Box)`
-  overflow-x: hidden;
-  overflow-y: auto;
-  position: relative;
-`
-
-const SearchPopoverWrapper = styled(Card)<{$position: PopoverPosition}>`
-  ${({$position}) =>
-    $position.x
-      ? css`
-          left: ${$position.x}px;
-        `
-      : css`
-          left: 50%;
-          transform: translateX(-50%);
-        `}
-  display: flex !important;
-  flex-direction: column;
-  max-height: ${({$position}) =>
-    `min(calc(100vh - ${$position.y}px - ${POPOVER_INPUT_PADDING}px), ${POPOVER_MAX_HEIGHT}px)`};
-  position: absolute;
-  top: ${({$position}) => $position.y}px;
-  width: min(calc(100vw - ${POPOVER_INPUT_PADDING * 2}px), ${POPOVER_MAX_WIDTH}px);
-`
-
-const TypeFilterWrapper = styled(Card)`
-  border-left: 1px solid ${({theme}) => theme.sanity.color.base.border};
-  max-width: 250px;
-  width: 100%;
-`

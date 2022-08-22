@@ -18,6 +18,27 @@ interface TypeFiltersProps {
   small?: boolean
 }
 
+const ClearButtonBox = styled(Box)`
+  border-top: 1px solid ${({theme}) => theme.sanity.color.base.border};
+`
+
+const SearchHeaderBox = styled(Box)`
+  border-bottom: 1px solid ${({theme}) => theme.sanity.color.base.border};
+`
+
+const TypeFiltersContentBox = styled(Box)`
+  overflow-x: hidden;
+  overflow-y: scroll;
+`
+
+const TypeFiltersContentDiv = styled.div`
+  position: relative;
+`
+
+const TypeFiltersFlex = styled(Flex)<{$lightHighlight: boolean}>`
+  height: 100%;
+`
+
 export function TypeFilters({small}: TypeFiltersProps) {
   const [childContainerElement, setChildContainerRef] = useState<HTMLDivElement | null>(null)
   const [containerElement, setContainerRef] = useState<HTMLDivElement | null>(null)
@@ -65,9 +86,9 @@ export function TypeFilters({small}: TypeFiltersProps) {
       level={1}
       pointerOverlayElement={pointerOverlayElement}
     >
-      <TypeFiltersWrapper $lightHighlight={!small} direction="column" ref={setContainerRef}>
+      <TypeFiltersFlex $lightHighlight={!small} direction="column" ref={setContainerRef}>
         {/* Search header */}
-        <SearchHeaderWrapper padding={padding}>
+        <SearchHeaderBox padding={padding}>
           <CustomTextInput
             autoComplete="off"
             border={false}
@@ -84,10 +105,10 @@ export function TypeFilters({small}: TypeFiltersProps) {
             radius={2}
             value={typeFilter}
           />
-        </SearchHeaderWrapper>
+        </SearchHeaderBox>
 
-        <TypeFiltersContent flex={1} padding={padding} ref={setFiltersContentRef}>
-          <TypeFiltersContentWrap>
+        <TypeFiltersContentBox flex={1} padding={padding} ref={setFiltersContentRef}>
+          <TypeFiltersContentDiv>
             <PointerOverlay ref={setPointerOverlayRef} />
 
             {/* Selectable document types */}
@@ -102,7 +123,7 @@ export function TypeFilters({small}: TypeFiltersProps) {
                 />
               ))}
             </Stack>
-          </TypeFiltersContentWrap>
+          </TypeFiltersContentDiv>
 
           {/* No results */}
           {!selectableDocumentTypes.length && (
@@ -112,11 +133,11 @@ export function TypeFilters({small}: TypeFiltersProps) {
               </Text>
             </Box>
           )}
-        </TypeFiltersContent>
+        </TypeFiltersContentBox>
 
         {/* Clear button */}
         {!typeFilter && selectedTypes.length > 0 && (
-          <ClearButtonWrapper padding={padding}>
+          <ClearButtonBox padding={padding}>
             <Stack>
               <Button
                 aria-label="Clear checked filters"
@@ -130,30 +151,9 @@ export function TypeFilters({small}: TypeFiltersProps) {
                 tone="primary"
               />
             </Stack>
-          </ClearButtonWrapper>
+          </ClearButtonBox>
         )}
-      </TypeFiltersWrapper>
+      </TypeFiltersFlex>
     </CommandListProvider>
   )
 }
-
-const ClearButtonWrapper = styled(Box)`
-  border-top: 1px solid ${({theme}) => theme.sanity.color.base.border};
-`
-
-const SearchHeaderWrapper = styled(Box)`
-  border-bottom: 1px solid ${({theme}) => theme.sanity.color.base.border};
-`
-
-const TypeFiltersContent = styled(Box)`
-  overflow-x: hidden;
-  overflow-y: scroll;
-`
-
-const TypeFiltersContentWrap = styled.div`
-  position: relative;
-`
-
-const TypeFiltersWrapper = styled(Flex)<{$lightHighlight: boolean}>`
-  height: 100%;
-`

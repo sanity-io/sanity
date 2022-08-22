@@ -1,7 +1,8 @@
 /* eslint-disable camelcase */
 import {createSearchQuery, DEFAULT_LIMIT} from './createSearchQuery'
+import {SearchableType} from './types'
 
-const testType = {
+const testType: SearchableType = {
   name: 'basic-schema-test',
   __experimental_search: [
     {

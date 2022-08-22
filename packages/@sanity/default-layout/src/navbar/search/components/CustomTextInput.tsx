@@ -6,19 +6,7 @@ interface CustomTextInputProps extends ComponentProps<typeof TextInput> {
   smallClearButton?: boolean
 }
 
-export const CustomTextInput = forwardRef<HTMLInputElement, CustomTextInputProps>(
-  function CustomTextInput(props, ref) {
-    const {smallClearButton, ...rest} = props
-
-    return (
-      <CustomTextInputWrapper smallClearButton={smallClearButton}>
-        <TextInput {...rest} ref={ref} />
-      </CustomTextInputWrapper>
-    )
-  }
-)
-
-const CustomTextInputWrapper = styled(Box)(({smallClearButton}: {smallClearButton: boolean}) => {
+const CustomTextInputBox = styled(Box)(({smallClearButton}: {smallClearButton: boolean}) => {
   return css`
     input + span {
       background: none;
@@ -35,3 +23,15 @@ const CustomTextInputWrapper = styled(Box)(({smallClearButton}: {smallClearButto
     }
   `
 })
+
+export const CustomTextInput = forwardRef<HTMLInputElement, CustomTextInputProps>(
+  function CustomTextInput(props, ref) {
+    const {smallClearButton, ...rest} = props
+
+    return (
+      <CustomTextInputBox smallClearButton={smallClearButton}>
+        <TextInput {...rest} ref={ref} />
+      </CustomTextInputBox>
+    )
+  }
+)

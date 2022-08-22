@@ -24,6 +24,24 @@ interface SearchItemProps extends ResponsivePaddingProps {
   virtualRow: VirtualItem
 }
 
+const SearchResultItemBox = styled(Box)<{$level: number}>(({$level}) => {
+  return css`
+    left: 0;
+    position: absolute;
+    top: 0;
+    width: 100%;
+
+    [data-focused='true'][data-level='${$level}'] &,
+    [data-hovered='true'][data-level='${$level}'] & {
+      &[aria-selected='true'] a {
+        background: ${({theme}) => theme.sanity.color.button.bleed.default.hovered.bg};
+        // Disable box-shadow to hide the halo effect when we have keyboard focus over a selected <Button>
+        box-shadow: none;
+      }
+    }
+  `
+})
+
 export function SearchResultItem({
   data,
   documentId,
@@ -56,7 +74,7 @@ export function SearchResultItem({
   )
 
   return (
-    <SearchResultItemWrapper
+    <SearchResultItemBox
       $level={level}
       data-index={index}
       flex={1}
@@ -84,24 +102,6 @@ export function SearchResultItem({
           schemaType={type}
         />
       </PreviewCard>
-    </SearchResultItemWrapper>
+    </SearchResultItemBox>
   )
 }
-
-const SearchResultItemWrapper = styled(Box)<{$level: number}>(({$level}) => {
-  return css`
-    left: 0;
-    position: absolute;
-    top: 0;
-    width: 100%;
-
-    [data-focused='true'][data-level='${$level}'] &,
-    [data-hovered='true'][data-level='${$level}'] & {
-      &[aria-selected='true'] a {
-        background: ${({theme}) => theme.sanity.color.button.bleed.default.hovered.bg};
-        // Disable box-shadow to hide the halo effect when we have keyboard focus over a selected <Button>
-        box-shadow: none;
-      }
-    }
-  `
-})

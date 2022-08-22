@@ -7,7 +7,7 @@ export function Instructions() {
     <Flex align="center" direction="column" gap={4} paddingX={4} paddingY={5}>
       <Inline space={3}>
         <Text muted>Use the</Text>
-        <Text muted size={2}>
+        <Text muted>
           <ControlsIcon />
         </Text>
         <Text muted>Filter to refine your search</Text>

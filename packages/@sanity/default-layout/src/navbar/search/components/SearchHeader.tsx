@@ -11,6 +11,38 @@ interface SearchHeaderProps {
   setHeaderInputRef: Dispatch<SetStateAction<HTMLInputElement>>
 }
 
+const AlignedSpinner = styled(Spinner)`
+  svg {
+    width: 20px;
+    vertical-align: bottom !important;
+  }
+`
+
+const FilterBox = styled(Box)`
+  position: relative;
+`
+
+const SearchHeaderCard = styled(Card)`
+  flex-shrink: 0;
+`
+
+const NotificationBadge = styled.div`
+  align-items: center;
+  background: ${({theme}) => theme.sanity.color.selectable.primary.enabled.fg};
+  color: ${({theme}) => theme.sanity.color.selectable.primary.selected.fg};
+  border-radius: 100%;
+  display: flex;
+  font-size: calc(8 / 16 * 1rem);
+  font-weight: ${studioTheme.fonts.text.weights.semibold};
+  height: 14px;
+  justify-content: center;
+  pointer-events: none;
+  position: absolute;
+  right: -2px;
+  top: -2px;
+  width: 14px;
+`
+
 export function SearchHeader({onClose, setHeaderInputRef}: SearchHeaderProps) {
   const [filterButtonElement, setFilterButtonRef] = useState<HTMLButtonElement | null>(null)
   const isMountedRef = useRef(false)
@@ -46,7 +78,7 @@ export function SearchHeader({onClose, setHeaderInputRef}: SearchHeaderProps) {
   }, [])
 
   return (
-    <SearchHeaderWrapper>
+    <SearchHeaderCard borderBottom>
       <Flex align="center" flex={1}>
         {/* Search field */}
         <Box
@@ -73,7 +105,7 @@ export function SearchHeader({onClose, setHeaderInputRef}: SearchHeaderProps) {
 
         {/* Filter toggle */}
         <Card borderLeft={!!onClose} padding={onClose ? 2 : 1}>
-          <FilterButton>
+          <FilterBox>
             <Button
               aria-controls="search-type-filters"
               aria-expanded={filtersVisible}
@@ -88,7 +120,7 @@ export function SearchHeader({onClose, setHeaderInputRef}: SearchHeaderProps) {
               tone="default"
             />
             {terms.types.length > 0 && <NotificationBadge>{terms.types.length}</NotificationBadge>}
-          </FilterButton>
+          </FilterBox>
         </Card>
 
         {/* (Fullscreen) Close button */}
@@ -98,39 +130,6 @@ export function SearchHeader({onClose, setHeaderInputRef}: SearchHeaderProps) {
           </Card>
         )}
       </Flex>
-    </SearchHeaderWrapper>
+    </SearchHeaderCard>
   )
 }
-
-const AlignedSpinner = styled(Spinner)`
-  svg {
-    width: 20px;
-    vertical-align: bottom !important;
-  }
-`
-
-const FilterButton = styled(Box)`
-  position: relative;
-`
-
-const SearchHeaderWrapper = styled(Box)`
-  border-bottom: 1px solid ${({theme}) => theme.sanity.color.base.border};
-  flex-shrink: 0;
-`
-
-const NotificationBadge = styled.div`
-  align-items: center;
-  background: ${({theme}) => theme.sanity.color.selectable.primary.enabled.fg};
-  color: ${({theme}) => theme.sanity.color.selectable.primary.selected.fg};
-  border-radius: 100%;
-  display: flex;
-  font-size: calc(8 / 16 * 1rem);
-  font-weight: ${studioTheme.fonts.text.weights.semibold};
-  height: 14px;
-  justify-content: center;
-  pointer-events: none;
-  position: absolute;
-  right: -2px;
-  top: -2px;
-  width: 14px;
-`

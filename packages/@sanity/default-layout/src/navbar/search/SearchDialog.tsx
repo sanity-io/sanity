@@ -18,6 +18,41 @@ interface SearchDialogProps {
   open: boolean
 }
 
+const DialogContentCard = styled(Card)`
+  height: 100%;
+`
+
+const InnerCard = styled(Card)`
+  flex-direction: column;
+  overflow: hidden;
+  pointer-events: all;
+  position: relative;
+`
+
+const SearchDialogBox = styled(Box)`
+  height: 100%;
+  left: 0;
+  overflow: hidden;
+  pointer-events: none;
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 1;
+`
+
+const SearchContentBox = styled(Box)`
+  height: 100%;
+  width: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+`
+
+const StyledDialog = styled(Dialog)`
+  [data-ui='DialogCard'] > [data-ui='Card'] {
+    flex: 1;
+  }
+`
+
 export function SearchDialog({onClose, onOpen, open}: SearchDialogProps) {
   const [childContainerElement, setChildContainerRef] = useState<HTMLDivElement | null>(null)
   const [containerElement, setContainerRef] = useState<HTMLDivElement | null>(null)
@@ -88,10 +123,10 @@ export function SearchDialog({onClose, onOpen, open}: SearchDialogProps) {
     >
       <Portal>
         <FocusLock autoFocus={false} returnFocus>
-          <SearchDialogWrapper ref={setContainerRef}>
+          <SearchDialogBox ref={setContainerRef}>
             <InnerCard display="flex" height="fill" scheme="light" tone="default">
               <SearchHeader onClose={handleClose} setHeaderInputRef={setHeaderInputRef} />
-              <SearchContent flex={1}>
+              <SearchContentBox flex={1}>
                 {hasValidTerms ? (
                   <SearchResults
                     onClose={handleClose}
@@ -104,10 +139,10 @@ export function SearchDialog({onClose, onOpen, open}: SearchDialogProps) {
                     setPointerOverlayRef={setPointerOverlayRef}
                   />
                 )}
-              </SearchContent>
+              </SearchContentBox>
               {filtersVisible && <SearchDialogFilters />}
             </InnerCard>
-          </SearchDialogWrapper>
+          </SearchDialogBox>
         </FocusLock>
       </Portal>
     </CommandListProvider>
@@ -117,68 +152,24 @@ export function SearchDialog({onClose, onOpen, open}: SearchDialogProps) {
 function SearchDialogFilters() {
   const {dispatch} = useSearchState()
 
-  const [dialogElement, setDialogRef] = useState<HTMLDivElement | null>(null)
-
-  /**
-   * Force dialog content to be 100% height
-   */
-  useEffect(() => {
-    const dialogCardInnerElement = dialogElement?.querySelector(
-      '[data-ui="DialogCard"] > [data-ui="Card"]'
-    ) as HTMLElement
-    if (dialogCardInnerElement) {
-      dialogCardInnerElement.style.flex = '1'
-    }
-  }, [dialogElement])
-
   const handleClose = useCallback(() => {
     dispatch({type: 'FILTERS_HIDE'})
   }, [dispatch])
 
   return (
     <FocusLock autoFocus={false}>
-      <Dialog
+      <StyledDialog
         cardRadius={1}
         header="Filter"
         height="fill"
         id="search-filter"
         onClose={handleClose}
-        ref={setDialogRef}
         width={2}
       >
-        <DialogContent tone="default">
+        <DialogContentCard tone="default">
           <TypeFilters />
-        </DialogContent>
-      </Dialog>
+        </DialogContentCard>
+      </StyledDialog>
     </FocusLock>
   )
 }
-
-const DialogContent = styled(Card)`
-  height: 100%;
-`
-
-const InnerCard = styled(Card)`
-  flex-direction: column;
-  overflow: hidden;
-  pointer-events: all;
-  position: relative;
-`
-
-const SearchDialogWrapper = styled(Box)`
-  height: 100%;
-  left: 0;
-  overflow: hidden;
-  pointer-events: none;
-  position: fixed;
-  top: 0;
-  width: 100%;
-  z-index: 1;
-`
-
-const SearchContent = styled(Box)`
-  height: 100%;
-  width: 100%;
-  overflow-x: hidden;
-  overflow-y: auto;
-`

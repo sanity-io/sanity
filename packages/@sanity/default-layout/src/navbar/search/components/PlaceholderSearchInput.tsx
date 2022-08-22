@@ -6,6 +6,26 @@ import styled from 'styled-components'
 import {GLOBAL_SEARCH_KEY, GLOBAL_SEARCH_KEY_MODIFIER} from '../constants'
 import {useSearchState} from '../contexts/search'
 
+const KeyboardShortcutFlex = styled(Flex)`
+  position: absolute;
+  right: 0;
+  top: 0;
+
+  & > :first-child {
+    margin-right: 1px;
+  }
+`
+
+const PlaceholderSearchInputFlex = styled(Flex)`
+  min-width: 253px;
+  max-width: 350px;
+  position: relative;
+`
+
+const PlaceholderTextInput = styled(TextInput)`
+  padding-right: 60px;
+`
+
 export const PlaceholderSearchInput = forwardRef(function DummyInput(
   {onOpen}: {onOpen: () => void},
   ref: Ref<HTMLInputElement>
@@ -33,8 +53,9 @@ export const PlaceholderSearchInput = forwardRef(function DummyInput(
   )
 
   return (
-    <PlaceholderSearchInputWrapper align="center">
+    <PlaceholderSearchInputFlex align="center">
       <PlaceholderTextInput
+        radius={2}
         aria-autocomplete="list"
         aria-expanded="false"
         autoComplete="off"
@@ -48,33 +69,10 @@ export const PlaceholderSearchInput = forwardRef(function DummyInput(
         role="combobox"
         value={terms.query}
       />
-      <KeyboardShortcutGroup marginRight={2}>
+      <KeyboardShortcutFlex align="center" height="fill" marginRight={2}>
         <KBD>{GLOBAL_SEARCH_KEY_MODIFIER.toUpperCase()}</KBD>
         <KBD>{GLOBAL_SEARCH_KEY.toUpperCase()}</KBD>
-      </KeyboardShortcutGroup>
-    </PlaceholderSearchInputWrapper>
+      </KeyboardShortcutFlex>
+    </PlaceholderSearchInputFlex>
   )
 })
-
-const KeyboardShortcutGroup = styled(Flex)`
-  align-items: center;
-  display: flex;
-  height: 100%;
-  position: absolute;
-  right: 0;
-  top: 0;
-
-  & > :first-child {
-    margin-right: 1px;
-  }
-`
-
-const PlaceholderSearchInputWrapper = styled(Flex)`
-  min-width: 253px;
-  max-width: 350px;
-  position: relative;
-`
-
-const PlaceholderTextInput = styled(TextInput)`
-  padding-right: 60px;
-`

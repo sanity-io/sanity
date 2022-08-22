@@ -1,8 +1,14 @@
-import type {ObjectSchemaType} from '@sanity/types'
 import {compact, flatten, flow, toLower, union, uniq} from 'lodash'
 import {joinPath} from '../../util/searchUtils'
 import {tokenize} from '../common/tokenize'
-import {SearchOptions, SearchPath, SearchSpec, SearchTerms, WeightedSearchOptions} from './types'
+import {
+  SearchableType,
+  SearchOptions,
+  SearchPath,
+  SearchSpec,
+  SearchTerms,
+  WeightedSearchOptions,
+} from './types'
 
 export interface SearchParams {
   __types: string[]
@@ -19,12 +25,6 @@ export interface SearchQuery {
   terms: string[]
 }
 
-type ObjectSchema = {
-  name: string
-  // eslint-disable-next-line camelcase
-  __experimental_search: ObjectSchemaType['__experimental_search']
-}
-
 export const DEFAULT_LIMIT = 1000
 
 const combinePaths = flow([flatten, union, compact])
@@ -33,7 +33,7 @@ const pathWithMapper = ({mapWith, path}: SearchPath): string =>
   mapWith ? `${mapWith}(${path})` : path
 
 export function createSearchQuery(
-  searchTerms: Omit<SearchTerms, 'types'> & {types: ObjectSchema[]},
+  searchTerms: Omit<SearchTerms, 'types'> & {types: SearchableType[]},
   searchOpts: SearchOptions & WeightedSearchOptions = {}
 ): SearchQuery {
   const {filter, params, tag} = searchOpts

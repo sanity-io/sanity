@@ -4,6 +4,10 @@ import styled from 'styled-components'
 import {useSearchState} from '../contexts/search'
 import {TypePills} from './TypePills'
 
+const Semibold = styled.span`
+  font-weight: ${({theme}: {theme: Theme}) => theme.sanity.fonts.text.weights.semibold};
+`
+
 export function NoResults() {
   const {state} = useSearchState()
 
@@ -27,7 +31,3 @@ export function NoResults() {
     </Flex>
   )
 }
-
-const Semibold = styled.span`
-  font-weight: ${({theme}: {theme: Theme}) => theme.sanity.fonts.text.weights.semibold};
-`

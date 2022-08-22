@@ -1,13 +1,22 @@
-import {ObjectSchemaType} from '@sanity/types'
+import {ExperimentalSearchPath} from '@sanity/types'
 
 /**
  * @internal
  */
 export interface SearchTerms {
   query: string
-  types: ObjectSchemaType[]
+  types: SearchableType[]
   limit?: number
   offset?: number
+}
+
+/**
+ * @internal
+ */
+export interface SearchableType {
+  name: string
+  // eslint-disable-next-line camelcase
+  __experimental_search: ExperimentalSearchPath[]
 }
 
 /**
