@@ -22,6 +22,7 @@ import {FormField, FormFieldSet} from '../../components/formField'
 import {PreviewProps} from '../../../components/previews'
 import {SanityPreview} from '../../../preview'
 import {ChangeIndicator} from '../../../components/changeIndicators'
+import {DiffComponent, DiffComponentOptions, resolveDiffComponent} from '../../../field'
 import {resolveReferenceInput} from './resolveReferenceInput'
 import {resolveArrayInput} from './resolveArrayInput'
 import {resolveStringInput} from './resolveStringInput'
@@ -187,4 +188,12 @@ export function defaultResolveItemComponent(
 
 export function defaultResolvePreviewComponent(): React.ComponentType<PreviewProps> {
   return SanityPreview as any
+}
+
+export function defaultResolveDiffComponent(
+  schemaType: SchemaType
+): DiffComponent | DiffComponentOptions | undefined {
+  if (schemaType.components?.diff) return schemaType.components.diff
+
+  return resolveDiffComponent(schemaType)
 }

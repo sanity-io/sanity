@@ -4,8 +4,10 @@ import {
   RenderInputCallback,
   RenderItemCallback,
   RenderPreviewCallback,
+  RenderDiffCallback,
 } from '../types'
 import {
+  defaultResolveDiffComponent,
   defaultResolveFieldComponent,
   defaultResolveInputComponent,
   defaultResolveItemComponent,
@@ -26,4 +28,8 @@ export const defaultRenderItem: RenderItemCallback = (props) => {
 
 export const defaultRenderPreview: RenderPreviewCallback = (props) => {
   return createElement(defaultResolvePreviewComponent(), props)
+}
+
+export const defaultRenderDiff: RenderDiffCallback = (props) => {
+  return createElement(defaultResolveDiffComponent(props.schemaType), props)
 }
