@@ -94,6 +94,8 @@ const DEBUG_INPUT_TYPES = [
   'uploadsTest',
   'validationTest',
   'withDocumentTest',
+  'arrayExperimentalSearch',
+  'arrayPreviewSelect',
 ]
 
 const CI_INPUT_TYPES = ['conditionalFieldset', 'validationCI']

@@ -32,7 +32,7 @@ export const topLevelPrimitiveArrayType = {
   ],
 }
 
-export default {
+const arraysTest = {
   name: 'arraysTest',
   type: 'document',
   title: 'Arrays test',
@@ -521,3 +521,94 @@ export default {
     },
   ],
 }
+
+const arraySearchBase = {
+  type: 'document',
+  fields: [
+    {
+      name: 'title',
+      title: 'Title',
+      type: 'string',
+    },
+    {
+      name: 'stringArray',
+      title: 'String array',
+      type: 'array',
+      of: [{type: 'string'}],
+      options: {
+        list: [
+          {title: 'Cats', value: 'cats'},
+          {title: 'Dogs', value: 'dogs'},
+        ],
+      },
+    },
+    {
+      name: 'bookArray',
+      title: 'Book array',
+      type: 'array',
+      of: [{type: 'book'}],
+    },
+  ],
+}
+
+export const arrayExperimentalSearch = {
+  ...arraySearchBase,
+  icon: OlistIcon,
+  name: 'arrayExperimentalSearch',
+  title: 'Arrays: Experimental search paths',
+  // eslint-disable-next-line camelcase
+  __experimental_search: [
+    {
+      path: ['title'],
+      weight: 1,
+    },
+    {
+      //boost this to the top to test that it works
+      path: ['stringArray', 0],
+      weight: 100,
+    },
+    {
+      //boost this to the top to test that it works
+      path: ['bookArray', 0, 'title'],
+      weight: 1000,
+    },
+  ],
+  preview: {
+    select: {
+      title: 'title',
+      subtitle: 'bookArray.0.title',
+      description: 'stringArray.0',
+    },
+    prepare: ({title, subtitle, description}) => ({
+      title: `${title} (weight 1)`,
+      subtitle: [
+        subtitle && `${subtitle} (weight 100)`,
+        description && `${description} (weight 1000)`,
+      ]
+        .filter(Boolean)
+        .join(' | '),
+    }),
+  },
+}
+
+export const arrayPreviewSelect = {
+  ...arraySearchBase,
+  icon: OlistIcon,
+  name: 'arrayPreviewSelect',
+  title: 'Arrays: Preview select paths',
+  preview: {
+    select: {
+      title: 'bookArray.0.title',
+      subtitle: 'stringArray.0',
+      description: 'title',
+    },
+    prepare: ({title, subtitle, description}) => ({
+      title: `${title} (weight 10)`,
+      subtitle: [subtitle && `${subtitle} (weight 5)`, description && `${description} (weight 1.5)`]
+        .filter(Boolean)
+        .join(' | '),
+    }),
+  },
+}
+
+export default arraysTest

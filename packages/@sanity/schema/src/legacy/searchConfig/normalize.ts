@@ -15,8 +15,16 @@ export function normalizeSearchConfigs(configs) {
     }
     return {
       weight: 'weight' in conf ? conf.weight : 1,
-      path: toPath(conf.path),
+      path: toPath(conf.path).map(stringsToNumbers),
       mapWith: typeof conf.mapWith === 'string' ? conf.mapWith : undefined,
     }
   })
+}
+
+export function stringsToNumbers(pathSegment: string | number): string | number {
+  const pathAsNumber = Number(pathSegment)
+  if (!Number.isNaN(pathAsNumber)) {
+    return pathAsNumber
+  }
+  return pathSegment
 }
