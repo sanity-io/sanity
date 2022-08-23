@@ -6,7 +6,8 @@ import codeInputType from 'part:@sanity/form-builder/input/code/schema'
 import arrays, {
   topLevelArrayType,
   topLevelPrimitiveArrayType,
-  arrayWithBrokenSearchConfig,
+  arrayPreviewSelect,
+  arrayExperimentalSearch,
 } from './standard/arrays'
 import booleans from './standard/booleans'
 import date from './standard/date'
@@ -180,7 +181,8 @@ export default createSchema({
     texts,
     topLevelArrayType,
     topLevelPrimitiveArrayType,
-    arrayWithBrokenSearchConfig,
+    arrayPreviewSelect,
+    arrayExperimentalSearch,
     typeWithNoToplevelStrings,
     uploads,
     urls,

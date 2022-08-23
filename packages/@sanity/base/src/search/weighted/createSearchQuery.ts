@@ -40,8 +40,7 @@ function createSearchSpec(types: SearchableType[], optimizeIndexedPaths) {
           hasIndexedPaths = true
           // putting [number] in the first filter of a query makes the whole query unoptimized by content-lake,
           // killing performance
-          // doing a second filter, after limiting when config contains indexed terms,
-          // fixes that at the cost of doubling query payload
+          // as a workaround we translate numbers to array syntax so we at least get some hits with decent performance for now
           if (optimizeIndexedPaths) {
             return [] as []
           }
@@ -57,7 +56,6 @@ function createSearchSpec(types: SearchableType[], optimizeIndexedPaths) {
   }))
   return {
     spec,
-    // we only add a second optimization filter if we found indexed paths in __experimental_search config
     hasIndexedPaths,
   }
 }
@@ -107,7 +105,8 @@ export function createSearchQuery(
   const query =
     `*[${filters.join(' && ')}]` +
     `[$__offset...$__limit]` +
-    `${hasIndexedPaths ? `[${createConstraints(exactSearchSpec).join(' && ')}]` : ''}` +
+    // the following would improve search quality for paths-with-numbers, but increases the size of the query by up to 50%
+    // `${hasIndexedPaths ? `[${createConstraints(exactSearchSpec).join(' && ')}]` : ''}` +
     `{_type, _id, ${selection}}`
 
   const offset = searchTerms.offset ?? 0

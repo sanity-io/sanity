@@ -50,13 +50,17 @@ describe('createSearchQuery', () => {
     })
 
     expect(query).toEqual(
+      /* Putting [number] in the filter of a query makes the whole query unoptimized by content-lake, killing performance.
+       * As a workaround, we replace numbers with [] array syntax, so we at least get hits when the path matches anywhere in the array.
+       * This is an improvement over before, where an illegal term was used (number-as-string, ala ["0"]),
+       * which lead to no hits at all. */
+
       '*[_type in $__types && (cover[].cards[].title match $t0) && (cover[].cards[].title match $t1)]' +
         '[$__offset...$__limit]' +
-        // putting [number] in the first filter of a query makes the whole query unoptimized by content-lake,
-        // killing performance
-        // doing a second filter, after limiting when config contains indexed terms,
-        // fixes that at the cost of doubling query payload
-        '[(cover[0].cards[0].title match $t0) && (cover[0].cards[0].title match $t1)]' +
+        // at this point we could refilter using cover[0].cards[0].title.
+        // This solution was discarded at it would increase the size of the query payload by up to 50%
+
+        // we still map out the path with number
         '{_type, _id, ...select(_type == "numbers-in-path" => { "w0": cover[0].cards[0].title })}'
     )
   })

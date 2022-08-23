@@ -522,11 +522,40 @@ const arraysTest = {
   ],
 }
 
-export const arrayWithBrokenSearchConfig = {
+const arraySearchBase = {
   type: 'document',
+  fields: [
+    {
+      name: 'title',
+      title: 'Title',
+      type: 'string',
+    },
+    {
+      name: 'stringArray',
+      title: 'String array',
+      type: 'array',
+      of: [{type: 'string'}],
+      options: {
+        list: [
+          {title: 'Cats', value: 'cats'},
+          {title: 'Dogs', value: 'dogs'},
+        ],
+      },
+    },
+    {
+      name: 'bookArray',
+      title: 'Book array',
+      type: 'array',
+      of: [{type: 'book'}],
+    },
+  ],
+}
+
+export const arrayExperimentalSearch = {
+  ...arraySearchBase,
   icon: OlistIcon,
-  name: 'arrayWithBrokenSearchConfig',
-  title: 'Search config with path with numbers',
+  name: 'arrayExperimentalSearch',
+  title: 'Arrays: Experimental search paths',
   // eslint-disable-next-line camelcase
   __experimental_search: [
     {
@@ -548,36 +577,38 @@ export const arrayWithBrokenSearchConfig = {
     select: {
       title: 'title',
       subtitle: 'bookArray.0.title',
+      description: 'stringArray.0',
     },
+    prepare: ({title, subtitle, description}) => ({
+      title: `${title} (weight 1)`,
+      subtitle: [
+        subtitle && `${subtitle} (weight 100)`,
+        description && `${description} (weight 1000)`,
+      ]
+        .filter(Boolean)
+        .join(' | '),
+    }),
   },
-  fields: [
-    {
-      name: 'title',
-      title: 'Title',
-      type: 'string',
-      description: 'search weight: 1',
+}
+
+export const arrayPreviewSelect = {
+  ...arraySearchBase,
+  icon: OlistIcon,
+  name: 'arrayPreviewSelect',
+  title: 'Arrays: Preview select paths',
+  preview: {
+    select: {
+      title: 'bookArray.0.title',
+      subtitle: 'stringArray.0',
+      description: 'title',
     },
-    {
-      name: 'stringArray',
-      title: 'String array',
-      description: 'search weight: 100 for first item only',
-      type: 'array',
-      of: [{type: 'string'}],
-      options: {
-        list: [
-          {title: 'Cats', value: 'cats'},
-          {title: 'Dogs', value: 'dogs'},
-        ],
-      },
-    },
-    {
-      name: 'bookArray',
-      title: 'Book array',
-      type: 'array',
-      of: [{type: 'book'}],
-      description: 'search weight: 1000 for book title only',
-    },
-  ],
+    prepare: ({title, subtitle, description}) => ({
+      title: `${title} (weight 10)`,
+      subtitle: [subtitle && `${subtitle} (weight 5)`, description && `${description} (weight 1.5)`]
+        .filter(Boolean)
+        .join(' | '),
+    }),
+  },
 }
 
 export default arraysTest
