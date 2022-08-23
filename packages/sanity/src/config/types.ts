@@ -23,6 +23,7 @@ import type {
   RenderInputCallback,
   RenderItemCallback,
   RenderPreviewCallback,
+  RenderDiffCallback,
 } from '../form'
 import type {AuthStore} from '../datastores'
 import type {StudioTheme} from '../theme'
@@ -31,6 +32,7 @@ import type {Router, RouterState} from '../router'
 import type {DocumentActionComponent} from '../desk/actions'
 import type {DocumentBadgeComponent} from '../desk/badges'
 import {PreviewProps} from '../components/previews'
+import {DiffProps} from '../field'
 import {StudioComponents, StudioComponentsPluginOptions} from './components'
 
 /**
@@ -65,8 +67,9 @@ export interface SanityFormConfig {
     string,
     | ComponentType<InputProps>
     | {
-        input?: ComponentType<InputProps>
+        diff?: ComponentType<DiffProps>
         field?: ComponentType<FieldProps>
+        input?: ComponentType<InputProps>
         item?: ComponentType<ItemProps>
         preview?: ComponentType<PreviewProps>
       }
@@ -82,6 +85,7 @@ export interface SanityFormConfig {
     directUploads?: boolean
   }
 
+  renderDiff?: (props: DiffProps & {schemaType: SchemaType}, next: RenderDiffCallback) => ReactNode
   renderInput?: (props: InputProps, next: RenderInputCallback) => ReactNode
   renderField?: (props: FieldProps, next: RenderFieldCallback) => ReactNode
   renderItem?: (props: ItemProps, next: RenderItemCallback) => ReactNode
@@ -316,6 +320,7 @@ export interface Source {
       directUploads: boolean
     }
 
+    renderDiff: (props: DiffProps & {schemaType: SchemaType}) => ReactNode
     renderInput: (props: InputProps) => ReactNode
     renderField: (props: FieldProps) => ReactNode
     renderItem: (props: ItemProps) => ReactNode

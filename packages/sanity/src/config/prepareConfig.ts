@@ -48,6 +48,7 @@ import {_createRenderItem} from './form/_renderItem'
 import {_createRenderPreview} from './form/_renderPreview'
 import {_createRenderStudioComponent} from './components'
 import type {LogoProps, ToolMenuProps, LayoutProps, NavbarProps} from './components'
+import {_createRenderDiff} from './form/_renderDiff'
 
 type InternalSource = WorkspaceSummary['__internal']['sources'][number]
 
@@ -453,6 +454,7 @@ function resolveSource({
         }),
     },
     form: {
+      renderDiff: _createRenderDiff(config),
       renderField: _createRenderField(config),
       renderInput: _createRenderInput(config),
       renderItem: _createRenderItem(config),
