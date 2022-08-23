@@ -1,6 +1,6 @@
 import path from 'path'
 import {SanityDocument} from '@sanity/client'
-import {APIPackageDocument} from '@sanity/tsdoc-to-portable-text'
+import {APIPackageDocument, TransformResult} from '@sanity/tsdoc-to-portable-text'
 import cac from 'cac'
 import chalk from 'chalk'
 import {_parsePackageName} from './_helpers'
@@ -30,7 +30,7 @@ function main() {
         const packages = await extractPackagesFromSanity({quiet, workspace})
         const packageResults = await extractFromTsdoc({workspace, quiet})
 
-        const docs: SanityDocument[] = []
+        const docs: TransformResult = []
 
         for (const fullName of workspace) {
           const [scope, name] = _parsePackageName(fullName)
@@ -43,7 +43,7 @@ function main() {
 
           const {results, version} = pkgResult
 
-          const _docs = transformTsdocToPortableText({
+          const workspaceDocs = transformTsdocToPortableText({
             scope,
             name,
             package: pkg as APIPackageDocument | undefined,
@@ -57,10 +57,10 @@ function main() {
             scope,
             name,
             version,
-            docs: _docs,
+            docs: workspaceDocs,
           })
 
-          docs.push(..._docs)
+          docs.push(...workspaceDocs)
         }
 
         await loadToSanity(docs)

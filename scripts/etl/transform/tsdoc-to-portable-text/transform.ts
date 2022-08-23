@@ -1,5 +1,9 @@
-import {SanityDocument} from '@sanity/client'
-import {APIPackageDocument, ExtractResult, transform} from '@sanity/tsdoc-to-portable-text'
+import {
+  APIPackageDocument,
+  ExtractResult,
+  transform,
+  TransformResult,
+} from '@sanity/tsdoc-to-portable-text'
 import chalk from 'chalk'
 import {_encodePackageName} from '../../_helpers'
 
@@ -10,7 +14,7 @@ export function transformTsdocToPortableText(options: {
   quiet: boolean
   results: ExtractResult[]
   version: string
-}): SanityDocument[] {
+}): TransformResult {
   const {scope, name, package: currPackageDoc, quiet, results, version} = options
   const fullName = _encodePackageName(scope, name)
 
@@ -22,5 +26,5 @@ export function transformTsdocToPortableText(options: {
 
   console.log(`${chalk.green('success')} [${fullName}] Transformed ${docs.length} documents`)
 
-  return docs as SanityDocument[]
+  return docs
 }
