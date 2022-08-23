@@ -1,6 +1,5 @@
 import React, {useCallback, useMemo, useState} from 'react'
 import {Stack, Box, Button, Text, Grid, useClickOutside} from '@sanity/ui'
-import {ObjectSchemaType} from '@sanity/types'
 import {useConditionalReadOnly} from '../../../conditional-property/conditionalReadOnly'
 import {useDocumentOperation} from '../../../hooks'
 import {FieldChangeNode, FieldOperationsAPI} from '../../types'
@@ -8,10 +7,10 @@ import {undoChange} from '../changes/undoChange'
 import {DiffContext} from '../contexts/DiffContext'
 import {useDocumentChange} from '../hooks'
 import {useDocumentPairPermissions} from '../../../datastores'
+import {useSource} from '../../../studio'
 import {ChangeBreadcrumb} from './ChangeBreadcrumb'
 import {DiffErrorBoundary} from './DiffErrorBoundary'
 import {DiffInspectWrapper} from './DiffInspectWrapper'
-import {FallbackDiff} from './FallbackDiff'
 import {RevertChangesButton} from './RevertChangesButton'
 import {ValueError} from './ValueError'
 import {FieldChangeContainer, DiffBorder, PopoverWrapper} from './FieldChange.styled'
@@ -25,7 +24,8 @@ export function FieldChange(
 ) {
   const {change, hidden, readOnly} = props
   const conditionalReadOnly = useConditionalReadOnly() ?? readOnly
-  const DiffComponent = change.diffComponent || FallbackDiff
+  const {renderDiff} = useSource().form
+
   const {
     documentId,
     schemaType,
@@ -87,10 +87,7 @@ export function FieldChange(
               ) : (
                 <DiffErrorBoundary>
                   <DiffContext.Provider value={{path: change.path}}>
-                    <DiffComponent
-                      diff={change.diff}
-                      schemaType={change.schemaType as ObjectSchemaType}
-                    />
+                    {renderDiff({diff: change.diff, schemaType: change.schemaType})}
                   </DiffContext.Provider>
                 </DiffErrorBoundary>
               )}
@@ -136,16 +133,16 @@ export function FieldChange(
       closeRevertChangesConfirmDialog,
       conditionalReadOnly,
       confirmRevertOpen,
-      DiffComponent,
       FieldWrapper,
-      hidden,
       handleRevertButtonMouseEnter,
       handleRevertButtonMouseLeave,
       handleRevertChanges,
       handleRevertChangesConfirm,
+      hidden,
       isComparingCurrent,
       isPermissionsLoading,
       permissions,
+      renderDiff,
       revertHovered,
     ]
   )
