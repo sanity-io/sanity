@@ -31,6 +31,7 @@
   "homepage": "https://www.sanity.io/",
   "dependencies": {
     "@portabletext/react": "^1.0.0",
+    "@reach/auto-id": "^0.13.2",
     "@sanity/asset-utils": "^1.2.0",
     "@sanity/base": "2.30.5",
     "@sanity/client": "^3.3.3",
