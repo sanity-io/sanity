@@ -2,6 +2,7 @@ import {Box, Card, Flex, Portal, Theme, useClickOutside, useLayer} from '@sanity
 import React, {useCallback, useEffect, useRef, useState} from 'react'
 import FocusLock from 'react-focus-lock'
 import styled, {css} from 'styled-components'
+import {useId} from '@reach/auto-id'
 import {POPOVER_INPUT_PADDING, POPOVER_MAX_HEIGHT, POPOVER_MAX_WIDTH} from '../constants'
 import {CommandListProvider} from '../contexts/commandList'
 import {useSearchState} from '../contexts/search'
@@ -121,6 +122,8 @@ export function SearchPopover({onClose, onOpen, open, position}: SearchPopoverPr
     headerInputElement?.focus()
   }, [headerInputElement])
 
+  const dialogId = useId()
+
   if (!open) {
     return null
   }
@@ -138,7 +141,8 @@ export function SearchPopover({onClose, onOpen, open, position}: SearchPopoverPr
           childCount={hasValidTerms ? result.hits.length : recentSearches.length}
           containerElement={containerElement}
           headerInputElement={headerInputElement}
-          id="search-results-popover"
+          id={dialogId}
+          data-testid="search-results-popover"
           initialSelectedIndex={hasValidTerms ? lastSearchIndex : 0}
           level={0}
           pointerOverlayElement={pointerOverlayElement}

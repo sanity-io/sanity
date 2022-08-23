@@ -2,6 +2,7 @@ import {Box, Card, Dialog, Portal} from '@sanity/ui'
 import React, {useCallback, useEffect, useRef, useState} from 'react'
 import FocusLock from 'react-focus-lock'
 import styled from 'styled-components'
+import {useId} from '@reach/auto-id'
 import {RecentSearches} from './components/RecentSearches'
 import {SearchHeader} from './components/SearchHeader'
 import {SearchResults} from './components/SearchResults'
@@ -101,6 +102,7 @@ export function SearchDialog({onClose, onOpen, open}: SearchDialogProps) {
    * Bind hotkeys to open / close actions
    */
   useSearchHotkeys({onClose: handleClose, onOpen, open})
+  const dialogId = useId()
 
   if (!open) {
     return null
@@ -115,7 +117,8 @@ export function SearchDialog({onClose, onOpen, open}: SearchDialogProps) {
       childCount={hasValidTerms ? result.hits.length : recentSearches.length}
       containerElement={containerElement}
       headerInputElement={headerInputElement}
-      id="search-results-dialog"
+      id={dialogId}
+      data-testid="search-results-dialog"
       initialSelectedIndex={hasValidTerms ? lastSearchIndex : 0}
       level={0}
       pointerOverlayElement={pointerOverlayElement}

@@ -107,7 +107,6 @@ export function SearchHeader({onClose, setHeaderInputRef}: SearchHeaderProps) {
         <Card borderLeft={!!onClose} padding={onClose ? 2 : 1}>
           <FilterBox>
             <Button
-              aria-controls="search-type-filters"
               aria-expanded={filtersVisible}
               aria-label="Filter"
               height="fill"
