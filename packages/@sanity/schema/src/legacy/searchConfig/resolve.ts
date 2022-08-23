@@ -1,4 +1,5 @@
 import {uniqBy} from 'lodash'
+import {stringsToNumbers} from './normalize'
 
 const stringFieldsSymbol = Symbol('__cachedStringFields')
 
@@ -58,13 +59,18 @@ const PREVIEW_FIELD_WEIGHT_MAP = {
   description: 1.5,
 }
 
-function deriveFromPreview(type) {
+/**
+ * @internal
+ */
+export function deriveFromPreview(type: {
+  preview: {select: Record<string, string>}
+}): {weight?: number; path: (string | number)[]}[] {
   const select = type.preview.select
   return Object.keys(select)
     .filter((fieldName) => fieldName in PREVIEW_FIELD_WEIGHT_MAP)
     .map((fieldName) => ({
       weight: PREVIEW_FIELD_WEIGHT_MAP[fieldName],
-      path: select[fieldName].split('.'),
+      path: select[fieldName].split('.').map(stringsToNumbers),
     }))
 }
 

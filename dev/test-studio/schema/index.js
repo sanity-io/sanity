@@ -3,7 +3,12 @@ import createSchema from 'part:@sanity/base/schema-creator'
 import codeInputType from 'part:@sanity/form-builder/input/code/schema'
 
 // Test documents with standard inputs
-import arrays, {topLevelArrayType, topLevelPrimitiveArrayType} from './standard/arrays'
+import arrays, {
+  topLevelArrayType,
+  topLevelPrimitiveArrayType,
+  arrayPreviewSelect,
+  arrayExperimentalSearch,
+} from './standard/arrays'
 import booleans from './standard/booleans'
 import date from './standard/date'
 import datetime from './standard/datetime'
@@ -176,6 +181,8 @@ export default createSchema({
     texts,
     topLevelArrayType,
     topLevelPrimitiveArrayType,
+    arrayPreviewSelect,
+    arrayExperimentalSearch,
     typeWithNoToplevelStrings,
     uploads,
     urls,

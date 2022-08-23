@@ -20,6 +20,7 @@ export {
 export type {DocumentAvailability} from '../preview/types'
 export {AvailabilityReason} from '../preview/types'
 
+export {getSearchableTypes} from '../search/common/utils'
 export {createWeightedSearch} from '../search/weighted/createWeightedSearch'
 export type {WeightedHit} from '../search/weighted/types'
 

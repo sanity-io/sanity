@@ -54,3 +54,7 @@ yarn.lock
 package-lock.json
 
 .env
+
+##IntelliJ
+.idea/
+*.iml

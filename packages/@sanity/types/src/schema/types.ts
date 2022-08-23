@@ -243,10 +243,17 @@ export interface ObjectSchemaType extends BaseSchemaType {
   weak?: boolean
 
   // Experimentals
-  // Note: `path` is a string in the _specification_, but converted to a
-  // string array in the schema normalization/compilation step
   // eslint-disable-next-line camelcase
-  __experimental_search: {path: string[]; weight: number; mapWith?: string}[]
+  __experimental_search: ExperimentalSearchPath[]
+}
+
+export interface ExperimentalSearchPath {
+  // Note: `path` is a string in the _specification_, but converted to a
+  // string/number array in the schema normalization/compilation step
+  // a path segment is a number when specified like array.0.prop in preview config.
+  path: (string | number)[]
+  weight: number
+  mapWith?: string
 }
 
 export interface ObjectSchemaTypeWithOptions extends ObjectSchemaType {

@@ -7,7 +7,7 @@
   "scripts": {
     "coverage": "nyc --report=lcov --report=text _mocha -- test/**/*.test.js",
     "clean": "rimraf lib .nyc_output coverage",
-    "posttest": "npm run type-check"
+    "test": "jest"
   },
   "repository": {
     "type": "git",
@@ -31,6 +31,7 @@
   "homepage": "https://www.sanity.io/",
   "dependencies": {
     "@portabletext/react": "^1.0.0",
+    "@reach/auto-id": "^0.13.2",
     "@sanity/asset-utils": "^1.2.0",
     "@sanity/base": "2.30.5",
     "@sanity/client": "^3.3.3",
@@ -40,11 +41,16 @@
     "@sanity/logos": "^1.1.9",
     "@sanity/ui": "^0.37.9",
     "@sanity/util": "2.30.5",
+    "debug": "^3.2.7",
+    "is-hotkey": "^0.1.6",
     "lodash": "^4.17.15",
+    "react-focus-lock": "^2.5.0",
     "react-rx": "^1.0.0-beta.6",
+    "react-virtual": "^2.10.4",
     "rxjs": "^6.5.3"
   },
   "devDependencies": {
+    "@sanity/schema": "2.29.3",
     "@sanity/types": "2.30.5",
     "@sanity/ui-workshop": "^0.4.1",
     "mocha": "^5.0.1",

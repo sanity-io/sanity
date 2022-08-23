@@ -1,14 +1,14 @@
-import {ObjectSchemaType, Schema, SchemaType} from '@sanity/types'
+import {ObjectSchemaType, SchemaType} from '@sanity/types'
 
 const isDocumentType = (type: SchemaType): type is ObjectSchemaType =>
   type.type && type.type.name === 'document'
 
 const isSanityType = (type: SchemaType): boolean => type.name.startsWith('sanity.')
 
-export const getSearchableTypes = (
-  schema: Schema
-  // eslint-disable-next-line camelcase
-): {name: string; __experimental_search: ObjectSchemaType['__experimental_search']}[] =>
+export const getSearchableTypes = (schema: {
+  get: (typeName: string) => SchemaType | undefined
+  getTypeNames(): string[]
+}): ObjectSchemaType[] =>
   schema
     .getTypeNames()
     .map((typeName) => schema.get(typeName))
