@@ -1,5 +1,10 @@
 import path from 'path'
-import {extract, ExtractorMessage, ExtractResult} from '@sanity/tsdoc-to-portable-text'
+import {
+  extract,
+  ExtractorLogLevel,
+  ExtractorMessage,
+  ExtractResult,
+} from '@sanity/tsdoc-to-portable-text'
 import chalk from 'chalk'
 import {
   _encodePackageName,
@@ -60,7 +65,47 @@ async function _extractPackage(options: {
   }
 
   const results = await extract(packagePath, {
-    // tsconfigPath: 'tsconfig.extract.json',
+    reporting: {
+      compilerMessageReporting: {
+        default: {
+          logLevel: 'warning' as ExtractorLogLevel,
+        },
+      },
+
+      extractorMessageReporting: {
+        default: {
+          logLevel: 'warning' as ExtractorLogLevel,
+          addToApiReportFile: false,
+        },
+
+        // 'ae-extra-release-tag': {
+        //   logLevel: 'error' as ExtractorLogLevel,
+        //   addToApiReportFile: false,
+        // },
+
+        // 'ae-forgotten-export': {
+        //   logLevel: 'error' as ExtractorLogLevel,
+        //   addToApiReportFile: false,
+        // },
+      },
+
+      tsdocMessageReporting: {
+        default: {
+          logLevel: 'warning' as ExtractorLogLevel,
+          addToApiReportFile: false,
+        },
+
+        'tsdoc-unsupported-tag': {
+          logLevel: 'none' as ExtractorLogLevel,
+          addToApiReportFile: false,
+        },
+
+        'tsdoc-undefined-tag': {
+          logLevel: 'none' as ExtractorLogLevel,
+          addToApiReportFile: false,
+        },
+      },
+    },
   })
 
   const messages = results.reduce<ExtractorMessage[]>((acc, x) => acc.concat(x.messages), [])
