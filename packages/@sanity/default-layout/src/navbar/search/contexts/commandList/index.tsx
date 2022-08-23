@@ -121,8 +121,8 @@ export function CommandListProvider({
         const childIndex = Number(child.dataset?.index)
 
         child.setAttribute('aria-posinset', (childIndex + 1).toString())
-        child.setAttribute('aria-selected', (childIndex === selectedIndex).toString())
         child.setAttribute('aria-setsize', childCount.toString())
+        child.setAttribute('data-active', (childIndex === selectedIndex).toString())
         child.setAttribute('id', getChildDescendantId(childIndex))
         child.setAttribute('role', 'option')
         child.setAttribute('tabIndex', '-1')

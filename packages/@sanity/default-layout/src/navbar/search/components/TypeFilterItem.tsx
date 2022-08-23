@@ -17,7 +17,7 @@ const TypeFilterItemButton = styled(Button)<{$level: number}>(({$level}) => {
   return css`
     [data-focused='true'][data-level='${$level}'] &,
     [data-hovered='true'][data-level='${$level}'] & {
-      &[aria-selected='true'] {
+      &[data-active='true'] {
         background: ${({theme}) => theme.sanity.color.button.bleed.default.hovered.bg};
         // Disable box-shadow to hide the halo effect when we have keyboard focus over a selected <Button>
         box-shadow: none;
@@ -51,7 +51,7 @@ export function TypeFilterItem({index, selected, small, type}: TypeFilterItemPro
   return (
     <TypeFilterItemButton
       $level={level}
-      aria-checked={selected}
+      aria-selected={selected}
       data-index={index}
       fontSize={small ? 1 : 2}
       iconRight={selected && CheckmarkIcon}

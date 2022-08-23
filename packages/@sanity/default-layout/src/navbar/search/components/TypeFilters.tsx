@@ -107,7 +107,7 @@ export function TypeFilters({small}: TypeFiltersProps) {
           />
         </SearchHeaderBox>
 
-        <TypeFiltersContentBox flex={1} padding={padding} ref={setFiltersContentRef}>
+        <TypeFiltersContentBox flex={1} padding={padding} ref={setFiltersContentRef} tabIndex={-1}>
           <TypeFiltersContentDiv>
             <PointerOverlay ref={setPointerOverlayRef} />
 

@@ -33,7 +33,7 @@ const SearchResultItemBox = styled(Box)<{$level: number}>(({$level}) => {
 
     [data-focused='true'][data-level='${$level}'] &,
     [data-hovered='true'][data-level='${$level}'] & {
-      &[aria-selected='true'] a {
+      &[data-active='true'] a {
         background: ${({theme}) => theme.sanity.color.button.bleed.default.hovered.bg};
         // Disable box-shadow to hide the halo effect when we have keyboard focus over a selected <Button>
         box-shadow: none;

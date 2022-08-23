@@ -101,7 +101,7 @@ export function SearchResults({
         <>
           {!!result.hits.length && (
             // (Has search results)
-            <VirtualListBox ref={childParentRef}>
+            <VirtualListBox ref={childParentRef} tabIndex={-1}>
               <VirtualListChildBox $height={totalSize} paddingBottom={1} ref={setChildContainerRef}>
                 {virtualItems.map((virtualRow) => {
                   const hit = result.hits[virtualRow.index]
