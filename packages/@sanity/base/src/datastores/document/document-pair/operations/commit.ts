@@ -1,9 +1,12 @@
+import {EMPTY} from 'rxjs'
 import {OperationArgs} from '../../types'
-import {merge} from 'rxjs'
 
 export const commit = {
   disabled: (): false => false,
   execute: ({draft, published}: OperationArgs) => {
-    return merge(draft.commit(), published.commit())
+    draft.commit()
+    published.commit()
+    // todo: we might be able to connect with the outgoing commit request stream here
+    return EMPTY
   },
 }
