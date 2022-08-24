@@ -273,7 +273,7 @@ export function prepareForPreview(
       // Find the selected option that matches the raw value
       const selectedOption =
         listOptions && listOptions.find((opt) => opt.value === get(rawValue, selection[key]))
-      acc[key] = selectedOption ? selectedOption.title : get(rawValue, selection[key])
+      acc[key] = selectedOption ? selectedOption.value : get(rawValue, selection[key])
     } else {
       acc[key] = get(rawValue, selection[key])
     }
