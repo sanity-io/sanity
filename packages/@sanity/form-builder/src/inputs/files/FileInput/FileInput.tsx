@@ -58,6 +58,7 @@ export type Props = {
   type: FileSchemaType
   level: number
   onChange: (event: PatchEvent) => void
+  // eslint-disable-next-line react/no-unused-prop-types
   resolveUploader: UploaderResolver
   observeAsset: (documentId: string) => Observable<FileAsset>
   onBlur: () => void
