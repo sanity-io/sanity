@@ -1,6 +1,6 @@
 {
   "name": "@sanity/types",
-  "version": "2.30.5",
+  "version": "2.31.0",
   "description": "Type definitions for common Sanity data structures",
   "main": "./lib/index.js",
   "types": "./dist/dts",

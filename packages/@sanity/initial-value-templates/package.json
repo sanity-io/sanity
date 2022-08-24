@@ -1,6 +1,6 @@
 {
   "name": "@sanity/initial-value-templates",
-  "version": "2.30.5",
+  "version": "2.31.0",
   "description": "Build templates for initial values",
   "main": "./lib/index.js",
   "types": "./dist/dts",
@@ -28,14 +28,14 @@
   },
   "dependencies": {
     "@sanity/icons": "^1.2.6",
-    "@sanity/util": "2.30.5",
+    "@sanity/util": "2.31.0",
     "@types/lodash": "^4.14.149",
     "lodash": "^4.17.15",
     "oneline": "^1.0.3"
   },
   "devDependencies": {
-    "@sanity/schema": "2.29.3",
-    "@sanity/types": "2.30.5",
+    "@sanity/schema": "2.31.0",
+    "@sanity/types": "2.31.0",
     "rimraf": "^2.7.1"
   },
   "repository": {
