@@ -116,7 +116,7 @@
     "@sanity/schema": "3.0.0-dev-preview.15",
     "@sanity/server": "3.0.0-dev-preview.15",
     "@sanity/types": "3.0.0-dev-preview.15",
-    "@sanity/ui": "^0.37.19",
+    "@sanity/ui": "^0.37.20",
     "@sanity/util": "3.0.0-dev-preview.15",
     "@sanity/uuid": "^3.0.1",
     "@sanity/validation": "3.0.0-dev-preview.15",
@@ -187,7 +187,7 @@
     "yargs": "^17.3.0"
   },
   "devDependencies": {
-    "@sanity/ui-workshop": "^0.4.14",
+    "@sanity/ui-workshop": "^0.4.15",
     "@testing-library/jest-dom": "^5.16.2",
     "@testing-library/react": "^11.2.5",
     "@testing-library/react-hooks": "^7.0.2",
