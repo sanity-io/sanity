@@ -8,6 +8,7 @@ import Mutation from './Mutation'
 import SquashingBuffer from './SquashingBuffer'
 import debug from './debug'
 import {Doc} from './types'
+import luid from './luid'
 
 const ONE_MINUTE = 1000 * 60
 
@@ -21,9 +22,9 @@ class Commit {
   apply(doc: Doc): Doc {
     return Mutation.applyAll(doc, this.mutations)
   }
-  squash(doc: Doc) {
+  squash(doc: Doc, transactionId?: string) {
     const result = Mutation.squash(doc, this.mutations)
-    result.assignRandomTransactionId()
+    result.assignTransactionId(transactionId || luid())
     return result
   }
 }
@@ -111,7 +112,7 @@ export default class BufferedDocument {
   }
 
   // Submit all mutations in the buffer to be committed
-  commit() {
+  commit(transactionId?: string) {
     // Anything to commit?
     if (!this.buffer.hasChanges()) {
       return
@@ -121,13 +122,13 @@ export default class BufferedDocument {
     this.commits.push(new Commit([this.buffer.purge()]))
     // ... clear the table for the next commit.
     this.buffer = new SquashingBuffer(this.LOCAL)
-    this.performCommits()
+    this.performCommits(transactionId)
   }
 
   // Starts the committer that will try to committ all staged commits to the database
   // by calling the commitHandler. Will keep running until all commits are successfully
   // committed.
-  performCommits() {
+  performCommits(transactionId?: string) {
     if (!this.commitHandler) {
       throw new Error('No commitHandler configured for this BufferedDocument')
     }
@@ -135,18 +136,18 @@ export default class BufferedDocument {
       // We can have only one committer at any given time
       return
     }
-    this._cycleCommitter()
+    this._cycleCommitter(transactionId)
   }
 
   // TODO: Error handling, right now retries after every error,
-  _cycleCommitter() {
+  _cycleCommitter(transactionId?: string) {
     if (this.commits.length == 0) {
       this.committerRunning = false
       return
     }
     this.committerRunning = true
     const commit = this.commits.shift()
-    const squashed = commit.squash(this.LOCAL)
+    const squashed = commit.squash(this.LOCAL, transactionId)
     const docResponder = this.document.stage(squashed, true)
 
     const responder = {
