@@ -46,7 +46,7 @@ export interface DocumentVersionSnapshots {
   delete: () => Mutation
 
   mutate: (mutations: Mutation[]) => void
-  commit: () => Observable<never>
+  commit: () => void
 }
 
 export interface SnapshotPair {

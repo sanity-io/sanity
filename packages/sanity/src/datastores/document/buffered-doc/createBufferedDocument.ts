@@ -2,14 +2,13 @@ import {SanityDocument} from '@sanity/types'
 import {Observable} from 'rxjs'
 import {ListenerEvent} from '../getPairListener'
 import {Mutation} from '../types'
-import {createObservableBufferedDocument} from './createObservableBufferedDocument'
+import {CommitRequest, createObservableBufferedDocument} from './createObservableBufferedDocument'
 import {
-  CommitFunction,
   CommittedEvent,
   DocumentMutationEvent,
   DocumentRebaseEvent,
-  SnapshotEvent,
   RemoteSnapshotEvent,
+  SnapshotEvent,
 } from './types'
 
 export type BufferedDocumentEvent =
@@ -27,6 +26,7 @@ export interface BufferedDocumentWrapper {
   consistency$: Observable<boolean>
   remoteSnapshot$: Observable<RemoteSnapshotEvent>
   events: Observable<BufferedDocumentEvent>
+  commitRequest$: Observable<CommitRequest>
   // helper functions
   patch: (patches: any[]) => Mutation[]
   create: (document: Partial<SanityDocument>) => Mutation
@@ -35,25 +35,25 @@ export interface BufferedDocumentWrapper {
   delete: () => Mutation
 
   mutate: (mutations: Mutation[]) => void
-  commit: () => Observable<never>
+  commit: () => void
 }
 
 export const createBufferedDocument = (
   documentId: string,
   // consider naming it remoteEvent$
-  listenerEvent$: Observable<ListenerEvent>,
-  commitMutations: CommitFunction
+  listenerEvent$: Observable<ListenerEvent>
 ): BufferedDocumentWrapper => {
-  const bufferedDocument = createObservableBufferedDocument(listenerEvent$, commitMutations)
+  const bufferedDocument = createObservableBufferedDocument(listenerEvent$)
 
   const prepareDoc = prepare(documentId)
 
   const DELETE = {delete: {id: documentId}}
 
   return {
-    events: bufferedDocument.updates$ as any,
+    events: bufferedDocument.updates$,
     consistency$: bufferedDocument.consistency$,
     remoteSnapshot$: bufferedDocument.remoteSnapshot$,
+    commitRequest$: bufferedDocument.commitRequest$,
 
     patch: (patches) => patches.map((patch) => ({patch: {...patch, id: documentId}})),
     create: (document) => ({create: prepareDoc(document)}),
