@@ -53,8 +53,8 @@ export default class Mutation {
   get effects() {
     return this.params.effects
   }
-  assignRandomTransactionId() {
-    this.params.resultRev = this.params.transactionId = luid()
+  assignTransactionId(transactionId: string) {
+    this.params.resultRev = this.params.transactionId = transactionId
   }
   appliesToMissingDocument() {
     if (typeof this._appliesToMissingDocument !== 'undefined') {
