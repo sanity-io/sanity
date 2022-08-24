@@ -22,7 +22,6 @@ export type {
   DocumentVersionEvent,
   DocumentVersionSnapshots,
   EditStateFor,
-  GuardedOperation,
   HistoryStore,
   IdPair,
   InitialValueErrorMsg,
@@ -51,7 +50,6 @@ export type {
   Transaction,
   ValidationStatus,
   WithVersion,
-  WrappedOperation,
 } from '../datastores'
 
 export type {Annotation, AnnotationDetails, Chunk, ChunkType} from '../field'

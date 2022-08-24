@@ -1,21 +1,17 @@
 import {omit} from 'lodash'
-import type {Observable} from 'rxjs'
-import type {MultipleMutationResult} from '@sanity/client'
-import type {OperationArgs} from '../../types'
 import {isLiveEditEnabled} from '../utils/isLiveEditEnabled'
+import {OperationImpl} from './types'
 
-export const unpublish = {
-  disabled: ({
-    schema,
-    snapshots,
-    typeName,
-  }: OperationArgs): 'LIVE_EDIT_ENABLED' | 'NOT_PUBLISHED' | false => {
+type DisabledReason = 'LIVE_EDIT_ENABLED' | 'NOT_PUBLISHED'
+
+export const unpublish: OperationImpl<[], DisabledReason> = {
+  disabled: ({schema, snapshots, typeName}) => {
     if (isLiveEditEnabled(schema, typeName)) {
       return 'LIVE_EDIT_ENABLED'
     }
     return snapshots.published ? false : 'NOT_PUBLISHED'
   },
-  execute: ({client, idPair, snapshots}: OperationArgs): Observable<MultipleMutationResult> => {
+  execute: ({client, idPair, snapshots}) => {
     let tx = client.observable.transaction().delete(idPair.publishedId)
 
     if (snapshots.published) {

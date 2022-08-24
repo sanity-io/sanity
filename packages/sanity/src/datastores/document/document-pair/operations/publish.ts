@@ -1,33 +1,29 @@
 import {omit} from 'lodash'
 import {isReference} from '@sanity/types'
-import type {Observable} from 'rxjs'
-import type {MultipleMutationResult} from '@sanity/client'
-import type {OperationArgs} from '../../types'
 import {isLiveEditEnabled} from '../utils/isLiveEditEnabled'
+import {OperationImpl} from './index'
 
-function strengthenOnPublish(obj: unknown): any {
+function strengthenOnPublish<T = any>(obj: T): T {
   if (isReference(obj)) {
     if (obj._strengthenOnPublish) {
       return omit(
         obj,
         ['_strengthenOnPublish'].concat(obj._strengthenOnPublish.weak ? [] : ['_weak'])
-      )
+      ) as T
     }
     return obj
   }
   if (typeof obj !== 'object' || !obj) return obj
-  if (Array.isArray(obj)) return obj.map(strengthenOnPublish)
+  if (Array.isArray(obj)) return obj.map(strengthenOnPublish) as T
   return Object.fromEntries(
     Object.entries(obj).map(([key, value]) => [key, strengthenOnPublish(value)] as const)
-  )
+  ) as T
 }
 
-export const publish = {
-  disabled: ({
-    schema,
-    typeName,
-    snapshots,
-  }: OperationArgs): 'LIVE_EDIT_ENABLED' | 'ALREADY_PUBLISHED' | 'NO_CHANGES' | false => {
+type DisabledReason = 'LIVE_EDIT_ENABLED' | 'ALREADY_PUBLISHED' | 'NO_CHANGES'
+
+export const publish: OperationImpl<[], DisabledReason> = {
+  disabled: ({schema, typeName, snapshots}) => {
     if (isLiveEditEnabled(schema, typeName)) {
       return 'LIVE_EDIT_ENABLED'
     }
@@ -36,14 +32,15 @@ export const publish = {
     }
     return false
   },
-  execute: ({client, idPair, snapshots}: OperationArgs): Observable<MultipleMutationResult> => {
-    const tx = client.observable.transaction()
-
+  execute: ({client, idPair, snapshots}) => {
     if (!snapshots.draft) {
       throw new Error('cannot execute "publish" when draft is missing')
     }
-
     const value = strengthenOnPublish(omit(snapshots.draft, '_updatedAt'))
+    const tx = client.observable.transaction()
+    if (!snapshots.draft) {
+      throw new Error('cannot execute "publish" when draft is missing')
+    }
 
     if (snapshots.published) {
       // If it exists already, we only want to update it if the revision on the remote server

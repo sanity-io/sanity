@@ -1,27 +1,27 @@
-import type {OperationArgs} from '../../types'
 import {isLiveEditEnabled} from '../utils/isLiveEditEnabled'
+import {OperationImpl} from './types'
 
 // todo: we could also consider exposing 'mutate' directly
-export const patch = {
+export const patch: OperationImpl<[patches: any[], initialDocument: Record<string, any>]> = {
   disabled: (): false => false,
   execute: (
-    {schema, snapshots, idPair, draft, published, typeName}: OperationArgs,
+    {schema, snapshots, idPair, draft, published, typeName},
     patches = [],
-    initialValue: any
+    initialDocument
   ): void => {
     if (isLiveEditEnabled(schema, typeName)) {
       // No drafting, so patch and commit the published document
       published.mutate([
         published.createIfNotExists({
           _type: typeName,
-          ...initialValue,
+          ...initialDocument,
         }),
         ...published.patch(patches),
       ])
     } else {
       draft.mutate([
         draft.createIfNotExists({
-          ...initialValue,
+          ...initialDocument,
           ...snapshots.published,
           _id: idPair.draftId,
           _type: typeName,

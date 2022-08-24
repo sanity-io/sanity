@@ -1,9 +1,9 @@
-import type {Observable} from 'rxjs'
-import type {MultipleMutationResult} from '@sanity/client'
-import type {OperationArgs} from '../../types'
+import {OperationImpl} from './types'
 
-export const discardChanges = {
-  disabled: ({snapshots}: OperationArgs): 'NO_CHANGES' | 'NOT_PUBLISHED' | false => {
+type DisabledReason = 'NO_CHANGES' | 'NOT_PUBLISHED'
+
+export const discardChanges: OperationImpl<[], DisabledReason> = {
+  disabled: ({snapshots}) => {
     if (!snapshots.draft) {
       return 'NO_CHANGES'
     }
@@ -12,10 +12,10 @@ export const discardChanges = {
     }
     return false
   },
-  execute: ({client, idPair}: OperationArgs): Observable<MultipleMutationResult> => {
+  execute: ({client, idPair}) => {
     return client.observable
       .transaction()
       .delete(idPair.draftId)
-      .commit({tag: 'document.discard-changes', visibility: 'async'})
+      .commit({tag: 'document.discard-changes'})
   },
 }

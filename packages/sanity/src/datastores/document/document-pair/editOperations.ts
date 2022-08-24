@@ -5,8 +5,9 @@ import {map, publishReplay, refCount, mergeMapTo} from 'rxjs/operators'
 import {HistoryStore} from '../../history'
 import {IdPair} from '../types'
 import {operationArgs} from './operationArgs'
+import {OperationsAPI} from './operations'
+import {createOperationsAPI, GUARDED} from './operations/helpers'
 import {getOperationEvents} from './operationEvents'
-import {createOperationsAPI, GUARDED, OperationsAPI} from './operations'
 
 const cache = new Map<string, Observable<OperationsAPI>>()
 

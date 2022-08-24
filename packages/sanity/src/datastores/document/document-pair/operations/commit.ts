@@ -1,9 +1,9 @@
-import {merge, Observable} from 'rxjs'
-import type {OperationArgs} from '../../types'
+import {merge} from 'rxjs'
+import {OperationImpl} from './types'
 
-export const commit = {
+export const commit: OperationImpl = {
   disabled: (): false => false,
-  execute: ({draft, published}: OperationArgs): Observable<never> => {
+  execute: ({draft, published}) => {
     return merge(draft.commit(), published.commit())
   },
 }

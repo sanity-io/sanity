@@ -5,9 +5,10 @@ import {Schema} from '@sanity/types'
 import {combineLatest, Observable} from 'rxjs'
 import {map, publishReplay, refCount, switchMap} from 'rxjs/operators'
 import {HistoryStore} from '../../history'
-import {IdPair, OperationArgs} from '../types'
+import {IdPair} from '../types'
 import {memoize} from '../utils/createMemoizer'
 import {snapshotPair} from './snapshotPair'
+import {OperationArgs} from './operations'
 
 export const operationArgs = memoize(
   (

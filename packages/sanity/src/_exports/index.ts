@@ -61,12 +61,10 @@ export type {
   AuthState,
   AuthStore,
   EditStateFor,
-  GuardedOperation,
   LoginComponentProps,
   Operation,
   OperationsAPI,
   UserStore,
-  WrappedOperation,
 } from '../datastores'
 
 export {useCurrentUser, useUser} from '../datastores'

@@ -15,9 +15,9 @@ import {
   throttleTime,
 } from 'rxjs/operators'
 import {Schema} from '@sanity/types'
-import {IdPair, OperationArgs} from '../types'
+import {IdPair} from '../types'
 import {HistoryStore} from '../../history'
-import {OperationImpl, OperationsAPI} from './operations'
+import {OperationArgs, OperationImpl, OperationsAPI} from './operations'
 import {operationArgs} from './operationArgs'
 import {del} from './operations/delete'
 import {publish} from './operations/publish'
@@ -123,7 +123,7 @@ export function getOperationEvents(ctx: {
     groupBy((op) => op.idPair.publishedId),
     mergeMap((groups$) =>
       groups$.pipe(
-        // although it might look like a but, dropping pending async operations here is actually a feature
+        // although it might look like a bug, dropping pending async operations here is actually a feature
         // E.g. if the user types `publish` which is async and then starts patching (sync) then the publish
         // should be cancelled
         switchMap((args) =>
