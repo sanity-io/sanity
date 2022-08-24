@@ -553,6 +553,13 @@ function prepareObjectInputState<T>(
       return []
     }
 
+    const fieldsetReadOnly = resolveConditionalProperty(fieldSet.readOnly, {
+      currentUser: props.currentUser,
+      document: props.document,
+      parent: props.value,
+      value: pick(props.value, fieldsetFieldNames),
+    })
+
     const fieldsetMembers = fieldSet.fields.flatMap((field): (FieldMember | FieldError)[] => {
       const fieldState = prepareFieldMember({
         field,
@@ -564,14 +571,22 @@ function prepareObjectInputState<T>(
       if (fieldState === null || !isFieldEnabledByGroupFilter(groups, field, selectedGroup)) {
         return []
       }
-      return [fieldState]
+
+      const fieldStateWithReadOnly = {
+        ...fieldState,
+        field: {
+          ...(fieldState as FieldMember)?.field,
+          readOnly: readOnly || fieldsetReadOnly,
+        },
+      }
+
+      return [fieldStateWithReadOnly]
     })
 
     // if all members of the fieldset is hidden, the fieldset should effectively also be hidden
     if (fieldsetMembers.length === 0) {
       return []
     }
-
     const defaultCollapsedState = getCollapsedWithDefaults(fieldSet.options, props.level)
 
     const collapsed =
