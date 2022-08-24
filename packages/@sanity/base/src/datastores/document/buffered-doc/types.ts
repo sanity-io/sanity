@@ -1,7 +1,4 @@
-import {Mutation} from '@sanity/mutator'
 import {SanityDocument} from '@sanity/types'
-
-export type CommitFunction = (mutation: Mutation['params']) => Promise<unknown>
 
 export interface DocumentRebaseEvent {
   type: 'rebase'
