@@ -3,8 +3,10 @@
 
 import FileIcon from 'part:@sanity/base/file-icon'
 import React, {useMemo} from 'react'
-import {Box, Card, Flex, Text} from '@sanity/ui'
+import {Box, Card, Flex, Stack, Text} from '@sanity/ui'
 import styled from 'styled-components'
+import {isFileSource} from '@sanity/asset-utils'
+import {WarningOutlineIcon} from '@sanity/icons'
 import {
   DiffComponent,
   DiffCard,
@@ -42,6 +44,8 @@ export const FileFieldDiff: DiffComponent<ObjectDiff<File>> = ({diff, schemaType
   const toAsset = toValue?.asset
   const prev = useRefValue<FileAsset>(fromAsset?._ref)
   const next = useRefValue<FileAsset>(toAsset?._ref)
+  const fromInvalid = fromAsset?._ref && !isFileSource(fromAsset?._ref)
+  const toInvalid = toAsset?._ref && !isFileSource(toAsset?._ref)
 
   const changedFields = Object.keys(fields).filter(
     (name) => fields[name].isChanged && name !== '_type'
@@ -65,27 +69,55 @@ export const FileFieldDiff: DiffComponent<ObjectDiff<File>> = ({diff, schemaType
 
   const from = prev && (
     <DiffCard as="del" diff={diff} path="asset._ref" style={cardStyles}>
-      <MetaInfo title={prev.originalFilename || 'Untitled'} icon={FileIcon}>
-        <Text size={0} style={{color: 'inherit'}}>{`${roundedPrevSize}MB`}</Text>
-      </MetaInfo>
+      {fromInvalid && (
+        <Card tone="caution" padding={4} paddingRight={2} border radius={2}>
+          <Stack space={3}>
+            <Text size={1}>
+              <WarningOutlineIcon />
+            </Text>
+            <Text size={1} weight="semibold">
+              Invalid file value
+            </Text>
+          </Stack>
+        </Card>
+      )}
+      {!fromInvalid && (
+        <MetaInfo title={prev.originalFilename || 'Untitled'} icon={FileIcon}>
+          <Text size={0} style={{color: 'inherit'}}>{`${roundedPrevSize}MB`}</Text>
+        </MetaInfo>
+      )}
     </DiffCard>
   )
 
   const to = next && (
     <DiffCard as="ins" diff={diff} path="asset._ref" style={cardStyles}>
-      <MetaInfo title={next.originalFilename || 'Untitled'} icon={FileIcon}>
-        <Flex align="center">
-          <Text size={0} style={{color: 'inherit'}}>{`${roundedNextSize}MB`}</Text>
-          {pctDiff !== 0 && (
-            <Card radius={2} padding={1} as={SizeDiff} marginLeft={2}>
-              <Text size={0} data-number={pctDiff > 0 ? 'positive' : 'negative'}>
-                {pctDiff > 0 && '+'}
-                {pctDiff}%
-              </Text>
-            </Card>
-          )}
-        </Flex>
-      </MetaInfo>
+      {toInvalid && (
+        <Card tone="caution" padding={4} paddingRight={2} border radius={2}>
+          <Stack space={3}>
+            <Text size={1}>
+              <WarningOutlineIcon />
+            </Text>
+            <Text size={1} weight="semibold">
+              Invalid file value
+            </Text>
+          </Stack>
+        </Card>
+      )}
+      {!toInvalid && (
+        <MetaInfo title={next.originalFilename || 'Untitled'} icon={FileIcon}>
+          <Flex align="center">
+            <Text size={0} style={{color: 'inherit'}}>{`${roundedNextSize}MB`}</Text>
+            {pctDiff !== 0 && (
+              <Card radius={2} padding={1} as={SizeDiff} marginLeft={2}>
+                <Text size={0} data-number={pctDiff > 0 ? 'positive' : 'negative'}>
+                  {pctDiff > 0 && '+'}
+                  {pctDiff}%
+                </Text>
+              </Card>
+            )}
+          </Flex>
+        </MetaInfo>
+      )}
     </DiffCard>
   )
 
