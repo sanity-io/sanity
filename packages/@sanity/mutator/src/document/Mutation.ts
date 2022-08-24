@@ -13,7 +13,7 @@ export type MutationParams = {
   previousRev?: string
   resultRev?: string
   mutations: Array<Mut>
-  timestamp?: String
+  timestamp?: string
   effects?: {apply: unknown; revert: unknown}
 }
 
