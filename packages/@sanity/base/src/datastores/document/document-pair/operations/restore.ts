@@ -2,12 +2,12 @@
 ///<reference types="@sanity/types/parts" />
 
 import historyStore from 'part:@sanity/base/datastore/history'
-import {OperationArgs} from '../../types'
 import {isLiveEditEnabled} from '../utils/isLiveEditEnabled'
+import {OperationImpl} from './types'
 
-export const restore = {
+export const restore: OperationImpl<[fromRevision: string]> = {
   disabled: (): false => false,
-  execute: ({idPair, typeName}: OperationArgs, fromRevision: string) => {
+  execute: ({idPair, typeName}, fromRevision: string) => {
     const targetId = isLiveEditEnabled(typeName) ? idPair.publishedId : idPair.draftId
     return historyStore.restore(idPair.publishedId, targetId, fromRevision)
   },
