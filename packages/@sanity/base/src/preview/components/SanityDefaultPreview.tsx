@@ -1,5 +1,6 @@
 import React from 'react'
 import imageUrlBuilder from '@sanity/image-url'
+import {isImageSource} from '@sanity/asset-utils'
 import {ImageUrlFitMode, SanityDocument} from '@sanity/types'
 import {DocumentIcon} from '@sanity/icons'
 import {assetUrlBuilder} from '../../assets'
@@ -129,7 +130,12 @@ export default class SanityDefaultPreview extends React.PureComponent<SanityDefa
     }
 
     // If the asset is on media
-    if (isRecord(value.media) && value.media._type === 'reference' && value.media._ref) {
+    if (
+      isRecord(value.media) &&
+      value.media._type === 'reference' &&
+      value.media._ref &&
+      isImageSource(media)
+    ) {
       return this.renderMedia
     }
 
@@ -139,7 +145,7 @@ export default class SanityDefaultPreview extends React.PureComponent<SanityDefa
     }
 
     // Handle sanity image
-    if (isRecord(media) && media.asset) {
+    if (isRecord(media) && media.asset && isImageSource(media)) {
       return this.renderMedia
     }
 
