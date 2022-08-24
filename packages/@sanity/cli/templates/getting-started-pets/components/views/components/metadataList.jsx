@@ -63,9 +63,7 @@ function ImageAndCaption({image, caption}) {
     <Tooltip
       content={
         <Box padding={2}>
-          <Text muted size={1}>
-            {caption}
-          </Text>
+          <Text size={1}>{caption}</Text>
         </Box>
       }
       portal

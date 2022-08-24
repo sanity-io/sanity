@@ -53,9 +53,7 @@ const ReviewButton = React.forwardRef(function ReviewButton(
           <Text size={1} weight="semibold">
             Review changes
           </Text>
-          <Text size={1} muted>
-            Changes saved {lastUpdatedTimeAgo}
-          </Text>
+          <Text size={1}>Changes saved {lastUpdatedTimeAgo}</Text>
         </Stack>
       }
     >

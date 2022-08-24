@@ -160,7 +160,7 @@ export const RowItem = React.forwardRef(function RegularItem(
               <Tooltip
                 content={
                   <Box padding={2}>
-                    <Text muted size={1}>
+                    <Text size={1}>
                       This item is missing the required <code>_key</code> property.
                     </Text>
                   </Box>

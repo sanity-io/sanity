@@ -48,9 +48,7 @@ export default function ArrayFunctions<MemberType>(
         portal
         content={
           <Box padding={2} sizing="border">
-            <Text size={1} muted>
-              This field is read-only
-            </Text>
+            <Text size={1}>This field is read-only</Text>
           </Box>
         }
       >

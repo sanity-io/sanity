@@ -57,7 +57,7 @@ export function MediaPreview(props: MediaPreviewProps) {
         )}
 
         {subtitle && (
-          <Text align="center" muted size={1}>
+          <Text align="center" size={1}>
             {typeof subtitle === 'function' ? subtitle({layout: 'media'}) : subtitle}
           </Text>
         )}
