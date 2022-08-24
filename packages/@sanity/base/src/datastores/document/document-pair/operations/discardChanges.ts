@@ -1,8 +1,10 @@
 import {versionedClient} from '../../../../client/versionedClient'
-import {OperationArgs} from '../../types'
+import {OperationImpl} from './types'
 
-export const discardChanges = {
-  disabled: ({snapshots}: OperationArgs) => {
+type DisabledReason = 'NO_CHANGES' | 'NOT_PUBLISHED'
+
+export const discardChanges: OperationImpl<[], DisabledReason> = {
+  disabled: ({snapshots}) => {
     if (!snapshots.draft) {
       return 'NO_CHANGES'
     }
@@ -11,7 +13,7 @@ export const discardChanges = {
     }
     return false
   },
-  execute: ({idPair}: OperationArgs) => {
+  execute: ({idPair}) => {
     return versionedClient.observable
       .transaction()
       .delete(idPair.draftId)

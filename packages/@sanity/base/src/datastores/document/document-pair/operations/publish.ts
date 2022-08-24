@@ -1,9 +1,9 @@
 import {omit} from 'lodash'
 import {isReference} from '@sanity/types'
 import {versionedClient} from '../../../../client/versionedClient'
-import {OperationArgs} from '../../types'
 
 import {isLiveEditEnabled} from '../utils/isLiveEditEnabled'
+import {OperationImpl} from './index'
 
 function strengthenOnPublish(obj: unknown) {
   if (isReference(obj)) {
@@ -22,8 +22,10 @@ function strengthenOnPublish(obj: unknown) {
   )
 }
 
-export const publish = {
-  disabled: ({typeName, snapshots}: OperationArgs) => {
+type DisabledReason = 'LIVE_EDIT_ENABLED' | 'ALREADY_PUBLISHED' | 'NO_CHANGES'
+
+export const publish: OperationImpl<[], DisabledReason> = {
+  disabled: ({typeName, snapshots}) => {
     if (isLiveEditEnabled(typeName)) {
       return 'LIVE_EDIT_ENABLED'
     }
@@ -32,7 +34,7 @@ export const publish = {
     }
     return false
   },
-  execute: ({idPair, snapshots}: OperationArgs) => {
+  execute: ({idPair, snapshots}) => {
     const tx = versionedClient.transaction()
 
     const value = strengthenOnPublish(omit(snapshots.draft, '_updatedAt'))
