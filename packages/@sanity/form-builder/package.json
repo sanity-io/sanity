@@ -30,6 +30,7 @@
     "@reach/auto-id": "^0.13.2",
     "@sanity/base": "2.31.0",
     "@sanity/block-tools": "2.31.0",
+    "@sanity/asset-utils": "^1.2.5",
     "@sanity/client": "^3.3.3",
     "@sanity/color": "^2.1.14",
     "@sanity/generate-help-url": "^3.0.0",
