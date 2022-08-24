@@ -14,13 +14,9 @@ const ONE_MINUTE = 1000 * 60
 class Commit {
   mutations: Mutation[]
   tries: number
-  resolve: () => {}
-  reject: (error: Error) => {}
-  constructor(mutations, {resolve, reject}) {
+  constructor(mutations) {
     this.mutations = mutations
     this.tries = 0
-    this.resolve = resolve
-    this.reject = reject
   }
   apply(doc: Doc): Doc {
     return Mutation.applyAll(doc, this.mutations)
@@ -116,19 +112,16 @@ export default class BufferedDocument {
 
   // Submit all mutations in the buffer to be committed
   commit() {
-    return new Promise<void>((resolve, reject) => {
-      // Anything to commit?
-      if (!this.buffer.hasChanges()) {
-        resolve()
-        return
-      }
-      debug('Committing local changes')
-      // Collect current staged mutations into a commit and ...
-      this.commits.push(new Commit([this.buffer.purge()], {resolve, reject}))
-      // ... clear the table for the next commit.
-      this.buffer = new SquashingBuffer(this.LOCAL)
-      this.performCommits()
-    })
+    // Anything to commit?
+    if (!this.buffer.hasChanges()) {
+      return
+    }
+    debug('Committing local changes')
+    // Collect current staged mutations into a commit and ...
+    this.commits.push(new Commit([this.buffer.purge()]))
+    // ... clear the table for the next commit.
+    this.buffer = new SquashingBuffer(this.LOCAL)
+    this.performCommits()
   }
 
   // Starts the committer that will try to committ all staged commits to the database
@@ -160,7 +153,6 @@ export default class BufferedDocument {
       success: () => {
         debug('Commit succeeded')
         docResponder.success()
-        commit.resolve()
         // Keep running the committer until no more commits
         this._cycleCommitter()
       },
@@ -180,7 +172,6 @@ export default class BufferedDocument {
         }
       },
       cancel: (error) => {
-        this.commits.forEach((commit) => commit.reject(error))
         // Throw away waiting commits
         this.commits = []
         // Reset back to last known state from gradient and
