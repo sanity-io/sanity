@@ -3,9 +3,10 @@ import {concat, merge, Observable, of, EMPTY} from 'rxjs'
 import {map, publishReplay, refCount, mergeMapTo} from 'rxjs/operators'
 import {IdPair} from '../types'
 import {memoize} from '../utils/createMemoizer'
-import {createOperationsAPI, GUARDED, OperationsAPI} from './operations'
+import {OperationsAPI} from './operations'
 import {operationArgs} from './operationArgs'
 import {operationEvents} from './operationEvents'
+import {createOperationsAPI, GUARDED} from './operations/helpers'
 
 export const editOperations = memoize(
   (idPair: IdPair, typeName: string): Observable<OperationsAPI> => {

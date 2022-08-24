@@ -1,8 +1,8 @@
 import {SanityDocument} from '@sanity/types'
 import {versionedClient} from '../../../../client/versionedClient'
-import {OperationArgs} from '../../types'
 import {isLiveEditEnabled} from '../utils/isLiveEditEnabled'
 import {publish} from './publish'
+import {OperationArgs} from './types'
 
 jest.mock('../../../../client/versionedClient', () => {
   const fn = jest.fn()

@@ -1,10 +1,10 @@
 import {versionedClient} from '../../../../client/versionedClient'
-import {OperationArgs} from '../../types'
 import {isLiveEditEnabled} from '../utils/isLiveEditEnabled'
+import {OperationImpl} from './types'
 
-export const del = {
+export const del: OperationImpl<[], 'NOTHING_TO_DELETE'> = {
   disabled: ({snapshots}) => (snapshots.draft || snapshots.published ? false : 'NOTHING_TO_DELETE'),
-  execute: ({idPair, typeName}: OperationArgs) => {
+  execute: ({idPair, typeName}) => {
     const tx = versionedClient.observable.transaction().delete(idPair.publishedId)
 
     if (isLiveEditEnabled(typeName)) {
