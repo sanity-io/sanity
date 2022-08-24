@@ -1,9 +1,9 @@
 import {EMPTY} from 'rxjs'
-import {OperationArgs} from '../../types'
+import {OperationImpl} from './types'
 
-export const commit = {
+export const commit: OperationImpl = {
   disabled: (): false => false,
-  execute: ({draft, published}: OperationArgs) => {
+  execute: ({draft, published}) => {
     draft.commit()
     published.commit()
     // todo: we might be able to connect with the outgoing commit request stream here

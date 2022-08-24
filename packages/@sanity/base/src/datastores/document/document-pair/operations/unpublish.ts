@@ -1,16 +1,18 @@
 import {omit} from 'lodash'
 import {versionedClient} from '../../../../client/versionedClient'
-import {OperationArgs} from '../../types'
 import {isLiveEditEnabled} from '../utils/isLiveEditEnabled'
+import {OperationImpl} from './types'
 
-export const unpublish = {
-  disabled: ({snapshots, typeName}: OperationArgs) => {
+type DisabledReason = 'LIVE_EDIT_ENABLED' | 'NOT_PUBLISHED'
+
+export const unpublish: OperationImpl<[], DisabledReason> = {
+  disabled: ({snapshots, typeName}) => {
     if (isLiveEditEnabled(typeName)) {
       return 'LIVE_EDIT_ENABLED'
     }
     return snapshots.published ? false : 'NOT_PUBLISHED'
   },
-  execute: ({idPair, snapshots}: OperationArgs) => {
+  execute: ({idPair, snapshots}) => {
     let tx = versionedClient.observable.transaction().delete(idPair.publishedId)
 
     if (snapshots.published) {
