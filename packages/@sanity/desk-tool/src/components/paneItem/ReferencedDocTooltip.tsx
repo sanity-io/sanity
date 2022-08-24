@@ -9,7 +9,7 @@ export function ReferencedDocTooltip({totalReferenceCount}: {totalReferenceCount
         <Tooltip
           content={
             <Box padding={2}>
-              <Text muted size={1}>
+              <Text size={1}>
                 Referenced by {totalReferenceCount}
                 {totalReferenceCount === 1 ? ' document' : ' documents'}
               </Text>

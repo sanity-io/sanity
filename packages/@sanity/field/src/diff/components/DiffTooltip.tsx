@@ -40,7 +40,7 @@ function DiffTooltipWithAnnotation(props: DiffTooltipWithAnnotationsProps) {
 
   const content = (
     <Stack padding={3} space={2}>
-      <Label size={1} style={{textTransform: 'uppercase'}} muted>
+      <Label size={1} style={{textTransform: 'uppercase'}}>
         {description}
       </Label>
       <Stack space={2}>
@@ -95,7 +95,7 @@ function AnnotationItem({annotation}: {annotation: AnnotationDetails}) {
           </Text>
         </Inline>
       </Flex>
-      <Text as="time" muted size={1} dateTime={timestamp}>
+      <Text as="time" size={1} dateTime={timestamp}>
         {timeAgo}
       </Text>
     </Inline>
