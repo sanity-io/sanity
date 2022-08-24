@@ -1,6 +1,6 @@
 import {SchemaType} from '@sanity/types'
 import {startCase} from 'lodash'
-import {SplitHorizontalIcon, StackCompactIcon} from '@sanity/icons'
+import {StackCompactIcon, StackIcon} from '@sanity/icons'
 import {MenuItemBuilder, getOrderingMenuItemsForSchemaType} from './MenuItem'
 import {DEFAULT_SELECTED_ORDERING_OPTION} from './Sort'
 import {DocumentListBuilder} from './DocumentList'
@@ -134,7 +134,7 @@ export function getDocumentTypeList(
         new MenuItemBuilder(context)
           .group('layout')
           .title('Detailed view')
-          .icon(SplitHorizontalIcon)
+          .icon(StackIcon)
           .action('setLayout')
           .params({layout: 'detail'}),
 
