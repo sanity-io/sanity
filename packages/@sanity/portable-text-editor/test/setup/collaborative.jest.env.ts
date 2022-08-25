@@ -209,6 +209,18 @@ export default class CollaborationEnvironment extends NodeEnvironment {
                 }),
               ])
             },
+            undo: async () => {
+              await page.keyboard.down(metaKey)
+              await page.keyboard.press('z')
+              await page.keyboard.up(metaKey)
+              await waitForRevision()
+            },
+            redo: async () => {
+              await page.keyboard.down(metaKey)
+              await page.keyboard.press('y')
+              await page.keyboard.up(metaKey)
+              await waitForRevision()
+            },
             pressKey: async (keyName: KeyInput, times?: number) => {
               await delay(generateRandomInteger(0, 100))
               const pressKey = async () => {
