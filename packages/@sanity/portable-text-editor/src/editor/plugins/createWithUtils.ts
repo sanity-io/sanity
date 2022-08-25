@@ -15,22 +15,6 @@ interface Options {
  */
 export function createWithUtils({portableTextFeatures, keyGenerator}: Options) {
   return function withUtils(editor: PortableTextSlateEditor): PortableTextSlateEditor {
-    editor.createPlaceholderBlock = (): Descendant => {
-      return {
-        _type: portableTextFeatures.types.block.name,
-        _key: keyGenerator(),
-        style: portableTextFeatures.styles[0].value,
-        markDefs: [],
-        children: [
-          {
-            _type: 'span',
-            _key: keyGenerator(),
-            text: '',
-            marks: [],
-          },
-        ],
-      }
-    }
     // Expands the the selection to wrap around the word the focus is at
     editor.pteExpandToWord = () => {
       const {selection} = editor
