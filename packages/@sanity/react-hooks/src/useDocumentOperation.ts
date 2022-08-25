@@ -3,10 +3,11 @@
 
 import documentStore from 'part:@sanity/base/datastore/document'
 import {useMemoObservable} from 'react-rx'
+import {OperationsAPI} from '@sanity/base'
 
 export function useDocumentOperation(publishedDocId: string, docTypeName: string) {
   return useMemoObservable(() => documentStore.pair.editOperations(publishedDocId, docTypeName), [
     publishedDocId,
     docTypeName,
-  ])
+  ]) as OperationsAPI
 }
