@@ -2,6 +2,7 @@ import {Box, Button, Card, Code, ErrorBoundary, Flex, Heading, Spinner} from '@s
 import {startCase} from 'lodash'
 import React, {createElement, Suspense, useCallback, useEffect, useMemo, useState} from 'react'
 import styled from 'styled-components'
+import {useHotModuleReload} from '../hooks/useHotModuleReload'
 import {RouteScope, useRouter} from '../router'
 import {Navbar} from './components'
 import {NoToolsScreen} from './screens/NoToolsScreen'
@@ -44,13 +45,10 @@ export function StudioLayout() {
     setSearchOpen(open)
   }, [])
 
-  useEffect(() => {
-    setToolError(null)
-  }, [activeToolName])
+  const resetToolError = useCallback(() => setToolError(null), [setToolError])
 
-  const handleToolRetry = useCallback(() => {
-    setToolError(null)
-  }, [])
+  useEffect(resetToolError, [activeToolName, resetToolError])
+  useHotModuleReload(resetToolError)
 
   return (
     <Flex data-ui="ToolScreen" direction="column" height="fill">
@@ -71,7 +69,7 @@ export function StudioLayout() {
             The <code>{activeToolName}</code> tool crashed
           </Heading>
           <Box marginTop={4}>
-            <Button onClick={handleToolRetry} text="Retry" />
+            <Button onClick={resetToolError} text="Retry" />
           </Box>
           <Card marginTop={4} overflow="auto" padding={3} tone="critical">
             <Code size={1}>{toolError.error.stack}</Code>
