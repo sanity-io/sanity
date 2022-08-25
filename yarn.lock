@@ -3185,10 +3185,10 @@
     tmp "^0.2.1"
     yargs "^17.5.1"
 
-"@sanity/ui-workshop@^0.4.15":
-  version "0.4.15"
-  resolved "https://registry.yarnpkg.com/@sanity/ui-workshop/-/ui-workshop-0.4.15.tgz#a8f1dfae8303696568a1a7cd578b9932d452e419"
-  integrity sha512-6y8L4FkaTEzT77No1xOsSegJ6FK6bSx2zn8NYWjrDP3zpqsPn/GEg+wpPnmWx5NtXst6HZy+Mmg08aPQ3M5AYw==
+"@sanity/ui-workshop@^0.5.0":
+  version "0.5.0"
+  resolved "https://registry.yarnpkg.com/@sanity/ui-workshop/-/ui-workshop-0.5.0.tgz#fa9369477189ce188beb0151d09f732ad0fe8e29"
+  integrity sha512-VTwFs6ropJAzoko3On4C3mYzJXlfJS4PkjIkZi9QgFwaiijN0W80/99FQEqITF47BAucqmoYyBxJ0xgHuMh1+g==
   dependencies:
     axe-core "^4.4.3"
     pako "^2.0.4"
@@ -3210,10 +3210,10 @@
     react-popper "^2.2.5"
     react-refractor "^2.1.7"
 
-"@sanity/ui@^0.37.20":
-  version "0.37.20"
-  resolved "https://registry.yarnpkg.com/@sanity/ui/-/ui-0.37.20.tgz#3e62534687352673599fafd7a1532a7336319e02"
-  integrity sha512-h0JS0YTAhYLkSutRfWIEZZqD2Ut9S0oho9eTp7q2iRKLqbzx0YEbbIkeH188mcWs8cfCqIfa4Q4HMsXGUhREGw==
+"@sanity/ui@^0.38.0":
+  version "0.38.0"
+  resolved "https://registry.yarnpkg.com/@sanity/ui/-/ui-0.38.0.tgz#97d6cfcb10048e23528dfb47d3c8a5cabd304a36"
+  integrity sha512-HtoWPSmCz8L8kLhRuwK/u/AEMQquW8SjR6dfykE1tVmgCl20r1c5zsBLsivpfqGJ4hfZxxf1MeHoClRIs+MrwQ==
   dependencies:
     "@juggle/resize-observer" "^3.4.0"
     "@popperjs/core" "^2.11.6"
