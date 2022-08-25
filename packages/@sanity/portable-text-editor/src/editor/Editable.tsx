@@ -25,6 +25,7 @@ import {usePortableTextEditor} from './hooks/usePortableTextEditor'
 import {PortableTextEditor} from './PortableTextEditor'
 import {createWithEditableAPI, createWithHotkeys, createWithInsertData} from './plugins'
 import {useForwardedRef} from './hooks/useForwardedRef'
+import {usePortableTextEditorValue} from './hooks/usePortableTextEditorValue'
 
 const debug = debugWithName('component:Editable')
 
@@ -102,11 +103,6 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
     portableTextFeatures,
     slateInstance: slateEditor,
   } = portableTextEditor
-
-  const isEmpty = useMemo(
-    () => isEqualToEmptyEditor(slateEditor.children, portableTextFeatures),
-    [portableTextFeatures, slateEditor.children]
-  )
 
   // React/UI-spesific plugins
   const withInsertData = useMemo(
@@ -326,7 +322,7 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
   }, [portableTextEditor, scrollSelectionIntoView])
 
   const decorate = useCallback(() => {
-    if (isEmpty && slateEditor.children.length <= 1) {
+    if (isEqualToEmptyEditor(slateEditor.children, portableTextFeatures)) {
       return [
         {
           anchor: {
@@ -342,7 +338,7 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
       ]
     }
     return EMPTY_DECORATORS
-  }, [isEmpty, slateEditor.children])
+  }, [portableTextFeatures, slateEditor.children])
 
   // The editor
   const slateEditable = useMemo(
