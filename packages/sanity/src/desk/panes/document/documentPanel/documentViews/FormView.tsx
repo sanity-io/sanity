@@ -1,7 +1,7 @@
 /* eslint-disable no-nested-ternary */
 
 import {isActionEnabled} from '@sanity/schema/_internal'
-import {Box, Container, Flex, Spinner, Text} from '@sanity/ui'
+import {Box, Container, Flex, Spinner, Text, useToast} from '@sanity/ui'
 import React, {useCallback, useEffect, useMemo} from 'react'
 import {tap} from 'rxjs/operators'
 import {useDocumentPane} from '../../useDocumentPane'
@@ -43,6 +43,7 @@ export function FormView(props: FormViewProps) {
     collapsedFieldSets,
     collapsedPaths,
     displayed: value,
+    editState,
     documentId,
     documentType,
     onChange: _handleChange,
@@ -101,6 +102,20 @@ export function FormView(props: FormViewProps) {
 
   //   return () => sub.unsubscribe()
   // }, [])
+
+  const toast = useToast()
+  const isLocked = editState?.transactionSyncLock?.enabled
+  useEffect(() => {
+    toast.push({
+      id: `sync-lock-${documentId}`,
+      status: 'warning',
+      // note1: there's a `duration || 0` in Sanity UI's pushToast(), so make it non-falsey
+      // note2: cannot use `Infinity` as duration, since it exceeds setTimeout's maximum delay value
+      duration: isLocked ? 3_600_000 : 0.01,
+      title: `Syncing document…`,
+      description: `Please hold tight while the document is synced. This usually happens right after the document has been published, and it shouldn't take more than a few seconds`,
+    })
+  }, [documentId, isLocked, toast])
 
   useEffect(() => {
     const sub = documentStore.pair
@@ -186,7 +201,7 @@ export function FormView(props: FormViewProps) {
                 onSetFieldSetCollapsed={onSetCollapsedFieldSet}
                 onSetPathCollapsed={onSetCollapsedPath}
                 presence={presence}
-                readOnly={isReadOnly}
+                readOnly={isReadOnly || editState?.transactionSyncLock?.enabled}
                 schemaType={formState.schemaType}
                 validation={validation}
                 value={formState.value}

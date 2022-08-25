@@ -1,10 +1,9 @@
-import {SanityClient} from '@sanity/client'
 import {SanityDocument} from '@sanity/types'
 import {filter, map, publishReplay, refCount} from 'rxjs/operators'
 import {Observable} from 'rxjs'
-import {IdPair, Mutation, ReconnectEvent} from '../types'
-import {BufferedDocumentEvent} from '../buffered-doc/createBufferedDocument'
-import {SnapshotEvent} from '../buffered-doc/types'
+import {SanityClient} from '@sanity/client'
+import {IdPair, Mutation, PendingMutationsEvent, ReconnectEvent} from '../types'
+import {BufferedDocumentEvent, SnapshotEvent} from '../buffered-doc'
 import {memoize} from '../utils/createMemoizer'
 import {memoizedPair} from './memoizedPair'
 import {DocumentVersion} from './checkoutPair'
@@ -49,7 +48,8 @@ export interface DocumentVersionSnapshots {
   commit: () => void
 }
 
-export interface SnapshotPair {
+interface SnapshotPair {
+  transactionsPendingEvents$: Observable<PendingMutationsEvent>
   draft: DocumentVersionSnapshots
   published: DocumentVersionSnapshots
 }
@@ -57,8 +57,9 @@ export interface SnapshotPair {
 export const snapshotPair = memoize(
   (client: SanityClient, idPair: IdPair, typeName: string) => {
     return memoizedPair(client, idPair, typeName).pipe(
-      map(({published, draft}): SnapshotPair => {
+      map(({published, draft, transactionsPendingEvents$}): SnapshotPair => {
         return {
+          transactionsPendingEvents$,
           published: withSnapshots(published),
           draft: withSnapshots(draft),
         }

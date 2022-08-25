@@ -4,15 +4,21 @@ import {filter, map, mergeMap, mergeMapTo, share, tap} from 'rxjs/operators'
 import {SanityDocument} from '@sanity/types'
 import {Mutation as MutatorMutation} from '@sanity/mutator'
 import {getPairListener, ListenerEvent} from '../getPairListener'
-import {BufferedDocumentEvent, createBufferedDocument} from '../buffered-doc'
-import {IdPair, Mutation, ReconnectEvent} from '../types'
-import {RemoteSnapshotEvent} from '../buffered-doc/types'
-import {CommitRequest} from '../buffered-doc/createObservableBufferedDocument'
+import {
+  BufferedDocumentEvent,
+  createBufferedDocument,
+  RemoteSnapshotEvent,
+  CommitRequest,
+} from '../buffered-doc'
+import {IdPair, Mutation, PendingMutationsEvent, ReconnectEvent} from '../types'
 
 const isMutationEventForDocId =
   (id: string) =>
-  (event: ListenerEvent): boolean =>
-    event.type !== 'reconnect' && event.documentId === id
+  (
+    event: ListenerEvent
+  ): event is Exclude<ListenerEvent, ReconnectEvent | PendingMutationsEvent> => {
+    return event.type !== 'reconnect' && event.type !== 'pending' && event.documentId === id
+  }
 
 export type WithVersion<T> = T & {version: 'published' | 'draft'}
 
@@ -35,6 +41,7 @@ export interface DocumentVersion {
 }
 
 export interface Pair {
+  transactionsPendingEvents$: Observable<PendingMutationsEvent>
   published: DocumentVersion
   draft: DocumentVersion
 }
@@ -89,6 +96,10 @@ export function checkoutPair(client: SanityClient, idPair: IdPair): Pair {
   )
 
   // share commit handling between draft and published
+  const transactionsPendingEvents$ = listenerEvents$.pipe(
+    filter((ev): ev is PendingMutationsEvent => ev.type === 'pending')
+  )
+
   const commits$ = merge(draft.commitRequest$, published.commitRequest$).pipe(
     mergeMap((commitRequest) => submitCommitRequest(client, commitRequest)),
     mergeMapTo(EMPTY),
@@ -96,6 +107,7 @@ export function checkoutPair(client: SanityClient, idPair: IdPair): Pair {
   )
 
   return {
+    transactionsPendingEvents$,
     draft: {
       ...draft,
       events: merge(commits$, reconnect$, draft.events).pipe(map(setVersion('draft'))),

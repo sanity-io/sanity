@@ -14,11 +14,20 @@ export interface MutationEvent {
   transactionId: string
   mutations: MutationPayload[]
   effects: {apply: unknown; revert: unknown}
+
+  transactionTotalEvents: number
+  transactionCurrentEvent: number
+
   transition: 'update' | 'appear' | 'disappear'
 }
 
 export interface ReconnectEvent {
   type: 'reconnect'
+}
+
+export interface PendingMutationsEvent {
+  type: 'pending'
+  phase: 'begin' | 'end'
 }
 
 export interface IdPair {

@@ -1,21 +1,27 @@
-import type {SanityClient} from '@sanity/client'
 import {SanityDocument, Schema} from '@sanity/types'
-import {Observable} from 'rxjs'
-import {map, publishReplay, refCount, startWith} from 'rxjs/operators'
+import {combineLatest, Observable} from 'rxjs'
+import {map, publishReplay, refCount, startWith, switchMap} from 'rxjs/operators'
+import {SanityClient} from '@sanity/client'
+import {IdPair, PendingMutationsEvent} from '../types'
 import {HistoryStore} from '../../history'
-import {IdPair} from '../types'
-import {operationArgs} from './operationArgs'
 import {isLiveEditEnabled} from './utils/isLiveEditEnabled'
+import {snapshotPair} from './snapshotPair'
 
-// TODO: should we rename this?
+interface TransactionSyncLockState {
+  enabled: boolean
+}
+
 export interface EditStateFor {
   id: string
   type: string
+  transactionSyncLock: TransactionSyncLockState | null
   draft: SanityDocument | null
   published: SanityDocument | null
   liveEdit: boolean
   ready: boolean
 }
+const LOCKED: TransactionSyncLockState = {enabled: true}
+const NOT_LOCKED: TransactionSyncLockState = {enabled: false}
 
 export const editState = (
   ctx: {
@@ -27,14 +33,25 @@ export const editState = (
   typeName: string
 ): Observable<EditStateFor> => {
   const liveEdit = isLiveEditEnabled(ctx.schema, typeName)
-  return operationArgs(ctx, idPair, typeName).pipe(
-    map(({snapshots}) => ({
+  return snapshotPair(ctx.client, idPair, typeName).pipe(
+    switchMap((versions) =>
+      combineLatest([
+        versions.draft.snapshots$,
+        versions.published.snapshots$,
+        versions.transactionsPendingEvents$.pipe(
+          map((ev: PendingMutationsEvent) => (ev.phase === 'begin' ? LOCKED : NOT_LOCKED)),
+          startWith(NOT_LOCKED)
+        ),
+      ])
+    ),
+    map(([draftSnapshot, publishedSnapshot, transactionSyncLock]) => ({
       id: idPair.publishedId,
       type: typeName,
-      draft: snapshots.draft,
-      published: snapshots.published,
+      draft: draftSnapshot,
+      published: publishedSnapshot,
       liveEdit,
       ready: true,
+      transactionSyncLock,
     })),
     startWith({
       id: idPair.publishedId,
@@ -43,6 +60,7 @@ export const editState = (
       published: null,
       liveEdit,
       ready: false,
+      transactionSyncLock: null,
     }),
     publishReplay(1),
     refCount()
