@@ -5,6 +5,7 @@ import {createOperationToPatches} from '../../utils/operationToPatches'
 import {createWithMaxBlocks} from './createWithMaxBlocks'
 import {createWithObjectKeys} from './createWithObjectKeys'
 import {createWithPatches} from './createWithPatches'
+import {createWithPlaceholderBlock} from './createWithPlaceholderBlock'
 import {createWithPortableTextBlockStyle} from './createWithPortableTextBlockStyle'
 import {createWithPortableTextLists} from './createWithPortableTextLists'
 import {createWithPortableTextMarkModel} from './createWithPortableTextMarkModel'
@@ -57,6 +58,7 @@ export const withPlugins = <T extends Editor>(
     keyGenerator
   )
   const withPortableTextBlockStyle = createWithPortableTextBlockStyle(portableTextFeatures, change$)
+  const withPlaceholderBlock = createWithPlaceholderBlock({keyGenerator, portableTextFeatures})
   const withUtils = createWithUtils({keyGenerator, portableTextFeatures})
   const withPortableTextSelections = createWithPortableTextSelections(change$, portableTextFeatures)
   e.destroy = () => {
@@ -69,7 +71,9 @@ export const withPlugins = <T extends Editor>(
   }
   const minimal = withSchemaTypes(
     withObjectKeys(
-      withPortableTextMarkModel(withPortableTextBlockStyle(withUtils(withPortableTextLists(e))))
+      withPortableTextMarkModel(
+        withPortableTextBlockStyle(withUtils(withPlaceholderBlock(withPortableTextLists(e))))
+      )
     )
   )
   const full =
@@ -80,7 +84,9 @@ export const withPlugins = <T extends Editor>(
           withPortableTextMarkModel(
             withPortableTextBlockStyle(
               withPortableTextLists(
-                withUtils(withMaxBlocks(withUndoRedo(withPatches(withPortableTextSelections(e)))))
+                withPlaceholderBlock(
+                  withUtils(withMaxBlocks(withUndoRedo(withPatches(withPortableTextSelections(e)))))
+                )
               )
             )
           )

@@ -347,7 +347,7 @@ export class PortableTextEditor extends React.Component<
     }
     // Set the new value
     debug('Replacing changed nodes')
-    if (this.props.value) {
+    if (val && val.length > 0) {
       const slateValueFromProps = toSlateValue(
         val,
         {
@@ -356,8 +356,6 @@ export class PortableTextEditor extends React.Component<
         KEY_TO_SLATE_ELEMENT.get(this.slateInstance)
       )
       this.slateInstance.children = slateValueFromProps
-    } else {
-      this.slateInstance.children = [this.slateInstance.createPlaceholderBlock()]
     }
     callbackFn()
   }

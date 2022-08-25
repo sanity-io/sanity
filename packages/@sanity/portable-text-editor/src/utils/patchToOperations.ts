@@ -1,12 +1,12 @@
 /* eslint-disable max-statements */
-import {Editor, Transforms, Element, Path as SlatePath, Descendant} from 'slate'
+import {Editor, Transforms, Element, Path as SlatePath, Descendant, Text, Node} from 'slate'
 import * as DMP from 'diff-match-patch'
 import {Path, KeyedSegment, PathSegment} from '@sanity/types'
 import {isEqual} from 'lodash'
 import type {Patch, InsertPatch, UnsetPatch, SetPatch, DiffMatchPatch} from '../types/patch'
 import {PortableTextFeatures, PortableTextBlock, PortableTextChild} from '../types/portableText'
 import {applyAll} from '../patch/applyPatch'
-import {isEqualToEmptyEditor, toSlateValue} from './values'
+import {toSlateValue} from './values'
 import {debugWithName} from './debug'
 import {KEY_TO_SLATE_ELEMENT} from './weakMaps'
 
@@ -30,12 +30,12 @@ export function createPatchToOperations(
       return blockKey ? node._key === blockKey : indx === patch.path[0]
     })
     const block = editor.children[blockIndex] as Element
-    const childKey = findLastKey([patch.path[2]])
-    const childIndex = block.children.findIndex((node, indx) => {
-      return childKey ? node._key === childKey : indx === patch.path[0]
-    })
     const parsed = dmp.patch_fromText(patch.value)[0]
-    if (parsed) {
+    if (parsed && editor.isTextBlock(block)) {
+      const childKey = findLastKey([patch.path[2]])
+      const childIndex = block.children.findIndex((node, indx) => {
+        return childKey ? node._key === childKey : indx === patch.path[0]
+      })
       const slatePath = [blockIndex, childIndex]
       const distance = parsed.length2 - parsed.length1
       const point = {
@@ -75,8 +75,9 @@ export function createPatchToOperations(
         })
       }
       debugState(editor, 'after')
+      return true
     }
-    return true
+    return false
   }
 
   function insertPatch(editor: Editor, patch: InsertPatch) {
@@ -95,19 +96,7 @@ export function createPatchToOperations(
       const normalizedIdx = position === 'after' ? index + 1 : index
       debug(`Inserting blocks at path [${normalizedIdx}]`)
       debugState(editor, 'before')
-      const isEmpty = isEqualToEmptyEditor(editor.children, portableTextFeatures)
-      debug('isEmpty', isEmpty)
-      if (isEmpty) {
-        debug('Removing placeholder block')
-        Transforms.removeNodes(editor, {at: [0]})
-      }
       Transforms.insertNodes(editor, blocksToInsert, {at: [normalizedIdx]})
-      if (isEmpty) {
-        Transforms.select(editor, {
-          focus: {path: [0, 0], offset: 0},
-          anchor: {path: [0, 0], offset: 0},
-        })
-      }
       debugState(editor, 'after')
       return true
     }
@@ -162,7 +151,7 @@ export function createPatchToOperations(
           ? node._key === patch.path[2]._key
           : indx === patch.path[2]
       })
-    let value: any = patch.value
+    let value = patch.value
     const targetPath: SlatePath = childIndex > -1 ? [blockIndex, childIndex] : [blockIndex]
     if (typeof patch.path[3] === 'string') {
       value = {}
@@ -175,7 +164,7 @@ export function createPatchToOperations(
       debugState(editor, 'before')
       if (targetPath.length === 1) {
         debug('Setting block property')
-        const {children, ...nextRest} = value
+        const {children, ...nextRest} = value as PortableTextBlock
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const {children: prevChildren, ...prevRest} = block || {children: undefined}
         editor.apply({
@@ -202,7 +191,7 @@ export function createPatchToOperations(
             })
           })
         }
-      } else if (typeof value.text === 'string') {
+      } else if (Text.isText(value)) {
         debug('Setting text property')
         const prevSel = editor.selection && {...editor.selection}
         editor.apply({
@@ -238,7 +227,7 @@ export function createPatchToOperations(
           type: 'set_node',
           path: targetPath,
           properties: {},
-          newProperties: value,
+          newProperties: value as Partial<Node>,
         })
       }
       debugState(editor, 'after')
@@ -258,13 +247,9 @@ export function createPatchToOperations(
     if (patch.path.length === 0) {
       debug(`Removing everything`)
       debugState(editor, 'before')
+      Transforms.deselect(editor)
       editor.children.forEach((c, i) => {
         Transforms.removeNodes(editor, {at: [i]})
-      })
-      Transforms.insertNodes(editor, editor.createPlaceholderBlock(), {at: [0]})
-      Transforms.select(editor, {
-        focus: {path: [0, 0], offset: 0},
-        anchor: {path: [0, 0], offset: 0},
       })
       debugState(editor, 'after')
       return true
@@ -275,18 +260,20 @@ export function createPatchToOperations(
       const index = editor.children.findIndex((node, indx) =>
         lastKey ? node._key === lastKey : indx === patch.path[0]
       )
-      if (index > -1) {
-        debug(`Removing block at path [${index}]`)
-        debugState(editor, 'before')
-        if (editor.selection && editor.selection.focus.path[0] === index) {
-          const point = {path: [editor.selection.focus.path[0] - 1 || 0], offset: 0}
-          Transforms.select(editor, {focus: point, anchor: point})
-          Transforms.move(editor, {unit: 'line'})
-        }
-        Transforms.removeNodes(editor, {at: [index]})
-        debugState(editor, 'after')
-        return true
+      debug(`Removing block at path [${index}]`)
+      debugState(editor, 'before')
+      if (
+        editor.selection &&
+        editor.selection.focus.path[0] === index &&
+        editor.children[index - 1]
+      ) {
+        const point = {path: [Math.max(editor.selection.focus.path[0] - 1, 0)], offset: 0}
+        Transforms.select(editor, {focus: point, anchor: point})
+        Transforms.move(editor, {unit: 'line'})
       }
+      Transforms.removeNodes(editor, {at: [index]})
+      debugState(editor, 'after')
+      return true
     }
 
     const blockIndex = editor.children.findIndex((node, indx) => {
@@ -329,9 +316,9 @@ export function createPatchToOperations(
           if (isMergeUnset) {
             debug('Adjusting selection for merging of nodes')
             prevSel.focus = {...prevSel.focus}
-            prevSel.focus.path = [targetPath[0], targetPath[1] - 1]
+            prevSel.focus.path = [targetPath[0], Math.max(targetPath[1] - 1, 0)]
             prevSel.focus.offset =
-              block.children[childIndex - 1].text.length -
+              block.children[Math.max(childIndex - 1, 0)].text.length -
               block.children[childIndex].text.length +
               prevSel.focus.offset
             prevSel.anchor = prevSel.focus
