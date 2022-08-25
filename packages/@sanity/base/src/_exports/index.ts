@@ -4,6 +4,7 @@ export * from '../theme'
 
 // Export document badges typings
 export type {DocumentBadgeComponent, DocumentBadgeDescription} from '../badges/types'
+export type {OperationsAPI} from '../datastores/document/document-pair/operations'
 
 // Export document actions typings
 export type {
