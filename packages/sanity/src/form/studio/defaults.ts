@@ -1,4 +1,6 @@
 import {createElement} from 'react'
+import {DiffComponent} from '../../field'
+import {isRecord} from '../../util'
 import {
   RenderFieldCallback,
   RenderInputCallback,
@@ -31,5 +33,13 @@ export const defaultRenderPreview: RenderPreviewCallback = (props) => {
 }
 
 export const defaultRenderDiff: RenderDiffCallback = (props) => {
-  return createElement(defaultResolveDiffComponent(props.schemaType), props)
+  const diffComponent = defaultResolveDiffComponent(props.schemaType)
+
+  if (isRecord(diffComponent) && diffComponent?.component) {
+    return createElement(diffComponent.component, props)
+  } else if (diffComponent) {
+    return createElement(diffComponent as DiffComponent, props)
+  }
+
+  return null
 }

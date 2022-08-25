@@ -1,6 +1,6 @@
 import {Button, Box, Card, Grid, Stack, useClickOutside} from '@sanity/ui'
 import {RevertIcon} from '@sanity/icons'
-import React, {useCallback, useContext, useMemo, useState} from 'react'
+import React, {useCallback, useContext, useEffect, useMemo, useState} from 'react'
 import {SanityDocument} from '@sanity/client'
 import {ObjectSchemaType} from '@sanity/types'
 import {unstable_useConditionalProperty as useConditionalProperty} from '../../../conditional-property'
@@ -11,6 +11,7 @@ import {buildObjectChangeList} from '../changes/buildChangeList'
 import {undoChange} from '../changes/undoChange'
 import {useDocumentChange} from '../hooks/useDocumentChange'
 import {useDocumentPairPermissions} from '../../../datastores'
+import {useSource} from '../../../studio'
 import {ChangeResolver} from './ChangeResolver'
 import {NoChanges} from './NoChanges'
 import {ChangeListWrapper, PopoverWrapper} from './ChangeList.styled'
@@ -22,6 +23,7 @@ export interface ChangeListProps {
 }
 
 export function ChangeList({diff, fields, schemaType}: ChangeListProps): React.ReactElement | null {
+  const {renderDiff} = useSource().form
   const {documentId, isComparingCurrent, value} = useDocumentChange()
   const docOperations = useDocumentOperation(documentId, schemaType.name) as FieldOperationsAPI
   const {path} = useContext(DiffContext)
@@ -47,14 +49,14 @@ export function ChangeList({diff, fields, schemaType}: ChangeListProps): React.R
   })
 
   const allChanges = useMemo(
-    () => buildObjectChangeList(schemaType, diff, path, [], {fieldFilter: fields}),
-    [schemaType, fields, path, diff]
+    () => buildObjectChangeList(schemaType, diff, path, [], {fieldFilter: fields, renderDiff}),
+    [schemaType, fields, path, diff, renderDiff]
   )
 
-  const changes = useMemo(
-    () => (fields && fields.length === 0 ? [] : maybeFlatten(allChanges)),
-    [allChanges, fields]
-  )
+  const changes = useMemo(() => {
+    // return fields && fields.length === 0 ? [] : allChanges
+    return fields && fields.length === 0 ? [] : maybeFlatten(allChanges)
+  }, [allChanges, fields])
 
   const rootChange = allChanges[0]
 

@@ -87,7 +87,8 @@ export function FieldChange(
               ) : (
                 <DiffErrorBoundary>
                   <DiffContext.Provider value={{path: change.path}}>
-                    {renderDiff({diff: change.diff, schemaType: change.schemaType})}
+                    {change.diffNode ||
+                      renderDiff({diff: change.diff, schemaType: change.schemaType})}
                   </DiffContext.Provider>
                 </DiffErrorBoundary>
               )}

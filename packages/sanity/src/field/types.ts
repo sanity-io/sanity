@@ -15,7 +15,7 @@ import {
   ConditionalProperty,
   SchemaType,
 } from '@sanity/types'
-import {ComponentType} from 'react'
+import React, {ComponentType, ReactNode} from 'react'
 import {
   // Base diffs
   ArrayDiff as AgnosticArrayDiff,
@@ -140,51 +140,6 @@ export type DiffComponentResolver = (options: {
 }) => React.ComponentType<any> | DiffComponentOptions<any> | undefined
 
 /**
- * Schema
- */
-
-// Note: INCOMPLETE, but good enough for diffs
-// export interface BaseSchemaType extends BaseGenericSchemaType {
-//   diffComponent?: DiffComponent<any> | DiffComponentOptions<any>
-// }
-
-// export interface StringSchemaType extends BaseStringSchemaType {
-//   diffComponent?: DiffComponent<StringDiff> | DiffComponentOptions<StringDiff>
-// }
-
-// export interface NumberSchemaType extends BaseNumberSchemaType {
-//   diffComponent?: DiffComponent<NumberDiff> | DiffComponentOptions<NumberDiff>
-// }
-
-// export interface BooleanSchemaType extends BaseBooleanSchemaType {
-//   diffComponent?: DiffComponent<BooleanDiff> | DiffComponentOptions<BooleanDiff>
-// }
-
-// export interface ArraySchemaType<V = unknown> extends BaseArraySchemaType {
-//   diffComponent?: DiffComponent<ArrayDiff<V>> | DiffComponentOptions<ArrayDiff<V>>
-// }
-
-// export interface BlockSchemaType<O> extends BaseBlockSchemaType {
-//   diffComponent?: DiffComponent<ObjectDiff<Block<O>>> | DiffComponentOptions<ObjectDiff<Block<O>>>
-// }
-
-// export interface ObjectSchemaType<T extends object = Record<string, any>>
-//   extends BaseObjectSchemaType {
-//   diffComponent?: DiffComponent<ObjectDiff<T>> | DiffComponentOptions<ObjectDiff<T>>
-// }
-
-// export interface ReferenceSchemaType extends BaseReferenceSchemaType {
-//   diffComponent?: DiffComponent<ObjectDiff<Reference>> | DiffComponentOptions<ObjectDiff<Reference>>
-// }
-
-// export type SchemaType<A = unknown, O extends object = Record<string, any>> =
-//   | ArraySchemaType<A>
-//   | BooleanSchemaType
-//   | NumberSchemaType
-//   | ObjectSchemaType<O>
-//   | StringSchemaType
-
-/**
  * "Changes" (presentation-oriented grouping of diffs)
  */
 export interface GroupChangeNode {
@@ -192,6 +147,7 @@ export interface GroupChangeNode {
   changes: ChangeNode[]
   key: string
   path: Path
+  diffNode?: ReactNode
   titlePath: ChangeTitlePath
   schemaType?: SchemaType
   readOnly?: ConditionalProperty
@@ -211,7 +167,7 @@ export interface FieldChangeNode {
   schemaType: ObjectFieldType
   showHeader: boolean
   showIndex: boolean
-  diffComponent?: DiffComponent
+  diffNode?: ReactNode
   parentSchema?: ArraySchemaType | ObjectSchemaType
   readOnly?: ConditionalProperty
   hidden?: ConditionalProperty

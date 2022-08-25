@@ -77,16 +77,19 @@ export function GroupChange(
           //   restProps[] === '' ? '' : undefined
           // }
         >
-          <Stack as={ChangeListWrapper} space={5}>
-            {changes.map((change) => (
-              <ChangeResolver
-                key={change.key}
-                change={change}
-                readOnly={readOnly}
-                hidden={hidden}
-              />
-            ))}
-          </Stack>
+          {group.diffNode || (
+            <Stack as={ChangeListWrapper} space={5}>
+              {changes.map((change) => (
+                <ChangeResolver
+                  key={change.key}
+                  change={change}
+                  readOnly={readOnly}
+                  hidden={hidden}
+                />
+              ))}
+            </Stack>
+          )}
+
           {isComparingCurrent && !isPermissionsLoading && permissions?.granted && (
             <PopoverWrapper
               content={
@@ -136,6 +139,7 @@ export function GroupChange(
       isPortableText,
       permissions,
       revertButtonRef,
+      group.diffNode,
     ]
   )
 
