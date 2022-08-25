@@ -8,15 +8,20 @@ import PatchEvent from '../../../PatchEvent'
 
 // These are the props any implementation of the ArrayFunctions part will receive
 export interface ArrayFunctionsProps<SchemaType extends ArraySchemaType, MemberType> {
+  /* eslint-disable react/no-unused-prop-types */
   className?: string
   type: SchemaType
   children?: ReactNode
+  /* eslint-disable react/no-unused-prop-types */
   value?: MemberType[]
   readOnly: boolean | null
   onAppendItem: (itemValue: MemberType) => void
+  /* eslint-disable react/no-unused-prop-types */
   onPrependItem: (itemValue: MemberType) => void
+  /* eslint-disable react/no-unused-prop-types */
   onFocusItem: (item: MemberType, index: number) => void
   onCreateValue: (type: SchemaType) => MemberType
+  /* eslint-disable react/no-unused-prop-types */
   onChange: (event: PatchEvent) => void
 }
 
