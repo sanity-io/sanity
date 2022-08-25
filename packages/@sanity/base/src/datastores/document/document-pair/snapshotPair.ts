@@ -47,7 +47,7 @@ export interface DocumentVersionSnapshots {
   delete: () => Mutation
 
   mutate: (mutations: Mutation[]) => void
-  commit: () => void
+  commit: (transactionId?: string) => void
 }
 
 interface SnapshotPair {

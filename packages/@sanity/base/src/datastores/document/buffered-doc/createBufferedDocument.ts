@@ -34,7 +34,7 @@ export interface BufferedDocumentWrapper {
   delete: () => Mutation
 
   mutate: (mutations: Mutation[]) => void
-  commit: () => void
+  commit: (transactionId?: string) => void
 }
 
 export const createBufferedDocument = (
@@ -61,6 +61,6 @@ export const createBufferedDocument = (
     delete: () => DELETE,
 
     mutate: (mutations: Mutation[]) => bufferedDocument.addMutations(mutations),
-    commit: () => bufferedDocument.commit(),
+    commit: (transactionId?: string) => bufferedDocument.commit(transactionId),
   }
 }
