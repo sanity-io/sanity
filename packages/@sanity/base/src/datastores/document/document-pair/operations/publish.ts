@@ -1,6 +1,6 @@
 import {omit} from 'lodash'
 import {isReference} from '@sanity/types'
-import {versionedClient} from '../../../../client/versionedClient'
+import {luid} from '@sanity/mutator'
 
 import {isLiveEditEnabled} from '../utils/isLiveEditEnabled'
 import {OperationImpl} from './index'
@@ -34,37 +34,49 @@ export const publish: OperationImpl<[], DisabledReason> = {
     }
     return false
   },
-  execute: ({idPair, snapshots}) => {
-    const tx = versionedClient.transaction()
+  execute: ({idPair, snapshots, draft, published}) => {
+    // flush any pending mutations
+    draft.commit()
+    published.commit()
 
     const value = strengthenOnPublish(omit(snapshots.draft, '_updatedAt'))
 
     if (snapshots.published) {
       // If it exists already, we only want to update it if the revision on the remote server
       // matches what our local state thinks it's at
-      tx.patch(idPair.publishedId, {
-        // Hack until other mutations support revision locking
-        unset: ['_revision_lock_pseudo_field_'],
-        ifRevisionID: snapshots.published._rev,
-      })
+      published.mutate(
+        published.patch([
+          {
+            unset: ['_revision_lock_pseudo_field_'],
+            ifRevisionID: snapshots.published._rev,
+          },
+        ])
+      )
 
-      tx.createOrReplace({
-        ...value,
-        _id: idPair.publishedId,
-        _type: snapshots.draft._type,
-      })
+      published.mutate([
+        published.createOrReplace({
+          ...value,
+          _id: idPair.publishedId,
+          _type: snapshots.draft._type,
+        }),
+      ])
     } else {
       // If the document has not been published, we want to create it - if it suddenly exists
       // before being created, we don't want to overwrite if, instead we want to yield an error
-      tx.create({
-        ...value,
-        _id: idPair.publishedId,
-        _type: snapshots.draft._type,
-      })
+      published.mutate([
+        published.create({
+          ...value,
+          _id: idPair.publishedId,
+          _type: snapshots.draft._type,
+        }),
+      ])
     }
 
-    tx.delete(idPair.draftId)
+    draft.mutate([draft.delete()])
 
-    return tx.commit({tag: 'document.publish'})
+    // Make sure to post mutations on both draft and published in the same transaction
+    const transactionId = luid()
+    draft.commit(transactionId)
+    published.commit(transactionId)
   },
 }
