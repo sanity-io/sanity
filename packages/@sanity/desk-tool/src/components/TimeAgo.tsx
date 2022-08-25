@@ -6,7 +6,7 @@ export interface TimeAgoProps {
 }
 
 export function TimeAgo({time}: TimeAgoProps) {
-  const timeAgo = useTimeAgo(time)
+  const timeAgo = useTimeAgo(time, {agoSuffix: true})
 
-  return <span title={timeAgo}>{timeAgo} ago</span>
+  return <span title={timeAgo}>{timeAgo}</span>
 }
