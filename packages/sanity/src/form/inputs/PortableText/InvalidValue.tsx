@@ -41,7 +41,7 @@ export function InvalidValue(props: InvalidValueProps) {
           </Box>
         </Stack>
       }
-      title={<>Invalid block value</>}
+      title={<>Invalid Portable Text Editor value</>}
     >
       <Stack space={3}>
         <Text as="p" muted size={1}>
