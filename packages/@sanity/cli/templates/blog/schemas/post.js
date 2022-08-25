@@ -32,6 +32,12 @@ export default {
       },
     },
     {
+      name: 'mainImageAlternative',
+      title: 'Alternative text for main image',
+      type: 'string',
+      description: 'Describe what is on this image',
+    },
+    {
       name: 'categories',
       title: 'Categories',
       type: 'array',
