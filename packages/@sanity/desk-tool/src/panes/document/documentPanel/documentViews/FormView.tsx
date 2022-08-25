@@ -46,6 +46,7 @@ export function FormView(props: FormViewProps) {
   const {
     compareValue,
     displayed: value,
+    editState,
     documentId,
     documentSchema,
     documentType,
@@ -159,7 +160,7 @@ export function FormView(props: FormViewProps) {
               type={documentSchema}
               presence={presence}
               filterField={filterField}
-              readOnly={isReadOnly}
+              readOnly={isReadOnly || editState?.publishState?.isPublishing}
               onBlur={handleBlur}
               onFocus={handleFocus}
               focusPath={focusPath}
@@ -184,21 +185,21 @@ export function FormView(props: FormViewProps) {
       </PresenceOverlay>
     )
   }, [
-    compareValue,
-    documentSchema,
-    filterField,
-    focusPath,
-    handleBlur,
-    handleChange,
-    handleFocus,
     hasTypeMismatch,
     margins,
-    markers,
-    patchChannelRef,
-    presence,
     ready,
-    isReadOnly,
     value,
+    compareValue,
+    documentSchema,
+    presence,
+    filterField,
+    isReadOnly,
+    editState?.publishState?.isPublishing,
+    handleBlur,
+    handleFocus,
+    focusPath,
+    handleChange,
+    markers,
     changesOpen,
   ])
 
