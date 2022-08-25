@@ -169,23 +169,15 @@ export function createWithPatches(
           return editor
         }
 
+        // Make sure the actual value is an array, and then insert the placeholder block into it
+        // before we produce any other patches that will target that block.
         if (editorWasEmpty && operation.type !== 'set_selection') {
           patches.push(setIfMissing([], []))
-          patches.push(
-            insert(
-              [
-                fromSlateValue(
-                  previousChildren.length === 0
-                    ? [editor.createPlaceholderBlock()]
-                    : previousChildren,
-                  portableTextFeatures.types.block.name,
-                  KEY_TO_VALUE_ELEMENT.get(editor)
-                )[0],
-              ],
-              'before',
-              [0]
+          previousChildren.forEach((c, index) => {
+            patches.push(
+              insert(fromSlateValue([c], portableTextFeatures.types.block.name), 'after', [index])
             )
-          )
+          })
         }
         switch (operation.type) {
           case 'insert_text':
