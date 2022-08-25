@@ -23,13 +23,13 @@ export function validateValue(
   if (value === undefined) {
     return {valid: true, resolution: null}
   }
-  // Only lengthy arrays are allowed
+  // Only lengthy arrays are allowed "inside" the editor.
   if (!Array.isArray(value) || value.length === 0) {
     return {
       valid: false,
       resolution: {
         patches: [unset([])],
-        description: 'Value must be an array or undefined',
+        description: 'Editor value must be an array of Portable Text blocks, or undefined.',
         action: 'Unset the value',
         item: value,
       },
