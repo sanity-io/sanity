@@ -24,7 +24,7 @@ function UnavailableMessage(props: {icon: ComponentType; children: ReactNode; ti
         </Text>
 
         <Box marginTop={3}>
-          <Text as="p" muted size={1}>
+          <Text as="p" size={1}>
             {props.children}
           </Text>
         </Box>
