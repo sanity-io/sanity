@@ -14,6 +14,7 @@ const DISABLED_REASON_TITLE = {
   LIVE_EDIT_ENABLED: 'Cannot publish since liveEdit is enabled for this document type',
   ALREADY_PUBLISHED: 'Already published',
   NO_CHANGES: 'No unpublished changes',
+  NOT_READY: 'Operation not ready',
 }
 
 function getDisabledReason(
@@ -36,10 +37,10 @@ function getDisabledReason(
 export const PublishAction: DocumentActionComponent = (props) => {
   const {id, type, liveEdit, draft, published} = props
   const [publishState, setPublishState] = useState<'publishing' | 'published' | null>(null)
-  const {publish}: any = useDocumentOperation(id, type)
+  const {publish} = useDocumentOperation(id, type)
   const validationStatus = useValidationStatus(id, type)
   const syncState = useSyncState(id, type)
-  const {changesOpen, handleHistoryOpen} = useDocumentPane()
+  const {changesOpen, editState, handleHistoryOpen} = useDocumentPane()
   const hasValidationErrors = validationStatus.markers.some((marker) => marker.level === 'error')
   // we use this to "schedule" publish after pending tasks (e.g. validation and sync) has completed
   const [publishScheduled, setPublishScheduled] = useState<boolean>(false)
@@ -126,6 +127,7 @@ export const PublishAction: DocumentActionComponent = (props) => {
 
   const disabled = Boolean(
     publishScheduled ||
+      editState?.transactionSyncLock?.enabled ||
       publishState === 'publishing' ||
       publishState === 'published' ||
       hasValidationErrors ||

@@ -97,6 +97,7 @@ describe('validation', () => {
         _updatedAt: '2021-09-07T16:23:52.256Z',
         title: 5,
       },
+      transactionSyncLock: null,
       liveEdit: false,
       published: undefined,
       type: 'movie',
@@ -139,6 +140,7 @@ describe('validation', () => {
         _updatedAt: '2021-09-07T16:23:52.256Z',
         title: 5,
       },
+      transactionSyncLock: null,
       liveEdit: false,
       published: undefined,
       type: 'movie',
@@ -158,6 +160,7 @@ describe('validation', () => {
         _updatedAt: '2021-09-07T16:23:52.256Z',
         title: 'valid title',
       },
+      transactionSyncLock: null,
       liveEdit: false,
       published: undefined,
       type: 'movie',
@@ -199,6 +202,7 @@ describe('validation', () => {
         exampleRef: {_ref: 'example-ref-id'},
         exampleRefTwo: {_ref: 'example-ref-other'},
       },
+      transactionSyncLock: null,
       liveEdit: false,
       published: undefined,
       type: 'movie',
@@ -256,6 +260,7 @@ describe('validation', () => {
         _updatedAt: '2021-09-07T16:23:52.256Z',
         title: 5,
       },
+      transactionSyncLock: null,
       liveEdit: false,
       published: undefined,
       type: 'movie',
@@ -310,6 +315,7 @@ describe('validation', () => {
       published: undefined,
       type: 'movie',
       ready: true,
+      transactionSyncLock: null,
     })
 
     await doneValidating()

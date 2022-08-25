@@ -6,7 +6,7 @@ import {
   unstable_useConditionalProperty as useConditionalProperty,
 } from '@sanity/base/hooks'
 import {PresenceOverlay} from '@sanity/base/presence'
-import {Box, Container, Flex, Spinner, Text} from '@sanity/ui'
+import {Box, Container, Flex, Spinner, Text, useToast} from '@sanity/ui'
 import afterEditorComponents from 'all:part:@sanity/desk-tool/after-editor-component'
 import documentStore from 'part:@sanity/base/datastore/document'
 import schema from 'part:@sanity/base/schema'
@@ -46,6 +46,7 @@ export function FormView(props: FormViewProps) {
   const {
     compareValue,
     displayed: value,
+    editState,
     documentId,
     documentSchema,
     documentType,
@@ -101,6 +102,20 @@ export function FormView(props: FormViewProps) {
   const handleBlur = useCallback(() => {
     // do nothing
   }, [])
+
+  const toast = useToast()
+  const isLocked = editState?.transactionSyncLock?.enabled
+  useEffect(() => {
+    toast.push({
+      id: `sync-lock-${documentId}`,
+      status: 'warning',
+      // note1: there's a `duration || 0` in Sanity UI's pushToast(), so make it non-falsey
+      // note2: cannot use `Infinity` as duration, since it exceeds setTimeout's maximum delay value
+      duration: isLocked ? 3_600_000 : 0.01,
+      title: `Syncing document…`,
+      description: `Please hold tight while the document is synced. This usually happens right after the document has been published, and it shouldn't take more than a few seconds`,
+    })
+  }, [documentId, isLocked, toast])
 
   useEffect(() => {
     const sub = documentStore.pair
@@ -159,7 +174,7 @@ export function FormView(props: FormViewProps) {
               type={documentSchema}
               presence={presence}
               filterField={filterField}
-              readOnly={isReadOnly}
+              readOnly={isReadOnly || editState?.transactionSyncLock?.enabled}
               onBlur={handleBlur}
               onFocus={handleFocus}
               focusPath={focusPath}
@@ -184,21 +199,21 @@ export function FormView(props: FormViewProps) {
       </PresenceOverlay>
     )
   }, [
-    compareValue,
-    documentSchema,
-    filterField,
-    focusPath,
-    handleBlur,
-    handleChange,
-    handleFocus,
     hasTypeMismatch,
     margins,
-    markers,
-    patchChannelRef,
-    presence,
     ready,
-    isReadOnly,
     value,
+    compareValue,
+    documentSchema,
+    presence,
+    filterField,
+    isReadOnly,
+    editState?.transactionSyncLock?.enabled,
+    handleBlur,
+    handleFocus,
+    focusPath,
+    handleChange,
+    markers,
     changesOpen,
   ])
 

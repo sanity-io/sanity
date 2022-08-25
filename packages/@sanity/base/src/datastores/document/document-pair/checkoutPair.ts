@@ -4,12 +4,15 @@ import {Mutation as MutatorMutation} from '@sanity/mutator'
 import {versionedClient} from '../../../client/versionedClient'
 import {getPairListener, ListenerEvent} from '../getPairListener'
 import {BufferedDocumentEvent, createBufferedDocument} from '../buffered-doc/createBufferedDocument'
-import {IdPair, Mutation, ReconnectEvent} from '../types'
+import {IdPair, Mutation, PendingMutationsEvent, ReconnectEvent} from '../types'
 import {RemoteSnapshotEvent} from '../buffered-doc/types'
 import {CommitRequest} from '../buffered-doc/createObservableBufferedDocument'
 
-const isMutationEventForDocId = (id: string) => (event: ListenerEvent): boolean =>
-  event.type !== 'reconnect' && event.documentId === id
+const isMutationEventForDocId = (id: string) => (
+  event: ListenerEvent
+): event is Exclude<ListenerEvent, ReconnectEvent | PendingMutationsEvent> => {
+  return event.type !== 'reconnect' && event.type !== 'pending' && event.documentId === id
+}
 
 type WithVersion<T> = T & {version: 'published' | 'draft'}
 
@@ -32,6 +35,7 @@ export interface DocumentVersion {
 }
 
 export interface Pair {
+  transactionsPendingEvents$: Observable<PendingMutationsEvent>
   published: DocumentVersion
   draft: DocumentVersion
 }
@@ -86,6 +90,10 @@ export function checkoutPair(idPair: IdPair): Pair {
   )
 
   // share commit handling between draft and published
+  const transactionsPendingEvents$ = listenerEvents$.pipe(
+    filter((ev): ev is PendingMutationsEvent => ev.type === 'pending')
+  )
+
   const commits$ = merge(draft.commitRequest$, published.commitRequest$).pipe(
     mergeMap(submitCommitRequest),
     mergeMapTo(EMPTY),
@@ -93,6 +101,7 @@ export function checkoutPair(idPair: IdPair): Pair {
   )
 
   return {
+    transactionsPendingEvents$,
     draft: {
       ...draft,
       events: merge(commits$, reconnect$, draft.events).pipe(map(setVersion('draft'))),
