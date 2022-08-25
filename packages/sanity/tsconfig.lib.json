@@ -16,7 +16,10 @@
     "jsx": "react",
 
     // For package.json import
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+
+    // For import.meta.env/import.meta.hot definition and similar
+    "types": ["vite/client"]
   },
   "references": [
     {"path": "../@sanity/diff"},
