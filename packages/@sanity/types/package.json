@@ -21,7 +21,7 @@
   ],
   "dependencies": {
     "@sanity/client": "^3.3.3",
-    "@sanity/color": "^2.1.8",
+    "@sanity/color": "^2.1.14",
     "@types/react": "^17.0.42",
     "rxjs": "^6.5.3"
   },

@@ -18,8 +18,8 @@
     "sanity-plugin"
   ],
   "dependencies": {
-    "@sanity/icons": "^1.2.6",
-    "@sanity/ui": "^0.37.9",
+    "@sanity/icons": "^1.3.4",
+    "@sanity/ui": "^0.37.21",
     "lodash": "^4.17.15",
     "react-color": "^2.13.8"
   },
