@@ -31,7 +31,7 @@ function getOpSuccessTitle(op: string): string {
   return `Successfully performed ${op} on document`
 }
 
-const IGNORE_OPS = ['patch', 'commit']
+const IGNORE_OPS = ['patch', 'commit', 'publish']
 
 export const DocumentOperationResults = memo(function DocumentOperationResults() {
   const {push: pushToast} = useToast()

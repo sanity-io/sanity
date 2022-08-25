@@ -75,7 +75,7 @@ export const publish: OperationImpl<[], DisabledReason> = {
     draft.mutate([draft.delete()])
 
     // Make sure to post mutations on both draft and published in the same transaction
-    const transactionId = luid()
+    const transactionId = `publish-${luid()}` //@todo remove prefix once we got the required backend support
     draft.commit(transactionId)
     published.commit(transactionId)
   },
