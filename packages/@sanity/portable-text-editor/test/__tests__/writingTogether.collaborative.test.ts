@@ -65,6 +65,98 @@ describe('collaborate editing', () => {
     })
   })
 
+  it('will reset the value when someone deletes everything, and when they start to type again, they will produce their own respective blocks.', async () => {
+    await setDocumentValue(initialValue)
+    const [editorA, editorB] = await getEditors()
+    await editorA.setSelection({
+      anchor: {path: [{_key: 'randomKey0'}, 'children', {_key: 'randomKey1'}], offset: 11},
+      focus: {path: [{_key: 'randomKey0'}, 'children', {_key: 'randomKey1'}], offset: 11},
+    })
+    await editorA.insertText(' world')
+    let valA = await editorA.getValue()
+    let valB = await editorB.getValue()
+    expect(valA).toEqual(valB)
+    expect(valB).toEqual([
+      {
+        _key: 'randomKey0',
+        _type: 'block',
+        markDefs: [],
+        style: 'normal',
+        children: [
+          {
+            _key: 'randomKey1',
+            _type: 'span',
+            text: 'Hello world',
+            marks: [],
+          },
+        ],
+      },
+    ])
+    await editorA.pressKey('Backspace', 11)
+    valA = await editorA.getValue()
+    valB = await editorB.getValue()
+    expect(valA).toEqual(valB)
+    expect(valA).toBe(undefined)
+    await editorB.pressKey('1')
+    valA = await editorA.getValue()
+    valB = await editorB.getValue()
+    expect(valA).toEqual(valB)
+    expect(valA).toMatchInlineSnapshot(`
+      Array [
+        Object {
+          "_key": "B-2",
+          "_type": "block",
+          "children": Array [
+            Object {
+              "_key": "B-3",
+              "_type": "span",
+              "marks": Array [],
+              "text": "1",
+            },
+          ],
+          "markDefs": Array [],
+          "style": "normal",
+        },
+      ]
+    `)
+    await editorA.pressKey('2')
+    valA = await editorB.getValue()
+    valB = await editorB.getValue()
+    expect(valA).toEqual(valB)
+    expect(valB).toMatchInlineSnapshot(`
+      Array [
+        Object {
+          "_key": "B-2",
+          "_type": "block",
+          "children": Array [
+            Object {
+              "_key": "B-3",
+              "_type": "span",
+              "marks": Array [],
+              "text": "1",
+            },
+          ],
+          "markDefs": Array [],
+          "style": "normal",
+        },
+        Object {
+          "_key": "randomKey0",
+          "_type": "block",
+          "children": Array [
+            Object {
+              "_key": "randomKey1",
+              "_type": "span",
+              "marks": Array [],
+              "text": "2",
+            },
+          ],
+          "markDefs": Array [],
+          "style": "normal",
+        },
+      ]
+    `)
+  })
+
   it('will update value in editor A when editor B writes something', async () => {
     await setDocumentValue([
       {
