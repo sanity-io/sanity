@@ -192,11 +192,11 @@ export const createObservableBufferedDocument = (listenerEvent$: Observable<List
   const addMutations = (mutations: MutationPayload[]) => emitAction({type: 'mutation', mutations})
   const addMutation = (mutation: MutationPayload) => addMutations([mutation])
 
-  const commit = () => {
+  const commit = (transactionId?: string) => {
     currentBufferedDocument$
       .pipe(
         take(1),
-        tap((bufferedDocument) => bufferedDocument!.commit())
+        tap((bufferedDocument) => bufferedDocument!.commit(transactionId))
       )
       .subscribe()
   }
