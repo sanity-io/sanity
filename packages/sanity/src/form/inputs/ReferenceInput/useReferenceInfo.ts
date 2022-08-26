@@ -78,7 +78,7 @@ export function useReferenceInfo(
   // workaround for a "bug" with useMemoObservable that doesn't
   // return the initial value upon resubscription
   const previousId = usePrevious(id, id)
-  if (previousId !== id) {
+  if (id && previousId !== id) {
     return INITIAL_LOADING_STATE
   }
   return referenceInfo
