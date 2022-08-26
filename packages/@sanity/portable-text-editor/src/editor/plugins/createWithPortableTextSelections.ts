@@ -16,7 +16,7 @@ export function createWithPortableTextSelections(
   return function withPortableTextSelections(
     editor: PortableTextSlateEditor
   ): PortableTextSlateEditor {
-    const emitSelection = () => {
+    const emitPortableTextSelection = () => {
       let ptRange: EditorSelection = null
       if (editor.selection) {
         const existing = SLATE_TO_PORTABLE_TEXT_RANGE.get(editor.selection)
@@ -35,8 +35,8 @@ export function createWithPortableTextSelections(
           SLATE_TO_PORTABLE_TEXT_RANGE.set(editor.selection, ptRange)
         }
       }
+      debug(`Emitting selection ${JSON.stringify(ptRange || null)}`)
       if (ptRange) {
-        debug(`Emitting selection ${JSON.stringify(ptRange)}`)
         change$.next({type: 'selection', selection: ptRange})
       } else {
         change$.next({type: 'selection', selection: null})
@@ -48,7 +48,7 @@ export function createWithPortableTextSelections(
       const hasChanges = editor.operations.length > 0
       onChange()
       if (hasChanges) {
-        emitSelection()
+        emitPortableTextSelection()
       }
     }
     return editor
