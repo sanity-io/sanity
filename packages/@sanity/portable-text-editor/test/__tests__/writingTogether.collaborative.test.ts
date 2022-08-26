@@ -60,8 +60,8 @@ describe('collaborate editing', () => {
       focus: {path: [{_key: 'randomKey0'}, 'children', {_key: 'randomKey1'}], offset: 11},
     })
     expect(selectionB).toEqual({
-      anchor: {offset: 0, path: [{_key: 'B-0'}, 'children', {_key: 'B-1'}]},
-      focus: {offset: 0, path: [{_key: 'B-0'}, 'children', {_key: 'B-1'}]},
+      anchor: {offset: 0, path: [{_key: 'randomKey0'}, 'children', {_key: 'randomKey1'}]},
+      focus: {offset: 0, path: [{_key: 'randomKey0'}, 'children', {_key: 'randomKey1'}]},
     })
   })
 
