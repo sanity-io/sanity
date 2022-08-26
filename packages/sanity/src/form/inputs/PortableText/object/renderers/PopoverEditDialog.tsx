@@ -12,7 +12,6 @@ import {
   Text,
   useBoundaryElement,
   useClickOutside,
-  useElementRect,
   useGlobalKeyDown,
   usePortal,
 } from '@sanity/ui'
@@ -97,17 +96,6 @@ export function PopoverEditDialog(props: PopoverEditDialogProps) {
   }, [elementRef?.current, forceUpdate])
 
   const [rootElement, setRootElement] = useState<HTMLDivElement | null>(null)
-  const boundaryElement = useBoundaryElement()
-  const boundaryElementRect = useElementRect(boundaryElement.element)
-
-  const contentStyle: React.CSSProperties = useMemo(
-    () => ({
-      opacity: boundaryElementRect ? undefined : 0,
-      width: boundaryElementRect ? `${boundaryElementRect.width - 16}px` : undefined,
-    }),
-
-    [boundaryElementRect]
-  )
 
   const handleScrollOrResize = useCallback(() => {
     setForceUpdate(forceUpdate + 1)
@@ -127,7 +115,7 @@ export function PopoverEditDialog(props: PopoverEditDialogProps) {
   return (
     <RootPopover
       constrainSize
-      content={<Content {...props} rootElement={rootElement} style={contentStyle} width={width} />}
+      content={<Content {...props} rootElement={rootElement} width={width} />}
       fallbackPlacements={POPOVER_FALLBACK_PLACEMENTS}
       placement="bottom"
       open
@@ -141,17 +129,16 @@ export function PopoverEditDialog(props: PopoverEditDialogProps) {
 function Content(
   props: PopoverEditDialogProps & {
     rootElement: HTMLDivElement | null
-    style: React.CSSProperties
   }
 ) {
-  const {onClose, rootElement, style, width = 0, title} = props
+  const {onClose, rootElement, width = 0, title} = props
   const {element: boundaryElement} = useBoundaryElement()
   const portal = usePortal()
 
   useClickOutside(onClose, [rootElement], boundaryElement)
 
   return (
-    <ContentContainer style={style} width={width}>
+    <ContentContainer width={width}>
       <Flex direction="column" flex={1}>
         <ContentHeaderBox padding={1}>
           <Flex align="center">
