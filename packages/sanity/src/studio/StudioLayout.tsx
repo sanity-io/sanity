@@ -2,7 +2,7 @@ import {Box, Button, Card, Code, ErrorBoundary, Flex, Heading, Spinner} from '@s
 import {startCase} from 'lodash'
 import React, {createElement, Suspense, useCallback, useEffect, useMemo, useState} from 'react'
 import styled from 'styled-components'
-import {useHotModuleReload} from '../hooks/useHotModuleReload'
+import {useHotModuleReload} from 'use-hot-module-reload'
 import {RouteScope, useRouter} from '../router'
 import {Navbar} from './components'
 import {NoToolsScreen} from './screens/NoToolsScreen'

@@ -17418,6 +17418,11 @@ use-device-pixel-ratio@^1.1.0:
   resolved "https://registry.yarnpkg.com/use-device-pixel-ratio/-/use-device-pixel-ratio-1.1.0.tgz#3fb519fd8cb693adc6ceb534c888f82432346693"
   integrity sha512-1c8CNimTFp8V1prGF5yLJ1WA+WGCqXlONaeQaOS2QgV7pFbJlsSYcNaxlisRcUkjZHiPI8seSRK1wY73OziGqg==
 
+use-hot-module-reload@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/use-hot-module-reload/-/use-hot-module-reload-1.0.1.tgz#3486713abd57f1509610f0f74aed51be356ccae6"
+  integrity sha512-wMaSVsuKOE3eh+EDF5MIOWQr479CymxZDzD8jYgcABZZ1znJzjPSlE/m/uy0BPGac0nDqa3PEOfiddTa8a/RrQ==
+
 use-sidecar@^1.1.2:
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/use-sidecar/-/use-sidecar-1.1.2.tgz#2f43126ba2d7d7e117aa5855e5d8f0276dfe73c2"
