@@ -358,6 +358,8 @@ export class PortableTextEditor extends React.Component<
     // Set the new value
     debug('Replacing changed nodes')
     if (val && val.length > 0) {
+      const oldSel = this.slateInstance.selection
+      Transforms.deselect(this.slateInstance)
       const slateValueFromProps = toSlateValue(
         val,
         {
@@ -366,6 +368,9 @@ export class PortableTextEditor extends React.Component<
         KEY_TO_SLATE_ELEMENT.get(this.slateInstance)
       )
       this.slateInstance.children = slateValueFromProps
+      if (oldSel) {
+        Transforms.select(this.slateInstance, oldSel)
+      }
     }
     callbackFn()
   }
