@@ -74,7 +74,7 @@ export const PaneHeader = forwardRef(function PaneHeader(
                   <ReferencedDocHeading totalReferenceCount={totalReferenceCount} title={title} />
                 ) : (
                   <Box paddingBottom={3}>
-                    <TitleText tabIndex={0} textOverflow="ellipsis" weight="semibold">
+                    <TitleText textOverflow="ellipsis" weight="semibold">
                       {title}
                     </TitleText>
                   </Box>
