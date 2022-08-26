@@ -1,5 +1,3 @@
-/* eslint-disable import/no-unresolved */
-
 import {FormFieldSet, ImperativeToast} from '@sanity/base/components'
 import {Box, Button, Card, Dialog, Menu, MenuButton, MenuItem, Stack, ToastParams} from '@sanity/ui'
 import {get, groupBy, uniqueId} from 'lodash'
@@ -18,12 +16,8 @@ import {
 import React, {ReactNode} from 'react'
 import {FormFieldPresence, PresenceOverlay} from '@sanity/base/presence'
 import deepCompare from 'react-fast-compare'
-import {
-  ResolvedUploader,
-  Uploader,
-  UploaderResolver,
-  UploadOptions,
-} from '../../../sanity/uploads/types'
+import {isImageSource} from '@sanity/asset-utils'
+import {ResolvedUploader, Uploader, UploadOptions} from '../../../sanity/uploads/types'
 import {ImageToolInput} from '../ImageToolInput'
 import PatchEvent, {setIfMissing, unset} from '../../../PatchEvent'
 import UploadPlaceholder from '../common/UploadPlaceholder'
@@ -39,6 +33,7 @@ import {UploadWarning} from '../common/UploadWarning'
 import {ImagePreview} from './ImagePreview'
 import {ImageInputField} from './ImageInputField'
 import {ImageActionsMenu} from './ImageActionsMenu'
+import {InvalidImageWarning} from './InvalidImageWarning'
 
 export interface Image extends Partial<BaseImage> {
   _upload?: UploadState
@@ -356,6 +351,10 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
     this.setState({isStale: true})
   }
 
+  handleClearField = () => {
+    this.props.onChange(PatchEvent.from([unset(['asset']), unset(['crop']), unset(['hotspot'])]))
+  }
+
   handleSelectFiles = (files: File[]) => {
     const {directUploads, readOnly} = this.props
     const {hoveringFiles} = this.state
@@ -431,7 +430,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
   renderPreview = () => {
     const {value, readOnly, type, directUploads, imageUrlBuilder} = this.props
 
-    if (!value) {
+    if (!value || !isImageSource(value)) {
       return null
     }
 
@@ -552,30 +551,31 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
 
     return (
       <WithReferencedAsset observeAsset={observeAsset} reference={asset}>
-        {(assetDocument) => (
-          <ImageActionsMenu
-            isMenuOpen={isMenuOpen}
-            onEdit={this.handleOpenDialog}
-            showEdit={showAdvancedEditButton}
-            onMenuOpen={(isOpen) => this.setState({isMenuOpen: isOpen})}
-          >
-            <ActionsMenu
-              onUpload={this.handleSelectFiles}
-              browse={browseMenuItem}
-              onReset={this.handleRemoveButtonClick}
-              downloadUrl={imageUrlBuilder
-                .image(value.asset)
-                .forceDownload(
-                  assetDocument.originalFilename || `download.${assetDocument.extension}`
-                )
-                .url()}
-              copyUrl={imageUrlBuilder.image(value.asset).url()}
-              readOnly={readOnly}
-              directUploads={directUploads}
-              accept={accept}
-            />
-          </ImageActionsMenu>
-        )}
+        {(assetDocument) => {
+          const filename = assetDocument.originalFilename || `download.${assetDocument.extension}`
+          const downloadUrl = imageUrlBuilder.image(assetDocument._id).forceDownload(filename).url()
+          const copyUrl = imageUrlBuilder.image(assetDocument._id).url()
+
+          return (
+            <ImageActionsMenu
+              isMenuOpen={isMenuOpen}
+              onEdit={this.handleOpenDialog}
+              showEdit={showAdvancedEditButton}
+              onMenuOpen={(isOpen) => this.setState({isMenuOpen: isOpen})}
+            >
+              <ActionsMenu
+                onUpload={this.handleSelectFiles}
+                browse={browseMenuItem}
+                onReset={this.handleRemoveButtonClick}
+                downloadUrl={downloadUrl}
+                copyUrl={copyUrl}
+                readOnly={readOnly}
+                directUploads={directUploads}
+                accept={accept}
+              />
+            </ImageActionsMenu>
+          )
+        }}
       </WithReferencedAsset>
     )
   }
@@ -815,6 +815,8 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
       return value?._upload && value?.asset ? 'transparent' : 'default'
     }
     const hasValueOrUpload = Boolean(value?._upload || value?.asset)
+    const hasInvalidImage =
+      value && typeof value.asset !== 'undefined' && !value?._upload && !isImageSource(value)
 
     return (
       <>
@@ -844,7 +846,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
               }
             >
               {/* not uploading */}
-              {!value?._upload && (
+              {!value?._upload && !hasInvalidImage && (
                 <FileTarget
                   tabIndex={0}
                   disabled={Boolean(readOnly)}
@@ -869,6 +871,8 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
                   )}
                 </FileTarget>
               )}
+
+              {hasInvalidImage && <InvalidImageWarning onClearValue={this.handleClearField} />}
 
               {/* uploading */}
               {value?._upload && this.renderUploadState(value._upload)}

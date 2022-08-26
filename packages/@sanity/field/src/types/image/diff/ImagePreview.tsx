@@ -3,10 +3,15 @@
 
 import React, {SyntheticEvent} from 'react'
 import {useDocumentValues} from '@sanity/base/hooks'
-import {getImageDimensions, isDefaultCrop, isDefaultHotspot} from '@sanity/asset-utils'
+import {
+  getImageDimensions,
+  isDefaultCrop,
+  isDefaultHotspot,
+  isImageSource,
+} from '@sanity/asset-utils'
 import imageUrlBuilder from '@sanity/image-url'
-import {ImageIcon} from '@sanity/icons'
-import {Box, Card, Flex, Text} from '@sanity/ui'
+import {ImageIcon, WarningOutlineIcon} from '@sanity/icons'
+import {Box, Card, Flex, Text, Stack} from '@sanity/ui'
 import styled from 'styled-components'
 import {hues} from '@sanity/color'
 import {versionedClient} from '../../../versionedClient'
@@ -93,6 +98,24 @@ export function ImagePreview(props: ImagePreviewProps): React.ReactElement {
   const {id, action, diff, hotspot, crop, is} = props
   const [imageError, setImageError] = React.useState<SyntheticEvent<HTMLImageElement, Event>>()
   const {value: asset} = useDocumentValues<MinimalAsset>(id, ASSET_FIELDS)
+
+  if (!isImageSource(id)) {
+    return (
+      <Flex direction="column" height="fill" flex={1}>
+        <Card tone="caution" padding={4} paddingRight={2} border radius={2}>
+          <Stack space={3}>
+            <Text size={1}>
+              <WarningOutlineIcon />
+            </Text>
+            <Text size={1} weight="semibold">
+              Invalid image value
+            </Text>
+          </Stack>
+        </Card>
+      </Flex>
+    )
+  }
+
   const dimensions = getImageDimensions(id)
 
   // undefined = still loading, null = its gone

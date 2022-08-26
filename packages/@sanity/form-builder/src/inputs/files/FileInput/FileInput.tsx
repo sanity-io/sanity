@@ -20,6 +20,7 @@ import {
 import {ImageIcon, SearchIcon} from '@sanity/icons'
 import {Box, Button, Card, Dialog, Menu, MenuButton, MenuItem, ToastParams} from '@sanity/ui'
 import {PresenceOverlay, FormFieldPresence} from '@sanity/base/presence'
+import {isFileSource} from '@sanity/asset-utils'
 import {WithReferencedAsset} from '../../../utils/WithReferencedAsset'
 import {Uploader, UploaderResolver, UploadOptions} from '../../../sanity/uploads/types'
 import PatchEvent, {setIfMissing, unset} from '../../../PatchEvent'
@@ -37,6 +38,7 @@ import {CardOverlay, FlexContainer} from './styles'
 import {FileInputField} from './FileInputField'
 import {FileDetails} from './FileDetails'
 import {FileSkeleton} from './FileSkeleton'
+import {InvalidFileWarning} from './InvalidFileWarning'
 
 type Field = {
   name: string
@@ -56,6 +58,7 @@ export type Props = {
   type: FileSchemaType
   level: number
   onChange: (event: PatchEvent) => void
+  // eslint-disable-next-line react/no-unused-prop-types
   resolveUploader: UploaderResolver
   observeAsset: (documentId: string) => Observable<FileAsset>
   onBlur: () => void
@@ -155,9 +158,14 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
     this.setState({isStale: true})
   }
 
+  handleClearField = () => {
+    this.props.onChange(PatchEvent.from(unset(['asset'])))
+  }
+
   handleSelectFiles = (files: DOMFile[]) => {
-    const {directUploads, readOnly} = this.props
+    const {directUploads, readOnly, value} = this.props
     const {hoveringFiles} = this.state
+
     if (directUploads && !readOnly) {
       this.uploadFirstAccepted(files)
     } else if (hoveringFiles.length > 0) {
@@ -689,6 +697,9 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
     }
 
     const hasValueOrUpload = Boolean(value?._upload || value?.asset)
+    const hasInvalidFile =
+      value && typeof value.asset !== 'undefined' && !value?._upload && !isFileSource(value)
+
     return (
       <>
         <ImperativeToast ref={this.setToast} />
@@ -718,7 +729,7 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
                 value={value?.asset?._ref}
               >
                 {/* not uploading */}
-                {!value?._upload && (
+                {!value?._upload && !hasInvalidFile && (
                   <FileTarget
                     tabIndex={0}
                     disabled={Boolean(readOnly)}
@@ -740,6 +751,8 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
                       : null}
                   </FileTarget>
                 )}
+
+                {hasInvalidFile && <InvalidFileWarning onClearValue={this.handleClearField} />}
 
                 {/* uploading */}
                 {value?._upload && this.renderUploadState(value._upload)}
