@@ -1,4 +1,8 @@
+import {prefixCommand} from '../../util/isNpx'
+
 const {size, sortBy} = require('lodash')
+
+const commandPrefix = prefixCommand()
 
 const headings = ['id', 'members', 'name', 'url', 'created']
 const helpText = `
@@ -8,10 +12,10 @@ Options
 
 Examples
   # List projects
-  sanity projects list
+  ${commandPrefix} projects list
 
   # List projects sorted by member count, ascending
-  sanity projects list --sort=members --order=asc
+  ${commandPrefix} projects list --sort=members --order=asc
 `
 
 const defaultFlags = {
