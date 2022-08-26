@@ -3,7 +3,7 @@ import {ArraySchemaType, Path} from '@sanity/types'
 import {Subscription, Subject, defer, of, EMPTY, Observable, OperatorFunction} from 'rxjs'
 import {concatMap, share, switchMap, tap} from 'rxjs/operators'
 import {randomKey} from '@sanity/util/content'
-import {createEditor, Descendant} from 'slate'
+import {createEditor, Descendant, Transforms} from 'slate'
 import {debounce, isEqual, throttle} from 'lodash'
 import {Slate} from '@sanity/slate-react'
 import {compileType} from '../utils/schema'
@@ -308,6 +308,8 @@ export class PortableTextEditor extends React.Component<
       isEqualToEmptyEditor(this.slateInstance.children, this.portableTextFeatures) &&
       this.props.value
     ) {
+      const oldSel = this.slateInstance.selection
+      Transforms.deselect(this.slateInstance)
       this.slateInstance.children = toSlateValue(
         val,
         {
@@ -315,6 +317,10 @@ export class PortableTextEditor extends React.Component<
         },
         KEY_TO_SLATE_ELEMENT.get(this.slateInstance)
       )
+      if (oldSel) {
+        Transforms.select(this.slateInstance, oldSel)
+      }
+      debug('Setting props.value directly to empty editor')
       callbackFn()
       return
     }
