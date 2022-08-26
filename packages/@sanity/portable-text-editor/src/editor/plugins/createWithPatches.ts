@@ -178,7 +178,7 @@ export function createWithPatches({
           patches.push(setIfMissing([], []))
           previousChildren.forEach((c, index) => {
             patches.push(
-              insert(fromSlateValue([c], portableTextFeatures.types.block.name), 'after', [index])
+              insert(fromSlateValue([c], portableTextFeatures.types.block.name), 'before', [index])
             )
           })
         }
