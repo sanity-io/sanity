@@ -45,7 +45,7 @@ const PRESENCE_MENU_POPOVER_PROPS: MenuButtonProps['popover'] = {
 }
 
 export function PresenceMenu(props: PresenceMenuProps) {
-  const {collapse, maxAvatars, projectId} = props
+  const {collapse, maxAvatars, projectId, label = "Who is here"} = props
   const presence = useGlobalPresence()
   const hasPresence = presence.length > 0
 
@@ -56,9 +56,10 @@ export function PresenceMenu(props: PresenceMenuProps) {
           icon={UsersIcon}
           mode="bleed"
           statusTone={hasPresence ? 'positive' : undefined}
+          aria-label={label}
         />
       ) : (
-        <Button mode="bleed" padding={1}>
+        <Button mode="bleed" padding={1} aria-label={label}>
           <AvatarStackCard>
             <AvatarStack maxLength={maxAvatars}>
               {presence.map((item) => (
