@@ -179,15 +179,7 @@ export type {ConnectionState, SyncState, ValidationStatus} from '../hooks'
 
 export type {FormFieldPresence} from '../presence'
 
-export type {
-  Route,
-  RouteChildren,
-  RouteSegment,
-  RouteTransform,
-  Router,
-  RouterNode,
-  RouterState,
-} from '../router'
+export * from '../router'
 
 export {
   renderStudio,

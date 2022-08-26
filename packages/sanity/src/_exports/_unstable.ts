@@ -201,7 +201,6 @@ export type {
   SanityPreviewProps,
 } from '../preview'
 
-export * from '../router'
 export * from '../schema'
 
 export type {ToolMenuProps} from '../studio'
