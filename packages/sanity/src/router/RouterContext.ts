@@ -2,6 +2,6 @@ import React from 'react'
 import {RouterContextValue} from './types'
 
 /**
- * @public
+ * @internal
  */
 export const RouterContext = React.createContext<RouterContextValue | null>(null)

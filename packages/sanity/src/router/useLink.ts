@@ -17,11 +17,11 @@ export function useLink(props: {
   onClick?: React.MouseEventHandler<HTMLElement>
   replace?: boolean
   target?: string
-}): {handleClick: React.MouseEventHandler<HTMLElement>} {
-  const {onClick, href, target, replace = false} = props
+}): {onClick: React.MouseEventHandler<HTMLElement>} {
+  const {onClick: onClickProp, href, target, replace = false} = props
   const {navigateUrl} = useRouter()
 
-  const handleClick = useCallback(
+  const onClick = useCallback(
     (event: React.MouseEvent<HTMLElement>): void => {
       if (event.isDefaultPrevented()) {
         return
@@ -29,8 +29,8 @@ export function useLink(props: {
 
       if (!href) return
 
-      if (onClick) {
-        onClick(event)
+      if (onClickProp) {
+        onClickProp(event)
       }
 
       if (isModifiedEvent(event) || !isLeftClickEvent(event)) {
@@ -46,8 +46,8 @@ export function useLink(props: {
 
       navigateUrl({path: href, replace})
     },
-    [href, navigateUrl, onClick, replace, target]
+    [href, navigateUrl, onClickProp, replace, target]
   )
 
-  return {handleClick}
+  return {onClick: onClick}
 }

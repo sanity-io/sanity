@@ -1,15 +1,13 @@
 import {flatten} from 'lodash'
-import {findMatchingRoutes} from './findMatchingRoutes'
+import {_findMatchingRoutes} from './_findMatchingRoutes'
 import {RouterNode, MatchResult} from './types'
 import {debug} from './utils/debug'
 
-/**
- * @public
- */
-export function resolvePathFromState(node: RouterNode, state: Record<string, unknown>): string {
+/** @internal */
+export function _resolvePathFromState(node: RouterNode, state: Record<string, unknown>): string {
   debug('Resolving path from state %o', state)
 
-  const match: MatchResult = findMatchingRoutes(node, state)
+  const match: MatchResult = _findMatchingRoutes(node, state)
 
   if (match.remaining.length > 0) {
     const remaining = match.remaining

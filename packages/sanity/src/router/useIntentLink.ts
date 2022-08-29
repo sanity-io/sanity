@@ -8,12 +8,12 @@ import {useRouter} from './useRouter'
  * ```tsx
  * import {useIntentLink} from 'sanity'
  *
- * const {handleClick, href} = useIntentLink({
+ * const {onClick, href} = useIntentLink({
  *   intent: 'edit',
  *   params: {id: 'foo'}
  * })
  *
- * <a href={href} onClick={handleClick}>Link to "foo" editor</a>
+ * <a href={href} onClick={onClick}>Link to "foo" editor</a>
  * ```
  *
  * @public
@@ -25,13 +25,13 @@ export function useIntentLink(props: {
   replace?: boolean
   target?: string
 }): {
-  handleClick: React.MouseEventHandler<HTMLElement>
+  onClick: React.MouseEventHandler<HTMLElement>
   href: string
 } {
-  const {intent, onClick, params, replace, target} = props
+  const {intent, onClick: onClickProp, params, replace, target} = props
   const {resolveIntentLink} = useRouter()
   const href = resolveIntentLink(intent, params)
-  const {handleClick} = useLink({href, onClick, replace, target})
+  const {onClick} = useLink({href, onClick: onClickProp, replace, target})
 
-  return {handleClick, href}
+  return {onClick, href}
 }

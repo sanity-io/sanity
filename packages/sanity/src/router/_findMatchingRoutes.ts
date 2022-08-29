@@ -1,10 +1,7 @@
-import {difference, intersection, isPlainObject, pick} from 'lodash'
+import {difference, intersection, pick} from 'lodash'
+import {isRecord} from '../util'
 import {RouterNode, MatchResult} from './types'
 import {arrayify} from './utils/arrayify'
-
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return isPlainObject(value)
-}
 
 function createMatchResult(
   nodes: RouterNode[],
@@ -14,7 +11,8 @@ function createMatchResult(
   return {nodes, missing, remaining}
 }
 
-export function findMatchingRoutes(
+/** @internal */
+export function _findMatchingRoutes(
   node: RouterNode,
   _state?: Record<string, unknown>
 ): MatchResult {
@@ -57,7 +55,7 @@ export function findMatchingRoutes(
   let matchingChild: MatchResult = {nodes: [], remaining: [], missing: []}
 
   arrayify(children).some((childNode) => {
-    matchingChild = findMatchingRoutes(childNode, remainingState)
+    matchingChild = _findMatchingRoutes(childNode, remainingState)
     return matchingChild.nodes.length > 0
   })
 

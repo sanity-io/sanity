@@ -1,6 +1,6 @@
-import {parseRoute} from './parseRoute'
-import {resolveStateFromPath} from './resolveStateFromPath'
-import {resolvePathFromState} from './resolvePathFromState'
+import {_parseRoute} from './_parseRoute'
+import {_resolveStateFromPath} from './_resolveStateFromPath'
+import {_resolvePathFromState} from './_resolvePathFromState'
 import {RouteTransform, Router, RouteChildren} from './types'
 import {decodeJsonParams, encodeJsonParams} from './utils/jsonParamsEncoding'
 import {decodeParams, encodeParams} from './utils/paramsEncoding'
@@ -16,6 +16,19 @@ export type NodeOptions = {
   }
   scope?: string
 }
+
+/**
+ * @public
+ */
+export const route: {
+  create: (
+    routeOrOpts: NodeOptions | string,
+    childrenOrOpts?: NodeOptions | RouteChildren | null,
+    children?: Router | RouteChildren
+  ) => Router
+  intents: (base: string) => Router
+  scope: (scopeName: string, ...rest: any[]) => Router
+} = {create: createRoute, scope: routeScope, intents: routeIntents}
 
 function normalizeChildren(children: any): RouteChildren {
   if (Array.isArray(children) || typeof children === 'function') {
@@ -52,19 +65,6 @@ function normalizeArgs(
 
   return {path, ...childrenOrOpts}
 }
-
-/**
- * @public
- */
-export const route: {
-  create: (
-    routeOrOpts: NodeOptions | string,
-    childrenOrOpts?: NodeOptions | RouteChildren | null,
-    children?: Router | RouteChildren
-  ) => Router
-  intents: (base: string) => Router
-  scope: (scopeName: string, ...rest: any[]) => Router
-} = {create: createRoute, scope: routeScope, intents: routeIntents}
 
 function createRoute(
   routeOrOpts: NodeOptions | string,
@@ -129,7 +129,7 @@ function createNode(options: NodeOptions): Router {
     throw new TypeError('Missing path')
   }
 
-  const parsedRoute = parseRoute(path)
+  const parsedRoute = _parseRoute(path)
 
   return {
     _isRoute: true, // todo: make a Router class instead
@@ -138,10 +138,10 @@ function createNode(options: NodeOptions): Router {
     children: children || [],
     transform,
     encode(state) {
-      return resolvePathFromState(this, state)
+      return _resolvePathFromState(this, state)
     },
     decode(_path) {
-      return resolveStateFromPath(this, _path)
+      return _resolveStateFromPath(this, _path)
     },
     isRoot: isRoot,
     isNotFound(pathname: string): boolean {
