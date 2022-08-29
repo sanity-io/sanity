@@ -19,7 +19,12 @@ export const IntentLink = forwardRef(function IntentLink(
   ref: ForwardedRef<HTMLAnchorElement>
 ) {
   const {intent, params, target, ...restProps} = props
-  const {handleClick, href} = useIntentLink({intent, params, target, onClick: props.onClick})
+  const {onClick, href} = useIntentLink({
+    intent,
+    params,
+    target,
+    onClick: props.onClick,
+  })
 
-  return <a {...restProps} href={href} onClick={handleClick} ref={ref} />
+  return <a {...restProps} href={href} onClick={onClick} ref={ref} target={target} />
 })

@@ -60,9 +60,9 @@ function matchPath(node: RouterNode, path: string): Record<string, string> | nul
 }
 
 /**
- * @public
+ * @internal
  */
-export function resolveStateFromPath(node: RouterNode, path: string): Record<string, any> | null {
+export function _resolveStateFromPath(node: RouterNode, path: string): Record<string, any> | null {
   debug('resolving state from path %s', path)
 
   const pathMatch = matchPath(node, path.split('?')[0])

@@ -15,8 +15,8 @@ export const Link = forwardRef(function Link(
   props: LinkProps & React.HTMLProps<HTMLAnchorElement>,
   ref: React.ForwardedRef<HTMLAnchorElement>
 ) {
-  const {onClick, href, target, replace, ...restProps} = props
-  const {handleClick} = useLink({onClick, href, target, replace})
+  const {onClick: onClickProp, href, target, replace, ...restProps} = props
+  const {onClick} = useLink({onClick: onClickProp, href, target, replace})
 
-  return <a {...restProps} onClick={handleClick} href={href} target={target} ref={ref} />
+  return <a {...restProps} onClick={onClick} href={href} target={target} ref={ref} />
 })
