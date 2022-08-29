@@ -16,7 +16,7 @@ export async function loadToFs(options: {
   const {cwd, scope, name, docs, version} = options
   const fullName = _encodePackageName(scope, name)
 
-  const packagePath = path.resolve(config.fs.etcPath, 'api', fullName)
+  const packagePath = path.resolve(config.fs.etcPath, fullName)
 
   await mkdirp(packagePath)
 
