@@ -3,7 +3,7 @@ import React from 'react'
 
 export function NoChanges() {
   return (
-    <Stack space={3}>
+    <Stack space={3} data-testid="review-changes-no-changes-message">
       <Text size={1} weight="semibold" as="h3">
         There are no changes
       </Text>

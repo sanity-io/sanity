@@ -22,7 +22,15 @@ interface NormalizedListOption {
   itemIndex: number
 }
 
-export const ArrayOfOptionsFieldDiff: DiffComponent<ArrayDiff> = ({diff, schemaType}) => {
+export interface ArrayOfOptionsFieldDiffProps {
+  diff: ArrayDiff
+  schemaType: ArraySchemaType
+}
+
+export const ArrayOfOptionsFieldDiff: DiffComponent<ArrayDiff> = ({
+  diff,
+  schemaType,
+}: ArrayOfOptionsFieldDiffProps) => {
   const options = schemaType.options?.list
   const colorManager = useUserColorManager()
   if (!Array.isArray(options)) {
@@ -31,7 +39,7 @@ export const ArrayOfOptionsFieldDiff: DiffComponent<ArrayDiff> = ({diff, schemaT
   }
 
   return (
-    <div>
+    <div data-testid="array-field-diff">
       {diff.items
         .map((item) => normalizeItems(item, diff, schemaType))
         .filter((item): item is NormalizedListOption => item !== null)

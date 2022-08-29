@@ -1,5 +1,5 @@
-import {Image} from '@sanity/types'
 import React from 'react'
+import {Image, ImageSchemaType} from '@sanity/types'
 import {Box, Card, Text} from '@sanity/ui'
 import {DiffCard, DiffTooltip, ChangeList, getAnnotationAtPath} from '../../../diff'
 import {DiffComponent, ObjectDiff} from '../../../types'
@@ -13,7 +13,15 @@ const CARD_STYLES = {
   flex: 1,
 }
 
-export const ImageFieldDiff: DiffComponent<ObjectDiff<Image>> = ({diff, schemaType}) => {
+export interface ImageFieldDiffProps {
+  diff: ObjectDiff<Image>
+  schemaType: ImageSchemaType
+}
+
+export const ImageFieldDiff: DiffComponent<ObjectDiff<Image>> = ({
+  diff,
+  schemaType,
+}: ImageFieldDiffProps) => {
   const {fromValue, toValue, fields, isChanged} = diff
   const fromRef = fromValue?.asset?._ref
   const toRef = toValue?.asset?._ref
@@ -96,7 +104,7 @@ export const ImageFieldDiff: DiffComponent<ObjectDiff<Image>> = ({diff, schemaTy
   const imageDiff = <FromTo align="center" from={from} layout="grid" to={to} />
 
   return (
-    <>
+    <Box data-testid="image-field-diff">
       {showImageDiff &&
         (didAssetChange ? (
           <DiffTooltip
@@ -113,6 +121,6 @@ export const ImageFieldDiff: DiffComponent<ObjectDiff<Image>> = ({diff, schemaTy
           <ChangeList diff={diff} schemaType={schemaType} fields={nestedFields} />
         </Box>
       )}
-    </>
+    </Box>
   )
 }

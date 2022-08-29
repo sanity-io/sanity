@@ -7,6 +7,7 @@ import {DiffComponent, ObjectDiff} from '../../../types'
 import {useRefValue} from '../../../diff/hooks'
 import {getSizeDiff} from './helpers'
 import {File, FileAsset} from './types'
+import {ObjectSchemaType} from '@sanity/types'
 
 const SizeDiff = styled.div`
   ${({theme}) => `
@@ -26,7 +27,15 @@ const SizeDiff = styled.div`
   }
 `
 
-export const FileFieldDiff: DiffComponent<ObjectDiff<File>> = ({diff, schemaType}) => {
+export interface FileFieldDiffProps {
+  diff: ObjectDiff<File>
+  schemaType: ObjectSchemaType
+}
+
+export const FileFieldDiff: DiffComponent<ObjectDiff<File>> = ({
+  diff,
+  schemaType,
+}: FileFieldDiffProps) => {
   const {fromValue, toValue, fields} = diff
   const fromAsset = fromValue?.asset
   const toAsset = toValue?.asset
@@ -105,13 +114,13 @@ export const FileFieldDiff: DiffComponent<ObjectDiff<File>> = ({diff, schemaType
   )
 
   return (
-    <>
+    <Box data-testid="file-field-diff">
       {didAssetChange && FileAssetChange}
       {nestedFields.length > 0 && (
         <Box marginTop={didAssetChange ? 4 : 3}>
           <ChangeList diff={diff} schemaType={schemaType} fields={nestedFields} />
         </Box>
       )}
-    </>
+    </Box>
   )
 }

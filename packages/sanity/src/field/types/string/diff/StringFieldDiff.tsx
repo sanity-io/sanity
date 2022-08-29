@@ -1,3 +1,4 @@
+import {StringSchemaType} from '@sanity/types'
 import React from 'react'
 import styled from 'styled-components'
 import {DiffFromTo, DiffString} from '../../../diff'
@@ -9,7 +10,15 @@ const StringWrapper = styled.div`
   word-wrap: break-word;
 `
 
-export const StringFieldDiff: DiffComponent<StringDiff> = ({diff, schemaType}) => {
+export interface StringFieldDiffProps {
+  diff: StringDiff
+  schemaType: StringSchemaType
+}
+
+export const StringFieldDiff: DiffComponent<StringDiff> = ({
+  diff,
+  schemaType,
+}: StringFieldDiffProps) => {
   const {options} = schemaType
 
   if (options?.list) {
@@ -19,7 +28,7 @@ export const StringFieldDiff: DiffComponent<StringDiff> = ({diff, schemaType}) =
   }
 
   return (
-    <StringWrapper>
+    <StringWrapper data-testid="string-field-diff">
       <DiffString diff={diff} />
     </StringWrapper>
   )

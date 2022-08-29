@@ -1,3 +1,5 @@
+import {SlugSchemaType} from '@sanity/types'
+import {Box} from '@sanity/ui'
 import React from 'react'
 import {DiffFromTo} from '../../../diff'
 import {DiffComponent, ObjectDiff} from '../../../types'
@@ -7,13 +9,23 @@ interface Slug {
   current?: string
 }
 
-export const SlugFieldDiff: DiffComponent<ObjectDiff<Slug>> = ({diff, schemaType}) => {
+export interface SlugFieldDiffProps {
+  diff: ObjectDiff<Slug>
+  schemaType: SlugSchemaType
+}
+
+export const SlugFieldDiff: DiffComponent<ObjectDiff<Slug>> = ({
+  diff,
+  schemaType,
+}: SlugFieldDiffProps) => {
   return (
-    <DiffFromTo
-      layout="inline"
-      diff={diff}
-      schemaType={schemaType}
-      previewComponent={SlugPreview}
-    />
+    <Box data-testid="slug-field-diff">
+      <DiffFromTo
+        layout="inline"
+        diff={diff}
+        schemaType={schemaType}
+        previewComponent={SlugPreview}
+      />
+    </Box>
   )
 }

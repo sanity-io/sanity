@@ -1,10 +1,19 @@
+import {BooleanSchemaType} from '@sanity/types'
 import {Box, Flex, Text} from '@sanity/ui'
 import React from 'react'
 import {DiffTooltip, FromToArrow, useDiffAnnotationColor} from '../../../diff'
 import {BooleanDiff, DiffComponent} from '../../../types'
 import {Checkbox, Switch} from '../preview'
 
-export const BooleanFieldDiff: DiffComponent<BooleanDiff> = ({diff, schemaType}) => {
+export interface BooleanFieldDiffProps {
+  diff: BooleanDiff
+  schemaType: BooleanSchemaType
+}
+
+export const BooleanFieldDiff: DiffComponent<BooleanDiff> = ({
+  diff,
+  schemaType,
+}: BooleanFieldDiffProps) => {
   const {fromValue, toValue} = diff
   const {title, options} = schemaType
   const Preview = options?.layout === 'checkbox' ? Checkbox : Switch
@@ -13,7 +22,7 @@ export const BooleanFieldDiff: DiffComponent<BooleanDiff> = ({diff, schemaType})
   const showToValue = toValue !== undefined && toValue !== null
 
   return (
-    <Flex align="center">
+    <Flex align="center" data-testid="boolean-field-diff">
       <DiffTooltip diff={diff}>
         <Flex align="center">
           <Preview checked={fromValue} color={userColor} />
