@@ -1,5 +1,4 @@
 import path from 'path'
-import {SanityDocument} from '@sanity/client'
 import {APIPackageDocument, TransformResult} from '@sanity/tsdoc-to-portable-text'
 import cac from 'cac'
 import chalk from 'chalk'
@@ -19,10 +18,12 @@ function main() {
     .command('[pattern]')
     .option('--quiet', '[boolean] print only crucial logs')
     .action(async (pattern, options) => {
-      const workspace = pattern
-        ? config.workspace.filter((p) => p === pattern)
-        : // .filter((p) => p.includes(pattern))
-          config.workspace
+      const workspace = pattern ? config.workspace.filter((p) => p === pattern) : config.workspace
+
+      if (workspace.length === 0) {
+        console.error(`${chalk.red('error')} no matching packages "${pattern}"`)
+        process.exit(1)
+      }
 
       const quiet = Boolean(options.quiet)
 
@@ -66,7 +67,7 @@ function main() {
         await loadToSanity(docs)
       } catch (error) {
         if (error instanceof Error) {
-          console.log(`${chalk.red('error')} ${quiet ? error.message : error.stack}`)
+          console.error(`${chalk.red('error')} ${quiet ? error.message : error.stack}`)
         }
 
         process.exit(1)
