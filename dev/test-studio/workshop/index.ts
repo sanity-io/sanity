@@ -1,5 +1,4 @@
-import {createPlugin} from 'sanity'
-import {route} from 'sanity/_unstable'
+import {createPlugin, route} from 'sanity'
 import {TerminalIcon} from '@sanity/icons'
 import {WorkshopOptions} from './types'
 import {WorkshopTool} from './WorkshopTool'

@@ -1,4 +1,4 @@
-import {useRouter} from 'sanity/_unstable'
+import {useRouter} from 'sanity'
 import {WorkshopLocation, WorkshopLocationStore} from '@sanity/ui-workshop'
 import qs from 'qs'
 import {useCallback, useMemo, useRef} from 'react'
