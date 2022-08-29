@@ -1,9 +1,6 @@
-/* eslint-disable import/no-unresolved */
-
-import React, {useCallback} from 'react'
+import React from 'react'
 import styled from 'styled-components'
 import {Box, Card, Checkbox, Flex, Switch} from '@sanity/ui'
-import {set} from '../patch'
 import {BooleanInputProps} from '../types'
 import {FormFieldHeaderText} from '../components/formField/FormFieldHeaderText'
 import {FormFieldStatus} from '../components/formField/FormFieldStatus'
@@ -17,15 +14,8 @@ const ZeroLineHeightBox = styled(Box)`
 `
 
 export function BooleanInput(props: BooleanInputProps) {
-  const {id, value, schemaType, readOnly, onChange, elementProps} = props
+  const {id, value, schemaType, readOnly, elementProps} = props
   const layout = schemaType.options?.layout || 'switch'
-
-  const handleChange = useCallback(
-    (event: React.SyntheticEvent<HTMLInputElement>) => {
-      onChange(set(event.currentTarget.checked))
-    },
-    [onChange]
-  )
 
   const indeterminate = typeof value !== 'boolean'
   const checked = value || false
@@ -39,7 +29,6 @@ export function BooleanInput(props: BooleanInputProps) {
           <LayoutSpecificInput
             label={schemaType.title}
             {...elementProps}
-            onChange={handleChange}
             indeterminate={indeterminate}
             checked={checked}
             style={{margin: -4}}

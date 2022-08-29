@@ -10,6 +10,7 @@ import {
 import {FormPatch, PatchEvent, set, unset} from '../../patch'
 import {useDidUpdate} from '../../hooks/useDidUpdate'
 import {useFormCallbacks} from '../../studio/contexts/FormCallbacks'
+import {isBooleanSchemaType, isNumberSchemaType} from '@sanity/types'
 
 /**
  * Responsible for creating inputProps and fieldProps to pass to ´renderInput´ and ´renderField´ for a primitive field/input
@@ -54,11 +55,20 @@ export function PrimitiveField(props: {
 
   const handleNativeChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
-      const inputValue = event.currentTarget.value
+      let inputValue: number | string | boolean = event.currentTarget.value
+      if (isNumberSchemaType(member.field.schemaType)) {
+        inputValue = event.currentTarget.valueAsNumber
+      } else if (isBooleanSchemaType(member.field.schemaType)) {
+        inputValue = event.currentTarget.checked
+      }
 
-      onChange(PatchEvent.from(inputValue ? set(inputValue) : unset()).prefixAll(member.name))
+      // `valueAsNumber` returns `NaN` on empty input
+      const hasEmptyValue =
+        inputValue === '' || (typeof inputValue === 'number' && isNaN(inputValue))
+
+      onChange(PatchEvent.from(hasEmptyValue ? unset() : set(inputValue)).prefixAll(member.name))
     },
-    [member.name, onChange]
+    [member.name, member.field.schemaType, onChange]
   )
 
   const validationError =
