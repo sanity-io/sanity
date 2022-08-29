@@ -8,6 +8,7 @@ import {Branding} from './components/Branding'
 import {resolveDocumentActions as documentActions} from './documentActions'
 import {resolveInitialValueTemplates} from './initialValueTemplates'
 import {languageFilter} from './plugins/language-filter'
+import {reviewChangesTest} from './plugins/reviewChangesTest'
 import {schemaTypes} from './schema'
 import {defaultDocumentNode, newDocumentOptions, structure} from './structure'
 import {workshopTool} from './workshop'
@@ -35,6 +36,7 @@ const sharedSettings = createPlugin({
     newDocumentOptions,
   },
   plugins: [
+    reviewChangesTest(),
     deskTool({
       icon: BookIcon,
       name: 'content',
