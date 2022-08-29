@@ -26,7 +26,8 @@ function createSegment(segment: string): RouteSegment | null {
   return {type: 'dir', name: segment}
 }
 
-export function parseRoute(route: string): Route {
+/** @internal */
+export function _parseRoute(route: string): Route {
   const [pathname] = route.split('?')
 
   const segments = pathname.split('/').map(createSegment).filter(Boolean) as RouteSegment[]

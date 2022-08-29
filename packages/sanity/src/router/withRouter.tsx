@@ -1,4 +1,4 @@
-import React, {ComponentType} from 'react'
+import React, {ComponentType, FunctionComponent} from 'react'
 import {RouterContextValue} from './types'
 import {useRouter} from './useRouter'
 
@@ -7,7 +7,7 @@ import {useRouter} from './useRouter'
  */
 export function withRouter<Props extends {router: RouterContextValue}>(
   Component: ComponentType<Props>
-) {
+): FunctionComponent<Omit<Props, 'router'>> {
   function WithRouter(props: Omit<Props, 'router'>) {
     const router = useRouter()
 

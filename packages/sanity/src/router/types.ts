@@ -62,6 +62,7 @@ export interface MatchResult {
   missing: string[]
   remaining: string[]
 }
+
 /**
  * @public
  */

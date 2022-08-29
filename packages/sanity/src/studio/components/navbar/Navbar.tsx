@@ -80,7 +80,7 @@ export function Navbar(props: NavbarProps) {
   const routerState = useRouterState()
   const ToolMenu = navbar?.components?.ToolMenu || DefaultToolMenu
   const {scheme} = useColorScheme()
-  const rootLink = useStateLink({state: {}})
+  const {href: rootHref, onClick: handleRootClick} = useStateLink({state: {}})
   const mediaIndex = useMediaIndex()
   const activeToolName = typeof routerState.tool === 'string' ? routerState.tool : undefined
 
@@ -161,15 +161,15 @@ export function Navbar(props: NavbarProps) {
       <Button
         aria-label={title}
         as="a"
-        href={rootLink.href}
+        href={rootHref}
         mode="bleed"
-        onClick={rootLink.handleClick}
+        onClick={handleRootClick}
         padding={3}
       >
         {rootLinkContent}
       </Button>
     ),
-    [rootLink.handleClick, rootLink.href, rootLinkContent, title]
+    [handleRootClick, rootHref, rootLinkContent, title]
   )
 
   // The HTML elements that are part of the search view (i.e. the "close" button that is visible

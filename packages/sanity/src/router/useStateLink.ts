@@ -14,10 +14,10 @@ export function useStateLink(props: {
   target?: string
   toIndex?: boolean
 }): {
-  handleClick: React.MouseEventHandler<HTMLElement>
+  onClick: React.MouseEventHandler<HTMLElement>
   href: string
 } {
-  const {onClick, replace, state, target, toIndex = false} = props
+  const {onClick: onClickProp, replace, state, target, toIndex = false} = props
 
   if (state && toIndex) {
     throw new Error('Passing both `state` and `toIndex={true}` as props to StateLink is invalid')
@@ -39,7 +39,7 @@ export function useStateLink(props: {
     [resolvePathFromState, state, toIndex]
   )
 
-  const {handleClick} = useLink({href, onClick, replace, target})
+  const {onClick} = useLink({href, onClick: onClickProp, replace, target})
 
-  return {handleClick, href}
+  return {onClick, href}
 }

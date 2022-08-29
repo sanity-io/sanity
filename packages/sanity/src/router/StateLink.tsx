@@ -17,8 +17,14 @@ export const StateLink = forwardRef(function StateLink(
   props: StateLinkProps & Omit<React.HTMLProps<HTMLAnchorElement>, 'href'>,
   ref: React.ForwardedRef<HTMLAnchorElement>
 ) {
-  const {onClick, replace, state, target, toIndex = false, ...restProps} = props
-  const {handleClick, href} = useStateLink({onClick, replace, state, target, toIndex})
+  const {onClick: onClickProp, replace, state, target, toIndex = false, ...restProps} = props
+  const {onClick, href} = useStateLink({
+    onClick: onClickProp,
+    replace,
+    state,
+    target,
+    toIndex,
+  })
 
-  return <a {...restProps} href={href} onClick={handleClick} ref={ref} />
+  return <a {...restProps} href={href} onClick={onClick} ref={ref} />
 })
