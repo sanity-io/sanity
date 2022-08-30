@@ -59,7 +59,7 @@ export function FormView(props: FormViewProps) {
     ready,
     changesOpen,
   } = useDocumentPane()
-  const presence = useDocumentPresence(documentId)
+  const presence = useDocumentPresence(documentId, {ignoreLastActiveUpdates: true})
   const {revTime: rev} = historyController
   const [{filterField}, setFilterField] = useState<FormViewState>(INITIAL_STATE)
 
