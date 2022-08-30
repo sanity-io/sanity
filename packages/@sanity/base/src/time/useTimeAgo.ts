@@ -48,9 +48,19 @@ export function useTimeAgo(time: Date | string, {minimal, agoSuffix}: TimeAgoOpt
 }
 
 function formatRelativeTime(date: Date | string, opts: TimeAgoOpts = {}): TimeSpec {
-  const now = Date.now()
   const parsedDate = date instanceof Date ? date : new Date(date)
 
+  // Invalid date? Return empty timestamp and inifinite refresh interval, to save us from
+  // continuously trying to format an invalid date. The `useEffect` calls in the hook will
+  // trigger a re-evaluation of the timestamp when the date changes, so this is safe.
+  if (!parsedDate.getTime()) {
+    return {
+      timestamp: '',
+      refreshInterval: +Infinity,
+    }
+  }
+
+  const now = Date.now()
   const diffMonths = differenceInMonths(now, parsedDate)
   const diffYears = differenceInYears(now, parsedDate)
 
