@@ -93,20 +93,16 @@ export function GroupChange(
           {isComparingCurrent && !isPermissionsLoading && permissions?.granted && (
             <PopoverWrapper
               content={
-                <Box>
-                  Are you sure you want to revert the changes?
-                  <Grid columns={2} gap={2} marginTop={2}>
-                    <Button mode="ghost" onClick={closeRevertChangesConfirmDialog}>
-                      <Text align="center">Cancel</Text>
-                    </Button>
-                    <Button tone="critical" onClick={handleRevertChanges}>
-                      <Text align="center">Revert change</Text>
-                    </Button>
+                <Stack space={3} padding={4}>
+                  <Text size={1}>Are you sure you want to revert the changes?</Text>
+
+                  <Grid columns={2} gap={2}>
+                    <Button mode="ghost" onClick={closeRevertChangesConfirmDialog} text="Cancel" />
+                    <Button tone="critical" onClick={handleRevertChanges} text="Revert change" />
                   </Grid>
-                </Box>
+                </Stack>
               }
               portal
-              padding={4}
               placement={'left'}
               open={confirmRevertOpen}
               ref={setRevertPopoverElement}
