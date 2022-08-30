@@ -1,4 +1,8 @@
-import {ObjectSchemaTypeWithOptions} from '@sanity/types'
+import {ObjectSchemaTypeWithOptions, SchemaType} from '@sanity/types'
+
+export function hasConditionalFields(type: SchemaType) {
+  return typeof type.readOnly === 'function' || typeof type.hidden === 'function'
+}
 
 interface CollapsibleOptions {
   collapsible: boolean
