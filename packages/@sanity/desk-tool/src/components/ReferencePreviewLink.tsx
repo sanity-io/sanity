@@ -1,6 +1,6 @@
 import {PreviewCard} from '@sanity/base/components'
 import {getPublishedId} from 'part:@sanity/base/util/draft-utils'
-import {useDocumentPresence} from '@sanity/base/hooks'
+import {useDocumentPresenceUsers} from '@sanity/base/hooks'
 import React, {useCallback} from 'react'
 import {SanityDocument, SchemaType} from '@sanity/types'
 import {usePaneRouter} from '../contexts/paneRouter'
@@ -17,7 +17,7 @@ interface ReferencePreviewLinkProps {
 export function ReferencePreviewLink(props: ReferencePreviewLinkProps) {
   const {onClick, type, value} = props
   const publishedId = getPublishedId(value?._id)
-  const documentPresence = useDocumentPresence(publishedId)
+  const documentPresence = useDocumentPresenceUsers(publishedId)
   const {ReferenceChildLink} = usePaneRouter()
 
   const Link = useCallback(

@@ -5,7 +5,7 @@ import {Text} from '@sanity/ui'
 import schema from 'part:@sanity/base/schema'
 import {SanityDefaultPreview} from 'part:@sanity/base/preview'
 import {PreviewCard} from '@sanity/base/components'
-import {useDocumentPresence} from '@sanity/base/hooks'
+import {useDocumentPresenceUsers} from '@sanity/base/hooks'
 import {getIconWithFallback} from '../../utils/getIconWithFallback'
 import {MissingSchemaType} from '../MissingSchemaType'
 import {usePaneRouter} from '../../contexts/paneRouter'
@@ -26,7 +26,7 @@ interface PaneItemProps {
 export function PaneItem(props: PaneItemProps) {
   const {icon, id, layout = 'default', pressed, schemaType, selected, title, value} = props
   const {ChildLink} = usePaneRouter()
-  const documentPresence = useDocumentPresence(id)
+  const documentPresence = useDocumentPresenceUsers(id)
   const hasSchemaType = Boolean(schemaType && schemaType.name && schema.get(schemaType.name))
   const previewValue = useMemo(() => ({title}), [title])
   const [clicked, setClicked] = useState<boolean>(false)

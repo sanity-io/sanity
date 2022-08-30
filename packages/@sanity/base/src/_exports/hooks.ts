@@ -1,4 +1,9 @@
-export {useDocumentPresence, useGlobalPresence} from '../datastores/presence/hooks'
+export {
+  useDocumentPresence,
+  useDocumentPresenceUsers,
+  useGlobalPresence,
+  useMinimalGlobalPresence,
+} from '../datastores/presence/hooks'
 export {useUser, useCurrentUser} from '../datastores/user/hooks'
 export {useDocumentType} from '../datastores/document/hooks'
 /* eslint-disable camelcase */

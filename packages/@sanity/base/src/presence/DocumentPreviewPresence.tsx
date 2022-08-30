@@ -1,11 +1,11 @@
+import type {User} from '@sanity/types'
 import {AvatarStack, Box, Card, Text, Theme, Tooltip, TooltipProps} from '@sanity/ui'
 import React, {useMemo} from 'react'
 import styled, {css, useTheme} from 'styled-components'
 import {UserAvatar, usePreviewCard} from '../components'
-import {DocumentPresence} from '../datastores/presence/types'
 
 interface DocumentPreviewPresenceProps {
-  presence: Omit<DocumentPresence, 'path'>[]
+  presence: User[]
 }
 
 const PRESENCE_MENU_POPOVER_PROPS: TooltipProps = {
@@ -27,9 +27,9 @@ const TooltipContentBox = styled(Box)`
   max-width: 150px;
 `
 
-const getTooltipText = (presence: Omit<DocumentPresence, 'path'>[]) => {
+const getTooltipText = (presence: User[]) => {
   if (presence.length === 1) {
-    return `${presence[0].user.displayName} is editing this document`
+    return `${presence[0].displayName} is editing this document`
   }
 
   if (presence.length > 1) {
@@ -45,30 +45,22 @@ export function DocumentPreviewPresence(props: DocumentPreviewPresenceProps) {
   const invertedScheme = color.dark ? 'light' : 'dark'
   const {selected} = usePreviewCard()
 
-  const uniqueUsers = useMemo(
-    () =>
-      Array.from(new Set(presence.map((a) => a.user.id))).map((id) => {
-        return presence.find((a) => a.user.id === id)
-      }),
-    [presence]
-  )
-
   const tooltipContent = useMemo(() => {
     return (
       <TooltipContentBox padding={2}>
         <Text align="center" size={1}>
-          {getTooltipText(uniqueUsers)}
+          {getTooltipText(presence)}
         </Text>
       </TooltipContentBox>
     )
-  }, [uniqueUsers])
+  }, [presence])
 
   return (
     <Tooltip content={tooltipContent} {...PRESENCE_MENU_POPOVER_PROPS}>
       <AvatarStackCard scheme={selected ? invertedScheme : undefined} $selected={selected}>
         <AvatarStack maxLength={2}>
-          {uniqueUsers.map((item) => (
-            <UserAvatar key={item.user.id} user={item.user} />
+          {presence.map((user) => (
+            <UserAvatar key={user.id} user={user} />
           ))}
         </AvatarStack>
       </AvatarStackCard>

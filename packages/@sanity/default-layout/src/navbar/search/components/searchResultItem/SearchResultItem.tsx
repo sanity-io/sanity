@@ -2,7 +2,7 @@
 ///<reference types="@sanity/types/parts" />
 
 import {PreviewCard} from '@sanity/base/components'
-import {useDocumentPresence} from '@sanity/base/hooks'
+import {useDocumentPresenceUsers} from '@sanity/base/hooks'
 import {IntentLink} from '@sanity/base/router'
 import {Box, ResponsivePaddingProps} from '@sanity/ui'
 import schema from 'part:@sanity/base/schema'
@@ -53,7 +53,7 @@ export function SearchResultItem({
 }: SearchItemProps) {
   const {hit, resultIndex} = data
   const type = schema.get(hit?._type)
-  const documentPresence = useDocumentPresence(documentId)
+  const documentPresence = useDocumentPresenceUsers(documentId)
   const {level} = useCommandList()
 
   const LinkComponent = useMemo(
