@@ -26,7 +26,7 @@ import {isTrueIsh, omitDeprecatedRole} from '../../utils/common'
 import {ObjectInputField} from './ObjectInputField'
 import {UnknownFields} from './UnknownFields'
 import {ObjectFieldSet} from './ObjectFieldSet'
-import {getCollapsedWithDefaults} from './utils'
+import {getCollapsedWithDefaults, hasConditionalFields} from './utils'
 import {FieldGroupTabs} from './fieldGroups'
 import {FieldGroupTabsWrapper} from './ObjectInput.styled'
 
@@ -230,7 +230,7 @@ export const ObjectInput = memo(
             key={`field-${field.name}`}
           >
             <ObjectInputField
-              parent={value}
+              parent={hasConditionalFields(field.type) ? value : undefined}
               field={field}
               value={fieldValue}
               onChange={handleFieldChange}
