@@ -1,3 +1,4 @@
+/* eslint-disable complexity */
 // @todo: remove the following line when part imports has been removed from this file
 ///<reference types="@sanity/types/parts" />
 
@@ -65,7 +66,6 @@ export default class Fieldset extends React.PureComponent<FieldsetProps, State> 
 
   constructor(props: FieldsetProps) {
     super(props)
-
     this.state = {
       isCollapsed: props.isCollapsed || false,
       hasBeenToggled: false,
@@ -78,6 +78,8 @@ export default class Fieldset extends React.PureComponent<FieldsetProps, State> 
       hasBeenToggled: true,
     }))
   }
+
+  handleKeyDown = (event) => (event.key === 'Enter' ? this.handleToggle() : false)
 
   handleFocus = (event: React.FocusEvent<HTMLDivElement>) => {
     // Make sure we don't trigger onFocus for child elements
@@ -135,7 +137,7 @@ export default class Fieldset extends React.PureComponent<FieldsetProps, State> 
     const showSummary = isCollapsible && isCollapsed
     // Hide the tooltip if field is collapsible, but field is not collapsed
     const hideTooltip = isCollapsible && !isCollapsed
-    const childPresence = isCollapsible && isCollapsed ? presence : []
+    const childPresence = isCollapsible && isCollapsed ? presence : EMPTY_ARRAY
     return (
       <div
         {...rest}
@@ -152,7 +154,7 @@ export default class Fieldset extends React.PureComponent<FieldsetProps, State> 
                   className={`${styles.legend} ${isCollapsed ? '' : styles.isOpen}`}
                   // Uses the tabIndex 0 and -1 here to avoid focus state on click
                   tabIndex={isCollapsible ? 0 : undefined}
-                  onKeyDown={(event) => (event.key === 'Enter' ? this.handleToggle() : false)}
+                  onKeyDown={this.handleKeyDown}
                 >
                   <div
                     className={styles.labelContainer}
@@ -204,7 +206,7 @@ export default class Fieldset extends React.PureComponent<FieldsetProps, State> 
             {!isCollapsible && (
               <div className={styles.content}>
                 {changeIndicator ? (
-                  <ChangeIndicator {...changeIndicator}>
+                  <ChangeIndicator {...(changeIndicator === true ? {} : changeIndicator)}>
                     <div className={styles.fieldWrapper} data-columns={columns && columns > 1}>
                       {children}
                     </div>
