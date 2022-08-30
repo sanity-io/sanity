@@ -16,12 +16,8 @@ export default function PreviewCardStory() {
           <Flex align="center" justify="center" gap={4}>
             <DocumentPreviewPresence
               presence={['id-1', 'id-2', 'id-3', 'id-4'].map((num) => ({
-                status: 'online',
-                lastActiveAt: '',
-                user: {
-                  imageUrl: 'https://source.unsplash.com/96x96/?face',
-                  id: num,
-                },
+                id: num,
+                imageUrl: 'https://source.unsplash.com/96x96/?face',
               }))}
             />
             <TextWithTone tone="positive">

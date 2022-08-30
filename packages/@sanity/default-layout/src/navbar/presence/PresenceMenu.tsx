@@ -1,5 +1,5 @@
 import {UserAvatar} from '@sanity/base/components'
-import {useGlobalPresence} from '@sanity/base/hooks'
+import {useMinimalGlobalPresence} from '@sanity/base/hooks'
 import {
   Card,
   AvatarStack,
@@ -17,7 +17,7 @@ import {CogIcon, UsersIcon} from '@sanity/icons'
 import React, {useMemo} from 'react'
 import styled from 'styled-components'
 import {StatusButton} from '../components'
-import {PresenceMenuItem} from '.'
+import {PresenceMenuItem} from './PresenceMenuItem'
 
 type PresenceMenuProps = {
   collapse?: boolean
@@ -47,7 +47,7 @@ const PRESENCE_MENU_POPOVER_PROPS: MenuButtonProps['popover'] = {
 
 export function PresenceMenu(props: PresenceMenuProps) {
   const {collapse, maxAvatars, projectId, label = 'Who is here'} = props
-  const presence = useGlobalPresence()
+  const presence = useMinimalGlobalPresence()
   const hasPresence = presence.length > 0
 
   const button = useMemo(

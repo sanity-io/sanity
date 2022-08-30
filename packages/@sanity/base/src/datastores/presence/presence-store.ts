@@ -4,8 +4,8 @@ import {
   auditTime,
   distinctUntilChanged,
   filter,
-  flatMap,
   map,
+  mergeMap,
   mergeMapTo,
   scan,
   share,
@@ -17,7 +17,7 @@ import {
   toArray,
   withLatestFrom,
 } from 'rxjs/operators'
-import {flatten, groupBy, omit, uniq} from 'lodash'
+import {flatten, groupBy, isEqual, omit, uniq, uniqBy} from 'lodash'
 import {nanoid} from 'nanoid'
 
 import {User} from '@sanity/types'
@@ -215,19 +215,23 @@ export const globalPresence$: Observable<GlobalPresence[]> = allSessions$.pipe(
     })
   ),
   map((userAndSessions) =>
-    userAndSessions.map((userAndSession) => ({
-      user: userAndSession.user,
-      status: 'online',
-      lastActiveAt: userAndSession.sessions.sort()[0]?.lastActiveAt,
-      locations: flatten((userAndSession.sessions || []).map((session) => session.locations || []))
-        .map((location) => ({
-          type: location.type,
-          documentId: location.documentId,
-          path: location.path,
-          lastActiveAt: location.lastActiveAt,
-        }))
-        .reduce((prev, curr) => prev.concat(curr), [] as PresenceLocation[]),
-    }))
+    userAndSessions
+      .map((userAndSession) => ({
+        user: userAndSession.user,
+        status: 'online' as const,
+        lastActiveAt: userAndSession.sessions.sort()[0]?.lastActiveAt,
+        locations: flatten(
+          (userAndSession.sessions || []).map((session) => session.locations || [])
+        )
+          .map((location) => ({
+            type: location.type,
+            documentId: location.documentId,
+            path: location.path,
+            lastActiveAt: location.lastActiveAt,
+          }))
+          .reduce((prev, curr) => prev.concat(curr), [] as PresenceLocation[]),
+      }))
+      .sort((a, b) => a.user.id.localeCompare(b.user.id))
   )
 )
 
@@ -239,7 +243,7 @@ export const documentPresence = (documentId: string): Observable<DocumentPresenc
         filter(
           (userAndSession) => debugIntrospect || userAndSession.session.sessionId !== SESSION_ID
         ),
-        flatMap((userAndSession) =>
+        mergeMap((userAndSession) =>
           (userAndSession.session.locations || [])
             .filter((item) => item.documentId === documentId)
             .map((location) => ({
@@ -251,5 +255,25 @@ export const documentPresence = (documentId: string): Observable<DocumentPresenc
         toArray()
       )
     )
+  )
+}
+
+export const documentPresenceUsers = (documentId: string): Observable<User[]> => {
+  return allSessions$.pipe(
+    withLatestFrom(debugIntrospect$),
+    map(([userAndSessions, debugIntrospect]) => {
+      const relevant = userAndSessions.filter(({session}) => {
+        const includeUser = debugIntrospect || session.sessionId !== SESSION_ID
+        const isInDocument = session.locations?.some(
+          (location) => location.documentId === documentId
+        )
+        return includeUser && isInDocument
+      })
+
+      return uniqBy(relevant, ({user}) => user.id)
+        .map(({user}) => user)
+        .sort((a, b) => (a.id > b.id ? 1 : -1))
+    }),
+    distinctUntilChanged(isEqual)
   )
 }

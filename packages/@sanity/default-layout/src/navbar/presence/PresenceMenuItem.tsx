@@ -1,5 +1,5 @@
 import React, {forwardRef, useMemo} from 'react'
-import {GlobalPresence} from '@sanity/base/presence'
+import {MinimalGlobalPresence} from '@sanity/base/presence'
 import {orderBy} from 'lodash'
 import * as PathUtils from '@sanity/util/paths'
 import {Box, Card, Flex, MenuItem, Text} from '@sanity/ui'
@@ -9,7 +9,7 @@ import {IntentLink} from '@sanity/base/router'
 import styled from 'styled-components'
 
 interface PresenceListRowProps {
-  presence: GlobalPresence
+  presence: MinimalGlobalPresence
 }
 
 const AvatarCard = styled(Card)`

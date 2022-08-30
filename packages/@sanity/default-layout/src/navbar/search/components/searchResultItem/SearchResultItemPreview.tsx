@@ -1,9 +1,9 @@
 // @todo: remove the following line when part imports has been removed from this file
 ///<reference types="@sanity/types/parts" />
 
-import {DocumentPresence, DocumentPreviewPresence} from '@sanity/base/presence'
+import {DocumentPreviewPresence} from '@sanity/base/presence'
 import type {SanityDocument} from '@sanity/client'
-import type {SchemaType} from '@sanity/types'
+import type {SchemaType, User} from '@sanity/types'
 import {Box, Inline, Label} from '@sanity/ui'
 import {SanityDefaultPreview} from 'part:@sanity/base/preview'
 import React, {useEffect, useMemo, useState} from 'react'
@@ -13,7 +13,7 @@ import type {SearchItemPreviewState} from './types'
 
 interface SearchResultItemPreviewProps {
   documentId: string
-  presence?: DocumentPresence[]
+  presence?: User[]
   schemaType: SchemaType
 }
 

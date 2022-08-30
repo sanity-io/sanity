@@ -6,7 +6,7 @@ import {Box, Flex, Inline, Label, Text, Tooltip, useRootTheme} from '@sanity/ui'
 import {AccessDeniedIcon, EditIcon, HelpCircleIcon, PublishIcon} from '@sanity/icons'
 import {TextWithTone} from '@sanity/base/components'
 import {DocumentPreviewPresence} from '@sanity/base/presence'
-import {useDocumentPresence} from '@sanity/base/hooks'
+import {useDocumentPresenceUsers} from '@sanity/base/hooks'
 import Preview from '../../Preview'
 import {DocumentPreview} from './types'
 import {TimeAgo} from './utils/TimeAgo'
@@ -52,7 +52,7 @@ export function ReferencePreview(props: {
   const {availability, id, layout, preview, refType, showTypeLabel} = props
 
   const theme = useRootTheme()
-  const documentPresence = useDocumentPresence(id)
+  const documentPresence = useDocumentPresenceUsers(id)
 
   const notFound = availability.reason === 'NOT_FOUND'
   const insufficientPermissions = availability.reason === 'PERMISSION_DENIED'

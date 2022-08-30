@@ -1,8 +1,8 @@
 // @todo: remove the following line when part imports has been removed from this file
 ///<reference types="@sanity/types/parts" />
 
-import {DocumentPreviewPresence, DocumentPresence} from '@sanity/base/presence'
-import {SanityDocument, SchemaType} from '@sanity/types'
+import {DocumentPreviewPresence} from '@sanity/base/presence'
+import {SanityDocument, SchemaType, User} from '@sanity/types'
 import {Inline} from '@sanity/ui'
 import {SanityDefaultPreview} from 'part:@sanity/base/preview'
 import React from 'react'
@@ -15,7 +15,7 @@ import {PaneItemPreviewState} from './types'
 export interface PaneItemPreviewProps {
   icon: React.ComponentType<any> | false
   layout: 'inline' | 'block' | 'default' | 'card' | 'media' | 'detail'
-  presence?: DocumentPresence[]
+  presence?: User[]
   schemaType: SchemaType
   value: SanityDocument
 }
