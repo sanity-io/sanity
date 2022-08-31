@@ -18,6 +18,7 @@ import {useMemberValidation} from '../hooks/useMemberValidation'
 import {usePortableTextMarkers} from '../hooks/usePortableTextMarkers'
 import {usePortableTextMemberItem} from '../hooks/usePortableTextMembers'
 import {pathToString} from '../../../../field/paths'
+import {debugRender} from '../debugRender'
 import {BlockObjectPreview} from './BlockObjectPreview'
 import {
   Root,
