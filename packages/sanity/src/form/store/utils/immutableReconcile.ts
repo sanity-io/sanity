@@ -4,10 +4,17 @@
  * @param previous - the previous value
  * @param next - the next/current value
  */
-export function immutableReconcile<T>(
+export function immutableReconcile<T>(previous: unknown, next: T): T {
+  return _immutableReconcile(previous, next, new WeakSet())
+}
+
+function _immutableReconcile<T>(
   previous: unknown,
   next: T,
-  parents: WeakSet<any> = new Set()
+  /**
+   * Keep track of visited nodes to prevent infinite recursion in case of circular structures
+   */
+  parents: WeakSet<any>
 ): T {
   if (previous === next) return previous as T
 
@@ -33,7 +40,7 @@ export function immutableReconcile<T>(
         return next
       }
 
-      const nextItem = immutableReconcile(previous[index], next[index], parents)
+      const nextItem = _immutableReconcile(previous[index], next[index], parents)
 
       if (nextItem !== previous[index]) {
         allEqual = false
@@ -54,7 +61,7 @@ export function immutableReconcile<T>(
       if (parents.has(next[key])) {
         return next
       }
-      const nextValue = immutableReconcile(previous[key], next[key]!, parents)
+      const nextValue = _immutableReconcile(previous[key], next[key]!, parents)
       if (nextValue !== previous[key]) {
         allEqual = false
       }
