@@ -1,8 +1,8 @@
 import PropTypes from 'prop-types'
-import React from 'react'
+import React, {useMemo} from 'react'
 import {BlockEditor} from 'part:@sanity/form-builder'
 import {PortableTextEditor} from '@sanity/portable-text-editor'
-import blockTools from '@sanity/block-tools'
+import {htmlToBlocks} from '@sanity/block-tools'
 import CustomMarkers from './CustomMarkers'
 import BlockActions from './BlockActions'
 
@@ -31,7 +31,7 @@ function handlePaste(input) {
     console.log('Run `sanity install @sanity/code-input, and add `type: "code"` to your schema.')
   }
   if (html && hasCodeType) {
-    const blocks = blockTools.htmlToBlocks(html, type, {
+    const blocks = htmlToBlocks(html, type, {
       rules: [
         {
           deserialize(el, next, block) {
@@ -71,6 +71,37 @@ function handlePaste(input) {
 
 const FunkyEditor = (props) => {
   const {markers, value, onFocus} = props
+  const hotkeys = useMemo(
+    () => ({
+      custom: {
+        'control+k': (e, editor) => {
+          e.preventDefault()
+          const existing = PortableTextEditor.activeAnnotations(editor).find(
+            (a) => a._type === 'link'
+          )
+          if (existing) {
+            const focusBlock = PortableTextEditor.focusBlock(editor)
+            if (focusBlock) {
+              const aPath = [{_key: focusBlock._key}, 'markDefs', {_key: existing._key}, '$']
+              PortableTextEditor.blur(editor)
+              onFocus(aPath)
+            }
+          } else {
+            const paths = PortableTextEditor.addAnnotation(editor, {name: 'link'})
+            if (paths && paths.markDefPath) {
+              PortableTextEditor.blur(editor)
+              onFocus(paths.markDefPath.concat('$'))
+            }
+          }
+        },
+      },
+    }),
+    [onFocus]
+  )
+  const textLength = useMemo(() => {
+    return extractTextFromBlocks(props.value).length
+  }, [props.value])
+
   return (
     <div>
       <BlockEditor
@@ -78,36 +109,13 @@ const FunkyEditor = (props) => {
         onPaste={handlePaste}
         renderBlockActions={BlockActions}
         renderCustomMarkers={CustomMarkers}
-        hotkeys={{
-          custom: {
-            'control+k': (e, editor) => {
-              e.preventDefault()
-              const existing = PortableTextEditor.activeAnnotations(editor).find(
-                (a) => a._type === 'link'
-              )
-              if (existing) {
-                const focusBlock = PortableTextEditor.focusBlock(editor)
-                if (focusBlock) {
-                  const aPath = [{_key: focusBlock._key}, 'markDefs', {_key: existing._key}, '$']
-                  PortableTextEditor.blur(editor)
-                  onFocus(aPath)
-                }
-              } else {
-                const paths = PortableTextEditor.addAnnotation(editor, {name: 'link'})
-                if (paths && paths.markDefPath) {
-                  PortableTextEditor.blur(editor)
-                  onFocus(paths.markDefPath.concat('$'))
-                }
-              }
-            },
-          },
-        }}
+        hotkeys={hotkeys}
         markers={markers.concat([
           {type: 'customMarkerTest', path: value && value[0] ? [{_key: value[0]._key}] : []},
         ])}
       />
       <p>
-        Text length: <strong>{extractTextFromBlocks(props.value).length}</strong> characters
+        Text length: <strong>{textLength}</strong> characters
       </p>
     </div>
   )
