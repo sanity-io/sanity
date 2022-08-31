@@ -320,8 +320,13 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
     }
   }, [portableTextEditor, scrollSelectionIntoView])
 
+  const isEmpty = useMemo(
+    () => isEqualToEmptyEditor(slateEditor.children, portableTextFeatures),
+    [portableTextFeatures, slateEditor.children]
+  )
+
   const decorate = useCallback(() => {
-    if (isEqualToEmptyEditor(slateEditor.children, portableTextFeatures)) {
+    if (isEmpty) {
       return [
         {
           anchor: {
@@ -337,7 +342,7 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
       ]
     }
     return EMPTY_DECORATORS
-  }, [portableTextFeatures, slateEditor.children])
+  }, [isEmpty])
 
   // The editor
   const slateEditable = useMemo(
