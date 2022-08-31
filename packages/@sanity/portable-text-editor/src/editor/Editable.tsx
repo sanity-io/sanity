@@ -25,7 +25,6 @@ import {usePortableTextEditor} from './hooks/usePortableTextEditor'
 import {PortableTextEditor} from './PortableTextEditor'
 import {createWithEditableAPI, createWithHotkeys, createWithInsertData} from './plugins'
 import {useForwardedRef} from './hooks/useForwardedRef'
-import {usePortableTextEditorValue} from './hooks/usePortableTextEditorValue'
 
 const debug = debugWithName('component:Editable')
 
