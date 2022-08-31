@@ -1,13 +1,17 @@
-import {useMemo} from 'react'
+import {useMemo, useRef} from 'react'
+import {NodeValidation} from '@sanity/types'
 import {BaseFormNode} from '../../../store'
 import {EMPTY_ARRAY} from '../../../utils/empty'
 import {useChildValidation} from '../../../studio/contexts/Validation'
 import {_isBlockType} from '../_helpers'
+import {immutableReconcile} from '../../../store/utils/immutableReconcile'
 
 const NONEXISTENT_PATH = ['@@_NONEXISTENT_PATH_@@']
 
 export function useMemberValidation(member: BaseFormNode | undefined) {
-  const memberValidation = member?.validation || EMPTY_ARRAY
+  const prev = useRef<NodeValidation[] | null>(null)
+  const memberValidation =
+    member?.validation && member.validation.length > 0 ? member.validation : EMPTY_ARRAY
   const childValidation = useChildValidation(member?.path || NONEXISTENT_PATH)
 
   const validation = useMemo(
@@ -27,12 +31,15 @@ export function useMemberValidation(member: BaseFormNode | undefined) {
     [validation]
   )
 
+  const reconciled = immutableReconcile(prev.current, validation)
+  prev.current = reconciled
+
   return useMemo(() => {
     return {
-      validation,
+      validation: reconciled,
       hasError,
       hasWarning,
       hasInfo,
     }
-  }, [validation, hasError, hasWarning, hasInfo])
+  }, [reconciled, hasError, hasWarning, hasInfo])
 }
