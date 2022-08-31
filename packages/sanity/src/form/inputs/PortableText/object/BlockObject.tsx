@@ -139,78 +139,110 @@ export function BlockObject(props: BlockObjectProps) {
 
   const isImagePreview = memberItem?.node.schemaType.name === 'image'
 
-  const tooltipEnabled = hasError || hasWarning || hasInfo || (hasMarkers && renderCustomMarkers)
-
-  return (
-    <Flex paddingBottom={1} marginY={3} contentEditable={false}>
-      <InnerFlex flex={1}>
-        <PreviewContainer flex={1} {...innerPaddingProps}>
-          <Tooltip
-            placement="top"
-            portal="editor"
-            disabled={!tooltipEnabled}
-            content={
-              tooltipEnabled && (
-                <TooltipBox padding={2}>
-                  <Markers
-                    markers={markers}
-                    validation={validation}
-                    renderCustomMarkers={renderCustomMarkers}
-                  />
-                </TooltipBox>
-              )
-            }
-          >
-            <Root
-              data-focused={focused ? '' : undefined}
-              data-image-preview={isImagePreview ? '' : undefined}
-              data-invalid={hasError ? '' : undefined}
-              data-markers={hasMarkers && renderCustomMarkers ? '' : undefined}
-              data-selected={selected ? '' : undefined}
-              data-testid="pte-block-object"
-              data-warning={hasWarning ? '' : undefined}
-              flex={1}
-              onDoubleClick={handleDoubleClickToOpen}
-              padding={isImagePreview ? 0 : 1}
-              ref={elementRef}
-              tone={tone}
-            >
-              <BlockPreview ref={memberItem?.elementRef as React.RefObject<HTMLDivElement>}>
-                {blockPreview}
-              </BlockPreview>
-            </Root>
-          </Tooltip>
-        </PreviewContainer>
-
-        <BlockActionsOuter marginRight={1}>
-          <BlockActionsInner>
-            {renderBlockActions && block && focused && !readOnly && (
-              <BlockActions
-                onChange={onChange}
-                block={block}
-                renderBlockActions={renderBlockActions}
-              />
-            )}
-          </BlockActionsInner>
-        </BlockActionsOuter>
-
-        {isFullscreen && memberItem && (
-          <ChangeIndicatorWrapper
-            onMouseOver={handleMouseOver}
-            onMouseOut={handleMouseOut}
-            $hasChanges={memberItem.member.item.changed}
-          >
-            <StyledChangeIndicatorWithProvidedFullPath
-              withHoverEffect={false}
-              hasFocus={focused}
-              path={memberItem.member.item.path}
-              isChanged={memberItem.member.item.changed}
-            />
-          </ChangeIndicatorWrapper>
-        )}
-
-        {reviewChangesHovered && <ReviewChangesHighlightBlock />}
-      </InnerFlex>
-    </Flex>
+  const tooltipEnabled = hasError || hasWarning || hasInfo || hasMarkers
+  const toolTipContent = useMemo(
+    () =>
+      (tooltipEnabled && (validation.length > 0 || markers.length > 0) && (
+        <TooltipBox padding={2}>
+          <Markers
+            markers={markers}
+            validation={validation}
+            renderCustomMarkers={renderCustomMarkers}
+          />
+        </TooltipBox>
+      )) ||
+      null,
+    [Markers, markers, renderCustomMarkers, tooltipEnabled, validation]
   )
+
+  const returned = useMemo(
+    () => (
+      <Flex paddingBottom={1} marginY={3} contentEditable={false} style={debugRender()}>
+        <InnerFlex flex={1}>
+          <PreviewContainer flex={1} {...innerPaddingProps}>
+            <Tooltip
+              placement="top"
+              portal="editor"
+              disabled={!tooltipEnabled}
+              content={toolTipContent}
+            >
+              <Root
+                data-focused={focused ? '' : undefined}
+                data-image-preview={isImagePreview ? '' : undefined}
+                data-invalid={hasError ? '' : undefined}
+                data-markers={hasMarkers && renderCustomMarkers ? '' : undefined}
+                data-selected={selected ? '' : undefined}
+                data-testid="pte-block-object"
+                data-warning={hasWarning ? '' : undefined}
+                flex={1}
+                onDoubleClick={handleDoubleClickToOpen}
+                padding={isImagePreview ? 0 : 1}
+                ref={elementRef}
+                tone={tone}
+              >
+                <BlockPreview ref={memberItem?.elementRef as React.RefObject<HTMLDivElement>}>
+                  {blockPreview}
+                </BlockPreview>
+              </Root>
+            </Tooltip>
+          </PreviewContainer>
+
+          <BlockActionsOuter marginRight={1}>
+            <BlockActionsInner>
+              {renderBlockActions && block && focused && !readOnly && (
+                <BlockActions
+                  onChange={onChange}
+                  block={block}
+                  renderBlockActions={renderBlockActions}
+                />
+              )}
+            </BlockActionsInner>
+          </BlockActionsOuter>
+
+          {isFullscreen && memberItem && (
+            <ChangeIndicatorWrapper
+              onMouseOver={handleMouseOver}
+              onMouseOut={handleMouseOut}
+              $hasChanges={memberItem.member.item.changed}
+            >
+              <StyledChangeIndicatorWithProvidedFullPath
+                withHoverEffect={false}
+                hasFocus={focused}
+                path={memberItem.member.item.path}
+                isChanged={memberItem.member.item.changed}
+              />
+            </ChangeIndicatorWrapper>
+          )}
+
+          {reviewChangesHovered && <ReviewChangesHighlightBlock />}
+        </InnerFlex>
+      </Flex>
+    ),
+    [
+      block,
+      blockPreview,
+      focused,
+      handleDoubleClickToOpen,
+      handleMouseOut,
+      handleMouseOver,
+      hasError,
+      hasMarkers,
+      hasWarning,
+      innerPaddingProps,
+      isFullscreen,
+      isImagePreview,
+      memberItem,
+      onChange,
+      readOnly,
+      renderBlockActions,
+      renderCustomMarkers,
+      reviewChangesHovered,
+      selected,
+      tone,
+      toolTipContent,
+      tooltipEnabled,
+    ]
+  )
+
+  return returned
 }
