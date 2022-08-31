@@ -1,6 +1,6 @@
 import {Path} from '@sanity/types'
 import {isEqual} from '@sanity/util/paths'
-import {useContext} from 'react'
+import {useContext, useMemo} from 'react'
 import {PortableTextMarker} from '../../../types'
 import {PortableTextMarkersContext} from '../contexts/PortableTextMarkers'
 
@@ -9,5 +9,6 @@ export function usePortableTextMarkers(path: Path): PortableTextMarker[] {
   if (!ctx) {
     throw new Error('Form context not provided')
   }
-  return ctx.filter((m) => isEqual(m.path, path))
+  const markers = useMemo(() => ctx.filter((m) => isEqual(m.path, path)), [ctx, path])
+  return markers
 }
