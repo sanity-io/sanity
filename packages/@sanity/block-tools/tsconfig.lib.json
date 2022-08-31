@@ -14,6 +14,7 @@
     "jsx": "react",
     "declarationDir": "./lib/dts/",
     "rootDir": "./",
-    "outDir": "./lib/dts/"
+    "outDir": "./lib/dts/",
+    "target": "ES5"
   }
 }

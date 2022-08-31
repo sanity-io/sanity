@@ -8,6 +8,7 @@
     "declaration": true,
     "declarationMap": true,
     "sourceMap": true,
+    "downlevelIteration": true, // Needed for ES5 transpilation
 
     // Settings
     "preserveConstEnums": true,
