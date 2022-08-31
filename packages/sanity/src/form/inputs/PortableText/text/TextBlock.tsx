@@ -11,6 +11,7 @@ import {useMemberValidation} from '../hooks/useMemberValidation'
 import {usePortableTextMarkers} from '../hooks/usePortableTextMarkers'
 import {usePortableTextMemberItem} from '../hooks/usePortableTextMembers'
 import {pathToString} from '../../../../field/paths'
+import {debugRender} from '../debugRender'
 import {TEXT_STYLE_PADDING} from './constants'
 import {
   BlockActionsInner,
@@ -24,17 +25,6 @@ import {
   TooltipBox,
 } from './TextBlock.styles'
 import {TEXT_STYLES} from './textStyles'
-
-const DEBUG_RENDERING = false
-
-function getRandomColor() {
-  const letters = '0123456789ABCDEF'
-  let color = '#'
-  for (let i = 0; i < 6; i++) {
-    color += letters[Math.floor(Math.random() * 16)]
-  }
-  return color
-}
 
 export interface TextBlockProps {
   attributes: RenderAttributes
@@ -84,8 +74,7 @@ export function TextBlock(props: TextBlockProps) {
             <TextStyle data-list-prefix="" />
           </ListPrefixWrapper>
         )}
-
-        <TextStyle data-text="" style={DEBUG_RENDERING ? {color: getRandomColor()} : undefined}>
+        <TextStyle data-text="" style={debugRender()}>
           {children}
         </TextStyle>
       </TextFlex>
