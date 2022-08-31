@@ -121,6 +121,7 @@ export function createWithPatches(
       if (incomingPatches$) {
         debug('Subscribing to patches')
         patchSubscription = incomingPatches$.subscribe(({patches, snapshot}) => {
+          debug('Incoming patches', patches)
           const remotePatches = patches.filter((p) => p.origin !== 'local')
           if (remotePatches.length !== 0) {
             Editor.withoutNormalizing(editor, () => {
@@ -141,7 +142,9 @@ export function createWithPatches(
               })
             })
           }
-          syncValueAfterIncomingPatches()
+          if (patches.length > 0) {
+            syncValueAfterIncomingPatches()
+          }
         })
       }
 
