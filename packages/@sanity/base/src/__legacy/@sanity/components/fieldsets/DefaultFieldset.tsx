@@ -22,7 +22,7 @@ interface FieldsetProps {
   isCollapsible?: boolean
   onFocus?: (path: Path) => void
   isCollapsed?: boolean
-  fieldset: {
+  fieldset?: {
     description?: string
     legend?: string
   }
@@ -33,8 +33,8 @@ interface FieldsetProps {
   transparent?: boolean
   styles?: Record<string, string>
   markers?: Marker[]
-  presence: FormFieldPresence[]
-  changeIndicator: ChangeIndicatorContextProvidedProps | boolean
+  presence?: FormFieldPresence[]
+  changeIndicator?: ChangeIndicatorContextProvidedProps | boolean
 }
 
 interface State {
