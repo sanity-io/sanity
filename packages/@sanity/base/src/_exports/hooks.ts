@@ -2,7 +2,7 @@ export {
   useDocumentPresence,
   useDocumentPresenceUsers,
   useGlobalPresence,
-  useMinimalGlobalPresence,
+  useGlobalPresenceUsers,
 } from '../datastores/presence/hooks'
 export {useUser, useCurrentUser} from '../datastores/user/hooks'
 export {useDocumentType} from '../datastores/document/hooks'
