@@ -2,10 +2,11 @@
 import type {SanityDocument} from '@sanity/types'
 import {defer, Observable, of as observableOf, timer} from 'rxjs'
 import {concatMap, map, mapTo, mergeMap, scan, tap} from 'rxjs/operators'
+import {groupBy} from 'lodash'
 import type {
   IdPair,
   MutationEvent,
-  PublishEvent,
+  PendingMutationsEvent,
   ReconnectEvent,
   SanityClient,
   WelcomeEvent,
@@ -30,26 +31,31 @@ export interface PairListenerOptions {
 
 export type {MutationEvent}
 
-export type ListenerEvent = MutationEvent | ReconnectEvent | InitialSnapshotEvent | PublishEvent
+export type ListenerEvent =
+  | MutationEvent
+  | ReconnectEvent
+  | InitialSnapshotEvent
+  | PendingMutationsEvent
 
-const PUBLISH_RECEIVED: PublishEvent = {type: 'publish', phase: 'received'}
-const PUBLISH_SUCCESS: PublishEvent = {type: 'publish', phase: 'success'}
+const PENDING_START: PendingMutationsEvent = {type: 'pending', phase: 'begin'}
+const PENDING_END: PendingMutationsEvent = {type: 'pending', phase: 'end'}
 
-// @todo replace implementation with a proper one once we get required backend suppoert
-function isPublishMutation(msg: ListenerEvent): msg is MutationEvent {
-  return msg.type === 'mutation' && msg.transactionId.startsWith('publish')
+function isMutationEvent(msg: ListenerEvent): msg is MutationEvent {
+  return msg.type === 'mutation'
+}
+function isMultiTransactionEvent(msg: MutationEvent) {
+  return msg.transactionTotalEvents > 1
 }
 
-// @todo replace implementation with a proper one once we get required backend suppoert
-function allTransactionMessagesReceived(listenerEvents: ListenerEvent[]) {
-  const publishEvents = listenerEvents.filter(isPublishMutation)
-  return !publishEvents.some((mut) => {
-    const [, id] = mut.transactionId.split('publish-')
-    return !publishEvents.find((m) => {
-      const [, otherId] = m.transactionId.split('publish-')
-      return m !== mut && id === otherId
-    })
-  })
+function allPendingTransactionEventsReceived(listenerEvents: ListenerEvent[]) {
+  const groupedMutations = groupBy(
+    listenerEvents.filter((ev): ev is MutationEvent => ev.type === 'mutation'),
+    (e) => e.transactionId
+  )
+  // Note: we can't assume that the events come in order, so instead of checking the counter attributes we check that we have actually received all
+  return Object.values(groupedMutations).every(
+    (mutations) => mutations.length === mutations[0].transactionTotalEvents
+  )
 }
 
 export function getPairListener(
@@ -87,9 +93,9 @@ export function getPairListener(
     // @todo: remove this
     SIMULATE_SLOW_CONNECTION
       ? mergeMap((msg) => {
-          if (msg.type === 'mutation' && msg.transactionId.startsWith('publish')) {
+          if (msg.type === 'mutation' && isMultiTransactionEvent(msg)) {
             const isCreateOrReplace = msg.transition === 'update' || msg.transition === 'appear'
-            const delay = isCreateOrReplace ? 10 : 5
+            const delay = isCreateOrReplace ? 5 : 10
             console.log(
               '[repro] Published "%s" received, delaying emit by %ds',
               isCreateOrReplace ? 'createOrReplace' : 'delete',
@@ -102,30 +108,34 @@ export function getPairListener(
           return observableOf(msg)
         })
       : tap(),
+    // tap((ev) => console.log(ev.type, ev.transactionCurrentEvent, ev.transactionTotalEvents)),
     scan(
       (acc: {next: ListenerEvent[]; buffer: ListenerEvent[]}, msg) => {
-        if (isPublishMutation(msg)) {
-          const nextBuffer = acc.buffer.concat(msg)
-          if (allTransactionMessagesReceived(nextBuffer)) {
-            console.log('we got all pending mutations, flush the buffer')
-            return {next: nextBuffer.concat(PUBLISH_SUCCESS), buffer: []}
-          }
-
-          // We still miss some mutations
-          console.log(
-            'We got the first of two expected publish mutations, start buffering until we get the next'
-          )
-          // console.log('DO NOT EDIT')
-          return {next: [PUBLISH_RECEIVED], buffer: [msg]}
+        // we only care about mutation events
+        if (!isMutationEvent(msg)) {
+          return {next: [msg], buffer: []}
         }
 
-        if (acc.buffer.length > 0) {
-          console.log(
-            'we got a message while waiting for the second publish mutation to arrive, put it in the buffer'
-          )
+        const isBuffering = acc.buffer.length > 0
+        const isMulti = isMultiTransactionEvent(msg)
+        if (!isMulti && !isBuffering) {
+          // simple case, we have no buffer, and the event is a single-transaction event, so just pass it on
+          return {next: [msg], buffer: []}
+        }
+
+        if (!isMulti) {
+          // we have received a single transaction event while waiting for the rest of events from a multi transaction
+          // put it in the buffer
           return {next: [], buffer: acc.buffer.concat(msg)}
         }
-        return {next: [msg], buffer: []}
+
+        const nextBuffer = acc.buffer.concat(msg)
+        if (allPendingTransactionEventsReceived(nextBuffer)) {
+          return {next: nextBuffer.concat(PENDING_END), buffer: []}
+        }
+        // if we get here, we are still waiting for more multi-transaction messages
+        // if nextBuffer only has one element, we know we just started buffering
+        return {next: nextBuffer.length === 1 ? [PENDING_START] : [], buffer: nextBuffer}
       },
       {next: [], buffer: []}
     ),

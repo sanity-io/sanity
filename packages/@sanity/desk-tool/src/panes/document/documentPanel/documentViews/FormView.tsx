@@ -6,7 +6,7 @@ import {
   unstable_useConditionalProperty as useConditionalProperty,
 } from '@sanity/base/hooks'
 import {PresenceOverlay} from '@sanity/base/presence'
-import {Box, Container, Flex, Spinner, Text} from '@sanity/ui'
+import {Box, Container, Flex, Spinner, Text, useToast} from '@sanity/ui'
 import afterEditorComponents from 'all:part:@sanity/desk-tool/after-editor-component'
 import documentStore from 'part:@sanity/base/datastore/document'
 import schema from 'part:@sanity/base/schema'
@@ -103,6 +103,18 @@ export function FormView(props: FormViewProps) {
     // do nothing
   }, [])
 
+  const toast = useToast()
+  const isLocked = editState?.transactionSyncLock?.enabled
+  useEffect(() => {
+    toast.push({
+      id: `sync-lock-${documentId}`,
+      status: 'warning',
+      duration: isLocked ? 3_600_000 : 0.01,
+      title: `Syncing document…`,
+      description: `Please hold tight while the document is synced it shouldn't take more than a few seconds. This usually happens right after the document has been published.`,
+    })
+  }, [documentId, isLocked, toast])
+
   useEffect(() => {
     const sub = documentStore.pair
       .documentEvents(documentId, documentType)
@@ -160,7 +172,7 @@ export function FormView(props: FormViewProps) {
               type={documentSchema}
               presence={presence}
               filterField={filterField}
-              readOnly={isReadOnly || editState?.publishState?.isPublishing}
+              readOnly={isReadOnly || editState?.transactionSyncLock?.enabled}
               onBlur={handleBlur}
               onFocus={handleFocus}
               focusPath={focusPath}
@@ -194,7 +206,7 @@ export function FormView(props: FormViewProps) {
     presence,
     filterField,
     isReadOnly,
-    editState?.publishState?.isPublishing,
+    editState?.transactionSyncLock?.enabled,
     handleBlur,
     handleFocus,
     focusPath,

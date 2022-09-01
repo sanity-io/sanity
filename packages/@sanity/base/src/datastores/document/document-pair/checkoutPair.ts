@@ -4,14 +4,13 @@ import {groupBy} from 'lodash'
 import {versionedClient} from '../../../client/versionedClient'
 import {getPairListener, ListenerEvent} from '../getPairListener'
 import {BufferedDocumentEvent, createBufferedDocument} from '../buffered-doc/createBufferedDocument'
-import {IdPair, Mutation, PublishEvent, ReconnectEvent} from '../types'
+import {IdPair, Mutation, PendingMutationsEvent, ReconnectEvent} from '../types'
 import {RemoteSnapshotEvent} from '../buffered-doc/types'
-import {getPublishedId} from '../../../util/draftUtils'
 
 const isMutationEventForDocId = (id: string) => (
   event: ListenerEvent
-): event is Exclude<ListenerEvent, ReconnectEvent | PublishEvent> => {
-  return event.type !== 'reconnect' && event.type !== 'publish' && event.documentId === id
+): event is Exclude<ListenerEvent, ReconnectEvent | PendingMutationsEvent> => {
+  return event.type !== 'reconnect' && event.type !== 'pending' && event.documentId === id
 }
 
 type WithVersion<T> = T & {version: 'published' | 'draft'}
@@ -35,7 +34,7 @@ export interface DocumentVersion {
 }
 
 export interface Pair {
-  publishEvents$: Observable<PublishEvent>
+  transactionsPendingEvents$: Observable<PendingMutationsEvent>
   published: DocumentVersion
   draft: DocumentVersion
 }
@@ -77,17 +76,6 @@ function submitCommitRequest(
   )
 }
 
-function isPublishTransaction(mutations: Mutation[]) {
-  const deleteDraftMutations = mutations.filter((mut) => mut.delete?.id)
-  const createOrReplaceMutations = mutations.filter((mut) => mut.createOrReplace?._id)
-  return (
-    deleteDraftMutations.length === 1 &&
-    createOrReplaceMutations.length === 1 &&
-    createOrReplaceMutations[0].createOrReplace._id ===
-      getPublishedId(deleteDraftMutations[0].delete.id)
-  )
-}
-
 export function checkoutPair(idPair: IdPair): Pair {
   const {publishedId, draftId} = idPair
 
@@ -107,10 +95,9 @@ export function checkoutPair(idPair: IdPair): Pair {
     listenerEvents$.pipe(filter(isMutationEventForDocId(publishedId)))
   )
 
-  const remotePublishEvents$ = listenerEvents$.pipe(
-    filter((ev): ev is PublishEvent => ev.type === 'publish')
+  const transactionsPendingEvents$ = listenerEvents$.pipe(
+    filter((ev): ev is PendingMutationsEvent => ev.type === 'pending')
   )
-  const localPublishEvents$ = new Subject<PublishEvent>()
 
   const commits$ = merge(draft.commitRequest$, published.commitRequest$).pipe(
     // collect all requests within the same event loop
@@ -121,9 +108,6 @@ export function checkoutPair(idPair: IdPair): Pair {
       return from(Object.values(groupedTransactions)).pipe(
         concatMap((transaction) => {
           const mutations = transaction.flatMap((req) => req.mutation.params.mutations)
-          if (isPublishTransaction(mutations)) {
-            localPublishEvents$.next({type: 'publish', phase: 'init'})
-          }
           return submitCommitRequest(mutations, transaction[0].mutation.transactionId, {
             success: () => transaction.forEach((r) => r.success()),
             failure: (err: Error) => transaction.forEach((r) => r.failure(err)),
@@ -137,7 +121,7 @@ export function checkoutPair(idPair: IdPair): Pair {
   )
 
   return {
-    publishEvents$: merge(localPublishEvents$, remotePublishEvents$),
+    transactionsPendingEvents$,
     draft: {
       ...draft,
       events: merge(commits$, reconnect$, draft.events).pipe(map(setVersion('draft'))),

@@ -1,27 +1,26 @@
 import {SanityDocument} from '@sanity/types'
 import {combineLatest, concat, EMPTY, Observable, of, timer} from 'rxjs'
 import {map, mapTo, publishReplay, refCount, scan, startWith, switchMap, tap} from 'rxjs/operators'
-import {IdPair, PublishEvent} from '../types'
+import {IdPair, PendingMutationsEvent} from '../types'
 import {memoize} from '../utils/createMemoizer'
 import {isLiveEditEnabled} from './utils/isLiveEditEnabled'
 import {snapshotPair} from './snapshotPair'
 
-interface PublishState {
-  isPublishing: boolean
-  phase: 'init' | 'submitted' | 'received' | 'success'
-  // will be true if the current client initiated the publish
-  local: boolean
+interface TransactionSyncLockState {
+  enabled: boolean
 }
 
 export interface EditStateFor {
   id: string
   type: string
-  publishState: PublishState | null
+  transactionSyncLock: TransactionSyncLockState
   draft: SanityDocument | null
   published: SanityDocument | null
   liveEdit: boolean
   ready: boolean
 }
+const LOCKED: TransactionSyncLockState = {enabled: true}
+const NOT_LOCKED: TransactionSyncLockState = {enabled: false}
 
 export const editState = memoize(
   (idPair: IdPair, typeName: string): Observable<EditStateFor> => {
@@ -31,34 +30,20 @@ export const editState = memoize(
         combineLatest([
           versions.draft.snapshots$,
           versions.published.snapshots$,
-          versions.publishEvents$.pipe(
-            switchMap((ev) =>
-              // reset after 2s unless there's a new event coming in
-              concat(of(ev), ev?.phase === 'success' ? timer(2000).pipe(mapTo(null)) : EMPTY)
-            ),
-            scan((acc: PublishState | null, ev: PublishEvent) => {
-              return ev === null
-                ? null
-                : {
-                    isPublishing:
-                      ev.phase === 'init' || ev.phase === 'submitted' || ev.phase === 'received',
-                    phase: ev.phase,
-                    local: ev.phase === 'init' ? true : acc?.local,
-                    lastPublish: ev.phase === 'success' ? new Date() : null,
-                  }
-            }, null),
-            startWith(null)
+          versions.transactionsPendingEvents$.pipe(
+            map((ev: PendingMutationsEvent) => (ev.phase === 'begin' ? LOCKED : NOT_LOCKED)),
+            startWith(NOT_LOCKED)
           ),
         ])
       ),
-      map(([draftSnapshot, publishedSnapshot, publishState]) => ({
+      map(([draftSnapshot, publishedSnapshot, transactionSyncLock]) => ({
         id: idPair.publishedId,
         type: typeName,
         draft: draftSnapshot,
         published: publishedSnapshot,
         liveEdit,
         ready: true,
-        publishState,
+        transactionSyncLock,
       })),
       startWith({
         id: idPair.publishedId,
@@ -68,7 +53,7 @@ export const editState = memoize(
         published: null,
         liveEdit,
         ready: false,
-        publishState: null,
+        transactionSyncLock: null,
       }),
       publishReplay(1),
       refCount()

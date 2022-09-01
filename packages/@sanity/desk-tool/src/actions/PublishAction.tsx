@@ -7,7 +7,6 @@ import {
   unstable_useDocumentPairPermissions as useDocumentPairPermissions,
 } from '@sanity/base/hooks'
 import {InsufficientPermissionsMessage} from '@sanity/base/components'
-import {useToast} from '@sanity/ui'
 import {TimeAgo} from '../components/TimeAgo'
 import {useDocumentPane} from '../panes/document/useDocumentPane'
 
@@ -37,10 +36,10 @@ function getDisabledReason(
 // eslint-disable-next-line complexity
 export const PublishAction: DocumentActionComponent = (props) => {
   const {id, type, liveEdit, draft, published} = props
+  const [publishState, setPublishState] = useState<'publishing' | 'published' | null>(null)
   const {publish} = useDocumentOperation(id, type)
   const validationStatus = useValidationStatus(id, type)
   const syncState = useSyncState(id, type)
-  const toast = useToast()
   const {changesOpen, editState, handleHistoryOpen} = useDocumentPane()
   const hasValidationErrors = validationStatus.markers.some((marker) => marker.level === 'error')
   // we use this to "schedule" publish after pending tasks (e.g. validation and sync) has completed
@@ -77,41 +76,20 @@ export const PublishAction: DocumentActionComponent = (props) => {
     }
   }, [isNeitherSyncingNorValidating, doPublish, hasValidationErrors, publishScheduled])
 
-  const publishState = editState?.publishState
-
   useEffect(() => {
-    if (publishState) {
-      toast.push({
-        id: `publish-progress-${id}`,
-        status: publishState.phase === 'success' ? 'success' : 'info',
-        duration: publishState.phase === 'success' ? 2_000 : 3_600_000,
-        title:
-          // eslint-disable-next-line no-nested-ternary
-          publishState.phase === 'init' || publishState.phase === 'received'
-            ? publishState.local
-              ? `Publishing document…`
-              : 'The document is being published…'
-            : publishState.phase === 'success'
-            ? 'The document was published'
-            : null,
-        description: `${
-          !publishState.local &&
-          (publishState.phase === 'init' || publishState.phase === 'received')
-            ? 'Someone is publishing this document right now. Please hang on.'
-            : ''
-        }`,
-      })
-    }
-  }, [toast, publishState, id])
-
-  useEffect(() => {
-    const didPublish = publishState?.phase === 'success' && !hasDraft
+    const didPublish = publishState === 'publishing' && !hasDraft
     if (didPublish) {
       if (changesOpen) {
         // Re-open the panel
         handleHistoryOpen()
       }
     }
+    const nextState = didPublish ? 'published' : null
+    const delay = didPublish ? 200 : 1000
+    const timer = setTimeout(() => {
+      setPublishState(nextState)
+    }, delay)
+    return () => clearTimeout(timer)
   }, [changesOpen, publishState, hasDraft, handleHistoryOpen])
 
   const handle = useCallback(() => {
@@ -148,24 +126,31 @@ export const PublishAction: DocumentActionComponent = (props) => {
 
   const disabled = Boolean(
     publishScheduled ||
-      (publishState && publishState?.phase !== 'success') ||
+      // editState.transactionSyncLock ||
+      publishState === 'publishing' ||
+      publishState === 'published' ||
       hasValidationErrors ||
       publish.disabled
   )
 
   return {
-    disabled: disabled || isPermissionsLoading,
+    disabled: disabled || isPermissionsLoading || editState?.transactionSyncLock.enabled,
     color: 'success',
     label:
       // eslint-disable-next-line no-nested-ternary
-      publishState?.phase === 'success' ? 'Published' : publishState ? 'Publishing…' : 'Publish',
-    icon: publishState?.phase === 'success' ? CheckmarkIcon : PublishIcon,
+      publishState === 'published'
+        ? 'Published'
+        : publishScheduled || publishState === 'publishing'
+        ? 'Publishing…'
+        : 'Publish',
+    // @todo: Implement loading state, to show a `<Button loading />` state
+    // loading: publishScheduled || publishState === 'publishing',
+    icon: publishState === 'published' ? CheckmarkIcon : PublishIcon,
     // eslint-disable-next-line no-nested-ternary
     title: publishScheduled
       ? 'Waiting for tasks to finish before publishing'
-      : publishState?.phase
-      ? // note: we're letting the toast deal with this
-        ''
+      : publishState === 'published' || publishState === 'publishing'
+      ? null
       : title,
     shortcut: disabled || publishScheduled ? null : 'Ctrl+Alt+P',
     onHandle: handle,

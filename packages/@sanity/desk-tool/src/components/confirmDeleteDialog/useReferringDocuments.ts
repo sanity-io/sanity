@@ -123,6 +123,7 @@ function fetchCrossDatasetReferences(
   documentId: string,
   visiblePoll$: ReturnType<typeof createVisiblePoll>
 ): Observable<ReferringDocuments['crossDatasetReferences']> {
+  return EMPTY
   return visiblePoll$.pipe(
     switchMap(() =>
       combineLatest([getDocumentExistence(documentId), fetchAllCrossProjectTokens()])
