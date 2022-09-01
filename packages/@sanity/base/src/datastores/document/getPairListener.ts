@@ -1,7 +1,7 @@
-/* eslint-disable @typescript-eslint/no-use-before-define */
+/* eslint-disable @typescript-eslint/no-use-before-define,no-console */
 import type {SanityDocument} from '@sanity/types'
-import {defer, Observable, of as observableOf} from 'rxjs'
-import {concatMap, map, mergeMap, scan} from 'rxjs/operators'
+import {defer, Observable, of as observableOf, timer} from 'rxjs'
+import {concatMap, map, mapTo, mergeMap, scan, tap} from 'rxjs/operators'
 import {groupBy} from 'lodash'
 import type {
   IdPair,
@@ -11,6 +11,8 @@ import type {
   SanityClient,
   WelcomeEvent,
 } from './types'
+
+const SIMULATE_SLOW_CONNECTION = true
 
 interface Snapshots {
   draft: SanityDocument | null
@@ -88,6 +90,24 @@ export function getPairListener(
           )
         : observableOf(event)
     ),
+    // @todo: remove this
+    SIMULATE_SLOW_CONNECTION
+      ? mergeMap((msg) => {
+          if (msg.type === 'mutation' && isMultiTransactionEvent(msg)) {
+            const isCreateOrReplace = msg.transition === 'update' || msg.transition === 'appear'
+            const delay = isCreateOrReplace ? 10 : 0
+            console.log(
+              '[repro] Published "%s" received, delaying emit by %ds',
+              isCreateOrReplace ? 'createOrReplace' : 'delete',
+              delay
+            )
+            return timer(1000 * delay)
+              .pipe(mapTo(msg))
+              .pipe(tap(() => console.log('releasing publish event')))
+          }
+          return observableOf(msg)
+        })
+      : tap(),
     scan(
       (acc: {next: ListenerEvent[]; buffer: ListenerEvent[]}, msg) => {
         // we only care about mutation events
