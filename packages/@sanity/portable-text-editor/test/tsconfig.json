@@ -1,6 +1,6 @@
 {
-  "extends": "../tsconfig",
+  "extends": "../tsconfig.json",
   "compilerOptions": {
-    "isolatedModules": false,
+    "target": "ESNext",
   }
 }
