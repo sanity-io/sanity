@@ -2,11 +2,11 @@
  * This is the beginning of what should be the data store tracking connection status in the Sanity studio.
  */
 
-import {bifur} from '../../client/bifur'
 import {map, mergeMapTo, startWith, take, takeUntil} from 'rxjs/operators'
-import {concat, fromEvent, merge, NEVER, Observable, of, throwError, timer} from 'rxjs'
-import {catchWithCount} from './utils/catchWithCount'
+import {concat, defer, fromEvent, merge, NEVER, Observable, of, throwError, timer} from 'rxjs'
 import {observableCallback} from 'observable-callback'
+import {getBifur} from '../../client/bifur'
+import {catchWithCount} from './utils/catchWithCount'
 
 const onOnline$ = fromEvent(window, 'online')
 const onOffline$ = fromEvent(window, 'offline')
@@ -57,9 +57,11 @@ const createErrorStatus = ({
   retryAt,
 })
 
-export const connectionStatus$: Observable<ConnectionStatus> = merge(
-  bifur.heartbeats,
-  onOffline$.pipe(mergeMapTo(throwError(new Error('The browser went offline'))))
+export const connectionStatus$: Observable<ConnectionStatus> = defer(() =>
+  merge(
+    getBifur().heartbeats,
+    onOffline$.pipe(mergeMapTo(throwError(new Error('The browser went offline'))))
+  )
 ).pipe(
   map((ts): ConnectionStatus => ({type: 'connected', lastHeartbeat: ts})),
   catchWithCount((error, successiveErrorsCount, caught) => {

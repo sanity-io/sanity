@@ -1,7 +1,8 @@
-import {Observable, EMPTY} from 'rxjs'
+import {Observable, EMPTY, defer} from 'rxjs'
 import {map, share} from 'rxjs/operators'
 import {BifurClient} from '@sanity/bifur-client'
 import {PresenceLocation} from '../types'
+import {getBifur} from '../../../client/bifur'
 import {Transport, TransportEvent, TransportMessage} from './transport'
 
 type BifurStateMessage = {
@@ -58,24 +59,24 @@ const handleIncomingMessage = (event: IncomingBifurEvent<Location[]>): Transport
   throw new Error(`Got unknown presence event: ${JSON.stringify(event)}`)
 }
 
-export const createBifurTransport = (bifur: BifurClient, sessionId: string): Transport => {
-  const incomingEvents$: Observable<TransportEvent> = bifur
-    .request<IncomingBifurEvent<Location[]>>('presence')
-    .pipe(map(handleIncomingMessage))
+export const createBifurTransport = (bifur: () => BifurClient, sessionId: string): Transport => {
+  const incomingEvents$: Observable<TransportEvent> = defer(() =>
+    getBifur().request<IncomingBifurEvent<Location[]>>('presence').pipe(map(handleIncomingMessage))
+  )
 
   const dispatchMessage = (message: TransportMessage): Observable<undefined> => {
     if (message.type === 'rollCall') {
-      return bifur.request('presence_rollcall', {session: sessionId})
+      return getBifur().request('presence_rollcall', {session: sessionId})
     }
 
     if (message.type === 'state') {
-      return bifur.request('presence_announce', {
+      return getBifur().request('presence_announce', {
         data: {locations: message.locations, sessionId},
       })
     }
 
     if (message.type === 'disconnect') {
-      return bifur.request('presence_disconnect', {session: sessionId})
+      return getBifur().request('presence_disconnect', {session: sessionId})
     }
 
     return EMPTY
