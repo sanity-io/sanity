@@ -103,8 +103,15 @@ export const FormFieldSet = forwardRef(
     } = props
     const [collapsed, setCollapsed] = useState(collapsedProp)
     const validation = markersToValidationList(markers)
-    const hasValidations = validation.length > 0
+    const [hasValidations, setHasValidatios] = useState(validation.length > 0)
+    //const hasValidations = validation.length > 0
+
     const forwardedRef = useForwardedRef(ref)
+
+    console.log(hasValidations)
+    useEffect(() => {
+      setHasValidatios(validation.length > 0)
+    }, [validation.length])
 
     const handleToggleCollapse = useCallback(() => {
       setCollapsed(!collapsed)

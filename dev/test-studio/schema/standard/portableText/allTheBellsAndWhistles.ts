@@ -1,7 +1,24 @@
-import {BellIcon, ImageIcon, InfoOutlineIcon} from '@sanity/icons'
+import {BellIcon, ImageIcon, InfoOutlineIcon, PlayIcon} from '@sanity/icons'
 import {Rule} from '@sanity/types'
-import {InfoBoxPreview} from './InfoBoxPreview'
+
+import React from 'react'
+import imageUrlBuilder from '@sanity/image-url'
+import client from 'part:@sanity/base/client'
 import {LinkAnnotationInput} from './LinkAnnotationInput'
+import {InfoBoxPreview} from './InfoBoxPreview'
+
+export const imageBuilder = imageUrlBuilder(client)
+
+export const Preview = ({value}) => {
+  const {url, previewImage} = value
+  if (url && previewImage) {
+    const imageUrl = imageBuilder.image(previewImage).auto('format').format('jpg').height(120)
+    if (imageUrl) {
+      return 'abc'
+    }
+  }
+  return 'boo'
+}
 
 export const ptAllTheBellsAndWhistlesType = {
   type: 'document',
@@ -143,6 +160,40 @@ export const ptAllTheBellsAndWhistlesType = {
               },
             },
           ],
+        },
+
+        {
+          name: 'youtube',
+          type: 'object',
+          title: 'Youtube Embed',
+          fields: [
+            {
+              name: 'url',
+              type: 'string',
+              title: 'Youtube Url',
+            },
+            {
+              title: 'Add a Preview Image',
+              name: 'previewImage',
+              type: 'image',
+              validation: (Rule) => Rule.required(),
+            },
+            {
+              title: 'Schema Version',
+              name: 'schemaVersion',
+              type: 'number',
+              initialValue: 1,
+              readOnly: true,
+              hidden: true,
+            },
+          ],
+          preview: {
+            select: {
+              url: 'url',
+              previewImage: 'previewImage',
+            },
+            component: Preview,
+          },
         },
 
         {
