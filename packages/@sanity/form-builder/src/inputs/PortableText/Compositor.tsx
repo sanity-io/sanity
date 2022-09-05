@@ -20,6 +20,7 @@ import {
   usePortal,
 } from '@sanity/ui'
 import {ChangeIndicatorWithProvidedFullPath} from '@sanity/base/components'
+import * as PathUtils from '@sanity/util/paths'
 import ActivateOnFocus from '../../components/ActivateOnFocus/ActivateOnFocus'
 import PatchEvent from '../../PatchEvent'
 import {BlockObject} from './object/BlockObject'
@@ -57,6 +58,7 @@ interface InputProps {
   renderBlockActions?: RenderBlockActions
   renderCustomMarkers?: RenderCustomMarkers
   value: PortableTextBlock[] | undefined
+  compareValue: PortableTextBlock[] | undefined
 }
 
 export function Compositor(props: InputProps) {
@@ -67,6 +69,7 @@ export function Compositor(props: InputProps) {
     isActive,
     isFullscreen,
     markers,
+    compareValue,
     onActivate,
     onChange,
     onCopy,
@@ -171,6 +174,7 @@ export function Compositor(props: InputProps) {
           <TextBlock
             attributes={attributes}
             block={block}
+            compareValue={PathUtils.get(compareValue, [{_key: block._key}])}
             blockRef={blockRef}
             isFullscreen={isFullscreen}
             markers={blockMarkers}
@@ -188,6 +192,7 @@ export function Compositor(props: InputProps) {
         <BlockObject
           attributes={attributes}
           block={block}
+          compareValue={PathUtils.get(compareValue, [{_key: block._key}])}
           blockRef={blockRef}
           editor={editor}
           isFullscreen={isFullscreen}
@@ -203,6 +208,7 @@ export function Compositor(props: InputProps) {
       )
     },
     [
+      compareValue,
       editObjectKey,
       editor,
       hasContent,

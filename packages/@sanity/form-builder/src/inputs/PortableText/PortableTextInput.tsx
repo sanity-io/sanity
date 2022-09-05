@@ -89,6 +89,7 @@ export type PortableTextInputProps = {
   subscribe: PatchSubscribe
   type: Type
   value: PortableTextBlock[] | undefined
+  compareValue: PortableTextBlock[] | undefined
 }
 
 const PortableTextInputController = React.forwardRef(function PortableTextInputController(
@@ -110,6 +111,7 @@ const PortableTextInputController = React.forwardRef(function PortableTextInputC
     renderCustomMarkers,
     type,
     value,
+    compareValue,
     subscribe,
   } = props
 
@@ -299,6 +301,7 @@ const PortableTextInputController = React.forwardRef(function PortableTextInputC
             renderBlockActions={renderBlockActions}
             renderCustomMarkers={renderCustomMarkers}
             value={value}
+            compareValue={compareValue}
           />
         </PortableTextEditor>
       )}

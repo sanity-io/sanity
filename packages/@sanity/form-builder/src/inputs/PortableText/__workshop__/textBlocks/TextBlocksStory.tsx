@@ -50,6 +50,7 @@ export function TextBlocksStory() {
           <TextBlock
             markers={markers}
             block={{...blockBase, style: 'h1'}}
+            compareValue={undefined}
             onChange={onChange}
             attributes={attributes}
             readOnly={readOnly}
@@ -60,6 +61,7 @@ export function TextBlocksStory() {
           <TextBlock
             markers={markers}
             block={{...blockBase, style: 'normal'}}
+            compareValue={undefined}
             onChange={onChange}
             attributes={attributes}
             readOnly={readOnly}
@@ -72,6 +74,7 @@ export function TextBlocksStory() {
           <TextBlock
             markers={markers}
             block={{...blockBase, style: 'normal', listItem: 'number', level: 1}}
+            compareValue={undefined}
             onChange={onChange}
             attributes={attributes}
             readOnly={readOnly}
@@ -82,6 +85,7 @@ export function TextBlocksStory() {
           <TextBlock
             markers={markers}
             block={{...blockBase, style: 'normal', listItem: 'number', level: 1}}
+            compareValue={undefined}
             onChange={onChange}
             attributes={attributes}
             readOnly={readOnly}
@@ -92,6 +96,7 @@ export function TextBlocksStory() {
           <TextBlock
             markers={markers}
             block={{...blockBase, style: 'normal', listItem: 'number', level: 3}}
+            compareValue={undefined}
             onChange={onChange}
             attributes={attributes}
             readOnly={readOnly}
@@ -102,6 +107,7 @@ export function TextBlocksStory() {
           <TextBlock
             markers={markers}
             block={{...blockBase, style: 'normal', listItem: 'number', level: 3}}
+            compareValue={undefined}
             onChange={onChange}
             attributes={attributes}
             readOnly={readOnly}
@@ -112,6 +118,7 @@ export function TextBlocksStory() {
           <TextBlock
             markers={markers}
             block={{...blockBase, style: 'h2'}}
+            compareValue={undefined}
             onChange={onChange}
             attributes={attributes}
             readOnly={readOnly}
@@ -122,6 +129,7 @@ export function TextBlocksStory() {
           <TextBlock
             markers={markers}
             block={{...blockBase, style: 'normal'}}
+            compareValue={undefined}
             onChange={onChange}
             attributes={attributes}
             readOnly={readOnly}
@@ -134,6 +142,7 @@ export function TextBlocksStory() {
           <TextBlock
             markers={markers}
             block={{...blockBase, style: 'normal', listItem: 'bullet', level: 1}}
+            compareValue={undefined}
             onChange={onChange}
             attributes={attributes}
             readOnly={readOnly}
@@ -144,6 +153,7 @@ export function TextBlocksStory() {
           <TextBlock
             markers={markers}
             block={{...blockBase, style: 'normal', listItem: 'bullet', level: 2}}
+            compareValue={undefined}
             onChange={onChange}
             attributes={attributes}
             readOnly={readOnly}
@@ -154,6 +164,7 @@ export function TextBlocksStory() {
           <TextBlock
             block={{...blockBase, style: 'h3'}}
             markers={[]}
+            compareValue={undefined}
             onChange={onChange}
             attributes={attributes}
             readOnly={readOnly}
@@ -164,6 +175,7 @@ export function TextBlocksStory() {
           <TextBlock
             block={{...blockBase, style: 'normal'}}
             markers={markers}
+            compareValue={undefined}
             onChange={onChange}
             attributes={attributes}
             readOnly={readOnly}
@@ -176,6 +188,7 @@ export function TextBlocksStory() {
           <TextBlock
             block={{...blockBase, style: 'blockquote'}}
             markers={markers}
+            compareValue={undefined}
             onChange={onChange}
             attributes={attributes}
             readOnly={readOnly}

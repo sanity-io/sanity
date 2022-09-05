@@ -1,2 +1,2 @@
 export * from './ReviewChangesHighlightBlock'
-export * from './StyledChangeIndicatorWithProvidedFullPath'
+export * from './StyledChangeIndicatorForFieldPath'

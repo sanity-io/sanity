@@ -31,6 +31,8 @@ export type {CollatedHit} from '../util/draftUtils'
 
 export {default as FieldStatus} from '../__legacy/@sanity/components/fieldsets/FieldStatus'
 
+export {ChangeIndicatorValueProvider} from '../change-indicators/ChangeIndicator'
+
 export {resizeObserver} from '../util/resizeObserver'
 
 export {getNewDocumentOptions} from '../util/getNewDocumentOptions'

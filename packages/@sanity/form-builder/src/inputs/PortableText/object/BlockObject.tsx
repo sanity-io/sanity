@@ -6,14 +6,15 @@ import {
   EditorSelection,
 } from '@sanity/portable-text-editor'
 import {isKeySegment, Marker, Path} from '@sanity/types'
-import {FOCUS_TERMINATOR} from '@sanity/util/paths'
+import {FOCUS_TERMINATOR, pathFor} from '@sanity/util/paths'
 import {Tooltip, ResponsivePaddingProps, Flex} from '@sanity/ui'
 import React, {useCallback, useMemo, useRef, useState} from 'react'
+import {isEqual} from 'lodash'
 import {RenderBlockActions, RenderCustomMarkers} from '../types'
 import {Markers} from '../../../legacyParts'
 import PatchEvent from '../../../PatchEvent'
 import {BlockActions} from '../BlockActions'
-import {ReviewChangesHighlightBlock, StyledChangeIndicatorWithProvidedFullPath} from '../_common'
+import {ReviewChangesHighlightBlock, StyledChangeIndicatorForFieldPath} from '../_common'
 import {createDebugStyle} from '../utils/debugRender'
 import {BlockObjectPreview} from './BlockObjectPreview'
 import {
@@ -26,9 +27,11 @@ import {
   TooltipBox,
   BlockPreview,
 } from './BlockObject.styles'
+
 interface BlockObjectProps {
   attributes: RenderAttributes
   block: PortableTextBlock
+  compareValue: undefined | PortableTextBlock
   blockRef?: React.RefObject<HTMLDivElement>
   editor: PortableTextEditor
   markers: Marker[]
@@ -58,15 +61,13 @@ export const BlockObject = React.forwardRef(function BlockObject(
     renderBlockActions,
     renderCustomMarkers,
     type,
+    compareValue,
   } = props
   const elementRef = useRef<HTMLDivElement>()
   const [reviewChangesHovered, setReviewChangesHovered] = useState<boolean>(false)
-  const [hasChanges, setHasChanges] = useState<boolean>(false)
 
   const handleMouseOver = useCallback(() => setReviewChangesHovered(true), [])
   const handleMouseOut = useCallback(() => setReviewChangesHovered(false), [])
-
-  const handleOnHasChanges = useCallback((changed: boolean) => setHasChanges(changed), [])
 
   const handleEdit = useCallback(() => {
     onFocus(path.concat(FOCUS_TERMINATOR))
@@ -156,7 +157,29 @@ export const BlockObject = React.forwardRef(function BlockObject(
 
   const isImagePreview = type?.type?.name === 'image'
 
-  const blockPath = useMemo(() => [{_key: block._key}], [block._key])
+  const changeIndicator = useMemo(() => {
+    if (!isFullscreen) {
+      return null
+    }
+
+    // we only want to run the deep equality check if we're in fullscreen
+    const hasChanges = isFullscreen && !isEqual(compareValue, block)
+
+    return (
+      <ChangeIndicatorWrapper
+        contentEditable={false}
+        onMouseOver={handleMouseOver}
+        onMouseLeave={handleMouseOut}
+        $hasChanges={hasChanges}
+      >
+        <StyledChangeIndicatorForFieldPath
+          isChanged={hasChanges}
+          hasFocus={focused}
+          path={pathFor([{_key: block._key}])}
+        />
+      </ChangeIndicatorWrapper>
+    )
+  }, [block, compareValue, focused, handleMouseOut, handleMouseOver, isFullscreen])
 
   const tooltipEnabled = hasErrors || hasWarnings || hasInfo || hasMarkers
 
@@ -213,23 +236,7 @@ export const BlockObject = React.forwardRef(function BlockObject(
           </BlockActionsInner>
         </BlockActionsOuter>
 
-        {isFullscreen && (
-          <ChangeIndicatorWrapper
-            contentEditable={false}
-            onMouseOver={handleMouseOver}
-            onMouseLeave={handleMouseOut}
-            $hasChanges={Boolean(hasChanges)}
-          >
-            <StyledChangeIndicatorWithProvidedFullPath
-              compareDeep
-              value={block}
-              hasFocus={focused}
-              path={blockPath}
-              withHoverEffect={false}
-              onHasChanges={handleOnHasChanges}
-            />
-          </ChangeIndicatorWrapper>
-        )}
+        {changeIndicator}
 
         {reviewChangesHovered && <ReviewChangesHighlightBlock />}
       </InnerFlex>

@@ -2,12 +2,13 @@ import {PortableTextBlock, RenderAttributes} from '@sanity/portable-text-editor'
 import {isKeySegment, isValidationMarker, Marker} from '@sanity/types'
 import {Box, ResponsivePaddingProps, Tooltip} from '@sanity/ui'
 import React, {useCallback, useMemo, useState} from 'react'
+import {isEqual} from 'lodash'
 import {Markers} from '../../../legacyParts'
 import PatchEvent from '../../../PatchEvent'
 import {BlockActions} from '../BlockActions'
 import {RenderBlockActions, RenderCustomMarkers} from '../types'
 import {createDebugStyle} from '../utils/debugRender'
-import {ReviewChangesHighlightBlock, StyledChangeIndicatorWithProvidedFullPath} from '../_common'
+import {ReviewChangesHighlightBlock, StyledChangeIndicatorForFieldPath} from '../_common'
 import {TEXT_STYLE_PADDING} from './constants'
 import {
   BlockActionsInner,
@@ -28,6 +29,7 @@ interface TextBlockProps {
   blockRef?: React.RefObject<HTMLDivElement>
   children: React.ReactNode
   isFullscreen?: boolean
+  compareValue: PortableTextBlock | undefined
   markers: Marker[]
   onChange: (event: PatchEvent) => void
   readOnly: boolean
@@ -40,6 +42,7 @@ export function TextBlock(props: TextBlockProps): React.ReactElement {
   const {
     attributes,
     block,
+    compareValue,
     blockRef,
     children,
     isFullscreen,
@@ -52,7 +55,6 @@ export function TextBlock(props: TextBlockProps): React.ReactElement {
   } = props
 
   const [reviewChangesHovered, setReviewChangesHovered] = useState<boolean>(false)
-  const [hasChanges, setHasChanges] = useState<boolean>(false)
 
   const {focused} = attributes
 
@@ -60,8 +62,6 @@ export function TextBlock(props: TextBlockProps): React.ReactElement {
 
   const handleMouseOver = useCallback(() => setReviewChangesHovered(true), [])
   const handleMouseOut = useCallback(() => setReviewChangesHovered(false), [])
-
-  const handleOnHasChanges = useCallback((changed: boolean) => setHasChanges(changed), [])
 
   // These are marker that is only for the block level (things further up, like annotations and inline objects are dealt with in their respective components)
   const blockMarkers = useMemo(
@@ -138,35 +138,25 @@ export function TextBlock(props: TextBlockProps): React.ReactElement {
     return TEXT_STYLE_PADDING[block.style] || {paddingY: 2}
   }, [block])
 
-  const changeIndicator = useMemo(
-    () =>
-      isFullscreen ? (
-        <ChangeIndicatorWrapper
-          onMouseOver={handleMouseOver}
-          onMouseOut={handleMouseOut}
-          $hasChanges={hasChanges}
-        >
-          <StyledChangeIndicatorWithProvidedFullPath
-            compareDeep
-            value={block}
-            hasFocus={focused}
-            path={blockPath}
-            withHoverEffect={false}
-            onHasChanges={handleOnHasChanges}
-          />
-        </ChangeIndicatorWrapper>
-      ) : null,
-    [
-      block,
-      blockPath,
-      focused,
-      handleMouseOut,
-      handleMouseOver,
-      handleOnHasChanges,
-      hasChanges,
-      isFullscreen,
-    ]
-  )
+  const changeIndicator = useMemo(() => {
+    if (!isFullscreen) {
+      return null
+    }
+    const hasChanges = !isEqual(compareValue, block)
+    return (
+      <ChangeIndicatorWrapper
+        onMouseOver={handleMouseOver}
+        onMouseOut={handleMouseOut}
+        $hasChanges={hasChanges}
+      >
+        <StyledChangeIndicatorForFieldPath
+          path={blockPath}
+          hasFocus={focused}
+          isChanged={hasChanges}
+        />
+      </ChangeIndicatorWrapper>
+    )
+  }, [block, blockPath, compareValue, focused, handleMouseOut, handleMouseOver, isFullscreen])
 
   return (
     <Box data-testid="text-block" {...outerPaddingProps}>
