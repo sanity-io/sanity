@@ -101,26 +101,12 @@ export function prepareConfig(config: Config): PreparedConfig {
 
         const auth = source.auth || createAuthStore({dataset, projectId})
 
-        const emitContext: Omit<ConfigContext, 'client' | 'schema'> & {
-          client?: SanityClient
-          schema?: Schema
-        } = {
-          projectId,
-          dataset,
-          currentUser: null,
-          schema: undefined,
-          client: undefined,
-        }
-        const contextSubject = new Subject<typeof emitContext>()
-        const observeAsyncContext = contextSubject.pipe(shareReplay(1))
-        contextSubject.next(emitContext)
-
         let schemaTypes
         try {
           schemaTypes = resolveConfigProperty({
             propertyName: 'schema.types',
             config: source,
-            context: {projectId, dataset, observeAsyncContext},
+            context: {projectId, dataset},
             initialValue: [],
             reducer: schemaTypesReducer,
           })
@@ -149,12 +135,6 @@ export function prepareConfig(config: Config): PreparedConfig {
 
         const source$ = auth.state.pipe(
           map(({client, authenticated, currentUser}) => {
-            contextSubject.next({
-              ...emitContext,
-              client,
-              schema,
-              currentUser,
-            })
             return resolveSource({
               config: source,
               client,

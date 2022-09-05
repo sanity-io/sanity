@@ -1,20 +1,19 @@
 import {
-  Schema,
   ArraySchemaType,
-  // InitialValueParams,
+  InitialValueProperty,
+  InitialValueResolver,
   isArraySchemaType,
   isObjectSchemaType,
   ObjectSchemaType,
+  Schema,
   SchemaType,
-  InitialValueProperty,
-  InitialValueResolver,
 } from '@sanity/types'
-import {randomKey, isEmpty, resolveTypeName} from '@sanity/util/content'
+import {isEmpty, randomKey, resolveTypeName} from '@sanity/util/content'
 import {isRecord} from './util/isRecord'
 import {Template} from './types'
 import {validateInitialObjectValue} from './validate'
 import deepAssign from './util/deepAssign'
-import {SanityClient} from '@sanity/client'
+import {ConfigContext} from '../config'
 
 type Serializeable<T> = {
   serialize(): T
@@ -28,8 +27,8 @@ export function isBuilder(template: unknown): template is Serializeable<Template
 // eslint-disable-next-line require-await
 export async function resolveValue<Params, InitialValue>(
   initialValueOpt: InitialValueProperty<Params, InitialValue>,
-  params?: Params,
-  context?: {client: SanityClient}
+  params: Params | undefined,
+  context: ConfigContext
 ): Promise<InitialValue | undefined> {
   return typeof initialValueOpt === 'function'
     ? (initialValueOpt as InitialValueResolver<Params, InitialValue>)(params, context)
@@ -40,7 +39,7 @@ export async function resolveInitialValue(
   schema: Schema,
   template: Template,
   params: {[key: string]: any} = {},
-  context?: {client: SanityClient}
+  context: ConfigContext
 ): Promise<{[key: string]: any}> {
   // Template builder?
   if (isBuilder(template)) {
@@ -88,7 +87,7 @@ export function getItemType(arrayType: ArraySchemaType, item: unknown): SchemaTy
     : arrayType.of.find((memberType) => memberType.name === itemTypeName)
 }
 
-const DEFAULT_MAX_RECURSION_DEPTH = 10
+export const DEFAULT_MAX_RECURSION_DEPTH = 10
 
 /**
  * Resolve initial value for the given schema type (recursively)
@@ -106,7 +105,7 @@ export function resolveInitialValueForType<Params extends Record<string, unknown
    * Maximum recursion depth (default 9).
    */
   maxDepth = DEFAULT_MAX_RECURSION_DEPTH,
-  context?: {client: SanityClient}
+  context: ConfigContext
 ): Promise<any> {
   if (maxDepth <= 0) {
     return Promise.resolve(undefined)
@@ -127,9 +126,9 @@ async function resolveInitialArrayValue<Params extends Record<string, unknown>>(
   type: SchemaType,
   params: Params,
   maxDepth: number,
-  context?: {client: SanityClient}
+  context: ConfigContext
 ): Promise<any> {
-  const initialArray = await resolveValue(type.initialValue)
+  const initialArray = await resolveValue(type.initialValue, undefined, context)
 
   if (!Array.isArray(initialArray)) {
     return undefined
@@ -153,7 +152,7 @@ export async function resolveInitialObjectValue<Params extends Record<string, un
   type: ObjectSchemaType,
   params: Params,
   maxDepth: number,
-  context?: {client: SanityClient}
+  context: ConfigContext
 ): Promise<any> {
   const initialObject: Record<string, unknown> = {
     ...((await resolveValue(type.initialValue, params, context)) || {}),

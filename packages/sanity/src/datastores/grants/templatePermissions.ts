@@ -7,9 +7,10 @@ import {createHookFromObservableFactory} from '../../util/createHookFromObservab
 import {getDraftId, getPublishedId} from '../../util/draftUtils'
 import {useGrantsStore} from '../datastores'
 import {PartialExcept} from '../../util/PartialExcept'
+import {ConfigContext} from '../../config'
 import {GrantsStore, PermissionCheckResult} from './types'
 import {getDocumentValuePermissions} from './documentValuePermissions'
-import {SanityClient} from '@sanity/client'
+import {useInitialValueContext} from '../document'
 
 export interface TemplatePermissionsResult<TInitialValue = Record<string, unknown>>
   extends PermissionCheckResult,
@@ -33,7 +34,7 @@ export interface TemplatePermissionsOptions {
   schema: Schema
   templates: Template[]
   templateItems: InitialValueTemplateItem[]
-  context?: {client: SanityClient}
+  context: ConfigContext
 }
 
 /**
@@ -137,15 +138,15 @@ export function useTemplatePermissions({
   typeof useTemplatePermissionsFromHookFactory
 > {
   const schema = useSchema()
-  const client = useClient()
   const templates = useTemplates()
   const grantsStore = useGrantsStore()
+  const initialValueContext = useInitialValueContext()
 
   return useTemplatePermissionsFromHookFactory({
     templateItems,
     grantsStore: rest.grantsStore || grantsStore,
     schema: rest.schema || schema,
     templates: rest.templates || templates,
-    context: {client},
+    context: initialValueContext,
   })
 }

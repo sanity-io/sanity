@@ -8,6 +8,7 @@ import {createSchema} from '../../../schema'
 import {requiresApproval} from '../debug/exampleGrants'
 import {createGrantsStore} from '../grantsStore'
 import {getTemplatePermissions} from '../templatePermissions'
+import {ConfigContext} from '../../../config'
 
 const schema = createSchema({
   name: 'test',
@@ -67,6 +68,7 @@ describe('getTemplatePermissions', () => {
           schemaType: 'author',
         },
       ],
+      context: {} as ConfigContext,
     })
       .pipe(first())
       .toPromise()

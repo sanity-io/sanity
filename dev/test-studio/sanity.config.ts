@@ -5,23 +5,17 @@ import {createConfig, createPlugin} from 'sanity'
 import {deskTool} from 'sanity/desk'
 import {imageAssetSource} from './assetSources'
 import {Branding} from './components/Branding'
-import {CustomMarkers} from './components/formBuilder/CustomMarkers'
-import {Markers} from './components/formBuilder/Markers'
 import {resolveDocumentActions as documentActions} from './documentActions'
 import {resolveInitialValueTemplates} from './initialValueTemplates'
 import {languageFilter} from './plugins/language-filter'
 import {schemaTypes} from './schema'
-import {defaultDocumentNode, structure, newDocumentOptions} from './structure'
+import {defaultDocumentNode, newDocumentOptions, structure} from './structure'
 import {workshopTool} from './workshop'
 
 const sharedSettings = createPlugin({
   name: 'sharedSettings',
   schema: {
-    types: (prev, context) => {
-      // eslint-disable-next-line no-console
-      ;(context as any).observeAsyncContext.subscribe(console.log)
-      return [...prev, ...schemaTypes]
-    },
+    types: schemaTypes,
     templates: resolveInitialValueTemplates,
   },
   // navbar: {

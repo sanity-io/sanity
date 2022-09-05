@@ -1,5 +1,6 @@
 // Note: INCOMPLETE, but it's a start
 import type {ComponentType} from 'react'
+import {SanityClient} from '@sanity/client'
 import type {Rule} from '../validation'
 import type {ReferenceOptions} from '../reference'
 import type {AssetSource} from '../assets'
@@ -7,7 +8,6 @@ import type {SlugOptions} from '../slug'
 import type {SanityDocument} from '../documents'
 import type {CurrentUser} from '../user'
 import type {PreviewConfig} from './preview'
-import {SanityClient} from '@sanity/client'
 
 // eslint-disable-next-line @typescript-eslint/no-namespace
 export namespace Schema {
@@ -451,9 +451,17 @@ export interface ConditionalPropertyCallbackContext {
 export type ConditionalPropertyCallback = (context: ConditionalPropertyCallbackContext) => boolean
 export type ConditionalProperty = boolean | ConditionalPropertyCallback | undefined
 
+export interface SourceContext {
+  projectId: string
+  dataset: string
+  schema: Schema
+  currentUser: CurrentUser | null
+  client: SanityClient
+}
+
 export type InitialValueResolver<Params, Value> = (
-  params?: Params,
-  context?: {client: SanityClient}
+  params: Params | undefined,
+  context: SourceContext
 ) => Promise<Value> | Value
 export type InitialValueProperty<Params, Value> =
   | Value

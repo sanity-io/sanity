@@ -11,8 +11,8 @@ import {Box, Button, Flex, Hotkeys, Text, Tooltip, useElementRect, useToast} fro
 import {CollapseIcon, ExpandIcon} from '@sanity/icons'
 import styled, {css} from 'styled-components'
 import {useRovingFocus} from '../../../../components/rovingFocus'
-import {resolveInitialValueForType} from '../../../../templates'
 import {FIXME} from '../../../types'
+import {useResolveInitialValueForType} from '../../../../datastores'
 import {ActionMenu} from './ActionMenu'
 import {BlockStyleSelect} from './BlockStyleSelect'
 import {InsertMenu} from './InsertMenu'
@@ -152,6 +152,7 @@ export function Toolbar(props: ToolbarProps) {
   const features = useFeatures()
   const editor = usePortableTextEditor()
   const selection = usePortableTextEditorSelection()
+  const resolveInitialValueForType = useResolveInitialValueForType()
   const disabled = readOnly || !selection
 
   const {push} = useToast()

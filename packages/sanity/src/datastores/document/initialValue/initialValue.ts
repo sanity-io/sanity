@@ -13,13 +13,13 @@ import {
 import {DocumentPreviewStore} from '../../../preview'
 import {Template, resolveInitialValue} from '../../../templates'
 import {getDraftId, getPublishedId} from '../../../util'
+import {ConfigContext} from '../../../config'
 import {
   InitialValueErrorMsg,
   InitialValueLoadingMsg,
   InitialValueSuccessMsg,
   InitialValueMsg,
 } from './types'
-import {SanityClient} from '@sanity/client'
 
 export interface InitialValueOptions {
   documentId: string
@@ -38,7 +38,7 @@ export function getInitialValueStream(
   initialValueTemplates: Template[],
   documentPreviewStore: DocumentPreviewStore,
   opts: InitialValueOptions,
-  context?: {client: SanityClient}
+  context: ConfigContext
 ): Observable<InitialValueMsg> {
   const draft$ = documentPreviewStore.observePaths(
     {_type: 'reference', _ref: getDraftId(opts.documentId)},
