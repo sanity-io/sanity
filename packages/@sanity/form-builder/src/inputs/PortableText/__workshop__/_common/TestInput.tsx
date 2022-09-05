@@ -10,6 +10,7 @@ import {useUnique} from '../../utils/useUnique'
 import {ReviewChangesContextProvider} from '../../../../sanity/contexts/reviewChanges/ReviewChangesProvider'
 import {inputResolver} from './input'
 import {resolvePreviewComponent} from './resolvePreviewComponent'
+
 interface TestInputProps {
   markers?: any[]
   readOnly?: boolean
@@ -216,6 +217,7 @@ export function TestInput(props: TestInputProps) {
           subscribe={subscribe}
           type={props.type}
           value={value}
+          compareValue={undefined}
         />
       </FormBuilderContext>
     </ReviewChangesContextProvider>
