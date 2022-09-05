@@ -1,4 +1,4 @@
-import {Tooltip} from '@sanity/ui'
+import {Tooltip, Text, Box} from '@sanity/ui'
 import React from 'react'
 import {InsufficientPermissionsMessage} from '../../../components/InsufficientPermissionsMessage'
 import {useCurrentUser} from '../../../datastores'
@@ -22,7 +22,15 @@ export function InsufficientPermissionsMessageTooltip({
 
   return (
     <Tooltip
-      content={loading ? 'Loading…' : <InsufficientPermissionsMessage currentUser={currentUser} />}
+      content={
+        loading ? (
+          <Box padding={2}>
+            <Text>Loading…</Text>
+          </Box>
+        ) : (
+          <InsufficientPermissionsMessage currentUser={currentUser} />
+        )
+      }
       portal
     >
       {/* this wrapping div is to allow mouse events */}

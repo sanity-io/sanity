@@ -7,6 +7,7 @@ import type {SlugOptions} from '../slug'
 import type {SanityDocument} from '../documents'
 import type {CurrentUser} from '../user'
 import type {PreviewConfig} from './preview'
+import {SanityClient} from '@sanity/client'
 
 // eslint-disable-next-line @typescript-eslint/no-namespace
 export namespace Schema {
@@ -123,7 +124,7 @@ export namespace Schema {
       preview?: React.ComponentType<any> // @todo: use `PreviewProps` here
     }
     // TODO
-    initialValue?: any
+    initialValue?: InitialValueProperty<any, any>
   }
 
   export type TypeOptions<T extends Type> = T extends 'array'
@@ -450,7 +451,10 @@ export interface ConditionalPropertyCallbackContext {
 export type ConditionalPropertyCallback = (context: ConditionalPropertyCallbackContext) => boolean
 export type ConditionalProperty = boolean | ConditionalPropertyCallback | undefined
 
-export type InitialValueResolver<Params, Value> = (params?: Params) => Promise<Value> | Value
+export type InitialValueResolver<Params, Value> = (
+  params?: Params,
+  context?: {client: SanityClient}
+) => Promise<Value> | Value
 export type InitialValueProperty<Params, Value> =
   | Value
   | InitialValueResolver<Params, Value>

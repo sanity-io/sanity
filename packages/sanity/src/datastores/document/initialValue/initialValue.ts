@@ -19,6 +19,7 @@ import {
   InitialValueSuccessMsg,
   InitialValueMsg,
 } from './types'
+import {SanityClient} from '@sanity/client'
 
 export interface InitialValueOptions {
   documentId: string
@@ -36,7 +37,8 @@ export function getInitialValueStream(
   schema: Schema,
   initialValueTemplates: Template[],
   documentPreviewStore: DocumentPreviewStore,
-  opts: InitialValueOptions
+  opts: InitialValueOptions,
+  context?: {client: SanityClient}
 ): Observable<InitialValueMsg> {
   const draft$ = documentPreviewStore.observePaths(
     {_type: 'reference', _ref: getDraftId(opts.documentId)},
@@ -82,8 +84,9 @@ export function getInitialValueStream(
         return of({isResolving: false, initialValue: undefined})
       }
 
+      //TODO make sure it is safe to propdrill client into the pipe closure
       const initialValueWithParams$ = from(
-        resolveInitialValue(schema, template, opts.templateParams)
+        resolveInitialValue(schema, template, opts.templateParams, context)
       )
         .pipe(map((initialValue) => ({isResolving: false, initialValue})))
         .pipe(

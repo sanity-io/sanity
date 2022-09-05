@@ -1,5 +1,6 @@
 import {example1SchemaType} from './example1'
+import {validationTest} from './validation/schemaType'
 
 export const v3docs = {
-  types: [example1SchemaType],
+  types: [example1SchemaType, validationTest],
 }

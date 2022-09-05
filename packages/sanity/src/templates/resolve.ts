@@ -14,6 +14,7 @@ import {isRecord} from './util/isRecord'
 import {Template} from './types'
 import {validateInitialObjectValue} from './validate'
 import deepAssign from './util/deepAssign'
+import {SanityClient} from '@sanity/client'
 
 type Serializeable<T> = {
   serialize(): T
@@ -27,21 +28,23 @@ export function isBuilder(template: unknown): template is Serializeable<Template
 // eslint-disable-next-line require-await
 export async function resolveValue<Params, InitialValue>(
   initialValueOpt: InitialValueProperty<Params, InitialValue>,
-  params?: Params
+  params?: Params,
+  context?: {client: SanityClient}
 ): Promise<InitialValue | undefined> {
   return typeof initialValueOpt === 'function'
-    ? (initialValueOpt as InitialValueResolver<Params, InitialValue>)(params)
+    ? (initialValueOpt as InitialValueResolver<Params, InitialValue>)(params, context)
     : initialValueOpt
 }
 
 export async function resolveInitialValue(
   schema: Schema,
   template: Template,
-  params: {[key: string]: any} = {}
+  params: {[key: string]: any} = {},
+  context?: {client: SanityClient}
 ): Promise<{[key: string]: any}> {
   // Template builder?
   if (isBuilder(template)) {
-    return resolveInitialValue(schema, template.serialize(), params)
+    return resolveInitialValue(schema, template.serialize(), params, context)
   }
 
   const {id, schemaType: schemaTypeName, value} = template
@@ -49,7 +52,7 @@ export async function resolveInitialValue(
     throw new Error(`Template "${id}" has invalid "value" property`)
   }
 
-  let resolvedValue = await resolveValue(value, params)
+  let resolvedValue = await resolveValue(value, params, context)
 
   if (!isRecord(resolvedValue)) {
     throw new Error(
@@ -67,7 +70,8 @@ export async function resolveInitialValue(
   }
 
   const newValue = deepAssign(
-    (await resolveInitialValueForType(schemaType, params)) || {},
+    (await resolveInitialValueForType(schemaType, params, DEFAULT_MAX_RECURSION_DEPTH, context)) ||
+      {},
     resolvedValue as Record<string, unknown>
   )
 
@@ -101,27 +105,29 @@ export function resolveInitialValueForType<Params extends Record<string, unknown
   /**
    * Maximum recursion depth (default 9).
    */
-  maxDepth = DEFAULT_MAX_RECURSION_DEPTH
+  maxDepth = DEFAULT_MAX_RECURSION_DEPTH,
+  context?: {client: SanityClient}
 ): Promise<any> {
   if (maxDepth <= 0) {
     return Promise.resolve(undefined)
   }
 
   if (isObjectSchemaType(type)) {
-    return resolveInitialObjectValue(type, params, maxDepth)
+    return resolveInitialObjectValue(type, params, maxDepth, context)
   }
 
   if (isArraySchemaType(type)) {
-    return resolveInitialArrayValue(type, params, maxDepth)
+    return resolveInitialArrayValue(type, params, maxDepth, context)
   }
 
-  return resolveValue(type.initialValue, params)
+  return resolveValue(type.initialValue, params, context)
 }
 
 async function resolveInitialArrayValue<Params extends Record<string, unknown>>(
   type: SchemaType,
   params: Params,
-  maxDepth: number
+  maxDepth: number,
+  context?: {client: SanityClient}
 ): Promise<any> {
   const initialArray = await resolveValue(type.initialValue)
 
@@ -135,7 +141,7 @@ async function resolveInitialArrayValue<Params extends Record<string, unknown>>(
       return isObjectSchemaType(itemType)
         ? {
             ...initialItem,
-            ...(await resolveInitialValueForType(itemType, params, maxDepth - 1)),
+            ...(await resolveInitialValueForType(itemType, params, maxDepth - 1, context)),
             _key: randomKey(),
           }
         : initialItem
@@ -146,16 +152,22 @@ async function resolveInitialArrayValue<Params extends Record<string, unknown>>(
 export async function resolveInitialObjectValue<Params extends Record<string, unknown>>(
   type: ObjectSchemaType,
   params: Params,
-  maxDepth: number
+  maxDepth: number,
+  context?: {client: SanityClient}
 ): Promise<any> {
   const initialObject: Record<string, unknown> = {
-    ...((await resolveValue(type.initialValue, params)) || {}),
+    ...((await resolveValue(type.initialValue, params, context)) || {}),
   }
 
   const fieldValues: Record<string, any> = {}
   await Promise.all(
     type.fields.map(async (field) => {
-      const initialFieldValue = await resolveInitialValueForType(field.type, params, maxDepth - 1)
+      const initialFieldValue = await resolveInitialValueForType(
+        field.type,
+        params,
+        maxDepth - 1,
+        context
+      )
       if (initialFieldValue !== undefined && initialFieldValue !== null) {
         fieldValues[field.name] = initialFieldValue
       }

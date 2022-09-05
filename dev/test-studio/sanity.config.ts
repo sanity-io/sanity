@@ -17,7 +17,11 @@ import {workshopTool} from './workshop'
 const sharedSettings = createPlugin({
   name: 'sharedSettings',
   schema: {
-    types: schemaTypes,
+    types: (prev, context) => {
+      // eslint-disable-next-line no-console
+      ;(context as any).observeAsyncContext.subscribe(console.log)
+      return [...prev, ...schemaTypes]
+    },
     templates: resolveInitialValueTemplates,
   },
   // navbar: {

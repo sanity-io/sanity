@@ -1,7 +1,7 @@
 import {Observable, combineLatest, from, of} from 'rxjs'
 import {switchMap, map} from 'rxjs/operators'
 import {Schema} from '@sanity/types'
-import {useSchema, useTemplates} from '../../hooks'
+import {useClient, useSchema, useTemplates} from '../../hooks'
 import {resolveInitialValue, Template, InitialValueTemplateItem} from '../../templates'
 import {createHookFromObservableFactory} from '../../util/createHookFromObservableFactory'
 import {getDraftId, getPublishedId} from '../../util/draftUtils'
@@ -9,6 +9,7 @@ import {useGrantsStore} from '../datastores'
 import {PartialExcept} from '../../util/PartialExcept'
 import {GrantsStore, PermissionCheckResult} from './types'
 import {getDocumentValuePermissions} from './documentValuePermissions'
+import {SanityClient} from '@sanity/client'
 
 export interface TemplatePermissionsResult<TInitialValue = Record<string, unknown>>
   extends PermissionCheckResult,
@@ -32,6 +33,7 @@ export interface TemplatePermissionsOptions {
   schema: Schema
   templates: Template[]
   templateItems: InitialValueTemplateItem[]
+  context?: {client: SanityClient}
 }
 
 /**
@@ -42,6 +44,7 @@ export function getTemplatePermissions({
   templateItems,
   templates,
   schema,
+  context,
 }: TemplatePermissionsOptions): Observable<
   Array<TemplatePermissionsResult<Record<string, unknown>>>
 > {
@@ -57,7 +60,12 @@ export function getTemplatePermissions({
           throw new Error(`template not found: "${item.templateId}"`)
         }
 
-        const resolvedInitialValue = await resolveInitialValue(schema, template, item.parameters)
+        const resolvedInitialValue = await resolveInitialValue(
+          schema,
+          template,
+          item.parameters,
+          context
+        )
 
         return {template, item, resolvedInitialValue}
       })
@@ -129,6 +137,7 @@ export function useTemplatePermissions({
   typeof useTemplatePermissionsFromHookFactory
 > {
   const schema = useSchema()
+  const client = useClient()
   const templates = useTemplates()
   const grantsStore = useGrantsStore()
 
@@ -137,5 +146,6 @@ export function useTemplatePermissions({
     grantsStore: rest.grantsStore || grantsStore,
     schema: rest.schema || schema,
     templates: rest.templates || templates,
+    context: {client},
   })
 }

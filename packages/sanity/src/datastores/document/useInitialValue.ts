@@ -3,6 +3,7 @@ import {useEffect, useMemo, useState} from 'react'
 import {useUnique} from '../../util/useUnique'
 import {useDocumentStore} from '../datastores'
 import {InitialValueState} from './initialValue/types'
+import {useClient} from '../../hooks'
 
 /**
  * @internal
@@ -16,6 +17,7 @@ export function useInitialValue(props: {
   const {documentId, documentType, templateName, templateParams: templateParamsRaw} = props
   const templateParams = useUnique(templateParamsRaw)
   const documentStore = useDocumentStore()
+  const client = useClient()
 
   const defaultValue: SanityDocumentLike = useMemo(
     () => ({_id: documentId, _type: documentType}),
@@ -36,7 +38,7 @@ export function useInitialValue(props: {
       return undefined
     }
 
-    const initialValueMsg$ = documentStore.initialValue(initialValueOptions)
+    const initialValueMsg$ = documentStore.initialValue(initialValueOptions, {client})
 
     const sub = initialValueMsg$.subscribe((msg) => {
       if (msg.type === 'loading') {
@@ -59,7 +61,7 @@ export function useInitialValue(props: {
     setState({loading: true, error: null, value: defaultValue})
 
     return () => sub.unsubscribe()
-  }, [defaultValue, documentId, documentStore, documentType, templateName, templateParams])
+  }, [defaultValue, documentId, documentStore, documentType, templateName, templateParams, client])
 
   return state
 }
