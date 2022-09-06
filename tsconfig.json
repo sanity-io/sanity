@@ -1,11 +1,11 @@
 {
   "extends": "./tsconfig.settings",
-  "include": ["./babel.config.js", "./dev/aliases.js", "./scripts", "./test"],
+  "include": ["**/*/package.config.ts", "./dev/aliases.js", "./scripts", "./test"],
   "exclude": ["./test/v2-studio"],
   "compilerOptions": {
-    "allowJs": true,
     "emitDeclarationOnly": true,
-    "outDir": "./node_modules/.sanity-monorepo/dts/"
+    "outDir": "./node_modules/.sanity-monorepo/dts",
+    "allowJs": true
   },
   "references": [
     {"path": "./packages/@sanity/block-tools"},

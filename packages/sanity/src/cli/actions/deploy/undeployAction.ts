@@ -1,7 +1,7 @@
 import type {CliCommandArguments, CliCommandContext} from '@sanity/cli'
 
 export default async function undeployStudio(
-  args: CliCommandArguments<Record<string, never>>,
+  args: CliCommandArguments<Record<string, unknown>>,
   context: CliCommandContext
 ): Promise<void> {
   const {apiClient, chalk, output, prompt} = context

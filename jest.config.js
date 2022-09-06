@@ -1,3 +1,8 @@
+/* eslint-disable strict */
+/* eslint-disable tsdoc/syntax */
+
+'use strict'
+
 const JEST_PROJECTS = [
   'sanity',
   '@sanity/block-tools',

@@ -2,9 +2,17 @@
   "name": "@sanity/cli",
   "version": "3.0.0-dev-preview.15",
   "description": "Sanity CLI tool for managing Sanity installations, managing plugins, schemas and datasets",
-  "source": "src/index.ts",
-  "types": "lib/dts/src/index.d.ts",
-  "main": "lib/index.js",
+  "source": "./src/index.ts",
+  "main": "./lib/index.cjs",
+  "module": "./lib/index.js",
+  "types": "./lib/dts/src/index.d.ts",
+  "files": [
+    "bin",
+    "codemods",
+    "lib",
+    "src",
+    "templates"
+  ],
   "keywords": [
     "sanity",
     "cms",
@@ -29,12 +37,12 @@
     "sanity": "./bin/sanity"
   },
   "scripts": {
-    "build": "run-s build:lib build:pack",
-    "build:lib": "../../../bin/pkg-utils transpile --target node --tsconfig tsconfig.lib.json",
-    "build:pack": "node scripts/pack.js",
-    "clean": "rimraf bin/sanity-cli.js lib",
-    "prepublishOnly": "yarn build",
-    "watch": "../../../bin/pkg-utils transpile --target node --tsconfig tsconfig.lib.json --watch",
+    "build": "pkg-utils build --tsconfig tsconfig.lib.json",
+    "check:package": "pkg-utils --strict --tsconfig tsconfig.lib.json",
+    "clean": "rimraf lib",
+    "postbuild": "run-s check:package",
+    "prebuild": "run-s clean",
+    "watch": "pkg-utils watch --tsconfig tsconfig.lib.json",
     "ts": "node -r esbuild-register"
   },
   "dependencies": {
@@ -43,8 +51,6 @@
     "pkg-dir": "^5.0.0"
   },
   "devDependencies": {
-    "@babel/parser": "^7.17.7",
-    "@babel/preset-env": "^7.16.4",
     "@babel/traverse": "^7.17.3",
     "@rexxars/gitconfiglocal": "^3.0.1",
     "@sanity/client": "^3.3.3",
@@ -59,6 +65,7 @@
     "@types/semver-compare": "^1.0.1",
     "@types/validate-npm-package-name": "^3.0.3",
     "@types/which": "^2.0.1",
+    "babylon": "^6.18.0",
     "boxen": "^4.1.0",
     "chalk": "^4.1.2",
     "clean-stack": "^3.0.0",

@@ -1,4 +1,3 @@
 {
-  "//": "used by bin/sanity but for some reason not understood by depcheck",
-  "ignore": ["read-pkg-up"]
+  "ignore": ["@sanity/pkg-utils", "globby", "read-pkg-up"]
 }

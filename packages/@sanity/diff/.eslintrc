@@ -1,5 +1,5 @@
 {
-  "extends": ["../../../.eslintrc.js"],
+  "extends": ["../../../.eslintrc.cjs"],
   "rules": {
     "complexity": "off",
     "max-depth": "off",

@@ -6,7 +6,7 @@ import type {SanityClient} from '@sanity/client'
 import type {CliCommandArguments, CliCommandContext} from '@sanity/cli'
 import buildSanityStudio, {BuildSanityStudioCommandFlags} from '../build/buildAction'
 
-interface DeployStudioActionFlags extends BuildSanityStudioCommandFlags {
+export interface DeployStudioActionFlags extends BuildSanityStudioCommandFlags {
   build?: boolean
 }
 

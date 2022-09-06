@@ -66,7 +66,7 @@ export async function getViteConfig(options: ViteOptions): Promise<InlineConfig>
 
   const monorepo = await loadSanityMonorepo(cwd)
   const basePath = normalizeBasePath(rawBasePath)
-  const faviconsPath = path.join(__dirname, 'static', 'favicons')
+  const faviconsPath = path.resolve(__dirname, '../static/favicons')
   const staticPath = `${basePath}static`
 
   const viteConfig: InlineConfig = {

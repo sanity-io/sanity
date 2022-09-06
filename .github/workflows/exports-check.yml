@@ -27,9 +27,9 @@ jobs:
         id: buildResolver
         run: yarn build
 
-      - name: ES check
-        id: esCheck
-        run: yarn exports:check
+      - name: Check package integrity
+        id: checkPackages
+        run: yarn check:packages
 
       # - name: Notify Slack about build failure
       #   if: failure() && github.ref == 'refs/heads/ui/main'

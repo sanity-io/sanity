@@ -9,7 +9,7 @@ type ListApisResponse = {
 }[]
 
 export default async function listGraphQLApis(
-  args: CliCommandArguments<Record<string, never>>,
+  args: CliCommandArguments<Record<string, unknown>>,
   context: CliCommandContext
 ): Promise<void> {
   const {apiClient, output, chalk} = context
