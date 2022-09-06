@@ -5,5 +5,5 @@ export interface FormFieldGroup {
   selected?: boolean
   disabled?: boolean
   title?: string
-  icon?: React.ComponentType
+  icon?: React.ElementType
 }

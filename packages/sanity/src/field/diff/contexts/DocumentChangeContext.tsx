@@ -7,7 +7,7 @@ export type DocumentChangeContextInstance = {
   schemaType: SchemaType
   rootDiff: ObjectDiff | null
   isComparingCurrent: boolean
-  FieldWrapper: React.ComponentType<{path: Path; children: React.ReactNode; hasHover: boolean}>
+  FieldWrapper: React.ElementType<{path: Path; children: React.ReactNode; hasHover: boolean}>
   value: Partial<SanityDocument>
 }
 

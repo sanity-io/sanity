@@ -82,7 +82,7 @@ const DefaultAssetSource = function DefaultAssetSource(
   )
 
   const handleDeleteFinished = useCallback(
-    (id) => {
+    (id: any) => {
       // eslint-disable-next-line max-nested-callbacks
       setAssets((prevState) => prevState.filter((asset) => asset._id !== id))
     },
@@ -90,7 +90,7 @@ const DefaultAssetSource = function DefaultAssetSource(
   )
 
   const select = useCallback(
-    (id) => {
+    (id: any) => {
       const selected = assets.find((doc) => doc._id === id)
 
       if (selected) {
@@ -128,7 +128,7 @@ const DefaultAssetSource = function DefaultAssetSource(
   }, [onClose])
 
   const handleFetchNextPage = useCallback(
-    (event) => {
+    (event: any) => {
       event.preventDefault()
       fetchPage(++currentPageNumber.current)
     },

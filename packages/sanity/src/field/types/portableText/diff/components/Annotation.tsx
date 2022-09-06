@@ -127,7 +127,7 @@ function AnnnotationWithDiff({
   }, [isEditing, myPath, onSetFocus, open])
 
   const handleOpenPopup = useCallback(
-    (event) => {
+    (event: any) => {
       event.stopPropagation()
       setOpen(true)
       if (!isRemoved) {

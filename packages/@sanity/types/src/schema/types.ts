@@ -125,7 +125,7 @@ export namespace Schema {
   export type FieldGroupDefinition = {
     name: string
     title?: string
-    icon?: ComponentType | ReactNode
+    icon?: React.ElementType | React.ReactNode
     default?: boolean
   }
 
@@ -135,13 +135,14 @@ export namespace Schema {
     description?: string | ReactElement
     hidden?: ConditionalProperty
     readOnly?: ConditionalProperty
-    icon?: ComponentType | ReactNode
+    validation?: SchemaValidationValue
+    icon?: React.ElementType | React.ReactNode
     components?: {
-      diff?: ComponentType<any> // @todo: use `DiffProps` here
-      field?: ComponentType<any> // @todo: use `FieldProps` here
-      input?: ComponentType<any> // @todo: use `InputProps` here
-      item?: ComponentType<any> // @todo: use `ItemProps` here
-      preview?: ComponentType<any> // @todo: use `PreviewProps` here
+      diff?: React.ElementType // @todo: use `DiffProps` here
+      field?: React.ElementType // @todo: use `FieldProps` here
+      input?: React.ElementType // @todo: use `InputProps` here
+      item?: React.ElementType // @todo: use `ItemProps` here
+      preview?: React.ElementType // @todo: use `PreviewProps` here
     }
     validation?: unknown
     initialValue?: unknown
@@ -441,7 +442,7 @@ export namespace Schema {
     to: {
       type: string
       title?: string
-      icon?: ComponentType
+      icon?: React.ElementType
       preview?: PreviewConfig
       // eslint-disable-next-line camelcase
       __experimental_search?: {path: string | string[]; weight?: number; mapWith?: string}[]
@@ -671,16 +672,16 @@ export interface BaseSchemaType {
   liveEdit?: boolean
   readOnly?: ConditionalProperty
   hidden?: ConditionalProperty
-  icon?: ComponentType
+  icon?: React.ElementType
   initialValue?: InitialValueProperty<any, any>
   validation?: SchemaValidationValue
   preview?: PreviewConfig
   components?: {
-    diff?: ComponentType<any> // @todo: use `DiffProps` here
-    field?: ComponentType<any> // @todo: use `FieldProps` here
-    input?: ComponentType<any> // @todo: use `InputProps` here
-    item?: ComponentType<any> // @todo: use `ItemProps` here
-    preview?: ComponentType<any> // @todo: use `PreviewProps` here
+    diff?: React.ElementType // @todo: use `DiffProps` here
+    field?: React.ElementType // @todo: use `FieldProps` here
+    input?: React.ElementType // @todo: use `InputProps` here
+    item?: React.ElementType // @todo: use `ItemProps` here
+    preview?: React.ElementType // @todo: use `PreviewProps` here
   }
 
   /**
@@ -786,8 +787,8 @@ export type BlockChildrenObjectField = {name: 'children'} & ObjectField<ArraySch
 export interface SpanSchemaType extends Omit<ObjectSchemaType, 'fields'> {
   annotations: (ObjectSchemaType & {
     blockEditor?: {
-      icon?: string | ComponentType
-      render?: ComponentType
+      icon?: string | React.ElementType
+      render?: React.ElementType
     }
   })[]
   decorators: TitledListValue<string>[]
@@ -830,7 +831,7 @@ export interface ObjectField<T extends SchemaType = SchemaType> {
 }
 export interface FieldGroup {
   name: string
-  icon?: ComponentType
+  icon?: React.ElementType
   title?: string
   description?: string
   hidden?: ConditionalProperty

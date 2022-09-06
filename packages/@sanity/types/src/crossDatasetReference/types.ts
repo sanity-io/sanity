@@ -1,4 +1,3 @@
-import type {ComponentType} from 'react'
 import type {Path} from '../paths'
 import type {SanityDocument} from '../documents'
 import type {ObjectSchemaType, PreviewConfig} from '../schema'
@@ -32,7 +31,7 @@ export type CrossDatasetReferenceFilterResolver = (options: {
 export interface CrossDatasetType {
   type: string
   title?: string
-  icon: ComponentType
+  icon: React.ElementType
   preview: PreviewConfig
   // eslint-disable-next-line camelcase
   __experimental_search: ObjectSchemaType['__experimental_search']

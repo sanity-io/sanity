@@ -1,4 +1,3 @@
-import {ComponentType} from 'react'
 import {
   ArraySchemaType,
   BooleanSchemaType,
@@ -10,7 +9,7 @@ import {
 } from '@sanity/types'
 import {UserColor} from '../../user-color'
 
-export type FieldPreviewComponent<T = any> = ComponentType<{
+export type FieldPreviewComponent<T = any> = React.ElementType<{
   color?: UserColor
   schemaType: T extends Array<any>
     ? ArraySchemaType

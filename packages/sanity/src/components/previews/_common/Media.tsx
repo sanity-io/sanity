@@ -43,7 +43,7 @@ function renderMedia(props: {
     media?: string
     mediaString?: string
   }
-}) {
+}): React.ReactNode {
   const {dimensions, layout, media, styles} = props
 
   if (isValidElementType(media)) {

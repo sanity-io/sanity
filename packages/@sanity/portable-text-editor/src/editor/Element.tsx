@@ -30,7 +30,7 @@ type ElementProps = {
   children: ReactElement
   element: SlateElement
   portableTextFeatures: PortableTextFeatures
-  readOnly: boolean
+  readOnly?: boolean
   renderBlock?: RenderBlockFunction
   renderChild?: RenderChildFunction
   spellCheck?: boolean

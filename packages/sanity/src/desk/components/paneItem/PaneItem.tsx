@@ -8,13 +8,13 @@ import {useSchema} from '../../../hooks'
 import {SanityDefaultPreview} from '../../../preview'
 import {GeneralPreviewLayoutKey} from '../../../components/previews'
 import {MissingSchemaType} from '../MissingSchemaType'
-import {usePaneRouter} from '../paneRouter'
+import {ChildLinkProps, usePaneRouter} from '../paneRouter'
 import {PaneItemPreview} from './PaneItemPreview'
 
 interface PaneItemProps {
   id: string
   layout?: GeneralPreviewLayoutKey
-  icon?: React.ComponentType<any> | false
+  icon?: React.ElementType | false
   pressed?: boolean
   selected?: boolean
   title?: string
@@ -27,10 +27,10 @@ interface PaneItemProps {
  * Otherwise return the passed icon or the schema type icon as a backup.
  */
 export function getIconWithFallback(
-  icon: React.ComponentType<any> | false | undefined,
+  icon: React.ElementType | false | undefined,
   schemaType: SchemaType | undefined,
-  defaultIcon: React.ComponentType<any>
-): React.ComponentType<any> | false {
+  defaultIcon: React.ElementType
+): React.ElementType | false {
   if (icon === false) {
     return false
   }
@@ -91,7 +91,8 @@ export function PaneItem(props: PaneItemProps) {
   const LinkComponent = useMemo(
     () =>
       // eslint-disable-next-line @typescript-eslint/no-shadow
-      forwardRef(function LinkComponent(linkProps: any, ref: any) {
+      forwardRef(function LinkComponent(linkProps: ChildLinkProps, ref?: any) {
+        // @ts-expect-error - @todo fix `Expression produces a union type that is too complex to represent.ts(2590)`
         return <ChildLink {...linkProps} childId={id} ref={ref} />
       }),
     [ChildLink, id]

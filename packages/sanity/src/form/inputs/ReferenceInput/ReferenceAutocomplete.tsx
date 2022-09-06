@@ -13,12 +13,14 @@ const StyledText = styled(Text)`
   word-break: break-word;
 `
 
+export type ReferenceAutocompleteProps = React.ComponentProps<typeof Autocomplete> & {
+  referenceElement: HTMLDivElement | null
+  searchString?: string
+  portalRef?: React.RefObject<HTMLDivElement>
+}
+
 export const ReferenceAutocomplete = forwardRef(function ReferenceAutocomplete(
-  props: React.ComponentProps<typeof Autocomplete> & {
-    referenceElement: HTMLDivElement | null
-    searchString?: string
-    portalRef?: React.RefObject<HTMLDivElement>
-  },
+  props: ReferenceAutocompleteProps,
   ref: React.ForwardedRef<HTMLInputElement>
 ) {
   const hasResults = props.options && props.options.length > 0

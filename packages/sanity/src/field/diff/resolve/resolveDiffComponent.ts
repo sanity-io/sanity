@@ -1,5 +1,4 @@
 import {ArraySchemaType, ObjectSchemaType, SchemaType} from '@sanity/types'
-import {ComponentType} from 'react'
 import {diffResolvers} from '../../TODO'
 import {Diff, DiffComponent, DiffComponentOptions} from '../../types'
 import {defaultComponents} from './defaultComponents'
@@ -32,7 +31,7 @@ function tryResolve(
 ): DiffComponent<any> | DiffComponentOptions | undefined {
   const resolvers = diffResolvers
 
-  let resolved: ComponentType | DiffComponentOptions | undefined
+  let resolved: React.ElementType | DiffComponentOptions | undefined
 
   for (const resolver of resolvers) {
     if (typeof resolver !== 'function') {

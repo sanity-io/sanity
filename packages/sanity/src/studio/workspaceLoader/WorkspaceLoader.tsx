@@ -53,8 +53,8 @@ const useRouterState = createHookFromObservableFactory(
 
 interface WorkspaceLoaderProps {
   children: React.ReactNode
-  ConfigErrorsComponent: React.ComponentType
-  LoadingComponent: React.ComponentType
+  ConfigErrorsComponent: React.ElementType
+  LoadingComponent: React.ElementType
 }
 
 function WorkspaceLoader({

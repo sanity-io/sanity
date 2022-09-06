@@ -1,7 +1,7 @@
 import {DocumentIcon, EditIcon, EllipsisVerticalIcon} from '@sanity/icons'
 import {Button, Card, Container, Flex, Text} from '@sanity/ui'
 import {useBoolean, useSelect, useString} from '@sanity/ui-workshop'
-import React, {ComponentType, createElement, useMemo} from 'react'
+import React, {createElement, useMemo} from 'react'
 import {PortableTextPreviewLayoutKey, PreviewProps} from '../types'
 import {InlinePreview} from '../portableText/InlinePreview'
 import {BlockPreview} from '../portableText/BlockPreview'
@@ -26,7 +26,7 @@ const LAYOUT_OPTIONS: Record<string, PortableTextPreviewLayoutKey> = {
 // }
 
 const previewComponents: {
-  [TLayoutKey in PortableTextPreviewLayoutKey]: React.ComponentType<PreviewProps<TLayoutKey>>
+  [TLayoutKey in PortableTextPreviewLayoutKey]: React.ElementType<PreviewProps<TLayoutKey>>
 } = {
   block: BlockPreview,
   blockImage: BlockImagePreview,
@@ -82,7 +82,7 @@ export default function PortableTextPreviewStory() {
       <Flex align="center" height="fill" justify="center" padding={4} sizing="border">
         <Container width={1}>
           <Card border padding={padding[layout]} radius={1} style={{lineHeight: 0}}>
-            {createElement(component as ComponentType<PreviewProps>, {
+            {createElement(component as React.ElementType<PreviewProps>, {
               actions: withActions && (
                 <Button fontSize={1} icon={EllipsisVerticalIcon} mode="bleed" paddingX={2} />
               ),

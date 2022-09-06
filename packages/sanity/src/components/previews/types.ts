@@ -1,5 +1,5 @@
 import {ImageUrlFitMode} from '@sanity/types'
-import {ComponentType, ReactNode} from 'react'
+import {ElementType, ReactNode} from 'react'
 
 export type PortableTextPreviewLayoutKey = 'block' | 'blockImage' | 'inline'
 
@@ -19,24 +19,24 @@ export type PreviewMediaDimensions = {
  * @alpha
  */
 export interface PreviewProps<TLayoutKey = PreviewLayoutKey> {
-  actions?: ReactNode | ComponentType<{layout: TLayoutKey}>
+  actions?: ReactNode | ElementType<{layout: TLayoutKey}>
   children?: ReactNode
-  description?: ReactNode | ComponentType<{layout: TLayoutKey}>
+  description?: ReactNode | ElementType<{layout: TLayoutKey}>
   error?: Error | null
   fallbackTitle?: ReactNode
   imageUrl?: string
   isPlaceholder?: boolean
   layout?: TLayoutKey
-  media?: ReactNode | ComponentType<{dimensions: PreviewMediaDimensions; layout: TLayoutKey}>
+  media?: ReactNode | ElementType<{dimensions: PreviewMediaDimensions; layout: TLayoutKey}>
   mediaDimensions?: PreviewMediaDimensions
   progress?: number
-  status?: ReactNode | ComponentType<{layout: TLayoutKey}>
-  subtitle?: ReactNode | ComponentType<{layout: TLayoutKey}>
-  title?: ReactNode | ComponentType<{layout: TLayoutKey}>
+  status?: ReactNode | ElementType<{layout: TLayoutKey}>
+  subtitle?: ReactNode | ElementType<{layout: TLayoutKey}>
+  title?: ReactNode | ElementType<{layout: TLayoutKey}>
   value?: unknown
   withBorder?: boolean
   withRadius?: boolean
   withShadow?: boolean
 }
 
-export type PreviewComponent = ComponentType<PreviewProps>
+export type PreviewComponent = ElementType<PreviewProps>

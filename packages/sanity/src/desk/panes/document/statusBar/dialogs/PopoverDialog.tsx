@@ -33,7 +33,7 @@ function PopoverDialogContent(props: {modal: DocumentActionPopoverModalProps}) {
   }, [isTopLayer, onClose])
 
   const handleGlobalKeyDown = useCallback(
-    (event) => {
+    (event: any) => {
       if (event.key === 'Escape' && isTopLayer) onClose()
     },
     [isTopLayer, onClose]

@@ -15,7 +15,7 @@ import {getPreviewStateObservable, getValueWithFallback} from './helpers'
 
 export interface PaneItemPreviewProps {
   documentPreviewStore: DocumentPreviewStore
-  icon: React.ComponentType | false
+  icon: React.ElementType | false
   layout: GeneralPreviewLayoutKey
   presence?: DocumentPresence[]
   schemaType: SchemaType

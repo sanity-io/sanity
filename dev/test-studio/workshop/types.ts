@@ -1,6 +1,6 @@
 export interface WorkshopOptions {
   collections?: {name: string; title: string}[]
-  icon?: React.ComponentType
+  icon?: React.ElementType
   name?: string
   title?: string
 }

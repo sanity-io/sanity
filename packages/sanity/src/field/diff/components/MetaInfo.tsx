@@ -5,7 +5,7 @@ import styled from 'styled-components'
 export interface MetaInfoProps {
   title: string
   action?: string
-  icon?: React.ComponentType
+  icon?: React.ElementType
   children?: React.ReactNode
   markRemoved?: boolean
 }

@@ -48,7 +48,7 @@ export const InvalidValueInput = forwardRef(
     }, [onChange])
 
     const handleConvertTo = useCallback(
-      (converted) => {
+      (converted: any) => {
         onChange(PatchEvent.from(set(converted)))
       },
       [onChange]

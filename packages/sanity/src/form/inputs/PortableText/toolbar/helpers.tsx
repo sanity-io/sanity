@@ -72,7 +72,7 @@ function getPTEListActions(editor: PortableTextEditor, disabled: boolean): PTETo
   })
 }
 
-function getAnnotationIcon(item: PortableTextFeature): React.ComponentType | string | undefined {
+function getAnnotationIcon(item: PortableTextFeature): React.ElementType | string | undefined {
   return (
     get(item, 'icon') ||
     get(item, 'blockEditor.icon') ||
@@ -135,8 +135,8 @@ export function getBlockStyles(features: PortableTextFeatures): BlockStyleItem[]
 
 function getInsertMenuIcon(
   type: ObjectSchemaType,
-  fallbackIcon: React.ComponentType
-): React.ComponentType {
+  fallbackIcon: React.ElementType
+): React.ElementType {
   const referenceIcon = get(type, 'to[0].icon')
 
   return type.icon || (type.type && type.type.icon) || referenceIcon || fallbackIcon
@@ -174,11 +174,11 @@ export function getInsertMenuItems(
   return filteredBlockItems
 }
 
-const annotationIcons: Record<string, React.ComponentType> = {
+const annotationIcons: Record<string, React.ElementType> = {
   link: LinkIcon,
 }
 
-const formatIcons: Record<string, React.ComponentType> = {
+const formatIcons: Record<string, React.ElementType> = {
   strong: BoldIcon,
   em: ItalicIcon,
   'strike-through': StrikethroughIcon,
@@ -186,7 +186,7 @@ const formatIcons: Record<string, React.ComponentType> = {
   code: CodeIcon,
 }
 
-const listStyleIcons: Record<string, React.ComponentType> = {
+const listStyleIcons: Record<string, React.ElementType> = {
   number: OlistIcon,
   bullet: UlistIcon,
 }

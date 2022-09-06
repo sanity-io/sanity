@@ -1,5 +1,4 @@
 import type {SanityClient} from '@sanity/client'
-import type {ComponentType} from 'react'
 
 export interface VisionProps {
   client: SanityClient
@@ -14,5 +13,5 @@ export interface VisionConfig {
 export interface VisionToolConfig extends Partial<VisionConfig> {
   name?: string
   title?: string
-  icon?: ComponentType
+  icon?: React.ElementType
 }

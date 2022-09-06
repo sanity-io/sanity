@@ -31,7 +31,7 @@ export interface PortableTextMarker {
  * unstable
  * @alpha
  */
-export type FormBuilderArrayFunctionComponent = React.ComponentType<
+export type FormBuilderArrayFunctionComponent = React.ElementType<
   FormArrayInputFunctionsProps<any, any>
 >
 
@@ -39,13 +39,13 @@ export type FormBuilderArrayFunctionComponent = React.ComponentType<
  * unstable
  * @alpha
  */
-export type FormBuilderCustomMarkersComponent = React.ComponentType<{markers: PortableTextMarker[]}>
+export type FormBuilderCustomMarkersComponent = React.ElementType<{markers: PortableTextMarker[]}>
 
 /**
  * unstable
  * @alpha
  */
-export type FormBuilderMarkersComponent = React.ComponentType<{
+export type FormBuilderMarkersComponent = React.ElementType<{
   markers: PortableTextMarker[]
   renderCustomMarkers?: RenderCustomMarkers
   validation: NodeValidation[]
@@ -57,10 +57,10 @@ export type FormBuilderMarkersComponent = React.ComponentType<{
 export type FormBuilderInputComponentMap = Record<
   string,
   {
-    field?: React.ComponentType<FieldProps>
-    item?: React.ComponentType<ItemProps>
-    input?: React.ComponentType<InputProps>
-    preview?: React.ComponentType<PreviewProps>
+    field?: React.ElementType<FieldProps>
+    item?: React.ElementType<ItemProps>
+    input?: React.ElementType<InputProps>
+    preview?: React.ElementType<PreviewProps>
   }
 >
 

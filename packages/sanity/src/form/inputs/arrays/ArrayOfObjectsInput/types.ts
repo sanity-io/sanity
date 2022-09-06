@@ -1,7 +1,7 @@
 /* eslint-disable camelcase */
 
-import type {ComponentType} from 'react'
 import {KeyedSegment, Path} from '@sanity/types'
+import React from 'react'
 
 export type ModalType = 'modal' | 'fullscreen' | string
 
@@ -23,4 +23,4 @@ export interface _InsertEvent {
   referenceItem: KeyedSegment | number
   edit?: boolean
 }
-export type ReferenceItemComponentType = ComponentType<any>
+export type ReferenceItemComponentType = React.ElementType

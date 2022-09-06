@@ -109,7 +109,7 @@ export const Calendar = forwardRef(function Calendar(
   }, [ref])
 
   const handleKeyDown = useCallback(
-    (event) => {
+    (event: any) => {
       if (!ARROW_KEYS.includes(event.key)) {
         return
       }

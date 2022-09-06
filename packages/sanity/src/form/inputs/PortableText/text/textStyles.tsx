@@ -76,7 +76,7 @@ export const BlockQuote = ({children, ...rest}: TextStyleProps) => (
   </BlockQuoteRoot>
 )
 
-export const TEXT_STYLES: Record<string, React.ComponentType<TextStyleProps>> = {
+export const TEXT_STYLES: Record<string, React.ElementType<TextStyleProps>> = {
   normal: Normal,
   h1: Heading1,
   h2: Heading2,

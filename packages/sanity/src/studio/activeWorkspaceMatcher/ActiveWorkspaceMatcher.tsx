@@ -13,8 +13,8 @@ import {matchWorkspace} from './matchWorkspace'
 interface ActiveWorkspaceMatcherProps {
   children?: React.ReactChild
   unstable_history?: History
-  NotFoundComponent: React.ComponentType<{onNavigateToDefaultWorkspace: () => void}>
-  LoadingComponent: React.ComponentType
+  NotFoundComponent: React.ElementType<{onNavigateToDefaultWorkspace: () => void}>
+  LoadingComponent: React.ElementType
 }
 
 const createHistory = () =>

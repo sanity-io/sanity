@@ -1,13 +1,15 @@
 import {SchemaType} from '@sanity/types'
-import {ComponentType} from 'react'
+import React from 'react'
 import {PreviewProps} from '../../components/previews'
 import {SanityDefaultPreview} from './SanityDefaultPreview'
 
-export function _resolvePreviewComponent(type: SchemaType): ComponentType<
+type PreviewElementType = React.ElementType<
   PreviewProps & {
-    icon?: ComponentType
+    icon?: React.ElementType
     schemaType?: SchemaType
   }
-> {
-  return type.components?.preview || SanityDefaultPreview
+>
+
+export function _resolvePreviewComponent(type: SchemaType): PreviewElementType {
+  return (type.components?.preview as PreviewElementType) || SanityDefaultPreview
 }

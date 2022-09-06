@@ -58,7 +58,7 @@ function CustomLogo(props: {provider: AuthProvider}) {
   ) as any
 }
 
-export const providerLogos: Record<string, React.ComponentType<{provider: AuthProvider}>> = {
+export const providerLogos: Record<string, React.ElementType<{provider: AuthProvider}>> = {
   google: GoogleLogo,
   github: GithubLogo,
   custom: CustomLogo,

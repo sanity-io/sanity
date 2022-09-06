@@ -48,16 +48,14 @@ import {_createRenderPreview} from './form/_renderPreview'
 
 type InternalSource = WorkspaceSummary['__internal']['sources'][number]
 
-function normalizeLogo(
-  logo: React.ComponentType | React.ElementType | undefined
-): JSX.Element | undefined {
+function normalizeLogo(logo: React.ReactNode | React.ElementType): JSX.Element | undefined {
   if (isValidElementType(logo)) return createElement(logo)
   if (isValidElement(logo)) return logo
   return undefined
 }
 
 function normalizeIcon(
-  icon: React.ComponentType | React.ElementType | undefined,
+  icon: React.ReactNode | React.ElementType,
   title: string,
   subtitle = ''
 ): JSX.Element {

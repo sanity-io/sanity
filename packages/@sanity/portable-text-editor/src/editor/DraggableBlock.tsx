@@ -16,7 +16,7 @@ const debugRenders = false
 type ElementProps = {
   children: React.ReactNode
   element: SlateElement
-  readOnly: boolean
+  readOnly?: boolean
   blockRef: React.MutableRefObject<HTMLDivElement | null>
 }
 

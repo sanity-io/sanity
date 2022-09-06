@@ -1,5 +1,5 @@
 import {ArraySchemaType} from '@sanity/types'
-import {ComponentType} from 'react'
+import React from 'react'
 import * as is from '../../utils/is'
 import {OptionsArrayInput as OptionsArray} from '../../inputs/arrays/OptionsArrayInput'
 import {PortableTextInput} from '../../inputs/PortableText/PortableTextInput'
@@ -29,7 +29,7 @@ export function hasOptionsList(type: ArraySchemaType): boolean {
   return Boolean(type.options?.list)
 }
 
-export function resolveArrayInput(type: ArraySchemaType): ComponentType<any> {
+export function resolveArrayInput(type: ArraySchemaType): React.ElementType {
   if (isStringArray(type) && isTagsArray(type)) {
     return TagsArrayInput
   }

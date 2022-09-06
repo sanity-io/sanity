@@ -24,7 +24,7 @@ export default function Block(props: {
   let returned = children
 
   const handleClick = useCallback(
-    (event) => {
+    (event: any) => {
       event.stopPropagation()
 
       if (!isRemoved) {

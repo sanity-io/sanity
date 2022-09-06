@@ -7,7 +7,7 @@ const isNonNullable = isObject as <T>(value: T) => value is NonNullable<T>
 type ListItemBuilder = ReturnType<StructureBuilder['listItem']>
 
 interface TypeGroupOpts {
-  icon?: React.ComponentType
+  icon?: React.ElementType
   id: string
   title: string
   types: string[]

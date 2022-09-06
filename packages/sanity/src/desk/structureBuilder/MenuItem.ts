@@ -27,7 +27,7 @@ export interface MenuItem {
   intent?: Intent
   group?: string
   // TODO: align these with TemplateResponse['icon']
-  icon?: React.ComponentType | React.ReactNode
+  icon?: React.ElementType | React.ReactNode
   params?: MenuItemParamsType
   showAsAction?: boolean
 }
@@ -73,7 +73,7 @@ export class MenuItemBuilder implements Serializable<MenuItem> {
     return this.spec.group
   }
 
-  icon(icon: React.ComponentType | React.ReactNode): MenuItemBuilder {
+  icon(icon: React.ElementType | React.ReactNode): MenuItemBuilder {
     return this.clone({icon})
   }
 

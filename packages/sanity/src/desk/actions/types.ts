@@ -45,9 +45,9 @@ export interface DocumentActionConfirmModalProps {
   message: React.ReactNode
   onConfirm: () => void
   onCancel: () => void
-  cancelButtonIcon?: React.ComponentType | React.ReactNode
+  cancelButtonIcon?: React.ElementType | React.ReactNode
   cancelButtonText?: React.ReactNode
-  confirmButtonIcon?: React.ComponentType | React.ReactNode
+  confirmButtonIcon?: React.ElementType | React.ReactNode
   confirmButtonText?: React.ReactNode
 }
 
@@ -85,7 +85,7 @@ export interface DocumentActionDescription {
   tone?: ButtonTone
   modal?: DocumentActionModalProps | false | null
   disabled?: boolean
-  icon?: React.ReactNode | React.ComponentType
+  icon?: React.ReactNode | React.ElementType
   label: string
   onHandle?: () => void
   shortcut?: string | null

@@ -20,11 +20,11 @@ const Root = styled.div`
   pointer-events: 'all';
 `
 
-// function isClassComponent(component: React.ComponentType) {
+// function isClassComponent(component: React.ElementType) {
 //   return typeof component === 'function' && !!component.prototype?.isReactComponent
 // }
 
-// function isFunctionComponent(component: React.ComponentType) {
+// function isFunctionComponent(component: React.ElementType) {
 //   return typeof component === 'function' && String(component).includes('return React.createElement')
 // }
 

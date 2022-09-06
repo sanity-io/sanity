@@ -701,6 +701,7 @@ export class VisionGui extends React.PureComponent<VisionGuiProps, VisionGuiStat
           </Grid>
         </Header>
         <SplitpaneContainer flex={1}>
+          {/* @ts-expect-error: https://github.com/tomkp/react-split-pane/pull/819 */}
           <SplitPane split="vertical" minSize={280} defaultSize={400} maxSize={-400}>
             <Box height="stretch" flex={1}>
               {/*
@@ -713,6 +714,7 @@ export class VisionGui extends React.PureComponent<VisionGuiProps, VisionGuiStat
                   - Disables resize if the container height is less then 500px
                   This should ensure that we mostly avoid a pane to take up all the room, and for the controls to not be eaten up by the pane
                 */}
+              {/* @ts-expect-error: https://github.com/tomkp/react-split-pane/pull/819 */}
               <SplitPane
                 className="sidebarPanes"
                 split="horizontal"

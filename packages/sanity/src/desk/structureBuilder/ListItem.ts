@@ -25,7 +25,7 @@ export interface ListItemDisplayOptions {
 export interface ListItemInput {
   id: string
   title?: string
-  icon?: React.ComponentType | React.ReactNode
+  icon?: React.ElementType | React.ReactNode
   child?: ListItemChild
   displayOptions?: ListItemDisplayOptions
   schemaType?: SchemaType | string
@@ -35,7 +35,7 @@ export interface ListItem {
   id: string
   type: string
   title?: string
-  icon?: React.ComponentType | React.ReactNode
+  icon?: React.ElementType | React.ReactNode
   child?: ListItemChild
   displayOptions?: ListItemDisplayOptions
   schemaType?: SchemaType
@@ -44,7 +44,7 @@ export interface ListItem {
 export interface UnserializedListItem {
   id: string
   title: string
-  icon?: React.ComponentType | React.ReactNode
+  icon?: React.ElementType | React.ReactNode
   child?: UnserializedListItemChild
   displayOptions?: ListItemDisplayOptions
   schemaType?: SchemaType | string
@@ -75,7 +75,7 @@ export class ListItemBuilder implements Serializable<ListItem> {
     return this.spec.title
   }
 
-  icon(icon: React.ComponentType | React.ReactNode): ListItemBuilder {
+  icon(icon: React.ElementType | React.ReactNode): ListItemBuilder {
     return this.clone({icon})
   }
 

@@ -4,7 +4,7 @@ export interface DocumentBadgeDescription {
   title?: string
   label?: string | undefined
   color?: 'primary' | 'success' | 'warning' | 'danger'
-  icon?: React.ReactNode | React.ComponentType
+  icon?: React.ReactNode | React.ElementType
 }
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface

@@ -28,7 +28,7 @@ export interface EditReferenceEvent {
 export interface CreateReferenceOption {
   id: string
   title: string
-  icon?: React.ReactNode | React.ComponentType
+  icon?: React.ReactNode | React.ElementType
   type: string
   template: ReferenceTemplate
   permission: {
@@ -59,7 +59,7 @@ export interface ReferenceInputProps<Value = Reference>
   onSearch: ReferenceSearchFunction
   selectedState?: 'selected' | 'pressed' | 'none'
   createOptions: CreateReferenceOption[]
-  editReferenceLinkComponent: React.ComponentType<{
+  editReferenceLinkComponent: React.ElementType<{
     children: React.ReactNode
     documentId: string
     documentType: string

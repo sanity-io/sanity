@@ -20,15 +20,15 @@ export const MediaCard = styled(Card)`
   }
 `
 
-const createIcon = (icon: React.ComponentType | React.ReactNode) => {
+const createIcon = (icon: React.ElementType | React.ReactNode) => {
   if (isValidElementType(icon)) return createElement(icon)
   if (isValidElement(icon)) return icon
   return undefined
 }
 
 export interface WorkspacePreviewProps {
-  icon?: React.ComponentType | React.ReactNode
-  iconRight?: React.ComponentType | React.ReactNode
+  icon?: React.ElementType | React.ReactNode
+  iconRight?: React.ElementType | React.ReactNode
   selected?: boolean
   state?: 'logged-in' | 'logged-out' | 'no-access'
   subtitle?: string

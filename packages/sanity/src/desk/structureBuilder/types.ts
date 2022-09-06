@@ -17,7 +17,7 @@ import type {FormView, FormViewBuilder} from './views/FormView'
 
 export type View = FormView | ComponentView
 
-export type UserViewComponent<TOptions = Record<string, any>> = React.ComponentType<{
+export type UserViewComponent<TOptions = Record<string, any>> = React.ElementType<{
   document: {
     draft: SanityDocument | null
     displayed: Partial<SanityDocument>
@@ -29,7 +29,7 @@ export type UserViewComponent<TOptions = Record<string, any>> = React.ComponentT
   schemaType: SchemaType
 }>
 
-export type UserComponent = React.ComponentType<{
+export type UserComponent = React.ElementType<{
   child?: ComponentBuilder
   childItemId?: string
   id: string

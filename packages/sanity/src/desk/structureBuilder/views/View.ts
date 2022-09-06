@@ -9,7 +9,7 @@ import {View} from '../types'
 export interface BaseView {
   id: string
   title: string
-  icon?: React.ComponentType | React.ReactNode
+  icon?: React.ElementType | React.ReactNode
 }
 
 export abstract class GenericViewBuilder<TView extends Partial<BaseView>, ConcreteImpl>
@@ -33,7 +33,7 @@ export abstract class GenericViewBuilder<TView extends Partial<BaseView>, Concre
     return this.spec.title
   }
 
-  icon(icon: React.ComponentType | React.ReactNode): ConcreteImpl {
+  icon(icon: React.ElementType | React.ReactNode): ConcreteImpl {
     return this.clone({icon})
   }
 

@@ -48,7 +48,7 @@ export const CommonDateTimeInput = React.forwardRef(function CommonDateTimeInput
   }, [value])
 
   const handleDatePickerInputChange = React.useCallback(
-    (event) => {
+    (event: any) => {
       const nextInputValue = event.currentTarget.value
       const result = nextInputValue === '' ? null : parseInputValue(nextInputValue)
 

@@ -20,7 +20,7 @@ export function UnknownFields(props: Props) {
   const fieldsLen = fieldNames.length
 
   const handleUnsetClick = useCallback(
-    (fieldName) => {
+    (fieldName: any) => {
       onChange(unset([fieldName]))
     },
     [onChange]

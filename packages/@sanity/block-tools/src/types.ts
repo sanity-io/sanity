@@ -1,4 +1,3 @@
-import type {ComponentType} from 'react'
 import type {
   ArraySchemaType,
   MarkDefinition,
@@ -27,8 +26,8 @@ export interface BlockContentFeatures {
  * @beta
  */
 export interface BlockEditorSchemaProps {
-  icon?: string | ComponentType
-  render?: ComponentType
+  icon?: string | React.ElementType
+  render?: React.ElementType
 }
 
 /**
@@ -39,7 +38,7 @@ export interface ResolvedAnnotationType {
   title: string | undefined
   value: string
   type: ObjectSchemaType
-  icon: ComponentType | undefined
+  icon: React.ElementType | undefined
 }
 
 /**

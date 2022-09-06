@@ -14,7 +14,7 @@ import {ItemRow} from './ItemRow'
 import {ArrayOfPrimitivesFunctions} from './ArrayOfPrimitivesFunctions'
 
 export interface DefaultArrayOfPrimitivesInputProps extends ArrayOfPrimitivesInputProps {
-  ArrayFunctionsImpl: React.ComponentType<
+  ArrayFunctionsImpl: React.ElementType<
     FormArrayInputFunctionsProps<ArraySchemaType<PrimitiveValue[]>, PrimitiveValue>
   >
 }

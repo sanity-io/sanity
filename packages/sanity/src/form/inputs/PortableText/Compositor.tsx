@@ -188,7 +188,7 @@ export function Compositor(props: InputProps) {
   )
 
   const renderChild = useCallback(
-    (child, childType, attributes, defaultRender) => {
+    (child: any, childType: any, attributes: any, defaultRender: any) => {
       const isSpan = child._type === ptFeatures.types.span.name
       if (isSpan) {
         return defaultRender(child)
@@ -218,7 +218,7 @@ export function Compositor(props: InputProps) {
   )
 
   const renderAnnotation = useCallback(
-    (annotation, annotationType, attributes, defaultRender) => {
+    (annotation: any, annotationType: any, attributes: any, defaultRender: any) => {
       return (
         <Annotation
           attributes={attributes}

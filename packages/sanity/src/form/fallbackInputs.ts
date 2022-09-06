@@ -7,9 +7,9 @@ import {TextInput} from './inputs/TextInput'
 import {FIXME} from './types'
 
 export const fallbackInputs = {
-  object: ObjectInput as React.ComponentType<FIXME>,
-  array: ArrayInput as React.ComponentType<FIXME>,
-  boolean: BooleanInput as React.ComponentType<FIXME>,
-  number: NumberInput as React.ComponentType<FIXME>,
-  string: TextInput as React.ComponentType<FIXME>,
+  object: ObjectInput as React.ElementType<FIXME>,
+  array: ArrayInput as React.ElementType<FIXME>,
+  boolean: BooleanInput as React.ElementType<FIXME>,
+  number: NumberInput as React.ElementType<FIXME>,
+  string: TextInput as React.ElementType<FIXME>,
 }

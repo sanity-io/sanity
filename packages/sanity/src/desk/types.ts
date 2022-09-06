@@ -39,7 +39,7 @@ export type StructureResolver = (S: StructureBuilder, context: ConfigContext) =>
 export type DeskToolPaneActionHandler = (params: any, scope?: unknown) => void
 
 export interface DeskToolOptions {
-  icon?: React.ComponentType
+  icon?: React.ElementType
   name?: string
   source?: string
   structure?: StructureResolver
@@ -161,7 +161,7 @@ interface BaseResolvedPaneNode<T extends PaneNode['type']> {
 export interface CustomComponentPaneNode extends BaseResolvedPaneNode<'component'> {
   component: UserComponent
   options?: Record<string, unknown>
-  // component: React.ComponentType<Props> | React.ReactNode
+  // component: React.ElementType<Props> | React.ReactNode
 
   /**
    * An experimental flag that can be used to opt out of the forced refresh when
@@ -209,7 +209,7 @@ export interface PaneListItem<TParams = unknown> {
   schemaType?: SchemaType
 
   title: string
-  icon?: React.ComponentType | false
+  icon?: React.ElementType | false
   displayOptions?: {showIcon?: boolean}
   action?: (t: TParams) => unknown
   params?: TParams

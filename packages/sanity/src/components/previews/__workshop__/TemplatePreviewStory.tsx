@@ -21,7 +21,7 @@ const mediaValues: Record<string, React.ReactNode> = {
   icon: <DocumentIcon />,
 }
 
-const previewComponents: Record<LayoutKey, React.ComponentType<TemplatePreviewProps>> = {
+const previewComponents: Record<LayoutKey, React.ElementType<TemplatePreviewProps>> = {
   createDocument: TemplatePreview,
 }
 

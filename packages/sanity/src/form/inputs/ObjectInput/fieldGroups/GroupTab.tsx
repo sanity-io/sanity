@@ -5,7 +5,7 @@ interface GroupType {
   'aria-controls': string
   autoFocus?: boolean
   disabled?: boolean
-  icon?: React.ComponentType
+  icon?: React.ElementType
   name: string
   onClick?: (value: string) => void
   selected: boolean

@@ -15,7 +15,7 @@ export function DefaultArrayInputFunctions<
   const menuButtonId = useId()
 
   const insertItem = React.useCallback(
-    (itemType) => {
+    (itemType: any) => {
       const item = onCreateValue(itemType)
 
       onAppendItem(item)

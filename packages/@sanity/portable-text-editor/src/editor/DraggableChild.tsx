@@ -15,7 +15,7 @@ declare global {
 type ElementProps = {
   children: ReactElement
   element: SlateElement
-  readOnly: boolean
+  readOnly?: boolean
 }
 
 export const DraggableChild = ({children, element, readOnly}: ElementProps) => {

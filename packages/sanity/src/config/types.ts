@@ -9,7 +9,7 @@ import type {
   SchemaTypeDefinition,
 } from '@sanity/types'
 import type React from 'react'
-import {ComponentType, ReactNode} from 'react'
+import {ElementType, ReactNode} from 'react'
 import type {Observable} from 'rxjs'
 import type {BifurClient} from '@sanity/bifur-client'
 import type {
@@ -63,12 +63,12 @@ export interface SanityFormConfig {
   }
   components?: Record<
     string,
-    | ComponentType<InputProps>
+    | ElementType<InputProps>
     | {
-        input?: ComponentType<InputProps>
-        field?: ComponentType<FieldProps>
-        item?: ComponentType<ItemProps>
-        preview?: ComponentType<PreviewProps>
+        input?: ElementType<InputProps>
+        field?: ElementType<FieldProps>
+        item?: ElementType<ItemProps>
+        preview?: ElementType<PreviewProps>
       }
   >
   file?: {
@@ -99,8 +99,8 @@ export interface FormBuilderComponentResolverContext extends ConfigContext {
  * @alpha
  */
 export interface Tool<Options = any> {
-  component: ComponentType<{tool: Tool<Options>}>
-  icon?: ComponentType
+  component: ElementType<{tool: Tool<Options>}>
+  icon?: ElementType
   name: string
   options?: Options
   router?: Router
@@ -174,7 +174,7 @@ export interface _DocumentLanguageFilterContext extends ConfigContext {
 /**
  * @internal
  */
-export type _DocumentLanguageFilterComponent = ComponentType<{schemaType: ObjectSchemaType}>
+export type _DocumentLanguageFilterComponent = ElementType<{schemaType: ObjectSchemaType}>
 
 /**
  * @internal
@@ -222,11 +222,11 @@ export type Plugin<TOptions = void> = (options: TOptions) => PluginOptions
 export interface WorkspaceOptions extends SourceOptions {
   basePath: string
   subtitle?: string
-  logo?: ComponentType
-  icon?: ComponentType
+  logo?: ElementType
+  icon?: ElementType
   navbar?: {
     components?: {
-      ToolMenu: ComponentType<ToolMenuProps>
+      ToolMenu: ElementType<ToolMenuProps>
     }
   }
   theme?: StudioTheme
@@ -364,7 +364,7 @@ export interface Workspace extends Omit<Source, 'type'> {
   icon: React.ReactNode
   navbar?: {
     components?: {
-      ToolMenu?: ComponentType<ToolMenuProps>
+      ToolMenu?: ElementType<ToolMenuProps>
     }
   }
   /**

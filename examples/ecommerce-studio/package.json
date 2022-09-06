@@ -20,10 +20,10 @@
   ],
   "dependencies": {
     "@sanity/cli": "3.0.0-dev-preview.15",
-    "@sanity/ui": "^0.38.0",
-    "react": "18.2.0",
+    "@sanity/ui": "0.38.3-next.5+6563c40f",
+    "react": "^18.2.0",
     "react-barcode": "^1.4.1",
-    "react-dom": "18.2.0",
+    "react-dom": "^18.2.0",
     "sanity": "3.0.0-dev-preview.15",
     "styled-components": "^5.2.0"
   },

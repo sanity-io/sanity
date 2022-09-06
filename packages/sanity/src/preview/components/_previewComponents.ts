@@ -1,4 +1,3 @@
-import {ComponentType} from 'react'
 import {
   BlockImagePreview,
   BlockPreview,
@@ -11,7 +10,7 @@ import {
 } from '../../components/previews'
 
 export const _previewComponents: {
-  [TLayoutKey in PreviewLayoutKey]: ComponentType<PreviewProps<TLayoutKey>>
+  [TLayoutKey in PreviewLayoutKey]: React.ElementType<PreviewProps<TLayoutKey>>
 } = {
   default: DefaultPreview,
   media: MediaPreview,

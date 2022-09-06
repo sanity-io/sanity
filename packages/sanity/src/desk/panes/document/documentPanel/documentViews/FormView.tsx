@@ -144,7 +144,7 @@ export function FormView(props: FormViewProps) {
   //   () =>
   //     Array.isArray(afterEditorComponents) &&
   //     afterEditorComponents.map(
-  //       (AfterEditorComponent: React.ComponentType<{documentId: string}>, idx: number) => (
+  //       (AfterEditorComponent: React.ElementType<{documentId: string}>, idx: number) => (
   //         <AfterEditorComponent key={String(idx)} documentId={documentId} />
   //       )
   //     ),

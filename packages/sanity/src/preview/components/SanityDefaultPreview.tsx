@@ -2,13 +2,14 @@ import {DocumentIcon} from '@sanity/icons'
 import imageUrlBuilder from '@sanity/image-url'
 import {ImageUrlFitMode, isImage, isReference} from '@sanity/types'
 import React, {
-  ComponentType,
   createElement,
+  ElementType,
   isValidElement,
   ReactElement,
   useCallback,
   useMemo,
 } from 'react'
+import {isValidElementType} from 'react-is'
 import {PreviewProps} from '../../components/previews'
 import {useClient} from '../../hooks'
 import {isRecord, isString} from '../../util'
@@ -21,7 +22,7 @@ function FallbackIcon() {
 
 export interface SanityDefaultPreviewProps extends Omit<PreviewProps, 'value'> {
   error?: Error | null
-  icon?: ComponentType | false
+  icon?: ElementType | false
   value?: unknown
 }
 
@@ -41,7 +42,7 @@ export function SanityDefaultPreview(props: SanityDefaultPreviewProps): ReactEle
   const imageBuilder = useMemo(() => imageUrlBuilder(client), [client])
 
   const component = (_previewComponents[layout || 'default'] ||
-    _previewComponents.default) as ComponentType<PreviewProps>
+    _previewComponents.default) as ElementType<PreviewProps>
 
   const {_upload, value} = useMemo(() => {
     return valueProp ? _extractUploadState(valueProp) : {_upload: undefined, value: undefined}
@@ -99,7 +100,7 @@ export function SanityDefaultPreview(props: SanityDefaultPreviewProps): ReactEle
       return false
     }
 
-    if (typeof mediaProp === 'function') {
+    if (isValidElementType(mediaProp)) {
       return mediaProp
     }
 
@@ -125,6 +126,7 @@ export function SanityDefaultPreview(props: SanityDefaultPreviewProps): ReactEle
     imageUrl: _upload?.previewImage,
     progress: _upload?.progress,
     ...restProps,
+    // @ts-expect-error -- @todo: fix `TS2769: No overload matches this call.`
     media,
     description,
     title,

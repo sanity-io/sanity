@@ -15,7 +15,6 @@ import {
   ConditionalProperty,
   SchemaType,
 } from '@sanity/types'
-import {ComponentType} from 'react'
 import {
   // Base diffs
   ArrayDiff as AgnosticArrayDiff,
@@ -110,7 +109,7 @@ export interface ArrayItemMetadata {
 /**
  * Diff components
  */
-export type DiffComponent<T extends Diff = Diff> = ComponentType<DiffProps<T>>
+export type DiffComponent<T extends Diff = Diff> = React.ElementType<DiffProps<T>>
 export type DiffComponentOptions<T extends Diff = Diff> = {
   component: DiffComponent<T>
   showHeader?: boolean
@@ -137,7 +136,7 @@ export type DiffProps<T extends Diff = Diff> = {
 export type DiffComponentResolver = (options: {
   schemaType: SchemaType
   parentSchemaType?: ArraySchemaType | ObjectSchemaType
-}) => React.ComponentType<any> | DiffComponentOptions<any> | undefined
+}) => React.ElementType | DiffComponentOptions<any> | undefined
 
 /**
  * Schema

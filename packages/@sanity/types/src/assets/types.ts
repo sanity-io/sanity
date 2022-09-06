@@ -1,4 +1,3 @@
-import type {ComponentType} from 'react'
 import type {Reference} from '../reference'
 import type {SanityDocument} from '../documents'
 
@@ -137,6 +136,6 @@ export type AssetMetadataType =
 export interface AssetSource {
   name: string
   title: string
-  component: ComponentType<AssetSourceComponentProps>
-  icon?: ComponentType<EmptyProps>
+  component: React.ElementType<AssetSourceComponentProps>
+  icon?: React.ElementType<EmptyProps>
 }

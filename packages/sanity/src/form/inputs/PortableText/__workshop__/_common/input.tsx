@@ -36,7 +36,7 @@ const DebugInput = forwardRef(function DebugInput(props: InputProps, ref) {
 export function inputResolver(
   input: SchemaType,
   form: SanityFormConfig
-): React.ComponentType<InputProps> {
+): React.ElementType<InputProps> {
   if (!input.type) {
     throw new Error('inputResolver: missing subtype')
   }
@@ -50,5 +50,5 @@ export function inputResolver(
   //   input.type.name = 'object'
   // }
 
-  return defaultResolveInputComponent(input.type) || DebugInput
+  return (defaultResolveInputComponent(input.type) as React.ElementType<InputProps>) || DebugInput
 }

@@ -14,7 +14,7 @@ import {StudioFileInput} from '../inputs/StudioFileInput'
 import {StudioCrossDatasetReferenceInput} from '../inputs/crossDatasetReference/StudioCrossDatasetReferenceInput'
 import {FIXME} from '../../types'
 
-export const defaultInputs: Record<string, React.ComponentType<FIXME>> = {
+export const defaultInputs: Record<string, React.ElementType<FIXME>> = {
   document: ObjectInput,
   object: ObjectInput,
   array: StudioArrayInput,

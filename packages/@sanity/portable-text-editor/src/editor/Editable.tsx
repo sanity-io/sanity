@@ -1,6 +1,12 @@
-import {BaseRange, Transforms} from 'slate'
+import {BaseRange, Transforms, Element as SlateElement} from 'slate'
 import React, {useCallback, useMemo, useEffect, forwardRef} from 'react'
-import {Editable as SlateEditable, ReactEditor, withReact} from '@sanity/slate-react'
+import {
+  Editable as SlateEditable,
+  ReactEditor,
+  withReact,
+  RenderElementProps,
+  RenderLeafProps,
+} from '@sanity/slate-react'
 import {
   EditorSelection,
   OnBeforeInputFn,
@@ -20,7 +26,7 @@ import {normalizeSelection} from '../utils/selection'
 import {toSlateRange} from '../utils/ranges'
 import {debugWithName} from '../utils/debug'
 import {Leaf} from './Leaf'
-import {Element} from './Element'
+import {Element, ElementAttributes} from './Element'
 import {usePortableTextEditor} from './hooks/usePortableTextEditor'
 import {PortableTextEditor} from './PortableTextEditor'
 import {createWithEditableAPI, createWithHotkeys, createWithInsertData} from './plugins'
@@ -135,7 +141,7 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
   }, [readOnly, slateEditor, withEditableAPI, withHotKeys, withInsertData])
 
   const renderElement = useCallback(
-    (eProps) => (
+    (eProps: RenderElementProps) => (
       <Element
         {...eProps}
         portableTextFeatures={portableTextFeatures}
@@ -149,7 +155,8 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
   )
 
   const renderLeaf = useCallback(
-    (lProps) => {
+    (lProps: RenderLeafProps) => {
+      // @ts-expect-error: fix typing on lProps.leaf.placeholder
       if (renderPlaceholder && lProps.leaf.placeholder && lProps.text.text === '') {
         return (
           <>
@@ -158,6 +165,9 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
             </div>
             <Leaf
               {...lProps}
+              // @TODO: fix the typings on lProps.leaf and attributes
+              attributes={lProps.attributes as unknown as ElementAttributes}
+              leaf={lProps.leaf as unknown as SlateElement}
               keyGenerator={keyGenerator}
               portableTextFeatures={portableTextFeatures}
               renderAnnotation={renderAnnotation}
@@ -171,6 +181,9 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
       return (
         <Leaf
           {...lProps}
+          // @TODO: fix the typings on lProps.leaf and attributes
+          attributes={lProps.attributes as unknown as ElementAttributes}
+          leaf={lProps.leaf as unknown as SlateElement}
           keyGenerator={keyGenerator}
           portableTextFeatures={portableTextFeatures}
           renderAnnotation={renderAnnotation}

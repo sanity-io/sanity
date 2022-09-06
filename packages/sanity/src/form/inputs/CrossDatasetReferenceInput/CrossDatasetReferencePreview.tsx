@@ -1,4 +1,4 @@
-import React, {ComponentType, createElement, ReactNode, useMemo} from 'react'
+import React, {ElementType, createElement, ReactNode, useMemo} from 'react'
 import {CrossDatasetType, PreviewValue} from '@sanity/types'
 import {Box, Flex, Inline, Label, Text, Tooltip} from '@sanity/ui'
 import {AccessDeniedIcon, HelpCircleIcon, LaunchIcon} from '@sanity/icons'
@@ -8,7 +8,7 @@ import {TextWithTone} from '../../../components/TextWithTone'
 import {FIXME} from '../../types'
 import {DocumentAvailability} from '../../../preview'
 
-function UnavailableMessage(props: {icon: ComponentType; children: ReactNode; title: ReactNode}) {
+function UnavailableMessage(props: {icon: ElementType; children: ReactNode; title: ReactNode}) {
   const Icon = props.icon
   return (
     <Flex padding={3}>

@@ -25,7 +25,7 @@ export function DocumentHeaderTabs() {
 }
 
 function DocumentHeaderTab(props: {
-  icon?: React.ComponentType | React.ReactNode
+  icon?: React.ElementType | React.ReactNode
   id: string
   isActive: boolean
   label: React.ReactNode

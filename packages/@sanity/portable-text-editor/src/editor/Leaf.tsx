@@ -25,7 +25,7 @@ type LeafProps = {
   renderAnnotation?: RenderAnnotationFunction
   renderChild?: RenderChildFunction
   renderDecorator?: RenderDecoratorFunction
-  readOnly: boolean
+  readOnly?: boolean
 }
 
 export const Leaf = (props: LeafProps) => {

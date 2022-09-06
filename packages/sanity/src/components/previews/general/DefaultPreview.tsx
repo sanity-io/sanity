@@ -88,7 +88,7 @@ export function DefaultPreview(props: DefaultPreviewProps) {
         <Media
           dimensions={DEFAULT_MEDIA_DIMENSIONS}
           layout="default"
-          media={media}
+          media={media as PreviewProps['media']}
           styles={styles}
         />
       )}

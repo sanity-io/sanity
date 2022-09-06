@@ -69,7 +69,9 @@ export function DetailPreview(props: DetailPreviewProps) {
 
   return (
     <RootFlex data-testid="detail-preview">
-      {media !== false && <Media dimensions={mediaDimensions} layout="detail" media={media} />}
+      {media !== false && (
+        <Media dimensions={mediaDimensions} layout="detail" media={media as any} />
+      )}
 
       <Box flex={1} paddingLeft={media === false ? 1 : 2}>
         <Flex align="center" data-testid="detail-preview__header">

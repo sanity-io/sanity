@@ -6,7 +6,7 @@ import React, {useMemo} from 'react'
 function usePaneChildLinkComponent(props: {
   id: string
   params?: Record<string, string>
-}): React.ComponentType {
+}): React.ElementType {
   const {id, params} = props
   const {ChildLink} = usePaneRouter()
 
@@ -20,7 +20,7 @@ function usePaneChildLinkComponent(props: {
 function usePaneParameterizedLinkComponent(props: {
   params?: Record<string, string>
   payload?: unknown
-}): React.ComponentType {
+}): React.ElementType {
   const {params, payload} = props
   const {ParameterizedLink} = usePaneRouter()
 

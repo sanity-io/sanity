@@ -1,5 +1,5 @@
 import {ArraySchemaType, ObjectSchemaType} from '@sanity/types'
-import type {ComponentType} from 'react'
+import React from 'react'
 import type {Type as SchemaType} from './schema'
 
 export type PortableTextBlock = {
@@ -45,12 +45,12 @@ export type PortableTextFeature = {
   value: string
   // Backward compatibility (blockEditor)
   blockEditor?: {
-    icon?: string | ComponentType<any>
-    render?: ComponentType<any>
+    icon?: string | React.ElementType
+    render?: React.ElementType
   }
   portableText?: {
-    icon?: string | ComponentType<any>
-    render?: ComponentType<any>
+    icon?: string | React.ElementType
+    render?: React.ElementType
   }
   type: SchemaType
 }

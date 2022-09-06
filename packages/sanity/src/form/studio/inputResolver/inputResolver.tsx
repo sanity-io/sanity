@@ -28,9 +28,7 @@ import {resolveStringInput} from './resolveStringInput'
 import {resolveNumberInput} from './resolveNumberInput'
 import {defaultInputs} from './defaultInputs'
 
-function resolveComponentFromTypeVariants(
-  type: SchemaType
-): React.ComponentType<FIXME> | undefined {
+function resolveComponentFromTypeVariants(type: SchemaType): React.ElementType<FIXME> | undefined {
   if (is.type('array', type)) {
     return resolveArrayInput(type as ArraySchemaType)
   }
@@ -63,7 +61,8 @@ function getTypeChain(type: SchemaType | undefined, visited: Set<SchemaType>): S
 
 export function defaultResolveInputComponent(
   schemaType: SchemaType
-): React.ComponentType<InputProps> {
+  // @todo: remove any once BaseSchemaType.input is no longer `any`
+): React.ElementType<InputProps | any> {
   if (schemaType.components?.input) return schemaType.components.input
 
   const componentFromTypeVariants = resolveComponentFromTypeVariants(schemaType)
@@ -159,7 +158,8 @@ function ImageOrFileField(field: ObjectFieldProps) {
 
 export function defaultResolveFieldComponent(
   schemaType: SchemaType
-): React.ComponentType<FieldProps> {
+  // @todo: remove any once BaseSchemaType.field is no longer `any`
+): React.ElementType<FieldProps | any> {
   if (schemaType.components?.field) return schemaType.components.field
 
   if (isBooleanSchemaType(schemaType)) {
@@ -167,24 +167,25 @@ export function defaultResolveFieldComponent(
   }
 
   if (getTypeChain(schemaType, new Set()).some((t) => t.name === 'image' || t.name === 'file')) {
-    return ImageOrFileField as React.ComponentType<FieldProps>
+    return ImageOrFileField as React.ElementType<FieldProps>
   }
 
   if (schemaType.jsonType !== 'object' && schemaType.jsonType !== 'array') {
     return PrimitiveField
   }
 
-  return ObjectOrArrayField as React.ComponentType<FieldProps>
+  return ObjectOrArrayField as React.ElementType<FieldProps>
 }
 
 export function defaultResolveItemComponent(
   schemaType: SchemaType
-): React.ComponentType<ItemProps> {
+  // @todo: remove any once BaseSchemaType.item is no longer `any`
+): React.ElementType<ItemProps | any> {
   if (schemaType.components?.item) return schemaType.components.item
 
   return NoopField
 }
 
-export function defaultResolvePreviewComponent(): React.ComponentType<PreviewProps> {
+export function defaultResolvePreviewComponent(): React.ElementType<PreviewProps> {
   return SanityPreview as any
 }

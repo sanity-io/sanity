@@ -1,3 +1,4 @@
+/* eslint-disable tsdoc/syntax */
 import {useCallback, useEffect, useState} from 'react'
 import {RovingFocusProps} from './types'
 
@@ -79,7 +80,7 @@ export function useRovingFocus(props: RovingFocusProps): undefined {
    * Handle increment/decrement of focusedIndex
    */
   const handleKeyDown = useCallback(
-    (event) => {
+    (event: any) => {
       if (pause) {
         return
       }

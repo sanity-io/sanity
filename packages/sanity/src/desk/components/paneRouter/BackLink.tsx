@@ -15,4 +15,4 @@ export const BackLink = forwardRef(function BackLink(
   const state = useMemo(() => ({panes}), [panes])
 
   return <StateLink {...props} ref={ref} state={state} />
-}) as React.ComponentType<BackLinkProps>
+}) as React.ElementType<BackLinkProps>

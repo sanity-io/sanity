@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {StrictMode} from 'react'
 import {createRoot} from 'react-dom/client'
 import type {Config} from '../config'
 import {Studio} from './Studio'
@@ -9,6 +9,10 @@ export function renderStudio(rootElement: HTMLElement | null, config: Config) {
   }
 
   const root = createRoot(rootElement)
-  root.render(<Studio config={config} />)
+  root.render(
+    <StrictMode>
+      <Studio config={config} />
+    </StrictMode>
+  )
   return () => root.unmount()
 }

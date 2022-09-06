@@ -36,7 +36,7 @@ export default function FormBuilderStory() {
   }, [])
 
   const handleChange = useCallback(
-    (patches) => {
+    (patches: any) => {
       patch.execute(patches, initialValue.value)
     },
     [patch, initialValue.value]

@@ -170,7 +170,7 @@ export function StudioReferenceInput(props: StudioReferenceInputProps) {
   }, [disableNew, initialValueTemplateItems, schemaType.to])
 
   const getReferenceInfo = useCallback(
-    (id, _type) => adapter.getReferenceInfo(documentPreviewStore, id, _type),
+    (id: any, _type: any) => adapter.getReferenceInfo(documentPreviewStore, id, _type),
     [documentPreviewStore]
   )
 

@@ -1,20 +1,18 @@
 import {Button, ButtonProps, TooltipProps} from '@sanity/ui'
 import React, {forwardRef} from 'react'
 
-export interface CommonProps extends Omit<ButtonProps, 'text' | 'icon' | 'iconRight'> {
+export type CommonProps = {
   as?: React.ElementType | keyof JSX.IntrinsicElements
   dividerBefore?: boolean
   focused?: boolean
   tooltipProps?: TooltipProps
   tooltipText?: React.ReactNode
-  icon?: React.ReactNode
-}
-export interface CollapseMenuButtonProps extends CommonProps {
+} & Omit<ButtonProps, 'text' | 'iconRight'>
+export type CollapseMenuButtonProps = {
   collapsedProps?: Omit<CommonProps, 'text'>
   expandedProps?: CommonProps
-  icon: React.ReactNode
-  text: React.ReactNode
-}
+} & CommonProps &
+  Pick<ButtonProps, 'text'>
 
 export const CollapseMenuButton = forwardRef(function CollapseMenuButton(
   props: CollapseMenuButtonProps & Omit<React.HTMLProps<HTMLButtonElement>, 'as'>,

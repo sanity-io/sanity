@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {PropsWithChildren} from 'react'
 import {ArraySchemaType, Path} from '@sanity/types'
 import {Subscription, Subject, defer, of, EMPTY, Observable, OperatorFunction} from 'rxjs'
 import {concatMap, share, switchMap, tap} from 'rxjs/operators'
@@ -48,7 +48,7 @@ const debug = debugWithName('component:PortableTextEditor')
  *
  * @public
  */
-export interface PortableTextEditorProps {
+export type PortableTextEditorProps = PropsWithChildren<{
   /**
    * Function that gets called when the editor changes the value
    */
@@ -84,7 +84,7 @@ export interface PortableTextEditorProps {
    * adjusting editor selections on concurrent editing and similar
    */
   incomingPatches$?: PatchObservable
-}
+}>
 
 /**
  * @internal

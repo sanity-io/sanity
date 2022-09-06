@@ -1,4 +1,4 @@
-import React, {ComponentType, createContext, HTMLProps, useContext, useMemo} from 'react'
+import React, {createContext, HTMLProps, useContext, useMemo} from 'react'
 import {Path} from '@sanity/types'
 import {TemplatePermissionsResult} from '../../../datastores'
 
@@ -41,7 +41,7 @@ export interface ReferenceInputOptions {
    * A specialized `EditReferenceLinkComponent` component that takes in the needed props to open a
    * referenced document to the right
    */
-  EditReferenceLinkComponent?: ComponentType<
+  EditReferenceLinkComponent?: React.ElementType<
     Omit<HTMLProps<'a'>, 'children'> & EditReferenceLinkComponentProps
   >
 

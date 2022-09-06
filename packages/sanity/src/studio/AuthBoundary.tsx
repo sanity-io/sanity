@@ -4,9 +4,9 @@ import {useActiveWorkspace} from './activeWorkspaceMatcher'
 
 interface AuthBoundaryProps {
   children: React.ReactNode
-  AuthenticateComponent?: React.ComponentType
-  LoadingComponent?: React.ComponentType
-  NotAuthenticatedComponent?: React.ComponentType
+  AuthenticateComponent?: React.ElementType
+  LoadingComponent?: React.ElementType
+  NotAuthenticatedComponent?: React.ElementType
 }
 
 export function AuthBoundary({

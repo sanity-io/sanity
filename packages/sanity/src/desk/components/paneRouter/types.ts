@@ -77,18 +77,18 @@ export interface PaneRouterContextValue {
   /**
    * Curried StateLink that passes the correct state automatically
    */
-  ChildLink: React.ComponentType<ChildLinkProps>
+  ChildLink: React.ElementType<ChildLinkProps>
 
   /**
    * Curried StateLink that pops off the last pane group
    */
-  BackLink: React.ComponentType<BackLinkProps>
+  BackLink: React.ElementType<BackLinkProps>
 
   /**
    * A specialized `ChildLink` that takes in the needed props to open a
    * referenced document to the right
    */
-  ReferenceChildLink: React.ComponentType<ReferenceChildLinkProps>
+  ReferenceChildLink: React.ElementType<ReferenceChildLinkProps>
 
   /**
    * Similar to `ReferenceChildLink` expect without the wrapping component
@@ -98,7 +98,7 @@ export interface PaneRouterContextValue {
   /**
    * Curried StateLink that passed the correct state, but merges params/payload
    */
-  ParameterizedLink: React.ComponentType<ParameterizedLinkProps>
+  ParameterizedLink: React.ElementType<ParameterizedLinkProps>
 
   /**
    * Replaces the current pane with a new one
