@@ -84,7 +84,6 @@ export function getInitialValueStream(
         return of({isResolving: false, initialValue: undefined})
       }
 
-      //TODO make sure it is safe to propdrill client into the pipe closure
       const initialValueWithParams$ = from(
         resolveInitialValue(schema, template, opts.templateParams, context)
       )

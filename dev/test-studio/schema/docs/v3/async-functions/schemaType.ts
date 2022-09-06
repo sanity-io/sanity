@@ -1,6 +1,5 @@
 import {ConfigContext, defineField, defineType} from 'sanity'
 import {structureGroupOptions} from '../../../../structure/groupByOption'
-import {randomKey} from '@sanity/block-tools'
 
 export const validationTest = defineType({
   type: 'document',
@@ -15,11 +14,20 @@ export const validationTest = defineType({
       name: 'title',
       title: 'Title',
       validation: (Rule) =>
-        Rule.custom((value, context) => {
-          // eslint-disable-next-line no-console
-          console.log('Context in custom validation function', context)
-          return `Always async error for projectId: ${context.projectId}`
-        }),
+        Rule.custom(
+          async (value, context) =>
+            new Promise((resolve) => {
+              setTimeout(() => {
+                // eslint-disable-next-line no-console
+                console.log('Context in custom validation function', context)
+                resolve(
+                  `Always async error for. From context client->projectId: ${
+                    context.client.config().projectId
+                  }`
+                )
+              }, 1000)
+            })
+        ),
       initialValue: async (params: undefined, context: ConfigContext) => {
         return new Promise((resolve) => {
           setTimeout(() => {
@@ -64,7 +72,7 @@ export const validationTest = defineType({
             console.log('Context in delayed initial value function, array', context)
             resolve([
               {
-                _key: randomKey(12),
+                _key: `${Math.random()}`,
                 title: context.projectId,
               },
             ])
