@@ -25,6 +25,7 @@ import {
 import {WorkspacesProvider} from './workspaces'
 import {AuthBoundary} from './AuthBoundary'
 import {Z_OFFSET} from './constants'
+import {StudioLayoutWrapper} from './StudioLayoutWrapper'
 
 Refractor.registerLanguage(bash)
 Refractor.registerLanguage(javascript)
@@ -75,7 +76,9 @@ export function StudioProvider({
                       LoadingComponent={LoadingScreen}
                       ConfigErrorsComponent={ConfigErrorsScreen}
                     >
-                      <ResourceCacheProvider>{children}</ResourceCacheProvider>
+                      <ResourceCacheProvider>
+                        <StudioLayoutWrapper>{children}</StudioLayoutWrapper>
+                      </ResourceCacheProvider>
                     </WorkspaceLoader>
                   </ConditionalAuthBoundary>
                 </UserColorManagerProvider>
