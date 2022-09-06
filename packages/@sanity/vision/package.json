@@ -41,9 +41,9 @@
     "@juggle/resize-observer": "^3.3.1",
     "@lezer/highlight": "^1.0.0",
     "@rexxars/react-json-inspector": "^8.0.1",
-    "@sanity/color": "^2.1.16",
-    "@sanity/icons": "^1.3.6",
-    "@sanity/ui": "^0.38.2",
+    "@sanity/color": "2.1.17-next.18",
+    "@sanity/icons": "1.3.7-next.18",
+    "@sanity/ui": "0.38.3-next.18",
     "@uiw/react-codemirror": "^4.11.4",
     "hashlru": "^2.3.0",
     "is-hotkey": "^0.1.6",
@@ -53,14 +53,14 @@
   },
   "devDependencies": {
     "@sanity/client": "^3.4.1",
-    "react": "17.0.2",
+    "react": "^18.2.0",
     "rxjs": "^6.5.3",
     "sanity": "3.0.0-dev-preview.20",
     "styled-components": "^5.2.0"
   },
   "peerDependencies": {
     "@sanity/client": "^3.4.1",
-    "react": "^16.9 || ^17 || ^18",
+    "react": "^18",
     "rxjs": "^6.5.3",
     "sanity": "dev-preview",
     "styled-components": "^5.2"

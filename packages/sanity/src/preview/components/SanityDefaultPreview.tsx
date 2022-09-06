@@ -127,7 +127,8 @@ export function SanityDefaultPreview(props: SanityDefaultPreviewProps): ReactEle
     imageUrl: _upload?.previewImage,
     progress: _upload?.progress,
     ...restProps,
-    media,
+    // @todo: fix `TS2769: No overload matches this call.`
+    media: media as any,
     description,
     title,
     subtitle,
