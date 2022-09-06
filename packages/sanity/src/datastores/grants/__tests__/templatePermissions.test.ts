@@ -2,13 +2,13 @@
 
 import {first} from 'rxjs/operators'
 import {SanityClient} from '@sanity/client'
+import {InitialValueResolverContext} from '@sanity/types'
 import {prepareTemplates, defaultTemplatesForSchema} from '../../../templates'
 import {createMockSanityClient} from '../../../../test/mocks/mockSanityClient'
 import {createSchema} from '../../../schema'
 import {requiresApproval} from '../debug/exampleGrants'
 import {createGrantsStore} from '../grantsStore'
 import {getTemplatePermissions} from '../templatePermissions'
-import {ConfigContext} from '../../../config'
 
 const schema = createSchema({
   name: 'test',
@@ -68,7 +68,7 @@ describe('getTemplatePermissions', () => {
           schemaType: 'author',
         },
       ],
-      context: {} as ConfigContext,
+      context: {} as InitialValueResolverContext,
     })
       .pipe(first())
       .toPromise()

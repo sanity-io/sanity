@@ -1,10 +1,9 @@
-import {SanityDocumentLike} from '@sanity/types'
+import {InitialValueResolverContext, SanityDocumentLike} from '@sanity/types'
 import {useEffect, useMemo, useState} from 'react'
 import {useUnique} from '../../util/useUnique'
 import {useDocumentStore} from '../datastores'
 import {useClient, useDataset, useProjectId, useSchema} from '../../hooks'
 import {useCurrentUser} from '../user'
-import {ConfigContext} from '../../config'
 import {InitialValueState} from './initialValue/types'
 
 /**
@@ -19,7 +18,7 @@ export function useInitialValue(props: {
   const {documentId, documentType, templateName, templateParams: templateParamsRaw} = props
   const templateParams = useUnique(templateParamsRaw)
   const documentStore = useDocumentStore()
-  const context = useInitialValueContext()
+  const context = useInitialValueResolverContext()
 
   const defaultValue: SanityDocumentLike = useMemo(
     () => ({_id: documentId, _type: documentType}),
@@ -71,7 +70,7 @@ export function useInitialValue(props: {
 /**
  * @internal
  */
-export function useInitialValueContext(): ConfigContext {
+export function useInitialValueResolverContext(): InitialValueResolverContext {
   const client = useClient()
   const schema = useSchema()
   const currentUser = useCurrentUser()

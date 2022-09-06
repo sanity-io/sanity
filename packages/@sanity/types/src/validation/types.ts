@@ -1,6 +1,6 @@
 import type {SanityClient} from '@sanity/client'
 import type {Path} from '../paths'
-import type {SchemaType, SchemaValidationValue, SourceContext} from '../schema'
+import type {SchemaType, SchemaValidationValue} from '../schema'
 import type {SanityDocument} from '../documents'
 import type {ValidationMarker} from '../markers'
 import type {Block} from '../portableText'

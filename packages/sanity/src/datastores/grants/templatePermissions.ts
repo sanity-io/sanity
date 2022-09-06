@@ -1,16 +1,15 @@
-import {Observable, combineLatest, from, of} from 'rxjs'
-import {switchMap, map} from 'rxjs/operators'
-import {Schema} from '@sanity/types'
-import {useClient, useSchema, useTemplates} from '../../hooks'
-import {resolveInitialValue, Template, InitialValueTemplateItem} from '../../templates'
+import {combineLatest, from, Observable, of} from 'rxjs'
+import {map, switchMap} from 'rxjs/operators'
+import {InitialValueResolverContext, Schema} from '@sanity/types'
+import {useSchema, useTemplates} from '../../hooks'
+import {InitialValueTemplateItem, resolveInitialValue, Template} from '../../templates'
 import {createHookFromObservableFactory} from '../../util/createHookFromObservableFactory'
 import {getDraftId, getPublishedId} from '../../util/draftUtils'
 import {useGrantsStore} from '../datastores'
 import {PartialExcept} from '../../util/PartialExcept'
-import {ConfigContext} from '../../config'
+import {useInitialValueResolverContext} from '../document'
 import {GrantsStore, PermissionCheckResult} from './types'
 import {getDocumentValuePermissions} from './documentValuePermissions'
-import {useInitialValueContext} from '../document'
 
 export interface TemplatePermissionsResult<TInitialValue = Record<string, unknown>>
   extends PermissionCheckResult,
@@ -34,7 +33,7 @@ export interface TemplatePermissionsOptions {
   schema: Schema
   templates: Template[]
   templateItems: InitialValueTemplateItem[]
-  context: ConfigContext
+  context: InitialValueResolverContext
 }
 
 /**
@@ -140,7 +139,7 @@ export function useTemplatePermissions({
   const schema = useSchema()
   const templates = useTemplates()
   const grantsStore = useGrantsStore()
-  const initialValueContext = useInitialValueContext()
+  const initialValueContext = useInitialValueResolverContext()
 
   return useTemplatePermissionsFromHookFactory({
     templateItems,

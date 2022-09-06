@@ -1,4 +1,4 @@
-import {StructureBuilder} from 'sanity/lib/dts/src/_exports/desk'
+import type {StructureBuilder} from 'sanity/desk'
 import {Schema} from '@sanity/types'
 
 type StructureGroup = 'v3' // extend with union strings

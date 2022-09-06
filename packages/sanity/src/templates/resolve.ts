@@ -2,6 +2,7 @@ import {
   ArraySchemaType,
   InitialValueProperty,
   InitialValueResolver,
+  InitialValueResolverContext,
   isArraySchemaType,
   isObjectSchemaType,
   ObjectSchemaType,
@@ -13,7 +14,6 @@ import {isRecord} from './util/isRecord'
 import {Template} from './types'
 import {validateInitialObjectValue} from './validate'
 import deepAssign from './util/deepAssign'
-import {ConfigContext} from '../config'
 
 type Serializeable<T> = {
   serialize(): T
@@ -28,7 +28,7 @@ export function isBuilder(template: unknown): template is Serializeable<Template
 export async function resolveValue<Params, InitialValue>(
   initialValueOpt: InitialValueProperty<Params, InitialValue>,
   params: Params | undefined,
-  context: ConfigContext
+  context: InitialValueResolverContext
 ): Promise<InitialValue | undefined> {
   return typeof initialValueOpt === 'function'
     ? (initialValueOpt as InitialValueResolver<Params, InitialValue>)(params, context)
@@ -39,7 +39,7 @@ export async function resolveInitialValue(
   schema: Schema,
   template: Template,
   params: {[key: string]: any} = {},
-  context: ConfigContext
+  context: InitialValueResolverContext
 ): Promise<{[key: string]: any}> {
   // Template builder?
   if (isBuilder(template)) {
@@ -105,7 +105,7 @@ export function resolveInitialValueForType<Params extends Record<string, unknown
    * Maximum recursion depth (default 9).
    */
   maxDepth = DEFAULT_MAX_RECURSION_DEPTH,
-  context: ConfigContext
+  context: InitialValueResolverContext
 ): Promise<any> {
   if (maxDepth <= 0) {
     return Promise.resolve(undefined)
@@ -126,7 +126,7 @@ async function resolveInitialArrayValue<Params extends Record<string, unknown>>(
   type: SchemaType,
   params: Params,
   maxDepth: number,
-  context: ConfigContext
+  context: InitialValueResolverContext
 ): Promise<any> {
   const initialArray = await resolveValue(type.initialValue, undefined, context)
 
@@ -152,7 +152,7 @@ export async function resolveInitialObjectValue<Params extends Record<string, un
   type: ObjectSchemaType,
   params: Params,
   maxDepth: number,
-  context: ConfigContext
+  context: InitialValueResolverContext
 ): Promise<any> {
   const initialObject: Record<string, unknown> = {
     ...((await resolveValue(type.initialValue, params, context)) || {}),

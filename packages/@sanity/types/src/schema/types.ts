@@ -451,7 +451,7 @@ export interface ConditionalPropertyCallbackContext {
 export type ConditionalPropertyCallback = (context: ConditionalPropertyCallbackContext) => boolean
 export type ConditionalProperty = boolean | ConditionalPropertyCallback | undefined
 
-export interface SourceContext {
+export interface InitialValueResolverContext {
   projectId: string
   dataset: string
   schema: Schema
@@ -461,7 +461,7 @@ export interface SourceContext {
 
 export type InitialValueResolver<Params, Value> = (
   params: Params | undefined,
-  context: SourceContext
+  context: InitialValueResolverContext
 ) => Promise<Value> | Value
 export type InitialValueProperty<Params, Value> =
   | Value

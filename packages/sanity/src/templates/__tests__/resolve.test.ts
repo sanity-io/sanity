@@ -1,7 +1,7 @@
 import {omit} from 'lodash'
+import {InitialValueResolverContext} from '@sanity/types'
 import {resolveInitialValue, Template} from '../'
 import {schema} from './schema'
-import {ConfigContext} from '../../config'
 
 beforeEach(() => {
   jest.resetModules()
@@ -14,7 +14,7 @@ const example: Template = {
   value: {title: 'here'},
 }
 
-const mockConfigContext: ConfigContext = {} as ConfigContext
+const mockConfigContext: InitialValueResolverContext = {} as InitialValueResolverContext
 
 describe('resolveInitialValue', () => {
   test('serializes builders', () => {

@@ -7,7 +7,6 @@ import {startCase} from 'lodash'
 import {fromUrl} from '@sanity/bifur-client'
 import {createElement, isValidElement} from 'react'
 import {isValidElementType} from 'react-is'
-import {Subject} from 'rxjs'
 import {createSchema} from '../schema'
 import {AuthStore, createAuthStore} from '../datastores'
 import {InitialValueTemplateItem, Template, TemplateResponse} from '../templates'
@@ -15,14 +14,13 @@ import {isNonNullable} from '../util'
 import {defaultFileAssetSources, defaultImageAssetSources} from '../form/defaults'
 import {validateWorkspaces} from '../studio/workspaces/validateWorkspaces'
 import {
-  Source,
-  SourceOptions,
   Config,
-  WorkspaceSummary,
   PreparedConfig,
   SingleWorkspace,
+  Source,
+  SourceOptions,
   WorkspaceOptions,
-  ConfigContext,
+  WorkspaceSummary,
 } from './types'
 import {
   _documentLanguageFilterReducer,

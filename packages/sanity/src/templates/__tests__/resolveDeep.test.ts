@@ -1,8 +1,8 @@
+import {InitialValueResolverContext} from '@sanity/types'
 import {resolveInitialValue} from '../'
 import {resolveValue} from '../resolve'
 import {defaultTemplatesForSchema} from '../prepare'
 import {schema} from './schema'
-import {ConfigContext} from '../../config'
 
 function generateNestedObjectTest(
   obj: Record<string, any>,
@@ -19,7 +19,7 @@ function generateNestedObjectTest(
   }
 }
 
-const mockConfigContext: ConfigContext = {} as ConfigContext
+const mockConfigContext: InitialValueResolverContext = {} as InitialValueResolverContext
 
 describe('resolveDeepInitialValues', () => {
   test('resolves deep, recursive default values', async () => {

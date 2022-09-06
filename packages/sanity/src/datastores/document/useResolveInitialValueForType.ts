@@ -2,7 +2,7 @@ import {SchemaType} from '@sanity/types'
 import {useCallback} from 'react'
 import {resolveInitialValueForType} from '../../templates'
 import {DEFAULT_MAX_RECURSION_DEPTH} from '../../templates/resolve'
-import {useInitialValueContext} from './useInitialValue'
+import {useInitialValueResolverContext} from './useInitialValue'
 
 export function useResolveInitialValueForType<Params extends Record<string, unknown>>(): (
   /**
@@ -14,7 +14,7 @@ export function useResolveInitialValueForType<Params extends Record<string, unkn
    */
   params: Params
 ) => Promise<any> {
-  const initialValueContext = useInitialValueContext()
+  const initialValueContext = useInitialValueResolverContext()
 
   return useCallback(
     (type: SchemaType, params: Params) => {

@@ -1,4 +1,4 @@
-import {Schema} from '@sanity/types'
+import {InitialValueResolverContext, Schema} from '@sanity/types'
 import {from, merge, Observable, of} from 'rxjs'
 import {
   map,
@@ -13,7 +13,6 @@ import {
 import {DocumentPreviewStore} from '../../../preview'
 import {Template, resolveInitialValue} from '../../../templates'
 import {getDraftId, getPublishedId} from '../../../util'
-import {ConfigContext} from '../../../config'
 import {
   InitialValueErrorMsg,
   InitialValueLoadingMsg,
@@ -38,7 +37,7 @@ export function getInitialValueStream(
   initialValueTemplates: Template[],
   documentPreviewStore: DocumentPreviewStore,
   opts: InitialValueOptions,
-  context: ConfigContext
+  context: InitialValueResolverContext
 ): Observable<InitialValueMsg> {
   const draft$ = documentPreviewStore.observePaths(
     {_type: 'reference', _ref: getDraftId(opts.documentId)},

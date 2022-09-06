@@ -1,11 +1,10 @@
 import {SanityClient} from '@sanity/client'
-import {Schema} from '@sanity/types'
+import {InitialValueResolverContext, Schema} from '@sanity/types'
 import {Observable} from 'rxjs'
 import {getDraftId, isDraftId} from '../../util'
 import {HistoryStore} from '../history'
 import {DocumentPreviewStore} from '../../preview'
 import {Template} from '../../templates'
-import {ConfigContext} from '../../config'
 import {checkoutPair, DocumentVersionEvent, Pair} from './document-pair/checkoutPair'
 import {consistencyStatus} from './document-pair/consistencyStatus'
 import {documentEvents} from './document-pair/documentEvents'
@@ -31,7 +30,10 @@ function getIdPairFromPublished(publishedId: string): IdPair {
 
 export interface DocumentStore {
   checkoutPair: (idPair: IdPair) => Pair
-  initialValue: (opts: InitialValueOptions, context: ConfigContext) => Observable<InitialValueMsg>
+  initialValue: (
+    opts: InitialValueOptions,
+    context: InitialValueResolverContext
+  ) => Observable<InitialValueMsg>
   listenQuery: (
     query: string | {fetch: string; listen: string},
     params: QueryParams,
