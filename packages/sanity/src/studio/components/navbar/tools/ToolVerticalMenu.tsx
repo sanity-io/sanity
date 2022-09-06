@@ -16,7 +16,7 @@ export function ToolVerticalMenu(props: ToolVerticalMenuProps) {
 
   return useMemo(
     () => (
-      <Stack as="ul" space={[1, 2]}>
+      <Stack as="ul" space={[1, 2]} data-testid="tool-vertical-menu">
         {tools.map((tool) => {
           const title = tool?.title || startCase(tool.name) || undefined
 
