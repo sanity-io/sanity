@@ -1,12 +1,12 @@
 import {Layer, Card, Flex, Text, Box, Button, Stack, useGlobalKeyDown} from '@sanity/ui'
 import {CloseIcon, LeaveIcon} from '@sanity/icons'
-import React, {memo, useEffect, useState} from 'react'
+import React, {memo, useEffect, useMemo, useState} from 'react'
 import styled from 'styled-components'
 import {UserAvatar} from '../../../components/UserAvatar'
 import {useWorkspace} from '../../workspace'
 import {useRovingFocus} from '../../../components/rovingFocus'
 import {Tool} from '../../../config'
-import {ToolMenu as DefaultToolMenu} from './tools/ToolMenu'
+import {ToolMenu, ToolMenuProps} from './tools/ToolMenu'
 import {WorkspaceMenuButton} from './workspace'
 
 const Root = styled(Layer)`
@@ -62,9 +62,7 @@ export const NavDrawer = memo(function NavDrawer(props: NavDrawerProps) {
   const [innerCardElement, setInnerCardElement] = useState<HTMLDivElement | null>(null)
   const tabIndex = isOpen ? 0 : -1
 
-  const {currentUser, navbar, auth} = useWorkspace()
-
-  const {ToolMenu = DefaultToolMenu} = navbar?.components || {}
+  const {currentUser, auth, studio} = useWorkspace()
 
   useRovingFocus({
     rootElement: innerCardElement,
@@ -82,6 +80,22 @@ export const NavDrawer = memo(function NavDrawer(props: NavDrawerProps) {
       closeButtonElement?.focus()
     }
   }, [closeButtonElement, isOpen])
+
+  const toolMenu = useMemo(
+    () =>
+      studio.components.ToolMenu({
+        children: (
+          <ToolMenu
+            activeToolName={activeToolName}
+            closeDrawer={onClose}
+            context="drawer"
+            isDrawerOpen={isOpen}
+            tools={tools}
+          />
+        ),
+      }),
+    [activeToolName, isOpen, onClose, studio.components, tools]
+  )
 
   return (
     <Root>
@@ -126,13 +140,7 @@ export const NavDrawer = memo(function NavDrawer(props: NavDrawerProps) {
         </Card>
 
         <Box flex="auto" overflow="auto" padding={[3, 3, 4]}>
-          <ToolMenu
-            activeToolName={activeToolName}
-            closeDrawer={onClose}
-            context="drawer"
-            isDrawerOpen={isOpen}
-            tools={tools}
-          />
+          {toolMenu}
         </Box>
 
         {auth.logout && (
