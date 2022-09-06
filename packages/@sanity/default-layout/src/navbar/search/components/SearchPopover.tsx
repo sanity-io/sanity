@@ -111,16 +111,22 @@ export function SearchPopover({onClose, onOpen, open, position}: SearchPopoverPr
     onClose()
   }, [onClose, setLastSearchIndex])
 
+  const handleClickOutside = useCallback(() => {
+    if (open) {
+      handleClose()
+    }
+  }, [handleClose, open])
+
+  const handleClearRecentSearches = useCallback(() => {
+    headerInputElement?.focus()
+  }, [headerInputElement])
+
   /**
    * Bind hotkeys to open / close actions
    */
   useSearchHotkeys({onClose: handleClose, onOpen, open})
 
-  useClickOutside(handleClose, [containerElement])
-
-  const handleClearRecentSearches = useCallback(() => {
-    headerInputElement?.focus()
-  }, [headerInputElement])
+  useClickOutside(handleClickOutside, [containerElement])
 
   const dialogId = useId()
 
