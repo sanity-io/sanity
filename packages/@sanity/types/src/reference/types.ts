@@ -33,4 +33,4 @@ export type ReferenceFilterOptions =
   | {filter: ReferenceFilterResolver}
   | {filter: string; filterParams?: Record<string, unknown>}
 
-export type ReferenceOptions = {disableNew: boolean} & ReferenceFilterOptions
+export type ReferenceOptions = {disableNew?: boolean} & ReferenceFilterOptions
