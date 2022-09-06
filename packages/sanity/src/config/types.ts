@@ -11,7 +11,7 @@ import type {
 import type React from 'react'
 import type {Observable} from 'rxjs'
 import type {BifurClient} from '@sanity/bifur-client'
-import {ComponentType, ReactNode} from 'react'
+import {ComponentType, ReactElement, ReactNode} from 'react'
 import type {
   FormBuilderArrayFunctionComponent,
   FormBuilderCustomMarkersComponent,
@@ -194,6 +194,23 @@ export type DocumentBadgesResolver = ComposableOption<
   DocumentBadgesContext
 >
 
+export type StudioComponentOptionNames = 'Layout' | 'Logo' | 'Navbar' | 'ToolMenu'
+export type ResolveComponentReturnType = (props: {children: ReactElement}) => ReactElement
+
+interface StudioComponentsPluginOptions {
+  Layout?: ResolveComponentReturnType
+  Logo?: ResolveComponentReturnType
+  Navbar?: ResolveComponentReturnType
+  ToolMenu?: ResolveComponentReturnType
+}
+
+interface StudioComponentsConfigOptions {
+  Layout: ResolveComponentReturnType
+  Logo: ResolveComponentReturnType
+  Navbar: ResolveComponentReturnType
+  ToolMenu: ResolveComponentReturnType
+}
+
 export interface PluginOptions {
   name: string
   plugins?: PluginOptions[]
@@ -203,6 +220,9 @@ export interface PluginOptions {
   document?: DocumentPluginOptions
   tools?: Tool[] | ComposableOption<Tool[], ConfigContext>
   form?: SanityFormConfig
+  studio?: {
+    components?: StudioComponentsPluginOptions
+  }
 }
 
 export type ConfigPropertyReducer<TValue, TContext> = (
@@ -222,13 +242,7 @@ export type Plugin<TOptions = void> = (options: TOptions) => PluginOptions
 export interface WorkspaceOptions extends SourceOptions {
   basePath: string
   subtitle?: string
-  logo?: ComponentType
   icon?: ComponentType
-  navbar?: {
-    components?: {
-      ToolMenu: ComponentType<ToolMenuProps>
-    }
-  }
   theme?: StudioTheme
   /**
    * @alpha
@@ -296,6 +310,11 @@ export interface Source {
       props: PartialContext<_DocumentLanguageFilterContext>
     ) => _DocumentLanguageFilterComponent[]
   }
+
+  studio: {
+    components: StudioComponentsConfigOptions
+  }
+
   form: {
     file: {
       assetSources: AssetSource[]
@@ -330,7 +349,6 @@ export interface WorkspaceSummary {
   type: 'workspace-summary'
   name: string
   title: string
-  logo?: React.ReactNode
   icon: React.ReactNode
   subtitle?: string
   basePath: string
@@ -360,13 +378,7 @@ export interface Workspace extends Omit<Source, 'type'> {
   type: 'workspace'
   basePath: string
   subtitle?: string
-  logo?: React.ReactNode
   icon: React.ReactNode
-  navbar?: {
-    components?: {
-      ToolMenu?: ComponentType<ToolMenuProps>
-    }
-  }
   /**
    * @alpha
    */

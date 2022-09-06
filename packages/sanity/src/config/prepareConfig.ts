@@ -45,16 +45,9 @@ import {_createRenderField} from './form/_renderField'
 import {_createRenderInput} from './form/_renderInput'
 import {_createRenderItem} from './form/_renderItem'
 import {_createRenderPreview} from './form/_renderPreview'
+import {resolveComponentProperty} from './resolveComponentProperty'
 
 type InternalSource = WorkspaceSummary['__internal']['sources'][number]
-
-function normalizeLogo(
-  logo: React.ComponentType | React.ElementType | undefined
-): JSX.Element | undefined {
-  if (isValidElementType(logo)) return createElement(logo)
-  if (isValidElement(logo)) return logo
-  return undefined
-}
 
 function normalizeIcon(
   icon: React.ComponentType | React.ElementType | undefined,
@@ -163,7 +156,6 @@ export function prepareConfig(config: Config): PreparedConfig {
         basePath: rootSource.basePath || '/',
         dataset: rootSource.dataset,
         schema: resolvedSources[0].schema,
-        logo: normalizeLogo(rootSource.logo),
         icon: normalizeIcon(
           rootSource.icon,
           title,
@@ -386,6 +378,34 @@ function resolveSource({
     authenticated,
     templates,
     auth,
+    studio: {
+      components: {
+        Layout: ({children}) =>
+          resolveComponentProperty({
+            children,
+            config,
+            propertyName: 'Layout',
+          }),
+        Logo: ({children}) =>
+          resolveComponentProperty({
+            children,
+            config,
+            propertyName: 'Logo',
+          }),
+        Navbar: ({children}) =>
+          resolveComponentProperty({
+            children,
+            config,
+            propertyName: 'Navbar',
+          }),
+        ToolMenu: ({children}) =>
+          resolveComponentProperty({
+            children,
+            config,
+            propertyName: 'ToolMenu',
+          }),
+      },
+    },
     document: {
       actions: (partialContext) =>
         resolveConfigProperty({
