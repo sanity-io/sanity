@@ -10,7 +10,7 @@
     "start": "http-server -a localhost -c-0 -p 3337 -s -P http://localhost:3337/index.html? dist"
   },
   "dependencies": {
-    "react": "17.0.2",
+    "react": "18.2.0",
     "sanity": "3.0.0-dev-preview.15",
     "styled-components": "^5.2.0"
   }

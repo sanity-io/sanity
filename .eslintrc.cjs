@@ -13,7 +13,7 @@ module.exports = {
     browser: true,
   },
   settings: {
-    react: {version: '17.0.0'},
+    react: {version: '18.0.0'},
   },
   extends: [
     'sanity',

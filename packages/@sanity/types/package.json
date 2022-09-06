@@ -34,7 +34,7 @@
   ],
   "dependencies": {
     "@sanity/client": "^3.3.3",
-    "@types/react": "^17.0.42"
+    "@types/react": "^18.0.18"
   },
   "devDependencies": {
     "rimraf": "^3.0.2",

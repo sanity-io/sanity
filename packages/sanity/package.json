@@ -136,7 +136,7 @@
     "@sanity/validation": "3.0.0-dev-preview.15",
     "@types/is-hotkey": "^0.1.7",
     "@types/react-copy-to-clipboard": "^5.0.2",
-    "@types/react-is": "^17.0.1",
+    "@types/react-is": "^17.0.3",
     "@types/shallow-equals": "^1.0.0",
     "@types/speakingurl": "^13.0.3",
     "chalk": "^4.1.2",
@@ -179,7 +179,7 @@
     "react-copy-to-clipboard": "^5.0.4",
     "react-fast-compare": "^3.2.0",
     "react-focus-lock": "^2.8.1",
-    "react-is": "^17.0.2",
+    "react-is": "^18.2.0",
     "react-props-stream": "^1.0.0",
     "react-refractor": "^2.1.6",
     "react-rx": "^2.0.4",
@@ -216,14 +216,14 @@
     "@types/rimraf": "^3.0.2",
     "@types/semver": "^6.2.3",
     "@types/tar-fs": "^2.0.1",
-    "react": "17.0.2",
-    "react-dom": "17.0.2",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
     "rimraf": "^3.0.2",
     "styled-components": "^5.2.0"
   },
   "peerDependencies": {
-    "react": "^16.9 || ^17 || ^18",
-    "react-dom": "^16.9 || ^17 || ^18",
+    "react": "^18",
+    "react-dom": "^18",
     "styled-components": "^5.2"
   },
   "engines": {
