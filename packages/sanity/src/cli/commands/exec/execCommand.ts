@@ -1,5 +1,4 @@
 import type {CliCommandDefinition} from '@sanity/cli'
-import {lazyRequire} from '../../util/lazyRequire'
 
 const helpText = `
 Options
@@ -29,7 +28,11 @@ export const execCommand: CliCommandDefinition = {
   signature: 'SCRIPT',
   description: 'Runs a script in Sanity context',
   helpText,
-  action: lazyRequire(require.resolve('../../actions/exec/execScript')),
+  action: async (args, context) => {
+    const mod = await import('../../actions/exec/execScript')
+
+    return mod.default(args, context)
+  },
 }
 
 export default execCommand

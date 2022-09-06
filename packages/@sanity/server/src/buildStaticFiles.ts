@@ -140,7 +140,7 @@ function skipIfExistsError(err: Error & {code: string}) {
 
 async function writeFavicons(basePath: string, destDir: string): Promise<void> {
   await fs.mkdir(destDir, {recursive: true})
-  await copyDir(path.join(__dirname, 'static', 'favicons'), destDir, true)
+  await copyDir(path.resolve(__dirname, '../static/favicons'), destDir, true)
   await writeWebManifest(basePath, destDir)
 }
 

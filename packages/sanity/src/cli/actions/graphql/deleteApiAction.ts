@@ -1,6 +1,6 @@
 import type {CliCommandArguments, CliCommandContext} from '@sanity/cli'
 
-interface DeleteGraphQLApiFlags {
+export interface DeleteGraphQLApiFlags {
   project?: string
   dataset?: string
   tag?: string

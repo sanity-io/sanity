@@ -1,0 +1,3 @@
+{
+  "ignore": ["@sanity/pkg-utils"]
+}

@@ -30,7 +30,7 @@ const addCorsOriginCommand: CliCommandDefinition = {
     const flags = args.extOptions
 
     // eslint-disable-next-line no-sync
-    const isFile = await fs.existsSync(path.join(process.cwd(), origin))
+    const isFile = fs.existsSync(path.join(process.cwd(), origin))
     if (isFile) {
       output.warn(`Origin "${origin}?" Remember to quote values (sanity cors add "*")`)
     }

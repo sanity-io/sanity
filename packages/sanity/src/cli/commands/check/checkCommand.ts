@@ -6,9 +6,10 @@ const checkCommand: CliCommandDefinition = {
   description: '[deprecated]',
   helpText: '',
   hideFromHelp: true,
-  action: async (args, context) => {
+  action: (_args, context) => {
     const {output} = context
-    await output.print('`sanity check` is deprecated and no longer has any effect')
+    output.print('`sanity check` is deprecated and no longer has any effect')
+    return Promise.resolve()
   },
 }
 

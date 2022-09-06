@@ -2,7 +2,10 @@
   "name": "create-sanity",
   "version": "3.0.0-dev-preview.15",
   "description": "Initialize a new Sanity project",
-  "bin": "index.js",
+  "bin": "./index.js",
+  "files": [
+    "index.js"
+  ],
   "engines": {
     "node": ">=14.0.0"
   },

@@ -8,32 +8,41 @@
   "types": "./lib/dts/src/index.d.ts",
   "exports": {
     ".": {
+      "types": "./lib/dts/src/index.d.ts",
       "source": "./src/index.ts",
+      "import": "./lib/index.js",
       "require": "./lib/index.cjs",
       "default": "./lib/index.js"
     },
     "./fs": {
+      "types": "./lib/dts/src/fsTools.d.ts",
       "source": "./src/fsTools.ts",
+      "import": "./lib/fsTools.js",
       "require": "./lib/fsTools.cjs",
       "default": "./lib/fsTools.js"
     },
     "./content": {
+      "types": "./lib/dts/src/content/index.d.ts",
       "source": "./src/content/index.ts",
+      "import": "./lib/content.js",
       "require": "./lib/content.cjs",
       "default": "./lib/content.js"
     },
     "./legacyDateFormat": {
+      "types": "./lib/dts/src/legacyDateFormat.d.ts",
       "source": "./src/legacyDateFormat.ts",
+      "import": "./lib/legacyDateFormat.js",
       "require": "./lib/legacyDateFormat.cjs",
       "default": "./lib/legacyDateFormat.js"
     },
     "./paths": {
+      "types": "./lib/dts/src/paths.d.ts",
       "source": "./src/paths.ts",
+      "import": "./lib/paths.js",
       "require": "./lib/paths.cjs",
       "default": "./lib/paths.js"
     }
   },
-  "//": "the typesVersion config below is a workaround for TypeScript's lack of support for package exports",
   "typesVersions": {
     "*": {
       "fs": [
@@ -50,15 +59,22 @@
       ]
     }
   },
+  "files": [
+    "content.js",
+    "fs.js",
+    "legacyDateFormat.js",
+    "lib",
+    "paths.js",
+    "src"
+  ],
   "scripts": {
-    "build": "../../../bin/pkg-utils bundle --target node --tsconfig tsconfig.lib.json",
+    "build": "pkg-utils build --tsconfig tsconfig.lib.json",
+    "check:package": "pkg-utils --strict --tsconfig tsconfig.lib.json",
     "clean": "rimraf lib",
-    "exports:check": "../../../bin/pkg-utils exports-check --target node",
-    "exports:clean": "../../../bin/pkg-utils exports-clean",
-    "exports:generate": "../../../bin/pkg-utils exports-generate",
-    "postbuild": "run-s exports:generate",
     "test": "jest",
-    "watch": "../../../bin/pkg-utils bundle --target node --tsconfig tsconfig.lib.json --watch"
+    "postbuild": "run-s check:package",
+    "prebuild": "run-s clean",
+    "watch": "pkg-utils watch --tsconfig tsconfig.lib.json"
   },
   "engines": {
     "node": ">=14.0.0"

@@ -7,7 +7,8 @@ const configCheckCommand: CliCommandDefinition = {
   helpText: '',
   hideFromHelp: true,
   action: async (args, context) => {
-    await context.output.error('`sanity configcheck` is no longer required/used')
+    context.output.error('`sanity configcheck` is no longer required/used')
+    return Promise.resolve()
   },
 }
 

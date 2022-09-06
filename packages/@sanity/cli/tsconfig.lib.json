@@ -2,21 +2,21 @@
   "extends": "../../../tsconfig.settings",
   "include": ["./src", "./typings", "./package.json"],
   "exclude": [
-    "./src/**/__fixtures__/*",
-    "./src/**/__mocks__/*",
-    "./src/**/__workshop__/*",
+    "./src/**/__fixtures__",
+    "./src/**/__mocks__",
+    "./src/**/__workshop__",
     "./src/**/*.test.ts",
     "./src/**/*.test.tsx"
   ],
   "compilerOptions": {
     "composite": true,
-    "declarationDir": "./lib/dts/",
-    "rootDir": "./",
-    "outDir": "./lib/dts/",
+    "rootDir": ".",
+    "outDir": "./lib/dts",
+
     "checkJs": false,
     "allowJs": true,
     "jsx": "react",
     "resolveJsonModule": true
   },
-  "references": [{"path": "../types"}]
+  "references": [{"path": "../types/tsconfig.lib.json"}, {"path": "../util/tsconfig.lib.json"}]
 }

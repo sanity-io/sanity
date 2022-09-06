@@ -23,9 +23,9 @@ const rimraf = util.promisify(rimrafcb)
 const env = {...process.env, SANITY_USE_PACKAGED_CLI: '1'}
 const skipDelete = process.argv.includes('--skip-delete')
 const tmpPath = process.env.RUNNER_TEMP || os.tmpdir()
-const tmpProjectPath = path.join(tmpPath, 'test-project')
+const tmpProjectPath = path.resolve(tmpPath, 'test-project')
 const githubWorkspace = process.env.GITHUB_WORKSPACE
-const basePath = githubWorkspace || path.join(__dirname, '..')
+const basePath = githubWorkspace || path.resolve(__dirname, '..')
 
 /** Utility functions */
 function spawnCommand(command, args, options = {}) {
@@ -68,7 +68,7 @@ if (!githubWorkspace && !skipDelete) {
   console.log('Base path is %s', basePath)
 
   // Allow running the Sanity CLI tool without specifying absolute path every time
-  const binPath = path.join(basePath, 'packages', '@sanity', 'cli', 'bin', 'sanity')
+  const binPath = path.resolve(basePath, 'packages/@sanity/cli/bin/sanity')
 
   // Require a clean slate at startup
   await cleanup()
@@ -76,23 +76,22 @@ if (!githubWorkspace && !skipDelete) {
   // Remove source and dependencies from CLI to ensure it works standalone
   if (!skipDelete) {
     const deletePaths = [
-      path.join(basePath, 'packages', '@sanity', 'cli', 'node_modules'),
-      path.join(basePath, 'packages', '@sanity', 'cli', 'src'),
-      path.join(basePath, 'packages', '@sanity', 'cli', 'lib'),
+      path.resolve(basePath, 'packages/@sanity/cli/node_modules'),
+      path.resolve(basePath, 'packages/@sanity/cli/src'),
     ]
     console.log(`Clearing directories: \n - ${deletePaths.join('\n - ')}`)
     await Promise.all(deletePaths.map((delPath) => rimraf(delPath)))
   }
 
   // Generate required scopes file for workshop in test-studio
-  spawnCommand('npm', ['run', 'workshop:build'], {
-    cwd: path.join(basePath, 'dev', 'test-studio'),
+  spawnCommand('yarn', ['workshop:build'], {
+    cwd: path.resolve(basePath, 'dev/test-studio'),
     stdio: 'inherit',
   })
 
   // Test `sanity build` command in test studio with all customizations
   spawnCommand(process.argv[0], [binPath, 'build', '-y'], {
-    cwd: path.join(basePath, 'dev', 'test-studio'),
+    cwd: path.resolve(basePath, 'dev/test-studio'),
     stdio: 'inherit',
   })
 
@@ -120,7 +119,7 @@ if (!githubWorkspace && !skipDelete) {
   // of the modules installed by npm/yarn
   spawnCommand(
     process.argv[0],
-    [path.join(basePath, 'scripts', 'symlinkDependencies.js'), tmpProjectPath],
+    [path.resolve(basePath, 'scripts/symlinkDependencies.js'), tmpProjectPath],
     {
       cwd: basePath,
       stdio: 'inherit',
@@ -137,7 +136,7 @@ if (!githubWorkspace && !skipDelete) {
   await testStartCommand({binPath, cwd: tmpProjectPath, expectedTitle: 'Sanity Studio'})
 
   // Test running a v2 studio with the v3 cli (eg defers to @sanity/core)
-  const v2Path = path.resolve(__dirname, '..', 'test', 'v2-studio')
+  const v2Path = path.resolve(__dirname, '../test/v2-studio')
 
   // npm install for v2 dependencies (eg dont want to symlink the monorepo modules)
   spawnCommand('npm', ['install'], {

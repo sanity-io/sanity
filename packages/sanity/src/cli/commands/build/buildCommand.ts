@@ -1,5 +1,5 @@
-import type {CliCommandDefinition} from '@sanity/cli'
-import {lazyRequire} from '../../util/lazyRequire'
+import type {CliCommandArguments, CliCommandContext, CliCommandDefinition} from '@sanity/cli'
+import {BuildSanityStudioCommandFlags} from '../../actions/build/buildAction'
 
 const helpText = `
 Options
@@ -16,7 +16,15 @@ const buildCommand: CliCommandDefinition = {
   name: 'build',
   signature: '[OUTPUT_DIR]',
   description: 'Builds the current Sanity configuration to a static bundle',
-  action: lazyRequire(require.resolve('../../actions/build/buildAction')),
+  action: async (
+    args: CliCommandArguments<BuildSanityStudioCommandFlags>,
+    context: CliCommandContext,
+    overrides?: {basePath?: string}
+  ) => {
+    const mod = await import('../../actions/build/buildAction')
+
+    return mod.default(args, context, overrides)
+  },
   helpText,
 }
 
