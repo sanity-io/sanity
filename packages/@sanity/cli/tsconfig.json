@@ -3,16 +3,13 @@
   "include": ["./src", "./test", "./typings", "./package.json"],
   "compilerOptions": {
     "composite": true,
-    "declarationDir": "./lib/dts/",
-    "rootDir": "./",
-    "outDir": "./lib/dts/",
+    "rootDir": ".",
+    "outDir": "./lib/dts",
+
     "checkJs": false,
     "allowJs": true,
     "jsx": "react",
     "resolveJsonModule": true
   },
-  "references": [
-    {"path": "../types"},
-    {"path": "../../sanity"}
-  ]
+  "references": [{"path": "../types/tsconfig.lib.json"}, {"path": "../util/tsconfig.lib.json"}]
 }

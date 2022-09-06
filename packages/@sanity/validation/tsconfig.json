@@ -3,10 +3,8 @@
   "include": ["./src", "./test"],
   "compilerOptions": {
     "composite": true,
-    "declarationDir": "./lib/dts/",
-    "rootDir": "./",
-    "outDir": "./lib/dts/",
-    "emitDeclarationOnly": false
+    "rootDir": ".",
+    "outDir": "./lib/dts"
   },
-  "references": [{"path": "../types"}]
+  "references": [{"path": "../types/tsconfig.lib.json"}]
 }

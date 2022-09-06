@@ -22,8 +22,8 @@ jobs:
           CYPRESS_INSTALL_BINARY: '0'
         run: yarn install
 
-      - name: Build TypeScript definitions
-        run: yarn type-check
+      - name: Build packages
+        run: yarn build
 
       - name: Extract API docs
         env:

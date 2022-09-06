@@ -1,4 +1,4 @@
-import {SchemaType, RuleSpec, SchemaValidationValue, Rule} from '@sanity/types'
+import type {SchemaType, RuleSpec, SchemaValidationValue, Rule} from '@sanity/types'
 
 const normalizeRules = (
   validation: SchemaValidationValue | undefined,

@@ -29,7 +29,7 @@ export async function getSanityStudioConfigPath(studioRootPath: string): Promise
   const availableConfigs = configs.filter((config) => config.exists)
   if (availableConfigs.length === 0) {
     console.warn('No `sanity.config.js`/`sanity.config.ts` found - using default studio config')
-    return path.join(__dirname, 'defaultStudioConfig.js')
+    return path.resolve(__dirname, './default-config.js')
   }
 
   if (availableConfigs.length > 1) {

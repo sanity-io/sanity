@@ -7,7 +7,7 @@ import {getTimer} from '../../util/timing'
 import {checkStudioDependencyVersions} from '../../util/checkStudioDependencyVersions'
 import {checkRequiredDependencies} from '../../util/checkRequiredDependencies'
 
-interface StartDevServerCommandFlags {
+export interface StartDevServerCommandFlags {
   host?: string
   port?: string
 }
@@ -21,7 +21,7 @@ export default async function startSanityDevServer(
   const {output, workDir, cliConfig} = context
 
   timers.start('checkStudioDependencyVersions')
-  await checkStudioDependencyVersions(workDir)
+  checkStudioDependencyVersions(workDir)
   timers.end('checkStudioDependencyVersions')
 
   // If the check resulted in a dependency install, the CLI command will be re-run,
@@ -106,7 +106,7 @@ function gracefulDeath(
 }
 
 function toInt(value: string | number | undefined, defaultValue: number): number {
-  if (typeof value === undefined) {
+  if (typeof value === 'undefined') {
     return defaultValue
   }
 

@@ -13,52 +13,57 @@
     "realtime",
     "content"
   ],
+  "bin": {
+    "sanity": "./bin/sanity"
+  },
   "source": "./src/_exports/index.ts",
-  "main": "./lib/cjs/_exports/index.js",
-  "module": "./lib/esm/_exports/index.js",
+  "main": "./lib/index.cjs",
+  "module": "./lib/index.js",
+  "types": "./lib/dts/src/_exports/index.d.ts",
   "exports": {
     ".": {
       "types": "./lib/dts/src/_exports/index.d.ts",
       "source": "./src/_exports/index.ts",
-      "require": "./lib/cjs/_exports/index.js",
-      "default": "./lib/esm/_exports/index.js"
+      "import": "./lib/index.js",
+      "require": "./lib/index.cjs",
+      "default": "./lib/index.js"
     },
     "./_unstable": {
       "types": "./lib/dts/src/_exports/_unstable.d.ts",
       "source": "./src/_exports/_unstable.ts",
-      "require": "./lib/cjs/_exports/_unstable.js",
-      "default": "./lib/esm/_exports/_unstable.js"
+      "import": "./lib/_unstable.js",
+      "require": "./lib/_unstable.cjs",
+      "default": "./lib/_unstable.js"
     },
     "./_internal": {
       "types": "./lib/dts/src/_exports/_internal.d.ts",
       "source": "./src/_exports/_internal.ts",
-      "require": "./lib/cjs/_exports/_internal.js",
-      "default": "./lib/esm/_exports/_internal.js"
+      "import": "./lib/_internal.js",
+      "require": "./lib/_internal.cjs",
+      "default": "./lib/_internal.js"
     },
     "./cli": {
       "types": "./lib/dts/src/_exports/cli.d.ts",
       "source": "./src/_exports/cli.ts",
-      "require": "./lib/cjs/_exports/cli.js",
-      "default": "./lib/esm/_exports/cli.js"
+      "import": "./lib/cli.js",
+      "require": "./lib/cli.cjs",
+      "default": "./lib/cli.js"
     },
     "./desk": {
       "types": "./lib/dts/src/_exports/desk.d.ts",
       "source": "./src/_exports/desk.ts",
-      "require": "./lib/cjs/_exports/desk.js",
-      "default": "./lib/esm/_exports/desk.js"
+      "import": "./lib/desk.js",
+      "require": "./lib/desk.cjs",
+      "default": "./lib/desk.js"
     },
     "./form": {
       "types": "./lib/dts/src/_exports/form.d.ts",
       "source": "./src/_exports/form.ts",
-      "require": "./lib/cjs/_exports/form.js",
-      "default": "./lib/esm/_exports/form.js"
+      "import": "./lib/form.js",
+      "require": "./lib/form.cjs",
+      "default": "./lib/form.js"
     }
   },
-  "bin": {
-    "sanity": "./bin/sanity"
-  },
-  "types": "./lib/dts/src/_exports/index.d.ts",
-  "//": "the typesVersion config below is a workaround for TypeScript's lack of support for package exports",
   "typesVersions": {
     "*": {
       "_unstable": [
@@ -78,18 +83,27 @@
       ]
     }
   },
+  "files": [
+    "_internal.js",
+    "_unstable.js",
+    "cli.js",
+    "desk.js",
+    "form.js",
+    "lib",
+    "src"
+  ],
   "scripts": {
-    "build": "../../bin/pkg-utils transpile --tsconfig tsconfig.lib.json",
-    "clean": "rimraf lib",
+    "build": "pkg-utils build --tsconfig tsconfig.lib.json",
+    "check:package": "pkg-utils --strict --tsconfig tsconfig.lib.json",
+    "clean": "rimraf _internal.js _unstable.js cli.js desk.js form.js lib",
     "coverage": "jest --coverage",
-    "exports:check": "../../bin/pkg-utils exports-check",
-    "exports:clean": "../../bin/pkg-utils exports-clean",
-    "exports:generate": "../../bin/pkg-utils exports-generate",
-    "postbuild": "run-s exports:generate && run-s write-version",
-    "prepublishOnly": "run-s write-version && node -r esbuild-register scripts/writeRequiredUIVersion.ts",
-    "write-version": "node writeVersion.js",
-    "test": "jest",
-    "watch": "../../bin/pkg-utils transpile --tsconfig tsconfig.lib.json --watch"
+    "postbuild": "run-s check:package",
+    "prebuild": "run-s clean",
+    "prepublishOnly": "run-s write:version write:ui-version",
+    "test": "pkg-utils --strict && jest",
+    "watch": "pkg-utils watch --tsconfig tsconfig.lib.json",
+    "write:ui-version": "node -r esbuild-register scripts/writeRequiredUIVersion.ts",
+    "write:version": "node -r esbuild-register scripts/writeVersion.ts"
   },
   "dependencies": {
     "@juggle/resize-observer": "^3.3.1",
@@ -210,7 +224,7 @@
   "peerDependencies": {
     "react": "^16.9 || ^17 || ^18",
     "react-dom": "^16.9 || ^17 || ^18",
-    "styled-components": "^5.2.0"
+    "styled-components": "^5.2"
   },
   "engines": {
     "node": ">=14.0.0"

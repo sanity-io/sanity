@@ -1,3 +1,5 @@
+/* eslint-disable tsdoc/syntax */
+
 const path = require('path')
 const {escapeRegExp, omit} = require('lodash')
 const devAliases = require('../dev/aliases')

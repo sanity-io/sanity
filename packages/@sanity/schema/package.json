@@ -5,20 +5,23 @@
   "source": "./src/_exports/index.ts",
   "main": "./lib/_exports/index.cjs",
   "module": "./lib/_exports/index.js",
+  "types": "./lib/dts/src/_exports/index.d.ts",
   "exports": {
     ".": {
+      "types": "./lib/dts/src/_exports/index.d.ts",
       "source": "./src/_exports/index.ts",
+      "import": "./lib/_exports/index.js",
       "require": "./lib/_exports/index.cjs",
       "default": "./lib/_exports/index.js"
     },
     "./_internal": {
+      "types": "./lib/dts/src/_exports/_internal.d.ts",
       "source": "./src/_exports/_internal.ts",
+      "import": "./lib/_exports/_internal.js",
       "require": "./lib/_exports/_internal.cjs",
       "default": "./lib/_exports/_internal.js"
     }
   },
-  "types": "./lib/dts/src/_exports/index.d.ts",
-  "//": "the typesVersion config below is a workaround for TypeScript's lack of support for package exports",
   "typesVersions": {
     "*": {
       "_internal": [
@@ -26,16 +29,20 @@
       ]
     }
   },
+  "files": [
+    "_internal.js",
+    "lib",
+    "src"
+  ],
   "scripts": {
-    "build": "../../../bin/pkg-utils bundle",
-    "clean": "rimraf lib",
-    "exports:check": "../../../bin/pkg-utils exports-check",
-    "exports:clean": "../../../bin/pkg-utils exports-clean",
-    "exports:generate": "../../../bin/pkg-utils exports-generate",
-    "postbuild": "run-s exports:generate",
+    "build": "pkg-utils build --tsconfig tsconfig.lib.json",
+    "check:package": "pkg-utils --strict --tsconfig tsconfig.lib.json",
+    "clean": "rimraf _internal.js lib",
+    "postbuild": "run-s check:package",
+    "prebuild": "run-s clean",
     "test": "jest",
     "test:watch": "jest --watchAll",
-    "watch": "../../../bin/pkg-utils bundle --watch"
+    "watch": "pkg-utils watch --tsconfig tsconfig.lib.json"
   },
   "keywords": [
     "sanity",
