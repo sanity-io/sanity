@@ -2,7 +2,7 @@ import type {CliCommandArguments, CliCommandContext} from '@sanity/cli'
 import yargs from 'yargs/yargs'
 import {hideBin} from 'yargs/helpers'
 
-interface DeleteGraphQLApiFlags {
+export interface DeleteGraphQLApiFlags {
   project?: string
   dataset?: string
   tag?: string

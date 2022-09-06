@@ -10,3 +10,9 @@
 
 # Compiled code
 /lib
+
+# Exports
+/content.js
+/fs.js
+/legacyDateFormat.js
+/paths.js

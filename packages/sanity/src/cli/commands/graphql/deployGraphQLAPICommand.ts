@@ -1,5 +1,4 @@
-import type {CliCommandDefinition} from '@sanity/cli'
-import {lazyRequire} from '../../util/lazyRequire'
+import type {CliCommandContext, CliCommandDefinition} from '@sanity/cli'
 
 const helpText = `
 Options
@@ -23,7 +22,11 @@ const deployGraphQLAPICommand: CliCommandDefinition = {
   signature: '',
   group: 'graphql',
   description: 'Deploy a GraphQL API from the current Sanity schema',
-  action: lazyRequire(require.resolve('../../actions/graphql/deployApiAction')),
+  action: async (args: {argv?: string[]}, context: CliCommandContext) => {
+    const mod = await import('../../actions/graphql/deployApiAction')
+
+    return mod.default(args, context)
+  },
   helpText,
 }
 

@@ -10,9 +10,5 @@
 # Dependency directories
 /node_modules
 
-# Packed version of Sanity binary
-/bin/sanity-cli.js
-/bin/sanity-cli.js.map
-
 # Dependency of `open` module
 /bin/xdg-open

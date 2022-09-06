@@ -12,28 +12,29 @@ function getFocusableElements(element: HTMLElement) {
   ) as HTMLElement[]
 }
 
-/** This hook handles focus with the keyboard arrows.
+/**
+ * This hook handles focus with the keyboard arrows.
  *
- * - Roving focus definition [https://a11y-solutions.stevenwoodson.com/solutions/focus/roving-focus/]
- * - Example usage:
- * 
+ * @see {@link https://a11y-solutions.stevenwoodson.com/solutions/focus/roving-focus/ | Roving focus definition}
+ *
+ * @example
+ * ```tsx
+ * function MyComponent() {
+ *   const [rootElement, setRootElement] = setRootElement(null)
+ *
+ *   useRovingFocus({
+ *     rootElement: rootElement,
+ *   })
+ *
+ *   return (
+ *     <div ref={setRootElement}>
+ *       <button>Button</button>
+ *       <button>Button</button>
+ *       <button>Button</button>
+ *     </div>
+ *   )
+ * }
  * ```
-  function MyComponent() {
-      const [rootElement, setRootElement] = setRootElement(null)
-
-      useRovingFocus({
-        rootElement: rootElement,
-      })
-
-      return (
-        <div ref={setRootElement}>
-          <button>Button</button>
-          <button>Button</button>
-          <button>Button</button>
-        </div>
-      )
-  }
-  ```
  */
 export function useRovingFocus(props: RovingFocusProps): undefined {
   const {

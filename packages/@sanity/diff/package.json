@@ -2,25 +2,26 @@
   "name": "@sanity/diff",
   "version": "3.0.0-dev-preview.20",
   "description": "Generates diffs between documents and primitive types",
+  "source": "./src/index.ts",
   "main": "./lib/index.cjs",
   "module": "./lib/index.js",
-  "exports": {
-    ".": {
-      "source": "./src/index.ts",
-      "require": "./lib/index.cjs",
-      "default": "./lib/index.js"
-    }
-  },
   "types": "./lib/dts/src/index.d.ts",
+  "files": [
+    "lib",
+    "src"
+  ],
   "author": "Sanity.io <hello@sanity.io>",
   "engines": {
     "node": ">=14.0.0"
   },
   "license": "MIT",
   "scripts": {
-    "build": "../../../bin/pkg-utils bundle",
+    "build": "pkg-utils build --tsconfig tsconfig.lib.json",
+    "check:package": "pkg-utils --strict --tsconfig tsconfig.lib.json",
     "clean": "rimraf lib coverage",
-    "watch": "../../../bin/pkg-utils bundle --watch"
+    "postbuild": "run-s check:package",
+    "prebuild": "run-s clean",
+    "watch": "pkg-utils watch --tsconfig tsconfig.lib.json"
   },
   "keywords": [
     "sanity",

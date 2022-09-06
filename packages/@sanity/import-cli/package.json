@@ -2,20 +2,18 @@
   "name": "@sanity/import-cli",
   "version": "3.0.0-dev-preview.20",
   "description": "CLI tool that imports documents from an ndjson file or URL",
-  "main": "lib/sanity-import.js",
+  "main": "./package.json",
+  "files": [
+    "src"
+  ],
   "bin": {
-    "sanity-import": "./lib/sanity-import.js"
+    "sanity-import": "./src/sanity-import.js"
   },
   "engines": {
     "node": ">=14.0.0"
   },
   "author": "Sanity.io <hello@sanity.io>",
   "license": "MIT",
-  "scripts": {
-    "build": "../../../bin/pkg-utils transpile --target node",
-    "clean": "rimraf lib",
-    "watch": "../../../bin/pkg-utils transpile --target node --watch"
-  },
   "keywords": [
     "sanity",
     "cms",
@@ -33,9 +31,6 @@
     "meow": "^9.0.0",
     "ora": "^5.4.1",
     "pretty-ms": "^7.0.1"
-  },
-  "devDependencies": {
-    "rimraf": "^3.0.2"
   },
   "repository": {
     "type": "git",

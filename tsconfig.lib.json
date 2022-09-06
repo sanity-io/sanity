@@ -1,0 +1,22 @@
+{
+  "extends": "./tsconfig.settings",
+  "include": [],
+  "compilerOptions": {
+    "emitDeclarationOnly": true,
+    "outDir": "./node_modules/.sanity-monorepo/dts"
+  },
+  "references": [
+    {"path": "./packages/@sanity/block-tools/tsconfig.lib.json"},
+    {"path": "./packages/@sanity/cli/tsconfig.lib.json"},
+    {"path": "./packages/@sanity/diff/tsconfig.lib.json"},
+    {"path": "./packages/@sanity/mutator/tsconfig.lib.json"},
+    {"path": "./packages/@sanity/portable-text-editor/tsconfig.lib.json"},
+    {"path": "./packages/@sanity/schema/tsconfig.lib.json"},
+    {"path": "./packages/@sanity/server/tsconfig.lib.json"},
+    {"path": "./packages/@sanity/types/tsconfig.lib.json"},
+    {"path": "./packages/@sanity/util/tsconfig.lib.json"},
+    {"path": "./packages/@sanity/validation/tsconfig.lib.json"},
+    {"path": "./packages/@sanity/vision/tsconfig.lib.json"},
+    {"path": "./packages/sanity/tsconfig.lib.json"}
+  ]
+}

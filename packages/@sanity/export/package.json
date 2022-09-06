@@ -2,18 +2,17 @@
   "name": "@sanity/export",
   "version": "3.0.0-dev-preview.20",
   "description": "Export Sanity documents and assets",
-  "main": "./lib/export.js",
-  "types": "./lib/dts/src/export.d.ts",
+  "main": "./src/export.js",
+  "files": [
+    "src"
+  ],
   "engines": {
     "node": ">=14.0.0"
   },
   "author": "Sanity.io <hello@sanity.io>",
   "license": "MIT",
   "scripts": {
-    "build": "../../../bin/pkg-utils transpile --target node",
-    "clean": "rimraf lib",
-    "test": "jest",
-    "watch": "../../../bin/pkg-utils transpile --target node --watch"
+    "test": "jest"
   },
   "keywords": [
     "sanity",

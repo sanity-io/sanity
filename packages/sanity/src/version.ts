@@ -1,5 +1,3 @@
-// Overwritten by prepublish script with a hard-coded version
-// This is only used in development.
-import {version} from '../package.json'
-
-export const SANITY_VERSION: string = version
+// This string is overwritten by prepublish script with `.version` from package.json
+// The version you see here is only read in monorepo development
+export const SANITY_VERSION = '0.0.0-development' as string
