@@ -27,6 +27,7 @@ const SearchHeaderBox = styled(Box)`
 `
 
 const TypeFiltersContentBox = styled(Box)`
+  outline: none;
   overflow-x: hidden;
   overflow-y: scroll;
 `
@@ -107,7 +108,13 @@ export function TypeFilters({small}: TypeFiltersProps) {
           />
         </SearchHeaderBox>
 
-        <TypeFiltersContentBox flex={1} padding={padding} ref={setFiltersContentRef} tabIndex={-1}>
+        <TypeFiltersContentBox
+          data-overflow
+          flex={1}
+          padding={padding}
+          ref={setFiltersContentRef}
+          tabIndex={-1}
+        >
           <TypeFiltersContentDiv>
             <PointerOverlay ref={setPointerOverlayRef} />
 

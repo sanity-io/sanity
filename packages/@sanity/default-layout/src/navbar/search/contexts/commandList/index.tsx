@@ -202,6 +202,34 @@ export function CommandListProvider({
     []
   )
 
+  const scrollToNextItem = useCallback(() => {
+    const nextIndex = selectedIndexRef.current < childCount - 1 ? selectedIndexRef.current + 1 : 0
+
+    // Delegate scrolling to virtual list if necessary
+    if (virtualList) {
+      virtualListScrollToIndexRef?.current(nextIndex)
+      setActiveIndex({index: nextIndex, scrollIntoView: false})
+    } else {
+      setActiveIndex({index: nextIndex})
+    }
+
+    enableChildContainerPointerEvents(false)
+  }, [childCount, enableChildContainerPointerEvents, setActiveIndex, virtualList])
+
+  const scrollToPreviousItem = useCallback(() => {
+    const nextIndex = selectedIndexRef.current > 0 ? selectedIndexRef.current - 1 : childCount - 1
+
+    // Delegate scrolling to virtual list if necessary
+    if (virtualList) {
+      virtualListScrollToIndexRef?.current(nextIndex)
+      setActiveIndex({index: nextIndex, scrollIntoView: false})
+    } else {
+      setActiveIndex({index: nextIndex})
+    }
+
+    enableChildContainerPointerEvents(false)
+  }, [childCount, enableChildContainerPointerEvents, setActiveIndex, virtualList])
+
   /**
    * Set active index whenever initial index changes
    */
@@ -235,33 +263,11 @@ export function CommandListProvider({
 
       if (event.key === 'ArrowDown') {
         event.preventDefault()
-        const nextIndex =
-          selectedIndexRef.current < childCount - 1 ? selectedIndexRef.current + 1 : 0
-
-        // Delegate scrolling to virtual list if necessary
-        if (virtualList) {
-          virtualListScrollToIndexRef?.current(nextIndex)
-          setActiveIndex({index: nextIndex, scrollIntoView: false})
-        } else {
-          setActiveIndex({index: nextIndex})
-        }
-
-        enableChildContainerPointerEvents(false)
+        scrollToNextItem()
       }
       if (event.key === 'ArrowUp') {
         event.preventDefault()
-        const nextIndex =
-          selectedIndexRef.current > 0 ? selectedIndexRef.current - 1 : childCount - 1
-
-        // Delegate scrolling to virtual list if necessary
-        if (virtualList) {
-          virtualListScrollToIndexRef?.current(nextIndex)
-          setActiveIndex({index: nextIndex, scrollIntoView: false})
-        } else {
-          setActiveIndex({index: nextIndex})
-        }
-
-        enableChildContainerPointerEvents(false)
+        scrollToPreviousItem()
       }
       if (event.key === 'Enter') {
         event.preventDefault()
@@ -280,14 +286,35 @@ export function CommandListProvider({
     return () => {
       headerInputElement?.removeEventListener('keydown', handleKeyDown)
     }
-  }, [
-    childContainerElement,
-    childCount,
-    enableChildContainerPointerEvents,
-    headerInputElement,
-    setActiveIndex,
-    virtualList,
-  ])
+  }, [childContainerElement, headerInputElement, scrollToNextItem, scrollToPreviousItem])
+
+  /**
+   * Listen to keyboard arrow events on the 'closest' parent [data-overflow] element to the child container.
+   * On arrow press: focus the header input element and then navigate accordingly.
+   *
+   * Done to account for when users focus a wrapping element with overflow (by dragging its scroll handle)
+   * and then try navigate with the keyboard.
+   */
+  useEffect(() => {
+    function handleKeydown(event: KeyboardEvent) {
+      if (event.key === 'ArrowDown') {
+        event.preventDefault()
+        headerInputElement.focus()
+        scrollToNextItem()
+      }
+      if (event.key === 'ArrowUp') {
+        event.preventDefault()
+        headerInputElement.focus()
+        scrollToPreviousItem()
+      }
+    }
+
+    const parentOverflowElement = childContainerElement?.closest('[data-overflow]')
+    parentOverflowElement?.addEventListener('keydown', handleKeydown)
+    return () => {
+      parentOverflowElement?.removeEventListener('keydown', handleKeydown)
+    }
+  }, [childContainerElement, headerInputElement, scrollToNextItem, scrollToPreviousItem])
 
   /**
    * Track focus / blur state on the list's input element and store state in `data-focused` attribute on

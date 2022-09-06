@@ -31,6 +31,7 @@ const SearchResultsDiv = styled.div<{$loading: boolean}>`
 
 const VirtualListBox = styled(Box)`
   height: 100%;
+  outline: none;
   overflow-x: hidden;
   overflow-y: auto;
   width: 100%;
@@ -93,15 +94,15 @@ export function SearchResults({
 
   return (
     <SearchResultsDiv aria-busy={result.loading} $loading={result.loading}>
-      <PointerOverlay ref={setPointerOverlayRef} />
-
       {result.error ? (
         <SearchError />
       ) : (
         <>
           {!!result.hits.length && (
             // (Has search results)
-            <VirtualListBox ref={childParentRef} tabIndex={-1}>
+            <VirtualListBox data-overflow ref={childParentRef} tabIndex={-1}>
+              <PointerOverlay ref={setPointerOverlayRef} />
+
               <VirtualListChildBox $height={totalSize} paddingBottom={1} ref={setChildContainerRef}>
                 {virtualItems.map((virtualRow) => {
                   const hit = result.hits[virtualRow.index]
@@ -110,10 +111,10 @@ export function SearchResults({
                       data={hit}
                       documentId={getPublishedId(hit.hit._id) || ''}
                       index={virtualRow.index}
+                      key={hit.hit._id}
                       onClick={handleResultClick}
                       onMouseDown={onChildMouseDown}
                       onMouseEnter={onChildMouseEnter(virtualRow.index)}
-                      key={hit.hit._id}
                       virtualRow={virtualRow}
                     />
                   )
