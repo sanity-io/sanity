@@ -1,8 +1,12 @@
 /* eslint-disable no-process-exit, no-sync */
+import {prefixCommand} from '../../util/isNpx'
+
 const childProcess = require('child_process')
 const path = require('path')
 const fs = require('fs')
 const mods = require('../../actions/codemod/mods')
+
+const commandPrefix = prefixCommand()
 
 const helpText = `
 Runs a given code modification script on the current studio folder.
@@ -16,11 +20,11 @@ Options
 
 Examples
   # Show available code mods
-  sanity codemod
+  ${commandPrefix} codemod
 
   # Run codemod to transform react-icons imports from v2 style to v3 style,
   # but only as a dry-run (do not write the files)
-  sanity codemod reactIconsV3 --dry
+  ${commandPrefix} codemod reactIconsV3 --dry
 
 `
 

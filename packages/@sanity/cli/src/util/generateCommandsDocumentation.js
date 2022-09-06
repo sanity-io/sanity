@@ -1,5 +1,8 @@
 import {padEnd} from 'lodash'
 import noSuchCommandText from './noSuchCommandText'
+import {prefixCommand} from './isNpx'
+
+const commandPrefix = prefixCommand()
 
 /**
  * Generate documentation for all commands within a given group
@@ -17,12 +20,15 @@ export function generateCommandsDocumentation(commandGroups, group = 'default') 
   const prefix = group === 'default' ? '' : ` ${group}`
 
   const rows = [
-    `usage: sanity${prefix} [--default] [-v|--version] [-d|--debug] [-h|--help] <command> [<args>]`,
+    `usage: ${commandPrefix}${prefix} [--default] [-v|--version] [-d|--debug] [-h|--help] <command> [<args>]`,
     '',
     'Commands:',
   ]
     .concat(commands.map((cmd) => `   ${padEnd(cmd.name, cmdLength + 1)} ${cmd.description}`))
-    .concat(['', `See 'sanity help${prefix} <command>' for specific information on a subcommand.`])
+    .concat([
+      '',
+      `See '${commandPrefix} help${prefix} <command>' for specific information on a subcommand.`,
+    ])
 
   return rows.join('\n')
 }
@@ -41,7 +47,7 @@ export function generateCommandDocumentation(command, group, subCommand) {
 
   const cmdParts = [group || command.name, subCommand].filter(Boolean).join(' ')
   return [
-    `usage: sanity ${cmdParts} ${command.signature}`,
+    `usage: ${commandPrefix} ${cmdParts} ${command.signature}`,
     '',
     `   ${command.description}`,
     '',

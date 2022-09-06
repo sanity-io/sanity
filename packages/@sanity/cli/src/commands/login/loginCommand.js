@@ -1,4 +1,7 @@
 import login from '../../actions/login/login'
+import {prefixCommand} from '../../util/isNpx'
+
+const commandPrefix = prefixCommand()
 
 const helpText = `
 Options
@@ -6,10 +9,10 @@ Options
 
 Examples
   # Login against the Sanity.io API
-  sanity login
+  ${commandPrefix} login
 
   # Login with SAML SSO
-  sanity login --sso org-slug
+  ${commandPrefix} login --sso org-slug
 `
 export default {
   name: 'login',

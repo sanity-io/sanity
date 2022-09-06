@@ -1,4 +1,7 @@
+import {prefixCommand} from '../../util/isNpx'
 import upgradeDependencies from './upgradeDependencies'
+
+const commandPrefix = prefixCommand()
 
 const helpText = `
 Upgrades installed Sanity studio modules to the latest available version within
@@ -13,16 +16,16 @@ Options
 
 Examples
   # Upgrade modules to the latest semver compatible versions
-  sanity upgrade
+  ${commandPrefix} upgrade
 
   # Update to the latest within the 2.2 range
-  sanity upgrade --range 2.2.x
+  ${commandPrefix} upgrade --range 2.2.x
 
   # Update to the latest semver compatible versions and pin the versions
-  sanity upgrade --save-exact
+  ${commandPrefix} upgrade --save-exact
 
   # Update to the latest 'canary' npm tag
-  sanity upgrade --tag canary
+  ${commandPrefix} upgrade --tag canary
 `
 
 export default {

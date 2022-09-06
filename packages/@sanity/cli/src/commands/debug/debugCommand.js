@@ -1,4 +1,7 @@
+import {prefixCommand} from '../../util/isNpx'
 import printDebugInfo from './printDebugInfo'
+
+const commandPrefix = prefixCommand()
 
 const help = `
 Used to find information about the Sanity environment, and to debug Sanity-related issues.
@@ -8,10 +11,10 @@ Options
 
 Examples
   # Show information about the user, project, and local/global Sanity environment
-  sanity debug
+  ${commandPrefix} debug
 
   # Include API keys in the output
-  sanity debug --secrets
+  ${commandPrefix} debug --secrets
 `
 
 export default {

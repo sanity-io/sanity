@@ -1,5 +1,8 @@
 import initProject from '../../actions/init-project/initProject'
 import initPlugin from '../../actions/init-plugin/initPlugin'
+import {prefixCommand} from '../../util/isNpx'
+
+const commandPrefix = prefixCommand()
 
 const helpText = `
 Options
@@ -19,23 +22,23 @@ Options
 
 Examples
   # Initialize a new project, prompt for required information along the way
-  sanity init
+  ${commandPrefix} init
 
   # Initialize a new plugin
-  sanity init plugin
+  ${commandPrefix} init plugin
 
   # Initialize a new project with a public dataset named "production"
-  sanity init --dataset-default
+  ${commandPrefix} init --dataset-default
 
   # Initialize a project with the given project ID and dataset to the given path
-  sanity init -y --project abc123 --dataset production --output-path ~/myproj
+  ${commandPrefix} init -y --project abc123 --dataset production --output-path ~/myproj
 
   # Initialize a project with the given project ID and dataset using the moviedb
   # template to the given path
-  sanity init -y --project abc123 --dataset staging --template moviedb --output-path .
+  ${commandPrefix} init -y --project abc123 --dataset staging --template moviedb --output-path .
 
   # Create a brand new project with name "Movies Unlimited"
-  sanity init -y \\
+  ${commandPrefix} init -y \\
     --create-project "Movies Unlimited" \\
     --dataset moviedb \\
     --visibility private \\

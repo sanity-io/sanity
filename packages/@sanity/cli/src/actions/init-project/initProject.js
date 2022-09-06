@@ -16,11 +16,13 @@ import getProjectDefaults from '../../util/getProjectDefaults'
 import createProject from '../project/createProject'
 import login from '../login/login'
 import dynamicRequire from '../../util/dynamicRequire'
+import {prefixCommand} from '../../util/isNpx'
 import promptForDatasetName from './promptForDatasetName'
 import bootstrapTemplate from './bootstrapTemplate'
 import templates from './templates'
 
 /* eslint-disable no-process-env */
+const commandPrefix = prefixCommand()
 const isCI = process.env.CI
 const sanityEnv = process.env.SANITY_INTERNAL_ENV
 const environment = sanityEnv ? sanityEnv : process.env.NODE_ENV
@@ -188,7 +190,7 @@ export default async function initSanity(args, context) {
     const hasNodeModules = await fse.pathExists(path.join(workDir, 'node_modules'))
     if (hasNodeModules) {
       print('Skipping installation of dependencies since node_modules exists.')
-      print('Run sanity install to reinstall dependencies')
+      print(`Run ${commandPrefix} install to reinstall dependencies`)
     } else {
       try {
         await yarn(['install'], {...output, rootDir: workDir})
@@ -274,14 +276,14 @@ export default async function initSanity(args, context) {
 
         print('')
         print('If you want to delete the imported data, use')
-        print(`\t${chalk.cyan(`sanity dataset delete ${datasetName}`)}`)
+        print(`\t${chalk.cyan(`${commandPrefix} dataset delete ${datasetName}`)}`)
         print('and create a new clean dataset with')
-        print(`\t${chalk.cyan(`sanity dataset create <name>`)}\n`)
+        print(`\t${chalk.cyan(`${commandPrefix} dataset create <name>`)}\n`)
       }
     } else {
       debug('Skipping configcheck since `@sanity/core` could not be found')
       shouldPrintImportCommand = shouldImport
-      importCmd = `sanity dataset import ${template.datasetUrl} ${datasetName}`
+      importCmd = `${commandPrefix} dataset import ${template.datasetUrl} ${datasetName}`
     }
 
     // See if the template has a success message handler and print it
@@ -294,26 +296,26 @@ export default async function initSanity(args, context) {
   if (isCurrentDir && shouldPrintImportCommand) {
     print(`\n${chalk.green('Success!')} Now, use these commands to continue:\n`)
     print(`First: ${chalk.cyan(importCmd)} - to import the sample data`)
-    print(`Then:  ${chalk.cyan('sanity start')} - to run Sanity Studio\n`)
+    print(`Then:  ${chalk.cyan(`${commandPrefix} start`)} - to run Sanity Studio\n`)
   } else if (isCurrentDir) {
     print(`\n${chalk.green('Success!')} Now, use this command to continue:\n`)
-    print(`${chalk.cyan('sanity start')} - to run Sanity Studio\n`)
+    print(`${chalk.cyan(`${commandPrefix} start`)} - to run Sanity Studio\n`)
   } else if (shouldPrintImportCommand) {
     print(`\n${chalk.green('Success!')} Now, use these commands to continue:\n`)
     print(`First: ${chalk.cyan(`cd ${outputPath}`)} - to enter project’s directory`)
     print(`Then:  ${chalk.cyan(importCmd)}`)
     print(`       (to import the sample data)`)
-    print(`Lastly: ${chalk.cyan('sanity start')} - to run Sanity Studio\n`)
+    print(`Lastly: ${chalk.cyan(`${commandPrefix} start`)} - to run Sanity Studio\n`)
   } else {
     print(`\n${chalk.green('Success!')} Now, use these commands to continue:\n`)
     print(`First: ${chalk.cyan(`cd ${outputPath}`)} - to enter project’s directory`)
-    print(`Then:  ${chalk.cyan('sanity start')} - to run Sanity Studio\n`)
+    print(`Then:  ${chalk.cyan(`${commandPrefix} start`)} - to run Sanity Studio\n`)
   }
 
   print(`Other helpful commands`)
-  print(`sanity docs - to open the documentation in a browser`)
-  print(`sanity manage - to open the project settings in a browser`)
-  print(`sanity help - to explore the CLI manual`)
+  print(`${commandPrefix} docs - to open the documentation in a browser`)
+  print(`${commandPrefix} manage - to open the project settings in a browser`)
+  print(`${commandPrefix} help - to explore the CLI manual`)
 
   if (successMessage) {
     print(`\n${successMessage}`)
