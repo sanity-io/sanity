@@ -1,5 +1,6 @@
-import React, {useEffect, useState} from 'react'
+import React, {useCallback, useEffect, useState} from 'react'
 import {Button, Card, Code, Container, ErrorBoundary, Heading, Stack, useToast} from '@sanity/ui'
+import {useHotModuleReload} from 'use-hot-module-reload'
 import {SchemaError} from '../config'
 import {isRecord} from '../util'
 import {globalScope} from '../util/globalScope'
@@ -30,6 +31,10 @@ export function StudioErrorBoundary({children}: StudioErrorBoundaryProps) {
 
   const message = isRecord(error) && typeof error.message === 'string' && error.message
   const stack = isRecord(error) && typeof error.stack === 'string' && error.stack
+
+  const handleResetError = useCallback(() => setError({error: null}), [setError])
+
+  useHotModuleReload(handleResetError)
 
   useEffect(() => {
     if (!errorChannel) return undefined
@@ -83,12 +88,7 @@ export function StudioErrorBoundary({children}: StudioErrorBoundaryProps) {
             <Heading>An error occurred</Heading>
 
             <div>
-              <Button
-                // eslint-disable-next-line react/jsx-no-bind
-                onClick={() => setError({error: null})}
-                text="Retry"
-                tone="default"
-              />
+              <Button onClick={handleResetError} text="Retry" tone="default" />
             </div>
 
             <Card border radius={2} overflow="auto" padding={4} tone="inherit">

@@ -184,6 +184,7 @@
     "speakingurl": "^14.0.1",
     "tar-fs": "^2.1.1",
     "use-device-pixel-ratio": "^1.1.0",
+    "use-hot-module-reload": "^1.0.1",
     "yargs": "^17.3.0"
   },
   "devDependencies": {
