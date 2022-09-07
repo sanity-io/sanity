@@ -1,14 +1,12 @@
-import type {SearchTerms} from '@sanity/base'
+import type {SearchTerms, WeightedHit} from '@sanity/base'
 
-export interface SearchHit {
-  _id: string
-  _type: string
-  resultIndex: number
-  hit: {_id: string; _type: string}
+export interface SearchSort {
+  mode: 'createdAt' | 'previewTitle' | 'relevance' | 'updatedAt'
+  order: 'asc' | 'desc'
 }
 
 export interface SearchState {
-  hits: SearchHit[]
+  hits: WeightedHit[]
   loading: boolean
   error: Error | null
   terms: SearchTerms

@@ -1,6 +1,7 @@
 // @todo: remove the following line when part imports has been removed from this file
 ///<reference types="@sanity/types/parts" />
 
+import type {WeightedHit} from '@sanity/base'
 import {PreviewCard} from '@sanity/base/components'
 import {useDocumentPresenceUsers} from '@sanity/base/hooks'
 import {IntentLink} from '@sanity/base/router'
@@ -11,11 +12,10 @@ import React, {forwardRef, MouseEvent, useMemo} from 'react'
 import type {VirtualItem} from 'react-virtual'
 import styled, {css} from 'styled-components'
 import {useCommandList} from '../../contexts/commandList'
-import type {SearchHit} from '../../types'
 import SearchResultItemPreview from './SearchResultItemPreview'
 
 interface SearchItemProps extends ResponsivePaddingProps {
-  data: SearchHit
+  data: WeightedHit
   index: number
   onClick?: () => void
   onMouseDown?: (event: MouseEvent) => void
@@ -97,6 +97,7 @@ export function SearchResultItem({
         tabIndex={-1}
       >
         <SearchResultItemPreview
+          data={data}
           documentId={hit._id}
           presence={documentPresence}
           schemaType={type}

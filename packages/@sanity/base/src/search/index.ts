@@ -11,7 +11,7 @@ const searchClient = versionedClient.withConfig({
   apiVersion: '2021-03-25',
 })
 
-export type {SearchTerms, SearchableType} from './weighted/types'
+export type {SearchOptions, SearchTerms, SearchableType, WeightedHit} from './weighted/types'
 
 export default createWeightedSearch(getSearchableTypes(schema), searchClient, {
   unique: true,

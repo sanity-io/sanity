@@ -73,7 +73,7 @@ export function SearchPopover({onClose, onOpen, open, position}: SearchPopoverPr
 
   const isMountedRef = useRef(false)
 
-  const {zIndex} = useLayer()
+  const {isTopLayer, zIndex} = useLayer()
 
   const {
     state: {recentSearches, result, terms},
@@ -111,15 +111,18 @@ export function SearchPopover({onClose, onOpen, open, position}: SearchPopoverPr
     onClose()
   }, [onClose, setLastSearchIndex])
 
-  const handleClickOutside = useCallback(() => {
-    if (open) {
-      handleClose()
-    }
-  }, [handleClose, open])
-
   const handleClearRecentSearches = useCallback(() => {
     headerInputElement?.focus()
   }, [headerInputElement])
+
+  /**
+   * Check for top-most layer to prevent closing if a portalled element (i.e. menu button) is active
+   */
+  const handleClickOutside = useCallback(() => {
+    if (open && isTopLayer) {
+      handleClose()
+    }
+  }, [handleClose, isTopLayer, open])
 
   /**
    * Bind hotkeys to open / close actions
@@ -174,6 +177,7 @@ export function SearchPopover({onClose, onOpen, open, position}: SearchPopoverPr
                     onClose={handleClose}
                     setChildContainerRef={setChildContainerRef}
                     setPointerOverlayRef={setPointerOverlayRef}
+                    small
                   />
                 ) : (
                   <RecentSearches

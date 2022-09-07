@@ -1,7 +1,7 @@
 // @todo: remove the following line when part imports has been removed from this file
 ///<reference types="@sanity/types/parts" />
 
-import type {SearchTerms} from '@sanity/base'
+import type {SearchOptions, SearchTerms, WeightedHit} from '@sanity/base'
 import {isEqual} from 'lodash'
 import search from 'part:@sanity/base/search'
 import {useCallback, useState} from 'react'
@@ -19,7 +19,7 @@ import {
 } from 'rxjs/operators'
 import {FINDABILITY_MVI} from '../constants'
 import {hasSearchableTerms} from '../contexts/search/selectors'
-import {SearchHit, SearchState} from '../types'
+import {SearchState} from '../types'
 
 const INITIAL_SEARCH_STATE: SearchState = {
   hits: [],
@@ -51,7 +51,7 @@ export function useSearch(
     onStart,
   }: {
     initialState: SearchState
-    onComplete?: (hits: SearchHit[]) => void
+    onComplete?: (hits: WeightedHit[]) => void
     onError?: (error: Error) => void
     onStart?: () => void
   } = {
@@ -80,7 +80,7 @@ export function useSearch(
         ]
         return concat(
           of({...INITIAL_SEARCH_STATE, loading: true, terms, searchString: terms.query}),
-          (search(terms, {}, searchComments) as Observable<SearchHit[]>).pipe(
+          (search(terms, {}, searchComments) as Observable<WeightedHit[]>).pipe(
             map((hits) => ({hits})),
             tap(({hits}) => onComplete?.(hits)),
             catchError((error) => {

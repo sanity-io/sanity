@@ -8,6 +8,8 @@ interface CustomTextInputProps extends ComponentProps<typeof TextInput> {
 
 const CustomTextInputBox = styled(Box)(({smallClearButton}: {smallClearButton: boolean}) => {
   return css`
+    width: 100%;
+
     input + span {
       background: none;
     }

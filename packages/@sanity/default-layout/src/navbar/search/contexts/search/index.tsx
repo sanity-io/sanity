@@ -3,6 +3,8 @@
 
 import type {SearchTerms} from '@sanity/base'
 import {CurrentUser} from '@sanity/types'
+import {isEqual} from 'lodash'
+import schema from 'part:@sanity/base/schema'
 import React, {
   createContext,
   Dispatch,
@@ -13,11 +15,11 @@ import React, {
   useReducer,
   useRef,
 } from 'react'
-import schema from 'part:@sanity/base/schema'
 import {SEARCH_LIMIT} from '../../constants'
 import {createRecentSearchesStore, RecentSearchesStore} from '../../datastores/recentSearches'
 import {useSearch} from '../../hooks/useSearch'
-import {initialSearchState, searchReducer, SearchAction, SearchReducerState} from './reducer'
+import type {SearchSort} from '../../types'
+import {initialSearchState, SearchAction, searchReducer, SearchReducerState} from './reducer'
 import {hasSearchableTerms} from './selectors'
 
 interface SearchContextValue {
@@ -48,19 +50,19 @@ export function SearchProvider({children, currentUser}: SearchProviderProps) {
     initialSearchState(currentUser, recentSearches)
   )
 
-  const {pageIndex, result, terms} = state
+  const {pageIndex, result, sort, terms} = state
 
   const isMountedRef = useRef(false)
   const previousPageIndexRef = useRef<number>(0)
+  const previousSortRef = useRef<SearchSort>(null)
   const previousTermsRef = useRef<SearchTerms>(null)
 
   const {handleSearch, searchState} = useSearch({
     initialState: {
-      searchString: terms.query,
       ...result,
+      searchString: terms.query,
       terms,
     },
-    // TODO: consider re-thinking how we handle search event callbacks
     onComplete: (hits) => dispatch({hits, type: 'SEARCH_REQUEST_COMPLETE'}),
     onError: (error) => dispatch({error, type: 'SEARCH_REQUEST_ERROR'}),
     onStart: () => dispatch({type: 'SEARCH_REQUEST_START'}),
@@ -76,12 +78,11 @@ export function SearchProvider({children, currentUser}: SearchProviderProps) {
    * There are cases were we may not run searches when terms change (e.g. when search terms are empty / invalid).
    */
   useEffect(() => {
-    const termsChanged = Object.keys(terms).some(
-      (key) => terms[key] !== previousTermsRef.current?.[key]
-    )
     const pageIndexChanged = pageIndex !== previousPageIndexRef.current
+    const sortChanged = !isEqual(sort, previousSortRef.current)
+    const termsChanged = !isEqual(terms, previousTermsRef.current)
 
-    if (termsChanged || pageIndexChanged) {
+    if (pageIndexChanged || sortChanged || termsChanged) {
       handleSearch({
         ...terms,
         limit: SEARCH_LIMIT,
@@ -92,9 +93,10 @@ export function SearchProvider({children, currentUser}: SearchProviderProps) {
       previousPageIndexRef.current = pageIndex
     }
 
-    // Update our terms snapshot, even if no search request was executed
+    // Update snapshots, even if no search request was executed
+    previousSortRef.current = sort
     previousTermsRef.current = terms
-  }, [handleSearch, hasValidTerms, pageIndex, searchState.terms, terms])
+  }, [handleSearch, hasValidTerms, pageIndex, searchState.terms, sort, terms])
 
   /**
    * Reset search hits / state when (after initial amount):

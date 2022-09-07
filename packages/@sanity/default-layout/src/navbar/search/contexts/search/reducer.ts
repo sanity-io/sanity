@@ -1,7 +1,7 @@
-import type {SearchTerms, SearchableType} from '@sanity/base'
+import type {SearchTerms, SearchableType, WeightedHit} from '@sanity/base'
 import type {CurrentUser} from '@sanity/types'
 import {RecentSearchTerms} from '../../datastores/recentSearches'
-import type {SearchHit} from '../../types'
+import type {SearchSort} from '../../types'
 import {debugWithName} from '../../utils/debug'
 import {sortTypes} from './selectors'
 
@@ -11,13 +11,14 @@ export interface SearchReducerState {
   pageIndex: number
   recentSearches: RecentSearchTerms[]
   result: SearchResult
+  sort: SearchSort
   terms: SearchTerms
 }
 
 export interface SearchResult {
   error: Error | null
   hasMore?: boolean
-  hits: SearchHit[]
+  hits: WeightedHit[]
   loaded: boolean
   loading: boolean
 }
@@ -38,6 +39,10 @@ export function initialSearchState(
       loaded: false,
       loading: false,
     },
+    sort: {
+      mode: 'relevance',
+      order: 'asc',
+    },
     terms: {
       query: '',
       types: [],
@@ -56,10 +61,11 @@ export type RecentSearchesSet = {
 export type SearchClear = {type: 'SEARCH_CLEAR'}
 export type SearchRequestComplete = {
   type: 'SEARCH_REQUEST_COMPLETE'
-  hits: SearchHit[]
+  hits: WeightedHit[]
 }
 export type SearchRequestError = {type: 'SEARCH_REQUEST_ERROR'; error: Error}
 export type SearchRequestStart = {type: 'SEARCH_REQUEST_START'}
+export type SortSet = {type: 'SORT_SET'; sort: SearchSort}
 export type TermsQuerySet = {type: 'TERMS_QUERY_SET'; query: string}
 export type TermsSet = {type: 'TERMS_SET'; terms: SearchTerms}
 export type TermsTypeAdd = {type: 'TERMS_TYPE_ADD'; schemaType: SearchableType}
@@ -76,6 +82,7 @@ export type SearchAction =
   | SearchRequestComplete
   | SearchRequestError
   | SearchRequestStart
+  | SortSet
   | TermsQuerySet
   | TermsSet
   | TermsTypeAdd
@@ -160,6 +167,11 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
           loaded: false,
           loading: true,
         },
+      }
+    case 'SORT_SET':
+      return {
+        ...state,
+        sort: action.sort,
       }
     case 'TERMS_QUERY_SET':
       return {

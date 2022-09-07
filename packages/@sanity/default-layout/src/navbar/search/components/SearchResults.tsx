@@ -1,7 +1,7 @@
 // @todo: remove the following line when part imports has been removed from this file
 ///<reference types="@sanity/types/parts" />
 
-import {Box} from '@sanity/ui'
+import {Box, Flex} from '@sanity/ui'
 import {getPublishedId} from 'part:@sanity/base/util/draft-utils'
 import React, {Dispatch, SetStateAction, useCallback, useEffect, useRef} from 'react'
 import {useVirtual} from 'react-virtual'
@@ -13,15 +13,20 @@ import {NoResults} from './NoResults'
 import {PointerOverlay} from './PointerOverlay'
 import {SearchError} from './SearchError'
 import {SearchResultItem} from './searchResultItem'
+import {SortMenu} from './SortMenu'
 
 interface SearchResultsProps {
   onClose: () => void
   setChildContainerRef: Dispatch<SetStateAction<HTMLDivElement>>
   setPointerOverlayRef: Dispatch<SetStateAction<HTMLDivElement>>
+  small?: boolean
 }
 
-const SearchResultsDiv = styled.div<{$loading: boolean}>`
+const SearchResultsFlex = styled(Flex)`
   height: 100%;
+`
+
+const SearchResultsInnerFlex = styled(Flex)<{$loading: boolean}>`
   opacity: ${({$loading}) => ($loading ? 0.5 : 1)};
   overflow: hidden;
   position: relative;
@@ -47,6 +52,7 @@ export function SearchResults({
   onClose,
   setChildContainerRef,
   setPointerOverlayRef,
+  small,
 }: SearchResultsProps) {
   const {
     dispatch,
@@ -93,39 +99,48 @@ export function SearchResults({
   }, [dispatch, onChildClick, onClose, recentSearchesStore, terms])
 
   return (
-    <SearchResultsDiv aria-busy={result.loading} $loading={result.loading}>
-      {result.error ? (
-        <SearchError />
-      ) : (
-        <>
-          {!!result.hits.length && (
-            // (Has search results)
-            <VirtualListBox data-overflow ref={childParentRef} tabIndex={-1}>
-              <PointerOverlay ref={setPointerOverlayRef} />
+    <SearchResultsFlex direction="column">
+      {/* Sort menu */}
+      {!!result.hits.length && <SortMenu small={small} />}
 
-              <VirtualListChildBox $height={totalSize} paddingBottom={1} ref={setChildContainerRef}>
-                {virtualItems.map((virtualRow) => {
-                  const hit = result.hits[virtualRow.index]
-                  return (
-                    <SearchResultItem
-                      data={hit}
-                      documentId={getPublishedId(hit.hit._id) || ''}
-                      index={virtualRow.index}
-                      key={hit.hit._id}
-                      onClick={handleResultClick}
-                      onMouseDown={onChildMouseDown}
-                      onMouseEnter={onChildMouseEnter(virtualRow.index)}
-                      virtualRow={virtualRow}
-                    />
-                  )
-                })}
-              </VirtualListChildBox>
-            </VirtualListBox>
-          )}
+      {/* Results */}
+      <SearchResultsInnerFlex $loading={result.loading} aria-busy={result.loading} flex={1}>
+        {result.error ? (
+          <SearchError />
+        ) : (
+          <>
+            {!!result.hits.length && (
+              // (Has search results)
+              <VirtualListBox data-overflow ref={childParentRef} tabIndex={-1}>
+                <PointerOverlay ref={setPointerOverlayRef} />
+                <VirtualListChildBox
+                  $height={totalSize}
+                  paddingBottom={1}
+                  ref={setChildContainerRef}
+                >
+                  {virtualItems.map((virtualRow) => {
+                    const hit = result.hits[virtualRow.index]
+                    return (
+                      <SearchResultItem
+                        data={hit}
+                        documentId={getPublishedId(hit.hit._id) || ''}
+                        index={virtualRow.index}
+                        key={hit.hit._id}
+                        onClick={handleResultClick}
+                        onMouseDown={onChildMouseDown}
+                        onMouseEnter={onChildMouseEnter(virtualRow.index)}
+                        virtualRow={virtualRow}
+                      />
+                    )
+                  })}
+                </VirtualListChildBox>
+              </VirtualListBox>
+            )}
 
-          {!result.hits.length && result.loaded && <NoResults />}
-        </>
-      )}
-    </SearchResultsDiv>
+            {!result.hits.length && result.loaded && <NoResults />}
+          </>
+        )}
+      </SearchResultsInnerFlex>
+    </SearchResultsFlex>
   )
 }
