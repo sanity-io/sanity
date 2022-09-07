@@ -105,7 +105,7 @@ export default class SanityDefaultPreview extends React.PureComponent<SanityDefa
     const imageUrl = value.imageUrl
     if (isString(imageUrl)) {
       const assetUrl = assetUrlBuilder(imageUrl.split('?')[0], dimensions)
-      return <img src={assetUrl} alt={isString(value.title) ? value.title : undefined} />
+      return <img src={assetUrl} alt={isString(value.title) ? value.title : ''} />
     }
     return undefined
   }
