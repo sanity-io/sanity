@@ -64,7 +64,7 @@ export function AnnotationToolbarPopover(props: AnnotationToolbarPopoverProps) {
         return cursorRect
       },
     }
-  }, [cursorRect])
+  }, [cursorRect]) as HTMLElement
 
   useEffect(() => {
     if (!open) {
@@ -114,6 +114,7 @@ export function AnnotationToolbarPopover(props: AnnotationToolbarPopoverProps) {
   // Detect selection changes
   useEffect(() => {
     function handleSelectionChange() {
+      if (!focused) return
       if (!textElement) return
       const winSelection = window.getSelection()
 
@@ -136,7 +137,7 @@ export function AnnotationToolbarPopover(props: AnnotationToolbarPopoverProps) {
     return () => {
       document.removeEventListener('selectionchange', handleSelectionChange)
     }
-  }, [textElement])
+  }, [focused, textElement])
 
   // Open popover when selection is within annotations
   useEffect(() => {
@@ -164,6 +165,10 @@ export function AnnotationToolbarPopover(props: AnnotationToolbarPopoverProps) {
       rangeRef.current = null
     }
   }, [focused, selection, annotationElement])
+
+  if (!open) {
+    return null
+  }
 
   return (
     <ToolbarPopover
@@ -200,7 +205,7 @@ export function AnnotationToolbarPopover(props: AnnotationToolbarPopoverProps) {
       open={open}
       placement="top"
       portal="editor"
-      referenceElement={cursorElement as HTMLElement}
+      referenceElement={cursorElement}
       scheme={popoverScheme}
     />
   )
