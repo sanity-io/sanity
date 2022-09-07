@@ -1,9 +1,13 @@
+// @todo: remove the following line when part imports has been removed from this file
+///<reference types="@sanity/types/parts" />
+
 import type {SearchTerms, SearchableType, WeightedHit} from '@sanity/base'
 import type {CurrentUser} from '@sanity/types'
+import schema from 'part:@sanity/base/schema'
 import {RecentSearchTerms} from '../../datastores/recentSearches'
 import type {SearchSort} from '../../types'
 import {debugWithName} from '../../utils/debug'
-import {sortTypes} from './selectors'
+import {getSortedSearchableTypes, sortTypes} from './selectors'
 
 export interface SearchReducerState {
   currentUser: CurrentUser
@@ -11,6 +15,7 @@ export interface SearchReducerState {
   pageIndex: number
   recentSearches: RecentSearchTerms[]
   result: SearchResult
+  searchableTypes: SearchableType[]
   sort: SearchSort
   terms: SearchTerms
 }
@@ -39,6 +44,7 @@ export function initialSearchState(
       loaded: false,
       loading: false,
     },
+    searchableTypes: getSortedSearchableTypes(schema),
     sort: {
       mode: 'relevance',
       order: 'desc',
@@ -63,6 +69,8 @@ export type SearchRequestComplete = {
   type: 'SEARCH_REQUEST_COMPLETE'
   hits: WeightedHit[]
 }
+export type SearchableTypesReset = {type: 'SEARCHABLE_TYPES_RESET'}
+export type SearchableTypesSet = {searchableTypes?: SearchableType[]; type: 'SEARCHABLE_TYPES_SET'}
 export type SearchRequestError = {type: 'SEARCH_REQUEST_ERROR'; error: Error}
 export type SearchRequestStart = {type: 'SEARCH_REQUEST_START'}
 export type SortReset = {type: 'SORT_RESET'}
@@ -79,6 +87,8 @@ export type SearchAction =
   | FiltersToggle
   | PageIncrement
   | RecentSearchesSet
+  | SearchableTypesReset
+  | SearchableTypesSet
   | SearchClear
   | SearchRequestComplete
   | SearchRequestError
@@ -128,6 +138,16 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
       return {
         ...state,
         recentSearches: action.recentSearches,
+      }
+    case 'SEARCHABLE_TYPES_RESET':
+      return {
+        ...state,
+        searchableTypes: getSortedSearchableTypes(schema),
+      }
+    case 'SEARCHABLE_TYPES_SET':
+      return {
+        ...state,
+        searchableTypes: getSortedSearchableTypes(schema, action.searchableTypes),
       }
     case 'SEARCH_CLEAR':
       return {
