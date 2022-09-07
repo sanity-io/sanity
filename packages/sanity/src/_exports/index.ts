@@ -205,6 +205,8 @@ export {
 } from '../studio'
 
 export type {
+  LogoProps,
+  NavbarProps,
   SourceProviderProps,
   StudioProps,
   StudioProviderProps,

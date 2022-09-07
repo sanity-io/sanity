@@ -1,4 +1,5 @@
 //import {codeInput} from '@sanity/code-input'
+import React from 'react'
 import {BookIcon} from '@sanity/icons'
 import {visionTool} from '@sanity/vision'
 import {createConfig, createPlugin} from 'sanity'
@@ -11,6 +12,7 @@ import {languageFilter} from './plugins/language-filter'
 import {schemaTypes} from './schema'
 import {defaultDocumentNode, newDocumentOptions, structure} from './structure'
 import {workshopTool} from './workshop'
+import {CustomLogo, CustomLayout, CustomNavbar, CustomToolMenu} from './components/customComponents'
 
 const sharedSettings = createPlugin({
   name: 'sharedSettings',
@@ -18,16 +20,7 @@ const sharedSettings = createPlugin({
     types: schemaTypes,
     templates: resolveInitialValueTemplates,
   },
-  // navbar: {
-  //   components: {
-  //     ToolMenu: ToolMenu,
-  //   },
-  // },
   form: {
-    // unstable: {
-    //   CustomMarkers,
-    //   Markers,
-    // },
     image: {
       assetSources: [imageAssetSource],
     },
@@ -37,12 +30,7 @@ const sharedSettings = createPlugin({
     newDocumentOptions,
   },
   plugins: [
-    // codeInput(),
     deskTool({
-      // TODO:
-      // components: {
-      //   LanguageFilter,
-      // },
       icon: BookIcon,
       name: 'content',
       title: 'Content',
@@ -93,5 +81,20 @@ export default createConfig([
     dataset: 'playground',
     plugins: [sharedSettings()],
     basePath: '/playground',
+  },
+  {
+    name: 'custom-components',
+    title: 'Test Studio (custom-components)',
+    logo: Branding,
+    projectId: 'ppsg7ml5',
+    dataset: 'test',
+    plugins: [sharedSettings()],
+    basePath: '/custom-components',
+    studio: {
+      renderLayout: (props, next) => <CustomLayout>{next(props)}</CustomLayout>,
+      renderLogo: CustomLogo,
+      renderNavbar: (props, next) => <CustomNavbar>{next(props)}</CustomNavbar>,
+      renderToolMenu: (props, next) => <CustomToolMenu>{next(props)}</CustomToolMenu>,
+    },
   },
 ])

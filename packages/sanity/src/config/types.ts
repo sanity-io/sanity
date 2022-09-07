@@ -31,7 +31,7 @@ import type {Router, RouterState} from '../router'
 import type {DocumentActionComponent} from '../desk/actions'
 import type {DocumentBadgeComponent} from '../desk/badges'
 import {PreviewProps} from '../components/previews'
-import {ToolMenuProps} from '../studio/components/navbar/tools/ToolMenu'
+import {LogoProps, NavbarProps, ToolMenuProps} from '../studio/components'
 
 /**
  * @alpha
@@ -48,6 +48,28 @@ export interface SanityAuthConfig {
 }
 
 export type AssetSourceResolver = ComposableOption<AssetSource[], ConfigContext>
+
+export type RenderComponentCallback<T> = (props: T) => ReactNode
+
+// Component API
+export type RenderLayoutCallback = RenderComponentCallback<unknown>
+export type RenderLogoCallback = RenderComponentCallback<LogoProps>
+export type RenderNavbarCallback = RenderComponentCallback<NavbarProps>
+export type RenderToolMenuCallback = RenderComponentCallback<ToolMenuProps>
+
+interface StudioConfigOptions {
+  renderLayout: RenderLayoutCallback
+  renderLogo: RenderLogoCallback
+  renderNavbar: RenderNavbarCallback
+  renderToolMenu: RenderToolMenuCallback
+}
+
+interface StudioPluginOptions {
+  renderLayout?: (props: unknown, next: RenderLayoutCallback) => ReactNode
+  renderLogo?: (props: LogoProps, next: RenderLogoCallback) => ReactNode
+  renderNavbar?: (props: NavbarProps, next: RenderComponentCallback<NavbarProps>) => ReactNode
+  renderToolMenu?: (props: ToolMenuProps, next: RenderToolMenuCallback) => ReactNode
+}
 
 /**
  * @alpha
@@ -203,6 +225,7 @@ export interface PluginOptions {
   document?: DocumentPluginOptions
   tools?: Tool[] | ComposableOption<Tool[], ConfigContext>
   form?: SanityFormConfig
+  studio?: StudioPluginOptions
 }
 
 export type ConfigPropertyReducer<TValue, TContext> = (
@@ -320,6 +343,9 @@ export interface Source {
       Markers?: FormBuilderMarkersComponent
     }
   }
+
+  studio: StudioConfigOptions
+
   __internal: {
     bifur: BifurClient
     staticInitialValueTemplateItems: InitialValueTemplateItem[]

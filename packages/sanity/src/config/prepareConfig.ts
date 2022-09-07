@@ -13,6 +13,7 @@ import {InitialValueTemplateItem, Template, TemplateResponse} from '../templates
 import {isNonNullable} from '../util'
 import {defaultFileAssetSources, defaultImageAssetSources} from '../form/defaults'
 import {validateWorkspaces} from '../studio/workspaces/validateWorkspaces'
+import {LogoProps, NavbarProps, ToolMenuProps} from '../studio/components'
 import {
   Config,
   PreparedConfig,
@@ -45,6 +46,7 @@ import {_createRenderField} from './form/_renderField'
 import {_createRenderInput} from './form/_renderInput'
 import {_createRenderItem} from './form/_renderItem'
 import {_createRenderPreview} from './form/_renderPreview'
+import {_createRenderComponent} from './components'
 
 type InternalSource = WorkspaceSummary['__internal']['sources'][number]
 
@@ -453,6 +455,25 @@ function resolveSource({
           // default value for this is `true`
           config.form?.file?.directUploads === undefined ? true : config.form.file.directUploads,
       },
+    },
+
+    studio: {
+      renderLayout: _createRenderComponent<unknown>({
+        componentName: 'Layout',
+        config,
+      }),
+      renderLogo: _createRenderComponent<LogoProps>({
+        componentName: 'Logo',
+        config,
+      }),
+      renderNavbar: _createRenderComponent<NavbarProps>({
+        componentName: 'Navbar',
+        config,
+      }),
+      renderToolMenu: _createRenderComponent<ToolMenuProps>({
+        componentName: 'ToolMenu',
+        config,
+      }),
     },
 
     __internal: {
