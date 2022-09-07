@@ -6,7 +6,7 @@ import {
   unstable_useConditionalProperty as useConditionalProperty,
 } from '@sanity/base/hooks'
 import {PresenceOverlay} from '@sanity/base/presence'
-import {Box, Container, Flex, Spinner, Text, useToast} from '@sanity/ui'
+import {Box, Container, Flex, Spinner, Text} from '@sanity/ui'
 import afterEditorComponents from 'all:part:@sanity/desk-tool/after-editor-component'
 import documentStore from 'part:@sanity/base/datastore/document'
 import schema from 'part:@sanity/base/schema'
@@ -19,6 +19,7 @@ import {SanityDocument} from '@sanity/client'
 import {ObjectField, ObjectSchemaTypeWithOptions} from '@sanity/types'
 import {useDocumentPane} from '../../useDocumentPane'
 import {Delay} from '../../../../components/Delay'
+import {useConditionalToast} from './useConditionalToast'
 
 interface FormViewProps {
   granted: boolean
@@ -103,19 +104,15 @@ export function FormView(props: FormViewProps) {
     // do nothing
   }, [])
 
-  const toast = useToast()
   const isLocked = editState?.transactionSyncLock?.enabled
-  useEffect(() => {
-    toast.push({
-      id: `sync-lock-${documentId}`,
-      status: 'warning',
-      // note1: there's a `duration || 0` in Sanity UI's pushToast(), so make it non-falsey
-      // note2: cannot use `Infinity` as duration, since it exceeds setTimeout's maximum delay value
-      duration: isLocked ? 3_600_000 : 0.01,
-      title: `Syncing document…`,
-      description: `Please hold tight while the document is synced. This usually happens right after the document has been published, and it shouldn't take more than a few seconds`,
-    })
-  }, [documentId, isLocked, toast])
+
+  useConditionalToast({
+    id: `sync-lock-${documentId}`,
+    status: 'warning',
+    enabled: isLocked,
+    title: `Syncing document…`,
+    description: `Please hold tight while the document is synced. This usually happens right after the document has been published, and it shouldn't take more than a few seconds`,
+  })
 
   useEffect(() => {
     const sub = documentStore.pair
