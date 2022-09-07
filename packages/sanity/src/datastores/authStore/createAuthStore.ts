@@ -102,22 +102,28 @@ const getCurrentUser = async (client: SanityClient) => {
       return null
     }
 
-    // Request failed for some other reason, see if this was a CORS-error by
+    // Request failed for a non-auth reason, see if this was a CORS-error by
     // checking the `/ping` endpoint, which allows all origins
-    const validCorsConfig = await client
+    const invalidCorsConfig = await client
       .request({uri: '/ping', withCredentials: false, tag: 'cors-check'})
       .then(
-        () => true,
-        () => false
+        () => true, // Request succeeded, so likely the CORS origin is disallowed
+        () => false // Request failed, so likely a network error of some kind
       )
 
-    // Some non-CORS error, rethrow
-    if (validCorsConfig) {
-      throw err
+    if (invalidCorsConfig) {
+      // Throw a specific error on CORS-errors, to allow us to show a customized dialog
+      throw new CorsOriginError({projectId: client.config()?.projectId})
     }
 
-    // Throw a specific error on CORS-errors, to allow us to show a customized dialog
-    throw new CorsOriginError({projectId: client.config()?.projectId})
+    // Some non-CORS error - is it one of those undefinable network errors?
+    if (err.isNetworkError && !err.message && err.request && err.request.url) {
+      const host = new URL(err.request.url).host
+      throw new Error(`Unknown network error attempting to reach ${host}`)
+    }
+
+    // Some other error, just throw it
+    throw err
   }
 }
 
