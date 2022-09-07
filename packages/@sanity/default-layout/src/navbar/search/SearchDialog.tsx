@@ -63,6 +63,7 @@ export function SearchDialog({onClose, onOpen, open}: SearchDialogProps) {
   const isMountedRef = useRef(false)
 
   const {
+    dispatch,
     state: {filtersVisible, recentSearches, result, terms},
   } = useSearchState()
 
@@ -74,6 +75,19 @@ export function SearchDialog({onClose, onOpen, open}: SearchDialogProps) {
   const {lastSearchIndex, resetLastSearchIndex, setLastSearchIndex} = useMeasureSearchResultsIndex(
     childContainerElement
   )
+
+  /**
+   * Store top-most search result scroll index on close
+   */
+  const handleClose = useCallback(() => {
+    setLastSearchIndex()
+    onClose()
+  }, [onClose, setLastSearchIndex])
+
+  /**
+   * Bind hotkeys to open / close actions
+   */
+  useSearchHotkeys({onClose: handleClose, onOpen, open})
 
   /**
    * Reset last search index when new results are loaded, or visiting recent searches
@@ -91,17 +105,14 @@ export function SearchDialog({onClose, onOpen, open}: SearchDialogProps) {
   }, [hasValidTerms, resetLastSearchIndex, result.loaded])
 
   /**
-   * Store top-most search result scroll index on close
+   * Reset sort when popover is closed (without valid search terms)
    */
-  const handleClose = useCallback(() => {
-    setLastSearchIndex()
-    onClose()
-  }, [onClose, setLastSearchIndex])
+  useEffect(() => {
+    if (!hasValidTerms && !open) {
+      dispatch({type: 'SORT_RESET'})
+    }
+  }, [dispatch, hasValidTerms, open])
 
-  /**
-   * Bind hotkeys to open / close actions
-   */
-  useSearchHotkeys({onClose: handleClose, onOpen, open})
   const dialogId = useId()
 
   if (!open) {

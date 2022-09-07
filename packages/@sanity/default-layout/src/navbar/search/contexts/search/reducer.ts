@@ -41,7 +41,7 @@ export function initialSearchState(
     },
     sort: {
       mode: 'relevance',
-      order: 'asc',
+      order: 'desc',
     },
     terms: {
       query: '',
@@ -65,6 +65,7 @@ export type SearchRequestComplete = {
 }
 export type SearchRequestError = {type: 'SEARCH_REQUEST_ERROR'; error: Error}
 export type SearchRequestStart = {type: 'SEARCH_REQUEST_START'}
+export type SortReset = {type: 'SORT_RESET'}
 export type SortSet = {type: 'SORT_SET'; sort: SearchSort}
 export type TermsQuerySet = {type: 'TERMS_QUERY_SET'; query: string}
 export type TermsSet = {type: 'TERMS_SET'; terms: SearchTerms}
@@ -82,6 +83,7 @@ export type SearchAction =
   | SearchRequestComplete
   | SearchRequestError
   | SearchRequestStart
+  | SortReset
   | SortSet
   | TermsQuerySet
   | TermsSet
@@ -172,6 +174,14 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
       return {
         ...state,
         sort: action.sort,
+      }
+    case 'SORT_RESET':
+      return {
+        ...state,
+        sort: {
+          mode: 'relevance',
+          order: 'desc',
+        },
       }
     case 'TERMS_QUERY_SET':
       return {

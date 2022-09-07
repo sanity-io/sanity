@@ -35,7 +35,7 @@ interface SortMenuProps {
 
 const MENU_ITEMS: (SortMenuItemDivider | SortMenuItem)[] = [
   {
-    sort: {mode: 'relevance', order: 'asc'},
+    sort: {mode: 'relevance', order: 'desc'},
     title: 'Relevance',
     type: 'menuItem',
   },

@@ -76,6 +76,7 @@ export function SearchPopover({onClose, onOpen, open, position}: SearchPopoverPr
   const {isTopLayer, zIndex} = useLayer()
 
   const {
+    dispatch,
     state: {recentSearches, result, terms},
   } = useSearchState()
 
@@ -87,21 +88,6 @@ export function SearchPopover({onClose, onOpen, open, position}: SearchPopoverPr
   const {lastSearchIndex, resetLastSearchIndex, setLastSearchIndex} = useMeasureSearchResultsIndex(
     childContainerElement
   )
-
-  /**
-   * Reset last search index when new results are loaded, or visiting recent searches
-   * @todo Revise if/when we introduce pagination
-   */
-  useEffect(() => {
-    if (!isMountedRef?.current) {
-      isMountedRef.current = true
-      return
-    }
-
-    if (!hasValidTerms || result.loaded) {
-      resetLastSearchIndex()
-    }
-  }, [hasValidTerms, resetLastSearchIndex, result.loaded])
 
   /**
    * Store top-most search result scroll index on close
@@ -130,6 +116,30 @@ export function SearchPopover({onClose, onOpen, open, position}: SearchPopoverPr
   useSearchHotkeys({onClose: handleClose, onOpen, open})
 
   useClickOutside(handleClickOutside, [containerElement])
+
+  /**
+   * Reset last search index when new results are loaded, or visiting recent searches
+   * @todo Revise if/when we introduce pagination
+   */
+  useEffect(() => {
+    if (!isMountedRef?.current) {
+      isMountedRef.current = true
+      return
+    }
+
+    if (!hasValidTerms || result.loaded) {
+      resetLastSearchIndex()
+    }
+  }, [hasValidTerms, resetLastSearchIndex, result.loaded])
+
+  /**
+   * Reset sort when popover is closed (without valid search terms)
+   */
+  useEffect(() => {
+    if (!hasValidTerms && !open) {
+      dispatch({type: 'SORT_RESET'})
+    }
+  }, [dispatch, hasValidTerms, open])
 
   const dialogId = useId()
 
