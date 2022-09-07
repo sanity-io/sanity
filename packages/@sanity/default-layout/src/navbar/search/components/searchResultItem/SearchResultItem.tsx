@@ -34,7 +34,9 @@ const SearchResultItemBox = styled(Box)<{$level: number}>(({$level}) => {
     [data-focused='true'][data-level='${$level}'] &,
     [data-hovered='true'][data-level='${$level}'] & {
       &[data-active='true'] a {
-        background: ${({theme}) => theme.sanity.color.button.bleed.default.hovered.bg};
+        // Allow nested cards to inherit the correct background color
+        --card-bg-color: ${({theme}) => theme.sanity.color.button.bleed.default.hovered.bg};
+        background: var(--card-bg-color);
         // Disable box-shadow to hide the halo effect when we have keyboard focus over a selected <Button>
         box-shadow: none;
       }
