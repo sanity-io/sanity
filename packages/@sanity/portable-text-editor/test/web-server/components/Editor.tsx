@@ -144,6 +144,8 @@ export const Editor = ({
     [onMutation]
   )
 
+  const [readOnly, setReadOnly] = useState(false)
+
   const editable = useMemo(
     () => (
       <PortableTextEditable
@@ -153,10 +155,11 @@ export const Editor = ({
         renderDecorator={renderDecorator}
         renderChild={renderChild}
         selection={selection}
+        readOnly={readOnly}
         spellCheck
       />
     ),
-    [renderBlock, renderChild, renderDecorator, selection]
+    [readOnly, renderBlock, renderChild, renderDecorator, selection]
   )
 
   // Make sure that the test editor is focused and out of "readOnly mode".
@@ -165,6 +168,10 @@ export const Editor = ({
       PortableTextEditor.focus(editor.current)
     }
   }, [editor])
+
+  const handleToggleReadOnly = useCallback(() => {
+    setReadOnly(!readOnly)
+  }, [readOnly])
 
   if (!editorId) {
     return null
@@ -178,7 +185,7 @@ export const Editor = ({
       incomingPatches$={incomingPatches$}
       value={value}
       keyGenerator={keyGenFn}
-      readOnly={false}
+      readOnly={readOnly}
     >
       <Box padding={4} style={{outline: '1px solid #999'}}>
         {editable}
@@ -207,6 +214,11 @@ export const Editor = ({
           </Code>
         </Box>
       )}
+      <Box paddingTop={2}>
+        <button type="button" onClick={handleToggleReadOnly}>
+          Toggle readonly ({JSON.stringify(readOnly)})
+        </button>
+      </Box>
     </PortableTextEditor>
   )
 }
