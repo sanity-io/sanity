@@ -74,7 +74,8 @@ export function createDocumentStore({
 
   const caches = {
     pair: {
-      editOperations: new Map(),
+      editOperations: new Map<string, Observable<OperationsAPI>>(),
+      editState: new Map<string, Observable<EditStateFor>>(),
     },
   }
 
@@ -104,15 +105,26 @@ export function createDocumentStore({
       editOperations(publishedId, type) {
         const cache = caches.pair.editOperations
         const key = `${publishedId}:${type}`
-
-        if (!cache.has(key)) {
-          cache.set(key, editOperations(ctx, getIdPairFromPublished(publishedId), type))
+        const cached = cache.get(key)
+        if (cached) {
+          return cached
         }
 
-        return cache.get(key)
+        const ops = editOperations(ctx, getIdPairFromPublished(publishedId), type)
+        cache.set(key, ops)
+        return ops
       },
       editState(publishedId, type) {
-        return editState(ctx, getIdPairFromPublished(publishedId), type)
+        const cache = caches.pair.editState
+        const key = `${publishedId}:${type}`
+        const cached = cache.get(key)
+        if (cached) {
+          return cached
+        }
+
+        const state = editState(ctx, getIdPairFromPublished(publishedId), type)
+        cache.set(key, state)
+        return state
       },
       operationEvents(publishedId, type) {
         return operationEvents(getIdPairFromPublished(publishedId), type)
