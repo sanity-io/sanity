@@ -58,7 +58,6 @@ export function RecentSearches({
         dispatch({type: 'FILTERS_SHOW'})
       }
       dispatch({type: 'TERMS_SET', terms: searchTerms})
-      dispatch({searchableTypes: searchTerms.types, type: 'SEARCHABLE_TYPES_SET'})
       // Add to Local Storage
       const updatedRecentSearches = recentSearchesStore?.addSearchTerm(searchTerms)
       dispatch({recentSearches: updatedRecentSearches, type: 'RECENT_SEARCHES_SET'})

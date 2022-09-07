@@ -1,26 +1,15 @@
 import type {SearchTerms, SearchableType} from '@sanity/base'
-import type {Schema} from '@sanity/types'
+import type {Schema, SchemaType} from '@sanity/types'
 import {getSearchableTypes} from '@sanity/base/_internal'
-import {partition} from 'lodash'
 
 /**
- * Returns a list of all available document types, partitioned by selected / non-selected types
+ * Returns a list of all available document types filtered by a search string.
+ * Types containing the search string in its `title` or `name` will be returned.
  */
-export function getSortedSearchableTypes(
-  schema: Schema,
-  selectedTypes: SearchableType[] = []
-): SearchableType[] {
-  const searchableTypes = getSearchableTypes(schema)
-
-  // Partition into selected / non-selected types
-  const [selected, nonSelected] = partition(searchableTypes, (type) => {
-    return selectedTypes.find((selectedType) => selectedType.name === type.name)
-  })
-
-  return [
-    ...selected.sort(sortTypes), //
-    ...nonSelected.sort(sortTypes),
-  ]
+export function getSelectableTypes(schema: Schema, typeFilter: string): SearchableType[] {
+  return getSearchableTypes(schema)
+    .filter((type) => inTypeFilter(type, typeFilter))
+    .sort(sortTypes)
 }
 
 export function hasSearchableTerms(terms: SearchTerms): boolean {
@@ -31,6 +20,6 @@ export function sortTypes(a: SearchableType, b: SearchableType): number {
   return (a.title ?? a.name).localeCompare(b.title ?? b.name)
 }
 
-export function inTypeFilter(type: SearchableType, typeFilter: string): boolean {
+function inTypeFilter(type: SchemaType, typeFilter: string): boolean {
   return !typeFilter || (type.title ?? type.name).toLowerCase().includes(typeFilter?.toLowerCase())
 }

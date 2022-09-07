@@ -3,12 +3,13 @@
 
 import {SearchIcon} from '@sanity/icons'
 import {Box, Button, Flex, Stack, Text} from '@sanity/ui'
-import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import schema from 'part:@sanity/base/schema'
+import React, {useCallback, useMemo, useState} from 'react'
 import styled from 'styled-components'
 import {SUBHEADER_HEIGHT_LARGE, SUBHEADER_HEIGHT_SMALL} from '../constants'
 import {CommandListProvider} from '../contexts/commandList'
 import {useSearchState} from '../contexts/search'
-import {inTypeFilter} from '../contexts/search/selectors'
+import {getSelectableTypes} from '../contexts/search/selectors'
 import {supportsTouch} from '../utils/supportsTouch'
 import {CustomTextInput} from './CustomTextInput'
 import {PointerOverlay} from './PointerOverlay'
@@ -53,59 +54,29 @@ export function TypeFilters({small}: TypeFiltersProps) {
   const [pointerOverlayElement, setPointerOverlayRef] = useState<HTMLDivElement | null>(null)
   const [typeFilter, setTypeFilter] = useState('')
 
-  const isMounted = useRef(false)
-
   const {
     dispatch,
     state: {
-      searchableTypes,
       terms: {types: selectedTypes},
     },
   } = useSearchState()
 
-  const selectableDocumentTypes = useMemo(
-    () => searchableTypes.filter((type) => inTypeFilter(type, typeFilter)),
-    [searchableTypes, typeFilter]
-  )
+  const selectableDocumentTypes = useMemo(() => getSelectableTypes(schema, typeFilter), [
+    typeFilter,
+  ])
 
-  /**
-   * On clear: re-focus header, scroll filters to top, clear terms and reset (and re-sort) searchable types
-   */
   const handleClearTypes = useCallback(() => {
     if (!supportsTouch) {
       headerInputElement?.focus()
     }
     filtersContentElement?.scrollTo(0, 0)
-    dispatch({type: 'SEARCHABLE_TYPES_RESET'})
     dispatch({type: 'TERMS_TYPES_CLEAR'})
   }, [dispatch, filtersContentElement, headerInputElement])
-
   const handleFilterChange = useCallback(
     (e: React.KeyboardEvent<HTMLInputElement>) => setTypeFilter(e.currentTarget.value),
     [setTypeFilter]
   )
   const handleFilterClear = useCallback(() => setTypeFilter(''), [])
-
-  useEffect(() => {
-    isMounted.current = true
-    return () => {
-      isMounted.current = false
-    }
-  }, [])
-
-  /**
-   * Update searchable types when type filters is unmounted
-   */
-  useEffect(() => {
-    return () => {
-      if (!isMounted.current) {
-        dispatch({
-          searchableTypes: selectedTypes,
-          type: 'SEARCHABLE_TYPES_SET',
-        })
-      }
-    }
-  }, [dispatch, selectedTypes])
 
   const padding = small ? 1 : 2
 
