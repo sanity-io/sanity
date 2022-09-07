@@ -23,6 +23,7 @@ type PresenceMenuProps = {
   collapse?: boolean
   maxAvatars?: number
   projectId: string
+  label?: string
 }
 const AvatarStackCard = styled(Card)`
   background: transparent;
@@ -45,7 +46,7 @@ const PRESENCE_MENU_POPOVER_PROPS: MenuButtonProps['popover'] = {
 }
 
 export function PresenceMenu(props: PresenceMenuProps) {
-  const {collapse, maxAvatars, projectId, label = "Who is here"} = props
+  const {collapse, maxAvatars, projectId, label = 'Who is here'} = props
   const presence = useGlobalPresence()
   const hasPresence = presence.length > 0
 
