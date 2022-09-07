@@ -48,6 +48,7 @@ const ReviewButton = React.forwardRef(function ReviewButton(
     <Tooltip
       portal
       disabled={status !== 'changes'}
+      id="review-changes-button"
       content={
         <Stack padding={3} space={3}>
           <Text size={1} weight="semibold">
@@ -62,6 +63,7 @@ const ReviewButton = React.forwardRef(function ReviewButton(
         justify="flex-start"
         tone={buttonProps?.tone}
         {...rest}
+        aria-describedby="review-changes-button"
         data-testid="review-changes-button"
         ref={ref}
       >
