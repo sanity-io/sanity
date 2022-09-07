@@ -34,7 +34,7 @@
   },
   "devDependencies": {
     "@sanity/base": "2.33.0",
-    "react": "17.0.1",
+    "react": "^18",
     "rimraf": "^2.7.1",
     "rxjs": "^6.5.3"
   },

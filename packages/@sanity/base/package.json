@@ -109,8 +109,8 @@
     "@types/raf": "^3.4.0",
     "@types/refractor": "^3.0.0",
     "prop-types": "^15.6.0",
-    "react": "17.0.1",
-    "react-dom": "17.0.1",
+    "react": "^18",
+    "react-dom": "^18",
     "rimraf": "^2.7.1",
     "styled-components": "^5.2.0"
   },

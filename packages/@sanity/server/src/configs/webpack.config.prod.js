@@ -14,6 +14,12 @@ export default (config) => {
         }),
       ].filter(Boolean)
     ),
+    resolve: Object.assign({}, baseConfig.resolve, {
+      alias: Object.assign({}, baseConfig.resolve.alias, {
+        'react-dom': 'react-dom/profiling',
+        'scheduler/tracing': 'scheduler/tracing-profiling',
+      }),
+    }),
   })
 
   return applyLocalWebpackConfig(prodConfig, basePath, 'production')

@@ -53,7 +53,7 @@
   },
   "devDependencies": {
     "@sanity/ui-workshop": "^0.4.16",
-    "react": "17.0.1",
+    "react": "^18",
     "rimraf": "^2.7.1"
   },
   "peerDependencies": {

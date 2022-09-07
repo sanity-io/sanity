@@ -45,7 +45,7 @@
     "@babel/register": "^7.7.4",
     "@sanity/css-loader": "^0.28.12",
     "@sanity/eventsource": "^3.0.1",
-    "@sanity/hot-loader-react-dom": "^16.14.0",
+    "@hot-loader/react-dom": "^17.0.2",
     "@sanity/resolver": "2.31.1",
     "@sanity/util": "2.31.1",
     "@sanity/webpack-dev-middleware": "^2.0.6",
@@ -72,8 +72,8 @@
   },
   "devDependencies": {
     "find-config": "^1.0.0",
-    "react": "17.0.1",
-    "react-dom": "17.0.1",
+    "react": "^18",
+    "react-dom": "^18",
     "rimraf": "^2.7.1"
   },
   "peerDependencies": {

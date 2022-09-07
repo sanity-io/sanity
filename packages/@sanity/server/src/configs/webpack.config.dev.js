@@ -18,7 +18,7 @@ export default (config) => {
     }),
     resolve: {
       alias: Object.assign({}, baseConfig.resolve.alias, {
-        'react-dom': getModulePath('@sanity/hot-loader-react-dom'),
+        'react-dom$': 'react-dom/profiling',
         'webpack-hot-middleware/client': require.resolve('../browser/hot-client'),
       }),
       extensions: baseConfig.resolve.extensions,

@@ -39,8 +39,8 @@
     "history": "^4.6.3",
     "object-inspect": "^1.6.0",
     "prop-types": "^15.6.0",
-    "react": "17.0.1",
-    "react-dom": "17.0.1",
+    "react": "^18",
+    "react-dom": "^18",
     "rimraf": "^2.7.1",
     "ts-node": "^9.1.1",
     "vite": "^2.4.4"
