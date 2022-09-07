@@ -82,7 +82,7 @@ export async function renderInput(props: {
   const onBlur = jest.fn()
   const onChange = jest.fn()
   const onFocus = jest.fn()
-  const onDOMChange = jest.fn()
+  const onDOMChange = jest.fn((...args) => onChange(...args))
 
   const onPathBlur = jest.fn()
   const onPathFocus = jest.fn()

@@ -11,6 +11,7 @@ import {
 } from '../../types'
 import {insert, PatchArg, PatchEvent, set, unset} from '../../patch'
 import {useFormCallbacks} from '../../studio/contexts/FormCallbacks'
+import {isBooleanSchemaType, isNumberSchemaType} from '@sanity/types'
 
 /**
  * @alpha
@@ -66,11 +67,20 @@ export function ArrayOfPrimitivesItem(props: PrimitiveMemberItemProps) {
 
   const handleNativeChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
-      const inputValue = event.currentTarget.value
+      let inputValue: number | string | boolean = event.currentTarget.value
+      if (isNumberSchemaType(member.item.schemaType)) {
+        inputValue = event.currentTarget.valueAsNumber
+      } else if (isBooleanSchemaType(member.item.schemaType)) {
+        inputValue = event.currentTarget.checked
+      }
 
-      onChange(PatchEvent.from(inputValue ? set(inputValue) : unset()).prefixAll(member.index))
+      // `valueAsNumber` returns `NaN` on empty input
+      const hasEmptyValue =
+        inputValue === '' || (typeof inputValue === 'number' && isNaN(inputValue))
+
+      onChange(PatchEvent.from(hasEmptyValue ? unset() : set(inputValue)).prefixAll(member.index))
     },
-    [member.index, onChange]
+    [member.index, member.item.schemaType, onChange]
   )
 
   const elementProps = useMemo(
