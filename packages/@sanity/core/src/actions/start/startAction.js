@@ -31,6 +31,7 @@ export default async (args, context) => {
     httpPort,
     context,
     project: sanityConfig.get('project'),
+    lang: sanityConfig.get('lang'),
   }
 
   await checkStudioDependencyVersions(workDir)
