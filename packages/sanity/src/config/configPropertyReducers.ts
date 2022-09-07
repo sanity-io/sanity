@@ -10,6 +10,8 @@ import {
 } from '../desk/actions'
 import {DocumentBadgeComponent, LiveEditBadge} from '../desk/badges'
 import type {
+  _DocumentLanguageFilterComponent,
+  _DocumentLanguageFilterContext,
   AsyncConfigPropertyReducer,
   ConfigContext,
   ConfigPropertyReducer,
@@ -18,8 +20,6 @@ import type {
   NewDocumentOptionsContext,
   ResolveProductionUrlContext,
   Tool,
-  _DocumentLanguageFilterComponent,
-  _DocumentLanguageFilterContext,
 } from './types'
 
 export const initialDocumentBadges = [LiveEditBadge]

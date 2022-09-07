@@ -45,7 +45,7 @@ export async function renderImageInput(options: {
   }
 
   const result = await renderObjectInput({
-    fieldDefinition: fieldDefinition as Schema.TypeDefinition<'object'>,
+    fieldDefinition: fieldDefinition as Schema.FieldDefinition<'object'>,
     props,
     render: (inputProps, context) => initialRender(transformProps(inputProps, context), context),
   })

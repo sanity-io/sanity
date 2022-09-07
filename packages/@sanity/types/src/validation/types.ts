@@ -43,6 +43,13 @@ export interface FieldReference {
   path: string | string[]
 }
 
+export interface UriValidationOptions {
+  scheme?: (string | RegExp) | Array<string | RegExp>
+  allowRelative?: boolean
+  relativeOnly?: boolean
+  allowCredentials?: boolean
+}
+
 export interface Rule {
   // Note: these prop is not actually deprecated but there is better TS Doc
   // support for `@deprecated` than `@internal`
@@ -136,12 +143,7 @@ export interface Rule {
   regex(pattern: RegExp, name: string): Rule
   regex(pattern: RegExp): Rule
   email(): Rule
-  uri(options?: {
-    scheme?: (string | RegExp) | Array<string | RegExp>
-    allowRelative?: boolean
-    relativeOnly?: boolean
-    allowCredentials?: boolean
-  }): Rule
+  uri(options?: UriValidationOptions): Rule
   unique(): Rule
   reference(): Rule
   /**
