@@ -1,23 +1,23 @@
 import type {ClientConfig as SanityClientConfig, SanityClient} from '@sanity/client'
 import type {
-  Schema,
-  SchemaType,
   AssetSource,
   CurrentUser,
-  SanityDocumentLike,
-  SchemaTypeDefinition,
   ObjectSchemaType,
+  SanityDocumentLike,
+  Schema,
+  SchemaType,
+  SchemaTypeDefinition,
 } from '@sanity/types'
 import type React from 'react'
+import {ComponentType, ReactNode} from 'react'
 import type {Observable} from 'rxjs'
 import type {BifurClient} from '@sanity/bifur-client'
-import {ComponentType, ReactNode} from 'react'
 import type {
+  FieldProps,
   FormBuilderArrayFunctionComponent,
   FormBuilderCustomMarkersComponent,
   FormBuilderMarkersComponent,
   InputProps,
-  FieldProps,
   ItemProps,
   RenderFieldCallback,
   RenderInputCallback,

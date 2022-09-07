@@ -9,7 +9,7 @@ export type TestRenderStringInputCallback = (
 ) => React.ReactElement
 
 export async function renderStringInput(options: {
-  fieldDefinition: Schema.TypeDefinition<'date' | 'datetime' | 'string' | 'url'>
+  fieldDefinition: Schema.FieldDefinition<'date' | 'datetime' | 'string' | 'url'>
   props?: TestRenderProps
   render: TestRenderStringInputCallback
 }) {

@@ -43,7 +43,7 @@ export async function renderCrossDatasetReferenceInput(options: {
   }
 
   const result = await renderObjectInput({
-    fieldDefinition: fieldDefinition as Schema.TypeDefinition<'object'>,
+    fieldDefinition: fieldDefinition as Schema.FieldDefinition<'object'>,
     props,
     render: (baseProps, context) => initialRender(transformProps(baseProps, context), context),
   })

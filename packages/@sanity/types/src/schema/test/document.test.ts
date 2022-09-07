@@ -1,0 +1,243 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/**
+ * Some of these tests have no expect statement;
+ * use of ts-expect-error serves the same purpose - TypeScript is the testrunner here
+ */
+import {defineField, defineType, Schema} from '../types'
+
+describe('document types', () => {
+  describe('defineType', () => {
+    it('should define document schema', () => {
+      const documentDef = defineType({
+        type: 'document',
+        name: 'custom-document',
+        title: 'Custom',
+        icon: () => null,
+        description: 'Description',
+        initialValue: () => Promise.resolve({title: 'some title'}),
+        validation: (Rule) => [
+          Rule.required()
+            .required()
+            .custom((value) => (value?._createdAt ? true : 'Error'))
+            .warning(),
+          // @ts-expect-error greaterThan does not exist on documentRule
+          Rule.greaterThan(5).error(),
+        ],
+        hidden: () => false,
+        liveEdit: true,
+        orderings: [{name: 'what', title: 'Order', by: [{field: 'title', direction: 'asc'}]}],
+        fieldsets: [
+          {
+            name: 'fieldset',
+            title: 'Fieldset',
+            description: 'Fieldset description',
+            hidden: false,
+            readOnly: false,
+            options: {
+              collapsed: true,
+              collapsible: true,
+              columns: 2,
+              //TODO is this actually supported on fieldset?
+              modal: {type: 'dialog', width: 1},
+            },
+          },
+        ],
+        groups: [{name: 'group', title: 'Group title', icon: () => null, default: true}],
+        preview: {
+          select: {
+            title: 'title',
+            subtitle: 'title',
+          },
+          prepare: ({title, subtitle}) => {
+            return {
+              title,
+              subtitle,
+              description: subtitle,
+              imageUrl: subtitle,
+              media: () => null,
+            }
+          },
+        },
+        fields: [],
+      })
+
+      const assignableToDocument: Schema.DocumentDefinition = documentDef
+
+      // @ts-expect-error document is not assignable to string
+      const notAssignableToString: Schema.StringDefinition = documentDef
+    })
+
+    it('should have typesafe preview.prepare keys', () => {
+      defineType({
+        type: 'document',
+        name: 'custom-document',
+        preview: {
+          select: {
+            fromSelect: 'a',
+            thisOneToo: 'b',
+          },
+          //@ts-expect-error title and subtitle are not in fromSelect | thisOneToo
+          prepare: ({title, subtitle}) => {
+            return {title, subtitle}
+          },
+        },
+        fields: [],
+      })
+
+      defineType({
+        type: 'document',
+        name: 'custom-document',
+        preview: {
+          select: {
+            title: 'a',
+            subtitle: 'b',
+          },
+          prepare: ({title, subtitle}) => {
+            return {title, subtitle}
+          },
+        },
+        fields: [],
+      })
+
+      defineType({
+        type: 'document',
+        name: 'custom-document',
+        preview: {
+          select: {
+            title: 'a',
+            subtitle: 'b',
+          },
+          // allows type narrowing values from any by providing an interface
+          prepare: ({title}: {title: string}) => {
+            return {title}
+          },
+        },
+        fields: [],
+      })
+
+      defineType({
+        type: 'document',
+        name: 'custom-document',
+        preview: {
+          select: {
+            title: 'a',
+          },
+          //@ts-expect-error notInSelect is missing in type Record<'title', any>
+          prepare: ({notInSelect}: {notInSelect: string}) => {
+            return {title: notInSelect}
+          },
+        },
+        fields: [],
+      })
+    })
+
+    it('should define document fields safely (with some compromises without defineField)', () => {
+      const documentDef = defineType({
+        type: 'document',
+        name: 'custom-document',
+        fields: [
+          //@ts-expect-error not assignable to FieldDefinition
+          {},
+          {
+            type: 'string',
+            name: 'stringField',
+            title: 'String',
+            readOnly: true,
+            hidden: false,
+            fieldset: 'test',
+            group: 'test',
+            validation: (Rule) => Rule.max(45),
+            initialValue: 'string',
+            options: {
+              layout: 'whatever',
+            },
+          },
+          {
+            type: 'array',
+            name: 'arrayField',
+            of: [{type: 'string'}],
+          },
+          {
+            type: 'array',
+            name: 'arrayField',
+            of: [{type: 'object', fields: [{type: 'string', name: 'field'}]}],
+          },
+          {
+            type: 'reference',
+            name: 'arrayField',
+            to: {type: 'string'},
+          },
+          {
+            type: 'reference',
+            name: 'arrayField',
+            to: [{type: 'person'}],
+          },
+          {
+            type: 'custom-type',
+            name: 'customField',
+            readOnly: true,
+            hidden: false,
+            options: {
+              layout: 'whatever',
+              slugify: () => 'all bets a re of',
+            },
+          },
+          {
+            type: 'object',
+            name: 'customInlineObject',
+            initialValue: {nestedField: 'value'},
+            fields: [
+              //@ts-expect-error not assignable to FieldDefinition
+              {},
+              {
+                type: 'string',
+                name: 'nestedField',
+                options: {
+                  layout: 'whatever',
+                  slugify: () => 'all bets are off',
+                },
+              },
+              defineField({
+                type: 'string',
+                name: 'nestedField',
+                options: {
+                  //@ts-expect-error wrapping with defineField will give narrowed types always
+                  unknownProp: 'strict not allowed',
+                },
+              }),
+              defineField(
+                {
+                  type: 'string',
+                  name: 'nestedField',
+                  options: {
+                    unknownProp: 'strict: false so it is allowed',
+                  },
+                },
+                {strict: false}
+              ),
+            ],
+          },
+          defineField({
+            type: 'string',
+            name: 'stringField',
+            title: 'String',
+            readOnly: true,
+            hidden: false,
+            // boy would typesafe fieldset be cool
+            fieldset: 'test',
+            group: 'test',
+            options: {
+              layout: 'radio',
+            },
+          }),
+        ],
+      })
+
+      let assignableToDocument: Schema.DocumentDefinition = documentDef
+      assignableToDocument = defineType(documentDef)
+      const fieldsType = documentDef.fields
+    })
+  })
+})
+
+export {}

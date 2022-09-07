@@ -20,7 +20,7 @@ export type TestRenderArrayOfObjectInputCallback = (
 ) => React.ReactElement
 
 export async function renderArrayOfObjectsInput(options: {
-  fieldDefinition: Schema.TypeDefinition<'array'>
+  fieldDefinition: Schema.FieldDefinition<'array'>
   props?: TestRenderProps
   render: TestRenderArrayOfObjectInputCallback
 }) {

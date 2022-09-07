@@ -13,7 +13,27 @@ export interface PreviewValue {
   imageUrl?: string
 }
 
-export interface PreviewConfig {
-  select?: Record<string, any>
-  prepare?: (value: Record<string, unknown>, viewOptions?: PrepareViewOptions) => PreviewValue
+export interface PreviewConfig<
+  Select extends Record<string, string> = Record<string, string>,
+  PrepareValue extends Record<keyof Select, any> = Record<keyof Select, any>
+> {
+  select?: Select
+  prepare?: (value: PrepareValue, viewOptions?: PrepareViewOptions) => PreviewValue
 }
+
+function test<
+  Select extends Record<string, string>,
+  PrepareValue extends Record<keyof Select, any>
+>(preview: PreviewConfig<Select, PrepareValue>) {
+  return preview
+}
+
+const t = test({
+  select: {
+    title: 'title',
+    subtitle: 'subtitle',
+  },
+  prepare({title}: {title: string}) {
+    return {}
+  },
+})

@@ -1,31 +1,31 @@
 import userEvent from '@testing-library/user-event'
-import {defineType} from '@sanity/types'
-import React, {ComponentType} from 'react'
+import {defineField} from '@sanity/types'
+import React from 'react'
 import {renderBooleanInput} from '../../../test/form/renderBooleanInput'
 import {BooleanInput} from './BooleanInput'
 
 const defs = {
-  booleanTest: defineType({
+  booleanTest: defineField({
     name: 'booleanTest',
     title: 'Switch',
     type: 'boolean',
   }),
 
-  booleanReadOnly: defineType({
+  booleanReadOnly: defineField({
     name: 'booleanReadOnly',
     title: 'Read-only',
     type: 'boolean',
     readOnly: true,
   }),
 
-  readOnlyCallback: defineType({
+  readOnlyCallback: defineField({
     name: 'readOnlyCallback',
     title: 'Boolean with callback',
     type: 'boolean',
     readOnly: () => false,
   }),
 
-  readOnlyWithDocument: defineType({
+  readOnlyWithDocument: defineField({
     name: 'readOnlyWithDocument',
     title: 'Boolean read-only with document',
     type: 'boolean',
