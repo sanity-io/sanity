@@ -58,7 +58,10 @@ function submitCommitRequest(request: CommitRequest) {
     tap({
       error: (error) => {
         const isBadRequest =
-          error.name === 'ClientError' && error.statusCode >= 400 && error.statusCode <= 500
+          'statusCode' in error &&
+          typeof error.statusCode === 'number' &&
+          error.statusCode >= 400 &&
+          error.statusCode <= 500
         if (isBadRequest) {
           request.cancel(error)
         } else {
