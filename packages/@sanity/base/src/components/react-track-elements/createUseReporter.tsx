@@ -51,6 +51,7 @@ export function createUseReporter<Value>(
         !isEqual(previous.current, current) &&
         id !== null
       ) {
+        console.log('update ', current)
         update(id, current)
       }
       previous.current = current
