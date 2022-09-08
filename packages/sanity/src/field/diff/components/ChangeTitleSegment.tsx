@@ -1,4 +1,4 @@
-import * as React from 'react'
+import React from 'react'
 import {Box, rem, Text} from '@sanity/ui'
 import styled from 'styled-components'
 import {FromToIndex, Annotation, FieldChangeNode} from '../../types'

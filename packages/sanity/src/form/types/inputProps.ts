@@ -7,8 +7,7 @@ import {
   SchemaType,
   StringSchemaType,
 } from '@sanity/types'
-import * as React from 'react'
-import {ChangeEventHandler, FocusEventHandler, FormEventHandler} from 'react'
+import React, {ChangeEventHandler, FocusEventHandler, FormEventHandler} from 'react'
 import {FormPatch, PatchEvent} from '../patch'
 import {
   ArrayOfObjectsFormNode,
