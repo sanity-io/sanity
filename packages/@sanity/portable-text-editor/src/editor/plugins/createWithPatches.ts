@@ -30,7 +30,7 @@ import {withoutSaving} from './createWithUndoRedo'
 
 const debug = debugWithName('plugin:withPatches')
 
-export type PatchFunctions = {
+export interface PatchFunctions {
   insertNodePatch: (
     editor: PortableTextSlateEditor,
     operation: InsertNodeOperation,
@@ -73,25 +73,27 @@ export type PatchFunctions = {
   ) => Patch[]
 }
 
-export function createWithPatches(
-  {
-    insertNodePatch,
-    insertTextPatch,
-    mergeNodePatch,
-    moveNodePatch,
-    removeNodePatch,
-    removeTextPatch,
-    setNodePatch,
-    splitNodePatch,
-  }: PatchFunctions,
-  change$: Subject<EditorChange>,
-  portableTextFeatures: PortableTextFeatures,
-  syncValue: () => void,
+interface Options {
+  patchFunctions: PatchFunctions
+  change$: Subject<EditorChange>
+  portableTextFeatures: PortableTextFeatures
+  syncValue: () => void
   incomingPatches$?: Observable<{
     patches: Patch[]
     snapshot: PortableTextBlock[] | undefined
   }>
-): [editor: (editor: PortableTextSlateEditor) => PortableTextSlateEditor, cleanupFn: () => void] {
+}
+
+export function createWithPatches({
+  patchFunctions,
+  change$,
+  portableTextFeatures,
+  syncValue,
+  incomingPatches$,
+}: Options): [
+  editor: (editor: PortableTextSlateEditor) => PortableTextSlateEditor,
+  cleanupFn: () => void
+] {
   // The previous editor children are needed to figure out the _key of deleted nodes
   // The editor.children would no longer contain that information if the node is already deleted.
   let previousChildren: Descendant[]
@@ -147,12 +149,10 @@ export function createWithPatches(
           }
         })
       }
-
       const {apply} = editor
-
       editor.apply = (operation: Operation): void | Editor => {
         if (editor.readOnly) {
-          editor.apply(operation)
+          apply(operation)
           return editor
         }
         let patches: Patch[] = []
@@ -184,28 +184,52 @@ export function createWithPatches(
         }
         switch (operation.type) {
           case 'insert_text':
-            patches = [...patches, ...insertTextPatch(editor, operation, previousChildren)]
+            patches = [
+              ...patches,
+              ...patchFunctions.insertTextPatch(editor, operation, previousChildren),
+            ]
             break
           case 'remove_text':
-            patches = [...patches, ...removeTextPatch(editor, operation, previousChildren)]
+            patches = [
+              ...patches,
+              ...patchFunctions.removeTextPatch(editor, operation, previousChildren),
+            ]
             break
           case 'remove_node':
-            patches = [...patches, ...removeNodePatch(editor, operation, previousChildren)]
+            patches = [
+              ...patches,
+              ...patchFunctions.removeNodePatch(editor, operation, previousChildren),
+            ]
             break
           case 'split_node':
-            patches = [...patches, ...splitNodePatch(editor, operation, previousChildren)]
+            patches = [
+              ...patches,
+              ...patchFunctions.splitNodePatch(editor, operation, previousChildren),
+            ]
             break
           case 'insert_node':
-            patches = [...patches, ...insertNodePatch(editor, operation, previousChildren)]
+            patches = [
+              ...patches,
+              ...patchFunctions.insertNodePatch(editor, operation, previousChildren),
+            ]
             break
           case 'set_node':
-            patches = [...patches, ...setNodePatch(editor, operation, previousChildren)]
+            patches = [
+              ...patches,
+              ...patchFunctions.setNodePatch(editor, operation, previousChildren),
+            ]
             break
           case 'merge_node':
-            patches = [...patches, ...mergeNodePatch(editor, operation, previousChildren)]
+            patches = [
+              ...patches,
+              ...patchFunctions.mergeNodePatch(editor, operation, previousChildren),
+            ]
             break
           case 'move_node':
-            patches = [...patches, ...moveNodePatch(editor, operation, previousChildren)]
+            patches = [
+              ...patches,
+              ...patchFunctions.moveNodePatch(editor, operation, previousChildren),
+            ]
             break
           case 'set_selection':
           default:

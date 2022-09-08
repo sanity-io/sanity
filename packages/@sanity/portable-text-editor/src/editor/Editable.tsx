@@ -1,6 +1,6 @@
 import {BaseRange, Transforms} from 'slate'
 import React, {useCallback, useMemo, useEffect, forwardRef} from 'react'
-import {Editable as SlateEditable, ReactEditor, withReact} from '@sanity/slate-react'
+import {Editable as SlateEditable, ReactEditor} from '@sanity/slate-react'
 import {
   EditorSelection,
   OnBeforeInputFn,
@@ -119,14 +119,16 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
     [keyGenerator, portableTextEditor, portableTextFeatures]
   )
 
-  // Update the Slate instance's plugins which are dependent on props for Editable
+  // Output a minimal React editor inside Editable when in readOnly mode.
+  // NOTE: make sure all the plugins used here can be safely run over again at any point.
+  // There will be a problem if they redefine editor methods and then calling the original method within themselves.
   useMemo(() => {
     if (readOnly) {
       debug('Editable is in read only mode')
-      return withReact(slateEditor)
+      return withInsertData(slateEditor)
     }
     debug('Editable is in edit mode')
-    return withEditableAPI(withInsertData(withHotKeys(withReact(slateEditor))))
+    return withEditableAPI(withInsertData(withHotKeys(slateEditor)))
   }, [readOnly, slateEditor, withEditableAPI, withHotKeys, withInsertData])
 
   const renderElement = useCallback(
