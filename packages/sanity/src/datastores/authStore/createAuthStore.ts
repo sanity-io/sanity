@@ -83,7 +83,10 @@ const saveToken = ({token, projectId}: {token: string; projectId: string}): void
   }
 }
 
-const getCurrentUser = async (client: SanityClient) => {
+const getCurrentUser = async (
+  client: SanityClient,
+  broadcastToken: (token: string | null) => void
+) => {
   try {
     const user = await client.request({
       uri: '/users/me',
@@ -99,6 +102,7 @@ const getCurrentUser = async (client: SanityClient) => {
     // logged out
     if (err.statusCode === 401) {
       clearToken(client.config().projectId || '')
+      broadcastToken(null)
       return null
     }
 
@@ -166,7 +170,7 @@ export function _createAuthStore({
     ),
     switchMap((client) =>
       defer(async (): Promise<AuthState> => {
-        const currentUser = await getCurrentUser(client)
+        const currentUser = await getCurrentUser(client, broadcast)
 
         return {
           currentUser,
@@ -190,7 +194,7 @@ export function _createAuthStore({
       })
 
       // try to get the current user by using the cookie credentials
-      const currentUser = await getCurrentUser(requestClient)
+      const currentUser = await getCurrentUser(requestClient, broadcast)
 
       if (currentUser) {
         // if that worked, then we don't need to fetch a token
