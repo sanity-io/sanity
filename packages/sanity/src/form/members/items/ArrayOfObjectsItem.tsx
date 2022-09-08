@@ -1,5 +1,4 @@
-import * as React from 'react'
-import {useCallback, useMemo, useRef} from 'react'
+import React, {useCallback, useMemo, useRef} from 'react'
 import {Path} from '@sanity/types'
 import {useDidUpdate} from '../../hooks/useDidUpdate'
 import {
