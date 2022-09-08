@@ -39,7 +39,7 @@
     "@sanity/imagetool": "2.29.8",
     "@sanity/initial-value-templates": "2.31.1",
     "@sanity/mutator": "2.29.3",
-    "@sanity/portable-text-editor": "3.0.0-v3-pte.58+ad2329e266",
+    "@sanity/portable-text-editor": "3.0.0-v3-pte.69+9d55aa6d2e",
     "@sanity/schema": "2.31.0",
     "@sanity/types": "2.31.1",
     "@sanity/ui": "^0.37.21",
