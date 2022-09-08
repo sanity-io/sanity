@@ -130,7 +130,10 @@ export const createObservableBufferedDocument = (
       const {resultRev, ...mutation} = opts.mutation.params
       commitMutations(mutation).then(opts.success, (error) => {
         const isBadRequest =
-          error.name === 'ClientError' && error.statusCode >= 400 && error.statusCode <= 500
+          'statusCode' in error &&
+          typeof error.statusCode === 'number' &&
+          error.statusCode >= 400 &&
+          error.statusCode <= 500
         if (isBadRequest) {
           opts.cancel(error)
         } else {
