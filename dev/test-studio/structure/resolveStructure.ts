@@ -92,59 +92,55 @@ export const structure: StructureResolver = (S, {schema}) => {
                 .id('component1')
                 .title('Component pane (1)')
                 .child(
-                  Object.assign(
-                    S.component(DebugPane)
-                      .id('component1')
-                      .title('Component pane #1')
-                      .options({no: 1})
-                      .menuItems([
-                        S.menuItem()
-                          .title('From Menu Item Create Intent')
-                          .intent({
-                            type: 'create',
-                            params: {type: 'author', id: `special.${uuid()}`},
-                          }),
-                        S.menuItem()
-                          .title('Also Menu Item Create Intent')
-                          .intent({
-                            type: 'create',
-                            params: {type: 'author', id: uuid()},
-                          }),
-                        S.menuItem()
-                          .title('Test 1')
-                          // eslint-disable-next-line no-alert
-                          .action(() => alert('you clicked!'))
-                          .showAsAction(true),
-                        S.menuItem()
-                          .title('Test Edit Intent (as action)')
-                          .intent({
-                            type: 'edit',
-                            params: {id: 'grrm', type: 'author'},
-                          })
-                          .icon(RocketIcon)
-                          .showAsAction(),
-                        S.menuItem().title('Should warn in console').action('shouldWarn'),
-                        S.menuItem()
-                          .title('Test Edit Intent (in menu)')
-                          .intent({
-                            type: 'edit',
-                            params: {id: 'foo-bar', type: 'author'},
-                          }),
-                      ])
-                      .child(
-                        S.component(DebugPane)
-                          .id('component1-1')
-                          .title('Component pane #1.1')
-                          .options({no: 1})
-                          .menuItems([
-                            S.menuItem().title('Test 1').action('test-1').showAsAction(true),
-                            S.menuItem().title('Test 2').action('test-2'), //.showAsAction(true),
-                          ])
-                          .child(S.document().documentId('component1-1-child').schemaType('author'))
-                      )
-                      .serialize(),
-                    {__preserveInstance: true}
-                  )
+                  S.component(DebugPane)
+                    .id('component1')
+                    .title('Component pane #1')
+                    .options({no: 1})
+                    .menuItems([
+                      S.menuItem()
+                        .title('From Menu Item Create Intent')
+                        .intent({
+                          type: 'create',
+                          params: {type: 'author', id: `special.${uuid()}`},
+                        }),
+                      S.menuItem()
+                        .title('Also Menu Item Create Intent')
+                        .intent({
+                          type: 'create',
+                          params: {type: 'author', id: uuid()},
+                        }),
+                      S.menuItem()
+                        .title('Test 1')
+                        // eslint-disable-next-line no-alert
+                        .action(() => alert('you clicked!'))
+                        .showAsAction(true),
+                      S.menuItem()
+                        .title('Test Edit Intent (as action)')
+                        .intent({
+                          type: 'edit',
+                          params: {id: 'grrm', type: 'author'},
+                        })
+                        .icon(RocketIcon)
+                        .showAsAction(),
+                      S.menuItem().title('Should warn in console').action('shouldWarn'),
+                      S.menuItem()
+                        .title('Test Edit Intent (in menu)')
+                        .intent({
+                          type: 'edit',
+                          params: {id: 'foo-bar', type: 'author'},
+                        }),
+                    ])
+                    .child(
+                      S.component(DebugPane)
+                        .id('component1-1')
+                        .title('Component pane #1.1')
+                        .options({no: 1})
+                        .menuItems([
+                          S.menuItem().title('Test 1').action('test-1').showAsAction(true),
+                          S.menuItem().title('Test 2').action('test-2'), //.showAsAction(true),
+                        ])
+                        .child(S.document().documentId('component1-1-child').schemaType('author'))
+                    )
                 ),
 
               S.listItem()
