@@ -11,7 +11,7 @@ import {
   isSpanSchemaType,
 } from '@sanity/types'
 import {uniqBy} from 'lodash'
-import {SanityClient} from '@sanity/client'
+import type {SanityClient} from '@sanity/client'
 import typeString from './util/typeString'
 import ValidationErrorClass from './ValidationError'
 import normalizeValidationRules from './util/normalizeValidationRules'
