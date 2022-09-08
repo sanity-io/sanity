@@ -94,12 +94,7 @@ export function SearchDialog({onClose, onOpen, open}: SearchDialogProps) {
    * @todo Revise if/when we introduce pagination
    */
   useEffect(() => {
-    if (!isMountedRef?.current) {
-      isMountedRef.current = true
-      return
-    }
-
-    if (!hasValidTerms || result.loaded) {
+    if ((!hasValidTerms || result.loaded) && isMountedRef.current) {
       resetLastSearchIndex()
     }
   }, [hasValidTerms, resetLastSearchIndex, result.loaded])
@@ -108,10 +103,19 @@ export function SearchDialog({onClose, onOpen, open}: SearchDialogProps) {
    * Reset sort when popover is closed (without valid search terms)
    */
   useEffect(() => {
-    if (!hasValidTerms && !open) {
+    if (!hasValidTerms && isMountedRef.current && !open) {
       dispatch({type: 'SORT_RESET'})
     }
   }, [dispatch, hasValidTerms, open])
+
+  /**
+   * Store mounted state (must be last)
+   */
+  useEffect(() => {
+    if (!isMountedRef?.current) {
+      isMountedRef.current = true
+    }
+  }, [])
 
   const dialogId = useId()
 
