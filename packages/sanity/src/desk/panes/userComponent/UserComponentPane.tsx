@@ -1,6 +1,6 @@
 import React, {createElement, isValidElement, useState} from 'react'
 import {isValidElementType} from 'react-is'
-import {Pane, usePaneRouter} from '../../components'
+import {Pane} from '../../components'
 import {DeskToolPaneActionHandler} from '../../types'
 import {BaseDeskToolPaneProps} from '../types'
 import {UserComponentPaneHeader} from './UserComponentPaneHeader'
@@ -13,7 +13,6 @@ type UserComponentPaneProps = BaseDeskToolPaneProps<'component'>
  */
 export function UserComponentPane(props: UserComponentPaneProps) {
   const {index, pane, paneKey, ...restProps} = props
-  const {params} = usePaneRouter()
   const {
     child,
     component,
@@ -48,8 +47,6 @@ export function UserComponentPane(props: UserComponentPaneProps) {
             ...({ref: setRef} as any),
             child: child as any, // @todo: Fix typings
             paneKey,
-            // NOTE: this is for backwards compatibility (<= 2.20.0)
-            urlParams: params,
           })}
 
         {isValidElement(component) && component}
