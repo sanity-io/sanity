@@ -42,13 +42,17 @@
     "url": "git+https://github.com/sanity-io/sanity.git",
     "directory": "packages/@sanity/validation"
   },
-  "devDependencies": {
-    "@sanity/client": "^3.3.3",
-    "@sanity/schema": "3.0.0-dev-preview.15"
-  },
   "dependencies": {
     "@sanity/types": "3.0.0-dev-preview.15",
     "date-fns": "^2.26.1",
     "lodash": "^4.17.21"
+  },
+  "devDependencies": {
+    "@sanity/client": "^3.3.3",
+    "@sanity/schema": "3.0.0-dev-preview.15"
+  },
+  "peerDependencies": {
+    "@sanity/client": "^3.3.3",
+    "@sanity/schema": "dev-preview"
   }
 }
