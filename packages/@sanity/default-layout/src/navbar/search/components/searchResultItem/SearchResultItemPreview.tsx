@@ -1,7 +1,6 @@
 // @todo: remove the following line when part imports has been removed from this file
 ///<reference types="@sanity/types/parts" />
 
-import type {WeightedHit} from '@sanity/base'
 import {DocumentPreviewPresence} from '@sanity/base/presence'
 import type {SanityDocument} from '@sanity/client'
 import type {SchemaType, User} from '@sanity/types'
@@ -13,7 +12,6 @@ import {getPreviewStateObservable, getValueWithFallback} from './helpers'
 import type {SearchItemPreviewState} from './types'
 
 interface SearchResultItemPreviewProps {
-  data: WeightedHit
   documentId: string
   presence?: User[]
   schemaType: SchemaType
@@ -36,7 +34,6 @@ const TypeLabel = styled(Label)`
 `
 
 export default function SearchResultItemPreview({
-  data,
   documentId,
   presence,
   schemaType,

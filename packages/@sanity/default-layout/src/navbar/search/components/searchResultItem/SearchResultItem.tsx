@@ -11,7 +11,9 @@ import {getPublishedId} from 'part:@sanity/base/util/draft-utils'
 import React, {forwardRef, MouseEvent, useMemo} from 'react'
 import type {VirtualItem} from 'react-virtual'
 import styled, {css} from 'styled-components'
+import {DEBUG_WEIGHTED_HIT_OVERLAY} from '../../constants'
 import {useCommandList} from '../../contexts/commandList'
+import {DebugOverlay} from './DebugOverlay'
 import SearchResultItemPreview from './SearchResultItemPreview'
 
 interface SearchItemProps extends ResponsivePaddingProps {
@@ -99,11 +101,11 @@ export function SearchResultItem({
         tabIndex={-1}
       >
         <SearchResultItemPreview
-          data={data}
           documentId={hit._id}
           presence={documentPresence}
           schemaType={type}
         />
+        {DEBUG_WEIGHTED_HIT_OVERLAY && <DebugOverlay data={data} />}
       </PreviewCard>
     </SearchResultItemBox>
   )

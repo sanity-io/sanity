@@ -3,6 +3,9 @@ import {studioTheme} from '@sanity/ui'
 const IS_MAC =
   typeof window != 'undefined' && /Mac|iPod|iPhone|iPad/.test(window.navigator.platform)
 
+// Show a debug overlay containing weighted hit data on every search result
+export const DEBUG_WEIGHTED_HIT_OVERLAY = true
+
 // Findability version, prepended to every search query for future measurement
 export const FINDABILITY_MVI = 1
 
