@@ -23,7 +23,7 @@ import {nanoid} from 'nanoid'
 import {User} from '@sanity/types'
 import userStore from '../user'
 
-import {bifur} from '../../client/bifur'
+import {getBifur} from '../../client/bifur'
 import {connectionStatus$} from '../connection-status/connection-status-store'
 import {debugParams$} from '../debugParams'
 import {
@@ -67,7 +67,7 @@ function setSessionId(id) {
 
 export const SESSION_ID = getSessionId() || setSessionId(generate())
 
-const [presenceEvents$, sendMessage] = createBifurTransport(bifur, SESSION_ID)
+const [presenceEvents$, sendMessage] = createBifurTransport(getBifur, SESSION_ID)
 
 const currentLocation$ = new BehaviorSubject<PresenceLocation[]>([])
 const locationChange$ = currentLocation$.pipe(distinctUntilChanged())
