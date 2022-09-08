@@ -4,7 +4,7 @@
 
     // Output settings
     "module": "ES2020",
-    "target": "ES2020",
+    "target": "ES2017",
     "declaration": true,
     "declarationMap": true,
     "sourceMap": true,
