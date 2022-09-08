@@ -27,6 +27,7 @@ import {getValueOrInitialValue, isEqualToEmptyEditor, toSlateValue} from '../uti
 import {KEY_TO_SLATE_ELEMENT, KEY_TO_VALUE_ELEMENT} from '../utils/weakMaps'
 import {PortableTextEditorContext} from './hooks/usePortableTextEditor'
 import {PortableTextEditorSelectionContext} from './hooks/usePortableTextEditorSelection'
+import {PortableTextEditorReadOnlyContext} from './hooks/usePortableTextReadOnly'
 import {PortableTextEditorValueContext} from './hooks/usePortableTextEditorValue'
 import {withPlugins} from './plugins'
 
@@ -278,11 +279,13 @@ export class PortableTextEditor extends React.Component<
     return (
       <PortableTextEditorContext.Provider value={this}>
         <PortableTextEditorValueContext.Provider value={this.props.value}>
-          <PortableTextEditorSelectionContext.Provider value={this.state.selection}>
-            <Slate onChange={NOOP} editor={this.slateInstance} value={this.state.initialValue}>
-              {this.props.children}
-            </Slate>
-          </PortableTextEditorSelectionContext.Provider>
+          <PortableTextEditorReadOnlyContext.Provider value={Boolean(this.props.readOnly)}>
+            <PortableTextEditorSelectionContext.Provider value={this.state.selection}>
+              <Slate onChange={NOOP} editor={this.slateInstance} value={this.state.initialValue}>
+                {this.props.children}
+              </Slate>
+            </PortableTextEditorSelectionContext.Provider>
+          </PortableTextEditorReadOnlyContext.Provider>
         </PortableTextEditorValueContext.Provider>
       </PortableTextEditorContext.Provider>
     )

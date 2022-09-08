@@ -25,6 +25,7 @@ import {usePortableTextEditor} from './hooks/usePortableTextEditor'
 import {PortableTextEditor} from './PortableTextEditor'
 import {createWithEditableAPI, createWithHotkeys, createWithInsertData} from './plugins'
 import {useForwardedRef} from './hooks/useForwardedRef'
+import {usePortableTextEditorReadOnlyStatus} from './hooks/usePortableTextReadOnly'
 
 const debug = debugWithName('component:Editable')
 
@@ -59,7 +60,6 @@ export type PortableTextEditableProps = {
   onBeforeInput?: OnBeforeInputFn
   onPaste?: OnPasteFn
   onCopy?: OnCopyFn
-  readOnly?: boolean
   renderAnnotation?: RenderAnnotationFunction
   renderBlock?: RenderBlockFunction
   renderChild?: RenderChildFunction
@@ -86,7 +86,6 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
     renderChild,
     renderDecorator,
     renderPlaceholder,
-    readOnly,
     selection: propsSelection,
     scrollSelectionIntoView,
     spellCheck,
@@ -94,6 +93,7 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
   } = props
 
   const portableTextEditor = usePortableTextEditor()
+  const readOnly = usePortableTextEditorReadOnlyStatus()
   const ref = useForwardedRef(forwardedRef)
 
   const {
