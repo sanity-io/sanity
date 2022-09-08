@@ -1,4 +1,4 @@
-import {Editor} from 'slate'
+import {BaseOperation, Editor, NodeEntry, Node} from 'slate'
 import {PortableTextSlateEditor} from '../../types/editor'
 import {createEditorOptions} from '../../types/options'
 import {createOperationToPatches} from '../../utils/operationToPatches'
@@ -28,6 +28,14 @@ export {createWithSchemaTypes} from './createWithSchemaTypes'
 export {createWithUndoRedo} from './createWithUndoRedo'
 export {createWithUtils} from './createWithUtils'
 
+export interface OriginalEditorFunctions {
+  apply: (operation: BaseOperation) => void
+  onChange: () => void
+  normalizeNode: (entry: NodeEntry<Node>) => void
+}
+
+const originalFnMap = new WeakMap<PortableTextSlateEditor, OriginalEditorFunctions>()
+
 export const withPlugins = <T extends Editor>(
   editor: T,
   options: createEditorOptions
@@ -35,19 +43,30 @@ export const withPlugins = <T extends Editor>(
   const e = editor as T & PortableTextSlateEditor
   e.maxBlocks = options.maxBlocks || -1
   e.readOnly = options.readOnly || false
+  if (e.destroy) {
+    e.destroy()
+  } else {
+    // Save a copy of the original editor functions here before they were changed by plugins.
+    // We will put them back when .destroy is called (see below).
+    originalFnMap.set(e, {
+      apply: e.apply,
+      onChange: e.onChange,
+      normalizeNode: e.normalizeNode,
+    })
+  }
   const {portableTextFeatures, keyGenerator, change$, incomingPatches$, syncValue} = options
   const operationToPatches = createOperationToPatches(portableTextFeatures)
   const withObjectKeys = createWithObjectKeys(portableTextFeatures, keyGenerator)
   const withSchemaTypes = createWithSchemaTypes(portableTextFeatures)
   const [withPatches, withPatchesCleanupFunction] = options.readOnly
     ? []
-    : createWithPatches(
-        operationToPatches,
+    : createWithPatches({
+        patchFunctions: operationToPatches,
         change$,
         portableTextFeatures,
         syncValue,
-        incomingPatches$
-      )
+        incomingPatches$,
+      })
   const withMaxBlocks = createWithMaxBlocks()
   const withPortableTextLists = createWithPortableTextLists(portableTextFeatures)
   const [withUndoRedo, withUndoRedoCleanupFunction] = options.readOnly
@@ -58,10 +77,23 @@ export const withPlugins = <T extends Editor>(
     keyGenerator
   )
   const withPortableTextBlockStyle = createWithPortableTextBlockStyle(portableTextFeatures, change$)
-  const withPlaceholderBlock = createWithPlaceholderBlock({keyGenerator, portableTextFeatures})
+
+  const withPlaceholderBlock = createWithPlaceholderBlock({
+    keyGenerator,
+    portableTextFeatures,
+  })
+
   const withUtils = createWithUtils({keyGenerator, portableTextFeatures})
   const withPortableTextSelections = createWithPortableTextSelections(change$, portableTextFeatures)
+
   e.destroy = () => {
+    const originalFunctions = originalFnMap.get(e)
+    if (!originalFunctions) {
+      throw new Error('Could not find pristine versions of editor functions')
+    }
+    e.onChange = originalFunctions.onChange
+    e.apply = originalFunctions.apply
+    e.normalizeNode = originalFunctions.normalizeNode
     if (withPatchesCleanupFunction) {
       withPatchesCleanupFunction()
     }
@@ -69,30 +101,32 @@ export const withPlugins = <T extends Editor>(
       withUndoRedoCleanupFunction()
     }
   }
-  const minimal = withSchemaTypes(
-    withObjectKeys(
-      withPortableTextMarkModel(
-        withPortableTextBlockStyle(withUtils(withPlaceholderBlock(withPortableTextLists(e))))
+  if (options.readOnly) {
+    return withSchemaTypes(
+      withObjectKeys(
+        withPortableTextMarkModel(
+          withPortableTextBlockStyle(withUtils(withPlaceholderBlock(withPortableTextLists(e))))
+        )
       )
     )
-  )
-  const full =
-    (withUndoRedo &&
-      withPatches &&
-      withSchemaTypes(
-        withObjectKeys(
-          withPortableTextMarkModel(
-            withPortableTextBlockStyle(
-              withPortableTextLists(
-                withPlaceholderBlock(
-                  withUtils(withMaxBlocks(withUndoRedo(withPatches(withPortableTextSelections(e)))))
-                )
+  }
+
+  // The 'if' here is only to satisfy Typscript
+  if (withUndoRedo && withPatches && withPortableTextSelections) {
+    // Ordering is important here, selection dealing last, data manipulation in the middle and core model stuff first.
+    return withSchemaTypes(
+      withObjectKeys(
+        withPortableTextMarkModel(
+          withPortableTextBlockStyle(
+            withPortableTextLists(
+              withPlaceholderBlock(
+                withUtils(withMaxBlocks(withUndoRedo(withPatches(withPortableTextSelections(e)))))
               )
             )
           )
         )
-      )) ||
-    e
-  // Ordering is important here, selection dealing last, data manipulation in the middle and core model stuff first.
-  return options.readOnly ? minimal : full
+      )
+    )
+  }
+  return e
 }
