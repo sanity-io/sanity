@@ -44,8 +44,9 @@
     "@types/react": "^17.0.42",
     "jsdom": "^20.0.0"
   },
-  "directories": {
-    "test": "test"
+  "peerDependencies": {
+    "@sanity/schema": "dev-preview",
+    "@sanity/types": "dev-preview"
   },
   "repository": {
     "type": "git",
