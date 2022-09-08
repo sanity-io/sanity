@@ -248,7 +248,7 @@ describe('plugin:withPortableTextMarksModel: normalization', () => {
               "text": "1",
             },
             Object {
-              "_key": "2",
+              "_key": "1",
               "_type": "span",
               "marks": Array [],
               "text": "23",
@@ -350,13 +350,13 @@ describe('plugin:withPortableTextMarksModel: normalization', () => {
               "text": "1",
             },
             Object {
-              "_key": "4",
+              "_key": "2",
               "_type": "span",
               "marks": Array [],
               "text": "23",
             },
             Object {
-              "_key": "2",
+              "_key": "1",
               "_type": "span",
               "marks": Array [
                 "bold",
@@ -719,11 +719,11 @@ describe('plugin:withPortableTextMarksModel: normalization', () => {
           "style": "normal",
         },
         Object {
-          "_key": "4",
+          "_key": "2",
           "_type": "myTestBlockType",
           "children": Array [
             Object {
-              "_key": "2",
+              "_key": "1",
               "_type": "span",
               "marks": Array [
                 "bab319ad3a9d",

@@ -234,13 +234,13 @@ describe('selection adjustment', () => {
           ],
         },
         {
-          _key: 'B-5',
+          _key: 'B-3',
           _type: 'block',
           markDefs: [],
           style: 'normal',
           children: [
             {
-              _key: 'B-3',
+              _key: 'B-2',
               _type: 'span',
               text: '',
               marks: [],
