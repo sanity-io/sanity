@@ -148,7 +148,7 @@ describe('plugin:withEditableAPI: .delete()', () => {
           "_type": "myTestBlockType",
           "children": Array [
             Object {
-              "_key": "2",
+              "_key": "1",
               "_type": "span",
               "marks": Array [],
               "text": "",

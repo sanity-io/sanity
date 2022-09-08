@@ -155,11 +155,10 @@ export const Editor = ({
         renderDecorator={renderDecorator}
         renderChild={renderChild}
         selection={selection}
-        readOnly={readOnly}
         spellCheck
       />
     ),
-    [readOnly, renderBlock, renderChild, renderDecorator, selection]
+    [renderBlock, renderChild, renderDecorator, selection]
   )
 
   // Make sure that the test editor is focused and out of "readOnly mode".
