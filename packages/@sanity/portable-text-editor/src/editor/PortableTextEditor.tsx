@@ -5,7 +5,7 @@ import {concatMap, share, switchMap, tap} from 'rxjs/operators'
 import {randomKey} from '@sanity/util/content'
 import {createEditor, Descendant, Transforms} from 'slate'
 import {debounce, isEqual, throttle} from 'lodash'
-import {Slate} from '@sanity/slate-react'
+import {Slate, withReact} from '@sanity/slate-react'
 import {compileType} from '../utils/schema'
 import {getPortableTextFeatures} from '../utils/getPortableTextFeatures'
 import {PortableTextBlock, PortableTextFeatures, PortableTextChild} from '../types/portableText'
@@ -205,7 +205,7 @@ export class PortableTextEditor extends React.Component<
     }
 
     // Create the slate instance
-    this.slateInstance = withPlugins(createEditor(), {
+    this.slateInstance = withPlugins(withReact(createEditor()), {
       change$: this.change$,
       incomingPatches$: this.incomingPatches$,
       keyGenerator: this.keyGenerator,
@@ -301,7 +301,8 @@ export class PortableTextEditor extends React.Component<
         userCallbackFn()
       }
     }
-    if (this.hasPendingLocalPatches.current) {
+
+    if (this.hasPendingLocalPatches.current && !this.readOnly) {
       debug('Not syncing value (has pending local patches)')
       retrySync(() => this.syncValue(), callbackFn)
       return
