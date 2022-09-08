@@ -32,7 +32,7 @@ export function ReferencedDocHeading(props: ReferenceDocHeadingProps) {
   // Ideally, this would automatically be handled by `@sanity/ui`.
   const handleResize = useCallback(
     (e: ResizeObserverEntry[]) => {
-      if (!hidePopover) {
+      if (!hidePopover && e?.[0]?.borderBoxSize?.[0]?.inlineSize) {
         setTitleBoxSize(Math.floor(e[0].borderBoxSize[0].inlineSize))
       }
     },
