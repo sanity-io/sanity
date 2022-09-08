@@ -1,6 +1,6 @@
 {
   "name": "@sanity/core",
-  "version": "2.32.0",
+  "version": "2.33.0",
   "description": "Sanity core bundle, containing required packages for the development and build process",
   "main": "lib/index.js",
   "author": "Sanity.io <hello@sanity.io>",
@@ -31,7 +31,7 @@
     "@sanity/eventsource": "^3.0.1",
     "@sanity/export": "2.30.3",
     "@sanity/generate-help-url": "^3.0.0",
-    "@sanity/import": "2.31.1",
+    "@sanity/import": "2.33.0",
     "@sanity/plugin-loader": "2.31.1",
     "@sanity/resolver": "2.31.1",
     "@sanity/schema": "2.31.0",
