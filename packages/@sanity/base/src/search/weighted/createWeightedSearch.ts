@@ -39,10 +39,11 @@ export function createWeightedSearch(
   client: SanityClient,
   commonOpts: WeightedSearchOptions = {}
 ): SearchFunction {
-  // this is the actual search function that takes the search string and returns the hits
-  // supports string as search param to be backwards compatible
+  // Search currently supports both strings (reference + cross dataset reference inputs)
+  // or a SearchTerms object (omnisearch).
   return function search(searchParams, searchOpts = {}, searchComments = []) {
     const searchTerms = getSearchTerms(searchParams, types)
+
     const {query, params, options, searchSpec, terms} = createSearchQuery(searchTerms, {
       ...commonOpts,
       ...searchOpts,
