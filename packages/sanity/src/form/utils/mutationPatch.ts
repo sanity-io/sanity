@@ -1,5 +1,6 @@
 import {arrayToJSONMatchPath} from '@sanity/mutator'
 import {flatten} from 'lodash'
+import {SANITY_PATCH_TYPE} from '../patch'
 import type {FormPatchOrigin, FormPatch} from '../patch/types'
 import {decodePath} from './path'
 
@@ -95,6 +96,16 @@ function toFormBuilderPatches(origin: FormPatchOrigin, patch: MutationPatch): Fo
 }
 
 function toMutationPatch(patch: FormPatch): MutationPatch {
+  if (patch.patchType !== SANITY_PATCH_TYPE && patch.type) {
+    throw new Error(
+      `Patch is missing "patchType" - import and use "${patch.type}()" from "sanity/form"`
+    )
+  } else if (patch.patchType !== SANITY_PATCH_TYPE) {
+    throw new Error(
+      `Patch is missing "patchType" - import and use the patch method helpers from "sanity/form"`
+    )
+  }
+
   const matchPath = arrayToJSONMatchPath(patch.path || [])
   if (patch.type === 'insert') {
     const {position, items} = patch
