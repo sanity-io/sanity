@@ -4,6 +4,7 @@ import type {SchemaType, SchemaValidationValue} from '../schema'
 import type {SanityDocument} from '../documents'
 import type {ValidationMarker} from '../markers'
 import type {Block} from '../portableText'
+import {Schema} from '../schema'
 
 export type RuleTypeConstraint = 'Array' | 'Boolean' | 'Date' | 'Number' | 'Object' | 'String'
 export type FieldRules = {[fieldKey: string]: SchemaValidationValue}
@@ -215,6 +216,7 @@ export type RuleSpecConstraint<T extends RuleSpec['flag']> = ConditionalIndexAcc
  */
 export type ValidationContext = {
   client: SanityClient
+  schema: Schema
   parent?: unknown
   type?: SchemaType
   document?: SanityDocument

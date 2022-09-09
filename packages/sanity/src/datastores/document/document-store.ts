@@ -1,5 +1,5 @@
 import {SanityClient} from '@sanity/client'
-import {Schema} from '@sanity/types'
+import {InitialValueResolverContext, Schema} from '@sanity/types'
 import {Observable} from 'rxjs'
 import {getDraftId, isDraftId} from '../../util'
 import {HistoryStore} from '../history'
@@ -30,7 +30,10 @@ function getIdPairFromPublished(publishedId: string): IdPair {
 
 export interface DocumentStore {
   checkoutPair: (idPair: IdPair) => Pair
-  initialValue: (opts: InitialValueOptions) => Observable<InitialValueMsg>
+  initialValue: (
+    opts: InitialValueOptions,
+    context: InitialValueResolverContext
+  ) => Observable<InitialValueMsg>
   listenQuery: (
     query: string | {fetch: string; listen: string},
     params: QueryParams,
@@ -86,8 +89,14 @@ export function createDocumentStore({
     checkoutPair(idPair) {
       return checkoutPair(versionedClient, idPair)
     },
-    initialValue(opts) {
-      return getInitialValueStream(schema, initialValueTemplates, documentPreviewStore, opts)
+    initialValue(opts, context) {
+      return getInitialValueStream(
+        schema,
+        initialValueTemplates,
+        documentPreviewStore,
+        opts,
+        context
+      )
     },
     listenQuery(query, params, options) {
       return listenQuery(versionedClient, query, params, options)

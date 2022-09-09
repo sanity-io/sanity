@@ -1,5 +1,6 @@
 // Note: INCOMPLETE, but it's a start
 import type {ComponentType} from 'react'
+import {SanityClient} from '@sanity/client'
 import type {Rule} from '../validation'
 import type {ReferenceOptions} from '../reference'
 import type {AssetSource} from '../assets'
@@ -123,7 +124,7 @@ export namespace Schema {
       preview?: React.ComponentType<any> // @todo: use `PreviewProps` here
     }
     // TODO
-    initialValue?: any
+    initialValue?: InitialValueProperty<any, any>
   }
 
   export type TypeOptions<T extends Type> = T extends 'array'
@@ -450,7 +451,18 @@ export interface ConditionalPropertyCallbackContext {
 export type ConditionalPropertyCallback = (context: ConditionalPropertyCallbackContext) => boolean
 export type ConditionalProperty = boolean | ConditionalPropertyCallback | undefined
 
-export type InitialValueResolver<Params, Value> = (params?: Params) => Promise<Value> | Value
+export interface InitialValueResolverContext {
+  projectId: string
+  dataset: string
+  schema: Schema
+  currentUser: CurrentUser | null
+  client: SanityClient
+}
+
+export type InitialValueResolver<Params, Value> = (
+  params: Params | undefined,
+  context: InitialValueResolverContext
+) => Promise<Value> | Value
 export type InitialValueProperty<Params, Value> =
   | Value
   | InitialValueResolver<Params, Value>

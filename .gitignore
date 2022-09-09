@@ -56,3 +56,7 @@ tsconfig.tsbuildinfo
 
 # Sanity temp folders
 .sanity
+
+#IntelliJ
+.idea
+*.iml
