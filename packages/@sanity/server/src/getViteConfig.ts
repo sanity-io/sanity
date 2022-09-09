@@ -96,6 +96,7 @@ export async function getViteConfig(options: ViteOptions): Promise<InlineConfig>
     resolve: {
       alias: getAliases({monorepo}),
     },
+    define: mode === 'development' ? {'process.env': getProcessEnvProxy()} : {},
   }
 
   if (mode === 'production') {
@@ -150,4 +151,14 @@ export function finalizeViteConfig(config: InlineConfig): InlineConfig {
       },
     },
   }
+}
+
+function getProcessEnvProxy() {
+  return `new Proxy({}, {
+    get: (target, key) => {
+      if (key.indexOf('SANITY_STUDIO_') === 0) {
+        console.warn('process.env is not available - use "import.meta.env.' + key + '" instead')
+      }
+    }
+  })`
 }
