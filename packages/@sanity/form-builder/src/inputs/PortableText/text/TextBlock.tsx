@@ -179,6 +179,7 @@ export function TextBlock(props: TextBlockProps): React.ReactElement {
               $level={block.level}
               data-error={hasErrors ? '' : undefined}
               data-warning={hasWarnings ? '' : undefined}
+              data-read-only={readOnly}
               data-list-item={block.listItem}
               data-custom-markers={hasCustomMarkers ? '' : undefined}
               data-testid="text-block__text"

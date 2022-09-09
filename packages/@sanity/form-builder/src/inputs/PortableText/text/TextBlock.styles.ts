@@ -50,6 +50,10 @@ function textBlockStyle(props: TextBlockStyleProps & {theme: Theme}) {
       --marker-bg-color: ${color.muted.critical.hovered.bg};
     }
 
+    &[data-read-only] {
+      --card-fg-color: ${color.input.default.readOnly.fg};
+    }
+
     & [data-list-prefix] {
       position: absolute;
       margin-left: -4.5rem;

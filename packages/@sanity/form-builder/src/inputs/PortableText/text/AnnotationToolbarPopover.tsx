@@ -25,7 +25,6 @@ interface AnnotationToolbarPopoverProps {
   /**
    * Needed to update the popover position on scroll
    */
-  focused: boolean
   scrollElement: HTMLElement
   annotationElement: HTMLElement
   textElement: HTMLElement
@@ -35,7 +34,7 @@ interface AnnotationToolbarPopoverProps {
 }
 
 export function AnnotationToolbarPopover(props: AnnotationToolbarPopoverProps) {
-  const {scrollElement, annotationElement, focused, textElement, title, onEdit, onDelete} = props
+  const {scrollElement, annotationElement, textElement, title, onEdit, onDelete} = props
   const [open, setOpen] = useState<boolean>(false)
   const [cursorRect, setCursorRect] = useState<DOMRect | null>(null)
   const [selection, setSelection] = useState(null)
@@ -109,7 +108,6 @@ export function AnnotationToolbarPopover(props: AnnotationToolbarPopoverProps) {
   // Detect selection changes
   useEffect(() => {
     function handleSelectionChange() {
-      if (!focused) return
       if (!textElement) return
       const winSelection = window.getSelection()
       const {anchorNode, anchorOffset, focusNode, focusOffset} = winSelection
@@ -127,7 +125,7 @@ export function AnnotationToolbarPopover(props: AnnotationToolbarPopoverProps) {
     return () => {
       document.removeEventListener('selectionchange', handleSelectionChange)
     }
-  }, [focused, textElement])
+  }, [textElement])
 
   // Open popover when selection is within annotations
   useEffect(() => {
@@ -136,7 +134,7 @@ export function AnnotationToolbarPopover(props: AnnotationToolbarPopoverProps) {
     const {anchorNode, focusNode} = selection
     // Safari would close the popover by loosing range when button is focused.
     // If we are focused and currently tabbing to the action buttons, just return here.
-    if (focused && isTabbing.current) {
+    if (isTabbing.current) {
       return
     }
     if (annotationElement && annotationElement.contains(anchorNode) && anchorNode === focusNode) {
@@ -154,7 +152,7 @@ export function AnnotationToolbarPopover(props: AnnotationToolbarPopoverProps) {
       setCursorRect(null)
       rangeRef.current = null
     }
-  }, [focused, selection, annotationElement])
+  }, [selection, annotationElement])
 
   if (!open) {
     return null

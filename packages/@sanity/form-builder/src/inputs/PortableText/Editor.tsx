@@ -27,6 +27,7 @@ import {useSpellcheck} from './hooks/useSpellCheck'
 
 interface EditorProps {
   initialSelection?: EditorSelection
+  isActive: boolean
   isFullscreen: boolean
   hotkeys: HotkeyOptions
   onFocus: (path: Path) => void
@@ -51,6 +52,7 @@ export function Editor(props: EditorProps) {
   const {
     hotkeys,
     initialSelection,
+    isActive,
     isFullscreen,
     onFocus,
     onCopy,
@@ -103,7 +105,6 @@ export function Editor(props: EditorProps) {
         onCopy={onCopy}
         onPaste={onPaste}
         ref={editableRef}
-        readOnly={readOnly}
         renderAnnotation={renderAnnotation}
         renderBlock={renderBlock}
         renderChild={renderChild}
@@ -119,7 +120,6 @@ export function Editor(props: EditorProps) {
       initialSelection,
       onCopy,
       onPaste,
-      readOnly,
       renderAnnotation,
       renderBlock,
       renderChild,
@@ -131,7 +131,7 @@ export function Editor(props: EditorProps) {
 
   return (
     <Root $fullscreen={isFullscreen} data-testid="pt-editor" onMouseDown={handleMouseDown}>
-      {!readOnly && (
+      {isActive && (
         <ToolbarCard data-testid="pt-editor__toolbar-card" shadow={1}>
           <Toolbar
             isFullscreen={isFullscreen}
@@ -143,7 +143,7 @@ export function Editor(props: EditorProps) {
         </ToolbarCard>
       )}
 
-      <EditableCard flex={1}>
+      <EditableCard flex={1} $readOnly={readOnly}>
         <Scroller ref={setScrollElement}>
           <EditableContainer padding={isFullscreen ? 2 : 0} sizing="border" width={1}>
             <EditableWrapper $isFullscreen={isFullscreen} $readOnly={readOnly}>

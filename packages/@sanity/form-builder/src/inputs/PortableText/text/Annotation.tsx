@@ -153,6 +153,11 @@ export const Annotation = React.forwardRef(function Annotation(
 
   const hasCustomMarkers = markers.filter((m) => !isValidationMarker(m)).length > 0
 
+  const handleReadOnlyClick = useCallback(() => onFocus(markDefPath.concat(FOCUS_TERMINATOR)), [
+    markDefPath,
+    onFocus,
+  ])
+
   return (
     <Root
       $toneKey={toneKey}
@@ -161,11 +166,11 @@ export const Annotation = React.forwardRef(function Annotation(
       data-error={hasError ? '' : undefined}
       data-warning={hasWarning ? '' : undefined}
       data-custom-markers={hasCustomMarkers ? '' : undefined}
+      onClick={readOnly ? handleReadOnlyClick : undefined}
     >
       <span ref={forwardedRef}>{markersToolTip || text}</span>
-      {!readOnly && (
+      {attributes.focused && !readOnly && (
         <AnnotationToolbarPopover
-          focused={attributes.focused}
           textElement={textElement}
           annotationElement={annotationRef?.current}
           scrollElement={scrollElement}
