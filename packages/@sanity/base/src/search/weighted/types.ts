@@ -6,8 +6,6 @@ import {ExperimentalSearchPath} from '@sanity/types'
 export interface SearchTerms {
   query: string
   types: SearchableType[]
-  limit?: number
-  offset?: number
 }
 
 /**
@@ -76,7 +74,19 @@ export interface WeightedSearchOptions {
   unique?: boolean
 }
 
+/**
+ * @internal
+ */
 export interface SearchOptions {
   includeDrafts?: boolean
   limit?: number
+  offset?: number
+  sort?: SearchSort
+}
+
+export type SortDirection = 'asc' | 'desc'
+
+export type SearchSort = {
+  direction: SortDirection
+  field: string
 }

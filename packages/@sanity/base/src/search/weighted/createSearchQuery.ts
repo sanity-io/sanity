@@ -1,12 +1,13 @@
 import {compact, flatten, flow, toLower, union, uniq} from 'lodash'
 import {joinPath} from '../../util/searchUtils'
 import {tokenize} from '../common/tokenize'
-import {
+import type {
   SearchableType,
   SearchOptions,
   SearchPath,
   SearchSpec,
   SearchTerms,
+  SortDirection,
   WeightedSearchOptions,
 } from './types'
 
@@ -126,15 +127,21 @@ export function createSearchQuery(
   })
 
   const selection = selections.length > 0 ? `...select(${selections.join(',\n')})` : ''
+
+  // Default to `_id asc` (GROQ default) if no search sort is provided
+  const sortDirection = searchOpts?.sort?.direction || ('asc' as SortDirection)
+  const sortField = searchOpts?.sort?.field || '_id'
+
   const query =
     `*[${filters.join(' && ')}]` +
+    `| order(${sortField} ${sortDirection})` +
     `[$__offset...$__limit]` +
     // the following would improve search quality for paths-with-numbers, but increases the size of the query by up to 50%
     // `${hasIndexedPaths ? `[${createConstraints(terms, exactSearchSpec).join(' && ')}]` : ''}` +
     `{_type, _id, ${selection}}`
 
-  const offset = searchTerms.offset ?? 0
-  const limit = (searchTerms.limit ?? searchOpts.limit ?? DEFAULT_LIMIT) + offset
+  const offset = searchOpts?.offset ?? 0
+  const limit = (searchOpts?.limit ?? DEFAULT_LIMIT) + offset
 
   return {
     query,

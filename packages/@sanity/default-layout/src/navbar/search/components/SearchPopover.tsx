@@ -128,11 +128,11 @@ export function SearchPopover({onClose, onOpen, open, position}: SearchPopoverPr
   }, [hasValidTerms, resetLastSearchIndex, result.loaded])
 
   /**
-   * Reset sort when popover is closed (without valid search terms)
+   * Reset ordering when popover is closed (without valid search terms)
    */
   useEffect(() => {
     if (!hasValidTerms && isMountedRef.current && !open) {
-      dispatch({type: 'SORT_RESET'})
+      dispatch({type: 'SEARCH_ORDERING_RESET'})
     }
   }, [dispatch, hasValidTerms, open])
 

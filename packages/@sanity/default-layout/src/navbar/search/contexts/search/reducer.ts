@@ -1,17 +1,17 @@
 import type {SearchTerms, SearchableType, WeightedHit} from '@sanity/base'
 import type {CurrentUser} from '@sanity/types'
 import {RecentSearchTerms} from '../../datastores/recentSearches'
-import type {SearchSort} from '../../types'
+import {SearchOrdering, ORDER_RELEVANCE} from '../../types'
 import {debugWithName} from '../../utils/debug'
 import {sortTypes} from './selectors'
 
 export interface SearchReducerState {
   currentUser: CurrentUser
   filtersVisible: boolean
+  ordering: SearchOrdering
   pageIndex: number
   recentSearches: RecentSearchTerms[]
   result: SearchResult
-  sort: SearchSort
   terms: SearchTerms
 }
 
@@ -30,6 +30,7 @@ export function initialSearchState(
   return {
     currentUser,
     filtersVisible: false,
+    ordering: ORDER_RELEVANCE,
     pageIndex: 0,
     recentSearches,
     result: {
@@ -38,10 +39,6 @@ export function initialSearchState(
       hits: [],
       loaded: false,
       loading: false,
-    },
-    sort: {
-      mode: 'relevance',
-      order: 'desc',
     },
     terms: {
       query: '',
@@ -59,14 +56,14 @@ export type RecentSearchesSet = {
   type: 'RECENT_SEARCHES_SET'
 }
 export type SearchClear = {type: 'SEARCH_CLEAR'}
+export type SearchOrderingReset = {type: 'SEARCH_ORDERING_RESET'}
+export type SearchOrderingSet = {ordering: SearchOrdering; type: 'SEARCH_ORDERING_SET'}
 export type SearchRequestComplete = {
   type: 'SEARCH_REQUEST_COMPLETE'
   hits: WeightedHit[]
 }
 export type SearchRequestError = {type: 'SEARCH_REQUEST_ERROR'; error: Error}
 export type SearchRequestStart = {type: 'SEARCH_REQUEST_START'}
-export type SortReset = {type: 'SORT_RESET'}
-export type SortSet = {type: 'SORT_SET'; sort: SearchSort}
 export type TermsQuerySet = {type: 'TERMS_QUERY_SET'; query: string}
 export type TermsSet = {type: 'TERMS_SET'; terms: SearchTerms}
 export type TermsTypeAdd = {type: 'TERMS_TYPE_ADD'; schemaType: SearchableType}
@@ -83,8 +80,8 @@ export type SearchAction =
   | SearchRequestComplete
   | SearchRequestError
   | SearchRequestStart
-  | SortReset
-  | SortSet
+  | SearchOrderingReset
+  | SearchOrderingSet
   | TermsQuerySet
   | TermsSet
   | TermsTypeAdd
@@ -139,6 +136,16 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
           hits: [],
         },
       }
+    case 'SEARCH_ORDERING_RESET':
+      return {
+        ...state,
+        ordering: ORDER_RELEVANCE,
+      }
+    case 'SEARCH_ORDERING_SET':
+      return {
+        ...state,
+        ordering: action.ordering,
+      }
     case 'SEARCH_REQUEST_COMPLETE':
       return {
         ...state,
@@ -168,19 +175,6 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
           ...state.result,
           loaded: false,
           loading: true,
-        },
-      }
-    case 'SORT_SET':
-      return {
-        ...state,
-        sort: action.sort,
-      }
-    case 'SORT_RESET':
-      return {
-        ...state,
-        sort: {
-          mode: 'relevance',
-          order: 'desc',
         },
       }
     case 'TERMS_QUERY_SET':

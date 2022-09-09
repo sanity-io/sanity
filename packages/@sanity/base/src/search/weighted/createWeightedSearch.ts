@@ -1,11 +1,12 @@
 /* eslint-disable import/prefer-default-export */
 import type {SanityClient} from '@sanity/client'
-import type {Observable} from 'rxjs'
 import sortBy from 'lodash/sortBy'
+import type {Observable} from 'rxjs'
 import {map, tap} from 'rxjs/operators'
 import {removeDupes} from '../../util/draftUtils'
 import {applyWeights} from './applyWeights'
-import {
+import {createSearchQuery} from './createSearchQuery'
+import type {
   SearchableType,
   SearchHit,
   SearchOptions,
@@ -13,7 +14,6 @@ import {
   WeightedHit,
   WeightedSearchOptions,
 } from './types'
-import {createSearchQuery} from './createSearchQuery'
 
 type SearchFunction = (
   searchTerms: string | SearchTerms,
@@ -55,6 +55,8 @@ export function createWeightedSearch(
 
     return client.observable.fetch(updatedQuery, params, options).pipe(
       commonOpts.unique ? map(removeDupes) : tap(),
+      // Apply weighting and scores based on current search terms.
+      // No scores will be assigned when terms are empty.
       map((hits: SearchHit[]) => applyWeights(searchSpec, hits, terms)),
       map((hits) => sortBy(hits, (hit) => -hit.score))
     )

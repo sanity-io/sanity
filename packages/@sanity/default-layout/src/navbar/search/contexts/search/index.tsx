@@ -18,7 +18,7 @@ import React, {
 import {SEARCH_LIMIT} from '../../constants'
 import {createRecentSearchesStore, RecentSearchesStore} from '../../datastores/recentSearches'
 import {useSearch} from '../../hooks/useSearch'
-import type {SearchSort} from '../../types'
+import {SearchOrdering} from '../../types'
 import {initialSearchState, SearchAction, searchReducer, SearchReducerState} from './reducer'
 import {hasSearchableTerms} from './selectors'
 
@@ -45,24 +45,21 @@ export function SearchProvider({children, currentUser}: SearchProviderProps) {
     recentSearchesStore,
   ])
 
-  const [state, dispatch] = useReducer(
-    searchReducer,
-    initialSearchState(currentUser, recentSearches)
-  )
+  const initialState = useMemo(() => initialSearchState(currentUser, recentSearches), [
+    currentUser,
+    recentSearches,
+  ])
+  const [state, dispatch] = useReducer(searchReducer, initialState)
 
-  const {pageIndex, result, sort, terms} = state
+  const {ordering, pageIndex, result, terms} = state
 
   const isMountedRef = useRef(false)
-  const previousPageIndexRef = useRef<number>(0)
-  const previousSortRef = useRef<SearchSort>(null)
-  const previousTermsRef = useRef<SearchTerms>(null)
+  const previousOrderingRef = useRef<SearchOrdering>(initialState.ordering)
+  const previousPageIndexRef = useRef<number>(initialState.pageIndex)
+  const previousTermsRef = useRef<SearchTerms>(initialState.terms)
 
   const {handleSearch, searchState} = useSearch({
-    initialState: {
-      ...result,
-      searchString: terms.query,
-      terms,
-    },
+    initialState: {...result, terms},
     onComplete: (hits) => dispatch({hits, type: 'SEARCH_REQUEST_COMPLETE'}),
     onError: (error) => dispatch({error, type: 'SEARCH_REQUEST_ERROR'}),
     onStart: () => dispatch({type: 'SEARCH_REQUEST_START'}),
@@ -78,15 +75,18 @@ export function SearchProvider({children, currentUser}: SearchProviderProps) {
    * There are cases were we may not run searches when terms change (e.g. when search terms are empty / invalid).
    */
   useEffect(() => {
+    const orderingChanged = !isEqual(ordering, previousOrderingRef.current)
     const pageIndexChanged = pageIndex !== previousPageIndexRef.current
-    const sortChanged = !isEqual(sort, previousSortRef.current)
     const termsChanged = !isEqual(terms, previousTermsRef.current)
 
-    if (pageIndexChanged || sortChanged || termsChanged) {
+    if (orderingChanged || pageIndexChanged || termsChanged) {
       handleSearch({
-        ...terms,
-        limit: SEARCH_LIMIT,
-        offset: pageIndex * SEARCH_LIMIT,
+        options: {
+          limit: SEARCH_LIMIT,
+          offset: pageIndex * SEARCH_LIMIT,
+          sort: ordering.sort,
+        },
+        terms,
       })
 
       // Update pageIndex snapshot only on a valid search request
@@ -94,9 +94,9 @@ export function SearchProvider({children, currentUser}: SearchProviderProps) {
     }
 
     // Update snapshots, even if no search request was executed
-    previousSortRef.current = sort
+    previousOrderingRef.current = ordering
     previousTermsRef.current = terms
-  }, [handleSearch, hasValidTerms, pageIndex, searchState.terms, sort, terms])
+  }, [handleSearch, hasValidTerms, ordering, pageIndex, searchState.terms, terms])
 
   /**
    * Reset search hits / state when (after initial amount):

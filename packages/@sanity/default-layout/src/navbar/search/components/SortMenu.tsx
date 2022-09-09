@@ -16,74 +16,28 @@ import React, {useCallback, useMemo} from 'react'
 import styled from 'styled-components'
 import {SUBHEADER_HEIGHT_LARGE, SUBHEADER_HEIGHT_SMALL} from '../constants'
 import {useSearchState} from '../contexts/search'
-import {SearchSort} from '../types'
-
-interface SortMenuItem {
-  sort: SearchSort
-  subtitle?: string
-  title: string
-  type: 'menuItem'
-}
-
-interface SortMenuItemDivider {
-  type: 'divider'
-}
+import {
+  SearchOrdering,
+  ORDER_CREATED_ASC,
+  ORDER_CREATED_DESC,
+  ORDER_RELEVANCE,
+  ORDER_UPDATED_ASC,
+  ORDER_UPDATED_DESC,
+} from '../types'
 
 interface SortMenuProps {
   small?: boolean
 }
 
-const MENU_ITEMS: (SortMenuItemDivider | SortMenuItem)[] = [
-  {
-    sort: {mode: 'relevance', order: 'desc'},
-    title: 'Relevance',
-    type: 'menuItem',
-  },
-  {
-    type: 'divider',
-  },
-  {
-    sort: {mode: 'createdAt', order: 'asc'},
-    subtitle: 'Newest first',
-    title: 'Created at',
-    type: 'menuItem',
-  },
-  {
-    sort: {mode: 'createdAt', order: 'desc'},
-    subtitle: 'Oldest first',
-    title: 'Created at',
-    type: 'menuItem',
-  },
-  {
-    type: 'divider',
-  },
-  {
-    sort: {mode: 'updatedAt', order: 'asc'},
-    subtitle: 'Newest first',
-    title: 'Last updated',
-    type: 'menuItem',
-  },
-  {
-    sort: {mode: 'updatedAt', order: 'desc'},
-    subtitle: 'Oldest first',
-    title: 'Last updated',
-    type: 'menuItem',
-  },
-  {
-    type: 'divider',
-  },
-  {
-    sort: {mode: 'previewTitle', order: 'asc'},
-    subtitle: 'A to Z',
-    title: 'Title',
-    type: 'menuItem',
-  },
-  {
-    sort: {mode: 'previewTitle', order: 'desc'},
-    subtitle: 'Z to A',
-    title: 'Title',
-    type: 'menuItem',
-  },
+// null items are represented as dividers
+const MENU_ORDERINGS: (SearchOrdering | null)[] = [
+  ORDER_RELEVANCE,
+  null,
+  ORDER_CREATED_DESC,
+  ORDER_CREATED_ASC,
+  null,
+  ORDER_UPDATED_DESC,
+  ORDER_UPDATED_ASC,
 ]
 
 const IconWrapperBox = styled(Box)<{$visible: boolean}>`
@@ -95,34 +49,26 @@ const SortMenuContentFlex = styled(Flex)<{$small: boolean}>`
   height: ${({$small}) => ($small ? SUBHEADER_HEIGHT_SMALL : SUBHEADER_HEIGHT_LARGE)}px;
 `
 
-function CustomMenuItem({
-  sort,
-  subtitle,
-  title,
-}: {
-  sort: SearchSort
-  subtitle?: string
-  title: string
-}) {
+function CustomMenuItem({ordering}: {ordering: SearchOrdering}) {
   const {
     dispatch,
-    state: {sort: currentSort},
+    state: {ordering: currentOrdering},
   } = useSearchState()
 
   const handleClick = useCallback(() => {
-    dispatch({sort, type: 'SORT_SET'})
-  }, [dispatch, sort])
+    dispatch({ordering, type: 'SEARCH_ORDERING_SET'})
+  }, [dispatch, ordering])
 
-  const isSelected = useMemo(() => isEqual(currentSort, sort), [currentSort, sort])
+  const isSelected = useMemo(() => isEqual(currentOrdering, ordering), [currentOrdering, ordering])
 
   return (
     <MenuItem onClick={handleClick} padding={3} selected={isSelected} tone="default">
       <Flex align="center" justify="space-between" gap={4}>
         <Inline space={1}>
           <Text size={1} weight="semibold">
-            {title}
+            {ordering.title}
           </Text>
-          <Text size={1}>{subtitle}</Text>
+          <Text size={1}>{ordering.subtitle}</Text>
         </Inline>
         <IconWrapperBox $visible={isSelected}>
           <Text size={1}>
@@ -136,12 +82,10 @@ function CustomMenuItem({
 
 export function SortMenu({small}: SortMenuProps) {
   const {
-    state: {sort},
+    state: {ordering},
   } = useSearchState()
 
-  const currentMenuItem = MENU_ITEMS.find(
-    (item): item is SortMenuItem => item.type === 'menuItem' && isEqual(sort, item.sort)
-  )
+  const currentMenuItem = MENU_ORDERINGS.find((item) => isEqual(ordering, item))
 
   return (
     <Card borderBottom>
@@ -163,23 +107,18 @@ export function SortMenu({small}: SortMenuProps) {
           id="search-order"
           menu={
             <Menu>
-              {MENU_ITEMS.map((item, index) => {
-                if (item.type === 'divider') {
+              {MENU_ORDERINGS.map((item, index) => {
+                if (item === null) {
                   // eslint-disable-next-line react/no-array-index-key
                   return <MenuDivider key={index} />
                 }
-                if (item.type === 'menuItem') {
-                  return (
-                    <CustomMenuItem
-                      // eslint-disable-next-line react/no-array-index-key
-                      key={index}
-                      sort={item.sort}
-                      subtitle={item.subtitle}
-                      title={item.title}
-                    />
-                  )
-                }
-                return null
+                return (
+                  <CustomMenuItem
+                    // eslint-disable-next-line react/no-array-index-key
+                    key={index}
+                    ordering={item}
+                  />
+                )
               })}
             </Menu>
           }

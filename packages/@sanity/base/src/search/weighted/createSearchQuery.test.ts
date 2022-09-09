@@ -21,6 +21,7 @@ describe('createSearchQuery', () => {
 
     expect(query).toEqual(
       '*[_type in $__types && (title match $t0)]' +
+        '| order(_id asc)' +
         '[$__offset...$__limit]' +
         '{_type, _id, ...select(_type == "basic-schema-test" => { "w0": title })}'
     )
@@ -56,6 +57,7 @@ describe('createSearchQuery', () => {
        * which lead to no hits at all. */
 
       '*[_type in $__types && (cover[].cards[].title match $t0) && (cover[].cards[].title match $t1)]' +
+        '| order(_id asc)' +
         '[$__offset...$__limit]' +
         // at this point we could refilter using cover[0].cards[0].title.
         // This solution was discarded at it would increase the size of the query payload by up to 50%
@@ -133,12 +135,16 @@ describe('createSearchQuery', () => {
   })
 
   it('should use provided offset and limit', () => {
-    const {params} = createSearchQuery({
-      query: 'term0',
-      types: [testType],
-      offset: 10,
-      limit: 30,
-    })
+    const {params} = createSearchQuery(
+      {
+        query: 'term0',
+        types: [testType],
+      },
+      {
+        offset: 10,
+        limit: 30,
+      }
+    )
 
     expect(params.__limit).toEqual(40) // provided offset + limit
     expect(params.__offset).toEqual(10)
@@ -229,5 +235,41 @@ describe('createSearchQuery', () => {
         ],
       },
     ])
+  })
+
+  it('should order results by _id ASC if no sort field and direction is configured', () => {
+    const {query} = createSearchQuery({
+      query: 'test',
+      types: [testType],
+    })
+
+    expect(query).toEqual(
+      '*[_type in $__types && (title match $t0)]' +
+        '| order(_id asc)' +
+        '[$__offset...$__limit]' +
+        '{_type, _id, ...select(_type == "basic-schema-test" => { "w0": title })}'
+    )
+  })
+
+  it('should add configured sort field and direction', () => {
+    const {query} = createSearchQuery(
+      {
+        query: 'test',
+        types: [testType],
+      },
+      {
+        sort: {
+          direction: 'desc',
+          field: 'exampleField',
+        },
+      }
+    )
+
+    expect(query).toEqual(
+      '*[_type in $__types && (title match $t0)]' +
+        '| order(exampleField desc)' +
+        '[$__offset...$__limit]' +
+        '{_type, _id, ...select(_type == "basic-schema-test" => { "w0": title })}'
+    )
   })
 })
