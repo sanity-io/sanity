@@ -86,6 +86,7 @@ export function SearchProvider({children, currentUser}: SearchProviderProps) {
           offset: pageIndex * SEARCH_LIMIT,
           sort: ordering.sort,
         },
+        skipSortByScore: ordering.ignoreScore,
         terms,
       })
 

@@ -23,6 +23,7 @@ import {SearchState} from '../types'
 
 interface SearchRequest {
   options?: SearchOptions
+  skipSortByScore?: boolean
   terms: SearchTerms
 }
 
@@ -95,9 +96,12 @@ export function useSearch(
               options: request.options,
               terms: request.terms,
             }),
-            (search(request.terms, request.options, searchComments) as Observable<
-              WeightedHit[]
-            >).pipe(
+            (search(
+              request.terms,
+              request.options,
+              searchComments,
+              request?.skipSortByScore
+            ) as Observable<WeightedHit[]>).pipe(
               map((hits) => ({hits})),
               tap(({hits}) => onComplete?.(hits)),
               catchError((error) => {
