@@ -57,7 +57,7 @@ export function SearchResults({
   const {
     dispatch,
     recentSearchesStore,
-    state: {terms, result},
+    state: {debug, terms, result},
   } = useSearchState()
 
   const childParentRef = useRef()
@@ -123,6 +123,7 @@ export function SearchResults({
                     return (
                       <SearchResultItem
                         data={hit}
+                        debug={debug}
                         documentId={getPublishedId(hit.hit._id) || ''}
                         index={virtualRow.index}
                         key={hit.hit._id}

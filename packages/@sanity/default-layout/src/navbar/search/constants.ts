@@ -3,11 +3,12 @@ import {studioTheme} from '@sanity/ui'
 const IS_MAC =
   typeof window != 'undefined' && /Mac|iPod|iPhone|iPad/.test(window.navigator.platform)
 
-// Show a debug overlay containing weighted hit data on every search result
-export const DEBUG_WEIGHTED_HIT_OVERLAY = true
+// Enable debug mode when the current URL contains the below fragment.
+// Must be prefixed with `_debug_`
+export const DEBUG_FRAGMENT = '_debug_search_score'
 
 // Findability version, prepended to every search query for future measurement
-export const FINDABILITY_MVI = 1
+export const FINDABILITY_MVI = 2
 
 // Max number of records to fetch per search request - intentionally set high to workaround
 // current limitations with studio search config

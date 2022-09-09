@@ -11,13 +11,13 @@ import {getPublishedId} from 'part:@sanity/base/util/draft-utils'
 import React, {forwardRef, MouseEvent, useMemo} from 'react'
 import type {VirtualItem} from 'react-virtual'
 import styled, {css} from 'styled-components'
-import {DEBUG_WEIGHTED_HIT_OVERLAY} from '../../constants'
 import {useCommandList} from '../../contexts/commandList'
 import {DebugOverlay} from './DebugOverlay'
 import SearchResultItemPreview from './SearchResultItemPreview'
 
 interface SearchItemProps extends ResponsivePaddingProps {
   data: WeightedHit
+  debug?: boolean
   index: number
   onClick?: () => void
   onMouseDown?: (event: MouseEvent) => void
@@ -48,6 +48,7 @@ const SearchResultItemBox = styled(Box)<{$level: number}>(({$level}) => {
 
 export function SearchResultItem({
   data,
+  debug,
   documentId,
   index,
   onClick,
@@ -105,8 +106,8 @@ export function SearchResultItem({
           presence={documentPresence}
           schemaType={type}
         />
-        {DEBUG_WEIGHTED_HIT_OVERLAY && <DebugOverlay data={data} />}
       </PreviewCard>
+      {debug && <DebugOverlay data={data} />}
     </SearchResultItemBox>
   )
 }

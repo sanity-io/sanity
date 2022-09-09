@@ -2,11 +2,12 @@ import type {SearchTerms, SearchableType, WeightedHit} from '@sanity/base'
 import type {CurrentUser} from '@sanity/types'
 import {RecentSearchTerms} from '../../datastores/recentSearches'
 import {SearchOrdering, ORDER_RELEVANCE} from '../../types'
-import {debugWithName} from '../../utils/debug'
+import {debugWithName, isDebugMode} from '../../utils/debug'
 import {sortTypes} from './selectors'
 
 export interface SearchReducerState {
   currentUser: CurrentUser
+  debug: boolean
   filtersVisible: boolean
   ordering: SearchOrdering
   pageIndex: number
@@ -29,6 +30,7 @@ export function initialSearchState(
 ): SearchReducerState {
   return {
     currentUser,
+    debug: isDebugMode(),
     filtersVisible: false,
     ordering: ORDER_RELEVANCE,
     pageIndex: 0,

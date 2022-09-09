@@ -8,6 +8,7 @@ interface DebugScoreProps {
 }
 
 const DebugScoreCard = styled(Card)`
+  cursor: help;
   left: 0;
   position: absolute;
   top: 0;
@@ -31,18 +32,23 @@ export function DebugOverlay({data}: DebugScoreProps) {
         content={
           <Box padding={2}>
             <Stack space={2}>
-              {matchingStories.map((story) => (
-                <Inline key={story.path} space={3}>
-                  <Code size={0} weight="semibold">
-                    {story.path}
-                  </Code>
-                  <Code size={0}>{story.why}</Code>
-                </Inline>
-              ))}
+              {matchingStories.length ? (
+                <>
+                  {matchingStories.map((story) => (
+                    <Inline key={story.path} space={3}>
+                      <Code size={0} weight="semibold">
+                        {story.path}
+                      </Code>
+                      <Code size={0}>{story.why}</Code>
+                    </Inline>
+                  ))}
+                </>
+              ) : (
+                <Code size={0}>No matches</Code>
+              )}
             </Stack>
           </Box>
         }
-        disabled={!matchingStories.length}
         placement="bottom-start"
         portal
       >
