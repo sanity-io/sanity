@@ -1,3 +1,6 @@
+import styled from 'styled-components'
+import {Grid} from '@sanity/ui'
+
 function focusRingBorderStyle(border: {color: string; width: number}): string {
   return `inset 0 0 0 ${border.width}px ${border.color}`
 }
@@ -21,3 +24,7 @@ export function focusRingStyle(opts: {
     .filter(Boolean)
     .join(',')
 }
+
+export const StyledGrid = styled(Grid)`
+  align-items: flex-end;
+`

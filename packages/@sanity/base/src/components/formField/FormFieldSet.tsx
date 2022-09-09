@@ -1,7 +1,7 @@
 /* eslint-disable camelcase */
 
 import {Marker} from '@sanity/types'
-import {Box, Flex, Grid, rem, Stack, Text, Theme, useForwardedRef} from '@sanity/ui'
+import {Box, Flex, rem, Stack, Text, Theme, useForwardedRef} from '@sanity/ui'
 import React, {forwardRef, useState, useCallback, useEffect, useMemo} from 'react'
 import styled, {css} from 'styled-components'
 import {ChangeIndicator, ChangeIndicatorContextProvidedProps} from '../../change-indicators'
@@ -9,7 +9,7 @@ import {FieldPresence, FormFieldPresence} from '../../presence'
 import {FormFieldValidationStatus} from './FormFieldValidationStatus'
 import {FormFieldSetLegend} from './FormFieldSetLegend'
 import {markersToValidationList} from './helpers'
-import {focusRingStyle} from './styles'
+import {focusRingStyle, StyledGrid} from './styles'
 
 export interface FormFieldSetProps {
   /**
@@ -127,7 +127,7 @@ export const FormFieldSet = forwardRef(
         return null
       }
       return (
-        <Grid columns={columns} gapX={4} gapY={5}>
+        <StyledGrid columns={columns} gapX={4} gapY={5}>
           {changeIndicator ? (
             <ChangeIndicator {...(changeIndicator === true ? {} : changeIndicator)}>
               {getChildren(children)}
@@ -135,7 +135,7 @@ export const FormFieldSet = forwardRef(
           ) : (
             getChildren(children)
           )}
-        </Grid>
+        </StyledGrid>
       )
     }, [changeIndicator, children, collapsed, columns])
 
