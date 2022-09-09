@@ -338,6 +338,7 @@ describe('user interaction happy paths', () => {
     expect(onChange).toHaveBeenCalledTimes(1)
     expect(onChange.mock.calls[0]).toEqual([
       {
+        patchType: Symbol.for('sanity.patch'),
         path: [],
         type: 'unset',
       },

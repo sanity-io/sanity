@@ -1,6 +1,19 @@
-/* eslint-disable camelcase */
+import type {Path} from '@sanity/types'
 
-import {Path} from '@sanity/types'
+/**
+ * @alpha
+ */
+export interface FormPatchBase {
+  /**
+   * A property used to identify this as a Sanity patch type, eg "set", "unset", "insert", etc.
+   * This allows us to potentially introduce new patch types in the future without breaking
+   * existing code. This is an internal property/implementation detail and should not be used by
+   * consumers.
+   *
+   * @internal
+   */
+  patchType: symbol
+}
 
 /**
  * @alpha
@@ -20,7 +33,7 @@ export type FormPatchOrigin = 'remote' | 'local' | 'internal'
 /**
  * @alpha
  */
-export type FormSetPatch = {
+export interface FormSetPatch extends FormPatchBase {
   path: Path
   type: 'set'
   origin?: FormPatchOrigin
@@ -30,7 +43,7 @@ export type FormSetPatch = {
 /**
  * @alpha
  */
-export type FormIncPatch = {
+export interface FormIncPatch extends FormPatchBase {
   path: Path
   type: 'inc'
   origin?: FormPatchOrigin
@@ -40,7 +53,7 @@ export type FormIncPatch = {
 /**
  * @alpha
  */
-export type FormDecPatch = {
+export interface FormDecPatch extends FormPatchBase {
   path: Path
   type: 'dec'
   origin?: FormPatchOrigin
@@ -50,7 +63,7 @@ export type FormDecPatch = {
 /**
  * @alpha
  */
-export type FormSetIfMissingPatch = {
+export interface FormSetIfMissingPatch extends FormPatchBase {
   path: Path
   origin?: FormPatchOrigin
   type: 'setIfMissing'
@@ -60,7 +73,7 @@ export type FormSetIfMissingPatch = {
 /**
  * @alpha
  */
-export type FormUnsetPatch = {
+export interface FormUnsetPatch extends FormPatchBase {
   path: Path
   origin?: FormPatchOrigin
   type: 'unset'
@@ -74,7 +87,7 @@ export type FormInsertPatchPosition = 'before' | 'after'
 /**
  * @alpha
  */
-export type FormInsertPatch = {
+export interface FormInsertPatch extends FormPatchBase {
   path: Path
   origin?: FormPatchOrigin
   type: 'insert'
@@ -85,7 +98,7 @@ export type FormInsertPatch = {
 /**
  * @alpha
  */
-export type FormDiffMatchPatch = {
+export interface FormDiffMatchPatch extends FormPatchBase {
   path: Path
   type: 'diffMatchPatch'
   origin?: FormPatchOrigin
