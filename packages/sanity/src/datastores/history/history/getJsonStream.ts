@@ -30,9 +30,7 @@ function getStream(response: Response): ReadableStream<StreamResult> {
 
       reader
         .read()
-        .then(function processResult(
-          result: ReadableStreamDefaultReadResult<Uint8Array>
-        ): void | Promise<void> {
+        .then(function processResult(result): void | Promise<void> {
           if (result.done) {
             if (cancelled) {
               return

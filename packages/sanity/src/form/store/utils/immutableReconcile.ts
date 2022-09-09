@@ -50,7 +50,7 @@ function _immutableReconcile<T>(
     return (allEqual ? previous : result) as any
   }
 
-  if (nextType === 'object') {
+  if (typeof next === 'object') {
     parents.add(next)
     assertType<Record<string, unknown>>(previous)
     assertType<Record<string, unknown>>(next)
@@ -73,5 +73,5 @@ function _immutableReconcile<T>(
 }
 
 // just some typescript trickery get type assertion
-// eslint-disable-next-line @typescript-eslint/no-empty-function
+// eslint-disable-next-line @typescript-eslint/no-empty-function, no-empty-function
 function assertType<T>(value: unknown): asserts value is T {}
