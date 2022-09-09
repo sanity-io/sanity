@@ -12,13 +12,16 @@ import {
   distinctUntilChanged,
   debounceTime,
   first,
+  throttleTime,
 } from 'rxjs/operators'
 
-import {concat, of, combineLatest, defer, from, Observable} from 'rxjs'
+import {concat, of, combineLatest, defer, from, Observable, asyncScheduler} from 'rxjs'
 import schema from 'part:@sanity/base/schema'
 import {validateDocument} from '@sanity/validation'
 import {Marker, ValidationContext, isReference} from '@sanity/types'
 import reduceJSON from 'json-reduce'
+import shallowEquals from 'shallow-equals'
+import {omit} from 'lodash'
 import {memoize} from '../utils/createMemoizer'
 import {IdPair} from '../types'
 import {observeDocumentPairAvailability} from '../../../preview/availability'
@@ -44,6 +47,7 @@ function findReferenceIds(obj: any): Set<string> {
   )
 }
 
+const EMPTY_ARRAY = []
 type GetDocumentExists = NonNullable<ValidationContext['getDocumentExists']>
 
 const listenDocumentExists = (id: string): Observable<boolean> =>
@@ -52,13 +56,27 @@ const listenDocumentExists = (id: string): Observable<boolean> =>
 const getDocumentExists: GetDocumentExists = ({id}) =>
   listenDocumentExists(id).pipe(first()).toPromise()
 
+// debounce delay for document updates (i.e. how long we wait before responding to changes in the document)
+const DOC_UPDATE_DELAY = 1000
+
+// debounce delay for referenced document updates (i.e. how long we wait before responding to changes in referenced documents
+const REF_UPDATE_DELAY = 1000
+
+// debounce delay for re-running validation either as a response to document updates or referenced document updates
+// e.g. we will only re-run validation if document edits and referenced documents has been "quiet" for this period of time
+// Note: this means validation will first be triggered at MAX(DOC_UPDATE_DELAY, REF_UPDATE_DELAY) + RERUN_VALIDATION_DELAY
+const RERUN_VALIDATION_DELAY = 1000
+
 export const validation = memoize(
   ({draftId, publishedId}: IdPair, typeName: string) => {
     const document$ = editState({draftId, publishedId}, typeName).pipe(
       map(({draft, published}) => draft || published),
-      // this debounce is needed for performance. it prevents the validation
-      // from being run on every keypress
-      debounceTime(300),
+      debounceTime(DOC_UPDATE_DELAY),
+      distinctUntilChanged((prev, next) =>
+        // _rev and _updatedAt may change without other fields changing (due to a limitation in mutator)
+        // so only pass on documents if _other_ attributes changes
+        shallowEquals(omit(prev, '_rev', '_updatedAt'), omit(next, '_rev', '_updatedAt'))
+      ),
       share()
     )
 
@@ -95,6 +113,7 @@ export const validation = memoize(
           )
         )
       ),
+      debounceTime(REF_UPDATE_DELAY),
       distinctUntilChanged((curr, next) => {
         const currKeys = Object.keys(curr)
         const nextKeys = Object.keys(next)
@@ -121,18 +140,24 @@ export const validation = memoize(
         // https://www.learnrxjs.io/learn-rxjs/operators/combination/combinelatest#why-use-combinelatest
         of(null),
         referencedDocumentUpdate$
-      ).pipe(
-        // don't remove, see `debounceTime` comment above
-        debounceTime(50)
       ),
     ]).pipe(
-      map(([document]) => document),
+      map(
+        ([
+          document,
+          // ignoring this as we merely want to re-run validation as a response to an update in a referenced document
+          referencedDocumentUpdate,
+        ]) => document
+      ),
+      // if referenced documents happens to update quite frequent and local document
+      // debounce delay hits about the same time, this will prevent us from running actual validation too often
+      debounceTime(RERUN_VALIDATION_DELAY),
       switchMap((document) =>
         concat(
           of({isValidating: true}),
           defer(async () => {
             if (!document?._type) {
-              return {markers: [], isValidating: false}
+              return {markers: EMPTY_ARRAY, isValidating: false}
             }
 
             // TODO: consider cancellation eventually
