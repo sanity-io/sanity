@@ -1,11 +1,11 @@
-import React, {useEffect, useReducer} from 'react'
+import React, {startTransition, useEffect, useReducer} from 'react'
 import formatDistanceToNow from 'date-fns/formatDistanceToNow'
 
 function useInterval(ms: number) {
   const [tick, update] = useReducer((n) => n + 1, 0)
 
   useEffect(() => {
-    const i = setInterval(update, ms)
+    const i = setInterval(() => startTransition(() => update()), ms)
     return () => clearInterval(i)
   }, [ms])
   return tick

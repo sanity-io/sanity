@@ -1,4 +1,4 @@
-import {useEffect, useRef} from 'react'
+import {startTransition, useEffect, useRef} from 'react'
 import shallowEquals from 'shallow-equals'
 import {usePrevious} from './usePrevious'
 
@@ -34,7 +34,7 @@ export function useDidUpdate<T>(
       return
     }
     if (!compare(previous, current)) {
-      didUpdate(previous, current)
+      startTransition(() => didUpdate(previous, current))
     }
   }, [didUpdate, current, previous, compare])
 }

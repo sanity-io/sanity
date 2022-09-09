@@ -1,5 +1,5 @@
 import type {Subscription} from 'rxjs'
-import React, {useState, useRef, useCallback, useMemo, useEffect} from 'react'
+import React, {startTransition, useState, useRef, useCallback, useMemo, useEffect} from 'react'
 import {DownloadIcon} from '@sanity/icons'
 import {Box, Button, Card, Dialog, Flex, Grid, Spinner, Text} from '@sanity/ui'
 import {Asset as AssetType, AssetFromSource, AssetSourceComponentProps} from '@sanity/types'
@@ -72,10 +72,12 @@ const DefaultAssetSource = function DefaultAssetSource(
       fetch$.current = versionedClient.observable
         .fetch(buildQuery(start, end, assetTypeParam), {}, {tag})
         .subscribe((result) => {
-          setIsLastPage(result.length < PER_PAGE)
-          // eslint-disable-next-line max-nested-callbacks
-          setAssets((prevState) => prevState.concat(result))
-          setIsLoading(false)
+          startTransition(() => {
+            setIsLastPage(result.length < PER_PAGE)
+            // eslint-disable-next-line max-nested-callbacks
+            setAssets((prevState) => prevState.concat(result))
+            setIsLoading(false)
+          })
         })
     },
     [assetType, setIsLoading, setAssets, setIsLastPage, versionedClient]

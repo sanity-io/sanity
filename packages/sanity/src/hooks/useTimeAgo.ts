@@ -1,4 +1,4 @@
-import {useEffect, useState} from 'react'
+import {startTransition, useEffect, useState} from 'react'
 import {
   format,
   differenceInSeconds,
@@ -30,13 +30,13 @@ export function useTimeAgo(time: Date | string, {minimal, agoSuffix}: TimeAgoOpt
   const [resolved, setResolved] = useState(() => formatRelativeTime(time, {minimal, agoSuffix}))
 
   useEffect(() => {
-    setResolved(formatRelativeTime(time, {minimal, agoSuffix}))
+    startTransition(() => setResolved(formatRelativeTime(time, {minimal, agoSuffix})))
   }, [time, minimal, agoSuffix])
 
   useEffect(() => {
     const id: number | undefined = Number.isFinite(resolved.refreshInterval)
       ? window.setInterval(
-          () => setResolved(formatRelativeTime(time, {minimal, agoSuffix})),
+          () => startTransition(() => setResolved(formatRelativeTime(time, {minimal, agoSuffix}))),
           resolved.refreshInterval
         )
       : undefined
