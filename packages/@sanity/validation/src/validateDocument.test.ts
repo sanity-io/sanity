@@ -168,6 +168,7 @@ describe('validateItem', () => {
     await expect(
       validateItem({
         client: client as any,
+        schema,
         value: {},
         document: undefined,
         path: [],
@@ -237,6 +238,7 @@ describe('validateItem', () => {
     await expect(
       validateItem({
         client: client as any,
+        schema,
         document: undefined,
         parent: undefined,
         path: undefined,
@@ -403,6 +405,7 @@ describe('validateItem', () => {
 
     const result = await validateItem({
       client: client as any,
+      schema,
       document: document,
       parent: undefined,
       path: [],
@@ -505,6 +508,7 @@ describe('validateItem', () => {
     await expect(
       validateItem({
         client: client as any,
+        schema,
         document: undefined,
         parent: undefined,
         path: [],
@@ -603,6 +607,7 @@ describe('validateItem', () => {
     await expect(
       validateItem({
         client: client as any,
+        schema,
         value,
         type: rootType,
         document,
@@ -745,6 +750,7 @@ describe('validateItem', () => {
 
     const resultPromise = validateItem({
       client: client as any,
+      schema,
       value,
       document: undefined,
       parent: undefined,

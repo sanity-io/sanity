@@ -1,3 +1,4 @@
+import {InitialValueResolverContext} from '@sanity/types'
 import {resolveInitialValue} from '../'
 import {resolveValue} from '../resolve'
 import {defaultTemplatesForSchema} from '../prepare'
@@ -18,6 +19,8 @@ function generateNestedObjectTest(
   }
 }
 
+const mockConfigContext: InitialValueResolverContext = {} as InitialValueResolverContext
+
 describe('resolveDeepInitialValues', () => {
   test('resolves deep, recursive default values', async () => {
     const defaultTemplates = defaultTemplatesForSchema(schema)
@@ -26,7 +29,7 @@ describe('resolveDeepInitialValues', () => {
       throw new Error('Could not find developer template')
     }
 
-    const initialValue = await resolveInitialValue(schema, developerTemplate)
+    const initialValue = await resolveInitialValue(schema, developerTemplate, {}, mockConfigContext)
 
     expect(initialValue.tasks[0]).toHaveProperty('_key')
 
@@ -68,7 +71,12 @@ describe('resolveDeepInitialValues', () => {
       throw new Error('Could not find person template')
     }
 
-    const initialValue = await resolveInitialValue(schema, personTemplate)
+    const initialValue = await resolveInitialValue(
+      schema,
+      personTemplate,
+      undefined,
+      mockConfigContext
+    )
     expect(initialValue).toEqual({
       _type: 'person',
       address: {
@@ -86,16 +94,21 @@ describe('resolveDeepInitialValues', () => {
       throw new Error('Could not find person template')
     }
 
-    const initialValue = await resolveInitialValue(schema, {
-      ...personTemplate,
-      value: {
-        ...resolveValue(personTemplate.value),
-        address: {
-          _type: 'address',
-          street: 'one new street',
+    const initialValue = await resolveInitialValue(
+      schema,
+      {
+        ...personTemplate,
+        value: {
+          ...resolveValue(personTemplate.value, undefined, mockConfigContext),
+          address: {
+            _type: 'address',
+            street: 'one new street',
+          },
         },
       },
-    })
+      {},
+      mockConfigContext
+    )
 
     expect(initialValue).toEqual({
       _type: 'person',
@@ -114,13 +127,18 @@ describe('resolveDeepInitialValues', () => {
       throw new Error('Could not find person template')
     }
 
-    const initialValue = await resolveInitialValue(schema, {
-      ...personTemplate,
-      value: {
-        ...resolveValue(personTemplate.value),
-        address: undefined,
+    const initialValue = await resolveInitialValue(
+      schema,
+      {
+        ...personTemplate,
+        value: {
+          ...resolveValue(personTemplate.value, undefined, mockConfigContext),
+          address: undefined,
+        },
       },
-    })
+      {},
+      mockConfigContext
+    )
 
     expect(initialValue).toStrictEqual({
       _type: 'person',
@@ -135,15 +153,20 @@ describe('resolveDeepInitialValues', () => {
       throw new Error('Could not find person template')
     }
 
-    const initialValue = await resolveInitialValue(schema, {
-      ...personTemplate,
-      value: {
-        ...resolveValue(personTemplate.value),
-        contact: {
-          _type: 'contact',
+    const initialValue = await resolveInitialValue(
+      schema,
+      {
+        ...personTemplate,
+        value: {
+          ...resolveValue(personTemplate.value, undefined, mockConfigContext),
+          contact: {
+            _type: 'contact',
+          },
         },
       },
-    })
+      {},
+      mockConfigContext
+    )
 
     expect(initialValue).toEqual({
       _type: 'person',

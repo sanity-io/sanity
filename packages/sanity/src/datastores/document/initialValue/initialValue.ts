@@ -1,4 +1,4 @@
-import {Schema} from '@sanity/types'
+import {InitialValueResolverContext, Schema} from '@sanity/types'
 import {from, merge, Observable, of} from 'rxjs'
 import {
   map,
@@ -36,7 +36,8 @@ export function getInitialValueStream(
   schema: Schema,
   initialValueTemplates: Template[],
   documentPreviewStore: DocumentPreviewStore,
-  opts: InitialValueOptions
+  opts: InitialValueOptions,
+  context: InitialValueResolverContext
 ): Observable<InitialValueMsg> {
   const draft$ = documentPreviewStore.observePaths(
     {_type: 'reference', _ref: getDraftId(opts.documentId)},
@@ -83,7 +84,7 @@ export function getInitialValueStream(
       }
 
       const initialValueWithParams$ = from(
-        resolveInitialValue(schema, template, opts.templateParams)
+        resolveInitialValue(schema, template, opts.templateParams, context)
       )
         .pipe(map((initialValue) => ({isResolving: false, initialValue})))
         .pipe(

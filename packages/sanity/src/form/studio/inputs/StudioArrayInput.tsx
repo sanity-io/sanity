@@ -7,8 +7,8 @@ import * as is from '../../utils/is'
 import {useFormBuilder} from '../../useFormBuilder'
 import {useClient} from '../../../hooks'
 import {ArrayOfObjectsInputProps, ArrayOfPrimitivesInputProps} from '../../types'
-import {resolveInitialValueForType} from '../../../templates'
 import {FileLike} from '../uploads/types'
+import {useResolveInitialValueForType} from '../../../datastores'
 
 export function StudioArrayInput(props: ArrayOfObjectsInputProps) {
   const formBuilder = useFormBuilder()
@@ -31,10 +31,12 @@ export function StudioArrayInput(props: ArrayOfObjectsInputProps) {
     [supportsFileUploads, supportsImageUploads]
   )
 
+  const resolveInitialValue = useResolveInitialValueForType()
+
   return (
     <ArrayInput
       {...props}
-      resolveInitialValue={resolveInitialValueForType}
+      resolveInitialValue={resolveInitialValue}
       resolveUploader={resolveUploader}
       client={client}
     />

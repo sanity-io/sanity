@@ -8,7 +8,7 @@ import {
   UsersIcon,
 } from '@sanity/icons'
 import {uuid} from '@sanity/uuid'
-import {StructureResolver} from 'sanity/desk'
+import {StructureBuilder, StructureResolver} from 'sanity/desk'
 import {DebugPane} from '../components/panes/debug'
 import {JsonDocumentDump} from '../components/panes/JsonDocumentDump'
 import {_buildTypeGroup} from './_buildTypeGroup'
@@ -22,6 +22,8 @@ import {
   STANDARD_PORTABLE_TEXT_INPUT_TYPES,
 } from './constants'
 import {delayValue} from './_helpers'
+import {Schema} from '@sanity/types'
+import {typesInOptionGroup} from './groupByOption'
 
 export const structure: StructureResolver = (S, {schema}) => {
   return S.list()
@@ -332,6 +334,14 @@ export const structure: StructureResolver = (S, {schema}) => {
         id: 'input-ci',
         title: 'CI',
         types: CI_INPUT_TYPES,
+      }),
+
+      S.divider(),
+
+      _buildTypeGroup(S, schema, {
+        id: 'v3',
+        title: 'V3 APIs',
+        types: typesInOptionGroup(S, schema, 'v3'),
       }),
 
       S.divider(),

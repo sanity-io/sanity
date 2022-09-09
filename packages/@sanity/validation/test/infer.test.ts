@@ -304,7 +304,9 @@ describe('schema validation inference', () => {
 
 async function expectNoError(validations: Rule[], value: unknown) {
   const errors = (
-    await Promise.all(validations.map((rule) => rule.validate(value, {client: {} as any})))
+    await Promise.all(
+      validations.map((rule) => rule.validate(value, {client: {} as any, schema: {} as any}))
+    )
   ).flat()
   if (errors.length === 0) {
     // This shouldn't actually be needed, but counts against an assertion in jest-terms
@@ -323,7 +325,9 @@ async function expectError(
   level = 'error'
 ) {
   const errors = (
-    await Promise.all(validations.map((rule) => rule.validate(value, {client: {} as any})))
+    await Promise.all(
+      validations.map((rule) => rule.validate(value, {client: {} as any, schema: {} as any}))
+    )
   ).flat()
   if (!errors.length) {
     throw new Error(`Expected error matching "${message}", but no errors were returned.`)

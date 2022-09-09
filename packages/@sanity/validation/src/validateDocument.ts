@@ -62,6 +62,7 @@ export default async function validateDocument(
   try {
     return await validateItem({
       client,
+      schema,
       parent: undefined,
       value: doc,
       path: [],

@@ -14,13 +14,13 @@ import {isNonNullable} from '../util'
 import {defaultFileAssetSources, defaultImageAssetSources} from '../form/defaults'
 import {validateWorkspaces} from '../studio/workspaces/validateWorkspaces'
 import {
-  Source,
-  SourceOptions,
   Config,
-  WorkspaceSummary,
   PreparedConfig,
   SingleWorkspace,
+  Source,
+  SourceOptions,
   WorkspaceOptions,
+  WorkspaceSummary,
 } from './types'
 import {
   _documentLanguageFilterReducer,
@@ -70,9 +70,9 @@ function normalizeIcon(
  * Takes in a config (created from the `createConfig` function) and returns
  * an array of `WorkspaceSummary`. Note: this only partially resolves a config.
  *
- * For usage usage inside of the Studio, it's preferred to pull the pre-resolved
+ * For usage inside the Studio, it's preferred to pull the pre-resolved
  * workspaces and sources via `useWorkspace` or `useSource`. For usage outside
- * of the Studio or for testing, use `resolveConfig`.
+ * the Studio or for testing, use `resolveConfig`.
  */
 export function prepareConfig(config: Config): PreparedConfig {
   const workspaceOptions: WorkspaceOptions[] | [SingleWorkspace] = Array.isArray(config)
@@ -201,7 +201,8 @@ function getBifurClient(client: SanityClient, auth: AuthStore) {
 
   const url = bifurVersionedClient.getUrl(`/socket/${dataset}`).replace(/^http/, 'ws')
 
-  return fromUrl(url, auth.token ? {token$: auth.token} : {})
+  const options = auth.token ? {token$: auth.token} : {}
+  return fromUrl(url, options)
 }
 
 function resolveSource({

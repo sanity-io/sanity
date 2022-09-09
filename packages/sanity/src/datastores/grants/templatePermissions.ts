@@ -1,12 +1,13 @@
-import {Observable, combineLatest, from, of} from 'rxjs'
-import {switchMap, map} from 'rxjs/operators'
-import {Schema} from '@sanity/types'
+import {combineLatest, from, Observable, of} from 'rxjs'
+import {map, switchMap} from 'rxjs/operators'
+import {InitialValueResolverContext, Schema} from '@sanity/types'
 import {useSchema, useTemplates} from '../../hooks'
-import {resolveInitialValue, Template, InitialValueTemplateItem} from '../../templates'
+import {InitialValueTemplateItem, resolveInitialValue, Template} from '../../templates'
 import {createHookFromObservableFactory} from '../../util/createHookFromObservableFactory'
 import {getDraftId, getPublishedId} from '../../util/draftUtils'
 import {useGrantsStore} from '../datastores'
 import {PartialExcept} from '../../util/PartialExcept'
+import {useInitialValueResolverContext} from '../document'
 import {GrantsStore, PermissionCheckResult} from './types'
 import {getDocumentValuePermissions} from './documentValuePermissions'
 
@@ -32,6 +33,7 @@ export interface TemplatePermissionsOptions {
   schema: Schema
   templates: Template[]
   templateItems: InitialValueTemplateItem[]
+  context: InitialValueResolverContext
 }
 
 /**
@@ -42,6 +44,7 @@ export function getTemplatePermissions({
   templateItems,
   templates,
   schema,
+  context,
 }: TemplatePermissionsOptions): Observable<
   Array<TemplatePermissionsResult<Record<string, unknown>>>
 > {
@@ -57,7 +60,12 @@ export function getTemplatePermissions({
           throw new Error(`template not found: "${item.templateId}"`)
         }
 
-        const resolvedInitialValue = await resolveInitialValue(schema, template, item.parameters)
+        const resolvedInitialValue = await resolveInitialValue(
+          schema,
+          template,
+          item.parameters,
+          context
+        )
 
         return {template, item, resolvedInitialValue}
       })
@@ -131,11 +139,13 @@ export function useTemplatePermissions({
   const schema = useSchema()
   const templates = useTemplates()
   const grantsStore = useGrantsStore()
+  const initialValueContext = useInitialValueResolverContext()
 
   return useTemplatePermissionsFromHookFactory({
     templateItems,
     grantsStore: rest.grantsStore || grantsStore,
     schema: rest.schema || schema,
     templates: rest.templates || templates,
+    context: initialValueContext,
   })
 }

@@ -1,4 +1,4 @@
-import React, {MutableRefObject, useCallback, useMemo, useRef} from 'react'
+import React, {useCallback, useMemo, useRef} from 'react'
 import {Path} from '@sanity/types'
 import {ArrayOfObjectsFormNode, FieldMember} from '../../store'
 import {
@@ -13,9 +13,9 @@ import {
 } from '../../types'
 import {FormCallbacksProvider, useFormCallbacks} from '../../studio/contexts/FormCallbacks'
 import {useDidUpdate} from '../../hooks/useDidUpdate'
-import {PatchArg, PatchEvent, setIfMissing, unset, insert} from '../../patch'
+import {insert, PatchArg, PatchEvent, setIfMissing, unset} from '../../patch'
 import {ensureKey} from '../../utils/ensureKey'
-import {resolveInitialValueForType} from '../../../templates'
+import {useResolveInitialValueForType} from '../../../datastores'
 
 /**
  * Responsible for creating inputProps and fieldProps to pass to ´renderInput´ and ´renderField´ for an array input
@@ -207,6 +207,8 @@ export function ArrayOfObjectsField(props: {
     [handleBlur, handleFocus, member.field.id]
   )
 
+  const resolveInitialValue = useResolveInitialValueForType()
+
   const inputProps = useMemo((): ArrayOfObjectsInputProps => {
     return {
       level: member.field.level,
@@ -235,7 +237,7 @@ export function ArrayOfObjectsField(props: {
       onAppendItem: handleAppendItem,
       onPrependItem: handlePrependItem,
       onFocusPath: handleFocusChildPath,
-      resolveInitialValue: resolveInitialValueForType,
+      resolveInitialValue,
 
       validation: member.field.validation,
       presence: member.field.presence,
