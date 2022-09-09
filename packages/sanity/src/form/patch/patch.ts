@@ -1,7 +1,5 @@
-/* eslint-disable camelcase */
-
-import {Path, PathSegment} from '@sanity/types'
-import {
+import type {Path, PathSegment} from '@sanity/types'
+import type {
   FormSetIfMissingPatch,
   FormInsertPatch,
   FormInsertPatchPosition,
@@ -11,8 +9,11 @@ import {
   FormDecPatch,
 } from './types'
 
+export const SANITY_PATCH_TYPE = Symbol.for('sanity.patch')
+
 export function setIfMissing(value: any, path: Path = []): FormSetIfMissingPatch {
   return {
+    patchType: SANITY_PATCH_TYPE,
     type: 'setIfMissing',
     path,
     value,
@@ -25,6 +26,7 @@ export function insert(
   path: Path = []
 ): FormInsertPatch {
   return {
+    patchType: SANITY_PATCH_TYPE,
     type: 'insert',
     path,
     position,
@@ -33,19 +35,19 @@ export function insert(
 }
 
 export function set(value: any, path: Path = []): FormSetPatch {
-  return {type: 'set', path, value}
+  return {patchType: SANITY_PATCH_TYPE, type: 'set', path, value}
 }
 
 export function unset(path: Path = []): FormUnsetPatch {
-  return {type: 'unset', path}
+  return {patchType: SANITY_PATCH_TYPE, type: 'unset', path}
 }
 
 export function inc(amount = 1, path: Path = []): FormIncPatch {
-  return {type: 'inc', path, value: amount}
+  return {patchType: SANITY_PATCH_TYPE, type: 'inc', path, value: amount}
 }
 
 export function dec(amount = 1, path: Path = []): FormDecPatch {
-  return {type: 'dec', path, value: amount}
+  return {patchType: SANITY_PATCH_TYPE, type: 'dec', path, value: amount}
 }
 
 export function prefixPath<T extends {path: Path}>(patch: T, segment: PathSegment): T {
