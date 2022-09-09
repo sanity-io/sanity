@@ -41,7 +41,7 @@
     "typescript"
   ],
   "dependencies": {
-    "@sanity/client": "^3.3.3",
+    "@sanity/client": "^3.4.1",
     "@types/react": "^17.0.42"
   },
   "devDependencies": {
