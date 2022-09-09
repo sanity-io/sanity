@@ -279,6 +279,10 @@ export function Navbar(props: NavbarProps) {
           {shouldRender.brandingCenter && <Box marginX={1}>{brandingComponent}</Box>}
 
           <Flex align="center">
+            <Box marginRight={1}>
+              <PresenceMenu collapse={shouldRender.collapsedPresenceMenu} />
+            </Box>
+
             {shouldRender.changelog && (
               <Box marginRight={1}>
                 <ChangelogButton />
@@ -290,10 +294,6 @@ export function Navbar(props: NavbarProps) {
                 <ConfigIssuesButton />
               </Box>
             )}
-
-            <Box marginRight={1}>
-              <PresenceMenu collapse={shouldRender.collapsedPresenceMenu} />
-            </Box>
 
             {shouldRender.tools && (
               <Box>
