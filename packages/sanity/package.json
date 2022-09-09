@@ -110,7 +110,7 @@
     "@sanity/icons": "^1.3.6",
     "@sanity/image-url": "^1.0.1",
     "@sanity/import": "3.0.0-dev-preview.15",
-    "@sanity/logos": "^1.1.17",
+    "@sanity/logos": "1.1.15",
     "@sanity/mutator": "3.0.0-dev-preview.15",
     "@sanity/portable-text-editor": "3.0.0-dev-preview.15",
     "@sanity/schema": "3.0.0-dev-preview.15",
