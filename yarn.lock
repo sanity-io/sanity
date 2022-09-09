@@ -3182,10 +3182,10 @@
     "@sanity/ui" "^0.37.0"
     react-copy-to-clipboard "^5.0.0"
 
-"@sanity/logos@^1.1.16":
-  version "1.1.16"
-  resolved "https://registry.yarnpkg.com/@sanity/logos/-/logos-1.1.16.tgz#1441d9af50f7d481edacc248fcb978cef051d2ab"
-  integrity sha512-GKOAImDKR2rqiLaKDoEcDOubwHw/ciNQExAUfnmZpR+nVMBFdHnHwf6HP3kdomFoAnK0U66PD/4drtbxFxugZQ==
+"@sanity/logos@^1.1.15":
+  version "1.1.15"
+  resolved "https://registry.yarnpkg.com/@sanity/logos/-/logos-1.1.15.tgz#1d9ca1ec2101338b7fc734db2a8213f2ad2c5ff3"
+  integrity sha512-bO5kQOqOQcM2t1AAl+TREU7gRFEBCH9KmvZ0bgyCRU5VAWPnDniQyMDkgeyzb+wnJwg79+SYmLDdt8OnZrPlTQ==
 
 "@sanity/slate-react@2.30.1":
   version "2.30.1"
