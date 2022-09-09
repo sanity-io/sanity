@@ -1,21 +1,16 @@
 import {createEditor, Descendant} from 'slate'
-import {Subject} from 'rxjs'
 import {getPortableTextFeatures} from '../getPortableTextFeatures'
 import {type} from '../../editor/__tests__/PortableTextEditorTester'
 import {createOperationToPatches} from '../operationToPatches'
 import {withPlugins} from '../../editor/plugins'
-import {keyGenerator} from '../..'
+import {PortableTextEditor, PortableTextEditorProps} from '../..'
 import {TextBlock} from '../../types/portableText'
 
 const portableTextFeatures = getPortableTextFeatures(type)
 
 const operationToPatches = createOperationToPatches(portableTextFeatures)
 const editor = withPlugins(createEditor(), {
-  portableTextFeatures,
-  keyGenerator,
-  change$: new Subject(),
-  readOnly: false,
-  syncValue: () => undefined,
+  portableTextEditor: new PortableTextEditor({type} as PortableTextEditorProps),
 })
 
 const createDefaultValue = () =>

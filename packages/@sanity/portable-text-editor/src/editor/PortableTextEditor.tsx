@@ -107,10 +107,10 @@ export class PortableTextEditor extends React.Component<
   public readOnly: boolean
   public slateInstance: PortableTextSlateEditor
   public type: ArraySchemaType<PortableTextBlock>
+  public incomingPatches$?: PatchObservable
 
   private changeSubscription: Subscription
   private editable?: EditableAPI
-  private incomingPatches$?: PatchObservable
   private pendingPatches: Patch[] = []
   private returnedPatches: Patch[] = []
   hasPendingLocalPatches: React.MutableRefObject<boolean | null>
@@ -206,13 +206,7 @@ export class PortableTextEditor extends React.Component<
 
     // Create the slate instance
     this.slateInstance = withPlugins(withReact(createEditor()), {
-      change$: this.change$,
-      incomingPatches$: this.incomingPatches$,
-      keyGenerator: this.keyGenerator,
-      maxBlocks: this.maxBlocks,
-      portableTextFeatures: this.portableTextFeatures,
-      readOnly: this.readOnly,
-      syncValue: this.syncValue,
+      portableTextEditor: this,
     })
 
     this.state = {
@@ -238,13 +232,7 @@ export class PortableTextEditor extends React.Component<
     if (this.props.readOnly !== prevProps.readOnly) {
       this.readOnly = Boolean(this.props.readOnly)
       this.slateInstance = withPlugins(this.slateInstance, {
-        change$: this.change$,
-        incomingPatches$: this.incomingPatches$,
-        keyGenerator: this.keyGenerator,
-        maxBlocks: this.maxBlocks,
-        portableTextFeatures: this.portableTextFeatures,
-        readOnly: this.readOnly,
-        syncValue: this.syncValue,
+        portableTextEditor: this,
       })
     }
     // Update the maxBlocks prop
