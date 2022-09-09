@@ -180,6 +180,15 @@ export const InlineObject = React.forwardRef(function InlineObject(
     [markers, preview, renderCustomMarkers]
   )
 
+  const handleEditButtonClickedReadOnly = useCallback(() => {
+    if (!readOnly) {
+      return
+    }
+    PortableTextEditor.blur(editor)
+    onFocus(path.concat(FOCUS_TERMINATOR))
+    setPopoverOpen(false)
+  }, [editor, onFocus, path, readOnly])
+
   const handleEditButtonClicked = useCallback((): void => {
     PortableTextEditor.blur(editor)
     onFocus(path.concat(FOCUS_TERMINATOR))
@@ -217,11 +226,15 @@ export const InlineObject = React.forwardRef(function InlineObject(
         contentEditable={false}
         ref={forwardedRef}
       >
-        <span ref={refElm} onDoubleClick={handleEditButtonClicked}>
+        <span
+          ref={refElm}
+          onClick={handleEditButtonClickedReadOnly}
+          onDoubleClick={handleEditButtonClicked}
+        >
           {markersToolTip || preview}
         </span>
       </Root>
-      {!readOnly && !isEditing && (
+      {!isEditing && !readOnly && (
         <InlineObjectToolbarPopover
           onDelete={handleDeleteButtonClicked}
           onEdit={handleEditButtonClicked}

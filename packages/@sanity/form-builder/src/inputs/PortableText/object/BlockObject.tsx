@@ -210,6 +210,7 @@ export const BlockObject = React.forwardRef(function BlockObject(
               data-image-preview={isImagePreview ? '' : undefined}
               data-invalid={hasErrors ? '' : undefined}
               data-markers={hasMarkers ? '' : undefined}
+              data-read-only={readOnly ? '' : undefined}
               data-selected={selected ? '' : undefined}
               data-testid="pte-block-object"
               data-warning={hasWarnings ? '' : undefined}

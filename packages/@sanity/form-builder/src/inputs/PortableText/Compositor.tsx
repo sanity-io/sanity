@@ -301,6 +301,7 @@ export function Compositor(props: InputProps) {
       <Editor
         hotkeys={editorHotkeys}
         initialSelection={initialSelection}
+        isActive={isActive}
         isFullscreen={isFullscreen}
         onFocus={onFocus}
         onCopy={onCopy}
@@ -322,6 +323,7 @@ export function Compositor(props: InputProps) {
       handleToggleFullscreen,
       initialSelection,
       isFullscreen,
+      isActive,
       onCopy,
       onFocus,
       onPaste,

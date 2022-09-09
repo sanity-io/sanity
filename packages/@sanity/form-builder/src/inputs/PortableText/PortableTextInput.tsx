@@ -106,7 +106,7 @@ const PortableTextInputController = React.forwardRef(function PortableTextInputC
     onFocus,
     onPaste,
     presence,
-    readOnly: readOnlyFromProps,
+    readOnly,
     renderBlockActions,
     renderCustomMarkers,
     type,
@@ -127,10 +127,6 @@ const PortableTextInputController = React.forwardRef(function PortableTextInputC
       setIsActive(true)
     }
   }, [hasFocus, focusPath])
-
-  const readOnly = useMemo(() => {
-    return isActive ? Boolean(readOnlyFromProps) : true
-  }, [isActive, readOnlyFromProps])
 
   const toast = useToast()
 
@@ -186,6 +182,9 @@ const PortableTextInputController = React.forwardRef(function PortableTextInputC
             PortableTextEditor.focus(ref.current)
           }
         })
+      }
+      if (isActive) {
+        setHasFocus(true)
       }
     }
   }, [hasFocus, isActive, ref])

@@ -18,9 +18,12 @@ export const ToolbarCard = styled(Card)`
   line-height: 0;
 `
 
-export const EditableCard = styled(Card)`
+export const EditableCard = styled(Card)<{$readOnly: boolean}>`
   position: relative;
   overflow: hidden;
+
+  --card-bg-color: ${({$readOnly, theme}) =>
+    $readOnly ? theme.sanity.color.input.default.readOnly.bg : theme.sanity.color.input.default.bg};
 
   & > [data-portal] {
     position: absolute;
@@ -64,6 +67,7 @@ export const EditableWrapper = styled(Card)<{$isFullscreen: boolean; $readOnly: 
   width: 100%;
   counter-reset: ${TEXT_LEVELS.map((l) => createListName(l)).join(' ')};
   overflow: hidden;
+  --card-bg-color: 'inherit';
 
   & > div {
     height: 100%;
