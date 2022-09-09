@@ -105,14 +105,16 @@ export const withPlugins = <T extends Editor>(
     return withSchemaTypes(
       withObjectKeys(
         withPortableTextMarkModel(
-          withPortableTextBlockStyle(withUtils(withPlaceholderBlock(withPortableTextLists(e))))
+          withPortableTextBlockStyle(
+            withUtils(withPlaceholderBlock(withPortableTextLists(withPortableTextSelections(e))))
+          )
         )
       )
     )
   }
 
   // The 'if' here is only to satisfy Typscript
-  if (withUndoRedo && withPatches && withPortableTextSelections) {
+  if (withUndoRedo && withPatches) {
     // Ordering is important here, selection dealing last, data manipulation in the middle and core model stuff first.
     return withSchemaTypes(
       withObjectKeys(
