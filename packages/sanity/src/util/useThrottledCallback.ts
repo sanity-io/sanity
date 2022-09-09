@@ -1,6 +1,6 @@
 import {throttle} from 'lodash'
 import type {ThrottleSettings} from 'lodash'
-import {useEffect, useMemo} from 'react'
+import {useMemo} from 'react'
 
 /**
  * @internal
@@ -27,14 +27,6 @@ export function useThrottledCallback(
   const throttledCallback = useMemo(
     () => throttle(callback, wait, options),
     [callback, options, wait]
-  )
-
-  useEffect(
-    () => () => {
-      // cleanup: invoke the last value
-      throttledCallback.flush()
-    },
-    [throttledCallback]
   )
 
   return throttledCallback
