@@ -23,7 +23,7 @@ import {Leaf} from './Leaf'
 import {Element} from './Element'
 import {usePortableTextEditor} from './hooks/usePortableTextEditor'
 import {PortableTextEditor} from './PortableTextEditor'
-import {createWithEditableAPI, createWithHotkeys, createWithInsertData} from './plugins'
+import {createWithInsertData, createWithHotkeys} from './plugins'
 import {useForwardedRef} from './hooks/useForwardedRef'
 import {usePortableTextEditorReadOnlyStatus} from './hooks/usePortableTextReadOnly'
 
@@ -113,12 +113,6 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
     [hotkeys, keyGenerator, portableTextEditor, portableTextFeatures]
   )
 
-  // Create the PortableTextEditor API
-  const withEditableAPI = useMemo(
-    () => createWithEditableAPI(portableTextEditor, portableTextFeatures, keyGenerator),
-    [keyGenerator, portableTextEditor, portableTextFeatures]
-  )
-
   // Output a minimal React editor inside Editable when in readOnly mode.
   // NOTE: make sure all the plugins used here can be safely run over again at any point.
   // There will be a problem if they redefine editor methods and then calling the original method within themselves.
@@ -128,8 +122,8 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
       return withInsertData(slateEditor)
     }
     debug('Editable is in edit mode')
-    return withEditableAPI(withInsertData(withHotKeys(slateEditor)))
-  }, [readOnly, slateEditor, withEditableAPI, withHotKeys, withInsertData])
+    return withInsertData(withHotKeys(slateEditor))
+  }, [readOnly, slateEditor, withHotKeys, withInsertData])
 
   const renderElement = useCallback(
     (eProps) => (

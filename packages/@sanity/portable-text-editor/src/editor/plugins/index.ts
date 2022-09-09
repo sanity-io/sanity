@@ -2,6 +2,7 @@ import {BaseOperation, Editor, NodeEntry, Node} from 'slate'
 import {PortableTextSlateEditor} from '../../types/editor'
 import {createEditorOptions} from '../../types/options'
 import {createOperationToPatches} from '../../utils/operationToPatches'
+import {createWithEditableAPI} from './createWithEditableAPI'
 import {createWithMaxBlocks} from './createWithMaxBlocks'
 import {createWithObjectKeys} from './createWithObjectKeys'
 import {createWithPatches} from './createWithPatches'
@@ -41,8 +42,11 @@ export const withPlugins = <T extends Editor>(
   options: createEditorOptions
 ): PortableTextSlateEditor => {
   const e = editor as T & PortableTextSlateEditor
-  e.maxBlocks = options.maxBlocks || -1
-  e.readOnly = options.readOnly || false
+  const {portableTextEditor} = options
+  const {portableTextFeatures, keyGenerator, readOnly, change$, syncValue, incomingPatches$} =
+    portableTextEditor
+  e.maxBlocks = portableTextEditor.maxBlocks || -1
+  e.readOnly = portableTextEditor.readOnly || false
   if (e.destroy) {
     e.destroy()
   } else {
@@ -54,11 +58,15 @@ export const withPlugins = <T extends Editor>(
       normalizeNode: e.normalizeNode,
     })
   }
-  const {portableTextFeatures, keyGenerator, change$, incomingPatches$, syncValue} = options
   const operationToPatches = createOperationToPatches(portableTextFeatures)
   const withObjectKeys = createWithObjectKeys(portableTextFeatures, keyGenerator)
   const withSchemaTypes = createWithSchemaTypes(portableTextFeatures)
-  const [withPatches, withPatchesCleanupFunction] = options.readOnly
+  const withEditableAPI = createWithEditableAPI(
+    portableTextEditor,
+    portableTextFeatures,
+    keyGenerator
+  )
+  const [withPatches, withPatchesCleanupFunction] = readOnly
     ? []
     : createWithPatches({
         patchFunctions: operationToPatches,
@@ -69,7 +77,7 @@ export const withPlugins = <T extends Editor>(
       })
   const withMaxBlocks = createWithMaxBlocks()
   const withPortableTextLists = createWithPortableTextLists(portableTextFeatures)
-  const [withUndoRedo, withUndoRedoCleanupFunction] = options.readOnly
+  const [withUndoRedo, withUndoRedoCleanupFunction] = readOnly
     ? []
     : createWithUndoRedo(incomingPatches$)
   const withPortableTextMarkModel = createWithPortableTextMarkModel(
@@ -101,12 +109,16 @@ export const withPlugins = <T extends Editor>(
       withUndoRedoCleanupFunction()
     }
   }
-  if (options.readOnly) {
+  if (readOnly) {
     return withSchemaTypes(
       withObjectKeys(
         withPortableTextMarkModel(
           withPortableTextBlockStyle(
-            withUtils(withPlaceholderBlock(withPortableTextLists(withPortableTextSelections(e))))
+            withUtils(
+              withPlaceholderBlock(
+                withPortableTextLists(withPortableTextSelections(withEditableAPI(e)))
+              )
+            )
           )
         )
       )
@@ -122,7 +134,11 @@ export const withPlugins = <T extends Editor>(
           withPortableTextBlockStyle(
             withPortableTextLists(
               withPlaceholderBlock(
-                withUtils(withMaxBlocks(withUndoRedo(withPatches(withPortableTextSelections(e)))))
+                withUtils(
+                  withMaxBlocks(
+                    withUndoRedo(withPatches(withPortableTextSelections(withEditableAPI(e))))
+                  )
+                )
               )
             )
           )
