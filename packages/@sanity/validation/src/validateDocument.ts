@@ -94,6 +94,8 @@ type ValidateItemOptions = {
   value: unknown
 } & ExplicitUndefined<ValidationContext>
 
+const idle = () => new Promise((resolve) => window.requestIdleCallback(resolve))
+
 export async function validateItem({
   value,
   type,
@@ -101,6 +103,7 @@ export async function validateItem({
   parent,
   ...restOfContext
 }: ValidateItemOptions): Promise<ValidationMarker[]> {
+  await idle()
   const rules = normalizeValidationRules(type)
 
   // run validation for the current value
