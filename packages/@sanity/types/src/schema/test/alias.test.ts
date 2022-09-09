@@ -37,6 +37,21 @@ describe('alias type test', () => {
 
     const assignableToStringOptions: Schema.StringOptions | undefined = narrowedAlias.options
   })
+
+  it('should support aliased array', () => {
+    const narrowedAlias: Schema.TypeAliasDefinition<'custom-string-array', 'array'> = defineType(
+      {
+        type: 'custom-string-array',
+        name: 'custom-string-redefined',
+        options: {
+          sortable: true,
+          list: [{title: 'title', value: {_type: 'unknown-so-not-perfect'}}],
+        },
+      },
+      {alias: 'array'}
+    )
+    const assignableToArrayOptions: Schema.ArrayOptions | undefined = narrowedAlias.options
+  })
 })
 
 export {}

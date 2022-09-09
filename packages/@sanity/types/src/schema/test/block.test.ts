@@ -28,21 +28,19 @@ describe('block types', () => {
         styles: [{title: 'Quote', value: 'blockquote'}],
         lists: [{title: 'Bullet', value: 'bullet'}],
         marks: {
-          // TODO
           decorators: [
             {title: 'Strong', value: 'strong'},
             {title: 'Emphasis', value: 'em'},
             {
               title: 'Sup',
               value: 'sup',
-              /*  blockEditor: {
+              blockEditor: {
                 icon: () => null,
-                render: ({children}) => children,
-              },*/
+                render: (props: any) => props,
+              },
             },
           ],
-          // TODO need to type arrays of types correctly
-          //annotations: [{name: 'author', title: 'Author', type: 'reference', to: {type: 'author'}}],
+          annotations: [{name: 'author', title: 'Author', type: 'reference', to: {type: 'author'}}],
         },
         of: [{type: 'string'}],
         options: {

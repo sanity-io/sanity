@@ -1,5 +1,5 @@
 // Note: INCOMPLETE, but it's a start
-import type {ComponentType, ReactNode} from 'react'
+import type {ComponentType} from 'react'
 import {SanityClient} from '@sanity/client'
 import type {Rule} from '../validation'
 import {UriValidationOptions} from '../validation'
@@ -10,6 +10,14 @@ import type {SanityDocument} from '../documents'
 import type {CurrentUser} from '../user'
 import type {PreviewConfig} from './preview'
 import {RuleDef, ValidationBuilder} from './ruleBuilder'
+import {
+  DefineSchemaType,
+  MaybeStrict,
+  NarrowPreview,
+  StrictDefinition,
+  WidenInitialValue,
+  WidenValidation,
+} from './defineHelpers'
 
 // eslint-disable-next-line @typescript-eslint/no-namespace
 export namespace Schema {
@@ -31,12 +39,10 @@ export namespace Schema {
     reference: ReferenceDefinition
     crossDatasetReference: CrossDatasetReferenceDefinition
     slug: SlugDefinition
+    span: SpanDefinition
     string: StringDefinition
     text: TextDefinition
     url: UrlDefinition
-    // TODO not sure if these should or needs to be here
-    // "not something you create yourself"
-    //span: SpanDefinition
   }
 
   /**
@@ -85,23 +91,21 @@ export namespace Schema {
   export interface FieldBase {
     fieldset?: string
     group?: string | string[]
-    /*    hidden?: ConditionalProperty
-    readOnly?: ConditionalProperty
-    validation?: SchemaValidationValue*/
   }
 
-  export type InferSchemaDef<
-    TType extends string,
-    TAlias extends Schema.Type | undefined,
-    TArrayType extends string | undefined
-  > = TType extends 'array'
-    ? TArrayType extends 'string'
-      ? Schema.StringArrayDefinition
-      : Schema.ObjectArrayDefinition
-    : TType extends Schema.Type
-    ? Schema.IntrinsicTypeDefinition[TType]
-    : Schema.TypeAliasDefinition<TType, TAlias>
-
+  /*
+   * Concessions:
+   * Arrays of schema-definitions cannot be sufficiently narrowed down when defining schemas.
+   *
+   * Instead of `[StringDefinition, AliasTypeDef]`, the type will be `(StringDefinition | AliasTypeDef) []``
+   * Once we introduce AliasTypeDefs with `type: 'string'``, typescript is unable to infer the exact schema
+   * definition per array value.
+   *
+   * To make it possible to define fields without using `defineType` this compromise type
+   * broadly types up fields found across all schema types.
+   *
+   * For better type-saftey, use `defineField`to narrow each array value.
+   */
   /**
    * The shape of a field definition. Note, it's recommended to use the
    * `defineField` function instead of using this type directly.
@@ -111,21 +115,23 @@ export namespace Schema {
    *
    * A field definition can be a reference to another registered top-level type
    * or a inline type definition.
+   *
    */
-  export type FieldDefinition<TType extends Type = Type> = Omit<
-    Schema.IntrinsicTypeDefinition[TType] | Schema.TypeAliasDefinition<string, TType>,
+  export type FieldDefinition<
+    TType extends Type = Type,
+    TAlias extends Type | undefined = undefined
+  > = Omit<
+    IntrinsicTypeDefinition[TType] | TypeAliasDefinition<string, TAlias>,
     'validation' | 'initialValue'
-  > &
-    FieldBase /* compromises */ & {
-      name: string
-      validation?: SchemaValidationValue
-      initialValue?: InitialValueProperty<any, any>
+  > & /* compromises */ {
+    name: string
 
-      /* compromises for inline field definitions without defineType*/
-      fields?: FieldDefinition[]
-      of?: ArrayOf<FieldDefinition>
-      to?: ReferenceTo
-    }
+    validation?: SchemaValidationValue
+    initialValue?: InitialValueProperty<any, any>
+    fields?: FieldDefinition[]
+    of?: ArrayOfType<FieldDefinition>[]
+    to?: ReferenceTo
+  } & FieldBase
 
   export type ImageMetadataType = 'blurhash' | 'lqip' | 'palette' | 'exif' | 'location'
 
@@ -163,34 +169,6 @@ export namespace Schema {
     initialValue?: unknown
   }
 
-  /*  export type DefineOptions<T extends string> = T extends 'array'
-    ? ArrayOptions
-    : T extends 'block'
-    ? BlockOptions
-    : T extends 'boolean'
-    ? BooleanOptions
-    : T extends 'date'
-    ? DateOptions
-    : T extends 'datetime'
-    ? DatetimeOptions
-    : T extends 'file'
-    ? FileOptions
-    : T extends 'image'
-    ? ImageOptions
-    : T extends 'number'
-    ? NumberOptions
-    : T extends 'object'
-    ? ObjectOptions
-    : T extends 'reference'
-    ? ReferenceOptions
-    : T extends 'crossDatasetReference'
-    ? CrossDatasetReferenceDefinition
-    : T extends 'slug'
-    ? SlugOptions
-    : T extends 'string'
-    ? StringOptions
-    : never*/
-
   export interface ArrayOptions<TValue = unknown> {
     sortable?: boolean
     layout?: 'tags' | 'grid'
@@ -205,29 +183,19 @@ export namespace Schema {
     unique: () => ArrayRule<Value>
   }
 
-  export type ArrayDefinition = StringArrayDefinition | ObjectArrayDefinition
+  export type ArrayOfType<T> = Omit<T, 'name' | 'hidden' | 'fieldset' | 'group'> & {
+    /**
+     * `name` is suffixed to _type of the array item
+     */
+    name?: string
+  }
 
-  interface ArrayDefBase extends BaseDefinitionOptions {
+  export interface ArrayDefinition extends BaseDefinitionOptions {
     type: 'array'
-  }
-
-  export type ArrayTypeDefinition<TType extends Exclude<Type, 'string'> = Exclude<Type, 'string'>> =
-    IntrinsicTypeDefinition[TType] | TypeAliasDefinition<TType, undefined>
-
-  type ArrayOf<T> = (Omit<T, 'name' | 'options' | 'validation' | 'hidden'> & {name?: string})[]
-
-  export interface ObjectArrayDefinition extends ArrayDefBase {
-    of: ArrayOf<ArrayTypeDefinition>
-    initialValue?: InitialValueProperty<any, any[]>
-    validation?: ValidationBuilder<ArrayRule<any[]>, any[]>
+    of: ArrayOfType<FieldDefinition>[]
+    initialValue?: InitialValueProperty<any, unknown[]>
+    validation?: ValidationBuilder<ArrayRule<unknown[]>, unknown[]>
     options?: ArrayOptions
-  }
-
-  export interface StringArrayDefinition extends ArrayDefBase {
-    of: ArrayOf<StringDefinition>
-    initialValue?: InitialValueProperty<any, string[]>
-    validation?: ValidationBuilder<ArrayRule<string[]>, string[]>
-    options?: ArrayOptions<string>
   }
 
   export interface BlockOptions {
@@ -252,14 +220,14 @@ export namespace Schema {
     title: string
     value: string
     blockEditor?: {
-      icon?: () => ReactNode
-      render?: (props: {children: ReactNode}) => ReactNode
+      icon?: string | ComponentType
+      render?: ComponentType
     }
   }
 
   export interface MarksDefinition {
     decorators?: DecoratorDefinition[]
-    annotations?: Array<TypeDefinition | TypeReference>[]
+    annotations?: (TypeDefinition | TypeReference)[]
   }
 
   export interface BooleanOptions {
@@ -379,7 +347,7 @@ export namespace Schema {
     initialValue?: InitialValueProperty<any, GeopointValue>
   }
 
-  interface AssetFieldOptions {
+  export interface AssetFieldOptions {
     /**
      * @deprecated This is now the default behavior - use `fieldset` to hide fields by default
      */
@@ -387,7 +355,7 @@ export namespace Schema {
   }
 
   export type AssetFieldDefinition = FieldDefinition & {
-    options?: AssetFieldOptions
+    options?: AssetFieldOptions & FieldDefinition['options']
   }
 
   export interface ImageOptions extends FileOptions {
@@ -417,8 +385,6 @@ export namespace Schema {
   export interface ImageDefinition extends Omit<ObjectDefinition, 'type' | 'fields' | 'options'> {
     type: 'image'
     fields?: AssetFieldDefinition[]
-    metadata?: ImageMetadataType[]
-    hotspot?: boolean
     options?: ImageOptions
     validation?: ValidationBuilder<ImageRule, ImageValue>
     initialValue?: InitialValueProperty<any, ImageValue>
@@ -463,7 +429,10 @@ export namespace Schema {
 
   export interface ObjectDefinition extends BaseDefinitionOptions {
     type: 'object'
-    fields: FieldDefinition[]
+    /**
+     * Object must have at least one field.
+     */
+    fields: [FieldDefinition, ...FieldDefinition[]]
     groups?: FieldGroupDefinition[]
     fieldsets?: FieldsetDefinition[]
     preview?: PreviewConfig
@@ -549,8 +518,12 @@ export namespace Schema {
     initialValue?: InitialValueProperty<any, string>
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-empty-interface
+  export interface SpanOptions extends StringOptions {}
+
   export interface SpanDefinition extends BaseDefinitionOptions {
     type: 'span'
+    options?: SpanOptions
   }
 
   // eslint-disable-next-line @typescript-eslint/no-empty-interface
@@ -582,26 +555,28 @@ export namespace Schema {
   }
 }
 
-type MaybeUnknownProps<TStrict extends boolean | undefined> = TStrict extends false
-  ? {
-      options?: {[index: string]: any}
-      [index: string]: any
-    }
-  : unknown
+export function defineType<
+  TType extends string,
+  TName extends string,
+  TSelect extends Record<string, string> | undefined,
+  TPrepareValue extends Record<keyof TSelect, any> | undefined,
+  TAlias extends Schema.Type | undefined,
+  TStrict extends StrictDefinition
+>(
+  schemaDefinition: {
+    type: TType
+    name: TName
+  } & Omit<DefineSchemaType<TType, TAlias>, 'preview'> &
+    NarrowPreview<TType, TAlias, TSelect, TPrepareValue> &
+    MaybeStrict<TStrict>,
 
-type MaybePreview<
-  Select extends Record<string, string> | undefined,
-  PrepareValue extends Record<keyof Select, any> | undefined
-> = Select extends Record<string, string>
-  ? PrepareValue extends Record<keyof Select, any>
-    ? PreviewConfig<Select, PrepareValue>
-    : never
-  : never
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  defineOptions?: DefineOptions<TStrict, TAlias>
+): typeof schemaDefinition {
+  return schemaDefinition
+}
 
-interface DefineOptions<
-  TStrict extends boolean | undefined,
-  TAlias extends Schema.Type | undefined
-> {
+interface DefineOptions<TStrict extends StrictDefinition, TAlias extends Schema.Type | undefined> {
   /**
    * `strict: false` allows unknown properties in the schema.
    * Use this when adding customizations to the schema that are not part of sanity core
@@ -611,57 +586,83 @@ interface DefineOptions<
   alias?: Schema.NarrowType<TAlias>
 }
 
-export function defineType<
-  TType extends string,
-  TArrayType extends string | undefined,
-  TSelect extends Record<string, string> | undefined,
-  TPrepareValue extends Record<keyof TSelect, any> | undefined,
-  TName extends string,
-  TAlias extends Schema.Type | undefined,
-  TStrict extends boolean | undefined
->(
-  schemaDefinition: {
-    type: TType
-    name: TName
-    of?: {type: TArrayType}[]
-    preview?: MaybePreview<TSelect, TPrepareValue>
-  } & Omit<Schema.InferSchemaDef<TType, TAlias, TArrayType>, 'preview'> &
-    MaybeUnknownProps<TStrict>,
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  defineOptions?: DefineOptions<TStrict, TAlias>
-): Omit<Schema.InferSchemaDef<TType, TAlias, TArrayType>, 'preview'> & {
-  name: TName
-  preview?: MaybePreview<TSelect, TPrepareValue>
-} {
-  return schemaDefinition
-}
-
 export function defineField<
   TType extends string,
-  TArrayType extends string | undefined,
   TName extends string,
-  TStrict extends boolean | undefined,
-  TAlias extends Schema.Type | undefined
+  TSelect extends Record<string, string> | undefined,
+  TPrepareValue extends Record<keyof TSelect, any> | undefined,
+  TAlias extends Schema.Type | undefined,
+  TStrict extends StrictDefinition,
+  TImageField extends boolean | undefined
 >(
   schemaField: {
     type: TType
     name: TName
-    of?: {type: TArrayType}[]
-  } & Schema.InferSchemaDef<TType, TAlias, TArrayType> &
+  } & DefineSchemaType<TType, TAlias> &
+    NarrowPreview<TType, TAlias, TSelect, TPrepareValue> &
     Schema.FieldBase &
-    MaybeUnknownProps<TStrict>,
+    MaybeStrict<TStrict> &
+    (TImageField extends true ? {options?: Schema.AssetFieldOptions} : unknown),
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  defineOptions?: DefineOptions<TStrict, TAlias> & {
+    /**
+     * Set this to true for fields in an image object.
+     * It will allow additional options relevant in that context.
+     * */
+    imageField?: TImageField
+  }
+): typeof schemaField & WidenValidation & WidenInitialValue {
+  return schemaField
+}
+
+export function defineArrayType<
+  TType extends string,
+  TName extends string,
+  TStrict extends StrictDefinition,
+  TAlias extends Schema.Type | undefined
+>(
+  arraySchema: {
+    type: TType
+    /**
+     * When provided, `name` used as `_type` for the array item when stored.
+     *
+     * Necessary when an array contains multiple entries with the same `type` with
+     * different configuration.
+     */
+    name?: TName
+  } & Omit<Schema.ArrayOfType<DefineSchemaType<TType, TAlias>>, 'name'> &
+    MaybeStrict<TStrict>,
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   defineOptions?: DefineOptions<TStrict, TAlias>
-): Schema.InferSchemaDef<TType, TAlias, TArrayType> &
-  Schema.FieldBase & {
-    name: TName
-    // type erease these on the way out to be compatible with FieldDefinition
-    validation?: SchemaValidationValue
-    initialValue?: InitialValueProperty<any, any>
-  } {
-  return schemaField
+): typeof arraySchema & WidenValidation & WidenInitialValue {
+  return arraySchema
+}
+
+/**
+ * `typed` can be used to ensure that a object conforms to an exact interface.
+ *
+ * It can be useful when working with `defineType` and `defineField` on occasions where a wider type with
+ * custom options or properties is required.
+ *
+ * ## Example  usage
+ * ```ts
+ *  defineField({
+ *    type: 'string',
+ *    name: 'nestedField',
+ *    options: typed<AssetFieldOptions & Schema.StringOptions>({
+ *      isHighlighted: true,
+ *      layout: 'radio',
+ *      //@ts-expect-error unknownProp is not part of AssetFieldOptions & Schema.StringOptions
+ *      unknownProp: 'not allowed in typed context',
+ *    }),
+ *  }),
+ * ```
+ *
+ * @param input - returned directly
+ */
+export function typed<T>(input: T): T {
+  return input
 }
 
 /**
@@ -682,6 +683,8 @@ export type SchemaType =
  *
  * It's recommend to use the `defineType` helper instead of this type by
  * itself.
+ *
+ * @see defineType
  */
 export type SchemaTypeDefinition<TType extends Schema.Type = Schema.Type> =
   Schema.TypeDefinition<TType>

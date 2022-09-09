@@ -66,6 +66,16 @@ describe('string types', () => {
         },
       })
     })
+
+    it('should not have type-helping fields not on string', () => {
+      defineType({
+        type: 'string',
+        name: 'custom-string',
+        //@ts-expect-error preview does not exist in type StringDefinition
+        preview: {},
+        of: [],
+      })
+    })
   })
 
   describe('defineField', () => {

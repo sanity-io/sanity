@@ -3,7 +3,7 @@
  * Some of these tests have no expect statement;
  * use of ts-expect-error serves the same purpose - TypeScript is the testrunner here
  */
-import {defineType, Schema} from '../types'
+import {defineField, defineType, Schema, typed} from '../types'
 
 describe('file types', () => {
   describe('defineType', () => {
@@ -17,7 +17,7 @@ describe('file types', () => {
         initialValue: () =>
           Promise.resolve({
             asset: {
-              _type: 'reference' as const, // TODO might be too strict to require const here
+              _type: 'reference' as const,
               _ref: 'hardcoded-file',
             },
             otherField: 'yolo',
@@ -41,8 +41,7 @@ describe('file types', () => {
           accept: 'application/msword',
           sources: [{name: 'source', title: 'Source', icon: () => null, component: () => null}],
         },
-        //TODO typesafe field inference
-        fields: [],
+        fields: [{type: 'string', name: 'string'}],
       })
 
       const assignableToFile: Schema.FileDefinition = fileDef
@@ -50,6 +49,109 @@ describe('file types', () => {
       // @ts-expect-error file is not assignable to string
       const notAssignableToString: Schema.StringDefinition = fileDef
     })
+  })
+
+  it('should define file fields safely (with some compromises without defineField)', () => {
+    const fileDef = defineType({
+      type: 'file',
+      name: 'custom-file',
+      fields: [
+        //@ts-expect-error not assignable to FieldDefinition
+        {},
+        {
+          type: 'string',
+          name: 'stringField',
+          title: 'String',
+          readOnly: true,
+          hidden: false,
+          fieldset: 'test',
+          group: 'test',
+          fields: [],
+          validation: (Rule) => Rule.max(45),
+          initialValue: 'string',
+          options: {
+            layout: 'whatever',
+            anything: 'goes',
+            isHighlighted: true,
+          },
+        },
+        {
+          type: 'array',
+          name: 'arrayField',
+          of: [{type: 'string'}],
+        },
+        {
+          type: 'array',
+          name: 'arrayField',
+          of: [{type: 'object', fields: [{type: 'string', name: 'field'}]}],
+        },
+        {
+          type: 'reference',
+          name: 'arrayField',
+          to: {type: 'string'},
+        },
+        {
+          type: 'reference',
+          name: 'arrayField',
+          to: [{type: 'person'}],
+        },
+        {
+          type: 'custom-type',
+          name: 'customField',
+          readOnly: true,
+          hidden: false,
+          options: {
+            layout: 'whatever',
+            slugify: () => 'all bets a re of',
+            isHighlighted: true,
+          },
+        },
+        {
+          type: 'object',
+          name: 'customInlineObject',
+          initialValue: {nestedField: 'value'},
+          fields: [
+            //@ts-expect-error not assignable to FieldDefinition
+            {},
+            {
+              type: 'string',
+              name: 'nestedField',
+              options: {
+                layout: 'whatever',
+                slugify: () => 'all bets are off',
+              },
+            },
+            defineField({
+              type: 'string',
+              name: 'nestedField',
+              options: {
+                layout: 'dropdown',
+                //@ts-expect-error wrapping with defineField will give narrowed types always
+                unknownProp: 'strict: so not allowed',
+              },
+            }),
+          ],
+        },
+        defineField({
+          type: 'string',
+          name: 'stringField',
+          title: 'String',
+          readOnly: true,
+          hidden: false,
+          // boy would typesafe fieldset be cool
+          fieldset: 'test',
+          group: 'test',
+          options: {
+            layout: 'radio',
+            //@ts-expect-error explicit typing prevents this
+            unknownProp: 'strict: widen interface',
+          },
+        }),
+      ],
+    })
+
+    let assignableToFile: Schema.FileDefinition = fileDef
+    assignableToFile = defineType(assignableToFile)
   })
 })
 

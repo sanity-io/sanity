@@ -37,7 +37,6 @@ describe('document types', () => {
               collapsed: true,
               collapsible: true,
               columns: 2,
-              //TODO is this actually supported on fieldset?
               modal: {type: 'dialog', width: 1},
             },
           },
@@ -58,7 +57,7 @@ describe('document types', () => {
             }
           },
         },
-        fields: [],
+        fields: [{type: 'string', name: 'string'}],
       })
 
       const assignableToDocument: Schema.DocumentDefinition = documentDef
@@ -81,7 +80,7 @@ describe('document types', () => {
             return {title, subtitle}
           },
         },
-        fields: [],
+        fields: [{type: 'string', name: 'string'}],
       })
 
       defineType({
@@ -96,7 +95,7 @@ describe('document types', () => {
             return {title, subtitle}
           },
         },
-        fields: [],
+        fields: [{type: 'string', name: 'string'}],
       })
 
       defineType({
@@ -112,7 +111,7 @@ describe('document types', () => {
             return {title}
           },
         },
-        fields: [],
+        fields: [{type: 'string', name: 'string'}],
       })
 
       defineType({
@@ -127,7 +126,7 @@ describe('document types', () => {
             return {title: notInSelect}
           },
         },
-        fields: [],
+        fields: [{type: 'string', name: 'string'}],
       })
     })
 
@@ -182,7 +181,7 @@ describe('document types', () => {
               slugify: () => 'all bets a re of',
             },
           },
-          {
+          defineField({
             type: 'object',
             name: 'customInlineObject',
             initialValue: {nestedField: 'value'},
@@ -216,7 +215,7 @@ describe('document types', () => {
                 {strict: false}
               ),
             ],
-          },
+          }),
           defineField({
             type: 'string',
             name: 'stringField',

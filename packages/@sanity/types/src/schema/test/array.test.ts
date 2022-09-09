@@ -3,7 +3,7 @@
  * Some of these tests have no expect statement;
  * use of ts-expect-error serves the same purpose - TypeScript is the testrunner here
  */
-import {defineType, Schema} from '../types'
+import {defineArrayType, defineType, Schema} from '../types'
 
 describe('array types', () => {
   describe('defineType', () => {
@@ -20,8 +20,11 @@ describe('array types', () => {
             .min(1)
             .max(10)
             .length(10)
-            // value is typed to string[] \o/
-            .custom((value) =>
+            // concession: making arrayDefinition generic to its value type
+            // is possible but we would have to make the 'of' property optional on all types in the defineType signature.
+            // That seemed less ideal than having to type custom value here,
+            // so the implementation was dropped
+            .custom((value?: string[]) =>
               value?.length === 2 && value[0].toLowerCase() == 'yolo' ? 'Error' : true
             )
             .warning(),
@@ -34,11 +37,6 @@ describe('array types', () => {
           {type: 'string'},
           {type: 'string', name: 'suffix'},
           {type: 'string', name: 'suffix2', title: 'Titled'},
-          {
-            type: 'string',
-            name: 'suffix2',
-            title: 'Titled',
-          },
         ],
         options: {
           layout: 'grid',
@@ -52,8 +50,8 @@ describe('array types', () => {
         },
       })
 
-      const assignableToArray: Schema.ArrayDefinition = arrayDef
-      const assignableToStringArray: Schema.StringArrayDefinition = arrayDef
+      let assignableToArray: Schema.ArrayDefinition = arrayDef
+      assignableToArray = defineType(assignableToArray)
 
       // @ts-expect-error string is not assignable to boolean
       const notAssignableToBoolean: Schema.BooleanDefinition = stringDef
@@ -79,7 +77,16 @@ describe('array types', () => {
         readOnly: () => false,
         // type inference here is not great
         of: [
-          {type: 'object', name: 'inline'},
+          defineArrayType({
+            type: 'object',
+            name: 'inline-object',
+            fields: [
+              {
+                type: 'string',
+                name: 'field',
+              },
+            ],
+          }),
           {
             type: 'reference',
             to: [{type: 'castMember'}, {type: 'crewMember'}],
@@ -94,12 +101,13 @@ describe('array types', () => {
           },
           list: [{value: {prop: 'string'}, title: 'An entry'}],
 
-          //allowUnknownOptions: true,
+          //@ts-expect-error unknown prop
+          allowUnknownOptions: false,
         },
       })
 
-      const assignableToArray: Schema.ArrayDefinition = arrayDef
-      const assignableToObjectArray: Schema.ObjectArrayDefinition = arrayDef
+      let assignableToArray: Schema.ArrayDefinition = arrayDef
+      assignableToArray = defineType(assignableToArray)
 
       // @ts-expect-error string is not assignable to boolean
       const notAssignableToBoolean: Schema.BooleanDefinition = stringDef
@@ -127,18 +135,6 @@ describe('array types', () => {
           ],
         },
       ],
-    })
-  })
-
-  it('should require string in list value for string array', () => {
-    defineType({
-      type: 'array',
-      name: 'custom-array',
-      of: [{type: 'string'}],
-      options: {
-        // @ts-expect-error value must be string
-        list: [{value: true, title: 'An entry'}],
-      },
     })
   })
 })
