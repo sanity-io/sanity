@@ -3116,15 +3116,15 @@
     object-assign "^4.1.1"
     rxjs "^6.0.0"
 
-"@sanity/color@^2.1.11", "@sanity/color@^2.1.14":
+"@sanity/color@^2.1.11":
   version "2.1.14"
   resolved "https://registry.yarnpkg.com/@sanity/color/-/color-2.1.14.tgz#96b486c24eecf9b657c358953a12cd5988810429"
   integrity sha512-ntCT72qUNck9XrCrMEpMrTGsNPK7edt3arou7YUBgb6IRjba6MtByTAz/LNXbRK5meMQFqYFpNKDErM351X+Ug==
 
-"@sanity/color@^2.1.15":
-  version "2.1.15"
-  resolved "https://registry.yarnpkg.com/@sanity/color/-/color-2.1.15.tgz#41334b1a94ab06babd01349ef7b08e242e8fc99a"
-  integrity sha512-LdPCX9xlDoSn3C4DYfObWS2dvo48vsjiCSU8Z75PaT0HrUcrzPZpLTUoijH7f6oel8lO1bfMdiy0nyrZkaEmrg==
+"@sanity/color@^2.1.16":
+  version "2.1.16"
+  resolved "https://registry.yarnpkg.com/@sanity/color/-/color-2.1.16.tgz#4d4b36874279e1801c89827c6eb3332c960a729f"
+  integrity sha512-R5Wh4qt+Jv20nvwSwE5xA+eS3kF2diPA6noAPQZSUsSG9UIUGGgxJyU0hWUa9O06RTCNqgBQI1YJiZTeJ6S7SA==
 
 "@sanity/eventsource@^3.0.1":
   version "3.0.3"
@@ -3158,15 +3158,15 @@
     lodash "^4.17.21"
     rxjs "^6.5.3"
 
-"@sanity/icons@^1.2.8", "@sanity/icons@^1.3.0", "@sanity/icons@^1.3.1", "@sanity/icons@^1.3.4":
+"@sanity/icons@^1.2.8", "@sanity/icons@^1.3.0", "@sanity/icons@^1.3.1":
   version "1.3.4"
   resolved "https://registry.yarnpkg.com/@sanity/icons/-/icons-1.3.4.tgz#145327737af84251be4a410f536f3267169a3b9a"
   integrity sha512-aRnqGrp30liSqV/etF4uSuQfCMxbrEztUNTgH1755MsrzQSowadK/d6yRiEHmamcqxiE0ovJK+SFNw1qltWXaQ==
 
-"@sanity/icons@^1.3.5":
-  version "1.3.5"
-  resolved "https://registry.yarnpkg.com/@sanity/icons/-/icons-1.3.5.tgz#80aa975e50c414fb157061fe37dcf4deb1495a19"
-  integrity sha512-ur8BjeoOeQqZdA2YdFrQY6gYTYBOCACEFQEaoxHFl8gUTaAV287E2r0gqThmEh5g28Sl0abgz56/uITDtSbFLA==
+"@sanity/icons@^1.3.6":
+  version "1.3.6"
+  resolved "https://registry.yarnpkg.com/@sanity/icons/-/icons-1.3.6.tgz#4de4848304bf8487e1c08188decbb0ba5e86a158"
+  integrity sha512-/GeFmwHMQVTCBvo4qAQgZJHKB1UzU8u42gnjs6696PWh626G4xbElb3/YJ9sM1PwTc0OaYrvIDes8qUTvrlhrA==
 
 "@sanity/image-url@^1.0.1":
   version "1.0.1"
@@ -3182,10 +3182,10 @@
     "@sanity/ui" "^0.37.0"
     react-copy-to-clipboard "^5.0.0"
 
-"@sanity/logos@^1.1.15":
-  version "1.1.15"
-  resolved "https://registry.yarnpkg.com/@sanity/logos/-/logos-1.1.15.tgz#1d9ca1ec2101338b7fc734db2a8213f2ad2c5ff3"
-  integrity sha512-bO5kQOqOQcM2t1AAl+TREU7gRFEBCH9KmvZ0bgyCRU5VAWPnDniQyMDkgeyzb+wnJwg79+SYmLDdt8OnZrPlTQ==
+"@sanity/logos@^1.1.17":
+  version "1.1.17"
+  resolved "https://registry.yarnpkg.com/@sanity/logos/-/logos-1.1.17.tgz#04bee887211d1bc91d47b95d80ff4a77fd71431a"
+  integrity sha512-LnDSi4CfYWi8orU87NxwYjXeOZSfFS/qlP9oVVr4FRjc7vsQ3r0tx0LPCAwvtNv6vwQxNqyidSTj0cmtH0nMCg==
 
 "@sanity/slate-react@2.30.1":
   version "2.30.1"
@@ -3224,10 +3224,10 @@
     tmp "^0.2.1"
     yargs "^17.5.1"
 
-"@sanity/ui-workshop@^0.6.0":
-  version "0.6.0"
-  resolved "https://registry.yarnpkg.com/@sanity/ui-workshop/-/ui-workshop-0.6.0.tgz#11a8cc25c9250d64c9cb69f5c9a1247a2fff83fc"
-  integrity sha512-ikIbnyWInDscX4GeM1lX1/tw3gcQpgwWDnaef6qAB/Qws1AL1Y+74ix2fXhVMStRCREJ36JBpdVDFn31JZq9wg==
+"@sanity/ui-workshop@^0.6.1":
+  version "0.6.1"
+  resolved "https://registry.yarnpkg.com/@sanity/ui-workshop/-/ui-workshop-0.6.1.tgz#91c03bf4e1664254835f4a867443af9b091296d7"
+  integrity sha512-291ofNySFO/jUflscqjbrVDtQSc6yLU8XrMRrxkHji5LkUySd6wX0Gbwi9Zdh6IWrs5AkjiUVuQ9BkJeRurvtg==
   dependencies:
     axe-core "^4.4.3"
     pako "^2.0.4"
@@ -3249,16 +3249,16 @@
     react-popper "^2.2.5"
     react-refractor "^2.1.7"
 
-"@sanity/ui@^0.38.0":
-  version "0.38.0"
-  resolved "https://registry.yarnpkg.com/@sanity/ui/-/ui-0.38.0.tgz#97d6cfcb10048e23528dfb47d3c8a5cabd304a36"
-  integrity sha512-HtoWPSmCz8L8kLhRuwK/u/AEMQquW8SjR6dfykE1tVmgCl20r1c5zsBLsivpfqGJ4hfZxxf1MeHoClRIs+MrwQ==
+"@sanity/ui@^0.38.2":
+  version "0.38.2"
+  resolved "https://registry.yarnpkg.com/@sanity/ui/-/ui-0.38.2.tgz#170f7c0032616fc9eac711aa0e486293b65898ff"
+  integrity sha512-jP0NoEmSIws97tkLifRHuzTKvEztXakcAGuJ6jJ45IYUjgQXZp3bpDobfD9TZY4eeR0WafUB3UntkfSHqRVNOQ==
   dependencies:
     "@juggle/resize-observer" "^3.4.0"
     "@popperjs/core" "^2.11.6"
     "@reach/auto-id" "^0.17.0"
-    "@sanity/color" "^2.1.14"
-    "@sanity/icons" "^1.3.4"
+    "@sanity/color" "^2.1.16"
+    "@sanity/icons" "^1.3.6"
     framer-motion "6.3.0"
     popper-max-size-modifier "^0.2.0"
     react-is "^17.0.2"
