@@ -166,6 +166,7 @@ export function _createAuthStore({
         withCredentials: true,
         requestTagPrefix: 'sanity.studio',
         ignoreBrowserTokenWarning: true,
+        allowReconfigure: false,
       })
     ),
     switchMap((client) =>
