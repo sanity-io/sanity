@@ -101,7 +101,7 @@
     "@sanity/bifur-client": "^0.3.0",
     "@sanity/block-tools": "3.0.0-dev-preview.15",
     "@sanity/cli": "3.0.0-dev-preview.15",
-    "@sanity/client": "^3.3.3",
+    "@sanity/client": "^3.4.1",
     "@sanity/color": "^2.1.16",
     "@sanity/diff": "3.0.0-dev-preview.15",
     "@sanity/eventsource": "^3.0.1",

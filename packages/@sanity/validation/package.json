@@ -42,7 +42,7 @@
     "directory": "packages/@sanity/validation"
   },
   "devDependencies": {
-    "@sanity/client": "^3.3.3",
+    "@sanity/client": "^3.4.1",
     "@sanity/schema": "3.0.0-dev-preview.15"
   },
   "dependencies": {
