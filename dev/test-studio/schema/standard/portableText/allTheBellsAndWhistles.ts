@@ -2,7 +2,7 @@ import {BellIcon, ImageIcon, InfoOutlineIcon} from '@sanity/icons'
 import {Rule} from '@sanity/types'
 import {InfoBoxPreview} from './InfoBoxPreview'
 import {LinkAnnotationInput} from './LinkAnnotationInput'
-import {defineType} from 'sanity'
+import {defineArrayOf, defineField, defineType} from 'sanity'
 
 export const ptAllTheBellsAndWhistlesType = defineType({
   type: 'document',
@@ -10,20 +10,21 @@ export const ptAllTheBellsAndWhistlesType = defineType({
   name: 'pt_allTheBellsAndWhistles',
   title: 'All the bells & whistles',
   fields: [
-    {
+    defineField({
       type: 'string',
       name: 'title',
       title: 'Title',
-    },
-    {
+    }),
+    defineField({
       type: 'array',
       name: 'text',
       title: 'Text',
       of: [
-        {
+        defineArrayOf({
           type: 'block',
           name: 'block',
           title: 'Block',
+
           // styles: [{title: 'Normal', value: 'normal'}],
           marks: {
             // decorators: [{title: 'Strong', value: 'strong'}],
@@ -55,13 +56,13 @@ export const ptAllTheBellsAndWhistlesType = defineType({
                           allowRelative: true,
                         }),
                   },
-                  {
+                  defineField({
                     title: 'Linked Book',
                     name: 'reference',
                     type: 'reference',
                     to: [{type: 'book'}],
                     description: '',
-                  },
+                  }),
                   {
                     type: 'boolean',
                     name: 'newTab',
@@ -73,9 +74,9 @@ export const ptAllTheBellsAndWhistlesType = defineType({
               },
             ],
           },
-        },
+        }),
 
-        {
+        defineField({
           type: 'image',
           icon: ImageIcon,
           name: 'image',
@@ -90,14 +91,17 @@ export const ptAllTheBellsAndWhistlesType = defineType({
             },
           },
           fields: [
-            {
-              title: 'Caption',
-              name: 'caption',
-              type: 'string',
-              options: {
-                isHighlighted: true,
+            defineField(
+              {
+                title: 'Caption',
+                name: 'caption',
+                type: 'string',
+                options: {
+                  isHighlighted: true,
+                },
               },
-            },
+              {imageField: true}
+            ),
             {
               name: 'alt',
               type: 'string',
@@ -134,37 +138,40 @@ export const ptAllTheBellsAndWhistlesType = defineType({
                 isHighlighted: true,
               },
             },
-            {
-              title: 'Large',
-              description: 'Not implemented in most surfaces.',
-              name: 'isLarge',
-              type: 'boolean',
-              options: {
-                isHighlighted: true,
+            defineField(
+              {
+                title: 'Large',
+                description: 'Not implemented in most surfaces.',
+                name: 'isLarge',
+                type: 'boolean',
+                options: {
+                  isHighlighted: true,
+                },
               },
-            },
+              {imageField: true}
+            ),
           ],
-        },
+        }),
 
-        {
+        defineField({
           name: 'infoBox',
           icon: InfoOutlineIcon,
           title: 'Info Box',
           type: 'object',
           fields: [
-            {
+            defineField({
               name: 'title',
               title: 'Title',
               type: 'string',
-              validation: (rule: Rule) => rule.required().warning('Should have a title'),
-            },
-            {
+              validation: (rule) => rule.required().warning('Should have a title'),
+            }),
+            defineField({
               title: 'Box Content',
               name: 'body',
               type: 'array',
               of: [{type: 'block'}],
-              validation: (rule: Rule) => rule.required().error('Must have content'),
-            },
+              validation: (rule) => rule.required().error('Must have content'),
+            }),
           ],
           components: {
             preview: InfoBoxPreview,
@@ -174,12 +181,12 @@ export const ptAllTheBellsAndWhistlesType = defineType({
               title: 'title',
               body: 'body',
             },
-            prepare(selection: any) {
-              return selection
+            prepare({title, body}) {
+              return {title, body}
             },
           },
-        },
+        }),
       ],
-    },
+    }),
   ],
 })

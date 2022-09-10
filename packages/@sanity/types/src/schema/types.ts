@@ -1,5 +1,5 @@
 // Note: INCOMPLETE, but it's a start
-import type {ComponentType} from 'react'
+import type {ComponentType, ReactNode} from 'react'
 import {SanityClient} from '@sanity/client'
 import type {Rule} from '../validation'
 import {UriValidationOptions} from '../validation'
@@ -166,13 +166,17 @@ export namespace Schema {
     name?: string
   }
 
-  export type IntrinsicArrayOfDefinition = {
-    [K in keyof IntrinsicTypeDefinition]: ArrayOfEntry<IntrinsicTypeDefinition[K]>
+  type IntrinsicArrayOfDefinition = {
+    [K in keyof IntrinsicTypeDefinition]: Omit<
+      ArrayOfEntry<IntrinsicTypeDefinition[K]>,
+      'validation' | 'initialValue'
+      /* concession: without this "widening" these are considered unknown in array.of when not using defineArrayOf */
+    > & {validation?: SchemaValidationValue; initialValue?: InitialValueProperty<any, any>}
   }
 
   export type ArrayOfType<TType extends Type = Type, TAlias extends Type | undefined = undefined> =
     | IntrinsicArrayOfDefinition[TType]
-    | TypeAliasDefinition<string, TAlias>
+    | ArrayOfEntry<TypeAliasDefinition<string, TAlias>>
 
   export interface ArrayDefinition extends BaseDefinitionOptions {
     type: 'array'
@@ -203,8 +207,9 @@ export namespace Schema {
   export interface DecoratorDefinition {
     title: string
     value: string
+    icon?: ReactNode | ComponentType
     blockEditor?: {
-      icon?: string | ComponentType
+      icon?: ReactNode | ComponentType
       render?: ComponentType
     }
   }
@@ -459,7 +464,7 @@ export namespace Schema {
     dataset: string
     projectId: string
     studioUrl?: (document: {id: string; type?: string}) => string | null
-    tokenId: string
+    tokenId?: string
     options?: ReferenceOptions
   }
 

@@ -1,6 +1,6 @@
 import React from 'react'
 import {ImageIcon, OlistIcon} from '@sanity/icons'
-import {defineField, defineType} from 'sanity'
+import {defineArrayOf, defineField, defineType} from 'sanity'
 
 export const topLevelArrayType = defineType({
   name: 'topLevelArrayType',
@@ -302,13 +302,13 @@ export default defineType({
         },
       ],
     },
-    {
+    defineField({
       name: 'arrayOfStrings',
       title: 'Array of strings',
       description: 'This array contains only strings, with no title',
       type: 'array',
       of: [{type: 'string', validation: (Rule) => Rule.required().min(10).max(80)}],
-    },
+    }),
     {
       name: 'arrayOfPrimitives',
       title: 'Array with primitive types',

@@ -1,7 +1,7 @@
 import {ComposeIcon, DropIcon, ImageIcon} from '@sanity/icons'
 import React from 'react'
 import {BlockEditor, PortableTextInputProps} from 'sanity/form'
-import {defineType} from 'sanity'
+import {defineArrayOf, defineField, defineType} from 'sanity'
 
 function CustomEditor(props: PortableTextInputProps) {
   const {markers, value} = props
@@ -28,13 +28,13 @@ export default defineType({
       type: 'array',
       of: [{type: 'block'}],
     },
-    {
+    defineField({
       name: 'defaults',
       title: 'Content',
       description: 'Profound description of what belongs here',
       type: 'array',
       of: [
-        {type: 'image', title: 'Image', icon: ImageIcon},
+        defineArrayOf({type: 'image', title: 'Image', icon: ImageIcon}),
         {
           type: 'reference',
           name: 'authorReference',
@@ -47,7 +47,7 @@ export default defineType({
           to: {type: 'book'},
           title: 'Reference to book',
         },
-        {
+        defineArrayOf({
           type: 'object',
           name: 'objectWithNestedArray',
           title: 'An object with nested array',
@@ -70,8 +70,8 @@ export default defineType({
               ],
             },
           ],
-        },
-        {type: 'author', title: 'Embedded author'},
+        }),
+        defineArrayOf({type: 'author', title: 'Embedded author'}),
         {type: 'code', title: 'Code'},
         // {
         //   type: 'color',
@@ -85,13 +85,13 @@ export default defineType({
           name: 'testObject',
           fields: [{name: 'field1', type: 'string'}],
         },
-        {
+        defineArrayOf({
           type: 'object',
           title: 'Other test object',
           name: 'otherTestObject',
           fields: [
             {name: 'field1', type: 'string'},
-            {
+            defineField({
               name: 'field3',
               type: 'array',
               of: [
@@ -103,9 +103,9 @@ export default defineType({
                   ],
                 },
               ],
-            },
+            }),
           ],
-        },
+        }),
         // {
         //   type: 'block',
         //   of: [
@@ -121,7 +121,7 @@ export default defineType({
           title: 'Spotify embed',
         },
       ],
-    },
+    }),
     {
       name: 'nestedWithDualColumnCTA',
       title: 'Nested, with dual column CTA',

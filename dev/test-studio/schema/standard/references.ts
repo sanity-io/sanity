@@ -67,7 +67,7 @@ export default defineType({
           type: 'reference',
           to: {type: 'book'},
           options: {
-            filter: ({parent}) => {
+            filter: ({parent}: {parent?: unknown[] | {decade?: number}}) => {
               const decade = Array.isArray(parent) ? null : parent?.decade
               if (!decade) {
                 return {filter: 'false'} // && false always returns no results :)

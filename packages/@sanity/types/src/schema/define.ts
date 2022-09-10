@@ -92,7 +92,8 @@ import {
  * @see typed
  */
 export function defineType<
-  TType extends string,
+  TAutocompleteTypeHelper extends string | Schema.Type,
+  TType extends TAutocompleteTypeHelper,
   TName extends string,
   TSelect extends Record<string, string> | undefined,
   TPrepareValue extends Record<keyof TSelect, any> | undefined,
@@ -100,7 +101,7 @@ export function defineType<
   TStrict extends StrictDefinition
 >(
   schemaDefinition: {
-    type: TType
+    type: TAutocompleteTypeHelper
     name: TName
   } & DefineSchemaBase<TType, TAlias> &
     NarrowPreview<TType, TAlias, TSelect, TPrepareValue> &
@@ -118,8 +119,11 @@ export function defineType<
  * This function will narrow the schema type down to fields and options based on the provided
  * type-string.
  *
+ * Using `defineField` is optional, but should provide improved autocompletion in your IDE, when building your schema.
+ * Field-properties like `validation` and `initialValue`will also be more specific.
+ *
  * ### Note on image fields
- * Sanity image fields has addtional options, to enable them in a typesafe manner use `defineField`, set `imageField: true`
+ * Sanity image fields has additional options. To make them legal in `defineField`, set `imageField: true`
  * in `defineOptions`:
  *
  * ```ts
@@ -146,7 +150,8 @@ export function defineType<
  * @see typed
  */
 export function defineField<
-  TType extends string,
+  TAutocompleteTypeHelper extends string | Schema.Type,
+  TType extends TAutocompleteTypeHelper,
   TName extends string,
   TSelect extends Record<string, string> | undefined,
   TPrepareValue extends Record<keyof TSelect, any> | undefined,
@@ -155,7 +160,7 @@ export function defineField<
   TImageField extends boolean | undefined
 >(
   schemaField: {
-    type: TType
+    type: TAutocompleteTypeHelper
     name: TName
   } & DefineSchemaBase<TType, TAlias> &
     NarrowPreview<TType, TAlias, TSelect, TPrepareValue> &
@@ -181,6 +186,9 @@ export function defineField<
  * This function will narrow the schema type down to fields and options based on the provided
  * type-string.
  *
+ * Using `defineArrayOf` is optional, but should provide improved autocompletion in your IDE, when building your schema.
+ * Field-properties like `validation` and `initialValue`will also be more specific.
+ *
  * See {@link defineType} for example usage.
  *
  * @param arrayOfSchema - should be a valid Sanity array.of type definition.
@@ -191,7 +199,8 @@ export function defineField<
  * @see typed
  */
 export function defineArrayOf<
-  TType extends string,
+  TAutocompleteTypeHelper extends string | Schema.Type,
+  TType extends TAutocompleteTypeHelper,
   TName extends string,
   TSelect extends Record<string, string> | undefined,
   TPrepareValue extends Record<keyof TSelect, any> | undefined,
@@ -199,7 +208,7 @@ export function defineArrayOf<
   TStrict extends StrictDefinition
 >(
   arrayOfSchema: {
-    type: TType
+    type: TAutocompleteTypeHelper
     /**
      * When provided, `name` is used as `_type` for the array item when stored.
      *

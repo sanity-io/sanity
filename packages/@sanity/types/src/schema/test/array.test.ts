@@ -36,7 +36,20 @@ describe('array types', () => {
         of: [
           {type: 'string'},
           {type: 'string', name: 'suffix'},
-          {type: 'string', name: 'suffix2', title: 'Titled'},
+          {
+            type: 'string',
+            name: 'suffix2',
+            title: 'Titled',
+            // when we dont use defineArrayOf, validation cannot be inferred and falls back to generic rule
+            // @ts-expect-error value is unknown
+            validation: (Rule) => Rule.custom((value) => (value?.toLowerCase() ? true : 'Error')),
+          },
+          defineArrayOf({
+            type: 'string',
+            name: 'suffix2',
+            title: 'Titled',
+            validation: (Rule) => Rule.custom((value) => (value?.toLowerCase() ? true : 'Error')),
+          }),
         ],
         options: {
           layout: 'grid',
@@ -101,6 +114,9 @@ describe('array types', () => {
           {
             type: 'reference',
             to: [{type: 'castMember'}, {type: 'crewMember'}],
+          },
+          {
+            type: 'aliased-type',
           },
         ],
         options: {

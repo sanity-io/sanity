@@ -42,13 +42,7 @@ export type DefineArrayOfBase<
   TAlias extends Schema.Type | undefined
 > = TType extends Schema.Type
   ? IntrinsicArrayOfBase[TType]
-  : Schema.ArrayOfEntry<Schema.TypeAliasDefinition<string, TAlias>> & {
-      validation?: SchemaValidationValue
-      initialValue?: InitialValueProperty<any, any>
-      fields?: Schema.FieldDefinition[]
-      of?: Schema.ArrayOfType[]
-      to?: Schema.ReferenceTo
-    }
+  : Schema.ArrayOfEntry<Schema.TypeAliasDefinition<string, TAlias>>
 
 export type StrictDefinition = boolean | undefined
 
