@@ -10,14 +10,6 @@ import type {SanityDocument} from '../documents'
 import type {CurrentUser} from '../user'
 import type {PreviewConfig} from './preview'
 import {RuleDef, ValidationBuilder} from './ruleBuilder'
-import {
-  DefineSchemaType,
-  MaybeStrict,
-  NarrowPreview,
-  StrictDefinition,
-  WidenInitialValue,
-  WidenValidation,
-} from './defineHelpers'
 
 // eslint-disable-next-line @typescript-eslint/no-namespace
 export namespace Schema {
@@ -77,15 +69,16 @@ export namespace Schema {
    * under a different name. You can also override the default type options with
    * a type alias definition.
    */
-  export interface TypeAliasDefinition<TType extends string, TAlias extends Type | undefined>
-    extends BaseDefinitionOptions {
+  export type TypeAliasDefinition<
+    TType extends string,
+    TAlias extends Type | undefined
+  > = BaseDefinitionOptions & {
     type: TType
-    options?: TAlias extends Type
-      ? IntrinsicTypeDefinition[TAlias]['options']
-      : {[key: string]: unknown}
+    options?: TAlias extends Type ? IntrinsicTypeDefinition[TAlias]['options'] : unknown
 
     validation?: SchemaValidationValue
     initialValue?: InitialValueProperty<any, any>
+    preview?: PreviewConfig
   }
 
   export interface FieldBase {
@@ -93,19 +86,13 @@ export namespace Schema {
     group?: string | string[]
   }
 
-  /*
-   * Concessions:
-   * Arrays of schema-definitions cannot be sufficiently narrowed down when defining schemas.
-   *
-   * Instead of `[StringDefinition, AliasTypeDef]`, the type will be `(StringDefinition | AliasTypeDef) []``
-   * Once we introduce AliasTypeDefs with `type: 'string'``, typescript is unable to infer the exact schema
-   * definition per array value.
-   *
-   * To make it possible to define fields without using `defineType` this compromise type
-   * broadly types up fields found across all schema types.
-   *
-   * For better type-saftey, use `defineField`to narrow each array value.
-   */
+  export type InlineFieldDefinition = {
+    [K in keyof IntrinsicTypeDefinition]: Omit<
+      IntrinsicTypeDefinition[K],
+      'initialValue' | 'validation'
+    >
+  }
+
   /**
    * The shape of a field definition. Note, it's recommended to use the
    * `defineField` function instead of using this type directly.
@@ -120,18 +107,7 @@ export namespace Schema {
   export type FieldDefinition<
     TType extends Type = Type,
     TAlias extends Type | undefined = undefined
-  > = Omit<
-    IntrinsicTypeDefinition[TType] | TypeAliasDefinition<string, TAlias>,
-    'validation' | 'initialValue'
-  > & /* compromises */ {
-    name: string
-
-    validation?: SchemaValidationValue
-    initialValue?: InitialValueProperty<any, any>
-    fields?: FieldDefinition[]
-    of?: ArrayOfType<FieldDefinition>[]
-    to?: ReferenceTo
-  } & FieldBase
+  > = (InlineFieldDefinition[TType] | TypeAliasDefinition<string, TAlias>) & FieldBase
 
   export type ImageMetadataType = 'blurhash' | 'lqip' | 'palette' | 'exif' | 'location'
 
@@ -183,16 +159,24 @@ export namespace Schema {
     unique: () => ArrayRule<Value>
   }
 
-  export type ArrayOfType<T> = Omit<T, 'name' | 'hidden' | 'fieldset' | 'group'> & {
+  export type ArrayOfEntry<T> = Omit<T, 'name' | 'hidden'> & {
     /**
      * `name` is suffixed to _type of the array item
      */
     name?: string
   }
 
+  export type IntrinsicArrayOfDefinition = {
+    [K in keyof IntrinsicTypeDefinition]: ArrayOfEntry<IntrinsicTypeDefinition[K]>
+  }
+
+  export type ArrayOfType<TType extends Type = Type, TAlias extends Type | undefined = undefined> =
+    | IntrinsicArrayOfDefinition[TType]
+    | TypeAliasDefinition<string, TAlias>
+
   export interface ArrayDefinition extends BaseDefinitionOptions {
     type: 'array'
-    of: ArrayOfType<FieldDefinition>[]
+    of: ArrayOfType[]
     initialValue?: InitialValueProperty<any, unknown[]>
     validation?: ValidationBuilder<ArrayRule<unknown[]>, unknown[]>
     options?: ArrayOptions
@@ -210,7 +194,7 @@ export namespace Schema {
     styles?: Array<{title: string; value: string}>
     lists?: Array<{title: string; value: string}>
     marks?: MarksDefinition
-    of?: Array<TypeDefinition | TypeReference>
+    of?: ArrayOfType[]
     initialValue?: InitialValueProperty<any, any[]>
     options?: BlockOptions
     validation?: ValidationBuilder<BlockRule, any[]>
@@ -555,115 +539,7 @@ export namespace Schema {
   }
 }
 
-export function defineType<
-  TType extends string,
-  TName extends string,
-  TSelect extends Record<string, string> | undefined,
-  TPrepareValue extends Record<keyof TSelect, any> | undefined,
-  TAlias extends Schema.Type | undefined,
-  TStrict extends StrictDefinition
->(
-  schemaDefinition: {
-    type: TType
-    name: TName
-  } & Omit<DefineSchemaType<TType, TAlias>, 'preview'> &
-    NarrowPreview<TType, TAlias, TSelect, TPrepareValue> &
-    MaybeStrict<TStrict>,
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  defineOptions?: DefineOptions<TStrict, TAlias>
-): typeof schemaDefinition {
-  return schemaDefinition
-}
-
-interface DefineOptions<TStrict extends StrictDefinition, TAlias extends Schema.Type | undefined> {
-  /**
-   * `strict: false` allows unknown properties in the schema.
-   * Use this when adding customizations to the schema that are not part of sanity core
-   */
-  strict?: TStrict
-  /** Should be provided when type is a non-intrinisic type, ie type is a type alias*/
-  alias?: Schema.NarrowType<TAlias>
-}
-
-export function defineField<
-  TType extends string,
-  TName extends string,
-  TSelect extends Record<string, string> | undefined,
-  TPrepareValue extends Record<keyof TSelect, any> | undefined,
-  TAlias extends Schema.Type | undefined,
-  TStrict extends StrictDefinition,
-  TImageField extends boolean | undefined
->(
-  schemaField: {
-    type: TType
-    name: TName
-  } & DefineSchemaType<TType, TAlias> &
-    NarrowPreview<TType, TAlias, TSelect, TPrepareValue> &
-    Schema.FieldBase &
-    MaybeStrict<TStrict> &
-    (TImageField extends true ? {options?: Schema.AssetFieldOptions} : unknown),
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  defineOptions?: DefineOptions<TStrict, TAlias> & {
-    /**
-     * Set this to true for fields in an image object.
-     * It will allow additional options relevant in that context.
-     * */
-    imageField?: TImageField
-  }
-): typeof schemaField & WidenValidation & WidenInitialValue {
-  return schemaField
-}
-
-export function defineArrayType<
-  TType extends string,
-  TName extends string,
-  TStrict extends StrictDefinition,
-  TAlias extends Schema.Type | undefined
->(
-  arraySchema: {
-    type: TType
-    /**
-     * When provided, `name` used as `_type` for the array item when stored.
-     *
-     * Necessary when an array contains multiple entries with the same `type` with
-     * different configuration.
-     */
-    name?: TName
-  } & Omit<Schema.ArrayOfType<DefineSchemaType<TType, TAlias>>, 'name'> &
-    MaybeStrict<TStrict>,
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  defineOptions?: DefineOptions<TStrict, TAlias>
-): typeof arraySchema & WidenValidation & WidenInitialValue {
-  return arraySchema
-}
-
-/**
- * `typed` can be used to ensure that a object conforms to an exact interface.
- *
- * It can be useful when working with `defineType` and `defineField` on occasions where a wider type with
- * custom options or properties is required.
- *
- * ## Example  usage
- * ```ts
- *  defineField({
- *    type: 'string',
- *    name: 'nestedField',
- *    options: typed<AssetFieldOptions & Schema.StringOptions>({
- *      isHighlighted: true,
- *      layout: 'radio',
- *      //@ts-expect-error unknownProp is not part of AssetFieldOptions & Schema.StringOptions
- *      unknownProp: 'not allowed in typed context',
- *    }),
- *  }),
- * ```
- *
- * @param input - returned directly
- */
-export function typed<T>(input: T): T {
-  return input
-}
+export {defineType, defineField, defineArrayOf, typed} from './define'
 
 /**
  * Note: you probably want `SchemaTypeDefinition` instead

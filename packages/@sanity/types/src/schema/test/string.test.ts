@@ -115,6 +115,14 @@ describe('string types', () => {
 
       const assignableToString: Schema.StringDefinition & FieldBase = stringField
       const nameIsNarrowed: 'stringField' = stringField.name
+
+      const assignableToFieldDef: Schema.FieldDefinition = defineField({
+        type: 'string',
+        name: 'nestedField',
+        options: {
+          layout: 'dropdown',
+        },
+      })
     })
   })
 })

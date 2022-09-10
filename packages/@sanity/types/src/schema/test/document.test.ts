@@ -3,7 +3,7 @@
  * Some of these tests have no expect statement;
  * use of ts-expect-error serves the same purpose - TypeScript is the testrunner here
  */
-import {defineField, defineType, Schema} from '../types'
+import {defineArrayOf, defineField, defineType, Schema} from '../types'
 
 describe('document types', () => {
   describe('defineType', () => {
@@ -128,6 +128,38 @@ describe('document types', () => {
         },
         fields: [{type: 'string', name: 'string'}],
       })
+
+      defineField({
+        type: 'object',
+        name: 'custom-object-field',
+        preview: {
+          select: {
+            title: 'a',
+            subtitle: 'b',
+          },
+          // allows type narrowing values from any by providing an interface
+          prepare: ({title}: {title: string}) => {
+            return {title}
+          },
+        },
+        fields: [{type: 'string', name: 'string'}],
+      })
+
+      defineArrayOf({
+        type: 'object',
+        name: 'custom-array-object',
+        preview: {
+          select: {
+            title: 'a',
+            subtitle: 'b',
+          },
+          //@ts-expect-error notExists not in select keys
+          prepare: ({notExists}) => {
+            return {notExists}
+          },
+        },
+        fields: [{type: 'string', name: 'string'}],
+      })
     })
 
     it('should define document fields safely (with some compromises without defineField)', () => {
@@ -199,6 +231,7 @@ describe('document types', () => {
               defineField({
                 type: 'string',
                 name: 'nestedField',
+
                 options: {
                   //@ts-expect-error wrapping with defineField will give narrowed types always
                   unknownProp: 'strict not allowed',

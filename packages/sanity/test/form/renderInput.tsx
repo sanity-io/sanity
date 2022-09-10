@@ -3,15 +3,12 @@ import {defineType, ObjectSchemaType, Path, Schema, SchemaType} from '@sanity/ty
 import {render} from '@testing-library/react'
 import React, {FocusEvent} from 'react'
 import {
-  ComplexElementProps,
   createPatchChannel,
   FieldMember,
-  FIXME,
   NodePresence,
   NodeValidation,
   PatchArg,
   PatchEvent,
-  PrimitiveInputElementProps,
   StudioFormBuilderProvider,
   useFormState,
 } from '../../src/form'
@@ -69,7 +66,7 @@ export async function renderInput(props: {
       schema: {
         types: [
           defineType({
-            type: 'document',
+            type: 'document' as const,
             name: 'test',
             fields: [fieldDefinition],
           }),

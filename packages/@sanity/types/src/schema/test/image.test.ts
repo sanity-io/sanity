@@ -67,7 +67,8 @@ describe('image types', () => {
           validation: (Rule) => Rule.max(45),
           initialValue: 'string',
           options: {
-            layout: 'whatever',
+            layout: 'radio',
+            //@ts-expect-error unknown option
             anything: 'goes',
             isHighlighted: true,
           },
@@ -98,8 +99,6 @@ describe('image types', () => {
           readOnly: true,
           hidden: false,
           options: {
-            layout: 'whatever',
-            slugify: () => 'all bets a re of',
             isHighlighted: true,
           },
         },
@@ -108,8 +107,6 @@ describe('image types', () => {
           name: 'customInlineObject',
           initialValue: {nestedField: 'value'},
           fields: [
-            //@ts-expect-error not assignable to FieldDefinition
-            {},
             {
               type: 'string',
               name: 'nestedField',
@@ -143,23 +140,26 @@ describe('image types', () => {
             ),
           ],
         },
-        defineField({
-          type: 'string',
-          name: 'stringField',
-          title: 'String',
-          readOnly: true,
-          hidden: false,
-          // boy would typesafe fieldset be cool
-          fieldset: 'test',
-          group: 'test',
-          options: typed<Schema.AssetFieldOptions & Schema.StringOptions>({
-            layout: 'radio',
-            // added by widen
-            isHighlighted: true,
-            //@ts-expect-error explicit typing prevents this
-            unknownProp: 'strict: widen interface',
-          }),
-        }),
+        defineField(
+          {
+            type: 'string',
+            name: 'stringField',
+            title: 'String',
+            readOnly: true,
+            hidden: false,
+            // boy would typesafe fieldset be cool
+            fieldset: 'test',
+            group: 'test',
+            options: {
+              layout: 'radio',
+              // added by widen
+              isHighlighted: true,
+              //@ts-expect-error explicit typing prevents this
+              unknownProp: 'strict: widen interface',
+            },
+          },
+          {imageField: true}
+        ),
       ],
     })
 

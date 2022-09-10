@@ -3,7 +3,7 @@
  * Some of these tests have no expect statement;
  * use of ts-expect-error serves the same purpose - TypeScript is the testrunner here
  */
-import {defineType, Schema} from '../types'
+import {defineArrayOf, defineField, defineType, Schema} from '../types'
 
 describe('alias type test', () => {
   it('should support narrowing alias types', () => {
@@ -51,6 +51,62 @@ describe('alias type test', () => {
       {alias: 'array'}
     )
     const assignableToArrayOptions: Schema.ArrayOptions | undefined = narrowedAlias.options
+  })
+
+  it('should support aliased object', () => {
+    const narrowedAlias: Schema.TypeAliasDefinition<'custom-object', 'object'> = defineType(
+      {
+        type: 'custom-object',
+        name: 'redefined-custom-object',
+        options: {
+          columns: 2,
+        },
+      },
+      {alias: 'object'}
+    )
+    const assignableToObjectOptions: Schema.ObjectOptions | undefined = narrowedAlias.options
+
+    defineType(
+      {
+        type: 'custom-object',
+        name: 'redefined-custom-object',
+        //@ts-expect-error redefining fields on object is not allowed
+        fields: [],
+      },
+      {alias: 'object'}
+    )
+  })
+
+  it('should support alias with preview', () => {
+    defineType({
+      type: 'custom-object',
+      name: 'redefined',
+      preview: {
+        select: {title: 'a'},
+        //@ts-expect-error error is not in select keys
+        prepare: ({error}) => ({error}),
+      },
+    })
+
+    defineField({
+      type: 'custom-object',
+      name: 'redefined',
+      preview: {
+        select: {title: 'a'},
+        //@ts-expect-error error is not in select keys
+        prepare: ({error}) => ({error}),
+      },
+    })
+
+    defineArrayOf({
+      type: 'custom-object',
+      name: 'redefined',
+      preview: {
+        select: {title: 'a'},
+        //@ts-expect-error error is not in select keys
+        prepare: ({error}) => ({error}),
+      },
+    })
   })
 })
 

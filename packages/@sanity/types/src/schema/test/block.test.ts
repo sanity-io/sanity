@@ -3,7 +3,7 @@
  * Some of these tests have no expect statement;
  * use of ts-expect-error serves the same purpose - TypeScript is the testrunner here
  */
-import {defineType, Schema} from '../types'
+import {defineArrayOf, defineField, defineType, Schema} from '../types'
 
 describe('block types', () => {
   describe('defineType', () => {
@@ -52,6 +52,82 @@ describe('block types', () => {
 
       // @ts-expect-error block is not assignable to boolean
       const notAssignableToBoolean: Schema.BooleanDefinition = stringDef
+    })
+  })
+
+  it('should define block field and arrayOf', () => {
+    const field: Schema.BlockDefinition = defineField({
+      type: 'block',
+      name: 'pteField',
+      title: 'Custom PTE',
+      icon: () => null,
+      styles: [{title: 'Quote', value: 'blockquote'}],
+      lists: [{title: 'Bullet', value: 'bullet'}],
+      marks: {
+        decorators: [
+          {title: 'Strong', value: 'strong'},
+          {
+            title: 'Sup',
+            value: 'sup',
+            blockEditor: {
+              icon: () => null,
+              render: (props: any) => props,
+            },
+          },
+        ],
+        annotations: [{name: 'author', title: 'Author', type: 'reference', to: {type: 'author'}}],
+      },
+      of: [{type: 'string'}],
+      options: {
+        spellCheck: true,
+      },
+    })
+    const arrayOf = defineArrayOf({
+      type: 'block',
+      name: 'pteField',
+      title: 'Custom PTE',
+      icon: () => null,
+      styles: [{title: 'Quote', value: 'blockquote'}],
+      lists: [{title: 'Bullet', value: 'bullet'}],
+      marks: {
+        decorators: [
+          {title: 'Strong', value: 'strong'},
+          {
+            title: 'Sup',
+            value: 'sup',
+            blockEditor: {
+              icon: () => null,
+              render: (props: any) => props,
+            },
+          },
+        ],
+        annotations: [{name: 'author', title: 'Author', type: 'reference', to: {type: 'author'}}],
+      },
+      of: [{type: 'string'}],
+      options: {
+        spellCheck: true,
+      },
+    })
+  })
+
+  it('should allow block fields in array defineType as inline definition', () => {
+    defineType({
+      type: 'array',
+      name: 'pte',
+      of: [
+        {
+          type: 'block',
+          name: 'pte',
+          styles: [{title: 'Quote', value: 'blockquote'}],
+          lists: [{title: 'Bullet', value: 'bullet'}],
+          marks: {
+            decorators: [{title: 'Strong', value: 'strong'}],
+            annotations: [
+              {name: 'author', title: 'Author', type: 'reference', to: {type: 'author'}},
+            ],
+          },
+        },
+      ],
     })
   })
 })

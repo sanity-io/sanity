@@ -1,6 +1,35 @@
 import {PreviewConfig} from './preview'
 import {InitialValueProperty, Schema, SchemaValidationValue} from './types'
 
+export interface DefineOptions<
+  TStrict extends StrictDefinition,
+  TAlias extends Schema.Type | undefined
+> {
+  /**
+   * `strict: false` allows unknown properties in the schema.
+   * Use this when adding customizations to the schema that are not part of sanity core
+   */
+  strict?: TStrict
+  /** Should be provided when type is a non-intrinisic type, ie type is a type alias*/
+  alias?: Schema.NarrowType<TAlias>
+}
+
+export type IntrinsicBase = {
+  [K in keyof Schema.IntrinsicTypeDefinition]: Omit<Schema.IntrinsicTypeDefinition[K], 'preview'>
+}
+
+export type IntrinsicArrayOfBase = {
+  [K in keyof Schema.IntrinsicTypeDefinition]: Omit<
+    Schema.ArrayOfEntry<Schema.IntrinsicTypeDefinition[K]>,
+    'preview'
+  >
+}
+
+export type DefineSchemaBase<
+  TType extends string,
+  TAlias extends Schema.Type | undefined
+> = TType extends Schema.Type ? IntrinsicBase[TType] : Schema.TypeAliasDefinition<TType, TAlias>
+
 export type DefineSchemaType<
   TType extends string,
   TAlias extends Schema.Type | undefined
@@ -8,9 +37,22 @@ export type DefineSchemaType<
   ? Schema.IntrinsicTypeDefinition[TType]
   : Schema.TypeAliasDefinition<TType, TAlias>
 
+export type DefineArrayOfBase<
+  TType extends string,
+  TAlias extends Schema.Type | undefined
+> = TType extends Schema.Type
+  ? IntrinsicArrayOfBase[TType]
+  : Schema.ArrayOfEntry<Schema.TypeAliasDefinition<string, TAlias>> & {
+      validation?: SchemaValidationValue
+      initialValue?: InitialValueProperty<any, any>
+      fields?: Schema.FieldDefinition[]
+      of?: Schema.ArrayOfType[]
+      to?: Schema.ReferenceTo
+    }
+
 export type StrictDefinition = boolean | undefined
 
-export type MaybeStrict<TStrict extends StrictDefinition> = TStrict extends false
+export type MaybeAllowUnknownProps<TStrict extends StrictDefinition> = TStrict extends false
   ? {
       options?: {[index: string]: any}
       [index: string]: any

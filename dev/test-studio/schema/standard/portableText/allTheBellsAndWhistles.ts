@@ -2,8 +2,9 @@ import {BellIcon, ImageIcon, InfoOutlineIcon} from '@sanity/icons'
 import {Rule} from '@sanity/types'
 import {InfoBoxPreview} from './InfoBoxPreview'
 import {LinkAnnotationInput} from './LinkAnnotationInput'
+import {defineType} from 'sanity'
 
-export const ptAllTheBellsAndWhistlesType = {
+export const ptAllTheBellsAndWhistlesType = defineType({
   type: 'document',
   icon: BellIcon,
   name: 'pt_allTheBellsAndWhistles',
@@ -165,6 +166,9 @@ export const ptAllTheBellsAndWhistlesType = {
               validation: (rule: Rule) => rule.required().error('Must have content'),
             },
           ],
+          components: {
+            preview: InfoBoxPreview,
+          },
           preview: {
             select: {
               title: 'title',
@@ -173,10 +177,9 @@ export const ptAllTheBellsAndWhistlesType = {
             prepare(selection: any) {
               return selection
             },
-            component: InfoBoxPreview,
           },
         },
       ],
     },
   ],
-}
+})

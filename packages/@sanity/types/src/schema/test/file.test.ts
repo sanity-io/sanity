@@ -111,8 +111,6 @@ describe('file types', () => {
           name: 'customInlineObject',
           initialValue: {nestedField: 'value'},
           fields: [
-            //@ts-expect-error not assignable to FieldDefinition
-            {},
             {
               type: 'string',
               name: 'nestedField',

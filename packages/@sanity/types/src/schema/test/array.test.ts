@@ -3,7 +3,7 @@
  * Some of these tests have no expect statement;
  * use of ts-expect-error serves the same purpose - TypeScript is the testrunner here
  */
-import {defineArrayType, defineType, Schema} from '../types'
+import {defineArrayOf, defineType, Schema} from '../types'
 
 describe('array types', () => {
   describe('defineType', () => {
@@ -77,9 +77,9 @@ describe('array types', () => {
         readOnly: () => false,
         // type inference here is not great
         of: [
-          defineArrayType({
+          defineArrayOf({
             type: 'object',
-            name: 'inline-object',
+            name: 'inline-object-via-define',
             fields: [
               {
                 type: 'string',
@@ -87,6 +87,17 @@ describe('array types', () => {
               },
             ],
           }),
+          {
+            type: 'object',
+            name: 'inline-object',
+
+            fields: [
+              {
+                type: 'string',
+                name: 'field',
+              },
+            ],
+          },
           {
             type: 'reference',
             to: [{type: 'castMember'}, {type: 'crewMember'}],

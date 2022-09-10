@@ -3,7 +3,7 @@
  * Some of these tests have no expect statement;
  * use of ts-expect-error serves the same purpose - TypeScript is the testrunner here
  */
-import {defineArrayType, defineField, defineType} from '../types'
+import {defineArrayOf, defineField, defineType} from '../types'
 
 describe('common type test', () => {
   it('should capture literal string type', () => {
@@ -23,13 +23,34 @@ describe('common type test', () => {
     type = stringField.type
     name = stringField.name
 
-    const stringArrayOf = defineArrayType({
+    const stringArrayOf = defineArrayOf({
       type: 'string',
       name: 'custom-string',
     })
 
     const arrayOfType: 'string' = stringArrayOf.type
     const arrayOfName: 'custom-string' | undefined = stringArrayOf.name
+  })
+
+  it('should support using all the define functions within each-other', () => {
+    defineType({
+      type: 'object',
+      name: 'custom-object',
+      fields: [
+        defineField({
+          type: 'array',
+          name: 'arrayField',
+          title: 'Things',
+          of: [
+            defineArrayOf({
+              type: 'object',
+              name: 'type-name-in-array',
+              fields: [defineField({type: 'string', name: 'title', title: 'Title'})],
+            }),
+          ],
+        }),
+      ],
+    })
   })
 
   it('should support optional strictness', () => {

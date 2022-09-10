@@ -19,7 +19,6 @@ describe('url types', () => {
             .uri({
               scheme: 'https',
               allowCredentials: true,
-              //TODO make these mutually exclusive?
               allowRelative: true,
               relativeOnly: false,
             })

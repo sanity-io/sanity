@@ -42,7 +42,7 @@ describe('object types', () => {
         ],
         groups: [{name: 'group', title: 'Group title', icon: () => null, default: true}],
         preview: {select: {title: 'title', subtitle: 'title'}},
-        //TODO
+        //@ts-expect-error requires one field def
         fields: [],
       })
 
