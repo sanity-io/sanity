@@ -10,16 +10,7 @@ import {
   useGlobalKeyDown,
   useMediaIndex,
 } from '@sanity/ui'
-import React, {
-  createElement,
-  useCallback,
-  useState,
-  isValidElement,
-  useMemo,
-  useEffect,
-  useRef,
-} from 'react'
-import {isValidElementType} from 'react-is'
+import React, {useCallback, useState, useMemo, useEffect, useRef} from 'react'
 import {startCase} from 'lodash'
 import styled from 'styled-components'
 import {useWorkspace} from '../../workspace'
@@ -32,10 +23,10 @@ import {NewDocumentButton} from './NewDocumentButton'
 import {PresenceMenu} from './presence'
 import {NavDrawer} from './NavDrawer'
 import {SearchField} from './search'
-import {ToolMenu as DefaultToolMenu} from './tools/ToolMenu'
 import {ChangelogButton} from './changelog'
 import {WorkspaceMenuButton} from './workspace'
 import {ConfigIssuesButton} from './configIssues/ConfigIssuesButton'
+import {ToolMenuProps} from './tools'
 
 const RootLayer = styled(Layer)`
   min-height: auto;
@@ -68,17 +59,22 @@ const LeftFlex = styled(Flex)`
   width: max-content;
 `
 
-interface NavbarProps {
+export interface NavbarProps {
+  /**
+   * @internal
+   */
   onSearchOpenChange: (open: boolean) => void
+  /**
+   * @internal
+   */
   fullscreenSearchPortalEl: HTMLElement | null
 }
 
 export function Navbar(props: NavbarProps) {
   const {fullscreenSearchPortalEl, onSearchOpenChange} = props
-  const {name, logo, navbar, tools, ...workspace} = useWorkspace()
+  const {name, studio, tools, ...workspace} = useWorkspace()
   const workspaces = useWorkspaces()
   const routerState = useRouterState()
-  const ToolMenu = navbar?.components?.ToolMenu || DefaultToolMenu
   const {scheme} = useColorScheme()
   const {href: rootHref, onClick: handleRootClick} = useStateLink({state: {}})
   const mediaIndex = useMediaIndex()
@@ -150,27 +146,29 @@ export function Navbar(props: NavbarProps) {
     setDrawerOpen(true)
   }, [])
 
-  const rootLinkContent = (() => {
-    if (isValidElementType(logo)) return createElement(logo)
-    if (isValidElement(logo)) return logo
-    return <Text weight="bold">{title}</Text>
-  })()
-
-  const brandingComponent = useMemo(
-    () => (
-      <Button
-        aria-label={title}
-        as="a"
-        href={rootHref}
-        mode="bleed"
-        onClick={handleRootClick}
-        padding={3}
-      >
-        {rootLinkContent}
-      </Button>
-    ),
-    [handleRootClick, rootHref, rootLinkContent, title]
+  const toolMenuProps: ToolMenuProps = useMemo(
+    () => ({
+      activeToolName: activeToolName,
+      closeSidebar: handleCloseDrawer,
+      context: 'topbar',
+      isSidebarOpen: false,
+      tools: tools,
+    }),
+    [activeToolName, handleCloseDrawer, tools]
   )
+
+  const toolMenu = studio.renderToolMenu(toolMenuProps)
+
+  const logoProps = useMemo(
+    () => ({
+      title,
+      href: rootHref,
+      onClick: handleRootClick,
+    }),
+    [handleRootClick, rootHref, title]
+  )
+
+  const brandingComponent = studio.renderLogo(logoProps)
 
   // The HTML elements that are part of the search view (i.e. the "close" button that is visible
   // when in fullscreen mode on narrow devices) needs to be passed to `<Autocomplete />` so it knows
@@ -265,13 +263,7 @@ export function Navbar(props: NavbarProps) {
 
             {shouldRender.tools && (
               <Card borderRight flex={1} marginX={2} overflow="visible" paddingRight={1}>
-                <ToolMenu
-                  activeToolName={activeToolName}
-                  context="topbar"
-                  isDrawerOpen={false}
-                  tools={tools}
-                  closeDrawer={handleCloseDrawer}
-                />
+                {toolMenu}
               </Card>
             )}
           </LeftFlex>
