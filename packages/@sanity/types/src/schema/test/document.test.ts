@@ -163,12 +163,42 @@ describe('document types', () => {
     })
 
     it('should define document fields safely (with some compromises without defineField)', () => {
-      const documentDef = defineType({
+      defineType({
+        type: 'document',
+        name: 'custom-document',
+        // @ts-expect-error require at least on field
+        fields: [],
+      })
+
+      defineType({
         type: 'document',
         name: 'custom-document',
         fields: [
           //@ts-expect-error not assignable to FieldDefinition
           {},
+        ],
+      })
+
+      defineType({
+        type: 'document',
+        name: 'custom-document',
+        fields: [
+          {
+            type: 'object',
+            name: 'error-fields-type',
+            fields: [
+              //@ts-expect-error not assignable to FieldDefinition
+              {},
+            ],
+          },
+        ],
+      })
+
+      // happy day
+      const documentDef = defineType({
+        type: 'document',
+        name: 'custom-document',
+        fields: [
           {
             type: 'string',
             name: 'stringField',
@@ -180,13 +210,22 @@ describe('document types', () => {
             validation: (Rule) => Rule.max(45),
             initialValue: 'string',
             options: {
-              layout: 'whatever',
+              layout: 'dropdown',
             },
           },
           {
             type: 'array',
             name: 'arrayField',
             of: [{type: 'string'}],
+          },
+          {
+            type: 'alias-type',
+            name: 'aliasType',
+            initialValue: {something: 'false'},
+            validation: (Rule) =>
+              Rule.custom((value?: Record<string, string>) =>
+                value?.something === 'false' ? true : 'Error'
+              ),
           },
           {
             type: 'array',

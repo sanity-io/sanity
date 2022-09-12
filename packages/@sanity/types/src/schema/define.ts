@@ -8,7 +8,7 @@ import {
   StrictDefinition,
   WidenInitialValue,
   WidenValidation,
-} from './defineHelpers'
+} from './defineTypes'
 
 /**
  * Define a Sanity type definition. This function will narrow the schema type down to fields and options based on the provided
@@ -84,6 +84,14 @@ import {
  *  })
  * ```
  *
+ * ## Note on type-safety in the current implementation
+ *
+ * Type-safety in arrays (`fields`, `of` ect) can only be guaranteed when {@link defineField} and {@link defineArrayOf}
+ * are used to wrap array-entries.
+ *
+ * For entries without a function-wrapper, TypeScript will resolve to a union type of all possible properties across
+ * all schema-types will be allowed.
+ *
  * @param schemaDefinition - should be a valid Sanity schema type definition.
  * @param defineOptions - optional param to provide typehints for the schemaDefinition.
  *
@@ -92,8 +100,7 @@ import {
  * @see typed
  */
 export function defineType<
-  TAutocompleteTypeHelper extends string | Schema.Type,
-  TType extends TAutocompleteTypeHelper,
+  TType extends string | Schema.Type, // Schema.Type here improves autocompletion in _some_ IDEs (not VS Code atm)
   TName extends string,
   TSelect extends Record<string, string> | undefined,
   TPrepareValue extends Record<keyof TSelect, any> | undefined,
@@ -101,7 +108,7 @@ export function defineType<
   TStrict extends StrictDefinition
 >(
   schemaDefinition: {
-    type: TAutocompleteTypeHelper
+    type: TType
     name: TName
   } & DefineSchemaBase<TType, TAlias> &
     NarrowPreview<TType, TAlias, TSelect, TPrepareValue> &
@@ -150,8 +157,7 @@ export function defineType<
  * @see typed
  */
 export function defineField<
-  TAutocompleteTypeHelper extends string | Schema.Type,
-  TType extends TAutocompleteTypeHelper,
+  TType extends string | Schema.Type, // Schema.Type here improves autocompletion in _some_ IDEs (not VS Code atm)
   TName extends string,
   TSelect extends Record<string, string> | undefined,
   TPrepareValue extends Record<keyof TSelect, any> | undefined,
@@ -160,7 +166,7 @@ export function defineField<
   TImageField extends boolean | undefined
 >(
   schemaField: {
-    type: TAutocompleteTypeHelper
+    type: TType
     name: TName
   } & DefineSchemaBase<TType, TAlias> &
     NarrowPreview<TType, TAlias, TSelect, TPrepareValue> &
@@ -199,8 +205,7 @@ export function defineField<
  * @see typed
  */
 export function defineArrayOf<
-  TAutocompleteTypeHelper extends string | Schema.Type,
-  TType extends TAutocompleteTypeHelper,
+  TType extends string | Schema.Type, // Schema.Type here improves autocompletion in _some_ IDEs (not VS Code atm)
   TName extends string,
   TSelect extends Record<string, string> | undefined,
   TPrepareValue extends Record<keyof TSelect, any> | undefined,
@@ -208,7 +213,7 @@ export function defineArrayOf<
   TStrict extends StrictDefinition
 >(
   arrayOfSchema: {
-    type: TAutocompleteTypeHelper
+    type: TType
     /**
      * When provided, `name` is used as `_type` for the array item when stored.
      *

@@ -10,8 +10,8 @@ export interface DefineOptions<
    * Use this when adding customizations to the schema that are not part of sanity core
    */
   strict?: TStrict
-  /** Should be provided when type is a non-intrinisic type, ie type is a type alias*/
-  alias?: Schema.NarrowType<TAlias>
+  /** Should be provided when type is a non-intrinsic type, ie type is a type alias*/
+  alias?: TAlias extends Schema.Type ? TAlias : never
 }
 
 export type IntrinsicBase = {

@@ -42,8 +42,6 @@ export namespace Schema {
    */
   export type Type = IntrinsicTypeDefinition[keyof IntrinsicTypeDefinition]['type']
 
-  export type NarrowType<T = never> = T extends Type ? T : never
-
   /**
    * Represents a Sanity schema type definition.
    *
@@ -90,7 +88,11 @@ export namespace Schema {
     [K in keyof IntrinsicTypeDefinition]: Omit<
       IntrinsicTypeDefinition[K],
       'initialValue' | 'validation'
-    >
+    > & {
+      // widen these so these are not unknown in FieldDefinition arrays du to mutually exclusive unions
+      validation?: SchemaValidationValue
+      initialValue?: InitialValueProperty<any, any>
+    }
   }
 
   /**
@@ -159,12 +161,7 @@ export namespace Schema {
     unique: () => ArrayRule<Value>
   }
 
-  export type ArrayOfEntry<T> = Omit<T, 'name' | 'hidden'> & {
-    /**
-     * `name` is suffixed to _type of the array item
-     */
-    name?: string
-  }
+  export type ArrayOfEntry<T> = Omit<T, 'name' | 'hidden'> & {name?: string}
 
   type IntrinsicArrayOfDefinition = {
     [K in keyof IntrinsicTypeDefinition]: Omit<

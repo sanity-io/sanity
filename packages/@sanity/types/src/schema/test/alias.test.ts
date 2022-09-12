@@ -11,11 +11,13 @@ describe('alias type test', () => {
     const notStringDef = defineType({
       type: 'custom-string',
       name: 'custom-string-redefined',
+
       options: {
         // atm this is allowed
         direction: 'horizontal',
         // but so is this
         slugify: () => null,
+        andThis: true,
       },
     })
 
