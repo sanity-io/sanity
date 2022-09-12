@@ -43,6 +43,7 @@
     "@sanity/ui": "^0.37.21",
     "@sanity/util": "2.33.2",
     "@sanity/uuid": "^3.0.1",
+    "date-fns": "^2.16.1",
     "framer-motion": "^5.3.3",
     "hashlru": "^2.1.0",
     "is-hotkey": "^0.1.6",
