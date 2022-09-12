@@ -3,8 +3,7 @@
  * Some of these tests have no expect statement;
  * use of ts-expect-error serves the same purpose - TypeScript is the testrunner here
  */
-import {defineField, defineType, Schema, typed} from '../types'
-import AssetFieldOptions = Schema.AssetFieldOptions
+import {defineField, defineType, Schema} from '../types'
 
 describe('image types', () => {
   it('should define image schema', () => {
@@ -99,7 +98,7 @@ describe('image types', () => {
           readOnly: true,
           hidden: false,
           options: {
-            isHighlighted: true,
+            unknownOption: 'allowed',
           },
         },
         {
@@ -118,48 +117,27 @@ describe('image types', () => {
             defineField({
               type: 'string',
               name: 'nestedField',
-              options: typed<AssetFieldOptions & Schema.StringOptions>({
-                isHighlighted: true,
-
+              options: {
                 //@ts-expect-error wrapping with defineField will give narrowed types always
                 unknownProp: 'strict: so not allowed',
-              }),
-            }),
-            defineField(
-              {
-                type: 'string',
-                name: 'nestedWiden',
-                options: {
-                  isHighlighted: true,
-
-                  //@ts-expect-error wrapping with defineField will give narrowed types always
-                  unknownProp: 'strict: so not allowed',
-                },
               },
-              {imageField: true}
-            ),
+            }),
           ],
         },
-        defineField(
-          {
-            type: 'string',
-            name: 'stringField',
-            title: 'String',
-            readOnly: true,
-            hidden: false,
-            // boy would typesafe fieldset be cool
-            fieldset: 'test',
-            group: 'test',
-            options: {
-              layout: 'radio',
-              // added by widen
-              isHighlighted: true,
-              //@ts-expect-error explicit typing prevents this
-              unknownProp: 'strict: widen interface',
-            },
+        defineField({
+          type: 'string',
+          name: 'stringField',
+          title: 'String',
+          readOnly: true,
+          hidden: false,
+          fieldset: 'test',
+          group: 'test',
+          options: {
+            layout: 'radio',
+            //@ts-expect-error explicit typing prevents this
+            unknownProp: 'strict: widen interface',
           },
-          {imageField: true}
-        ),
+        }),
       ],
     })
 

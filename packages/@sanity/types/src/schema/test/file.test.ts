@@ -72,7 +72,6 @@ describe('file types', () => {
           options: {
             layout: 'whatever',
             anything: 'goes',
-            isHighlighted: true,
           },
         },
         {
@@ -103,7 +102,7 @@ describe('file types', () => {
           options: {
             layout: 'whatever',
             slugify: () => 'all bets a re of',
-            isHighlighted: true,
+            unknownOption: 'allowed',
           },
         },
         {

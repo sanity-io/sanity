@@ -129,24 +129,6 @@ export function defineType<
  * Using `defineField` is optional, but should provide improved autocompletion in your IDE, when building your schema.
  * Field-properties like `validation` and `initialValue`will also be more specific.
  *
- * ### Note on image fields
- * Sanity image fields has additional options. To make them legal in `defineField`, set `imageField: true`
- * in `defineOptions`:
- *
- * ```ts
- * defineField({
- *     type: 'string',
- *     name: 'stringWithImageFieldOptions',
- *     options: {
- *       isHighlighted: true,
- *       // other string options
- *     },
- *   },
- *   {imageField: true}
- * ),
- * ```
- *
- *
  * See {@link defineType} for more examples.
  *
  * @param schemaField - should be a valid Sanity field type definition.
@@ -162,8 +144,7 @@ export function defineField<
   TSelect extends Record<string, string> | undefined,
   TPrepareValue extends Record<keyof TSelect, any> | undefined,
   TAlias extends Schema.Type | undefined,
-  TStrict extends StrictDefinition,
-  TImageField extends boolean | undefined
+  TStrict extends StrictDefinition
 >(
   schemaField: {
     type: TType
@@ -171,17 +152,10 @@ export function defineField<
   } & DefineSchemaBase<TType, TAlias> &
     NarrowPreview<TType, TAlias, TSelect, TPrepareValue> &
     MaybeAllowUnknownProps<TStrict> &
-    Schema.FieldBase &
-    (TImageField extends true ? {options?: Schema.AssetFieldOptions} : unknown),
+    Schema.FieldBase,
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  defineOptions?: DefineOptions<TStrict, TAlias> & {
-    /**
-     * Set this to true for fields in an image object.
-     * It will allow additional options relevant in that context.
-     * */
-    imageField?: TImageField
-  }
+  defineOptions?: DefineOptions<TStrict, TAlias>
 ): typeof schemaField & WidenValidation & WidenInitialValue {
   return schemaField
 }
@@ -242,9 +216,10 @@ export function defineArrayOf<
  *  defineField({
  *    type: 'string',
  *    name: 'nestedField',
- *    options: typed<AssetFieldOptions & Schema.StringOptions>({
- *      isHighlighted: true,
+ *    options: typed<Schema.StringOptions & {myCustomOption: boolean}>({
  *      layout: 'radio',
+ *      // allowed
+ *      myCustomOption: true,
  *      //@ts-expect-error unknownProp is not part of AssetFieldOptions & Schema.StringOptions
  *      unknownProp: 'not allowed in typed context',
  *    }),

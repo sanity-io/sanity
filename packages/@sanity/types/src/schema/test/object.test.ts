@@ -130,7 +130,7 @@ describe('object types', () => {
             // validation is unfortunately broadened to the generic-rule-with-all-functions here
             validation: (Rule) => Rule.greaterThan(5),
             options: {
-              isHighlighted: true,
+              unknownOption: 'allowed',
               direction: 'horizontal',
               unknown: 'without-a-wrapper-unknown-options-are-allowed',
             },
@@ -149,11 +149,9 @@ describe('object types', () => {
             //@ts-expect-error now this is not allowed as greaterThan is not in StringRule
             validation: (Rule) => Rule.greaterThan(5),
             options: {
-              //@ts-expect-error isHighlighted is not allowed in this context
-              isHighlighted: true,
+              //@ts-expect-error not allowed in this context
+              unknownOption: 'not-allowed',
               direction: 'horizontal',
-              //if isHighlighted does not error, this will, but TypeScript only emits on the first errored field
-              unknown: 'without-a-wrapper-unknown-options-are-allowed',
             },
           }),
         ],

@@ -333,17 +333,6 @@ export namespace Schema {
     initialValue?: InitialValueProperty<any, GeopointValue>
   }
 
-  export interface AssetFieldOptions {
-    /**
-     * @deprecated This is now the default behavior - use `fieldset` to hide fields by default
-     */
-    isHighlighted?: boolean
-  }
-
-  export type AssetFieldDefinition = FieldDefinition & {
-    options?: AssetFieldOptions & FieldDefinition['options']
-  }
-
   export interface ImageOptions extends FileOptions {
     metadata?: ImageMetadataType[]
     hotspot?: boolean
@@ -370,7 +359,7 @@ export namespace Schema {
 
   export interface ImageDefinition extends Omit<ObjectDefinition, 'type' | 'fields' | 'options'> {
     type: 'image'
-    fields?: AssetFieldDefinition[]
+    fields?: FieldDefinition[]
     options?: ImageOptions
     validation?: ValidationBuilder<ImageRule, ImageValue>
     initialValue?: InitialValueProperty<any, ImageValue>
