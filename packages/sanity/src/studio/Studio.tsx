@@ -1,8 +1,15 @@
 import React from 'react'
 import {StudioProvider, StudioProviderProps} from './StudioProvider'
-import {StudioLayout} from './StudioLayout'
+import {useWorkspace} from './workspace'
 
 export type StudioProps = Omit<StudioProviderProps, 'children'>
+
+function StudioLayout() {
+  const {renderLayout} = useWorkspace().studio
+  const layout = renderLayout(undefined)
+
+  return <>{layout}</>
+}
 
 export function Studio(props: StudioProps) {
   return (
