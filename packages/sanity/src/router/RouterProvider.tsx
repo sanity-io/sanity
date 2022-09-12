@@ -1,5 +1,5 @@
 import {isEqual} from 'lodash'
-import React, {startTransition, useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {RouterContext} from './RouterContext'
 import {IntentParameters, RouterContextValue, NavigateOptions, Router, RouterState} from './types'
 
@@ -60,7 +60,7 @@ export function RouterProvider(props: RouterProviderProps): React.ReactElement {
 
   const navigateUrl = useCallback(
     (opts: {path: string; replace?: boolean}) => {
-      startTransition(() => onNavigate(opts))
+      onNavigate(opts)
     },
     [onNavigate]
   )
@@ -82,18 +82,14 @@ export function RouterProvider(props: RouterProviderProps): React.ReactElement {
 
   const navigate = useCallback(
     (nextState: Record<string, unknown>, options: NavigateOptions = {}) => {
-      startTransition(() =>
-        navigateUrl({path: resolvePathFromState(nextState), replace: options.replace})
-      )
+      navigateUrl({path: resolvePathFromState(nextState), replace: options.replace})
     },
     [navigateUrl, resolvePathFromState]
   )
 
   const navigateIntent = useCallback(
     (intentName: string, params?: IntentParameters, options: NavigateOptions = {}) => {
-      startTransition(() =>
-        navigateUrl({path: resolveIntentLink(intentName, params), replace: options.replace})
-      )
+      navigateUrl({path: resolveIntentLink(intentName, params), replace: options.replace})
     },
     [navigateUrl, resolveIntentLink]
   )
@@ -116,7 +112,7 @@ export function RouterProvider(props: RouterProviderProps): React.ReactElement {
     const nextState = stateProp
 
     if (!isEqual(nextState, prevState)) {
-      startTransition(() => setState(nextState))
+      setState(nextState)
     }
   }, [stateProp])
 

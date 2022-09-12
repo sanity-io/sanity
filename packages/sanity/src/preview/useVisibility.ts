@@ -1,4 +1,4 @@
-import {startTransition, useCallback, useEffect, useState} from 'react'
+import {useEffect, useState} from 'react'
 import {concat, of} from 'rxjs'
 import {delay, distinctUntilChanged, map, switchMap} from 'rxjs/operators'
 import {intersectionObservableFor} from './streams/intersectionObservableFor'
@@ -6,11 +6,7 @@ import {visibilityChange$} from './streams/visibilityChange'
 
 export function useVisibility(props: {element: HTMLElement | null; hideDelay?: number}): boolean {
   const {element, hideDelay = 0} = props
-  const [visible, _setVisible] = useState(false)
-  const setVisible = useCallback(
-    (nextVisible: boolean) => startTransition(() => _setVisible(nextVisible)),
-    []
-  )
+  const [visible, setVisible] = useState(false)
 
   useEffect(() => {
     if (!element) {

@@ -1,5 +1,5 @@
 import {PreviewValue, SchemaType, SortOrdering} from '@sanity/types'
-import {startTransition, useEffect, useState} from 'react'
+import {useEffect, useState} from 'react'
 import {useDocumentPreviewStore} from '../datastores'
 import {Previewable} from './types'
 
@@ -29,7 +29,7 @@ function useDocumentPreview(props: {
         setError(nextError)
       },
       next(nextValue) {
-        startTransition(() => setValue(nextValue.snapshot || null))
+        setValue(nextValue.snapshot || null)
       },
     })
 

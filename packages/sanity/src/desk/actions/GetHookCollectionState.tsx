@@ -1,5 +1,5 @@
 import type {ThrottleSettings} from 'lodash'
-import React, {startTransition, useCallback, useMemo, useRef, useState} from 'react'
+import React, {useCallback, useMemo, useRef, useState} from 'react'
 import {isNonNullable} from '../../util/isNonNullable'
 import {useThrottledCallback} from '../../util/useThrottledCallback'
 import {getHookId} from './actionId'
@@ -34,8 +34,7 @@ export function GetHookCollectionState<T, K>(props: GetHookCollectionStateProps<
     ricHandle.current = requestIdleCallback(() => {
       ricHandle.current = null
 
-      // eslint-disable-next-line max-nested-callbacks
-      startTransition(() => setTick((tick) => tick + 1))
+      setTick((tick) => tick + 1)
     })
   }, [])
 
@@ -56,9 +55,7 @@ export function GetHookCollectionState<T, K>(props: GetHookCollectionStateProps<
 
   const handleReset = useCallback(
     (id: any) => {
-      startTransition(() =>
-        setKeys((currentKeys) => ({...currentKeys, [id]: (currentKeys[id] || 0) + 1}))
-      )
+      setKeys((currentKeys) => ({...currentKeys, [id]: (currentKeys[id] || 0) + 1}))
 
       if (onReset) {
         onReset()

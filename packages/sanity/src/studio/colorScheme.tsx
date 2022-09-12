@@ -1,11 +1,4 @@
-import React, {
-  createContext,
-  startTransition,
-  useContext,
-  useEffect,
-  useMemo,
-  useState,
-} from 'react'
+import React, {createContext, useContext, useEffect, useMemo, useState} from 'react'
 import {studioTheme, ThemeColorSchemeKey, ThemeProvider, usePrefersDark} from '@sanity/ui'
 
 const ColorSchemeContext = createContext<{
@@ -30,7 +23,7 @@ export function ColorSchemeProvider({
   // if the preferred color scheme changes, then react to this change
   useEffect(() => {
     const nextScheme = prefersDark ? 'dark' : 'light'
-    startTransition(() => setScheme(nextScheme))
+    setScheme(nextScheme)
     onSchemeChange?.(nextScheme)
   }, [onSchemeChange, prefersDark])
 

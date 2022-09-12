@@ -1,5 +1,5 @@
 import {identity} from 'lodash'
-import {startTransition, useEffect, useState} from 'react'
+import {useEffect, useState} from 'react'
 import {RouterState} from './types'
 import {useRouter} from './useRouter'
 
@@ -23,7 +23,7 @@ export function useRouterState(
   const [selectedState, setState] = useState(() => selector(state))
 
   // reset the state when the `selector` prop changes
-  useEffect(() => startTransition(() => setState(selector(state))), [selector, state])
+  useEffect(() => setState(selector(state)), [selector, state])
 
   return selectedState
 }
