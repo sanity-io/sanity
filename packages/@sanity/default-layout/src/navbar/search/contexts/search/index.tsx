@@ -15,7 +15,7 @@ import React, {
   useReducer,
   useRef,
 } from 'react'
-import {SEARCH_LIMIT} from '../../constants'
+import {FINDABILITY_MVI, SEARCH_LIMIT} from '../../constants'
 import {createRecentSearchesStore, RecentSearchesStore} from '../../datastores/recentSearches'
 import {useSearch} from '../../hooks/useSearch'
 import {SearchOrdering} from '../../types'
@@ -82,11 +82,16 @@ export function SearchProvider({children, currentUser}: SearchProviderProps) {
     if (orderingChanged || pageIndexChanged || termsChanged) {
       handleSearch({
         options: {
+          // Comments prepended to each query for future measurement
+          comments: [
+            `findability-mvi:${FINDABILITY_MVI}`,
+            `findability-selected-types:${terms.types.length}`,
+          ],
           limit: SEARCH_LIMIT,
           offset: pageIndex * SEARCH_LIMIT,
+          skipSortByScore: ordering.ignoreScore,
           sort: ordering.sort,
         },
-        skipSortByScore: ordering.ignoreScore,
         terms,
       })
 

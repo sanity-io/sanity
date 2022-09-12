@@ -140,11 +140,15 @@ export function createSearchQuery(
     // `${hasIndexedPaths ? `[${createConstraints(terms, exactSearchSpec).join(' && ')}]` : ''}` +
     `{_type, _id, ${selection}}`
 
+  // Prepend optional GROQ comments to query
+  const groqComments = (searchOpts?.comments || []).map((s) => `// ${s}`).join('\n')
+  const updatedQuery = groqComments ? `${groqComments}\n${query}` : query
+
   const offset = searchOpts?.offset ?? 0
   const limit = (searchOpts?.limit ?? DEFAULT_LIMIT) + offset
 
   return {
-    query,
+    query: updatedQuery,
     params: {
       ...toGroqParams(terms),
       __types: exactSearchSpecs.map((spec) => spec.typeName),

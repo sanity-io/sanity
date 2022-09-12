@@ -17,9 +17,7 @@ import type {
 
 type SearchFunction = (
   searchTerms: string | SearchTerms,
-  searchOpts?: SearchOptions,
-  searchComments?: string[],
-  skipSortByScore?: boolean
+  searchOpts?: SearchOptions
 ) => Observable<WeightedHit[]>
 
 function getSearchTerms(
@@ -42,12 +40,7 @@ export function createWeightedSearch(
 ): SearchFunction {
   // Search currently supports both strings (reference + cross dataset reference inputs)
   // or a SearchTerms object (omnisearch).
-  return function search(
-    searchParams,
-    searchOpts = {},
-    searchComments = [],
-    skipSortByScore?: boolean
-  ) {
+  return function search(searchParams, searchOpts = {}) {
     const searchTerms = getSearchTerms(searchParams, types)
 
     const {query, params, options, searchSpec, terms} = createSearchQuery(searchTerms, {
@@ -55,18 +48,14 @@ export function createWeightedSearch(
       ...searchOpts,
     })
 
-    // Prepend optional GROQ comments to query
-    const groqComments = searchComments.map((s) => `// ${s}`).join('\n')
-    const updatedQuery = groqComments ? `${groqComments}\n${query}` : query
-
-    return client.observable.fetch(updatedQuery, params, options).pipe(
+    return client.observable.fetch(query, params, options).pipe(
       commonOpts.unique ? map(removeDupes) : tap(),
       // Assign weighting and scores based on current search terms.
       // No scores will be assigned when terms are empty.
       map((hits: SearchHit[]) => applyWeights(searchSpec, hits, terms)),
       // Optionally skip client-side score sorting.
       // This can be relevant when ordering results by specific fields, especially dates.
-      skipSortByScore ? tap() : map((hits) => sortBy(hits, (hit) => -hit.score))
+      searchOpts?.skipSortByScore ? tap() : map((hits) => sortBy(hits, (hit) => -hit.score))
     )
   }
 }

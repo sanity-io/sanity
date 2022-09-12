@@ -43,12 +43,9 @@ describe('createWeightedSearch', () => {
 
   it('should not order hits by score if skipSortByScore is enabled', async () => {
     // @todo: replace `toPromise` with `firstValueFrom` in rxjs 7+
-    const result = await search(
-      {query: 'harry', types: []} as SearchTerms,
-      {},
-      [],
-      true
-    ).toPromise()
+    const result = await search({query: 'harry', types: []} as SearchTerms, {
+      skipSortByScore: true,
+    }).toPromise()
 
     expect(result[0].score).toEqual(2.5)
     expect(result[1].score).toEqual(10)

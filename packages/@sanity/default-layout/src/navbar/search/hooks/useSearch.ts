@@ -17,13 +17,11 @@ import {
   switchMap,
   tap,
 } from 'rxjs/operators'
-import {FINDABILITY_MVI} from '../constants'
 import {hasSearchableTerms} from '../contexts/search/selectors'
 import {SearchState} from '../types'
 
 interface SearchRequest {
   options?: SearchOptions
-  skipSortByScore?: boolean
   terms: SearchTerms
 }
 
@@ -82,26 +80,15 @@ export function useSearch(
         filter((request: SearchRequest) => hasSearchableTerms(request.terms)),
         debounceTime(300),
         tap(onStart),
-        switchMap((request) => {
-          // Comments prepended to each query for future measurement
-          const searchComments = [
-            `findability-mvi:${FINDABILITY_MVI}`,
-            `findability-selected-types:${request.terms.types.length}`,
-          ]
-
-          return concat(
+        switchMap((request) =>
+          concat(
             of({
               ...INITIAL_SEARCH_STATE,
               loading: true,
               options: request.options,
               terms: request.terms,
             }),
-            (search(
-              request.terms,
-              request.options,
-              searchComments,
-              request?.skipSortByScore
-            ) as Observable<WeightedHit[]>).pipe(
+            (search(request.terms, request.options) as Observable<WeightedHit[]>).pipe(
               map((hits) => ({hits})),
               tap(({hits}) => onComplete?.(hits)),
               catchError((error) => {
@@ -117,7 +104,7 @@ export function useSearch(
             ),
             of({loading: false})
           )
-        }),
+        ),
         scan((prevState, nextState): SearchState => {
           return {...prevState, ...nextState}
         }, INITIAL_SEARCH_STATE),

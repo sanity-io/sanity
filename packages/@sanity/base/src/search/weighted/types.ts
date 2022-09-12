@@ -78,9 +78,11 @@ export interface WeightedSearchOptions {
  * @internal
  */
 export interface SearchOptions {
+  comments?: string[]
   includeDrafts?: boolean
   limit?: number
   offset?: number
+  skipSortByScore?: boolean
   sort?: SearchSort
 }
 

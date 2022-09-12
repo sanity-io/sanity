@@ -294,9 +294,7 @@ declare module 'part:@sanity/base/search' {
 
   declare const search: (
     searchTerms: string | SearchTerms,
-    searchOpts?: SearchOptions,
-    groqComments?: string[],
-    skipSortByScore?: boolean
+    searchOpts?: SearchOptions
   ) => Observable
   export default search
 }
