@@ -76,6 +76,7 @@ export const CollapseMenu = forwardRef(function CollapseMenu(
     gap,
     menuButtonProps,
     onMenuClose,
+    ...rest
   } = props
   const [rootEl, setRootEl] = useState<HTMLDivElement | null>(null)
   const [hiddenRowEl, setHiddenRowEl] = useState<HTMLDivElement | null>(null)
@@ -169,7 +170,14 @@ export const CollapseMenu = forwardRef(function CollapseMenu(
   }
 
   return (
-    <OuterFlex align="center" data-ui="CollapseMenu" overflow="hidden" sizing="border" ref={ref}>
+    <OuterFlex
+      align="center"
+      data-ui="CollapseMenu"
+      overflow="hidden"
+      sizing="border"
+      ref={ref}
+      {...rest}
+    >
       <RootFlex direction="column" flex={1} justify="center" ref={setRootEl}>
         {/* Content */}
         <RowFlex gap={gap}>
