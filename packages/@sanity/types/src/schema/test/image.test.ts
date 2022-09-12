@@ -67,10 +67,10 @@ describe('image types', () => {
           validation: (Rule) => Rule.max(45),
           initialValue: 'string',
           options: {
+            isHighlighted: true,
             layout: 'radio',
             //@ts-expect-error unknown option
             anything: 'goes',
-            isHighlighted: true,
           },
         },
         {
