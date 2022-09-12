@@ -63,15 +63,15 @@ describe('image types', () => {
           hidden: false,
           fieldset: 'test',
           group: 'test',
-          fields: [],
+          //fields: [],
           validation: (Rule) => Rule.max(45),
           initialValue: 'string',
-          options: {
+          /*  options: {
             isHighlighted: true,
             layout: 'radio',
             //@ts-expect-error unknown option
             anything: 'goes',
-          },
+          },*/
         },
         {
           type: 'array',
