@@ -1,5 +1,4 @@
 import {ArraySchemaType, ObjectSchemaType} from '@sanity/types'
-import React from 'react'
 import type {Type as SchemaType} from './schema'
 
 export type PortableTextBlock = {

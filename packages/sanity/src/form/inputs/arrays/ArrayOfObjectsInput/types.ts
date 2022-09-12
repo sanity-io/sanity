@@ -1,7 +1,6 @@
 /* eslint-disable camelcase */
 
 import {KeyedSegment, Path} from '@sanity/types'
-import React from 'react'
 
 export type ModalType = 'modal' | 'fullscreen' | string
 

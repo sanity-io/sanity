@@ -1,5 +1,4 @@
 import {ArraySchemaType} from '@sanity/types'
-import React from 'react'
 import * as is from '../../utils/is'
 import {OptionsArrayInput as OptionsArray} from '../../inputs/arrays/OptionsArrayInput'
 import {PortableTextInput} from '../../inputs/PortableText/PortableTextInput'

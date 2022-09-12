@@ -1,5 +1,4 @@
 import {SchemaType} from '@sanity/types'
-import React from 'react'
 import {PreviewProps} from '../../components/previews'
 import {SanityDefaultPreview} from './SanityDefaultPreview'
 
