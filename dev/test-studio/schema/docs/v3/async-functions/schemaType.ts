@@ -18,8 +18,6 @@ export const validationTest = defineType({
           async (value, context) =>
             new Promise((resolve) => {
               setTimeout(() => {
-                // eslint-disable-next-line no-console
-                console.log('Context in custom validation function', context)
                 resolve(
                   `Always async error for. From context client->projectId: ${
                     context.client.config().projectId
@@ -31,8 +29,6 @@ export const validationTest = defineType({
       initialValue: async (params: undefined, context: ConfigContext) => {
         return new Promise((resolve) => {
           setTimeout(() => {
-            // eslint-disable-next-line no-console
-            console.log('Context in delayed initial value function, string', context)
             resolve(context.projectId)
           }, 1000)
         })
@@ -55,8 +51,6 @@ export const validationTest = defineType({
           initialValue: async (params: undefined, context: ConfigContext) => {
             return new Promise((resolve) => {
               setTimeout(() => {
-                // eslint-disable-next-line no-console
-                console.log('Context in delayed initial value function, array object', context)
                 resolve({
                   title: context.projectId,
                 })
@@ -68,8 +62,6 @@ export const validationTest = defineType({
       initialValue: async (params: undefined, context: ConfigContext) => {
         return new Promise((resolve) => {
           setTimeout(() => {
-            // eslint-disable-next-line no-console
-            console.log('Context in delayed initial value function, array', context)
             resolve([
               {
                 _key: `${Math.random()}`,
@@ -99,11 +91,6 @@ export const validationTest = defineType({
           initialValue: async (params: undefined, context: ConfigContext) => {
             return new Promise((resolve) => {
               setTimeout(() => {
-                // eslint-disable-next-line no-console
-                console.log(
-                  'Context in delayed initial value function, block array object',
-                  context
-                )
                 resolve({
                   _type: 'testObject',
                   title: context.projectId,
@@ -116,8 +103,6 @@ export const validationTest = defineType({
       initialValue: async (params: undefined, context: ConfigContext) => {
         return new Promise((resolve) => {
           setTimeout(() => {
-            // eslint-disable-next-line no-console
-            console.log('Context in delayed initial value function, block array', context)
             resolve([
               {
                 style: 'normal',
