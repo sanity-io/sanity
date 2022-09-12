@@ -2,8 +2,9 @@
 ///<reference types="@sanity/types/parts" />
 
 import type {SearchOptions, SearchTerms, WeightedHit} from '@sanity/base'
+import {createWeightedSearch, getSearchableTypes} from '@sanity/base/_internal'
 import {isEqual} from 'lodash'
-import search from 'part:@sanity/base/search'
+import schema from 'part:@sanity/base/schema'
 import {useCallback, useState} from 'react'
 import {useObservableCallback} from 'react-rx'
 import {concat, Observable, of} from 'rxjs'
@@ -17,6 +18,7 @@ import {
   switchMap,
   tap,
 } from 'rxjs/operators'
+import {searchClient} from '../../../versionedClient'
 import {hasSearchableTerms} from '../contexts/search/selectors'
 import {SearchState} from '../types'
 
@@ -49,6 +51,11 @@ function sanitizeRequest(request: SearchRequest) {
     },
   }
 }
+
+const searchWeighted = createWeightedSearch(getSearchableTypes(schema), searchClient, {
+  tag: 'search.global',
+  unique: true,
+})
 
 export function useSearch(
   {
@@ -88,7 +95,7 @@ export function useSearch(
               options: request.options,
               terms: request.terms,
             }),
-            (search(request.terms, request.options) as Observable<WeightedHit[]>).pipe(
+            (searchWeighted(request.terms, request.options) as Observable<WeightedHit[]>).pipe(
               map((hits) => ({hits})),
               tap(({hits}) => onComplete?.(hits)),
               catchError((error) => {

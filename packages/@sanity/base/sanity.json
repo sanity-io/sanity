@@ -51,14 +51,6 @@
       "path": "assets/asset-url-builder"
     },
     {
-      "name": "part:@sanity/base/search",
-      "description": "Parse the search query and fetch search results from the dataset"
-    },
-    {
-      "name": "part:@sanity/base/search/weighted",
-      "description": "Weighted search implementation"
-    },
-    {
       "name": "part:@sanity/base/theme/variables-style",
       "description": "Base theme variables for Sanity. Dont override this unless you provide all the new variables"
     },
@@ -277,14 +269,6 @@
     {
       "implements": "part:@sanity/base/schema-creator",
       "path": "schema/createSchema"
-    },
-    {
-      "implements": "part:@sanity/base/search",
-      "path": "search/index"
-    },
-    {
-      "implements": "part:@sanity/base/search/weighted",
-      "path": "search/weighted/index"
     },
     {
       "implements": "part:@sanity/base/util/draft-utils",
