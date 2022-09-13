@@ -1,6 +1,7 @@
-import React, {useCallback, useMemo} from 'react'
+import React, {useCallback} from 'react'
 import imageUrlBuilder from '@sanity/image-url'
 import {SchemaType} from '@sanity/types'
+import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../studioClient'
 import {ImageInput, ImageInputProps} from '../../inputs/files/ImageInput'
 import {useFormBuilder} from '../../useFormBuilder'
 import {useDocumentPreviewStore} from '../../../datastores'
@@ -23,8 +24,7 @@ export function StudioImageInput(props: StudioImageInputProps) {
   const sourcesFromSchema = props.schemaType.options?.sources
   const {image} = useFormBuilder().__internal
   const documentPreviewStore = useDocumentPreviewStore()
-  const client = useClient()
-  const versionedClient = useMemo(() => client.withConfig({apiVersion: '1'}), [client])
+  const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const formBuilder = useFormBuilder()
   const supportsImageUploads = formBuilder.__internal.image.directUploads
 
@@ -45,7 +45,7 @@ export function StudioImageInput(props: StudioImageInputProps) {
     [image, sourcesFromSchema]
   )
 
-  const builder = React.useMemo(() => imageUrlBuilder(versionedClient), [versionedClient])
+  const builder = React.useMemo(() => imageUrlBuilder(client), [client])
 
   const observeAsset = useCallback(
     (id: string) => observeImageAsset(documentPreviewStore, id),

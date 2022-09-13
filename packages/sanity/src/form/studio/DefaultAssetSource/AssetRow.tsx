@@ -1,9 +1,10 @@
 import type {Subscription} from 'rxjs'
-import React, {useMemo, useRef, useState} from 'react'
+import React, {useRef, useState} from 'react'
 import styled, {css} from 'styled-components'
 import {Button, Box, Card, Flex, Stack, Label, Text, Tooltip, Grid, useToast} from '@sanity/ui'
 import {DocumentIcon, ChevronUpIcon, ChevronDownIcon, LinkIcon, TrashIcon} from '@sanity/icons'
 import {Asset as AssetType} from '@sanity/types'
+import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../studioClient'
 import {useClient, useTimeAgo} from '../../../hooks'
 import {FIXME} from '../../types'
 import {prettyBytes} from './prettyBytes'
@@ -115,8 +116,7 @@ const STYLES_ASSETMENU_WRAPPER = {
 const DISABLED_DELETE_TITLE = 'Cannot delete current file'
 
 export const AssetRow = (props: RowProps) => {
-  const client = useClient()
-  const versionedClient = useMemo(() => client.withConfig({apiVersion: '1'}), [client])
+  const versionedClient = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const toast = useToast()
   const deleteRef$ = useRef<Subscription>()
   const [showUsageDialog, setShowUsageDialog] = useState(false)

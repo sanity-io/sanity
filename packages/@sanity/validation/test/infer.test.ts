@@ -7,6 +7,7 @@ import {createSchema} from './createSchema'
 import {createMockSanityClient} from './mocks/mockSanityClient'
 
 const client = createMockSanityClient()
+const getClient = (options: {apiVersion: string}): SanityClient => client as unknown as SanityClient
 
 describe('schema validation inference', () => {
   describe('object with `options.list` and `value` field', () => {
@@ -129,9 +130,7 @@ describe('schema validation inference', () => {
         )
       )
 
-      await expect(
-        validateDocument(client as unknown as SanityClient, mockDocument, schema)
-      ).resolves.toEqual([])
+      await expect(validateDocument(getClient, mockDocument, schema)).resolves.toEqual([])
 
       expect(client.fetch).toHaveBeenCalledTimes(1)
       expect(client.fetch.mock.calls[0]).toEqual([
@@ -157,9 +156,7 @@ describe('schema validation inference', () => {
         )
       )
 
-      await expect(
-        validateDocument(client as unknown as SanityClient, mockDocument, schema)
-      ).resolves.toMatchObject([
+      await expect(validateDocument(getClient, mockDocument, schema)).resolves.toMatchObject([
         {
           path: ['slugField'],
           level: 'error',
@@ -223,7 +220,7 @@ describe('schema validation inference', () => {
       const mockGetDocumentExists = jest.fn(() => Promise.resolve(false))
       await expect(
         validateDocument(
-          client as unknown as SanityClient,
+          getClient,
           {
             ...mockDocument,
             referenceField: {
@@ -248,7 +245,7 @@ describe('schema validation inference', () => {
     test('reference is valid if schema type is marked as weak', async () => {
       await expect(
         validateDocument(
-          client as unknown as SanityClient,
+          getClient,
           {
             ...mockDocument,
             referenceFieldWeak: {_ref: 'example-id'},
@@ -260,7 +257,7 @@ describe('schema validation inference', () => {
 
     test('throws if `getDocumentExists` is not present', async () => {
       const result = await validateDocument(
-        client as unknown as SanityClient,
+        getClient,
         {
           ...mockDocument,
           referenceField: {
@@ -284,7 +281,7 @@ describe('schema validation inference', () => {
       const mockGetDocumentExists = jest.fn(() => Promise.resolve(true))
       await expect(
         validateDocument(
-          client as unknown as SanityClient,
+          getClient,
           {
             ...mockDocument,
             referenceField: {
@@ -305,7 +302,7 @@ describe('schema validation inference', () => {
 async function expectNoError(validations: Rule[], value: unknown) {
   const errors = (
     await Promise.all(
-      validations.map((rule) => rule.validate(value, {client: {} as any, schema: {} as any}))
+      validations.map((rule) => rule.validate(value, {getClient, schema: {} as any}))
     )
   ).flat()
   if (errors.length === 0) {
@@ -326,7 +323,7 @@ async function expectError(
 ) {
   const errors = (
     await Promise.all(
-      validations.map((rule) => rule.validate(value, {client: {} as any, schema: {} as any}))
+      validations.map((rule) => rule.validate(value, {getClient, schema: {} as any}))
     )
   ).flat()
   if (!errors.length) {

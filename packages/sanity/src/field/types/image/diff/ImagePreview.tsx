@@ -5,6 +5,7 @@ import {ImageIcon} from '@sanity/icons'
 import {Box, Card, Flex, Text} from '@sanity/ui'
 import styled from 'styled-components'
 import {hues} from '@sanity/color'
+import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../studioClient'
 import {useClient} from '../../../../hooks'
 import {MetaInfo} from '../../../diff'
 import {useDocumentValues} from '../../../../datastores'
@@ -87,7 +88,7 @@ const HotspotDiff = styled.div`
 
 export function ImagePreview(props: ImagePreviewProps): React.ReactElement {
   const {id, action, diff, hotspot, crop, is} = props
-  const client = useClient()
+  const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const [imageError, setImageError] = React.useState<SyntheticEvent<HTMLImageElement, Event>>()
   const {value: asset} = useDocumentValues<MinimalAsset>(id, ASSET_FIELDS)
   const dimensions = getImageDimensions(id)

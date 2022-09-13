@@ -1,7 +1,9 @@
 import {SchemaType, SortOrderingItem} from '@sanity/types'
 import {SanityClient} from '@sanity/client'
 import {ComposeIcon} from '@sanity/icons'
+import type {SourceClientOptions} from '../../config'
 import {InitialValueTemplateItem} from '../../templates'
+import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
 import {SerializeError, HELP_URL} from './SerializeError'
 import {SerializeOptions, Child} from './StructureNodes'
 import {ChildResolver, ChildResolverOptions, ItemChild} from './ChildResolver'
@@ -15,18 +17,18 @@ import {DocumentBuilder} from './Document'
 import {StructureContext} from './types'
 
 const resolveTypeForDocument = async (
-  client: SanityClient,
+  getClient: (options: SourceClientOptions) => SanityClient,
   id: string
 ): Promise<string | undefined> => {
   const query = '*[_id in [$documentId, $draftId]]._type'
   const documentId = id.replace(/^drafts\./, '')
   const draftId = `drafts.${documentId}`
 
-  const types = await client
-    // For structure-internal requests that we have control of the filter on,
-    // we'll use this client with a more modern API version
-    .withConfig({apiVersion: '2021-06-07'})
-    .fetch(query, {documentId, draftId}, {tag: 'structure.resolve-type'})
+  const types = await getClient(DEFAULT_STUDIO_CLIENT_OPTIONS).fetch(
+    query,
+    {documentId, draftId},
+    {tag: 'structure.resolve-type'}
+  )
 
   return types[0]
 }
@@ -55,7 +57,7 @@ const createDocumentChildResolverForItem =
       : undefined
     const type = template
       ? template.schemaType
-      : parentItem.schemaTypeName || resolveTypeForDocument(context.client, itemId)
+      : parentItem.schemaTypeName || resolveTypeForDocument(context.getClient, itemId)
 
     return Promise.resolve(type).then((schemaType) =>
       schemaType

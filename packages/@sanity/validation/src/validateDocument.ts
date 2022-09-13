@@ -48,7 +48,7 @@ export function resolveTypeForArrayItem(
 }
 
 export default async function validateDocument(
-  client: SanityClient,
+  getClient: (options: {apiVersion: string}) => SanityClient,
   doc: SanityDocument,
   schema: Schema,
   context?: Pick<ValidationContext, 'getDocumentExists'>
@@ -61,7 +61,7 @@ export default async function validateDocument(
 
   try {
     return await validateItem({
-      client,
+      getClient,
       schema,
       parent: undefined,
       value: doc,

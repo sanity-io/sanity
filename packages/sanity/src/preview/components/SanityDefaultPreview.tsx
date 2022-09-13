@@ -11,6 +11,7 @@ import React, {
 } from 'react'
 import {PreviewProps} from '../../components/previews'
 import {useClient} from '../../hooks'
+import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
 import {isRecord, isString} from '../../util'
 import {_extractUploadState} from './_extractUploadState'
 import {_previewComponents} from './_previewComponents'
@@ -37,7 +38,7 @@ export function SanityDefaultPreview(props: SanityDefaultPreviewProps): ReactEle
     ...restProps
   } = props
 
-  const client = useClient()
+  const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const imageBuilder = useMemo(() => imageUrlBuilder(client), [client])
 
   const component = (_previewComponents[layout || 'default'] ||

@@ -33,6 +33,7 @@ export function SourceProvider({children, ...props}: SourceProviderProps) {
 }
 
 /**
+ * @internal
  * @deprecated INTERNAL USE ONLY
  */
 export function useSource(): Source {

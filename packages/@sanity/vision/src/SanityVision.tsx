@@ -9,7 +9,7 @@ interface SanityVisionProps {
 }
 
 function SanityVision(props: SanityVisionProps) {
-  const client = useClient().withConfig({apiVersion: '1'})
+  const client = useClient({apiVersion: '1'})
   const config: VisionConfig = {
     defaultApiVersion: DEFAULT_API_VERSION,
     ...props.tool.options,

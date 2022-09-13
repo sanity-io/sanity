@@ -1,3 +1,4 @@
+import type {SanityClient} from '@sanity/client'
 import {Rule, SchemaType, SanityDocument, Schema, ArraySchemaType, Block} from '@sanity/types'
 import {createSchema} from '../test/createSchema'
 import {createMockSanityClient} from '../test/mocks/mockSanityClient'
@@ -18,6 +19,7 @@ beforeEach(() => {
 
 // mock client
 const client = createMockSanityClient()
+const getClient = (options: {apiVersion: string}) => client as any as SanityClient
 
 describe('resolveTypeForArrayItem', () => {
   const schema: Schema = createSchema({
@@ -167,7 +169,7 @@ describe('validateItem', () => {
 
     await expect(
       validateItem({
-        client: client as any,
+        getClient,
         schema,
         value: {},
         document: undefined,
@@ -237,7 +239,7 @@ describe('validateItem', () => {
 
     await expect(
       validateItem({
-        client: client as any,
+        getClient,
         schema,
         document: undefined,
         parent: undefined,
@@ -404,7 +406,7 @@ describe('validateItem', () => {
     }
 
     const result = await validateItem({
-      client: client as any,
+      getClient,
       schema,
       document: document,
       parent: undefined,
@@ -507,7 +509,7 @@ describe('validateItem', () => {
 
     await expect(
       validateItem({
-        client: client as any,
+        getClient,
         schema,
         document: undefined,
         parent: undefined,
@@ -606,7 +608,7 @@ describe('validateItem', () => {
 
     await expect(
       validateItem({
-        client: client as any,
+        getClient,
         schema,
         value,
         type: rootType,
@@ -749,7 +751,7 @@ describe('validateItem', () => {
     }
 
     const resultPromise = validateItem({
-      client: client as any,
+      getClient,
       schema,
       value,
       document: undefined,
