@@ -143,10 +143,13 @@ export function Editor(props: EditorProps) {
         </ToolbarCard>
       )}
 
-      <EditableCard flex={1} $readOnly={readOnly}>
+      <EditableCard flex={1} tone={readOnly ? 'transparent' : 'default'}>
         <Scroller ref={setScrollElement}>
           <EditableContainer padding={isFullscreen ? 2 : 0} sizing="border" width={1}>
-            <EditableWrapper $isFullscreen={isFullscreen} $readOnly={readOnly}>
+            <EditableWrapper
+              $isFullscreen={isFullscreen}
+              tone={readOnly ? 'transparent' : 'default'}
+            >
               <BoundaryElementProvider element={isFullscreen ? scrollElement : boundaryElement}>
                 {editable}
               </BoundaryElementProvider>

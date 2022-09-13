@@ -6,11 +6,19 @@ import {
   Type,
   usePortableTextEditor,
 } from '@sanity/portable-text-editor'
-import {Box, Flex, Menu, MenuButton, MenuButtonProps, MenuItem, useGlobalKeyDown} from '@sanity/ui'
+import {
+  Box,
+  Button,
+  Flex,
+  Menu,
+  MenuButton,
+  MenuButtonProps,
+  MenuItem,
+  useGlobalKeyDown,
+} from '@sanity/ui'
 import React, {forwardRef, useCallback, useMemo, useRef} from 'react'
 import {useId} from '@reach/auto-id'
 import Preview from '../../../Preview'
-import {StyledButton} from './BlockObject.styles'
 
 interface BlockObjectPreviewProps {
   focused: boolean
@@ -75,13 +83,12 @@ export function BlockObjectPreview(props: BlockObjectPreviewProps) {
   const actions = (
     <MenuButton
       button={
-        <StyledButton
+        <Button
           aria-label="Open menu"
           fontSize={1}
           iconRight={EllipsisVerticalIcon}
           mode="bleed"
           paddingX={2}
-          readOnly={readOnly}
         />
       }
       ref={menuButton}
