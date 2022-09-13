@@ -3,6 +3,7 @@
  * Some of these tests have no expect statement;
  * use of ts-expect-error serves the same purpose - TypeScript is the testrunner here
  */
+import React from 'react'
 import {defineArrayMember, defineField, defineType} from '../types'
 
 describe('common type test', () => {
@@ -107,6 +108,27 @@ describe('common type test', () => {
       name: 'custom-string',
       //@ts-expect-error disallow unknown props
       unknownProp: false,
+    })
+  })
+
+  it('should allow ReactElement for description', () => {
+    defineType({
+      type: 'text',
+      name: 'text',
+      description: 'Some text',
+    })
+
+    defineType({
+      type: 'text',
+      name: 'text',
+      description: <strong>Some like it bold</strong>,
+    })
+
+    defineType({
+      type: 'text',
+      name: 'text',
+      //@ts-expect-error ReactElement but not ReactNode
+      description: () => <strong>Render function not supported </strong>,
     })
   })
 })

@@ -1,5 +1,5 @@
 // Note: INCOMPLETE, but it's a start
-import type {ComponentType, ReactNode} from 'react'
+import type {ComponentType, ReactElement, ReactNode} from 'react'
 import {SanityClient} from '@sanity/client'
 import type {Rule} from '../validation'
 import {UriValidationOptions} from '../validation'
@@ -125,23 +125,23 @@ export namespace Schema {
   export type FieldGroupDefinition = {
     name: string
     title?: string
-    icon?: React.ComponentType | React.ReactNode
+    icon?: ComponentType | ReactNode
     default?: boolean
   }
 
   export interface BaseDefinitionOptions {
     name: string
     title?: string
-    description?: string
+    description?: string | ReactElement
     hidden?: ConditionalProperty
     readOnly?: ConditionalProperty
-    icon?: React.ComponentType | React.ReactNode
+    icon?: ComponentType | ReactNode
     components?: {
-      diff?: React.ComponentType<any> // @todo: use `DiffProps` here
-      field?: React.ComponentType<any> // @todo: use `FieldProps` here
-      input?: React.ComponentType<any> // @todo: use `InputProps` here
-      item?: React.ComponentType<any> // @todo: use `ItemProps` here
-      preview?: React.ComponentType<any> // @todo: use `PreviewProps` here
+      diff?: ComponentType<any> // @todo: use `DiffProps` here
+      field?: ComponentType<any> // @todo: use `FieldProps` here
+      input?: ComponentType<any> // @todo: use `InputProps` here
+      item?: ComponentType<any> // @todo: use `ItemProps` here
+      preview?: ComponentType<any> // @todo: use `PreviewProps` here
     }
     validation?: unknown
     initialValue?: unknown
@@ -205,7 +205,7 @@ export namespace Schema {
     title: string
     value: string
     icon?: ReactNode | ComponentType
-    blockEditor?: {
+    portableText?: {
       icon?: ReactNode | ComponentType
       render?: ComponentType
     }
@@ -676,11 +676,11 @@ export interface BaseSchemaType {
   validation?: SchemaValidationValue
   preview?: PreviewConfig
   components?: {
-    diff?: React.ComponentType<any> // @todo: use `DiffProps` here
-    field?: React.ComponentType<any> // @todo: use `FieldProps` here
-    input?: React.ComponentType<any> // @todo: use `InputProps` here
-    item?: React.ComponentType<any> // @todo: use `ItemProps` here
-    preview?: React.ComponentType<any> // @todo: use `PreviewProps` here
+    diff?: ComponentType<any> // @todo: use `DiffProps` here
+    field?: ComponentType<any> // @todo: use `FieldProps` here
+    input?: ComponentType<any> // @todo: use `InputProps` here
+    item?: ComponentType<any> // @todo: use `ItemProps` here
+    preview?: ComponentType<any> // @todo: use `PreviewProps` here
   }
 
   /**
@@ -830,7 +830,7 @@ export interface ObjectField<T extends SchemaType = SchemaType> {
 }
 export interface FieldGroup {
   name: string
-  icon?: React.ComponentType
+  icon?: ComponentType
   title?: string
   description?: string
   hidden?: ConditionalProperty

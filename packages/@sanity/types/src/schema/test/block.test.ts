@@ -34,7 +34,7 @@ describe('block types', () => {
             {
               title: 'Sup',
               value: 'sup',
-              blockEditor: {
+              portableText: {
                 icon: () => null,
                 render: (props: any) => props,
               },
@@ -69,7 +69,7 @@ describe('block types', () => {
           {
             title: 'Sup',
             value: 'sup',
-            blockEditor: {
+            portableText: {
               icon: () => null,
               render: (props: any) => props,
             },
@@ -95,7 +95,7 @@ describe('block types', () => {
           {
             title: 'Sup',
             value: 'sup',
-            blockEditor: {
+            portableText: {
               icon: () => null,
               render: (props: any) => props,
             },

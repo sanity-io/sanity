@@ -45,7 +45,8 @@
     "@types/react": "^17.0.42"
   },
   "devDependencies": {
-    "rimraf": "^3.0.2"
+    "rimraf": "^3.0.2",
+    "react": "^17.0.42"
   },
   "repository": {
     "type": "git",
