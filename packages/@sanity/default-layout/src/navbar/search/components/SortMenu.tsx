@@ -1,4 +1,4 @@
-import {CheckmarkIcon, SelectIcon} from '@sanity/icons'
+import {CheckmarkIcon, SortIcon} from '@sanity/icons'
 import {
   Box,
   Button,
@@ -33,11 +33,11 @@ interface SortMenuProps {
 const MENU_ORDERINGS: (SearchOrdering | null)[] = [
   ORDER_RELEVANCE,
   null,
-  ORDER_CREATED_DESC,
   ORDER_CREATED_ASC,
+  ORDER_CREATED_DESC,
   null,
-  ORDER_UPDATED_DESC,
   ORDER_UPDATED_ASC,
+  ORDER_UPDATED_DESC,
 ]
 
 const IconWrapperBox = styled(Box)<{$visible: boolean}>`
@@ -65,10 +65,9 @@ function CustomMenuItem({ordering}: {ordering: SearchOrdering}) {
     <MenuItem onClick={handleClick} padding={3} selected={isSelected} tone="default">
       <Flex align="center" justify="space-between" gap={4}>
         <Inline space={1}>
-          <Text size={1} weight="semibold">
+          <Text size={1} weight="medium">
             {ordering.title}
           </Text>
-          <Text size={1}>{ordering.subtitle}</Text>
         </Inline>
         <IconWrapperBox $visible={isSelected}>
           <Text size={1}>
@@ -89,18 +88,27 @@ export function SortMenu({small}: SortMenuProps) {
 
   return (
     <Card borderBottom>
-      <SortMenuContentFlex $small={small} align="center" flex={1} padding={1}>
+      <SortMenuContentFlex
+        $small={small}
+        align="center"
+        flex={1}
+        marginLeft={small ? 0 : 1}
+        padding={1}
+      >
         <MenuButton
           button={
-            <Button mode="bleed" padding={2}>
+            <Button mode="bleed" padding={3}>
               <Flex align="center" gap={1} justify="space-between">
-                <Inline space={1}>
-                  <Text size={1} weight="semibold">
+                <Box marginRight={1}>
+                  <Text size={1}>
+                    <SortIcon />
+                  </Text>
+                </Box>
+                <Inline space={2}>
+                  <Text size={1} weight="medium">
                     {currentMenuItem.title}
                   </Text>
-                  {currentMenuItem?.subtitle && <Text size={1}>{currentMenuItem.subtitle}</Text>}
                 </Inline>
-                <SelectIcon />
               </Flex>
             </Button>
           }
@@ -123,7 +131,7 @@ export function SortMenu({small}: SortMenuProps) {
             </Menu>
           }
           placement="bottom-start"
-          popover={{portal: true}}
+          popover={{portal: true, radius: 2}}
         />
       </SortMenuContentFlex>
     </Card>

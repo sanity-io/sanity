@@ -3,7 +3,6 @@ import type {SearchOptions, SearchSort, SearchTerms, WeightedHit} from '@sanity/
 export interface SearchOrdering {
   ignoreScore?: boolean
   sort: SearchSort
-  subtitle?: string
   title: string
 }
 export interface SearchState {
@@ -22,27 +21,23 @@ export const ORDER_RELEVANCE: SearchOrdering = {
 export const ORDER_CREATED_ASC: SearchOrdering = {
   ignoreScore: true,
   sort: {direction: 'asc', field: '_createdAt'},
-  subtitle: 'Oldest first',
-  title: 'Created at',
+  title: 'Created: Oldest first',
 }
 
 export const ORDER_CREATED_DESC: SearchOrdering = {
   ignoreScore: true,
   sort: {direction: 'desc', field: '_createdAt'},
-  subtitle: 'Newest first',
-  title: 'Created at',
+  title: 'Created: Newest first',
 }
 
 export const ORDER_UPDATED_ASC: SearchOrdering = {
   ignoreScore: true,
   sort: {direction: 'asc', field: '_updatedAt'},
-  subtitle: 'Oldest first',
-  title: 'Last updated',
+  title: 'Updated: Oldest first',
 }
 
 export const ORDER_UPDATED_DESC: SearchOrdering = {
   ignoreScore: true,
   sort: {direction: 'desc', field: '_updatedAt'},
-  subtitle: 'Newest first',
-  title: 'Last updated',
+  title: 'Updated: Newest first',
 }
