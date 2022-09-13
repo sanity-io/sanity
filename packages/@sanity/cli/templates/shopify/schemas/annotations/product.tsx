@@ -6,8 +6,9 @@
 import {hues} from '@sanity/color'
 import {TagIcon} from '@sanity/icons'
 import React from 'react'
+import {defineType, defineField} from 'sanity'
 
-export default {
+export default defineType({
   title: 'Product (inline link)',
   name: 'annotationProduct',
   type: 'object',
@@ -35,23 +36,23 @@ export default {
   ],
   fields: [
     // Product
-    {
+    defineField({
       name: 'productWithVariant',
       title: 'Product + Variant',
       type: 'productWithVariant',
       description: 'No links will be displayed if the product is not available or sold out',
       validation: (Rule) => Rule.required(),
-    },
+    }),
     // Quantity
-    {
+    defineField({
       fieldset: 'callToAction',
       name: 'quantity',
       title: 'Quantity',
       type: 'number',
       validation: (Rule) => Rule.required().min(1).max(10),
-    },
+    }),
     // Action
-    {
+    defineField({
       fieldset: 'callToAction',
       name: 'action',
       title: 'Action',
@@ -69,6 +70,6 @@ export default {
         ],
       },
       validation: (Rule) => Rule.required(),
-    },
+    }),
   ],
-}
+})

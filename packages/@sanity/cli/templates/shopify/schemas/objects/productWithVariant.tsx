@@ -2,23 +2,24 @@ import {TagIcon} from '@sanity/icons'
 import sanityClient from 'part:@sanity/base/client'
 import pluralize from 'pluralize-esm'
 import React from 'react'
+import {defineField, defineType} from 'sanity'
 import ProductStatusMedia from '../../components/media/ProductStatus'
 import {SANITY_API_VERSION} from '../../constants'
 import {getPriceRange} from '../../utils/getPriceRange'
 
-export default {
+export default defineType({
   name: 'productWithVariant',
   title: 'Product with variant',
   type: 'object',
   icon: TagIcon,
   fields: [
-    {
+    defineField({
       name: 'product',
       type: 'reference',
       weak: true,
       to: [{type: 'product'}],
-    },
-    {
+    }),
+    defineField({
       name: 'variant',
       type: 'reference',
       to: [{type: 'productVariant'}],
@@ -69,7 +70,7 @@ export default {
 
           return result ? true : 'Invalid product variant'
         }),
-    },
+    }),
   ],
   preview: {
     select: {
@@ -100,7 +101,7 @@ export default {
 
       const productVariantTitle = variantTitle || defaultVariantTitle
 
-      let previewTitle = [title]
+      let previewTitle: string[] = [title]
       if (productVariantTitle) {
         previewTitle.push(`[${productVariantTitle}]`)
       }
@@ -133,4 +134,4 @@ export default {
       }
     },
   },
-}
+})
