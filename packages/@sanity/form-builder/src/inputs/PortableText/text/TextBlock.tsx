@@ -189,24 +189,26 @@ export function TextBlock(props: TextBlockProps): React.ReactElement {
             </TextRoot>
           </Tooltip>
         </Box>
-        <BlockExtrasContainer contentEditable={false}>
-          {renderBlockActions && (
-            <BlockActionsOuter marginRight={1}>
-              <BlockActionsInner>
-                {focused && !readOnly && (
-                  <BlockActions
-                    onChange={onChange}
-                    block={block}
-                    renderBlockActions={renderBlockActions}
-                  />
-                )}
-              </BlockActionsInner>
-            </BlockActionsOuter>
-          )}
+        <div contentEditable={false}>
+          <BlockExtrasContainer>
+            {renderBlockActions && (
+              <BlockActionsOuter marginRight={1}>
+                <BlockActionsInner>
+                  {focused && !readOnly && (
+                    <BlockActions
+                      onChange={onChange}
+                      block={block}
+                      renderBlockActions={renderBlockActions}
+                    />
+                  )}
+                </BlockActionsInner>
+              </BlockActionsOuter>
+            )}
 
-          {changeIndicator}
-        </BlockExtrasContainer>
-        {reviewChangesHovered && <ReviewChangesHighlightBlock />}
+            {changeIndicator}
+          </BlockExtrasContainer>
+          {reviewChangesHovered && <ReviewChangesHighlightBlock />}
+        </div>
       </TextBlockFlexWrapper>
     </Box>
   )
