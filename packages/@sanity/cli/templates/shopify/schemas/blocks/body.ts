@@ -1,9 +1,11 @@
-export default {
+import {defineArrayMember, defineType} from 'sanity'
+
+export default defineType({
   name: 'body',
   title: 'Body',
   type: 'array',
   of: [
-    {
+    defineArrayMember({
       lists: [
         {title: 'Bullet', value: 'bullet'},
         {title: 'Numbered', value: 'number'},
@@ -49,15 +51,15 @@ export default {
         {title: 'Quote', value: 'blockquote'},
       ],
       type: 'block',
-    },
+    }),
     // Custom blocks
-    {
+    defineArrayMember({
       name: 'blockImage',
       type: 'blockImage',
-    },
-    {
+    }),
+    defineArrayMember({
       name: 'blockProduct',
       type: 'blockProduct',
-    },
+    }),
   ],
-}
+})

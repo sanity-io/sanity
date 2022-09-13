@@ -1,61 +1,62 @@
 import {HomeIcon} from '@sanity/icons'
+import {defineArrayMember, defineField, defineType} from 'sanity'
 import {getPriceRange} from '../../utils/getPriceRange'
 
 const TITLE = 'Home'
 
-export default {
+export default defineType({
   name: 'home',
   title: TITLE,
   type: 'document',
   icon: HomeIcon,
   fields: [
     // Intro
-    {
+    defineField({
       name: 'intro',
       title: 'Intro',
       type: 'body',
-    },
+    }),
     // Featured collections
-    {
+    defineField({
       name: 'featuredCollections',
       title: 'Featured collections',
       type: 'array',
       of: [
-        {
+        defineArrayMember({
           title: 'Collection',
           type: 'reference',
           to: [{type: 'collection'}],
-        },
+        }),
       ],
       validation: (Rule) => Rule.max(2).unique(),
-    },
+    }),
     // Gallery
-    {
+    defineField({
       name: 'gallery',
       title: 'Gallery',
       type: 'array',
       of: [
-        {
+        defineArrayMember({
           name: 'galleryProduct',
           type: 'object',
           fields: [
-            {
+            defineField({
               name: 'image',
               title: 'Image',
               type: 'image',
               validation: (Rule) => Rule.required(),
-            },
-            {
+            }),
+            defineField({
               name: 'productWithVariant',
               title: 'Product + Variant',
               type: 'productWithVariant',
               validation: (Rule) => Rule.required(),
-            },
-            {
+            }),
+            defineField({
               name: 'title',
               title: 'Title',
               type: 'string',
-            },
+            }),
           ],
           preview: {
             select: {
@@ -80,7 +81,7 @@ export default {
               } = selection
               const productVariantTitle = variantTitle || defaultVariantTitle
 
-              let previewTitle = [title]
+              let previewTitle: string[] = [title]
               if (productVariantTitle) {
                 previewTitle.push(`[${productVariantTitle}]`)
               }
@@ -100,11 +101,11 @@ export default {
               }
             },
           },
-        },
+        }),
       ],
-    },
+    }),
     // Featured products
-    {
+    defineField({
       name: 'featuredProducts',
       title: 'Featured products',
       type: 'array',
@@ -116,13 +117,13 @@ export default {
         },
       ],
       validation: (Rule) => Rule.unique(),
-    },
+    }),
     // SEO
-    {
+    defineField({
       name: 'seo',
       title: 'SEO',
       type: 'seo.singleton',
-    },
+    }),
   ],
   preview: {
     prepare() {
@@ -133,4 +134,4 @@ export default {
       }
     },
   },
-}
+})

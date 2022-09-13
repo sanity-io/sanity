@@ -5,8 +5,9 @@
  */
 import {EarthGlobeIcon} from '@sanity/icons'
 import React from 'react'
+import {defineField, defineType} from 'sanity'
 
-export default {
+export default defineType({
   title: 'External Link',
   name: 'annotationLinkExternal',
   type: 'object',
@@ -23,17 +24,17 @@ export default {
     newWindow: true,
   },
   fields: [
-    {
+    defineField({
       name: 'url',
       title: 'URL',
       type: 'url',
       validation: (Rule) => Rule.required().uri({scheme: ['http', 'https']}),
-    },
+    }),
     // Open in a new window
-    {
+    defineField({
       title: 'Open in a new window?',
       name: 'newWindow',
       type: 'boolean',
-    },
+    }),
   ],
-}
+})

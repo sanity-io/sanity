@@ -1,8 +1,9 @@
 import React from 'react'
 import {IntentLink} from '@sanity/base/router'
 import {CogIcon} from '@sanity/icons'
+import {defineField, defineType} from 'sanity'
 
-export default {
+export default defineType({
   name: 'seo.standard',
   title: 'SEO',
   type: 'object',
@@ -11,7 +12,7 @@ export default {
     collapsible: true,
   },
   fields: [
-    {
+    defineField({
       name: 'title',
       title: 'Title',
       type: 'placeholderString',
@@ -23,23 +24,23 @@ export default {
       options: {field: 'title'},
       validation: (Rule) =>
         Rule.max(50).warning('Longer titles may be truncated by search engines'),
-    },
-    {
+    }),
+    defineField({
       name: 'description',
       title: 'Description',
       type: 'text',
       rows: 2,
       validation: (Rule) =>
         Rule.max(150).warning('Longer descriptions may be truncated by search engines'),
-    },
-    {
+    }),
+    defineField({
       name: 'keywords',
       title: 'Keywords',
       type: 'array',
       of: [{type: 'string'}],
       options: {layout: 'tags'},
-    },
-    {
+    }),
+    defineField({
       name: 'image',
       title: 'Image',
       type: 'image',
@@ -60,6 +61,6 @@ export default {
           .
         </>
       ),
-    },
+    }),
   ],
-}
+})

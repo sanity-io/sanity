@@ -1,6 +1,7 @@
 import {EarthGlobeIcon} from '@sanity/icons'
+import {defineField, defineType} from 'sanity'
 
-export default {
+export default defineType({
   title: 'External Link',
   name: 'linkExternal',
   type: 'object',
@@ -10,25 +11,25 @@ export default {
   },
   fields: [
     // Title
-    {
+    defineField({
       title: 'Title',
       name: 'title',
       type: 'string',
       validation: (Rule) => Rule.required(),
-    },
+    }),
     // URL
-    {
+    defineField({
       name: 'url',
       title: 'URL',
       type: 'url',
       validation: (Rule) => Rule.required().uri({scheme: ['http', 'https']}),
-    },
+    }),
     // Open in a new window
-    {
+    defineField({
       title: 'Open in a new window?',
       name: 'newWindow',
       type: 'boolean',
-    },
+    }),
   ],
   preview: {
     select: {
@@ -38,7 +39,7 @@ export default {
     prepare(selection) {
       const {title, url} = selection
 
-      let subtitle = []
+      let subtitle: string[] = []
       if (url) {
         subtitle.push(`→ ${url}`)
       }
@@ -50,4 +51,4 @@ export default {
       }
     },
   },
-}
+})
