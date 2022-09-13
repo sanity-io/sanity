@@ -1,8 +1,9 @@
 import type {SearchableType, SearchTerms, WeightedHit} from '@sanity/base'
 import type {CurrentUser} from '@sanity/types'
-import {RecentSearchTerms} from '../../datastores/recentSearches'
+import type {RecentSearchTerms} from '../../datastores/recentSearches'
 import {ORDER_RELEVANCE, SearchOrdering} from '../../types'
 import {debugWithName, isDebugMode} from '../../utils/debug'
+import {isRecentSearchTerms} from '../../utils/isRecentSearchTerms'
 import {sortTypes} from '../../utils/selectors'
 
 export interface SearchReducerState {
@@ -13,7 +14,7 @@ export interface SearchReducerState {
   pageIndex: number
   recentSearches: RecentSearchTerms[]
   result: SearchResult
-  terms: SearchTerms
+  terms: RecentSearchTerms | SearchTerms
 }
 
 export interface SearchResult {
@@ -122,6 +123,7 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
       return {
         ...state,
         pageIndex: state.pageIndex + 1,
+        terms: stripRecentTimestamp(state.terms),
       }
     case 'RECENT_SEARCHES_SET':
       return {
@@ -142,11 +144,13 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
       return {
         ...state,
         ordering: ORDER_RELEVANCE,
+        terms: stripRecentTimestamp(state.terms),
       }
     case 'SEARCH_ORDERING_SET':
       return {
         ...state,
         ordering: action.ordering,
+        terms: stripRecentTimestamp(state.terms),
       }
     case 'SEARCH_REQUEST_COMPLETE':
       return {
@@ -187,10 +191,10 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
           ...state.result,
           loaded: false,
         },
-        terms: {
+        terms: stripRecentTimestamp({
           ...state.terms,
           query: action.query,
-        },
+        }),
       }
     case 'TERMS_SET':
       return {
@@ -210,10 +214,10 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
           ...state.result,
           loaded: false,
         },
-        terms: {
+        terms: stripRecentTimestamp({
           ...state.terms,
           types: [...state.terms.types, action.schemaType].sort(sortTypes),
-        },
+        }),
       }
     case 'TERMS_TYPE_REMOVE':
       return {
@@ -223,10 +227,10 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
           ...state.result,
           loaded: false,
         },
-        terms: {
+        terms: stripRecentTimestamp({
           ...state.terms,
           types: state.terms.types.filter((s) => s !== action.schemaType),
-        },
+        }),
       }
     case 'TERMS_TYPES_CLEAR':
       return {
@@ -236,12 +240,31 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
           ...state.result,
           loaded: false,
         },
-        terms: {
+        terms: stripRecentTimestamp({
           ...state.terms,
           types: [],
-        },
+        }),
       }
     default:
       return state
   }
+}
+
+/**
+ * This function is used to strip __recentTimestamp from terms, generally whenever there's a change in search
+ * terms or options that would otherwise trigger an additional search request.
+ * (e.g. updating the search query, changing a sort filter, adding / removing document types)
+ *
+ * This is done so we can better disambiguate between requests sent as a result of clicking a 'recent search'
+ * for purposes of measurement.
+ *
+ * @todo remove this (and associated tests) once client-side instrumentation is available
+ */
+function stripRecentTimestamp(terms: RecentSearchTerms | SearchTerms) {
+  if (isRecentSearchTerms(terms)) {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const {__recentTimestamp, ...rest} = terms
+    return rest
+  }
+  return terms
 }

@@ -1,6 +1,7 @@
 import type {SearchOptions, SearchSort, SearchTerms, WeightedHit} from '@sanity/base'
 
 export interface SearchOrdering {
+  customMeasurementLabel?: string
   ignoreScore?: boolean
   sort: SearchSort
   title: string
@@ -14,6 +15,7 @@ export interface SearchState {
 }
 
 export const ORDER_RELEVANCE: SearchOrdering = {
+  customMeasurementLabel: 'relevance',
   sort: {direction: 'desc', field: '_updatedAt'},
   title: 'Relevance',
 }

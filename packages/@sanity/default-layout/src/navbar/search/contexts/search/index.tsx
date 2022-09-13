@@ -2,7 +2,7 @@
 ///<reference types="@sanity/types/parts" />
 
 import type {SearchTerms} from '@sanity/base'
-import {CurrentUser} from '@sanity/types'
+import type {CurrentUser} from '@sanity/types'
 import {isEqual} from 'lodash'
 import schema from 'part:@sanity/base/schema'
 import React, {
@@ -16,10 +16,15 @@ import React, {
   useRef,
 } from 'react'
 import {FINDABILITY_MVI, SEARCH_LIMIT} from '../../constants'
-import {createRecentSearchesStore, RecentSearchesStore} from '../../datastores/recentSearches'
+import {
+  createRecentSearchesStore,
+  RecentSearchesStore,
+  RecentSearchTerms,
+} from '../../datastores/recentSearches'
 import {useSearch} from '../../hooks/useSearch'
-import {SearchOrdering} from '../../types'
+import type {SearchOrdering} from '../../types'
 import {hasSearchableTerms} from '../../utils/hasSearchableTerms'
+import {isRecentSearchTerms} from '../../utils/isRecentSearchTerms'
 import {initialSearchState, SearchAction, searchReducer, SearchReducerState} from './reducer'
 
 interface SearchContextValue {
@@ -56,7 +61,7 @@ export function SearchProvider({children, currentUser}: SearchProviderProps) {
   const isMountedRef = useRef(false)
   const previousOrderingRef = useRef<SearchOrdering>(initialState.ordering)
   const previousPageIndexRef = useRef<number>(initialState.pageIndex)
-  const previousTermsRef = useRef<SearchTerms>(initialState.terms)
+  const previousTermsRef = useRef<SearchTerms | RecentSearchTerms>(initialState.terms)
 
   const {handleSearch, searchState} = useSearch({
     initialState: {...result, terms},
@@ -80,12 +85,18 @@ export function SearchProvider({children, currentUser}: SearchProviderProps) {
     const termsChanged = !isEqual(terms, previousTermsRef.current)
 
     if (orderingChanged || pageIndexChanged || termsChanged) {
+      // Use a custom label if provided, otherwise return field and direction, e.g. `_updatedAt desc`
+      const sortLabel =
+        ordering?.customMeasurementLabel || `${ordering.sort.field} ${ordering.sort.direction}`
+
       handleSearch({
         options: {
           // Comments prepended to each query for future measurement
           comments: [
             `findability-mvi:${FINDABILITY_MVI}`,
+            ...(isRecentSearchTerms(terms) ? ['findability-recent-search'] : []),
             `findability-selected-types:${terms.types.length}`,
+            `findability-sort:${sortLabel}`,
           ],
           limit: SEARCH_LIMIT,
           offset: pageIndex * SEARCH_LIMIT,
