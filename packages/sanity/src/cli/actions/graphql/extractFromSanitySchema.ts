@@ -27,7 +27,7 @@ const disallowedCustomizedMembers = ['object', 'array', 'image', 'file', 'block'
 const disabledBlockFields = ['markDefs']
 const scalars = ['string', 'number', 'boolean']
 
-function getBaseType(baseSchema: CompiledSchema, typeName: string): SchemaType {
+function getBaseType(baseSchema: CompiledSchema, typeName: CompiledSchema.Type): SchemaType {
   return Schema.compile({
     types: (baseSchema._original?.types || []).concat([
       {name: `__placeholder__`, type: typeName, options: {hotspot: true}},
@@ -298,7 +298,7 @@ export function extractFromSanitySchema(
       return fields
     }
 
-    const extended = getBaseType(sanitySchema, def.name)
+    const extended = getBaseType(sanitySchema, def.name as CompiledSchema.Type)
     return gatherAllFields(extended)
   }
 

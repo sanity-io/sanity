@@ -2,7 +2,7 @@ import {fireEvent} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import {format, parse} from 'date-fns'
 import React from 'react'
-import {defineType} from '@sanity/types'
+import {defineField} from '@sanity/types'
 import {ParseResult} from '../types'
 import {CommonDateTimeInput} from '../CommonDateTimeInput'
 import {isValidDate} from '../utils'
@@ -32,7 +32,7 @@ async function renderInput() {
   const onChange = jest.fn()
 
   const ret = await renderStringInput({
-    fieldDefinition: defineType({
+    fieldDefinition: defineField({
       type: 'datetime',
       name: 'test',
     }),
