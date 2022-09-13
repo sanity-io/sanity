@@ -62,7 +62,7 @@ export function ItemWithMissingType(props: Props) {
                 JSON representation of this item:
               </Text>
               <Card padding={2} overflow="auto" border>
-                <Code size={1} as="pre">
+                <Code size={1} as="pre" language="json">
                   {JSON.stringify(value, null, 2)}
                 </Code>
               </Card>
