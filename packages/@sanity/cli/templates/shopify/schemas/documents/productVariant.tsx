@@ -1,9 +1,10 @@
 import {CopyIcon} from '@sanity/icons'
 import React from 'react'
+import {defineField, defineType} from 'sanity'
 import ProductMediaPreview from '../../components/media/ProductStatus'
 import ProductVariantHiddenInput from '../../components/inputs/ProductVariantHidden'
 
-export default {
+export default defineType({
   // HACK: Required to hide 'create new' button in desk structure
   __experimental_actions: [/*'create',*/ 'update', /*'delete',*/ 'publish'],
   name: 'productVariant',
@@ -12,30 +13,30 @@ export default {
   icon: CopyIcon,
   fields: [
     // Product variant hidden status
-    {
+    defineField({
       name: 'hidden',
       type: 'string',
-      inputComponent: ProductVariantHiddenInput,
+      components: {input: ProductVariantHiddenInput},
       hidden: ({parent}) => {
         const isDeleted = parent?.store?.isDeleted
 
         return !isDeleted
       },
-    },
+    }),
     // Title (proxy)
-    {
+    defineField({
       title: 'Title',
       name: 'titleProxy',
       type: 'proxyString',
       options: {field: 'store.title'},
-    },
+    }),
     // Shopify product variant
-    {
+    defineField({
       name: 'store',
       title: 'Shopify',
       description: 'Variant data from Shopify (read-only)',
       type: 'shopifyProductVariant',
-    },
+    }),
   ],
   preview: {
     select: {
@@ -62,4 +63,4 @@ export default {
       }
     },
   },
-}
+})

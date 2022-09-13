@@ -1,34 +1,37 @@
-export default {
+// @ts-check
+import {defineField, defineType} from '@sanity/types'
+
+export default defineType({
   name: 'crewMember',
   title: 'Crew Member',
   type: 'object',
   fields: [
-    {
+    defineField({
       name: 'department',
       title: 'Department',
       type: 'string',
-    },
-    {
+    }),
+    defineField({
       name: 'job',
       title: 'Job',
       type: 'string',
-    },
-    {
+    }),
+    defineField({
       name: 'person',
       title: 'Person',
       type: 'reference',
       to: [{type: 'person'}],
-    },
-    {
+    }),
+    defineField({
       name: 'externalId',
       title: 'External ID',
       type: 'number',
-    },
-    {
+    }),
+    defineField({
       name: 'externalCreditId',
       title: 'External Credit ID',
       type: 'string',
-    },
+    }),
   ],
   preview: {
     select: {
@@ -46,4 +49,4 @@ export default {
       }
     },
   },
-}
+})
