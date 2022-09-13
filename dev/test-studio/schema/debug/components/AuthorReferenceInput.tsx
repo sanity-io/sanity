@@ -21,7 +21,7 @@ export const AuthorReferenceInput = forwardRef(function AuthorReferenceInput(
   // @todo fix
   const {inputProps, type, value} = props
   const {readOnly} = inputProps
-  const client = useClient()
+  const client = useClient({apiVersion: '2022-09-09'})
   const current = value && value._ref
   const imageBuilder = useMemo(() => imageUrlBuilder(client), [client])
 
