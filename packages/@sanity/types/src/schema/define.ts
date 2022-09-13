@@ -1,5 +1,5 @@
-import {Schema} from './types'
-import {
+import type {Schema} from './types'
+import type {
   DefineArrayMemberBase,
   DefineOptions,
   DefineSchemaBase,
@@ -11,8 +11,10 @@ import {
 } from './defineTypes'
 
 /**
- * Define a Sanity type definition. This function will narrow the schema type down to fields and options based on the provided
- *  type-string.
+ * Helper function for defining a Sanity type definition. This function does not do anything on its own;
+ * it exists to check that your schema definition is correct, and help autocompletion in your IDE.
+ *
+ * This function will narrow the schema type down to fields and options based on the provided type-string.
  *
  * Schemas defined using `defineType` should typically be added to the Studio config under `schema.types`.
  * Defined types can be referenced by their `name`. This is referred to as a type-alias.
@@ -46,7 +48,7 @@ import {
  * }, {aliasFor: 'object' })
  * ```
  *
- * ### Allow unknown props
+ * ### Allow unknown properties
  *
  * ```ts
  * defineType({
@@ -57,7 +59,7 @@ import {
  *     columns: 2,
  *     allowsUnknownOptions: true
  *   }
- * }, {strict: false })
+ * }, {strict: false})
  * ```
  * ### Maximum safety and best autocompletion
  *
@@ -86,11 +88,11 @@ import {
  *
  * ## Note on type-safety in the current implementation
  *
- * Type-safety in arrays (`fields`, `of` ect) can only be guaranteed when {@link defineField} and {@link defineArrayMember}
- * are used to wrap array-entries.
+ * Type-safety inside array-like properties (schema properties like `fields` and `of`) can only be guaranteed when
+ * {@link defineField} and {@link defineArrayMember} are used to wrap each value in the array.
  *
- * For entries without a function-wrapper, TypeScript will resolve to a union type of all possible properties across
- * all schema-types will be allowed.
+ * For array-values without a function-wrapper, TypeScript will resolve to a union type of all possible properties across
+ * all schema types. This result in less precise typing.
  *
  * ### Extending the Sanity Schema types
  *
@@ -162,8 +164,8 @@ import {
  * })
  * ```
  *
- * @param schemaDefinition - should be a valid Sanity schema type definition.
- * @param defineOptions - optional param to provide typehints for the schemaDefinition.
+ * @param schemaDefinition - should be a valid schema type definition.
+ * @param defineOptions - optional param to provide type hints for `schemaDefinition`.
  *
  * @see defineField
  * @see defineArrayMember
@@ -191,7 +193,7 @@ export function defineType<
 }
 
 /**
- * Define a Sanity field within a document, object, image or file definition `fields` array.
+ * Define a field within a document, object, image or file definition `fields` array.
  *
  * This function will narrow the schema type down to fields and options based on the provided
  * type-string.
@@ -201,8 +203,8 @@ export function defineType<
  *
  * See {@link defineType} for more examples.
  *
- * @param schemaField - should be a valid Sanity field type definition.
- * @param defineOptions - optional param to provide typehints for the schemaField.
+ * @param schemaField - should be a valid field type definition.
+ * @param defineOptions - optional param to provide type hints for `schemaField`.
  *
  * @see defineField
  * @see defineArrayMember
@@ -231,18 +233,18 @@ export function defineField<
 }
 
 /**
- * Define a Sanity array item type within an array definition `of`-array.
+ * Define a an array item membeer type within an array definition `of`-array.
  *
  * This function will narrow the schema type down to fields and options based on the provided
- * type-string.
+ * `type` string.
  *
  * Using `defineArrayMember` is optional, but should provide improved autocompletion in your IDE, when building your schema.
- * Field-properties like `validation` and `initialValue`will also be more specific.
+ * Field properties like `validation` and `initialValue` will also be more specific.
  *
  * See {@link defineType} for example usage.
  *
- * @param arrayOfSchema - should be a valid Sanity array.of type definition.
- * @param defineOptions - optional param to provide typehints for the arrayOfSchema.
+ * @param arrayOfSchema - should be a valid `array.of` member definition.
+ * @param defineOptions - optional param to provide type hints for `arrayOfSchema`.
  *
  * @see defineType
  * @see defineField
