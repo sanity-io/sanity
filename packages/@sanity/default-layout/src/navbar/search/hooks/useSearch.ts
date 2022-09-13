@@ -19,7 +19,7 @@ import {
   tap,
 } from 'rxjs/operators'
 import {searchClient} from '../../../versionedClient'
-import {hasSearchableTerms} from '../contexts/search/selectors'
+import {getSearchableOmnisearchTypes, hasSearchableTerms} from '../contexts/search/selectors'
 import {SearchState} from '../types'
 
 interface SearchRequest {
@@ -52,7 +52,7 @@ function sanitizeRequest(request: SearchRequest) {
   }
 }
 
-const searchWeighted = createWeightedSearch(getSearchableTypes(schema), searchClient, {
+const searchWeighted = createWeightedSearch(getSearchableOmnisearchTypes(schema), searchClient, {
   tag: 'search.global',
   unique: true,
 })

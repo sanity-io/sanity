@@ -2,6 +2,7 @@ import type {SearchTerms} from '@sanity/base'
 import {getSearchableTypes} from '@sanity/base/_internal'
 import {CurrentUser, ObjectSchemaType, Schema} from '@sanity/types'
 import {versionedClient} from '../../../versionedClient'
+import {getSearchableOmnisearchTypes} from '../contexts/search/selectors'
 
 const SEARCH_TERMS_KEY = 'search-terms::recent'
 export const MAX_RECENT_SEARCHES = 5
@@ -142,6 +143,7 @@ function getRecentSearchTerms(lsKey: string, schema: Schema): RecentSearchTerms[
 
 /**
  * Sanitize stored search terms - recent searches containing _any_ number of invalid document schemas are removed.
+ * Document types hidden from omnisearch with __experimental_omnisearch_visibility are also omitted.
  * This mutates Local Storage if any invalid terms are found.
  */
 function sanitizeStoredSearchTerms(
@@ -149,7 +151,9 @@ function sanitizeStoredSearchTerms(
   storedSearchTerms: StoredSearch,
   lsKey: string
 ): StoredSearch {
-  const searchableTypeNames = getSearchableTypes(studioSchema).map((schema) => schema.name)
+  const searchableTypeNames = getSearchableOmnisearchTypes(studioSchema).map(
+    (schema) => schema.name
+  )
 
   const filteredSearchTerms = storedSearchTerms.recentSearches.filter((searchTerm) => {
     return searchTerm.terms.typeNames.every((typeName) => searchableTypeNames.includes(typeName))
