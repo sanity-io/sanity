@@ -4,8 +4,6 @@ import pointsWithinPolygon from '@turf/points-within-polygon'
 import norway from './data/norway'
 import {CustomObjectSelectInput} from './components/CustomObjectSelectInput'
 
-// const client = sanityClient.withConfig({apiVersion: '1'})
-
 export const validationArraySuperType = {
   name: 'imageArray',
   title: 'Array supertype',

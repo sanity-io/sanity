@@ -30,7 +30,7 @@ interface SlugQueryResult {
 
 export const LinkAnnotationInput = (props: LinkAnnotationInputProps) => {
   const {type, value, onChange, onBlur, onFocus, validation} = props
-  const client = useClient()
+  const client = useClient({apiVersion: '2022-09-09'})
   const versionedClient = useMemo(() => client.withConfig({apiVersion: '2021-03-01'}), [client])
   const referenceArticleField = type.fields.find((field) => field.name === 'reference')
   const urlField = type.fields.find((field) => field.name === 'href')

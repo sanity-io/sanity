@@ -20,7 +20,7 @@ export const validationTest = defineType({
               setTimeout(() => {
                 resolve(
                   `Always async error for. From context client->projectId: ${
-                    context.client.config().projectId
+                    context.getClient({apiVersion: '2022-09-09'}).config().projectId
                   }`
                 )
               }, 1000)

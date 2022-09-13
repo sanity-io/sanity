@@ -16,7 +16,7 @@ export const JsonDocumentDump = forwardRef(function JsonDocumentDump(
   ref: React.ForwardedRef<{actionHandlers: Record<string, () => void>}>
 ) {
   const {itemId} = props
-  const client = useClient()
+  const client = useClient({apiVersion: '2022-09-09'})
   const [state, setState] = useState<{document?: SanityDocument; isLoading: boolean}>({
     isLoading: true,
   })
