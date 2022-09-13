@@ -510,7 +510,7 @@ export namespace Schema {
   export interface TextDefinition extends BaseDefinitionOptions {
     type: 'text'
     rows?: number
-    options: TextOptions
+    options?: TextOptions
     validation?: ValidationBuilder<TextRule, string>
     initialValue?: InitialValueProperty<any, string>
   }
