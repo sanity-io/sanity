@@ -1,6 +1,6 @@
 import styled from 'styled-components'
 import {hues} from '@sanity/color'
-import {ThemeProps} from '@sanity/ui'
+import type {ThemeProps} from '@sanity/ui'
 
 function gradientColor({theme}: ThemeProps) {
   return theme.sanity.color.dark ? '#323232' : hues.gray[50].hex
