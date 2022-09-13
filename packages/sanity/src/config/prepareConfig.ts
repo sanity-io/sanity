@@ -1,5 +1,5 @@
 /* eslint-disable max-nested-callbacks */
-import {SanityClient} from '@sanity/client'
+import type {SanityClient} from '@sanity/client'
 import {map, shareReplay} from 'rxjs/operators'
 import {CurrentUser, Schema} from '@sanity/types'
 import {studioTheme} from '@sanity/ui'
@@ -231,12 +231,36 @@ function resolveSource({
   }
 
   const context = {
+    client,
     getClient,
     currentUser,
     dataset,
     projectId,
     schema,
   }
+
+  // <TEMPORARY UGLY HACK TO PRINT DEPRECATION WARNINGS ON USE>
+  /* eslint-disable no-proto */
+  const wrappedClient = client as any
+  context.client = [...Object.keys(client), ...Object.keys(wrappedClient.__proto__)].reduce(
+    (acc, key) => {
+      const original = Object.hasOwnProperty.call(client, key)
+        ? wrappedClient[key]
+        : wrappedClient.__proto__[key]
+
+      return Object.defineProperty(acc, key, {
+        get() {
+          console.warn(
+            '`configContext.client` is deprecated and will be removed in the next release! Use `context.getClient({apiVersion: "2021-06-07"})` instead'
+          )
+          return original
+        },
+      })
+    },
+    {}
+  ) as any as SanityClient
+  /* eslint-enable no-proto */
+  // </TEMPORARY UGLY HACK TO PRINT DEPRECATION WARNINGS ON USE>
 
   let templates!: Source['templates']
   try {

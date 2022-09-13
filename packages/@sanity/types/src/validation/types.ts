@@ -1,10 +1,9 @@
 import type {SanityClient} from '@sanity/client'
 import type {Path} from '../paths'
-import type {SchemaType, SchemaValidationValue} from '../schema'
+import type {Schema, SchemaType, SchemaValidationValue} from '../schema'
 import type {SanityDocument} from '../documents'
 import type {ValidationMarker} from '../markers'
 import type {Block} from '../portableText'
-import {Schema} from '../schema'
 
 export type RuleTypeConstraint = 'Array' | 'Boolean' | 'Date' | 'Number' | 'Object' | 'String'
 export type FieldRules = {[fieldKey: string]: SchemaValidationValue}
@@ -217,6 +216,10 @@ export type RuleSpecConstraint<T extends RuleSpec['flag']> = ConditionalIndexAcc
  * ```
  */
 export type ValidationContext = {
+  /**
+   * @deprecated Will be removed in the next version! Use `getClient({apiVersion: '2021-06-07'})` instead
+   */
+  client: SanityClient
   getClient: (options: {apiVersion: string}) => SanityClient
   schema: Schema
   parent?: unknown

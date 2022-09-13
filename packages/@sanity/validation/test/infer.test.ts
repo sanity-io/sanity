@@ -302,7 +302,9 @@ describe('schema validation inference', () => {
 async function expectNoError(validations: Rule[], value: unknown) {
   const errors = (
     await Promise.all(
-      validations.map((rule) => rule.validate(value, {getClient, schema: {} as any}))
+      validations.map((rule) =>
+        rule.validate(value, {client: client as any, getClient, schema: {} as any})
+      )
     )
   ).flat()
   if (errors.length === 0) {
@@ -323,7 +325,9 @@ async function expectError(
 ) {
   const errors = (
     await Promise.all(
-      validations.map((rule) => rule.validate(value, {getClient, schema: {} as any}))
+      validations.map((rule) =>
+        rule.validate(value, {client: client as any, getClient, schema: {} as any})
+      )
     )
   ).flat()
   if (!errors.length) {
