@@ -75,7 +75,7 @@ export function MediaPreview(props: MediaPreviewProps) {
               border={withBorder}
               dimensions={mediaDimensions}
               layout="media"
-              media={media as any}
+              media={media as PreviewProps['media']}
               radius={withRadius ? 1 : 0}
               responsive
             />

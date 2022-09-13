@@ -27,6 +27,8 @@ jobs:
       - name: Build modules
         id: buildModules
         run: yarn build
+        env:
+          NODE_OPTIONS: --max_old_space_size=4096
 
       - name: Lint changed files
         id: listChangedFiles
