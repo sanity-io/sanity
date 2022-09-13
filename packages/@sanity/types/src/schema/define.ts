@@ -233,7 +233,7 @@ export function defineField<
 }
 
 /**
- * Define a an array item membeer type within an array definition `of`-array.
+ * Define an array item member type within an array definition `of`-array.
  *
  * This function will narrow the schema type down to fields and options based on the provided
  * `type` string.
