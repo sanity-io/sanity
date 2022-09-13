@@ -79,6 +79,7 @@ export default function Block(props: {
   return (
     <div
       onClick={handleClick}
+      // eslint-disable-next-line react/no-unknown-property
       diff-block-action={diff.action}
       data-block-note={`changed_from_style_${fromStyle || 'undefined'}`}
     >
