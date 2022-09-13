@@ -1,8 +1,11 @@
 import {AssetFromSource, FileSchemaType} from '@sanity/types'
+import {get} from 'lodash'
+import type {SanityClient} from '@sanity/client'
+import sanityClient from 'part:@sanity/base/client'
 import PatchEvent, {set, setIfMissing, unset} from '../../../PatchEvent'
 import {Uploader, UploaderResolver, UploadOptions} from '../../../sanity/uploads/types'
 import {base64ToFile, urlToFile} from '../ImageInput/utils/image'
-import {get} from 'lodash'
+import validateAssetSourceRef from '../../../sanity/uploads/validateAssetSourceRef'
 
 // We alias DOM File type here to distinguish it from the type of the File value
 type DOMFile = globalThis.File
@@ -16,14 +19,14 @@ interface Props {
   isImage?: boolean
 }
 
-export function handleSelectAssetFromSource({
+export async function handleSelectAssetFromSource({
   assetFromSource,
   onChange,
   type,
   resolveUploader,
   uploadWith,
   isImage,
-}: Props): void {
+}: Props): Promise<void> {
   // const {onChange, type, resolveUploader} = this.props
   if (!assetFromSource) {
     throw new Error('No asset given')
@@ -41,6 +44,7 @@ export function handleSelectAssetFromSource({
   const imagePatches = isImage ? [unset(['hotspot']), unset(['crop'])] : []
   switch (firstAsset.kind) {
     case 'assetDocumentId':
+      await validateAssetSourceRef(type, firstAsset)
       onChange(
         PatchEvent.from([
           setIfMissing({

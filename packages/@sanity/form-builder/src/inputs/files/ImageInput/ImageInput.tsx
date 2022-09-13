@@ -302,9 +302,9 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
     this.props.onFocus([])
   }
 
-  handleSelectAssetFromSource = (assetFromSource: AssetFromSource) => {
+  handleSelectAssetFromSource = async (assetFromSource: AssetFromSource) => {
     const {onChange, type} = this.props
-    handleSelectAssetFromSource({
+    await handleSelectAssetFromSource({
       assetFromSource,
       onChange,
       type,
