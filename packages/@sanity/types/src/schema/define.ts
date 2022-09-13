@@ -18,7 +18,7 @@ import {
  * Defined types can be referenced by their `name`. This is referred to as a type-alias.
  *
  * When using type-aliases as `type`, `defineType` cannot know the base-type, so type-safety will be reduced.
- * If you know the base type of the type-alias, provide `defineOptions.alias: <base type name>`.
+ * If you know the base type of the type-alias, provide `defineOptions.aliasFor: <base type name>`.
  * This will enforce that the schema definition conforms with the provided type.
  *
  * By default `defineType` only known properties are allowed.
@@ -34,7 +34,7 @@ import {
  * })
  * ```
  *
- * ### Usage with alias narrowing
+ * ### Usage with aliasFor narrowing
  *
  * ```ts
  * defineType({
@@ -43,7 +43,7 @@ import {
  *   options: {
  *     columns: 2
  *   }
- * }, {alias: 'object' })
+ * }, {aliasFor: 'object' })
  * ```
  *
  * ### Allow unknown props
