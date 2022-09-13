@@ -1,4 +1,4 @@
-import {CustomValidator, FieldReference} from '../validation'
+import type {CustomValidator, FieldReference} from '../validation'
 
 export interface RuleDef<T, FieldValue = unknown> {
   required: () => T

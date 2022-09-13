@@ -17,7 +17,7 @@ export interface DefineOptions<
    * @see defineType
    */
   strict?: TStrict
-  /** Should be provided when type is a non-intrinsic type, ie type is a type alias*/
+  /** Should be provided when type is a non-intrinsic type, ie type is a type alias */
   aliasFor?: TAlias extends Schema.Type ? TAlias : never
 }
 
