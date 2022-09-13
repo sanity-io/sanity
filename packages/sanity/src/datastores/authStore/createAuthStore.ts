@@ -2,7 +2,7 @@ import createClient, {SanityClient} from '@sanity/client'
 import {defer} from 'rxjs'
 import {map, shareReplay, startWith, switchMap} from 'rxjs/operators'
 import {memoize} from 'lodash'
-import {checkCors, CorsOriginError} from '../cors'
+import {CorsOriginError} from '../cors'
 import {AuthState, AuthStore} from './types'
 import {createBroadcastChannel} from './createBroadcastChannel'
 import {sessionId} from './sessionId'
@@ -83,13 +83,10 @@ const saveToken = ({token, projectId}: {token: string; projectId: string}): void
   }
 }
 
-const getCurrentUser = async (client: SanityClient) => {
-  const result = await checkCors(client)
-
-  if (result?.isCorsError) {
-    throw new CorsOriginError({...result, projectId: client.config()?.projectId})
-  }
-
+const getCurrentUser = async (
+  client: SanityClient,
+  broadcastToken: (token: string | null) => void
+) => {
   try {
     const user = await client.request({
       uri: '/users/me',
@@ -100,7 +97,36 @@ const getCurrentUser = async (client: SanityClient) => {
     // if the user came back with an id, assume it's a full CurrentUser
     return typeof user?.id === 'string' ? user : null
   } catch (err) {
-    if (err.statusCode === 401) return null
+    // 401 means the user had some kind of credentials, but failed to authenticate,
+    // we should clear any local token in this case and treat it as if the used was
+    // logged out
+    if (err.statusCode === 401) {
+      clearToken(client.config().projectId || '')
+      broadcastToken(null)
+      return null
+    }
+
+    // Request failed for a non-auth reason, see if this was a CORS-error by
+    // checking the `/ping` endpoint, which allows all origins
+    const invalidCorsConfig = await client
+      .request({uri: '/ping', withCredentials: false, tag: 'cors-check'})
+      .then(
+        () => true, // Request succeeded, so likely the CORS origin is disallowed
+        () => false // Request failed, so likely a network error of some kind
+      )
+
+    if (invalidCorsConfig) {
+      // Throw a specific error on CORS-errors, to allow us to show a customized dialog
+      throw new CorsOriginError({projectId: client.config()?.projectId})
+    }
+
+    // Some non-CORS error - is it one of those undefinable network errors?
+    if (err.isNetworkError && !err.message && err.request && err.request.url) {
+      const host = new URL(err.request.url).host
+      throw new Error(`Unknown network error attempting to reach ${host}`)
+    }
+
+    // Some other error, just throw it
     throw err
   }
 }
@@ -144,7 +170,7 @@ export function _createAuthStore({
     ),
     switchMap((client) =>
       defer(async (): Promise<AuthState> => {
-        const currentUser = await getCurrentUser(client)
+        const currentUser = await getCurrentUser(client, broadcast)
 
         return {
           currentUser,
@@ -168,7 +194,7 @@ export function _createAuthStore({
       })
 
       // try to get the current user by using the cookie credentials
-      const currentUser = await getCurrentUser(requestClient)
+      const currentUser = await getCurrentUser(requestClient, broadcast)
 
       if (currentUser) {
         // if that worked, then we don't need to fetch a token
