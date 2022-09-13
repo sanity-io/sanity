@@ -61,9 +61,6 @@ const SelectLanguageProvider = ({schemaType}: Props) => {
   }
 
   if (FallbackImplementation) {
-    // This is happening only inside the mono repo because Lerna is hoisting it incorrectly.
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-expect-error
     return <FallbackImplementation schemaType={schemaType} />
   }
 
