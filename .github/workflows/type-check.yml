@@ -25,6 +25,8 @@ jobs:
       - name: Type check
         id: typeCheck
         run: yarn type-check
+        env:
+          NODE_OPTIONS: --max_old_space_size=8192 --optimize_for_size
 
       # - name: Notify Slack about build failure
       #   if: failure() && github.ref == 'refs/heads/ui/main'

@@ -38,6 +38,8 @@ jobs:
         # has been installed, no extra build/compile step required
         id: typeCheckModules
         run: yarn type-check
+        env:
+          NODE_OPTIONS: --max_old_space_size=8192 --optimize_for_size
 
       # Required for import lint rules to work - packages pointing to ex
       # `lib/index.js`, where `src/index.ts` gets compiled to `lib/index.js`
@@ -45,7 +47,7 @@ jobs:
         id: buildResolver
         run: yarn build
         env:
-          NODE_OPTIONS: --max_old_space_size=4096
+          NODE_OPTIONS: --max_old_space_size=8192 --optimize_for_size
 
       - name: Check for unused or missing dependencies
         id: depcheck
