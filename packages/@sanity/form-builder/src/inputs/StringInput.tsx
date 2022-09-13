@@ -1,8 +1,9 @@
-import React, {useMemo} from 'react'
+import React, {useCallback, useEffect, useMemo, useState} from 'react'
 import {useId} from '@reach/auto-id'
 import {StringSchemaType} from '@sanity/types'
-import {TextInput} from '@sanity/ui'
+import {TextInput, useForwardedRef} from '@sanity/ui'
 import {FormField} from '@sanity/base/components'
+import {throttle} from 'lodash'
 import PatchEvent, {set, unset} from '../PatchEvent'
 import {Props} from './types'
 
@@ -19,12 +20,32 @@ const StringInput = React.forwardRef(function StringInput(
     [markers]
   )
 
-  const handleChange = React.useCallback(
+  const [localValue, setLocalValue] = useState(null)
+  const inputRef = useForwardedRef(forwardedRef)
+
+  const throttledSubmit = useMemo(
+    () =>
+      throttle(
+        () => {
+          const inputValue = inputRef.current.value
+          onChange(PatchEvent.from(inputValue ? set(inputValue) : unset()))
+          setLocalValue(null)
+        },
+        500,
+        {leading: false, trailing: true}
+      ),
+    [inputRef, onChange]
+  )
+
+  useEffect(() => () => throttledSubmit.flush(), [throttledSubmit])
+
+  const handleChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
       const inputValue = event.currentTarget.value
-      onChange(PatchEvent.from(inputValue ? set(inputValue) : unset()))
+      setLocalValue(inputValue)
+      throttledSubmit()
     },
-    [onChange]
+    [throttledSubmit]
   )
 
   const input = useMemo(
@@ -32,16 +53,27 @@ const StringInput = React.forwardRef(function StringInput(
       <TextInput
         id={inputId}
         customValidity={errors.length > 0 ? errors[0].item.message : ''}
-        value={value || ''}
+        value={(localValue === null ? value : localValue) || ''}
         readOnly={Boolean(readOnly)}
         placeholder={placeholder}
         onChange={handleChange}
         onFocus={onFocus}
         onBlur={onBlur}
-        ref={forwardedRef}
+        ref={inputRef}
       />
     ),
-    [errors, forwardedRef, handleChange, inputId, onBlur, onFocus, placeholder, readOnly, value]
+    [
+      localValue,
+      errors,
+      handleChange,
+      inputId,
+      inputRef,
+      onBlur,
+      onFocus,
+      placeholder,
+      readOnly,
+      value,
+    ]
   )
 
   return (

@@ -1,9 +1,10 @@
-import React, {ForwardedRef, useMemo} from 'react'
+import React, {ForwardedRef, useCallback, useEffect, useMemo, useState} from 'react'
 import {useId} from '@reach/auto-id'
 import {FormField} from '@sanity/base/components'
 import {TextSchemaType} from '@sanity/types'
-import {TextArea} from '@sanity/ui'
+import {TextArea, useForwardedRef} from '@sanity/ui'
 import styled from 'styled-components'
+import {throttle} from 'lodash'
 import PatchEvent, {set, unset} from '../PatchEvent'
 import {Props} from './types'
 
@@ -26,13 +27,34 @@ const TextInput = React.forwardRef(function TextInput(
     [markers]
   )
 
-  const handleChange = React.useCallback(
-    (event) => {
-      const inputValue = event.currentTarget.value
-      onChange(PatchEvent.from(inputValue ? set(inputValue) : unset()))
-    },
-    [onChange]
+  const [localValue, setLocalValue] = useState(null)
+  const inputRef = useForwardedRef(forwardedRef)
+
+  const throttledSubmit = useMemo(
+    () =>
+      throttle(
+        () => {
+          const inputValue = inputRef.current.value
+          onChange(PatchEvent.from(inputValue ? set(inputValue) : unset()))
+          setLocalValue(null)
+        },
+        500,
+        {leading: false, trailing: true}
+      ),
+    [inputRef, onChange]
   )
+
+  useEffect(() => () => throttledSubmit.flush(), [throttledSubmit])
+
+  const handleChange = useCallback(
+    (event: React.ChangeEvent<HTMLTextAreaElement>) => {
+      const inputValue = event.currentTarget.value
+      setLocalValue(inputValue)
+      throttledSubmit()
+    },
+    [throttledSubmit]
+  )
+
   return (
     <FormField
       level={level}
@@ -45,14 +67,14 @@ const TextInput = React.forwardRef(function TextInput(
       <StyledTextArea
         id={inputId}
         customValidity={errors && errors.length > 0 ? errors[0].item.message : ''}
-        value={value || ''}
+        value={(localValue === null ? value : localValue) || ''}
         readOnly={Boolean(readOnly)}
         placeholder={type.placeholder}
         onChange={handleChange}
         onFocus={onFocus}
         onBlur={onBlur}
         rows={typeof type.rows === 'number' ? type.rows : 10}
-        ref={forwardedRef}
+        ref={inputRef}
       />
     </FormField>
   )
