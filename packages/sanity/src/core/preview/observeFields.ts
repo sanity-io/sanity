@@ -24,7 +24,7 @@ import {
 } from 'rxjs/operators'
 import {difference, flatten, memoize} from 'lodash'
 import {SanityClient} from '@sanity/client'
-import {CrossProjectTokenStore} from '../datastores/crossProjectToken'
+import {CrossProjectTokenStore} from '../store'
 import {debounceCollect} from './utils/debounceCollect'
 import {combineSelections, reassemble, toQuery} from './utils/optimizeQuery'
 import {ApiConfig, FieldName, Id, ObservePathsFn, PreviewPath, Selection} from './types'

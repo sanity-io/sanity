@@ -17,7 +17,7 @@ import {
 import React, {useCallback, useMemo} from 'react'
 import styled from 'styled-components'
 import {UserAvatar} from '../../../../components'
-import {getProviderTitle} from '../../../../datastores'
+import {getProviderTitle} from '../../../../store'
 import {useColorScheme} from '../../../colorScheme'
 import {useWorkspace} from '../../../workspace'
 import {LoginProviderLogo} from './LoginProviderLogo'

@@ -1,7 +1,7 @@
 import createClient from '@sanity/client'
 import {of} from 'rxjs'
 import {bufferTime, first} from 'rxjs/operators'
-import {createMockAuthStore} from '../../datastores'
+import {createMockAuthStore} from '../../store'
 import {resolveConfig, createWorkspaceFromConfig, createSourceFromConfig} from '../resolveConfig'
 
 describe('resolveConfig', () => {

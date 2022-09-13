@@ -1,7 +1,7 @@
 import {CurrentUser} from '@sanity/types'
 import {Button, Card, Dialog, Stack, Text} from '@sanity/ui'
 import React, {useCallback, useEffect, useState} from 'react'
-import {getProviderTitle} from '../../datastores'
+import {getProviderTitle} from '../../store'
 import {useActiveWorkspace} from '../activeWorkspaceMatcher'
 
 export function NotAuthenticatedScreen() {

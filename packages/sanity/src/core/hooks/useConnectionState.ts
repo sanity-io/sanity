@@ -1,7 +1,7 @@
 import {distinctUntilChanged, map, mapTo, startWith, switchMap} from 'rxjs/operators'
 import {of, timer} from 'rxjs'
 import {useMemoObservable} from 'react-rx'
-import {useDocumentStore} from '../datastores'
+import {useDocumentStore} from '../store'
 
 export type ConnectionState = 'connecting' | 'reconnecting' | 'connected'
 

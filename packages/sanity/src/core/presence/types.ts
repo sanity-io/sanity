@@ -1,5 +1,5 @@
 import {Path, User} from '@sanity/types'
-import {Session, Status} from '../datastores/presence/types'
+import {Session, Status} from '../store/_legacy'
 
 export type Position = 'top' | 'bottom' | 'inside' | null
 export type Size = 'xsmall' | 'small' | 'medium'

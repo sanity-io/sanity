@@ -5,7 +5,7 @@ import {ComposeIcon} from '@sanity/icons'
 import {IntentLink} from '../../../../router'
 import {useSource} from '../../source'
 import {useColorScheme} from '../../colorScheme'
-import {TemplatePermissionsResult, useTemplatePermissions} from '../../../datastores'
+import {TemplatePermissionsResult, useTemplatePermissions} from '../../../store'
 import {DefaultPreview, InsufficientPermissionsMessage} from '../../../components'
 
 const DocumentButton = styled(Button)`

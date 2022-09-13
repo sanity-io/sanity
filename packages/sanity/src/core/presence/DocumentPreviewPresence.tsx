@@ -1,9 +1,9 @@
 import {AvatarStack, Box, Card, Text, Theme, Tooltip, TooltipProps} from '@sanity/ui'
 import React, {useMemo} from 'react'
 import styled, {css, useTheme} from 'styled-components'
-import {isNonNullable} from '../util'
-import {DocumentPresence} from '../datastores'
 import {usePreviewCard, UserAvatar} from '../components'
+import {DocumentPresence} from '../store'
+import {isNonNullable} from '../util'
 
 export interface DocumentPreviewPresenceProps {
   presence: Omit<DocumentPresence, 'path'>[]
