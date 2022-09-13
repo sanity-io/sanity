@@ -52,6 +52,8 @@ jobs:
       - name: Check for unused or missing dependencies
         id: depcheck
         run: yarn depcheck
+        env:
+          NODE_OPTIONS: --max_old_space_size=8192
 
       # (for puppeteer tests)
       - name: Install Chrome
