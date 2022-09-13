@@ -61,7 +61,7 @@ import {
  * ```
  * ### Maximum safety and best autocompletion
  *
- * Use {@link defineType}, {@link defineField} and {@link defineArrayOf}:
+ * Use {@link defineType}, {@link defineField} and {@link defineArrayMember}:
  *
  * ```ts
  *  defineType({
@@ -73,7 +73,7 @@ import {
  *        name: 'arrayField',
  *        title: 'Things',
  *        of: [
- *          defineArrayOf({
+ *          defineArrayMember({
  *            type: 'object',
  *            name: 'type-name-in-array',
  *            fields: [defineField({type: 'string', name: 'title', title: 'Title'})],
@@ -86,7 +86,7 @@ import {
  *
  * ## Note on type-safety in the current implementation
  *
- * Type-safety in arrays (`fields`, `of` ect) can only be guaranteed when {@link defineField} and {@link defineArrayOf}
+ * Type-safety in arrays (`fields`, `of` ect) can only be guaranteed when {@link defineField} and {@link defineArrayMember}
  * are used to wrap array-entries.
  *
  * For entries without a function-wrapper, TypeScript will resolve to a union type of all possible properties across
@@ -96,7 +96,7 @@ import {
  * @param defineOptions - optional param to provide typehints for the schemaDefinition.
  *
  * @see defineField
- * @see defineArrayOf
+ * @see defineArrayMember
  * @see typed
  */
 export function defineType<
@@ -135,7 +135,7 @@ export function defineType<
  * @param defineOptions - optional param to provide typehints for the schemaField.
  *
  * @see defineField
- * @see defineArrayOf
+ * @see defineArrayMember
  * @see typed
  */
 export function defineField<
@@ -166,7 +166,7 @@ export function defineField<
  * This function will narrow the schema type down to fields and options based on the provided
  * type-string.
  *
- * Using `defineArrayOf` is optional, but should provide improved autocompletion in your IDE, when building your schema.
+ * Using `defineArrayMember` is optional, but should provide improved autocompletion in your IDE, when building your schema.
  * Field-properties like `validation` and `initialValue`will also be more specific.
  *
  * See {@link defineType} for example usage.
@@ -178,7 +178,7 @@ export function defineField<
  * @see defineField
  * @see typed
  */
-export function defineArrayOf<
+export function defineArrayMember<
   TType extends string | Schema.Type, // Schema.Type here improves autocompletion in _some_ IDEs (not VS Code atm)
   TName extends string,
   TSelect extends Record<string, string> | undefined,

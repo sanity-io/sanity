@@ -3,7 +3,7 @@
  * Some of these tests have no expect statement;
  * use of ts-expect-error serves the same purpose - TypeScript is the testrunner here
  */
-import {defineArrayOf, defineField, defineType, Schema} from '../types'
+import {defineArrayMember, defineField, defineType, Schema} from '../types'
 
 describe('alias type test', () => {
   it('should support narrowing alias types', () => {
@@ -100,7 +100,7 @@ describe('alias type test', () => {
       },
     })
 
-    defineArrayOf({
+    defineArrayMember({
       type: 'custom-object',
       name: 'redefined',
       preview: {

@@ -1,4 +1,4 @@
-import {defineArrayOf, defineField, defineType} from '@sanity/types'
+import {defineArrayMember, defineField, defineType} from '@sanity/types'
 import {CalloutPreview} from './components/CalloutPreview'
 
 function extractTextFromBlocks(blocks) {
@@ -48,7 +48,7 @@ const createBodyField = (title, name, size = 1) => {
         title: title,
         type: 'array',
         of: [
-          defineArrayOf({
+          defineArrayMember({
             type: 'block',
             marks: {
               annotations: [linkType, myStringType],

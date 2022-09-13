@@ -3,7 +3,7 @@
  * Some of these tests have no expect statement;
  * use of ts-expect-error serves the same purpose - TypeScript is the testrunner here
  */
-import {defineArrayOf, defineType, Schema} from '../types'
+import {defineArrayMember, defineType, Schema} from '../types'
 
 describe('array types', () => {
   describe('defineType', () => {
@@ -40,11 +40,11 @@ describe('array types', () => {
             type: 'string',
             name: 'suffix2',
             title: 'Titled',
-            // when we dont use defineArrayOf, validation cannot be inferred and falls back to generic rule
+            // when we dont use defineArrayMember, validation cannot be inferred and falls back to generic rule
             // @ts-expect-error value is unknown
             validation: (Rule) => Rule.custom((value) => (value?.toLowerCase() ? true : 'Error')),
           },
-          defineArrayOf({
+          defineArrayMember({
             type: 'string',
             name: 'suffix2',
             title: 'Titled',
@@ -90,7 +90,7 @@ describe('array types', () => {
         readOnly: () => false,
         // type inference here is not great
         of: [
-          defineArrayOf({
+          defineArrayMember({
             type: 'object',
             name: 'inline-object-via-define',
             fields: [

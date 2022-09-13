@@ -3,7 +3,7 @@
  * Some of these tests have no expect statement;
  * use of ts-expect-error serves the same purpose - TypeScript is the testrunner here
  */
-import {defineArrayOf, defineField, defineType, Schema} from '../types'
+import {defineArrayMember, defineField, defineType, Schema} from '../types'
 
 describe('document types', () => {
   describe('defineType', () => {
@@ -145,7 +145,7 @@ describe('document types', () => {
         fields: [{type: 'string', name: 'string'}],
       })
 
-      defineArrayOf({
+      defineArrayMember({
         type: 'object',
         name: 'custom-array-object',
         preview: {

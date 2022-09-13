@@ -167,7 +167,7 @@ export namespace Schema {
     [K in keyof IntrinsicTypeDefinition]: Omit<
       ArrayOfEntry<IntrinsicTypeDefinition[K]>,
       'validation' | 'initialValue'
-      /* concession: without this "widening" these are considered unknown in array.of when not using defineArrayOf */
+      /* concession: without this "widening" these are considered unknown in array.of when not using defineArrayMember */
     > & {validation?: SchemaValidationValue; initialValue?: InitialValueProperty<any, any>}
   }
 
@@ -530,7 +530,7 @@ export namespace Schema {
   }
 }
 
-export {defineType, defineField, defineArrayOf, typed} from './define'
+export {defineType, defineField, defineArrayMember, typed} from './define'
 
 /**
  * Note: you probably want `SchemaTypeDefinition` instead

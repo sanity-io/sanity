@@ -3,7 +3,7 @@
  * Some of these tests have no expect statement;
  * use of ts-expect-error serves the same purpose - TypeScript is the testrunner here
  */
-import {defineArrayOf, defineField, defineType, Schema} from '../types'
+import {defineArrayMember, defineField, defineType, Schema} from '../types'
 
 describe('block types', () => {
   describe('defineType', () => {
@@ -82,7 +82,7 @@ describe('block types', () => {
         spellCheck: true,
       },
     })
-    const arrayOf = defineArrayOf({
+    const arrayOf = defineArrayMember({
       type: 'block',
       name: 'pteField',
       title: 'Custom PTE',
