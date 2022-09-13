@@ -2,7 +2,7 @@
 ///<reference types="@sanity/types/parts" />
 
 import type {SearchOptions, SearchTerms, WeightedHit} from '@sanity/base'
-import {createWeightedSearch, getSearchableTypes} from '@sanity/base/_internal'
+import {createWeightedSearch} from '@sanity/base/_internal'
 import {isEqual} from 'lodash'
 import schema from 'part:@sanity/base/schema'
 import {useCallback, useState} from 'react'
@@ -19,8 +19,9 @@ import {
   tap,
 } from 'rxjs/operators'
 import {searchClient} from '../../../versionedClient'
-import {getSearchableOmnisearchTypes, hasSearchableTerms} from '../contexts/search/selectors'
 import {SearchState} from '../types'
+import {hasSearchableTerms} from '../utils/hasSearchableTerms'
+import {getSearchableOmnisearchTypes} from '../utils/selectors'
 
 interface SearchRequest {
   options?: SearchOptions

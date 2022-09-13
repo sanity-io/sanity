@@ -1,17 +1,17 @@
+import {useId} from '@reach/auto-id'
 import {Box, Card, Dialog, Portal} from '@sanity/ui'
 import React, {useCallback, useEffect, useRef, useState} from 'react'
 import FocusLock from 'react-focus-lock'
 import styled from 'styled-components'
-import {useId} from '@reach/auto-id'
 import {RecentSearches} from './components/RecentSearches'
 import {SearchHeader} from './components/SearchHeader'
 import {SearchResults} from './components/SearchResults'
 import {TypeFilters} from './components/TypeFilters'
 import {CommandListProvider} from './contexts/commandList'
 import {useSearchState} from './contexts/search'
-import {hasSearchableTerms} from './contexts/search/selectors'
 import {useMeasureSearchResultsIndex} from './hooks/useMeasureSearchResultsIndex'
 import {useSearchHotkeys} from './hooks/useSearchHotkeys'
+import {hasSearchableTerms} from './utils/hasSearchableTerms'
 
 interface SearchDialogProps {
   onClose: () => void

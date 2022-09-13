@@ -19,8 +19,8 @@ import {FINDABILITY_MVI, SEARCH_LIMIT} from '../../constants'
 import {createRecentSearchesStore, RecentSearchesStore} from '../../datastores/recentSearches'
 import {useSearch} from '../../hooks/useSearch'
 import {SearchOrdering} from '../../types'
+import {hasSearchableTerms} from '../../utils/hasSearchableTerms'
 import {initialSearchState, SearchAction, searchReducer, SearchReducerState} from './reducer'
-import {hasSearchableTerms} from './selectors'
 
 interface SearchContextValue {
   dispatch: Dispatch<SearchAction>

@@ -9,7 +9,7 @@ import styled from 'styled-components'
 import {SUBHEADER_HEIGHT_LARGE, SUBHEADER_HEIGHT_SMALL} from '../constants'
 import {CommandListProvider} from '../contexts/commandList'
 import {useSearchState} from '../contexts/search'
-import {getSelectableTypes} from '../contexts/search/selectors'
+import {getSelectableOmnisearchTypes} from '../utils/selectors'
 import {supportsTouch} from '../utils/supportsTouch'
 import {CustomTextInput} from './CustomTextInput'
 import {PointerOverlay} from './PointerOverlay'
@@ -61,7 +61,7 @@ export function TypeFilters({small}: TypeFiltersProps) {
     },
   } = useSearchState()
 
-  const selectableDocumentTypes = useMemo(() => getSelectableTypes(schema, typeFilter), [
+  const selectableDocumentTypes = useMemo(() => getSelectableOmnisearchTypes(schema, typeFilter), [
     typeFilter,
   ])
 

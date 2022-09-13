@@ -1,9 +1,9 @@
-import type {SearchTerms, SearchableType, WeightedHit} from '@sanity/base'
+import type {SearchableType, SearchTerms, WeightedHit} from '@sanity/base'
 import type {CurrentUser} from '@sanity/types'
 import {RecentSearchTerms} from '../../datastores/recentSearches'
-import {SearchOrdering, ORDER_RELEVANCE} from '../../types'
+import {ORDER_RELEVANCE, SearchOrdering} from '../../types'
 import {debugWithName, isDebugMode} from '../../utils/debug'
-import {sortTypes} from './selectors'
+import {sortTypes} from '../../utils/selectors'
 
 export interface SearchReducerState {
   currentUser: CurrentUser

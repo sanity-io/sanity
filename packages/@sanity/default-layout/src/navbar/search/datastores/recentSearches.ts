@@ -1,8 +1,7 @@
 import type {SearchTerms} from '@sanity/base'
-import {getSearchableTypes} from '@sanity/base/_internal'
 import {CurrentUser, ObjectSchemaType, Schema} from '@sanity/types'
 import {versionedClient} from '../../../versionedClient'
-import {getSearchableOmnisearchTypes} from '../contexts/search/selectors'
+import {getSearchableOmnisearchTypes} from '../utils/selectors'
 
 const SEARCH_TERMS_KEY = 'search-terms::recent'
 export const MAX_RECENT_SEARCHES = 5
