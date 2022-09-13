@@ -1,7 +1,7 @@
 import {useMemoObservable} from 'react-rx'
 import {merge, timer} from 'rxjs'
 import {debounce, share, skip, take} from 'rxjs/operators'
-import {EditStateFor, useDocumentStore} from '../datastores'
+import {EditStateFor, useDocumentStore} from '../store'
 
 export function useEditState(
   publishedDocId: string,

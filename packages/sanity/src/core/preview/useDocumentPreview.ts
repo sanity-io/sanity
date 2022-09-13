@@ -1,6 +1,6 @@
 import {PreviewValue, SchemaType, SortOrdering} from '@sanity/types'
 import {useEffect, useState} from 'react'
-import {useDocumentPreviewStore} from '../datastores'
+import {useDocumentPreviewStore} from '../store'
 import {Previewable} from './types'
 
 export {useDocumentPreview as unstable_useDocumentPreview}

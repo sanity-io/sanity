@@ -2,10 +2,12 @@ import {Observable} from 'rxjs'
 import {distinctUntilChanged, map} from 'rxjs/operators'
 import {SanityClient} from '@sanity/client'
 import {PrepareViewOptions, SanityDocument} from '@sanity/types'
-import {CrossProjectTokenStore} from '../datastores'
+import {CrossProjectTokenStore} from '../store'
 import {isRecord} from '../util'
+import {create_preview_availability} from './availability'
 import {createPathObserver} from './createPathObserver'
 import {createPreviewObserver} from './createPreviewObserver'
+import {create_preview_documentPair} from './documentPair'
 import {create_preview_observeFields} from './observeFields'
 import {
   ApiConfig,
@@ -17,8 +19,6 @@ import {
   Previewable,
   PreviewableType,
 } from './types'
-import {create_preview_availability} from './availability'
-import {create_preview_documentPair} from './documentPair'
 
 export type ObserveForPreviewFn = (
   value: Previewable,

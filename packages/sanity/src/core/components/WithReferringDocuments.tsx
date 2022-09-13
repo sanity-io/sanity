@@ -2,7 +2,7 @@ import {SanityDocument} from '@sanity/types'
 import {withPropsStream} from 'react-props-stream'
 import {concat, Observable, of} from 'rxjs'
 import {distinctUntilChanged, map, switchMap} from 'rxjs/operators'
-import {DocumentStore} from '../datastores'
+import {DocumentStore} from '../store'
 
 export const WithReferringDocuments = withPropsStream(
   connect,

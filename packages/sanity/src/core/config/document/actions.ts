@@ -1,6 +1,6 @@
 import {type ButtonTone} from '@sanity/ui'
 import type React from 'react'
-import {type EditStateFor} from '../../datastores'
+import {type EditStateFor} from '../../store/_legacy'
 
 export interface ActionComponent<ActionProps> {
   (props: ActionProps): DocumentActionDescription | null

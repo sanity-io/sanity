@@ -1,7 +1,7 @@
 import {CurrentUser, User} from '@sanity/types'
 import {from} from 'rxjs'
 import {useSource} from '../../studio'
-import {UserStore, useUserStore} from '../../datastores'
+import {UserStore, useUserStore} from '../_legacy'
 import {createHookFromObservableFactory, LoadingTuple} from '../../util'
 
 const useUserViaUserStore = createHookFromObservableFactory(

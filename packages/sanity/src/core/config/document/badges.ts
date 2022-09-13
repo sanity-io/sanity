@@ -1,4 +1,4 @@
-import {EditStateFor} from '../../datastores'
+import {EditStateFor} from '../../store'
 
 /** @beta */
 export interface DocumentBadgeDescription {

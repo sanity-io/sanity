@@ -1,6 +1,5 @@
 export * from './components'
 export * from './config'
-export * from './datastores'
 export * from './environment'
 export * from './field'
 export * from './hooks'

@@ -5,7 +5,7 @@ import {Box, Card, Flex, MenuItem, Text} from '@sanity/ui'
 import {LinkIcon} from '@sanity/icons'
 import styled from 'styled-components'
 import {IntentLink} from '../../../../../router'
-import {GlobalPresence} from '../../../../datastores'
+import {GlobalPresence} from '../../../../store'
 import {UserAvatar} from '../../../../components'
 
 const AvatarCard = styled(Card)`

@@ -9,11 +9,11 @@ import {fromUrl} from '@sanity/bifur-client'
 import {createElement, isValidElement} from 'react'
 import {isValidElementType} from 'react-is'
 import {createSchema} from '../schema'
-import {AuthStore, createAuthStore} from '../datastores'
+import {AuthStore, createAuthStore} from '../store/_legacy'
 import {FileSource, ImageSource} from '../../form/studio/assetSource'
 import {InitialValueTemplateItem, Template, TemplateResponse} from '../templates'
 import {isNonNullable} from '../util'
-import {validateWorkspaces} from '../studio/workspaces/validateWorkspaces'
+import {validateWorkspaces} from '../studio'
 import {
   LayoutProps,
   LogoProps,
