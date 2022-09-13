@@ -1,38 +1,46 @@
 // Note: INCOMPLETE, but it's a start
-import type {ComponentType} from 'react'
+import type {ComponentType, ReactElement, ReactNode} from 'react'
 import {SanityClient} from '@sanity/client'
 import type {Rule} from '../validation'
+import {UriValidationOptions} from '../validation'
 import type {ReferenceOptions} from '../reference'
 import type {AssetSource} from '../assets'
 import type {SlugOptions} from '../slug'
 import type {SanityDocument} from '../documents'
 import type {CurrentUser} from '../user'
 import type {PreviewConfig} from './preview'
+import {RuleDef, ValidationBuilder} from './ruleBuilder'
 
 // eslint-disable-next-line @typescript-eslint/no-namespace
 export namespace Schema {
   /**
-   * The type definitions that are built into the sanity schema
+   * This type can be extended being a interface and not a type, via declaration merging
    */
-  export type IntrinsicTypeDefinition =
-    | ArrayDefinition
-    | BlockDefinition
-    | BooleanDefinition
-    | DateDefinition
-    | DatetimeDefinition
-    | DocumentDefinition
-    | FileDefinition
-    | GeopointDefinition
-    | ImageDefinition
-    | NumberDefinition
-    | ObjectDefinition
-    | ReferenceDefinition
-    | CrossDatasetReferenceDefinition
-    | SlugDefinition
-    | StringDefinition
-    | SpanDefinition
-    | TextDefinition
-    | UrlDefinition
+  export interface IntrinsicTypeDefinition {
+    array: ArrayDefinition
+    block: BlockDefinition
+    boolean: BooleanDefinition
+    date: DateDefinition
+    datetime: DatetimeDefinition
+    document: DocumentDefinition
+    file: FileDefinition
+    geopoint: GeopointDefinition
+    image: ImageDefinition
+    number: NumberDefinition
+    object: ObjectDefinition
+    reference: ReferenceDefinition
+    crossDatasetReference: CrossDatasetReferenceDefinition
+    slug: SlugDefinition
+    span: SpanDefinition
+    string: StringDefinition
+    text: TextDefinition
+    url: UrlDefinition
+  }
+
+  /**
+   * A union of all intrinsic types allowed natively in the schema.
+   */
+  export type Type = IntrinsicTypeDefinition[keyof IntrinsicTypeDefinition]['type']
 
   /**
    * Represents a Sanity schema type definition.
@@ -41,21 +49,16 @@ export namespace Schema {
    * itself.
    */
   export type TypeDefinition<TType extends Type = Type> =
-    | Extract<IntrinsicTypeDefinition, {type: TType}>
-    | TypeAliasDefinition<TType>
-
-  /**
-   * A union of all intrinsic types allowed natively in the schema.
-   */
-  export type Type = IntrinsicTypeDefinition['type']
+    | IntrinsicTypeDefinition[Type]
+    | TypeAliasDefinition<string, TType>
 
   /**
    * Represents a reference to another type registered top-level in your schema.
    */
-  export interface TypeReference<TType extends Type = Type> {
+  export interface TypeReference {
     type: string
     name?: string
-    options?: TypeOptions<TType> & {[key: string]: unknown}
+    options?: {[key: string]: unknown}
   }
 
   /**
@@ -64,31 +67,49 @@ export namespace Schema {
    * under a different name. You can also override the default type options with
    * a type alias definition.
    */
-  export interface TypeAliasDefinition<TType extends Type = Type> extends BaseDefinitionOptions {
-    type: Exclude<string, Type>
-    options?: TypeOptions<TType> & {[key: string]: unknown}
+  export type TypeAliasDefinition<
+    TType extends string,
+    TAlias extends Type | undefined
+  > = BaseDefinitionOptions & {
+    type: TType
+    options?: TAlias extends Type ? IntrinsicTypeDefinition[TAlias]['options'] : unknown
+
+    validation?: SchemaValidationValue
+    initialValue?: InitialValueProperty<any, any>
+    preview?: PreviewConfig
+  }
+
+  export interface FieldBase {
+    fieldset?: string
+    group?: string | string[]
+  }
+
+  export type InlineFieldDefinition = {
+    [K in keyof IntrinsicTypeDefinition]: Omit<
+      IntrinsicTypeDefinition[K],
+      'initialValue' | 'validation'
+    > & {
+      // widen these so these are not unknown in FieldDefinition arrays du to mutually exclusive unions
+      validation?: SchemaValidationValue
+      initialValue?: InitialValueProperty<any, any>
+    }
   }
 
   /**
    * The shape of a field definition. Note, it's recommended to use the
    * `defineField` function instead of using this type directly.
    *
+   * Where `defineField` infers the exact field type,
+   * FieldDefinition is a compromise union of all types a field can have.
+   *
    * A field definition can be a reference to another registered top-level type
-   * or a inline inline type definition.
+   * or a inline type definition.
+   *
    */
-  export type FieldDefinition<TType extends Type = Type> = (
-    | Extract<IntrinsicTypeDefinition, {type: TType}>
-    | TypeReference<TType>
-  ) & {
-    name: string
-    title?: string
-    description?: string
-    fieldset?: string
-    group?: string | string[]
-    hidden?: ConditionalProperty
-    readOnly?: ConditionalProperty
-    validation?: SchemaValidationValue
-  }
+  export type FieldDefinition<
+    TType extends Type = Type,
+    TAlias extends Type | undefined = undefined
+  > = (InlineFieldDefinition[TType] | TypeAliasDefinition<string, TAlias>) & FieldBase
 
   export type ImageMetadataType = 'blurhash' | 'lqip' | 'palette' | 'exif' | 'location'
 
@@ -104,56 +125,27 @@ export namespace Schema {
   export type FieldGroupDefinition = {
     name: string
     title?: string
-    icon?: React.ComponentType | React.ReactNode
+    icon?: ComponentType | ReactNode
     default?: boolean
   }
 
-  interface BaseDefinitionOptions {
+  export interface BaseDefinitionOptions {
     name: string
     title?: string
-    description?: string
+    description?: string | ReactElement
     hidden?: ConditionalProperty
     readOnly?: ConditionalProperty
-    validation?: SchemaValidationValue
-    icon?: React.ComponentType | React.ReactNode
+    icon?: ComponentType | ReactNode
     components?: {
-      diff?: React.ComponentType<any> // @todo: use `DiffProps` here
-      field?: React.ComponentType<any> // @todo: use `FieldProps` here
-      input?: React.ComponentType<any> // @todo: use `InputProps` here
-      item?: React.ComponentType<any> // @todo: use `ItemProps` here
-      preview?: React.ComponentType<any> // @todo: use `PreviewProps` here
+      diff?: ComponentType<any> // @todo: use `DiffProps` here
+      field?: ComponentType<any> // @todo: use `FieldProps` here
+      input?: ComponentType<any> // @todo: use `InputProps` here
+      item?: ComponentType<any> // @todo: use `ItemProps` here
+      preview?: ComponentType<any> // @todo: use `PreviewProps` here
     }
-    // TODO
-    initialValue?: InitialValueProperty<any, any>
+    validation?: unknown
+    initialValue?: unknown
   }
-
-  export type TypeOptions<T extends Type> = T extends 'array'
-    ? ArrayOptions
-    : T extends 'block'
-    ? BlockOptions
-    : T extends 'boolean'
-    ? BooleanOptions
-    : T extends 'date'
-    ? DateOptions
-    : T extends 'datetime'
-    ? DatetimeOptions
-    : T extends 'file'
-    ? FileOptions
-    : T extends 'image'
-    ? ImageOptions
-    : T extends 'number'
-    ? NumberOptions
-    : T extends 'object'
-    ? ObjectOptions
-    : T extends 'reference'
-    ? ReferenceOptions
-    : T extends 'crossDatasetReference'
-    ? CrossDatasetReferenceDefinition
-    : T extends 'slug'
-    ? SlugOptions
-    : T extends 'string'
-    ? StringOptions
-    : never
 
   export interface ArrayOptions<TValue = unknown> {
     sortable?: boolean
@@ -162,34 +154,80 @@ export namespace Schema {
     modal?: {type?: 'dialog' | 'popover'; width?: number | 'auto'}
   }
 
-  export interface ArrayDefinition<TValue = unknown> extends BaseDefinitionOptions {
-    type: 'array'
-    of: Array<TypeDefinition | TypeReference>
+  export interface ArrayRule<Value> extends RuleDef<ArrayRule<Value>, Value> {
+    min: (length: number) => ArrayRule<Value>
+    max: (length: number) => ArrayRule<Value>
+    length: (length: number) => ArrayRule<Value>
+    unique: () => ArrayRule<Value>
+  }
 
-    options?: ArrayOptions<TValue>
+  export type ArrayOfEntry<T> = Omit<T, 'name' | 'hidden'> & {name?: string}
+
+  type IntrinsicArrayOfDefinition = {
+    [K in keyof IntrinsicTypeDefinition]: Omit<
+      ArrayOfEntry<IntrinsicTypeDefinition[K]>,
+      'validation' | 'initialValue'
+      /* concession: without this "widening" these are considered unknown in array.of when not using defineArrayMember */
+    > & {validation?: SchemaValidationValue; initialValue?: InitialValueProperty<any, any>}
+  }
+
+  export type ArrayOfType<TType extends Type = Type, TAlias extends Type | undefined = undefined> =
+    | IntrinsicArrayOfDefinition[TType]
+    | ArrayOfEntry<TypeAliasDefinition<string, TAlias>>
+
+  export interface ArrayDefinition extends BaseDefinitionOptions {
+    type: 'array'
+    of: ArrayOfType[]
+    initialValue?: InitialValueProperty<any, unknown[]>
+    validation?: ValidationBuilder<ArrayRule<unknown[]>, unknown[]>
+    options?: ArrayOptions
   }
 
   export interface BlockOptions {
     spellCheck?: boolean
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-empty-interface
+  export interface BlockRule extends RuleDef<BlockRule, any[]> {}
+
   export interface BlockDefinition extends BaseDefinitionOptions {
     type: 'block'
     styles?: Array<{title: string; value: string}>
     lists?: Array<{title: string; value: string}>
-    // TODO
-    marks?: unknown
-    of?: Array<TypeDefinition | TypeReference>
+    marks?: MarksDefinition
+    of?: ArrayOfType[]
+    initialValue?: InitialValueProperty<any, any[]>
     options?: BlockOptions
+    validation?: ValidationBuilder<BlockRule, any[]>
+  }
+
+  export interface DecoratorDefinition {
+    title: string
+    value: string
+    icon?: ReactNode | ComponentType
+    portableText?: {
+      icon?: ReactNode | ComponentType
+      render?: ComponentType
+    }
+  }
+
+  export interface MarksDefinition {
+    decorators?: DecoratorDefinition[]
+    annotations?: (TypeDefinition | TypeReference)[]
   }
 
   export interface BooleanOptions {
     layout?: 'switch' | 'checkbox'
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-empty-interface
+  export interface BooleanRule extends RuleDef<BooleanRule, boolean> {}
+
   export interface BooleanDefinition extends BaseDefinitionOptions {
     type: 'boolean'
     options?: BooleanOptions
+    initialValue?: InitialValueProperty<any, boolean>
+    validation?: ValidationBuilder<BooleanRule, boolean>
   }
 
   export interface DateOptions {
@@ -197,10 +235,15 @@ export namespace Schema {
     dateFormat?: string
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-empty-interface
+  export interface DateRule extends RuleDef<DateRule, string> {}
+
   export interface DateDefinition extends BaseDefinitionOptions {
     type: 'date'
     options?: DateOptions
     placeholder?: string
+    validation?: ValidationBuilder<DateRule, string>
+    initialValue?: InitialValueProperty<any, string>
   }
 
   export interface DatetimeOptions {
@@ -210,16 +253,39 @@ export namespace Schema {
     timeStep?: number
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-empty-interface
+  export interface DatetimeRule extends RuleDef<DatetimeRule, string> {
+    /**
+     * @param minDate - Minimum date (inclusive). minDate should be in ISO 8601 format.
+     */
+    min: (minDate: string) => DatetimeRule
+    /**
+     * @param maxDate - Maximum date (inclusive). maxDate should be in ISO 8601 format.
+     */
+    max: (maxDate: string) => DatetimeRule
+  }
+
   export interface DatetimeDefinition extends BaseDefinitionOptions {
     type: 'datetime'
     options?: DatetimeOptions
     placeholder?: string
+    validation?: ValidationBuilder<DatetimeRule, string>
+    initialValue?: InitialValueProperty<any, string>
   }
+
+  // eslint-disable-next-line @typescript-eslint/no-empty-interface
+  export interface DocumentOptions {}
+
+  // eslint-disable-next-line @typescript-eslint/no-empty-interface
+  export interface DocumentRule extends RuleDef<DocumentRule, SanityDocument> {}
 
   export interface DocumentDefinition extends Omit<ObjectDefinition, 'type'> {
     type: 'document'
     liveEdit?: boolean
     orderings?: SortOrdering[]
+    options?: DocumentOptions
+    validation?: ValidationBuilder<DocumentRule, SanityDocument>
+    initialValue?: InitialValueProperty<any, Record<string, unknown>>
   }
 
   export interface FileOptions extends ObjectOptions {
@@ -228,25 +294,43 @@ export namespace Schema {
     sources?: AssetSource[]
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-empty-interface
+  export interface FileRule extends RuleDef<FileRule, FileValue> {}
+
+  export interface FileValue {
+    asset?: {
+      _type?: 'reference'
+      _ref?: string
+    }
+    [index: string]: unknown
+  }
+
   export interface FileDefinition extends Omit<ObjectDefinition, 'type' | 'fields' | 'options'> {
     type: 'file'
     fields?: ObjectDefinition['fields']
     options?: FileOptions
+    validation?: ValidationBuilder<FileRule>
+    initialValue?: InitialValueProperty<any, FileValue>
   }
+
+  export interface GeopointValue {
+    lat?: number
+    lng?: number
+    alt?: number
+    [index: string]: unknown
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-empty-interface
+  export interface GeopointRule extends RuleDef<GeopointRule, GeopointValue> {}
+
+  // eslint-disable-next-line @typescript-eslint/no-empty-interface
+  export interface GeopointOptions {}
 
   export interface GeopointDefinition extends BaseDefinitionOptions {
     type: 'geopoint'
-  }
-
-  interface AssetFieldOptions {
-    /**
-     * @deprecated This is now the default behavior - use `fieldset` to hide fields by default
-     */
-    isHighlighted?: boolean
-  }
-
-  export type AssetFieldDefinition<TType extends Type = Type> = FieldDefinition<TType> & {
-    options?: AssetFieldOptions
+    options?: GeopointOptions
+    validation?: ValidationBuilder<GeopointRule, GeopointValue>
+    initialValue?: InitialValueProperty<any, GeopointValue>
   }
 
   export interface ImageOptions extends FileOptions {
@@ -254,12 +338,31 @@ export namespace Schema {
     hotspot?: boolean
   }
 
+  export interface ImageValue extends FileValue {
+    crop?: {
+      top?: number
+      bottom?: number
+      left?: number
+      right?: number
+    }
+    hotspot?: {
+      x?: number
+      y?: number
+      height: number
+      width: number
+    }
+    [index: string]: unknown
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-empty-interface
+  export interface ImageRule extends RuleDef<ImageRule, ImageValue> {}
+
   export interface ImageDefinition extends Omit<ObjectDefinition, 'type' | 'fields' | 'options'> {
     type: 'image'
-    fields?: AssetFieldDefinition[]
-    metadata?: ImageMetadataType[]
-    hotspot?: boolean
+    fields?: FieldDefinition[]
     options?: ImageOptions
+    validation?: ValidationBuilder<ImageRule, ImageValue>
+    initialValue?: InitialValueProperty<any, ImageValue>
   }
 
   export interface NumberOptions {
@@ -268,9 +371,22 @@ export namespace Schema {
     direction?: 'horizontal' | 'vertical'
   }
 
+  export interface NumberRule extends RuleDef<NumberRule, number> {
+    min: (minNumber: number) => NumberRule
+    max: (maxNumber: number) => NumberRule
+    lessThan: (limit: number) => NumberRule
+    greaterThan: (limit: number) => NumberRule
+    integer: () => NumberRule
+    precision: (limit: number) => NumberRule
+    positive: () => NumberRule
+    negative: () => NumberRule
+  }
+
   export interface NumberDefinition extends BaseDefinitionOptions {
     type: 'number'
     options?: NumberOptions
+    validation?: ValidationBuilder<NumberRule, number>
+    initialValue?: InitialValueProperty<any, number>
   }
 
   export interface ObjectOptions {
@@ -283,21 +399,40 @@ export namespace Schema {
     }
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-empty-interface
+  export interface ObjectRule extends RuleDef<ObjectRule, Record<string, unknown>> {}
+
   export interface ObjectDefinition extends BaseDefinitionOptions {
     type: 'object'
-    fields: FieldDefinition[]
+    /**
+     * Object must have at least one field.
+     */
+    fields: [FieldDefinition, ...FieldDefinition[]]
     groups?: FieldGroupDefinition[]
     fieldsets?: FieldsetDefinition[]
     preview?: PreviewConfig
 
     options?: ObjectOptions
+    validation?: ValidationBuilder<ObjectRule, Record<string, unknown>>
+    initialValue?: InitialValueProperty<any, Record<string, unknown>>
   }
+
+  export interface ReferenceValue {
+    _ref?: string
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-empty-interface
+  export interface ReferenceRule extends RuleDef<ReferenceRule, ReferenceValue> {}
+
+  export type ReferenceTo = TypeDefinition | TypeReference | Array<TypeDefinition | TypeReference>
 
   export interface ReferenceDefinition extends BaseDefinitionOptions {
     type: 'reference'
-    to: TypeDefinition | TypeReference | Array<TypeDefinition | TypeReference>
+    to: ReferenceTo
     weak?: boolean
     options?: ReferenceOptions
+    validation?: ValidationBuilder<ReferenceRule, ReferenceValue>
+    initialValue?: InitialValueProperty<any, ReferenceValue>
   }
 
   export interface CrossDatasetReferenceDefinition extends BaseDefinitionOptions {
@@ -315,13 +450,22 @@ export namespace Schema {
     dataset: string
     projectId: string
     studioUrl?: (document: {id: string; type?: string}) => string | null
-    tokenId: string
+    tokenId?: string
     options?: ReferenceOptions
   }
+
+  export interface SlugValue {
+    current?: string
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-empty-interface
+  export interface SlugRule extends RuleDef<SlugRule, SlugValue> {}
 
   export interface SlugDefinition extends BaseDefinitionOptions {
     type: 'slug'
     options?: SlugOptions
+    validation?: ValidationBuilder<SlugRule, SlugValue>
+    initialValue?: InitialValueProperty<any, SlugValue>
   }
 
   export interface StringOptions {
@@ -330,44 +474,63 @@ export namespace Schema {
     direction?: 'vertical' | 'horizontal'
   }
 
+  export interface StringRule extends RuleDef<StringRule, string> {
+    min: (minNumber: number) => StringRule
+    max: (maxNumber: number) => StringRule
+    length: (exactLength: number) => StringRule
+    uppercase: () => StringRule
+    lowercase: () => StringRule
+    regex(pattern: RegExp, name: string, options: {name?: string; invert?: boolean}): StringRule
+    regex(pattern: RegExp, options: {name?: string; invert?: boolean}): StringRule
+    regex(pattern: RegExp, name: string): StringRule
+    regex(pattern: RegExp): StringRule
+  }
+
   export interface StringDefinition extends BaseDefinitionOptions {
     type: 'string'
     options?: StringOptions
+    validation?: ValidationBuilder<StringRule, string>
+    initialValue?: InitialValueProperty<any, string>
   }
+
+  // eslint-disable-next-line @typescript-eslint/no-empty-interface
+  export interface SpanOptions extends StringOptions {}
 
   export interface SpanDefinition extends BaseDefinitionOptions {
     type: 'span'
+    options?: SpanOptions
   }
+
+  // eslint-disable-next-line @typescript-eslint/no-empty-interface
+  export interface TextRule extends StringRule {}
+
+  // eslint-disable-next-line @typescript-eslint/no-empty-interface
+  export interface TextOptions extends StringOptions {}
 
   export interface TextDefinition extends BaseDefinitionOptions {
     type: 'text'
     rows?: number
+    options?: TextOptions
+    validation?: ValidationBuilder<TextRule, string>
+    initialValue?: InitialValueProperty<any, string>
   }
+
+  export interface UrlRule extends RuleDef<UrlRule, string> {
+    uri(options: UriValidationOptions): UrlRule
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-empty-interface
+  export interface UrlOptions {}
 
   export interface UrlDefinition extends BaseDefinitionOptions {
     type: 'url'
+    options?: UrlOptions
+    validation?: ValidationBuilder<UrlRule, string>
+    initialValue?: InitialValueProperty<any, string>
   }
 }
 
-export function defineType<TType extends string>(
-  schemaDefinition: Schema.TypeAliasDefinition
-): Schema.TypeAliasDefinition
-
-export function defineType<TType extends Schema.Type>(
-  schemaDefinition: Extract<Schema.IntrinsicTypeDefinition, {type: TType}>
-): Extract<Schema.IntrinsicTypeDefinition, {type: TType}>
-
-export function defineType<TType extends Schema.Type>(
-  schemaDefinition: Schema.TypeDefinition<TType>
-): Schema.TypeDefinition<TType> {
-  return schemaDefinition
-}
-
-export function defineField<TType extends Schema.Type>(
-  schemaField: Schema.FieldDefinition<TType>
-): Schema.FieldDefinition<TType> {
-  return schemaField
-}
+export {defineType, defineField, defineArrayMember, typed} from './define'
 
 /**
  * Note: you probably want `SchemaTypeDefinition` instead
@@ -387,6 +550,8 @@ export type SchemaType =
  *
  * It's recommend to use the `defineType` helper instead of this type by
  * itself.
+ *
+ * @see defineType
  */
 export type SchemaTypeDefinition<TType extends Schema.Type = Schema.Type> =
   Schema.TypeDefinition<TType>
@@ -511,11 +676,11 @@ export interface BaseSchemaType {
   validation?: SchemaValidationValue
   preview?: PreviewConfig
   components?: {
-    diff?: React.ComponentType<any> // @todo: use `DiffProps` here
-    field?: React.ComponentType<any> // @todo: use `FieldProps` here
-    input?: React.ComponentType<any> // @todo: use `InputProps` here
-    item?: React.ComponentType<any> // @todo: use `ItemProps` here
-    preview?: React.ComponentType<any> // @todo: use `PreviewProps` here
+    diff?: ComponentType<any> // @todo: use `DiffProps` here
+    field?: ComponentType<any> // @todo: use `FieldProps` here
+    input?: ComponentType<any> // @todo: use `InputProps` here
+    item?: ComponentType<any> // @todo: use `ItemProps` here
+    preview?: ComponentType<any> // @todo: use `PreviewProps` here
   }
 
   /**
@@ -665,7 +830,7 @@ export interface ObjectField<T extends SchemaType = SchemaType> {
 }
 export interface FieldGroup {
   name: string
-  icon?: React.ComponentType
+  icon?: ComponentType
   title?: string
   description?: string
   hidden?: ConditionalProperty

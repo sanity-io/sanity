@@ -16,7 +16,7 @@ export type TestRenderObjectInputCallback = (
 ) => React.ReactElement
 
 export async function renderObjectInput(options: {
-  fieldDefinition: Schema.TypeDefinition<'object'>
+  fieldDefinition: Schema.FieldDefinition<'object'>
   props?: TestRenderProps
   render: TestRenderObjectInputCallback
 }) {

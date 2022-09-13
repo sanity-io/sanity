@@ -9,7 +9,7 @@ export type TestRenderNumberInputCallback = (
 ) => React.ReactElement
 
 export async function renderNumberInput(options: {
-  fieldDefinition: Schema.TypeDefinition<'number'>
+  fieldDefinition: Schema.FieldDefinition<'number'>
   props?: TestRenderProps
   render: TestRenderNumberInputCallback
 }) {

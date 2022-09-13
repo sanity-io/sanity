@@ -1,4 +1,4 @@
-import {defineType} from 'sanity'
+import {defineArrayMember, defineField, defineType} from 'sanity'
 
 export default defineType({
   name: 'simpleBlockNoteBody',
@@ -24,20 +24,17 @@ export default defineType({
       name: 'code',
       type: 'code',
     },
-    {
+    defineArrayMember({
       title: 'Image',
       name: 'image',
       type: 'image',
       fields: [
-        {
+        defineField({
           title: 'Caption',
           name: 'caption',
           type: 'string',
-          options: {
-            isHighlighted: true,
-          },
-        },
+        }),
       ],
-    },
+    }),
   ],
 })
