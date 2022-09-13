@@ -1,6 +1,6 @@
-import {SchemaType} from '@sanity/types'
+import {ObjectSchemaType, SchemaType} from '@sanity/types'
 import {get} from 'lodash'
-import {ArrayFieldProps, ObjectFieldProps} from '../../types'
+import {ArrayFieldProps} from '../../types'
 
 export function getOption(type: SchemaType, optionName: string) {
   return get(type.options, optionName)
@@ -9,15 +9,30 @@ export function getOption(type: SchemaType, optionName: string) {
 const PSEUDO_OBJECTS = ['array', 'file', 'image', 'reference']
 const HIDDEN_FIELDS = ['asset', 'crop', 'hotspot', '_ref', '_weak']
 const NO_LEVEL_LAYOUTS = ['tags']
+const NO_LEVEL_TYPES = ['slug']
 
-export function getObjectFieldLevel(field: ObjectFieldProps): number {
+type PartialObjectSchema = Pick<ObjectSchemaType, 'name' | 'options'> & {
+  type?: PartialObjectSchema
+  fields?: {name: string}[]
+}
+
+export interface PartialObjectFieldProps {
+  schemaType: PartialObjectSchema
+  level: number
+}
+
+export function getObjectFieldLevel(field: PartialObjectFieldProps): number {
   const {type, fields, options} = field.schemaType
-  const fieldType = type?.name || ''
+  const rootType = getRootType(type)
+  const fieldType = rootType?.name || ''
+
+  if (NO_LEVEL_TYPES.includes(fieldType)) {
+    return 0
+  }
 
   const isPseudoObject = PSEUDO_OBJECTS.includes(fieldType)
-
-  const hasVisibleFields = fields?.filter((f) => !HIDDEN_FIELDS.includes(f.name)).length > 0
-  const hasListOptions = options?.list?.length > 0
+  const hasVisibleFields = (fields?.filter((f) => !HIDDEN_FIELDS.includes(f.name)).length ?? 0) > 0
+  const hasListOptions = (options?.list?.length ?? 0) > 0
 
   if (hasVisibleFields || hasListOptions || !isPseudoObject) {
     return field.level
@@ -37,4 +52,11 @@ export function getArrayFieldLevel(field: ArrayFieldProps): number {
   }
 
   return 0
+}
+
+function getRootType(schemaType?: PartialObjectSchema): PartialObjectSchema | undefined {
+  if (!schemaType?.type) {
+    return schemaType
+  }
+  return getRootType(schemaType.type)
 }

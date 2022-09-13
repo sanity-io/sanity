@@ -18,8 +18,8 @@ import simpleBlockNote from './standard/portableText/simpleBlockNote'
 import simpleBlockNoteBody from './standard/portableText/simpleBlockNoteBody'
 import simpleBlockNoteUrl from './standard/portableText/simpleBlockNoteUrl'
 import spotifyEmbed from './standard/portableText/spotifyEmbed'
-import references from './standard/references'
-import slugs from './standard/slugs'
+import references, {referenceAlias} from './standard/references'
+import slugs, {slugAlias} from './standard/slugs'
 import strings from './standard/strings'
 import texts from './standard/texts'
 import urls from './standard/urls'
@@ -200,6 +200,7 @@ export const schemaTypes = [
   recursiveObjectTest,
   recursivePopover,
   references,
+  referenceAlias,
   crossDatasetReference,
   crossDatasetSubtype,
   circularCrossDatasetReferenceTest,
@@ -213,6 +214,7 @@ export const schemaTypes = [
   simpleBlockNoteUrl,
   simpleArrayOfObjects,
   slugs,
+  slugAlias,
   species,
   spotifyEmbed,
   strings,
