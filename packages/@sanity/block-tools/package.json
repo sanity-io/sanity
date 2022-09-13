@@ -41,7 +41,6 @@
     "@sanity/schema": "3.0.0-dev-preview.15",
     "@sanity/types": "3.0.0-dev-preview.15",
     "@types/jsdom": "^20.0.0",
-    "@types/react": "^18.0.18",
     "jsdom": "^20.0.0"
   },
   "peerDependencies": {
