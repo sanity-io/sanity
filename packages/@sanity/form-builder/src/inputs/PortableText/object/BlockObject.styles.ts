@@ -27,10 +27,6 @@ export const Root = styled(Card)((props: {theme: Theme}) => {
       box-shadow: 0 0 0 1px ${color.selectable.primary.selected.border};
     }
 
-    &[data-read-only] {
-      --card-bg-color: ${color.input.default.disabled.bg};
-    }
-
     &:not([data-focused]):not([data-selected]) {
       @media (hover: hover) {
         &:hover {
@@ -128,15 +124,6 @@ export const BlockActionsInner = styled(Flex)`
     visibility: hidden;
   }
 `
-
-export const StyledButton = styled(Button)((props: {theme: Theme; readOnly: boolean}) => {
-  return css`
-    --card-bg-color: ${props.readOnly
-      ? props.theme.sanity.color.input.default.disabled.bg
-      : 'inherit'};
-    --card-border-color: 'inherit';
-  `
-})
 
 export const TooltipBox = styled(Box)`
   max-width: 250px;
