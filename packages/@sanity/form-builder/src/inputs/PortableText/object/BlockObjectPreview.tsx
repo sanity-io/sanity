@@ -66,7 +66,6 @@ export function BlockObjectPreview(props: BlockObjectPreviewProps) {
           event.preventDefault()
           event.stopPropagation()
           isTabbing.current = false
-          PortableTextEditor.focus(editor)
         }
         if (event.key === 'Tab') {
           if (menuButton.current && !isTabbing.current) {
@@ -77,7 +76,7 @@ export function BlockObjectPreview(props: BlockObjectPreviewProps) {
           }
         }
       },
-      [focused, editor]
+      [focused]
     )
   )
 

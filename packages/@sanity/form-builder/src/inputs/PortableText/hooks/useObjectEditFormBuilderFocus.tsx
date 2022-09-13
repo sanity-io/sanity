@@ -33,8 +33,8 @@ export function useObjectEditFormBuilderFocus(onFocus: (path: Path) => void) {
   const onEditObjectFormBuilderBlur = onBlur
 
   const onEditObjectClose = useCallback(() => {
-    PortableTextEditor.focus(editor)
-  }, [editor])
+    onFocus([])
+  }, [onFocus])
 
   return useMemo(
     () => ({onEditObjectFormBuilderFocus, onEditObjectFormBuilderBlur, onEditObjectClose}),
