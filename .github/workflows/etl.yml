@@ -25,7 +25,7 @@ jobs:
       - name: Build packages
         run: yarn build
         env:
-          NODE_OPTIONS: --max_old_space_size=8192 --optimize_for_size
+          NODE_OPTIONS: --max_old_space_size=8192
 
       - name: Extract API docs
         env:
