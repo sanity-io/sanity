@@ -11,7 +11,7 @@ export interface DefineOptions<
    */
   strict?: TStrict
   /** Should be provided when type is a non-intrinsic type, ie type is a type alias*/
-  alias?: TAlias extends Schema.Type ? TAlias : never
+  aliasFor?: TAlias extends Schema.Type ? TAlias : never
 }
 
 export type IntrinsicBase = {
@@ -37,7 +37,7 @@ export type DefineSchemaType<
   ? Schema.IntrinsicTypeDefinition[TType]
   : Schema.TypeAliasDefinition<TType, TAlias>
 
-export type DefineArrayOfBase<
+export type DefineArrayMemberBase<
   TType extends string,
   TAlias extends Schema.Type | undefined
 > = TType extends Schema.Type

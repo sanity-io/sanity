@@ -1,7 +1,7 @@
 import {ComposeIcon, DropIcon, ImageIcon} from '@sanity/icons'
 import React from 'react'
 import {BlockEditor, PortableTextInputProps} from 'sanity/form'
-import {defineArrayOf, defineField, defineType} from 'sanity'
+import {defineArrayMember, defineField, defineType} from 'sanity'
 
 function CustomEditor(props: PortableTextInputProps) {
   const {markers, value} = props
@@ -34,7 +34,7 @@ export default defineType({
       description: 'Profound description of what belongs here',
       type: 'array',
       of: [
-        defineArrayOf({type: 'image', title: 'Image', icon: ImageIcon}),
+        defineArrayMember({type: 'image', title: 'Image', icon: ImageIcon}),
         {
           type: 'reference',
           name: 'authorReference',
@@ -47,7 +47,7 @@ export default defineType({
           to: {type: 'book'},
           title: 'Reference to book',
         },
-        defineArrayOf({
+        defineArrayMember({
           type: 'object',
           name: 'objectWithNestedArray',
           title: 'An object with nested array',
@@ -71,7 +71,7 @@ export default defineType({
             },
           ],
         }),
-        defineArrayOf({type: 'author', title: 'Embedded author'}),
+        defineArrayMember({type: 'author', title: 'Embedded author'}),
         {type: 'code', title: 'Code'},
         // {
         //   type: 'color',
@@ -85,7 +85,7 @@ export default defineType({
           name: 'testObject',
           fields: [{name: 'field1', type: 'string'}],
         },
-        defineArrayOf({
+        defineArrayMember({
           type: 'object',
           title: 'Other test object',
           name: 'otherTestObject',

@@ -34,7 +34,7 @@ describe('alias type test', () => {
           slugify: () => null,
         },
       },
-      {alias: 'string'}
+      {aliasFor: 'string'}
     )
 
     const assignableToStringOptions: Schema.StringOptions | undefined = narrowedAlias.options
@@ -50,7 +50,7 @@ describe('alias type test', () => {
           list: [{title: 'title', value: {_type: 'unknown-so-not-perfect'}}],
         },
       },
-      {alias: 'array'}
+      {aliasFor: 'array'}
     )
     const assignableToArrayOptions: Schema.ArrayOptions | undefined = narrowedAlias.options
   })
@@ -64,7 +64,7 @@ describe('alias type test', () => {
           columns: 2,
         },
       },
-      {alias: 'object'}
+      {aliasFor: 'object'}
     )
     const assignableToObjectOptions: Schema.ObjectOptions | undefined = narrowedAlias.options
 
@@ -75,7 +75,7 @@ describe('alias type test', () => {
         //@ts-expect-error redefining fields on object is not allowed
         fields: [],
       },
-      {alias: 'object'}
+      {aliasFor: 'object'}
     )
   })
 

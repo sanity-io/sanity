@@ -1,6 +1,6 @@
 import {Schema} from './types'
 import {
-  DefineArrayOfBase,
+  DefineArrayMemberBase,
   DefineOptions,
   DefineSchemaBase,
   MaybeAllowUnknownProps,
@@ -15,7 +15,7 @@ import {
  *  type-string.
  *
  * Schemas defined using `defineType` should typically be added to the Studio config under `schema.types`.
- * Defined types can be references by their `name`. This is referred to as a type-alias.
+ * Defined types can be referenced by their `name`. This is referred to as a type-alias.
  *
  * When using type-aliases as `type`, `defineType` cannot know the base-type, so type-safety will be reduced.
  * If you know the base type of the type-alias, provide `defineOptions.alias: <base type name>`.
@@ -195,7 +195,7 @@ export function defineArrayMember<
      * different configuration (title and initialValue for instance).
      */
     name?: TName
-  } & DefineArrayOfBase<TType, TAlias> &
+  } & DefineArrayMemberBase<TType, TAlias> &
     NarrowPreview<TType, TAlias, TSelect, TPrepareValue> &
     MaybeAllowUnknownProps<TStrict>,
 

@@ -1,6 +1,6 @@
 import React from 'react'
 import {ImageIcon, OlistIcon} from '@sanity/icons'
-import {defineArrayOf, defineField, defineType} from 'sanity'
+import {defineField, defineType} from 'sanity'
 
 export const topLevelArrayType = defineType({
   name: 'topLevelArrayType',

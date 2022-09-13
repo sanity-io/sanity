@@ -2,7 +2,7 @@ import {BellIcon, ImageIcon, InfoOutlineIcon} from '@sanity/icons'
 import {Rule} from '@sanity/types'
 import {InfoBoxPreview} from './InfoBoxPreview'
 import {LinkAnnotationInput} from './LinkAnnotationInput'
-import {defineArrayOf, defineField, defineType} from 'sanity'
+import {defineArrayMember, defineField, defineType} from 'sanity'
 
 export const ptAllTheBellsAndWhistlesType = defineType({
   type: 'document',
@@ -20,7 +20,7 @@ export const ptAllTheBellsAndWhistlesType = defineType({
       name: 'text',
       title: 'Text',
       of: [
-        defineArrayOf({
+        defineArrayMember({
           type: 'block',
           name: 'block',
           title: 'Block',
@@ -91,25 +91,16 @@ export const ptAllTheBellsAndWhistlesType = defineType({
             },
           },
           fields: [
-            defineField(
-              {
-                title: 'Caption',
-                name: 'caption',
-                type: 'string',
-                options: {
-                  isHighlighted: true,
-                },
-              },
-              {imageField: true}
-            ),
+            defineField({
+              title: 'Caption',
+              name: 'caption',
+              type: 'string',
+            }),
             {
               name: 'alt',
               type: 'string',
               title: 'Alt text',
               description: 'Alternative text for screenreaders. Falls back on caption if not set',
-              options: {
-                isHighlighted: true,
-              },
             },
             {
               title: 'Enable lightbox',
@@ -117,39 +108,24 @@ export const ptAllTheBellsAndWhistlesType = defineType({
                 '❓ Optional. The default behavior is to enable it if image is large enough to benefit from it.',
               name: 'enableLightbox',
               type: 'boolean',
-              options: {
-                isHighlighted: true,
-              },
             },
             {
               title: 'Icon',
               name: 'isIcon',
               type: 'boolean',
-              options: {
-                isHighlighted: true,
-              },
             },
             {
               title: 'Disable shadow',
               description: 'Not implemented in most surfaces.',
               name: 'disableShadow',
               type: 'boolean',
-              options: {
-                isHighlighted: true,
-              },
             },
-            defineField(
-              {
-                title: 'Large',
-                description: 'Not implemented in most surfaces.',
-                name: 'isLarge',
-                type: 'boolean',
-                options: {
-                  isHighlighted: true,
-                },
-              },
-              {imageField: true}
-            ),
+            defineField({
+              title: 'Large',
+              description: 'Not implemented in most surfaces.',
+              name: 'isLarge',
+              type: 'boolean',
+            }),
           ],
         }),
 
