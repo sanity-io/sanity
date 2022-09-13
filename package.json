@@ -135,5 +135,6 @@
     "hooks": {
       "commitmsg": "node scripts/validateCommitMessage.js"
     }
-  }
+  },
+  "workspaces": ["packages/@sanity/*"]
 }
