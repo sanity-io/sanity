@@ -11,7 +11,7 @@ import {
   isSpanSchemaType,
 } from '@sanity/types'
 import {uniqBy} from 'lodash'
-import {SanityClient} from '@sanity/client'
+import type {SanityClient} from '@sanity/client'
 import typeString from './util/typeString'
 import ValidationErrorClass from './ValidationError'
 import normalizeValidationRules from './util/normalizeValidationRules'
@@ -59,17 +59,44 @@ export default async function validateDocument(
     return []
   }
 
-  try {
-    return await validateItem({
-      getClient,
-      schema,
-      parent: undefined,
-      value: doc,
-      path: [],
-      document: doc,
-      type: documentType,
-      getDocumentExists: context?.getDocumentExists,
+  const client = getClient({apiVersion: '2021-06-07'})
+  const validationOptions: ValidateItemOptions = {
+    client,
+    getClient,
+    schema,
+    parent: undefined,
+    value: doc,
+    path: [],
+    document: doc,
+    type: documentType,
+    getDocumentExists: context?.getDocumentExists,
+  }
+
+  // <TEMPORARY UGLY HACK TO PRINT DEPRECATION WARNINGS ON USE>
+  /* eslint-disable no-proto */
+  const wrappedClient = client as any
+  validationOptions.client = [
+    ...Object.keys(client),
+    ...Object.keys(wrappedClient.__proto__),
+  ].reduce((acc, key) => {
+    const original = Object.hasOwnProperty.call(client, key)
+      ? wrappedClient[key]
+      : wrappedClient.__proto__[key]
+
+    return Object.defineProperty(acc, key, {
+      get() {
+        console.warn(
+          '`configContext.client` is deprecated and will be removed in the next release! Use `context.getClient({apiVersion: "2021-06-07"})` instead'
+        )
+        return original
+      },
     })
+  }, {}) as any as SanityClient
+  /* eslint-enable no-proto */
+  // </TEMPORARY UGLY HACK TO PRINT DEPRECATION WARNINGS ON USE>
+
+  try {
+    return await validateItem(validationOptions)
   } catch (err) {
     console.error(err)
     return [

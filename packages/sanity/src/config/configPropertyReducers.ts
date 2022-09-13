@@ -1,4 +1,4 @@
-import {Schema, AssetSource} from '@sanity/types'
+import type {Schema, AssetSource} from '@sanity/types'
 import type {Template, TemplateResponse} from '../templates'
 import {
   DeleteAction,
@@ -36,7 +36,7 @@ export const initialLanguageFilter: _DocumentLanguageFilterComponent[] = []
 
 export const schemaTypesReducer: ConfigPropertyReducer<
   Schema.TypeDefinition[],
-  Omit<ConfigContext, 'schema' | 'currentUser' | 'getClient'>
+  Omit<ConfigContext, 'schema' | 'currentUser' | 'client' | 'getClient'>
 > = (prev, {schema}, context) => {
   const schemaTypes = schema?.types
 

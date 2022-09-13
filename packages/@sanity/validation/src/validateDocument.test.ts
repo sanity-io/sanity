@@ -18,8 +18,8 @@ beforeEach(() => {
 })
 
 // mock client
-const client = createMockSanityClient()
-const getClient = (options: {apiVersion: string}) => client as any as SanityClient
+const client = createMockSanityClient() as any as SanityClient
+const getClient = (options: {apiVersion: string}) => client
 
 describe('resolveTypeForArrayItem', () => {
   const schema: Schema = createSchema({
@@ -95,7 +95,7 @@ describe('validateDocument', () => {
       title: null,
     }
 
-    const result = await validateDocument(client as any, document, schema)
+    const result = await validateDocument(getClient, document, schema)
     expect(result).toMatchObject([
       {
         level: 'error',
@@ -169,6 +169,7 @@ describe('validateItem', () => {
 
     await expect(
       validateItem({
+        client,
         getClient,
         schema,
         value: {},
@@ -239,6 +240,7 @@ describe('validateItem', () => {
 
     await expect(
       validateItem({
+        client,
         getClient,
         schema,
         document: undefined,
@@ -406,6 +408,7 @@ describe('validateItem', () => {
     }
 
     const result = await validateItem({
+      client,
       getClient,
       schema,
       document: document,
@@ -509,6 +512,7 @@ describe('validateItem', () => {
 
     await expect(
       validateItem({
+        client,
         getClient,
         schema,
         document: undefined,
@@ -608,6 +612,7 @@ describe('validateItem', () => {
 
     await expect(
       validateItem({
+        client,
         getClient,
         schema,
         value,
@@ -751,6 +756,7 @@ describe('validateItem', () => {
     }
 
     const resultPromise = validateItem({
+      client,
       getClient,
       schema,
       value,
