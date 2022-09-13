@@ -1,5 +1,5 @@
-import {PreviewConfig} from './preview'
-import {InitialValueProperty, Schema, SchemaValidationValue} from './types'
+import type {PreviewConfig} from './preview'
+import type {InitialValueProperty, Schema, SchemaValidationValue} from './types'
 
 export interface DefineOptions<
   TStrict extends StrictDefinition,
@@ -7,7 +7,14 @@ export interface DefineOptions<
 > {
   /**
    * `strict: false` allows unknown properties in the schema.
-   * Use this when adding customizations to the schema that are not part of sanity core
+   * Use this when adding customizations to the schema that are not part of sanity core.
+   *
+   * If you want to extend the Sanity Schema types with your own properties or options to make them typesafe,
+   * you can use [TypeScript declaration merging](https://www.typescriptlang.org/docs/handbook/declaration-merging.html).
+   *
+   * See {@link defineType} for more.
+   *
+   * @see defineType
    */
   strict?: TStrict
   /** Should be provided when type is a non-intrinsic type, ie type is a type alias*/

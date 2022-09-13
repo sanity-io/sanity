@@ -21,8 +21,8 @@ import {
  * If you know the base type of the type-alias, provide `defineOptions.aliasFor: <base type name>`.
  * This will enforce that the schema definition conforms with the provided type.
  *
- * By default `defineType` only known properties are allowed.
- * Use `defineOptions.strict: false` to allow unknown fields and options.
+ * By default `defineType` only allows known properties and options.
+ * Use `defineOptions.strict: false` to allow unknown properties and options.
  *
  * ### Basic usage
  *
@@ -91,6 +91,76 @@ import {
  *
  * For entries without a function-wrapper, TypeScript will resolve to a union type of all possible properties across
  * all schema-types will be allowed.
+ *
+ * ### Extending the Sanity Schema types
+ *
+ * If you want to extend the Sanity Schema types with your own properties or options to make them typesafe,
+ * you can use [TypeScript declaration merging](https://www.typescriptlang.org/docs/handbook/declaration-merging.html).
+ *
+ * With declaration merging, properties and options will be available in a type-safe manner, and
+ * `strict: false` will not be necessary.
+ *
+ * #### Example: Add option to StringOptions
+ *
+ * ```ts
+ * // string.ts
+ *
+ * //redeclare the sanity module
+ * declare module 'sanity' {
+ *
+ *   // redeclare Schema; it will be merged with Schema in the sanity module
+ *   export namespace Schema {
+ *
+ *       // redeclare StringOptions; it will be merged with Schema.StringOptions in the sanity module
+ *      export interface StringOptions {
+ *        myCustomOption?: boolean
+ *      }
+ *   }
+ * }
+ *
+ * // the option is now part of the StringOptions type, just as if it was declared in the sanity codebase:
+ * defineType({
+ *   type: 'string',
+ *   name: 'my-string',
+ *   options: {
+ *     myCustomOption: true // this does not give an error anymore
+ *   }
+ * })
+ *
+ * ```
+ *
+ * #### Example: Add a schema definition to "intrinsic-types"
+ *
+ * ```ts
+ * //my-custom-type-definition.ts
+ *
+ * // create a new schema definition based on object (we remove the ability to assign field, change the type add some options)
+ *  export type MagicallyAddedDefinition = Omit<Schema.ObjectDefinition, 'type' | 'fields'> & {
+ *    type: 'magically-added-type'
+ *    options?: {
+ *      sparkles?: boolean
+ *    }
+ *  }
+ *
+ * declare module 'sanity' {
+ *     // redeclares IntrinsicTypeDefinition and adds a named definition to it
+ *     // it is very important that the key is the same as the type in the definition ('magically-added-type')
+ *     export interface IntrinsicTypeDefinition {
+ *       'magically-added-type': MagicallyAddedDefinition
+ *     }
+ * }
+ *
+ * // defineType will now narrow `type: 'magically-added-type'` to `MagicallyAddedDefinition`
+ * defineType({
+ *   type: 'magically-added-type'
+ *   name: 'magic',
+ *   options: {
+ *     sparkles: true // this is allowed,
+ *     //@ts-expect-error this is not allowed in MagicallyAddedDefinition.options
+ *     sparks: true
+ *   }
+ * })
+ * ```
  *
  * @param schemaDefinition - should be a valid Sanity schema type definition.
  * @param defineOptions - optional param to provide typehints for the schemaDefinition.
@@ -206,7 +276,7 @@ export function defineArrayMember<
 }
 
 /**
- * `typed` can be used to ensure that a object conforms to an exact interface.
+ * `typed` can be used to ensure that an object conforms to an exact interface.
  *
  * It can be useful when working with `defineType` and `defineField` on occasions where a wider type with
  * custom options or properties is required.
