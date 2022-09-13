@@ -57,7 +57,7 @@ describe('document types', () => {
             }
           },
         },
-        fields: [{type: 'string', name: 'string'}],
+        fields: [defineField({type: 'text', name: 'text'})],
       })
 
       const assignableToDocument: Schema.DocumentDefinition = documentDef
