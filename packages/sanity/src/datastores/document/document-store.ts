@@ -1,10 +1,12 @@
-import {SanityClient} from '@sanity/client'
-import {InitialValueResolverContext, Schema} from '@sanity/types'
-import {Observable} from 'rxjs'
+import type {SanityClient} from '@sanity/client'
+import type {InitialValueResolverContext, Schema} from '@sanity/types'
+import type {Observable} from 'rxjs'
+import type {SourceClientOptions} from '../../config'
+import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
 import {getDraftId, isDraftId} from '../../util'
-import {HistoryStore} from '../history'
-import {DocumentPreviewStore} from '../../preview'
-import {Template} from '../../templates'
+import type {HistoryStore} from '../history'
+import type {DocumentPreviewStore} from '../../preview'
+import type {Template} from '../../templates'
 import {checkoutPair, DocumentVersionEvent, Pair} from './document-pair/checkoutPair'
 import {consistencyStatus} from './document-pair/consistencyStatus'
 import {documentEvents} from './document-pair/documentEvents'
@@ -15,7 +17,7 @@ import {OperationsAPI} from './document-pair/operations'
 import {validation, ValidationStatus} from './document-pair/validation'
 import {listenQuery, ListenQueryOptions} from './listenQuery'
 import {resolveTypeForDocument} from './resolveTypeForDocument'
-import {IdPair} from './types'
+import type {IdPair} from './types'
 import {getInitialValueStream, InitialValueMsg, InitialValueOptions} from './initialValue'
 
 export type QueryParams = Record<string, string | number | boolean | string[]>
@@ -55,7 +57,7 @@ export interface DocumentStore {
 }
 
 export interface DocumentStoreOptions {
-  client: SanityClient
+  getClient: (options: SourceClientOptions) => SanityClient
   documentPreviewStore: DocumentPreviewStore
   historyStore: HistoryStore
   schema: Schema
@@ -63,17 +65,17 @@ export interface DocumentStoreOptions {
 }
 
 export function createDocumentStore({
-  client,
+  getClient,
   documentPreviewStore,
   historyStore,
   initialValueTemplates,
   schema,
 }: DocumentStoreOptions): DocumentStore {
-  const versionedClient = client.withConfig({
-    apiVersion: '2021-12-01',
-  })
-
-  const ctx = {client, documentPreviewStore, historyStore, schema}
+  // Note that we're both passing a shared `client` here which is used by the
+  // internal operations, and a `getClient` method that we expose to user-land
+  // for things like validations
+  const client = getClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
+  const ctx = {client, getClient, documentPreviewStore, historyStore, schema}
 
   const caches = {
     pair: {
@@ -87,7 +89,7 @@ export function createDocumentStore({
   return {
     // Public API
     checkoutPair(idPair) {
-      return checkoutPair(versionedClient, idPair)
+      return checkoutPair(client, idPair)
     },
     initialValue(opts, context) {
       return getInitialValueStream(
@@ -99,10 +101,10 @@ export function createDocumentStore({
       )
     },
     listenQuery(query, params, options) {
-      return listenQuery(versionedClient, query, params, options)
+      return listenQuery(client, query, params, options)
     },
     resolveTypeForDocument(id, specifiedType) {
-      return resolveTypeForDocument(versionedClient, id, specifiedType)
+      return resolveTypeForDocument(client, id, specifiedType)
     },
     pair: {
       consistencyStatus(publishedId, type) {

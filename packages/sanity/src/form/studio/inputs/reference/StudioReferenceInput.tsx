@@ -11,6 +11,7 @@ import {get} from '@sanity/util/paths'
 import React, {ComponentProps, ForwardedRef, forwardRef, useCallback, useMemo, useRef} from 'react'
 import {from, throwError} from 'rxjs'
 import {catchError, mergeMap} from 'rxjs/operators'
+import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../studioClient'
 import {isNonNullable} from '../../../../util'
 import * as adapter from '../client-adapters/reference'
 import {ReferenceInput} from '../../../inputs/ReferenceInput/ReferenceInput'
@@ -60,10 +61,9 @@ type SearchError = {
 }
 
 export function StudioReferenceInput(props: StudioReferenceInputProps) {
-  const client = useClient()
+  const searchClient = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const schema = useSchema()
   const documentPreviewStore = useDocumentPreviewStore()
-  const searchClient = useMemo(() => client.withConfig({apiVersion: '2021-03-25'}), [client])
   const {path, schemaType} = props
   const {EditReferenceLinkComponent, onEditReference, activePath, initialValueTemplateItems} =
     useReferenceInputOptions()

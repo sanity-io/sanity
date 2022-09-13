@@ -18,6 +18,7 @@ import {
   PreparedConfig,
   SingleWorkspace,
   Source,
+  SourceClientOptions,
   SourceOptions,
   WorkspaceOptions,
   WorkspaceSummary,
@@ -216,9 +217,21 @@ function resolveSource({
   const {dataset, projectId} = config
   const bifur = getBifurClient(client, auth)
   const errors: unknown[] = []
+  const clients: Record<string, SanityClient> = {}
+  const getClient = (options: SourceClientOptions): SanityClient => {
+    if (!options || !options.apiVersion) {
+      throw new Error('Missing required `apiVersion` option')
+    }
+
+    if (!clients[options.apiVersion]) {
+      clients[options.apiVersion] = client.withConfig(options)
+    }
+
+    return clients[options.apiVersion]
+  }
 
   const context = {
-    client,
+    getClient,
     currentUser,
     dataset,
     projectId,
@@ -379,7 +392,7 @@ function resolveSource({
     name: config.name,
     title: config.title || startCase(config.name),
     schema,
-    client,
+    getClient,
     dataset,
     projectId,
     tools,

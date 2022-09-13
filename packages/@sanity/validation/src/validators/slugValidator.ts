@@ -23,7 +23,7 @@ function serializePath(path: Path): string {
 }
 
 const defaultIsUnique: SlugIsUniqueValidator = (slug, context) => {
-  const {client, document, path, type} = context
+  const {getClient, document, path, type} = context
   const schemaOptions = type?.options as {disableArrayWarning?: boolean} | undefined
 
   if (!document) {
@@ -48,7 +48,7 @@ const defaultIsUnique: SlugIsUniqueValidator = (slug, context) => {
     `${atPath} == $slug`,
   ].join(' && ')
 
-  return client.fetch<boolean>(
+  return getClient({apiVersion: '2022-09-09'}).fetch<boolean>(
     `!defined(*[${constraints}][0]._id)`,
     {
       docType,

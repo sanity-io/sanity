@@ -1,8 +1,9 @@
 import {InitialValueResolverContext, SanityDocumentLike} from '@sanity/types'
 import {useEffect, useMemo, useState} from 'react'
+import {useSource} from '../../studio'
 import {useUnique} from '../../util/useUnique'
 import {useDocumentStore} from '../datastores'
-import {useClient, useDataset, useProjectId, useSchema} from '../../hooks'
+import {useDataset, useProjectId, useSchema} from '../../hooks'
 import {useCurrentUser} from '../user'
 import {InitialValueState} from './initialValue/types'
 
@@ -71,19 +72,20 @@ export function useInitialValue(props: {
  * @internal
  */
 export function useInitialValueResolverContext(): InitialValueResolverContext {
-  const client = useClient()
+  const source = useSource()
   const schema = useSchema()
   const currentUser = useCurrentUser()
   const projectId = useProjectId()
   const dataset = useDataset()
+  const getClient = source.getClient
 
   return useMemo(() => {
     return {
       projectId,
       dataset,
-      client,
+      getClient,
       schema,
       currentUser,
     }
-  }, [client, schema, currentUser, projectId, dataset])
+  }, [getClient, schema, currentUser, projectId, dataset])
 }

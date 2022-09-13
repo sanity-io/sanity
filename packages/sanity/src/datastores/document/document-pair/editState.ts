@@ -1,4 +1,4 @@
-import {SanityClient} from '@sanity/client'
+import type {SanityClient} from '@sanity/client'
 import {SanityDocument, Schema} from '@sanity/types'
 import {Observable} from 'rxjs'
 import {map, publishReplay, refCount, startWith} from 'rxjs/operators'

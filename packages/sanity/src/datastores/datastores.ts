@@ -3,6 +3,7 @@
 import {useMemo} from 'react'
 import {useClient, useSchema, useTemplates} from '../hooks'
 import {useSource, useWorkspace} from '../studio'
+import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../studioClient'
 import {createDocumentPreviewStore, DocumentPreviewStore} from '../preview'
 import {
   ConnectionStatusStore,
@@ -19,8 +20,9 @@ import {createSettingsStore, SettingsStore} from './settings'
 import {createUserStore, useCurrentUser, UserStore} from './user'
 
 export function useUserStore(): UserStore {
-  const {client, currentUser} = useSource()
+  const {getClient, currentUser} = useSource()
   const resourceCache = useResourceCache()
+  const client = getClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
 
   return useMemo(() => {
     const userStore =
@@ -40,7 +42,8 @@ export function useUserStore(): UserStore {
 }
 
 export function useGrantsStore(): GrantsStore {
-  const {client} = useSource()
+  const {getClient} = useSource()
+  const client = getClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const currentUser = useCurrentUser()
   const resourceCache = useResourceCache()
 
@@ -62,7 +65,7 @@ export function useGrantsStore(): GrantsStore {
 }
 
 export function useHistoryStore(): HistoryStore {
-  const client = useClient()
+  const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const resourceCache = useResourceCache()
 
   return useMemo(() => {
@@ -83,7 +86,7 @@ export function useHistoryStore(): HistoryStore {
 }
 
 export function useDocumentPreviewStore(): DocumentPreviewStore {
-  const client = useClient()
+  const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const resourceCache = useResourceCache()
   const crossProjectTokenStore = useCrossProjectTokenStore()
 
@@ -105,7 +108,7 @@ export function useDocumentPreviewStore(): DocumentPreviewStore {
 }
 
 export function useCrossProjectTokenStore() {
-  const client = useClient()
+  const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const resourceCache = useResourceCache()
 
   return useMemo(() => {
@@ -126,7 +129,7 @@ export function useCrossProjectTokenStore() {
 }
 
 export function useDocumentStore(): DocumentStore {
-  const client = useClient()
+  const getClient = useSource().getClient
   const schema = useSchema()
   const templates = useTemplates()
   const resourceCache = useResourceCache()
@@ -137,10 +140,10 @@ export function useDocumentStore(): DocumentStore {
     const documentStore =
       resourceCache.get<DocumentStore>({
         namespace: 'documentStore',
-        dependencies: [client, documentPreviewStore, historyStore, schema],
+        dependencies: [getClient, documentPreviewStore, historyStore, schema],
       }) ||
       createDocumentStore({
-        client,
+        getClient,
         documentPreviewStore,
         historyStore,
         initialValueTemplates: templates,
@@ -149,12 +152,12 @@ export function useDocumentStore(): DocumentStore {
 
     resourceCache.set({
       namespace: 'documentStore',
-      dependencies: [client, documentPreviewStore, historyStore, schema],
+      dependencies: [getClient, documentPreviewStore, historyStore, schema],
       value: documentStore,
     })
 
     return documentStore
-  }, [client, documentPreviewStore, historyStore, resourceCache, schema, templates])
+  }, [getClient, documentPreviewStore, historyStore, resourceCache, schema, templates])
 }
 
 export function useConnectionStatusStore(): ConnectionStatusStore {
@@ -204,7 +207,7 @@ export function usePresenceStore(): PresenceStore {
 }
 
 export function useProjectStore(): ProjectStore {
-  const client = useClient()
+  const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const resourceCache = useResourceCache()
 
   return useMemo(() => {

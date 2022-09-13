@@ -23,6 +23,7 @@ import {
 } from '../../../hooks'
 import {isDev} from '../../../environment'
 import {useSource} from '../../../studio'
+import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../studioClient'
 import {getPublishedId, useUnique} from '../../../util'
 import {usePaneRouter} from '../../components'
 import {PatchEvent, StateTree, toMutationPatches} from '../../../form'
@@ -44,7 +45,7 @@ const emptyObject = {} as Record<string, string | undefined>
 // eslint-disable-next-line complexity, max-statements
 export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   const {children, index, pane, paneKey} = props
-  const client = useClient()
+  const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const schema = useSchema()
   const templates = useTemplates()
   const {

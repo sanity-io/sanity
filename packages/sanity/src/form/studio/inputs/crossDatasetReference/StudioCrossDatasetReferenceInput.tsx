@@ -11,6 +11,7 @@ import {get} from '@sanity/util/paths'
 import {from, throwError} from 'rxjs'
 import {catchError, mergeMap} from 'rxjs/operators'
 import {Box, Stack, Text, TextSkeleton} from '@sanity/ui'
+import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../studioClient'
 import {CrossDatasetReferenceInput} from '../../../inputs/CrossDatasetReferenceInput'
 import {Alert} from '../../../components/Alert'
 import {useDocumentPreviewStore} from '../../../../datastores'
@@ -64,7 +65,7 @@ type SearchError = {
 
 export function StudioCrossDatasetReferenceInput(props: StudioCrossDatasetReferenceInputProps) {
   const {path, schemaType} = props
-  const client = useClient()
+  const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const projectId = useProjectId()
   const documentPreviewStore = useDocumentPreviewStore()
 

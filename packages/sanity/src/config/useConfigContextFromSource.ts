@@ -9,10 +9,10 @@ import type {Source, ConfigContext} from './types'
  * @internal
  */
 export function useConfigContextFromSource(source: Source): ConfigContext {
-  const {projectId, dataset, schema, currentUser, client} = source
+  const {projectId, dataset, schema, currentUser, getClient} = source
   return useMemo(() => {
-    return {projectId, dataset, schema, currentUser, client}
-  }, [projectId, dataset, schema, currentUser, client])
+    return {projectId, dataset, schema, currentUser, getClient}
+  }, [projectId, dataset, schema, currentUser, getClient])
 }
 
 /**
@@ -23,6 +23,6 @@ export function useConfigContextFromSource(source: Source): ConfigContext {
  * @internal
  */
 export function getConfigContextFromSource(source: Source): ConfigContext {
-  const {projectId, dataset, schema, currentUser, client} = source
-  return {projectId, dataset, schema, currentUser, client}
+  const {projectId, dataset, schema, currentUser, getClient} = source
+  return {projectId, dataset, schema, currentUser, getClient}
 }

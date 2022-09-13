@@ -14,6 +14,7 @@ import {from, throwError} from 'rxjs'
 import {catchError, mergeMap} from 'rxjs/operators'
 import {isNonNullable} from '../../../../util'
 import * as adapter from '../client-adapters/reference'
+import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../studioClient'
 import {ArrayItemReferenceInput} from '../../../inputs/ReferenceInput/ArrayItemReferenceInput'
 import {EditReferenceEvent} from '../../../inputs/ReferenceInput/types'
 import {_InsertEvent} from '../../../inputs/arrays/ArrayOfObjectsInput/types'
@@ -67,7 +68,7 @@ type SearchError = {
 }
 
 export function StudioArrayItemReferenceInput(props: SanityArrayItemReferenceInputProps) {
-  const client = useClient()
+  const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const schema = useSchema()
   const documentPreviewStore = useDocumentPreviewStore()
   const searchClient = useMemo(() => client.withConfig({apiVersion: '2021-03-25'}), [client])

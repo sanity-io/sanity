@@ -621,7 +621,7 @@ export interface InitialValueResolverContext {
   dataset: string
   schema: Schema
   currentUser: CurrentUser | null
-  client: SanityClient
+  getClient: (options: {apiVersion: string}) => SanityClient
 }
 
 export type InitialValueResolver<Params, Value> = (

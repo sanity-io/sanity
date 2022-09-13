@@ -13,11 +13,12 @@ import {
   ObjectDiff,
 } from '../../field'
 import {useClient, useConnectionState, useEditState, useSchema} from '../../hooks'
+import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
 import {useInitialValue} from '../document/useInitialValue'
 import {useHistoryStore} from '../datastores'
 
 export default function HistoryTimelineStory() {
-  const client = useClient()
+  const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const schema = useSchema()
   const documentId = useMemo(() => 'test', [])
   const documentType = useMemo(() => 'author', [])

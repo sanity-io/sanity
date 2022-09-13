@@ -125,7 +125,7 @@ export interface ConfigContext {
   dataset: string
   schema: Schema
   currentUser: CurrentUser | null
-  client: SanityClient
+  getClient: (options: SourceClientOptions) => SanityClient
 }
 
 export type TemplateResolver = ComposableOption<Template[], ConfigContext>
@@ -136,7 +136,7 @@ export interface SchemaPluginOptions {
     | SchemaTypeDefinition[]
     | ComposableOption<
         SchemaTypeDefinition[],
-        Omit<ConfigContext, 'schema' | 'currentUser' | 'client'>
+        Omit<ConfigContext, 'schema' | 'currentUser' | 'getClient'>
       >
   templates?: Template[] | TemplateResolver
 }
@@ -271,6 +271,13 @@ export type PartialContext<TContext extends ConfigContext> = Pick<
   Exclude<keyof TContext, keyof ConfigContext>
 >
 
+/**
+ * @public
+ */
+export interface SourceClientOptions {
+  apiVersion: string
+}
+
 export interface Source {
   type: 'source'
   name: string
@@ -280,10 +287,11 @@ export interface Source {
   schema: Schema
   templates: Template[]
   tools: Tool[]
-  client: SanityClient
   currentUser: CurrentUser | null
   authenticated: boolean
   auth: AuthStore
+
+  getClient: (clientOptions: SourceClientOptions) => SanityClient
 
   document: {
     actions: (props: PartialContext<DocumentActionsContext>) => DocumentActionComponent[]

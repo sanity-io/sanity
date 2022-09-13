@@ -3,9 +3,9 @@ import {SanityDocument, Schema, SchemaType} from '@sanity/types'
 import {Observable, combineLatest, of} from 'rxjs'
 import {switchMap, map} from 'rxjs/operators'
 import {createHookFromObservableFactory} from '../../util/createHookFromObservableFactory'
+import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
 import {snapshotPair} from '../document/document-pair/snapshotPair'
 import {getDraftId, getPublishedId} from '../../util/draftUtils'
-import {useSource} from '../../studio'
 import {useGrantsStore} from '../datastores'
 import {PartialExcept} from '../../util/PartialExcept'
 import {useClient, useSchema} from '../../hooks'
@@ -267,7 +267,7 @@ export function useDocumentPairPermissions({
 }: PartialExcept<DocumentPairPermissionsOptions, 'id' | 'type' | 'permission'>): ReturnType<
   typeof useDocumentPairPermissionsFromHookFactory
 > {
-  const client = useClient()
+  const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const schema = useSchema()
   const grantsStore = useGrantsStore()
 

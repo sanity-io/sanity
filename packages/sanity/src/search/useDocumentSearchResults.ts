@@ -10,6 +10,7 @@ import {
   switchMap,
 } from 'rxjs/operators'
 import {useClient, useSchema} from '../hooks'
+import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../studioClient'
 import {isNonNullable} from '../util'
 import {createSearch} from './search'
 import {WeightedHit} from './weighted/types'
@@ -47,7 +48,7 @@ export function useDocumentSearchResults(props: {
   limit?: number
   query: string
 }): DocumentSearchResultsState {
-  const client = useClient()
+  const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const schema = useSchema()
   const {includeDrafts = false, limit = 1000, query: queryProp} = props
   const [state, setState] = useState<DocumentSearchResultsState>(EMPTY_STATE)

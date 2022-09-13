@@ -1,6 +1,7 @@
 import React, {useCallback, useMemo, useState} from 'react'
 import {PackageIcon} from '@sanity/icons'
 import {DialogProps} from '@sanity/ui'
+import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../studioClient'
 import {useModuleStatus} from '../../../../module-status'
 import {StatusButton} from '../../StatusButton'
 import {isDev} from '../../../../environment'
@@ -14,7 +15,7 @@ const EMPTY_ARRAY: [] = []
 export function ChangelogButton() {
   const [open, setOpen] = useState<boolean>(false)
   const [buttonElement, setButtonElement] = useState<HTMLButtonElement | null>(null)
-  const client = useClient()
+  const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const versionedClient = useMemo(
     () =>
       client.withConfig({

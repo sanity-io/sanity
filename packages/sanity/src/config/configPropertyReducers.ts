@@ -36,7 +36,7 @@ export const initialLanguageFilter: _DocumentLanguageFilterComponent[] = []
 
 export const schemaTypesReducer: ConfigPropertyReducer<
   Schema.TypeDefinition[],
-  Omit<ConfigContext, 'schema' | 'currentUser' | 'client'>
+  Omit<ConfigContext, 'schema' | 'currentUser' | 'getClient'>
 > = (prev, {schema}, context) => {
   const schemaTypes = schema?.types
 

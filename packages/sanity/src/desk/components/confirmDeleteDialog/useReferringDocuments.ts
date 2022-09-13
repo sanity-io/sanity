@@ -18,6 +18,7 @@ import {
 import {useClient} from '../../../hooks'
 import {createHookFromObservableFactory, getPublishedId, getDraftId} from '../../../util'
 import type {AvailabilityResponse} from '../../../preview'
+import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../studioClient'
 
 // this is used in place of `instanceof` so the matching can be more robust and
 // won't have any issues with dual packages etc
@@ -206,8 +207,7 @@ const useCrossDatasetReferences = createHookFromObservableFactory(
 )
 
 export function useReferringDocuments(documentId: string): ReferringDocuments {
-  const client = useClient()
-  const versionedClient = useMemo(() => client.withConfig({apiVersion: '2022-03-07'}), [client])
+  const versionedClient = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
 
   const documentStore = useDocumentStore()
   const crossProjectTokenStore = useCrossProjectTokenStore()

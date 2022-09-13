@@ -1,5 +1,6 @@
 import React, {ForwardedRef, forwardRef, useCallback} from 'react'
 import {SchemaType} from '@sanity/types'
+import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../studioClient'
 import {resolveUploader as defaultResolveUploader} from '../uploads/resolveUploader'
 import {ArrayInput} from '../../inputs/arrays/ArrayOfObjectsInput'
 import {ArrayOfPrimitivesInput} from '../../inputs/arrays/ArrayOfPrimitivesInput'
@@ -13,7 +14,7 @@ import {useResolveInitialValueForType} from '../../../datastores'
 export function StudioArrayInput(props: ArrayOfObjectsInputProps) {
   const formBuilder = useFormBuilder()
   // todo abstract the client away
-  const client = useClient()
+  const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const supportsImageUploads = formBuilder.__internal.image.directUploads
   const supportsFileUploads = formBuilder.__internal.file.directUploads
 

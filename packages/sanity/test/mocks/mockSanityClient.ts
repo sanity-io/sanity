@@ -22,7 +22,10 @@ export interface MockClientLog {
   transaction: MockClientTransactionLog[]
 }
 
-export function createMockSanityClient(data: {requests?: Record<string, any>} = {}) {
+export function createMockSanityClient(
+  data: {requests?: Record<string, any>} = {},
+  options: {apiVersion?: string} = {}
+) {
   const requests: Record<string, any> = {
     '/auth/providers': {
       thirdPartyLogin: true,
@@ -63,6 +66,7 @@ export function createMockSanityClient(data: {requests?: Record<string, any>} = 
     projectId: 'mock-project-id',
     dataset: 'mock-data-set',
     apiVersion: '1',
+    ...options,
   }
 
   const BASE_URL = `mock://${mockConfig.projectId}.sanity.api`

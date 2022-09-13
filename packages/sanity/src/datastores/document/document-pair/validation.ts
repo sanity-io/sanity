@@ -1,4 +1,4 @@
-import {SanityClient} from '@sanity/client'
+import type {SanityClient} from '@sanity/client'
 import {concat, of, combineLatest, defer, from, Observable} from 'rxjs'
 import {
   map,
@@ -15,6 +15,7 @@ import {
 import {validateDocument} from '@sanity/validation'
 import {ValidationMarker, ValidationContext, isReference, Schema} from '@sanity/types'
 import reduceJSON from 'json-reduce'
+import {SourceClientOptions} from '../../../config'
 import {memoize} from '../utils/createMemoizer'
 import {IdPair} from '../types'
 import {HistoryStore} from '../../history'
@@ -55,13 +56,14 @@ export const validation = memoize(
   (
     ctx: {
       client: SanityClient
+      getClient: (options: SourceClientOptions) => SanityClient
       documentPreviewStore: DocumentPreviewStore
       historyStore: HistoryStore
       schema: Schema
     },
     {draftId, publishedId}: IdPair,
     typeName: string
-  ) => {
+  ): Observable<ValidationStatus> => {
     const getDocumentExists: GetDocumentExists = ({id}) =>
       listenDocumentExists(ctx.documentPreviewStore, id).pipe(first()).toPromise()
 
@@ -147,7 +149,7 @@ export const validation = memoize(
             }
 
             // TODO: consider cancellation eventually
-            const markers = await validateDocument(ctx.client, document, ctx.schema, {
+            const markers = await validateDocument(ctx.getClient, document, ctx.schema, {
               getDocumentExists,
             })
 
