@@ -11,14 +11,16 @@ interface PreviewSnapshot {
   title: string
 }
 
-export function useRefValue<T = unknown>(refId: string | undefined | null): T | undefined {
+export function useRefValue<T extends Record<string, any> = Record<string, any>>(
+  refId: string | undefined | null
+): T | undefined {
   const [value, setValue] = useState<T | undefined>(undefined)
   useEffect(() => {
     if (!refId) {
       return undefined
     }
 
-    const subscription = versionedClient.observable.getDocument(refId).subscribe(setValue)
+    const subscription = versionedClient.observable.getDocument<T>(refId).subscribe(setValue)
 
     return () => {
       subscription.unsubscribe()
