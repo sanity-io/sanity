@@ -46,13 +46,13 @@
     "ts": "node -r esbuild-register"
   },
   "dependencies": {
+    "@babel/traverse": "^7.19.0",
     "esbuild": "^0.14.43",
     "esbuild-register": "^3.3.2",
     "get-it": "^5.2.1",
     "pkg-dir": "^5.0.0"
   },
   "devDependencies": {
-    "@babel/traverse": "^7.19.0",
     "@rexxars/gitconfiglocal": "^3.0.1",
     "@sanity/client": "^3.3.3",
     "@sanity/generate-help-url": "^3.0.0",
