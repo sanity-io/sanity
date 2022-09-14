@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "sanity-strict-studio",
-  "version": "3.0.0-dev-preview.16",
+  "version": "3.0.0-dev-preview.17",
   "scripts": {
     "build": "sanity build",
     "dev": "sanity start",
@@ -10,7 +10,7 @@
   "dependencies": {
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
-    "sanity": "3.0.0-dev-preview.16",
+    "sanity": "3.0.0-dev-preview.17",
     "styled-components": "^5.2.0"
   }
 }
