@@ -30,8 +30,9 @@ const schema = createSchema({
 // A fixture used to set up a validation stream/subscription and wait
 // for certain events (e.g. when validation is finished running)
 function createSubscription(client: SanityClient, documentPreviewStore?: DocumentPreviewStore) {
+  const getClient = () => client
   const stream = validation(
-    {client, documentPreviewStore, schema} as any,
+    {client, getClient, documentPreviewStore, schema} as any,
     {publishedId: 'example-id', draftId: 'drafts.example-id'},
     'movie'
   ).pipe(publish())

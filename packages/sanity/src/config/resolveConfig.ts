@@ -37,7 +37,7 @@ type CreateWorkspaceFromConfigOptions =
   | SingleWorkspace
   | (SingleWorkspace & {
       currentUser: CurrentUser
-      client: SanityClient
+      getClient: (options: {apiVersion: string}) => SanityClient
       schema?: SchemaPluginOptions
     })
 
@@ -55,11 +55,12 @@ type CreateWorkspaceFromConfigOptions =
 export async function createWorkspaceFromConfig(
   options: CreateWorkspaceFromConfigOptions
 ): Promise<Workspace> {
+  const client = 'getClient' in options ? options.getClient({apiVersion: '2022-09-09'}) : undefined
   const [workspace] = await resolveConfig({
     ...options,
-    ...('client' in options &&
+    ...(client &&
       'currentUser' in options && {
-        auth: createMockAuthStore(options),
+        auth: createMockAuthStore({...options, client}),
       }),
   })
     .pipe(first())

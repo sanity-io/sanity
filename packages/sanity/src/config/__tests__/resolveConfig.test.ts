@@ -144,15 +144,16 @@ describe('createWorkspaceFromConfig', () => {
     })
   })
 
-  it('allows overriding the `currentUser` and `client`', async () => {
+  it('allows overriding the `currentUser` and `getClient`', async () => {
     const projectId = 'ppsg7ml5'
     const dataset = 'production'
-    const client = createClient({
-      projectId,
-      apiVersion: '2021-06-07',
-      dataset,
-      useCdn: false,
-    })
+    const getClient = () =>
+      createClient({
+        projectId,
+        apiVersion: '2021-06-07',
+        dataset,
+        useCdn: false,
+      })
     const currentUser = {
       id: 'test',
       name: 'test',
@@ -165,7 +166,7 @@ describe('createWorkspaceFromConfig', () => {
       projectId,
       dataset,
       name: 'default',
-      client,
+      getClient,
       currentUser,
     })
 
