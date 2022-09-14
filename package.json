@@ -142,10 +142,7 @@
     "*.{js,jsx,ts,tsx}": "eslint --quiet"
   },
   "resolutions": {
-    "@sanity/icons": "1.3.7-next.5+6563c40f",
-    "@sanity/ui": "0.38.3-next.5+6563c40f",
     "@types/react": "^18",
-    "**/@types/react": "^18",
-    "react-is": "^18"
+    "**/@types/react": "^18"
   }
 }
