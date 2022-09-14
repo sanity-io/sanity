@@ -392,15 +392,6 @@ export function Compositor(props: InputProps) {
     [portal.element, portalElement, wrapperElement]
   )
 
-  const editorLayer = useMemo(
-    () => (
-      <Portal __unstable_name={isFullscreen ? 'expanded' : 'collapsed'}>
-        <ExpandedLayer data-fullscreen={isFullscreen ? '' : undefined}>{children}</ExpandedLayer>
-      </Portal>
-    ),
-    [children, isFullscreen]
-  )
-
   return (
     <PortalProvider __unstable_elements={portalElements}>
       <ActivateOnFocus
@@ -416,7 +407,9 @@ export function Compositor(props: InputProps) {
         >
           <Root data-focused={hasFocus ? '' : undefined} data-read-only={readOnly ? '' : undefined}>
             <div data-wrapper="" ref={setWrapperElement}>
-              {editorLayer}
+              <Portal __unstable_name={isFullscreen ? 'expanded' : 'collapsed'}>
+                {isFullscreen ? <ExpandedLayer>{children}</ExpandedLayer> : children}
+              </Portal>
             </div>
             <div data-border="" />
           </Root>
