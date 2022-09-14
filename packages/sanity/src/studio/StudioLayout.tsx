@@ -1,10 +1,17 @@
 import {Box, Button, Card, Code, ErrorBoundary, Flex, Heading, Spinner} from '@sanity/ui'
 import {startCase} from 'lodash'
-import React, {createElement, Suspense, useCallback, useEffect, useMemo, useState} from 'react'
+import React, {
+  createContext,
+  createElement,
+  Suspense,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react'
 import styled from 'styled-components'
 import {useHotModuleReload} from 'use-hot-module-reload'
 import {RouteScope, useRouter} from '../router'
-import {Navbar} from './components'
 import {NoToolsScreen} from './screens/NoToolsScreen'
 import {ToolNotFoundScreen} from './screens/ToolNotFoundScreen'
 import {useWorkspace} from './workspace'
@@ -15,10 +22,19 @@ const SearchFullscreenPortalCard = styled(Card)`
   min-height: 100%;
   flex: 1;
 `
+interface NavbarContextValue {
+  onSearchOpenChange: (open: boolean) => void
+  fullscreenSearchPortalEl: HTMLElement | null
+}
+
+export const NavbarContext = createContext<NavbarContextValue>({
+  fullscreenSearchPortalEl: null,
+  onSearchOpenChange: () => '',
+})
 
 export function StudioLayout() {
   const {state: routerState} = useRouter()
-  const {name, title, tools} = useWorkspace()
+  const {name, title, tools, studio} = useWorkspace()
   const activeToolName = typeof routerState.tool === 'string' ? routerState.tool : undefined
   const activeTool = tools.find((tool) => tool.name === activeToolName)
   const [toolError, setToolError] = useState<{error: Error; info: React.ErrorInfo} | null>(null)
@@ -50,12 +66,18 @@ export function StudioLayout() {
   useEffect(resetToolError, [activeToolName, resetToolError])
   useHotModuleReload(resetToolError)
 
+  const navbarContextValue = useMemo(
+    () => ({fullscreenSearchPortalEl, onSearchOpenChange: handleSearchOpenChange}),
+    [fullscreenSearchPortalEl, handleSearchOpenChange]
+  )
+
+  const {Navbar} = studio.components
+
   return (
-    <Flex data-ui="ToolScreen" direction="column" height="fill">
-      <Navbar
-        onSearchOpenChange={handleSearchOpenChange}
-        fullscreenSearchPortalEl={fullscreenSearchPortalEl}
-      />
+    <Flex data-ui="ToolScreen" direction="column" height="fill" data-testid="studio-layout">
+      <NavbarContext.Provider value={navbarContextValue}>
+        <Navbar />
+      </NavbarContext.Provider>
 
       {tools.length === 0 && <NoToolsScreen />}
 
