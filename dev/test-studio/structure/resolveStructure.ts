@@ -357,7 +357,8 @@ export const structure: StructureResolver = (S, {schema}) => {
           !STANDARD_PORTABLE_TEXT_INPUT_TYPES.includes(id) &&
           !PLUGIN_INPUT_TYPES.includes(id) &&
           !EXTERNAL_PLUGIN_INPUT_TYPES.includes(id) &&
-          !DEBUG_FIELD_GROUP_TYPES.includes(id)
+          !DEBUG_FIELD_GROUP_TYPES.includes(id) &&
+          !typesInOptionGroup(S, schema, 'v3').includes(id)
         )
       }),
     ])
