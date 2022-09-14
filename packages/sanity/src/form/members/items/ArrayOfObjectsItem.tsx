@@ -141,12 +141,13 @@ export function ArrayOfObjectsItem(props: MemberItemProps) {
     onPathOpen(member.item.path)
   }, [onPathOpen, member.item.path])
 
+  const isEmptyValue = !member.item.value || isEmpty(member.item.value)
   const handleClose = useCallback(() => {
-    if (!member.item.value || isEmpty(member.item.value)) {
+    if (isEmptyValue) {
       onRemove()
     }
     onPathOpen(member.item.path.slice(0, -1))
-  }, [onPathOpen, member.item.path, member.item.value, onRemove])
+  }, [onPathOpen, member.item.path, isEmptyValue, onRemove])
 
   const handleSelectFieldGroup = useCallback(
     (groupName: string) => {
