@@ -63,7 +63,12 @@ export function ToolCollapseMenu(props: ToolCollapseMenuProps) {
   )
 
   return (
-    <CollapseMenu gap={1} menuButtonProps={menuButtonProps} ref={setCollapseMenuEl}>
+    <CollapseMenu
+      data-testid="tool-collapse-menu"
+      gap={1}
+      menuButtonProps={menuButtonProps}
+      ref={setCollapseMenuEl}
+    >
       {children}
     </CollapseMenu>
   )
