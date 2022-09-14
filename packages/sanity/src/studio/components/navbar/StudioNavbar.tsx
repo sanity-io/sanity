@@ -10,16 +10,7 @@ import {
   useGlobalKeyDown,
   useMediaIndex,
 } from '@sanity/ui'
-import React, {
-  createElement,
-  useCallback,
-  useState,
-  isValidElement,
-  useMemo,
-  useEffect,
-  useRef,
-} from 'react'
-import {isValidElementType} from 'react-is'
+import React, {useCallback, useState, useMemo, useEffect, useRef, useContext} from 'react'
 import {startCase} from 'lodash'
 import styled from 'styled-components'
 import {useWorkspace} from '../../workspace'
@@ -27,15 +18,16 @@ import {useColorScheme} from '../../colorScheme'
 import {RouterState, useRouterState, useStateLink} from '../../../router'
 import {useWorkspaces} from '../../workspaces'
 import {isDev} from '../../../environment'
+import {NavbarContext} from '../../StudioLayout'
 import {UserMenu} from './userMenu'
 import {NewDocumentButton} from './NewDocumentButton'
 import {PresenceMenu} from './presence'
 import {NavDrawer} from './NavDrawer'
 import {SearchField} from './search'
-import {ToolMenu as DefaultToolMenu} from './tools/ToolMenu'
 import {ChangelogButton} from './changelog'
 import {WorkspaceMenuButton} from './workspace'
 import {ConfigIssuesButton} from './configIssues/ConfigIssuesButton'
+import {LogoButton} from './LogoButton'
 
 const RootLayer = styled(Layer)`
   min-height: auto;
@@ -45,6 +37,10 @@ const RootLayer = styled(Layer)`
     top: 0;
     position: sticky;
   }
+`
+
+const RootCard = styled(Card)`
+  line-height: 0;
 `
 
 const SearchCard = styled(Card)`
@@ -68,21 +64,18 @@ const LeftFlex = styled(Flex)`
   width: max-content;
 `
 
-interface NavbarProps {
-  onSearchOpenChange: (open: boolean) => void
-  fullscreenSearchPortalEl: HTMLElement | null
-}
-
-export function Navbar(props: NavbarProps) {
-  const {fullscreenSearchPortalEl, onSearchOpenChange} = props
-  const {name, logo, navbar, tools, ...workspace} = useWorkspace()
+export function StudioNavbar() {
+  const {name, studio, tools, ...workspace} = useWorkspace()
   const workspaces = useWorkspaces()
   const routerState = useRouterState()
-  const ToolMenu = navbar?.components?.ToolMenu || DefaultToolMenu
   const {scheme} = useColorScheme()
   const {href: rootHref, onClick: handleRootClick} = useStateLink({state: {}})
   const mediaIndex = useMediaIndex()
   const activeToolName = typeof routerState.tool === 'string' ? routerState.tool : undefined
+
+  const {fullscreenSearchPortalEl, onSearchOpenChange} = useContext(NavbarContext)
+
+  const {Logo, ToolMenu} = studio.components
 
   const [searchOpen, setSearchOpen] = useState<boolean>(false)
   const [drawerOpen, setDrawerOpen] = useState<boolean>(false)
@@ -150,28 +143,6 @@ export function Navbar(props: NavbarProps) {
     setDrawerOpen(true)
   }, [])
 
-  const rootLinkContent = (() => {
-    if (isValidElementType(logo)) return createElement(logo)
-    if (isValidElement(logo)) return logo
-    return <Text weight="bold">{title}</Text>
-  })()
-
-  const brandingComponent = useMemo(
-    () => (
-      <Button
-        aria-label={title}
-        as="a"
-        href={rootHref}
-        mode="bleed"
-        onClick={handleRootClick}
-        padding={3}
-      >
-        {rootLinkContent}
-      </Button>
-    ),
-    [handleRootClick, rootHref, rootLinkContent, title]
-  )
-
   // The HTML elements that are part of the search view (i.e. the "close" button that is visible
   // when in fullscreen mode on narrow devices) needs to be passed to `<Autocomplete />` so it knows
   // how to make the search experience work properly for non-sighted users.
@@ -184,13 +155,13 @@ export function Navbar(props: NavbarProps) {
 
   return (
     <RootLayer zOffset={100} data-search-open={searchOpen}>
-      <Card
+      <RootCard
+        data-testid="navbar"
+        data-ui="Navbar"
+        padding={2}
         scheme="dark"
         shadow={scheme === 'dark' ? 1 : undefined}
-        style={{lineHeight: 0}}
-        padding={2}
         sizing="border"
-        data-ui="Navbar"
       >
         <Flex align="center" justify="space-between">
           <LeftFlex align="center" flex={shouldRender.brandingCenter ? undefined : 1}>
@@ -205,7 +176,13 @@ export function Navbar(props: NavbarProps) {
               </Box>
             )}
 
-            {!shouldRender.brandingCenter && <Box marginRight={1}>{brandingComponent}</Box>}
+            {!shouldRender.brandingCenter && (
+              <Box marginRight={1}>
+                <LogoButton href={rootHref} onClick={handleRootClick} title={title}>
+                  <Logo title={title} />
+                </LogoButton>
+              </Box>
+            )}
 
             {shouldRender.workspaces && (
               <Box marginRight={2}>
@@ -267,16 +244,22 @@ export function Navbar(props: NavbarProps) {
               <Card borderRight flex={1} marginX={2} overflow="visible" paddingRight={1}>
                 <ToolMenu
                   activeToolName={activeToolName}
+                  closeSidebar={handleCloseDrawer}
                   context="topbar"
-                  isDrawerOpen={false}
+                  isSidebarOpen={false}
                   tools={tools}
-                  closeDrawer={handleCloseDrawer}
                 />
               </Card>
             )}
           </LeftFlex>
 
-          {shouldRender.brandingCenter && <Box marginX={1}>{brandingComponent}</Box>}
+          {shouldRender.brandingCenter && (
+            <Box marginX={1}>
+              <LogoButton href={rootHref} onClick={handleRootClick} title={title}>
+                <Logo title={title} />
+              </LogoButton>
+            </Box>
+          )}
 
           <Flex align="center">
             <Box marginRight={1}>
@@ -312,7 +295,7 @@ export function Navbar(props: NavbarProps) {
             )}
           </Flex>
         </Flex>
-      </Card>
+      </RootCard>
 
       {!shouldRender.tools && (
         <NavDrawer
