@@ -1,6 +1,14 @@
 import {SyncIcon} from '@sanity/icons'
 import {defineField, defineType} from 'sanity'
 
+export const referenceAlias = defineType({
+  type: 'reference',
+  name: 'reference-alias',
+  title: 'Reference alias',
+  description: 'This is a reference alias type',
+  to: {type: 'referenceTest'},
+})
+
 export default defineType({
   name: 'referenceTest',
   type: 'document',
@@ -15,6 +23,10 @@ export default defineType({
       type: 'reference',
       description: 'Some description',
       to: {type: 'referenceTest'},
+    },
+    {
+      name: 'aliasRef',
+      type: referenceAlias.name,
     },
     {
       title: 'Reference to book or author',
