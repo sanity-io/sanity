@@ -46,6 +46,8 @@ import {_createRenderField} from './form/_renderField'
 import {_createRenderInput} from './form/_renderInput'
 import {_createRenderItem} from './form/_renderItem'
 import {_createRenderPreview} from './form/_renderPreview'
+import {_createRenderStudioComponent} from './components'
+import type {LogoProps, ToolMenuProps, LayoutProps, NavbarProps} from './components'
 
 type InternalSource = WorkspaceSummary['__internal']['sources'][number]
 
@@ -489,6 +491,27 @@ function resolveSource({
           // TODO: consider refactoring this to `noDirectUploads` or similar
           // default value for this is `true`
           config.form?.file?.directUploads === undefined ? true : config.form.file.directUploads,
+      },
+    },
+
+    studio: {
+      components: {
+        Layout: _createRenderStudioComponent<Omit<LayoutProps, 'renderLayout'>>({
+          componentName: 'Layout',
+          config,
+        }),
+        Logo: _createRenderStudioComponent<Omit<LogoProps, 'renderLogo'>>({
+          componentName: 'Logo',
+          config,
+        }),
+        Navbar: _createRenderStudioComponent<Omit<NavbarProps, 'renderNavbar'>>({
+          componentName: 'Navbar',
+          config,
+        }),
+        ToolMenu: _createRenderStudioComponent<Omit<ToolMenuProps, 'renderToolMenu'>>({
+          componentName: 'ToolMenu',
+          config,
+        }),
       },
     },
 
