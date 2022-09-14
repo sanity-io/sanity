@@ -31,11 +31,13 @@ export function PaneItemPreview(props: PaneItemPreviewProps) {
     isNumber(value.title)
       ? value.title
       : null
-  const {draft, published, isLoading} =
-    useMemoObservable<PaneItemPreviewState>(
-      () => getPreviewStateObservable(props.documentPreviewStore, schemaType, value._id, title),
-      [props.documentPreviewStore, schemaType, value._id, title]
-    ) || {}
+
+  // NOTE: this emits sync so can never be null
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  const {draft, published, isLoading} = useMemoObservable<PaneItemPreviewState>(
+    () => getPreviewStateObservable(props.documentPreviewStore, schemaType, value._id, title),
+    [props.documentPreviewStore, schemaType, value._id, title]
+  )!
 
   const status = isLoading ? null : (
     <Inline space={4}>
