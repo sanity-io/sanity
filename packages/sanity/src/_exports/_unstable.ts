@@ -203,8 +203,6 @@ export type {
 
 export * from '../schema'
 
-export type {ToolMenuProps} from '../studio'
-
 export type {
   ArrayFieldDefinition,
   FieldDefinition,
