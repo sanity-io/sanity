@@ -1,5 +1,5 @@
 /* eslint-disable camelcase */
-import {createSearchQuery, DEFAULT_LIMIT} from './createSearchQuery'
+import {createSearchQuery, DEFAULT_LIMIT, extractTermsFromQuery} from './createSearchQuery'
 import {SearchableType} from './types'
 
 const testType: SearchableType = {
@@ -293,5 +293,22 @@ describe('createSearchQuery', () => {
       expect(query).toContain('*[_type in $__types && (pt::text(pteField) match $t0)')
       expect(query).toContain('...select(_type == "type1" => { "w0": pt::text(pteField) })')
     })
+  })
+})
+
+describe('extractTermsFromQuery', () => {
+  it('should tokenize all unquoted text', () => {
+    const terms = extractTermsFromQuery('foo bar')
+    expect(terms).toEqual(['foo', 'bar'])
+  })
+
+  it('should treat quoted text as a single token, retaining quotes', () => {
+    const terms = extractTermsFromQuery(`"foo bar" baz`)
+    expect(terms).toEqual([`"foo bar"`, 'baz'])
+  })
+
+  it('should strip quotes from text containing single words', () => {
+    const terms = extractTermsFromQuery(`"foo"`)
+    expect(terms).toEqual([`foo`])
   })
 })

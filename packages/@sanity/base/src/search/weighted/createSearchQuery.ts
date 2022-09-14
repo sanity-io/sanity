@@ -1,4 +1,4 @@
-import {compact, flatten, flow, toLower, union, uniq} from 'lodash'
+import {compact, flatten, flow, toLower, trim, union, uniq, words} from 'lodash'
 import {joinPath} from '../../util/searchUtils'
 import {tokenize} from '../common/tokenize'
 import type {
@@ -71,6 +71,10 @@ function createSearchSpecs(types: SearchableType[], optimizeIndexedPaths) {
 const pathWithMapper = ({mapWith, path}: SearchPath): string =>
   mapWith ? `${mapWith}(${path})` : path
 
+/**
+ * Create GROQ constraints, given search terms and the full spec of available document types and fields.
+ * Essentially a large list of all possible fields (joined by logical OR) to match our search terms against.
+ */
 function createConstraints(terms: string[], specs: SearchSpec[]) {
   const combinedSearchPaths = combinePaths(
     specs.map((configForType) => configForType.paths.map((opt) => pathWithMapper(opt)))
@@ -80,6 +84,38 @@ function createConstraints(terms: string[], specs: SearchSpec[]) {
     .filter((constraint) => constraint.length > 0)
 
   return constraints.map((constraint) => `(${constraint.join(' || ')})`)
+}
+
+/**
+ * Convert a string into an array of tokenized terms.
+ *
+ * Any (multi word) text wrapped in double quotes will be treated as "phrases", or separate tokens that
+ * will not have its special characters removed.
+ * E.g.`"the" "fantastic mr" fox fox book` => ["the", `"fantastic mr"`, "fox", "book"]
+ *
+ * Phrases wrapped in quotes are assigned relevance scoring differently from regular words.
+ */
+export function extractTermsFromQuery(query: string): string[] {
+  const quotedQueries = [] as string[]
+  const unquotedQuery = query.replace(/("[^"]*")/g, (match) => {
+    if (words(match).length > 1) {
+      quotedQueries.push(match)
+      return ''
+    }
+    return match
+  })
+
+  // Lowercase and trim quoted queries
+  const quotedTerms = quotedQueries.map((str) => trim(toLower(str)))
+
+  /**
+   * Convert (remaining) search query into an array of deduped, sanitized tokens.
+   * All white space and special characters are removed.
+   * e.g. "The saint of Saint-Germain-des-Prés" => ['the', 'saint', 'of', 'germain', 'des', 'pres']
+   */
+  const remainingTerms = uniq(compact(tokenize(toLower(unquotedQuery))))
+
+  return [...quotedTerms, ...remainingTerms]
 }
 
 export function createSearchQuery(
@@ -95,12 +131,8 @@ export function createSearchQuery(
    */
   const {specs: exactSearchSpecs, hasIndexedPaths} = createSearchSpecs(searchTerms.types, false)
 
-  /**
-   * Convert search query into an array of deduped, sanitized tokens.
-   * All white space and special characters are removed.
-   * e.g. "The saint of Saint-Germain-des-Prés" => ['the', 'saint', 'of', 'germain', 'des', 'prés']
-   */
-  const terms = uniq(compact(tokenize(toLower(searchTerms.query))))
+  // Extract search terms from string query, factoring in phrases wrapped in quotes
+  const terms = extractTermsFromQuery(searchTerms.query)
 
   /**
    * Second pass: create an optimized spec (with array indices removed), but only if types with any
