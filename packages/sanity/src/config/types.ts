@@ -31,7 +31,7 @@ import type {Router, RouterState} from '../router'
 import type {DocumentActionComponent} from '../desk/actions'
 import type {DocumentBadgeComponent} from '../desk/badges'
 import {PreviewProps} from '../components/previews'
-import {ToolMenuProps} from '../studio/components/navbar/tools/ToolMenu'
+import {StudioComponents, StudioComponentsPluginOptions} from './components'
 
 /**
  * @alpha
@@ -207,6 +207,9 @@ export interface PluginOptions {
   document?: DocumentPluginOptions
   tools?: Tool[] | ComposableOption<Tool[], ConfigContext>
   form?: SanityFormConfig
+  studio?: {
+    components?: StudioComponentsPluginOptions
+  }
 }
 
 export type ConfigPropertyReducer<TValue, TContext> = (
@@ -228,11 +231,6 @@ export interface WorkspaceOptions extends SourceOptions {
   subtitle?: string
   logo?: ComponentType
   icon?: ComponentType
-  navbar?: {
-    components?: {
-      ToolMenu: ComponentType<ToolMenuProps>
-    }
-  }
   theme?: StudioTheme
   /**
    * @alpha
@@ -332,6 +330,11 @@ export interface Source {
       Markers?: FormBuilderMarkersComponent
     }
   }
+
+  studio: {
+    components: StudioComponents
+  }
+
   __internal: {
     bifur: BifurClient
     staticInitialValueTemplateItems: InitialValueTemplateItem[]
@@ -374,11 +377,6 @@ export interface Workspace extends Omit<Source, 'type'> {
   subtitle?: string
   logo?: React.ReactNode
   icon: React.ReactNode
-  navbar?: {
-    components?: {
-      ToolMenu?: ComponentType<ToolMenuProps>
-    }
-  }
   /**
    * @alpha
    */
