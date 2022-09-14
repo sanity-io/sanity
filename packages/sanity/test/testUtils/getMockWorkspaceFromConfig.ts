@@ -52,7 +52,8 @@ export function getMockWorkspace({
   currentUser = defaultMockUser,
   client = createMockSanityClient() as any as SanityClient,
 }: MockWorkspaceOptions = {}): Promise<Workspace> {
-  return createWorkspaceFromConfig({...defaultMockConfig, ...userConfig, currentUser, client})
+  const getClient = () => client
+  return createWorkspaceFromConfig({...defaultMockConfig, ...userConfig, currentUser, getClient})
 }
 
 export async function getMockSource(options: MockWorkspaceOptions = {}): Promise<Source> {
