@@ -6,7 +6,6 @@ import {UserAvatar} from '../../../components/UserAvatar'
 import {useWorkspace} from '../../workspace'
 import {useRovingFocus} from '../../../components/rovingFocus'
 import {Tool} from '../../../config'
-import {ToolMenu as DefaultToolMenu} from './tools/ToolMenu'
 import {WorkspaceMenuButton} from './workspace'
 
 const Root = styled(Layer)`
@@ -61,10 +60,7 @@ export const NavDrawer = memo(function NavDrawer(props: NavDrawerProps) {
   const [closeButtonElement, setCloseButtonElement] = useState<HTMLButtonElement | null>(null)
   const [innerCardElement, setInnerCardElement] = useState<HTMLDivElement | null>(null)
   const tabIndex = isOpen ? 0 : -1
-
-  const {currentUser, navbar, auth} = useWorkspace()
-
-  const {ToolMenu = DefaultToolMenu} = navbar?.components || {}
+  const {auth, currentUser, studio} = useWorkspace()
 
   useRovingFocus({
     rootElement: innerCardElement,
@@ -82,6 +78,8 @@ export const NavDrawer = memo(function NavDrawer(props: NavDrawerProps) {
       closeButtonElement?.focus()
     }
   }, [closeButtonElement, isOpen])
+
+  const {ToolMenu} = studio.components
 
   return (
     <Root>
@@ -128,9 +126,9 @@ export const NavDrawer = memo(function NavDrawer(props: NavDrawerProps) {
         <Box flex="auto" overflow="auto" padding={[3, 3, 4]}>
           <ToolMenu
             activeToolName={activeToolName}
-            closeDrawer={onClose}
-            context="drawer"
-            isDrawerOpen={isOpen}
+            closeSidebar={onClose}
+            context="sidebar"
+            isSidebarOpen={isOpen}
             tools={tools}
           />
         </Box>
