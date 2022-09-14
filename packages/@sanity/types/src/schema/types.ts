@@ -135,7 +135,6 @@ export namespace Schema {
     description?: string | ReactElement
     hidden?: ConditionalProperty
     readOnly?: ConditionalProperty
-    validation?: SchemaValidationValue
     icon?: React.ElementType | React.ReactNode
     components?: {
       diff?: React.ElementType // @todo: use `DiffProps` here
