@@ -1,6 +1,6 @@
 {
   "name": "@sanity/schema",
-  "version": "2.31.0",
+  "version": "2.33.2",
   "description": "",
   "main": "./lib/_exports/index.js",
   "types": "index.d.ts",

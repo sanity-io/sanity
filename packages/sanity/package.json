@@ -1,6 +1,6 @@
 {
   "name": "sanity",
-  "version": "2.29.3",
+  "version": "2.33.2",
   "description": "Sanity is a real-time content infrastructure with a scalable, hosted backend featuring a Graph Oriented Query Language (GROQ), asset pipelines and fast edge caches",
   "scripts": {
     "postinstall": "node placeholder.js"
