@@ -1,6 +1,6 @@
 import {FormField} from '@sanity/base/components'
 import PatchEvent, {set, unset} from '@sanity/form-builder/PatchEvent'
-import {Marker, Path} from '@sanity/types'
+import {Marker, Path} from 'sanity'
 import {TextInput} from '@sanity/ui'
 import {uuid} from '@sanity/uuid'
 import get from 'lodash.get'

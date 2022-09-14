@@ -1,4 +1,4 @@
-import {defineField, defineType} from '@sanity/types'
+import {defineField, defineType} from 'sanity'
 import {MdLocalPlay as icon} from 'react-icons/md'
 
 export default defineType({

@@ -1,5 +1,5 @@
 // @ts-check
-import {defineField, defineType} from '@sanity/types'
+import {defineField, defineType} from 'sanity'
 
 export default defineType({
   name: 'crewMember',

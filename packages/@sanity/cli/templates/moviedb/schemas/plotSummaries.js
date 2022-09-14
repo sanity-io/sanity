@@ -1,4 +1,4 @@
-import {defineField, defineType} from '@sanity/types'
+import {defineField, defineType} from 'sanity'
 
 export default defineType({
   title: 'Plot summaries',
