@@ -37,6 +37,7 @@ import {ArrayOfObjectsFormNode, ArrayOfPrimitivesFormNode, ObjectFormNode} from 
 import {FormFieldGroup} from './types/fieldGroup'
 import {getCollapsedWithDefaults} from './utils/getCollapsibleOptions'
 import {FieldError} from './types/memberErrors'
+import {getFieldLevel} from '../studio/inputResolver/helpers'
 
 type PrimitiveSchemaType = BooleanSchemaType | NumberSchemaType | StringSchemaType
 
@@ -117,7 +118,8 @@ function prepareFieldMember(props: {
 }): ObjectMember | null {
   const {parent, field, index} = props
   const fieldPath = pathFor([...parent.path, field.name])
-  const fieldLevel = parent.level + 1
+  const fieldLevel = getFieldLevel(field.type, parent.level + 1)
+
   const parentValue = parent.value
   const parentComparisonValue = parent.comparisonValue
   if (!isAcceptedObjectValue(parentValue)) {
