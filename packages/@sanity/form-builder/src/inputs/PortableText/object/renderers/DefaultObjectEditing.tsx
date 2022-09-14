@@ -1,9 +1,9 @@
-import React, {useCallback, useEffect} from 'react'
+import React, {useCallback} from 'react'
 import {useId} from '@reach/auto-id'
 import {Path, Marker, SchemaType} from '@sanity/types'
 import {FormFieldPresence, PresenceOverlay} from '@sanity/base/presence'
 import {PortableTextBlock, PortableTextChild} from '@sanity/portable-text-editor'
-import {Box, Dialog, PortalProvider, useLayer, usePortal} from '@sanity/ui'
+import {Box, Dialog, PortalProvider, usePortal} from '@sanity/ui'
 import {FormBuilderInput} from '../../../../FormBuilderInput'
 import {PatchEvent} from '../../../../PatchEvent'
 import {DIALOG_WIDTH_TO_UI_WIDTH} from './constants'
@@ -41,31 +41,12 @@ export function DefaultObjectEditing(props: DefaultObjectEditingProps) {
   } = props
 
   const dialogId = useId()
-  const {isTopLayer} = useLayer()
   const portal = usePortal()
 
   const handleChange = useCallback((patchEvent: PatchEvent): void => onChange(patchEvent, path), [
     onChange,
     path,
   ])
-
-  const handleClose = useCallback(() => {
-    if (isTopLayer) onClose()
-  }, [isTopLayer, onClose])
-
-  const handleKeyDown = useCallback(
-    (event: KeyboardEvent) => {
-      if (event.key === 'Escape') handleClose()
-    },
-    [handleClose]
-  )
-
-  useEffect(() => {
-    window.addEventListener('keydown', handleKeyDown)
-    return () => {
-      window.removeEventListener('keydown', handleKeyDown)
-    }
-  }, [handleKeyDown])
 
   return (
     <Dialog
@@ -74,6 +55,7 @@ export function DefaultObjectEditing(props: DefaultObjectEditingProps) {
       header={type.title}
       portal="default"
       width={DIALOG_WIDTH_TO_UI_WIDTH[width]}
+      onClickOutside={onClose}
     >
       <PresenceOverlay margins={[0, 0, 1, 0]}>
         <Box padding={4}>
