@@ -1,108 +1,181 @@
 /* eslint max-nested-callbacks: */
 
-import {getObjectFieldLevel, type PartialObjectFieldProps} from './helpers'
-
-type SchemaSnippet = PartialObjectFieldProps['schemaType']
-type SchemaTest = SchemaSnippet & {description: string}
-
-const noIndentation: SchemaTest[] = [
-  {description: 'any array', name: 'array'},
-  {description: 'file without additional fields', name: 'file', fields: [{name: 'asset'}]},
-  {
-    description: 'image without additional fields',
-    name: 'image',
-    fields: [{name: 'asset'}, {name: 'crop'}, {name: 'hotspot'}],
-  },
-  {description: 'any reference', name: 'reference', fields: [{name: '_ref'}, {name: '_weak'}]},
-  {description: 'any slug', name: 'slug', fields: [{name: 'current'}]},
-]
-
-const hasIndentation: SchemaTest[] = [
-  {description: 'string without list', name: 'string'},
-  {description: 'string with empty list', name: 'string', options: {list: []}},
-  {description: 'string with list', name: 'string', options: {list: ['dummy']}},
-
-  {description: 'number with list', name: 'number', options: {list: [1]}},
-  {description: 'number without list', name: 'number'},
-  {description: 'number with empty list', name: 'number', options: {list: []}},
-
-  {description: 'object with (visible) fields', name: 'object', fields: [{name: 'title'}]},
-  {description: 'object with no fields', name: 'object', fields: []},
-  {
-    description: 'file with additional fields',
-    name: 'file',
-    fields: [{name: 'caption'}, {name: 'asset'}],
-  },
-  {
-    description: 'image with additional fields',
-    name: 'image',
-    fields: [{name: 'caption'}, {name: 'asset'}, {name: 'crop'}, {name: 'hotspot'}],
-  },
-]
-
-function createBaseType(snippet: SchemaSnippet): SchemaSnippet {
-  return {
-    ...snippet,
-    type: snippet,
-  }
-}
-
-function createAlias(snippet: SchemaSnippet): SchemaSnippet {
-  const parentType = createBaseType(snippet)
-  const alias = {
-    ...parentType,
-    name: `${parentType.name}-alias`,
-    type: parentType,
-  }
-  // schemas seem to self-reference first, then recurse
-  return {
-    ...alias,
-    type: alias,
-  }
-}
+import {type ObjectSchemaType, defineType, defineField, Schema} from '@sanity/types'
+import {createSchema} from '../../../schema'
+import {validateSchema, groupProblems} from '@sanity/schema/_internal'
+import {getFieldLevel} from './helpers'
 
 describe('inputResolver/helpers', () => {
-  describe('getObjectFieldLevel', () => {
+  const {onlyIndentationObject, noIndentationObject} = setupTest()
+
+  describe('getFieldLevel', () => {
     const GREATER_THAN_ZERO = 5
 
-    noIndentation.forEach((schemaSnippet) => {
-      describe('types without indentation', () => {
-        it(`should return level 0 for ${schemaSnippet.description}`, () => {
-          const field = {schemaType: createBaseType(schemaSnippet), level: GREATER_THAN_ZERO}
-          const baseLevel = getObjectFieldLevel(field)
+    describe('types without indentation', () => {
+      noIndentationObject.fields.forEach((field) => {
+        it(`${field.type.description} (${field.name})`, () => {
+          const baseLevel = getFieldLevel(field.type, GREATER_THAN_ZERO)
           expect(baseLevel).toEqual(0)
-        })
-
-        it(`should return level 0 for ${schemaSnippet.description} alias`, () => {
-          const field = {
-            schemaType: createAlias(schemaSnippet),
-            level: GREATER_THAN_ZERO,
-          }
-          const aliasLevel = getObjectFieldLevel(field)
-          expect(aliasLevel).toEqual(0)
         })
       })
     })
 
     describe('types with indentation', () => {
-      hasIndentation.forEach((schemaSnippet) => {
-        it(`should return level > 0 for ${schemaSnippet.name}`, () => {
-          const field = {schemaType: createBaseType(schemaSnippet), level: GREATER_THAN_ZERO}
-          const baseLevel = getObjectFieldLevel(field)
+      onlyIndentationObject.fields.forEach((field) => {
+        it(`${field.type.description} (${field.name})`, () => {
+          const baseLevel = getFieldLevel(field.type, GREATER_THAN_ZERO)
           expect(baseLevel).toEqual(GREATER_THAN_ZERO)
-        })
-
-        it(`should return level > 0 for ${schemaSnippet.name} alias`, () => {
-          const field = {
-            schemaType: createAlias(schemaSnippet),
-            level: GREATER_THAN_ZERO,
-          }
-          const aliasLevel = getObjectFieldLevel(field)
-          expect(aliasLevel).toEqual(GREATER_THAN_ZERO)
         })
       })
     })
   })
 })
+
+function setupTest() {
+  const noIndentationFields = [
+    defineField({
+      type: 'array',
+      name: 'array',
+      description: 'plain array',
+      of: [{type: 'noIndentationFields'}],
+    }),
+    defineField({
+      type: 'array',
+      name: 'arrayTagList',
+      description: 'array with tag-list',
+      of: [{type: 'string'}],
+      options: {
+        list: ['1'],
+        layout: 'tags',
+      },
+    }),
+    defineField({type: 'file', name: 'file', description: 'file without additional fields'}),
+    defineField({type: 'image', name: 'image', description: 'image without additional fields'}),
+    defineField({
+      type: 'reference',
+      name: 'reference',
+      description: 'image without additional fields',
+      to: [{type: 'noIndentationFields'}],
+    }),
+    defineField({type: 'slug', name: 'slug', description: 'any slug'}),
+  ] as const
+
+  const onlyIndentationFields = [
+    defineField({type: 'string', name: 'string', description: 'string without list'}),
+    defineField({
+      type: 'string',
+      name: 'stringEmptyList',
+      description: 'string with empty list',
+      options: {list: []},
+    }),
+    defineField({
+      type: 'string',
+      name: 'stringList',
+      description: 'string with list',
+      options: {list: ['1']},
+    }),
+
+    defineField({type: 'number', name: 'number', description: 'number without list'}),
+    defineField({
+      type: 'number',
+      name: 'numberEmptyList',
+      description: 'number with empty list',
+      options: {list: []},
+    }),
+    defineField({
+      type: 'number',
+      name: 'numberList',
+      description: 'number with list',
+      options: {list: [1]},
+    }),
+
+    defineField({
+      type: 'object',
+      name: 'objectVisibleFields',
+      description: 'object with visible fields',
+      fields: [defineField({type: 'string', name: 'string'})],
+    }),
+
+    defineField({
+      type: 'file',
+      name: 'fileVisibleFields',
+      description: 'file with visible fields',
+      fields: [defineField({type: 'string', name: 'string'})],
+    }),
+    defineField({
+      type: 'image',
+      name: 'imageVisibleFields',
+      description: 'image with visible fields',
+      fields: [defineField({type: 'string', name: 'string'})],
+    }),
+    defineField({
+      type: 'array',
+      name: 'arrayList',
+      description: 'array with list (and not tag layout)',
+      of: [{type: 'string'}],
+      options: {
+        list: ['1'],
+      },
+    }),
+  ] as const
+
+  const aliasTypes = [...noIndentationFields, ...onlyIndentationFields].map((field) =>
+    defineType({...field, name: `${field.name}-alias`})
+  )
+
+  function aliasTypeClone<T extends {name: string; type: string}>(field: T) {
+    const clone: any = {...field}
+    delete clone.of
+    delete clone.to
+    delete clone.fields
+    return {
+      ...clone,
+      name: `${field.name}Alias`,
+      type: `${field.name}-alias`,
+    }
+  }
+
+  const schemaDef = {
+    name: 'test',
+    types: [
+      ...aliasTypes,
+      defineType({
+        name: 'noIndentationFields',
+        type: 'object',
+        fields: [...noIndentationFields, ...noIndentationFields.map(aliasTypeClone)],
+      }),
+      defineType({
+        name: 'onlyIndentationFields',
+        type: 'object',
+        fields: [...onlyIndentationFields, ...onlyIndentationFields.map(aliasTypeClone)],
+      }),
+    ],
+  }
+
+  const validated = validateSchema(schemaDef.types).getTypes()
+  const validation = groupProblems(validated)
+  const errors = validation
+    .map((group) => group.problems.filter(({severity}) => severity === 'error'))
+    .filter((problems) => problems.length)
+
+  if (errors.length) {
+    throw new Error(`Test has incorrectly configured test data: ${JSON.stringify(errors, null, 2)}`)
+  }
+
+  const testSchema = createSchema(schemaDef)
+
+  const noIndentationObject: ObjectSchemaType = testSchema.get(
+    'noIndentationFields'
+  ) as ObjectSchemaType
+
+  const onlyIndentationObject: ObjectSchemaType = testSchema.get(
+    'onlyIndentationFields'
+  ) as ObjectSchemaType
+
+  return {
+    noIndentationObject,
+    onlyIndentationObject,
+  }
+}
 
 export {}

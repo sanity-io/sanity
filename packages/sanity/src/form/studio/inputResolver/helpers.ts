@@ -1,62 +1,65 @@
-import {ObjectSchemaType, SchemaType} from '@sanity/types'
+import {isArraySchemaType, isObjectSchemaType, SchemaType} from '@sanity/types'
 import {get} from 'lodash'
-import {ArrayFieldProps} from '../../types'
 
 export function getOption(type: SchemaType, optionName: string) {
   return get(type.options, optionName)
 }
 
-const PSEUDO_OBJECTS = ['array', 'file', 'image', 'reference']
+const PSEUDO_OBJECTS = ['array', 'file', 'image', 'reference', 'slug']
 const HIDDEN_FIELDS = ['asset', 'crop', 'hotspot', '_ref', '_weak']
 const NO_LEVEL_LAYOUTS = ['tags']
 const NO_LEVEL_TYPES = ['slug']
 
-type PartialObjectSchema = Pick<ObjectSchemaType, 'name' | 'options'> & {
-  type?: PartialObjectSchema
-  fields?: {name: string}[]
+export function getFieldLevel(schemaType: SchemaType, currentLevel: number) {
+  return isArraySchemaType(schemaType)
+    ? getArrayFieldLevel(schemaType, currentLevel)
+    : getObjectFieldLevel(schemaType, currentLevel)
 }
 
-export interface PartialObjectFieldProps {
-  schemaType: PartialObjectSchema
-  level: number
-}
+function getObjectFieldLevel(schemaType: SchemaType, currentLevel: number): number {
+  const {type, options} = schemaType
+  const typeIfRelevant = asType(type, PSEUDO_OBJECTS)
+  const fields = schemaType?.jsonType === 'object' ? schemaType.fields : undefined
 
-export function getObjectFieldLevel(field: PartialObjectFieldProps): number {
-  const {type, fields, options} = field.schemaType
-  const rootType = getRootType(type)
-  const fieldType = rootType?.name || ''
+  const typeName = typeIfRelevant?.name || ''
 
-  if (NO_LEVEL_TYPES.includes(fieldType)) {
+  if (NO_LEVEL_TYPES.includes(typeName)) {
     return 0
   }
 
-  const isPseudoObject = PSEUDO_OBJECTS.includes(fieldType)
+  const isPseudoObject = PSEUDO_OBJECTS.includes(typeName)
   const hasVisibleFields = (fields?.filter((f) => !HIDDEN_FIELDS.includes(f.name)).length ?? 0) > 0
   const hasListOptions = (options?.list?.length ?? 0) > 0
 
   if (hasVisibleFields || hasListOptions || !isPseudoObject) {
-    return field.level
+    return currentLevel
   }
 
   return 0
 }
 
-export function getArrayFieldLevel(field: ArrayFieldProps): number {
-  const {options} = field.schemaType
+function getArrayFieldLevel(schemaType: SchemaType, currentLevel: number): number {
+  const {options} = schemaType
 
   const hasListOptions = (options?.list || [])?.length > 0
   const isNoLevelLayout = NO_LEVEL_LAYOUTS.includes(options?.layout || '')
 
   if (hasListOptions && !isNoLevelLayout) {
-    return field.level
+    return currentLevel
   }
 
   return 0
 }
 
-function getRootType(schemaType?: PartialObjectSchema): PartialObjectSchema | undefined {
-  if (!schemaType?.type) {
+function asType(
+  schemaType: SchemaType | undefined,
+  asOneOfTypes: string[]
+): SchemaType | undefined {
+  if (schemaType?.name && asOneOfTypes.includes(schemaType?.name)) {
     return schemaType
   }
-  return getRootType(schemaType.type)
+  if (!schemaType) {
+    return undefined
+  }
+  return asType(schemaType.type, asOneOfTypes)
 }
