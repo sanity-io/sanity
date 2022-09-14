@@ -1,4 +1,0 @@
-{
-  "presets": [["@babel/typescript"]],
-  "plugins": ["lodash", "babel-plugin-styled-components"]
-}

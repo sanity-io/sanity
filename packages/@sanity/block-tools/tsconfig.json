@@ -3,11 +3,11 @@
   "include": ["./src", "./test"],
   "compilerOptions": {
     "composite": true,
-    // --
-    "jsx": "react",
-    "declarationDir": "./lib/dts/",
-    "rootDir": "./",
-    "outDir": "./lib/dts/"
+    "declarationDir": "./lib/dts",
+    "rootDir": ".",
+    "outDir": "./lib/dts",
+
+    "jsx": "react"
   },
-  "references": [{"path": "../schema"}]
+  "references": [{"path": "../schema/tsconfig.lib.json"}]
 }

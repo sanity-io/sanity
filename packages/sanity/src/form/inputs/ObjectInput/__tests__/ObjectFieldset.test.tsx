@@ -1,11 +1,11 @@
-import {defineType} from '@sanity/types'
+import {defineField, defineType} from '@sanity/types'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
 import {renderObjectInput} from '../../../../../test/form'
 import {ObjectInput} from '../ObjectInput'
 import {FieldProps} from '../../../types'
 
-const fieldsetsTestType = defineType({
+const fieldsetsTestType = defineField({
   title: 'Fieldsets test',
   name: 'fieldsetsTest',
   type: 'object',

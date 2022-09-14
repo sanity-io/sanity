@@ -6,7 +6,7 @@ import {TestRenderProps} from './types'
 export type TestRenderBooleanInputCallback = (inputProps: BooleanInputProps) => React.ReactElement
 
 export async function renderBooleanInput(options: {
-  fieldDefinition: Schema.TypeDefinition<'boolean'>
+  fieldDefinition: Schema.FieldDefinition<'boolean'>
   props?: TestRenderProps
   render: TestRenderBooleanInputCallback
 }) {

@@ -1,5 +1,5 @@
-import type {CliCommandDefinition} from '@sanity/cli'
-import {lazyRequire} from '../../util/lazyRequire'
+import type {CliCommandArguments, CliCommandContext, CliCommandDefinition} from '@sanity/cli'
+import type {DeleteGraphQLApiFlags} from '../../actions/graphql/deleteApiAction'
 
 const helpText = `
 Options
@@ -18,7 +18,11 @@ const deleteGraphQLAPICommand: CliCommandDefinition = {
   group: 'graphql',
   signature: '',
   description: 'Remove a deployed GraphQL API',
-  action: lazyRequire(require.resolve('../../actions/graphql/deleteApiAction')),
+  action: async (args: CliCommandArguments<DeleteGraphQLApiFlags>, context: CliCommandContext) => {
+    const mod = await import('../../actions/graphql/deleteApiAction')
+
+    return mod.default(args, context)
+  },
   helpText,
 }
 

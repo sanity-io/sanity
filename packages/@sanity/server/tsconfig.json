@@ -3,10 +3,10 @@
   "include": ["./src", "./test", "./typings"],
   "compilerOptions": {
     "composite": true,
-    "jsx": "react",
-    "declarationDir": "./lib/dts/",
-    "rootDir": "./",
-    "outDir": "./lib/dts/"
+    "rootDir": ".",
+    "outDir": "./lib/dts",
+
+    "jsx": "react"
   },
   "references": [{"path": "../../sanity/tsconfig.lib.json"}]
 }

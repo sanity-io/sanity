@@ -1,10 +1,10 @@
-import {defineType} from '@sanity/types'
+import {defineField} from '@sanity/types'
 import React from 'react'
 import {renderNumberInput} from '../../../test/form'
 import {NumberInput} from './NumberInput'
 
 const defs = {
-  num: defineType({name: 'num', title: 'Number', type: 'number'}),
+  num: defineField({name: 'num', title: 'Number', type: 'number'}),
 }
 
 describe('NumberInput', () => {

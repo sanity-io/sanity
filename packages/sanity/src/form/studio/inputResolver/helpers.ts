@@ -1,40 +1,65 @@
-import {SchemaType} from '@sanity/types'
+import {isArraySchemaType, isObjectSchemaType, SchemaType} from '@sanity/types'
 import {get} from 'lodash'
-import {ArrayFieldProps, ObjectFieldProps} from '../../types'
 
 export function getOption(type: SchemaType, optionName: string) {
   return get(type.options, optionName)
 }
 
-const PSEUDO_OBJECTS = ['array', 'file', 'image', 'reference']
+const PSEUDO_OBJECTS = ['array', 'file', 'image', 'reference', 'slug']
 const HIDDEN_FIELDS = ['asset', 'crop', 'hotspot', '_ref', '_weak']
 const NO_LEVEL_LAYOUTS = ['tags']
+const NO_LEVEL_TYPES = ['slug']
 
-export function getObjectFieldLevel(field: ObjectFieldProps): number {
-  const {type, fields, options} = field.schemaType
-  const fieldType = type?.name || ''
+export function getFieldLevel(schemaType: SchemaType, currentLevel: number) {
+  return isArraySchemaType(schemaType)
+    ? getArrayFieldLevel(schemaType, currentLevel)
+    : getObjectFieldLevel(schemaType, currentLevel)
+}
 
-  const isPseudoObject = PSEUDO_OBJECTS.includes(fieldType)
+function getObjectFieldLevel(schemaType: SchemaType, currentLevel: number): number {
+  const {type, options} = schemaType
+  const typeIfRelevant = asType(type, PSEUDO_OBJECTS)
+  const fields = schemaType?.jsonType === 'object' ? schemaType.fields : undefined
 
-  const hasVisibleFields = fields?.filter((f) => !HIDDEN_FIELDS.includes(f.name)).length > 0
-  const hasListOptions = options?.list?.length > 0
+  const typeName = typeIfRelevant?.name || ''
+
+  if (NO_LEVEL_TYPES.includes(typeName)) {
+    return 0
+  }
+
+  const isPseudoObject = PSEUDO_OBJECTS.includes(typeName)
+  const hasVisibleFields = (fields?.filter((f) => !HIDDEN_FIELDS.includes(f.name)).length ?? 0) > 0
+  const hasListOptions = (options?.list?.length ?? 0) > 0
 
   if (hasVisibleFields || hasListOptions || !isPseudoObject) {
-    return field.level
+    return currentLevel
   }
 
   return 0
 }
 
-export function getArrayFieldLevel(field: ArrayFieldProps): number {
-  const {options} = field.schemaType
+function getArrayFieldLevel(schemaType: SchemaType, currentLevel: number): number {
+  const {options} = schemaType
 
   const hasListOptions = (options?.list || [])?.length > 0
   const isNoLevelLayout = NO_LEVEL_LAYOUTS.includes(options?.layout || '')
 
   if (hasListOptions && !isNoLevelLayout) {
-    return field.level
+    return currentLevel
   }
 
   return 0
+}
+
+function asType(
+  schemaType: SchemaType | undefined,
+  asOneOfTypes: string[]
+): SchemaType | undefined {
+  if (schemaType?.name && asOneOfTypes.includes(schemaType?.name)) {
+    return schemaType
+  }
+  if (!schemaType) {
+    return undefined
+  }
+  return asType(schemaType.type, asOneOfTypes)
 }

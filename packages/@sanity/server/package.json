@@ -2,13 +2,45 @@
   "name": "@sanity/server",
   "version": "3.0.0-dev-preview.15",
   "description": "Webserver dedicated to serving Sanity, allowing a smooth development experience",
-  "main": "./lib/index.js",
+  "source": "./src/index.ts",
+  "main": "./lib/index.cjs",
+  "module": "./lib/index.js",
   "types": "./lib/dts/src/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./lib/dts/src/index.d.ts",
+      "source": "./src/index.ts",
+      "import": "./lib/index.js",
+      "require": "./lib/index.cjs",
+      "default": "./lib/index.js"
+    },
+    "./default-config": {
+      "types": "./lib/dts/src/default-config.d.ts",
+      "source": "./src/defaultStudioConfig.ts",
+      "import": "./lib/default-config.js",
+      "default": "./lib/default-config.js"
+    }
+  },
+  "typesVersions": {
+    "*": {
+      "default-config": [
+        "./lib/dts/src/default-config.d.ts"
+      ]
+    }
+  },
+  "files": [
+    "lib",
+    "src",
+    "static"
+  ],
   "scripts": {
-    "build": "../../../bin/pkg-utils transpile --target node --tsconfig tsconfig.lib.json",
+    "build": "pkg-utils build --tsconfig tsconfig.lib.json",
+    "check:package": "pkg-utils --strict --tsconfig tsconfig.lib.json",
     "clean": "rimraf lib",
+    "postbuild": "run-s check:package",
+    "prebuild": "run-s clean",
     "test": "jest",
-    "watch": "../../../bin/pkg-utils transpile --target node --tsconfig tsconfig.lib.json --watch"
+    "watch": "pkg-utils watch --tsconfig tsconfig.lib.json"
   },
   "engines": {
     "node": ">=14.0.0"
@@ -54,5 +86,10 @@
     "react-dom": "17.0.2",
     "rimraf": "^3.0.2",
     "sanity": "3.0.0-dev-preview.15"
+  },
+  "peerDependencies": {
+    "react": "^16.9 || ^17 || ^18",
+    "react-dom": "^16.9 || ^17 || ^18",
+    "sanity": "dev-preview"
   }
 }

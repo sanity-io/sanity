@@ -1,4 +1,4 @@
-import {defineType} from '@sanity/types'
+import {defineField} from '@sanity/types'
 import {fireEvent} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
@@ -13,7 +13,7 @@ test('timezone for the test environment should be set to America/Los_Angeles', (
 
 test('does not emit onChange after invalid value has been typed', async () => {
   const {onChange, result} = await renderStringInput({
-    fieldDefinition: defineType({
+    fieldDefinition: defineField({
       type: 'date',
       name: 'test',
     }),
@@ -33,7 +33,7 @@ test('does not emit onChange after invalid value has been typed', async () => {
 
 test('emits onChange on correct format if a valid value has been typed', async () => {
   const {onChange, result} = await renderStringInput({
-    fieldDefinition: defineType({
+    fieldDefinition: defineField({
       type: 'date',
       name: 'test',
     }),
@@ -54,7 +54,7 @@ test('emits onChange on correct format if a valid value has been typed', async (
 
 test('formatting of deserialized value', async () => {
   const {result} = await renderStringInput({
-    fieldDefinition: defineType({
+    fieldDefinition: defineField({
       type: 'date',
       name: 'test',
     }),

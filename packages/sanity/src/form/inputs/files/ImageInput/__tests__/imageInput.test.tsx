@@ -2,7 +2,7 @@
 
 // import {SanityClient} from '@sanity/client'
 // import imageUrlBuilder from '@sanity/image-url'
-import {ConditionalPropertyCallbackContext, defineType} from '@sanity/types'
+import {ConditionalPropertyCallbackContext, defineField, defineType} from '@sanity/types'
 // import {fireEvent, waitFor} from '@testing-library/react'
 import React from 'react'
 // import {EMPTY, of} from 'rxjs'
@@ -25,14 +25,11 @@ const defs = {
       hotspot: true,
     },
     fields: [
-      {
+      defineField({
         name: 'caption',
         type: 'string',
         title: 'Caption',
-        options: {
-          isHighlighted: true,
-        },
-      },
+      }),
       {
         name: 'detailedCaption',
         type: 'string',

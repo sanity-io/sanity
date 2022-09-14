@@ -1,5 +1,4 @@
-import * as React from 'react'
-import {useCallback, useMemo, useRef} from 'react'
+import React, {useCallback, useMemo, useRef} from 'react'
 import {Path} from '@sanity/types'
 import {useDidUpdate} from '../../hooks/useDidUpdate'
 import {
@@ -15,6 +14,7 @@ import {ensureKey} from '../../utils/ensureKey'
 import {FormCallbacksProvider, useFormCallbacks} from '../../studio/contexts/FormCallbacks'
 import {ArrayOfObjectsItemMember} from '../../store'
 import {createProtoValue} from '../../utils/createProtoValue'
+import {isEmpty} from '../../inputs/arrays/ArrayOfObjectsInput/item/helpers'
 
 /**
  * @alpha
@@ -49,6 +49,25 @@ export function ArrayOfObjectsItem(props: MemberItemProps) {
       focusRef.current?.focus()
     }
   })
+
+  const onRemove = useCallback(() => {
+    onChange(PatchEvent.from([unset([{_key: member.key}])]))
+  }, [member.key, onChange])
+
+  const onInsert = useCallback(
+    (event: {items: unknown[]; position: 'before' | 'after'}) => {
+      onChange(
+        PatchEvent.from([
+          insert(
+            event.items.map((item) => ensureKey(item)),
+            event.position,
+            [{_key: member.key}]
+          ),
+        ])
+      )
+    },
+    [member.key, onChange]
+  )
 
   const handleBlur = useCallback(() => {
     onPathBlur(member.item.path)
@@ -121,9 +140,13 @@ export function ArrayOfObjectsItem(props: MemberItemProps) {
     onPathOpen(member.item.path)
   }, [onPathOpen, member.item.path])
 
+  const isEmptyValue = !member.item.value || isEmpty(member.item.value)
   const handleClose = useCallback(() => {
+    if (isEmptyValue) {
+      onRemove()
+    }
     onPathOpen(member.item.path.slice(0, -1))
-  }, [onPathOpen, member.item.path])
+  }, [onPathOpen, member.item.path, isEmptyValue, onRemove])
 
   const handleSelectFieldGroup = useCallback(
     (groupName: string) => {
@@ -203,26 +226,6 @@ export function ArrayOfObjectsItem(props: MemberItemProps) {
   ])
 
   const renderedInput = useMemo(() => renderInput(inputProps), [inputProps, renderInput])
-
-  // const onInsert = useCallback(() => {}, [member.key])
-  const onRemove = useCallback(() => {
-    onChange(PatchEvent.from([unset([{_key: member.key}])]))
-  }, [member.key, onChange])
-
-  const onInsert = useCallback(
-    (event: {items: unknown[]; position: 'before' | 'after'}) => {
-      onChange(
-        PatchEvent.from([
-          insert(
-            event.items.map((item) => ensureKey(item)),
-            event.position,
-            [{_key: member.key}]
-          ),
-        ])
-      )
-    },
-    [member.key, onChange]
-  )
 
   const itemProps = useMemo((): ObjectItemProps => {
     return {

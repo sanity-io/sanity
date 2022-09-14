@@ -2,18 +2,18 @@
   "name": "@sanity/import",
   "version": "3.0.0-dev-preview.15",
   "description": "Import documents to a Sanity dataset",
-  "main": "./lib/import.js",
+  "main": "./src/import.js",
+  "files": [
+    "src"
+  ],
   "engines": {
     "node": ">=14.0.0"
   },
   "author": "Sanity.io <hello@sanity.io>",
   "license": "MIT",
   "scripts": {
-    "build": "../../../bin/pkg-utils transpile --target node",
-    "clean": "rimraf lib",
     "coverage": "jest --coverage",
-    "test": "jest",
-    "watch": "../../../bin/pkg-utils transpile --target node --watch"
+    "test": "jest"
   },
   "keywords": [
     "sanity",

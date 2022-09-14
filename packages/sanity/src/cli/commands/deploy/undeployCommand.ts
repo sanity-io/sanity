@@ -1,5 +1,4 @@
-import type {CliCommandDefinition} from '@sanity/cli'
-import {lazyRequire} from '../../util/lazyRequire'
+import type {CliCommandArguments, CliCommandContext, CliCommandDefinition} from '@sanity/cli'
 
 const helpText = `
 Examples
@@ -10,7 +9,14 @@ const undeployCommand: CliCommandDefinition = {
   name: 'undeploy',
   signature: '',
   description: 'Removes the deployed studio from <hostname>.sanity.studio',
-  action: lazyRequire(require.resolve('../../actions/deploy/undeployAction')),
+  action: async (
+    args: CliCommandArguments<Record<string, unknown>>,
+    context: CliCommandContext
+  ) => {
+    const mod = await import('../../actions/deploy/undeployAction')
+
+    return mod.default(args, context)
+  },
   helpText,
 }
 

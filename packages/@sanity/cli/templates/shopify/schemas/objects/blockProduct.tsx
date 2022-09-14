@@ -1,5 +1,6 @@
 import React from 'react'
 import {TagIcon} from '@sanity/icons'
+import {defineField, defineType} from 'sanity'
 import {getPriceRange} from '../../utils/getPriceRange'
 
 const ImagePreview = (props: {url: string}) => {
@@ -11,24 +12,24 @@ const ImagePreview = (props: {url: string}) => {
   return <img src={`${url}&width=400`} />
 }
 
-export default {
+export default defineType({
   name: 'blockProduct',
   title: 'Product',
   type: 'object',
   icon: TagIcon,
   fields: [
     // Product
-    {
+    defineField({
       name: 'productWithVariant',
       title: 'Product + Variant',
       type: 'productWithVariant',
       validation: (Rule) => Rule.required(),
-    },
-    {
+    }),
+    defineField({
       name: 'caption',
       title: 'Caption',
       type: 'string',
-    },
+    }),
   ],
   preview: {
     select: {
@@ -77,4 +78,4 @@ export default {
       }
     },
   },
-}
+})

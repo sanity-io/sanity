@@ -1,5 +1,11 @@
 import {defineType} from 'sanity'
 
+export const slugAlias = {
+  name: 'slug-alias',
+  type: 'slug',
+  title: 'Slug alias',
+}
+
 export default defineType({
   name: 'slugsTest',
   type: 'document',
@@ -31,6 +37,10 @@ export default defineType({
         source: 'title',
         maxLength: 96,
       },
+    },
+    {
+      name: 'slugAlias',
+      type: slugAlias.name,
     },
     {
       name: 'noSource',
@@ -118,6 +128,17 @@ export default defineType({
               return encodeURI(`${type.name}_${value}`).toLocaleLowerCase()
             },
           },
+        },
+        {
+          name: 'nestedInner',
+          type: 'object',
+          fields: [
+            {
+              name: 'slug',
+              type: 'slug',
+              description: 'Level indentation check',
+            },
+          ],
         },
       ],
     },

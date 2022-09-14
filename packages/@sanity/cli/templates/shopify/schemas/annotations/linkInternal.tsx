@@ -5,9 +5,10 @@
  */
 import {LinkIcon} from '@sanity/icons'
 import React from 'react'
+import {defineType} from 'sanity'
 import {PAGE_REFERENCES} from '../../constants'
 
-export default {
+export default defineType({
   title: 'Internal Link',
   name: 'annotationLinkInternal',
   type: 'object',
@@ -30,4 +31,4 @@ export default {
       to: PAGE_REFERENCES,
     },
   ],
-}
+})

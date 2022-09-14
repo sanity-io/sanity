@@ -1,6 +1,7 @@
 import {SunIcon} from '@sanity/icons'
+import {defineField, defineType} from 'sanity'
 
-export default {
+export default defineType({
   title: 'Product option',
   name: 'productOption',
   type: 'object',
@@ -8,18 +9,18 @@ export default {
   readOnly: true,
   fields: [
     // Name
-    {
+    defineField({
       title: 'Name',
       name: 'name',
       type: 'string',
-    },
+    }),
     // Values
-    {
+    defineField({
       title: 'Values',
       name: 'values',
       type: 'array',
       of: [{type: 'string'}],
-    },
+    }),
   ],
   preview: {
     select: {
@@ -33,4 +34,4 @@ export default {
       }
     },
   },
-}
+})

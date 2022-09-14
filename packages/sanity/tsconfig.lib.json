@@ -2,18 +2,28 @@
   "extends": "../../tsconfig.settings",
   "include": ["./package.json", "./src", "./typings"],
   "exclude": [
-    "./src/**/__fixtures__/*",
-    "./src/**/__mocks__/*",
-    "./src/**/__workshop__/*",
+    "./src/**/__fixtures__",
+    "./src/**/__mocks__",
+    "./src/**/__workshop__",
     "./src/**/*.test.ts",
     "./src/**/*.test.tsx"
   ],
   "compilerOptions": {
     "composite": true,
-    "declarationDir": "./lib/dts/",
-    "rootDir": "./",
-    "outDir": "./lib/dts/",
+    "emitDeclarationOnly": true,
+    "declarationDir": "./lib/dts",
+    "rootDir": ".",
+    "outDir": "./lib/dts",
     "jsx": "react",
+    "baseUrl": "./src/_exports",
+    "paths": {
+      "sanity/_internal": ["./_internal.ts"],
+      "sanity/_unstable": ["./_unstable.ts"],
+      "sanity/cli": ["./cli.ts"],
+      "sanity/desk": ["./desk.ts"],
+      "sanity/form": ["./form.ts"],
+      "sanity": ["./index.ts"]
+    },
 
     // For package.json import
     "resolveJsonModule": true,
@@ -22,11 +32,13 @@
     "types": ["vite/client"]
   },
   "references": [
-    {"path": "../@sanity/diff"},
+    {"path": "../@sanity/cli/tsconfig.lib.json"},
+    {"path": "../@sanity/diff/tsconfig.lib.json"},
     {"path": "../@sanity/mutator/tsconfig.lib.json"},
-    {"path": "../@sanity/portable-text-editor"},
-    {"path": "../@sanity/schema"},
-    {"path": "../@sanity/types"},
+    {"path": "../@sanity/portable-text-editor/tsconfig.lib.json"},
+    {"path": "../@sanity/schema/tsconfig.lib.json"},
+    {"path": "../@sanity/types/tsconfig.lib.json"},
+    {"path": "../@sanity/cli/tsconfig.lib.json"},
     {"path": "../@sanity/util/tsconfig.lib.json"},
     {"path": "../@sanity/validation/tsconfig.lib.json"}
   ]

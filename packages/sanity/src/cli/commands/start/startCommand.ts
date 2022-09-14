@@ -1,5 +1,5 @@
-import type {CliCommandDefinition} from '@sanity/cli'
-import {lazyRequire} from '../../util/lazyRequire'
+import type {CliCommandArguments, CliCommandContext, CliCommandDefinition} from '@sanity/cli'
+import type {StartDevServerCommandFlags} from '../../actions/start/startAction'
 
 const helpText = `
 Notes
@@ -18,7 +18,14 @@ const startCommand: CliCommandDefinition = {
   name: 'start',
   signature: '[--port <port>] [--host <host>]',
   description: 'Starts a web server for the Sanity Studio',
-  action: lazyRequire(require.resolve('../../actions/start/startAction')),
+  action: async (
+    args: CliCommandArguments<StartDevServerCommandFlags>,
+    context: CliCommandContext
+  ) => {
+    const mod = await import('../../actions/start/startAction')
+
+    return mod.default(args, context)
+  },
   helpText,
 }
 

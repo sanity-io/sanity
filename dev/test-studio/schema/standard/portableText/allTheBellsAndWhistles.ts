@@ -2,27 +2,29 @@ import {BellIcon, ImageIcon, InfoOutlineIcon} from '@sanity/icons'
 import {Rule} from '@sanity/types'
 import {InfoBoxPreview} from './InfoBoxPreview'
 import {LinkAnnotationInput} from './LinkAnnotationInput'
+import {defineArrayMember, defineField, defineType} from 'sanity'
 
-export const ptAllTheBellsAndWhistlesType = {
+export const ptAllTheBellsAndWhistlesType = defineType({
   type: 'document',
   icon: BellIcon,
   name: 'pt_allTheBellsAndWhistles',
   title: 'All the bells & whistles',
   fields: [
-    {
+    defineField({
       type: 'string',
       name: 'title',
       title: 'Title',
-    },
-    {
+    }),
+    defineField({
       type: 'array',
       name: 'text',
       title: 'Text',
       of: [
-        {
+        defineArrayMember({
           type: 'block',
           name: 'block',
           title: 'Block',
+
           // styles: [{title: 'Normal', value: 'normal'}],
           marks: {
             // decorators: [{title: 'Strong', value: 'strong'}],
@@ -54,13 +56,13 @@ export const ptAllTheBellsAndWhistlesType = {
                           allowRelative: true,
                         }),
                   },
-                  {
+                  defineField({
                     title: 'Linked Book',
                     name: 'reference',
                     type: 'reference',
                     to: [{type: 'book'}],
                     description: '',
-                  },
+                  }),
                   {
                     type: 'boolean',
                     name: 'newTab',
@@ -72,9 +74,9 @@ export const ptAllTheBellsAndWhistlesType = {
               },
             ],
           },
-        },
+        }),
 
-        {
+        defineField({
           type: 'image',
           icon: ImageIcon,
           name: 'image',
@@ -89,22 +91,16 @@ export const ptAllTheBellsAndWhistlesType = {
             },
           },
           fields: [
-            {
+            defineField({
               title: 'Caption',
               name: 'caption',
               type: 'string',
-              options: {
-                isHighlighted: true,
-              },
-            },
+            }),
             {
               name: 'alt',
               type: 'string',
               title: 'Alt text',
               description: 'Alternative text for screenreaders. Falls back on caption if not set',
-              options: {
-                isHighlighted: true,
-              },
             },
             {
               title: 'Enable lightbox',
@@ -112,71 +108,61 @@ export const ptAllTheBellsAndWhistlesType = {
                 '❓ Optional. The default behavior is to enable it if image is large enough to benefit from it.',
               name: 'enableLightbox',
               type: 'boolean',
-              options: {
-                isHighlighted: true,
-              },
             },
             {
               title: 'Icon',
               name: 'isIcon',
               type: 'boolean',
-              options: {
-                isHighlighted: true,
-              },
             },
             {
               title: 'Disable shadow',
               description: 'Not implemented in most surfaces.',
               name: 'disableShadow',
               type: 'boolean',
-              options: {
-                isHighlighted: true,
-              },
             },
-            {
+            defineField({
               title: 'Large',
               description: 'Not implemented in most surfaces.',
               name: 'isLarge',
               type: 'boolean',
-              options: {
-                isHighlighted: true,
-              },
-            },
+            }),
           ],
-        },
+        }),
 
-        {
+        defineField({
           name: 'infoBox',
           icon: InfoOutlineIcon,
           title: 'Info Box',
           type: 'object',
           fields: [
-            {
+            defineField({
               name: 'title',
               title: 'Title',
               type: 'string',
-              validation: (rule: Rule) => rule.required().warning('Should have a title'),
-            },
-            {
+              validation: (rule) => rule.required().warning('Should have a title'),
+            }),
+            defineField({
               title: 'Box Content',
               name: 'body',
               type: 'array',
               of: [{type: 'block'}],
-              validation: (rule: Rule) => rule.required().error('Must have content'),
-            },
+              validation: (rule) => rule.required().error('Must have content'),
+            }),
           ],
+          components: {
+            preview: InfoBoxPreview,
+          },
           preview: {
             select: {
               title: 'title',
               body: 'body',
             },
-            prepare(selection: any) {
-              return selection
+            prepare({title, body}) {
+              return {title, body}
             },
-            component: InfoBoxPreview,
           },
-        },
+        }),
       ],
-    },
+    }),
   ],
-}
+})

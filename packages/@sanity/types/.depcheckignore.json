@@ -1,17 +1,17 @@
 {
   "ignore": [
-    "_self_",
-    "@sanity/types",
+    "@juggle/resize-observer",
+    "@popperjs/core",
     "@sanity/bifur-client",
     "@sanity/mutator",
-    "styled-components",
-    "@popperjs/core",
+    "@sanity/pkg-utils",
+    "@sanity/types",
+    "@sanity/ui",
+    "_self_",
     "boundless-arrow-key-navigation",
-    "prop-types",
     "element-resize-detector",
-    "react-sortable-hoc",
-    "@juggle/resize-observer",
     "nano-pubsub",
-    "@sanity/ui"
+    "react-sortable-hoc",
+    "styled-components"
   ]
 }

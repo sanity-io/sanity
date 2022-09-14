@@ -1,17 +1,14 @@
 import {SanityClient} from '@sanity/client'
-import {ObjectSchemaType, Path, Schema, SchemaType} from '@sanity/types'
+import {defineType, ObjectSchemaType, Path, Schema, SchemaType} from '@sanity/types'
 import {render} from '@testing-library/react'
 import React, {FocusEvent} from 'react'
 import {
-  ComplexElementProps,
   createPatchChannel,
   FieldMember,
-  FIXME,
   NodePresence,
   NodeValidation,
   PatchArg,
   PatchEvent,
-  PrimitiveInputElementProps,
   StudioFormBuilderProvider,
   useFormState,
 } from '../../src/form'
@@ -51,7 +48,7 @@ export type TestRenderInputCallback<ElementProps> = (
 ) => React.ReactElement
 
 export async function renderInput(props: {
-  fieldDefinition: Schema.TypeDefinition
+  fieldDefinition: Schema.FieldDefinition
   props?: TestRenderProps
   render: TestRenderInputCallback<any>
 }) {
@@ -68,11 +65,11 @@ export async function renderInput(props: {
       dataset: 'test',
       schema: {
         types: [
-          {
-            type: 'document',
+          defineType({
+            type: 'document' as const,
             name: 'test',
             fields: [fieldDefinition],
-          },
+          }),
         ],
       },
     },
