@@ -1,3 +1,4 @@
+import {useId} from '@reach/auto-id'
 import {CheckmarkIcon, SortIcon} from '@sanity/icons'
 import {
   Box,
@@ -84,6 +85,8 @@ export function SortMenu({small}: SortMenuProps) {
     state: {ordering},
   } = useSearchState()
 
+  const menuButtonId = useId()
+
   const currentMenuItem = MENU_ORDERINGS.find((item) => isEqual(ordering, item))
 
   return (
@@ -112,7 +115,7 @@ export function SortMenu({small}: SortMenuProps) {
               </Flex>
             </Button>
           }
-          id="search-order"
+          id={menuButtonId}
           menu={
             <Menu>
               {MENU_ORDERINGS.map((item, index) => {
