@@ -55,6 +55,8 @@ export type {
 
 export {createConfig, createPlugin} from '../config'
 
+export type {LayoutProps, LogoProps, NavbarProps, ToolMenuProps} from '../config/components'
+
 export type {
   AuthState,
   AuthStore,
@@ -188,7 +190,7 @@ export {
   StudioLayout,
   StudioProvider,
   ToolLink,
-  ToolMenu,
+  StudioToolMenu,
   useColorScheme,
   useSource,
   useWorkspace,
@@ -201,7 +203,6 @@ export type {
   StudioProps,
   StudioProviderProps,
   ToolLinkProps,
-  ToolMenuProps,
   WorkspaceProviderProps,
 } from '../studio'
 
