@@ -1,6 +1,6 @@
 {
   "name": "@sanity/types",
-  "version": "3.0.0-dev-preview.15",
+  "version": "3.0.0-dev-preview.16",
   "description": "Type definitions for common Sanity data structures",
   "source": "./src/index.ts",
   "main": "./lib/index.cjs",
@@ -45,8 +45,8 @@
     "@types/react": "^17.0.42"
   },
   "devDependencies": {
-    "rimraf": "^3.0.2",
-    "react": "17.0.2"
+    "react": "17.0.2",
+    "rimraf": "^3.0.2"
   },
   "repository": {
     "type": "git",
