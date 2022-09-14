@@ -345,7 +345,6 @@ export interface WorkspaceSummary {
   type: 'workspace-summary'
   name: string
   title: string
-  logo?: React.ReactNode
   icon: React.ReactNode
   subtitle?: string
   basePath: string
@@ -375,7 +374,6 @@ export interface Workspace extends Omit<Source, 'type'> {
   type: 'workspace'
   basePath: string
   subtitle?: string
-  logo?: React.ReactNode
   icon: React.ReactNode
   /**
    * @alpha
