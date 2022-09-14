@@ -5,8 +5,6 @@ import styled from 'styled-components'
 import {ChangeIndicator} from '../../../../components/changeIndicators'
 import {FormField} from '../../../components/formField'
 import {set} from '../../../patch'
-import {Checkerboard} from '../../../components/Checkerboard'
-import {withFocusRing} from '../../../components/withFocusRing'
 import {RatioBox} from '../common/RatioBox'
 import {EMPTY_ARRAY} from '../../../utils/empty'
 import type {ObjectInputProps} from '../../../types'
@@ -32,8 +30,6 @@ const DEFAULT_VALUE: Partial<Image> = {
   crop: DEFAULT_CROP,
   hotspot: DEFAULT_HOTSPOT,
 }
-
-const CheckerboardWithFocusRing = withFocusRing(Checkerboard)
 
 const Placeholder = styled.div`
   min-height: 6em;
@@ -120,7 +116,13 @@ export function ImageToolInput(props: ImageToolInputProps) {
       __unstable_presence={presence}
     >
       <div>
-        <CheckerboardWithFocusRing tabIndex={0} ref={elementProps.ref} onFocus={handleFocus}>
+        <Card
+          __unstable_checkered
+          __unstable_focusRing
+          tabIndex={0}
+          ref={elementProps.ref}
+          onFocus={handleFocus}
+        >
           <ChangeIndicator
             path={path.concat(HOTSPOT_PATH)}
             hasFocus={focusPath[0] === 'hotspot'}
@@ -152,7 +154,7 @@ export function ImageToolInput(props: ImageToolInputProps) {
               )}
             </RatioBox>
           </ChangeIndicator>
-        </CheckerboardWithFocusRing>
+        </Card>
         <Box marginTop={3}>
           <Grid columns={PREVIEW_ASPECT_RATIOS.length} gap={1}>
             {PREVIEW_ASPECT_RATIOS.map(([title, ratio]) => (
@@ -162,7 +164,7 @@ export function ImageToolInput(props: ImageToolInputProps) {
                 </Heading>
                 <Box marginTop={2}>
                   <RatioBox ratio={ratio}>
-                    <Checkerboard>
+                    <Card __unstable_checkered>
                       {!isImageLoading && image ? (
                         <HotspotImage
                           aspectRatio={ratio}
@@ -174,7 +176,7 @@ export function ImageToolInput(props: ImageToolInputProps) {
                       ) : (
                         <Placeholder />
                       )}
-                    </Checkerboard>
+                    </Card>
                   </RatioBox>
                 </Box>
               </div>

@@ -1,11 +1,10 @@
 import type {Subscription} from 'rxjs'
 import React, {useState, useEffect, useRef, useCallback, useMemo} from 'react'
 import styled from 'styled-components'
-import {Button, useToast} from '@sanity/ui'
+import {Button, Card, useToast} from '@sanity/ui'
 import {Asset as AssetType} from '@sanity/types'
 import {useClient} from '../../../hooks'
 import {FullscreenSpinner} from '../../components/FullscreenSpinner'
-import {Checkerboard} from '../../components/Checkerboard'
 import {AssetUsageDialog} from './AssetUsageDialog'
 import {AssetMenu} from './AssetMenu'
 import {AssetMenuAction} from './types'
@@ -35,7 +34,7 @@ const Image = styled.img`
   object-fit: contain;
 `
 
-const Container = styled(Checkerboard)`
+const Container = styled(Card)`
   position: relative;
   z-index: 1;
   padding-bottom: 100%;
@@ -163,7 +162,7 @@ export const AssetThumb = React.memo(function AssetThumb(props: AssetProps) {
         padding={0}
         style={{padding: 2}}
       >
-        <Container>
+        <Container __unstable_checkered>
           <Image alt={originalFilename} src={imageUrl} onClick={onClick} data-id={_id} />
           {isDeleting && <FullscreenSpinner />}
         </Container>
