@@ -51,14 +51,6 @@ import type {LogoProps, ToolMenuProps, LayoutProps, NavbarProps} from './compone
 
 type InternalSource = WorkspaceSummary['__internal']['sources'][number]
 
-function normalizeLogo(
-  logo: React.ComponentType | React.ElementType | undefined
-): JSX.Element | undefined {
-  if (isValidElementType(logo)) return createElement(logo)
-  if (isValidElement(logo)) return logo
-  return undefined
-}
-
 function normalizeIcon(
   icon: React.ComponentType | React.ElementType | undefined,
   title: string,
@@ -166,7 +158,6 @@ export function prepareConfig(config: Config): PreparedConfig {
         basePath: rootSource.basePath || '/',
         dataset: rootSource.dataset,
         schema: resolvedSources[0].schema,
-        logo: normalizeLogo(rootSource.logo),
         icon: normalizeIcon(
           rootSource.icon,
           title,
