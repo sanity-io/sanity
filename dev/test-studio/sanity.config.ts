@@ -1,4 +1,3 @@
-//import {codeInput} from '@sanity/code-input'
 import {BookIcon} from '@sanity/icons'
 import {visionTool} from '@sanity/vision'
 import {createConfig, createPlugin} from 'sanity'
@@ -11,6 +10,13 @@ import {languageFilter} from './plugins/language-filter'
 import {schemaTypes} from './schema'
 import {defaultDocumentNode, newDocumentOptions, structure} from './structure'
 import {workshopTool} from './workshop'
+import {
+  CustomLogo,
+  CustomLayout,
+  CustomNavbar,
+  CustomToolMenu,
+  componentsPlugin,
+} from './components/customComponents'
 
 const sharedSettings = createPlugin({
   name: 'sharedSettings',
@@ -18,16 +24,7 @@ const sharedSettings = createPlugin({
     types: schemaTypes,
     templates: resolveInitialValueTemplates,
   },
-  // navbar: {
-  //   components: {
-  //     ToolMenu: ToolMenu,
-  //   },
-  // },
   form: {
-    // unstable: {
-    //   CustomMarkers,
-    //   Markers,
-    // },
     image: {
       assetSources: [imageAssetSource],
     },
@@ -37,12 +34,7 @@ const sharedSettings = createPlugin({
     newDocumentOptions,
   },
   plugins: [
-    // codeInput(),
     deskTool({
-      // TODO:
-      // components: {
-      //   LanguageFilter,
-      // },
       icon: BookIcon,
       name: 'content',
       title: 'Content',
@@ -79,19 +71,43 @@ export default createConfig([
   {
     name: 'default',
     title: 'Test Studio',
-    logo: Branding,
     projectId: 'ppsg7ml5',
     dataset: 'test',
     plugins: [sharedSettings()],
     basePath: '/test',
+    studio: {
+      components: {
+        Logo: Branding,
+      },
+    },
   },
   {
     name: 'playground',
     title: 'Test Studio (playground)',
-    logo: Branding,
     projectId: 'ppsg7ml5',
     dataset: 'playground',
     plugins: [sharedSettings()],
     basePath: '/playground',
+    studio: {
+      components: {
+        Logo: Branding,
+      },
+    },
+  },
+  {
+    name: 'custom-components',
+    title: 'Test Studio (custom-components)',
+    projectId: 'ppsg7ml5',
+    dataset: 'test',
+    plugins: [sharedSettings(), componentsPlugin()],
+    basePath: '/custom-components',
+    studio: {
+      components: {
+        Layout: CustomLayout,
+        Logo: CustomLogo,
+        Navbar: CustomNavbar,
+        ToolMenu: CustomToolMenu,
+      },
+    },
   },
 ])
