@@ -8,13 +8,13 @@ import {
 } from '@sanity/icons'
 import {Card} from '@sanity/ui'
 import {useBoolean, useString} from '@sanity/ui-workshop'
-import React, {useMemo, useState} from 'react'
+import React, {createContext, useMemo, useState} from 'react'
 import styled from 'styled-components'
 import {createConfig, Tool} from '../../../../config'
 import {isNonNullable} from '../../../../util/isNonNullable'
 import {isTruthy} from '../../../../util/isTruthy'
-import {Navbar} from '..'
 import {StudioProvider} from '../../../StudioProvider'
+import {useWorkspace} from '../../../workspace'
 
 const SearchFullscreenPortalCard = styled(Card)`
   display: flex;
@@ -27,11 +27,20 @@ const ExampleTool = () => <div>Tool</div>
 
 const noop = () => null
 
-// const mockClient = createMockClient()
+interface NavbarContextValue {
+  onSearchOpenChange: (open: boolean) => void
+  fullscreenSearchPortalEl: HTMLElement | null
+}
+
+export const NavbarContext = createContext<NavbarContextValue>({
+  fullscreenSearchPortalEl: null,
+  onSearchOpenChange: () => '',
+})
 
 export default function NavbarStory() {
   const projectName = useString('Project name', undefined)
   const [portalEl, setPortalEl] = useState<HTMLDivElement | null>(null)
+  const {Navbar} = useWorkspace().studio.components
 
   // Create configuration
   const tools = useTools()
@@ -48,9 +57,16 @@ export default function NavbarStory() {
     [projectName, tools]
   )
 
+  const navbarContextValue = useMemo(
+    () => ({fullscreenSearchPortalEl: portalEl, onSearchOpenChange: noop}),
+    [portalEl]
+  )
+
   return (
     <StudioProvider config={config}>
-      <Navbar onSearchOpenChange={noop} fullscreenSearchPortalEl={portalEl} />
+      <NavbarContext.Provider value={navbarContextValue}>
+        <Navbar />
+      </NavbarContext.Provider>
       <SearchFullscreenPortalCard ref={setPortalEl} />
     </StudioProvider>
   )
