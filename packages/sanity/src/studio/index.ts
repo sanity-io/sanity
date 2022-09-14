@@ -1,5 +1,4 @@
-export * from './components/navbar/tools/ToolMenu'
-export * from './components/navbar/tools/ToolLink'
+export * from './components/navbar'
 
 export * from './Studio'
 export * from './StudioLayout'
