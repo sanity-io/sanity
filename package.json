@@ -146,7 +146,6 @@
     "@sanity/ui": "0.38.3-next.5+6563c40f",
     "@types/react": "^18",
     "**/@types/react": "^18",
-    "@types/react-dom": "^18",
-    "**/@types/react-dom": "^18"
+    "react-is": "^18"
   }
 }
