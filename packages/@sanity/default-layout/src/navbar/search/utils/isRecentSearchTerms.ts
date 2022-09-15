@@ -4,5 +4,9 @@ import type {RecentSearchTerms} from '../datastores/recentSearches'
 export function isRecentSearchTerms(
   terms: SearchTerms | RecentSearchTerms
 ): terms is RecentSearchTerms {
-  return (terms as RecentSearchTerms).__recentTimestamp !== undefined
+  const recentSearchTerms = terms as RecentSearchTerms
+  return (
+    typeof recentSearchTerms.__recentTimestamp !== 'undefined' &&
+    typeof recentSearchTerms.__index === 'number'
+  )
 }

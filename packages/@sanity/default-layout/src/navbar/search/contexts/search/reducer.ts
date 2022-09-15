@@ -123,7 +123,7 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
       return {
         ...state,
         pageIndex: state.pageIndex + 1,
-        terms: stripRecentTimestamp(state.terms),
+        terms: stripRecentIndexAndTimestamp(state.terms),
       }
     case 'RECENT_SEARCHES_SET':
       return {
@@ -144,13 +144,13 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
       return {
         ...state,
         ordering: ORDER_RELEVANCE,
-        terms: stripRecentTimestamp(state.terms),
+        terms: stripRecentIndexAndTimestamp(state.terms),
       }
     case 'SEARCH_ORDERING_SET':
       return {
         ...state,
         ordering: action.ordering,
-        terms: stripRecentTimestamp(state.terms),
+        terms: stripRecentIndexAndTimestamp(state.terms),
       }
     case 'SEARCH_REQUEST_COMPLETE':
       return {
@@ -191,7 +191,7 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
           ...state.result,
           loaded: false,
         },
-        terms: stripRecentTimestamp({
+        terms: stripRecentIndexAndTimestamp({
           ...state.terms,
           query: action.query,
         }),
@@ -214,7 +214,7 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
           ...state.result,
           loaded: false,
         },
-        terms: stripRecentTimestamp({
+        terms: stripRecentIndexAndTimestamp({
           ...state.terms,
           types: [...state.terms.types, action.schemaType].sort(sortTypes),
         }),
@@ -227,7 +227,7 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
           ...state.result,
           loaded: false,
         },
-        terms: stripRecentTimestamp({
+        terms: stripRecentIndexAndTimestamp({
           ...state.terms,
           types: state.terms.types.filter((s) => s !== action.schemaType),
         }),
@@ -240,7 +240,7 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
           ...state.result,
           loaded: false,
         },
-        terms: stripRecentTimestamp({
+        terms: stripRecentIndexAndTimestamp({
           ...state.terms,
           types: [],
         }),
@@ -251,19 +251,19 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
 }
 
 /**
- * This function is used to strip __recentTimestamp from terms, generally whenever there's a change in search
- * terms or options that would otherwise trigger an additional search request.
+ * This function is used to strip both __index and __recentTimestamp from terms, generally whenever
+ * there's a change in search* terms or options that would otherwise trigger an additional search request.
  * (e.g. updating the search query, changing a sort filter, adding / removing document types)
  *
  * This is done so we can better disambiguate between requests sent as a result of clicking a 'recent search'
- * for purposes of measurement.
+ * for purposes of measurement. __index is used to measure exactly which recent search item was clicked.
  *
  * @todo remove this (and associated tests) once client-side instrumentation is available
  */
-function stripRecentTimestamp(terms: RecentSearchTerms | SearchTerms) {
+function stripRecentIndexAndTimestamp(terms: RecentSearchTerms | SearchTerms) {
   if (isRecentSearchTerms(terms)) {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const {__recentTimestamp, ...rest} = terms
+    const {__index, __recentTimestamp, ...rest} = terms
     return rest
   }
   return terms

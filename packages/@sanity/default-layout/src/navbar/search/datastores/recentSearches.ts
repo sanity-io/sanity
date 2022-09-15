@@ -8,7 +8,10 @@ export const MAX_RECENT_SEARCHES = 5
 // might come in handy in the future
 const CURRENT_VERSION = 1
 
-export type RecentSearchTerms = SearchTerms & {__recentTimestamp: number}
+export type RecentSearchTerms = SearchTerms & {
+  __index: number
+  __recentTimestamp: number
+}
 
 export interface RecentSearchesStore {
   addSearchTerm: (searchTerm: SearchTerms) => RecentSearchTerms[]
@@ -131,7 +134,8 @@ function getRecentSearchTerms(lsKey: string, schema: Schema): RecentSearchTerms[
 
   return sanitizeStoredSearchTerms(schema, storedSearchTerms, lsKey)
     .recentSearches.filter((r) => !!r.terms)
-    .map((r) => ({
+    .map((r, index) => ({
+      __index: index,
       __recentTimestamp: new Date(r.created).getTime(),
       query: r.terms.query,
       types: r.terms.typeNames

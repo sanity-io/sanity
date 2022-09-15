@@ -97,7 +97,7 @@ export function SearchProvider({children, currentUser}: SearchProviderProps) {
           // Comments prepended to each query for future measurement
           comments: [
             `findability-mvi:${FINDABILITY_MVI}`,
-            ...(isRecentSearchTerms(terms) ? ['findability-recent-search'] : []),
+            ...(isRecentSearchTerms(terms) ? [`findability-recent-search:${terms.__index}`] : []),
             `findability-selected-types:${terms.types.length}`,
             `findability-sort:${sortLabel}`,
           ],

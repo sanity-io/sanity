@@ -2,9 +2,8 @@ import type {SearchableType} from '@sanity/base'
 import type {CurrentUser} from '@sanity/types'
 import {act, renderHook} from '@testing-library/react-hooks'
 import {useReducer} from 'react'
-import {RecentSearchTerms} from '../../datastores/recentSearches'
-import {SearchOrdering} from '../../types'
-import {isRecentSearchTerms} from '../../utils/isRecentSearchTerms'
+import type {RecentSearchTerms} from '../../datastores/recentSearches'
+import type {SearchOrdering} from '../../types'
 import {initialSearchState, searchReducer, SearchReducerState} from './reducer'
 
 const mockUser: CurrentUser = {
@@ -28,6 +27,7 @@ const mockSearchableType: SearchableType = {
 }
 
 const recentSearchTerms = {
+  __index: 0,
   __recentTimestamp: new Date().getTime(),
   query: 'foo',
   types: [],
@@ -38,71 +38,80 @@ const initialState: SearchReducerState = {
 }
 
 describe('searchReducer', () => {
-  it('should not retain recentTimestamp when page index is incremented', () => {
+  it('should clear __index and __recentTimestamp when page index is incremented', () => {
     const {result} = renderHook(() => useReducer(searchReducer, initialState))
     const [, dispatch] = result.current
 
     act(() => dispatch({type: 'PAGE_INCREMENT'}))
 
     const [state] = result.current
-    expect(isRecentSearchTerms(state.terms)).toEqual(false)
+    expect((state.terms as RecentSearchTerms).__index).toBeUndefined()
+    expect((state.terms as RecentSearchTerms).__recentTimestamp).toBeUndefined()
   })
-  it('should not retain recentTimestamp after resetting sort order', () => {
+
+  it('should clear __index and __recentTimestamp after resetting sort order', () => {
     const {result} = renderHook(() => useReducer(searchReducer, initialState))
     const [, dispatch] = result.current
 
     act(() => dispatch({type: 'SEARCH_ORDERING_RESET'}))
 
     const [state] = result.current
-    expect(isRecentSearchTerms(state.terms)).toEqual(false)
+    expect((state.terms as RecentSearchTerms).__index).toBeUndefined()
+    expect((state.terms as RecentSearchTerms).__recentTimestamp).toBeUndefined()
   })
-  it('should not retain recentTimestamp after updating sort order', () => {
+
+  it('should clear __index and __recentTimestamp after updating sort order', () => {
     const {result} = renderHook(() => useReducer(searchReducer, initialState))
     const [, dispatch] = result.current
 
     act(() => dispatch({ordering: mockOrdering, type: 'SEARCH_ORDERING_SET'}))
 
     const [state] = result.current
-    expect(isRecentSearchTerms(state.terms)).toEqual(false)
+    expect((state.terms as RecentSearchTerms).__index).toBeUndefined()
+    expect((state.terms as RecentSearchTerms).__recentTimestamp).toBeUndefined()
   })
 
-  it('should not retain recentTimestamp after updating query', () => {
+  it('should clear __index and __recentTimestamp after updating query', () => {
     const {result} = renderHook(() => useReducer(searchReducer, initialState))
     const [, dispatch] = result.current
 
     act(() => dispatch({query: 'bar', type: 'TERMS_QUERY_SET'}))
 
     const [state] = result.current
-    expect(isRecentSearchTerms(state.terms)).toEqual(false)
+    expect((state.terms as RecentSearchTerms).__index).toBeUndefined()
+    expect((state.terms as RecentSearchTerms).__recentTimestamp).toBeUndefined()
   })
 
-  it('should not retain recentTimestamp after adding a document type', () => {
+  it('should clear __index and __recentTimestamp after adding a document type', () => {
     const {result} = renderHook(() => useReducer(searchReducer, initialState))
     const [, dispatch] = result.current
 
     act(() => dispatch({schemaType: mockSearchableType, type: 'TERMS_TYPE_ADD'}))
 
     const [state] = result.current
-    expect(isRecentSearchTerms(state.terms)).toEqual(false)
+    expect((state.terms as RecentSearchTerms).__index).toBeUndefined()
+    expect((state.terms as RecentSearchTerms).__recentTimestamp).toBeUndefined()
   })
 
-  it('should not retain recentTimestamp after remove a document type', () => {
+  it('should clear __index and __recentTimestamp after remove a document type', () => {
     const {result} = renderHook(() => useReducer(searchReducer, initialState))
     const [, dispatch] = result.current
 
     act(() => dispatch({schemaType: mockSearchableType, type: 'TERMS_TYPE_REMOVE'}))
 
     const [state] = result.current
-    expect(isRecentSearchTerms(state.terms)).toEqual(false)
+    expect((state.terms as RecentSearchTerms).__index).toBeUndefined()
+    expect((state.terms as RecentSearchTerms).__recentTimestamp).toBeUndefined()
   })
 
-  it('should not retain recentTimestamp after clearing all document types', () => {
+  it('should clear __index and __recentTimestamp after clearing all document types', () => {
     const {result} = renderHook(() => useReducer(searchReducer, initialState))
     const [, dispatch] = result.current
 
     act(() => dispatch({type: 'TERMS_TYPES_CLEAR'}))
 
     const [state] = result.current
-    expect(isRecentSearchTerms(state.terms)).toEqual(false)
+    expect((state.terms as RecentSearchTerms).__index).toBeUndefined()
+    expect((state.terms as RecentSearchTerms).__recentTimestamp).toBeUndefined()
   })
 })
