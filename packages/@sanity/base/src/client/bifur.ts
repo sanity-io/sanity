@@ -7,7 +7,9 @@ export const getBifur = memoize(() => {
   const bifurVersionedClient = getVersionedClient('2022-06-30')
   const dataset = bifurVersionedClient.config().dataset
 
-  const url = bifurVersionedClient.getUrl(`/socket/${dataset}`).replace(/^http/, 'ws')
+  const url = `${bifurVersionedClient
+    .getUrl(`/socket/${dataset}`)
+    .replace(/^http/, 'ws')}?tag=sanity.studio.bifur`
 
   return fromUrl(url, {token$: authToken$})
 })
