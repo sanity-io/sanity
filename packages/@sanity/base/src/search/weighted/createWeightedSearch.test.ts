@@ -1,7 +1,7 @@
 import Schema from '@sanity/schema'
 import client from 'part:@sanity/base/client'
 import {defer, of} from 'rxjs'
-import {SearchTerms} from '..'
+import type {SearchTerms} from '..'
 import {getSearchableTypes} from '../common/utils'
 import {createWeightedSearch} from './createWeightedSearch'
 

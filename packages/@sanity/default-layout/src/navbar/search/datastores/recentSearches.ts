@@ -1,5 +1,5 @@
 import type {SearchTerms} from '@sanity/base'
-import {CurrentUser, ObjectSchemaType, Schema} from '@sanity/types'
+import type {CurrentUser, ObjectSchemaType, Schema} from '@sanity/types'
 import {versionedClient} from '../../../versionedClient'
 import {getSearchableOmnisearchTypes} from '../utils/selectors'
 

@@ -1,7 +1,6 @@
 import type {SearchableType} from '@sanity/base'
-import type {Schema, SchemaType} from '@sanity/types'
+import type {ObjectSchemaType, Schema, SchemaType} from '@sanity/types'
 import {getSearchableTypes} from '@sanity/base/_internal'
-import {ObjectSchemaType} from '@sanity/types'
 
 /**
  * Returns a list of all available document types filtered by a search string.
