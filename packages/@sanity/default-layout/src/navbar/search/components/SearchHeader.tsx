@@ -11,10 +11,14 @@ interface SearchHeaderProps {
   setHeaderInputRef: Dispatch<SetStateAction<HTMLInputElement | null>>
 }
 
+// @todo: remove hardcoded margin once <Spinner /> alignment within <TextInput /> icons is fixed
 const AlignedSpinner = styled(Spinner)`
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  margin-top: 4.5px;
   svg {
     width: 20px;
-    vertical-align: bottom !important;
   }
 `
 
