@@ -14,8 +14,8 @@ import {SearchHeader} from './SearchHeader'
 import {SearchResults} from './SearchResults'
 import {TypeFilters} from './TypeFilters'
 
-type PopoverPosition = {
-  x: number
+export type PopoverPosition = {
+  x: number | null
   y: number
 }
 export interface SearchPopoverProps {
@@ -161,10 +161,10 @@ export function SearchPopover({onClose, onOpen, open, position}: SearchPopoverPr
           ariaHeaderLabel="Search results"
           autoFocus
           childContainerElement={childContainerElement}
-          childCount={hasValidTerms ? result.hits.length : recentSearches.length}
+          childCount={hasValidTerms ? result.hits.length : recentSearches?.length}
           containerElement={containerElement}
           headerInputElement={headerInputElement}
-          id={dialogId}
+          id={dialogId || ''}
           data-testid="search-results-popover"
           initialSelectedIndex={hasValidTerms ? lastSearchIndex : 0}
           level={0}

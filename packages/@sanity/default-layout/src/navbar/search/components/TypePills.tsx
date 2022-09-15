@@ -12,7 +12,7 @@ interface TypePillsProps {
 const DEFAULT_AVAILABLE_CHARS = 40 // excluding "+x more" suffix
 
 const PillCard = styled(Card)<{$collapsible?: boolean}>`
-  background: ${({theme}) => theme.sanity.color.selectable.primary.enabled.code.bg};
+  background: ${({theme}) => theme?.sanity?.color?.selectable?.primary?.enabled?.code?.bg};
   flex-shrink: ${({$collapsible}) => ($collapsible ? 1 : 0)};
   overflow: hidden;
 `

@@ -17,8 +17,8 @@ import {SortMenu} from './SortMenu'
 
 interface SearchResultsProps {
   onClose: () => void
-  setChildContainerRef: Dispatch<SetStateAction<HTMLDivElement>>
-  setPointerOverlayRef: Dispatch<SetStateAction<HTMLDivElement>>
+  setChildContainerRef: Dispatch<SetStateAction<HTMLDivElement | null>>
+  setPointerOverlayRef: Dispatch<SetStateAction<HTMLDivElement | null>>
   small?: boolean
 }
 
@@ -60,7 +60,7 @@ export function SearchResults({
     state: {debug, terms, result},
   } = useSearchState()
 
-  const childParentRef = useRef()
+  const childParentRef = useRef<HTMLDivElement | null>(null)
 
   const {scrollToIndex, totalSize, virtualItems} = useVirtual({
     estimateSize: useCallback(() => VIRTUAL_LIST_ITEM_HEIGHT, []),
@@ -81,7 +81,6 @@ export function SearchResults({
    */
   useEffect(() => {
     setVirtualListScrollToIndex(scrollToIndex)
-    return () => setVirtualListScrollToIndex(null)
   }, [setVirtualListScrollToIndex, scrollToIndex])
 
   /**
@@ -89,11 +88,13 @@ export function SearchResults({
    */
   const handleResultClick = useCallback(() => {
     // Add terms to Local Storage
-    const updatedRecentSearches = recentSearchesStore?.addSearchTerm(terms)
-    dispatch({
-      recentSearches: updatedRecentSearches,
-      type: 'RECENT_SEARCHES_SET',
-    })
+    if (recentSearchesStore) {
+      const updatedRecentSearches = recentSearchesStore.addSearchTerm(terms)
+      dispatch({
+        recentSearches: updatedRecentSearches,
+        type: 'RECENT_SEARCHES_SET',
+      })
+    }
     onChildClick?.()
     onClose()
   }, [dispatch, onChildClick, onClose, recentSearchesStore, terms])

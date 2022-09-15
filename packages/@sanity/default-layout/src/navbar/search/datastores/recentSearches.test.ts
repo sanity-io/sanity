@@ -1,7 +1,7 @@
 import type {SearchTerms} from '@sanity/base'
 import Schema from '@sanity/schema'
 import type {CurrentUser, ObjectSchemaType} from '@sanity/types'
-import {createRecentSearchesStore, MAX_RECENT_SEARCHES} from './recentSearches'
+import {createRecentSearchesStore, MAX_RECENT_SEARCHES, RecentSearchesStore} from './recentSearches'
 
 const mockSchema = Schema.compile({
   name: 'default',
@@ -33,7 +33,7 @@ const mockUser: CurrentUser = {
   roles: [],
 }
 
-const recentSearchesStore = createRecentSearchesStore(mockSchema, mockUser)
+const recentSearchesStore = createRecentSearchesStore(mockSchema, mockUser) as RecentSearchesStore
 
 afterEach(() => {
   window.localStorage.clear()

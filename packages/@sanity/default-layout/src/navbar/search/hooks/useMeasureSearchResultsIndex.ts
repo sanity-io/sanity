@@ -2,13 +2,13 @@ import {useCallback, useState} from 'react'
 import {VIRTUAL_LIST_ITEM_HEIGHT} from '../constants'
 
 export function useMeasureSearchResultsIndex(
-  childContainerElement: HTMLDivElement
+  childContainerElement: HTMLDivElement | null
 ): {
   lastSearchIndex: number
   resetLastSearchIndex: () => void
   setLastSearchIndex: () => void
 } {
-  const [lastSearchIndex, setSavedSearchIndex] = useState<number>()
+  const [lastSearchIndex, setSavedSearchIndex] = useState<number>(0)
 
   const resetLastSearchIndex = useCallback(() => {
     setSavedSearchIndex(0)

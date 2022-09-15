@@ -8,8 +8,8 @@ import {PointerOverlay} from './PointerOverlay'
 import {RecentSearchItem} from './RecentSearchItem'
 
 interface RecentSearchesProps {
-  setChildContainerRef: Dispatch<SetStateAction<HTMLDivElement>>
-  setPointerOverlayRef: Dispatch<SetStateAction<HTMLDivElement>>
+  setChildContainerRef: Dispatch<SetStateAction<HTMLDivElement | null>>
+  setPointerOverlayRef: Dispatch<SetStateAction<HTMLDivElement | null>>
   showFiltersOnClick?: boolean
   onClear?: () => void
 }
@@ -46,8 +46,10 @@ export function RecentSearches({
 
   const handleClearRecentSearchesClick = useCallback(() => {
     // Remove terms from Local Storage
-    const updatedRecentSearches = recentSearchesStore?.removeSearchTerms()
-    dispatch({recentSearches: updatedRecentSearches, type: 'RECENT_SEARCHES_SET'})
+    if (recentSearchesStore) {
+      const updatedRecentSearches = recentSearchesStore.removeSearchTerms()
+      dispatch({recentSearches: updatedRecentSearches, type: 'RECENT_SEARCHES_SET'})
+    }
     onClear?.()
   }, [dispatch, recentSearchesStore, onClear])
 
@@ -59,8 +61,10 @@ export function RecentSearches({
       }
       dispatch({type: 'TERMS_SET', terms: searchTerms})
       // Add to Local Storage
-      const updatedRecentSearches = recentSearchesStore?.addSearchTerm(searchTerms)
-      dispatch({recentSearches: updatedRecentSearches, type: 'RECENT_SEARCHES_SET'})
+      if (recentSearchesStore) {
+        const updatedRecentSearches = recentSearchesStore?.addSearchTerm(searchTerms)
+        dispatch({recentSearches: updatedRecentSearches, type: 'RECENT_SEARCHES_SET'})
+      }
     },
     [dispatch, recentSearchesStore, showFiltersOnClick]
   )
@@ -69,8 +73,10 @@ export function RecentSearches({
     (index: number) => (event: MouseEvent) => {
       event.stopPropagation()
       // Remove from Local Storage
-      const updatedRecentSearches = recentSearchesStore?.removeSearchTermAtIndex(index)
-      dispatch({recentSearches: updatedRecentSearches, type: 'RECENT_SEARCHES_SET'})
+      if (recentSearchesStore) {
+        const updatedRecentSearches = recentSearchesStore?.removeSearchTermAtIndex(index)
+        dispatch({recentSearches: updatedRecentSearches, type: 'RECENT_SEARCHES_SET'})
+      }
     },
     [dispatch, recentSearchesStore]
   )

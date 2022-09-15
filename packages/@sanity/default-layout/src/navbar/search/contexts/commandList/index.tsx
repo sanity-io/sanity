@@ -39,7 +39,7 @@ interface CommandListContextValue {
   onChildMouseDown: (event: MouseEvent) => void
   onChildMouseEnter: (index: number) => () => void
   setVirtualListScrollToIndex: (
-    scrollToIndex: (index: number, options: Record<string, any>) => void
+    scrollToIndex: (index: number, options?: Record<string, any>) => void
   ) => void
 }
 
@@ -54,14 +54,14 @@ interface CommandListProviderProps {
   ariaMultiselectable?: boolean
   autoFocus?: boolean
   children?: ReactNode
-  childContainerElement: HTMLDivElement
+  childContainerElement: HTMLDivElement | null
   childCount: number
-  containerElement: HTMLDivElement
-  headerInputElement: HTMLInputElement
+  containerElement: HTMLDivElement | null
+  headerInputElement: HTMLInputElement | null
   id: string
   initialSelectedIndex?: number
   level: number
-  pointerOverlayElement: HTMLDivElement
+  pointerOverlayElement: HTMLDivElement | null
   virtualList?: boolean
 }
 
@@ -84,10 +84,10 @@ export function CommandListProvider({
   pointerOverlayElement,
   virtualList,
 }: CommandListProviderProps) {
-  const selectedIndexRef = useRef<number>(null)
+  const selectedIndexRef = useRef<number>(-1)
 
   const virtualListScrollToIndexRef = useRef<
-    (index: number, options?: Record<string, any>) => void
+    ((index: number, options?: Record<string, any>) => void) | null
   >(null)
 
   /**
@@ -132,8 +132,8 @@ export function CommandListProvider({
        * Scroll into view: delegate to `react-virtual` if a virtual list, otherwise use `scrollIntoView`
        */
       if (scrollSelectedIntoView) {
-        if (virtualList && virtualListScrollToIndexRef.current) {
-          virtualListScrollToIndexRef.current(selectedIndex, {align: 'start'})
+        if (virtualList) {
+          virtualListScrollToIndexRef?.current?.(selectedIndex, {align: 'start'})
         } else {
           const selectedElement = childElements.find(
             (element) => Number(element.dataset?.index) === selectedIndex
@@ -207,7 +207,7 @@ export function CommandListProvider({
 
     // Delegate scrolling to virtual list if necessary
     if (virtualList) {
-      virtualListScrollToIndexRef?.current(nextIndex)
+      virtualListScrollToIndexRef?.current?.(nextIndex)
       setActiveIndex({index: nextIndex, scrollIntoView: false})
     } else {
       setActiveIndex({index: nextIndex})
@@ -221,7 +221,7 @@ export function CommandListProvider({
 
     // Delegate scrolling to virtual list if necessary
     if (virtualList) {
-      virtualListScrollToIndexRef?.current(nextIndex)
+      virtualListScrollToIndexRef?.current?.(nextIndex)
       setActiveIndex({index: nextIndex, scrollIntoView: false})
     } else {
       setActiveIndex({index: nextIndex})
@@ -275,11 +275,15 @@ export function CommandListProvider({
           (el) => Number(el.dataset.index) === selectedIndexRef.current
         )
 
-        // Find the closest available clickable element - if not the current element, then query its children.
-        const clickableElement = CLICKABLE_CHILD_TAGS.includes(currentElement.tagName.toLowerCase())
-          ? currentElement
-          : (currentElement.querySelector(CLICKABLE_CHILD_TAGS.join(',')) as HTMLElement)
-        clickableElement?.click()
+        if (currentElement) {
+          // Find the closest available clickable element - if not the current element, then query its children.
+          const clickableElement = CLICKABLE_CHILD_TAGS.includes(
+            currentElement.tagName.toLowerCase()
+          )
+            ? currentElement
+            : (currentElement.querySelector(CLICKABLE_CHILD_TAGS.join(',')) as HTMLElement)
+          clickableElement?.click()
+        }
       }
     }
     headerInputElement?.addEventListener('keydown', handleKeyDown)
@@ -299,12 +303,12 @@ export function CommandListProvider({
     function handleKeydown(event: KeyboardEvent) {
       if (event.key === 'ArrowDown') {
         event.preventDefault()
-        headerInputElement.focus()
+        headerInputElement?.focus()
         scrollToNextItem()
       }
       if (event.key === 'ArrowUp') {
         event.preventDefault()
-        headerInputElement.focus()
+        headerInputElement?.focus()
         scrollToPreviousItem()
       }
     }

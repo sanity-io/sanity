@@ -27,7 +27,7 @@ const SearchHeaderBox = styled(Box)`
   border-bottom: 1px solid ${({theme}) => theme.sanity.color.base.border};
 `
 
-const SearchHeaderContentFlex = styled(Flex)<{$small: boolean}>`
+const SearchHeaderContentFlex = styled(Flex)<{$small?: boolean}>`
   box-sizing: border-box;
   height: ${({$small}) => ($small ? SUBHEADER_HEIGHT_SMALL : SUBHEADER_HEIGHT_LARGE)}px;
 `

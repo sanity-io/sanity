@@ -19,7 +19,7 @@ export interface SearchReducerState {
 
 export interface SearchResult {
   error: Error | null
-  hasMore?: boolean
+  hasMore?: boolean | null
   hits: WeightedHit[]
   loaded: boolean
   loading: boolean
@@ -27,7 +27,7 @@ export interface SearchResult {
 
 export function initialSearchState(
   currentUser: CurrentUser,
-  recentSearches: RecentSearchTerms[]
+  recentSearches?: RecentSearchTerms[]
 ): SearchReducerState {
   return {
     currentUser,
@@ -35,7 +35,7 @@ export function initialSearchState(
     filtersVisible: false,
     ordering: ORDER_RELEVANCE,
     pageIndex: 0,
-    recentSearches,
+    recentSearches: recentSearches || [],
     result: {
       error: null,
       hasMore: null,

@@ -45,7 +45,7 @@ const IconWrapperBox = styled(Box)<{$visible: boolean}>`
   visibility: ${({$visible}) => ($visible ? 'visible' : 'hidden')};
 `
 
-const SortMenuContentFlex = styled(Flex)<{$small: boolean}>`
+const SortMenuContentFlex = styled(Flex)<{$small?: boolean}>`
   box-sizing: border-box;
   height: ${({$small}) => ($small ? SUBHEADER_HEIGHT_SMALL : SUBHEADER_HEIGHT_LARGE)}px;
 `
@@ -89,6 +89,10 @@ export function SortMenu({small}: SortMenuProps) {
 
   const currentMenuItem = MENU_ORDERINGS.find((item) => isEqual(ordering, item))
 
+  if (!currentMenuItem) {
+    return null
+  }
+
   return (
     <Card borderBottom>
       <SortMenuContentFlex
@@ -115,7 +119,7 @@ export function SortMenu({small}: SortMenuProps) {
               </Flex>
             </Button>
           }
-          id={menuButtonId}
+          id={menuButtonId || ''}
           menu={
             <Menu>
               {MENU_ORDERINGS.map((item, index) => {

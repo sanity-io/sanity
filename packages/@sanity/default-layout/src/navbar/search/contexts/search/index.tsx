@@ -46,7 +46,8 @@ interface SearchProviderProps {
 export function SearchProvider({children, currentUser}: SearchProviderProps) {
   // Create local storage store
   const recentSearchesStore = createRecentSearchesStore(schema, currentUser)
-  const recentSearches = useMemo(() => recentSearchesStore.getRecentSearchTerms(), [
+
+  const recentSearches = useMemo(() => recentSearchesStore?.getRecentSearchTerms(), [
     recentSearchesStore,
   ])
 

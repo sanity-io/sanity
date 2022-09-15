@@ -8,7 +8,7 @@ import {CustomTextInput} from './CustomTextInput'
 
 interface SearchHeaderProps {
   onClose?: () => void
-  setHeaderInputRef: Dispatch<SetStateAction<HTMLInputElement>>
+  setHeaderInputRef: Dispatch<SetStateAction<HTMLInputElement | null>>
 }
 
 const AlignedSpinner = styled(Spinner)`
@@ -28,8 +28,8 @@ const SearchHeaderCard = styled(Card)`
 
 const NotificationBadge = styled.div`
   align-items: center;
-  background: ${({theme}) => theme.sanity.color.selectable.primary.enabled.fg};
-  color: ${({theme}) => theme.sanity.color.selectable.primary.selected.fg};
+  background: ${({theme}) => theme?.sanity?.color?.selectable?.primary?.enabled?.fg};
+  color: ${({theme}) => theme?.sanity?.color?.selectable?.primary?.selected?.fg};
   border-radius: 100%;
   display: flex;
   font-size: calc(8 / 16 * 1rem);

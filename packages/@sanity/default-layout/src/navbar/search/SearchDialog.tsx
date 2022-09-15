@@ -132,7 +132,7 @@ export function SearchDialog({onClose, onOpen, open}: SearchDialogProps) {
       childCount={hasValidTerms ? result.hits.length : recentSearches.length}
       containerElement={containerElement}
       headerInputElement={headerInputElement}
-      id={dialogId}
+      id={dialogId || ''}
       data-testid="search-results-dialog"
       initialSelectedIndex={hasValidTerms ? lastSearchIndex : 0}
       level={0}
