@@ -28,6 +28,7 @@ Link Alias
 Un-link Alias
   sanity dataset alias unlink
   sanity dataset alias unlink <alias-name>
+  sanity dataset alias unlink <alias-name> --force
 `
 
 const aliasCommand: CliCommandDefinition = {
