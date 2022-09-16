@@ -42,7 +42,7 @@ describe('calculateWordScore', () => {
 
 describe('partitionAndSanitizeSearchTerms', () => {
   it('should separate words and phrases', () => {
-    const [phrases, words] = partitionAndSanitizeSearchTerms(['foo', 'bar', `"foo bar"`])
+    const {phrases, words} = partitionAndSanitizeSearchTerms(['foo', 'bar', `"foo bar"`])
     expect(phrases).toEqual(['foo bar'])
     expect(words).toEqual(['foo', 'bar'])
   })

@@ -297,6 +297,22 @@ describe('createSearchQuery', () => {
 })
 
 describe('extractTermsFromQuery', () => {
+  describe('should handle orphaned double quotes', () => {
+    const tests: [string, string[]][] = [
+      [`"foo bar`, ['foo', 'bar']],
+      [`foo bar"`, ['foo', 'bar']],
+      [`foo "bar`, ['foo', 'bar']],
+    ]
+    it.each(tests)('%s', (input, expected) => {
+      expect(extractTermsFromQuery(input)).toEqual(expected)
+    })
+  })
+
+  it('should treat single quotes as regular characters', () => {
+    const terms = extractTermsFromQuery(`'foo ' bar'`)
+    expect(terms).toEqual([`'foo`, `'`, `bar'`])
+  })
+
   it('should tokenize all unquoted text', () => {
     const terms = extractTermsFromQuery('foo bar')
     expect(terms).toEqual(['foo', 'bar'])

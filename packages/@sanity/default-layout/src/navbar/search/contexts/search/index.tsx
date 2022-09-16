@@ -3,7 +3,7 @@
 
 import type {SearchTerms} from '@sanity/base'
 import type {CurrentUser} from '@sanity/types'
-import {isEqual} from 'lodash'
+import isEqual from 'lodash/isEqual'
 import schema from 'part:@sanity/base/schema'
 import React, {
   createContext,
@@ -97,7 +97,9 @@ export function SearchProvider({children, currentUser}: SearchProviderProps) {
           // Comments prepended to each query for future measurement
           comments: [
             `findability-mvi:${FINDABILITY_MVI}`,
-            ...(isRecentSearchTerms(terms) ? [`findability-recent-search:${terms.__index}`] : []),
+            ...(isRecentSearchTerms(terms)
+              ? [`findability-recent-search:${terms.__recent.index}`]
+              : []),
             `findability-selected-types:${terms.types.length}`,
             `findability-sort:${sortLabel}`,
           ],

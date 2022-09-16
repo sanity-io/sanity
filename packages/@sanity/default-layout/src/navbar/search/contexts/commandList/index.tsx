@@ -202,33 +202,28 @@ export function CommandListProvider({
     []
   )
 
-  const scrollToNextItem = useCallback(() => {
-    const nextIndex = selectedIndexRef.current < childCount - 1 ? selectedIndexRef.current + 1 : 0
+  const scrollToAdjacentItem = useCallback(
+    (direction: 'previous' | 'next') => {
+      let nextIndex
+      if (direction === 'next') {
+        nextIndex = selectedIndexRef.current < childCount - 1 ? selectedIndexRef.current + 1 : 0
+      }
+      if (direction === 'previous') {
+        nextIndex = selectedIndexRef.current > 0 ? selectedIndexRef.current - 1 : childCount - 1
+      }
 
-    // Delegate scrolling to virtual list if necessary
-    if (virtualList) {
-      virtualListScrollToIndexRef?.current?.(nextIndex)
-      setActiveIndex({index: nextIndex, scrollIntoView: false})
-    } else {
-      setActiveIndex({index: nextIndex})
-    }
+      // Delegate scrolling to virtual list if necessary
+      if (virtualList) {
+        virtualListScrollToIndexRef?.current?.(nextIndex)
+        setActiveIndex({index: nextIndex, scrollIntoView: false})
+      } else {
+        setActiveIndex({index: nextIndex})
+      }
 
-    enableChildContainerPointerEvents(false)
-  }, [childCount, enableChildContainerPointerEvents, setActiveIndex, virtualList])
-
-  const scrollToPreviousItem = useCallback(() => {
-    const nextIndex = selectedIndexRef.current > 0 ? selectedIndexRef.current - 1 : childCount - 1
-
-    // Delegate scrolling to virtual list if necessary
-    if (virtualList) {
-      virtualListScrollToIndexRef?.current?.(nextIndex)
-      setActiveIndex({index: nextIndex, scrollIntoView: false})
-    } else {
-      setActiveIndex({index: nextIndex})
-    }
-
-    enableChildContainerPointerEvents(false)
-  }, [childCount, enableChildContainerPointerEvents, setActiveIndex, virtualList])
+      enableChildContainerPointerEvents(false)
+    },
+    [childCount, enableChildContainerPointerEvents, setActiveIndex, virtualList]
+  )
 
   /**
    * Set active index whenever initial index changes
@@ -263,11 +258,11 @@ export function CommandListProvider({
 
       if (event.key === 'ArrowDown') {
         event.preventDefault()
-        scrollToNextItem()
+        scrollToAdjacentItem('next')
       }
       if (event.key === 'ArrowUp') {
         event.preventDefault()
-        scrollToPreviousItem()
+        scrollToAdjacentItem('previous')
       }
       if (event.key === 'Enter') {
         event.preventDefault()
@@ -290,7 +285,7 @@ export function CommandListProvider({
     return () => {
       headerInputElement?.removeEventListener('keydown', handleKeyDown)
     }
-  }, [childContainerElement, headerInputElement, scrollToNextItem, scrollToPreviousItem])
+  }, [childContainerElement, headerInputElement, scrollToAdjacentItem])
 
   /**
    * Listen to keyboard arrow events on the 'closest' parent [data-overflow] element to the child container.
@@ -304,12 +299,12 @@ export function CommandListProvider({
       if (event.key === 'ArrowDown') {
         event.preventDefault()
         headerInputElement?.focus()
-        scrollToNextItem()
+        scrollToAdjacentItem('next')
       }
       if (event.key === 'ArrowUp') {
         event.preventDefault()
         headerInputElement?.focus()
-        scrollToPreviousItem()
+        scrollToAdjacentItem('previous')
       }
     }
 
@@ -318,7 +313,7 @@ export function CommandListProvider({
     return () => {
       parentOverflowElement?.removeEventListener('keydown', handleKeydown)
     }
-  }, [childContainerElement, headerInputElement, scrollToNextItem, scrollToPreviousItem])
+  }, [childContainerElement, headerInputElement, scrollToAdjacentItem])
 
   /**
    * Track focus / blur state on the list's input element and store state in `data-focused` attribute on

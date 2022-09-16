@@ -1,5 +1,5 @@
 import {CloseIcon, ControlsIcon, SearchIcon} from '@sanity/icons'
-import {Box, Button, Card, Flex, Spinner, studioTheme} from '@sanity/ui'
+import {Box, Button, Card, Flex, Spinner, studioTheme, Theme} from '@sanity/ui'
 import React, {Dispatch, SetStateAction, useCallback, useEffect, useRef, useState} from 'react'
 import styled from 'styled-components'
 import {useSearchState} from '../contexts/search'
@@ -32,8 +32,8 @@ const SearchHeaderCard = styled(Card)`
 
 const NotificationBadge = styled.div`
   align-items: center;
-  background: ${({theme}) => theme?.sanity?.color?.selectable?.primary?.enabled?.fg};
-  color: ${({theme}) => theme?.sanity?.color?.selectable?.primary?.selected?.fg};
+  background: ${({theme}: {theme: Theme}) => theme.sanity.color.selectable?.primary.enabled.fg};
+  color: ${({theme}: {theme: Theme}) => theme.sanity.color.selectable?.primary.selected.fg};
   border-radius: 100%;
   display: flex;
   font-size: calc(8 / 16 * 1rem);

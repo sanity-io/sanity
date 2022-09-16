@@ -6,7 +6,9 @@ type SearchScore = [number, string]
 // takes a set of terms and a value and returns a [score, story] pair where score is a value between 0, 1 and story is the explanation
 export const calculateScore = (searchTerms: string[], value: string): SearchScore => {
   // Separate search terms by phrases (wrapped with quotes) and words.
-  const [uniqueSearchPhrases, uniqueSearchWords] = partitionAndSanitizeSearchTerms(searchTerms)
+  const {phrases: uniqueSearchPhrases, words: uniqueSearchWords} = partitionAndSanitizeSearchTerms(
+    searchTerms
+  )
 
   // Calculate an aggregated score of both phrase and word matches.
   const [phraseScore, phraseWhy] = calculatePhraseScore(uniqueSearchPhrases, value)
@@ -89,14 +91,19 @@ export function calculateWordScore(uniqueSearchTerms: string[], value: string): 
       ]
 }
 
-export function partitionAndSanitizeSearchTerms(searchTerms: string[]): [string[], string[]] {
+export function partitionAndSanitizeSearchTerms(
+  searchTerms: string[]
+): {
+  phrases: string[]
+  words: string[]
+} {
   const uniqueSearchTerms = uniq(searchTerms.map(toLower))
 
   const [searchPhrases, searchWords] = partition(uniqueSearchTerms, (term) => /^".*"$/.test(term))
-  return [
-    uniq(searchPhrases).map(toLower).map(stripWrappingQuotes), //
-    uniq(searchWords.map(toLower)),
-  ]
+  return {
+    phrases: uniq(searchPhrases).map(toLower).map(stripWrappingQuotes), //
+    words: uniq(searchWords.map(toLower)),
+  }
 }
 
 function stripWrappingQuotes(str: string) {

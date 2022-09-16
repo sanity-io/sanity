@@ -97,7 +97,7 @@ export function RecentSearches({
                 <RecentSearchItem
                   data-index={index}
                   index={index}
-                  key={recentSearch.__recentTimestamp}
+                  key={recentSearch.__recent.timestamp}
                   maxVisibleTypePillChars={maxVisibleTypePillChars}
                   onClick={handleRecentSearchClick}
                   onDelete={handleRecentSearchDelete(index)}

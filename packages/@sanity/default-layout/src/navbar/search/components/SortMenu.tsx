@@ -12,7 +12,7 @@ import {
   MenuItem,
   Text,
 } from '@sanity/ui'
-import {isEqual} from 'lodash'
+import isEqual from 'lodash/isEqual'
 import React, {useCallback, useMemo} from 'react'
 import styled from 'styled-components'
 import {SUBHEADER_HEIGHT_LARGE, SUBHEADER_HEIGHT_SMALL} from '../constants'
@@ -30,13 +30,16 @@ interface SortMenuProps {
   small?: boolean
 }
 
-// null items are represented as dividers
-const MENU_ORDERINGS: (SearchOrdering | null)[] = [
+interface SearchDivider {
+  type: 'divider'
+}
+
+const MENU_ORDERINGS: (SearchDivider | SearchOrdering)[] = [
   ORDER_RELEVANCE,
-  null,
+  {type: 'divider'},
   ORDER_CREATED_ASC,
   ORDER_CREATED_DESC,
-  null,
+  {type: 'divider'},
   ORDER_UPDATED_ASC,
   ORDER_UPDATED_DESC,
 ]
@@ -49,6 +52,10 @@ const SortMenuContentFlex = styled(Flex)<{$small?: boolean}>`
   box-sizing: border-box;
   height: ${({$small}) => ($small ? SUBHEADER_HEIGHT_SMALL : SUBHEADER_HEIGHT_LARGE)}px;
 `
+
+function isSearchDivider(item: SearchDivider | SearchOrdering): item is SearchDivider {
+  return (item as SearchDivider).type === 'divider'
+}
 
 function CustomMenuItem({ordering}: {ordering: SearchOrdering}) {
   const {
@@ -87,7 +94,9 @@ export function SortMenu({small}: SortMenuProps) {
 
   const menuButtonId = useId()
 
-  const currentMenuItem = MENU_ORDERINGS.find((item) => isEqual(ordering, item))
+  const currentMenuItem = MENU_ORDERINGS.find(
+    (item): item is SearchOrdering => isEqual(ordering, item) && !isSearchDivider(item)
+  )
 
   if (!currentMenuItem) {
     return null
@@ -123,7 +132,7 @@ export function SortMenu({small}: SortMenuProps) {
           menu={
             <Menu>
               {MENU_ORDERINGS.map((item, index) => {
-                if (item === null) {
+                if (isSearchDivider(item)) {
                   // eslint-disable-next-line react/no-array-index-key
                   return <MenuDivider key={index} />
                 }

@@ -3,7 +3,7 @@
 
 import type {SearchOptions, SearchTerms, WeightedHit} from '@sanity/base'
 import {createWeightedSearch} from '@sanity/base/_internal'
-import {isEqual} from 'lodash'
+import isEqual from 'lodash/isEqual'
 import schema from 'part:@sanity/base/schema'
 import {useCallback, useState} from 'react'
 import {useObservableCallback} from 'react-rx'
