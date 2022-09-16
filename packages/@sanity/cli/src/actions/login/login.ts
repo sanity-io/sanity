@@ -18,9 +18,10 @@ import type {
 } from './types'
 
 export interface LoginFlags {
-  sso?: string
-  provider?: string
   experimental?: boolean
+  open?: boolean
+  provider?: string
+  sso?: string
 }
 
 export async function login(
@@ -28,7 +29,7 @@ export async function login(
   context: CliCommandContext
 ): Promise<void> {
   const {prompt, output, apiClient} = context
-  const {sso, experimental, provider: specifiedProvider} = args.extOptions
+  const {sso, experimental, open: openFlag, provider: specifiedProvider} = args.extOptions
   const previousToken = getCliToken()
   const hasExistingToken = Boolean(previousToken)
 
@@ -56,14 +57,17 @@ export async function login(
   providerUrl.searchParams.set('label', `${os.hostname()} / ${os.platform()}`)
   const loginUrl = providerUrl.href
 
-  const shouldLaunchBrowser = canLaunchBrowser()
+  const shouldLaunchBrowser = canLaunchBrowser() && openFlag !== false
   const actionText = shouldLaunchBrowser ? 'Opening browser at' : 'Please open a browser at'
 
   output.print(`\n${actionText} ${loginUrl}\n`)
   const spin = output
     .spinner('Waiting for browser login to complete... Press Ctrl + C to cancel')
     .start()
-  open(loginUrl)
+
+  if (shouldLaunchBrowser) {
+    open(loginUrl)
+  }
 
   // Wait for a success/error on the listener channel
   let token: string
