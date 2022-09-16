@@ -1,0 +1,21 @@
+{
+  "name": "v3-studio",
+  "private": true,
+  "version": "0.0.1",
+  "description": "A Sanity v3 studio for CI testing.",
+  "author": "Sanity.io <hello@sanity.io>",
+  "license": "MIT",
+  "scripts": {
+    "build": "sanity build",
+    "start": "sanity start"
+  },
+  "keywords": [
+    "fixture"
+  ],
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "sanity": "3.0.0-dev-preview.20",
+    "styled-components": "^5.2.0"
+  }
+}

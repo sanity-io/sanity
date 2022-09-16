@@ -1,6 +1,7 @@
 {
   "extends": "../../../tsconfig.settings",
   "include": ["./src", "./test", "./typings", "./package.json"],
+  "exclude": ["./test/**/__fixtures__"],
   "compilerOptions": {
     "composite": true,
     "rootDir": ".",

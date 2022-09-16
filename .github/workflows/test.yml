@@ -75,16 +75,3 @@ jobs:
       - name: Test
         id: test
         run: yarn test
-
-      # Required for import lint rules to work - packages pointing to ex
-      # `lib/index.js`, where `src/index.ts` gets compiled to `lib/index.js`
-      - name: Build modules
-        id: buildResolver
-        run: yarn build
-        env:
-          NODE_OPTIONS: --max_old_space_size=8192
-
-      - name: Test CLI
-        working-directory: ${{ env.GITHUB_WORKSPACE }}
-        run: |
-          node scripts/testCli.js

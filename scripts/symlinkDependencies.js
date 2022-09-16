@@ -37,6 +37,12 @@ if (!argv.all) {
 const targetRootPackages = fs.readdirSync(targetDepsPath).filter(notSanity)
 const targetSanityPackages = fs.readdirSync(path.join(targetDepsPath, '@sanity')).map(prefix)
 
+if (targetDeps.includes('sanity')) {
+  // in v3 studios, we'll want to explicitly link/keep `@sanity/cli`,
+  // since it has the `sanity` cli binary
+  targetDeps.push('@sanity/cli')
+}
+
 // All the dependencies in the root of node_modules and node_modules/@sanity
 const targetPackages = [].concat(targetRootPackages, targetSanityPackages, targetDeps)
 const sharedPackages = argv.all

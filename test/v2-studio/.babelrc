@@ -1,2 +1,0 @@
-// Here to prevent the CLI test from resolving the monorepo babelrc
-{}
