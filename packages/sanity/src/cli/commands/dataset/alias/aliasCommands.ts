@@ -14,7 +14,12 @@ Create Alias
   sanity dataset alias create <alias-name> <target-dataset>
 
 Delete Alias
-  sanity dataset alias delete <alias-name>
+  Options
+    --force Skips security prompt and forces link command
+
+  Usage
+    sanity dataset alias delete <alias-name>
+    sanity dataset alias delete <alias-name> --force
 
 Link Alias
   Options
@@ -24,11 +29,16 @@ Link Alias
     sanity dataset alias link
     sanity dataset alias link <alias-name>
     sanity dataset alias link <alias-name> <target-dataset>
+    sanity dataset alias link <alias-name> <target-dataset> --force
 
 Un-link Alias
-  sanity dataset alias unlink
-  sanity dataset alias unlink <alias-name>
-  sanity dataset alias unlink <alias-name> --force
+  Options
+    --force Skips security prompt and forces link command
+
+  Usage
+    sanity dataset alias unlink
+    sanity dataset alias unlink <alias-name>
+    sanity dataset alias unlink <alias-name> --force
 `
 
 const aliasCommand: CliCommandDefinition = {
