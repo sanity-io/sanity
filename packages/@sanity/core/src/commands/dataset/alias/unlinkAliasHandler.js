@@ -1,11 +1,18 @@
+import {hideBin} from 'yargs/helpers'
+import yargs from 'yargs/yargs'
 import promptForDatasetAliasName from '../../../actions/dataset/alias/datasetAliasNamePrompt'
 import validateDatasetAliasName from '../../../actions/dataset/alias/validateDatasetAliasName'
 import * as aliasClient from './datasetAliasesClient'
 import {ALIAS_PREFIX} from './datasetAliasesClient'
 
+function parseCliFlags(args) {
+  return yargs(hideBin(args.argv || process.argv).slice(2)).option('force', {type: 'boolean'}).argv
+}
+
 export default async (args, context) => {
   const {apiClient, output, prompt} = context
   const [, alias] = args.argsWithoutOptions
+  const {force} = await parseCliFlags(args)
   const client = apiClient()
 
   const nameError = alias && validateDatasetAliasName(alias)
@@ -34,15 +41,19 @@ export default async (args, context) => {
     throw new Error(`Dataset alias "${aliasOutputName}" is not linked to a dataset`)
   }
 
-  await prompt.single({
-    type: 'input',
-    message: `Are you ABSOLUTELY sure you want to unlink this alias from the "${linkedAlias.datasetName}" dataset?
-      \n  Type YES/NO: `,
-    filter: (input) => `${input}`.toLowerCase(),
-    validate: (input) => {
-      return input === 'yes' || 'Ctrl + C to cancel dataset alias unlink.'
-    },
-  })
+  if (force) {
+    output.warn(`'--force' used: skipping confirmation, unlinking alias "${aliasOutputName}"`)
+  } else {
+    await prompt.single({
+      type: 'input',
+      message: `Are you ABSOLUTELY sure you want to unlink this alias from the "${linkedAlias.datasetName}" dataset?
+        \n  Type YES/NO: `,
+      filter: (input) => `${input}`.toLowerCase(),
+      validate: (input) => {
+        return input === 'yes' || 'Ctrl + C to cancel dataset alias unlink.'
+      },
+    })
+  }
 
   try {
     const result = await aliasClient.unlinkAlias(client, aliasName)
