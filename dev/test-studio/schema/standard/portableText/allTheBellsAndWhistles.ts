@@ -1,7 +1,10 @@
 import {BellIcon, ImageIcon, InfoOutlineIcon} from '@sanity/icons'
 import {Rule} from '@sanity/types'
+import {Spinner, Flex} from '@sanity/ui'
+import React from 'react'
 import {InfoBoxPreview} from './InfoBoxPreview'
 import {LinkAnnotationInput} from './LinkAnnotationInput'
+import {Typer} from './Typer'
 
 export const ptAllTheBellsAndWhistlesType = {
   type: 'document',
@@ -13,6 +16,12 @@ export const ptAllTheBellsAndWhistlesType = {
       type: 'string',
       name: 'title',
       title: 'Title',
+    },
+    {
+      name: 'typer',
+      type: 'string',
+      title: 'Typer',
+      inputComponent: () => React.createElement(Typer),
     },
     {
       type: 'array',
