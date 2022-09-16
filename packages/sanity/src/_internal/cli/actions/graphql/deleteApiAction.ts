@@ -1,6 +1,8 @@
+import type {SanityClient} from '@sanity/client'
 import type {CliCommandArguments, CliCommandContext} from '@sanity/cli'
 import yargs from 'yargs/yargs'
 import {hideBin} from 'yargs/helpers'
+import {getGraphQLAPIs} from './getGraphQLAPIs'
 
 export interface DeleteGraphQLApiFlags {
   project?: string
@@ -11,6 +13,7 @@ export interface DeleteGraphQLApiFlags {
 
 function parseCliFlags(args: {argv?: string[]}) {
   return yargs(hideBin(args.argv || process.argv).slice(2))
+    .option('api', {type: 'string'})
     .option('project', {type: 'string'})
     .option('dataset', {type: 'string'})
     .option('tag', {type: 'string', default: 'default'})
@@ -25,14 +28,51 @@ export default async function deleteGraphQLApi(
   const flags = await parseCliFlags(args)
   const {apiClient, output, prompt} = context
 
-  let client = apiClient({
-    requireUser: true,
-    requireProject: true,
-  }).config({apiVersion: '1'})
+  // Use explicitly defined flags where possible
+  let projectId = flags.project
+  let dataset = flags.dataset
+  let tag = flags.tag
 
-  const projectId = flags.project ? `${flags.project}` : client.config().projectId
-  const dataset = flags.dataset ? `${flags.dataset}` : client.config().dataset
-  const tag = flags.tag ? `${flags.tag}` : 'default'
+  // If specifying --api, use it for the flags not provided
+  if (flags.api) {
+    const apiDefs = await getGraphQLAPIs(context)
+    const apiDef = apiDefs.find((def) => def.id === flags.api)
+    if (!apiDef) {
+      throw new Error(`GraphQL API "${flags.api}" not found`)
+    }
+
+    if (projectId) {
+      output.warn(`Both --api and --project specified, using --project ${projectId}`)
+    } else {
+      projectId = apiDef.projectId
+    }
+
+    if (dataset) {
+      output.warn(`Both --api and --dataset specified, using --dataset ${dataset}`)
+    } else {
+      dataset = apiDef.dataset
+    }
+
+    if (tag && apiDef.tag) {
+      output.warn(`Both --api and --tag specified, using --tag ${tag}`)
+    } else {
+      tag = apiDef.tag || 'default'
+    }
+  }
+
+  // If neither --api nor --project/dataset is specified, use the CLI config for values
+  let client: SanityClient
+  if (!projectId || !dataset) {
+    client = apiClient({
+      requireUser: true,
+      requireProject: true,
+    }).config({apiVersion: '1'})
+
+    projectId = projectId || client.config().projectId
+    dataset = dataset || client.config().dataset
+  } else {
+    client = apiClient({requireProject: false, requireUser: true}).config({projectId, dataset})
+  }
 
   const confirmMessage =
     tag === 'default'

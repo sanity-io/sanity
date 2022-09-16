@@ -6,7 +6,8 @@
     "./src/**/__mocks__",
     "./src/**/__workshop__",
     "./src/**/*.test.ts",
-    "./src/**/*.test.tsx"
+    "./src/**/*.test.tsx",
+    "./test/**/__fixtures__"
   ],
   "compilerOptions": {
     "composite": true,

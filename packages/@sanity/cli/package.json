@@ -43,7 +43,8 @@
     "postbuild": "run-s check:package",
     "prebuild": "run-s clean",
     "watch": "pkg-utils watch --tsconfig tsconfig.lib.json",
-    "ts": "node -r esbuild-register"
+    "ts": "node -r esbuild-register",
+    "test": "jest"
   },
   "dependencies": {
     "@babel/traverse": "^7.19.0",
@@ -60,6 +61,7 @@
     "@sanity/types": "3.0.0-dev-preview.20",
     "@sanity/util": "3.0.0-dev-preview.20",
     "@types/configstore": "^5.0.1",
+    "@types/cpx": "^1.5.2",
     "@types/babel__traverse": "^7.18.1",
     "@types/decompress": "^4.2.4",
     "@types/eventsource": "^1.1.8",
@@ -73,6 +75,7 @@
     "chalk": "^4.1.2",
     "clean-stack": "^3.0.0",
     "configstore": "^5.0.1",
+    "cpx": "^1.5.0",
     "debug": "^3.2.7",
     "decompress": "^4.2.0",
     "deep-sort-object": "^1.0.1",

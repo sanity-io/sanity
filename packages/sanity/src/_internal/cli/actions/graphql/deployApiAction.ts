@@ -38,6 +38,8 @@ interface DeployTask {
   schema: GeneratedApiSpecification
 }
 
+const legacyFlags = ['generation', 'non-null-document-fields', 'playground']
+
 // eslint-disable-next-line complexity
 export default async function deployGraphQLApiAction(
   args: {argv?: string[]},
@@ -45,7 +47,19 @@ export default async function deployGraphQLApiAction(
 ): Promise<void> {
   // Reparsing CLI flags for better control of binary flags
   const flags = await parseCliFlags(args)
-  const {force, dryRun, api: onlyApis} = flags
+  const {force, dryRun, api: onlyApis, dataset: datasetFlag, tag: tagFlag} = flags
+
+  const usedLegacyFlags = legacyFlags.filter((flag) => typeof flags[flag] !== 'undefined')
+  if (usedLegacyFlags.length === 1) {
+    throw new Error(
+      `The --${usedLegacyFlags[0]} flag is no longer supported. The setting can be configured in sanity.cli.ts (environment variables may be used for dynamic configuration).`
+    )
+  } else if (usedLegacyFlags.length > 1) {
+    const removedFlags = usedLegacyFlags.map((flag) => `--${flag}`).join(', ')
+    throw new Error(
+      `The following flags are no longer supported: ${removedFlags}. Instead, configure these in sanity.cli.ts (environment variables may be used for dynamic configuration).`
+    )
+  }
 
   const {apiClient, output, prompt} = context
 
@@ -56,15 +70,35 @@ export default async function deployGraphQLApiAction(
     requireProject: true,
   })
 
-  // Importing dynamically in order to create a separate chunk for this file:
-  // we use worker threads to keep browser environment mocking out of the main process
   const apiDefs = await getGraphQLAPIs(context)
+  const hasMultipleApis = apiDefs.length > 1 || (flags.api && flags.api.length > 1)
+  const usedFlags = [flags.dataset && '--dataset', flags.tag && '--tag'].filter(Boolean)
+
+  if (hasMultipleApis && (flags.dataset || flags.tag)) {
+    output.warn(`WARN: More than one API defined, and ${usedFlags.join('/')} is specified`)
+    output.warn(`WARN: This will use the specified flag for ALL APIs!`)
+
+    if (flags.force) {
+      output.warn(`WARN: --force specified, continuing...`)
+    } else if (
+      !(await prompt.single({
+        type: 'confirm',
+        message: 'Continue with flag override for all APIs?',
+        default: false,
+      }))
+    ) {
+      process.exit(1)
+    }
+  }
+
   const deployTasks: DeployTask[] = []
 
   const apiNames = new Set<string>()
   const apiIds = new Set<string>()
   for (const apiDef of apiDefs) {
-    const apiName = [apiDef.dataset, apiDef.tag || 'default'].join('/')
+    const dataset = datasetFlag || apiDef.dataset
+    const tag = tagFlag || apiDef.tag || 'default'
+    const apiName = [dataset, tag].join('/')
     if (apiNames.has(apiName)) {
       throw new Error(`Multiple GraphQL APIs with the same dataset and tag found (${apiName})`)
     }
@@ -104,7 +138,9 @@ export default async function deployGraphQLApiAction(
 
     index++
 
-    const {projectId, dataset, playground, tag = 'default', nonNullDocumentFields, schema} = apiDef
+    const dataset = datasetFlag || apiDef.dataset
+    const tag = tagFlag || apiDef.tag || 'default'
+    const {projectId, playground, nonNullDocumentFields, schema} = apiDef
     const apiName = [dataset, tag].join('/')
     spinner = output.spinner(`Generating GraphQL API: ${apiName}`).start()
 
@@ -338,15 +374,19 @@ async function getCurrentSchemaProps(
 }
 
 function parseCliFlags(args: {argv?: string[]}) {
-  return yargs(hideBin(args.argv || process.argv).slice(2))
-    .option('api', {type: 'string', array: true})
-    .option('dataset', {type: 'string'})
-    .option('tag', {type: 'string', default: 'default'})
-    .option('generation', {type: 'string'})
-    .option('non-null-document-fields', {type: 'boolean', default: false})
-    .option('playground', {type: 'boolean'})
-    .option('dry-run', {type: 'boolean', default: false})
-    .option('force', {type: 'boolean'}).argv
+  return (
+    yargs(hideBin(args.argv || process.argv).slice(2))
+      // These are legacy flags - should throw errors when using them
+      .option('generation', {type: 'string'})
+      .option('non-null-document-fields', {type: 'boolean'})
+      .option('playground', {type: 'boolean'})
+      // These are the supported flags
+      .option('tag', {type: 'string'})
+      .option('dataset', {type: 'string'})
+      .option('api', {type: 'string', array: true})
+      .option('dry-run', {type: 'boolean', default: false})
+      .option('force', {type: 'boolean'}).argv
+  )
 }
 
 function isResultValid(

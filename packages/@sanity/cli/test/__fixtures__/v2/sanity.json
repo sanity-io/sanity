@@ -4,8 +4,8 @@
     "name": "v2 studio"
   },
   "api": {
-    "projectId": "ppsg7ml5",
-    "dataset": "test"
+    "projectId": "aeysrmym",
+    "dataset": "production"
   },
   "plugins": [
     "@sanity/base",
@@ -13,10 +13,17 @@
     "@sanity/default-login",
     "@sanity/desk-tool"
   ],
+  "server": {
+    "port": 3334
+  },
   "parts": [
     {
       "name": "part:@sanity/base/schema",
       "path": "schema"
+    },
+    {
+      "implements": "part:@sanity/base/brand-logo",
+      "path": "./components/MyLogo.jsx"
     }
   ]
 }
