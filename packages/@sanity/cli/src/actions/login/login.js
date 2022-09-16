@@ -11,7 +11,7 @@ import {getCliToken} from '../../util/clientWrapper'
 
 export default async function login(args, context) {
   const {prompt, output, apiClient} = context
-  const {sso, experimental, provider: specifiedProvider} = args.extOptions
+  const {sso, experimental, open: openFlag, provider: specifiedProvider} = args.extOptions
   const previousToken = getCliToken()
   const hasExistingToken = Boolean(previousToken)
 
@@ -38,14 +38,17 @@ export default async function login(args, context) {
   providerUrl.query.label = `${os.hostname()} / ${os.platform()}`
   const loginUrl = urlParser.format(providerUrl)
 
-  const shouldLaunchBrowser = canLaunchBrowser()
+  const shouldLaunchBrowser = canLaunchBrowser() && openFlag !== false
   const actionText = shouldLaunchBrowser ? 'Opening browser at' : 'Please open a browser at'
 
   output.print(`\n${actionText} ${loginUrl}\n`)
   const spin = output
     .spinner('Waiting for browser login to complete... Press Ctrl + C to cancel')
     .start()
-  open(loginUrl, {wait: false})
+
+  if (shouldLaunchBrowser) {
+    open(loginUrl, {wait: false})
+  }
 
   // Wait for a success/error on the listener channel
   let token
