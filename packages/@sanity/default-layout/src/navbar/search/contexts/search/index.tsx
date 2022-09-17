@@ -71,6 +71,7 @@ export function SearchProvider({children, currentUser}: SearchProviderProps) {
     onComplete: (hits) => dispatch({hits, type: 'SEARCH_REQUEST_COMPLETE'}),
     onError: (error) => dispatch({error, type: 'SEARCH_REQUEST_ERROR'}),
     onStart: () => dispatch({type: 'SEARCH_REQUEST_START'}),
+    schema,
   })
 
   const hasValidTerms = hasSearchableTerms(terms)

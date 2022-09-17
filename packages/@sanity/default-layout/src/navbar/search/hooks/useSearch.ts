@@ -1,11 +1,8 @@
-// @todo: remove the following line when part imports has been removed from this file
-///<reference types="@sanity/types/parts" />
-
 import type {SearchOptions, SearchTerms, WeightedHit} from '@sanity/base'
 import {createWeightedSearch} from '@sanity/base/_internal'
+import type {Schema} from '@sanity/types'
 import isEqual from 'lodash/isEqual'
-import schema from 'part:@sanity/base/schema'
-import {useCallback, useState} from 'react'
+import {useCallback, useMemo, useState} from 'react'
 import {useObservableCallback} from 'react-rx'
 import {concat, Observable, of} from 'rxjs'
 import {
@@ -53,31 +50,33 @@ function sanitizeRequest(request: SearchRequest) {
   }
 }
 
-const searchWeighted = createWeightedSearch(getSearchableOmnisearchTypes(schema), searchClient, {
-  tag: 'search.global',
-  unique: true,
-})
-
-export function useSearch(
-  {
-    initialState,
-    onComplete,
-    onError,
-    onStart,
-  }: {
-    initialState: SearchState
-    onComplete?: (hits: WeightedHit[]) => void
-    onError?: (error: Error) => void
-    onStart?: () => void
-  } = {
-    initialState: INITIAL_SEARCH_STATE,
-  }
-): {
+export function useSearch({
+  initialState,
+  onComplete,
+  onError,
+  onStart,
+  schema,
+}: {
+  initialState: SearchState
+  onComplete?: (hits: WeightedHit[]) => void
+  onError?: (error: Error) => void
+  onStart?: () => void
+  schema: Schema
+}): {
   handleSearch: (request: SearchRequest) => void
   handleClearSearch: () => void
   searchState: SearchState
 } {
   const [searchState, setSearchState] = useState(initialState)
+
+  const searchWeighted = useMemo(
+    () =>
+      createWeightedSearch(getSearchableOmnisearchTypes(schema), searchClient, {
+        tag: 'search.global',
+        unique: true,
+      }),
+    [schema]
+  )
 
   const handleQueryChange = useObservableCallback(
     (inputValue$: Observable<SearchRequest | null>) => {
