@@ -45,7 +45,8 @@
   "dependencies": {
     "@sanity/types": "3.0.0-dev-preview.20",
     "date-fns": "^2.26.1",
-    "lodash": "^4.17.21"
+    "lodash": "^4.17.21",
+    "rxjs": "^6.5.3"
   },
   "devDependencies": {
     "@sanity/client": "^3.4.1",
