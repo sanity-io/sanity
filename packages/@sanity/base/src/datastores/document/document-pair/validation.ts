@@ -1,29 +1,29 @@
+/* eslint-disable max-nested-callbacks */
 // @todo: remove the following line when part imports has been removed from this file
 ///<reference types="@sanity/types/parts" />
 
 import {
+  distinctUntilChanged,
+  first,
   map,
-  scan,
-  switchMap,
   mergeMap,
   publishReplay,
   refCount,
+  scan,
   share,
-  distinctUntilChanged,
-  debounceTime,
-  first,
+  skip,
+  switchMap,
   throttleTime,
-  tap,
-  mapTo,
 } from 'rxjs/operators'
 
-import {concat, of, combineLatest, defer, from, Observable, asyncScheduler} from 'rxjs'
+import {asyncScheduler, combineLatest, concat, defer, from, Observable, of} from 'rxjs'
 import schema from 'part:@sanity/base/schema'
-import {validateDocument} from '@sanity/validation'
-import {Marker, ValidationContext, isReference} from '@sanity/types'
+import {validateDocumentObservable} from '@sanity/validation'
+import {isReference, Marker, ValidationContext} from '@sanity/types'
 import reduceJSON from 'json-reduce'
 import shallowEquals from 'shallow-equals'
 import {omit} from 'lodash'
+import {exhaustMapWithTrailing} from 'rxjs-exhaustmap-with-trailing'
 import {memoize} from '../utils/createMemoizer'
 import {IdPair} from '../types'
 import {observeDocumentPairAvailability} from '../../../preview/availability'
@@ -58,33 +58,32 @@ const listenDocumentExists = (id: string): Observable<boolean> =>
 const getDocumentExists: GetDocumentExists = ({id}) =>
   listenDocumentExists(id).pipe(first()).toPromise()
 
-// debounce delay for document updates (i.e. how long we wait before responding to changes in the document)
-const DOC_UPDATE_DELAY = 1000
+// throttle delay for document updates (i.e. time between responding to changes in the current document)
+const DOC_UPDATE_DELAY = 200
 
-// debounce delay for referenced document updates (i.e. how long we wait before responding to changes in referenced documents
+// throttle delay for referenced document updates (i.e. time between responding to changes in referenced documents)
 const REF_UPDATE_DELAY = 1000
-
-// debounce delay for re-running validation either as a response to document updates or referenced document updates
-// e.g. we will only re-run validation if document edits and referenced documents has been "quiet" for this period of time
-// Note: this means validation will first be triggered at MAX(DOC_UPDATE_DELAY, REF_UPDATE_DELAY) + RERUN_VALIDATION_DELAY
-const RERUN_VALIDATION_DELAY = 1000
 
 export const validation = memoize(
   ({draftId, publishedId}: IdPair, typeName: string) => {
     const document$ = editState({draftId, publishedId}, typeName).pipe(
       map(({draft, published}) => draft || published),
-      debounceTime(DOC_UPDATE_DELAY),
-      distinctUntilChanged((prev, next) =>
+      throttleTime(DOC_UPDATE_DELAY, asyncScheduler, {trailing: true}),
+      // filter((doc): doc is NonNullable<any> => Boolean(doc)),
+      distinctUntilChanged((prev, next) => {
+        if (prev?._rev === next?._rev) {
+          return true
+        }
         // _rev and _updatedAt may change without other fields changing (due to a limitation in mutator)
         // so only pass on documents if _other_ attributes changes
-        shallowEquals(omit(prev, '_rev', '_updatedAt'), omit(next, '_rev', '_updatedAt'))
-      ),
+        return shallowEquals(omit(prev, '_rev', '_updatedAt'), omit(next, '_rev', '_updatedAt'))
+      }),
       share()
     )
 
     const referenceIds$ = document$.pipe(
       map((document) => findReferenceIds(document)),
-      distinctUntilChanged((curr, next) => {
+      distinctUntilChanged((curr: Set<string>, next: Set<string>) => {
         if (curr.size !== next.size) return false
         for (const item of curr) {
           if (!next.has(item)) return false
@@ -93,6 +92,7 @@ export const validation = memoize(
       })
     )
 
+    // Note: we only use this to trigger a re-run of validation when a referenced document is published/unpublished
     const referencedDocumentUpdate$ = referenceIds$.pipe(
       switchMap((idSet) =>
         from(idSet).pipe(
@@ -103,53 +103,37 @@ export const validation = memoize(
                 (result) => [id, result] as const
               )
             )
-          ),
-          // the `debounceTime` in the next stream removes multiple emissions
-          // caused by this scan
-          scan(
-            (acc, [id, result]) => ({
-              ...acc,
-              [id]: result,
-            }),
-            {} as Record<string, boolean>
           )
         )
       ),
-      debounceTime(REF_UPDATE_DELAY),
-      distinctUntilChanged((curr, next) => {
-        const currKeys = Object.keys(curr)
-        const nextKeys = Object.keys(next)
-        if (currKeys.length !== nextKeys.length) return false
-        for (const key of currKeys) {
-          if (curr[key] !== next[key]) return false
+      scan((acc: Record<string, boolean>, [id, result]) => {
+        if (Boolean(acc[id]) === result) {
+          return acc
         }
-        return true
-      })
+        return result ? {...acc, [id]: result} : omit(acc, id)
+      }, {}),
+      distinctUntilChanged(shallowEquals),
+      // we'll skip the first emission since the document already gets an initial validation pass
+      // we're only interested in updates in referenced documents after that
+      skip(1),
+      throttleTime(REF_UPDATE_DELAY, asyncScheduler, {trailing: true})
     )
 
-    return document$.pipe(
-      switchMap((document) =>
-        // project updates in referenced documents to our current version of document
-        concat(of(document), referencedDocumentUpdate$.pipe(mapTo(document)))
-      ),
-      // if referenced documents happens to update quite frequent and local document
-      // debounce delay hits about the same time, this will prevent us from running actual validation too often
-      debounceTime(RERUN_VALIDATION_DELAY),
-      switchMap((document) =>
-        concat(
-          of({isValidating: true}),
-          defer(async () => {
-            if (!document?._type) {
-              return {markers: EMPTY_ARRAY, isValidating: false}
-            }
-
-            // TODO: consider cancellation eventually
-            const markers = await validateDocument(document, schema, {getDocumentExists})
-
-            return {markers, isValidating: false}
-          })
-        )
-      ),
+    return combineLatest([document$, concat(of(null), referencedDocumentUpdate$)]).pipe(
+      map(([document]) => document),
+      exhaustMapWithTrailing((document) => {
+        return defer(() => {
+          if (!document?._type) {
+            return of({markers: EMPTY_ARRAY, isValidating: false})
+          }
+          return concat(
+            of({isValidating: true}),
+            validateDocumentObservable(document, schema, {getDocumentExists}).pipe(
+              map((markers) => ({markers, isValidating: false}))
+            )
+          )
+        })
+      }),
       scan((acc, next) => ({...acc, ...next}), INITIAL_VALIDATION_STATUS),
       publishReplay(1),
       refCount()
