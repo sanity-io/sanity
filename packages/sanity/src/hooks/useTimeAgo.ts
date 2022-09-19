@@ -1,19 +1,19 @@
-import {useEffect, useState} from 'react'
+import {useEffect, useReducer} from 'react'
 import {
-  format,
-  differenceInSeconds,
-  differenceInMinutes,
-  differenceInHours,
   differenceInDays,
-  differenceInWeeks,
+  differenceInHours,
+  differenceInMinutes,
   differenceInMonths,
+  differenceInSeconds,
+  differenceInWeeks,
   differenceInYears,
+  format,
 } from 'date-fns'
 import pluralize from 'pluralize-esm'
 
 interface TimeSpec {
   timestamp: string
-  refreshInterval: number
+  refreshInterval: number | null
 }
 
 const FIVE_SECONDS = 1000 * 5
@@ -27,22 +27,35 @@ export interface TimeAgoOpts {
 }
 
 export function useTimeAgo(time: Date | string, {minimal, agoSuffix}: TimeAgoOpts = {}): string {
-  const [resolved, setResolved] = useState(() => formatRelativeTime(time, {minimal, agoSuffix}))
+  const resolved = formatRelativeTime(time, {minimal, agoSuffix})
+
+  const [, forceUpdate] = useReducer((x) => x + 1, 0)
 
   useEffect(() => {
-    setResolved(formatRelativeTime(time, {minimal, agoSuffix}))
-  }, [time, minimal, agoSuffix])
+    const refreshInterval = resolved.refreshInterval
 
-  useEffect(() => {
-    const id: number | undefined = Number.isFinite(resolved.refreshInterval)
-      ? window.setInterval(
-          () => setResolved(formatRelativeTime(time, {minimal, agoSuffix})),
-          resolved.refreshInterval
-        )
-      : undefined
+    if (refreshInterval === null) {
+      return () => {}
+    }
 
-    return () => clearInterval(id)
-  }, [time, minimal, resolved.refreshInterval, agoSuffix])
+    let timerId: number
+    function tick() {
+      if (refreshInterval !== null) {
+        timerId = window.setTimeout(() => {
+          forceUpdate()
+          // avoid pile-up of setInterval callbacks,
+          // e.g. schedule the next update at `refreshInterval` *after* the previous one finishes
+          timerId = window.setTimeout(tick, refreshInterval)
+        }, refreshInterval)
+      }
+    }
+
+    tick()
+
+    return () => {
+      clearTimeout(timerId)
+    }
+  }, [forceUpdate, resolved.refreshInterval])
 
   return resolved.timestamp
 }
@@ -50,13 +63,13 @@ export function useTimeAgo(time: Date | string, {minimal, agoSuffix}: TimeAgoOpt
 function formatRelativeTime(date: Date | string, opts: TimeAgoOpts = {}): TimeSpec {
   const parsedDate = date instanceof Date ? date : new Date(date)
 
-  // Invalid date? Return empty timestamp and inifinite refresh interval, to save us from
+  // Invalid date? Return empty timestamp and `null` as refresh interval, to save us from
   // continuously trying to format an invalid date. The `useEffect` calls in the hook will
   // trigger a re-evaluation of the timestamp when the date changes, so this is safe.
   if (!parsedDate.getTime()) {
     return {
       timestamp: '',
-      refreshInterval: +Infinity,
+      refreshInterval: null,
     }
   }
 
@@ -69,20 +82,20 @@ function formatRelativeTime(date: Date | string, opts: TimeAgoOpts = {}): TimeSp
       // same year
       return {
         timestamp: format(parsedDate, 'MMM d'),
-        refreshInterval: +Infinity,
+        refreshInterval: null,
       }
     }
 
     if (opts.minimal) {
       return {
         timestamp: format(parsedDate, 'MMM d, yyyy'),
-        refreshInterval: +Infinity,
+        refreshInterval: null,
       }
     }
 
     return {
       timestamp: format(parsedDate, 'MMM d, yyyy, hh:mm a'),
-      refreshInterval: +Infinity,
+      refreshInterval: null,
     }
   }
 
