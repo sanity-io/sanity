@@ -38,6 +38,7 @@
   "dependencies": {
     "@sanity/types": "2.33.2",
     "date-fns": "^2.16.1",
+    "rxjs": "^6.5.3",
     "lodash": "^4.17.15"
   }
 }
