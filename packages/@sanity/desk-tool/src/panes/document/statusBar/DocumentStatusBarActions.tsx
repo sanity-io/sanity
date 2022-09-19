@@ -5,6 +5,7 @@ import React, {memo, useCallback, useMemo, useState} from 'react'
 import {DocumentActionDescription} from '@sanity/base'
 import {Box, Flex, Tooltip, Stack, Button, Hotkeys, LayerProvider, Text, Card} from '@sanity/ui'
 import {RenderActionCollectionState} from 'part:@sanity/base/actions/utils'
+import {useEditState} from '@sanity/react-hooks'
 import {HistoryRestoreAction} from '../../../actions/HistoryRestoreAction'
 import {useDocumentPane} from '../useDocumentPane'
 import {ActionMenuButton} from './ActionMenuButton'
@@ -82,7 +83,8 @@ function DocumentStatusBarActionsInner(props: DocumentStatusBarActionsInnerProps
 }
 
 export const DocumentStatusBarActions = memo(function DocumentStatusBarActions() {
-  const {actions, connectionState, editState} = useDocumentPane()
+  const {actions, connectionState, documentId, documentType} = useDocumentPane()
+  const editState = useEditState(documentId, documentType, 'low')
   const [isMenuOpen, setMenuOpen] = useState(false)
   const handleMenuOpen = useCallback(() => setMenuOpen(true), [])
   const handleMenuClose = useCallback(() => setMenuOpen(false), [])
@@ -110,7 +112,8 @@ export const DocumentStatusBarActions = memo(function DocumentStatusBarActions()
 const historyActions = [HistoryRestoreAction]
 
 export const HistoryStatusBarActions = memo(function HistoryStatusBarActions() {
-  const {connectionState, editState, historyController} = useDocumentPane()
+  const {connectionState, historyController, documentId, documentType} = useDocumentPane()
+  const editState = useEditState(documentId, documentType, 'low')
   const revision = historyController.revTime?.id || ''
   const disabled = (editState?.draft || editState?.published || {})._rev === revision
   const actionProps = useMemo(() => ({...(editState || {}), revision}), [editState, revision])
