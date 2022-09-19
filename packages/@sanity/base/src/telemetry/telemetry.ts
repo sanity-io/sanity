@@ -11,7 +11,7 @@ enum TELEMETRY_EVENT {
 
 // In the future we might have a separate one for telemetry
 // const PROXY_ENDPOINT = 'https://telemetry.sanity.io/event'
-const PROXY_ENDPOINT = 'https://www.sanity.io/intake/dp/v1/page'
+const PROXY_ENDPOINT = 'https://www.sanity.io/intake/dp/v1/track'
 
 // Get from session
 const sanityUserId = 'xxx'
