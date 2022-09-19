@@ -13,6 +13,7 @@ import {
 import {uniqBy} from 'lodash'
 import type {SanityClient} from '@sanity/client'
 import typeString from './util/typeString'
+import {requestIdleCallback, cancelIdleCallback} from './util/requestIdleCallback'
 import ValidationErrorClass from './ValidationError'
 import normalizeValidationRules from './util/normalizeValidationRules'
 
