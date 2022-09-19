@@ -1,13 +1,13 @@
-import {BoundaryElementProvider, Flex, PortalProvider, usePortal, useElementRect} from '@sanity/ui'
+import {BoundaryElementProvider, Flex, PortalProvider, useElementRect, usePortal} from '@sanity/ui'
 import React, {createElement, useEffect, useMemo, useRef, useState} from 'react'
 import styled, {css} from 'styled-components'
 import {PaneContent, usePaneLayout} from '../../../components'
 import {ScrollContainer} from '../../../../components/scroll'
 import {useDocumentValuePermissions} from '../../../../datastores'
-import {getPublishedId, getDraftId} from '../../../../util'
+import {getDraftId, getPublishedId} from '../../../../util'
 import {useDocumentPane} from '../useDocumentPane'
 import {InspectDialog} from '../inspectDialog'
-import {useSchema} from '../../../../hooks'
+import {useEditState, useSchema} from '../../../../hooks'
 import {useDeskTool} from '../../../useDeskTool'
 import {ReferenceChangedBanner} from './ReferenceChangedBanner'
 import {PermissionCheckBanner} from './PermissionCheckBanner'
@@ -37,17 +37,8 @@ const Scroller = styled(ScrollContainer)<{$disabled: boolean}>(({$disabled}) => 
 export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
   const {footerHeight, isInspectOpen, rootElement} = props
   const schema = useSchema()
-  const {
-    activeViewId,
-    displayed,
-    documentId,
-    documentType,
-    editState,
-    value,
-    views,
-    ready,
-    schemaType,
-  } = useDocumentPane()
+  const {activeViewId, displayed, documentId, documentType, value, views, ready, schemaType} =
+    useDocumentPane()
   const {collapsed: layoutCollapsed} = usePaneLayout()
   const parentPortal = usePortal()
   const {features} = useDeskTool()
@@ -55,6 +46,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
   const headerRect = useElementRect(headerElement)
   const portalRef = useRef<HTMLDivElement | null>(null)
   const [documentScrollElement, setDocumentScrollElement] = useState<HTMLDivElement | null>(null)
+  const editState = useEditState(documentId, documentType, 'low')
 
   const requiredPermission = value._createdAt ? 'update' : 'create'
   const liveEdit = useMemo(

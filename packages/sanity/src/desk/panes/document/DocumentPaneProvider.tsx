@@ -84,7 +84,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   })
   const initialValue = useUnique(initialValueRaw)
   const {patch}: any = useDocumentOperation(documentId, documentType)
-  const editState = useEditState(documentId, documentType)
+  const editState = useEditState(documentId, documentType, 'low')
   const {validation: validationRaw} = useValidationStatus(documentId, documentType)
   const connectionState = useConnectionState(documentId, documentType)
   const schemaType = schema.get(documentType) as ObjectSchemaType | undefined
@@ -337,7 +337,6 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     documentId,
     documentIdRaw,
     documentType,
-    editState,
     focusPath,
     menuItems,
     onBlur: handleBlur,

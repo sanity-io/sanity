@@ -1,17 +1,17 @@
 import {
-  ValidationMarker,
+  ObjectSchemaType,
   Path,
   SanityDocument,
-  ObjectSchemaType,
   SanityDocumentLike,
+  ValidationMarker,
 } from '@sanity/types'
 import {createContext} from 'react'
 import {_DocumentLanguageFilterComponent} from '../../../config'
-import {EditStateFor, TimelineController, Timeline} from '../../../datastores'
+import {Timeline, TimelineController} from '../../../datastores'
 import {PatchEvent, StateTree} from '../../../form'
 import {DocumentActionComponent} from '../../actions'
 import {DocumentBadgeComponent} from '../../badges'
-import {PaneView, PaneMenuItem, PaneMenuItemGroup} from '../../types'
+import {PaneMenuItem, PaneMenuItemGroup, PaneView} from '../../types'
 import {DocumentFormNode} from '../../../form/store/types/nodes'
 import {TimelineMode} from './types'
 
@@ -28,7 +28,6 @@ export interface DocumentPaneContextValue {
   documentId: string
   documentIdRaw: string
   documentType: string
-  editState: EditStateFor | null
   focusPath: Path
   // TODO: rename this for consistency
   historyController: TimelineController

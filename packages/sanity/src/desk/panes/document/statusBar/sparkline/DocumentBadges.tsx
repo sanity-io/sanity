@@ -1,5 +1,6 @@
 import {Badge, BadgeTone, Box, Inline, Text, Tooltip} from '@sanity/ui'
 import React from 'react'
+import {useEditState} from 'sanity'
 import {DocumentBadgeDescription, RenderBadgeCollectionState} from '../../../../badges'
 import {useDocumentPane} from '../../useDocumentPane'
 
@@ -49,7 +50,8 @@ function DocumentBadgesInner({states}: DocumentBadgesInnerProps) {
 }
 
 export function DocumentBadges() {
-  const {badges, editState} = useDocumentPane()
+  const {badges, documentId, documentType} = useDocumentPane()
+  const editState = useEditState(documentId, documentType, 'low')
 
   if (!editState || !badges) return null
 

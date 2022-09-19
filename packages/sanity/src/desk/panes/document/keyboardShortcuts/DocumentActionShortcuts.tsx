@@ -9,6 +9,7 @@ import {
   RenderActionCollectionState,
 } from '../../../actions'
 import {LegacyLayerProvider} from '../../../../components/transitional'
+import {useEditState} from '../../../../hooks'
 
 export interface KeyboardShortcutResponderProps {
   actionsBoxElement: HTMLElement | null
@@ -94,7 +95,8 @@ export interface DocumentActionShortcutsProps {
 export const DocumentActionShortcuts = React.memo(
   (props: DocumentActionShortcutsProps & React.HTMLProps<HTMLDivElement>) => {
     const {actionsBoxElement, children, ...rest} = props
-    const {actions, editState} = useDocumentPane()
+    const {actions, documentId, documentType} = useDocumentPane()
+    const editState = useEditState(documentId, documentType, 'low')
     const [activeIndex, setActiveIndex] = useState(-1)
 
     const onActionStart = useCallback((idx: number) => {

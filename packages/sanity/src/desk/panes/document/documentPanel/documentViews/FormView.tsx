@@ -19,6 +19,7 @@ import {
   DocumentMutationEvent,
   DocumentRebaseEvent,
 } from '../../../../../datastores/document/buffered-doc/types'
+import {useEditState} from '../../../../../hooks'
 import {useConditionalToast} from './useConditionalToast'
 
 interface FormViewProps {
@@ -44,7 +45,6 @@ export function FormView(props: FormViewProps) {
     collapsedFieldSets,
     collapsedPaths,
     displayed: value,
-    editState,
     documentId,
     documentType,
     onChange: _handleChange,
@@ -61,6 +61,9 @@ export function FormView(props: FormViewProps) {
     onSetActiveFieldGroup,
     schemaType,
   } = useDocumentPane()
+
+  const editState = useEditState(documentId, documentType)
+
   const documentStore = useDocumentStore()
   const {revTime: rev} = historyController
   // const [{filterField}, setState] = useState<FormViewState>(INITIAL_STATE)
