@@ -1,6 +1,5 @@
 import {DocumentActionDescription, DocumentBadgeDescription} from '@sanity/base'
 import {Marker, Path, SanityDocument} from '@sanity/types'
-import {EditStateFor} from '@sanity/base/_internal'
 import {createContext} from 'react'
 import {PaneView, PaneMenuItem, PaneMenuItemGroup} from '../../types'
 import {Controller as HistoryController} from './documentHistory/history/Controller'
@@ -18,7 +17,6 @@ export interface DocumentPaneContextValue {
   compareValue: Partial<SanityDocument> | null
   connectionState: 'connecting' | 'reconnecting' | 'connected'
   displayed: Partial<SanityDocument> | null
-  editState: EditStateFor | null
   documentId: string
   documentIdRaw: string
   documentSchema: DocumentSchema | null
@@ -35,6 +33,7 @@ export interface DocumentPaneContextValue {
   handlePaneSplit?: () => void
   historyController: HistoryController
   index: number
+  initialValue: Partial<SanityDocument>
   inspectOpen: boolean
   markers: Marker[]
   menuItems: PaneMenuItem[]

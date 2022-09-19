@@ -1,7 +1,7 @@
 // @todo: remove the following line when part imports has been removed from this file
 ///<reference types="@sanity/types/parts" />
 
-import React, {memo, useCallback, useEffect, useMemo, useState} from 'react'
+import React, {memo, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {Path, SanityDocument} from '@sanity/types'
 import {
   useConnectionState,
@@ -19,7 +19,7 @@ import resolveDocumentBadges from 'part:@sanity/base/document-badges/resolver'
 import {getPublishedId} from 'part:@sanity/base/util/draft-utils'
 import schema from 'part:@sanity/base/schema'
 import {useMemoObservable} from 'react-rx'
-import {PaneMenuItem} from '../../types'
+import {PaneMenuItem, PaneMenuItemGroup} from '../../types'
 import {useDeskTool} from '../../contexts/deskTool'
 import {usePaneRouter} from '../../contexts/paneRouter'
 import {useUnique} from '../../utils/useUnique'
@@ -36,6 +36,8 @@ import {getPreviewUrl} from './usePreviewUrl'
 declare const __DEV__: boolean
 
 const emptyObject = {} as Record<string, string | undefined>
+const emptyPath: Path = []
+const emptyMenuGroup: PaneMenuItemGroup[] = []
 
 type Props = {children: React.ReactElement} & DocumentPaneProviderProps
 
@@ -48,13 +50,13 @@ export const DocumentPaneProvider = memo(({children, index, pane, paneKey}: Prop
   const {features} = useDeskTool()
   const {push: pushToast} = useToast()
   const {options, menuItemGroups, title = null, views: viewsProp = []} = pane
-  const initialValueRaw = useInitialValue(options.id, options)
-  const initialValue = useUnique(initialValueRaw)
+  const initialValue = useInitialValue(options.id, options)
+
   const documentIdRaw = options.id
   const documentId = getPublishedId(documentIdRaw)
   const documentType = options.type
   const {patch}: any = useDocumentOperation(documentId, documentType)
-  const editState = useEditState(documentId, documentType)
+  const editState = useEditState(documentId, documentType, 'low')
   const {markers: markersRaw} = useValidationStatus(documentId, documentType)
   const connectionState = useConnectionState(documentId, documentType)
   const documentSchema = schema.get(documentType)
@@ -62,15 +64,17 @@ export const DocumentPaneProvider = memo(({children, index, pane, paneKey}: Prop
     externalPollInterval: 1000 * 60,
   })
   const totalReferenceCount = isReferencesLoading ? undefined : totalCount
-  const value: Partial<SanityDocument> =
-    editState?.draft || editState?.published || initialValue.value
+  const value: Partial<SanityDocument> = useMemo(
+    () => editState?.draft || editState?.published || initialValue.value,
+    [editState, initialValue]
+  )
   const actions = useMemo(() => (editState ? resolveDocumentActions(editState) : null), [editState])
   const badges = useMemo(() => (editState ? resolveDocumentBadges(editState) : null), [editState])
   const markers = useUnique(markersRaw)
   const views = useUnique(viewsProp)
   const params = paneRouter.params || emptyObject
   const [focusPath, setFocusPath] = useState<Path>(() =>
-    params.path ? pathFromString(params.path) : []
+    params.path ? pathFromString(params.path) : emptyPath
   )
   const activeViewId = params.view || (views[0] && views[0].id) || null
   const timeline = useMemo(() => new Timeline({publishedId: documentId, enableTrace: __DEV__}), [
@@ -145,10 +149,12 @@ export const DocumentPaneProvider = memo(({children, index, pane, paneKey}: Prop
     [documentId, setFocusPath]
   )
 
-  const handleChange = useCallback((patches) => patch.execute(patches, initialValue.value), [
-    patch,
-    initialValue.value,
-  ])
+  const patchRef = useRef(patch)
+  patchRef.current = patch
+  const handleChange = useCallback(
+    (patches) => patchRef.current.execute(patches, initialValue.value),
+    [initialValue.value]
+  )
 
   const handleHistoryClose = useCallback(() => {
     paneRouter.setParams({...params, since: undefined})
@@ -213,47 +219,89 @@ export const DocumentPaneProvider = memo(({children, index, pane, paneKey}: Prop
 
   const handleInspectClose = useCallback(() => toggleInspect(false), [toggleInspect])
 
-  const documentPane: DocumentPaneContextValue = {
-    actions,
-    activeViewId,
-    badges,
-    changesOpen,
-    compareValue,
-    connectionState,
-    displayed,
-    documentId,
-    documentIdRaw,
-    documentSchema,
-    documentType,
-    editState,
-    focusPath,
-    handleChange,
-    handleFocus,
-    handleHistoryClose,
-    handleHistoryOpen,
-    handleInspectClose,
-    handleKeyUp,
-    handleMenuAction,
-    handlePaneClose,
-    handlePaneSplit,
-    historyController,
-    index,
-    inspectOpen,
-    markers,
-    menuItems,
-    menuItemGroups: menuItemGroups || [],
-    paneKey,
-    previewUrl,
-    ready,
-    setTimelineMode,
-    setTimelineRange,
-    timeline,
-    timelineMode,
-    title,
-    totalReferenceCount,
-    value,
-    views,
-  }
+  const documentPane: DocumentPaneContextValue = useMemo(
+    () => ({
+      actions,
+      activeViewId,
+      badges,
+      changesOpen,
+      compareValue,
+      connectionState,
+      displayed,
+      documentId,
+      documentIdRaw,
+      documentSchema,
+      documentType,
+      focusPath,
+      handleChange,
+      handleFocus,
+      handleHistoryClose,
+      handleHistoryOpen,
+      handleInspectClose,
+      handleKeyUp,
+      handleMenuAction,
+      handlePaneClose,
+      handlePaneSplit,
+      historyController,
+      index,
+      initialValue: initialValue.value,
+      inspectOpen,
+      markers,
+      menuItems,
+      menuItemGroups: menuItemGroups || emptyMenuGroup,
+      paneKey,
+      previewUrl,
+      ready,
+      setTimelineMode,
+      setTimelineRange,
+      timeline,
+      timelineMode,
+      title,
+      totalReferenceCount,
+      value,
+      views,
+    }),
+    [
+      actions,
+      activeViewId,
+      badges,
+      changesOpen,
+      compareValue,
+      connectionState,
+      displayed,
+      documentId,
+      documentIdRaw,
+      documentSchema,
+      documentType,
+      focusPath,
+      handleChange,
+      handleFocus,
+      handleHistoryClose,
+      handleHistoryOpen,
+      handleInspectClose,
+      handleKeyUp,
+      handleMenuAction,
+      handlePaneClose,
+      handlePaneSplit,
+      historyController,
+      index,
+      initialValue,
+      inspectOpen,
+      markers,
+      menuItems,
+      menuItemGroups,
+      paneKey,
+      previewUrl,
+      ready,
+      setTimelineRange,
+      timeline,
+      timelineMode,
+      title,
+      totalReferenceCount,
+      value,
+      views,
+    ]
+  )
 
   useEffect(() => {
     if (connectionState === 'reconnecting') {
