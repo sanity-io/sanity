@@ -32,28 +32,25 @@ export function useTimeAgo(time: Date | string, {minimal, agoSuffix}: TimeAgoOpt
   const [, forceUpdate] = useReducer((x) => x + 1, 0)
 
   useEffect(() => {
-    const refreshInterval = resolved.refreshInterval
+    let timerId: number | null
 
-    if (refreshInterval === null) {
-      return () => {}
+    function tick(interval: number) {
+      timerId = window.setTimeout(() => {
+        forceUpdate()
+        // avoid pile-up of setInterval callbacks,
+        // e.g. schedule the next update at `refreshInterval` *after* the previous one finishes
+        timerId = window.setTimeout(() => tick(interval), interval)
+      }, interval)
     }
 
-    let timerId: number
-    function tick() {
-      if (refreshInterval !== null) {
-        timerId = window.setTimeout(() => {
-          forceUpdate()
-          // avoid pile-up of setInterval callbacks,
-          // e.g. schedule the next update at `refreshInterval` *after* the previous one finishes
-          timerId = window.setTimeout(tick, refreshInterval)
-        }, refreshInterval)
-      }
+    if (resolved.refreshInterval !== null) {
+      tick(resolved.refreshInterval)
     }
-
-    tick()
 
     return () => {
-      clearTimeout(timerId)
+      if (timerId !== null) {
+        clearTimeout(timerId)
+      }
     }
   }, [forceUpdate, resolved.refreshInterval])
 
