@@ -214,9 +214,9 @@ function validateItemObservable({
     const spanType = spanChildrenField.type.of.find(isSpanSchemaType)
 
     const annotations = (spanType?.annotations || []).reduce<Map<string, SchemaType>>(
-      (map, annotationType) => {
-        map.set(annotationType.name, annotationType)
-        return map
+      (acc, annotationType) => {
+        acc.set(annotationType.name, annotationType)
+        return acc
       },
       new Map()
     )
