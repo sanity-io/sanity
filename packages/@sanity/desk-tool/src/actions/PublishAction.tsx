@@ -1,5 +1,10 @@
 import {DocumentActionComponent} from '@sanity/base'
-import {useSyncState, useDocumentOperation, useValidationStatus} from '@sanity/react-hooks'
+import {
+  useSyncState,
+  useDocumentOperation,
+  useValidationStatus,
+  useEditState,
+} from '@sanity/react-hooks'
 import {CheckmarkIcon, PublishIcon} from '@sanity/icons'
 import React, {useCallback, useEffect, useState} from 'react'
 import {
@@ -40,7 +45,8 @@ export const PublishAction: DocumentActionComponent = (props) => {
   const {publish} = useDocumentOperation(id, type)
   const validationStatus = useValidationStatus(id, type)
   const syncState = useSyncState(id, type)
-  const {changesOpen, editState, handleHistoryOpen} = useDocumentPane()
+  const {changesOpen, handleHistoryOpen, documentId, documentType} = useDocumentPane()
+  const editState = useEditState(documentId, documentType, 'low')
   const hasValidationErrors = validationStatus.markers.some((marker) => marker.level === 'error')
   // we use this to "schedule" publish after pending tasks (e.g. validation and sync) has completed
   const [publishScheduled, setPublishScheduled] = useState<boolean>(false)

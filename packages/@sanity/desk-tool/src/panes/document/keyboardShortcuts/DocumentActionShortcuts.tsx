@@ -6,6 +6,7 @@ import {LegacyLayerProvider} from '@sanity/base/components'
 import {RenderActionCollectionState} from 'part:@sanity/base/actions/utils'
 import isHotkey from 'is-hotkey'
 import React, {useCallback, useState} from 'react'
+import {useEditState} from '@sanity/react-hooks'
 import {ActionStateDialog} from '../statusBar'
 import {Pane} from '../../../components/pane'
 import {useDocumentPane} from '../useDocumentPane'
@@ -93,7 +94,8 @@ export interface DocumentActionShortcutsProps {
 export const DocumentActionShortcuts = React.memo(
   (props: DocumentActionShortcutsProps & React.HTMLProps<HTMLDivElement>) => {
     const {actionsBoxElement, children, ...rest} = props
-    const {actions, editState} = useDocumentPane()
+    const {actions, documentId, documentType} = useDocumentPane()
+    const editState = useEditState(documentId, documentType, 'low')
     const [activeIndex, setActiveIndex] = useState(-1)
 
     const onActionStart = useCallback((idx: number) => {

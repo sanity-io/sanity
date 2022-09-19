@@ -5,6 +5,7 @@ import {unstable_useDocumentValuePermissions as useDocumentValuePermissions} fro
 import styled, {css} from 'styled-components'
 import {SchemaType} from '@sanity/types'
 import {getPublishedId, getDraftId} from '@sanity/base/_internal'
+import {useEditState} from '@sanity/react-hooks'
 import {PaneContent} from '../../../components/pane'
 import {usePaneLayout} from '../../../components/pane/usePaneLayout'
 import {useDeskTool} from '../../../contexts/deskTool'
@@ -50,7 +51,6 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
     displayed,
     documentId,
     documentSchema,
-    editState,
     value,
     views,
     ready,
@@ -63,6 +63,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
   const headerRect = useElementRect(headerElement)
   const portalRef = useRef<HTMLDivElement | null>(null)
   const [documentScrollElement, setDocumentScrollElement] = useState<HTMLDivElement | null>(null)
+  const editState = useEditState(documentId, documentType, 'low')
 
   const requiredPermission = value._createdAt ? 'update' : 'create'
   const liveEdit = useMemo(() => Boolean(getSchemaType(documentType)?.liveEdit), [documentType])

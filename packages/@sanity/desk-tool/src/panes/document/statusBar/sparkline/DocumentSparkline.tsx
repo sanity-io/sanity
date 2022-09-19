@@ -1,6 +1,6 @@
 import {Box, Flex, useElementRect} from '@sanity/ui'
 import React, {useEffect, useMemo, useState, memo, useLayoutEffect} from 'react'
-import {useSyncState} from '@sanity/react-hooks'
+import {useEditState, useSyncState} from '@sanity/react-hooks'
 import {useDocumentPane} from '../../useDocumentPane'
 import {DocumentBadges} from './DocumentBadges'
 import {PublishStatus} from './PublishStatus'
@@ -14,12 +14,12 @@ export const DocumentSparkline = memo(function DocumentSparkline() {
     changesOpen,
     documentId,
     documentType,
-    editState,
     handleHistoryClose,
     handleHistoryOpen,
     historyController,
     value,
   } = useDocumentPane()
+  const editState = useEditState(documentId, documentType, 'low')
   const syncState = useSyncState(documentId, documentType)
 
   const lastUpdated = value?._updatedAt
