@@ -1,20 +1,24 @@
 import type {SanityClient} from '@sanity/client'
-import {concat, of, combineLatest, defer, from, Observable} from 'rxjs'
+import {concat, of, combineLatest, defer, from, Observable, asyncScheduler} from 'rxjs'
 import {
+  distinctUntilChanged,
+  first,
   map,
-  scan,
-  switchMap,
   mergeMap,
   publishReplay,
   refCount,
+  scan,
   share,
-  distinctUntilChanged,
-  debounceTime,
-  first,
+  skip,
+  switchMap,
+  throttleTime,
 } from 'rxjs/operators'
-import {validateDocument} from '@sanity/validation'
-import {ValidationMarker, ValidationContext, isReference, Schema} from '@sanity/types'
+import {validateDocumentObservable} from '@sanity/validation'
+import {isReference, Schema, ValidationContext, ValidationMarker} from '@sanity/types'
 import reduceJSON from 'json-reduce'
+import shallowEquals from 'shallow-equals'
+import {omit} from 'lodash'
+import {exhaustMapWithTrailing} from 'rxjs-exhaustmap-with-trailing'
 import {SourceClientOptions} from '../../../config'
 import {memoize} from '../utils/createMemoizer'
 import {IdPair} from '../types'
@@ -42,6 +46,8 @@ function findReferenceIds(obj: any): Set<string> {
   )
 }
 
+const EMPTY_MARKERS: ValidationMarker[] = []
+
 type GetDocumentExists = NonNullable<ValidationContext['getDocumentExists']>
 
 const listenDocumentExists = (
@@ -51,6 +57,12 @@ const listenDocumentExists = (
   previewStore
     .unstable_observeDocumentPairAvailability({_type: 'reference', _ref: id})
     .pipe(map(({published}) => published.available))
+
+// throttle delay for document updates (i.e. time between responding to changes in the current document)
+const DOC_UPDATE_DELAY = 200
+
+// throttle delay for referenced document updates (i.e. time between responding to changes in referenced documents)
+const REF_UPDATE_DELAY = 1000
 
 export const validation = memoize(
   (
@@ -69,15 +81,21 @@ export const validation = memoize(
 
     const document$ = editState(ctx, {draftId, publishedId}, typeName).pipe(
       map(({draft, published}) => draft || published),
-      // this debounce is needed for performance. it prevents the validation
-      // from being run on every keypress
-      debounceTime(300),
+      throttleTime(DOC_UPDATE_DELAY, asyncScheduler, {trailing: true}),
+      distinctUntilChanged((prev, next) => {
+        if (prev?._rev === next?._rev) {
+          return true
+        }
+        // _rev and _updatedAt may change without other fields changing (due to a limitation in mutator)
+        // so only pass on documents if _other_ attributes changes
+        return shallowEquals(omit(prev, '_rev', '_updatedAt'), omit(next, '_rev', '_updatedAt'))
+      }),
       share()
     )
 
     const referenceIds$ = document$.pipe(
       map((document) => findReferenceIds(document)),
-      distinctUntilChanged((curr, next) => {
+      distinctUntilChanged((curr: Set<string>, next: Set<string>) => {
         if (curr.size !== next.size) return false
         for (const item of curr) {
           if (!next.has(item)) return false
@@ -86,6 +104,7 @@ export const validation = memoize(
       })
     )
 
+    // Note: we only use this to trigger a re-run of validation when a referenced document is published/unpublished
     const referencedDocumentUpdate$ = referenceIds$.pipe(
       switchMap((idSet) =>
         from(idSet).pipe(
@@ -96,67 +115,37 @@ export const validation = memoize(
                 (result) => [id, result] as const
               )
             )
-          ),
-          // the `debounceTime` in the next stream removes multiple emissions
-          // caused by this scan
-          scan(
-            (acc, [id, result]) => ({
-              ...acc,
-              [id]: result,
-            }),
-            {} as Record<string, boolean>
           )
         )
       ),
-      distinctUntilChanged((curr, next) => {
-        const currKeys = Object.keys(curr)
-        const nextKeys = Object.keys(next)
-        if (currKeys.length !== nextKeys.length) return false
-        for (const key of currKeys) {
-          if (curr[key] !== next[key]) return false
+      scan((acc: Record<string, boolean>, [id, result]) => {
+        if (Boolean(acc[id]) === result) {
+          return acc
         }
-        return true
-      })
+        return result ? {...acc, [id]: result} : omit(acc, id)
+      }, {}),
+      distinctUntilChanged(shallowEquals),
+      // we'll skip the first emission since the document already gets an initial validation pass
+      // we're only interested in updates in referenced documents after that
+      skip(1),
+      throttleTime(REF_UPDATE_DELAY, asyncScheduler, {leading: true, trailing: true})
     )
 
-    return combineLatest([
-      // from document edits
-      document$,
-      // and from document dependency events
-      concat(
-        // note: that the `referencedDocumentUpdate$` may not pre-emit any
-        // events (unlike `editState` which includes `publishReplay(1)`), so
-        // we `concat` the stream with an empty emission so `combineLatest` will
-        // emit as soon as `editState` emits
-        //
-        // > Be aware that `combineLatest` will not emit an initial value until
-        // > each observable emits at least one value.
-        // https://www.learnrxjs.io/learn-rxjs/operators/combination/combinelatest#why-use-combinelatest
-        of(null),
-        referencedDocumentUpdate$
-      ).pipe(
-        // don't remove, see `debounceTime` comment above
-        debounceTime(50)
-      ),
-    ]).pipe(
+    return combineLatest([document$, concat(of(null), referencedDocumentUpdate$)]).pipe(
       map(([document]) => document),
-      switchMap((document) =>
-        concat(
-          of({isValidating: true}),
-          defer(async () => {
-            if (!document?._type) {
-              return {validation: [], isValidating: false}
-            }
-
-            // TODO: consider cancellation eventually
-            const markers = await validateDocument(ctx.getClient, document, ctx.schema, {
+      exhaustMapWithTrailing((document) => {
+        return defer(() => {
+          if (!document?._type) {
+            return of({markers: EMPTY_MARKERS, isValidating: false})
+          }
+          return concat(
+            of({isValidating: true}),
+            validateDocumentObservable(ctx.getClient, document, ctx.schema, {
               getDocumentExists,
-            })
-
-            return {validation: markers, isValidating: false}
-          })
-        )
-      ),
+            }).pipe(map((markers) => ({markers, isValidating: false})))
+          )
+        })
+      }),
       scan((acc, next) => ({...acc, ...next}), INITIAL_VALIDATION_STATUS),
       publishReplay(1),
       refCount()
