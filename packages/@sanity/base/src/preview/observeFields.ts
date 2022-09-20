@@ -25,7 +25,6 @@ import {
 import {difference, flatten, memoize} from 'lodash'
 import {SanityClient} from '@sanity/client'
 import {versionedClient} from '../client/versionedClient'
-import {getTokenDocumentId} from '../datastores/crossProjectToken'
 import {debounceCollect} from './utils/debounceCollect'
 import {combineSelections, reassemble, toQuery} from './utils/optimizeQuery'
 import {ApiConfig, FieldName, Id, Path, Selection} from './types'
@@ -84,18 +83,11 @@ function listen(id: Id) {
   )
 }
 
-interface CrossProjectToken {
-  projectId: string
-  value: string
-}
-
-function fetchAllDocumentPathsWith(client: SanityClient, token?: CrossProjectToken) {
-  const headers = token ? {'sanity-project-tokens': `${token.projectId}=${token.value}`} : {}
-
+function fetchAllDocumentPathsWith(client: SanityClient) {
   return function fetchAllDocumentPath(selections: Selection[]) {
     const combinedSelections = combineSelections(selections)
     return client.observable
-      .fetch(toQuery(combinedSelections), {}, {tag: 'preview.document-paths', headers})
+      .fetch(toQuery(combinedSelections), {}, {tag: 'preview.document-paths'})
       .pipe(map((result: any) => reassemble(result, combinedSelections)))
   }
 }
@@ -143,9 +135,9 @@ type Cache = {
 const CACHE: Cache = {} // todo: use a LRU cache instead (e.g. hashlru or quick-lru)
 
 const getBatchFetcherForDataset = memoize(
-  function getBatchFetcherForDataset(apiConfig: ApiConfig, token?: CrossProjectToken | undefined) {
+  function getBatchFetcherForDataset(apiConfig: ApiConfig) {
     const client = versionedClient.withConfig(apiConfig)
-    const fetchAll = fetchAllDocumentPathsWith(client, token)
+    const fetchAll = fetchAllDocumentPathsWith(client)
     return debounceCollect(fetchAll, 10)
   },
   (apiConfig) => apiConfig.dataset + apiConfig.projectId
@@ -163,20 +155,9 @@ const visiblePoll$ = fromEvent(document, 'visibilitychange').pipe(
 )
 
 function crossDatasetListenFields(id: Id, fields: Path[], apiConfig: ApiConfig) {
-  const token$ = observePaths(getTokenDocumentId({projectId: apiConfig.projectId}), ['token']).pipe(
-    map((document) => document?.token as string | undefined)
-  )
-  return combineLatest([token$, visiblePoll$.pipe(startWith(0))]).pipe(
-    switchMap(([token]) => {
-      const batchFetcher = getBatchFetcherForDataset(
-        apiConfig,
-        token
-          ? {
-              projectId: apiConfig.projectId,
-              value: token,
-            }
-          : undefined
-      )
+  return visiblePoll$.pipe(startWith(0)).pipe(
+    switchMap(() => {
+      const batchFetcher = getBatchFetcherForDataset(apiConfig)
       return batchFetcher(id, fields)
     })
   )
