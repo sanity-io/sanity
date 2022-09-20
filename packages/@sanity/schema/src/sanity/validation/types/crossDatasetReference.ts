@@ -20,15 +20,6 @@ export function isValidDatasetName(name: string): string | true {
   )
 }
 
-const VALID_TOKEN_ID = /^[a-zA-Z0-9_][a-zA-Z0-9_-]+$/
-export function isValidTokenId(tokenId: string): string | true {
-  const isValid = tokenId.length >= 2 && VALID_TOKEN_ID.test(tokenId)
-  return (
-    isValid ||
-    `The provided tokenId "${tokenId}" is invalid. The tokenId must be a string made up of at least 2 characters in the a-zA-Z0-9_- range and cannot start with a - (dash) character`
-  )
-}
-
 export default (typeDef, visitorContext) => {
   const isValidTo = Array.isArray(typeDef.to) || isPlainObject(typeDef.to)
   const normalizedTo = normalizeToProp(typeDef)
@@ -88,21 +79,6 @@ export default (typeDef, visitorContext) => {
     })
   })
 
-  if (typeof typeDef.tokenId === 'string') {
-    const validationResult = isValidTokenId(typeDef.tokenId)
-    if (validationResult !== true) {
-      problems.push(error(validationResult, HELP_IDS.CROSS_DATASET_REFERENCE_INVALID))
-    }
-  }
-
-  if (typeof typeDef.projectId !== 'string') {
-    problems.push(
-      error(
-        'A cross dataset reference must specify a `projectId`',
-        HELP_IDS.CROSS_DATASET_REFERENCE_INVALID
-      )
-    )
-  }
   if (typeof typeDef.dataset === 'string') {
     const datasetValidation = isValidDatasetName(typeDef.dataset)
     if (datasetValidation !== true) {
