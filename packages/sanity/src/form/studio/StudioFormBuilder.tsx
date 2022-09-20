@@ -10,6 +10,7 @@ import {ObjectInputProps} from '../types'
 import {EMPTY_ARRAY} from '../utils/empty'
 import {useFormBuilder} from '../useFormBuilder'
 import {StateTree} from '../store'
+import {useFormRenderCallbacks} from '../renderCallbacks/useFormRenderCallbacks'
 import {StudioFormBuilderProvider} from './StudioFormBuilderProvider'
 import {useFormCallbacks} from './contexts/FormCallbacks'
 
@@ -104,20 +105,9 @@ export function StudioFormBuilder(props: StudioFormBuilderProps) {
 }
 
 function RootInput() {
-  const {
-    focusPath,
-    focused,
-    groups,
-    id,
-    members,
-    readOnly,
-    renderField,
-    renderInput,
-    renderItem,
-    renderPreview,
-    schemaType,
-    value,
-  } = useFormBuilder()
+  const {focusPath, focused, groups, id, members, readOnly, schemaType, value} = useFormBuilder()
+
+  const {renderInput} = useFormRenderCallbacks()
 
   const {
     onChange,
@@ -190,10 +180,6 @@ function RootInput() {
     path: EMPTY_ARRAY,
     presence: EMPTY_ARRAY,
     readOnly,
-    renderField,
-    renderInput,
-    renderItem,
-    renderPreview,
     schemaType,
     validation: EMPTY_ARRAY,
     value,

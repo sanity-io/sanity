@@ -23,6 +23,7 @@ import {FormCallbacksProvider} from './studio/contexts/FormCallbacks'
 import {PresenceProvider} from './studio/contexts/Presence'
 import {ValidationProvider} from './studio/contexts/Validation'
 import {defaultFileAssetSources, defaultImageAssetSources} from './defaults'
+import {FormRenderCallbacksProvider} from './renderCallbacks/FormRenderCallbacksProvider'
 
 export interface FormBuilderProviderProps {
   /**
@@ -153,10 +154,6 @@ export function FormBuilderProvider(props: FormBuilderProviderProps) {
       id,
       members,
       readOnly,
-      renderField,
-      renderInput,
-      renderItem,
-      renderPreview,
       schemaType,
       value: documentValue,
     }),
@@ -173,29 +170,32 @@ export function FormBuilderProvider(props: FormBuilderProviderProps) {
       id,
       members,
       readOnly,
-      renderField,
-      renderInput,
-      renderItem,
-      renderPreview,
       schemaType,
     ]
   )
 
   return (
     <FormBuilderContext.Provider value={formBuilder}>
-      <FormCallbacksProvider
-        onChange={onChange}
-        onFieldGroupSelect={onFieldGroupSelect}
-        onPathBlur={onPathBlur}
-        onPathFocus={onPathFocus}
-        onPathOpen={onPathOpen}
-        onSetPathCollapsed={onSetPathCollapsed}
-        onSetFieldSetCollapsed={onSetFieldSetCollapsed}
+      <FormRenderCallbacksProvider
+        renderField={renderField}
+        renderInput={renderInput}
+        renderItem={renderItem}
+        renderPreview={renderPreview}
       >
-        <PresenceProvider presence={presence}>
-          <ValidationProvider validation={validation}>{children}</ValidationProvider>
-        </PresenceProvider>
-      </FormCallbacksProvider>
+        <FormCallbacksProvider
+          onChange={onChange}
+          onFieldGroupSelect={onFieldGroupSelect}
+          onPathBlur={onPathBlur}
+          onPathFocus={onPathFocus}
+          onPathOpen={onPathOpen}
+          onSetPathCollapsed={onSetPathCollapsed}
+          onSetFieldSetCollapsed={onSetFieldSetCollapsed}
+        >
+          <PresenceProvider presence={presence}>
+            <ValidationProvider validation={validation}>{children}</ValidationProvider>
+          </PresenceProvider>
+        </FormCallbacksProvider>
+      </FormRenderCallbacksProvider>
     </FormBuilderContext.Provider>
   )
 }
