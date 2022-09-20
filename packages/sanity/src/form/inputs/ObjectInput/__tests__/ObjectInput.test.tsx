@@ -5,6 +5,7 @@ import {createSchema} from '../../../../schema'
 import {ObjectInputProps} from '../../../types'
 import {FormCallbacksProvider} from '../../../studio/contexts/FormCallbacks'
 import {render} from './test-utils'
+import {FormRenderCallbacksProvider} from '../../../renderCallbacks/FormRenderCallbacksProvider'
 
 const defs = {
   basic: defineType({
@@ -129,35 +130,37 @@ describe('basic examples', () => {
         onPathBlur={noop}
         onPathOpen={noop}
       >
-        <ObjectInput
-          {...noopProps}
-          members={[
-            {
-              kind: 'field',
-              collapsed: true,
-              name: 'first',
-              open: false,
-              collapsible: true,
-              key: 'first-field',
-              index: 0,
-              field: {
-                schemaType,
-                validation: [],
-                level: 0,
-                path: ['first'],
-                presence: [],
-                value: 'something',
-                changed: false,
-                focused: false,
-                id: 'first-field',
-                readOnly: false,
+        <FormRenderCallbacksProvider>
+          <ObjectInput
+            {...noopProps}
+            members={[
+              {
+                kind: 'field',
+                collapsed: true,
+                name: 'first',
+                open: false,
+                collapsible: true,
+                key: 'first-field',
+                index: 0,
+                field: {
+                  schemaType,
+                  validation: [],
+                  level: 0,
+                  path: ['first'],
+                  presence: [],
+                  value: 'something',
+                  changed: false,
+                  focused: false,
+                  id: 'first-field',
+                  readOnly: false,
+                },
               },
-            },
-          ]}
-          schemaType={schemaType}
-          renderInput={renderInput}
-          renderField={renderField}
-        />
+            ]}
+            schemaType={schemaType}
+            renderInput={renderInput}
+            renderField={renderField}
+          />
+        </FormRenderCallbacksProvider>
       </FormCallbacksProvider>
     )
     expect(queryByTestId('field-first-field')).toBeInTheDocument()
