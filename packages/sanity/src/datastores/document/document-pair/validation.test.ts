@@ -1,7 +1,7 @@
 import {SanityClient} from '@sanity/client'
-import {concat, ConnectableObservable, timer, Observable, Subject, of} from 'rxjs'
-import {buffer, takeWhile, first, publish, mapTo} from 'rxjs/operators'
-import {DocumentPreviewStore} from '../../../preview'
+import {concat, ConnectableObservable, defer, EMPTY, Observable, of, Subject, timer} from 'rxjs'
+import {buffer, first, publish, takeWhile} from 'rxjs/operators'
+import {DocumentAvailability, DraftsModelDocumentAvailability} from '../../../preview'
 import {createSchema} from '../../../schema'
 import {createMockSanityClient} from '../../../../test/mocks/mockSanityClient'
 import {editState, EditStateFor} from './editState'
@@ -27,12 +27,21 @@ const schema = createSchema({
   ],
 })
 
+const AVAILABLE: DocumentAvailability = {available: true, reason: 'READABLE'}
+const NOT_FOUND: DocumentAvailability = {available: false, reason: 'NOT_FOUND'}
+
 // A fixture used to set up a validation stream/subscription and wait
 // for certain events (e.g. when validation is finished running)
-function createSubscription(client: SanityClient, documentPreviewStore?: DocumentPreviewStore) {
+function createSubscription(
+  client: SanityClient,
+  observeDocumentPairAvailability: (
+    id: string
+  ) => Observable<DraftsModelDocumentAvailability> = jest.fn().mockReturnValue(EMPTY)
+) {
   const getClient = () => client
+
   const stream = validation(
-    {client, getClient, documentPreviewStore, schema} as any,
+    {client, getClient, schema, observeDocumentPairAvailability},
     {publishedId: 'example-id', draftId: 'drafts.example-id'},
     'movie'
   ).pipe(publish())
@@ -54,19 +63,27 @@ function createSubscription(client: SanityClient, documentPreviewStore?: Documen
     },
   }
 }
+// @todo: fix mock sanity client is not compatible with SanityClient
+function getMockClient() {
+  return createMockSanityClient() as any as SanityClient
+}
 
+/**
+ * READ THIS: Each tests passes when being run individually, but not when run as part of the whole suite.
+ * It's probably a symptom of something wrong with the caching and should be investigated.
+ */
 describe('validation', () => {
   beforeEach(() => {
     mockEditState.mockReset()
   })
 
   it('runs `editState` through `validateDocument` to create a stream of validation statuses', async () => {
-    const client = createMockSanityClient()
+    const client = getMockClient()
     const mockEditStateSubject = new Subject<EditStateFor>()
 
     mockEditState.mockImplementation(() => mockEditStateSubject.asObservable())
 
-    const {subscription, closeSubscription, doneValidating} = createSubscription(client as any)
+    const {subscription, closeSubscription, doneValidating} = createSubscription(client)
 
     // simulate first emission from validation listener
     mockEditStateSubject.next({
@@ -74,7 +91,7 @@ describe('validation', () => {
       draft: {
         _id: 'example-id',
         _createdAt: '2021-09-07T16:23:52.256Z',
-        _rev: 'exampleRev',
+        _rev: 'exampleRev1',
         _type: 'movie',
         _updatedAt: '2021-09-07T16:23:52.256Z',
         title: 5,
@@ -105,15 +122,16 @@ describe('validation', () => {
         ],
       },
     ])
+    mockEditStateSubject.complete()
   })
 
   it.skip('re-runs validation when the edit state changes', async () => {
-    const client = createMockSanityClient()
+    const client = getMockClient()
     const mockEditStateSubject = new Subject<EditStateFor>()
 
     mockEditState.mockImplementation(() => mockEditStateSubject.asObservable())
 
-    const {subscription, closeSubscription, doneValidating} = createSubscription(client as any)
+    const {subscription, closeSubscription, doneValidating} = createSubscription(client)
 
     // simulate first emission from validation listener
     mockEditStateSubject.next({
@@ -121,7 +139,7 @@ describe('validation', () => {
       draft: {
         _id: 'example-id',
         _createdAt: '2021-09-07T16:23:52.256Z',
-        _rev: 'exampleRev',
+        _rev: 'exampleRev2',
         _type: 'movie',
         _updatedAt: '2021-09-07T16:23:52.256Z',
         title: 5,
@@ -142,7 +160,7 @@ describe('validation', () => {
       draft: {
         _id: 'example-id',
         _createdAt: '2021-09-07T16:23:52.256Z',
-        _rev: 'exampleRev',
+        _rev: 'exampleRev3',
         _type: 'movie',
         _updatedAt: '2021-09-07T16:23:52.256Z',
         title: 'valid title',
@@ -167,27 +185,31 @@ describe('validation', () => {
       {isValidating: true, validation: [{item: {message: 'Expected type "String", got "Number"'}}]},
       {isValidating: false, validation: []},
     ])
+    mockEditStateSubject.complete()
   })
 
   it.skip('re-runs validation when dependency events change', async () => {
-    const client = createMockSanityClient()
-    const subject = new Subject()
-    const mockPreviewStore: any = {}
+    const client = getMockClient()
+    const subject = new Subject<DraftsModelDocumentAvailability>()
 
     // Mock `editState`
     const mockEditStateSubject = new Subject<EditStateFor>()
     mockEditState.mockImplementation(() => mockEditStateSubject.asObservable())
 
-    const {subscription, closeSubscription, doneValidating} = createSubscription(
-      client as any,
-      mockPreviewStore
-    )
+    const observeDocumentPairAvailability = (
+      id: string
+    ): Observable<DraftsModelDocumentAvailability> =>
+      id === 'example-ref-id'
+        ? concat(of({published: AVAILABLE, draft: AVAILABLE}), subject)
+        : concat(
+            of({published: AVAILABLE, draft: AVAILABLE}),
+            of({published: AVAILABLE, draft: AVAILABLE})
+          )
 
-    mockPreviewStore.unstable_observeDocumentPairAvailability = () =>
-      concat(
-        of({published: {available: true}}),
-        subject.pipe(mapTo({published: {available: false}}))
-      )
+    const {subscription, closeSubscription, doneValidating} = createSubscription(
+      client,
+      observeDocumentPairAvailability
+    )
 
     // simulate first emission from validation listener
     mockEditStateSubject.next({
@@ -195,7 +217,7 @@ describe('validation', () => {
       draft: {
         _id: 'example-id',
         _createdAt: '2021-09-07T16:23:52.256Z',
-        _rev: 'exampleRev',
+        _rev: 'exampleRev4',
         _type: 'movie',
         _updatedAt: '2021-09-07T16:23:52.256Z',
         title: 'testing',
@@ -210,22 +232,17 @@ describe('validation', () => {
     })
     await doneValidating()
 
-    mockPreviewStore.unstable_observeDocumentPairAvailability = (id: string) =>
-      id === 'example-ref-id'
-        ? of({published: {available: false}})
-        : of({published: {available: true}})
-
-    subject.next()
+    subject.next({published: NOT_FOUND, draft: AVAILABLE})
 
     await doneValidating()
 
     // close the buffer
     closeSubscription()
 
-    await expect(subscription).resolves.toMatchObject([
-      {isValidating: true, validation: []},
-      {isValidating: false, validation: []},
-      {isValidating: true, validation: []},
+    expect(await subscription).toMatchObject([
+      {isValidating: true, validation: [], revision: 'exampleRev4'},
+      {isValidating: false, validation: [], revision: 'exampleRev4'},
+      {isValidating: true, validation: [], revision: 'exampleRev4'},
       {
         isValidating: false,
         validation: [
@@ -237,19 +254,26 @@ describe('validation', () => {
         ],
       },
     ])
+    mockEditStateSubject.complete()
   })
 
   // this means that when you subscribe to the same document, you'll
   // immediately get the previous value emitted to you
+  // @todo: investigate why this fails
   it.skip('replays the last known version via `memoize` and `publishReplay`', async () => {
-    const client = createMockSanityClient()
+    const client = getMockClient()
 
     // Mock `editState`
     const mockEditStateSubject = new Subject<EditStateFor>()
     mockEditState.mockImplementation(() => mockEditStateSubject.asObservable())
 
     const subscription = validation(
-      {client, schema} as any,
+      {
+        client,
+        schema,
+        getClient: () => client,
+        observeDocumentPairAvailability: jest.fn().mockReturnValue(EMPTY),
+      },
       {publishedId: 'example-id', draftId: 'drafts.example-id'},
       'movie'
     )
@@ -262,7 +286,7 @@ describe('validation', () => {
       draft: {
         _id: 'example-id',
         _createdAt: '2021-09-07T16:23:52.256Z',
-        _rev: 'exampleRev',
+        _rev: 'exampleRev5',
         _type: 'movie',
         _updatedAt: '2021-09-07T16:23:52.256Z',
         title: 5,
@@ -314,13 +338,13 @@ describe('validation', () => {
   })
 
   it.skip('returns empty validation message arrays if there is no available published or draft snapshot', async () => {
-    const client = createMockSanityClient()
+    const client = getMockClient()
 
     // Mock `editState`
     const mockEditStateSubject = new Subject<EditStateFor>()
     mockEditState.mockImplementation(() => mockEditStateSubject.asObservable())
 
-    const {subscription, closeSubscription, doneValidating} = createSubscription(client as any)
+    const {subscription, closeSubscription, doneValidating} = createSubscription(client)
 
     mockEditStateSubject.next({
       id: 'example-id',
@@ -335,9 +359,6 @@ describe('validation', () => {
     await doneValidating()
     closeSubscription()
 
-    await expect(subscription).resolves.toMatchObject([
-      {isValidating: true, validation: []},
-      {isValidating: false, validation: []},
-    ])
+    await expect(subscription).resolves.toMatchObject([{isValidating: false, validation: []}])
   })
 })

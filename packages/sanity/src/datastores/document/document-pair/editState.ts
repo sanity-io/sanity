@@ -3,7 +3,6 @@ import {combineLatest, Observable} from 'rxjs'
 import {map, publishReplay, refCount, startWith, switchMap} from 'rxjs/operators'
 import {SanityClient} from '@sanity/client'
 import {IdPair, PendingMutationsEvent} from '../types'
-import {HistoryStore} from '../../history'
 import {isLiveEditEnabled} from './utils/isLiveEditEnabled'
 import {snapshotPair} from './snapshotPair'
 
@@ -26,7 +25,6 @@ const NOT_LOCKED: TransactionSyncLockState = {enabled: false}
 export const editState = (
   ctx: {
     client: SanityClient
-    historyStore: HistoryStore
     schema: Schema
   },
   idPair: IdPair,
