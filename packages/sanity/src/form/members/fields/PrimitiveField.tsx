@@ -1,4 +1,5 @@
 import React, {useCallback, useMemo, useRef} from 'react'
+import {isBooleanSchemaType, isNumberSchemaType} from '@sanity/types'
 import {FieldMember} from '../../store'
 import {
   ArrayOfObjectsInputProps,
@@ -10,7 +11,7 @@ import {
 import {FormPatch, PatchEvent, set, unset} from '../../patch'
 import {useDidUpdate} from '../../hooks/useDidUpdate'
 import {useFormCallbacks} from '../../studio/contexts/FormCallbacks'
-import {isBooleanSchemaType, isNumberSchemaType} from '@sanity/types'
+import {useFormRenderCallbacks} from '../../renderCallbacks/useFormRenderCallbacks'
 
 /**
  * Responsible for creating inputProps and fieldProps to pass to ´renderInput´ and ´renderField´ for a primitive field/input
@@ -18,10 +19,17 @@ import {isBooleanSchemaType, isNumberSchemaType} from '@sanity/types'
  */
 export function PrimitiveField(props: {
   member: FieldMember
-  renderInput: RenderInputCallback<PrimitiveInputProps>
-  renderField: RenderFieldCallback<PrimitiveFieldProps>
+  renderInput?: RenderInputCallback<PrimitiveInputProps>
+  renderField?: RenderFieldCallback<PrimitiveFieldProps>
 }) {
-  const {member, renderInput, renderField} = props
+  const renderCallbacks = useFormRenderCallbacks()
+
+  const {
+    member,
+    renderField = renderCallbacks.renderField,
+    renderInput = renderCallbacks.renderInput,
+  } = props
+
   const focusRef = useRef<{focus: () => void}>()
 
   const {onPathBlur, onPathFocus, onChange} = useFormCallbacks()

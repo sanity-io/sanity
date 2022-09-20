@@ -16,6 +16,7 @@ import {useDidUpdate} from '../../hooks/useDidUpdate'
 import {insert, PatchArg, PatchEvent, setIfMissing, unset} from '../../patch'
 import {ensureKey} from '../../utils/ensureKey'
 import {useResolveInitialValueForType} from '../../../datastores'
+import {useFormRenderCallbacks} from '../../renderCallbacks/useFormRenderCallbacks'
 
 /**
  * Responsible for creating inputProps and fieldProps to pass to ´renderInput´ and ´renderField´ for an array input
@@ -24,10 +25,10 @@ import {useResolveInitialValueForType} from '../../../datastores'
  */
 export function ArrayOfObjectsField(props: {
   member: FieldMember<ArrayOfObjectsFormNode>
-  renderField: RenderFieldCallback
-  renderInput: RenderInputCallback
-  renderItem: RenderArrayOfObjectsItemCallback
-  renderPreview: RenderPreviewCallback
+  renderField?: RenderFieldCallback
+  renderInput?: RenderInputCallback
+  renderItem?: RenderArrayOfObjectsItemCallback
+  renderPreview?: RenderPreviewCallback
 }) {
   const {
     onPathBlur,
@@ -39,7 +40,16 @@ export function ArrayOfObjectsField(props: {
     onFieldGroupSelect,
   } = useFormCallbacks()
 
-  const {member, renderField, renderInput, renderItem, renderPreview} = props
+  const renderCallbacks = useFormRenderCallbacks()
+
+  const {
+    member,
+    renderField = renderCallbacks.renderField,
+    renderInput = renderCallbacks.renderInput,
+    renderItem = renderCallbacks.renderItem,
+    renderPreview = renderCallbacks.renderPreview,
+  } = props
+
   const focusRef = useRef<Element & {focus: () => void}>()
 
   useDidUpdate(member.field.focused, (hadFocus, hasFocus) => {
@@ -273,6 +283,7 @@ export function ArrayOfObjectsField(props: {
     handleAppendItem,
     handlePrependItem,
     handleFocusChildPath,
+    resolveInitialValue,
     renderInput,
     renderField,
     renderItem,

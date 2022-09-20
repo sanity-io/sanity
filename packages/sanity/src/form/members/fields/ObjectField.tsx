@@ -14,6 +14,7 @@ import {
 import {PatchArg, PatchEvent, setIfMissing} from '../../patch'
 import {FormCallbacksProvider, useFormCallbacks} from '../../studio/contexts/FormCallbacks'
 import {createProtoValue} from '../../utils/createProtoValue'
+import {useFormRenderCallbacks} from '../../renderCallbacks/useFormRenderCallbacks'
 
 /**
  * Responsible for creating inputProps and fieldProps to pass to ´renderInput´ and ´renderField´ for an object input
@@ -22,10 +23,10 @@ import {createProtoValue} from '../../utils/createProtoValue'
  */
 export const ObjectField = function ObjectField(props: {
   member: FieldMember<ObjectFormNode>
-  renderField: RenderFieldCallback
-  renderInput: RenderInputCallback
-  renderItem: RenderArrayOfObjectsItemCallback
-  renderPreview: RenderPreviewCallback
+  renderField?: RenderFieldCallback
+  renderInput?: RenderInputCallback
+  renderItem?: RenderArrayOfObjectsItemCallback
+  renderPreview?: RenderPreviewCallback
 }) {
   const {
     onPathBlur,
@@ -37,7 +38,11 @@ export const ObjectField = function ObjectField(props: {
     onFieldGroupSelect,
   } = useFormCallbacks()
 
+  const {renderField: defaultRenderField, renderInput: defaultRenderInput} =
+    useFormRenderCallbacks()
+
   const {member, renderField, renderInput, renderItem, renderPreview} = props
+
   const focusRef = useRef<{focus: () => void}>()
 
   useDidUpdate(member.field.focused, (hadFocus, hasFocus) => {
@@ -183,7 +188,7 @@ export const ObjectField = function ObjectField(props: {
     member.field.focusPath,
     member.field.focused,
     member.field.groups,
-    handleBlur,
+    // handleBlur,
     handleSelectFieldGroup,
     handleOpenField,
     handleCloseField,
@@ -191,16 +196,20 @@ export const ObjectField = function ObjectField(props: {
     handleExpandField,
     handleExpandFieldSet,
     handleCollapseFieldSet,
-    handleFocus,
+    // handleFocus,
     handleFocusChildPath,
     handleChange,
     renderField,
     renderInput,
     renderItem,
     renderPreview,
+    elementProps,
   ])
 
-  const renderedInput = useMemo(() => renderInput(inputProps), [inputProps, renderInput])
+  const renderedInput = useMemo(() => {
+    const render = renderInput || defaultRenderInput
+    return render(inputProps)
+  }, [defaultRenderInput, inputProps, renderInput])
 
   const fieldProps = useMemo((): ObjectFieldProps => {
     return {
@@ -252,6 +261,12 @@ export const ObjectField = function ObjectField(props: {
     inputProps,
   ])
 
+  const children = useMemo(() => {
+    const render = renderField || defaultRenderField
+
+    return render(fieldProps)
+  }, [defaultRenderField, fieldProps, renderField])
+
   return (
     <FormCallbacksProvider
       onFieldGroupSelect={onFieldGroupSelect}
@@ -262,7 +277,7 @@ export const ObjectField = function ObjectField(props: {
       onPathBlur={onPathBlur}
       onPathFocus={onPathFocus}
     >
-      {useMemo(() => renderField(fieldProps), [fieldProps, renderField])}
+      {children}
     </FormCallbacksProvider>
   )
 }

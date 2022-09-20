@@ -15,6 +15,7 @@ import {FormCallbacksProvider, useFormCallbacks} from '../../studio/contexts/For
 import {useDidUpdate} from '../../hooks/useDidUpdate'
 import {PatchArg, PatchEvent, set, setIfMissing, unset} from '../../patch'
 import {PrimitiveValue} from '../../inputs/arrays/ArrayOfPrimitivesInput/types'
+import {useFormRenderCallbacks} from '../../renderCallbacks/useFormRenderCallbacks'
 
 function move<T>(arr: T[], from: number, to: number): T[] {
   const copy = arr.slice()
@@ -58,10 +59,10 @@ function insertAfter<T>(
  */
 export function ArrayOfPrimitivesField(props: {
   member: FieldMember<ArrayOfPrimitivesFormNode>
-  renderField: RenderFieldCallback
-  renderInput: RenderInputCallback
-  renderItem: RenderArrayOfPrimitivesItemCallback
-  renderPreview: RenderPreviewCallback
+  renderField?: RenderFieldCallback
+  renderInput?: RenderInputCallback
+  renderItem?: RenderArrayOfPrimitivesItemCallback
+  renderPreview?: RenderPreviewCallback
 }) {
   const {
     onPathBlur,
@@ -72,7 +73,16 @@ export function ArrayOfPrimitivesField(props: {
     onSetFieldSetCollapsed,
     onFieldGroupSelect,
   } = useFormCallbacks()
-  const {member, renderField, renderInput, renderItem, renderPreview} = props
+
+  const renderCallbacks = useFormRenderCallbacks()
+
+  const {
+    member,
+    renderField = renderCallbacks.renderField,
+    renderInput = renderCallbacks.renderInput,
+    renderItem = renderCallbacks.renderItem,
+    renderPreview = renderCallbacks.renderPreview,
+  } = props
 
   const focusRef = useRef<Element & {focus: () => void}>()
 

@@ -13,10 +13,10 @@ import {MemberFieldSet} from './MemberFieldset'
 
 export interface ObjectMembersProps {
   members: ObjectMember[]
-  renderInput: RenderInputCallback
-  renderField: RenderFieldCallback
-  renderItem: RenderArrayOfObjectsItemCallback
-  renderPreview: RenderPreviewCallback
+  renderInput?: RenderInputCallback
+  renderField?: RenderFieldCallback
+  renderItem?: RenderArrayOfObjectsItemCallback
+  renderPreview?: RenderPreviewCallback
 }
 /**
  * Convenience component for wrapping an object input
