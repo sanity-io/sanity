@@ -48,7 +48,6 @@
     "react": "17.0.1",
     "react-dom": "17.0.1",
     "react-icons": "^3.11.0",
-    "sanity-plugin-cross-project-tokens": "^1.0.0",
     "sanity-plugin-dashboard-widget-cats": "^0.0.2",
     "sanity-plugin-dashboard-widget-document-list": "^0.0.13",
     "sanity-plugin-markdown": "^2.0.4",
