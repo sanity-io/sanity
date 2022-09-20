@@ -191,7 +191,7 @@
     "rimraf": "^3.0.2",
     "rxjs": "^6.5.3",
     "rxjs-etc": "^10.6.0",
-    "rxjs-exhaustmap-with-trailing": "^1.0.0",
+    "rxjs-exhaustmap-with-trailing": "^1.2.0",
     "sanity-diff-patch": "^1.0.9",
     "scroll-into-view-if-needed": "^2.2.29",
     "semver": "^7.3.5",
