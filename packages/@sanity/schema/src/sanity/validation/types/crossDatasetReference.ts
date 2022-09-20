@@ -2,7 +2,6 @@ import {flatten, isPlainObject} from 'lodash'
 import {error, HELP_IDS} from '../createValidationResult'
 import {getDupes} from '../utils/getDupes'
 import {ValidationResult} from '../../typedefs'
-import {validateExperimentalSearch} from '../utils/validateExperimentalSearch'
 
 function normalizeToProp(typeDef) {
   if (Array.isArray(typeDef.to)) {
@@ -67,16 +66,6 @@ export default (typeDef, visitorContext) => {
         )
       )
     }
-    validateExperimentalSearch(crossDatasetTypeDef.__experimental_search).forEach((err) => {
-      problems.push(
-        error(
-          `Invalid "__experimental_search" config for referenced type "${
-            crossDatasetTypeDef.type || '<unknown type>'
-          }": ${err}`,
-          HELP_IDS.CROSS_DATASET_REFERENCE_INVALID
-        )
-      )
-    })
   })
 
   if (typeof typeDef.dataset === 'string') {
