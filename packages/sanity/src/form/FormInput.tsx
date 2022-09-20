@@ -5,13 +5,12 @@ import {FieldMember} from './store'
 import {
   ArrayOfObjectsInputProps,
   ObjectInputProps,
-  RenderArrayOfObjectsItemCallback,
   RenderFieldCallback,
   RenderInputCallback,
-  RenderPreviewCallback,
 } from './types'
 import {isArrayInputProps, isObjectInputProps} from './utils/asserters'
 import {MemberField, ArrayOfObjectsItem, MemberItemError} from './members'
+import {useFormRenderCallbacks} from './renderCallbacks/useFormRenderCallbacks'
 
 const pass = ({children}: {children: React.ReactNode}) => children
 
@@ -37,16 +36,7 @@ export const FormInput = memo(function FormInput(
     return hasAbsolutePath(props) ? props.absolutePath : props.path.concat(props.relativePath)
   }, [props])
 
-  return (
-    <FormInputInner
-      {...props}
-      absolutePath={absolutePath}
-      destinationRenderField={props.renderField}
-      destinationRenderInput={props.renderInput}
-      destinationRenderItem={props.renderItem}
-      destinationRenderPreview={props.renderPreview}
-    />
-  )
+  return <FormInputInner {...props} absolutePath={absolutePath} />
 })
 
 /**
@@ -56,19 +46,15 @@ const FormInputInner = memo(function FormInputInner(
   props: (ArrayOfObjectsInputProps | ObjectInputProps) & {
     absolutePath: Path
     includeField?: boolean
-    destinationRenderInput: RenderInputCallback
-    destinationRenderField: RenderFieldCallback
-    destinationRenderItem: RenderArrayOfObjectsItemCallback
-    destinationRenderPreview: RenderPreviewCallback
   }
 ) {
+  const {absolutePath} = props
+
   const {
-    absolutePath,
-    destinationRenderInput,
-    destinationRenderItem,
-    destinationRenderField,
-    destinationRenderPreview,
-  } = props
+    renderField: destinationRenderField,
+    renderInput: destinationRenderInput,
+    renderPreview: destinationRenderPreview,
+  } = useFormRenderCallbacks()
 
   const renderInput: RenderInputCallback = useCallback(
     (inputProps) => {
@@ -86,23 +72,14 @@ const FormInputInner = memo(function FormInputInner(
         )
       }
       // we have not yet reached the destination path, so we'll continue recurse until we get there
-      return (
-        <FormInputInner
-          {...inputProps}
-          absolutePath={absolutePath}
-          destinationRenderInput={destinationRenderInput}
-          destinationRenderItem={destinationRenderItem}
-          destinationRenderField={destinationRenderField}
-          destinationRenderPreview={destinationRenderPreview}
-        />
-      )
+      return <FormInputInner {...inputProps} absolutePath={absolutePath} />
     },
     [
       absolutePath,
-      destinationRenderField,
+      // destinationRenderField,
       destinationRenderInput,
-      destinationRenderItem,
-      destinationRenderPreview,
+      // destinationRenderItem,
+      // destinationRenderPreview,
     ]
   )
 
