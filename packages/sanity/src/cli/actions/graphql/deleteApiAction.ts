@@ -1,17 +1,29 @@
 import type {CliCommandArguments, CliCommandContext} from '@sanity/cli'
+import yargs from 'yargs/yargs'
+import {hideBin} from 'yargs/helpers'
 
 interface DeleteGraphQLApiFlags {
   project?: string
   dataset?: string
   tag?: string
+  force?: boolean
+}
+
+function parseCliFlags(args: {argv?: string[]}) {
+  return yargs(hideBin(args.argv || process.argv).slice(2))
+    .option('project', {type: 'string'})
+    .option('dataset', {type: 'string'})
+    .option('tag', {type: 'string', default: 'default'})
+    .option('force', {type: 'boolean'}).argv
 }
 
 export default async function deleteGraphQLApi(
   args: CliCommandArguments<DeleteGraphQLApiFlags>,
   context: CliCommandContext
 ): Promise<void> {
+  // Reparsing CLI flags for better control of binary flags
+  const flags = await parseCliFlags(args)
   const {apiClient, output, prompt} = context
-  const flags = args.extOptions
 
   let client = apiClient({
     requireUser: true,
@@ -27,11 +39,13 @@ export default async function deleteGraphQLApi(
       ? `Are you absolutely sure you want to delete the current GraphQL API connected to the "${dataset}" dataset in project ${projectId}?`
       : `Are you absolutely sure you want to delete the GraphQL API connected to the "${dataset}" dataset in project ${projectId}, tagged "${tag}"?`
 
-  const confirmedDelete = await prompt.single({
-    type: 'confirm',
-    message: confirmMessage,
-    default: false,
-  })
+  const confirmedDelete =
+    flags.force ||
+    (await prompt.single({
+      type: 'confirm',
+      message: confirmMessage,
+      default: false,
+    }))
 
   if (!confirmedDelete) {
     return

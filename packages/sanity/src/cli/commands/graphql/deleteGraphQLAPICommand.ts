@@ -6,6 +6,7 @@ Options
   --project <projectId> Project ID to delete GraphQL API for
   --dataset <dataset> Delete GraphQL API for the given dataset
   --tag <tag> Delete GraphQL API for the given tag (defaults to 'default')
+  --force Skip confirmation prompt, forcefully undeploying the GraphQL API
 
 Examples
   sanity graphql undeploy
