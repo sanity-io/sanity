@@ -20,7 +20,7 @@ import type {
   InputProps,
   ItemProps,
   RenderFieldCallback,
-  RenderInputCallback,
+  // RenderInputCallback,
   RenderItemCallback,
   RenderPreviewCallback,
 } from '../form'
@@ -32,6 +32,7 @@ import type {DocumentActionComponent} from '../desk/actions'
 import type {DocumentBadgeComponent} from '../desk/badges'
 import {PreviewProps} from '../components/previews'
 import {StudioComponents, StudioComponentsPluginOptions} from './components'
+import {FormComponents, FormComponentsPluginOptions} from './components/form/types'
 
 /**
  * @alpha
@@ -61,16 +62,9 @@ export interface SanityFormConfig {
     CustomMarkers?: FormBuilderCustomMarkersComponent
     Markers?: FormBuilderMarkersComponent
   }
-  components?: Record<
-    string,
-    | ComponentType<InputProps>
-    | {
-        input?: ComponentType<InputProps>
-        field?: ComponentType<FieldProps>
-        item?: ComponentType<ItemProps>
-        preview?: ComponentType<PreviewProps>
-      }
-  >
+
+  components?: FormComponentsPluginOptions
+
   file?: {
     assetSources?: AssetSource[] | AssetSourceResolver
     // TODO: this option needs more thought on composition and availability
@@ -81,14 +75,6 @@ export interface SanityFormConfig {
     // TODO: this option needs more thought on composition and availability
     directUploads?: boolean
   }
-
-  renderInput?: (props: InputProps, next: RenderInputCallback) => ReactNode
-  renderField?: (props: FieldProps, next: RenderFieldCallback) => ReactNode
-  renderItem?: (props: ItemProps, next: RenderItemCallback) => ReactNode
-  renderPreview?: (
-    props: PreviewProps & {schemaType: SchemaType},
-    next: RenderPreviewCallback
-  ) => ReactNode
 }
 
 export interface FormBuilderComponentResolverContext extends ConfigContext {
@@ -311,15 +297,13 @@ export interface Source {
       assetSources: AssetSource[]
       directUploads: boolean
     }
+
     image: {
       assetSources: AssetSource[]
       directUploads: boolean
     }
 
-    renderInput: (props: InputProps) => ReactNode
-    renderField: (props: FieldProps) => ReactNode
-    renderItem: (props: ItemProps) => ReactNode
-    renderPreview: (props: PreviewProps & {schemaType: SchemaType}) => ReactNode
+    components: FormComponents
 
     /**
      * these have not been migrated over and are not merged by the form builder

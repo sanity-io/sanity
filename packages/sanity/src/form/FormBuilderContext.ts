@@ -7,10 +7,10 @@ import {
   FormBuilderFilterFieldFn,
   FormBuilderMarkersComponent,
   FormFieldGroup,
-  RenderFieldCallback,
-  RenderInputCallback,
-  RenderItemCallback,
-  RenderPreviewCallback,
+  // RenderFieldCallback,
+  // RenderInputCallback,
+  // RenderItemCallback,
+  // RenderPreviewCallback,
 } from './types'
 import {ObjectMember, StateTree} from './store'
 
@@ -50,10 +50,10 @@ export interface FormBuilderContextValue {
   id: string
   members: ObjectMember[]
   readOnly?: boolean
-  renderField: RenderFieldCallback
-  renderInput: RenderInputCallback
-  renderItem: RenderItemCallback
-  renderPreview: RenderPreviewCallback
+  // renderField: RenderFieldCallback
+  // renderInput: RenderInputCallback
+  // renderItem: RenderItemCallback
+  // renderPreview: RenderPreviewCallback
   schemaType: ObjectSchemaType
   value: {[field in string]: unknown} | undefined
 }

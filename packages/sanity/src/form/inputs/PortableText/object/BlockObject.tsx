@@ -18,6 +18,7 @@ import {useMemberValidation} from '../hooks/useMemberValidation'
 import {usePortableTextMarkers} from '../hooks/usePortableTextMarkers'
 import {usePortableTextMemberItem} from '../hooks/usePortableTextMembers'
 import {pathToString} from '../../../../field/paths'
+import {useFormRenderCallbacks} from '../../../renderCallbacks/useFormRenderCallbacks'
 import {BlockObjectPreview} from './BlockObjectPreview'
 import {
   Root,
@@ -39,11 +40,13 @@ interface BlockObjectProps {
   readOnly?: boolean
   renderBlockActions?: RenderBlockActionsCallback
   renderCustomMarkers?: RenderCustomMarkers
-  renderPreview: RenderPreviewCallback
+  renderPreview?: RenderPreviewCallback
   type: ObjectSchemaType
 }
 
 export function BlockObject(props: BlockObjectProps) {
+  const renderCallbacks = useFormRenderCallbacks()
+
   const {
     attributes: {focused, selected, path},
     block,
@@ -53,7 +56,7 @@ export function BlockObject(props: BlockObjectProps) {
     readOnly,
     renderBlockActions,
     renderCustomMarkers,
-    renderPreview,
+    renderPreview = renderCallbacks.renderPreview,
     type,
   } = props
   const {Markers} = useFormBuilder().__internal.components

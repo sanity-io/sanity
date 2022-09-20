@@ -18,6 +18,7 @@ import {usePortableTextMarkers} from '../hooks/usePortableTextMarkers'
 import {useMemberValidation} from '../hooks/useMemberValidation'
 import {usePortableTextMemberItem} from '../hooks/usePortableTextMembers'
 import {pathToString} from '../../../../field/paths'
+import {useFormRenderCallbacks} from '../../../renderCallbacks/useFormRenderCallbacks'
 import {InlineObjectToolbarPopover} from './InlineObjectToolbarPopover'
 
 interface InlineObjectProps {
@@ -25,7 +26,7 @@ interface InlineObjectProps {
   onOpenItem: (path: Path) => void
   readOnly?: boolean
   renderCustomMarkers?: RenderCustomMarkers
-  renderPreview: RenderPreviewCallback
+  renderPreview?: RenderPreviewCallback
   scrollElement: HTMLElement | null
   type: Type
   value: PortableTextChild
@@ -113,12 +114,14 @@ export const InlineObject = React.forwardRef(function InlineObject(
   props: InlineObjectProps,
   forwardedRef: React.ForwardedRef<PortableTextEditorElement>
 ) {
+  const renderCallbacks = useFormRenderCallbacks()
+
   const {
     attributes: {focused, selected, path},
     onOpenItem,
     readOnly,
     renderCustomMarkers,
-    renderPreview,
+    renderPreview = renderCallbacks.renderPreview,
     scrollElement,
     type,
     value,

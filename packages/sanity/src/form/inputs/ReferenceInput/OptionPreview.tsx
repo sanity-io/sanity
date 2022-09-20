@@ -7,6 +7,7 @@ import {Stack, Text, TextSkeleton} from '@sanity/ui'
 import {Observable} from 'rxjs'
 import {Alert} from '../../components/Alert'
 import {RenderPreviewCallback} from '../../types'
+import {useFormRenderCallbacks} from '../../renderCallbacks/useFormRenderCallbacks'
 import {ReferenceInfo} from './types'
 import {useReferenceInfo} from './useReferenceInfo'
 import {ReferencePreview} from './ReferencePreview'
@@ -19,9 +20,10 @@ export function OptionPreview(props: {
   id: string
   type: ReferenceSchemaType
   getReferenceInfo: (id: string) => Observable<ReferenceInfo>
-  renderPreview: RenderPreviewCallback
+  renderPreview?: RenderPreviewCallback
 }) {
-  const {getReferenceInfo, id: documentId, renderPreview} = props
+  const renderCallbacks = useFormRenderCallbacks()
+  const {getReferenceInfo, id: documentId, renderPreview = renderCallbacks.renderPreview} = props
   const {isLoading, result: referenceInfo, error} = useReferenceInfo(documentId, getReferenceInfo)
 
   if (isLoading) {

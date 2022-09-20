@@ -12,10 +12,10 @@ import {MemberItemError} from './MemberItemError'
 
 export interface ArrayOfObjectsMembersProps {
   members: ArrayOfObjectsMember[]
-  renderInput: RenderInputCallback
-  renderField: RenderFieldCallback
-  renderItem: RenderArrayOfObjectsItemCallback
-  renderPreview: RenderPreviewCallback
+  renderInput?: RenderInputCallback
+  renderField?: RenderFieldCallback
+  renderItem?: RenderArrayOfObjectsItemCallback
+  renderPreview?: RenderPreviewCallback
 }
 
 /**

@@ -9,6 +9,7 @@ import {useScrollIntoViewOnFocusWithin} from '../../../../hooks/useScrollIntoVie
 import {useDidUpdate} from '../../../../hooks/useDidUpdate'
 import {FIXME, RenderPreviewCallback} from '../../../../types'
 import {useChildPresence} from '../../../../studio/contexts/Presence'
+import {useFormRenderCallbacks} from '../../../../renderCallbacks/useFormRenderCallbacks'
 import {RowItem} from './RowItem'
 import {CellItem} from './CellItem'
 
@@ -27,7 +28,7 @@ export interface ArrayItemProps {
   path: Path
   presence: FIXME[]
   readOnly?: boolean
-  renderPreview: RenderPreviewCallback
+  renderPreview?: RenderPreviewCallback
   schemaType: SchemaType
   validation: FIXME[]
   value: _ArrayInput_ArrayMember
@@ -35,6 +36,8 @@ export interface ArrayItemProps {
 
 // This renders the item / preview of unexpanded array items
 export const ArrayItem = memo(function ArrayItem(props: ArrayItemProps) {
+  const renderCallbacks = useFormRenderCallbacks()
+
   const {
     changed,
     value,
@@ -53,7 +56,7 @@ export const ArrayItem = memo(function ArrayItem(props: ArrayItemProps) {
     onInsert,
     onFocus,
     children,
-    renderPreview,
+    renderPreview = renderCallbacks.renderPreview,
   } = props
 
   const innerElementRef = useRef<HTMLDivElement | null>(null)

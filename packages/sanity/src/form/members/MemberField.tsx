@@ -4,7 +4,6 @@ import {
   RenderFieldCallback,
   RenderInputCallback,
   RenderArrayOfObjectsItemCallback,
-  FIXME,
   RenderPreviewCallback,
 } from '../types'
 import {ArrayOfObjectsField} from './fields/ArrayOfObjectsField'
@@ -15,10 +14,10 @@ import {isMemberArrayOfObjects, isMemberArrayOfPrimitives, isMemberObject} from 
 
 export interface MemberFieldProps {
   member: FieldMember
-  renderField: RenderFieldCallback
-  renderInput: RenderInputCallback
-  renderItem: RenderArrayOfObjectsItemCallback
-  renderPreview: RenderPreviewCallback
+  renderField?: RenderFieldCallback
+  renderInput?: RenderInputCallback
+  renderItem?: RenderArrayOfObjectsItemCallback
+  renderPreview?: RenderPreviewCallback
 }
 
 export const MemberField = memo(function MemberField(props: MemberFieldProps) {
@@ -43,8 +42,7 @@ export const MemberField = memo(function MemberField(props: MemberFieldProps) {
         member={member}
         renderField={renderField}
         renderInput={renderInput}
-        // todo: these have different signatures, so renderItem for a primitive input should not be the same as renderItem in array of object inputs
-        renderItem={renderItem as FIXME}
+        renderItem={renderItem as any}
         renderPreview={renderPreview}
       />
     )

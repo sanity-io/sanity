@@ -5,13 +5,14 @@ import {FieldMember} from './store'
 import {
   ArrayOfObjectsInputProps,
   ObjectInputProps,
-  RenderArrayOfObjectsItemCallback,
+  // RenderArrayOfObjectsItemCallback,
   RenderFieldCallback,
   RenderInputCallback,
-  RenderPreviewCallback,
+  // RenderPreviewCallback,
 } from './types'
 import {isArrayInputProps, isObjectInputProps} from './utils/asserters'
 import {MemberField, ArrayOfObjectsItem, MemberItemError} from './members'
+import {useFormRenderCallbacks} from './renderCallbacks/useFormRenderCallbacks'
 
 const pass = ({children}: {children: React.ReactNode}) => children
 
@@ -41,10 +42,10 @@ export const FormInput = memo(function FormInput(
     <FormInputInner
       {...props}
       absolutePath={absolutePath}
-      destinationRenderField={props.renderField}
-      destinationRenderInput={props.renderInput}
-      destinationRenderItem={props.renderItem}
-      destinationRenderPreview={props.renderPreview}
+      // destinationRenderField={props.renderField}
+      // destinationRenderInput={props.renderInput}
+      // destinationRenderItem={props.renderItem}
+      // destinationRenderPreview={props.renderPreview}
     />
   )
 })
@@ -56,19 +57,26 @@ const FormInputInner = memo(function FormInputInner(
   props: (ArrayOfObjectsInputProps | ObjectInputProps) & {
     absolutePath: Path
     includeField?: boolean
-    destinationRenderInput: RenderInputCallback
-    destinationRenderField: RenderFieldCallback
-    destinationRenderItem: RenderArrayOfObjectsItemCallback
-    destinationRenderPreview: RenderPreviewCallback
+    // destinationRenderInput: RenderInputCallback
+    // destinationRenderField: RenderFieldCallback
+    // destinationRenderItem: RenderArrayOfObjectsItemCallback
+    // destinationRenderPreview: RenderPreviewCallback
   }
 ) {
   const {
     absolutePath,
-    destinationRenderInput,
-    destinationRenderItem,
-    destinationRenderField,
-    destinationRenderPreview,
+    // destinationRenderInput,
+    // destinationRenderItem,
+    // destinationRenderField,
+    // destinationRenderPreview,
   } = props
+
+  const {
+    renderField: destinationRenderField,
+    renderInput: destinationRenderInput,
+    // renderItem: destinationRenderItem,
+    renderPreview: destinationRenderPreview,
+  } = useFormRenderCallbacks()
 
   const renderInput: RenderInputCallback = useCallback(
     (inputProps) => {
@@ -90,19 +98,19 @@ const FormInputInner = memo(function FormInputInner(
         <FormInputInner
           {...inputProps}
           absolutePath={absolutePath}
-          destinationRenderInput={destinationRenderInput}
-          destinationRenderItem={destinationRenderItem}
-          destinationRenderField={destinationRenderField}
-          destinationRenderPreview={destinationRenderPreview}
+          // destinationRenderInput={destinationRenderInput}
+          // destinationRenderItem={destinationRenderItem}
+          // destinationRenderField={destinationRenderField}
+          // destinationRenderPreview={destinationRenderPreview}
         />
       )
     },
     [
       absolutePath,
-      destinationRenderField,
+      // destinationRenderField,
       destinationRenderInput,
-      destinationRenderItem,
-      destinationRenderPreview,
+      // destinationRenderItem,
+      // destinationRenderPreview,
     ]
   )
 

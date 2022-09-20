@@ -13,10 +13,10 @@ import {MemberFieldError} from './MemberFieldError'
 
 export const MemberFieldSet = memo(function MemberFieldSet(props: {
   member: FieldSetMember
-  renderField: RenderFieldCallback
-  renderInput: RenderInputCallback
-  renderItem: RenderArrayOfObjectsItemCallback
-  renderPreview: RenderPreviewCallback
+  renderField?: RenderFieldCallback
+  renderInput?: RenderInputCallback
+  renderItem?: RenderArrayOfObjectsItemCallback
+  renderPreview?: RenderPreviewCallback
 }) {
   const {member, renderField, renderInput, renderItem, renderPreview} = props
 

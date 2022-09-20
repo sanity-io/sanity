@@ -1,4 +1,5 @@
 import React, {useCallback, useMemo, useRef} from 'react'
+import {isBooleanSchemaType, isNumberSchemaType} from '@sanity/types'
 import {ArrayOfPrimitivesItemMember} from '../../store'
 import {useDidUpdate} from '../../hooks/useDidUpdate'
 import {getEmptyValue} from '../../inputs/arrays/ArrayOfPrimitivesInput/getEmptyValue'
@@ -11,15 +12,15 @@ import {
 } from '../../types'
 import {insert, PatchArg, PatchEvent, set, unset} from '../../patch'
 import {useFormCallbacks} from '../../studio/contexts/FormCallbacks'
-import {isBooleanSchemaType, isNumberSchemaType} from '@sanity/types'
+import {useFormRenderCallbacks} from '../../renderCallbacks/useFormRenderCallbacks'
 
 /**
  * @alpha
  */
 export interface PrimitiveMemberItemProps {
   member: ArrayOfPrimitivesItemMember
-  renderItem: RenderArrayOfPrimitivesItemCallback
-  renderInput: RenderInputCallback
+  renderItem?: RenderArrayOfPrimitivesItemCallback
+  renderInput?: RenderInputCallback
 }
 
 /**
@@ -27,7 +28,14 @@ export interface PrimitiveMemberItemProps {
  */
 export function ArrayOfPrimitivesItem(props: PrimitiveMemberItemProps) {
   const focusRef = useRef<{focus: () => void}>()
-  const {member, renderItem, renderInput} = props
+
+  const renderCallbacks = useFormRenderCallbacks()
+
+  const {
+    member,
+    renderInput = renderCallbacks.renderInput,
+    renderItem = renderCallbacks.renderItem,
+  } = props
 
   const {onPathBlur, onPathFocus, onChange} = useFormCallbacks()
 
@@ -37,19 +45,13 @@ export function ArrayOfPrimitivesItem(props: PrimitiveMemberItemProps) {
     }
   })
 
-  const handleBlur = useCallback(
-    (event: React.FocusEvent) => {
-      onPathBlur(member.item.path)
-    },
-    [member.item.path, onPathBlur]
-  )
+  const handleBlur = useCallback(() => {
+    onPathBlur(member.item.path)
+  }, [member.item.path, onPathBlur])
 
-  const handleFocus = useCallback(
-    (event: React.FocusEvent) => {
-      onPathFocus(member.item.path)
-    },
-    [member.item.path, onPathFocus]
-  )
+  const handleFocus = useCallback(() => {
+    onPathFocus(member.item.path)
+  }, [member.item.path, onPathFocus])
 
   const handleChange = useCallback(
     (event: PatchEvent | PatchArg) => {

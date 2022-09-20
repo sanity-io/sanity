@@ -13,6 +13,8 @@ import {InitialValueTemplateItem, Template, TemplateResponse} from '../templates
 import {isNonNullable} from '../util'
 import {defaultFileAssetSources, defaultImageAssetSources} from '../form/defaults'
 import {validateWorkspaces} from '../studio/workspaces/validateWorkspaces'
+import {FieldProps, InputProps, ItemProps} from '../form'
+import {PreviewProps} from '../components/previews'
 import {
   Config,
   PreparedConfig,
@@ -42,12 +44,9 @@ import {resolveConfigProperty} from './resolveConfigProperty'
 import {ConfigResolutionError} from './ConfigResolutionError'
 import {SchemaError} from './SchemaError'
 import {createDefaultIcon} from './createDefaultIcon'
-import {_createRenderField} from './form/_renderField'
-import {_createRenderInput} from './form/_renderInput'
-import {_createRenderItem} from './form/_renderItem'
-import {_createRenderPreview} from './form/_renderPreview'
 import {_createRenderStudioComponent} from './components'
 import type {LogoProps, ToolMenuProps, LayoutProps, NavbarProps} from './components'
+import {_createRenderFormComponent} from './components/form'
 
 type InternalSource = WorkspaceSummary['__internal']['sources'][number]
 
@@ -453,10 +452,25 @@ function resolveSource({
         }),
     },
     form: {
-      renderField: _createRenderField(config),
-      renderInput: _createRenderInput(config),
-      renderItem: _createRenderItem(config),
-      renderPreview: _createRenderPreview(config),
+      components: {
+        Input: _createRenderFormComponent<Omit<InputProps, 'renderInput'>>({
+          config,
+          componentName: 'Input',
+        }),
+        Field: _createRenderFormComponent<Omit<FieldProps, 'renderField'>>({
+          config,
+          componentName: 'Field',
+        }),
+        Item: _createRenderFormComponent<Omit<ItemProps, 'renderItem'>>({
+          config,
+          componentName: 'Item',
+        }),
+        Preview: _createRenderFormComponent<Omit<PreviewProps, 'renderPreview'>>({
+          config,
+          componentName: 'Preview',
+        }),
+      },
+
       file: {
         assetSources: resolveConfigProperty({
           config,

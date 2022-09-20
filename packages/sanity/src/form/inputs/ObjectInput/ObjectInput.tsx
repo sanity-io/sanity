@@ -6,7 +6,7 @@ import {UnknownFields} from './UnknownFields'
 import {FieldGroupTabsWrapper} from './ObjectInput.styled'
 import {FieldGroupTabs} from './fieldGroups/FieldGroupTabs'
 
-export const ObjectInput = memo(function ObjectInput(props: ObjectInputProps) {
+export const ObjectInput = memo((props: ObjectInputProps) => {
   const {
     schemaType,
     groups,
@@ -22,6 +22,8 @@ export const ObjectInput = memo(function ObjectInput(props: ObjectInputProps) {
     path,
     onFieldGroupSelect,
   } = props
+
+  // console.log(`[${props.id}] ObjectInput`, props)
 
   const {columns} = schemaType.options || {}
 
@@ -58,6 +60,7 @@ export const ObjectInput = memo(function ObjectInput(props: ObjectInputProps) {
   if (members.length === 0) {
     return null
   }
+
   return (
     <Stack space={5}>
       {groups.length > 0 ? (
@@ -83,3 +86,5 @@ export const ObjectInput = memo(function ObjectInput(props: ObjectInputProps) {
     </Stack>
   )
 })
+
+ObjectInput.displayName = 'ObjectInput'

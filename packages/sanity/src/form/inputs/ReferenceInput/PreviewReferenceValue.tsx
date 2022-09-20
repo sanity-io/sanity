@@ -3,17 +3,20 @@ import {Reference, ReferenceSchemaType} from '@sanity/types'
 import {Box, Flex, Inline, Label, Stack} from '@sanity/ui'
 import {RenderPreviewCallback} from '../../types'
 import {SanityDefaultPreview} from '../../../preview'
+import {useFormRenderCallbacks} from '../../renderCallbacks/useFormRenderCallbacks'
 import {ReferencePreview} from './ReferencePreview'
 import {Loadable} from './useReferenceInfo'
 import {ReferenceInfo} from './types'
 
 export function PreviewReferenceValue(props: {
   referenceInfo: Loadable<ReferenceInfo>
-  renderPreview: RenderPreviewCallback
+  renderPreview?: RenderPreviewCallback
   type: ReferenceSchemaType
   value: Reference
 }) {
-  const {referenceInfo, renderPreview, type, value} = props
+  const renderCallbacks = useFormRenderCallbacks()
+
+  const {referenceInfo, renderPreview = renderCallbacks.renderPreview, type, value} = props
 
   if (referenceInfo.isLoading || referenceInfo.error) {
     return <SanityDefaultPreview isPlaceholder />

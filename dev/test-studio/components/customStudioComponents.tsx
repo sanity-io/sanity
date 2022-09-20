@@ -1,6 +1,7 @@
 import React, {createContext, useContext} from 'react'
 import {Box, Card, Flex, Stack, Text} from '@sanity/ui'
-import {LogoProps, NavbarProps, LayoutProps, createPlugin, ToolMenuProps} from 'sanity'
+import {LogoProps, NavbarProps, LayoutProps, createPlugin, ToolMenuProps, InputProps} from 'sanity'
+import {isObjectInputProps, isStringInputProps} from 'sanity/form'
 
 export const componentsPlugin = createPlugin({
   name: 'components-plugin',

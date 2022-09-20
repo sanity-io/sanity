@@ -57,6 +57,10 @@ export function StudioLayout() {
     document.title = documentTitle
   }, [documentTitle])
 
+  useEffect(() => {
+    if (toolError) console.error(toolError)
+  }, [toolError])
+
   const handleSearchOpenChange = useCallback((open: boolean) => {
     setSearchOpen(open)
   }, [])

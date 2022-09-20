@@ -15,16 +15,17 @@ import {FormCallbacksProvider, useFormCallbacks} from '../../studio/contexts/For
 import {ArrayOfObjectsItemMember} from '../../store'
 import {createProtoValue} from '../../utils/createProtoValue'
 import {isEmpty} from '../../inputs/arrays/ArrayOfObjectsInput/item/helpers'
+import {useFormRenderCallbacks} from '../../renderCallbacks/useFormRenderCallbacks'
 
 /**
  * @alpha
  */
 export interface MemberItemProps {
   member: ArrayOfObjectsItemMember
-  renderItem: RenderArrayOfObjectsItemCallback
-  renderField: RenderFieldCallback
-  renderInput: RenderInputCallback
-  renderPreview: RenderPreviewCallback
+  renderItem?: RenderArrayOfObjectsItemCallback
+  renderField?: RenderFieldCallback
+  renderInput?: RenderInputCallback
+  renderPreview?: RenderPreviewCallback
 }
 
 /**
@@ -32,7 +33,16 @@ export interface MemberItemProps {
  */
 export function ArrayOfObjectsItem(props: MemberItemProps) {
   const focusRef = useRef<{focus: () => void}>()
-  const {member, renderItem, renderInput, renderField, renderPreview} = props
+
+  const renderCallbacks = useFormRenderCallbacks()
+
+  const {
+    member,
+    renderField = renderCallbacks.renderField,
+    renderInput = renderCallbacks.renderInput,
+    renderItem = renderCallbacks.renderItem,
+    renderPreview = renderCallbacks.renderPreview,
+  } = props
 
   const {
     onPathBlur,
