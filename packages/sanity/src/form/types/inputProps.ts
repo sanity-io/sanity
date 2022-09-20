@@ -7,7 +7,7 @@ import {
   SchemaType,
   StringSchemaType,
 } from '@sanity/types'
-import React, {ChangeEventHandler, FocusEventHandler, FormEventHandler} from 'react'
+import React, {FocusEventHandler, FormEventHandler} from 'react'
 import {FormPatch, PatchEvent} from '../patch'
 import {
   ArrayOfObjectsFormNode,
@@ -50,10 +50,10 @@ export interface ObjectInputProps<
   onOpenField: (fieldName: string) => void
   onCloseField: (fieldName: string) => void
 
-  renderInput: RenderInputCallback
-  renderField: RenderFieldCallback
-  renderItem: RenderArrayOfObjectsItemCallback
-  renderPreview: RenderPreviewCallback
+  renderInput?: RenderInputCallback
+  renderField?: RenderFieldCallback
+  renderItem?: RenderArrayOfObjectsItemCallback
+  renderPreview?: RenderPreviewCallback
 
   elementProps: ComplexElementProps
 }
@@ -86,10 +86,10 @@ export interface ArrayOfObjectsInputProps<
   onOpenItem: (path: Path) => void
   onCloseItem: () => void
 
-  renderField: RenderFieldCallback
-  renderInput: RenderInputCallback
-  renderItem: RenderArrayOfObjectsItemCallback
-  renderPreview: RenderPreviewCallback
+  renderField?: RenderFieldCallback
+  renderInput?: RenderInputCallback
+  renderItem?: RenderArrayOfObjectsItemCallback
+  renderPreview?: RenderPreviewCallback
 
   elementProps: ComplexElementProps
 }
