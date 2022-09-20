@@ -74,6 +74,7 @@ import fieldGroups from './debug/fieldGroups'
 import fieldGroupsDefault from './debug/fieldGroupsDefault'
 import fieldGroupsMany from './debug/fieldGroupsMany'
 import fieldGroupsWithValidation from './debug/fieldGroupsWithValidation'
+import {formComponents} from './debug/formComponents'
 
 // Test documents with official plugin inputs
 import code from './plugins/code'
@@ -179,9 +180,8 @@ export const schemaTypes = [
   numbers,
   objectWithNestedArray,
   objects,
+  formComponents,
   formInputDebug,
-  // orderableCategoryDocumentType,
-  // orderableTagDocumentType,
   manyEditors,
   playlist,
   playlistTrack,
