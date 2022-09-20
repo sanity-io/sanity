@@ -16,6 +16,7 @@ module.exports = async function deleteApiAction(args, context) {
       : `Are you absolutely sure you want to delete the GraphQL API connected to the "${dataset}" dataset, tagged "${tag}"?`
 
   if (
+    !flags.force &&
     !(await prompt.single({
       type: 'confirm',
       message: confirmMessage,
