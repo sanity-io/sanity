@@ -170,7 +170,11 @@ export class VisionGui extends React.PureComponent<VisionGuiProps, VisionGuiStat
     this._paramsEditorContainer = React.createRef()
     this._customApiVersionElement = React.createRef()
 
-    this._client = props.client.withConfig({apiVersion: customApiVersion || apiVersion, dataset})
+    this._client = props.client.withConfig({
+      apiVersion: customApiVersion || apiVersion,
+      dataset,
+      allowReconfigure: true,
+    })
 
     // Initial root height without header
     const bodyHeight =
