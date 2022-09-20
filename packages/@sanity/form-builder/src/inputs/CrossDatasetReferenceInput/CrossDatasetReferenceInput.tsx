@@ -28,6 +28,7 @@ import {EMPTY_ARRAY} from '../../utils/empty'
 import {useDidUpdate} from '../../hooks/useDidUpdate'
 import {AlertStrip} from '../../AlertStrip'
 import {useOnClickOutside} from '../../hooks/useOnClickOutside'
+import {getProjectId} from './utils/getProjectId'
 import {BaseInputProps, SearchState} from './types'
 import {OptionPreview} from './OptionPreview'
 import {useReferenceInfo} from './useReferenceInfo'
@@ -73,6 +74,8 @@ export const CrossDatasetReferenceInput = forwardRef(function CrossDatasetRefere
     getReferenceInfo,
   } = props
 
+  const projectId = useMemo(() => getProjectId(), [])
+
   const [searchState, setSearchState] = useState<SearchState>(INITIAL_SEARCH_STATE)
 
   const handleChange = useCallback(
@@ -94,7 +97,7 @@ export const CrossDatasetReferenceInput = forwardRef(function CrossDatasetRefere
           set({
             _type: type.name,
             _ref: getPublishedId(id),
-            _projectId: type.projectId,
+            _projectId: projectId,
             _dataset: type.dataset,
             _weak: type.weak,
             // persist _key between mutations if the value is in an array
@@ -108,9 +111,9 @@ export const CrossDatasetReferenceInput = forwardRef(function CrossDatasetRefere
       value?._key,
       searchState.hits,
       type.name,
-      type.projectId,
       type.dataset,
       type.weak,
+      projectId,
       onChange,
       onFocus,
     ]

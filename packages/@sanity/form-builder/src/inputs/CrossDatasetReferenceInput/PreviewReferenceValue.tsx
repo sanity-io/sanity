@@ -1,9 +1,10 @@
-import React from 'react'
+import React, {useMemo} from 'react'
 import {CrossDatasetReference, CrossDatasetReferenceSchemaType} from '@sanity/types'
 import {Stack, Text, TextSkeleton} from '@sanity/ui'
 import {Loadable} from './useReferenceInfo'
 import {CrossDatasetReferenceInfo} from './types'
 import {CrossDatasetReferencePreview} from './CrossDatasetReferencePreview'
+import {getProjectId} from './utils/getProjectId'
 
 export function PreviewReferenceValue(props: {
   value: CrossDatasetReference
@@ -13,6 +14,7 @@ export function PreviewReferenceValue(props: {
   referenceInfo: Loadable<CrossDatasetReferenceInfo>
 }) {
   const {value, type, showStudioUrlIcon, hasStudioUrl, referenceInfo} = props
+  const projectId = useMemo(() => getProjectId(), [])
 
   if (referenceInfo.isLoading || referenceInfo.error) {
     return (
@@ -44,7 +46,7 @@ export function PreviewReferenceValue(props: {
       showStudioUrlIcon={showStudioUrlIcon}
       preview={referenceInfo.result.preview}
       refType={refType}
-      projectId={type.projectId}
+      projectId={projectId}
       dataset={type.dataset}
       id={value._ref}
       showTypeLabel={showTypeLabel}
