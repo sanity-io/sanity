@@ -16,22 +16,20 @@ import {
   CustomNavbar,
   CustomToolMenu,
   componentsPlugin,
-} from './components/customComponents'
+} from './components/customStudioComponents'
+import {CustomInput} from './components/customFormComponents'
 
 const sharedSettings = createPlugin({
   name: 'sharedSettings',
-  schema: {
-    types: schemaTypes,
-    templates: resolveInitialValueTemplates,
+
+  document: {
+    actions: documentActions,
+    newDocumentOptions,
   },
   form: {
     image: {
       assetSources: [imageAssetSource],
     },
-  },
-  document: {
-    actions: documentActions,
-    newDocumentOptions,
   },
   plugins: [
     deskTool({
@@ -65,6 +63,10 @@ const sharedSettings = createPlugin({
       defaultApiVersion: '2022-08-08',
     }),
   ],
+  schema: {
+    types: schemaTypes,
+    templates: resolveInitialValueTemplates,
+  },
 })
 
 export default createConfig([
@@ -101,6 +103,11 @@ export default createConfig([
     dataset: 'test',
     plugins: [sharedSettings(), componentsPlugin()],
     basePath: '/custom-components',
+    form: {
+      components: {
+        Input: CustomInput,
+      },
+    },
     studio: {
       components: {
         Layout: CustomLayout,
