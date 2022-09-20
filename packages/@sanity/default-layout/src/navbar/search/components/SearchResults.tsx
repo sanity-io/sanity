@@ -99,10 +99,12 @@ export function SearchResults({
     onClose()
   }, [dispatch, onChildClick, onClose, recentSearchesStore, terms])
 
+  const hasSearchResults = !!result.hits.length
+
   return (
     <SearchResultsFlex direction="column">
       {/* Sort menu */}
-      {!!result.hits.length && <SortMenu small={small} />}
+      {hasSearchResults && <SortMenu small={small} />}
 
       {/* Results */}
       <SearchResultsInnerFlex $loading={result.loading} aria-busy={result.loading} flex={1}>
@@ -110,7 +112,7 @@ export function SearchResults({
           <SearchError />
         ) : (
           <>
-            {!!result.hits.length && (
+            {hasSearchResults && (
               // (Has search results)
               <VirtualListBox data-overflow ref={childParentRef} tabIndex={-1}>
                 <PointerOverlay ref={setPointerOverlayRef} />
