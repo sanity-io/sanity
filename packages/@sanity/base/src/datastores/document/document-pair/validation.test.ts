@@ -1,6 +1,6 @@
 /* eslint-disable max-nested-callbacks */
-import {ConnectableObservable, Subject, timer, Observable, concat, of} from 'rxjs'
-import {buffer, takeWhile, first, publish, mapTo} from 'rxjs/operators'
+import {concat, ConnectableObservable, Observable, of, Subject, timer} from 'rxjs'
+import {buffer, first, mapTo, publish, takeWhile} from 'rxjs/operators'
 import type {EditStateFor} from './editState'
 
 type VersionedClient = typeof import('../../../client/versionedClient').versionedClient
@@ -92,7 +92,7 @@ describe('validation', () => {
       draft: {
         _id: 'example-id',
         _createdAt: '2021-09-07T16:23:52.256Z',
-        _rev: 'exampleRev',
+        _rev: 'exampleRev1',
         _type: 'movie',
         _updatedAt: '2021-09-07T16:23:52.256Z',
         title: 5,
@@ -135,7 +135,7 @@ describe('validation', () => {
       draft: {
         _id: 'example-id',
         _createdAt: '2021-09-07T16:23:52.256Z',
-        _rev: 'exampleRev',
+        _rev: 'exampleRev2',
         _type: 'movie',
         _updatedAt: '2021-09-07T16:23:52.256Z',
         title: 5,
@@ -155,7 +155,7 @@ describe('validation', () => {
       draft: {
         _id: 'example-id',
         _createdAt: '2021-09-07T16:23:52.256Z',
-        _rev: 'exampleRev',
+        _rev: 'exampleRev3',
         _type: 'movie',
         _updatedAt: '2021-09-07T16:23:52.256Z',
         title: 'valid title',
@@ -195,7 +195,7 @@ describe('validation', () => {
       draft: {
         _id: 'example-id',
         _createdAt: '2021-09-07T16:23:52.256Z',
-        _rev: 'exampleRev',
+        _rev: 'exampleRev4',
         _type: 'movie',
         _updatedAt: '2021-09-07T16:23:52.256Z',
         title: 'testing',
@@ -255,7 +255,7 @@ describe('validation', () => {
       draft: {
         _id: 'example-id',
         _createdAt: '2021-09-07T16:23:52.256Z',
-        _rev: 'exampleRev',
+        _rev: 'exampleRev5',
         _type: 'movie',
         _updatedAt: '2021-09-07T16:23:52.256Z',
         title: 5,
@@ -321,9 +321,6 @@ describe('validation', () => {
     await doneValidating()
     closeSubscription()
 
-    await expect(subscription).resolves.toMatchObject([
-      {isValidating: true, markers: []},
-      {isValidating: false, markers: []},
-    ])
+    await expect(subscription).resolves.toMatchObject([{isValidating: false, markers: []}])
   })
 })
