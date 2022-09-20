@@ -9,6 +9,7 @@ import {
 import {InsufficientPermissionsMessage} from '@sanity/base/components'
 import {TimeAgo} from '../components/TimeAgo'
 import {useDocumentPane} from '../panes/document/useDocumentPane'
+import {telemetryClient, TELEMETRY_EVENT} from '../../../base/src/telemetry/telemetry'
 
 const DISABLED_REASON_TITLE = {
   LIVE_EDIT_ENABLED: 'Cannot publish since liveEdit is enabled for this document type',
@@ -65,6 +66,12 @@ export const PublishAction: DocumentActionComponent = (props) => {
   const doPublish = useCallback(() => {
     publish.execute()
     setPublishState('publishing')
+    telemetryClient({
+      event: TELEMETRY_EVENT.BUTTON_CLICK,
+      metadata: {
+        name: 'publishButton',
+      },
+    })
   }, [publish])
 
   useEffect(() => {

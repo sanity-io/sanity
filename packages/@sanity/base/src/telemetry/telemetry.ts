@@ -3,8 +3,9 @@ interface TelemetryPayload {
   metadata?: Record<string, string>
 }
 
-enum TELEMETRY_EVENT {
+export enum TELEMETRY_EVENT {
   DOCUMENT_PUBLISHED = 'documentPublished',
+  BUTTON_CLICK = 'buttonClick',
   //DOCUMENT_DELETED = 'documentDeleted',
   //PERFORMANCE_XXXX = 'performanceWhatever',
 }
@@ -19,7 +20,6 @@ const sanityUserId = 'xxx'
 const getPayload = ({event, metadata = {}}: TelemetryPayload) =>
   JSON.stringify({
     userId: sanityUserId,
-    // "anonymousId":"anon-id-new",
     event: 'studio-telemetry',
     properties: {
       eventAction: event,
@@ -34,16 +34,31 @@ const getPayload = ({event, metadata = {}}: TelemetryPayload) =>
     timestamp: new Date().toISOString(),
   })
 
-const telemetryClient = ({event, metadata}: TelemetryPayload) => {
-  navigator.sendBeacon(PROXY_ENDPOINT, getPayload({event, metadata}))
+const headers = {
+  type: 'Basic MXBiSk5jRUpIV09lM0R2ZFB5SXA3WERJQ0o0Og==',
 }
 
-telemetryClient({
-  event: TELEMETRY_EVENT.DOCUMENT_PUBLISHED,
-  //   metadata: {
+export const telemetryClient = ({event, metadata}: TelemetryPayload) => {
+  fetch(PROXY_ENDPOINT, {
+    method: 'POST', // or 'PUT'
+    headers: {
+      authorization: 'Basic MXBiSk5jRUpIV09lM0R2ZFB5SXA3WERJQ0o0Og==',
+    },
+    body: getPayload({event, metadata}),
+  })
+}
 
-  //   }
-})
+// export const telemetryClient = ({event, metadata}: TelemetryPayload) => {
+//   const blob = new Blob([getPayload({event, metadata})], headers)
+//   navigator.sendBeacon(PROXY_ENDPOINT, blob)
+// }
+
+// telemetryClient({
+//   event: TELEMETRY_EVENT.DOCUMENT_PUBLISHED,
+//   metadata: {
+//     name: 'publishButton',
+//   },
+// })
 
 // telemetryClient({
 //   event: TELEMETRY_EVENT.PERFORMANCE_XXXX,
