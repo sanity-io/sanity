@@ -93,7 +93,7 @@
     "refractor": "^3.6.0",
     "rxjs": "^6.5.3",
     "rxjs-etc": "^10.6.0",
-    "rxjs-exhaustmap-with-trailing": "^1.0.0",
+    "rxjs-exhaustmap-with-trailing": "^1.2.0",
     "semver-compare": "^1.0.0",
     "shallow-equals": "^1.0.0",
     "use-device-pixel-ratio": "^1.1.0"
