@@ -69,9 +69,7 @@ const ReviewButton = React.forwardRef(function ReviewButton(
       >
         <Flex align="center">
           <Box marginRight={collapsed ? 0 : 3}>
-            <Text>
-              <AnimatedStatusIcon status={status} />
-            </Text>
+            <Text>{/*<AnimatedStatusIcon status={status} />*/}</Text>
           </Box>
           {!collapsed && (
             <Text size={1} weight="medium">

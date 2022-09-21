@@ -9,6 +9,7 @@ import {
 import {Button, ButtonProps, Menu, MenuButton} from '@sanity/ui'
 import React, {useCallback, useMemo} from 'react'
 import {useDocumentPane} from '../../useDocumentPane'
+import {useFocusPath} from '../../focusPath'
 
 interface ValidationMenuProps {
   boundaryElement: HTMLDivElement | null
@@ -33,8 +34,10 @@ const BUTTON_PROPS: Record<'error' | 'warning' | 'info', ButtonProps> = {
 
 export function ValidationMenu(props: ValidationMenuProps) {
   const {boundaryElement, isOpen, setOpen} = props
-  const {documentSchema, handleFocus, markers} = useDocumentPane()
+  const {documentSchema, markers} = useDocumentPane()
   const id = useId()
+
+  const {onFocus} = useFocusPath()
 
   const validationMarkers = useMemo(
     () => markers.filter((marker) => marker.type === 'validation'),
@@ -95,7 +98,7 @@ export function ValidationMenu(props: ValidationMenuProps) {
             documentType={documentSchema}
             markers={validationMarkers}
             onClose={handleClose}
-            onFocus={handleFocus}
+            onFocus={onFocus}
           />
         </Menu>
       }
