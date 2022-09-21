@@ -146,7 +146,6 @@ describe('render states', () => {
           name: 'productReference',
           type: 'crossDatasetReference',
           dataset: 'products',
-          projectId: 'abcxyz',
           weak: true,
           to: [
             {
