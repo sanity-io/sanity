@@ -12,9 +12,12 @@ interface SearchHeaderProps {
 }
 
 const AlignedSpinner = styled(Spinner)`
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  margin-top: 4.5px;
   svg {
     width: 20px;
-    vertical-align: bottom !important;
   }
 `
 
