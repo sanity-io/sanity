@@ -15,7 +15,7 @@ function warnMissingFocusMethod(ComposedComponent) {
   )
 }
 
-interface WithValuePathProps {
+export interface WithValuePathProps {
   getValuePath: () => Path
 }
 
