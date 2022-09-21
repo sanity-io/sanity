@@ -22,6 +22,8 @@ import {fromString as pathFromString} from '@sanity/util/paths'
 import {Unstable_ReferenceInputOptionsProvider} from '@sanity/form-builder/_internal'
 import {Path} from '@sanity/types'
 import {getNewDocumentOptions} from '@sanity/base/_internal'
+import {setLocation} from 'part:@sanity/base/datastore/presence'
+import {getPublishedId} from 'part:@sanity/base/util/draft-utils'
 import {DocumentPaneNode} from '../../types'
 import {useDeskTool} from '../../contexts/deskTool'
 import {usePaneRouter} from '../../contexts/paneRouter'
@@ -37,6 +39,9 @@ import {DocumentStatusBar} from './statusBar'
 import {useDocumentPane} from './useDocumentPane'
 import {DocumentPaneProvider} from './DocumentPaneProvider'
 import {DocumentPaneProviderProps} from './types'
+import {FocusPathProvider, useFocusPath} from './focusPath'
+
+const emptyObject = {} as Record<string, string | undefined>
 
 declare const __DEV__: boolean
 
@@ -78,8 +83,29 @@ export const DocumentPane = memo(function DocumentPane(props: DocumentPaneProvid
   const {ReferenceChildLink, handleEditReference, groupIndex, routerPanesState} = paneRouter
   const childParams = routerPanesState[groupIndex + 1]?.[0].params || {}
   const routerPanesStateLength = routerPanesState.length
-  const {parentRefPath} = childParams
 
+  const {parentRefPath} = childParams
+  const documentIdRaw = options.id
+  const documentId = getPublishedId(documentIdRaw)
+  const params = paneRouter.params || emptyObject
+
+  const focusPathProviderProps = useMemo(
+    () => ({
+      documentId,
+      path: params.path ? pathFromString(params.path) : [],
+      onFocus: (focusPath: Path) => {
+        setLocation([
+          {
+            type: 'document',
+            documentId,
+            path: focusPath,
+            lastActiveAt: new Date().toISOString(),
+          },
+        ])
+      },
+    }),
+    [documentId, params.path]
+  )
   const activePath: {path: Path; state: 'selected' | 'pressed' | 'none'} = useMemo(() => {
     return parentRefPath
       ? {
@@ -120,19 +146,21 @@ export const DocumentPane = memo(function DocumentPane(props: DocumentPaneProvid
   }
 
   return (
-    <DocumentPaneProvider {...providerProps}>
-      {/* NOTE: this is a temporary location for this provider until we */}
-      {/* stabilize the reference input options formally in the form builder */}
-      {/* eslint-disable-next-line react/jsx-pascal-case */}
-      <Unstable_ReferenceInputOptionsProvider
-        EditReferenceLinkComponent={ReferenceChildLink}
-        onEditReference={handleEditReference}
-        initialValueTemplateItems={templatePermissions}
-        activePath={activePath}
-      >
-        <InnerDocumentPane />
-      </Unstable_ReferenceInputOptionsProvider>
-    </DocumentPaneProvider>
+    <FocusPathProvider {...focusPathProviderProps}>
+      <DocumentPaneProvider {...providerProps}>
+        {/* NOTE: this is a temporary location for this provider until we */}
+        {/* stabilize the reference input options formally in the form builder */}
+        {/* eslint-disable-next-line react/jsx-pascal-case */}
+        <Unstable_ReferenceInputOptionsProvider
+          EditReferenceLinkComponent={ReferenceChildLink}
+          onEditReference={handleEditReference}
+          initialValueTemplateItems={templatePermissions}
+          activePath={activePath}
+        >
+          <InnerDocumentPane />
+        </Unstable_ReferenceInputOptionsProvider>
+      </DocumentPaneProvider>
+    </FocusPathProvider>
   )
 })
 
@@ -180,7 +208,6 @@ function InnerDocumentPane() {
     changesOpen,
     documentSchema,
     documentType,
-    handleFocus,
     handleHistoryOpen,
     handleKeyUp,
     inspectOpen,
@@ -188,6 +215,7 @@ function InnerDocumentPane() {
     value,
     totalReferenceCount,
   } = useDocumentPane()
+  const {onFocus} = useFocusPath()
   const {features} = useDeskTool()
   const {collapsed: layoutCollapsed} = usePaneLayout()
   const zOffsets = useZIndex()
@@ -280,7 +308,7 @@ function InnerDocumentPane() {
               data-testid="change-connector-root"
               isReviewChangesOpen={changesOpen}
               onOpenReviewChanges={handleHistoryOpen}
-              onSetFocus={handleFocus}
+              onSetFocus={onFocus}
             >
               {documentPanel}
               {changesPanel}
@@ -298,7 +326,7 @@ function InnerDocumentPane() {
     documentSchema,
     documentType,
     footer,
-    handleFocus,
+    onFocus,
     handleHistoryOpen,
     layoutCollapsed,
     paneKey,

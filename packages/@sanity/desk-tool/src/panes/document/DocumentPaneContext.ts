@@ -21,9 +21,7 @@ export interface DocumentPaneContextValue {
   documentIdRaw: string
   documentSchema: DocumentSchema | null
   documentType: string
-  focusPath: Path
   handleChange: (patches: any[]) => void
-  handleFocus: (nextPath: Path) => void
   handleHistoryClose: () => void
   handleHistoryOpen: () => void
   handleInspectClose: () => void

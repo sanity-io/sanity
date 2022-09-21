@@ -17,10 +17,11 @@ import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {tap} from 'rxjs/operators'
 import {SanityDocument} from '@sanity/client'
 import {ObjectField, ObjectSchemaTypeWithOptions} from '@sanity/types'
+import {useEditState} from '@sanity/react-hooks'
 import {useDocumentPane} from '../../useDocumentPane'
 import {Delay} from '../../../../components/Delay'
+import {useFocusPath} from '../../focusPath'
 import {useConditionalToast} from './useConditionalToast'
-import {useEditState} from '@sanity/react-hooks'
 
 interface FormViewProps {
   granted: boolean
@@ -50,15 +51,14 @@ export function FormView(props: FormViewProps) {
     documentId,
     documentSchema,
     documentType,
-    focusPath,
     handleChange,
-    handleFocus,
     historyController,
     initialValue,
     markers,
     ready,
     changesOpen,
   } = useDocumentPane()
+  const {onFocus, focusPath} = useFocusPath()
   const editState = useEditState(documentId, documentType)
   const value = editState.draft || editState.published || initialValue
   const presence = useDocumentPresence(documentId, {ignoreLastActiveUpdates: true})
@@ -175,7 +175,7 @@ export function FormView(props: FormViewProps) {
               filterField={filterField}
               readOnly={isReadOnly || editState?.transactionSyncLock?.enabled}
               onBlur={handleBlur}
-              onFocus={handleFocus}
+              onFocus={onFocus}
               focusPath={focusPath}
               onChange={isReadOnly ? noop : handleChange}
               markers={markers}
@@ -209,7 +209,7 @@ export function FormView(props: FormViewProps) {
     isReadOnly,
     editState?.transactionSyncLock?.enabled,
     handleBlur,
-    handleFocus,
+    onFocus,
     focusPath,
     handleChange,
     markers,
