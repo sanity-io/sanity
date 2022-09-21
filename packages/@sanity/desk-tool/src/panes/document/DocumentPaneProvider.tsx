@@ -11,7 +11,7 @@ import {
 } from '@sanity/react-hooks'
 import {omit} from 'lodash'
 import {useToast} from '@sanity/ui'
-import {fromString as pathFromString, pathFor} from '@sanity/util/paths'
+import {fromString as pathFromString} from '@sanity/util/paths'
 import isHotkey from 'is-hotkey'
 import {setLocation} from 'part:@sanity/base/datastore/presence'
 import resolveDocumentActions from 'part:@sanity/base/document-actions/resolver'
@@ -36,7 +36,6 @@ import {getPreviewUrl} from './usePreviewUrl'
 declare const __DEV__: boolean
 
 const emptyObject = {} as Record<string, string | undefined>
-const emptyPath: Path = []
 const emptyMenuGroup: PaneMenuItemGroup[] = []
 
 type Props = {children: React.ReactElement} & DocumentPaneProviderProps
@@ -45,7 +44,7 @@ type Props = {children: React.ReactElement} & DocumentPaneProviderProps
  * @internal
  */
 // eslint-disable-next-line complexity, max-statements
-export const DocumentPaneProvider = memo(({children, index, pane, paneKey}: Props) => {
+export const DocumentPaneProvider = ({children, index, pane, paneKey}: Props) => {
   const paneRouter = usePaneRouter()
   const {features} = useDeskTool()
   const {push: pushToast} = useToast()
@@ -73,9 +72,6 @@ export const DocumentPaneProvider = memo(({children, index, pane, paneKey}: Prop
   const markers = useUnique(markersRaw)
   const views = useUnique(viewsProp)
   const params = paneRouter.params || emptyObject
-  const [focusPath, setFocusPath] = useState<Path>(() =>
-    params.path ? pathFromString(params.path) : emptyPath
-  )
   const activeViewId = params.view || (views[0] && views[0].id) || null
   const timeline = useMemo(() => new Timeline({publishedId: documentId, enableTrace: __DEV__}), [
     documentId,
@@ -131,22 +127,6 @@ export const DocumentPaneProvider = memo(({children, index, pane, paneKey}: Prop
       })
     },
     [paneRouter]
-  )
-
-  const handleFocus = useCallback(
-    (nextFocusPath: Path) => {
-      setFocusPath(pathFor(nextFocusPath))
-
-      setLocation([
-        {
-          type: 'document',
-          documentId,
-          path: nextFocusPath,
-          lastActiveAt: new Date().toISOString(),
-        },
-      ])
-    },
-    [documentId, setFocusPath]
   )
 
   const patchRef = useRef(patch)
@@ -232,9 +212,7 @@ export const DocumentPaneProvider = memo(({children, index, pane, paneKey}: Prop
       documentIdRaw,
       documentSchema,
       documentType,
-      focusPath,
       handleChange,
-      handleFocus,
       handleHistoryClose,
       handleHistoryOpen,
       handleInspectClose,
@@ -273,9 +251,7 @@ export const DocumentPaneProvider = memo(({children, index, pane, paneKey}: Prop
       documentIdRaw,
       documentSchema,
       documentType,
-      focusPath,
       handleChange,
-      handleFocus,
       handleHistoryClose,
       handleHistoryOpen,
       handleInspectClose,
@@ -313,15 +289,12 @@ export const DocumentPaneProvider = memo(({children, index, pane, paneKey}: Prop
     }
   }, [connectionState, pushToast])
 
-  // Reset `focusPath` when `documentId` or `params.path` changes
-  useEffect(() => {
-    // Reset focus path
-    setFocusPath(params.path ? pathFromString(params.path) : [])
-  }, [documentId, params.path])
-
-  return (
-    <DocumentPaneContext.Provider value={documentPane}>{children}</DocumentPaneContext.Provider>
+  return useMemo(
+    () => (
+      <DocumentPaneContext.Provider value={documentPane}>{children}</DocumentPaneContext.Provider>
+    ),
+    [children, documentPane]
   )
-})
+}
 
 DocumentPaneProvider.displayName = 'DocumentPaneProvider'
