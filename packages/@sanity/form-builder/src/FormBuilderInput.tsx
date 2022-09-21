@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 import React, {useMemo} from 'react'
 import shallowEquals from 'shallow-equals'
 import {
@@ -30,7 +31,7 @@ interface FormBuilderInputProps {
   onFocus: (path: Path) => void
   onBlur: () => void
   readOnly?: ConditionalProperty
-  parent?: Record<string, unknown> | undefined
+  _internal_parent?: Record<string, unknown> | undefined
   presence?: FormFieldPresence[]
   focusPath: Path
   markers: Marker[]
@@ -216,9 +217,9 @@ export class FormBuilderInput extends React.Component<FormBuilderInputProps> {
   }
 
   render() {
-    const {type, parent, value} = this.props
+    const {type, _internal_parent, value} = this.props
     // Separate readOnly in order to resolve it to a boolean type
-    const {readOnly, ...restProps} = this.props
+    const {readOnly, _internal_parent: _, ...restProps} = this.props
     const InputComponent = this.resolveInputComponent(type)
 
     if (!InputComponent) {
@@ -232,7 +233,7 @@ export class FormBuilderInput extends React.Component<FormBuilderInputProps> {
     if (typeof readOnly === 'function' || typeof type.readOnly === 'function') {
       return (
         <ConditionalReadOnlyField
-          parent={parent}
+          parent={_internal_parent}
           value={value}
           readOnly={readOnly ?? type.readOnly}
         >
