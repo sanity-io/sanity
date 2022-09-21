@@ -94,6 +94,7 @@ const DEBUG_INPUT_TYPES = [
   'uploadsTest',
   'validationTest',
   'withDocumentTest',
+  'withParentTest',
   'arrayExperimentalSearch',
   'arrayPreviewSelect',
 ]

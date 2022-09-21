@@ -15,7 +15,7 @@ function warnMissingFocusMethod(ComposedComponent) {
   )
 }
 
-interface WithDocumentProps<Doc extends SanityDocument = SanityDocument> {
+export interface WithDocumentProps<Doc extends SanityDocument = SanityDocument> {
   document: Doc
 }
 

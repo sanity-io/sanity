@@ -72,6 +72,7 @@ import typeWithNoToplevelStrings from './debug/typeWithNoToplevelStrings'
 import uploads from './debug/uploads'
 import validation, {validationArraySuperType} from './debug/validation'
 import {withDocumentTestSchemaType} from './debug/withDocumentTest'
+import {withParentTestSchemaType} from './debug/withParentTest'
 import fieldGroups from './debug/fieldGroups'
 import fieldGroupsDefault from './debug/fieldGroupsDefault'
 import fieldGroupsMany from './debug/fieldGroupsMany'
@@ -190,6 +191,7 @@ export default createSchema({
     validationArraySuperType,
     validationTest,
     withDocumentTestSchemaType,
+    withParentTestSchemaType,
     fieldGroups,
     fieldGroupsDefault,
     fieldGroupsMany,

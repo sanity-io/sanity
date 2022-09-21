@@ -88,7 +88,7 @@ export const ObjectInputField = forwardRef(function ObjectInputField(
         compareValue={compareValue}
         level={level}
         presence={presence}
-        parent={parent}
+        _internal_parent={parent}
         ref={forwardedRef}
         readOnly={conditionalReadOnly || field.type.readOnly}
       />
