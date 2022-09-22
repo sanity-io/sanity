@@ -1,3 +1,5 @@
+import config from 'config:sanity'
+
 interface TelemetryPayload {
   event: TELEMETRY_EVENT
   metadata?: Record<string, string>
@@ -39,6 +41,7 @@ const headers = {
 }
 
 export const telemetryClient = ({event, metadata}: TelemetryPayload) => {
+  console.log(config)
   fetch(PROXY_ENDPOINT, {
     method: 'POST', // or 'PUT'
     headers: {

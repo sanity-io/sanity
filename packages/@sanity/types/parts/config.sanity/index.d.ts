@@ -10,6 +10,7 @@ declare module 'config:sanity' {
       dataset: string
     }
     plugins: string[]
+    telemetry: boolean
   }
 
   const config: SanityConfig
