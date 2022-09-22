@@ -9,6 +9,7 @@ import {
   HotkeyOptions,
   InvalidValue,
   EditorSelection,
+  Patch,
 } from '@sanity/portable-text-editor'
 import React, {
   useEffect,
@@ -23,7 +24,7 @@ import {Subject} from 'rxjs'
 import {Box, useToast} from '@sanity/ui'
 import scrollIntoView from 'scroll-into-view-if-needed'
 import {debounce} from 'lodash'
-import {FormPatch as FormBuilderPatch} from '../../patch'
+import {FormPatch, SANITY_PATCH_TYPE} from '../../patch'
 import {ArrayOfObjectsItemMember, ObjectFormNode} from '../../store'
 import type {
   ArrayOfObjectsInputProps,
@@ -265,7 +266,7 @@ export function PortableTextInput(props: PortableTextInputProps) {
     (change: EditorChange): void => {
       switch (change.type) {
         case 'mutation':
-          onChange(change.patches as FormBuilderPatch[])
+          onChange(toFormPatches(change.patches))
           break
         case 'selection':
           setFocusPathDebounced(change.selection)
@@ -278,7 +279,7 @@ export function PortableTextInput(props: PortableTextInputProps) {
           break
         case 'undo':
         case 'redo':
-          onChange(change.patches as FormBuilderPatch[])
+          onChange(toFormPatches(change.patches))
           break
         case 'invalidValue':
           setInvalidValue(change)
@@ -378,4 +379,8 @@ export function PortableTextInput(props: PortableTextInputProps) {
       )}
     </Box>
   )
+}
+
+function toFormPatches(patches: any) {
+  return patches.map((p: Patch) => ({...p, patchType: SANITY_PATCH_TYPE})) as FormPatch[]
 }
