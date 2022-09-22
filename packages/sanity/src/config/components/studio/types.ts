@@ -1,7 +1,7 @@
 import React from 'react'
 import {Tool} from '../../types'
 
-export type ComponentNames = 'Layout' | 'Logo' | 'Navbar' | 'ToolMenu'
+export type StudioComponentNames = 'Layout' | 'Logo' | 'Navbar' | 'ToolMenu'
 
 export type RenderComponentCallbackNames =
   | 'renderLayout'

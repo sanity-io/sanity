@@ -2,16 +2,16 @@ import React, {ComponentType, createElement} from 'react'
 import {StudioLayout} from '../../../studio'
 import {StudioLogo, StudioNavbar, StudioToolMenu} from '../../../studio/components'
 import {PluginOptions, SourceOptions} from '../../types'
-import {RenderComponentCallbackNames, ComponentNames} from './types'
+import {RenderComponentCallbackNames, StudioComponentNames} from './types'
 
-const DEFAULT_COMPONENTS: Record<ComponentNames, React.ElementType> = {
+const DEFAULT_COMPONENTS: Record<StudioComponentNames, React.ElementType> = {
   Layout: StudioLayout,
   Logo: StudioLogo,
   Navbar: StudioNavbar,
   ToolMenu: StudioToolMenu,
 }
 
-const RENDER_CALLBACK_NAMES: Record<ComponentNames, RenderComponentCallbackNames> = {
+const RENDER_CALLBACK_NAMES: Record<StudioComponentNames, RenderComponentCallbackNames> = {
   Layout: 'renderLayout',
   Logo: 'renderLogo',
   Navbar: 'renderNavbar',
@@ -19,14 +19,14 @@ const RENDER_CALLBACK_NAMES: Record<ComponentNames, RenderComponentCallbackNames
 }
 
 interface CreateRenderComponentProps {
-  componentName: ComponentNames
+  componentName: StudioComponentNames
   config: SourceOptions
 }
 
 function _collectMiddleware<T>(
   middlewares: ComponentType<T>[],
   plugins: PluginOptions[],
-  componentName: ComponentNames
+  componentName: StudioComponentNames
 ) {
   for (const plugin of plugins) {
     if (plugin.plugins) {
