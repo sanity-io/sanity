@@ -74,7 +74,6 @@
     "@types/ws": "~8.5.3",
     "@vitejs/plugin-react": "^2.0.0",
     "diff-match-patch": "^1.0.4",
-    "eslint": "^8.23.0",
     "express": "^4.17.1",
     "express-ws": "^5.0.2",
     "jest-dev-server": "^5.0.3",
