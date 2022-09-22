@@ -1,6 +1,6 @@
 import {TextWithTone} from '@sanity/base/components'
 import {SearchableType} from '@sanity/base'
-import {Box, Card, Flex, Text} from '@sanity/ui'
+import {Box, Card, Flex, Text, Theme} from '@sanity/ui'
 import React, {useMemo} from 'react'
 import styled from 'styled-components'
 
@@ -12,7 +12,8 @@ interface TypePillsProps {
 const DEFAULT_AVAILABLE_CHARS = 40 // excluding "+x more" suffix
 
 const PillCard = styled(Card)<{$collapsible?: boolean}>`
-  background: ${({theme}) => theme.sanity.color.selectable.primary.enabled.code.bg};
+  background: ${({theme}: {theme: Theme}) =>
+    theme.sanity.color.selectable?.primary.enabled.code.bg};
   flex-shrink: ${({$collapsible}) => ($collapsible ? 1 : 0)};
   overflow: hidden;
 `

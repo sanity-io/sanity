@@ -1,21 +1,21 @@
+import {useId} from '@reach/auto-id'
 import {Box, Card, Flex, Portal, Theme, useClickOutside, useLayer} from '@sanity/ui'
 import React, {useCallback, useEffect, useRef, useState} from 'react'
 import FocusLock from 'react-focus-lock'
 import styled, {css} from 'styled-components'
-import {useId} from '@reach/auto-id'
 import {POPOVER_INPUT_PADDING, POPOVER_MAX_HEIGHT, POPOVER_MAX_WIDTH} from '../constants'
 import {CommandListProvider} from '../contexts/commandList'
 import {useSearchState} from '../contexts/search'
-import {hasSearchableTerms} from '../contexts/search/selectors'
 import {useMeasureSearchResultsIndex} from '../hooks/useMeasureSearchResultsIndex'
 import {useSearchHotkeys} from '../hooks/useSearchHotkeys'
+import {hasSearchableTerms} from '../utils/hasSearchableTerms'
 import {RecentSearches} from './RecentSearches'
 import {SearchHeader} from './SearchHeader'
 import {SearchResults} from './SearchResults'
 import {TypeFilters} from './TypeFilters'
 
-type PopoverPosition = {
-  x: number
+export type PopoverPosition = {
+  x: number | null
   y: number
 }
 export interface SearchPopoverProps {
@@ -73,9 +73,10 @@ export function SearchPopover({onClose, onOpen, open, position}: SearchPopoverPr
 
   const isMountedRef = useRef(false)
 
-  const {zIndex} = useLayer()
+  const {isTopLayer, zIndex} = useLayer()
 
   const {
+    dispatch,
     state: {recentSearches, result, terms},
   } = useSearchState()
 
@@ -89,21 +90,6 @@ export function SearchPopover({onClose, onOpen, open, position}: SearchPopoverPr
   )
 
   /**
-   * Reset last search index when new results are loaded, or visiting recent searches
-   * @todo Revise if/when we introduce pagination
-   */
-  useEffect(() => {
-    if (!isMountedRef?.current) {
-      isMountedRef.current = true
-      return
-    }
-
-    if (!hasValidTerms || result.loaded) {
-      resetLastSearchIndex()
-    }
-  }, [hasValidTerms, resetLastSearchIndex, result.loaded])
-
-  /**
    * Store top-most search result scroll index on close
    */
   const handleClose = useCallback(() => {
@@ -111,16 +97,53 @@ export function SearchPopover({onClose, onOpen, open, position}: SearchPopoverPr
     onClose()
   }, [onClose, setLastSearchIndex])
 
+  const handleClearRecentSearches = useCallback(() => {
+    headerInputElement?.focus()
+  }, [headerInputElement])
+
+  /**
+   * Check for top-most layer to prevent closing if a portalled element (i.e. menu button) is active
+   */
+  const handleClickOutside = useCallback(() => {
+    if (open && isTopLayer) {
+      handleClose()
+    }
+  }, [handleClose, isTopLayer, open])
+
   /**
    * Bind hotkeys to open / close actions
    */
   useSearchHotkeys({onClose: handleClose, onOpen, open})
 
-  useClickOutside(handleClose, [containerElement])
+  useClickOutside(handleClickOutside, [containerElement])
 
-  const handleClearRecentSearches = useCallback(() => {
-    headerInputElement?.focus()
-  }, [headerInputElement])
+  /**
+   * Reset last search index when new results are loaded, or visiting recent searches
+   * @todo Revise if/when we introduce pagination
+   */
+  useEffect(() => {
+    if ((!hasValidTerms || result.loaded) && isMountedRef.current) {
+      resetLastSearchIndex()
+    }
+  }, [hasValidTerms, resetLastSearchIndex, result.loaded])
+
+  /**
+   * Reset ordering when popover is closed (without valid search terms)
+   */
+  useEffect(() => {
+    if (!hasValidTerms && isMountedRef.current && !open) {
+      dispatch({type: 'SEARCH_ORDERING_RESET'})
+    }
+  }, [dispatch, hasValidTerms, open])
+
+  /**
+   * Store mounted state (must be last)
+   */
+  useEffect(() => {
+    if (!isMountedRef?.current) {
+      isMountedRef.current = true
+    }
+  }, [])
 
   const dialogId = useId()
 
@@ -138,10 +161,10 @@ export function SearchPopover({onClose, onOpen, open, position}: SearchPopoverPr
           ariaHeaderLabel="Search results"
           autoFocus
           childContainerElement={childContainerElement}
-          childCount={hasValidTerms ? result.hits.length : recentSearches.length}
+          childCount={hasValidTerms ? result.hits.length : recentSearches?.length}
           containerElement={containerElement}
           headerInputElement={headerInputElement}
-          id={dialogId}
+          id={dialogId || ''}
           data-testid="search-results-popover"
           initialSelectedIndex={hasValidTerms ? lastSearchIndex : 0}
           level={0}
@@ -168,6 +191,7 @@ export function SearchPopover({onClose, onOpen, open, position}: SearchPopoverPr
                     onClose={handleClose}
                     setChildContainerRef={setChildContainerRef}
                     setPointerOverlayRef={setPointerOverlayRef}
+                    small
                   />
                 ) : (
                   <RecentSearches

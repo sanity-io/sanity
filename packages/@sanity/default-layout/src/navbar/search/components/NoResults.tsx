@@ -14,7 +14,15 @@ export function NoResults() {
   const typesSelected = state.terms.types.length > 0
 
   return (
-    <Flex align="center" aria-live="assertive" direction="column" gap={4} paddingX={4} paddingY={5}>
+    <Flex
+      align="center"
+      aria-live="assertive"
+      direction="column"
+      flex={1}
+      gap={4}
+      paddingX={4}
+      paddingY={5}
+    >
       <Text muted>
         No results for <Semibold>{state.terms.query}</Semibold>
       </Text>

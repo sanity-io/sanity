@@ -1,6 +1,7 @@
 // @todo: remove the following line when part imports has been removed from this file
 ///<reference types="@sanity/types/parts" />
 
+import type {WeightedHit} from '@sanity/base'
 import {PreviewCard} from '@sanity/base/components'
 import {useDocumentPresenceUsers} from '@sanity/base/hooks'
 import {IntentLink} from '@sanity/base/router'
@@ -11,11 +12,12 @@ import React, {forwardRef, MouseEvent, useMemo} from 'react'
 import type {VirtualItem} from 'react-virtual'
 import styled, {css} from 'styled-components'
 import {useCommandList} from '../../contexts/commandList'
-import type {SearchHit} from '../../types'
+import {DebugOverlay} from './DebugOverlay'
 import SearchResultItemPreview from './SearchResultItemPreview'
 
 interface SearchItemProps extends ResponsivePaddingProps {
-  data: SearchHit
+  data: WeightedHit
+  debug?: boolean
   index: number
   onClick?: () => void
   onMouseDown?: (event: MouseEvent) => void
@@ -34,7 +36,9 @@ const SearchResultItemBox = styled(Box)<{$level: number}>(({$level}) => {
     [data-focused='true'][data-level='${$level}'] &,
     [data-hovered='true'][data-level='${$level}'] & {
       &[data-active='true'] a {
-        background: ${({theme}) => theme.sanity.color.button.bleed.default.hovered.bg};
+        // Allow nested cards to inherit the correct background color
+        --card-bg-color: ${({theme}) => theme.sanity.color.button.bleed.default.hovered.bg};
+        background: var(--card-bg-color);
         // Disable box-shadow to hide the halo effect when we have keyboard focus over a selected <Button>
         box-shadow: none;
       }
@@ -44,6 +48,7 @@ const SearchResultItemBox = styled(Box)<{$level: number}>(({$level}) => {
 
 export function SearchResultItem({
   data,
+  debug,
   documentId,
   index,
   onClick,
@@ -102,6 +107,7 @@ export function SearchResultItem({
           schemaType={type}
         />
       </PreviewCard>
+      {debug && <DebugOverlay data={data} />}
     </SearchResultItemBox>
   )
 }

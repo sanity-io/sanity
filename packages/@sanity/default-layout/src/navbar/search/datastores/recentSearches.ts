@@ -1,14 +1,19 @@
 import type {SearchTerms} from '@sanity/base'
-import {getSearchableTypes} from '@sanity/base/_internal'
-import {CurrentUser, ObjectSchemaType, Schema} from '@sanity/types'
+import type {CurrentUser, ObjectSchemaType, Schema} from '@sanity/types'
 import {versionedClient} from '../../../versionedClient'
+import {getSearchableOmnisearchTypes} from '../utils/selectors'
 
 const SEARCH_TERMS_KEY = 'search-terms::recent'
 export const MAX_RECENT_SEARCHES = 5
 // might come in handy in the future
 const CURRENT_VERSION = 1
 
-export type RecentSearchTerms = SearchTerms & {__recentTimestamp: number}
+export type RecentSearchTerms = SearchTerms & {
+  __recent: {
+    index: number
+    timestamp: number
+  }
+}
 
 export interface RecentSearchesStore {
   addSearchTerm: (searchTerm: SearchTerms) => RecentSearchTerms[]
@@ -131,8 +136,11 @@ function getRecentSearchTerms(lsKey: string, schema: Schema): RecentSearchTerms[
 
   return sanitizeStoredSearchTerms(schema, storedSearchTerms, lsKey)
     .recentSearches.filter((r) => !!r.terms)
-    .map((r) => ({
-      __recentTimestamp: new Date(r.created).getTime(),
+    .map((r, index) => ({
+      __recent: {
+        index,
+        timestamp: new Date(r.created).getTime(),
+      },
       query: r.terms.query,
       types: r.terms.typeNames
         .map((typeName) => schema.get(typeName))
@@ -142,6 +150,7 @@ function getRecentSearchTerms(lsKey: string, schema: Schema): RecentSearchTerms[
 
 /**
  * Sanitize stored search terms - recent searches containing _any_ number of invalid document schemas are removed.
+ * Document types hidden from omnisearch with __experimental_omnisearch_visibility are also omitted.
  * This mutates Local Storage if any invalid terms are found.
  */
 function sanitizeStoredSearchTerms(
@@ -149,7 +158,9 @@ function sanitizeStoredSearchTerms(
   storedSearchTerms: StoredSearch,
   lsKey: string
 ): StoredSearch {
-  const searchableTypeNames = getSearchableTypes(studioSchema).map((schema) => schema.name)
+  const searchableTypeNames = getSearchableOmnisearchTypes(studioSchema).map(
+    (schema) => schema.name
+  )
 
   const filteredSearchTerms = storedSearchTerms.recentSearches.filter((searchTerm) => {
     return searchTerm.terms.typeNames.every((typeName) => searchableTypeNames.includes(typeName))

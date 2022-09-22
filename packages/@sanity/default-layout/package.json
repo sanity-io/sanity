@@ -5,8 +5,8 @@
   "main": "./lib/default-layout.js",
   "types": "./dist/dts",
   "scripts": {
-    "coverage": "nyc --report=lcov --report=text _mocha -- test/**/*.test.js",
-    "clean": "rimraf lib .nyc_output coverage",
+    "coverage": "jest --coverage",
+    "clean": "rimraf lib coverage",
     "test": "jest"
   },
   "repository": {
@@ -53,8 +53,7 @@
     "@sanity/schema": "2.33.2",
     "@sanity/types": "2.33.2",
     "@sanity/ui-workshop": "^0.4.16",
-    "mocha": "^5.0.1",
-    "nyc": "^11.0.3",
+    "@testing-library/react-hooks": "^7.0.2",
     "prop-types": "^15.6.0",
     "rimraf": "^2.7.1"
   },

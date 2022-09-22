@@ -1,6 +1,6 @@
-import {tokenize} from '../src/search/common/tokenize'
+import {tokenize} from './tokenize'
 
-const tests = [
+const tests: [string, string[]][] = [
   ['', []],
   ['foo', ['foo']],
   ['0foo', ['0foo']],

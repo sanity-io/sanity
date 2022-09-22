@@ -41,6 +41,7 @@ import customNumber from './debug/customNumber'
 import documentActions from './debug/documentActions'
 import empty from './debug/empty'
 import experiment from './debug/experiment'
+import experimentalOmnisearchVisibilityTest from './debug/experimentalOmnisearchVisibilityTest'
 import fieldsets from './debug/fieldsets'
 import {
   fieldValidationInferReproSharedObject,
@@ -124,6 +125,7 @@ export default createSchema({
     emails,
     empty,
     experiment,
+    experimentalOmnisearchVisibilityTest,
     fieldValidationInferReproDoc,
     fieldValidationInferReproSharedObject,
     fieldsets,

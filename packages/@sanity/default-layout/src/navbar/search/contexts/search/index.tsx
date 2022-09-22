@@ -2,7 +2,9 @@
 ///<reference types="@sanity/types/parts" />
 
 import type {SearchTerms} from '@sanity/base'
-import {CurrentUser} from '@sanity/types'
+import type {CurrentUser} from '@sanity/types'
+import isEqual from 'lodash/isEqual'
+import schema from 'part:@sanity/base/schema'
 import React, {
   createContext,
   Dispatch,
@@ -13,12 +15,17 @@ import React, {
   useReducer,
   useRef,
 } from 'react'
-import schema from 'part:@sanity/base/schema'
-import {SEARCH_LIMIT} from '../../constants'
-import {createRecentSearchesStore, RecentSearchesStore} from '../../datastores/recentSearches'
+import {FINDABILITY_MVI, SEARCH_LIMIT} from '../../constants'
+import {
+  createRecentSearchesStore,
+  RecentSearchesStore,
+  RecentSearchTerms,
+} from '../../datastores/recentSearches'
 import {useSearch} from '../../hooks/useSearch'
-import {initialSearchState, searchReducer, SearchAction, SearchReducerState} from './reducer'
-import {hasSearchableTerms} from './selectors'
+import type {SearchOrdering} from '../../types'
+import {hasSearchableTerms} from '../../utils/hasSearchableTerms'
+import {isRecentSearchTerms} from '../../utils/isRecentSearchTerms'
+import {initialSearchState, SearchAction, searchReducer, SearchReducerState} from './reducer'
 
 interface SearchContextValue {
   dispatch: Dispatch<SearchAction>
@@ -38,32 +45,33 @@ interface SearchProviderProps {
  */
 export function SearchProvider({children, currentUser}: SearchProviderProps) {
   // Create local storage store
-  const recentSearchesStore = createRecentSearchesStore(schema, currentUser)
-  const recentSearches = useMemo(() => recentSearchesStore.getRecentSearchTerms(), [
+  const recentSearchesStore = useMemo(() => createRecentSearchesStore(schema, currentUser), [
+    currentUser,
+  ])
+
+  const recentSearches = useMemo(() => recentSearchesStore?.getRecentSearchTerms(), [
     recentSearchesStore,
   ])
 
-  const [state, dispatch] = useReducer(
-    searchReducer,
-    initialSearchState(currentUser, recentSearches)
-  )
+  const initialState = useMemo(() => initialSearchState(currentUser, recentSearches), [
+    currentUser,
+    recentSearches,
+  ])
+  const [state, dispatch] = useReducer(searchReducer, initialState)
 
-  const {pageIndex, result, terms} = state
+  const {ordering, pageIndex, result, terms} = state
 
   const isMountedRef = useRef(false)
-  const previousPageIndexRef = useRef<number>(0)
-  const previousTermsRef = useRef<SearchTerms>(null)
+  const previousOrderingRef = useRef<SearchOrdering>(initialState.ordering)
+  const previousPageIndexRef = useRef<number>(initialState.pageIndex)
+  const previousTermsRef = useRef<SearchTerms | RecentSearchTerms>(initialState.terms)
 
   const {handleSearch, searchState} = useSearch({
-    initialState: {
-      searchString: terms.query,
-      ...result,
-      terms,
-    },
-    // TODO: consider re-thinking how we handle search event callbacks
+    initialState: {...result, terms},
     onComplete: (hits) => dispatch({hits, type: 'SEARCH_REQUEST_COMPLETE'}),
     onError: (error) => dispatch({error, type: 'SEARCH_REQUEST_ERROR'}),
     onStart: () => dispatch({type: 'SEARCH_REQUEST_START'}),
+    schema,
   })
 
   const hasValidTerms = hasSearchableTerms(terms)
@@ -76,25 +84,42 @@ export function SearchProvider({children, currentUser}: SearchProviderProps) {
    * There are cases were we may not run searches when terms change (e.g. when search terms are empty / invalid).
    */
   useEffect(() => {
-    const termsChanged = Object.keys(terms).some(
-      (key) => terms[key] !== previousTermsRef.current?.[key]
-    )
+    const orderingChanged = !isEqual(ordering, previousOrderingRef.current)
     const pageIndexChanged = pageIndex !== previousPageIndexRef.current
+    const termsChanged = !isEqual(terms, previousTermsRef.current)
 
-    if (termsChanged || pageIndexChanged) {
+    if (orderingChanged || pageIndexChanged || termsChanged) {
+      // Use a custom label if provided, otherwise return field and direction, e.g. `_updatedAt desc`
+      const sortLabel =
+        ordering?.customMeasurementLabel || `${ordering.sort.field} ${ordering.sort.direction}`
+
       handleSearch({
-        ...terms,
-        limit: SEARCH_LIMIT,
-        offset: pageIndex * SEARCH_LIMIT,
+        options: {
+          // Comments prepended to each query for future measurement
+          comments: [
+            `findability-mvi:${FINDABILITY_MVI}`,
+            ...(isRecentSearchTerms(terms)
+              ? [`findability-recent-search:${terms.__recent.index}`]
+              : []),
+            `findability-selected-types:${terms.types.length}`,
+            `findability-sort:${sortLabel}`,
+          ],
+          limit: SEARCH_LIMIT,
+          offset: pageIndex * SEARCH_LIMIT,
+          skipSortByScore: ordering.ignoreScore,
+          sort: ordering.sort,
+        },
+        terms,
       })
 
       // Update pageIndex snapshot only on a valid search request
       previousPageIndexRef.current = pageIndex
     }
 
-    // Update our terms snapshot, even if no search request was executed
+    // Update snapshots, even if no search request was executed
+    previousOrderingRef.current = ordering
     previousTermsRef.current = terms
-  }, [handleSearch, hasValidTerms, pageIndex, searchState.terms, terms])
+  }, [handleSearch, hasValidTerms, ordering, pageIndex, searchState.terms, terms])
 
   /**
    * Reset search hits / state when (after initial amount):
