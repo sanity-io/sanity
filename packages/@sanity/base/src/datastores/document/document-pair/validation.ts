@@ -34,9 +34,14 @@ import {editState} from './editState'
 export interface ValidationStatus {
   isValidating: boolean
   markers: Marker[]
+  revision: string
 }
 
-const INITIAL_VALIDATION_STATUS: ValidationStatus = {isValidating: true, markers: []}
+const INITIAL_VALIDATION_STATUS: ValidationStatus = {
+  isValidating: true,
+  markers: [],
+  revision: null,
+}
 
 function findReferenceIds(obj: any): Set<string> {
   return reduceJSON(
@@ -139,7 +144,7 @@ export const validation = memoize(
             return of({markers: EMPTY_ARRAY, isValidating: false})
           }
           return concat(
-            of({isValidating: true}),
+            of({isValidating: true, revision: document._rev}),
             validateDocumentObservable(document, schema, {getDocumentExists}).pipe(
               map((markers) => ({markers, isValidating: false}))
             )
