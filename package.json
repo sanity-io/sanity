@@ -63,7 +63,6 @@
     "type-check": "tsc --build",
     "updated": "lerna updated",
     "vercel-build": "yarn build:cli && (cd dev/test-studio && yarn build)",
-    "verify-format": "lerna run clean && yarn prettier -c",
     "watch": "lerna run --parallel --scope '{@sanity/*,sanity}' watch"
   },
   "devDependencies": {
