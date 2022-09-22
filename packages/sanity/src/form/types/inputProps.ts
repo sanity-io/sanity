@@ -7,7 +7,7 @@ import {
   SchemaType,
   StringSchemaType,
 } from '@sanity/types'
-import React, {ChangeEventHandler, FocusEventHandler, FormEventHandler} from 'react'
+import React, {FocusEventHandler, FormEventHandler} from 'react'
 import {FormPatch, PatchEvent} from '../patch'
 import {
   ArrayOfObjectsFormNode,
@@ -56,6 +56,8 @@ export interface ObjectInputProps<
   renderPreview: RenderPreviewCallback
 
   elementProps: ComplexElementProps
+
+  renderNext: (props: InputProps) => React.ReactElement
 }
 
 export interface ArrayOfObjectsInputProps<
@@ -92,6 +94,8 @@ export interface ArrayOfObjectsInputProps<
   renderPreview: RenderPreviewCallback
 
   elementProps: ComplexElementProps
+
+  renderNext: (props: InputProps) => React.ReactElement
 }
 
 export type ArrayOfPrimitivesElementType<T extends any[]> = T extends (infer K)[] ? K : unknown
@@ -117,6 +121,8 @@ export interface ArrayOfPrimitivesInputProps<
   renderItem: RenderArrayOfPrimitivesItemCallback
   renderPreview: RenderPreviewCallback
   elementProps: ComplexElementProps
+
+  renderNext: (props: InputProps) => React.ReactElement
 }
 
 export interface PrimitiveInputElementProps {
@@ -142,6 +148,7 @@ export interface StringInputProps<S extends StringSchemaType = StringSchemaType>
   onChange: (patch: FormPatch | FormPatch[] | PatchEvent) => void
   validationError?: string
   elementProps: PrimitiveInputElementProps
+  renderNext: (props: InputProps) => React.ReactElement
 }
 
 export interface NumberInputProps<S extends NumberSchemaType = NumberSchemaType>
@@ -149,6 +156,7 @@ export interface NumberInputProps<S extends NumberSchemaType = NumberSchemaType>
   onChange: (patch: FormPatch | FormPatch[] | PatchEvent) => void
   validationError?: string
   elementProps: PrimitiveInputElementProps
+  renderNext: (props: InputProps) => React.ReactElement
 }
 
 export interface BooleanInputProps<S extends BooleanSchemaType = BooleanSchemaType>
@@ -163,6 +171,7 @@ export interface BooleanInputProps<S extends BooleanSchemaType = BooleanSchemaTy
    */
   validationError?: string
   elementProps: PrimitiveInputElementProps
+  renderNext: (props: InputProps) => React.ReactElement
 }
 
 export type PrimitiveInputProps = StringInputProps | BooleanInputProps | NumberInputProps

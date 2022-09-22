@@ -31,6 +31,7 @@ export interface BaseFieldProps {
   index: number
   changed: boolean
   children: React.ReactNode
+  renderNext: (props: BaseFieldProps) => React.ReactElement
 }
 
 export interface ObjectFieldProps extends BaseFieldProps {

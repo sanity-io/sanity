@@ -1,5 +1,5 @@
 import {ImageUrlFitMode} from '@sanity/types'
-import {ComponentType, ReactNode} from 'react'
+import React, {ComponentType, ReactNode} from 'react'
 
 export type PortableTextPreviewLayoutKey = 'block' | 'blockImage' | 'inline'
 
@@ -37,6 +37,8 @@ export interface PreviewProps<TLayoutKey = PreviewLayoutKey> {
   withBorder?: boolean
   withRadius?: boolean
   withShadow?: boolean
+
+  renderNext: (props: PreviewProps) => React.ReactElement
 }
 
 export type PreviewComponent = ComponentType<PreviewProps>

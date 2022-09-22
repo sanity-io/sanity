@@ -34,6 +34,8 @@ export interface BaseItemProps {
 
   validation: NodeValidation[]
   presence: NodePresence[]
+
+  renderNext: (props: BaseItemProps) => React.ReactElement
 }
 
 export interface ObjectItemProps extends BaseItemProps {
