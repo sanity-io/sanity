@@ -794,7 +794,7 @@ export class ImageInput extends React.PureComponent<ImageInputProps, ImageInputS
             )
           }
           if (member.kind === 'error') {
-            return <MemberFieldError member={member} />
+            return <MemberFieldError member={member} key={member.key} />
           }
           //@ts-expect-error all possible cases should be covered
           return <>Unknown member kind: ${member.kind}</>

@@ -636,7 +636,7 @@ export class FileInput extends React.PureComponent<FileInputProps, FileInputStat
             )
           }
           if (member.kind === 'error') {
-            return <MemberFieldError member={member} />
+            return <MemberFieldError member={member} key={member.key} />
           }
           //@ts-expect-error all possible cases should be covered
           return <>Unknown member kind: ${member.kind}</>
