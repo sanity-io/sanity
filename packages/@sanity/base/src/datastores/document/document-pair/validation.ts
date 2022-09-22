@@ -13,6 +13,7 @@ import {
   refCount,
   scan,
   share,
+  shareReplay,
   skip,
   throttleTime,
 } from 'rxjs/operators'
@@ -56,9 +57,6 @@ type GetDocumentExists = NonNullable<ValidationContext['getDocumentExists']>
 const listenDocumentExists = (id: string): Observable<boolean> =>
   observeDocumentPairAvailability(id).pipe(map(({published}) => published.available))
 
-const getDocumentExists: GetDocumentExists = ({id}) =>
-  listenDocumentExists(id).pipe(first()).toPromise()
-
 // throttle delay for document updates (i.e. time between responding to changes in the current document)
 const DOC_UPDATE_DELAY = 200
 
@@ -87,7 +85,7 @@ export const validation = memoize(
     )
 
     // Note: we only use this to trigger a re-run of validation when a referenced document is published/unpublished
-    const referencedDocumentUpdate$ = referenceIds$.pipe(
+    const referenceExistence$ = referenceIds$.pipe(
       groupBy(
         (id) => id,
         null,
@@ -113,13 +111,27 @@ export const validation = memoize(
         return result ? {...acc, [id]: result} : omit(acc, id)
       }, {}),
       distinctUntilChanged(shallowEquals),
+      shareReplay({refCount: true, bufferSize: 1})
+    )
+
+    // Provided to individual validation functions to support using existence of a weakly referenced document
+    // as part of the validation rule (used by references in place)
+    const getDocumentExists: GetDocumentExists = ({id}) =>
+      referenceExistence$
+        .pipe(
+          first(),
+          map((referenceExistence) => referenceExistence[id])
+        )
+        .toPromise()
+
+    const referenceDocumentUpdates$ = referenceExistence$.pipe(
       // we'll skip the first emission since the document already gets an initial validation pass
       // we're only interested in updates in referenced documents after that
       skip(1),
       throttleTime(REF_UPDATE_DELAY, asyncScheduler, {leading: true, trailing: true})
     )
 
-    return combineLatest([document$, concat(of(null), referencedDocumentUpdate$)]).pipe(
+    return combineLatest([document$, concat(of(null), referenceDocumentUpdates$)]).pipe(
       map(([document]) => document),
       exhaustMapWithTrailing((document) => {
         return defer(() => {
