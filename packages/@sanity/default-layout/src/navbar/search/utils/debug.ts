@@ -1,4 +1,5 @@
 import debug from 'debug'
+import {DEBUG_FRAGMENT} from '../constants'
 
 const rootName = 'sanity-default-layout:navbar:search:'
 
@@ -9,4 +10,10 @@ export function debugWithName(name: string): debug.Debugger {
     return debug(namespace)
   }
   return debug(rootName)
+}
+
+export function isDebugMode(): boolean {
+  return typeof window === 'undefined'
+    ? false
+    : window.location.hash.slice(1).split(';').includes(DEBUG_FRAGMENT)
 }

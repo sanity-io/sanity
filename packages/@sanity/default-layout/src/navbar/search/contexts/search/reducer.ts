@@ -1,36 +1,41 @@
-import type {SearchTerms, SearchableType} from '@sanity/base'
+import type {SearchableType, SearchTerms, WeightedHit} from '@sanity/base'
 import type {CurrentUser} from '@sanity/types'
-import {RecentSearchTerms} from '../../datastores/recentSearches'
-import type {SearchHit} from '../../types'
-import {debugWithName} from '../../utils/debug'
-import {sortTypes} from './selectors'
+import type {RecentSearchTerms} from '../../datastores/recentSearches'
+import {ORDER_RELEVANCE, SearchOrdering} from '../../types'
+import {debugWithName, isDebugMode} from '../../utils/debug'
+import {isRecentSearchTerms} from '../../utils/isRecentSearchTerms'
+import {sortTypes} from '../../utils/selectors'
 
 export interface SearchReducerState {
   currentUser: CurrentUser
+  debug: boolean
   filtersVisible: boolean
+  ordering: SearchOrdering
   pageIndex: number
   recentSearches: RecentSearchTerms[]
   result: SearchResult
-  terms: SearchTerms
+  terms: RecentSearchTerms | SearchTerms
 }
 
 export interface SearchResult {
   error: Error | null
-  hasMore?: boolean
-  hits: SearchHit[]
+  hasMore?: boolean | null
+  hits: WeightedHit[]
   loaded: boolean
   loading: boolean
 }
 
 export function initialSearchState(
   currentUser: CurrentUser,
-  recentSearches: RecentSearchTerms[]
+  recentSearches?: RecentSearchTerms[]
 ): SearchReducerState {
   return {
     currentUser,
+    debug: isDebugMode(),
     filtersVisible: false,
+    ordering: ORDER_RELEVANCE,
     pageIndex: 0,
-    recentSearches,
+    recentSearches: recentSearches || [],
     result: {
       error: null,
       hasMore: null,
@@ -54,9 +59,11 @@ export type RecentSearchesSet = {
   type: 'RECENT_SEARCHES_SET'
 }
 export type SearchClear = {type: 'SEARCH_CLEAR'}
+export type SearchOrderingReset = {type: 'SEARCH_ORDERING_RESET'}
+export type SearchOrderingSet = {ordering: SearchOrdering; type: 'SEARCH_ORDERING_SET'}
 export type SearchRequestComplete = {
   type: 'SEARCH_REQUEST_COMPLETE'
-  hits: SearchHit[]
+  hits: WeightedHit[]
 }
 export type SearchRequestError = {type: 'SEARCH_REQUEST_ERROR'; error: Error}
 export type SearchRequestStart = {type: 'SEARCH_REQUEST_START'}
@@ -76,6 +83,8 @@ export type SearchAction =
   | SearchRequestComplete
   | SearchRequestError
   | SearchRequestStart
+  | SearchOrderingReset
+  | SearchOrderingSet
   | TermsQuerySet
   | TermsSet
   | TermsTypeAdd
@@ -114,6 +123,7 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
       return {
         ...state,
         pageIndex: state.pageIndex + 1,
+        terms: stripRecent(state.terms),
       }
     case 'RECENT_SEARCHES_SET':
       return {
@@ -129,6 +139,18 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
           hasMore: null,
           hits: [],
         },
+      }
+    case 'SEARCH_ORDERING_RESET':
+      return {
+        ...state,
+        ordering: ORDER_RELEVANCE,
+        terms: stripRecent(state.terms),
+      }
+    case 'SEARCH_ORDERING_SET':
+      return {
+        ...state,
+        ordering: action.ordering,
+        terms: stripRecent(state.terms),
       }
     case 'SEARCH_REQUEST_COMPLETE':
       return {
@@ -169,10 +191,10 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
           ...state.result,
           loaded: false,
         },
-        terms: {
+        terms: stripRecent({
           ...state.terms,
           query: action.query,
-        },
+        }),
       }
     case 'TERMS_SET':
       return {
@@ -192,10 +214,10 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
           ...state.result,
           loaded: false,
         },
-        terms: {
+        terms: stripRecent({
           ...state.terms,
           types: [...state.terms.types, action.schemaType].sort(sortTypes),
-        },
+        }),
       }
     case 'TERMS_TYPE_REMOVE':
       return {
@@ -205,10 +227,10 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
           ...state.result,
           loaded: false,
         },
-        terms: {
+        terms: stripRecent({
           ...state.terms,
           types: state.terms.types.filter((s) => s !== action.schemaType),
-        },
+        }),
       }
     case 'TERMS_TYPES_CLEAR':
       return {
@@ -218,12 +240,31 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
           ...state.result,
           loaded: false,
         },
-        terms: {
+        terms: stripRecent({
           ...state.terms,
           types: [],
-        },
+        }),
       }
     default:
       return state
   }
+}
+
+/**
+ * This function is used to strip __recent from terms, generally whenever there's a change in
+ * search terms or options that would otherwise trigger an additional search request.
+ * (e.g. updating the search query, changing a sort filter, adding / removing document types)
+ *
+ * This is done so we can better disambiguate between requests sent as a result of clicking a 'recent search'
+ * for purposes of measurement.
+ *
+ * @todo remove this (and associated tests) once client-side instrumentation is available
+ */
+function stripRecent(terms: RecentSearchTerms | SearchTerms) {
+  if (isRecentSearchTerms(terms)) {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const {__recent, ...rest} = terms
+    return rest
+  }
+  return terms
 }

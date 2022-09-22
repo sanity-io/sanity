@@ -6,9 +6,10 @@ import {Box, Button, Flex, Stack, Text} from '@sanity/ui'
 import schema from 'part:@sanity/base/schema'
 import React, {useCallback, useMemo, useState} from 'react'
 import styled from 'styled-components'
+import {SUBHEADER_HEIGHT_LARGE, SUBHEADER_HEIGHT_SMALL} from '../constants'
 import {CommandListProvider} from '../contexts/commandList'
 import {useSearchState} from '../contexts/search'
-import {getSelectableTypes} from '../contexts/search/selectors'
+import {getSelectableOmnisearchTypes} from '../utils/selectors'
 import {supportsTouch} from '../utils/supportsTouch'
 import {CustomTextInput} from './CustomTextInput'
 import {PointerOverlay} from './PointerOverlay'
@@ -26,7 +27,13 @@ const SearchHeaderBox = styled(Box)`
   border-bottom: 1px solid ${({theme}) => theme.sanity.color.base.border};
 `
 
+const SearchHeaderContentFlex = styled(Flex)<{$small?: boolean}>`
+  box-sizing: border-box;
+  height: ${({$small}) => ($small ? SUBHEADER_HEIGHT_SMALL : SUBHEADER_HEIGHT_LARGE)}px;
+`
+
 const TypeFiltersContentBox = styled(Box)`
+  outline: none;
   overflow-x: hidden;
   overflow-y: scroll;
 `
@@ -54,7 +61,7 @@ export function TypeFilters({small}: TypeFiltersProps) {
     },
   } = useSearchState()
 
-  const selectableDocumentTypes = useMemo(() => getSelectableTypes(schema, typeFilter), [
+  const selectableDocumentTypes = useMemo(() => getSelectableOmnisearchTypes(schema, typeFilter), [
     typeFilter,
   ])
 
@@ -88,26 +95,34 @@ export function TypeFilters({small}: TypeFiltersProps) {
     >
       <TypeFiltersFlex $lightHighlight={!small} direction="column" ref={setContainerRef}>
         {/* Search header */}
-        <SearchHeaderBox padding={padding}>
-          <CustomTextInput
-            autoComplete="off"
-            border={false}
-            clearButton={!!typeFilter}
-            fontSize={small ? 1 : 2}
-            icon={SearchIcon}
-            muted
-            onChange={handleFilterChange}
-            onClear={handleFilterClear}
-            placeholder="Document type"
-            ref={setHeaderInputRef}
-            smallClearButton
-            spellCheck={false}
-            radius={2}
-            value={typeFilter}
-          />
+        <SearchHeaderBox>
+          <SearchHeaderContentFlex $small={small} align="center" flex={1} padding={padding}>
+            <CustomTextInput
+              autoComplete="off"
+              border={false}
+              clearButton={!!typeFilter}
+              fontSize={small ? 1 : 2}
+              icon={SearchIcon}
+              muted
+              onChange={handleFilterChange}
+              onClear={handleFilterClear}
+              placeholder="Document type"
+              ref={setHeaderInputRef}
+              smallClearButton
+              spellCheck={false}
+              radius={2}
+              value={typeFilter}
+            />
+          </SearchHeaderContentFlex>
         </SearchHeaderBox>
 
-        <TypeFiltersContentBox flex={1} padding={padding} ref={setFiltersContentRef} tabIndex={-1}>
+        <TypeFiltersContentBox
+          data-overflow
+          flex={1}
+          padding={padding}
+          ref={setFiltersContentRef}
+          tabIndex={-1}
+        >
           <TypeFiltersContentDiv>
             <PointerOverlay ref={setPointerOverlayRef} />
 

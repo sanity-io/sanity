@@ -5,7 +5,15 @@ import React from 'react'
 
 export function SearchError() {
   return (
-    <Flex align="center" aria-live="assertive" direction="column" gap={3} marginY={2} padding={4}>
+    <Flex
+      align="center"
+      aria-live="assertive"
+      direction="column"
+      flex={1}
+      gap={3}
+      marginY={2}
+      padding={4}
+    >
       <Box marginBottom={1}>
         <TextWithTone tone="critical">
           <WarningOutlineIcon />

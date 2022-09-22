@@ -1,6 +1,6 @@
 import React, {useCallback, useEffect, useState} from 'react'
 import {PlaceholderSearchInput} from './components/PlaceholderSearchInput'
-import {SearchPopover} from './components/SearchPopover'
+import {PopoverPosition, SearchPopover} from './components/SearchPopover'
 import {POPOVER_INPUT_PADDING, POPOVER_MAX_WIDTH} from './constants'
 
 export function SearchField() {
@@ -15,26 +15,19 @@ export function SearchField() {
   return (
     <>
       <PlaceholderSearchInput onOpen={handleOpen} ref={setPlaceholderElement} />
-      <SearchPopover
-        onClose={handleClose}
-        onOpen={handleOpen}
-        open={open}
-        position={popoverPosition}
-      />
+      {popoverPosition && (
+        <SearchPopover
+          onClose={handleClose}
+          onOpen={handleOpen}
+          open={open}
+          position={popoverPosition}
+        />
+      )}
     </>
   )
 }
 
-function calcDialogPosition(
-  element: HTMLElement
-): {
-  x: number | null
-  y: number
-} {
-  if (!element) {
-    return null
-  }
-
+function calcDialogPosition(element: HTMLElement): PopoverPosition {
   const placeholderRect = element.getBoundingClientRect()
 
   // Offset positioning to account for dialog padding. This should ensure that our popover search input
@@ -48,21 +41,22 @@ function calcDialogPosition(
   }
 }
 
-function usePopoverPosition(element: HTMLElement) {
-  const [popoverPosition, setPopoverPosition] = useState<{
-    x: number
-    y: number
-  }>(null)
+function usePopoverPosition(element: HTMLElement | null) {
+  const [popoverPosition, setPopoverPosition] = useState<PopoverPosition | null>(null)
 
   useEffect(() => {
-    setPopoverPosition(calcDialogPosition(element))
+    if (element) {
+      setPopoverPosition(calcDialogPosition(element))
+    }
   }, [element])
 
   /**
    * Update popover position on window resize based off current placeholder input
    */
   const handleWindowResize = useCallback(() => {
-    setPopoverPosition(calcDialogPosition(element))
+    if (element) {
+      setPopoverPosition(calcDialogPosition(element))
+    }
   }, [element])
 
   useEffect(() => {

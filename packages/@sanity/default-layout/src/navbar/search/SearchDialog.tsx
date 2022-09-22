@@ -1,17 +1,17 @@
+import {useId} from '@reach/auto-id'
 import {Box, Card, Dialog, Portal} from '@sanity/ui'
 import React, {useCallback, useEffect, useRef, useState} from 'react'
 import FocusLock from 'react-focus-lock'
 import styled from 'styled-components'
-import {useId} from '@reach/auto-id'
 import {RecentSearches} from './components/RecentSearches'
 import {SearchHeader} from './components/SearchHeader'
 import {SearchResults} from './components/SearchResults'
 import {TypeFilters} from './components/TypeFilters'
 import {CommandListProvider} from './contexts/commandList'
 import {useSearchState} from './contexts/search'
-import {hasSearchableTerms} from './contexts/search/selectors'
 import {useMeasureSearchResultsIndex} from './hooks/useMeasureSearchResultsIndex'
 import {useSearchHotkeys} from './hooks/useSearchHotkeys'
+import {hasSearchableTerms} from './utils/hasSearchableTerms'
 
 interface SearchDialogProps {
   onClose: () => void
@@ -63,6 +63,7 @@ export function SearchDialog({onClose, onOpen, open}: SearchDialogProps) {
   const isMountedRef = useRef(false)
 
   const {
+    dispatch,
     state: {filtersVisible, recentSearches, result, terms},
   } = useSearchState()
 
@@ -76,21 +77,6 @@ export function SearchDialog({onClose, onOpen, open}: SearchDialogProps) {
   )
 
   /**
-   * Reset last search index when new results are loaded, or visiting recent searches
-   * @todo Revise if/when we introduce pagination
-   */
-  useEffect(() => {
-    if (!isMountedRef?.current) {
-      isMountedRef.current = true
-      return
-    }
-
-    if (!hasValidTerms || result.loaded) {
-      resetLastSearchIndex()
-    }
-  }, [hasValidTerms, resetLastSearchIndex, result.loaded])
-
-  /**
    * Store top-most search result scroll index on close
    */
   const handleClose = useCallback(() => {
@@ -102,6 +88,35 @@ export function SearchDialog({onClose, onOpen, open}: SearchDialogProps) {
    * Bind hotkeys to open / close actions
    */
   useSearchHotkeys({onClose: handleClose, onOpen, open})
+
+  /**
+   * Reset last search index when new results are loaded, or visiting recent searches
+   * @todo Revise if/when we introduce pagination
+   */
+  useEffect(() => {
+    if ((!hasValidTerms || result.loaded) && isMountedRef.current) {
+      resetLastSearchIndex()
+    }
+  }, [hasValidTerms, resetLastSearchIndex, result.loaded])
+
+  /**
+   * Reset ordering when popover is closed (without valid search terms)
+   */
+  useEffect(() => {
+    if (!hasValidTerms && isMountedRef.current && !open) {
+      dispatch({type: 'SEARCH_ORDERING_RESET'})
+    }
+  }, [dispatch, hasValidTerms, open])
+
+  /**
+   * Store mounted state (must be last)
+   */
+  useEffect(() => {
+    if (!isMountedRef?.current) {
+      isMountedRef.current = true
+    }
+  }, [])
+
   const dialogId = useId()
 
   if (!open) {
@@ -117,7 +132,7 @@ export function SearchDialog({onClose, onOpen, open}: SearchDialogProps) {
       childCount={hasValidTerms ? result.hits.length : recentSearches.length}
       containerElement={containerElement}
       headerInputElement={headerInputElement}
-      id={dialogId}
+      id={dialogId || ''}
       data-testid="search-results-dialog"
       initialSelectedIndex={hasValidTerms ? lastSearchIndex : 0}
       level={0}

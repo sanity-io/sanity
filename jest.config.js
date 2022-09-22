@@ -2,6 +2,7 @@ const JEST_PROJECTS = [
   '@sanity/core',
   '@sanity/base',
   '@sanity/block-tools',
+  '@sanity/default-layout',
   '@sanity/desk-tool',
   '@sanity/export',
   '@sanity/form-builder',

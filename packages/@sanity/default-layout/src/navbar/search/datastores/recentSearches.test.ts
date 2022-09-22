@@ -1,7 +1,7 @@
 import type {SearchTerms} from '@sanity/base'
 import Schema from '@sanity/schema'
 import type {CurrentUser, ObjectSchemaType} from '@sanity/types'
-import {createRecentSearchesStore, MAX_RECENT_SEARCHES} from './recentSearches'
+import {createRecentSearchesStore, MAX_RECENT_SEARCHES, RecentSearchesStore} from './recentSearches'
 
 const mockSchema = Schema.compile({
   name: 'default',
@@ -13,6 +13,8 @@ const mockSchema = Schema.compile({
       fields: [{name: 'title', type: 'string'}],
     },
     {
+      // eslint-disable-next-line camelcase
+      __experimental_omnisearch_visibility: false,
       name: 'book',
       title: 'Book',
       type: 'document',
@@ -21,6 +23,7 @@ const mockSchema = Schema.compile({
   ],
 })
 const mockArticle: ObjectSchemaType = mockSchema.get('article')
+const mockBook: ObjectSchemaType = mockSchema.get('book')
 
 const mockUser: CurrentUser = {
   id: 'mock-user',
@@ -30,7 +33,7 @@ const mockUser: CurrentUser = {
   roles: [],
 }
 
-const recentSearchesStore = createRecentSearchesStore(mockSchema, mockUser)
+const recentSearchesStore = createRecentSearchesStore(mockSchema, mockUser) as RecentSearchesStore
 
 afterEach(() => {
   window.localStorage.clear()
@@ -68,6 +71,22 @@ describe('search-store', () => {
       recentSearchesStore.addSearchTerm(searchTerms2)
       recentSearchesStore.addSearchTerm(searchTerms3)
       recentSearchesStore.addSearchTerm(searchTerms4)
+      const recentTerms = recentSearchesStore.getRecentSearchTerms()
+
+      expect(recentTerms.length).toEqual(1)
+    })
+
+    it('should filter out search terms with document types hidden from omnisearch', () => {
+      const searchTerms1: SearchTerms = {
+        query: 'foo',
+        types: [mockArticle],
+      }
+      const searchTerms2: SearchTerms = {
+        query: 'bar',
+        types: [mockBook],
+      }
+      recentSearchesStore.addSearchTerm(searchTerms1)
+      recentSearchesStore.addSearchTerm(searchTerms2)
       const recentTerms = recentSearchesStore.getRecentSearchTerms()
 
       expect(recentTerms.length).toEqual(1)

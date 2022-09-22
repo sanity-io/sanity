@@ -1,4 +1,4 @@
-import {fieldNeedsEscape, escapeField, joinPath} from '../src/util/searchUtils'
+import {fieldNeedsEscape, escapeField, joinPath} from './searchUtils'
 
 test('fieldNeedsEscape', () => {
   expect(fieldNeedsEscape('0foo')).toBe(true)

@@ -245,6 +245,8 @@ export interface ObjectSchemaType extends BaseSchemaType {
   // Experimentals
   // eslint-disable-next-line camelcase
   __experimental_search: ExperimentalSearchPath[]
+  // eslint-disable-next-line camelcase
+  __experimental_omnisearch_visibility?: boolean
 }
 
 export interface ExperimentalSearchPath {

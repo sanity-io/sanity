@@ -97,6 +97,7 @@ const DEBUG_INPUT_TYPES = [
   'withParentTest',
   'arrayExperimentalSearch',
   'arrayPreviewSelect',
+  'experimentalOmnisearchVisibilityTest',
 ]
 
 const CI_INPUT_TYPES = ['conditionalFieldset', 'validationCI']
