@@ -7,6 +7,7 @@ import type {
   FormUnsetPatch,
   FormIncPatch,
   FormDecPatch,
+  FormDiffMatchPatch,
 } from './types'
 
 export const SANITY_PATCH_TYPE = Symbol.for('sanity.patch')
@@ -40,6 +41,10 @@ export function set(value: any, path: Path = []): FormSetPatch {
 
 export function unset(path: Path = []): FormUnsetPatch {
   return {patchType: SANITY_PATCH_TYPE, type: 'unset', path}
+}
+
+export function diffMatchPatch(value: string, path: Path = []): FormDiffMatchPatch {
+  return {patchType: SANITY_PATCH_TYPE, type: 'diffMatchPatch', path, value}
 }
 
 export function inc(amount = 1, path: Path = []): FormIncPatch {

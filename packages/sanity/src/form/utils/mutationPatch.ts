@@ -80,7 +80,7 @@ function toFormBuilderPatches(origin: FormPatchOrigin, patch: MutationPatch): Fo
             }
             if (type === 'diffMatchPatch') {
               return {
-                type: 'diffMatchPatch',
+                type,
                 path: decodePath(gradientPath),
                 value: patch[type][gradientPath],
                 origin,
