@@ -16,7 +16,7 @@ import {useFormCallbacks} from './contexts/FormCallbacks'
 /**
  * @alpha
  */
-export interface StudioFormBuilderProps
+export interface FormBuilderProps
   extends Omit<ObjectFormNode, 'level' | 'path' | 'presence' | 'validation'> {
   /**
    * @internal Considered internal – do not use.
@@ -47,7 +47,7 @@ export interface StudioFormBuilderProps
 /**
  * @alpha
  */
-export function StudioFormBuilder(props: StudioFormBuilderProps) {
+export function FormBuilder(props: FormBuilderProps) {
   const {
     __internal_patchChannel: patchChannel,
     autoFocus,
