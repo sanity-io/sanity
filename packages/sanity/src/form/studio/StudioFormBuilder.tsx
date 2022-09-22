@@ -10,7 +10,7 @@ import {ObjectInputProps} from '../types'
 import {EMPTY_ARRAY} from '../utils/empty'
 import {useFormBuilder} from '../useFormBuilder'
 import {StateTree} from '../store'
-import {StudioFormBuilderProvider} from './StudioFormBuilderProvider'
+import {FormProvider} from './FormProvider'
 import {useFormCallbacks} from './contexts/FormCallbacks'
 
 /**
@@ -74,7 +74,7 @@ export function StudioFormBuilder(props: StudioFormBuilderProps) {
   } = props
 
   return (
-    <StudioFormBuilderProvider
+    <FormProvider
       __internal_patchChannel={patchChannel}
       autoFocus={autoFocus}
       changesOpen={changesOpen}
@@ -99,7 +99,7 @@ export function StudioFormBuilder(props: StudioFormBuilderProps) {
       value={value}
     >
       <RootInput />
-    </StudioFormBuilderProvider>
+    </FormProvider>
   )
 }
 

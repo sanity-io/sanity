@@ -9,7 +9,7 @@ import {
   NodeValidation,
   PatchArg,
   PatchEvent,
-  StudioFormBuilderProvider,
+  FormProvider,
   useFormState,
 } from '../../src/form'
 import {FormState} from '../../src/form/store/useFormState'
@@ -130,7 +130,7 @@ export async function renderInput(props: {
     const {level, path, readOnly, schemaType} = fieldMember.field
 
     return (
-      <StudioFormBuilderProvider
+      <FormProvider
         __internal_patchChannel={patchChannel}
         changesOpen={false}
         collapsedFieldSets={undefined}
@@ -179,7 +179,7 @@ export async function renderInput(props: {
           },
           {client, formState}
         )}
-      </StudioFormBuilderProvider>
+      </FormProvider>
     )
   }
 

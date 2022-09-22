@@ -93,7 +93,7 @@ function TestForm() {
   return <>TODO</>
 
   // return (
-  //   <StudioFormBuilderProvider
+  //   <FormProvider
   //     __internal_patchChannel={patchChannel}
   //     onChange={handleChange}
   //     value={value}
@@ -130,6 +130,6 @@ function TestForm() {
   //       validation={validation}
   //       value={value}
   //     />
-  //   </StudioFormBuilderProvider>
+  //   </FormProvider>
   // )
 }
