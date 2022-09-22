@@ -8,9 +8,10 @@ import {useMemoObservable} from 'react-rx'
 interface ValidationStatus {
   isValidating: boolean
   markers: Marker[]
+  revision: string | null
 }
 
-const INITIAL: ValidationStatus = {markers: [], isValidating: false}
+const INITIAL: ValidationStatus = {markers: [], isValidating: false, revision: null}
 
 export function useValidationStatus(publishedDocId: string, docTypeName: string): ValidationStatus {
   return useMemoObservable(
