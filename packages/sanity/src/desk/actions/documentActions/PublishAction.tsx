@@ -1,7 +1,7 @@
 import {CheckmarkIcon, PublishIcon} from '@sanity/icons'
 import React, {useCallback, useEffect, useState} from 'react'
 import {isValidationErrorMarker} from '@sanity/types'
-import {useSyncState, useDocumentOperation, useValidationStatus} from '../../../hooks'
+import {useDocumentOperation, useEditState, useSyncState, useValidationStatus} from '../../../hooks'
 import {DocumentActionComponent} from '../types'
 import {InsufficientPermissionsMessage} from '../../../components/InsufficientPermissionsMessage'
 import {TimeAgo} from '../../components'
@@ -38,11 +38,16 @@ export const PublishAction: DocumentActionComponent = (props) => {
   const {publish} = useDocumentOperation(id, type)
   const validationStatus = useValidationStatus(id, type)
   const syncState = useSyncState(id, type)
-  const {changesOpen, editState, onHistoryOpen} = useDocumentPane()
+  const {changesOpen, onHistoryOpen, documentId, documentType} = useDocumentPane()
+  const editState = useEditState(documentId, documentType)
+
+  const revision = (editState?.draft || editState?.published || {})._rev
+
   const hasValidationErrors = validationStatus.validation.some(isValidationErrorMarker)
   // we use this to "schedule" publish after pending tasks (e.g. validation and sync) has completed
   const [publishScheduled, setPublishScheduled] = useState<boolean>(false)
-  const isNeitherSyncingNorValidating = !syncState.isSyncing && !validationStatus.isValidating
+  const isSyncing = syncState.isSyncing
+  const isValidating = validationStatus.isValidating
   const [permissions, isPermissionsLoading] = useDocumentPairPermissions({
     id,
     type,
@@ -66,14 +71,28 @@ export const PublishAction: DocumentActionComponent = (props) => {
   }, [publish])
 
   useEffect(() => {
-    if (publishScheduled && isNeitherSyncingNorValidating) {
-      if (!hasValidationErrors) {
-        doPublish()
-      }
+    // make sure the validation status is about the current revision and not an earlier one
+    const validationComplete =
+      validationStatus.isValidating === false && validationStatus.revision !== revision
 
-      setPublishScheduled(false)
+    if (!publishScheduled || isSyncing || !validationComplete) {
+      return
     }
-  }, [isNeitherSyncingNorValidating, doPublish, hasValidationErrors, publishScheduled])
+
+    if (!hasValidationErrors) {
+      doPublish()
+    }
+    setPublishScheduled(false)
+  }, [
+    isSyncing,
+    doPublish,
+    hasValidationErrors,
+    publishScheduled,
+    validationStatus.revision,
+    revision,
+    isValidating,
+    validationStatus.isValidating,
+  ])
 
   useEffect(() => {
     const didPublish = publishState === 'publishing' && !hasDraft
@@ -92,12 +111,22 @@ export const PublishAction: DocumentActionComponent = (props) => {
   }, [changesOpen, publishState, hasDraft, onHistoryOpen])
 
   const handle = useCallback(() => {
-    if (syncState.isSyncing || validationStatus.isValidating) {
+    if (
+      syncState.isSyncing ||
+      validationStatus.isValidating ||
+      validationStatus.revision !== revision
+    ) {
       setPublishScheduled(true)
     } else {
       doPublish()
     }
-  }, [syncState.isSyncing, validationStatus.isValidating, doPublish])
+  }, [
+    syncState.isSyncing,
+    validationStatus.isValidating,
+    validationStatus.revision,
+    revision,
+    doPublish,
+  ])
 
   if (liveEdit) {
     return {

@@ -30,9 +30,13 @@ import {editState} from './editState'
 export interface ValidationStatus {
   isValidating: boolean
   validation: ValidationMarker[]
+  revision?: string
 }
 
-const INITIAL_VALIDATION_STATUS: ValidationStatus = {isValidating: true, validation: []}
+const INITIAL_VALIDATION_STATUS: ValidationStatus = {
+  isValidating: true,
+  validation: [],
+}
 
 function findReferenceIds(obj: any): Set<string> {
   return reduceJSON(
@@ -150,7 +154,7 @@ export const validation = memoize(
             return of({validation: EMPTY_VALIDATION, isValidating: false})
           }
           return concat(
-            of({isValidating: true}),
+            of({isValidating: true, revision: document._rev}),
             validateDocumentObservable(ctx.getClient, document, ctx.schema, {
               getDocumentExists,
             }).pipe(

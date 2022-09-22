@@ -5,6 +5,7 @@ import {useDocumentStore} from '../datastores'
 export interface ValidationStatus {
   isValidating: boolean
   validation: ValidationMarker[]
+  revision?: string
 }
 
 const INITIAL: ValidationStatus = {validation: [], isValidating: false}
