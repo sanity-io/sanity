@@ -1,8 +1,10 @@
 import type {SanityClient} from '@sanity/client'
-import {concat, of, combineLatest, defer, from, Observable, asyncScheduler} from 'rxjs'
+import {asyncScheduler, combineLatest, concat, defer, from, Observable, of, timer} from 'rxjs'
 import {
+  distinct,
   distinctUntilChanged,
   first,
+  groupBy,
   map,
   mergeMap,
   publishReplay,
@@ -10,7 +12,6 @@ import {
   scan,
   share,
   skip,
-  switchMap,
   throttleTime,
 } from 'rxjs/operators'
 import {validateDocumentObservable} from '@sanity/validation'
@@ -95,19 +96,19 @@ export const validation = memoize(
 
     const referenceIds$ = document$.pipe(
       map((document) => findReferenceIds(document)),
-      distinctUntilChanged((curr: Set<string>, next: Set<string>) => {
-        if (curr.size !== next.size) return false
-        for (const item of curr) {
-          if (!next.has(item)) return false
-        }
-        return true
-      })
+      mergeMap((ids) => from(ids))
     )
 
     // Note: we only use this to trigger a re-run of validation when a referenced document is published/unpublished
     const referencedDocumentUpdate$ = referenceIds$.pipe(
-      switchMap((idSet) =>
-        from(idSet).pipe(
+      groupBy(
+        (id) => id,
+        undefined,
+        () => timer(1000 * 60 * 30)
+      ),
+      mergeMap((id$) =>
+        id$.pipe(
+          distinct(),
           mergeMap((id) =>
             listenDocumentExists(ctx.documentPreviewStore, id).pipe(
               map(
