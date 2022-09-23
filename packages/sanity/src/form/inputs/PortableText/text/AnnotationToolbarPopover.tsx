@@ -11,7 +11,6 @@ import {
 } from '@sanity/ui'
 import styled from 'styled-components'
 import {EditIcon, TrashIcon} from '@sanity/icons'
-import {PortableTextEditor, usePortableTextEditor} from '@sanity/portable-text-editor'
 
 const ToolbarPopover = styled(Popover)`
   &[data-popper-reference-hidden='true'] {
@@ -25,9 +24,9 @@ interface AnnotationToolbarPopoverProps {
   /**
    * Needed to update the popover position on scroll
    */
-  scrollElement: HTMLElement | null
-  annotationElement: HTMLElement | null
-  textElement: HTMLElement | null
+  scrollElement?: HTMLElement
+  annotationElement?: HTMLElement
+  textElement?: HTMLElement
   onEdit: (event: React.MouseEvent<HTMLButtonElement>) => void
   onDelete: (event: React.MouseEvent<HTMLButtonElement>) => void
   title: string
@@ -45,10 +44,9 @@ export function AnnotationToolbarPopover(props: AnnotationToolbarPopoverProps) {
   } | null>(null)
   const isClosingRef = useRef<boolean>(false)
   const rangeRef = useRef<Range | null>(null)
-  const editButtonRef = useRef<HTMLButtonElement | null>(null)
+  const editButtonRef = useRef<HTMLButtonElement>(null)
   const isTabbing = useRef<boolean>(false)
   const {sanity} = useTheme()
-  const editor = usePortableTextEditor()
 
   const popoverScheme = sanity.color.dark ? 'light' : 'dark'
 
@@ -63,10 +61,10 @@ export function AnnotationToolbarPopover(props: AnnotationToolbarPopoverProps) {
         return cursorRect
       },
     }
-  }, [cursorRect]) as HTMLElement | null
+  }, [cursorRect]) as HTMLElement
 
   useEffect(() => {
-    if (!open) {
+    if (!open || !scrollElement) {
       return undefined
     }
 
@@ -76,10 +74,10 @@ export function AnnotationToolbarPopover(props: AnnotationToolbarPopoverProps) {
       }
     }
 
-    scrollElement?.addEventListener('scroll', handleScroll, {passive: true})
+    scrollElement.addEventListener('scroll', handleScroll, {passive: true})
 
     return () => {
-      scrollElement?.removeEventListener('scroll', handleScroll)
+      scrollElement.removeEventListener('scroll', handleScroll)
     }
   }, [open, scrollElement])
 
@@ -95,7 +93,6 @@ export function AnnotationToolbarPopover(props: AnnotationToolbarPopoverProps) {
           event.stopPropagation()
           setOpen(false)
           isTabbing.current = false
-          PortableTextEditor.focus(editor)
         }
         if (event.key === 'Tab') {
           if (!isTabbing.current) {
@@ -106,7 +103,7 @@ export function AnnotationToolbarPopover(props: AnnotationToolbarPopoverProps) {
           }
         }
       },
-      [editButtonRef, open, editor]
+      [open]
     )
   )
 
@@ -115,11 +112,9 @@ export function AnnotationToolbarPopover(props: AnnotationToolbarPopoverProps) {
     function handleSelectionChange() {
       if (!textElement) return
       const winSelection = window.getSelection()
-
       if (!winSelection) {
         return
       }
-
       const {anchorNode, anchorOffset, focusNode, focusOffset} = winSelection
 
       setSelection({
