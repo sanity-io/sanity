@@ -26,9 +26,10 @@ import {useSpellcheck} from './hooks/useSpellCheck'
 import {useScrollSelectionIntoView} from './hooks/useScrollSelectionIntoView'
 
 interface EditorProps {
-  initialSelection?: EditorSelection
-  isFullscreen: boolean
   hotkeys: HotkeyOptions
+  initialSelection?: EditorSelection
+  isActive: boolean
+  isFullscreen: boolean
   onCopy?: OnCopyFn
   onOpenItem: (path: Path) => void
   onPaste?: OnPasteFn
@@ -51,6 +52,7 @@ export function Editor(props: EditorProps) {
   const {
     hotkeys,
     initialSelection,
+    isActive,
     isFullscreen,
     onCopy,
     onOpenItem,
@@ -105,7 +107,6 @@ export function Editor(props: EditorProps) {
         onCopy={onCopy}
         onPaste={onPaste}
         ref={editableRef}
-        readOnly={readOnly}
         renderAnnotation={renderAnnotation}
         renderBlock={renderBlock}
         renderChild={renderChild}
@@ -121,7 +122,6 @@ export function Editor(props: EditorProps) {
       initialSelection,
       onCopy,
       onPaste,
-      readOnly,
       renderAnnotation,
       renderBlock,
       renderChild,
@@ -140,7 +140,7 @@ export function Editor(props: EditorProps) {
 
   return (
     <Root $fullscreen={isFullscreen} data-testid="pt-editor" onMouseDown={handleMouseDown}>
-      {!readOnly && (
+      {isActive && (
         <ToolbarCard data-testid="pt-editor__toolbar-card" shadow={1}>
           <Toolbar
             isFullscreen={isFullscreen}
@@ -152,10 +152,13 @@ export function Editor(props: EditorProps) {
         </ToolbarCard>
       )}
 
-      <EditableCard flex={1}>
+      <EditableCard flex={1} tone={readOnly ? 'transparent' : 'default'}>
         <Scroller ref={setScrollElement}>
           <EditableContainer padding={isFullscreen ? 2 : 0} sizing="border" width={1}>
-            <EditableWrapper $isFullscreen={isFullscreen} $readOnly={readOnly}>
+            <EditableWrapper
+              $isFullscreen={isFullscreen}
+              tone={readOnly ? 'transparent' : 'default'}
+            >
               <BoundaryElementProvider element={isFullscreen ? scrollElement : boundaryElement}>
                 {editable}
               </BoundaryElementProvider>

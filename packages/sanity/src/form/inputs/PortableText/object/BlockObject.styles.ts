@@ -128,9 +128,4 @@ export const BlockActionsInner = styled(Flex)`
 export const TooltipBox = styled(Box)`
   max-width: 250px;
 `
-export const BlockPreview = styled(Box)((props: {theme: Theme}) => {
-  const color = props.theme.sanity.color.input
-  return css`
-    background-color: ${color.default.enabled.bg};
-  `
-})
+export const BlockPreview = styled(Box)``

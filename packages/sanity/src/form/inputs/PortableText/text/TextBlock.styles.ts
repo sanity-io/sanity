@@ -36,7 +36,7 @@ function textBlockStyle(props: TextBlockStyleProps & {theme: Theme}) {
       background-color: var(--marker-bg-color);
     }
 
-    &[data-custom-markers] {
+    &[data-markers] {
       --marker-bg-color: ${color.dark ? hues.purple[950].hex : hues.purple[50].hex};
     }
 

@@ -134,13 +134,13 @@ export function TextBlock(props: TextBlockProps) {
               }
             >
               <TextRoot
-                $level={block.level}
                 data-error={hasError ? '' : undefined}
-                data-warning={hasWarning ? '' : undefined}
                 data-list-item={block.listItem}
-                // @todo: rename to `data-markers`
-                data-custom-markers={hasMarkers ? '' : undefined}
+                data-markers={hasMarkers ? '' : undefined}
+                data-read-only={readOnly}
                 data-testid="text-block__text"
+                data-warning={hasWarning ? '' : undefined}
+                $level={block.level}
                 spellCheck={spellCheck}
               >
                 {text}

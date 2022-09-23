@@ -23,15 +23,13 @@ const POPOVER_FALLBACK_PLACEMENTS: PopoverProps['fallbackPlacements'] = ['top', 
 interface InlineObjectToolbarPopoverProps {
   onDelete: (event: React.MouseEvent<HTMLButtonElement>) => void
   onEdit: (event: React.MouseEvent<HTMLButtonElement>) => void
-  open: boolean
   referenceElement: HTMLElement | null
   scrollElement: HTMLElement | null
-  setOpen: (open: boolean) => void
   title: string
 }
 
 export function InlineObjectToolbarPopover(props: InlineObjectToolbarPopoverProps) {
-  const {open, onEdit, onDelete, referenceElement, scrollElement, setOpen, title} = props
+  const {onEdit, onDelete, referenceElement, scrollElement, title} = props
   const {sanity} = useTheme()
   const editButtonRef = useRef<HTMLButtonElement | null>(null)
   const popoverScheme = sanity.color.dark ? 'light' : 'dark'
@@ -40,35 +38,31 @@ export function InlineObjectToolbarPopover(props: InlineObjectToolbarPopoverProp
   // Close floating toolbar on Escape
   // Focus to edit button on Tab
   useGlobalKeyDown(
-    useCallback(
-      (event) => {
-        if (!open) {
-          return
-        }
-        if (event.key === 'Escape') {
+    useCallback((event) => {
+      if (!open) {
+        return
+      }
+      if (event.key === 'Escape') {
+        event.preventDefault()
+        event.stopPropagation()
+        isTabbing.current = false
+      }
+      if (event.key === 'Tab') {
+        if (!isTabbing.current) {
           event.preventDefault()
           event.stopPropagation()
-          isTabbing.current = false
-          setOpen(false)
+          editButtonRef.current?.focus()
+          isTabbing.current = true
         }
-        if (event.key === 'Tab') {
-          if (!isTabbing.current) {
-            event.preventDefault()
-            event.stopPropagation()
-            editButtonRef.current?.focus()
-            isTabbing.current = true
-          }
-        }
-      },
-      [open, setOpen]
-    )
+      }
+    }, [])
   )
 
   useEffect(() => {
-    if (open && isTabbing.current) {
+    if (isTabbing.current) {
       editButtonRef.current?.focus()
     }
-  }, [open])
+  }, [])
 
   return (
     <div contentEditable={false}>

@@ -4,11 +4,10 @@ import {
   PortableTextEditor,
   RenderAttributes,
   usePortableTextEditor,
-  usePortableTextEditorSelection,
 } from '@sanity/portable-text-editor'
 import {ObjectSchemaType, Path} from '@sanity/types'
 import {Box, Theme, ThemeColorToneKey, Tooltip} from '@sanity/ui'
-import React, {SyntheticEvent, useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import React, {SyntheticEvent, useCallback, useMemo, useRef, useState} from 'react'
 import styled, {css} from 'styled-components'
 import {FIXME, RenderCustomMarkers} from '../../../types'
 import {DefaultMarkers} from '../_legacyDefaultParts/Markers'
@@ -66,7 +65,7 @@ const TooltipBox = styled(Box).attrs({forwardedAs: 'span'})`
 
 export const Annotation = function Annotation(props: AnnotationProps) {
   const {
-    attributes: {focused, path, selected},
+    attributes: {focused, path},
     children,
     onOpenItem,
     renderCustomMarkers,
@@ -78,7 +77,6 @@ export const Annotation = function Annotation(props: AnnotationProps) {
   const {Markers = DefaultMarkers} = useFormBuilder().__internal.components
   const annotationRef = useRef<HTMLElement>(null)
   const editor = usePortableTextEditor()
-  const editorSelection = usePortableTextEditorSelection()
   const markDefPath = useMemo(
     () => [path[0]].concat(['markDefs', {_key: value._key}]),
     [path, value._key]
@@ -87,7 +85,6 @@ export const Annotation = function Annotation(props: AnnotationProps) {
   const memberItem = usePortableTextMemberItem(pathToString(markDefPath))
   const {validation, hasError, hasWarning} = useMemberValidation(memberItem?.node)
   const markers = usePortableTextMarkers(path)
-  const [showPopover, setShowPopover] = useState(false)
 
   const text = useMemo(
     () => (
@@ -99,15 +96,11 @@ export const Annotation = function Annotation(props: AnnotationProps) {
     [children]
   )
 
-  useEffect(() => {
-    setShowPopover(true)
-  }, [editorSelection])
-
-  useEffect(() => {
-    if (memberItem?.elementRef?.current) {
-      setShowPopover(!readOnly && focused && selected)
+  const openItem = useCallback(() => {
+    if (memberItem) {
+      onOpenItem(memberItem.node.path)
     }
-  }, [focused, selected, memberItem?.elementRef, readOnly])
+  }, [memberItem, onOpenItem])
 
   const markersToolTip = useMemo(
     () =>
@@ -133,15 +126,12 @@ export const Annotation = function Annotation(props: AnnotationProps) {
 
   const handleEditClick = useCallback(
     (event: SyntheticEvent): void => {
-      setShowPopover(false)
       PortableTextEditor.blur(editor)
       event.preventDefault()
       event.stopPropagation()
-      if (memberItem) {
-        onOpenItem(memberItem.node.path)
-      }
+      openItem()
     },
-    [editor, memberItem, onOpenItem]
+    [editor, openItem]
   )
 
   const handleRemoveClick = useCallback(
@@ -181,11 +171,11 @@ export const Annotation = function Annotation(props: AnnotationProps) {
       data-error={hasError ? '' : undefined}
       data-warning={hasWarning ? '' : undefined}
       data-custom-markers={hasCustomMarkers ? '' : undefined}
+      onClick={readOnly ? openItem : undefined}
     >
       <span ref={memberItem?.elementRef}>{markersToolTip || text}</span>
-      {showPopover && (
+      {focused && !readOnly && (
         <AnnotationToolbarPopover
-          focused={focused}
           textElement={textElement}
           annotationElement={annotationRef?.current}
           scrollElement={scrollElement}
