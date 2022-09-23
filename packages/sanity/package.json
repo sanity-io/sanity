@@ -130,6 +130,7 @@
     "classnames": "^2.2.5",
     "color2k": "^2.0.0",
     "configstore": "^5.0.1",
+    "console-table-printer": "^2.11.1",
     "dataloader": "^2.1.0",
     "date-fns": "^2.26.1",
     "debug": "^3.2.7",

@@ -1,16 +1,22 @@
 import type {SanityClient} from '@sanity/client'
 import type {CliCommandDefinition, CliOutputter} from '@sanity/cli'
+import yargs from 'yargs/yargs'
+import {hideBin} from 'yargs/helpers'
 import EventSource from '@sanity/eventsource'
 import {Observable} from 'rxjs'
 import {promptForDatasetName} from '../../actions/dataset/datasetNamePrompt'
 import {validateDatasetName} from '../../actions/dataset/validateDatasetName'
 import {debug} from '../../debug'
+import {listDatasetCopyJobs} from '../../actions/dataset/listDatasetCopyJobs'
 
 const helpText = `
 Options
   --detach Start the copy without waiting for it to finish
   --attach <job-id> Attach to the running copy process to show progress
   --skip-history Don't preserve document history on copy
+  --list Lists all dataset copy jobs corresponding to a certain criteria.
+  --offset Start position in the list of jobs. Default 0. With --list.
+  --limit Maximum number of jobs returned. Default 10. Maximum 1000. With --list.
 
 Examples
   sanity dataset copy
@@ -19,6 +25,9 @@ Examples
   sanity dataset copy --skip-history <source-dataset> <target-dataset>
   sanity dataset copy --detach <source-dataset> <target-dataset>
   sanity dataset copy --attach <job-id>
+  sanity dataset copy --list
+  sanity dataset copy --list --offset=2
+  sanity dataset copy --list --offset=2 --limit=10
 `
 
 interface CopyProgressStreamEvent {
@@ -26,10 +35,27 @@ interface CopyProgressStreamEvent {
   progress?: number
 }
 
-interface CopyFlags {
+interface CopyDatasetFlags {
+  list?: boolean
   attach?: string
   detach?: boolean
+  offset?: number
+  limit?: number
   'skip-history'?: boolean
+}
+
+interface CopyDatasetResponse {
+  jobId: string
+}
+
+function parseCliFlags(args: {argv?: string[]}) {
+  return yargs(hideBin(args.argv || process.argv).slice(2))
+    .option('attach', {type: 'string'})
+    .option('list', {type: 'boolean'})
+    .option('limit', {type: 'number'})
+    .option('offset', {type: 'number'})
+    .option('skip-history', {type: 'boolean'})
+    .option('detach', {type: 'boolean'}).argv
 }
 
 const progress = (url: string) => {
@@ -103,7 +129,8 @@ const followProgress = (jobId: string, client: SanityClient, output: CliOutputte
       spinner.text = `Copy in progress: ${currentProgress}%`
     },
     error: (err) => {
-      spinner.fail(`There was an error copying the dataset: ${err.message}`)
+      spinner.fail()
+      throw new Error(`There was an error copying dataset: ${err.data}`)
     },
     complete: () => {
       spinner.succeed('Copy finished.')
@@ -111,16 +138,23 @@ const followProgress = (jobId: string, client: SanityClient, output: CliOutputte
   })
 }
 
-const copyDatasetCommand: CliCommandDefinition<CopyFlags> = {
+const copyDatasetCommand: CliCommandDefinition<CopyDatasetFlags> = {
   name: 'copy',
   group: 'dataset',
   signature: '[SOURCE_DATASET] [TARGET_DATASET]',
   helpText,
-  description: 'Copies a dataset including its assets to a new dataset',
+  description:
+    'Manages dataset copying, including starting a new copy job, listing copy jobs and following the progress of a running copy job',
   action: async (args, context) => {
     const {apiClient, output, prompt, chalk} = context
-    const flags = args.extOptions
+    // Reparsing CLI flags for better control of binary flags
+    const flags: CopyDatasetFlags = await parseCliFlags(args)
     const client = apiClient()
+
+    if (flags.list) {
+      await listDatasetCopyJobs(flags, context)
+      return
+    }
 
     if (flags.attach) {
       const jobId = flags.attach
@@ -164,7 +198,7 @@ const copyDatasetCommand: CliCommandDefinition<CopyFlags> = {
     }
 
     try {
-      const response = await client.request({
+      const response = await client.request<CopyDatasetResponse>({
         method: 'PUT',
         uri: `/datasets/${sourceDatasetName}/copy`,
         body: {
@@ -176,6 +210,13 @@ const copyDatasetCommand: CliCommandDefinition<CopyFlags> = {
       output.print(
         `Copying dataset ${chalk.green(sourceDatasetName)} to ${chalk.green(targetDatasetName)}...`
       )
+
+      if (!shouldSkipHistory) {
+        output.print(
+          `Note: You can run this command with flag '--skip-history'. The flag will reduce copy time in larger datasets.`
+        )
+      }
+
       output.print(`Job ${chalk.green(response.jobId)} started`)
 
       if (flags.detach) {
