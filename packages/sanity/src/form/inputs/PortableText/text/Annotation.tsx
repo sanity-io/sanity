@@ -176,9 +176,9 @@ export const Annotation = function Annotation(props: AnnotationProps) {
       <span ref={memberItem?.elementRef}>{markersToolTip || text}</span>
       {focused && !readOnly && (
         <AnnotationToolbarPopover
-          textElement={textElement}
-          annotationElement={annotationRef?.current}
-          scrollElement={scrollElement}
+          textElement={textElement || undefined}
+          annotationElement={annotationRef.current || undefined}
+          scrollElement={scrollElement || undefined}
           onEdit={handleEditClick}
           onDelete={handleRemoveClick}
           title={type?.title || type.name}

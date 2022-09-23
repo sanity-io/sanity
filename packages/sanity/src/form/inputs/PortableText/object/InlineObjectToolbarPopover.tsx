@@ -1,4 +1,4 @@
-import React, {useRef, useCallback, useEffect} from 'react'
+import React, {useRef, useCallback, useEffect, useState} from 'react'
 import {
   Box,
   Button,
@@ -21,6 +21,8 @@ const ToolbarPopover = styled(Popover)`
 const POPOVER_FALLBACK_PLACEMENTS: PopoverProps['fallbackPlacements'] = ['top', 'bottom']
 
 interface InlineObjectToolbarPopoverProps {
+  open: boolean
+  onClose: () => void
   onDelete: (event: React.MouseEvent<HTMLButtonElement>) => void
   onEdit: (event: React.MouseEvent<HTMLButtonElement>) => void
   referenceElement: HTMLElement | null
@@ -29,7 +31,7 @@ interface InlineObjectToolbarPopoverProps {
 }
 
 export function InlineObjectToolbarPopover(props: InlineObjectToolbarPopoverProps) {
-  const {onEdit, onDelete, referenceElement, scrollElement, title} = props
+  const {onClose, onEdit, onDelete, referenceElement, scrollElement, title, open} = props
   const {sanity} = useTheme()
   const editButtonRef = useRef<HTMLButtonElement | null>(null)
   const popoverScheme = sanity.color.dark ? 'light' : 'dark'
@@ -38,24 +40,25 @@ export function InlineObjectToolbarPopover(props: InlineObjectToolbarPopoverProp
   // Close floating toolbar on Escape
   // Focus to edit button on Tab
   useGlobalKeyDown(
-    useCallback((event) => {
-      if (!open) {
-        return
-      }
-      if (event.key === 'Escape') {
-        event.preventDefault()
-        event.stopPropagation()
-        isTabbing.current = false
-      }
-      if (event.key === 'Tab') {
-        if (!isTabbing.current) {
+    useCallback(
+      (event) => {
+        if (event.key === 'Escape') {
           event.preventDefault()
           event.stopPropagation()
-          editButtonRef.current?.focus()
-          isTabbing.current = true
+          isTabbing.current = false
+          onClose()
         }
-      }
-    }, [])
+        if (event.key === 'Tab') {
+          if (!isTabbing.current) {
+            event.preventDefault()
+            event.stopPropagation()
+            editButtonRef.current?.focus()
+            isTabbing.current = true
+          }
+        }
+      },
+      [onClose]
+    )
   )
 
   useEffect(() => {
@@ -97,7 +100,7 @@ export function InlineObjectToolbarPopover(props: InlineObjectToolbarPopoverProp
           </Box>
         }
         fallbackPlacements={POPOVER_FALLBACK_PLACEMENTS}
-        open
+        open={open}
         placement="top"
         portal="editor"
         referenceElement={referenceElement}

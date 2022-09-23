@@ -5,7 +5,6 @@ import {
   RenderAttributes,
   PortableTextEditor,
   usePortableTextEditor,
-  usePortableTextEditorSelection,
 } from '@sanity/portable-text-editor'
 import {Path} from '@sanity/types'
 import React, {useCallback, useEffect, useMemo, useState} from 'react'
@@ -129,6 +128,7 @@ export const InlineObject = React.forwardRef(function InlineObject(
   const memberItem = usePortableTextMemberItem(pathToString(path))
   const {validation, hasError, hasWarning} = useMemberValidation(memberItem?.node)
   const hasValidationMarkers = validation.length > 0
+  const [popoverOpen, setPopoverOpen] = useState<boolean>(true)
 
   const tone = useMemo(() => {
     if (hasError) {
@@ -198,8 +198,26 @@ export const InlineObject = React.forwardRef(function InlineObject(
     PortableTextEditor.blur(editor)
     if (memberItem) {
       onOpenItem(memberItem.node.path)
+      setPopoverOpen(false)
     }
   }, [editor, memberItem, onOpenItem])
+
+  const handlePopoverClose = useCallback(() => {
+    if (memberItem?.member.open) {
+      setPopoverOpen(true)
+    }
+    setPopoverOpen(false)
+  }, [memberItem?.member.open])
+
+  useEffect(() => {
+    if (memberItem?.member.open) {
+      setPopoverOpen(false)
+    } else if (focused) {
+      setPopoverOpen(true)
+    } else {
+      setPopoverOpen(false)
+    }
+  }, [editor, focused, memberItem?.member.open, selected])
 
   return (
     <>
@@ -215,15 +233,16 @@ export const InlineObject = React.forwardRef(function InlineObject(
         contentEditable={false}
         ref={memberItem?.elementRef as React.RefObject<HTMLDivElement>}
         onClick={readOnly ? openItem : undefined}
+        onDoubleClick={openItem}
       >
-        <span ref={forwardedRef} onDoubleClick={openItem}>
-          {markersToolTip || preview}
-        </span>
+        <span ref={forwardedRef}>{markersToolTip || preview}</span>
       </Root>
       {focused && !readOnly && (
         <InlineObjectToolbarPopover
+          open={popoverOpen}
           onDelete={handleRemoveClick}
           onEdit={openItem}
+          onClose={handlePopoverClose}
           referenceElement={memberItem?.elementRef?.current || null}
           scrollElement={scrollElement}
           title={type?.title || type.name}
