@@ -1,5 +1,6 @@
 export * from './createConfig'
 export * from './createPlugin'
+export * from './document'
 export * from './types'
 export * from './prepareConfig'
 export * from './resolveConfig'

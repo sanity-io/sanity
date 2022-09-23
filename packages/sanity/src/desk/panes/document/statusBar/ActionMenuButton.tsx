@@ -14,8 +14,7 @@ import {
 } from '@sanity/ui'
 import React, {createElement, isValidElement, useCallback, useRef, useState, useMemo} from 'react'
 import {isValidElementType} from 'react-is'
-import {LegacyLayerProvider} from '../../../../core'
-import {DocumentActionDescription} from '../../../actions'
+import {DocumentActionDescription, LegacyLayerProvider} from '../../../../core'
 import {ActionStateDialog} from './ActionStateDialog'
 
 export interface ActionMenuButtonProps {

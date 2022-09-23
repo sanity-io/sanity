@@ -4,6 +4,7 @@ const actionIds = new WeakMap<ActionHook<any, any>, string>()
 
 let counter = 0
 
+/** @internal */
 export function getHookId<T, K>(actionHook: ActionHook<T, K>): string {
   const cachedId = actionIds.get(actionHook)
 

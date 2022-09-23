@@ -7,15 +7,16 @@ import {
 } from '@sanity/types'
 import {createContext} from 'react'
 import {
-  EditStateFor,
-  TimelineController,
-  Timeline,
+  DocumentActionComponent,
+  DocumentBadgeComponent,
   DocumentLanguageFilterComponent,
+  EditStateFor,
+  Timeline,
+  TimelineController,
 } from '../../../core'
 import {DocumentFormNode, PatchEvent, StateTree} from '../../../form'
-import {DocumentActionComponent} from '../../actions'
-import {DocumentBadgeComponent} from '../../badges'
-import {PaneView, PaneMenuItem, PaneMenuItemGroup} from '../../types'
+import {View} from '../../structureBuilder'
+import {PaneMenuItem, PaneMenuItemGroup} from '../../types'
 import {TimelineMode} from './types'
 
 export interface DocumentPaneContextValue {
@@ -65,7 +66,7 @@ export interface DocumentPaneContextValue {
   title: string | null
   validation: ValidationMarker[]
   value: SanityDocumentLike
-  views: PaneView[]
+  views: View[]
   formState: DocumentFormNode | null
   unstable_languageFilter: DocumentLanguageFilterComponent[]
 }

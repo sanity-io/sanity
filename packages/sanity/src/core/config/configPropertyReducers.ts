@@ -1,15 +1,7 @@
 import type {AssetSource, SchemaTypeDefinition} from '@sanity/types'
 import type {Template, TemplateResponse} from '../templates'
-import {
-  DeleteAction,
-  DiscardChangesAction,
-  DocumentActionComponent,
-  DuplicateAction,
-  PublishAction,
-  UnpublishAction,
-  DocumentBadgeComponent,
-  LiveEditBadge,
-} from '../../desk'
+import {DocumentActionComponent} from './document/actions'
+import {DocumentBadgeComponent} from './document/badges'
 import type {
   DocumentLanguageFilterComponent,
   DocumentLanguageFilterContext,
@@ -23,15 +15,9 @@ import type {
   Tool,
 } from './types'
 
-export const initialDocumentBadges = [LiveEditBadge]
+export const initialDocumentBadges: DocumentBadgeComponent[] = []
 
-export const initialDocumentActions = [
-  PublishAction,
-  DiscardChangesAction,
-  UnpublishAction,
-  DuplicateAction,
-  DeleteAction,
-]
+export const initialDocumentActions: DocumentActionComponent[] = []
 
 export const initialLanguageFilter: DocumentLanguageFilterComponent[] = []
 

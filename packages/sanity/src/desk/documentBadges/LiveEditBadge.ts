@@ -1,4 +1,4 @@
-import type {DocumentBadgeComponent} from '../types'
+import {DocumentBadgeComponent} from '../../core'
 
 export const LiveEditBadge: DocumentBadgeComponent = (props) => {
   const {liveEdit} = props

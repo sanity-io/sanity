@@ -3,12 +3,13 @@
 import {ResetIcon} from '@sanity/icons'
 import React, {useCallback, useMemo, useState} from 'react'
 import {
+  DocumentActionComponent,
+  DocumentActionModalProps,
   InsufficientPermissionsMessage,
-  useDocumentPairPermissions,
   useCurrentUser,
   useDocumentOperation,
-} from '../../../core'
-import {DocumentActionComponent, DocumentActionModalProps} from '../types'
+  useDocumentPairPermissions,
+} from '../../core'
 
 const DISABLED_REASON_TITLE = {
   NO_CHANGES: 'This document has no unpublished changes',

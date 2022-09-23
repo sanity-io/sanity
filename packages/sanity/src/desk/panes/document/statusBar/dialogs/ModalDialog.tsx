@@ -1,8 +1,7 @@
 import {useId} from '@reach/auto-id'
 import {Box, Dialog} from '@sanity/ui'
 import React from 'react'
-import {LegacyLayerProvider} from '../../../../../core'
-import {DocumentActionDialogModalProps} from '../../../../actions'
+import {DocumentActionDialogModalProps, LegacyLayerProvider} from '../../../../../core'
 import {DIALOG_WIDTH_TO_UI_WIDTH} from './constants'
 
 export function ModalDialog(props: {modal: DocumentActionDialogModalProps}) {
