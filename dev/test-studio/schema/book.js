@@ -25,11 +25,6 @@ export default {
       validation: (Rule) => Rule.min(5).max(100),
     },
     {
-      type: 'markdown',
-      name: 'descriptionMd',
-      title: 'Description (markdown)',
-    },
-    {
       name: 'translations',
       title: 'Translations',
       type: 'object',
