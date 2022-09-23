@@ -22,7 +22,6 @@ export function DefaultEditDialog(props: DefaultEditDialogProps) {
       __unstable_autoFocus
       id={dialogId || ''}
       onClose={onClose}
-      onClickOutside={onClose}
       header={title}
       portal="default"
       width={width}

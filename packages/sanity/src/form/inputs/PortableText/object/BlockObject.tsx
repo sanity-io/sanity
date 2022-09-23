@@ -171,6 +171,7 @@ export function BlockObject(props: BlockObjectProps) {
                 data-image-preview={isImagePreview ? '' : undefined}
                 data-invalid={hasError ? '' : undefined}
                 data-markers={hasMarkers && renderCustomMarkers ? '' : undefined}
+                data-read-only={readOnly ? '' : undefined}
                 data-selected={selected ? '' : undefined}
                 data-testid="pte-block-object"
                 data-warning={hasWarning ? '' : undefined}
