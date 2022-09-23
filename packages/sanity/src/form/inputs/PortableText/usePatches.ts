@@ -2,7 +2,7 @@ import {Path, PathSegment} from '@sanity/types'
 import {get, find} from 'lodash'
 import {useCallback} from 'react'
 import shallowEquals from 'shallow-equals'
-import {isRecord} from '../../../core/util'
+import {isRecord} from '../../../core'
 import {FormPatch} from '../../patch'
 import {useFormBuilder} from '../../useFormBuilder'
 

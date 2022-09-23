@@ -8,12 +8,12 @@ import {
   prepareForPreview,
   CollatedHit,
   collate,
+  createWeightedSearch,
   getDraftId,
   getIdPair,
   isRecord,
 } from '../../../../core'
 import {ReferenceInfo, ReferenceSearchHit} from '../../../inputs/ReferenceInput/types'
-import {createWeightedSearch} from '../../../../core/studio/components/navbar/search/search'
 
 const READABLE = {
   available: true,

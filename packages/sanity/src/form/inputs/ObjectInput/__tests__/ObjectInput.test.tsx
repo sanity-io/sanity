@@ -1,7 +1,7 @@
 import {defineType, ObjectSchemaType} from '@sanity/types'
 import React from 'react'
 import {ObjectInput} from '../ObjectInput'
-import {createSchema} from '../../../../core/schema'
+import {createSchema} from '../../../../core'
 import {ObjectInputProps} from '../../../types'
 import {FormCallbacksProvider} from '../../../studio/contexts/FormCallbacks'
 import {render} from './test-utils'

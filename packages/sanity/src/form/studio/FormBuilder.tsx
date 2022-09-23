@@ -3,13 +3,12 @@
 
 import {ObjectSchemaType, Path, ValidationMarker} from '@sanity/types'
 import React, {useCallback, useRef} from 'react'
-import {FormFieldPresence} from '../../core'
+import {EMPTY_ARRAY, FormFieldPresence} from '../../core'
 import {FormPatch, PatchChannel, PatchEvent} from '../patch'
 import {ObjectFormNode} from '../store/types/nodes'
 import {ObjectInputProps} from '../types'
 import {useFormBuilder} from '../useFormBuilder'
 import {StateTree} from '../store'
-import {EMPTY_ARRAY} from '../utils/empty'
 import {FormProvider} from './FormProvider'
 import {useFormCallbacks} from './contexts/FormCallbacks'
 

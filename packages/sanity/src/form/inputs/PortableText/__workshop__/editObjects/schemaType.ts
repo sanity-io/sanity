@@ -1,5 +1,5 @@
 import {defineType} from '@sanity/types'
-import {createSchema} from '../../../../../core/schema'
+import {createSchema} from '../../../../../core'
 
 const linkType = {
   type: 'object',

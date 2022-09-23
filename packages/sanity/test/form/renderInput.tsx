@@ -9,18 +9,17 @@ import {
 } from '@sanity/types'
 import {render} from '@testing-library/react'
 import React, {FocusEvent} from 'react'
+import {EMPTY_ARRAY, FormFieldPresence, useSchema} from '../../src/core'
 import {
   createPatchChannel,
   FieldMember,
+  FormState,
   NodeValidation,
   PatchArg,
   PatchEvent,
   FormProvider,
   useFormState,
 } from '../../src/form'
-import {FormState} from '../../src/form/store/useFormState'
-import {EMPTY_ARRAY} from '../../src/form/utils/empty'
-import {FormFieldPresence, useSchema} from '../../src/core'
 import {createMockSanityClient} from '../mocks/mockSanityClient'
 import {createTestProvider} from '../testUtils/TestProvider'
 import {TestRenderProps} from './types'

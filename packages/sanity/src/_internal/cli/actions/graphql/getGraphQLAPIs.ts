@@ -2,7 +2,7 @@ import path from 'path'
 import {Worker, isMainThread} from 'worker_threads'
 import readPkgUp from 'read-pkg-up'
 import type {CliCommandContext, CliV3CommandContext} from '@sanity/cli'
-import {createSchema} from '../../../../core/schema'
+import {createSchema} from '../../../../core'
 import type {
   ResolvedGraphQLAPI,
   ResolvedSourceProperties,

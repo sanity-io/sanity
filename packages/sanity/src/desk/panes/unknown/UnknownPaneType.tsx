@@ -1,6 +1,6 @@
 import {Box, Text} from '@sanity/ui'
 import React from 'react'
-import {isRecord} from '../../../core/util'
+import {isRecord} from '../../../core'
 import {Pane, PaneContent, PaneHeader} from '../../components/pane'
 
 interface UnknownPaneProps {

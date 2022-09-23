@@ -1,6 +1,6 @@
 import {RestoreIcon} from '@sanity/icons'
 import React, {useCallback, useMemo, useState} from 'react'
-import {useDocumentOperation} from '../../../core/hooks'
+import {useDocumentOperation} from '../../../core'
 import {useRouter} from '../../../router'
 import {DocumentActionComponent, DocumentActionModalProps} from '../types'
 

@@ -7,8 +7,9 @@ import {
   DuplicateAction,
   PublishAction,
   UnpublishAction,
-} from '../../desk/actions'
-import {DocumentBadgeComponent, LiveEditBadge} from '../../desk/badges'
+  DocumentBadgeComponent,
+  LiveEditBadge,
+} from '../../desk'
 import type {
   DocumentLanguageFilterComponent,
   DocumentLanguageFilterContext,

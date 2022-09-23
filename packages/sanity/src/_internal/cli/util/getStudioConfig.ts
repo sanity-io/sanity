@@ -2,7 +2,7 @@
 import fs from 'fs'
 import path from 'path'
 import {first} from 'rxjs/operators'
-import {resolveConfig, Config, Workspace} from '../../../core/config'
+import {resolveConfig, Config, Workspace} from '../../../core'
 import {mockBrowserEnvironment} from './mockBrowserEnvironment'
 
 const candidates = [

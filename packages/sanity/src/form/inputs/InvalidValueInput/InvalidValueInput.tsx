@@ -1,6 +1,6 @@
 import {Button, Card, Code, Stack, Text} from '@sanity/ui'
 import React, {forwardRef, useCallback, useImperativeHandle, useMemo} from 'react'
-import {isDev} from '../../../core/environment'
+import {isDev} from '../../../core'
 import {PatchEvent, set, unset} from '../../patch'
 import {Alert} from '../../components/Alert'
 import {Details} from '../../components/Details'

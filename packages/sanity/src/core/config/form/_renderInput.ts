@@ -1,5 +1,4 @@
-import {InputProps, RenderInputCallback} from '../../../form'
-import {defaultRenderInput} from '../../../form/studio/defaults'
+import {InputProps, RenderInputCallback, defaultRenderInput} from '../../../form'
 import {PluginOptions, SourceOptions} from '../types'
 import {_RenderMiddleware} from './_types'
 

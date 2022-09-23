@@ -5,13 +5,11 @@ import {
   ArrayOfObjectsInputProps,
   ComplexElementProps,
   FieldMember,
-} from '../../src/form'
-import {
   defaultRenderField,
   defaultRenderInput,
   defaultRenderItem,
   defaultRenderPreview,
-} from '../../src/form/studio/defaults'
+} from '../../src/form'
 import {renderInput, TestRenderInputContext, TestRenderInputProps} from './renderInput'
 import {TestRenderProps} from './types'
 

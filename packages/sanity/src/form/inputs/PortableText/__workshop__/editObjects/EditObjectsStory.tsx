@@ -1,13 +1,10 @@
 import {Card, Code, PortalProvider, Stack, Text, usePortal} from '@sanity/ui'
 import {useAction, useBoolean, useSelect} from '@sanity/ui-workshop'
 import React, {useMemo} from 'react'
-import {useSource} from '../../../../../core/studio'
+import {useSource, EMPTY_ARRAY} from '../../../../../core'
 import {createPatchChannel} from '../../../../patch/PatchChannel'
 import {FIXME} from '../../../../types'
-import {EMPTY_ARRAY} from '../../../../utils/empty'
-// import {EditObject} from '../../object'
 import {ObjectEditData} from '../../types'
-// import {resolveInputComponent, resolvePreviewComponent} from './formBuilder'
 import {schema} from './schemaType'
 
 const TYPE_OPTIONS: Record<string, 'annotation' | 'blockObject' | 'inlineObject'> = {

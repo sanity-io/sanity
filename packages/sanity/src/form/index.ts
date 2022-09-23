@@ -1,7 +1,6 @@
 /* eslint-disable camelcase */
 
 export type {ArrayInputProps} from './inputs/arrays/ArrayOfObjectsInput/ArrayInput'
-export {StudioArrayInput as ArrayOfObjectsInput} from './studio/inputs/StudioArrayInput'
 export * from './inputs/arrays/ArrayOfObjectsInput'
 
 export * from './inputs/PortableText/PortableTextInput'
@@ -28,6 +27,12 @@ export * from './utils/path'
 
 export {FormInput} from './FormInput'
 
+export {type ImageUrlBuilder} from './inputs/files/types'
+export {type FileInputProps as BaseFileInputProps} from './inputs/files/FileInput'
+export {type ImageInputProps as BaseImageInputProps} from './inputs/files/ImageInput'
+
+export type {CrossDatasetReferenceInputProps} from './inputs/CrossDatasetReferenceInput'
+
 export type {PortableTextEditorElement} from './inputs/PortableText/Compositor'
 
 export type {RenderBlockActionsCallback, RenderBlockActionsProps} from './inputs/PortableText/types'
@@ -35,14 +40,6 @@ export type {RenderBlockActionsCallback, RenderBlockActionsProps} from './inputs
 export * from './inputs/ObjectInput'
 
 export type {FIXME_SanityDocument} from './store/formState' // eslint-disable-line camelcase
-
-export type {
-  FileLike,
-  UploadEvent,
-  UploadOptions,
-  Uploader,
-  UploaderResolver,
-} from './studio/uploads/types'
 
 export * from './components/formField'
 

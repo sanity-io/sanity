@@ -1,12 +1,8 @@
-import {map} from 'rxjs/operators'
-
+import {SanityClient} from '@sanity/client'
 import {CrossDatasetReferenceSchemaType, ReferenceFilterSearchOptions} from '@sanity/types'
 import {Observable} from 'rxjs'
-
-// eslint-disable-next-line camelcase
-import {SanityClient} from '@sanity/client'
-import {collate} from '../../../../../core/util'
-import {createWeightedSearch} from '../../../../../core/studio/components/navbar/search/search'
+import {map} from 'rxjs/operators'
+import {collate, createWeightedSearch} from '../../../../../core'
 
 interface SearchHit {
   id: string

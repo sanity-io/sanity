@@ -1,12 +1,15 @@
 import {FieldDefinition, ObjectSchemaType} from '@sanity/types'
 import React from 'react'
-import {ComplexElementProps, FieldMember, ObjectFormNode, ObjectInputProps} from '../../src/form'
 import {
+  ComplexElementProps,
+  FieldMember,
+  ObjectFormNode,
+  ObjectInputProps,
   defaultRenderField,
   defaultRenderInput,
   defaultRenderItem,
   defaultRenderPreview,
-} from '../../src/form/studio/defaults'
+} from '../../src/form'
 import {renderInput, TestRenderInputContext, TestRenderInputProps} from './renderInput'
 import {TestRenderProps} from './types'
 

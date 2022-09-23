@@ -1,6 +1,5 @@
 import React, {ComponentType, createElement} from 'react'
-import {StudioLayout} from '../../../studio'
-import {StudioLogo, StudioNavbar, StudioToolMenu} from '../../../studio/components'
+import {StudioLayout, StudioLogo, StudioNavbar, StudioToolMenu} from '../../../studio'
 import {PluginOptions, SourceOptions} from '../../types'
 import {RenderComponentCallbackNames, ComponentNames} from './types'
 

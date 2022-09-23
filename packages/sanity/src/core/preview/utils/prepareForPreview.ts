@@ -1,7 +1,13 @@
-import {isTitledListValue, PreviewValue, SchemaType, TitledListValue} from '@sanity/types'
+import {
+  isTitledListValue,
+  PrepareViewOptions,
+  PreviewValue,
+  SchemaType,
+  TitledListValue,
+} from '@sanity/types'
 import {debounce, flatten, get, isPlainObject, pick, uniqBy} from 'lodash'
 import {INVALID_PREVIEW_FALLBACK} from '../constants'
-import {PrepareViewOptions, PreviewableType} from '../types'
+import {PreviewableType} from '../types'
 import {isRecord} from '../../util'
 import {isPortableTextArray, extractTextFromBlocks} from './portableText'
 import {keysOf} from './keysOf'

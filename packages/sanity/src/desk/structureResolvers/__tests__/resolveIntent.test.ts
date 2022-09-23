@@ -1,5 +1,5 @@
 import {PaneNode, UnresolvedPaneNode} from '../../types'
-import {SchemaPluginOptions} from '../../../core/config'
+import {SchemaPluginOptions} from '../../../core'
 import {createStructureBuilder, SerializeError} from '../../structureBuilder'
 import {resolveIntent} from '../resolveIntent'
 import {PaneResolutionError} from '../PaneResolutionError'

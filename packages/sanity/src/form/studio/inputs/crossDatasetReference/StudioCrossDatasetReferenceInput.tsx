@@ -11,10 +11,14 @@ import {get} from '@sanity/util/paths'
 import {from, throwError} from 'rxjs'
 import {catchError, mergeMap} from 'rxjs/operators'
 import {Box, Stack, Text, TextSkeleton} from '@sanity/ui'
-import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../core/studioClient'
+import {
+  DEFAULT_STUDIO_CLIENT_OPTIONS,
+  useDocumentPreviewStore,
+  useClient,
+  useProjectId,
+} from '../../../../core'
 import {CrossDatasetReferenceInput} from '../../../inputs/CrossDatasetReferenceInput'
 import {Alert} from '../../../components/Alert'
-import {useDocumentPreviewStore, useClient, useProjectId} from '../../../../core'
 import {FIXME, ObjectInputProps} from '../../../types'
 import {useFormValue} from '../../../useFormValue'
 import {search} from './datastores/search'

@@ -4,10 +4,11 @@ import {
   isCrossDatasetReference,
   isCrossDatasetReferenceSchemaType,
   isReferenceSchemaType,
+  PrepareViewOptions,
 } from '@sanity/types'
 import {isPlainObject} from 'lodash'
 import {invokePrepare, prepareForPreview} from './utils/prepareForPreview'
-import type {ApiConfig, PreviewPath, PreparedSnapshot, PrepareViewOptions} from './types'
+import type {ApiConfig, PreviewPath, PreparedSnapshot} from './types'
 import {getPreviewPaths} from './utils/getPreviewPaths'
 import {Previewable, PreviewableType} from './types'
 

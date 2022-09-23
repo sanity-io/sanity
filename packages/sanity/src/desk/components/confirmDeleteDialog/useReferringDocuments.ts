@@ -12,6 +12,7 @@ import {
 import {
   AvailabilityResponse,
   CrossProjectTokenStore,
+  DEFAULT_STUDIO_CLIENT_OPTIONS,
   DocumentStore,
   useCrossProjectTokenStore,
   useDocumentStore,
@@ -20,7 +21,6 @@ import {
   getPublishedId,
   useClient,
 } from '../../../core'
-import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../core/studioClient'
 
 // this is used in place of `instanceof` so the matching can be more robust and
 // won't have any issues with dual packages etc

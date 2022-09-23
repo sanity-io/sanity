@@ -1,12 +1,15 @@
 import React, {ForwardedRef, forwardRef, useCallback} from 'react'
 import {SchemaType} from '@sanity/types'
-import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../core/studioClient'
+import {
+  DEFAULT_STUDIO_CLIENT_OPTIONS,
+  useClient,
+  useResolveInitialValueForType,
+} from '../../../core'
 import {resolveUploader as defaultResolveUploader} from '../uploads/resolveUploader'
 import {ArrayInput} from '../../inputs/arrays/ArrayOfObjectsInput'
 import {ArrayOfPrimitivesInput} from '../../inputs/arrays/ArrayOfPrimitivesInput'
 import * as is from '../../utils/is'
 import {useFormBuilder} from '../../useFormBuilder'
-import {useClient, useResolveInitialValueForType} from '../../../core'
 import {ArrayOfObjectsInputProps, ArrayOfPrimitivesInputProps} from '../../types'
 import {FileLike} from '../uploads/types'
 

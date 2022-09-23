@@ -16,7 +16,7 @@ import {PortableTextEditorElement} from '../Compositor'
 import {usePortableTextMarkers} from '../hooks/usePortableTextMarkers'
 import {useMemberValidation} from '../hooks/useMemberValidation'
 import {usePortableTextMemberItem} from '../hooks/usePortableTextMembers'
-import {pathToString} from '../../../../core/field/paths'
+import {pathToString} from '../../../../core'
 import {InlineObjectToolbarPopover} from './InlineObjectToolbarPopover'
 
 interface InlineObjectProps {

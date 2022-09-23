@@ -3,8 +3,7 @@ import {SanityDocument} from '@sanity/types'
 import {useAsObservable} from 'react-rx'
 import {debounceTime, switchMap, catchError} from 'rxjs/operators'
 import {from, of} from 'rxjs'
-import {useSource} from '../../../core/studio'
-import {isRecord} from '../../../core/util'
+import {useSource, isRecord} from '../../../core'
 
 const isSanityDocument = (value: unknown): value is SanityDocument =>
   isRecord(value) && typeof value._id === 'string' && typeof value._type === 'string'

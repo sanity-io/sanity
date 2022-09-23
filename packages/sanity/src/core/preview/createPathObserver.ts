@@ -1,7 +1,7 @@
 import {uniq} from 'lodash'
 import {Observable, of as observableOf} from 'rxjs'
 import {switchMap} from 'rxjs/operators'
-import {isRecord} from '../../core'
+import {isRecord} from '../util'
 import {ApiConfig, FieldName, PreviewPath, Previewable} from './types'
 import {props} from './utils/props'
 

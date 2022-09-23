@@ -1,4 +1,4 @@
-import {Template} from '../../../core/templates'
+import {Template} from '../../../core'
 
 interface InitialValueOptions {
   documentType: string
