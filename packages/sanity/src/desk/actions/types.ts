@@ -1,8 +1,6 @@
-import type {ButtonTone} from '@sanity/ui'
+import {type ButtonTone} from '@sanity/ui'
 import type React from 'react'
-import type {EditStateFor} from '../../core'
-
-export type ActionHook<T, K> = (args: T) => K | null
+import {type EditStateFor} from '../../core'
 
 export interface ActionComponent<ActionProps> {
   (props: ActionProps): DocumentActionDescription | null
