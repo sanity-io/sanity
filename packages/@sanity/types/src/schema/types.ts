@@ -10,6 +10,13 @@ import type {SanityDocument} from '../documents'
 import type {CurrentUser} from '../user'
 import type {PreviewConfig} from './preview'
 import {RuleDef, ValidationBuilder} from './ruleBuilder'
+import {
+  InputComponent,
+  FieldComponent,
+  DiffComponent,
+  ItemComponent,
+  PreviewComponent,
+} from './components'
 
 // eslint-disable-next-line @typescript-eslint/no-namespace
 export namespace Schema {
@@ -20,6 +27,7 @@ export namespace Schema {
     array: ArrayDefinition
     block: BlockDefinition
     boolean: BooleanDefinition
+    crossDatasetReference: CrossDatasetReferenceDefinition
     date: DateDefinition
     datetime: DatetimeDefinition
     document: DocumentDefinition
@@ -29,7 +37,6 @@ export namespace Schema {
     number: NumberDefinition
     object: ObjectDefinition
     reference: ReferenceDefinition
-    crossDatasetReference: CrossDatasetReferenceDefinition
     slug: SlugDefinition
     span: SpanDefinition
     string: StringDefinition
@@ -136,13 +143,6 @@ export namespace Schema {
     hidden?: ConditionalProperty
     readOnly?: ConditionalProperty
     icon?: ComponentType | ReactNode
-    components?: {
-      diff?: ComponentType<any> // @todo: use `DiffProps` here
-      field?: ComponentType<any> // @todo: use `FieldProps` here
-      input?: ComponentType<any> // @todo: use `InputProps` here
-      item?: ComponentType<any> // @todo: use `ItemProps` here
-      preview?: ComponentType<any> // @todo: use `PreviewProps` here
-    }
     validation?: unknown
     initialValue?: unknown
   }
@@ -286,6 +286,10 @@ export namespace Schema {
     options?: DocumentOptions
     validation?: ValidationBuilder<DocumentRule, SanityDocument>
     initialValue?: InitialValueProperty<any, Record<string, unknown>>
+    components?: {
+      input?: InputComponent
+      field?: FieldComponent
+    }
   }
 
   export interface FileOptions extends ObjectOptions {
@@ -363,6 +367,10 @@ export namespace Schema {
     options?: ImageOptions
     validation?: ValidationBuilder<ImageRule, ImageValue>
     initialValue?: InitialValueProperty<any, ImageValue>
+    components?: {
+      input?: InputComponent
+      field?: FieldComponent
+    }
   }
 
   export interface NumberOptions {
@@ -415,6 +423,10 @@ export namespace Schema {
     options?: ObjectOptions
     validation?: ValidationBuilder<ObjectRule, Record<string, unknown>>
     initialValue?: InitialValueProperty<any, Record<string, unknown>>
+    components?: {
+      input?: InputComponent
+      field?: FieldComponent
+    }
   }
 
   export interface ReferenceValue {
@@ -491,6 +503,10 @@ export namespace Schema {
     options?: StringOptions
     validation?: ValidationBuilder<StringRule, string>
     initialValue?: InitialValueProperty<any, string>
+    components?: {
+      input?: InputComponent
+      field?: FieldComponent
+    }
   }
 
   // eslint-disable-next-line @typescript-eslint/no-empty-interface
@@ -513,6 +529,10 @@ export namespace Schema {
     options?: TextOptions
     validation?: ValidationBuilder<TextRule, string>
     initialValue?: InitialValueProperty<any, string>
+    components?: {
+      input?: InputComponent
+      field?: FieldComponent
+    }
   }
 
   export interface UrlRule extends RuleDef<UrlRule, string> {
@@ -527,6 +547,10 @@ export namespace Schema {
     options?: UrlOptions
     validation?: ValidationBuilder<UrlRule, string>
     initialValue?: InitialValueProperty<any, string>
+    components?: {
+      input?: InputComponent
+      field?: FieldComponent
+    }
   }
 }
 
@@ -676,11 +700,11 @@ export interface BaseSchemaType {
   validation?: SchemaValidationValue
   preview?: PreviewConfig
   components?: {
-    diff?: ComponentType<any> // @todo: use `DiffProps` here
-    field?: ComponentType<any> // @todo: use `FieldProps` here
-    input?: ComponentType<any> // @todo: use `InputProps` here
-    item?: ComponentType<any> // @todo: use `ItemProps` here
-    preview?: ComponentType<any> // @todo: use `PreviewProps` here
+    diff?: DiffComponent
+    field?: FieldComponent
+    input?: InputComponent
+    item?: ItemComponent
+    preview?: PreviewComponent
   }
 
   /**
