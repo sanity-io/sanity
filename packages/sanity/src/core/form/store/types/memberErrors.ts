@@ -57,7 +57,9 @@ export type UndeclaredMembersError = {type: 'UNDECLARED_MEMBERS'; schemaType: Ar
 export type MixedArray = {type: 'MIXED_ARRAY'; schemaType: ArraySchemaType}
 
 /**
- * This error may happen for arrays (of both objects and primitive values) if we encounter items that is not valid according to the schema definition
+ * This error may happen for arrays (of both objects and primitive values) if we encounter items that are not valid according to the schema definition
+ *
+ * @beta
  */
 export type InvalidItemTypeError = {
   type: 'INVALID_ITEM_TYPE'
