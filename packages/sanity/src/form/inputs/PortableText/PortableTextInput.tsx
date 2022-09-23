@@ -90,7 +90,7 @@ export function PortableTextInput(props: PortableTextInputProps) {
     onInsert,
     onPaste,
     path,
-    readOnly: readOnlyFromProps,
+    readOnly,
     renderBlockActions,
     renderCustomMarkers,
     schemaType: type,
@@ -115,9 +115,12 @@ export function PortableTextInput(props: PortableTextInputProps) {
   const [isFullscreen, setIsFullscreen] = useState(false)
   const [isActive, setIsActive] = useState(false)
 
-  const readOnly = useMemo(() => {
-    return isActive ? Boolean(readOnlyFromProps) : true
-  }, [isActive, readOnlyFromProps])
+  // Set as active whenever we have focus inside the editor.
+  useEffect(() => {
+    if (hasFocus || focusPath.length > 1) {
+      setIsActive(true)
+    }
+  }, [hasFocus, focusPath])
 
   const toast = useToast()
   const portableTextMemberItemsRef: React.MutableRefObject<PortableTextMemberItem[]> = useRef([])
@@ -318,14 +321,11 @@ export function PortableTextInput(props: PortableTextInputProps) {
   const handleActivate = useCallback((): void => {
     if (!isActive) {
       setIsActive(true)
-      // Focus the editor in the next tick if needed
-      // Next tick because we are in a re-rendering phase of the editor at this point (activating it).
       if (!hasFocus) {
-        setTimeout(() => {
-          if (editorRef.current) {
-            PortableTextEditor.focus(editorRef.current)
-          }
-        })
+        if (editorRef.current) {
+          PortableTextEditor.focus(editorRef.current)
+        }
+        setHasFocus(true)
       }
     }
   }, [hasFocus, isActive])

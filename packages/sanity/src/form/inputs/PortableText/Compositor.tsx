@@ -18,7 +18,7 @@ import {
   usePortal,
 } from '@sanity/ui'
 import {ChangeIndicator} from '../../../components/changeIndicators'
-import {ArrayOfObjectsInputProps, RenderCustomMarkers} from '../../types'
+import {ArrayOfObjectsInputProps, FIXME, RenderCustomMarkers} from '../../types'
 import {ActivateOnFocus} from '../../components/ActivateOnFocus/ActivateOnFocus'
 import {EMPTY_ARRAY} from '../../utils/empty'
 import {FormInput} from '../../FormInput'
@@ -236,6 +236,7 @@ export function Compositor(props: InputProps) {
       <Editor
         hotkeys={editorHotkeys}
         initialSelection={initialSelection}
+        isActive={isActive}
         isFullscreen={isFullscreen}
         onOpenItem={onOpenItem}
         onCopy={onCopy}
@@ -257,6 +258,7 @@ export function Compositor(props: InputProps) {
       editorHotkeys,
       handleToggleFullscreen,
       initialSelection,
+      isActive,
       isFullscreen,
       onCopy,
       onOpenItem,
@@ -287,7 +289,7 @@ export function Compositor(props: InputProps) {
                   onClose={onCloseItem}
                   scrollElement={boundaryElm}
                 >
-                  <FormInput absolutePath={dMemberItem.node.path} {...(props as any)} />
+                  <FormInput absolutePath={dMemberItem.node.path} {...(props as FIXME)} />
                 </ObjectEditModal>
               )
             })}
