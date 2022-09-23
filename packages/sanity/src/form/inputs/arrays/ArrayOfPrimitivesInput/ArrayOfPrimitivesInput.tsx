@@ -156,8 +156,8 @@ export class ArrayOfPrimitivesInput extends React.PureComponent<DefaultArrayOfPr
 
     return (
       <Stack space={3}>
-        <Stack space={1}>
-          {members.length > 0 && (
+        {members.length > 0 && (
+          <Stack space={1}>
             <Card padding={1} border>
               <List onSortEnd={this.handleSortEnd} isSortable={isSortable}>
                 {members.map((member, index) => {
@@ -185,8 +185,8 @@ export class ArrayOfPrimitivesInput extends React.PureComponent<DefaultArrayOfPr
                 })}
               </List>
             </Card>
-          )}
-        </Stack>
+          </Stack>
+        )}
 
         <ArrayOfPrimitivesFunctions
           type={schemaType}
