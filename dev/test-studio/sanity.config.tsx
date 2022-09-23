@@ -1,7 +1,9 @@
+/* eslint-disable react/react-in-jsx-scope */
 import {BookIcon} from '@sanity/icons'
 import {visionTool} from '@sanity/vision'
 import {createConfig, createPlugin} from 'sanity'
 import {deskTool} from 'sanity/desk'
+import {Card} from '@sanity/ui'
 import {imageAssetSource} from './assetSources'
 import {Branding} from './components/Branding'
 import {resolveDocumentActions as documentActions} from './documentActions'
@@ -101,6 +103,31 @@ export default createConfig([
     dataset: 'test',
     plugins: [sharedSettings(), componentsPlugin()],
     basePath: '/custom-components',
+    form: {
+      components: {
+        Input: (props) => {
+          return (
+            <Card border padding={1} tone="primary">
+              {props.renderNext(props)}
+            </Card>
+          )
+        },
+        Field: (props) => {
+          return (
+            <Card border padding={1} tone="positive">
+              {props.renderNext(props)}
+            </Card>
+          )
+        },
+        Preview: (props) => {
+          return (
+            <Card border padding={1} tone="caution">
+              {props.renderNext(props)}
+            </Card>
+          )
+        },
+      },
+    },
     studio: {
       components: {
         Layout: CustomLayout,
