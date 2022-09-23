@@ -1,6 +1,6 @@
 {
   "name": "@sanity/cli",
-  "version": "3.0.0-dev-preview.17",
+  "version": "3.0.0-dev-preview.19",
   "description": "Sanity CLI tool for managing Sanity installations, managing plugins, schemas and datasets",
   "source": "src/index.ts",
   "types": "lib/dts/src/index.d.ts",
@@ -49,8 +49,8 @@
     "@rexxars/gitconfiglocal": "^3.0.1",
     "@sanity/client": "^3.4.1",
     "@sanity/generate-help-url": "^3.0.0",
-    "@sanity/types": "3.0.0-dev-preview.17",
-    "@sanity/util": "3.0.0-dev-preview.17",
+    "@sanity/types": "3.0.0-dev-preview.19",
+    "@sanity/util": "3.0.0-dev-preview.19",
     "@types/configstore": "^5.0.1",
     "@types/decompress": "^4.2.4",
     "@types/eventsource": "^1.1.8",
