@@ -13,7 +13,7 @@ import {
 import React, {useMemo} from 'react'
 import styled from 'styled-components'
 import {useActiveWorkspace} from '../../..'
-import {useRouter} from '../../../../router'
+import {useRouter} from '../../../../../router'
 import {useColorScheme} from '../../../colorScheme'
 import {useWorkspaces} from '../../../workspaces'
 import {workspacesDocsUrl} from './constants'

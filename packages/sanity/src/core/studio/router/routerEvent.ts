@@ -3,7 +3,7 @@ import {EMPTY, Observable, of} from 'rxjs'
 import {distinctUntilChanged, filter, map, mergeScan, shareReplay} from 'rxjs/operators'
 import {History, Location} from 'history'
 import {Tool} from '../../config'
-import {Router} from '../../router'
+import {Router} from '../../../router'
 import {decodeUrlState, isNonNullable, resolveDefaultState, resolveIntentState} from './helpers'
 import {RouterEvent} from './types'
 

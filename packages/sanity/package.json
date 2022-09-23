@@ -62,6 +62,13 @@
       "import": "./lib/form.mjs",
       "require": "./lib/form.js",
       "default": "./lib/form.mjs"
+    },
+    "./router": {
+      "types": "./lib/dts/exports/router.d.ts",
+      "source": "./exports/router.ts",
+      "import": "./lib/router.mjs",
+      "require": "./lib/router.js",
+      "default": "./lib/router.mjs"
     }
   },
   "typesVersions": {
@@ -80,6 +87,9 @@
       ],
       "form": [
         "./lib/dts/exports/form.d.ts"
+      ],
+      "router": [
+        "./lib/dts/exports/router.d.ts"
       ]
     }
   },
@@ -90,12 +100,13 @@
     "desk.js",
     "form.js",
     "lib",
+    "router.js",
     "src"
   ],
   "scripts": {
     "build": "pkg-utils build --tsconfig tsconfig.lib.json",
     "check:package": "pkg-utils --strict --tsconfig tsconfig.lib.json",
-    "clean": "rimraf _internal.js _unstable.js cli.js desk.js form.js lib",
+    "clean": "rimraf _internal.js _unstable.js cli.js desk.js form.js lib router.js",
     "coverage": "jest --coverage",
     "postbuild": "run-s check:package",
     "prebuild": "run-s clean",

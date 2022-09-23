@@ -5,7 +5,7 @@ import {ComposeIcon} from '@sanity/icons'
 import {DefaultPreview} from '../../../../_unstable/components/previews'
 import {InsufficientPermissionsMessage} from '../../../../_unstable/components/InsufficientPermissionsMessage'
 import {TemplatePermissionsResult, useTemplatePermissions} from '../../../../_unstable/datastores'
-import {IntentLink} from '../../../router'
+import {IntentLink} from '../../../../router'
 import {useSource} from '../../source'
 import {useColorScheme} from '../../colorScheme'
 

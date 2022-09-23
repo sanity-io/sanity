@@ -1,5 +1,5 @@
 import {Tool} from '../../config'
-import {RouterState, Router} from '../../router'
+import {RouterState, Router} from '../../../router'
 import {isRecord} from '../../util/isRecord'
 import {RouterEvent, RouterStateEvent} from './types'
 import {getOrderedTools} from './util/getOrderedTools'

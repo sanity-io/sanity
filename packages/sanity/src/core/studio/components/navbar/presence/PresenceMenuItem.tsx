@@ -6,7 +6,7 @@ import {LinkIcon} from '@sanity/icons'
 import styled from 'styled-components'
 import {UserAvatar} from '../../../../../_unstable/components/UserAvatar'
 import {GlobalPresence} from '../../../../../_unstable/datastores'
-import {IntentLink} from '../../../../router'
+import {IntentLink} from '../../../../../router'
 
 const AvatarCard = styled(Card)`
   background: transparent;
