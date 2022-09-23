@@ -1,12 +1,18 @@
 import React from 'react'
-import {GetHookCollectionState, type EditStateFor} from '../../core'
-import type {DocumentBadgeDescription, DocumentBadgeProps} from './types'
+import {
+  type DocumentBadgeDescription,
+  type DocumentBadgeProps,
+  type EditStateFor,
+  GetHookCollectionState,
+} from '../../core'
 
-interface Badge<Args, Description> {
+/** @internal */
+export interface Badge<Args, Description> {
   (args: Args): Description | null
 }
 
-interface RenderBadgeCollectionProps {
+/** @internal */
+export interface RenderBadgeCollectionProps {
   badges: Badge<DocumentBadgeProps, DocumentBadgeDescription>[]
   badgeProps: EditStateFor
   children: (props: {states: DocumentBadgeDescription[]}) => React.ReactNode

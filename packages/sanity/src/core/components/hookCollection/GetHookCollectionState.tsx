@@ -6,7 +6,8 @@ import {HookStateContainer} from './HookStateContainer'
 import {cancelIdleCallback, requestIdleCallback} from './requestIdleCallback'
 import {ActionHook} from './types'
 
-interface GetHookCollectionStateProps<T, K> {
+/** @internal */
+export interface GetHookCollectionStateProps<T, K> {
   args: T
   children: (props: {states: K[]}) => React.ReactNode
   hooks: ActionHook<T, K>[]
@@ -15,6 +16,7 @@ interface GetHookCollectionStateProps<T, K> {
 
 const throttleOptions: ThrottleSettings = {trailing: true}
 
+/** @internal */
 export function GetHookCollectionState<T, K>(props: GetHookCollectionStateProps<T, K>) {
   const {hooks, args, children, onReset} = props
 

@@ -1,3 +1,4 @@
+import type {BifurClient} from '@sanity/bifur-client'
 import type {ClientConfig as SanityClientConfig, SanityClient} from '@sanity/client'
 import type {
   AssetSource,
@@ -11,7 +12,6 @@ import type {
 import type React from 'react'
 import type {ComponentType, ReactNode} from 'react'
 import type {Observable} from 'rxjs'
-import type {BifurClient} from '@sanity/bifur-client'
 import type {
   FieldProps,
   FormBuilderArrayFunctionComponent,
@@ -24,12 +24,12 @@ import type {
   RenderItemCallback,
   RenderPreviewCallback,
 } from '../../form'
-import type {StudioTheme} from '../theme'
-import type {InitialValueTemplateItem, Template, TemplateResponse} from '../templates'
 import type {Router, RouterState} from '../../router'
-import type {DocumentActionComponent, DocumentBadgeComponent} from '../../desk'
-import {PreviewProps} from '../components/previews'
+import type {InitialValueTemplateItem, Template, TemplateResponse} from '../templates'
+import type {StudioTheme} from '../theme'
+import {PreviewProps} from '../components'
 import {AuthStore} from '../datastores'
+import {DocumentActionComponent, DocumentBadgeComponent} from './document'
 import {StudioComponents, StudioComponentsPluginOptions} from './components'
 
 /**

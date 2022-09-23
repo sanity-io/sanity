@@ -1,6 +1,6 @@
 import {type ButtonTone} from '@sanity/ui'
 import type React from 'react'
-import {type EditStateFor} from '../../core'
+import {type EditStateFor} from '../../datastores'
 
 export interface ActionComponent<ActionProps> {
   (props: ActionProps): DocumentActionDescription | null
@@ -33,10 +33,7 @@ export interface DocumentActionComponent extends ActionComponent<DocumentActionP
   action?: 'delete' | 'discardChanges' | 'duplicate' | 'restore' | 'publish' | 'unpublish'
 }
 
-export interface DocumentActionResolver {
-  (props: EditStateFor): DocumentActionComponent[]
-}
-
+/** @beta */
 export interface DocumentActionConfirmModalProps {
   type: 'confirm'
   tone?: ButtonTone

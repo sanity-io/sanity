@@ -15,6 +15,7 @@ function useShallowCompareEffect(callback: React.EffectCallback, dependencies: a
   useEffect(callback, useShallowCompareMemoize(dependencies))
 }
 
+/** @internal */
 export const HookStateContainer = memo(
   function HookStateContainer(props: any) {
     const {hook, args, id, onNext, onReset, onRequestUpdate} = props

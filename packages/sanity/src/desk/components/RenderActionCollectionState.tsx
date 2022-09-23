@@ -1,12 +1,17 @@
 import React from 'react'
-import {GetHookCollectionState} from '../../core'
-import {DocumentActionDescription, DocumentActionProps} from './types'
+import {
+  type DocumentActionDescription,
+  type DocumentActionProps,
+  GetHookCollectionState,
+} from '../../core'
 
-interface Action<Args, Description> {
+/** @internal */
+export interface Action<Args, Description> {
   (args: Args): Description | null
 }
 
-interface RenderActionCollectionProps {
+/** @internal */
+export interface RenderActionCollectionProps {
   actions: Action<DocumentActionProps, DocumentActionDescription>[]
   actionProps: DocumentActionProps
   children: (props: {states: DocumentActionDescription[]}) => React.ReactNode

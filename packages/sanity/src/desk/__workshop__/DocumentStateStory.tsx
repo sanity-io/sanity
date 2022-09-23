@@ -1,15 +1,17 @@
 import {Box, Code, Stack, Button, Dialog} from '@sanity/ui'
 import React, {useMemo, useState, useCallback, useEffect} from 'react'
 import {
-  useInitialValue,
+  DocumentActionComponent,
+  DocumentActionDescription,
+  DocumentActionProps,
   EditStateFor,
-  useEditState,
   useConnectionState,
+  useEditState,
+  useInitialValue,
   useSource,
   useUnique,
   useValidationStatus,
 } from '../../core'
-import {DocumentActionDescription, DocumentActionComponent, DocumentActionProps} from '../actions'
 import {DeskToolProvider} from '../DeskToolProvider'
 import {DocumentPaneProvider} from '../panes'
 import {DocumentPaneNode} from '../types'

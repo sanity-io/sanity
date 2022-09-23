@@ -1,5 +1,3 @@
-export * from './actions'
-export * from './badges'
 export * from './deskTool'
 export * from './panes/document/useDocumentPane'
 

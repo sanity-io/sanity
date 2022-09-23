@@ -1,10 +1,8 @@
 import {useId} from '@reach/auto-id'
 import {Box, Dialog} from '@sanity/ui'
 import React from 'react'
-import {DocumentActionModalProps} from '../../../actions'
+import {DocumentActionModalProps} from '../../../../core'
 import {ConfirmDialog} from './dialogs/ConfirmDialog'
-// import {DeprecatedErrorDialog} from './dialogs/DeprecatedErrorDialog'
-// import {DeprecatedSuccessDialog} from './dialogs/DeprecatedSuccessDialog'
 import {ModalDialog} from './dialogs/ModalDialog'
 import {PopoverDialog} from './dialogs/PopoverDialog'
 
@@ -17,11 +15,6 @@ export function ActionStateDialog(props: ActionStateDialogProps) {
   const {modal, referenceElement = null} = props
   const modalId = useId() || ''
 
-  // @todo: rename this type type "component" or "node"?
-  // if (modal.type === 'legacy') {
-  //   return <>{modal.content}</>
-  // }
-
   if (modal.type === 'confirm') {
     return <ConfirmDialog modal={modal} referenceElement={referenceElement} />
   }
@@ -33,14 +26,6 @@ export function ActionStateDialog(props: ActionStateDialogProps) {
   if (modal.type === 'popover') {
     return <PopoverDialog modal={modal} referenceElement={referenceElement} />
   }
-
-  // if (modal.type === 'success') {
-  //   return <DeprecatedSuccessDialog modal={modal} />
-  // }
-
-  // if (modal.type === 'error') {
-  //   return <DeprecatedErrorDialog modal={modal} />
-  // }
 
   // @todo: add validation?
   const unknownModal: any = modal

@@ -1,6 +1,6 @@
 import {Popover, useClickOutside, useGlobalKeyDown, useLayer} from '@sanity/ui'
 import React, {useCallback, useState} from 'react'
-import {DocumentActionPopoverModalProps} from '../../../../actions'
+import {DocumentActionPopoverModalProps} from '../../../../../core'
 import {POPOVER_FALLBACK_PLACEMENTS} from './constants'
 
 export function PopoverDialog(props: {
