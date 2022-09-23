@@ -3,7 +3,7 @@ import {Box, Card, Container} from '@sanity/ui'
 import {useAction, useBoolean} from '@sanity/ui-workshop'
 import React, {useMemo} from 'react'
 import {PortableTextMarker} from '../../../../types'
-import {useSource} from '../../../../../core/studio'
+import {useSource} from '../../../../../core'
 
 const errorMarker: ValidationMarker = {
   level: 'error',

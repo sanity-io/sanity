@@ -6,6 +6,7 @@ import {fromString as pathFromString} from '@sanity/util/paths'
 import isHotkey from 'is-hotkey'
 import {useMemoObservable} from 'react-rx'
 import {
+  DEFAULT_STUDIO_CLIENT_OPTIONS,
   DocumentPresence,
   getPublishedId,
   isDev,
@@ -26,7 +27,6 @@ import {PatchEvent, StateTree, toMutationPatches, useFormState} from '../../../f
 import {usePaneRouter} from '../../components'
 import {PaneMenuItem} from '../../types'
 import {useDeskTool} from '../../useDeskTool'
-import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../core/studioClient'
 import {setAtPath} from '../../../form/store/stateTreeHelper'
 import {getExpandOperations} from '../../../form/store/utils/getExpandOperations'
 import {DocumentPaneContext, DocumentPaneContextValue} from './DocumentPaneContext'

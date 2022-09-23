@@ -11,8 +11,13 @@ import {get} from '@sanity/util/paths'
 import React, {ComponentProps, ForwardedRef, forwardRef, useCallback, useMemo, useRef} from 'react'
 import {from, throwError} from 'rxjs'
 import {catchError, mergeMap} from 'rxjs/operators'
-import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../core/studioClient'
-import {isNonNullable, useClient, useDocumentPreviewStore, useSchema} from '../../../../core'
+import {
+  DEFAULT_STUDIO_CLIENT_OPTIONS,
+  isNonNullable,
+  useClient,
+  useSchema,
+  useDocumentPreviewStore,
+} from '../../../../core'
 import * as adapter from '../client-adapters/reference'
 import {ReferenceInput} from '../../../inputs/ReferenceInput/ReferenceInput'
 import {CreateReferenceOption, EditReferenceEvent} from '../../../inputs/ReferenceInput/types'

@@ -1,4 +1,5 @@
 export * from './diff'
+export * from './paths'
 export * from './preview'
 export * from './types'
 export * from './validation'

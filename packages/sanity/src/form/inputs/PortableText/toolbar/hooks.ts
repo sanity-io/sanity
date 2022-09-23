@@ -9,7 +9,7 @@ import {
 } from '@sanity/portable-text-editor'
 import {ObjectSchemaType, Path} from '@sanity/types'
 import {useCallback, useMemo} from 'react'
-import {useUnique} from '../../../../core/util'
+import {useUnique} from '../../../../core'
 import {FIXME} from '../../../types'
 import {getPTEToolbarActionGroups} from './helpers'
 import {BlockStyleItem, PTEToolbarAction, PTEToolbarActionGroup} from './types'

@@ -1,5 +1,4 @@
-import {FieldProps, RenderFieldCallback} from '../../../form'
-import {defaultRenderField} from '../../../form/studio/defaults'
+import {FieldProps, RenderFieldCallback, defaultRenderField} from '../../../form'
 import {PluginOptions, SourceOptions} from '../types'
 import {_RenderMiddleware} from './_types'
 

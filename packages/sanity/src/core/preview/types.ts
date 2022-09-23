@@ -1,8 +1,6 @@
 import {PreviewConfig, PreviewValue, Reference, SanityDocumentLike, SchemaType} from '@sanity/types'
 import {Observable} from 'rxjs'
 
-export type {SortOrdering, PrepareViewOptions} from '@sanity/types'
-
 export type Id = string
 
 export type Previewable = (

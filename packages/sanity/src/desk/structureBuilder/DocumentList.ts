@@ -1,9 +1,11 @@
 import {SchemaType, SortOrderingItem} from '@sanity/types'
 import {SanityClient} from '@sanity/client'
 import {ComposeIcon} from '@sanity/icons'
-import {InitialValueTemplateItem} from '../../core/templates'
-import {SourceClientOptions} from '../../core/config'
-import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../core/studioClient'
+import {
+  DEFAULT_STUDIO_CLIENT_OPTIONS,
+  InitialValueTemplateItem,
+  SourceClientOptions,
+} from '../../core'
 import {SerializeError, HELP_URL} from './SerializeError'
 import {SerializeOptions, Child} from './StructureNodes'
 import {ChildResolver, ChildResolverOptions, ItemChild} from './ChildResolver'

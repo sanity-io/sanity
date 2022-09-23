@@ -1,10 +1,9 @@
 import React, {useCallback, useMemo} from 'react'
 import {Button, Card, Code, Grid, Stack, Text} from '@sanity/ui'
-import {useSchema} from '../../../core/hooks'
+import {useSchema, isDev} from '../../../core'
 import {PatchEvent, setIfMissing, unset} from '../../patch'
 import {Alert} from '../../components/Alert'
 import {Details} from '../../components/Details'
-import {isDev} from '../../../core/environment'
 
 interface UntypedValueInputProps {
   validTypes: string[]

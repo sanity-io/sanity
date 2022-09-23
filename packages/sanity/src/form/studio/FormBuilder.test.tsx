@@ -8,8 +8,7 @@ import {createMockSanityClient} from '../../../test/mocks/mockSanityClient'
 import {createTestProvider} from '../../../test/testUtils/TestProvider'
 import {createPatchChannel} from '../patch'
 import {useFormState} from '../store/useFormState'
-import {EMPTY_ARRAY} from '../utils/empty'
-import {useWorkspace} from '../../core/studio'
+import {EMPTY_ARRAY, useWorkspace} from '../../core'
 import {FormBuilder, FormBuilderProps} from './FormBuilder'
 
 const schemaTypes = [

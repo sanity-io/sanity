@@ -1,10 +1,10 @@
-import {useMemo, useRef} from 'react'
 import {NodeValidation} from '@sanity/types'
+import {useMemo, useRef} from 'react'
+import {EMPTY_ARRAY} from '../../../../core'
 import {BaseFormNode} from '../../../store'
-import {EMPTY_ARRAY} from '../../../utils/empty'
+import {immutableReconcile} from '../../../store/utils/immutableReconcile'
 import {useChildValidation} from '../../../studio/contexts/Validation'
 import {_isBlockType} from '../_helpers'
-import {immutableReconcile} from '../../../store/utils/immutableReconcile'
 
 const NONEXISTENT_PATH = ['@@_NONEXISTENT_PATH_@@']
 

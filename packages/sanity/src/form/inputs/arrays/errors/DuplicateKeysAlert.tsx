@@ -5,7 +5,7 @@ import {Alert} from '../../../components/Alert'
 import {DuplicateKeysError} from '../../../store/types/memberErrors'
 import {PatchEvent, set} from '../../../patch'
 import {Details} from '../../../components/Details'
-import {isDev} from '../../../../core/environment'
+import {isDev} from '../../../../core'
 
 interface Props {
   error: DuplicateKeysError

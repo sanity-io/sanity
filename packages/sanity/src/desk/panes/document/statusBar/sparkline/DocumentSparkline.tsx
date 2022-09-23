@@ -1,6 +1,6 @@
 import {Box, Flex, useElementRect} from '@sanity/ui'
 import React, {useEffect, useMemo, useState, memo, useLayoutEffect} from 'react'
-import {useSyncState} from '../../../../../core/hooks'
+import {useSyncState} from '../../../../../core'
 import {useDocumentPane} from '../../useDocumentPane'
 import {DocumentBadges} from './DocumentBadges'
 import {PublishStatus} from './PublishStatus'

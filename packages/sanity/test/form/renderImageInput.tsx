@@ -1,15 +1,13 @@
 import {ImageSchemaType, AssetSource, FieldDefinition, SchemaTypeDefinition} from '@sanity/types'
 import React from 'react'
 import {EMPTY} from 'rxjs'
-import {ImageInputProps} from '../../src/form/inputs/files/ImageInput'
-import {ImageUrlBuilder} from '../../src/form/inputs/files/types'
-import {ObjectInputProps} from '../../src/form'
+import {BaseImageInputProps, ObjectInputProps, ImageUrlBuilder} from '../../src/form'
 import {renderObjectInput} from './renderObjectInput'
 import {TestRenderProps} from './types'
 import {TestRenderInputContext} from './renderInput'
 
 export type TestRenderImageInputCallback = (
-  inputProps: ImageInputProps,
+  inputProps: BaseImageInputProps,
   context: TestRenderInputContext
 ) => React.ReactElement
 
@@ -28,7 +26,7 @@ export async function renderImageInput(options: {
   function transformProps(
     inputProps: ObjectInputProps,
     context: TestRenderInputContext
-  ): ImageInputProps {
+  ): BaseImageInputProps {
     const {schemaType, value, ...restProps} = inputProps
     const {client} = context
 

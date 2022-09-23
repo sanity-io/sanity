@@ -1,5 +1,5 @@
 import {SchemaType} from '@sanity/types'
-import {isRecord} from '../../core/util'
+import {isRecord} from '../../core'
 import {SerializeOptions} from './StructureNodes'
 import {ListItemBuilder, ListItem, UnserializedListItem, ListItemInput} from './ListItem'
 import {SerializeError, HELP_URL} from './SerializeError'

@@ -1,6 +1,6 @@
 import React, {forwardRef, useContext, useMemo} from 'react'
 import {StateLink} from '../../../router'
-import {useUnique} from '../../../core/util'
+import {useUnique} from '../../../core'
 import {PaneRouterContext} from './PaneRouterContext'
 
 interface ParameterizedLinkProps {

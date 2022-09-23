@@ -12,9 +12,14 @@ import * as PathUtils from '@sanity/util/paths'
 import {get} from '@sanity/util/paths'
 import {from, throwError} from 'rxjs'
 import {catchError, mergeMap} from 'rxjs/operators'
-import {isNonNullable, useClient, useSchema, useDocumentPreviewStore} from '../../../../core'
+import {
+  DEFAULT_STUDIO_CLIENT_OPTIONS,
+  isNonNullable,
+  useClient,
+  useSchema,
+  useDocumentPreviewStore,
+} from '../../../../core'
 import * as adapter from '../client-adapters/reference'
-import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../core/studioClient'
 import {ArrayItemReferenceInput} from '../../../inputs/ReferenceInput/ArrayItemReferenceInput'
 import {EditReferenceEvent} from '../../../inputs/ReferenceInput/types'
 import {InsertEvent} from '../../../inputs/arrays/ArrayOfObjectsInput/types'
