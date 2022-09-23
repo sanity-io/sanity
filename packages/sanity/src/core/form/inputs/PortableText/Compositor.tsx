@@ -18,11 +18,11 @@ import {
   usePortal,
 } from '@sanity/ui'
 import {ArrayOfObjectsInputProps, RenderCustomMarkers} from '../../types'
+import {FormInput} from '../../components'
 import {ActivateOnFocus} from '../../components/ActivateOnFocus/ActivateOnFocus'
-import {FormInput} from '../../FormInput'
-import {ChangeIndicator} from '../../../components'
 import {EMPTY_ARRAY} from '../../../util'
 import {FIXME} from '../../../FIXME'
+import {ChangeIndicator} from '../../../components'
 import {BlockObject} from './object/BlockObject'
 import {InlineObject} from './object/InlineObject'
 import {Annotation, TextBlock} from './text'

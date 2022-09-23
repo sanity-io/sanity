@@ -1,7 +1,7 @@
 import React, {memo, useCallback, useMemo} from 'react'
 import {isEqual, startsWith, trimLeft} from '@sanity/util/paths'
 import {isKeySegment, Path} from '@sanity/types'
-import {FieldMember} from './store'
+import {FieldMember} from '../store'
 import {
   ArrayOfObjectsInputProps,
   ObjectInputProps,
@@ -9,9 +9,9 @@ import {
   RenderFieldCallback,
   RenderInputCallback,
   RenderPreviewCallback,
-} from './types'
-import {isArrayInputProps, isObjectInputProps} from './utils/asserters'
-import {MemberField, ArrayOfObjectsItem, MemberItemError} from './members'
+} from '../types'
+import {isArrayInputProps, isObjectInputProps} from '../utils/asserters'
+import {MemberField, ArrayOfObjectsItem, MemberItemError} from '../members'
 
 const pass = ({children}: {children: React.ReactNode}) => children
 

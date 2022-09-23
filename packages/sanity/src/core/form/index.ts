@@ -1,12 +1,9 @@
-/* eslint-disable camelcase */
-
 /*
  * sanity/form
  */
 
 export * from './FormBuilderContext'
-export * from './FormInput'
-export * from './components/formField'
+export * from './components'
 export * from './inputs'
 export * from './members'
 export * from './patch'
