@@ -1,6 +1,6 @@
 import {Box, Card, Flex, Spinner, Text} from '@sanity/ui'
 import React, {useEffect} from 'react'
-import {useRouter} from '../../../../core/router'
+import {useRouter} from '../../../../router'
 import {RouterPanes} from '../../../types'
 import {Delay} from '../../Delay'
 

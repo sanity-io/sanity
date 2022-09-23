@@ -1,7 +1,7 @@
 import {omit} from 'lodash'
 import React, {useCallback, useMemo} from 'react'
 import {toString as pathToString} from '@sanity/util/paths'
-import {useRouter, useRouterState} from '../../../core/router'
+import {useRouter, useRouterState} from '../../../router'
 import {RouterPaneGroup, RouterPanes, RouterPaneSibling} from '../../types'
 import {ChildLink} from './ChildLink'
 import {BackLink} from './BackLink'

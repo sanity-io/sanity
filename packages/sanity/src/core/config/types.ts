@@ -27,7 +27,7 @@ import type {
 import type {AuthStore} from '../../_unstable/datastores'
 import type {StudioTheme} from '../theme'
 import type {InitialValueTemplateItem, Template, TemplateResponse} from '../templates'
-import type {Router, RouterState} from '../router'
+import type {Router, RouterState} from '../../router'
 import type {DocumentActionComponent} from '../../desk/actions'
 import type {DocumentBadgeComponent} from '../../desk/badges'
 import {PreviewProps} from '../../_unstable/components/previews'

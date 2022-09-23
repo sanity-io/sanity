@@ -4,7 +4,7 @@ import {Box, Button, Label, Menu, MenuButton, MenuItem, PopoverProps} from '@san
 import {Schema} from '@sanity/types'
 import {IntentButton} from '../IntentButton'
 import {useTemplatePermissions, TemplatePermissionsResult} from '../../../_unstable/datastores'
-import {IntentLink} from '../../../core/router'
+import {IntentLink} from '../../../router'
 import {Template, InitialValueTemplateItem} from '../../../core/templates'
 import {useSchema, useTemplates} from '../../../core/hooks'
 import {InsufficientPermissionsMessageTooltip} from './InsufficientPermissionsMessageTooltip'

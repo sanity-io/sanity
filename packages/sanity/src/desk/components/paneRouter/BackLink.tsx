@@ -1,5 +1,5 @@
 import React, {forwardRef, useContext, useMemo} from 'react'
-import {StateLink} from '../../../core/router'
+import {StateLink} from '../../../router'
 import {PaneRouterContext} from './PaneRouterContext'
 import {BackLinkProps} from './types'
 

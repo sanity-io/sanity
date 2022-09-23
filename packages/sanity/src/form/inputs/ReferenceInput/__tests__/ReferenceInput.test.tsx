@@ -5,7 +5,7 @@ import {LayerProvider, studioTheme, ThemeProvider, ToastProvider} from '@sanity/
 import {of} from 'rxjs'
 import {noop} from 'lodash'
 import {Reference} from '@sanity/types'
-import {RouterProvider, route} from '../../../../core/router'
+import {RouterProvider, route} from '../../../../router'
 import {ReferenceInput} from '../ReferenceInput'
 import {ReferenceInfo, ReferenceInputProps} from '../types'
 

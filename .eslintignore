@@ -33,6 +33,7 @@
 /packages/sanity/cli.js
 /packages/sanity/desk.js
 /packages/sanity/form.js
+/packages/sanity/router.js
 
 /packages/@sanity/cli/templates
 

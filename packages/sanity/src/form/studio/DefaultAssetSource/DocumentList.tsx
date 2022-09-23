@@ -2,7 +2,7 @@ import React, {useCallback} from 'react'
 import {Card, Text, Flex} from '@sanity/ui'
 import {Asset as AssetType, SanityDocument} from '@sanity/types'
 import {SanityPreview} from '../../../_unstable/preview'
-import {IntentLink} from '../../../core/router'
+import {IntentLink} from '../../../router'
 import {useSchema} from '../../../core/hooks'
 
 export const DocumentList = ({

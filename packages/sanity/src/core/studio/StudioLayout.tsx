@@ -11,7 +11,7 @@ import React, {
 } from 'react'
 import styled from 'styled-components'
 import {useHotModuleReload} from 'use-hot-module-reload'
-import {RouteScope, useRouter} from '../router'
+import {RouteScope, useRouter} from '../../router'
 import {NoToolsScreen} from './screens/NoToolsScreen'
 import {ToolNotFoundScreen} from './screens/ToolNotFoundScreen'
 import {useWorkspace} from './workspace'

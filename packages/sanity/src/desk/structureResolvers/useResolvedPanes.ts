@@ -1,7 +1,7 @@
 import {useEffect, useMemo, useState} from 'react'
 import {ReplaySubject} from 'rxjs'
 import {map} from 'rxjs/operators'
-import {RouterState, useRouter} from '../../core/router'
+import {RouterState, useRouter} from '../../router'
 import {LOADING_PANE} from '../constants'
 import {RouterPanes, PaneNode, RouterPaneGroup} from '../types'
 import {useDeskTool} from '../useDeskTool'

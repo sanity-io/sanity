@@ -4,7 +4,7 @@ import React, {useCallback, useState} from 'react'
 import {InsufficientPermissionsMessage} from '../../../_unstable/components/InsufficientPermissionsMessage'
 import {useDocumentPairPermissions} from '../../../_unstable/datastores'
 import {useDocumentOperation} from '../../../core/hooks'
-import {useRouter} from '../../../core/router'
+import {useRouter} from '../../../router'
 import {DocumentActionComponent} from '../types'
 import {useCurrentUser} from '../../../core/store/user/hooks'
 

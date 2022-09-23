@@ -5,7 +5,7 @@ import {DocumentPreviewPresence} from '../../../../../_unstable/presence'
 import {SanityPreview} from '../../../../../_unstable/preview'
 import {useDocumentPresence} from '../../../../../_unstable/datastores'
 import {useSchema} from '../../../../hooks'
-import {IntentLink} from '../../../../router'
+import {IntentLink} from '../../../../../router'
 import {getPublishedId} from '../../../../util'
 
 interface SearchItemProps extends ResponsivePaddingProps {
