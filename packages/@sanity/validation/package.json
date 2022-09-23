@@ -1,6 +1,6 @@
 {
   "name": "@sanity/validation",
-  "version": "3.0.0-dev-preview.19",
+  "version": "3.0.0-dev-preview.20",
   "description": "Validation and warning infrastructure for Sanity projects",
   "main": "./lib/index.cjs",
   "module": "./lib/index.js",
@@ -43,10 +43,10 @@
   },
   "devDependencies": {
     "@sanity/client": "^3.4.1",
-    "@sanity/schema": "3.0.0-dev-preview.19"
+    "@sanity/schema": "3.0.0-dev-preview.20"
   },
   "dependencies": {
-    "@sanity/types": "3.0.0-dev-preview.19",
+    "@sanity/types": "3.0.0-dev-preview.20",
     "date-fns": "^2.26.1",
     "lodash": "^4.17.21"
   }
