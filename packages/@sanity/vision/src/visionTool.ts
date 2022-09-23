@@ -1,5 +1,6 @@
 import {lazy} from 'react'
-import {createPlugin, route} from 'sanity'
+import {createPlugin} from 'sanity'
+import {route} from 'sanity/router'
 import {EyeOpenIcon} from '@sanity/icons'
 import {VisionToolConfig} from './types'
 
