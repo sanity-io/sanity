@@ -95,8 +95,12 @@ function textBlockStyle(props: TextBlockStyleProps & {theme: Theme}) {
 
 export const TextRoot = styled.div<TextBlockStyleProps>(textBlockStyle)
 
-export const TextBlockFlexWrapper = styled(Flex)`
+// Because of a weird bug in Google Chrome regarding the @sanity/ui Flex component and spellchecking,
+// this is set to be a Box with 'display: flex'. Using the Flex component here results in Chrome
+// using 20% CPU when idle when spellchecking is on for some reason.
+export const TextBlockFlexWrapper = styled(Box)`
   position: relative;
+  display: flex;
 `
 
 export const ListPrefixWrapper = styled.div`
