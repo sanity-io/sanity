@@ -35,11 +35,10 @@ export function ObjectEditModal(props: {
   const initialSelection = useRef<EditorSelection | null>(PortableTextEditor.getSelection(editor))
 
   const handleClose = useCallback(() => {
-    onClose()
     // Force a new selection here as the selection is a callback dep. for showing the popup
-    PortableTextEditor.select(editor, null)
     PortableTextEditor.focus(editor)
     PortableTextEditor.select(editor, initialSelection.current)
+    onClose()
   }, [editor, onClose])
 
   const title = <>Edit {memberItem.node.schemaType.title}</>
