@@ -11,7 +11,7 @@ import {
 } from '@sanity/types'
 import {isPlainObject} from 'lodash'
 import {Box, Button, Card, Dialog, Flex, Spinner, Stack, Text} from '@sanity/ui'
-import React from 'react'
+import React, {ReactElement} from 'react'
 import {map} from 'rxjs/operators'
 import {Subscription} from 'rxjs'
 import {randomKey, resolveTypeName} from '@sanity/util/content'
@@ -302,7 +302,7 @@ export class ArrayInput extends React.PureComponent<ArrayInputProps> {
     return <>Unknown member kind: ${member.kind}</>
   }
 
-  render() {
+  render(): ReactElement {
     const {
       schemaType,
       onChange,

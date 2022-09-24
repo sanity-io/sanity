@@ -9,8 +9,11 @@ const WorkspaceContext = createContext<Workspace | null>(null)
 export function WorkspaceProvider({children, workspace}: WorkspaceProviderProps) {
   return <WorkspaceContext.Provider value={workspace}>{children}</WorkspaceContext.Provider>
 }
-export function useWorkspace() {
+
+export function useWorkspace(): Workspace {
   const workspace = useContext(WorkspaceContext)
-  if (!workspace) throw new Error('Could not find `workspace` context')
+
+  if (!workspace) throw new Error('Workspace: missing context value')
+
   return workspace
 }
