@@ -8,11 +8,11 @@ interface ResourceCache {
 
 const ResourceCacheContext = createContext<ResourceCache | null>(null)
 
-interface CacheProviderProps {
+export interface ResourceCacheProviderProps {
   children: React.ReactNode
 }
 
-export function ResourceCacheProvider({children}: CacheProviderProps) {
+export function ResourceCacheProvider({children}: ResourceCacheProviderProps) {
   const resourceCache = useMemo((): ResourceCache => {
     const namespaces = new Map<string, MultiKeyWeakMap>()
 
