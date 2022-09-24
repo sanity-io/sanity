@@ -2,24 +2,25 @@ import {SanityClient} from '@sanity/client'
 import {
   defineType,
   FieldDefinition,
+  NodeValidation,
   ObjectSchemaType,
   Path,
-  Schema,
   SchemaType,
 } from '@sanity/types'
 import {render} from '@testing-library/react'
 import React, {FocusEvent} from 'react'
-import {EMPTY_ARRAY, FormFieldPresence, useSchema} from '../../src/core'
 import {
-  createPatchChannel,
+  EMPTY_ARRAY,
   FieldMember,
+  FormFieldPresence,
+  FormProvider,
   FormState,
-  NodeValidation,
   PatchArg,
   PatchEvent,
-  FormProvider,
+  createPatchChannel,
   useFormState,
-} from '../../src/form'
+  useSchema,
+} from '../../src/core'
 import {createMockSanityClient} from '../mocks/mockSanityClient'
 import {createTestProvider} from '../testUtils/TestProvider'
 import {TestRenderProps} from './types'

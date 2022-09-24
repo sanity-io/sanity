@@ -1,5 +1,5 @@
 import {FieldDefinition, StringSchemaType} from '@sanity/types'
-import {PrimitiveInputElementProps, StringInputProps} from '../../src/form'
+import {PrimitiveInputElementProps, StringInputProps} from '../../src/core'
 import {renderInput, TestRenderInputContext, TestRenderInputProps} from './renderInput'
 import {TestRenderProps} from './types'
 

@@ -9,12 +9,14 @@ import {createContext} from 'react'
 import {
   DocumentActionComponent,
   DocumentBadgeComponent,
+  DocumentFormNode,
   DocumentLanguageFilterComponent,
   EditStateFor,
+  PatchEvent,
+  StateTree,
   Timeline,
   TimelineController,
 } from '../../../core'
-import {DocumentFormNode, PatchEvent, StateTree} from '../../../form'
 import {View} from '../../structureBuilder'
 import {PaneMenuItem, PaneMenuItemGroup} from '../../types'
 import {TimelineMode} from './types'

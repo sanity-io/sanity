@@ -49,13 +49,6 @@
       "require": "./lib/desk.js",
       "default": "./lib/desk.mjs"
     },
-    "./form": {
-      "types": "./lib/dts/exports/form.d.ts",
-      "source": "./exports/form.ts",
-      "import": "./lib/form.mjs",
-      "require": "./lib/form.js",
-      "default": "./lib/form.mjs"
-    },
     "./router": {
       "types": "./lib/dts/exports/router.d.ts",
       "source": "./exports/router.ts",
@@ -75,9 +68,6 @@
       "desk": [
         "./lib/dts/exports/desk.d.ts"
       ],
-      "form": [
-        "./lib/dts/exports/form.d.ts"
-      ],
       "router": [
         "./lib/dts/exports/router.d.ts"
       ]
@@ -87,7 +77,6 @@
     "_internal.js",
     "cli.js",
     "desk.js",
-    "form.js",
     "lib",
     "router.js",
     "src"
@@ -95,7 +84,7 @@
   "scripts": {
     "build": "pkg-utils build --tsconfig tsconfig.lib.json",
     "check:package": "pkg-utils --strict --tsconfig tsconfig.lib.json",
-    "clean": "rimraf _internal.js cli.js desk.js form.js lib router.js",
+    "clean": "rimraf _internal.js cli.js desk.js lib router.js",
     "coverage": "jest --coverage",
     "postbuild": "run-s check:package",
     "prebuild": "run-s clean",

@@ -1,7 +1,7 @@
 import {SchemaTypeDefinition, FileSchemaType, AssetSource, FieldDefinition} from '@sanity/types'
 import React from 'react'
 import {EMPTY} from 'rxjs'
-import {BaseFileInputProps, ObjectInputProps} from '../../src/form'
+import {BaseFileInputProps, ObjectInputProps} from '../../src/core'
 import {renderObjectInput} from './renderObjectInput'
 import {TestRenderProps} from './types'
 import {TestRenderInputContext} from './renderInput'

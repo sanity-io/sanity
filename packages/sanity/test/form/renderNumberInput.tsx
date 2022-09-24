@@ -1,6 +1,6 @@
 import {FieldDefinition, NumberSchemaType} from '@sanity/types'
 import {ReactElement} from 'react'
-import {NumberInputProps, PrimitiveInputElementProps} from '../../src/form'
+import {NumberInputProps, PrimitiveInputElementProps} from '../../src/core'
 import {renderInput, TestRenderInputContext, TestRenderInputProps} from './renderInput'
 import {TestRenderProps} from './types'
 
