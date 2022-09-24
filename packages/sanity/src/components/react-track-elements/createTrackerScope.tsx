@@ -55,7 +55,7 @@ const DEFAULT_CONTEXT: TrackerContext<unknown> = {
 let id = 0
 const getNextId = () => ++id
 
-export function createScope<Value>() {
+export function createTrackerScope<Value>() {
   const Context = React.createContext(DEFAULT_CONTEXT as TrackerContext<Value>)
 
   function useReportedValues() {

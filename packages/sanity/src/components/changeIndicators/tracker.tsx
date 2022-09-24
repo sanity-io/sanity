@@ -1,7 +1,6 @@
 import {Path} from '@sanity/types'
-import {createScope} from '../react-track-elements'
+import {createNoopTrackerScope, createTrackerScope} from '../react-track-elements'
 import {ENABLED} from './constants'
-import {createNoopTracker} from './noop-tracker'
 
 export interface TrackedChange {
   element: HTMLElement
@@ -18,7 +17,7 @@ export interface TrackedArea {
 }
 
 const {Tracker, useReportedValues, useReporter} = ENABLED
-  ? createScope<TrackedChange | TrackedArea>()
-  : createNoopTracker<TrackedChange | TrackedArea>()
+  ? createTrackerScope<TrackedChange | TrackedArea>()
+  : createNoopTrackerScope<TrackedChange | TrackedArea>()
 
 export {Tracker, useReportedValues, useReporter}
