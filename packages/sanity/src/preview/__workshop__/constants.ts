@@ -1,4 +1,4 @@
-import {PreviewLayoutKey} from '../../_exports'
+import {PreviewLayoutKey} from '../../components/previews'
 
 export const WORKSHOP_PREVIEW_LAYOUT: Record<string, PreviewLayoutKey> = {
   Block: 'block',

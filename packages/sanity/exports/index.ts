@@ -1,5 +1,5 @@
 export * from '@sanity/types'
-export {SANITY_VERSION} from '../version'
+export {SANITY_VERSION} from '../src/version'
 
 export type {
   DefaultPreviewProps,
@@ -8,9 +8,9 @@ export type {
   PreviewLayoutKey,
   PreviewMediaDimensions,
   PreviewProps,
-} from '../components/previews'
+} from '../src/components/previews'
 
-export * from '../components/DefaultDocument'
+export * from '../src/components/DefaultDocument'
 
 export type {
   DocumentLanguageFilterComponent,
@@ -51,11 +51,11 @@ export type {
   Workspace,
   WorkspaceOptions,
   WorkspaceSummary,
-} from '../config'
+} from '../src/config'
 
-export {createConfig, createPlugin} from '../config'
+export {createConfig, createPlugin} from '../src/config'
 
-export type {LayoutProps, LogoProps, NavbarProps, ToolMenuProps} from '../config/components'
+export type {LayoutProps, LogoProps, NavbarProps, ToolMenuProps} from '../src/config/components'
 
 export type {
   AuthState,
@@ -65,9 +65,9 @@ export type {
   Operation,
   OperationsAPI,
   UserStore,
-} from '../datastores'
+} from '../src/datastores'
 
-export {useCurrentUser, useUser} from '../datastores'
+export {useCurrentUser, useUser} from '../src/datastores'
 
 export type {
   ActionComponent,
@@ -81,11 +81,11 @@ export type {
   DocumentBadgeComponent,
   DocumentBadgeDescription,
   DocumentBadgeProps,
-} from '../desk'
+} from '../src/desk'
 
-export {isDev, isProd} from '../environment'
+export {isDev, isProd} from '../src/environment'
 
-export {PatchEvent} from '../form'
+export {PatchEvent} from '../src/form'
 
 export type {
   ArrayFieldProps,
@@ -158,7 +158,7 @@ export type {
   StringFormNode,
   TypeAnnotationMismatchError,
   UndeclaredMembersError,
-} from '../form'
+} from '../src/form'
 
 export {
   useClient,
@@ -172,13 +172,13 @@ export {
   useTemplates,
   useTools,
   useValidationStatus,
-} from '../hooks'
+} from '../src/hooks'
 
-export type {ConnectionState, SyncState, ValidationStatus} from '../hooks'
+export type {ConnectionState, SyncState, ValidationStatus} from '../src/hooks'
 
-export type {FormFieldPresence} from '../presence'
+export type {FormFieldPresence} from '../src/presence'
 
-export * from '../router'
+export * from '../src/router'
 
 export {
   renderStudio,
@@ -193,7 +193,7 @@ export {
   useWorkspace,
   useWorkspaces,
   WorkspaceProvider,
-} from '../studio'
+} from '../src/studio'
 
 export type {
   SourceProviderProps,
@@ -201,13 +201,13 @@ export type {
   StudioProviderProps,
   ToolLinkProps,
   WorkspaceProviderProps,
-} from '../studio'
+} from '../src/studio'
 
-export type {StudioTheme} from '../theme'
+export type {StudioTheme} from '../src/theme'
 
-export {defaultTheme} from '../theme'
+export {defaultTheme} from '../src/theme'
 
-export type {Template, TemplateResponse} from '../templates'
+export type {Template, TemplateResponse} from '../src/templates'
 
 export type {
   ArrayFieldDefinition,
@@ -216,9 +216,9 @@ export type {
   ReferenceTarget,
   TemplateParameter,
   TypeTarget,
-} from '../templates'
+} from '../src/templates'
 
-export {getDraftId, getPublishedId} from '../util'
+export {getDraftId, getPublishedId} from '../src/util'
 
 export type {
   DraftId,
@@ -229,4 +229,4 @@ export type {
   LoadableState,
   Opaque,
   PublishedId,
-} from '../util'
+} from '../src/util'

@@ -1,6 +1,6 @@
 {
   "extends": "../../tsconfig.settings",
-  "include": ["./package.json", "./src", "./typings"],
+  "include": ["./exports", "./package.json", "./src", "./typings"],
   "exclude": [
     "./src/**/__fixtures__",
     "./src/**/__mocks__",
