@@ -18,7 +18,9 @@ export type Previewable = (
   _internalMeta?: {type?: string}
 }
 
-// @todo: unify with content path from @sanity/types
+/**
+ * TODO: unify with content path from `@sanity/types`
+ */
 export type PreviewPath = FieldName[]
 export type Selection = [Id, FieldName[]]
 export type FieldName = string
