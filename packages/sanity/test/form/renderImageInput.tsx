@@ -1,7 +1,7 @@
 import {ImageSchemaType, AssetSource, FieldDefinition, SchemaTypeDefinition} from '@sanity/types'
 import React from 'react'
 import {EMPTY} from 'rxjs'
-import {BaseImageInputProps, ObjectInputProps, ImageUrlBuilder} from '../../src/form'
+import {BaseImageInputProps, ObjectInputProps, ImageUrlBuilder} from '../../src/core'
 import {renderObjectInput} from './renderObjectInput'
 import {TestRenderProps} from './types'
 import {TestRenderInputContext} from './renderInput'

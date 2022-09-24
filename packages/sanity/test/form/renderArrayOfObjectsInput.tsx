@@ -9,7 +9,7 @@ import {
   defaultRenderInput,
   defaultRenderItem,
   defaultRenderPreview,
-} from '../../src/form'
+} from '../../src/core'
 import {renderInput, TestRenderInputContext, TestRenderInputProps} from './renderInput'
 import {TestRenderProps} from './types'
 

@@ -9,12 +9,15 @@ import {Delay} from '../../../../components/Delay'
 import {
   DocumentMutationEvent,
   DocumentRebaseEvent,
+  FormBuilder,
+  PatchEvent,
+  PatchMsg,
   PresenceOverlay,
+  createPatchChannel,
+  fromMutationPatches,
   useDocumentPresence,
   useDocumentStore,
 } from '../../../../../core'
-import {PatchEvent, PatchMsg, createPatchChannel, fromMutationPatches} from '../../../../../form'
-import {FormBuilder} from '../../../../../form/studio/FormBuilder'
 import {useConditionalToast} from './useConditionalToast'
 
 interface FormViewProps {
@@ -22,14 +25,6 @@ interface FormViewProps {
   hidden: boolean
   margins: [number, number, number, number]
 }
-
-// interface FormViewState {
-//   filterField: FormBuilderFilterFieldFn
-// }
-
-// const INITIAL_STATE: FormViewState = {
-//   filterField: () => true,
-// }
 
 const preventDefault = (ev: React.FormEvent) => ev.preventDefault()
 
@@ -47,7 +42,6 @@ export function FormView(props: FormViewProps) {
     historyController,
     validation,
     ready,
-    // changesOpen,
     formState,
     onFocus,
     onBlur,
@@ -59,9 +53,6 @@ export function FormView(props: FormViewProps) {
   } = useDocumentPane()
   const documentStore = useDocumentStore()
   const {revTime: rev} = historyController
-  // const [{filterField}, setState] = useState<FormViewState>(INITIAL_STATE)
-
-  const hasTypeMismatch = value !== null && value._type !== schemaType.name
   const isNonExistent = !value || !value._id
   const presence = useDocumentPresence(documentId)
 

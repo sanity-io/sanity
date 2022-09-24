@@ -15,15 +15,15 @@ import {fromString as pathFromString} from '@sanity/util/paths'
 import {Path} from '@sanity/types'
 import {
   ChangeConnectorRoot,
-  useZIndex,
-  useDocumentType,
-  useTemplatePermissions,
-  isDev,
-  useTemplates,
-  useSource,
+  ReferenceInputOptionsProvider,
   SourceProvider,
+  isDev,
+  useDocumentType,
+  useSource,
+  useTemplatePermissions,
+  useTemplates,
+  useZIndex,
 } from '../../../core'
-import {ReferenceInputOptionsProvider} from '../../../form'
 import {DocumentPaneNode} from '../../types'
 import {usePaneRouter} from '../../components'
 import {PaneFooter} from '../../components/pane'

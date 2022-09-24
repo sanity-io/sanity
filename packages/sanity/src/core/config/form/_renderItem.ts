@@ -1,4 +1,4 @@
-import {ItemProps, RenderItemCallback, defaultRenderItem} from '../../../form'
+import {ItemProps, RenderItemCallback, defaultRenderItem} from '../../form'
 import {PluginOptions, SourceOptions} from '../types'
 import {_RenderMiddleware} from './_types'
 

@@ -23,7 +23,7 @@ import type {
   RenderInputCallback,
   RenderItemCallback,
   RenderPreviewCallback,
-} from '../../form'
+} from '../form'
 import type {Router, RouterState} from '../../router'
 import type {InitialValueTemplateItem, Template, TemplateResponse} from '../templates'
 import type {StudioTheme} from '../theme'

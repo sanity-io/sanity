@@ -8,12 +8,18 @@ import {useMemoObservable} from 'react-rx'
 import {
   DEFAULT_STUDIO_CLIENT_OPTIONS,
   DocumentPresence,
+  PatchEvent,
+  StateTree,
+  toMutationPatches,
+  getExpandOperations,
   getPublishedId,
   isDev,
+  setAtPath,
   useClient,
   useConnectionState,
   useDocumentOperation,
   useEditState,
+  useFormState,
   useHistoryStore,
   useInitialValue,
   usePresenceStore,
@@ -23,12 +29,9 @@ import {
   useUnique,
   useValidationStatus,
 } from '../../../core'
-import {PatchEvent, StateTree, toMutationPatches, useFormState} from '../../../form'
 import {usePaneRouter} from '../../components'
 import {PaneMenuItem} from '../../types'
 import {useDeskTool} from '../../useDeskTool'
-import {setAtPath} from '../../../form/store/stateTreeHelper'
-import {getExpandOperations} from '../../../form/store/utils/getExpandOperations'
 import {DocumentPaneContext, DocumentPaneContextValue} from './DocumentPaneContext'
 import {getMenuItems} from './menuItems'
 import {DocumentPaneProviderProps} from './types'

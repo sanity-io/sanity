@@ -1,4 +1,4 @@
-import {InputProps, RenderInputCallback, defaultRenderInput} from '../../../form'
+import {InputProps, RenderInputCallback, defaultRenderInput} from '../../form'
 import {PluginOptions, SourceOptions} from '../types'
 import {_RenderMiddleware} from './_types'
 

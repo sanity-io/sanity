@@ -1,7 +1,7 @@
 import {CrossDatasetReferenceSchemaType, FieldDefinition, SchemaTypeDefinition} from '@sanity/types'
 import React from 'react'
 import {of} from 'rxjs'
-import {CrossDatasetReferenceInputProps, ObjectInputProps} from '../../src/form'
+import {CrossDatasetReferenceInputProps, ObjectInputProps} from '../../src/core'
 import {TestRenderInputContext} from './renderInput'
 import {TestRenderProps} from './types'
 import {renderObjectInput} from './renderObjectInput'

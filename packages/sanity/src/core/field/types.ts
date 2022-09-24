@@ -23,7 +23,7 @@ import {
   StringSegmentUnchanged as AgnosticStringSegmentUnchanged,
   TypeChangeDiff as AgnosticTypeChangeDiff,
 } from '@sanity/diff'
-import {FormInsertPatch} from '../../form'
+import {FormInsertPatch} from '../form'
 import {FieldValueError} from './validation'
 
 /**
