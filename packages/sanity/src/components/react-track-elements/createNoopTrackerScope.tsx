@@ -1,5 +1,5 @@
 import React from 'react'
-import {Reported} from '../react-track-elements'
+import {Reported} from './types'
 
 // eslint-disable-next-line no-empty-function, @typescript-eslint/no-empty-function
 function noop() {}
@@ -7,7 +7,8 @@ function noop() {}
 function NoopTracker({children}: {children: React.ReactNode}) {
   return <>{children}</>
 }
-export function createNoopTracker<T>() {
+
+export function createNoopTrackerScope<T>() {
   return {
     useReportedValues: noop as () => Reported<T>[],
     Tracker: NoopTracker,
