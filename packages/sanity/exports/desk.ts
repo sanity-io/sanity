@@ -6,7 +6,7 @@ export type {
   PreviewLayoutKey,
   PreviewProps,
   PreviewMediaDimensions,
-} from '../components/previews'
+} from '../src/components/previews'
 
 export type {
   AssetSourceResolver,
@@ -32,9 +32,9 @@ export type {
   TemplateResolver,
   Tool,
   WorkspaceSummary,
-} from '../config'
+} from '../src/config'
 
-export {Timeline, TimelineController} from '../datastores'
+export {Timeline, TimelineController} from '../src/datastores'
 
 export type {
   AuthState,
@@ -54,9 +54,9 @@ export type {
   Transaction,
   UserStore,
   WithVersion,
-} from '../datastores'
+} from '../src/datastores'
 
-export {deskTool, useDocumentPane} from '../desk'
+export {deskTool, useDocumentPane} from '../src/desk'
 
 export type {
   DefaultDocumentNodeResolver,
@@ -71,7 +71,7 @@ export type {
   RouterPanes,
   StructureBuilder,
   StructureResolver,
-} from '../desk'
+} from '../src/desk'
 
 export type {
   ActionComponent,
@@ -83,13 +83,13 @@ export type {
   DocumentActionPopoverModalProps,
   DocumentActionProps,
   DocumentActionResolver,
-} from '../desk/actions'
+} from '../src/desk/actions'
 
 export type {
   DocumentBadgeComponent,
   DocumentBadgeProps,
   DocumentBadgeDescription,
-} from '../desk/badges'
+} from '../src/desk/badges'
 
 export {
   DeleteAction,
@@ -98,11 +98,11 @@ export {
   UnpublishAction,
   DiscardChangesAction,
   HistoryRestoreAction,
-} from '../desk/actions'
+} from '../src/desk/actions'
 
-export {ConfirmDeleteDialog, usePaneRouter} from '../desk/components'
+export {ConfirmDeleteDialog, usePaneRouter} from '../src/desk/components'
 
-export type {ConfirmDeleteDialogProps} from '../desk/components'
+export type {ConfirmDeleteDialogProps} from '../src/desk/components'
 
 export type {
   BackLinkProps,
@@ -111,10 +111,10 @@ export type {
   PaneRouterContextValue,
   ParameterizedLinkProps,
   ReferenceChildLinkProps,
-} from '../desk/components'
+} from '../src/desk/components'
 
-export type {DocumentPaneContextValue} from '../desk/panes/document/DocumentPaneContext'
-export type {TimelineMode} from '../desk/panes/document/types'
+export type {DocumentPaneContextValue} from '../src/desk/panes/document/DocumentPaneContext'
+export type {TimelineMode} from '../src/desk/panes/document/types'
 
 export {
   ComponentBuilder,
@@ -131,7 +131,7 @@ export {
   ListItemBuilder,
   MenuItemBuilder,
   MenuItemGroupBuilder,
-} from '../desk/structureBuilder'
+} from '../src/desk/structureBuilder'
 
 export type {
   BaseGenericList,
@@ -195,9 +195,9 @@ export type {
   UserViewComponent,
   View,
   ViewBuilder,
-} from '../desk/structureBuilder'
+} from '../src/desk/structureBuilder'
 
-export type {Annotation, AnnotationDetails, ChunkType} from '../field'
+export type {Annotation, AnnotationDetails, ChunkType} from '../src/field'
 
 export type {
   ArrayFieldProps,
@@ -274,7 +274,7 @@ export type {
   TypeAnnotationMismatchError,
   UndeclaredMembersError,
   ArrayInputMember,
-} from '../form'
+} from '../src/form'
 
 export type {
   FileLike,
@@ -282,9 +282,9 @@ export type {
   UploadOptions,
   Uploader,
   UploaderResolver,
-} from '../form/studio/uploads/types'
+} from '../src/form/studio/uploads/types'
 
-export type {FormFieldPresence} from '../presence'
+export type {FormFieldPresence} from '../src/presence'
 
 export type {
   Route,
@@ -294,7 +294,7 @@ export type {
   Router,
   RouterNode,
   RouterState,
-} from '../router'
+} from '../src/router'
 
 export type {
   ArrayFieldDefinition,
@@ -305,6 +305,6 @@ export type {
   TemplateParameter,
   TemplateResponse,
   TypeTarget,
-} from '../templates'
+} from '../src/templates'
 
-export type {StudioTheme} from '../theme'
+export type {StudioTheme} from '../src/theme'

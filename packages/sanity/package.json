@@ -16,49 +16,49 @@
   "bin": {
     "sanity": "./bin/sanity"
   },
-  "types": "./lib/dts/src/_exports/index.d.ts",
-  "source": "./src/_exports/index.ts",
+  "types": "./lib/dts/exports/index.d.ts",
+  "source": "./exports/index.ts",
   "module": "./lib/index.mjs",
   "main": "./lib/index.js",
   "exports": {
     ".": {
-      "types": "./lib/dts/src/_exports/index.d.ts",
-      "source": "./src/_exports/index.ts",
+      "types": "./lib/dts/exports/index.d.ts",
+      "source": "./exports/index.ts",
       "import": "./lib/index.mjs",
       "require": "./lib/index.js",
       "default": "./lib/index.mjs"
     },
     "./_unstable": {
-      "types": "./lib/dts/src/_exports/_unstable.d.ts",
-      "source": "./src/_exports/_unstable.ts",
+      "types": "./lib/dts/exports/_unstable.d.ts",
+      "source": "./exports/_unstable.ts",
       "import": "./lib/_unstable.mjs",
       "require": "./lib/_unstable.js",
       "default": "./lib/_unstable.mjs"
     },
     "./_internal": {
-      "types": "./lib/dts/src/_exports/_internal.d.ts",
-      "source": "./src/_exports/_internal.ts",
+      "types": "./lib/dts/exports/_internal.d.ts",
+      "source": "./exports/_internal.ts",
       "import": "./lib/_internal.mjs",
       "require": "./lib/_internal.js",
       "default": "./lib/_internal.mjs"
     },
     "./cli": {
-      "types": "./lib/dts/src/_exports/cli.d.ts",
-      "source": "./src/_exports/cli.ts",
+      "types": "./lib/dts/exports/cli.d.ts",
+      "source": "./exports/cli.ts",
       "import": "./lib/cli.mjs",
       "require": "./lib/cli.js",
       "default": "./lib/cli.mjs"
     },
     "./desk": {
-      "types": "./lib/dts/src/_exports/desk.d.ts",
-      "source": "./src/_exports/desk.ts",
+      "types": "./lib/dts/exports/desk.d.ts",
+      "source": "./exports/desk.ts",
       "import": "./lib/desk.mjs",
       "require": "./lib/desk.js",
       "default": "./lib/desk.mjs"
     },
     "./form": {
-      "types": "./lib/dts/src/_exports/form.d.ts",
-      "source": "./src/_exports/form.ts",
+      "types": "./lib/dts/exports/form.d.ts",
+      "source": "./exports/form.ts",
       "import": "./lib/form.mjs",
       "require": "./lib/form.js",
       "default": "./lib/form.mjs"
@@ -67,19 +67,19 @@
   "typesVersions": {
     "*": {
       "_unstable": [
-        "./lib/dts/src/_exports/_unstable.d.ts"
+        "./lib/dts/exports/_unstable.d.ts"
       ],
       "_internal": [
-        "./lib/dts/src/_exports/_internal.d.ts"
+        "./lib/dts/exports/_internal.d.ts"
       ],
       "cli": [
-        "./lib/dts/src/_exports/cli.d.ts"
+        "./lib/dts/exports/cli.d.ts"
       ],
       "desk": [
-        "./lib/dts/src/_exports/desk.d.ts"
+        "./lib/dts/exports/desk.d.ts"
       ],
       "form": [
-        "./lib/dts/src/_exports/form.d.ts"
+        "./lib/dts/exports/form.d.ts"
       ]
     }
   },

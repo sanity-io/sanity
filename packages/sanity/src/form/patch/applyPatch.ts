@@ -1,10 +1,10 @@
 import {isObject, isString} from 'lodash'
-import {PatchArg} from '../../_exports'
 import {FIXME} from '../types'
 import {_arrayApply} from './array'
 import {_objectApply} from './object'
 import {_primitiveApply} from './primitive'
 import {_stringApply} from './string'
+import {PatchArg} from './types'
 
 export function applyAll(value: FIXME, patches: PatchArg[]) {
   return patches.reduce(applyPatch, value)

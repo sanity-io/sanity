@@ -4,10 +4,10 @@ export type {
   PreviewLayoutKey,
   PreviewMediaDimensions,
   PreviewProps,
-} from '../components/previews'
-export type {ChangeIndicatorProps} from '../components/changeIndicators'
+} from '../src/components/previews'
+export type {ChangeIndicatorProps} from '../src/components/changeIndicators'
 
-export {Timeline, TimelineController} from '../datastores'
+export {Timeline, TimelineController} from '../src/datastores'
 
 export type {
   BufferedDocumentEvent,
@@ -50,33 +50,33 @@ export type {
   Transaction,
   ValidationStatus,
   WithVersion,
-} from '../datastores'
+} from '../src/datastores'
 
-export type {Annotation, AnnotationDetails, Chunk, ChunkType} from '../field'
+export type {Annotation, AnnotationDetails, Chunk, ChunkType} from '../src/field'
 
-export * from '../form'
+export * from '../src/form'
 
-export type {PortableTextEditorElement} from '../form/inputs/PortableText/Compositor'
+export type {PortableTextEditorElement} from '../src/form/inputs/PortableText/Compositor'
 
 export type {
   RenderBlockActionsCallback,
   RenderBlockActionsProps,
-} from '../form/inputs/PortableText/types'
+} from '../src/form/inputs/PortableText/types'
 
-export * from '../form/members'
+export * from '../src/form/members'
 
-export * from '../form/inputs/ObjectInput'
-export {StudioArrayInput as ArrayOfObjectsInput} from '../form/studio/inputs/StudioArrayInput'
-export * from '../form/inputs/arrays/ArrayOfObjectsInput'
+export * from '../src/form/inputs/ObjectInput'
+export {StudioArrayInput as ArrayOfObjectsInput} from '../src/form/studio/inputs/StudioArrayInput'
+export * from '../src/form/inputs/arrays/ArrayOfObjectsInput'
 
-export type {FIXME_SanityDocument} from '../form/store/formState' // eslint-disable-line camelcase
+export type {FIXME_SanityDocument} from '../src/form/store/formState' // eslint-disable-line camelcase
 
 export type {
   HashFocusManagerChildArgs,
   HashFocusManagerProps,
   SimpleFocusManagerProps,
   SimpleFocusManagerState,
-} from '../form/studio'
+} from '../src/form/studio'
 
 export type {
   FileLike,
@@ -84,9 +84,9 @@ export type {
   UploadOptions,
   Uploader,
   UploaderResolver,
-} from '../form/studio/uploads/types'
+} from '../src/form/studio/uploads/types'
 
-export type {FormFieldPresence} from '../presence'
+export type {FormFieldPresence} from '../src/presence'
 
 export type {
   ArrayFieldDefinition,
@@ -97,13 +97,13 @@ export type {
   TemplateParameter,
   TemplateResponse,
   TypeTarget,
-} from '../templates'
+} from '../src/templates'
 
-export * from '../form/components/formField'
+export * from '../src/form/components/formField'
 
-export type {FormInputAbsolutePathArg, FormInputRelativePathArg} from '../form/FormInput'
+export type {FormInputAbsolutePathArg, FormInputRelativePathArg} from '../src/form/FormInput'
 
-export * from '../form/types'
+export * from '../src/form/types'
 
-export type {FormBuilderContextValue} from '../form/FormBuilderContext'
-export {useFormBuilder} from '../form/useFormBuilder'
+export type {FormBuilderContextValue} from '../src/form/FormBuilderContext'
+export {useFormBuilder} from '../src/form/useFormBuilder'
