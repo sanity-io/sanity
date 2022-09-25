@@ -1,8 +1,11 @@
 import {SanityClient} from '@sanity/client'
 import {useMemoObservable} from 'react-rx'
 import {map, startWith} from 'rxjs/operators'
-import {useCrossProjectTokenStore, useDocumentPreviewStore} from '../../../../../datastores'
-import {isRecord} from '../../../../../util'
+import {
+  useCrossProjectTokenStore,
+  useDocumentPreviewStore,
+} from '../../../../../_unstable/datastores'
+import {isRecord} from '../../../../../core/util'
 
 type LoadState<T> =
   | {status: 'loading'}

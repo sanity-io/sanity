@@ -1,4 +1,4 @@
-import {isRecord} from '../../util'
+import {isRecord} from '../../core/util'
 import {SerializeError} from '../structureBuilder'
 import {UnresolvedPaneNode} from '../types'
 import {leven} from './leven'

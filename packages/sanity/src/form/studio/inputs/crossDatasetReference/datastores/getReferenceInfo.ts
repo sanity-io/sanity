@@ -9,10 +9,10 @@ import {
   prepareForPreview,
   DocumentAvailability,
   Previewable,
-} from '../../../../../preview'
+} from '../../../../../_unstable/preview'
 import {CrossDatasetReferenceInfo} from '../../../../inputs/CrossDatasetReferenceInput/types'
 import {FIXME} from '../../../../types'
-import {isRecord} from '../../../../../util'
+import {isRecord} from '../../../../../core/util'
 
 const REQUEST_TAG_BASE = 'cross-dataset-refs'
 

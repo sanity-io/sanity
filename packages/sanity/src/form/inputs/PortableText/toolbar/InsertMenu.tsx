@@ -2,7 +2,7 @@ import React, {memo, useCallback, useMemo} from 'react'
 import {AddIcon} from '@sanity/icons'
 import {Button, PopoverProps} from '@sanity/ui'
 import {PortableTextEditor, usePortableTextEditor} from '@sanity/portable-text-editor'
-import {CollapseMenu, CollapseMenuButton} from '../../../../components/collapseMenu'
+import {CollapseMenu, CollapseMenuButton} from '../../../../_unstable/components/collapseMenu'
 import {BlockItem} from './types'
 import {useFeatures, useFocusBlock} from './hooks'
 

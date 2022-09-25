@@ -2,7 +2,7 @@ import React, {useCallback} from 'react'
 import {format, parse} from '@sanity/util/legacyDateFormat'
 import {set, unset} from '../../patch'
 import {StringInputProps} from '../../types'
-import {ChangeIndicator} from '../../../components/changeIndicators'
+import {ChangeIndicator} from '../../../_unstable/components/changeIndicators'
 import {CommonDateTimeInput} from './CommonDateTimeInput'
 
 interface ParsedOptions {

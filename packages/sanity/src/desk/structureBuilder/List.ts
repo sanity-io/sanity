@@ -1,5 +1,5 @@
 import {find} from 'lodash'
-import {isRecord} from '../../util'
+import {isRecord} from '../../core/util'
 import {SerializePath, SerializeOptions, Divider} from './StructureNodes'
 import {ChildResolverOptions, ChildResolver} from './ChildResolver'
 import {SerializeError, HELP_URL} from './SerializeError'

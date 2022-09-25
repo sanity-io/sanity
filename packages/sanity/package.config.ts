@@ -8,25 +8,25 @@ export default defineConfig({
     ...prevExports,
 
     // Build unexposed bundles for scripts that need to be spawned/used in workers
-    './cli/threads/esbuild': {
-      source: './src/cli/threads/esbuild.ts',
-      require: './lib/cli/threads/esbuild.js',
-      default: './lib/cli/threads/esbuild.js',
+    './_internal/cli/threads/esbuild': {
+      source: './src/_internal/cli/threads/esbuild.ts',
+      require: './lib/_internal/cli/threads/esbuild.js',
+      default: './lib/_internal/cli/threads/esbuild.js',
     },
-    './cli/threads/registerBrowserEnv': {
-      source: './src/cli/threads/registerBrowserEnv.ts',
-      require: './lib/cli/threads/registerBrowserEnv.js',
-      default: './lib/cli/threads/registerBrowserEnv.js',
+    './_internal/cli/threads/registerBrowserEnv': {
+      source: './src/_internal/cli/threads/registerBrowserEnv.ts',
+      require: './lib/_internal/cli/threads/registerBrowserEnv.js',
+      default: './lib/_internal/cli/threads/registerBrowserEnv.js',
     },
-    './cli/threads/configClient': {
-      source: './src/cli/threads/configClient.ts',
-      require: './lib/cli/threads/configClient.js',
-      default: './lib/cli/threads/configClient.js',
+    './_internal/cli/threads/configClient': {
+      source: './src/_internal/cli/threads/configClient.ts',
+      require: './lib/_internal/cli/threads/configClient.js',
+      default: './lib/_internal/cli/threads/configClient.js',
     },
-    './cli/threads/getGraphQLAPIs': {
-      source: './src/cli/threads/getGraphQLAPIs.ts',
-      require: './lib/cli/threads/getGraphQLAPIs.js',
-      default: './lib/cli/threads/getGraphQLAPIs.js',
+    './_internal/cli/threads/getGraphQLAPIs': {
+      source: './src/_internal/cli/threads/getGraphQLAPIs.ts',
+      require: './lib/_internal/cli/threads/getGraphQLAPIs.js',
+      default: './lib/_internal/cli/threads/getGraphQLAPIs.js',
     },
   }),
 

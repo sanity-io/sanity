@@ -1,1 +1,1 @@
-export {cliProjectCommands} from '../src/cli/commands'
+export * from '../src/_internal'

@@ -1,8 +1,8 @@
 import {uniqueId} from 'lodash'
 import type {SchemaType} from '@sanity/types'
 import {isValidElementType} from 'react-is'
-import {Source, getConfigContextFromSource} from '../../config'
-import {getPublishedId} from '../../util'
+import {Source, getConfigContextFromSource} from '../../core/config'
+import {getPublishedId} from '../../core/util'
 import {ListBuilder} from './List'
 import {
   getDocumentTypeListItems,

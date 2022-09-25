@@ -3,7 +3,7 @@ import {Observable, of as observableOf} from 'rxjs'
 import {FileAsset, ImageAsset} from '@sanity/types'
 import {SanityClient, ProgressEvent, SanityAssetDocument} from '@sanity/client'
 import {withMaxConcurrency} from '../../utils'
-import {DocumentPreviewStore} from '../../../../preview'
+import {DocumentPreviewStore} from '../../../../_unstable/preview'
 import {UploadOptions} from '../../uploads/types'
 
 const MAX_CONCURRENT_UPLOADS = 4

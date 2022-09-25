@@ -3,7 +3,7 @@
 
 import {ObjectSchemaType, Path, ValidationMarker} from '@sanity/types'
 import React, {useCallback, useRef} from 'react'
-import {FormFieldPresence} from '../../presence'
+import {FormFieldPresence} from '../../_unstable/presence'
 import {FormPatch, PatchChannel, PatchEvent} from '../patch'
 import {ObjectFormNode} from '../store/types/nodes'
 import {ObjectInputProps} from '../types'

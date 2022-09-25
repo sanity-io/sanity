@@ -1,8 +1,8 @@
 import React, {useCallback} from 'react'
 import {Box, Button, Card, Code, Stack, Text} from '@sanity/ui'
 import {TrashIcon} from '@sanity/icons'
-import {isDev} from '../../../environment'
-import {FormPatch, PatchArg, PatchEvent, unset} from '../../patch'
+import {isDev} from '../../../core/environment'
+import {FormPatch, PatchEvent, unset} from '../../patch'
 import {Details} from '../../components/Details'
 import {Alert} from '../../components/Alert'
 

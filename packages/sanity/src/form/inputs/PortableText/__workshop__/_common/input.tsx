@@ -4,7 +4,7 @@ import styled, {css} from 'styled-components'
 import {SchemaType} from '@sanity/types'
 import {PortableTextInput} from '../../PortableTextInput'
 import {defaultResolveInputComponent} from '../../../../studio/inputResolver/inputResolver'
-import {SanityFormConfig} from '../../../../../config'
+import {SanityFormConfig} from '../../../../../core/config'
 import {InputProps} from '../../../../types'
 
 const DebugTextArea = styled(TextArea)(({theme}: {theme: Theme}) => {

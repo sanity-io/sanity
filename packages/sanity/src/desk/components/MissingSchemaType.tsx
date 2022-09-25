@@ -1,8 +1,8 @@
 import {WarningOutlineIcon} from '@sanity/icons'
 import {PreviewValue, SanityDocument} from '@sanity/types'
 import React from 'react'
-import {GeneralPreviewLayoutKey} from '../../components/previews'
-import {SanityDefaultPreview} from '../../preview'
+import {GeneralPreviewLayoutKey} from '../../_unstable/components/previews'
+import {SanityDefaultPreview} from '../../_unstable/preview'
 
 export interface MissingSchemaTypeProps {
   layout?: GeneralPreviewLayoutKey

@@ -34,7 +34,7 @@ import type {
 } from '../../types'
 import {EMPTY_ARRAY} from '../../utils/empty'
 import {isMemberArrayOfObjects} from '../../members/fields/asserters'
-import {pathToString} from '../../../field/paths'
+import {pathToString} from '../../../_unstable/field/paths'
 import {Compositor, PortableTextEditorElement} from './Compositor'
 import {InvalidValue as RespondToInvalidContent} from './InvalidValue'
 import {usePatches} from './usePatches'

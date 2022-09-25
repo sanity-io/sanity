@@ -14,11 +14,11 @@ import {
   DocumentStore,
   useDocumentStore,
   useCrossProjectTokenStore,
-} from '../../../datastores'
-import {useClient} from '../../../hooks'
-import {createHookFromObservableFactory, getPublishedId, getDraftId} from '../../../util'
-import type {AvailabilityResponse} from '../../../preview'
-import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../studioClient'
+} from '../../../_unstable/datastores'
+import {useClient} from '../../../core/hooks'
+import {createHookFromObservableFactory, getPublishedId, getDraftId} from '../../../core/util'
+import {AvailabilityResponse} from '../../../_unstable/preview'
+import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../core/studioClient'
 
 // this is used in place of `instanceof` so the matching can be more robust and
 // won't have any issues with dual packages etc

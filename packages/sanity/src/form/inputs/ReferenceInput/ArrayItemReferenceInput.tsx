@@ -1,5 +1,6 @@
 /* eslint-disable complexity */
 /* eslint-disable max-nested-callbacks,no-nested-ternary */
+
 import React, {
   ComponentProps,
   ForwardedRef,
@@ -42,12 +43,11 @@ import {uuid} from '@sanity/uuid'
 import {useId} from '@reach/auto-id'
 import styled from 'styled-components'
 import {FormField, FormFieldValidationStatus} from '../../components/formField'
-import {PreviewCard} from '../../../components/PreviewCard'
-import {FieldPresence} from '../../../presence'
-import {IntentLink} from '../../../router'
+import {PreviewCard} from '../../../_unstable/components/PreviewCard'
+import {FieldPresence} from '../../../_unstable/presence'
+import {IntentLink} from '../../../core/router'
 import {set, setIfMissing, unset} from '../../patch'
 import {EMPTY_ARRAY} from '../../utils/empty'
-// import {useDidUpdate} from '../../hooks/useDidUpdate'
 import {isNonNullable} from '../../utils/isNonNullable'
 import {AlertStrip} from '../../components/AlertStrip'
 import {RowWrapper} from '../arrays/ArrayOfObjectsInput/item/components/RowWrapper'
@@ -56,7 +56,7 @@ import {InsertEvent} from '../arrays/ArrayOfObjectsInput/types'
 import {InsertMenu} from '../arrays/ArrayOfObjectsInput/InsertMenu'
 import {useOnClickOutside} from '../../hooks/useOnClickOutside'
 import {FIXME} from '../../types'
-import {getPublishedId} from '../../../util'
+import {getPublishedId} from '../../../core/util'
 import {ReferenceInputProps, CreateReferenceOption, ReferenceSearchState} from './types'
 import {OptionPreview} from './OptionPreview'
 import {useReferenceInfo} from './useReferenceInfo'

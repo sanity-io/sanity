@@ -1,7 +1,7 @@
 import {Tooltip, Text, Box} from '@sanity/ui'
 import React from 'react'
-import {InsufficientPermissionsMessage} from '../../../components/InsufficientPermissionsMessage'
-import {useCurrentUser} from '../../../datastores'
+import {useCurrentUser} from '../../../core/store/user/hooks'
+import {InsufficientPermissionsMessage} from '../../../_unstable/components/InsufficientPermissionsMessage'
 
 interface InsufficientPermissionsMessageTooltipProps {
   reveal: boolean

@@ -1,9 +1,12 @@
+/* eslint-disable import/no-extraneous-dependencies */
+
 import {ResetIcon} from '@sanity/icons'
 import React, {useCallback, useMemo, useState} from 'react'
+import {useDocumentOperation} from '../../../core/hooks'
+import {useCurrentUser} from '../../../core/store/user/hooks'
+import {InsufficientPermissionsMessage} from '../../../_unstable/components/InsufficientPermissionsMessage'
+import {useDocumentPairPermissions} from '../../../_unstable/datastores'
 import {DocumentActionComponent, DocumentActionModalProps} from '../types'
-import {useDocumentOperation} from '../../../hooks'
-import {InsufficientPermissionsMessage} from '../../../components/InsufficientPermissionsMessage'
-import {useCurrentUser, useDocumentPairPermissions} from '../../../datastores'
 
 const DISABLED_REASON_TITLE = {
   NO_CHANGES: 'This document has no unpublished changes',

@@ -2,7 +2,6 @@ import {
   HotkeyOptions,
   usePortableTextEditor,
   usePortableTextEditorSelection,
-  // Type,
   PortableTextEditor,
 } from '@sanity/portable-text-editor'
 import React, {memo, useCallback, useMemo, useState} from 'react'
@@ -10,9 +9,9 @@ import {ObjectSchemaType, Path, SchemaType} from '@sanity/types'
 import {Box, Button, Flex, Hotkeys, Text, Tooltip, useElementRect, useToast} from '@sanity/ui'
 import {CollapseIcon, ExpandIcon} from '@sanity/icons'
 import styled, {css} from 'styled-components'
-import {useRovingFocus} from '../../../../components/rovingFocus'
+import {useRovingFocus} from '../../../../_unstable/components/rovingFocus'
 import {FIXME} from '../../../types'
-import {useResolveInitialValueForType} from '../../../../datastores'
+import {useResolveInitialValueForType} from '../../../../_unstable/datastores'
 import {ActionMenu} from './ActionMenu'
 import {BlockStyleSelect} from './BlockStyleSelect'
 import {InsertMenu} from './InsertMenu'

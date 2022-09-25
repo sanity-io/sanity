@@ -1,5 +1,5 @@
 import {omit} from 'lodash'
-import {route} from '../router'
+import {route} from '../core/router'
 import {RouterPanes, RouterPaneGroup, RouterPaneSibling} from './types'
 
 const EMPTY_PARAMS = {}

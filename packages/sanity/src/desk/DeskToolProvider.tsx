@@ -1,6 +1,6 @@
 import React, {useMemo, useState} from 'react'
-import {useConfigContextFromSource} from '../config/useConfigContextFromSource'
-import {useSource} from '../studio'
+import {useConfigContextFromSource} from '../core/config/useConfigContextFromSource'
+import {useSource} from '../core/studio'
 import {DeskToolContext} from './DeskToolContext'
 import {createStructureBuilder, DefaultDocumentNodeResolver} from './structureBuilder'
 import {StructureResolver, UnresolvedPaneNode} from './types'

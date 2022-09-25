@@ -9,7 +9,7 @@ import {
   SanityDocument,
   SchemaType,
 } from '@sanity/types'
-import {getPublishedId, collate} from '../../../util'
+import {getPublishedId, collate} from '../../../core/util'
 import {DocumentListPaneItem, SortOrder, SortOrderBy} from './types'
 
 export function getDocumentKey(value: DocumentListPaneItem, index: number): string {

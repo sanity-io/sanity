@@ -1,7 +1,7 @@
 import React from 'react'
 import {Box, Dialog, Layer} from '@sanity/ui'
-import {PopoverDialog} from '../../components/popoverDialog'
-import {PresenceOverlay} from '../../presence'
+import {PopoverDialog} from '../../_unstable/components/popoverDialog'
+import {PresenceOverlay} from '../../_unstable/presence'
 
 const PRESENCE_MARGINS: [number, number, number, number] = [0, 0, 1, 0]
 

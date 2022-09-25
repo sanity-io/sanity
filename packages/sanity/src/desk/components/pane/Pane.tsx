@@ -1,7 +1,7 @@
 import {BoundaryElementProvider, Card, CardProps, Code, Flex, useForwardedRef} from '@sanity/ui'
 import React, {forwardRef, useMemo, useState, useCallback, useEffect} from 'react'
 import styled from 'styled-components'
-import {LegacyLayerProvider} from '../../../components/transitional'
+import {LegacyLayerProvider} from '../../../_unstable/components/transitional'
 import {PANE_COLLAPSED_WIDTH, PANE_DEBUG, PANE_DEFAULT_MIN_WIDTH} from './constants'
 import {PaneContext} from './PaneContext'
 import {PaneDivider} from './PaneDivider'

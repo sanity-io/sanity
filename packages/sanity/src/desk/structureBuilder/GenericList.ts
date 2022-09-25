@@ -1,5 +1,6 @@
 import {camelCase} from 'lodash'
-import {InitialValueTemplateItem} from '../../templates'
+import {InitialValueTemplateItem} from '../../core/templates'
+import {PreviewLayoutKey} from '../../_unstable/components/previews'
 import {StructureNode, SerializeOptions, Serializable, Child} from './StructureNodes'
 import {layoutOptions} from './Layout'
 import {MenuItem, MenuItemBuilder, maybeSerializeMenuItem} from './MenuItem'
@@ -11,7 +12,6 @@ import {
   maybeSerializeInitialValueTemplateItem,
 } from './InitialValueTemplateItem'
 import {validateId} from './util/validateId'
-import {PreviewLayoutKey} from '../../components/previews'
 
 function noChildResolver() {
   return undefined
