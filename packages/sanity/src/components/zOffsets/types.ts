@@ -1,5 +1,5 @@
 /**
- * @todo: Rename to `ZOffsetsContextValue`
+ * TODO: Rename to `ZOffsetsContextValue`
  *
  * @internal
  */
@@ -24,7 +24,7 @@ export interface ZIndexContextValue {
   /** Used by: `@sanity/google-maps-input` */
   modal: number | number[]
 
-  /** @todo this path does not seem to be correct - fix?  */
+  /** TODO this path does not seem to be correct - fix?  */
   /** Used by: `movingItem` in packages/sanity/src/styles/layout/helpers.css */
   movingItem: number | number[]
 

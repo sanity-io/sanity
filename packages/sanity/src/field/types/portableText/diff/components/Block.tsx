@@ -79,7 +79,7 @@ export default function Block(props: {
   return (
     <div
       onClick={handleClick}
-      diff-block-action={diff.action}
+      data-diff-block-action={diff.action}
       data-block-note={`changed_from_style_${fromStyle || 'undefined'}`}
     >
       {returned}

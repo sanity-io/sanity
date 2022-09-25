@@ -3,7 +3,7 @@ import React from 'react'
 import {DiffString} from '../diff'
 
 /**
- * @todo
+ * TODO
  */
 export default function DiffStringStory() {
   return (

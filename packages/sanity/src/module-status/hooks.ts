@@ -8,7 +8,7 @@ import {CheckModuleVersionsOptions, ModuleStatusResponse} from './types'
  * to date and/or supported, and if they are outdated; which versions are is
  * the latest available on npm vs which ones are installed locally.
  *
- * @param options Options to use for resolving module status
+ * @param options - Options to use for resolving module status
  * @internal Not a stable API yet
  */
 export function useModuleStatus(

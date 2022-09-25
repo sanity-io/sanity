@@ -3,7 +3,7 @@ import React from 'react'
 import {DiffFromTo} from '../diff'
 
 /**
- * @todo
+ * TODO
  */
 export default function DiffFromToStory() {
   return (

@@ -12,8 +12,6 @@ import {CrossDatasetReferencePreview} from './CrossDatasetReferencePreview'
  * Used to preview a referenced type
  * Takes as props the referenced document, the reference type and a hook to subscribe to
  * in order to listen for the reference info
- * @param props
- * @constructor
  */
 export function OptionPreview(props: {
   document: {_id: string; _type: string}

@@ -18,8 +18,8 @@ export type AsyncState<T> = AsyncPendingState | AsyncCompleteState<T> | AsyncErr
  * Takes an async function and returns a [AsyncState<value>, callback] pair.
  * Whenever the callback is invoked, a new AsyncState is returned.
  * If the returned callback is called again before the previous callback has settled, the resolution of the previous one will be ignored, thus preventing race conditions.
- * @param fn an async function that returns a value
- * @param dependencies list of dependencies that will return a new [value, callback] pair
+ * @param fn - an async function that returns a value
+ * @param dependencies - list of dependencies that will return a new [value, callback] pair
  */
 export function useAsync<T, U>(
   fn: (arg: U) => Promise<T>,

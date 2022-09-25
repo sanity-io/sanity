@@ -27,6 +27,7 @@ import {
 import React, {ReactNode} from 'react'
 import deepCompare from 'react-fast-compare'
 import {SanityClient} from '@sanity/client'
+import {isImageSource} from '@sanity/asset-utils'
 import {PatchEvent, setIfMissing, unset} from '../../../patch'
 import {FieldMember} from '../../../store'
 import {FIXME, InputProps, ObjectInputProps} from '../../../types'
@@ -52,7 +53,6 @@ import {FormInput} from '../../../FormInput'
 import {MemberField, MemberFieldError, MemberFieldSet} from '../../../members'
 import {ImageActionsMenu} from './ImageActionsMenu'
 import {ImagePreview} from './ImagePreview'
-import {isImageSource} from '@sanity/asset-utils'
 import {InvalidImageWarning} from './InvalidImageWarning'
 
 export interface Image extends Partial<BaseImage> {
@@ -794,7 +794,7 @@ export class ImageInput extends React.PureComponent<ImageInputProps, ImageInputS
             )
           }
           if (member.kind === 'error') {
-            return <MemberFieldError member={member} />
+            return <MemberFieldError key={member.key} member={member} />
           }
           //@ts-expect-error all possible cases should be covered
           return <>Unknown member kind: ${member.kind}</>

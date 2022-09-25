@@ -3,7 +3,7 @@ import React from 'react'
 import {DiffTooltip} from '../diff'
 
 /**
- * @todo
+ * TODO
  */
 export default function DiffTooltipStory() {
   return (

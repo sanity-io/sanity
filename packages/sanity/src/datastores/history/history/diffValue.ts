@@ -12,7 +12,7 @@ export type AnnotationExtractor = {
 }
 
 class ArrayContentWrapper implements ArrayInput<Annotation> {
-  type: 'array' = 'array'
+  type = 'array' as const
   value: unknown[]
   length: number
   annotation: Annotation
@@ -54,7 +54,7 @@ class ArrayContentWrapper implements ArrayInput<Annotation> {
 }
 
 class ObjectContentWrapper implements ObjectInput<Annotation> {
-  type: 'object' = 'object'
+  type = 'object' as const
   value: Record<string, unknown>
   keys: string[]
   annotation: Annotation
@@ -88,7 +88,7 @@ class ObjectContentWrapper implements ObjectInput<Annotation> {
 }
 
 class StringContentWrapper implements StringInput<Annotation> {
-  type: 'string' = 'string'
+  type = 'string' as const
   value: string
   annotation: Annotation
   extractor: AnnotationExtractor

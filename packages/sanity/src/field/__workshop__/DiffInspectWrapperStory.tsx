@@ -3,7 +3,7 @@ import React from 'react'
 import {DiffInspectWrapper} from '../diff/components/DiffInspectWrapper'
 
 /**
- * @todo
+ * TODO
  */
 export default function DiffInspectWrapperStory() {
   return (

@@ -108,8 +108,8 @@ export type DiffVisitor = (diff: Diff | StringDiffSegment, path: Path) => boolea
 /**
  * Visit all diffs in tree, until visitor returns false
  *
- * @param diff Diff to visit
- * @param visitor Visitor function, return false to stop from going deeper
+ * @param diff - Diff to visit
+ * @param visitor - Visitor function, return false to stop from going deeper
  */
 export function visitDiff(
   diff: Diff | StringDiffSegment,

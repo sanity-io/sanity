@@ -3,7 +3,7 @@ import React from 'react'
 import {FieldChange} from '../diff/components/FieldChange'
 
 /**
- * @todo
+ * TODO
  */
 export default function FieldChangeStory() {
   return (

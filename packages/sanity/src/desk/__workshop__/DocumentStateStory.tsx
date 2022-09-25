@@ -103,6 +103,7 @@ function Debug(props: {documentId: string; documentType: string}) {
                   footer={actionItem.modal.footer}
                   header={actionItem.modal.header}
                   id={`document-action-modal-${idx}`}
+                  key={idx}
                   // eslint-disable-next-line react/jsx-handler-names
                   onClose={actionItem.modal.onClose}
                 >
