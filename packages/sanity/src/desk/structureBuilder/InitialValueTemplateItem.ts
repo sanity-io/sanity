@@ -1,6 +1,6 @@
 import {pickBy} from 'lodash'
 import {ComposeIcon} from '@sanity/icons'
-import {InitialValueTemplateItem} from '../../templates'
+import {InitialValueTemplateItem} from '../../core/templates'
 import {HELP_URL, SerializeError} from './SerializeError'
 import {Serializable, SerializeOptions, SerializePath} from './StructureNodes'
 import {MenuItemBuilder, MenuItem} from './MenuItem'

@@ -1,6 +1,6 @@
 import {SerializeOptions} from '../StructureNodes'
 import {SerializeError, HELP_URL} from '../SerializeError'
-import {isRecord} from '../../../util'
+import {isRecord} from '../../../core/util'
 import type {UserViewComponent} from '../types'
 import {BaseView, GenericViewBuilder} from './View'
 

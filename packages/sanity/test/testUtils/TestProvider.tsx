@@ -1,9 +1,9 @@
 import React from 'react'
 import {SanityClient} from '@sanity/client'
 import {LayerProvider, studioTheme, ThemeProvider, ToastProvider} from '@sanity/ui'
-import {SingleWorkspace} from '../../src/config'
-import {SourceProvider, WorkspaceProvider} from '../../src/studio'
-import {ResourceCacheProvider} from '../../src/datastores/ResourceCacheProvider'
+import {SingleWorkspace} from '../../src/core/config'
+import {SourceProvider, WorkspaceProvider} from '../../src/core/studio'
+import {ResourceCacheProvider} from '../../src/_unstable/datastores/ResourceCacheProvider'
 import {getMockWorkspace} from './getMockWorkspaceFromConfig'
 
 interface TestProviderOptions {

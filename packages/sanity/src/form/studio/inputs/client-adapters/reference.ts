@@ -2,9 +2,13 @@ import {map, mergeMap, startWith, switchMap} from 'rxjs/operators'
 import {ReferenceFilterSearchOptions, ReferenceSchemaType} from '@sanity/types'
 import {combineLatest, EMPTY, Observable, of} from 'rxjs'
 import {SanityClient} from '@sanity/client'
-import {DocumentPreviewStore, getPreviewPaths, prepareForPreview} from '../../../../preview'
-import {createWeightedSearch} from '../../../../search'
-import {getIdPair, CollatedHit, getDraftId, collate, isRecord} from '../../../../util'
+import {
+  DocumentPreviewStore,
+  getPreviewPaths,
+  prepareForPreview,
+} from '../../../../_unstable/preview'
+import {createWeightedSearch} from '../../../../core/studio/components/navbar/search/search'
+import {getIdPair, CollatedHit, getDraftId, collate, isRecord} from '../../../../core/util'
 import {ReferenceInfo, ReferenceSearchHit} from '../../../inputs/ReferenceInput/types'
 
 const READABLE = {

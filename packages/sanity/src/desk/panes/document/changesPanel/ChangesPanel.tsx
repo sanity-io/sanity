@@ -3,19 +3,19 @@ import {AvatarStack, BoundaryElementProvider, Box, Button, Flex} from '@sanity/u
 import React, {useRef} from 'react'
 import styled from 'styled-components'
 import {ObjectDiff} from '@sanity/diff'
-import {
-  DocumentChangeContextInstance,
-  DiffTooltip,
-  NoChanges,
-  DocumentChangeContext,
-  ChangeList,
-} from '../../../../field'
 import {PaneContent, PaneHeader, usePane} from '../../../components'
 import {TimelineMenu} from '../timeline'
 import {useDocumentPane} from '../useDocumentPane'
-import {ScrollContainer} from '../../../../components/scroll'
-import {ChangeFieldWrapper} from '../../../../components/changeIndicators'
-import {UserAvatar} from '../../../../components/UserAvatar'
+import {ScrollContainer} from '../../../../_unstable/components/scroll'
+import {ChangeFieldWrapper} from '../../../../_unstable/components/changeIndicators'
+import {UserAvatar} from '../../../../_unstable/components/UserAvatar'
+import {
+  ChangeList,
+  DiffTooltip,
+  DocumentChangeContext,
+  DocumentChangeContextInstance,
+  NoChanges,
+} from '../../../../_unstable/field'
 import {collectLatestAuthorAnnotations} from './helpers'
 import {LoadingContent} from './content/LoadingContent'
 

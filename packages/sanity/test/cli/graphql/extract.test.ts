@@ -1,6 +1,6 @@
 import {orderBy} from 'lodash'
-import {extractFromSanitySchema} from '../../../src/cli/actions/graphql/extractFromSanitySchema'
-import type {ApiSpecification} from '../../../src/cli/actions/graphql/types'
+import {extractFromSanitySchema} from '../../../src/_internal/cli/actions/graphql/extractFromSanitySchema'
+import type {ApiSpecification} from '../../../src/_internal/cli/actions/graphql/types'
 import testStudioSchema from './fixtures/test-studio'
 
 describe('GraphQL - Schema extraction', () => {

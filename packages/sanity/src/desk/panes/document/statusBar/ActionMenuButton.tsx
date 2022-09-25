@@ -14,7 +14,7 @@ import {
 } from '@sanity/ui'
 import React, {createElement, isValidElement, useCallback, useRef, useState, useMemo} from 'react'
 import {isValidElementType} from 'react-is'
-import {LegacyLayerProvider} from '../../../../components/transitional'
+import {LegacyLayerProvider} from '../../../../_unstable/components/transitional'
 import {DocumentActionDescription} from '../../../actions'
 import {ActionStateDialog} from './ActionStateDialog'
 

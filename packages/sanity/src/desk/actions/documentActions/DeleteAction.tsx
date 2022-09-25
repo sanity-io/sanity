@@ -1,8 +1,11 @@
+/* eslint-disable import/no-extraneous-dependencies */
+
 import {TrashIcon} from '@sanity/icons'
 import React, {useCallback, useState} from 'react'
-import {InsufficientPermissionsMessage} from '../../../components/InsufficientPermissionsMessage'
-import {useCurrentUser, useDocumentPairPermissions} from '../../../datastores'
-import {useDocumentOperation} from '../../../hooks'
+import {InsufficientPermissionsMessage} from '../../../_unstable/components/InsufficientPermissionsMessage'
+import {useDocumentPairPermissions} from '../../../_unstable/datastores'
+import {useDocumentOperation} from '../../../core/hooks'
+import {useCurrentUser} from '../../../core/store/user/hooks'
 import {ConfirmDeleteDialog} from '../../components'
 import {DocumentActionComponent} from '../types'
 

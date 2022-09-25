@@ -1,4 +1,4 @@
-import {isKeySegment, isObjectSchemaType, Path} from '@sanity/types'
+import {isKeySegment, Path} from '@sanity/types'
 import {castArray} from 'lodash'
 import {
   ArrayOfObjectsFormNode,
@@ -6,7 +6,7 @@ import {
   FieldMember,
   FieldSetMember,
   ObjectFormNode,
-} from '../../../form'
+} from '../types'
 import {isMemberArrayOfObjects} from '../../members/fields/asserters'
 
 // eslint-disable-next-line @typescript-eslint/ban-types

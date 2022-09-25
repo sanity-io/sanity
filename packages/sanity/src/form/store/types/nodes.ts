@@ -7,7 +7,7 @@ import {
   SchemaType,
   StringSchemaType,
 } from '@sanity/types'
-import {FormFieldPresence} from '../../../presence'
+import {FormFieldPresence} from '../../../_unstable'
 import {NodeValidation} from '../../types/common'
 import {ArrayOfObjectsMember, ArrayOfPrimitivesMember, ObjectMember} from './members'
 import {FormFieldGroup} from './fieldGroup'

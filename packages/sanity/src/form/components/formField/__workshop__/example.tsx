@@ -1,11 +1,9 @@
 import type {ValidationMarker} from '@sanity/types'
-import {Card, Code, Container, Flex, LayerProvider, TextInput} from '@sanity/ui'
+import {Card, Code, Container, Flex, LayerProvider} from '@sanity/ui'
 import {useBoolean, useNumber, useString} from '@sanity/ui-workshop'
 import React, {useCallback, useMemo, useState} from 'react'
-import {ElementWithChangeBar} from '../../../../components/changeIndicators/ElementWithChangeBar'
-import {useCurrentUser} from '../../../../datastores'
-import type {FormFieldPresence} from '../../../../presence'
-import {FormField} from '../FormField'
+import {useCurrentUser} from '../../../../core/store/user/hooks'
+import type {FormFieldPresence} from '../../../../_unstable/presence'
 
 const DEBUG = false
 const noop = () => undefined

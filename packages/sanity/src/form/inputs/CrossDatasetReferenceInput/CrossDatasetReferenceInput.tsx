@@ -17,7 +17,6 @@ import {
   MenuItem,
   Stack,
   Text,
-  useForwardedRef,
   useToast,
 } from '@sanity/ui'
 import {useObservableCallback} from 'react-rx'
@@ -26,8 +25,8 @@ import {set, unset} from '../../patch'
 import {AlertStrip} from '../../components/AlertStrip'
 import {useOnClickOutside} from '../../hooks/useOnClickOutside'
 import {isNonNullable} from '../../utils/isNonNullable'
-import {getPublishedId} from '../../../util'
-import {ChangeIndicator} from '../../../components/changeIndicators'
+import {getPublishedId} from '../../../core/util'
+import {ChangeIndicator} from '../../../_unstable/components/changeIndicators'
 import {CrossDatasetReferenceInfo, CrossDatasetSearchHit, SearchState} from './types'
 import {OptionPreview} from './OptionPreview'
 import {GetReferenceInfoFn, useReferenceInfo} from './useReferenceInfo'

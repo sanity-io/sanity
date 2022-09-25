@@ -2,8 +2,8 @@
 
 import {ObjectSchemaType, Path, ValidationMarker} from '@sanity/types'
 import React, {useEffect, useMemo, useRef} from 'react'
-import {Source} from '../config'
-import {FormFieldPresence} from '../presence'
+import {Source} from '../core/config'
+import {FormFieldPresence} from '../_unstable/presence'
 import {FormBuilderContext, FormBuilderContextValue} from './FormBuilderContext'
 import {
   FIXME,

@@ -25,14 +25,13 @@ import {
   UploadState,
 } from '@sanity/types'
 import React, {ReactNode} from 'react'
-import deepCompare from 'react-fast-compare'
 import {SanityClient} from '@sanity/client'
 import {isImageSource} from '@sanity/asset-utils'
 import {PatchEvent, setIfMissing, unset} from '../../../patch'
 import {FieldMember} from '../../../store'
 import {FIXME, InputProps, ObjectInputProps} from '../../../types'
-import {PresenceOverlay} from '../../../../presence'
-import {ImperativeToast} from '../../../../components/transitional'
+import {PresenceOverlay} from '../../../../_unstable/presence'
+import {ImperativeToast} from '../../../../_unstable/components/transitional'
 import {
   ResolvedUploader,
   Uploader,
@@ -48,7 +47,7 @@ import {handleSelectAssetFromSource} from '../common/assetSource'
 import {ActionsMenu} from '../common/ActionsMenu'
 import {UploadWarning} from '../common/UploadWarning'
 import {ImageToolInput} from '../ImageToolInput'
-import {ChangeIndicator} from '../../../../components/changeIndicators'
+import {ChangeIndicator} from '../../../../_unstable/components/changeIndicators'
 import {FormInput} from '../../../FormInput'
 import {MemberField, MemberFieldError, MemberFieldSet} from '../../../members'
 import {ImageActionsMenu} from './ImageActionsMenu'

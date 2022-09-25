@@ -1,5 +1,5 @@
 import React, {forwardRef, useContext} from 'react'
-import {StateLink} from '../../../router'
+import {StateLink} from '../../../core/router'
 import {PaneRouterContext} from './PaneRouterContext'
 import {ChildLinkProps} from './types'
 

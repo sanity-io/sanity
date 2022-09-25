@@ -6,7 +6,7 @@ import {
   SingleWorkspace,
   Source,
   Workspace,
-} from '../../src/config'
+} from '../../src/core/config'
 import {createMockSanityClient} from '../mocks/mockSanityClient'
 
 const defaultMockUser: CurrentUser = {

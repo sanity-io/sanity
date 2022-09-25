@@ -1,7 +1,7 @@
 import {RestoreIcon} from '@sanity/icons'
 import React, {useCallback, useMemo, useState} from 'react'
-import {useDocumentOperation} from '../../../hooks'
-import {useRouter} from '../../../router'
+import {useDocumentOperation} from '../../../core/hooks'
+import {useRouter} from '../../../core/router'
 import {DocumentActionComponent, DocumentActionModalProps} from '../types'
 
 export const HistoryRestoreAction: DocumentActionComponent = ({id, type, revision, onComplete}) => {

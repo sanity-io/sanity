@@ -1,6 +1,6 @@
 import {Observable, of as observableOf, from as observableFrom, Subscribable} from 'rxjs'
 import {publishReplay, refCount, switchMap} from 'rxjs/operators'
-import {isRecord} from '../../util'
+import {isRecord} from '../../core/util'
 import {PaneNode, RouterPaneSiblingContext, UnresolvedPaneNode} from '../types'
 import {PaneResolutionError} from './PaneResolutionError'
 

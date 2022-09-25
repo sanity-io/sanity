@@ -1,6 +1,6 @@
 import {useToast} from '@sanity/ui'
 import React, {memo, useEffect} from 'react'
-import {useDocumentOperationEvent} from '../../../hooks'
+import {useDocumentOperationEvent} from '../../../core/hooks'
 import {useDocumentPane} from './useDocumentPane'
 
 function getOpErrorTitle(op: string): string {

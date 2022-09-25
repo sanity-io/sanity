@@ -1,12 +1,12 @@
 import {PortableTextBlock, Type as PTType} from '@sanity/portable-text-editor'
-import {Path, Schema, ValidationMarker} from '@sanity/types'
+import {Path, ValidationMarker} from '@sanity/types'
 import React, {useCallback, useEffect, useMemo, useState} from 'react'
 import {
   // FormInputComponentResolver,
   PortableTextMarker,
   RenderCustomMarkers,
 } from '../../../../types'
-import {useSource} from '../../../../../studio'
+import {useSource} from '../../../../../core/studio'
 import {FormBuilderProvider} from '../../../../FormBuilderProvider'
 import {PortableTextInput} from '../../PortableTextInput'
 import {applyAll} from '../../../../patch/simplePatch'

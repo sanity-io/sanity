@@ -1,6 +1,6 @@
 import type {SanityDocument, SchemaType, SortOrdering} from '@sanity/types'
-import type {ConfigContext, Source} from '../../config'
-import type {InitialValueTemplateItem} from '../../templates'
+import type {ConfigContext, Source} from '../../core/config'
+import type {InitialValueTemplateItem} from '../../core/templates'
 import type {ComponentBuilder, ComponentInput} from './Component'
 import type {DocumentBuilder, PartialDocumentNode} from './Document'
 import type {DocumentListInput, DocumentListBuilder} from './DocumentList'

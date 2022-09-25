@@ -4,14 +4,8 @@ import React, {useCallback, useEffect, useMemo, useState} from 'react'
 import type {ObjectField, ObjectSchemaTypeWithOptions} from '@sanity/types'
 import {PatchEvent, createPatchChannel} from '../patch'
 import {applyAll} from '../patch/applyPatch'
-import {toMutationPatches} from '../utils/mutationPatch'
-import {PresenceOverlay} from '../../presence'
-import {
-  getDummySchema,
-  getDummyDocument,
-  schemaListOptions,
-  DUMMY_DOCUMENT_ID,
-} from './_common/data'
+import {PresenceOverlay} from '../../_unstable/presence'
+import {getDummySchema, getDummyDocument, schemaListOptions} from './_common/data'
 import {
   TypeTester,
   FilterFieldInput,

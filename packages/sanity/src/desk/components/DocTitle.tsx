@@ -1,7 +1,7 @@
 import {SanityDocumentLike} from '@sanity/types'
 import React from 'react'
-import {useSchema} from '../../hooks'
-import {unstable_useDocumentPreview as useDocumentPreview} from '../../preview'
+import {useSchema} from '../../core/hooks'
+import {unstable_useDocumentPreview as useDocumentPreview} from '../../_unstable/preview'
 
 export interface DocTitleProps {
   document: SanityDocumentLike

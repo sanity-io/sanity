@@ -1,5 +1,6 @@
 /* eslint-disable complexity */
 /* eslint-disable max-nested-callbacks,no-nested-ternary */
+
 import React, {
   ComponentProps,
   ForwardedRef,
@@ -9,7 +10,6 @@ import React, {
   useRef,
   useState,
 } from 'react'
-// import {isValidationErrorMarker, Reference} from '@sanity/types'
 import {
   EllipsisVerticalIcon,
   LaunchIcon as OpenInNewTabIcon,
@@ -31,25 +31,22 @@ import {
   MenuItem,
   Stack,
   Text,
-  useForwardedRef,
   useToast,
 } from '@sanity/ui'
 import {useObservableCallback} from 'react-rx'
 import {uuid} from '@sanity/uuid'
 import styled from 'styled-components'
-// import {ChangeIndicatorForFieldPath, FormField, PreviewCard} from '../../../components'
-import {ChangeIndicator} from '../../../components/changeIndicators'
-import {PreviewCard} from '../../../components/PreviewCard'
+import {PreviewCard} from '../../../_unstable/components/PreviewCard'
+import {ChangeIndicator} from '../../../_unstable/components/changeIndicators'
 import {set, setIfMissing, unset} from '../../patch'
 import {EMPTY_ARRAY} from '../../utils/empty'
-// import {useDidUpdate} from '../../hooks/useDidUpdate'
 import {isNonNullable} from '../../utils/isNonNullable'
 import {AlertStrip} from '../../components/AlertStrip'
 import {Alert} from '../../components/Alert'
 import {useOnClickOutside} from '../../hooks/useOnClickOutside'
 import {FIXME} from '../../types'
-import {getPublishedId} from '../../../util'
-import {IntentLink} from '../../../router'
+import {getPublishedId} from '../../../core/util'
+import {IntentLink} from '../../../core/router'
 import {ReferenceInputProps, CreateReferenceOption, ReferenceSearchState} from './types'
 import {OptionPreview} from './OptionPreview'
 import {useReferenceInfo} from './useReferenceInfo'

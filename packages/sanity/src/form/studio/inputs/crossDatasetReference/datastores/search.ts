@@ -5,8 +5,8 @@ import {Observable} from 'rxjs'
 
 // eslint-disable-next-line camelcase
 import {SanityClient} from '@sanity/client'
-import {collate} from '../../../../../util'
-import {createWeightedSearch} from '../../../../../search'
+import {collate} from '../../../../../core/util'
+import {createWeightedSearch} from '../../../../../core/studio/components/navbar/search/search'
 
 interface SearchHit {
   id: string

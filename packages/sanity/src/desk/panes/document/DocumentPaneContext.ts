@@ -6,8 +6,8 @@ import {
   SanityDocumentLike,
 } from '@sanity/types'
 import {createContext} from 'react'
-import {DocumentLanguageFilterComponent} from '../../../config'
-import {EditStateFor, TimelineController, Timeline} from '../../../datastores'
+import {DocumentLanguageFilterComponent} from '../../../core/config'
+import {EditStateFor, TimelineController, Timeline} from '../../../_unstable/datastores'
 import {PatchEvent, StateTree} from '../../../form'
 import {DocumentActionComponent} from '../../actions'
 import {DocumentBadgeComponent} from '../../badges'

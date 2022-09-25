@@ -1,7 +1,7 @@
 import {orderBy} from 'lodash'
 
-import {extractFromSanitySchema} from '../../../src/cli/actions/graphql/extractFromSanitySchema'
-import generateSchema from '../../../src/cli/actions/graphql/gen3'
+import {extractFromSanitySchema} from '../../../src/_internal/cli/actions/graphql/extractFromSanitySchema'
+import generateSchema from '../../../src/_internal/cli/actions/graphql/gen3'
 
 import testStudioSchema from './fixtures/test-studio'
 

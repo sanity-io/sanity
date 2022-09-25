@@ -10,7 +10,7 @@ import {RenderBlockActionsCallback} from '../types'
 import {useMemberValidation} from '../hooks/useMemberValidation'
 import {usePortableTextMarkers} from '../hooks/usePortableTextMarkers'
 import {usePortableTextMemberItem} from '../hooks/usePortableTextMembers'
-import {pathToString} from '../../../../field/paths'
+import {pathToString} from '../../../../_unstable/field/paths'
 import {debugRender} from '../debugRender'
 import {TEXT_STYLE_PADDING} from './constants'
 import {

@@ -1,24 +1,20 @@
 /* eslint-disable no-nested-ternary */
 
 import {isActionEnabled} from '@sanity/schema/_internal'
-import {Box, Container, Flex, Spinner, Text, useToast} from '@sanity/ui'
+import {Box, Container, Flex, Spinner, Text} from '@sanity/ui'
 import React, {useCallback, useEffect, useMemo} from 'react'
 import {tap} from 'rxjs/operators'
 import {useDocumentPane} from '../../useDocumentPane'
 import {Delay} from '../../../../components/Delay'
-import {useDocumentPresence, useDocumentStore} from '../../../../../datastores'
-import {
-  createPatchChannel,
-  fromMutationPatches,
-  PatchEvent,
-  PatchMsg,
-  FormBuilder,
-} from '../../../../../form'
-import {PresenceOverlay} from '../../../../../presence'
 import {
   DocumentMutationEvent,
   DocumentRebaseEvent,
-} from '../../../../../datastores/document/buffered-doc/types'
+  useDocumentPresence,
+  useDocumentStore,
+} from '../../../../../_unstable'
+import {PatchEvent, PatchMsg, createPatchChannel, fromMutationPatches} from '../../../../../form'
+import {FormBuilder} from '../../../../../form/studio/FormBuilder'
+import {PresenceOverlay} from '../../../../../_unstable/presence'
 import {useConditionalToast} from './useConditionalToast'
 
 interface FormViewProps {

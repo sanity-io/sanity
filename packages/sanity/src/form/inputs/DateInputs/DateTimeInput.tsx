@@ -1,7 +1,7 @@
 import {format, parse} from '@sanity/util/legacyDateFormat'
 import {getMinutes, setMinutes, parseISO} from 'date-fns'
 import React, {useCallback} from 'react'
-import {ChangeIndicator} from '../../../components/changeIndicators'
+import {ChangeIndicator} from '../../../_unstable/components/changeIndicators'
 import {set, unset} from '../../patch'
 import {StringInputProps} from '../../types'
 import {CommonDateTimeInput} from './CommonDateTimeInput'

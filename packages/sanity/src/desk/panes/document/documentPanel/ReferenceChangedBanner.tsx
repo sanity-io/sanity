@@ -8,9 +8,9 @@ import {debounceTime, map} from 'rxjs/operators'
 import {concat, Observable, of} from 'rxjs'
 import {useMemoObservable} from 'react-rx'
 import {RouterPaneGroup} from '../../../types'
-import {useDocumentPreviewStore} from '../../../../datastores'
-import {DocumentAvailability} from '../../../../preview'
-import {getPublishedId} from '../../../../util'
+import {useDocumentPreviewStore} from '../../../../_unstable/datastores'
+import {DocumentAvailability} from '../../../../_unstable/preview'
+import {getPublishedId} from '../../../../core/util'
 import {usePaneRouter} from '../../../components'
 
 const Root = styled(Card)`

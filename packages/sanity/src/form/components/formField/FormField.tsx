@@ -2,7 +2,7 @@
 
 import {Stack} from '@sanity/ui'
 import React, {memo} from 'react'
-import {FormFieldPresence} from '../../../presence'
+import {FormFieldPresence} from '../../../_unstable'
 import {NodeValidation} from '../../types/common'
 import {FormFieldHeader} from './FormFieldHeader'
 

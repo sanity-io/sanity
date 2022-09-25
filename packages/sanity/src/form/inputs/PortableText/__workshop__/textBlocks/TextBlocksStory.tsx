@@ -2,11 +2,8 @@ import {ValidationMarker} from '@sanity/types'
 import {Box, Card, Container} from '@sanity/ui'
 import {useAction, useBoolean} from '@sanity/ui-workshop'
 import React, {useMemo} from 'react'
-import {createSchema} from '../../../../../schema'
 import {PortableTextMarker} from '../../../../types'
-import {FormBuilderProvider} from '../../../../FormBuilderProvider'
-import {TextBlock} from '../../text'
-import {useSource} from '../../../../../studio'
+import {useSource} from '../../../../../core/studio'
 
 const errorMarker: ValidationMarker = {
   level: 'error',

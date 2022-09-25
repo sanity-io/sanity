@@ -3,7 +3,7 @@
 import {Box, Flex, Grid, rem, Stack, Text, Theme, useForwardedRef} from '@sanity/ui'
 import React, {forwardRef, useCallback, useMemo} from 'react'
 import styled, {css} from 'styled-components'
-import {FieldPresence, FormFieldPresence} from '../../../presence'
+import {FieldPresence, FormFieldPresence} from '../../../_unstable'
 import {NodeValidation} from '../../types'
 import {FormFieldValidationStatus} from './FormFieldValidationStatus'
 import {FormFieldSetLegend} from './FormFieldSetLegend'

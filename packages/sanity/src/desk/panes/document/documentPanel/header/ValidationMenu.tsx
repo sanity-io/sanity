@@ -7,7 +7,7 @@ import {
 } from '@sanity/types'
 import {Button, ButtonProps, Menu, MenuButton} from '@sanity/ui'
 import React, {useCallback, useMemo} from 'react'
-import {ValidationList} from '../../../../../components/validation'
+import {ValidationList} from '../../../../../_unstable/components/validation'
 import {useDocumentPane} from '../../useDocumentPane'
 
 export interface ValidationMenuProps {

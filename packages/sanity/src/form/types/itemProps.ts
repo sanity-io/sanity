@@ -7,7 +7,7 @@ import {
   StringSchemaType,
 } from '@sanity/types'
 import React from 'react'
-import {FormFieldPresence} from '../../presence'
+import {FormFieldPresence} from '../../_unstable'
 import {NodeValidation} from './common'
 
 export interface BaseItemProps {

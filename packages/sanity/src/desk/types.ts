@@ -1,8 +1,8 @@
 import {SchemaType} from '@sanity/types'
 import {Subscribable} from 'rxjs'
-import {GeneralPreviewLayoutKey} from '../components/previews'
-import {ConfigContext} from '../config'
-import {InitialValueTemplateItem} from '../templates'
+import {GeneralPreviewLayoutKey} from '../_unstable/components/previews'
+import {ConfigContext} from '../core/config'
+import {InitialValueTemplateItem} from '../core/templates'
 import {
   ComponentView,
   DefaultDocumentNodeResolver,

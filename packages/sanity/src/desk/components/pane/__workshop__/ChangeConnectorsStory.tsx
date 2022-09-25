@@ -22,8 +22,8 @@ import {
   ChangeConnectorRoot,
   ChangeIndicator,
   ChangeFieldWrapper,
-} from '../../../../components/changeIndicators'
-import {ScrollContainer} from '../../../../components/scroll'
+} from '../../../../_unstable/components/changeIndicators'
+import {ScrollContainer} from '../../../../_unstable/components/scroll'
 import {Pane} from '../Pane'
 import {PaneContent} from '../PaneContent'
 import {PaneFooter} from '../PaneFooter'

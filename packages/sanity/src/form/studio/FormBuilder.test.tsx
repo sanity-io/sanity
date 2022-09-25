@@ -9,7 +9,7 @@ import {createTestProvider} from '../../../test/testUtils/TestProvider'
 import {createPatchChannel} from '../patch'
 import {useFormState} from '../store/useFormState'
 import {EMPTY_ARRAY} from '../utils/empty'
-import {useWorkspace} from '../../studio'
+import {useWorkspace} from '../../core/studio'
 import {FormBuilder, FormBuilderProps} from './FormBuilder'
 
 const schemaTypes = [

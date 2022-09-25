@@ -17,7 +17,7 @@ import {
 import {concat, merge, of, fromEvent, Observable, Subject} from 'rxjs'
 import deepEquals from 'react-fast-compare'
 import {SanityDocument} from '@sanity/types'
-import {listenQuery} from '../../../datastores'
+import {listenQuery} from '../../../_unstable/datastores'
 
 const INITIAL_CHILD_PROPS = {
   result: null,

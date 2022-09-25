@@ -11,7 +11,7 @@ import {
   useHistoryStore,
   useInitialValue,
   usePresenceStore,
-} from '../../../datastores'
+} from '../../../_unstable/datastores'
 import {
   useClient,
   useConnectionState,
@@ -20,17 +20,17 @@ import {
   useSchema,
   useTemplates,
   useValidationStatus,
-} from '../../../hooks'
-import {isDev} from '../../../environment'
-import {useSource} from '../../../studio'
-import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../studioClient'
-import {getPublishedId, useUnique} from '../../../util'
+} from '../../../core/hooks'
+import {isDev} from '../../../core/environment'
+import {useSource} from '../../../core/studio'
+import {getPublishedId, useUnique} from '../../../core/util'
 import {usePaneRouter} from '../../components'
 import {PatchEvent, StateTree, toMutationPatches} from '../../../form'
 import {useFormState} from '../../../form/store/useFormState'
 import {setAtPath} from '../../../form/store/stateTreeHelper'
 import {getExpandOperations} from '../../../form/store/utils/getExpandOperations'
 import {useDeskTool} from '../../useDeskTool'
+import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../core/studioClient'
 import {DocumentPaneContext, DocumentPaneContextValue} from './DocumentPaneContext'
 import {getMenuItems} from './menuItems'
 import {DocumentPaneProviderProps} from './types'

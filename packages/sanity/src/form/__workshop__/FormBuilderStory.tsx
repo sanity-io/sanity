@@ -1,8 +1,8 @@
 import {Path} from '@sanity/types'
 import {Card, Container} from '@sanity/ui'
 import React, {useCallback, useMemo, useState} from 'react'
-import {useUnique} from '../../util'
-import {useDocumentOperation, useEditState, useSchema, useValidationStatus} from '../../hooks'
+import {useUnique} from '../../core/util'
+import {useDocumentOperation, useEditState, useSchema, useValidationStatus} from '../../core/hooks'
 import {FormBuilder} from '../studio/FormBuilder'
 import {createPatchChannel} from '../patch/PatchChannel'
 
@@ -60,7 +60,7 @@ export default function FormBuilderStory() {
     <Card paddingX={4} paddingY={[4, 5, 6, 7]} style={{minHeight: '100%', position: 'relative'}}>
       <Container width={1}>
         TODO
-        {/*<SanityFormBuilder*/}
+        {/*<FormBuilder*/}
         {/*  __internal_patchChannel={patchChannel}*/}
         {/*  autoFocus*/}
         {/*  changesOpen={false}*/}

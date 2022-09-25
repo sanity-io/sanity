@@ -18,7 +18,7 @@ import {
 import React, {forwardRef, MouseEvent, ReactElement, useCallback, useMemo, useRef} from 'react'
 import {useId} from '@reach/auto-id'
 import {ObjectSchemaType} from '@sanity/types'
-import {IntentLink} from '../../../../router'
+import {IntentLink} from '../../../../core/router'
 import {FIXME, RenderPreviewCallback} from '../../../types'
 import {is} from '../../../utils/is'
 

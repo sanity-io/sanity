@@ -1,6 +1,6 @@
 import {MasterDetailIcon} from '@sanity/icons'
 import {lazy} from 'react'
-import {createPlugin} from '../config'
+import {createPlugin} from '../core/config'
 import {getIntentState} from './getIntentState'
 import {router} from './router'
 import {DeskToolOptions} from './types'
