@@ -1,3 +1,4 @@
+import {SanityDocument} from '@sanity/types'
 import {collate, removeDupes} from '../src/util/draftUtils'
 
 test('collate()', () => {
@@ -14,10 +15,10 @@ test('collate()', () => {
 })
 
 test('removeDupes()', () => {
-  const foo = {_type: 'foo', _id: 'foo'}
-  const fooDraft = {_type: 'foo', _id: 'drafts.foo'}
-  const barDraft = {_type: 'foo', _id: 'drafts.bar'}
-  const baz = {_type: 'foo', _id: 'baz'}
+  const foo = {_type: 'foo', _id: 'foo'} as SanityDocument
+  const fooDraft = {_type: 'foo', _id: 'drafts.foo'} as SanityDocument
+  const barDraft = {_type: 'foo', _id: 'drafts.bar'} as SanityDocument
+  const baz = {_type: 'foo', _id: 'baz'} as SanityDocument
 
   expect(removeDupes([foo, fooDraft, barDraft, baz])).toEqual([fooDraft, barDraft, baz])
 })
