@@ -1,8 +1,6 @@
 import type {MendozaEffectPair} from '@sanity/types'
 import type {RemoteSnapshotVersionEvent} from '../../document/document-pair/checkoutPair'
 
-export type {ChunkType, Chunk} from '../../../field'
-
 export type DocumentRemoteMutationVersionEvent = Exclude<
   RemoteSnapshotVersionEvent,
   {type: 'snapshot'}

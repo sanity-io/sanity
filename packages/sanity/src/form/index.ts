@@ -1,13 +1,5 @@
 /* eslint-disable camelcase */
 
-// sanity
-export * from './studio/contexts'
-export * from './studio/FormBuilder'
-export * from './studio/FormProvider'
-export * from './studio/focusManagers/HashFocusManager'
-export * from './studio/focusManagers/SimpleFocusManager'
-
-// inputs
 export type {ArrayInputMember, InsertEvent} from './inputs/arrays/ArrayOfObjectsInput'
 export type {ArrayInputState, ArrayInputProps} from './inputs/arrays/ArrayOfObjectsInput/ArrayInput'
 export * from './inputs/PortableText/PortableTextInput'

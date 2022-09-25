@@ -14,7 +14,8 @@ import {
   tap,
   withLatestFrom,
 } from 'rxjs/operators'
-import {ListenerEvent, MutationEvent} from '../getPairListener'
+import {ListenerEvent} from '../getPairListener'
+import {MutationEvent} from '../types'
 import {
   DocumentMutationEvent,
   DocumentRebaseEvent,

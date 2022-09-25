@@ -71,17 +71,6 @@ export {ConfirmDeleteDialog} from '../src/desk/components/confirmDeleteDialog'
 export type {ConfirmDeleteDialogProps} from '../src/desk/components/confirmDeleteDialog'
 
 export * from '../src/field'
-export * from '../src/field/diff/components/ChangeBreadcrumb'
-export * from '../src/field/diff/components/ChangeTitleSegment'
-export * from '../src/field/diff/components/DiffErrorBoundary'
-export * from '../src/field/diff/components/DiffInspectWrapper'
-export * from '../src/field/diff/components/FallbackDiff'
-export * from '../src/field/diff/components/FieldChange'
-export * from '../src/field/diff/components/GroupChange'
-export * from '../src/field/diff/components/MetaInfo'
-export * from '../src/field/diff/components/NoChanges'
-export * from '../src/field/diff/components/RevertChangesButton'
-export * from '../src/field/diff/components/ValueError'
 
 export {PatchEvent} from '../src/form'
 
@@ -159,8 +148,6 @@ export type {
 } from '../src/form'
 
 export * from '../src/hooks/useTimeAgo'
-
-export type {TimeAgoOpts} from '../src/hooks'
 
 export {
   DocumentPreviewPresence,

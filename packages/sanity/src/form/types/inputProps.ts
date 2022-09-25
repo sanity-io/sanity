@@ -17,6 +17,7 @@ import {
   ObjectFormNode,
   StringFormNode,
 } from '../store/types/nodes'
+import {FormFieldGroup} from '../store'
 import {
   RenderArrayOfObjectsItemCallback,
   RenderArrayOfPrimitivesItemCallback,
@@ -25,7 +26,6 @@ import {
   RenderPreviewCallback,
 } from './renderCallback'
 import {InsertItemEvent, MoveItemEvent} from './event'
-import {FormFieldGroup} from './fieldGroups'
 
 export interface ObjectInputProps<
   T = {[key in string]: unknown},

@@ -1,12 +1,11 @@
 import type {SanityClient} from '@sanity/client'
 import {Diff, ObjectDiff} from '@sanity/diff'
 import {Observable} from 'rxjs'
-import {Annotation} from '../../../field'
+import {Annotation, Chunk} from '../../../field'
 import {RemoteSnapshotVersionEvent} from '../../document/document-pair/checkoutPair'
 import {remoteSnapshots} from '../../document/document-pair/remoteSnapshots'
 import {Timeline, ParsedTimeRef} from './Timeline'
 import {getJsonStream} from './getJsonStream'
-import {Chunk} from './types'
 import {Aligner} from './Aligner'
 import {Reconstruction} from './Reconstruction'
 

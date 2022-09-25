@@ -1,7 +1,7 @@
 import React, {useCallback} from 'react'
 import {ElementQuery, Select, TabList} from '@sanity/ui'
 import styled from 'styled-components'
-import {FormFieldGroup} from '../../../types'
+import {FormFieldGroup} from '../../../store'
 import {GroupOption, GroupTab} from './GroupTab'
 
 interface FieldGroupTabsProps {

@@ -1,6 +1,5 @@
 export * from './buffered-doc'
 export * from './document-pair'
-export * from './document-pair/checkoutPair'
 export * from './document-pair/operationEvents'
 export * from './document-store'
 export * from './getPairListener'
