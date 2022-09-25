@@ -9,7 +9,9 @@ import {
   PrimitiveFieldProps,
 } from '../types/fieldProps'
 
-export function assertType<T>(v: unknown): asserts v is T {}
+export function assertType<T>(v: unknown): asserts v is T {
+  // intentionally empty
+}
 
 export function isObjectInputProps(inputProps: InputProps): inputProps is ObjectInputProps {
   return isObjectSchemaType(inputProps.schemaType)

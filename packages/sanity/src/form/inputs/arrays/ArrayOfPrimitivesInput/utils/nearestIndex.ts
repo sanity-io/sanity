@@ -2,9 +2,6 @@
  * Find the index of the nearest element with the same value. Starts at given index and looks incrementally in either direction for the searchElement
  * It's *NOT* inclusive: If the element matches the element at the startIdx, startIdx will be returned
  * It prefers matches in the first half. If there's a tie it will pick the first element that comes before
- * @param array
- * @param startIdx
- * @param searchElement
  */
 export function nearestIndexOf<T>(array: T[], startIdx: number, searchElement: T) {
   return nearestIndex(array, startIdx, (element) => element === searchElement)
@@ -14,9 +11,6 @@ export function nearestIndexOf<T>(array: T[], startIdx: number, searchElement: T
  * Find the index of the nearest element matching the predicate. Starts at given index and looks incrementally in either direction
  * It's *NOT* inclusive: If the predicate matches the element at the startIdx, startIdx will be returned
  * It prefers matches in the first half. If there's a tie it will pick the first element that comes before
- * @param array
- * @param startIdx
- * @param predicate
  */
 export function nearestIndex<T>(
   array: T[],

@@ -3,7 +3,7 @@ import {ZIndexContextValue} from './types'
 import {defaults} from './defaults'
 
 /**
- * @todo: Rename to `ZOffsetsContext`
+ * TODO: Rename to `ZOffsetsContext`
  *
  * @internal
  */

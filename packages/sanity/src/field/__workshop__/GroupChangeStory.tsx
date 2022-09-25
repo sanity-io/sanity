@@ -3,7 +3,7 @@ import React from 'react'
 import {GroupChange} from '../diff/components/GroupChange'
 
 /**
- * @todo
+ * TODO
  */
 export default function GroupChangeStory() {
   return (

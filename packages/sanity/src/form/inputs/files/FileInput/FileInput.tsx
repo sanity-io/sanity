@@ -24,6 +24,7 @@ import {
   ToastParams,
 } from '@sanity/ui'
 import {SanityClient} from '@sanity/client'
+import {isFileSource} from '@sanity/asset-utils'
 import {WithReferencedAsset} from '../../../utils/WithReferencedAsset'
 import {Uploader, UploaderResolver, UploadOptions} from '../../../studio/uploads/types'
 import {FileInfo, FileTarget} from '../common/styles'
@@ -41,7 +42,6 @@ import {ChangeIndicator} from '../../../../components/changeIndicators'
 import {CardOverlay, FlexContainer} from './styles'
 import {FileDetails} from './FileDetails'
 import {FileSkeleton} from './FileSkeleton'
-import {isFileSource} from '@sanity/asset-utils'
 import {InvalidFileWarning} from './InvalidFileWarning'
 
 // We alias DOM File type here to distinguish it from the type of the File value
@@ -636,7 +636,7 @@ export class FileInput extends React.PureComponent<FileInputProps, FileInputStat
             )
           }
           if (member.kind === 'error') {
-            return <MemberFieldError member={member} />
+            return <MemberFieldError key={member.key} member={member} />
           }
           //@ts-expect-error all possible cases should be covered
           return <>Unknown member kind: ${member.kind}</>

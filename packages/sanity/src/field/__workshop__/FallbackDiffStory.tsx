@@ -3,7 +3,7 @@ import React from 'react'
 import {FallbackDiff} from '../diff/components/FallbackDiff'
 
 /**
- * @todo
+ * TODO
  */
 export default function FallbackDiffStory() {
   return (
