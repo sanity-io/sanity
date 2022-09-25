@@ -27,8 +27,6 @@ export interface PairListenerOptions {
   tag?: string
 }
 
-export type {MutationEvent}
-
 export type ListenerEvent =
   | MutationEvent
   | ReconnectEvent

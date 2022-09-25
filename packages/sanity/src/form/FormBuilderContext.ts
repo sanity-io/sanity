@@ -6,13 +6,12 @@ import {
   FormBuilderCustomMarkersComponent,
   FormBuilderFilterFieldFn,
   FormBuilderMarkersComponent,
-  FormFieldGroup,
   RenderFieldCallback,
   RenderInputCallback,
   RenderItemCallback,
   RenderPreviewCallback,
 } from './types'
-import {ObjectMember, StateTree} from './store'
+import {FormFieldGroup, ObjectMember, StateTree} from './store'
 
 /**
  * @alpha

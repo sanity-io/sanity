@@ -63,5 +63,3 @@ export function useDocumentValuePermissions({
     permission,
   })
 }
-
-export type {DocumentValuePermission}

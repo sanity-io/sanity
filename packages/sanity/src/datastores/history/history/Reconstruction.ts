@@ -1,7 +1,7 @@
 import {Diff} from '@sanity/diff'
-import {Annotation} from '../../../field'
+import {Annotation, Chunk} from '../../../field'
 import {Timeline} from './Timeline'
-import {CombinedDocument, Chunk} from './types'
+import {CombinedDocument} from './types'
 
 /**
  * A reconstruction represents a single reconstruction of a

@@ -63,20 +63,10 @@ export type {
   RenderBlockActionsProps,
 } from '../src/form/inputs/PortableText/types'
 
-export * from '../src/form/members'
-
 export * from '../src/form/inputs/ObjectInput'
 export {StudioArrayInput as ArrayOfObjectsInput} from '../src/form/studio/inputs/StudioArrayInput'
-export * from '../src/form/inputs/arrays/ArrayOfObjectsInput'
 
 export type {FIXME_SanityDocument} from '../src/form/store/formState' // eslint-disable-line camelcase
-
-export type {
-  HashFocusManagerChildArgs,
-  HashFocusManagerProps,
-  SimpleFocusManagerProps,
-  SimpleFocusManagerState,
-} from '../src/form/studio'
 
 export type {
   FileLike,
@@ -102,8 +92,6 @@ export type {
 export * from '../src/form/components/formField'
 
 export type {FormInputAbsolutePathArg, FormInputRelativePathArg} from '../src/form/FormInput'
-
-export * from '../src/form/types'
 
 export type {FormBuilderContextValue} from '../src/form/FormBuilderContext'
 export {useFormBuilder} from '../src/form/useFormBuilder'

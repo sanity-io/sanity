@@ -39,7 +39,6 @@ export {Timeline, TimelineController} from '../src/datastores'
 export type {
   AuthState,
   AuthStore,
-  Chunk,
   CombinedDocument,
   DocumentRemoteMutationEvent,
   DocumentRemoteMutationVersionEvent,
@@ -197,7 +196,7 @@ export type {
   ViewBuilder,
 } from '../src/desk/structureBuilder'
 
-export type {Annotation, AnnotationDetails, ChunkType} from '../src/field'
+export type {Annotation, AnnotationDetails, Chunk, ChunkType} from '../src/field'
 
 export type {
   ArrayFieldProps,

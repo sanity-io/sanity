@@ -5,8 +5,7 @@ import React from 'react'
 import {useSource} from '../../studio'
 import {PatchChannel, PatchEvent} from '../patch'
 import {FormBuilderProvider} from '../FormBuilderProvider'
-import {ObjectMember, StateTree} from '../store'
-import {FormFieldGroup} from '../types'
+import {FormFieldGroup, ObjectMember, StateTree} from '../store'
 import {FormFieldPresence} from '../../presence'
 
 /**
