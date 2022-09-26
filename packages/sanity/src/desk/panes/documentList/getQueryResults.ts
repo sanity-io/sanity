@@ -1,4 +1,5 @@
 import {SanityClient} from '@sanity/client'
+import deepEquals from 'react-fast-compare'
 import {
   catchError,
   distinctUntilChanged,
@@ -15,9 +16,8 @@ import {
   refCount,
 } from 'rxjs/operators'
 import {concat, merge, of, fromEvent, Observable, Subject} from 'rxjs'
-import deepEquals from 'react-fast-compare'
 import {SanityDocument} from '@sanity/types'
-import {listenQuery} from '../../../_unstable/datastores'
+import {listenQuery} from '../../../core'
 
 const INITIAL_CHILD_PROPS = {
   result: null,

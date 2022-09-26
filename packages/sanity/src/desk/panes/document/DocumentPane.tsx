@@ -13,28 +13,32 @@ import React, {memo, useCallback, useMemo, useState} from 'react'
 import styled from 'styled-components'
 import {fromString as pathFromString} from '@sanity/util/paths'
 import {Path} from '@sanity/types'
+import {
+  ChangeConnectorRoot,
+  useZIndex,
+  useDocumentType,
+  useTemplatePermissions,
+  isDev,
+  useTemplates,
+  useSource,
+  SourceProvider,
+} from '../../../core'
+import {ReferenceInputOptionsProvider} from '../../../form'
 import {DocumentPaneNode} from '../../types'
+import {usePaneRouter} from '../../components'
 import {PaneFooter} from '../../components/pane'
 import {usePaneLayout} from '../../components/pane/usePaneLayout'
+import {useDeskTool} from '../../useDeskTool'
 import {ErrorPane} from '../error'
 import {LoadingPane} from '../loading'
-import {ChangeConnectorRoot} from '../../../_unstable/components/changeIndicators'
-import {useZIndex} from '../../../_unstable/components/zOffsets'
-import {isDev} from '../../../core/environment'
-import {useTemplates} from '../../../core/hooks'
-import {useSource, SourceProvider} from '../../../core/studio'
-import {usePaneRouter} from '../../components'
-import {useDocumentType, useTemplatePermissions} from '../../../_unstable/datastores'
-import {ReferenceInputOptionsProvider} from '../../../form'
-import {useDeskTool} from '../../useDeskTool'
+import {DocumentOperationResults} from './DocumentOperationResults'
+import {DocumentPaneProvider} from './DocumentPaneProvider'
 import {ChangesPanel} from './changesPanel'
 import {DocumentPanel} from './documentPanel'
-import {DocumentOperationResults} from './DocumentOperationResults'
 import {DocumentActionShortcuts} from './keyboardShortcuts'
 import {DocumentStatusBar} from './statusBar'
-import {useDocumentPane} from './useDocumentPane'
-import {DocumentPaneProvider} from './DocumentPaneProvider'
 import {DocumentPaneProviderProps} from './types'
+import {useDocumentPane} from './useDocumentPane'
 
 type DocumentPaneOptions = DocumentPaneNode['options']
 

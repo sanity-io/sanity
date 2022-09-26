@@ -1,4 +1,4 @@
-import type {EditStateFor} from '../../_unstable/datastores'
+import type {EditStateFor} from '../../core'
 
 export interface DocumentBadgeDescription {
   title?: string

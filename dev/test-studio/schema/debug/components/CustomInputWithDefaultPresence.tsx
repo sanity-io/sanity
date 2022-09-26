@@ -1,16 +1,16 @@
 import React, {useCallback} from 'react'
 import {range} from 'lodash'
 import {ObjectInputProps, set, setIfMissing} from 'sanity/form'
-import {FieldPresence, PresenceScope} from 'sanity/_unstable'
+import {FieldPresence, PresenceScope} from 'sanity'
 
 export const CustomInputWithDefaultPresence = React.forwardRef(
   function CustomInputWithDefaultPresence(
     props: ObjectInputProps<Record<string, any>>,
     ref: React.ForwardedRef<HTMLDivElement>
   ) {
-    const {onFocus, onFocusPath, value, onChange, presence, readOnly, schemaType} = props
+    const {elementProps, onFocusPath, value, onChange, presence, readOnly, schemaType} = props
 
-    // const {onFocus, readOnly} = inputProps
+    const {onFocus} = elementProps
 
     const handleRootFocus = useCallback(
       (event: any) => {

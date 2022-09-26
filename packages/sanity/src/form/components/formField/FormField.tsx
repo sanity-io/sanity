@@ -1,9 +1,7 @@
-/* eslint-disable camelcase */
-
 import {Stack} from '@sanity/ui'
 import React, {memo} from 'react'
-import {FormFieldPresence} from '../../../_unstable'
-import {NodeValidation} from '../../types/common'
+import {FormFieldPresence} from '../../../core'
+import {NodeValidation} from '../../types'
 import {FormFieldHeader} from './FormFieldHeader'
 
 export interface FormFieldProps {

@@ -10,14 +10,16 @@ import {
   catchError,
 } from 'rxjs/operators'
 import {
+  AvailabilityResponse,
   CrossProjectTokenStore,
   DocumentStore,
-  useDocumentStore,
   useCrossProjectTokenStore,
-} from '../../../_unstable/datastores'
-import {useClient} from '../../../core/hooks'
-import {createHookFromObservableFactory, getPublishedId, getDraftId} from '../../../core/util'
-import {AvailabilityResponse} from '../../../_unstable/preview'
+  useDocumentStore,
+  createHookFromObservableFactory,
+  getDraftId,
+  getPublishedId,
+  useClient,
+} from '../../../core'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../core/studioClient'
 
 // this is used in place of `instanceof` so the matching can be more robust and

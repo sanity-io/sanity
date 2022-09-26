@@ -1,7 +1,7 @@
 import {useId} from '@reach/auto-id'
 import {Box, Dialog} from '@sanity/ui'
 import React from 'react'
-import {LegacyLayerProvider} from '../../../../../_unstable/components/transitional'
+import {LegacyLayerProvider} from '../../../../../core'
 import {DocumentActionDialogModalProps} from '../../../../actions'
 import {DIALOG_WIDTH_TO_UI_WIDTH} from './constants'
 

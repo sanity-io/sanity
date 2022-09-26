@@ -27,11 +27,10 @@ import {
 import React, {ReactNode} from 'react'
 import {SanityClient} from '@sanity/client'
 import {isImageSource} from '@sanity/asset-utils'
+import {ChangeIndicator, ImperativeToast, PresenceOverlay} from '../../../../core'
 import {PatchEvent, setIfMissing, unset} from '../../../patch'
 import {FieldMember} from '../../../store'
 import {FIXME, InputProps, ObjectInputProps} from '../../../types'
-import {PresenceOverlay} from '../../../../_unstable/presence'
-import {ImperativeToast} from '../../../../_unstable/components/transitional'
 import {
   ResolvedUploader,
   Uploader,
@@ -47,7 +46,6 @@ import {handleSelectAssetFromSource} from '../common/assetSource'
 import {ActionsMenu} from '../common/ActionsMenu'
 import {UploadWarning} from '../common/UploadWarning'
 import {ImageToolInput} from '../ImageToolInput'
-import {ChangeIndicator} from '../../../../_unstable/components/changeIndicators'
 import {FormInput} from '../../../FormInput'
 import {MemberField, MemberFieldError, MemberFieldSet} from '../../../members'
 import {ImageActionsMenu} from './ImageActionsMenu'

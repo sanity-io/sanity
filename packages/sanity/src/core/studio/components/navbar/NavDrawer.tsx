@@ -2,10 +2,9 @@ import {Layer, Card, Flex, Text, Box, Button, Stack, useGlobalKeyDown} from '@sa
 import {CloseIcon, LeaveIcon} from '@sanity/icons'
 import React, {memo, useEffect, useState} from 'react'
 import styled from 'styled-components'
-import {UserAvatar} from '../../../../_unstable/components/UserAvatar'
-import {useRovingFocus} from '../../../../_unstable/components/rovingFocus'
 import {useWorkspace} from '../../workspace'
 import {Tool} from '../../../config'
+import {UserAvatar, useRovingFocus} from '../../../components'
 import {WorkspaceMenuButton} from './workspace'
 
 const Root = styled(Layer)`

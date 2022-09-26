@@ -6,10 +6,9 @@ import {ArrayInput} from '../../inputs/arrays/ArrayOfObjectsInput'
 import {ArrayOfPrimitivesInput} from '../../inputs/arrays/ArrayOfPrimitivesInput'
 import * as is from '../../utils/is'
 import {useFormBuilder} from '../../useFormBuilder'
-import {useClient} from '../../../core/hooks'
+import {useClient, useResolveInitialValueForType} from '../../../core'
 import {ArrayOfObjectsInputProps, ArrayOfPrimitivesInputProps} from '../../types'
 import {FileLike} from '../uploads/types'
-import {useResolveInitialValueForType} from '../../../_unstable/datastores'
 
 export function StudioArrayInput(props: ArrayOfObjectsInputProps) {
   const formBuilder = useFormBuilder()

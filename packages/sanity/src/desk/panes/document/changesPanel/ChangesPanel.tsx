@@ -1,23 +1,23 @@
+import {ObjectDiff} from '@sanity/diff'
 import {CloseIcon} from '@sanity/icons'
 import {AvatarStack, BoundaryElementProvider, Box, Button, Flex} from '@sanity/ui'
 import React, {useRef} from 'react'
 import styled from 'styled-components'
-import {ObjectDiff} from '@sanity/diff'
-import {PaneContent, PaneHeader, usePane} from '../../../components'
-import {TimelineMenu} from '../timeline'
-import {useDocumentPane} from '../useDocumentPane'
-import {ScrollContainer} from '../../../../_unstable/components/scroll'
-import {ChangeFieldWrapper} from '../../../../_unstable/components/changeIndicators'
-import {UserAvatar} from '../../../../_unstable/components/UserAvatar'
 import {
+  ChangeFieldWrapper,
   ChangeList,
   DiffTooltip,
   DocumentChangeContext,
   DocumentChangeContextInstance,
   NoChanges,
-} from '../../../../_unstable/field'
-import {collectLatestAuthorAnnotations} from './helpers'
+  ScrollContainer,
+  UserAvatar,
+} from '../../../../core'
+import {PaneContent, PaneHeader, usePane} from '../../../components'
+import {TimelineMenu} from '../timeline'
+import {useDocumentPane} from '../useDocumentPane'
 import {LoadingContent} from './content/LoadingContent'
+import {collectLatestAuthorAnnotations} from './helpers'
 
 const Scroller = styled(ScrollContainer)`
   height: 100%;

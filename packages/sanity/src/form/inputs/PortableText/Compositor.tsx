@@ -17,11 +17,11 @@ import {
   useBoundaryElement,
   usePortal,
 } from '@sanity/ui'
-import {ChangeIndicator} from '../../../_unstable/components/changeIndicators'
+import {ChangeIndicator} from '../../../core/components/changeIndicators'
 import {ArrayOfObjectsInputProps, FIXME, RenderCustomMarkers} from '../../types'
 import {ActivateOnFocus} from '../../components/ActivateOnFocus/ActivateOnFocus'
-import {EMPTY_ARRAY} from '../../utils/empty'
 import {FormInput} from '../../FormInput'
+import {EMPTY_ARRAY} from '../../utils/empty'
 import {BlockObject} from './object/BlockObject'
 import {InlineObject} from './object/InlineObject'
 import {Annotation, TextBlock} from './text'

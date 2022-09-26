@@ -1,7 +1,7 @@
 import React from 'react'
 import {useId} from '@reach/auto-id'
 import {Box, Dialog, PortalProvider, usePortal} from '@sanity/ui'
-import {PresenceOverlay} from '../../../../../_unstable/presence'
+import {PresenceOverlay} from '../../../../../core'
 import {ModalWidth} from './types'
 
 interface DefaultEditDialogProps {

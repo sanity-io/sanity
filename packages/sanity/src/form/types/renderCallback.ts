@@ -1,6 +1,6 @@
 import {ReactNode} from 'react'
 import {SchemaType} from '@sanity/types'
-import {PreviewProps} from '../../_unstable/components/previews'
+import {PreviewProps} from '../../core'
 import {ObjectItemProps, PrimitiveItemProps} from './itemProps'
 import {FieldProps} from './fieldProps'
 import {InputProps} from './inputProps'

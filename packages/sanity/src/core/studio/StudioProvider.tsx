@@ -1,3 +1,4 @@
+import {ToastProvider} from '@sanity/ui'
 import React, {Fragment, useMemo} from 'react'
 import Refractor from 'react-refractor'
 import bash from 'refractor/lang/bash'
@@ -5,16 +6,15 @@ import javascript from 'refractor/lang/javascript'
 import json from 'refractor/lang/json'
 import jsx from 'refractor/lang/jsx'
 import typescript from 'refractor/lang/typescript'
-import {History} from 'history'
-import {ThemeColorSchemeKey, ToastProvider} from '@sanity/ui'
-import {Config} from '../config'
 import {UserColorManagerProvider} from '../user-color'
-import {ResourceCacheProvider} from '../../_unstable/datastores/ResourceCacheProvider'
-import {ColorSchemeProvider} from './colorScheme'
-import {ActiveWorkspaceMatcher} from './activeWorkspaceMatcher'
+import {ResourceCacheProvider} from '../datastores'
+import {AuthBoundary} from './AuthBoundary'
+import {StudioProps} from './Studio'
 import {StudioThemeProvider} from './StudioThemeProvider'
 import {StudioErrorBoundary} from './StudioErrorBoundary'
-import {WorkspaceLoader} from './workspaceLoader'
+import {ActiveWorkspaceMatcher} from './activeWorkspaceMatcher'
+import {ColorSchemeProvider} from './colorScheme'
+import {Z_OFFSET} from './constants'
 import {
   ConfigErrorsScreen,
   LoadingScreen,
@@ -22,9 +22,8 @@ import {
   NotFoundScreen,
   NotAuthenticatedScreen,
 } from './screens'
+import {WorkspaceLoader} from './workspaceLoader'
 import {WorkspacesProvider} from './workspaces'
-import {AuthBoundary} from './AuthBoundary'
-import {Z_OFFSET} from './constants'
 
 Refractor.registerLanguage(bash)
 Refractor.registerLanguage(javascript)
@@ -32,13 +31,8 @@ Refractor.registerLanguage(json)
 Refractor.registerLanguage(jsx)
 Refractor.registerLanguage(typescript)
 
-export interface StudioProviderProps {
+export interface StudioProviderProps extends StudioProps {
   children: React.ReactNode
-  config: Config
-  onSchemeChange?: (nextScheme: ThemeColorSchemeKey) => void
-  scheme?: ThemeColorSchemeKey
-  unstable_history?: History
-  unstable_noAuthBoundary?: boolean
 }
 
 export function StudioProvider({

@@ -5,32 +5,30 @@ import {useToast} from '@sanity/ui'
 import {fromString as pathFromString} from '@sanity/util/paths'
 import isHotkey from 'is-hotkey'
 import {useMemoObservable} from 'react-rx'
-import {PaneMenuItem} from '../../types'
 import {
   DocumentPresence,
-  useHistoryStore,
-  useInitialValue,
-  usePresenceStore,
-} from '../../../_unstable/datastores'
-import {
+  getPublishedId,
+  isDev,
   useClient,
   useConnectionState,
   useDocumentOperation,
   useEditState,
+  useHistoryStore,
+  useInitialValue,
+  usePresenceStore,
   useSchema,
+  useSource,
   useTemplates,
+  useUnique,
   useValidationStatus,
-} from '../../../core/hooks'
-import {isDev} from '../../../core/environment'
-import {useSource} from '../../../core/studio'
-import {getPublishedId, useUnique} from '../../../core/util'
+} from '../../../core'
+import {PatchEvent, StateTree, toMutationPatches, useFormState} from '../../../form'
 import {usePaneRouter} from '../../components'
-import {PatchEvent, StateTree, toMutationPatches} from '../../../form'
-import {useFormState} from '../../../form/store/useFormState'
-import {setAtPath} from '../../../form/store/stateTreeHelper'
-import {getExpandOperations} from '../../../form/store/utils/getExpandOperations'
+import {PaneMenuItem} from '../../types'
 import {useDeskTool} from '../../useDeskTool'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../core/studioClient'
+import {setAtPath} from '../../../form/store/stateTreeHelper'
+import {getExpandOperations} from '../../../form/store/utils/getExpandOperations'
 import {DocumentPaneContext, DocumentPaneContextValue} from './DocumentPaneContext'
 import {getMenuItems} from './menuItems'
 import {DocumentPaneProviderProps} from './types'

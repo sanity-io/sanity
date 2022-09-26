@@ -1,6 +1,6 @@
 import {SchemaType} from '@sanity/types'
 import React from 'react'
-import {FormFieldPresence} from '../../../../../_unstable'
+import {FormFieldPresence} from '../../../../../core'
 import {NodeValidation, RenderPreviewCallback} from '../../../../types'
 
 export interface ItemLayoutProps {

@@ -1,14 +1,17 @@
 import React, {memo, useMemo, useRef} from 'react'
 import {Card, Code} from '@sanity/ui'
 import shallowEquals from 'shallow-equals'
-import {GeneralPreviewLayoutKey} from '../../../_unstable/components/previews'
+import {
+  GeneralPreviewLayoutKey,
+  SourceProvider,
+  useSchema,
+  useSource,
+  useUnique,
+} from '../../../core'
 import {Pane} from '../../components/pane'
 import {_DEBUG} from '../../constants'
-import {useUnique} from '../../../core/util'
 import {useDeskToolSetting} from '../../useDeskToolSetting'
 import {BaseDeskToolPaneProps} from '../types'
-import {useSchema} from '../../../core/hooks'
-import {useSource, SourceProvider} from '../../../core/studio'
 import {DEFAULT_ORDERING, EMPTY_RECORD} from './constants'
 import {
   applyOrderingFunctions,

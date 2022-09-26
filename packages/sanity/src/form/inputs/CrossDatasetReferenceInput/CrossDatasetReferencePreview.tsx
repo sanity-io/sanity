@@ -3,10 +3,13 @@ import {CrossDatasetType, PreviewValue} from '@sanity/types'
 import {Box, Flex, Inline, Label, Text, Tooltip} from '@sanity/ui'
 import {AccessDeniedIcon, HelpCircleIcon, LaunchIcon} from '@sanity/icons'
 import imageUrlBuilder from '@sanity/image-url'
-import {DefaultPreview, PreviewMediaDimensions} from '../../../_unstable/components/previews'
-import {TextWithTone} from '../../../_unstable/components/TextWithTone'
+import {
+  DefaultPreview,
+  DocumentAvailability,
+  PreviewMediaDimensions,
+  TextWithTone,
+} from '../../../core'
 import {FIXME} from '../../types'
-import {DocumentAvailability} from '../../../_unstable/preview'
 
 function UnavailableMessage(props: {icon: ComponentType; children: ReactNode; title: ReactNode}) {
   const Icon = props.icon

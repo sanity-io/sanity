@@ -6,13 +6,16 @@ import {
   SanityDocumentLike,
 } from '@sanity/types'
 import {createContext} from 'react'
-import {DocumentLanguageFilterComponent} from '../../../core/config'
-import {EditStateFor, TimelineController, Timeline} from '../../../_unstable/datastores'
-import {PatchEvent, StateTree} from '../../../form'
+import {
+  EditStateFor,
+  TimelineController,
+  Timeline,
+  DocumentLanguageFilterComponent,
+} from '../../../core'
+import {DocumentFormNode, PatchEvent, StateTree} from '../../../form'
 import {DocumentActionComponent} from '../../actions'
 import {DocumentBadgeComponent} from '../../badges'
 import {PaneView, PaneMenuItem, PaneMenuItemGroup} from '../../types'
-import {DocumentFormNode} from '../../../form/store/types/nodes'
 import {TimelineMode} from './types'
 
 export interface DocumentPaneContextValue {

@@ -1,9 +1,8 @@
 import {EditIcon} from '@sanity/icons'
 import {Box, Card, Flex, Stack, Text} from '@sanity/ui'
 import React, {useCallback, useMemo} from 'react'
-import {useSchema} from '../../core/hooks'
+import {useSchema, SanityPreview} from '../../core'
 import {useRouter} from '../../router'
-import {SanityPreview} from '../../_unstable/preview'
 
 export interface ReferringDocumentsListProps {
   documents: Record<string, any>[]

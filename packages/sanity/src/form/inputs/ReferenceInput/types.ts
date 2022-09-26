@@ -1,7 +1,7 @@
 import {Observable} from 'rxjs'
 import React, {ReactNode} from 'react'
 import {Path, PreviewValue, Reference, ReferenceSchemaType} from '@sanity/types'
-import {DocumentAvailability} from '../../../_unstable/preview'
+import {DocumentAvailability} from '../../../core'
 import {ObjectInputProps} from '../../types'
 
 export interface ReferenceInfo {

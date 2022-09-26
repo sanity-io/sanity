@@ -1,5 +1,5 @@
 import React from 'react'
-import type {EditStateFor} from '../../_unstable/datastores'
+import type {EditStateFor} from '../../core'
 import {GetHookCollectionState} from '../actions/GetHookCollectionState'
 import type {DocumentBadgeDescription, DocumentBadgeProps} from './types'
 

@@ -2,10 +2,12 @@
 
 import {ResetIcon} from '@sanity/icons'
 import React, {useCallback, useMemo, useState} from 'react'
-import {useDocumentOperation} from '../../../core/hooks'
-import {useCurrentUser} from '../../../core/store/user/hooks'
-import {InsufficientPermissionsMessage} from '../../../_unstable/components/InsufficientPermissionsMessage'
-import {useDocumentPairPermissions} from '../../../_unstable/datastores'
+import {
+  InsufficientPermissionsMessage,
+  useDocumentPairPermissions,
+  useCurrentUser,
+  useDocumentOperation,
+} from '../../../core'
 import {DocumentActionComponent, DocumentActionModalProps} from '../types'
 
 const DISABLED_REASON_TITLE = {

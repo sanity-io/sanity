@@ -29,7 +29,6 @@
 /packages/@sanity/util/legacyDateFormat.js
 /packages/@sanity/util/paths.js
 /packages/sanity/_internal.js
-/packages/sanity/_unstable.js
 /packages/sanity/cli.js
 /packages/sanity/desk.js
 /packages/sanity/form.js

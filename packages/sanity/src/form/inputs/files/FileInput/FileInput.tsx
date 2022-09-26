@@ -25,6 +25,7 @@ import {
 } from '@sanity/ui'
 import {SanityClient} from '@sanity/client'
 import {isFileSource} from '@sanity/asset-utils'
+import {ChangeIndicator, ImperativeToast} from '../../../../core'
 import {WithReferencedAsset} from '../../../utils/WithReferencedAsset'
 import {Uploader, UploaderResolver, UploadOptions} from '../../../studio/uploads/types'
 import {FileInfo, FileTarget} from '../common/styles'
@@ -35,10 +36,8 @@ import {PlaceholderText} from '../common/PlaceholderText'
 import {UploadPlaceholder} from '../common/UploadPlaceholder'
 import {UploadWarning} from '../common/UploadWarning'
 import {FIXME, InputProps, ObjectInputProps} from '../../../types'
-import {ImperativeToast} from '../../../../_unstable/components/transitional'
 import {PatchEvent, setIfMissing, unset} from '../../../patch'
 import {MemberField, MemberFieldError, MemberFieldSet} from '../../../members'
-import {ChangeIndicator} from '../../../../_unstable/components/changeIndicators'
 import {CardOverlay, FlexContainer} from './styles'
 import {FileDetails} from './FileDetails'
 import {FileSkeleton} from './FileSkeleton'
@@ -54,6 +53,7 @@ export interface File extends Partial<BaseFile> {
 function passThrough({children}: {children?: React.ReactNode}) {
   return children
 }
+
 export interface FileInputProps extends ObjectInputProps<File, FileSchemaType> {
   assetSources: AssetSource[]
   directUploads?: boolean

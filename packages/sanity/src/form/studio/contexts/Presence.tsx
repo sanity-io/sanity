@@ -2,7 +2,7 @@
 import React, {useContext, createContext, useMemo} from 'react'
 import {Path} from '@sanity/types'
 import {startsWith} from '@sanity/util/paths'
-import {FormFieldPresence} from '../../../_unstable/presence'
+import {FormFieldPresence} from '../../../core'
 
 const PresenceContext = createContext<FormFieldPresence[]>([])
 

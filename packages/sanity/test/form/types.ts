@@ -1,5 +1,5 @@
 import {Path, ValidationMarker} from '@sanity/types'
-import {FormFieldPresence} from '../../src/_unstable/presence'
+import {FormFieldPresence} from '../../src/core'
 
 export interface TestRenderProps {
   documentValue?: Record<string, unknown>

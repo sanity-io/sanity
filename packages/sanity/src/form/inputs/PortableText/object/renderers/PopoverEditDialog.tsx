@@ -17,7 +17,7 @@ import {
 } from '@sanity/ui'
 import React, {useCallback, useEffect, useMemo, useState} from 'react'
 import styled from 'styled-components'
-import {PresenceOverlay} from '../../../../../_unstable/presence'
+import {PresenceOverlay} from '../../../../../core'
 import {FIXME} from '../../../../types'
 import {PortableTextEditorElement} from '../../Compositor'
 import {debugElement} from './debug'

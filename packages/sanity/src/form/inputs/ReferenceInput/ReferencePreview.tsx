@@ -2,12 +2,14 @@ import React, {ComponentType, ReactNode, useMemo} from 'react'
 import {ObjectSchemaType} from '@sanity/types'
 import {Box, Flex, Inline, Label, Text, Tooltip, useRootTheme} from '@sanity/ui'
 import {AccessDeniedIcon, EditIcon, HelpCircleIcon, PublishIcon} from '@sanity/icons'
-import {TextWithTone} from '../../../_unstable/components/TextWithTone'
-import {DocumentPreviewPresence} from '../../../_unstable/presence'
-import {DocumentAvailability} from '../../../_unstable/preview'
+import {
+  DocumentAvailability,
+  DocumentPreviewPresence,
+  PreviewLayoutKey,
+  TextWithTone,
+  useDocumentPresence,
+} from '../../../core'
 import {RenderPreviewCallback} from '../../types'
-import {PreviewLayoutKey} from '../../../_unstable/components/previews'
-import {useDocumentPresence} from '../../../_unstable/datastores'
 import {TimeAgo} from './utils/TimeAgo'
 import {ReferenceInfo} from './types'
 

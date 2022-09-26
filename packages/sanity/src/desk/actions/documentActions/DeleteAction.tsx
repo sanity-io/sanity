@@ -2,10 +2,12 @@
 
 import {TrashIcon} from '@sanity/icons'
 import React, {useCallback, useState} from 'react'
-import {InsufficientPermissionsMessage} from '../../../_unstable/components/InsufficientPermissionsMessage'
-import {useDocumentPairPermissions} from '../../../_unstable/datastores'
-import {useDocumentOperation} from '../../../core/hooks'
-import {useCurrentUser} from '../../../core/store/user/hooks'
+import {
+  InsufficientPermissionsMessage,
+  useDocumentPairPermissions,
+  useDocumentOperation,
+  useCurrentUser,
+} from '../../../core'
 import {ConfirmDeleteDialog} from '../../components'
 import {DocumentActionComponent} from '../types'
 

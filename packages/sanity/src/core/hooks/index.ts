@@ -1,15 +1,13 @@
-// Utility hooks to avoid exposing the `useSource()` internal hook
 export * from './useClient'
-export * from './useDataset'
-export * from './useProjectId'
-export * from './useSchema'
-export * from './useTemplates'
-export * from './useTools'
-
-// These hooks used to be exported from `@sanity/react-hooks`
 export * from './useConnectionState'
+export * from './useDataset'
 export * from './useDocumentOperation'
 export * from './useDocumentOperationEvent'
 export * from './useEditState'
+export * from './useProjectId'
+export * from './useSchema'
 export * from './useSyncState'
+export * from './useTemplates'
+export * from './useTimeAgo'
+export * from './useTools'
 export * from './useValidationStatus'

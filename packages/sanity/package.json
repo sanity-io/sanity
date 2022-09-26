@@ -28,13 +28,6 @@
       "require": "./lib/index.js",
       "default": "./lib/index.mjs"
     },
-    "./_unstable": {
-      "types": "./lib/dts/exports/_unstable.d.ts",
-      "source": "./exports/_unstable.ts",
-      "import": "./lib/_unstable.mjs",
-      "require": "./lib/_unstable.js",
-      "default": "./lib/_unstable.mjs"
-    },
     "./_internal": {
       "types": "./lib/dts/exports/_internal.d.ts",
       "source": "./exports/_internal.ts",
@@ -73,9 +66,6 @@
   },
   "typesVersions": {
     "*": {
-      "_unstable": [
-        "./lib/dts/exports/_unstable.d.ts"
-      ],
       "_internal": [
         "./lib/dts/exports/_internal.d.ts"
       ],
@@ -95,7 +85,6 @@
   },
   "files": [
     "_internal.js",
-    "_unstable.js",
     "cli.js",
     "desk.js",
     "form.js",
@@ -106,7 +95,7 @@
   "scripts": {
     "build": "pkg-utils build --tsconfig tsconfig.lib.json",
     "check:package": "pkg-utils --strict --tsconfig tsconfig.lib.json",
-    "clean": "rimraf _internal.js _unstable.js cli.js desk.js form.js lib router.js",
+    "clean": "rimraf _internal.js cli.js desk.js form.js lib router.js",
     "coverage": "jest --coverage",
     "postbuild": "run-s check:package",
     "prebuild": "run-s clean",

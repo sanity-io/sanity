@@ -2,7 +2,7 @@ import {combineLatest, Observable} from 'rxjs'
 import {first, map} from 'rxjs/operators'
 import {CurrentUser} from '@sanity/types'
 import {SanityClient} from '@sanity/client'
-import {createMockAuthStore} from '../../_unstable/datastores/authStore/createMockAuthStore'
+import {createMockAuthStore} from '../datastores'
 import {Config, SingleWorkspace, Source, Workspace, SchemaPluginOptions} from './types'
 import {prepareConfig} from './prepareConfig'
 

@@ -1,12 +1,5 @@
-import {ValidationMarker} from '@sanity/types'
 import {useMemoObservable} from 'react-rx'
-import {useDocumentStore} from '../../_unstable/datastores'
-
-export interface ValidationStatus {
-  isValidating: boolean
-  validation: ValidationMarker[]
-  revision?: string
-}
+import {useDocumentStore, ValidationStatus} from '../datastores'
 
 const INITIAL: ValidationStatus = {validation: [], isValidating: false}
 

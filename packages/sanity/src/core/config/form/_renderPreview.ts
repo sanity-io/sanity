@@ -1,7 +1,7 @@
 import {SchemaType} from '@sanity/types'
 import {RenderPreviewCallback} from '../../../form'
 import {defaultRenderPreview} from '../../../form/studio/defaults'
-import {PreviewProps} from '../../../_unstable/components/previews'
+import {PreviewProps} from '../../components'
 import {PluginOptions, SourceOptions} from '../types'
 import {_RenderMiddleware} from './_types'
 

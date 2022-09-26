@@ -1,7 +1,6 @@
 import {Box, Card, Flex, Spinner, Text} from '@sanity/ui'
 import React, {useEffect, useState} from 'react'
-import {useDocumentStore} from '../../../../_unstable/datastores'
-import {useUnique} from '../../../../core/util'
+import {useDocumentStore, useUnique} from '../../../../core'
 import {resolveIntent} from '../../../structureResolvers'
 import {RouterPanes} from '../../../types'
 import {useDeskTool} from '../../../useDeskTool'

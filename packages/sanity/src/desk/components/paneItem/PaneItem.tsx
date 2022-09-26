@@ -2,11 +2,14 @@ import {FolderIcon, ChevronRightIcon, DocumentIcon} from '@sanity/icons'
 import {isSanityDocument, PreviewValue, SanityDocument, SchemaType} from '@sanity/types'
 import {Text} from '@sanity/ui'
 import React, {forwardRef, useCallback, useEffect, useMemo, useState} from 'react'
-import {PreviewCard} from '../../../_unstable/components/PreviewCard'
-import {useDocumentPresence, useDocumentPreviewStore} from '../../../_unstable/datastores'
-import {SanityDefaultPreview} from '../../../_unstable/preview'
-import {GeneralPreviewLayoutKey} from '../../../_unstable/components/previews'
-import {useSchema} from '../../../core/hooks'
+import {
+  GeneralPreviewLayoutKey,
+  PreviewCard,
+  SanityDefaultPreview,
+  useDocumentPresence,
+  useDocumentPreviewStore,
+  useSchema,
+} from '../../../core'
 import {MissingSchemaType} from '../MissingSchemaType'
 import {usePaneRouter} from '../paneRouter'
 import {PaneItemPreview} from './PaneItemPreview'

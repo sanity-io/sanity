@@ -5,11 +5,14 @@ import {Inline} from '@sanity/ui'
 import {useMemoObservable} from 'react-rx'
 import {PublishedStatus} from '../PublishedStatus'
 import {DraftStatus} from '../DraftStatus'
-import {GeneralPreviewLayoutKey} from '../../../_unstable/components/previews'
-import {DocumentPreviewPresence} from '../../../_unstable/presence'
-import {DocumentPreviewStore, SanityDefaultPreview} from '../../../_unstable/preview'
-import {isRecord} from '../../../core/util'
-import {DocumentPresence} from '../../../_unstable/datastores'
+import {
+  GeneralPreviewLayoutKey,
+  DocumentPresence,
+  DocumentPreviewPresence,
+  DocumentPreviewStore,
+  SanityDefaultPreview,
+  isRecord,
+} from '../../../core'
 import {PaneItemPreviewState} from './types'
 import {getPreviewStateObservable, getValueWithFallback} from './helpers'
 

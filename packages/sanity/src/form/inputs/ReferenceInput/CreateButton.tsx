@@ -4,7 +4,7 @@
 import React, {ComponentProps} from 'react'
 import {AddIcon} from '@sanity/icons'
 import {Box, Button, Menu, MenuButton, MenuItem, Tooltip} from '@sanity/ui'
-import {InsufficientPermissionsMessage} from '../../../_unstable/components/InsufficientPermissionsMessage'
+import {InsufficientPermissionsMessage} from '../../../core'
 import {CreateReferenceOption} from './types'
 
 interface Props extends ComponentProps<typeof Button> {

@@ -1,6 +1,6 @@
 import React, {useMemo} from 'react'
 import {Box, Button, ButtonProps, Flex, Stack, Text, Tooltip} from '@sanity/ui'
-import {useTimeAgo} from '../../../../../../_unstable/hooks'
+import {useTimeAgo} from '../../../../../../core'
 import {AnimatedStatusIcon} from './AnimatedStatusIcon'
 
 interface ReviewChangesButtonProps extends React.HTMLProps<HTMLButtonElement> {

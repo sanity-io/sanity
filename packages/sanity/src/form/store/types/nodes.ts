@@ -7,8 +7,8 @@ import {
   SchemaType,
   StringSchemaType,
 } from '@sanity/types'
-import {FormFieldPresence} from '../../../_unstable'
 import {NodeValidation} from '../../types/common'
+import {FormFieldPresence} from '../../../core'
 import {ArrayOfObjectsMember, ArrayOfPrimitivesMember, ObjectMember} from './members'
 import {FormFieldGroup} from './fieldGroup'
 
@@ -32,10 +32,9 @@ export interface ObjectFormNode<
   T = {[key in string]: unknown},
   S extends ObjectSchemaType = ObjectSchemaType
 > extends BaseFormNode<T, S> {
-  members: ObjectMember[]
-  groups: FormFieldGroup[]
-
   focusPath: Path
+  groups: FormFieldGroup[]
+  members: ObjectMember[]
 }
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
@@ -48,18 +47,16 @@ export interface ArrayOfObjectsFormNode<
   T extends any[] = unknown[],
   S extends ArraySchemaType = ArraySchemaType
 > extends BaseFormNode<T, S> {
-  members: ArrayOfObjectsMember[]
-
   focusPath: Path
+  members: ArrayOfObjectsMember[]
 }
 
 export interface ArrayOfPrimitivesFormNode<
   T extends (string | number | boolean)[] = (string | number | boolean)[],
   S extends ArraySchemaType = ArraySchemaType
 > extends BaseFormNode<T, S> {
-  members: ArrayOfPrimitivesMember[]
-
   focusPath: Path
+  members: ArrayOfPrimitivesMember[]
 }
 
 export type BooleanFormNode<S extends BooleanSchemaType = BooleanSchemaType> = BaseFormNode<
