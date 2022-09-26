@@ -117,5 +117,6 @@ function getFileExtensions() {
     '.ttf',
     '.eot',
     '.otf',
+    '.css',
   ]
 }
