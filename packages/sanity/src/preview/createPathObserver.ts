@@ -1,6 +1,7 @@
 import {uniq} from 'lodash'
 import {Observable, of as observableOf} from 'rxjs'
 import {switchMap} from 'rxjs/operators'
+import {isRecord} from '../util'
 import {ApiConfig, FieldName, Path, Previewable} from './types'
 import {props} from './utils/props'
 
@@ -98,7 +99,7 @@ function observePaths(
   const next = Object.keys(leads).reduce((res: Record<string, unknown>, head) => {
     const tails = leads[head].filter((tail) => tail.length > 0)
     if (tails.length === 0) {
-      res[head] = isReferenceLike(value) ? undefined : value[head]
+      res[head] = isRecord(value) ? (value as Record<string, unknown>)[head] : undefined
     } else {
       res[head] = observePaths((value as any)[head], tails, observeFields, apiConfig)
     }
