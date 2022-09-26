@@ -23,6 +23,6 @@ export function useEditState(
         )
       )
     }
-    return documentStore.pair.editState(publishedDocId, docTypeName)
+    return base
   }, [publishedDocId, docTypeName, priority]) as EditStateFor
 }
