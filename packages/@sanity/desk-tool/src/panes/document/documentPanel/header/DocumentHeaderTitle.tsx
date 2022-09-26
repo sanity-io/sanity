@@ -13,7 +13,7 @@ function renderTitle({title}: SanityDocument) {
 }
 
 export function DocumentHeaderTitle() {
-  const {connectionState, documentSchema, title, value} = useDocumentPane()
+  const {connectionState, documentSchema, title, value, ready} = useDocumentPane()
 
   if (connectionState !== 'connected') {
     return <></>
@@ -27,9 +27,9 @@ export function DocumentHeaderTitle() {
     return <>New {documentSchema?.title || documentSchema?.name}</>
   }
 
-  return (
+  return ready ? (
     <PreviewFields document={value} layout="inline" type={documentSchema} fields={PREVIEW_FIELDS}>
       {renderTitle}
     </PreviewFields>
-  )
+  ) : null
 }
