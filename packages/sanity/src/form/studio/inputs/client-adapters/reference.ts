@@ -32,10 +32,7 @@ export function getReferenceInfo(
 ): Observable<ReferenceInfo> {
   const {publishedId, draftId} = getIdPair(id)
 
-  const pairAvailability$ = documentPreviewStore.unstable_observeDocumentPairAvailability({
-    _type: 'reference',
-    _ref: id,
-  })
+  const pairAvailability$ = documentPreviewStore.unstable_observeDocumentPairAvailability(id)
 
   return pairAvailability$.pipe(
     switchMap((pairAvailability) => {

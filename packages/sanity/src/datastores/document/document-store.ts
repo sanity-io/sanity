@@ -71,11 +71,14 @@ export function createDocumentStore({
   initialValueTemplates,
   schema,
 }: DocumentStoreOptions): DocumentStore {
+  const observeDocumentPairAvailability =
+    documentPreviewStore.unstable_observeDocumentPairAvailability
+
   // Note that we're both passing a shared `client` here which is used by the
   // internal operations, and a `getClient` method that we expose to user-land
   // for things like validations
   const client = getClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
-  const ctx = {client, getClient, documentPreviewStore, historyStore, schema}
+  const ctx = {client, getClient, observeDocumentPairAvailability, historyStore, schema}
 
   const caches = {
     pair: {

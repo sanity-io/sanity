@@ -36,7 +36,7 @@ export interface DocumentPreviewStore {
    * @beta
    */
   unstable_observeDocumentPairAvailability: (
-    id: Previewable
+    id: string
   ) => Observable<DraftsModelDocumentAvailability>
 
   unstable_observePathsDocumentPair: <T extends SanityDocument = SanityDocument>(

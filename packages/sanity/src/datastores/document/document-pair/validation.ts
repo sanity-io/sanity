@@ -24,8 +24,7 @@ import {exhaustMapWithTrailing} from 'rxjs-exhaustmap-with-trailing'
 import {SourceClientOptions} from '../../../config'
 import {memoize} from '../utils/createMemoizer'
 import {IdPair} from '../types'
-import {HistoryStore} from '../../history'
-import {DocumentPreviewStore} from '../../../preview'
+import {DraftsModelDocumentAvailability} from '../../../preview'
 import {editState} from './editState'
 
 export interface ValidationStatus {
@@ -48,17 +47,17 @@ function findReferenceIds(obj: any): Set<string> {
   )
 }
 
-const EMPTY_MARKERS: ValidationMarker[] = []
+const EMPTY_VALIDATION: ValidationMarker[] = []
 
 type GetDocumentExists = NonNullable<ValidationContext['getDocumentExists']>
 
+type ObserveDocumentPairAvailability = (id: string) => Observable<DraftsModelDocumentAvailability>
+
 const listenDocumentExists = (
-  previewStore: DocumentPreviewStore,
+  observeDocumentAvailability: ObserveDocumentPairAvailability,
   id: string
 ): Observable<boolean> =>
-  previewStore
-    .unstable_observeDocumentPairAvailability({_type: 'reference', _ref: id})
-    .pipe(map(({published}) => published.available))
+  observeDocumentAvailability(id).pipe(map(({published}) => published.available))
 
 // throttle delay for document updates (i.e. time between responding to changes in the current document)
 const DOC_UPDATE_DELAY = 200
@@ -71,8 +70,7 @@ export const validation = memoize(
     ctx: {
       client: SanityClient
       getClient: (options: SourceClientOptions) => SanityClient
-      documentPreviewStore: DocumentPreviewStore
-      historyStore: HistoryStore
+      observeDocumentPairAvailability: ObserveDocumentPairAvailability
       schema: Schema
     },
     {draftId, publishedId}: IdPair,
@@ -108,7 +106,7 @@ export const validation = memoize(
         id$.pipe(
           distinct(),
           mergeMap((id) =>
-            listenDocumentExists(ctx.documentPreviewStore, id).pipe(
+            listenDocumentExists(ctx.observeDocumentPairAvailability, id).pipe(
               map(
                 // eslint-disable-next-line max-nested-callbacks
                 (result) => [id, result] as const
@@ -149,13 +147,15 @@ export const validation = memoize(
       exhaustMapWithTrailing((document) => {
         return defer(() => {
           if (!document?._type) {
-            return of({markers: EMPTY_MARKERS, isValidating: false})
+            return of({validation: EMPTY_VALIDATION, isValidating: false})
           }
           return concat(
             of({isValidating: true}),
             validateDocumentObservable(ctx.getClient, document, ctx.schema, {
               getDocumentExists,
-            }).pipe(map((markers) => ({markers, isValidating: false})))
+            }).pipe(
+              map((validationMarkers) => ({validation: validationMarkers, isValidating: false}))
+            )
           )
         })
       }),

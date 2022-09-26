@@ -31,7 +31,7 @@ export function create_preview_documentPair(
   ): Observable<DraftsModelDocument<T>> {
     const {draftId, publishedId} = getIdPair('_id' in value ? value._id : value._ref)
 
-    return observeDocumentPairAvailability(value).pipe(
+    return observeDocumentPairAvailability(draftId).pipe(
       switchMap((availability) => {
         if (!availability.draft.available && !availability.published.available) {
           // short circuit, neither draft nor published is available so no point in trying to get a snapshot

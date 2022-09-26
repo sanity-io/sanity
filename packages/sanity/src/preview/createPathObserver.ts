@@ -1,9 +1,7 @@
-import {isReference} from '@sanity/types'
-import {isString, uniq} from 'lodash'
+import {uniq} from 'lodash'
 import {Observable, of as observableOf} from 'rxjs'
 import {switchMap} from 'rxjs/operators'
-import {isRecord} from '../util'
-import {FieldName, Path, Previewable, ApiConfig} from './types'
+import {ApiConfig, FieldName, Path, Previewable} from './types'
 import {props} from './utils/props'
 
 function createEmpty(fields: FieldName[]) {
@@ -15,6 +13,10 @@ function createEmpty(fields: FieldName[]) {
 
 function resolveMissingHeads(value: Record<string, unknown>, paths: string[][]) {
   return paths.filter((path) => !(path[0] in value))
+}
+
+function isReferenceLike(value: Previewable): value is {_ref: string} {
+  return '_ref' in value
 }
 
 type ObserveFieldsFn = (
@@ -34,7 +36,7 @@ function observePaths(
     return observableOf(value as null) // @todo
   }
 
-  const id: string | undefined = isReference(value) ? value._ref : value._id
+  const id: string | undefined = isReferenceLike(value) ? value._ref : value._id
 
   const currentValue: Record<string, unknown> = {...value, _id: id}
 
@@ -55,8 +57,8 @@ function observePaths(
 
     const nextHeads: string[] = uniq(pathsWithMissingHeads.map((path: string[]) => path[0]))
 
-    const dataset = isRecord(value) && isString(value._dataset) ? value._dataset : undefined
-    const projectId = isRecord(value) && isString(value._projectId) ? value._projectId : undefined
+    const dataset = isReferenceLike(value) ? value._dataset : undefined
+    const projectId = isReferenceLike(value) ? value._projectId : undefined
 
     const refApiConfig =
       // if it's a cross dataset reference we want to use it's `_projectId` + `_dataset`
@@ -72,7 +74,7 @@ function observePaths(
         return observePaths(
           {
             ...createEmpty(nextHeads),
-            ...(isReference(value) ? {...value, ...refApiConfig} : value),
+            ...(isReferenceLike(value) ? {...value, ...refApiConfig} : value),
             ...snapshot,
           } as Previewable,
           paths,
@@ -96,7 +98,7 @@ function observePaths(
   const next = Object.keys(leads).reduce((res: Record<string, unknown>, head) => {
     const tails = leads[head].filter((tail) => tail.length > 0)
     if (tails.length === 0) {
-      res[head] = isRecord(value) ? value[head] : undefined
+      res[head] = isReferenceLike(value) ? undefined : value[head]
     } else {
       res[head] = observePaths((value as any)[head], tails, observeFields, apiConfig)
     }

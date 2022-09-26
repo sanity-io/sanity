@@ -11,7 +11,6 @@ import type {
   AvailabilityResponse,
   DocumentAvailability,
   DraftsModelDocumentAvailability,
-  Previewable,
 } from './types'
 import {debounceCollect} from './utils/debounceCollect'
 import {
@@ -62,19 +61,19 @@ export function create_preview_availability(
   versionedClient: SanityClient,
   observePaths: ObservePathsFn
 ): {
-  observeDocumentPairAvailability(value: Previewable): Observable<DraftsModelDocumentAvailability>
+  observeDocumentPairAvailability(id: string): Observable<DraftsModelDocumentAvailability>
 } {
   /**
    * Returns an observable of metadata for a given drafts model document
    */
   function observeDocumentPairAvailability(
-    value: Previewable
+    id: string
   ): Observable<DraftsModelDocumentAvailability> {
-    const draftId = getDraftId('_id' in value ? value._id : value._ref)
-    const publishedId = getPublishedId('_id' in value ? value._id : value._ref)
+    const draftId = getDraftId(id)
+    const publishedId = getPublishedId(id)
     return combineLatest([
-      observeDocumentAvailability({_type: 'reference', _ref: draftId}),
-      observeDocumentAvailability({_type: 'reference', _ref: publishedId}),
+      observeDocumentAvailability(draftId),
+      observeDocumentAvailability(publishedId),
     ]).pipe(
       distinctUntilChanged(shallowEquals),
       map(([draftReadability, publishedReadability]) => {
@@ -92,11 +91,9 @@ export function create_preview_availability(
    *
    * @internal
    */
-  function observeDocumentAvailability(value: Previewable): Observable<DocumentAvailability> {
-    const id = '_id' in value ? value._id : value._ref
-
+  function observeDocumentAvailability(id: string): Observable<DocumentAvailability> {
     // check for existence
-    return observePaths(value, [['_rev']]).pipe(
+    return observePaths({_ref: id}, [['_rev']]).pipe(
       map((res) => isRecord(res) && Boolean('_rev' in res && res?._rev)),
       distinctUntilChanged(),
       switchMap((hasRev) => {

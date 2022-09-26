@@ -5,7 +5,10 @@ export type {SortOrdering, PrepareViewOptions} from '@sanity/types'
 
 export type Id = string
 
-export type Previewable = (SanityDocumentLike | Reference) & {
+export type Previewable = (
+  | {_id: string; _type: string; [key: string]: unknown}
+  | {_ref: string; _dataset?: string; _projectId?: string}
+) & {
   /**
    * optional object used to attach meta data to the prepared result.
    * currently used to add a flag for the invalid preview error fallback and
