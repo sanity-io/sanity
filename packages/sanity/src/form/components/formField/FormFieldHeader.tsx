@@ -2,7 +2,7 @@
 
 import React, {memo} from 'react'
 import {Box, Flex} from '@sanity/ui'
-import {FieldPresence, FormFieldPresence} from '../../../_unstable'
+import {FieldPresence, FormFieldPresence} from '../../../core'
 import {NodeValidation} from '../../types'
 import {FormFieldHeaderText} from './FormFieldHeaderText'
 

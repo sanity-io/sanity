@@ -16,13 +16,11 @@ import {
   StringSchemaType,
   ValidationMarker,
 } from '@sanity/types'
-
 import {castArray, pick, isEqual as _isEqual} from 'lodash'
 import {isEqual, pathFor, startsWith, toString, trimChildPath} from '@sanity/util/paths'
 import {resolveTypeName} from '@sanity/util/content'
+import {FormFieldPresence, isRecord} from '../../core'
 import {FIXME} from '../types'
-import {FormFieldPresence} from '../../_unstable/presence'
-import {isRecord} from '../../core/util'
 import {PrimitiveFormNode, StateTree} from './types'
 import {resolveConditionalProperty} from './conditional-property'
 import {MAX_FIELD_DEPTH} from './constants'
@@ -97,6 +95,7 @@ function findDuplicateKeyEntries(array: {_key: string}[]) {
 function hasKey<T extends object>(value: T): value is T & {_key: string} {
   return '_key' in value
 }
+
 function everyItemHasKey<T extends object>(array: T[]): array is (T & {_key: string})[] {
   return array?.every((item) => isRecord(item) && hasKey(item))
 }
@@ -646,6 +645,7 @@ function prepareObjectInputState<T>(
     groups: hasFieldGroups ? groups : [],
   }
 }
+
 function prepareArrayOfPrimitivesInputState<T extends (boolean | string | number)[]>(
   props: RawState<ArraySchemaType, T>
 ): ArrayOfPrimitivesFormNode | null {

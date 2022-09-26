@@ -1,7 +1,7 @@
 import {SchemaType} from '@sanity/types'
 import {Box, Card, Code, Flex, Label} from '@sanity/ui'
 import React, {useMemo} from 'react'
-import {createSchema} from '..'
+import {createSchema} from '../createSchema'
 
 export default function ReferenceSchemaStory() {
   const authorTypeDef = useMemo(

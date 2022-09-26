@@ -24,13 +24,12 @@ import type {
   RenderItemCallback,
   RenderPreviewCallback,
 } from '../../form'
-import type {AuthStore} from '../../_unstable/datastores'
 import type {StudioTheme} from '../theme'
 import type {InitialValueTemplateItem, Template, TemplateResponse} from '../templates'
 import type {Router, RouterState} from '../../router'
-import type {DocumentActionComponent} from '../../desk/actions'
-import type {DocumentBadgeComponent} from '../../desk/badges'
-import {PreviewProps} from '../../_unstable/components/previews'
+import type {DocumentActionComponent, DocumentBadgeComponent} from '../../desk'
+import {PreviewProps} from '../components/previews'
+import {AuthStore} from '../datastores'
 import {StudioComponents, StudioComponentsPluginOptions} from './components'
 
 /**

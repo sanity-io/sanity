@@ -3,8 +3,8 @@ import {isEqual} from 'lodash'
 import {useEffect, useMemo, useState} from 'react'
 import {Subject} from 'rxjs'
 import {distinctUntilChanged, map} from 'rxjs/operators'
-import {getValueAtPath} from '../_unstable/field/paths'
-import {useUnique} from '../core/util'
+import {useUnique} from '../core'
+import {getValueAtPath} from '../core/field/paths'
 import {useFormBuilder} from './useFormBuilder'
 
 /**

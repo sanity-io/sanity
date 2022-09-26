@@ -1,6 +1,6 @@
 import React, {useCallback} from 'react'
 import {Button, Card, Code, Stack} from '@sanity/ui'
-import {usePaneRouter} from 'sanity/_unstable'
+import {usePaneRouter} from 'sanity/desk'
 
 export function CustomPane(props: any) {
   return (

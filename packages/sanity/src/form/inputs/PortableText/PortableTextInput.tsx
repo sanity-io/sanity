@@ -32,9 +32,9 @@ import type {
   PortableTextMarker,
   RenderCustomMarkers,
 } from '../../types'
-import {EMPTY_ARRAY} from '../../utils/empty'
+import {pathToString} from '../../../core/field/paths'
 import {isMemberArrayOfObjects} from '../../members/fields/asserters'
-import {pathToString} from '../../../_unstable/field/paths'
+import {EMPTY_ARRAY} from '../../utils/empty'
 import {Compositor, PortableTextEditorElement} from './Compositor'
 import {InvalidValue as RespondToInvalidContent} from './InvalidValue'
 import {usePatches} from './usePatches'

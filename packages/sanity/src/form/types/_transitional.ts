@@ -1,7 +1,7 @@
 import {ArraySchemaType, ObjectField, ObjectSchemaType, Path} from '@sanity/types'
 import React from 'react'
 import {PatchEvent} from '../patch'
-import {PreviewProps} from '../../_unstable/components/previews'
+import {PreviewProps} from '../../core'
 import {InputProps} from './inputProps'
 import {FieldProps} from './fieldProps'
 import {ItemProps} from './itemProps'

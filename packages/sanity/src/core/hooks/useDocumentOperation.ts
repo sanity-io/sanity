@@ -1,7 +1,6 @@
 import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
-import {useDocumentStore} from '../../_unstable/datastores'
-import {OperationsAPI} from '../../_unstable/datastores/document/document-pair/operations'
+import {useDocumentStore, OperationsAPI} from '../datastores'
 
 export function useDocumentOperation(publishedDocId: string, docTypeName: string): OperationsAPI {
   const documentStore = useDocumentStore()

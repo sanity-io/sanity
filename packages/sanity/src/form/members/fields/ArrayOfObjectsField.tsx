@@ -1,5 +1,6 @@
 import React, {useCallback, useMemo, useRef} from 'react'
 import {Path} from '@sanity/types'
+import {useResolveInitialValueForType} from '../../../core'
 import {ArrayOfObjectsFormNode, FieldMember} from '../../store'
 import {
   ArrayFieldProps,
@@ -15,7 +16,6 @@ import {FormCallbacksProvider, useFormCallbacks} from '../../studio/contexts/For
 import {useDidUpdate} from '../../hooks/useDidUpdate'
 import {insert, PatchArg, PatchEvent, setIfMissing, unset} from '../../patch'
 import {ensureKey} from '../../utils/ensureKey'
-import {useResolveInitialValueForType} from '../../../_unstable/datastores'
 
 /**
  * Responsible for creating inputProps and fieldProps to pass to ´renderInput´ and ´renderField´ for an array input

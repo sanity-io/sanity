@@ -6,10 +6,14 @@ import {
   DocumentPreviewStore,
   getPreviewPaths,
   prepareForPreview,
-} from '../../../../_unstable/preview'
-import {createWeightedSearch} from '../../../../core/studio/components/navbar/search/search'
-import {getIdPair, CollatedHit, getDraftId, collate, isRecord} from '../../../../core/util'
+  CollatedHit,
+  collate,
+  getDraftId,
+  getIdPair,
+  isRecord,
+} from '../../../../core'
 import {ReferenceInfo, ReferenceSearchHit} from '../../../inputs/ReferenceInput/types'
+import {createWeightedSearch} from '../../../../core/studio/components/navbar/search/search'
 
 const READABLE = {
   available: true,

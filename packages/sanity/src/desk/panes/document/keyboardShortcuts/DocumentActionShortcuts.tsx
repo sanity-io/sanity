@@ -8,7 +8,7 @@ import {
   DocumentActionProps,
   RenderActionCollectionState,
 } from '../../../actions'
-import {LegacyLayerProvider} from '../../../../_unstable/components/transitional'
+import {LegacyLayerProvider} from '../../../../core'
 
 export interface KeyboardShortcutResponderProps {
   actionsBoxElement: HTMLElement | null

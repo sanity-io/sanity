@@ -1,6 +1,6 @@
 import {Box} from '@sanity/ui'
 import React, {forwardRef} from 'react'
-import {LegacyLayerProvider} from '../../../_unstable/components/transitional'
+import {LegacyLayerProvider} from '../../../core'
 import {usePane} from './usePane'
 import {Root, RootCard} from './PaneFooter.styles'
 

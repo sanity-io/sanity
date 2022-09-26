@@ -1,6 +1,6 @@
 import type {ButtonTone} from '@sanity/ui'
 import type React from 'react'
-import type {EditStateFor} from '../../_unstable/datastores'
+import type {EditStateFor} from '../../core'
 
 export type ActionHook<T, K> = (args: T) => K | null
 

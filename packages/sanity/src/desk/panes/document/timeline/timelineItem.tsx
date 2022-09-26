@@ -1,7 +1,6 @@
 import React, {useCallback, createElement, useState} from 'react'
 import {Box, Flex, Stack, Text, ButtonTone} from '@sanity/ui'
-import {ChunkType, Chunk} from '../../../../_unstable/field'
-import {useTimeAgo} from '../../../../_unstable/hooks'
+import {ChunkType, Chunk, useTimeAgo} from '../../../../core'
 import {formatTimelineEventLabel, getTimelineEventIconComponent} from './helpers'
 import {TimelineItemState} from './types'
 import {UserAvatarStack} from './userAvatarStack'

@@ -3,7 +3,7 @@ import {Button, Card, Code, Container, ErrorBoundary, Heading, Stack, useToast} 
 import {useHotModuleReload} from 'use-hot-module-reload'
 import {SchemaError} from '../config'
 import {globalScope, isRecord} from '../util'
-import {CorsOriginError} from '../../_unstable/datastores'
+import {CorsOriginError} from '../datastores'
 import {CorsOriginErrorScreen, SchemaErrorsScreen} from './screens'
 
 interface StudioErrorBoundaryProps {

@@ -1,5 +1,5 @@
 import {useCallback, useEffect, useMemo, useState} from 'react'
-import {useSettingsStore} from '../_unstable/datastores'
+import {useSettingsStore} from '../core'
 
 /**
  * @internal

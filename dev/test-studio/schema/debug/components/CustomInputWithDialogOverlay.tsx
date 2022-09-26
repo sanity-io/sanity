@@ -1,5 +1,5 @@
 import React from 'react'
-import {PresenceOverlay, FieldPresence, DocumentPresence} from 'sanity/_unstable'
+import {PresenceOverlay, FieldPresence, DocumentPresence} from 'sanity'
 import {Button, Dialog} from '@sanity/ui'
 import {setIfMissing} from 'sanity/form'
 import {ObjectSchemaType, Path} from '@sanity/types'

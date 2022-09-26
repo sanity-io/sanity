@@ -1,6 +1,6 @@
 import {PreviewValue} from '@sanity/types'
 import {Observable} from 'rxjs'
-import {DocumentAvailability} from '../../../_unstable/preview'
+import {DocumentAvailability} from '../../../core'
 
 export interface CrossDatasetReferenceInfo {
   id: string

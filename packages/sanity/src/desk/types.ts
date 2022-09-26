@@ -1,8 +1,6 @@
 import {SchemaType} from '@sanity/types'
 import {Subscribable} from 'rxjs'
-import {GeneralPreviewLayoutKey} from '../_unstable/components/previews'
-import {ConfigContext} from '../core/config'
-import {InitialValueTemplateItem} from '../core/templates'
+import {GeneralPreviewLayoutKey, ConfigContext, InitialValueTemplateItem} from '../core'
 import {
   ComponentView,
   DefaultDocumentNodeResolver,
@@ -30,8 +28,6 @@ export interface DeskToolContextValue {
   rootPaneNode: UnresolvedPaneNode
   structureContext: StructureContext
 }
-
-// export type DocumentActionsResolver = (editState: EditStateFor) => DocumentActionComponent[]
 
 // TODO: this should be updated to enforce the correct return type
 export type StructureResolver = (S: StructureBuilder, context: ConfigContext) => unknown

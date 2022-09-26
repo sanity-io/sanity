@@ -2,11 +2,10 @@
 
 import {ObjectSchemaType, Path, ValidationMarker} from '@sanity/types'
 import React from 'react'
-import {useSource} from '../../core/studio'
+import {FormFieldPresence, useSource} from '../../core'
 import {PatchChannel, PatchEvent} from '../patch'
 import {FormBuilderProvider} from '../FormBuilderProvider'
 import {FormFieldGroup, ObjectMember, StateTree} from '../store'
-import {FormFieldPresence} from '../../_unstable'
 
 /**
  * @alpha This API might change.

@@ -4,8 +4,7 @@ import {assignWith} from 'lodash'
 import React from 'react'
 import {combineLatest, Observable, of} from 'rxjs'
 import {map, startWith} from 'rxjs/operators'
-import {DocumentPreviewStore} from '../../../_unstable/preview'
-import {getDraftId, getPublishedId} from '../../../core/util'
+import {DocumentPreviewStore, getDraftId, getPublishedId} from '../../../core'
 import {PaneItemPreviewState} from './types'
 
 export const isLiveEditEnabled = (schemaType: SchemaType) => schemaType.liveEdit === true

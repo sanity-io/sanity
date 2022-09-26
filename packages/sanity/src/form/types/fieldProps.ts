@@ -7,7 +7,7 @@ import {
   SchemaType,
   StringSchemaType,
 } from '@sanity/types'
-import {FormFieldPresence} from '../../_unstable'
+import {FormFieldPresence} from '../../core'
 import {
   ArrayOfObjectsInputProps,
   ArrayOfPrimitivesInputProps,

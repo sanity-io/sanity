@@ -1,8 +1,11 @@
 import React, {useCallback} from 'react'
 import type {SanityDocument, SchemaType} from '@sanity/types'
-import {getPublishedId} from '../../../core/util'
-import {PreviewCard} from '../../../_unstable/components/PreviewCard'
-import {useDocumentPresence, useDocumentPreviewStore} from '../../../_unstable/datastores'
+import {
+  PreviewCard,
+  useDocumentPresence,
+  useDocumentPreviewStore,
+  getPublishedId,
+} from '../../../core'
 import {PaneItemPreview} from '../paneItem/PaneItemPreview'
 import {usePaneRouter} from '../paneRouter'
 

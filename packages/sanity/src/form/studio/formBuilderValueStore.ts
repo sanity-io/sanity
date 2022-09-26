@@ -1,14 +1,12 @@
 import {map, scan} from 'rxjs/operators'
-import {DocumentStore} from '../../_unstable/datastores'
 import {
   DocumentMutationEvent,
   DocumentRebaseEvent,
-} from '../../_unstable/datastores/document/buffered-doc/types'
-import {
+  DocumentStore,
   DocumentVersion,
   DocumentVersionEvent,
-} from '../../_unstable/datastores/document/document-pair/checkoutPair'
-import {IdPair} from '../../_unstable/datastores/document/types'
+  IdPair,
+} from '../../core'
 import {FormPatch} from '../patch'
 import {fromMutationPatches, toMutationPatches} from '../utils/mutationPatch'
 import {FIXME} from '../types'

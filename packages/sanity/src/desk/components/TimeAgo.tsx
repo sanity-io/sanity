@@ -1,5 +1,5 @@
 import React from 'react'
-import {useTimeAgo} from '../../_unstable/hooks'
+import {useTimeAgo} from '../../core'
 
 export interface TimeAgoProps {
   time: string | Date

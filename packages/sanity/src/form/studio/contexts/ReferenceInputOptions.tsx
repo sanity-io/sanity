@@ -1,6 +1,6 @@
 import React, {ComponentType, createContext, HTMLProps, useContext, useMemo} from 'react'
 import {Path} from '@sanity/types'
-import {TemplatePermissionsResult} from '../../../_unstable/datastores'
+import {TemplatePermissionsResult} from '../../../core'
 
 const Context = createContext<ReferenceInputOptions>({})
 

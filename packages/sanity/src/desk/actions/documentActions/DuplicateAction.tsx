@@ -1,12 +1,14 @@
 import {CopyIcon} from '@sanity/icons'
 import {uuid} from '@sanity/uuid'
 import React, {useCallback, useState} from 'react'
-import {InsufficientPermissionsMessage} from '../../../_unstable/components/InsufficientPermissionsMessage'
-import {useDocumentPairPermissions} from '../../../_unstable/datastores'
-import {useDocumentOperation} from '../../../core/hooks'
+import {
+  InsufficientPermissionsMessage,
+  useDocumentPairPermissions,
+  useDocumentOperation,
+  useCurrentUser,
+} from '../../../core'
 import {useRouter} from '../../../router'
 import {DocumentActionComponent} from '../types'
-import {useCurrentUser} from '../../../core/store/user/hooks'
 
 const DISABLED_REASON_TITLE = {
   NOTHING_TO_DUPLICATE: 'This document doesn’t yet exist so there‘s nothing to duplicate',

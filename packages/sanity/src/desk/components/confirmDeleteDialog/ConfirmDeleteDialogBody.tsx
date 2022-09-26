@@ -8,8 +8,7 @@ import {
 } from '@sanity/icons'
 import {useToast, Text, Box, Button, Flex, Label, Card, Stack} from '@sanity/ui'
 import {CopyToClipboard} from 'react-copy-to-clipboard'
-import {useSchema} from '../../../core/hooks'
-import {SanityDefaultPreview} from '../../../_unstable/preview'
+import {SanityDefaultPreview, useSchema} from '../../../core'
 import {ReferencePreviewLink} from './ReferencePreviewLink'
 import {ReferringDocuments} from './useReferringDocuments'
 import {

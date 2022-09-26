@@ -9,12 +9,12 @@ import {Delay} from '../../../../components/Delay'
 import {
   DocumentMutationEvent,
   DocumentRebaseEvent,
+  PresenceOverlay,
   useDocumentPresence,
   useDocumentStore,
-} from '../../../../../_unstable'
+} from '../../../../../core'
 import {PatchEvent, PatchMsg, createPatchChannel, fromMutationPatches} from '../../../../../form'
 import {FormBuilder} from '../../../../../form/studio/FormBuilder'
-import {PresenceOverlay} from '../../../../../_unstable/presence'
 import {useConditionalToast} from './useConditionalToast'
 
 interface FormViewProps {

@@ -13,7 +13,6 @@
 
 # Legacy exports
 /_internal.js
-/_unstable.js
 /cli.js
 /desk.js
 /form.js

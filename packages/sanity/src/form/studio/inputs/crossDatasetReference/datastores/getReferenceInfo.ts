@@ -4,15 +4,15 @@ import {combineLatest, Observable, of} from 'rxjs'
 import {SanityClient} from '@sanity/client'
 import {keyBy} from 'lodash'
 import {
-  DocumentPreviewStore,
-  getPreviewPaths,
-  prepareForPreview,
   DocumentAvailability,
+  DocumentPreviewStore,
   Previewable,
-} from '../../../../../_unstable/preview'
+  getPreviewPaths,
+  isRecord,
+  prepareForPreview,
+} from '../../../../../core'
 import {CrossDatasetReferenceInfo} from '../../../../inputs/CrossDatasetReferenceInput/types'
 import {FIXME} from '../../../../types'
-import {isRecord} from '../../../../../core/util'
 
 const REQUEST_TAG_BASE = 'cross-dataset-refs'
 

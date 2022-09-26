@@ -1,56 +1,47 @@
-import {Card, Grid, Stack, useToast} from '@sanity/ui'
-import {useBoolean, useProps, useSelect} from '@sanity/ui-workshop'
-import React, {useCallback, useEffect, useMemo, useState} from 'react'
 import type {ObjectField, ObjectSchemaTypeWithOptions} from '@sanity/types'
-import {PatchEvent, createPatchChannel} from '../patch'
+import {Card, Grid, Stack, useToast} from '@sanity/ui'
+import {useBoolean, useProps} from '@sanity/ui-workshop'
+import React, {useCallback, useEffect, useMemo, useState} from 'react'
+import {PresenceOverlay} from '../../core'
+import {PatchEvent} from '../patch'
 import {applyAll} from '../patch/applyPatch'
-import {PresenceOverlay} from '../../_unstable/presence'
-import {getDummySchema, getDummyDocument, schemaListOptions} from './_common/data'
-import {
-  TypeTester,
-  FilterFieldInput,
-  FormDebugger,
-  // FormBuilderTester
-} from './_common'
-
-const patchChannel = createPatchChannel()
-
-const EMPTY = [] as never[]
+import {getDummyDocument} from './_common/data'
+import {TypeTester, FilterFieldInput, FormDebugger} from './_common'
 
 export default function ExampleStory() {
   const {setPropValue} = useProps()
-  const ref = React.useRef<{focus: () => void} | null>(null)
+  // const ref = React.useRef<{focus: () => void} | null>(null)
   const toast = useToast()
-  const isUseMutator = useBoolean('Use Mutator', false, 'Props')
+  // const isUseMutator = useBoolean('Use Mutator', false, 'Props')
   const [, setFocused] = useState(false)
   const [focusPath, setFocusPath] = useState([])
   const isReadOnly = useBoolean('Read-only', false, 'Props')
   const isFilterFields = useBoolean('Filter Fields', false, 'Props')
-  const isHiddenGroup = useBoolean('Hidden Group', false, 'Props')
+  // const isHiddenGroup = useBoolean('Hidden Group', false, 'Props')
   const isTypeTester = useBoolean('Type Performance Tester', false, 'Props')
   const includeUnknownField = useBoolean('Unknown Field in Value', false, 'Props')
   const isDebug = useBoolean('Debug', false, 'Props')
-  const isChangesOpen = useBoolean('Changes Open', false, 'Props')
-  const selectedSchemaKey = useSelect(
-    'Schema',
-    schemaListOptions,
-    Object.values(schemaListOptions)[0],
-    'Props'
-  )
+  // const isChangesOpen = useBoolean('Changes Open', false, 'Props')
+  // const selectedSchemaKey = useSelect(
+  //   'Schema',
+  //   schemaListOptions,
+  //   Object.values(schemaListOptions)[0],
+  //   'Props'
+  // )
 
   const [documentValue, setDocumentValue] = useState<{[key: string]: any}>(getDummyDocument())
   const [fieldFilterSource, setFieldFilterSource] = useState<string>(``)
   const [fieldFilterValue, setFieldFilterValue] = useState<string>(``)
 
-  const schema = useMemo(() => {
-    return getDummySchema({
-      schemaKey: selectedSchemaKey,
-      hiddenGroup: isHiddenGroup,
-    })
-  }, [isHiddenGroup, selectedSchemaKey])
-  const documentType = useMemo(() => {
-    return schema.get('dummy')
-  }, [schema])
+  // const schema = useMemo(() => {
+  //   return getDummySchema({
+  //     schemaKey: selectedSchemaKey,
+  //     hiddenGroup: isHiddenGroup,
+  //   })
+  // }, [isHiddenGroup, selectedSchemaKey])
+  // const documentType = useMemo(() => {
+  //   return schema.get('dummy')
+  // }, [schema])
 
   const handleChange = useCallback((patchEvent: PatchEvent) => {
     setDocumentValue((currentDocumentValue) => applyAll(currentDocumentValue, patchEvent.patches))

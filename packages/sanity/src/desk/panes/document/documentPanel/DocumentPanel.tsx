@@ -1,13 +1,16 @@
 import {BoundaryElementProvider, Flex, PortalProvider, usePortal, useElementRect} from '@sanity/ui'
 import React, {createElement, useEffect, useMemo, useRef, useState} from 'react'
 import styled, {css} from 'styled-components'
+import {
+  ScrollContainer,
+  useDocumentValuePermissions,
+  useSchema,
+  getDraftId,
+  getPublishedId,
+} from '../../../../core'
 import {PaneContent, usePaneLayout} from '../../../components'
-import {ScrollContainer} from '../../../../_unstable/components/scroll'
-import {useDocumentValuePermissions} from '../../../../_unstable/datastores'
-import {getPublishedId, getDraftId} from '../../../../core/util'
 import {useDocumentPane} from '../useDocumentPane'
 import {InspectDialog} from '../inspectDialog'
-import {useSchema} from '../../../../core/hooks'
 import {useDeskTool} from '../../../useDeskTool'
 import {ReferenceChangedBanner} from './ReferenceChangedBanner'
 import {PermissionCheckBanner} from './PermissionCheckBanner'
