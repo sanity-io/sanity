@@ -1,5 +1,5 @@
-const {teardown: teardownDevServer} = require('jest-dev-server')
+import {teardown as teardownDevServer} from 'jest-dev-server'
 
-module.exports = async function globalTeardown() {
+export default async function globalTeardown() {
   await teardownDevServer()
 }

@@ -4,6 +4,7 @@
     "node": true
   },
   "rules": {
+    "import/no-unassigned-import": "off",
     "tsdoc/syntax": "off"
   }
 }
