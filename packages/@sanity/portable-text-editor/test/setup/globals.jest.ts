@@ -1,7 +1,7 @@
 import {KeyInput} from 'puppeteer'
 import {EditorSelection, PortableTextBlock} from '../../src'
 
-export default {}
+export {}
 
 type Value = PortableTextBlock[] | undefined
 
@@ -18,7 +18,8 @@ type Editor = {
   toggleMark: () => Promise<void>
   undo: () => void
 }
+
 declare global {
   function getEditors(): Promise<Editor[]>
-  function setDocumentValue(value: Value): void
+  function setDocumentValue(value: Value): Promise<void>
 }

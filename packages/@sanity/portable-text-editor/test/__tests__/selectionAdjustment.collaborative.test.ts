@@ -1,8 +1,5 @@
-/**
- * @jest-environment ./test/setup/collaborative.jest.env.ts
- */
+/** @jest-environment ./test/setup/collaborative.jest.env.ts */
 
-// eslint-disable-next-line import/no-unassigned-import
 import '../setup/globals.jest'
 
 describe('selection adjustment', () => {

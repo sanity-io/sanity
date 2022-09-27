@@ -1,9 +1,9 @@
-const path = require('path')
-const {setup: setupDevServer} = require('jest-dev-server')
+import path from 'path'
+import {setup as setupDevServer} from 'jest-dev-server'
 
 const testFolderPath = path.resolve(__dirname, '..')
 
-module.exports = async function globalSetup() {
+export default async function globalSetup() {
   await setupDevServer([
     {
       command: `vite --port 3000 ${testFolderPath}/web-server`,

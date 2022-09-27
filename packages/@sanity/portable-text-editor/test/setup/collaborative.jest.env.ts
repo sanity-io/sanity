@@ -1,11 +1,11 @@
 import childProcess from 'child_process'
 import NodeEnvironment from 'jest-environment-node'
-import puppeteer, {ElementHandle, KeyInput} from 'puppeteer'
-import ipc from 'node-ipc'
 import {isEqual} from 'lodash'
-import {EditorSelection, PortableTextBlock} from '../../src'
+import ipc from 'node-ipc'
+import puppeteer, {ElementHandle, KeyInput} from 'puppeteer'
 import {FLUSH_PATCHES_DEBOUNCE_MS} from '../../src/constants'
 import {normalizeSelection} from '../../src/utils/selection'
+import type {EditorSelection, PortableTextBlock} from '../../src'
 
 ipc.config.id = 'collaborative-jest-environment-ipc-client'
 ipc.config.retry = 1500
@@ -33,7 +33,7 @@ const launchConfig = process.env.CI
 
 let testId: string
 
-function generateRandomInteger(min, max) {
+function generateRandomInteger(min: number, max: number) {
   return Math.floor(min + Math.random() * (max - min + 1))
 }
 
@@ -42,11 +42,13 @@ export const delay = (time: number): Promise<void> => {
     setTimeout(resolve, time)
   })
 }
+
 export default class CollaborationEnvironment extends NodeEnvironment {
-  private _browserA: puppeteer.Browser
-  private _browserB: puppeteer.Browser
-  private _pageA: puppeteer.Page
-  private _pageB: puppeteer.Page
+  private _browserA?: puppeteer.Browser
+  private _browserB?: puppeteer.Browser
+  private _pageA?: puppeteer.Page
+  private _pageB?: puppeteer.Page
+
   public async setup(): Promise<void> {
     await super.setup()
     this._browserA = await puppeteer.launch(launchConfig)
@@ -56,10 +58,10 @@ export default class CollaborationEnvironment extends NodeEnvironment {
 
     // Hook up page console and npm debug in the PTE
     if (DEBUG) {
-      await this._pageA.evaluateOnNewDocument((filter) => {
+      await this._pageA.evaluateOnNewDocument((filter: string) => {
         window.localStorage.debug = filter
       }, DEBUG)
-      await this._pageB.evaluateOnNewDocument((filter) => {
+      await this._pageB.evaluateOnNewDocument((filter: string) => {
         window.localStorage.debug = filter
       }, DEBUG)
       this._pageA.on('console', (message) =>
@@ -99,22 +101,22 @@ export default class CollaborationEnvironment extends NodeEnvironment {
 
   private async _setupInstance(): Promise<void> {
     testId = (Math.random() + 1).toString(36).substring(7)
-    await this._pageA.goto(`${WEB_SERVER_ROOT_URL}?editorId=A&testId=${testId}`)
-    await this._pageB.goto(`${WEB_SERVER_ROOT_URL}?editorId=B&testId=${testId}`)
+    await this._pageA?.goto(`${WEB_SERVER_ROOT_URL}?editorId=A&testId=${testId}`)
+    await this._pageB?.goto(`${WEB_SERVER_ROOT_URL}?editorId=B&testId=${testId}`)
     this.global.setDocumentValue = async (
       value: PortableTextBlock[] | undefined
     ): Promise<void> => {
       ipc.of.socketServer.emit('payload', JSON.stringify({type: 'value', value, testId}))
       const [valueHandleA, valueHandleB] = await Promise.all([
-        this._pageA.waitForSelector('#pte-value'),
-        this._pageB.waitForSelector('#pte-value'),
+        this._pageA?.waitForSelector('#pte-value'),
+        this._pageB?.waitForSelector('#pte-value'),
       ])
 
       if (!valueHandleA || !valueHandleB) {
         throw new Error('Failed to find `#pte-value` element on page')
       }
 
-      const readVal = (node) => {
+      const readVal = (node: any) => {
         return node.innerText ? JSON.parse(node.innerText) : undefined
       }
       if (valueHandleA === null || valueHandleB === null) {
@@ -131,7 +133,7 @@ export default class CollaborationEnvironment extends NodeEnvironment {
     }
     this.global.getEditors = () =>
       Promise.all(
-        [this._pageA, this._pageB].map(async (page, index) => {
+        [this._pageA!, this._pageB!].map(async (page, index) => {
           const userAgent = await page.evaluate(() => navigator.userAgent)
           const isMac = /Mac|iPod|iPhone|iPad/.test(userAgent)
           const metaKey = isMac ? 'Meta' : 'Control'

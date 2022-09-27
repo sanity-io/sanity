@@ -1,6 +1,5 @@
 import {Box, Card, Stack, studioTheme, ThemeProvider} from '@sanity/ui'
 import React, {useCallback, useMemo, useState} from 'react'
-
 import ReactDOM from 'react-dom'
 import {Subject} from 'rxjs'
 import {EditorSelection, Patch, PortableTextBlock} from '../../src'
