@@ -31,7 +31,7 @@
     "@sanity/logos": "^1.1.15",
     "@sanity/structure": "2.33.2",
     "@sanity/types": "2.33.2",
-    "@sanity/ui": "^0.37.21",
+    "@sanity/ui": "^0.37.22",
     "@sanity/vision": "2.33.3",
     "prop-types": "^15.6.0",
     "react": "17.0.1",

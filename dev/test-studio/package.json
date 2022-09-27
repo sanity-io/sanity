@@ -36,7 +36,7 @@
     "@sanity/production-preview": "2.33.2",
     "@sanity/studio-hints": "2.33.2",
     "@sanity/types": "2.33.2",
-    "@sanity/ui": "^0.37.21",
+    "@sanity/ui": "^0.37.22",
     "@sanity/util": "2.33.2",
     "@sanity/uuid": "^3.0.1",
     "@sanity/vision": "2.33.3",

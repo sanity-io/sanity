@@ -22,7 +22,7 @@
     "@sanity/field": "2.33.3",
     "@sanity/icons": "^1.3.4",
     "@sanity/types": "2.33.2",
-    "@sanity/ui": "^0.37.21",
+    "@sanity/ui": "^0.37.22",
     "lodash": "^4.17.15",
     "rxjs": "^6.5.3"
   },
