@@ -112,7 +112,11 @@ const progress = (url: string) => {
   })
 }
 
-const followProgress = (jobId: string, client: SanityClient, output: CliOutputter) => {
+const followProgress = (
+  jobId: string,
+  client: SanityClient,
+  output: CliOutputter
+): Promise<void> => {
   let currentProgress = 0
 
   const spinner = output.spinner({}).start()
@@ -120,21 +124,24 @@ const followProgress = (jobId: string, client: SanityClient, output: CliOutputte
 
   debug(`Listening to ${listenUrl}`)
 
-  progress(listenUrl).subscribe({
-    next: (event) => {
-      if (typeof event.progress === 'number') {
-        currentProgress = event.progress
-      }
+  return new Promise((resolve, reject) => {
+    progress(listenUrl).subscribe({
+      next: (event) => {
+        if (typeof event.progress === 'number') {
+          currentProgress = event.progress
+        }
 
-      spinner.text = `Copy in progress: ${currentProgress}%`
-    },
-    error: (err) => {
-      spinner.fail()
-      throw new Error(`There was an error copying dataset: ${err.data}`)
-    },
-    complete: () => {
-      spinner.succeed('Copy finished.')
-    },
+        spinner.text = `Copy in progress: ${currentProgress}%`
+      },
+      error: (err) => {
+        spinner.fail()
+        reject(new Error(`${err.data}`))
+      },
+      complete: () => {
+        spinner.succeed('Copy finished.')
+        resolve()
+      },
+    })
   })
 }
 
@@ -163,8 +170,7 @@ const copyDatasetCommand: CliCommandDefinition<CopyDatasetFlags> = {
         throw new Error('Please supply a jobId')
       }
 
-      followProgress(jobId, client, output)
-
+      await followProgress(jobId, client, output)
       return
     }
 
@@ -223,7 +229,8 @@ const copyDatasetCommand: CliCommandDefinition<CopyDatasetFlags> = {
         return
       }
 
-      followProgress(response.jobId, client, output)
+      await followProgress(response.jobId, client, output)
+      output.print(`Job ${chalk.green(response.jobId)} completed`)
     } catch (error) {
       if (error.statusCode) {
         output.print(`${chalk.red(`Dataset copying failed:\n${error.response.body.message}`)}\n`)
