@@ -1,6 +1,6 @@
 {
   "extends": "./tsconfig.settings",
-  "include": ["**/*/package.config.ts", "./dev/aliases.js", "./scripts", "./test"],
+  "include": ["**/*/package.config.ts", "./dev/aliases.cjs", "./scripts", "./test"],
   "exclude": ["./test/v2-studio"],
   "compilerOptions": {
     "emitDeclarationOnly": true,

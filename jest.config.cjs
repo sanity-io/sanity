@@ -1,5 +1,5 @@
-/* eslint-disable strict */
 /* eslint-disable tsdoc/syntax */
+/* eslint-disable strict */
 
 'use strict'
 

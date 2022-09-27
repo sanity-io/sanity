@@ -16,7 +16,7 @@ export function getAliases(opts: {monorepo?: SanityMonorepo}): Record<string, st
   // Load monorepo aliases (if the current Studio is located within the sanity monorepo)
   // This is done in order for the Vite server to use the source files instead of
   // the compiled output, allowing for a better dev experience.
-  const aliasesPath = path.join(monorepo.path, 'dev', 'aliases')
+  const aliasesPath = path.resolve(monorepo.path, 'dev/aliases.cjs')
 
   // eslint-disable-next-line import/no-dynamic-require
   const devAliases: Record<string, string> = require(aliasesPath)
