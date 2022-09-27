@@ -49,20 +49,18 @@ if (!v) {
 
 const version = `${v.major}.${v.minor}.${v.patch}`
 
-globby([path.join(__dirname, '../lib/**/*.cjs'), path.join(__dirname, '../lib/**/*.js')]).then(
-  (files) => {
-    for (const file of files) {
-      const buf = fs.readFileSync(file, 'utf8')
-      fs.writeFileSync(
-        file,
-        buf
-          .toString()
-          .replace(
-            /REQUIRED_UI_VERSION = "0\.0\.0-development"/g,
-            `REQUIRED_UI_VERSION = "${version}"`
-          ),
-        'utf8'
-      )
-    }
+globby([
+  path.resolve(__dirname, '../lib/**/*.js'),
+  path.resolve(__dirname, '../lib/**/*.mjs'),
+]).then((files) => {
+  for (const file of files) {
+    const buf = fs.readFileSync(file, 'utf8')
+    fs.writeFileSync(
+      file,
+      buf
+        .toString()
+        .replace('REQUIRED_UI_VERSION="0.0.0-development"', `REQUIRED_UI_VERSION="${version}"`),
+      'utf8'
+    )
   }
-)
+})

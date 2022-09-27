@@ -6,15 +6,16 @@ import path from 'path'
 import globby from 'globby'
 import {version} from '../package.json'
 
-globby([path.join(__dirname, '../lib/**/*.cjs'), path.join(__dirname, '../lib/**/*.js')]).then(
-  (files) => {
-    for (const file of files) {
-      const buf = fs.readFileSync(file, 'utf8')
-      fs.writeFileSync(
-        file,
-        buf.toString().replace(/"0\.0\.0-development"/g, `"${version}"`),
-        'utf8'
-      )
-    }
+globby([
+  path.resolve(__dirname, '../lib/**/*.js'),
+  path.resolve(__dirname, '../lib/**/*.mjs'),
+]).then((files) => {
+  for (const file of files) {
+    const buf = fs.readFileSync(file, 'utf8')
+    fs.writeFileSync(
+      file,
+      buf.toString().replace('SANITY_VERSION="0.0.0-development"', `SANITY_VERSION="${version}"`),
+      'utf8'
+    )
   }
-)
+})
