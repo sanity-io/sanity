@@ -3,10 +3,10 @@
   "private": "true",
   "version": "3.0.0-dev-preview.20",
   "description": "Tagged template literal for Sanity.io GROQ-queries",
-  "source": "./src/groq.ts",
-  "main": "./lib/groq.cjs",
-  "module": "./lib/groq.js",
   "types": "./lib/dts/src/groq.d.ts",
+  "source": "./src/groq.ts",
+  "module": "./lib/groq.mjs",
+  "main": "./lib/groq.js",
   "files": [
     "lib",
     "src"

@@ -2,22 +2,22 @@
   "name": "@sanity/server",
   "version": "3.0.0-dev-preview.20",
   "description": "Webserver dedicated to serving Sanity, allowing a smooth development experience",
-  "source": "./src/index.ts",
-  "main": "./lib/index.cjs",
-  "module": "./lib/index.js",
   "types": "./lib/dts/src/index.d.ts",
+  "source": "./src/index.ts",
+  "module": "./lib/index.mjs",
+  "main": "./lib/index.js",
   "exports": {
     ".": {
       "types": "./lib/dts/src/index.d.ts",
       "source": "./src/index.ts",
-      "import": "./lib/index.js",
-      "require": "./lib/index.cjs",
-      "default": "./lib/index.js"
+      "import": "./lib/index.mjs",
+      "require": "./lib/index.js",
+      "default": "./lib/index.mjs"
     },
     "./default-config": {
       "types": "./lib/dts/src/default-config.d.ts",
       "source": "./src/defaultStudioConfig.ts",
-      "import": "./lib/default-config.js",
+      "import": "./lib/default-config.mjs",
       "default": "./lib/default-config.js"
     }
   },

@@ -2,10 +2,10 @@
   "name": "@sanity/cli",
   "version": "3.0.0-dev-preview.20",
   "description": "Sanity CLI tool for managing Sanity installations, managing plugins, schemas and datasets",
-  "source": "./src/index.ts",
-  "main": "./lib/index.cjs",
-  "module": "./lib/index.js",
   "types": "./lib/dts/src/index.d.ts",
+  "source": "./src/index.ts",
+  "module": "./lib/index.mjs",
+  "main": "./lib/index.js",
   "files": [
     "bin",
     "codemods",

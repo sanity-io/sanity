@@ -2,10 +2,10 @@
   "name": "@sanity/vision",
   "version": "3.0.0-dev-preview.20",
   "description": "Sanity plugin for running/debugging GROQ-queries against Sanity datasets",
-  "source": "./src/index.ts",
-  "main": "./lib/index.cjs",
-  "module": "./lib/index.js",
   "types": "./lib/dts/src/index.d.ts",
+  "source": "./src/index.ts",
+  "main": "./lib/index.js",
+  "module": "./lib/index.mjs",
   "files": [
     "lib",
     "src"

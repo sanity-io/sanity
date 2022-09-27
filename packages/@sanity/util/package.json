@@ -2,45 +2,45 @@
   "name": "@sanity/util",
   "version": "3.0.0-dev-preview.20",
   "description": "Utilities shared across projects of Sanity",
-  "source": "./src/index.ts",
-  "main": "./lib/index.cjs",
-  "module": "./lib/index.js",
   "types": "./lib/dts/src/index.d.ts",
+  "source": "./src/index.ts",
+  "main": "./lib/index.js",
+  "module": "./lib/index.mjs",
   "exports": {
     ".": {
       "types": "./lib/dts/src/index.d.ts",
       "source": "./src/index.ts",
-      "import": "./lib/index.js",
-      "require": "./lib/index.cjs",
-      "default": "./lib/index.js"
+      "import": "./lib/index.mjs",
+      "require": "./lib/index.js",
+      "default": "./lib/index.mjs"
     },
     "./fs": {
       "types": "./lib/dts/src/fsTools.d.ts",
       "source": "./src/fsTools.ts",
-      "import": "./lib/fsTools.js",
-      "require": "./lib/fsTools.cjs",
-      "default": "./lib/fsTools.js"
+      "import": "./lib/fsTools.mjs",
+      "require": "./lib/fsTools.js",
+      "default": "./lib/fsTools.mjs"
     },
     "./content": {
       "types": "./lib/dts/src/content/index.d.ts",
       "source": "./src/content/index.ts",
-      "import": "./lib/content.js",
-      "require": "./lib/content.cjs",
-      "default": "./lib/content.js"
+      "import": "./lib/content.mjs",
+      "require": "./lib/content.js",
+      "default": "./lib/content.mjs"
     },
     "./legacyDateFormat": {
       "types": "./lib/dts/src/legacyDateFormat.d.ts",
       "source": "./src/legacyDateFormat.ts",
-      "import": "./lib/legacyDateFormat.js",
-      "require": "./lib/legacyDateFormat.cjs",
-      "default": "./lib/legacyDateFormat.js"
+      "import": "./lib/legacyDateFormat.mjs",
+      "require": "./lib/legacyDateFormat.js",
+      "default": "./lib/legacyDateFormat.mjs"
     },
     "./paths": {
       "types": "./lib/dts/src/paths.d.ts",
       "source": "./src/paths.ts",
-      "import": "./lib/paths.js",
-      "require": "./lib/paths.cjs",
-      "default": "./lib/paths.js"
+      "import": "./lib/paths.mjs",
+      "require": "./lib/paths.js",
+      "default": "./lib/paths.mjs"
     }
   },
   "typesVersions": {

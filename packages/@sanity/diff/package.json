@@ -2,10 +2,10 @@
   "name": "@sanity/diff",
   "version": "3.0.0-dev-preview.20",
   "description": "Generates diffs between documents and primitive types",
-  "source": "./src/index.ts",
-  "main": "./lib/index.cjs",
-  "module": "./lib/index.js",
   "types": "./lib/dts/src/index.d.ts",
+  "source": "./src/index.ts",
+  "module": "./lib/index.mjs",
+  "main": "./lib/index.js",
   "files": [
     "lib",
     "src"
