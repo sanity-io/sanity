@@ -109,18 +109,21 @@ export default class HintsPackage extends React.PureComponent {
         </span>
       )
     }
-
     if (isLoading) {
       return (
-        <Flex justify="center" align="center" paddingX={4} paddingY={5} flex={1}>
-          <Stack space={3}>
-            <Text size={1} muted align="center">
-              <Spinner />
-            </Text>
-            <Text size={1} muted>
-              Loading hints
-            </Text>
-          </Stack>
+        <Flex
+          justify="center"
+          align="center"
+          paddingX={4}
+          paddingY={5}
+          flex={1}
+          direction="column"
+          gap={3}
+        >
+          <Spinner muted />
+          <Text size={1} muted>
+            Loading hints
+          </Text>
         </Flex>
       )
     }
