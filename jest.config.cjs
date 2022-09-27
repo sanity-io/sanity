@@ -1,21 +1,21 @@
-/* eslint-disable tsdoc/syntax */
-/* eslint-disable strict */
-
 'use strict'
 
-const JEST_PROJECTS = [
-  'sanity',
-  '@sanity/block-tools',
-  '@sanity/export',
-  '@sanity/import',
-  '@sanity/mutator',
-  '@sanity/portable-text-editor',
-  '@sanity/schema',
-  '@sanity/util',
-  '@sanity/validation',
+const path = require('path')
+const globby = require('globby')
+const pkg = require('./package.json')
+
+const jestConfigFiles = globby.sync(
+  pkg.workspaces.map((workspace) => path.join(__dirname, workspace, '/jest.config.cjs'))
+)
+
+const IGNORE_PROJECTS = [
+  // There are jest/esm issues in `@sanity/server` test suite, so ignore for now
+  'packages/@sanity/server',
 ]
 
-/** @type {import('@jest/types').Config.InitialOptions} */
 module.exports = {
-  projects: JEST_PROJECTS.map((pkgName) => `<rootDir>/packages/${pkgName}`),
+  projects: jestConfigFiles
+    .map((file) => path.relative(__dirname, path.dirname(file)))
+    .filter((projectPath) => !IGNORE_PROJECTS.includes(projectPath))
+    .map((projectPath) => `<rootDir>/${projectPath}`),
 }
