@@ -4,8 +4,8 @@ import puppeteer, {ElementHandle, KeyInput} from 'puppeteer'
 import ipc from 'node-ipc'
 import {isEqual} from 'lodash'
 import {EditorSelection, PortableTextBlock} from '../../src'
+import {FLUSH_PATCHES_DEBOUNCE_MS} from '../../src/constants'
 import {normalizeSelection} from '../../src/utils/selection'
-import {FLUSH_PATCHES_DEBOUNCE_MS} from '../../src/editor/PortableTextEditor'
 
 ipc.config.id = 'collaborative-jest-environment-ipc-client'
 ipc.config.retry = 1500
