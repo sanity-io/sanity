@@ -1,19 +1,9 @@
-/* eslint-disable strict */
-
 'use strict'
 
-module.exports = {
-  root: true,
-  parser: '@typescript-eslint/parser',
-  globals: {
-    JSX: true,
-  },
+const baseConfig = {
   env: {
     node: true,
     browser: true,
-  },
-  settings: {
-    react: {version: '17.0.0'},
   },
   extends: [
     'sanity',
@@ -24,34 +14,64 @@ module.exports = {
     'sanity/typescript',
     'prettier',
   ],
+  globals: {
+    JSX: true,
+  },
+  parser: '@typescript-eslint/parser',
+  plugins: ['import', '@typescript-eslint', 'prettier', 'react', 'tsdoc'],
   rules: {
+    'import/extensions': ['error', {pattern: {cjs: 'always', json: 'always'}}],
     'prettier/prettier': 'error',
-    'react/jsx-filename-extension': ['error', {extensions: ['.js', '.jsx', '.tsx']}],
+    'react/jsx-filename-extension': ['error', {extensions: ['.jsx']}],
     'sort-imports': 'off', // prefer import/order
-
-    // tsdoc
     'tsdoc/syntax': 'error',
   },
-  plugins: ['import', '@typescript-eslint', 'prettier', 'react', 'tsdoc'],
+  settings: {
+    'import/extensions': ['.cjs', '.mjs', '.js', '.jsx', '.ts', '.tsx'],
+    react: {version: '17.0.0'},
+  },
+}
+
+module.exports = {
+  ...baseConfig,
+
   overrides: [
+    // TypeScript files
     {
       files: ['*.{ts,tsx}'],
       rules: {
+        '@typescript-eslint/no-dupe-class-members': ['error'],
+        '@typescript-eslint/no-shadow': ['error'],
+        '@typescript-eslint/no-unused-vars': ['warn'],
+        'import/named': 'off',
+        'import/no-named-as-default': 'off',
         'import/no-unresolved': 'off',
         'no-undef': 'off',
-        'import/named': 'off',
-        // the normal `no-dupe-class-members` doesn't work with TS overrides
-        'no-dupe-class-members': 'off',
-        '@typescript-eslint/no-dupe-class-members': ['error'],
-        'no-unused-vars': 'off',
-        '@typescript-eslint/no-unused-vars': ['warn'],
+        'no-dupe-class-members': 'off', // doesn't work with TS overrides
         'no-shadow': 'off',
-        '@typescript-eslint/no-shadow': ['error'],
+        'no-unused-vars': 'off',
+        'react/jsx-filename-extension': ['error', {extensions: ['.tsx']}],
       },
     },
+
+    // CommonJS files
     {
-      files: ['./test/jest-setup.js', '*.test.{js,ts,tsx}'],
+      files: ['*.cjs'],
+      parserOptions: {
+        sourceType: 'script',
+      },
+      rules: {
+        ...baseConfig.rules,
+        strict: ['error', 'global'],
+      },
+    },
+
+    // Test files
+    {
+      files: ['./test/**/*.js', './test/*.js', '*.test.{js,ts,tsx}'],
       env: {jest: true},
     },
   ],
+
+  root: true,
 }

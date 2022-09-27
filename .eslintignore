@@ -1,22 +1,42 @@
+/dev/*/.next
+/dev/*/.sanity
+/dev/*/build
 /dev/*/dist
 /dev/*/node_modules
 /dev/*/public
+/dev/*/static
 
+/etc
+
+/examples/*/.sanity
 /examples/*/dist
 /examples/*/node_modules
+/examples/*/static
 
+# packages
 /packages/*/coverage
 /packages/*/lib
 /packages/*/node_modules
-
 /packages/@sanity/*/coverage
 /packages/@sanity/*/lib
 /packages/@sanity/*/node_modules
-/packages/@sanity/client/umd
-/packages/@sanity/cli/bin/sanity-cli.js
+
+# legacy exports
+/packages/@sanity/schema/_internal.js
+/packages/@sanity/server/default-config.js
+/packages/@sanity/util/content.js
+/packages/@sanity/util/fs.js
+/packages/@sanity/util/legacyDateFormat.js
+/packages/@sanity/util/paths.js
+/packages/sanity/_internal.js
+/packages/sanity/_unstable.js
+/packages/sanity/cli.js
+/packages/sanity/desk.js
+/packages/sanity/form.js
+
 /packages/@sanity/cli/templates
 
-test/v2-studio/dist/**
+/test/v2-studio
 
 *.json
 *.css

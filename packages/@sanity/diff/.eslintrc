@@ -1,8 +1,0 @@
-{
-  "extends": ["../../../.eslintrc.cjs"],
-  "rules": {
-    "complexity": "off",
-    "max-depth": "off",
-    "id-length": "off"
-  }
-}
