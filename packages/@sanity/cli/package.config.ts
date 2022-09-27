@@ -8,8 +8,8 @@ export default defineConfig({
     ...exports,
     './cli': {
       source: './src/cli.ts',
-      require: './lib/cli.cjs',
-      default: './lib/cli.cjs',
+      require: './lib/cli.js',
+      default: './lib/cli.js',
     },
   }),
   runtime: 'node',

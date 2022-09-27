@@ -2,24 +2,24 @@
   "name": "@sanity/schema",
   "version": "3.0.0-dev-preview.20",
   "description": "",
-  "source": "./src/_exports/index.ts",
-  "main": "./lib/_exports/index.cjs",
-  "module": "./lib/_exports/index.js",
   "types": "./lib/dts/src/_exports/index.d.ts",
+  "source": "./src/_exports/index.ts",
+  "module": "./lib/_exports/index.mjs",
+  "main": "./lib/_exports/index.js",
   "exports": {
     ".": {
       "types": "./lib/dts/src/_exports/index.d.ts",
       "source": "./src/_exports/index.ts",
-      "import": "./lib/_exports/index.js",
-      "require": "./lib/_exports/index.cjs",
-      "default": "./lib/_exports/index.js"
+      "import": "./lib/_exports/index.mjs",
+      "require": "./lib/_exports/index.js",
+      "default": "./lib/_exports/index.mjs"
     },
     "./_internal": {
       "types": "./lib/dts/src/_exports/_internal.d.ts",
       "source": "./src/_exports/_internal.ts",
-      "import": "./lib/_exports/_internal.js",
-      "require": "./lib/_exports/_internal.cjs",
-      "default": "./lib/_exports/_internal.js"
+      "import": "./lib/_exports/_internal.mjs",
+      "require": "./lib/_exports/_internal.js",
+      "default": "./lib/_exports/_internal.mjs"
     }
   },
   "typesVersions": {

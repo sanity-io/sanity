@@ -16,52 +16,52 @@
   "bin": {
     "sanity": "./bin/sanity"
   },
-  "source": "./src/_exports/index.ts",
-  "main": "./lib/index.cjs",
-  "module": "./lib/index.js",
   "types": "./lib/dts/src/_exports/index.d.ts",
+  "source": "./src/_exports/index.ts",
+  "module": "./lib/index.mjs",
+  "main": "./lib/index.js",
   "exports": {
     ".": {
       "types": "./lib/dts/src/_exports/index.d.ts",
       "source": "./src/_exports/index.ts",
-      "import": "./lib/index.js",
-      "require": "./lib/index.cjs",
-      "default": "./lib/index.js"
+      "import": "./lib/index.mjs",
+      "require": "./lib/index.js",
+      "default": "./lib/index.mjs"
     },
     "./_unstable": {
       "types": "./lib/dts/src/_exports/_unstable.d.ts",
       "source": "./src/_exports/_unstable.ts",
-      "import": "./lib/_unstable.js",
-      "require": "./lib/_unstable.cjs",
-      "default": "./lib/_unstable.js"
+      "import": "./lib/_unstable.mjs",
+      "require": "./lib/_unstable.js",
+      "default": "./lib/_unstable.mjs"
     },
     "./_internal": {
       "types": "./lib/dts/src/_exports/_internal.d.ts",
       "source": "./src/_exports/_internal.ts",
-      "import": "./lib/_internal.js",
-      "require": "./lib/_internal.cjs",
-      "default": "./lib/_internal.js"
+      "import": "./lib/_internal.mjs",
+      "require": "./lib/_internal.js",
+      "default": "./lib/_internal.mjs"
     },
     "./cli": {
       "types": "./lib/dts/src/_exports/cli.d.ts",
       "source": "./src/_exports/cli.ts",
-      "import": "./lib/cli.js",
-      "require": "./lib/cli.cjs",
-      "default": "./lib/cli.js"
+      "import": "./lib/cli.mjs",
+      "require": "./lib/cli.js",
+      "default": "./lib/cli.mjs"
     },
     "./desk": {
       "types": "./lib/dts/src/_exports/desk.d.ts",
       "source": "./src/_exports/desk.ts",
-      "import": "./lib/desk.js",
-      "require": "./lib/desk.cjs",
-      "default": "./lib/desk.js"
+      "import": "./lib/desk.mjs",
+      "require": "./lib/desk.js",
+      "default": "./lib/desk.mjs"
     },
     "./form": {
       "types": "./lib/dts/src/_exports/form.d.ts",
       "source": "./src/_exports/form.ts",
-      "import": "./lib/form.js",
-      "require": "./lib/form.cjs",
-      "default": "./lib/form.js"
+      "import": "./lib/form.mjs",
+      "require": "./lib/form.js",
+      "default": "./lib/form.mjs"
     }
   },
   "typesVersions": {
