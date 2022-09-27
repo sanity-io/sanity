@@ -1,5 +1,5 @@
+import {getCliClient} from '@sanity/cli'
 import ConfigStore from 'configstore'
-import {getCliClient} from '../../../_exports/cli'
 
 // eslint-disable-next-line no-process-env
 const sanityEnv = (process.env.SANITY_INTERNAL_ENV || '').toLowerCase()

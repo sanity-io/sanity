@@ -4,6 +4,7 @@ import path from 'path'
 import type {CliCommandAction, CliCommandArguments} from '@sanity/cli'
 import yargs from 'yargs/yargs'
 import {hideBin} from 'yargs/helpers'
+import readPkgUp from 'read-pkg-up'
 
 interface ExecFlags {
   'with-user-token'?: boolean
@@ -36,9 +37,21 @@ const execScript: CliCommandAction<ExecFlags> = async function execScript(args, 
     throw new Error(`${scriptPath} does not exist`)
   }
 
-  const esbuildPath = path.resolve(__dirname, './esbuild.js')
-  const browserEnvPath = path.resolve(__dirname, './registerBrowserEnv.js')
-  const configClientPath = path.resolve(__dirname, './configClient.js')
+  const sanityPkgPath = (await readPkgUp({cwd: __dirname}))?.path
+  if (!sanityPkgPath) {
+    throw new Error('Unable to resolve `sanity` module root')
+  }
+
+  const sanityDir = path.dirname(sanityPkgPath)
+  const threadsDir = path.join(sanityDir, 'lib', 'cli', 'threads')
+  const esbuildPath = path.join(threadsDir, 'esbuild.js')
+  const browserEnvPath = path.join(threadsDir, 'registerBrowserEnv.js')
+  const configClientPath = path.join(threadsDir, 'configClient.js')
+
+  if (!(await fs.stat(esbuildPath).catch(() => false))) {
+    throw new Error('`sanity` module build error: missing threads')
+  }
+
   const baseArgs = mockBrowserEnv ? ['-r', browserEnvPath] : ['-r', esbuildPath]
   const tokenArgs = withUserToken ? ['-r', configClientPath] : []
 
