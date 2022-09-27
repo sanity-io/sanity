@@ -1,4 +1,4 @@
-import {tokenize} from '../src/search/common/tokenize'
+import {tokenize} from './tokenize'
 
 const tests = [
   {input: '', expected: []},
