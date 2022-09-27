@@ -53,11 +53,9 @@ export default function CorsCheck() {
 
   if (isLoading) {
     return (
-      <Container width={4} padding={4} height="fill">
-        <Flex align="center" justify="center" height="fill">
-          <Text>
-            <Spinner />
-          </Text>
+      <Container width={4} height="fill">
+        <Flex justify="center" height="fill">
+          <Spinner />
         </Flex>
       </Container>
     )
