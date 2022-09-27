@@ -1,7 +1,7 @@
-import {CloseIcon, ControlsIcon, SearchIcon} from '@sanity/icons'
-import {Box, Button, Card, Flex, Spinner, studioTheme, Theme} from '@sanity/ui'
+import {CloseIcon, ControlsIcon, SearchIcon, SpinnerIcon} from '@sanity/icons'
+import {Box, Button, Card, Flex, studioTheme, Theme} from '@sanity/ui'
 import React, {Dispatch, SetStateAction, useCallback, useEffect, useRef, useState} from 'react'
-import styled from 'styled-components'
+import styled, {keyframes} from 'styled-components'
 import {useSearchState} from '../contexts/search'
 import {supportsTouch} from '../utils/supportsTouch'
 import {CustomTextInput} from './CustomTextInput'
@@ -11,15 +11,17 @@ interface SearchHeaderProps {
   setHeaderInputRef: Dispatch<SetStateAction<HTMLInputElement | null>>
 }
 
-// @todo: remove hardcoded margin once <Spinner /> alignment within <TextInput /> icons is fixed
-const AlignedSpinner = styled(Spinner)`
-  align-items: center;
-  display: flex;
-  justify-content: center;
-  margin-top: 4.5px;
-  svg {
-    width: 20px;
+const rotate = keyframes`
+  from {
+    transform: rotate(0deg);
   }
+  to {
+    transform: rotate(360deg);
+  }
+`
+
+const AnimatedSpinnerIcon = styled(SpinnerIcon)`
+  animation: ${rotate} 500ms linear infinite;
 `
 
 const FilterBox = styled(Box)`
@@ -96,7 +98,7 @@ export function SearchHeader({onClose, setHeaderInputRef}: SearchHeaderProps) {
             border={false}
             clearButton={!!terms.query}
             fontSize={2}
-            icon={loading ? <AlignedSpinner /> : SearchIcon}
+            icon={loading ? AnimatedSpinnerIcon : SearchIcon}
             onChange={handleQueryChange}
             onClear={handleQueryClear}
             placeholder="Search"
