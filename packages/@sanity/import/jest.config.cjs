@@ -1,8 +1,7 @@
-/* eslint-disable tsdoc/syntax */
+'use strict'
 
-const {createJestConfig} = require('../../../test/config')
+const {createJestConfig} = require('../../../test/config.cjs')
 
-/** @type {import('@jest/types').Config.InitialOptions} */
 module.exports = createJestConfig({
   displayName: require('./package.json').name,
   testEnvironment: 'node',

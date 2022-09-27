@@ -1,8 +1,10 @@
+'use strict'
+
 /* eslint-disable tsdoc/syntax */
 
 const path = require('path')
 const {escapeRegExp, omit} = require('lodash')
-const devAliases = require('../dev/aliases')
+const devAliases = require('../dev/aliases.cjs')
 
 const ROOT_PATH = path.resolve(__dirname, '..')
 
