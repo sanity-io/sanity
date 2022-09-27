@@ -3,8 +3,10 @@ import {of, Observable, asyncScheduler} from 'rxjs'
 import React from 'react'
 import ReactDOM from 'react-dom'
 import {act} from 'react-dom/test-utils'
-import basePkg from '../package.json'
-import {checkModuleStatus, useModuleStatus, VersionsResponse} from '../src/module-status'
+import basePkg from '../../package.json'
+import {checkModuleStatus} from './moduleStatus'
+import {useModuleStatus} from './hooks'
+import {VersionsResponse} from './types'
 
 const defaults = {isSupported: true, isUpToDate: true, outdated: []}
 

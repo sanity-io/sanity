@@ -1,4 +1,4 @@
-import {calculateScore} from '../src/search/weighted/applyWeights'
+import {calculateScore} from './weighted/applyWeights'
 
 test('Exact match', () => {
   expect(calculateScore(['foo'], 'foo')).toEqual([1, 'Exact match'])

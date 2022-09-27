@@ -1,5 +1,5 @@
 import {SanityDocument} from '@sanity/types'
-import {collate, removeDupes} from '../src/util/draftUtils'
+import {collate, removeDupes} from './draftUtils'
 
 test('collate()', () => {
   const foo = {_type: 'foo', _id: 'foo'}

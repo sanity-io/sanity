@@ -1,4 +1,4 @@
-import {removeMissingReferences} from '../src/datastores/history/createHistoryStore'
+import {removeMissingReferences} from './createHistoryStore'
 
 const testDoc = {
   _id: 'foo',
