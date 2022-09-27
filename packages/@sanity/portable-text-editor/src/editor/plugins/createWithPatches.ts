@@ -24,7 +24,7 @@ import {debugWithName} from '../../utils/debug'
 import {PATCHING, isPatching, withoutPatching} from '../../utils/withoutPatching'
 import {KEY_TO_VALUE_ELEMENT} from '../../utils/weakMaps'
 import {createPatchToOperations} from '../../utils/patchToOperations'
-import {keyGenerator} from '../..'
+import {defaultKeyGenerator} from '../../editor/PortableTextEditor'
 import {withPreserveKeys} from '../../utils/withPreserveKeys'
 import {withoutSaving} from './createWithUndoRedo'
 
@@ -98,7 +98,7 @@ export function createWithPatches({
   // The editor.children would no longer contain that information if the node is already deleted.
   let previousChildren: Descendant[]
 
-  const patchToOperations = createPatchToOperations(portableTextFeatures, keyGenerator)
+  const patchToOperations = createPatchToOperations(portableTextFeatures, defaultKeyGenerator)
   let patchSubscription: Subscription
   const cleanupFn = () => {
     if (patchSubscription) {
