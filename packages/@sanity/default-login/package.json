@@ -23,7 +23,7 @@
     "@sanity/client": "^3.3.3",
     "@sanity/generate-help-url": "^3.0.0",
     "@sanity/logos": "^1.1.15",
-    "@sanity/ui": "^0.37.21",
+    "@sanity/ui": "^0.37.22",
     "prop-types": "^15.6.0",
     "rxjs": "^6.5.3"
   },

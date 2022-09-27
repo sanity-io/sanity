@@ -26,7 +26,7 @@
     "@sanity/default-login": "2.33.3",
     "@sanity/desk-tool": "2.33.3",
     "@sanity/form-builder": "2.33.3",
-    "@sanity/ui": "^0.37.21",
+    "@sanity/ui": "^0.37.22",
     "prop-types": "^15.6.0",
     "react": "17.0.1",
     "react-barcode": "^1.3.2",
