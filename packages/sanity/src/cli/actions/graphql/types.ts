@@ -1,3 +1,6 @@
+import type {GraphQLAPIConfig} from '@sanity/cli'
+import type {Schema} from '@sanity/types'
+
 export interface GeneratedApiSpecification {
   types: (ConvertedType | ConvertedUnion | ConvertedEnum | InputObjectType)[]
   queries: QueryDefinition[]
@@ -150,3 +153,21 @@ export interface SchemaDefinitionish {
   type: string
   fields?: SchemaDefinitionish[]
 }
+
+export interface ResolvedSerializableProperties {
+  projectId: string
+  dataset: string
+  schemaTypes: SchemaDefinitionish[]
+}
+
+export interface ResolvedSourceProperties {
+  projectId: string
+  dataset: string
+  schema: Schema
+}
+
+export type TypeResolvedGraphQLAPI = Omit<GraphQLAPIConfig, 'workspace' | 'source'> &
+  ResolvedSerializableProperties
+
+export type ResolvedGraphQLAPI = Omit<GraphQLAPIConfig, 'workspace' | 'source'> &
+  ResolvedSourceProperties
