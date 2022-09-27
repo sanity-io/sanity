@@ -17,6 +17,7 @@ module.exports = {
   '@sanity/schema': './packages/@sanity/schema/src/_exports',
   '@sanity/types': './packages/@sanity/types/src',
   '@sanity/types/parts': './packages/@sanity/types/parts',
+  '@sanity/util/fs': './packages/@sanity/util/src/fsTools.ts',
   '@sanity/util': './packages/@sanity/util/src',
   '@sanity/validation': './packages/@sanity/validation/src',
   '@sanity/vision': './packages/@sanity/vision/src',
