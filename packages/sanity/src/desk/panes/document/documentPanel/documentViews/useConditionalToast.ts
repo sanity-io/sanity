@@ -14,7 +14,6 @@ const LONG_ENOUGH_BUT_NOT_TOO_LONG = 1000 * 60 * 60 * 24 * 24
 
 /**
  * Workaround to support conditional toast (e.g. a toast that is visible as long as a condition holds true)
- * @param params
  */
 export function useConditionalToast(params: ToastParams & {id: string; enabled?: boolean}) {
   const toast = useToast()
