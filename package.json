@@ -16,6 +16,7 @@
     "build": "lerna run --scope '{@sanity/*,groq,sanity}' build",
     "build:cli": "run-s build",
     "build:dts": "tsc --build tsconfig.lib.json",
+    "check:format": "yarn prettier --check",
     "check:packages": "lerna run check:package",
     "clean": "lerna run --scope '{@sanity/*,groq,sanity}' clean",
     "clean:deps": "rimraf packages/@sanity/*/node_modules packages/*/node_modules node_modules",
