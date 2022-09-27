@@ -51,7 +51,7 @@ describe('block types', () => {
       const assignableToBlock: Schema.BlockDefinition = blockDef
 
       // @ts-expect-error block is not assignable to boolean
-      const notAssignableToBoolean: Schema.BooleanDefinition = stringDef
+      const notAssignableToBoolean: Schema.BooleanDefinition = blockDef
     })
   })
 

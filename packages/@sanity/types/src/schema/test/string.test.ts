@@ -4,7 +4,6 @@
  * use of ts-expect-error serves the same purpose - TypeScript is the testrunner here
  */
 import {defineField, defineType, Schema} from '../types'
-import FieldBase = Schema.FieldBase
 
 describe('string types', () => {
   describe('defineType', () => {
@@ -113,7 +112,7 @@ describe('string types', () => {
         },
       })
 
-      const assignableToString: Schema.StringDefinition & FieldBase = stringField
+      const assignableToString: Schema.StringDefinition & Schema.FieldBase = stringField
       const nameIsNarrowed: 'stringField' = stringField.name
 
       const assignableToFieldDef: Schema.FieldDefinition = defineField({
