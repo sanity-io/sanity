@@ -46,7 +46,7 @@ describe('reference types', () => {
       const assignableToreference: Schema.ReferenceDefinition = referenceDef
 
       // @ts-expect-error reference is not assignable to boolean
-      const notAssignableToBoolean: Schema.BooleanDefinition = stringDef
+      const notAssignableToBoolean: Schema.BooleanDefinition = referenceDef
     })
   })
 })

@@ -67,7 +67,7 @@ describe('array types', () => {
       assignableToArray = defineType(assignableToArray)
 
       // @ts-expect-error string is not assignable to boolean
-      const notAssignableToBoolean: Schema.BooleanDefinition = stringDef
+      const notAssignableToBoolean: Schema.BooleanDefinition = arrayDef
     })
 
     it('should define object array schema', () => {
@@ -137,7 +137,7 @@ describe('array types', () => {
       assignableToArray = defineType(assignableToArray)
 
       // @ts-expect-error string is not assignable to boolean
-      const notAssignableToBoolean: Schema.BooleanDefinition = stringDef
+      const notAssignableToBoolean: Schema.BooleanDefinition = arrayDef
     })
   })
 
