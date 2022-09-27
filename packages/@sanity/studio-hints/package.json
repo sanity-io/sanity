@@ -1,6 +1,6 @@
 {
   "name": "@sanity/studio-hints",
-  "version": "2.33.2",
+  "version": "2.34.0",
   "description": "Plugin for rendering hints in the Studio",
   "main": "src/StudioHints.js",
   "author": "Sanity.io <hello@sanity.io>",
