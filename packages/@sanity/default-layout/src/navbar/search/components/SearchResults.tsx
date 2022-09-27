@@ -104,7 +104,7 @@ export function SearchResults({
   return (
     <SearchResultsFlex direction="column">
       {/* Sort menu */}
-      {hasSearchResults && <SortMenu small={small} />}
+      {/* {hasSearchResults && <SortMenu small={small} />} */}
 
       {/* Results */}
       <SearchResultsInnerFlex $loading={result.loading} aria-busy={result.loading} flex={1}>
