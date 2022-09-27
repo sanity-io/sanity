@@ -42,7 +42,7 @@
     "@sanity/portable-text-editor": "3.0.0-v3-pte.80+7ad1a80c1e",
     "@sanity/schema": "2.33.2",
     "@sanity/types": "2.33.2",
-    "@sanity/ui": "^0.37.21",
+    "@sanity/ui": "^0.37.22",
     "@sanity/util": "2.33.2",
     "@sanity/uuid": "^3.0.1",
     "attr-accept": "^1.1.0",
