@@ -33,6 +33,9 @@ jobs:
           CYPRESS_INSTALL_BINARY: '0'
         run: yarn install
 
+      - name: Check formatting
+        run: yarn check:format
+
       - name: Typecheck modules
         # If TypeScript project references is set up properly, `tsc --build` should work right after dependencies
         # has been installed, no extra build/compile step required
