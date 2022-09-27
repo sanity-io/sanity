@@ -55,6 +55,7 @@
   "devDependencies": {
     "@rexxars/gitconfiglocal": "^3.0.1",
     "@sanity/client": "^3.4.1",
+    "@sanity/eslint-config-studio": "^2.0.0",
     "@sanity/generate-help-url": "^3.0.0",
     "@sanity/types": "3.0.0-dev-preview.20",
     "@sanity/util": "3.0.0-dev-preview.20",

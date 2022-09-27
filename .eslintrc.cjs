@@ -1,57 +1,98 @@
-/* eslint-disable strict */
-
 'use strict'
 
-module.exports = {
-  root: true,
-  parser: '@typescript-eslint/parser',
-  globals: {
-    JSX: true,
-  },
+const baseConfig = {
   env: {
     node: true,
     browser: true,
-  },
-  settings: {
-    react: {version: '17.0.0'},
   },
   extends: [
     'sanity',
     'sanity/react',
     'sanity/import',
-    'plugin:@typescript-eslint/recommended',
     'plugin:react-hooks/recommended',
-    'sanity/typescript',
     'prettier',
   ],
+  parser: '@typescript-eslint/parser',
+  plugins: ['import', '@typescript-eslint', 'prettier', 'react', 'tsdoc'],
   rules: {
+    '@typescript-eslint/no-var-requires': 'off', // prefer import/no-dynamic-require
+    'import/extensions': ['error', {pattern: {cjs: 'always', json: 'always'}}],
+    'import/named': 'off',
+    'import/no-named-as-default': 'off',
+    'import/no-named-as-default-member': 'off',
+    'import/no-unresolved': 'off',
     'prettier/prettier': 'error',
-    'react/jsx-filename-extension': ['error', {extensions: ['.js', '.jsx', '.tsx']}],
+    'react/jsx-filename-extension': ['error', {extensions: ['.jsx']}],
     'sort-imports': 'off', // prefer import/order
-
-    // tsdoc
     'tsdoc/syntax': 'error',
   },
-  plugins: ['import', '@typescript-eslint', 'prettier', 'react', 'tsdoc'],
-  overrides: [
-    {
-      files: ['*.{ts,tsx}'],
-      rules: {
-        'import/no-unresolved': 'off',
-        'no-undef': 'off',
-        'import/named': 'off',
-        // the normal `no-dupe-class-members` doesn't work with TS overrides
-        'no-dupe-class-members': 'off',
-        '@typescript-eslint/no-dupe-class-members': ['error'],
-        'no-unused-vars': 'off',
-        '@typescript-eslint/no-unused-vars': ['warn'],
-        'no-shadow': 'off',
-        '@typescript-eslint/no-shadow': ['error'],
+  settings: {
+    'import/extensions': ['.cjs', '.mjs', '.js', '.jsx', '.ts', '.tsx'],
+    'import/parsers': {
+      '@typescript-eslint/parser': ['.cjs', '.mjs', '.js', '.jsx', '.ts', '.tsx'],
+    },
+    'import/resolver': {
+      typescript: {
+        alwaysTryTypes: true,
+        project: [
+          'dev/*/tsconfig.json',
+          'examples/*/tsconfig.json',
+          'packages/@sanity/*/tsconfig.json',
+          'packages/*/tsconfig.json',
+        ],
       },
     },
+    react: {version: '17.0.0'},
+  },
+}
+
+module.exports = {
+  ...baseConfig,
+
+  overrides: [
+    // TypeScript files
     {
-      files: ['./test/jest-setup.js', '*.test.{js,ts,tsx}'],
+      files: ['*.{ts,tsx}'],
+      extends: [
+        'sanity',
+        'sanity/react',
+        'sanity/import',
+        'sanity/typescript',
+        'plugin:@typescript-eslint/recommended',
+        'plugin:react-hooks/recommended',
+        'prettier',
+      ],
+      rules: {
+        ...baseConfig.rules,
+        '@typescript-eslint/no-dupe-class-members': ['error'],
+        '@typescript-eslint/no-shadow': ['error'],
+        '@typescript-eslint/no-unused-vars': ['warn'],
+        'no-undef': 'off',
+        'no-dupe-class-members': 'off', // doesn't work with TS overrides
+        'no-shadow': 'off',
+        'no-unused-vars': 'off',
+        'react/jsx-filename-extension': ['error', {extensions: ['.tsx']}],
+      },
+    },
+
+    // CommonJS files
+    {
+      files: ['*.cjs'],
+      parserOptions: {
+        sourceType: 'script',
+      },
+      rules: {
+        ...baseConfig.rules,
+        strict: ['error', 'global'],
+      },
+    },
+
+    // Test files
+    {
+      files: ['./test/**/*.js', './test/*.js', '*.test.{js,ts,tsx}'],
       env: {jest: true},
     },
   ],
+
+  root: true,
 }
