@@ -10,8 +10,8 @@ import {debug} from '../../debug'
 import {getUrlHeaders} from '../../util/getUrlHeaders'
 import {extractFromSanitySchema} from './extractFromSanitySchema'
 import {SchemaError} from './SchemaError'
-import {getGraphQLAPIs} from './getGraphQLAPIs'
 import {DeployResponse, GeneratedApiSpecification, ValidationResponse} from './types'
+import {getGraphQLAPIs} from './getGraphQLAPIs'
 
 import gen1 from './gen1'
 import gen2 from './gen2'
@@ -56,6 +56,8 @@ export default async function deployGraphQLApiAction(
     requireProject: true,
   })
 
+  // Importing dynamically in order to create a separate chunk for this file:
+  // we use worker threads to keep browser environment mocking out of the main process
   const apiDefs = await getGraphQLAPIs(context)
   const deployTasks: DeployTask[] = []
 
