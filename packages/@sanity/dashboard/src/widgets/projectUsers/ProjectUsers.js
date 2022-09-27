@@ -1,9 +1,13 @@
+// @todo: remove the following line when part imports has been removed from this file
+///<reference types="@sanity/types/parts" />
+
 import React from 'react'
 import {map, switchMap} from 'rxjs/operators'
-import {Stack, Spinner, Card, Box, Text, Button} from '@sanity/ui'
+import {Stack, Card, Box, Text, Button} from '@sanity/ui'
 import {RobotIcon} from '@sanity/icons'
 import styled from 'styled-components'
 import {DefaultPreview} from '@sanity/base/components'
+import Spinner from 'part:@sanity/components/loading/spinner'
 import {versionedClient} from '../../versionedClient'
 import {DashboardWidget} from '../../'
 import {userStore} from '../../legacyParts'
@@ -134,16 +138,9 @@ class ProjectUsers extends React.PureComponent {
         }
       >
         {isLoading && (
-          <Box paddingY={5} paddingX={2}>
-            <Stack space={4}>
-              <Text align="center" muted size={1}>
-                <Spinner />
-              </Text>
-              <Text align="center" size={1} muted>
-                Loading items...
-              </Text>
-            </Stack>
-          </Box>
+          <Card padding={4}>
+            <Spinner center message="Loading..." />
+          </Card>
         )}
 
         {!isLoading && (
