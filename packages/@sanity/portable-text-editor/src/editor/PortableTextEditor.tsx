@@ -25,15 +25,12 @@ import {validateValue} from '../utils/validateValue'
 import {debugWithName} from '../utils/debug'
 import {getValueOrInitialValue, isEqualToEmptyEditor, toSlateValue} from '../utils/values'
 import {KEY_TO_SLATE_ELEMENT, KEY_TO_VALUE_ELEMENT} from '../utils/weakMaps'
+import {FLUSH_PATCHES_DEBOUNCE_MS} from '../constants'
 import {PortableTextEditorContext} from './hooks/usePortableTextEditor'
 import {PortableTextEditorSelectionContext} from './hooks/usePortableTextEditorSelection'
 import {PortableTextEditorReadOnlyContext} from './hooks/usePortableTextReadOnly'
 import {PortableTextEditorValueContext} from './hooks/usePortableTextEditorValue'
 import {withPlugins} from './plugins'
-
-// Debounce time for flushing local patches (ms since user haven't produced a patch)
-// (lower time for tests to speed them up)
-export const FLUSH_PATCHES_DEBOUNCE_MS = process.env.NODE_ENV === 'test' ? 50 : 1000
 
 export const defaultKeyGenerator = () => randomKey(12)
 
