@@ -66,6 +66,12 @@ export const PublishAction: DocumentActionComponent = (props) => {
   const doPublish = useCallback(() => {
     publish.execute()
     setPublishState('publishing')
+    // useFetch({
+    //   event: TELEMETRY_EVENT.BUTTON_CLICK,
+    //   metadata: {
+    //     name: 'publishButton',
+    //   },
+    // })
     telemetryClient({
       event: TELEMETRY_EVENT.BUTTON_CLICK,
       metadata: {

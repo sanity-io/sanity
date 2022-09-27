@@ -1,4 +1,53 @@
-import config from 'config:sanity'
+import {useEffect, useState} from 'react'
+import {useCurrentUser} from '../_exports/hooks'
+import config from 'config:sanity' //gives you the entire config in v2
+
+// If we want to use the useCurrentUser-hook, the telemetryclient should be turned into a hook. This code demonstrates that this can be done
+// export const useFetch = ({event, metadata = {}}: TelemetryPayload) => {
+//   const [data, setData] = useState()
+//   const [error, setError] = useState()
+//   const [loading, setLoading] = useState(false)
+//   const PROXY_ENDPOINT = 'https://www.sanity.io/intake/dp/v1/track'
+//   const sanityUserId = useCurrentUser()
+
+//   /* eslint-disable no-process-env */
+//   const disableTelemetry = process.env.SANITY_STUDIO_TELEMETRY //Can turn off the telemetry globally by setting an env variable called SANITY_STUDIO_TELEMETRY = 1.
+
+//   console.log(disableTelemetry)
+
+//   console.log(config)
+
+//   useEffect(() => {
+//     setLoading(true)
+//     fetch(PROXY_ENDPOINT, {
+//       method: 'POST', // or 'PUT'
+//       headers: {
+//         authorization: 'Basic MXBiSk5jRUpIV09lM0R2ZFB5SXA3WERJQ0o0Og==',
+//       },
+//       body: JSON.stringify({
+//         userId: sanityUserId,
+//         event: 'studio-telemetry',
+//         properties: {
+//           eventAction: event,
+//           ...metadata,
+//         },
+//         context: {
+//           // ip: '14.5.67.21',
+//           library: {
+//             name: 'http',
+//           },
+//         },
+//         timestamp: new Date().toISOString(),
+//       }),
+//     })
+//       .then((response) => response.json())
+//       .then(setData)
+//       .catch(setError)
+//       .finally(() => setLoading(false))
+//   }, [event, metadata])
+
+//   return {data, error, loading}
+// }
 
 interface TelemetryPayload {
   event: TELEMETRY_EVENT
@@ -36,20 +85,30 @@ const getPayload = ({event, metadata = {}}: TelemetryPayload) =>
     timestamp: new Date().toISOString(),
   })
 
-const headers = {
-  type: 'Basic MXBiSk5jRUpIV09lM0R2ZFB5SXA3WERJQ0o0Og==',
+const disableTelemetry = process.env.SANITY_STUDIO_TELEMETRY //Can turn off the telemetry globally by setting an env variable called SANITY_STUDIO_TELEMETRY=1.
+export const telemetryClient = ({event, metadata}: TelemetryPayload) => {
+  if (disableTelemetry !== '1') {
+    //If you set the env variable to 1, you will turn the tracking off. Anything else, and this fetch will run
+    fetch(PROXY_ENDPOINT, {
+      method: 'POST', // or 'PUT'
+      headers: {
+        authorization: 'Basic MXBiSk5jRUpIV09lM0R2ZFB5SXA3WERJQ0o0Og==',
+      },
+      body: getPayload({event, metadata}),
+    })
+  }
 }
 
-export const telemetryClient = ({event, metadata}: TelemetryPayload) => {
-  console.log(config)
-  fetch(PROXY_ENDPOINT, {
-    method: 'POST', // or 'PUT'
-    headers: {
-      authorization: 'Basic MXBiSk5jRUpIV09lM0R2ZFB5SXA3WERJQ0o0Og==',
-    },
-    body: getPayload({event, metadata}),
-  })
-}
+// export const telemetryClient = ({event, metadata}: TelemetryPayload) => {
+//   console.log(config)
+//   fetch(PROXY_ENDPOINT, {
+//     method: 'POST', // or 'PUT'
+//     headers: {
+//       authorization: 'Basic MXBiSk5jRUpIV09lM0R2ZFB5SXA3WERJQ0o0Og==',
+//     },
+//     body: getPayload({event, metadata}),
+//   })
+// }
 
 // export const telemetryClient = ({event, metadata}: TelemetryPayload) => {
 //   const blob = new Blob([getPayload({event, metadata})], headers)
