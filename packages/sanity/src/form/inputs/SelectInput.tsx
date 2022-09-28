@@ -35,7 +35,7 @@ export function SelectInput(props: StringInputProps) {
   const isRadio = schemaType.options && schemaType.options.layout === 'radio'
 
   const itemFromOptionValue = useCallback(
-    (optionValue) => {
+    (optionValue: any) => {
       const index = Number(optionValue)
 
       return items[index]
@@ -44,7 +44,7 @@ export function SelectInput(props: StringInputProps) {
   )
 
   const optionValueFromItem = useCallback(
-    (item) => {
+    (item: any) => {
       return String(items.indexOf(item))
     },
     [items]

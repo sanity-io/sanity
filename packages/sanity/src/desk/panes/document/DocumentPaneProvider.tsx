@@ -206,7 +206,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     patch.execute(toMutationPatches(event.patches), initialValue.value)
   }
 
-  const handleChange = useCallback((event) => patchRef.current(event), [])
+  const handleChange = useCallback((event: any) => patchRef.current(event), [])
 
   const handleHistoryClose = useCallback(() => {
     paneRouter.setParams({...params, since: undefined})

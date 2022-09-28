@@ -90,7 +90,7 @@ export const AssetThumb = React.memo(function AssetThumb(props: AssetProps) {
   }, [setShowUsageDialog])
 
   const handleDeleteError = useCallback(
-    (error) => {
+    (error: any) => {
       toast.push({
         closable: true,
         status: 'error',

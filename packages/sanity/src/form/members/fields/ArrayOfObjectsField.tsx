@@ -128,7 +128,7 @@ export function ArrayOfObjectsField(props: {
   )
 
   const handlePrependItem = useCallback(
-    (item) => {
+    (item: any) => {
       onChange(
         PatchEvent.from([setIfMissing([]), insert([ensureKey(item)], 'before', [0])]).prefixAll(
           member.name
@@ -138,7 +138,7 @@ export function ArrayOfObjectsField(props: {
     [member.name, onChange]
   )
   const handleAppendItem = useCallback(
-    (item) => {
+    (item: any) => {
       onChange(
         PatchEvent.from([setIfMissing([]), insert([ensureKey(item)], 'after', [-1])]).prefixAll(
           member.name

@@ -63,7 +63,7 @@ export function useLocationStore(props: {baseUrl?: string} = {}): WorkshopLocati
     [baseUrl, navigateUrl]
   )
 
-  const subscribe = useCallback((subscriber) => {
+  const subscribe = useCallback((subscriber: any) => {
     subscribersRef.current.push(subscriber)
 
     return () => {

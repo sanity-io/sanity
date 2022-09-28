@@ -52,7 +52,7 @@ function ConfirmDialogContent(props: {modal: DocumentActionConfirmModalProps}) {
   }, [isTopLayer, onCancel])
 
   const handleGlobalKeyDown = useCallback(
-    (event) => {
+    (event: any) => {
       if (event.key === 'Escape' && isTopLayer) onCancel()
     },
     [isTopLayer, onCancel]

@@ -63,7 +63,7 @@ export const RegionsWithIntersections = forwardRef(function RegionsWithIntersect
     >
   >({})
 
-  const onIntersection = useCallback((id, entry) => {
+  const onIntersection = useCallback((id: any, entry: any) => {
     setIntersections((current) => ({...current, [id]: entry}))
   }, [])
 

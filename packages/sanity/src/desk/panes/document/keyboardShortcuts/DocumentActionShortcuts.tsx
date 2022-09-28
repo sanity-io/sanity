@@ -40,7 +40,7 @@ function KeyboardShortcutResponder(
   const activeAction = states[activeIndex]
 
   const handleKeyDown = useCallback(
-    (event) => {
+    (event: any) => {
       const matchingStates = states.filter(
         (state) => state.shortcut && isHotkey(state.shortcut, event)
       )

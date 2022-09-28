@@ -43,13 +43,15 @@ export function BlockImagePreview(props: BlockImagePreviewProps) {
       <Stack>
         <HeaderFlex paddingLeft={2} paddingRight={1} paddingY={1}>
           <Stack flex={1} space={2}>
-            <Text size={1} textOverflow="ellipsis" weight="semibold">
-              {title || fallbackTitle}
-            </Text>
+            {(title || fallbackTitle) && (
+              <Text size={1} textOverflow="ellipsis" weight="semibold">
+                {title ? renderPreviewNode(title as any, 'block') : fallbackTitle}
+              </Text>
+            )}
 
             {subtitle && (
               <Text muted size={1} textOverflow="ellipsis">
-                {renderPreviewNode(subtitle, 'block')}
+                {renderPreviewNode(subtitle as any, 'block')}
               </Text>
             )}
           </Stack>
@@ -57,11 +59,11 @@ export function BlockImagePreview(props: BlockImagePreviewProps) {
           <Flex gap={1} paddingLeft={1}>
             {status && (
               <Box paddingX={2} paddingY={3}>
-                {renderPreviewNode(status, 'block')}
+                {renderPreviewNode(status as any, 'block')}
               </Box>
             )}
 
-            {actions}
+            {actions as any}
           </Flex>
         </HeaderFlex>
 
@@ -76,7 +78,7 @@ export function BlockImagePreview(props: BlockImagePreviewProps) {
             border={false}
             dimensions={mediaDimensions}
             layout="blockImage"
-            media={media}
+            media={media as any}
             radius={0}
             responsive
           />
@@ -86,7 +88,7 @@ export function BlockImagePreview(props: BlockImagePreviewProps) {
       {description && (
         <Box paddingX={2} paddingY={3}>
           <Text muted size={1}>
-            {renderPreviewNode(description, 'block')}
+            {renderPreviewNode(description as any, 'block')}
           </Text>
         </Box>
       )}

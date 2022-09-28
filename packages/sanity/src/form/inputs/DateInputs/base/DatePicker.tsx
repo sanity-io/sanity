@@ -14,7 +14,7 @@ export const DatePicker = React.forwardRef(function DatePicker(
   const [focusedDate, setFocusedDay] = React.useState<Date>()
 
   const handleSelect = React.useCallback(
-    (nextDate) => {
+    (nextDate: any) => {
       onChange(nextDate)
       setFocusedDay(undefined)
     },

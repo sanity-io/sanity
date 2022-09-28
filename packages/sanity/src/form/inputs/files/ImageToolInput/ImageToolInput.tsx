@@ -80,7 +80,7 @@ export function ImageToolInput(props: ImageToolInputProps) {
   })
 
   const handleChangeEnd = useCallback(
-    (finalValue) => {
+    (finalValue: any) => {
       if (readOnly) {
         return
       }

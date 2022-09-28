@@ -33,12 +33,11 @@ export function BlockPreview(props: PreviewProps<'block'>) {
   return (
     <Stack data-testid="block-preview" space={1}>
       <HeaderFlex data-testid="block-preview__header">
-        {media && <Media dimensions={mediaDimensions} layout="block" media={media} />}
+        {media && <Media dimensions={mediaDimensions} layout="block" media={media as any} />}
 
         <Box flex={1} paddingLeft={media ? 2 : 1}>
           <Text size={1} textOverflow="ellipsis" weight="semibold">
-            {title && renderPreviewNode(title, 'block')}
-            {!title && <>Untitled</>}
+            {title ? renderPreviewNode(title, 'block') : 'Untitled'}
           </Text>
 
           {subtitle && (
@@ -65,7 +64,7 @@ export function BlockPreview(props: PreviewProps<'block'>) {
             </Box>
           )}
 
-          {actions}
+          {actions as any}
         </Flex>
       </HeaderFlex>
 

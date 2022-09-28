@@ -45,7 +45,7 @@ export function ConfirmDeleteDialogBody({
   const toast = useToast()
 
   const renderPreviewItem = useCallback(
-    (item) => {
+    (item: any) => {
       const type = schema.get(item._type)
       if (type) {
         return <ReferencePreviewLink type={type} value={item} onClick={onReferenceLinkClick} />

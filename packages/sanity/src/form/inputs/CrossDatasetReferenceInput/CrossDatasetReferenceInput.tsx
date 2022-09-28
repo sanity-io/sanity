@@ -117,7 +117,7 @@ export function CrossDatasetReferenceInput(props: CrossDatasetReferenceInputProp
   }, [onChange])
 
   const handleAutocompleteKeyDown = useCallback(
-    (event) => {
+    (event: any) => {
       // escape
       if (event.keyCode === 27) {
         onFocusPath?.([])
@@ -166,7 +166,7 @@ export function CrossDatasetReferenceInput(props: CrossDatasetReferenceInputProp
   const errors = useMemo(() => validation.filter((item) => item.level === 'error'), [validation])
 
   const handleFocus = useCallback(
-    (event) => {
+    (event: any) => {
       if (onFocusPath && event.currentTarget === elementProps.ref.current) {
         onFocusPath([])
       }
@@ -175,7 +175,7 @@ export function CrossDatasetReferenceInput(props: CrossDatasetReferenceInputProp
   )
 
   const handleAutocompleteFocus = useCallback(
-    (event) => {
+    (event: any) => {
       if (onFocusPath && event.currentTarget === elementProps.ref.current) {
         onFocusPath(REF_PATH)
       }
@@ -233,7 +233,7 @@ export function CrossDatasetReferenceInput(props: CrossDatasetReferenceInputProp
     null
 
   const renderOption = useCallback(
-    (option) => {
+    (option: any) => {
       return (
         <PreviewCard forwardedAs="button" type="button" radius={2}>
           <Box paddingX={3} paddingY={1}>

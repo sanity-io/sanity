@@ -4,7 +4,7 @@ import {ObjectSchemaType} from '@sanity/types'
 
 export interface BlockItem {
   handle: () => void
-  icon: React.ComponentType
+  icon: React.ElementType
   inline: boolean
   key: string
   type: ObjectSchemaType
@@ -13,14 +13,14 @@ export interface BlockItem {
 export interface BlockStyleItem {
   key: string
   style: string
-  styleComponent?: React.ComponentType
+  styleComponent?: React.ElementType
   title: string
 }
 
 export interface PTEToolbarAction {
   type: 'annotation' | 'format' | 'listStyle'
   disabled: boolean
-  icon?: React.ComponentType | string
+  icon?: React.ElementType | string
   handle: (active?: boolean) => void
   hotkeys?: string[]
   key: string

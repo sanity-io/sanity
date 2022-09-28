@@ -41,11 +41,12 @@ export const LinkAnnotationInput = (props: LinkAnnotationInputProps) => {
   const exclude = [urlField?.name, referenceArticleField?.name]
   const otherFields = type.fields.filter((f) => !exclude.includes(f.name))
   const getFieldValidation = useCallback(
-    (fieldName) => validation.filter((marker) => PathUtils.startsWith([fieldName], marker.path)),
+    (fieldName: any) =>
+      validation.filter((marker) => PathUtils.startsWith([fieldName], marker.path)),
     [validation]
   )
   const handleFieldChange = useCallback(
-    (field, fieldPatchEvent) => {
+    (field: any, fieldPatchEvent: any) => {
       const patchEvent = fieldPatchEvent
         .prefixAll(field.name)
         .prepend(setIfMissing({_type: type.name}))

@@ -21,7 +21,7 @@ export const FilterFieldInput = React.forwardRef(function FilterFieldInput(
   const {value, onChange, onFilter} = props
 
   const handleChange = useCallback(
-    (event) => {
+    (event: any) => {
       onChange(event.target.value)
     },
     [onChange]
