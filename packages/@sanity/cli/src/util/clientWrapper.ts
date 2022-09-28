@@ -43,6 +43,7 @@ export function getCliToken(): string | undefined {
   const userConfig = getUserConfig()
   return envAuthToken || userConfig.get('authToken')
 }
+
 export interface ClientRequirements {
   requireUser?: boolean
   requireProject?: boolean

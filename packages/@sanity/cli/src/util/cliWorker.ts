@@ -9,12 +9,12 @@ import pkgDir from 'pkg-dir'
  * To make things worse, the built CLI makes it difficult to resolve paths to
  * built source files (that contains the unpackaged worker).
  *
- * This function takes a path _relative to the `src`/`lib` folder, resolves
+ * This function takes a path relative to the `src/workers` folder, resolves
  * the location of that within the installed location (eg global Sanity CLI)
  * and ensures we can resolve the actual module before trying to spawn the
  * worker thread.
  *
- * @param workerPath - _RELATIVE_ path (relative to `src`/`lib`) to the worker
+ * @param workerPath - _RELATIVE_ path (relative to `src/workers`) to the worker
  * @returns Full, absolute path to the worker
  * @internal
  */
@@ -24,11 +24,10 @@ export async function getCliWorkerPath(workerPath: string): Promise<string> {
     throw new Error('Failed to find root @sanity/cli module directory')
   }
 
-  const resolvedPath = path.resolve(cliDir, 'lib', workerPath)
-  const resolvedFile = require.resolve(resolvedPath)
-  if (!resolvedFile) {
-    throw new Error(`Unable to resolve path for worker: ${resolvedPath}`)
+  const resolvedPath = path.resolve(cliDir, 'lib', 'workers', workerPath)
+  try {
+    return require.resolve(resolvedPath)
+  } catch (err) {
+    throw new Error(`Unable to resolve path for worker: ${workerPath}`)
   }
-
-  return resolvedFile
 }
