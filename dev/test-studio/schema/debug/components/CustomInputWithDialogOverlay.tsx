@@ -20,7 +20,7 @@ export const CustomInputWithDialogOverlay = React.forwardRef(function CustomInpu
   const {focusPath, level = 0, onBlur, onChange, onFocus, presence, schemaType, value} = props
 
   const handleFieldChange = React.useCallback(
-    (field, fieldPatchEvent) => {
+    (field: any, fieldPatchEvent: any) => {
       // Whenever the field input emits a patch event, we need to make sure to each of the included patches
       // are prefixed with its field name, e.g. going from:
       // {path: [], set: <nextvalue>} to {path: [<fieldName>], set: <nextValue>}

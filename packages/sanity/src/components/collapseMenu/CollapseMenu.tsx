@@ -121,7 +121,7 @@ export const CollapseMenu = forwardRef(function CollapseMenu(
   )
 
   const isInMenu = useCallback(
-    (childKey) => menuOptionsArray.some((o) => o.key === childKey),
+    (childKey: any) => menuOptionsArray.some((o) => o.key === childKey),
     [menuOptionsArray]
   )
 

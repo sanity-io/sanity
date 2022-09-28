@@ -36,7 +36,7 @@ export function SlugInput(props: SlugInputProps) {
   const errors = useMemo(() => validation.filter((item) => item.level === 'error'), [validation])
 
   const updateSlug = useCallback(
-    (nextSlug) => {
+    (nextSlug: any) => {
       if (!nextSlug) {
         onChange(PatchEvent.from(unset([])))
         return
@@ -68,7 +68,7 @@ export function SlugInput(props: SlugInputProps) {
   const isUpdating = generateState?.status === 'pending'
 
   const handleChange = React.useCallback(
-    (event) => updateSlug(event.currentTarget.value),
+    (event: any) => updateSlug(event.currentTarget.value),
     [updateSlug]
   )
 

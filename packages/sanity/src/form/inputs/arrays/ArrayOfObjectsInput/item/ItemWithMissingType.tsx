@@ -21,7 +21,7 @@ export function ItemWithMissingType(props: Props) {
 
   useClickOutside(() => setShowDetails(false), [popoverRef])
 
-  const handleKeyDown = React.useCallback((e) => {
+  const handleKeyDown = React.useCallback((e: any) => {
     if (e.key === 'Escape' || e.key === 'Tab') {
       setShowDetails(false)
     }

@@ -76,7 +76,7 @@ export function BlockObject(props: BlockObjectProps) {
   }, [onOpenItem, memberItem])
 
   const handleDoubleClickToOpen = useCallback(
-    (e) => {
+    (e: any) => {
       e.preventDefault()
       e.stopPropagation()
       PortableTextEditor.blur(editor)
@@ -86,7 +86,7 @@ export function BlockObject(props: BlockObjectProps) {
   )
 
   const handleDelete = useCallback(
-    (e) => {
+    (e: any) => {
       e.stopPropagation()
       e.preventDefault()
       const sel: EditorSelection = {focus: {path, offset: 0}, anchor: {path, offset: 0}}

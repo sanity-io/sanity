@@ -126,7 +126,7 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
   }, [readOnly, slateEditor, withHotKeys, withInsertData])
 
   const renderElement = useCallback(
-    (eProps) => (
+    (eProps: any) => (
       <Element
         {...eProps}
         portableTextFeatures={portableTextFeatures}
@@ -140,7 +140,7 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
   )
 
   const renderLeaf = useCallback(
-    (lProps) => {
+    (lProps: any) => {
       if (renderPlaceholder && lProps.leaf.placeholder && lProps.text.text === '') {
         return (
           <>

@@ -24,12 +24,12 @@ export const LazyTextInput = React.forwardRef(function LazyTextInput(
 ) {
   const [inputValue, setInputValue] = React.useState<string>()
 
-  const handleChange = React.useCallback((event) => {
+  const handleChange = React.useCallback((event: any) => {
     setInputValue(event.currentTarget.value)
   }, [])
 
   const checkEvent = React.useCallback(
-    (event) => {
+    (event: any) => {
       const currentValue = event.currentTarget.value
       if (currentValue !== `${value}`) {
         if (onChange) {
@@ -42,7 +42,7 @@ export const LazyTextInput = React.forwardRef(function LazyTextInput(
   )
 
   const handleBlur = React.useCallback(
-    (e) => {
+    (e: any) => {
       checkEvent(e)
       if (onBlur) {
         onBlur(e)

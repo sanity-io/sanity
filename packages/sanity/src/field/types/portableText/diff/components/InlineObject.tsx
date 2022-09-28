@@ -101,7 +101,7 @@ function InlineObjectWithDiff({
   }, [isEditing])
 
   const handleOpenPopup = useCallback(
-    (event) => {
+    (event: any) => {
       event.stopPropagation()
       setOpen(true)
       if (!isRemoved) {

@@ -62,7 +62,7 @@ export function SanityPreview(props: SanityPreviewProps & {style?: CSSProperties
         error,
         isPlaceholder: !value,
         layout,
-        media: isImage(valueProp) ? valueProp : value?.media,
+        media: isImage(valueProp) ? (valueProp as any) : value?.media,
         schemaType,
         subtitle: value?.subtitle,
         title: value?.title,

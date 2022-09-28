@@ -33,7 +33,7 @@ const PlaceholderStringInput = forwardRef((props: Props, ref: RefObject<HTMLInpu
 
   const handleChange = useCallback(
     // useCallback will help with performance
-    (event) => {
+    (event: any) => {
       const inputValue = event.currentTarget.value // get current value
 
       // if the value exists, set the data, if not, unset the data

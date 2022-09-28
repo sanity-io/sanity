@@ -20,7 +20,7 @@ const testPaths: RouterPanes[] = [
 
 export default function ResolvePanesStoryWrapper() {
   return (
-    <DeskToolProvider structure={useCallback((S) => S.list().title('Content'), [])}>
+    <DeskToolProvider structure={useCallback((S: any) => S.list().title('Content'), [])}>
       <ResolvePanesStory />
     </DeskToolProvider>
   )

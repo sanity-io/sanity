@@ -48,7 +48,7 @@ export function GetHookCollectionState<T, K>(props: GetHookCollectionStateProps<
     trailing: true,
   })
 
-  const handleNext = useCallback((id, hookState) => {
+  const handleNext = useCallback((id: any, hookState: any) => {
     if (hookState === null) {
       delete statesRef.current[id]
     } else {
@@ -58,7 +58,7 @@ export function GetHookCollectionState<T, K>(props: GetHookCollectionStateProps<
   }, [])
 
   const handleReset = useCallback(
-    (id) => {
+    (id: any) => {
       setKeys((currentKeys) => ({...currentKeys, [id]: (currentKeys[id] || 0) + 1}))
 
       if (onReset) {

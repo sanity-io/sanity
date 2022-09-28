@@ -68,17 +68,17 @@ export default function ExampleStory() {
     // setDocumentValue((currentDocumentValue) => patcher.apply(currentDocumentValue))
   }, [])
   const handleBlur = useCallback(() => setFocused(false), [])
-  const handleFocus = useCallback((path) => {
+  const handleFocus = useCallback((path: any) => {
     setFocusPath(path)
     setFocused(true)
   }, [])
-  const handleChangeFieldFilterSource = useCallback((value) => {
+  const handleChangeFieldFilterSource = useCallback((value: any) => {
     const handledValue = value && value.length > 0 ? value : ``
 
     setFieldFilterSource(handledValue)
   }, [])
   const handleChangeFieldFilter = useCallback(
-    (value) => {
+    (value: any) => {
       setFieldFilterValue(value)
       toast.push({
         status: 'success',

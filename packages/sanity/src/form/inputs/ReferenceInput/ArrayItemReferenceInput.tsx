@@ -203,7 +203,7 @@ export function ArrayItemReferenceInput(props: Props) {
   }, [onChange])
 
   const handlePreviewKeyPress = useCallback(
-    (event) => {
+    (event: any) => {
       if (event.key !== 'Enter' && event.key !== 'Space') {
         // enable "search for reference"-mode
         onFocusPath(['_ref'])
@@ -220,7 +220,7 @@ export function ArrayItemReferenceInput(props: Props) {
   }, [onChange, onFocusPath, value?._ref])
 
   const handleAutocompleteKeyDown = useCallback(
-    (event) => {
+    (event: any) => {
       // escape
       if (event.keyCode === 27) {
         handleCancelEdit()
@@ -230,7 +230,7 @@ export function ArrayItemReferenceInput(props: Props) {
   )
 
   const getReferenceInfoMemo = useCallback(
-    (id) => getReferenceInfo(id, type),
+    (id: any) => getReferenceInfo(id, type),
     [getReferenceInfo, type]
   )
 
@@ -283,7 +283,7 @@ export function ArrayItemReferenceInput(props: Props) {
   const pressed = selectedState === 'pressed'
   const selected = selectedState === 'selected'
   const handleFocus = useCallback(
-    (event) => {
+    (event: any) => {
       if (event.currentTarget === forwardedRef.current) {
         elementProps.onFocus(event)
       }
@@ -292,7 +292,7 @@ export function ArrayItemReferenceInput(props: Props) {
   )
 
   const handleAutocompleteFocus = useCallback(
-    (event) => {
+    (event: any) => {
       if (onFocusPath && event.currentTarget === forwardedRef.current) {
         onFocusPath(['_ref'])
       }
@@ -343,7 +343,7 @@ export function ArrayItemReferenceInput(props: Props) {
   const inputId = useId()
 
   const handleCreateButtonKeyDown = useCallback(
-    (e) => {
+    (e: any) => {
       if (e.key === 'Escape') {
         forwardedRef.current?.focus()
       }
@@ -352,7 +352,7 @@ export function ArrayItemReferenceInput(props: Props) {
   )
 
   const renderOption = useCallback(
-    (option) => {
+    (option: any) => {
       const id = option.hit.draft?._id || option.hit.published?._id
 
       return (
@@ -627,8 +627,8 @@ export function ArrayItemReferenceInput(props: Props) {
         >
           <Stack space={3}>
             <Text as="p" muted size={1}>
-              <strong>{loadableReferenceInfo.result?.preview.published?.title}</strong> is published
-              and this reference should now be{' '}
+              <strong>{loadableReferenceInfo.result?.preview.published?.title as any}</strong> is
+              published and this reference should now be{' '}
               {type.weak ? <>finalized</> : <>converted to a strong reference</>}.
             </Text>
             <Button

@@ -39,7 +39,7 @@ export function SearchField(props: SearchFieldProps) {
   }, [fullScreen, onSearchItemClick])
 
   const renderOption = useCallback(
-    (option) => {
+    (option: any) => {
       const {data} = option.payload
       const documentId = data.hit._id
       const documentType = data.hit._type
@@ -58,7 +58,7 @@ export function SearchField(props: SearchFieldProps) {
   )
 
   const renderPopoverFullscreen = useCallback(
-    (popoverProps, ref) => {
+    (popoverProps: any, ref: any) => {
       if (!popoverProps.hidden && results.error) {
         return (
           <SearchFullscreenContent tone="critical">
@@ -111,7 +111,7 @@ export function SearchField(props: SearchFieldProps) {
   )
 
   const renderPopover = useCallback(
-    (popoverProps, ref) => {
+    (popoverProps: any, ref: any) => {
       if (!popoverProps.hidden && results.error) {
         return (
           <SearchPopoverContent
