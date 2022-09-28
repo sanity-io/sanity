@@ -14,12 +14,7 @@ describe('blockContentTypeFeatures', () => {
       throw new Error('Failed to find type')
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    const expected = require('../../fixtures/defaultFeatures.json')
-    assert.deepEqual(
-      JSON.parse(JSON.stringify(blockContentTypeFeatures(blockContentType))),
-      expected
-    )
+    expect(blockContentTypeFeatures(blockContentType)).toMatchSnapshot()
   })
 
   it('will give spesific features for a custom schema', () => {
@@ -30,11 +25,6 @@ describe('blockContentTypeFeatures', () => {
     if (!blockContentType || blockContentType.jsonType !== 'array') {
       throw new Error('Failed to find type')
     }
-
-    const expected = require('../../fixtures/customFeatures.json')
-    assert.deepEqual(
-      JSON.parse(JSON.stringify(blockContentTypeFeatures(blockContentType))),
-      expected
-    )
+    expect(blockContentTypeFeatures(blockContentType)).toMatchSnapshot()
   })
 })
