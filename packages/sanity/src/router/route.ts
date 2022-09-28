@@ -8,7 +8,7 @@ import {decodeParams, encodeParams} from './utils/paramsEncoding'
 /**
  * @public
  */
-export type NodeOptions = {
+export type RouteNodeOptions = {
   path?: string
   children?: RouteChildren
   transform?: {
@@ -22,8 +22,8 @@ export type NodeOptions = {
  */
 export const route: {
   create: (
-    routeOrOpts: NodeOptions | string,
-    childrenOrOpts?: NodeOptions | RouteChildren | null,
+    routeOrOpts: RouteNodeOptions | string,
+    childrenOrOpts?: RouteNodeOptions | RouteChildren | null,
     children?: Router | RouteChildren
   ) => Router
   intents: (base: string) => Router
@@ -37,16 +37,16 @@ function normalizeChildren(children: any): RouteChildren {
   return children ? [children] : []
 }
 
-function isRoute(val?: NodeOptions | Router | RouteChildren) {
+function isRoute(val?: RouteNodeOptions | Router | RouteChildren) {
   return val && '_isRoute' in val
 }
 
-function normalizeArgs(...args: any[]): NodeOptions
+function normalizeArgs(...args: any[]): RouteNodeOptions
 function normalizeArgs(
-  path: string | NodeOptions,
-  childrenOrOpts?: NodeOptions | Router | RouteChildren,
+  path: string | RouteNodeOptions,
+  childrenOrOpts?: RouteNodeOptions | Router | RouteChildren,
   children?: Router | RouteChildren
-): NodeOptions {
+): RouteNodeOptions {
   if (typeof path === 'object') {
     return path
   }
@@ -67,8 +67,8 @@ function normalizeArgs(
 }
 
 function createRoute(
-  routeOrOpts: NodeOptions | string,
-  childrenOrOpts?: NodeOptions | RouteChildren | null,
+  routeOrOpts: RouteNodeOptions | string,
+  childrenOrOpts?: RouteNodeOptions | RouteChildren | null,
   children?: Router | RouteChildren
 ): Router {
   return createNode(normalizeArgs(routeOrOpts, childrenOrOpts, children))
@@ -122,7 +122,7 @@ function isRoot(pathname: string): boolean {
   return pathname.split('/').every((segment) => !segment)
 }
 
-function createNode(options: NodeOptions): Router {
+function createNode(options: RouteNodeOptions): Router {
   const {path, scope, transform, children} = options
 
   if (!path) {
