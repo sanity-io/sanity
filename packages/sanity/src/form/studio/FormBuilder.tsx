@@ -10,13 +10,13 @@ import {ObjectInputProps} from '../types'
 import {EMPTY_ARRAY} from '../utils/empty'
 import {useFormBuilder} from '../useFormBuilder'
 import {StateTree} from '../store'
-import {StudioFormBuilderProvider} from './StudioFormBuilderProvider'
+import {FormProvider} from './FormProvider'
 import {useFormCallbacks} from './contexts/FormCallbacks'
 
 /**
  * @alpha
  */
-export interface StudioFormBuilderProps
+export interface FormBuilderProps
   extends Omit<ObjectFormNode, 'level' | 'path' | 'presence' | 'validation'> {
   /**
    * @internal Considered internal – do not use.
@@ -47,7 +47,7 @@ export interface StudioFormBuilderProps
 /**
  * @alpha
  */
-export function StudioFormBuilder(props: StudioFormBuilderProps) {
+export function FormBuilder(props: FormBuilderProps) {
   const {
     __internal_patchChannel: patchChannel,
     autoFocus,
@@ -74,7 +74,7 @@ export function StudioFormBuilder(props: StudioFormBuilderProps) {
   } = props
 
   return (
-    <StudioFormBuilderProvider
+    <FormProvider
       __internal_patchChannel={patchChannel}
       autoFocus={autoFocus}
       changesOpen={changesOpen}
@@ -99,7 +99,7 @@ export function StudioFormBuilder(props: StudioFormBuilderProps) {
       value={value}
     >
       <RootInput />
-    </StudioFormBuilderProvider>
+    </FormProvider>
   )
 }
 

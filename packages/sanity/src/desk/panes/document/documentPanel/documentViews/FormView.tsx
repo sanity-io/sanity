@@ -12,7 +12,7 @@ import {
   fromMutationPatches,
   PatchEvent,
   PatchMsg,
-  StudioFormBuilder,
+  FormBuilder,
 } from '../../../../../form'
 import {PresenceOverlay} from '../../../../../presence'
 import {
@@ -180,7 +180,7 @@ export function FormView(props: FormViewProps) {
                 <Text>This form is hidden</Text>
               </Box>
             ) : (
-              <StudioFormBuilder
+              <FormBuilder
                 __internal_patchChannel={patchChannel}
                 collapsedFieldSets={collapsedFieldSets}
                 collapsedPaths={collapsedPaths}

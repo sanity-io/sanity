@@ -3,7 +3,7 @@ import {Card, Container} from '@sanity/ui'
 import React, {useCallback, useMemo, useState} from 'react'
 import {useUnique} from '../../util'
 import {useDocumentOperation, useEditState, useSchema, useValidationStatus} from '../../hooks'
-import {StudioFormBuilder} from '../studio/StudioFormBuilder'
+import {FormBuilder} from '../studio/FormBuilder'
 import {createPatchChannel} from '../patch/PatchChannel'
 
 export default function FormBuilderStory() {

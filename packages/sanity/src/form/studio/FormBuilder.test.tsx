@@ -10,7 +10,7 @@ import {createPatchChannel} from '../patch'
 import {useFormState} from '../store/useFormState'
 import {EMPTY_ARRAY} from '../utils/empty'
 import {useWorkspace} from '../../studio'
-import {StudioFormBuilder, StudioFormBuilderProps} from './StudioFormBuilder'
+import {FormBuilder, FormBuilderProps} from './FormBuilder'
 
 const schemaTypes = [
   defineType({
@@ -27,7 +27,7 @@ const schemaTypes = [
   }),
 ]
 
-describe('StudioFormBuilder', () => {
+describe('FormBuilder', () => {
   it('should render a studio form', async () => {
     const client = createMockSanityClient() as unknown as SanityClient
     const TestProvider = await createTestProvider({
@@ -79,7 +79,7 @@ describe('StudioFormBuilder', () => {
         validation: [],
       })
 
-      const formBuilderProps: StudioFormBuilderProps = useMemo(
+      const formBuilderProps: FormBuilderProps = useMemo(
         () => ({
           __internal_patchChannel: patchChannel,
           changesOpen: false,
@@ -109,7 +109,7 @@ describe('StudioFormBuilder', () => {
         [formState, patchChannel, schemaType]
       )
 
-      return <StudioFormBuilder {...formBuilderProps} />
+      return <FormBuilder {...formBuilderProps} />
     }
 
     const result = render(

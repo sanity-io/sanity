@@ -3,7 +3,7 @@ import {Card, Container, Flex} from '@sanity/ui'
 import {useAction} from '@sanity/ui-workshop'
 import React, {useMemo, useState} from 'react'
 import {useSchema} from '../../../../hooks'
-import {StudioFormBuilderProvider} from '../../../studio/StudioFormBuilderProvider'
+import {FormProvider} from '../../../studio/FormProvider'
 import {ReviewChangesContextProvider} from '../../../studio/contexts/reviewChanges/ReviewChangesProvider'
 import {createPatchChannel} from '../../../patch/PatchChannel'
 
@@ -26,7 +26,7 @@ export default function ReferenceInputStory() {
         <Container width={0}>
           <ReviewChangesContextProvider changesOpen={false}>
             TODO
-            {/* <StudioFormBuilderProvider
+            {/* <FormProvider
               __internal_patchChannel={patchChannel}
               onChange={onChange}
               value={value}
@@ -43,7 +43,7 @@ export default function ReferenceInputStory() {
                 validation={[]}
                 value={undefined}
               />
-            </StudioFormBuilderProvider> */}
+            </FormProvider> */}
           </ReviewChangesContextProvider>
         </Container>
       </Flex>
