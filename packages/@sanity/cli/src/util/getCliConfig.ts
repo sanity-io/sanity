@@ -62,7 +62,7 @@ export function getCliConfigSync(cwd: string): CliConfigResult | null {
 }
 
 async function getCliConfigForked(cwd: string): Promise<CliConfigResult | null> {
-  const workerPath = await getCliWorkerPath('util/getCliConfig.worker')
+  const workerPath = await getCliWorkerPath('getCliConfig')
   return new Promise((resolve, reject) => {
     const worker = new Worker(workerPath, {workerData: cwd})
     worker.on('message', (message) => {
