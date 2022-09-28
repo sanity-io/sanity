@@ -3,8 +3,8 @@
 import {Box, Flex, Grid, rem, Stack, Text, Theme, useForwardedRef} from '@sanity/ui'
 import React, {forwardRef, useCallback, useMemo} from 'react'
 import styled, {css} from 'styled-components'
-import {FieldPresence} from '../../../presence'
-import {NodePresence, NodeValidation} from '../../types'
+import {FieldPresence, FormFieldPresence} from '../../../presence'
+import {NodeValidation} from '../../types'
 import {FormFieldValidationStatus} from './FormFieldValidationStatus'
 import {FormFieldSetLegend} from './FormFieldSetLegend'
 import {focusRingStyle} from './styles'
@@ -13,7 +13,7 @@ export interface FormFieldSetProps {
   /**
    * @alpha
    */
-  __unstable_presence?: NodePresence[]
+  __unstable_presence?: FormFieldPresence[]
   children: React.ReactNode | (() => React.ReactNode)
   collapsed?: boolean
   collapsible?: boolean

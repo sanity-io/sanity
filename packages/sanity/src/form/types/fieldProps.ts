@@ -7,6 +7,7 @@ import {
   SchemaType,
   StringSchemaType,
 } from '@sanity/types'
+import {FormFieldPresence} from '../../presence'
 import {
   ArrayOfObjectsInputProps,
   ArrayOfPrimitivesInputProps,
@@ -15,13 +16,13 @@ import {
   ObjectInputProps,
   StringInputProps,
 } from './inputProps'
-import {NodePresence, NodeValidation} from './common'
+import {NodeValidation} from './common'
 
 export interface BaseFieldProps {
   schemaType: SchemaType
   title: string | undefined
   description: string | undefined
-  presence: NodePresence[]
+  presence: FormFieldPresence[]
   validation: NodeValidation[]
   level: number
   inputId: string
