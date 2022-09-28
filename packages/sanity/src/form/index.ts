@@ -2,8 +2,8 @@
 
 // sanity
 export * from './studio/contexts'
-export * from './studio/StudioFormBuilder'
-export * from './studio/StudioFormBuilderProvider'
+export * from './studio/FormBuilder'
+export * from './studio/FormProvider'
 export * from './studio/focusManagers/HashFocusManager'
 export * from './studio/focusManagers/SimpleFocusManager'
 

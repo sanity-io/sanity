@@ -12,7 +12,7 @@ import {FormFieldPresence} from '../../presence'
 /**
  * @alpha This API might change.
  */
-export interface StudioFormBuilderProviderProps {
+export interface FormProviderProps {
   /**
    * @internal Considered internal, do not use.
    */
@@ -47,7 +47,7 @@ export interface StudioFormBuilderProviderProps {
  *
  * @alpha This API might change.
  */
-export function StudioFormBuilderProvider(props: StudioFormBuilderProviderProps) {
+export function FormProvider(props: FormProviderProps) {
   const {
     __internal_patchChannel: patchChannel,
     autoFocus,
