@@ -12,7 +12,6 @@ import React, {FocusEvent} from 'react'
 import {
   createPatchChannel,
   FieldMember,
-  NodePresence,
   NodeValidation,
   PatchArg,
   PatchEvent,
@@ -22,6 +21,7 @@ import {
 import {FormState} from '../../src/form/store/useFormState'
 import {EMPTY_ARRAY} from '../../src/form/utils/empty'
 import {useSchema} from '../../src/hooks'
+import {FormFieldPresence} from '../../src/presence'
 import {createMockSanityClient} from '../mocks/mockSanityClient'
 import {createTestProvider} from '../testUtils/TestProvider'
 import {TestRenderProps} from './types'
@@ -41,7 +41,7 @@ export interface TestRenderInputProps<ElementProps> {
   onPathBlur: (path: Path) => void
   onPathFocus: (path: Path) => void
   path: Path
-  presence: NodePresence[]
+  presence: FormFieldPresence[]
   readOnly: boolean | undefined
   schemaType: SchemaType
   validation: NodeValidation[]

@@ -7,7 +7,8 @@ import {
   StringSchemaType,
 } from '@sanity/types'
 import React from 'react'
-import {NodePresence, NodeValidation} from './common'
+import {FormFieldPresence} from '../../presence'
+import {NodeValidation} from './common'
 
 export interface BaseItemProps {
   schemaType: SchemaType
@@ -33,7 +34,7 @@ export interface BaseItemProps {
   children: React.ReactNode | null
 
   validation: NodeValidation[]
-  presence: NodePresence[]
+  presence: FormFieldPresence[]
 }
 
 export interface ObjectItemProps extends BaseItemProps {

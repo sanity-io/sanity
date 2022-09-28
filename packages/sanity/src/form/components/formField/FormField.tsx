@@ -2,8 +2,8 @@
 
 import {Stack} from '@sanity/ui'
 import React, {memo} from 'react'
-
-import {NodePresence, NodeValidation} from '../../types/common'
+import {FormFieldPresence} from '../../../presence'
+import {NodeValidation} from '../../types/common'
 import {FormFieldHeader} from './FormFieldHeader'
 
 export interface FormFieldProps {
@@ -14,7 +14,7 @@ export interface FormFieldProps {
   /**
    * @alpha
    */
-  __unstable_presence?: NodePresence[]
+  __unstable_presence?: FormFieldPresence[]
   children: React.ReactNode
   description?: React.ReactNode
   /**

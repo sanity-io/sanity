@@ -1,6 +1,5 @@
 import {Path, User} from '@sanity/types'
 import {Session, Status} from '../datastores/presence/types'
-import {NodePresence} from '../form'
 
 export type Position = 'top' | 'bottom' | 'inside' | null
 export type Size = 'xsmall' | 'small' | 'medium'
@@ -15,7 +14,7 @@ export type RegionWithIntersectionDetails = {
 
 export type FieldPresenceData = {
   element: HTMLElement
-  presence: NodePresence[]
+  presence: FormFieldPresence[]
   maxAvatars: number
 }
 

@@ -131,7 +131,6 @@ export type {
   MissingKeysError,
   MixedArray,
   MoveItemEvent,
-  NodePresence,
   NodeValidation,
   NumberFieldProps,
   NumberFormNode,
