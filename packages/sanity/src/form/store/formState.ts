@@ -623,7 +623,10 @@ function prepareObjectInputState<T>(
     .filter((item) => isEqual(item.path, props.path))
     .map((v) => ({level: v.level, message: v.item.message, path: v.path}))
 
-  if (members.length === 0) {
+  // Return null here only when enableHiddenCheck, or we end up with array members that have 'item: null' when they
+  // really should not be. One example is when a block object inside the PT-input have a type with one single hidden field.
+  // Then it should still be possible to see the member item, even though all of it's fields are null.
+  if (members.length === 0 && enableHiddenCheck) {
     return null
   }
 
