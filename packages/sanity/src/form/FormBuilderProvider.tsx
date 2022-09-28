@@ -1,6 +1,6 @@
 /* eslint-disable camelcase */
 
-import {AssetSource, ObjectSchemaType, Path, ValidationMarker} from '@sanity/types'
+import {ObjectSchemaType, Path, ValidationMarker} from '@sanity/types'
 import React, {useEffect, useMemo, useRef} from 'react'
 import {Source} from '../config'
 import {FormFieldPresence} from '../presence'
@@ -22,7 +22,6 @@ import {PatchChannel, PatchEvent} from './patch'
 import {FormCallbacksProvider} from './studio/contexts/FormCallbacks'
 import {PresenceProvider} from './studio/contexts/Presence'
 import {ValidationProvider} from './studio/contexts/Validation'
-import {defaultFileAssetSources, defaultImageAssetSources} from './defaults'
 
 export interface FormBuilderProviderProps {
   /**
@@ -122,16 +121,12 @@ export function FormBuilderProvider(props: FormBuilderProviderProps) {
         Markers: unstable?.Markers || DefaultMarkers,
       },
       file: {
-        assetSources: file?.assetSources
-          ? _ensureArrayOfSources(file.assetSources) || defaultFileAssetSources
-          : defaultFileAssetSources,
+        assetSources: file.assetSources,
         directUploads: file?.directUploads !== false,
       },
       filterField: filterField || (() => true),
       image: {
-        assetSources: image?.assetSources
-          ? _ensureArrayOfSources(image.assetSources) || defaultImageAssetSources
-          : defaultImageAssetSources,
+        assetSources: image.assetSources,
         directUploads: image?.directUploads !== false,
       },
       getDocument: () => documentValueRef.current as FIXME,
@@ -198,14 +193,4 @@ export function FormBuilderProvider(props: FormBuilderProviderProps) {
       </FormCallbacksProvider>
     </FormBuilderContext.Provider>
   )
-}
-
-function _ensureArrayOfSources(sources: unknown): AssetSource[] | null {
-  if (Array.isArray(sources)) {
-    return sources
-  }
-
-  console.warn('Configured asset sources is not an array:', sources)
-
-  return null
 }
