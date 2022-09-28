@@ -71,7 +71,7 @@ export default function ChangeResolverStory() {
     [nameDiff, schemaType]
   )
 
-  const FieldWrapper = useCallback((_props) => {
+  const FieldWrapper = useCallback((_props: any) => {
     // console.log('props', _props)
     return <Card>{_props.children}</Card>
   }, [])

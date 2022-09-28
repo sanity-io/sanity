@@ -146,7 +146,7 @@ export function StickyOverlay(props: Props) {
   )
 
   const renderCallback = React.useCallback(
-    (regionsWithIntersectionDetails: RegionWithIntersectionDetails[], containerWidth) => {
+    (regionsWithIntersectionDetails: RegionWithIntersectionDetails[], containerWidth: any) => {
       const grouped = group(
         regionsWithIntersectionDetails.filter((item) => item.region.presence.length > 0)
       )

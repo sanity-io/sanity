@@ -13,7 +13,7 @@ export const CustomInputWithDefaultPresence = React.forwardRef(
     // const {onFocus, readOnly} = inputProps
 
     const handleRootFocus = useCallback(
-      (event) => {
+      (event: any) => {
         if (event.currentTarget.element === ref) onFocus(event)
       },
       [onFocus, ref]

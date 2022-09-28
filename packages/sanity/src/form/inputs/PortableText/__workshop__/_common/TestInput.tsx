@@ -65,7 +65,7 @@ export function TestInput(props: TestInputProps) {
     setFocusPath([])
   }, [])
 
-  const onChange = useCallback((event) => {
+  const onChange = useCallback((event: any) => {
     setValue((prevValue) => applyAll(prevValue, event.patches))
   }, [])
 

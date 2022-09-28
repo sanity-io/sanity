@@ -159,7 +159,7 @@ export function ReferenceInput(props: ReferenceInputProps) {
   }, [onChange])
 
   const handlePreviewKeyPress = useCallback(
-    (event) => {
+    (event: any) => {
       if (event.key !== 'Enter' && event.key !== 'Space') {
         // enable "search for reference"-mode
         onFocusPath(['_ref'])
@@ -169,7 +169,7 @@ export function ReferenceInput(props: ReferenceInputProps) {
   )
 
   const handleAutocompleteKeyDown = useCallback(
-    (event) => {
+    (event: any) => {
       // escape
       if (event.keyCode === 27) {
         onFocusPath([])
@@ -179,7 +179,7 @@ export function ReferenceInput(props: ReferenceInputProps) {
   )
 
   const getReferenceInfoMemo = useCallback(
-    (id) => getReferenceInfo(id, schemaType),
+    (id: any) => getReferenceInfo(id, schemaType),
     [getReferenceInfo, schemaType]
   )
 
@@ -279,7 +279,7 @@ export function ReferenceInput(props: ReferenceInputProps) {
   const inputId = useId()
 
   const handleCreateButtonKeyDown = useCallback(
-    (e) => {
+    (e: any) => {
       if (e.key === 'Escape') {
         forwardedRef?.current?.focus()
       }
@@ -288,7 +288,7 @@ export function ReferenceInput(props: ReferenceInputProps) {
   )
 
   const renderOption = useCallback(
-    (option) => {
+    (option: any) => {
       const id = option.hit.draft?._id || option.hit.published?._id
 
       return (
@@ -507,8 +507,8 @@ export function ReferenceInput(props: ReferenceInputProps) {
               >
                 <Stack space={3}>
                   <Text as="p" muted size={1}>
-                    <strong>{loadableReferenceInfo.result?.preview.published?.title}</strong> is
-                    published and this reference should now be{' '}
+                    <strong>{loadableReferenceInfo.result?.preview.published?.title as any}</strong>{' '}
+                    is published and this reference should now be{' '}
                     {schemaType.weak ? <>finalized</> : <>converted to a strong reference</>}.
                   </Text>
                   <Button

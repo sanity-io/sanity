@@ -15,7 +15,7 @@ export function ArrayOfPrimitivesFunctions<
   const menuButtonId = useId()
 
   const insertItem = React.useCallback(
-    (itemType) => {
+    (itemType: any) => {
       onAppendItem(onCreateValue(itemType))
     },
     [onCreateValue, onAppendItem]

@@ -36,7 +36,7 @@ export const DateTimeInput = forwardRef(function DateTimeInput(
     forwardedRef.current?.select()
   }, [forwardedRef])
 
-  const handleKeyUp = useCallback((e) => {
+  const handleKeyUp = useCallback((e: any) => {
     if (e.key === 'Escape') {
       setPickerOpen(false)
     }

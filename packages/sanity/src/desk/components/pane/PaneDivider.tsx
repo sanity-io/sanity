@@ -63,7 +63,7 @@ export function PaneDivider({
   const [dragging, setDragging] = useState(false)
 
   const handleMouseDown = useCallback(
-    (event) => {
+    (event: any) => {
       if (!element) return
 
       setDragging(true)

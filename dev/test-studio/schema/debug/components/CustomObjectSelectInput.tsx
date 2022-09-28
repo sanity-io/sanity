@@ -26,7 +26,7 @@ export const CustomObjectSelectInput = React.forwardRef(function CustomObjectSel
   const [inputId] = useState(() => String(++objectSelectInputIdx))
 
   const handleChange = useCallback(
-    (evt) => {
+    (evt: any) => {
       onChange(
         evt.target.value ? set(items.find((item) => item.value === evt.target.value)) : unset()
       )

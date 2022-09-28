@@ -107,7 +107,7 @@ export const FieldGroupTabs = React.memo(function FieldGroupTabs({
   ...props
 }: FieldGroupTabsProps) {
   const handleClick = useCallback(
-    (groupName) => {
+    (groupName: any) => {
       onClick?.(groupName)
     },
     [onClick]

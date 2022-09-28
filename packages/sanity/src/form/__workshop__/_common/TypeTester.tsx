@@ -79,7 +79,7 @@ export function TypeTester({readOnly}: TypeTesterProps) {
   }, [focusedInput])
 
   const handleHighlightMouseOver = useCallback(
-    (event) => {
+    (event: any) => {
       if (event.type === 'mouseover') {
         focusedInput!.classList.add(HIGHLIGHT_CLASSNAME)
       }

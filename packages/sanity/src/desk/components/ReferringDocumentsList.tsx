@@ -39,7 +39,7 @@ function DocumentPreviewLink(props: DocumentPreviewLinkProps) {
   const schemaType = schema.get(document._type)
 
   const handleClick = useCallback(
-    (event) => {
+    (event: any) => {
       if (event.shiftKey || event.metaKey) return
       event.preventDefault()
       router.navigateIntent(intent.action, intent.params)

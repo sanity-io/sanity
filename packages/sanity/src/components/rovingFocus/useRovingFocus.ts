@@ -79,7 +79,7 @@ export function useRovingFocus(props: RovingFocusProps): undefined {
    * Handle increment/decrement of focusedIndex
    */
   const handleKeyDown = useCallback(
-    (event) => {
+    (event: any) => {
       if (pause) {
         return
       }

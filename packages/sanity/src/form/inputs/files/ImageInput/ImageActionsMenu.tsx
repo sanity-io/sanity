@@ -24,7 +24,7 @@ export function ImageActionsMenu(props: Props) {
   }, [onMenuOpen])
 
   const handleGlobalKeyDown = useCallback(
-    (e) => {
+    (e: any) => {
       if (e.key === 'Escape') {
         onMenuOpen(false)
         menuButtonRef?.focus()

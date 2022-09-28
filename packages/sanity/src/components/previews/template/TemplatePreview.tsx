@@ -1,18 +1,19 @@
-import React from 'react'
+import React, {createElement, isValidElement} from 'react'
+import {isValidElementType} from 'react-is'
 import {Box, Flex, rem, Stack, Text, TextSkeleton} from '@sanity/ui'
 import styled from 'styled-components'
 import {getDevicePixelRatio} from 'use-device-pixel-ratio'
 import {PreviewMediaDimensions} from '../types'
-import {Media} from '../_common/Media'
+import {Media, MediaProps} from '../_common/Media'
 import {PREVIEW_MEDIA_SIZE} from '../constants'
 
 export interface TemplatePreviewProps {
-  description?: React.ReactNode | React.FunctionComponent<unknown>
+  description?: React.ReactNode
   isPlaceholder?: boolean
-  media?: React.ReactNode | React.FunctionComponent<unknown>
+  media?: MediaProps['media']
   mediaDimensions?: PreviewMediaDimensions
-  subtitle?: React.ReactNode | React.FunctionComponent<{layout: 'default'}>
-  title?: React.ReactNode | React.FunctionComponent<unknown>
+  subtitle?: React.ElementType<{layout: 'default'}> | React.ReactNode
+  title?: React.ElementType<{layout: 'default'}> | React.ReactNode
 }
 
 const DEFAULT_MEDIA_DIMENSION: PreviewMediaDimensions = {
@@ -76,14 +77,19 @@ export function TemplatePreview(props: TemplatePreviewProps) {
     <Root>
       <HeaderFlex>
         <Stack flex={1} space={2}>
-          <Text textOverflow="ellipsis">
-            {typeof title !== 'function' && title}
-            {typeof title === 'function' && title({layout: 'default'})}
-          </Text>
+          {isValidElementType(title) && (
+            <Text textOverflow="ellipsis">{createElement(title, {layout: 'default'})}</Text>
+          )}
+          {isValidElement(title) && <Text textOverflow="ellipsis">{title}</Text>}
 
-          {subtitle && (
+          {isValidElementType(subtitle) && (
             <Text muted size={1} textOverflow="ellipsis">
-              {(typeof subtitle === 'function' && subtitle({layout: 'default'})) || subtitle}
+              {createElement(subtitle, {layout: 'default'})}
+            </Text>
+          )}
+          {isValidElement(subtitle) && (
+            <Text muted size={1} textOverflow="ellipsis">
+              {subtitle}
             </Text>
           )}
         </Stack>
