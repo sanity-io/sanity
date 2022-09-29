@@ -224,7 +224,15 @@ export class Timeline {
       return this.reachedEarliestEntry ? 'invalid' : 'loading'
     }
 
-    const [timestampStr, chunkId] = id.split('/', 3)
+    // NOTE:
+    // This was refactored from
+    // ```
+    // const [timestampStr, chunkId] = id.split('/', 3)
+    // ```
+    // in order to avoid issues with `@microsoft/api-extractor`.
+    const idSegments = id.split('/', 3)
+    const timestampStr = idSegments.shift()
+    const chunkId = idSegments.shift()
     const timestamp = Number(timestampStr)
 
     for (let idx = this._chunks.lastIdx; idx >= this._chunks.firstIdx; idx--) {
