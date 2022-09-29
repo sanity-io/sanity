@@ -2,7 +2,7 @@ import React, {useCallback} from 'react'
 import imageUrlBuilder from '@sanity/image-url'
 import {SchemaType} from '@sanity/types'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../studioClient'
-import {ImageInput, ImageInputProps} from '../../inputs/files/ImageInput'
+import {BaseImageInput, BaseImageInputProps} from '../../inputs/files/ImageInput'
 import {useFormBuilder} from '../../useFormBuilder'
 import {resolveUploader as defaultResolveUploader} from '../uploads/resolveUploader'
 import {FileLike} from '../uploads/types'
@@ -10,8 +10,8 @@ import {useDocumentPreviewStore} from '../../../store'
 import {useClient} from '../../../hooks'
 import {observeImageAsset} from './client-adapters/assets'
 
-export type StudioImageInputProps = Omit<
-  ImageInputProps,
+export type ImageInputProps = Omit<
+  BaseImageInputProps,
   | 'assetSources'
   | 'directUploads'
   | 'imageUrlBuilder'
@@ -20,7 +20,7 @@ export type StudioImageInputProps = Omit<
   | 'resolveUploader'
 >
 
-export function StudioImageInput(props: StudioImageInputProps) {
+export function StudioImageInput(props: ImageInputProps) {
   const sourcesFromSchema = props.schemaType.options?.sources
   const {image} = useFormBuilder().__internal
   const documentPreviewStore = useDocumentPreviewStore()
@@ -53,7 +53,7 @@ export function StudioImageInput(props: StudioImageInputProps) {
   )
 
   return (
-    <ImageInput
+    <BaseImageInput
       {...props}
       client={client}
       assetSources={assetSources}

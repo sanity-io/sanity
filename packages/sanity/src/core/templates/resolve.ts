@@ -15,7 +15,7 @@ import {Template} from './types'
 import {validateInitialObjectValue} from './validate'
 import deepAssign from './util/deepAssign'
 
-type Serializeable<T> = {
+export type Serializeable<T> = {
   serialize(): T
 }
 

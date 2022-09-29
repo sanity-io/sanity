@@ -1,6 +1,6 @@
-export {WorkspacesContext} from './WorkspacesContext'
-export {WorkspacesProvider} from './WorkspacesProvider'
-
-export {useWorkspaces} from './useWorkspaces'
-export type {WorkspaceLike} from './types'
+export * from './WorkspacesContext'
+export * from './WorkspacesProvider'
+export * from './helpers'
+export * from './types'
+export * from './useWorkspaces'
 export * from './validateWorkspaces'

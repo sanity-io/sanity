@@ -1,12 +1,12 @@
 import {escapeRegExp} from 'lodash'
 import {WorkspaceLike} from '../workspaces'
 
-interface MatchWorkspaceOptions<TWorkspace extends WorkspaceLike> {
+export interface MatchWorkspaceOptions<TWorkspace extends WorkspaceLike> {
   workspaces: TWorkspace[]
   pathname: string
 }
 
-type MatchWorkspaceResult<TWorkspace extends WorkspaceLike> =
+export type MatchWorkspaceResult<TWorkspace extends WorkspaceLike> =
   | {type: 'match'; workspace: TWorkspace}
   | {type: 'redirect'; pathname: string}
   | {type: 'not-found'}

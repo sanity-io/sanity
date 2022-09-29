@@ -10,7 +10,7 @@ import {renderImageInput} from '../../../../../../../test/form'
 // import {UploadOptions} from '../../../../studio/uploads/types'
 // import {ImageUrlBuilder} from '../../types'
 import {
-  ImageInput,
+  BaseImageInput,
   // ImageInputProps
 } from '../ImageInput'
 
@@ -133,7 +133,7 @@ describe('ImageInput with empty state', () => {
   it.skip('renders an empty input as default', async () => {
     const {result} = await renderImageInput({
       fieldDefinition: defs.mainImage,
-      render: (inputProps) => <ImageInput {...inputProps} />,
+      render: (inputProps) => <BaseImageInput {...inputProps} />,
     })
     // const {result} = renderImageInput({type: imagesTest})
     expect(result.queryByTestId('file-button-input')!.getAttribute('value')).toBe('')

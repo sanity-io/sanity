@@ -6,7 +6,7 @@ const ColorSchemeContext = createContext<{
   setScheme: (colorScheme: ThemeColorSchemeKey) => void
 } | null>(null)
 
-interface ColorSchemeProviderProps {
+export interface ColorSchemeProviderProps {
   children: React.ReactNode
   onSchemeChange?: (nextScheme: ThemeColorSchemeKey) => void
   scheme?: ThemeColorSchemeKey

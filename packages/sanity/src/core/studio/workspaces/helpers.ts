@@ -9,15 +9,15 @@ import {WorkspaceLike} from './types'
  * @returns Printable string (eg `intranet`, or `at index 5 (titled "Intranet")`)
  * @internal
  */
-export function getIdentifier({name, title}: WorkspaceLike, index: number): string {
+export function getWorkspaceIdentifier({name, title}: WorkspaceLike, index: number): string {
   if (typeof name === 'string' && name.trim().length > 0) {
     return name
   }
 
-  return getNamelessIdentifier(title, index)
+  return getNamelessWorkspaceIdentifier(title, index)
 }
 
-export function getNamelessIdentifier(title: string | undefined, index: number): string {
+export function getNamelessWorkspaceIdentifier(title: string | undefined, index: number): string {
   const withTitle =
     typeof title === 'string' && title.trim().length > 0 ? ` (titled "${title}")` : ''
   return `at index ${index}${withTitle}`

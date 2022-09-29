@@ -3,7 +3,7 @@ import {SanityClient} from '@sanity/client'
 import {CurrentUser} from '@sanity/types'
 import {AuthStore} from './types'
 
-interface MockAuthStoreOptions {
+export interface MockAuthStoreOptions {
   currentUser: CurrentUser | null
   client: SanityClient
 }

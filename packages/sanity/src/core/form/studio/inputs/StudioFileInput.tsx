@@ -1,6 +1,6 @@
 import React, {useCallback, useMemo} from 'react'
 import {SchemaType} from '@sanity/types'
-import {FileInput, FileInputProps} from '../../inputs/files/FileInput'
+import {BaseFileInput, BaseFileInputProps} from '../../inputs/files/FileInput'
 import {resolveUploader as defaultResolveUploader} from '../uploads/resolveUploader'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../studioClient'
 import {useFormBuilder} from '../../useFormBuilder'
@@ -9,12 +9,12 @@ import {useDocumentPreviewStore} from '../../../store'
 import {useClient} from '../../../hooks'
 import {observeFileAsset} from './client-adapters/assets'
 
-export type StudioFileInputProps = Omit<
-  FileInputProps,
+export type FileInputProps = Omit<
+  BaseFileInputProps,
   'assetSources' | 'directUploads' | 'observeAsset' | 'resolveUploader' | 'client'
 >
 
-export function StudioFileInput(props: StudioFileInputProps) {
+export function StudioFileInput(props: FileInputProps) {
   const sourcesFromSchema = props.schemaType.options?.sources
   const documentPreviewStore = useDocumentPreviewStore()
   const {file: fileConfig} = useFormBuilder().__internal
@@ -42,7 +42,7 @@ export function StudioFileInput(props: StudioFileInputProps) {
   )
 
   return (
-    <FileInput
+    <BaseFileInput
       {...props}
       client={client}
       assetSources={assetSources}

@@ -3,7 +3,7 @@ import {Path} from '@sanity/types'
 import React, {memo, useContext} from 'react'
 import {PatchEvent} from '../../patch'
 
-interface FormCallbacksValue {
+export interface FormCallbacksValue {
   onChange: (patchEvent: PatchEvent) => void
   onPathFocus: (path: Path) => void
   onPathBlur: (path: Path) => void

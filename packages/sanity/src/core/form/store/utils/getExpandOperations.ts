@@ -9,31 +9,33 @@ import {
 } from '../types'
 import {isMemberArrayOfObjects} from '../../members/fields/asserters'
 
-// eslint-disable-next-line @typescript-eslint/ban-types
-interface ExpandPathOperation {
+export interface ExpandPathOperation {
   type: 'expandPath'
   path: Path
 }
 
-interface ExpandFieldSetOperation {
+export interface ExpandFieldSetOperation {
   type: 'expandFieldSet'
   path: Path
 }
 
-interface SetActiveGroup {
+export interface SetActiveGroupOperation {
   type: 'setSelectedGroup'
   path: Path
   groupName: string
 }
 
-type Operation = ExpandPathOperation | ExpandFieldSetOperation | SetActiveGroup
+export type ExpandOperation =
+  | ExpandPathOperation
+  | ExpandFieldSetOperation
+  | SetActiveGroupOperation
 
 /**
  * This takes a form state and returns a list of operations required to open a node at a particular path
  * @param state - The form state
  * @param path - The path to open
  */
-export function getExpandOperations(state: ObjectFormNode, path: Path): Operation[] {
+export function getExpandOperations(state: ObjectFormNode, path: Path): ExpandOperation[] {
   // start at the root and make sure all groups/paths are expanded/activated along the way
   const [fieldName, ...rest] = path
 
@@ -45,7 +47,7 @@ export function getExpandOperations(state: ObjectFormNode, path: Path): Operatio
       )
   )
 
-  const ops: Operation[] = [{type: 'expandPath', path}]
+  const ops: ExpandOperation[] = [{type: 'expandPath', path}]
   if (fieldsetMember) {
     ops.push({type: 'expandFieldSet', path: fieldsetMember.fieldSet.path})
   }
@@ -82,7 +84,7 @@ export function getExpandOperations(state: ObjectFormNode, path: Path): Operatio
   return ops
 }
 
-function expandArrayPath(state: ArrayOfObjectsFormNode, path: Path): Operation[] {
+function expandArrayPath(state: ArrayOfObjectsFormNode, path: Path): ExpandOperation[] {
   // start at the root and make sure all groups/paths are expanded/activated along the way
   const [segment, ...rest] = path
   if (!isKeySegment(segment)) {

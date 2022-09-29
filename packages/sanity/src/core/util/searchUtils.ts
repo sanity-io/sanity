@@ -1,4 +1,4 @@
-type SearchPathSegment = string | []
+export type SearchPathSegment = string | []
 
 const GROQ_KEYWORDS = ['match', 'in', 'asc', 'desc', 'true', 'false', 'null']
 const VALID_FIELD = /^[a-zA-Z_][a-zA-Z0-9_]*$/

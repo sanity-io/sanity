@@ -6,9 +6,9 @@ import {useUnique} from './useUnique'
 
 export type LoadingTuple<T> = [T, boolean]
 
-type ReactHook<TArgs extends unknown[], TResult> = (...args: TArgs) => TResult
+export type ReactHook<TArgs extends unknown[], TResult> = (...args: TArgs) => TResult
 
-interface CreateHookFromObservableFactoryOptions<T, TArgs extends unknown[]> {
+export interface CreateHookFromObservableFactoryOptions<T, TArgs extends unknown[]> {
   /**
    * Optionally provide an initial value that will show up initially if the
    * observable resolves asynchronously. Prevents `undefined` as the initial
