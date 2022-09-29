@@ -22,6 +22,7 @@ export interface BaseItemProps {
   description: string | undefined
   inputId: string
   onFocus: (event: React.FocusEvent) => void
+  onBlur: (event: React.FocusEvent) => void
   readOnly?: boolean
   focused?: boolean
   onRemove: () => void

@@ -163,6 +163,7 @@ export function ArrayOfPrimitivesItem(props: PrimitiveMemberItemProps) {
       readOnly: member.item.readOnly,
       focused: member.item.focused,
       onFocus: handleFocus,
+      onBlur: handleBlur,
       inputId: member.item.id,
       path: member.item.path,
       children: renderedInput,
@@ -182,6 +183,7 @@ export function ArrayOfPrimitivesItem(props: PrimitiveMemberItemProps) {
     onInsert,
     onRemove,
     handleFocus,
+    handleBlur,
     renderedInput,
   ])
 

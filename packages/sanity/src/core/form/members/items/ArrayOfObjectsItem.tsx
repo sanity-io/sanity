@@ -250,6 +250,7 @@ export function ArrayOfObjectsItem(props: MemberItemProps) {
       readOnly: member.item.readOnly,
       focused: member.item.focused,
       onFocus: handleFocus,
+      onBlur: handleBlur,
       inputId: member.item.id,
       path: member.item.path,
       children: renderedInput,
@@ -278,6 +279,7 @@ export function ArrayOfObjectsItem(props: MemberItemProps) {
     handleExpand,
     handleCollapse,
     handleFocus,
+    handleBlur,
     renderedInput,
   ])
 
