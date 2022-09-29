@@ -9,22 +9,26 @@ import {
 } from '../types'
 import {isMemberArrayOfObjects} from '../../members/fields/asserters'
 
+/** @internal */
 export interface ExpandPathOperation {
   type: 'expandPath'
   path: Path
 }
 
+/** @internal */
 export interface ExpandFieldSetOperation {
   type: 'expandFieldSet'
   path: Path
 }
 
+/** @internal */
 export interface SetActiveGroupOperation {
   type: 'setSelectedGroup'
   path: Path
   groupName: string
 }
 
+/** @internal */
 export type ExpandOperation =
   | ExpandPathOperation
   | ExpandFieldSetOperation
@@ -34,6 +38,8 @@ export type ExpandOperation =
  * This takes a form state and returns a list of operations required to open a node at a particular path
  * @param state - The form state
  * @param path - The path to open
+ *
+ * @internal
  */
 export function getExpandOperations(state: ObjectFormNode, path: Path): ExpandOperation[] {
   // start at the root and make sure all groups/paths are expanded/activated along the way

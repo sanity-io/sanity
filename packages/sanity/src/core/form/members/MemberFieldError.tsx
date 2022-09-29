@@ -7,6 +7,7 @@ import {InvalidValueInput} from '../inputs/InvalidValueInput'
 import {MissingKeysAlert} from '../inputs/arrays/errors/MissingKeysAlert'
 import {DuplicateKeysAlert} from '../inputs/arrays/errors/DuplicateKeysAlert'
 
+/** @internal */
 export function MemberFieldError(props: {member: FieldError}) {
   const {member} = props
   const {onChange} = useFormCallbacks()

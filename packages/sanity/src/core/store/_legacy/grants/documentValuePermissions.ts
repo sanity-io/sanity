@@ -3,6 +3,7 @@ import {createHookFromObservableFactory, PartialExcept} from '../../../util'
 import {useGrantsStore} from '../datastores'
 import {DocumentValuePermission, GrantsStore, PermissionCheckResult} from './types'
 
+/** @internal */
 export interface DocumentValuePermissionsOptions {
   grantsStore: GrantsStore
   document: Record<string, unknown>
@@ -13,6 +14,8 @@ export interface DocumentValuePermissionsOptions {
  * The observable version of `useDocumentValuePermissions`
  *
  * @see useDocumentValuePermissions
+ *
+ * @internal
  */
 export function getDocumentValuePermissions({
   grantsStore,
@@ -42,11 +45,14 @@ export function getDocumentValuePermissions({
  * no operation is allowed regardless of the given document.
  *
  * @see useDocumentPairPermissions
+ *
+ * @internal
  */
 export const useDocumentValuePermissionsFromHookFactory = createHookFromObservableFactory(
   getDocumentValuePermissions
 )
 
+/** @internal */
 export function useDocumentValuePermissions({
   document,
   permission,

@@ -7,6 +7,7 @@ import {DiffCard} from './DiffCard'
 import {DiffTooltip} from './DiffTooltip'
 import {FromTo} from './FromTo'
 
+/** @internal */
 export interface DiffFromToProps {
   align?: 'top' | 'center' | 'bottom'
   cardClassName?: string
@@ -24,6 +25,7 @@ const cardStyles: CSSProperties = {
   whiteSpace: 'break-spaces',
 }
 
+/** @internal */
 export function DiffFromTo(props: DiffFromToProps) {
   const {align, cardClassName, diff, layout, path, previewComponent, schemaType} = props
   const {action} = diff

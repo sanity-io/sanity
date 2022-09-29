@@ -5,10 +5,12 @@ import {DEFAULT_INTENT_HANDLER} from './Intent'
 import {GenericListInput} from './GenericList'
 import {StructureContext} from './types'
 
+/** @beta */
 export interface DocumentTypeListInput extends Partial<GenericListInput> {
   schemaType: SchemaType | string
 }
 
+/** @beta */
 export class DocumentTypeListBuilder extends DocumentListBuilder {
   protected spec: PartialDocumentList
 

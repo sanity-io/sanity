@@ -19,6 +19,7 @@ export interface DefaultArrayOfPrimitivesInputProps extends ArrayOfPrimitivesInp
   >
 }
 
+/** @public */
 export class ArrayOfPrimitivesInput extends React.PureComponent<DefaultArrayOfPrimitivesInputProps> {
   _element: HTMLElement | null = null
   _lastAddedIndex = -1

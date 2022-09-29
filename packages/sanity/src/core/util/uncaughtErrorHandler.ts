@@ -1,6 +1,7 @@
 const FONT_SANS_SERIF = `-apple-system, BlinkMacSystemFont, \\'Segoe UI\\', Roboto, \\'Helvetica Neue\\', Helvetica, Arial, system-ui, sans-serif`
 const FONT_MONOSPACE = `-apple-system-ui-monospace, \\'SF Mono\\', Menlo, Monaco, Consolas, monospace`
 
+/** @internal */
 export const uncaughtErrorHandler = (): string =>
   // prettier-ignore
   [

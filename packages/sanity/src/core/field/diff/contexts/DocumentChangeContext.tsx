@@ -2,6 +2,7 @@ import {Path, SanityDocument, SchemaType} from '@sanity/types'
 import {createContext} from 'react'
 import {ObjectDiff} from '../../types'
 
+/** @internal */
 export type DocumentChangeContextInstance = {
   documentId: string
   schemaType: SchemaType
@@ -11,4 +12,5 @@ export type DocumentChangeContextInstance = {
   value: Partial<SanityDocument>
 }
 
+/** @internal */
 export const DocumentChangeContext = createContext<DocumentChangeContextInstance | null>(null)

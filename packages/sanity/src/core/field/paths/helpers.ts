@@ -14,6 +14,7 @@ const rePropName =
   /[^.[\]]+|\[(?:(-?\d+(?:\.\d+)?)|(["'])((?:(?!\2)[^\\]|\\.)*?)\2)\]|(?=(?:\.|\[\])(?:\.|\[\]|$))/g
 const reKeySegment = /_key\s*==\s*['"](.*)['"]/
 
+/** @internal */
 export function pathToString(path: Path): string {
   if (!Array.isArray(path)) {
     throw new Error('Path is not an array')
@@ -43,6 +44,7 @@ export function pathToString(path: Path): string {
   }, '')
 }
 
+/** @internal */
 export function getValueAtPath(rootValue: unknown, path: Path): unknown {
   const segment = path[0]
   if (!segment) {
@@ -68,6 +70,7 @@ export function getValueAtPath(rootValue: unknown, path: Path): unknown {
   throw new Error(`Unknown segment type ${JSON.stringify(segment)}`)
 }
 
+/** @internal */
 export function findIndex(array: unknown[], segment: PathSegment): number {
   if (typeof segment !== 'number' && !isKeySegment(segment)) {
     return -1
@@ -78,6 +81,7 @@ export function findIndex(array: unknown[], segment: PathSegment): number {
     : array.findIndex((item) => isKeyedObject(item) && item._key === segment._key)
 }
 
+/** @internal */
 export function stringToPath(path: string): Path {
   const segments = path.match(rePropName)
   if (!segments) {
@@ -87,6 +91,7 @@ export function stringToPath(path: string): Path {
   return segments.map(normalizePathSegment)
 }
 
+/** @internal */
 export function normalizePathSegment(segment: string): PathSegment {
   if (isIndexSegment(segment)) {
     return normalizeIndexSegment(segment)
@@ -103,10 +108,12 @@ export function normalizePathSegment(segment: string): PathSegment {
   return segment
 }
 
+/** @internal */
 export function normalizeIndexSegment(segment: string): PathSegment {
   return Number(segment.replace(/[^\d]/g, ''))
 }
 
+/** @internal */
 export function normalizeKeySegment(segment: string): KeyedSegment {
   const segments = segment.match(reKeySegment)
   if (!segments) {
@@ -116,11 +123,13 @@ export function normalizeKeySegment(segment: string): KeyedSegment {
   return {_key: segments[1]}
 }
 
+/** @internal */
 export function normalizeIndexTupleSegment(segment: string): IndexTuple {
   const [from, to] = segment.split(':').map((seg) => (seg === '' ? seg : Number(seg)))
   return [from, to]
 }
 
+/** @internal */
 export function pathsAreEqual(pathA: Path, pathB: Path): boolean {
   if (pathA.length !== pathB.length) {
     return false
@@ -144,15 +153,18 @@ export function pathsAreEqual(pathA: Path, pathB: Path): boolean {
   })
 }
 
+/** @internal */
 export function getItemKey(arrayItem: unknown): string | undefined {
   return isKeyedObject(arrayItem) ? arrayItem._key : undefined
 }
 
+/** @internal */
 export function getItemKeySegment(arrayItem: unknown): KeyedSegment | undefined {
   const key = getItemKey(arrayItem)
   return key ? {_key: key} : undefined
 }
 
+/** @internal */
 export function isEmptyObject(item: unknown): boolean {
   return typeof item === 'object' && item !== null && Object.keys(item).length <= 0
 }

@@ -8,6 +8,7 @@ export type {ConfirmDeleteDialogProps}
 type ArgType<T> = T extends (arg: infer U) => unknown ? U : never
 type ErrorInfo = ArgType<React.ComponentProps<typeof ErrorBoundary>['onCatch']>
 
+/** @internal */
 function ConfirmDeleteDialogContainer(props: ConfirmDeleteDialogProps) {
   const id = useId()
   const [error, setError] = useState<ErrorInfo | null>(null)

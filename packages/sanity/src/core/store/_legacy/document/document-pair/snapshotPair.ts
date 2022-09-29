@@ -34,6 +34,8 @@ function withSnapshots(pair: DocumentVersion): DocumentVersionSnapshots {
     commit: pair.commit,
   }
 }
+
+/** @internal */
 export interface DocumentVersionSnapshots {
   snapshots$: Observable<SanityDocument>
 
@@ -48,12 +50,14 @@ export interface DocumentVersionSnapshots {
   commit: () => void
 }
 
+/** @internal */
 interface SnapshotPair {
   transactionsPendingEvents$: Observable<PendingMutationsEvent>
   draft: DocumentVersionSnapshots
   published: DocumentVersionSnapshots
 }
 
+/** @internal */
 export const snapshotPair = memoize(
   (client: SanityClient, idPair: IdPair, typeName: string) => {
     return memoizedPair(client, idPair, typeName).pipe(

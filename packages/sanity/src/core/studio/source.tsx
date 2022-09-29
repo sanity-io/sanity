@@ -2,12 +2,14 @@ import React, {createContext, useContext} from 'react'
 import {Source} from '../config'
 import {useWorkspace} from './workspace'
 
+/** @internal */
 export type SourceProviderProps =
   | {source: Source; children?: React.ReactNode}
   | {name: string; children?: React.ReactNode}
 
 const SourceContext = createContext<Source | null>(null)
 
+/** @internal */
 export function SourceProvider({children, ...props}: SourceProviderProps) {
   const parentSource = useContext(SourceContext)
   const {unstable_sources: sources} = useWorkspace()

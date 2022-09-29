@@ -6,6 +6,7 @@ const ResizeObserver: typeof Polyfill =
     ? window.ResizeObserver
     : Polyfill
 
+/** @internal */
 export interface SharedResizeObserver {
   observe: (
     element: Element,
@@ -14,6 +15,7 @@ export interface SharedResizeObserver {
   ) => () => void
 }
 
+/** @internal */
 export const createSharedResizeObserver = (): SharedResizeObserver => {
   const event = createPubSub<ResizeObserverEntry[]>()
 
@@ -44,4 +46,5 @@ export const createSharedResizeObserver = (): SharedResizeObserver => {
   }
 }
 
+/** @internal */
 export const resizeObserver = createSharedResizeObserver()

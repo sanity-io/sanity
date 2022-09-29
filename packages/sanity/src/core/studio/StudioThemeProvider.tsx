@@ -7,6 +7,7 @@ interface StudioThemeProviderProps {
   children: React.ReactChild
 }
 
+/** @internal */
 export function StudioThemeProvider({children}: StudioThemeProviderProps) {
   const theme = useActiveWorkspace().activeWorkspace.theme
   const {scheme} = useColorScheme()

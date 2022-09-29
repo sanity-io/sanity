@@ -1,11 +1,13 @@
 import {escapeRegExp} from 'lodash'
 import {WorkspaceLike} from '../workspaces'
 
+/** @internal */
 export interface MatchWorkspaceOptions<TWorkspace extends WorkspaceLike> {
   workspaces: TWorkspace[]
   pathname: string
 }
 
+/** @internal */
 export type MatchWorkspaceResult<TWorkspace extends WorkspaceLike> =
   | {type: 'match'; workspace: TWorkspace}
   | {type: 'redirect'; pathname: string}
@@ -16,6 +18,8 @@ export type MatchWorkspaceResult<TWorkspace extends WorkspaceLike> =
  * a redirect, or not-found.
  *
  * Throws if the workspace `basePaths` could result in ambiguous matches.
+ *
+ * @internal
  */
 export function matchWorkspace<TWorkspace extends WorkspaceLike>({
   pathname,

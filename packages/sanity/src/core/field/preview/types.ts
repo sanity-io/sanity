@@ -10,6 +10,7 @@ import {
 } from '@sanity/types'
 import {UserColor} from '../../user-color'
 
+/** @internal */
 export type FieldPreviewComponent<T = any> = ComponentType<{
   color?: UserColor
   schemaType: T extends Array<any>

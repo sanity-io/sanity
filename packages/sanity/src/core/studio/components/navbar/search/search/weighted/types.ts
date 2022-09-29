@@ -34,7 +34,7 @@ export interface SearchStory {
 }
 
 /**
- * @alpha
+ * @internal
  */
 export interface WeightedHit {
   hit: SearchHit
@@ -44,7 +44,7 @@ export interface WeightedHit {
 }
 
 /**
- * @alpha
+ * @internal
  */
 export interface WeightedSearchOptions {
   filter?: string
@@ -54,6 +54,7 @@ export interface WeightedSearchOptions {
   unique?: boolean
 }
 
+/** @internal */
 export interface SearchOptions {
   includeDrafts?: boolean
   limit?: number

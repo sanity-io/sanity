@@ -2,6 +2,7 @@ import React from 'react'
 import {ItemWithMissingType} from '../inputs/arrays/ArrayOfObjectsInput/item/ItemWithMissingType'
 import {ArrayItemError} from '../store/types/memberErrors'
 
+/** @internal */
 export function MemberItemError(props: {member: ArrayItemError}) {
   const {member} = props
 

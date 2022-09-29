@@ -2,6 +2,7 @@ import {Card, CardProps} from '@sanity/ui'
 import React, {createContext, forwardRef, useContext} from 'react'
 import styled, {css} from 'styled-components'
 
+/** @internal */
 const StyledCard = styled(Card)(() => {
   return css`
     /* this is a hack to avoid layout jumps while previews are loading
@@ -20,12 +21,14 @@ const StyledCard = styled(Card)(() => {
   `
 })
 
+/** @internal */
 export interface PreviewCardContextValue {
   selected?: boolean
 }
 
 const PreviewCardContext = createContext<PreviewCardContextValue>({selected: false})
 
+/** @internal */
 export function usePreviewCard(): PreviewCardContextValue {
   const context = useContext(PreviewCardContext)
 
@@ -36,6 +39,7 @@ export function usePreviewCard(): PreviewCardContextValue {
   return context
 }
 
+/** @internal */
 export const PreviewCard = forwardRef(function PreviewCard(
   props: CardProps & Omit<React.HTMLProps<HTMLDivElement>, 'height'>,
   ref: React.ForwardedRef<HTMLDivElement>

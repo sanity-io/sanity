@@ -1,8 +1,6 @@
 import type {Path} from '@sanity/types'
 
-/**
- * @alpha
- */
+/** @beta */
 export interface FormPatchBase {
   /**
    * A property used to identify this as a Sanity patch type, eg "set", "unset", "insert", etc.
@@ -16,7 +14,7 @@ export interface FormPatchBase {
 }
 
 /**
- * @alpha
+ * @beta
  */
 export type FormPatchJSONValue =
   | number
@@ -26,12 +24,12 @@ export type FormPatchJSONValue =
   | FormPatchJSONValue[]
 
 /**
- * @alpha
+ * @beta
  */
 export type FormPatchOrigin = 'remote' | 'local' | 'internal'
 
 /**
- * @alpha
+ * @beta
  */
 export interface FormSetPatch extends FormPatchBase {
   path: Path
@@ -41,7 +39,7 @@ export interface FormSetPatch extends FormPatchBase {
 }
 
 /**
- * @alpha
+ * @beta
  */
 export interface FormIncPatch extends FormPatchBase {
   path: Path
@@ -51,7 +49,7 @@ export interface FormIncPatch extends FormPatchBase {
 }
 
 /**
- * @alpha
+ * @beta
  */
 export interface FormDecPatch extends FormPatchBase {
   path: Path
@@ -61,7 +59,7 @@ export interface FormDecPatch extends FormPatchBase {
 }
 
 /**
- * @alpha
+ * @beta
  */
 export interface FormSetIfMissingPatch extends FormPatchBase {
   path: Path
@@ -71,7 +69,7 @@ export interface FormSetIfMissingPatch extends FormPatchBase {
 }
 
 /**
- * @alpha
+ * @beta
  */
 export interface FormUnsetPatch extends FormPatchBase {
   path: Path
@@ -80,12 +78,12 @@ export interface FormUnsetPatch extends FormPatchBase {
 }
 
 /**
- * @alpha
+ * @beta
  */
 export type FormInsertPatchPosition = 'before' | 'after'
 
 /**
- * @alpha
+ * @beta
  */
 export interface FormInsertPatch extends FormPatchBase {
   path: Path
@@ -96,7 +94,7 @@ export interface FormInsertPatch extends FormPatchBase {
 }
 
 /**
- * @alpha
+ * @beta
  */
 export interface FormDiffMatchPatch extends FormPatchBase {
   path: Path
@@ -106,7 +104,7 @@ export interface FormDiffMatchPatch extends FormPatchBase {
 }
 
 /**
- * @alpha
+ * @beta
  */
 export type FormPatch =
   | FormSetPatch
@@ -116,6 +114,6 @@ export type FormPatch =
   | FormDiffMatchPatch
 
 /**
- * @alpha
+ * @beta
  */
 export type PatchArg = FormPatch | FormPatch[]

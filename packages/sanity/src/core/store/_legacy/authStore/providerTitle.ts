@@ -1,3 +1,4 @@
+/** @internal */
 export function getProviderTitle(provider?: string): string | undefined {
   if (provider === 'google') {
     return 'Google'

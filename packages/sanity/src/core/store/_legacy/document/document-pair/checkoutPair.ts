@@ -21,11 +21,16 @@ const isMutationEventForDocId =
     return event.type !== 'reconnect' && event.type !== 'pending' && event.documentId === id
   }
 
+/** @beta */
 export type WithVersion<T> = T & {version: 'published' | 'draft'}
 
+/** @beta */
 export type DocumentVersionEvent = WithVersion<ReconnectEvent | BufferedDocumentEvent>
+
+/** @beta */
 export type RemoteSnapshotVersionEvent = WithVersion<RemoteSnapshotEvent>
 
+/** @beta */
 export interface DocumentVersion {
   consistency$: Observable<boolean>
   remoteSnapshot$: Observable<RemoteSnapshotVersionEvent>
@@ -41,7 +46,9 @@ export interface DocumentVersion {
   commit: () => void
 }
 
+/** @beta */
 export interface Pair {
+  /** @internal */
   transactionsPendingEvents$: Observable<PendingMutationsEvent>
   published: DocumentVersion
   draft: DocumentVersion
@@ -80,6 +87,7 @@ function submitCommitRequest(client: SanityClient, request: CommitRequest) {
   )
 }
 
+/** @internal */
 export function checkoutPair(client: SanityClient, idPair: IdPair): Pair {
   const {publishedId, draftId} = idPair
 

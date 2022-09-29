@@ -18,10 +18,12 @@ import {
   StringInputProps,
 } from './inputProps'
 
+/** @public */
 export interface BaseFieldProps {
   schemaType: SchemaType
   title: string | undefined
   description: string | undefined
+  /** @beta */
   presence: FormFieldPresence[]
   validation: NodeValidation[]
   level: number
@@ -34,6 +36,7 @@ export interface BaseFieldProps {
   children: React.ReactNode
 }
 
+/** @public */
 export interface ObjectFieldProps extends BaseFieldProps {
   schemaType: ObjectSchemaType
   value: {[field in string]: unknown} | undefined
@@ -47,6 +50,7 @@ export interface ObjectFieldProps extends BaseFieldProps {
   inputProps: ObjectInputProps
 }
 
+/** @public */
 export interface ArrayFieldProps extends BaseFieldProps {
   schemaType: ArraySchemaType
   value: unknown[] | undefined
@@ -57,6 +61,7 @@ export interface ArrayFieldProps extends BaseFieldProps {
   inputProps: ArrayOfObjectsInputProps
 }
 
+/** @internal */
 export interface ArrayOfPrimitivesFieldProps extends BaseFieldProps {
   schemaType: ArraySchemaType
   value: unknown[] | undefined
@@ -67,25 +72,31 @@ export interface ArrayOfPrimitivesFieldProps extends BaseFieldProps {
   inputProps: ArrayOfPrimitivesInputProps
 }
 
+/** @public */
 export interface NumberFieldProps extends BaseFieldProps {
   schemaType: NumberSchemaType
   value: number | undefined
   inputProps: NumberInputProps
 }
+
+/** @public */
 export interface BooleanFieldProps extends BaseFieldProps {
   schemaType: BooleanSchemaType
   value: boolean | undefined
   inputProps: BooleanInputProps
 }
 
+/** @public */
 export interface StringFieldProps extends BaseFieldProps {
   schemaType: StringSchemaType
   value: string | undefined
   inputProps: StringInputProps
 }
 
+/** @internal */
 export type PrimitiveFieldProps = NumberFieldProps | BooleanFieldProps | StringFieldProps
 
+/** @public */
 export type FieldProps =
   | ObjectFieldProps
   | ArrayFieldProps

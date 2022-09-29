@@ -14,7 +14,7 @@ import {insert, PatchArg, PatchEvent, set, unset} from '../../patch'
 import {useFormCallbacks} from '../../studio/contexts/FormCallbacks'
 
 /**
- * @alpha
+ * @beta
  */
 export interface PrimitiveMemberItemProps {
   member: ArrayOfPrimitivesItemMember
@@ -23,7 +23,7 @@ export interface PrimitiveMemberItemProps {
 }
 
 /**
- * @alpha
+ * @beta
  */
 export function ArrayOfPrimitivesItem(props: PrimitiveMemberItemProps) {
   const focusRef = useRef<{focus: () => void}>()

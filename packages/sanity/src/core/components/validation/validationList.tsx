@@ -10,6 +10,7 @@ import {
 import {Container} from '@sanity/ui'
 import {ListItem} from './listItem'
 
+/** @internal */
 export interface ValidationListProps {
   documentType?: ObjectSchemaType
   kind?: 'simple'
@@ -19,6 +20,7 @@ export interface ValidationListProps {
   truncate?: boolean
 }
 
+/** @internal */
 export function ValidationList(props: ValidationListProps) {
   const {documentType, kind, validation, onFocus, onClose, truncate} = props
   const errors = validation.filter(isValidationErrorMarker)

@@ -7,6 +7,7 @@ import {PreviewMediaDimensions, PreviewProps} from '../types'
 import {renderPreviewNode} from '../helpers'
 import {HeaderFlex, MediaCard, RootBox} from './BlockImagePreview.styled'
 
+/** @beta */
 export type BlockImagePreviewProps = PreviewProps<'blockImage'>
 
 const DEFAULT_MEDIA_DIMENSIONS: PreviewMediaDimensions = {
@@ -25,6 +26,7 @@ const getRatio = (dimensions: PreviewMediaDimensions) => {
   return (height / width) * 100
 }
 
+/** @beta */
 export function BlockImagePreview(props: BlockImagePreviewProps) {
   const {
     actions,

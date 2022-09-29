@@ -11,11 +11,13 @@ function isNonNullable<T>(t: T): t is NonNullable<T> {
   return !!t
 }
 
+/** @internal */
 export function prepareTemplates(schema: Schema, initialValueTemplates: Template[]): Template[] {
   const serialized = initialValueTemplates.map(maybeSerialize)
   return validateTemplates(schema, serialized)
 }
 
+/** @internal */
 export function defaultTemplateForType(schemaType: SchemaType): Template {
   return {
     id: schemaType.name,
@@ -26,6 +28,7 @@ export function defaultTemplateForType(schemaType: SchemaType): Template {
   }
 }
 
+/** @internal */
 export function defaultTemplatesForSchema(schema: Schema): Template[] {
   const schemaTypes = schema
     .getTypeNames()

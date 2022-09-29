@@ -14,6 +14,7 @@ import {useInitialValueResolverContext} from '../document'
 import {getDocumentValuePermissions} from './documentValuePermissions'
 import {GrantsStore, PermissionCheckResult} from './types'
 
+/** @internal */
 export interface TemplatePermissionsResult<TInitialValue = Record<string, unknown>>
   extends PermissionCheckResult,
     InitialValueTemplateItem {
@@ -31,6 +32,7 @@ function serialize<T>(item: T | Serializable<T>): T {
   return item as T
 }
 
+/** @internal */
 export interface TemplatePermissionsOptions {
   grantsStore: GrantsStore
   schema: Schema
@@ -41,6 +43,8 @@ export interface TemplatePermissionsOptions {
 
 /**
  * The observable version of `useTemplatePermissions`
+ *
+ * @internal
  */
 export function getTemplatePermissions({
   grantsStore,
@@ -129,10 +133,13 @@ export function getTemplatePermissions({
  * resolved value is then run through the document-value permissions. If there
  * are any matching grants for the resolved initial template value, the
  * `TemplatePermissionsResult` will include `granted: true`.
+ *
+ * @internal
  */
 export const useTemplatePermissionsFromHookFactory =
   createHookFromObservableFactory(getTemplatePermissions)
 
+/** @internal */
 export function useTemplatePermissions({
   templateItems,
   ...rest

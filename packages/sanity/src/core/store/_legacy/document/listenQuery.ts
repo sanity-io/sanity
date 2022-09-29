@@ -4,8 +4,10 @@ import {mergeMap, throttleTime, share, take, filter} from 'rxjs/operators'
 import {exhaustMapToWithTrailing} from 'rxjs-exhaustmap-with-trailing'
 import {ReconnectEvent, WelcomeEvent, MutationEvent} from './types'
 
+/** @internal */
 export type ListenQueryParams = Record<string, string | number | boolean | string[]>
 
+/** @beta */
 export interface ListenQueryOptions {
   tag?: string
   apiVersion?: string
@@ -49,6 +51,7 @@ function isWelcomeEvent(
   return event.type === 'welcome'
 }
 
+/** @internal */
 // todo: promote as building block for better re-use
 // todo: optimize by patching collection in-place
 export const listenQuery = (

@@ -4,6 +4,7 @@ import {UrlFieldDiff} from '../../types/url/diff'
 import {SlugFieldDiff} from '../../types/slug/diff'
 import {DiffComponentResolver} from '../../types'
 
+/** @internal */
 export const diffResolver: DiffComponentResolver = ({schemaType}) => {
   // datetime or date
   if (['datetime', 'date'].includes(schemaType.name)) {

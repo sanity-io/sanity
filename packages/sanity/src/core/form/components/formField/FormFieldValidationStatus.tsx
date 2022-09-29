@@ -6,13 +6,14 @@ import {NodeValidation} from '@sanity/types'
 import {Box, Flex, Placement, Stack, Text, Tooltip} from '@sanity/ui'
 import React, {useMemo} from 'react'
 
+/** @internal */
 export interface FormFieldValidationStatusProps {
   /**
-   * @alpha
+   * @beta
    */
   validation?: NodeValidation[]
   /**
-   * @alpha
+   * @beta
    */
   __unstable_showSummary?: boolean
   fontSize?: number | number
@@ -34,6 +35,7 @@ const VALIDATION_ICONS: Record<'error' | 'warning' | 'info', React.ReactElement>
   info: <InfoOutlineIcon data-testid="input-validation-icon-info" />,
 }
 
+/** @internal */
 export function FormFieldValidationStatus(props: FormFieldValidationStatusProps) {
   const {
     validation = EMPTY_ARRAY,

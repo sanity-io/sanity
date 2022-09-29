@@ -60,11 +60,13 @@ async function matchesFilter(
   return data?.length === 1
 }
 
+/** @internal */
 export interface GrantsStoreOptions {
   client: SanityClient
   currentUser: CurrentUser | null
 }
 
+/** @internal */
 export function createGrantsStore({client, currentUser}: GrantsStoreOptions): GrantsStore {
   const versionedClient = client.withConfig({apiVersion: '2021-06-07'})
 

@@ -2,6 +2,7 @@ import {Text, TextProps} from '@sanity/ui'
 import React, {createElement} from 'react'
 import {ArrowRightIcon, ArrowDownIcon} from '@sanity/icons'
 
+/** @internal */
 export type FromToArrowDirection = 'down' | 'right'
 
 const arrowComponents = {
@@ -9,6 +10,7 @@ const arrowComponents = {
   right: ArrowRightIcon,
 }
 
+/** @internal */
 export function FromToArrow(
   props: {direction?: FromToArrowDirection} & TextProps &
     Omit<React.HTMLProps<HTMLDivElement>, 'children' | 'ref'>

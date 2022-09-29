@@ -5,6 +5,7 @@ import {pathToString} from '../../paths'
 import {FieldChangeNode} from '../../types'
 import {FromToArrow} from './FromToArrow'
 
+/** @internal */
 export interface DiffInspectWrapperProps {
   children: React.ReactNode
   change: FieldChangeNode
@@ -22,6 +23,7 @@ const Meta = styled.div`
   right: 0;
 `
 
+/** @internal */
 export function DiffInspectWrapper(props: DiffInspectWrapperProps & BoxProps): React.ReactElement {
   const {children, as, change, ...restProps} = props
   const isHovering = useRef(false)

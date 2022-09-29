@@ -1,6 +1,7 @@
 import {isString} from 'lodash'
 import {Plugin, PluginOptions} from './types'
 
+/** @beta */
 export type PluginFactory<TOptions> = (options: TOptions) => PluginOptions
 
 function validatePlugin(pluginResult: PluginOptions) {
@@ -16,6 +17,7 @@ function validatePlugin(pluginResult: PluginOptions) {
     )
 }
 
+/** @beta */
 export function createPlugin<TOptions = void>(
   arg: PluginFactory<TOptions> | PluginOptions
 ): Plugin<TOptions> {

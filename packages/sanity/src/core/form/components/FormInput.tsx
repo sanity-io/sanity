@@ -15,7 +15,10 @@ import {MemberField, ArrayOfObjectsItem, MemberItemError} from '../members'
 
 const pass = ({children}: {children: React.ReactNode}) => children
 
+/** @internal */
 export type FormInputAbsolutePathArg = {absolutePath: Path}
+
+/** @internal */
 export type FormInputRelativePathArg = {relativePath: Path}
 
 function hasAbsolutePath(
@@ -24,6 +27,7 @@ function hasAbsolutePath(
   return 'absolutePath' in a
 }
 
+/** @internal */
 export const FormInput = memo(function FormInput(
   props: (ArrayOfObjectsInputProps | ObjectInputProps) &
     (FormInputRelativePathArg | FormInputAbsolutePathArg) & {

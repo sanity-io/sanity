@@ -37,6 +37,7 @@ function getDisabledReason(
   return DISABLED_REASON_TITLE[reason]
 }
 
+/** @internal */
 // eslint-disable-next-line complexity
 export const PublishAction: DocumentActionComponent = (props) => {
   const {id, type, liveEdit, draft, published} = props

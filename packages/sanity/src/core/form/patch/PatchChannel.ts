@@ -1,7 +1,7 @@
 import {FormPatch} from './types'
 
 /**
- * @internal
+ * @beta
  */
 export interface MutationPatchMsg {
   type: 'mutation'
@@ -10,7 +10,7 @@ export interface MutationPatchMsg {
 }
 
 /**
- * @internal
+ * @beta
  */
 export interface RebasePatchMsg {
   type: 'rebase'
@@ -19,19 +19,19 @@ export interface RebasePatchMsg {
 }
 
 /**
- * @internal
+ * @beta
  */
 export type PatchMsg = MutationPatchMsg | RebasePatchMsg
 
 /**
- * @internal
+ * @beta
  */
 export interface PatchMsgSubscriber {
   (msg: PatchMsg): void
 }
 
 /**
- * @internal
+ * @beta
  */
 export interface PatchChannel {
   publish: (msg: PatchMsg) => void

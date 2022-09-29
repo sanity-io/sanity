@@ -3,6 +3,7 @@ import {shareReplay} from 'rxjs/operators'
 import {hues, ColorHueKey, COLOR_HUES} from '@sanity/color'
 import {UserColorHue, UserColorManager, UserColor, UserId} from './types'
 
+/** @internal */
 export interface UserColorManagerOptions {
   anonymousColor?: UserColor
   userStore?: {me: Observable<{id: string} | null>}
@@ -39,6 +40,7 @@ const defaultAnonymousColor: UserColor = {
   tints: hues.gray,
 }
 
+/** @internal */
 export function createUserColorManager(options?: UserColorManagerOptions): UserColorManager {
   const userColors = (options && options.colors) || defaultColors
   const anonymousColor = options?.anonymousColor || defaultAnonymousColor

@@ -9,12 +9,14 @@ function trimChildPath(path: Path, childPath: Path) {
   return PathUtils.startsWith(path, childPath) ? PathUtils.trimLeft(path, childPath) : EMPTY_ARRAY
 }
 
+/** @internal */
 export interface PresenceScopeProps {
   readOnly?: boolean
   path: Path
   children: React.ReactNode
 }
 
+/** @internal */
 export function PresenceScope(props: PresenceScopeProps) {
   const {readOnly, path, children} = props
   const contextPresence = React.useContext(FormFieldPresenceContext)

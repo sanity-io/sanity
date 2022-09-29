@@ -1,6 +1,7 @@
 import React, {createContext, useContext, useMemo} from 'react'
 import {createMultiKeyWeakMap, MultiKeyWeakMap} from './createMultiKeyWeakMap'
 
+/** @internal */
 export interface ResourceCache {
   get<T = unknown>(options: {namespace: string; dependencies: (object | null)[]}): T | undefined
   set(options: {namespace: string; dependencies: (object | null)[]; value: unknown}): void
@@ -8,10 +9,12 @@ export interface ResourceCache {
 
 const ResourceCacheContext = createContext<ResourceCache | null>(null)
 
+/** @internal */
 export interface ResourceCacheProviderProps {
   children: React.ReactNode
 }
 
+/** @internal */
 export function ResourceCacheProvider({children}: ResourceCacheProviderProps) {
   const resourceCache = useMemo((): ResourceCache => {
     const namespaces = new Map<string, MultiKeyWeakMap>()
@@ -45,6 +48,7 @@ export function ResourceCacheProvider({children}: ResourceCacheProviderProps) {
   )
 }
 
+/** @internal */
 export function useResourceCache(): ResourceCache {
   const cache = useContext(ResourceCacheContext)
   if (!cache) throw new Error('Could not find `cache` context')

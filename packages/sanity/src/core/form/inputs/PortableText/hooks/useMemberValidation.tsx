@@ -8,6 +8,7 @@ import {_isBlockType} from '../_helpers'
 
 const NONEXISTENT_PATH = ['@@_NONEXISTENT_PATH_@@']
 
+/** @internal */
 export function useMemberValidation(member: BaseFormNode | undefined) {
   const prev = useRef<NodeValidation[] | null>(null)
   const memberValidation =

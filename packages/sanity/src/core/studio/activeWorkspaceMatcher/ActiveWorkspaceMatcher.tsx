@@ -10,6 +10,7 @@ import {
 } from './ActiveWorkspaceMatcherContext'
 import {matchWorkspace} from './matchWorkspace'
 
+/** @internal */
 export interface ActiveWorkspaceMatcherProps {
   children?: React.ReactChild
   unstable_history?: History
@@ -20,6 +21,7 @@ export interface ActiveWorkspaceMatcherProps {
 const createHistory = () =>
   typeof document === 'undefined' ? createMemoryHistory() : createBrowserHistory()
 
+/** @internal */
 export function ActiveWorkspaceMatcher({
   children,
   LoadingComponent,

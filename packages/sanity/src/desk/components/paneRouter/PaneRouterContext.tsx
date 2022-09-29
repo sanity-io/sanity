@@ -6,7 +6,7 @@ function missingContext<T = unknown>(): T {
 }
 
 /**
- * @public
+ * @beta
  */
 export const PaneRouterContext = createContext<PaneRouterContextValue>({
   index: 0,

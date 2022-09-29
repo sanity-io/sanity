@@ -21,6 +21,7 @@ interface SchemaOptions {
   calendarTodayLabel?: string
 }
 
+/** @public */
 export type DateTimeInputProps = StringInputProps
 
 const DEFAULT_DATE_FORMAT = 'YYYY-MM-DD'
@@ -63,6 +64,7 @@ function enforceTimeStep(dateString: string, timeStep: number) {
   return serialize(date)
 }
 
+/** @public */
 export function DateTimeInput(props: DateTimeInputProps) {
   const {onChange, schemaType, value, elementProps} = props
 

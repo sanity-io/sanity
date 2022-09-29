@@ -3,12 +3,14 @@ import {CurrentUser} from '@sanity/types'
 import {Text, Inline, Box} from '@sanity/ui'
 import React from 'react'
 
+/** @internal */
 export interface InsufficientPermissionsMessageProps {
   title?: string
   operationLabel?: string
   currentUser?: CurrentUser | null
 }
 
+/** @internal */
 export function InsufficientPermissionsMessage(props: InsufficientPermissionsMessageProps) {
   const {
     currentUser,

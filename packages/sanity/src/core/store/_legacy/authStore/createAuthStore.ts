@@ -9,6 +9,7 @@ import {sessionId} from './sessionId'
 import * as storage from './storage'
 import {createLoginComponent} from './createLoginComponent'
 
+/** @internal */
 export interface AuthProvider {
   name: string
   title: string
@@ -16,6 +17,7 @@ export interface AuthProvider {
   logo?: string
 }
 
+/** @internal */
 export interface AuthStoreOptions {
   projectId: string
   dataset: string
@@ -261,6 +263,6 @@ function hash(value: unknown): string {
 }
 
 /**
- * @public
+ * @internal
  */
 export const createAuthStore = memoize(_createAuthStore, hash)

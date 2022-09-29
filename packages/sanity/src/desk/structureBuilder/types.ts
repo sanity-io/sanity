@@ -14,8 +14,10 @@ import type {ComponentView, ComponentViewBuilder} from './views/ComponentView'
 import type {FormView, FormViewBuilder} from './views/FormView'
 import type {ConfigContext, Source, InitialValueTemplateItem} from 'sanity'
 
+/** @beta */
 export type View = FormView | ComponentView
 
+/** @beta */
 export type UserViewComponent<TOptions = Record<string, any>> = React.ComponentType<{
   document: {
     draft: SanityDocument | null
@@ -28,6 +30,7 @@ export type UserViewComponent<TOptions = Record<string, any>> = React.ComponentT
   schemaType: SchemaType
 }>
 
+/** @beta */
 export type UserComponent = React.ComponentType<{
   child?: ComponentBuilder
   childItemId?: string
@@ -41,23 +44,26 @@ export type UserComponent = React.ComponentType<{
 }>
 
 /**
- * @internal
+ * @beta
  */
 export interface StructureContext extends Source {
   resolveDocumentNode: (options: {documentId?: string; schemaType: string}) => DocumentBuilder
   getStructureBuilder: () => StructureBuilder
 }
 
+/** @beta */
 export interface DefaultDocumentNodeContext extends ConfigContext {
   documentId?: string
   schemaType: string
 }
 
+/** @beta */
 export type DefaultDocumentNodeResolver = (
   S: StructureBuilder,
   options: DefaultDocumentNodeContext
 ) => DocumentBuilder | null | undefined
 
+/** @beta */
 export interface StructureBuilder {
   /**
    * @internal

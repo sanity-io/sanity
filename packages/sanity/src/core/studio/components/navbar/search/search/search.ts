@@ -5,6 +5,7 @@ import {getSearchableTypes} from './common/utils'
 import {createWeightedSearch} from './weighted/createWeightedSearch'
 import {SearchOptions, WeightedHit} from './weighted/types'
 
+/** @internal */
 export function createSearch(
   client: SanityClient,
   schema: Schema

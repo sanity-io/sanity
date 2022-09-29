@@ -4,6 +4,7 @@ import {concat, Observable, of} from 'rxjs'
 import {distinctUntilChanged, map, switchMap} from 'rxjs/operators'
 import {DocumentStore} from '../store'
 
+/** @internal */
 export const WithReferringDocuments = withPropsStream(
   connect,
   function _WithReferringDocuments({children, ...props}) {

@@ -1,6 +1,7 @@
 import {isKeySegment, Path} from '@sanity/types'
 import {StateTree} from './types'
 
+/** @internal */
 export function setAtPath<T>(
   currentTree: StateTree<T> | undefined,
   path: Path,

@@ -11,6 +11,7 @@ import {MemberField} from './MemberField'
 import {MemberFieldError} from './MemberFieldError'
 import {MemberFieldSet} from './MemberFieldset'
 
+/** @internal */
 export interface ObjectMembersProps {
   members: ObjectMember[]
   renderInput: RenderInputCallback
@@ -20,7 +21,7 @@ export interface ObjectMembersProps {
 }
 /**
  * Convenience component for wrapping an object input
- * @beta
+ * @internal
  */
 
 export function ObjectMembers(props: ObjectMembersProps) {

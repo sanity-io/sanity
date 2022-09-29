@@ -8,6 +8,7 @@ function NoopTracker({children}: {children: React.ReactNode}) {
   return <>{children}</>
 }
 
+/** @internal */
 export function createNoopTrackerScope<T>() {
   return {
     useReportedValues: noop as () => Reported<T>[],

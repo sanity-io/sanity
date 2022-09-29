@@ -57,6 +57,7 @@ export interface Router extends RouterNode {
   isRoot: (path: string) => boolean
 }
 
+/** @internal */
 export interface MatchResult {
   nodes: RouterNode[]
   missing: string[]

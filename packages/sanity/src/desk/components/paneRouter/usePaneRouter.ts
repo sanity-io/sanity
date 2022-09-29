@@ -3,7 +3,7 @@ import {PaneRouterContext} from './PaneRouterContext'
 import {PaneRouterContextValue} from './types'
 
 /**
- * @public
+ * @beta
  */
 export function usePaneRouter(): PaneRouterContextValue {
   return useContext(PaneRouterContext)

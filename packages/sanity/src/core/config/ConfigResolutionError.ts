@@ -1,11 +1,13 @@
 import {isRecord} from '../util'
 
+/** @internal */
 export interface ConfigResolutionErrorOptions {
   name: string
   type: string
   causes: Array<ConfigResolutionError | Error | unknown>
 }
 
+/** @internal */
 export class ConfigResolutionError extends Error {
   name: string
   type: string

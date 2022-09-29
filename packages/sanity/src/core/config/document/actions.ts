@@ -2,15 +2,18 @@ import {type ButtonTone} from '@sanity/ui'
 import type React from 'react'
 import {type EditStateFor} from '../../store/_legacy'
 
+/** @beta */
 export interface ActionComponent<ActionProps> {
   (props: ActionProps): DocumentActionDescription | null
 }
 
+/** @beta */
 export interface DocumentActionProps extends EditStateFor {
   revision?: string
   onComplete: () => void
 }
 
+/** @beta */
 export interface DocumentActionComponent extends ActionComponent<DocumentActionProps> {
   /**
    * An optional meta property that can used to replace this document action
@@ -46,6 +49,7 @@ export interface DocumentActionConfirmModalProps {
   confirmButtonText?: React.ReactNode
 }
 
+/** @beta */
 export interface DocumentActionDialogModalProps {
   type: 'dialog'
   content: React.ReactNode
@@ -65,17 +69,20 @@ export interface DocumentActionDialogModalProps {
   width?: 'small' | 'medium' | 'large' | 'full'
 }
 
+/** @beta */
 export interface DocumentActionPopoverModalProps {
   type: 'popover'
   content: React.ReactNode
   onClose: () => void
 }
 
+/** @beta */
 export type DocumentActionModalProps =
   | DocumentActionConfirmModalProps
   | DocumentActionPopoverModalProps
   | DocumentActionDialogModalProps
 
+/** @beta */
 export interface DocumentActionDescription {
   tone?: ButtonTone
   modal?: DocumentActionModalProps | false | null

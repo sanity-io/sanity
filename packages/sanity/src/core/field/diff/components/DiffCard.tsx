@@ -6,6 +6,7 @@ import {getAnnotationAtPath, useAnnotationColor} from '../annotations'
 import {Annotation, Diff} from '../../types'
 import {DiffTooltip} from './DiffTooltip'
 
+/** @internal */
 export interface DiffCardProps {
   annotation?: Annotation
   as?: React.ElementType | keyof JSX.IntrinsicElements
@@ -67,6 +68,7 @@ const StyledCard = styled(Card)`
 
 const EMPTY_PATH: Path = []
 
+/** @internal */
 export const DiffCard = forwardRef(function DiffCard(
   props: DiffCardProps & Omit<React.HTMLProps<HTMLElement>, 'as' | 'height'>,
   ref

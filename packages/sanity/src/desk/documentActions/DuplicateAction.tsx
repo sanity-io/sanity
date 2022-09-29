@@ -14,6 +14,7 @@ const DISABLED_REASON_TITLE = {
   NOTHING_TO_DUPLICATE: 'This document doesn’t yet exist so there‘s nothing to duplicate',
 }
 
+/** @internal */
 export const DuplicateAction: DocumentActionComponent = ({id, type, onComplete}) => {
   const {duplicate} = useDocumentOperation(id, type)
   const router = useRouter()

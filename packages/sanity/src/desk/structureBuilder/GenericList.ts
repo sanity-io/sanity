@@ -16,14 +16,17 @@ function noChildResolver() {
   return undefined
 }
 
+/** @internal */
 export const shallowIntentChecker: IntentChecker = (intentName, params, {pane, index}): boolean => {
   return index <= 1 && defaultIntentChecker(intentName, params, {pane, index})
 }
 
+/** @beta */
 export interface ListDisplayOptions {
   showIcons?: boolean
 }
 
+/** @beta */
 export interface BaseGenericList extends StructureNode {
   defaultLayout?: PreviewLayoutKey
   canHandleIntent?: IntentChecker
@@ -32,6 +35,7 @@ export interface BaseGenericList extends StructureNode {
   initialValueTemplates?: (InitialValueTemplateItem | InitialValueTemplateItemBuilder)[]
 }
 
+/** @beta */
 // "POJO"/verbatim-version - end result
 export interface GenericList extends BaseGenericList {
   type: string
@@ -39,12 +43,14 @@ export interface GenericList extends BaseGenericList {
   menuItemGroups: MenuItemGroup[]
 }
 
+/** @beta */
 // Used internally in builder classes to make everything optional
 export interface BuildableGenericList extends Partial<BaseGenericList> {
   menuItems?: (MenuItem | MenuItemBuilder)[]
   menuItemGroups?: (MenuItemGroup | MenuItemGroupBuilder)[]
 }
 
+/** @beta */
 // Input version, allows builders and only requires things not inferrable
 export interface GenericListInput extends StructureNode {
   id: string
@@ -57,6 +63,7 @@ export interface GenericListInput extends StructureNode {
   child?: Child
 }
 
+/** @beta */
 export abstract class GenericListBuilder<TList extends BuildableGenericList, ConcreteImpl>
   implements Serializable<GenericList>
 {

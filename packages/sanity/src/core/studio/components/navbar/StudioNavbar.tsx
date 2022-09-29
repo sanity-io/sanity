@@ -64,6 +64,7 @@ const LeftFlex = styled(Flex)`
   width: max-content;
 `
 
+/** @beta */
 export function StudioNavbar() {
   const {name, studio, tools, ...workspace} = useWorkspace()
   const workspaces = useWorkspaces()

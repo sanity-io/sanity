@@ -4,6 +4,7 @@ import {useMemoObservable} from 'react-rx'
 import {UserColorManagerContext} from './context'
 import {UserColor, UserColorManager} from './types'
 
+/** @internal */
 export function useUserColorManager(): UserColorManager {
   const userColorManager = useContext(UserColorManagerContext)
 
@@ -14,6 +15,7 @@ export function useUserColorManager(): UserColorManager {
   return userColorManager
 }
 
+/** @internal */
 export function useUserColor(userId: string | null): UserColor {
   const manager = useUserColorManager()
 

@@ -15,6 +15,7 @@ const DISABLED_REASON_TITLE = {
   NOTHING_TO_DELETE: 'This document doesn’t yet exist or is already deleted',
 }
 
+/** @internal */
 export const DeleteAction: DocumentActionComponent = ({id, type, draft, onComplete}) => {
   const {delete: deleteOp} = useDocumentOperation(id, type)
   const [isDeleting, setIsDeleting] = useState(false)

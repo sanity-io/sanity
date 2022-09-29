@@ -2,6 +2,7 @@ import {useEffect, useMemo, useState} from 'react'
 import {getPublishedId} from '../../../../util'
 import {useDocumentStore} from '../../datastores'
 
+/** @internal */
 export interface DocumentTypeResolveState {
   isLoaded: boolean
   documentType: string | undefined
@@ -12,6 +13,7 @@ const LOADING_STATE: DocumentTypeResolveState = {
   documentType: undefined,
 }
 
+/** @internal */
 export function useDocumentType(documentId: string, specifiedType = '*'): DocumentTypeResolveState {
   const documentStore = useDocumentStore()
   const publishedId = getPublishedId(documentId)

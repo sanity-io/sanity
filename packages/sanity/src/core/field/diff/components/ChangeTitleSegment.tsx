@@ -16,6 +16,7 @@ const AnnotationText = styled(Text)`
   }
 `
 
+/** @internal */
 export function ChangeTitleSegment(props: {
   change?: FieldChangeNode
   segment: string | FromToIndex

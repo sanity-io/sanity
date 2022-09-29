@@ -35,6 +35,8 @@ function getFocusableElements(element: HTMLElement) {
  *   )
  * }
  * ```
+ *
+ * @beta
  */
 export function useRovingFocus(props: RovingFocusProps): undefined {
   const {

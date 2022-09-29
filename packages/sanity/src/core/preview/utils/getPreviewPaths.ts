@@ -1,6 +1,7 @@
 import {SchemaType} from '@sanity/types'
 import {PreviewPath} from '../types'
 
+/** @internal */
 export function getPreviewPaths(preview: SchemaType['preview']): PreviewPath[] | undefined {
   const selection = preview?.select
 

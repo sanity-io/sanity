@@ -5,6 +5,7 @@ import {IdPair} from '../types'
 import {memoize} from '../utils/createMemoizer'
 import {memoizedPair} from './memoizedPair'
 
+/** @internal */
 export const remoteSnapshots = memoize(
   (client: SanityClient, idPair: IdPair, typeName: string) => {
     return memoizedPair(client, idPair, typeName).pipe(

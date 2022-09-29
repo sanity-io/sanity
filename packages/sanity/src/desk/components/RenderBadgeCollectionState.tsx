@@ -19,6 +19,7 @@ export interface RenderBadgeCollectionProps {
   onActionComplete?: () => void
 }
 
+/** @internal */
 export const RenderBadgeCollectionState = (props: RenderBadgeCollectionProps) => {
   const {badges, children, badgeProps, ...rest} = props
 

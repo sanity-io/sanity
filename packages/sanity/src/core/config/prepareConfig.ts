@@ -74,6 +74,8 @@ function normalizeIcon(
  * For usage inside the Studio, it's preferred to pull the pre-resolved
  * workspaces and sources via `useWorkspace` or `useSource`. For usage outside
  * the Studio or for testing, use `resolveConfig`.
+ *
+ * @internal
  */
 export function prepareConfig(config: Config): PreparedConfig {
   const workspaceOptions: WorkspaceOptions[] | [SingleWorkspace] = Array.isArray(config)

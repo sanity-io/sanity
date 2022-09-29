@@ -2,6 +2,7 @@ import {useMemoObservable} from 'react-rx'
 import {map} from 'rxjs/operators'
 import {useDocumentStore} from '../store'
 
+/** @internal */
 export interface SyncState {
   isSyncing: boolean
 }
@@ -9,6 +10,7 @@ export interface SyncState {
 const SYNCING = {isSyncing: true}
 const NOT_SYNCING = {isSyncing: false}
 
+/** @internal */
 export function useSyncState(publishedDocId: string, documentType: string): SyncState {
   const documentStore = useDocumentStore()
 

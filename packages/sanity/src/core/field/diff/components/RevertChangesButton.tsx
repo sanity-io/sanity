@@ -24,6 +24,7 @@ const Root = styled(Button)`
   }
 `
 
+/** @internal */
 export const RevertChangesButton = forwardRef(function RevertChangesButton(
   props: ButtonProps & Omit<React.HTMLProps<HTMLButtonElement>, 'ref'>,
   ref: React.ForwardedRef<HTMLButtonElement>

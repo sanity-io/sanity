@@ -1,12 +1,16 @@
 import {ImageUrlFitMode} from '@sanity/types'
 import {ComponentType, ReactNode} from 'react'
 
+/** @beta */
 export type PortableTextPreviewLayoutKey = 'block' | 'blockImage' | 'inline'
 
+/** @beta */
 export type GeneralPreviewLayoutKey = 'default' | 'media' | 'detail'
 
+/** @beta */
 export type PreviewLayoutKey = GeneralPreviewLayoutKey | PortableTextPreviewLayoutKey
 
+/** @beta */
 export type PreviewMediaDimensions = {
   aspect?: number
   dpr?: number
@@ -16,7 +20,7 @@ export type PreviewMediaDimensions = {
 }
 
 /**
- * @alpha
+ * @beta
  */
 export interface PreviewProps<TLayoutKey = PreviewLayoutKey> {
   actions?: ReactNode | ComponentType<{layout: TLayoutKey}>
@@ -39,4 +43,5 @@ export interface PreviewProps<TLayoutKey = PreviewLayoutKey> {
   withShadow?: boolean
 }
 
+/** @beta */
 export type PreviewComponent = ComponentType<PreviewProps>

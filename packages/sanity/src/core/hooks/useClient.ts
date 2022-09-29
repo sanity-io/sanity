@@ -2,9 +2,7 @@ import type {SanityClient} from '@sanity/client'
 import type {SourceClientOptions} from '../config'
 import {useSource} from '../studio'
 
-/**
- * @public
- */
+/** @beta */
 export function useClient(clientOptions?: SourceClientOptions): SanityClient {
   const source = useSource()
   if (!clientOptions) {

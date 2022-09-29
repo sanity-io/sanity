@@ -6,6 +6,7 @@ import {DocTitle} from '../DocTitle'
 import {useReferringDocuments} from './useReferringDocuments'
 import {ConfirmDeleteDialogBody} from './ConfirmDeleteDialogBody'
 
+/** @internal */
 export const DialogBody = styled(Flex).attrs({
   padding: 4,
   direction: 'column',
@@ -14,6 +15,7 @@ export const DialogBody = styled(Flex).attrs({
   box-sizing: border-box;
 `
 
+/** @internal */
 export const LoadingContainer = styled(Flex).attrs({
   align: 'center',
   direction: 'column',
@@ -22,6 +24,7 @@ export const LoadingContainer = styled(Flex).attrs({
   height: 300px;
 `
 
+/** @internal */
 export interface ConfirmDeleteDialogProps {
   /**
    * Incoming document ID used to find other referencing documents. This
@@ -46,6 +49,8 @@ export interface ConfirmDeleteDialogProps {
  * A confirmation dialog used to prevent unwanted document deletes. Loads all
  * the referencing internal and cross-data references prior to showing the
  * delete button.
+ *
+ * @internal
  */
 export function ConfirmDeleteDialog({
   id,

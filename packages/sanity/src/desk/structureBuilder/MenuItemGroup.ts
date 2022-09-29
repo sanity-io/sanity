@@ -2,6 +2,7 @@ import {SerializeOptions, Serializable, SerializePath} from './StructureNodes'
 import {SerializeError, HELP_URL} from './SerializeError'
 import {StructureContext} from './types'
 
+/** @internal */
 export function maybeSerializeMenuItemGroup(
   item: MenuItemGroup | MenuItemGroupBuilder,
   index: number,
@@ -10,11 +11,13 @@ export function maybeSerializeMenuItemGroup(
   return item instanceof MenuItemGroupBuilder ? item.serialize({path, index}) : item
 }
 
+/** @beta */
 export interface MenuItemGroup {
   id: string
   title: string
 }
 
+/** @beta */
 export class MenuItemGroupBuilder implements Serializable<MenuItemGroup> {
   protected _id: string
   protected _title: string

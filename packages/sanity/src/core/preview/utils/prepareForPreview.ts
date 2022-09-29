@@ -254,6 +254,7 @@ function getListOptions(type: SchemaType): TitledListValue[] | undefined {
   )
 }
 
+/** @internal */
 export function prepareForPreview(
   rawValue: unknown,
   type: SchemaType,

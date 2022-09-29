@@ -28,6 +28,8 @@ import {FieldValueError} from './validation'
 
 /**
  * History timeline / chunking
+ *
+ * @beta
  */
 export type ChunkType =
   | 'initial'
@@ -39,6 +41,7 @@ export type ChunkType =
   | 'discardDraft'
   | 'editLive'
 
+/** @beta */
 export type Chunk = {
   index: number
 
@@ -55,6 +58,8 @@ export type Chunk = {
 
 /**
  * Annotation connected to a change
+ *
+ * @beta
  */
 export type AnnotationDetails = {
   chunk: Chunk
@@ -62,28 +67,36 @@ export type AnnotationDetails = {
   author: string
 }
 
+/** @beta */
 export type Annotation = AnnotationDetails | null
 
-/**
- * Diff types with annotation type set automatically
- */
+// Diff types with annotation type set automatically
 
+/** @internal */
 export type ArrayDiff<V = unknown> = AgnosticArrayDiff<Annotation, V>
 
+/** @internal */
 export type BooleanDiff = AgnosticBooleanDiff<Annotation>
 
+/** @internal */
 export type NullDiff = AgnosticNullDiff<Annotation>
 
+/** @internal */
 export type NumberDiff = AgnosticNumberDiff<Annotation>
 
+/** @internal */
 export type ObjectDiff<T extends object = Record<string, any>> = AgnosticObjectDiff<Annotation, T>
 
+/** @internal */
 export type StringDiff = AgnosticStringDiff<Annotation>
 
+/** @internal */
 export type ReferenceDiff = ObjectDiff<Reference>
 
+/** @internal */
 export type TypeChangeDiff = AgnosticTypeChangeDiff<Annotation>
 
+/** @internal */
 export type Diff<A = unknown, O extends object = Record<string, any>> =
   | ArrayDiff<A>
   | BooleanDiff
@@ -93,14 +106,22 @@ export type Diff<A = unknown, O extends object = Record<string, any>> =
   | StringDiff
   | TypeChangeDiff
 
+/** @internal */
 export type StringDiffSegment = StringSegmentChanged | StringSegmentUnchanged
+
+/** @internal */
 export type StringSegmentChanged = AgnosticStringSegmentChanged<Annotation>
+
+/** @internal */
 export type StringSegmentUnchanged = AgnosticStringSegmentUnchanged
 
+/** @internal */
 export type ItemDiff = AgnosticItemDiff<Annotation>
 
 /**
  * Diff extensions for presentational concerns
+ *
+ * @internal
  */
 export interface ArrayItemMetadata {
   fromType?: SchemaType
@@ -109,14 +130,18 @@ export interface ArrayItemMetadata {
 
 /**
  * Diff components
+ *
+ * @internal
  */
 export type DiffComponent<T extends Diff = Diff> = ComponentType<DiffProps<T>>
 
+/** @internal */
 export type DiffComponentOptions<T extends Diff = Diff> = {
   component: DiffComponent<T>
   showHeader?: boolean
 }
 
+/** @internal */
 export type DiffProps<T extends Diff = Diff> = {
   diff: T
   schemaType: T extends ObjectDiff
@@ -134,6 +159,8 @@ export type DiffProps<T extends Diff = Diff> = {
 
 /**
  * Resolvers
+ *
+ * @internal
  */
 export type DiffComponentResolver = (options: {
   schemaType: SchemaType
@@ -187,6 +214,8 @@ export type DiffComponentResolver = (options: {
 
 /**
  * "Changes" (presentation-oriented grouping of diffs)
+ *
+ * @internal
  */
 export interface GroupChangeNode {
   type: 'group'
@@ -200,6 +229,7 @@ export interface GroupChangeNode {
   fieldsetName?: string
 }
 
+/** @internal */
 export interface FieldChangeNode {
   type: 'field'
   diff: Diff
@@ -218,8 +248,10 @@ export interface FieldChangeNode {
   hidden?: ConditionalProperty
 }
 
+/** @internal */
 export type ChangeNode = GroupChangeNode | FieldChangeNode
 
+/** @internal */
 export interface FromToIndex {
   hasMoved: boolean
   fromIndex?: number
@@ -227,8 +259,10 @@ export interface FromToIndex {
   annotation?: Annotation
 }
 
+/** @internal */
 export type ChangeTitlePath = (string | FromToIndex)[]
 
+/** @internal */
 export interface _PatchOperations {
   set?: {[key: string]: unknown}
   setIfMissing?: {[key: string]: unknown}
@@ -241,6 +275,7 @@ export interface _PatchOperations {
   ifRevisionID?: string
 }
 
+/** @internal */
 export interface FieldOperationsAPI {
   patch: {
     execute: (patches: _PatchOperations[]) => void
@@ -249,6 +284,8 @@ export interface FieldOperationsAPI {
 
 /**
  * From sanity-diff-patch
+ *
+ * @internal
  */
 export interface SetDiffPatch {
   op: 'set'
@@ -256,15 +293,18 @@ export interface SetDiffPatch {
   value: unknown
 }
 
+/** @internal */
 export interface UnsetDiffPatch {
   op: 'unset'
   path: Path
 }
 
+/** @internal */
 export interface InsertDiffPatch {
   op: 'insert'
   after: Path
   items: unknown[]
 }
 
+/** @internal */
 export type DiffPatch = SetDiffPatch | UnsetDiffPatch | InsertDiffPatch

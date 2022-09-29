@@ -4,6 +4,7 @@ import {IdPair} from '../../types'
 import {DocumentVersionSnapshots} from '../snapshotPair'
 import {HistoryStore} from '../../../history'
 
+/** @internal */
 export interface OperationImpl<
   ExtraArgs extends any[] = [],
   DisabledReason extends string = string
@@ -12,6 +13,7 @@ export interface OperationImpl<
   execute(args: OperationArgs, ...extra: ExtraArgs): void
 }
 
+/** @internal */
 export interface Operation<ExtraArgs extends any[] = [], ErrorStrings extends string = string> {
   disabled: false | ErrorStrings | 'NOT_READY'
   execute(...extra: ExtraArgs): void
@@ -20,6 +22,7 @@ export interface Operation<ExtraArgs extends any[] = [], ErrorStrings extends st
 type GuardedOperation = Operation<any[], 'NOT_READY'>
 type Patch = any
 
+/** @internal */
 // Note: Changing this interface in a backwards incompatible manner will be a breaking change
 export interface OperationsAPI {
   commit: Operation | GuardedOperation
@@ -35,6 +38,7 @@ export interface OperationsAPI {
   restore: Operation<[revision: string]> | GuardedOperation
 }
 
+/** @internal */
 export interface OperationArgs {
   historyStore: HistoryStore
   client: SanityClient

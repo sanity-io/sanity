@@ -36,6 +36,7 @@ import {uploadTarget} from './uploadTarget/uploadTarget'
 import {isEmpty} from './item/helpers'
 import {ArrayItem} from './item/ArrayItem'
 
+/** @internal */
 export function createProtoValue(type: SchemaType): ArrayInputMember {
   if (!isObjectSchemaType(type)) {
     throw new Error(
@@ -56,20 +57,29 @@ export interface ArrayInputState {
 
 const UploadTarget = uploadTarget(withFocusRing(Card))
 
+/** @public */
 export interface ArrayInputProps extends ArrayOfObjectsInputProps<ArrayInputMember> {
   resolveUploader: UploaderResolver
   client: SanityClient
 }
 
+/** @public */
 export class ArrayInput extends React.PureComponent<ArrayInputProps> {
+  /** @internal */
   _focusArea: HTMLElement | null = null
+
+  /** @internal */
   toast: any | null = null
 
+  /** @internal */
   uploadSubscriptions: Record<string, Subscription> = {}
+
+  /** @internal */
   state: ArrayInputState = {
     isResolvingInitialValue: false,
   }
 
+  /** @internal */
   insert = (
     item: ArrayInputMember,
     position: 'before' | 'after',
@@ -79,14 +89,17 @@ export class ArrayInput extends React.PureComponent<ArrayInputProps> {
     onInsert({items: [item], position, referenceItem})
   }
 
+  /** @internal */
   handlePrepend = (value: ArrayInputMember) => {
     this.handleInsert({item: value, position: 'before', referenceItem: 0})
   }
 
+  /** @internal */
   handleAppend = (value: ArrayInputMember) => {
     this.handleInsert({item: value, position: 'after', referenceItem: -1})
   }
 
+  /** @internal */
   handleInsert = (event: InsertEvent) => {
     const {onFocusPath, onOpenItem, resolveInitialValue} = this.props
     this.setState({isResolvingInitialValue: true})
@@ -126,16 +139,19 @@ export class ArrayInput extends React.PureComponent<ArrayInputProps> {
       })
   }
 
+  /** @internal */
   getMemberTypeOfItem(item: ArrayInputMember): SchemaType | undefined {
     const {schemaType} = this.props
     const itemTypeName = resolveTypeName(item)
     return schemaType.of.find((memberType) => memberType.name === itemTypeName)
   }
 
+  /** @internal */
   handleRemoveItem = (item: ArrayInputMember) => {
     this.removeItem(item)
   }
 
+  /** @internal */
   removeItem(item: ArrayInputMember) {
     const {onChange, onFocusPath, value} = this.props
 
@@ -166,6 +182,7 @@ export class ArrayInput extends React.PureComponent<ArrayInputProps> {
     onFocusPath(nearestSibling ? [{_key: nearestSibling._key}] : [])
   }
 
+  /** @internal */
   handleSortEnd = (event: {newIndex: number; oldIndex: number}) => {
     const {value, onMoveItem} = this.props
     const item = value?.[event.oldIndex]
@@ -193,13 +210,17 @@ export class ArrayInput extends React.PureComponent<ArrayInputProps> {
     }
   }
 
+  /** @internal */
   setFocusArea = (el: HTMLElement | null) => {
     this._focusArea = el
   }
 
+  /** @internal */
   setToast = (toast: any | null) => {
     this.toast = toast
   }
+
+  /** @internal */
   handleRemoveNonObjectValues = () => {
     const {onChange, value} = this.props
     const nonObjects = (value || [])
@@ -210,6 +231,7 @@ export class ArrayInput extends React.PureComponent<ArrayInputProps> {
     onChange(patches)
   }
 
+  /** @internal */
   handleUpload = ({file, type, uploader}: {file: File; type: SchemaType; uploader: Uploader}) => {
     const {onChange, client} = this.props
     const item = createProtoValue(type)
@@ -231,6 +253,7 @@ export class ArrayInput extends React.PureComponent<ArrayInputProps> {
     }
   }
 
+  /** @internal */
   renderItem = (itemProps: ItemProps) => {
     if (!isObjectItemProps(itemProps)) {
       throw new Error('Expected item to be of object type')
@@ -281,6 +304,7 @@ export class ArrayInput extends React.PureComponent<ArrayInputProps> {
     )
   }
 
+  /** @internal */
   renderMember(member: ArrayOfObjectsMember) {
     const {renderField, renderInput, renderPreview} = this.props
     if (member.kind === 'item') {

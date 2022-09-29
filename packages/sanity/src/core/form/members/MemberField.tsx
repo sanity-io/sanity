@@ -13,6 +13,7 @@ import {ObjectField} from './fields/ObjectField'
 import {ArrayOfPrimitivesField} from './fields/ArrayOfPrimitivesField'
 import {isMemberArrayOfObjects, isMemberArrayOfPrimitives, isMemberObject} from './fields/asserters'
 
+/** @internal */
 export interface MemberFieldProps {
   member: FieldMember
   renderField: RenderFieldCallback
@@ -21,6 +22,7 @@ export interface MemberFieldProps {
   renderPreview: RenderPreviewCallback
 }
 
+/** @internal */
 export const MemberField = memo(function MemberField(props: MemberFieldProps) {
   const {member, renderField, renderInput, renderItem, renderPreview} = props
 

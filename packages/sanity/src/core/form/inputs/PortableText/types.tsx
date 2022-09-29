@@ -2,7 +2,7 @@ import type {PortableTextBlock} from '@sanity/portable-text-editor'
 import type {Path} from '@sanity/types'
 
 /**
- * @alpha
+ * @internal
  */
 export type ObjectEditData = {
   editorPath: Path // The object representation in the editor (i.e. an text for an annotation)
@@ -12,7 +12,7 @@ export type ObjectEditData = {
 }
 
 /**
- * @alpha
+ * @beta
  */
 export interface RenderBlockActionsProps {
   block: PortableTextBlock
@@ -23,6 +23,6 @@ export interface RenderBlockActionsProps {
 }
 
 /**
- * @alpha
+ * @beta
  */
 export type RenderBlockActionsCallback = (props: RenderBlockActionsProps) => React.ReactNode

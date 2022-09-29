@@ -10,7 +10,7 @@ import {WorkspaceSummary} from '../../../config'
  * NOTE: This interface is primarily for internal use. Refer to
  * `createAuthStore` instead.
  *
- * @alpha
+ * @internal
  */
 export interface AuthStore {
   /**
@@ -49,6 +49,8 @@ export interface AuthStore {
 
 /**
  * The unit an `AuthStore` emits to determine the user's authentication state.
+ *
+ * @internal
  */
 export interface AuthState {
   /**
@@ -70,4 +72,5 @@ export interface AuthState {
   client: SanityClient
 }
 
+/** @internal */
 export type LoginComponentProps = Omit<WorkspaceSummary, 'type' | '__internal'>

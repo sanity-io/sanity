@@ -2,7 +2,7 @@ import {useSource} from '../studio'
 import {Template} from '../templates'
 
 /**
- * @public
+ * @beta
  */
 export function useTemplates(): Template[] {
   return useSource().templates

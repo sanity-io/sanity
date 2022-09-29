@@ -85,19 +85,23 @@ function isPromise<T>(thing: unknown): thing is PromiseLike<T> {
   return isRecord(thing) && typeof thing.then === 'function'
 }
 
+/** @beta */
 export interface List extends GenericList {
   type: 'list'
   items: (ListItem | Divider)[]
 }
 
+/** @beta */
 export interface ListInput extends GenericListInput {
   items?: (ListItem | ListItemBuilder | Divider)[]
 }
 
+/** @beta */
 export interface BuildableList extends BuildableGenericList {
   items?: (ListItem | ListItemBuilder | Divider)[]
 }
 
+/** @beta */
 export class ListBuilder extends GenericListBuilder<BuildableList, ListBuilder> {
   protected spec: BuildableList
 

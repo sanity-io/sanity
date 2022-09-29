@@ -11,6 +11,7 @@ import {
   StringDiffSegment,
 } from '../../types'
 
+/** @internal */
 export function getAnnotationColor(
   colorManager: UserColorManager,
   annotation?: Annotation | null
@@ -18,12 +19,14 @@ export function getAnnotationColor(
   return colorManager.get(annotation?.author || null)
 }
 
+/** @internal */
 export function getAnnotationAtPath(diff: Diff, diffPath: string | Path): Annotation | undefined {
   const path: Path = Array.isArray(diffPath) ? diffPath : stringToPath(diffPath)
 
   return getAnnotationAt(diff, path)
 }
 
+/** @internal */
 export function getDiffAtPath(diff: Diff, diffPath: string | Path): Diff | undefined {
   const path: Path = Array.isArray(diffPath) ? diffPath : stringToPath(diffPath)
   return getDiffAt(diff, path)
@@ -103,6 +106,7 @@ function itemMatchesKey(item: ItemDiff, key: KeyedSegment) {
   return itemDiff.type !== 'object' || !itemDiff.toValue ? false : itemDiff.toValue._key === key
 }
 
+/** @internal */
 export type DiffVisitor = (diff: Diff | StringDiffSegment, path: Path) => boolean
 
 /**
@@ -110,6 +114,8 @@ export type DiffVisitor = (diff: Diff | StringDiffSegment, path: Path) => boolea
  *
  * @param diff - Diff to visit
  * @param visitor - Visitor function, return false to stop from going deeper
+ *
+ * @internal
  */
 export function visitDiff(
   diff: Diff | StringDiffSegment,

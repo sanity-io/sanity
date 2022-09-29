@@ -1,9 +1,11 @@
 import {MutationPayload} from './buffered-doc/types'
 
+/** @internal */
 export interface WelcomeEvent {
   type: 'welcome'
 }
 
+/** @internal */
 export interface MutationEvent {
   type: 'mutation'
   documentId: string
@@ -17,15 +19,18 @@ export interface MutationEvent {
   transition: 'update' | 'appear' | 'disappear'
 }
 
+/** @beta */
 export interface ReconnectEvent {
   type: 'reconnect'
 }
 
+/** @internal */
 export interface PendingMutationsEvent {
   type: 'pending'
   phase: 'begin' | 'end'
 }
 
+/** @internal */
 export interface IdPair {
   draftId: string
   publishedId: string

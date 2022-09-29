@@ -9,11 +9,13 @@ import {useDocumentPreviewStore} from '../../../store'
 import {useClient} from '../../../hooks'
 import {observeFileAsset} from './client-adapters/assets'
 
+/** @beta */
 export type FileInputProps = Omit<
   BaseFileInputProps,
   'assetSources' | 'directUploads' | 'observeAsset' | 'resolveUploader' | 'client'
 >
 
+/** @beta */
 export function StudioFileInput(props: FileInputProps) {
   const sourcesFromSchema = props.schemaType.options?.sources
   const documentPreviewStore = useDocumentPreviewStore()

@@ -1,7 +1,7 @@
 import {useSource} from '../studio'
 
 /**
- * @public
+ * @beta
  */
 export function useDataset(): string {
   return useSource().dataset

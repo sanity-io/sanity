@@ -1,11 +1,13 @@
 import {isRecord} from '../util'
 
+/** @internal */
 export interface ConfigPropertyErrorOptions {
   propertyName: string
   path: string[]
   cause: unknown
 }
 
+/** @internal */
 export class ConfigPropertyError extends Error {
   propertyName: string
   path: string[]

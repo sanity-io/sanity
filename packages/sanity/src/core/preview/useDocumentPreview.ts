@@ -6,6 +6,7 @@ import {Previewable} from './types'
 export {useDocumentPreview as unstable_useDocumentPreview}
 
 /**
+ * @internal
  * @deprecated FOR INTERNAL USE.
  */
 function useDocumentPreview(props: {

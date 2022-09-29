@@ -148,6 +148,7 @@ function getPairPermissions({
   }
 }
 
+/** @internal */
 export type DocumentPermission =
   | 'delete'
   | 'discardDraft'
@@ -156,6 +157,7 @@ export type DocumentPermission =
   | 'update'
   | 'duplicate'
 
+/** @internal */
 export interface DocumentPairPermissionsOptions {
   client: SanityClient
   schema: Schema
@@ -169,6 +171,8 @@ export interface DocumentPairPermissionsOptions {
  * The observable version of `useDocumentPairPermissions`
  *
  * @see useDocumentPairPermissions
+ *
+ * @internal
  */
 export function getDocumentPairPermissions({
   client,
@@ -257,11 +261,14 @@ export function getDocumentPairPermissions({
  * return as true.
  *
  * @see useDocumentValuePermissions
+ *
+ * @internal
  */
 export const useDocumentPairPermissionsFromHookFactory = createHookFromObservableFactory(
   getDocumentPairPermissions
 )
 
+/** @internal */
 export function useDocumentPairPermissions({
   id,
   type,

@@ -65,6 +65,7 @@ const execute = (
 
 const operationCalls$ = new Subject<ExecuteArgs>()
 
+/** @internal */
 export function emitOperation(
   operationName: keyof OperationsAPI,
   idPair: IdPair,
@@ -77,15 +78,19 @@ export function emitOperation(
 // These are the operations that cannot be performed while the document is in an inconsistent state
 const REQUIRES_CONSISTENCY = ['publish', 'unpublish', 'discardChanges', 'delete']
 
+/** @beta */
 export interface OperationError {
   type: 'error'
+  /** @internal */
   op: keyof OperationsAPI
   id: string
   error: Error
 }
 
+/** @beta */
 export interface OperationSuccess {
   type: 'success'
+  /** @internal */
   op: keyof OperationsAPI
   id: string
 }
@@ -101,6 +106,7 @@ interface IntermediaryError {
   error: any
 }
 
+/** @internal */
 export type OperationEventsListener = (
   idPair: IdPair,
   typeName?: string
@@ -108,6 +114,7 @@ export type OperationEventsListener = (
 
 const listenerCache = new Map<string, OperationEventsListener>()
 
+/** @internal */
 export function getOperationEvents(ctx: {
   client: SanityClient
   historyStore: HistoryStore

@@ -1,7 +1,7 @@
 import {useSource} from '../studio'
 
 /**
- * @public
+ * @beta
  */
 export function useProjectId(): string {
   return useSource().projectId

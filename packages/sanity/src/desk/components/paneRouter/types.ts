@@ -2,6 +2,7 @@ import type React from 'react'
 import {Path} from '@sanity/types'
 import {RouterPanes, RouterPaneSibling} from '../../types'
 
+/** @beta */
 export interface ChildLinkProps {
   childId: string
   childParameters?: Record<string, string>
@@ -9,10 +10,12 @@ export interface ChildLinkProps {
   children?: React.ReactNode
 }
 
+/** @beta */
 export interface BackLinkProps {
   children?: React.ReactNode
 }
 
+/** @beta */
 export interface ReferenceChildLinkProps {
   documentId: string
   documentType: string
@@ -21,11 +24,13 @@ export interface ReferenceChildLinkProps {
   children: React.ReactNode
 }
 
+/** @beta */
 export interface ParameterizedLinkProps {
   params?: Record<string, string>
   payload?: unknown
 }
 
+/** @beta */
 export interface EditReferenceOptions {
   parentRefPath: Path
   id: string
@@ -33,6 +38,7 @@ export interface EditReferenceOptions {
   template: {id: string; params?: Record<string, string | number | boolean>}
 }
 
+/** @beta */
 export interface PaneRouterContextValue {
   /**
    * Zero-based index (position) of pane, visually

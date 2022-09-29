@@ -21,11 +21,13 @@ const TWENTY_SECONDS = 1000 * 20
 const ONE_MINUTE = 1000 * 60
 const ONE_HOUR = ONE_MINUTE * 60
 
+/** @internal */
 export interface TimeAgoOpts {
   minimal?: boolean
   agoSuffix?: boolean
 }
 
+/** @internal */
 export function useTimeAgo(time: Date | string, {minimal, agoSuffix}: TimeAgoOpts = {}): string {
   const resolved = formatRelativeTime(time, {minimal, agoSuffix})
 

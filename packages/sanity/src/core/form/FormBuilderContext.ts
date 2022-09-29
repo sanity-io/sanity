@@ -14,11 +14,12 @@ import {
 import {FormFieldGroup, ObjectMember, StateTree} from './store'
 
 /**
- * @alpha
+ * @beta
  */
 export interface FormBuilderContextValue {
   /**
    * @deprecated INTERNAL USE ONLY
+   * @internal
    */
   __internal: {
     components: {

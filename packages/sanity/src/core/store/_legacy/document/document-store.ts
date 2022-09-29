@@ -20,6 +20,7 @@ import {resolveTypeForDocument} from './resolveTypeForDocument'
 import type {IdPair} from './types'
 import {getInitialValueStream, InitialValueMsg, InitialValueOptions} from './initialValue'
 
+/** @beta */
 export type QueryParams = Record<string, string | number | boolean | string[]>
 
 function getIdPairFromPublished(publishedId: string): IdPair {
@@ -30,7 +31,9 @@ function getIdPairFromPublished(publishedId: string): IdPair {
   return {publishedId, draftId: getDraftId(publishedId)}
 }
 
+/** @beta */
 export interface DocumentStore {
+  /** @internal */
   checkoutPair: (idPair: IdPair) => Pair
   initialValue: (
     opts: InitialValueOptions,
@@ -45,7 +48,9 @@ export interface DocumentStore {
 
   pair: {
     consistencyStatus: (publishedId: string, type: string) => Observable<boolean>
+    /** @internal */
     documentEvents: (publishedId: string, type: string) => Observable<DocumentVersionEvent>
+    /** @internal */
     editOperations: (publishedId: string, type: string) => Observable<OperationsAPI>
     editState: (publishedId: string, type: string) => Observable<EditStateFor>
     operationEvents: (
@@ -56,6 +61,7 @@ export interface DocumentStore {
   }
 }
 
+/** @internal */
 export interface DocumentStoreOptions {
   getClient: (options: SourceClientOptions) => SanityClient
   documentPreviewStore: DocumentPreviewStore
@@ -64,6 +70,7 @@ export interface DocumentStoreOptions {
   initialValueTemplates: Template[]
 }
 
+/** @internal */
 export function createDocumentStore({
   getClient,
   documentPreviewStore,

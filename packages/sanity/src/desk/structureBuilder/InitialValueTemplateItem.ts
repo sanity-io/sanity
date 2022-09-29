@@ -7,6 +7,7 @@ import {IntentParams} from './Intent'
 import {StructureContext} from './types'
 import {InitialValueTemplateItem} from 'sanity'
 
+/** @beta */
 export class InitialValueTemplateItemBuilder implements Serializable<InitialValueTemplateItem> {
   protected spec: Partial<InitialValueTemplateItem>
 
@@ -113,6 +114,7 @@ export class InitialValueTemplateItemBuilder implements Serializable<InitialValu
   }
 }
 
+/** @internal */
 export function defaultInitialValueTemplateItems(
   context: StructureContext
 ): InitialValueTemplateItemBuilder[] {
@@ -130,6 +132,7 @@ export function defaultInitialValueTemplateItems(
   return ordered.map((tpl) => getStructureBuilder().initialValueTemplateItem(tpl.id))
 }
 
+/** @internal */
 export function maybeSerializeInitialValueTemplateItem(
   item: InitialValueTemplateItem | InitialValueTemplateItemBuilder,
   index: number,
@@ -138,6 +141,7 @@ export function maybeSerializeInitialValueTemplateItem(
   return item instanceof InitialValueTemplateItemBuilder ? item.serialize({path, index}) : item
 }
 
+/** @internal */
 export function menuItemsFromInitialValueTemplateItems(
   context: StructureContext,
   templateItems: InitialValueTemplateItem[]

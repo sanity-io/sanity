@@ -3,6 +3,7 @@ import React, {useCallback, useMemo, useState} from 'react'
 import {DocumentActionComponent, DocumentActionModalProps, useDocumentOperation} from 'sanity'
 import {useRouter} from 'sanity/router'
 
+/** @internal */
 export const HistoryRestoreAction: DocumentActionComponent = ({id, type, revision, onComplete}) => {
   const {restore}: any = useDocumentOperation(id, type)
   const router = useRouter()

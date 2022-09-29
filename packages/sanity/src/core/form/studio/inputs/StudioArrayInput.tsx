@@ -11,6 +11,7 @@ import {FileLike} from '../uploads/types'
 import {useClient} from '../../../hooks'
 import {useResolveInitialValueForType} from '../../../store'
 
+/** @internal */
 export function StudioArrayInput(props: ArrayOfObjectsInputProps) {
   const formBuilder = useFormBuilder()
   // todo abstract the client away

@@ -1,7 +1,9 @@
 import {Path, User} from '@sanity/types'
 
+/** @internal */
 export type Status = 'online' | 'editing' | 'inactive'
 
+/** @internal */
 // Low level data/transport format
 export interface Session {
   sessionId: string
@@ -10,6 +12,7 @@ export interface Session {
   locations: PresenceLocation[]
 }
 
+/** @internal */
 // (this is what each client typically exchanges over bifur)
 export interface PresenceLocation {
   type: 'document'
@@ -18,11 +21,13 @@ export interface PresenceLocation {
   path: Path
 }
 
+/** @internal */
 export interface UserSessionPair {
   user: User
   session: Session
 }
 
+/** @internal */
 // These are the data prepared and made ready for different types of UI components to use
 // Presence data prepared for a single document
 export interface DocumentPresence {
@@ -32,6 +37,7 @@ export interface DocumentPresence {
   lastActiveAt: string // iso date
 }
 
+/** @internal */
 export type GlobalPresence = {
   user: User
   status: Status
