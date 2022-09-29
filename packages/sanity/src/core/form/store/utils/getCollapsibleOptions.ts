@@ -2,9 +2,9 @@ import {ObjectSchemaTypeWithOptions} from '@sanity/types'
 import {AUTO_COLLAPSE_DEPTH} from '../constants'
 
 interface CollapsibleOptions {
-  collapsible: boolean
+  collapsible: boolean | undefined
   // Initial collapsed state
-  collapsed: boolean
+  collapsed: boolean | undefined
 }
 
 /**
@@ -29,9 +29,17 @@ export function getCollapsedWithDefaults(
   }
 
   const collapsed =
-    typeof options?.collapsed === 'boolean' ? options.collapsed : level >= AUTO_COLLAPSE_DEPTH
+    // eslint-disable-next-line no-nested-ternary
+    typeof options?.collapsed === 'boolean'
+      ? options.collapsed
+      : level >= AUTO_COLLAPSE_DEPTH
+      ? true
+      : undefined
 
-  const collapsible = collapsed || options?.collapsible === true || options?.collapsable === true
+  const collapsible =
+    options?.collapsible === true || options?.collapsable === true || collapsed === true
+      ? true
+      : undefined
 
   return {
     collapsible,
