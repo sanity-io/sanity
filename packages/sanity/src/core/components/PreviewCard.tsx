@@ -37,7 +37,7 @@ export function usePreviewCard(): PreviewCardContextValue {
 }
 
 export const PreviewCard = forwardRef(function PreviewCard(
-  props: CardProps & Omit<React.HTMLProps<HTMLDivElement>, 'as' | 'height'>,
+  props: CardProps & Omit<React.HTMLProps<HTMLDivElement>, 'height'>,
   ref: React.ForwardedRef<HTMLDivElement>
 ) {
   const {children, selected, as, ...restProps} = props
