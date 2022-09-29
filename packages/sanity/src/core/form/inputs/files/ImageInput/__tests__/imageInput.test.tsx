@@ -113,7 +113,7 @@ const defs = {
 //   projectId: 'some-project-id',
 // })
 
-// const defaultProps: Partial<ImageInputProps> = {
+// const defaultProps: Partial<BaseImageInputProps> = {
 //   resolveUploader: resolveUploaderStub,
 //   observeAsset: observeAssetStub,
 //   directUploads: true,
@@ -122,10 +122,10 @@ const defs = {
 //   path: ['image'],
 // }
 
-// function renderImageInput(options: {props?: Partial<ImageInputProps>; type: any}) {
+// function renderImageInput(options: {props?: Partial<BaseImageInputProps>; type: any}) {
 //   return renderInput<any>({
 //     ...options,
-//     render: (props) => <ImageInput {...defaultProps} {...props} />,
+//     render: (props) => <BaseImageInput {...defaultProps} {...props} />,
 //   })
 // }
 
@@ -147,7 +147,7 @@ describe('ImageInput with empty state', () => {
   // /* assetSources - adds a list of sources that a user can pick from when browsing */
 
   // it('renders the browse button when it has at least one element in assetSources', () => {
-  //   // const {queryByTestId} = render(<ImageInput />)
+  //   // const {queryByTestId} = render(<BaseImageInput />)
   //   const {result} = renderImageInput({type: imagesTest})
 
   //   expect(result.queryByTestId('file-input-upload-button')).toBeInTheDocument()
@@ -155,7 +155,7 @@ describe('ImageInput with empty state', () => {
   // })
 
   // it('renders only the upload button when it has no assetSources', () => {
-  //   // const {queryByTestId} = render(<ImageInput assetSources={[]} />)
+  //   // const {queryByTestId} = render(<BaseImageInput assetSources={[]} />)
   //   const {result} = renderImageInput({
   //     props: {
   //       assetSources: [],
@@ -190,7 +190,7 @@ describe('ImageInput with empty state', () => {
   // /* directUploads - allows for user to upload images directly (default is true) */
 
   // it('renders the upload button as disabled when directUploads is false', () => {
-  //   // const {queryByTestId} = render(<ImageInput directUploads={false} />)
+  //   // const {queryByTestId} = render(<BaseImageInput directUploads={false} />)
   //   const {result} = renderImageInput({
   //     props: {
   //       directUploads: false,
@@ -204,7 +204,7 @@ describe('ImageInput with empty state', () => {
   // })
 
   // it('has default text that mentions that you cannot upload images when directUploads is false', async () => {
-  //   // const {queryByText} = render(<ImageInput directUploads={false} />)
+  //   // const {queryByText} = render(<BaseImageInput directUploads={false} />)
   //   const {result} = renderImageInput({
   //     props: {
   //       directUploads: false,
@@ -218,7 +218,7 @@ describe('ImageInput with empty state', () => {
   // /* readOnly - the image input is read only or not */
 
   // it('the upload button is disabled when the input is readOnly', () => {
-  //   // const {queryByTestId} = render(<ImageInput readOnly />)
+  //   // const {queryByTestId} = render(<BaseImageInput readOnly />)
   //   const {result} = renderImageInput({
   //     props: {
   //       readOnly: true,
@@ -232,7 +232,7 @@ describe('ImageInput with empty state', () => {
   // })
 
   // it('does not allow for browsing when input is readOnly', () => {
-  //   // const {queryByTestId} = render(<ImageInput readOnly />)
+  //   // const {queryByTestId} = render(<BaseImageInput readOnly />)
   //   const {result} = renderImageInput({
   //     props: {
   //       readOnly: true,
@@ -246,7 +246,7 @@ describe('ImageInput with empty state', () => {
   // })
 
   // it('does not allow for upload when input is readOnly', async () => {
-  //   // const {queryByTestId, queryByText} = render(<ImageInput readOnly />)
+  //   // const {queryByTestId, queryByText} = render(<BaseImageInput readOnly />)
   //   const {result} = renderImageInput({
   //     props: {
   //       readOnly: true,
@@ -287,7 +287,7 @@ describe('ImageInput with empty state', () => {
 //   }
 
 //   it('renders the right url as default when it has asset', () => {
-//     // const {queryByTestId} = render(<ImageInput value={value} />)
+//     // const {queryByTestId} = render(<BaseImageInput value={value} />)
 //     const {result} = renderImageInput({
 //       props: {value},
 //       type: imagesTest,
@@ -305,7 +305,7 @@ describe('ImageInput with empty state', () => {
 //   /* assetSources - adds a list of sources that a user can pick from when browsing */
 
 //   it('renders the browse button in the image menu when it has at least one element in assetSources', async () => {
-//     // const {queryByTestId} = render(<ImageInput value={value} />)
+//     // const {queryByTestId} = render(<BaseImageInput value={value} />)
 //     const {result} = renderImageInput({
 //       props: {value},
 //       type: imagesTest,
@@ -318,7 +318,7 @@ describe('ImageInput with empty state', () => {
 //   })
 
 //   it('renders the browse button in the image menu when it has no assetSources', async () => {
-//     // const {queryByTestId} = render(<ImageInput value={value} assetSources={[]} />)
+//     // const {queryByTestId} = render(<BaseImageInput value={value} assetSources={[]} />)
 //     const {result} = renderImageInput({
 //       props: {assetSources: [], value},
 //       type: imagesTest,
@@ -334,7 +334,7 @@ describe('ImageInput with empty state', () => {
 
 //   it('renders the multiple browse buttons in the image menu when it has multiple assetSources', async () => {
 //     // const {queryByTestId} = render(
-//     //   <ImageInput value={value} assetSources={[{name: 'source1'}, {name: 'source2'}]} />
+//     //   <BaseImageInput value={value} assetSources={[{name: 'source1'}, {name: 'source2'}]} />
 //     // )
 //     const {result} = renderImageInput({
 //       props: {
@@ -355,7 +355,7 @@ describe('ImageInput with empty state', () => {
 //   /* directUploads - allows for user to upload images directly (default is true) */
 
 //   it('renders the upload button as disabled when directUploads is false', async () => {
-//     // const {queryByTestId} = render(<ImageInput value={value} directUploads={false} />)
+//     // const {queryByTestId} = render(<BaseImageInput value={value} directUploads={false} />)
 //     const {result} = renderImageInput({
 //       props: {
 //         directUploads: false,
@@ -376,7 +376,7 @@ describe('ImageInput with empty state', () => {
 //   /* readOnly - the image input is read only or not */
 
 //   it('the upload button in the dropdown menu is disabled when the input is readOnly', async () => {
-//     // const {queryByTestId} = render(<ImageInput value={value} readOnly />)
+//     // const {queryByTestId} = render(<BaseImageInput value={value} readOnly />)
 //     const {result} = renderImageInput({
 //       props: {
 //         readOnly: true,
@@ -395,7 +395,7 @@ describe('ImageInput with empty state', () => {
 //   })
 
 //   it('does not allow for browsing when input is readOnly', async () => {
-//     // const {queryByTestId} = render(<ImageInput value={value} readOnly />)
+//     // const {queryByTestId} = render(<BaseImageInput value={value} readOnly />)
 //     const {result} = renderImageInput({
 //       props: {
 //         readOnly: true,
@@ -413,7 +413,7 @@ describe('ImageInput with empty state', () => {
 
 //   it('does not allow for browsing with multiple sources when input is readOnly', async () => {
 //     // const {queryByTestId} = render(
-//     //   <ImageInput value={value} assetSources={[{name: 'source1'}, {name: 'source2'}]} readOnly />
+//     //   <BaseImageInput value={value} assetSources={[{name: 'source1'}, {name: 'source2'}]} readOnly />
 //     // )
 
 //     const {result} = renderImageInput({
@@ -438,7 +438,7 @@ describe('ImageInput with empty state', () => {
 //   })
 
 //   it('does not allow for clearing the image when input is readOnly', async () => {
-//     // const {queryByTestId} = render(<ImageInput value={value} readOnly />)
+//     // const {queryByTestId} = render(<BaseImageInput value={value} readOnly />)
 //     const {result} = renderImageInput({
 //       props: {
 //         readOnly: true,
@@ -455,7 +455,7 @@ describe('ImageInput with empty state', () => {
 //   })
 
 //   it('can open the edit details (if the option exists) dialog when the input is readOnly', async () => {
-//     // const {queryByTestId} = render(<ImageInput value={value} type={imageType} readOnly />)
+//     // const {queryByTestId} = render(<BaseImageInput value={value} type={imageType} readOnly />)
 //     const {result} = renderImageInput({
 //       props: {
 //         readOnly: true,
@@ -470,7 +470,7 @@ describe('ImageInput with empty state', () => {
 //   })
 
 //   it('does not allow for upload when input is readOnly & the image src is the same', async () => {
-//     // const {queryByTestId} = render(<ImageInput value={value} type={imageType} readOnly />)
+//     // const {queryByTestId} = render(<BaseImageInput value={value} type={imageType} readOnly />)
 //     const {result} = renderImageInput({
 //       props: {
 //         readOnly: true,
@@ -506,7 +506,7 @@ describe('ImageInput with empty state', () => {
 //       type: {...imagesTest, ...imageType},
 //     })
 
-//     // const {queryByTestId} = render(<ImageInput value={value} type={imageType} />)
+//     // const {queryByTestId} = render(<BaseImageInput value={value} type={imageType} />)
 //     expect(result.queryByTestId('options-menu-edit-details')).toBeInTheDocument()
 //   })
 // })
