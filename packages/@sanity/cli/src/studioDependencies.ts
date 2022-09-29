@@ -8,9 +8,9 @@ export const studioDependencies = {
     sanity: V3_TAG,
 
     // Non-Sanity dependencies
-    react: '^17.0.0',
-    'react-dom': '^17.0.0',
-    'react-is': '^17.0.0', // Peer dependency of styled-components
+    react: '^18.2.0',
+    'react-dom': '^18.2.0',
+    'react-is': '^18.2.0', // Peer dependency of styled-components
     'styled-components': '^5.2.0',
   },
 

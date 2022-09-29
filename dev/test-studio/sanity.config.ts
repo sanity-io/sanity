@@ -2,6 +2,7 @@ import {BookIcon} from '@sanity/icons'
 import {visionTool} from '@sanity/vision'
 import {createConfig, createPlugin} from 'sanity'
 import {deskTool} from 'sanity/desk'
+// import {muxInput} from 'sanity-plugin-mux-input'
 import {imageAssetSource} from './assetSources'
 import {Branding} from './components/Branding'
 import {resolveDocumentActions as documentActions} from './documentActions'
@@ -64,6 +65,8 @@ const sharedSettings = createPlugin({
     visionTool({
       defaultApiVersion: '2022-08-08',
     }),
+    // eslint-disable-next-line camelcase
+    // muxInput({mp4_support: 'standard'}),
   ],
 })
 
