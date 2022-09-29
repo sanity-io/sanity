@@ -109,7 +109,7 @@ export function PaneItem(props: PaneItemProps) {
     () => (
       <PreviewCard
         __unstable_focusRing
-        as={LinkComponent}
+        as={LinkComponent as any}
         data-as="a"
         data-ui="PaneItem"
         padding={2}

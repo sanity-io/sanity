@@ -39,7 +39,7 @@ export function ReferencePreviewLink(props: ReferencePreviewLinkProps) {
   return (
     <PreviewCard
       __unstable_focusRing
-      as={Link}
+      as={Link as any}
       data-as="a"
       onClick={onClick}
       padding={2}

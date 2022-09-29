@@ -40,7 +40,7 @@ export function SearchItem(props: SearchItemProps) {
   if (!schemaType) return null
 
   return (
-    <PreviewCard data-as="a" as={LinkComponent} onClick={onClick} {...restProps} radius={2}>
+    <PreviewCard data-as="a" as={LinkComponent as any} onClick={onClick} {...restProps} radius={2}>
       <SanityPreview
         layout="default"
         schemaType={schemaType}
