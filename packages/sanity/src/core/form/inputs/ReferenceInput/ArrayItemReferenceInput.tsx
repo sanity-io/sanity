@@ -45,15 +45,15 @@ import styled from 'styled-components'
 import {FormField, FormFieldValidationStatus} from '../../components/formField'
 import {set, setIfMissing, unset} from '../../patch'
 import {AlertStrip} from '../../components/AlertStrip'
-import {RowWrapper} from '../arrays/ArrayOfObjectsInput/item/components/RowWrapper'
 import {DragHandle} from '../arrays/common/DragHandle'
-import {InsertEvent} from '../arrays/ArrayOfObjectsInput'
 import {InsertMenu} from '../arrays/ArrayOfObjectsInput/InsertMenu'
 import {useOnClickOutside} from '../../hooks/useOnClickOutside'
 import {PreviewCard} from '../../../components/PreviewCard'
 import {EMPTY_ARRAY, getPublishedId, isNonNullable} from '../../../util'
 import {FIXME} from '../../../FIXME'
 import {FieldPresence} from '../../../presence'
+import {ArrayInputInsertEvent} from '../../types'
+import {ItemCard} from '../arrays/ArrayOfObjectsInput/item/ItemCard'
 import {ReferenceInputProps, CreateReferenceOption, ReferenceSearchState} from './types'
 import {OptionPreview} from './OptionPreview'
 import {useReferenceInfo} from './useReferenceInfo'
@@ -77,7 +77,7 @@ const INITIAL_SEARCH_STATE: ReferenceSearchState = {
 export interface Props extends ReferenceInputProps<OptionalRef> {
   isSortable: boolean
   insertableTypes?: SchemaType[]
-  onInsert?: (event: InsertEvent) => void
+  onInsert?: (event: ArrayInputInsertEvent<{_ref?: string}>) => void
 }
 
 const NO_FILTER = () => true
@@ -419,7 +419,7 @@ export function ArrayItemReferenceInput(props: Props) {
   const autocompletePopoverReferenceElementRef = useRef<HTMLDivElement | null>(null)
 
   return (
-    <RowWrapper
+    <ItemCard
       radius={2}
       padding={1}
       tone={
@@ -692,6 +692,6 @@ export function ArrayItemReferenceInput(props: Props) {
           </Stack>
         </AlertStrip>
       )}
-    </RowWrapper>
+    </ItemCard>
   )
 }

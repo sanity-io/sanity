@@ -6,6 +6,5 @@ export type {RenderBlockActionsCallback, RenderBlockActionsProps} from './Portab
 export * from './files/types'
 export * from './ObjectInput'
 export * from './arrays/ArrayOfObjectsInput'
-export type {ArrayInputState, ArrayInputProps} from './arrays/ArrayOfObjectsInput/ArrayInput'
 export * from './PortableText/PortableTextInput'
 export {PortableTextInput as BlockEditor} from './PortableText/PortableTextInput'

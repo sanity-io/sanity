@@ -1,14 +1,23 @@
-import {KeyedSegment} from '@sanity/types'
+import {KeyedSegment, SchemaType} from '@sanity/types'
+import {Uploader} from '../studio'
 
 /** @beta */
-export interface InsertItemEvent {
-  items: unknown[]
+export interface ArrayInputInsertEvent<Item> {
+  items: Item[]
   position: 'before' | 'after'
   referenceItem: KeyedSegment | number
+  skipInitialValue?: boolean
 }
 
 /** @beta */
-export interface MoveItemEvent {
+export interface ArrayInputMoveItemEvent {
   fromIndex: number
   toIndex: number
+}
+
+/** @beta */
+export interface UploadEvent {
+  file: File
+  schemaType: SchemaType
+  uploader: Uploader
 }

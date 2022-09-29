@@ -9,7 +9,7 @@ const PopoverCard = styled(Card)`
 `
 
 interface Props {
-  value: any
+  value: unknown
   onFocus?: (event: React.FocusEvent) => void
   vertical?: boolean
 }
@@ -76,18 +76,23 @@ export function ItemWithMissingType(props: Props) {
         type="button"
         radius={2}
         tone="inherit"
-        padding={2}
+        paddingX={2}
+        paddingY={3}
         onFocus={onFocus}
         onClick={handleShowDetails}
         onKeyDown={handleKeyDown}
+        marginLeft={1}
+        paddingRight={2}
+        __unstable_focusRing
         {...rest}
       >
         {vertical && (
           <Stack space={4}>
-            <Text align="center">
-              <UnknownIcon />
-            </Text>
-
+            <Box margin={3}>
+              <Text align="center" size={2}>
+                <UnknownIcon />
+              </Text>
+            </Box>
             <Text size={1} align="center">
               Item type <code>{typeName}</code> not defined for this list
             </Text>

@@ -1,21 +1,76 @@
 import React, {useCallback, useMemo, useRef} from 'react'
-import {Path} from '@sanity/types'
+import {ArraySchemaType, Path, SchemaType} from '@sanity/types'
+import {catchError, map, mergeMap, tap} from 'rxjs/operators'
+import {concat, defer, EMPTY, from, Observable, of, Subscription} from 'rxjs'
+import {resolveTypeName} from '@sanity/util/content'
+import {useToast} from '@sanity/ui'
 import {ArrayOfObjectsFormNode, FieldMember} from '../../store'
 import {
   ArrayFieldProps,
+  ArrayInputInsertEvent,
+  ArrayInputMoveItemEvent,
   ArrayOfObjectsInputProps,
-  InsertItemEvent,
-  MoveItemEvent,
+  ObjectItem,
   RenderArrayOfObjectsItemCallback,
   RenderFieldCallback,
   RenderInputCallback,
   RenderPreviewCallback,
+  UploadEvent,
 } from '../../types'
 import {FormCallbacksProvider, useFormCallbacks} from '../../studio/contexts/FormCallbacks'
 import {useDidUpdate} from '../../hooks/useDidUpdate'
-import {insert, PatchArg, PatchEvent, setIfMissing, unset} from '../../patch'
+import {FormPatch, insert, PatchArg, PatchEvent, set, setIfMissing, unset} from '../../patch'
 import {ensureKey} from '../../utils/ensureKey'
+import {FileLike, UploadProgressEvent} from '../../studio/uploads/types'
+import {createProtoArrayValue} from '../../inputs/arrays/ArrayOfObjectsInput/createProtoArrayValue'
+import {useClient} from '../../../hooks'
+import {resolveUploader as defaultResolveUploader} from '../../studio/uploads/resolveUploader'
+import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../studioClient'
+import {useFormBuilder} from '../../useFormBuilder'
+import * as is from '../../utils/is'
 import {useResolveInitialValueForType} from '../../../store'
+import {isEmptyItem} from '../../store/utils/isEmptyItem'
+
+const getMemberTypeOfItem = (schemaType: ArraySchemaType, item: any): SchemaType | undefined => {
+  const itemTypeName = resolveTypeName(item)
+  return schemaType.of.find((memberType) => memberType.name === itemTypeName)
+}
+
+function resolveInitialValues<T extends ObjectItem>(
+  items: T[],
+  schemaType: ArraySchemaType,
+  resolver: (type: SchemaType, params: Record<string, unknown>) => Promise<T>
+): Observable<
+  | {type: 'patch'; patches: FormPatch[]}
+  | {type: 'error'; error: Error; item: T; schemaType: SchemaType}
+> {
+  return from(items).pipe(
+    mergeMap((item) => {
+      const itemKey = {_key: item._key}
+      return of(getMemberTypeOfItem(schemaType, item)).pipe(
+        mergeMap((memberType) => (memberType ? of(memberType) : EMPTY)),
+        mergeMap((memberType) => {
+          if (!isEmptyItem(item) || !resolver) {
+            return EMPTY
+          }
+          return concat(
+            of({type: 'patch' as const, patches: [set(true, [itemKey, '_resolvingInitialValue'])]}),
+            defer(() => resolver(memberType, item)).pipe(
+              map((initial) => ({
+                type: 'patch' as const,
+                patches: [set({...item, ...initial}, [itemKey])],
+              })),
+              catchError((error) =>
+                of({type: 'error' as const, error, item, schemaType: memberType})
+              )
+            ),
+            of({type: 'patch' as const, patches: [unset([itemKey, '_resolvingInitialValue'])]})
+          )
+        })
+      )
+    })
+  )
+}
 
 /**
  * Responsible for creating inputProps and fieldProps to pass to ´renderInput´ and ´renderField´ for an array input
@@ -41,6 +96,7 @@ export function ArrayOfObjectsField(props: {
 
   const {member, renderField, renderInput, renderItem, renderPreview} = props
   const focusRef = useRef<Element & {focus: () => void}>()
+  const uploadSubscriptions = useRef<Record<string, Subscription>>({})
 
   useDidUpdate(member.field.focused, (hadFocus, hasFocus) => {
     if (!hadFocus && hasFocus) {
@@ -80,25 +136,43 @@ export function ArrayOfObjectsField(props: {
     },
     [onChange, member.name]
   )
+  const resolveInitialValue = useResolveInitialValueForType()
+
+  const toast = useToast()
 
   const handleInsert = useCallback(
-    (event: InsertItemEvent) => {
+    (event: ArrayInputInsertEvent<ObjectItem>) => {
+      const itemsWithKeys = event.items.map((item) => ensureKey(item))
+
       onChange(
         PatchEvent.from([
           setIfMissing([]),
-          insert(
-            event.items.map((item) => ensureKey(item)),
-            event.position,
-            [event.referenceItem]
-          ),
+          insert(itemsWithKeys, event.position, [event.referenceItem]),
         ]).prefixAll(member.name)
       )
+      if (!event.skipInitialValue) {
+        resolveInitialValues(itemsWithKeys, member.field.schemaType, resolveInitialValue)
+          .pipe(
+            tap((result) => {
+              if (result.type === 'patch') {
+                onChange(PatchEvent.from(result.patches).prefixAll(member.name))
+              } else {
+                toast.push({
+                  title: `Could not resolve initial value`,
+                  description: `Unable to resolve initial value for type: ${result.schemaType.title}: ${result.error.message}.`,
+                  status: 'error',
+                })
+              }
+            })
+          )
+          .subscribe()
+      }
     },
-    [member.name, onChange]
+    [member.field.schemaType, member.name, onChange, resolveInitialValue, toast]
   )
 
   const handleMoveItem = useCallback(
-    (event: MoveItemEvent) => {
+    (event: ArrayInputMoveItemEvent) => {
       const value = member.field.value
       const item = value?.[event.fromIndex] as any
       const refItem = value?.[event.toIndex] as any
@@ -185,6 +259,10 @@ export function ArrayOfObjectsField(props: {
 
   const handleRemoveItem = useCallback(
     (itemKey: string) => {
+      if (uploadSubscriptions.current[itemKey]) {
+        uploadSubscriptions.current[itemKey].unsubscribe()
+        delete uploadSubscriptions.current[itemKey]
+      }
       onChange(PatchEvent.from([unset(member.field.path.concat({_key: itemKey}))]))
     },
     [onChange, member.field.path]
@@ -207,7 +285,51 @@ export function ArrayOfObjectsField(props: {
     [handleBlur, handleFocus, member.field.id]
   )
 
-  const resolveInitialValue = useResolveInitialValueForType()
+  const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
+  const formBuilder = useFormBuilder()
+
+  const supportsImageUploads = formBuilder.__internal.image.directUploads
+  const supportsFileUploads = formBuilder.__internal.file.directUploads
+
+  const resolveUploader = useCallback(
+    (type: SchemaType, file: FileLike) => {
+      if (is.type('image', type) && !supportsImageUploads) {
+        return null
+      }
+      if (is.type('file', type) && !supportsFileUploads) {
+        return null
+      }
+
+      return defaultResolveUploader(type, file)
+    },
+    [supportsFileUploads, supportsImageUploads]
+  )
+
+  const handleUpload = useCallback(
+    ({file, schemaType, uploader}: UploadEvent) => {
+      const item = createProtoArrayValue(schemaType)
+      const key = item._key
+
+      handleInsert({
+        items: [item],
+        position: 'after',
+        referenceItem: -1,
+      })
+
+      const events$ = uploader.upload(client, file, schemaType).pipe(
+        map((uploadProgressEvent: UploadProgressEvent) =>
+          PatchEvent.from(uploadProgressEvent.patches || []).prefixAll({_key: key})
+        ),
+        tap((event) => handleChange(event.patches))
+      )
+
+      uploadSubscriptions.current = {
+        ...uploadSubscriptions.current,
+        [key]: events$.subscribe(),
+      }
+    },
+    [client, handleChange, handleInsert]
+  )
 
   const inputProps = useMemo((): Omit<ArrayOfObjectsInputProps, 'renderDefault'> => {
     return {
@@ -232,20 +354,21 @@ export function ArrayOfObjectsField(props: {
 
       onChange: handleChange,
       onInsert: handleInsert,
-      onMoveItem: handleMoveItem,
+      onItemMove: handleMoveItem,
       onRemoveItem: handleRemoveItem,
       onAppendItem: handleAppendItem,
       onPrependItem: handlePrependItem,
       onFocusPath: handleFocusChildPath,
       resolveInitialValue,
-
+      onUpload: handleUpload,
+      resolveUploader: resolveUploader,
       validation: member.field.validation,
       presence: member.field.presence,
       renderInput,
       renderField,
       renderItem,
       renderPreview,
-      elementProps: elementProps,
+      elementProps,
     }
   }, [
     member.field.level,
@@ -274,6 +397,8 @@ export function ArrayOfObjectsField(props: {
     handlePrependItem,
     handleFocusChildPath,
     resolveInitialValue,
+    handleUpload,
+    resolveUploader,
     renderInput,
     renderField,
     renderItem,

@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {ComponentType} from 'react'
 import type {SortableContainerProps} from '@rexxars/react-sortable-hoc'
 import {SortableContainer, SortableElement, SortableHandle} from '@rexxars/react-sortable-hoc'
 import {FIXME} from '../../../../FIXME'
@@ -65,17 +65,6 @@ const KEYCODES = {
   down: [KeyCode.Right, KeyCode.Down],
 }
 
-export function sortableGrid<Props>(Component: React.ComponentType<Props>) {
-  return sortableContainer(Component, {
-    helperClass: MOVING_ITEM_CLASS_NAME,
-    keyCodes: KEYCODES,
-    axis: 'xy',
-    lockAxis: 'xy',
-    useDragHandle: true,
-    shouldCancelStart,
-  })
-}
-
 export function sortableList<Props>(Component: React.ComponentType<Props>) {
   return sortableContainer(Component, {
     helperClass: MOVING_ITEM_CLASS_NAME,
@@ -84,7 +73,7 @@ export function sortableList<Props>(Component: React.ComponentType<Props>) {
     lockAxis: 'y',
     useDragHandle: true,
     shouldCancelStart,
-  })
+  }) as any as ComponentType<Props & ExposedSortableProps>
 }
 
 // Cancel sorting if the event target is not drag handle

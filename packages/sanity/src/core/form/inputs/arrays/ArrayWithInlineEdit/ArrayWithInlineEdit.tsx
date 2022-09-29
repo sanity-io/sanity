@@ -22,7 +22,7 @@ import {
 import {FormFieldValidationStatus} from '../../../components'
 import {useChildPresence} from '../../../studio/contexts/Presence'
 import {ArrayOfObjectsMembers} from '../../../members'
-import {createProtoValue} from '../ArrayOfObjectsInput/ArrayInput'
+import {createProtoArrayValue} from '../ArrayOfObjectsInput/createProtoArrayValue'
 import {FieldPresence} from '../../../../presence'
 
 const HoverCard = styled(Card)<{collapsed: boolean}>`
@@ -164,7 +164,7 @@ export function ArrayWithInlineEdit(props: ArrayOfObjectsInputProps) {
     const itemType = props.schemaType.of[0]
 
     const key = Math.random().toString(32).substring(2)
-    const item = {...createProtoValue(itemType), _key: key}
+    const item = {...createProtoArrayValue(itemType), _key: key}
 
     props.onAppendItem(item)
     if (exclusive) {
@@ -192,7 +192,7 @@ export function ArrayWithInlineEdit(props: ArrayOfObjectsInputProps) {
         : [[currentIndex, nextIndex]]
     })
     moved.forEach(([fromIndex, toIndex]) => {
-      props.onMoveItem({fromIndex, toIndex})
+      props.onItemMove({fromIndex, toIndex})
     })
   }
 

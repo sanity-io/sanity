@@ -55,10 +55,10 @@ export class ArrayOfPrimitivesInput extends React.PureComponent<DefaultArrayOfPr
     }
   }
 
-  handleSortEnd = (event: {oldIndex: number; newIndex: number}) => {
+  handleSortEnd = (event: {fromIndex: number; toIndex: number}) => {
     const {onFocusIndex, onMoveItem, value} = this.props
-    if (value) onMoveItem({fromIndex: event.oldIndex, toIndex: event.newIndex})
-    onFocusIndex(event.newIndex)
+    if (value) onMoveItem(event)
+    onFocusIndex(event.toIndex)
   }
 
   setElement = (el: HTMLElement | null) => {
@@ -160,7 +160,7 @@ export class ArrayOfPrimitivesInput extends React.PureComponent<DefaultArrayOfPr
         <Stack space={1}>
           {members.length > 0 && (
             <Card padding={1} border>
-              <List onSortEnd={this.handleSortEnd} isSortable={isSortable}>
+              <List onItemMove={this.handleSortEnd} sortable={isSortable}>
                 {members.map((member, index) => {
                   if (member.kind === 'item') {
                     return (
@@ -168,7 +168,7 @@ export class ArrayOfPrimitivesInput extends React.PureComponent<DefaultArrayOfPr
                         key={member.key}
                         index={index}
                         data-item-index={index}
-                        isSortable={isSortable}
+                        sortable={isSortable}
                       >
                         <ArrayOfPrimitivesItem
                           member={member}

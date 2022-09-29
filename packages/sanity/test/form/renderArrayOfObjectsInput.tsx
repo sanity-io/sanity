@@ -34,9 +34,10 @@ export async function renderArrayOfObjectsInput(options: {
   const onExpandItem = jest.fn()
   const onFocusPath = jest.fn()
   const onInsert = jest.fn()
-  const onMoveItem = jest.fn()
+  const onItemMove = jest.fn()
   const onOpenItem = jest.fn()
   const onPrependItem = jest.fn()
+  const onUpload = jest.fn()
   const onRemoveItem = jest.fn()
 
   let initialValueId = 0
@@ -66,10 +67,12 @@ export async function renderArrayOfObjectsInput(options: {
       onExpandItem,
       onFocusPath,
       onInsert,
-      onMoveItem,
+      onItemMove,
       onOpenItem,
       onPrependItem,
       onRemoveItem,
+      resolveUploader: () => null,
+      onUpload,
       path,
       renderField: defaultRenderField,
       renderInput: defaultRenderInput,

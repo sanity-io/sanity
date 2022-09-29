@@ -14,7 +14,7 @@ import {ensureKey} from '../../utils/ensureKey'
 import {FormCallbacksProvider, useFormCallbacks} from '../../studio/contexts/FormCallbacks'
 import {ArrayOfObjectsItemMember} from '../../store'
 import {createProtoValue} from '../../utils/createProtoValue'
-import {isEmpty} from '../../inputs/arrays/ArrayOfObjectsInput/item/helpers'
+import {isEmptyItem} from '../../store/utils/isEmptyItem'
 
 /**
  * @beta
@@ -140,7 +140,7 @@ export function ArrayOfObjectsItem(props: MemberItemProps) {
     onPathOpen(member.item.path)
   }, [onPathOpen, member.item.path])
 
-  const isEmptyValue = !member.item.value || isEmpty(member.item.value)
+  const isEmptyValue = !member.item.value || isEmptyItem(member.item.value)
   const handleClose = useCallback(() => {
     if (isEmptyValue) {
       onRemove()

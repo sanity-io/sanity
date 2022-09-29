@@ -5,7 +5,7 @@ import {
   ArrayOfObjectsInputProps,
   ArrayOfPrimitivesFieldProps,
   ArrayOfPrimitivesInputProps,
-  MoveItemEvent,
+  ArrayInputMoveItemEvent,
   RenderArrayOfPrimitivesItemCallback,
   RenderFieldCallback,
   RenderInputCallback,
@@ -139,7 +139,7 @@ export function ArrayOfPrimitivesField(props: {
   )
 
   const handleMoveItem = useCallback(
-    (event: MoveItemEvent) => {
+    (event: ArrayInputMoveItemEvent) => {
       const {value = []} = member.field
       if (event.fromIndex === event.toIndex) {
         return

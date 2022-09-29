@@ -98,7 +98,7 @@ export class OptionsArrayInput extends React.PureComponent<OptionsArrayInputProp
       schemaType.options?.direction === 'horizontal' || schemaType.options?.layout === 'grid'
 
     return (
-      <List isGrid={isGrid} tabIndex={0} {...elementProps}>
+      <List tabIndex={0} {...elementProps}>
         {options.map((option, index) => {
           const optionType = this.getMemberTypeOfItem(option)
           const checked = inArray(value || [], resolveValueWithLegacyOptionsSupport(option))
@@ -112,7 +112,7 @@ export class OptionsArrayInput extends React.PureComponent<OptionsArrayInputProp
           }
 
           return (
-            <Item index={index} isGrid={isGrid} key={index}>
+            <Item index={index} key={index}>
               <Flex align="center" as="label" muted={disabled}>
                 <WrappedCheckbox
                   disabled={disabled}

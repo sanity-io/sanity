@@ -17,8 +17,7 @@ import {useClient, useSchema} from '../../../../hooks'
 import {useDocumentPreviewStore} from '../../../../store'
 import {ArrayItemReferenceInput} from '../../../inputs/ReferenceInput/ArrayItemReferenceInput'
 import {EditReferenceEvent} from '../../../inputs/ReferenceInput/types'
-import {InsertEvent} from '../../../inputs/arrays/ArrayOfObjectsInput/types'
-import {ObjectInputProps} from '../../../types'
+import {ArrayInputInsertEvent, ObjectInputProps} from '../../../types'
 import {useFormValue} from '../../../useFormValue'
 import {useReferenceInputOptions} from '../../contexts'
 import {isNonNullable} from '../../../../util'
@@ -50,7 +49,7 @@ export interface SanityArrayItemReferenceInputProps
   extends ObjectInputProps<Reference, ReferenceSchemaType> {
   insertableTypes?: SchemaType[]
   isSortable: boolean
-  onInsert?: (event: InsertEvent) => void
+  onInsert?: (event: ArrayInputInsertEvent<FIXME>) => void
 }
 
 function useValueRef<T>(value: T): {current: T} {

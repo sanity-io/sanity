@@ -3,7 +3,7 @@ import {map, concat} from 'rxjs/operators'
 import {SanityClient} from '@sanity/client'
 import {set} from '../../patch'
 import {uploadFileAsset} from '../inputs/client-adapters/assets'
-import {UploadEvent, UploadOptions} from './types'
+import {UploadProgressEvent, UploadOptions} from './types'
 import {UPLOAD_STATUS_KEY} from './constants'
 import {createUploadEvent, createInitialUploadEvent, CLEANUP_EVENT} from './utils'
 
@@ -11,7 +11,7 @@ export function uploadFile(
   client: SanityClient,
   file: File,
   options?: UploadOptions
-): Observable<UploadEvent> {
+): Observable<UploadProgressEvent> {
   const upload$ = uploadFileAsset(client, file, options).pipe(
     map((event) => {
       if (event.type === 'complete') {

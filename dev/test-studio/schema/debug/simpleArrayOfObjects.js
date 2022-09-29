@@ -1,5 +1,4 @@
 import {StackIcon} from '@sanity/icons'
-import {ArrayWithInlineEditPOC} from 'sanity'
 
 export const simpleArrayOfObjects = {
   name: 'simpleArrayOfObjects',
@@ -18,7 +17,6 @@ export const simpleArrayOfObjects = {
       title: 'Array with named objects',
       description: 'This array contains objects of type as defined inline',
       type: 'array',
-      components: {input: ArrayWithInlineEditPOC},
       of: [
         {
           type: 'object',
@@ -46,7 +44,6 @@ export const simpleArrayOfObjects = {
       title: 'Array with named objects',
       description: 'Can only be open one at a time',
       type: 'array',
-      components: {input: ArrayWithInlineEditPOC},
       of: [
         {
           type: 'object',

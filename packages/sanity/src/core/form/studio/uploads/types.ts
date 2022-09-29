@@ -3,17 +3,13 @@ import {AssetSourceSpec, SchemaType, AssetMetadataType} from '@sanity/types'
 import {Observable} from 'rxjs'
 import {FormPatch} from '../../patch'
 
-/** @public */
-export type UploadEvent = {
-  type: 'uploadEvent'
-  /** @beta */
+export type UploadProgressEvent = {
+  type: 'uploadProgress'
   patches: FormPatch[] | null
 }
 
-/** @internal */
 export type ResolvedUploader = {uploader: Uploader; type: SchemaType}
 
-/** @public */
 export type UploadOptions = {
   metadata?: AssetMetadataType[]
   storeOriginalFilename?: boolean
@@ -24,14 +20,12 @@ export type UploadOptions = {
   source?: AssetSourceSpec
 }
 
-/** @internal */
 export type UploaderDef = {
   type: string
   accepts: string
-  upload: (client: SanityClient, file: File, type: SchemaType) => Observable<UploadEvent>
+  upload: (client: SanityClient, file: File, type: SchemaType) => Observable<UploadProgressEvent>
 }
 
-/** @public */
 export type Uploader = {
   type: string
   accepts: string
@@ -40,11 +34,10 @@ export type Uploader = {
     file: File,
     type: SchemaType,
     options?: UploadOptions
-  ) => Observable<UploadEvent>
+  ) => Observable<UploadProgressEvent>
   priority: number
 }
 
-/** @public */
 export interface FileLike {
   // mime type
   type: string
@@ -52,5 +45,4 @@ export interface FileLike {
   name?: string
 }
 
-/** @public */
 export type UploaderResolver = (type: SchemaType, file: FileLike) => Uploader | null
