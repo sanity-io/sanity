@@ -2,6 +2,9 @@
  * sanity/form
  */
 
+/** TODO remove*/
+export {ArrayWithInlineEdit as ArrayWithInlineEditPOC} from './inputs/arrays/ArrayWithInlineEdit/ArrayWithInlineEdit'
+
 export * from './FormBuilderContext'
 export * from './components'
 export * from './field'
