@@ -1,7 +1,7 @@
 import React, {forwardRef, useContext} from 'react'
-import {StateLink} from '../../../router'
 import {PaneRouterContext} from './PaneRouterContext'
 import {ChildLinkProps} from './types'
+import {StateLink} from 'sanity/router'
 
 /**
  * @internal

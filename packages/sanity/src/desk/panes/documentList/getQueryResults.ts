@@ -17,7 +17,7 @@ import {
 } from 'rxjs/operators'
 import {concat, merge, of, fromEvent, Observable, Subject} from 'rxjs'
 import {SanityDocument} from '@sanity/types'
-import {listenQuery} from '../../../core'
+import {listenQuery} from 'sanity'
 
 const INITIAL_CHILD_PROPS = {
   result: null,

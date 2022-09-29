@@ -9,7 +9,7 @@ import {
   useCurrentUser,
   useDocumentOperation,
   useDocumentPairPermissions,
-} from '../../core'
+} from 'sanity'
 
 const DISABLED_REASON_TITLE = {
   NO_CHANGES: 'This document has no unpublished changes',

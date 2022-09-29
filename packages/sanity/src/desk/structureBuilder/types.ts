@@ -1,5 +1,4 @@
 import type {SanityDocument, SchemaType, SortOrdering} from '@sanity/types'
-import type {ConfigContext, Source, InitialValueTemplateItem} from '../../core'
 import type {ComponentBuilder, ComponentInput} from './Component'
 import type {DocumentBuilder, PartialDocumentNode} from './Document'
 import type {DocumentListInput, DocumentListBuilder} from './DocumentList'
@@ -13,6 +12,7 @@ import type {MenuItemGroup, MenuItemGroupBuilder} from './MenuItemGroup'
 import type {Divider, EditorNode} from './StructureNodes'
 import type {ComponentView, ComponentViewBuilder} from './views/ComponentView'
 import type {FormView, FormViewBuilder} from './views/FormView'
+import type {ConfigContext, Source, InitialValueTemplateItem} from 'sanity'
 
 export type View = FormView | ComponentView
 

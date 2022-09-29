@@ -12,13 +12,13 @@ import {
 } from '@sanity/ui'
 import React, {useMemo} from 'react'
 import styled from 'styled-components'
-import {useRouter} from '../../../../../router'
 import {useActiveWorkspace} from '../../../activeWorkspaceMatcher'
 import {useColorScheme} from '../../../colorScheme'
 import {useWorkspaces} from '../../../workspaces'
 import {workspacesDocsUrl} from './constants'
 import {useWorkspaceAuthStates} from './hooks'
 import {WorkspacePreview} from './WorkspacePreview'
+import {useRouter} from 'sanity/router'
 
 const StyledMenu = styled(Menu)`
   max-width: 350px;

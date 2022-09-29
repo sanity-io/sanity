@@ -7,8 +7,8 @@ import {
 } from '@sanity/types'
 import {Button, ButtonProps, Menu, MenuButton} from '@sanity/ui'
 import React, {useCallback, useMemo} from 'react'
-import {ValidationList} from '../../../../../core'
 import {useDocumentPane} from '../../useDocumentPane'
+import {ValidationList} from 'sanity'
 
 export interface ValidationMenuProps {
   boundaryElement: HTMLDivElement | null

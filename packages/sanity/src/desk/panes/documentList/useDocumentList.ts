@@ -2,11 +2,11 @@ import {VirtualListChangeOpts} from '@sanity/ui'
 import {useEffect, useState, useCallback, useMemo, useRef} from 'react'
 import {of} from 'rxjs'
 import {filter as filterEvents} from 'rxjs/operators'
-import {DEFAULT_STUDIO_CLIENT_OPTIONS, useClient} from '../../../core'
 import {DocumentListPaneItem, QueryResult, SortOrder, SortOrderBy} from './types'
 import {removePublishedWithDrafts, toOrderClause} from './helpers'
 import {DEFAULT_ORDERING, FULL_LIST_LIMIT, PARTIAL_PAGE_LIMIT} from './constants'
 import {getQueryResults} from './getQueryResults'
+import {DEFAULT_STUDIO_CLIENT_OPTIONS, useClient} from 'sanity'
 
 interface UseDocumentListOpts {
   defaultOrdering: SortOrderBy[]

@@ -18,10 +18,10 @@ import {
 import React, {forwardRef, MouseEvent, ReactElement, useCallback, useMemo, useRef} from 'react'
 import {useId} from '@reach/auto-id'
 import {ObjectSchemaType} from '@sanity/types'
-import {IntentLink} from '../../../../../router'
 import {RenderPreviewCallback} from '../../../types'
 import {is} from '../../../utils/is'
 import {FIXME} from '../../../../FIXME'
+import {IntentLink} from 'sanity/router'
 
 interface BlockObjectPreviewProps {
   focused: boolean

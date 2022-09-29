@@ -1,6 +1,6 @@
 import {omit} from 'lodash'
-import {route} from '../router'
 import {RouterPanes, RouterPaneGroup, RouterPaneSibling} from './types'
+import {route} from 'sanity/router'
 
 const EMPTY_PARAMS = {}
 

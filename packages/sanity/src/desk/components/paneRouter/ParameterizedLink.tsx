@@ -1,7 +1,7 @@
 import React, {forwardRef, useContext, useMemo} from 'react'
-import {StateLink} from '../../../router'
-import {useUnique} from '../../../core'
 import {PaneRouterContext} from './PaneRouterContext'
+import {useUnique} from 'sanity'
+import {StateLink} from 'sanity/router'
 
 interface ParameterizedLinkProps {
   params?: Record<string, string>

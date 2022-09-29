@@ -14,11 +14,11 @@ import {
 } from '@sanity/ui'
 import React, {useCallback, useEffect, useMemo, useState} from 'react'
 import {SanityDocument} from '@sanity/types'
-import {GeneralPreviewLayoutKey, getPublishedId, useSchema} from '../../../core'
 import {Delay, PaneContent, usePane, usePaneLayout, PaneItem} from '../../components'
 import {DocumentListPaneItem} from './types'
 import {getDocumentKey} from './helpers'
 import {FULL_LIST_LIMIT} from './constants'
+import {GeneralPreviewLayoutKey, getPublishedId, useSchema} from 'sanity'
 
 interface DocumentListPaneContentProps {
   childItemId?: string

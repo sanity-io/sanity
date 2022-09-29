@@ -2,13 +2,13 @@ import path from 'path'
 import {Worker, isMainThread} from 'worker_threads'
 import readPkgUp from 'read-pkg-up'
 import type {CliCommandContext, CliV3CommandContext} from '@sanity/cli'
-import {createSchema} from '../../../../core'
 import type {
   ResolvedGraphQLAPI,
   ResolvedSourceProperties,
   SchemaDefinitionish,
   TypeResolvedGraphQLAPI,
 } from './types'
+import {createSchema} from 'sanity'
 
 export async function getGraphQLAPIs(cliContext: CliCommandContext): Promise<ResolvedGraphQLAPI[]> {
   if (!isModernCliConfig(cliContext)) {

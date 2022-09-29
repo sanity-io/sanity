@@ -1,7 +1,7 @@
 import React from 'react'
 import {Box, Card, Container, Flex, Stack, Text} from '@sanity/ui'
 import {WarningOutlineIcon} from '@sanity/icons'
-import {useSource} from '../../core'
+import {useSource} from 'sanity'
 
 export function MissingDocumentTypesMessage() {
   const {name: sourceName} = useSource()

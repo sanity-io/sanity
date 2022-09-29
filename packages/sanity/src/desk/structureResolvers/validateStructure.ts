@@ -1,7 +1,7 @@
-import {isRecord} from '../../core'
 import {SerializeError} from '../structureBuilder'
 import {UnresolvedPaneNode} from '../types'
 import {leven} from './leven'
+import {isRecord} from 'sanity'
 
 // TODO: this is not wired up
 export function validateStructure(structure: any): UnresolvedPaneNode {

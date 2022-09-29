@@ -1,10 +1,10 @@
 import {SchemaType} from '@sanity/types'
-import {isRecord} from '../../core'
 import {SerializeOptions} from './StructureNodes'
 import {ListItemBuilder, ListItem, UnserializedListItem, ListItemInput} from './ListItem'
 import {SerializeError, HELP_URL} from './SerializeError'
 import {DocumentBuilder} from './Document'
 import {StructureContext} from './types'
+import {isRecord} from 'sanity'
 
 export interface DocumentListItemInput extends ListItemInput {
   schemaType: SchemaType | string

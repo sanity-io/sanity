@@ -2,8 +2,8 @@ import React from 'react'
 import {PublishIcon} from '@sanity/icons'
 import {PreviewValue, SanityDocument} from '@sanity/types'
 import {Box, Text, Tooltip} from '@sanity/ui'
-import {TextWithTone} from '../../core'
 import {TimeAgo} from './TimeAgo'
+import {TextWithTone} from 'sanity'
 
 export function PublishedStatus(props: {document?: PreviewValue | Partial<SanityDocument> | null}) {
   const {document} = props

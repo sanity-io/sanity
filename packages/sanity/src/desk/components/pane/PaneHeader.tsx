@@ -1,8 +1,8 @@
 import {useElementRect, Box, Card, Flex, LayerProvider} from '@sanity/ui'
 import React, {useMemo, useCallback, forwardRef} from 'react'
-import {LegacyLayerProvider} from '../../../core'
 import {usePane} from './usePane'
 import {Layout, Root, TabsBox, TitleBox, TitleTextSkeleton, TitleText} from './PaneHeader.styles'
+import {LegacyLayerProvider} from 'sanity'
 
 interface PaneHeaderProps {
   actions?: React.ReactNode

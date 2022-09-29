@@ -2,7 +2,7 @@ import {Box, Button, Flex, Stack, Text, Tooltip} from '@sanity/ui'
 import {PlayIcon, PublishIcon} from '@sanity/icons'
 import React from 'react'
 import styled from 'styled-components'
-import {useTimeAgo} from '../../../../../core'
+import {useTimeAgo} from 'sanity'
 
 interface PublishStatusProps {
   collapsed?: boolean

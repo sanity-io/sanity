@@ -24,13 +24,13 @@ import type {
   RenderItemCallback,
   RenderPreviewCallback,
 } from '../form'
-import type {Router, RouterState} from '../../router'
 import type {InitialValueTemplateItem, Template, TemplateResponse} from '../templates'
 import type {StudioTheme} from '../theme'
 import {PreviewProps} from '../components'
 import {AuthStore} from '../store'
 import {DocumentActionComponent, DocumentBadgeComponent} from './document'
 import {StudioComponents, StudioComponentsPluginOptions} from './components'
+import type {Router, RouterState} from 'sanity/router'
 
 /**
  * @alpha

@@ -13,17 +13,6 @@ import React, {memo, useCallback, useMemo, useState} from 'react'
 import styled from 'styled-components'
 import {fromString as pathFromString} from '@sanity/util/paths'
 import {Path} from '@sanity/types'
-import {
-  ChangeConnectorRoot,
-  ReferenceInputOptionsProvider,
-  SourceProvider,
-  isDev,
-  useDocumentType,
-  useSource,
-  useTemplatePermissions,
-  useTemplates,
-  useZIndex,
-} from '../../../core'
 import {DocumentPaneNode} from '../../types'
 import {usePaneRouter} from '../../components'
 import {PaneFooter} from '../../components/pane'
@@ -39,6 +28,17 @@ import {DocumentActionShortcuts} from './keyboardShortcuts'
 import {DocumentStatusBar} from './statusBar'
 import {DocumentPaneProviderProps} from './types'
 import {useDocumentPane} from './useDocumentPane'
+import {
+  ChangeConnectorRoot,
+  ReferenceInputOptionsProvider,
+  SourceProvider,
+  isDev,
+  useDocumentType,
+  useSource,
+  useTemplatePermissions,
+  useTemplates,
+  useZIndex,
+} from 'sanity'
 
 type DocumentPaneOptions = DocumentPaneNode['options']
 

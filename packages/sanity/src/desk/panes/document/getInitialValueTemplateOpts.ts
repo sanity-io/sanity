@@ -1,4 +1,4 @@
-import {Template} from '../../../core'
+import {Template} from 'sanity'
 
 interface InitialValueOptions {
   documentType: string

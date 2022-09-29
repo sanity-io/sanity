@@ -1,7 +1,6 @@
 import {omit} from 'lodash'
 import React, {useCallback, useMemo} from 'react'
 import {toString as pathToString} from '@sanity/util/paths'
-import {useRouter, useRouterState} from '../../../router'
 import {RouterPaneGroup, RouterPanes, RouterPaneSibling} from '../../types'
 import {ChildLink} from './ChildLink'
 import {BackLink} from './BackLink'
@@ -9,6 +8,7 @@ import {ReferenceChildLink} from './ReferenceChildLink'
 import {PaneRouterContext} from './PaneRouterContext'
 import {ParameterizedLink} from './ParameterizedLink'
 import {PaneRouterContextValue} from './types'
+import {useRouter, useRouterState} from 'sanity/router'
 
 const emptyArray: never[] = []
 

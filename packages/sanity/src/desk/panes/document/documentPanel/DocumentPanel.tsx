@@ -1,13 +1,6 @@
 import {BoundaryElementProvider, Flex, PortalProvider, usePortal, useElementRect} from '@sanity/ui'
 import React, {createElement, useEffect, useMemo, useRef, useState} from 'react'
 import styled, {css} from 'styled-components'
-import {
-  ScrollContainer,
-  useDocumentValuePermissions,
-  useSchema,
-  getDraftId,
-  getPublishedId,
-} from '../../../../core'
 import {PaneContent, usePaneLayout} from '../../../components'
 import {useDocumentPane} from '../useDocumentPane'
 import {InspectDialog} from '../inspectDialog'
@@ -16,6 +9,13 @@ import {ReferenceChangedBanner} from './ReferenceChangedBanner'
 import {PermissionCheckBanner} from './PermissionCheckBanner'
 import {FormView} from './documentViews'
 import {DocumentPanelHeader} from './header'
+import {
+  ScrollContainer,
+  useDocumentValuePermissions,
+  useSchema,
+  getDraftId,
+  getPublishedId,
+} from 'sanity'
 
 interface DocumentPanelProps {
   footerHeight: number | null

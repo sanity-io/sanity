@@ -1,5 +1,8 @@
 import {Box, Code, Stack, Button, Dialog} from '@sanity/ui'
 import React, {useMemo, useState, useCallback, useEffect} from 'react'
+import {DeskToolProvider} from '../DeskToolProvider'
+import {DocumentPaneProvider} from '../panes'
+import {DocumentPaneNode} from '../types'
 import {
   DocumentActionComponent,
   DocumentActionDescription,
@@ -11,10 +14,7 @@ import {
   useSource,
   useUnique,
   useValidationStatus,
-} from '../../core'
-import {DeskToolProvider} from '../DeskToolProvider'
-import {DocumentPaneProvider} from '../panes'
-import {DocumentPaneNode} from '../types'
+} from 'sanity'
 
 export default function InitialValueStory() {
   const documentId = 'test'

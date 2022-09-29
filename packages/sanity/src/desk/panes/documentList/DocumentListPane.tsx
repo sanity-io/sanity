@@ -1,13 +1,6 @@
 import React, {memo, useMemo, useRef} from 'react'
 import {Card, Code} from '@sanity/ui'
 import shallowEquals from 'shallow-equals'
-import {
-  GeneralPreviewLayoutKey,
-  SourceProvider,
-  useSchema,
-  useSource,
-  useUnique,
-} from '../../../core'
 import {Pane} from '../../components/pane'
 import {_DEBUG} from '../../constants'
 import {useDeskToolSetting} from '../../useDeskToolSetting'
@@ -22,6 +15,7 @@ import {DocumentListPaneContent} from './DocumentListPaneContent'
 import {DocumentListPaneHeader} from './DocumentListPaneHeader'
 import {SortOrder} from './types'
 import {useDocumentList} from './useDocumentList'
+import {GeneralPreviewLayoutKey, SourceProvider, useSchema, useSource, useUnique} from 'sanity'
 
 type DocumentListPaneProps = BaseDeskToolPaneProps<'documentList'>
 

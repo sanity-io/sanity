@@ -1,5 +1,5 @@
 import React from 'react'
-import {useTimeAgo} from '../../core'
+import {useTimeAgo} from 'sanity'
 
 export interface TimeAgoProps {
   time: string | Date

@@ -7,9 +7,9 @@ import {KeyedSegment, Reference} from '@sanity/types'
 import {debounceTime, map} from 'rxjs/operators'
 import {concat, Observable, of} from 'rxjs'
 import {useMemoObservable} from 'react-rx'
-import {DocumentAvailability, useDocumentPreviewStore, getPublishedId} from '../../../../core'
 import {RouterPaneGroup} from '../../../types'
 import {usePaneRouter} from '../../../components'
+import {DocumentAvailability, useDocumentPreviewStore, getPublishedId} from 'sanity'
 
 const Root = styled(Card)`
   position: relative;

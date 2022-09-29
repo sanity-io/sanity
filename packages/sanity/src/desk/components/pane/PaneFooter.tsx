@@ -1,8 +1,8 @@
 import {Box} from '@sanity/ui'
 import React, {forwardRef} from 'react'
-import {LegacyLayerProvider} from '../../../core'
 import {usePane} from './usePane'
 import {Root, RootCard} from './PaneFooter.styles'
+import {LegacyLayerProvider} from 'sanity'
 
 interface PaneFooterProps {
   children?: React.ReactNode

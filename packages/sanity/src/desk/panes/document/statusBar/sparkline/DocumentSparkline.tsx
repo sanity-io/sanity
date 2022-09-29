@@ -1,10 +1,10 @@
 import {Box, Flex, useElementRect} from '@sanity/ui'
 import React, {useEffect, useMemo, useState, memo, useLayoutEffect} from 'react'
-import {useSyncState} from '../../../../../core'
 import {useDocumentPane} from '../../useDocumentPane'
 import {DocumentBadges} from './DocumentBadges'
 import {PublishStatus} from './PublishStatus'
 import {ReviewChangesButton} from './ReviewChangesButton'
+import {useSyncState} from 'sanity'
 
 const SYNCING_TIMEOUT = 1000
 const SAVED_TIMEOUT = 3000

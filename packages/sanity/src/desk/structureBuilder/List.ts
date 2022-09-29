@@ -1,5 +1,4 @@
 import {find} from 'lodash'
-import {isRecord} from '../../core'
 import {SerializePath, SerializeOptions, Divider} from './StructureNodes'
 import {ChildResolverOptions, ChildResolver} from './ChildResolver'
 import {SerializeError, HELP_URL} from './SerializeError'
@@ -14,6 +13,7 @@ import {
   shallowIntentChecker,
 } from './GenericList'
 import {StructureContext} from './types'
+import {isRecord} from 'sanity'
 
 const getArgType = (thing: ListItem) => {
   if (thing instanceof ListBuilder) {

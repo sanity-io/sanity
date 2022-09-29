@@ -1,4 +1,4 @@
-import {AnnotationDetails, visitDiff, Diff} from '../../../../core'
+import {AnnotationDetails, visitDiff, Diff} from 'sanity'
 
 export function collectLatestAuthorAnnotations(diff: Diff): AnnotationDetails[] {
   const authorMap = new Map<string, AnnotationDetails>()

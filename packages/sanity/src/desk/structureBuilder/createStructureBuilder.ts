@@ -1,7 +1,6 @@
 import {uniqueId} from 'lodash'
 import type {SchemaType} from '@sanity/types'
 import {isValidElementType} from 'react-is'
-import {Source, getConfigContextFromSource, getPublishedId} from '../../core'
 import {ListBuilder} from './List'
 import {
   getDocumentTypeListItems,
@@ -28,6 +27,7 @@ import type {
   StructureContext,
   DefaultDocumentNodeResolver,
 } from './types'
+import {Source, getConfigContextFromSource, getPublishedId} from 'sanity'
 
 export interface StructureBuilderOptions {
   source: Source

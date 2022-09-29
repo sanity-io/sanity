@@ -16,7 +16,6 @@ import styled from 'styled-components'
 import {isDev} from '../../../environment'
 import {useWorkspace} from '../../workspace'
 import {useColorScheme} from '../../colorScheme'
-import {RouterState, useRouterState, useStateLink} from '../../../../router'
 import {useWorkspaces} from '../../workspaces'
 import {NavbarContext} from '../../StudioLayout'
 import {UserMenu} from './userMenu'
@@ -28,6 +27,7 @@ import {ChangelogButton} from './changelog'
 import {WorkspaceMenuButton} from './workspace'
 import {ConfigIssuesButton} from './configIssues/ConfigIssuesButton'
 import {LogoButton} from './LogoButton'
+import {RouterState, useRouterState, useStateLink} from 'sanity/router'
 
 const RootLayer = styled(Layer)`
   min-height: auto;
