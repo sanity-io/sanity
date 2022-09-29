@@ -17,6 +17,10 @@ const baseConfig = {
   rules: {
     '@typescript-eslint/no-var-requires': 'off', // prefer import/no-dynamic-require
     'import/extensions': ['error', {pattern: {cjs: 'always', json: 'always'}}],
+    'import/named': 'off',
+    'import/no-named-as-default': 'off',
+    'import/no-named-as-default-member': 'off',
+    'import/no-unresolved': 'off',
     'prettier/prettier': 'error',
     'react/jsx-filename-extension': ['error', {extensions: ['.jsx']}],
     'sort-imports': 'off', // prefer import/order
@@ -24,6 +28,20 @@ const baseConfig = {
   },
   settings: {
     'import/extensions': ['.cjs', '.mjs', '.js', '.jsx', '.ts', '.tsx'],
+    'import/parsers': {
+      '@typescript-eslint/parser': ['.cjs', '.mjs', '.js', '.jsx', '.ts', '.tsx'],
+    },
+    'import/resolver': {
+      typescript: {
+        alwaysTryTypes: true,
+        project: [
+          'dev/*/tsconfig.json',
+          'examples/*/tsconfig.json',
+          'packages/@sanity/*/tsconfig.json',
+          'packages/*/tsconfig.json',
+        ],
+      },
+    },
     react: {version: '18.0.0'},
   },
 }
@@ -44,38 +62,16 @@ module.exports = {
         'plugin:react-hooks/recommended',
         'prettier',
       ],
-      plugins: ['import', '@typescript-eslint', 'prettier', 'react', 'tsdoc'],
       rules: {
         ...baseConfig.rules,
         '@typescript-eslint/no-dupe-class-members': ['error'],
         '@typescript-eslint/no-shadow': ['error'],
         '@typescript-eslint/no-unused-vars': ['warn'],
-        'import/named': 'off',
-        'import/no-named-as-default': 'off',
-        'import/no-named-as-default-member': 'off',
-        'import/no-unresolved': 'off',
         'no-undef': 'off',
         'no-dupe-class-members': 'off', // doesn't work with TS overrides
         'no-shadow': 'off',
         'no-unused-vars': 'off',
         'react/jsx-filename-extension': ['error', {extensions: ['.tsx']}],
-      },
-      settings: {
-        ...baseConfig.settings,
-        'import/parsers': {
-          '@typescript-eslint/parser': ['.ts', '.tsx'],
-        },
-        'import/resolver': {
-          typescript: {
-            alwaysTryTypes: true,
-            project: [
-              'dev/*/tsconfig.json',
-              'examples/*/tsconfig.json',
-              'packages/@sanity/*/tsconfig.json',
-              'packages/*/tsconfig.json',
-            ],
-          },
-        },
       },
     },
 
