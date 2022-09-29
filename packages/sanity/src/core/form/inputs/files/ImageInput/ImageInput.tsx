@@ -54,11 +54,12 @@ import {ImageActionsMenu} from './ImageActionsMenu'
 import {ImagePreview} from './ImagePreview'
 import {InvalidImageWarning} from './InvalidImageWarning'
 
-export interface Image extends Partial<BaseImage> {
+export interface BaseImageInputValue extends Partial<BaseImage> {
   _upload?: UploadState
 }
 
-export interface ImageInputProps extends ObjectInputProps<Image, ImageSchemaType> {
+export interface BaseImageInputProps
+  extends ObjectInputProps<BaseImageInputValue, ImageSchemaType> {
   assetSources: AssetSource[]
   directUploads?: boolean
   imageUrlBuilder: ImageUrlBuilder
@@ -79,7 +80,7 @@ type FileInfo = {
   kind: string // 'file' or 'string'
 }
 
-type ImageInputState = {
+type BaseImageInputState = {
   isUploading: boolean
   selectedAssetSource: AssetSource | null
   // Metadata about files currently over the drop area
@@ -101,12 +102,12 @@ const ASSET_FIELD_PATH = ['asset']
 
 const ASSET_IMAGE_MENU_POPOVER: MenuButtonProps['popover'] = {portal: true}
 
-export class ImageInput extends React.PureComponent<ImageInputProps, ImageInputState> {
+export class BaseImageInput extends React.PureComponent<BaseImageInputProps, BaseImageInputState> {
   _assetElementRef: null | Focusable = null
   _assetPath: Path
   uploadSubscription: null | Subscription = null
 
-  state: ImageInputState = {
+  state: BaseImageInputState = {
     isUploading: false,
     selectedAssetSource: null,
     hoveringFiles: [],
@@ -114,7 +115,7 @@ export class ImageInput extends React.PureComponent<ImageInputProps, ImageInputS
     isMenuOpen: false,
   }
 
-  constructor(props: ImageInputProps) {
+  constructor(props: BaseImageInputProps) {
     super(props)
     this._assetPath = props.path.concat(ASSET_FIELD_PATH)
   }

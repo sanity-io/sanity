@@ -22,7 +22,8 @@ const SearchFullscreenPortalCard = styled(Card)`
   min-height: 100%;
   flex: 1;
 `
-interface NavbarContextValue {
+
+export interface NavbarContextValue {
   onSearchOpenChange: (open: boolean) => void
   fullscreenSearchPortalEl: HTMLElement | null
 }

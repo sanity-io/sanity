@@ -5,7 +5,7 @@ import {fireEvent, waitFor} from '@testing-library/react'
 import React from 'react'
 import {Observable, of} from 'rxjs'
 import {renderFileInput} from '../../../../../../../test/form'
-import {FileInput} from '../FileInput'
+import {BaseFileInput} from '../FileInput'
 
 const observeAssetStub = (): Observable<FileAsset> =>
   of({
@@ -26,7 +26,7 @@ describe('FileInput with empty state', () => {
         type: 'file',
       },
       observeAsset: observeAssetStub,
-      render: (inputProps) => <FileInput {...inputProps} />,
+      render: (inputProps) => <BaseFileInput {...inputProps} />,
     })
 
     expect(result.queryByTestId('file-button-input')!.getAttribute('value')).toBe('')
@@ -47,7 +47,7 @@ describe('FileInput with empty state', () => {
         type: 'file',
       },
       observeAsset: observeAssetStub,
-      render: (inputProps) => <FileInput {...inputProps} />,
+      render: (inputProps) => <BaseFileInput {...inputProps} />,
     })
 
     expect(result.queryByTestId('file-input-upload-button')).toBeInTheDocument()
@@ -62,7 +62,7 @@ describe('FileInput with empty state', () => {
         type: 'file',
       },
       observeAsset: observeAssetStub,
-      render: (inputProps) => <FileInput {...inputProps} assetSources={[]} />,
+      render: (inputProps) => <BaseFileInput {...inputProps} assetSources={[]} />,
     })
 
     expect(result.queryByTestId('file-input-upload-button')).toBeInTheDocument()
@@ -78,7 +78,10 @@ describe('FileInput with empty state', () => {
       },
       observeAsset: observeAssetStub,
       render: (inputProps) => (
-        <FileInput {...inputProps} assetSources={[{name: 'source1'}, {name: 'source2'}] as any} />
+        <BaseFileInput
+          {...inputProps}
+          assetSources={[{name: 'source1'}, {name: 'source2'}] as any}
+        />
       ),
     })
 
@@ -105,7 +108,7 @@ describe('FileInput with empty state', () => {
         type: 'file',
       },
       observeAsset: observeAssetStub,
-      render: (inputProps) => <FileInput {...inputProps} directUploads={false} />,
+      render: (inputProps) => <BaseFileInput {...inputProps} directUploads={false} />,
     })
 
     expect(result.queryByTestId('file-input-upload-button')!.getAttribute('data-disabled')).toBe(
@@ -121,7 +124,7 @@ describe('FileInput with empty state', () => {
         type: 'file',
       },
       observeAsset: observeAssetStub,
-      render: (inputProps) => <FileInput {...inputProps} directUploads={false} />,
+      render: (inputProps) => <BaseFileInput {...inputProps} directUploads={false} />,
     })
 
     expect(result.queryByText(`Can't upload files here`)).toBeInTheDocument()
@@ -137,7 +140,7 @@ describe('FileInput with empty state', () => {
         type: 'file',
       },
       observeAsset: observeAssetStub,
-      render: (inputProps) => <FileInput {...inputProps} readOnly />,
+      render: (inputProps) => <BaseFileInput {...inputProps} readOnly />,
     })
 
     expect(result.queryByTestId('file-input-upload-button')!.getAttribute('data-disabled')).toBe(
@@ -153,7 +156,7 @@ describe('FileInput with empty state', () => {
         type: 'file',
       },
       observeAsset: observeAssetStub,
-      render: (inputProps) => <FileInput {...inputProps} readOnly />,
+      render: (inputProps) => <BaseFileInput {...inputProps} readOnly />,
     })
 
     expect(result.queryByTestId('file-input-browse-button')!.getAttribute('data-disabled')).toBe(
@@ -169,7 +172,7 @@ describe('FileInput with empty state', () => {
         type: 'file',
       },
       observeAsset: observeAssetStub,
-      render: (inputProps) => <FileInput {...inputProps} readOnly />,
+      render: (inputProps) => <BaseFileInput {...inputProps} readOnly />,
     })
 
     const input = result.queryByTestId('file-button-input')
@@ -205,7 +208,7 @@ describe('FileInput with asset', () => {
         type: 'file',
       },
       observeAsset: observeAssetStub,
-      render: (inputProps) => <FileInput {...inputProps} value={value} />,
+      render: (inputProps) => <BaseFileInput {...inputProps} value={value} />,
     })
 
     expect(result.queryByText('cats.txt')).toBeInTheDocument()
@@ -230,7 +233,7 @@ describe('FileInput with asset', () => {
         type: 'file',
       },
       observeAsset: observeAssetStub,
-      render: (inputProps) => <FileInput {...inputProps} value={value} />,
+      render: (inputProps) => <BaseFileInput {...inputProps} value={value} />,
     })
 
     fireEvent.click(result.queryByTestId('options-menu-button')!)
@@ -248,7 +251,7 @@ describe('FileInput with asset', () => {
         type: 'file',
       },
       observeAsset: observeAssetStub,
-      render: (inputProps) => <FileInput {...inputProps} assetSources={[]} value={value} />,
+      render: (inputProps) => <BaseFileInput {...inputProps} assetSources={[]} value={value} />,
     })
 
     fireEvent.click(result.queryByTestId('options-menu-button')!)
@@ -268,7 +271,7 @@ describe('FileInput with asset', () => {
       },
       observeAsset: observeAssetStub,
       render: (inputProps) => (
-        <FileInput
+        <BaseFileInput
           {...inputProps}
           assetSources={[{name: 'source1'}, {name: 'source2'}] as any}
           value={value}
@@ -294,7 +297,7 @@ describe('FileInput with asset', () => {
         type: 'file',
       },
       observeAsset: observeAssetStub,
-      render: (inputProps) => <FileInput {...inputProps} directUploads={false} value={value} />,
+      render: (inputProps) => <BaseFileInput {...inputProps} directUploads={false} value={value} />,
     })
 
     fireEvent.click(result.queryByTestId('options-menu-button')!)
@@ -316,7 +319,7 @@ describe('FileInput with asset', () => {
         type: 'file',
       },
       observeAsset: observeAssetStub,
-      render: (inputProps) => <FileInput {...inputProps} readOnly value={value} />,
+      render: (inputProps) => <BaseFileInput {...inputProps} readOnly value={value} />,
     })
 
     fireEvent.click(result.queryByTestId('options-menu-button')!)
@@ -336,7 +339,7 @@ describe('FileInput with asset', () => {
         type: 'file',
       },
       observeAsset: observeAssetStub,
-      render: (inputProps) => <FileInput {...inputProps} readOnly value={value} />,
+      render: (inputProps) => <BaseFileInput {...inputProps} readOnly value={value} />,
     })
 
     fireEvent.click(result.queryByTestId('options-menu-button')!)
@@ -355,7 +358,7 @@ describe('FileInput with asset', () => {
       },
       observeAsset: observeAssetStub,
       render: (inputProps) => (
-        <FileInput
+        <BaseFileInput
           {...inputProps}
           assetSources={[{name: 'source1'}, {name: 'source2'}] as any}
           readOnly
@@ -384,7 +387,7 @@ describe('FileInput with asset', () => {
         type: 'file',
       },
       observeAsset: observeAssetStub,
-      render: (inputProps) => <FileInput {...inputProps} readOnly value={value} />,
+      render: (inputProps) => <BaseFileInput {...inputProps} readOnly value={value} />,
     })
 
     fireEvent.click(result.queryByTestId('options-menu-button')!)
@@ -430,7 +433,7 @@ describe('FileInput with asset', () => {
       },
       observeAsset: observeAssetStub,
       render: (inputProps) => (
-        <FileInput
+        <BaseFileInput
           {...inputProps}
           readOnly
           schemaType={fileType as any as FileSchemaType}

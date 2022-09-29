@@ -17,7 +17,7 @@ const RENDER_CALLBACK_NAMES: Record<ComponentNames, RenderComponentCallbackNames
   ToolMenu: 'renderToolMenu',
 }
 
-interface CreateRenderComponentProps {
+export interface CreateRenderComponentProps {
   componentName: ComponentNames
   config: SourceOptions
 }

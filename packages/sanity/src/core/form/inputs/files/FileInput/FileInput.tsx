@@ -47,7 +47,7 @@ import {InvalidFileWarning} from './InvalidFileWarning'
 // We alias DOM File type here to distinguish it from the type of the File value
 type DOMFile = globalThis.File
 
-export interface File extends Partial<BaseFile> {
+export interface BaseFileInputValue extends Partial<BaseFile> {
   _upload?: UploadState
 }
 
@@ -55,14 +55,15 @@ function passThrough({children}: {children?: React.ReactNode}) {
   return children
 }
 
-export interface FileInputProps extends ObjectInputProps<File, FileSchemaType> {
+export interface BaseFileInputProps extends ObjectInputProps<BaseFileInputValue, FileSchemaType> {
   assetSources: AssetSource[]
   directUploads?: boolean
   observeAsset: (documentId: string) => Observable<FileAsset>
   resolveUploader: UploaderResolver
   client: SanityClient
 }
-type FileInputState = {
+
+export interface BaseFileInputState {
   isUploading: boolean
   selectedAssetSource: AssetSource | null
   hoveringFiles: FileInfo[]
@@ -70,17 +71,17 @@ type FileInputState = {
   isMenuOpen: boolean
 }
 
-type Focusable = {
+export type Focusable = {
   focus: () => void
 }
 const ASSET_FIELD_PATH = ['asset']
 
-export class FileInput extends React.PureComponent<FileInputProps, FileInputState> {
+export class BaseFileInput extends React.PureComponent<BaseFileInputProps, BaseFileInputState> {
   _focusRef: Focusable | null = null
   _assetFieldPath: Path
   uploadSubscription: Subscription | null = null
 
-  state: FileInputState = {
+  state: BaseFileInputState = {
     isUploading: false,
     selectedAssetSource: null,
     hoveringFiles: [],
@@ -88,7 +89,7 @@ export class FileInput extends React.PureComponent<FileInputProps, FileInputStat
     isMenuOpen: false,
   }
 
-  constructor(props: FileInputProps) {
+  constructor(props: BaseFileInputProps) {
     super(props)
     this._assetFieldPath = props.path.concat(ASSET_FIELD_PATH)
   }

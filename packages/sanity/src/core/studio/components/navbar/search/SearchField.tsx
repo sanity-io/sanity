@@ -13,7 +13,7 @@ const StyledText = styled(Text)`
 
 const filterOption = () => true
 
-interface SearchFieldProps {
+export interface SearchFieldProps {
   fullScreen: boolean
   onSearchItemClick: () => void
   portalElement: HTMLElement | null

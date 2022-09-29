@@ -4,7 +4,7 @@ import {DeskToolContext} from './DeskToolContext'
 import {createStructureBuilder, DefaultDocumentNodeResolver} from './structureBuilder'
 import {StructureResolver, UnresolvedPaneNode} from './types'
 
-interface DeskToolProviderProps {
+export interface DeskToolProviderProps {
   structure?: StructureResolver
   defaultDocumentNode?: DefaultDocumentNodeResolver
   children: React.ReactNode

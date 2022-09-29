@@ -24,21 +24,3 @@ export interface CrossDatasetSearchHit {
   type: string
   published: undefined | {_id: string; _type: string}
 }
-
-// export interface BaseInputProps {
-//   type: CrossDatasetReferenceSchemaType
-//   markers: Marker[]
-//   id?: string
-//   focusPath: Path
-//   readOnly?: boolean
-//   onSearch: SearchFunction
-//   onFocus?: (path: Path) => void
-//   onBlur?: () => void
-//   getReferenceInfo: (
-//     doc: {_id: string; _type?: string},
-//     type: CrossDatasetReferenceSchemaType
-//   ) => Observable<CrossDatasetReferenceInfo>
-//   onChange: (event: PatchEvent) => void
-//   level: number
-//   presence: FormFieldPresence[]
-// }

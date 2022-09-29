@@ -45,7 +45,7 @@ export interface DocumentPreviewStore {
   ) => Observable<DraftsModelDocument<T>>
 }
 
-interface DocumentPreviewStoreOptions {
+export interface DocumentPreviewStoreOptions {
   crossProjectTokenStore: CrossProjectTokenStore
   client: SanityClient
 }

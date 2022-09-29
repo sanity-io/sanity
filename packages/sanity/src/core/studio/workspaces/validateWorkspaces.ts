@@ -1,12 +1,10 @@
-import {getIdentifier, getNamelessIdentifier} from './helpers'
+import {getWorkspaceIdentifier, getNamelessWorkspaceIdentifier} from './helpers'
 import type {WorkspaceLike} from './types'
 import {WorkspaceValidationError} from './WorkspaceValidationError'
 
-interface ValidateWorkspaceOptions {
+export interface ValidateWorkspaceOptions {
   workspaces: WorkspaceLike[]
 }
-
-export const getWorkspaceIdentifier = getIdentifier
 
 /**
  * Validates workspace configuration, throwing if:
@@ -36,7 +34,7 @@ export function validateNames(workspaces: WorkspaceLike[]): void {
   const names = new Map<string, {index: number; workspace: WorkspaceLike}>()
   workspaces.forEach((workspace, index) => {
     const {name: rawName, title} = workspace
-    const thisIdentifier = getNamelessIdentifier(title, index)
+    const thisIdentifier = getNamelessWorkspaceIdentifier(title, index)
 
     if (!rawName && !isSingleWorkspace) {
       throw new WorkspaceValidationError(
@@ -59,7 +57,7 @@ export function validateNames(workspaces: WorkspaceLike[]): void {
     const existingWorkspace = names.get(normalized)
 
     if (existingWorkspace) {
-      const prevIdentifier = getNamelessIdentifier(
+      const prevIdentifier = getNamelessWorkspaceIdentifier(
         existingWorkspace.workspace.title,
         existingWorkspace.index
       )
@@ -112,12 +110,12 @@ export function validateBasePaths(workspaces: WorkspaceLike[]): void {
 
     if (firstWorkspaceSegmentCount !== workspaceSegmentCount) {
       throw new WorkspaceValidationError(
-        `All workspace \`basePath\`s must have the same amount of segments. Workspace \`${getIdentifier(
+        `All workspace \`basePath\`s must have the same amount of segments. Workspace \`${getWorkspaceIdentifier(
           firstWorkspace,
           index
         )}\` had ${firstWorkspaceSegmentCount} segment${
           firstWorkspaceSegmentCount === 1 ? '' : 's'
-        } \`${firstWorkspace.basePath}\` but workspace \`${getIdentifier(
+        } \`${firstWorkspace.basePath}\` but workspace \`${getWorkspaceIdentifier(
           workspace,
           index
         )}\` had ${workspaceSegmentCount} segment${workspaceSegmentCount === 1 ? '' : 's'} \`${
@@ -136,12 +134,15 @@ export function validateBasePaths(workspaces: WorkspaceLike[]): void {
     if (existingWorkspace) {
       throw new WorkspaceValidationError(
         `\`basePath\`s must be unique. Workspaces \`${existingWorkspace}\` and ` +
-          `\`${getIdentifier(workspace, index)}\` both have the \`basePath\` \`${basePath}\``,
+          `\`${getWorkspaceIdentifier(
+            workspace,
+            index
+          )}\` both have the \`basePath\` \`${basePath}\``,
         {workspace, index}
       )
     }
 
-    basePaths.set(basePath, getIdentifier(workspace, index))
+    basePaths.set(basePath, getWorkspaceIdentifier(workspace, index))
   })
 }
 

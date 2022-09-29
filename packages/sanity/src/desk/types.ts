@@ -2,12 +2,11 @@ import {SchemaType} from '@sanity/types'
 import {Subscribable} from 'rxjs'
 import {GeneralPreviewLayoutKey, ConfigContext, InitialValueTemplateItem} from '../core'
 import {
-  ComponentView,
   DefaultDocumentNodeResolver,
-  FormView,
   StructureBuilder,
   StructureContext,
   UserComponent,
+  View,
 } from './structureBuilder'
 
 export interface DeskToolFeatures {
@@ -140,7 +139,7 @@ export interface PaneMenuItemGroup {
   title?: string
 }
 
-interface BaseResolvedPaneNode<T extends PaneNode['type']> {
+export interface BaseResolvedPaneNode<T extends PaneNode['type']> {
   id: string
   type: T
   title: string
@@ -160,7 +159,6 @@ export interface CustomComponentPaneNode extends BaseResolvedPaneNode<'component
   // component: React.ComponentType<Props> | React.ReactNode
 }
 
-export type PaneView = FormView | ComponentView
 
 export interface DocumentPaneNode extends BaseResolvedPaneNode<'document'> {
   options: {
@@ -170,7 +168,7 @@ export interface DocumentPaneNode extends BaseResolvedPaneNode<'document'> {
     templateParameters?: Record<string, unknown>
   }
   source?: string
-  views?: PaneView[]
+  views?: View[]
 }
 
 export interface DocumentListPaneNode extends BaseResolvedPaneNode<'documentList'> {

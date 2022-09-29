@@ -33,7 +33,7 @@ export function resolveConfig(config: Config): Observable<Workspace[]> {
   )
 }
 
-type CreateWorkspaceFromConfigOptions =
+export type CreateWorkspaceFromConfigOptions =
   | SingleWorkspace
   | (SingleWorkspace & {
       currentUser: CurrentUser

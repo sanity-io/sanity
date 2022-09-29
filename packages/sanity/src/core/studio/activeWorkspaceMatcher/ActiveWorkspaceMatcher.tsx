@@ -10,7 +10,7 @@ import {
 } from './ActiveWorkspaceMatcherContext'
 import {matchWorkspace} from './matchWorkspace'
 
-interface ActiveWorkspaceMatcherProps {
+export interface ActiveWorkspaceMatcherProps {
   children?: React.ReactChild
   unstable_history?: History
   NotFoundComponent: React.ComponentType<{onNavigateToDefaultWorkspace: () => void}>
