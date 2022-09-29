@@ -166,7 +166,7 @@ describe('collapsible object fields', () => {
       throw new Error('should not be hidden')
     }
     const aboveMember = getDeepFieldMember(result, new Array(2).fill('deep'))
-    expect(aboveMember.collapsible).toBe(false)
+    expect(aboveMember.collapsible).toBeFalsy()
     expect(aboveMember.collapsed).toBe(false)
 
     const atMember = getDeepFieldMember(result, new Array(3).fill('deep'))
