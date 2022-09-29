@@ -1,4 +1,4 @@
-import React, {useCallback, useMemo, useRef} from 'react'
+import React, {useCallback, useEffect, useMemo, useRef} from 'react'
 import {isBooleanSchemaType, isNumberSchemaType} from '@sanity/types'
 import {FieldMember} from '../../store'
 import {
@@ -8,7 +8,6 @@ import {
   RenderInputCallback,
 } from '../../types'
 import {FormPatch, PatchEvent, set, unset} from '../../patch'
-import {useDidUpdate} from '../../hooks/useDidUpdate'
 import {useFormCallbacks} from '../../studio/contexts/FormCallbacks'
 
 /**
@@ -27,11 +26,11 @@ export function PrimitiveField(props: {
 
   const {onPathBlur, onPathFocus, onChange} = useFormCallbacks()
 
-  useDidUpdate(member.field.focused, (hadFocus, hasFocus) => {
-    if (!hadFocus && hasFocus) {
+  useEffect(() => {
+    if (member.field.focused) {
       focusRef.current?.focus()
     }
-  })
+  }, [member.field.focused])
 
   const handleBlur = useCallback(() => {
     onPathBlur(member.field.path)
