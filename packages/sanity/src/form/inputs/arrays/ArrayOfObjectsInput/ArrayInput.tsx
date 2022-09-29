@@ -10,7 +10,7 @@ import {
   SchemaType,
 } from '@sanity/types'
 import {isPlainObject} from 'lodash'
-import {Box, Button, Card, Dialog, Flex, Spinner, Stack, Text, ToastParams} from '@sanity/ui'
+import {Box, Button, Card, Dialog, Flex, Spinner, Stack, Text} from '@sanity/ui'
 import React from 'react'
 import {map} from 'rxjs/operators'
 import {Subscription} from 'rxjs'
@@ -35,8 +35,6 @@ import type {ArrayInputMember, InsertEvent} from './types'
 import {uploadTarget} from './uploadTarget/uploadTarget'
 import {isEmpty} from './item/helpers'
 import {ArrayItem} from './item/ArrayItem'
-
-type Toast = {push: (params: ToastParams) => void}
 
 export function createProtoValue(type: SchemaType): ArrayInputMember {
   if (!isObjectSchemaType(type)) {

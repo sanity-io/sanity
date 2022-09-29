@@ -16,8 +16,12 @@ export interface TrackedArea {
   element: HTMLElement
 }
 
-const {Tracker, useReportedValues, useReporter} = ENABLED
+const trackerScope = ENABLED
   ? createTrackerScope<TrackedChange | TrackedArea>()
   : createNoopTrackerScope<TrackedChange | TrackedArea>()
 
-export {Tracker, useReportedValues, useReporter}
+export const Tracker = trackerScope.Tracker
+
+export const useReportedValues = trackerScope.useReportedValues
+
+export const useReporter = trackerScope.useReporter

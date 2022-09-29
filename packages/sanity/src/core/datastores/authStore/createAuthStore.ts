@@ -263,6 +263,4 @@ function hash(value: unknown): string {
 /**
  * @public
  */
-const createAuthStore = memoize(_createAuthStore, hash)
-
-export {createAuthStore}
+export const createAuthStore = memoize(_createAuthStore, hash)

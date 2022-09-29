@@ -1,7 +1,6 @@
 import React, {useCallback, useMemo, useRef} from 'react'
 import {FieldMember} from '../../store'
 import {
-  ArrayOfObjectsInputProps,
   PrimitiveFieldProps,
   PrimitiveInputProps,
   RenderFieldCallback,

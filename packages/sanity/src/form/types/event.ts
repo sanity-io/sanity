@@ -1,4 +1,4 @@
-import {KeyedSegment, SchemaType} from '@sanity/types'
+import {KeyedSegment} from '@sanity/types'
 
 export interface InsertItemEvent {
   items: unknown[]

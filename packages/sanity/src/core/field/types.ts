@@ -1,12 +1,7 @@
-/* eslint-disable @typescript-eslint/ban-types */
 import {
   Path,
-  // Block,
   Reference,
-  // ReferenceSchemaType,
   ArraySchemaType,
-  // GenericSchemaType,
-  // BlockSchemaType,
   BooleanSchemaType,
   NumberSchemaType,
   ObjectSchemaType,
@@ -17,19 +12,16 @@ import {
 } from '@sanity/types'
 import {ComponentType} from 'react'
 import {
-  // Base diffs
   ArrayDiff as AgnosticArrayDiff,
   BooleanDiff as AgnosticBooleanDiff,
+  ItemDiff as AgnosticItemDiff,
   NullDiff as AgnosticNullDiff,
   NumberDiff as AgnosticNumberDiff,
   ObjectDiff as AgnosticObjectDiff,
   StringDiff as AgnosticStringDiff,
-  TypeChangeDiff as AgnosticTypeChangeDiff,
-
-  // Diff internals
-  ItemDiff as AgnosticItemDiff,
   StringSegmentChanged as AgnosticStringSegmentChanged,
   StringSegmentUnchanged as AgnosticStringSegmentUnchanged,
+  TypeChangeDiff as AgnosticTypeChangeDiff,
 } from '@sanity/diff'
 import {FormInsertPatch} from '../../form'
 import {FieldValueError} from './validation'
@@ -75,13 +67,21 @@ export type Annotation = AnnotationDetails | null
 /**
  * Diff types with annotation type set automatically
  */
+
 export type ArrayDiff<V = unknown> = AgnosticArrayDiff<Annotation, V>
+
 export type BooleanDiff = AgnosticBooleanDiff<Annotation>
+
 export type NullDiff = AgnosticNullDiff<Annotation>
+
 export type NumberDiff = AgnosticNumberDiff<Annotation>
+
 export type ObjectDiff<T extends object = Record<string, any>> = AgnosticObjectDiff<Annotation, T>
+
 export type StringDiff = AgnosticStringDiff<Annotation>
+
 export type ReferenceDiff = ObjectDiff<Reference>
+
 export type TypeChangeDiff = AgnosticTypeChangeDiff<Annotation>
 
 export type Diff<A = unknown, O extends object = Record<string, any>> =
@@ -111,6 +111,7 @@ export interface ArrayItemMetadata {
  * Diff components
  */
 export type DiffComponent<T extends Diff = Diff> = ComponentType<DiffProps<T>>
+
 export type DiffComponentOptions<T extends Diff = Diff> = {
   component: DiffComponent<T>
   showHeader?: boolean
