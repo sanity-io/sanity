@@ -9,7 +9,7 @@ import type {
   SchemaTypeDefinition,
 } from '@sanity/types'
 import type React from 'react'
-import {ComponentType, ReactNode} from 'react'
+import type {ComponentType, ReactNode} from 'react'
 import type {Observable} from 'rxjs'
 import type {BifurClient} from '@sanity/bifur-client'
 import type {

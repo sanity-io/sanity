@@ -97,7 +97,7 @@ describe('Keyboard accessibility', () => {
     })
 
     const input = result.container.querySelector('input[id="booleanTest"]')
-    userEvent.tab({focusTrap: result.container})
+    userEvent.tab()
     expect(input).toHaveFocus()
     expect(onFocus).toBeCalled()
   })
@@ -108,7 +108,7 @@ describe('Keyboard accessibility', () => {
       render: (inputProps) => <BooleanInput {...inputProps} />,
     })
 
-    userEvent.tab({focusTrap: result.container})
+    userEvent.tab()
     userEvent.keyboard('{space}')
     expect(onChange).toBeCalled()
   })
@@ -120,7 +120,7 @@ describe('Keyboard accessibility', () => {
     })
 
     const input = result.container.querySelector('input[id="booleanTest"]')
-    userEvent.tab({focusTrap: result.container})
+    userEvent.tab()
     userEvent.tab()
     expect(input).not.toHaveFocus()
 
@@ -166,7 +166,7 @@ describe('readOnly property', () => {
     expect(onChange).not.toBeCalled()
 
     // Keyboard event
-    userEvent.tab({focusTrap: result.container})
+    userEvent.tab()
     expect(input).not.toHaveFocus()
   })
 
@@ -185,7 +185,7 @@ describe('readOnly property', () => {
 
     // Keyboard event
     userEvent.tab({shift: true})
-    userEvent.tab({focusTrap: result.container})
+    userEvent.tab()
     userEvent.keyboard('{space}')
     expect(onChange).toBeCalled()
   })
@@ -205,7 +205,7 @@ describe('readOnly property', () => {
     expect(onChange).not.toBeCalled()
 
     // Keyboard event
-    userEvent.tab({focusTrap: result.container})
+    userEvent.tab()
     expect(input).not.toHaveFocus()
   })
 })

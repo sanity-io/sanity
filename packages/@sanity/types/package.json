@@ -34,7 +34,7 @@
   ],
   "dependencies": {
     "@sanity/client": "^3.4.1",
-    "@types/react": "^17.0.42"
+    "@types/react": "^18.0.21"
   },
   "devDependencies": {
     "react": "17.0.2",

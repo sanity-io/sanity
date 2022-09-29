@@ -1,8 +1,8 @@
 import {SanityDocument, SchemaType} from '@sanity/types'
 import React, {isValidElement} from 'react'
-import {Subscription} from 'rxjs'
 import {isNumber, isString} from 'lodash'
 import {Inline} from '@sanity/ui'
+import {useMemoObservable} from 'react-rx'
 import {PublishedStatus} from '../PublishedStatus'
 import {DraftStatus} from '../DraftStatus'
 import {GeneralPreviewLayoutKey} from '../../../components/previews'
@@ -22,67 +22,37 @@ export interface PaneItemPreviewProps {
   value: SanityDocument
 }
 
-export class PaneItemPreview extends React.Component<PaneItemPreviewProps, PaneItemPreviewState> {
-  state: PaneItemPreviewState = {}
+export function PaneItemPreview(props: PaneItemPreviewProps) {
+  const {icon, layout, presence, schemaType, value} = props
+  const title =
+    (isRecord(value.title) && isValidElement(value.title)) ||
+    isString(value.title) ||
+    isNumber(value.title)
+      ? value.title
+      : null
 
-  subscription: Subscription
+  // NOTE: this emits sync so can never be null
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  const {draft, published, isLoading} = useMemoObservable<PaneItemPreviewState>(
+    () => getPreviewStateObservable(props.documentPreviewStore, schemaType, value._id, title),
+    [props.documentPreviewStore, schemaType, value._id, title]
+  )!
 
-  constructor(props: PaneItemPreviewProps) {
-    super(props)
+  const status = isLoading ? null : (
+    <Inline space={4}>
+      {presence && presence.length > 0 && <DocumentPreviewPresence presence={presence} />}
+      <PublishedStatus document={published} />
+      <DraftStatus document={draft} />
+    </Inline>
+  )
 
-    const {value, schemaType} = props
-    // const {title} = value
-    const title =
-      (isRecord(value.title) && isValidElement(value.title)) ||
-      isString(value.title) ||
-      isNumber(value.title)
-        ? value.title
-        : null
-
-    let sync = true
-
-    this.subscription = getPreviewStateObservable(
-      props.documentPreviewStore,
-      schemaType,
-      value._id,
-      title
-    ).subscribe((state) => {
-      if (sync) {
-        this.state = state
-      } else {
-        this.setState(state)
-      }
-    })
-
-    sync = false
-  }
-
-  componentWillUnmount() {
-    if (this.subscription) {
-      this.subscription.unsubscribe()
-    }
-  }
-
-  render() {
-    const {icon, layout, presence, value} = this.props
-    const {draft, published, isLoading} = this.state
-
-    const status = isLoading ? null : (
-      <Inline space={4}>
-        {presence && presence.length > 0 && <DocumentPreviewPresence presence={presence} />}
-        <PublishedStatus document={published} />
-        <DraftStatus document={draft} />
-      </Inline>
-    )
-
-    return (
-      <SanityDefaultPreview
-        {...getValueWithFallback({value, draft, published})}
-        isPlaceholder={isLoading}
-        icon={icon}
-        layout={layout}
-        status={status}
-      />
-    )
-  }
+  return (
+    <SanityDefaultPreview
+      {...getValueWithFallback({value, draft, published})}
+      isPlaceholder={isLoading}
+      icon={icon}
+      layout={layout}
+      status={status}
+    />
+  )
 }

@@ -1,4 +1,5 @@
-import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import type {ThrottleSettings} from 'lodash'
+import React, {useCallback, useMemo, useRef, useState} from 'react'
 import {isNonNullable} from '../../util/isNonNullable'
 import {useThrottledCallback} from '../../util/useThrottledCallback'
 import {getHookId} from './actionId'
@@ -13,6 +14,8 @@ interface GetHookCollectionStateProps<T, K> {
   onReset?: () => void
 }
 
+const throttleOptions: ThrottleSettings = {trailing: true}
+
 export function GetHookCollectionState<T, K>(props: GetHookCollectionStateProps<T, K>) {
   const {hooks, args, children, onReset} = props
 
@@ -20,13 +23,6 @@ export function GetHookCollectionState<T, K>(props: GetHookCollectionStateProps<
   const [tickId, setTick] = useState(0)
 
   const [keys, setKeys] = useState<Record<string, number>>({})
-  const mountedRef = useRef(true)
-
-  useEffect(() => {
-    return () => {
-      mountedRef.current = false
-    }
-  }, [])
 
   const ricHandle = useRef<number | null>(null)
 
@@ -38,15 +34,15 @@ export function GetHookCollectionState<T, K>(props: GetHookCollectionStateProps<
     ricHandle.current = requestIdleCallback(() => {
       ricHandle.current = null
 
-      if (mountedRef.current) {
-        setTick((tick) => tick + 1)
-      }
+      setTick((tick) => tick + 1)
     })
   }, [])
 
-  const handleRequestUpdateThrottled = useThrottledCallback(handleRequestUpdate, 60, {
-    trailing: true,
-  })
+  const handleRequestUpdateThrottled = useThrottledCallback(
+    handleRequestUpdate,
+    60,
+    throttleOptions
+  )
 
   const handleNext = useCallback((id: any, hookState: any) => {
     if (hookState === null) {

@@ -331,7 +331,7 @@ describe('user interaction happy paths', () => {
     const preview = result.getByTestId('preview')
     expect(preview).toHaveTextContent('Product some-product')
     const menuButton = result.getByTestId('menu-button')
-    menuButton.click()
+    await act(() => menuButton.click())
     const replaceMenuItem = result.getByTestId('menu-item-clear')
     replaceMenuItem.click()
 
