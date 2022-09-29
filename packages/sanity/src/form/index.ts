@@ -8,11 +8,8 @@ export * from './studio/focusManagers/HashFocusManager'
 export * from './studio/focusManagers/SimpleFocusManager'
 
 // inputs
-export type {_ArrayInput_ArrayMember, _InsertEvent} from './inputs/arrays/ArrayOfObjectsInput'
-export type {
-  _ArrayInputState,
-  ArrayInputProps,
-} from './inputs/arrays/ArrayOfObjectsInput/ArrayInput'
+export type {ArrayInputMember, InsertEvent} from './inputs/arrays/ArrayOfObjectsInput'
+export type {ArrayInputState, ArrayInputProps} from './inputs/arrays/ArrayOfObjectsInput/ArrayInput'
 export * from './inputs/PortableText/PortableTextInput'
 export {PortableTextInput as BlockEditor} from './inputs/PortableText/PortableTextInput'
 

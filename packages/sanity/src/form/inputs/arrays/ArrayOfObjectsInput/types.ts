@@ -8,7 +8,7 @@ export type ModalType = 'modal' | 'fullscreen' | string
 /**
  * @internal
  */
-export type _ArrayInput_ArrayMember = {
+export type ArrayInputMember = {
   _type?: string
   _key: string
   [key: string]: any
@@ -17,8 +17,8 @@ export type _ArrayInput_ArrayMember = {
 /**
  * @internal
  */
-export interface _InsertEvent {
-  item: _ArrayInput_ArrayMember
+export interface InsertEvent {
+  item: ArrayInputMember
   position: 'before' | 'after'
   referenceItem: KeyedSegment | number
   edit?: boolean

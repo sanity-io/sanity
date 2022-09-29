@@ -163,14 +163,14 @@ export interface DocumentPluginOptions {
   badges?: DocumentBadgeComponent[] | DocumentBadgesResolver
   actions?: DocumentActionComponent[] | DocumentActionsResolver
   productionUrl?: AsyncComposableOption<string | undefined, ResolveProductionUrlContext>
-  unstable_languageFilter?: _DocumentLanguageFilterResolver
+  unstable_languageFilter?: DocumentLanguageFilterResolver
   newDocumentOptions?: NewDocumentOptionsResolver
 }
 
 /**
  * @internal
  */
-export interface _DocumentLanguageFilterContext extends ConfigContext {
+export interface DocumentLanguageFilterContext extends ConfigContext {
   documentId?: string
   schemaType: string
 }
@@ -178,14 +178,14 @@ export interface _DocumentLanguageFilterContext extends ConfigContext {
 /**
  * @internal
  */
-export type _DocumentLanguageFilterComponent = ComponentType<{schemaType: ObjectSchemaType}>
+export type DocumentLanguageFilterComponent = ComponentType<{schemaType: ObjectSchemaType}>
 
 /**
  * @internal
  */
-export type _DocumentLanguageFilterResolver = ComposableOption<
-  _DocumentLanguageFilterComponent[],
-  _DocumentLanguageFilterContext
+export type DocumentLanguageFilterResolver = ComposableOption<
+  DocumentLanguageFilterComponent[],
+  DocumentLanguageFilterContext
 >
 
 export type DocumentActionsResolver = ComposableOption<
@@ -303,8 +303,8 @@ export interface Source {
     ) => Promise<string | undefined>
     resolveNewDocumentOptions: (context: NewDocumentCreationContext) => InitialValueTemplateItem[]
     unstable_languageFilter: (
-      props: PartialContext<_DocumentLanguageFilterContext>
-    ) => _DocumentLanguageFilterComponent[]
+      props: PartialContext<DocumentLanguageFilterContext>
+    ) => DocumentLanguageFilterComponent[]
   }
   form: {
     file: {

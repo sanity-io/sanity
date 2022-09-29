@@ -24,7 +24,7 @@ import {
   WorkspaceSummary,
 } from './types'
 import {
-  _documentLanguageFilterReducer,
+  documentLanguageFilterReducer,
   documentActionsReducer,
   documentBadgesReducer,
   fileAssetSourceResolver,
@@ -449,7 +449,7 @@ function resolveSource({
           context: {...context, ...partialContext},
           initialValue: initialLanguageFilter,
           propertyName: 'document.unstable_languageFilter',
-          reducer: _documentLanguageFilterReducer,
+          reducer: documentLanguageFilterReducer,
         }),
     },
     form: {

@@ -274,7 +274,7 @@ export type {
   StringInputProps,
   TypeAnnotationMismatchError,
   UndeclaredMembersError,
-  _ArrayInput_ArrayMember,
+  ArrayInputMember,
 } from '../form'
 
 export type {
