@@ -16,20 +16,6 @@ function validatePlugin(pluginResult: PluginOptions) {
     )
 }
 
-// interface Foo {
-//   s?: string
-//   // j?: number
-// }
-
-// type F<T> = Exclude<T[keyof T], undefined> extends never ? T : T | void
-
-// type X = F<Foo>
-
-// interface X
-
-// export function createPlugin<TOptions = void>(
-//   arg: PluginFactory<TOptions> | PluginOptions
-// ): Plugin<F<TOptions>>
 export function createPlugin<TOptions = void>(
   arg: PluginFactory<TOptions> | PluginOptions
 ): Plugin<TOptions> {

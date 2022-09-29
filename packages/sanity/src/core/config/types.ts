@@ -90,10 +90,6 @@ export interface SanityFormConfig {
   ) => ReactNode
 }
 
-export interface FormBuilderComponentResolverContext extends ConfigContext {
-  schemaType: SchemaType
-}
-
 /**
  * @alpha
  */

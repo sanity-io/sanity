@@ -35,9 +35,11 @@ export const CONNECTING: ConnectingStatus = {type: 'connecting'}
 
 export type ConnectionStatus = ConnectingStatus | ErrorStatus | ConnectedStatus | RetryingStatus
 
-const [onRetry$, onRetry] = observableCallback()
+const _callback = observableCallback()
 
-export {onRetry}
+const onRetry$ = _callback[0]
+
+export const onRetry = _callback[1]
 
 const createErrorStatus = ({
   error,
@@ -60,10 +62,10 @@ const createErrorStatus = ({
 export interface ConnectionStatusStoreOptions {
   bifur: BifurClient
 }
+
 /**
  * This is the beginning of what should be the data store tracking connection status in the Sanity studio.
  */
-
 export function createConnectionStatusStore({
   bifur,
 }: ConnectionStatusStoreOptions): ConnectionStatusStore {
