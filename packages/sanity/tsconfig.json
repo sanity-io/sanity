@@ -6,15 +6,6 @@
     "rootDir": ".",
     "outDir": "./lib/dts",
     "jsx": "react",
-    "baseUrl": "./src/_exports",
-    "paths": {
-      "sanity/_internal": ["./_internal.ts"],
-      "sanity/_unstable": ["./_unstable.ts"],
-      "sanity/cli": ["./cli.ts"],
-      "sanity/desk": ["./desk.ts"],
-      "sanity/form": ["./form.ts"],
-      "sanity": ["./index.ts"]
-    },
 
     // For package.json import and scripts
     "resolveJsonModule": true,
