@@ -5,6 +5,7 @@ import {Config} from '../config'
 import {StudioProvider} from './StudioProvider'
 import {useWorkspace} from './workspace'
 
+/** @beta */
 export interface StudioProps {
   config: Config
   onSchemeChange?: (nextScheme: ThemeColorSchemeKey) => void
@@ -19,6 +20,7 @@ function StudioLayout() {
   return <Layout />
 }
 
+/** @beta */
 export function Studio(props: StudioProps): ReactElement {
   return (
     <StudioProvider {...props}>

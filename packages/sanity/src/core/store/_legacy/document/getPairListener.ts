@@ -17,16 +17,19 @@ interface Snapshots {
   published: SanityDocument | null
 }
 
+/** @internal */
 export interface InitialSnapshotEvent {
   type: 'snapshot'
   documentId: string
   document: SanityDocument | null
 }
 
+/** @internal */
 export interface PairListenerOptions {
   tag?: string
 }
 
+/** @internal */
 export type ListenerEvent =
   | MutationEvent
   | ReconnectEvent
@@ -54,6 +57,7 @@ function allPendingTransactionEventsReceived(listenerEvents: ListenerEvent[]) {
   )
 }
 
+/** @internal */
 export function getPairListener(
   client: SanityClient,
   idPair: IdPair,

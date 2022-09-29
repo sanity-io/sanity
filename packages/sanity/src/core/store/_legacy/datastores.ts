@@ -20,6 +20,7 @@ import {useResourceCache} from './ResourceCacheProvider'
 import {createSettingsStore, SettingsStore} from './settings'
 import {createUserStore, UserStore} from './user'
 
+/** @beta */
 export function useUserStore(): UserStore {
   const {getClient, currentUser} = useSource()
   const resourceCache = useResourceCache()
@@ -42,6 +43,7 @@ export function useUserStore(): UserStore {
   }, [client, currentUser, resourceCache])
 }
 
+/** @beta */
 export function useGrantsStore(): GrantsStore {
   const {getClient} = useSource()
   const client = getClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
@@ -65,6 +67,7 @@ export function useGrantsStore(): GrantsStore {
   }, [client, currentUser, resourceCache])
 }
 
+/** @beta */
 export function useHistoryStore(): HistoryStore {
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const resourceCache = useResourceCache()
@@ -86,6 +89,7 @@ export function useHistoryStore(): HistoryStore {
   }, [client, resourceCache])
 }
 
+/** @beta */
 export function useDocumentPreviewStore(): DocumentPreviewStore {
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const resourceCache = useResourceCache()
@@ -108,6 +112,7 @@ export function useDocumentPreviewStore(): DocumentPreviewStore {
   }, [client, resourceCache, crossProjectTokenStore])
 }
 
+/** @internal */
 export function useCrossProjectTokenStore() {
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const resourceCache = useResourceCache()
@@ -129,6 +134,7 @@ export function useCrossProjectTokenStore() {
   }, [client, resourceCache])
 }
 
+/** @beta */
 export function useDocumentStore(): DocumentStore {
   const getClient = useSource().getClient
   const schema = useSchema()
@@ -161,6 +167,7 @@ export function useDocumentStore(): DocumentStore {
   }, [getClient, documentPreviewStore, historyStore, resourceCache, schema, templates])
 }
 
+/** @internal */
 export function useConnectionStatusStore(): ConnectionStatusStore {
   const {bifur} = useSource().__internal
   const resourceCache = useResourceCache()
@@ -182,6 +189,7 @@ export function useConnectionStatusStore(): ConnectionStatusStore {
   }, [bifur, resourceCache])
 }
 
+/** @beta */
 export function usePresenceStore(): PresenceStore {
   const {
     __internal: {bifur},
@@ -207,6 +215,7 @@ export function usePresenceStore(): PresenceStore {
   }, [bifur, connectionStatusStore, resourceCache, userStore])
 }
 
+/** @beta */
 export function useProjectStore(): ProjectStore {
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const resourceCache = useResourceCache()
@@ -228,6 +237,7 @@ export function useProjectStore(): ProjectStore {
   }, [client, resourceCache])
 }
 
+/** @internal */
 export function useSettingsStore(): SettingsStore {
   const resourceCache = useResourceCache()
   const workspace = useWorkspace()

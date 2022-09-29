@@ -14,6 +14,8 @@ import {useFormCallbacks} from '../../studio/contexts/FormCallbacks'
 /**
  * Responsible for creating inputProps and fieldProps to pass to ´renderInput´ and ´renderField´ for a primitive field/input
  * @param props - Component props
+ *
+ * @internal
  */
 export function PrimitiveField(props: {
   member: FieldMember

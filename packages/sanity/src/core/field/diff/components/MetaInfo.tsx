@@ -2,6 +2,7 @@ import {Text, Box, Flex, Stack} from '@sanity/ui'
 import React, {createElement} from 'react'
 import styled from 'styled-components'
 
+/** @internal */
 export interface MetaInfoProps {
   title: string
   action?: string
@@ -14,6 +15,7 @@ const MetaText = styled(Text)`
   color: inherit;
 `
 
+/** @internal */
 export function MetaInfo(props: MetaInfoProps) {
   const {title, action, icon, children, markRemoved} = props
 

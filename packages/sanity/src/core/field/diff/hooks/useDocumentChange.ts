@@ -4,6 +4,7 @@ import {
   DocumentChangeContextInstance,
 } from '../contexts/DocumentChangeContext'
 
+/** @internal */
 export function useDocumentChange(): DocumentChangeContextInstance {
   const documentChange = useContext(DocumentChangeContext)
 

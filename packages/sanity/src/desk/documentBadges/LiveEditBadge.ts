@@ -1,5 +1,6 @@
 import {DocumentBadgeComponent} from 'sanity'
 
+/** @internal */
 export const LiveEditBadge: DocumentBadgeComponent = (props) => {
   const {liveEdit} = props
 

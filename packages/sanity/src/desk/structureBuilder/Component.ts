@@ -6,6 +6,8 @@ import {MenuItemGroup, MenuItemGroupBuilder, maybeSerializeMenuItemGroup} from '
 import {validateId} from './util/validateId'
 import {UserComponent} from './types'
 
+/** @beta */
+// TODO: rename to `StructureComponent` since it clashes with React?
 export interface Component extends StructureNode {
   component: UserComponent
   child?: Child
@@ -14,6 +16,7 @@ export interface Component extends StructureNode {
   options: {[key: string]: unknown}
 }
 
+/** @beta */
 export interface ComponentInput extends StructureNode {
   component: UserComponent
   child?: Child
@@ -22,6 +25,7 @@ export interface ComponentInput extends StructureNode {
   menuItemGroups?: (MenuItemGroup | MenuItemGroupBuilder)[]
 }
 
+/** @beta */
 export interface BuildableComponent extends Partial<StructureNode> {
   component?: UserComponent
   child?: Child
@@ -30,6 +34,7 @@ export interface BuildableComponent extends Partial<StructureNode> {
   menuItemGroups?: (MenuItemGroup | MenuItemGroupBuilder)[]
 }
 
+/** @beta */
 export class ComponentBuilder implements Serializable<Component> {
   protected spec: BuildableComponent
 

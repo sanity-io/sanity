@@ -2,10 +2,16 @@ import {FieldsetState} from './fieldsetState'
 import {BaseFormNode, ObjectFormNode, PrimitiveFormNode} from './nodes'
 import {ArrayItemError, FieldError} from './memberErrors'
 
+/** @public */
 export type ObjectMember = FieldMember | FieldSetMember | FieldError
+
+/** @beta */
 export type ArrayOfObjectsMember = ArrayOfObjectsItemMember | ArrayItemError
+
+/** @beta */
 export type ArrayOfPrimitivesMember = ArrayOfPrimitivesItemMember | ArrayItemError
 
+/** @beta */
 export interface ArrayOfObjectsItemMember<Node extends ObjectFormNode = ObjectFormNode> {
   kind: 'item'
   key: string
@@ -22,9 +28,11 @@ export interface ArrayOfObjectsItemMember<Node extends ObjectFormNode = ObjectFo
 
   open: boolean
 
+  /** @beta */
   item: Node
 }
 
+/** @beta */
 export interface ArrayOfPrimitivesItemMember<Node extends PrimitiveFormNode = PrimitiveFormNode> {
   kind: 'item'
   // note: there's no persistent handle on primitive items, so our only option is to use the index as key here
@@ -39,11 +47,13 @@ export interface ArrayOfPrimitivesItemMember<Node extends PrimitiveFormNode = Pr
 
   open: boolean
 
+  /** @beta */
   // note: ObjectInputProps.collapsed always follows the array item collapsed state
   // this means you cannot have an expanded array item with a collapsed object inside it
   item: Node
 }
 
+/** @public */
 export interface FieldMember<Node extends BaseFormNode = BaseFormNode> {
   kind: 'field'
   key: string
@@ -52,11 +62,16 @@ export interface FieldMember<Node extends BaseFormNode = BaseFormNode> {
   collapsed: boolean | undefined
   collapsible: boolean | undefined
   open: boolean
+
+  /** @beta */
   field: Node
 }
 
+/** @public */
 export interface FieldSetMember {
   kind: 'fieldSet'
   key: string
+
+  /** @beta */
   fieldSet: FieldsetState
 }

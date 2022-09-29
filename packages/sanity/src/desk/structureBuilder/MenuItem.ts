@@ -7,6 +7,7 @@ import {SerializeOptions, Serializable, SerializePath} from './StructureNodes'
 import {SerializeError, HELP_URL} from './SerializeError'
 import {StructureContext} from './types'
 
+/** @internal */
 export function maybeSerializeMenuItem(
   item: MenuItem | MenuItemBuilder,
   index: number,
@@ -15,12 +16,15 @@ export function maybeSerializeMenuItem(
   return item instanceof MenuItemBuilder ? item.serialize({path, index}) : item
 }
 
+/** @beta */
 export type MenuItemActionType =
   | string
   | ((params: Record<string, string> | undefined, scope?: any) => void)
 
+/** @beta */
 export type MenuItemParamsType = Record<string, string | unknown | undefined>
 
+/** @beta */
 export interface MenuItem {
   title: string
   action?: MenuItemActionType
@@ -32,8 +36,10 @@ export interface MenuItem {
   showAsAction?: boolean
 }
 
+/** @beta */
 export type PartialMenuItem = Partial<MenuItem>
 
+/** @beta */
 export class MenuItemBuilder implements Serializable<MenuItem> {
   protected spec: PartialMenuItem
 
@@ -137,12 +143,14 @@ export class MenuItemBuilder implements Serializable<MenuItem> {
   }
 }
 
+/** @internal */
 export interface SortMenuItem extends MenuItem {
   params: {
     by: SortOrderingItem[]
   }
 }
 
+/** @internal */
 export function getOrderingMenuItem(
   context: StructureContext,
   ordering: SortOrdering,
@@ -156,6 +164,7 @@ export function getOrderingMenuItem(
     .params({by: ordering.by, extendedProjection})
 }
 
+/** @internal */
 export function getOrderingMenuItemsForSchemaType(
   context: StructureContext,
   typeName: SchemaType | string

@@ -72,6 +72,7 @@ export interface Schema {
   getTypeNames: () => string[]
 }
 
+/** @beta */
 export interface SortOrderingItem {
   field: string
   direction: 'asc' | 'desc'
@@ -109,6 +110,7 @@ export type InitialValueResolver<Params, Value> = (
   context: InitialValueResolverContext
 ) => Promise<Value> | Value
 
+/** @public */
 export type InitialValueProperty<Params, Value> =
   | Value
   | InitialValueResolver<Params, Value>

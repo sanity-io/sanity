@@ -57,6 +57,7 @@ const ChangeBarWrapper = memo(function ChangeBarWrapper(
   )
 })
 
+/** @internal */
 export interface ChangeIndicatorProps {
   children?: React.ReactNode
   className?: string
@@ -67,6 +68,7 @@ export interface ChangeIndicatorProps {
   withHoverEffect?: boolean
 }
 
+/** @internal */
 export function ChangeIndicator(props: ChangeIndicatorProps) {
   const {children, className, disabled, hasFocus, isChanged, path, withHoverEffect} = props
   return (

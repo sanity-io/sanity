@@ -17,6 +17,7 @@ export function getWorkspaceIdentifier({name, title}: WorkspaceLike, index: numb
   return getNamelessWorkspaceIdentifier(title, index)
 }
 
+/** @internal */
 export function getNamelessWorkspaceIdentifier(title: string | undefined, index: number): string {
   const withTitle =
     typeof title === 'string' && title.trim().length > 0 ? ` (titled "${title}")` : ''

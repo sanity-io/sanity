@@ -3,10 +3,12 @@ import {of, timer} from 'rxjs'
 import {useMemoObservable} from 'react-rx'
 import {useDocumentStore} from '../store'
 
+/** @internal */
 export type ConnectionState = 'connecting' | 'reconnecting' | 'connected'
 
 const INITIAL: ConnectionState = 'connecting'
 
+/** @internal */
 export function useConnectionState(publishedDocId: string, docTypeName: string): ConnectionState {
   const documentStore = useDocumentStore()
 

@@ -39,6 +39,7 @@ import {PortableTextMarkersProvider} from './contexts/PortableTextMarkers'
 import {PortableTextMemberItemsProvider} from './contexts/PortableTextMembers'
 import {_isArrayOfObjectsFieldMember, _isBlockType} from './_helpers'
 
+/** @internal */
 export type PTObjectMember = ArrayOfObjectsItemMember<
   ObjectFormNode<
     {
@@ -47,6 +48,8 @@ export type PTObjectMember = ArrayOfObjectsItemMember<
     ObjectSchemaType
   >
 >
+
+/** @internal */
 export interface PortableTextMemberItem {
   kind: 'annotation' | 'textBlock' | 'objectBlock' | 'inlineObject'
   key: string
@@ -56,7 +59,7 @@ export interface PortableTextMemberItem {
 }
 
 /**
- * @alpha
+ * @beta
  */
 export interface PortableTextInputProps
   extends ArrayOfObjectsInputProps<PortableTextBlock, ArraySchemaType> {
@@ -71,7 +74,7 @@ export interface PortableTextInputProps
 /**
  * The root Portable Text Input component
  *
- * @alpha
+ * @beta
  */
 export function PortableTextInput(props: PortableTextInputProps) {
   const {

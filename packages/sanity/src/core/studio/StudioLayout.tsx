@@ -23,16 +23,19 @@ const SearchFullscreenPortalCard = styled(Card)`
   flex: 1;
 `
 
+/** @internal */
 export interface NavbarContextValue {
   onSearchOpenChange: (open: boolean) => void
   fullscreenSearchPortalEl: HTMLElement | null
 }
 
+/** @internal */
 export const NavbarContext = createContext<NavbarContextValue>({
   fullscreenSearchPortalEl: null,
   onSearchOpenChange: () => '',
 })
 
+/** @public */
 export function StudioLayout() {
   const {state: routerState} = useRouter()
   const {name, title, tools, studio} = useWorkspace()

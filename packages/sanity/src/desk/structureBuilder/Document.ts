@@ -27,6 +27,7 @@ const createDocumentChildResolver =
     return resolveDocumentNode({documentId: itemId, schemaType: type})
   }
 
+/** @beta */
 export interface DocumentOptions {
   id: string
   type: string
@@ -34,6 +35,7 @@ export interface DocumentOptions {
   templateParameters?: Record<string, unknown>
 }
 
+/** @beta */
 export type PartialDocumentNode = {
   id?: string
   title?: string
@@ -42,6 +44,7 @@ export type PartialDocumentNode = {
   options?: Partial<DocumentOptions>
 }
 
+/** @beta */
 export class DocumentBuilder implements Serializable<DocumentNode> {
   protected spec: PartialDocumentNode
 
@@ -218,6 +221,7 @@ function getDocumentOptions(spec: Partial<DocumentOptions>): DocumentOptions {
   return opts
 }
 
+/** @internal */
 export function documentFromEditor(context: StructureContext, spec?: EditorNode): DocumentBuilder {
   let doc = spec?.type
     ? // Use user-defined document fragment as base if possible
@@ -243,6 +247,7 @@ export function documentFromEditor(context: StructureContext, spec?: EditorNode)
   return doc
 }
 
+/** @internal */
 export function documentFromEditorWithInitialValue(
   {resolveDocumentNode, templates}: StructureContext,
   templateId: string,

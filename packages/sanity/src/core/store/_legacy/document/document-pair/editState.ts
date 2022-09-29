@@ -10,6 +10,7 @@ interface TransactionSyncLockState {
   enabled: boolean
 }
 
+/** @beta */
 export interface EditStateFor {
   id: string
   type: string
@@ -22,6 +23,7 @@ export interface EditStateFor {
 const LOCKED: TransactionSyncLockState = {enabled: true}
 const NOT_LOCKED: TransactionSyncLockState = {enabled: false}
 
+/** @internal */
 export const editState = (
   ctx: {
     client: SanityClient

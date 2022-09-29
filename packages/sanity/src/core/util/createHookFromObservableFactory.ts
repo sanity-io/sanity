@@ -4,10 +4,13 @@ import {catchError, distinctUntilChanged, map, scan, switchMap} from 'rxjs/opera
 import shallowEquals from 'shallow-equals'
 import {useUnique} from './useUnique'
 
+/** @internal */
 export type LoadingTuple<T> = [T, boolean]
 
+/** @internal */
 export type ReactHook<TArgs extends unknown[], TResult> = (...args: TArgs) => TResult
 
+/** @internal */
 export interface CreateHookFromObservableFactoryOptions<T, TArgs extends unknown[]> {
   /**
    * Optionally provide an initial value that will show up initially if the
@@ -32,15 +35,18 @@ function defaultArgsAreEqual<TArgs extends unknown[]>(prev: TArgs, next: TArgs) 
   return true
 }
 
+/** @internal */
 // overloads to handle types where an initial value is passed
 export function createHookFromObservableFactory<T, TArgs extends unknown[]>(
   observableFactory: (...args: TArgs) => Observable<T>,
   options: CreateHookFromObservableFactoryOptions<T, TArgs>
 ): ReactHook<TArgs, LoadingTuple<T>>
+/** @internal */
 export function createHookFromObservableFactory<T, TArgs extends unknown[]>(
   observableFactory: (...args: TArgs) => Observable<T>,
   options: CreateHookFromObservableFactoryOptions<T | undefined, TArgs>
 ): ReactHook<TArgs, LoadingTuple<T | undefined>>
+/** @internal */
 export function createHookFromObservableFactory<T, TArgs extends unknown[]>(
   observableFactory: (...args: TArgs) => Observable<T>,
   options?: CreateHookFromObservableFactoryOptions<T | undefined, TArgs>
@@ -56,6 +62,8 @@ export function createHookFromObservableFactory<T, TArgs extends unknown[]>(
  * The loading state will become true as soon as new incoming args are given and
  * will flip to false when the observable from the function emits the next
  * value.
+ *
+ * @internal
  */
 export function createHookFromObservableFactory<T, TArgs extends unknown[]>(
   observableFactory: (...args: TArgs) => Observable<T>,

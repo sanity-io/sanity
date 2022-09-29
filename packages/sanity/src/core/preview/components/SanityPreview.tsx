@@ -7,12 +7,14 @@ import {useVisibility} from '../useVisibility'
 import {_HIDE_DELAY} from './_constants'
 import {_resolvePreviewComponent} from './_resolvePreviewComponent'
 
+/** @internal */
 export interface SanityPreviewProps extends Omit<PreviewProps, 'value'> {
   ordering?: SortOrdering
   schemaType: SchemaType
   value: Previewable
 }
 
+/** @internal */
 export function SanityPreview(props: SanityPreviewProps & {style?: CSSProperties}) {
   const {
     layout = 'default',

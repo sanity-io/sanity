@@ -1,10 +1,9 @@
 /* eslint-disable react/no-unused-prop-types */
 
-// A simple focus path manager
-
 import React from 'react'
 import {Path} from '@sanity/types'
 
+/** @internal */
 export interface SimpleFocusManagerProps {
   path: any | null
   onFocus: () => void
@@ -12,10 +11,12 @@ export interface SimpleFocusManagerProps {
   children: (arg: any) => any
 }
 
+/** @internal */
 export interface SimpleFocusManagerState {
   focusPath: Array<any>
 }
 
+/** @internal */
 export class SimpleFocusManager extends React.Component<
   SimpleFocusManagerProps,
   SimpleFocusManagerState

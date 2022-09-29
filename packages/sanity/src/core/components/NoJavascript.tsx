@@ -20,6 +20,7 @@ const NoJsStyles = `
 }
 `
 
+/** @internal */
 export function NoJavascript() {
   return (
     <noscript>

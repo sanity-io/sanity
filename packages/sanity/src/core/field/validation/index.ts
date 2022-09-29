@@ -1,10 +1,12 @@
 import {SchemaType, ObjectSchemaType} from '@sanity/types'
 
+/** @internal */
 export interface FieldValueError {
   message: string
   value: unknown
 }
 
+/** @internal */
 export function getValueError(value: unknown, schemaType: SchemaType): FieldValueError | undefined {
   const {jsonType} = schemaType
   const valueType = Array.isArray(value) ? 'array' : typeof value

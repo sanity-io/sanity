@@ -11,6 +11,7 @@ import {map, mergeMap} from 'rxjs/operators'
 import {getDraftId, getPublishedId, isRecord} from '../../../util'
 import {Timeline, TimelineController, createObservableController} from './history'
 
+/** @beta */
 export interface HistoryStore {
   getDocumentAtRevision: (
     documentId: string,
@@ -26,8 +27,10 @@ export interface HistoryStore {
 
   restore: (id: string, targetId: string, rev: string) => Observable<SanityDocument>
 
+  /** @internal */
   getTimeline: (options: {publishedId: string; enableTrace?: boolean}) => Timeline
 
+  /** @internal */
   getTimelineController: (options: {
     client: SanityClient
     documentId: string
@@ -143,6 +146,7 @@ function jsonMap(value: unknown, mapFn: any): any {
 const mapRefNodes = (doc: SanityDocument, mapFn: (node: Reference) => Reference | undefined) =>
   jsonMap(doc, (node: unknown) => (isReference(node) ? mapFn(node) : node))
 
+/** @internal */
 export const removeMissingReferences = (
   doc: SanityDocument,
   existingIds: Record<string, boolean | undefined>
@@ -178,10 +182,12 @@ function restore(client: SanityClient, documentId: string, targetDocumentId: str
   )
 }
 
+/** @internal */
 export interface HistoryStoreOptions {
   client: SanityClient
 }
 
+/** @internal */
 export function createHistoryStore({client}: HistoryStoreOptions): HistoryStore {
   return {
     getDocumentAtRevision: (documentId, revision) =>

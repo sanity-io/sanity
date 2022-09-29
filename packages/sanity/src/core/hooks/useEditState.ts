@@ -3,6 +3,7 @@ import {merge, timer} from 'rxjs'
 import {debounce, share, skip, take} from 'rxjs/operators'
 import {EditStateFor, useDocumentStore} from '../store'
 
+/** @internal */
 export function useEditState(
   publishedDocId: string,
   docTypeName: string,

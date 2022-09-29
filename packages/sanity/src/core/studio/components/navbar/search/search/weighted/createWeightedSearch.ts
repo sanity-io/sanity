@@ -30,6 +30,7 @@ const toGroqParams = (terms: string[]): Record<string, string> => {
 const pathWithMapper = ({mapWith, path}: SearchPath): string =>
   mapWith ? `${mapWith}(${path})` : path
 
+/** @internal */
 export function createWeightedSearch(
   // eslint-disable-next-line camelcase
   types: {name: string; __experimental_search?: ObjectSchemaType['__experimental_search']}[],

@@ -9,6 +9,7 @@ import {
 } from './structureBuilder'
 import {GeneralPreviewLayoutKey, ConfigContext, InitialValueTemplateItem} from 'sanity'
 
+/** @internal */
 export interface DeskToolFeatures {
   /**
    * @beta
@@ -19,6 +20,7 @@ export interface DeskToolFeatures {
   splitViews: boolean
 }
 
+/** @internal */
 export interface DeskToolContextValue {
   features: DeskToolFeatures
   layoutCollapsed: boolean
@@ -28,11 +30,14 @@ export interface DeskToolContextValue {
   structureContext: StructureContext
 }
 
+/** @beta */
 // TODO: this should be updated to enforce the correct return type
 export type StructureResolver = (S: StructureBuilder, context: ConfigContext) => unknown
 
+/** @internal */
 export type DeskToolPaneActionHandler = (params: any, scope?: unknown) => void
 
+/** @beta */
 export interface DeskToolOptions {
   icon?: React.ComponentType
   name?: string
@@ -76,6 +81,8 @@ export interface DeskToolOptions {
  * see [`packages/@sanity/desk-tool/src/utils/parsePanesSegment.ts`][0]
  *
  * [0]: https://github.com/sanity-io/sanity/blob/287d308442938c98cbec4608d159401631792d7a/packages/%40sanity/desk-tool/src/utils/parsePanesSegment.ts#L71-L88
+ *
+ * @beta
  */
 export type RouterPanes = RouterPaneGroup[]
 
@@ -83,6 +90,8 @@ export type RouterPanes = RouterPaneGroup[]
  * Represents a "pane group" in the router.
  *
  * @see RouterPanes
+ *
+ * @beta
  */
 export type RouterPaneGroup = RouterPaneSibling[]
 
@@ -90,6 +99,8 @@ export type RouterPaneGroup = RouterPaneSibling[]
  * Represents a "sibling pane" or "split pane" in the router.
  *
  * @see RouterPanes
+ *
+ * @beta
  */
 export interface RouterPaneSibling {
   id: string
@@ -102,6 +113,8 @@ export interface RouterPaneSibling {
  * Passed as the second argument to the item of resolving pane children
  *
  * @see RouterPanes
+ *
+ * @internal
  */
 export interface RouterPaneSiblingContext {
   id: string
@@ -120,12 +133,15 @@ export interface RouterPaneSiblingContext {
   }
 }
 
+/** @internal */
 export type DeskToolMenuItem = ReturnType<ReturnType<StructureBuilder['menuItem']>['serialize']>
 
 /**
  * Represents what can be passed into `menuItems` inside of desk-tool panes
  *
  * @see BaseResolvedPaneNode
+ *
+ * @internal
  */
 export interface PaneMenuItem extends DeskToolMenuItem {
   // TODO: these would be great options in the `MenuItemBuilder`
@@ -134,11 +150,13 @@ export interface PaneMenuItem extends DeskToolMenuItem {
   shortcut?: string
 }
 
+/** @internal */
 export interface PaneMenuItemGroup {
   id: string
   title?: string
 }
 
+/** @internal */
 export interface BaseResolvedPaneNode<T extends PaneNode['type']> {
   id: string
   type: T
@@ -153,13 +171,14 @@ export interface BaseResolvedPaneNode<T extends PaneNode['type']> {
   child?: UnresolvedPaneNode
 }
 
+/** @internal */
 export interface CustomComponentPaneNode extends BaseResolvedPaneNode<'component'> {
   component: UserComponent
   options?: Record<string, unknown>
   // component: React.ComponentType<Props> | React.ReactNode
 }
 
-
+/** @internal */
 export interface DocumentPaneNode extends BaseResolvedPaneNode<'document'> {
   options: {
     id: string
@@ -171,6 +190,7 @@ export interface DocumentPaneNode extends BaseResolvedPaneNode<'document'> {
   views?: View[]
 }
 
+/** @internal */
 export interface DocumentListPaneNode extends BaseResolvedPaneNode<'documentList'> {
   defaultLayout?: GeneralPreviewLayoutKey
   displayOptions?: {showIcons?: boolean}
@@ -185,6 +205,7 @@ export interface DocumentListPaneNode extends BaseResolvedPaneNode<'documentList
   source?: string
 }
 
+/** @internal */
 export interface PaneListItem<TParams = unknown> {
   type: 'listItem'
   id: string
@@ -200,10 +221,12 @@ export interface PaneListItem<TParams = unknown> {
   params?: TParams
 }
 
+/** @internal */
 export interface PaneListItemDivider {
   type: 'divider'
 }
 
+/** @internal */
 export interface ListPaneNode extends BaseResolvedPaneNode<'list'> {
   defaultLayout?: GeneralPreviewLayoutKey
   displayOptions?: {showIcons?: boolean}
@@ -212,20 +235,24 @@ export interface ListPaneNode extends BaseResolvedPaneNode<'list'> {
   source?: string
 }
 
+/** @internal */
 export type PaneNode =
   | CustomComponentPaneNode
   | DocumentPaneNode
   | DocumentListPaneNode
   | ListPaneNode
 
+/** @internal */
 export type SerializablePaneNode = {
   // TODO: unify this context with `SerializeOptions`
   serialize(context: RouterPaneSiblingContext): UnresolvedPaneNode
 }
 
+/** @internal */
 export type PaneNodeResolver = (id: string, context: RouterPaneSiblingContext) => UnresolvedPaneNode
 
 // TODO: these types need to be unified with the buidlers `ListBuilder
+/** @internal */
 export type UnresolvedPaneNode =
   | PaneNodeResolver
   | SerializablePaneNode

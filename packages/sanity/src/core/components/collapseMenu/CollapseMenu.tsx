@@ -6,6 +6,7 @@ import {CollapseOverflowMenu} from './CollapseOverflowMenu'
 import {ObserveElement} from './ObserveElement'
 import {CollapseMenuDivider} from './CollapseMenuDivider'
 
+/** @internal */
 export interface CollapseMenuProps {
   children: React.ReactNode
   collapsed?: boolean
@@ -64,6 +65,7 @@ function _isReactElement(node: unknown): node is React.ReactElement {
   return Boolean(node)
 }
 
+/** @internal */
 export const CollapseMenu = forwardRef(function CollapseMenu(
   props: CollapseMenuProps,
   ref: React.ForwardedRef<HTMLDivElement>

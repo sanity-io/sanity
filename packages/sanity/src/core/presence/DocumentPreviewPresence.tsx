@@ -5,6 +5,7 @@ import {usePreviewCard, UserAvatar} from '../components'
 import {DocumentPresence} from '../store'
 import {isNonNullable} from '../util'
 
+/** @internal */
 export interface DocumentPreviewPresenceProps {
   presence: Omit<DocumentPresence, 'path'>[]
 }
@@ -39,6 +40,7 @@ const getTooltipText = (presence: Omit<DocumentPresence, 'path'>[]) => {
   return undefined
 }
 
+/** @internal */
 export function DocumentPreviewPresence(props: DocumentPreviewPresenceProps) {
   const {presence} = props
   const {color} = useTheme().sanity

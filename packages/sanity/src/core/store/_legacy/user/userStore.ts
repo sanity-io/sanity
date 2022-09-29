@@ -4,11 +4,13 @@ import DataLoader from 'dataloader'
 import raf from 'raf'
 import {isRecord} from '../../../util'
 
+/** @internal */
 export interface UserStoreOptions {
   client: SanityClient
   currentUser: CurrentUser | null
 }
 
+/** @beta */
 export interface UserStore {
   getUser(userId: string): Promise<User | null>
   getUsers(userIds: string[]): Promise<User[]>
@@ -17,6 +19,8 @@ export interface UserStore {
 /**
  * Given a `client` and a `currentUser` creates a datastore that handles
  * fetching, batch fetching, and caching users.
+ *
+ * @internal
  */
 export function createUserStore({client: _client, currentUser}: UserStoreOptions): UserStore {
   const client = _client.withConfig({apiVersion: '2021-06-07'})

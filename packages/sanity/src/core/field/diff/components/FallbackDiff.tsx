@@ -13,6 +13,7 @@ const FallbackPreview: FieldPreviewComponent<React.ReactNode> = ({value, schemaT
   )
 }
 
+/** @internal */
 export const FallbackDiff: DiffComponent<Diff<unknown, Record<string, unknown>>> = (props) => {
   const {diff, schemaType} = props
 

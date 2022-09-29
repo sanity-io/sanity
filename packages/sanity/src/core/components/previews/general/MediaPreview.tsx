@@ -14,6 +14,7 @@ import {
   TooltipContentStack,
 } from './MediaPreview.styled'
 
+/** @beta */
 export type MediaPreviewProps = PreviewProps<'media'>
 
 const DEFAULT_MEDIA_DIMENSIONS: PreviewMediaDimensions = {
@@ -23,6 +24,7 @@ const DEFAULT_MEDIA_DIMENSIONS: PreviewMediaDimensions = {
   dpr: getDevicePixelRatio(),
 }
 
+/** @beta */
 export function MediaPreview(props: MediaPreviewProps) {
   const {
     media,

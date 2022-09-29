@@ -49,8 +49,10 @@ interface InputProps extends ArrayOfObjectsInputProps<PortableTextBlock> {
   renderCustomMarkers?: RenderCustomMarkers
 }
 
+/** @internal */
 export type PortableTextEditorElement = HTMLDivElement | HTMLSpanElement | null
 
+/** @internal */
 export function Compositor(props: InputProps) {
   const {
     changed,

@@ -11,6 +11,7 @@ import {
   SnapshotEvent,
 } from './types'
 
+/** @beta */
 export type BufferedDocumentEvent =
   | SnapshotEvent
   | DocumentRebaseEvent
@@ -22,6 +23,7 @@ const prepare = (id: string) => (document: Partial<SanityDocument>) => {
   return {_id: id, ...rest}
 }
 
+/** @internal */
 export interface BufferedDocumentWrapper {
   consistency$: Observable<boolean>
   remoteSnapshot$: Observable<RemoteSnapshotEvent>
@@ -38,6 +40,7 @@ export interface BufferedDocumentWrapper {
   commit: () => void
 }
 
+/** @internal */
 export const createBufferedDocument = (
   documentId: string,
   // consider naming it remoteEvent$

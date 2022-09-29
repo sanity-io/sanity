@@ -5,9 +5,10 @@ import {Box, Flex, Stack, Text} from '@sanity/ui'
 import React, {memo} from 'react'
 import {FormFieldValidationStatus} from './FormFieldValidationStatus'
 
+/** @internal */
 export interface FormFieldHeaderTextProps {
   /**
-   * @alpha
+   * @beta
    */
   validation?: NodeValidation[]
   description?: React.ReactNode
@@ -20,6 +21,7 @@ export interface FormFieldHeaderTextProps {
 
 const EMPTY_ARRAY: never[] = []
 
+/** @internal */
 export const FormFieldHeaderText = memo(function FormFieldHeaderText(
   props: FormFieldHeaderTextProps
 ) {

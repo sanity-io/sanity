@@ -7,6 +7,7 @@ import {useUser} from '../../../store'
 import {AnnotationDetails, Diff} from '../../types'
 import {getAnnotationAtPath, useAnnotationColor} from '../annotations'
 
+/** @internal */
 export interface DiffTooltipProps extends TooltipProps {
   children: React.ReactElement
   description?: React.ReactNode
@@ -14,12 +15,14 @@ export interface DiffTooltipProps extends TooltipProps {
   path?: Path | string
 }
 
+/** @internal */
 export interface DiffTooltipWithAnnotationsProps extends TooltipProps {
   annotations: AnnotationDetails[]
   children: React.ReactElement
   description?: React.ReactNode
 }
 
+/** @internal */
 export function DiffTooltip(props: DiffTooltipProps | DiffTooltipWithAnnotationsProps) {
   if ('diff' in props) {
     const {diff, path = [], ...restProps} = props

@@ -27,6 +27,7 @@ import {IdPair} from '../types'
 import {DraftsModelDocumentAvailability} from '../../../../preview'
 import {editState} from './editState'
 
+/** @beta */
 export interface ValidationStatus {
   isValidating: boolean
   validation: ValidationMarker[]
@@ -69,6 +70,7 @@ const DOC_UPDATE_DELAY = 200
 // throttle delay for referenced document updates (i.e. time between responding to changes in referenced documents)
 const REF_UPDATE_DELAY = 1000
 
+/** @internal */
 export const validation = memoize(
   (
     ctx: {

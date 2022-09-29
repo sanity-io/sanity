@@ -29,6 +29,7 @@ import type {
 } from './types'
 import {Source, getConfigContextFromSource, getPublishedId} from 'sanity'
 
+/** @internal */
 export interface StructureBuilderOptions {
   source: Source
   defaultDocumentNode?: DefaultDocumentNodeResolver
@@ -51,6 +52,7 @@ function getDefaultStructure(context: StructureContext): ListBuilder {
     .showIcons(items.some((item) => hasIcon(item.getSchemaType())))
 }
 
+/** @internal */
 export function createStructureBuilder({
   defaultDocumentNode,
   source,

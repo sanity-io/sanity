@@ -4,12 +4,13 @@ import {TemplatePermissionsResult} from '../../../store'
 
 const Context = createContext<ReferenceInputOptions>({})
 
+/** @internal */
 export interface TemplateOption {
   id: string
   params?: Record<string, string | number | boolean>
 }
+
 /**
- * unstable
  * @internal
  */
 export interface EditReferenceOptions {
@@ -19,6 +20,7 @@ export interface EditReferenceOptions {
   template: TemplateOption
 }
 
+/** @internal */
 export interface EditReferenceLinkComponentProps {
   documentId: string
   documentType: string
@@ -28,7 +30,6 @@ export interface EditReferenceLinkComponentProps {
 }
 
 /**
- * unstable
  * @internal
  */
 export interface ReferenceInputOptions {
@@ -54,7 +55,6 @@ export interface ReferenceInputOptions {
 }
 
 /**
- * unstable
  * @internal
  */
 export function useReferenceInputOptions() {
@@ -62,7 +62,6 @@ export function useReferenceInputOptions() {
 }
 
 /**
- * unstable
  * @internal
  */
 export function ReferenceInputOptionsProvider(

@@ -54,10 +54,12 @@ import {ImageActionsMenu} from './ImageActionsMenu'
 import {ImagePreview} from './ImagePreview'
 import {InvalidImageWarning} from './InvalidImageWarning'
 
+/** @beta */
 export interface BaseImageInputValue extends Partial<BaseImage> {
   _upload?: UploadState
 }
 
+/** @beta */
 export interface BaseImageInputProps
   extends ObjectInputProps<BaseImageInputValue, ImageSchemaType> {
   assetSources: AssetSource[]
@@ -102,6 +104,7 @@ const ASSET_FIELD_PATH = ['asset']
 
 const ASSET_IMAGE_MENU_POPOVER: MenuButtonProps['popover'] = {portal: true}
 
+/** @internal */
 export class BaseImageInput extends React.PureComponent<BaseImageInputProps, BaseImageInputState> {
   _assetElementRef: null | Focusable = null
   _assetPath: Path

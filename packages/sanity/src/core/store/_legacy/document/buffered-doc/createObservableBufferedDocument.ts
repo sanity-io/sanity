@@ -39,6 +39,8 @@ type Action = MutationAction | CommitAction
 /**
  * Represents "commit requests" from the mutator.
  * These are emitted from the BufferedDocument instance's `requestHandler` callback
+ *
+ * @internal
  */
 export interface CommitRequest {
   mutation: Mutation
@@ -71,6 +73,7 @@ const getUpdatedSnapshot = (bufferedDocument: BufferedDocument) => {
 const toSnapshotEvent = (document: any): SnapshotEvent => ({type: 'snapshot', document})
 const getDocument = <T extends {document: any}>(event: T): T['document'] => event.document
 
+/** @internal */
 // This is an observable interface for BufferedDocument in an attempt
 // to make it easier to work with the api provided by it
 export const createObservableBufferedDocument = (listenerEvent$: Observable<ListenerEvent>) => {

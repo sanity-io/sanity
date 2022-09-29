@@ -44,6 +44,7 @@ import {FileDetails} from './FileDetails'
 import {FileSkeleton} from './FileSkeleton'
 import {InvalidFileWarning} from './InvalidFileWarning'
 
+/** @beta */
 export interface BaseFileInputValue extends Partial<BaseFile> {
   _upload?: UploadState
 }
@@ -52,6 +53,7 @@ function passThrough({children}: {children?: React.ReactNode}) {
   return children
 }
 
+/** @beta */
 export interface BaseFileInputProps extends ObjectInputProps<BaseFileInputValue, FileSchemaType> {
   assetSources: AssetSource[]
   directUploads?: boolean
@@ -60,6 +62,7 @@ export interface BaseFileInputProps extends ObjectInputProps<BaseFileInputValue,
   client: SanityClient
 }
 
+/** @internal */
 export interface BaseFileInputState {
   isUploading: boolean
   selectedAssetSource: AssetSource | null
@@ -68,11 +71,13 @@ export interface BaseFileInputState {
   isMenuOpen: boolean
 }
 
+/** @internal */
 export type Focusable = {
   focus: () => void
 }
 const ASSET_FIELD_PATH = ['asset']
 
+/** @internal */
 export class BaseFileInput extends React.PureComponent<BaseFileInputProps, BaseFileInputState> {
   _focusRef: Focusable | null = null
   _assetFieldPath: Path

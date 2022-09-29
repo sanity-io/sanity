@@ -922,8 +922,10 @@ function preparePrimitiveInputState<SchemaType extends PrimitiveSchemaType>(
   } as PrimitiveFormNode
 }
 
+/** @internal */
 export type FIXME_SanityDocument = Record<string, unknown>
 
+/** @internal */
 export function prepareFormState<T extends FIXME_SanityDocument>(
   props: RawState<ObjectSchemaType, T>
 ): ObjectFormNode | null {

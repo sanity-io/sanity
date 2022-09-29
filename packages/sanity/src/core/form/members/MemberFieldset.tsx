@@ -11,6 +11,7 @@ import {useFormCallbacks} from '../studio/contexts/FormCallbacks'
 import {MemberField} from './MemberField'
 import {MemberFieldError} from './MemberFieldError'
 
+/** @internal */
 export const MemberFieldSet = memo(function MemberFieldSet(props: {
   member: FieldSetMember
   renderField: RenderFieldCallback

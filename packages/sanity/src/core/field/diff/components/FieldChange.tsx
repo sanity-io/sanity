@@ -16,6 +16,7 @@ import {RevertChangesButton} from './RevertChangesButton'
 import {ValueError} from './ValueError'
 import {FieldChangeContainer, DiffBorder, PopoverWrapper} from './FieldChange.styled'
 
+/** @internal */
 export function FieldChange(
   props: {
     change: FieldChangeNode

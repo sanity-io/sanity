@@ -7,6 +7,8 @@ import {ConnectorContext} from './ConnectorContext'
 
 /**
  * This is used to draw the bar that wraps the diff components in the changes panel
+ *
+ * @internal
  */
 export const ChangeFieldWrapper = (props: {
   path: Path

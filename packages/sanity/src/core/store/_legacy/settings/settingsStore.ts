@@ -3,6 +3,7 @@ import {filter, map, switchMap} from 'rxjs/operators'
 import {resolveBackend} from './backends/resolve'
 import {Settings, SettingsStore} from './types'
 
+/** @internal */
 export function createSettingsStore(): SettingsStore {
   const storageBackend = resolveBackend()
 

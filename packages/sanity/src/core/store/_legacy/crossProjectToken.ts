@@ -2,6 +2,7 @@ import {from, Observable, of} from 'rxjs'
 import {filter, map, mergeMap, toArray} from 'rxjs/operators'
 import {SanityClient} from '@sanity/client'
 
+/** @internal */
 export interface CrossProjectTokenStore {
   getTokenDocumentId: ({tokenId, projectId}: {tokenId?: string; projectId: string}) => string
   getProjectIdFromTokenDocumentId: (id: string) => null | string
@@ -23,10 +24,12 @@ function isNonNullable<T>(value: T): value is NonNullable<T> {
   return value !== null
 }
 
+/** @internal */
 export interface CrossProjectTokenStoreOptions {
   client: SanityClient
 }
 
+/** @internal */
 // eslint-disable-next-line camelcase
 export function __tmp_wrap_crossProjectToken({
   client: _client,

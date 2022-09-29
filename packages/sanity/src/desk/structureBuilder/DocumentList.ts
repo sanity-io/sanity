@@ -64,15 +64,18 @@ const createDocumentChildResolverForItem =
     )
   }
 
+/** @beta */
 export interface PartialDocumentList extends BuildableGenericList {
   options?: DocumentListOptions
   schemaTypeName?: string
 }
 
+/** @beta */
 export interface DocumentListInput extends GenericListInput {
   options: DocumentListOptions
 }
 
+/** @beta */
 export interface DocumentList extends GenericList {
   type: 'documentList'
   options: DocumentListOptions
@@ -80,6 +83,7 @@ export interface DocumentList extends GenericList {
   schemaTypeName?: string
 }
 
+/** @beta */
 export interface DocumentListOptions {
   filter: string
   params?: Record<string, unknown>
@@ -87,6 +91,7 @@ export interface DocumentListOptions {
   defaultOrdering?: SortOrderingItem[]
 }
 
+/** @beta */
 export class DocumentListBuilder extends GenericListBuilder<
   PartialDocumentList,
   DocumentListBuilder
@@ -235,6 +240,7 @@ function inferTypeName(spec: PartialDocumentList): string | undefined {
   return typeNames.length === 1 ? typeNames[0] : undefined
 }
 
+/** @internal */
 export function getTypeNamesFromFilter(
   filter: string,
   params: Record<string, unknown> = {}

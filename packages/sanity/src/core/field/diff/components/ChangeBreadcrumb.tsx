@@ -3,6 +3,7 @@ import {Breadcrumbs, Text} from '@sanity/ui'
 import {ChangeTitlePath, FieldChangeNode} from '../../types'
 import {ChangeTitleSegment} from './ChangeTitleSegment'
 
+/** @internal */
 export function ChangeBreadcrumb(props: {change?: FieldChangeNode; titlePath: ChangeTitlePath}) {
   const {change, titlePath} = props
 

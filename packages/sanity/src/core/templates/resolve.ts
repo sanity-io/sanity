@@ -15,14 +15,17 @@ import {Template} from './types'
 import {validateInitialObjectValue} from './validate'
 import deepAssign from './util/deepAssign'
 
+/** @internal */
 export type Serializeable<T> = {
   serialize(): T
 }
 
+/** @internal */
 export function isBuilder(template: unknown): template is Serializeable<Template> {
   return isRecord(template) && typeof template.serialize === 'function'
 }
 
+/** @internal */
 // returns the "resolved" value from an initial value property (e.g. type.initialValue)
 // eslint-disable-next-line require-await
 export async function resolveValue<Params, InitialValue>(
@@ -35,6 +38,7 @@ export async function resolveValue<Params, InitialValue>(
     : initialValueOpt
 }
 
+/** @internal */
 export async function resolveInitialValue(
   schema: Schema,
   template: Template,
@@ -79,6 +83,7 @@ export async function resolveInitialValue(
   return validateInitialObjectValue(newValue, template)
 }
 
+/** @internal */
 export function getItemType(arrayType: ArraySchemaType, item: unknown): SchemaType | undefined {
   const itemTypeName = resolveTypeName(item)
 
@@ -87,10 +92,13 @@ export function getItemType(arrayType: ArraySchemaType, item: unknown): SchemaTy
     : arrayType.of.find((memberType) => memberType.name === itemTypeName)
 }
 
+/** @internal */
 export const DEFAULT_MAX_RECURSION_DEPTH = 10
 
 /**
  * Resolve initial value for the given schema type (recursively)
+ *
+ * @internal
  */
 export function resolveInitialValueForType<Params extends Record<string, unknown>>(
   /**
@@ -148,6 +156,7 @@ async function resolveInitialArrayValue<Params extends Record<string, unknown>>(
   )
 }
 
+/** @internal */
 export async function resolveInitialObjectValue<Params extends Record<string, unknown>>(
   type: ObjectSchemaType,
   params: Params,

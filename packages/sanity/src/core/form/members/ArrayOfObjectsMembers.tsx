@@ -10,6 +10,7 @@ import {
 import {ArrayOfObjectsItem} from './items/ArrayOfObjectsItem'
 import {MemberItemError} from './MemberItemError'
 
+/** @internal */
 export interface ArrayOfObjectsMembersProps {
   members: ArrayOfObjectsMember[]
   renderInput: RenderInputCallback
@@ -20,7 +21,7 @@ export interface ArrayOfObjectsMembersProps {
 
 /**
  * Convenience component for wrapping an array of objects
- * @beta
+ * @internal
  */
 export function ArrayOfObjectsMembers(props: ArrayOfObjectsMembersProps) {
   const {members, renderInput, renderField, renderItem, renderPreview} = props

@@ -10,6 +10,7 @@ import {
 import React from 'react'
 import {FormFieldPresence} from '../../presence'
 
+/** @public */
 export interface BaseItemProps {
   schemaType: SchemaType
   key: string
@@ -34,9 +35,12 @@ export interface BaseItemProps {
   children: React.ReactNode | null
 
   validation: NodeValidation[]
+
+  /** @beta */
   presence: FormFieldPresence[]
 }
 
+/** @public */
 export interface ObjectItemProps extends BaseItemProps {
   changed: boolean
   schemaType: ObjectSchemaType
@@ -49,8 +53,10 @@ export interface ObjectItemProps extends BaseItemProps {
   onOpen: () => void
 }
 
+/** @public */
 export type ItemProps = ObjectItemProps | PrimitiveItemProps
 
+/** @public */
 export interface PrimitiveItemProps extends BaseItemProps {
   schemaType: NumberSchemaType | BooleanSchemaType | StringSchemaType
 }

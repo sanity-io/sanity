@@ -3,6 +3,7 @@ import {Path} from '@sanity/types'
 import React, {memo, useContext} from 'react'
 import {PatchEvent} from '../../patch'
 
+/** @internal */
 export interface FormCallbacksValue {
   onChange: (patchEvent: PatchEvent) => void
   onPathFocus: (path: Path) => void
@@ -15,6 +16,7 @@ export interface FormCallbacksValue {
 
 const FormCallbacksContext = React.createContext<FormCallbacksValue | null>(null)
 
+/** @internal */
 export const FormCallbacksProvider = memo(function FormCallbacksProvider(
   props: FormCallbacksValue & {children: React.ReactNode}
 ) {
@@ -23,6 +25,7 @@ export const FormCallbacksProvider = memo(function FormCallbacksProvider(
   )
 })
 
+/** @internal */
 export function useFormCallbacks(): FormCallbacksValue {
   const ctx = useContext(FormCallbacksContext)
   if (!ctx) {

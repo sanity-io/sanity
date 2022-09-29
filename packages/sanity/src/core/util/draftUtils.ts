@@ -1,23 +1,31 @@
 import {SanityDocument} from '@sanity/types'
 import {isNonNullable} from './isNonNullable'
 
+/** @internal */
 // nominal/opaque type hack
 export type Opaque<T, K> = T & {__opaqueId__: K}
 
+/** @internal */
 export type DraftId = Opaque<string, 'draftId'>
+
+/** @internal */
 export type PublishedId = Opaque<string, 'publishedId'>
 
+/** @internal */
 export const DRAFTS_FOLDER = 'drafts'
 const DRAFTS_PREFIX = `${DRAFTS_FOLDER}.`
 
+/** @internal */
 export function isDraft(document: SanityDocument): boolean {
   return isDraftId(document._id)
 }
 
+/** @internal */
 export function isDraftId(id: string): id is DraftId {
   return id.startsWith(DRAFTS_PREFIX)
 }
 
+/** @internal */
 export function getIdPair(id: string): {draftId: DraftId; publishedId: PublishedId} {
   return {
     draftId: getDraftId(id),
@@ -25,18 +33,22 @@ export function getIdPair(id: string): {draftId: DraftId; publishedId: Published
   }
 }
 
+/** @internal */
 export function isPublishedId(id: string): id is PublishedId {
   return !isDraftId(id)
 }
 
+/** @internal */
 export function getDraftId(id: string): DraftId {
   return isDraftId(id) ? id : ((DRAFTS_PREFIX + id) as DraftId)
 }
 
+/** @internal */
 export function getPublishedId(id: string): PublishedId {
   return (isDraftId(id) ? id.slice(DRAFTS_PREFIX.length) : id) as PublishedId
 }
 
+/** @internal */
 export function createDraftFrom(document: SanityDocument): SanityDocument {
   return {
     ...document,
@@ -44,6 +56,7 @@ export function createDraftFrom(document: SanityDocument): SanityDocument {
   }
 }
 
+/** @internal */
 export function newDraftFrom(document: SanityDocument): SanityDocument {
   return {
     ...document,
@@ -51,6 +64,7 @@ export function newDraftFrom(document: SanityDocument): SanityDocument {
   }
 }
 
+/** @internal */
 export function createPublishedFrom(document: SanityDocument): SanityDocument {
   return {
     ...document,
@@ -64,6 +78,8 @@ export function createPublishedFrom(document: SanityDocument): SanityDocument {
  *
  * Note: because Map is ordered by insertion key the resulting array will be ordered by whichever
  * version appeared first
+ *
+ * @internal
  */
 export interface CollatedHit<T extends {_id: string} = {_id: string}> {
   id: string
@@ -72,6 +88,7 @@ export interface CollatedHit<T extends {_id: string} = {_id: string}> {
   published?: T
 }
 
+/** @internal */
 export function collate<T extends {_id: string; _type: string}>(documents: T[]): CollatedHit<T>[] {
   const byId = documents.reduce((res, doc) => {
     const publishedId = getPublishedId(doc._id)
@@ -88,6 +105,7 @@ export function collate<T extends {_id: string; _type: string}>(documents: T[]):
   return Array.from(byId.values())
 }
 
+/** @internal */
 // Removes published documents that also has a draft
 export function removeDupes(documents: SanityDocument[]): SanityDocument[] {
   return collate(documents)

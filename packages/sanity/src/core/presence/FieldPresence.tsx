@@ -16,15 +16,18 @@ import {PresenceTooltip} from './PresenceTooltip'
 import {useReporter} from './overlay/tracker'
 import {FormFieldPresence} from './types'
 
+/** @internal */
 export interface FieldPresenceProps {
   presence: FormFieldPresence[]
   maxAvatars: number
 }
 
+/** @internal */
 export const FieldPresence = DISABLE_OVERLAY
   ? FieldPresenceWithoutOverlay
   : FieldPresenceWithOverlay
 
+/** @internal */
 export function FieldPresenceWithOverlay(props: FieldPresenceProps) {
   const contextPresence = useContext(FormFieldPresenceContext)
   const {presence = contextPresence, maxAvatars = DEFAULT_MAX_AVATARS_FIELDS} = props
@@ -43,6 +46,7 @@ export function FieldPresenceWithOverlay(props: FieldPresenceProps) {
   )
 }
 
+/** @internal */
 export function FieldPresenceWithoutOverlay(props: FieldPresenceProps) {
   const contextPresence = useContext(FormFieldPresenceContext)
   const {presence = contextPresence, maxAvatars = DEFAULT_MAX_AVATARS_FIELDS} = props
@@ -54,6 +58,7 @@ export function FieldPresenceWithoutOverlay(props: FieldPresenceProps) {
   return <FieldPresenceInner presence={presence} maxAvatars={maxAvatars} />
 }
 
+/** @internal */
 export interface FieldPresenceInnerProps {
   maxAvatars?: number
   presence: FormFieldPresence[]
@@ -66,6 +71,7 @@ function calcAvatarStackWidth(len: number) {
   return -AVATAR_DISTANCE + (AVATAR_SIZE + AVATAR_DISTANCE) * len
 }
 
+/** @internal */
 export const FieldPresenceInner = memo(function FieldPresenceInner({
   presence,
   position = 'inside',

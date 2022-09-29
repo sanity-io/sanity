@@ -6,6 +6,8 @@ import {ArraySchemaType, SchemaType} from '@sanity/types'
  *   - the schema type defines an array, but the actual value is an object (or vice versa)
  *   - the schema type defines a number, but the actual value is a string (or vice versa)
  *   - the schema type defines an object, but the actual value is a string (or vice versa)
+ *
+ * @public
  */
 export type IncompatibleTypeError = {
   type: 'INCOMPATIBLE_TYPE'
@@ -21,6 +23,8 @@ export type IncompatibleTypeError = {
  *
  * Note on compatibility: The schema of a field may be defined as an object with fields (a, b, c), but the value is an object with (d, e, f)
  * These are still structurally compatible because (d, e, f) will be considered undeclared members
+ *
+ * @public
  */
 export type TypeAnnotationMismatchError = {
   type: 'TYPE_ANNOTATION_MISMATCH'
@@ -30,6 +34,8 @@ export type TypeAnnotationMismatchError = {
 
 /**
  * This error may happen for arrays of objects where one or more of the members are missing a _key
+ *
+ * @public
  */
 export type MissingKeysError = {
   type: 'MISSING_KEYS'
@@ -39,6 +45,8 @@ export type MissingKeysError = {
 
 /**
  * This error may happen for arrays of objects where one or more of the members are having duplicate keys
+ *
+ * @public
  */
 export type DuplicateKeysError = {
   type: 'DUPLICATE_KEYS'
@@ -48,11 +56,15 @@ export type DuplicateKeysError = {
 
 /**
  * This error may happen for objects if we encounter fields that are not declared in the schema
+ *
+ * @public
  */
 export type UndeclaredMembersError = {type: 'UNDECLARED_MEMBERS'; schemaType: ArraySchemaType}
 
 /**
  * This error may happen for objects if we encounter fields that are not declared in the schema
+ *
+ * @public
  */
 export type MixedArray = {type: 'MIXED_ARRAY'; schemaType: ArraySchemaType}
 
@@ -68,6 +80,7 @@ export type InvalidItemTypeError = {
   value: unknown
 }
 
+/** @public */
 export interface FieldError {
   kind: 'error'
   key: string
@@ -81,6 +94,7 @@ export interface FieldError {
     | MixedArray
 }
 
+/** @beta */
 export interface ArrayItemError {
   kind: 'error'
   key: string

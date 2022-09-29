@@ -32,6 +32,7 @@ const ChangeSegment = styled(Text)`
   }
 `
 
+/** @internal */
 export function DiffStringSegment(props: {segment: StringDiffSegment}): React.ReactElement {
   const {segment} = props
   const {text} = segment
@@ -71,6 +72,7 @@ export function DiffStringSegment(props: {segment: StringDiffSegment}): React.Re
   )
 }
 
+/** @internal */
 export function DiffString(props: {diff: StringDiff}) {
   const {diff} = props
 

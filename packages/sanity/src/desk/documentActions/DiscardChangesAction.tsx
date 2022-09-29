@@ -16,6 +16,7 @@ const DISABLED_REASON_TITLE = {
   NOT_PUBLISHED: 'This document is not published',
 }
 
+/** @internal */
 export const DiscardChangesAction: DocumentActionComponent = ({
   id,
   type,

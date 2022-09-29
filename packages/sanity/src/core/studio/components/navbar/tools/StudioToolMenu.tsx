@@ -3,6 +3,7 @@ import {ToolMenuProps} from '../../../../config'
 import {ToolCollapseMenu} from './ToolCollapseMenu'
 import {ToolVerticalMenu} from './ToolVerticalMenu'
 
+/** @beta */
 export function StudioToolMenu(props: ToolMenuProps) {
   const {context, isSidebarOpen, ...restProps} = props
 

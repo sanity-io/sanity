@@ -13,6 +13,7 @@ const StyledText = styled(Text)`
 
 const filterOption = () => true
 
+/** @internal */
 export interface SearchFieldProps {
   fullScreen: boolean
   onSearchItemClick: () => void
@@ -21,6 +22,7 @@ export interface SearchFieldProps {
   relatedElements?: HTMLElement[]
 }
 
+/** @internal */
 export function SearchField(props: SearchFieldProps) {
   const {fullScreen, onSearchItemClick, portalElement, relatedElements, setSearchInputElement} =
     props

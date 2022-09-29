@@ -4,6 +4,7 @@ import {diffResolvers} from '../../TODO'
 import {Diff, DiffComponent, DiffComponentOptions} from '../../types'
 import {defaultComponents} from './defaultComponents'
 
+/** @internal */
 export function resolveDiffComponent<D extends Diff = any>(
   type: SchemaType,
   parentSchemaType?: ArraySchemaType | ObjectSchemaType

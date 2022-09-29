@@ -9,9 +9,10 @@ import {FormFieldValidationStatus} from './FormFieldValidationStatus'
 import {FormFieldSetLegend} from './FormFieldSetLegend'
 import {focusRingStyle} from './styles'
 
+/** @internal */
 export interface FormFieldSetProps {
   /**
-   * @alpha
+   * @beta
    */
   __unstable_presence?: FormFieldPresence[]
   children: React.ReactNode | (() => React.ReactNode)
@@ -27,7 +28,7 @@ export interface FormFieldSetProps {
   onExpand?: () => void
   title?: React.ReactNode
   /**
-   * @alpha
+   * @beta
    */
   validation?: NodeValidation[]
 }
@@ -75,6 +76,7 @@ const Content = styled(Box)<{
 
 const EMPTY_ARRAY: never[] = []
 
+/** @internal */
 export const FormFieldSet = forwardRef(function FormFieldSet(
   props: FormFieldSetProps & Omit<React.HTMLProps<HTMLDivElement>, 'as' | 'height' | 'ref'>,
   ref: React.ForwardedRef<HTMLDivElement>

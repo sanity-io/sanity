@@ -2,16 +2,18 @@ import {kebabCase} from 'lodash'
 import {Serializable, SerializeOptions, SerializePath} from '../StructureNodes'
 import {HELP_URL, SerializeError} from '../SerializeError'
 import {validateId} from '../util/validateId'
+import {View} from '../types'
 import {ComponentViewBuilder} from './ComponentView'
 import {FormViewBuilder} from './FormView'
-import {View} from '../types'
 
+/** @beta */
 export interface BaseView {
   id: string
   title: string
   icon?: React.ComponentType | React.ReactNode
 }
 
+/** @beta */
 export abstract class GenericViewBuilder<TView extends Partial<BaseView>, ConcreteImpl>
   implements Serializable<BaseView>
 {
@@ -73,6 +75,7 @@ function isSerializable(view: BaseView | Serializable<BaseView>): view is Serial
   return typeof (view as Serializable<BaseView>).serialize === 'function'
 }
 
+/** @internal */
 export function maybeSerializeView(
   item: View | Serializable<View>,
   index: number,
@@ -81,4 +84,5 @@ export function maybeSerializeView(
   return isSerializable(item) ? item.serialize({path, index}) : item
 }
 
+/** @beta */
 export type ViewBuilder = ComponentViewBuilder | FormViewBuilder

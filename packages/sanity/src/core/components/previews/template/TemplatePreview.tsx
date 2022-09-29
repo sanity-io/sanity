@@ -7,6 +7,7 @@ import {PreviewMediaDimensions} from '../types'
 import {Media, MediaProps} from '../_common/Media'
 import {PREVIEW_MEDIA_SIZE} from '../constants'
 
+/** @beta */
 export interface TemplatePreviewProps {
   description?: React.ReactNode
   isPlaceholder?: boolean
@@ -50,6 +51,7 @@ const SubtitleSkeleton = styled(TextSkeleton).attrs({animated: true, radius: 1, 
   width: 60%;
 `
 
+/** @beta */
 export function TemplatePreview(props: TemplatePreviewProps) {
   const {
     description,

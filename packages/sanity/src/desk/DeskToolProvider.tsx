@@ -4,12 +4,14 @@ import {createStructureBuilder, DefaultDocumentNodeResolver} from './structureBu
 import {StructureResolver, UnresolvedPaneNode} from './types'
 import {useConfigContextFromSource, useSource} from 'sanity'
 
+/** @internal */
 export interface DeskToolProviderProps {
   structure?: StructureResolver
   defaultDocumentNode?: DefaultDocumentNodeResolver
   children: React.ReactNode
 }
 
+/** @internal */
 export function DeskToolProvider({
   defaultDocumentNode,
   structure: resolveStructure,

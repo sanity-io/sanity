@@ -11,6 +11,7 @@ import {Reconstruction} from './Reconstruction'
 
 const TRANSLOG_ENTRY_LIMIT = 50
 
+/** @beta */
 export type TimelineControllerOptions = {
   timeline: Timeline
   client: SanityClient
@@ -22,6 +23,8 @@ export type TimelineControllerOptions = {
 /**
  * The controller is responsible for fetching information
  * about a document and maintaining a Timeline.
+ *
+ * @beta
  */
 export class TimelineController {
   timeline: Timeline
@@ -324,6 +327,7 @@ export class TimelineController {
   }
 }
 
+/** @internal */
 export function createObservableController(
   options: Omit<TimelineControllerOptions, 'handler'>
 ): Observable<{historyController: TimelineController}> {

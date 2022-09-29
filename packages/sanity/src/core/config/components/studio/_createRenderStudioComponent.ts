@@ -17,6 +17,7 @@ const RENDER_CALLBACK_NAMES: Record<ComponentNames, RenderComponentCallbackNames
   ToolMenu: 'renderToolMenu',
 }
 
+/** @internal */
 export interface CreateRenderComponentProps {
   componentName: ComponentNames
   config: SourceOptions
@@ -40,9 +41,7 @@ function _collectMiddleware<T>(
   }
 }
 
-/**
- * @internal
- */
+/** @internal */
 export function _createRenderStudioComponent<T>({
   componentName,
   config,

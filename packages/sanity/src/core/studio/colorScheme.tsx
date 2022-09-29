@@ -6,12 +6,14 @@ const ColorSchemeContext = createContext<{
   setScheme: (colorScheme: ThemeColorSchemeKey) => void
 } | null>(null)
 
+/** @internal */
 export interface ColorSchemeProviderProps {
   children: React.ReactNode
   onSchemeChange?: (nextScheme: ThemeColorSchemeKey) => void
   scheme?: ThemeColorSchemeKey
 }
 
+/** @internal */
 export function ColorSchemeProvider({
   children,
   onSchemeChange,
@@ -42,6 +44,7 @@ export function ColorSchemeProvider({
   )
 }
 
+/** @internal */
 export function useColorScheme() {
   const value = useContext(ColorSchemeContext)
   if (!value) throw new Error('Could not find `colorScheme` context')

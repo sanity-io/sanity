@@ -15,11 +15,13 @@ import {isNonNullable} from '../../../../../util'
 import {createSearch} from './search'
 import {WeightedHit} from './weighted/types'
 
+/** @internal */
 export interface DocumentSearchParams {
   options: {includeDrafts: boolean; limit: number}
   query: string
 }
 
+/** @internal */
 export interface DocumentSearchResultsState {
   loading: boolean
   error: Error | null
@@ -43,6 +45,7 @@ const LOADING_STATE: DocumentSearchResultsState = {
 // to display the search results until the user has finished typing.
 const DEBOUNCE_VALUE = 400
 
+/** @internal */
 export function useDocumentSearchResults(props: {
   includeDrafts?: boolean
   limit?: number

@@ -35,6 +35,7 @@ import {mock$} from './mock-events'
 import {createBifurTransport} from './message-transports/bifurTransport'
 import {DocumentPresence, GlobalPresence, PresenceLocation, Session, UserSessionPair} from './types'
 
+/** @beta */
 export interface PresenceStore {
   /**
    * @internal
@@ -91,8 +92,10 @@ function setSessionId(id: string) {
   return id
 }
 
+/** @internal */
 export const SESSION_ID = getSessionId() || setSessionId(generate())
 
+/** @internal */
 export function __tmp_wrap_presenceStore(context: {
   bifur: BifurClient
   connectionStatusStore: ConnectionStatusStore

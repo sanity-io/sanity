@@ -3,14 +3,17 @@ import {ErrorOutlineIcon} from '@sanity/icons'
 import {Box, Card, Flex, Text} from '@sanity/ui'
 import {isDev} from '../../../environment'
 
+/** @internal */
 export interface DiffErrorBoundaryProps {
   children: React.ReactNode
 }
 
+/** @internal */
 export interface DiffErrorBoundaryState {
   error?: Error
 }
 
+/** @internal */
 export class DiffErrorBoundary extends React.Component<
   DiffErrorBoundaryProps,
   DiffErrorBoundaryState

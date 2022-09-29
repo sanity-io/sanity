@@ -1,5 +1,6 @@
 import {Observable} from 'rxjs'
 
+/** @internal */
 export interface Settings {
   forKey: (key: string) => {
     listen: (defaultValue: unknown) => Observable<unknown>
@@ -12,6 +13,7 @@ export interface Settings {
   forNamespace: (sub: string) => Settings
 }
 
+/** @internal */
 export interface SettingsStore {
   forNamespace: (ns: string) => Settings
 }

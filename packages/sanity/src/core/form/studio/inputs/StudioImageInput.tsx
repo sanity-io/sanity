@@ -10,6 +10,7 @@ import {useDocumentPreviewStore} from '../../../store'
 import {useClient} from '../../../hooks'
 import {observeImageAsset} from './client-adapters/assets'
 
+/** @beta */
 export type ImageInputProps = Omit<
   BaseImageInputProps,
   | 'assetSources'
@@ -20,6 +21,7 @@ export type ImageInputProps = Omit<
   | 'resolveUploader'
 >
 
+/** @beta */
 export function StudioImageInput(props: ImageInputProps) {
   const sourcesFromSchema = props.schemaType.options?.sources
   const {image} = useFormBuilder().__internal

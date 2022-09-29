@@ -6,15 +6,18 @@ import {DocumentBuilder} from './Document'
 import {StructureContext} from './types'
 import {isRecord} from 'sanity'
 
+/** @beta */
 export interface DocumentListItemInput extends ListItemInput {
   schemaType: SchemaType | string
 }
 
+/** @beta */
 export interface DocumentListItem extends ListItem {
   schemaType: SchemaType
   _id: string
 }
 
+/** @beta */
 export type PartialDocumentListItem = Partial<UnserializedListItem>
 
 const createDefaultChildResolver =
@@ -28,6 +31,7 @@ const createDefaultChildResolver =
       : new DocumentBuilder(context).id('documentEditor').documentId(documentId)
   }
 
+/** @beta */
 export class DocumentListItemBuilder extends ListItemBuilder {
   protected spec: PartialDocumentListItem
 
@@ -58,6 +62,7 @@ export class DocumentListItemBuilder extends ListItemBuilder {
   }
 }
 
+/** @internal */
 export function isDocumentListItem(item: unknown): item is DocumentListItem {
   return isRecord(item) && typeof item.schemaType !== 'undefined' && typeof item._id === 'string'
 }

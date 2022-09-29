@@ -21,6 +21,7 @@ import {
   TimelineController,
 } from 'sanity'
 
+/** @internal */
 export interface DocumentPaneContextValue {
   actions: DocumentActionComponent[] | null
   activeViewId: string | null
@@ -73,4 +74,5 @@ export interface DocumentPaneContextValue {
   unstable_languageFilter: DocumentLanguageFilterComponent[]
 }
 
+/** @internal */
 export const DocumentPaneContext = createContext<DocumentPaneContextValue | null>(null)

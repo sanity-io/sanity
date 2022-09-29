@@ -38,6 +38,7 @@ const INITIAL_SEARCH_STATE: SearchState = {
   isLoading: false,
 }
 
+/** @internal */
 export interface CrossDatasetReferenceInputProps
   extends ObjectInputProps<CrossDatasetReference, CrossDatasetReferenceSchemaType> {
   getReferenceInfo: (
@@ -51,6 +52,7 @@ const NO_FILTER = () => true
 
 const REF_PATH = ['_ref']
 
+/** @internal */
 export function CrossDatasetReferenceInput(props: CrossDatasetReferenceInputProps) {
   const {
     changed,

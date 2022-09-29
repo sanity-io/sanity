@@ -7,12 +7,14 @@ import {useDocumentChange} from '../hooks'
 import {FieldChange} from './FieldChange'
 import {GroupChange} from './GroupChange'
 
+/** @internal */
 export interface ChangeResolverProps {
   change: ChangeNode
   readOnly?: ConditionalProperty
   hidden?: ConditionalProperty
 }
 
+/** @internal */
 export function ChangeResolver(props: ChangeResolverProps) {
   const {change, hidden, readOnly} = props
   const {value} = useDocumentChange()

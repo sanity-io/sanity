@@ -20,6 +20,7 @@ import {
   InitialValueMsg,
 } from './types'
 
+/** @beta */
 export interface InitialValueOptions {
   documentId: string
   documentType: string

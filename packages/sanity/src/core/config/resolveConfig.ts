@@ -11,7 +11,7 @@ import {prepareConfig} from './prepareConfig'
  * workspaces from a config. Returns an `Observable` that waits till all sources
  * emit once before emitting an array of fully resolved sources and workspaces.
  *
- * @alpha
+ * @internal
  */
 export function resolveConfig(config: Config): Observable<Workspace[]> {
   const {workspaces} = prepareConfig(config)
@@ -33,6 +33,7 @@ export function resolveConfig(config: Config): Observable<Workspace[]> {
   )
 }
 
+/** @internal */
 export type CreateWorkspaceFromConfigOptions =
   | SingleWorkspace
   | (SingleWorkspace & {
@@ -50,7 +51,7 @@ export type CreateWorkspaceFromConfigOptions =
  * `useWorkspace` hook to grab the fully resolved workspace from the
  * `StudioProvider`
  *
- * @alpha
+ * @internal
  */
 export async function createWorkspaceFromConfig(
   options: CreateWorkspaceFromConfigOptions
@@ -77,7 +78,7 @@ export async function createWorkspaceFromConfig(
  * testing purposes. If you need to use a source, we recommend using the
  * `useSource` hook to grab the fully resolved source from the `StudioProvider`
  *
- * @alpha
+ * @internal
  */
 export async function createSourceFromConfig(
   options: CreateWorkspaceFromConfigOptions

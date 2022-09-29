@@ -3,6 +3,7 @@ import {Text, Box, Card, Flex} from '@sanity/ui'
 import React from 'react'
 import {FieldValueError} from '../../validation'
 
+/** @internal */
 export function ValueError({error}: {error: FieldValueError}) {
   return (
     <Card tone="critical" padding={3}>

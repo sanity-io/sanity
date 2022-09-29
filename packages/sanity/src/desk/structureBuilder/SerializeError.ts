@@ -21,6 +21,7 @@ export class SerializeError extends Error {
   }
 }
 
+/** @internal */
 export enum HELP_URL {
   ID_REQUIRED = 'structure-node-id-required',
   TITLE_REQUIRED = 'structure-title-required',

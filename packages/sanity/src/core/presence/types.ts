@@ -1,10 +1,16 @@
 import {Path, User} from '@sanity/types'
 import {Session, Status} from '../store/_legacy'
 
+/** @internal */
 export type Position = 'top' | 'bottom' | 'inside' | null
+
+/** @internal */
 export type Size = 'xsmall' | 'small' | 'medium'
 
+/** @internal */
 export type ReportedRegionWithRect<T> = T & {id: string; rect: Rect}
+
+/** @internal */
 export type RegionWithIntersectionDetails = {
   distanceTop: number
   distanceBottom: number
@@ -12,23 +18,27 @@ export type RegionWithIntersectionDetails = {
   region: ReportedRegionWithRect<FieldPresenceData>
 }
 
+/** @internal */
 export type FieldPresenceData = {
   element: HTMLElement
   presence: FormFieldPresence[]
   maxAvatars: number
 }
 
+/** @internal */
 export type PresentUser = {
   user: User
   status?: Status
   sessions?: Session[]
 }
 
+/** @internal */
 export interface Location {
   documentId: string
   path: Path
 }
 
+/** @beta */
 export interface FormFieldPresence {
   user: User
   path: Path
@@ -36,6 +46,7 @@ export interface FormFieldPresence {
   lastActiveAt: string
 }
 
+/** @internal */
 export interface Rect {
   height: number
   width: number

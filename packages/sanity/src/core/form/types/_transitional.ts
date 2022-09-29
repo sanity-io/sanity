@@ -9,14 +9,14 @@ import {ItemProps} from './itemProps'
 /**
  * Export `PortableTextMarker` so it can be used to build custom Portable Text markers.
  *
- * @alpha
+ * @beta
  */
 export type RenderCustomMarkers = (markers: PortableTextMarker[]) => React.ReactNode
 
 /**
  * A generic marker for attaching metadata to specific nodes of the Portable Text input.
  *
- * @alpha
+ * @beta
  */
 export interface PortableTextMarker {
   type: string
@@ -25,22 +25,19 @@ export interface PortableTextMarker {
 }
 
 /**
- * unstable
- * @alpha
+ * @beta
  */
 export type FormBuilderArrayFunctionComponent = React.ComponentType<
   FormArrayInputFunctionsProps<any, any>
 >
 
 /**
- * unstable
- * @alpha
+ * @beta
  */
 export type FormBuilderCustomMarkersComponent = React.ComponentType<{markers: PortableTextMarker[]}>
 
 /**
- * unstable
- * @alpha
+ * @beta
  */
 export type FormBuilderMarkersComponent = React.ComponentType<{
   markers: PortableTextMarker[]
@@ -49,7 +46,7 @@ export type FormBuilderMarkersComponent = React.ComponentType<{
 }>
 
 /**
- * @alpha
+ * @beta
  */
 export type FormBuilderInputComponentMap = Record<
   string,
@@ -63,6 +60,8 @@ export type FormBuilderInputComponentMap = Record<
 
 /**
  * These are the props an implementation of the ArrayFunctions component will receive
+ *
+ * @beta
  */
 export interface FormArrayInputFunctionsProps<SchemaType extends ArraySchemaType, MemberType> {
   children?: React.ReactNode
@@ -77,7 +76,7 @@ export interface FormArrayInputFunctionsProps<SchemaType extends ArraySchemaType
 }
 
 /**
- * @alpha
+ * @internal
  */
 export interface FormBuilderFilterFieldFn {
   (type: ObjectSchemaType, field: ObjectField, selectedLanguageIds: string[]): boolean

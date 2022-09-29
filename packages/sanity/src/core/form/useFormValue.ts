@@ -8,7 +8,7 @@ import {useUnique} from '../util'
 import {useFormBuilder} from './useFormBuilder'
 
 /**
- * @alpha
+ * @beta
  */
 export function useFormValue(path: Path): unknown {
   const uniquePath = useUnique(path)

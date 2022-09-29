@@ -1,6 +1,7 @@
 import React from 'react'
 import {TrackerContext} from './types'
 
+/** @internal */
 export type ReporterHook<Payload> = (
   id: string | null,
   value: Payload | (() => Payload),
@@ -18,8 +19,10 @@ function read<T>(value: T | (() => T)): T {
 // eslint-disable-next-line @typescript-eslint/no-empty-function
 const noop = () => undefined
 
+/** @internal */
 export type IsEqualFunction<Value> = (a: Value, b: Value) => boolean
 
+/** @internal */
 export function createUseReporter<Value>(
   Context: React.Context<TrackerContext<Value>>
 ): ReporterHook<Value> {

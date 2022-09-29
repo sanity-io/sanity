@@ -5,6 +5,7 @@ import {renderPreviewMedia, renderPreviewNode} from '../helpers'
 import {PreviewMediaDimensions, PreviewProps} from '../types'
 import {RootSpan, MediaSpan, TextSpan} from './InlinePreview.styled'
 
+/** @beta */
 export type InlinePreviewProps = PreviewProps<'inline'>
 
 const DEFAULT_MEDIA_DIMENSIONS: PreviewMediaDimensions = {
@@ -14,6 +15,7 @@ const DEFAULT_MEDIA_DIMENSIONS: PreviewMediaDimensions = {
   dpr: getDevicePixelRatio(),
 }
 
+/** @beta */
 export function InlinePreview(props: InlinePreviewProps) {
   const {
     title,

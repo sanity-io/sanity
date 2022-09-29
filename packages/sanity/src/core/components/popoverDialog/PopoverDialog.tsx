@@ -2,6 +2,7 @@ import {CloseIcon} from '@sanity/icons'
 import {Box, Button, Card, Container, Flex, Popover, PopoverProps, Text} from '@sanity/ui'
 import React, {HTMLProps} from 'react'
 
+/** @internal */
 export function PopoverDialog(
   props: Omit<PopoverProps, 'content' | 'width'> &
     Omit<HTMLProps<HTMLDivElement>, 'ref' | 'width'> & {

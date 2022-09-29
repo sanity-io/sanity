@@ -10,18 +10,23 @@ import {ComponentBuilder} from './Component'
 import {validateId} from './util/validateId'
 import {StructureContext} from './types'
 
+/** @beta */
 export type UnserializedListItemChild = Collection | CollectionBuilder | ChildResolver
 
+/** @beta */
 export type ListItemChild = Collection | ChildResolver | undefined
 
+/** @beta */
 export interface ListItemSerializeOptions extends SerializeOptions {
   titleIsOptional?: boolean
 }
 
+/** @beta */
 export interface ListItemDisplayOptions {
   showIcon?: boolean
 }
 
+/** @beta */
 export interface ListItemInput {
   id: string
   title?: string
@@ -31,6 +36,7 @@ export interface ListItemInput {
   schemaType?: SchemaType | string
 }
 
+/** @beta */
 export interface ListItem {
   id: string
   type: string
@@ -41,6 +47,7 @@ export interface ListItem {
   schemaType?: SchemaType
 }
 
+/** @beta */
 export interface UnserializedListItem {
   id: string
   title: string
@@ -50,8 +57,10 @@ export interface UnserializedListItem {
   schemaType?: SchemaType | string
 }
 
+/** @beta */
 export type PartialListItem = Partial<UnserializedListItem>
 
+/** @beta */
 export class ListItemBuilder implements Serializable<ListItem> {
   protected spec: PartialListItem
 

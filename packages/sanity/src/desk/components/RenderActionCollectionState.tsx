@@ -18,6 +18,7 @@ export interface RenderActionCollectionProps {
   onActionComplete?: () => void
 }
 
+/** @internal */
 export const RenderActionCollectionState = (props: RenderActionCollectionProps) => {
   const {actions, children, actionProps, onActionComplete} = props
 

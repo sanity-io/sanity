@@ -3,6 +3,7 @@ import {useDocumentStore, ValidationStatus} from '../store'
 
 const INITIAL: ValidationStatus = {validation: [], isValidating: false}
 
+/** @internal */
 export function useValidationStatus(publishedDocId: string, docTypeName: string): ValidationStatus {
   const documentStore = useDocumentStore()
 

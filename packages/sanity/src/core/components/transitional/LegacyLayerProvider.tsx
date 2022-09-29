@@ -3,6 +3,7 @@ import React from 'react'
 import {useZIndex} from '../zOffsets/useZIndex'
 import {ZIndexContextValue} from '../zOffsets/types'
 
+/** @internal */
 export type ZIndexContextValueKey = keyof ZIndexContextValue
 
 /**

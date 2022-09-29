@@ -1,6 +1,7 @@
 import React from 'react'
 import styled from 'styled-components'
 
+/** @internal */
 export interface FieldStatusProps {
   children?: React.ReactNode
   maxAvatars?: number
@@ -28,6 +29,7 @@ const Root = styled.div`
   }
 `
 
+/** @internal */
 export function FormFieldStatus({children, maxAvatars, position = 'bottom'}: FieldStatusProps) {
   return (
     <Root data-max-avatars={maxAvatars} data-position={position}>

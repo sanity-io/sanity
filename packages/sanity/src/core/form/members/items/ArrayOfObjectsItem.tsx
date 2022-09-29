@@ -17,7 +17,7 @@ import {createProtoValue} from '../../utils/createProtoValue'
 import {isEmpty} from '../../inputs/arrays/ArrayOfObjectsInput/item/helpers'
 
 /**
- * @alpha
+ * @beta
  */
 export interface MemberItemProps {
   member: ArrayOfObjectsItemMember
@@ -28,7 +28,7 @@ export interface MemberItemProps {
 }
 
 /**
- * @alpha
+ * @beta
  */
 export function ArrayOfObjectsItem(props: MemberItemProps) {
   const focusRef = useRef<{focus: () => void}>()

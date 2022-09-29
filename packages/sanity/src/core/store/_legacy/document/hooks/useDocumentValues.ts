@@ -3,6 +3,7 @@ import {Observable, of} from 'rxjs'
 import {LoadableState, useLoadable} from '../../../../util'
 import {useDocumentPreviewStore} from '../../datastores'
 
+/** @internal */
 export function useDocumentValues<T = Record<string, unknown>>(
   documentId: string,
   paths: string[]

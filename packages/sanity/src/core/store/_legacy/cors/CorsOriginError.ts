@@ -1,7 +1,9 @@
+/** @internal */
 export interface CorsOriginErrorOptions {
   projectId?: string
 }
 
+/** @internal */
 export class CorsOriginError extends Error {
   projectId?: string
 

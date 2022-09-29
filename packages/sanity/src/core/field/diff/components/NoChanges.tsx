@@ -1,6 +1,7 @@
 import {Stack, Text} from '@sanity/ui'
 import React from 'react'
 
+/** @internal */
 export function NoChanges() {
   return (
     <Stack space={3}>

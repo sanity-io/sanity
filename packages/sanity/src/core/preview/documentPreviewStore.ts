@@ -20,6 +20,7 @@ import {
   PreviewableType,
 } from './types'
 
+/** @beta */
 export type ObserveForPreviewFn = (
   value: Previewable,
   type: PreviewableType,
@@ -27,6 +28,7 @@ export type ObserveForPreviewFn = (
   apiConfig?: ApiConfig
 ) => Observable<PreparedSnapshot>
 
+/** @beta */
 export interface DocumentPreviewStore {
   observePaths: ObservePathsFn
   observeForPreview: ObserveForPreviewFn
@@ -45,11 +47,13 @@ export interface DocumentPreviewStore {
   ) => Observable<DraftsModelDocument<T>>
 }
 
+/** @internal */
 export interface DocumentPreviewStoreOptions {
   crossProjectTokenStore: CrossProjectTokenStore
   client: SanityClient
 }
 
+/** @internal */
 export function createDocumentPreviewStore({
   crossProjectTokenStore,
   client,

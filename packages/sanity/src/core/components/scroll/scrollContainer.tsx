@@ -3,6 +3,7 @@ import createPubSub from 'nano-pubsub'
 import React, {useContext, useEffect, useMemo} from 'react'
 import {ScrollContext} from './scrollContext'
 
+/** @internal */
 export interface ScrollContainerProps<T extends React.ElementType>
   extends Omit<React.HTMLProps<T>, 'as' | 'onScroll'> {
   as?: React.ElementType | keyof JSX.IntrinsicElements
@@ -14,9 +15,11 @@ const noop = () => undefined
 /**
  * This provides a utility function for use within Sanity Studios to create scrollable containers
  * It also provides a way for components inside a scrollable container to track onScroll on their first parent scroll container
- * Note: this is used by different studio utilities to track positions of elements on screen
- * Note: It will call any given `onScroll` callback with a Native DOM Event, and not a React Synthetic event
- * Note: It will not make sure the element is actually scrollable, this still needs to be done with css as usual
+ * NOTE: this is used by different studio utilities to track positions of elements on screen
+ * NOTE: It will call any given `onScroll` callback with a Native DOM Event, and not a React Synthetic event
+ * NOTE: It will not make sure the element is actually scrollable, this still needs to be done with css as usual
+ *
+ * @internal
  */
 export const ScrollContainer = React.forwardRef(function ScrollContainer<
   T extends React.ElementType = 'div'

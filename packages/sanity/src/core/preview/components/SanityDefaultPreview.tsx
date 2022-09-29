@@ -21,12 +21,14 @@ function FallbackIcon() {
   return <DocumentIcon className="sanity-studio__preview-fallback-icon" />
 }
 
+/** @internal */
 export interface SanityDefaultPreviewProps extends Omit<PreviewProps, 'value'> {
   error?: Error | null
   icon?: ElementType | false
   value?: unknown
 }
 
+/** @internal */
 export function SanityDefaultPreview(props: SanityDefaultPreviewProps): ReactElement {
   const {
     description: descriptionProp,

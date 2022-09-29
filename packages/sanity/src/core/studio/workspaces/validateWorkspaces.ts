@@ -2,6 +2,7 @@ import {getWorkspaceIdentifier, getNamelessWorkspaceIdentifier} from './helpers'
 import type {WorkspaceLike} from './types'
 import {WorkspaceValidationError} from './WorkspaceValidationError'
 
+/** @internal */
 export interface ValidateWorkspaceOptions {
   workspaces: WorkspaceLike[]
 }
@@ -12,6 +13,8 @@ export interface ValidateWorkspaceOptions {
  * - Workspaces do not all have base paths and names (if multiple given)
  * - Base paths or names are invalid
  * - Base paths or names are not unique
+ *
+ * @internal
  */
 export function validateWorkspaces({workspaces}: ValidateWorkspaceOptions): void {
   if (workspaces.length === 0) {

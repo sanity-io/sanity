@@ -15,6 +15,7 @@ import {
   TitleSkeleton,
 } from './DetailPreview.styled'
 
+/** @beta */
 export type DetailPreviewProps = PreviewProps<'detail'>
 
 const DEFAULT_MEDIA_DIMENSIONS: PreviewMediaDimensions = {
@@ -24,6 +25,7 @@ const DEFAULT_MEDIA_DIMENSIONS: PreviewMediaDimensions = {
   dpr: getDevicePixelRatio(),
 }
 
+/** @beta */
 export function DetailPreview(props: DetailPreviewProps) {
   const {
     title,

@@ -4,13 +4,14 @@ import React, {memo} from 'react'
 import {FormFieldPresence} from '../../../presence'
 import {FormFieldHeader} from './FormFieldHeader'
 
+/** @internal */
 export interface FormFieldProps {
   /**
-   * @alpha
+   * @beta
    */
   validation?: NodeValidation[]
   /**
-   * @alpha
+   * @beta
    */
   __unstable_presence?: FormFieldPresence[]
   children: React.ReactNode
@@ -26,6 +27,7 @@ export interface FormFieldProps {
   title?: React.ReactNode
 }
 
+/** @internal */
 export const FormField = memo(function FormField(
   props: FormFieldProps & Omit<React.HTMLProps<HTMLDivElement>, 'as' | 'height' | 'ref'>
 ) {

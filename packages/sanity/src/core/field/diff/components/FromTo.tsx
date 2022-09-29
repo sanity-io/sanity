@@ -2,6 +2,7 @@ import React, {forwardRef, useMemo} from 'react'
 import {Flex, Grid, rem, useTheme} from '@sanity/ui'
 import {FromToArrow} from './FromToArrow'
 
+/** @internal */
 export type FromToProps = {
   align?: 'top' | 'center' | 'bottom'
   layout?: 'grid' | 'inline'
@@ -19,6 +20,7 @@ const FLEX_ALIGN: Record<string, 'flex-start' | 'center' | 'flex-end'> = {
   default: 'flex-start',
 }
 
+/** @internal */
 export const FromTo = forwardRef<HTMLDivElement, FromToProps>(function FromTo(props, ref) {
   const {align = 'top', layout = 'inline', from, to, style, ...restProps} = props
   const theme = useTheme()

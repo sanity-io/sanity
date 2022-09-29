@@ -10,11 +10,13 @@ import {prepareFormState, FIXME_SanityDocument} from './formState'
 import {immutableReconcile} from './utils/immutableReconcile'
 import {DocumentFormNode} from './types/nodes'
 
+/** @internal */
 export type FormState<
   T extends {[key in string]: unknown} = {[key in string]: unknown},
   S extends ObjectSchemaType = ObjectSchemaType
 > = ObjectFormNode<T, S>
 
+/** @internal */
 export function useFormState<
   T extends {[key in string]: unknown} = {[key in string]: unknown},
   S extends ObjectSchemaType = ObjectSchemaType

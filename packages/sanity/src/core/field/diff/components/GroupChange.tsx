@@ -15,6 +15,7 @@ import {ChangeResolver} from './ChangeResolver'
 import {RevertChangesButton} from './RevertChangesButton'
 import {ChangeListWrapper, GroupChangeContainer, PopoverWrapper} from './GroupChange.styled'
 
+/** @internal */
 export function GroupChange(
   props: {
     change: GroupChangeNode

@@ -4,6 +4,7 @@ import type {UserViewComponent} from '../types'
 import {BaseView, GenericViewBuilder} from './View'
 import {isRecord} from 'sanity'
 
+/** @beta */
 export interface ComponentView<TOptions = Record<string, any>> extends BaseView {
   type: 'component'
   component: UserViewComponent
@@ -13,6 +14,7 @@ export interface ComponentView<TOptions = Record<string, any>> extends BaseView 
 const isComponentSpec = (spec: unknown): spec is ComponentView =>
   isRecord(spec) && spec.type === 'component'
 
+/** @beta */
 export class ComponentViewBuilder extends GenericViewBuilder<
   Partial<ComponentView>,
   ComponentViewBuilder

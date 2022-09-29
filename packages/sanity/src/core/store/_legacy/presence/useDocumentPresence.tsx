@@ -2,6 +2,7 @@ import {useState, useEffect} from 'react'
 import {usePresenceStore} from '../datastores'
 import {DocumentPresence} from './types'
 
+/** @internal */
 export function useDocumentPresence(documentId: string): DocumentPresence[] {
   const presenceStore = usePresenceStore()
   const [presence, setPresence] = useState<DocumentPresence[]>([])

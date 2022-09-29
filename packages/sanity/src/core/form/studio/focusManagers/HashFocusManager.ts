@@ -4,12 +4,14 @@ import {Path} from '@sanity/types'
 import React, {useCallback, useEffect, useState} from 'react'
 import {decodePath, encodePath} from '../../utils/path'
 
+/** @internal */
 export type HashFocusManagerChildArgs = {
   onFocus: (path: Path) => void
   onBlur: () => void
   focusPath: Path
 }
 
+/** @internal */
 export interface HashFocusManagerProps {
   focusPath: any | null
   onFocus: () => void
@@ -28,6 +30,8 @@ function getPathFromHash() {
 
 /**
  * An example of how to sync focus path through document.location.hash
+ *
+ * @internal
  */
 export function HashFocusManager(props: HashFocusManagerProps) {
   const {children} = props
