@@ -3,9 +3,9 @@ import oneline from 'oneline'
 import {isPlainObject} from 'lodash'
 import type {Schema} from '@sanity/types'
 import type {CliV3CommandContext, GraphQLAPIConfig} from '@sanity/cli'
-import {Workspace} from '../../../core'
 import type {SchemaDefinitionish, TypeResolvedGraphQLAPI} from '../actions/graphql/types'
 import {getStudioConfig} from '../util/getStudioConfig'
+import {Workspace} from 'sanity'
 
 if (isMainThread || !parentPort) {
   throw new Error('This module must be run as a worker thread')

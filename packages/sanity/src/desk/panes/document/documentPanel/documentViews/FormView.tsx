@@ -6,6 +6,7 @@ import React, {useCallback, useEffect, useMemo} from 'react'
 import {tap} from 'rxjs/operators'
 import {useDocumentPane} from '../../useDocumentPane'
 import {Delay} from '../../../../components/Delay'
+import {useConditionalToast} from './useConditionalToast'
 import {
   DocumentMutationEvent,
   DocumentRebaseEvent,
@@ -17,8 +18,7 @@ import {
   fromMutationPatches,
   useDocumentPresence,
   useDocumentStore,
-} from '../../../../../core'
-import {useConditionalToast} from './useConditionalToast'
+} from 'sanity'
 
 interface FormViewProps {
   granted: boolean

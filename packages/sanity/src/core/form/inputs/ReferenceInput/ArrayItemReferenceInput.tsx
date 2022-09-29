@@ -43,7 +43,6 @@ import {uuid} from '@sanity/uuid'
 import {useId} from '@reach/auto-id'
 import styled from 'styled-components'
 import {FormField, FormFieldValidationStatus} from '../../components/formField'
-import {IntentLink} from '../../../../router'
 import {set, setIfMissing, unset} from '../../patch'
 import {AlertStrip} from '../../components/AlertStrip'
 import {RowWrapper} from '../arrays/ArrayOfObjectsInput/item/components/RowWrapper'
@@ -62,6 +61,7 @@ import {PreviewReferenceValue} from './PreviewReferenceValue'
 import {CreateButton} from './CreateButton'
 import {ReferenceAutocomplete} from './ReferenceAutocomplete'
 import {AutocompleteContainer} from './AutocompleteContainer'
+import {IntentLink} from 'sanity/router'
 
 const StyledPreviewCard = styled(PreviewCard)`
   /* this is a hack to avoid layout jumps while previews are loading

@@ -1,11 +1,6 @@
 import {SchemaType, SortOrderingItem} from '@sanity/types'
 import {SanityClient} from '@sanity/client'
 import {ComposeIcon} from '@sanity/icons'
-import {
-  DEFAULT_STUDIO_CLIENT_OPTIONS,
-  InitialValueTemplateItem,
-  SourceClientOptions,
-} from '../../core'
 import {SerializeError, HELP_URL} from './SerializeError'
 import {SerializeOptions, Child} from './StructureNodes'
 import {ChildResolver, ChildResolverOptions, ItemChild} from './ChildResolver'
@@ -17,6 +12,7 @@ import {
 } from './GenericList'
 import {DocumentBuilder} from './Document'
 import {StructureContext} from './types'
+import {DEFAULT_STUDIO_CLIENT_OPTIONS, InitialValueTemplateItem, SourceClientOptions} from 'sanity'
 
 const resolveTypeForDocument = async (
   getClient: (options: SourceClientOptions) => SanityClient,

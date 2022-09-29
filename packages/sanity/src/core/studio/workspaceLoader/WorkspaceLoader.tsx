@@ -5,11 +5,11 @@ import {History} from 'history'
 import {ErrorBoundary} from '@sanity/ui'
 import {createHookFromObservableFactory} from '../../util'
 import {ConfigResolutionError, Tool, Source, Workspace} from '../../config'
-import {Router, RouterProvider, RouterState} from '../../../router'
 import {createRouter, createRouterEventStream} from '../router'
 import {useActiveWorkspace} from '../activeWorkspaceMatcher'
 import {WorkspaceProvider} from '../workspace'
 import {SourceProvider} from '../source'
+import {Router, RouterProvider, RouterState} from 'sanity/router'
 // TODO: work on error handler
 // import {flattenErrors} from './flattenErrors'
 

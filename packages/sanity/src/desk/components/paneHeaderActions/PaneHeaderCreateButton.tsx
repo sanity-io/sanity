@@ -3,10 +3,16 @@ import React, {useMemo, forwardRef} from 'react'
 import {Box, Button, Label, Menu, MenuButton, MenuItem, PopoverProps} from '@sanity/ui'
 import {Schema} from '@sanity/types'
 import {IntentButton} from '../IntentButton'
-import {Template, InitialValueTemplateItem, useSchema, useTemplates} from '../../../core'
-import {TemplatePermissionsResult, useTemplatePermissions} from '../../../core/store/_legacy'
-import {IntentLink} from '../../../router'
 import {InsufficientPermissionsMessageTooltip} from './InsufficientPermissionsMessageTooltip'
+import {IntentLink} from 'sanity/router'
+import {
+  useTemplatePermissions,
+  TemplatePermissionsResult,
+  Template,
+  InitialValueTemplateItem,
+  useSchema,
+  useTemplates,
+} from 'sanity'
 
 export type PaneHeaderIntentProps = React.ComponentProps<typeof IntentButton>['intent']
 

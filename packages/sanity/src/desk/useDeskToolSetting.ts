@@ -1,5 +1,5 @@
 import {useCallback, useEffect, useMemo, useState} from 'react'
-import {useSettingsStore} from '../core'
+import {useSettingsStore} from 'sanity'
 
 /**
  * @internal

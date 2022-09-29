@@ -3,7 +3,7 @@ import {Card, Text, Flex} from '@sanity/ui'
 import {Asset as AssetType, SanityDocument} from '@sanity/types'
 import {useSchema} from '../../../hooks'
 import {SanityPreview} from '../../../preview'
-import {IntentLink} from '../../../../router'
+import {IntentLink} from 'sanity/router'
 
 export const DocumentList = ({
   asset,

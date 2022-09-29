@@ -1,5 +1,6 @@
 import {UnpublishIcon} from '@sanity/icons'
 import React, {useCallback, useMemo, useState} from 'react'
+import {ConfirmDeleteDialog} from '../components'
 import {
   DocumentActionComponent,
   DocumentActionModalProps,
@@ -7,8 +8,7 @@ import {
   useDocumentPairPermissions,
   useCurrentUser,
   useDocumentOperation,
-} from '../../core'
-import {ConfirmDeleteDialog} from '../components'
+} from 'sanity'
 
 const DISABLED_REASON_TITLE = {
   NOT_PUBLISHED: 'This document is not published',

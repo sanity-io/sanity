@@ -20,7 +20,7 @@ import {
   getDraftId,
   getPublishedId,
   useClient,
-} from '../../../core'
+} from 'sanity'
 
 // this is used in place of `instanceof` so the matching can be more robust and
 // won't have any issues with dual packages etc

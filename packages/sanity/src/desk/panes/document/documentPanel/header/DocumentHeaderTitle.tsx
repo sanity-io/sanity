@@ -1,6 +1,6 @@
 import React, {ReactElement} from 'react'
 import {useDocumentPane} from '../../useDocumentPane'
-import {unstable_useDocumentPreview as useDocumentPreview} from '../../../../../core'
+import {unstable_useDocumentPreview as useDocumentPreview} from 'sanity'
 
 export function DocumentHeaderTitle(): ReactElement {
   const {connectionState, schemaType, title, value: documentValue} = useDocumentPane()

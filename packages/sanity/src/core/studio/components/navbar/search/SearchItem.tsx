@@ -1,12 +1,13 @@
 import {Inline, Label, ResponsivePaddingProps} from '@sanity/ui'
-import React, {forwardRef, useMemo} from 'react'
-import {IntentLink} from '../../../../../router'
+import React, {ReactNode, useMemo} from 'react'
 import {useSchema} from '../../../../hooks'
 import {useDocumentPresence} from '../../../../store'
 import {SanityPreview} from '../../../../preview'
 import {DocumentPreviewPresence} from '../../../../presence'
 import {getPublishedId} from '../../../../util'
 import {PreviewCard} from '../../../../components/PreviewCard'
+import {FIXME} from '../../../../FIXME'
+import {IntentLink} from 'sanity/router'
 
 interface SearchItemProps extends ResponsivePaddingProps {
   onClick?: () => void
@@ -28,19 +29,18 @@ export function SearchItem(props: SearchItemProps) {
     [documentId, documentType]
   )
 
-  const LinkComponent = useMemo(
+  const Link = useMemo(
     () =>
-      // eslint-disable-next-line @typescript-eslint/no-shadow
-      forwardRef(function LinkComponent(linkProps, ref: React.ForwardedRef<HTMLAnchorElement>) {
-        return <IntentLink {...linkProps} intent="edit" params={params} tabIndex={-1} ref={ref} />
-      }),
+      function LinkComponent(linkProps: {children?: ReactNode}) {
+        return <IntentLink {...linkProps} intent="edit" params={params} tabIndex={-1} />
+      },
     [params]
   )
 
   if (!schemaType) return null
 
   return (
-    <PreviewCard data-as="a" as={LinkComponent as any} onClick={onClick} {...restProps} radius={2}>
+    <PreviewCard data-as="a" as={Link as FIXME} onClick={onClick} {...restProps} radius={2}>
       <SanityPreview
         layout="default"
         schemaType={schemaType}

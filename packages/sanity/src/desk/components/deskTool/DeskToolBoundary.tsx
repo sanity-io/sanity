@@ -1,13 +1,13 @@
 import React, {useEffect, useMemo, useState} from 'react'
 import {ErrorBoundary} from '@sanity/ui'
-import {SourceProvider, useWorkspace, Tool, isRecord} from '../../../core'
 import {DeskToolOptions} from '../../types'
-import {useRouter} from '../../../router'
 import {DeskToolProvider} from '../../DeskToolProvider'
 import {setActivePanes} from '../../getIntentState'
 import {IntentResolver} from './intentResolver'
 import {StructureError} from './StructureError'
 import {DeskTool} from './DeskTool'
+import {useRouter} from 'sanity/router'
+import {SourceProvider, useWorkspace, Tool, isRecord} from 'sanity'
 
 const EMPTY_RECORD = {}
 

@@ -2,8 +2,6 @@ import {PortalProvider, useToast} from '@sanity/ui'
 import React, {memo, Fragment, useState, useEffect, useCallback} from 'react'
 import styled from 'styled-components'
 import isHotkey from 'is-hotkey'
-import {useSchema, _isCustomDocumentTypeDefinition} from '../../../core'
-import {useRouter} from '../../../router'
 import {LOADING_PANE} from '../../constants'
 import {LoadingPane, DeskToolPane} from '../../panes'
 import {useResolvedPanes} from '../../structureResolvers'
@@ -11,6 +9,8 @@ import {PaneNode} from '../../types'
 import {PaneLayout} from '../pane'
 import {useDeskTool} from '../../useDeskTool'
 import {NoDocumentTypesScreen} from './NoDocumentTypesScreen'
+import {useRouter} from 'sanity/router'
+import {useSchema, _isCustomDocumentTypeDefinition} from 'sanity'
 
 interface DeskToolProps {
   onPaneChange: (panes: Array<PaneNode | typeof LOADING_PANE>) => void

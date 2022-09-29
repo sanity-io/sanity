@@ -1,6 +1,5 @@
 import {SchemaType} from '@sanity/types'
 import {Subscribable} from 'rxjs'
-import {GeneralPreviewLayoutKey, ConfigContext, InitialValueTemplateItem} from '../core'
 import {
   DefaultDocumentNodeResolver,
   StructureBuilder,
@@ -8,6 +7,7 @@ import {
   UserComponent,
   View,
 } from './structureBuilder'
+import {GeneralPreviewLayoutKey, ConfigContext, InitialValueTemplateItem} from 'sanity'
 
 export interface DeskToolFeatures {
   /**

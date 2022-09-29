@@ -1,18 +1,19 @@
 import {FolderIcon, ChevronRightIcon, DocumentIcon} from '@sanity/icons'
 import {isSanityDocument, PreviewValue, SanityDocument, SchemaType} from '@sanity/types'
 import {Text} from '@sanity/ui'
-import React, {forwardRef, useCallback, useEffect, useMemo, useState} from 'react'
+import React, {ReactNode, useCallback, useEffect, useMemo, useState} from 'react'
+import {MissingSchemaType} from '../MissingSchemaType'
+import {usePaneRouter} from '../paneRouter'
+import {PaneItemPreview} from './PaneItemPreview'
 import {
+  FIXME,
   GeneralPreviewLayoutKey,
   PreviewCard,
   SanityDefaultPreview,
   useDocumentPresence,
   useDocumentPreviewStore,
   useSchema,
-} from '../../../core'
-import {MissingSchemaType} from '../MissingSchemaType'
-import {usePaneRouter} from '../paneRouter'
-import {PaneItemPreview} from './PaneItemPreview'
+} from 'sanity'
 
 interface PaneItemProps {
   id: string
@@ -91,12 +92,11 @@ export function PaneItem(props: PaneItemProps) {
     documentPresence,
   ])
 
-  const LinkComponent = useMemo(
+  const Link = useMemo(
     () =>
-      // eslint-disable-next-line @typescript-eslint/no-shadow
-      forwardRef(function LinkComponent(linkProps: any, ref: any) {
-        return <ChildLink {...linkProps} childId={id} ref={ref} />
-      }),
+      function LinkComponent(linkProps: {children: ReactNode}) {
+        return <ChildLink {...linkProps} childId={id} />
+      },
     [ChildLink, id]
   )
 
@@ -105,23 +105,20 @@ export function PaneItem(props: PaneItemProps) {
   // Reset `clicked` state when `selected` prop changes
   useEffect(() => setClicked(false), [selected])
 
-  return useMemo(
-    () => (
-      <PreviewCard
-        __unstable_focusRing
-        as={LinkComponent as any}
-        data-as="a"
-        data-ui="PaneItem"
-        padding={2}
-        radius={2}
-        onClick={handleClick}
-        pressed={pressed}
-        selected={selected || clicked}
-        tone="inherit"
-      >
-        {preview}
-      </PreviewCard>
-    ),
-    [clicked, handleClick, LinkComponent, pressed, preview, selected]
+  return (
+    <PreviewCard
+      __unstable_focusRing
+      as={Link as FIXME}
+      data-as="a"
+      data-ui="PaneItem"
+      padding={2}
+      radius={2}
+      onClick={handleClick}
+      pressed={pressed}
+      selected={selected || clicked}
+      tone="inherit"
+    >
+      {preview}
+    </PreviewCard>
   )
 }

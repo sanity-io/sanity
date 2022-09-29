@@ -1,11 +1,11 @@
 import {pickBy} from 'lodash'
 import {ComposeIcon} from '@sanity/icons'
-import {InitialValueTemplateItem} from '../../core'
 import {HELP_URL, SerializeError} from './SerializeError'
 import {Serializable, SerializeOptions, SerializePath} from './StructureNodes'
 import {MenuItemBuilder, MenuItem} from './MenuItem'
 import {IntentParams} from './Intent'
 import {StructureContext} from './types'
+import {InitialValueTemplateItem} from 'sanity'
 
 export class InitialValueTemplateItemBuilder implements Serializable<InitialValueTemplateItem> {
   protected spec: Partial<InitialValueTemplateItem>

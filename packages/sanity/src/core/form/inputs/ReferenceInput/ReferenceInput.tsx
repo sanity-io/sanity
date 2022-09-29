@@ -40,7 +40,6 @@ import {set, setIfMissing, unset} from '../../patch'
 import {AlertStrip} from '../../components/AlertStrip'
 import {Alert} from '../../components/Alert'
 import {useOnClickOutside} from '../../hooks/useOnClickOutside'
-import {IntentLink} from '../../../../router'
 import {ChangeIndicator, PreviewCard} from '../../../components'
 import {EMPTY_ARRAY, getPublishedId, isNonNullable} from '../../../util'
 import {FIXME} from '../../../FIXME'
@@ -51,6 +50,7 @@ import {PreviewReferenceValue} from './PreviewReferenceValue'
 import {CreateButton} from './CreateButton'
 import {ReferenceAutocomplete} from './ReferenceAutocomplete'
 import {AutocompleteContainer} from './AutocompleteContainer'
+import {IntentLink} from 'sanity/router'
 
 const StyledPreviewCard = styled(PreviewCard)`
   /* this is a hack to avoid layout jumps while previews are loading

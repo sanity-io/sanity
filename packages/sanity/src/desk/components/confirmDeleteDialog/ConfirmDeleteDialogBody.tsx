@@ -8,7 +8,6 @@ import {
 } from '@sanity/icons'
 import {useToast, Text, Box, Button, Flex, Label, Card, Stack} from '@sanity/ui'
 import {CopyToClipboard} from 'react-copy-to-clipboard'
-import {SanityDefaultPreview, useSchema} from '../../../core'
 import {ReferencePreviewLink} from './ReferencePreviewLink'
 import {ReferringDocuments} from './useReferringDocuments'
 import {
@@ -20,6 +19,7 @@ import {
   Table,
   ChevronWrapper,
 } from './ConfirmDeleteDialogBody.styles'
+import {SanityDefaultPreview, useSchema} from 'sanity'
 
 type DeletionConfirmationDialogBodyProps = Required<ReferringDocuments> & {
   documentTitle: React.ReactNode

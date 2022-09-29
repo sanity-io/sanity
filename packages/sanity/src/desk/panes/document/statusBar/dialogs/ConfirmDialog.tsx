@@ -9,8 +9,8 @@ import {
   useLayer,
 } from '@sanity/ui'
 import React, {useCallback, useState} from 'react'
-import {DocumentActionConfirmModalProps} from '../../../../../core'
 import {POPOVER_FALLBACK_PLACEMENTS} from './constants'
+import {DocumentActionConfirmModalProps} from 'sanity'
 
 export function ConfirmDialog(props: {
   modal: DocumentActionConfirmModalProps

@@ -1,8 +1,8 @@
 import {Tool} from '../../config'
-import {RouterState, Router} from '../../../router'
 import {isRecord} from '../../util/isRecord'
 import {RouterEvent, RouterStateEvent} from './types'
 import {getOrderedTools} from './util/getOrderedTools'
+import {RouterState, Router} from 'sanity/router'
 
 function resolveUrlStateWithDefaultTool(tools: Tool[], state: Record<string, unknown> | null) {
   const orderedTools = getOrderedTools(tools)

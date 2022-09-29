@@ -4,9 +4,9 @@ import * as PathUtils from '@sanity/util/paths'
 import {Box, Card, Flex, MenuItem, Text} from '@sanity/ui'
 import {LinkIcon} from '@sanity/icons'
 import styled from 'styled-components'
-import {IntentLink} from '../../../../../router'
 import {GlobalPresence} from '../../../../store'
 import {UserAvatar} from '../../../../components'
+import {IntentLink} from 'sanity/router'
 
 const AvatarCard = styled(Card)`
   background: transparent;

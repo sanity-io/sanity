@@ -2,11 +2,11 @@ import React, {useCallback, useMemo, useState} from 'react'
 import {Dialog, Grid, Button, Flex, Box, Tooltip, Spinner, Text} from '@sanity/ui'
 import styled from 'styled-components'
 import {ComposeIcon} from '@sanity/icons'
-import {IntentLink} from '../../../../router'
 import {useSource} from '../../source'
 import {useColorScheme} from '../../colorScheme'
 import {TemplatePermissionsResult, useTemplatePermissions} from '../../../store'
 import {DefaultPreview, InsufficientPermissionsMessage} from '../../../components'
+import {IntentLink} from 'sanity/router'
 
 const DocumentButton = styled(Button)`
   text-decoration: none;

@@ -9,8 +9,8 @@ import {
   SanityDocument,
   SchemaType,
 } from '@sanity/types'
-import {getPublishedId, collate} from '../../../core'
 import {DocumentListPaneItem, SortOrder, SortOrderBy} from './types'
+import {getPublishedId, collate} from 'sanity'
 
 export function getDocumentKey(value: DocumentListPaneItem, index: number): string {
   return value._id ? getPublishedId(value._id) : `item-${index}`

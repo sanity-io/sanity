@@ -1,5 +1,4 @@
 import {camelCase} from 'lodash'
-import {PreviewLayoutKey, InitialValueTemplateItem} from '../../core'
 import {Child, Serializable, SerializeOptions, StructureNode} from './StructureNodes'
 import {layoutOptions} from './Layout'
 import {MenuItem, MenuItemBuilder, maybeSerializeMenuItem} from './MenuItem'
@@ -11,6 +10,7 @@ import {
   maybeSerializeInitialValueTemplateItem,
 } from './InitialValueTemplateItem'
 import {validateId} from './util/validateId'
+import {PreviewLayoutKey, InitialValueTemplateItem} from 'sanity'
 
 function noChildResolver() {
   return undefined

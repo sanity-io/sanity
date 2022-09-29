@@ -1,11 +1,11 @@
 import {ArrowLeftIcon} from '@sanity/icons'
 import {Button} from '@sanity/ui'
 import React, {memo, useMemo} from 'react'
-import {GeneralPreviewLayoutKey, InitialValueTemplateItem} from '../../../core'
 import {PaneMenuItem, PaneMenuItemGroup, DeskToolPaneActionHandler} from '../../types'
 import {BackLink, PaneHeader, PaneHeaderActions} from '../../components'
 import {useDeskTool} from '../../useDeskTool'
 import {SortOrder} from './types'
+import {GeneralPreviewLayoutKey, InitialValueTemplateItem} from 'sanity'
 
 interface DocumentListPaneHeaderProps {
   index: number

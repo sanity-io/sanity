@@ -5,6 +5,14 @@ import {useToast} from '@sanity/ui'
 import {fromString as pathFromString} from '@sanity/util/paths'
 import isHotkey from 'is-hotkey'
 import {useMemoObservable} from 'react-rx'
+import {usePaneRouter} from '../../components'
+import {PaneMenuItem} from '../../types'
+import {useDeskTool} from '../../useDeskTool'
+import {DocumentPaneContext, DocumentPaneContextValue} from './DocumentPaneContext'
+import {getMenuItems} from './menuItems'
+import {DocumentPaneProviderProps} from './types'
+import {usePreviewUrl} from './usePreviewUrl'
+import {getInitialValueTemplateOpts} from './getInitialValueTemplateOpts'
 import {
   DEFAULT_STUDIO_CLIENT_OPTIONS,
   DocumentPresence,
@@ -28,15 +36,7 @@ import {
   useTemplates,
   useUnique,
   useValidationStatus,
-} from '../../../core'
-import {usePaneRouter} from '../../components'
-import {PaneMenuItem} from '../../types'
-import {useDeskTool} from '../../useDeskTool'
-import {DocumentPaneContext, DocumentPaneContextValue} from './DocumentPaneContext'
-import {getMenuItems} from './menuItems'
-import {DocumentPaneProviderProps} from './types'
-import {usePreviewUrl} from './usePreviewUrl'
-import {getInitialValueTemplateOpts} from './getInitialValueTemplateOpts'
+} from 'sanity'
 
 const emptyObject = {} as Record<string, string | undefined>
 

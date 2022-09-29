@@ -6,6 +6,9 @@ import {
   SanityDocumentLike,
 } from '@sanity/types'
 import {createContext} from 'react'
+import {View} from '../../structureBuilder'
+import {PaneMenuItem, PaneMenuItemGroup} from '../../types'
+import {TimelineMode} from './types'
 import {
   DocumentActionComponent,
   DocumentBadgeComponent,
@@ -16,10 +19,7 @@ import {
   StateTree,
   Timeline,
   TimelineController,
-} from '../../../core'
-import {View} from '../../structureBuilder'
-import {PaneMenuItem, PaneMenuItemGroup} from '../../types'
-import {TimelineMode} from './types'
+} from 'sanity'
 
 export interface DocumentPaneContextValue {
   actions: DocumentActionComponent[] | null

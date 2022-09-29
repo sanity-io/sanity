@@ -1,10 +1,10 @@
 import {useId} from '@reach/auto-id'
 import {Box, Dialog} from '@sanity/ui'
 import React from 'react'
-import {DocumentActionModalProps} from '../../../../core'
 import {ConfirmDialog} from './dialogs/ConfirmDialog'
 import {ModalDialog} from './dialogs/ModalDialog'
 import {PopoverDialog} from './dialogs/PopoverDialog'
+import {DocumentActionModalProps} from 'sanity'
 
 export interface ActionStateDialogProps {
   modal: DocumentActionModalProps

@@ -1,6 +1,6 @@
 import {IconComponent} from '@sanity/icons'
-import {ChunkType, Chunk} from '../../../../core'
 import {TIMELINE_ICON_COMPONENTS, TIMELINE_LABELS} from './constants'
+import {ChunkType, Chunk} from 'sanity'
 
 export function formatTimelineEventLabel(type: ChunkType): string | undefined {
   return TIMELINE_LABELS[type]

@@ -16,6 +16,14 @@
     "outDir": "./lib/dts",
     "jsx": "react",
 
+    "paths": {
+      "sanity/_internal": ["./exports/_internal.ts"],
+      "sanity/cli": ["./exports/cli.ts"],
+      "sanity/desk": ["./exports/desk.ts"],
+      "sanity/router": ["./exports/router.ts"],
+      "sanity": ["./exports/index.ts"]
+    },
+
     // For package.json import
     "resolveJsonModule": true,
 

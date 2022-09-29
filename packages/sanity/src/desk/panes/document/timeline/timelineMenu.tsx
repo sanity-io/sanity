@@ -3,10 +3,10 @@ import {useClickOutside, Button, Popover} from '@sanity/ui'
 import {upperFirst} from 'lodash'
 import React, {useCallback, useState} from 'react'
 import styled from 'styled-components'
-import {Chunk, useTimeAgo} from '../../../../core'
 import {useDocumentPane} from '../useDocumentPane'
 import {sinceTimelineProps, revTimelineProps, formatTimelineEventLabel} from './helpers'
 import {Timeline} from './timeline'
+import {Chunk, useTimeAgo} from 'sanity'
 
 interface TimelineMenuProps {
   chunk: Chunk | null

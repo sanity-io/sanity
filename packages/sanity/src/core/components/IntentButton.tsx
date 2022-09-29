@@ -1,6 +1,6 @@
 import {Button, ButtonProps} from '@sanity/ui'
 import React, {HTMLProps} from 'react'
-import {IntentLink, IntentLinkProps} from '../../router'
+import {IntentLink, IntentLinkProps} from 'sanity/router'
 
 /**
  * @beta

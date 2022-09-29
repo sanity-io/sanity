@@ -3,7 +3,7 @@ import {
   type DocumentActionDescription,
   type DocumentActionProps,
   GetHookCollectionState,
-} from '../../core'
+} from 'sanity'
 
 /** @internal */
 export interface Action<Args, Description> {

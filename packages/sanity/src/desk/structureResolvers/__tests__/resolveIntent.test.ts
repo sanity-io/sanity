@@ -1,9 +1,9 @@
 import {PaneNode, UnresolvedPaneNode} from '../../types'
-import {SchemaPluginOptions} from '../../../core'
 import {createStructureBuilder, SerializeError} from '../../structureBuilder'
 import {resolveIntent} from '../resolveIntent'
 import {PaneResolutionError} from '../PaneResolutionError'
 import {getMockSource} from '../../../../test/testUtils/getMockWorkspaceFromConfig'
+import {SchemaPluginOptions} from 'sanity'
 
 const mockSchema: SchemaPluginOptions = {
   name: 'mockSchema',

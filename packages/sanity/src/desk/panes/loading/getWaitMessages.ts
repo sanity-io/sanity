@@ -1,6 +1,6 @@
 import {Observable, of, merge} from 'rxjs'
 import {mapTo, delay} from 'rxjs/operators'
-import {isDev} from '../../../core'
+import {isDev} from 'sanity'
 
 /**
  * @internal

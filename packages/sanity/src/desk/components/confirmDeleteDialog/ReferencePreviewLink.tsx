@@ -1,13 +1,14 @@
 import React, {useCallback} from 'react'
 import type {SanityDocument, SchemaType} from '@sanity/types'
-import {
-  getPublishedId,
-  PreviewCard,
-  useDocumentPresence,
-  useDocumentPreviewStore,
-} from '../../../core'
 import {PaneItemPreview} from '../paneItem/PaneItemPreview'
 import {usePaneRouter} from '../paneRouter'
+import {
+  FIXME,
+  PreviewCard,
+  getPublishedId,
+  useDocumentPresence,
+  useDocumentPreviewStore,
+} from 'sanity'
 
 const EMPTY_ARRAY: [] = []
 
@@ -25,21 +26,23 @@ export function ReferencePreviewLink(props: ReferencePreviewLinkProps) {
   const {ReferenceChildLink} = usePaneRouter()
 
   const Link = useCallback(
-    (linkProps: {children: React.ReactNode}) => (
-      <ReferenceChildLink
-        documentId={value?._id}
-        documentType={type?.name}
-        parentRefPath={EMPTY_ARRAY}
-        {...linkProps}
-      />
-    ),
+    function LinkComponent(linkProps: {children: React.ReactNode}) {
+      return (
+        <ReferenceChildLink
+          documentId={value?._id}
+          documentType={type?.name}
+          parentRefPath={EMPTY_ARRAY}
+          {...linkProps}
+        />
+      )
+    },
     [ReferenceChildLink, type?.name, value?._id]
   )
 
   return (
     <PreviewCard
       __unstable_focusRing
-      as={Link as any}
+      as={Link as FIXME}
       data-as="a"
       onClick={onClick}
       padding={2}

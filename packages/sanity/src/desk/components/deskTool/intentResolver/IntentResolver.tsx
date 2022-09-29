@@ -1,12 +1,12 @@
 import {Box, Card, Flex, Spinner, Text} from '@sanity/ui'
 import React, {useEffect, useState} from 'react'
-import {useDocumentStore, useUnique} from '../../../../core'
 import {resolveIntent} from '../../../structureResolvers'
 import {RouterPanes} from '../../../types'
 import {useDeskTool} from '../../../useDeskTool'
 import {Delay} from '../../Delay'
 import {Redirect} from './Redirect'
 import {ensureDocumentIdAndType} from './utils'
+import {useDocumentStore, useUnique} from 'sanity'
 
 export interface IntentResolverProps {
   intent: string

@@ -4,7 +4,7 @@ import {
   type DocumentBadgeProps,
   type EditStateFor,
   GetHookCollectionState,
-} from '../../core'
+} from 'sanity'
 
 /** @internal */
 export interface Badge<Args, Description> {

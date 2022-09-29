@@ -3,6 +3,11 @@ import {CloseIcon} from '@sanity/icons'
 import {AvatarStack, BoundaryElementProvider, Box, Button, Flex} from '@sanity/ui'
 import React, {useRef} from 'react'
 import styled from 'styled-components'
+import {PaneContent, PaneHeader, usePane} from '../../../components'
+import {TimelineMenu} from '../timeline'
+import {useDocumentPane} from '../useDocumentPane'
+import {LoadingContent} from './content/LoadingContent'
+import {collectLatestAuthorAnnotations} from './helpers'
 import {
   ChangeFieldWrapper,
   ChangeList,
@@ -12,12 +17,7 @@ import {
   NoChanges,
   ScrollContainer,
   UserAvatar,
-} from '../../../../core'
-import {PaneContent, PaneHeader, usePane} from '../../../components'
-import {TimelineMenu} from '../timeline'
-import {useDocumentPane} from '../useDocumentPane'
-import {LoadingContent} from './content/LoadingContent'
-import {collectLatestAuthorAnnotations} from './helpers'
+} from 'sanity'
 
 const Scroller = styled(ScrollContainer)`
   height: 100%;

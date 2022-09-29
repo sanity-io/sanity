@@ -1,8 +1,8 @@
 import {SerializeOptions} from '../StructureNodes'
 import {SerializeError, HELP_URL} from '../SerializeError'
-import {isRecord} from '../../../core'
 import type {UserViewComponent} from '../types'
 import {BaseView, GenericViewBuilder} from './View'
+import {isRecord} from 'sanity'
 
 export interface ComponentView<TOptions = Record<string, any>> extends BaseView {
   type: 'component'

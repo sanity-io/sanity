@@ -1,8 +1,8 @@
 import React, {useMemo, useState} from 'react'
-import {useConfigContextFromSource, useSource} from '../core'
 import {DeskToolContext} from './DeskToolContext'
 import {createStructureBuilder, DefaultDocumentNodeResolver} from './structureBuilder'
 import {StructureResolver, UnresolvedPaneNode} from './types'
+import {useConfigContextFromSource, useSource} from 'sanity'
 
 export interface DeskToolProviderProps {
   structure?: StructureResolver

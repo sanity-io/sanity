@@ -3,7 +3,7 @@ import React, {useCallback, useMemo, useState} from 'react'
 import {ActionStateDialog} from '../statusBar'
 import {Pane, RenderActionCollectionState} from '../../../components'
 import {useDocumentPane} from '../useDocumentPane'
-import {DocumentActionDescription, DocumentActionProps, LegacyLayerProvider} from '../../../../core'
+import {DocumentActionDescription, DocumentActionProps, LegacyLayerProvider} from 'sanity'
 
 export interface KeyboardShortcutResponderProps {
   actionsBoxElement: HTMLElement | null

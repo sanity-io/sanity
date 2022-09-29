@@ -1,6 +1,6 @@
 import {Tooltip, Text, Box} from '@sanity/ui'
 import React from 'react'
-import {useCurrentUser, InsufficientPermissionsMessage} from '../../../core'
+import {useCurrentUser, InsufficientPermissionsMessage} from 'sanity'
 
 interface InsufficientPermissionsMessageTooltipProps {
   reveal: boolean

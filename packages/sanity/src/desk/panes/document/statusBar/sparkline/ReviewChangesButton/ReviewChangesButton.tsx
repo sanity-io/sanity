@@ -1,7 +1,7 @@
 import React, {useMemo} from 'react'
 import {Box, Button, ButtonProps, Flex, Stack, Text, Tooltip} from '@sanity/ui'
-import {useTimeAgo} from '../../../../../../core'
 import {AnimatedStatusIcon} from './AnimatedStatusIcon'
+import {useTimeAgo} from 'sanity'
 
 interface ReviewChangesButtonProps extends React.HTMLProps<HTMLButtonElement> {
   status?: 'changes' | 'saved' | 'syncing'

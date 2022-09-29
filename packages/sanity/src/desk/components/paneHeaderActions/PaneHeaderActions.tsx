@@ -2,11 +2,11 @@ import {UnknownIcon} from '@sanity/icons'
 import {Box, Button, Inline, Text, Tooltip} from '@sanity/ui'
 import {partition, uniqBy} from 'lodash'
 import React, {memo, useCallback, useMemo} from 'react'
-import {useTemplates, InitialValueTemplateItem} from '../../../core'
 import {DeskToolPaneActionHandler, PaneMenuItem, PaneMenuItemGroup} from '../../types'
 import {IntentButton} from '../IntentButton'
 import {PaneContextMenuButton} from '../pane/PaneContextMenuButton'
 import {PaneHeaderCreateButton} from './PaneHeaderCreateButton'
+import {useTemplates, InitialValueTemplateItem} from 'sanity'
 
 // to preserve memory references
 const emptyArray: never[] = []
