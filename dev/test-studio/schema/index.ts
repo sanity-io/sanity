@@ -64,6 +64,7 @@ import recursiveArray from './debug/recursiveArray'
 import recursiveObjectTest, {recursiveObject} from './debug/recursiveObject'
 import recursivePopover from './debug/recursivePopover'
 import {simpleArrayOfObjects} from './debug/simpleArrayOfObjects'
+import {simpleReferences} from './debug/simpleReferences'
 import reservedFieldNames from './debug/reservedFieldNames'
 import review from './debug/review'
 import select from './debug/select'
@@ -213,6 +214,7 @@ export const schemaTypes = [
   simpleBlockNoteBody,
   simpleBlockNoteUrl,
   simpleArrayOfObjects,
+  simpleReferences,
   slugs,
   slugAlias,
   species,
