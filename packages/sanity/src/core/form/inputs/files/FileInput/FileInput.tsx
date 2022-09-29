@@ -44,9 +44,6 @@ import {FileDetails} from './FileDetails'
 import {FileSkeleton} from './FileSkeleton'
 import {InvalidFileWarning} from './InvalidFileWarning'
 
-// We alias DOM File type here to distinguish it from the type of the File value
-type DOMFile = globalThis.File
-
 export interface BaseFileInputValue extends Partial<BaseFile> {
   _upload?: UploadState
 }
@@ -155,7 +152,7 @@ export class BaseFileInput extends React.PureComponent<BaseFileInputProps, BaseF
     this.props.onChange(unset(['asset']))
   }
 
-  handleSelectFiles = (files: DOMFile[]) => {
+  handleSelectFiles = (files: globalThis.File[]) => {
     const {directUploads, readOnly} = this.props
     const {hoveringFiles} = this.state
     if (directUploads && !readOnly) {
@@ -173,7 +170,7 @@ export class BaseFileInput extends React.PureComponent<BaseFileInputProps, BaseF
     this.setState({selectedAssetSource: null})
   }
 
-  uploadFirstAccepted(files: DOMFile[]) {
+  uploadFirstAccepted(files: globalThis.File[]) {
     const {schemaType} = this.props
 
     const match = files
@@ -187,7 +184,11 @@ export class BaseFileInput extends React.PureComponent<BaseFileInputProps, BaseF
     this.setState({isMenuOpen: false})
   }
 
-  uploadWith = (uploader: Uploader, file: DOMFile, assetDocumentProps: UploadOptions = {}) => {
+  uploadWith = (
+    uploader: Uploader,
+    file: globalThis.File,
+    assetDocumentProps: UploadOptions = {}
+  ) => {
     const {schemaType, onChange, client} = this.props
     const {source} = assetDocumentProps
     const options = {
@@ -574,7 +575,7 @@ export class BaseFileInput extends React.PureComponent<BaseFileInputProps, BaseF
     this._focusRef = ref
   }
 
-  handleUpload = ({file, uploader}: {file: DOMFile; uploader: Uploader}) => {
+  handleUpload = ({file, uploader}: {file: globalThis.File; uploader: Uploader}) => {
     this.uploadWith(uploader, file)
   }
 
