@@ -17,7 +17,7 @@ import * as adapter from '../client-adapters/reference'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../studioClient'
 import {ArrayItemReferenceInput} from '../../../inputs/ReferenceInput/ArrayItemReferenceInput'
 import {EditReferenceEvent} from '../../../inputs/ReferenceInput/types'
-import {_InsertEvent} from '../../../inputs/arrays/ArrayOfObjectsInput/types'
+import {InsertEvent} from '../../../inputs/arrays/ArrayOfObjectsInput/types'
 import {useDocumentPreviewStore} from '../../../../datastores'
 import {useClient, useSchema} from '../../../../hooks'
 import {useReferenceInputOptions} from '../../contexts'
@@ -50,7 +50,7 @@ export interface SanityArrayItemReferenceInputProps
   extends ObjectInputProps<Reference, ReferenceSchemaType> {
   insertableTypes?: SchemaType[]
   isSortable: boolean
-  onInsert?: (event: _InsertEvent) => void
+  onInsert?: (event: InsertEvent) => void
 }
 
 function useValueRef<T>(value: T): {current: T} {

@@ -52,7 +52,7 @@ import {isNonNullable} from '../../utils/isNonNullable'
 import {AlertStrip} from '../../components/AlertStrip'
 import {RowWrapper} from '../arrays/ArrayOfObjectsInput/item/components/RowWrapper'
 import {DragHandle} from '../arrays/common/DragHandle'
-import {_InsertEvent} from '../arrays/ArrayOfObjectsInput/types'
+import {InsertEvent} from '../arrays/ArrayOfObjectsInput/types'
 import {InsertMenu} from '../arrays/ArrayOfObjectsInput/InsertMenu'
 import {useOnClickOutside} from '../../hooks/useOnClickOutside'
 import {FIXME} from '../../types'
@@ -79,7 +79,7 @@ const INITIAL_SEARCH_STATE: ReferenceSearchState = {
 export interface Props extends ReferenceInputProps<OptionalRef> {
   isSortable: boolean
   insertableTypes?: SchemaType[]
-  onInsert?: (event: _InsertEvent) => void
+  onInsert?: (event: InsertEvent) => void
 }
 
 const NO_FILTER = () => true

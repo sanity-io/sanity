@@ -10,8 +10,8 @@ import {
 } from '../desk/actions'
 import {DocumentBadgeComponent, LiveEditBadge} from '../desk/badges'
 import type {
-  _DocumentLanguageFilterComponent,
-  _DocumentLanguageFilterContext,
+  DocumentLanguageFilterComponent,
+  DocumentLanguageFilterContext,
   AsyncConfigPropertyReducer,
   ConfigContext,
   ConfigPropertyReducer,
@@ -32,7 +32,7 @@ export const initialDocumentActions = [
   DeleteAction,
 ]
 
-export const initialLanguageFilter: _DocumentLanguageFilterComponent[] = []
+export const initialLanguageFilter: DocumentLanguageFilterComponent[] = []
 
 export const schemaTypesReducer: ConfigPropertyReducer<
   SchemaTypeDefinition[],
@@ -169,9 +169,9 @@ export const imageAssetSourceResolver: ConfigPropertyReducer<AssetSource[], Conf
 /**
  * @internal
  */
-export const _documentLanguageFilterReducer: ConfigPropertyReducer<
-  _DocumentLanguageFilterComponent[],
-  _DocumentLanguageFilterContext
+export const documentLanguageFilterReducer: ConfigPropertyReducer<
+  DocumentLanguageFilterComponent[],
+  DocumentLanguageFilterContext
 > = (prev, {document}, context) => {
   const resolveDocumentLanguageFilter = document?.unstable_languageFilter
   if (!resolveDocumentLanguageFilter) return prev
