@@ -37,6 +37,7 @@ export const DEBUG_INPUT_TYPES = [
   'languageFilterDebug',
   'actionsTest',
   'simpleArrayOfObjects',
+  'simpleReferences',
   'formInputDebug',
   'conditionalFieldsTest',
   'customInputsTest',
