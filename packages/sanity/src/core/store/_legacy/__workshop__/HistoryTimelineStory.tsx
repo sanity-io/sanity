@@ -5,7 +5,7 @@ import {format} from 'date-fns'
 import {omit} from 'lodash'
 import React, {useCallback, useEffect, useMemo, useState} from 'react'
 import {useMemoObservable} from 'react-rx'
-import {ChangeFieldWrapper} from '../../../components'
+import {ChangeFieldWrapper} from '../../../changeIndicators'
 import {
   ChangeList,
   DocumentChangeContext,

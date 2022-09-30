@@ -3,7 +3,7 @@ import {isTitledListValue, TitledListValue} from '@sanity/types'
 import {Box, Card, Flex, Inline, Radio, Select, Stack, Text} from '@sanity/ui'
 import {capitalize} from 'lodash'
 import React, {forwardRef, useCallback, useMemo} from 'react'
-import {ChangeIndicator} from '../../components'
+import {ChangeIndicator} from '../../changeIndicators'
 import {PatchEvent, set, unset} from '../patch'
 import {StringInputProps} from '../types'
 

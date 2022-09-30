@@ -3,7 +3,7 @@
 import {isReferenceSchemaType, Path, SchemaType} from '@sanity/types'
 import {Box} from '@sanity/ui'
 import React, {memo, useCallback, useRef} from 'react'
-import {ChangeIndicator} from '../../../../../components'
+import {ChangeIndicator} from '../../../../../changeIndicators'
 import {ArrayInputMember} from '../types'
 import {useScrollIntoViewOnFocusWithin} from '../../../../hooks/useScrollIntoViewOnFocusWithin'
 import {useDidUpdate} from '../../../../hooks/useDidUpdate'

@@ -1,6 +1,6 @@
 import React, {useMemo} from 'react'
 import {Path} from '@sanity/types'
-import {ScrollContainer} from '../../scroll'
+import {ScrollContainer} from '../../components/scroll'
 import {ConnectorContext} from '../ConnectorContext'
 import {ENABLED} from '../constants'
 import {Tracker} from '../tracker'
