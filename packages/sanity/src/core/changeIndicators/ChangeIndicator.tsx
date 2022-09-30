@@ -3,7 +3,7 @@ import React, {memo} from 'react'
 import deepCompare from 'react-fast-compare'
 import * as PathUtils from '@sanity/util/paths'
 import {Path} from '@sanity/types'
-import {EMPTY_ARRAY} from '../../util'
+import {EMPTY_ARRAY} from '../util'
 import {useReporter} from './tracker'
 import {ElementWithChangeBar} from './ElementWithChangeBar'
 

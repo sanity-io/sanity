@@ -8,7 +8,7 @@ import {ChangeList, DiffContext, DiffTooltip, useDiffAnnotationColor} from '../.
 import {ObjectDiff} from '../../../../types'
 import {PortableTextChild} from '../types'
 import {isEmptyObject} from '../helpers'
-import {ConnectorContext, useReportedValues} from '../../../../../components'
+import {ConnectorContext, useReportedValues} from '../../../../../changeIndicators'
 import {InlineBox, InlineText, PopoverContainer, PreviewContainer} from './styledComponents'
 
 interface AnnotationProps {

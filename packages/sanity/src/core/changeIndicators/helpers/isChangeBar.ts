@@ -1,4 +1,4 @@
-import {Reported} from '../../react-track-elements'
+import {Reported} from '../../components/react-track-elements'
 import {TrackedArea, TrackedChange} from '../tracker'
 
 export function isChangeBar(

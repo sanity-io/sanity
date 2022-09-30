@@ -9,7 +9,7 @@ import {ObjectDiff} from '../../../../types'
 import {PortableTextChild} from '../types'
 import {isEmptyObject} from '../helpers'
 import {SanityPreview} from '../../../../../preview'
-import {ConnectorContext, useReportedValues} from '../../../../../components'
+import {ConnectorContext, useReportedValues} from '../../../../../changeIndicators'
 import {InlineBox, InlineText, PopoverContainer, PreviewContainer} from './styledComponents'
 
 interface InlineObjectProps {

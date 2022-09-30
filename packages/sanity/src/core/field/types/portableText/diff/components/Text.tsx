@@ -3,7 +3,7 @@ import React, {SyntheticEvent, useCallback, useMemo} from 'react'
 import {startCase} from 'lodash'
 import {DiffCard, DiffContext} from '../../../../diff'
 import {ObjectDiff, StringDiff, StringDiffSegment} from '../../../../types'
-import {ConnectorContext} from '../../../../../components'
+import {ConnectorContext} from '../../../../../changeIndicators'
 import {InlineBox} from './styledComponents'
 
 interface TextProps {
