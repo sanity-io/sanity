@@ -1,4 +1,5 @@
-import React from 'react'
+/* eslint-disable @typescript-eslint/no-shadow */
+import React, {useCallback, useEffect, useState} from 'react'
 
 export interface ResizeProps {
   image: HTMLImageElement
@@ -7,47 +8,43 @@ export interface ResizeProps {
   children: (canvas: HTMLCanvasElement) => React.ReactNode
 }
 
-export class Resize extends React.Component<ResizeProps> {
-  _canvas: HTMLCanvasElement | null = null
+export function Resize(props: ResizeProps): any {
+  const {image, maxHeight, maxWidth, children} = props
 
-  componentWillUnmount() {
-    if (this._canvas) {
-      document.body.removeChild(this._canvas)
+  const [canvas] = useState<HTMLCanvasElement>(() => {
+    const canvasElement = document.createElement('canvas')
+    canvasElement.style.display = 'none'
+    return canvasElement
+  })
+  useEffect(() => {
+    document.body.appendChild(canvas)
+    return () => {
+      document.body.removeChild(canvas)
     }
-  }
+  }, [canvas])
 
-  getCanvas() {
-    if (!this._canvas) {
-      this._canvas = document.createElement('canvas')
-      document.body.appendChild(this._canvas)
-      this._canvas.style.display = 'none'
-    }
-    return this._canvas
-  }
+  const resize = useCallback(
+    (image: HTMLImageElement, maxHeight: number, maxWidth: number) => {
+      const ratio = image.width / image.height
+      const width = Math.min(image.width, maxWidth)
+      const height = Math.min(image.height, maxHeight)
 
-  resize(image: HTMLImageElement, maxHeight: number, maxWidth: number) {
-    const canvas = this.getCanvas()
-    const ratio = image.width / image.height
-    const width = Math.min(image.width, maxWidth)
-    const height = Math.min(image.height, maxHeight)
+      const landscape = image.width > image.height
+      const targetWidth = landscape ? width : height * ratio
+      const targetHeight = landscape ? width / ratio : height
 
-    const landscape = image.width > image.height
-    const targetWidth = landscape ? width : height * ratio
-    const targetHeight = landscape ? width / ratio : height
+      canvas.width = targetWidth
+      canvas.height = targetHeight
 
-    canvas.width = targetWidth
-    canvas.height = targetHeight
+      const ctx = canvas.getContext('2d')
+      if (ctx) {
+        ctx.drawImage(image, 0, 0, image.width, image.height, 0, 0, targetWidth, targetHeight)
+      }
 
-    const ctx = canvas.getContext('2d')
-    if (ctx) {
-      ctx.drawImage(image, 0, 0, image.width, image.height, 0, 0, targetWidth, targetHeight)
-    }
+      return canvas
+    },
+    [canvas]
+  )
 
-    return canvas
-  }
-
-  render() {
-    const {image, maxHeight, maxWidth, children} = this.props
-    return children(this.resize(image, maxHeight, maxWidth))
-  }
+  return children(resize(image, maxHeight, maxWidth))
 }
