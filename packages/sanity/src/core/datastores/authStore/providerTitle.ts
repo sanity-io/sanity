@@ -1,4 +1,4 @@
-export const getProviderTitle = (provider?: string): string | undefined => {
+export function getProviderTitle(provider?: string): string | undefined {
   if (provider === 'google') {
     return 'Google'
   }
