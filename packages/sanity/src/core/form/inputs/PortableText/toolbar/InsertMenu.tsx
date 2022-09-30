@@ -2,13 +2,14 @@ import React, {memo, useCallback, useMemo} from 'react'
 import {AddIcon} from '@sanity/icons'
 import {Button, PopoverProps} from '@sanity/ui'
 import {PortableTextEditor, usePortableTextEditor} from '@sanity/portable-text-editor'
-import {CollapseMenu, CollapseMenuButton} from '../../../../components'
+import {CollapseMenu, CollapseMenuButton} from '../../../../components/collapseMenu'
 import {BlockItem} from './types'
 import {useFeatures, useFocusBlock} from './hooks'
 
 const CollapseMenuMemo = memo(CollapseMenu)
 
 const MENU_POPOVER_PROPS: PopoverProps = {constrainSize: true, portal: true}
+
 interface InsertMenuProps {
   disabled: boolean
   items: BlockItem[]
