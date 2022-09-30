@@ -1,3 +1,4 @@
+import {getIdentifier, getNamelessIdentifier} from './helpers'
 import type {WorkspaceLike} from './types'
 import {WorkspaceValidationError} from './WorkspaceValidationError'
 
@@ -183,27 +184,4 @@ function validateBasePath(workspace: WorkspaceLike, index: number) {
       {workspace, index}
     )
   }
-}
-
-/**
- * Gets a printable identifer for the workspace - either the name, or the index
- * and any potential title set for it
- *
- * @param workspace - The workspace to get the indentifier for
- * @param index - The index at which the workspace appeared in the source array
- * @returns Printable string (eg `intranet`, or `at index 5 (titled "Intranet")`)
- * @internal
- */
-function getIdentifier({name, title}: WorkspaceLike, index: number): string {
-  if (typeof name === 'string' && name.trim().length > 0) {
-    return name
-  }
-
-  return getNamelessIdentifier(title, index)
-}
-
-function getNamelessIdentifier(title: string | undefined, index: number): string {
-  const withTitle =
-    typeof title === 'string' && title.trim().length > 0 ? ` (titled "${title}")` : ''
-  return `at index ${index}${withTitle}`
 }
