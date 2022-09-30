@@ -26,13 +26,12 @@ import {AlertStrip} from '../../components/AlertStrip'
 import {useOnClickOutside} from '../../hooks/useOnClickOutside'
 import {getPublishedId, isNonNullable} from '../../../util'
 import {FIXME} from '../../../FIXME'
-import {ChangeIndicator} from '../../../components'
+import {ChangeIndicator, PreviewCard} from '../../../components'
 import {CrossDatasetReferenceInfo, CrossDatasetSearchHit, SearchState} from './types'
 import {OptionPreview} from './OptionPreview'
 import {GetReferenceInfoFn, useReferenceInfo} from './useReferenceInfo'
 import {PreviewReferenceValue} from './PreviewReferenceValue'
 import {ReferenceAutocomplete} from './ReferenceAutocomplete'
-import {PreviewCard} from './PreviewCard'
 
 const INITIAL_SEARCH_STATE: SearchState = {
   hits: [],
@@ -234,7 +233,7 @@ export function CrossDatasetReferenceInput(props: CrossDatasetReferenceInputProp
   const renderOption = useCallback(
     (option: any) => {
       return (
-        <PreviewCard forwardedAs="button" type="button" radius={2}>
+        <PreviewCard as="button" type="button" radius={2}>
           <Box paddingX={3} paddingY={1}>
             <OptionPreview
               referenceType={schemaType}
@@ -315,7 +314,7 @@ export function CrossDatasetReferenceInput(props: CrossDatasetReferenceInputProp
             <Flex align="center" padding={1}>
               {studioUrl ? (
                 <PreviewCard
-                  forwardedAs="a"
+                  as="a"
                   target="_blank"
                   rel="noopener noreferrer"
                   href={studioUrl}
