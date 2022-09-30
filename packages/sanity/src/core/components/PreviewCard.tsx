@@ -2,8 +2,12 @@ import {Card, CardProps} from '@sanity/ui'
 import React, {createContext, forwardRef, useContext} from 'react'
 import styled, {css} from 'styled-components'
 
-export const StyledCard = styled(Card)(() => {
+const StyledCard = styled(Card)(() => {
   return css`
+    /* this is a hack to avoid layout jumps while previews are loading
+    there's probably better ways of solving this */
+    min-height: 35px;
+
     /* TextWithTone uses its own logic to set color, and we therefore need */
     /* to override this logic in order to set the correct color in different states */
     &[data-selected],
@@ -36,10 +40,10 @@ export const PreviewCard = forwardRef(function PreviewCard(
   props: CardProps & Omit<React.HTMLProps<HTMLDivElement>, 'as' | 'height'>,
   ref: React.ForwardedRef<HTMLDivElement>
 ) {
-  const {children, selected, as, ...rest} = props
+  const {children, selected, as, ...restProps} = props
 
   return (
-    <StyledCard data-ui="PreviewCard" {...rest} forwardedAs={as} selected={selected} ref={ref}>
+    <StyledCard data-ui="PreviewCard" {...restProps} forwardedAs={as} ref={ref} selected={selected}>
       <PreviewCardContext.Provider value={{selected}}>{children}</PreviewCardContext.Provider>
     </StyledCard>
   )
