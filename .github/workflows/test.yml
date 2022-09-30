@@ -20,23 +20,34 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Cache node modules
-        uses: actions/cache@v2
+        id: cache-node-modules
+        uses: actions/cache@v3
+        env:
+          cache-name: cache-node-modules
         with:
           path: '**/node_modules'
-          key: ${{ runner.os }}-modules-${{ hashFiles('**/yarn.lock') }}
+          key: ${{ runner.os }}-modules-${{ env.cache-name }}-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-modules-${{ env.cache-name }}-
+            ${{ runner.os }}-modules-
+            ${{ runner.os }}-
 
       - name: Install project dependencies
+        if: steps.cache-node-modules.outputs.cache-hit != 'true'
         env:
+          # Keep the Cypress binary in ./node_modules/.cypress
+          CYPRESS_CACHE_FOLDER: './node_modules/.cypress'
           CYPRESS_INSTALL_BINARY: '0'
+          # PUPPETEER_SKIP_DOWNLOAD: 'true'
         run: yarn install
 
       - name: Check formatting
         run: yarn check:format
 
-      - name: Typecheck modules
+      - name: Check type system
         # If TypeScript project references is set up properly, `tsc --build` should work right after dependencies
         # has been installed, no extra build/compile step required
         id: typeCheckModules
@@ -44,15 +55,7 @@ jobs:
         env:
           NODE_OPTIONS: --max_old_space_size=8192
 
-      # Required for import lint rules to work - packages pointing to ex
-      # `lib/index.js`, where `src/index.ts` gets compiled to `lib/index.js`
-      - name: Build modules
-        id: buildResolver
-        run: yarn build
-        env:
-          NODE_OPTIONS: --max_old_space_size=8192
-
-      - name: Check for unused or missing dependencies
+      - name: Check for unused/missing dependencies
         id: depcheck
         run: yarn depcheck
         env:
@@ -68,17 +71,15 @@ jobs:
         id: test
         run: yarn test
 
+      # Required for import lint rules to work - packages pointing to ex
+      # `lib/index.js`, where `src/index.ts` gets compiled to `lib/index.js`
+      - name: Build modules
+        id: buildResolver
+        run: yarn build
+        env:
+          NODE_OPTIONS: --max_old_space_size=8192
+
       - name: Test CLI
         working-directory: ${{ env.GITHUB_WORKSPACE }}
         run: |
           node scripts/testCli.js
-
-      # - name: Notify Slack about build failure
-      #   if: failure() && github.ref == 'refs/heads/next'
-      #   env:
-      #     SLACK_BOT_TOKEN: ${{ secrets.ACTIONS_SLACK_BOT_TOKEN }}
-      #   uses: voxmedia/github-action-slack-notify-build@v1
-      #   with:
-      #     channel: studio-internal
-      #     status: FAILED
-      #     color: danger
