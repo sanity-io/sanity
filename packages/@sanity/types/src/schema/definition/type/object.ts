@@ -4,6 +4,7 @@ import {InitialValueProperty} from '../../types'
 import {FieldDefinition} from '../schemaDefinition'
 import {BaseSchemaDefinition, FieldGroupDefinition, FieldsetDefinition} from './common'
 
+/** @public */
 export interface ObjectOptions {
   collapsible?: boolean
   collapsed?: boolean
@@ -14,9 +15,11 @@ export interface ObjectOptions {
   }
 }
 
+/** @public */
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface ObjectRule extends RuleDef<ObjectRule, Record<string, unknown>> {}
 
+/** @public */
 export interface ObjectDefinition extends BaseSchemaDefinition {
   type: 'object'
   /**

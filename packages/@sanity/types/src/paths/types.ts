@@ -1,11 +1,11 @@
-/** @beta */
+/** @public */
 export type KeyedSegment = {_key: string}
 
-/** @beta */
+/** @public */
 export type IndexTuple = [number | '', number | '']
 
-/** @beta */
+/** @public */
 export type PathSegment = string | number | KeyedSegment | IndexTuple
 
-/** @beta */
+/** @public */
 export type Path = PathSegment[]

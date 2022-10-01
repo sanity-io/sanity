@@ -2,6 +2,8 @@ import type {Mutation} from '../mutations'
 
 /**
  * An entry in the transaction log
+ *
+ * @internal
  */
 export interface TransactionLogEvent {
   /**
@@ -29,6 +31,8 @@ export interface TransactionLogEvent {
  * An entry in the transaction log that includes the effects of the transaction.
  * Used when asking the transaction log to include effects in mendoza format,
  * eg `?effectFormat=mendoza`
+ *
+ * @internal
  */
 export interface TransactionLogEventWithEffects extends TransactionLogEvent {
   /**
@@ -42,6 +46,8 @@ export interface TransactionLogEventWithEffects extends TransactionLogEvent {
  * An entry in the transaction log that includes the mutations that were performed.
  * Used when asking the transaction log not to exclude the mutations,
  * eg `excludeMutations=false`
+ *
+ * @internal
  */
 export interface TransactionLogEventWithMutations extends TransactionLogEvent {
   /**
@@ -56,6 +62,8 @@ export interface TransactionLogEventWithMutations extends TransactionLogEvent {
  * Mutation type used when the document has passed the threshold of the
  * "history retention" - any transactions done prior to the threshold gets "squashed"
  * into a single "create" transaction.
+ *
+ * @internal
  */
 export interface CreateSquashedMutation {
   createSquashed: {
@@ -88,6 +96,8 @@ export interface CreateSquashedMutation {
 /**
  * A mutation that can occur in the transaction log, which includes the
  * {@link CreateSquashedMutation} mutation type.
+ *
+ * @internal
  */
 export type TransactionLogMutation = Mutation | CreateSquashedMutation
 
@@ -95,6 +105,8 @@ export type TransactionLogMutation = Mutation | CreateSquashedMutation
  * A mendoza patch. These are not human-readable patches, but are optimized to
  * take as little space as possible, while still being represented by plain JSON.
  * See {@link https://www.sanity.io/blog/mendoza}
+ *
+ * @internal
  */
 export type MendozaPatch = unknown[]
 
@@ -102,6 +114,8 @@ export type MendozaPatch = unknown[]
  * A pair of mendoza patches that can either be _applied_ (to perform the effect),
  * or _reverted_ (to undo the effect). Requires the exact, previous version of the
  * document when applying - any difference might have unexpected consequences.
+ *
+ * @internal
  */
 export interface MendozaEffectPair {
   apply: MendozaPatch

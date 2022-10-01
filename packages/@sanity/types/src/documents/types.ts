@@ -1,3 +1,4 @@
+/** @public */
 export interface SanityDocument {
   _id: string
   _type: string
@@ -9,7 +10,10 @@ export interface SanityDocument {
 
 /**
  * Similar to `SanityDocument` but only requires the `_id` and `_type`
+ *
  * @see SanityDocument
+ *
+ * @public
  */
 export interface SanityDocumentLike {
   _id: string
@@ -20,11 +24,13 @@ export interface SanityDocumentLike {
   [key: string]: unknown
 }
 
+/** @public */
 export interface TypedObject {
   [key: string]: unknown
   _type: string
 }
 
+/** @public */
 export interface KeyedObject {
   [key: string]: unknown
   _key: string

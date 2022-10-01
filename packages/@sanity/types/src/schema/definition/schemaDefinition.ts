@@ -34,6 +34,8 @@ import {BaseSchemaDefinition} from './type/common'
  * See {@link defineType} for examples on how this can be accomplished.
  *
  * @see defineType
+ *
+ * @public
  */
 export interface IntrinsicDefinitions {
   array: ArrayDefinition
@@ -60,6 +62,8 @@ export interface IntrinsicDefinitions {
  * A union of all intrinsic types allowed natively in the schema.
  *
  * @see IntrinsicDefinitions
+ *
+ * @public
  */
 export type IntrinsicTypeName = IntrinsicDefinitions[keyof IntrinsicDefinitions]['type']
 
@@ -70,6 +74,8 @@ export type IntrinsicTypeName = IntrinsicDefinitions[keyof IntrinsicDefinitions]
  * itself.
  *
  * @see defineType
+ *
+ * @public
  */
 export type SchemaTypeDefinition<TType extends IntrinsicTypeName = IntrinsicTypeName> =
   | IntrinsicDefinitions[IntrinsicTypeName]
@@ -77,6 +83,8 @@ export type SchemaTypeDefinition<TType extends IntrinsicTypeName = IntrinsicType
 
 /**
  * Represents a reference to another type registered top-level in your schema.
+ *
+ * @public
  */
 export interface TypeReference {
   type: string
@@ -89,6 +97,8 @@ export interface TypeReference {
  * in your schema. Creating a type alias will re-register that existing type
  * under a different name. You can also override the default type options with
  * a type alias definition.
+ *
+ * @public
  */
 export type TypeAliasDefinition<
   TType extends string,
@@ -102,11 +112,13 @@ export type TypeAliasDefinition<
   preview?: PreviewConfig
 }
 
+/** @public */
 export interface FieldDefinitionBase {
   fieldset?: string
   group?: string | string[]
 }
 
+/** @public */
 export type InlineFieldDefinition = {
   [K in keyof IntrinsicDefinitions]: Omit<
     IntrinsicDefinitions[K],
@@ -128,6 +140,7 @@ export type InlineFieldDefinition = {
  * A field definition can be a reference to another registered top-level type
  * or a inline type definition.
  *
+ * @public
  */
 export type FieldDefinition<
   TType extends IntrinsicTypeName = IntrinsicTypeName,

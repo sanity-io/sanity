@@ -1,10 +1,13 @@
 import type {ReactNode, ElementType} from 'react'
 import type {SortOrdering} from './types'
 
+/** @public */
 export interface PrepareViewOptions {
+  /** @beta */
   ordering?: SortOrdering
 }
 
+/** @public */
 export interface PreviewValue {
   title?: ReactNode | ElementType
   subtitle?: ReactNode | ElementType
@@ -13,6 +16,7 @@ export interface PreviewValue {
   imageUrl?: string
 }
 
+/** @public */
 export interface PreviewConfig<
   Select extends Record<string, string> = Record<string, string>,
   PrepareValue extends Record<keyof Select, any> = Record<keyof Select, any>

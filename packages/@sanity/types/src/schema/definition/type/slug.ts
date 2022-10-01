@@ -5,13 +5,16 @@ import {SlugifierFn, SlugSourceFn} from '../../../slug'
 import {SlugIsUniqueValidator} from '../../../validation'
 import {BaseSchemaDefinition} from './common'
 
+/** @public */
 export interface SlugValue {
   current?: string
 }
 
+/** @public */
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface SlugRule extends RuleDef<SlugRule, SlugValue> {}
 
+/** @public */
 export interface SlugOptions {
   source?: string | Path | SlugSourceFn
   maxLength?: number
@@ -19,6 +22,7 @@ export interface SlugOptions {
   isUnique?: SlugIsUniqueValidator
 }
 
+/** @public */
 export interface SlugDefinition extends BaseSchemaDefinition {
   type: 'slug'
   options?: SlugOptions

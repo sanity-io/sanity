@@ -2,6 +2,7 @@ import {RuleDef, ValidationBuilder} from '../../ruleBuilder'
 import {InitialValueProperty} from '../../types'
 import {BaseSchemaDefinition} from './common'
 
+/** @public */
 export interface DatetimeOptions {
   calendarTodayLabel?: string
   dateFormat?: string
@@ -9,6 +10,7 @@ export interface DatetimeOptions {
   timeStep?: number
 }
 
+/** @public */
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface DatetimeRule extends RuleDef<DatetimeRule, string> {
   /**
@@ -21,6 +23,7 @@ export interface DatetimeRule extends RuleDef<DatetimeRule, string> {
   max: (maxDate: string) => DatetimeRule
 }
 
+/** @public */
 export interface DatetimeDefinition extends BaseSchemaDefinition {
   type: 'datetime'
   options?: DatetimeOptions

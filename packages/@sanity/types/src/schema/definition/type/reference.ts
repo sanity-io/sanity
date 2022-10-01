@@ -5,13 +5,16 @@ import {SchemaTypeDefinition, TypeReference} from '../schemaDefinition'
 import {ReferenceBaseOptions, ReferenceFilterOptions} from '../../../reference'
 import {BaseSchemaDefinition} from './common'
 
+/** @public */
 export interface ReferenceValue {
   _ref?: string
 }
 
+/** @public */
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface ReferenceRule extends RuleDef<ReferenceRule, ReferenceValue> {}
 
+/** @public */
 export type ReferenceTo =
   | SchemaTypeDefinition
   | TypeReference
@@ -24,9 +27,12 @@ export type ReferenceTo =
  * @see ReferenceFilterOptions
  * @see ReferenceFilterResolverOptions
  * @see ReferenceBaseOptions
+ *
+ * @public
  */
 export type ReferenceOptions = ReferenceBaseOptions & ReferenceFilterOptions
 
+/** @public */
 export interface ReferenceDefinition extends BaseSchemaDefinition {
   type: 'reference'
   to: ReferenceTo

@@ -25,6 +25,7 @@ function isRecord(value: unknown): value is Record<string, unknown> {
  *
  * @param type - Schema type to test
  * @returns True if type is a document type, false otherwise
+ *
  * @public
  */
 export function isDocumentSchemaType(type: unknown): type is ObjectSchemaType {
@@ -43,51 +44,61 @@ export function isDocumentSchemaType(type: unknown): type is ObjectSchemaType {
   return false
 }
 
+/** @internal */
 export function isObjectSchemaType(type: unknown): type is ObjectSchemaType {
   if (!isRecord(type)) return false
   return type.jsonType === 'object'
 }
 
+/** @internal */
 export function isArraySchemaType(type: unknown): type is ArraySchemaType {
   if (!isRecord(type)) return false
   return type.jsonType === 'array'
 }
 
+/** @internal */
 export function isArrayOfObjectsSchemaType(
   type: unknown
 ): type is ArraySchemaType<ObjectSchemaType> {
   return isArraySchemaType(type) && type.of.every((memberType) => isObjectSchemaType(memberType))
 }
 
+/** @internal */
 export function isArrayOfPrimitivesSchemaType(type: unknown): type is ArraySchemaType {
   return isArraySchemaType(type) && type.of.every((memberType) => isPrimitiveSchemaType(memberType))
 }
 
+/** @internal */
 export function isBooleanSchemaType(type: unknown): type is BooleanSchemaType {
   if (!isRecord(type)) return false
   return type.jsonType === 'boolean'
 }
 
+/** @internal */
 export function isStringSchemaType(type: unknown): type is StringSchemaType {
   if (!isRecord(type)) return false
   return type.jsonType === 'string'
 }
 
+/** @internal */
 export function isNumberSchemaType(type: unknown): type is NumberSchemaType {
   if (!isRecord(type)) return false
   return type.jsonType === 'number'
 }
 
+/** @internal */
 export function isPrimitiveSchemaType(
   type: unknown
 ): type is BooleanSchemaType | StringSchemaType | NumberSchemaType {
   return isBooleanSchemaType(type) || isStringSchemaType(type) || isNumberSchemaType(type)
 }
 
+/** @internal */
 export function isReferenceSchemaType(type: unknown): type is ReferenceSchemaType {
   return isRecord(type) && (type.name === 'reference' || isReferenceSchemaType(type.type))
 }
 
+/** @internal */
 export function isCrossDatasetReferenceSchemaType(
   type: unknown
 ): type is CrossDatasetReferenceSchemaType {
@@ -97,10 +108,12 @@ export function isCrossDatasetReferenceSchemaType(
   )
 }
 
+/** @internal */
 export function isTitledListValue(item: unknown): item is TitledListValue {
   return typeof item === 'object' && item !== null && 'title' in item && 'value' in item
 }
 
+/** @internal */
 export function isSpanSchemaType(type: unknown): type is SpanSchemaType {
   if (!isRecord(type)) return false
   // we check for `annotations` and `decorators` instead of `type.name` because
@@ -108,6 +121,7 @@ export function isSpanSchemaType(type: unknown): type is SpanSchemaType {
   return Array.isArray(type.annotations) && Array.isArray(type.decorators)
 }
 
+/** @internal */
 export function isBlockSchemaType(type: unknown): type is BlockSchemaType {
   if (!isRecord(type)) return false
   if (!Array.isArray(type.fields)) return false
@@ -120,18 +134,21 @@ export function isBlockSchemaType(type: unknown): type is BlockSchemaType {
   )
 }
 
+/** @internal */
 export function isStyleObjectField(field: unknown): field is StyleObjectField {
   if (!isRecord(field)) return false
   if (field.name !== 'style') return false
   return isRecord(field.type) && field.type.jsonType === 'string'
 }
 
+/** @internal */
 export function isListObjectField(field: unknown): field is ListObjectField {
   if (!isRecord(field)) return false
   if (field.name !== 'list') return false
   return isRecord(field.type) && field.type.jsonType === 'string'
 }
 
+/** @internal */
 export function isBlockChildrenObjectField(field: unknown): field is BlockChildrenObjectField {
   if (!isRecord(field)) return false
   if (field.name !== 'children') return false

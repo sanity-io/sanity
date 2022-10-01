@@ -7,6 +7,7 @@ import {
 import type {PreviewConfig} from './preview'
 import type {InitialValueProperty, SchemaValidationValue} from './types'
 
+/** @beta */
 export interface DefineSchemaOptions<
   TStrict extends StrictDefinition,
   TAlias extends IntrinsicTypeName | undefined
@@ -27,19 +28,23 @@ export interface DefineSchemaOptions<
   aliasFor?: TAlias extends IntrinsicTypeName ? TAlias : never
 }
 
+/** @beta */
 export type IntrinsicBase = {
   [K in keyof IntrinsicDefinitions]: Omit<IntrinsicDefinitions[K], 'preview'>
 }
 
+/** @beta */
 export type IntrinsicArrayOfBase = {
   [K in keyof IntrinsicDefinitions]: Omit<ArrayOfEntry<IntrinsicDefinitions[K]>, 'preview'>
 }
 
+/** @beta */
 export type DefineSchemaBase<
   TType extends string,
   TAlias extends IntrinsicTypeName | undefined
 > = TType extends IntrinsicTypeName ? IntrinsicBase[TType] : TypeAliasDefinition<TType, TAlias>
 
+/** @beta */
 export type DefineSchemaType<
   TType extends string,
   TAlias extends IntrinsicTypeName | undefined
@@ -47,6 +52,7 @@ export type DefineSchemaType<
   ? IntrinsicDefinitions[TType]
   : TypeAliasDefinition<TType, TAlias>
 
+/** @beta */
 export type DefineArrayMemberBase<
   TType extends string,
   TAlias extends IntrinsicTypeName | undefined
@@ -54,8 +60,10 @@ export type DefineArrayMemberBase<
   ? IntrinsicArrayOfBase[TType]
   : ArrayOfEntry<TypeAliasDefinition<string, TAlias>>
 
+/** @beta */
 export type StrictDefinition = boolean | undefined
 
+/** @beta */
 export type MaybeAllowUnknownProps<TStrict extends StrictDefinition> = TStrict extends false
   ? {
       options?: {[index: string]: any}
@@ -63,6 +71,7 @@ export type MaybeAllowUnknownProps<TStrict extends StrictDefinition> = TStrict e
     }
   : unknown
 
+/** @beta */
 export type MaybePreview<
   Select extends Record<string, string> | undefined,
   PrepareValue extends Record<keyof Select, any> | undefined
@@ -72,6 +81,7 @@ export type MaybePreview<
     : never
   : never
 
+/** @beta */
 export type NarrowPreview<
   TType extends string,
   TAlias extends IntrinsicTypeName | undefined,
@@ -83,11 +93,13 @@ export type NarrowPreview<
     }
   : unknown
 
+/** @beta */
 // Must type-widen some fields on the way out of the define functions to be compatible with FieldDefinition and ArrayDefinition
 export interface WidenValidation {
   validation?: SchemaValidationValue
 }
 
+/** @beta */
 export interface WidenInitialValue {
   initialValue?: InitialValueProperty<any, any>
 }

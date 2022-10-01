@@ -1,8 +1,10 @@
 /**
- * Note: These are query parameters, so they will eventually be encoded as strings.
+ * NOTE: These are query parameters, so they will eventually be encoded as strings.
  * However, since most/all query parameter encoders will accept numbers and encode
  * them as strings, we'll use `string| number` where applicable, as it makes it easier
  * to use in places that do calculations and such.
+ *
+ * @internal
  */
 export interface ImageUrlParams {
   bg?: string
@@ -35,10 +37,13 @@ export interface ImageUrlParams {
   border?: string // <width>,<color>
 }
 
+/** @internal */
 export type ImageUrlFormat = 'jpg' | 'pjpg' | 'png' | 'webp'
 
+/** @internal */
 export type ImageUrlFitMode = 'clip' | 'crop' | 'fill' | 'fillmax' | 'max' | 'scale' | 'min'
 
+/** @internal */
 export type ImageUrlCropMode =
   | 'top'
   | 'bottom'
@@ -48,6 +53,8 @@ export type ImageUrlCropMode =
   | 'focalpoint'
   | 'entropy' // EXPERIMENTAL
 
+/** @internal */
 export type ImageUrlAutoMode = 'format'
 
+/** @internal */
 export type ImageUrlOrientation = '0' | '90' | '180' | '270'

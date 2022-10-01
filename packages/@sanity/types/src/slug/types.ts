@@ -5,13 +5,16 @@ import type {SanityDocument} from '../documents'
 import type {Path} from '../paths'
 import {CurrentUser} from '../user'
 
+/** @internal */
 export interface Slug {
   _type: 'slug'
   current: string
 }
 
+/** @public */
 export type SlugParent = Record<string, unknown> | Record<string, unknown>[]
 
+/** @public */
 export interface SlugSourceContext {
   parentPath: Path
   parent: SlugParent
@@ -22,11 +25,13 @@ export interface SlugSourceContext {
   getClient: (options: {apiVersion: string}) => SanityClient
 }
 
+/** @public */
 export type SlugSourceFn = (
   document: SanityDocument,
   context: SlugSourceContext
 ) => string | Promise<string>
 
+/** @public */
 export type SlugifierFn = (
   source: string,
   schemaType: SlugSchemaType,

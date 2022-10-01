@@ -3,6 +3,7 @@ import {InitialValueProperty, SchemaValidationValue} from '../../types'
 import {IntrinsicDefinitions, TypeAliasDefinition, IntrinsicTypeName} from '../schemaDefinition'
 import {BaseSchemaDefinition, TitledListValue} from './common'
 
+/** @public */
 export interface ArrayOptions<V = unknown> {
   list?: TitledListValue<V>[] | V[]
   /**
@@ -17,6 +18,7 @@ export interface ArrayOptions<V = unknown> {
   modal?: {type?: 'dialog' | 'popover'; width?: number | 'auto'}
 }
 
+/** @public */
 export interface ArrayRule<Value> extends RuleDef<ArrayRule<Value>, Value> {
   min: (length: number) => ArrayRule<Value>
   max: (length: number) => ArrayRule<Value>
@@ -24,8 +26,10 @@ export interface ArrayRule<Value> extends RuleDef<ArrayRule<Value>, Value> {
   unique: () => ArrayRule<Value>
 }
 
+/** @public */
 export type ArrayOfEntry<T> = Omit<T, 'name' | 'hidden'> & {name?: string}
 
+/** @public */
 export type IntrinsicArrayOfDefinition = {
   [K in keyof IntrinsicDefinitions]: Omit<
     ArrayOfEntry<IntrinsicDefinitions[K]>,
@@ -34,11 +38,13 @@ export type IntrinsicArrayOfDefinition = {
   > & {validation?: SchemaValidationValue; initialValue?: InitialValueProperty<any, any>}
 }
 
+/** @public */
 export type ArrayOfType<
   TType extends IntrinsicTypeName = IntrinsicTypeName,
   TAlias extends IntrinsicTypeName | undefined = undefined
 > = IntrinsicArrayOfDefinition[TType] | ArrayOfEntry<TypeAliasDefinition<string, TAlias>>
 
+/** @public */
 export interface ArrayDefinition extends BaseSchemaDefinition {
   type: 'array'
   of: ArrayOfType[]

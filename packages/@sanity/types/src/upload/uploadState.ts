@@ -1,3 +1,4 @@
+/** @internal */
 export interface UploadState {
   progress: number
   initiated: string
