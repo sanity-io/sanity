@@ -7,21 +7,28 @@ import type {Block} from '../portableText'
 import {SlugSchemaType} from '../schema'
 import {SlugParent} from '../slug'
 
+/** @public */
 export type RuleTypeConstraint = 'Array' | 'Boolean' | 'Date' | 'Number' | 'Object' | 'String'
+
+/** @public */
 export type FieldRules = {[fieldKey: string]: SchemaValidationValue}
 
-// Note: `RuleClass` and `Rule` are split to fit the current `@sanity/types`
-// setup. Classes are a bit weird in the `@sanity/types` package because classes
-// create an actual javascript class while simultaneously creating a type
-// definition.
-//
-// This implicitly creates two types:
-// 1. the instance type — `Rule` and
-// 2. the static/class type - `RuleClass`
-//
-// The `RuleClass` type contains the static methods and the `Rule` instance
-// contains the instance methods. Downstream in the validation package, the Rule
-// implementation asserts the class declaration is of this type.
+/**
+ * Note: `RuleClass` and `Rule` are split to fit the current `@sanity/types`
+ * setup. Classes are a bit weird in the `@sanity/types` package because classes
+ * create an actual javascript class while simultaneously creating a type
+ * definition.
+ *
+ * This implicitly creates two types:
+ * 1. the instance type — `Rule` and
+ * 2. the static/class type - `RuleClass`
+ *
+ * The `RuleClass` type contains the static methods and the `Rule` instance
+ * contains the instance methods. Downstream in the validation package, the Rule
+ * implementation asserts the class declaration is of this type.
+ *
+ * @internal
+ */
 export interface RuleClass {
   FIELD_REF: symbol
   array: (def?: SchemaType) => Rule
@@ -38,13 +45,16 @@ export interface RuleClass {
 
 /**
  * Holds a reference to a different field
- * Note: Only use this through {@link Rule.valueOfField}
+ * NOTE: Only use this through {@link Rule.valueOfField}
+ *
+ * @public
  */
 export interface FieldReference {
   type: symbol
   path: string | string[]
 }
 
+/** @public */
 export interface UriValidationOptions {
   scheme?: (string | RegExp) | Array<string | RegExp>
   allowRelative?: boolean
@@ -52,8 +62,9 @@ export interface UriValidationOptions {
   allowCredentials?: boolean
 }
 
+/** @public */
 export interface Rule {
-  // Note: these prop is not actually deprecated but there is better TS Doc
+  // NOTE: these prop is not actually deprecated but there is better TS Doc
   // support for `@deprecated` than `@internal`
   /**
    * @internal
@@ -157,6 +168,7 @@ export interface Rule {
   validate(value: unknown, options: ValidationContext): Promise<ValidationMarker[]>
 }
 
+/** @public */
 export type RuleSpec =
   | {flag: 'integer'}
   | {flag: 'email'}
@@ -196,10 +208,15 @@ export type RuleSpec =
       }
     }
 
-// this is used to get allow index access (e.g. `RuleSpec['constraint']`) to
-// constraint when a rule spec might not have a 'constraint` prop
+/**
+ * this is used to get allow index access (e.g. `RuleSpec['constraint']`) to
+ * constraint when a rule spec might not have a `constraint` prop
+ *
+ * @internal
+ */
 export type ConditionalIndexAccess<T, U> = U extends keyof T ? T[U] : undefined
 
+/** @internal */
 export type RuleSpecConstraint<T extends RuleSpec['flag']> = ConditionalIndexAccess<
   Extract<RuleSpec, {flag: T}>,
   'constraint'
@@ -216,6 +233,8 @@ export type RuleSpecConstraint<T extends RuleSpec['flag']> = ConditionalIndexAcc
  *   // ...
  * })`
  * ```
+ *
+ * @public
  */
 export type ValidationContext = {
   /**
@@ -232,12 +251,13 @@ export type ValidationContext = {
 }
 
 /**
- * @internal
  * The base type for all validators in the validation library. Takes in a
  * `RuleSpec`'s constraint, the value to check, an optional override message,
  * and the validation context.
  *
  * @see Rule.validate from `@sanity/validation/src/Rule`
+ *
+ * @internal
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type Validator<T = any, Value = any> = (
@@ -253,7 +273,6 @@ export type Validator<T = any, Value = any> = (
   | Promise<ValidationError[] | ValidationError | string | true>
 
 /**
- * @internal
  * A type helper used to define a group of validators. The type of the
  * `RuleSpec` constraint is inferred via the key.
  *
@@ -269,6 +288,8 @@ export type Validator<T = any, Value = any> = (
  *   },
  * }
  * ```
+ *
+ * @internal
  */
 export type Validators = Partial<{
   [P in RuleSpec['flag']]: Validator<
@@ -276,19 +297,25 @@ export type Validators = Partial<{
   >
 }>
 
+/** @internal */
 export interface ValidationErrorOptions {
   paths?: Path[]
   children?: ValidationMarker[]
   operation?: 'AND' | 'OR'
 }
 
-// This follows the same pattern as `RuleClass` and `Rule` above
-// Note: this class does not actually extend `Error` since it's never thrown
-// within the validation library
+/**
+ * This follows the same pattern as `RuleClass` and `Rule` above
+ * Note: this class does not actually extend `Error` since it's never thrown
+ * within the validation library
+ *
+ * @internal
+ */
 export interface ValidationErrorClass {
   new (message: string, options?: ValidationErrorOptions): ValidationError
 }
 
+/** @public */
 export interface ValidationError {
   message: string
   children?: ValidationMarker[]
@@ -306,8 +333,10 @@ export interface ValidationError {
   cloneWithMessage?(message: string): ValidationError
 }
 
+/** @public */
 export type CustomValidatorResult = true | string | ValidationError
 
+/** @public */
 export type CustomValidator<T = unknown> = (
   value: T,
   context: ValidationContext
@@ -315,7 +344,10 @@ export type CustomValidator<T = unknown> = (
 
 /**
  * @deprecated use `Rule.custom` instead
+ *
  * @see CustomValidator
+ *
+ * @public
  */
 export type BlockValidator = (
   block: Block,
@@ -327,17 +359,20 @@ export type BlockValidator = (
   | true
   | Promise<ValidationError[] | ValidationError | string | true>
 
+/** @public */
 export interface SlugValidationContext extends ValidationContext {
   parent: SlugParent
   type: SlugSchemaType
   defaultIsUnique: SlugIsUniqueValidator
 }
 
+/** @public */
 export type SlugIsUniqueValidator = (
   slug: string,
   context: SlugValidationContext
 ) => boolean | Promise<boolean>
 
+/** @public */
 export interface NodeValidation {
   level: 'error' | 'warning' | 'info'
   message: string

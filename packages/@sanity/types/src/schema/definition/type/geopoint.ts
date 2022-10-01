@@ -7,6 +7,8 @@ import {BaseSchemaDefinition} from './common'
  * Geographical point representing a pair of latitude and longitude coordinates,
  * stored as degrees, in the World Geodetic System 1984 (WGS 84) format. Also
  * includes an optional `alt` property representing the altitude in meters.
+ *
+ * @public
  */
 export interface Geopoint {
   /**
@@ -30,13 +32,15 @@ export interface Geopoint {
   alt?: number
 }
 
+/** @public */
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface GeopointRule extends RuleDef<GeopointRule, Geopoint> {}
 
-//this exits only
+/** @public */
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface GeopointOptions {}
 
+/** @public */
 export interface GeopointDefinition extends BaseSchemaDefinition {
   type: 'geopoint'
   options?: GeopointOptions

@@ -2,9 +2,11 @@ import {RuleDef, ValidationBuilder} from '../../ruleBuilder'
 import {InitialValueProperty} from '../../types'
 import {BaseSchemaDefinition, EnumListProps} from './common'
 
+/** @public */
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface NumberOptions extends EnumListProps<number> {}
 
+/** @public */
 export interface NumberRule extends RuleDef<NumberRule, number> {
   min: (minNumber: number) => NumberRule
   max: (maxNumber: number) => NumberRule
@@ -16,6 +18,7 @@ export interface NumberRule extends RuleDef<NumberRule, number> {
   negative: () => NumberRule
 }
 
+/** @public */
 export interface NumberDefinition extends BaseSchemaDefinition {
   type: 'number'
   options?: NumberOptions

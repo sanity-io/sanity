@@ -166,6 +166,8 @@ import {FieldDefinitionBase, IntrinsicTypeName} from './definition'
  * @see defineField
  * @see defineArrayMember
  * @see typed
+ *
+ * @beta
  */
 export function defineType<
   TType extends string | IntrinsicTypeName, // IntrinsicTypeName here improves autocompletion in _some_ IDEs (not VS Code atm)
@@ -205,6 +207,8 @@ export function defineType<
  * @see defineField
  * @see defineArrayMember
  * @see typed
+ *
+ * @beta
  */
 export function defineField<
   TType extends string | IntrinsicTypeName, // IntrinsicTypeName here improves autocompletion in _some_ IDEs (not VS Code atm)
@@ -245,6 +249,8 @@ export function defineField<
  * @see defineType
  * @see defineField
  * @see typed
+ *
+ * @beta
  */
 export function defineArrayMember<
   TType extends string | IntrinsicTypeName, // IntrinsicTypeName here improves autocompletion in _some_ IDEs (not VS Code atm)
@@ -295,6 +301,8 @@ export function defineArrayMember<
  * ```
  *
  * @param input - returned directly
+ *
+ * @internal
  */
 export function typed<T>(input: T): T {
   return input

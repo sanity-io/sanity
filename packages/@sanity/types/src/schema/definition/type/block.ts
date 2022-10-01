@@ -5,13 +5,16 @@ import {SchemaTypeDefinition, TypeReference} from '../schemaDefinition'
 import {ArrayOfType} from './array'
 import {BaseSchemaDefinition} from './common'
 
+/** @public */
 export interface BlockOptions {
   spellCheck?: boolean
 }
 
+/** @public */
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface BlockRule extends RuleDef<BlockRule, any[]> {}
 
+/** @public */
 export interface DecoratorDefinition {
   title: string
   value: string
@@ -22,11 +25,13 @@ export interface DecoratorDefinition {
   }
 }
 
+/** @public */
 export interface MarksDefinition {
   decorators?: DecoratorDefinition[]
   annotations?: (SchemaTypeDefinition | TypeReference)[]
 }
 
+/** @public */
 export interface BlockDefinition extends BaseSchemaDefinition {
   type: 'block'
   styles?: Array<{title: string; value: string}>

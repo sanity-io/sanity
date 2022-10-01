@@ -2,9 +2,11 @@ import {RuleDef, ValidationBuilder} from '../../ruleBuilder'
 import {InitialValueProperty} from '../../types'
 import {BaseSchemaDefinition, EnumListProps} from './common'
 
+/** @public */
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface StringOptions extends EnumListProps<string> {}
 
+/** @public */
 export interface StringRule extends RuleDef<StringRule, string> {
   min: (minNumber: number) => StringRule
   max: (maxNumber: number) => StringRule
@@ -17,6 +19,7 @@ export interface StringRule extends RuleDef<StringRule, string> {
   regex(pattern: RegExp): StringRule
 }
 
+/** @public */
 export interface StringDefinition extends BaseSchemaDefinition {
   type: 'string'
   options?: StringOptions

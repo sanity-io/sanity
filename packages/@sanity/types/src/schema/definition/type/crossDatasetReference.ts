@@ -3,6 +3,7 @@ import {PreviewConfig} from '../../preview'
 import {BaseSchemaDefinition} from './common'
 import {ReferenceOptions} from './reference'
 
+/** @public */
 export interface CrossDatasetReferenceDefinition extends BaseSchemaDefinition {
   type: 'crossDatasetReference'
   weak?: boolean

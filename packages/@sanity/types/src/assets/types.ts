@@ -2,14 +2,17 @@ import type {ComponentType} from 'react'
 import type {Reference} from '../reference'
 import type {SanityDocument} from '../documents'
 
+/** @public */
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface EmptyProps {}
 
+/** @public */
 export interface File {
   [key: string]: unknown // We allow meta-fields on file
   asset: Reference
 }
 
+/** @public */
 export interface Image {
   [key: string]: unknown // We allow meta-fields on image
   asset: Reference
@@ -17,6 +20,7 @@ export interface Image {
   hotspot?: ImageHotspot
 }
 
+/** @public */
 export interface Asset extends SanityDocument {
   url: string
   path: string
@@ -32,16 +36,19 @@ export interface Asset extends SanityDocument {
   source?: AssetSourceSpec
 }
 
+/** @public */
 export interface ImageAsset extends Asset {
   _type: 'sanity.imageAsset'
   metadata: ImageMetadata
 }
 
+/** @public */
 export interface FileAsset extends Asset {
   _type: 'sanity.fileAsset'
   metadata: Record<string, unknown>
 }
 
+/** @public */
 export interface ImageMetadata {
   [key: string]: unknown
   _type: 'sanity.imageMetadata'
@@ -53,6 +60,7 @@ export interface ImageMetadata {
   isOpaque: boolean
 }
 
+/** @public */
 export interface ImageDimensions {
   _type: 'sanity.imageDimensions'
   height: number
@@ -60,6 +68,7 @@ export interface ImageDimensions {
   aspectRatio: number
 }
 
+/** @public */
 export interface ImageCrop {
   _type?: 'sanity.imageCrop'
   left: number
@@ -68,6 +77,7 @@ export interface ImageCrop {
   top: number
 }
 
+/** @public */
 export interface ImageHotspot {
   _type?: 'sanity.imageHotspot'
   width: number
@@ -76,6 +86,7 @@ export interface ImageHotspot {
   y: number
 }
 
+/** @public */
 export interface ImagePalette {
   _type: 'sanity.imagePalette'
   darkMuted?: ImageSwatch
@@ -87,6 +98,7 @@ export interface ImagePalette {
   vibrant?: ImageSwatch
 }
 
+/** @public */
 export interface ImageSwatch {
   _type: 'sanity.imagePaletteSwatch'
   background: string
@@ -95,6 +107,7 @@ export interface ImageSwatch {
   title?: string
 }
 
+/** @public */
 export type SwatchName =
   | 'darkMuted'
   | 'darkVibrant'
@@ -104,18 +117,21 @@ export type SwatchName =
   | 'muted'
   | 'vibrant'
 
+/** @public */
 export interface AssetSourceSpec {
   id: string
   name: string
   url?: string
 }
 
+/** @public */
 export type AssetFromSource = {
   kind: 'assetDocumentId' | 'file' | 'base64' | 'url'
   value: string | File
   assetDocumentProps?: ImageAsset
 }
 
+/** @public */
 export interface AssetSourceComponentProps {
   assetType?: 'file' | 'image'
   selectionType: 'single'
@@ -125,6 +141,7 @@ export interface AssetSourceComponentProps {
   onSelect: (assetFromSource: AssetFromSource[]) => void
 }
 
+/** @public */
 export type AssetMetadataType =
   | 'location'
   | 'exif'
@@ -134,6 +151,7 @@ export type AssetMetadataType =
   | 'blurhash'
   | 'none'
 
+/** @public */
 export interface AssetSource {
   name: string
   title: string

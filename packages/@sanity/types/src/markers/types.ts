@@ -1,6 +1,7 @@
 import type {ValidationError} from '../validation'
 import type {Path} from '../paths'
 
+/** @public */
 export interface ValidationMarker {
   level: 'error' | 'warning' | 'info'
   item: ValidationError

@@ -1,9 +1,14 @@
+/** @internal */
 export type InsertPatch =
   | {before: string; items: unknown[]}
   | {after: string; items: unknown[]}
   | {replace: string; items: unknown[]}
 
-// Note: this is actually incorrect/invalid, but implemented as-is for backwards compatibility
+/**
+ * NOTE: this is actually incorrect/invalid, but implemented as-is for backwards compatibility
+ *
+ * @internal
+ */
 export interface PatchOperations {
   set?: {[key: string]: unknown}
   setIfMissing?: {[key: string]: unknown}
@@ -15,9 +20,13 @@ export interface PatchOperations {
   ifRevisionID?: string
 }
 
+/** @internal */
 export type MutationSelection = {query: string; params?: Record<string, unknown>} | {id: string}
+
+/** @internal */
 export type PatchMutationOperation = PatchOperations & MutationSelection
 
+/** @internal */
 export interface CreateMutation {
   create: {
     _id?: string
@@ -26,6 +35,7 @@ export interface CreateMutation {
   }
 }
 
+/** @internal */
 export interface CreateOrReplaceMutation {
   createOrReplace: {
     _id: string
@@ -34,6 +44,7 @@ export interface CreateOrReplaceMutation {
   }
 }
 
+/** @internal */
 export interface CreateIfNotExistsMutation {
   createIfNotExists: {
     _id: string
@@ -42,14 +53,17 @@ export interface CreateIfNotExistsMutation {
   }
 }
 
+/** @internal */
 export interface DeleteMutation {
   delete: MutationSelection
 }
 
+/** @internal */
 export interface PatchMutation {
   patch: PatchMutationOperation
 }
 
+/** @internal */
 export type Mutation =
   | CreateMutation
   | CreateOrReplaceMutation
@@ -57,6 +71,7 @@ export type Mutation =
   | DeleteMutation
   | PatchMutation
 
+/** @internal */
 export type MutationOperationName =
   | 'create'
   | 'createOrReplace'
@@ -64,12 +79,14 @@ export type MutationOperationName =
   | 'delete'
   | 'patch'
 
+/** @internal */
 export interface SingleMutationResult {
   transactionId: string
   documentId: string
   results: {id: string}[]
 }
 
+/** @internal */
 export interface MultipleMutationResult {
   transactionId: string
   documentIds: string[]

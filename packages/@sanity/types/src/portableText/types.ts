@@ -1,3 +1,4 @@
+/** @public */
 export interface Block<TChild = Span> {
   _type: string
   _key: string
@@ -6,6 +7,7 @@ export interface Block<TChild = Span> {
   markDefs: MarkDefinition[]
 }
 
+/** @public */
 export interface Span {
   _type: 'span'
   _key: string
@@ -13,6 +15,7 @@ export interface Span {
   text: string
 }
 
+/** @public */
 export interface MarkDefinition {
   [key: string]: unknown
   _type: string

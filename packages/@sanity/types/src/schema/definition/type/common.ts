@@ -2,6 +2,7 @@ import {ComponentType, ReactElement, ReactNode} from 'react'
 import {ConditionalProperty} from '../../types'
 import {ObjectOptions} from './object'
 
+/** @public */
 export type FieldsetDefinition = {
   name: string
   title?: string
@@ -11,6 +12,7 @@ export type FieldsetDefinition = {
   options?: ObjectOptions
 }
 
+/** @public */
 export type FieldGroupDefinition = {
   name: string
   title?: string
@@ -18,6 +20,7 @@ export type FieldGroupDefinition = {
   default?: boolean
 }
 
+/** @public */
 export interface BaseSchemaDefinition {
   name: string
   title?: string
@@ -36,12 +39,14 @@ export interface BaseSchemaDefinition {
   initialValue?: unknown
 }
 
+/** @public */
 export interface TitledListValue<V = unknown> {
   _key?: string
   title: string
   value?: V
 }
 
+/** @public */
 export interface EnumListProps<V = unknown> {
   list?: Array<TitledListValue<V> | V>
   layout?: 'radio' | 'dropdown'

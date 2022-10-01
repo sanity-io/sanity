@@ -26,6 +26,8 @@ export {defineType, defineField, defineArrayMember, typed} from './define'
 /**
  * Note: you probably want `SchemaTypeDefinition` instead
  * @see SchemaTypeDefinition
+ *
+ * @public
  */
 export type SchemaType =
   | ArraySchemaType
@@ -36,35 +38,44 @@ export type SchemaType =
   | StringSchemaType
   | ReferenceSchemaType
 
+/** @public */
 export interface SchemaValidationError {
   helpId?: string
   message: string
   severity: 'error'
 }
 
+/** @internal */
 export interface SchemaValidationWarning {
   helpId?: string
   message: string
   severity: 'warning'
 }
 
+/** @internal */
 export type SchemaValidationProblem = SchemaValidationError | SchemaValidationWarning
 
+/** @internal */
 export type SchemaValidationProblemPath = Array<
   {kind: 'type'; type: string; name: string} | {kind: 'property'; name: string}
 >
 
+/** @internal */
 export interface SchemaValidationProblemGroup {
   path: SchemaValidationProblemPath
   problems: SchemaValidationProblem[]
 }
 
+/** @public */
 export interface Schema {
+  /** @internal */
   _original?: {
     name: string
     types: SchemaTypeDefinition[]
   }
+  /** @internal */
   _registry: {[typeName: string]: any}
+  /** @internal */
   _validation?: SchemaValidationProblemGroup[]
   name: string
   get: (name: string) => SchemaType | undefined
@@ -78,11 +89,14 @@ export interface SortOrderingItem {
   direction: 'asc' | 'desc'
 }
 
+/** @beta */
 export type SortOrdering = {
   title: string
   name: string
   by: SortOrderingItem[]
 }
+
+/** @public */
 export interface ConditionalPropertyCallbackContext {
   document: SanityDocument | undefined
   // `any` should be fine here. leaving this as `unknown` would cause more
@@ -94,9 +108,13 @@ export interface ConditionalPropertyCallbackContext {
   currentUser: Omit<CurrentUser, 'role'> | null
 }
 
+/** @public */
 export type ConditionalPropertyCallback = (context: ConditionalPropertyCallbackContext) => boolean
+
+/** @public */
 export type ConditionalProperty = boolean | ConditionalPropertyCallback | undefined
 
+/** @public */
 export interface InitialValueResolverContext {
   projectId: string
   dataset: string
@@ -105,6 +123,7 @@ export interface InitialValueResolverContext {
   getClient: (options: {apiVersion: string}) => SanityClient
 }
 
+/** @public */
 export type InitialValueResolver<Params, Value> = (
   params: Params | undefined,
   context: InitialValueResolverContext
@@ -138,6 +157,8 @@ export type InitialValueProperty<Params, Value> =
  *   )
  * }
  * ```
+ *
+ * @public
  */
 export type SchemaValidationValue =
   | false
@@ -146,6 +167,7 @@ export type SchemaValidationValue =
   | SchemaValidationValue[]
   | ((rule: Rule) => SchemaValidationValue)
 
+/** @public */
 export interface BaseSchemaType {
   name: string
   title?: string
@@ -175,6 +197,8 @@ export interface BaseSchemaType {
 /**
  * This is used for string, text, date and datetime.
  * This interface represent the compiled version at runtime, when accessed through Schema.
+ *
+ * @public
  */
 export interface StringSchemaType extends BaseSchemaType {
   jsonType: 'string'
@@ -182,22 +206,26 @@ export interface StringSchemaType extends BaseSchemaType {
   initialValue?: InitialValueProperty<any, string>
 }
 
+/** @public */
 export interface TextSchemaType extends StringSchemaType {
   rows?: number
 }
 
+/** @public */
 export interface NumberSchemaType extends BaseSchemaType {
   jsonType: 'number'
   options?: NumberOptions
   initialValue?: InitialValueProperty<any, number>
 }
 
+/** @public */
 export interface BooleanSchemaType extends BaseSchemaType {
   jsonType: 'boolean'
   options?: BooleanOptions
   initialValue?: InitialValueProperty<any, boolean>
 }
 
+/** @public */
 export interface ArraySchemaType<V = unknown> extends BaseSchemaType {
   jsonType: 'array'
   of: (Exclude<SchemaType, ArraySchemaType> | ReferenceSchemaType)[]
@@ -206,6 +234,7 @@ export interface ArraySchemaType<V = unknown> extends BaseSchemaType {
 
 // Note: this would ideally be a type parameter in `ArraySchemaType` however
 // adding one conflicts with the existing definition.
+/** @internal */
 export type ArraySchemaTypeOf<TSchemaType extends ArraySchemaType['of'][number]> = Omit<
   ArraySchemaType,
   'of'
@@ -214,30 +243,40 @@ export type ArraySchemaTypeOf<TSchemaType extends ArraySchemaType['of'][number]>
 /**
  * A specific `ObjectField` for `marks` in `SpanSchemaType`
  * @see SpanSchemaType
+ *
+ * @internal
  */
 export type MarksObjectField = {name: 'marks'} & ObjectField<ArraySchemaTypeOf<StringSchemaType>>
 
 /**
  * A specific `ObjectField` for `text` in `SpanSchemaType`
  * @see SpanSchemaType
+ *
+ * @internal
  */
 export type TextObjectField = {name: 'text'} & ObjectField<TextSchemaType>
 
 /**
  * A specific `ObjectField` for `style` in `BlockSchemaType`
  * @see BlockSchemaType
+ *
+ * @internal
  */
 export type StyleObjectField = {name: 'style'} & ObjectField<StringSchemaType>
 
 /**
  * A specific `ObjectField` for `list` in `BlockSchemaType`
  * @see BlockSchemaType
+ *
+ * @internal
  */
 export type ListObjectField = {name: 'list'} & ObjectField<StringSchemaType>
 
 /**
  * The specific `children` field of a `block` type (`BlockSchemaType`)
  * @see BlockSchemaType
+ *
+ * @internal
  */
 export type BlockChildrenObjectField = {name: 'children'} & ObjectField<ArraySchemaType>
 
@@ -245,6 +284,8 @@ export type BlockChildrenObjectField = {name: 'children'} & ObjectField<ArraySch
  * Represents the compiled schema shape for `span`s for portable text.
  *
  * Note: this does _not_ represent the schema definition shape.
+ *
+ * @internal
  */
 export interface SpanSchemaType extends Omit<ObjectSchemaType, 'fields'> {
   annotations: (ObjectSchemaType & {
@@ -263,6 +304,8 @@ export interface SpanSchemaType extends Omit<ObjectSchemaType, 'fields'> {
  * Represents the compiled schema shape for `block`s for portable text.
  *
  * Note: this does _not_ represent the schema definition shape.
+ *
+ * @internal
  */
 export interface BlockSchemaType extends ObjectSchemaType {
   fields: [
@@ -276,22 +319,27 @@ export interface BlockSchemaType extends ObjectSchemaType {
   options?: BlockOptions
 }
 
+/** @public */
 export interface SlugSchemaType extends ObjectSchemaType {
   jsonType: 'object'
   options?: SlugOptions
 }
 
+/** @public */
 export type ObjectFieldType<T extends SchemaType = SchemaType> = T & {
   hidden?: ConditionalProperty
   readOnly?: ConditionalProperty
 }
 
+/** @public */
 export interface ObjectField<T extends SchemaType = SchemaType> {
   name: string
   fieldset?: string
   group?: string | string[]
   type: ObjectFieldType<T>
 }
+
+/** @public */
 export interface FieldGroup {
   name: string
   icon?: ComponentType
@@ -302,6 +350,7 @@ export interface FieldGroup {
   fields?: ObjectField[]
 }
 
+/** @public */
 export interface ObjectSchemaType extends BaseSchemaType {
   jsonType: 'object'
   fields: ObjectField[]
@@ -313,7 +362,7 @@ export interface ObjectSchemaType extends BaseSchemaType {
   // Experimentals
   // Note: `path` is a string in the _specification_, but converted to a
   // string array in the schema normalization/compilation step
-  // eslint-disable-next-line camelcase
+  /** @alpha */
   __experimental_search?: {path: string[]; weight: number; mapWith?: string}[]
 
   /**
@@ -325,12 +374,14 @@ export interface ObjectSchemaType extends BaseSchemaType {
   options?: any
 }
 
+/** @internal */
 export interface ObjectSchemaTypeWithOptions extends Omit<ObjectSchemaType, 'options'> {
   options?: CollapseOptions & {
     columns?: number
   }
 }
 
+/** @public */
 export interface SingleFieldSet {
   single: true
   field: ObjectField
@@ -339,6 +390,7 @@ export interface SingleFieldSet {
   group?: string | string[]
 }
 
+/** @public */
 export interface MultiFieldSet {
   name: string
   title?: string
@@ -353,8 +405,10 @@ export interface MultiFieldSet {
   readOnly?: ConditionalProperty
 }
 
+/** @public */
 export type Fieldset = SingleFieldSet | MultiFieldSet
 
+/** @public */
 export interface CollapseOptions {
   collapsed?: boolean
 
@@ -366,6 +420,7 @@ export interface CollapseOptions {
   collapsable?: boolean
 }
 
+/** @public */
 export interface ReferenceSchemaType extends Omit<ObjectSchemaType, 'options'> {
   jsonType: 'object'
   to: ObjectSchemaType[]
@@ -373,15 +428,18 @@ export interface ReferenceSchemaType extends Omit<ObjectSchemaType, 'options'> {
   options?: ReferenceOptions
 }
 
+/** @public */
 export interface AssetSchemaTypeOptions {
   accept?: string
   storeOriginalFilename?: boolean
 }
 
+/** @public */
 export interface FileSchemaType extends Omit<ObjectSchemaType, 'options'> {
   options?: FileOptions
 }
 
+/** @internal */
 export interface ImageSchemaType extends Omit<ObjectSchemaType, 'options'> {
   options?: ImageOptions
 }

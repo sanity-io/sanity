@@ -1,5 +1,6 @@
 import type {CustomValidator, FieldReference} from '../validation'
 
+/** @public */
 export interface RuleDef<T, FieldValue = unknown> {
   required: () => T
 
@@ -13,8 +14,10 @@ export interface RuleDef<T, FieldValue = unknown> {
   valueOfField: (path: string | string[]) => FieldReference
 }
 
+/** @public */
 export type RuleBuilder<T extends RuleDef<T, FieldValue>, FieldValue = unknown> = T | T[]
 
+/** @public */
 export type ValidationBuilder<T extends RuleDef<T, FieldValue>, FieldValue = unknown> = (
   rule: T
 ) => RuleBuilder<T, FieldValue>
