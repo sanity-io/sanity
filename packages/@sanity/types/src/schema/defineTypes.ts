@@ -63,7 +63,7 @@ export type MaybeAllowUnknownProps<TStrict extends StrictDefinition> = TStrict e
     }
   : unknown
 
-type MaybePreview<
+export type MaybePreview<
   Select extends Record<string, string> | undefined,
   PrepareValue extends Record<keyof Select, any> | undefined
 > = Select extends Record<string, string>

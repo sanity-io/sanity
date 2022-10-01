@@ -26,7 +26,7 @@ export interface ArrayRule<Value> extends RuleDef<ArrayRule<Value>, Value> {
 
 export type ArrayOfEntry<T> = Omit<T, 'name' | 'hidden'> & {name?: string}
 
-type IntrinsicArrayOfDefinition = {
+export type IntrinsicArrayOfDefinition = {
   [K in keyof IntrinsicDefinitions]: Omit<
     ArrayOfEntry<IntrinsicDefinitions[K]>,
     'validation' | 'initialValue'
