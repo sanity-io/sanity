@@ -3,6 +3,7 @@
   "include": ["./package.json", "./scripts", "./src", "./test", "./typings"],
   "compilerOptions": {
     "composite": true,
+    "emitDeclarationOnly": true,
     "rootDir": ".",
     "outDir": "./lib/dts",
     "jsx": "react",
