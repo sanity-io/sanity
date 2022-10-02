@@ -3,8 +3,8 @@ import {History} from 'history'
 import React, {ReactElement} from 'react'
 import {Config} from '../config'
 import {GlobalStyle} from './GlobalStyle'
+import {useLayoutComponent} from './studio-components-hooks'
 import {StudioProvider} from './StudioProvider'
-import {useWorkspace} from './workspace'
 
 /** @beta */
 export interface StudioProps {
@@ -20,7 +20,7 @@ export interface StudioProps {
 }
 
 function StudioLayout() {
-  const {Layout} = useWorkspace().studio.components
+  const Layout = useLayoutComponent()
 
   return <Layout />
 }
