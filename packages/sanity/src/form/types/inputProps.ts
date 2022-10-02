@@ -7,7 +7,7 @@ import {
   SchemaType,
   StringSchemaType,
 } from '@sanity/types'
-import React, {ChangeEventHandler, FocusEventHandler, FormEventHandler} from 'react'
+import React, {FocusEventHandler, FormEventHandler} from 'react'
 import {FormPatch, PatchEvent} from '../patch'
 import {
   ArrayOfObjectsFormNode,
@@ -27,10 +27,15 @@ import {
 import {InsertItemEvent, MoveItemEvent} from './event'
 import {FormFieldGroup} from './fieldGroups'
 
+interface BaseInputProps {
+  renderDefault: (props: InputProps) => React.ReactElement<InputProps>
+}
+
 export interface ObjectInputProps<
   T = {[key in string]: unknown},
   S extends ObjectSchemaType = ObjectSchemaType
-> extends ObjectFormNode<T, S> {
+> extends BaseInputProps,
+    ObjectFormNode<T, S> {
   groups: FormFieldGroup[]
 
   // todo: consider remove PatchEvent
@@ -61,7 +66,8 @@ export interface ObjectInputProps<
 export interface ArrayOfObjectsInputProps<
   T extends {_key: string} = {_key: string},
   S extends ArraySchemaType = ArraySchemaType
-> extends ArrayOfObjectsFormNode<T[], S> {
+> extends BaseInputProps,
+    ArrayOfObjectsFormNode<T[], S> {
   // Data manipulation callbacks special for array inputs
   onChange: (patch: FormPatch | FormPatch[] | PatchEvent) => void
   onAppendItem: (item: T) => void
@@ -99,7 +105,8 @@ export type ArrayOfPrimitivesElementType<T extends any[]> = T extends (infer K)[
 export interface ArrayOfPrimitivesInputProps<
   T extends (string | boolean | number)[] = (string | boolean | number)[],
   S extends ArraySchemaType = ArraySchemaType
-> extends ArrayOfPrimitivesFormNode<T, S> {
+> extends BaseInputProps,
+    ArrayOfPrimitivesFormNode<T, S> {
   // note: not a priority to support collapsible arrays right now
   onSetCollapsed: (collapsed: boolean) => void
 
@@ -138,21 +145,24 @@ export interface ComplexElementProps {
 }
 
 export interface StringInputProps<S extends StringSchemaType = StringSchemaType>
-  extends StringFormNode<S> {
+  extends BaseInputProps,
+    StringFormNode<S> {
   onChange: (patch: FormPatch | FormPatch[] | PatchEvent) => void
   validationError?: string
   elementProps: PrimitiveInputElementProps
 }
 
 export interface NumberInputProps<S extends NumberSchemaType = NumberSchemaType>
-  extends NumberFormNode<S> {
+  extends BaseInputProps,
+    NumberFormNode<S> {
   onChange: (patch: FormPatch | FormPatch[] | PatchEvent) => void
   validationError?: string
   elementProps: PrimitiveInputElementProps
 }
 
 export interface BooleanInputProps<S extends BooleanSchemaType = BooleanSchemaType>
-  extends BooleanFormNode<S> {
+  extends BaseInputProps,
+    BooleanFormNode<S> {
   onChange: (patch: FormPatch | FormPatch[] | PatchEvent) => void
 
   /**
