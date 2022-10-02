@@ -34,6 +34,7 @@ export interface BaseFieldProps {
   index: number
   changed: boolean
   children: React.ReactNode
+  renderDefault: (props: FieldProps) => React.ReactElement<FieldProps>
 }
 
 /** @public */

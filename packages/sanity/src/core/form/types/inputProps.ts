@@ -28,10 +28,16 @@ import {
 import {InsertItemEvent, MoveItemEvent} from './event'
 
 /** @public */
+export interface BaseInputProps {
+  renderDefault: (props: InputProps) => React.ReactElement<InputProps>
+}
+
+/** @public */
 export interface ObjectInputProps<
   T = {[key in string]: unknown},
   S extends ObjectSchemaType = ObjectSchemaType
-> extends ObjectFormNode<T, S> {
+> extends BaseInputProps,
+    ObjectFormNode<T, S> {
   /** @beta */
   groups: FormFieldGroup[]
 
@@ -82,8 +88,10 @@ export interface ObjectInputProps<
 export interface ArrayOfObjectsInputProps<
   T extends {_key: string} = {_key: string},
   S extends ArraySchemaType = ArraySchemaType
-> extends ArrayOfObjectsFormNode<T[], S> {
+> extends BaseInputProps,
+    ArrayOfObjectsFormNode<T[], S> {
   /** @beta */
+  // Data manipulation callbacks special for array inputs
   onChange: (patch: FormPatch | FormPatch[] | PatchEvent) => void
 
   /** @beta */
@@ -155,7 +163,8 @@ export type ArrayOfPrimitivesElementType<T extends any[]> = T extends (infer K)[
 export interface ArrayOfPrimitivesInputProps<
   T extends (string | boolean | number)[] = (string | boolean | number)[],
   S extends ArraySchemaType = ArraySchemaType
-> extends ArrayOfPrimitivesFormNode<T, S> {
+> extends BaseInputProps,
+    ArrayOfPrimitivesFormNode<T, S> {
   // note: not a priority to support collapsible arrays right now
   onSetCollapsed: (collapsed: boolean) => void
 
@@ -215,7 +224,8 @@ export interface ComplexElementProps {
 
 /** @public */
 export interface StringInputProps<S extends StringSchemaType = StringSchemaType>
-  extends StringFormNode<S> {
+  extends BaseInputProps,
+    StringFormNode<S> {
   /** @beta */
   onChange: (patch: FormPatch | FormPatch[] | PatchEvent) => void
   validationError?: string
@@ -225,7 +235,8 @@ export interface StringInputProps<S extends StringSchemaType = StringSchemaType>
 
 /** @public */
 export interface NumberInputProps<S extends NumberSchemaType = NumberSchemaType>
-  extends NumberFormNode<S> {
+  extends BaseInputProps,
+    NumberFormNode<S> {
   /** @beta */
   onChange: (patch: FormPatch | FormPatch[] | PatchEvent) => void
   validationError?: string
@@ -235,7 +246,8 @@ export interface NumberInputProps<S extends NumberSchemaType = NumberSchemaType>
 
 /** @public */
 export interface BooleanInputProps<S extends BooleanSchemaType = BooleanSchemaType>
-  extends BooleanFormNode<S> {
+  extends BaseInputProps,
+    BooleanFormNode<S> {
   /** @beta */
   onChange: (patch: FormPatch | FormPatch[] | PatchEvent) => void
 
