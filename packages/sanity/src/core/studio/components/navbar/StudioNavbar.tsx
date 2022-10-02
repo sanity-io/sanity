@@ -18,6 +18,7 @@ import {useWorkspace} from '../../workspace'
 import {useColorScheme} from '../../colorScheme'
 import {useWorkspaces} from '../../workspaces'
 import {NavbarContext} from '../../StudioLayout'
+import {useLogoComponent, useToolMenuComponent} from '../../studio-components-hooks'
 import {UserMenu} from './userMenu'
 import {NewDocumentButton} from './NewDocumentButton'
 import {PresenceMenu} from './presence'
@@ -66,7 +67,7 @@ const LeftFlex = styled(Flex)`
 
 /** @beta */
 export function StudioNavbar() {
-  const {name, studio, tools, ...workspace} = useWorkspace()
+  const {name, tools, ...workspace} = useWorkspace()
   const workspaces = useWorkspaces()
   const routerState = useRouterState()
   const {scheme} = useColorScheme()
@@ -76,7 +77,8 @@ export function StudioNavbar() {
 
   const {fullscreenSearchPortalEl, onSearchOpenChange} = useContext(NavbarContext)
 
-  const {Logo, ToolMenu} = studio.components
+  const Logo = useLogoComponent()
+  const ToolMenu = useToolMenuComponent()
 
   const [searchOpen, setSearchOpen] = useState<boolean>(false)
   const [drawerOpen, setDrawerOpen] = useState<boolean>(false)
