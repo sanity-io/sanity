@@ -14,6 +14,7 @@ import {useHotModuleReload} from 'use-hot-module-reload'
 import {RouteScope, useRouter} from '../router'
 import {NoToolsScreen} from './screens/NoToolsScreen'
 import {ToolNotFoundScreen} from './screens/ToolNotFoundScreen'
+import {useNavbarComponent} from './studio-components-hooks'
 import {useWorkspace} from './workspace'
 
 const SearchFullscreenPortalCard = styled(Card)`
@@ -34,7 +35,7 @@ export const NavbarContext = createContext<NavbarContextValue>({
 
 export function StudioLayout() {
   const {state: routerState} = useRouter()
-  const {name, title, tools, studio} = useWorkspace()
+  const {name, title, tools} = useWorkspace()
   const activeToolName = typeof routerState.tool === 'string' ? routerState.tool : undefined
   const activeTool = tools.find((tool) => tool.name === activeToolName)
   const [toolError, setToolError] = useState<{error: Error; info: React.ErrorInfo} | null>(null)
@@ -71,7 +72,7 @@ export function StudioLayout() {
     [fullscreenSearchPortalEl, handleSearchOpenChange]
   )
 
-  const {Navbar} = studio.components
+  const Navbar = useNavbarComponent()
 
   return (
     <Flex data-ui="ToolScreen" direction="column" height="fill" data-testid="studio-layout">
