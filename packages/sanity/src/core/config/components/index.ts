@@ -1,1 +1,2 @@
-export * from './studio'
+export * from './types'
+export * from './useMiddlewareComponents'
