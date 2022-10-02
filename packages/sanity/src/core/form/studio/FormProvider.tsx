@@ -1,12 +1,19 @@
 /* eslint-disable camelcase */
-
 import {ObjectSchemaType, Path, ValidationMarker} from '@sanity/types'
-import React from 'react'
-import {FormNodePresence} from '../../presence'
+import React, {useCallback} from 'react'
 import {useSource} from '../../studio'
 import {PatchChannel, PatchEvent} from '../patch'
 import {FormBuilderProvider} from '../FormBuilderProvider'
 import {FormFieldGroup, ObjectMember, StateTree} from '../store'
+import {FieldProps, InputProps, ItemProps} from '../types'
+import {
+  useFieldComponent,
+  useInputComponent,
+  useItemComponent,
+  usePreviewComponent,
+} from '../form-components-hooks'
+import {PreviewProps} from '../../components'
+import {FormNodePresence} from '../../presence'
 
 /**
  * @alpha This API might change.
@@ -73,7 +80,21 @@ export function FormProvider(props: FormProviderProps) {
     value,
   } = props
 
-  const {file, image, renderField, renderInput, renderItem, renderPreview} = useSource().form
+  const {file, image} = useSource().form
+
+  // These hooks may be stored in context as an perf optimization
+  const Input = useInputComponent()
+  const Field = useFieldComponent()
+  const Preview = usePreviewComponent()
+  const Item = useItemComponent()
+
+  const renderInput = useCallback((inputProps: InputProps) => <Input {...inputProps} />, [Input])
+  const renderField = useCallback((fieldProps: FieldProps) => <Field {...fieldProps} />, [Field])
+  const renderItem = useCallback((itemProps: ItemProps) => <Item {...itemProps} />, [Item])
+  const renderPreview = useCallback(
+    (previewProps: PreviewProps) => <Preview {...previewProps} />,
+    [Preview]
+  )
 
   return (
     <FormBuilderProvider
