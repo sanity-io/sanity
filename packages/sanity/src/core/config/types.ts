@@ -10,7 +10,7 @@ import type {
   SchemaTypeDefinition,
 } from '@sanity/types'
 import type React from 'react'
-import type {ComponentType, ReactNode} from 'react'
+import type {ComponentType} from 'react'
 import type {Observable} from 'rxjs'
 import type {
   FieldProps,
@@ -19,18 +19,14 @@ import type {
   FormBuilderMarkersComponent,
   InputProps,
   ItemProps,
-  RenderFieldCallback,
-  RenderInputCallback,
-  RenderItemCallback,
-  RenderPreviewCallback,
 } from '../form'
 import type {InitialValueTemplateItem, Template, TemplateResponse} from '../templates'
-import type {StudioTheme} from '../theme'
-import {PreviewProps} from '../components'
+import {PreviewProps} from '../components/previews'
 import {AuthStore} from '../store'
+import {StudioTheme} from '../theme'
+import {StudioComponents, StudioComponentsPluginOptions} from './studio'
 import {DocumentActionComponent, DocumentBadgeComponent} from './document'
-import {StudioComponents, StudioComponentsPluginOptions} from './components'
-import type {Router, RouterState} from 'sanity/router'
+import {Router, RouterState} from 'sanity/router'
 
 /**
  * @beta
@@ -64,18 +60,14 @@ export interface SanityFormConfig {
     Markers?: FormBuilderMarkersComponent
   }
   /** @beta */
-  components?: Record<
-    string,
-    | ComponentType<InputProps>
-    | {
-        input?: ComponentType<InputProps>
-        field?: ComponentType<FieldProps>
-        item?: ComponentType<ItemProps>
-        preview?: ComponentType<PreviewProps>
-      }
-  >
-  /** @beta */
+  components?: {
+    input?: ComponentType<InputProps>
+    field?: ComponentType<FieldProps>
+    item?: ComponentType<ItemProps>
+    preview?: ComponentType<PreviewProps>
+  }
   file?: {
+    /** @beta */
     assetSources?: AssetSource[] | AssetSourceResolver
     // TODO: this option needs more thought on composition and availability
     directUploads?: boolean
@@ -86,21 +78,6 @@ export interface SanityFormConfig {
     // TODO: this option needs more thought on composition and availability
     directUploads?: boolean
   }
-
-  /** @beta */
-  renderInput?: (props: InputProps, next: RenderInputCallback) => ReactNode
-
-  /** @beta */
-  renderField?: (props: FieldProps, next: RenderFieldCallback) => ReactNode
-
-  /** @beta */
-  renderItem?: (props: ItemProps, next: RenderItemCallback) => ReactNode
-
-  /** @beta */
-  renderPreview?: (
-    props: PreviewProps & {schemaType: SchemaType},
-    next: RenderPreviewCallback
-  ) => ReactNode
 }
 
 /** @internal */
@@ -365,16 +342,12 @@ export interface Source {
     }
 
     /** @beta */
-    renderInput: (props: InputProps) => ReactNode
-
-    /** @beta */
-    renderField: (props: FieldProps) => ReactNode
-
-    /** @beta */
-    renderItem: (props: ItemProps) => ReactNode
-
-    /** @beta */
-    renderPreview: (props: PreviewProps & {schemaType: SchemaType}) => ReactNode
+    components?: {
+      input?: ComponentType<Omit<InputProps, 'renderDefault'>>
+      field?: ComponentType<Omit<FieldProps, 'renderDefault'>>
+      item?: ComponentType<Omit<ItemProps, 'renderDefault'>>
+      preview?: ComponentType<Omit<PreviewProps, 'renderDefault'>>
+    }
 
     /**
      * these have not been migrated over and are not merged by the form builder
@@ -388,15 +361,16 @@ export interface Source {
     }
   }
 
-  /** @beta */
-  studio: {
-    components: StudioComponents
+  studio?: {
+    /** @beta */
+    components?: StudioComponents
   }
 
   /** @internal */
   __internal: {
     bifur: BifurClient
     staticInitialValueTemplateItems: InitialValueTemplateItem[]
+    options: SourceOptions
   }
 }
 

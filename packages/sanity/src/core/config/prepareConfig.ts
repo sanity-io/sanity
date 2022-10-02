@@ -15,13 +15,6 @@ import {InitialValueTemplateItem, Template, TemplateResponse} from '../templates
 import {isNonNullable} from '../util'
 import {validateWorkspaces} from '../studio'
 import {
-  LayoutProps,
-  LogoProps,
-  NavbarProps,
-  ToolMenuProps,
-  _createRenderStudioComponent,
-} from './components'
-import {
   Config,
   PreparedConfig,
   SingleWorkspace,
@@ -50,10 +43,6 @@ import {resolveConfigProperty} from './resolveConfigProperty'
 import {ConfigResolutionError} from './ConfigResolutionError'
 import {SchemaError} from './SchemaError'
 import {createDefaultIcon} from './createDefaultIcon'
-import {_createRenderField} from './form/_renderField'
-import {_createRenderInput} from './form/_renderInput'
-import {_createRenderItem} from './form/_renderItem'
-import {_createRenderPreview} from './form/_renderPreview'
 
 type InternalSource = WorkspaceSummary['__internal']['sources'][number]
 
@@ -461,10 +450,6 @@ function resolveSource({
         }),
     },
     form: {
-      renderField: _createRenderField(config),
-      renderInput: _createRenderInput(config),
-      renderItem: _createRenderItem(config),
-      renderPreview: _createRenderPreview(config),
       file: {
         assetSources: resolveConfigProperty({
           config,
@@ -493,30 +478,10 @@ function resolveSource({
       },
     },
 
-    studio: {
-      components: {
-        Layout: _createRenderStudioComponent<Omit<LayoutProps, 'renderLayout'>>({
-          componentName: 'Layout',
-          config,
-        }),
-        Logo: _createRenderStudioComponent<Omit<LogoProps, 'renderLogo'>>({
-          componentName: 'Logo',
-          config,
-        }),
-        Navbar: _createRenderStudioComponent<Omit<NavbarProps, 'renderNavbar'>>({
-          componentName: 'Navbar',
-          config,
-        }),
-        ToolMenu: _createRenderStudioComponent<Omit<ToolMenuProps, 'renderToolMenu'>>({
-          componentName: 'ToolMenu',
-          config,
-        }),
-      },
-    },
-
     __internal: {
       bifur,
       staticInitialValueTemplateItems,
+      options: config,
     },
   }
 

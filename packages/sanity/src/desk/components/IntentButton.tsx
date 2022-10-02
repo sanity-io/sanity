@@ -26,13 +26,7 @@ export const IntentButton = forwardRef(function IntentButton(
   )
 
   return props.disabled ? (
-    <Button
-      {...props}
-      as="a"
-      ref={ref as React.ForwardedRef<HTMLButtonElement>}
-      role="link"
-      aria-disabled="true"
-    />
+    <Button {...props} as="a" role="link" aria-disabled="true" />
   ) : (
     <Button
       {...restProps}
