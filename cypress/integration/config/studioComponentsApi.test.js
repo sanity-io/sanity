@@ -1,4 +1,4 @@
-describe('Config: studio.components', () => {
+describe('Config: studio components', () => {
   beforeEach(() => {
     cy.visit('custom-components/content')
   })
