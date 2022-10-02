@@ -67,6 +67,24 @@ export default function PortableTextPreviewStory() {
     return false
   }, [layout, mediaKey])
 
+  const previewProps: Omit<PreviewProps, 'renderDefault'> = useMemo(
+    () => ({
+      actions: withActions && (
+        <Button fontSize={1} icon={EllipsisVerticalIcon} mode="bleed" paddingX={2} />
+      ),
+      isPlaceholder,
+      media,
+      status: status && (
+        <Text muted size={1}>
+          <EditIcon />
+        </Text>
+      ),
+      title,
+      subtitle,
+    }),
+    [isPlaceholder, media, status, subtitle, title, withActions]
+  )
+
   const component = layout && previewComponents[layout]
 
   if (!component) {
@@ -82,20 +100,7 @@ export default function PortableTextPreviewStory() {
       <Flex align="center" height="fill" justify="center" padding={4} sizing="border">
         <Container width={1}>
           <Card border padding={padding[layout]} radius={1} style={{lineHeight: 0}}>
-            {createElement(component as ComponentType<PreviewProps>, {
-              actions: withActions && (
-                <Button fontSize={1} icon={EllipsisVerticalIcon} mode="bleed" paddingX={2} />
-              ),
-              isPlaceholder,
-              media,
-              status: status && (
-                <Text muted size={1}>
-                  <EditIcon />
-                </Text>
-              ),
-              title,
-              subtitle,
-            })}
+            {createElement(component as ComponentType<PreviewProps>, previewProps as PreviewProps)}
           </Card>
         </Container>
       </Flex>

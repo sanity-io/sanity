@@ -63,6 +63,23 @@ export default function GeneralPreviewStory() {
     return false
   }, [layout, mediaKey])
 
+  const previewProps: Omit<PreviewProps, 'renderDefault' | 'schemaType'> = useMemo(
+    () => ({
+      description,
+      isPlaceholder,
+      media,
+      progress,
+      status: status && (
+        <Text muted size={1}>
+          <EditIcon />
+        </Text>
+      ),
+      title,
+      subtitle,
+    }),
+    [description, isPlaceholder, media, progress, status, subtitle, title]
+  )
+
   const component = layout && previewComponents[layout]
 
   if (!component) {
@@ -84,19 +101,10 @@ export default function GeneralPreviewStory() {
             selected={interactive ? selected : undefined}
             style={{lineHeight: 0}}
           >
-            {createElement(component as React.ComponentType<PreviewProps>, {
-              description,
-              isPlaceholder,
-              media,
-              progress,
-              status: status && (
-                <Text muted size={1}>
-                  <EditIcon />
-                </Text>
-              ),
-              title,
-              subtitle,
-            })}
+            {createElement(
+              component as React.ComponentType<PreviewProps>,
+              previewProps as PreviewProps
+            )}
           </Card>
         </Container>
       </Flex>
