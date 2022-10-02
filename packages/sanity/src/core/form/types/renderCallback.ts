@@ -1,5 +1,4 @@
 import {ReactNode} from 'react'
-import {SchemaType} from '@sanity/types'
 import {PreviewProps} from '../../components'
 import {ObjectItemProps, PrimitiveItemProps} from './itemProps'
 import {FieldProps} from './fieldProps'
@@ -21,4 +20,4 @@ export type RenderFieldCallback<T extends FieldProps = FieldProps> = (fieldProps
 export type RenderInputCallback<T extends InputProps = InputProps> = (inputProps: T) => ReactNode
 
 /** @beta */
-export type RenderPreviewCallback = (props: PreviewProps & {schemaType: SchemaType}) => ReactNode
+export type RenderPreviewCallback = (props: PreviewProps) => ReactNode
