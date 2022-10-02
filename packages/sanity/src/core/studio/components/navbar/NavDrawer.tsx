@@ -4,6 +4,7 @@ import React, {memo, useEffect, useState} from 'react'
 import styled from 'styled-components'
 import {useWorkspace} from '../../workspace'
 import {Tool} from '../../../config'
+import {useToolMenuComponent} from '../../studio-components-hooks'
 import {UserAvatar, useRovingFocus} from '../../../components'
 import {WorkspaceMenuButton} from './workspace'
 
@@ -59,7 +60,7 @@ export const NavDrawer = memo(function NavDrawer(props: NavDrawerProps) {
   const [closeButtonElement, setCloseButtonElement] = useState<HTMLButtonElement | null>(null)
   const [innerCardElement, setInnerCardElement] = useState<HTMLDivElement | null>(null)
   const tabIndex = isOpen ? 0 : -1
-  const {auth, currentUser, studio} = useWorkspace()
+  const {auth, currentUser} = useWorkspace()
 
   useRovingFocus({
     rootElement: innerCardElement,
@@ -78,7 +79,7 @@ export const NavDrawer = memo(function NavDrawer(props: NavDrawerProps) {
     }
   }, [closeButtonElement, isOpen])
 
-  const {ToolMenu} = studio.components
+  const ToolMenu = useToolMenuComponent()
 
   return (
     <Root>
