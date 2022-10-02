@@ -55,7 +55,7 @@ export type {
 
 export {createConfig, createPlugin} from '../config'
 
-export type {LayoutProps, LogoProps, NavbarProps, ToolMenuProps} from '../config/components'
+export type {LayoutProps, LogoProps, NavbarProps, ToolMenuProps} from '../config'
 
 export type {
   AuthState,
@@ -134,7 +134,6 @@ export type {
   MixedArray,
   MoveItemEvent,
   NodePresence,
-  NodeValidation,
   NumberFieldProps,
   NumberInputProps,
   NumberFormNode,
