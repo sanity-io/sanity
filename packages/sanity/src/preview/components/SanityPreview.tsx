@@ -1,4 +1,4 @@
-import {isImage, SchemaType} from '@sanity/types'
+import {SchemaType} from '@sanity/types'
 import React, {createElement, CSSProperties, useCallback, useMemo, useState} from 'react'
 import {PreviewProps} from '../../components/previews'
 import {Previewable, SortOrdering} from '../types'
@@ -7,7 +7,8 @@ import {useVisibility} from '../useVisibility'
 import {_HIDE_DELAY} from './_constants'
 import {_resolvePreviewComponent} from './_resolvePreviewComponent'
 
-export interface SanityPreviewProps extends Omit<PreviewProps, 'value'> {
+export interface SanityPreviewProps
+  extends Omit<PreviewProps, 'value' | 'renderDefault' | 'schemaType'> {
   ordering?: SortOrdering
   schemaType: SchemaType
   value: Previewable
@@ -20,6 +21,10 @@ export function SanityPreview(props: SanityPreviewProps & {style?: CSSProperties
     schemaType,
     style: styleProp,
     value: valueProp,
+    media,
+    description,
+    title,
+    subtitle,
     ...restProps
   } = props
   const component = _resolvePreviewComponent(schemaType)
@@ -54,20 +59,29 @@ export function SanityPreview(props: SanityPreviewProps & {style?: CSSProperties
     [styleProp]
   )
 
+  const previewProps: Omit<PreviewProps, 'renderDefault'> = useMemo(
+    () => ({
+      ...restProps,
+      description: description || value?.description,
+      error,
+      isPlaceholder: !value,
+      layout,
+      media: media || value?.media,
+      schemaType,
+      subtitle: subtitle || value?.subtitle,
+      title: title || value?.title,
+      value,
+    }),
+    [description, error, layout, media, restProps, schemaType, subtitle, title, value]
+  )
+
+  // Remove components property to avoid component rendering itself
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const {components, ...restSchemaType} = schemaType
+
   return (
     <div ref={setRef} style={style}>
-      {createElement(component, {
-        ...restProps,
-        description: value?.description,
-        error,
-        isPlaceholder: !value,
-        layout,
-        media: isImage(valueProp) ? (valueProp as any) : value?.media,
-        schemaType,
-        subtitle: value?.subtitle,
-        title: value?.title,
-        value,
-      })}
+      {createElement(component, {...previewProps, schemaType: restSchemaType} as PreviewProps)}
     </div>
   )
 }
