@@ -13,8 +13,8 @@ import styled from 'styled-components'
 import {createConfig, Tool} from '../../../../config'
 import {isNonNullable} from '../../../../util/isNonNullable'
 import {isTruthy} from '../../../../util/isTruthy'
+import {useNavbarComponent} from '../../../studio-components-hooks'
 import {StudioProvider} from '../../../StudioProvider'
-import {useWorkspace} from '../../../workspace'
 
 const SearchFullscreenPortalCard = styled(Card)`
   display: flex;
@@ -40,7 +40,7 @@ export const NavbarContext = createContext<NavbarContextValue>({
 export default function NavbarStory() {
   const projectName = useString('Project name', undefined)
   const [portalEl, setPortalEl] = useState<HTMLDivElement | null>(null)
-  const {Navbar} = useWorkspace().studio.components
+  const Navbar = useNavbarComponent()
 
   // Create configuration
   const tools = useTools()
