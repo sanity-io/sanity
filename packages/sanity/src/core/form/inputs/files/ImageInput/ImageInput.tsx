@@ -763,7 +763,7 @@ export class BaseImageInput extends React.PureComponent<BaseImageInputProps, Bas
     )
 
     return (
-      <>
+      <div data-testid="image-input">
         <ImperativeToast ref={this.setToast} />
 
         {members.map((member) => {
@@ -811,7 +811,7 @@ export class BaseImageInput extends React.PureComponent<BaseImageInputProps, Bas
           />
         )}
         {selectedAssetSource && this.renderAssetSource()}
-      </>
+      </div>
     )
   }
 }
