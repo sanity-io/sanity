@@ -1,11 +1,11 @@
 import React from 'react'
+import {useLayoutComponent} from './studio-components-hooks'
 import {StudioProvider, StudioProviderProps} from './StudioProvider'
-import {useWorkspace} from './workspace'
 
 export type StudioProps = Omit<StudioProviderProps, 'children'>
 
 function StudioLayout() {
-  const {Layout} = useWorkspace().studio.components
+  const Layout = useLayoutComponent()
 
   return <Layout />
 }
