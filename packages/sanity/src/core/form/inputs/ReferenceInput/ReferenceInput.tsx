@@ -358,6 +358,7 @@ export function ReferenceInput(props: ReferenceInputProps) {
     <Stack
       space={1}
       // marginY={isEditing ? 2 : 0}
+      data-testid="reference-input"
     >
       {isEditing || isWeakRefToNonexistent ? (
         <Stack space={2} ref={clickOutsideBoundaryRef}>
