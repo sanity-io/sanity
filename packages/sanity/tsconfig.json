@@ -3,10 +3,8 @@
   "include": ["./exports", "./package.json", "./scripts", "./src", "./test", "./typings"],
   "compilerOptions": {
     "composite": true,
-    "emitDeclarationOnly": true,
     "rootDir": ".",
-    "outDir": "./lib/dts",
-    "jsx": "react",
+    "outDir": "./lib",
 
     "paths": {
       "sanity/_internal": ["./exports/_internal.ts"],
@@ -15,6 +13,9 @@
       "sanity/router": ["./exports/router.ts"],
       "sanity": ["./exports/index.ts"]
     },
+
+    "emitDeclarationOnly": true,
+    "jsx": "react",
 
     // For package.json import and scripts
     "resolveJsonModule": true,

@@ -16,41 +16,41 @@
   "bin": {
     "sanity": "./bin/sanity"
   },
-  "types": "./lib/dts/exports/index.d.ts",
+  "types": "./lib/exports/index.d.ts",
   "source": "./exports/index.ts",
   "module": "./lib/index.mjs",
   "main": "./lib/index.js",
   "exports": {
     ".": {
-      "types": "./lib/dts/exports/index.d.ts",
+      "types": "./lib/exports/index.d.ts",
       "source": "./exports/index.ts",
       "import": "./lib/index.mjs",
       "require": "./lib/index.js",
       "default": "./lib/index.mjs"
     },
     "./_internal": {
-      "types": "./lib/dts/exports/_internal.d.ts",
+      "types": "./lib/exports/_internal.d.ts",
       "source": "./exports/_internal.ts",
       "import": "./lib/_internal.mjs",
       "require": "./lib/_internal.js",
       "default": "./lib/_internal.mjs"
     },
     "./cli": {
-      "types": "./lib/dts/exports/cli.d.ts",
+      "types": "./lib/exports/cli.d.ts",
       "source": "./exports/cli.ts",
       "import": "./lib/cli.mjs",
       "require": "./lib/cli.js",
       "default": "./lib/cli.mjs"
     },
     "./desk": {
-      "types": "./lib/dts/exports/desk.d.ts",
+      "types": "./lib/exports/desk.d.ts",
       "source": "./exports/desk.ts",
       "import": "./lib/desk.mjs",
       "require": "./lib/desk.js",
       "default": "./lib/desk.mjs"
     },
     "./router": {
-      "types": "./lib/dts/exports/router.d.ts",
+      "types": "./lib/exports/router.d.ts",
       "source": "./exports/router.ts",
       "import": "./lib/router.mjs",
       "require": "./lib/router.js",
@@ -60,16 +60,16 @@
   "typesVersions": {
     "*": {
       "_internal": [
-        "./lib/dts/exports/_internal.d.ts"
+        "./lib/exports/_internal.d.ts"
       ],
       "cli": [
-        "./lib/dts/exports/cli.d.ts"
+        "./lib/exports/cli.d.ts"
       ],
       "desk": [
-        "./lib/dts/exports/desk.d.ts"
+        "./lib/exports/desk.d.ts"
       ],
       "router": [
-        "./lib/dts/exports/router.d.ts"
+        "./lib/exports/router.d.ts"
       ]
     }
   },
