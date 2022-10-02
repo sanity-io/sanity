@@ -20,6 +20,7 @@ import {useId} from '@reach/auto-id'
 import {ObjectSchemaType} from '@sanity/types'
 import {RenderPreviewCallback} from '../../../types'
 import {is} from '../../../utils/is'
+import {PreviewProps} from '../../../../components'
 import {FIXME} from '../../../../FIXME'
 import {IntentLink} from 'sanity/router'
 
@@ -126,16 +127,19 @@ export function BlockObjectPreview(props: BlockObjectPreviewProps): ReactElement
     />
   )
 
+  const previewProps: Omit<PreviewProps, 'renderDefault'> = useMemo(
+    () => ({
+      layout: isImageType ? 'blockImage' : 'block',
+      schemaType: type,
+      value,
+    }),
+    [isImageType, type, value]
+  )
+
   if (isCustomPreviewComponent) {
     return (
       <Flex>
-        <Box flex={1}>
-          {renderPreview({
-            layout: isImageType ? 'blockImage' : 'block',
-            schemaType: type,
-            value,
-          })}
-        </Box>
+        <Box flex={1}>{renderPreview(previewProps as PreviewProps)}</Box>
         <Box marginLeft={1}>{actions}</Box>
       </Flex>
     )
@@ -148,7 +152,8 @@ export function BlockObjectPreview(props: BlockObjectPreviewProps): ReactElement
         layout: isImageType ? 'blockImage' : 'block',
         schemaType: type,
         value,
-      })}
+        media: isImageType ? value : undefined,
+      } as PreviewProps)}
     </>
   )
 }

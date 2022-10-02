@@ -4,7 +4,7 @@ import {Box, Flex, Inline, Label, Text, Tooltip, useRootTheme} from '@sanity/ui'
 import {AccessDeniedIcon, EditIcon, HelpCircleIcon, PublishIcon} from '@sanity/icons'
 import {RenderPreviewCallback} from '../../types'
 import {DocumentAvailability} from '../../../preview'
-import {PreviewLayoutKey, TextWithTone} from '../../../components'
+import {PreviewLayoutKey, PreviewProps, TextWithTone} from '../../../components'
 import {useDocumentPresence} from '../../../store'
 import {DocumentPreviewPresence} from '../../../presence'
 import {TimeAgo} from './utils/TimeAgo'
@@ -73,16 +73,19 @@ export function ReferencePreview(props: {
     [previewId, refType.name]
   )
 
+  const previewProps: Omit<PreviewProps, 'renderDefault'> = useMemo(
+    () => ({
+      layout,
+      schemaType: refType,
+      value: previewStub,
+    }),
+    [layout, previewStub, refType]
+  )
+
   return (
     <Flex align="center">
       {availability.available ? (
-        <Box flex={1}>
-          {renderPreview({
-            layout,
-            schemaType: refType,
-            value: previewStub,
-          })}
-        </Box>
+        <Box flex={1}>{renderPreview(previewProps as PreviewProps)}</Box>
       ) : (
         <Box flex={1}>
           <Flex align="center">

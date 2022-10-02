@@ -7,6 +7,7 @@ import {set, unset} from '../../../patch'
 import {ArrayOfPrimitivesInputProps} from '../../../types'
 import {ItemWithMissingType} from '../ArrayOfObjectsInput/item/ItemWithMissingType'
 import {Item, List} from '../common/list'
+import {PreviewProps} from '../../../../components/previews'
 import {isLegacyOptionsItem, resolveValueWithLegacyOptionsSupport} from './legacyOptionsSupport'
 
 function isEqual(item: any, otherItem: any): boolean {
@@ -104,6 +105,12 @@ export class OptionsArrayInput extends React.PureComponent<OptionsArrayInputProp
           const disabled = !optionType
           const title = option?.title || startCase(option?.value) || option
 
+          const previewProps: Omit<PreviewProps, 'renderDefault'> = {
+            layout: 'media',
+            schemaType: optionType,
+            value: resolveValueWithLegacyOptionsSupport(option),
+          }
+
           return (
             <Item index={index} isGrid={isGrid} key={index}>
               <Flex align="center" as="label" muted={disabled}>
@@ -121,13 +128,7 @@ export class OptionsArrayInput extends React.PureComponent<OptionsArrayInputProp
                       <Text>{title}</Text>
                     </Box>
                   ) : (
-                    <Box marginLeft={2}>
-                      {renderPreview({
-                        layout: 'media',
-                        schemaType: optionType,
-                        value: resolveValueWithLegacyOptionsSupport(option),
-                      })}
-                    </Box>
+                    <Box marginLeft={2}>{renderPreview(previewProps as PreviewProps)}</Box>
                   ))}
 
                 {!optionType && (

@@ -104,7 +104,7 @@ export function ArrayOfPrimitivesItem(props: PrimitiveMemberItemProps) {
       member.item.value,
     ]
   )
-  const inputProps = useMemo((): PrimitiveInputProps => {
+  const inputProps = useMemo((): Omit<PrimitiveInputProps, 'renderDefault'> => {
     return {
       changed: member.item.changed,
       level: member.item.level,
@@ -134,7 +134,10 @@ export function ArrayOfPrimitivesItem(props: PrimitiveMemberItemProps) {
     elementProps,
   ])
 
-  const renderedInput = useMemo(() => renderInput(inputProps), [inputProps, renderInput])
+  const renderedInput = useMemo(
+    () => renderInput(inputProps as PrimitiveInputProps),
+    [inputProps, renderInput]
+  )
 
   const onRemove = useCallback(() => {
     onChange(PatchEvent.from([unset([member.index])]))
@@ -147,7 +150,7 @@ export function ArrayOfPrimitivesItem(props: PrimitiveMemberItemProps) {
     [member.index, onChange]
   )
 
-  const itemProps = useMemo((): PrimitiveItemProps => {
+  const itemProps = useMemo((): Omit<PrimitiveItemProps, 'renderDefault'> => {
     return {
       key: member.key,
       index: member.index,
@@ -185,5 +188,5 @@ export function ArrayOfPrimitivesItem(props: PrimitiveMemberItemProps) {
     renderedInput,
   ])
 
-  return <>{useMemo(() => renderItem(itemProps), [itemProps, renderItem])}</>
+  return <>{useMemo(() => renderItem(itemProps as PrimitiveItemProps), [itemProps, renderItem])}</>
 }

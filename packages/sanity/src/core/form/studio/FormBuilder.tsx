@@ -169,7 +169,7 @@ function RootInput() {
     [onSetFieldSetCollapsed]
   )
 
-  const rootInputProps: ObjectInputProps = {
+  const rootInputProps: Omit<ObjectInputProps, 'renderDefault'> = {
     focusPath,
     elementProps: {ref: focusRef, id, onBlur: handleBlur, onFocus: handleFocus},
     changed: members.some((m) => m.kind === 'field' && m.field.changed),
@@ -199,5 +199,5 @@ function RootInput() {
     value,
   }
 
-  return <>{renderInput(rootInputProps)}</>
+  return <>{renderInput(rootInputProps as ObjectInputProps)}</>
 }

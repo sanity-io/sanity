@@ -1,4 +1,4 @@
-import React, {MutableRefObject, useCallback, useMemo, useRef} from 'react'
+import React, {useCallback, useMemo, useRef} from 'react'
 import {FIXME} from '../../../FIXME'
 import {ArrayOfPrimitivesFormNode, FieldMember} from '../../store'
 import {
@@ -200,7 +200,7 @@ export function ArrayOfPrimitivesField(props: {
     [handleBlur, handleFocus, member.field.id]
   )
 
-  const inputProps = useMemo((): ArrayOfPrimitivesInputProps => {
+  const inputProps = useMemo((): Omit<ArrayOfPrimitivesInputProps, 'renderDefault'> => {
     return {
       level: member.field.level,
       members: member.field.members,
@@ -254,9 +254,12 @@ export function ArrayOfPrimitivesField(props: {
     renderPreview,
   ])
 
-  const renderedInput = useMemo(() => renderInput(inputProps), [inputProps, renderInput])
+  const renderedInput = useMemo(
+    () => renderInput(inputProps as ArrayOfPrimitivesInputProps),
+    [inputProps, renderInput]
+  )
 
-  const fieldProps = useMemo((): ArrayOfPrimitivesFieldProps => {
+  const fieldProps = useMemo((): Omit<ArrayOfPrimitivesFieldProps, 'renderDefault'> => {
     return {
       name: member.name,
       index: member.index,
@@ -275,7 +278,7 @@ export function ArrayOfPrimitivesField(props: {
       presence: member.field.presence,
       validation: member.field.validation,
       children: renderedInput,
-      inputProps,
+      inputProps: inputProps as ArrayOfPrimitivesInputProps,
     }
   }, [
     member.name,

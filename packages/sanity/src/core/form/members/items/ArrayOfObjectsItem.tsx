@@ -165,7 +165,7 @@ export function ArrayOfObjectsItem(props: MemberItemProps) {
     [handleBlur, handleFocus, member.item.id]
   )
 
-  const inputProps = useMemo((): ObjectInputProps => {
+  const inputProps = useMemo((): Omit<ObjectInputProps, 'renderDefault'> => {
     return {
       changed: member.item.changed,
       focusPath: member.item.focusPath,
@@ -225,9 +225,12 @@ export function ArrayOfObjectsItem(props: MemberItemProps) {
     renderPreview,
   ])
 
-  const renderedInput = useMemo(() => renderInput(inputProps), [inputProps, renderInput])
+  const renderedInput = useMemo(
+    () => renderInput(inputProps as ObjectInputProps),
+    [inputProps, renderInput]
+  )
 
-  const itemProps = useMemo((): ObjectItemProps => {
+  const itemProps = useMemo((): Omit<ObjectItemProps, 'renderDefault'> => {
     return {
       key: member.key,
       index: member.index,
@@ -291,7 +294,7 @@ export function ArrayOfObjectsItem(props: MemberItemProps) {
       onPathBlur={onPathBlur}
       onPathFocus={onPathFocus}
     >
-      {useMemo(() => renderItem(itemProps), [itemProps, renderItem])}
+      {useMemo(() => renderItem(itemProps as ObjectItemProps), [itemProps, renderItem])}
     </FormCallbacksProvider>
   )
 }
