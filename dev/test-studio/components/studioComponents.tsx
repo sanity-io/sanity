@@ -2,19 +2,19 @@ import React, {createContext, useContext} from 'react'
 import {Box, Card, Flex, Stack, Text} from '@sanity/ui'
 import {LogoProps, NavbarProps, LayoutProps, createPlugin, ToolMenuProps} from 'sanity'
 
-export const componentsPlugin = createPlugin({
-  name: 'components-plugin',
+export const studioComponentsPlugin = createPlugin({
+  name: 'studio-components-plugin',
   studio: {
     components: {
-      Layout: (props) => (
+      layout: (props) => (
         <Box height="fill" data-testid="test-layout-plugin">
-          {props.renderLayout(props)}
+          {props.renderDefault(props)}
         </Box>
       ),
-      Logo: (props) => <Box data-testid="test-logo-plugin">{props.renderLogo(props)}</Box>,
-      Navbar: (props) => <Box data-testid="test-navbar-plugin">{props.renderNavbar(props)}</Box>,
-      ToolMenu: (props) => (
-        <Box data-testid="test-tool-menu-plugin">{props.renderToolMenu(props)}</Box>
+      logo: (props) => <Box data-testid="test-logo-plugin">{props.renderDefault(props)}</Box>,
+      navbar: (props) => <Box data-testid="test-navbar-plugin">{props.renderDefault(props)}</Box>,
+      toolMenu: (props) => (
+        <Box data-testid="test-tool-menu-plugin">{props.renderDefault(props)}</Box>
       ),
     },
   },
@@ -25,12 +25,12 @@ const TitleContext = createContext<string>('')
 const useTitleContext = () => useContext(TitleContext)
 
 export function CustomLayout(props: LayoutProps) {
-  const {renderLayout} = props
+  const {renderDefault} = props
 
   return (
     <TitleContext.Provider value="Context value">
       <Box height="fill" data-testid="test-layout-config">
-        {renderLayout(props)}
+        {renderDefault(props)}
       </Box>
     </TitleContext.Provider>
   )
@@ -40,7 +40,7 @@ export function CustomLayout(props: LayoutProps) {
 export function CustomLogo(props: LogoProps) {
   const title = useTitleContext()
 
-  return props.renderLogo({...props, title})
+  return props.renderDefault({...props, title})
 }
 
 // Navbar
@@ -56,7 +56,7 @@ export function CustomNavbar(props: NavbarProps) {
         </Flex>
       </Card>
 
-      {props.renderNavbar(props)}
+      {props.renderDefault(props)}
     </Stack>
   )
 }
@@ -73,7 +73,7 @@ export function CustomToolMenu(props: ToolMenuProps) {
       sizing="border"
       tone="primary"
     >
-      {props.renderToolMenu(props)}
+      {props.renderDefault(props)}
     </Card>
   )
 }
