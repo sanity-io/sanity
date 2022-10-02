@@ -254,7 +254,7 @@ export class ArrayInput extends React.PureComponent<ArrayInputProps> {
   }
 
   /** @internal */
-  renderItem = (itemProps: ItemProps) => {
+  renderArrayItem = (itemProps: ItemProps) => {
     if (!isObjectItemProps(itemProps)) {
       throw new Error('Expected item to be of object type')
     }
@@ -306,12 +306,13 @@ export class ArrayInput extends React.PureComponent<ArrayInputProps> {
 
   /** @internal */
   renderMember(member: ArrayOfObjectsMember) {
-    const {renderField, renderInput, renderPreview} = this.props
+    const {renderField, renderInput, renderPreview, renderItem} = this.props
     if (member.kind === 'item') {
       return (
         <ArrayOfObjectsItem
           member={member}
-          renderItem={this.renderItem}
+          // eslint-disable-next-line react/jsx-no-bind
+          renderItem={(p) => this.renderArrayItem({...p, children: renderItem(p)})}
           renderField={renderField}
           renderInput={renderInput}
           renderPreview={renderPreview}
@@ -376,7 +377,7 @@ export class ArrayInput extends React.PureComponent<ArrayInputProps> {
     const isSortable = options.sortable !== false
     const isGrid = options.layout === 'grid'
     return (
-      <Stack space={3}>
+      <Stack space={3} data-testid="array-input">
         <UploadTarget
           types={schemaType.of}
           resolveUploader={resolveUploader}
