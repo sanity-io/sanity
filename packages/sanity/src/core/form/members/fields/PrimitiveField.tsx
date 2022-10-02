@@ -33,19 +33,13 @@ export function PrimitiveField(props: {
     }
   })
 
-  const handleBlur = useCallback(
-    (event: React.FocusEvent) => {
-      onPathBlur(member.field.path)
-    },
-    [member.field.path, onPathBlur]
-  )
+  const handleBlur = useCallback(() => {
+    onPathBlur(member.field.path)
+  }, [member.field.path, onPathBlur])
 
-  const handleFocus = useCallback(
-    (event: React.FocusEvent) => {
-      onPathFocus(member.field.path)
-    },
-    [member.field.path, onPathFocus]
-  )
+  const handleFocus = useCallback(() => {
+    onPathFocus(member.field.path)
+  }, [member.field.path, onPathFocus])
 
   const handleChange = useCallback(
     (event: FormPatch | FormPatch[] | PatchEvent) => {
@@ -104,7 +98,7 @@ export function PrimitiveField(props: {
     ]
   )
 
-  const inputProps = useMemo((): PrimitiveInputProps => {
+  const inputProps = useMemo((): Omit<PrimitiveInputProps, 'renderDefault'> => {
     return {
       value: member.field.value as any,
       readOnly: member.field.readOnly,
@@ -136,9 +130,12 @@ export function PrimitiveField(props: {
     elementProps,
   ])
 
-  const renderedInput = useMemo(() => renderInput(inputProps), [inputProps, renderInput])
+  const renderedInput = useMemo(
+    () => renderInput(inputProps as PrimitiveInputProps),
+    [inputProps, renderInput]
+  )
 
-  const fieldProps = useMemo((): PrimitiveFieldProps => {
+  const fieldProps = useMemo((): Omit<PrimitiveFieldProps, 'renderDefault'> => {
     return {
       name: member.name,
       index: member.index,
@@ -170,5 +167,5 @@ export function PrimitiveField(props: {
     inputProps,
   ])
 
-  return <>{renderField(fieldProps)}</>
+  return <>{renderField(fieldProps as PrimitiveFieldProps)}</>
 }

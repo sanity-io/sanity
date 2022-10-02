@@ -16,6 +16,7 @@ import {createProtoValue} from '../ArrayInput'
 import {InsertMenu} from '../InsertMenu'
 import {EMPTY_ARRAY} from '../../../../../util'
 import {FIXME} from '../../../../../FIXME'
+import {PreviewProps} from '../../../../../components'
 import {FieldPresence} from '../../../../../presence'
 import {ItemWithMissingType} from './ItemWithMissingType'
 import {ItemLayoutProps} from './ItemLayoutProps'
@@ -144,6 +145,17 @@ export const CellItem = React.forwardRef(function ItemCell(
 
   const id = useId()
 
+  const previewProps: Omit<PreviewProps, 'renderDefault'> = useMemo(
+    () => ({
+      layout: 'media',
+      schemaType: type,
+      value,
+      withBorder: false,
+      withRadius: false,
+    }),
+    [type, value]
+  )
+
   return (
     <Root {...rest} radius={2} ref={ref} border tone={tone}>
       {/* Preview */}
@@ -161,13 +173,7 @@ export const CellItem = React.forwardRef(function ItemCell(
           onFocus={onFocus}
           __unstable_focusRing
         >
-          {renderPreview({
-            layout: 'media',
-            schemaType: type,
-            value,
-            withBorder: false,
-            withRadius: false,
-          })}
+          {renderPreview(previewProps as PreviewProps)}
         </PreviewCard>
       ) : (
         <MissingTypeBox flex={1}>

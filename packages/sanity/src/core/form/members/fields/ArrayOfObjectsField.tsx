@@ -209,7 +209,7 @@ export function ArrayOfObjectsField(props: {
 
   const resolveInitialValue = useResolveInitialValueForType()
 
-  const inputProps = useMemo((): ArrayOfObjectsInputProps => {
+  const inputProps = useMemo((): Omit<ArrayOfObjectsInputProps, 'renderDefault'> => {
     return {
       level: member.field.level,
       members: member.field.members,
@@ -273,6 +273,7 @@ export function ArrayOfObjectsField(props: {
     handleAppendItem,
     handlePrependItem,
     handleFocusChildPath,
+    resolveInitialValue,
     renderInput,
     renderField,
     renderItem,
@@ -280,9 +281,12 @@ export function ArrayOfObjectsField(props: {
     elementProps,
   ])
 
-  const renderedInput = useMemo(() => renderInput(inputProps), [inputProps, renderInput])
+  const renderedInput = useMemo(
+    () => renderInput(inputProps as ArrayOfObjectsInputProps),
+    [inputProps, renderInput]
+  )
 
-  const fieldProps = useMemo((): ArrayFieldProps => {
+  const fieldProps = useMemo((): Omit<ArrayFieldProps, 'renderDefault'> => {
     return {
       name: member.name,
       index: member.index,
@@ -301,7 +305,7 @@ export function ArrayOfObjectsField(props: {
       presence: member.field.presence,
       validation: member.field.validation,
       children: renderedInput,
-      inputProps,
+      inputProps: inputProps as ArrayOfObjectsInputProps,
     }
   }, [
     member.name,
@@ -332,7 +336,7 @@ export function ArrayOfObjectsField(props: {
       onPathBlur={onPathBlur}
       onPathFocus={onPathFocus}
     >
-      {useMemo(() => renderField(fieldProps), [fieldProps, renderField])}
+      {useMemo(() => renderField(fieldProps as ArrayFieldProps), [fieldProps, renderField])}
     </FormCallbacksProvider>
   )
 }

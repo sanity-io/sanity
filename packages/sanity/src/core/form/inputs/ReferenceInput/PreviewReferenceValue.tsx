@@ -3,6 +3,7 @@ import {Reference, ReferenceSchemaType} from '@sanity/types'
 import {Box, Flex, Inline, Label, Stack} from '@sanity/ui'
 import {RenderPreviewCallback} from '../../types'
 import {SanityDefaultPreview} from '../../../preview'
+import {PreviewProps} from '../../../components/previews'
 import {ReferencePreview} from './ReferencePreview'
 import {Loadable} from './useReferenceInfo'
 import {ReferenceInfo} from './types'
@@ -34,15 +35,15 @@ export function PreviewReferenceValue(props: {
           }
         : value
 
+      const previewProps: Omit<PreviewProps, 'renderDefault'> = {
+        layout: 'default',
+        schemaType: refType,
+        value: stub,
+      }
+
       return (
         <Flex align="center">
-          <Box flex={1}>
-            {renderPreview({
-              layout: 'default',
-              schemaType: refType,
-              value: stub,
-            })}
-          </Box>
+          <Box flex={1}>{renderPreview(previewProps as PreviewProps)}</Box>
           <Box>
             <Inline space={4}>
               {showTypeLabel && (

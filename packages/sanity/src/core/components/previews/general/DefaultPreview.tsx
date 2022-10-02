@@ -9,7 +9,7 @@ import {PreviewMediaDimensions, PreviewProps} from '../types'
 import {renderPreviewNode} from '../helpers'
 
 /** @beta */
-export interface DefaultPreviewProps extends Omit<PreviewProps<'default'>, 'schemaType'> {
+export interface DefaultPreviewProps extends Omit<PreviewProps<'default'>, 'renderDefault'> {
   styles?: {
     root?: string
     placeholder?: string
