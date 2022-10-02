@@ -1,7 +1,10 @@
+import React from 'react'
 import {FieldDefinition, StringSchemaType} from '@sanity/types'
 import {PrimitiveInputElementProps, StringInputProps} from '../../src/core'
 import {renderInput, TestRenderInputContext, TestRenderInputProps} from './renderInput'
 import {TestRenderProps} from './types'
+
+const noopRenderDefault = () => <></>
 
 export type TestRenderStringInputCallback = (
   inputProps: StringInputProps,
@@ -29,6 +32,7 @@ export async function renderStringInput(options: {
       changed: false,
       schemaType: schemaType as StringSchemaType,
       value: value as string,
+      renderDefault: noopRenderDefault,
     }
   }
 
