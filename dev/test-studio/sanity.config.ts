@@ -16,8 +16,9 @@ import {
   CustomLayout,
   CustomNavbar,
   CustomToolMenu,
-  componentsPlugin,
-} from './components/customComponents'
+  studioComponentsPlugin,
+} from './components/studioComponents'
+import {Field, formComponentsPlugin, Input, Item, Preview} from './components/formComponents'
 
 const sharedSettings = createPlugin({
   name: 'sharedSettings',
@@ -80,7 +81,7 @@ export default createConfig([
     basePath: '/test',
     studio: {
       components: {
-        Logo: Branding,
+        logo: Branding,
       },
     },
   },
@@ -93,7 +94,7 @@ export default createConfig([
     basePath: '/playground',
     studio: {
       components: {
-        Logo: Branding,
+        logo: Branding,
       },
     },
   },
@@ -102,14 +103,22 @@ export default createConfig([
     title: 'Test Studio (custom-components)',
     projectId: 'ppsg7ml5',
     dataset: 'test',
-    plugins: [sharedSettings(), componentsPlugin()],
+    plugins: [sharedSettings(), studioComponentsPlugin(), formComponentsPlugin()],
     basePath: '/custom-components',
+    form: {
+      components: {
+        input: Input,
+        field: Field,
+        item: Item,
+        preview: Preview,
+      },
+    },
     studio: {
       components: {
-        Layout: CustomLayout,
-        Logo: CustomLogo,
-        Navbar: CustomNavbar,
-        ToolMenu: CustomToolMenu,
+        layout: CustomLayout,
+        logo: CustomLogo,
+        navbar: CustomNavbar,
+        toolMenu: CustomToolMenu,
       },
     },
   },
