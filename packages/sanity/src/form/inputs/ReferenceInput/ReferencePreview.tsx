@@ -6,7 +6,7 @@ import {TextWithTone} from '../../../components/TextWithTone'
 import {DocumentPreviewPresence} from '../../../presence'
 import {DocumentAvailability} from '../../../preview'
 import {RenderPreviewCallback} from '../../types'
-import {PreviewLayoutKey} from '../../../components/previews'
+import {PreviewLayoutKey, PreviewProps} from '../../../components/previews'
 import {useDocumentPresence} from '../../../datastores'
 import {TimeAgo} from './utils/TimeAgo'
 import {ReferenceInfo} from './types'
@@ -74,16 +74,19 @@ export function ReferencePreview(props: {
     [previewId, refType.name]
   )
 
+  const previewProps: Omit<PreviewProps, 'renderDefault'> = useMemo(
+    () => ({
+      layout,
+      schemaType: refType,
+      value: previewStub,
+    }),
+    [layout, previewStub, refType]
+  )
+
   return (
     <Flex align="center">
       {availability.available ? (
-        <Box flex={1}>
-          {renderPreview({
-            layout,
-            schemaType: refType,
-            value: previewStub,
-          })}
-        </Box>
+        <Box flex={1}>{renderPreview(previewProps as PreviewProps)}</Box>
       ) : (
         <Box flex={1}>
           <Flex align="center">

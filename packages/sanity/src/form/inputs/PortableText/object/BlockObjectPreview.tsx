@@ -21,6 +21,7 @@ import {ObjectSchemaType} from '@sanity/types'
 import {IntentLink} from '../../../../router'
 import {FIXME, RenderPreviewCallback} from '../../../types'
 import {is} from '../../../utils/is'
+import {PreviewProps} from '../../../../components/previews'
 
 interface BlockObjectPreviewProps {
   focused: boolean
@@ -125,16 +126,19 @@ export function BlockObjectPreview(props: BlockObjectPreviewProps): ReactElement
     />
   )
 
+  const previewProps: Omit<PreviewProps, 'renderDefault'> = useMemo(
+    () => ({
+      layout: isImageType ? 'blockImage' : 'block',
+      schemaType: type,
+      value,
+    }),
+    [isImageType, type, value]
+  )
+
   if (isCustomPreviewComponent) {
     return (
       <Flex>
-        <Box flex={1}>
-          {renderPreview({
-            layout: isImageType ? 'blockImage' : 'block',
-            schemaType: type,
-            value,
-          })}
-        </Box>
+        <Box flex={1}>{renderPreview(previewProps as PreviewProps)}</Box>
         <Box marginLeft={1}>{actions}</Box>
       </Flex>
     )
@@ -147,7 +151,8 @@ export function BlockObjectPreview(props: BlockObjectPreviewProps): ReactElement
         layout: isImageType ? 'blockImage' : 'block',
         schemaType: type,
         value,
-      })}
+        media: isImageType ? value : undefined,
+      } as PreviewProps)}
     </>
   )
 }

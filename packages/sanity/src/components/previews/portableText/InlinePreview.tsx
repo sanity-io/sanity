@@ -5,7 +5,7 @@ import {renderPreviewMedia, renderPreviewNode} from '../helpers'
 import {PreviewMediaDimensions, PreviewProps} from '../types'
 import {RootSpan, MediaSpan, TextSpan} from './InlinePreview.styled'
 
-export type InlinePreviewProps = PreviewProps<'inline'>
+export type InlinePreviewProps = Omit<PreviewProps<'inline'>, 'renderDefault'>
 
 const DEFAULT_MEDIA_DIMENSIONS: PreviewMediaDimensions = {
   ...PREVIEW_MEDIA_SIZE.inline,

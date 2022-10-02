@@ -21,7 +21,8 @@ function FallbackIcon() {
   return <DocumentIcon className="sanity-studio__preview-fallback-icon" />
 }
 
-export interface SanityDefaultPreviewProps extends Omit<PreviewProps, 'value'> {
+export interface SanityDefaultPreviewProps
+  extends Omit<PreviewProps, 'value' | 'renderDefault' | 'schemaType'> {
   error?: Error | null
   icon?: ElementType | false
   value?: unknown
@@ -123,15 +124,29 @@ export function SanityDefaultPreview(props: SanityDefaultPreviewProps): ReactEle
     return renderIcon
   }, [icon, mediaProp, renderIcon, renderMedia])
 
-  return createElement(component, {
-    imageUrl: _upload?.previewImage,
-    progress: _upload?.progress,
-    ...restProps,
-    // @todo: fix `TS2769: No overload matches this call.`
-    media: media as any,
-    description,
-    title,
-    subtitle,
-    value,
-  })
+  const previewProps: Omit<PreviewProps, 'renderDefault'> = useMemo(
+    () => ({
+      imageUrl: _upload?.previewImage,
+      progress: _upload?.progress,
+      ...restProps,
+      // @todo: fix `TS2769: No overload matches this call.`
+      media: media as any,
+      description,
+      title,
+      subtitle,
+      value,
+    }),
+    [
+      _upload?.previewImage,
+      _upload?.progress,
+      description,
+      media,
+      restProps,
+      subtitle,
+      title,
+      value,
+    ]
+  )
+
+  return createElement(component, previewProps as PreviewProps)
 }

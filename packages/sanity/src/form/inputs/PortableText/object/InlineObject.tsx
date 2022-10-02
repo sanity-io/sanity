@@ -17,6 +17,7 @@ import {usePortableTextMarkers} from '../hooks/usePortableTextMarkers'
 import {useMemberValidation} from '../hooks/useMemberValidation'
 import {usePortableTextMemberItem} from '../hooks/usePortableTextMembers'
 import {pathToString} from '../../../../field/paths'
+import {PreviewProps} from '../../../../components/previews'
 import {InlineObjectToolbarPopover} from './InlineObjectToolbarPopover'
 
 interface InlineObjectProps {
@@ -145,20 +146,16 @@ export const InlineObject = React.forwardRef(function InlineObject(
     return undefined
   }, [focused, hasError, hasWarning, selected])
 
-  const preview = useMemo(
-    () => (
-      <PreviewSpan>
-        {renderPreview({
-          fallbackTitle: 'Click to edit',
-          layout: 'inline',
-          schemaType: type as FIXME,
-          value,
-        })}
-      </PreviewSpan>
-    ),
+  const preview = useMemo(() => {
+    const previewProps: Omit<PreviewProps, 'renderDefault'> = {
+      fallbackTitle: 'Click to edit',
+      layout: 'inline',
+      schemaType: type as FIXME,
+      value,
+    }
 
-    [renderPreview, type, value]
-  )
+    return <PreviewSpan>{renderPreview(previewProps as PreviewProps)}</PreviewSpan>
+  }, [renderPreview, type, value])
 
   const markersToolTip = useMemo(
     () =>

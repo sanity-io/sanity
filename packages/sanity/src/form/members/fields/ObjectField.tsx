@@ -4,6 +4,7 @@ import {useDidUpdate} from '../../hooks/useDidUpdate'
 import {FieldMember, ObjectFormNode} from '../../store'
 import {
   ArrayOfObjectsInputProps,
+  InputProps,
   ObjectFieldProps,
   ObjectInputProps,
   RenderArrayOfObjectsItemCallback,
@@ -139,7 +140,7 @@ export const ObjectField = function ObjectField(props: {
     [handleBlur, handleFocus, member.field.id]
   )
 
-  const inputProps = useMemo((): ObjectInputProps => {
+  const inputProps = useMemo((): Omit<ObjectInputProps, 'renderDefault'> => {
     return {
       elementProps,
       level: member.field.level,
@@ -170,6 +171,7 @@ export const ObjectField = function ObjectField(props: {
       renderPreview,
     }
   }, [
+    elementProps,
     member.field.level,
     member.field.members,
     member.field.value,
@@ -183,7 +185,6 @@ export const ObjectField = function ObjectField(props: {
     member.field.focusPath,
     member.field.focused,
     member.field.groups,
-    handleBlur,
     handleSelectFieldGroup,
     handleOpenField,
     handleCloseField,
@@ -191,7 +192,6 @@ export const ObjectField = function ObjectField(props: {
     handleExpandField,
     handleExpandFieldSet,
     handleCollapseFieldSet,
-    handleFocus,
     handleFocusChildPath,
     handleChange,
     renderField,
@@ -200,9 +200,12 @@ export const ObjectField = function ObjectField(props: {
     renderPreview,
   ])
 
-  const renderedInput = useMemo(() => renderInput(inputProps), [inputProps, renderInput])
+  const renderedInput = useMemo(
+    () => renderInput(inputProps as ObjectInputProps),
+    [inputProps, renderInput]
+  )
 
-  const fieldProps = useMemo((): ObjectFieldProps => {
+  const fieldProps = useMemo((): Omit<ObjectFieldProps, 'renderDefault'> => {
     return {
       name: member.name,
       index: member.index,
@@ -228,7 +231,7 @@ export const ObjectField = function ObjectField(props: {
       inputId: member.field.id,
       path: member.field.path,
       children: renderedInput,
-      inputProps,
+      inputProps: inputProps as ObjectInputProps,
     }
   }, [
     member.name,
@@ -262,7 +265,7 @@ export const ObjectField = function ObjectField(props: {
       onPathBlur={onPathBlur}
       onPathFocus={onPathFocus}
     >
-      {useMemo(() => renderField(fieldProps), [fieldProps, renderField])}
+      {useMemo(() => renderField(fieldProps as ObjectFieldProps), [fieldProps, renderField])}
     </FormCallbacksProvider>
   )
 }
