@@ -11,5 +11,6 @@ export default defineConfig({
       'ae-missing-release-tag': 'off',
     },
   },
+  legacyExports: true,
   minify: false,
 })
