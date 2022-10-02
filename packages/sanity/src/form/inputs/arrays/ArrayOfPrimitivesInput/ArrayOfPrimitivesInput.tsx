@@ -134,7 +134,7 @@ export class ArrayOfPrimitivesInput extends React.PureComponent<DefaultArrayOfPr
     }
   }
 
-  renderItem = (props: PrimitiveItemProps) => {
+  renderArrayItem = (props: PrimitiveItemProps) => {
     const {schemaType, readOnly} = this.props
     const isSortable = !readOnly && get(schemaType, 'options.sortable') !== false
 
@@ -150,12 +150,12 @@ export class ArrayOfPrimitivesInput extends React.PureComponent<DefaultArrayOfPr
   }
 
   render() {
-    const {schemaType, members, readOnly, value, onChange, renderInput} = this.props
+    const {schemaType, members, readOnly, value, onChange, renderInput, renderItem} = this.props
 
     const isSortable = !readOnly && get(schemaType, 'options.sortable') !== false
 
     return (
-      <Stack space={3}>
+      <Stack space={3} data-testid="array-primitives-input">
         <Stack space={1}>
           {members.length > 0 && (
             <Card padding={1} border>
@@ -172,7 +172,8 @@ export class ArrayOfPrimitivesInput extends React.PureComponent<DefaultArrayOfPr
                         <ArrayOfPrimitivesItem
                           member={member}
                           renderInput={renderInput}
-                          renderItem={this.renderItem}
+                          // eslint-disable-next-line react/jsx-no-bind
+                          renderItem={(p) => this.renderArrayItem({...p, children: renderItem(p)})}
                         />
                       </Item>
                     )
