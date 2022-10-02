@@ -10,6 +10,8 @@ import {
 import {renderInput, TestRenderInputContext, TestRenderInputProps} from './renderInput'
 import {TestRenderProps} from './types'
 
+const noopRenderDefault = () => <></>
+
 export type TestRenderObjectInputCallback = (
   inputProps: ObjectInputProps,
   context: TestRenderInputContext
@@ -61,6 +63,7 @@ export async function renderObjectInput(options: {
       renderPreview: defaultRenderPreview,
       schemaType: schemaType as ObjectSchemaType,
       value: value as Record<string, any>,
+      renderDefault: noopRenderDefault,
     }
   }
 

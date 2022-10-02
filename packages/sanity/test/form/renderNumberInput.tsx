@@ -1,7 +1,10 @@
+import React from 'react'
 import {Schema, NumberSchemaType} from '@sanity/types'
 import {NumberInputProps, PrimitiveInputElementProps} from '../../src/form'
 import {renderInput, TestRenderInputContext, TestRenderInputProps} from './renderInput'
 import {TestRenderProps} from './types'
+
+const noopRenderDefault = () => <></>
 
 export type TestRenderNumberInputCallback = (
   inputProps: NumberInputProps,
@@ -25,6 +28,7 @@ export async function renderNumberInput(options: {
       changed: false,
       schemaType: schemaType as NumberSchemaType,
       value: value as number,
+      renderDefault: noopRenderDefault,
     }
   }
 

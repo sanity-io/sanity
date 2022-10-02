@@ -15,6 +15,8 @@ import {
 import {renderInput, TestRenderInputContext, TestRenderInputProps} from './renderInput'
 import {TestRenderProps} from './types'
 
+const noopRenderDefault = () => <></>
+
 export type TestRenderArrayOfObjectInputCallback = (
   inputProps: ArrayOfObjectsInputProps
 ) => React.ReactElement
@@ -78,6 +80,7 @@ export async function renderArrayOfObjectsInput(options: {
       resolveInitialValue,
       schemaType: schemaType as ArraySchemaType,
       value: value as any[],
+      renderDefault: noopRenderDefault,
     }
   }
 
