@@ -6,6 +6,8 @@ import {FormCallbacksProvider} from '../../../studio/contexts/FormCallbacks'
 import {createSchema} from '../../../../schema'
 import {render} from './test-utils'
 
+const noopRenderDefault = () => <></>
+
 const defs = {
   basic: defineType({
     title: 'very basic object',
@@ -76,7 +78,7 @@ function returnNull(...args: any[]): null {
   return null
 }
 
-const noopProps: Omit<ObjectInputProps, 'schemaType'> = {
+const noopProps: Omit<ObjectInputProps, 'schemaType' | 'renderDefault'> = {
   groups: [],
   onChange: noop,
   onCollapseField: noop,
@@ -105,7 +107,13 @@ const noopProps: Omit<ObjectInputProps, 'schemaType'> = {
 
 describe('basic examples', () => {
   it('renders as empty if given no members', () => {
-    const {container} = render(<ObjectInput {...noopProps} schemaType={getTestSchema('basic')} />)
+    const {container} = render(
+      <ObjectInput
+        {...noopProps}
+        renderDefault={noopRenderDefault}
+        schemaType={getTestSchema('basic')}
+      />
+    )
     expect(container).toBeEmptyDOMElement()
   })
   it('calls renderField and renderInput for each member', () => {
@@ -157,6 +165,7 @@ describe('basic examples', () => {
           schemaType={schemaType}
           renderInput={renderInput}
           renderField={renderField}
+          renderDefault={noopRenderDefault}
         />
       </FormCallbacksProvider>
     )
