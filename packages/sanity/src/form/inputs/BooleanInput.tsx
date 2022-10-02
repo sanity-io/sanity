@@ -23,7 +23,7 @@ export function BooleanInput(props: BooleanInputProps) {
   const LayoutSpecificInput = layout === 'checkbox' ? Checkbox : Switch
 
   return (
-    <Card border radius={1}>
+    <Card border radius={1} data-testid="boolean-input">
       <Flex>
         <ZeroLineHeightBox padding={3}>
           <LayoutSpecificInput

@@ -759,7 +759,7 @@ export class ImageInput extends React.PureComponent<ImageInputProps, ImageInputS
     )
 
     return (
-      <>
+      <div data-testid="image-input">
         <ImperativeToast ref={this.setToast} />
 
         {members.map((member) => {
@@ -807,7 +807,7 @@ export class ImageInput extends React.PureComponent<ImageInputProps, ImageInputS
           />
         )}
         {selectedAssetSource && this.renderAssetSource()}
-      </>
+      </div>
     )
   }
 }
