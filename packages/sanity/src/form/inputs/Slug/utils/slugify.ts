@@ -1,4 +1,4 @@
-import {SlugSchemaType} from '@sanity/types'
+import {SlugSchemaType, SlugSourceContext} from '@sanity/types'
 import speakingurl from 'speakingurl'
 import {FIXME} from '../../../types'
 
@@ -9,12 +9,16 @@ const defaultSlugify = (value: FIXME, type: SlugSchemaType): string => {
   return value ? speakingurl(value, slugifyOpts) : ''
 }
 
-export function slugify(sourceValue: FIXME, type: SlugSchemaType): Promise<string> {
+// eslint-disable-next-line require-await
+export async function slugify(
+  sourceValue: FIXME,
+  type: SlugSchemaType,
+  context: SlugSourceContext
+): Promise<string> {
   if (!sourceValue) {
-    return Promise.resolve(sourceValue)
+    return sourceValue
   }
 
   const slugifier = type.options?.slugify || defaultSlugify
-
-  return Promise.resolve(slugifier(sourceValue, type))
+  return slugifier(sourceValue, type, context)
 }

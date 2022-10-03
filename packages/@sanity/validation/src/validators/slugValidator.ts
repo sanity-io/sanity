@@ -1,4 +1,12 @@
-import {SlugIsUniqueValidator, Path, CustomValidator, isKeyedObject} from '@sanity/types'
+import {
+  SlugIsUniqueValidator,
+  Path,
+  CustomValidator,
+  isKeyedObject,
+  SlugValidationContext,
+  SlugParent,
+  SlugSchemaType,
+} from '@sanity/types'
 import {memoize} from 'lodash'
 // import getClient from '../getClient'
 
@@ -94,7 +102,13 @@ export const slugValidator: CustomValidator = async (value, context) => {
   const options = context?.type?.options as {isUnique?: SlugIsUniqueValidator} | undefined
   const isUnique = options?.isUnique || defaultIsUnique
 
-  const wasUnique = await isUnique(slugValue, {...context, defaultIsUnique})
+  const slugContext: SlugValidationContext = {
+    ...context,
+    parent: context.parent as SlugParent,
+    type: context.type as SlugSchemaType,
+    defaultIsUnique,
+  }
+  const wasUnique = await isUnique(slugValue, slugContext)
   if (wasUnique) {
     return true
   }

@@ -4,6 +4,8 @@ import type {Schema, SchemaType, SchemaValidationValue} from '../schema'
 import type {SanityDocument} from '../documents'
 import type {ValidationMarker} from '../markers'
 import type {Block} from '../portableText'
+import {SlugSchemaType} from '../schema'
+import {SlugParent} from '../slug'
 
 export type RuleTypeConstraint = 'Array' | 'Boolean' | 'Date' | 'Number' | 'Object' | 'String'
 export type FieldRules = {[fieldKey: string]: SchemaValidationValue}
@@ -325,9 +327,15 @@ export type BlockValidator = (
   | true
   | Promise<ValidationError[] | ValidationError | string | true>
 
+export interface SlugValidationContext extends ValidationContext {
+  parent: SlugParent
+  type: SlugSchemaType
+  defaultIsUnique: SlugIsUniqueValidator
+}
+
 export type SlugIsUniqueValidator = (
   slug: string,
-  options: ValidationContext & {defaultIsUnique: SlugIsUniqueValidator}
+  context: SlugValidationContext
 ) => boolean | Promise<boolean>
 
 export interface NodeValidation {
