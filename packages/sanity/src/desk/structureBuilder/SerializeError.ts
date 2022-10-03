@@ -1,5 +1,6 @@
 import {SerializePath} from './StructureNodes'
 
+/** @internal */
 export class SerializeError extends Error {
   public readonly path: SerializePath
   public helpId?: HELP_URL
