@@ -1,4 +1,4 @@
-import {FieldMember, ObjectInputProps, MemberField} from 'sanity/form'
+import {FieldMember, MemberField, ObjectInputProps} from 'sanity'
 import {Stack} from '@sanity/ui'
 import React from 'react'
 

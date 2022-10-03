@@ -1,5 +1,5 @@
 import React from 'react'
-import {set, setIfMissing} from 'sanity/form'
+import {set, setIfMissing} from 'sanity'
 
 export default class CustomMyObjectInput extends React.Component {
   handleChange = (field, event) => {

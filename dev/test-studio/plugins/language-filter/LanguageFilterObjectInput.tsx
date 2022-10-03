@@ -1,7 +1,14 @@
 import {pathFor} from '@sanity/util/paths'
 import React, {useMemo} from 'react'
-import {FieldError, FieldMember, FieldSetMember, ObjectInputProps, ObjectMember} from 'sanity'
-import {ObjectInput, useFormBuilder} from 'sanity/form'
+import {
+  FieldError,
+  FieldMember,
+  FieldSetMember,
+  ObjectInput,
+  ObjectInputProps,
+  ObjectMember,
+  useFormBuilder,
+} from 'sanity'
 import {LanguageFilterPluginOptions} from './types'
 import {usePaneLanguages} from './usePaneLanguages'
 import {_isPathCollapsed} from './_helpers'

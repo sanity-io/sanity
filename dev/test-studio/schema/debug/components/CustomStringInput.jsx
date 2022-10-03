@@ -1,5 +1,5 @@
 import React from 'react'
-import {set} from 'sanity/form'
+import {set} from 'sanity'
 
 export default class CustomStringInput extends React.Component {
   handleChange = (event) => {
