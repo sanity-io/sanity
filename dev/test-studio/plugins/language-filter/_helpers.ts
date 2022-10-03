@@ -1,5 +1,4 @@
-import {Path} from 'sanity'
-import {StateTree} from 'sanity/form'
+import {Path, StateTree, isArray} from 'sanity'
 
 export function _isPathCollapsed(
   path: Path,
@@ -18,7 +17,7 @@ export function _isPathCollapsed(
       node = node.children?.[segment]
     } else if (typeof segment === 'number') {
       node = node.children?.[segment]
-    } else if (Array.isArray(segment)) {
+    } else if (isArray(segment)) {
       node = node.children?.[String(segment[0])]
     } else {
       node = node.children?.[segment._key]

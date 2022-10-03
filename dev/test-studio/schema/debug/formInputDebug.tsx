@@ -1,7 +1,6 @@
 import React from 'react'
-import {FormInput} from 'sanity/form'
+import {FormInput, ObjectInputProps} from 'sanity'
 import {Grid} from '@sanity/ui'
-import {ObjectInputProps} from 'sanity'
 
 export const formInputDebug = {
   name: 'formInputDebug',
@@ -57,9 +56,9 @@ export const formInputDebug = {
 
 function CustomObjectInput(props: ObjectInputProps) {
   return (
-    <Grid gap={3} columns={2}>
-      <FormInput {...props} filterPath={['arrayWithObjects']} />
-      <FormInput {...props} filterPath={['address', 'country']} />
+    <Grid gap={4} columns={2}>
+      <FormInput {...props} absolutePath={['arrayWithObjects']} />
+      <FormInput {...props} absolutePath={['address', 'country']} />
     </Grid>
   )
 }

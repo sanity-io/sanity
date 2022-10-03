@@ -64,7 +64,6 @@ function SpotifyEmbedPreview(props: PreviewProps) {
       width="300"
       height="380"
       frameBorder="0"
-      allowTransparency
       allow="encrypted-media"
       style={{width: '100%', verticalAlign: 'top'}}
     />

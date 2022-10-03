@@ -1,4 +1,4 @@
-import {set} from 'sanity/form'
+import {set} from 'sanity'
 import React from 'react'
 import styles from './CustomFontStringInput.module.css'
 

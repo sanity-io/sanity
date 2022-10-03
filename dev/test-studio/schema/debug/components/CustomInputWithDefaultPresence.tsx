@@ -1,7 +1,6 @@
 import React, {useCallback} from 'react'
 import {range} from 'lodash'
-import {ObjectInputProps, set, setIfMissing} from 'sanity/form'
-import {FieldPresence, PresenceScope} from 'sanity'
+import {FieldPresence, ObjectInputProps, PresenceScope, set, setIfMissing} from 'sanity'
 
 export const CustomInputWithDefaultPresence = React.forwardRef(
   function CustomInputWithDefaultPresence(

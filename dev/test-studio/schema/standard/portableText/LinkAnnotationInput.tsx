@@ -1,7 +1,6 @@
 import {isPlainObject} from 'lodash'
 import React, {useCallback, useMemo} from 'react'
-import {useClient, ValidationMarker} from 'sanity'
-import {FormPatch, PatchEvent, set, setIfMissing} from 'sanity/form'
+import {FormPatch, PatchEvent, ValidationMarker, set, setIfMissing, useClient} from 'sanity'
 import {Box} from '@sanity/ui'
 import * as PathUtils from '@sanity/util/paths'
 

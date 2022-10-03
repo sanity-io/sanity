@@ -1,7 +1,12 @@
 import {ComposeIcon, DropIcon, ImageIcon} from '@sanity/icons'
 import React from 'react'
-import {BlockEditor, PortableTextInputProps} from 'sanity/form'
-import {defineArrayMember, defineField, defineType} from 'sanity'
+import {
+  BlockEditor,
+  PortableTextInputProps,
+  defineArrayMember,
+  defineField,
+  defineType,
+} from 'sanity'
 
 function CustomEditor(props: PortableTextInputProps) {
   const {markers, value} = props

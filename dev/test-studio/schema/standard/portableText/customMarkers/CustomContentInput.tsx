@@ -1,5 +1,5 @@
-import {PortableTextInput, PortableTextInputProps, PortableTextMarker} from 'sanity/form'
 import React, {useMemo} from 'react'
+import {PortableTextInput, PortableTextInputProps, PortableTextMarker} from 'sanity'
 import {renderBlockActions} from './blockActions'
 import {renderCustomMarkers} from './customMarkers'
 
