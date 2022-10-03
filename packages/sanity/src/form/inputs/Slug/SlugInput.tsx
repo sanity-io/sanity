@@ -1,5 +1,12 @@
 import React, {useCallback, useMemo} from 'react'
-import {Path, SanityDocument, SlugParent, SlugSchemaType, SlugSourceFn} from '@sanity/types'
+import {
+  Path,
+  SanityDocument,
+  SlugParent,
+  SlugSchemaType,
+  SlugSourceContext,
+  SlugSourceFn,
+} from '@sanity/types'
 import * as PathUtils from '@sanity/util/paths'
 import {Box, Button, Card, Flex, Stack, TextInput} from '@sanity/ui'
 import {PatchEvent, set, setIfMissing, unset} from '../../patch'
@@ -7,6 +14,7 @@ import {ObjectInputProps} from '../../types'
 import {useFormBuilder} from '../../useFormBuilder'
 import {slugify} from './utils/slugify'
 import {useAsync} from './utils/useAsync'
+import {SlugContext, useSlugContext} from './utils/useSlugContext'
 
 export type Slug = {
   _type: 'slug'
@@ -15,25 +23,35 @@ export type Slug = {
 
 export type SlugInputProps = ObjectInputProps<Slug, SlugSchemaType>
 
-function getNewFromSource(
-  source: string | Path | SlugSourceFn,
+function getSlugSourceContext(
   valuePath: Path,
-  document: SanityDocument
-) {
+  document: SanityDocument,
+  context: SlugContext
+): SlugSourceContext {
   const parentPath = valuePath.slice(0, -1)
   const parent = PathUtils.get(document, parentPath) as SlugParent
+  return {parentPath, parent, ...context}
+}
+
+function getNewFromSource(
+  source: string | Path | SlugSourceFn,
+  document: SanityDocument,
+  context: SlugSourceContext
+) {
   return Promise.resolve(
     typeof source === 'function'
-      ? source(document, {parentPath, parent})
+      ? source(document, context)
       : (PathUtils.get(document, source) as string | undefined)
   )
 }
 
 export function SlugInput(props: SlugInputProps) {
   const {getDocument} = useFormBuilder().__internal
-  const {path, value, schemaType, validation, onChange, onFocusPath, readOnly, elementProps} = props
+  const {path, value, schemaType, validation, onChange, readOnly, elementProps} = props
   const sourceField = schemaType.options?.source
   const errors = useMemo(() => validation.filter((item) => item.level === 'error'), [validation])
+
+  const slugContext = useSlugContext()
 
   const updateSlug = useCallback(
     (nextSlug: any) => {
@@ -56,14 +74,12 @@ export function SlugInput(props: SlugInputProps) {
       )
     }
 
-    return getNewFromSource(
-      sourceField,
-      path,
-      getDocument() || ({_type: schemaType.name} as SanityDocument)
-    )
-      .then((newFromSource) => slugify(newFromSource || '', schemaType))
+    const doc = getDocument() || ({_type: schemaType.name} as SanityDocument)
+    const sourceContext = getSlugSourceContext(path, doc, slugContext)
+    return getNewFromSource(sourceField, doc, sourceContext)
+      .then((newFromSource) => slugify(newFromSource || '', schemaType, sourceContext))
       .then((newSlug) => updateSlug(newSlug))
-  }, [path, updateSlug, document, schemaType])
+  }, [path, updateSlug, getDocument, schemaType, slugContext])
 
   const isUpdating = generateState?.status === 'pending'
 
