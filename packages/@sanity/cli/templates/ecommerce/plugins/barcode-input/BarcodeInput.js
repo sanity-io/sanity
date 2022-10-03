@@ -2,8 +2,8 @@
 
 import React, {useState} from 'react'
 import {Box, Text} from '@sanity/ui'
-import {MemberField} from 'sanity/form'
 import Barcode from 'react-barcode'
+import {MemberField} from 'sanity'
 import styled from 'styled-components'
 
 const BarcodeRoot = styled(Box)`
