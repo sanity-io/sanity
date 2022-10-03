@@ -1,4 +1,11 @@
-import {isIndexSegment, isKeyedObject, isKeySegment, isTypedObject, Path} from '@sanity/types'
+import {
+  isIndexSegment,
+  isKeyedObject,
+  isKeySegment,
+  isTypedObject,
+  PatchOperations,
+  Path,
+} from '@sanity/types'
 import {diffItem} from 'sanity-diff-patch'
 import {isRecord} from '../../../util'
 import {
@@ -17,7 +24,6 @@ import {
   ItemDiff,
   ObjectDiff,
   FieldOperationsAPI,
-  _PatchOperations,
   SetDiffPatch,
   UnsetDiffPatch,
 } from '../../types'
@@ -34,7 +40,7 @@ export function undoChange(
     return
   }
 
-  const patches: _PatchOperations[] = []
+  const patches: PatchOperations[] = []
 
   if (change.type === 'group') {
     const allChanges = flattenChangeNode(change)
@@ -79,7 +85,7 @@ function buildUnsetPatch(rootDiff: ObjectDiff, path: Path, concurrentUnsetPaths:
   return furthestEmptyAncestor(previousValue, path, concurrentUnsetPaths)
 }
 
-function buildUnsetPatches(rootDiff: ObjectDiff, paths: Path[]): _PatchOperations[] {
+function buildUnsetPatches(rootDiff: ObjectDiff, paths: Path[]): PatchOperations[] {
   const patches: Path[] = []
 
   for (let i = 0; i < paths.length; i++) {
@@ -161,7 +167,7 @@ function buildMovePatches(
   itemDiff: ItemDiff,
   parentDiff: ArrayDiff,
   path: Path
-): _PatchOperations[] {
+): PatchOperations[] {
   const basePath = path.slice(0, -1)
   const {parentValue, fromIndex, fromValue} = getFromItem(parentDiff, itemDiff)
 
@@ -187,7 +193,7 @@ function buildMovePatches(
   ]
 }
 
-function buildUndoPatches(diff: Diff, rootDiff: ObjectDiff, path: Path): _PatchOperations[] {
+function buildUndoPatches(diff: Diff, rootDiff: ObjectDiff, path: Path): PatchOperations[] {
   const patches = diffItem(diff.toValue, diff.fromValue, diffOptions, path) as DiffPatch[]
 
   const inserts = patches
@@ -199,7 +205,7 @@ function buildUndoPatches(diff: Diff, rootDiff: ObjectDiff, path: Path): _PatchO
     .reduce((acc, patch) => acc.concat(pathToString(patch.path)), [] as string[])
 
   const stubbedPaths = new Set<string>()
-  const stubs: _PatchOperations[] = []
+  const stubs: PatchOperations[] = []
 
   let hasSets = false
   const sets = patches
@@ -219,14 +225,10 @@ function buildUndoPatches(diff: Diff, rootDiff: ObjectDiff, path: Path): _PatchO
   ]
 }
 
-function getParentStubs(
-  path: Path,
-  rootDiff: ObjectDiff,
-  stubbed: Set<string>
-): _PatchOperations[] {
+function getParentStubs(path: Path, rootDiff: ObjectDiff, stubbed: Set<string>): PatchOperations[] {
   const value = rootDiff.fromValue as Record<string, unknown>
   const nextValue = rootDiff.toValue as Record<string, unknown>
-  const stubs: _PatchOperations[] = []
+  const stubs: PatchOperations[] = []
 
   for (let i = 1; i <= path.length; i++) {
     const subPath = path.slice(0, i)

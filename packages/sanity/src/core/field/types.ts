@@ -9,6 +9,7 @@ import {
   ObjectFieldType,
   ConditionalProperty,
   SchemaType,
+  PatchOperations,
 } from '@sanity/types'
 import {ComponentType} from 'react'
 import {
@@ -263,22 +264,9 @@ export interface FromToIndex {
 export type ChangeTitlePath = (string | FromToIndex)[]
 
 /** @internal */
-export interface _PatchOperations {
-  set?: {[key: string]: unknown}
-  setIfMissing?: {[key: string]: unknown}
-  merge?: {[key: string]: unknown}
-  diffMatchPatch?: {[key: string]: unknown}
-  unset?: string[]
-  inc?: {[key: string]: number}
-  dec?: {[key: string]: number}
-  insert?: FormInsertPatch
-  ifRevisionID?: string
-}
-
-/** @internal */
 export interface FieldOperationsAPI {
   patch: {
-    execute: (patches: _PatchOperations[]) => void
+    execute: (patches: PatchOperations[]) => void
   }
 }
 
