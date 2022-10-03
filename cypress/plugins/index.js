@@ -1,3 +1,5 @@
+/* eslint-disable tsdoc/syntax */
+
 const dotenvPlugin = require('cypress-dotenv')
 
 /// <reference types="cypress" />
