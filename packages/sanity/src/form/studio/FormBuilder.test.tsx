@@ -125,5 +125,5 @@ describe('FormBuilder', () => {
 })
 
 function removeClasses(html: string) {
-  return html.replace(/\s+class=".*?"/g, '')
+  return html.replace(/\s+class=".*?"|\s+data-testid="string-input"/g, '')
 }
