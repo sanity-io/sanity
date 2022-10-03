@@ -9,16 +9,16 @@ const defaultSlugify = (value: FIXME, type: SlugSchemaType): string => {
   return value ? speakingurl(value, slugifyOpts) : ''
 }
 
-export function slugify(
+// eslint-disable-next-line require-await
+export async function slugify(
   sourceValue: FIXME,
   type: SlugSchemaType,
   context: SlugSourceContext
 ): Promise<string> {
   if (!sourceValue) {
-    return Promise.resolve(sourceValue)
+    return sourceValue
   }
 
   const slugifier = type.options?.slugify || defaultSlugify
-
-  return Promise.resolve(slugifier(sourceValue, type, context))
+  return slugifier(sourceValue, type, context)
 }

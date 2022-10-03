@@ -33,16 +33,15 @@ function getSlugSourceContext(
   return {parentPath, parent, ...context}
 }
 
-function getNewFromSource(
+// eslint-disable-next-line require-await
+async function getNewFromSource(
   source: string | Path | SlugSourceFn,
   document: SanityDocument,
   context: SlugSourceContext
-) {
-  return Promise.resolve(
-    typeof source === 'function'
-      ? source(document, context)
-      : (PathUtils.get(document, source) as string | undefined)
-  )
+): Promise<string | undefined> {
+  return typeof source === 'function'
+    ? source(document, context)
+    : (PathUtils.get(document, source) as string | undefined)
 }
 
 export function SlugInput(props: SlugInputProps) {
