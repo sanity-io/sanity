@@ -2,7 +2,7 @@ import type {ObjectInput, Input} from '../types'
 import {wrap} from './index'
 
 export default class ObjectWrapper<A> implements ObjectInput<A> {
-  type: 'object' = 'object'
+  type = 'object' as const
   value: Record<string, unknown>
   keys: string[]
   annotation: A

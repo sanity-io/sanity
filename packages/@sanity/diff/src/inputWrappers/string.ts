@@ -1,7 +1,7 @@
 import type {StringInput} from '../types'
 
 export default class StringWrapper<A> implements StringInput<A> {
-  type: 'string' = 'string'
+  type = 'string' as const
   value: string
   annotation: A
 
