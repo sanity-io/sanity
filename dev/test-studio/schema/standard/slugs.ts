@@ -1,4 +1,4 @@
-import {defineType} from 'sanity'
+import {defineField, defineType} from 'sanity'
 
 export const slugAlias = {
   name: 'slug-alias',
@@ -61,17 +61,20 @@ export default defineType({
         maxLength: 96,
       },
     },
-    {
+    defineField({
       name: 'slugWithFunction',
       type: 'slug',
       title: 'Slug with function to get source',
-      description: 'This is a slug field that should update according to current title',
+      description:
+        'This is a slug field that should update according to current title joined with dataset',
       options: {
-        source: (document) => document.title,
+        source: (document, context) => {
+          return [document.title, context.dataset].filter(Boolean).join('_')
+        },
         maxLength: 96,
       },
-    },
-    {
+    }),
+    defineField({
       name: 'slugWithCustomUniqueCheck',
       type: 'slug',
       title: 'Slug with custom unique check',
@@ -79,10 +82,11 @@ export default defineType({
       options: {
         source: 'title',
         maxLength: 100,
-        isUnique: (value, options) =>
-          !/^hei/i.test(value) && options.defaultIsUnique(value, options),
+        isUnique: (value, context) => {
+          return !/^hei/i.test(value) && context.defaultIsUnique(value, context)
+        },
       },
-    },
+    }),
     {
       name: 'arrayOfSlugs',
       type: 'array',
@@ -104,12 +108,15 @@ export default defineType({
     {
       name: 'deprecatedSlugifyFnField',
       type: 'slug',
-      title: 'Slug field using deprecated "slugifyFn" option',
-      description: 'Should warn the developer about deprecated field',
+      title: 'Slug field using "slugify" option',
       options: {
         source: 'title',
-        slugify: (value) =>
-          value.toLocaleLowerCase().split('').reverse().join('').replace(/\s+/g, '-'),
+        slugify: (value, schemaType, context) => {
+          return [
+            value.toLocaleLowerCase().split('').reverse().join('').replace(/\s+/g, '-'),
+            context.dataset,
+          ].join('_')
+        },
       },
     },
     {
