@@ -3,7 +3,8 @@
  * Some of these tests have no expect statement;
  * use of ts-expect-error serves the same purpose - TypeScript is the testrunner here
  */
-import {defineType, Schema} from '../types'
+import {BooleanDefinition, ReferenceDefinition} from '../definition'
+import {defineType} from '../types'
 
 describe('reference types', () => {
   describe('defineType', () => {
@@ -43,10 +44,10 @@ describe('reference types', () => {
         },
       })
 
-      const assignableToreference: Schema.ReferenceDefinition = referenceDef
+      const assignableToreference: ReferenceDefinition = referenceDef
 
       // @ts-expect-error reference is not assignable to boolean
-      const notAssignableToBoolean: Schema.BooleanDefinition = referenceDef
+      const notAssignableToBoolean: BooleanDefinition = referenceDef
     })
   })
 })

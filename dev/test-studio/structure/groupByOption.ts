@@ -1,5 +1,5 @@
 import type {StructureBuilder} from 'sanity/desk'
-import {Schema} from '@sanity/types'
+import {ObjectOptions, Schema} from '@sanity/types'
 
 type StructureGroup = 'v3' // extend with union strings
 
@@ -23,8 +23,8 @@ export function typesInOptionGroup(
     })
 }
 
-export function structureGroupOptions<
-  O extends Required<StructureGroupOption> & Schema.ObjectOptions
->(options: O): O & Schema.ObjectOptions {
+export function structureGroupOptions<O extends Required<StructureGroupOption> & ObjectOptions>(
+  options: O
+): O & ObjectOptions {
   return options
 }

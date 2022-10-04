@@ -1,4 +1,4 @@
-import {Schema, FileSchemaType, AssetSource} from '@sanity/types'
+import {SchemaTypeDefinition, FileSchemaType, AssetSource, FieldDefinition} from '@sanity/types'
 import React from 'react'
 import {EMPTY} from 'rxjs'
 import {FileInputProps} from '../../src/form/inputs/files/FileInput'
@@ -25,7 +25,7 @@ export type TestRenderFileInputCallback = (
 
 export async function renderFileInput(options: {
   assetSources?: FileInputProps['assetSources']
-  fieldDefinition: Schema.TypeDefinition<'file'>
+  fieldDefinition: SchemaTypeDefinition<'file'>
   observeAsset?: FileInputProps['observeAsset']
   props?: TestRenderProps
   render: TestRenderFileInputCallback
@@ -60,7 +60,7 @@ export async function renderFileInput(options: {
   }
 
   const result = await renderObjectInput({
-    fieldDefinition: fieldDefinition as Schema.FieldDefinition<'object'>,
+    fieldDefinition: fieldDefinition as FieldDefinition<'object'>,
     props,
     render: (inputProps, context) => initialRender(transformProps(inputProps, context), context),
   })

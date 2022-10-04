@@ -3,7 +3,8 @@
  * Some of these tests have no expect statement;
  * use of ts-expect-error serves the same purpose - TypeScript is the testrunner here
  */
-import {defineArrayMember, defineField, defineType, Schema} from '../types'
+import {BlockDefinition, BooleanDefinition} from '../definition'
+import {defineArrayMember, defineField, defineType} from '../types'
 
 describe('block types', () => {
   describe('defineType', () => {
@@ -48,15 +49,15 @@ describe('block types', () => {
         },
       })
 
-      const assignableToBlock: Schema.BlockDefinition = blockDef
+      const assignableToBlock: BlockDefinition = blockDef
 
       // @ts-expect-error block is not assignable to boolean
-      const notAssignableToBoolean: Schema.BooleanDefinition = blockDef
+      const notAssignableToBoolean: BooleanDefinition = blockDef
     })
   })
 
   it('should define block field and arrayOf', () => {
-    const field: Schema.BlockDefinition = defineField({
+    const field: BlockDefinition = defineField({
       type: 'block',
       name: 'pteField',
       title: 'Custom PTE',

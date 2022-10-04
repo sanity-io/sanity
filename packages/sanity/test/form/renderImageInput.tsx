@@ -1,4 +1,4 @@
-import {Schema, ImageSchemaType, AssetSource} from '@sanity/types'
+import {ImageSchemaType, AssetSource, FieldDefinition, SchemaTypeDefinition} from '@sanity/types'
 import React from 'react'
 import {EMPTY} from 'rxjs'
 import {ImageInputProps} from '../../src/form/inputs/files/ImageInput'
@@ -14,7 +14,7 @@ export type TestRenderImageInputCallback = (
 ) => React.ReactElement
 
 export async function renderImageInput(options: {
-  fieldDefinition: Schema.TypeDefinition<'image'>
+  fieldDefinition: SchemaTypeDefinition<'image'>
   props?: TestRenderProps
   render: TestRenderImageInputCallback
 }) {
@@ -45,7 +45,7 @@ export async function renderImageInput(options: {
   }
 
   const result = await renderObjectInput({
-    fieldDefinition: fieldDefinition as Schema.FieldDefinition<'object'>,
+    fieldDefinition: fieldDefinition as FieldDefinition<'object'>,
     props,
     render: (inputProps, context) => initialRender(transformProps(inputProps, context), context),
   })

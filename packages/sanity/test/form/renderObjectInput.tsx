@@ -1,4 +1,4 @@
-import {Schema, ObjectSchemaType} from '@sanity/types'
+import {FieldDefinition, ObjectSchemaType} from '@sanity/types'
 import React from 'react'
 import {ComplexElementProps, FieldMember, ObjectFormNode, ObjectInputProps} from '../../src/form'
 import {
@@ -16,7 +16,7 @@ export type TestRenderObjectInputCallback = (
 ) => React.ReactElement
 
 export async function renderObjectInput(options: {
-  fieldDefinition: Schema.FieldDefinition<'object'>
+  fieldDefinition: FieldDefinition<'object'>
   props?: TestRenderProps
   render: TestRenderObjectInputCallback
 }) {

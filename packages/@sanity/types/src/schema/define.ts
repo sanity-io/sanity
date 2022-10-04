@@ -1,7 +1,7 @@
 import type {Schema} from './types'
 import type {
   DefineArrayMemberBase,
-  DefineOptions,
+  DefineSchemaOptions,
   DefineSchemaBase,
   MaybeAllowUnknownProps,
   NarrowPreview,
@@ -9,6 +9,7 @@ import type {
   WidenInitialValue,
   WidenValidation,
 } from './defineTypes'
+import {FieldDefinitionBase, TypeName} from './definition'
 
 /**
  * Helper function for defining a Sanity type definition. This function does not do anything on its own;
@@ -23,7 +24,7 @@ import type {
  * If you know the base type of the type-alias, provide `defineOptions.aliasFor: <base type name>`.
  * This will enforce that the schema definition conforms with the provided type.
  *
- * By default `defineType` only allows known properties and options.
+ * By default, `defineType` only allows known properties and options.
  * Use `defineOptions.strict: false` to allow unknown properties and options.
  *
  * ### Basic usage
@@ -109,15 +110,10 @@ import type {
  *
  * //redeclare the sanity module
  * declare module 'sanity' {
- *
- *   // redeclare Schema; it will be merged with Schema in the sanity module
- *   export namespace Schema {
- *
- *       // redeclare StringOptions; it will be merged with Schema.StringOptions in the sanity module
- *      export interface StringOptions {
- *        myCustomOption?: boolean
- *      }
- *   }
+ *  // redeclare StringOptions; it will be merged with StringOptions in the sanity module
+ *  export interface StringOptions {
+ *    myCustomOption?: boolean
+ *  }
  * }
  *
  * // the option is now part of the StringOptions type, just as if it was declared in the sanity codebase:
@@ -144,10 +140,11 @@ import type {
  *    }
  *  }
  *
+ *  // redeclares sanity module so we can add interfaces props to it
  * declare module 'sanity' {
- *     // redeclares IntrinsicTypeDefinition and adds a named definition to it
- *     // it is very important that the key is the same as the type in the definition ('magically-added-type')
- *     export interface IntrinsicTypeDefinition {
+ *     // redeclares IntrinsicDefinitions and adds a named definition to it
+ *     // it is important that the key is the same as the type in the definition ('magically-added-type')
+ *     export interface IntrinsicDefinitions {
  *       'magically-added-type': MagicallyAddedDefinition
  *     }
  * }
@@ -172,11 +169,11 @@ import type {
  * @see typed
  */
 export function defineType<
-  TType extends string | Schema.Type, // Schema.Type here improves autocompletion in _some_ IDEs (not VS Code atm)
+  TType extends string | TypeName, // TypeName here improves autocompletion in _some_ IDEs (not VS Code atm)
   TName extends string,
   TSelect extends Record<string, string> | undefined,
   TPrepareValue extends Record<keyof TSelect, any> | undefined,
-  TAlias extends Schema.Type | undefined,
+  TAlias extends TypeName | undefined,
   TStrict extends StrictDefinition
 >(
   schemaDefinition: {
@@ -187,7 +184,7 @@ export function defineType<
     MaybeAllowUnknownProps<TStrict>,
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  defineOptions?: DefineOptions<TStrict, TAlias>
+  defineOptions?: DefineSchemaOptions<TStrict, TAlias>
 ): typeof schemaDefinition {
   return schemaDefinition
 }
@@ -211,11 +208,11 @@ export function defineType<
  * @see typed
  */
 export function defineField<
-  TType extends string | Schema.Type, // Schema.Type here improves autocompletion in _some_ IDEs (not VS Code atm)
+  TType extends string | TypeName, // TypeName here improves autocompletion in _some_ IDEs (not VS Code atm)
   TName extends string,
   TSelect extends Record<string, string> | undefined,
   TPrepareValue extends Record<keyof TSelect, any> | undefined,
-  TAlias extends Schema.Type | undefined,
+  TAlias extends TypeName | undefined,
   TStrict extends StrictDefinition
 >(
   schemaField: {
@@ -224,10 +221,10 @@ export function defineField<
   } & DefineSchemaBase<TType, TAlias> &
     NarrowPreview<TType, TAlias, TSelect, TPrepareValue> &
     MaybeAllowUnknownProps<TStrict> &
-    Schema.FieldBase,
+    FieldDefinitionBase,
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  defineOptions?: DefineOptions<TStrict, TAlias>
+  defineOptions?: DefineSchemaOptions<TStrict, TAlias>
 ): typeof schemaField & WidenValidation & WidenInitialValue {
   return schemaField
 }
@@ -251,11 +248,11 @@ export function defineField<
  * @see typed
  */
 export function defineArrayMember<
-  TType extends string | Schema.Type, // Schema.Type here improves autocompletion in _some_ IDEs (not VS Code atm)
+  TType extends string | TypeName, // TypeName here improves autocompletion in _some_ IDEs (not VS Code atm)
   TName extends string,
   TSelect extends Record<string, string> | undefined,
   TPrepareValue extends Record<keyof TSelect, any> | undefined,
-  TAlias extends Schema.Type | undefined,
+  TAlias extends TypeName | undefined,
   TStrict extends StrictDefinition
 >(
   arrayOfSchema: {
@@ -272,7 +269,7 @@ export function defineArrayMember<
     MaybeAllowUnknownProps<TStrict>,
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  defineOptions?: DefineOptions<TStrict, TAlias>
+  defineOptions?: DefineSchemaOptions<TStrict, TAlias>
 ): typeof arrayOfSchema & WidenValidation & WidenInitialValue {
   return arrayOfSchema
 }
@@ -288,11 +285,11 @@ export function defineArrayMember<
  *  defineField({
  *    type: 'string',
  *    name: 'nestedField',
- *    options: typed<Schema.StringOptions & {myCustomOption: boolean}>({
+ *    options: typed<StringOptions & {myCustomOption: boolean}>({
  *      layout: 'radio',
  *      // allowed
  *      myCustomOption: true,
- *      //@ts-expect-error unknownProp is not part of AssetFieldOptions & Schema.StringOptions
+ *      //@ts-expect-error unknownProp is not part of StringOptions & {myCustomOption: boolean}
  *      unknownProp: 'not allowed in typed context',
  *    }),
  *  }),

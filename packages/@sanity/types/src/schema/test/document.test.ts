@@ -3,7 +3,8 @@
  * Some of these tests have no expect statement;
  * use of ts-expect-error serves the same purpose - TypeScript is the testrunner here
  */
-import {defineArrayMember, defineField, defineType, Schema} from '../types'
+import {DocumentDefinition, StringDefinition} from '../definition'
+import {defineArrayMember, defineField, defineType} from '../types'
 
 describe('document types', () => {
   describe('defineType', () => {
@@ -60,10 +61,10 @@ describe('document types', () => {
         fields: [defineField({type: 'text', name: 'text'})],
       })
 
-      const assignableToDocument: Schema.DocumentDefinition = documentDef
+      const assignableToDocument: DocumentDefinition = documentDef
 
       // @ts-expect-error document is not assignable to string
-      const notAssignableToString: Schema.StringDefinition = documentDef
+      const notAssignableToString: StringDefinition = documentDef
     })
 
     it('should have typesafe preview.prepare keys', () => {
@@ -304,7 +305,7 @@ describe('document types', () => {
         ],
       })
 
-      let assignableToDocument: Schema.DocumentDefinition = documentDef
+      let assignableToDocument: DocumentDefinition = documentDef
       assignableToDocument = defineType(documentDef)
       const fieldsType = documentDef.fields
     })

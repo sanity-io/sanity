@@ -3,7 +3,8 @@
  * Some of these tests have no expect statement;
  * use of ts-expect-error serves the same purpose - TypeScript is the testrunner here
  */
-import {defineArrayMember, defineField, defineType, Schema} from '../types'
+import {ArrayOptions, ObjectOptions, StringOptions, TypeAliasDefinition} from '../definition'
+import {defineArrayMember, defineField, defineType} from '../types'
 
 describe('alias type test', () => {
   it('should support narrowing alias types', () => {
@@ -22,7 +23,7 @@ describe('alias type test', () => {
     })
 
     //@ts-expect-error options is a union type of everything and not very useful
-    const notAssignableToStringOptions: Schema.StringOptions | undefined = notStringDef.options
+    const notAssignableToStringOptions: StringOptions | undefined = notStringDef.options
 
     const narrowedAlias = defineType(
       {
@@ -37,11 +38,11 @@ describe('alias type test', () => {
       {aliasFor: 'string'}
     )
 
-    const assignableToStringOptions: Schema.StringOptions | undefined = narrowedAlias.options
+    const assignableToStringOptions: StringOptions | undefined = narrowedAlias.options
   })
 
   it('should support aliased array', () => {
-    const narrowedAlias: Schema.TypeAliasDefinition<'custom-string-array', 'array'> = defineType(
+    const narrowedAlias: TypeAliasDefinition<'custom-string-array', 'array'> = defineType(
       {
         type: 'custom-string-array',
         name: 'custom-string-redefined',
@@ -52,11 +53,11 @@ describe('alias type test', () => {
       },
       {aliasFor: 'array'}
     )
-    const assignableToArrayOptions: Schema.ArrayOptions | undefined = narrowedAlias.options
+    const assignableToArrayOptions: ArrayOptions | undefined = narrowedAlias.options
   })
 
   it('should support aliased object', () => {
-    const narrowedAlias: Schema.TypeAliasDefinition<'custom-object', 'object'> = defineType(
+    const narrowedAlias: TypeAliasDefinition<'custom-object', 'object'> = defineType(
       {
         type: 'custom-object',
         name: 'redefined-custom-object',
@@ -66,7 +67,7 @@ describe('alias type test', () => {
       },
       {aliasFor: 'object'}
     )
-    const assignableToObjectOptions: Schema.ObjectOptions | undefined = narrowedAlias.options
+    const assignableToObjectOptions: ObjectOptions | undefined = narrowedAlias.options
 
     defineType(
       {

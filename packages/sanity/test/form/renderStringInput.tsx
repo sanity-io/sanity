@@ -1,4 +1,4 @@
-import {Schema, StringSchemaType} from '@sanity/types'
+import {FieldDefinition, StringSchemaType} from '@sanity/types'
 import {PrimitiveInputElementProps, StringInputProps} from '../../src/form'
 import {renderInput, TestRenderInputContext, TestRenderInputProps} from './renderInput'
 import {TestRenderProps} from './types'
@@ -9,7 +9,7 @@ export type TestRenderStringInputCallback = (
 ) => React.ReactElement
 
 export async function renderStringInput(options: {
-  fieldDefinition: Schema.FieldDefinition<'date' | 'datetime' | 'string' | 'url'>
+  fieldDefinition: FieldDefinition<'date' | 'datetime' | 'string' | 'url'>
   props?: TestRenderProps
   render: TestRenderStringInputCallback
 }) {
