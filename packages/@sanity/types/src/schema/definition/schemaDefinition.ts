@@ -23,7 +23,17 @@ import {
 import {BaseSchemaDefinition} from './type/common'
 
 /**
- * This type can be extended being a interface and not a type, via declaration merging
+ * `IntrinsicDefinitions` is a lookup map for "predefined" schema definitions.
+ * Schema types in `IntrinsicDefinitions` will have good type-completion and type-safety in {@link defineType},
+ * {@link defineField} and {@link defineArrayMember} once the `type` property is provided.
+ *
+ * By default, `IntrinsicDefinitions` contains all standard Sanity schema types (`array`, `string`, `number` ect),
+ * but it is an interface and as such, open for extension.
+ *
+ * This type can be extended using declaration merging; this way new entries can be added.
+ * See {@link defineType} for examples on how this can be accomplished.
+ *
+ * @see defineType
  */
 export interface IntrinsicDefinitions {
   array: ArrayDefinition
@@ -48,8 +58,10 @@ export interface IntrinsicDefinitions {
 
 /**
  * A union of all intrinsic types allowed natively in the schema.
+ *
+ * @see IntrinsicDefinitions
  */
-export type TypeName = IntrinsicDefinitions[keyof IntrinsicDefinitions]['type']
+export type IntrinsicTypeName = IntrinsicDefinitions[keyof IntrinsicDefinitions]['type']
 
 /**
  * Represents a Sanity schema type definition with an optional type parameter.
@@ -59,8 +71,8 @@ export type TypeName = IntrinsicDefinitions[keyof IntrinsicDefinitions]['type']
  *
  * @see defineType
  */
-export type SchemaTypeDefinition<TType extends TypeName = TypeName> =
-  | IntrinsicDefinitions[TypeName]
+export type SchemaTypeDefinition<TType extends IntrinsicTypeName = IntrinsicTypeName> =
+  | IntrinsicDefinitions[IntrinsicTypeName]
   | TypeAliasDefinition<string, TType>
 
 /**
@@ -80,10 +92,10 @@ export interface TypeReference {
  */
 export type TypeAliasDefinition<
   TType extends string,
-  TAlias extends TypeName | undefined
+  TAlias extends IntrinsicTypeName | undefined
 > = BaseSchemaDefinition & {
   type: TType
-  options?: TAlias extends TypeName ? IntrinsicDefinitions[TAlias]['options'] : unknown
+  options?: TAlias extends IntrinsicTypeName ? IntrinsicDefinitions[TAlias]['options'] : unknown
 
   validation?: SchemaValidationValue
   initialValue?: InitialValueProperty<any, any>
@@ -118,6 +130,6 @@ export type InlineFieldDefinition = {
  *
  */
 export type FieldDefinition<
-  TType extends TypeName = TypeName,
-  TAlias extends TypeName | undefined = undefined
+  TType extends IntrinsicTypeName = IntrinsicTypeName,
+  TAlias extends IntrinsicTypeName | undefined = undefined
 > = (InlineFieldDefinition[TType] | TypeAliasDefinition<string, TAlias>) & FieldDefinitionBase

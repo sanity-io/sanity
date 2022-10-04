@@ -1,4 +1,3 @@
-import type {Schema} from './types'
 import type {
   DefineArrayMemberBase,
   DefineSchemaOptions,
@@ -9,7 +8,7 @@ import type {
   WidenInitialValue,
   WidenValidation,
 } from './defineTypes'
-import {FieldDefinitionBase, TypeName} from './definition'
+import {FieldDefinitionBase, IntrinsicTypeName} from './definition'
 
 /**
  * Helper function for defining a Sanity type definition. This function does not do anything on its own;
@@ -169,11 +168,11 @@ import {FieldDefinitionBase, TypeName} from './definition'
  * @see typed
  */
 export function defineType<
-  TType extends string | TypeName, // TypeName here improves autocompletion in _some_ IDEs (not VS Code atm)
+  TType extends string | IntrinsicTypeName, // IntrinsicTypeName here improves autocompletion in _some_ IDEs (not VS Code atm)
   TName extends string,
   TSelect extends Record<string, string> | undefined,
   TPrepareValue extends Record<keyof TSelect, any> | undefined,
-  TAlias extends TypeName | undefined,
+  TAlias extends IntrinsicTypeName | undefined,
   TStrict extends StrictDefinition
 >(
   schemaDefinition: {
@@ -208,11 +207,11 @@ export function defineType<
  * @see typed
  */
 export function defineField<
-  TType extends string | TypeName, // TypeName here improves autocompletion in _some_ IDEs (not VS Code atm)
+  TType extends string | IntrinsicTypeName, // IntrinsicTypeName here improves autocompletion in _some_ IDEs (not VS Code atm)
   TName extends string,
   TSelect extends Record<string, string> | undefined,
   TPrepareValue extends Record<keyof TSelect, any> | undefined,
-  TAlias extends TypeName | undefined,
+  TAlias extends IntrinsicTypeName | undefined,
   TStrict extends StrictDefinition
 >(
   schemaField: {
@@ -248,11 +247,11 @@ export function defineField<
  * @see typed
  */
 export function defineArrayMember<
-  TType extends string | TypeName, // TypeName here improves autocompletion in _some_ IDEs (not VS Code atm)
+  TType extends string | IntrinsicTypeName, // IntrinsicTypeName here improves autocompletion in _some_ IDEs (not VS Code atm)
   TName extends string,
   TSelect extends Record<string, string> | undefined,
   TPrepareValue extends Record<keyof TSelect, any> | undefined,
-  TAlias extends TypeName | undefined,
+  TAlias extends IntrinsicTypeName | undefined,
   TStrict extends StrictDefinition
 >(
   arrayOfSchema: {

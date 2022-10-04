@@ -1,6 +1,6 @@
 import {RuleDef, ValidationBuilder} from '../../ruleBuilder'
 import {InitialValueProperty, SchemaValidationValue} from '../../types'
-import {IntrinsicDefinitions, TypeAliasDefinition, TypeName} from '../schemaDefinition'
+import {IntrinsicDefinitions, TypeAliasDefinition, IntrinsicTypeName} from '../schemaDefinition'
 import {BaseSchemaDefinition, TitledListValue} from './common'
 
 export interface ArrayOptions<V = unknown> {
@@ -35,8 +35,8 @@ type IntrinsicArrayOfDefinition = {
 }
 
 export type ArrayOfType<
-  TType extends TypeName = TypeName,
-  TAlias extends TypeName | undefined = undefined
+  TType extends IntrinsicTypeName = IntrinsicTypeName,
+  TAlias extends IntrinsicTypeName | undefined = undefined
 > = IntrinsicArrayOfDefinition[TType] | ArrayOfEntry<TypeAliasDefinition<string, TAlias>>
 
 export interface ArrayDefinition extends BaseSchemaDefinition {

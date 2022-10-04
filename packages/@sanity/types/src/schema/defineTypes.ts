@@ -1,10 +1,15 @@
-import {ArrayOfEntry, IntrinsicDefinitions, TypeAliasDefinition, TypeName} from './definition'
+import {
+  ArrayOfEntry,
+  IntrinsicDefinitions,
+  TypeAliasDefinition,
+  IntrinsicTypeName,
+} from './definition'
 import type {PreviewConfig} from './preview'
 import type {InitialValueProperty, SchemaValidationValue} from './types'
 
 export interface DefineSchemaOptions<
   TStrict extends StrictDefinition,
-  TAlias extends TypeName | undefined
+  TAlias extends IntrinsicTypeName | undefined
 > {
   /**
    * `strict: false` allows unknown properties in the schema.
@@ -19,7 +24,7 @@ export interface DefineSchemaOptions<
    */
   strict?: TStrict
   /** Should be provided when type is a non-intrinsic type, ie type is a type alias */
-  aliasFor?: TAlias extends TypeName ? TAlias : never
+  aliasFor?: TAlias extends IntrinsicTypeName ? TAlias : never
 }
 
 export type IntrinsicBase = {
@@ -32,18 +37,20 @@ export type IntrinsicArrayOfBase = {
 
 export type DefineSchemaBase<
   TType extends string,
-  TAlias extends TypeName | undefined
-> = TType extends TypeName ? IntrinsicBase[TType] : TypeAliasDefinition<TType, TAlias>
+  TAlias extends IntrinsicTypeName | undefined
+> = TType extends IntrinsicTypeName ? IntrinsicBase[TType] : TypeAliasDefinition<TType, TAlias>
 
 export type DefineSchemaType<
   TType extends string,
-  TAlias extends TypeName | undefined
-> = TType extends TypeName ? IntrinsicDefinitions[TType] : TypeAliasDefinition<TType, TAlias>
+  TAlias extends IntrinsicTypeName | undefined
+> = TType extends IntrinsicTypeName
+  ? IntrinsicDefinitions[TType]
+  : TypeAliasDefinition<TType, TAlias>
 
 export type DefineArrayMemberBase<
   TType extends string,
-  TAlias extends TypeName | undefined
-> = TType extends TypeName
+  TAlias extends IntrinsicTypeName | undefined
+> = TType extends IntrinsicTypeName
   ? IntrinsicArrayOfBase[TType]
   : ArrayOfEntry<TypeAliasDefinition<string, TAlias>>
 
@@ -67,7 +74,7 @@ type MaybePreview<
 
 export type NarrowPreview<
   TType extends string,
-  TAlias extends TypeName | undefined,
+  TAlias extends IntrinsicTypeName | undefined,
   TSelect extends Record<string, string> | undefined,
   TPrepareValue extends Record<keyof TSelect, any> | undefined
 > = DefineSchemaType<TType, TAlias> extends {preview?: Record<string, any>}
