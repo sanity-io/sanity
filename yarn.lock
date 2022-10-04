@@ -3355,6 +3355,11 @@
   resolved "https://registry.yarnpkg.com/@sanity/color/-/color-2.1.17-next.18.tgz#2832e1ad4477acd6c4fc1bb61d39e5fe5dba0343"
   integrity sha512-6oGNiJKESGFPSXcnRarrPnIqm/A9YUbQSrEQkK39TGtVwRs4bRCL4RfroIO7Mdk62psl5BL73pp4wGVuQhuWqA==
 
+"@sanity/color@^2.1.16":
+  version "2.1.16"
+  resolved "https://registry.yarnpkg.com/@sanity/color/-/color-2.1.16.tgz#4d4b36874279e1801c89827c6eb3332c960a729f"
+  integrity sha512-R5Wh4qt+Jv20nvwSwE5xA+eS3kF2diPA6noAPQZSUsSG9UIUGGgxJyU0hWUa9O06RTCNqgBQI1YJiZTeJ6S7SA==
+
 "@sanity/eslint-config-studio@^2.0.0":
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/@sanity/eslint-config-studio/-/eslint-config-studio-2.0.0.tgz#1c7a0a559ff364c475d951fe882bfdc33c41ca38"
