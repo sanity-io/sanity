@@ -373,7 +373,7 @@ export type SlugIsUniqueValidator = (
 ) => boolean | Promise<boolean>
 
 /** @public */
-export interface NodeValidation {
+export interface FormNodeValidation {
   level: 'error' | 'warning' | 'info'
   message: string
   path: Path

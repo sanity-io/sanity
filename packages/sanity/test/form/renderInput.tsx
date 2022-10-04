@@ -2,7 +2,7 @@ import {SanityClient} from '@sanity/client'
 import {
   defineType,
   FieldDefinition,
-  NodeValidation,
+  FormNodeValidation,
   ObjectSchemaType,
   Path,
   SchemaType,
@@ -43,7 +43,7 @@ export interface TestRenderInputProps<ElementProps> {
   presence: FormFieldPresence[]
   readOnly: boolean | undefined
   schemaType: SchemaType
-  validation: NodeValidation[]
+  validation: FormNodeValidation[]
   value: unknown
   elementProps: ElementProps
 }

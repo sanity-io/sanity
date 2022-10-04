@@ -1,4 +1,4 @@
-import {NodeValidation} from '@sanity/types'
+import {FormNodeValidation} from '@sanity/types'
 import {Stack} from '@sanity/ui'
 import React, {memo} from 'react'
 import {FormFieldPresence} from '../../../presence'
@@ -9,7 +9,7 @@ export interface FormFieldProps {
   /**
    * @beta
    */
-  validation?: NodeValidation[]
+  validation?: FormNodeValidation[]
   /**
    * @beta
    */

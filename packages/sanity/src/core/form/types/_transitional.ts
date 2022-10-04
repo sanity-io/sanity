@@ -1,4 +1,10 @@
-import {ArraySchemaType, NodeValidation, ObjectField, ObjectSchemaType, Path} from '@sanity/types'
+import {
+  ArraySchemaType,
+  FormNodeValidation,
+  ObjectField,
+  ObjectSchemaType,
+  Path,
+} from '@sanity/types'
 import React from 'react'
 import {PatchEvent} from '../patch'
 import {PreviewProps} from '../../components'
@@ -42,7 +48,7 @@ export type FormBuilderCustomMarkersComponent = React.ComponentType<{markers: Po
 export type FormBuilderMarkersComponent = React.ComponentType<{
   markers: PortableTextMarker[]
   renderCustomMarkers?: RenderCustomMarkers
-  validation: NodeValidation[]
+  validation: FormNodeValidation[]
 }>
 
 /**

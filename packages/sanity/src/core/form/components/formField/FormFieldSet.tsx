@@ -3,7 +3,7 @@
 import {Box, Flex, Grid, rem, Stack, Text, Theme, useForwardedRef} from '@sanity/ui'
 import React, {forwardRef, useCallback, useMemo} from 'react'
 import styled, {css} from 'styled-components'
-import {NodeValidation} from '@sanity/types'
+import {FormNodeValidation} from '@sanity/types'
 import {FieldPresence, FormFieldPresence} from '../../../presence'
 import {FormFieldValidationStatus} from './FormFieldValidationStatus'
 import {FormFieldSetLegend} from './FormFieldSetLegend'
@@ -30,7 +30,7 @@ export interface FormFieldSetProps {
   /**
    * @beta
    */
-  validation?: NodeValidation[]
+  validation?: FormNodeValidation[]
 }
 
 function getChildren(children: React.ReactNode | (() => React.ReactNode)): React.ReactNode {
