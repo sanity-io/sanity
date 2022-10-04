@@ -1,4 +1,4 @@
-import {NodeValidation} from '@sanity/types'
+import {FormNodeValidation} from '@sanity/types'
 import {useMemo, useRef} from 'react'
 import {EMPTY_ARRAY} from '../../../../util'
 import {BaseFormNode} from '../../../store'
@@ -10,7 +10,7 @@ const NONEXISTENT_PATH = ['@@_NONEXISTENT_PATH_@@']
 
 /** @internal */
 export function useMemberValidation(member: BaseFormNode | undefined) {
-  const prev = useRef<NodeValidation[] | null>(null)
+  const prev = useRef<FormNodeValidation[] | null>(null)
   const memberValidation =
     member?.validation && member.validation.length > 0 ? member.validation : EMPTY_ARRAY
   const childValidation = useChildValidation(member?.path || NONEXISTENT_PATH)

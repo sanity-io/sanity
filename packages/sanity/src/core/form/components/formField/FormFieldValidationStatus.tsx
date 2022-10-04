@@ -2,7 +2,7 @@
 
 import {hues} from '@sanity/color'
 import {ErrorOutlineIcon, InfoOutlineIcon, WarningOutlineIcon} from '@sanity/icons'
-import {NodeValidation} from '@sanity/types'
+import {FormNodeValidation} from '@sanity/types'
 import {Box, Flex, Placement, Stack, Text, Tooltip} from '@sanity/ui'
 import React, {useMemo} from 'react'
 
@@ -11,7 +11,7 @@ export interface FormFieldValidationStatusProps {
   /**
    * @beta
    */
-  validation?: NodeValidation[]
+  validation?: FormNodeValidation[]
   /**
    * @beta
    */
@@ -96,7 +96,7 @@ export function FormFieldValidationStatus(props: FormFieldValidationStatusProps)
   )
 }
 
-function FormFieldValidationStatusItem(props: {validation: NodeValidation}) {
+function FormFieldValidationStatusItem(props: {validation: FormNodeValidation}) {
   const {validation} = props
 
   const statusIcon = useMemo(() => {
@@ -129,7 +129,7 @@ function FormFieldValidationStatusItem(props: {validation: NodeValidation}) {
   )
 }
 
-function FormFieldValidationSummary({validation}: {validation: NodeValidation[]}) {
+function FormFieldValidationSummary({validation}: {validation: FormNodeValidation[]}) {
   const errorMarkers = validation.filter((item) => item.level === 'error')
   const warningMarkers = validation.filter((item) => item.level === 'warning')
   const errorLen = errorMarkers.length

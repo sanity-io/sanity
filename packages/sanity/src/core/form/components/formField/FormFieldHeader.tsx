@@ -2,7 +2,7 @@
 
 import React, {memo} from 'react'
 import {Box, Flex} from '@sanity/ui'
-import {NodeValidation} from '@sanity/types'
+import {FormNodeValidation} from '@sanity/types'
 import {FieldPresence, FormFieldPresence} from '../../../presence'
 import {FormFieldHeaderText} from './FormFieldHeaderText'
 
@@ -10,7 +10,7 @@ export interface FormFieldHeaderProps {
   /**
    * @beta
    */
-  validation?: NodeValidation[]
+  validation?: FormNodeValidation[]
   /**
    * @beta
    */

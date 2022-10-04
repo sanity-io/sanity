@@ -1,7 +1,7 @@
 import {
   ArraySchemaType,
   BooleanSchemaType,
-  NodeValidation,
+  FormNodeValidation,
   NumberSchemaType,
   ObjectSchemaType,
   Path,
@@ -25,7 +25,7 @@ export interface BaseFieldProps {
   description: string | undefined
   /** @beta */
   presence: FormFieldPresence[]
-  validation: NodeValidation[]
+  validation: FormNodeValidation[]
   level: number
   inputId: string
   value: unknown | undefined

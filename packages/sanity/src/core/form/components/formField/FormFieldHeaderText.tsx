@@ -1,6 +1,6 @@
 /* eslint-disable camelcase */
 
-import {NodeValidation} from '@sanity/types'
+import {FormNodeValidation} from '@sanity/types'
 import {Box, Flex, Stack, Text} from '@sanity/ui'
 import React, {memo} from 'react'
 import {FormFieldValidationStatus} from './FormFieldValidationStatus'
@@ -10,7 +10,7 @@ export interface FormFieldHeaderTextProps {
   /**
    * @beta
    */
-  validation?: NodeValidation[]
+  validation?: FormNodeValidation[]
   description?: React.ReactNode
   /**
    * The unique ID used to target the actual input element

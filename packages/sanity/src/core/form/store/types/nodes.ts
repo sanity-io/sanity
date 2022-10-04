@@ -1,7 +1,7 @@
 import {
   ArraySchemaType,
   BooleanSchemaType,
-  NodeValidation,
+  FormNodeValidation,
   NumberSchemaType,
   ObjectSchemaType,
   Path,
@@ -23,7 +23,7 @@ export interface BaseFormNode<T = unknown, S extends SchemaType = SchemaType> {
   // state
   /** @beta */
   presence: FormFieldPresence[]
-  validation: NodeValidation[]
+  validation: FormNodeValidation[]
   value: T | undefined
   readOnly?: boolean
   focused?: boolean

@@ -1,6 +1,6 @@
 import {
   BooleanSchemaType,
-  NodeValidation,
+  FormNodeValidation,
   NumberSchemaType,
   ObjectSchemaType,
   Path,
@@ -34,7 +34,7 @@ export interface BaseItemProps {
 
   children: React.ReactNode | null
 
-  validation: NodeValidation[]
+  validation: FormNodeValidation[]
 
   /** @beta */
   presence: FormFieldPresence[]

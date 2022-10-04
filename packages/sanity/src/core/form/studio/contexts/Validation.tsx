@@ -1,6 +1,6 @@
 /* eslint-disable react/no-unused-prop-types */
 import React, {createContext, useContext, useMemo} from 'react'
-import {NodeValidation, Path, ValidationMarker} from '@sanity/types'
+import {FormNodeValidation, Path, ValidationMarker} from '@sanity/types'
 import {startsWith} from '@sanity/util/paths'
 
 const ValidationContext = createContext<ValidationMarker[]>([])
@@ -24,7 +24,7 @@ export function useValidationMarkers(): ValidationMarker[] {
   return ctx
 }
 
-export function useChildValidation(path: Path): NodeValidation[] {
+export function useChildValidation(path: Path): FormNodeValidation[] {
   const validation = useValidationMarkers()
   return useMemo(
     () =>
@@ -34,7 +34,7 @@ export function useChildValidation(path: Path): NodeValidation[] {
           message: marker.item.message,
           level: marker.level,
           path: marker.path,
-        })) as NodeValidation[],
+        })) as FormNodeValidation[],
     [path, validation]
   )
 }

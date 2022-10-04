@@ -1,4 +1,4 @@
-import {NodeValidation, SchemaType} from '@sanity/types'
+import {FormNodeValidation, SchemaType} from '@sanity/types'
 import React from 'react'
 import {FormFieldPresence} from '../../../../../presence'
 import {RenderPreviewCallback} from '../../../../types'
@@ -15,6 +15,6 @@ export interface ItemLayoutProps {
   readOnly?: boolean
   renderPreview: RenderPreviewCallback
   type?: SchemaType // note: type might be undefined here if the value doesn't have a matching schema type definition
-  validation?: NodeValidation[]
+  validation?: FormNodeValidation[]
   value: {_key: string; _ref?: string}
 }
