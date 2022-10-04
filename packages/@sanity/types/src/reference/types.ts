@@ -29,8 +29,16 @@ export type ReferenceFilterResolver = (options: {
   parentPath: Path
 }) => ReferenceFilterSearchOptions | Promise<ReferenceFilterSearchOptions>
 
-export type ReferenceFilterOptions =
-  | {filter: ReferenceFilterResolver}
-  | {filter: string; filterParams?: Record<string, unknown>}
+export interface ReferenceFilterResolverOptions {
+  filter: ReferenceFilterResolver
+}
+export interface ReferenceFilterQueryOptions {
+  filter: string
+  filterParams?: Record<string, unknown>
+}
 
-export type ReferenceOptions = {disableNew?: boolean} & ReferenceFilterOptions
+export interface ReferenceBaseOptions {
+  disableNew?: boolean
+}
+
+export type ReferenceFilterOptions = ReferenceFilterResolverOptions | ReferenceFilterQueryOptions

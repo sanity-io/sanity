@@ -3,6 +3,7 @@
  * Some of these tests have no expect statement;
  * use of ts-expect-error serves the same purpose - TypeScript is the testrunner here
  */
+import {GeopointDefinition, StringDefinition} from '../definition'
 import {defineType, Schema} from '../types'
 
 describe('geopoint types', () => {
@@ -31,10 +32,10 @@ describe('geopoint types', () => {
         hidden: () => false,
       })
 
-      const assignableToGeopoint: Schema.GeopointDefinition = geopointDef
+      const assignableToGeopoint: GeopointDefinition = geopointDef
 
       // @ts-expect-error geopoint is not assignable to string
-      const notAssignableToString: Schema.StringDefinition = geopointDef
+      const notAssignableToString: StringDefinition = geopointDef
     })
   })
 })

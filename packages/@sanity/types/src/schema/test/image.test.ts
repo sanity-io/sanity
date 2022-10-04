@@ -3,6 +3,7 @@
  * Some of these tests have no expect statement;
  * use of ts-expect-error serves the same purpose - TypeScript is the testrunner here
  */
+import {ImageDefinition} from '../definition'
 import {defineField, defineType, Schema} from '../types'
 
 describe('image types', () => {
@@ -41,10 +42,10 @@ describe('image types', () => {
       },
     })
 
-    const assignableToimage: Schema.ImageDefinition = imageDef
+    const assignableToimage: ImageDefinition = imageDef
 
     // @ts-expect-error image is not assignable to string
-    const notAssignableToString: Schema.StringDefinition = imageDef
+    const notAssignableToString: StringDefinition = imageDef
   })
 
   it('should define image fields safely (with some compromises without defineField)', () => {
@@ -141,7 +142,7 @@ describe('image types', () => {
       ],
     })
 
-    let assignableToImage: Schema.ImageDefinition = imageDef
+    let assignableToImage: ImageDefinition = imageDef
     assignableToImage = defineType(imageDef)
     const fieldsType = imageDef.fields
   })

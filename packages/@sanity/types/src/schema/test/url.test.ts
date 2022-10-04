@@ -3,7 +3,8 @@
  * Some of these tests have no expect statement;
  * use of ts-expect-error serves the same purpose - TypeScript is the testrunner here
  */
-import {defineType, Schema} from '../types'
+import {BooleanDefinition, UrlDefinition} from '../definition'
+import {defineType} from '../types'
 
 describe('url types', () => {
   describe('defineType', () => {
@@ -36,10 +37,10 @@ describe('url types', () => {
         },
       })
 
-      const assignableToUrl: Schema.UrlDefinition = urlDef
+      const assignableToUrl: UrlDefinition = urlDef
 
       // @ts-expect-error url is not assignable to boolean
-      const notAssignableToBoolean: Schema.BooleanDefinition = urlDef
+      const notAssignableToBoolean: BooleanDefinition = urlDef
     })
   })
 })

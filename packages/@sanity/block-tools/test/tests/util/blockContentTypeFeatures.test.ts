@@ -1,4 +1,3 @@
-import * as assert from 'assert'
 import type {ObjectSchemaType} from '@sanity/types'
 import blockContentTypeFeatures from '../../../src/util/blockContentTypeFeatures'
 import customSchema from '../../fixtures/customSchema'

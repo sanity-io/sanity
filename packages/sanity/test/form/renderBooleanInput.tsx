@@ -1,4 +1,4 @@
-import {Schema, BooleanSchemaType} from '@sanity/types'
+import {BooleanSchemaType, FieldDefinition} from '@sanity/types'
 import {BooleanInputProps, PrimitiveInputElementProps} from '../../src/form'
 import {renderInput, TestRenderInputProps} from './renderInput'
 import {TestRenderProps} from './types'
@@ -6,7 +6,7 @@ import {TestRenderProps} from './types'
 export type TestRenderBooleanInputCallback = (inputProps: BooleanInputProps) => React.ReactElement
 
 export async function renderBooleanInput(options: {
-  fieldDefinition: Schema.FieldDefinition<'boolean'>
+  fieldDefinition: FieldDefinition<'boolean'>
   props?: TestRenderProps
   render: TestRenderBooleanInputCallback
 }) {

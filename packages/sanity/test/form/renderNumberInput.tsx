@@ -1,4 +1,5 @@
-import {Schema, NumberSchemaType} from '@sanity/types'
+import {FieldDefinition, NumberSchemaType} from '@sanity/types'
+import {ReactElement} from 'react'
 import {NumberInputProps, PrimitiveInputElementProps} from '../../src/form'
 import {renderInput, TestRenderInputContext, TestRenderInputProps} from './renderInput'
 import {TestRenderProps} from './types'
@@ -6,10 +7,10 @@ import {TestRenderProps} from './types'
 export type TestRenderNumberInputCallback = (
   inputProps: NumberInputProps,
   context: TestRenderInputContext
-) => React.ReactElement
+) => ReactElement
 
 export async function renderNumberInput(options: {
-  fieldDefinition: Schema.FieldDefinition<'number'>
+  fieldDefinition: FieldDefinition<'number'>
   props?: TestRenderProps
   render: TestRenderNumberInputCallback
 }) {

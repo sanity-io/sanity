@@ -3,7 +3,8 @@
  * Some of these tests have no expect statement;
  * use of ts-expect-error serves the same purpose - TypeScript is the testrunner here
  */
-import {defineType, Schema} from '../types'
+import {SlugDefinition, StringDefinition} from '../definition'
+import {defineType} from '../types'
 
 describe('slug types', () => {
   describe('defineType', () => {
@@ -33,10 +34,10 @@ describe('slug types', () => {
         },
       })
 
-      const assignableToSlug: Schema.SlugDefinition = slugDef
+      const assignableToSlug: SlugDefinition = slugDef
 
       // @ts-expect-error slug is not assignable to string
-      const notAssignableToString: Schema.StringDefinition = slugDef
+      const notAssignableToString: StringDefinition = slugDef
     })
   })
 })

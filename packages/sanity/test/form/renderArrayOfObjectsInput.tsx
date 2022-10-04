@@ -1,4 +1,4 @@
-import {Schema, ArraySchemaType} from '@sanity/types'
+import {ArraySchemaType, FieldDefinition} from '@sanity/types'
 import React from 'react'
 import {
   ArrayOfObjectsFormNode,
@@ -20,7 +20,7 @@ export type TestRenderArrayOfObjectInputCallback = (
 ) => React.ReactElement
 
 export async function renderArrayOfObjectsInput(options: {
-  fieldDefinition: Schema.FieldDefinition<'array'>
+  fieldDefinition: FieldDefinition<'array'>
   props?: TestRenderProps
   render: TestRenderArrayOfObjectInputCallback
 }) {

@@ -3,7 +3,13 @@
  * Some of these tests have no expect statement;
  * use of ts-expect-error serves the same purpose - TypeScript is the testrunner here
  */
-import {defineField, defineType, Schema} from '../types'
+import {
+  BooleanDefinition,
+  FieldDefinition,
+  FieldDefinitionBase,
+  StringDefinition,
+} from '../definition'
+import {defineField, defineType} from '../types'
 
 describe('string types', () => {
   describe('defineType', () => {
@@ -39,10 +45,10 @@ describe('string types', () => {
         },
       })
 
-      const assignableToString: Schema.StringDefinition = stringDef
+      const assignableToString: StringDefinition = stringDef
 
       // @ts-expect-error string is not assignable to boolean
-      const notAssignableToBoolean: Schema.BooleanDefinition = stringDef
+      const notAssignableToBoolean: BooleanDefinition = stringDef
     })
 
     it('should fail compilation for string with incorrect options', () => {
@@ -112,10 +118,10 @@ describe('string types', () => {
         },
       })
 
-      const assignableToString: Schema.StringDefinition & Schema.FieldBase = stringField
+      const assignableToString: StringDefinition & FieldDefinitionBase = stringField
       const nameIsNarrowed: 'stringField' = stringField.name
 
-      const assignableToFieldDef: Schema.FieldDefinition = defineField({
+      const assignableToFieldDef: FieldDefinition = defineField({
         type: 'string',
         name: 'nestedField',
         options: {

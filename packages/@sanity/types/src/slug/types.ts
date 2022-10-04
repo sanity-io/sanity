@@ -1,10 +1,9 @@
 import {SanityClient} from '@sanity/client'
 import type {SlugSchemaType} from '../schema'
+import {Schema} from '../schema'
 import type {SanityDocument} from '../documents'
 import type {Path} from '../paths'
 import {CurrentUser} from '../user'
-import {Schema} from '../schema'
-import {SlugIsUniqueValidator} from '../validation'
 
 export interface Slug {
   _type: 'slug'
@@ -33,10 +32,3 @@ export type SlugifierFn = (
   schemaType: SlugSchemaType,
   context: SlugSourceContext
 ) => string | Promise<string>
-
-export interface SlugOptions {
-  source?: string | Path | SlugSourceFn
-  maxLength?: number
-  slugify?: SlugifierFn
-  isUnique?: SlugIsUniqueValidator
-}

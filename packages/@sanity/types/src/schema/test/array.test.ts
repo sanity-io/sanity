@@ -3,7 +3,8 @@
  * Some of these tests have no expect statement;
  * use of ts-expect-error serves the same purpose - TypeScript is the testrunner here
  */
-import {defineArrayMember, defineType, Schema} from '../types'
+import {ArrayDefinition, BooleanDefinition} from '../definition'
+import {defineArrayMember, defineField, defineType} from '../types'
 
 describe('array types', () => {
   describe('defineType', () => {
@@ -63,11 +64,11 @@ describe('array types', () => {
         },
       })
 
-      let assignableToArray: Schema.ArrayDefinition = arrayDef
+      let assignableToArray: ArrayDefinition = arrayDef
       assignableToArray = defineType(assignableToArray)
 
       // @ts-expect-error string is not assignable to boolean
-      const notAssignableToBoolean: Schema.BooleanDefinition = arrayDef
+      const notAssignableToBoolean: BooleanDefinition = arrayDef
     })
 
     it('should define object array schema', () => {
@@ -133,11 +134,11 @@ describe('array types', () => {
         },
       })
 
-      let assignableToArray: Schema.ArrayDefinition = arrayDef
+      let assignableToArray: ArrayDefinition = arrayDef
       assignableToArray = defineType(assignableToArray)
 
       // @ts-expect-error string is not assignable to boolean
-      const notAssignableToBoolean: Schema.BooleanDefinition = arrayDef
+      const notAssignableToBoolean: BooleanDefinition = arrayDef
     })
   })
 
@@ -162,6 +163,19 @@ describe('array types', () => {
           ],
         },
       ],
+    })
+  })
+
+  it('should support tag layout', () => {
+    const arrayField: ArrayDefinition = defineField({
+      type: 'array',
+      name: 'arrayTagList',
+      description: 'array with tag-list',
+      of: [{type: 'string'}],
+      options: {
+        list: ['1'],
+        layout: 'tags',
+      },
     })
   })
 })

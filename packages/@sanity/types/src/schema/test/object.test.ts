@@ -3,7 +3,8 @@
  * Some of these tests have no expect statement;
  * use of ts-expect-error serves the same purpose - TypeScript is the testrunner here
  */
-import {defineField, defineType, Schema} from '../types'
+import {ObjectDefinition, StringDefinition} from '../definition'
+import {defineField, defineType} from '../types'
 
 describe('object types', () => {
   it('should define object schema', () => {
@@ -45,10 +46,10 @@ describe('object types', () => {
       fields: [],
     })
 
-    const assignableToObject: Schema.ObjectDefinition = objectDef
+    const assignableToObject: ObjectDefinition = objectDef
 
     // @ts-expect-error object is not assignable to string
-    const notAssignableToString: Schema.StringDefinition = objectDef
+    const notAssignableToString: StringDefinition = objectDef
   })
 
   it('should define document fields safely (with some compromises without defineField)', () => {

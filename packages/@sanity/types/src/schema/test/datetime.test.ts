@@ -3,7 +3,8 @@
  * Some of these tests have no expect statement;
  * use of ts-expect-error serves the same purpose - TypeScript is the testrunner here
  */
-import {defineType, Schema} from '../types'
+import {DatetimeDefinition} from '../definition'
+import {defineType} from '../types'
 
 describe('datetime types', () => {
   describe('defineType', () => {
@@ -34,10 +35,10 @@ describe('datetime types', () => {
         },
       })
 
-      const assignableToDatetime: Schema.DatetimeDefinition = datetimeDef
+      const assignableToDatetime: DatetimeDefinition = datetimeDef
 
       // @ts-expect-error datetime is not assignable to string
-      const notAssignableToString: Schema.StringDefinition = datetimeDef
+      const notAssignableToString: StringDefinition = datetimeDef
     })
   })
 })

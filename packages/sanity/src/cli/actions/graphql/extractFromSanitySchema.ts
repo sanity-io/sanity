@@ -7,6 +7,7 @@ import type {
   ObjectField,
   ObjectSchemaType,
   ArraySchemaType,
+  IntrinsicTypeName,
 } from '@sanity/types'
 import {generateHelpUrl} from '@sanity/generate-help-url'
 import Schema from '@sanity/schema'
@@ -27,7 +28,7 @@ const disallowedCustomizedMembers = ['object', 'array', 'image', 'file', 'block'
 const disabledBlockFields = ['markDefs']
 const scalars = ['string', 'number', 'boolean']
 
-function getBaseType(baseSchema: CompiledSchema, typeName: CompiledSchema.Type): SchemaType {
+function getBaseType(baseSchema: CompiledSchema, typeName: IntrinsicTypeName): SchemaType {
   return Schema.compile({
     types: (baseSchema._original?.types || []).concat([
       {name: `__placeholder__`, type: typeName, options: {hotspot: true}},
@@ -298,7 +299,7 @@ export function extractFromSanitySchema(
       return fields
     }
 
-    const extended = getBaseType(sanitySchema, def.name as CompiledSchema.Type)
+    const extended = getBaseType(sanitySchema, def.name as IntrinsicTypeName)
     return gatherAllFields(extended)
   }
 

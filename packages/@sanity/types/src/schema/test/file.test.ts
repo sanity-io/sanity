@@ -3,7 +3,8 @@
  * Some of these tests have no expect statement;
  * use of ts-expect-error serves the same purpose - TypeScript is the testrunner here
  */
-import {defineField, defineType, Schema, typed} from '../types'
+import {defineField, defineType} from '../types'
+import {FileDefinition, StringDefinition} from '_self_'
 
 describe('file types', () => {
   describe('defineType', () => {
@@ -44,10 +45,10 @@ describe('file types', () => {
         fields: [{type: 'string', name: 'string'}],
       })
 
-      const assignableToFile: Schema.FileDefinition = fileDef
+      const assignableToFile: FileDefinition = fileDef
 
       // @ts-expect-error file is not assignable to string
-      const notAssignableToString: Schema.StringDefinition = fileDef
+      const notAssignableToString: StringDefinition = fileDef
     })
   })
 
@@ -147,7 +148,7 @@ describe('file types', () => {
       ],
     })
 
-    let assignableToFile: Schema.FileDefinition = fileDef
+    let assignableToFile: FileDefinition = fileDef
     assignableToFile = defineType(assignableToFile)
   })
 })

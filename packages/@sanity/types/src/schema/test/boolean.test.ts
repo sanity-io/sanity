@@ -3,7 +3,8 @@
  * Some of these tests have no expect statement;
  * use of ts-expect-error serves the same purpose - TypeScript is the testrunner here
  */
-import {defineType, Schema} from '../types'
+import {BooleanDefinition} from '../definition'
+import {defineType} from '../types'
 
 describe('boolean types', () => {
   describe('defineType', () => {
@@ -29,10 +30,10 @@ describe('boolean types', () => {
         },
       })
 
-      const assignableToBoolean: Schema.BooleanDefinition = booleanDef
+      const assignableToBoolean: BooleanDefinition = booleanDef
 
       // @ts-expect-error boolean is not assignable to string
-      const notAssignableToString: Schema.StringDefinition = booleanDef
+      const notAssignableToString: StringDefinition = booleanDef
     })
   })
 })

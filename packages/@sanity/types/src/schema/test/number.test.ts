@@ -3,7 +3,8 @@
  * Some of these tests have no expect statement;
  * use of ts-expect-error serves the same purpose - TypeScript is the testrunner here
  */
-import {defineType, Schema} from '../types'
+import {NumberDefinition, StringDefinition} from '../definition'
+import {defineType} from '../types'
 
 describe('number types', () => {
   describe('defineType', () => {
@@ -39,10 +40,10 @@ describe('number types', () => {
         },
       })
 
-      const assignableToNumber: Schema.NumberDefinition = numberDef
+      const assignableToNumber: NumberDefinition = numberDef
 
       // @ts-expect-error number is not assignable to string
-      const notAssignableToString: Schema.StringDefinition = numberDef
+      const notAssignableToString: StringDefinition = numberDef
     })
   })
 })

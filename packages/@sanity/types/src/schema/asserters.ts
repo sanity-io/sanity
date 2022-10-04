@@ -1,11 +1,11 @@
 import type {CrossDatasetReferenceSchemaType} from '../crossDatasetReference'
+import {TitledListValue} from './definition'
 import type {
   BlockSchemaType,
   ArraySchemaType,
   ObjectSchemaType,
   ReferenceSchemaType,
   SpanSchemaType,
-  TitledListValue,
   BlockChildrenObjectField,
   StyleObjectField,
   ListObjectField,

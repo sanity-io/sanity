@@ -1,4 +1,4 @@
-import {CrossDatasetReferenceSchemaType, Schema} from '@sanity/types'
+import {CrossDatasetReferenceSchemaType, FieldDefinition, SchemaTypeDefinition} from '@sanity/types'
 import React from 'react'
 import {of} from 'rxjs'
 import {CrossDatasetReferenceInputProps} from '../../src/form/inputs/CrossDatasetReferenceInput'
@@ -15,7 +15,7 @@ export type TestRenderCrossDatasetReferenceInputCallback = (
 ) => React.ReactElement
 
 export async function renderCrossDatasetReferenceInput(options: {
-  fieldDefinition: Schema.TypeDefinition<'reference'>
+  fieldDefinition: SchemaTypeDefinition<'reference'>
   getReferenceInfo: CrossDatasetReferenceInputProps['getReferenceInfo']
   onSearch?: CrossDatasetReferenceInputProps['onSearch']
   props?: TestRenderProps
@@ -43,7 +43,7 @@ export async function renderCrossDatasetReferenceInput(options: {
   }
 
   const result = await renderObjectInput({
-    fieldDefinition: fieldDefinition as Schema.FieldDefinition<'object'>,
+    fieldDefinition: fieldDefinition as FieldDefinition<'object'>,
     props,
     render: (baseProps, context) => initialRender(transformProps(baseProps, context), context),
   })
