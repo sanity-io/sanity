@@ -1,7 +1,6 @@
 {
   "extends": "./tsconfig.settings",
   "include": ["**/*/package.config.ts", "./dev/aliases.cjs", "./scripts", "./test"],
-  "exclude": [],
   "compilerOptions": {
     "emitDeclarationOnly": true,
     "outDir": "./node_modules/.sanity-monorepo/dts",
