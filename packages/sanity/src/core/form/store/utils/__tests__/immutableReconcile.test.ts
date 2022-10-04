@@ -108,5 +108,6 @@ test('returns new array when previous and next has different length', () => {
   const lessItems = ['a']
 
   expect(immutableReconcile(moreItems, lessItems)).not.toBe(moreItems)
+
   expect(immutableReconcile(lessItems, moreItems)).not.toBe(lessItems)
 })
