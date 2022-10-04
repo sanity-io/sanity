@@ -12,7 +12,7 @@ import React, {FocusEvent} from 'react'
 import {
   EMPTY_ARRAY,
   FieldMember,
-  FormFieldPresence,
+  FormNodePresence,
   FormProvider,
   FormState,
   PatchArg,
@@ -40,7 +40,7 @@ export interface TestRenderInputProps<ElementProps> {
   onPathBlur: (path: Path) => void
   onPathFocus: (path: Path) => void
   path: Path
-  presence: FormFieldPresence[]
+  presence: FormNodePresence[]
   readOnly: boolean | undefined
   schemaType: SchemaType
   validation: FormNodeValidation[]

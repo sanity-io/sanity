@@ -9,7 +9,7 @@ import {ObjectInputProps} from '../types'
 import {useFormBuilder} from '../useFormBuilder'
 import {StateTree} from '../store'
 import {EMPTY_ARRAY} from '../../util'
-import {FormFieldPresence} from '../../presence'
+import {FormNodePresence} from '../../presence'
 import {FormProvider} from './FormProvider'
 import {useFormCallbacks} from './contexts/FormCallbacks'
 
@@ -37,7 +37,7 @@ export interface FormBuilderProps
   onFieldGroupSelect: (path: Path, groupName: string) => void
   onSetFieldSetCollapsed: (path: Path, collapsed: boolean) => void
   onSetPathCollapsed: (path: Path, collapsed: boolean) => void
-  presence: FormFieldPresence[]
+  presence: FormNodePresence[]
   readOnly?: boolean
   schemaType: ObjectSchemaType
   validation: ValidationMarker[]

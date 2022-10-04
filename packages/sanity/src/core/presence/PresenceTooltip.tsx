@@ -1,11 +1,11 @@
 import React, {useMemo} from 'react'
 import {Flex, Stack, Text, Tooltip} from '@sanity/ui'
 import {UserAvatar} from '../components/UserAvatar'
-import {FormFieldPresence} from './types'
+import {FormNodePresence} from './types'
 
 interface PresenceTooltipProps {
   children?: React.ReactElement
-  items: FormFieldPresence[]
+  items: FormNodePresence[]
 }
 
 /**

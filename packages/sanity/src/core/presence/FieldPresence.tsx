@@ -14,11 +14,11 @@ import {FlexWrapper, InnerBox} from './FieldPresence.styled'
 import {FormFieldPresenceContext} from './context'
 import {PresenceTooltip} from './PresenceTooltip'
 import {useReporter} from './overlay/tracker'
-import {FormFieldPresence} from './types'
+import {FormNodePresence} from './types'
 
 /** @internal */
 export interface FieldPresenceProps {
-  presence: FormFieldPresence[]
+  presence: FormNodePresence[]
   maxAvatars: number
 }
 
@@ -61,7 +61,7 @@ export function FieldPresenceWithoutOverlay(props: FieldPresenceProps) {
 /** @internal */
 export interface FieldPresenceInnerProps {
   maxAvatars?: number
-  presence: FormFieldPresence[]
+  presence: FormNodePresence[]
   stack?: boolean
   position?: AvatarPosition
   animateArrowFrom?: AvatarPosition

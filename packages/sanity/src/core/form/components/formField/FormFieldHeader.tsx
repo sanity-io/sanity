@@ -3,7 +3,7 @@
 import React, {memo} from 'react'
 import {Box, Flex} from '@sanity/ui'
 import {FormNodeValidation} from '@sanity/types'
-import {FieldPresence, FormFieldPresence} from '../../../presence'
+import {FieldPresence, FormNodePresence} from '../../../presence'
 import {FormFieldHeaderText} from './FormFieldHeaderText'
 
 export interface FormFieldHeaderProps {
@@ -14,7 +14,7 @@ export interface FormFieldHeaderProps {
   /**
    * @beta
    */
-  __unstable_presence?: FormFieldPresence[]
+  __unstable_presence?: FormNodePresence[]
   description?: React.ReactNode
   /**
    * The unique ID used to target the actual input element

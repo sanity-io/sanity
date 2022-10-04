@@ -21,7 +21,7 @@ export type RegionWithIntersectionDetails = {
 /** @internal */
 export type FieldPresenceData = {
   element: HTMLElement
-  presence: FormFieldPresence[]
+  presence: FormNodePresence[]
   maxAvatars: number
 }
 
@@ -39,7 +39,7 @@ export interface Location {
 }
 
 /** @beta */
-export interface FormFieldPresence {
+export interface FormNodePresence {
   user: User
   path: Path
   sessionId: string

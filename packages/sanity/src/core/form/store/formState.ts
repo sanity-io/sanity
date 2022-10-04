@@ -21,7 +21,7 @@ import {isEqual, pathFor, startsWith, toString, trimChildPath} from '@sanity/uti
 import {resolveTypeName} from '@sanity/util/content'
 import {isRecord} from '../../util'
 import {FIXME} from '../../FIXME'
-import {FormFieldPresence} from '../../presence'
+import {FormNodePresence} from '../../presence'
 import {getFieldLevel} from '../studio/inputResolver/helpers'
 import {PrimitiveFormNode, StateTree} from './types'
 import {resolveConditionalProperty} from './conditional-property'
@@ -448,7 +448,7 @@ interface RawState<SchemaType, T> {
   path: Path
   openPath: Path
   focusPath: Path
-  presence: FormFieldPresence[]
+  presence: FormNodePresence[]
   validation: ValidationMarker[]
   fieldGroupState?: StateTree<string>
   collapsedPaths?: StateTree<boolean>

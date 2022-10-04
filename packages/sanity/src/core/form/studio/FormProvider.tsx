@@ -2,7 +2,7 @@
 
 import {ObjectSchemaType, Path, ValidationMarker} from '@sanity/types'
 import React from 'react'
-import {FormFieldPresence} from '../../presence'
+import {FormNodePresence} from '../../presence'
 import {useSource} from '../../studio'
 import {PatchChannel, PatchEvent} from '../patch'
 import {FormBuilderProvider} from '../FormBuilderProvider'
@@ -34,7 +34,7 @@ export interface FormProviderProps {
   onFieldGroupSelect: (path: Path, groupName: string) => void
   onSetPathCollapsed: (path: Path, collapsed: boolean) => void
   onSetFieldSetCollapsed: (path: Path, collapsed: boolean) => void
-  presence: FormFieldPresence[]
+  presence: FormNodePresence[]
   readOnly?: boolean
   schemaType: ObjectSchemaType
   validation: ValidationMarker[]
