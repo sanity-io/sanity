@@ -75,3 +75,5 @@ jobs:
       - name: Test
         id: test
         run: yarn test
+        env:
+          SANITY_CI_CLI_AUTH_TOKEN: ${{ secrets.SANITY_CI_CLI_AUTH_TOKEN }}
