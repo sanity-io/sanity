@@ -80,6 +80,8 @@ jobs:
       - name: Test
         id: test
         run: |
+          node -v
+          npm -v
           yarn build:cli # Needed for CLI tests
           yarn test
         env:
