@@ -8,7 +8,7 @@ import {
   SchemaType,
   StringSchemaType,
 } from '@sanity/types'
-import {FormFieldPresence} from '../../../presence'
+import {FormNodePresence} from '../../../presence'
 import {ArrayOfObjectsMember, ArrayOfPrimitivesMember, ObjectMember} from './members'
 import {FormFieldGroup} from './fieldGroup'
 
@@ -22,7 +22,7 @@ export interface BaseFormNode<T = unknown, S extends SchemaType = SchemaType> {
 
   // state
   /** @beta */
-  presence: FormFieldPresence[]
+  presence: FormNodePresence[]
   validation: FormNodeValidation[]
   value: T | undefined
   readOnly?: boolean

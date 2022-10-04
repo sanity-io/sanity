@@ -1,10 +1,10 @@
 import {Path, ValidationMarker} from '@sanity/types'
-import {FormFieldPresence} from '../../src/core'
+import {FormNodePresence} from '../../src/core'
 
 export interface TestRenderProps {
   documentValue?: Record<string, unknown>
   focusPath?: Path
   openPath?: Path
-  presence?: FormFieldPresence[]
+  presence?: FormNodePresence[]
   validation?: ValidationMarker[]
 }

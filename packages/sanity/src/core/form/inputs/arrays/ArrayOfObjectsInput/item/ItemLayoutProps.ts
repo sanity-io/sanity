@@ -1,6 +1,6 @@
 import {FormNodeValidation, SchemaType} from '@sanity/types'
 import React from 'react'
-import {FormFieldPresence} from '../../../../../presence'
+import {FormNodePresence} from '../../../../../presence'
 import {RenderPreviewCallback} from '../../../../types'
 
 export interface ItemLayoutProps {
@@ -11,7 +11,7 @@ export interface ItemLayoutProps {
   onFocus?: (event: React.FocusEvent) => void
   onInsert: (event: {items: unknown[]; position: 'before' | 'after'}) => void
   onRemove: () => void
-  presence: FormFieldPresence[]
+  presence: FormNodePresence[]
   readOnly?: boolean
   renderPreview: RenderPreviewCallback
   type?: SchemaType // note: type might be undefined here if the value doesn't have a matching schema type definition

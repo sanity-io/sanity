@@ -3,7 +3,7 @@
 import {ObjectSchemaType, Path, ValidationMarker} from '@sanity/types'
 import {useLayoutEffect, useMemo, useRef} from 'react'
 import {pathFor} from '@sanity/util/paths'
-import {FormFieldPresence} from '../../presence'
+import {FormNodePresence} from '../../presence'
 import {useCurrentUser} from '../../store'
 import {StateTree, ObjectFormNode} from './types'
 import {prepareFormState, FIXME_SanityDocument} from './formState'
@@ -40,7 +40,7 @@ export function useFormState<
     comparisonValue: Partial<FIXME_SanityDocument> | null
     openPath: Path
     focusPath: Path
-    presence: FormFieldPresence[]
+    presence: FormNodePresence[]
     validation: ValidationMarker[]
   }
 ): FormState<T, S> | null {

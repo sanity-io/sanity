@@ -3,7 +3,7 @@
 import {ObjectSchemaType, Path, ValidationMarker} from '@sanity/types'
 import React, {useEffect, useMemo, useRef} from 'react'
 import {Source} from '../config'
-import {FormFieldPresence} from '../presence'
+import {FormNodePresence} from '../presence'
 import {FIXME} from '../FIXME'
 import {FormBuilderContext, FormBuilderContextValue} from './FormBuilderContext'
 import {
@@ -47,7 +47,7 @@ export interface FormBuilderProviderProps {
   onPathOpen: (path: Path) => void
   onSetFieldSetCollapsed: (path: Path, collapsed: boolean) => void
   onSetPathCollapsed: (path: Path, collapsed: boolean) => void
-  presence: FormFieldPresence[]
+  presence: FormNodePresence[]
   readOnly?: boolean
   renderField: RenderFieldCallback
   renderInput: RenderInputCallback
