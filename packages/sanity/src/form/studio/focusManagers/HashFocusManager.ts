@@ -1,7 +1,7 @@
 /* eslint-disable react/no-unused-prop-types */
 
 import {Path} from '@sanity/types'
-import React from 'react'
+import React, {useCallback, useEffect, useState} from 'react'
 import {decodePath, encodePath} from '../../utils/path'
 
 export type HashFocusManagerChildArgs = {
@@ -17,10 +17,6 @@ export interface HashFocusManagerProps {
   children: (arg0: HashFocusManagerChildArgs) => any
 }
 
-export interface HashFocusManagerState {
-  focusPath: Array<any>
-}
-
 function getHash() {
   return decodeURIComponent(document.location.hash.substring(1))
 }
@@ -33,39 +29,25 @@ function getPathFromHash() {
 /**
  * An example of how to sync focus path through document.location.hash
  */
-export class HashFocusManager extends React.Component<
-  HashFocusManagerProps,
-  HashFocusManagerState
-> {
-  state = {
-    focusPath: getPathFromHash(),
-  }
+export function HashFocusManager(props: HashFocusManagerProps) {
+  const {children} = props
+  const [focusPath, setFocusPath] = useState(() => getPathFromHash())
 
-  componentDidMount() {
-    window.addEventListener('hashchange', this.handleHashChange, false)
-  }
-
-  componentWillUnmount() {
-    window.removeEventListener('hashchange', this.handleHashChange, false)
-  }
-
-  handleHashChange = () => {
-    this.setState({focusPath: getPathFromHash()})
-  }
-
-  handleFocus = (focusPath: Path) => {
+  const handleBlur = useCallback(() => {
+    // setFocusPath([])
+  }, [])
+  // eslint-disable-next-line @typescript-eslint/no-shadow
+  const handleFocus = useCallback((focusPath: Path) => {
     document.location.hash = encodePath(focusPath)
-  }
+  }, [])
 
-  handleBlur = () => {
-    // this.setState({focusPath: []})
-  }
+  useEffect(() => {
+    const handleHashChange = () => {
+      setFocusPath(getPathFromHash())
+    }
+    window.addEventListener('hashchange', handleHashChange, false)
+    return () => window.removeEventListener('hashchange', handleHashChange, false)
+  }, [])
 
-  render() {
-    return this.props.children({
-      onBlur: this.handleBlur,
-      onFocus: this.handleFocus,
-      focusPath: this.state.focusPath,
-    })
-  }
+  return children({onBlur: handleBlur, onFocus: handleFocus, focusPath})
 }

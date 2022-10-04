@@ -1,6 +1,13 @@
-import React from 'react'
+import React, {
+  memo,
+  startTransition,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
 import Debug from 'debug'
-import {debounce} from 'lodash'
 import {calculateStyles} from './calculateStyles'
 import {DEFAULT_HOTSPOT, DEFAULT_CROP} from './constants'
 import {HotspotImageContainer} from './HotspotImage.styles'
@@ -31,28 +38,39 @@ export interface HotspotImageProps {
   onError?: (event: React.SyntheticEvent<HTMLImageElement, Event>) => void
   onLoad?: () => void
 }
-export interface HotspotImageState {
-  containerAspect: number | null
-}
-export class HotspotImage extends React.PureComponent<HotspotImageProps, HotspotImageState> {
-  static defaultProps = {
-    alignX: 'center',
-    alignY: 'center',
-    className: '',
-    crop: DEFAULT_CROP,
-    hotspot: DEFAULT_HOTSPOT,
-    aspectRatio: 'none',
-  }
 
-  state: HotspotImageState = {
-    containerAspect: null,
-  }
+export const HotspotImage = memo(function HotspotImage(props: HotspotImageProps) {
+  const {
+    alignX = 'center',
+    alignY = 'center',
+    alt,
+    aspectRatio = 'none',
+    className = '',
+    crop = DEFAULT_CROP,
+    hotspot = DEFAULT_HOTSPOT,
+    onError,
+    onLoad,
+    src,
+    srcAspectRatio,
+    srcSet,
+    style,
+  } = props
+  const [containerAspect, setContainerAspect] = useState<number | null>(null)
+  const containerElementRef = useRef<HTMLDivElement | null>(null)
+  const imageElementRef = useRef<HTMLImageElement | null>(null)
 
-  containerElement: HTMLDivElement | null = null
-  imageElement: HTMLImageElement | null = null
+  const updateContainerAspect = useCallback(() => {
+    if (!containerElementRef.current) return
+    if (aspectRatio === 'auto') {
+      const parentNode = containerElementRef.current.parentNode as HTMLElement
+      startTransition(() => setContainerAspect(parentNode.offsetWidth / parentNode.offsetHeight))
+    } else {
+      setContainerAspect(null)
+    }
+  }, [aspectRatio])
 
-  componentDidMount() {
-    const imageElement = this.imageElement
+  useEffect(() => {
+    const imageElement = imageElementRef.current
 
     // Fixes issues that may happen if the component is rendered on server and mounted after the image has finished loading
     // In these situations, neither the onLoad or the onError events will be called.
@@ -64,121 +82,63 @@ export class HotspotImage extends React.PureComponent<HotspotImageProps, Hotspot
       imageElement.naturalWidth !== undefined
 
     if (alreadyLoaded) {
-      debug(
-        "Image '%s' already loaded, refreshing (from cache) to trigger onLoad / onError",
-        this.props.src
-      )
+      debug("Image '%s' already loaded, refreshing (from cache) to trigger onLoad / onError", src)
       // eslint-disable-next-line no-self-assign
       imageElement.src = imageElement.src
     }
 
-    this.updateContainerAspect(this.props)
+    updateContainerAspect()
 
-    if (typeof window !== 'undefined') {
-      window.addEventListener('resize', this.handleResize)
+    window.addEventListener('resize', updateContainerAspect)
+
+    return () => {
+      window.removeEventListener('resize', updateContainerAspect)
     }
-  }
+  }, [src, updateContainerAspect])
 
-  componentWillUnmount() {
-    if (typeof window !== 'undefined') {
-      window.removeEventListener('resize', this.handleResize)
-    }
-  }
-
-  // eslint-disable-next-line camelcase
-  UNSAFE_componentWillReceiveProps(nextProps: HotspotImageProps) {
-    if (nextProps.aspectRatio !== this.props.aspectRatio) {
-      this.updateContainerAspect(nextProps)
-    }
-  }
-
-  updateContainerAspect(props: HotspotImageProps) {
-    if (!this.containerElement) return
-    if (props.aspectRatio === 'auto') {
-      const parentNode = this.containerElement.parentNode as HTMLElement
-      this.setState({
-        containerAspect: parentNode.offsetWidth / parentNode.offsetHeight,
-      })
-    } else {
-      this.setState({
-        containerAspect: null,
-      })
-    }
-  }
-
-  getTargetAspectValue() {
-    const {aspectRatio, srcAspectRatio, crop} = this.props
-
+  const targetAspect = useMemo(() => {
     if (aspectRatio === 'none') {
       return crop ? getCropAspect(crop, srcAspectRatio) : srcAspectRatio
     }
 
     if (aspectRatio === 'auto') {
-      return this.state.containerAspect
+      return containerAspect
     }
 
     return aspectRatio || null
-  }
+  }, [aspectRatio, containerAspect, crop, srcAspectRatio])
 
-  setImageElement = (el: HTMLImageElement | null) => {
-    this.imageElement = el
-  }
+  const targetStyles = useMemo(
+    () =>
+      calculateStyles({
+        container: {aspectRatio: targetAspect || srcAspectRatio},
+        image: {aspectRatio: srcAspectRatio},
+        hotspot,
+        crop,
+        align: {
+          x: alignX,
+          y: alignY,
+        },
+      }),
+    [alignX, alignY, crop, hotspot, srcAspectRatio, targetAspect]
+  )
 
-  handleResize = debounce(() => this.updateContainerAspect(this.props))
-
-  setContainerElement = (el: HTMLDivElement | null) => {
-    this.containerElement = el
-  }
-
-  render() {
-    const {
-      srcAspectRatio,
-      crop,
-      hotspot,
-      src,
-      srcSet,
-      alignX = 'center',
-      alignY = 'center',
-      className,
-      style,
-      alt,
-      onError,
-      onLoad,
-    } = this.props
-
-    const targetAspect = this.getTargetAspectValue()
-
-    const targetStyles = calculateStyles({
-      container: {aspectRatio: targetAspect || srcAspectRatio},
-      image: {aspectRatio: srcAspectRatio},
-      hotspot,
-      crop,
-      align: {
-        x: alignX,
-        y: alignY,
-      },
-    })
-    return (
-      <HotspotImageContainer
-        className={`${className}`}
-        style={style}
-        ref={this.setContainerElement}
-      >
-        <div style={targetStyles.container}>
-          <div style={targetStyles.padding} />
-          <div style={targetStyles.crop}>
-            <img
-              ref={this.setImageElement}
-              src={src}
-              alt={alt}
-              srcSet={srcSet}
-              onLoad={onLoad}
-              onError={onError}
-              style={targetStyles.image}
-            />
-          </div>
+  return (
+    <HotspotImageContainer className={`${className}`} style={style} ref={containerElementRef}>
+      <div style={targetStyles.container}>
+        <div style={targetStyles.padding} />
+        <div style={targetStyles.crop}>
+          <img
+            ref={imageElementRef}
+            src={src}
+            alt={alt}
+            srcSet={srcSet}
+            onLoad={onLoad}
+            onError={onError}
+            style={targetStyles.image}
+          />
         </div>
-      </HotspotImageContainer>
-    )
-  }
-}
+      </div>
+    </HotspotImageContainer>
+  )
+})

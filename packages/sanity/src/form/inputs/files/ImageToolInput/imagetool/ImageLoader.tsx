@@ -1,4 +1,5 @@
-import React from 'react'
+/* eslint-disable @typescript-eslint/no-shadow */
+import {useEffect, useState, type ReactElement} from 'react'
 
 interface ImageLoaderProps {
   src: string
@@ -6,59 +7,36 @@ interface ImageLoaderProps {
     isLoading: boolean
     image: HTMLImageElement | null
     error: Error | null
-  }) => React.ReactNode
-}
-interface ImageLoaderState {
-  isLoading: boolean
-  image: HTMLImageElement | null
-  error: Error | null
+  }) => ReactElement | null
 }
 
-export class ImageLoader extends React.Component<ImageLoaderProps, ImageLoaderState> {
-  state: ImageLoaderState = {
-    isLoading: true,
-    image: null,
-    error: null,
-  }
+export function ImageLoader(props: ImageLoaderProps) {
+  const {src, children} = props
+  const [isLoading, setIsLoading] = useState(true)
+  const [image, setImage] = useState<HTMLImageElement | null>(null)
+  const [error, setError] = useState<Error | null>(null)
 
-  UNSAFE_componentWillMount() {
-    this.loadImage(this.props.src)
-  }
+  useEffect(() => {
+    setImage(null)
+    setError(null)
+    setIsLoading(true)
 
-  loadImage(src: string) {
     const image = new Image()
-    this.setState({
-      image: null,
-      error: null,
-    })
 
     image.onload = () => {
-      this.setState({
-        image: image,
-        error: null,
-        isLoading: false,
-      })
+      setImage(image)
+      setError(null)
+      setIsLoading(false)
     }
 
     image.onerror = () => {
-      this.setState({
-        error: new Error(`Could not load image from ${JSON.stringify(this.props.src)}`),
-        isLoading: false,
-      })
+      setError(new Error(`Could not load image from ${JSON.stringify(src)}`))
+      setIsLoading(false)
     }
 
     image.referrerPolicy = 'strict-origin-when-cross-origin'
     image.src = src
-  }
+  }, [src])
 
-  UNSAFE_componentWillReceiveProps(nextProps: ImageLoaderProps) {
-    if (nextProps.src !== this.props.src) {
-      this.loadImage(nextProps.src)
-    }
-  }
-
-  render() {
-    const {error, image, isLoading} = this.state
-    return this.props.children({image, error, isLoading})
-  }
+  return children({image, error, isLoading})
 }

@@ -74,7 +74,6 @@ export type {FIXME_SanityDocument} from '../form/store/formState' // eslint-disa
 export type {
   HashFocusManagerChildArgs,
   HashFocusManagerProps,
-  HashFocusManagerState,
   SimpleFocusManagerProps,
   SimpleFocusManagerState,
 } from '../form/studio'
