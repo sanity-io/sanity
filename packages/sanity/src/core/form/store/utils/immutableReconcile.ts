@@ -55,9 +55,10 @@ function _immutableReconcile<T>(
     assertType<Record<string, unknown>>(previous)
     assertType<Record<string, unknown>>(next)
 
-    let allEqual = true
+    const nextKeys = Object.keys(next)
+    let allEqual = Object.keys(previous).length === nextKeys.length
     const result: Record<string, unknown> = {}
-    for (const key of Object.keys(next)) {
+    for (const key of nextKeys) {
       if (parents.has(next[key])) {
         return next
       }
