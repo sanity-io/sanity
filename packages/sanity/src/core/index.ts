@@ -1,3 +1,5 @@
+export type {SchemaComponents} from './schemaComponentsExtension'
+
 export * from './FIXME'
 export * from './changeIndicators'
 export * from './components'

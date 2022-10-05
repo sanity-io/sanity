@@ -28,13 +28,6 @@ export interface BaseSchemaDefinition {
   hidden?: ConditionalProperty
   readOnly?: ConditionalProperty
   icon?: ComponentType | ReactNode
-  components?: {
-    diff?: ComponentType<any> // @todo: use `DiffProps` here
-    field?: ComponentType<any> // @todo: use `FieldProps` here
-    input?: ComponentType<any> // @todo: use `InputProps` here
-    item?: ComponentType<any> // @todo: use `ItemProps` here
-    preview?: ComponentType<any> // @todo: use `PreviewProps` here
-  }
   validation?: unknown
   initialValue?: unknown
 }
