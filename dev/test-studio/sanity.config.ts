@@ -18,6 +18,9 @@ import {
   CustomToolMenu,
   componentsPlugin,
 } from './components/customComponents'
+import {connect} from '@rxjs-insights/devtools/connect'
+
+await connect()
 
 const sharedSettings = createPlugin({
   name: 'sharedSettings',

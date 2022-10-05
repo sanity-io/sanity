@@ -3326,6 +3326,53 @@
     colors "~1.2.1"
     string-argv "~0.3.1"
 
+"@rxjs-insights/core@^0.4.3":
+  version "0.4.3"
+  resolved "https://registry.yarnpkg.com/@rxjs-insights/core/-/core-0.4.3.tgz#6f6fa3b1b8a4de2287d09cd74996f6685010baf9"
+  integrity sha512-jVcuPOytJWuKxyuQx53mdxeqjOQXK1f4UWsY7cAUYkjBZC6m7uQM+a1FLLmFwuc7I2ZIu90L5ArYC3tOuX2sKw==
+
+"@rxjs-insights/devtools@^0.4.3":
+  version "0.4.3"
+  resolved "https://registry.yarnpkg.com/@rxjs-insights/devtools/-/devtools-0.4.3.tgz#b38371f61aa48d50e51d978570f8066d93ef0371"
+  integrity sha512-+UTNkKXs2KhSJA9ku882RnwpKedmYLkvUlACVxaOCNYSOR2NchmQa52xexu8la3VS9/7UUlEFv2E/e+Q01nGjw==
+  dependencies:
+    "@rxjs-insights/core" "^0.4.3"
+
+"@rxjs-insights/locator@^0.4.3":
+  version "0.4.3"
+  resolved "https://registry.yarnpkg.com/@rxjs-insights/locator/-/locator-0.4.3.tgz#b43967fbb5c00dc01e7c4fdf1dcea368182a25c5"
+  integrity sha512-8rq54sT3FeXhSeChLNYVZ+g+ywulpALCMGfraHA2qSXXS5AlVpkAZkntCRHEQ3UpPYCPMqnv9WvV6JDZzjNsdA==
+  dependencies:
+    error-stack-parser "^2.0.6"
+    source-map "^0.7.4"
+
+"@rxjs-insights/plugin-base@^0.4.2":
+  version "0.4.2"
+  resolved "https://registry.yarnpkg.com/@rxjs-insights/plugin-base/-/plugin-base-0.4.2.tgz#c74a489dd7983a677790b5650b8628e084f5e2ef"
+  integrity sha512-EEEEe/0EKL17/DBDt3RAeZESGPn7AdSJ2CKpVyeiYRjdnotQrhoj6LjXub4F4zSX7fVCK/JsjMasXoAJ6YTDBw==
+  dependencies:
+    resolve-cwd "3.0.0"
+
+"@rxjs-insights/recorder@^0.4.3":
+  version "0.4.3"
+  resolved "https://registry.yarnpkg.com/@rxjs-insights/recorder/-/recorder-0.4.3.tgz#64a0bf9de343087f42ac2e8aeab39f4d84e95d64"
+  integrity sha512-GmgymmgT1HV3p+LjipXe0nYALv5YqoRE6/LyIWBMHzjHKsADFhffOWMbMQA8NTzwg3PvH95J2uzZzNf8YLZyaw==
+
+"@rxjs-insights/rxjs6@^0.4.3":
+  version "0.4.3"
+  resolved "https://registry.yarnpkg.com/@rxjs-insights/rxjs6/-/rxjs6-0.4.3.tgz#f8289644f19f60b74734a845ea6f6f85e8f55b70"
+  integrity sha512-xdH/Tf773W7GSA3rVbFaRe7+spiBWCdG0fosW8+SzZlV5RWz3kAjoa6+nSjqxf2gw3eROHJAMAuKvkoojlF2rg==
+  dependencies:
+    "@rxjs-insights/core" "^0.4.3"
+    "@rxjs-insights/locator" "^0.4.3"
+    "@rxjs-insights/recorder" "^0.4.3"
+    "@rxjs-insights/tracer" "^0.4.3"
+
+"@rxjs-insights/tracer@^0.4.3":
+  version "0.4.3"
+  resolved "https://registry.yarnpkg.com/@rxjs-insights/tracer/-/tracer-0.4.3.tgz#07a6d3dfe2e9a9183afb75607b5de4556ce33fcd"
+  integrity sha512-67oXXbvJJDjKHEvjskuPieeGoXXINSjqVc/TIEBDp4IXNPIOn35HAoLvQ8maL9J7E6JsORmzkt8g+z2G7CSfTg==
+
 "@sanity/asset-utils@^1.2.5":
   version "1.3.0"
   resolved "https://registry.yarnpkg.com/@sanity/asset-utils/-/asset-utils-1.3.0.tgz#6460cd993a2c24368a6308028f3bc57df91f131e"
@@ -14955,7 +15002,7 @@ requires-port@^1.0.0:
   resolved "https://registry.yarnpkg.com/requires-port/-/requires-port-1.0.0.tgz#925d2601d39ac485e091cf0da5c6e694dc3dcaff"
   integrity sha512-KigOCHcocU3XODJxsu8i/j8T9tzT4adHiecwORRQ0ZZFcp7ahwXuRU1m+yuO90C5ZUyGeGfocHDI14M3L3yDAQ==
 
-resolve-cwd@^3.0.0:
+resolve-cwd@3.0.0, resolve-cwd@^3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/resolve-cwd/-/resolve-cwd-3.0.0.tgz#0f0075f1bb2544766cf73ba6a6e2adfebcb13f2d"
   integrity sha512-OrZaX2Mb+rJCpH/6CpSqt9xFVpN++x01XnN2ie9g6P5/3xelLAkXWVADpdz1IHD/KFfEXyE6V0U01OQ3UO2rEg==
@@ -15130,6 +15177,13 @@ run-parallel@^1.1.9:
   integrity sha512-5l4VyZR86LZ/lDxZTR6jqL8AFE2S0IFLMP26AbjsLVADxHdhB/c0GUsH+y39UfCi3dzz8OlQuPmnaJOMoDHQBA==
   dependencies:
     queue-microtask "^1.2.2"
+
+rxjs-debug@1.3.0:
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/rxjs-debug/-/rxjs-debug-1.3.0.tgz#2af654e8301dd7712ce92863f2901b5d33666bc4"
+  integrity sha512-wVk4L5BqZXEkGzfJtvtUS+2gGMFj0+Pjx3MJ/yWJttUvfJTwdv6mcQXcY0PPFNIOYrZclY8+OjAADYG72qhm0g==
+  dependencies:
+    tslib "^2.0.0"
 
 rxjs-etc@^10.6.0:
   version "10.6.2"
@@ -15635,7 +15689,7 @@ source-map@0.6.1, source-map@^0.6.0, source-map@^0.6.1, source-map@~0.6.0, sourc
   resolved "https://registry.yarnpkg.com/source-map/-/source-map-0.6.1.tgz#74722af32e9614e9c287a8d0bbde48b5e2f1a263"
   integrity sha512-UjgapumWlbMhkBgzT7Ykc5YXUT46F0iKu8SGXq0bcwP5dz/h0Plj6enJqjz1Zbq2l5WaqYnrVbwWOWMyF3F47g==
 
-source-map@^0.7.3:
+source-map@^0.7.3, source-map@^0.7.4:
   version "0.7.4"
   resolved "https://registry.yarnpkg.com/source-map/-/source-map-0.7.4.tgz#a9bbe705c9d8846f4e08ff6765acf0f1b0898656"
   integrity sha512-l3BikUxvPOcn5E74dZiq5BGsTb5yEwhaTSzccU6t4sDOH8NWJCstKO5QT2CvtFoK6F0saL7p9xHAqHOlCPJygA==

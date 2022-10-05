@@ -38,6 +38,9 @@
     "styled-components": "^5.2.0"
   },
   "devDependencies": {
+    "@rxjs-insights/devtools": "^0.4.3",
+    "@rxjs-insights/plugin-base": "^0.4.2",
+    "@rxjs-insights/rxjs6": "^0.4.3",
     "@sanity/cli": "3.0.0-dev-preview.20",
     "@types/history": "^4.7.9",
     "chokidar": "^3.5.3",
