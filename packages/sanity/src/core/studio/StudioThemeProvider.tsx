@@ -13,7 +13,7 @@ export function StudioThemeProvider({children}: StudioThemeProviderProps) {
   const {scheme} = useColorScheme()
 
   return (
-    <ThemeProvider scheme={scheme} theme={theme}>
+    <ThemeProvider scheme={scheme} theme={theme} tone="transparent">
       <LayerProvider>{children}</LayerProvider>
     </ThemeProvider>
   )
