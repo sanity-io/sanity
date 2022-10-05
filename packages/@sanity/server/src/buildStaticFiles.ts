@@ -40,7 +40,7 @@ export async function buildStaticFiles(
     vite: extendViteConfig,
   } = options
 
-  await writeSanityRuntime({cwd, watch: false})
+  await writeSanityRuntime({cwd, reactStrictMode: false, watch: false})
 
   let viteConfig = await getViteConfig({
     cwd,

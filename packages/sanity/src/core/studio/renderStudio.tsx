@@ -4,16 +4,24 @@ import type {Config} from '../config'
 import {Studio} from './Studio'
 
 /** @internal */
-export function renderStudio(rootElement: HTMLElement | null, config: Config) {
+export function renderStudio(
+  rootElement: HTMLElement | null,
+  config: Config,
+  reactStrictMode = false
+) {
   if (!rootElement) {
     throw new Error('Missing root element to mount application into')
   }
 
   const root = createRoot(rootElement)
   root.render(
-    <StrictMode>
+    reactStrictMode ? (
+      <StrictMode>
+        <Studio config={config} />
+      </StrictMode>
+    ) : (
       <Studio config={config} />
-    </StrictMode>
+    )
   )
   return () => root.unmount()
 }

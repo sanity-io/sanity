@@ -13,6 +13,7 @@ import {
 
 export interface RuntimeOptions {
   cwd: string
+  reactStrictMode: boolean
   watch: boolean
 }
 
@@ -23,7 +24,11 @@ export interface RuntimeOptions {
  * @param options - Current working directory (Sanity root dir), and whether or not to watch
  * @internal
  */
-export async function writeSanityRuntime({cwd, watch}: RuntimeOptions): Promise<void> {
+export async function writeSanityRuntime({
+  cwd,
+  reactStrictMode,
+  watch,
+}: RuntimeOptions): Promise<void> {
   const monorepo = await loadSanityMonorepo(cwd)
   const runtimeDir = path.join(cwd, '.sanity', 'runtime')
 
@@ -55,5 +60,8 @@ export async function writeSanityRuntime({cwd, watch}: RuntimeOptions): Promise<
   debug('Writing app.js to runtime directory')
   const studioConfigPath = await getSanityStudioConfigPath(cwd)
   const relativeConfigLocation = path.relative(runtimeDir, studioConfigPath)
-  await fs.writeFile(path.join(runtimeDir, 'app.js'), getEntryModule({relativeConfigLocation}))
+  await fs.writeFile(
+    path.join(runtimeDir, 'app.js'),
+    getEntryModule({reactStrictMode, relativeConfigLocation})
+  )
 }
