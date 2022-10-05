@@ -135,7 +135,7 @@ export class ArrayOfPrimitivesInput extends React.PureComponent<DefaultArrayOfPr
     }
   }
 
-  renderArrayItem = (props: PrimitiveItemProps) => {
+  renderArrayItem = (props: Omit<PrimitiveItemProps, 'renderDefault'>) => {
     const {schemaType, readOnly} = this.props
     const isSortable = !readOnly && get(schemaType, 'options.sortable') !== false
 

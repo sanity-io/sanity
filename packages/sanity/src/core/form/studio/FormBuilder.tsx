@@ -199,5 +199,5 @@ function RootInput() {
     value,
   }
 
-  return <>{renderInput(rootInputProps as ObjectInputProps)}</>
+  return <>{renderInput(rootInputProps)}</>
 }

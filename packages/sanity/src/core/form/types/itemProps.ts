@@ -39,7 +39,7 @@ export interface BaseItemProps {
   /** @beta */
   presence: FormNodePresence[]
 
-  renderDefault: (props: ItemProps) => React.ReactElement<ItemProps>
+  renderDefault: (props: ItemProps) => React.ReactElement
 }
 
 /** @public */

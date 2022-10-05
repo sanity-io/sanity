@@ -8,6 +8,7 @@ import {
   SchemaType,
   StringSchemaType,
 } from '@sanity/types'
+import {ReactElement, ReactNode} from 'react'
 import {FormNodePresence} from '../../presence'
 import {
   ArrayOfObjectsInputProps,
@@ -33,8 +34,8 @@ export interface BaseFieldProps {
   name: string
   index: number
   changed: boolean
-  children: React.ReactNode
-  renderDefault: (props: FieldProps) => React.ReactElement<FieldProps>
+  children: ReactNode
+  renderDefault: (props: FieldProps) => ReactElement
 }
 
 /** @public */

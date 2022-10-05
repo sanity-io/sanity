@@ -88,11 +88,20 @@ export function FormProvider(props: FormProviderProps) {
   const Preview = usePreviewComponent()
   const Item = useItemComponent()
 
-  const renderInput = useCallback((inputProps: InputProps) => <Input {...inputProps} />, [Input])
-  const renderField = useCallback((fieldProps: FieldProps) => <Field {...fieldProps} />, [Field])
-  const renderItem = useCallback((itemProps: ItemProps) => <Item {...itemProps} />, [Item])
+  const renderInput = useCallback(
+    (inputProps: Omit<InputProps, 'renderDefault'>) => <Input {...inputProps} />,
+    [Input]
+  )
+  const renderField = useCallback(
+    (fieldProps: Omit<FieldProps, 'renderDefault'>) => <Field {...fieldProps} />,
+    [Field]
+  )
+  const renderItem = useCallback(
+    (itemProps: Omit<ItemProps, 'renderDefault'>) => <Item {...itemProps} />,
+    [Item]
+  )
   const renderPreview = useCallback(
-    (previewProps: PreviewProps) => <Preview {...previewProps} />,
+    (previewProps: Omit<PreviewProps, 'renderDefault'>) => <Preview {...previewProps} />,
     [Preview]
   )
 

@@ -130,10 +130,7 @@ export function PrimitiveField(props: {
     elementProps,
   ])
 
-  const renderedInput = useMemo(
-    () => renderInput(inputProps as PrimitiveInputProps),
-    [inputProps, renderInput]
-  )
+  const renderedInput = useMemo(() => renderInput(inputProps), [inputProps, renderInput])
 
   const fieldProps = useMemo((): Omit<PrimitiveFieldProps, 'renderDefault'> => {
     return {
@@ -167,5 +164,5 @@ export function PrimitiveField(props: {
     inputProps,
   ])
 
-  return <>{renderField(fieldProps as PrimitiveFieldProps)}</>
+  return <>{renderField(fieldProps)}</>
 }

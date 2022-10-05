@@ -254,12 +254,9 @@ export function ArrayOfPrimitivesField(props: {
     renderPreview,
   ])
 
-  const renderedInput = useMemo(
-    () => renderInput(inputProps as ArrayOfPrimitivesInputProps),
-    [inputProps, renderInput]
-  )
+  const renderedInput = useMemo(() => renderInput(inputProps), [inputProps, renderInput])
 
-  const fieldProps = useMemo((): Omit<ArrayOfPrimitivesFieldProps, 'renderDefault'> => {
+  const fieldProps: Omit<ArrayOfPrimitivesFieldProps, 'renderDefault'> = useMemo(() => {
     return {
       name: member.name,
       index: member.index,

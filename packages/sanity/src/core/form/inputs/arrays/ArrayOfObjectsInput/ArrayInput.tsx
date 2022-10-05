@@ -254,7 +254,7 @@ export class ArrayInput extends React.PureComponent<ArrayInputProps> {
   }
 
   /** @internal */
-  renderArrayItem = (itemProps: ItemProps) => {
+  renderArrayItem = (itemProps: Omit<ItemProps, 'renderDefault'>) => {
     if (!isObjectItemProps(itemProps)) {
       throw new Error('Expected item to be of object type')
     }

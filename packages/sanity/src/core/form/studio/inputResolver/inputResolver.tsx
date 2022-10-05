@@ -57,7 +57,7 @@ function getTypeChain(type: SchemaType | undefined, visited: Set<SchemaType>): S
 
 export function defaultResolveInputComponent(
   schemaType: SchemaType
-): React.ComponentType<InputProps> {
+): React.ComponentType<Omit<InputProps, 'renderDefault'>> {
   if (schemaType.components?.input) return schemaType.components.input
 
   const componentFromTypeVariants = resolveComponentFromTypeVariants(schemaType)
@@ -153,7 +153,7 @@ function ImageOrFileField(field: ObjectFieldProps) {
 
 export function defaultResolveFieldComponent(
   schemaType: SchemaType
-): React.ComponentType<FieldProps> {
+): React.ComponentType<Omit<FieldProps, 'renderDefault'>> {
   if (schemaType.components?.field) return schemaType.components.field
 
   if (isBooleanSchemaType(schemaType)) {
@@ -161,24 +161,26 @@ export function defaultResolveFieldComponent(
   }
 
   if (getTypeChain(schemaType, new Set()).some((t) => t.name === 'image' || t.name === 'file')) {
-    return ImageOrFileField as React.ComponentType<FieldProps>
+    return ImageOrFileField as React.ComponentType<Omit<FieldProps, 'renderDefault'>>
   }
 
   if (schemaType.jsonType !== 'object' && schemaType.jsonType !== 'array') {
-    return PrimitiveField
+    return PrimitiveField as React.ComponentType<Omit<FieldProps, 'renderDefault'>>
   }
 
-  return ObjectOrArrayField as React.ComponentType<FieldProps>
+  return ObjectOrArrayField as React.ComponentType<Omit<FieldProps, 'renderDefault'>>
 }
 
 export function defaultResolveItemComponent(
   schemaType: SchemaType
-): React.ComponentType<ItemProps> {
+): React.ComponentType<Omit<ItemProps, 'renderDefault'>> {
   if (schemaType.components?.item) return schemaType.components.item
 
   return NoopField
 }
 
-export function defaultResolvePreviewComponent(): React.ComponentType<PreviewProps> {
+export function defaultResolvePreviewComponent(): React.ComponentType<
+  Omit<PreviewProps, 'renderDefault'>
+> {
   return SanityPreview as any
 }

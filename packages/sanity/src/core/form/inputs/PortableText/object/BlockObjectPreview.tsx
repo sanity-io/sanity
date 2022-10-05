@@ -139,7 +139,7 @@ export function BlockObjectPreview(props: BlockObjectPreviewProps): ReactElement
   if (isCustomPreviewComponent) {
     return (
       <Flex>
-        <Box flex={1}>{renderPreview(previewProps as PreviewProps)}</Box>
+        <Box flex={1}>{renderPreview(previewProps)}</Box>
         <Box marginLeft={1}>{actions}</Box>
       </Flex>
     )
@@ -152,8 +152,8 @@ export function BlockObjectPreview(props: BlockObjectPreviewProps): ReactElement
         layout: isImageType ? 'blockImage' : 'block',
         schemaType: type,
         value,
-        media: isImageType ? value : undefined,
-      } as PreviewProps)}
+        media: (isImageType ? value : undefined) as any, // TODO
+      })}
     </>
   )
 }

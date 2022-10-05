@@ -33,7 +33,7 @@ const fieldsetsTestType = defineField({
 
 describe('fieldset with default options', () => {
   it('renders fields in a <fieldset element and includes a <legend', async () => {
-    function FieldWithTestId(props: FieldProps) {
+    function FieldWithTestId(props: Omit<FieldProps, 'renderDefault'>) {
       return <div data-testid={`input-${props.name}`}>{props.children}</div>
     }
     const {result} = await renderObjectInput({

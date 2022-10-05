@@ -2,6 +2,7 @@ import {DocumentIcon} from '@sanity/icons'
 import imageUrlBuilder from '@sanity/image-url'
 import {ImageUrlFitMode, isImage, isReference} from '@sanity/types'
 import React, {
+  ComponentType,
   createElement,
   ElementType,
   isValidElement,
@@ -45,8 +46,7 @@ export function SanityDefaultPreview(props: SanityDefaultPreviewProps): ReactEle
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const imageBuilder = useMemo(() => imageUrlBuilder(client), [client])
 
-  const component = (_previewComponents[layout || 'default'] ||
-    _previewComponents.default) as ElementType<PreviewProps>
+  const component = _previewComponents[layout || 'default'] || _previewComponents.default
 
   const {_upload, value} = useMemo(() => {
     return valueProp ? _extractUploadState(valueProp) : {_upload: undefined, value: undefined}
@@ -150,5 +150,8 @@ export function SanityDefaultPreview(props: SanityDefaultPreviewProps): ReactEle
     ]
   )
 
-  return createElement(component, previewProps as PreviewProps)
+  return createElement(
+    component as ComponentType<Omit<PreviewProps, 'renderDefault'>>,
+    previewProps
+  )
 }

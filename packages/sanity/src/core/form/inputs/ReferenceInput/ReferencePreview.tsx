@@ -85,7 +85,7 @@ export function ReferencePreview(props: {
   return (
     <Flex align="center">
       {availability.available ? (
-        <Box flex={1}>{renderPreview(previewProps as PreviewProps)}</Box>
+        <Box flex={1}>{renderPreview(previewProps)}</Box>
       ) : (
         <Box flex={1}>
           <Flex align="center">

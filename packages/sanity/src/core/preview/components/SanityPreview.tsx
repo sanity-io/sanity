@@ -83,7 +83,7 @@ export function SanityPreview(props: SanityPreviewProps & {style?: CSSProperties
 
   return (
     <div ref={setRef} style={style}>
-      {createElement(component, {...previewProps, schemaType: restSchemaType} as PreviewProps)}
+      {createElement(component, {...previewProps, schemaType: restSchemaType})}
     </div>
   )
 }

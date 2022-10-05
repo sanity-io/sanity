@@ -13,7 +13,7 @@ import {ImageTool, HotspotImage, DEFAULT_CROP, DEFAULT_HOTSPOT} from './imagetoo
 import {useLoadImage} from './useLoadImage'
 
 export interface ImageToolInputProps
-  extends Omit<ObjectInputProps<Image, ImageSchemaType>, 'markers'> {
+  extends Omit<ObjectInputProps<Image, ImageSchemaType>, 'markers' | 'renderDefault'> {
   imageUrl: string
 }
 

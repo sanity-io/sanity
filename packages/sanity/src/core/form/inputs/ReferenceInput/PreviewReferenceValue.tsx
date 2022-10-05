@@ -43,7 +43,7 @@ export function PreviewReferenceValue(props: {
 
       return (
         <Flex align="center">
-          <Box flex={1}>{renderPreview(previewProps as PreviewProps)}</Box>
+          <Box flex={1}>{renderPreview(previewProps)}</Box>
           <Box>
             <Inline space={4}>
               {showTypeLabel && (
