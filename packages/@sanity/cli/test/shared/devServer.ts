@@ -62,7 +62,9 @@ export function testStartCommand({
       try {
         res = await Promise.race([
           request(`http://localhost:${port}/`),
-          new Promise<ResponseData>((_, rejectTimeout) => setTimeout(rejectTimeout, 500)),
+          new Promise<ResponseData>((_, rejectTimeout) =>
+            setTimeout(rejectTimeout, 500, new Error('Timed out trying to connect'))
+          ),
         ])
       } catch (err) {
         scheduleConnect()
