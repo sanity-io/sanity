@@ -1,5 +1,6 @@
 import path from 'path'
 import {stat} from 'fs/promises'
+import tar from 'tar'
 import {describeCliTest, testConcurrent} from './shared/describe'
 import {
   getTestRunArgs,
@@ -23,9 +24,21 @@ describeCliTest('CLI: `sanity dataset export` / `import`', () => {
       expect(result.stdout).toMatch(/export finished/i)
       expect(result.code).toBe(0)
 
-      const stats = await stat(path.join(studiosPath, version, testRunArgs.exportTarball))
+      const tarballPath = path.join(studiosPath, version, testRunArgs.exportTarball)
+
+      const stats = await stat(tarballPath)
       expect(stats.isFile()).toBe(true)
-      expect(stats.size).toBeGreaterThanOrEqual(5000)
+
+      // We're just checking for the existence of a few files here - the actual export
+      // functionality is fully tested in `@sanity/export`
+      const filesTypes: string[] = []
+      await tar.t({
+        file: tarballPath,
+        onentry: (entry) => filesTypes.push(path.extname(entry.path)),
+      })
+
+      expect(filesTypes).toContain('.ndjson')
+      expect(filesTypes).toContain('.jpg')
     })
 
     testConcurrent('import', async () => {
