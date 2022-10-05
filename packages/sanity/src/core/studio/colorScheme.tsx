@@ -37,7 +37,7 @@ export function ColorSchemeProvider({
       {/* that may render before the StudioThemeProvider renders. this is */}
       {/* required because the StudioThemeProvider has a dependence on the */}
       {/* active workspace provided via the ActiveWorkspaceMatcher */}
-      <ThemeProvider scheme={scheme} theme={studioTheme}>
+      <ThemeProvider scheme={scheme} theme={studioTheme} tone="transparent">
         {children}
       </ThemeProvider>
     </ColorSchemeContext.Provider>
