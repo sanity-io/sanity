@@ -57,7 +57,7 @@ export function BlockObjectPreview(props: BlockObjectPreviewProps): ReactElement
   const menuButtonId = useId() || ''
   const menuButton = useRef<HTMLButtonElement | null>(null)
   const isTabbing = useRef<boolean>(false)
-  const isCustomPreviewComponent = Boolean((type.preview as FIXME)?.component)
+  const isCustomPreviewComponent = Boolean(type?.components?.preview)
   const isImageType = is('image', type)
 
   const referenceLink = useMemo(
