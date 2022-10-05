@@ -72,12 +72,17 @@ function getDevServerConfig({
 
   const basePath = env.SANITY_STUDIO_BASEPATH || cliConfig?.project?.basePath || '/'
 
+  const reactStrictMode = env.SANITY_STUDIO_REACT_STRICT_MODE
+    ? env.SANITY_STUDIO_REACT_STRICT_MODE === 'true'
+    : Boolean(cliConfig?.reactStrictMode)
+
   return {
     cwd: workDir,
     httpPort,
     httpHost,
     basePath,
     staticPath: path.join(workDir, 'static'),
+    reactStrictMode,
     vite: cliConfig?.vite,
   }
 }

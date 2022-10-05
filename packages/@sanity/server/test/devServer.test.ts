@@ -24,6 +24,7 @@ describe('devServer', () => {
       httpPort: 9700,
       httpHost: 'localhost',
 
+      reactStrictMode: false,
       vite(viteConfig: InlineConfig) {
         return {
           ...viteConfig,

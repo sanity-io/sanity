@@ -6,13 +6,16 @@ import studioConfig from %STUDIO_CONFIG_LOCATION%
 
 renderStudio(
   document.getElementById("sanity"),
-  studioConfig
+  studioConfig,
+  %STUDIO_REACT_STRICT_MODE%
 )
 `
 
-export function getEntryModule(options: {relativeConfigLocation: string}): string {
-  return entryModule.replace(
-    /%STUDIO_CONFIG_LOCATION%/,
-    JSON.stringify(options.relativeConfigLocation)
-  )
+export function getEntryModule(options: {
+  reactStrictMode: boolean
+  relativeConfigLocation: string
+}): string {
+  return entryModule
+    .replace(/%STUDIO_REACT_STRICT_MODE%/, JSON.stringify(Boolean(options.reactStrictMode)))
+    .replace(/%STUDIO_CONFIG_LOCATION%/, JSON.stringify(options.relativeConfigLocation))
 }

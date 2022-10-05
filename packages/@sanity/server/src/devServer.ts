@@ -13,6 +13,7 @@ export interface DevServerOptions {
   httpHost?: string
   projectName?: string
 
+  reactStrictMode: boolean
   vite?: (config: InlineConfig) => InlineConfig
 }
 
@@ -21,10 +22,10 @@ export interface DevServer {
 }
 
 export async function startDevServer(options: DevServerOptions): Promise<DevServer> {
-  const {cwd, httpPort, httpHost, basePath: base, vite: extendViteConfig} = options
+  const {cwd, httpPort, httpHost, basePath: base, reactStrictMode, vite: extendViteConfig} = options
 
   const startTime = Date.now()
-  await writeSanityRuntime({cwd, watch: true})
+  await writeSanityRuntime({cwd, reactStrictMode, watch: true})
 
   debug('Resolving vite config')
   let viteConfig = await getViteConfig({

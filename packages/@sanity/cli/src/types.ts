@@ -269,6 +269,14 @@ export interface CliConfig {
     basePath?: string
   }
 
+  /**
+   * Wraps the Studio in `<React.StrictMode>` root to aid flagging potential problems related to concurrent features (`startTransition`, `useTransition`, `useDeferredValue`, `Suspense`)
+   * Can also be enabled by setting `SANITY_STUDIO_REACT_STRICT_MODE="true"|"false"`.
+   * It only applies to `sanity start` in dev mode, it's ignored in `sanity build` and in production.
+   * Defaults to `false`
+   */
+  reactStrictMode?: boolean
+
   server?: {
     hostname?: string
     port?: number
