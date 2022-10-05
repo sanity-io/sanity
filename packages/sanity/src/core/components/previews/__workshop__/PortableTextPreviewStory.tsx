@@ -26,7 +26,9 @@ const LAYOUT_OPTIONS: Record<string, PortableTextPreviewLayoutKey> = {
 // }
 
 const previewComponents: {
-  [TLayoutKey in PortableTextPreviewLayoutKey]: React.ComponentType<PreviewProps<TLayoutKey>>
+  [TLayoutKey in PortableTextPreviewLayoutKey]: React.ComponentType<
+    Omit<PreviewProps<TLayoutKey>, 'renderDefault'>
+  >
 } = {
   block: BlockPreview,
   blockImage: BlockImagePreview,
@@ -100,7 +102,10 @@ export default function PortableTextPreviewStory() {
       <Flex align="center" height="fill" justify="center" padding={4} sizing="border">
         <Container width={1}>
           <Card border padding={padding[layout]} radius={1} style={{lineHeight: 0}}>
-            {createElement(component as ComponentType<PreviewProps>, previewProps as PreviewProps)}
+            {createElement(
+              component as ComponentType<Omit<PreviewProps, 'renderDefault'>>,
+              previewProps
+            )}
           </Card>
         </Container>
       </Flex>

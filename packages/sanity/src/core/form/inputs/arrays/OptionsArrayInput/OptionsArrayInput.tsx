@@ -128,7 +128,7 @@ export class OptionsArrayInput extends React.PureComponent<OptionsArrayInputProp
                       <Text>{title}</Text>
                     </Box>
                   ) : (
-                    <Box marginLeft={2}>{renderPreview(previewProps as PreviewProps)}</Box>
+                    <Box marginLeft={2}>{renderPreview(previewProps)}</Box>
                   ))}
 
                 {!optionType && (

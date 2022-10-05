@@ -326,7 +326,7 @@ export class BaseFileInput extends React.PureComponent<BaseFileInputProps, BaseF
 
     // todo: convert this to a functional component and use this with useCallback
     //  it currently has to return a new function on every render in order to pick up state from this component
-    return (inputProps: InputProps) => (
+    return (inputProps: Omit<InputProps, 'renderDefault'>) => (
       <>
         {isStale && (
           <Box marginBottom={2}>

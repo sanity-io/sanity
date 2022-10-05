@@ -29,7 +29,7 @@ import {InsertItemEvent, MoveItemEvent} from './event'
 
 /** @public */
 export interface BaseInputProps {
-  renderDefault: (props: InputProps) => React.ReactElement<InputProps>
+  renderDefault: (props: InputProps) => React.ReactElement
 }
 
 /** @public */

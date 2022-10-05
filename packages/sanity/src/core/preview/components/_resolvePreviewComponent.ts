@@ -4,7 +4,7 @@ import {PreviewProps} from '../../components/previews'
 import {SanityDefaultPreview} from './SanityDefaultPreview'
 
 type PreviewElementType = ElementType<
-  PreviewProps & {
+  Omit<PreviewProps, 'renderDefault'> & {
     icon?: React.ElementType
     schemaType?: SchemaType
   }

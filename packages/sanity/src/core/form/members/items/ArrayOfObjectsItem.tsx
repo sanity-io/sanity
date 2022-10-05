@@ -225,10 +225,7 @@ export function ArrayOfObjectsItem(props: MemberItemProps) {
     renderPreview,
   ])
 
-  const renderedInput = useMemo(
-    () => renderInput(inputProps as ObjectInputProps),
-    [inputProps, renderInput]
-  )
+  const renderedInput = useMemo(() => renderInput(inputProps), [inputProps, renderInput])
 
   const itemProps = useMemo((): Omit<ObjectItemProps, 'renderDefault'> => {
     return {
@@ -294,7 +291,7 @@ export function ArrayOfObjectsItem(props: MemberItemProps) {
       onPathBlur={onPathBlur}
       onPathFocus={onPathFocus}
     >
-      {useMemo(() => renderItem(itemProps as ObjectItemProps), [itemProps, renderItem])}
+      {useMemo(() => renderItem(itemProps), [itemProps, renderItem])}
     </FormCallbacksProvider>
   )
 }

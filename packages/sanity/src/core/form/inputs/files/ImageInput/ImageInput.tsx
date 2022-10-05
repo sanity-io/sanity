@@ -368,7 +368,7 @@ export class BaseImageInput extends React.PureComponent<BaseImageInputProps, Bas
     this.setState({selectedAssetSource: null})
   }
 
-  renderHotspotInput = (hotspotInputProps: InputProps) => {
+  renderHotspotInput = (hotspotInputProps: Omit<InputProps, 'renderDefault'>) => {
     const {value, changed, id, imageUrlBuilder} = this.props
 
     const withImageTool = this.isImageToolEnabled() && value && value.asset
@@ -706,7 +706,7 @@ export class BaseImageInput extends React.PureComponent<BaseImageInputProps, Bas
 
     // todo: convert this to a functional component and use this with useCallback
     //  it currently has to return a new function on every render in order to pick up state from this component
-    return (inputProps: InputProps) => (
+    return (inputProps: Omit<InputProps, 'renderDefault'>) => (
       <>
         {isStale && (
           <Box marginBottom={2}>

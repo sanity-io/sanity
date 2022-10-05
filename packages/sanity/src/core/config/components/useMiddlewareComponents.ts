@@ -1,31 +1,39 @@
-import {ComponentType, createElement, useMemo} from 'react'
+/* eslint-disable @typescript-eslint/ban-types */
+
+import {ComponentType, createElement, Fragment, useMemo} from 'react'
 import {useSource} from '../../studio'
 import {PluginOptions} from '../types'
 
-interface MiddlewareProps<T> {
-  renderDefault: (props: T) => React.ReactElement
-}
+const emptyRender = () => createElement(Fragment)
 
-function _createMiddlewareComponent<T extends {renderDefault: (props: T) => React.ReactElement}>(
+function _createMiddlewareComponent<T extends {}>(
+  defaultComponent: ComponentType<T>,
   middlewareComponents: ComponentType<T>[]
 ): ComponentType<T> {
-  return (_props: T) => {
-    const _defaultItem = (props: T) => createElement(middlewareComponents[0], props)
+  return (outerProps: T) => {
+    // This is the inner "layer" of the middleware chain
+    // Here we render the _default_ component (typically Sanity's component)
+    let next = (props: T) => createElement(defaultComponent, props)
 
-    let next = _defaultItem
+    // Since the middleware array is actually a middleware _stack_ data structure, we are
+    // essentially looping backwards here. This makes it possible to define the _next_ layer for
+    // each layer.
+    for (const middleware of middlewareComponents) {
+      // As we progress through the chain, the meaning of "renderDefault" changes.
+      // At a given layer in the chain, the _next_ layer is the "default".
+      const renderDefault = next
 
-    for (const middleware of middlewareComponents.slice(1)) {
-      const defaultRender = next
-
-      next = (props) => {
-        return createElement(middleware, {
-          ...props,
-          renderDefault: defaultRender,
-        })
-      }
+      // Here we replace `next` so that the _previous_ layer may use this as its _next_.
+      next = (props) => createElement(middleware, {...props, renderDefault})
     }
 
-    return next(_props)
+    return next({
+      ...outerProps,
+      // NOTE: it's safe to pass the empty render function, since it'll be overwritten in the next step (above).
+      // NOTE: it's important that the default component does not use `renderDefault`, since it will
+      // get the `emptyRender` callback will be passed when the middleware stack is empty.
+      renderDefault: emptyRender,
+    })
   }
 }
 
@@ -59,18 +67,19 @@ function _pickFromPluginOptions<T>(
 }
 
 /** @internal */
-export function useMiddlewareComponents<T extends MiddlewareProps<T>>(props: {
-  pick: (plugin: PluginOptions) => ComponentType<T> | undefined
+export function useMiddlewareComponents<T extends {}>(props: {
+  pick: (plugin: PluginOptions) => ComponentType<T>
   defaultComponent: ComponentType<T>
 }): ComponentType<T> {
   const {options} = useSource().__internal
   const {defaultComponent, pick} = props
 
-  const middlewareComponents: ComponentType<T>[] = useMemo(() => {
-    const middleware = _pickFromPluginOptions(options, pick)
+  const middlewareComponents = useMemo(() => {
+    return _pickFromPluginOptions(options, pick)
+  }, [options, pick])
 
-    return [defaultComponent, ...middleware]
-  }, [defaultComponent, options, pick])
-
-  return useMemo(() => _createMiddlewareComponent(middlewareComponents), [middlewareComponents])
+  return useMemo(
+    () => _createMiddlewareComponent(defaultComponent, middlewareComponents),
+    [defaultComponent, middlewareComponents]
+  )
 }

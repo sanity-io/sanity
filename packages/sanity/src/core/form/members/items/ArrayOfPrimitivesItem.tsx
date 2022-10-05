@@ -134,10 +134,7 @@ export function ArrayOfPrimitivesItem(props: PrimitiveMemberItemProps) {
     elementProps,
   ])
 
-  const renderedInput = useMemo(
-    () => renderInput(inputProps as PrimitiveInputProps),
-    [inputProps, renderInput]
-  )
+  const renderedInput = useMemo(() => renderInput(inputProps), [inputProps, renderInput])
 
   const onRemove = useCallback(() => {
     onChange(PatchEvent.from([unset([member.index])]))

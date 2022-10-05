@@ -9,14 +9,19 @@ import {
 } from '../studio/inputResolver/inputResolver'
 import {InputProps, FieldProps, ItemProps} from '../types'
 
-function useResolveDefaultComponent<T>(props: {
-  componentProps: T & {schemaType: SchemaType}
-  componentResolver: (schemaType: SchemaType) => React.ComponentType<T>
+function useResolveDefaultComponent<T extends {schemaType?: SchemaType}>(props: {
+  componentProps: Omit<T, 'renderDefault'>
+  componentResolver: (schemaType: SchemaType) => React.ComponentType<Omit<T, 'renderDefault'>>
 }): React.ReactElement<T> {
   const {componentResolver, componentProps} = props
-  const defaultResolvedComponent = componentResolver(
-    componentProps.schemaType
-  ) as React.ComponentType<any>
+
+  // NOTE: this will not happen, but we do this to avoid updating too many places
+  // TODO: We need to clean up the preview machinery + types to remove this
+  if (!componentProps.schemaType) {
+    throw new Error('the `schemaType` property must be defined')
+  }
+
+  const defaultResolvedComponent = componentResolver(componentProps.schemaType)
 
   const renderDefault = useCallback(
     (parentTypeProps: T) => {
@@ -29,9 +34,7 @@ function useResolveDefaultComponent<T>(props: {
       // in order to prevent that a component is render itself
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const {components, ...restSchemaType} = componentProps.schemaType
-      const parentTypeResolvedComponent = componentResolver(
-        restSchemaType
-      ) as React.ComponentType<any>
+      const parentTypeResolvedComponent = componentResolver(restSchemaType as SchemaType)
       return createElement(parentTypeResolvedComponent, parentTypeProps)
     },
     [componentProps.schemaType, componentResolver]
@@ -46,8 +49,8 @@ function useResolveDefaultComponent<T>(props: {
 /**
  * @internal
  */
-export function DefaultInput(props: InputProps): React.ReactElement<InputProps> {
-  return useResolveDefaultComponent<InputProps>({
+export function DefaultInput(props: Omit<InputProps, 'renderDefault'>): React.ReactElement {
+  return useResolveDefaultComponent<Omit<InputProps, 'renderDefault'>>({
     componentProps: props,
     componentResolver: defaultResolveInputComponent,
   })
@@ -56,8 +59,8 @@ export function DefaultInput(props: InputProps): React.ReactElement<InputProps> 
 /**
  * @internal
  */
-export function DefaultField(props: FieldProps): React.ReactElement<FieldProps> {
-  return useResolveDefaultComponent<FieldProps>({
+export function DefaultField(props: Omit<FieldProps, 'renderDefault'>): React.ReactElement {
+  return useResolveDefaultComponent<Omit<FieldProps, 'renderDefault'>>({
     componentProps: props,
     componentResolver: defaultResolveFieldComponent,
   })
@@ -66,8 +69,8 @@ export function DefaultField(props: FieldProps): React.ReactElement<FieldProps> 
 /**
  * @internal
  */
-export function DefaultItem(props: ItemProps): React.ReactElement<ItemProps> {
-  return useResolveDefaultComponent<ItemProps>({
+export function DefaultItem(props: Omit<ItemProps, 'renderDefault'>): React.ReactElement {
+  return useResolveDefaultComponent<Omit<ItemProps, 'renderDefault'>>({
     componentProps: props,
     componentResolver: defaultResolveItemComponent,
   })
@@ -76,9 +79,9 @@ export function DefaultItem(props: ItemProps): React.ReactElement<ItemProps> {
 /**
  * @internal
  */
-export function DefaultPreview(props: PreviewProps): React.ReactElement<PreviewProps> {
-  return useResolveDefaultComponent<PreviewProps>({
-    componentProps: props as any,
+export function DefaultPreview(props: Omit<PreviewProps, 'renderDefault'>): React.ReactElement {
+  return useResolveDefaultComponent<Omit<PreviewProps, 'renderDefault'>>({
+    componentProps: props,
     componentResolver: defaultResolvePreviewComponent,
   })
 }

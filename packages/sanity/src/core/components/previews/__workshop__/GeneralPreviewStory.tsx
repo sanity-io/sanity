@@ -102,8 +102,8 @@ export default function GeneralPreviewStory() {
             style={{lineHeight: 0}}
           >
             {createElement(
-              component as React.ComponentType<PreviewProps>,
-              previewProps as PreviewProps
+              component as React.ComponentType<Omit<PreviewProps, 'renderDefault'>>,
+              previewProps
             )}
           </Card>
         </Container>

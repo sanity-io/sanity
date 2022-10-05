@@ -13,7 +13,7 @@ import {
 /**
  * @internal
  */
-export function useInputComponent(): ComponentType<InputProps> {
+export function useInputComponent(): ComponentType<Omit<InputProps, 'renderDefault'>> {
   return useMiddlewareComponents({
     defaultComponent: DefaultInput,
     pick: pickInputComponent,
@@ -23,7 +23,7 @@ export function useInputComponent(): ComponentType<InputProps> {
 /**
  * @internal
  */
-export function useFieldComponent(): ComponentType<FieldProps> {
+export function useFieldComponent(): ComponentType<Omit<FieldProps, 'renderDefault'>> {
   return useMiddlewareComponents({
     defaultComponent: DefaultField,
     pick: pickFieldComponent,
@@ -33,7 +33,7 @@ export function useFieldComponent(): ComponentType<FieldProps> {
 /**
  * @internal
  */
-export function usePreviewComponent(): ComponentType<PreviewProps> {
+export function usePreviewComponent(): ComponentType<Omit<PreviewProps, 'renderDefault'>> {
   return useMiddlewareComponents({
     defaultComponent: DefaultPreview,
     pick: pickPreviewComponent,
@@ -43,7 +43,7 @@ export function usePreviewComponent(): ComponentType<PreviewProps> {
 /**
  * @internal
  */
-export function useItemComponent(): ComponentType<ItemProps> {
+export function useItemComponent(): ComponentType<Omit<ItemProps, 'renderDefault'>> {
   return useMiddlewareComponents({
     defaultComponent: DefaultItem,
     pick: pickItemComponent,

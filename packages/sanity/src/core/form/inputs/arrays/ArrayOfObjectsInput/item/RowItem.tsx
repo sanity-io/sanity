@@ -123,7 +123,7 @@ export const RowItem = React.forwardRef(function RegularItem(
             onFocus={onFocus}
             __unstable_focusRing
           >
-            {renderPreview(previewProps as PreviewProps)}
+            {renderPreview(previewProps)}
           </Card>
         ) : (
           <Box flex={1}>

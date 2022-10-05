@@ -15,9 +15,9 @@ import {
  */
 export function useToolMenuComponent(): ComponentType<Omit<ToolMenuProps, 'renderDefault'>> {
   return useMiddlewareComponents({
-    defaultComponent: StudioToolMenu,
+    defaultComponent: StudioToolMenu as ComponentType<Omit<ToolMenuProps, 'renderDefault'>>,
     pick: pickToolMenuComponent,
-  }) as ComponentType<Omit<ToolMenuProps, 'renderDefault'>>
+  })
 }
 
 /**
@@ -25,9 +25,9 @@ export function useToolMenuComponent(): ComponentType<Omit<ToolMenuProps, 'rende
  */
 export function useNavbarComponent(): ComponentType<Omit<NavbarProps, 'renderDefault'>> {
   return useMiddlewareComponents({
-    defaultComponent: StudioNavbar,
+    defaultComponent: StudioNavbar as ComponentType<Omit<NavbarProps, 'renderDefault'>>,
     pick: pickNavbarComponent,
-  }) as ComponentType<Omit<NavbarProps, 'renderDefault'>>
+  })
 }
 
 /**
@@ -35,9 +35,9 @@ export function useNavbarComponent(): ComponentType<Omit<NavbarProps, 'renderDef
  */
 export function useLogoComponent(): ComponentType<Omit<LogoProps, 'renderDefault'>> {
   return useMiddlewareComponents({
-    defaultComponent: StudioLogo,
+    defaultComponent: StudioLogo as ComponentType<Omit<LogoProps, 'renderDefault'>>,
     pick: pickLogoComponent,
-  }) as ComponentType<Omit<LogoProps, 'renderDefault'>>
+  })
 }
 
 /**
@@ -45,7 +45,7 @@ export function useLogoComponent(): ComponentType<Omit<LogoProps, 'renderDefault
  */
 export function useLayoutComponent(): ComponentType<Omit<LayoutProps, 'renderDefault'>> {
   return useMiddlewareComponents({
-    defaultComponent: StudioLayout,
+    defaultComponent: StudioLayout as ComponentType<Omit<LayoutProps, 'renderDefault'>>,
     pick: pickLayoutComponent,
-  }) as ComponentType<Omit<LayoutProps, 'renderDefault'>>
+  })
 }

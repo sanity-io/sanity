@@ -12,7 +12,7 @@ import {getEmptyValue} from './getEmptyValue'
 
 const dragHandle = <DragHandle paddingX={1} paddingY={3} />
 
-export type DefaultItemProps = PrimitiveItemProps & {
+export type DefaultItemProps = Omit<PrimitiveItemProps, 'renderDefault'> & {
   insertableTypes: SchemaType[]
   onEnterKey: (item: number) => void
   onEscapeKey: (item: number) => void

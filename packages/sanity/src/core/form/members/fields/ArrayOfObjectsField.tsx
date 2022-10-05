@@ -281,10 +281,7 @@ export function ArrayOfObjectsField(props: {
     elementProps,
   ])
 
-  const renderedInput = useMemo(
-    () => renderInput(inputProps as ArrayOfObjectsInputProps),
-    [inputProps, renderInput]
-  )
+  const renderedInput = useMemo(() => renderInput(inputProps), [inputProps, renderInput])
 
   const fieldProps = useMemo((): Omit<ArrayFieldProps, 'renderDefault'> => {
     return {
@@ -336,7 +333,7 @@ export function ArrayOfObjectsField(props: {
       onPathBlur={onPathBlur}
       onPathFocus={onPathFocus}
     >
-      {useMemo(() => renderField(fieldProps as ArrayFieldProps), [fieldProps, renderField])}
+      {useMemo(() => renderField(fieldProps), [fieldProps, renderField])}
     </FormCallbacksProvider>
   )
 }

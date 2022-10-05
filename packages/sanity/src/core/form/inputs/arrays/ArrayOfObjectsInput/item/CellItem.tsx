@@ -173,7 +173,7 @@ export const CellItem = React.forwardRef(function ItemCell(
           onFocus={onFocus}
           __unstable_focusRing
         >
-          {renderPreview(previewProps as PreviewProps)}
+          {renderPreview(previewProps)}
         </PreviewCard>
       ) : (
         <MissingTypeBox flex={1}>

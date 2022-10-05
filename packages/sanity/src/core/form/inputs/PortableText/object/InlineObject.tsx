@@ -155,7 +155,7 @@ export const InlineObject = React.forwardRef(function InlineObject(
       value,
     }
 
-    return <PreviewSpan>{renderPreview(previewProps as PreviewProps)}</PreviewSpan>
+    return <PreviewSpan>{renderPreview(previewProps)}</PreviewSpan>
   }, [renderPreview, type, value])
 
   const markersToolTip = useMemo(

@@ -8,7 +8,7 @@ import {renderPreviewNode} from '../helpers'
 import {HeaderFlex, MediaCard, RootBox} from './BlockImagePreview.styled'
 
 /** @beta */
-export type BlockImagePreviewProps = PreviewProps<'blockImage'>
+export type BlockImagePreviewProps = Omit<PreviewProps<'blockImage'>, 'renderDefault'>
 
 const DEFAULT_MEDIA_DIMENSIONS: PreviewMediaDimensions = {
   ...PREVIEW_MEDIA_SIZE.blockImage,

@@ -4,7 +4,6 @@ import {useDidUpdate} from '../../hooks/useDidUpdate'
 import {FieldMember, ObjectFormNode} from '../../store'
 import {
   ArrayOfObjectsInputProps,
-  InputProps,
   ObjectFieldProps,
   ObjectInputProps,
   RenderArrayOfObjectsItemCallback,
@@ -200,10 +199,7 @@ export const ObjectField = function ObjectField(props: {
     renderPreview,
   ])
 
-  const renderedInput = useMemo(
-    () => renderInput(inputProps as ObjectInputProps),
-    [inputProps, renderInput]
-  )
+  const renderedInput = useMemo(() => renderInput(inputProps), [inputProps, renderInput])
 
   const fieldProps = useMemo((): Omit<ObjectFieldProps, 'renderDefault'> => {
     return {
@@ -265,7 +261,7 @@ export const ObjectField = function ObjectField(props: {
       onPathBlur={onPathBlur}
       onPathFocus={onPathFocus}
     >
-      {useMemo(() => renderField(fieldProps as ObjectFieldProps), [fieldProps, renderField])}
+      {useMemo(() => renderField(fieldProps), [fieldProps, renderField])}
     </FormCallbacksProvider>
   )
 }
