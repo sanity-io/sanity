@@ -10,4 +10,5 @@ module.exports = createJestConfig({
   globalTeardown: '<rootDir>/test/shared/globalTeardown.ts',
   slowTestThreshold: 60000,
   testTimeout: 30000,
+  setupFilesAfterEnv: ['<rootDir>/test/shared/setupAfterEnv.ts'],
 })
