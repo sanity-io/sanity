@@ -1,6 +1,6 @@
 {
   "extends": "../../../tsconfig.settings",
-  "include": ["./src", "./typings"],
+  "include": ["./exports", "./src", "./typings"],
   "exclude": [
     "./src/**/__fixtures__",
     "./src/**/__mocks__",
@@ -11,7 +11,7 @@
   "compilerOptions": {
     "composite": true,
     "rootDir": ".",
-    "outDir": "./lib/dts"
+    "outDir": "./lib"
   },
   "references": [{"path": "../types/tsconfig.lib.json"}]
 }

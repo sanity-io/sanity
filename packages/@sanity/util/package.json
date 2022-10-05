@@ -2,42 +2,42 @@
   "name": "@sanity/util",
   "version": "3.0.0-dev-preview.20",
   "description": "Utilities shared across projects of Sanity",
-  "types": "./lib/dts/src/index.d.ts",
-  "source": "./src/index.ts",
+  "types": "./lib/exports/index.d.ts",
+  "source": "./exports/index.ts",
   "module": "./lib/index.mjs",
   "main": "./lib/index.js",
   "exports": {
     ".": {
-      "types": "./lib/dts/src/index.d.ts",
-      "source": "./src/index.ts",
+      "types": "./lib/exports/index.d.ts",
+      "source": "./exports/index.ts",
       "import": "./lib/index.mjs",
       "require": "./lib/index.js",
       "default": "./lib/index.mjs"
     },
     "./fs": {
-      "types": "./lib/dts/src/fsTools.d.ts",
-      "source": "./src/fsTools.ts",
-      "import": "./lib/fsTools.mjs",
-      "require": "./lib/fsTools.js",
-      "default": "./lib/fsTools.mjs"
+      "types": "./lib/exports/fs.d.ts",
+      "source": "./exports/fs.ts",
+      "import": "./lib/fs.mjs",
+      "require": "./lib/fs.js",
+      "default": "./lib/fs.mjs"
     },
     "./content": {
-      "types": "./lib/dts/src/content/index.d.ts",
-      "source": "./src/content/index.ts",
+      "types": "./lib/exports/content.d.ts",
+      "source": "./exports/content.ts",
       "import": "./lib/content.mjs",
       "require": "./lib/content.js",
       "default": "./lib/content.mjs"
     },
     "./legacyDateFormat": {
-      "types": "./lib/dts/src/legacyDateFormat.d.ts",
-      "source": "./src/legacyDateFormat.ts",
+      "types": "./lib/exports/legacyDateFormat.d.ts",
+      "source": "./exports/legacyDateFormat.ts",
       "import": "./lib/legacyDateFormat.mjs",
       "require": "./lib/legacyDateFormat.js",
       "default": "./lib/legacyDateFormat.mjs"
     },
     "./paths": {
-      "types": "./lib/dts/src/paths.d.ts",
-      "source": "./src/paths.ts",
+      "types": "./lib/exports/paths.d.ts",
+      "source": "./exports/paths.ts",
       "import": "./lib/paths.mjs",
       "require": "./lib/paths.js",
       "default": "./lib/paths.mjs"
@@ -46,16 +46,16 @@
   "typesVersions": {
     "*": {
       "fs": [
-        "./lib/dts/src/fsTools.d.ts"
+        "./lib/exports/fs.d.ts"
       ],
       "content": [
-        "./lib/dts/src/content/index.d.ts"
+        "./lib/exports/content.d.ts"
       ],
       "legacyDateFormat": [
-        "./lib/dts/src/legacyDateFormat.d.ts"
+        "./lib/exports/legacyDateFormat.d.ts"
       ],
       "paths": [
-        "./lib/dts/src/paths.d.ts"
+        "./lib/exports/paths.d.ts"
       ]
     }
   },
@@ -70,7 +70,7 @@
   "scripts": {
     "build": "pkg-utils build --tsconfig tsconfig.lib.json",
     "check:package": "pkg-utils --strict --tsconfig tsconfig.lib.json",
-    "clean": "rimraf lib",
+    "clean": "rimraf content.js fs.js legacyDateFormat.js lib paths.js",
     "test": "jest",
     "postbuild": "run-s check:package",
     "prebuild": "run-s clean",
