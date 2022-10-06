@@ -5,7 +5,7 @@ import {
   SanityDocument,
   TransactionLogEventWithMutations,
 } from '@sanity/types'
-import jsonReduce from 'json-reduce'
+import {reduce as jsonReduce} from 'json-reduce'
 import {from, Observable} from 'rxjs'
 import {map, mergeMap} from 'rxjs/operators'
 import {getDraftId, getPublishedId, isRecord} from '../../../util'
