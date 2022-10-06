@@ -8,7 +8,7 @@ import {_getModalOption} from '../helpers'
 import {PortableTextMemberItem} from '../../PortableTextInput'
 import {DefaultEditDialog} from './DefaultEditDialog'
 import {PopoverEditDialog} from './PopoverEditDialog'
-import {ModalType} from './types'
+import {ModalType, ModalWidth} from './types'
 
 export function ObjectEditModal(props: {
   children: React.ReactNode
@@ -29,6 +29,10 @@ export function ObjectEditModal(props: {
 
     return 'dialog'
   }, [kind, modalOption])
+
+  const modalWidth: ModalWidth | undefined = useMemo(() => {
+    return modalOption?.width
+  }, [modalOption?.width])
 
   const [firstField, setFirstField] = useState<HTMLElement | null>(null)
   const editor = usePortableTextEditor()
@@ -65,6 +69,7 @@ export function ObjectEditModal(props: {
         onClose={handleClose}
         scrollElement={scrollElement}
         title={title}
+        width={modalWidth}
       >
         {props.children}
       </PopoverEditDialog>
@@ -72,7 +77,7 @@ export function ObjectEditModal(props: {
   }
 
   return (
-    <DefaultEditDialog title={title} onClose={handleClose}>
+    <DefaultEditDialog title={title} onClose={handleClose} width={modalWidth}>
       {props.children}
     </DefaultEditDialog>
   )
