@@ -172,7 +172,7 @@
     "react-is": "^18.2.0",
     "react-props-stream": "^1.0.0",
     "react-refractor": "^2.1.6",
-    "react-rx": "^2.0.4",
+    "react-rx": "^2.1.3",
     "read-pkg-up": "^7.0.1",
     "refractor": "^3.6.0",
     "resolve-from": "^5.0.0",
