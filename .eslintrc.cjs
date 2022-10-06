@@ -25,6 +25,13 @@ const baseConfig = {
     'react/jsx-filename-extension': ['error', {extensions: ['.jsx']}],
     'sort-imports': 'off', // prefer import/order
     'tsdoc/syntax': 'error',
+    'react-hooks/rules-of-hooks': 'error',
+    'react-hooks/exhaustive-deps': [
+      'error',
+      {
+        additionalHooks: '(useMemoObservable|useObservableCallback)',
+      },
+    ],
   },
   settings: {
     'import/extensions': ['.cjs', '.mjs', '.js', '.jsx', '.ts', '.tsx'],
