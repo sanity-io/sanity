@@ -9,6 +9,7 @@ import React, {
   useMemo,
   useRef,
   useState,
+  useId,
 } from 'react'
 import {Reference, SchemaType} from '@sanity/types'
 import {
@@ -40,7 +41,6 @@ import {
 } from '@sanity/ui'
 import {useObservableCallback} from 'react-rx'
 import {uuid} from '@sanity/uuid'
-import {useId} from '@reach/auto-id'
 import styled from 'styled-components'
 import {FormField, FormFieldValidationStatus} from '../../components/formField'
 import {set, setIfMissing, unset} from '../../patch'

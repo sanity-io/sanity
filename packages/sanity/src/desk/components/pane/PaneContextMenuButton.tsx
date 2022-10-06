@@ -1,7 +1,6 @@
-import {useId} from '@reach/auto-id'
 import {EllipsisVerticalIcon} from '@sanity/icons'
 import {Box, Button, Label, Menu, MenuButton, MenuDivider, MenuItem, PopoverProps} from '@sanity/ui'
-import React, {forwardRef, Fragment, useCallback, useMemo} from 'react'
+import React, {forwardRef, Fragment, useCallback, useMemo, useId} from 'react'
 import {PaneMenuItem, PaneMenuItemGroup} from '../../types'
 import {IntentLink} from 'sanity/router'
 
@@ -28,7 +27,7 @@ const CONTEXT_MENU_POPOVER_PROPS: PopoverProps = {
  */
 export function PaneContextMenuButton(props: PaneContextMenuButtonProps) {
   const {items, itemGroups, onAction} = props
-  const id = useId() || ''
+  const id = useId()
 
   const groups = useMemo(() => {
     if (!itemGroups || itemGroups.length === 0) {

@@ -1,7 +1,6 @@
-import React, {memo, useContext} from 'react'
+import React, {memo, useContext, useId} from 'react'
 import {sortBy, uniqBy} from 'lodash'
 import {AvatarCounter, AvatarPosition} from '@sanity/ui'
-import {useId} from '@reach/auto-id'
 import {UserAvatar} from '../components/UserAvatar'
 import {
   AVATAR_DISTANCE,
@@ -33,7 +32,7 @@ export function FieldPresenceWithOverlay(props: FieldPresenceProps) {
   const {presence = contextPresence, maxAvatars = DEFAULT_MAX_AVATARS_FIELDS} = props
   const ref = React.useRef(null)
 
-  useReporter(useId() || '', () => ({presence, element: ref.current!, maxAvatars: maxAvatars}))
+  useReporter(useId(), () => ({presence, element: ref.current!, maxAvatars: maxAvatars}))
 
   const minWidth = -AVATAR_DISTANCE + (AVATAR_SIZE + AVATAR_DISTANCE) * props.maxAvatars
 

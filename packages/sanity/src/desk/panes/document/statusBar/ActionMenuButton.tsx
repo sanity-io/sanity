@@ -1,4 +1,3 @@
-import {useId} from '@reach/auto-id'
 import {ChevronDownIcon} from '@sanity/icons'
 import {
   Box,
@@ -12,7 +11,15 @@ import {
   Text,
   Tooltip,
 } from '@sanity/ui'
-import React, {createElement, isValidElement, useCallback, useRef, useState, useMemo} from 'react'
+import React, {
+  createElement,
+  isValidElement,
+  useCallback,
+  useRef,
+  useState,
+  useMemo,
+  useId,
+} from 'react'
 import {isValidElementType} from 'react-is'
 import {ActionStateDialog} from './ActionStateDialog'
 import {DocumentActionDescription, LegacyLayerProvider} from 'sanity'
@@ -24,7 +31,7 @@ export interface ActionMenuButtonProps {
 
 export function ActionMenuButton(props: ActionMenuButtonProps) {
   const {actionStates, disabled} = props
-  const idPrefix = useId() || ''
+  const idPrefix = useId()
   const buttonRef = useRef<HTMLButtonElement | null>(null)
   const [actionIndex, setActionIndex] = useState(-1)
   const [referenceElement, setReferenceElement] = useState<HTMLButtonElement | null>(null)

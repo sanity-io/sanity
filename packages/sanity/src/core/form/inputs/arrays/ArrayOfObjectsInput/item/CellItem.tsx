@@ -4,10 +4,9 @@ import {
   TrashIcon,
   WarningOutlineIcon,
 } from '@sanity/icons'
-import React, {useCallback, useMemo} from 'react'
+import React, {useCallback, useMemo, useId} from 'react'
 import {Badge, Box, Button, Card, Flex, Menu, MenuButton, MenuItem, Text, Tooltip} from '@sanity/ui'
 import styled from 'styled-components'
-import {useId} from '@reach/auto-id'
 import {SchemaType} from '@sanity/types'
 import {FormFieldValidationStatus} from '../../../../components/formField'
 import {DragHandle} from '../../common/DragHandle'

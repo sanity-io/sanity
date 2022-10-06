@@ -98,7 +98,6 @@
     "@juggle/resize-observer": "^3.3.1",
     "@portabletext/react": "^1.0.6",
     "@portabletext/types": "^1.0.3",
-    "@reach/auto-id": "^0.13.2",
     "@rexxars/react-json-inspector": "^8.0.1",
     "@sanity/asset-utils": "^1.2.5",
     "@sanity/bifur-client": "^0.3.0",

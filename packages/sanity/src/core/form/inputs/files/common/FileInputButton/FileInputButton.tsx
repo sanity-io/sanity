@@ -1,6 +1,5 @@
-import React, {createElement, isValidElement} from 'react'
+import React, {createElement, isValidElement, useId} from 'react'
 import {isValidElementType} from 'react-is'
-import {useId} from '@reach/auto-id'
 import {Box, ButtonProps, Flex, Text, useTheme} from '@sanity/ui'
 import {FileButton} from './styles'
 
@@ -32,7 +31,7 @@ export const FileInputButton = React.forwardRef(function FileInputButton(
     disabled,
     ...rest
   } = props
-  const id = useId(idProp)
+  const id = `${idProp || ''}-${useId()}`
   const theme = useTheme()
 
   const handleChange = React.useCallback(

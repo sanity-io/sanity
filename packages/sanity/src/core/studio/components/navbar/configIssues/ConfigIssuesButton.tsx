@@ -1,7 +1,6 @@
-import React, {useCallback, useState} from 'react'
+import React, {useCallback, useState, useId} from 'react'
 import {Box, Button, Dialog, Heading, Stack, Text, Tooltip} from '@sanity/ui'
 import {WarningOutlineIcon} from '@sanity/icons'
-import {useId} from '@reach/auto-id'
 import {useSchema} from '../../../../hooks'
 import {SchemaProblemGroups} from '../../../screens/schemaErrors/SchemaProblemGroups'
 import {useColorScheme} from '../../../colorScheme'
@@ -16,7 +15,7 @@ export function ConfigIssuesButton() {
   // get root scheme
   const {scheme} = useColorScheme()
 
-  const dialogId = useId() || 'config-issues-dialog'
+  const dialogId = useId()
 
   const [isDialogOpen, setDialogOpen] = useState(false)
   const [buttonElement, setButtonElement] = useState<HTMLButtonElement | null>(null)

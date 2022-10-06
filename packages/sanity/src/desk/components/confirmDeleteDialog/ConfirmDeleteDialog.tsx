@@ -1,7 +1,6 @@
-import React, {useMemo} from 'react'
+import React, {useMemo, useId} from 'react'
 import styled from 'styled-components'
 import {Box, Dialog, Button, Text, Spinner, Grid, Flex} from '@sanity/ui'
-import {useId} from '@reach/auto-id'
 import {DocTitle} from '../DocTitle'
 import {useReferringDocuments} from './useReferringDocuments'
 import {ConfirmDeleteDialogBody} from './ConfirmDeleteDialogBody'
