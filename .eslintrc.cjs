@@ -29,7 +29,7 @@ const baseConfig = {
     'react-hooks/exhaustive-deps': [
       'error',
       {
-        additionalHooks: '(useMemoObservable|useObservableCallback)',
+        additionalHooks: '(useMemoObservable|useObservableCallback|useAsync)',
       },
     ],
   },
