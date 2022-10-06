@@ -43,9 +43,6 @@
     "@types/lodash": "^4.14.149",
     "rimraf": "^3.0.2"
   },
-  "peerDependencies": {
-    "@sanity/types": "dev-preview"
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/sanity-io/sanity.git",

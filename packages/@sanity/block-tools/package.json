@@ -44,10 +44,6 @@
     "@types/react": "^18.0.21",
     "jsdom": "^20.0.0"
   },
-  "peerDependencies": {
-    "@sanity/schema": "dev-preview",
-    "@sanity/types": "dev-preview"
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/sanity-io/sanity.git",

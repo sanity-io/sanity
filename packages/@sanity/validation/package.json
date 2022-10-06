@@ -53,7 +53,6 @@
     "@sanity/schema": "3.0.0-dev-preview.21"
   },
   "peerDependencies": {
-    "@sanity/client": "^3.4.1",
-    "@sanity/schema": "dev-preview"
+    "@sanity/client": "^3.4.1"
   }
 }

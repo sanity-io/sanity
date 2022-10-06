@@ -62,7 +62,6 @@
     "@sanity/client": "^3.4.1",
     "react": "^18",
     "rxjs": "^6.5.3",
-    "sanity": "dev-preview",
     "styled-components": "^5.2"
   },
   "repository": {

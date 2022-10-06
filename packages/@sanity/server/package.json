@@ -89,7 +89,6 @@
   },
   "peerDependencies": {
     "react": "^18",
-    "react-dom": "^18",
-    "sanity": "dev-preview"
+    "react-dom": "^18"
   }
 }
