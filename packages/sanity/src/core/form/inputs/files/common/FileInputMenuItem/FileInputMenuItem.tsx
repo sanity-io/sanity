@@ -1,6 +1,5 @@
-import React, {createElement, isValidElement} from 'react'
+import React, {createElement, isValidElement, useId} from 'react'
 import {isValidElementType} from 'react-is'
-import {useId} from '@reach/auto-id'
 import {Box, ButtonProps, Flex, Text} from '@sanity/ui'
 import {FileButton} from './FileInputMenuItem.styled'
 
@@ -32,7 +31,7 @@ export const FileInputMenuItem = React.forwardRef(function FileInputMenuItem(
     disabled,
     ...rest
   } = props
-  const id = useId(idProp)
+  const id = `${idProp || ''}-${useId()}`
 
   const handleChange = React.useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {

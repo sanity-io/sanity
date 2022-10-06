@@ -1,12 +1,11 @@
-import {useId} from '@reach/auto-id'
 import {Box, Dialog} from '@sanity/ui'
-import React from 'react'
+import React, {useId} from 'react'
 import {DIALOG_WIDTH_TO_UI_WIDTH} from './constants'
 import {DocumentActionDialogModalProps, LegacyLayerProvider} from 'sanity'
 
 export function ModalDialog(props: {modal: DocumentActionDialogModalProps}) {
   const {modal} = props
-  const modalId = useId() || ''
+  const modalId = useId()
 
   const footer = modal.footer && (
     <Box paddingX={4} paddingY={3}>

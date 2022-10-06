@@ -1,5 +1,4 @@
-import React from 'react'
-import {useId} from '@reach/auto-id'
+import React, {useId} from 'react'
 import {Box, Dialog, PortalProvider, usePortal} from '@sanity/ui'
 import {PresenceOverlay} from '../../../../../presence'
 import {ModalWidth} from './types'

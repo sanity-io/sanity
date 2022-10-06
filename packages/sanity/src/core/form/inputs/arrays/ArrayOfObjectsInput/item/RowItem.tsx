@@ -1,6 +1,6 @@
 /* eslint-disable no-nested-ternary */
 
-import React, {useCallback, useMemo} from 'react'
+import React, {useCallback, useMemo, useId} from 'react'
 import {
   Badge,
   Box,
@@ -15,7 +15,6 @@ import {
   Tooltip,
 } from '@sanity/ui'
 import {CopyIcon as DuplicateIcon, EllipsisVerticalIcon, TrashIcon} from '@sanity/icons'
-import {useId} from '@reach/auto-id'
 import {SchemaType} from '@sanity/types'
 import {FormFieldValidationStatus} from '../../../../components/formField'
 import {DragHandle} from '../../common/DragHandle'

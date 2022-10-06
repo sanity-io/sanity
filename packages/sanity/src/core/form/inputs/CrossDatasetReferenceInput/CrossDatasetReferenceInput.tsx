@@ -1,10 +1,9 @@
 /* eslint-disable complexity, max-nested-callbacks, no-nested-ternary */
 
-import React, {useCallback, useMemo, useRef, useState} from 'react'
+import React, {useCallback, useMemo, useRef, useState, useId} from 'react'
 import {CrossDatasetReference, CrossDatasetReferenceSchemaType} from '@sanity/types'
 import {EllipsisVerticalIcon, ResetIcon as ClearIcon, SyncIcon as ReplaceIcon} from '@sanity/icons'
 import {concat, Observable, of} from 'rxjs'
-import {useId} from '@reach/auto-id'
 import {catchError, distinctUntilChanged, filter, map, scan, switchMap, tap} from 'rxjs/operators'
 import {
   Box,

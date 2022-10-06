@@ -15,8 +15,15 @@ import {
   useGlobalKeyDown,
   useLayer,
 } from '@sanity/ui'
-import React, {forwardRef, MouseEvent, ReactElement, useCallback, useMemo, useRef} from 'react'
-import {useId} from '@reach/auto-id'
+import React, {
+  forwardRef,
+  MouseEvent,
+  ReactElement,
+  useCallback,
+  useMemo,
+  useRef,
+  useId,
+} from 'react'
 import {ObjectSchemaType} from '@sanity/types'
 import {RenderPreviewCallback} from '../../../types'
 import {is} from '../../../utils/is'
@@ -55,7 +62,7 @@ export function BlockObjectPreview(props: BlockObjectPreviewProps): ReactElement
   } = props
   const {isTopLayer} = useLayer()
   const editor = usePortableTextEditor()
-  const menuButtonId = useId() || ''
+  const menuButtonId = useId()
   const menuButton = useRef<HTMLButtonElement | null>(null)
   const isTabbing = useRef<boolean>(false)
   const isCustomPreviewComponent = Boolean(type?.components?.preview)

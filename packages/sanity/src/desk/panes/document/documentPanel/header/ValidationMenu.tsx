@@ -1,4 +1,3 @@
-import {useId} from '@reach/auto-id'
 import {ErrorOutlineIcon, InfoOutlineIcon, WarningOutlineIcon} from '@sanity/icons'
 import {
   isValidationInfoMarker,
@@ -6,7 +5,7 @@ import {
   isValidationErrorMarker,
 } from '@sanity/types'
 import {Button, ButtonProps, Menu, MenuButton} from '@sanity/ui'
-import React, {useCallback, useMemo} from 'react'
+import React, {useCallback, useMemo, useId} from 'react'
 import {useDocumentPane} from '../../useDocumentPane'
 import {ValidationList} from 'sanity'
 

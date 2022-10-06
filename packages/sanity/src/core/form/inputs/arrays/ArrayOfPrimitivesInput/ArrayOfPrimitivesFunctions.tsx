@@ -2,9 +2,8 @@
 
 import {ArraySchemaType, isReferenceSchemaType} from '@sanity/types'
 import {AddIcon} from '@sanity/icons'
-import React, {useMemo} from 'react'
+import React, {useMemo, useId} from 'react'
 import {Box, Button, Grid, Menu, MenuButton, MenuItem, Tooltip, Text} from '@sanity/ui'
-import {useId} from '@reach/auto-id'
 import {FormArrayInputFunctionsProps} from '../../../types'
 
 export function ArrayOfPrimitivesFunctions<

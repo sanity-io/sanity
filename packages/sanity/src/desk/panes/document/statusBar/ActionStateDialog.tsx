@@ -1,6 +1,5 @@
-import {useId} from '@reach/auto-id'
 import {Box, Dialog} from '@sanity/ui'
-import React from 'react'
+import React, {useId} from 'react'
 import {ConfirmDialog} from './dialogs/ConfirmDialog'
 import {ModalDialog} from './dialogs/ModalDialog'
 import {PopoverDialog} from './dialogs/PopoverDialog'
@@ -13,7 +12,7 @@ export interface ActionStateDialogProps {
 
 export function ActionStateDialog(props: ActionStateDialogProps) {
   const {modal, referenceElement = null} = props
-  const modalId = useId() || ''
+  const modalId = useId()
 
   if (modal.type === 'confirm') {
     return <ConfirmDialog modal={modal} referenceElement={referenceElement} />

@@ -9,6 +9,7 @@ import React, {
   useMemo,
   useRef,
   useState,
+  useId,
 } from 'react'
 import {
   EllipsisVerticalIcon,
@@ -17,7 +18,7 @@ import {
   SyncIcon as ReplaceIcon,
 } from '@sanity/icons'
 import {concat, Observable, of} from 'rxjs'
-import {useId} from '@reach/auto-id'
+
 import {catchError, distinctUntilChanged, filter, map, scan, switchMap, tap} from 'rxjs/operators'
 import {
   Box,
