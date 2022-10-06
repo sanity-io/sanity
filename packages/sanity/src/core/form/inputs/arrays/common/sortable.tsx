@@ -1,6 +1,6 @@
 import React from 'react'
-import type {SortableContainerProps} from 'react-sortable-hoc'
-import {SortableContainer, SortableElement, SortableHandle} from 'react-sortable-hoc'
+import type {SortableContainerProps} from '@rexxars/react-sortable-hoc'
+import {SortableContainer, SortableElement, SortableHandle} from '@rexxars/react-sortable-hoc'
 import {FIXME} from '../../../../FIXME'
 
 export const MOVING_ITEM_CLASS_NAME = 'moving'

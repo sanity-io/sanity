@@ -2,6 +2,7 @@
   "ignore": [
     "@juggle/resize-observer",
     "@popperjs/core",
+    "@rexxars/react-sortable-hoc",
     "@sanity/bifur-client",
     "@sanity/mutator",
     "@sanity/pkg-utils",
@@ -11,7 +12,6 @@
     "boundless-arrow-key-navigation",
     "element-resize-detector",
     "nano-pubsub",
-    "react-sortable-hoc",
     "styled-components"
   ]
 }
