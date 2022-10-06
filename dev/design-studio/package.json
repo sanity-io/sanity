@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "design-studio",
-  "version": "3.0.0-dev-preview.20",
+  "version": "3.0.0-dev-preview.21",
   "description": "Sanity Design Studio",
   "main": "package.json",
   "author": "Sanity.io <hello@sanity.io>",
@@ -24,7 +24,7 @@
     "@sanity/ui": "0.38.3-next.18",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "sanity": "3.0.0-dev-preview.20",
+    "sanity": "3.0.0-dev-preview.21",
     "styled-components": "^5.2.0"
   },
   "bugs": {

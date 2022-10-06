@@ -1,6 +1,6 @@
 {
   "name": "@sanity/server",
-  "version": "3.0.0-dev-preview.20",
+  "version": "3.0.0-dev-preview.21",
   "description": "Webserver dedicated to serving Sanity, allowing a smooth development experience",
   "types": "./lib/dts/src/index.d.ts",
   "source": "./src/index.ts",
@@ -85,7 +85,7 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "rimraf": "^3.0.2",
-    "sanity": "3.0.0-dev-preview.20"
+    "sanity": "3.0.0-dev-preview.21"
   },
   "peerDependencies": {
     "react": "^18",
