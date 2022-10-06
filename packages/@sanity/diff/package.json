@@ -4,7 +4,7 @@
   "description": "Generates diffs between documents and primitive types",
   "types": "./lib/dts/src/index.d.ts",
   "source": "./src/index.ts",
-  "module": "./lib/index.mjs",
+  "module": "./lib/index.esm.js",
   "main": "./lib/index.js",
   "files": [
     "lib",

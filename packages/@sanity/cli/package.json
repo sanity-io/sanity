@@ -4,7 +4,7 @@
   "description": "Sanity CLI tool for managing Sanity installations, managing plugins, schemas and datasets",
   "types": "./lib/dts/src/index.d.ts",
   "source": "./src/index.ts",
-  "module": "./lib/index.mjs",
+  "module": "./lib/index.esm.js",
   "main": "./lib/index.js",
   "files": [
     "bin",

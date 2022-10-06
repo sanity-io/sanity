@@ -4,22 +4,22 @@
   "description": "",
   "types": "./lib/dts/src/_exports/index.d.ts",
   "source": "./src/_exports/index.ts",
-  "module": "./lib/_exports/index.mjs",
+  "module": "./lib/_exports/index.esm.js",
   "main": "./lib/_exports/index.js",
   "exports": {
     ".": {
       "types": "./lib/dts/src/_exports/index.d.ts",
       "source": "./src/_exports/index.ts",
-      "import": "./lib/_exports/index.mjs",
+      "import": "./lib/_exports/index.esm.js",
       "require": "./lib/_exports/index.js",
-      "default": "./lib/_exports/index.mjs"
+      "default": "./lib/_exports/index.esm.js"
     },
     "./_internal": {
       "types": "./lib/dts/src/_exports/_internal.d.ts",
       "source": "./src/_exports/_internal.ts",
-      "import": "./lib/_exports/_internal.mjs",
+      "import": "./lib/_exports/_internal.esm.js",
       "require": "./lib/_exports/_internal.js",
-      "default": "./lib/_exports/_internal.mjs"
+      "default": "./lib/_exports/_internal.esm.js"
     }
   },
   "typesVersions": {

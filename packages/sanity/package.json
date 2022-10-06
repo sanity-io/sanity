@@ -18,43 +18,43 @@
   },
   "types": "./lib/exports/index.d.ts",
   "source": "./exports/index.ts",
-  "module": "./lib/index.mjs",
+  "module": "./lib/index.esm.js",
   "main": "./lib/index.js",
   "exports": {
     ".": {
       "types": "./lib/exports/index.d.ts",
       "source": "./exports/index.ts",
-      "import": "./lib/index.mjs",
+      "import": "./lib/index.esm.js",
       "require": "./lib/index.js",
-      "default": "./lib/index.mjs"
+      "default": "./lib/index.esm.js"
     },
     "./_internal": {
       "types": "./lib/exports/_internal.d.ts",
       "source": "./exports/_internal.ts",
-      "import": "./lib/_internal.mjs",
+      "import": "./lib/_internal.esm.js",
       "require": "./lib/_internal.js",
-      "default": "./lib/_internal.mjs"
+      "default": "./lib/_internal.esm.js"
     },
     "./cli": {
       "types": "./lib/exports/cli.d.ts",
       "source": "./exports/cli.ts",
-      "import": "./lib/cli.mjs",
+      "import": "./lib/cli.esm.js",
       "require": "./lib/cli.js",
-      "default": "./lib/cli.mjs"
+      "default": "./lib/cli.esm.js"
     },
     "./desk": {
       "types": "./lib/exports/desk.d.ts",
       "source": "./exports/desk.ts",
-      "import": "./lib/desk.mjs",
+      "import": "./lib/desk.esm.js",
       "require": "./lib/desk.js",
-      "default": "./lib/desk.mjs"
+      "default": "./lib/desk.esm.js"
     },
     "./router": {
       "types": "./lib/exports/router.d.ts",
       "source": "./exports/router.ts",
-      "import": "./lib/router.mjs",
+      "import": "./lib/router.esm.js",
       "require": "./lib/router.js",
-      "default": "./lib/router.mjs"
+      "default": "./lib/router.esm.js"
     }
   },
   "typesVersions": {

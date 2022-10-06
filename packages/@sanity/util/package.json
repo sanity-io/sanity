@@ -4,43 +4,43 @@
   "description": "Utilities shared across projects of Sanity",
   "types": "./lib/exports/index.d.ts",
   "source": "./exports/index.ts",
-  "module": "./lib/index.mjs",
+  "module": "./lib/index.esm.js",
   "main": "./lib/index.js",
   "exports": {
     ".": {
       "types": "./lib/exports/index.d.ts",
       "source": "./exports/index.ts",
-      "import": "./lib/index.mjs",
+      "import": "./lib/index.esm.js",
       "require": "./lib/index.js",
-      "default": "./lib/index.mjs"
+      "default": "./lib/index.esm.js"
     },
     "./fs": {
       "types": "./lib/exports/fs.d.ts",
       "source": "./exports/fs.ts",
-      "import": "./lib/fs.mjs",
+      "import": "./lib/fs.esm.js",
       "require": "./lib/fs.js",
-      "default": "./lib/fs.mjs"
+      "default": "./lib/fs.esm.js"
     },
     "./content": {
       "types": "./lib/exports/content.d.ts",
       "source": "./exports/content.ts",
-      "import": "./lib/content.mjs",
+      "import": "./lib/content.esm.js",
       "require": "./lib/content.js",
-      "default": "./lib/content.mjs"
+      "default": "./lib/content.esm.js"
     },
     "./legacyDateFormat": {
       "types": "./lib/exports/legacyDateFormat.d.ts",
       "source": "./exports/legacyDateFormat.ts",
-      "import": "./lib/legacyDateFormat.mjs",
+      "import": "./lib/legacyDateFormat.esm.js",
       "require": "./lib/legacyDateFormat.js",
-      "default": "./lib/legacyDateFormat.mjs"
+      "default": "./lib/legacyDateFormat.esm.js"
     },
     "./paths": {
       "types": "./lib/exports/paths.d.ts",
       "source": "./exports/paths.ts",
-      "import": "./lib/paths.mjs",
+      "import": "./lib/paths.esm.js",
       "require": "./lib/paths.js",
-      "default": "./lib/paths.mjs"
+      "default": "./lib/paths.esm.js"
     }
   },
   "typesVersions": {

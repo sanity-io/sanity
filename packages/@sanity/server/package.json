@@ -4,21 +4,21 @@
   "description": "Webserver dedicated to serving Sanity, allowing a smooth development experience",
   "types": "./lib/dts/src/index.d.ts",
   "source": "./src/index.ts",
-  "module": "./lib/index.mjs",
+  "module": "./lib/index.esm.js",
   "main": "./lib/index.js",
   "exports": {
     ".": {
       "types": "./lib/dts/src/index.d.ts",
       "source": "./src/index.ts",
-      "import": "./lib/index.mjs",
+      "import": "./lib/index.esm.js",
       "require": "./lib/index.js",
-      "default": "./lib/index.mjs"
+      "default": "./lib/index.esm.js"
     },
     "./default-config": {
       "types": "./lib/dts/src/default-config.d.ts",
       "source": "./src/defaultStudioConfig.ts",
-      "import": "./lib/default-config.mjs",
-      "default": "./lib/default-config.mjs"
+      "import": "./lib/default-config.esm.js",
+      "default": "./lib/default-config.esm.js"
     }
   },
   "typesVersions": {

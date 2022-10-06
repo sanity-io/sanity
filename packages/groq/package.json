@@ -5,7 +5,7 @@
   "description": "Tagged template literal for Sanity.io GROQ-queries",
   "types": "./lib/dts/src/groq.d.ts",
   "source": "./src/groq.ts",
-  "module": "./lib/groq.mjs",
+  "module": "./lib/groq.esm.js",
   "main": "./lib/groq.js",
   "files": [
     "lib",
