@@ -17,7 +17,7 @@ import {
 } from 'rxjs/operators'
 import {validateDocumentObservable} from '@sanity/validation'
 import {isReference, Schema, ValidationContext, ValidationMarker} from '@sanity/types'
-import reduceJSON from 'json-reduce'
+import {reduce as reduceJSON} from 'json-reduce'
 import shallowEquals from 'shallow-equals'
 import {omit} from 'lodash'
 import {exhaustMapWithTrailing} from 'rxjs-exhaustmap-with-trailing'
