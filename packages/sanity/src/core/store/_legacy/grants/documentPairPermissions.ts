@@ -13,6 +13,7 @@ import {snapshotPair} from '../document'
 import {useClient, useSchema} from '../../../hooks'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../studioClient'
 import {GrantsStore, PermissionCheckResult} from './types'
+import {useMemo} from 'react'
 
 function getSchemaType(schema: Schema, typeName: string): SchemaType {
   const type = schema.get(typeName)
@@ -273,20 +274,27 @@ export function useDocumentPairPermissions({
   id,
   type,
   permission,
-  ...rest
+  client: overrideClient,
+  schema: overrideSchema,
+  grantsStore: overrideGrantsStore,
 }: PartialExcept<DocumentPairPermissionsOptions, 'id' | 'type' | 'permission'>): ReturnType<
   typeof useDocumentPairPermissionsFromHookFactory
 > {
-  const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
-  const schema = useSchema()
-  const grantsStore = useGrantsStore()
+  const defaultClient = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
+  const defaultSchema = useSchema()
+  const defaultGrantsStore = useGrantsStore()
 
-  return useDocumentPairPermissionsFromHookFactory({
-    client: rest.client || client,
-    grantsStore: rest.grantsStore || grantsStore,
-    schema: rest.schema || schema,
-    id,
-    permission,
-    type,
-  })
+  const client = useMemo(() => overrideClient || defaultClient, [defaultClient, overrideClient])
+  const schema = useMemo(() => overrideSchema || defaultSchema, [defaultSchema, overrideSchema])
+  const grantsStore = useMemo(
+    () => overrideGrantsStore || defaultGrantsStore,
+    [defaultGrantsStore, overrideGrantsStore]
+  )
+
+  return useDocumentPairPermissionsFromHookFactory(
+    useMemo(
+      () => ({client, schema, grantsStore, id, permission, type}),
+      [client, grantsStore, id, permission, schema, type]
+    )
+  )
 }

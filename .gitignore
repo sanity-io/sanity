@@ -60,3 +60,4 @@ tsconfig.tsbuildinfo
 #IntelliJ
 .idea
 *.iml
+.eslintcache

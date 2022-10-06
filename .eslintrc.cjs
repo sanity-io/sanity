@@ -27,7 +27,9 @@ const baseConfig = {
     'tsdoc/syntax': 'error',
     'react-hooks/rules-of-hooks': 'error',
     'react-hooks/exhaustive-deps': [
-      'error',
+      // @todo: set this to 'error' after fixing the ones we have to help prevent future accidents
+      // until then you can run `yarn lint:exhaustive-deps` to make it `error` instead of `warn` while ignoring other warnings to make problematic deps easier to spot
+      'warn',
       {
         additionalHooks: '(useMemoObservable|useObservableCallback|useAsync)',
       },

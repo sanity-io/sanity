@@ -147,7 +147,7 @@ export function ReferenceInput(props: ReferenceInputProps) {
       onChange(patches)
       onFocusPath([])
     },
-    [searchState.hits, schemaType.name, schemaType.weak, onChange, onFocusPath]
+    [onChange, onFocusPath, schemaType.name, schemaType.weak, searchState.hits]
   )
 
   const handleClear = useCallback(() => {
@@ -232,38 +232,44 @@ export function ReferenceInput(props: ReferenceInputProps) {
   const pressed = selectedState === 'pressed'
   const selected = selectedState === 'selected'
 
-  const handleQueryChange = useObservableCallback((inputValue$: Observable<string | null>) => {
-    return inputValue$.pipe(
-      filter(nonNullable),
-      distinctUntilChanged(),
-      switchMap((searchString) =>
-        concat(
-          of({isLoading: true}),
-          onSearch(searchString).pipe(
-            map((hits) => ({hits, searchString, isLoading: false})),
-            catchError((error) => {
-              push({
-                title: 'Reference search failed',
-                description: error.message,
-                status: 'error',
-                id: `reference-search-fail-${inputId}`,
+  const inputId = useId()
+
+  const handleQueryChange = useObservableCallback(
+    (inputValue$: Observable<string | null>) => {
+      return inputValue$.pipe(
+        filter(nonNullable),
+        distinctUntilChanged(),
+        switchMap((searchString) =>
+          concat(
+            of({isLoading: true}),
+            onSearch(searchString).pipe(
+              map((hits) => ({hits, searchString, isLoading: false})),
+              catchError((error) => {
+                push({
+                  title: 'Reference search failed',
+                  description: error.message,
+                  status: 'error',
+                  id: `reference-search-fail-${inputId}`,
+                })
+
+                console.error(error)
+                return of({hits: []})
               })
-
-              console.error(error)
-              return of({hits: []})
-            })
+            )
           )
-        )
-      ),
+        ),
 
-      scan(
-        (prevState, nextState): ReferenceSearchState => ({...prevState, ...nextState}),
-        INITIAL_SEARCH_STATE
-      ),
+        scan(
+          (prevState, nextState): ReferenceSearchState => ({...prevState, ...nextState}),
+          INITIAL_SEARCH_STATE
+        ),
 
-      tap(setSearchState)
-    )
-  }, [])
+        tap(setSearchState)
+      )
+    },
+    // @todo: add onSearch to the deps list when it's verified that it's safe to do so
+    [inputId, push]
+  )
 
   const handleAutocompleteOpenButtonClick = useCallback(() => {
     handleQueryChange('')
@@ -271,8 +277,6 @@ export function ReferenceInput(props: ReferenceInputProps) {
 
   const showWeakRefMismatch =
     !loadableReferenceInfo.isLoading && hasRef && weakIs !== weakShouldBe && !weakWarningOverride
-
-  const inputId = useId()
 
   const handleCreateButtonKeyDown = useCallback(
     (e: any) => {

@@ -12,6 +12,7 @@ export function usePreviewUrl(value: Partial<SanityDocument> | undefined): strin
   const [previewUrl, setPreviewUrl] = useState<string | undefined>(undefined)
   const [error, setError] = useState<unknown>(null)
   const {resolveProductionUrl} = useSource().document
+  // @todo refactor out of useAsObservable, and instead use `of() + useMemoObservable` like we did for `useLoadableFromCreateLoadable`
   const value$ = useAsObservable(value)
 
   if (error) throw error
