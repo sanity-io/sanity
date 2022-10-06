@@ -87,3 +87,27 @@ test('does not mutate any of its input', () => {
 
   expect(() => immutableReconcile(prev, next)).not.toThrow()
 })
+
+test('returns new object when previous and next has different number of keys', () => {
+  const moreKeys = {
+    key1: 'value1',
+    key2: 'value2',
+    key3: 'value3',
+  }
+  const lessKeys = {
+    key1: 'value1',
+    key2: 'value2',
+  }
+
+  expect(immutableReconcile(moreKeys, lessKeys)).not.toBe(moreKeys)
+  expect(immutableReconcile(lessKeys, moreKeys)).not.toBe(lessKeys)
+})
+
+test('returns new array when previous and next has different length', () => {
+  const moreItems = ['a', 'b']
+  const lessItems = ['a']
+
+  expect(immutableReconcile(moreItems, lessItems)).not.toBe(moreItems)
+
+  expect(immutableReconcile(lessItems, moreItems)).not.toBe(lessItems)
+})
