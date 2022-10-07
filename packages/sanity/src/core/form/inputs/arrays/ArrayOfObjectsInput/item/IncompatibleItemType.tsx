@@ -14,7 +14,7 @@ interface Props {
   vertical?: boolean
 }
 
-export function ItemWithMissingType(props: Props) {
+export function IncompatibleItemType(props: Props) {
   const {value, onFocus, vertical, ...rest} = props
   const [showDetails, setShowDetails] = React.useState(false)
   const [popoverRef, setPopoverRef] = React.useState<HTMLElement | null>(null)
@@ -94,7 +94,7 @@ export function ItemWithMissingType(props: Props) {
               </Text>
             </Box>
             <Text size={1} align="center">
-              Item type <code>{typeName}</code> not defined for this list
+              Items of type <code>{typeName}</code> is not valid for this list
             </Text>
           </Stack>
         )}
@@ -108,7 +108,7 @@ export function ItemWithMissingType(props: Props) {
 
             <Box flex={1}>
               <Text size={1} textOverflow="ellipsis">
-                Item type <code>{typeName}</code> not defined for this list
+                Item of type <code>{typeName}</code> not valid for this list
               </Text>
             </Box>
           </Flex>
