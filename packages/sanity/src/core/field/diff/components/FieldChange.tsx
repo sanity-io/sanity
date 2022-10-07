@@ -1,6 +1,5 @@
 import React, {useCallback, useMemo, useState} from 'react'
 import {Stack, Box, Button, Text, Grid, useClickOutside} from '@sanity/ui'
-import {ObjectSchemaType} from '@sanity/types'
 import {useConditionalReadOnly} from '../../conditional-property/conditionalReadOnly'
 import {useDocumentOperation} from '../../../hooks'
 import {FieldChangeNode, FieldOperationsAPI} from '../../types'
@@ -16,6 +15,8 @@ import {RevertChangesButton} from './RevertChangesButton'
 import {ValueError} from './ValueError'
 import {FieldChangeContainer, DiffBorder, PopoverWrapper} from './FieldChange.styled'
 
+const nooRenderDefault = () => <></>
+
 /** @internal */
 export function FieldChange(
   props: {
@@ -26,7 +27,6 @@ export function FieldChange(
 ) {
   const {change, hidden, readOnly} = props
   const conditionalReadOnly = useConditionalReadOnly() ?? readOnly
-  const DiffComponent = change.diffComponent || FallbackDiff
   const {
     documentId,
     schemaType,
@@ -38,6 +38,8 @@ export function FieldChange(
   const [confirmRevertOpen, setConfirmRevertOpen] = useState(false)
   const [revertHovered, setRevertHovered] = useState(false)
   const [revertButtonElement, setRevertButtonElement] = useState<HTMLDivElement | null>(null)
+
+  const DiffComponent = change.diffComponent || FallbackDiff
 
   const [permissions, isPermissionsLoading] = useDocumentPairPermissions({
     id: documentId,
@@ -53,7 +55,7 @@ export function FieldChange(
     setConfirmRevertOpen(true)
   }, [])
 
-  const closeRevertChangesConfirmDialog = React.useCallback(() => {
+  const closeRevertChangesConfirmDialog = useCallback(() => {
     setConfirmRevertOpen(false)
   }, [])
 
@@ -69,87 +71,87 @@ export function FieldChange(
 
   useClickOutside(handleClickOutside, [revertButtonElement])
 
+  const showRevertButton = isComparingCurrent && !isPermissionsLoading && permissions?.granted
+
   const content = useMemo(
-    () =>
-      hidden ? null : (
-        <Stack space={1} as={FieldChangeContainer}>
-          {change.showHeader && <ChangeBreadcrumb change={change} titlePath={change.titlePath} />}
-
-          <FieldWrapper path={change.path} hasHover={revertHovered}>
-            <DiffInspectWrapper
-              change={change}
-              as={DiffBorder}
-              data-revert-field-hover={revertHovered ? '' : undefined}
-              data-error={change.error ? '' : undefined}
-              data-revert-all-hover
+    () => (
+      <DiffInspectWrapper
+        change={change}
+        as={DiffBorder}
+        data-revert-field-hover={revertHovered ? '' : undefined}
+        data-error={change.error ? '' : undefined}
+        data-revert-all-hover
+      >
+        <Stack space={1}>
+          {change.error ? (
+            <ValueError error={change.error} />
+          ) : (
+            <DiffErrorBoundary>
+              <DiffContext.Provider value={{path: change.path}}>
+                <DiffComponent
+                  diff={change.diff}
+                  schemaType={change.schemaType}
+                  renderDefault={nooRenderDefault} // TODO
+                />
+              </DiffContext.Provider>
+            </DiffErrorBoundary>
+          )}
+          {showRevertButton && (
+            <PopoverWrapper
+              content={
+                <Stack space={2}>
+                  <Text>Are you sure you want to revert the changes?</Text>
+                  <Grid columns={2} gap={2} marginTop={2}>
+                    <Button mode="ghost" onClick={closeRevertChangesConfirmDialog} text="Cancel" />
+                    <Button tone="critical" onClick={handleRevertChanges} text="Revert change" />
+                  </Grid>
+                </Stack>
+              }
+              open={confirmRevertOpen}
+              padding={4}
+              placement="left"
+              portal
+              ref={setRevertButtonElement}
             >
-              {change.error ? (
-                <ValueError error={change.error} />
-              ) : (
-                <DiffErrorBoundary>
-                  <DiffContext.Provider value={{path: change.path}}>
-                    <DiffComponent
-                      diff={change.diff}
-                      schemaType={change.schemaType as ObjectSchemaType}
-                    />
-                  </DiffContext.Provider>
-                </DiffErrorBoundary>
-              )}
-
-              {isComparingCurrent && !isPermissionsLoading && permissions?.granted && (
-                <PopoverWrapper
-                  content={
-                    <Box padding={3} sizing="border">
-                      Are you sure you want to revert the changes?
-                      <Grid columns={2} gap={2} marginTop={2}>
-                        <Button mode="ghost" onClick={closeRevertChangesConfirmDialog}>
-                          <Text align="center">Cancel</Text>
-                        </Button>
-                        <Button tone="critical" onClick={handleRevertChanges}>
-                          <Text align="center">Revert change</Text>
-                        </Button>
-                      </Grid>
-                    </Box>
-                  }
-                  open={confirmRevertOpen}
-                  portal
-                  placement="left"
-                  ref={setRevertButtonElement}
-                >
-                  <Box flex={1}>
-                    <RevertChangesButton
-                      onClick={handleRevertChangesConfirm}
-                      onMouseEnter={handleRevertButtonMouseEnter}
-                      onMouseLeave={handleRevertButtonMouseLeave}
-                      selected={confirmRevertOpen}
-                      disabled={conditionalReadOnly}
-                      data-testid={`single-change-revert-button-${change?.key}`}
-                    />
-                  </Box>
-                </PopoverWrapper>
-              )}
-            </DiffInspectWrapper>
-          </FieldWrapper>
+              <Box flex={1}>
+                <RevertChangesButton
+                  onClick={handleRevertChangesConfirm}
+                  onMouseEnter={handleRevertButtonMouseEnter}
+                  onMouseLeave={handleRevertButtonMouseLeave}
+                  selected={confirmRevertOpen}
+                  disabled={conditionalReadOnly}
+                  data-testid={`single-change-revert-button-${change?.key}`}
+                />
+              </Box>
+            </PopoverWrapper>
+          )}
         </Stack>
-      ),
+      </DiffInspectWrapper>
+    ),
     [
+      DiffComponent,
       change,
       closeRevertChangesConfirmDialog,
       conditionalReadOnly,
       confirmRevertOpen,
-      DiffComponent,
-      FieldWrapper,
-      hidden,
       handleRevertButtonMouseEnter,
       handleRevertButtonMouseLeave,
       handleRevertChanges,
       handleRevertChangesConfirm,
-      isComparingCurrent,
-      isPermissionsLoading,
-      permissions,
       revertHovered,
+      showRevertButton,
     ]
   )
 
-  return content
+  if (hidden) return null
+
+  return (
+    <Stack space={1} as={FieldChangeContainer}>
+      {change?.showHeader && <ChangeBreadcrumb change={change} titlePath={change.titlePath} />}
+
+      <FieldWrapper path={change.path} hasHover={revertHovered}>
+        {content}
+      </FieldWrapper>
+    </Stack>
+  )
 }

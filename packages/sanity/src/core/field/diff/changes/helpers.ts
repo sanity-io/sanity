@@ -1,6 +1,12 @@
-import {Path, PathSegment} from '@sanity/types'
+import {Path, PathSegment, SchemaType} from '@sanity/types'
 import {ChangeNode, FieldChangeNode} from '../../types'
 import {getItemKey} from '../../paths'
+
+export const shouldShowHeader = (schemaType: SchemaType): boolean => {
+  if (schemaType.jsonType === 'boolean') return false
+
+  return true
+}
 
 const isAddedAction = (change: ChangeNode): boolean => {
   return change.type === 'field' && change.diff.action === 'added'

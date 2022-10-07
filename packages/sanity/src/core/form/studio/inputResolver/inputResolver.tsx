@@ -7,7 +7,7 @@ import {
   SchemaType,
   StringSchemaType,
 } from '@sanity/types'
-import React from 'react'
+import React, {ComponentType, ReactNode} from 'react'
 import {FieldMember} from '../../store'
 import {ArrayFieldProps, FieldProps, InputProps, ItemProps, ObjectFieldProps} from '../../types'
 import * as is from '../../utils/is'
@@ -16,15 +16,14 @@ import {PreviewProps} from '../../../components'
 import {ChangeIndicator} from '../../../changeIndicators'
 import {SanityPreview} from '../../../preview'
 import {FIXME} from '../../../FIXME'
+import {DiffProps, resolveDiffComponent} from '../../../field'
 import {resolveReferenceInput} from './resolveReferenceInput'
 import {resolveArrayInput} from './resolveArrayInput'
 import {resolveStringInput} from './resolveStringInput'
 import {resolveNumberInput} from './resolveNumberInput'
 import {defaultInputs} from './defaultInputs'
 
-function resolveComponentFromTypeVariants(
-  type: SchemaType
-): React.ComponentType<FIXME> | undefined {
+function resolveComponentFromTypeVariants(type: SchemaType): ComponentType<FIXME> | undefined {
   if (is.type('array', type)) {
     return resolveArrayInput(type as ArraySchemaType)
   }
@@ -57,7 +56,7 @@ function getTypeChain(type: SchemaType | undefined, visited: Set<SchemaType>): S
 
 export function defaultResolveInputComponent(
   schemaType: SchemaType
-): React.ComponentType<Omit<InputProps, 'renderDefault'>> {
+): ComponentType<Omit<InputProps, 'renderDefault'>> {
   if (schemaType.components?.input) return schemaType.components.input
 
   const componentFromTypeVariants = resolveComponentFromTypeVariants(schemaType)
@@ -81,7 +80,7 @@ export function defaultResolveInputComponent(
   throw new Error(`Could not find input component for schema type \`${schemaType.name}\``)
 }
 
-function NoopField({children}: {children: React.ReactNode}) {
+function NoopField({children}: {children: ReactNode}) {
   return <>{children}</>
 }
 
@@ -153,7 +152,7 @@ function ImageOrFileField(field: ObjectFieldProps) {
 
 export function defaultResolveFieldComponent(
   schemaType: SchemaType
-): React.ComponentType<Omit<FieldProps, 'renderDefault'>> {
+): ComponentType<Omit<FieldProps, 'renderDefault'>> {
   if (schemaType.components?.field) return schemaType.components.field
 
   if (isBooleanSchemaType(schemaType)) {
@@ -161,26 +160,34 @@ export function defaultResolveFieldComponent(
   }
 
   if (getTypeChain(schemaType, new Set()).some((t) => t.name === 'image' || t.name === 'file')) {
-    return ImageOrFileField as React.ComponentType<Omit<FieldProps, 'renderDefault'>>
+    return ImageOrFileField as ComponentType<Omit<FieldProps, 'renderDefault'>>
   }
 
   if (schemaType.jsonType !== 'object' && schemaType.jsonType !== 'array') {
-    return PrimitiveField as React.ComponentType<Omit<FieldProps, 'renderDefault'>>
+    return PrimitiveField as ComponentType<Omit<FieldProps, 'renderDefault'>>
   }
 
-  return ObjectOrArrayField as React.ComponentType<Omit<FieldProps, 'renderDefault'>>
+  return ObjectOrArrayField as ComponentType<Omit<FieldProps, 'renderDefault'>>
 }
 
 export function defaultResolveItemComponent(
   schemaType: SchemaType
-): React.ComponentType<Omit<ItemProps, 'renderDefault'>> {
+): ComponentType<Omit<ItemProps, 'renderDefault'>> {
   if (schemaType.components?.item) return schemaType.components.item
 
   return NoopField
 }
 
-export function defaultResolvePreviewComponent(): React.ComponentType<
+export function defaultResolvePreviewComponent(): ComponentType<
   Omit<PreviewProps, 'renderDefault'>
 > {
   return SanityPreview as any
+}
+
+export function defaultResolveDiffComponent(
+  schemaType: SchemaType
+): ComponentType<Omit<DiffProps, 'renderDefault'>> {
+  const resolvedComponent = resolveDiffComponent(schemaType)
+
+  return resolvedComponent
 }

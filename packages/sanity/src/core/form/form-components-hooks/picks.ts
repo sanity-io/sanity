@@ -1,6 +1,7 @@
 import {ComponentType} from 'react'
 import {PreviewProps} from '../../components/previews'
 import {PluginOptions} from '../../config'
+import {DiffProps} from '../../field'
 import {FieldProps, InputProps, ItemProps} from '../types'
 
 export function pickInputComponent(
@@ -25,4 +26,10 @@ export function pickItemComponent(
   plugin: PluginOptions
 ): ComponentType<Omit<ItemProps, 'renderDefault'>> {
   return plugin.form?.components?.item as ComponentType<Omit<ItemProps, 'renderDefault'>>
+}
+
+export function pickDiffComponent(
+  plugin: PluginOptions
+): ComponentType<Omit<DiffProps, 'renderDefault'>> {
+  return plugin.form?.components?.diff as ComponentType<Omit<DiffProps, 'renderDefault'>>
 }

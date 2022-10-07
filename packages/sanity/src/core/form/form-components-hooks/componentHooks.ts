@@ -1,13 +1,15 @@
 import {ComponentType} from 'react'
 import {PreviewProps} from '../../components/previews'
 import {useMiddlewareComponents} from '../../config/components'
+import {DiffProps} from '../../field'
 import {InputProps, FieldProps, ItemProps} from '../types'
-import {DefaultInput, DefaultField, DefaultItem, DefaultPreview} from './components'
+import {DefaultInput, DefaultField, DefaultItem, DefaultPreview, DefaultDiff} from './components'
 import {
   pickInputComponent,
   pickFieldComponent,
   pickPreviewComponent,
   pickItemComponent,
+  pickDiffComponent,
 } from './picks'
 
 /**
@@ -47,5 +49,15 @@ export function useItemComponent(): ComponentType<Omit<ItemProps, 'renderDefault
   return useMiddlewareComponents({
     defaultComponent: DefaultItem,
     pick: pickItemComponent,
+  })
+}
+
+/**
+ * @internal
+ */
+export function useDiffComponent(): ComponentType<Omit<DiffProps, 'renderDefault'>> {
+  return useMiddlewareComponents({
+    defaultComponent: DefaultDiff,
+    pick: pickDiffComponent,
   })
 }

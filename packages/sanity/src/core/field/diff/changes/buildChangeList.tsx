@@ -6,6 +6,7 @@ import {
   ObjectSchemaType,
   SchemaType,
 } from '@sanity/types'
+import React from 'react'
 import {pathToString, pathsAreEqual, getItemKeySegment} from '../../paths'
 import {getValueError} from '../../validation'
 import {getArrayDiffItemType} from '../../schema/helpers'
@@ -15,19 +16,21 @@ import {
   ChangeNode,
   ChangeTitlePath,
   Diff,
-  DiffComponent,
+  DiffProps,
   FieldChangeNode,
   ItemDiff,
   ObjectDiff,
 } from '../../types'
 import {resolveDiffComponent} from '../resolve/resolveDiffComponent'
 import {isFieldChange} from '../helpers'
+import {shouldShowHeader} from './helpers'
 
 interface DiffContext {
+  diffComponent: React.ComponentType<Omit<DiffProps, 'renderDefault'>>
+  fieldFilter?: string[]
   itemDiff?: ItemDiff
   parentDiff?: ArrayDiff | ObjectDiff
   parentSchema?: ArraySchemaType | ObjectSchemaType
-  fieldFilter?: string[]
 }
 
 export function buildChangeList(
@@ -35,9 +38,9 @@ export function buildChangeList(
   diff: Diff,
   path: Path = [],
   titlePath: ChangeTitlePath = [],
-  context: DiffContext = {}
+  context: DiffContext
 ): ChangeNode[] {
-  const diffComponent = resolveDiffComponent(schemaType, context.parentSchema)
+  const diffComponent = resolveDiffComponent(schemaType)
 
   if (!diffComponent) {
     if (schemaType.jsonType === 'object' && diff.type === 'object') {
@@ -45,7 +48,7 @@ export function buildChangeList(
     }
 
     if (schemaType.jsonType === 'array' && diff.type === 'array') {
-      return buildArrayChangeList(schemaType, diff, path, titlePath)
+      return buildArrayChangeList(schemaType, diff, path, titlePath, context)
     }
   }
 
@@ -57,11 +60,15 @@ export function buildObjectChangeList(
   diff: ObjectDiff,
   path: Path = [],
   titlePath: ChangeTitlePath = [],
-  diffContext: DiffContext = {}
+  diffContext: DiffContext
 ): ChangeNode[] {
   const changes: ChangeNode[] = []
 
-  const childContext: DiffContext = {...diffContext, parentSchema: schemaType}
+  const childContext: DiffContext = {
+    ...diffContext,
+    parentSchema: schemaType,
+  }
+
   const fieldSets =
     schemaType.fieldsets || schemaType.fields.map((field) => ({single: true, field}))
   for (const fieldSet of fieldSets) {
@@ -83,9 +90,10 @@ export function buildObjectChangeList(
       type: 'group',
       key: pathToString(path) || 'root',
       path,
-      titlePath,
+      titlePath, // Don't do anything – objet gets their titlePath in `getFieldChange`
       changes: reduceTitlePaths(changes, titlePath.length),
       schemaType,
+      diffComponent: diffContext.diffComponent,
     },
   ]
 }
@@ -95,7 +103,7 @@ export function buildFieldChange(
   diff: ObjectDiff,
   path: Path,
   titlePath: ChangeTitlePath,
-  diffContext: DiffContext & {fieldFilter?: string[]} = {}
+  diffContext: DiffContext
 ): ChangeNode[] {
   const {fieldFilter, ...context} = diffContext
   const fieldDiff = diff.fields[field.name]
@@ -113,7 +121,7 @@ export function buildFieldsetChangeList(
   diff: ObjectDiff,
   path: Path,
   titlePath: ChangeTitlePath,
-  diffContext: DiffContext & {fieldFilter?: string[]} = {}
+  diffContext: DiffContext & {fieldFilter?: string[]}
 ): ChangeNode[] {
   const {fields, name, title, readOnly, hidden} = fieldSet
   const {fieldFilter, ...context} = diffContext
@@ -161,6 +169,7 @@ export function buildFieldsetChangeList(
       changes: reduceTitlePaths(changes, fieldSetTitlePath.length),
       readOnly: fieldsetReadOnly,
       hidden: fieldSetHidden,
+      diffComponent: diffContext.diffComponent,
     },
   ]
 }
@@ -169,7 +178,8 @@ export function buildArrayChangeList(
   schemaType: ArraySchemaType,
   diff: ArrayDiff,
   path: Path = [],
-  titlePath: ChangeTitlePath = []
+  titlePath: ChangeTitlePath = [],
+  diffContext: DiffContext
 ): ChangeNode[] {
   const changedOrMoved = diff.items.filter(
     (item) => (item.hasMoved && item.fromIndex !== item.toIndex) || item.diff.action !== 'unchanged'
@@ -196,7 +206,12 @@ export function buildArrayChangeList(
       diff.items.indexOf(itemDiff)
 
     const itemPath = path.concat(segment)
-    const itemContext: DiffContext = {itemDiff, parentDiff: diff, parentSchema: schemaType}
+    const itemContext: DiffContext = {
+      itemDiff,
+      parentDiff: diff,
+      parentSchema: schemaType,
+      diffComponent: diffContext.diffComponent,
+    }
     const itemTitlePath = titlePath.concat({
       hasMoved: itemDiff.hasMoved,
       toIndex: itemDiff.toIndex,
@@ -217,7 +232,7 @@ export function buildArrayChangeList(
       memberType,
       itemDiff.diff,
       itemPath,
-      itemTitlePath,
+      itemTitlePath, // Array item title, e.g. the index of the item like "#1" or "#3"
       itemContext
     ).map(attachItemDiff)
 
@@ -247,6 +262,7 @@ export function buildArrayChangeList(
         titlePath,
         changes: reduceTitlePaths(changes, titlePath.length),
         schemaType,
+        diffComponent: diffContext.diffComponent,
       },
     ]
   }
@@ -259,7 +275,7 @@ function getFieldChange(
   diff: Diff,
   path: Path,
   titlePath: ChangeTitlePath,
-  {itemDiff, parentDiff, parentSchema}: DiffContext = {}
+  {itemDiff, parentDiff, parentSchema, diffComponent}: DiffContext
 ): FieldChangeNode[] {
   const {fromValue, toValue, type} = diff
 
@@ -277,21 +293,7 @@ function getFieldChange(
     error = getValueError(toValue, schemaType)
   }
 
-  let showHeader = true
-  let component: DiffComponent | undefined
-
-  const diffComponent = resolveDiffComponent(schemaType, parentSchema)
-  if (diffComponent && typeof diffComponent === 'function') {
-    // Just a diff component with default options
-    component = diffComponent
-  } else if (diffComponent) {
-    // Diff component with options
-    component = (diffComponent as any).component
-    showHeader =
-      typeof (diffComponent as any).showHeader === 'undefined'
-        ? showHeader
-        : (diffComponent as any).showHeader
-  }
+  const showHeader = shouldShowHeader(schemaType)
 
   return [
     {
@@ -306,8 +308,8 @@ function getFieldChange(
       showHeader,
       showIndex: true,
       key: pathToString(path) || 'root',
-      diffComponent: error ? undefined : component,
       parentSchema,
+      diffComponent: diffComponent,
     },
   ]
 }

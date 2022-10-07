@@ -24,6 +24,7 @@ import type {InitialValueTemplateItem, Template, TemplateResponse} from '../temp
 import {PreviewProps} from '../components/previews'
 import {AuthStore} from '../store'
 import {StudioTheme} from '../theme'
+import {DiffProps} from '../field'
 import {StudioComponents, StudioComponentsPluginOptions} from './studio'
 import {DocumentActionComponent, DocumentBadgeComponent} from './document'
 import {Router, RouterState} from 'sanity/router'
@@ -61,8 +62,9 @@ export interface SanityFormConfig {
   }
   /** @beta */
   components?: {
-    input?: ComponentType<InputProps>
+    diff?: ComponentType<DiffProps>
     field?: ComponentType<FieldProps>
+    input?: ComponentType<InputProps>
     item?: ComponentType<ItemProps>
     preview?: ComponentType<PreviewProps>
   }
@@ -343,8 +345,9 @@ export interface Source {
 
     /** @beta */
     components?: {
-      input?: ComponentType<Omit<InputProps, 'renderDefault'>>
+      diff?: ComponentType<Omit<DiffProps, 'renderDefault'>>
       field?: ComponentType<Omit<FieldProps, 'renderDefault'>>
+      input?: ComponentType<Omit<InputProps, 'renderDefault'>>
       item?: ComponentType<Omit<ItemProps, 'renderDefault'>>
       preview?: ComponentType<Omit<PreviewProps, 'renderDefault'>>
     }

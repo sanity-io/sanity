@@ -1,3 +1,4 @@
+import React from 'react'
 import {BookIcon} from '@sanity/icons'
 import {visionTool} from '@sanity/vision'
 import {createConfig, createPlugin} from 'sanity'
@@ -18,7 +19,7 @@ import {
   CustomToolMenu,
   studioComponentsPlugin,
 } from './components/studioComponents'
-import {Field, formComponentsPlugin, Input, Item, Preview} from './components/formComponents'
+import {Diff, Field, formComponentsPlugin, Input, Item, Preview} from './components/formComponents'
 import {googleTheme} from './themes/google'
 import {vercelTheme} from './themes/vercel'
 import {theme as tailwindTheme} from 'https://themer.sanity.build/api/hues?preset=tw-cyan&default=64748b&primary=d946ef;lightest:fdf4ff;darkest:701a75&transparent=6b7180;darkest:111826&positive=43d675;400;lightest:f8fafc&caution=f59e09;300;lightest:fffbeb;darkest:783510&critical=f43f5e;lightest:fef1f2;darkest:881337&lightest=ffffff&darkest=0f172a'
@@ -82,6 +83,7 @@ export default createConfig([
     dataset: 'test',
     plugins: [sharedSettings()],
     basePath: '/test',
+
     studio: {
       components: {
         logo: Branding,
@@ -152,8 +154,9 @@ export default createConfig([
     basePath: '/custom-components',
     form: {
       components: {
-        input: Input,
+        diff: Diff,
         field: Field,
+        input: Input,
         item: Item,
         preview: Preview,
       },

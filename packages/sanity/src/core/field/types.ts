@@ -11,7 +11,7 @@ import {
   SchemaType,
   PatchOperations,
 } from '@sanity/types'
-import {ComponentType} from 'react'
+import {ComponentType, ReactElement} from 'react'
 import {
   ArrayDiff as AgnosticArrayDiff,
   BooleanDiff as AgnosticBooleanDiff,
@@ -30,7 +30,7 @@ import {FieldValueError} from './validation'
 /**
  * History timeline / chunking
  *
- * @beta
+ * @public
  */
 export type ChunkType =
   | 'initial'
@@ -42,7 +42,7 @@ export type ChunkType =
   | 'discardDraft'
   | 'editLive'
 
-/** @beta */
+/** @public */
 export type Chunk = {
   index: number
 
@@ -60,7 +60,7 @@ export type Chunk = {
 /**
  * Annotation connected to a change
  *
- * @beta
+ * @public
  */
 export type AnnotationDetails = {
   chunk: Chunk
@@ -68,36 +68,36 @@ export type AnnotationDetails = {
   author: string
 }
 
-/** @beta */
+/** @public */
 export type Annotation = AnnotationDetails | null
 
 // Diff types with annotation type set automatically
 
-/** @internal */
+/** @public */
 export type ArrayDiff<V = unknown> = AgnosticArrayDiff<Annotation, V>
 
-/** @internal */
+/** @public */
 export type BooleanDiff = AgnosticBooleanDiff<Annotation>
 
-/** @internal */
+/** @public */
 export type NullDiff = AgnosticNullDiff<Annotation>
 
-/** @internal */
+/** @public */
 export type NumberDiff = AgnosticNumberDiff<Annotation>
 
-/** @internal */
+/** @public */
 export type ObjectDiff<T extends object = Record<string, any>> = AgnosticObjectDiff<Annotation, T>
 
-/** @internal */
+/** @public */
 export type StringDiff = AgnosticStringDiff<Annotation>
 
-/** @internal */
+/** @public */
 export type ReferenceDiff = ObjectDiff<Reference>
 
-/** @internal */
+/** @public */
 export type TypeChangeDiff = AgnosticTypeChangeDiff<Annotation>
 
-/** @internal */
+/** @public */
 export type Diff<A = unknown, O extends object = Record<string, any>> =
   | ArrayDiff<A>
   | BooleanDiff
@@ -142,7 +142,7 @@ export type DiffComponentOptions<T extends Diff = Diff> = {
   showHeader?: boolean
 }
 
-/** @internal */
+/** @public */
 export type DiffProps<T extends Diff = Diff> = {
   diff: T
   schemaType: T extends ObjectDiff
@@ -156,6 +156,7 @@ export type DiffProps<T extends Diff = Diff> = {
     : T extends NumberDiff
     ? NumberSchemaType
     : SchemaType
+  renderDefault: (props: Omit<DiffProps, 'renderDefault'>) => ReactElement
 }
 
 /**
@@ -228,6 +229,7 @@ export interface GroupChangeNode {
   readOnly?: ConditionalProperty
   hidden?: ConditionalProperty
   fieldsetName?: string
+  diffComponent?: ComponentType<Omit<DiffProps, 'renderDefault'>>
 }
 
 /** @internal */
@@ -243,10 +245,10 @@ export interface FieldChangeNode {
   schemaType: ObjectFieldType
   showHeader: boolean
   showIndex: boolean
-  diffComponent?: DiffComponent
   parentSchema?: ArraySchemaType | ObjectSchemaType
   readOnly?: ConditionalProperty
   hidden?: ConditionalProperty
+  diffComponent?: ComponentType<Omit<DiffProps, 'renderDefault'>>
 }
 
 /** @internal */

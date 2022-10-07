@@ -1,11 +1,13 @@
 import {SchemaType} from '@sanity/types'
 import React, {useCallback, createElement} from 'react'
 import {PreviewProps} from '../../components/previews'
+import {DiffProps} from '../../field'
 import {
   defaultResolveInputComponent,
   defaultResolveFieldComponent,
   defaultResolveItemComponent,
   defaultResolvePreviewComponent,
+  defaultResolveDiffComponent,
 } from '../studio/inputResolver/inputResolver'
 import {InputProps, FieldProps, ItemProps} from '../types'
 
@@ -21,7 +23,7 @@ function useResolveDefaultComponent<T extends {schemaType?: SchemaType}>(props: 
     throw new Error('the `schemaType` property must be defined')
   }
 
-  const defaultResolvedComponent = componentResolver(componentProps.schemaType)
+  const defaultResolvedComponent = componentResolver(componentProps?.schemaType)
 
   const renderDefault = useCallback(
     (parentTypeProps: T) => {
@@ -83,5 +85,15 @@ export function DefaultPreview(props: Omit<PreviewProps, 'renderDefault'>): Reac
   return useResolveDefaultComponent<Omit<PreviewProps, 'renderDefault'>>({
     componentProps: props,
     componentResolver: defaultResolvePreviewComponent,
+  })
+}
+
+/**
+ * @internal
+ */
+export function DefaultDiff(props: Omit<DiffProps, 'renderDefault'>): React.ReactElement {
+  return useResolveDefaultComponent<Omit<DiffProps, 'renderDefault'>>({
+    componentProps: props,
+    componentResolver: defaultResolveDiffComponent,
   })
 }

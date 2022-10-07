@@ -1,13 +1,14 @@
 import React from 'react'
 import {hues} from '@sanity/color'
 import {Box, Stack, Heading, Flex, Inline, Text} from '@sanity/ui'
-import {FieldProps, InputProps, ItemProps, PreviewProps} from 'sanity'
+import {DiffProps, FieldProps, InputProps, ItemProps, PreviewProps} from 'sanity'
 
 const COMPONENT_COLORS = {
-  input: hues.blue[400].hex,
+  diff: hues.magenta[400].hex,
   field: hues.yellow[400].hex,
-  preview: hues.red[400].hex,
+  input: hues.blue[400].hex,
   item: hues.green[400].hex,
+  preview: hues.red[400].hex,
 }
 
 export function FormInput(props: InputProps) {
@@ -83,6 +84,20 @@ export function CustomPreview(props: PreviewProps & {testId: string}) {
       style={{border: `4px solid ${COMPONENT_COLORS.preview}`}}
     >
       {props.renderDefault(props)}
+    </Box>
+  )
+}
+
+export function CustomDiff(props: DiffProps & {testId: string}) {
+  return props.renderDefault(props)
+
+  return (
+    <Box
+      data-testid={props.testId}
+      padding={2}
+      style={{border: `4px solid ${COMPONENT_COLORS.diff}`}}
+    >
+      {props?.renderDefault(props)}
     </Box>
   )
 }

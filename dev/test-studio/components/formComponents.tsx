@@ -1,6 +1,21 @@
 import React from 'react'
 import {Card} from '@sanity/ui'
-import {createPlugin, InputProps, FieldProps, ItemProps, PreviewProps} from 'sanity'
+import {createPlugin, InputProps, FieldProps, ItemProps, PreviewProps, DiffProps} from 'sanity'
+
+export function Diff(props: DiffProps) {
+  return props.renderDefault(props)
+
+  return (
+    <Card
+      data-testid="diff-config-component"
+      padding={2}
+      style={{border: '2px solid magenta'}}
+      tone="transparent"
+    >
+      {props.renderDefault(props)}
+    </Card>
+  )
+}
 
 export function Input(props: InputProps) {
   return (
@@ -38,6 +53,15 @@ export const formComponentsPlugin = createPlugin({
   name: 'form-components-plugin',
   form: {
     components: {
+      diff: (props) => {
+        return props.renderDefault(props)
+
+        return (
+          <Card data-testid="diff-plugin-component" padding={2} border tone="transparent">
+            {props.renderDefault(props)}
+          </Card>
+        )
+      },
       input: (props) => {
         return (
           <Card data-testid="input-plugin-component" padding={2} border tone="primary">
