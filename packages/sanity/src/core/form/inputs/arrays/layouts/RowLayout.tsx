@@ -2,7 +2,7 @@ import {Box, Card, CardTone, Flex} from '@sanity/ui'
 import React, {ReactNode, useRef} from 'react'
 import {useDidUpdate} from '../../../hooks/useDidUpdate'
 import {DragHandle} from '../common/DragHandle'
-import {ItemCard} from './item/ItemCard'
+import {ItemCard} from './ItemCard'
 
 interface RowLayoutProps {
   tone?: CardTone

@@ -1,15 +1,10 @@
 /* eslint-disable react/jsx-handler-names */
 import {Card, Stack, Text} from '@sanity/ui'
 import React from 'react'
+import {isReferenceSchemaType} from '@sanity/types'
 import {UploaderResolver} from '../../../studio/uploads/types'
 import {Item, List} from '../common/list'
-import {
-  ArrayInputInsertEvent,
-  ArrayOfObjectsInputProps,
-  ObjectItem,
-  ObjectItemProps,
-  UploadEvent,
-} from '../../../types'
+import {ArrayOfObjectsInputProps, ObjectItem, ObjectItemProps, UploadEvent} from '../../../types'
 import {DefaultArrayInputFunctions} from '../common/ArrayFunctions'
 import {withFocusRing} from '../../../components/withFocusRing'
 import {ArrayOfObjectsItem} from '../../../members'
@@ -17,8 +12,8 @@ import {uploadTarget} from './uploadTarget/uploadTarget'
 
 import {PreviewItem} from './PreviewItem'
 import {createProtoArrayValue} from './createProtoArrayValue'
-import {InlineItem} from './InlineItem'
 import {ItemError} from './item/ItemError'
+import {ReferenceItem, ReferenceItemValue} from './ReferenceItem'
 
 const UploadTarget = uploadTarget(withFocusRing(Card))
 
@@ -55,17 +50,22 @@ export function ArrayOfObjectsInput<Item extends ObjectItem>(props: ArrayInputPr
   const sortable = schemaType.options?.sortable !== false
 
   const renderItem = (itemProps: Omit<ObjectItemProps, 'renderDefault'>) => {
-    const inline = itemProps.schemaType.options?.modal === 'inline'
-
-    return inline ? (
-      <InlineItem insertableTypes={schemaType.of} sortable={sortable} {...itemProps} />
+    return isReferenceSchemaType(itemProps.schemaType) ? (
+      <ReferenceItem
+        {...itemProps}
+        insertableTypes={schemaType.of}
+        sortable={sortable}
+        schemaType={itemProps.schemaType}
+        value={itemProps.value as ReferenceItemValue}
+        renderPreview={renderPreview}
+      />
     ) : (
       <PreviewItem
         {...itemProps}
         sortable={sortable}
         insertableTypes={schemaType.of}
         preview={renderPreview({
-          schemaType: schemaType,
+          schemaType: itemProps.schemaType,
           value: itemProps.value,
           layout: 'default',
         })}

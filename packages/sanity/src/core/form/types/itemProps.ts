@@ -9,6 +9,7 @@ import {
 } from '@sanity/types'
 import React from 'react'
 import {FormNodePresence} from '../../presence'
+import {ObjectInputProps} from './inputProps'
 
 /** @public */
 export type ObjectItem = {
@@ -60,6 +61,7 @@ export interface ObjectItemProps<Item extends ObjectItem = ObjectItem> extends B
   onClose: () => void
   onOpen: () => void
   value: Item
+  inputProps: Omit<ObjectInputProps, 'renderDefault'>
 }
 
 export type ItemProps = ObjectItemProps | PrimitiveItemProps

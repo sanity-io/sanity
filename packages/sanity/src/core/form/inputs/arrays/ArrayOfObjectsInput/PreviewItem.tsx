@@ -23,10 +23,10 @@ import {randomKey} from '../common/randomKey'
 import {FormFieldValidationStatus} from '../../../components/formField'
 import {FieldPresence} from '../../../../presence'
 import {useChildValidation} from '../../../studio/contexts/Validation'
-import {RowLayout} from './RowLayout'
+import {ChangeIndicator} from '../../../../changeIndicators'
+import {RowLayout} from '../layouts/RowLayout'
 import {createProtoArrayValue} from './createProtoArrayValue'
 import {InsertMenu} from './InsertMenu'
-import {ChangeIndicator} from '../../../../changeIndicators'
 
 interface Props<Item extends ObjectItem> extends Omit<ObjectItemProps<Item>, 'renderDefault'> {
   insertableTypes: SchemaType[]
@@ -164,8 +164,7 @@ export function PreviewItem<Item extends ObjectItem = ObjectItem>(props: Props<I
         tone="inherit"
         radius={2}
         disabled={resolvingInitialValue}
-        marginLeft={1}
-        paddingRight={2}
+        paddingX={2}
         paddingY={1}
         onClick={onOpen}
         ref={previewCardRef}
@@ -187,6 +186,7 @@ export function PreviewItem<Item extends ObjectItem = ObjectItem>(props: Props<I
             tone="transparent"
             as={Flex}
             radius={2}
+            //eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-ignore
             justify="center"
           >

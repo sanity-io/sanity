@@ -53,7 +53,7 @@ import {EMPTY_ARRAY, getPublishedId, isNonNullable} from '../../../util'
 import {FIXME} from '../../../FIXME'
 import {FieldPresence} from '../../../presence'
 import {ArrayInputInsertEvent} from '../../types'
-import {ItemCard} from '../arrays/ArrayOfObjectsInput/item/ItemCard'
+import {ItemCard} from '../arrays/layouts/ItemCard'
 import {ReferenceInputProps, CreateReferenceOption, ReferenceSearchState} from './types'
 import {OptionPreview} from './OptionPreview'
 import {useReferenceInfo} from './useReferenceInfo'
@@ -504,10 +504,10 @@ export function ArrayItemReferenceInput(props: Props) {
                   tone={selected ? 'default' : 'inherit'}
                   __unstable_focusRing
                   tabIndex={0}
-                  selected={selected}
-                  pressed={pressed}
                   onKeyPress={handlePreviewKeyPress}
                   onFocus={handleFocus}
+                  selected={selected}
+                  pressed={pressed}
                   data-selected={selected ? true : undefined}
                   data-pressed={pressed ? true : undefined}
                   ref={forwardedRef}

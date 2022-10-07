@@ -255,6 +255,7 @@ export function ArrayOfObjectsItem(props: MemberItemProps) {
       path: member.item.path,
       children: renderedInput,
       changed: member.item.changed,
+      inputProps,
     }
   }, [
     member.key,
@@ -281,6 +282,7 @@ export function ArrayOfObjectsItem(props: MemberItemProps) {
     handleFocus,
     handleBlur,
     renderedInput,
+    inputProps,
   ])
 
   return (

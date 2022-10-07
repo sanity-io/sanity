@@ -4,9 +4,9 @@ import {SchemaType} from '@sanity/types'
 import {CopyIcon as DuplicateIcon, EllipsisVerticalIcon, TrashIcon} from '@sanity/icons'
 import {ObjectItem, ObjectItemProps} from '../../../types'
 import {randomKey} from '../common/randomKey'
+import {RowLayout} from '../layouts/RowLayout'
 import {InsertMenu} from './InsertMenu'
 import {createProtoArrayValue} from './createProtoArrayValue'
-import {RowLayout} from './RowLayout'
 
 interface Props<Item extends ObjectItem> extends Omit<ObjectItemProps<Item>, 'renderDefault'> {
   insertableTypes: SchemaType[]

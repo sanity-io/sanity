@@ -1,6 +1,6 @@
 import {Card} from '@sanity/ui'
 import styled from 'styled-components'
-import {MOVING_ITEM_CLASS_NAME} from '../../common/sortable'
+import {MOVING_ITEM_CLASS_NAME} from '../common/sortable'
 
 export const ItemCard = styled(Card)`
   position: relative;
