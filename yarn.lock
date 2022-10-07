@@ -3342,10 +3342,10 @@
     object-assign "^4.1.1"
     rxjs "^6.0.0"
 
-"@sanity/color@2.1.17-next.18", "@sanity/color@2.1.17-next.18+f1216ee3":
-  version "2.1.17-next.18"
-  resolved "https://registry.yarnpkg.com/@sanity/color/-/color-2.1.17-next.18.tgz#2832e1ad4477acd6c4fc1bb61d39e5fe5dba0343"
-  integrity sha512-6oGNiJKESGFPSXcnRarrPnIqm/A9YUbQSrEQkK39TGtVwRs4bRCL4RfroIO7Mdk62psl5BL73pp4wGVuQhuWqA==
+"@sanity/color@2.1.17-next.30", "@sanity/color@2.1.17-next.30+8cd982e0":
+  version "2.1.17-next.30"
+  resolved "https://registry.yarnpkg.com/@sanity/color/-/color-2.1.17-next.30.tgz#2c64c07cb6332a1d55cfd7532c42b826482307d0"
+  integrity sha512-aodt2NtC1EPTdZLRRS2zcSYyMUfhqit2GpHh07ptWDRZy0ZLxZoBnRNJPsHK5DvCXeguNP1kHSRgn5h/B/g+AQ==
 
 "@sanity/eslint-config-studio@^2.0.0":
   version "2.0.0"
@@ -3394,10 +3394,10 @@
     lodash "^4.17.21"
     rxjs "^6.6.7"
 
-"@sanity/icons@1.3.7-next.18", "@sanity/icons@1.3.7-next.18+f1216ee3":
-  version "1.3.7-next.18"
-  resolved "https://registry.yarnpkg.com/@sanity/icons/-/icons-1.3.7-next.18.tgz#54bd991f4e7180fff096cafb737ef07ecf9edd0f"
-  integrity sha512-2aa1DPZ1Rs/X9QcJkCPsn744H0pdj3VYWgYumjwp4bmbXd9J90seM78dlp7kbqFBIOMa2xrc43Wajr8nftbgqQ==
+"@sanity/icons@1.3.7-next.30", "@sanity/icons@1.3.7-next.30+8cd982e0":
+  version "1.3.7-next.30"
+  resolved "https://registry.yarnpkg.com/@sanity/icons/-/icons-1.3.7-next.30.tgz#a15ba648c94348e1fbf6804a29441da837f585d2"
+  integrity sha512-k+R4zHb1XzhHgXZDP/u7bUP6PRvHFOp0YrBme4tyJ+qbH2aLhQo5OVmvp9R3Zx74GtC7y3IIq19rIiiZDM0U+Q==
 
 "@sanity/image-url@^1.0.1":
   version "1.0.1"
@@ -3412,10 +3412,10 @@
     "@reach/auto-id" "^0.17.0"
     react-copy-to-clipboard "^5.1.0"
 
-"@sanity/logos@1.1.18-next.18":
-  version "1.1.18-next.18"
-  resolved "https://registry.yarnpkg.com/@sanity/logos/-/logos-1.1.18-next.18.tgz#c9065254b0fefda34140e76bd84e8beba8d9ce1f"
-  integrity sha512-UB0QGpdgeFLy9E5Bj2yDeu+zAbnOBIUzbLd7wsmINPzLiNW+UZaCLB01Yg5t43C4c6y0zCLMwWW6vOqdlxalng==
+"@sanity/logos@1.1.18-next.30":
+  version "1.1.18-next.30"
+  resolved "https://registry.yarnpkg.com/@sanity/logos/-/logos-1.1.18-next.30.tgz#ebf7250c1852939dd3aa41f333dc94d1d1259d84"
+  integrity sha512-92fDyBx4V68vMVCJ133rfT11DlPp6rmOCQR8P3ZH7zQ+d0kPlpRqfc3ldHlwoSf4M1TU70cUPVq7sTa0izwZmg==
 
 "@sanity/pkg-utils@^1.12.0":
   version "1.12.0"
@@ -3500,15 +3500,15 @@
     pako "^2.0.4"
     segmented-property "^3.0.3"
 
-"@sanity/ui@0.38.3-next.18":
-  version "0.38.3-next.18"
-  resolved "https://registry.yarnpkg.com/@sanity/ui/-/ui-0.38.3-next.18.tgz#02e66895311f5d73138250fbb596cf70d52318bd"
-  integrity sha512-joPPyeMe38Rm/xZ4JuhGKDkMs60rP+Jil5z0UFWLsZl6Nd3IbmyXkj7LN00eexos6rcAECgzbL2iGAYkSlzjlQ==
+"@sanity/ui@0.38.3-next.30":
+  version "0.38.3-next.30"
+  resolved "https://registry.yarnpkg.com/@sanity/ui/-/ui-0.38.3-next.30.tgz#36eeca737ebcd9f9fa55dad2b548da18b2b4f910"
+  integrity sha512-hilbAt6j6yE0t+fkEu9eVwiZTr6ZPtQI59TCa4YnhtlmHLnwlDHbwUhr5+Xy5Qo3KNRXsuPwbFfsHxAbVlKLTQ==
   dependencies:
     "@popperjs/core" "^2.11.6"
-    "@sanity/color" "2.1.17-next.18+f1216ee3"
-    "@sanity/icons" "1.3.7-next.18+f1216ee3"
-    framer-motion "^7.3.5"
+    "@sanity/color" "2.1.17-next.30+8cd982e0"
+    "@sanity/icons" "1.3.7-next.30+8cd982e0"
+    framer-motion "^7.5.2"
     popper-max-size-modifier "^0.2.0"
     react-is "^18.2.0"
     react-popper "^2.3.0"
@@ -9270,10 +9270,10 @@ framer-motion@^6.3.0:
   optionalDependencies:
     "@emotion/is-prop-valid" "^0.8.2"
 
-framer-motion@^7.3.5:
-  version "7.4.0"
-  resolved "https://registry.yarnpkg.com/framer-motion/-/framer-motion-7.4.0.tgz#318c52a76517f9f854aa4a298c292be04941521b"
-  integrity sha512-tcvL5L1cASYjIeBG6mQHhzfndm7MdyHjOwqIdOzOetIVa1yUqeYMufAoljgqg69XFgsgZet+c4iuSuFF+Vgbjg==
+framer-motion@^7.5.2:
+  version "7.5.2"
+  resolved "https://registry.yarnpkg.com/framer-motion/-/framer-motion-7.5.2.tgz#6808f518fb5bcba3177ea377084b5a06d06f6a21"
+  integrity sha512-HKQetVN92thmbl5ALDkmdr0xcTP6JD80l6rASs2g5e92zFkWYBE7rZLy++sbCq0L6JSviusb5t0txt19K8xSwg==
   dependencies:
     "@motionone/dom" "10.13.1"
     framesync "6.1.2"
