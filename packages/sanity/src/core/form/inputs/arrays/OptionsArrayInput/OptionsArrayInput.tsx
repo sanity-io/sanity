@@ -5,7 +5,7 @@ import {resolveTypeName} from '@sanity/util/content'
 import {FIXME} from '../../../../FIXME'
 import {set, unset} from '../../../patch'
 import {ArrayOfPrimitivesInputProps} from '../../../types'
-import {ItemWithMissingType} from '../ArrayOfObjectsInput/item/ItemWithMissingType'
+import {IncompatibleItemType} from '../ArrayOfObjectsInput/item/IncompatibleItemType'
 import {Item, List} from '../common/list'
 import {PreviewProps} from '../../../../components/previews'
 import {isLegacyOptionsItem, resolveValueWithLegacyOptionsSupport} from './legacyOptionsSupport'
@@ -132,7 +132,7 @@ export class OptionsArrayInput extends React.PureComponent<OptionsArrayInputProp
                   ))}
 
                 {!optionType && (
-                  <ItemWithMissingType value={option} onFocus={() => this.handleFocus(index)} />
+                  <IncompatibleItemType value={option} onFocus={() => this.handleFocus(index)} />
                 )}
               </Flex>
             </Item>

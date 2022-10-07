@@ -4,7 +4,7 @@ import {SchemaType} from '@sanity/types'
 import {CopyIcon as DuplicateIcon, EllipsisVerticalIcon, TrashIcon} from '@sanity/icons'
 import {FormFieldValidationStatus} from '../../../components/formField'
 import {DragHandle} from '../common/DragHandle'
-import {ItemWithMissingType} from '../ArrayOfObjectsInput/item/ItemWithMissingType'
+import {IncompatibleItemType} from '../ArrayOfObjectsInput/item/IncompatibleItemType'
 import {InsertMenu} from '../ArrayOfObjectsInput/InsertMenu'
 import {PrimitiveItemProps} from '../../../types/itemProps'
 import {getEmptyValue} from './getEmptyValue'
@@ -106,7 +106,7 @@ export const ItemRow = React.forwardRef(function ItemRow(
           </Flex>
         ) : (
           <Box flex={1}>
-            <ItemWithMissingType value={value} onFocus={onFocus} />
+            <IncompatibleItemType value={value} onFocus={onFocus} />
           </Box>
         )}
 
