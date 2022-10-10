@@ -3417,10 +3417,10 @@
   resolved "https://registry.yarnpkg.com/@sanity/logos/-/logos-1.1.18-next.30.tgz#ebf7250c1852939dd3aa41f333dc94d1d1259d84"
   integrity sha512-92fDyBx4V68vMVCJ133rfT11DlPp6rmOCQR8P3ZH7zQ+d0kPlpRqfc3ldHlwoSf4M1TU70cUPVq7sTa0izwZmg==
 
-"@sanity/pkg-utils@^1.12.0":
-  version "1.12.0"
-  resolved "https://registry.yarnpkg.com/@sanity/pkg-utils/-/pkg-utils-1.12.0.tgz#401dbd4d52ae9ef51d83d33c4d7bb4f59344211c"
-  integrity sha512-cRhxXYNXLmYWPYmp5IpD01t1MNtMu8q7u17bQq+/tP7DpCKuOCFBmNAzf5B6ov56hyYW7cXqzBYfE4mymXgXEg==
+"@sanity/pkg-utils@^1.14.0":
+  version "1.14.0"
+  resolved "https://registry.yarnpkg.com/@sanity/pkg-utils/-/pkg-utils-1.14.0.tgz#37e2687e8603118f544c1d8dfcb82abeb24fdbb4"
+  integrity sha512-oid/9uu39ejl5O8ja95iVfrDb7KD3HQiXoKNVmaeWCRL4tkNciG1nM4ffyRZs2iTDEgzaK/SoqsMtRUxKvmroQ==
   dependencies:
     "@babel/core" "^7.19.0"
     "@babel/plugin-proposal-object-rest-spread" "^7.18.9"
@@ -3446,6 +3446,7 @@
     pkg-up "^3.1.0"
     prettier "^2.7.1"
     pretty-bytes "^5.6.0"
+    rimraf "^3.0.2"
     rollup "^2.78.1"
     rollup-plugin-esbuild "^4.9.3"
     rollup-plugin-terser "^7.0.2"
@@ -10250,7 +10251,7 @@ http-proxy@^1.16.2, http-proxy@^1.18.1:
     follow-redirects "^1.0.0"
     requires-port "^1.0.0"
 
-http-server@^14.0.0:
+http-server@^14.0.0, http-server@^14.1.1:
   version "14.1.1"
   resolved "https://registry.yarnpkg.com/http-server/-/http-server-14.1.1.tgz#d60fbb37d7c2fdff0f0fbff0d0ee6670bd285e2e"
   integrity sha512-+cbxadF40UXd9T01zUHgA+rlo2Bg1Srer4+B4NwIHdaGxAGGv59nYRnGGDJ9LBk7alpS0US+J+bLLdQOOkJq4A==
