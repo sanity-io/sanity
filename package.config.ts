@@ -1,6 +1,9 @@
 import {defineConfig} from '@sanity/pkg-utils'
 
 export default defineConfig({
+  define: {
+    __DEV__: false,
+  },
   extract: {
     rules: {
       // Disable rules for now
