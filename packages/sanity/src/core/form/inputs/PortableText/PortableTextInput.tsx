@@ -266,10 +266,6 @@ export function PortableTextInput(props: PortableTextInputProps) {
   // Handle editor changes
   const handleEditorChange = useCallback(
     (change: EditorChange): void => {
-      // With React 18 it can happen that we still receive changes after the editor has unmounted.
-      if (!editorRef.current) {
-        return
-      }
       switch (change.type) {
         case 'mutation':
           onChange(toFormPatches(change.patches))
