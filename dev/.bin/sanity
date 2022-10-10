@@ -1,0 +1,11 @@
+#!/usr/bin/env node
+
+const path = require('path')
+
+require('esbuild-register/dist/node').register({
+  target: `node${process.version.slice(1)}`,
+})
+
+global.__DEV__ = true
+
+require('../../packages/@sanity/cli/src/run')

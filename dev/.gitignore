@@ -1,2 +1,4 @@
+/.cache
+
 # Ignore markdown files in the dev/ directory – useful for making temporary notes
 /*.md

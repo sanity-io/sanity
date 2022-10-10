@@ -1,10 +1,8 @@
 {
-  "extends": "../../tsconfig.settings",
+  "extends": "../tsconfig.dev",
   "include": ["**/*.ts", "**/*.tsx"],
   "compilerOptions": {
-    "outDir": "./build",
-    "jsx": "preserve",
-    "allowJs": true
+    "jsx": "preserve"
   },
   "references": [{"path": "../../packages/sanity/tsconfig.lib.json"}]
 }
