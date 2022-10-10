@@ -4,6 +4,7 @@ export default defineConfig({
   define: {
     __DEV__: false,
   },
+  dist: 'lib',
   extract: {
     rules: {
       // Disable rules for now
