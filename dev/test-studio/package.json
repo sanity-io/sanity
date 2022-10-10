@@ -41,7 +41,6 @@
     "styled-components": "^5.2.0"
   },
   "devDependencies": {
-    "@sanity/cli": "3.0.0-dev-preview.21",
     "@types/history": "^4.7.9",
     "chokidar": "^3.5.3",
     "http-server": "^14.0.0",
