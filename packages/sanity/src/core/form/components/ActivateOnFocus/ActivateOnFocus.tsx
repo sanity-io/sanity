@@ -42,6 +42,7 @@ export function ActivateOnFocus(props: ActivateOnFocusProps) {
         return
       }
       if (event.code === 'Space' && onActivate) {
+        event.preventDefault()
         onActivate()
       }
     },
