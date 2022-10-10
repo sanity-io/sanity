@@ -76,9 +76,9 @@ export function FormView(props: FormViewProps) {
 
   const handleChange = useCallback(
     (patchEvent: PatchEvent) => {
-      if (!isReadOnly) _handleChange(patchEvent)
+      if (!isReadOnly && ready) _handleChange(patchEvent)
     },
-    [_handleChange, isReadOnly]
+    [_handleChange, isReadOnly, ready]
   )
 
   // useEffect(() => {
