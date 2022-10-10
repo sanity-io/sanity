@@ -1,0 +1,18 @@
+{
+  "extends": "../tsconfig.settings",
+  "include": ["../packages/@sanity/util/src"],
+  "compilerOptions": {
+    "rootDir": "..",
+    "baseUrl": "..",
+    "outDir": "./.cache/ts",
+
+    "paths": {
+      // Alias to paths required for Sanity CLI to run in dev-mode
+      "@sanity/mutator": ["./packages/@sanity/mutator/src"],
+      "@sanity/server": ["./packages/@sanity/server/src"],
+      "@sanity/util/fs": ["./packages/@sanity/util/exports/fs.ts"],
+      "sanity/_internal": ["./packages/sanity/exports/_internal.ts"],
+      "sanity/cli": ["./packages/sanity/exports/cli.ts"]
+    }
+  }
+}
