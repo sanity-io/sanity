@@ -6,16 +6,17 @@ import {
   Flex,
   Menu,
   MenuButton,
+  MenuDivider,
   MenuItem,
   Spinner,
-  Text,
-  MenuDivider,
   Stack,
+  Text,
   TextSkeleton,
 } from '@sanity/ui'
 import React, {useCallback, useMemo, useRef} from 'react'
 import {isReference, Reference, ReferenceSchemaType, SchemaType} from '@sanity/types'
 import {
+  CloseIcon,
   CopyIcon as DuplicateIcon,
   EllipsisVerticalIcon,
   LaunchIcon as OpenInNewTabIcon,
@@ -104,9 +105,8 @@ export function ReferenceItem<Item extends ReferenceItemValue = ReferenceItemVal
     focused,
     children,
     sortable,
-    renderPreview,
-    inputProps,
     insertableTypes,
+    inputProps,
   } = props
 
   const previewCardRef = useRef<HTMLDivElement | null>(null)
@@ -169,6 +169,17 @@ export function ReferenceItem<Item extends ReferenceItemValue = ReferenceItemVal
     )
   }, [childValidation, props.validation, reference])
 
+  const refTypeName = loadableReferenceInfo.result?.type || value?._strengthenOnPublish?.type
+
+  const refType = refTypeName
+    ? schemaType.to.find((toType) => toType.name === refTypeName)
+    : undefined
+  const pressed = selectedState === 'pressed'
+  const selected = selectedState === 'selected'
+
+  const tone = getTone({readOnly, hasErrors, hasWarnings})
+  const isEditing = !value._ref || inputProps.focusPath[0] === '_ref'
+
   const menu = useMemo(
     () =>
       readOnly ? null : (
@@ -181,22 +192,22 @@ export function ReferenceItem<Item extends ReferenceItemValue = ReferenceItemVal
                 {!readOnly && (
                   <>
                     <MenuItem text="Remove" tone="critical" icon={TrashIcon} onClick={onRemove} />
-
                     <MenuItem
-                      text="Replace"
-                      icon={ReplaceIcon}
-                      onClick={() => {
-                        inputProps.onFocusPath(['_ref'])
-                      }}
+                      text={value._ref && isEditing ? 'Cancel replace' : 'Replace'}
+                      icon={value._ref && isEditing ? CloseIcon : ReplaceIcon}
+                      onClick={
+                        value._ref && isEditing
+                          ? () => inputProps.onFocusPath([])
+                          : () => inputProps.onFocusPath(['_ref'])
+                      }
                     />
-
                     <MenuItem text="Duplicate" icon={DuplicateIcon} onClick={handleDuplicate} />
                     <InsertMenu onInsert={handleInsert} types={insertableTypes} />
                   </>
                 )}
 
-                {!readOnly && value?._ref && <MenuDivider />}
-                {value._ref && (
+                {!readOnly && !isEditing && value._ref && <MenuDivider />}
+                {!isEditing && value._ref && (
                   <MenuItem
                     as={EditReferenceLink}
                     data-as="a"
@@ -214,25 +225,17 @@ export function ReferenceItem<Item extends ReferenceItemValue = ReferenceItemVal
       readOnly,
       inputId,
       onRemove,
+      value._ref,
+      isEditing,
       handleDuplicate,
       handleInsert,
       insertableTypes,
-      value._ref,
       EditReferenceLink,
       inputProps,
     ]
   )
 
-  const refTypeName = loadableReferenceInfo.result?.type || value?._strengthenOnPublish?.type
-
-  const refType = refTypeName
-    ? schemaType.to.find((toType) => toType.name === refTypeName)
-    : undefined
-  const pressed = selectedState === 'pressed'
-  const selected = selectedState === 'selected'
-
-  const tone = getTone({readOnly, hasErrors, hasWarnings})
-  const item = value._ref && (
+  const item = (
     <RowLayout
       menu={menu}
       presence={presence}
@@ -240,76 +243,82 @@ export function ReferenceItem<Item extends ReferenceItemValue = ReferenceItemVal
       tone={tone}
       focused={focused}
       dragHandle={sortable}
-      selected={open}
     >
-      {loadableReferenceInfo.isLoading ? (
-        <Stack space={2} padding={1}>
-          <TextSkeleton style={{maxWidth: 320}} radius={1} animated />
-          <TextSkeleton style={{maxWidth: 200}} radius={1} size={1} animated />
-        </Stack>
+      {isEditing ? (
+        children
       ) : (
-        <PreviewCard
-          forwardedAs={EditReferenceLink as any}
-          tone="inherit"
-          radius={2}
-          data-as="a"
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore
-          documentId={value?._ref}
-          documentType={refType?.name}
-          disabled={resolvingInitialValue}
-          paddingX={2}
-          paddingY={1}
-          ref={previewCardRef}
-          onFocus={onFocus}
-          __unstable_focusRing
-          style={{position: 'relative'}}
-          selected={selected}
-          pressed={pressed}
-          data-selected={selected ? true : undefined}
-          data-pressed={pressed ? true : undefined}
-        >
-          <PreviewReferenceValue
-            value={value}
-            referenceInfo={loadableReferenceInfo}
-            renderPreview={props.renderPreview}
-            type={schemaType}
-          />
-          {resolvingInitialValue && (
-            <Card
-              style={{
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                width: '100%',
-                height: '100%',
-                opacity: 0.6,
-              }}
-              tone="transparent"
-              as={Flex}
+        <>
+          {loadableReferenceInfo.isLoading ? (
+            <Stack space={2} padding={1}>
+              <TextSkeleton style={{maxWidth: 320}} radius={1} animated />
+              <TextSkeleton style={{maxWidth: 200}} radius={1} size={1} animated />
+            </Stack>
+          ) : (
+            <PreviewCard
+              forwardedAs={EditReferenceLink as any}
+              tone="inherit"
               radius={2}
+              data-as="a"
               // eslint-disable-next-line @typescript-eslint/ban-ts-comment
               // @ts-ignore
-              justify="center"
+              documentId={value?._ref}
+              documentType={refType?.name}
+              disabled={resolvingInitialValue}
+              paddingX={2}
+              paddingY={1}
+              ref={previewCardRef}
+              onFocus={onFocus}
+              __unstable_focusRing
+              style={{position: 'relative'}}
+              selected={selected}
+              pressed={pressed}
+              data-selected={selected ? true : undefined}
+              data-pressed={pressed ? true : undefined}
             >
-              <Flex align="center" justify="center" padding={3}>
-                <Box marginX={3}>
-                  <Spinner muted />
-                </Box>
-                <Text>Resolving initial value…</Text>
-              </Flex>
-            </Card>
+              <PreviewReferenceValue
+                value={value}
+                referenceInfo={loadableReferenceInfo}
+                renderPreview={props.renderPreview}
+                type={schemaType}
+              />
+              {resolvingInitialValue && (
+                <Card
+                  style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    width: '100%',
+                    height: '100%',
+                    opacity: 0.6,
+                  }}
+                  tone="transparent"
+                  as={Flex}
+                  radius={2}
+                  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                  // @ts-ignore
+                  justify="center"
+                >
+                  <Flex align="center" justify="center" padding={3}>
+                    <Box marginX={3}>
+                      <Spinner muted />
+                    </Box>
+                    <Text>Resolving initial value…</Text>
+                  </Flex>
+                </Card>
+              )}
+            </PreviewCard>
           )}
-        </PreviewCard>
+        </>
       )}
     </RowLayout>
   )
   return (
     <>
       <ChangeIndicator path={path} isChanged={changed} hasFocus={Boolean(focused)}>
-        <Box paddingX={1}>{item}</Box>
+        <Box paddingX={1} paddingY={isEditing ? 1 : 0}>
+          {item}
+        </Box>
       </ChangeIndicator>
-      {!value._ref && <Box padding={4}>{children}</Box>}
     </>
   )
 }

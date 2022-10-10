@@ -10,7 +10,7 @@ import {CreateReferenceOption} from './types'
 interface Props extends ComponentProps<typeof Button> {
   id: string
   createOptions: CreateReferenceOption[]
-  menuRef: React.RefObject<HTMLDivElement>
+  menuRef?: React.RefObject<HTMLDivElement>
   onCreate: (option: CreateReferenceOption) => void
 }
 

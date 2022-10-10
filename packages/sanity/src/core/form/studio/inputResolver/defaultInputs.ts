@@ -11,7 +11,7 @@ import {SlugInput} from '../../inputs/Slug/SlugInput'
 import {StudioImageInput} from '../inputs/StudioImageInput'
 import {StudioFileInput} from '../inputs/StudioFileInput'
 import {StudioCrossDatasetReferenceInput} from '../inputs/crossDatasetReference/StudioCrossDatasetReferenceInput'
-import {ArrayOfObjectsInput} from '../../inputs/arrays/ArrayOfObjectsInput'
+import {ArrayOfObjectsInput} from '../../inputs/arrays/ArrayOfObjectsInput/ArrayOfObjectsInput'
 import {FIXME} from '../../../FIXME'
 
 export const defaultInputs: Record<string, React.ComponentType<FIXME>> = {

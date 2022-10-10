@@ -59,7 +59,7 @@ async function resolveUserDefinedFilter(
 interface Options {
   path: Path
   schemaType: ReferenceSchemaType
-  value: Reference
+  value?: Reference
 }
 
 export function useReferenceInput(options: Options) {
