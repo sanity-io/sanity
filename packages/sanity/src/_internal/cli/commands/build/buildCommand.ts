@@ -21,11 +21,26 @@ const buildCommand: CliCommandDefinition = {
     context: CliCommandContext,
     overrides?: {basePath?: string}
   ) => {
-    const mod = await import('../../actions/build/buildAction')
+    const buildAction = await getBuildAction()
 
-    return mod.default(args, context, overrides)
+    return buildAction(args, context, overrides)
   },
   helpText,
+}
+
+async function getBuildAction() {
+  // NOTE: in dev-mode we want to include from `src` so we need to use `.ts` extension
+  // NOTE: this `if` statement is not included in the output bundle
+  if (__DEV__) {
+    // eslint-disable-next-line import/extensions
+    const mod: typeof import('../../actions/build/buildAction') = require('../../actions/build/buildAction.ts')
+
+    return mod.default
+  }
+
+  const mod = await import('../../actions/build/buildAction')
+
+  return mod.default
 }
 
 export default buildCommand

@@ -22,11 +22,26 @@ const startCommand: CliCommandDefinition = {
     args: CliCommandArguments<StartDevServerCommandFlags>,
     context: CliCommandContext
   ) => {
-    const mod = await import('../../actions/start/startAction')
+    const startAction = await getStartAction()
 
-    return mod.default(args, context)
+    return startAction(args, context)
   },
   helpText,
+}
+
+async function getStartAction() {
+  // NOTE: in dev-mode we want to include from `src` so we need to use `.ts` extension
+  // NOTE: this `if` statement is not included in the output bundle
+  if (__DEV__) {
+    // eslint-disable-next-line import/extensions
+    const mod: typeof import('../../actions/start/startAction') = require('../../actions/start/startAction.ts')
+
+    return mod.default
+  }
+
+  const mod = await import('../../actions/start/startAction')
+
+  return mod.default
 }
 
 export default startCommand
