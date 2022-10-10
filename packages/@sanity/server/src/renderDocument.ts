@@ -52,6 +52,7 @@ export function renderDocument(options: {
     }
 
     const worker = new Worker(__filename, {
+      execArgv: __DEV__ ? ['-r', 'esbuild-register'] : undefined,
       workerData: {...options, shouldWarn: true},
     })
 
