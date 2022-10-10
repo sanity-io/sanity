@@ -7,6 +7,7 @@
   "author": "Sanity.io <hello@sanity.io>",
   "license": "MIT",
   "scripts": {
+    "clean": "rimraf .sanity dist",
     "start": "sanity start --port 4000"
   },
   "keywords": [
