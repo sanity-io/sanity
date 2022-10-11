@@ -1,7 +1,8 @@
 import React, {createContext, useContext, useEffect, useMemo, useState} from 'react'
 import {studioTheme, ThemeColorSchemeKey, ThemeProvider, usePrefersDark} from '@sanity/ui'
 
-const ColorSchemeContext = createContext<{
+/** @internal */
+export const ColorSchemeContext = createContext<{
   scheme: ThemeColorSchemeKey
   setScheme: (colorScheme: ThemeColorSchemeKey) => void
 } | null>(null)

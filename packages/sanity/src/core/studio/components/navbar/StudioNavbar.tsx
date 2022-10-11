@@ -9,6 +9,7 @@ import {
   Tooltip,
   useGlobalKeyDown,
   useMediaIndex,
+  useRootTheme,
 } from '@sanity/ui'
 import React, {useCallback, useState, useMemo, useEffect, useRef, useContext} from 'react'
 import {startCase} from 'lodash'
@@ -19,6 +20,7 @@ import {useColorScheme} from '../../colorScheme'
 import {useWorkspaces} from '../../workspaces'
 import {NavbarContext} from '../../StudioLayout'
 import {useLogoComponent, useToolMenuComponent} from '../../studio-components-hooks'
+import {StudioTheme} from '../../../theme'
 import {UserMenu} from './userMenu'
 import {NewDocumentButton} from './NewDocumentButton'
 import {PresenceMenu} from './presence'
@@ -68,6 +70,7 @@ const LeftFlex = styled(Flex)`
 /** @beta */
 export function StudioNavbar() {
   const {name, tools, ...workspace} = useWorkspace()
+  const theme = useRootTheme().theme as StudioTheme
   const workspaces = useWorkspaces()
   const routerState = useRouterState()
   const {scheme} = useColorScheme()
@@ -163,7 +166,7 @@ export function StudioNavbar() {
         data-ui="Navbar"
         padding={2}
         scheme="dark"
-        shadow={scheme === 'dark' ? 1 : undefined}
+        shadow={theme.__legacy || scheme === 'dark' ? 1 : undefined}
         sizing="border"
       >
         <Flex align="center" justify="space-between">
