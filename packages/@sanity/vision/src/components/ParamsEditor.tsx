@@ -25,9 +25,15 @@ export function ParamsEditor(props: ParamsEditorProps) {
   const {onChange} = props
   const {raw: value, error, parsed, valid} = eventFromValue(props.value)
   const [isValid, setValid] = useState(valid)
+  const [mounted, setMounted] = useState(false)
 
   // Emit onChange on very first render
-  useEffect(() => onChange({parsed, raw: value, valid: isValid, error}), [])
+  useEffect(() => {
+    if (!mounted) {
+      onChange({parsed, raw: value, valid: isValid, error})
+      setMounted(true)
+    }
+  }, [error, isValid, mounted, onChange, parsed, value])
 
   const handleChangeRaw = useCallback(
     (newValue: string) => {

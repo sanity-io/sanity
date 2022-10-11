@@ -13,6 +13,7 @@ const INITIAL_LOADING_STATE: Loadable<CrossDatasetReferenceInfo> = {
   result: undefined,
   error: undefined,
   retry: noop,
+  retryAttempt: 0,
 }
 
 const EMPTY_STATE: Loadable<any> = {
@@ -20,12 +21,13 @@ const EMPTY_STATE: Loadable<any> = {
   result: undefined,
   error: undefined,
   retry: noop,
+  retryAttempt: 0,
 }
 
 export type Loadable<T> =
-  | {isLoading: true; result: undefined; error: undefined; retry: () => void}
-  | {isLoading: false; result: T; error: undefined; retry: () => void}
-  | {isLoading: false; result: undefined; error: Error; retry: () => void}
+  | {isLoading: true; result: undefined; error: undefined; retry: () => void; retryAttempt: number}
+  | {isLoading: false; result: T; error: undefined; retry: () => void; retryAttempt: number}
+  | {isLoading: false; result: undefined; error: Error; retry: () => void; retryAttempt: number}
 
 export type GetReferenceInfoFn = (doc: {
   _id: string
@@ -53,16 +55,23 @@ export function useReferenceInfo(
                   result,
                   error: undefined,
                   retry,
+                  retryAttempt,
                 } as const)
             ),
             startWith(INITIAL_LOADING_STATE),
             catchError((err: Error) => {
               console.error(err)
-              return of({isLoading: false, result: undefined, error: err, retry} as const)
+              return of({
+                isLoading: false,
+                result: undefined,
+                error: err,
+                retry,
+                retryAttempt,
+              } as const)
             })
           )
         : of(EMPTY_STATE),
-    [retryAttempt, getReferenceInfo, doc?._id, doc?._type, retry],
+    [doc, getReferenceInfo, retry, retryAttempt],
     INITIAL_LOADING_STATE
   )
 

@@ -66,7 +66,7 @@ export const CommonDateTimeInput = React.forwardRef(function CommonDateTimeInput
         setLocalValue(nextInputValue)
       }
     },
-    [localValue, serialize, onChange, parseInputValue]
+    [parseInputValue, onChange, value, localValue, serialize]
   )
 
   const handleDatePickerChange = React.useCallback(

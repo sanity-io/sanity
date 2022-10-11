@@ -139,7 +139,7 @@ export const CellItem = React.forwardRef(function ItemCell(
         position: pos,
       })
     },
-    [onInsert, value._key]
+    [onInsert]
   )
 
   const id = useId()

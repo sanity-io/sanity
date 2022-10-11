@@ -49,6 +49,7 @@ export function useAsync<T, U>(
           }
         )
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- it's ok to spread the deps here
     [fn, ...dependencies]
   )
 

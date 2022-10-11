@@ -67,7 +67,7 @@
   "homepage": "https://www.sanity.io/",
   "dependencies": {
     "@sanity/generate-help-url": "^3.0.0",
-    "@vitejs/plugin-react": "^2.0.0",
+    "@vitejs/plugin-react": "^2.1.0",
     "chalk": "^4.1.2",
     "chokidar": "^3.5.3",
     "connect-history-api-fallback": "^1.6.0",

@@ -125,7 +125,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const {historyController} = useMemoObservable(
     () => historyStore.getTimelineController({client, documentId, documentType, timeline}),
-    [client, documentId, documentType, timeline]
+    [client, documentId, documentType, historyStore, timeline]
   )!
 
   // @todo: this will now happen on each render, but should be refactored so it happens only when
@@ -160,8 +160,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   const viewOlderVersion = historyController.onOlderRevision()
   const displayed: Partial<SanityDocument> | null = useMemo(
     () => (viewOlderVersion ? historyController.displayed() : value),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [historyController, params.rev, params.since, value, viewOlderVersion]
+    [historyController, value, viewOlderVersion]
   )
 
   const setTimelineRange = useCallback(

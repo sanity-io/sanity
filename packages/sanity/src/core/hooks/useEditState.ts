@@ -23,5 +23,5 @@ export function useEditState(
       )
     }
     return documentStore.pair.editState(publishedDocId, docTypeName)
-  }, [publishedDocId, docTypeName, priority]) as EditStateFor
+  }, [documentStore.pair, publishedDocId, docTypeName, priority]) as EditStateFor
 }

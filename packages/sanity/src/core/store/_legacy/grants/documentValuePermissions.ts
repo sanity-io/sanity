@@ -1,3 +1,4 @@
+import {useMemo} from 'react'
 import {Observable} from 'rxjs'
 import {createHookFromObservableFactory, PartialExcept} from '../../../util'
 import {useGrantsStore} from '../datastores'
@@ -55,16 +56,26 @@ export const useDocumentValuePermissionsFromHookFactory = createHookFromObservab
 /** @internal */
 export function useDocumentValuePermissions({
   document,
+  grantsStore: overrideGrantsStore,
   permission,
-  ...rest
 }: PartialExcept<DocumentValuePermissionsOptions, 'permission' | 'document'>): ReturnType<
   typeof useDocumentValuePermissionsFromHookFactory
 > {
-  const grantsStore = useGrantsStore()
+  const defaultGrantsStore = useGrantsStore()
 
-  return useDocumentValuePermissionsFromHookFactory({
-    grantsStore: rest.grantsStore || grantsStore,
-    document,
-    permission,
-  })
+  const grantsStore = useMemo(
+    () => overrideGrantsStore || defaultGrantsStore,
+    [defaultGrantsStore, overrideGrantsStore]
+  )
+
+  return useDocumentValuePermissionsFromHookFactory(
+    useMemo(
+      () => ({
+        document,
+        grantsStore,
+        permission,
+      }),
+      [document, grantsStore, permission]
+    )
+  )
 }

@@ -23,7 +23,7 @@ export function useConnectionState(publishedDocId: string, docTypeName: string):
         startWith(INITIAL as any),
         distinctUntilChanged()
       ),
-    [publishedDocId, docTypeName],
+    [documentStore.pair, publishedDocId, docTypeName],
     INITIAL
   )
 }

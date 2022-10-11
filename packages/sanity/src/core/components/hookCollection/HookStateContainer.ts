@@ -1,24 +1,10 @@
-import React, {memo, useEffect, useRef} from 'react'
 import shallowEquals from 'shallow-equals'
-
-function useShallowCompareMemoize<T>(value: T): Array<T | undefined> {
-  const ref = useRef<T | undefined>(undefined)
-
-  if (!shallowEquals(value, ref.current)) {
-    ref.current = value
-  }
-
-  return [ref.current]
-}
-
-function useShallowCompareEffect(callback: React.EffectCallback, dependencies: any) {
-  useEffect(callback, useShallowCompareMemoize(dependencies))
-}
+import {memo, useEffect, useRef, useDeferredValue} from 'react'
 
 /** @internal */
 export const HookStateContainer = memo(
   function HookStateContainer(props: any) {
-    const {hook, args, id, onNext, onReset, onRequestUpdate} = props
+    const {hook, args, id, onNext, onReset} = props
 
     const hookState = hook({
       ...args,
@@ -26,15 +12,21 @@ export const HookStateContainer = memo(
         onReset(id)
       },
     })
+    // let React defer (similar to requestIdleCallback) the hook state should the render pipeline be super busy atm
+    const deferredHookState = useDeferredValue(hookState)
+    const hookStateRef = useRef(null)
 
-    useShallowCompareEffect(() => {
-      onNext(id, hookState)
-      onRequestUpdate()
-      return () => {
-        onNext(id, null)
-        onRequestUpdate()
+    // eslint-disable-next-line consistent-return
+    useEffect(() => {
+      if (!shallowEquals(deferredHookState, hookStateRef.current)) {
+        hookStateRef.current = deferredHookState
+        onNext(id, deferredHookState)
+        return () => {
+          hookStateRef.current = null
+          onNext(id, null)
+        }
       }
-    }, hookState)
+    }, [deferredHookState, id, onNext])
 
     return null
   },

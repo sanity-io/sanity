@@ -39,8 +39,8 @@ export const RegionsWithIntersections = forwardRef(function RegionsWithIntersect
   const overlayRef = useRef<HTMLDivElement | null>(null)
 
   // Make sure `margins` is memoized
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const margins = useMemo(() => marginsProp, [JSON.stringify(marginsProp)])
+  const marginsJson = useMemo(() => JSON.stringify(marginsProp), [marginsProp])
+  const margins = useMemo(() => JSON.parse(marginsJson), [marginsJson])
 
   const io = useMemo(
     () =>

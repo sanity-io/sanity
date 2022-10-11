@@ -1,4 +1,5 @@
 import {InitialValueResolverContext, Schema} from '@sanity/types'
+import {useMemo} from 'react'
 import {combineLatest, from, Observable, of} from 'rxjs'
 import {map, switchMap} from 'rxjs/operators'
 import {useSchema, useTemplates} from '../../../hooks'
@@ -142,20 +143,37 @@ export const useTemplatePermissionsFromHookFactory =
 /** @internal */
 export function useTemplatePermissions({
   templateItems,
-  ...rest
+  grantsStore: overrideGrantsStore,
+  schema: overrideSchema,
+  templates: overrideTemplates,
 }: PartialExcept<TemplatePermissionsOptions, 'templateItems'>): ReturnType<
   typeof useTemplatePermissionsFromHookFactory
 > {
-  const schema = useSchema()
-  const templates = useTemplates()
-  const grantsStore = useGrantsStore()
+  const defaultGrantsStore = useGrantsStore()
+  const defaultSchema = useSchema()
+  const defaultTemplates = useTemplates()
   const initialValueContext = useInitialValueResolverContext()
 
-  return useTemplatePermissionsFromHookFactory({
-    templateItems,
-    grantsStore: rest.grantsStore || grantsStore,
-    schema: rest.schema || schema,
-    templates: rest.templates || templates,
-    context: initialValueContext,
-  })
+  const grantsStore = useMemo(
+    () => overrideGrantsStore || defaultGrantsStore,
+    [defaultGrantsStore, overrideGrantsStore]
+  )
+  const schema = useMemo(() => overrideSchema || defaultSchema, [defaultSchema, overrideSchema])
+  const templates = useMemo(
+    () => overrideTemplates || defaultTemplates,
+    [defaultTemplates, overrideTemplates]
+  )
+
+  return useTemplatePermissionsFromHookFactory(
+    useMemo(
+      () => ({
+        context: initialValueContext,
+        grantsStore,
+        schema,
+        templateItems,
+        templates,
+      }),
+      [grantsStore, initialValueContext, schema, templateItems, templates]
+    )
+  )
 }

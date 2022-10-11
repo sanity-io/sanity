@@ -78,7 +78,7 @@ export function SlugInput(props: SlugInputProps) {
     return getNewFromSource(sourceField, doc, sourceContext)
       .then((newFromSource) => slugify(newFromSource || '', schemaType, sourceContext))
       .then((newSlug) => updateSlug(newSlug))
-  }, [path, updateSlug, getDocument, schemaType, slugContext])
+  }, [sourceField, getDocument, schemaType, path, slugContext, updateSlug])
 
   const isUpdating = generateState?.status === 'pending'
 

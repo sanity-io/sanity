@@ -150,7 +150,7 @@ export function ArrayItemReferenceInput(props: Props) {
       //   position: 'after',
       // })
     }
-  }, [onInsert, value])
+  }, [value])
 
   const handleInsert = useCallback(
     (pos: 'before' | 'after') => {
@@ -162,7 +162,7 @@ export function ArrayItemReferenceInput(props: Props) {
         // })
       }
     },
-    [onInsert, type.name, value?._key]
+    [value?._key]
   )
 
   const handleChange = useCallback(
@@ -333,8 +333,7 @@ export function ArrayItemReferenceInput(props: Props) {
         tap(setSearchState)
       )
     },
-    // @todo: add onSearch to the deps list when it's verified that it's safe to do so
-    [inputId, push]
+    [inputId, onSearch, push]
   )
 
   const handleAutocompleteOpenButtonClick = useCallback(() => {

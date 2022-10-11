@@ -72,7 +72,7 @@
     "@types/react": "^18.0.21",
     "@types/react-dom": "^18.0.6",
     "@types/ws": "~8.5.3",
-    "@vitejs/plugin-react": "^2.0.0",
+    "@vitejs/plugin-react": "^2.1.0",
     "diff-match-patch": "^1.0.4",
     "express": "^4.17.1",
     "express-ws": "^5.0.2",

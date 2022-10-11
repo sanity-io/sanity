@@ -125,7 +125,13 @@ export const AssetThumb = React.memo(function AssetThumb(props: AssetProps) {
         console.error('Could not delete asset', err)
       },
     })
-  }, [asset._id, handleDeleteError, handleDeleteSuccess, onDeleteFinished])
+  }, [
+    asset._id,
+    handleDeleteError,
+    handleDeleteSuccess,
+    onDeleteFinished,
+    versionedClient.observable,
+  ])
 
   const handleMenuAction = useCallback(
     (action: AssetMenuAction) => {

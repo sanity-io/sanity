@@ -13,6 +13,7 @@ type LoadState<T> =
   | {status: 'error'; error: Error}
 
 export function useCrossProjectToken(
+  // @todo: investigate if it's safe to remove the client parameter given that it's not used
   client: SanityClient,
   {projectId, tokenId}: {tokenId?: string; projectId: string}
 ): LoadState<string> | undefined {
@@ -41,5 +42,5 @@ export function useCrossProjectToken(
         }),
         startWith({status: 'loading'} as const)
       )
-  }, [client, crossProjectTokenStore, documentPreviewStore, projectId, tokenId])
+  }, [crossProjectTokenStore, documentPreviewStore, projectId, tokenId])
 }

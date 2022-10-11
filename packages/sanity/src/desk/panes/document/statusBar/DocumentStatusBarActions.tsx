@@ -1,11 +1,10 @@
 import {Box, Flex, Tooltip, Stack, Button, Hotkeys, LayerProvider, Text} from '@sanity/ui'
-import React, {memo, useMemo, useState} from 'react'
-import {RenderActionCollectionState} from '../../../components'
+import React, {memo, useCallback, useMemo, useState} from 'react'
 import {HistoryRestoreAction} from '../../../documentActions'
 import {useDocumentPane} from '../useDocumentPane'
 import {ActionMenuButton} from './ActionMenuButton'
 import {ActionStateDialog} from './ActionStateDialog'
-import {DocumentActionDescription} from 'sanity'
+import {DocumentActionDescription, GetHookCollectionState} from 'sanity'
 
 interface DocumentStatusBarActionsInnerProps {
   disabled: boolean
@@ -77,30 +76,34 @@ export const DocumentStatusBarActions = memo(function DocumentStatusBarActions()
   // const handleMenuOpen = useCallback(() => setMenuOpen(true), [])
   // const handleMenuClose = useCallback(() => setMenuOpen(false), [])
   // const handleActionComplete = useCallback(() => setMenuOpen(false), [])
+  const renderChildren = useCallback<
+    (props: {states: DocumentActionDescription[]}) => React.ReactNode
+  >(
+    ({states}) => (
+      <DocumentStatusBarActionsInner
+        disabled={connectionState !== 'connected'}
+        // isMenuOpen={isMenuOpen}
+        // onMenuOpen={handleMenuOpen}
+        // onMenuClose={handleMenuClose}
+        showMenu={actions!.length > 1}
+        states={states}
+      />
+    ),
+    [actions, connectionState]
+  )
 
   if (!actions || !editState) {
     return null
   }
 
   return (
-    <RenderActionCollectionState
-      // component={}
-      // onActionComplete={handleActionComplete}
-      actions={actions}
-      // @ts-expect-error TODO: fix the document actions
-      actionProps={editState}
-    >
-      {({states}) => (
-        <DocumentStatusBarActionsInner
-          disabled={connectionState !== 'connected'}
-          // isMenuOpen={isMenuOpen}
-          // onMenuOpen={handleMenuOpen}
-          // onMenuClose={handleMenuClose}
-          showMenu={actions.length > 1}
-          states={states}
-        />
-      )}
-    </RenderActionCollectionState>
+    <GetHookCollectionState
+      args={editState as any}
+      // eslint-disable-next-line react/no-children-prop
+      render={renderChildren}
+      hooks={actions}
+      // onReset={handleActionComplete}
+    />
   )
 })
 
@@ -110,16 +113,16 @@ export const HistoryStatusBarActions = memo(function HistoryStatusBarActions() {
   const disabled = (editState?.draft || editState?.published || {})._rev === revision
   const actionProps = useMemo(() => ({...(editState || {}), revision}), [editState, revision])
   const historyActions = useMemo(() => [HistoryRestoreAction], [])
-
-  return (
-    <RenderActionCollectionState actions={historyActions} actionProps={actionProps as any}>
-      {({states}) => (
-        <DocumentStatusBarActionsInner
-          disabled={connectionState !== 'connected' || Boolean(disabled)}
-          showMenu={false}
-          states={states}
-        />
-      )}
-    </RenderActionCollectionState>
+  const render = useCallback<(props: {states: DocumentActionDescription[]}) => React.ReactNode>(
+    ({states}) => (
+      <DocumentStatusBarActionsInner
+        disabled={connectionState !== 'connected' || Boolean(disabled)}
+        showMenu={false}
+        states={states}
+      />
+    ),
+    [connectionState, disabled]
   )
+
+  return <GetHookCollectionState args={actionProps as any} render={render} hooks={historyActions} />
 })

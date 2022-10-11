@@ -2,7 +2,7 @@
 
 import {isActionEnabled} from '@sanity/schema/_internal'
 import {Box, Container, Flex, Spinner, Text} from '@sanity/ui'
-import React, {useCallback, useEffect, useMemo} from 'react'
+import React, {useCallback, useEffect, useMemo, useRef} from 'react'
 import {tap} from 'rxjs/operators'
 import {useDocumentPane} from '../../useDocumentPane'
 import {Delay} from '../../../../components/Delay'
@@ -122,9 +122,9 @@ export function FormView(props: FormViewProps) {
     }
   }, [documentId, documentStore, documentType, patchChannel])
 
-  const hasRev = Boolean(value?._rev)
+  const hasRevFixed = useRef(false)
   useEffect(() => {
-    if (hasRev) {
+    if (!hasRevFixed.current && value?._rev) {
       // this is a workaround for an issue that caused the document pushed to withDocument to get
       // stuck at the first initial value.
       // This effect is triggered only when the document goes from not having a revision, to getting one
@@ -134,10 +134,9 @@ export function FormView(props: FormViewProps) {
         patches: [],
         snapshot: value,
       })
+      hasRevFixed.current = true
     }
-    // React to changes in hasRev only
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [hasRev])
+  }, [patchChannel, value])
 
   // const after = useMemo(
   //   () =>

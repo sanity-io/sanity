@@ -103,7 +103,7 @@ export const ReferenceChangedBanner = memo(() => {
           )
       )
     },
-    [parentId, parentRefPath],
+    [documentPreviewStore, parentId, parentRefPath],
     {loading: true}
   )
 

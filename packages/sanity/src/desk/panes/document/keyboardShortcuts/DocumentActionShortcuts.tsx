@@ -1,9 +1,14 @@
 import isHotkey from 'is-hotkey'
 import React, {useCallback, useMemo, useState} from 'react'
 import {ActionStateDialog} from '../statusBar'
-import {Pane, RenderActionCollectionState} from '../../../components'
+import {Pane} from '../../../components'
 import {useDocumentPane} from '../useDocumentPane'
-import {DocumentActionDescription, DocumentActionProps, LegacyLayerProvider} from 'sanity'
+import {
+  DocumentActionDescription,
+  DocumentActionProps,
+  GetHookCollectionState,
+  LegacyLayerProvider,
+} from 'sanity'
 
 export interface KeyboardShortcutResponderProps {
   actionsBoxElement: HTMLElement | null
@@ -88,7 +93,6 @@ export interface DocumentActionShortcutsProps {
 
 export const DocumentActionShortcuts = React.memo(
   (props: DocumentActionShortcutsProps & React.HTMLProps<HTMLDivElement>) => {
-    const {actionsBoxElement, children, ...rest} = props
     const {actions, editState} = useDocumentPane()
     const [activeIndex, setActiveIndex] = useState(-1)
 
@@ -109,12 +113,10 @@ export const DocumentActionShortcuts = React.memo(
         },
       [editState]
     )
-
-    if (!actionProps || !actions) return null
-
-    return (
-      <RenderActionCollectionState actionProps={actionProps} actions={actions}>
-        {({states}) => (
+    const render = useCallback<(props: {states: DocumentActionDescription[]}) => React.ReactNode>(
+      ({states}) => {
+        const {actionsBoxElement, children, ...rest} = props
+        return (
           <KeyboardShortcutResponder
             {...rest}
             activeIndex={activeIndex}
@@ -124,9 +126,14 @@ export const DocumentActionShortcuts = React.memo(
           >
             {children}
           </KeyboardShortcutResponder>
-        )}
-      </RenderActionCollectionState>
+        )
+      },
+      [activeIndex, onActionStart, props]
     )
+
+    if (!actionProps || !actions) return null
+
+    return <GetHookCollectionState args={actionProps} render={render} hooks={actions} />
   }
 )
 

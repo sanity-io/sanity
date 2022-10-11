@@ -19,5 +19,9 @@ export function useUserColorManager(): UserColorManager {
 export function useUserColor(userId: string | null): UserColor {
   const manager = useUserColorManager()
 
-  return useMemoObservable(userId ? manager.listen(userId) : empty(), [userId], manager.get(null))
+  return useMemoObservable(
+    () => (userId ? manager.listen(userId) : empty()),
+    [manager, userId],
+    manager.get(null)
+  )
 }

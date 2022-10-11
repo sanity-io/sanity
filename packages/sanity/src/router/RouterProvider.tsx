@@ -1,5 +1,4 @@
-import {isEqual} from 'lodash'
-import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import React, {useCallback, useMemo} from 'react'
 import {RouterContext} from './RouterContext'
 import {IntentParameters, RouterContextValue, NavigateOptions, Router, RouterState} from './types'
 
@@ -54,9 +53,7 @@ export interface RouterProviderProps {
  */
 export function RouterProvider(props: RouterProviderProps): React.ReactElement {
   // TODO: can we do nested routes?
-  const {onNavigate, router: routerProp, state: stateProp} = props
-  const [state, setState] = useState<RouterState>(stateProp)
-  const stateRef = useRef(state)
+  const {onNavigate, router: routerProp, state} = props
 
   const navigateUrl = useCallback(
     (opts: {path: string; replace?: boolean}) => {
@@ -105,16 +102,6 @@ export function RouterProvider(props: RouterProviderProps): React.ReactElement {
     }),
     [navigate, navigateIntent, navigateUrl, resolveIntentLink, resolvePathFromState, state]
   )
-
-  // Update state as new `state` prop comes in
-  useEffect(() => {
-    const prevState = stateRef.current
-    const nextState = stateProp
-
-    if (!isEqual(nextState, prevState)) {
-      setState(nextState)
-    }
-  }, [stateProp])
 
   return <RouterContext.Provider value={router}>{props.children}</RouterContext.Provider>
 }

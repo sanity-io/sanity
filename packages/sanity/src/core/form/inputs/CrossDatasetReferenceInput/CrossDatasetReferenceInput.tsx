@@ -218,8 +218,7 @@ export function CrossDatasetReferenceInput(props: CrossDatasetReferenceInputProp
         tap(setSearchState)
       )
     },
-    // @todo: add onSearch to the deps list when it's verified that it's safe to do so
-    [inputId, push]
+    [inputId, onSearch, push]
   )
 
   const handleAutocompleteOpenButtonClick = useCallback(() => {

@@ -1,8 +1,7 @@
 import {Badge, BadgeTone, Box, Inline, Text, Tooltip} from '@sanity/ui'
-import React from 'react'
-import {RenderBadgeCollectionState} from '../../../../components'
+import React, {useCallback} from 'react'
 import {useDocumentPane} from '../../useDocumentPane'
-import {DocumentBadgeDescription} from 'sanity'
+import {DocumentBadgeDescription, GetHookCollectionState} from 'sanity'
 
 interface DocumentBadgesInnerProps {
   states: DocumentBadgeDescription[]
@@ -51,12 +50,12 @@ function DocumentBadgesInner({states}: DocumentBadgesInnerProps) {
 
 export function DocumentBadges() {
   const {badges, editState} = useDocumentPane()
+  const render = useCallback<(props: {states: DocumentBadgeDescription[]}) => React.ReactNode>(
+    ({states}) => <DocumentBadgesInner states={states} />,
+    []
+  )
 
   if (!editState || !badges) return null
 
-  return (
-    <RenderBadgeCollectionState badges={badges} badgeProps={editState as any}>
-      {({states}) => <DocumentBadgesInner states={states} />}
-    </RenderBadgeCollectionState>
-  )
+  return <GetHookCollectionState args={editState} render={render} hooks={badges} />
 }
