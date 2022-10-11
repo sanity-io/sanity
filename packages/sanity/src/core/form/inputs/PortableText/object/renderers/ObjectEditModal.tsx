@@ -19,7 +19,7 @@ export function ObjectEditModal(props: {
 }) {
   const {memberItem, onClose, scrollElement, kind} = props
   const {schemaType} = memberItem.node
-  const modalOption = useMemo(() => _getModalOption({schemaType}), [schemaType])
+  const modalOption = useMemo(() => _getModalOption(schemaType), [schemaType])
 
   const modalType: ModalType = useMemo(() => {
     if (modalOption.type) return modalOption.type
