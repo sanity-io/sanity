@@ -19,6 +19,8 @@ import {
   studioComponentsPlugin,
 } from './components/studioComponents'
 import {Field, formComponentsPlugin, Input, Item, Preview} from './components/formComponents'
+import {googleTheme} from './themes/google'
+import {vercelTheme} from './themes/vercel'
 
 const sharedSettings = createPlugin({
   name: 'sharedSettings',
@@ -84,6 +86,34 @@ export default createConfig([
         logo: Branding,
       },
     },
+  },
+  {
+    name: 'google-theme',
+    title: 'Google Colors',
+    projectId: 'ppsg7ml5',
+    dataset: 'test',
+    plugins: [sharedSettings()],
+    basePath: '/google',
+    studio: {
+      components: {
+        logo: Branding,
+      },
+    },
+    theme: googleTheme,
+  },
+  {
+    name: 'vercel-theme',
+    title: 'Vercel Colors',
+    projectId: 'ppsg7ml5',
+    dataset: 'test',
+    plugins: [sharedSettings()],
+    basePath: '/vercel',
+    studio: {
+      components: {
+        logo: Branding,
+      },
+    },
+    theme: vercelTheme,
   },
   {
     name: 'playground',
