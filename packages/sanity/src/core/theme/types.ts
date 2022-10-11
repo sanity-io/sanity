@@ -1,4 +1,9 @@
 import {RootTheme} from '@sanity/ui'
 
-/** @beta */
-export type StudioTheme = RootTheme
+/** @public */
+export interface StudioTheme extends RootTheme {
+  /** @internal */
+  __dark?: boolean
+  /** @internal */
+  __legacy?: boolean
+}

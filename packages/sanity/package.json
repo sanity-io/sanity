@@ -164,6 +164,7 @@
     "open": "^8.4.0",
     "pirates": "^4.0.0",
     "pluralize-esm": "^9.0.2",
+    "polished": "^4.2.2",
     "pretty-ms": "^7.0.1",
     "raf": "^3.4.1",
     "react-copy-to-clipboard": "^5.0.4",
