@@ -13,11 +13,13 @@ import {
   Stack,
   Text,
   Tooltip,
+  useRootTheme,
 } from '@sanity/ui'
 import React, {useCallback, useMemo} from 'react'
 import styled from 'styled-components'
 import {UserAvatar} from '../../../../components'
 import {getProviderTitle} from '../../../../store'
+import {StudioTheme} from '../../../../theme'
 import {useColorScheme} from '../../../colorScheme'
 import {useWorkspace} from '../../../workspace'
 import {LoginProviderLogo} from './LoginProviderLogo'
@@ -33,6 +35,7 @@ const AvatarBox = styled(Box)`
 
 export function UserMenu() {
   const {currentUser, projectId, auth} = useWorkspace()
+  const theme = useRootTheme().theme as StudioTheme
   const {scheme, setScheme} = useColorScheme()
 
   const providerTitle = getProviderTitle(currentUser?.provider)
@@ -103,13 +106,17 @@ export function UserMenu() {
             </Flex>
           </Card>
 
-          <MenuDivider />
+          {!theme?.__legacy && (
+            <>
+              <MenuDivider />
 
-          <MenuItem
-            icon={scheme === 'dark' ? SunIcon : MoonIcon}
-            onClick={handleToggleScheme}
-            text={scheme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
-          />
+              <MenuItem
+                icon={scheme === 'dark' ? SunIcon : MoonIcon}
+                onClick={handleToggleScheme}
+                text={scheme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+              />
+            </>
+          )}
 
           <MenuDivider />
 
