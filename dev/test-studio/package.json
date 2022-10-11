@@ -37,6 +37,7 @@
     "refractor": "^3.6.0",
     "rxjs": "^6.5.3",
     "sanity": "3.0.0-dev-preview.21",
+    "sanity-plugin-mux-input": "2.0.0-v3-studio.19",
     "styled-components": "^5.2.0"
   },
   "devDependencies": {

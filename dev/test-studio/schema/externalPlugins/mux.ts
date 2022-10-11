@@ -6,10 +6,6 @@ export default defineType({
   type: 'document',
   fields: [
     {title: 'Title', name: 'title', type: 'string'},
-    // {
-    //   title: 'Video file',
-    //   name: 'video',
-    //   type: 'mux.video',
-    // },
+    {title: 'Video file', name: 'video', type: 'mux.video'},
   ],
 })
