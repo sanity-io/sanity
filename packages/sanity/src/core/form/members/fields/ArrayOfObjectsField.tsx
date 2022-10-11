@@ -142,6 +142,9 @@ export function ArrayOfObjectsField(props: {
 
   const handleInsert = useCallback(
     (event: ArrayInputInsertEvent<ObjectItem>) => {
+      if (event.items.length === 0) {
+        throw new Error('Insert event should include at least one item')
+      }
       const itemsWithKeys = event.items.map((item) => ensureKey(item))
 
       onChange(
@@ -150,6 +153,11 @@ export function ArrayOfObjectsField(props: {
           insert(itemsWithKeys, event.position, [event.referenceItem]),
         ]).prefixAll(member.name)
       )
+
+      const focusItemKey = itemsWithKeys[0]._key
+      // Set focus at the first item (todo: verify that this is the expected/better behavior)
+      onPathFocus([...props.member.field.path, {_key: focusItemKey}])
+
       if (!event.skipInitialValue) {
         resolveInitialValues(itemsWithKeys, member.field.schemaType, resolveInitialValue)
           .pipe(
@@ -168,7 +176,15 @@ export function ArrayOfObjectsField(props: {
           .subscribe()
       }
     },
-    [member.field.schemaType, member.name, onChange, resolveInitialValue, toast]
+    [
+      member.field.schemaType,
+      member.name,
+      onChange,
+      onPathFocus,
+      props.member.field.path,
+      resolveInitialValue,
+      toast,
+    ]
   )
 
   const handleMoveItem = useCallback(

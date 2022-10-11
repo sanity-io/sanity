@@ -76,7 +76,7 @@ export function useReferenceInput(options: Options) {
 
   const documentTypeName = documentRef.current?._type
 
-  const isDocumentLiveEdit = useMemo(() => {
+  const isCurrentDocumentLiveEdit = useMemo(() => {
     return schema.get(documentTypeName)?.liveEdit
   }, [documentTypeName, schema])
 
@@ -178,6 +178,7 @@ export function useReferenceInput(options: Options) {
   return {
     selectedState,
     handleSearch,
+    isCurrentDocumentLiveEdit,
     handleEditReference,
     EditReferenceLink,
     createOptions,

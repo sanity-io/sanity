@@ -1,9 +1,11 @@
 import React from 'react'
 import {Reference, ReferenceSchemaType} from '@sanity/types'
 import {Box, Flex, Inline, Label, Stack} from '@sanity/ui'
+import {Button, Text} from '@sanity/ui/src'
 import {RenderPreviewCallback} from '../../types'
 import {SanityDefaultPreview} from '../../../preview'
-import {PreviewProps} from '../../../components/previews'
+import {PreviewProps} from '../../../components'
+import {AlertStrip} from '../../components/AlertStrip'
 import {ReferencePreview} from './ReferencePreview'
 import {Loadable} from './useReferenceInfo'
 import {ReferenceInfo} from './types'
@@ -13,14 +15,13 @@ export function PreviewReferenceValue(props: {
   renderPreview: RenderPreviewCallback
   type: ReferenceSchemaType
   value: Reference
+  showTypeLabel?: boolean
 }) {
-  const {referenceInfo, renderPreview, type, value} = props
+  const {referenceInfo, renderPreview, type, value, showTypeLabel} = props
 
   if (referenceInfo.isLoading || referenceInfo.error) {
     return <SanityDefaultPreview isPlaceholder />
   }
-
-  const showTypeLabel = type.to.length > 1
 
   if (referenceInfo.result?.availability.reason === 'NOT_FOUND' && value._strengthenOnPublish) {
     const refType = type.to.find((toType) => toType.name === value?._strengthenOnPublish?.type)

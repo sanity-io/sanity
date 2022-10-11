@@ -1,7 +1,7 @@
 /* eslint-disable complexity */
 /* eslint-disable max-nested-callbacks,no-nested-ternary */
 
-import React, {KeyboardEvent, useCallback, useRef, useState} from 'react'
+import React, {KeyboardEvent, FocusEvent, useCallback, useRef, useState} from 'react'
 import {concat, Observable, of} from 'rxjs'
 
 import {catchError, distinctUntilChanged, filter, map, scan, switchMap, tap} from 'rxjs/operators'
@@ -206,13 +206,14 @@ export function ReferenceInput(props: ReferenceInputProps) {
   )
 
   const handleFocus = useCallback(() => onFocusPath(['_ref']), [onFocusPath])
-
-  const renderValue = useCallback(() => {
-    if (loadableReferenceInfo.isLoading) {
-      return 'Loading…'
-    }
-    return loadableReferenceInfo.result?.preview.published?.title || 'loading…'
-  }, [loadableReferenceInfo.isLoading, loadableReferenceInfo.result?.preview.published?.title])
+  const handleBlur = useCallback((event: FocusEvent) => {
+    // if (
+    //   event.target !== event.currentTarget &&
+    //   !autocompletePopoverReferenceElementRef.current?.contains(event.target)
+    // ) {
+    //   props.elementProps.onBlur(event)
+    // }
+  }, [])
 
   const isWeakRefToNonexistent =
     loadableReferenceInfo?.result?.availability?.reason === 'NOT_FOUND' &&
@@ -248,6 +249,7 @@ export function ReferenceInput(props: ReferenceInputProps) {
           <ReferenceAutocomplete
             {...elementProps}
             onFocus={handleFocus}
+            onBlur={handleBlur}
             data-testid="autocomplete"
             loading={searchState.isLoading}
             referenceElement={autocompletePopoverReferenceElementRef.current}
@@ -262,7 +264,6 @@ export function ReferenceInput(props: ReferenceInputProps) {
             onQueryChange={handleQueryChange}
             searchString={searchState.searchString}
             onChange={handleChange}
-            renderValue={renderValue}
             filterOption={NO_FILTER}
             renderOption={renderOption}
             openButton={{onClick: handleAutocompleteOpenButtonClick}}

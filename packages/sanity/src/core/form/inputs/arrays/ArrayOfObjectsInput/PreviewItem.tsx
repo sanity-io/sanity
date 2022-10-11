@@ -6,21 +6,21 @@ import {
   Dialog,
   Flex,
   Menu,
-  Text,
   MenuButton,
   MenuItem,
   Spinner,
+  Text,
 } from '@sanity/ui'
 import React, {ReactNode, useCallback, useMemo, useRef} from 'react'
-import {isReference, SchemaType} from '@sanity/types'
+import {SchemaType} from '@sanity/types'
 import {CopyIcon as DuplicateIcon, EllipsisVerticalIcon, TrashIcon} from '@sanity/icons'
-import {getSchemaTypeTitle} from '../../../../schema/helpers'
+import {getSchemaTypeTitle} from '../../../../schema'
 import {ObjectItem, ObjectItemProps} from '../../../types'
 import {useScrollIntoViewOnFocusWithin} from '../../../hooks/useScrollIntoViewOnFocusWithin'
 import {useDidUpdate} from '../../../hooks/useDidUpdate'
 import {useChildPresence} from '../../../studio/contexts/Presence'
 import {randomKey} from '../common/randomKey'
-import {FormFieldValidationStatus} from '../../../components/formField'
+import {FormFieldValidationStatus} from '../../../components'
 import {FieldPresence} from '../../../../presence'
 import {useChildValidation} from '../../../studio/contexts/Validation'
 import {ChangeIndicator} from '../../../../changeIndicators'
@@ -118,15 +118,14 @@ export function PreviewItem<Item extends ObjectItem = ObjectItem>(props: Props<I
   }, [childPresence, props.presence])
 
   const childValidation = useChildValidation(path)
-  const reference = isReference(value)
   const validation = useMemo(() => {
     const itemValidation = props.validation.concat(childValidation)
     return itemValidation.length === 0 ? null : (
       <Box marginLeft={1} paddingX={1} paddingY={3}>
-        <FormFieldValidationStatus validation={itemValidation} __unstable_showSummary={reference} />
+        <FormFieldValidationStatus validation={itemValidation} />
       </Box>
     )
-  }, [childValidation, props.validation, reference])
+  }, [childValidation, props.validation])
 
   const menu = useMemo(
     () =>

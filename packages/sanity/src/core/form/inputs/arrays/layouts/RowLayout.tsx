@@ -1,4 +1,4 @@
-import {Box, Card, CardTone, Flex} from '@sanity/ui'
+import {Box, Card, CardTone, Flex, Stack} from '@sanity/ui'
 import React, {ReactNode, useRef} from 'react'
 import {useDidUpdate} from '../../../hooks/useDidUpdate'
 import {DragHandle} from '../common/DragHandle'
@@ -11,12 +11,13 @@ interface RowLayoutProps {
   presence?: ReactNode
   validation?: ReactNode
   menu?: ReactNode
+  footer?: ReactNode
   selected?: boolean
   children?: ReactNode
 }
 
 export function RowLayout(props: RowLayoutProps) {
-  const {validation, selected, tone, presence, focused, children, dragHandle, menu} = props
+  const {validation, selected, tone, presence, focused, children, dragHandle, menu, footer} = props
 
   const elementRef = useRef<HTMLDivElement | null>(null)
 
@@ -33,25 +34,29 @@ export function RowLayout(props: RowLayoutProps) {
       aria-selected={selected}
       radius={2}
       padding={1}
+      marginX={1}
       /*prevent clicks in children from triggering onFocus on surrounding array input*/
       tabIndex={-1}
       tone={tone}
     >
-      <Flex align="center">
-        {dragHandle && (
-          <Card tone="inherit" marginRight={1}>
-            <DragHandle paddingX={1} paddingY={3} />
-          </Card>
-        )}
-
-        <Box flex={1}>{children}</Box>
-
+      <Stack space={1}>
         <Flex align="center">
-          {presence && <Box marginLeft={1}>{presence}</Box>}
-          {validation && <Box marginLeft={1}>{validation}</Box>}
-          {menu}
+          {dragHandle && (
+            <Box marginRight={1} paddingY={1}>
+              <DragHandle paddingX={1} paddingY={3} />
+            </Box>
+          )}
+
+          <Box flex={1}>{children}</Box>
+
+          <Flex align="center">
+            {presence && <Box marginLeft={1}>{presence}</Box>}
+            {validation && <Box marginLeft={1}>{validation}</Box>}
+            {menu}
+          </Flex>
         </Flex>
-      </Flex>
+        {footer}
+      </Stack>
     </ItemCard>
   )
 }
