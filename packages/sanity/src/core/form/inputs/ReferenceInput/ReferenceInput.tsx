@@ -1,7 +1,7 @@
 /* eslint-disable complexity */
 /* eslint-disable max-nested-callbacks,no-nested-ternary */
 
-import React, {KeyboardEvent, FocusEvent, useCallback, useRef, useState} from 'react'
+import React, {KeyboardEvent, FocusEvent, useCallback, useRef, useState, useMemo} from 'react'
 import {concat, Observable, of} from 'rxjs'
 
 import {catchError, distinctUntilChanged, filter, map, scan, switchMap, tap} from 'rxjs/operators'
@@ -15,7 +15,12 @@ import {PreviewCard} from '../../../components'
 import {getPublishedId, isNonNullable} from '../../../util'
 import {useReferenceInput} from '../arrays/ArrayOfObjectsInput/_reference/useReferenceInput'
 import {useDidUpdate} from '../../hooks/useDidUpdate'
-import {CreateReferenceOption, ReferenceInputProps, ReferenceSearchState} from './types'
+import {
+  CreateReferenceOption,
+  ReferenceInputProps,
+  ReferenceSearchHit,
+  ReferenceSearchState,
+} from './types'
 import {OptionPreview} from './OptionPreview'
 import {useReferenceInfo} from './useReferenceInfo'
 import {CreateButton} from './CreateButton'
@@ -39,6 +44,10 @@ function nonNullable<T>(v: T): v is NonNullable<T> {
   return v !== null
 }
 
+interface AutocompleteOption {
+  hit: ReferenceSearchHit
+  value: string
+}
 export function ReferenceInput(props: ReferenceInputProps) {
   const {
     createOptions,
@@ -177,7 +186,7 @@ export function ReferenceInput(props: ReferenceInputProps) {
   }, [handleQueryChange])
 
   const handleCreateButtonKeyDown = useCallback(
-    (e: any) => {
+    (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
         onFocusPath([])
       }
@@ -186,8 +195,8 @@ export function ReferenceInput(props: ReferenceInputProps) {
   )
 
   const renderOption = useCallback(
-    (option: any) => {
-      const documentId = option.hit.draft?._id || option.hit.published?._id
+    (option: AutocompleteOption) => {
+      const documentId = option.hit.draft?._id || option.hit.published?._id || option.value
 
       return (
         <StyledPreviewCard forwardedAs="button" type="button" radius={2} tone="inherit">
@@ -206,14 +215,14 @@ export function ReferenceInput(props: ReferenceInputProps) {
   )
 
   const handleFocus = useCallback(() => onFocusPath(['_ref']), [onFocusPath])
-  const handleBlur = useCallback((event: FocusEvent) => {
-    // if (
-    //   event.target !== event.currentTarget &&
-    //   !autocompletePopoverReferenceElementRef.current?.contains(event.target)
-    // ) {
-    //   props.elementProps.onBlur(event)
-    // }
-  }, [])
+  const handleBlur = useCallback(
+    (event: FocusEvent) => {
+      if (!autocompletePopoverReferenceElementRef.current?.contains(event.relatedTarget)) {
+        props.elementProps.onBlur(event)
+      }
+    },
+    [props.elementProps]
+  )
 
   const isWeakRefToNonexistent =
     loadableReferenceInfo?.result?.availability?.reason === 'NOT_FOUND' &&
@@ -225,6 +234,14 @@ export function ReferenceInput(props: ReferenceInputProps) {
       elementProps.ref.current?.focus()
     }
   })
+  const hits: AutocompleteOption[] = useMemo(
+    () =>
+      searchState.hits.map((hit) => ({
+        value: hit.id,
+        hit: hit,
+      })),
+    [searchState.hits]
+  )
   return (
     <Stack space={1} data-testid="reference-input">
       <Stack space={2}>
@@ -253,10 +270,7 @@ export function ReferenceInput(props: ReferenceInputProps) {
             data-testid="autocomplete"
             loading={searchState.isLoading}
             referenceElement={autocompletePopoverReferenceElementRef.current}
-            options={searchState.hits.map((hit) => ({
-              value: hit.id,
-              hit: hit,
-            }))}
+            options={hits}
             radius={1}
             placeholder="Type to search"
             onKeyDown={handleAutocompleteKeyDown}
@@ -265,7 +279,7 @@ export function ReferenceInput(props: ReferenceInputProps) {
             searchString={searchState.searchString}
             onChange={handleChange}
             filterOption={NO_FILTER}
-            renderOption={renderOption}
+            renderOption={renderOption as any}
             openButton={{onClick: handleAutocompleteOpenButtonClick}}
           />
 

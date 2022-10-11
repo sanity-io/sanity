@@ -103,32 +103,101 @@ export function ReferenceField(props: ReferenceFieldProps) {
     ])
   }, [onChange, schemaType.weak])
 
+  const handleFixStrengthMismatch = useCallback(() => {
+    onChange(schemaType.weak === true ? set(true, ['_weak']) : unset(['_weak']))
+  }, [onChange, schemaType])
+
+  const weakIs = value?._weak ? 'weak' : 'strong'
+  const weakShouldBe = schemaType.weak === true ? 'weak' : 'strong'
+
+  // If the reference value is marked with _strengthenOnPublish,
+  // we allow weak references if the reference points to a document that has a draft but not a published
+  // In all other cases we should display a "weak mismatch" warning
+  const weakWarningOverride =
+    hasRef && !loadableReferenceInfo.isLoading && value?._strengthenOnPublish
+
+  const showWeakRefMismatch =
+    !loadableReferenceInfo.isLoading && hasRef && weakIs !== weakShouldBe && !weakWarningOverride
+
   const tone = getTone({readOnly, hasErrors, hasWarnings})
   const isEditing = !value?._ref || inputProps.focusPath[0] === '_ref'
+  const preview =
+    loadableReferenceInfo.result?.preview.draft || loadableReferenceInfo.result?.preview.published
 
-  const footer = isCurrentDocumentLiveEdit &&
-    publishedReferenceExists &&
-    value._strengthenOnPublish && (
-      <AlertStrip
-        padding={1}
-        title={schemaType.weak ? 'Finalize reference' : 'Convert to strong reference'}
-        status="info"
-        data-testid="alert-reference-published"
-      >
-        <Stack space={3}>
-          <Text as="p" muted size={1}>
-            <strong>{loadableReferenceInfo.result?.preview.published?.title as any}</strong> is
-            published and this reference should now be{' '}
-            {schemaType.weak ? <>finalized</> : <>converted to a strong reference</>}.
-          </Text>
-          <Button
-            onClick={handleRemoveStrengthenOnPublish}
-            text={<>Convert to strong reference</>}
-            tone="positive"
-          />
-        </Stack>
-      </AlertStrip>
-    )
+  const footer = (
+    <>
+      {isCurrentDocumentLiveEdit && publishedReferenceExists && value._strengthenOnPublish && (
+        <AlertStrip
+          padding={1}
+          title={schemaType.weak ? 'Finalize reference' : 'Convert to strong reference'}
+          status="info"
+          data-testid="alert-reference-published"
+        >
+          <Stack space={3}>
+            <Text as="p" muted size={1}>
+              <strong>{loadableReferenceInfo.result?.preview.published?.title as any}</strong> is
+              published and this reference should now be{' '}
+              {schemaType.weak ? <>finalized</> : <>converted to a strong reference</>}.
+            </Text>
+            <Button
+              onClick={handleRemoveStrengthenOnPublish}
+              text={<>Convert to strong reference</>}
+              tone="positive"
+            />
+          </Stack>
+        </AlertStrip>
+      )}
+      {showWeakRefMismatch && (
+        <AlertStrip
+          padding={1}
+          title="Reference strength mismatch"
+          status="warning"
+          data-testid="alert-reference-strength-mismatch"
+        >
+          <Stack space={3}>
+            <Text as="p" muted size={1}>
+              This reference is <em>{weakIs}</em>, but according to the current schema it should be{' '}
+              <em>{weakShouldBe}.</em>
+            </Text>
+
+            <Text as="p" muted size={1}>
+              {schemaType.weak ? (
+                <>
+                  It will not be possible to delete the "{preview?.title}"-document without first
+                  removing this reference.
+                </>
+              ) : (
+                <>
+                  This makes it possible to delete the "{preview?.title}"-document without first
+                  deleting this reference, leaving this field referencing a nonexisting document.
+                </>
+              )}
+            </Text>
+            <Button
+              onClick={handleFixStrengthMismatch}
+              text={<>Convert to {weakShouldBe} reference</>}
+              tone="caution"
+            />
+          </Stack>
+        </AlertStrip>
+      )}
+      {loadableReferenceInfo.error && (
+        <AlertStrip
+          padding={1}
+          title="Unable to load reference metadata"
+          status="warning"
+          data-testid="alert-reference-info-failed"
+        >
+          <Stack space={3}>
+            <Text as="p" muted size={1}>
+              Error: {loadableReferenceInfo.error.message}
+            </Text>
+            <Button onClick={loadableReferenceInfo.retry!} text={<>Retry</>} tone="primary" />
+          </Stack>
+        </AlertStrip>
+      )}
+    </>
+  )
 
   const menu = useMemo(
     () =>
