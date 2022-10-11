@@ -183,46 +183,50 @@ export function CrossDatasetReferenceInput(props: CrossDatasetReferenceInputProp
     [elementProps.ref, onFocusPath]
   )
 
-  const handleQueryChange = useObservableCallback((inputValue$: Observable<string | null>) => {
-    return inputValue$.pipe(
-      filter(isNonNullable),
-      distinctUntilChanged(),
-      switchMap((searchString) =>
-        concat(
-          of({isLoading: true}),
-          onSearch(searchString).pipe(
-            map((hits) => ({hits, searchString, isLoading: false})),
-            catchError((error) => {
-              push({
-                title: 'Reference search failed',
-                description: error.message,
-                status: 'error',
-                id: `reference-search-fail-${inputId}`,
+  const inputId = useId()
+
+  const handleQueryChange = useObservableCallback(
+    (inputValue$: Observable<string | null>) => {
+      return inputValue$.pipe(
+        filter(isNonNullable),
+        distinctUntilChanged(),
+        switchMap((searchString) =>
+          concat(
+            of({isLoading: true}),
+            onSearch(searchString).pipe(
+              map((hits) => ({hits, searchString, isLoading: false})),
+              catchError((error) => {
+                push({
+                  title: 'Reference search failed',
+                  description: error.message,
+                  status: 'error',
+                  id: `reference-search-fail-${inputId}`,
+                })
+
+                console.error(error)
+                return of({hits: []})
               })
-
-              console.error(error)
-              return of({hits: []})
-            })
+            )
           )
-        )
-      ),
+        ),
 
-      scan(
-        (prevState, nextState): SearchState => ({...prevState, ...nextState}),
-        INITIAL_SEARCH_STATE
-      ),
+        scan(
+          (prevState, nextState): SearchState => ({...prevState, ...nextState}),
+          INITIAL_SEARCH_STATE
+        ),
 
-      tap(setSearchState)
-    )
-  }, [])
+        tap(setSearchState)
+      )
+    },
+    // @todo: add onSearch to the deps list when it's verified that it's safe to do so
+    [inputId, push]
+  )
 
   const handleAutocompleteOpenButtonClick = useCallback(() => {
     handleQueryChange('')
   }, [handleQueryChange])
 
   const showWeakRefMismatch = !loadableReferenceInfo.isLoading && hasRef && weakIs !== weakShouldBe
-
-  const inputId = useId()
 
   const studioUrl =
     (value?._ref &&

@@ -1,7 +1,7 @@
 import {useCallback, useMemo} from 'react'
 import {catchError, concatMap, map, startWith} from 'rxjs/operators'
 import {concat, Observable, of, Subject} from 'rxjs'
-import {useObservable} from 'react-rx'
+import {useMemoObservable} from 'react-rx'
 import {usePrevious} from '../../hooks/usePrevious'
 import {ReferenceInfo} from './types'
 
@@ -40,7 +40,7 @@ export function useReferenceInfo(
     msgSubject.next({type: 'retry'})
   }, [msgSubject])
 
-  const stream$ = useMemo(
+  const referenceInfo = useMemoObservable(
     () =>
       concat(of(null), msg$).pipe(
         map(() => id),
@@ -64,17 +64,11 @@ export function useReferenceInfo(
             : of(EMPTY_STATE)
         )
       ),
-    [getReferenceInfo, id, retry, msg$]
+    [getReferenceInfo, id, msg$, retry],
+    INITIAL_LOADING_STATE
   )
 
-  const referenceInfo = useObservable(stream$, INITIAL_LOADING_STATE)
-
-  // const referenceInfo = useMemoObservable(
-  //   () => stream$,
-  //   [retryAttempt, getReferenceInfo, id, retry],
-  //   INITIAL_LOADING_STATE
-  // )
-
+  // @todo test and see if this were fixed in `react-rx@2.1.x`
   // workaround for a "bug" with useMemoObservable that doesn't
   // return the initial value upon resubscription
   const previousId = usePrevious(id, id)

@@ -13541,7 +13541,7 @@ object.values@^1.1.0, object.values@^1.1.5:
     define-properties "^1.1.3"
     es-abstract "^1.19.1"
 
-observable-callback@^1.0.1:
+observable-callback@^1.0.1, observable-callback@^1.0.2:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/observable-callback/-/observable-callback-1.0.2.tgz#6ec5a0d7184eb484e1f8f157e645676b034aa75b"
   integrity sha512-Fb7qVUHqr8jl32NyJffTiqf76NObRvmzaSPgGtaAGH+Wfh45tiGWjrvUsNgEuCa86SUzGZZpoSN0hpGtldoSDg==
@@ -15312,12 +15312,12 @@ react-refresh@^0.14.0:
   resolved "https://registry.yarnpkg.com/react-refresh/-/react-refresh-0.14.0.tgz#4e02825378a5f227079554d4284889354e5f553e"
   integrity sha512-wViHqhAd8OHeLS/IRMJjTSDHF3U9eWi62F/MledQGPdJGDhodXJ9PBLNGr6WWL7qlH12Mt3TyTpbS+hGXMjCzQ==
 
-react-rx@^2.0.4:
-  version "2.0.4"
-  resolved "https://registry.yarnpkg.com/react-rx/-/react-rx-2.0.4.tgz#785b6548b7f8cfe8872004521ba77d1e38028522"
-  integrity sha512-2+cAjAuCZpX6ZOsE8uWaT8XI3dYbCxWsI+X9ljm8ZFQc5lzLTRbtqfnkREQu5zNoUF3KODHADhL8sCFfp/iKNg==
+react-rx@^2.1.3:
+  version "2.1.3"
+  resolved "https://registry.yarnpkg.com/react-rx/-/react-rx-2.1.3.tgz#386fce56edcab51b6973202b55677dd986b80427"
+  integrity sha512-4dppkgEFAldr75IUUz14WyxuI2cJhpXYrrIM+4gvG6slKzaMUCmcgiiykx9Hst0UmtwNt247nRoOFDmN0Q7GJw==
   dependencies:
-    observable-callback "^1.0.1"
+    observable-callback "^1.0.2"
     use-sync-external-store "^1.2.0"
 
 react-scripts@^5.0.0:

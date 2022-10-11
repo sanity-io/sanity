@@ -1,17 +1,18 @@
 import {CurrentUser, User} from '@sanity/types'
+import {useMemo} from 'react'
 import {from} from 'rxjs'
 import {useSource} from '../../studio'
 import {UserStore, useUserStore} from '../_legacy'
 import {createHookFromObservableFactory, LoadingTuple} from '../../util'
 
 const useUserViaUserStore = createHookFromObservableFactory(
-  (userStore: UserStore, userId: string) => from(userStore.getUser(userId))
+  ([userStore, userId]: [UserStore, string]) => from(userStore.getUser(userId))
 )
 
 /** @internal */
 export function useUser(userId: string): LoadingTuple<User | null | undefined> {
   const userStore = useUserStore()
-  return useUserViaUserStore(userStore, userId)
+  return useUserViaUserStore(useMemo(() => [userStore, userId], [userId, userStore]))
 }
 
 /** @internal */

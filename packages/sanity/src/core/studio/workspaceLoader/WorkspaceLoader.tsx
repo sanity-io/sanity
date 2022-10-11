@@ -23,14 +23,14 @@ interface StudioRouterState {
   state: RouterState
 }
 
-interface UseRouterStateOptions {
-  unstable_history: History
-  router: Router | undefined
+type UseRouterStateOptions = [
+  unstable_history: History,
+  router: Router | undefined,
   tools: Tool[] | undefined
-}
+]
 
 const useRouterState = createHookFromObservableFactory(
-  ({tools, unstable_history, router}: UseRouterStateOptions) => {
+  ([unstable_history, router, tools]: UseRouterStateOptions) => {
     if (!router || !tools) return of(initialState)
 
     return createRouterEventStream({
@@ -48,7 +48,7 @@ const useRouterState = createHookFromObservableFactory(
       }, initialState)
     )
   },
-  {initialValue: initialState}
+  initialState
 )
 
 interface WorkspaceLoaderProps {
@@ -128,7 +128,9 @@ function WorkspaceLoader({
     return createRouter(workspace)
   }, [workspace])
 
-  const [routerState] = useRouterState({unstable_history: history, router, tools})
+  const [routerState] = useRouterState(
+    useMemo(() => [history, router, tools], [history, router, tools])
+  )
   if (!router || !workspace) return <LoadingComponent />
 
   // TODO: may need a screen if one of the sources is not logged in. e.g. it

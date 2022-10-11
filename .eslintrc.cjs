@@ -25,6 +25,15 @@ const baseConfig = {
     'react/jsx-filename-extension': ['error', {extensions: ['.jsx']}],
     'sort-imports': 'off', // prefer import/order
     'tsdoc/syntax': 'error',
+    'react-hooks/rules-of-hooks': 'error',
+    'react-hooks/exhaustive-deps': [
+      // @todo: set this to 'error' after fixing the ones we have to help prevent future accidents
+      // until then you can run `yarn lint:exhaustive-deps` to make it `error` instead of `warn` while ignoring other warnings to make problematic deps easier to spot
+      'warn',
+      {
+        additionalHooks: '(useMemoObservable|useObservableCallback|useAsync)',
+      },
+    ],
   },
   settings: {
     'import/extensions': ['.cjs', '.mjs', '.js', '.jsx', '.ts', '.tsx'],

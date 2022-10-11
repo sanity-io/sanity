@@ -174,8 +174,7 @@ function fetchCrossDatasetReferences(
 }
 
 const useInternalReferences = createHookFromObservableFactory(
-  (documentId: string, context: {documentStore: DocumentStore}) => {
-    const {documentStore} = context
+  ([documentId, documentStore]: [string, DocumentStore]) => {
     const referencesClause = '*[references($documentId)][0...100]{_id,_type}'
     const totalClause = 'count(*[references($documentId)])'
     const fetchQuery = `{"references":${referencesClause},"totalCount":${totalClause}}`
@@ -190,13 +189,11 @@ const useInternalReferences = createHookFromObservableFactory(
 )
 
 const useCrossDatasetReferences = createHookFromObservableFactory(
-  (
-    documentId: string,
-    context: {crossProjectTokenStore: CrossProjectTokenStore},
-    versionedClient: SanityClient
-  ) => {
-    const {crossProjectTokenStore} = context
-
+  ([documentId, crossProjectTokenStore, versionedClient]: [
+    string,
+    CrossProjectTokenStore,
+    SanityClient
+  ]) => {
     return getVisiblePoll$().pipe(
       switchMap(() =>
         fetchCrossDatasetReferences(documentId, {
@@ -215,14 +212,15 @@ export function useReferringDocuments(documentId: string): ReferringDocuments {
   const crossProjectTokenStore = useCrossProjectTokenStore()
   const publishedId = getPublishedId(documentId)
 
-  const [internalReferences, isInternalReferencesLoading] = useInternalReferences(publishedId, {
-    documentStore,
-  })
+  const [internalReferences, isInternalReferencesLoading] = useInternalReferences(
+    useMemo(() => [publishedId, documentStore], [documentStore, publishedId])
+  )
 
   const [crossDatasetReferences, isCrossDatasetReferencesLoading] = useCrossDatasetReferences(
-    publishedId,
-    {crossProjectTokenStore},
-    versionedClient
+    useMemo(
+      () => [publishedId, crossProjectTokenStore, versionedClient],
+      [crossProjectTokenStore, publishedId, versionedClient]
+    )
   )
 
   const projectIds = useMemo(() => {
