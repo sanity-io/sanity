@@ -5,6 +5,7 @@ import {MOVING_ITEM_CLASS_NAME} from '../common/sortable'
 export const ItemCard = styled(Card)`
   position: relative;
   border: 1px solid transparent;
+  transition: border-color 250ms;
   .dragHandle {
     color: var(--card-shadow-umbra-color);
   }

@@ -28,20 +28,20 @@ export function useValidationMarkers(): ValidationMarker[] {
 
 /**
  * @alpha
- * Todo: consider introducing a `inclusive`-param that concats child validation with validation for given path as well
  * @param path - the path to return child validation for
+ * @param inclusive - whether to include validation for the current path (default false)
  */
-export function useChildValidation(path: Path): FormNodeValidation[] {
+export function useChildValidation(path: Path, inclusive = false): FormNodeValidation[] {
   const validation = useValidationMarkers()
   return useMemo(
     () =>
       validation
-        .filter((item) => startsWith(path, item.path) && !isEqual(path, item.path))
+        .filter((item) => startsWith(path, item.path) && (inclusive || !isEqual(path, item.path)))
         .map((marker) => ({
           message: marker.item.message,
           level: marker.level,
           path: marker.path,
         })) as FormNodeValidation[],
-    [path, validation]
+    [inclusive, path, validation]
   )
 }

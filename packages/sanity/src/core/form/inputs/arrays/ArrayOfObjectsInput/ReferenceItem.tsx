@@ -254,8 +254,8 @@ export function ReferenceItem<Item extends ReferenceItemValue = ReferenceItemVal
         >
           <Stack space={3}>
             <Text as="p" muted size={1}>
-              <strong>{loadableReferenceInfo.result?.preview.published?.title as any}</strong> is
-              published and this reference should now be{' '}
+              <strong>{loadableReferenceInfo.result?.preview.published?.title}</strong> is published
+              and this reference should now be{' '}
               {schemaType.weak ? <>finalized</> : <>converted to a strong reference</>}.
             </Text>
             <Button
@@ -320,16 +320,16 @@ export function ReferenceItem<Item extends ReferenceItemValue = ReferenceItemVal
 
   const item = (
     <RowLayout
+      dragHandle={sortable}
       presence={
         !isEditing && presence.length > 0 && <FieldPresence presence={presence} maxAvatars={1} />
       }
       validation={
         !isEditing && validation.length > 0 && <FormFieldValidationStatus validation={validation} />
       }
-      menu={isEditing ? undefined : menu}
+      menu={menu}
       footer={isEditing ? undefined : issues}
       tone={isEditing ? undefined : tone}
-      dragHandle={!isEditing && sortable}
       focused={focused}
     >
       {isEditing ? (

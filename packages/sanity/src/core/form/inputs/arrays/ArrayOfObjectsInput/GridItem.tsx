@@ -14,6 +14,7 @@ import {
 import React, {ReactNode, useCallback, useMemo, useRef} from 'react'
 import {SchemaType} from '@sanity/types'
 import {CopyIcon as DuplicateIcon, EllipsisVerticalIcon, TrashIcon} from '@sanity/icons'
+import styled from 'styled-components'
 import {getSchemaTypeTitle} from '../../../../schema'
 import {ObjectItem, ObjectItemProps} from '../../../types'
 import {useScrollIntoViewOnFocusWithin} from '../../../hooks/useScrollIntoViewOnFocusWithin'
@@ -25,6 +26,7 @@ import {FieldPresence} from '../../../../presence'
 import {useChildValidation} from '../../../studio/contexts/Validation'
 import {ChangeIndicator} from '../../../../changeIndicators'
 import {RowLayout} from '../layouts/RowLayout'
+import {GridItemLayout} from '../layouts/GridItemLayout'
 import {createProtoArrayValue} from './createProtoArrayValue'
 import {InsertMenu} from './InsertMenu'
 
@@ -35,6 +37,21 @@ interface Props<Item extends ObjectItem> extends Omit<ObjectItemProps<Item>, 're
   sortable: boolean
 }
 
+const PreviewCard = styled(Card)`
+  border-top-right-radius: inherit;
+  border-top-left-radius: inherit;
+  height: 100%;
+
+  @media (hover: hover) {
+    &:hover {
+      filter: brightness(95%);
+    }
+  }
+
+  &:focus:focus-visible {
+    box-shadow: 0 0 0 2px var(--card-focus-ring-color);
+  }
+`
 function getTone({
   readOnly,
   hasErrors,
@@ -54,7 +71,7 @@ function getTone({
 }
 const MENU_POPOVER_PROPS = {portal: true, tone: 'default'} as const
 
-export function PreviewItem<Item extends ObjectItem = ObjectItem>(props: Props<Item>) {
+export function GridItem<Item extends ObjectItem = ObjectItem>(props: Props<Item>) {
   const {
     schemaType,
     path,
@@ -116,7 +133,6 @@ export function PreviewItem<Item extends ObjectItem = ObjectItem>(props: Props<I
   }, [childPresence, props.presence])
 
   const childValidation = useChildValidation(path, true)
-
   const validation = useMemo(() => {
     const itemValidation = props.validation.concat(childValidation)
     return itemValidation.length === 0 ? null : (
@@ -150,7 +166,7 @@ export function PreviewItem<Item extends ObjectItem = ObjectItem>(props: Props<I
 
   const tone = getTone({readOnly, hasErrors, hasWarnings})
   const item = (
-    <RowLayout
+    <GridItemLayout
       menu={menu}
       presence={presence}
       validation={validation}
@@ -165,8 +181,6 @@ export function PreviewItem<Item extends ObjectItem = ObjectItem>(props: Props<I
         tone="inherit"
         radius={2}
         disabled={resolvingInitialValue}
-        paddingX={2}
-        paddingY={1}
         onClick={onOpen}
         ref={previewCardRef}
         onFocus={onFocus}
@@ -200,12 +214,12 @@ export function PreviewItem<Item extends ObjectItem = ObjectItem>(props: Props<I
           </Card>
         )}
       </Card>
-    </RowLayout>
+    </GridItemLayout>
   )
   return (
     <>
       <ChangeIndicator path={path} isChanged={changed} hasFocus={Boolean(focused)}>
-        <Box paddingX={1}>{item}</Box>
+        {item}
       </ChangeIndicator>
       {open && (
         <Dialog

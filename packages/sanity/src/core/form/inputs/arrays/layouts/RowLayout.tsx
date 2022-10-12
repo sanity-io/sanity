@@ -35,8 +35,6 @@ export function RowLayout(props: RowLayoutProps) {
       radius={2}
       padding={1}
       marginX={1}
-      /*prevent clicks in children from triggering onFocus on surrounding array input*/
-      tabIndex={-1}
       tone={tone}
     >
       <Stack space={1}>

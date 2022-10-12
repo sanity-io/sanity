@@ -9,6 +9,7 @@ import {Box, Button, Stack, Text, useToast} from '@sanity/ui'
 import {useObservableCallback} from 'react-rx'
 import {uuid} from '@sanity/uuid'
 import styled from 'styled-components'
+import ReactDOM from 'react-dom'
 import {set, setIfMissing, unset} from '../../patch'
 import {Alert} from '../../components/Alert'
 import {PreviewCard} from '../../../components'
@@ -214,6 +215,17 @@ export function ReferenceInput(props: ReferenceInputProps) {
     [schemaType, getReferenceInfo, renderPreview]
   )
 
+  const renderValue = useCallback(() => {
+    return (
+      loadableReferenceInfo.result?.preview.draft?.title ||
+      loadableReferenceInfo.result?.preview.published?.title ||
+      ''
+    )
+  }, [
+    loadableReferenceInfo.result?.preview.draft?.title,
+    loadableReferenceInfo.result?.preview.published?.title,
+  ])
+
   const handleFocus = useCallback(() => onFocusPath(['_ref']), [onFocusPath])
   const handleBlur = useCallback(
     (event: FocusEvent) => {
@@ -280,6 +292,8 @@ export function ReferenceInput(props: ReferenceInputProps) {
             onChange={handleChange}
             filterOption={NO_FILTER}
             renderOption={renderOption as any}
+            renderValue={renderValue}
+            value={value?._ref}
             openButton={{onClick: handleAutocompleteOpenButtonClick}}
           />
 

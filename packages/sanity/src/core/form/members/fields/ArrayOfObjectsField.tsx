@@ -4,7 +4,7 @@ import {catchError, map, mergeMap, tap} from 'rxjs/operators'
 import {concat, defer, EMPTY, from, Observable, of, Subscription} from 'rxjs'
 import {resolveTypeName} from '@sanity/util/content'
 import {useToast} from '@sanity/ui'
-import {ArrayOfObjectsFormNode, FieldMember} from '../../store'
+import {ArrayOfObjectsFormNode, FieldMember, ObjectMember} from '../../store'
 import {
   ArrayFieldProps,
   ArrayInputInsertEvent,
@@ -140,6 +140,41 @@ export function ArrayOfObjectsField(props: {
 
   const toast = useToast()
 
+  const handleCollapse = useCallback(() => {
+    onSetPathCollapsed(member.field.path, true)
+  }, [onSetPathCollapsed, member.field.path])
+
+  const handleExpand = useCallback(() => {
+    onSetPathCollapsed(member.field.path, false)
+  }, [onSetPathCollapsed, member.field.path])
+
+  const handleCollapseItem = useCallback(
+    (itemKey: string) => {
+      onSetPathCollapsed(member.field.path.concat({_key: itemKey}), true)
+    },
+    [onSetPathCollapsed, member.field.path]
+  )
+
+  const handleExpandItem = useCallback(
+    (itemKey: string) => {
+      onSetPathCollapsed(member.field.path.concat({_key: itemKey}), false)
+    },
+    [onSetPathCollapsed, member.field.path]
+  )
+
+  const handleOpenItem = useCallback(
+    (path: Path) => {
+      onPathOpen(path)
+      onSetPathCollapsed(path, false)
+    },
+    [onPathOpen, onSetPathCollapsed]
+  )
+
+  const handleCloseItem = useCallback(() => {
+    onPathOpen(member.field.path)
+    onSetPathCollapsed(member.field.path, true)
+  }, [onPathOpen, member.field.path, onSetPathCollapsed])
+
   const handleInsert = useCallback(
     (event: ArrayInputInsertEvent<ObjectItem>) => {
       if (event.items.length === 0) {
@@ -155,15 +190,25 @@ export function ArrayOfObjectsField(props: {
       )
 
       const focusItemKey = itemsWithKeys[0]._key
-      // Set focus at the first item (todo: verify that this is the expected/better behavior)
-      onPathFocus([...props.member.field.path, {_key: focusItemKey}])
+      const itemPath = [...props.member.field.path, {_key: focusItemKey}]
+      // Set focus at the first item (todo: verify that this is the expected/better behavior when adding multiple items)
+      onPathFocus(itemPath)
 
-      if (!event.skipInitialValue) {
+      const shouldOpen = event.open !== false
+
+      if (event.skipInitialValue) {
+        if (shouldOpen) {
+          handleOpenItem(itemPath)
+        }
+      } else {
         resolveInitialValues(itemsWithKeys, member.field.schemaType, resolveInitialValue)
           .pipe(
             tap((result) => {
               if (result.type === 'patch') {
                 onChange(PatchEvent.from(result.patches).prefixAll(member.name))
+                if (shouldOpen) {
+                  handleOpenItem(itemPath)
+                }
               } else {
                 toast.push({
                   title: `Could not resolve initial value`,
@@ -177,6 +222,7 @@ export function ArrayOfObjectsField(props: {
       }
     },
     [
+      handleOpenItem,
       member.field.schemaType,
       member.name,
       onChange,
@@ -237,41 +283,6 @@ export function ArrayOfObjectsField(props: {
     },
     [member.name, onChange]
   )
-
-  const handleCollapse = useCallback(() => {
-    onSetPathCollapsed(member.field.path, true)
-  }, [onSetPathCollapsed, member.field.path])
-
-  const handleExpand = useCallback(() => {
-    onSetPathCollapsed(member.field.path, false)
-  }, [onSetPathCollapsed, member.field.path])
-
-  const handleCollapseItem = useCallback(
-    (itemKey: string) => {
-      onSetPathCollapsed(member.field.path.concat({_key: itemKey}), true)
-    },
-    [onSetPathCollapsed, member.field.path]
-  )
-
-  const handleExpandItem = useCallback(
-    (itemKey: string) => {
-      onSetPathCollapsed(member.field.path.concat({_key: itemKey}), false)
-    },
-    [onSetPathCollapsed, member.field.path]
-  )
-
-  const handleOpenItem = useCallback(
-    (path: Path) => {
-      onPathOpen(path)
-      onSetPathCollapsed(path, false)
-    },
-    [onPathOpen, onSetPathCollapsed]
-  )
-
-  const handleCloseItem = useCallback(() => {
-    onPathOpen(member.field.path)
-    onSetPathCollapsed(member.field.path, true)
-  }, [onPathOpen, member.field.path, onSetPathCollapsed])
 
   const handleRemoveItem = useCallback(
     (itemKey: string) => {

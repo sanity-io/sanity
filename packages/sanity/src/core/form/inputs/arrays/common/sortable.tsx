@@ -43,7 +43,7 @@ function sortableContainer<Props>(
     props: Props & ExposedSortableProps,
     ref: React.ForwardedRef<React.ComponentType<Props>>
   ) {
-    return <Container {...props} {...options} ref={ref} />
+    return <Container {...options} {...props} ref={ref} />
   })
 }
 

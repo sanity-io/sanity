@@ -1,5 +1,6 @@
 import {UserIcon as icon} from '@sanity/icons'
 import {Rule} from 'sanity'
+import React from 'react'
 
 const AUTHOR_ROLES = [
   {value: 'developer', title: 'Developer'},

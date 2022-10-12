@@ -5,6 +5,7 @@ import {OptionsArrayInput as OptionsArray} from '../../inputs/arrays/OptionsArra
 import {PortableTextInput} from '../../inputs/PortableText/PortableTextInput'
 import {TagsArrayInput} from '../../inputs/TagsArrayInput'
 import {ArrayOfPrimitivesInput} from '../../inputs/arrays/ArrayOfPrimitivesInput'
+import {ArrayOfObjectsGridInput} from '../../inputs/arrays/ArrayOfObjectsInput/Grid'
 import {ArrayOfObjectsInput} from 'sanity'
 
 const PRIMITIVES = ['string', 'number', 'boolean']
@@ -50,6 +51,9 @@ export function resolveArrayInput(type: ArraySchemaType): ComponentType<any> {
     return PortableTextInput
   }
 
-  // use default
+  if (type.options?.layout === 'grid') {
+    // use default
+    return ArrayOfObjectsGridInput
+  }
   return ArrayOfObjectsInput
 }

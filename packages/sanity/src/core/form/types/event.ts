@@ -7,6 +7,7 @@ export interface ArrayInputInsertEvent<Item> {
   position: 'before' | 'after'
   referenceItem: KeyedSegment | number
   skipInitialValue?: boolean
+  open?: boolean
 }
 
 /** @beta */
