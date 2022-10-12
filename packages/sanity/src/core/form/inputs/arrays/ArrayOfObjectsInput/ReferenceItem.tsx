@@ -27,7 +27,7 @@ import {ObjectItem, ObjectItemProps, RenderPreviewCallback} from '../../../types
 import {useScrollIntoViewOnFocusWithin} from '../../../hooks/useScrollIntoViewOnFocusWithin'
 import {useDidUpdate} from '../../../hooks/useDidUpdate'
 import {randomKey} from '../common/randomKey'
-import {FormFieldValidationStatus} from '../../../components/formField'
+import {FormFieldSet, FormFieldValidationStatus} from '../../../components/formField'
 import {FieldPresence} from '../../../../presence'
 
 import {ChangeIndicator} from '../../../../changeIndicators'
@@ -243,7 +243,7 @@ export function ReferenceItem<Item extends ReferenceItemValue = ReferenceItemVal
   const preview =
     loadableReferenceInfo.result?.preview.draft || loadableReferenceInfo.result?.preview.published
 
-  const footer = (
+  const issues = (
     <>
       {isCurrentDocumentLiveEdit && publishedReferenceExists && value._strengthenOnPublish && (
         <AlertStrip
@@ -320,16 +320,29 @@ export function ReferenceItem<Item extends ReferenceItemValue = ReferenceItemVal
 
   const item = (
     <RowLayout
-      menu={menu}
-      presence={presence.length > 0 && <FieldPresence presence={presence} maxAvatars={1} />}
-      validation={validation.length > 0 && <FormFieldValidationStatus validation={validation} />}
-      footer={footer}
+      presence={
+        !isEditing && presence.length > 0 && <FieldPresence presence={presence} maxAvatars={1} />
+      }
+      validation={
+        !isEditing && validation.length > 0 && <FormFieldValidationStatus validation={validation} />
+      }
+      menu={isEditing ? undefined : menu}
+      footer={isEditing ? undefined : issues}
       tone={isEditing ? undefined : tone}
+      dragHandle={!isEditing && sortable}
       focused={focused}
-      dragHandle={sortable}
     >
       {isEditing ? (
-        <Box padding={1}>{children}</Box>
+        <Box padding={1}>
+          <FormFieldSet
+            title={schemaType.title}
+            description={schemaType.description}
+            __unstable_presence={presence}
+            validation={validation}
+          >
+            {children}
+          </FormFieldSet>
+        </Box>
       ) : (
         <ReferencePreviewCard
           forwardedAs={EditReferenceLink as any}
