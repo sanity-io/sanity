@@ -88,7 +88,7 @@ export function IncompatibleItemType(props: Props) {
       >
         {vertical && (
           <Stack space={4}>
-            <Box margin={3}>
+            <Box margin={1}>
               <Text align="center" size={2}>
                 <UnknownIcon />
               </Text>

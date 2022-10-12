@@ -34,7 +34,6 @@ export function RowLayout(props: RowLayoutProps) {
       aria-selected={selected}
       radius={2}
       padding={1}
-      marginX={1}
       tone={tone}
     >
       <Stack space={1}>

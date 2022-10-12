@@ -17,6 +17,7 @@ export function ItemError(props: {member: ArrayItemError; sortable?: boolean}) {
   const handleRemove = useCallback(() => {
     onChange(PatchEvent.from([unset([{_key: member.key}])]))
   }, [onChange, member.key])
+
   return (
     <Box paddingX={1}>
       <RowLayout

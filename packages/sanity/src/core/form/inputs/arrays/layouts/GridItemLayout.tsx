@@ -66,7 +66,7 @@ export function GridItemLayout(props: RowLayoutProps) {
 
   return (
     <Root
-      shadow={1}
+      border
       ref={elementRef}
       selected={selected}
       aria-selected={selected}
