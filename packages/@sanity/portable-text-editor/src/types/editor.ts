@@ -276,7 +276,6 @@ export type OnPasteResult =
       insert?: PortableTextBlock[]
       path?: Path
     }
-  | Error
   | undefined
 export type OnPasteResultOrPromise = OnPasteResult | Promise<OnPasteResult>
 
