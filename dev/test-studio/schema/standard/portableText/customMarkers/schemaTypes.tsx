@@ -64,6 +64,7 @@ export const ptCustomMarkersTestType = defineType({
             },
           ],
         },
+        {type: 'code'},
       ],
       components: {input: CustomContentInput},
     },
