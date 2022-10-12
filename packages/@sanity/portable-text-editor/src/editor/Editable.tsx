@@ -268,7 +268,6 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
             throw result
           }
           if (result && result.insert) {
-            event.preventDefault() // Stop the chain
             slateEditor.insertFragment(toSlateValue(result.insert, {portableTextFeatures}))
             change$.next({type: 'loading', isLoading: false})
             return
