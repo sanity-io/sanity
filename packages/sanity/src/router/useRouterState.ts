@@ -1,5 +1,5 @@
 import {identity} from 'lodash'
-import {useEffect, useState} from 'react'
+import {useMemo} from 'react'
 import {RouterState} from './types'
 import {useRouter} from './useRouter'
 
@@ -20,10 +20,6 @@ export function useRouterState(
   selector: (routerState: RouterState) => unknown = identity
 ): unknown {
   const {state} = useRouter()
-  const [selectedState, setState] = useState(() => selector(state))
 
-  // reset the state when the `selector` prop changes
-  useEffect(() => setState(selector(state)), [selector, state])
-
-  return selectedState
+  return useMemo(() => selector(state), [selector, state])
 }

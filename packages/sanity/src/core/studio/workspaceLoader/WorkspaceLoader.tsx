@@ -1,55 +1,15 @@
 import React, {useCallback, useEffect, useMemo, useState} from 'react'
-import {map, filter, scan, catchError} from 'rxjs/operators'
+import {map, catchError} from 'rxjs/operators'
 import {combineLatest, of} from 'rxjs'
-import {History} from 'history'
 import {ErrorBoundary} from '@sanity/ui'
-import {createHookFromObservableFactory} from '../../util'
-import {ConfigResolutionError, Tool, Source, Workspace} from '../../config'
-import {createRouter, createRouterEventStream} from '../router'
+import {ConfigResolutionError, Source, Workspace} from '../../config'
+import {createRouter, useRouterState} from '../router'
 import {useActiveWorkspace} from '../activeWorkspaceMatcher'
 import {WorkspaceProvider} from '../workspace'
 import {SourceProvider} from '../source'
-import {Router, RouterProvider, RouterState} from 'sanity/router'
+import {RouterProvider} from 'sanity/router'
 // TODO: work on error handler
 // import {flattenErrors} from './flattenErrors'
-
-const isStateEvent = <T extends {type: string}>(e: T): e is Extract<T, {type: 'state'}> =>
-  e.type === 'state'
-
-const initialState: StudioRouterState = {isNotFound: true, state: {}}
-
-interface StudioRouterState {
-  isNotFound: boolean
-  state: RouterState
-}
-
-type UseRouterStateOptions = [
-  unstable_history: History,
-  router: Router | undefined,
-  tools: Tool[] | undefined
-]
-
-const useRouterState = createHookFromObservableFactory(
-  ([unstable_history, router, tools]: UseRouterStateOptions) => {
-    if (!router || !tools) return of(initialState)
-
-    return createRouterEventStream({
-      unstable_history,
-      router,
-      tools,
-    }).pipe(
-      filter(isStateEvent),
-      scan((prevState, event) => {
-        return {
-          ...prevState,
-          isNotFound: event.isNotFound,
-          state: event.state,
-        }
-      }, initialState)
-    )
-  },
-  initialState
-)
 
 interface WorkspaceLoaderProps {
   children: React.ReactNode
@@ -127,10 +87,8 @@ function WorkspaceLoader({
     if (!workspace) return undefined
     return createRouter(workspace)
   }, [workspace])
+  const routerState = useRouterState(history, router, tools)
 
-  const [routerState] = useRouterState(
-    useMemo(() => [history, router, tools], [history, router, tools])
-  )
   if (!router || !workspace) return <LoadingComponent />
 
   // TODO: may need a screen if one of the sources is not logged in. e.g. it

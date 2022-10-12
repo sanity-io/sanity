@@ -1,87 +1,93 @@
 import {escapeRegExp, isEqual} from 'lodash'
-import {EMPTY, Observable, of} from 'rxjs'
-import {distinctUntilChanged, filter, map, mergeScan, shareReplay} from 'rxjs/operators'
-import {History, Location} from 'history'
-import {Tool} from '../../config'
-import {decodeUrlState, isNonNullable, resolveDefaultState, resolveIntentState} from './helpers'
-import {RouterEvent} from './types'
-import {Router} from 'sanity/router'
+import {useCallback, useEffect, useMemo, useRef, useSyncExternalStore} from 'react'
+import type {History} from 'history'
+import type {Tool} from '../../config'
+import {decodeUrlState, resolveDefaultState, resolveIntentState} from './helpers'
+import type {RouterStateEvent} from './types'
+import type {Router, RouterState} from 'sanity/router'
 
-interface RouterEventStreamOptions {
-  unstable_history: History
-  router: Router
-  tools: Tool[]
+interface StudioRouterState {
+  isNotFound: boolean
+  state: RouterState
 }
+
+const isStateEvent = <T extends {type: string}>(e: T): e is Extract<T, {type: 'state'}> =>
+  e.type === 'state'
+
+const initialState: StudioRouterState = {isNotFound: true, state: {}}
+const initialStateEvent: RouterStateEvent = {type: 'state', ...initialState}
 
 /**
  * @internal
  */
-export function createRouterEventStream({
-  unstable_history: history,
-  router,
-  tools,
-}: RouterEventStreamOptions): Observable<RouterEvent> {
-  function maybeHandleIntent(
-    prevEvent: RouterEvent | null,
-    currentEvent: RouterEvent
-  ): Observable<RouterEvent> {
-    if (currentEvent?.type === 'state' && currentEvent.state?.intent) {
+export function useRouterState(
+  history: History,
+  router: Router | undefined,
+  tools: Tool[] | undefined
+): StudioRouterState {
+  const shouldSkip = !router || !tools
+  const location = useSyncExternalStore(
+    history.listen,
+    useCallback(() => history.location, [history])
+  )
+  const {pathname} = location
+  const routerBasePath = useMemo(() => router?.getBasePath(), [router])
+  const routerEvent = useMemo<RouterStateEvent>(() => {
+    if (shouldSkip) {
+      return initialStateEvent
+    }
+
+    // this is necessary to prevent emissions intended for other workspaces.
+    //
+    // this regex ends with a `(\\/|$)` (forward slash or end) to prevent false
+    // matches where the pathname is a false subset of the current pathname.
+    const validPathname =
+      routerBasePath === '/'
+        ? true
+        : new RegExp(`^${escapeRegExp(routerBasePath)}(\\/|$)`, 'i').test(pathname)
+    return validPathname ? decodeUrlState(router, pathname) : initialStateEvent
+  }, [pathname, router, routerBasePath, shouldSkip])
+
+  const prevRouterEventRef = useRef(initialStateEvent)
+  useEffect(() => {
+    if (shouldSkip) return
+
+    if (routerEvent?.type === 'state' && routerEvent.state?.intent) {
       const redirectState = resolveIntentState(
         tools,
-        prevEvent?.type === 'state' ? prevEvent.state : {},
-        currentEvent.state
+        prevRouterEventRef.current?.type === 'state' ? prevRouterEventRef.current.state : {},
+        routerEvent.state
       )
 
       if (redirectState?.type === 'state') {
         history.replace(router.encode(redirectState.state))
         // This will not push anything downstream and preserve the prevEvent for the next received value
         // Since we are calling history.replace here, a new event will be received immediately
-        return EMPTY
+        return
       }
     }
+    prevRouterEventRef.current = routerEvent
 
-    return of(currentEvent)
-  }
+    if (routerEvent?.type === 'state') {
+      const defaultState = resolveDefaultState(tools, routerEvent.state)
 
-  function maybeRedirectDefaultState(event: RouterEvent) {
-    if (event.type === 'state') {
-      const defaultState = resolveDefaultState(tools, event.state)
-
-      if (defaultState && defaultState !== event.state) {
+      if (defaultState && defaultState !== routerEvent.state) {
         history.replace(router.encode(defaultState))
-        return null
       }
     }
+  }, [history, router, routerEvent, shouldSkip, tools])
 
-    return event
+  const routerStateRef = useRef<StudioRouterState>(initialState)
+  if (!shouldSkip && isStateEvent(routerEvent) && !isEqual(routerEvent, routerStateRef.current)) {
+    routerStateRef.current = routerEvent
   }
 
-  const routerBasePath = router.getBasePath()
-
-  const state$: Observable<RouterEvent> = new Observable<Location>((observer) => {
-    const unlisten = history.listen((location) => observer.next(location))
-
-    // emit on mount
-    observer.next(history.location)
-    return unlisten
-  }).pipe(
-    // this is necessary to prevent emissions intended for other workspaces.
-    //
-    // this regex ends with a `(\\/|$)` (forward slash or end) to prevent false
-    // matches where the pathname is a false subset of the current pathname.
-    filter(({pathname}) =>
-      routerBasePath === '/'
-        ? true
-        : new RegExp(`^${escapeRegExp(routerBasePath)}(\\/|$)`, 'i').test(pathname)
-    ),
-    map(({pathname}) => decodeUrlState(router, pathname)),
-    mergeScan(maybeHandleIntent, null),
-    filter(isNonNullable),
-    map(maybeRedirectDefaultState),
-    filter(isNonNullable),
-    distinctUntilChanged(isEqual),
-    shareReplay(1)
+  const {isNotFound, state} = routerStateRef.current
+  return useMemo<StudioRouterState>(
+    () => ({
+      isNotFound: isNotFound ?? initialStateEvent.isNotFound,
+      state: state ?? initialStateEvent.state,
+    }),
+    [isNotFound, state]
   )
-
-  return state$
 }
