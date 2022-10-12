@@ -233,8 +233,9 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
       if (!slateEditor.selection) {
         return
       }
+      event.preventDefault()
       if (!onPaste) {
-        // no custom handling, fallback to default but prevent native handling
+        debug('Pasting normally')
         slateEditor.insertData(event.clipboardData)
         return
       }
@@ -252,7 +253,9 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
         .then((result) => {
           debug('Custom paste function from client resolved', result)
           change$.next({type: 'loading', isLoading: true})
-          if (!result) {
+          if (!result || !result.insert) {
+            debug('No result from custom paste handler, pasting normally')
+            slateEditor.insertData(event.clipboardData)
             return
           }
           if (result && result.insert) {
