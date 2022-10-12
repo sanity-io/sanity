@@ -21,6 +21,7 @@ import {
 import {Field, formComponentsPlugin, Input, Item, Preview} from './components/formComponents'
 import {googleTheme} from './themes/google'
 import {vercelTheme} from './themes/vercel'
+import {theme as tailwindTheme} from 'https://themer.sanity.build/api/hues?preset=tw-cyan&default=64748b&primary=d946ef;lightest:fdf4ff;darkest:701a75&transparent=6b7180;darkest:111826&positive=43d675;400;lightest:f8fafc&caution=f59e09;300;lightest:fffbeb;darkest:783510&critical=f43f5e;lightest:fef1f2;darkest:881337&lightest=ffffff&darkest=0f172a'
 
 const sharedSettings = createPlugin({
   name: 'sharedSettings',
@@ -114,6 +115,20 @@ export default createConfig([
       },
     },
     theme: vercelTheme,
+  },
+  {
+    name: 'tailwind-theme',
+    title: 'Tailwind Colors',
+    projectId: 'ppsg7ml5',
+    dataset: 'test',
+    plugins: [sharedSettings()],
+    basePath: '/tailwind',
+    studio: {
+      components: {
+        logo: Branding,
+      },
+    },
+    theme: tailwindTheme,
   },
   {
     name: 'playground',
