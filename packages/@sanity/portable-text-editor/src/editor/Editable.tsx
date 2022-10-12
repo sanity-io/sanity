@@ -6,6 +6,7 @@ import {
   OnBeforeInputFn,
   OnCopyFn,
   OnPasteFn,
+  OnPasteResult,
   RenderAnnotationFunction,
   RenderBlockFunction,
   RenderChildFunction,
@@ -230,7 +231,6 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
   const handlePaste = useCallback(
     (event: React.ClipboardEvent<HTMLDivElement>): Promise<void> | void => {
       event.preventDefault()
-      event.persist()
       if (!slateEditor.selection) {
         return
       }
@@ -240,8 +240,8 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
         return
       }
       // Resolve it as promise (can be either async promise or sync return value)
-      Promise.resolve()
-        .then(() =>
+      new Promise<OnPasteResult>((resolve) => {
+        resolve(
           onPaste({
             event,
             value: PortableTextEditor.getValue(portableTextEditor),
@@ -250,6 +250,7 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
             type: portableTextFeatures.types.portableText, // For legacy support
           })
         )
+      })
         .then((result) => {
           debug('Custom paste function from client resolved', result)
           change$.next({type: 'loading', isLoading: true})
