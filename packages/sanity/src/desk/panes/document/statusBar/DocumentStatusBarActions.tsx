@@ -1,5 +1,6 @@
 import {Box, Flex, Tooltip, Stack, Button, Hotkeys, LayerProvider, Text} from '@sanity/ui'
 import React, {memo, useMemo, useState} from 'react'
+import styled from 'styled-components'
 import {RenderActionCollectionState} from '../../../components'
 import {HistoryRestoreAction} from '../../../documentActions'
 import {useDocumentPane} from '../useDocumentPane'
@@ -13,6 +14,23 @@ interface DocumentStatusBarActionsInnerProps {
   states: DocumentActionDescription[]
 }
 
+const StyledButton = styled.button`
+  height: 100px;
+  width: 141px;
+  background-image: url(/static/publish-button.png);
+  background-position: 50% 50%;
+  background-size: 101% 101%;
+  border: 1px transparent;
+  border-radius: 0;
+  outline: none;
+  appearance: none;
+  box-shadow: none;
+  transition: all 150ms;
+  filter: ${(props) => (props.disabled ? `saturate(0)` : 'saturate(80%)')};
+  &:hover {
+    filter: ${(props) => (props.disabled ? `saturate(0)` : 'saturate(100%)')};
+  }
+`
 function DocumentStatusBarActionsInner(props: DocumentStatusBarActionsInnerProps) {
   const {disabled, showMenu, states} = props
   const [firstActionState, ...menuActionStates] = states
@@ -43,7 +61,7 @@ function DocumentStatusBarActionsInner(props: DocumentStatusBarActionsInnerProps
         <LayerProvider zOffset={200}>
           <Tooltip disabled={!tooltipContent} content={tooltipContent} portal placement="top">
             <Stack flex={1}>
-              <Button
+              <StyledButton
                 data-testid={`action-${firstActionState.label}`}
                 disabled={disabled || Boolean(firstActionState.disabled)}
                 icon={firstActionState.icon}

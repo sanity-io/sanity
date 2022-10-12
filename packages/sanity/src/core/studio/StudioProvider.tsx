@@ -52,7 +52,7 @@ export function StudioProvider({
 
   return (
     <ColorSchemeProvider onSchemeChange={onSchemeChange} scheme={scheme}>
-      <ToastProvider paddingY={7} zOffset={Z_OFFSET.toast}>
+      <ToastProvider paddingY={8} zOffset={Z_OFFSET.toast}>
         <StudioErrorBoundary>
           <WorkspacesProvider config={config}>
             <ActiveWorkspaceMatcher

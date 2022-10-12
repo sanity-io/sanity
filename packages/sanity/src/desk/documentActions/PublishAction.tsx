@@ -171,16 +171,16 @@ export const PublishAction: DocumentActionComponent = (props) => {
   return {
     disabled: disabled || isPermissionsLoading,
     tone: 'positive',
-    label:
-      // eslint-disable-next-line no-nested-ternary
-      publishState === 'published'
-        ? 'Published'
-        : publishScheduled || publishState === 'publishing'
-        ? 'Publishing…'
-        : 'Publish',
+    label: ' ',
+    // // eslint-disable-next-line no-nested-ternary
+    // publishState === 'published'
+    //   ? 'Published'
+    //   : publishScheduled || publishState === 'publishing'
+    //   ? 'Publishing…'
+    //   : 'Publish',
     // @todo: Implement loading state, to show a `<Button loading />` state
     // loading: publishScheduled || publishState === 'publishing',
-    icon: publishState === 'published' ? CheckmarkIcon : PublishIcon,
+    // icon: publishState === 'published' ? CheckmarkIcon : PublishIcon,
     // eslint-disable-next-line no-nested-ternary
     title: publishScheduled
       ? 'Waiting for tasks to finish before publishing'
