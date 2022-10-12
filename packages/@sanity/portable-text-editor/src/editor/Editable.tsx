@@ -230,10 +230,10 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
   const handlePaste = useCallback(
     (event: React.ClipboardEvent<HTMLDivElement>): Promise<void> | void => {
       event.preventDefault()
+      event.persist()
       if (!slateEditor.selection) {
         return
       }
-      event.preventDefault()
       if (!onPaste) {
         debug('Pasting normally')
         slateEditor.insertData(event.clipboardData)
