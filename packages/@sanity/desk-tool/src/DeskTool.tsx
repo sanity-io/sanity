@@ -1,6 +1,6 @@
 import {getTemplateById} from '@sanity/base/initial-value-templates'
 import {useRouter, useRouterState} from '@sanity/base/router'
-import {PortalProvider, useToast} from '@sanity/ui'
+import {PortalProvider, useToast, useMediaIndex} from '@sanity/ui'
 import React, {memo, Fragment, useState, useEffect, useCallback} from 'react'
 import styled from 'styled-components'
 import {PaneNode} from './types'
@@ -27,6 +27,7 @@ export const DeskTool = memo(({onPaneChange}: DeskToolProps) => {
   const {push: pushToast} = useToast()
   const {navigate, getState} = useRouter()
   const {paneDataItems, resolvedPanes, routerPanes} = useResolvedPanes()
+  const mediaIndex = useMediaIndex()
 
   const [layoutCollapsed, setLayoutCollapsed] = useState(false)
   const [portalElement, setPortalElement] = useState<HTMLDivElement | null>(null)
@@ -46,14 +47,14 @@ export const DeskTool = memo(({onPaneChange}: DeskToolProps) => {
   // The pane layout is "collapsed" on small screens, and only shows 1 pane at a time.
   // Remove pane siblings (i.e. split panes) as the pane layout collapses.
   useEffect(() => {
-    if (!layoutCollapsed) return
+    if (mediaIndex > 1 || !layoutCollapsed) return
     const hasSiblings = routerPanes?.some((group) => group.length > 1)
 
     if (!hasSiblings) return
     const withoutSiblings = routerPanes?.map((group) => [group[0]])
 
     navigate({panes: withoutSiblings}, {replace: true})
-  }, [navigate, layoutCollapsed, routerPanes])
+  }, [mediaIndex, navigate, layoutCollapsed, routerPanes])
 
   // Handle old-style URLs
   const shouldRewrite = useRouterState(
