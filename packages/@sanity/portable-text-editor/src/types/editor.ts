@@ -280,7 +280,7 @@ export type OnPasteResult =
 export type OnPasteResultOrPromise = OnPasteResult | Promise<OnPasteResult>
 
 export type OnPasteFn = (arg0: {
-  event: React.SyntheticEvent
+  event: React.ClipboardEvent
   path: Path
   portableTextFeatures: PortableTextFeatures
   type: ArraySchemaType<PortableTextBlock>
