@@ -234,50 +234,52 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
       if (!slateEditor.selection) {
         return
       }
-      if (onPaste) {
-        const resolveOnPasteResultOrError = (): OnPasteResultOrPromise | Error => {
-          try {
-            return onPaste({
-              event,
-              value: PortableTextEditor.getValue(portableTextEditor),
-              path: slateEditor.selection?.focus.path || [],
-              portableTextFeatures, // New key added in v.2.23.2
-              type: portableTextFeatures.types.portableText, // For legacy support
-            })
-          } catch (error) {
-            return error as Error
-          }
-        }
-        // Resolve it as promise (can be either async promise or sync return value)
-        const resolved: OnPasteResultOrPromise | Error = Promise.resolve(
-          resolveOnPasteResultOrError()
-        )
-        resolved
-          .then((result: OnPasteResult) => {
-            debug('Custom paste function from client resolved', result)
-            change$.next({type: 'loading', isLoading: true})
-            if (!result) {
-              return
-            }
-            if (result instanceof Error) {
-              throw result
-            }
-            if (result && result.insert) {
-              event.preventDefault() // Stop the chain
-              slateEditor.insertFragment(toSlateValue(result.insert, {portableTextFeatures}))
-              change$.next({type: 'loading', isLoading: false})
-              return
-            }
-            console.warn('Your onPaste function returned something unexpected:', result)
-          })
-          .catch((error) => {
-            change$.next({type: 'loading', isLoading: false})
-            console.error(error) // eslint-disable-line no-console
-            return error
-          })
+      if (!onPaste) {
+        // no custom handling, fallback to default but prevent native handling
+        event.preventDefault()
+        slateEditor.insertData(event.clipboardData)
+        return
       }
-      event.preventDefault()
-      slateEditor.insertData(event.clipboardData)
+      const resolveOnPasteResultOrError = (): OnPasteResultOrPromise | Error => {
+        try {
+          return onPaste({
+            event,
+            value: PortableTextEditor.getValue(portableTextEditor),
+            path: slateEditor.selection?.focus.path || [],
+            portableTextFeatures, // New key added in v.2.23.2
+            type: portableTextFeatures.types.portableText, // For legacy support
+          })
+        } catch (error) {
+          return error as Error
+        }
+      }
+      // Resolve it as promise (can be either async promise or sync return value)
+      const resolved: OnPasteResultOrPromise | Error = Promise.resolve(
+        resolveOnPasteResultOrError()
+      )
+      resolved
+        .then((result: OnPasteResult) => {
+          debug('Custom paste function from client resolved', result)
+          change$.next({type: 'loading', isLoading: true})
+          if (!result) {
+            return
+          }
+          if (result instanceof Error) {
+            throw result
+          }
+          if (result && result.insert) {
+            event.preventDefault() // Stop the chain
+            slateEditor.insertFragment(toSlateValue(result.insert, {portableTextFeatures}))
+            change$.next({type: 'loading', isLoading: false})
+            return
+          }
+          console.warn('Your onPaste function returned something unexpected:', result)
+        })
+        .catch((error) => {
+          change$.next({type: 'loading', isLoading: false})
+          console.error(error) // eslint-disable-line no-console
+          return error
+        })
     },
     [change$, onPaste, portableTextEditor, portableTextFeatures, slateEditor]
   )
