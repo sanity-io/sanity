@@ -95,7 +95,7 @@ export function ChangesPanel(): React.ReactElement | null {
             </Box>
           )
         }
-        tabs={<TimelineMenu mode="since" chunk={since} />}
+        tabs={<TimelineMenu mode="since" chunk={since} placement="bottom-start" />}
         title="Changes"
       />
 

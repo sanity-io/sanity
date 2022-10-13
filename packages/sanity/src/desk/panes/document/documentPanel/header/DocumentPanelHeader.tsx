@@ -73,7 +73,9 @@ export const DocumentPanelHeader = memo(
           features.backButton &&
           index > 0 && <Button as={BackLink} data-as="a" icon={ArrowLeftIcon} mode="bleed" />
         }
-        subActions={showVersionMenu && <TimelineMenu chunk={rev} mode="rev" />}
+        subActions={
+          showVersionMenu && <TimelineMenu chunk={rev} mode="rev" placement="bottom-end" />
+        }
         actions={
           <Inline space={1}>
             {unstable_languageFilter.length > 0 && (

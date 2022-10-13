@@ -1,5 +1,5 @@
 import {SelectIcon} from '@sanity/icons'
-import {useClickOutside, Button, Popover} from '@sanity/ui'
+import {useClickOutside, Button, Popover, Placement} from '@sanity/ui'
 import {upperFirst} from 'lodash'
 import React, {useCallback, useState} from 'react'
 import styled from 'styled-components'
@@ -11,6 +11,7 @@ import {Chunk, useTimeAgo} from 'sanity'
 interface TimelineMenuProps {
   chunk: Chunk | null
   mode: 'rev' | 'since'
+  placement?: Placement
 }
 
 const Root = styled(Popover)`
@@ -33,10 +34,10 @@ const Root = styled(Popover)`
   }
 `
 
-export function TimelineMenu({chunk, mode}: TimelineMenuProps) {
+export function TimelineMenu({chunk, mode, placement}: TimelineMenuProps) {
   const {historyController, setTimelineRange, setTimelineMode, timeline, ready} = useDocumentPane()
   const [open, setOpen] = useState(false)
-  const [buttonRef, setButtonRef] = useState<HTMLButtonElement | null>(null)
+  const [button, setButton] = useState<HTMLButtonElement | null>(null)
   const [menuContent, setMenuContent] = useState<HTMLDivElement | null>(null)
 
   const handleOpen = useCallback(() => {
@@ -53,7 +54,7 @@ export function TimelineMenu({chunk, mode}: TimelineMenuProps) {
     handleClose()
   }, [handleClose])
 
-  useClickOutside(handleClickOutside, [menuContent, buttonRef])
+  useClickOutside(handleClickOutside, [menuContent, button])
 
   const selectRev = useCallback(
     (revChunk: Chunk) => {
@@ -121,8 +122,8 @@ export function TimelineMenu({chunk, mode}: TimelineMenuProps) {
       content={content}
       data-ui="versionMenu"
       open={open}
+      placement={placement}
       portal
-      referenceElement={buttonRef}
     >
       <Button
         disabled={!ready}
@@ -131,7 +132,7 @@ export function TimelineMenu({chunk, mode}: TimelineMenuProps) {
         padding={2}
         iconRight={SelectIcon}
         onClick={open ? handleClose : handleOpen}
-        ref={setButtonRef}
+        ref={setButton}
         selected={open}
         text={open ? openLabel : buttonLabel}
       />
