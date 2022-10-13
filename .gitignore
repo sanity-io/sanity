@@ -61,3 +61,6 @@ tsconfig.tsbuildinfo
 .idea
 *.iml
 .eslintcache
+
+# Output of `etl` actions
+etc
