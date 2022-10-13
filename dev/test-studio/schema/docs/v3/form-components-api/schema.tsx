@@ -26,9 +26,7 @@ export const formComponentsSchema = defineType({
       title: 'Array of objects',
       type: 'array',
       components: {
-        // diff: (props) => {
-        //   return <div style={{border: '4px solid blue'}}>{props.renderDefault(props)}</div>
-        // },
+        // diff: (props) => <CustomDiff {...props} />, // Don't work
         input: (props) => <CustomInput {...props} testId="input-schema-array-objects" />,
         field: (props) => <CustomField {...props} testId="field-schema-array-objects" />,
       },
@@ -36,9 +34,7 @@ export const formComponentsSchema = defineType({
         {
           type: 'object',
           components: {
-            // diff: (props) => {
-            //   return <div style={{border: '4px solid magenta'}}>{props.renderDefault(props)}</div>
-            // },
+            // diff: (props) => <CustomDiff {...props} />, // Don't work
             input: (props) => <CustomInput {...props} testId="input-schema-array-input-object" />,
             field: (props) => <CustomField {...props} testId="field-schema-array-field-object" />,
             item: (props) => <CustomItem {...props} testId="field-schema-array-item-object" />,
@@ -50,7 +46,7 @@ export const formComponentsSchema = defineType({
               name: 'testString',
               title: 'String',
               components: {
-                // diff: (props) => <CustomDiff {...props} />,
+                diff: (props) => <CustomDiff {...props} />,
                 // diff: (props) => {
                 //   return (
                 //     <div style={{border: '4px solid orange'}}>{props.renderDefault(props)}</div>
@@ -63,7 +59,7 @@ export const formComponentsSchema = defineType({
               name: 'testImage',
               title: 'Image',
               components: {
-                // diff: (props) => <CustomDiff {...props} />,
+                diff: (props) => <CustomDiff {...props} />,
                 // diff: (props) => {
                 //   return <div style={{border: '4px solid green'}}>{props.renderDefault(props)}</div>
                 // },
@@ -78,7 +74,7 @@ export const formComponentsSchema = defineType({
       name: 'body',
       title: 'Body',
       components: {
-        // diff: (props) => <CustomDiff {...props} />, // GroupChange don't work
+        // diff: (props) => <CustomDiff {...props} />, // Don't work
         input: (props) => <CustomInput {...props} testId="input-schema-pte" />,
         field: (props) => <CustomField {...props} testId="field-schema-pte" />,
       },
@@ -90,7 +86,7 @@ export const formComponentsSchema = defineType({
           type: 'image',
           components: {
             preview: CustomPreview,
-            diff: (props) => <CustomDiff {...props} />, //  don't work
+            diff: (props) => <CustomDiff {...props} />,
           },
         },
       ],
@@ -152,9 +148,9 @@ export const formComponentsSchema = defineType({
       title: 'Array of primitives',
       name: 'arrayOfPrimitives',
       components: {
+        // diff: (props) => <CustomDiff {...props} />, // Don't work
         input: (props) => <CustomInput {...props} testId="input-schema-array-primitives" />,
         field: (props) => <CustomField {...props} testId="field-schema-array-primitives" />,
-        // diff: (props) => <CustomDiff {...props} />, // GroupChange don't work
       },
       of: [
         {

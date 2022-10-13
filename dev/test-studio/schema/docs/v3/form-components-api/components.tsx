@@ -12,6 +12,8 @@ const COMPONENT_COLORS = {
 }
 
 export function FormInput(props: InputProps) {
+  return props.renderDefault(props)
+
   return (
     <Stack space={5} padding={3}>
       <Stack space={4}>
@@ -41,6 +43,8 @@ export function FormInput(props: InputProps) {
 }
 
 export function CustomField(props: FieldProps & {testId: string}) {
+  return props.renderDefault(props)
+
   return (
     <Box
       data-testid={props.testId}
@@ -53,6 +57,7 @@ export function CustomField(props: FieldProps & {testId: string}) {
 }
 
 export function CustomInput(props: InputProps & {testId: string}) {
+  return props.renderDefault(props)
   return (
     <Box
       data-testid={props.testId}
@@ -65,6 +70,8 @@ export function CustomInput(props: InputProps & {testId: string}) {
 }
 
 export function CustomItem(props: ItemProps & {testId: string}) {
+  return props.renderDefault(props)
+
   return (
     <Box
       data-testid={props.testId}
@@ -77,6 +84,8 @@ export function CustomItem(props: ItemProps & {testId: string}) {
 }
 
 export function CustomPreview(props: PreviewProps & {testId: string}) {
+  return props.renderDefault(props)
+
   return (
     <Box
       data-testid={props.testId}

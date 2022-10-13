@@ -12,8 +12,8 @@ export const GroupChangeContainer = styled.div`
   --diff-inspect-padding-small: ${({theme}) => rem(theme.sanity.space[2])};
 
   position: relative;
-  /* padding: var(--diff-inspect-padding-xsmall) var(--diff-inspect-padding-small); */
-  /*
+  padding: var(--diff-inspect-padding-xsmall) var(--diff-inspect-padding-small);
+
   &::before {
     content: '';
     display: block;
@@ -22,7 +22,7 @@ export const GroupChangeContainer = styled.div`
     left: 0;
     bottom: 0;
     border-left: 1px solid var(--card-border-color);
-  } */
+  }
 
   &[data-error]:hover::before,
   &[data-revert-group-hover]:hover::before,
