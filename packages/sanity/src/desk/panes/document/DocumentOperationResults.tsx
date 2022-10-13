@@ -1,5 +1,5 @@
 import {useToast} from '@sanity/ui'
-import React, {memo, useEffect} from 'react'
+import React, {memo, useEffect, useRef} from 'react'
 import {useDocumentPane} from './useDocumentPane'
 import {useDocumentOperationEvent} from 'sanity'
 
@@ -37,9 +37,10 @@ export const DocumentOperationResults = memo(function DocumentOperationResults()
   const {push: pushToast} = useToast()
   const {documentId, documentType} = useDocumentPane()
   const event: any = useDocumentOperationEvent(documentId, documentType)
+  const prevEvent = useRef(event)
 
   useEffect(() => {
-    if (!event) return
+    if (!event || event === prevEvent.current) return
 
     if (event.type === 'error') {
       pushToast({
@@ -63,6 +64,8 @@ export const DocumentOperationResults = memo(function DocumentOperationResults()
         title: getOpSuccessTitle(event.op),
       })
     }
+
+    prevEvent.current = event
   }, [event, pushToast])
 
   return null
