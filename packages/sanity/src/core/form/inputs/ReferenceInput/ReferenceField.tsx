@@ -26,7 +26,7 @@ import {useReferenceInput} from '../arrays/ArrayOfObjectsInput/_reference/useRef
 import {useScrollIntoViewOnFocusWithin} from '../../hooks/useScrollIntoViewOnFocusWithin'
 import {useDidUpdate} from '../../hooks/useDidUpdate'
 import {set, unset} from '../../patch'
-import {ReferencePreviewCard} from '../arrays/ArrayOfObjectsInput/ReferenceItem'
+import {ReferencePreviewCard} from '../arrays/ArrayOfObjectsInput/List/ReferenceItem'
 import {AlertStrip} from '../../components/AlertStrip'
 import {useReferenceInfo} from './useReferenceInfo'
 import {PreviewReferenceValue} from './PreviewReferenceValue'

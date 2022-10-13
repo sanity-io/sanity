@@ -146,7 +146,8 @@ export function ArrayOfObjectsItem(props: MemberItemProps) {
       onRemove()
     }
     onPathOpen(member.item.path.slice(0, -1))
-  }, [onPathOpen, member.item.path, isEmptyValue, onRemove])
+    onPathFocus(member.item.path)
+  }, [isEmptyValue, onPathOpen, member.item.path, onPathFocus, onRemove])
 
   const handleSelectFieldGroup = useCallback(
     (groupName: string) => {

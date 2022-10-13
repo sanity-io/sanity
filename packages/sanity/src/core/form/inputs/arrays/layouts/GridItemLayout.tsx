@@ -1,5 +1,5 @@
 import {Box, Card, CardTone, Flex} from '@sanity/ui'
-import React, {ReactNode, useRef} from 'react'
+import React, {ComponentProps, ReactNode, useRef} from 'react'
 import styled from 'styled-components'
 import {useDidUpdate} from '../../../hooks/useDidUpdate'
 import {DragHandle} from '../common/DragHandle'
@@ -33,6 +33,7 @@ const DragHandleCard = styled(Card)`
 `
 const Root = styled(Card)`
   transition: border-color 250ms;
+  box-sizing: border-box;
   position: relative;
 
   @media (hover: hover) {
@@ -53,27 +54,23 @@ const Root = styled(Card)`
   }
 `
 
-export function GridItemLayout(props: RowLayoutProps) {
-  const {validation, selected, tone, presence, focused, children, dragHandle, menu, footer} = props
-
-  const elementRef = useRef<HTMLDivElement | null>(null)
-
-  useDidUpdate(focused, (hadFocus, hasFocus) => {
-    if (!hadFocus && hasFocus) {
-      elementRef.current?.focus()
-    }
-  })
+export function GridItemLayout(props: RowLayoutProps & ComponentProps<typeof Root>) {
+  const {validation, selected, tone, presence, children, dragHandle, menu, footer, ...rest} = props
 
   return (
     <Root
+      forwardedAs={Flex}
+      direction="column"
       border
-      ref={elementRef}
       selected={selected}
       aria-selected={selected}
       radius={2}
       tone={tone}
+      overflow="auto"
+      {...rest}
     >
       {children}
+
       {dragHandle && (
         <DragHandleCard
           margin={1}
@@ -91,6 +88,7 @@ export function GridItemLayout(props: RowLayoutProps) {
           {presence}
         </PresenceFlex>
       )}
+
       <FooterFlex align="center" paddingX={1} sizing="border" justify="space-between">
         <Flex>{validation}</Flex>
         <Box>{footer}</Box>

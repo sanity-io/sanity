@@ -1,16 +1,19 @@
 /* eslint-disable react/jsx-handler-names */
 import {Card, Stack, Text} from '@sanity/ui'
 import React from 'react'
-import {UploaderResolver} from '../../../studio/uploads/types'
-import {Item, List} from '../common/list'
-import {ArrayOfObjectsInputProps, ObjectItem, ObjectItemProps, UploadEvent} from '../../../types'
-import {DefaultArrayInputFunctions} from '../common/ArrayFunctions'
-import {withFocusRing} from '../../../components/withFocusRing'
-import {ArrayOfObjectsItem} from '../../../members'
-import {uploadTarget} from './uploadTarget/uploadTarget'
-import {createProtoArrayValue} from './createProtoArrayValue'
-import {ItemError} from './item/ItemError'
-import {GridItem} from './GridItem'
+import {isReferenceSchemaType} from '@sanity/types'
+import {UploaderResolver} from '../../../../studio/uploads/types'
+import {Item, List} from '../../common/list'
+import {ArrayOfObjectsInputProps, ObjectItem, ObjectItemProps, UploadEvent} from '../../../../types'
+import {DefaultArrayInputFunctions} from '../../common/ArrayFunctions'
+import {withFocusRing} from '../../../../components/withFocusRing'
+import {ArrayOfObjectsItem} from '../../../../members'
+import {uploadTarget} from '../uploadTarget/uploadTarget'
+
+import {createProtoArrayValue} from '../createProtoArrayValue'
+import {PreviewItem} from './PreviewItem'
+import {ErrorItem} from './ErrorItem'
+import {ReferenceItem, ReferenceItemValue} from './ReferenceItem'
 
 const UploadTarget = uploadTarget(withFocusRing(Card))
 
@@ -19,7 +22,7 @@ export interface ArrayInputProps<Item extends ObjectItem> extends ArrayOfObjects
   onUpload: (event: UploadEvent) => void
 }
 
-export function ArrayOfObjectsGridInput<Item extends ObjectItem>(props: ArrayInputProps<Item>) {
+export function Input<Item extends ObjectItem>(props: ArrayInputProps<Item>) {
   const {
     schemaType,
     onChange,
@@ -47,16 +50,24 @@ export function ArrayOfObjectsGridInput<Item extends ObjectItem>(props: ArrayInp
   const sortable = schemaType.options?.sortable !== false
 
   const renderItem = (itemProps: Omit<ObjectItemProps, 'renderDefault'>) => {
-    // todo: consider using a different item component for references
-    return (
-      <GridItem
+    return isReferenceSchemaType(itemProps.schemaType) ? (
+      <ReferenceItem
+        {...itemProps}
+        insertableTypes={schemaType.of}
+        sortable={sortable}
+        schemaType={itemProps.schemaType}
+        value={itemProps.value as ReferenceItemValue}
+        renderPreview={renderPreview}
+      />
+    ) : (
+      <PreviewItem
         {...itemProps}
         sortable={sortable}
         insertableTypes={schemaType.of}
         preview={renderPreview({
           schemaType: itemProps.schemaType,
           value: itemProps.value,
-          layout: 'media',
+          layout: 'default',
         })}
       />
     )
@@ -81,16 +92,7 @@ export function ArrayOfObjectsGridInput<Item extends ObjectItem>(props: ArrayInp
           )}
           {members?.length > 0 && (
             <Card border radius={1}>
-              <List
-                axis="xy"
-                lockAxis="xy"
-                columns={[2, 3, 4]}
-                gap={3}
-                padding={1}
-                margin={1}
-                onItemMove={onItemMove}
-                sortable={sortable}
-              >
+              <List gap={1} paddingY={1} onItemMove={onItemMove} sortable={sortable}>
                 {members.map((member, index) => (
                   <Item key={member.key} sortable={sortable} index={index}>
                     {member.kind === 'item' && (
@@ -102,7 +104,7 @@ export function ArrayOfObjectsGridInput<Item extends ObjectItem>(props: ArrayInp
                         renderPreview={renderPreview}
                       />
                     )}
-                    {member.kind === 'error' && <ItemError sortable={sortable} member={member} />}
+                    {member.kind === 'error' && <ErrorItem sortable={sortable} member={member} />}
                   </Item>
                 ))}
               </List>

@@ -1,8 +1,9 @@
 import {Box, Card, CardTone, Flex, Stack} from '@sanity/ui'
 import React, {ReactNode, useRef} from 'react'
+import styled from 'styled-components'
 import {useDidUpdate} from '../../../hooks/useDidUpdate'
 import {DragHandle} from '../common/DragHandle'
-import {ItemCard} from './ItemCard'
+import {MOVING_ITEM_CLASS_NAME} from '../common/sortable'
 
 interface RowLayoutProps {
   tone?: CardTone
@@ -16,6 +17,29 @@ interface RowLayoutProps {
   children?: ReactNode
 }
 
+const Root = styled(Card)`
+  position: relative;
+  border: 1px solid transparent;
+  transition: border-color 250ms;
+  .dragHandle {
+    color: var(--card-shadow-umbra-color);
+  }
+  &:hover {
+    border-color: var(--card-shadow-umbra-color);
+    .dragHandle {
+      color: inherit;
+    }
+  }
+  &[aria-selected='true'] {
+    border-color: var(--card-focus-ring-color);
+  }
+  .${MOVING_ITEM_CLASS_NAME} & {
+    box-shadow: 0 0 0 0, 0 8px 17px 2px var(--card-shadow-umbra-color),
+      0 3px 14px 2px var(--card-shadow-penumbra-color),
+      0 5px 5px -3px var(--card-shadow-ambient-color);
+  }
+`
+
 export function RowLayout(props: RowLayoutProps) {
   const {validation, selected, tone, presence, focused, children, dragHandle, menu, footer} = props
 
@@ -28,7 +52,7 @@ export function RowLayout(props: RowLayoutProps) {
   })
 
   return (
-    <ItemCard
+    <Root
       ref={elementRef}
       selected={selected}
       aria-selected={selected}
@@ -54,6 +78,6 @@ export function RowLayout(props: RowLayoutProps) {
         </Flex>
         {footer}
       </Stack>
-    </ItemCard>
+    </Root>
   )
 }

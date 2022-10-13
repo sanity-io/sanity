@@ -57,7 +57,7 @@ export function List(props: ListProps) {
 
 type ItemProps = {sortable?: boolean; children?: React.ReactNode; index: number}
 
-export function Item(props: ItemProps) {
+export function Item(props: ItemProps & ComponentProps<typeof Card>) {
   const {sortable, ...rest} = props
   return sortable ? <SortableListItem {...rest} /> : <ListItem {...rest} />
 }

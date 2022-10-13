@@ -1,15 +1,15 @@
 import React, {useCallback, useId} from 'react'
 import {EllipsisVerticalIcon, TrashIcon} from '@sanity/icons'
-import {Button, Box, Menu, MenuButton, MenuItem} from '@sanity/ui'
-import {MemberItemError} from '../../../../members'
+import {Box, Button, Menu, MenuButton, MenuItem} from '@sanity/ui'
 import {ArrayItemError} from '../../../../store'
 import {useFormCallbacks} from '../../../../studio/contexts/FormCallbacks'
 import {PatchEvent, unset} from '../../../../patch'
 import {RowLayout} from '../../layouts/RowLayout'
+import {IncompatibleItemType} from './IncompatibleItemType'
 
 const MENU_POPOVER_PROPS = {portal: true, tone: 'default'} as const
 
-export function ItemError(props: {member: ArrayItemError; sortable?: boolean}) {
+export function ErrorItem(props: {member: ArrayItemError; sortable?: boolean}) {
   const {member, sortable} = props
   const id = useId()
   const {onChange} = useFormCallbacks()
@@ -36,7 +36,11 @@ export function ItemError(props: {member: ArrayItemError; sortable?: boolean}) {
           />
         }
       >
-        <MemberItemError member={member} />
+        {member.error.type === 'INVALID_ITEM_TYPE' ? (
+          <IncompatibleItemType value={member.error.value} />
+        ) : (
+          <div>Unexpected Error: {member.error.type}</div>
+        )}
       </RowLayout>
     </Box>
   )

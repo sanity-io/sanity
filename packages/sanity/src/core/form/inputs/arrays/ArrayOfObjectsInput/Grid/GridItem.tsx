@@ -14,19 +14,22 @@ import {
 import React, {ReactNode, useCallback, useMemo, useRef} from 'react'
 import {SchemaType} from '@sanity/types'
 import {CopyIcon as DuplicateIcon, EllipsisVerticalIcon, TrashIcon} from '@sanity/icons'
-import {getSchemaTypeTitle} from '../../../../schema'
-import {ObjectItem, ObjectItemProps} from '../../../types'
-import {useScrollIntoViewOnFocusWithin} from '../../../hooks/useScrollIntoViewOnFocusWithin'
-import {useDidUpdate} from '../../../hooks/useDidUpdate'
-import {useChildPresence} from '../../../studio/contexts/Presence'
-import {randomKey} from '../common/randomKey'
-import {FormFieldValidationStatus} from '../../../components'
-import {FieldPresence} from '../../../../presence'
-import {useChildValidation} from '../../../studio/contexts/Validation'
-import {ChangeIndicator} from '../../../../changeIndicators'
-import {RowLayout} from '../layouts/RowLayout'
-import {createProtoArrayValue} from './createProtoArrayValue'
-import {InsertMenu} from './InsertMenu'
+import styled from 'styled-components'
+import {getSchemaTypeTitle} from '../../../../../schema'
+import {ObjectItem, ObjectItemProps} from '../../../../types'
+import {useScrollIntoViewOnFocusWithin} from '../../../../hooks/useScrollIntoViewOnFocusWithin'
+import {useDidUpdate} from '../../../../hooks/useDidUpdate'
+import {useChildPresence} from '../../../../studio/contexts/Presence'
+import {randomKey} from '../../../../utils/randomKey'
+import {FormFieldValidationStatus} from '../../../../components'
+import {FieldPresence} from '../../../../../presence'
+import {useChildValidation} from '../../../../studio/contexts/Validation'
+import {ChangeIndicator} from '../../../../../changeIndicators'
+import {GridItemLayout} from '../../layouts/GridItemLayout'
+import {createProtoArrayValue} from '../createProtoArrayValue'
+import {InsertMenu} from '../InsertMenu'
+import {FIXME} from '../../../../../FIXME'
+import {EditPortal} from '../../../../components/EditPortal'
 
 interface Props<Item extends ObjectItem> extends Omit<ObjectItemProps<Item>, 'renderDefault'> {
   insertableTypes: SchemaType[]
@@ -34,6 +37,21 @@ interface Props<Item extends ObjectItem> extends Omit<ObjectItemProps<Item>, 're
   preview: ReactNode
   sortable: boolean
 }
+const PreviewCard = styled(Card)`
+  border-top-right-radius: inherit;
+  border-top-left-radius: inherit;
+  height: 100%;
+
+  @media (hover: hover) {
+    &:hover {
+      filter: brightness(95%);
+    }
+  }
+
+  &:focus:focus-visible {
+    box-shadow: 0 0 0 2px var(--card-focus-ring-color);
+  }
+`
 
 function getTone({
   readOnly,
@@ -54,7 +72,7 @@ function getTone({
 }
 const MENU_POPOVER_PROPS = {portal: true, tone: 'default'} as const
 
-export function PreviewItem<Item extends ObjectItem = ObjectItem>(props: Props<Item>) {
+export function GridItem<Item extends ObjectItem = ObjectItem>(props: Props<Item>) {
   const {
     schemaType,
     path,
@@ -75,16 +93,14 @@ export function PreviewItem<Item extends ObjectItem = ObjectItem>(props: Props<I
     insertableTypes,
   } = props
 
-  const previewCardRef = useRef<HTMLDivElement | null>(null)
-  const elementRef = useRef<HTMLDivElement | null>(null)
-
+  const previewCardRef = useRef<FIXME | null>(null)
   // this is here to make sure the item is visible if it's being edited behind a modal
-  useScrollIntoViewOnFocusWithin(elementRef, open)
+  useScrollIntoViewOnFocusWithin(previewCardRef, open)
 
   useDidUpdate(focused, (hadFocus, hasFocus) => {
-    if (!hadFocus && hasFocus && elementRef.current) {
+    if (!hadFocus && hasFocus && previewCardRef.current) {
       // Note: if editing an inline item, focus is handled by the item input itself and no ref is being set
-      elementRef.current?.focus()
+      previewCardRef.current?.focus()
     }
   })
 
@@ -116,7 +132,6 @@ export function PreviewItem<Item extends ObjectItem = ObjectItem>(props: Props<I
   }, [childPresence, props.presence])
 
   const childValidation = useChildValidation(path, true)
-
   const validation = useMemo(() => {
     const itemValidation = props.validation.concat(childValidation)
     return itemValidation.length === 0 ? null : (
@@ -150,32 +165,35 @@ export function PreviewItem<Item extends ObjectItem = ObjectItem>(props: Props<I
 
   const tone = getTone({readOnly, hasErrors, hasWarnings})
   const item = (
-    <RowLayout
+    <GridItemLayout
       menu={menu}
       presence={presence}
       validation={validation}
       tone={tone}
+      radius={2}
+      border
       focused={focused}
       dragHandle={sortable}
       selected={open}
     >
-      <Card
-        as="button"
-        type="button"
+      <PreviewCard
         tone="inherit"
-        radius={2}
+        overflow="auto"
+        forwardedAs="button"
+        data-ui="PreviewCard"
+        data-as="button"
+        type="button"
+        flex={1}
+        tabIndex={0}
         disabled={resolvingInitialValue}
-        paddingX={1}
-        paddingY={1}
         onClick={onOpen}
         ref={previewCardRef}
         onFocus={onFocus}
         __unstable_focusRing
-        style={{position: 'relative'}}
       >
         {preview}
         {resolvingInitialValue && (
-          <Card
+          <Flex
             style={{
               position: 'absolute',
               top: 0,
@@ -184,11 +202,6 @@ export function PreviewItem<Item extends ObjectItem = ObjectItem>(props: Props<I
               height: '100%',
               opacity: 0.6,
             }}
-            tone="transparent"
-            as={Flex}
-            radius={2}
-            //eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-ignore
             justify="center"
           >
             <Flex align="center" justify="center" padding={3}>
@@ -197,25 +210,28 @@ export function PreviewItem<Item extends ObjectItem = ObjectItem>(props: Props<I
               </Box>
               <Text>Resolving initial value…</Text>
             </Flex>
-          </Card>
+          </Flex>
         )}
-      </Card>
-    </RowLayout>
+      </PreviewCard>
+    </GridItemLayout>
   )
+  const itemTypeTitle = getSchemaTypeTitle(schemaType)
+
   return (
     <>
       <ChangeIndicator path={path} isChanged={changed} hasFocus={Boolean(focused)}>
-        <Box paddingX={1}>{item}</Box>
+        {item}
       </ChangeIndicator>
       {open && (
-        <Dialog
-          width={1}
-          header={`Edit ${getSchemaTypeTitle(schemaType)}`}
-          id={`${inputId}-item-${value._key}-dialog`}
+        <EditPortal
+          header={readOnly ? `View ${itemTypeTitle}` : `Edit ${itemTypeTitle}`}
+          type={schemaType?.options?.modal?.type || 'dialog'}
+          id={value._key}
           onClose={onClose}
+          legacy_referenceElement={previewCardRef.current}
         >
-          <Box padding={4}>{children}</Box>
-        </Dialog>
+          {children}
+        </EditPortal>
       )}
     </>
   )

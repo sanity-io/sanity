@@ -53,7 +53,6 @@ import {EMPTY_ARRAY, getPublishedId, isNonNullable} from '../../../util'
 import {FIXME} from '../../../FIXME'
 import {FieldPresence} from '../../../presence'
 import {ArrayInputInsertEvent} from '../../types'
-import {ItemCard} from '../arrays/layouts/ItemCard'
 import {ReferenceInputProps, CreateReferenceOption, ReferenceSearchState} from './types'
 import {OptionPreview} from './OptionPreview'
 import {useReferenceInfo} from './useReferenceInfo'
@@ -419,7 +418,7 @@ export function ArrayItemReferenceInput(props: Props) {
   const autocompletePopoverReferenceElementRef = useRef<HTMLDivElement | null>(null)
 
   return (
-    <ItemCard
+    <Card
       radius={2}
       padding={1}
       tone={
@@ -692,6 +691,6 @@ export function ArrayItemReferenceInput(props: Props) {
           </Stack>
         </AlertStrip>
       )}
-    </ItemCard>
+    </Card>
   )
 }
