@@ -11,7 +11,7 @@ Vision is a plugin for Sanity Studio for testing GROQ queries. It features:
 
 ## Installation
 
-`npm install --save @sanity/vision`
+`npm install --save-exact @sanity/vision@dev-preview`
 
 ### Configuring
 
