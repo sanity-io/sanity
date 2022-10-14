@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "design-studio",
-  "version": "2.34.1",
+  "version": "2.34.2",
   "description": "Sanity Design Studio",
   "main": "package.json",
   "author": "Sanity.io <hello@sanity.io>",
@@ -19,7 +19,7 @@
   ],
   "dependencies": {
     "@sanity/base": "2.34.0",
-    "@sanity/cli": "2.34.0",
+    "@sanity/cli": "2.34.2",
     "@sanity/color": "^2.1.14",
     "@sanity/core": "2.34.0",
     "@sanity/default-layout": "2.34.0",
