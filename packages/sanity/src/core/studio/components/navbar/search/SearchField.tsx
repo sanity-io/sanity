@@ -3,6 +3,9 @@ import {PlaceholderSearchInput} from './components/PlaceholderSearchInput'
 import {PopoverPosition, SearchPopover} from './components/SearchPopover'
 import {POPOVER_INPUT_PADDING, POPOVER_MAX_WIDTH} from './constants'
 
+/**
+ * @internal
+ */
 export function SearchField() {
   const [placeholderElement, setPlaceholderElement] = useState<HTMLInputElement | null>(null)
   const [open, setOpen] = useState(false)

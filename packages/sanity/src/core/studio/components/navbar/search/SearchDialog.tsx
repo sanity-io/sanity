@@ -54,6 +54,9 @@ const StyledDialog = styled(Dialog)`
   }
 `
 
+/**
+ * @internal
+ */
 export function SearchDialog({onClose, onOpen, open}: SearchDialogProps) {
   const [childContainerElement, setChildContainerRef] = useState<HTMLDivElement | null>(null)
   const [containerElement, setContainerRef] = useState<HTMLDivElement | null>(null)
