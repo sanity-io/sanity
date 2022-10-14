@@ -5,7 +5,7 @@ import {SanityClient} from '@sanity/client'
 import {ReferenceInfo, ReferenceSearchHit} from '../../../inputs/ReferenceInput/types'
 import {DocumentPreviewStore, getPreviewPaths, prepareForPreview} from '../../../../preview'
 import {collate, CollatedHit, getDraftId, getIdPair, isRecord} from '../../../../util'
-import {createWeightedSearch} from '../../../../studio'
+import {createWeightedSearch} from '../../../../search'
 
 const READABLE = {
   available: true,

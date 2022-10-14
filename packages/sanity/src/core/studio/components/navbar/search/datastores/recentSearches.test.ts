@@ -1,6 +1,6 @@
 import Schema from '@sanity/schema'
 import type {CurrentUser, ObjectSchemaType} from '@sanity/types'
-import type {SearchTerms} from '../search/weighted/types'
+import type {SearchTerms} from '../../../../../search'
 import {createRecentSearchesStore, MAX_RECENT_SEARCHES, RecentSearchesStore} from './recentSearches'
 
 const mockSchema = Schema.compile({

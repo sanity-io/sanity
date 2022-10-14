@@ -1,4 +1,4 @@
-import type {SearchOptions, SearchSort, SearchTerms, WeightedHit} from './search/weighted/types'
+import type {SearchOptions, SearchSort, SearchTerms, WeightedHit} from '../../../../search'
 
 export interface SearchOrdering {
   customMeasurementLabel?: string

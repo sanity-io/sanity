@@ -1,5 +1,5 @@
 import type {CurrentUser, ObjectSchemaType, Schema} from '@sanity/types'
-import type {SearchTerms} from '../search/weighted/types'
+import type {SearchTerms} from '../../../../../search'
 import {getSearchableOmnisearchTypes} from '../utils/selectors'
 
 const SEARCH_TERMS_KEY = 'search-terms::recent'

@@ -2,7 +2,7 @@ import {Box, Card, Flex, Text, Theme} from '@sanity/ui'
 import React, {useMemo} from 'react'
 import styled from 'styled-components'
 import {TextWithTone} from '../../../../../components/TextWithTone'
-import type {SearchableType} from '../search/weighted/types'
+import type {SearchableType} from '../../../../../search'
 
 interface TypePillsProps {
   availableCharacters?: number

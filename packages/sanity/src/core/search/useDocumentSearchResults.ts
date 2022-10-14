@@ -9,11 +9,11 @@ import {
   share,
   switchMap,
 } from 'rxjs/operators'
-import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../../studioClient'
-import {useClient, useSchema} from '../../../../../hooks'
-import {isNonNullable} from '../../../../../util'
+import {useClient, useSchema} from '../hooks'
+import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../studioClient'
+import {isNonNullable} from '../util'
 import {createSearch} from './search'
-import {WeightedHit} from './weighted/types'
+import type {WeightedHit} from './weighted/types'
 
 /** @internal */
 export interface DocumentSearchParams {

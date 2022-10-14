@@ -1,5 +1,5 @@
 import type {RecentSearchTerms} from '../datastores/recentSearches'
-import type {SearchTerms} from '../search/weighted/types'
+import type {SearchTerms} from '../../../../../search'
 
 export function isRecentSearchTerms(
   terms: SearchTerms | RecentSearchTerms

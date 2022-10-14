@@ -10,9 +10,9 @@ import React, {
   useRef,
 } from 'react'
 import {useClient, useSchema} from '../../../../../../hooks'
+import type {SearchTerms} from '../../../../../../search'
 import {useCurrentUser} from '../../../../../../store'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../../../studioClient'
-import type {SearchTerms} from '../../search/weighted/types'
 import {FINDABILITY_MVI, SEARCH_LIMIT} from '../../constants'
 import {
   createRecentSearchesStore,

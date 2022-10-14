@@ -1,5 +1,5 @@
 import type {CurrentUser} from '@sanity/types'
-import type {SearchableType, SearchTerms, WeightedHit} from '../../search/weighted/types'
+import type {SearchableType, SearchTerms, WeightedHit} from '../../../../../../search'
 import type {RecentSearchTerms} from '../../datastores/recentSearches'
 import {ORDER_RELEVANCE, SearchOrdering} from '../../types'
 import {debugWithName, isDebugMode} from '../../utils/debug'

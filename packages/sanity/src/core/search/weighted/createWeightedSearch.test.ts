@@ -1,13 +1,13 @@
-import {renderHook} from '@testing-library/react'
 import Schema from '@sanity/schema'
+import {renderHook} from '@testing-library/react'
 import {defer, of} from 'rxjs'
-import {useClient} from '../../../../../../hooks'
 import type {SearchTerms} from '..'
+import {useClient} from '../../hooks'
 import {getSearchableTypes} from '../common/utils'
 import {createWeightedSearch} from './createWeightedSearch'
 
 // Mock client
-jest.mock('../../../../../../hooks', () => ({
+jest.mock('../../hooks', () => ({
   useClient: () => ({observable: {fetch: jest.fn()}}),
 }))
 

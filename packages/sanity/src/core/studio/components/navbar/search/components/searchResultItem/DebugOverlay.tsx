@@ -1,7 +1,7 @@
 import {Box, Card, CardTone, Code, Inline, Stack, Tooltip} from '@sanity/ui'
 import React from 'react'
 import styled from 'styled-components'
-import type {WeightedHit} from '../../search/weighted/types'
+import type {WeightedHit} from '../../../../../../search'
 
 interface DebugScoreProps {
   data: WeightedHit

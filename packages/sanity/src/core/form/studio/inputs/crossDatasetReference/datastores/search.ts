@@ -2,7 +2,7 @@ import {SanityClient} from '@sanity/client'
 import {CrossDatasetReferenceSchemaType, ReferenceFilterSearchOptions} from '@sanity/types'
 import {Observable} from 'rxjs'
 import {map} from 'rxjs/operators'
-import {createWeightedSearch} from '../../../../../studio'
+import {createWeightedSearch} from '../../../../../search'
 import {collate} from '../../../../../util'
 
 interface SearchHit {

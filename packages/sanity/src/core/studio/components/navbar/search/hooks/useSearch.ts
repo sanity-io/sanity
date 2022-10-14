@@ -14,9 +14,8 @@ import {
   tap,
 } from 'rxjs/operators'
 import {useClient} from '../../../../../hooks'
+import {createWeightedSearch, SearchOptions, SearchTerms, WeightedHit} from '../../../../../search'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../../studioClient'
-import {createWeightedSearch} from '../../search'
-import type {SearchOptions, SearchTerms, WeightedHit} from '../search/weighted/types'
 import {SearchState} from '../types'
 import {hasSearchableTerms} from '../utils/hasSearchableTerms'
 import {getSearchableOmnisearchTypes} from '../utils/selectors'

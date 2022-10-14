@@ -1,5 +1,5 @@
 import {compact, flatten, flow, toLower, trim, union, uniq, words} from 'lodash'
-import {joinPath} from '../../../../../../../core/util/searchUtils'
+import {joinPath} from '../../../core/util/searchUtils'
 import {tokenize} from '../common/tokenize'
 import type {
   SearchableType,

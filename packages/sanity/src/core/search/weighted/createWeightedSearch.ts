@@ -2,7 +2,7 @@ import type {SanityClient} from '@sanity/client'
 import {sortBy} from 'lodash'
 import type {Observable} from 'rxjs'
 import {map, tap} from 'rxjs/operators'
-import {removeDupes} from '../../../../../../util/draftUtils'
+import {removeDupes} from '../../util/draftUtils'
 import {applyWeights} from './applyWeights'
 import {createSearchQuery} from './createSearchQuery'
 import type {

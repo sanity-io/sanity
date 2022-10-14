@@ -2,7 +2,7 @@ import {CheckmarkIcon} from '@sanity/icons'
 import {Button} from '@sanity/ui'
 import React, {useCallback} from 'react'
 import styled, {css} from 'styled-components'
-import type {SearchableType} from '../search/weighted/types'
+import type {SearchableType} from '../../../../../search'
 import {useCommandList} from '../contexts/commandList'
 import {useSearchState} from '../contexts/search'
 

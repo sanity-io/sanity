@@ -1,7 +1,7 @@
 import {Box, Button, Label, Stack, Text, useMediaIndex} from '@sanity/ui'
 import React, {Dispatch, MouseEvent, SetStateAction, useCallback, useMemo} from 'react'
 import styled from 'styled-components'
-import type {SearchTerms} from '../search/weighted/types'
+import type {SearchTerms} from '../../../../../search'
 import {useSearchState} from '../contexts/search'
 import {Instructions} from './Instructions'
 import {PointerOverlay} from './PointerOverlay'
