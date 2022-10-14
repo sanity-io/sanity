@@ -20,6 +20,7 @@
     "check:packages": "lerna run check:package",
     "clean": "lerna run clean",
     "clean:deps": "rimraf packages/@sanity/*/node_modules packages/*/node_modules node_modules",
+    "check:deps-updates": "npx npm-check-updates --workspaces --root -m",
     "check:versions": "node scripts/normalizeDependencyVersions.js",
     "cypress:open": "cypress open --config-file cypress/cypress.json",
     "cypress:run": "cypress run --config-file cypress/cypress.json",
