@@ -1,6 +1,6 @@
 import {SearchIcon} from '@sanity/icons'
 import {Box, Button, Flex, Stack, Text} from '@sanity/ui'
-import React, {useCallback, useMemo, useState} from 'react'
+import React, {useCallback, useId, useMemo, useState} from 'react'
 import styled from 'styled-components'
 import {useSchema} from '../../../../../hooks'
 import {SUBHEADER_HEIGHT_LARGE, SUBHEADER_HEIGHT_SMALL} from '../constants'
@@ -62,7 +62,7 @@ export function TypeFilters({small}: TypeFiltersProps) {
 
   const selectableDocumentTypes = useMemo(
     () => getSelectableOmnisearchTypes(schema, typeFilter),
-    [typeFilter]
+    [schema, typeFilter]
   )
 
   const handleClearTypes = useCallback(() => {
@@ -80,6 +80,8 @@ export function TypeFilters({small}: TypeFiltersProps) {
 
   const padding = small ? 1 : 2
 
+  const commandListId = useId()
+
   return (
     <CommandListProvider
       ariaChildrenLabel="Document types"
@@ -89,7 +91,7 @@ export function TypeFilters({small}: TypeFiltersProps) {
       childCount={selectableDocumentTypes.length}
       containerElement={containerElement}
       headerInputElement={headerInputElement}
-      id="search-type-filters"
+      id={commandListId}
       level={1}
       pointerOverlayElement={pointerOverlayElement}
     >

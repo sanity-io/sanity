@@ -19,6 +19,7 @@ export type PopoverPosition = {
   y: number
 }
 export interface SearchPopoverProps {
+  disableFocusLock?: boolean
   onClose: () => void
   onOpen: () => void
   open: boolean
@@ -65,7 +66,13 @@ const TypeFilterCard = styled(Card)`
   width: 100%;
 `
 
-export function SearchPopover({onClose, onOpen, open, position}: SearchPopoverProps) {
+export function SearchPopover({
+  disableFocusLock,
+  onClose,
+  onOpen,
+  open,
+  position,
+}: SearchPopoverProps) {
   const [childContainerElement, setChildContainerRef] = useState<HTMLDivElement | null>(null)
   const [containerElement, setContainerRef] = useState<HTMLDivElement | null>(null)
   const [headerInputElement, setHeaderInputRef] = useState<HTMLInputElement | null>(null)
@@ -145,7 +152,7 @@ export function SearchPopover({onClose, onOpen, open, position}: SearchPopoverPr
     }
   }, [])
 
-  const dialogId = useId()
+  const commandListId = useId()
 
   if (!open) {
     return null
@@ -153,7 +160,7 @@ export function SearchPopover({onClose, onOpen, open, position}: SearchPopoverPr
 
   return (
     <Portal>
-      <FocusLock autoFocus={false} returnFocus>
+      <FocusLock autoFocus={false} disabled={disableFocusLock} returnFocus>
         <Overlay style={{zIndex}} />
 
         <CommandListProvider
@@ -164,7 +171,7 @@ export function SearchPopover({onClose, onOpen, open, position}: SearchPopoverPr
           childCount={hasValidTerms ? result.hits.length : recentSearches?.length}
           containerElement={containerElement}
           headerInputElement={headerInputElement}
-          id={dialogId || ''}
+          id={commandListId || ''}
           data-testid="search-results-popover"
           initialSelectedIndex={hasValidTerms ? lastSearchIndex : 0}
           level={0}
