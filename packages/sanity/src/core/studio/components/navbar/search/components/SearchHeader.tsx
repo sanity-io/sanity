@@ -2,7 +2,7 @@ import {CloseIcon, ControlsIcon, SearchIcon, SpinnerIcon} from '@sanity/icons'
 import {Box, Button, Card, Flex, studioTheme, Theme} from '@sanity/ui'
 import React, {Dispatch, SetStateAction, useCallback, useEffect, useRef, useState} from 'react'
 import styled, {keyframes} from 'styled-components'
-import {useSearchState} from '../contexts/search'
+import {useSearchState} from '../contexts/search/useSearchState'
 import {supportsTouch} from '../utils/supportsTouch'
 import {CustomTextInput} from './CustomTextInput'
 

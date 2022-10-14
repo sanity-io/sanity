@@ -30,8 +30,8 @@ import {ChangelogButton} from './changelog'
 import {WorkspaceMenuButton} from './workspace'
 import {ConfigIssuesButton} from './configIssues/ConfigIssuesButton'
 import {LogoButton} from './LogoButton'
-import {SearchDialog, SearchField} from './search/'
-import {SearchProvider} from './search/contexts/search'
+import {SearchDialog, SearchField} from './search'
+import {SearchProvider} from './search/contexts/search/SearchProvider'
 import {RouterState, useRouterState, useStateLink} from 'sanity/router'
 
 const RootLayer = styled(Layer)`

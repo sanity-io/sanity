@@ -1,37 +1,17 @@
 import isEqual from 'lodash/isEqual'
-import React, {
-  createContext,
-  Dispatch,
-  ReactNode,
-  useContext,
-  useEffect,
-  useMemo,
-  useReducer,
-  useRef,
-} from 'react'
+import React, {ReactNode, useEffect, useMemo, useReducer, useRef} from 'react'
 import {useClient, useSchema} from '../../../../../../hooks'
 import type {SearchTerms} from '../../../../../../search'
 import {useCurrentUser} from '../../../../../../store'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../../../studioClient'
 import {FINDABILITY_MVI, SEARCH_LIMIT} from '../../constants'
-import {
-  createRecentSearchesStore,
-  RecentSearchesStore,
-  RecentSearchTerms,
-} from '../../datastores/recentSearches'
+import {createRecentSearchesStore, RecentSearchTerms} from '../../datastores/recentSearches'
 import {useSearch} from '../../hooks/useSearch'
 import type {SearchOrdering} from '../../types'
 import {hasSearchableTerms} from '../../utils/hasSearchableTerms'
 import {isRecentSearchTerms} from '../../utils/isRecentSearchTerms'
-import {initialSearchState, SearchAction, searchReducer, SearchReducerState} from './reducer'
-
-interface SearchContextValue {
-  dispatch: Dispatch<SearchAction>
-  state: SearchReducerState
-  recentSearchesStore?: RecentSearchesStore
-}
-
-const SearchContext = createContext<SearchContextValue | undefined>(undefined)
+import {initialSearchState, searchReducer} from './reducer'
+import {SearchContext} from './SearchContext'
 
 interface SearchProviderProps {
   children?: ReactNode
@@ -144,12 +124,4 @@ export function SearchProvider({children}: SearchProviderProps) {
       {children}
     </SearchContext.Provider>
   )
-}
-
-export function useSearchState() {
-  const context = useContext(SearchContext)
-  if (context === undefined) {
-    throw new Error('useSearchState must be used within an SearchProvider')
-  }
-  return context
 }

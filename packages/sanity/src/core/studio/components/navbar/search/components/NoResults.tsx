@@ -1,7 +1,7 @@
 import {Flex, Inline, Text, Theme} from '@sanity/ui'
 import React from 'react'
 import styled from 'styled-components'
-import {useSearchState} from '../contexts/search'
+import {useSearchState} from '../contexts/search/useSearchState'
 import {TypePills} from './TypePills'
 
 const Semibold = styled.span`
