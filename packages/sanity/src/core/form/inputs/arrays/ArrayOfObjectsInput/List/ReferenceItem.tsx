@@ -107,7 +107,7 @@ export function ReferenceItem<Item extends ReferenceItemValue = ReferenceItemVal
     children,
     sortable,
     insertableTypes,
-    inputProps: {onChange, focusPath, onFocusPath},
+    inputProps: {onChange, focusPath, onPathFocus},
   } = props
 
   const elementRef = useRef<HTMLDivElement | null>(null)
@@ -187,7 +187,7 @@ export function ReferenceItem<Item extends ReferenceItemValue = ReferenceItemVal
                       text={hasRef && isEditing ? 'Cancel replace' : 'Replace'}
                       icon={hasRef && isEditing ? CloseIcon : ReplaceIcon}
                       onClick={
-                        hasRef && isEditing ? () => onFocusPath([]) : () => onFocusPath(['_ref'])
+                        hasRef && isEditing ? () => onPathFocus([]) : () => onPathFocus(['_ref'])
                       }
                     />
                     <MenuItem text="Duplicate" icon={DuplicateIcon} onClick={handleDuplicate} />
@@ -220,7 +220,7 @@ export function ReferenceItem<Item extends ReferenceItemValue = ReferenceItemVal
       handleInsert,
       insertableTypes,
       EditReferenceLink,
-      onFocusPath,
+      onPathFocus,
     ]
   )
 

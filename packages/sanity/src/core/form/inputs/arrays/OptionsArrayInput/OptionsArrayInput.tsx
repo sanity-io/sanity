@@ -85,8 +85,8 @@ export class OptionsArrayInput extends React.PureComponent<OptionsArrayInputProp
   }
 
   handleFocus = (index: number) => {
-    const {onFocusIndex} = this.props
-    onFocusIndex(index)
+    const {onIndexFocus} = this.props
+    onIndexFocus(index)
   }
 
   render() {

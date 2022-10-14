@@ -216,8 +216,8 @@ export function ReferenceField(props: ReferenceFieldProps) {
                       icon={value?._ref && isEditing ? CloseIcon : ReplaceIcon}
                       onClick={
                         value?._ref && isEditing
-                          ? () => inputProps.onFocusPath([])
-                          : () => inputProps.onFocusPath(['_ref'])
+                          ? () => inputProps.onPathFocus([])
+                          : () => inputProps.onPathFocus(['_ref'])
                       }
                     />
                   </>

@@ -129,12 +129,12 @@ function RootInput() {
     onSetPathCollapsed,
   } = useFormCallbacks()
 
-  const handleCollapseField = useCallback(
+  const handleFieldCollapse = useCallback(
     (fieldName: string) => onSetPathCollapsed([fieldName], true),
     [onSetPathCollapsed]
   )
 
-  const handleExpandField = useCallback(
+  const handleFieldExpand = useCallback(
     (fieldName: string) => onSetPathCollapsed([fieldName], false),
     [onSetPathCollapsed]
   )
@@ -155,16 +155,16 @@ function RootInput() {
     [onFieldGroupSelect]
   )
 
-  const handleOpenField = useCallback((fieldName: string) => onPathOpen([fieldName]), [onPathOpen])
+  const handleFieldOpen = useCallback((fieldName: string) => onPathOpen([fieldName]), [onPathOpen])
 
-  const handleCloseField = useCallback(() => onPathOpen([]), [onPathOpen])
+  const handleFieldClose = useCallback(() => onPathOpen([]), [onPathOpen])
 
-  const handleCollapseFieldSet = useCallback(
+  const handleFieldSetCollapse = useCallback(
     (fieldSetName: string) => onSetFieldSetCollapsed([fieldSetName], true),
     [onSetFieldSetCollapsed]
   )
 
-  const handleExpandFieldSet = useCallback(
+  const handleFieldSetExpand = useCallback(
     (fieldSetName: string) => onSetFieldSetCollapsed([fieldSetName], false),
     [onSetFieldSetCollapsed]
   )
@@ -179,13 +179,13 @@ function RootInput() {
     level: 0,
     members,
     onChange: handleChange,
-    onCloseField: handleCloseField,
-    onCollapseField: handleCollapseField,
-    onCollapseFieldSet: handleCollapseFieldSet,
-    onExpandField: handleExpandField,
-    onExpandFieldSet: handleExpandFieldSet,
-    onFocusPath: onPathFocus,
-    onOpenField: handleOpenField,
+    onFieldClose: handleFieldClose,
+    onFieldCollapse: handleFieldCollapse,
+    onFieldSetCollapse: handleFieldSetCollapse,
+    onFieldExpand: handleFieldExpand,
+    onFieldSetExpand: handleFieldSetExpand,
+    onPathFocus: onPathFocus,
+    onFieldOpen: handleFieldOpen,
     onFieldGroupSelect: handleSelectFieldGroup,
     path: EMPTY_ARRAY,
     presence: EMPTY_ARRAY,

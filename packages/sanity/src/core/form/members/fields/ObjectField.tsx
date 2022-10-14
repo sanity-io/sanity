@@ -54,7 +54,7 @@ export const ObjectField = function ObjectField(props: {
     onPathFocus(member.field.path)
   }, [member.field.path, onPathFocus])
 
-  const handleFocusChildPath = useCallback(
+  const handleChildPathFocus = useCallback(
     (path: Path) => {
       onPathFocus(member.field.path.concat(path))
     },
@@ -80,34 +80,35 @@ export const ObjectField = function ObjectField(props: {
     onSetPathCollapsed(member.field.path, false)
   }, [onSetPathCollapsed, member.field.path])
 
-  const handleCollapseField = useCallback(
+  const handleFieldCollapse = useCallback(
     (fieldName: string) => {
       onSetPathCollapsed(member.field.path.concat(fieldName), true)
     },
     [onSetPathCollapsed, member.field.path]
   )
-  const handleExpandField = useCallback(
+  const handleFieldExpand = useCallback(
     (fieldName: string) => {
       onSetPathCollapsed(member.field.path.concat(fieldName), false)
     },
     [onSetPathCollapsed, member.field.path]
   )
-  const handleOpenField = useCallback(
+  const handleFieldOpen = useCallback(
     (fieldName: string) => {
       onPathOpen(member.field.path.concat(fieldName))
     },
     [onPathOpen, member.field.path]
   )
-  const handleCloseField = useCallback(() => {
+  const handleFieldClose = useCallback(() => {
     onPathOpen(member.field.path)
   }, [onPathOpen, member.field.path])
-  const handleExpandFieldSet = useCallback(
+
+  const handleFieldSetExpand = useCallback(
     (fieldsetName: string) => {
       onSetFieldSetCollapsed(member.field.path.concat(fieldsetName), false)
     },
     [onSetFieldSetCollapsed, member.field.path]
   )
-  const handleCollapseFieldSet = useCallback(
+  const handleFieldSetCollapse = useCallback(
     (fieldsetName: string) => {
       onSetFieldSetCollapsed(member.field.path.concat(fieldsetName), true)
     },
@@ -152,13 +153,13 @@ export const ObjectField = function ObjectField(props: {
       changed: member.field.changed,
       id: member.field.id,
       onFieldGroupSelect: handleSelectFieldGroup,
-      onOpenField: handleOpenField,
-      onCloseField: handleCloseField,
-      onCollapseField: handleCollapseField,
-      onExpandField: handleExpandField,
-      onExpandFieldSet: handleExpandFieldSet,
-      onCollapseFieldSet: handleCollapseFieldSet,
-      onFocusPath: handleFocusChildPath,
+      onFieldOpen: handleFieldOpen,
+      onFieldClose: handleFieldClose,
+      onFieldCollapse: handleFieldCollapse,
+      onFieldExpand: handleFieldExpand,
+      onFieldSetExpand: handleFieldSetExpand,
+      onFieldSetCollapse: handleFieldSetCollapse,
+      onPathFocus: handleChildPathFocus,
       path: member.field.path,
       focusPath: member.field.focusPath,
       focused: member.field.focused,
@@ -185,13 +186,13 @@ export const ObjectField = function ObjectField(props: {
     member.field.focused,
     member.field.groups,
     handleSelectFieldGroup,
-    handleOpenField,
-    handleCloseField,
-    handleCollapseField,
-    handleExpandField,
-    handleExpandFieldSet,
-    handleCollapseFieldSet,
-    handleFocusChildPath,
+    handleFieldOpen,
+    handleFieldClose,
+    handleFieldCollapse,
+    handleFieldExpand,
+    handleFieldSetExpand,
+    handleFieldSetCollapse,
+    handleChildPathFocus,
     handleChange,
     renderField,
     renderInput,

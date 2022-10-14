@@ -77,7 +77,7 @@ export function ArrayOfObjectsItem(props: MemberItemProps) {
     onPathFocus(member.item.path)
   }, [member.item.path, onPathFocus])
 
-  const handleFocusChildPath = useCallback(
+  const handleChildPathFocus = useCallback(
     (path: Path) => {
       onPathFocus(member.item.path.concat(path))
     },
@@ -102,34 +102,34 @@ export function ArrayOfObjectsItem(props: MemberItemProps) {
     onSetPathCollapsed(member.item.path, false)
   }, [onSetPathCollapsed, member.item.path])
 
-  const handleCollapseField = useCallback(
+  const handleFieldCollapse = useCallback(
     (fieldName: string) => {
       onSetPathCollapsed(member.item.path.concat(fieldName), true)
     },
     [onSetPathCollapsed, member.item.path]
   )
-  const handleExpandField = useCallback(
+  const handleFieldExpand = useCallback(
     (fieldName: string) => {
       onSetPathCollapsed(member.item.path.concat(fieldName), false)
     },
     [onSetPathCollapsed, member.item.path]
   )
-  const handleCloseField = useCallback(() => {
+  const handleFieldClose = useCallback(() => {
     onPathOpen(member.item.path)
   }, [onPathOpen, member.item.path])
-  const handleOpenField = useCallback(
+  const handleFieldOpen = useCallback(
     (fieldName: string) => {
       onPathOpen(member.item.path.concat(fieldName))
     },
     [onPathOpen, member.item.path]
   )
-  const handleExpandFieldSet = useCallback(
+  const handleFieldSetExpand = useCallback(
     (fieldsetName: string) => {
       onSetFieldSetCollapsed(member.item.path.concat(fieldsetName), false)
     },
     [onSetFieldSetCollapsed, member.item.path]
   )
-  const handleCollapseFieldSet = useCallback(
+  const handleFieldSetCollapse = useCallback(
     (fieldsetName: string) => {
       onSetFieldSetCollapsed(member.item.path.concat(fieldsetName), true)
     },
@@ -149,7 +149,7 @@ export function ArrayOfObjectsItem(props: MemberItemProps) {
     onPathFocus(member.item.path)
   }, [isEmptyValue, onPathOpen, member.item.path, onPathFocus, onRemove])
 
-  const handleSelectFieldGroup = useCallback(
+  const handleFieldGroupSelect = useCallback(
     (groupName: string) => {
       onFieldGroupSelect(member.item.path, groupName)
     },
@@ -176,14 +176,14 @@ export function ArrayOfObjectsItem(props: MemberItemProps) {
       level: member.item.level,
       members: member.item.members,
       onChange: handleChange,
-      onCloseField: handleCloseField,
-      onCollapseField: handleCollapseField,
-      onCollapseFieldSet: handleCollapseFieldSet,
-      onExpandField: handleExpandField,
-      onExpandFieldSet: handleExpandFieldSet,
-      onFieldGroupSelect: handleSelectFieldGroup,
-      onFocusPath: handleFocusChildPath,
-      onOpenField: handleOpenField,
+      onFieldClose: handleFieldClose,
+      onFieldCollapse: handleFieldCollapse,
+      onFieldSetCollapse: handleFieldSetCollapse,
+      onFieldExpand: handleFieldExpand,
+      onFieldSetExpand: handleFieldSetExpand,
+      onFieldGroupSelect: handleFieldGroupSelect,
+      onPathFocus: handleChildPathFocus,
+      onFieldOpen: handleFieldOpen,
       path: member.item.path,
       presence: member.item.presence,
       readOnly: member.item.readOnly,
@@ -199,14 +199,14 @@ export function ArrayOfObjectsItem(props: MemberItemProps) {
   }, [
     elementProps,
     handleChange,
-    handleCloseField,
-    handleCollapseField,
-    handleCollapseFieldSet,
-    handleExpandField,
-    handleExpandFieldSet,
-    handleFocusChildPath,
-    handleOpenField,
-    handleSelectFieldGroup,
+    handleFieldClose,
+    handleFieldCollapse,
+    handleFieldSetCollapse,
+    handleFieldExpand,
+    handleFieldSetExpand,
+    handleChildPathFocus,
+    handleFieldOpen,
+    handleFieldGroupSelect,
     member.item.changed,
     member.item.focusPath,
     member.item.focused,

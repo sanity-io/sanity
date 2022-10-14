@@ -47,28 +47,28 @@ export interface ObjectInputProps<
   onChange: (patch: FormPatch | FormPatch[] | PatchEvent) => void
 
   /** @beta */
-  onCollapseField: (fieldName: string) => void
+  onFieldCollapse: (fieldName: string) => void
 
   /** @beta */
-  onExpandField: (fieldName: string) => void
+  onFieldExpand: (fieldName: string) => void
 
   /** @beta */
-  onCollapseFieldSet: (fieldSetName: string) => void
+  onFieldSetCollapse: (fieldSetName: string) => void
 
   /** @beta */
-  onExpandFieldSet: (fieldSetName: string) => void
+  onFieldSetExpand: (fieldSetName: string) => void
 
   /** @beta */
   onFieldGroupSelect: (groupName: string) => void
 
   /** @beta */
-  onFocusPath: (path: Path) => void
+  onPathFocus: (path: Path) => void
 
   /** @beta */
-  onOpenField: (fieldName: string) => void
+  onFieldOpen: (fieldName: string) => void
 
   /** @beta */
-  onCloseField: (fieldName: string) => void
+  onFieldClose: (fieldName: string) => void
 
   /** @beta */
   renderInput: RenderInputCallback
@@ -97,13 +97,13 @@ export interface ArrayOfObjectsInputProps<
   onChange: (patch: FormPatch | FormPatch[] | PatchEvent) => void
 
   /** @beta */
-  onAppendItem: (item: T) => void
+  onItemAppend: (item: T) => void
 
   /** @beta */
-  onPrependItem: (item: T) => void
+  onItemPrepend: (item: T) => void
 
   /** @beta */
-  onRemoveItem: (itemKey: string) => void
+  onItemRemove: (itemKey: string) => void
 
   /** @beta */
   onItemMove: (event: ArrayInputMoveItemEvent) => void
@@ -121,7 +121,7 @@ export interface ArrayOfObjectsInputProps<
   onUpload: (event: UploadEvent) => void
 
   /** @beta */
-  onFocusPath: (path: Path) => void
+  onPathFocus: (path: Path) => void
 
   /**
    * NOTE: not a priority to support collapsible arrays right now
@@ -136,19 +136,19 @@ export interface ArrayOfObjectsInputProps<
    * for array inputs using expand/collapse semantics for items
    * @beta
    */
-  onCollapseItem: (itemKey: string) => void
+  onItemCollapse: (itemKey: string) => void
 
   /** @beta */
-  onExpandItem: (itemKey: string) => void
+  onItemExpand: (itemKey: string) => void
 
   /**
    * for array inputs using modal open/close semantics for items
    * @beta
    */
-  onOpenItem: (path: Path) => void
+  onItemOpen: (path: Path) => void
 
   /** @beta */
-  onCloseItem: () => void
+  onItemClose: () => void
 
   /** @beta */
   renderField: RenderFieldCallback
@@ -182,22 +182,22 @@ export interface ArrayOfPrimitivesInputProps<
   onChange: (patch: FormPatch | FormPatch[] | PatchEvent) => void
 
   /** @beta */
-  onAppendItem: (item: ArrayOfPrimitivesElementType<T>) => void
+  onItemAppend: (item: ArrayOfPrimitivesElementType<T>) => void
 
   /** @beta */
-  onPrependItem: (item: ArrayOfPrimitivesElementType<T>) => void
+  onItemPrepend: (item: ArrayOfPrimitivesElementType<T>) => void
 
   /** @beta */
-  onRemoveItem: (index: number) => void
+  onItemRemove: (index: number) => void
 
   /** @beta */
-  onMoveItem: (event: ArrayInputMoveItemEvent) => void
+  onItemMove: (event: ArrayInputMoveItemEvent) => void
 
   /** @beta */
   onInsert: (event: {items: T; position: 'before' | 'after'; referenceIndex: number}) => void
 
   /** @beta */
-  onFocusIndex: (index: number) => void
+  onIndexFocus: (index: number) => void
 
   /** @beta */
   renderInput: RenderInputCallback

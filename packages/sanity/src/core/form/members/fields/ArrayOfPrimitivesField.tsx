@@ -138,7 +138,7 @@ export function ArrayOfPrimitivesField(props: {
     [member.name, onChange]
   )
 
-  const handleMoveItem = useCallback(
+  const handleItemMove = useCallback(
     (event: ArrayInputMoveItemEvent) => {
       const {value = []} = member.field
       if (event.fromIndex === event.toIndex) {
@@ -150,7 +150,7 @@ export function ArrayOfPrimitivesField(props: {
     [member.field, setValue]
   )
 
-  const handleAppend = useCallback(
+  const handleItemAppend = useCallback(
     (itemValue: PrimitiveValue) => {
       const {value = []} = member.field
       setValue(value.concat(itemValue))
@@ -158,7 +158,7 @@ export function ArrayOfPrimitivesField(props: {
     [member.field, setValue]
   )
 
-  const handlePrepend = useCallback(
+  const handleItemPrepend = useCallback(
     (itemValue: PrimitiveValue) => {
       const {value = []} = member.field
       setValue([itemValue].concat(value || []))
@@ -176,14 +176,14 @@ export function ArrayOfPrimitivesField(props: {
     [member.field, setValue]
   )
 
-  const handleRemoveItem = useCallback(
+  const handleItemRemove = useCallback(
     (index: number) => {
       onChange(PatchEvent.from([unset(member.field.path.concat(index))]))
     },
     [onChange, member.field.path]
   )
 
-  const handleFocusIndex = useCallback(
+  const handleIndexFocus = useCallback(
     (index: number) => {
       onPathFocus(member.field.path.concat([index]))
     },
@@ -216,15 +216,15 @@ export function ArrayOfPrimitivesField(props: {
       focused: member.field.focused,
       onChange: handleChange,
       onInsert: handleInsert,
-      onMoveItem: handleMoveItem,
-      onRemoveItem: handleRemoveItem,
-      onAppendItem: handleAppend,
-      onPrependItem: handlePrepend,
+      onItemMove: handleItemMove,
+      onItemRemove: handleItemRemove,
+      onItemAppend: handleItemAppend,
+      onItemPrepend: handleItemPrepend,
       validation: member.field.validation,
       presence: member.field.presence,
       renderInput,
       renderItem,
-      onFocusIndex: handleFocusIndex,
+      onIndexFocus: handleIndexFocus,
       renderPreview,
     }
   }, [
@@ -244,13 +244,13 @@ export function ArrayOfPrimitivesField(props: {
     elementProps,
     handleChange,
     handleInsert,
-    handleMoveItem,
-    handleRemoveItem,
-    handleAppend,
-    handlePrepend,
+    handleItemMove,
+    handleItemRemove,
+    handleItemAppend,
+    handleItemPrepend,
     renderInput,
     renderItem,
-    handleFocusIndex,
+    handleIndexFocus,
     renderPreview,
   ])
 

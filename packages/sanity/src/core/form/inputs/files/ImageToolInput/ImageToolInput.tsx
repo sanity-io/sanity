@@ -54,7 +54,7 @@ export function ImageToolInput(props: ImageToolInputProps) {
     presence,
     onChange,
     schemaType,
-    onFocusPath,
+    onPathFocus,
     readOnly,
     elementProps,
   } = props
@@ -64,8 +64,8 @@ export function ImageToolInput(props: ImageToolInputProps) {
   const {image, isLoading: isImageLoading, error: imageLoadError} = useLoadImage(imageUrl)
 
   const handleFocus = useCallback(() => {
-    onFocusPath(HOTSPOT_PATH)
-  }, [onFocusPath])
+    onPathFocus(HOTSPOT_PATH)
+  }, [onPathFocus])
 
   useEffect(() => {
     setLocalValue(value || DEFAULT_VALUE)

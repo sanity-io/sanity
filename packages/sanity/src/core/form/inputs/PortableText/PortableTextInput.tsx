@@ -78,7 +78,7 @@ export function PortableTextInput(props: PortableTextInputProps) {
     members,
     onChange,
     onCopy,
-    onFocusPath,
+    onPathFocus,
     onInsert,
     onPaste,
     path,
@@ -248,12 +248,12 @@ export function PortableTextInput(props: PortableTextInputProps) {
     () =>
       debounce(
         (sel: EditorSelection) => {
-          if (sel && hasFocus) onFocusPath(sel.focus.path)
+          if (sel && hasFocus) onPathFocus(sel.focus.path)
         },
         500,
         {trailing: true, leading: false}
       ),
-    [hasFocus, onFocusPath]
+    [hasFocus, onPathFocus]
   )
 
   // Handle editor changes

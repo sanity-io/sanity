@@ -65,8 +65,8 @@ export function Compositor(props: InputProps) {
     onChange,
     onCopy,
     onActivate,
-    onOpenItem,
-    onCloseItem,
+    onItemOpen,
+    onItemClose,
     onPaste,
     onToggleFullscreen,
     path,
@@ -90,7 +90,7 @@ export function Compositor(props: InputProps) {
     hasFocus,
     editorRootPath: path,
     scrollElement,
-    onCloseItem,
+    onItemClose,
   })
 
   const handleToggleFullscreen = useCallback(() => {
@@ -156,7 +156,7 @@ export function Compositor(props: InputProps) {
           block={block}
           isFullscreen={isFullscreen}
           onChange={onChange}
-          onOpenItem={onOpenItem}
+          onItemOpen={onItemOpen}
           readOnly={readOnly}
           renderBlockActions={hasContent ? renderBlockActions : undefined}
           renderCustomMarkers={hasContent ? renderCustomMarkers : undefined}
@@ -169,7 +169,7 @@ export function Compositor(props: InputProps) {
       hasContent,
       isFullscreen,
       onChange,
-      onOpenItem,
+      onItemOpen,
       ptFeatures.types.block.name,
       readOnly,
       renderBlockActions,
@@ -188,7 +188,7 @@ export function Compositor(props: InputProps) {
       return (
         <InlineObject
           attributes={attributes}
-          onOpenItem={onOpenItem}
+          onItemOpen={onItemOpen}
           readOnly={readOnly}
           renderCustomMarkers={renderCustomMarkers}
           scrollElement={scrollElement}
@@ -199,7 +199,7 @@ export function Compositor(props: InputProps) {
       )
     },
     [
-      onOpenItem,
+      onItemOpen,
       ptFeatures.types.span.name,
       readOnly,
       renderCustomMarkers,
@@ -213,7 +213,7 @@ export function Compositor(props: InputProps) {
       return (
         <Annotation
           attributes={attributes}
-          onOpenItem={onOpenItem}
+          onItemOpen={onItemOpen}
           readOnly={readOnly}
           renderCustomMarkers={renderCustomMarkers}
           scrollElement={scrollElement}
@@ -224,7 +224,7 @@ export function Compositor(props: InputProps) {
         </Annotation>
       )
     },
-    [onOpenItem, readOnly, renderCustomMarkers, scrollElement]
+    [onItemOpen, readOnly, renderCustomMarkers, scrollElement]
   )
 
   const [portalElement, setPortalElement] = useState<HTMLDivElement | null>(null)
@@ -241,7 +241,7 @@ export function Compositor(props: InputProps) {
         initialSelection={initialSelection}
         isActive={isActive}
         isFullscreen={isFullscreen}
-        onOpenItem={onOpenItem}
+        onItemOpen={onItemOpen}
         onCopy={onCopy}
         onPaste={onPaste}
         onToggleFullscreen={handleToggleFullscreen}
@@ -264,7 +264,7 @@ export function Compositor(props: InputProps) {
       isActive,
       isFullscreen,
       onCopy,
-      onOpenItem,
+      onItemOpen,
       onPaste,
       path,
       readOnly,
@@ -278,8 +278,8 @@ export function Compositor(props: InputProps) {
   const boundaryElm = isFullscreen ? scrollElement : boundaryElement
 
   const handleEditModalClose = useCallback(() => {
-    onCloseItem()
-  }, [onCloseItem])
+    onItemClose()
+  }, [onItemClose])
 
   const children = useMemo(
     () =>

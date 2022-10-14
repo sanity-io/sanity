@@ -26,19 +26,19 @@ export async function renderArrayOfObjectsInput(options: {
 }) {
   const {fieldDefinition, props, render} = options
 
-  const onAppendItem = jest.fn()
-  const onCloseItem = jest.fn()
+  const onItemAppend = jest.fn()
+  const onItemClose = jest.fn()
   const onCollapse = jest.fn()
-  const onCollapseItem = jest.fn()
+  const onItemCollapse = jest.fn()
   const onExpand = jest.fn()
-  const onExpandItem = jest.fn()
-  const onFocusPath = jest.fn()
+  const onItemExpand = jest.fn()
+  const onPathFocus = jest.fn()
   const onInsert = jest.fn()
   const onItemMove = jest.fn()
-  const onOpenItem = jest.fn()
-  const onPrependItem = jest.fn()
+  const onItemOpen = jest.fn()
+  const onItemPrepend = jest.fn()
   const onUpload = jest.fn()
-  const onRemoveItem = jest.fn()
+  const onItemRemove = jest.fn()
 
   let initialValueId = 0
   const resolveInitialValue = () => Promise.resolve({_key: String(initialValueId++)})
@@ -59,18 +59,18 @@ export async function renderArrayOfObjectsInput(options: {
       changed: false,
       focusPath,
       members: field?.members || [],
-      onAppendItem,
-      onCloseItem,
+      onItemAppend,
+      onItemClose,
       onCollapse,
-      onCollapseItem,
+      onItemCollapse,
       onExpand,
-      onExpandItem,
-      onFocusPath,
+      onItemExpand,
+      onPathFocus,
       onInsert,
       onItemMove,
-      onOpenItem,
-      onPrependItem,
-      onRemoveItem,
+      onItemOpen,
+      onItemPrepend,
+      onItemRemove,
       resolveUploader: () => null,
       onUpload,
       path,
@@ -95,5 +95,5 @@ export async function renderArrayOfObjectsInput(options: {
     return ret.rerender((inputProps, context) => renderFn(transformProps(inputProps, context)))
   }
 
-  return {...ret, onAppendItem, rerender}
+  return {...ret, onItemAppend, rerender}
 }

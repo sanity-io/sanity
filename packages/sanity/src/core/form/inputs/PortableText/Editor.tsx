@@ -31,7 +31,7 @@ interface EditorProps {
   isActive: boolean
   isFullscreen: boolean
   onCopy?: OnCopyFn
-  onOpenItem: (path: Path) => void
+  onItemOpen: (path: Path) => void
   onPaste?: OnPasteFn
   onToggleFullscreen: () => void
   path: Path
@@ -55,7 +55,7 @@ export function Editor(props: EditorProps) {
     isActive,
     isFullscreen,
     onCopy,
-    onOpenItem,
+    onItemOpen,
     onPaste,
     onToggleFullscreen,
     path,
@@ -133,9 +133,9 @@ export function Editor(props: EditorProps) {
 
   const handleToolBarOnExpand = useCallback(
     (relativePath: Path) => {
-      onOpenItem(path.concat(relativePath))
+      onItemOpen(path.concat(relativePath))
     },
-    [onOpenItem, path]
+    [onItemOpen, path]
   )
 
   return (

@@ -60,7 +60,7 @@ export function CrossDatasetReferenceInput(props: CrossDatasetReferenceInputProp
     focusPath,
     getReferenceInfo,
     onChange,
-    onFocusPath,
+    onPathFocus,
     onSearch,
     path,
     readOnly,
@@ -76,7 +76,7 @@ export function CrossDatasetReferenceInput(props: CrossDatasetReferenceInputProp
     (id: string) => {
       if (!id) {
         onChange(unset())
-        onFocusPath([])
+        onPathFocus([])
         return
       }
 
@@ -98,7 +98,7 @@ export function CrossDatasetReferenceInput(props: CrossDatasetReferenceInputProp
         })
       )
 
-      onFocusPath([])
+      onPathFocus([])
     },
     [
       value?._key,
@@ -108,7 +108,7 @@ export function CrossDatasetReferenceInput(props: CrossDatasetReferenceInputProp
       schemaType.dataset,
       schemaType.weak,
       onChange,
-      onFocusPath,
+      onPathFocus,
     ]
   )
 
@@ -120,10 +120,10 @@ export function CrossDatasetReferenceInput(props: CrossDatasetReferenceInputProp
     (event: any) => {
       // escape
       if (event.keyCode === 27) {
-        onFocusPath?.([])
+        onPathFocus?.([])
       }
     },
-    [onFocusPath]
+    [onPathFocus]
   )
 
   const getReferenceInfoMemo: GetReferenceInfoFn = useCallback(
@@ -167,20 +167,20 @@ export function CrossDatasetReferenceInput(props: CrossDatasetReferenceInputProp
 
   const handleFocus = useCallback(
     (event: any) => {
-      if (onFocusPath && event.currentTarget === elementProps.ref.current) {
-        onFocusPath([])
+      if (onPathFocus && event.currentTarget === elementProps.ref.current) {
+        onPathFocus([])
       }
     },
-    [elementProps.ref, onFocusPath]
+    [elementProps.ref, onPathFocus]
   )
 
   const handleAutocompleteFocus = useCallback(
     (event: any) => {
-      if (onFocusPath && event.currentTarget === elementProps.ref.current) {
-        onFocusPath(REF_PATH)
+      if (onPathFocus && event.currentTarget === elementProps.ref.current) {
+        onPathFocus(REF_PATH)
       }
     },
-    [elementProps.ref, onFocusPath]
+    [elementProps.ref, onPathFocus]
   )
 
   const inputId = useId()
@@ -265,7 +265,7 @@ export function CrossDatasetReferenceInput(props: CrossDatasetReferenceInputProp
     [clickOutsideBoundaryRef, autocompletePortalRef, createButtonMenuPortalRef],
     () => {
       if (hasFocusAtRef) {
-        onFocusPath([])
+        onPathFocus([])
       }
     }
   )
@@ -392,7 +392,7 @@ export function CrossDatasetReferenceInput(props: CrossDatasetReferenceInputProp
                             icon={ReplaceIcon}
                             data-testid="menu-item-replace"
                             onClick={() => {
-                              onFocusPath(REF_PATH)
+                              onPathFocus(REF_PATH)
                             }}
                           />
                         </>

@@ -37,7 +37,7 @@ interface BlockObjectProps {
   isActive?: boolean
   isFullscreen?: boolean
   onChange: (...patches: PatchArg[]) => void
-  onOpenItem: (path: Path) => void
+  onItemOpen: (path: Path) => void
   readOnly?: boolean
   renderBlockActions?: RenderBlockActionsCallback
   renderCustomMarkers?: RenderCustomMarkers
@@ -52,7 +52,7 @@ export function BlockObject(props: BlockObjectProps) {
     isActive,
     isFullscreen,
     onChange,
-    onOpenItem,
+    onItemOpen,
     readOnly,
     renderBlockActions,
     renderCustomMarkers,
@@ -71,9 +71,9 @@ export function BlockObject(props: BlockObjectProps) {
 
   const handleEdit = useCallback(() => {
     if (memberItem) {
-      onOpenItem(memberItem.node.path)
+      onItemOpen(memberItem.node.path)
     }
-  }, [onOpenItem, memberItem])
+  }, [onItemOpen, memberItem])
 
   const handleDoubleClickToOpen = useCallback(
     (e: any) => {

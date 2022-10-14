@@ -166,22 +166,22 @@ export function ArrayWithInlineEdit(props: ArrayOfObjectsInputProps) {
     const key = Math.random().toString(32).substring(2)
     const item = {...createProtoArrayValue(itemType), _key: key}
 
-    props.onAppendItem(item)
+    props.onItemAppend(item)
     if (exclusive) {
-      props.onOpenItem([...props.path, {_key: key}])
+      props.onItemOpen([...props.path, {_key: key}])
     } else {
-      props.onExpandItem(key)
+      props.onItemExpand(key)
     }
-    props.onFocusPath([{_key: key}, (itemType as ObjectSchemaType).fields[0].name])
+    props.onPathFocus([{_key: key}, (itemType as ObjectSchemaType).fields[0].name])
   }
   const handleCollapseAll = () => {
     props.members.forEach((member) => {
-      if (member.kind === 'item' && !member.collapsed) props.onCollapseItem(member.key)
+      if (member.kind === 'item' && !member.collapsed) props.onItemCollapse(member.key)
     })
   }
   const handleExpandAll = () => {
     props.members.forEach((member) => {
-      if (member.kind === 'item') props.onExpandItem(member.key)
+      if (member.kind === 'item') props.onItemExpand(member.key)
     })
   }
   const handleReorder = (nextItems: any[]) => {

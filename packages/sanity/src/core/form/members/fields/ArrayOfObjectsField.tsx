@@ -4,7 +4,7 @@ import {catchError, map, mergeMap, tap} from 'rxjs/operators'
 import {concat, defer, EMPTY, from, Observable, of, Subscription} from 'rxjs'
 import {resolveTypeName} from '@sanity/util/content'
 import {useToast} from '@sanity/ui'
-import {ArrayOfObjectsFormNode, FieldMember, ObjectMember} from '../../store'
+import {ArrayOfObjectsFormNode, FieldMember} from '../../store'
 import {
   ArrayFieldProps,
   ArrayInputInsertEvent,
@@ -369,10 +369,10 @@ export function ArrayOfObjectsField(props: {
       id: member.field.id,
       onExpand: handleExpand,
       onCollapse: handleCollapse,
-      onExpandItem: handleExpandItem,
-      onCollapseItem: handleCollapseItem,
-      onCloseItem: handleCloseItem,
-      onOpenItem: handleOpenItem,
+      onItemExpand: handleExpandItem,
+      onItemCollapse: handleCollapseItem,
+      onItemClose: handleCloseItem,
+      onItemOpen: handleOpenItem,
 
       focusPath: member.field.focusPath,
       focused: member.field.focused,
@@ -382,10 +382,10 @@ export function ArrayOfObjectsField(props: {
       onChange: handleChange,
       onInsert: handleInsert,
       onItemMove: handleMoveItem,
-      onRemoveItem: handleRemoveItem,
-      onAppendItem: handleAppendItem,
-      onPrependItem: handlePrependItem,
-      onFocusPath: handleFocusChildPath,
+      onItemRemove: handleRemoveItem,
+      onItemAppend: handleAppendItem,
+      onItemPrepend: handlePrependItem,
+      onPathFocus: handleFocusChildPath,
       resolveInitialValue,
       onUpload: handleUpload,
       resolveUploader: resolveUploader,

@@ -58,7 +58,7 @@ export function ReferenceInput(props: ReferenceInputProps) {
     schemaType,
     readOnly,
     id,
-    onFocusPath,
+    onPathFocus,
     value,
     renderPreview,
     path,
@@ -90,16 +90,16 @@ export function ReferenceInput(props: ReferenceInputProps) {
       onChange(patches)
 
       onEditReference({id: newDocumentId, type: option.type, template: option.template})
-      onFocusPath([])
+      onPathFocus([])
     },
-    [onChange, onEditReference, onFocusPath, schemaType]
+    [onChange, onEditReference, onPathFocus, schemaType]
   )
 
   const handleChange = useCallback(
     (nextId: string) => {
       if (!nextId) {
         onChange(unset())
-        onFocusPath([])
+        onPathFocus([])
         return
       }
 
@@ -122,9 +122,9 @@ export function ReferenceInput(props: ReferenceInputProps) {
 
       onChange(patches)
       // Move focus away from _ref and one level up
-      onFocusPath([])
+      onPathFocus([])
     },
-    [onChange, onFocusPath, schemaType.name, schemaType.weak, searchState.hits]
+    [onChange, onPathFocus, schemaType.name, schemaType.weak, searchState.hits]
   )
 
   const handleClear = useCallback(() => {
@@ -134,10 +134,10 @@ export function ReferenceInput(props: ReferenceInputProps) {
   const handleAutocompleteKeyDown = useCallback(
     (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
-        onFocusPath([])
+        onPathFocus([])
       }
     },
-    [onFocusPath]
+    [onPathFocus]
   )
 
   const loadableReferenceInfo = useReferenceInfo(value?._ref, getReferenceInfo)
@@ -189,10 +189,10 @@ export function ReferenceInput(props: ReferenceInputProps) {
   const handleCreateButtonKeyDown = useCallback(
     (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
-        onFocusPath([])
+        onPathFocus([])
       }
     },
-    [onFocusPath]
+    [onPathFocus]
   )
 
   const renderOption = useCallback(
@@ -226,7 +226,7 @@ export function ReferenceInput(props: ReferenceInputProps) {
     loadableReferenceInfo.result?.preview.published?.title,
   ])
 
-  const handleFocus = useCallback(() => onFocusPath(['_ref']), [onFocusPath])
+  const handleFocus = useCallback(() => onPathFocus(['_ref']), [onPathFocus])
   const handleBlur = useCallback(
     (event: FocusEvent) => {
       if (!autocompletePopoverReferenceElementRef.current?.contains(event.relatedTarget)) {
