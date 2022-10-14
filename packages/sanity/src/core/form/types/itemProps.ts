@@ -18,7 +18,7 @@ export type ObjectItem = {
 }
 
 /** @public */
-export interface BaseItemProps {
+export interface BaseItemProps<T> {
   schemaType: SchemaType
   key: string
   index: number
@@ -38,7 +38,7 @@ export interface BaseItemProps {
   // onMoveTo: (event: {ref: number|string, position: 'before'|'after'}) => void
   // onDuplicate: () => void
   // ---
-  onInsert: (event: {items: unknown[]; position: 'before' | 'after'}) => void
+  onInsert: (event: {items: T[]; position: 'before' | 'after'}) => void
 
   children: React.ReactNode
 
@@ -50,7 +50,7 @@ export interface BaseItemProps {
   renderDefault: (props: ItemProps) => React.ReactElement
 }
 
-export interface ObjectItemProps<Item extends ObjectItem = ObjectItem> extends BaseItemProps {
+export interface ObjectItemProps<Item extends ObjectItem = ObjectItem> extends BaseItemProps<Item> {
   changed: boolean
   schemaType: ObjectSchemaType
   collapsed: boolean | undefined
@@ -66,6 +66,7 @@ export interface ObjectItemProps<Item extends ObjectItem = ObjectItem> extends B
 
 export type ItemProps = ObjectItemProps | PrimitiveItemProps
 
-export interface PrimitiveItemProps extends BaseItemProps {
+export interface PrimitiveItemProps extends BaseItemProps<string | number | boolean> {
+  value: string | number | boolean
   schemaType: NumberSchemaType | BooleanSchemaType | StringSchemaType
 }

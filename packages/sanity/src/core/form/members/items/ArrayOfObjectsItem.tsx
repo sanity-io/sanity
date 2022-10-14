@@ -55,7 +55,7 @@ export function ArrayOfObjectsItem(props: MemberItemProps) {
   }, [member.key, onChange])
 
   const onInsert = useCallback(
-    (event: {items: unknown[]; position: 'before' | 'after'}) => {
+    (event: {items: {_key?: string}[]; position: 'before' | 'after'}) => {
       onChange(
         PatchEvent.from([
           insert(
