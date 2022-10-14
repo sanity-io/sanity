@@ -116,6 +116,13 @@ export const DocumentPaneProvider = memo(({children, index, pane, paneKey}: Prop
     : editState?.published || null
   const ready = connectionState === 'connected' && editState.ready
   const viewOlderVersion = historyController.onOlderRevision()
+
+  const historyValue: Partial<SanityDocument> | null = useMemo(
+    () => (viewOlderVersion ? historyController.displayed() : null),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [historyController, params.rev, params.since, viewOlderVersion]
+  )
+
   const displayed: Partial<SanityDocument> | null = useMemo(
     () => (viewOlderVersion ? historyController.displayed() : value),
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -228,6 +235,7 @@ export const DocumentPaneProvider = memo(({children, index, pane, paneKey}: Prop
       compareValue,
       connectionState,
       displayed,
+      historyValue,
       documentId,
       documentIdRaw,
       documentSchema,
@@ -271,6 +279,7 @@ export const DocumentPaneProvider = memo(({children, index, pane, paneKey}: Prop
       displayed,
       documentId,
       documentIdRaw,
+      historyValue,
       documentSchema,
       documentType,
       focusPath,
