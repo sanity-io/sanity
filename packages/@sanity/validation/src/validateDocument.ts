@@ -224,12 +224,12 @@ function validateItemObservable({
 
   if (shouldRunNestedValidationForArrays) {
     nestedChecks = nestedChecks.concat(
-      value.map((item) =>
+      value.map((item, index) =>
         validateItemObservable({
           ...restOfContext,
           parent: value,
           value: item,
-          path: path.concat(isKeyedObject(item) ? {_key: item._key} : value.indexOf(item)),
+          path: path.concat(isKeyedObject(item) ? {_key: item._key} : index),
           type: resolveTypeForArrayItem(item, type.of),
         })
       )
