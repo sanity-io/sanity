@@ -1,7 +1,6 @@
 import React from 'react'
 import {Reference, ReferenceSchemaType} from '@sanity/types'
 import {Box, Flex, Inline, Label, Stack} from '@sanity/ui'
-import {Button, Text} from '@sanity/ui/src'
 import {RenderPreviewCallback} from '../../types'
 import {SanityDefaultPreview} from '../../../preview'
 import {PreviewProps} from '../../../components'
