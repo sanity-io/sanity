@@ -1,4 +1,4 @@
-import type {ReactNode, ElementType} from 'react'
+import {ElementType, ReactNode} from 'react'
 import type {SortOrdering} from './types'
 
 /** @public */
@@ -9,9 +9,9 @@ export interface PrepareViewOptions {
 
 /** @public */
 export interface PreviewValue {
-  title?: ReactNode | ElementType
-  subtitle?: ReactNode | ElementType
-  description?: ReactNode | ElementType
+  title?: string
+  subtitle?: string
+  description?: string
   media?: ReactNode | ElementType
   imageUrl?: string
 }

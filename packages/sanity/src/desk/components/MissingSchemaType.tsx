@@ -8,7 +8,7 @@ export interface MissingSchemaTypeProps {
   value: SanityDocument
 }
 
-const getUnknownTypeFallback = (id: string, typeName: string): PreviewValue => ({
+const getUnknownTypeFallback = (id: string, typeName: string) => ({
   title: (
     <em>
       No schema found for type <code>{typeName}</code>
@@ -19,7 +19,7 @@ const getUnknownTypeFallback = (id: string, typeName: string): PreviewValue => (
       Document: <code>{id}</code>
     </em>
   ),
-  media: WarningOutlineIcon,
+  media: () => <WarningOutlineIcon />,
 })
 
 export function MissingSchemaType(props: MissingSchemaTypeProps) {

@@ -3,10 +3,10 @@ import type {PreviewValue, SanityDocument} from '@sanity/types'
 import {assignWith} from 'lodash'
 import React from 'react'
 
-const getMissingDocumentFallback = (item: SanityDocument): PreviewValue => ({
+const getMissingDocumentFallback = (item: SanityDocument) => ({
   title: <em>{item.title ? String(item.title) : 'Missing document'}</em>,
   subtitle: <em>{item.title ? `Missing document ID: ${item._id}` : `Document ID: ${item._id}`}</em>,
-  media: WarningOutlineIcon,
+  media: () => <WarningOutlineIcon />,
 })
 
 /**
@@ -23,7 +23,7 @@ export const getPreviewValueWithFallback = ({
   value: SanityDocument
   draft?: Partial<SanityDocument> | PreviewValue | null
   published?: Partial<SanityDocument> | PreviewValue | null
-}): PreviewValue => {
+}) => {
   const snapshot = draft || published
 
   if (!snapshot) {

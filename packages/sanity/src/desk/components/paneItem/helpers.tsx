@@ -9,10 +9,10 @@ import {DocumentPreviewStore, getDraftId, getPublishedId} from 'sanity'
 
 export const isLiveEditEnabled = (schemaType: SchemaType) => schemaType.liveEdit === true
 
-export const getMissingDocumentFallback = (item: SanityDocument): PreviewValue => ({
+export const getMissingDocumentFallback = (item: SanityDocument) => ({
   title: <em>{item.title ? String(item.title) : 'Missing document'}</em>,
   subtitle: <em>{item.title ? `Missing document ID: ${item._id}` : `Document ID: ${item._id}`}</em>,
-  media: WarningOutlineIcon,
+  media: () => <WarningOutlineIcon />,
 })
 
 export const getValueWithFallback = ({
@@ -23,7 +23,7 @@ export const getValueWithFallback = ({
   value: SanityDocument
   draft?: Partial<SanityDocument> | PreviewValue | null
   published?: Partial<SanityDocument> | PreviewValue | null
-}): PreviewValue => {
+}) => {
   const snapshot = draft || published
 
   if (!snapshot) {
@@ -32,7 +32,7 @@ export const getValueWithFallback = ({
 
   return assignWith({}, snapshot, value, (objValue, srcValue) => {
     return typeof srcValue === 'undefined' ? objValue : srcValue
-  }) as PreviewValue
+  })
 }
 
 export function getPreviewStateObservable(
