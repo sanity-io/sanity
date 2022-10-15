@@ -1,4 +1,4 @@
-import {renderHook} from '@testing-library/react-hooks'
+import {renderHook} from '@testing-library/react'
 import {createTestProvider} from '../../../../test/testUtils/TestProvider'
 import {
   ConditionalPropertyProps,
@@ -44,7 +44,7 @@ describe('Conditional property resolver', () => {
     const TestWrapper = await createTestProvider()
     const callbackFn = jest.fn(() => true)
 
-    const {result} = renderHook(
+    renderHook(
       () =>
         useConditionalProperty({
           checkProperty: callbackFn,
@@ -52,10 +52,6 @@ describe('Conditional property resolver', () => {
         }),
       {wrapper: TestWrapper}
     )
-
-    if (result.error) {
-      throw result.error
-    }
 
     expect(callbackFn).toBeCalled()
 

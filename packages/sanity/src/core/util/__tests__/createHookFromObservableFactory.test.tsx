@@ -1,6 +1,5 @@
-import {renderHook} from '@testing-library/react-hooks'
 import React, {Profiler, memo, useDeferredValue} from 'react'
-import {render, waitFor} from '@testing-library/react'
+import {render, renderHook, waitFor} from '@testing-library/react'
 import * as Rx from 'rxjs'
 import {createHookFromObservableFactory} from '../createHookFromObservableFactory'
 
@@ -197,11 +196,20 @@ describe('createHookFromObservableFactory', () => {
         })
       )
 
+    let error: Error | undefined
     const useHook = createHookFromObservableFactory(observableFactory, 'factory initial')
-    const {result, waitForNextUpdate} = renderHook(useHook)
-    await waitForNextUpdate()
-
-    expect(result.error?.message).toBe('test error')
+    renderHook(useHook, {
+      wrapper: class Wrapper extends React.Component<React.PropsWithChildren<unknown>> {
+        static getDerivedStateFromError(err: Error) {
+          error = err
+          return {hasError: true}
+        }
+        override render() {
+          return this.props.children
+        }
+      },
+    })
+    await waitFor(() => expect(error?.message).toBe('test error'))
 
     if (typeof window !== 'undefined') {
       window.removeEventListener('error', preventer, false)

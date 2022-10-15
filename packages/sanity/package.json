@@ -195,7 +195,6 @@
     "@sanity/ui-workshop": "1.0.0-beta.1",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",
-    "@testing-library/react-hooks": "^8.0.1",
     "@testing-library/user-event": "^13.0.16",
     "@types/history": "^4.7.9",
     "@types/lodash": "^4.14.149",
