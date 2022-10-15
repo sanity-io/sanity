@@ -71,6 +71,15 @@ describe('validateBasePaths', () => {
     }).toThrowErrorMatchingInlineSnapshot(
       `"All workspace \`basePath\`s must have the same amount of segments. Workspace \`twoSegments\` had 2 segments \`/one/two\` but workspace \`threeSegments\` had 3 segments \`/one/two/three\`"`
     )
+
+    expect(() => {
+      validateBasePaths([
+        {name: 'noSegments', basePath: '/'},
+        {name: 'oneSegment', basePath: '/one'},
+      ])
+    }).toThrowErrorMatchingInlineSnapshot(
+      `"All workspace \`basePath\`s must have the same amount of segments. Workspace \`noSegments\` had 0 segments \`/\` but workspace \`oneSegment\` had 1 segment \`/one\`"`
+    )
   })
 
   it('throws if workspaces have identical base paths', () => {

@@ -103,7 +103,8 @@ export function validateBasePaths(workspaces: WorkspaceLike[]): void {
   const firstWorkspaceSegmentCount = (firstWorkspace.basePath || '/')
     // remove starting slash before splitting
     .substring(1)
-    .split('/').length
+    .split('/')
+    .filter(Boolean).length
 
   restOfWorkspaces.forEach((workspace, index) => {
     const workspaceSegmentCount = (workspace.basePath || '/')
