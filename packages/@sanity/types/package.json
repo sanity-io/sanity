@@ -7,6 +7,7 @@
   "module": "./lib/index.js",
   "exports": {
     ".": {
+      "types": "./lib/dts/src/index.d.ts",
       "source": "./src/index.ts",
       "require": "./lib/index.cjs",
       "default": "./lib/index.js"
