@@ -1,7 +1,7 @@
 import type {SanityClient} from '@sanity/client'
 import {of, Observable, asyncScheduler} from 'rxjs'
 import React from 'react'
-import ReactDOM from 'react-dom'
+import {createRoot} from 'react-dom/client'
 import {act} from 'react-dom/test-utils'
 import basePkg from '../../../../../../../package.json'
 import {checkModuleStatus} from './moduleStatus'
@@ -93,7 +93,7 @@ describe('useModuleStatus', () => {
     }
 
     act(() => {
-      ReactDOM.render(React.createElement(StatusDumper), container)
+      createRoot(container!).render(React.createElement(StatusDumper))
     })
 
     expect(container!.textContent).toMatchInlineSnapshot(
@@ -123,7 +123,7 @@ describe('useModuleStatus', () => {
     }
 
     act(() => {
-      ReactDOM.render(React.createElement(StatusDumper), container)
+      createRoot(container!).render(React.createElement(StatusDumper))
     })
 
     expect(container!.textContent).toMatchInlineSnapshot(

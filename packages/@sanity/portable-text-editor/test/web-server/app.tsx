@@ -1,12 +1,18 @@
 import {Box, Card, Stack, studioTheme, ThemeProvider} from '@sanity/ui'
 import React, {useCallback, useMemo, useState} from 'react'
-import ReactDOM from 'react-dom'
+import {createRoot} from 'react-dom/client'
 import {Subject} from 'rxjs'
 import {EditorSelection, Patch, PortableTextBlock} from '../../src'
 import {Editor} from './components/Editor'
 import {Value} from './components/Value'
 
-ReactDOM.render(<App />, document.getElementById('root'))
+const rootEl = document.getElementById('root')
+if (!rootEl) {
+  throw new Error('Root element not found')
+}
+
+const root = createRoot(rootEl)
+root.render(<App />)
 
 export function App() {
   const incomingPatches$ = useMemo(

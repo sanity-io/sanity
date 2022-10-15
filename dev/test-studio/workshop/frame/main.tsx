@@ -2,7 +2,7 @@ import {StudioProvider} from 'sanity'
 import {ThemeColorSchemeKey, usePrefersDark} from '@sanity/ui'
 import {WorkshopFrame} from '@sanity/ui-workshop'
 import React, {useMemo, useState} from 'react'
-import ReactDOM from 'react-dom'
+import {createRoot} from 'react-dom/client'
 import Refractor from 'react-refractor'
 import javascript from 'refractor/lang/javascript'
 import json from 'refractor/lang/json'
@@ -34,4 +34,10 @@ function Main() {
   )
 }
 
-ReactDOM.render(<Main />, document.getElementById('root'))
+const rootEl = document.getElementById('root')
+if (!rootEl) {
+  throw new Error('Root element not found')
+}
+
+const root = createRoot(rootEl)
+root.render(<Main />)
