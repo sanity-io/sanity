@@ -333,7 +333,7 @@ describe('user interaction happy paths', () => {
     const menuButton = result.getByTestId('menu-button')
     await act(() => menuButton.click())
     const replaceMenuItem = result.getByTestId('menu-item-clear')
-    replaceMenuItem.click()
+    await act(() => replaceMenuItem.click())
 
     expect(onChange).toHaveBeenCalledTimes(1)
     expect(onChange.mock.calls[0]).toEqual([
