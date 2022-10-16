@@ -5,9 +5,13 @@ import React, {useMemo} from 'react'
 import {useMemoObservable} from 'react-rx'
 import styled from 'styled-components'
 import {DocumentPreviewPresence} from '../../../../../../presence'
-import {DocumentPreviewStore, SanityDefaultPreview} from '../../../../../../preview'
-import {DocumentPresence} from '../../../../../../store'
-import {getPreviewStateObservable, getValueWithFallback} from './helpers'
+import {
+  DocumentPreviewStore,
+  getPreviewStateObservable,
+  getPreviewValueWithFallback,
+  SanityDefaultPreview,
+} from '../../../../../../preview'
+import type {DocumentPresence} from '../../../../../../store'
 
 interface SearchResultItemPreviewProps {
   documentId: string
@@ -67,7 +71,7 @@ export default function SearchResultItemPreview({
   return (
     <SearchResultItemPreviewBox>
       <SanityDefaultPreview
-        {...getValueWithFallback({
+        {...getPreviewValueWithFallback({
           draft,
           published,
           value: sanityDocument,
@@ -76,7 +80,6 @@ export default function SearchResultItemPreview({
         layout="default"
         icon={schemaType.icon}
         status={status}
-        value={sanityDocument}
       />
     </SearchResultItemPreviewBox>
   )
