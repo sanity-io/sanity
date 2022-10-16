@@ -1,13 +1,14 @@
-import {CloseIcon, MenuIcon, SearchIcon} from '@sanity/icons'
+import {MenuIcon, SearchIcon} from '@sanity/icons'
 import {
   Box,
   Button,
   Card,
   Flex,
   Layer,
+  LayerProvider,
+  PortalProvider,
   Text,
   Tooltip,
-  useGlobalKeyDown,
   useMediaIndex,
   useRootTheme,
 } from '@sanity/ui'
@@ -25,11 +26,12 @@ import {UserMenu} from './userMenu'
 import {NewDocumentButton} from './NewDocumentButton'
 import {PresenceMenu} from './presence'
 import {NavDrawer} from './NavDrawer'
-import {SearchField} from './search'
 import {ChangelogButton} from './changelog'
 import {WorkspaceMenuButton} from './workspace'
 import {ConfigIssuesButton} from './configIssues/ConfigIssuesButton'
 import {LogoButton} from './LogoButton'
+import {SearchDialog, SearchField} from './search/'
+import {SearchProvider} from './search/contexts/search'
 import {RouterState, useRouterState, useStateLink} from 'sanity/router'
 
 const RootLayer = styled(Layer)`
@@ -44,23 +46,6 @@ const RootLayer = styled(Layer)`
 
 const RootCard = styled(Card)`
   line-height: 0;
-`
-
-const SearchCard = styled(Card)`
-  z-index: 1;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  right: 0;
-
-  &[data-fullscreen='true'] {
-    position: absolute;
-  }
-
-  &[data-fullscreen='false'] {
-    min-width: 253px;
-    max-width: 350px;
-  }
 `
 
 const LeftFlex = styled(Flex)`
@@ -78,12 +63,12 @@ export function StudioNavbar() {
   const mediaIndex = useMediaIndex()
   const activeToolName = typeof routerState.tool === 'string' ? routerState.tool : undefined
 
-  const {fullscreenSearchPortalEl, onSearchOpenChange} = useContext(NavbarContext)
+  const {onSearchFullscreenOpenChange, searchFullscreenOpen, searchFullscreenPortalEl} =
+    useContext(NavbarContext)
 
   const Logo = useLogoComponent()
   const ToolMenu = useToolMenuComponent()
 
-  const [searchOpen, setSearchOpen] = useState<boolean>(false)
   const [drawerOpen, setDrawerOpen] = useState<boolean>(false)
 
   const routerStateRef = useRef<RouterState>(routerState)
@@ -100,9 +85,7 @@ export function StudioNavbar() {
   }, [name, routerState])
 
   const [drawerButtonEl, setDrawerButtonEl] = useState<HTMLButtonElement | null>(null)
-  const [searchInputElement, setSearchInputElement] = useState<HTMLInputElement | null>(null)
   const [searchOpenButtonEl, setSearchOpenButtonEl] = useState<HTMLButtonElement | null>(null)
-  const [searchCloseButtonEl, setSearchCloseButtonEl] = useState<HTMLButtonElement | null>(null)
 
   const shouldRender = useMemo(
     () => ({
@@ -121,24 +104,24 @@ export function StudioNavbar() {
   const title = workspace.title || formattedName || 'Studio'
 
   useEffect(() => {
-    onSearchOpenChange(searchOpen)
-    if (searchOpen) searchInputElement?.focus()
-  }, [searchOpen, searchInputElement, onSearchOpenChange])
+    onSearchFullscreenOpenChange(searchFullscreenOpen)
+  }, [searchFullscreenOpen, onSearchFullscreenOpenChange])
 
-  useGlobalKeyDown((e) => {
-    if (e.key === 'Escape' && searchOpen) {
-      handleCloseSearch()
+  // Disable fullscreen search on media query change (if already open)
+  useEffect(() => {
+    if (onSearchFullscreenOpenChange && !shouldRender.searchFullscreen) {
+      onSearchFullscreenOpenChange(false)
     }
-  })
+  }, [onSearchFullscreenOpenChange, shouldRender.searchFullscreen])
 
-  const handleOpenSearch = useCallback(() => {
-    setSearchOpen(true)
-  }, [])
+  const handleOpenSearchFullscreen = useCallback(() => {
+    onSearchFullscreenOpenChange(true)
+  }, [onSearchFullscreenOpenChange])
 
-  const handleCloseSearch = useCallback(() => {
-    setSearchOpen(false)
+  const handleCloseSearchFullscreen = useCallback(() => {
+    onSearchFullscreenOpenChange(false)
     searchOpenButtonEl?.focus()
-  }, [searchOpenButtonEl])
+  }, [onSearchFullscreenOpenChange, searchOpenButtonEl])
 
   const handleCloseDrawer = useCallback(() => {
     setDrawerOpen(false)
@@ -149,18 +132,8 @@ export function StudioNavbar() {
     setDrawerOpen(true)
   }, [])
 
-  // The HTML elements that are part of the search view (i.e. the "close" button that is visible
-  // when in fullscreen mode on narrow devices) needs to be passed to `<Autocomplete />` so it knows
-  // how to make the search experience work properly for non-sighted users.
-  // Specifically – without passing `relatedElements`, the listbox with results will close when you
-  // TAB to focus the "close" button, and that‘s not a good experience for anyone.
-  const searchRelatedElements = useMemo(
-    () => [searchCloseButtonEl].filter(Boolean) as HTMLElement[],
-    [searchCloseButtonEl]
-  )
-
   return (
-    <RootLayer zOffset={100} data-search-open={searchOpen}>
+    <RootLayer zOffset={100} data-search-open={searchFullscreenOpen}>
       <RootCard
         data-testid="navbar"
         data-ui="Navbar"
@@ -213,38 +186,21 @@ export function StudioNavbar() {
               <NewDocumentButton />
             </Box>
 
-            {(searchOpen || !shouldRender.searchFullscreen) && (
-              <SearchCard
-                data-fullscreen={shouldRender.searchFullscreen}
-                data-ui="SearchRoot"
-                flex={1}
-                padding={shouldRender.searchFullscreen ? 2 : undefined}
-                scheme={shouldRender.searchFullscreen ? 'light' : undefined}
-                shadow={shouldRender.searchFullscreen ? 1 : undefined}
-              >
-                <Flex>
-                  <Box flex={1} marginRight={shouldRender.tools ? undefined : [1, 1, 2]}>
-                    <SearchField
-                      fullScreen={shouldRender.searchFullscreen}
-                      onSearchItemClick={handleCloseSearch}
-                      portalElement={fullscreenSearchPortalEl}
-                      setSearchInputElement={setSearchInputElement}
-                      relatedElements={searchRelatedElements}
-                    />
-                  </Box>
-
+            {/* Search */}
+            <LayerProvider>
+              <SearchProvider>
+                <PortalProvider element={searchFullscreenPortalEl}>
                   {shouldRender.searchFullscreen && (
-                    <Button
-                      aria-label="Close search"
-                      icon={CloseIcon}
-                      mode="bleed"
-                      onClick={handleCloseSearch}
-                      ref={setSearchCloseButtonEl}
+                    <SearchDialog
+                      onClose={handleCloseSearchFullscreen}
+                      onOpen={handleOpenSearchFullscreen}
+                      open={searchFullscreenOpen}
                     />
                   )}
-                </Flex>
-              </SearchCard>
-            )}
+                </PortalProvider>
+                {!shouldRender.searchFullscreen && <SearchField />}
+              </SearchProvider>
+            </LayerProvider>
 
             {shouldRender.tools && (
               <Card borderRight flex={1} marginX={2} overflow="visible" paddingRight={1}>
@@ -295,7 +251,7 @@ export function StudioNavbar() {
                 aria-label="Open search"
                 icon={SearchIcon}
                 mode="bleed"
-                onClick={handleOpenSearch}
+                onClick={handleOpenSearchFullscreen}
                 ref={setSearchOpenButtonEl}
               />
             )}

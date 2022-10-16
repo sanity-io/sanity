@@ -18,22 +18,27 @@ import {useWorkspace} from './workspace'
 import {RouteScope, useRouter} from 'sanity/router'
 
 const SearchFullscreenPortalCard = styled(Card)`
-  display: flex;
-  flex-direction: column;
-  min-height: 100%;
-  flex: 1;
+  height: 100%;
+  left: 0;
+  overflow: hidden;
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 200;
 `
 
 /** @internal */
 export interface NavbarContextValue {
-  onSearchOpenChange: (open: boolean) => void
-  fullscreenSearchPortalEl: HTMLElement | null
+  onSearchFullscreenOpenChange: (open: boolean) => void
+  searchFullscreenOpen: boolean
+  searchFullscreenPortalEl: HTMLElement | null
 }
 
 /** @internal */
 export const NavbarContext = createContext<NavbarContextValue>({
-  fullscreenSearchPortalEl: null,
-  onSearchOpenChange: () => '',
+  onSearchFullscreenOpenChange: () => '',
+  searchFullscreenOpen: false,
+  searchFullscreenPortalEl: null,
 })
 
 /** @public */
@@ -42,11 +47,11 @@ export function StudioLayout() {
   const {name, title, tools} = useWorkspace()
   const activeToolName = typeof routerState.tool === 'string' ? routerState.tool : undefined
   const activeTool = tools.find((tool) => tool.name === activeToolName)
-  const [toolError, setToolError] = useState<{error: Error; info: React.ErrorInfo} | null>(null)
-  const [searchOpen, setSearchOpen] = useState<boolean>(false)
-  const [fullscreenSearchPortalEl, setFullscreenSearchPortalEl] = useState<HTMLDivElement | null>(
+  const [searchFullscreenOpen, setSearchFullscreenOpen] = useState<boolean>(false)
+  const [searchFullscreenPortalEl, setSearchFullscreenPortalEl] = useState<HTMLDivElement | null>(
     null
   )
+  const [toolError, setToolError] = useState<{error: Error; info: React.ErrorInfo} | null>(null)
 
   const documentTitle = useMemo(() => {
     const mainTitle = title || startCase(name)
@@ -62,8 +67,8 @@ export function StudioLayout() {
     document.title = documentTitle
   }, [documentTitle])
 
-  const handleSearchOpenChange = useCallback((open: boolean) => {
-    setSearchOpen(open)
+  const handleSearchFullscreenOpenChange = useCallback((open: boolean) => {
+    setSearchFullscreenOpen(open)
   }, [])
 
   const resetToolError = useCallback(() => setToolError(null), [setToolError])
@@ -72,8 +77,12 @@ export function StudioLayout() {
   useHotModuleReload(resetToolError)
 
   const navbarContextValue = useMemo(
-    () => ({fullscreenSearchPortalEl, onSearchOpenChange: handleSearchOpenChange}),
-    [fullscreenSearchPortalEl, handleSearchOpenChange]
+    () => ({
+      searchFullscreenOpen,
+      searchFullscreenPortalEl,
+      onSearchFullscreenOpenChange: handleSearchFullscreenOpenChange,
+    }),
+    [searchFullscreenOpen, searchFullscreenPortalEl, handleSearchFullscreenOpenChange]
   )
 
   const Navbar = useNavbarComponent()
@@ -107,11 +116,11 @@ export function StudioLayout() {
         </Card>
       )}
 
-      {searchOpen && (
-        <SearchFullscreenPortalCard ref={setFullscreenSearchPortalEl} overflow="auto" />
+      {searchFullscreenOpen && (
+        <SearchFullscreenPortalCard ref={setSearchFullscreenPortalEl} overflow="auto" />
       )}
 
-      <Card flex={1} hidden={searchOpen}>
+      <Card flex={1} hidden={searchFullscreenOpen}>
         {!toolError && activeTool && activeToolName && (
           <RouteScope scope={activeToolName}>
             <ErrorBoundary onCatch={setToolError}>

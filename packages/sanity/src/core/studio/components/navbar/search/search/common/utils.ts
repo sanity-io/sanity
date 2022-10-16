@@ -6,10 +6,7 @@ const isDocumentType = (type: SchemaType): type is ObjectSchemaType =>
 
 const isSanityType = (type: SchemaType): boolean => type.name.startsWith('sanity.')
 
-export const getSearchableTypes = (
-  schema: Schema
-  // eslint-disable-next-line camelcase
-): {name: string; __experimental_search?: ObjectSchemaType['__experimental_search']}[] =>
+export const getSearchableTypes = (schema: Schema): ObjectSchemaType[] =>
   schema
     .getTypeNames()
     .map((typeName) => schema.get(typeName))
