@@ -22,4 +22,8 @@ export interface DocumentDefinition extends Omit<ObjectDefinition, 'type'> {
   options?: DocumentOptions
   validation?: ValidationBuilder<DocumentRule, SanityDocument>
   initialValue?: InitialValueProperty<any, Record<string, unknown>>
+  /** @alpha */
+  __experimental_search?: {path: string; weight: number; mapWith?: string}[]
+  /** @alpha */
+  __experimental_omnisearch_visibility?: boolean
 }
