@@ -20,10 +20,7 @@ import {useWorkspaceAuthStates} from './hooks'
 import {WorkspacePreview} from './WorkspacePreview'
 import {useRouter} from 'sanity/router'
 
-const StyledMenu = styled(Menu)`
-  max-width: 350px;
-  min-width: 250px;
-`
+const FEATURE_DOCS_FOOTER = false
 
 const FooterCard = styled(Card)`
   position: sticky;
@@ -47,8 +44,8 @@ export function WorkspaceMenuButton(props: ButtonProps) {
       button={<Button icon={SelectIcon} mode="bleed" {...props} disabled={!authStates} />}
       id="workspace-menu"
       menu={
-        <StyledMenu paddingBottom={0}>
-          <Box paddingX={3} paddingY={3}>
+        <Menu>
+          <Box padding={3} paddingBottom={2}>
             <Label size={1} muted>
               Workspaces
             </Label>
@@ -95,17 +92,19 @@ export function WorkspaceMenuButton(props: ButtonProps) {
               )
             })}
 
-          <FooterCard borderTop paddingY={1}>
-            <MenuItem
-              as="a"
-              href={workspacesDocsUrl}
-              icon={AddIcon}
-              rel="noopener noreferrer"
-              target="__blank"
-              text="Add workspace"
-            />
-          </FooterCard>
-        </StyledMenu>
+          {FEATURE_DOCS_FOOTER && (
+            <FooterCard borderTop paddingTop={1}>
+              <MenuItem
+                as="a"
+                href={workspacesDocsUrl}
+                icon={AddIcon}
+                rel="noopener noreferrer"
+                target="__blank"
+                text="Add workspace"
+              />
+            </FooterCard>
+          )}
+        </Menu>
       }
       popover={popoverProps}
     />

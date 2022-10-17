@@ -30,6 +30,7 @@
     "dev": "yarn start",
     "dev:design-studio": "yarn --cwd dev/design-studio dev",
     "dev:perf-studio": "yarn --cwd dev/perf-studio start",
+    "dev:shared-studio": "yarn --cwd dev/shared-studio dev",
     "dev:starter-studio": "yarn --cwd dev/starter-studio dev",
     "dev:strict-studio": "yarn --cwd dev/strict-studio dev",
     "dev:test-studio": "yarn --cwd dev/test-studio dev",
