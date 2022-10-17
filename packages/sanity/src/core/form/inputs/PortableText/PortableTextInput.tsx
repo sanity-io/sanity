@@ -1,4 +1,4 @@
-import {ArraySchemaType, ObjectSchemaType} from '@sanity/types'
+import {ArraySchemaType} from '@sanity/types'
 import {
   EditorChange,
   OnCopyFn,
@@ -40,14 +40,7 @@ import {PortableTextMemberItemsProvider} from './contexts/PortableTextMembers'
 import {_isArrayOfObjectsFieldMember, _isBlockType} from './_helpers'
 
 /** @internal */
-export type PTObjectMember = ArrayOfObjectsItemMember<
-  ObjectFormNode<
-    {
-      [x: string]: unknown
-    },
-    ObjectSchemaType
-  >
->
+export type PTObjectMember = ArrayOfObjectsItemMember
 
 /** @internal */
 export interface PortableTextMemberItem {
@@ -59,7 +52,7 @@ export interface PortableTextMemberItem {
 }
 
 /**
- * @beta
+ * @alpha
  */
 export interface PortableTextInputProps
   extends ArrayOfObjectsInputProps<PortableTextBlock, ArraySchemaType> {
@@ -74,7 +67,7 @@ export interface PortableTextInputProps
 /**
  * The root Portable Text Input component
  *
- * @beta
+ * @alpha
  */
 export function PortableTextInput(props: PortableTextInputProps) {
   const {

@@ -16,14 +16,15 @@ import {
   StringSchemaType,
   ValidationMarker,
 } from '@sanity/types'
-import {castArray, pick, isEqual as _isEqual} from 'lodash'
+
+import {castArray, isEqual as _isEqual, pick} from 'lodash'
 import {isEqual, pathFor, startsWith, toString, trimChildPath} from '@sanity/util/paths'
 import {resolveTypeName} from '@sanity/util/content'
 import {isRecord} from '../../util'
+import {getFieldLevel} from '../studio/inputResolver/helpers'
 import {FIXME} from '../../FIXME'
 import {FormNodePresence} from '../../presence'
-import {getFieldLevel} from '../studio/inputResolver/helpers'
-import {PrimitiveFormNode, StateTree} from './types'
+import {ObjectArrayFormNode, PrimitiveFormNode, StateTree} from './types'
 import {resolveConditionalProperty} from './conditional-property'
 import {MAX_FIELD_DEPTH} from './constants'
 import {getItemType, getPrimitiveItemType} from './utils/getItemType'
@@ -234,6 +235,7 @@ function prepareFieldMember(props: {
           error: {
             type: 'MIXED_ARRAY',
             schemaType: field.type,
+            value: fieldValue,
           },
         }
       }
@@ -818,7 +820,7 @@ function prepareArrayOfObjectsMember(props: {
       readOnly,
     },
     false
-  )
+  ) as ObjectArrayFormNode
 
   const defaultCollapsedState = getCollapsedWithDefaults(itemType.options, itemLevel)
   const collapsed = collapsedItemPaths?.value ?? defaultCollapsedState.collapsed

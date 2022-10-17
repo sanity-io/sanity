@@ -9,9 +9,16 @@ import {
 } from '@sanity/types'
 import React from 'react'
 import {FormNodePresence} from '../../presence'
+import {ObjectInputProps} from './inputProps'
 
 /** @public */
-export interface BaseItemProps {
+export type ObjectItem = {
+  _type?: string
+  _key: string
+}
+
+/** @public */
+export interface BaseItemProps<T> {
   schemaType: SchemaType
   key: string
   index: number
@@ -31,9 +38,9 @@ export interface BaseItemProps {
   // onMoveTo: (event: {ref: number|string, position: 'before'|'after'}) => void
   // onDuplicate: () => void
   // ---
-  onInsert: (event: {items: unknown[]; position: 'before' | 'after'}) => void
+  onInsert: (event: {items: T[]; position: 'before' | 'after'}) => void
 
-  children: React.ReactNode | null
+  children: React.ReactNode
 
   validation: FormNodeValidation[]
 
@@ -43,8 +50,7 @@ export interface BaseItemProps {
   renderDefault: (props: ItemProps) => React.ReactElement
 }
 
-/** @public */
-export interface ObjectItemProps extends BaseItemProps {
+export interface ObjectItemProps<Item extends ObjectItem = ObjectItem> extends BaseItemProps<Item> {
   changed: boolean
   schemaType: ObjectSchemaType
   collapsed: boolean | undefined
@@ -54,12 +60,13 @@ export interface ObjectItemProps extends BaseItemProps {
   open: boolean
   onClose: () => void
   onOpen: () => void
+  value: Item
+  inputProps: Omit<ObjectInputProps, 'renderDefault'>
 }
 
-/** @public */
 export type ItemProps = ObjectItemProps | PrimitiveItemProps
 
-/** @public */
-export interface PrimitiveItemProps extends BaseItemProps {
+export interface PrimitiveItemProps extends BaseItemProps<string | number | boolean> {
+  value: string | number | boolean
   schemaType: NumberSchemaType | BooleanSchemaType | StringSchemaType
 }

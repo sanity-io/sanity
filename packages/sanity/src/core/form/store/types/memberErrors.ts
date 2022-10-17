@@ -66,7 +66,7 @@ export type UndeclaredMembersError = {type: 'UNDECLARED_MEMBERS'; schemaType: Ar
  *
  * @public
  */
-export type MixedArray = {type: 'MIXED_ARRAY'; schemaType: ArraySchemaType}
+export type MixedArrayError = {type: 'MIXED_ARRAY'; schemaType: ArraySchemaType; value: unknown[]}
 
 /**
  * This error may happen for arrays (of both objects and primitive values) if we encounter items that are not valid according to the schema definition
@@ -91,7 +91,7 @@ export interface FieldError {
     | MissingKeysError
     | DuplicateKeysError
     | UndeclaredMembersError
-    | MixedArray
+    | MixedArrayError
 }
 
 /** @beta */

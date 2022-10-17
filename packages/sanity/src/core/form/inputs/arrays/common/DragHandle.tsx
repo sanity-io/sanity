@@ -19,7 +19,6 @@ export const DragHandle = sortableHandle(function DragHandle(
     <DragHandleButton
       icon={DragHandleIcon}
       mode="bleed"
-      tabIndex={0}
       data-ui="DragHandleButton"
       {...props}
       {...DRAG_HANDLE_PROPS}

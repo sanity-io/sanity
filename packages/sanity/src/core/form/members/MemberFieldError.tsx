@@ -6,6 +6,7 @@ import {PatchEvent} from '../patch'
 import {InvalidValueInput} from '../inputs/InvalidValueInput'
 import {MissingKeysAlert} from '../inputs/arrays/errors/MissingKeysAlert'
 import {DuplicateKeysAlert} from '../inputs/arrays/errors/DuplicateKeysAlert'
+import {MixedArrayAlert} from '../inputs/arrays/errors/MixedArrayAlert'
 
 /** @internal */
 export function MemberFieldError(props: {member: FieldError}) {
@@ -33,6 +34,9 @@ export function MemberFieldError(props: {member: FieldError}) {
   }
   if (member.error.type === 'DUPLICATE_KEYS') {
     return <DuplicateKeysAlert error={member.error} onChange={handleChange} />
+  }
+  if (member.error.type === 'MIXED_ARRAY') {
+    return <MixedArrayAlert onChange={handleChange} error={member.error} />
   }
   return <Box>Unexpected error: {props.member.error.type}</Box>
 }

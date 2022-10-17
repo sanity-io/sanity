@@ -8,6 +8,7 @@ import {
   SchemaType,
   StringSchemaType,
 } from '@sanity/types'
+import {ObjectItem} from '../../types'
 import {FormNodePresence} from '../../../presence'
 import {ArrayOfObjectsMember, ArrayOfPrimitivesMember, ObjectMember} from './members'
 import {FormFieldGroup} from './fieldGroup'
@@ -35,51 +36,52 @@ export interface ObjectFormNode<
   T = {[key in string]: unknown},
   S extends ObjectSchemaType = ObjectSchemaType
 > extends BaseFormNode<T, S> {
-  focusPath: Path
-  /** @beta */
-  groups: FormFieldGroup[]
-  /** @beta */
   members: ObjectMember[]
+  groups: FormFieldGroup[]
+
+  focusPath: Path
 }
 
-/** @internal */
+export interface ObjectArrayFormNode<
+  T extends ObjectItem = ObjectItem,
+  S extends ObjectSchemaType = ObjectSchemaType
+> extends BaseFormNode<T, S> {
+  members: ObjectMember[]
+  groups: FormFieldGroup[]
+
+  focusPath: Path
+  value: T
+}
+
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface DocumentFormNode<
   T extends {[key in string]: unknown} = {[key in string]: unknown},
   S extends ObjectSchemaType = ObjectSchemaType
 > extends ObjectFormNode<T, S> {}
 
-/** @public */
 export interface ArrayOfObjectsFormNode<
   T extends any[] = unknown[],
   S extends ArraySchemaType = ArraySchemaType
 > extends BaseFormNode<T, S> {
-  focusPath: Path
-  /** @beta */
   members: ArrayOfObjectsMember[]
+
+  focusPath: Path
 }
 
-/** @public */
 export interface ArrayOfPrimitivesFormNode<
   T extends (string | number | boolean)[] = (string | number | boolean)[],
   S extends ArraySchemaType = ArraySchemaType
 > extends BaseFormNode<T, S> {
-  focusPath: Path
-  /** @beta */
   members: ArrayOfPrimitivesMember[]
+
+  focusPath: Path
 }
 
-/** @public */
 export type BooleanFormNode<S extends BooleanSchemaType = BooleanSchemaType> = BaseFormNode<
   boolean,
   S
 >
-
-/** @public */
 export type NumberFormNode<S extends NumberSchemaType = NumberSchemaType> = BaseFormNode<number, S>
-
-/** @public */
 export type StringFormNode<S extends StringSchemaType = StringSchemaType> = BaseFormNode<string, S>
 
-/** @beta */
 export type PrimitiveFormNode = BooleanFormNode | NumberFormNode | StringFormNode

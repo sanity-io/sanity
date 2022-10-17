@@ -25,6 +25,13 @@ export default defineType({
       to: {type: 'referenceTest'},
     },
     {
+      name: 'selfOrEmpty',
+      title: 'Reference to either self or empty',
+      type: 'reference',
+      description: 'Some description',
+      to: [{type: 'referenceTest'}, {type: 'empty'}],
+    },
+    {
       name: 'aliasRef',
       type: referenceAlias.name,
     },
@@ -45,7 +52,7 @@ export default defineType({
           type: 'reference',
           title: 'Reference to either "species", "empty" or "book"',
           description: 'Some description',
-          to: [{type: 'species'}, {type: 'empty'}, {type: 'book'}],
+          to: [{type: 'species'}, {type: 'empty'}, {type: 'book'}, {type: 'referenceTest'}],
         },
       ],
     },
