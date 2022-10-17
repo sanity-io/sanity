@@ -4,7 +4,7 @@ import {runSanityCmdCommand, studiosPath, studioVersions} from './shared/environ
 import {describeCliTest, testConcurrent} from './shared/describe'
 
 describeCliTest('CLI: `sanity build` / `sanity deploy`', () => {
-  describe.each(studioVersions)('%s', (version) => {
+  describe.skip.each(studioVersions)('%s', (version) => {
     // Builds can take a bit of time with lots of concurrent tasks and slow CIs
     jest.setTimeout(120 * 1000)
 
