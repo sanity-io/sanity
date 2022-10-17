@@ -1,7 +1,9 @@
 /* eslint-disable react/no-unused-prop-types */
 import React, {createContext, useContext, useMemo} from 'react'
 import {FormNodeValidation, Path, ValidationMarker} from '@sanity/types'
-import {startsWith} from '@sanity/util/paths'
+import {isEqual, startsWith} from '@sanity/util/paths'
+import {of} from 'rxjs'
+import {mergeMapTo} from 'rxjs/operators'
 
 const ValidationContext = createContext<ValidationMarker[]>([])
 
@@ -24,17 +26,22 @@ export function useValidationMarkers(): ValidationMarker[] {
   return ctx
 }
 
-export function useChildValidation(path: Path): FormNodeValidation[] {
+/**
+ * @alpha
+ * @param path - the path to return child validation for
+ * @param inclusive - whether to include validation for the current path (default false)
+ */
+export function useChildValidation(path: Path, inclusive = false): FormNodeValidation[] {
   const validation = useValidationMarkers()
   return useMemo(
     () =>
       validation
-        .filter((item) => startsWith(path, item.path))
+        .filter((item) => startsWith(path, item.path) && (inclusive || !isEqual(path, item.path)))
         .map((marker) => ({
           message: marker.item.message,
           level: marker.level,
           path: marker.path,
         })) as FormNodeValidation[],
-    [path, validation]
+    [inclusive, path, validation]
   )
 }

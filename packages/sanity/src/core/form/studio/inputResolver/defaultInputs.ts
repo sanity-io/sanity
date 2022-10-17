@@ -8,16 +8,16 @@ import {DateTimeInput, DateInput} from '../../inputs/DateInputs'
 import {TextInput} from '../../inputs/TextInput'
 import {UrlInput} from '../../inputs/UrlInput'
 import {SlugInput} from '../../inputs/Slug/SlugInput'
-import {StudioArrayInput} from '../inputs/StudioArrayInput'
 import {StudioImageInput} from '../inputs/StudioImageInput'
 import {StudioFileInput} from '../inputs/StudioFileInput'
 import {StudioCrossDatasetReferenceInput} from '../inputs/crossDatasetReference/StudioCrossDatasetReferenceInput'
+import {ArrayInput as ListArrayInput} from '../../inputs/arrays/ArrayOfObjectsInput/List/Input'
 import {FIXME} from '../../../FIXME'
 
 export const defaultInputs: Record<string, React.ComponentType<FIXME>> = {
   document: ObjectInput,
   object: ObjectInput,
-  array: StudioArrayInput,
+  array: ListArrayInput,
   boolean: BooleanInput,
   number: NumberInput,
   text: TextInput,

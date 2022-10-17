@@ -41,7 +41,7 @@ export function SanityPreview(props: SanityPreviewProps & {style?: CSSProperties
   })
 
   // Subscribe document preview value
-  const {error, value} = useDocumentPreview({
+  const {error, value, isLoading} = useDocumentPreview({
     enabled: isPTE || visibility,
     ordering,
     schemaType,
@@ -66,7 +66,7 @@ export function SanityPreview(props: SanityPreviewProps & {style?: CSSProperties
       ...restProps,
       description: description || value?.description,
       error,
-      isPlaceholder: !value,
+      isPlaceholder: isLoading,
       layout,
       media: media || value?.media,
       schemaType,
@@ -74,7 +74,7 @@ export function SanityPreview(props: SanityPreviewProps & {style?: CSSProperties
       title: title || value?.title,
       value,
     }),
-    [description, error, layout, media, restProps, schemaType, subtitle, title, value]
+    [description, error, isLoading, layout, media, restProps, schemaType, subtitle, title, value]
   )
 
   // Remove components property to avoid component rendering itself

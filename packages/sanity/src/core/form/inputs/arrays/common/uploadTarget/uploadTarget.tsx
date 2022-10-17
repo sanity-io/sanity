@@ -3,24 +3,21 @@ import React from 'react'
 import {SchemaType} from '@sanity/types'
 import {sortBy} from 'lodash'
 import styled from 'styled-components'
-import {
-  FileLike,
-  ResolvedUploader,
-  Uploader,
-  UploaderResolver,
-} from '../../../../studio/uploads/types'
+import {FileLike, ResolvedUploader, UploaderResolver} from '../../../../studio/uploads/types'
 import {FileInfo, fileTarget} from '../../../common/fileTarget'
 import {DropMessage} from '../../../files/common/DropMessage'
+import {UploadEvent} from '../../../../types'
 import {Overlay} from './styles'
 
-type UploadTargetProps = {
+export interface UploadTargetProps {
   types: SchemaType[]
   resolveUploader?: UploaderResolver
-  onUpload?: (event: {type: SchemaType; file: File; uploader: Uploader}) => void
+  onUpload?: (event: UploadEvent) => void
   children?: React.ReactNode
 }
+
 // todo: define and export this as a core interface in this package
-type UploadTask = {
+interface UploadTask {
   file: File
   uploaderCandidates: ResolvedUploader[]
 }
@@ -54,7 +51,7 @@ export function uploadTarget<Props>(Component: React.ComponentType<Props>) {
     const uploadFile = React.useCallback(
       (file: File, resolvedUploader: ResolvedUploader) => {
         const {type, uploader} = resolvedUploader
-        onUpload?.({file, type, uploader})
+        onUpload?.({file, schemaType: type, uploader})
       },
       [onUpload]
     )

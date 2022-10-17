@@ -2,8 +2,8 @@
 import {
   ArraySchemaType,
   isBooleanSchemaType,
+  isReferenceSchemaType,
   NumberSchemaType,
-  ReferenceSchemaType,
   SchemaType,
   StringSchemaType,
 } from '@sanity/types'
@@ -16,7 +16,8 @@ import {PreviewProps} from '../../../components'
 import {ChangeIndicator} from '../../../changeIndicators'
 import {SanityPreview} from '../../../preview'
 import {FIXME} from '../../../FIXME'
-import {resolveReferenceInput} from './resolveReferenceInput'
+import {ReferenceField} from '../../inputs/ReferenceInput/ReferenceField'
+import {StudioReferenceInput} from '../inputs/reference/StudioReferenceInput'
 import {resolveArrayInput} from './resolveArrayInput'
 import {resolveStringInput} from './resolveStringInput'
 import {resolveNumberInput} from './resolveNumberInput'
@@ -30,7 +31,7 @@ function resolveComponentFromTypeVariants(
   }
 
   if (is.type('reference', type)) {
-    return resolveReferenceInput(type as ReferenceSchemaType)
+    return StudioReferenceInput
   }
 
   // String input with a select
@@ -160,8 +161,13 @@ export function defaultResolveFieldComponent(
     return NoopField
   }
 
-  if (getTypeChain(schemaType, new Set()).some((t) => t.name === 'image' || t.name === 'file')) {
+  const typeChain = getTypeChain(schemaType, new Set())
+
+  if (typeChain.some((t) => t.name === 'image' || t.name === 'file')) {
     return ImageOrFileField as React.ComponentType<Omit<FieldProps, 'renderDefault'>>
+  }
+  if (typeChain.some((t) => isReferenceSchemaType(t))) {
+    return ReferenceField as React.ComponentType<Omit<FieldProps, 'renderDefault'>>
   }
 
   if (schemaType.jsonType !== 'object' && schemaType.jsonType !== 'array') {

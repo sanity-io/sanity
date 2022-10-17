@@ -17,6 +17,8 @@ import {
   ObjectFormNode,
   StringFormNode,
 } from '../store/types/nodes'
+
+import {UploaderResolver} from '../studio'
 import {FormFieldGroup} from '../store'
 import {
   RenderArrayOfObjectsItemCallback,
@@ -25,7 +27,7 @@ import {
   RenderInputCallback,
   RenderPreviewCallback,
 } from './renderCallback'
-import {InsertItemEvent, MoveItemEvent} from './event'
+import {ArrayInputInsertEvent, ArrayInputMoveItemEvent, UploadEvent} from './event'
 
 /** @public */
 export interface BaseInputProps {
@@ -104,13 +106,21 @@ export interface ArrayOfObjectsInputProps<
   onRemoveItem: (itemKey: string) => void
 
   /** @beta */
-  onMoveItem: (event: MoveItemEvent) => void
+  onItemMove: (event: ArrayInputMoveItemEvent) => void
 
   /** @beta */
-  onInsert: (event: InsertItemEvent) => void
+  onInsert: (event: ArrayInputInsertEvent<T>) => void
 
+  /** @beta */
   resolveInitialValue: (type: SchemaType, params: Record<string, unknown>) => Promise<T>
 
+  /** @beta */
+  resolveUploader: UploaderResolver
+
+  /** @beta */
+  onUpload: (event: UploadEvent) => void
+
+  /** @beta */
   onFocusPath: (path: Path) => void
 
   /**
@@ -181,10 +191,16 @@ export interface ArrayOfPrimitivesInputProps<
   onRemoveItem: (index: number) => void
 
   /** @beta */
-  onMoveItem: (event: MoveItemEvent) => void
+  onMoveItem: (event: ArrayInputMoveItemEvent) => void
 
   /** @beta */
   onInsert: (event: {items: T; position: 'before' | 'after'; referenceIndex: number}) => void
+
+  /** @beta */
+  resolveUploader: UploaderResolver<NumberSchemaType | BooleanSchemaType | StringSchemaType>
+
+  /** @beta */
+  onUpload: (event: UploadEvent) => void
 
   /** @beta */
   onFocusIndex: (index: number) => void
