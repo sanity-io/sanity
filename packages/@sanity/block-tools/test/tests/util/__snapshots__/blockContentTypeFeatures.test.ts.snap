@@ -1153,6 +1153,9 @@ Object {
         ],
         "jsonType": "object",
         "name": "author",
+        "options": Object {
+          "modal": "inline",
+        },
         "title": "Author",
         "to": Array [
           Object {
@@ -1343,6 +1346,9 @@ Object {
         "type": Object {
           "jsonType": "object",
           "name": "reference",
+          "options": Object {
+            "modal": "inline",
+          },
           "title": "Reference",
           "type": null,
         },
@@ -1476,6 +1482,9 @@ Object {
                         ],
                         "jsonType": "object",
                         "name": "author",
+                        "options": Object {
+                          "modal": "inline",
+                        },
                         "title": "Author",
                         "to": Array [
                           Object {
@@ -1666,6 +1675,9 @@ Object {
                         "type": Object {
                           "jsonType": "object",
                           "name": "reference",
+                          "options": Object {
+                            "modal": "inline",
+                          },
                           "title": "Reference",
                           "type": null,
                         },
@@ -1904,6 +1916,9 @@ Object {
                     ],
                     "jsonType": "object",
                     "name": "author",
+                    "options": Object {
+                      "modal": "inline",
+                    },
                     "title": "Author",
                     "to": Array [
                       Object {
@@ -2114,6 +2129,9 @@ Object {
                     "type": Object {
                       "jsonType": "object",
                       "name": "reference",
+                      "options": Object {
+                        "modal": "inline",
+                      },
                       "title": "Reference",
                       "type": null,
                     },
@@ -2228,6 +2246,9 @@ Object {
                           ],
                           "jsonType": "object",
                           "name": "author",
+                          "options": Object {
+                            "modal": "inline",
+                          },
                           "title": "Author",
                           "to": Array [
                             Object {
@@ -2418,6 +2439,9 @@ Object {
                           "type": Object {
                             "jsonType": "object",
                             "name": "reference",
+                            "options": Object {
+                              "modal": "inline",
+                            },
                             "title": "Reference",
                             "type": null,
                           },
@@ -2656,6 +2680,9 @@ Object {
                       ],
                       "jsonType": "object",
                       "name": "author",
+                      "options": Object {
+                        "modal": "inline",
+                      },
                       "title": "Author",
                       "to": Array [
                         Object {
@@ -2866,6 +2893,9 @@ Object {
                       "type": Object {
                         "jsonType": "object",
                         "name": "reference",
+                        "options": Object {
+                          "modal": "inline",
+                        },
                         "title": "Reference",
                         "type": null,
                       },
@@ -2991,6 +3021,9 @@ Object {
           ],
           "jsonType": "object",
           "name": "author",
+          "options": Object {
+            "modal": "inline",
+          },
           "title": "Author",
           "to": Array [
             Object {
@@ -3181,6 +3214,9 @@ Object {
           "type": Object {
             "jsonType": "object",
             "name": "reference",
+            "options": Object {
+              "modal": "inline",
+            },
             "title": "Reference",
             "type": null,
           },
