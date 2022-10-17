@@ -40,17 +40,17 @@ export function buildChangeList(
   titlePath: ChangeTitlePath = [],
   context: DiffContext
 ): ChangeNode[] {
-  const diffComponent = resolveDiffComponent(schemaType)
+  // const diffComponent = resolveDiffComponent(schemaType)
 
-  if (!diffComponent) {
-    if (schemaType.jsonType === 'object' && diff.type === 'object') {
-      return buildObjectChangeList(schemaType as ObjectSchemaType, diff, path, titlePath, context)
-    }
+  // if (!diffComponent) {
+  //   if (schemaType.jsonType === 'object' && diff.type === 'object') {
+  //     return buildObjectChangeList(schemaType as ObjectSchemaType, diff, path, titlePath, context)
+  //   }
 
-    if (schemaType.jsonType === 'array' && diff.type === 'array') {
-      return buildArrayChangeList(schemaType, diff, path, titlePath, context)
-    }
-  }
+  //   if (schemaType.jsonType === 'array' && diff.type === 'array') {
+  //     return buildArrayChangeList(schemaType, diff, path, titlePath, context)
+  //   }
+  // }
 
   return getFieldChange(schemaType, diff, path, titlePath, context)
 }
@@ -90,10 +90,9 @@ export function buildObjectChangeList(
       type: 'group',
       key: pathToString(path) || 'root',
       path,
-      titlePath, // Don't do anything – objet gets their titlePath in `getFieldChange`
+      titlePath, // Don't do anything – object gets their titlePath in `getFieldChange`
       changes: reduceTitlePaths(changes, titlePath.length),
       schemaType,
-      diffComponent: diffContext.diffComponent,
     },
   ]
 }
@@ -105,7 +104,7 @@ export function buildFieldChange(
   titlePath: ChangeTitlePath,
   diffContext: DiffContext
 ): ChangeNode[] {
-  const {fieldFilter, ...context} = diffContext
+  const {fieldFilter} = diffContext
   const fieldDiff = diff.fields[field.name]
   if (!fieldDiff || !fieldDiff.isChanged || (fieldFilter && !fieldFilter.includes(field.name))) {
     return []
@@ -113,7 +112,8 @@ export function buildFieldChange(
 
   const fieldPath = path.concat([field.name])
   const fieldTitlePath = titlePath.concat([field.type.title || field.name])
-  return buildChangeList(field.type as any, fieldDiff, fieldPath, fieldTitlePath, context)
+
+  return buildChangeList(field.type, fieldDiff, fieldPath, fieldTitlePath, diffContext)
 }
 
 export function buildFieldsetChangeList(
@@ -169,7 +169,6 @@ export function buildFieldsetChangeList(
       changes: reduceTitlePaths(changes, fieldSetTitlePath.length),
       readOnly: fieldsetReadOnly,
       hidden: fieldSetHidden,
-      diffComponent: diffContext.diffComponent,
     },
   ]
 }
@@ -191,6 +190,7 @@ export function buildArrayChangeList(
 
   const isPortableText = hasPTMemberType(schemaType)
   const list: ChangeNode[] = []
+
   const changes = changedOrMoved.reduce((acc, itemDiff) => {
     const memberTypes = getArrayDiffItemType(itemDiff.diff, schemaType)
     const memberType = memberTypes.toType || memberTypes.fromType
@@ -232,7 +232,7 @@ export function buildArrayChangeList(
       memberType,
       itemDiff.diff,
       itemPath,
-      itemTitlePath, // Array item title, e.g. the index of the item like "#1" or "#3"
+      itemTitlePath,
       itemContext
     ).map(attachItemDiff)
 
@@ -253,21 +253,20 @@ export function buildArrayChangeList(
     return acc
   }, list)
 
-  if (changes.length > 1) {
-    return [
-      {
-        type: 'group',
-        key: pathToString(path) || 'root',
-        path,
-        titlePath,
-        changes: reduceTitlePaths(changes, titlePath.length),
-        schemaType,
-        diffComponent: diffContext.diffComponent,
-      },
-    ]
+  if (changes.length < 2) {
+    return changes
   }
 
-  return changes
+  return [
+    {
+      type: 'group',
+      key: pathToString(path) || 'root',
+      path,
+      titlePath,
+      changes: reduceTitlePaths(changes, titlePath.length),
+      schemaType,
+    },
+  ]
 }
 
 function getFieldChange(
@@ -275,9 +274,10 @@ function getFieldChange(
   diff: Diff,
   path: Path,
   titlePath: ChangeTitlePath,
-  {itemDiff, parentDiff, parentSchema, diffComponent}: DiffContext
+  context: DiffContext
 ): FieldChangeNode[] {
   const {fromValue, toValue, type} = diff
+  const {itemDiff, parentDiff, parentSchema, diffComponent} = context
 
   // Treat undefined => [] as no change
   if (type === 'array' && isEmpty(fromValue) && isEmpty(toValue)) {

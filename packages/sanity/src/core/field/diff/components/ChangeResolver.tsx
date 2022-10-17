@@ -1,11 +1,11 @@
 import {ConditionalProperty, SanityDocument} from '@sanity/types'
 import React from 'react'
-import {Text} from '@sanity/ui'
+import {Stack, Text} from '@sanity/ui'
 import {unstable_useConditionalProperty as useConditionalProperty} from '../../conditional-property'
 import {ChangeNode} from '../../types'
 import {useDocumentChange} from '../hooks'
 import {FieldChange} from './FieldChange'
-import {GroupChange} from './GroupChange'
+// import {GroupChange} from './GroupChange'
 
 /** @internal */
 export interface ChangeResolverProps {
@@ -43,12 +43,20 @@ export function ChangeResolver(props: ChangeResolverProps) {
 
   if (change.type === 'group') {
     return (
-      <GroupChange
-        change={change}
-        data-testid={`group-change-${change.fieldsetName}`}
-        readOnly={isReadOnly}
-      />
+      <Stack space={5}>
+        {change.changes.map((c) => {
+          return <ChangeResolver key={c.key} change={c} readOnly={c.readOnly} hidden={c.hidden} />
+        })}
+      </Stack>
     )
+
+    // return (
+    //   <GroupChange
+    //     change={change}
+    //     data-testid={`group-change-${change.fieldsetName}`}
+    //     readOnly={isReadOnly}
+    //   />
+    // )
   }
 
   return (

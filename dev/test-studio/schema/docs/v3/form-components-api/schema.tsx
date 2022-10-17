@@ -1,3 +1,4 @@
+import {Card} from '@sanity/ui'
 import React from 'react'
 import {defineType} from 'sanity'
 import {structureGroupOptions} from '../../../../structure/groupByOption'
@@ -26,9 +27,14 @@ export const formComponentsSchema = defineType({
       title: 'Array of objects',
       type: 'array',
       components: {
-        // diff: (props) => <CustomDiff {...props} />, // Don't work
+        diff: (props) => <CustomDiff {...props} />, // Don't work
         input: (props) => <CustomInput {...props} testId="input-schema-array-objects" />,
         field: (props) => <CustomField {...props} testId="field-schema-array-objects" />,
+        // diff: (props) => (
+        //   <Card padding={2} border tone="critical">
+        //     {props.renderDefault(props)}
+        //   </Card>
+        // ),
       },
       of: [
         {
@@ -39,6 +45,11 @@ export const formComponentsSchema = defineType({
             field: (props) => <CustomField {...props} testId="field-schema-array-field-object" />,
             item: (props) => <CustomItem {...props} testId="field-schema-array-item-object" />,
             preview: (props) => <CustomPreview {...props} />,
+            // diff: (props) => (
+            //   <Card padding={2} border tone="positive">
+            //     {props.renderDefault(props)}
+            //   </Card>
+            // ),
           },
           fields: [
             {
@@ -121,7 +132,7 @@ export const formComponentsSchema = defineType({
       components: {
         input: (props) => <CustomInput {...props} testId="input-schema-reference" />,
         field: (props) => <CustomField {...props} testId="field-schema-reference" />,
-        diff: (props) => <CustomDiff {...props} />,
+        // diff: (props) => <CustomDiff {...props} />,
       },
       to: [
         {
@@ -140,7 +151,7 @@ export const formComponentsSchema = defineType({
       components: {
         input: (props) => <CustomInput {...props} testId="input-schema-image" />,
         field: (props) => <CustomField {...props} testId="field-schema-image" />,
-        diff: (props) => <CustomDiff {...props} />,
+        // diff: (props) => <CustomDiff {...props} />,
       },
     },
     {
