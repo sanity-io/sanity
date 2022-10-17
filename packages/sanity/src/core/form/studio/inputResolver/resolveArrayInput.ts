@@ -5,9 +5,7 @@ import {ArrayOfOptionsInput} from '../../inputs/arrays/ArrayOfOptionsInput'
 import {PortableTextInput} from '../../inputs/PortableText/PortableTextInput'
 import {TagsArrayInput} from '../../inputs/TagsArrayInput'
 import {ArrayOfPrimitivesInput} from '../../inputs/arrays/ArrayOfPrimitivesInput'
-import {ArrayInput as ListArrayInput} from '../../inputs/arrays/ArrayOfObjectsInput/List/Input'
-import {GridArrayInput} from '../../inputs/arrays/ArrayOfObjectsInput/Grid/Input'
-import {ArrayOfObjectsInput} from '../../inputs/arrays/ArrayOfObjectsInput/ArrayOfObjectsInput'
+import {ArrayOfObjectsInput} from '../../inputs/arrays/ArrayOfObjectsInput'
 
 const PRIMITIVES = ['string', 'number', 'boolean']
 

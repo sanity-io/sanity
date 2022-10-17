@@ -15,14 +15,9 @@ import {nearestIndexOf} from './utils/nearestIndex'
 import {ItemRow} from './ItemRow'
 import {ArrayOfPrimitivesFunctions} from './ArrayOfPrimitivesFunctions'
 
-export interface DefaultArrayOfPrimitivesInputProps extends ArrayOfPrimitivesInputProps {
-  ArrayFunctionsImpl: React.ComponentType<
-    FormArrayInputFunctionsProps<ArraySchemaType<PrimitiveValue[]>, PrimitiveValue>
-  >
-}
 // Note: this should be a class component until React provides support for a hook version of getSnapshotBeforeUpdate
 /** @public */
-export class ArrayOfPrimitivesInput extends React.PureComponent<DefaultArrayOfPrimitivesInputProps> {
+export class ArrayOfPrimitivesInput extends React.PureComponent<ArrayOfPrimitivesInputProps> {
   _element: HTMLElement | null = null
   _lastAddedIndex = -1
 
