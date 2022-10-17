@@ -44,7 +44,7 @@ describeCliTest('CLI: `sanity build` / `sanity deploy`', () => {
       120 * 1000
     )
 
-    testConcurrent(
+    test.skip(
       'deploy',
       async () => {
         const result = await runSanityCmdCommand(version, ['deploy', '-y'])
