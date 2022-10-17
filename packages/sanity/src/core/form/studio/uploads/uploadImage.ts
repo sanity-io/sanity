@@ -6,7 +6,7 @@ import {uploadImageAsset} from '../inputs/client-adapters/assets'
 import {readExif} from './image/readExif'
 import {rotateImage} from './image/rotateImage'
 import {DEFAULT_ORIENTATION, Orientation} from './image/orient'
-import {UploadEvent, UploadOptions} from './types'
+import {UploadProgressEvent, UploadOptions} from './types'
 import {UPLOAD_STATUS_KEY} from './constants'
 import {CLEANUP_EVENT, createInitialUploadEvent, createUploadEvent} from './utils'
 
@@ -18,7 +18,7 @@ export function uploadImage(
   client: SanityClient,
   file: File,
   options?: UploadOptions
-): Observable<UploadEvent> {
+): Observable<UploadProgressEvent> {
   const upload$ = uploadImageAsset(client, file, options).pipe(
     filter((event: any) => event.stage !== 'download'),
     map((event) => ({

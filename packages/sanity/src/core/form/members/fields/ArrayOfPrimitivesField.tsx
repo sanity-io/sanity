@@ -1,20 +1,38 @@
 import React, {useCallback, useMemo, useRef} from 'react'
+import {
+  ArraySchemaType,
+  BooleanSchemaType,
+  isBooleanSchemaType,
+  isNumberSchemaType,
+  isStringSchemaType,
+  NumberSchemaType,
+  SchemaType,
+  StringSchemaType,
+} from '@sanity/types'
+import {filter, map, tap} from 'rxjs/operators'
+import {Subscription} from 'rxjs'
 import {FIXME} from '../../../FIXME'
 import {ArrayOfPrimitivesFormNode, FieldMember} from '../../store'
 import {
   ArrayOfObjectsInputProps,
   ArrayOfPrimitivesFieldProps,
   ArrayOfPrimitivesInputProps,
-  MoveItemEvent,
+  ArrayInputMoveItemEvent,
   RenderArrayOfPrimitivesItemCallback,
   RenderFieldCallback,
   RenderInputCallback,
   RenderPreviewCallback,
+  UploadEvent,
 } from '../../types'
 import {FormCallbacksProvider, useFormCallbacks} from '../../studio/contexts/FormCallbacks'
 import {useDidUpdate} from '../../hooks/useDidUpdate'
-import {PatchArg, PatchEvent, set, setIfMissing, unset} from '../../patch'
+import {insert, PatchArg, PatchEvent, set, setIfMissing, unset} from '../../patch'
 import {PrimitiveValue} from '../../inputs/arrays/ArrayOfPrimitivesInput/types'
+import {Uploader, UploaderResolver, UploadProgressEvent} from '../../studio'
+import {useClient} from '../../../hooks'
+import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../studioClient'
+import {readAsText} from '../../studio/uploads/file/readAsText'
+import {accepts} from '../../studio/uploads/accepts'
 
 function move<T>(arr: T[], from: number, to: number): T[] {
   const copy = arr.slice()
@@ -50,6 +68,55 @@ function insertAfter<T>(
   copy.splice(index + 1, 0, ...items)
   return copy
 }
+function isStringNumeric(input: string) {
+  return /^\d+$/.test(input)
+}
+
+type PrimitiveSchemaType = NumberSchemaType | BooleanSchemaType | StringSchemaType
+
+function convertToSchemaType(line: string, candidates: SchemaType[]) {
+  let acceptsBooleans = false
+  let acceptsNumbers = false
+  let acceptsStrings = false
+  candidates.forEach((candidate) => {
+    if (isBooleanSchemaType(candidate)) {
+      acceptsBooleans = true
+    }
+    if (isStringSchemaType(candidate)) {
+      acceptsStrings = true
+    }
+    if (isNumberSchemaType(candidate)) {
+      acceptsNumbers = true
+    }
+  })
+
+  if (acceptsBooleans && (line === 'true' || line === 'false')) return line === 'true'
+  if (acceptsNumbers && isStringNumeric(line)) return Number(line)
+  return acceptsStrings ? line : undefined
+}
+
+function createPlainTextUploader(itemTypes: PrimitiveSchemaType[]): Uploader<PrimitiveSchemaType> {
+  return {
+    priority: 0,
+    accepts: 'text/*',
+    type: 'string',
+    upload(client, file) {
+      return readAsText(file, 'utf-8').pipe(
+        map((textContent) =>
+          textContent
+            ?.split(/[\n\r]/)
+            .map((value) => convertToSchemaType(value, itemTypes))
+            .filter((v) => v !== undefined)
+        ),
+        filter((v: unknown[] | undefined): v is unknown[] => Array.isArray(v)),
+        map((lines: unknown[]) => ({
+          type: 'uploadProgress',
+          patches: [insert(lines, 'after', [-1])],
+        }))
+      )
+    },
+  }
+}
 
 /**
  * Responsible for creating inputProps and fieldProps to pass to ´renderInput´ and ´renderField´ for an array input
@@ -75,6 +142,8 @@ export function ArrayOfPrimitivesField(props: {
   const {member, renderField, renderInput, renderItem, renderPreview} = props
 
   const focusRef = useRef<Element & {focus: () => void}>()
+  const uploadSubscriptions = useRef<Subscription>()
+  const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
 
   useDidUpdate(member.field.focused, (hadFocus, hasFocus) => {
     if (!hadFocus && hasFocus) {
@@ -139,7 +208,7 @@ export function ArrayOfPrimitivesField(props: {
   )
 
   const handleMoveItem = useCallback(
-    (event: MoveItemEvent) => {
+    (event: ArrayInputMoveItemEvent) => {
       const {value = []} = member.field
       if (event.fromIndex === event.toIndex) {
         return
@@ -200,6 +269,33 @@ export function ArrayOfPrimitivesField(props: {
     [handleBlur, handleFocus, member.field.id]
   )
 
+  const plainTextUploader = useMemo(
+    () => createPlainTextUploader(member.field.schemaType.of as PrimitiveSchemaType[]),
+    [member.field.schemaType.of]
+  )
+
+  const resolveUploader: UploaderResolver<PrimitiveSchemaType> = useCallback(
+    (schemaType, file) => (accepts(file, 'text/*') ? plainTextUploader : null),
+    [plainTextUploader]
+  )
+
+  const handleUpload = useCallback(
+    ({file, schemaType, uploader}: UploadEvent) => {
+      const events$ = uploader.upload(client, file, schemaType).pipe(
+        map((uploadProgressEvent: UploadProgressEvent) =>
+          PatchEvent.from(uploadProgressEvent.patches || [])
+        ),
+        tap((event) => handleChange(event.patches))
+      )
+
+      if (uploadSubscriptions.current) {
+        uploadSubscriptions.current.unsubscribe()
+      }
+      uploadSubscriptions.current = events$.subscribe()
+    },
+    [client, handleChange]
+  )
+
   const inputProps = useMemo((): Omit<ArrayOfPrimitivesInputProps, 'renderDefault'> => {
     return {
       level: member.field.level,
@@ -222,6 +318,8 @@ export function ArrayOfPrimitivesField(props: {
       onPrependItem: handlePrepend,
       validation: member.field.validation,
       presence: member.field.presence,
+      resolveUploader,
+      onUpload: handleUpload,
       renderInput,
       renderItem,
       onFocusIndex: handleFocusIndex,
@@ -248,6 +346,8 @@ export function ArrayOfPrimitivesField(props: {
     handleRemoveItem,
     handleAppend,
     handlePrepend,
+    resolveUploader,
+    handleUpload,
     renderInput,
     renderItem,
     handleFocusIndex,

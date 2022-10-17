@@ -1,7 +1,7 @@
 /* eslint-disable react/no-unused-prop-types */
 import React, {useContext, createContext, useMemo} from 'react'
 import {Path} from '@sanity/types'
-import {startsWith} from '@sanity/util/paths'
+import {startsWith, isEqual} from '@sanity/util/paths'
 import {FormNodePresence} from '../../../presence'
 
 const PresenceContext = createContext<FormNodePresence[]>([])
@@ -20,7 +20,18 @@ export function useFormFieldPresence(): FormNodePresence[] {
   return ctx
 }
 
-export function useChildPresence(path: Path): FormNodePresence[] {
+/**
+ * @alpha
+ * @param path - the path to return child presence for
+ * @param inclusive - whether to include presence for the current path (default false)
+ */
+export function useChildPresence(path: Path, inclusive?: boolean): FormNodePresence[] {
   const presence = useFormFieldPresence()
-  return useMemo(() => presence.filter((item) => startsWith(path, item.path)), [path, presence])
+  return useMemo(
+    () =>
+      presence.filter(
+        (item) => startsWith(path, item.path) && (inclusive || !isEqual(path, item.path))
+      ),
+    [inclusive, path, presence]
+  )
 }

@@ -4,12 +4,12 @@ import {ArraySchemaType, isReferenceSchemaType} from '@sanity/types'
 import {AddIcon} from '@sanity/icons'
 import React, {useMemo, useId} from 'react'
 import {Box, Button, Grid, Menu, MenuButton, MenuItem, Tooltip, Text} from '@sanity/ui'
-import {FormArrayInputFunctionsProps} from '../../../types'
+import {FormArrayInputFunctionsProps, ObjectItem} from '../../../types'
 
 export function DefaultArrayInputFunctions<
   SchemaType extends ArraySchemaType,
-  MemberType extends {_key: string}
->(props: FormArrayInputFunctionsProps<SchemaType, MemberType>) {
+  Item extends ObjectItem
+>(props: FormArrayInputFunctionsProps<SchemaType, Item>) {
   const {type, readOnly, children, onCreateValue, onAppendItem} = props
   const menuButtonId = useId()
 

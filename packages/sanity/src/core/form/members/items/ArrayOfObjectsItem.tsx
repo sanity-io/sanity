@@ -14,7 +14,7 @@ import {ensureKey} from '../../utils/ensureKey'
 import {FormCallbacksProvider, useFormCallbacks} from '../../studio/contexts/FormCallbacks'
 import {ArrayOfObjectsItemMember} from '../../store'
 import {createProtoValue} from '../../utils/createProtoValue'
-import {isEmpty} from '../../inputs/arrays/ArrayOfObjectsInput/item/helpers'
+import {isEmptyItem} from '../../store/utils/isEmptyItem'
 
 /**
  * @beta
@@ -55,7 +55,7 @@ export function ArrayOfObjectsItem(props: MemberItemProps) {
   }, [member.key, onChange])
 
   const onInsert = useCallback(
-    (event: {items: unknown[]; position: 'before' | 'after'}) => {
+    (event: {items: {_key?: string}[]; position: 'before' | 'after'}) => {
       onChange(
         PatchEvent.from([
           insert(
@@ -140,13 +140,14 @@ export function ArrayOfObjectsItem(props: MemberItemProps) {
     onPathOpen(member.item.path)
   }, [onPathOpen, member.item.path])
 
-  const isEmptyValue = !member.item.value || isEmpty(member.item.value)
+  const isEmptyValue = !member.item.value || isEmptyItem(member.item.value)
   const handleClose = useCallback(() => {
     if (isEmptyValue) {
       onRemove()
     }
     onPathOpen(member.item.path.slice(0, -1))
-  }, [onPathOpen, member.item.path, isEmptyValue, onRemove])
+    onPathFocus(member.item.path)
+  }, [isEmptyValue, onPathOpen, member.item.path, onPathFocus, onRemove])
 
   const handleSelectFieldGroup = useCallback(
     (groupName: string) => {
@@ -255,6 +256,7 @@ export function ArrayOfObjectsItem(props: MemberItemProps) {
       path: member.item.path,
       children: renderedInput,
       changed: member.item.changed,
+      inputProps,
     }
   }, [
     member.key,
@@ -281,6 +283,7 @@ export function ArrayOfObjectsItem(props: MemberItemProps) {
     handleFocus,
     handleBlur,
     renderedInput,
+    inputProps,
   ])
 
   return (

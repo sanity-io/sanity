@@ -1,4 +1,7 @@
 import React, {ComponentProps, ForwardedRef, forwardRef, useCallback, useMemo, useRef} from 'react'
+import {from, throwError} from 'rxjs'
+import {catchError, mergeMap} from 'rxjs/operators'
+import * as PathUtils from '@sanity/util/paths'
 import {
   Path,
   Reference,
@@ -6,23 +9,30 @@ import {
   ReferenceOptions,
   ReferenceSchemaType,
   SanityDocument,
-  SchemaType,
 } from '@sanity/types'
-import * as PathUtils from '@sanity/util/paths'
-import {from, throwError} from 'rxjs'
-import {catchError, mergeMap} from 'rxjs/operators'
-import * as adapter from '../client-adapters/reference'
-import {FIXME} from '../../../../FIXME'
-import {useClient, useSchema} from '../../../../hooks'
-import {useDocumentPreviewStore} from '../../../../store'
-import {ArrayItemReferenceInput} from '../../../inputs/ReferenceInput/ArrayItemReferenceInput'
-import {EditReferenceEvent} from '../../../inputs/ReferenceInput/types'
-import {InsertEvent} from '../../../inputs/arrays/ArrayOfObjectsInput/types'
-import {ObjectInputProps} from '../../../types'
-import {useFormValue} from '../../../useFormValue'
-import {useReferenceInputOptions} from '../../contexts'
-import {isNonNullable} from '../../../../util'
-import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../studioClient'
+import {useClient, useSchema} from '../../../../../hooks'
+import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../../studioClient'
+import {useDocumentPreviewStore} from '../../../../../store'
+import {useReferenceInputOptions} from '../../../../studio'
+import {useFormValue} from '../../../../useFormValue'
+import {FIXME} from '../../../../../FIXME'
+import * as adapter from '../../../../studio/inputs/client-adapters/reference'
+import {EditReferenceEvent} from '../../../ReferenceInput/types'
+import {isNonNullable} from '../../../../../util'
+
+function useValueRef<T>(value: T): {current: T} {
+  const ref = useRef(value)
+  ref.current = value
+  return ref
+}
+
+interface SearchError {
+  message: string
+  details?: {
+    type: string
+    description: string
+  }
+}
 
 // eslint-disable-next-line require-await
 async function resolveUserDefinedFilter(
@@ -46,33 +56,18 @@ async function resolveUserDefinedFilter(
   }
 }
 
-export interface SanityArrayItemReferenceInputProps
-  extends ObjectInputProps<Reference, ReferenceSchemaType> {
-  insertableTypes?: SchemaType[]
-  isSortable: boolean
-  onInsert?: (event: InsertEvent) => void
+interface Options {
+  path: Path
+  schemaType: ReferenceSchemaType
+  value?: Reference
 }
 
-function useValueRef<T>(value: T): {current: T} {
-  const ref = useRef(value)
-  ref.current = value
-  return ref
-}
-
-type SearchError = {
-  message: string
-  details?: {
-    type: string
-    description: string
-  }
-}
-
-export function StudioArrayItemReferenceInput(props: SanityArrayItemReferenceInputProps) {
+export function useReferenceInput(options: Options) {
+  const {path, schemaType} = options
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const schema = useSchema()
   const documentPreviewStore = useDocumentPreviewStore()
   const searchClient = useMemo(() => client.withConfig({apiVersion: '2021-03-25'}), [client])
-  const {path, schemaType} = props
   const {EditReferenceLinkComponent, onEditReference, activePath, initialValueTemplateItems} =
     useReferenceInputOptions()
 
@@ -81,7 +76,7 @@ export function StudioArrayItemReferenceInput(props: SanityArrayItemReferenceInp
 
   const documentTypeName = documentRef.current?._type
 
-  const isDocumentLiveEdit = useMemo(() => {
+  const isCurrentDocumentLiveEdit = useMemo(() => {
     return schema.get(documentTypeName)?.liveEdit
   }, [documentTypeName, schema])
 
@@ -111,7 +106,7 @@ export function StudioArrayItemReferenceInput(props: SanityArrayItemReferenceInp
     [documentRef, path, searchClient, schemaType]
   )
 
-  const template = props.value?._strengthenOnPublish?.template
+  const template = options.value?._strengthenOnPublish?.template
   const EditReferenceLink = useMemo(
     () =>
       forwardRef(function EditReferenceLink_(
@@ -175,16 +170,18 @@ export function StudioArrayItemReferenceInput(props: SanityArrayItemReferenceInp
     )
   }, [disableNew, initialValueTemplateItems, schemaType.to])
 
-  return (
-    <ArrayItemReferenceInput
-      {...props}
-      liveEdit={isDocumentLiveEdit}
-      onSearch={handleSearch}
-      getReferenceInfo={(id, _type) => adapter.getReferenceInfo(documentPreviewStore, id, _type)}
-      selectedState={selectedState}
-      editReferenceLinkComponent={EditReferenceLink}
-      createOptions={createOptions}
-      onEditReference={handleEditReference}
-    />
+  const getReferenceInfo = useCallback(
+    (id: string) => adapter.getReferenceInfo(documentPreviewStore, id, schemaType),
+    [documentPreviewStore, schemaType]
   )
+
+  return {
+    selectedState,
+    handleSearch,
+    isCurrentDocumentLiveEdit,
+    handleEditReference,
+    EditReferenceLink,
+    createOptions,
+    getReferenceInfo,
+  }
 }

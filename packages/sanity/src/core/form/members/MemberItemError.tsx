@@ -1,6 +1,7 @@
 import React from 'react'
-import {IncompatibleItemType} from '../inputs/arrays/ArrayOfObjectsInput/item/IncompatibleItemType'
+
 import {ArrayItemError} from '../store/types/memberErrors'
+import {IncompatibleItemType} from './views/IncompatibleItemType'
 
 /** @internal */
 export function MemberItemError(props: {member: ArrayItemError}) {

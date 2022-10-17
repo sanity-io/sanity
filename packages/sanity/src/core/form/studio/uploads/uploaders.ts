@@ -26,7 +26,7 @@ const UPLOAD_TEXT: UploaderDef = {
   upload: (client: SanityClient, file: File, type: SchemaType, options?: UploadOptions) =>
     uploadFile(client, file, options).pipe(
       map((content) => ({
-        type: 'uploadEvent',
+        type: 'uploadProgress',
         patches: [set(content)],
       }))
     ),

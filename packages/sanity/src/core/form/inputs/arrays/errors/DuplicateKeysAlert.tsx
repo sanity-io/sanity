@@ -52,8 +52,8 @@ export function DuplicateKeysAlert(props: Props) {
               The value of the <code>_key</code> property must be a unique string.
             </Text>
           </Stack>
+          {/* TODO: render array items and highlight the items with duplicate keys (sc-26255) */}
         </Details>
-        {/* TODO: render array items and highlight the items with duplicate keys */}
       </Alert>
     </FormField>
   )

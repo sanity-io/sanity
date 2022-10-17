@@ -1,12 +1,12 @@
 import {FormPatch, set, setIfMissing, unset} from '../../patch'
-import {UploadEvent} from './types'
+import {UploadProgressEvent} from './types'
 import {UPLOAD_STATUS_KEY} from './constants'
 
 const UNSET_UPLOAD_PATCH = unset([UPLOAD_STATUS_KEY])
 
-export function createUploadEvent(patches: FormPatch[] = []): UploadEvent {
+export function createUploadEvent(patches: FormPatch[] = []): UploadProgressEvent {
   return {
-    type: 'uploadEvent',
+    type: 'uploadProgress',
     patches,
   }
 }

@@ -5,7 +5,7 @@ import {resolveTypeName} from '@sanity/util/content'
 import {FIXME} from '../../../../FIXME'
 import {set, unset} from '../../../patch'
 import {ArrayOfPrimitivesInputProps} from '../../../types'
-import {IncompatibleItemType} from '../ArrayOfObjectsInput/item/IncompatibleItemType'
+import {IncompatibleItemType} from '../ArrayOfObjectsInput/List/IncompatibleItemType'
 import {Item, List} from '../common/list'
 import {PreviewProps} from '../../../../components/previews'
 import {isLegacyOptionsItem, resolveValueWithLegacyOptionsSupport} from './legacyOptionsSupport'
@@ -98,7 +98,7 @@ export class OptionsArrayInput extends React.PureComponent<OptionsArrayInputProp
       schemaType.options?.direction === 'horizontal' || schemaType.options?.layout === 'grid'
 
     return (
-      <List isGrid={isGrid} tabIndex={0} {...elementProps}>
+      <List tabIndex={0} {...elementProps}>
         {options.map((option, index) => {
           const optionType = this.getMemberTypeOfItem(option)
           const checked = inArray(value || [], resolveValueWithLegacyOptionsSupport(option))
@@ -112,7 +112,7 @@ export class OptionsArrayInput extends React.PureComponent<OptionsArrayInputProp
           }
 
           return (
-            <Item index={index} isGrid={isGrid} key={index}>
+            <Item index={index} key={index}>
               <Flex align="center" as="label" muted={disabled}>
                 <WrappedCheckbox
                   disabled={disabled}

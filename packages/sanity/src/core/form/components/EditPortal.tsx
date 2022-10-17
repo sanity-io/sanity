@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {ReactNode} from 'react'
 import {Box, Dialog, Layer} from '@sanity/ui'
 import {PresenceOverlay} from '../../presence'
 import {PopoverDialog} from '../../components'
@@ -10,7 +10,7 @@ interface Props {
   header: string
   id?: string
   onClose: () => void
-  children?: JSX.Element
+  children?: ReactNode
   // eslint-disable-next-line camelcase
   legacy_referenceElement: HTMLElement | null
 }

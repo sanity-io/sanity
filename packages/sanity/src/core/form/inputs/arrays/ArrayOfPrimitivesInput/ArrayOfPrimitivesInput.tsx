@@ -1,11 +1,13 @@
 import React from 'react'
 import {get} from 'lodash'
 import {ArraySchemaType} from '@sanity/types'
-import {Card, Stack} from '@sanity/ui'
+import {Card, Stack, Text} from '@sanity/ui'
 import {ArrayOfPrimitivesInputProps, FormArrayInputFunctionsProps} from '../../../types'
 import {Item, List} from '../common/list'
 import {PrimitiveItemProps} from '../../../types/itemProps'
-import {MemberItemError, ArrayOfPrimitivesItem} from '../../../members'
+import {ArrayOfPrimitivesItem} from '../../../members'
+import {ErrorItem} from '../ArrayOfObjectsInput/List/ErrorItem'
+import {UploadTargetCard} from '../common/UploadTargetCard'
 import {getEmptyValue} from './getEmptyValue'
 
 import {PrimitiveValue} from './types'
@@ -18,7 +20,7 @@ export interface DefaultArrayOfPrimitivesInputProps extends ArrayOfPrimitivesInp
     FormArrayInputFunctionsProps<ArraySchemaType<PrimitiveValue[]>, PrimitiveValue>
   >
 }
-
+// Note: this should be a class component until React provides support for a hook version of getSnapshotBeforeUpdate
 /** @public */
 export class ArrayOfPrimitivesInput extends React.PureComponent<DefaultArrayOfPrimitivesInputProps> {
   _element: HTMLElement | null = null
@@ -55,14 +57,10 @@ export class ArrayOfPrimitivesInput extends React.PureComponent<DefaultArrayOfPr
     }
   }
 
-  handleSortEnd = (event: {oldIndex: number; newIndex: number}) => {
+  handleSortEnd = (event: {fromIndex: number; toIndex: number}) => {
     const {onFocusIndex, onMoveItem, value} = this.props
-    if (value) onMoveItem({fromIndex: event.oldIndex, toIndex: event.newIndex})
-    onFocusIndex(event.newIndex)
-  }
-
-  setElement = (el: HTMLElement | null) => {
-    this._element = el
+    if (value) onMoveItem(event)
+    onFocusIndex(event.toIndex)
   }
 
   focus() {
@@ -136,13 +134,12 @@ export class ArrayOfPrimitivesInput extends React.PureComponent<DefaultArrayOfPr
   }
 
   renderArrayItem = (props: Omit<PrimitiveItemProps, 'renderDefault'>) => {
-    const {schemaType, readOnly} = this.props
-    const isSortable = !readOnly && get(schemaType, 'options.sortable') !== false
-
+    const {schemaType} = this.props
+    const sortable = schemaType.options?.sortable !== false
     return (
       <ItemRow
         {...props}
-        isSortable={isSortable}
+        sortable={sortable}
         insertableTypes={schemaType.of}
         onEnterKey={this.handleItemEnterKey}
         onEscapeKey={this.handleItemEscapeKey}
@@ -151,44 +148,60 @@ export class ArrayOfPrimitivesInput extends React.PureComponent<DefaultArrayOfPr
   }
 
   render() {
-    const {schemaType, members, readOnly, value, onChange, renderInput, renderItem} = this.props
+    const {
+      schemaType,
+      members,
+      readOnly,
+      value,
+      onChange,
+      renderInput,
+      onUpload,
+      resolveUploader,
+      elementProps,
+    } = this.props
 
     const isSortable = !readOnly && get(schemaType, 'options.sortable') !== false
 
     return (
       <Stack space={3} data-testid="array-primitives-input">
-        <Stack space={1}>
-          {members.length > 0 && (
-            <Card padding={1} border>
-              <List onSortEnd={this.handleSortEnd} isSortable={isSortable}>
-                {members.map((member, index) => {
-                  if (member.kind === 'item') {
+        <UploadTargetCard
+          types={schemaType.of}
+          resolveUploader={resolveUploader}
+          onUpload={onUpload}
+          {...elementProps}
+          tabIndex={0}
+        >
+          <Stack space={1}>
+            {members.length === 0 ? (
+              <Card padding={3} border style={{borderStyle: 'dashed'}} radius={2}>
+                <Text align="center" muted size={1}>
+                  {schemaType.placeholder || <>No items</>}
+                </Text>
+              </Card>
+            ) : (
+              <Card padding={1} border>
+                <List onItemMove={this.handleSortEnd} sortable={isSortable} gap={1}>
+                  {members.map((member, index) => {
                     return (
-                      <Item
-                        key={member.key}
-                        index={index}
-                        data-item-index={index}
-                        isSortable={isSortable}
-                      >
-                        <ArrayOfPrimitivesItem
-                          member={member}
-                          renderInput={renderInput}
-                          // eslint-disable-next-line react/jsx-no-bind
-                          renderItem={(p) => this.renderArrayItem({...p, children: renderItem(p)})}
-                        />
+                      <Item key={member.key} sortable={isSortable} index={index}>
+                        {member.kind === 'item' && (
+                          <ArrayOfPrimitivesItem
+                            member={member}
+                            renderItem={this.renderArrayItem}
+                            renderInput={renderInput}
+                          />
+                        )}
+                        {member.kind === 'error' && (
+                          <ErrorItem sortable={isSortable} member={member} />
+                        )}
                       </Item>
                     )
-                  }
-                  if (member.kind === 'error') {
-                    return <MemberItemError key={member.key} member={member} />
-                  }
-                  //@ts-expect-error all possible cases should be covered
-                  return <>Unknown member kind: ${member.kind}</>
-                })}
-              </List>
-            </Card>
-          )}
-        </Stack>
+                  })}
+                </List>
+              </Card>
+            )}
+          </Stack>
+        </UploadTargetCard>
 
         <ArrayOfPrimitivesFunctions
           type={schemaType}

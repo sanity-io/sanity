@@ -45,7 +45,7 @@ export function ReferencePreview(props: {
   refType: ObjectSchemaType
   layout: PreviewLayoutKey
   renderPreview: RenderPreviewCallback
-  showTypeLabel: boolean
+  showTypeLabel?: boolean
 }) {
   const {availability, id, layout, preview, refType, renderPreview, showTypeLabel} = props
 
