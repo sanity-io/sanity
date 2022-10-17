@@ -11,13 +11,13 @@ import {SlugInput} from '../../inputs/Slug/SlugInput'
 import {StudioImageInput} from '../inputs/StudioImageInput'
 import {StudioFileInput} from '../inputs/StudioFileInput'
 import {StudioCrossDatasetReferenceInput} from '../inputs/crossDatasetReference/StudioCrossDatasetReferenceInput'
-import {ArrayInput as ListArrayInput} from '../../inputs/arrays/ArrayOfObjectsInput/List/Input'
+import {UniversalArrayInput} from '../../inputs/arrays/UniversalArrayInput'
 import {FIXME} from '../../../FIXME'
 
 export const defaultInputs: Record<string, React.ComponentType<FIXME>> = {
   document: ObjectInput,
   object: ObjectInput,
-  array: ListArrayInput,
+  array: UniversalArrayInput,
   boolean: BooleanInput,
   number: NumberInput,
   text: TextInput,
