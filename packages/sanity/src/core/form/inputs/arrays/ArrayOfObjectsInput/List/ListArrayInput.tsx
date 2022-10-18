@@ -1,18 +1,15 @@
 /* eslint-disable react/jsx-handler-names */
 import {Card, Stack, Text} from '@sanity/ui'
-import React from 'react'
-import {isReferenceSchemaType} from '@sanity/types'
+import React, {useCallback} from 'react'
 import {UploaderResolver} from '../../../../studio/uploads/types'
 import {Item, List} from '../../common/list'
-import {ArrayOfObjectsInputProps, ObjectItem, ObjectItemProps, UploadEvent} from '../../../../types'
+import {ArrayOfObjectsInputProps, ObjectItem, UploadEvent} from '../../../../types'
 import {DefaultArrayInputFunctions} from '../../common/ArrayFunctions'
 import {ArrayOfObjectsItem} from '../../../../members'
 
 import {createProtoArrayValue} from '../createProtoArrayValue'
 import {UploadTargetCard} from '../../common/UploadTargetCard'
-import {PreviewItem} from './PreviewItem'
 import {ErrorItem} from './ErrorItem'
-import {ReferenceItem, ReferenceItemValue} from './ReferenceItem'
 
 export interface ArrayInputProps<Item extends ObjectItem> extends ArrayOfObjectsInputProps<Item> {
   resolveUploader: UploaderResolver
@@ -33,6 +30,7 @@ export function ListArrayInput<Item extends ObjectItem>(props: ArrayInputProps<I
     onUpload,
     renderPreview,
     renderField,
+    renderItem,
     renderInput,
   } = props
 
@@ -51,30 +49,6 @@ export function ListArrayInput<Item extends ObjectItem>(props: ArrayInputProps<I
   )
 
   const sortable = schemaType.options?.sortable !== false
-
-  const renderItem = (itemProps: Omit<ObjectItemProps, 'renderDefault'>) => {
-    return isReferenceSchemaType(itemProps.schemaType) ? (
-      <ReferenceItem
-        {...itemProps}
-        insertableTypes={schemaType.of}
-        sortable={sortable}
-        schemaType={itemProps.schemaType}
-        value={itemProps.value as ReferenceItemValue}
-        renderPreview={renderPreview}
-      />
-    ) : (
-      <PreviewItem
-        {...itemProps}
-        sortable={sortable}
-        insertableTypes={schemaType.of}
-        preview={renderPreview({
-          schemaType: itemProps.schemaType,
-          value: itemProps.value,
-          layout: 'default',
-        })}
-      />
-    )
-  }
 
   return (
     <Stack space={3}>

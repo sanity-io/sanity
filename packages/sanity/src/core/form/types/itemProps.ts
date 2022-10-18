@@ -1,4 +1,5 @@
 import {
+  ArraySchemaType,
   BooleanSchemaType,
   FormNodeValidation,
   NumberSchemaType,
@@ -53,6 +54,7 @@ export interface BaseItemProps<T> {
 export interface ObjectItemProps<Item extends ObjectItem = ObjectItem> extends BaseItemProps<Item> {
   changed: boolean
   schemaType: ObjectSchemaType
+  parentSchemaType: ArraySchemaType
   collapsed: boolean | undefined
   collapsible: boolean
   onCollapse: () => void
@@ -69,4 +71,5 @@ export type ItemProps = ObjectItemProps | PrimitiveItemProps
 export interface PrimitiveItemProps extends BaseItemProps<string | number | boolean> {
   value: string | number | boolean
   schemaType: NumberSchemaType | BooleanSchemaType | StringSchemaType
+  parentSchemaType: ArraySchemaType
 }

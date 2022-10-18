@@ -6,11 +6,11 @@ import {
   RenderPreviewCallback,
 } from '../types'
 import {
-  defaultResolveFieldComponent,
   defaultResolveInputComponent,
-  defaultResolveItemComponent,
   defaultResolvePreviewComponent,
 } from './inputResolver/inputResolver'
+import {defaultResolveItemComponent} from './inputResolver/itemResolver'
+import {defaultResolveFieldComponent} from './inputResolver/fieldResolver'
 
 /** @internal */
 export const defaultRenderField: RenderFieldCallback = (props) => {

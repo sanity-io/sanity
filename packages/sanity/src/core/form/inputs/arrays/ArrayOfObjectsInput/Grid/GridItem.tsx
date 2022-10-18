@@ -10,7 +10,7 @@ import {
   Spinner,
   Text,
 } from '@sanity/ui'
-import React, {ReactNode, useCallback, useMemo, useRef} from 'react'
+import React, {useCallback, useMemo, useRef} from 'react'
 import {SchemaType} from '@sanity/types'
 import {CopyIcon as DuplicateIcon, EllipsisVerticalIcon, TrashIcon} from '@sanity/icons'
 import styled from 'styled-components'
@@ -30,12 +30,8 @@ import {InsertMenu} from '../InsertMenu'
 import {FIXME} from '../../../../../FIXME'
 import {EditPortal} from '../../../../components/EditPortal'
 
-interface Props<Item extends ObjectItem> extends Omit<ObjectItemProps<Item>, 'renderDefault'> {
-  insertableTypes: SchemaType[]
-  value: Item
-  preview: ReactNode
-  sortable: boolean
-}
+type GridItemProps<Item extends ObjectItem> = Omit<ObjectItemProps<Item>, 'renderDefault'>
+
 const PreviewCard = styled(Card)`
   border-top-right-radius: inherit;
   border-top-left-radius: inherit;
@@ -71,9 +67,10 @@ function getTone({
 }
 const MENU_POPOVER_PROPS = {portal: true, tone: 'default'} as const
 
-export function GridItem<Item extends ObjectItem = ObjectItem>(props: Props<Item>) {
+export function GridItem<Item extends ObjectItem = ObjectItem>(props: GridItemProps<Item>) {
   const {
     schemaType,
+    parentSchemaType,
     path,
     readOnly,
     onRemove,
@@ -83,14 +80,14 @@ export function GridItem<Item extends ObjectItem = ObjectItem>(props: Props<Item
     onFocus,
     onOpen,
     onClose,
-    inputId,
     changed,
     focused,
     children,
-    sortable,
-    preview,
-    insertableTypes,
+    inputProps: {renderPreview},
   } = props
+
+  const sortable = parentSchemaType.options?.sortable !== false
+  const insertableTypes = parentSchemaType.of
 
   const previewCardRef = useRef<FIXME | null>(null)
   // this is here to make sure the item is visible if it's being edited behind a modal
@@ -190,7 +187,11 @@ export function GridItem<Item extends ObjectItem = ObjectItem>(props: Props<Item
         onFocus={onFocus}
         __unstable_focusRing
       >
-        {preview}
+        {renderPreview({
+          schemaType,
+          value,
+          layout: 'media',
+        })}
         {resolvingInitialValue && (
           <Flex
             style={{

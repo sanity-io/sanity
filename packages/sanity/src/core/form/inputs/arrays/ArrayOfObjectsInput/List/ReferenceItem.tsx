@@ -23,7 +23,7 @@ import {
   TrashIcon,
 } from '@sanity/icons'
 import styled from 'styled-components'
-import {ObjectItem, ObjectItemProps, RenderPreviewCallback} from '../../../../types'
+import {ObjectItem, ObjectItemProps} from '../../../../types'
 import {useScrollIntoViewOnFocusWithin} from '../../../../hooks/useScrollIntoViewOnFocusWithin'
 import {useDidUpdate} from '../../../../hooks/useDidUpdate'
 import {randomKey} from '../../../../utils/randomKey'
@@ -42,13 +42,10 @@ import {useReferenceInput} from '../_reference/useReferenceInput'
 
 export interface ReferenceItemValue extends Omit<ObjectItem, '_type'>, Omit<Reference, '_key'> {}
 
-interface Props<Item extends ReferenceItemValue>
+interface ReferenceItemProps<Item extends ReferenceItemValue>
   extends Omit<ObjectItemProps<ReferenceItemValue>, 'renderDefault'> {
-  insertableTypes: SchemaType[]
   value: Item
   schemaType: ReferenceSchemaType
-  sortable: boolean
-  renderPreview: RenderPreviewCallback
 }
 
 function getTone({
@@ -87,10 +84,11 @@ export const ReferencePreviewCard = styled(Card)`
 `
 
 export function ReferenceItem<Item extends ReferenceItemValue = ReferenceItemValue>(
-  props: Props<Item>
+  props: ReferenceItemProps<Item>
 ) {
   const {
     schemaType,
+    parentSchemaType,
     path,
     readOnly,
     onRemove,
@@ -104,10 +102,11 @@ export function ReferenceItem<Item extends ReferenceItemValue = ReferenceItemVal
     changed,
     focused,
     children,
-    sortable,
-    insertableTypes,
-    inputProps: {onChange, focusPath, onFocusPath},
+    inputProps: {onChange, focusPath, onFocusPath, renderPreview, elementProps},
   } = props
+
+  const sortable = parentSchemaType.options?.sortable !== false
+  const insertableTypes = parentSchemaType.of
 
   const elementRef = useRef<HTMLDivElement | null>(null)
 
@@ -366,7 +365,7 @@ export function ReferenceItem<Item extends ReferenceItemValue = ReferenceItemVal
           <PreviewReferenceValue
             value={value}
             referenceInfo={loadableReferenceInfo}
-            renderPreview={props.renderPreview}
+            renderPreview={renderPreview}
             type={schemaType}
           />
           {resolvingInitialValue && (
