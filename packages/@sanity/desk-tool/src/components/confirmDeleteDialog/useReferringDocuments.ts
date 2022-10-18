@@ -48,6 +48,7 @@ export type ReferringDocuments = {
   isLoading: boolean
   totalCount: number
   projectIds: string[]
+  datasetNames: string[]
   internalReferences?: {
     totalCount: number
     references: Array<{_id: string; _type: string}>
@@ -73,7 +74,7 @@ export type ReferringDocuments = {
        * This will be omitted if there is no access to the current project and
        * dataset pair (e.g. if no `sanity-project-token` were configured)
        */
-      datasetName?: string
+      datasetName: string
     }>
   }
 }
@@ -193,9 +194,20 @@ export function useReferringDocuments(
     ).sort()
   }, [crossDatasetReferences?.references])
 
+  const datasetNames = useMemo(() => {
+    return Array.from(
+      new Set(
+        crossDatasetReferences?.references
+          .map((crossDatasetReference) => crossDatasetReference.datasetName)
+          .filter(Boolean)
+      )
+    ).sort()
+  }, [crossDatasetReferences?.references])
+
   return {
     totalCount: (internalReferences?.totalCount || 0) + (crossDatasetReferences?.totalCount || 0),
     projectIds,
+    datasetNames,
     internalReferences,
     crossDatasetReferences,
     isLoading: isInternalReferencesLoading || isCrossDatasetReferencesLoading,

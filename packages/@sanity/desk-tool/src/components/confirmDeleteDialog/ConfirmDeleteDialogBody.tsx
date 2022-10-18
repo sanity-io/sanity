@@ -45,6 +45,7 @@ export function ConfirmDeleteDialogBody({
   totalCount,
   action,
   projectIds,
+  datasetNames,
   onReferenceLinkClick,
 }: DeletionConfirmationDialogBodyProps) {
   const toast = useToast()
@@ -86,7 +87,8 @@ export function ConfirmDeleteDialogBody({
     crossDatasetReferences.totalCount === 1
       ? '1 document'
       : `${crossDatasetReferences.totalCount.toLocaleString()} documents`
-  const projectCount = projectIds.length === 1 ? 'another project' : `${projectIds.length} projects`
+  const datasetsCount =
+    datasetNames.length === 1 ? 'another dataset' : `${datasetNames.length} datasets`
   const projectIdList = `Project ID${projectIds.length === 1 ? '' : 's'}: ${projectIds.join(', ')}`
 
   return (
@@ -156,7 +158,7 @@ export function ConfirmDeleteDialogBody({
                   <Flex marginRight={4} direction="column">
                     <Box marginBottom={2}>
                       <Text>
-                        {documentCount} in {projectCount}
+                        {documentCount} in {datasetsCount}
                       </Text>
                     </Box>
                     <Box>
