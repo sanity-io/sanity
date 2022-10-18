@@ -1,4 +1,4 @@
-import {isArraySchemaType, isObjectSchemaType, SchemaType} from '@sanity/types'
+import {isArraySchemaType, SchemaType} from '@sanity/types'
 import {get} from 'lodash'
 
 export function getOption(type: SchemaType, optionName: string) {
@@ -9,6 +9,16 @@ const PSEUDO_OBJECTS = ['array', 'file', 'image', 'reference', 'slug']
 const HIDDEN_FIELDS = ['asset', 'crop', 'hotspot', '_ref', '_weak']
 const NO_LEVEL_LAYOUTS = ['tags']
 const NO_LEVEL_TYPES = ['slug']
+
+export function getTypeChain(type: SchemaType | undefined, visited: Set<SchemaType>): SchemaType[] {
+  if (!type) return []
+  if (visited.has(type)) return []
+
+  visited.add(type)
+
+  const next = type.type ? getTypeChain(type.type, visited) : []
+  return [type, ...next]
+}
 
 export function getFieldLevel(schemaType: SchemaType, currentLevel: number) {
   return isArraySchemaType(schemaType)

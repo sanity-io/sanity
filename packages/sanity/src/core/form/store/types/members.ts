@@ -1,5 +1,6 @@
+import {ArraySchemaType} from '@sanity/types'
 import {FieldsetState} from './fieldsetState'
-import {BaseFormNode, ObjectArrayFormNode, ObjectFormNode, PrimitiveFormNode} from './nodes'
+import {BaseFormNode, ObjectArrayFormNode, PrimitiveFormNode} from './nodes'
 import {ArrayItemError, FieldError} from './memberErrors'
 
 export type ObjectMember = FieldMember | FieldSetMember | FieldError
@@ -22,6 +23,7 @@ export interface ArrayOfObjectsItemMember<Node extends ObjectArrayFormNode = Obj
 
   open: boolean
 
+  parentSchemaType: ArraySchemaType
   item: Node
 }
 
@@ -38,6 +40,8 @@ export interface ArrayOfPrimitivesItemMember<Node extends PrimitiveFormNode = Pr
   // collapsible: true
 
   open: boolean
+
+  parentSchemaType: ArraySchemaType
 
   // note: ObjectInputProps.collapsed always follows the array item collapsed state
   // this means you cannot have an expanded array item with a collapsed object inside it
