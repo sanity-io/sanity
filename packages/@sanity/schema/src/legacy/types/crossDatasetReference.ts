@@ -16,7 +16,13 @@ export const WEAK_FIELD = {
   type: 'boolean',
 }
 
-const REFERENCE_FIELDS = [REF_FIELD, WEAK_FIELD]
+const DATASET_FIELD = {
+  name: '_dataset',
+  title: 'The dataset containing the referenced document',
+  type: 'string',
+}
+
+const REFERENCE_FIELDS = [REF_FIELD, WEAK_FIELD, DATASET_FIELD]
 
 const OVERRIDABLE_FIELDS = [...DEFAULT_OVERRIDEABLE_FIELDS]
 
