@@ -1,13 +1,13 @@
 import {SchemaType} from '@sanity/types'
-import React, {useCallback, createElement} from 'react'
+import React, {createElement, useCallback} from 'react'
 import {PreviewProps} from '../../components/previews'
 import {
   defaultResolveInputComponent,
-  defaultResolveFieldComponent,
-  defaultResolveItemComponent,
   defaultResolvePreviewComponent,
 } from '../studio/inputResolver/inputResolver'
-import {InputProps, FieldProps, ItemProps} from '../types'
+import {FieldProps, InputProps, ItemProps} from '../types'
+import {defaultResolveFieldComponent} from '../studio/inputResolver/fieldResolver'
+import {defaultResolveItemComponent} from '../studio/inputResolver/itemResolver'
 
 function useResolveDefaultComponent<T extends {schemaType?: SchemaType}>(props: {
   componentProps: Omit<T, 'renderDefault'>

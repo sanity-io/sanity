@@ -47,19 +47,8 @@ export function GridArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
 
   const renderItem = useCallback((itemProps: Omit<ObjectItemProps, 'renderDefault'>) => {
     // todo: consider using a different item component for references
-    return (
-      <GridItem
-        {...itemProps}
-        sortable={sortable}
-        insertableTypes={schemaType.of}
-        preview={renderPreview({
-          schemaType: itemProps.schemaType,
-          value: itemProps.value,
-          layout: 'media',
-        })}
-      />
-    )
-  }
+    return <GridItem {...itemProps} />
+  }, [])
 
   return (
     <Stack space={3}>

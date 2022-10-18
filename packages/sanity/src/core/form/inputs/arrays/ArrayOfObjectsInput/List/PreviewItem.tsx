@@ -10,7 +10,7 @@ import {
   Spinner,
   Text,
 } from '@sanity/ui'
-import React, {ReactNode, useCallback, useMemo, useRef} from 'react'
+import React, {useCallback, useMemo, useRef} from 'react'
 import {SchemaType} from '@sanity/types'
 import {CopyIcon as DuplicateIcon, EllipsisVerticalIcon, TrashIcon} from '@sanity/icons'
 import {getSchemaTypeTitle} from '../../../../../schema'
@@ -28,12 +28,7 @@ import {createProtoArrayValue} from '../createProtoArrayValue'
 import {InsertMenu} from '../InsertMenu'
 import {EditPortal} from '../../../../components/EditPortal'
 
-interface Props<Item extends ObjectItem> extends Omit<ObjectItemProps<Item>, 'renderDefault'> {
-  insertableTypes: SchemaType[]
-  value: Item
-  preview: ReactNode
-  sortable: boolean
-}
+type PreviewItemProps<Item extends ObjectItem> = Omit<ObjectItemProps<Item>, 'renderDefault'>
 
 function getTone({
   readOnly,
@@ -64,9 +59,10 @@ const INITIAL_VALUE_CARD_STYLE = {
 
 const BUTTON_CARD_STYLE = {position: 'relative'} as const
 
-export function PreviewItem<Item extends ObjectItem = ObjectItem>(props: Props<Item>) {
+export function PreviewItem<Item extends ObjectItem = ObjectItem>(props: PreviewItemProps<Item>) {
   const {
     schemaType,
+    parentSchemaType,
     path,
     readOnly,
     onRemove,
@@ -76,14 +72,14 @@ export function PreviewItem<Item extends ObjectItem = ObjectItem>(props: Props<I
     onFocus,
     onOpen,
     onClose,
-    inputId,
     changed,
     focused,
     children,
-    sortable,
-    preview,
-    insertableTypes,
+    inputProps: {renderPreview},
   } = props
+
+  const sortable = parentSchemaType.options?.sortable !== false
+  const insertableTypes = parentSchemaType.of
 
   const previewCardRef = useRef<HTMLDivElement | null>(null)
 
@@ -178,7 +174,11 @@ export function PreviewItem<Item extends ObjectItem = ObjectItem>(props: Props<I
         __unstable_focusRing
         style={BUTTON_CARD_STYLE}
       >
-        {preview}
+        {renderPreview({
+          schemaType: props.schemaType,
+          value: props.value,
+          layout: 'default',
+        })}
         {resolvingInitialValue && (
           <Card
             style={INITIAL_VALUE_CARD_STYLE}

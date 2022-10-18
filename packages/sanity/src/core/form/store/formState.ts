@@ -831,12 +831,13 @@ function prepareArrayOfObjectsMember(props: {
     open: startsWith(itemPath, parent.openPath),
     collapsed: collapsed,
     collapsible: true,
+    parentSchemaType: parent.schemaType,
     item: itemState,
   }
 }
 
 /*
- * Takes a field in context of a parent object and returns prepared props for it
+ * Takes a field in contet of a parent object and returns prepared props for it
  */
 function prepareArrayOfPrimitivesMember(props: {
   arrayItem: unknown
@@ -897,6 +898,7 @@ function prepareArrayOfPrimitivesMember(props: {
     kind: 'item',
     key,
     index,
+    parentSchemaType: parent.schemaType,
     open: isEqual(itemPath, parent.openPath),
     item,
   }
