@@ -89,7 +89,7 @@ export function CrossDatasetReferencePreview(props: {
   return (
     <Flex align="center" data-testid="preview">
       {availability.available ? (
-        <Box flex={1} paddingX={2} paddingY={1}>
+        <Box flex={1}>
           <DefaultPreview
             title={preview.published?.title}
             subtitle={preview.published?.subtitle}
@@ -97,8 +97,8 @@ export function CrossDatasetReferencePreview(props: {
           />
         </Box>
       ) : (
-        <Box flex={1} padding={2}>
-          <Flex align="center" justify="center">
+        <Box flex={1}>
+          <Flex align="center">
             <Box flex={1} paddingY={2}>
               <Text muted>Document unavailable</Text>
             </Box>
