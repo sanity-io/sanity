@@ -888,6 +888,97 @@ Object {
       "name": "ColorSorting",
     },
     Object {
+      "description": undefined,
+      "fields": Array [
+        Object {
+          "description": undefined,
+          "fieldName": "_dataset",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "_key",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "_ref",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "_type",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "_weak",
+          "type": "Boolean",
+        },
+      ],
+      "kind": "Type",
+      "name": "CrossDatasetReference",
+      "originalName": "crossDatasetReference",
+      "type": "Object",
+    },
+    Object {
+      "fields": Array [
+        Object {
+          "fieldName": "_dataset",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        Object {
+          "fieldName": "_key",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        Object {
+          "fieldName": "_ref",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        Object {
+          "fieldName": "_type",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        Object {
+          "fieldName": "_weak",
+          "isReference": undefined,
+          "type": "BooleanFilter",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "CrossDatasetReferenceFilter",
+    },
+    Object {
+      "fields": Array [
+        Object {
+          "fieldName": "_dataset",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "_key",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "_ref",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "_type",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "_weak",
+          "type": "SortOrder",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "CrossDatasetReferenceSorting",
+    },
+    Object {
       "fields": Array [
         Object {
           "description": "Checks if the value is equal to the given input.",

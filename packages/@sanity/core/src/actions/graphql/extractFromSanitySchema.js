@@ -6,15 +6,16 @@ const helpUrls = require('./helpUrls')
 const SchemaError = require('./SchemaError')
 
 const Schema = schemaCompiler.default || schemaCompiler
-const skipTypes = ['document', 'reference', 'crossDatasetReference']
+const skipTypes = ['document', 'reference']
 const allowedJsonTypes = ['object', 'array']
 const disallowedCustomizedMembers = ['object', 'array', 'image', 'file', 'block']
 const scalars = ['string', 'number', 'boolean']
 
 function getBaseType(baseSchema, typeName) {
+  const additions = typeName === 'crossDatasetReference' ? {to: [{type: typeName}]} : {}
   return Schema.compile({
     types: baseSchema._original.types.concat([
-      {name: `__placeholder__`, type: typeName, options: {hotspot: true}},
+      {name: `__placeholder__`, type: typeName, options: {hotspot: true}, ...additions},
     ]),
   }).get('__placeholder__')
 }
@@ -29,8 +30,7 @@ function isBaseType(type) {
     type.name !== type.jsonType &&
     allowedJsonTypes.includes(type.jsonType) &&
     !skipTypes.includes(type.name) &&
-    !isReference(type) &&
-    !isCrossDatasetReference(type)
+    !isReference(type)
   )
 }
 
@@ -65,10 +65,6 @@ function isType(typeDef, typeName) {
 
 function isReference(typeDef) {
   return isType(typeDef, 'reference')
-}
-
-function isCrossDatasetReference(typeDef) {
-  return isType(typeDef, 'crossDatasetReference')
 }
 
 function extractFromSanitySchema(sanitySchema, extractOptions = {}) {
