@@ -278,7 +278,7 @@ export const CrossDatasetReferenceInput = forwardRef(function CrossDatasetRefere
       level={level}
       description={type.description}
     >
-      <Stack space={1} marginY={isEditing ? 2 : 0}>
+      <Stack space={1} marginBottom={isEditing ? 0 : 0}>
         {isEditing ? (
           <Stack space={2} ref={clickOutsideBoundaryRef}>
             <ChangeIndicatorForFieldPath
