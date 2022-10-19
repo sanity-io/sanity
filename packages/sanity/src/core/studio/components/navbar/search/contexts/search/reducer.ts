@@ -91,7 +91,7 @@ export type SearchAction =
   | TermsTypeRemove
   | TermsTypesClear
 
-const debug = debugWithName('searchReducer')
+const debug = debugWithName('reducer')
 
 export function searchReducer(state: SearchReducerState, action: SearchAction): SearchReducerState {
   let prefix = '🔍'

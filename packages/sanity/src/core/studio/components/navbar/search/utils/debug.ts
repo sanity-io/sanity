@@ -1,7 +1,7 @@
 import debug from 'debug'
 import {DEBUG_FRAGMENT} from '../constants'
 
-const rootName = 'sanity-default-layout:navbar:search:'
+const rootName = 'core:studio:navbar:search:'
 
 export default debug(rootName)
 export function debugWithName(name: string): debug.Debugger {
