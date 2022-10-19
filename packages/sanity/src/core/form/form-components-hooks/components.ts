@@ -25,7 +25,7 @@ function useResolveDefaultComponent<T extends {schemaType?: SchemaType}>(props: 
 
   const renderDefault = useCallback(
     (parentTypeProps: T) => {
-      if (!componentProps.schemaType?.type) {
+      if (!parentTypeProps.schemaType?.type) {
         // In theory this should not be possible, and this error should never be thrown
         throw new Error('Attempted to render form component of non-existent parent type')
       }
@@ -33,11 +33,11 @@ function useResolveDefaultComponent<T extends {schemaType?: SchemaType}>(props: 
       // The components property is removed from the schemaType object
       // in order to prevent that a component is render itself
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const {components, ...restSchemaType} = componentProps.schemaType
-      const parentTypeResolvedComponent = componentResolver(restSchemaType as SchemaType)
+      const {components, ...restSchemaType} = parentTypeProps.schemaType
+      const parentTypeResolvedComponent = componentResolver(restSchemaType)
       return createElement(parentTypeResolvedComponent, parentTypeProps)
     },
-    [componentProps.schemaType, componentResolver]
+    [componentResolver]
   )
 
   return createElement(defaultResolvedComponent, {
