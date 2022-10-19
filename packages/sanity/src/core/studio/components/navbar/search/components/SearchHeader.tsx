@@ -34,10 +34,11 @@ const SearchHeaderCard = styled(Card)`
 
 const NotificationBadge = styled.div`
   align-items: center;
-  background: ${({theme}: {theme: Theme}) => theme.sanity.color.selectable?.primary.enabled.fg};
-  color: ${({theme}: {theme: Theme}) => theme.sanity.color.selectable?.primary.selected.fg};
+  background: ${({theme}: {theme: Theme}) => theme.sanity.color.solid.primary.hovered.bg};
+  color: ${({theme}: {theme: Theme}) => theme.sanity.color.solid.primary.hovered.fg};
   border-radius: 100%;
   display: flex;
+  font-family: ${studioTheme.fonts.text.family};
   font-size: calc(8 / 16 * 1rem);
   font-weight: ${studioTheme.fonts.text.weights.semibold};
   height: 14px;

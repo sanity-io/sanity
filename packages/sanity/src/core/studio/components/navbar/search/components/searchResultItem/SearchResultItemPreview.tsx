@@ -21,8 +21,8 @@ interface SearchResultItemPreviewProps {
 }
 
 /**
- * Brute force all nested boxes on iOS to use `background-attachment: scroll`, as
- * `background-attachment: fixed` (what Sanity UI's <Skeleton> components) isn't yet supported on iOS Safari.
+ * Temporary workaround: force all nested boxes on iOS to use `background-attachment: scroll`
+ * to allow <Skeleton> components to render correctly within virtual lists.
  */
 const SearchResultItemPreviewBox = styled(Box)`
   @supports (-webkit-overflow-scrolling: touch) {
