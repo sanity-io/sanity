@@ -43,9 +43,12 @@ export function IncompatibleItemType(props: Props) {
       content={
         <PopoverCard margin={1} padding={3} onKeyDown={handleKeyDown} tabIndex={0} overflow="auto">
           <Stack space={4}>
-            <Box>
-              <Text weight="semibold">Why is this happening?</Text>
-            </Box>
+            <Text weight="semibold">
+              Item of type <code>{typeName}</code> not valid for this list
+            </Text>
+            <Text size={1} weight="semibold">
+              Why is this happening?
+            </Text>
             <Text size={1}>
               The current schema does not declare items of type <code>{typeName}</code> as valid for
               this list. This could mean that the type has been removed as a valid item type, or
