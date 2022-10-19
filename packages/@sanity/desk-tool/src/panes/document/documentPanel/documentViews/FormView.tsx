@@ -55,12 +55,13 @@ export function FormView(props: FormViewProps) {
     handleFocus,
     historyController,
     initialValue,
+    historyValue,
     markers,
     ready,
     changesOpen,
   } = useDocumentPane()
   const editState = useEditState(documentId, documentType)
-  const value = editState.draft || editState.published || initialValue
+  const value = historyValue || editState.draft || editState.published || initialValue
   const presence = useDocumentPresence(documentId, {ignoreLastActiveUpdates: true})
   const {revTime: rev} = historyController
   const [{filterField}, setFilterField] = useState<FormViewState>(INITIAL_STATE)

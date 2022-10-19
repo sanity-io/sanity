@@ -17,6 +17,7 @@ export interface DocumentPaneContextValue {
   compareValue: Partial<SanityDocument> | null
   connectionState: 'connecting' | 'reconnecting' | 'connected'
   displayed: Partial<SanityDocument> | null
+  historyValue: Partial<SanityDocument> | null
   documentId: string
   documentIdRaw: string
   documentSchema: DocumentSchema | null
