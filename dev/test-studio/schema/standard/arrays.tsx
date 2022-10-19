@@ -267,7 +267,7 @@ export default defineType({
         },
       ],
       options: {
-        direction: 'vertical',
+        layout: 'grid',
         list: [
           {_type: 'color', title: 'Red', name: 'red', _key: 'red'},
           {_type: 'color', title: 'Green', name: 'green', _key: 'green'},
