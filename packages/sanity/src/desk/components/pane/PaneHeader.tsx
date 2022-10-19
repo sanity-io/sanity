@@ -49,7 +49,7 @@ export const PaneHeader = forwardRef(function PaneHeader(
             <Layout
               onClick={handleLayoutClick}
               padding={2}
-              paddingBottom={tabs || subActions ? 1 : 2}
+              paddingBottom={tabs || subActions ? 0 : 2}
               sizing="border"
               style={layoutStyle}
             >
@@ -80,7 +80,7 @@ export const PaneHeader = forwardRef(function PaneHeader(
               <Flex
                 align="center"
                 hidden={collapsed}
-                paddingTop={0}
+                paddingTop={1}
                 paddingRight={2}
                 paddingBottom={2}
                 paddingLeft={3}
