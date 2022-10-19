@@ -207,7 +207,8 @@ export function PreviewItem<Item extends ObjectItem = ObjectItem>(props: Preview
       {open && (
         <EditPortal
           header={readOnly ? `View ${itemTypeTitle}` : `Edit ${itemTypeTitle}`}
-          type={schemaType?.options?.modal?.type || 'dialog'}
+          type={parentSchemaType?.options?.modal?.type || 'dialog'}
+          width={parentSchemaType?.options?.modal?.width ?? 1}
           id={value._key}
           onClose={onClose}
           legacy_referenceElement={previewCardRef.current}

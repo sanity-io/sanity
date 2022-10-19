@@ -225,7 +225,8 @@ export function GridItem<Item extends ObjectItem = ObjectItem>(props: GridItemPr
       {open && (
         <EditPortal
           header={readOnly ? `View ${itemTypeTitle}` : `Edit ${itemTypeTitle}`}
-          type={schemaType?.options?.modal?.type || 'dialog'}
+          type={parentSchemaType?.options?.modal?.type || 'dialog'}
+          width={parentSchemaType?.options?.modal?.width ?? 1}
           id={value._key}
           onClose={onClose}
           legacy_referenceElement={previewCardRef.current}
