@@ -6,7 +6,7 @@ import {
   BLOCK_STYLES,
   DEFAULT_BLOCK_STYLES,
   DEFAULT_LINK_ANNOTATION,
-  DEFAULT_LIST_TYPES,
+  DEFAULT_LIST_CHOICES,
   DEFAULT_MARKS_FIELD,
   DEFAULT_TEXT_FIELD,
   DEFAULT_DECORATORS,
@@ -108,7 +108,7 @@ function createStyleField(styles) {
     title: 'Style',
     type: 'string',
     options: {
-      list: ensureNormalStyle(styles || DEFAULT_BLOCK_STYLES),
+      choices: ensureNormalStyle(styles || DEFAULT_BLOCK_STYLES),
     },
   }
 }
@@ -119,7 +119,7 @@ function createListField(lists) {
     title: 'List type',
     type: 'string',
     options: {
-      list: lists || DEFAULT_LIST_TYPES,
+      choices: lists || DEFAULT_LIST_CHOICES,
     },
   }
 }

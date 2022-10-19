@@ -340,7 +340,7 @@ Object {
                 "jsonType": "string",
                 "name": "string",
                 "options": Object {
-                  "list": Array [
+                  "choices": Array [
                     Object {
                       "title": "Normal",
                       "value": "normal",
@@ -393,7 +393,7 @@ Object {
                 "jsonType": "string",
                 "name": "string",
                 "options": Object {
-                  "list": Array [
+                  "choices": Array [
                     Object {
                       "title": "Bullet",
                       "value": "bullet",
@@ -1777,7 +1777,7 @@ Object {
                 "jsonType": "string",
                 "name": "string",
                 "options": Object {
-                  "list": Array [
+                  "choices": Array [
                     Object {
                       "title": "Normal",
                       "value": "normal",
@@ -1810,7 +1810,7 @@ Object {
                 "jsonType": "string",
                 "name": "string",
                 "options": Object {
-                  "list": Array [
+                  "choices": Array [
                     Object {
                       "title": "Numbered",
                       "value": "number",
@@ -2541,7 +2541,7 @@ Object {
                   "jsonType": "string",
                   "name": "string",
                   "options": Object {
-                    "list": Array [
+                    "choices": Array [
                       Object {
                         "title": "Normal",
                         "value": "normal",
@@ -2574,7 +2574,7 @@ Object {
                   "jsonType": "string",
                   "name": "string",
                   "options": Object {
-                    "list": Array [
+                    "choices": Array [
                       Object {
                         "title": "Numbered",
                         "value": "number",

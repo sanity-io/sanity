@@ -22,10 +22,10 @@ interface NormalizedListOption {
   itemIndex: number
 }
 
-export const ArrayOfOptionsFieldDiff: DiffComponent<ArrayDiff> = ({diff, schemaType}) => {
-  const options = schemaType.options?.list
+export const ArrayOfChoicesFieldDiff: DiffComponent<ArrayDiff> = ({diff, schemaType}) => {
+  const choices = schemaType.options?.choices
   const colorManager = useUserColorManager()
-  if (!Array.isArray(options)) {
+  if (!Array.isArray(choices)) {
     // Shouldn't happen, because the resolver should only resolve here if it does
     return null
   }
@@ -152,12 +152,12 @@ function isNamedOption(item: unknown | NamedListOption): item is NamedListOption
 }
 
 function getOptionIndex(item: unknown, schemaType: ArraySchemaType): number {
-  const list = schemaType.options?.list || []
+  const list = schemaType.options?.choices || []
   return list.findIndex((opt) => isEqual(isNamedOption(opt) ? opt.value : opt, item))
 }
 
 function getItemTitle(item: unknown, schemaType: ArraySchemaType): string | undefined {
-  const list = (schemaType.options?.list || []) as NamedListOption[]
+  const list = (schemaType.options?.choices || []) as NamedListOption[]
   const index = getOptionIndex(item, schemaType)
   return index === -1 ? undefined : list[index].title || undefined
 }

@@ -1,4 +1,4 @@
-import {ArrayOfOptionsFieldDiff} from '../../types/array/diff'
+import {ArrayOfChoicesFieldDiff} from '../../types/array/diff'
 import {DatetimeFieldDiff} from '../../types/datetime/diff'
 import {UrlFieldDiff} from '../../types/url/diff'
 import {SlugFieldDiff} from '../../types/slug/diff'
@@ -19,8 +19,8 @@ export const diffResolver: DiffComponentResolver = ({schemaType}) => {
     return SlugFieldDiff
   }
 
-  if (schemaType.jsonType === 'array' && Array.isArray(schemaType.options?.list)) {
-    return ArrayOfOptionsFieldDiff
+  if (schemaType.jsonType === 'array' && Array.isArray(schemaType.options?.choices)) {
+    return ArrayOfChoicesFieldDiff
   }
 
   return undefined

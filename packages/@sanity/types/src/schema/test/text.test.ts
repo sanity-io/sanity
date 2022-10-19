@@ -36,7 +36,7 @@ describe('text types', () => {
         options: {
           layout: 'radio',
           direction: 'horizontal',
-          list: [{value: 'A', title: 'An entry'}],
+          choices: [{value: 'A', title: 'An entry'}],
         },
       })
 

@@ -55,8 +55,8 @@ function resolveEnabledStyles(blockType: ObjectSchemaType) {
     throw new Error("A field with name 'style' is not defined in the block type (required).")
   }
   const textStyles =
-    styleField.type.options?.list &&
-    styleField.type.options.list?.filter((style: {value: string}) => style.value)
+    styleField.type.options?.choices &&
+    styleField.type.options.choices?.filter((style: {value: string}) => style.value)
   if (!textStyles || textStyles.length === 0) {
     throw new Error(
       'The style fields need at least one style ' +
@@ -89,8 +89,8 @@ function resolveEnabledListItems(blockType: ObjectSchemaType) {
     throw new Error("A field with name 'list' is not defined in the block type (required).")
   }
   const listItems =
-    listField.type.options?.list &&
-    listField.type.options.list.filter((list: {value: string}) => list.value)
+    listField.type.options?.choices &&
+    listField.type.options.choices.filter((list: {value: string}) => list.value)
   if (!listItems) {
     throw new Error('The list field need at least to be an empty array')
   }

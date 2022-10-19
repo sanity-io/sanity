@@ -82,7 +82,7 @@ describe('normalizeValidationRules', () => {
       jsonType: 'string',
       name: 'stringTypeWithOptions',
       options: {
-        list: [
+        choices: [
           {title: 'Blue', value: 'blue'},
           {title: 'Red', value: 'red'},
         ],
@@ -111,7 +111,7 @@ describe('normalizeValidationRules', () => {
       jsonType: 'string',
       name: 'stringTypeWithOptions',
       options: {
-        list: ['blue', 'red'],
+        choices: ['blue', 'red'],
       },
     }
 

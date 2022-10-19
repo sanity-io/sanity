@@ -48,7 +48,7 @@ describe('alias type test', () => {
         name: 'custom-string-redefined',
         options: {
           sortable: true,
-          list: [{title: 'title', value: {_type: 'unknown-so-not-perfect'}}],
+          choices: [{title: 'title', value: {_type: 'unknown-so-not-perfect'}}],
         },
       },
       {aliasFor: 'array'}

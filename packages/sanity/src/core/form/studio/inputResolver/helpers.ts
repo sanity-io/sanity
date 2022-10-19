@@ -39,9 +39,9 @@ function getObjectFieldLevel(schemaType: SchemaType, currentLevel: number): numb
 
   const isPseudoObject = PSEUDO_OBJECTS.includes(typeName)
   const hasVisibleFields = (fields?.filter((f) => !HIDDEN_FIELDS.includes(f.name)).length ?? 0) > 0
-  const hasListOptions = (options?.list?.length ?? 0) > 0
+  const hasChoices = (options?.choices?.length ?? 0) > 0
 
-  if (hasVisibleFields || hasListOptions || !isPseudoObject) {
+  if (hasVisibleFields || hasChoices || !isPseudoObject) {
     return currentLevel
   }
 
@@ -51,7 +51,7 @@ function getObjectFieldLevel(schemaType: SchemaType, currentLevel: number): numb
 function getArrayFieldLevel(schemaType: SchemaType, currentLevel: number): number {
   const {options} = schemaType
 
-  const hasListOptions = (options?.list || [])?.length > 0
+  const hasListOptions = (options?.choices || [])?.length > 0
   const isNoLevelLayout = NO_LEVEL_LAYOUTS.includes(options?.layout || '')
 
   if (hasListOptions && !isNoLevelLayout) {

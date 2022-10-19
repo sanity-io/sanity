@@ -41,14 +41,13 @@ export interface BaseSchemaDefinition {
 
 /** @public */
 export interface TitledListValue<V = unknown> {
-  _key?: string
   title: string
   value?: V
 }
 
 /** @public */
 export interface EnumListProps<V = unknown> {
-  list?: Array<TitledListValue<V> | V>
+  choices?: (TitledListValue<V> | V)[]
   layout?: 'radio' | 'dropdown'
   direction?: 'horizontal' | 'vertical'
 }

@@ -12,7 +12,7 @@ const StringWrapper = styled.div`
 export const StringFieldDiff: DiffComponent<StringDiff> = ({diff, schemaType}) => {
   const {options} = schemaType
 
-  if (options?.list) {
+  if (options?.choices) {
     // When the string is considered to be an "enum", don't show individual
     // string segment changes, rather treat is as a "from -> to" diff
     return <DiffFromTo diff={diff} previewComponent={StringPreview} schemaType={schemaType} />

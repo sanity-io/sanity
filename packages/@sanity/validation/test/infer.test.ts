@@ -10,8 +10,8 @@ const client = createMockSanityClient()
 const getClient = (options: {apiVersion: string}): SanityClient => client as unknown as SanityClient
 
 describe('schema validation inference', () => {
-  describe('object with `options.list` and `value` field', () => {
-    const listOptions = [
+  describe('object with `options.choices` and `value` field', () => {
+    const choices = [
       {value: '#f00', title: 'Red'},
       {value: '#0f0', title: 'Green'},
       {value: '#00f', title: 'Blue'},
@@ -20,26 +20,26 @@ describe('schema validation inference', () => {
     const schema = SchemaBuilder.compile({
       types: [
         {
-          name: 'colorList',
+          name: 'color',
           type: 'object',
           fields: [
             {name: 'value', type: 'string'},
             {name: 'title', type: 'string'},
           ],
           options: {
-            list: listOptions,
+            choices,
           },
         },
       ],
     })
 
     test('allowed value', async () => {
-      const type = inferFromSchema(schema).get('colorList')!
-      await expectNoError(type.validation as Rule[], listOptions[0])
+      const type = inferFromSchema(schema).get('color')!
+      await expectNoError(type.validation as Rule[], choices[0])
     })
 
     test('disallowed value', async () => {
-      const type = inferFromSchema(schema).get('colorList')!
+      const type = inferFromSchema(schema).get('color')!
 
       await expectError(
         type.validation as Rule[],

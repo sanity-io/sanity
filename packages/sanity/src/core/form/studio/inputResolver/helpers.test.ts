@@ -45,7 +45,7 @@ function setupTest() {
       description: 'array with tag-list',
       of: [{type: 'string'}],
       options: {
-        list: ['1'],
+        choices: ['1'],
         layout: 'tags',
       },
     }),
@@ -66,13 +66,13 @@ function setupTest() {
       type: 'string',
       name: 'stringEmptyList',
       description: 'string with empty list',
-      options: {list: []},
+      options: {choices: []},
     }),
     defineField({
       type: 'string',
       name: 'stringList',
       description: 'string with list',
-      options: {list: ['1']},
+      options: {choices: ['1']},
     }),
 
     defineField({type: 'number', name: 'number', description: 'number without list'}),
@@ -80,13 +80,13 @@ function setupTest() {
       type: 'number',
       name: 'numberEmptyList',
       description: 'number with empty list',
-      options: {list: []},
+      options: {choices: []},
     }),
     defineField({
       type: 'number',
       name: 'numberList',
       description: 'number with list',
-      options: {list: [1]},
+      options: {choices: [1]},
     }),
 
     defineField({
@@ -114,7 +114,7 @@ function setupTest() {
       description: 'array with list (and not tag layout)',
       of: [{type: 'string'}],
       options: {
-        list: ['1'],
+        choices: ['1'],
       },
     }),
   ] as const

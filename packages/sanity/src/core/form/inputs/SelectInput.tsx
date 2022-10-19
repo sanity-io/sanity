@@ -1,4 +1,4 @@
-import {isTitledListValue, TitledListValue} from '@sanity/types'
+import {isTitledChoice, TitledListValue} from '@sanity/types'
 import {Box, Card, Flex, Inline, Radio, Select, Stack, Text} from '@sanity/ui'
 import {capitalize} from 'lodash'
 import React, {useId, forwardRef, useCallback, useMemo} from 'react'
@@ -9,7 +9,7 @@ import {StringInputProps} from '../types'
 function toSelectItem(
   option: TitledListValue<string | number> | string | number
 ): TitledListValue<string | number> {
-  return isTitledListValue(option) ? option : {title: capitalize(`${option}`), value: option}
+  return isTitledChoice(option) ? option : {title: capitalize(`${option}`), value: option}
 }
 
 const EMPTY_ITEM = {title: '', value: undefined}
@@ -27,8 +27,8 @@ export function SelectInput(props: StringInputProps) {
     elementProps,
   } = props
   const items = useMemo(
-    () => (schemaType.options?.list || []).map(toSelectItem),
-    [schemaType.options?.list]
+    () => (schemaType.options?.choices || []).map(toSelectItem),
+    [schemaType.options?.choices]
   )
   const currentItem = items.find((item) => item.value === value)
   const isRadio = schemaType.options && schemaType.options.layout === 'radio'

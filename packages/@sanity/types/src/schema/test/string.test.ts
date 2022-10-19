@@ -41,7 +41,7 @@ describe('string types', () => {
         options: {
           layout: 'radio',
           direction: 'horizontal',
-          list: [{value: 'A', title: 'An entry'}],
+          choices: [{value: 'A', title: 'An entry'}],
         },
       })
 
@@ -61,7 +61,7 @@ describe('string types', () => {
           layout: 'unsassignable',
           // @ts-expect-error unsassignable is not assiagnable to direction
           direction: 'unsassignable',
-          list: [
+          choices: [
             {
               // @ts-expect-error object-literals may only assign known fields
               unknownField: 'A',
@@ -114,7 +114,7 @@ describe('string types', () => {
         options: {
           layout: 'radio',
           direction: 'horizontal',
-          list: [{value: 'A', title: 'An entry'}],
+          choices: [{value: 'A', title: 'An entry'}],
         },
       })
 

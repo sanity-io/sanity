@@ -40,7 +40,7 @@ const predefinedStringArray = defineField({
   type: 'array',
   of: [{type: 'string'}],
   options: {
-    list: [{title: 'Cats', value: 'cats4ever'}, {title: 'Dogs', value: 'dogs4ever'}, 'Horses'],
+    choices: [{title: 'Cats', value: 'cats4ever'}, {title: 'Dogs', value: 'dogs4ever'}, 'Horses'],
   },
 })
 
@@ -76,7 +76,7 @@ export default defineType({
               title: 'String options',
               type: 'string',
               options: {
-                list: [
+                choices: [
                   {title: 'Cats', value: 'cats4ever'},
                   {title: 'Sweden', value: 'swe'},
                 ],
@@ -345,7 +345,7 @@ export default defineType({
       type: 'array',
       of: [{type: 'string'}],
       options: {
-        list: [
+        choices: [
           {value: 'residential', title: 'Residential'},
           {value: 'education', title: 'Education'},
           {value: 'commercial', title: 'Commercial'},

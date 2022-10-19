@@ -31,12 +31,12 @@ export const DEFAULT_MARKS_FIELD = {
   title: 'Marks',
 }
 
-export const LIST_TYPES = {
+export const CHOICE_TYPES = {
   bullet: {title: 'Bullet', value: 'bullet'},
   numbered: {title: 'Numbered', value: 'number'},
 }
 
-export const DEFAULT_LIST_TYPES = [LIST_TYPES.bullet, LIST_TYPES.numbered]
+export const DEFAULT_LIST_CHOICES = [CHOICE_TYPES.bullet, CHOICE_TYPES.numbered]
 
 export const BLOCK_STYLES = {
   normal: {title: 'Normal', value: 'normal'},

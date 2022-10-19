@@ -35,7 +35,7 @@ describe('number types', () => {
         hidden: () => false,
         options: {
           layout: 'radio',
-          list: [2, 4],
+          choices: [2, 4],
           direction: 'vertical',
         },
       })

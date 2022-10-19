@@ -462,7 +462,7 @@
                   "name": "string",
                   "title": "Style",
                   "options": {
-                    "list": [
+                    "choices": [
                       {"title": "Normal", "value": "normal"},
                       {"title": "H1", "value": "h1"},
                       {"title": "H2", "value": "h2"}
@@ -478,7 +478,7 @@
                   "type": {"name": "string", "title": "String", "type": null, "jsonType": "string"},
                   "name": "string",
                   "title": "List type",
-                  "options": {"list": [{"title": "Numbered", "value": "number"}]},
+                  "options": {"choices": [{"title": "Numbered", "value": "number"}]},
                   "preview": {}
                 }
               },

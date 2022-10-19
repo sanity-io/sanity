@@ -109,7 +109,7 @@ export function isCrossDatasetReferenceSchemaType(
 }
 
 /** @internal */
-export function isTitledListValue(item: unknown): item is TitledListValue {
+export function isTitledChoice(item: unknown): item is TitledListValue {
   return typeof item === 'object' && item !== null && 'title' in item && 'value' in item
 }
 

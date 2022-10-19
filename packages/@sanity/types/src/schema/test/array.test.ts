@@ -55,7 +55,7 @@ describe('array types', () => {
         options: {
           layout: 'grid',
           sortable: true,
-          list: [{value: 'A', title: 'An entry'}],
+          choices: [{value: 'A', title: 'An entry'}],
           modal: {
             type: 'popover',
             width: 'auto',
@@ -127,7 +127,7 @@ describe('array types', () => {
             type: 'popover',
             width: 'auto',
           },
-          list: [{value: {prop: 'string'}, title: 'An entry'}],
+          choices: [{value: {prop: 'string'}, title: 'An entry'}],
 
           //@ts-expect-error unknown prop
           allowUnknownOptions: false,
@@ -173,7 +173,7 @@ describe('array types', () => {
       description: 'array with tag-list',
       of: [{type: 'string'}],
       options: {
-        list: ['1'],
+        choices: ['1'],
         layout: 'tags',
       },
     })

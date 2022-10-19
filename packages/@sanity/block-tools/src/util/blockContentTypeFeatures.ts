@@ -7,7 +7,7 @@ import {
   isListObjectField,
   isObjectSchemaType,
   isStyleObjectField,
-  isTitledListValue,
+  isTitledChoice,
   ObjectSchemaType,
   SpanSchemaType,
   TitledListValue,
@@ -68,7 +68,7 @@ function resolveEnabledStyles(blockType: BlockSchemaType): TitledListValue<strin
     throw new Error("A field with name 'style' is not defined in the block type (required).")
   }
 
-  const textStyles = getTitledListValuesFromEnumListOptions(styleField.type.options)
+  const textStyles = getTitledChoicesFromOptions(styleField.type.options)
   if (textStyles.length === 0) {
     throw new Error(
       'The style fields need at least one style ' +
@@ -94,26 +94,21 @@ function resolveEnabledDecorators(spanType: SpanSchemaType): TitledListValue<str
 }
 
 function resolveEnabledListItems(blockType: BlockSchemaType): TitledListValue<string>[] {
-  const listField = blockType.fields.find(isListObjectField)
-  if (!listField) {
+  const enumField = blockType.fields.find(isListObjectField)
+  if (!enumField) {
     throw new Error("A field with name 'list' is not defined in the block type (required).")
   }
 
-  const listItems = getTitledListValuesFromEnumListOptions(listField.type.options)
-  if (!listItems) {
-    throw new Error('The list field need at least to be an empty array')
-  }
-
-  return listItems
+  return getTitledChoicesFromOptions(enumField.type.options)
 }
 
-function getTitledListValuesFromEnumListOptions(
+function getTitledChoicesFromOptions(
   options: EnumListProps<string> | undefined
 ): TitledListValue<string>[] {
-  const list = options ? options.list : undefined
-  if (!Array.isArray(list)) {
+  const choices = options ? options.choices : undefined
+  if (!Array.isArray(choices)) {
     return []
   }
 
-  return list.map((item) => (isTitledListValue(item) ? item : {title: item, value: item}))
+  return choices.map((item) => (isTitledChoice(item) ? item : {title: item, value: item}))
 }

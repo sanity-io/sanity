@@ -5,7 +5,7 @@ import {BaseSchemaDefinition, TitledListValue} from './common'
 
 /** @public */
 export interface ArrayOptions<V = unknown> {
-  list?: TitledListValue<V>[] | V[]
+  choices?: TitledListValue<V>[] | V[]
   /**
    * layout: 'tags' only works for string array
    * layout: 'grid' only works for arrays with objects

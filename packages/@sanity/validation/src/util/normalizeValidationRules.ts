@@ -31,20 +31,18 @@ function baseRuleReducer(inputRule: Rule, type: SchemaType) {
     baseRule = baseRule.type(type.jsonType)
   }
 
-  const typeOptionsList =
+  const typeChoices =
     // if type.options is truthy
     type?.options &&
     // and type.options is an object (non-null from the previous)
     typeof type.options === 'object' &&
     // and if `list` is in options
-    'list' in type.options &&
+    'choices' in type.options &&
     // then finally access the list
-    type.options.list
+    type.options.choices
 
-  if (Array.isArray(typeOptionsList)) {
-    baseRule = baseRule.valid(
-      typeOptionsList.map((option) => extractValueFromListOption(option, type))
-    )
+  if (Array.isArray(typeChoices)) {
+    baseRule = baseRule.valid(typeChoices.map((option) => extractValueFromListOption(option, type)))
   }
 
   if (type.name === 'datetime') return baseRule.type('Date')

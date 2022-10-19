@@ -1,5 +1,5 @@
 import {
-  isTitledListValue,
+  isTitledChoice,
   PrepareViewOptions,
   PreviewValue,
   SchemaType,
@@ -228,7 +228,7 @@ function withErrors(
 }
 
 interface EnumListOptions {
-  list: TitledListValue[] | unknown[]
+  choices: TitledListValue[] | unknown[]
 }
 
 function hasEnumListOptions(
@@ -239,8 +239,8 @@ function hasEnumListOptions(
     return false
   }
 
-  const listOptions = (options as EnumListOptions).list
-  return Array.isArray(listOptions)
+  const choices = (options as EnumListOptions).choices
+  return Array.isArray(choices)
 }
 
 function getListOptions(type: SchemaType): TitledListValue[] | undefined {
@@ -248,9 +248,9 @@ function getListOptions(type: SchemaType): TitledListValue[] | undefined {
     return undefined
   }
 
-  const listOptions = type.options.list as EnumListOptions['list']
-  return listOptions.map((option) =>
-    isTitledListValue(option) ? option : ({title: option, value: option} as TitledListValue)
+  const choices = type.options.choices as EnumListOptions['choices']
+  return choices.map((option) =>
+    isTitledChoice(option) ? option : ({title: option, value: option} as TitledListValue)
   )
 }
 
