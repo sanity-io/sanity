@@ -32,6 +32,7 @@ export function useFormState<
     openPath,
     presence,
     validation,
+    readOnly,
     changesOpen,
   }: {
     fieldGroupState?: StateTree<string> | undefined
@@ -44,6 +45,7 @@ export function useFormState<
     presence: FormNodePresence[]
     validation: ValidationMarker[]
     changesOpen?: boolean
+    readOnly?: boolean
   }
 ): FormState<T, S> | null {
   // note: feel free to move these state pieces out of this hook
@@ -67,6 +69,7 @@ export function useFormState<
       comparisonValue,
       focusPath,
       openPath,
+      readOnly,
       path: pathFor([]),
       level: 0,
       currentUser,

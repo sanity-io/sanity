@@ -21,7 +21,6 @@ import {
 } from 'sanity'
 
 interface FormViewProps {
-  granted: boolean
   hidden: boolean
   margins: [number, number, number, number]
 }
@@ -29,7 +28,7 @@ interface FormViewProps {
 const preventDefault = (ev: React.FormEvent) => ev.preventDefault()
 
 export function FormView(props: FormViewProps) {
-  const {hidden, margins, granted} = props
+  const {hidden, margins} = props
 
   const {
     collapsedFieldSets,
@@ -38,8 +37,7 @@ export function FormView(props: FormViewProps) {
     editState,
     documentId,
     documentType,
-    onChange: _handleChange,
-    historyController,
+    onChange,
     validation,
     ready,
     formState,
@@ -49,11 +47,8 @@ export function FormView(props: FormViewProps) {
     onPathOpen,
     onSetCollapsedFieldSet,
     onSetActiveFieldGroup,
-    schemaType,
   } = useDocumentPane()
   const documentStore = useDocumentStore()
-  const {revTime: rev} = historyController
-  const isNonExistent = !value || !value._id
   const presence = useDocumentPresence(documentId)
 
   // The `patchChannel` is an INTERNAL publish/subscribe channel that we use to notify form-builder
@@ -61,35 +56,6 @@ export function FormView(props: FormViewProps) {
   // - Used by the Portable Text input to modify selections.
   // - Used by `withDocument` to reset value.
   const patchChannel = useMemo(() => createPatchChannel(), [])
-
-  const isReadOnly = useMemo(() => {
-    return (
-      formState === null ||
-      formState.readOnly ||
-      !ready ||
-      rev !== null ||
-      !granted ||
-      !isActionEnabled(schemaType, 'update') ||
-      (isNonExistent && !isActionEnabled(schemaType, 'create'))
-    )
-  }, [formState, ready, rev, granted, isNonExistent, schemaType])
-
-  const handleChange = useCallback(
-    (patchEvent: PatchEvent) => {
-      if (!isReadOnly && ready) _handleChange(patchEvent)
-    },
-    [_handleChange, isReadOnly, ready]
-  )
-
-  // useEffect(() => {
-  //   if (!filterFieldFn$) return undefined
-
-  //   const sub = filterFieldFn$.subscribe((nextFilterField) =>
-  //     setState({filterField: nextFilterField})
-  //   )
-
-  //   return () => sub.unsubscribe()
-  // }, [])
 
   const isLocked = editState?.transactionSyncLock?.enabled
 
@@ -149,7 +115,6 @@ export function FormView(props: FormViewProps) {
   //     ),
   //   [documentId]
   // )
-
   return (
     <Container
       hidden={hidden}
@@ -177,7 +142,7 @@ export function FormView(props: FormViewProps) {
                 groups={formState.groups}
                 id="root"
                 members={formState.members}
-                onChange={handleChange}
+                onChange={onChange}
                 onFieldGroupSelect={onSetActiveFieldGroup}
                 onPathBlur={onBlur}
                 onPathFocus={onFocus}
@@ -185,7 +150,7 @@ export function FormView(props: FormViewProps) {
                 onSetFieldSetCollapsed={onSetCollapsedFieldSet}
                 onSetPathCollapsed={onSetCollapsedPath}
                 presence={presence}
-                readOnly={isReadOnly || editState?.transactionSyncLock?.enabled}
+                readOnly={formState.readOnly}
                 schemaType={formState.schemaType}
                 validation={validation}
                 value={formState.value}

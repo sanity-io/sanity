@@ -14,8 +14,10 @@ import {
   DocumentBadgeComponent,
   DocumentFormNode,
   DocumentLanguageFilterComponent,
+  DocumentPermission,
   EditStateFor,
   PatchEvent,
+  PermissionCheckResult,
   StateTree,
   Timeline,
   TimelineController,
@@ -71,6 +73,8 @@ export interface DocumentPaneContextValue {
   value: SanityDocumentLike
   views: View[]
   formState: DocumentFormNode | null
+  permissions?: PermissionCheckResult | null
+  isPermissionsLoading: boolean
   unstable_languageFilter: DocumentLanguageFilterComponent[]
 }
 
