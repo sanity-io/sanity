@@ -1,6 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
-import {rem, Text, Card, Box, Tooltip, Container, Inline} from '@sanity/ui'
+import {rem, Flex, Text, Card, Box, Tooltip, Container, Inline} from '@sanity/ui'
 import {InfoOutlineIcon} from '@sanity/icons'
 
 export const ChevronWrapper = styled(Box)`
@@ -52,6 +52,10 @@ export const Table = styled.table`
   tr > *:last-child {
     text-align: right;
   }
+`
+
+export const DocumentIdFlex = styled(Flex)`
+  min-height: 35px;
 `
 
 export const ReferencesCard = styled(Card).attrs({

@@ -8,6 +8,7 @@ import {DefaultPreview, PreviewMediaDimensions, TextWithTone} from '@sanity/base
 import imageUrlBuilder from '@sanity/image-url'
 
 import {DocumentPreview} from './types'
+import {StyledPreviewFlex, TooltipContent} from './CrossDatasetReferencePreview.styled'
 
 function UnavailableMessage(props: {icon: ComponentType; children: ReactNode; title: ReactNode}) {
   const Icon = props.icon

@@ -19,6 +19,7 @@ import {
   TableContainer,
   Table,
   ChevronWrapper,
+  DocumentIdFlex,
 } from './ConfirmDeleteDialogBody.styles'
 import {ReferringDocuments} from './useReferringDocuments'
 
@@ -44,8 +45,8 @@ export function ConfirmDeleteDialogBody({
   documentTitle,
   totalCount,
   action,
-  projectIds,
   datasetNames,
+  hasUnknownDatasetNames,
   onReferenceLinkClick,
 }: DeletionConfirmationDialogBodyProps) {
   const toast = useToast()
@@ -87,9 +88,28 @@ export function ConfirmDeleteDialogBody({
     crossDatasetReferences.totalCount === 1
       ? '1 document'
       : `${crossDatasetReferences.totalCount.toLocaleString()} documents`
+
+  // We do some extra checks to handle cases where you have unavailable dataset
+  // name(s) due to permissions, both alone and in combination with known datasets
+
+  // This normalizes one or more undefined dataset names to the catch-all `unavailable`
+  const normalizedDatasetNames = [
+    ...datasetNames,
+    ...(hasUnknownDatasetNames ? ['unavailable'] : []),
+  ]
   const datasetsCount =
-    datasetNames.length === 1 ? 'another dataset' : `${datasetNames.length} datasets`
-  const projectIdList = `Project ID${projectIds.length === 1 ? '' : 's'}: ${projectIds.join(', ')}`
+    normalizedDatasetNames.length === 1
+      ? 'another dataset'
+      : `${normalizedDatasetNames.length} datasets`
+
+  let datasetNameList = `Dataset${
+    normalizedDatasetNames.length === 1 ? '' : 's'
+  }: ${normalizedDatasetNames.join(', ')}`
+
+  // We only have one dataset, and it is unavailable due to permissions
+  if (hasUnknownDatasetNames && normalizedDatasetNames.length === 1) {
+    datasetNameList = 'Unavailable dataset'
+  }
 
   return (
     <>
@@ -162,8 +182,8 @@ export function ConfirmDeleteDialogBody({
                       </Text>
                     </Box>
                     <Box>
-                      <Text title={projectIdList} textOverflow="ellipsis" size={1} muted>
-                        {projectIdList}
+                      <Text title={datasetNameList} textOverflow="ellipsis" size={1} muted>
+                        {datasetNameList}
                       </Text>
                     </Box>
                   </Flex>
@@ -199,11 +219,7 @@ export function ConfirmDeleteDialogBody({
                   <tbody>
                     {crossDatasetReferences.references
                       .filter((reference): reference is Required<typeof reference> => {
-                        return (
-                          'projectId' in reference &&
-                          'datasetName' in reference &&
-                          'documentId' in reference
-                        )
+                        return 'projectId' in reference
                       })
                       .map(({projectId, datasetName, documentId}, index) => (
                         // eslint-disable-next-line react/no-array-index-key
@@ -212,32 +228,34 @@ export function ConfirmDeleteDialogBody({
                             <Text size={1}>{projectId}</Text>
                           </td>
                           <td>
-                            <Text size={1}>{datasetName}</Text>
+                            <Text size={1}>{datasetName || 'unavailable'}</Text>
                           </td>
                           <td>
-                            <Flex align="center" gap={2} justify="flex-end">
+                            <DocumentIdFlex align="center" gap={2} justify="flex-end">
                               <Text textOverflow="ellipsis" size={1}>
-                                {documentId}
+                                {documentId || 'unavailable'}
                               </Text>
-                              <CopyToClipboard
-                                text={documentId}
-                                // eslint-disable-next-line react/jsx-no-bind
-                                onCopy={() => {
-                                  // TODO: this isn't visible with the dialog open
-                                  toast.push({
-                                    title: 'Copied document ID to clipboard!',
-                                    status: 'success',
-                                  })
-                                }}
-                              >
-                                <Button
-                                  title="Copy ID to clipboard"
-                                  mode="bleed"
-                                  icon={ClipboardIcon}
-                                  fontSize={0}
-                                />
-                              </CopyToClipboard>
-                            </Flex>
+                              {documentId && (
+                                <CopyToClipboard
+                                  text={documentId}
+                                  // eslint-disable-next-line react/jsx-no-bind
+                                  onCopy={() => {
+                                    // TODO: this isn't visible with the dialog open
+                                    toast.push({
+                                      title: 'Copied document ID to clipboard!',
+                                      status: 'success',
+                                    })
+                                  }}
+                                >
+                                  <Button
+                                    title="Copy ID to clipboard"
+                                    mode="bleed"
+                                    icon={ClipboardIcon}
+                                    fontSize={0}
+                                  />
+                                </CopyToClipboard>
+                              )}
+                            </DocumentIdFlex>
                           </td>
                         </tr>
                       ))}

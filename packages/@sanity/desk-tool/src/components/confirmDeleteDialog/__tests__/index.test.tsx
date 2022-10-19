@@ -189,8 +189,8 @@ describe('ConfirmDeleteDialog', () => {
     expect(internalReferences).toContainElement(queryByText('Preview Unavailable'))
 
     const crossDatasetReferences = queryByTestId('cross-dataset-references')
-    expect(crossDatasetReferences).toContainElement(queryByText('1 document in another project'))
-    expect(crossDatasetReferences).toContainElement(queryByText('Project ID: test-project'))
+    expect(crossDatasetReferences).toContainElement(queryByText('1 document in another dataset'))
+    expect(crossDatasetReferences).toContainElement(queryByText('Dataset: test-dataset'))
   })
 
   it('shows a fallback dialog if an error occurs', async () => {

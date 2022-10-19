@@ -49,6 +49,7 @@ export type ReferringDocuments = {
   totalCount: number
   projectIds: string[]
   datasetNames: string[]
+  hasUnknownDatasetNames: boolean
   internalReferences?: {
     totalCount: number
     references: Array<{_id: string; _type: string}>
@@ -74,7 +75,7 @@ export type ReferringDocuments = {
        * This will be omitted if there is no access to the current project and
        * dataset pair (e.g. if no `sanity-project-token` were configured)
        */
-      datasetName: string
+      datasetName?: string
     }>
   }
 }
@@ -196,18 +197,28 @@ export function useReferringDocuments(
 
   const datasetNames = useMemo(() => {
     return Array.from(
-      new Set(
+      new Set<string>(
         crossDatasetReferences?.references
-          .map((crossDatasetReference) => crossDatasetReference.datasetName)
-          .filter(Boolean)
+          // .filter((name) => typeof name === 'string')
+          .map((crossDatasetReference) => crossDatasetReference?.datasetName || '')
+          .filter((datasetName) => Boolean(datasetName) && datasetName !== '')
       )
     ).sort()
+  }, [crossDatasetReferences?.references])
+
+  const hasUnknownDatasetNames = useMemo(() => {
+    return Boolean(
+      crossDatasetReferences?.references.some(
+        (crossDatasetReference) => typeof crossDatasetReference.datasetName !== 'string'
+      )
+    )
   }, [crossDatasetReferences?.references])
 
   return {
     totalCount: (internalReferences?.totalCount || 0) + (crossDatasetReferences?.totalCount || 0),
     projectIds,
     datasetNames,
+    hasUnknownDatasetNames,
     internalReferences,
     crossDatasetReferences,
     isLoading: isInternalReferencesLoading || isCrossDatasetReferencesLoading,

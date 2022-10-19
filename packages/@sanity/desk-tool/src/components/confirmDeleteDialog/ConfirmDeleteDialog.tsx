@@ -62,6 +62,7 @@ export function ConfirmDeleteDialog({
     totalCount,
     projectIds,
     datasetNames,
+    hasUnknownDatasetNames,
   } = useReferringDocuments(id)
   const capitalizedAction = `${action.substring(0, 1).toUpperCase()}${action.substring(1)}`
 
@@ -101,6 +102,7 @@ export function ConfirmDeleteDialog({
             action={action}
             projectIds={projectIds}
             datasetNames={datasetNames}
+            hasUnknownDatasetNames={hasUnknownDatasetNames}
             onReferenceLinkClick={onCancel}
           />
         ) : (
