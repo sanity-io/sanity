@@ -1,8 +1,12 @@
 import React, {useCallback, useMemo, useRef} from 'react'
 import {Path} from '@sanity/types'
+import {tap} from 'rxjs/operators'
+import {useToast} from '@sanity/ui'
 import {useDidUpdate} from '../../hooks/useDidUpdate'
 import {
+  ArrayInputInsertEvent,
   ObjectInputProps,
+  ObjectItem,
   ObjectItemProps,
   RenderArrayOfObjectsItemCallback,
   RenderFieldCallback,
@@ -15,6 +19,8 @@ import {FormCallbacksProvider, useFormCallbacks} from '../../studio/contexts/For
 import {ArrayOfObjectsItemMember} from '../../store'
 import {createProtoValue} from '../../utils/createProtoValue'
 import {isEmptyItem} from '../../store/utils/isEmptyItem'
+import {useResolveInitialValueForType} from '../../../store'
+import {resolveInitialArrayValues} from '../utils/resolveInitialArrayValues'
 
 /**
  * @beta
@@ -43,6 +49,7 @@ export function ArrayOfObjectsItem(props: MemberItemProps) {
     onSetFieldSetCollapsed,
     onFieldGroupSelect,
   } = useFormCallbacks()
+  const resolveInitialValue = useResolveInitialValueForType()
 
   useDidUpdate(member.item.focused, (hadFocus, hasFocus) => {
     if (!hadFocus && hasFocus) {
@@ -54,19 +61,71 @@ export function ArrayOfObjectsItem(props: MemberItemProps) {
     onChange(PatchEvent.from([unset([{_key: member.key}])]))
   }, [member.key, onChange])
 
-  const onInsert = useCallback(
-    (event: {items: {_key?: string}[]; position: 'before' | 'after'}) => {
-      onChange(
-        PatchEvent.from([
-          insert(
-            event.items.map((item) => ensureKey(item)),
-            event.position,
-            [{_key: member.key}]
-          ),
-        ])
-      )
+  const handleOpenItem = useCallback(
+    (path: Path) => {
+      onPathOpen(path)
+      onSetPathCollapsed(path, false)
     },
-    [member.key, onChange]
+    [onPathOpen, onSetPathCollapsed]
+  )
+  const toast = useToast()
+
+  // Note: this handles inserting *siblings*
+  const handleInsert = useCallback(
+    (event: Omit<ArrayInputInsertEvent<ObjectItem>, 'referenceItem'>) => {
+      if (event.items.length === 0) {
+        throw new Error('Insert event should include at least one item')
+      }
+      const itemsWithKeys = event.items.map((item) => ensureKey(item))
+
+      onChange(PatchEvent.from([insert(itemsWithKeys, event.position, [{_key: member.key}])]))
+
+      const focusItemKey = itemsWithKeys[0]._key
+      const parentPath = member.item.path.slice(0, -1)
+      const itemPath = [...parentPath, {_key: focusItemKey}]
+
+      // Set focus at the first item (todo: verify that this is the expected/better behavior when adding multiple items)
+      onPathFocus(itemPath)
+
+      const shouldOpen = event.open !== false
+      if (event.skipInitialValue) {
+        if (shouldOpen) {
+          handleOpenItem(itemPath)
+        }
+      } else {
+        resolveInitialArrayValues(itemsWithKeys, member.parentSchemaType, resolveInitialValue)
+          .pipe(
+            tap((result) => {
+              if (result.type === 'patch') {
+                onChange(PatchEvent.from(result.patches))
+              } else {
+                toast.push({
+                  title: `Could not resolve initial value`,
+                  description: `Unable to resolve initial value for type: ${result.schemaType.title}: ${result.error.message}.`,
+                  status: 'error',
+                })
+              }
+            })
+          )
+          .subscribe({
+            complete: () => {
+              if (shouldOpen) {
+                handleOpenItem(itemPath)
+              }
+            },
+          })
+      }
+    },
+    [
+      handleOpenItem,
+      member.item.path,
+      member.key,
+      member.parentSchemaType,
+      onChange,
+      onPathFocus,
+      resolveInitialValue,
+      toast,
+    ]
   )
 
   const handleBlur = useCallback(() => {
@@ -240,7 +299,7 @@ export function ArrayOfObjectsItem(props: MemberItemProps) {
       collapsed: member.collapsed,
       schemaType: member.item.schemaType,
       parentSchemaType: member.parentSchemaType,
-      onInsert,
+      onInsert: handleInsert,
       onRemove,
       presence: member.item.presence,
       validation: member.item.validation,
@@ -276,7 +335,7 @@ export function ArrayOfObjectsItem(props: MemberItemProps) {
     member.collapsible,
     member.collapsed,
     member.open,
-    onInsert,
+    handleInsert,
     onRemove,
     handleOpen,
     handleClose,

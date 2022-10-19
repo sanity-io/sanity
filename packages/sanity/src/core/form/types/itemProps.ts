@@ -11,6 +11,7 @@ import {
 import React from 'react'
 import {FormNodePresence} from '../../presence'
 import {ObjectInputProps} from './inputProps'
+import {ArrayInputInsertEvent} from './event'
 
 /** @public */
 export type ObjectItem = {
@@ -39,7 +40,7 @@ export interface BaseItemProps<T> {
   // onMoveTo: (event: {ref: number|string, position: 'before'|'after'}) => void
   // onDuplicate: () => void
   // ---
-  onInsert: (event: {items: T[]; position: 'before' | 'after'}) => void
+  onInsert: (event: Omit<ArrayInputInsertEvent<T>, 'referenceItem'>) => void
 
   children: React.ReactNode
 

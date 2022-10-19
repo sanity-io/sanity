@@ -1,10 +1,9 @@
 import React, {useCallback, useMemo, useRef} from 'react'
-import {ArraySchemaType, Path, SchemaType} from '@sanity/types'
-import {catchError, map, mergeMap, tap} from 'rxjs/operators'
-import {concat, defer, EMPTY, from, Observable, of, Subscription} from 'rxjs'
-import {resolveTypeName} from '@sanity/util/content'
+import {Path, SchemaType} from '@sanity/types'
+import {map, tap} from 'rxjs/operators'
+import {Subscription} from 'rxjs'
 import {useToast} from '@sanity/ui'
-import {ArrayOfObjectsFormNode, FieldMember, ObjectMember} from '../../store'
+import {ArrayOfObjectsFormNode, FieldMember} from '../../store'
 import {
   ArrayFieldProps,
   ArrayInputInsertEvent,
@@ -19,7 +18,7 @@ import {
 } from '../../types'
 import {FormCallbacksProvider, useFormCallbacks} from '../../studio/contexts/FormCallbacks'
 import {useDidUpdate} from '../../hooks/useDidUpdate'
-import {FormPatch, insert, PatchArg, PatchEvent, set, setIfMissing, unset} from '../../patch'
+import {insert, PatchArg, PatchEvent, setIfMissing, unset} from '../../patch'
 import {ensureKey} from '../../utils/ensureKey'
 import {FileLike, UploadProgressEvent} from '../../studio/uploads/types'
 import {createProtoArrayValue} from '../../inputs/arrays/ArrayOfObjectsInput/createProtoArrayValue'
@@ -29,48 +28,7 @@ import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../studioClient'
 import {useFormBuilder} from '../../useFormBuilder'
 import * as is from '../../utils/is'
 import {useResolveInitialValueForType} from '../../../store'
-import {isEmptyItem} from '../../store/utils/isEmptyItem'
-
-const getMemberTypeOfItem = (schemaType: ArraySchemaType, item: any): SchemaType | undefined => {
-  const itemTypeName = resolveTypeName(item)
-  return schemaType.of.find((memberType) => memberType.name === itemTypeName)
-}
-
-function resolveInitialValues<T extends ObjectItem>(
-  items: T[],
-  schemaType: ArraySchemaType,
-  resolver: (type: SchemaType, params: Record<string, unknown>) => Promise<T>
-): Observable<
-  | {type: 'patch'; patches: FormPatch[]}
-  | {type: 'error'; error: Error; item: T; schemaType: SchemaType}
-> {
-  return from(items).pipe(
-    mergeMap((item) => {
-      const itemKey = {_key: item._key}
-      return of(getMemberTypeOfItem(schemaType, item)).pipe(
-        mergeMap((memberType) => (memberType ? of(memberType) : EMPTY)),
-        mergeMap((memberType) => {
-          if (!isEmptyItem(item) || !resolver) {
-            return EMPTY
-          }
-          return concat(
-            of({type: 'patch' as const, patches: [set(true, [itemKey, '_resolvingInitialValue'])]}),
-            defer(() => resolver(memberType, item)).pipe(
-              map((initial) => ({
-                type: 'patch' as const,
-                patches: [set({...item, ...initial}, [itemKey])],
-              })),
-              catchError((error) =>
-                of({type: 'error' as const, error, item, schemaType: memberType})
-              )
-            ),
-            of({type: 'patch' as const, patches: [unset([itemKey, '_resolvingInitialValue'])]})
-          )
-        })
-      )
-    })
-  )
-}
+import {resolveInitialArrayValues} from '../utils/resolveInitialArrayValues'
 
 /**
  * Responsible for creating inputProps and fieldProps to pass to ´renderInput´ and ´renderField´ for an array input
@@ -196,7 +154,7 @@ export function ArrayOfObjectsField(props: {
           handleOpenItem(itemPath)
         }
       } else {
-        resolveInitialValues(itemsWithKeys, member.field.schemaType, resolveInitialValue)
+        resolveInitialArrayValues(itemsWithKeys, member.field.schemaType, resolveInitialValue)
           .pipe(
             tap((result) => {
               if (result.type === 'patch') {
@@ -221,11 +179,11 @@ export function ArrayOfObjectsField(props: {
     },
     [
       handleOpenItem,
+      member.field.path,
       member.field.schemaType,
       member.name,
       onChange,
       onPathFocus,
-      props.member.field.path,
       resolveInitialValue,
       toast,
     ]
@@ -263,11 +221,7 @@ export function ArrayOfObjectsField(props: {
 
   const handlePrependItem = useCallback(
     (item: any) => {
-      onChange(
-        PatchEvent.from([setIfMissing([]), insert([ensureKey(item)], 'before', [0])]).prefixAll(
-          member.name
-        )
-      )
+      handleChange([setIfMissing([]), insert([ensureKey(item)], 'before', [0])])
     },
     [member.name, onChange]
   )
