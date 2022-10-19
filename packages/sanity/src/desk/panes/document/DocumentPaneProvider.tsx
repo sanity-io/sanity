@@ -5,6 +5,7 @@ import {useToast} from '@sanity/ui'
 import {fromString as pathFromString} from '@sanity/util/paths'
 import isHotkey from 'is-hotkey'
 import {useMemoObservable} from 'react-rx'
+import {isActionEnabled} from '@sanity/schema/_internal'
 import {usePaneRouter} from '../../components'
 import {PaneMenuItem} from '../../types'
 import {useDeskTool} from '../../useDeskTool'
@@ -36,6 +37,8 @@ import {
   useTemplates,
   useUnique,
   useValidationStatus,
+  getDraftId,
+  useDocumentValuePermissions,
 } from 'sanity'
 
 const emptyObject = {} as Record<string, string | undefined>
@@ -158,8 +161,12 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     : editState?.published || null
   const ready = connectionState === 'connected' && editState.ready
   const viewOlderVersion = historyController.onOlderRevision()
-  const displayed: Partial<SanityDocument> | null = useMemo(
-    () => (viewOlderVersion ? historyController.displayed() : value),
+
+  const displayed: Partial<SanityDocument> | undefined = useMemo(
+    () =>
+      viewOlderVersion
+        ? historyController.displayed() || {_id: value._id, _type: value._type}
+        : value,
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [historyController, params.rev, params.since, value, viewOlderVersion]
   )
@@ -291,8 +298,37 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     []
   )
 
+  const requiredPermission = value._createdAt ? 'update' : 'create'
+  const liveEdit = useMemo(() => Boolean(schemaType?.liveEdit), [documentType, schema])
+  const docId = value._id ? value._id : 'dummy-id'
+  const docPermissionsInput = useMemo(() => {
+    return {
+      ...value,
+      _id: liveEdit ? getPublishedId(docId) : getDraftId(docId),
+    }
+  }, [liveEdit, value, docId])
+
+  const [permissions, isPermissionsLoading] = useDocumentValuePermissions({
+    document: docPermissionsInput,
+    permission: requiredPermission,
+  })
+  const {revTime: rev} = historyController
+
+  const isNonExistent = !value?._id
+
+  const readOnly = useMemo(() => {
+    return (
+      !ready ||
+      rev !== null ||
+      (!isPermissionsLoading && !permissions?.granted) ||
+      !isActionEnabled(schemaType!, 'update') ||
+      (isNonExistent && !isActionEnabled(schemaType!, 'create'))
+    )
+  }, [isNonExistent, isPermissionsLoading, permissions?.granted, ready, rev, schemaType])
+
   const formState = useFormState(schemaType!, {
-    value,
+    value: displayed,
+    readOnly,
     comparisonValue: compareValue,
     focusPath,
     openPath,
@@ -365,6 +401,8 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     previewUrl,
     ready,
     schemaType: schemaType!,
+    isPermissionsLoading,
+    permissions,
     setTimelineMode,
     setTimelineRange,
     timeline,

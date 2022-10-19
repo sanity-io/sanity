@@ -39,17 +39,17 @@ const Scroller = styled(ScrollContainer)<{$disabled: boolean}>(({$disabled}) => 
 
 export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
   const {footerHeight, isInspectOpen, rootElement} = props
-  const schema = useSchema()
   const {
     activeViewId,
     displayed,
     documentId,
-    documentType,
     editState,
     value,
     views,
     ready,
     schemaType,
+    permissions,
+    isPermissionsLoading,
   } = useDocumentPane()
   const {collapsed: layoutCollapsed} = usePaneLayout()
   const parentPortal = usePortal()
@@ -60,21 +60,6 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
   const [documentScrollElement, setDocumentScrollElement] = useState<HTMLDivElement | null>(null)
 
   const requiredPermission = value._createdAt ? 'update' : 'create'
-  const liveEdit = useMemo(
-    () => Boolean(schema.get(documentType)?.liveEdit),
-    [documentType, schema]
-  )
-  const docId = value._id ? value._id : 'dummy-id'
-  const docPermissionsInput = useMemo(() => {
-    return {
-      ...value,
-      _id: liveEdit ? getPublishedId(docId) : getDraftId(docId),
-    }
-  }, [liveEdit, value, docId])
-  const [permissions, isPermissionsLoading] = useDocumentValuePermissions({
-    document: docPermissionsInput,
-    permission: requiredPermission,
-  })
 
   const activeView = useMemo(
     () => views.find((view) => view.id === activeViewId) || views[0] || {type: 'form'},
@@ -154,7 +139,6 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
                 hidden={formViewHidden}
                 key={documentId + (ready ? '_ready' : '_pending')}
                 margins={margins}
-                granted={Boolean(permissions?.granted)}
               />
               {activeViewNode}
             </Scroller>
