@@ -324,6 +324,7 @@ export const CrossDatasetReferenceInput = forwardRef(function CrossDatasetRefere
             <Card
               padding={0}
               border
+              flex={1}
               radius={1}
               tone={
                 readOnly

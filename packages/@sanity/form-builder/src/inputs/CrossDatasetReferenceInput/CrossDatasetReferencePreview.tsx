@@ -10,27 +10,17 @@ import imageUrlBuilder from '@sanity/image-url'
 import {DocumentPreview} from './types'
 import {StyledPreviewFlex, TooltipContent} from './CrossDatasetReferencePreview.styled'
 
-function UnavailableMessage(props: {icon: ComponentType; children: ReactNode; title: ReactNode}) {
-  const Icon = props.icon
+function UnavailableMessage(props: {children: ReactNode}) {
   return (
-    <Flex padding={3}>
-      <Box>
-        <Text size={1}>
-          <Icon />
-        </Text>
-      </Box>
-      <Box flex={1} marginLeft={3}>
-        <Text size={1} weight="semibold">
-          {props.title}
-        </Text>
-
-        <Box marginTop={3}>
+    <TooltipContent padding={3}>
+      <Box flex={1}>
+        <Box>
           <Text as="p" size={1}>
             {props.children}
           </Text>
         </Box>
       </Box>
-    </Flex>
+    </TooltipContent>
   )
 }
 
@@ -88,7 +78,7 @@ export function CrossDatasetReferencePreview(props: {
   }, [previewMedia, dataset, projectId, refType?.icon])
 
   return (
-    <Flex align="center" data-testid="preview">
+    <StyledPreviewFlex align="center" justify="center" flex={1} data-testid="preview">
       {availability.available ? (
         <Box flex={1}>
           <DefaultPreview
@@ -119,13 +109,13 @@ export function CrossDatasetReferencePreview(props: {
                 portal
                 content={
                   notFound ? (
-                    <UnavailableMessage title="Not found" icon={HelpCircleIcon}>
-                      The referenced document does not exist
+                    <UnavailableMessage>
+                      The referenced document no longer exist and might have been deleted.
                       <br />
                       (id: <code>{id}</code>)
                     </UnavailableMessage>
                   ) : (
-                    <UnavailableMessage title="Insufficient permissions" icon={AccessDeniedIcon}>
+                    <UnavailableMessage>
                       The referenced document could not be accessed due to insufficient permissions
                     </UnavailableMessage>
                   )
@@ -161,6 +151,6 @@ export function CrossDatasetReferencePreview(props: {
           )}
         </Inline>
       </Box>
-    </Flex>
+    </StyledPreviewFlex>
   )
 }
