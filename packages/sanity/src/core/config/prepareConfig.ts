@@ -296,6 +296,12 @@ function resolveSource({
     errors.push(e)
   }
 
+  // In this case we want to throw an error because it is not possible to have
+  // a tool with the name "tool" due to logic that happens in the router.
+  if (tools.some(({name}) => name === 'tool')) {
+    throw new Error('A tool cannot have the name "tool". Please enter a different name.')
+  }
+
   const initialTemplatesResponses = templates
     // filter out the ones with parameters to fill
     .filter((template) => !template.parameters?.length)
