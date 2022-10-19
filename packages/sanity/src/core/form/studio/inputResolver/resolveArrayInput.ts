@@ -1,7 +1,7 @@
 import {ArraySchemaType} from '@sanity/types'
 import {ComponentType} from 'react'
 import * as is from '../../utils/is'
-import {ChoicesArrayInput} from '../../inputs/arrays/ArrayOfChoicesInput'
+import {ArrayOfOptionsInput} from '../../inputs/arrays/ArrayOfOptionsInput'
 import {PortableTextInput} from '../../inputs/PortableText/PortableTextInput'
 import {TagsArrayInput} from '../../inputs/TagsArrayInput'
 import {ArrayOfPrimitivesInput} from '../../inputs/arrays/ArrayOfPrimitivesInput'
@@ -28,7 +28,7 @@ function isPortableText(type: ArraySchemaType): boolean {
   return type.of.some((memberType) => is.type('block', memberType))
 }
 
-export function hasChoices(type: ArraySchemaType): boolean {
+function hasListOptions(type: ArraySchemaType): boolean {
   return Boolean(type.options?.list)
 }
 
@@ -38,8 +38,8 @@ export function resolveArrayInput(type: ArraySchemaType): ComponentType<any> {
   }
 
   // Schema provides predefines list
-  if (hasChoices(type)) {
-    return ChoicesArrayInput
+  if (hasListOptions(type)) {
+    return ArrayOfOptionsInput
   }
 
   // Special component for array of primitive values
