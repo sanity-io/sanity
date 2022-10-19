@@ -8,7 +8,6 @@ import {_getModalOption} from '../helpers'
 import {PortableTextMemberItem} from '../../PortableTextInput'
 import {DefaultEditDialog} from './DefaultEditDialog'
 import {PopoverEditDialog} from './PopoverEditDialog'
-import {ModalType} from './types'
 
 export function ObjectEditModal(props: {
   children: React.ReactNode
@@ -19,15 +18,13 @@ export function ObjectEditModal(props: {
 }) {
   const {memberItem, onClose, scrollElement, kind} = props
   const {schemaType} = memberItem.node
-  const modalOption = useMemo(() => _getModalOption({schemaType}), [schemaType])
+  const modalOption = useMemo(() => _getModalOption(schemaType), [schemaType])
 
-  const modalType: ModalType = useMemo(() => {
-    if (modalOption.type) return modalOption.type
+  const modalType = useMemo(() => {
+    if (modalOption?.type) return modalOption.type
 
     // If the object is inline or an annotation, then default to "popover"
-    if (kind === 'inlineObject' || kind === 'annotation') return 'popover'
-
-    return 'dialog'
+    return kind === 'inlineObject' || kind === 'annotation' ? 'popover' : 'dialog'
   }, [kind, modalOption])
 
   const [firstField, setFirstField] = useState<HTMLElement | null>(null)
@@ -63,6 +60,7 @@ export function ObjectEditModal(props: {
       <PopoverEditDialog
         elementRef={memberItem.elementRef}
         onClose={handleClose}
+        width={modalOption?.width}
         scrollElement={scrollElement}
         title={title}
       >
@@ -72,7 +70,7 @@ export function ObjectEditModal(props: {
   }
 
   return (
-    <DefaultEditDialog title={title} onClose={handleClose}>
+    <DefaultEditDialog title={title} onClose={handleClose} width={modalOption?.width}>
       {props.children}
     </DefaultEditDialog>
   )
