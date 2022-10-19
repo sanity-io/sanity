@@ -24,13 +24,7 @@ export function EditPortal(props: Props): React.ReactElement {
   if (type === 'fullscreen') {
     return (
       <Layer>
-        <Dialog
-          width="auto"
-          id={id || ''}
-          onClose={onClose}
-          header={header}
-          __unstable_autoFocus={false}
-        >
+        <Dialog width="auto" id={id || ''} onClose={onClose} header={header}>
           <PresenceOverlay margins={PRESENCE_MARGINS}>
             <Box padding={4}>{children}</Box>
           </PresenceOverlay>
@@ -56,7 +50,7 @@ export function EditPortal(props: Props): React.ReactElement {
   }
 
   return (
-    <Dialog width={1} id={id || ''} onClose={onClose} header={header} __unstable_autoFocus={false}>
+    <Dialog width={1} id={id || ''} onClose={onClose} header={header}>
       <PresenceOverlay margins={PRESENCE_MARGINS}>
         <Box padding={4}>{children}</Box>
       </PresenceOverlay>
