@@ -55,6 +55,7 @@ export interface ObjectArrayFormNode<
   groups: FormFieldGroup[]
   /** @beta */
   members: ObjectMember[]
+  changesOpen?: boolean
 }
 
 /** @internal */

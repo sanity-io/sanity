@@ -32,6 +32,7 @@ export function useFormState<
     openPath,
     presence,
     validation,
+    changesOpen,
   }: {
     fieldGroupState?: StateTree<string> | undefined
     collapsedFieldSets?: StateTree<boolean> | undefined
@@ -42,6 +43,7 @@ export function useFormState<
     focusPath: Path
     presence: FormNodePresence[]
     validation: ValidationMarker[]
+    changesOpen?: boolean
   }
 ): FormState<T, S> | null {
   // note: feel free to move these state pieces out of this hook
@@ -70,6 +72,7 @@ export function useFormState<
       currentUser,
       presence,
       validation,
+      changesOpen,
     }) as ObjectFormNode<T, S> // TODO: remove type cast
 
     const reconciled = immutableReconcile(prev.current, next)
@@ -88,5 +91,6 @@ export function useFormState<
     currentUser,
     presence,
     validation,
+    changesOpen,
   ])
 }

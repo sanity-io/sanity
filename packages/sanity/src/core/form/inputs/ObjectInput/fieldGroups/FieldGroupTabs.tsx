@@ -5,11 +5,11 @@ import {FormFieldGroup} from '../../../store'
 import {GroupOption, GroupTab} from './GroupTab'
 
 interface FieldGroupTabsProps {
-  inputId?: string
-  groups: FormFieldGroup[]
-  shouldAutoFocus?: boolean
-  onClick?: (name: string) => void
   disabled?: boolean
+  groups: FormFieldGroup[]
+  inputId?: string
+  onClick?: (name: string) => void
+  shouldAutoFocus?: boolean
 }
 
 const Root = styled(ElementQuery)`
@@ -44,7 +44,7 @@ const GroupTabs = ({
           <GroupTab
             aria-controls={`${inputId}-field-group-fields`}
             autoFocus={shouldAutoFocus && group.selected}
-            disabled={disabled}
+            disabled={disabled || group.disabled}
             icon={group?.icon}
             key={`${inputId}-${group.name}-tab`}
             name={group.name}
@@ -60,11 +60,11 @@ const GroupTabs = ({
 
 /* For small screens, use Select from Sanity UI  */
 const GroupSelect = ({
+  disabled,
   groups,
   inputId,
   onSelect,
   shouldAutoFocus = true,
-  disabled,
 }: Omit<FieldGroupTabsProps, 'onClick'> & {onSelect: (name: string) => void}) => {
   const handleSelect = useCallback(
     (event: React.ChangeEvent<HTMLSelectElement>) => {
@@ -75,24 +75,24 @@ const GroupSelect = ({
 
   return (
     <Select
-      fontSize={2}
-      onChange={handleSelect}
-      muted
-      data-testid="field-group-select"
       aria-label="Field groups"
       autoFocus={shouldAutoFocus}
+      data-testid="field-group-select"
       disabled={disabled}
+      fontSize={2}
+      muted
+      onChange={handleSelect}
       value={groups.find((g) => g.selected)?.name}
     >
       {groups.map((group) => {
         // Separate hidden in order to resolve it to a boolean type
         return (
           <GroupOption
-            key={`${inputId}-${group.name}-tab`}
             aria-controls={`${inputId}-field-group-fields`}
-            selected={Boolean(group.selected)}
             disabled={group.disabled}
+            key={`${inputId}-${group.name}-tab`}
             name={group.name}
+            selected={Boolean(group.selected)}
             title={group.title || group.name}
           />
         )
@@ -102,8 +102,8 @@ const GroupSelect = ({
 }
 
 export const FieldGroupTabs = React.memo(function FieldGroupTabs({
-  onClick,
   disabled = false,
+  onClick,
   ...props
 }: FieldGroupTabsProps) {
   const handleClick = useCallback(
