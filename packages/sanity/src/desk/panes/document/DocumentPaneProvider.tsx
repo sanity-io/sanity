@@ -299,8 +299,9 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     collapsedPaths,
     presence,
     validation,
-    collapsedFieldSets: collapsedFieldSets,
+    collapsedFieldSets,
     fieldGroupState,
+    changesOpen,
   })
 
   const formStateRef = useRef(formState)
