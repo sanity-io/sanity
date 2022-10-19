@@ -1,17 +1,18 @@
-import {SanityDocument, SchemaType} from '@sanity/types'
+import type {SanityDocument, SchemaType} from '@sanity/types'
 import React, {isValidElement} from 'react'
 import {isNumber, isString} from 'lodash'
 import {Inline} from '@sanity/ui'
 import {useMemoObservable} from 'react-rx'
 import {PublishedStatus} from '../PublishedStatus'
 import {DraftStatus} from '../DraftStatus'
-import {PaneItemPreviewState} from './types'
-import {getPreviewStateObservable, getValueWithFallback} from './helpers'
+import type {PaneItemPreviewState} from './types'
 import {
-  GeneralPreviewLayoutKey,
   DocumentPresence,
   DocumentPreviewPresence,
   DocumentPreviewStore,
+  GeneralPreviewLayoutKey,
+  getPreviewStateObservable,
+  getPreviewValueWithFallback,
   SanityDefaultPreview,
   isRecord,
 } from 'sanity'
@@ -51,7 +52,7 @@ export function PaneItemPreview(props: PaneItemPreviewProps) {
 
   return (
     <SanityDefaultPreview
-      {...getValueWithFallback({value, draft, published})}
+      {...getPreviewValueWithFallback({value, draft, published})}
       isPlaceholder={isLoading}
       icon={icon}
       layout={layout}

@@ -1,3 +1,22 @@
+import type {ObjectSchemaType} from '@sanity/types'
+
+/**
+ * @internal
+ */
+export interface SearchTerms {
+  query: string
+  types: SearchableType[]
+}
+
+/**
+ * @internal
+ */
+export interface SearchableType {
+  name: string
+  title?: string
+  __experimental_search: ObjectSchemaType['__experimental_search']
+}
+
 /**
  * @internal
  */
@@ -54,8 +73,27 @@ export interface WeightedSearchOptions {
   unique?: boolean
 }
 
-/** @internal */
+/**
+ * @internal
+ */
 export interface SearchOptions {
+  comments?: string[]
   includeDrafts?: boolean
   limit?: number
+  offset?: number
+  skipSortByScore?: boolean
+  sort?: SearchSort
+}
+
+/**
+ * @internal
+ */
+export type SortDirection = 'asc' | 'desc'
+
+/**
+ * @internal
+ */
+export type SearchSort = {
+  direction: SortDirection
+  field: string
 }

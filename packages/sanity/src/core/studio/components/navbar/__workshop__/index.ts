@@ -12,4 +12,14 @@ export default defineScope('sanity/studio/navbar', 'Navbar', [
     title: 'ChangelogDialog',
     component: lazy(() => import('./ChangelogDialogStory')),
   },
+  {
+    name: 'searchPopover',
+    title: 'SearchPopover',
+    component: lazy(() => import('./SearchPopoverStory')),
+  },
+  {
+    name: 'searchDialog',
+    title: 'SearchDialog',
+    component: lazy(() => import('./SearchDialogStory')),
+  },
 ])

@@ -1,15 +1,12 @@
 import {ObjectSchemaType, Schema, SchemaType} from '@sanity/types'
-import {isNonNullable} from '../../../../../../util/isNonNullable'
+import {isNonNullable} from '../../util/isNonNullable'
 
 const isDocumentType = (type: SchemaType): type is ObjectSchemaType =>
   Boolean(type.type && type.type.name === 'document')
 
 const isSanityType = (type: SchemaType): boolean => type.name.startsWith('sanity.')
 
-export const getSearchableTypes = (
-  schema: Schema
-  // eslint-disable-next-line camelcase
-): {name: string; __experimental_search?: ObjectSchemaType['__experimental_search']}[] =>
+export const getSearchableTypes = (schema: Schema): ObjectSchemaType[] =>
   schema
     .getTypeNames()
     .map((typeName) => schema.get(typeName))
