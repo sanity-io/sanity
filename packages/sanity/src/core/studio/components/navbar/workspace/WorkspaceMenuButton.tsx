@@ -15,7 +15,7 @@ import styled from 'styled-components'
 import {useActiveWorkspace} from '../../../activeWorkspaceMatcher'
 import {useColorScheme} from '../../../colorScheme'
 import {useWorkspaces} from '../../../workspaces'
-import {workspacesDocsUrl} from './constants'
+import {WORKSPACES_DOCS_URL} from './constants'
 import {useWorkspaceAuthStates} from './hooks'
 import {WorkspacePreview} from './WorkspacePreview'
 import {useRouter} from 'sanity/router'
@@ -98,7 +98,7 @@ export function WorkspaceMenuButton(props: ButtonProps) {
           <FooterCard borderTop paddingY={1}>
             <MenuItem
               as="a"
-              href={workspacesDocsUrl}
+              href={WORKSPACES_DOCS_URL}
               icon={AddIcon}
               rel="noopener noreferrer"
               target="__blank"

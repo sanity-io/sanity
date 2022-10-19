@@ -7,7 +7,7 @@ import {useWorkspaces} from '../../../../workspaces'
 import {WorkspacePreview} from '../WorkspacePreview'
 import {useWorkspaceAuthStates} from '../hooks'
 import {LoadingScreen} from '../../../../screens'
-import {workspacesDocsUrl} from '../constants'
+import {WORKSPACES_DOCS_URL} from '../constants'
 import {Layout} from './Layout'
 
 export function WorkspaceAuth() {
@@ -72,7 +72,7 @@ export function WorkspaceAuth() {
         <Stack padding={1}>
           <Button
             as="a"
-            href={workspacesDocsUrl}
+            href={WORKSPACES_DOCS_URL}
             icon={AddIcon}
             justify="flex-start"
             mode="bleed"
