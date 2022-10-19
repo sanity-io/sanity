@@ -183,6 +183,7 @@ function prepareFieldMember(props: {
       collapsedPaths: scopedCollapsedPaths,
       collapsedFieldSets: scopedCollapsedFieldsets,
       readOnly: parent.readOnly,
+      changesOpen: parent.changesOpen,
     })
 
     if (inputState === null) {
@@ -457,6 +458,7 @@ interface RawState<SchemaType, T> {
   collapsedFieldSets?: StateTree<boolean>
   // nesting level
   level: number
+  changesOpen?: boolean
 }
 
 function prepareObjectInputState<T>(
@@ -499,7 +501,12 @@ function prepareObjectInputState<T>(
 
   const groups = [ALL_FIELDS_GROUP, ...schemaTypeGroupConfig].flatMap((group): FormFieldGroup[] => {
     const groupHidden = resolveConditionalProperty(group.hidden, conditionalPropertyContext)
-    const selected = group.name === (props.fieldGroupState?.value || defaultGroupName)
+    const isSelected = group.name === (props.fieldGroupState?.value || defaultGroupName)
+
+    // Set the "all-fields" group as selected when review changes is open to enable review of all
+    // fields and changes together. When review changes is closed - switch back to the selected tab.
+    const selected = (props.changesOpen && group.name === ALL_FIELDS_GROUP.name) || isSelected
+
     return groupHidden
       ? []
       : [
@@ -632,6 +639,11 @@ function prepareObjectInputState<T>(
     return null
   }
 
+  // Disable all groups except the "all fields" group when the review changes pane is open.
+  const _groups = hasFieldGroups
+    ? groups.map((g) => ({...g, disabled: props?.changesOpen && g.name !== ALL_FIELDS_GROUP.name}))
+    : []
+
   return {
     value: props.value as Record<string, unknown> | undefined,
     changed: isChangedValue(props.value, props.comparisonValue),
@@ -645,7 +657,7 @@ function prepareObjectInputState<T>(
     presence,
     validation,
     members,
-    groups: hasFieldGroups ? groups : [],
+    groups: _groups,
   }
 }
 

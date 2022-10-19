@@ -64,9 +64,9 @@ export const ObjectInput = memo(function ObjectInput(props: ObjectInputProps) {
       {groups.length > 0 ? (
         <FieldGroupTabsWrapper $level={level} data-testid="field-groups">
           <FieldGroupTabs
+            groups={groups}
             inputId={id}
             onClick={onFieldGroupSelect}
-            groups={groups}
             shouldAutoFocus={path.length === 0}
           />
         </FieldGroupTabsWrapper>
