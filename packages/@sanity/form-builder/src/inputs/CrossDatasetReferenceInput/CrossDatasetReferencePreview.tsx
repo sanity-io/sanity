@@ -6,6 +6,7 @@ import {Box, Flex, Inline, Label, Text, Tooltip} from '@sanity/ui'
 import {AccessDeniedIcon, HelpCircleIcon, LaunchIcon} from '@sanity/icons'
 import {DefaultPreview, PreviewMediaDimensions, TextWithTone} from '@sanity/base/components'
 import imageUrlBuilder from '@sanity/image-url'
+import {isImageSource} from '@sanity/asset-utils'
 
 import {DocumentPreview} from './types'
 import {StyledPreviewFlex, TooltipContent} from './CrossDatasetReferencePreview.styled'
@@ -59,19 +60,27 @@ export function CrossDatasetReferencePreview(props: {
 
   const media = useMemo(() => {
     if (previewMedia) {
+      const isValidImageAsset =
+        typeof (previewMedia as any)?.asset !== 'undefined' && isImageSource(previewMedia)
+      const isValidElement = React.isValidElement(previewMedia)
+
+      if (!isValidImageAsset && !isValidElement) {
+        return null
+      }
+
       return function MediaPreview({dimensions}: {dimensions: PreviewMediaDimensions}) {
-        return React.isValidElement(previewMedia) ? (
-          previewMedia
-        ) : (
-          <img
-            src={imageUrlBuilder({dataset, projectId})
-              .image(previewMedia as any)
-              .withOptions(dimensions)
-              .url()}
-            alt="Image preview of referenced document"
-            referrerPolicy="strict-origin-when-cross-origin"
-          />
-        )
+        return isValidElement
+          ? previewMedia
+          : isValidImageAsset && (
+              <img
+                src={imageUrlBuilder({dataset, projectId})
+                  .image(previewMedia as any)
+                  .withOptions(dimensions)
+                  .url()}
+                alt="Image preview of referenced document"
+                referrerPolicy="strict-origin-when-cross-origin"
+              />
+            )
       }
     }
     return refType?.icon ? createElement(refType.icon) : null
