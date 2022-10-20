@@ -51,11 +51,5 @@ export function useFeatureEnabled(featureKey: string): Features {
     INITIAL_LOADING_STATE
   )
 
-  // workaround for a "bug" with useMemoObservable that doesn't
-  // return the initial value upon resubscription
-  const previousId = usePrevious(featureKey)
-  if (previousId !== featureKey) {
-    return INITIAL_LOADING_STATE
-  }
   return featureInfo
 }
