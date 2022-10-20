@@ -57,6 +57,8 @@ function nonNullable<T>(v: T): v is NonNullable<T> {
 type $TODO = any
 
 const REF_PATH = ['_ref']
+const CROSS_DATASET_FEATUREKEY = 'crossDatasetReferences'
+
 export const CrossDatasetReferenceInput = forwardRef(function CrossDatasetReferenceInput(
   props: Props,
   forwardedRef: ForwardedRef<HTMLInputElement>
@@ -144,7 +146,6 @@ export const CrossDatasetReferenceInput = forwardRef(function CrossDatasetRefere
   const refDoc = useMemo(() => ({_id: value?._ref}), [value?._ref])
 
   const loadableReferenceInfo = useReferenceInfo(refDoc, getReferenceInfoMemo)
-  const CROSS_DATASET_FEATUREKEY = 'crossDatasetReferences'
   const featureInfo = useFeatureEnabled(CROSS_DATASET_FEATUREKEY)
 
   const autocompletePopoverReferenceElementRef = useRef()
