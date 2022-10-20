@@ -13,6 +13,7 @@ export const HELP_IDS = {
   OBJECT_FIELD_NOT_UNIQUE: 'schema-object-fields-invalid',
   OBJECT_FIELD_NAME_INVALID: 'schema-object-fields-invalid',
   OBJECT_FIELD_DEFINITION_INVALID_TYPE: 'schema-object-fields-invalid',
+  ARRAY_PREDEFINED_CHOICES_INVALID: 'schema-predefined-choices-invalid',
   ARRAY_OF_ARRAY: 'schema-array-of-array',
   ARRAY_OF_INVALID: 'schema-array-of-invalid',
   ARRAY_OF_NOT_UNIQUE: 'schema-array-of-invalid',

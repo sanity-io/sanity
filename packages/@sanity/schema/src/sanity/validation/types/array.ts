@@ -8,7 +8,27 @@ function isPrimitiveTypeName(typeName) {
   return typeName === 'string' || typeName === 'number' || typeName === 'boolean'
 }
 
-const pluralize = (arr: unknown[], suf = 's') => (arr.length === 1 ? '' : suf)
+function isAssignable(typeName, type) {
+  return (typeof type.name === 'string' ? type.name : type.type) === typeName
+}
+
+function quote(n) {
+  return `"${n}"`
+}
+
+function pluralize(arr: unknown[], suf = 's') {
+  return arr.length === 1 ? '' : suf
+}
+
+function format(value: unknown) {
+  if (Array.isArray(value)) {
+    return `array with ${value.length} entries`
+  }
+  if (typeof value === 'object' && value !== null) {
+    return `object with keys ${humanizeList(Object.keys(value).map(quote))}`
+  }
+  return quote(value)
+}
 
 export default (typeDef, visitorContext) => {
   // name should already have been marked
@@ -129,12 +149,61 @@ export default (typeDef, visitorContext) => {
       error(
         `The array type's 'of' property can't have both object types and primitive types (found primitive type ${pluralize(
           primitiveTypeNames
-        )} ${humanizeList(primitiveTypeNames.map((n) => `"${n}"`))} and object type${pluralize(
+        )} ${humanizeList(primitiveTypeNames.map(quote))} and object type${pluralize(
           objectTypeNames
-        )} ${humanizeList(objectTypeNames.map((n) => `"${n}"`))})`,
+        )} ${humanizeList(objectTypeNames.map(quote))})`,
         HELP_IDS.ARRAY_OF_INVALID
       )
     )
+  }
+
+  const list = typeDef?.options?.list
+  if (!isMixedArray && Array.isArray(list)) {
+    const isArrayOfPrimitives = primitiveTypes.length > 0
+    if (isArrayOfPrimitives) {
+      list.forEach((option) => {
+        const value = option?.value ?? option
+        const isDeclared = primitiveTypes.some((primitiveType) => {
+          return typeof value === visitorContext.getType(primitiveType.type).jsonType
+        })
+        if (!isDeclared) {
+          const formattedTypeList = humanizeList(
+            primitiveTypes.map((t) => t.name || t.type),
+            {conjunction: 'or'}
+          )
+          problems.push(
+            error(
+              `An invalid entry found in options.list: ${format(
+                value
+              )}. Must be either a value of type ${formattedTypeList}, or an object with {title: string, value: ${formattedTypeList}}`,
+              HELP_IDS.ARRAY_PREDEFINED_CHOICES_INVALID
+            )
+          )
+        }
+      })
+    } else {
+      list.forEach((option) => {
+        const optionTypeName = option._type || 'object'
+        const isDeclared = objectTypes.some((validObjectType) =>
+          isAssignable(optionTypeName, validObjectType)
+        )
+        if (!isDeclared) {
+          problems.push(
+            error(
+              `An invalid entry found in options.list: ${format(
+                option
+              )}. Must be an object with "_type" set to ${humanizeList(
+                objectTypes
+                  .map((t) => t.name || t.type)
+                  .map((t) => (t === 'object' ? 'undefined' : quote(t))),
+                {conjunction: 'or'}
+              )}`,
+              HELP_IDS.ARRAY_PREDEFINED_CHOICES_INVALID
+            )
+          )
+        }
+      })
+    }
   }
 
   if (typeDef?.options?.list && typeDef?.options?.layout === 'tags') {
