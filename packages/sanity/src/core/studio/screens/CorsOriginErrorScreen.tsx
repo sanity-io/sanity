@@ -34,50 +34,23 @@ export function CorsOriginErrorScreen(props: CorsOriginErrorScreenProps) {
 
   return (
     <Card height="fill">
-      <Dialog
-        id="cors-error-dialog"
-        header="Configure API access"
-        width={1}
-        footer={
-          <Stack paddingX={3} paddingY={2}>
-            <Button
-              as="a"
-              href={corsUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              text="Add origin"
-              tone="primary"
-            />
-          </Stack>
-        }
-      >
+      <Dialog id="cors-error-dialog" header="Before you continue..." width={1}>
         <Stack paddingX={4} paddingY={5} space={4}>
           <Text>
-            It looks like you're trying to connect to the Content Lake API from this origin:
+            To access your content, you need to{' '}
+            <b>add the following URLas an allowed CORS origin</b> to your Sanity project.
           </Text>
 
           <TextInput value={origin} readOnly />
 
-          <Text>
-            However it's not in the{' '}
-            <a
-              href="https://www.sanity.io/docs/front-ends/cors"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              list over allowed CORS origins
-            </a>{' '}
-            for{' '}
-            <a
-              href={`https://sanity.io/manage/project/${projectId}`}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              your project.
-            </a>
-          </Text>
-
-          <Text>Add it now to proceed loading your studio.</Text>
+          <Button
+            as="a"
+            href={corsUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            text="Add CORS origin"
+            tone="primary"
+          />
         </Stack>
       </Dialog>
     </Card>
