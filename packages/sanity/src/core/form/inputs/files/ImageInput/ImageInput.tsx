@@ -89,7 +89,8 @@ type BaseImageInputState = {
   // Metadata about files currently over the drop area
   hoveringFiles: FileInfo[]
   isStale: boolean
-  isMenuOpen: boolean
+  hotspotButtonElement: HTMLButtonElement | null
+  menuButtonElement: HTMLButtonElement | null
 }
 
 type Focusable = {
@@ -116,7 +117,8 @@ export class BaseImageInput extends React.PureComponent<BaseImageInputProps, Bas
     selectedAssetSource: null,
     hoveringFiles: [],
     isStale: false,
-    isMenuOpen: false,
+    hotspotButtonElement: null,
+    menuButtonElement: null,
   }
 
   constructor(props: BaseImageInputProps) {
@@ -134,6 +136,14 @@ export class BaseImageInput extends React.PureComponent<BaseImageInputProps, Bas
 
   setFocusElement = (el: HTMLElement | null) => {
     this._assetElementRef = el
+  }
+
+  setMenuButtonElement = (el: HTMLButtonElement | null) => {
+    this.setState({menuButtonElement: el})
+  }
+
+  setHotspotButtonElement = (el: HTMLButtonElement | null) => {
+    this.setState({hotspotButtonElement: el})
   }
 
   isImageToolEnabled() {
@@ -169,8 +179,6 @@ export class BaseImageInput extends React.PureComponent<BaseImageInputProps, Bas
     if (match) {
       this.uploadWith(match.uploader!, match.file)
     }
-
-    this.setState({isMenuOpen: false})
   }
 
   uploadWith = (uploader: Uploader, file: File, assetDocumentProps: UploadOptions = {}) => {
@@ -305,6 +313,9 @@ export class BaseImageInput extends React.PureComponent<BaseImageInputProps, Bas
   handleCloseDialog = () => {
     const {onFieldClose} = this.props
     onFieldClose('hotspot')
+
+    // Set focus on hotspot button in `ImageActionsMenu` when closing the dialog
+    this.state.hotspotButtonElement?.focus()
   }
 
   handleSelectAssetFromSource = (assetFromSource: AssetFromSource[]) => {
@@ -366,6 +377,9 @@ export class BaseImageInput extends React.PureComponent<BaseImageInputProps, Bas
 
   handleAssetSourceClosed = () => {
     this.setState({selectedAssetSource: null})
+
+    // Set focus on menu button in `ImageActionsMenu` when closing the dialog
+    this.state.menuButtonElement?.focus()
   }
 
   renderHotspotInput = (hotspotInputProps: Omit<InputProps, 'renderDefault'>) => {
@@ -441,7 +455,6 @@ export class BaseImageInput extends React.PureComponent<BaseImageInputProps, Bas
       imageUrlBuilder,
       observeAsset,
     } = this.props
-    const {isMenuOpen} = this.state
 
     const asset = value?.asset
     if (!asset) {
@@ -458,7 +471,6 @@ export class BaseImageInput extends React.PureComponent<BaseImageInputProps, Bas
           icon={SearchIcon}
           text="Select"
           onClick={() => {
-            this.setState({isMenuOpen: false})
             this.handleSelectImageFromAssetSource(assetSources[0])
           }}
           disabled={readOnly}
@@ -473,7 +485,6 @@ export class BaseImageInput extends React.PureComponent<BaseImageInputProps, Bas
             key={assetSource.name}
             text={assetSource.title}
             onClick={() => {
-              this.setState({isMenuOpen: false})
               this.handleSelectImageFromAssetSource(assetSource)
             }}
             icon={assetSource.icon || ImageIcon}
@@ -498,10 +509,10 @@ export class BaseImageInput extends React.PureComponent<BaseImageInputProps, Bas
 
           return (
             <ImageActionsMenu
-              isMenuOpen={isMenuOpen}
               onEdit={this.handleOpenDialog}
               showEdit={showAdvancedEditButton}
-              onMenuOpen={(isOpen) => this.setState({isMenuOpen: isOpen})}
+              setHotspotButtonElement={this.setHotspotButtonElement}
+              setMenuButtonElement={this.setMenuButtonElement}
             >
               <ActionsMenu
                 onUpload={this.handleSelectFiles}
@@ -546,7 +557,6 @@ export class BaseImageInput extends React.PureComponent<BaseImageInputProps, Bas
                     key={assetSource.name}
                     text={assetSource.title}
                     onClick={() => {
-                      this.setState({isMenuOpen: false})
                       this.handleSelectImageFromAssetSource(assetSource)
                     }}
                     icon={assetSource.icon || ImageIcon}
@@ -569,7 +579,6 @@ export class BaseImageInput extends React.PureComponent<BaseImageInputProps, Bas
         icon={SearchIcon}
         mode="ghost"
         onClick={() => {
-          this.setState({isMenuOpen: false})
           this.handleSelectImageFromAssetSource(assetSources[0])
         }}
         data-testid="file-input-browse-button"
@@ -638,6 +647,7 @@ export class BaseImageInput extends React.PureComponent<BaseImageInputProps, Bas
       return null
     }
     const Component = selectedAssetSource.component
+
     if (value && value.asset) {
       return (
         <WithReferencedAsset observeAsset={observeAsset} reference={value.asset}>
@@ -738,8 +748,8 @@ export class BaseImageInput extends React.PureComponent<BaseImageInputProps, Bas
               {!value?.asset && this.renderUploadPlaceholder()}
               {!value?._upload && value?.asset && (
                 <div style={{position: 'relative'}}>
-                  {this.renderAssetMenu()}
                   {this.renderPreview()}
+                  {this.renderAssetMenu()}
                 </div>
               )}
             </FileTarget>
