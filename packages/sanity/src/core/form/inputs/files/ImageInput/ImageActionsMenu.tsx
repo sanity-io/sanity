@@ -1,69 +1,54 @@
-import React, {MouseEventHandler, ReactNode, useCallback, useState} from 'react'
-
+import React, {MouseEventHandler, ReactNode} from 'react'
 import {EllipsisVerticalIcon, CropIcon} from '@sanity/icons'
-import {Menu, Popover, useClickOutside, useGlobalKeyDown} from '@sanity/ui'
-import {MenuActionsWrapper, ButtonContainer} from './ImageActionsMenu.styled'
+import {Button, Inline, Menu, MenuButton, MenuButtonProps} from '@sanity/ui'
+import styled from 'styled-components'
 
-interface Props {
+const POPOVER_PROPS: MenuButtonProps['popover'] = {portal: true, constrainSize: true}
+
+export const MenuActionsWrapper = styled(Inline)`
+  position: absolute;
+  top: 0;
+  right: 0;
+`
+
+interface ImageActionsMenuProps {
   children: ReactNode
   onEdit: MouseEventHandler<HTMLButtonElement>
+  setHotspotButtonElement: (element: HTMLButtonElement | null) => void
+  setMenuButtonElement: (element: HTMLButtonElement | null) => void
   showEdit: boolean
-  isMenuOpen: boolean
-  onMenuOpen: (v: boolean) => void
 }
 
-export function ImageActionsMenu(props: Props) {
-  const {onEdit, children, showEdit, isMenuOpen, onMenuOpen} = props
-  const [menuElement, setMenuRef] = useState<HTMLDivElement | null>(null)
-  const [menuButtonRef, setMenuButtonRef] = useState<HTMLButtonElement | null>(null)
-
-  const handleClick = React.useCallback(() => onMenuOpen(true), [onMenuOpen])
-
-  const handleClickOutside = useCallback(() => {
-    onMenuOpen(false)
-  }, [onMenuOpen])
-
-  const handleGlobalKeyDown = useCallback(
-    (e: any) => {
-      if (e.key === 'Escape') {
-        onMenuOpen(false)
-        menuButtonRef?.focus()
-      }
-    },
-    [menuButtonRef, onMenuOpen]
-  )
-
-  useClickOutside(handleClickOutside, [menuElement])
-  useGlobalKeyDown(handleGlobalKeyDown)
+export function ImageActionsMenu(props: ImageActionsMenuProps) {
+  const {onEdit, children, showEdit, setHotspotButtonElement, setMenuButtonElement} = props
 
   return (
     <MenuActionsWrapper data-buttons space={1} padding={2}>
       {showEdit && (
-        <ButtonContainer
+        <Button
+          aria-label="Open image edit dialog"
+          data-testid="options-menu-edit-details"
           icon={CropIcon}
           mode="ghost"
           onClick={onEdit}
-          data-testid="options-menu-edit-details"
+          ref={setHotspotButtonElement}
         />
       )}
-      <Popover
-        content={
-          <Menu ref={setMenuRef} shouldFocus="first">
-            {children}
-          </Menu>
+
+      <MenuButton
+        button={
+          <Button
+            aria-label="Open image options menu"
+            data-testid="options-menu-button"
+            icon={EllipsisVerticalIcon}
+            mode="ghost"
+          />
         }
-        portal
-        constrainSize
-        open={isMenuOpen}
-      >
-        <ButtonContainer
-          icon={EllipsisVerticalIcon}
-          mode="ghost"
-          data-testid="options-menu-button"
-          onClick={handleClick}
-          ref={setMenuButtonRef}
-        />
-      </Popover>
+        id="image-actions-menu"
+        menu={<Menu>{children}</Menu>}
+        popover={POPOVER_PROPS}
+        ref={setMenuButtonElement}
+      />
     </MenuActionsWrapper>
   )
 }
