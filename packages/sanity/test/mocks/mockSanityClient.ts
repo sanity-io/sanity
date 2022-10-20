@@ -142,7 +142,7 @@ export function createMockSanityClient(
 
         $log.observable.request.push(opts)
 
-        if (opts.uri.startsWith(requestUriPrefix)) {
+        if (opts.uri?.startsWith(requestUriPrefix)) {
           const path = opts.uri.slice(requestUriPrefix.length)
 
           if (requests[path]) {

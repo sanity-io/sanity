@@ -5,7 +5,7 @@ import {useMemoObservable} from 'react-rx'
 import {useClient} from '../../../hooks'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../studioClient'
 
-type Features = {
+interface Features {
   isLoading: boolean
   enabled: boolean
   features: string[]
@@ -22,26 +22,26 @@ const INITIAL_LOADING_STATE: Features = {
  */
 function fetchFeatures({versionedClient}: {versionedClient: SanityClient}): Observable<string[]> {
   return versionedClient.observable.request<string[]>({
-    url: `/features`,
+    uri: `/features`,
     tag: 'features',
   })
 }
 
-let observable: Observable<string[]>
+let cachedFeatureRequest: Observable<string[]>
 
 export function useFeatureEnabled(featureKey: string): Features {
   const versionedClient = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
 
-  if (!observable) {
-    observable = fetchFeatures({versionedClient}).pipe(shareReplay())
+  if (!cachedFeatureRequest) {
+    cachedFeatureRequest = fetchFeatures({versionedClient}).pipe(shareReplay())
   }
 
   const featureInfo = useMemoObservable(
     () =>
-      observable.pipe(
-        map((features) => ({
+      cachedFeatureRequest.pipe(
+        map((features = []) => ({
           isLoading: false,
-          enabled: features.includes(featureKey),
+          enabled: Boolean(features?.includes(featureKey)),
           features,
         })),
         startWith(INITIAL_LOADING_STATE),
