@@ -23,6 +23,7 @@ import {
 import {ChangeIndicatorForFieldPath, FormField} from '@sanity/base/components'
 import {getPublishedId} from '@sanity/base/_internal'
 import {useObservableCallback} from 'react-rx'
+import {FOCUS_TERMINATOR} from '@sanity/util/paths'
 import PatchEvent, {set, unset} from '../../PatchEvent'
 import {EMPTY_ARRAY} from '../../utils/empty'
 import {useDidUpdate} from '../../hooks/useDidUpdate'
@@ -174,7 +175,7 @@ export const CrossDatasetReferenceInput = forwardRef(function CrossDatasetRefere
   const handleFocus = useCallback(
     (event) => {
       if (onFocus && event.currentTarget === focusElementRef.current) {
-        onFocus([])
+        onFocus([FOCUS_TERMINATOR])
       }
     },
     [onFocus, focusElementRef]
