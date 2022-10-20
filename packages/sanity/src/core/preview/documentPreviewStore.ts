@@ -2,7 +2,6 @@ import {Observable} from 'rxjs'
 import {distinctUntilChanged, map} from 'rxjs/operators'
 import {SanityClient} from '@sanity/client'
 import {PrepareViewOptions, SanityDocument} from '@sanity/types'
-import {CrossProjectTokenStore} from '../store'
 import {isRecord} from '../util'
 import {create_preview_availability} from './availability'
 import {createPathObserver} from './createPathObserver'
@@ -49,13 +48,11 @@ export interface DocumentPreviewStore {
 
 /** @internal */
 export interface DocumentPreviewStoreOptions {
-  crossProjectTokenStore: CrossProjectTokenStore
   client: SanityClient
 }
 
 /** @internal */
 export function createDocumentPreviewStore({
-  crossProjectTokenStore,
   client,
 }: DocumentPreviewStoreOptions): DocumentPreviewStore {
   const versionedClient = client.withConfig({apiVersion: '1'})
@@ -68,7 +65,6 @@ export function createDocumentPreviewStore({
   }
 
   const {observeFields} = create_preview_observeFields({
-    crossProjectTokenStore,
     observePaths: __proxy_observePaths,
     versionedClient,
   })

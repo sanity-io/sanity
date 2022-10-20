@@ -1,6 +1,5 @@
 import {Config, Source as SanitySource} from '../../config'
 import {DocumentPreviewStore} from '../../preview'
-import {CrossProjectTokenStore} from './crossProjectToken'
 import {DocumentStore} from './document'
 import {GrantsStore} from './grants/types'
 import {HistoryStore} from './history'
@@ -14,7 +13,6 @@ export interface DatastoresContext {
 }
 
 export interface Datastores {
-  crossProjectTokenStore: CrossProjectTokenStore
   documentStore: DocumentStore
   documentPreviewStore: DocumentPreviewStore
   grantsStore: GrantsStore

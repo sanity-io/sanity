@@ -10,7 +10,6 @@ import {
   ConnectionStatusStore,
   createConnectionStatusStore,
 } from './connection-status/connection-status-store'
-import {CrossProjectTokenStore, __tmp_wrap_crossProjectToken} from './crossProjectToken'
 import {createDocumentStore, DocumentStore} from './document'
 import {createGrantsStore, GrantsStore} from './grants'
 import {createHistoryStore, HistoryStore} from './history'
@@ -93,44 +92,21 @@ export function useHistoryStore(): HistoryStore {
 export function useDocumentPreviewStore(): DocumentPreviewStore {
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const resourceCache = useResourceCache()
-  const crossProjectTokenStore = useCrossProjectTokenStore()
 
   return useMemo(() => {
     const documentPreviewStore =
       resourceCache.get<DocumentPreviewStore>({
         namespace: 'documentPreviewStore',
-        dependencies: [client, crossProjectTokenStore],
-      }) || createDocumentPreviewStore({client, crossProjectTokenStore})
+        dependencies: [client],
+      }) || createDocumentPreviewStore({client})
 
     resourceCache.set({
       namespace: 'documentPreviewStore',
-      dependencies: [client, crossProjectTokenStore],
+      dependencies: [client],
       value: documentPreviewStore,
     })
 
     return documentPreviewStore
-  }, [client, resourceCache, crossProjectTokenStore])
-}
-
-/** @internal */
-export function useCrossProjectTokenStore() {
-  const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
-  const resourceCache = useResourceCache()
-
-  return useMemo(() => {
-    const crossProjectTokenStore =
-      resourceCache.get<CrossProjectTokenStore>({
-        namespace: 'crossProjectTokenStore',
-        dependencies: [client],
-      }) || __tmp_wrap_crossProjectToken({client})
-
-    resourceCache.set({
-      namespace: 'crossProjectTokenStore',
-      dependencies: [client],
-      value: crossProjectTokenStore,
-    })
-
-    return crossProjectTokenStore
   }, [client, resourceCache])
 }
 

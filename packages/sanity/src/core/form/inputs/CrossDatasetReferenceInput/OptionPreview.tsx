@@ -7,6 +7,7 @@ import {Alert} from '../../components/Alert'
 import {CrossDatasetReferenceInfo} from './types'
 import {useReferenceInfo} from './useReferenceInfo'
 import {CrossDatasetReferencePreview} from './CrossDatasetReferencePreview'
+import {useProjectId} from './utils/useProjectId'
 
 /**
  * Used to preview a referenced type
@@ -23,6 +24,7 @@ export function OptionPreview(props: {
     result: referenceInfo,
     error,
   } = useReferenceInfo(props.document, props.getReferenceInfo)
+  const projectId = useProjectId()
 
   if (isLoading) {
     return (
@@ -70,7 +72,7 @@ export function OptionPreview(props: {
         preview={referenceInfo.preview}
         refType={refType}
         dataset={props.referenceType.dataset}
-        projectId={props.referenceType.projectId}
+        projectId={projectId}
         showTypeLabel={props.referenceType.to.length > 1}
       />
     )

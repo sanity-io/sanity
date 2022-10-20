@@ -35,8 +35,11 @@ describe('render states', () => {
         to: [
           {
             type: 'product',
-            __experimental_search: [{path: 'title'}],
-            preview: {},
+            preview: {
+              select: {
+                title: 'title',
+              },
+            },
           },
         ],
       } as any,
@@ -77,8 +80,11 @@ describe('render states', () => {
         to: [
           {
             type: 'product',
-            preview: {},
-            __experimental_search: [{path: 'title'}],
+            preview: {
+              select: {
+                title: 'title',
+              },
+            },
           },
         ],
       } as any,
@@ -117,7 +123,16 @@ describe('render states', () => {
         dataset: 'products',
         projectId: 'abcxyz',
         weak: true,
-        to: [{type: 'product', __experimental_search: [{path: 'title'}], preview: {}}],
+        to: [
+          {
+            type: 'product',
+            preview: {
+              select: {
+                title: 'title',
+              },
+            },
+          },
+        ],
       } as any,
       getReferenceInfo,
       render: (inputProps) => {
@@ -156,7 +171,16 @@ describe('user interaction happy paths', () => {
         type: 'crossDatasetReference',
         dataset: 'products',
         projectId: 'abcxyz',
-        to: [{type: 'product', __experimental_search: [{path: 'title'}], preview: {}}],
+        to: [
+          {
+            type: 'product',
+            preview: {
+              select: {
+                title: 'title',
+              },
+            },
+          },
+        ],
       } as any,
       render: (inputProps) => <CrossDatasetReferenceInput {...inputProps} />,
     })
@@ -192,7 +216,7 @@ describe('user interaction happy paths', () => {
             type: 'set',
             value: {
               _dataset: 'products',
-              _projectId: 'abcxyz',
+              _projectId: 'mock-project-id',
               _ref: 'two',
               _type: 'productReference',
             },
@@ -225,7 +249,7 @@ describe('user interaction happy paths', () => {
       _type: 'productReference',
       _ref: 'some-product',
       _dataset: 'products',
-      _projectId: 'abcxyz',
+      _projectId: 'mock-project-id',
     }
 
     const {onChange, onPathFocus, rerender, result} = await renderCrossDatasetReferenceInput({
@@ -237,7 +261,16 @@ describe('user interaction happy paths', () => {
         type: 'crossDatasetReference',
         dataset: 'products',
         projectId: 'abcxyz',
-        to: [{type: 'product', __experimental_search: [{path: 'title'}], preview: {}}],
+        to: [
+          {
+            type: 'product',
+            preview: {
+              select: {
+                title: 'title',
+              },
+            },
+          },
+        ],
       } as any,
 
       render: (inputProps) => <CrossDatasetReferenceInput {...inputProps} value={value} />,
@@ -286,7 +319,7 @@ describe('user interaction happy paths', () => {
             type: 'set',
             value: {
               _dataset: 'products',
-              _projectId: 'abcxyz',
+              _projectId: 'mock-project-id',
               _ref: 'two',
               _type: 'productReference',
             },
@@ -322,7 +355,16 @@ describe('user interaction happy paths', () => {
         type: 'crossDatasetReference',
         dataset: 'products',
         projectId: 'abcxyz',
-        to: [{type: 'product', __experimental_search: [{path: 'title'}], preview: {}}],
+        to: [
+          {
+            type: 'product',
+            preview: {
+              select: {
+                title: 'title',
+              },
+            },
+          },
+        ],
       } as any,
 
       render: (inputProps) => <CrossDatasetReferenceInput {...inputProps} value={value} />,

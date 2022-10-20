@@ -1,6 +1,6 @@
 import {useMemo} from 'react'
 import {ClientError, SanityClient} from '@sanity/client'
-import {Observable, timer, fromEvent, EMPTY, of, forkJoin} from 'rxjs'
+import {Observable, timer, fromEvent, EMPTY, of} from 'rxjs'
 import {
   map,
   startWith,
@@ -11,10 +11,8 @@ import {
 } from 'rxjs/operators'
 import {
   AvailabilityResponse,
-  CrossProjectTokenStore,
   DEFAULT_STUDIO_CLIENT_OPTIONS,
   DocumentStore,
-  useCrossProjectTokenStore,
   useDocumentStore,
   createHookFromObservableFactory,
   getDraftId,
@@ -58,6 +56,8 @@ export type ReferringDocuments = {
   isLoading: boolean
   totalCount: number
   projectIds: string[]
+  datasetNames: string[]
+  hasUnknownDatasetNames: boolean
   internalReferences?: {
     totalCount: number
     references: Array<{_id: string; _type: string}>
@@ -125,36 +125,22 @@ function getDocumentExistence(
  */
 function fetchCrossDatasetReferences(
   documentId: string,
-  context: {versionedClient: SanityClient; crossProjectTokenStore: CrossProjectTokenStore}
+  context: {versionedClient: SanityClient}
 ): Observable<ReferringDocuments['crossDatasetReferences']> {
-  const {crossProjectTokenStore, versionedClient} = context
+  const {versionedClient} = context
 
   return getVisiblePoll$().pipe(
-    switchMap(() =>
-      forkJoin({
-        checkDocumentId: getDocumentExistence(documentId, context),
-        crossProjectTokens: crossProjectTokenStore.fetchAllCrossProjectTokens(),
-      })
-    ),
-    switchMap(({checkDocumentId, crossProjectTokens}) => {
+    switchMap(() => getDocumentExistence(documentId, context)),
+    switchMap((checkDocumentId) => {
       if (!checkDocumentId) {
         return of({totalCount: 0, references: []})
       }
 
       const currentDataset = versionedClient.config().dataset
-      const headers: Record<string, string> =
-        crossProjectTokens.length > 0
-          ? {
-              'sanity-project-tokens': crossProjectTokens
-                .map((t) => `${t.projectId}=${t.token}`)
-                .join(','),
-            }
-          : {}
 
       return versionedClient.observable
         .request({
           url: `/data/references/${currentDataset}/documents/${checkDocumentId}/to?excludeInternalReferences=true&excludePaths=true`,
-          headers,
           tag: 'use-referring-documents.external',
         })
         .pipe(
@@ -189,16 +175,12 @@ const useInternalReferences = createHookFromObservableFactory(
 )
 
 const useCrossDatasetReferences = createHookFromObservableFactory(
-  ([documentId, crossProjectTokenStore, versionedClient]: [
-    string,
-    CrossProjectTokenStore,
-    SanityClient
-  ]) => {
+  ([documentId, versionedClient]: [string, SanityClient]) => {
+    // (documentId: string, versionedClient: SanityClient) => {
     return getVisiblePoll$().pipe(
       switchMap(() =>
         fetchCrossDatasetReferences(documentId, {
           versionedClient,
-          crossProjectTokenStore,
         })
       )
     )
@@ -209,7 +191,6 @@ export function useReferringDocuments(documentId: string): ReferringDocuments {
   const versionedClient = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
 
   const documentStore = useDocumentStore()
-  const crossProjectTokenStore = useCrossProjectTokenStore()
   const publishedId = getPublishedId(documentId)
 
   const [internalReferences, isInternalReferencesLoading] = useInternalReferences(
@@ -217,10 +198,7 @@ export function useReferringDocuments(documentId: string): ReferringDocuments {
   )
 
   const [crossDatasetReferences, isCrossDatasetReferencesLoading] = useCrossDatasetReferences(
-    useMemo(
-      () => [publishedId, crossProjectTokenStore, versionedClient],
-      [crossProjectTokenStore, publishedId, versionedClient]
-    )
+    useMemo(() => [publishedId, versionedClient], [publishedId, versionedClient])
   )
 
   const projectIds = useMemo(() => {
@@ -233,9 +211,30 @@ export function useReferringDocuments(documentId: string): ReferringDocuments {
     ).sort()
   }, [crossDatasetReferences?.references])
 
+  const datasetNames = useMemo(() => {
+    return Array.from(
+      new Set<string>(
+        crossDatasetReferences?.references
+          // .filter((name) => typeof name === 'string')
+          .map((crossDatasetReference) => crossDatasetReference?.datasetName || '')
+          .filter((datasetName) => Boolean(datasetName) && datasetName !== '')
+      )
+    ).sort()
+  }, [crossDatasetReferences?.references])
+
+  const hasUnknownDatasetNames = useMemo(() => {
+    return Boolean(
+      crossDatasetReferences?.references.some(
+        (crossDatasetReference) => typeof crossDatasetReference.datasetName !== 'string'
+      )
+    )
+  }, [crossDatasetReferences?.references])
+
   return {
     totalCount: (internalReferences?.totalCount || 0) + (crossDatasetReferences?.totalCount || 0),
     projectIds,
+    datasetNames,
+    hasUnknownDatasetNames,
     internalReferences,
     crossDatasetReferences,
     isLoading: isInternalReferencesLoading || isCrossDatasetReferencesLoading,

@@ -1,6 +1,6 @@
 import arrify from 'arrify'
 import {capitalize, pick} from 'lodash'
-import {normalizeSearchConfigs} from '../searchConfig/normalize'
+import {resolveSearchConfigForBaseFieldPaths} from '../searchConfig/resolve'
 import {lazyGetter} from './utils'
 import {DEFAULT_OVERRIDEABLE_FIELDS} from './constants'
 
@@ -79,7 +79,7 @@ export const CrossDatasetReferenceType = {
         return {
           ...toType,
           // eslint-disable-next-line camelcase
-          __experimental_search: normalizeSearchConfigs(toType.__experimental_search),
+          __experimental_search: resolveSearchConfigForBaseFieldPaths(toType),
         }
       })
     })
