@@ -13,7 +13,8 @@ describeCliTest('CLI: `sanity build` / `sanity deploy`', () => {
     testConcurrent(
       'build',
       async () => {
-        // Build to a different output directory to avoid conflicting with `sanity deploy`
+        // Build to a different output directory to avoid conflicting with
+        // `sanity deploy` / `sanity start` tests
         const result = await runSanityCmdCommand(version, ['build', 'out', '-y'])
         expect(result.code).toBe(0)
 
@@ -47,6 +48,7 @@ describeCliTest('CLI: `sanity build` / `sanity deploy`', () => {
     test.skip(
       'deploy',
       async () => {
+        // Build to different output directory to avoid conflicting with `sanity build`/`sanity start` tests
         const result = await runSanityCmdCommand(version, ['deploy', '-y'])
         expect(result.stdout).toContain('deployed to')
         expect(result.code).toBe(0)
