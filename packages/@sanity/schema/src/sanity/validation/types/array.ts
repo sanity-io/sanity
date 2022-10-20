@@ -1,7 +1,14 @@
+import {flatten, partition} from 'lodash'
+import humanizeList from 'humanize-list'
 import {error, HELP_IDS, warning} from '../createValidationResult'
-import {flatten} from 'lodash'
 import {getDupes} from '../utils/getDupes'
 import {coreTypeNames} from '../../coreTypes'
+
+function isPrimitiveTypeName(typeName) {
+  return typeName === 'string' || typeName === 'number' || typeName === 'boolean'
+}
+
+const pluralize = (arr: unknown[], suf = 's') => (arr.length === 1 ? '' : suf)
 
 export default (typeDef, visitorContext) => {
   // name should already have been marked
@@ -101,6 +108,30 @@ export default (typeDef, visitorContext) => {
     problems.push(
       error(
         "The array type's 'of' property can't have an object type without a 'name' property as member, when the 'block' type is also a member of that array.",
+        HELP_IDS.ARRAY_OF_INVALID
+      )
+    )
+  }
+
+  const [primitiveTypes, objectTypes] = partition(
+    of,
+    (ofType) =>
+      isPrimitiveTypeName(ofType.type) ||
+      isPrimitiveTypeName(visitorContext.getType(ofType.type)?.jsonType)
+  )
+
+  const isMixedArray = primitiveTypes.length > 0 && objectTypes.length > 0
+
+  if (isMixedArray) {
+    const primitiveTypeNames = primitiveTypes.map((t) => t.type)
+    const objectTypeNames = objectTypes.map((t) => t.type)
+    problems.push(
+      error(
+        `The array type's 'of' property can't have both object types and primitive types (found primitive type ${pluralize(
+          primitiveTypeNames
+        )} ${humanizeList(primitiveTypeNames.map((n) => `"${n}"`))} and object type${pluralize(
+          objectTypeNames
+        )} ${humanizeList(objectTypeNames.map((n) => `"${n}"`))})`,
         HELP_IDS.ARRAY_OF_INVALID
       )
     )
