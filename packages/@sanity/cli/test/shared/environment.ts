@@ -11,7 +11,7 @@ export const cliUserToken = (process.env.SANITY_CI_CLI_AUTH_TOKEN || '').trim()
 export const cliProjectId = 'aeysrmym'
 
 export const hasBuiltCli = existsSync(path.join(__dirname, '..', '..', 'lib', 'cli.js'))
-export const studioFixturesPath = path.join(__dirname, '..', '__fixtures__')
+export const fixturesPath = path.join(__dirname, '..', '__fixtures__')
 export const studioVersions = ['v2', 'v3'] as const
 export const doCleanup = false
 export const baseTestPath = path.join(tmpdir(), 'sanity-cli-test')

@@ -3,7 +3,6 @@ import path from 'path'
 import chalk from 'chalk'
 import {InlineConfig, preview} from 'vite'
 import {debug} from './debug'
-import {getViteConfig} from './getViteConfig'
 
 export interface PreviewServer {
   urls: {local: string[]; network: string[]}
@@ -22,7 +21,7 @@ export interface PreviewServerOptions {
 }
 
 export async function startPreviewServer(options: PreviewServerOptions): Promise<PreviewServer> {
-  const {cwd, httpPort, httpHost, basePath: base, vite: extendViteConfig, root} = options
+  const {httpPort, httpHost, basePath: base, root} = options
   const startTime = Date.now()
 
   // eslint-disable-next-line no-sync
@@ -32,27 +31,23 @@ export async function startPreviewServer(options: PreviewServerOptions): Promise
     )
   }
 
-  debug('Resolving vite config')
-  let viteConfig = await getViteConfig({
-    basePath: base || '/',
-    mode: 'development',
-    server: {port: httpPort, host: httpHost},
-    cwd,
-  })
-
-  if (extendViteConfig) {
-    viteConfig = extendViteConfig(viteConfig)
-  }
-
-  viteConfig.root = root
-  viteConfig.preview = {
-    port: httpPort,
-    host: httpHost,
-    strictPort: true,
+  const previewConfig: InlineConfig = {
+    root,
+    base: base || '/',
+    configFile: false,
+    preview: {
+      port: httpPort,
+      host: httpHost,
+      strictPort: true,
+    },
+    // Needed for vite to not serve `root/dist`
+    build: {
+      outDir: root,
+    },
   }
 
   debug('Creating vite server')
-  const server = await preview(viteConfig)
+  const server = await preview(previewConfig)
   const info = server.config.logger.info
   const url = server.resolvedUrls.local[0]
 

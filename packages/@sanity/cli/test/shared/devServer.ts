@@ -2,14 +2,18 @@ import {spawn} from 'child_process'
 import {cliBinPath, sanityEnv} from './environment'
 import {request, ResponseData} from './request'
 
-export function testStartCommand({
+export function testServerCommand({
+  command,
   port,
   cwd,
   expectedTitle,
+  args,
 }: {
+  command: 'preview' | 'start'
   port: number
   cwd: string
   expectedTitle: string
+  args?: string[]
 }): Promise<string> {
   return new Promise(async (resolve, reject) => {
     const maxWaitForServer = 120000
@@ -23,7 +27,7 @@ export function testStartCommand({
       return
     }
 
-    const proc = spawn(process.argv[0], [cliBinPath, 'start'], {
+    const proc = spawn(process.argv[0], [cliBinPath, command, ...(args || [])], {
       cwd,
       env: sanityEnv,
       stdio: 'pipe',
@@ -38,7 +42,9 @@ export function testStartCommand({
       if (!hasSucceeded && code && code > 0) {
         const stderrStr = Buffer.concat(stderr).toString('utf8')
         const stdoutStr = Buffer.concat(stdout).toString('utf8')
-        reject(new Error(`'sanity start' failed with code ${code}:\n${stderrStr}\n${stdoutStr}`))
+        reject(
+          new Error(`'sanity ${command}' failed with code ${code}:\n${stderrStr}\n${stdoutStr}`)
+        )
       }
     })
 
