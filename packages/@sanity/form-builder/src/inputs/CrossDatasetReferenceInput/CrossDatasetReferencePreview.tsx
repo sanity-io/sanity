@@ -141,15 +141,15 @@ export function CrossDatasetReferencePreview(props: {
               <Tooltip
                 portal
                 content={
-                  <Box padding={2}>
+                  <TooltipContent padding={2}>
                     {hasStudioUrl ? (
                       <Text size={1}>This document opens in another Studio</Text>
                     ) : (
                       <Text size={1}>
-                        This document cannot be opened (unable to resolve URL to Studio)
+                        This document cannot be opened <br /> (unable to resolve URL to Studio)
                       </Text>
                     )}
-                  </Box>
+                  </TooltipContent>
                 }
               >
                 <TextWithTone size={1} tone="default" muted={!hasStudioUrl}>
