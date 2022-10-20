@@ -379,7 +379,7 @@ export const ReferenceInput = forwardRef(function ReferenceInput(
       level={level}
       description={type.description}
     >
-      <Stack space={1} marginY={isEditing ? 2 : 0}>
+      <Stack space={1}>
         {isEditing || isWeakRefToNonexistent ? (
           <Stack space={2} ref={clickOutsideBoundaryRef}>
             {isWeakRefToNonexistent ? (

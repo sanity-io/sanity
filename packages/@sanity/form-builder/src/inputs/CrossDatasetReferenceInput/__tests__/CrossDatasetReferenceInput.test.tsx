@@ -73,8 +73,7 @@ describe('render states', () => {
           name: 'productReference',
           type: 'crossDatasetReference',
           dataset: 'products',
-          projectId: 'abcxyz',
-          to: [{type: 'product', __experimental_search: [{path: 'title'}]}],
+          to: [{type: 'product'}],
         },
       ],
     })
@@ -106,8 +105,16 @@ describe('render states', () => {
           name: 'productReference',
           type: 'crossDatasetReference',
           dataset: 'products',
-          projectId: 'abcxyz',
-          to: [{type: 'product', __experimental_search: [{path: 'title'}]}],
+          to: [
+            {
+              type: 'product',
+              preview: {
+                select: {
+                  title: 'title',
+                },
+              },
+            },
+          ],
         },
       ],
     })
@@ -139,9 +146,17 @@ describe('render states', () => {
           name: 'productReference',
           type: 'crossDatasetReference',
           dataset: 'products',
-          projectId: 'abcxyz',
           weak: true,
-          to: [{type: 'product', __experimental_search: [{path: 'title'}]}],
+          to: [
+            {
+              type: 'product',
+              preview: {
+                select: {
+                  title: 'title',
+                },
+              },
+            },
+          ],
         },
       ],
     })
@@ -186,8 +201,16 @@ describe('user interaction happy paths', () => {
           name: 'productReference',
           type: 'crossDatasetReference',
           dataset: 'products',
-          projectId: 'abcxyz',
-          to: [{type: 'product', __experimental_search: [{path: 'title'}]}],
+          to: [
+            {
+              type: 'product',
+              preview: {
+                select: {
+                  title: 'title',
+                },
+              },
+            },
+          ],
         },
       ],
     })
@@ -239,7 +262,7 @@ describe('user interaction happy paths', () => {
             type: 'set',
             value: {
               _dataset: 'products',
-              _projectId: 'abcxyz',
+              _projectId: 'mock-project-id',
               _ref: 'two',
               _type: 'productReference',
             },
@@ -265,8 +288,16 @@ describe('user interaction happy paths', () => {
           name: 'productReference',
           type: 'crossDatasetReference',
           dataset: 'products',
-          projectId: 'abcxyz',
-          to: [{type: 'product', __experimental_search: [{path: 'title'}]}],
+          to: [
+            {
+              type: 'product',
+              preview: {
+                select: {
+                  title: 'title',
+                },
+              },
+            },
+          ],
         },
       ],
     })
@@ -275,7 +306,7 @@ describe('user interaction happy paths', () => {
       _type: 'productReference',
       _ref: 'some-product',
       _dataset: 'products',
-      _projectId: 'abcxyz',
+      _projectId: 'mock-project-id',
     }
     const getReferenceInfo = ({_id: id}) =>
       of({
@@ -346,7 +377,7 @@ describe('user interaction happy paths', () => {
             type: 'set',
             value: {
               _dataset: 'products',
-              _projectId: 'abcxyz',
+              _projectId: 'mock-project-id',
               _ref: 'two',
               _type: 'productReference',
             },
@@ -365,8 +396,16 @@ describe('user interaction happy paths', () => {
           name: 'productReference',
           type: 'crossDatasetReference',
           dataset: 'products',
-          projectId: 'abcxyz',
-          to: [{type: 'product', __experimental_search: [{path: 'title'}]}],
+          to: [
+            {
+              type: 'product',
+              preview: {
+                select: {
+                  title: 'title',
+                },
+              },
+            },
+          ],
         },
       ],
     })
@@ -375,7 +414,7 @@ describe('user interaction happy paths', () => {
       _type: 'productReference',
       _ref: 'some-product',
       _dataset: 'products',
-      _projectId: 'abcxyz',
+      _projectId: 'mock-project-id',
     }
     const getReferenceInfo = ({_id: id}) =>
       of({

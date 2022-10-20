@@ -14,7 +14,7 @@
     },
     {
       "name": "playground",
-      "title": "Private",
+      "title": "Private (playground)",
       "api": {
         "dataset": "playground"
       }
@@ -38,7 +38,6 @@
     "@sanity/studio-hints",
     "dashboard-widget-cats",
     "dashboard-widget-document-list",
-    "cross-project-tokens",
     "markdown",
     "mux-input"
   ],

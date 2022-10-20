@@ -1,5 +1,5 @@
 /* eslint-disable max-nested-callbacks,no-nested-ternary */
-import React from 'react'
+import React, {useMemo} from 'react'
 import {CrossDatasetReferenceSchemaType} from '@sanity/types'
 import {Stack, TextSkeleton} from '@sanity/ui'
 import {Observable} from 'rxjs'
@@ -7,6 +7,7 @@ import {Alert} from '../../components/Alert'
 import {CrossDatasetReferenceInfo} from './types'
 import {useReferenceInfo} from './useReferenceInfo'
 import {CrossDatasetReferencePreview} from './CrossDatasetReferencePreview'
+import {getProjectId} from './utils/getProjectId'
 
 /**
  * Used to preview a referenced type
@@ -20,6 +21,7 @@ export function OptionPreview(props: {
   referenceType: CrossDatasetReferenceSchemaType
   getReferenceInfo: (doc: {_id: string; _type: string}) => Observable<CrossDatasetReferenceInfo>
 }) {
+  const projectId = useMemo(() => getProjectId(), [])
   const {isLoading, result: referenceInfo, error} = useReferenceInfo(
     props.document,
     props.getReferenceInfo
@@ -71,7 +73,7 @@ export function OptionPreview(props: {
         preview={referenceInfo.preview}
         refType={refType}
         dataset={props.referenceType.dataset}
-        projectId={props.referenceType.projectId}
+        projectId={projectId}
         showTypeLabel={props.referenceType.to.length > 1}
       />
     )

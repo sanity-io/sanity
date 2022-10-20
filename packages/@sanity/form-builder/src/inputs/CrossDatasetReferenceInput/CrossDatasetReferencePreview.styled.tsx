@@ -1,0 +1,14 @@
+import {Flex} from '@sanity/ui'
+import styled from 'styled-components'
+
+export const StyledPreviewFlex = styled(Flex)`
+  /* this is a hack to avoid layout jumps while previews are loading
+  or the message is not tall enough to fill the card
+  there's probably better ways of solving this */
+  min-height: 36px;
+`
+
+export const TooltipContent = styled(Flex)`
+  /* This limits the width of the tooltip content */
+  max-width: 250px;
+`

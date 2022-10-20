@@ -1,5 +1,4 @@
-import React, {ForwardedRef, forwardRef, useCallback, useMemo, useRef} from 'react'
-
+import {FormFieldPresence} from '@sanity/base/presence'
 import {
   CrossDatasetReference,
   CrossDatasetReferenceSchemaType,
@@ -10,20 +9,17 @@ import {
   SanityDocument,
 } from '@sanity/types'
 import {get} from '@sanity/util/paths'
-import {FormFieldPresence} from '@sanity/base/presence'
+import client from 'part:@sanity/base/client'
+import React, {ForwardedRef, forwardRef, useCallback, useMemo, useRef} from 'react'
 import {from, throwError} from 'rxjs'
 import {catchError, mergeMap} from 'rxjs/operators'
-import client from 'part:@sanity/base/client'
-import {Box, Stack, Text, TextSkeleton} from '@sanity/ui'
-import withValuePath from '../../../utils/withValuePath'
-import withDocument from '../../../utils/withDocument'
-import PatchEvent from '../../../PatchEvent'
+
 import {CrossDatasetReferenceInput} from '../../../inputs/CrossDatasetReferenceInput'
-import {versionedClient} from '../../versionedClient'
-import {Alert} from '../../../components/Alert'
-import {search} from './datastores/search'
+import PatchEvent from '../../../PatchEvent'
+import withDocument from '../../../utils/withDocument'
+import withValuePath from '../../../utils/withValuePath'
 import {createGetReferenceInfo} from './datastores/getReferenceInfo'
-import {useCrossProjectToken} from './datastores/useCrossProjectToken'
+import {search} from './datastores/search'
 
 // eslint-disable-next-line require-await
 async function resolveUserDefinedFilter(
@@ -86,32 +82,18 @@ const SanityCrossDatasetReferenceInput = forwardRef(function SanityCrossDatasetR
 ) {
   const {getValuePath, type, document} = props
 
-  const currentProject = versionedClient.config().projectId
-
-  const isCurrentProject = currentProject === type.projectId
-  const loadableToken = useCrossProjectToken(versionedClient, {
-    projectId: type.projectId,
-    tokenId: type.tokenId,
-  })
-
   const crossDatasetClient = useMemo(() => {
-    const token = isCurrentProject
-      ? undefined
-      : loadableToken.status === 'loaded' && loadableToken.result
-
     return (
       client
         .withConfig({
-          projectId: type.projectId,
           dataset: type.dataset,
           apiVersion: '2022-03-07',
-          token,
           ignoreBrowserTokenWarning: true,
         })
         // seems like this is required to prevent this client from sometimes magically get mutated with a new projectId and dataset
         .clone()
     )
-  }, [isCurrentProject, loadableToken, type.projectId, type.dataset])
+  }, [type.dataset])
 
   const documentRef = useValueRef(document)
 
@@ -140,51 +122,6 @@ const SanityCrossDatasetReferenceInput = forwardRef(function SanityCrossDatasetR
   const getReferenceInfo = useMemo(() => createGetReferenceInfo(crossDatasetClient), [
     crossDatasetClient,
   ])
-
-  if (loadableToken.status === 'loading') {
-    return (
-      <Box padding={2}>
-        <Stack space={2}>
-          <Stack space={2} padding={1}>
-            <TextSkeleton style={{maxWidth: 320}} radius={1} />
-            <TextSkeleton style={{maxWidth: 200}} radius={1} size={1} />
-          </Stack>
-        </Stack>
-      </Box>
-    )
-  }
-
-  if (!isCurrentProject && loadableToken.status === 'loaded' && !loadableToken.result) {
-    return (
-      <Stack space={2} marginY={2}>
-        <Text size={1} weight="semibold">
-          {type.title}
-        </Text>
-        <Alert title="No cross dataset read token found" size={1} muted>
-          <Stack space={3}>
-            <Text size={1}>
-              This cross dataset reference field requires a cross dataset token to be registered.
-              Please configure a token{' '}
-              {type.tokenId ? (
-                <>
-                  with ID <b>{type.tokenId}</b>
-                </>
-              ) : null}{' '}
-              for project <b>{type.projectId}</b> that has read access to the <b>{type.dataset}</b>
-              -dataset.
-            </Text>
-            <Text size={1}>
-              See the documentation for{' '}
-              <a href="https://www.sanity.io/docs/cross-dataset-references">
-                Cross Dataset References
-              </a>{' '}
-              for more details.
-            </Text>
-          </Stack>
-        </Alert>
-      </Stack>
-    )
-  }
 
   return (
     <CrossDatasetReferenceInput

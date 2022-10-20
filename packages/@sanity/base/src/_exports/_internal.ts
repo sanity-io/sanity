@@ -10,12 +10,6 @@ export {
 export {observePathsDocumentPair as unstable_observePathsDocumentPair} from '../preview/documentPair'
 // eslint-disable-next-line camelcase
 export {observeDocumentPairAvailability as unstable_observeDocumentPairAvailability} from '../preview/availability'
-export {
-  getProjectIdFromTokenDocumentId,
-  getTokenDocumentId,
-  fetchCrossProjectToken,
-  fetchAllCrossProjectTokens,
-} from '../datastores/crossProjectToken'
 
 export type {DocumentAvailability} from '../preview/types'
 export {AvailabilityReason} from '../preview/types'
