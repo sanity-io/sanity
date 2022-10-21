@@ -22,15 +22,15 @@ export class ArrayOfPrimitivesInput extends React.PureComponent<ArrayOfPrimitive
   _lastAddedIndex = -1
 
   handleAppend = (itemValue: PrimitiveValue) => {
-    const {value = [], onFocusIndex, onAppendItem} = this.props
-    onAppendItem(itemValue)
-    onFocusIndex(value.length)
+    const {value = [], onIndexFocus, onItemAppend} = this.props
+    onItemAppend(itemValue)
+    onIndexFocus(value.length)
   }
 
   handlePrepend = (itemValue: PrimitiveValue) => {
-    const {onFocusIndex, value = [], onPrependItem} = this.props
-    onPrependItem(itemValue)
-    onFocusIndex(value.length)
+    const {onIndexFocus, value = [], onItemPrepend} = this.props
+    onItemPrepend(itemValue)
+    onIndexFocus(value.length)
   }
   handleItemEnterKey = (index: number) => {
     const {schemaType, onInsert} = this.props
@@ -46,16 +46,16 @@ export class ArrayOfPrimitivesInput extends React.PureComponent<ArrayOfPrimitive
   }
 
   handleItemEscapeKey = (index: number) => {
-    const {value, onRemoveItem} = this.props
+    const {value, onItemRemove} = this.props
     if (index === this._lastAddedIndex && value?.[index] === '') {
-      onRemoveItem(index)
+      onItemRemove(index)
     }
   }
 
   handleSortEnd = (event: {fromIndex: number; toIndex: number}) => {
-    const {onFocusIndex, onMoveItem, value} = this.props
+    const {onIndexFocus, onMoveItem, value} = this.props
     if (value) onMoveItem(event)
-    onFocusIndex(event.toIndex)
+    onIndexFocus(event.toIndex)
   }
 
   focus() {
@@ -99,7 +99,7 @@ export class ArrayOfPrimitivesInput extends React.PureComponent<ArrayOfPrimitive
     prevState: Record<string, unknown>,
     snapshot?: {restoreSelection: {start: number; end: number}; prevFocusedIndex: number}
   ) {
-    const {onFocusIndex} = this.props
+    const {onIndexFocus} = this.props
     if (snapshot?.restoreSelection && prevProps.value) {
       const prevFocusedValue = prevProps.value[snapshot.prevFocusedIndex]
 
@@ -124,7 +124,7 @@ export class ArrayOfPrimitivesInput extends React.PureComponent<ArrayOfPrimitive
           // not all inputs supports selection (e.g. <input type="number" />)
         }
       }
-      onFocusIndex(nearestIndex)
+      onIndexFocus(nearestIndex)
     }
   }
 
@@ -202,9 +202,9 @@ export class ArrayOfPrimitivesInput extends React.PureComponent<ArrayOfPrimitive
           type={schemaType}
           value={value}
           readOnly={readOnly}
-          onAppendItem={this.handleAppend}
-          onPrependItem={this.handlePrepend}
-          onCreateValue={getEmptyValue}
+          onItemAppend={this.handleAppend}
+          onItemPrepend={this.handlePrepend}
+          onValueCreate={getEmptyValue}
           onChange={onChange}
         />
       </Stack>

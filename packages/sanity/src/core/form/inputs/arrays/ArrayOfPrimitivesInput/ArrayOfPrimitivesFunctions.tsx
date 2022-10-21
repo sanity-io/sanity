@@ -10,14 +10,14 @@ export function ArrayOfPrimitivesFunctions<
   SchemaType extends ArraySchemaType,
   MemberType extends string | boolean | number
 >(props: FormArrayInputFunctionsProps<SchemaType, MemberType>) {
-  const {type, readOnly, children, onCreateValue, onAppendItem} = props
+  const {type, readOnly, children, onValueCreate, onItemAppend} = props
   const menuButtonId = useId()
 
   const insertItem = React.useCallback(
     (itemType: any) => {
-      onAppendItem(onCreateValue(itemType))
+      onItemAppend(onValueCreate(itemType))
     },
-    [onCreateValue, onAppendItem]
+    [onValueCreate, onItemAppend]
   )
 
   const handleAddBtnClick = React.useCallback(() => {

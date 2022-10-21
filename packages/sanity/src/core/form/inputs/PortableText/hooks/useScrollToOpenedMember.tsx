@@ -8,13 +8,13 @@ interface Props {
   editorRootPath: Path
   hasFocus: boolean
   scrollElement: HTMLElement | null
-  onCloseItem: () => void
+  onItemClose: () => void
 }
 
 // This hook will scroll to the "opened" portable text object's editor dom node.
 // If the opened item is a regular text block, place the cursor there as well.
 export function useScrollToOpenedMember(props: Props): void {
-  const {editorRootPath, scrollElement, hasFocus, onCloseItem} = props
+  const {editorRootPath, scrollElement, hasFocus, onItemClose} = props
   const portableTextMemberItems = usePortableTextMemberItems()
   const editor = usePortableTextEditor()
 
@@ -45,8 +45,8 @@ export function useScrollToOpenedMember(props: Props): void {
         PortableTextEditor.focus(editor)
         // "auto-close" regular text blocks or they get sticky here when trying to focus on an other field
         // There is no natural way of closing them (however opening something else would close them)
-        onCloseItem()
+        onItemClose()
       }
     }
-  }, [editor, hasFocus, editorRootPath.length, memberItem, scrollElement, onCloseItem])
+  }, [editor, hasFocus, editorRootPath.length, memberItem, scrollElement, onItemClose])
 }

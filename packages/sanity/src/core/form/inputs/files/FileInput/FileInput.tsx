@@ -300,7 +300,7 @@ export class BaseFileInput extends React.PureComponent<BaseFileInputProps, BaseF
     // to let focus bubble, so this workaround is needed
     // Background: https://github.com/facebook/react/issues/6410#issuecomment-671915381
     if (event.currentTarget === event.target && event.currentTarget === this._focusRef) {
-      this.props.onFocusPath(['asset'])
+      this.props.onPathFocus(['asset'])
     }
   }
 

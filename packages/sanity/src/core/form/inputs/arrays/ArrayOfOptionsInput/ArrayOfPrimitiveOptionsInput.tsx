@@ -48,7 +48,7 @@ export function ArrayOfPrimitiveOptionsInput(props: ArrayOfPrimitivesInputProps)
     readOnly,
     path,
     changed,
-    onFocusIndex,
+    onIndexFocus,
     elementProps,
   } = props
 
@@ -85,7 +85,7 @@ export function ArrayOfPrimitiveOptionsInput(props: ArrayOfPrimitivesInputProps)
                 disabled={disabled}
                 checked={checked}
                 onChange={(e) => handleChange(e.currentTarget.checked, option.value)}
-                onFocus={() => onFocusIndex(index)}
+                onFocus={() => onIndexFocus(index)}
                 readOnly={readOnly}
               />
 
@@ -94,7 +94,7 @@ export function ArrayOfPrimitiveOptionsInput(props: ArrayOfPrimitivesInputProps)
               </Box>
 
               {!optionType && (
-                <IncompatibleItemType value={option} onFocus={() => onFocusIndex(index)} />
+                <IncompatibleItemType value={option} onFocus={() => onIndexFocus(index)} />
               )}
             </Flex>
           )

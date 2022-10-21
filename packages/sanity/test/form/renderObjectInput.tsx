@@ -27,12 +27,12 @@ export async function renderObjectInput(options: {
 }) {
   const {fieldDefinition, props, render: initialRender} = options
 
-  const onCloseField = jest.fn()
-  const onCollapseField = jest.fn()
-  const onCollapseFieldSet = jest.fn()
-  const onExpandField = jest.fn()
-  const onExpandFieldSet = jest.fn()
-  const onOpenField = jest.fn()
+  const onFieldClose = jest.fn()
+  const onFieldCollapse = jest.fn()
+  const onFieldSetCollapse = jest.fn()
+  const onFieldExpand = jest.fn()
+  const onFieldSetExpand = jest.fn()
+  const onFieldOpen = jest.fn()
   const onFieldGroupSelect = jest.fn()
 
   function transformProps(
@@ -51,14 +51,14 @@ export async function renderObjectInput(options: {
       changed: false,
       groups: field?.groups || [],
       members: field?.members || [],
-      onCloseField,
-      onCollapseField,
-      onCollapseFieldSet,
-      onExpandField,
-      onExpandFieldSet,
+      onFieldClose,
+      onFieldCollapse,
+      onFieldSetCollapse,
+      onFieldExpand,
+      onFieldSetExpand,
       onFieldGroupSelect,
-      onFocusPath: onPathFocus,
-      onOpenField,
+      onPathFocus: onPathFocus,
+      onFieldOpen,
       path,
       renderField: defaultRenderField,
       renderInput: defaultRenderInput,

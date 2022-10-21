@@ -22,7 +22,7 @@ import {AnnotationToolbarPopover} from './AnnotationToolbarPopover'
 interface AnnotationProps {
   attributes: RenderAttributes
   children: JSX.Element
-  onOpenItem: (path: Path) => void
+  onItemOpen: (path: Path) => void
   readOnly?: boolean
   renderCustomMarkers?: RenderCustomMarkers
   scrollElement: HTMLElement | null
@@ -68,7 +68,7 @@ export const Annotation = function Annotation(props: AnnotationProps) {
   const {
     attributes: {focused, path},
     children,
-    onOpenItem,
+    onItemOpen,
     renderCustomMarkers,
     scrollElement,
     readOnly,
@@ -99,9 +99,9 @@ export const Annotation = function Annotation(props: AnnotationProps) {
 
   const openItem = useCallback(() => {
     if (memberItem) {
-      onOpenItem(memberItem.node.path)
+      onItemOpen(memberItem.node.path)
     }
-  }, [memberItem, onOpenItem])
+  }, [memberItem, onItemOpen])
 
   const markersToolTip = useMemo(
     () =>
