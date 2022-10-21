@@ -11,7 +11,7 @@ import {
   Stack,
   Text,
 } from '@sanity/ui'
-import React, {useMemo} from 'react'
+import React, {useCallback, useMemo, useState} from 'react'
 import styled from 'styled-components'
 import {UserAvatar} from '../../../../components'
 import {useGlobalPresence} from '../../../../store'
@@ -44,8 +44,22 @@ export function PresenceMenu(props: PresenceMenuProps) {
   const {collapse} = props
   const presence = useGlobalPresence()
   const {projectId} = useWorkspace()
-  const hasPresence = presence.length > 0
   const {scheme} = useColorScheme()
+  const hasPresence = presence.length > 0
+
+  /**
+   * This id is used as a workaround to keep focus on the selected menu item
+   * when the list of users in the menu is updated
+   */
+  const [focusedId, setFocusedId] = useState<string>()
+
+  const handleItemFocus = useCallback((id: string) => {
+    setFocusedId(id)
+  }, [])
+
+  const handleClearFocusedItem = useCallback(() => {
+    setFocusedId('')
+  }, [])
 
   const button = useMemo(() => {
     if (collapse) {
@@ -78,14 +92,20 @@ export function PresenceMenu(props: PresenceMenuProps) {
 
   return (
     <MenuButton
-      id="global-presence-menu"
       button={button}
+      id="global-presence-menu"
+      onClose={handleClearFocusedItem}
       menu={
         <StyledMenu padding={1}>
           {hasPresence && (
             <Stack space={2}>
               {presence.map((item) => (
-                <PresenceMenuItem key={item.user.id} presence={item} />
+                <PresenceMenuItem
+                  focused={focusedId === item.user.id}
+                  key={item.user.id}
+                  onFocus={handleItemFocus}
+                  presence={item}
+                />
               ))}
             </Stack>
           )}
@@ -111,6 +131,7 @@ export function PresenceMenu(props: PresenceMenuProps) {
               as="a"
               href={`https://sanity.io/manage/project/${projectId}`}
               iconRight={CogIcon}
+              onFocus={handleClearFocusedItem}
               paddingY={4}
               rel="noopener noreferrer"
               target="_blank"

@@ -1,4 +1,4 @@
-import React, {forwardRef, memo, useMemo} from 'react'
+import React, {forwardRef, memo, useCallback, useEffect, useMemo, useState} from 'react'
 import {orderBy} from 'lodash'
 import * as PathUtils from '@sanity/util/paths'
 import {Box, Card, Flex, MenuItem, Text} from '@sanity/ui'
@@ -14,14 +14,38 @@ const AvatarCard = styled(Card)`
 `
 
 interface PresenceListRowProps {
+  focused: boolean
+  onFocus: (id: string) => void
   presence: GlobalPresence
 }
 
-export const PresenceMenuItem = memo(function PresenceMenuItem({presence}: PresenceListRowProps) {
+export const PresenceMenuItem = memo(function PresenceMenuItem(props: PresenceListRowProps) {
+  const {presence, focused, onFocus} = props
+  const [menuItemElement, setMenuItemElement] = useState<HTMLElement | null>(null)
+
   const lastActiveLocation = orderBy(presence.locations || [], ['lastActiveAt'], ['desc']).find(
     (location) => location.documentId
   )
   const hasLink = Boolean(lastActiveLocation?.documentId)
+
+  /**
+   * This is a workaround to keep focus on the selected menu item
+   * when the list of users in the menu is updated
+   */
+  useEffect(() => {
+    if (focused && menuItemElement) {
+      menuItemElement.focus()
+      menuItemElement.setAttribute('data-selected', '')
+    }
+
+    if (!focused) {
+      menuItemElement?.removeAttribute('data-selected')
+    }
+  }, [menuItemElement, focused])
+
+  const handleFocus = useCallback(() => {
+    onFocus(presence.user.id)
+  }, [onFocus, presence.user.id])
 
   const LinkComponent = useMemo(
     () =>
@@ -48,8 +72,10 @@ export const PresenceMenuItem = memo(function PresenceMenuItem({presence}: Prese
     <MenuItem
       as={lastActiveLocation ? LinkComponent : 'div'}
       data-as={lastActiveLocation ? 'a' : 'div'}
+      onFocus={handleFocus}
       padding={4}
       paddingRight={3}
+      ref={setMenuItemElement}
     >
       <Flex align="center">
         <AvatarCard>
