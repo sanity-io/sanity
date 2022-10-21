@@ -4,27 +4,27 @@ import {ObjectItemProps, PrimitiveItemProps} from './itemProps'
 import {FieldProps} from './fieldProps'
 import {InputProps} from './inputProps'
 
-/** @public */
+/** @beta  */
 export type RenderArrayOfObjectsItemCallback = (
   itemProps: Omit<ObjectItemProps, 'renderDefault'>
 ) => ReactNode
 
-/** @public */
+/** @beta */
 export type RenderArrayOfPrimitivesItemCallback = (
   itemProps: Omit<PrimitiveItemProps, 'renderDefault'>
 ) => ReactNode
 
-/** @public */
+/** @beta */
 export type RenderItemCallback = (
   itemProps: Omit<ObjectItemProps, 'renderDefault'> | Omit<PrimitiveItemProps, 'renderDefault'>
 ) => ReactNode
 
-/** @public */
+/** @beta */
 export type RenderFieldCallback<T extends FieldProps = FieldProps> = (
   fieldProps: Omit<T, 'renderDefault'>
 ) => ReactNode
 
-/** @public */
+/** @beta */
 export type RenderInputCallback<T extends InputProps = InputProps> = (
   inputProps: Omit<T, 'renderDefault'>
 ) => ReactNode

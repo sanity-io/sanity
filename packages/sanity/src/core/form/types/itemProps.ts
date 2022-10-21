@@ -40,6 +40,7 @@ export interface BaseItemProps<T> {
   // onMoveTo: (event: {ref: number|string, position: 'before'|'after'}) => void
   // onDuplicate: () => void
   // ---
+  /** @beta */
   onInsert: (event: Omit<ArrayInputInsertEvent<T>, 'referenceItem'>) => void
 
   children: React.ReactNode
@@ -52,6 +53,7 @@ export interface BaseItemProps<T> {
   renderDefault: (props: ItemProps) => React.ReactElement
 }
 
+/** @public */
 export interface ObjectItemProps<Item extends ObjectItem = ObjectItem> extends BaseItemProps<Item> {
   changed: boolean
   schemaType: ObjectSchemaType
@@ -64,11 +66,14 @@ export interface ObjectItemProps<Item extends ObjectItem = ObjectItem> extends B
   onClose: () => void
   onOpen: () => void
   value: Item
+  /** @beta */
   inputProps: Omit<ObjectInputProps, 'renderDefault'>
 }
 
+/** @public */
 export type ItemProps = ObjectItemProps | PrimitiveItemProps
 
+/** @public */
 export interface PrimitiveItemProps extends BaseItemProps<string | number | boolean> {
   value: string | number | boolean
   schemaType: NumberSchemaType | BooleanSchemaType | StringSchemaType
