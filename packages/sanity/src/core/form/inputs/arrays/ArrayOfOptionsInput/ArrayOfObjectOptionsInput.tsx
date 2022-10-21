@@ -1,4 +1,4 @@
-import React, {useCallback} from 'react'
+import React, {useCallback, useMemo} from 'react'
 import {Box, Card, Checkbox, Flex, Grid} from '@sanity/ui'
 import {resolveTypeName} from '@sanity/util/content'
 import {ArraySchemaType, isKeyedObject} from '@sanity/types'
@@ -44,6 +44,10 @@ function getMemberTypeOfItem(schemaType: ArraySchemaType, item: unknown) {
 
 const EMPTY_ARRAY: unknown[] = []
 
+interface ObjectOption {
+  _key?: string
+}
+
 /**
  * Array of predefined object options input
  * Note: this input can handle only object values
@@ -61,10 +65,16 @@ export function ArrayOfObjectOptionsInput(props: ArrayOfObjectsInputProps) {
     changed,
   } = props
 
-  const options = schemaType.options?.list || EMPTY_ARRAY
+  const options = useMemo(
+    () =>
+      ((schemaType.options?.list || EMPTY_ARRAY) as ObjectOption[]).map((option, index) =>
+        isKeyedObject(option) ? option : {...option, _key: `auto-generated-${index}`}
+      ),
+    [schemaType.options?.list]
+  )
 
   const handleChange = useCallback(
-    (isChecked: boolean, changedOption: unknown) => {
+    (isChecked: boolean, changedOption: ObjectOption) => {
       if (!isChecked && isKeyedObject(changedOption)) {
         // This is an optimization that only works if list items are _keyed
         onChange(unset([{_key: changedOption._key}]))
