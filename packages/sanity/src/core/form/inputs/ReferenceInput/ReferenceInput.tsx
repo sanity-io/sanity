@@ -13,8 +13,8 @@ import {set, setIfMissing, unset} from '../../patch'
 import {Alert} from '../../components/Alert'
 import {PreviewCard} from '../../../components'
 import {getPublishedId, isNonNullable} from '../../../util'
-import {useReferenceInput} from '../arrays/ArrayOfObjectsInput/_reference/useReferenceInput'
 import {useDidUpdate} from '../../hooks/useDidUpdate'
+import {useReferenceInput} from './useReferenceInput'
 import {
   CreateReferenceOption,
   ReferenceInputProps,
