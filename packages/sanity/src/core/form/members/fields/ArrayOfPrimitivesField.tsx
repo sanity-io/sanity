@@ -200,11 +200,9 @@ export function ArrayOfPrimitivesField(props: {
 
   const setValue = useCallback(
     (nextValue: PrimitiveValue[]) => {
-      onChange(
-        PatchEvent.from(nextValue.length === 0 ? unset() : set(nextValue)).prefixAll(member.name)
-      )
+      handleChange(nextValue.length === 0 ? unset() : set(nextValue))
     },
-    [member.name, onChange]
+    [handleChange]
   )
 
   const handleMoveItem = useCallback(
@@ -247,9 +245,9 @@ export function ArrayOfPrimitivesField(props: {
 
   const handleRemoveItem = useCallback(
     (index: number) => {
-      onChange(PatchEvent.from([unset(member.field.path.concat(index))]))
+      handleChange(unset(member.field.path.concat(index)))
     },
-    [onChange, member.field.path]
+    [handleChange, member.field.path]
   )
 
   const handleFocusIndex = useCallback(

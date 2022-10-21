@@ -158,7 +158,7 @@ export function ArrayOfObjectsField(props: {
           .pipe(
             tap((result) => {
               if (result.type === 'patch') {
-                onChange(PatchEvent.from(result.patches).prefixAll(member.name))
+                handleChange(result.patches)
               } else {
                 toast.push({
                   title: `Could not resolve initial value`,
@@ -178,11 +178,10 @@ export function ArrayOfObjectsField(props: {
       }
     },
     [
+      handleChange,
       handleOpenItem,
       member.field.path,
       member.field.schemaType,
-      member.name,
-      onChange,
       onPathFocus,
       resolveInitialValue,
       toast,
@@ -207,33 +206,27 @@ export function ArrayOfObjectsField(props: {
         return
       }
 
-      onChange(
-        PatchEvent.from([
-          unset([{_key: item._key}]),
-          insert([item], event.fromIndex > event.toIndex ? 'before' : 'after', [
-            {_key: refItem._key},
-          ]),
-        ]).prefixAll(member.name)
-      )
+      handleChange([
+        unset([{_key: item._key}]),
+        insert([item], event.fromIndex > event.toIndex ? 'before' : 'after', [
+          {_key: refItem._key},
+        ]),
+      ])
     },
-    [member.field.value, member.name, onChange]
+    [handleChange, member.field.value]
   )
 
   const handlePrependItem = useCallback(
     (item: any) => {
       handleChange([setIfMissing([]), insert([ensureKey(item)], 'before', [0])])
     },
-    [member.name, onChange]
+    [handleChange]
   )
   const handleAppendItem = useCallback(
     (item: any) => {
-      onChange(
-        PatchEvent.from([setIfMissing([]), insert([ensureKey(item)], 'after', [-1])]).prefixAll(
-          member.name
-        )
-      )
+      handleChange([setIfMissing([]), insert([ensureKey(item)], 'after', [-1])])
     },
-    [member.name, onChange]
+    [handleChange]
   )
 
   const handleRemoveItem = useCallback(
@@ -244,7 +237,7 @@ export function ArrayOfObjectsField(props: {
       }
       handleChange([unset(member.field.path.concat({_key: itemKey}))])
     },
-    [onChange, member.field.path]
+    [handleChange, member.field.path]
   )
 
   const handleFocusChildPath = useCallback(
