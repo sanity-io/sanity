@@ -36,52 +36,64 @@ export interface ObjectFormNode<
   T = {[key in string]: unknown},
   S extends ObjectSchemaType = ObjectSchemaType
 > extends BaseFormNode<T, S> {
-  members: ObjectMember[]
-  groups: FormFieldGroup[]
-
   focusPath: Path
+  /** @beta */
+  groups: FormFieldGroup[]
+  /** @beta */
+  members: ObjectMember[]
 }
 
+/** @public */
 export interface ObjectArrayFormNode<
   T extends ObjectItem = ObjectItem,
   S extends ObjectSchemaType = ObjectSchemaType
 > extends BaseFormNode<T, S> {
-  members: ObjectMember[]
-  groups: FormFieldGroup[]
-
   focusPath: Path
   value: T
+
+  /** @beta */
+  groups: FormFieldGroup[]
+  /** @beta */
+  members: ObjectMember[]
 }
 
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface DocumentFormNode<
+/** @internal */
+export type DocumentFormNode<
   T extends {[key in string]: unknown} = {[key in string]: unknown},
   S extends ObjectSchemaType = ObjectSchemaType
-> extends ObjectFormNode<T, S> {}
+> = ObjectFormNode<T, S>
 
+/** @public */
 export interface ArrayOfObjectsFormNode<
   T extends any[] = unknown[],
   S extends ArraySchemaType = ArraySchemaType
 > extends BaseFormNode<T, S> {
-  members: ArrayOfObjectsMember[]
-
   focusPath: Path
+  /** @beta */
+  members: ArrayOfObjectsMember[]
 }
 
+/** @public */
 export interface ArrayOfPrimitivesFormNode<
   T extends (string | number | boolean)[] = (string | number | boolean)[],
   S extends ArraySchemaType = ArraySchemaType
 > extends BaseFormNode<T, S> {
-  members: ArrayOfPrimitivesMember[]
-
   focusPath: Path
+  /** @beta */
+  members: ArrayOfPrimitivesMember[]
 }
 
+/** @public */
 export type BooleanFormNode<S extends BooleanSchemaType = BooleanSchemaType> = BaseFormNode<
   boolean,
   S
 >
+
+/** @public */
 export type NumberFormNode<S extends NumberSchemaType = NumberSchemaType> = BaseFormNode<number, S>
+
+/** @public */
 export type StringFormNode<S extends StringSchemaType = StringSchemaType> = BaseFormNode<string, S>
 
+/** @beta */
 export type PrimitiveFormNode = BooleanFormNode | NumberFormNode | StringFormNode

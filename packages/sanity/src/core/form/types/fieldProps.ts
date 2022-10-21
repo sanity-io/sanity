@@ -19,7 +19,7 @@ import {
   StringInputProps,
 } from './inputProps'
 
-/** @public */
+/** @beta */
 export interface BaseFieldProps {
   schemaType: SchemaType
   title: string | undefined
@@ -38,7 +38,7 @@ export interface BaseFieldProps {
   renderDefault: (props: FieldProps) => ReactElement
 }
 
-/** @public */
+/** @beta */
 export interface ObjectFieldProps extends BaseFieldProps {
   schemaType: ObjectSchemaType
   value: {[field in string]: unknown} | undefined
@@ -52,7 +52,7 @@ export interface ObjectFieldProps extends BaseFieldProps {
   inputProps: ObjectInputProps
 }
 
-/** @public */
+/** @beta */
 export interface ArrayFieldProps extends BaseFieldProps {
   schemaType: ArraySchemaType
   value: unknown[] | undefined
@@ -74,21 +74,21 @@ export interface ArrayOfPrimitivesFieldProps extends BaseFieldProps {
   inputProps: ArrayOfPrimitivesInputProps
 }
 
-/** @public */
+/** @beta */
 export interface NumberFieldProps extends BaseFieldProps {
   schemaType: NumberSchemaType
   value: number | undefined
   inputProps: NumberInputProps
 }
 
-/** @public */
+/** @beta */
 export interface BooleanFieldProps extends BaseFieldProps {
   schemaType: BooleanSchemaType
   value: boolean | undefined
   inputProps: BooleanInputProps
 }
 
-/** @public */
+/** @beta */
 export interface StringFieldProps extends BaseFieldProps {
   schemaType: StringSchemaType
   value: string | undefined
@@ -98,7 +98,7 @@ export interface StringFieldProps extends BaseFieldProps {
 /** @internal */
 export type PrimitiveFieldProps = NumberFieldProps | BooleanFieldProps | StringFieldProps
 
-/** @public */
+/** @beta */
 export type FieldProps =
   | ObjectFieldProps
   | ArrayFieldProps

@@ -29,12 +29,12 @@ import {
 } from './renderCallback'
 import {ArrayInputInsertEvent, ArrayInputMoveItemEvent, UploadEvent} from './event'
 
-/** @public */
+/** @beta */
 export interface BaseInputProps {
   renderDefault: (props: InputProps) => React.ReactElement
 }
 
-/** @public */
+/** @beta */
 export interface ObjectInputProps<
   T = {[key in string]: unknown},
   S extends ObjectSchemaType = ObjectSchemaType
@@ -86,7 +86,7 @@ export interface ObjectInputProps<
   elementProps: ComplexElementProps
 }
 
-/** @public */
+/** @beta */
 export interface ArrayOfObjectsInputProps<
   T extends {_key: string} = {_key: string},
   S extends ArraySchemaType = ArraySchemaType
@@ -169,7 +169,7 @@ export interface ArrayOfObjectsInputProps<
 /** @beta */
 export type ArrayOfPrimitivesElementType<T extends any[]> = T extends (infer K)[] ? K : unknown
 
-/** @public */
+/** @beta */
 export interface ArrayOfPrimitivesInputProps<
   T extends (string | boolean | number)[] = (string | boolean | number)[],
   S extends ArraySchemaType = ArraySchemaType
@@ -218,7 +218,7 @@ export interface ArrayOfPrimitivesInputProps<
   elementProps: ComplexElementProps
 }
 
-/** @public */
+/** @beta */
 export interface PrimitiveInputElementProps {
   value?: string
   id: string
@@ -238,7 +238,7 @@ export interface ComplexElementProps {
   ref: React.MutableRefObject<any>
 }
 
-/** @public */
+/** @beta */
 export interface StringInputProps<S extends StringSchemaType = StringSchemaType>
   extends BaseInputProps,
     StringFormNode<S> {
@@ -249,7 +249,7 @@ export interface StringInputProps<S extends StringSchemaType = StringSchemaType>
   elementProps: PrimitiveInputElementProps
 }
 
-/** @public */
+/** @beta */
 export interface NumberInputProps<S extends NumberSchemaType = NumberSchemaType>
   extends BaseInputProps,
     NumberFormNode<S> {
@@ -260,7 +260,7 @@ export interface NumberInputProps<S extends NumberSchemaType = NumberSchemaType>
   elementProps: PrimitiveInputElementProps
 }
 
-/** @public */
+/** @beta */
 export interface BooleanInputProps<S extends BooleanSchemaType = BooleanSchemaType>
   extends BaseInputProps,
     BooleanFormNode<S> {
@@ -278,10 +278,10 @@ export interface BooleanInputProps<S extends BooleanSchemaType = BooleanSchemaTy
   elementProps: PrimitiveInputElementProps
 }
 
-/** @internal */
+/** @beta */
 export type PrimitiveInputProps = StringInputProps | BooleanInputProps | NumberInputProps
 
-/** @public */
+/** @beta */
 export type InputProps =
   | ObjectInputProps
   | ArrayOfObjectsInputProps
