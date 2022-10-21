@@ -269,7 +269,7 @@ export default defineType({
       options: {
         layout: 'grid',
         list: [
-          {_type: 'color', title: 'Red', name: 'red', _key: 'red'},
+          {_type: 'color', title: 'Red', name: 'red'},
           {_type: 'color', title: 'Green', name: 'green', _key: 'green'},
           1, // invalid, not defined in list
           {_type: 'color', title: 'Blue', name: 'blue', _key: 'blue'},
