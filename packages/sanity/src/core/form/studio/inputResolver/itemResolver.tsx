@@ -1,6 +1,6 @@
 import {isReferenceSchemaType, SchemaType} from '@sanity/types'
 import React from 'react'
-import {ReferenceItem} from '../../inputs/arrays/ArrayOfObjectsInput/List/ReferenceItem'
+import {ReferenceItem} from '../../inputs/ReferenceInput/ReferenceItem'
 import {PreviewItem} from '../../inputs/arrays/ArrayOfObjectsInput/List/PreviewItem'
 import {ItemProps} from '../../types'
 import {FIXME} from '../../../FIXME'

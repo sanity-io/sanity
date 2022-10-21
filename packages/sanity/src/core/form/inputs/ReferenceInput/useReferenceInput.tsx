@@ -10,15 +10,15 @@ import {
   ReferenceSchemaType,
   SanityDocument,
 } from '@sanity/types'
-import {useClient, useSchema} from '../../../../../hooks'
-import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../../studioClient'
-import {useDocumentPreviewStore} from '../../../../../store'
-import {useReferenceInputOptions} from '../../../../studio'
-import {useFormValue} from '../../../../useFormValue'
-import {FIXME} from '../../../../../FIXME'
-import * as adapter from '../../../../studio/inputs/client-adapters/reference'
-import {EditReferenceEvent} from '../../../ReferenceInput/types'
-import {isNonNullable} from '../../../../../util'
+import {useClient, useSchema} from '../../../hooks'
+import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../studioClient'
+import {useDocumentPreviewStore} from '../../../store'
+import {useReferenceInputOptions} from '../../studio'
+import {useFormValue} from '../../useFormValue'
+import {FIXME} from '../../../FIXME'
+import * as adapter from '../../studio/inputs/client-adapters/reference'
+import {isNonNullable} from '../../../util'
+import {EditReferenceEvent} from './types'
 
 function useValueRef<T>(value: T): {current: T} {
   const ref = useRef(value)
