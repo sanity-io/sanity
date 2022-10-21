@@ -97,7 +97,7 @@ function ReferenceInfoTester(
 const PUBLISHED_PREVIEW = {title: 'Actor (published)', description: ''}
 const DRAFT_PREVIEW = {title: 'Actor (draft)', description: ''}
 
-describe('if schema type is a strong reference', () => {
+describe.skip('if schema type is a strong reference', () => {
   test('the UI does *NOT* show a warning if the draft exist and the reference value is weak and has a _strengthenOnPublish flag', () => {
     const {getByTestId, queryByTestId} = render(
       <ReferenceInfoTester
@@ -142,7 +142,7 @@ describe('if schema type is a strong reference', () => {
   })
 })
 
-describe('if schema type is a weak reference', () => {
+describe.skip('if schema type is a weak reference', () => {
   test('the UI indicates that the referenced document does not exist', () => {
     const {getByTestId} = render(
       <ReferenceInfoTester
