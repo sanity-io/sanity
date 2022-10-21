@@ -1,23 +1,38 @@
-import {Card, Dialog, Stack, Button, Text, TextInput} from '@sanity/ui'
+import {Card, Dialog, Stack, Button, Text, TextInput, Inline, Flex, Box} from '@sanity/ui'
 import React, {useEffect, useMemo} from 'react'
+import {LaunchIcon} from '@sanity/icons'
+import styled from 'styled-components'
 
 interface CorsOriginErrorScreenProps {
   projectId?: string
 }
 
+export const ScreenReaderLabel = styled.label`
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  height: 1px;
+  overflow: hidden;
+  position: absolute;
+  white-space: nowrap;
+  width: 1px;
+`
+
+export const LaunchIconWrapper = styled.span`
+  margin-left: 0.75rem;
+`
+
 export function CorsOriginErrorScreen(props: CorsOriginErrorScreenProps) {
   const {projectId} = props
 
   const origin = window.location.origin
-  const projectURL = `https://sanity.io/manage/project/${projectId}`
   const corsUrl = useMemo(() => {
-    const url = new URL(`${projectURL}/api`)
+    const url = new URL(`https://sanity.io/manage/project/${projectId}/api`)
     url.searchParams.set('cors', 'add')
     url.searchParams.set('origin', origin)
     url.searchParams.set('credentials', '')
 
     return url.toString()
-  }, [origin, projectURL])
+  }, [origin, projectId])
 
   useEffect(() => {
     const handleFocus = () => {
@@ -35,23 +50,21 @@ export function CorsOriginErrorScreen(props: CorsOriginErrorScreenProps) {
         <Stack paddingX={4} paddingY={5} space={4}>
           <Text>
             To access your content, you need to <b>add the following URL as a CORS origin</b> to
-            your{' '}
-            <a href={projectURL} target="_blank" rel="noreferrer">
-              Sanity project
-            </a>
-            .
+            your Sanity project.
           </Text>
 
+          {/* added for accessibility */}
+          <ScreenReaderLabel aria-hidden="true">CORS URL to be added</ScreenReaderLabel>
           <TextInput value={origin} readOnly />
 
-          <Button
-            as="a"
-            href={corsUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            text="Continue"
-            tone="primary"
-          />
+          <Button as="a" href={corsUrl} target="_blank" rel="noopener noreferrer" tone="primary">
+            <Text align="center">
+              Continue
+              <LaunchIconWrapper>
+                <LaunchIcon />
+              </LaunchIconWrapper>
+            </Text>
+          </Button>
         </Stack>
       </Dialog>
     </Card>
