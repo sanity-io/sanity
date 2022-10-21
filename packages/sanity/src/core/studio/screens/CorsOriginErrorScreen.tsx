@@ -17,10 +17,6 @@ export const ScreenReaderLabel = styled.label`
   width: 1px;
 `
 
-export const LaunchIconWrapper = styled.span`
-  margin-left: 0.75rem;
-`
-
 export function CorsOriginErrorScreen(props: CorsOriginErrorScreenProps) {
   const {projectId} = props
 
@@ -58,12 +54,12 @@ export function CorsOriginErrorScreen(props: CorsOriginErrorScreenProps) {
           <TextInput value={origin} readOnly />
 
           <Button as="a" href={corsUrl} target="_blank" rel="noopener noreferrer" tone="primary">
-            <Text align="center">
-              Continue
-              <LaunchIconWrapper>
+            <Flex align="center" justify="center" gap={3}>
+              <Text weight="medium">Continue</Text>
+              <Text weight="medium">
                 <LaunchIcon />
-              </LaunchIconWrapper>
-            </Text>
+              </Text>
+            </Flex>
           </Button>
         </Stack>
       </Dialog>
