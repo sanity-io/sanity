@@ -89,9 +89,9 @@ export function ListArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
         type={schemaType}
         value={value}
         readOnly={readOnly}
-        onAppendItem={handleAppend}
-        onPrependItem={handlePrepend}
-        onCreateValue={createProtoArrayValue}
+        onItemAppend={handleAppend}
+        onItemPrepend={handlePrepend}
+        onValueCreate={createProtoArrayValue}
         onChange={onChange}
       />
     </Stack>

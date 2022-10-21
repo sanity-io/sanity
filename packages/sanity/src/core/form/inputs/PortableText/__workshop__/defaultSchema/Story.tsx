@@ -53,19 +53,19 @@ function TestForm() {
   const [focusPath, setFocusPath] = useState<Path>([])
   const changed = false
   const focusRef = useRef()
-  const handleAppendItem = useAction('onAppendItem')
+  const handleAppendItem = useAction('onItemAppend')
   const handleBlur = useAction('onBlur')
   const handleFocus = useAction('onFocus')
   const handleInsert = useAction('onInsert')
   const handleMoveItem = useAction('onMoveItem')
-  const handlePrependItem = useAction('onPrependItem')
-  const handleRemoveItem = useAction('onRemoveItem')
-  const handleOpenItem = useAction('onOpenItem')
-  const handleCloseItem = useAction('onCloseItem')
+  const handlePrependItem = useAction('onItemPrepend')
+  const handleRemoveItem = useAction('onItemRemove')
+  const handleOpenItem = useAction('onItemOpen')
+  const handleCloseItem = useAction('onItemClose')
   const handleExpand = useAction('onExpand')
   const handleCollapse = useAction('onCollapse')
-  const handleCollapseItem = useAction('onCollapseItem')
-  const handleExpandItem = useAction('onExpandItem')
+  const handleCollapseItem = useAction('onItemCollapse')
+  const handleExpandItem = useAction('onItemExpand')
   const members: ArrayOfObjectsMember[] = useMemo(() => [], [])
   const path = useMemo(() => [], [])
   const presence = useMemo(() => [], [])
@@ -105,21 +105,21 @@ function TestForm() {
   //       id="test"
   //       level={0}
   //       members={members}
-  //       onAppendItem={handleAppendItem}
+  //       onItemAppend={handleAppendItem}
   //       onBlur={handleBlur}
   //       onChange={handleChange}
   //       onFocus={handleFocus}
-  //       onFocusPath={setFocusPath}
+  //       onPathFocus={setFocusPath}
   //       onInsert={handleInsert}
   //       onMoveItem={handleMoveItem}
-  //       onPrependItem={handlePrependItem}
-  //       onRemoveItem={handleRemoveItem}
+  //       onItemPrepend={handlePrependItem}
+  //       onItemRemove={handleRemoveItem}
   //       onCollapse={handleCollapse}
-  //       onOpenItem={handleOpenItem}
-  //       onCloseItem={handleCloseItem}
+  //       onItemOpen={handleOpenItem}
+  //       onItemClose={handleCloseItem}
   //       onExpand={handleExpand}
-  //       onCollapseItem={handleCollapseItem}
-  //       onExpandItem={handleExpandItem}
+  //       onItemCollapse={handleCollapseItem}
+  //       onItemExpand={handleExpandItem}
   //       path={path}
   //       presence={presence}
   //       renderField={renderField}

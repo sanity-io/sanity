@@ -7,7 +7,7 @@ export const CustomInputWithDefaultPresence = React.forwardRef(
     props: ObjectInputProps<Record<string, any>>,
     ref: React.ForwardedRef<HTMLDivElement>
   ) {
-    const {elementProps, onFocusPath, value, onChange, presence, readOnly, schemaType} = props
+    const {elementProps, onPathFocus, value, onChange, presence, readOnly, schemaType} = props
 
     const {onFocus} = elementProps
 
@@ -53,7 +53,7 @@ export const CustomInputWithDefaultPresence = React.forwardRef(
                           ])
                         }}
                         onFocus={() => {
-                          onFocusPath(path)
+                          onPathFocus(path)
                         }}
                       />
                     </div>

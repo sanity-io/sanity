@@ -10,16 +10,16 @@ export function DefaultArrayInputFunctions<
   SchemaType extends ArraySchemaType,
   Item extends ObjectItem
 >(props: FormArrayInputFunctionsProps<SchemaType, Item>) {
-  const {type, readOnly, children, onCreateValue, onAppendItem} = props
+  const {type, readOnly, children, onValueCreate, onItemAppend} = props
   const menuButtonId = useId()
 
   const insertItem = React.useCallback(
     (itemType: any) => {
-      const item = onCreateValue(itemType)
+      const item = onValueCreate(itemType)
 
-      onAppendItem(item)
+      onItemAppend(item)
     },
-    [onCreateValue, onAppendItem]
+    [onValueCreate, onItemAppend]
   )
 
   const handleAddBtnClick = React.useCallback(() => {

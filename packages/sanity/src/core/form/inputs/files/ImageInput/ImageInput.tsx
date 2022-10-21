@@ -298,13 +298,13 @@ export class BaseImageInput extends React.PureComponent<BaseImageInputProps, Bas
   }
 
   handleOpenDialog = () => {
-    const {onOpenField} = this.props
-    onOpenField('hotspot')
+    const {onFieldOpen} = this.props
+    onFieldOpen('hotspot')
   }
 
   handleCloseDialog = () => {
-    const {onCloseField} = this.props
-    onCloseField('hotspot')
+    const {onFieldClose} = this.props
+    onFieldClose('hotspot')
   }
 
   handleSelectAssetFromSource = (assetFromSource: AssetFromSource[]) => {

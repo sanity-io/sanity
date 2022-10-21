@@ -57,7 +57,7 @@ export function ArrayOfObjectOptionsInput(props: ArrayOfObjectsInputProps) {
     renderPreview,
     schemaType,
     onChange,
-    onFocusPath,
+    onPathFocus,
     value = [],
     readOnly,
     elementProps,
@@ -92,9 +92,9 @@ export function ArrayOfObjectOptionsInput(props: ArrayOfObjectsInputProps) {
 
   const handleItemFocus = useCallback(
     (index: number) => {
-      onFocusPath([index])
+      onPathFocus([index])
     },
-    [onFocusPath]
+    [onPathFocus]
   )
 
   const isGrid = schemaType.options?.layout === 'grid'

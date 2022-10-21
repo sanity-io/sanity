@@ -72,10 +72,10 @@ export type FormBuilderInputComponentMap = Record<
 export interface FormArrayInputFunctionsProps<SchemaType extends ArraySchemaType, Item> {
   children?: React.ReactNode
   className?: string
-  onAppendItem: (itemValue: Item) => void
+  onItemAppend: (itemValue: Item) => void
   onChange: (event: PatchEvent) => void
-  onCreateValue: (type: SchemaType) => Item
-  onPrependItem: (itemValue: Item) => void
+  onValueCreate: (type: SchemaType) => Item
+  onItemPrepend: (itemValue: Item) => void
   readOnly?: boolean
   type: SchemaType
   value?: Item[]
