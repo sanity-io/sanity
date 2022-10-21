@@ -9,18 +9,15 @@ export function CorsOriginErrorScreen(props: CorsOriginErrorScreenProps) {
   const {projectId} = props
 
   const origin = window.location.origin
+  const projectURL = `https://sanity.io/manage/project/${projectId}`
   const corsUrl = useMemo(() => {
-    // const url = new URL(`http://localhost:3000/manage/project/${projectId}/api`)
-    const url = new URL(
-      `https://manage-git-feat-sc-25721cors.sanity.build/manage/project/${projectId}/api`
-    )
-    // const url = new URL(`https://sanity.io/manage/project/${projectId}/api`)
+    const url = new URL(`${projectURL}/api`)
     url.searchParams.set('cors', 'add')
     url.searchParams.set('origin', origin)
     url.searchParams.set('credentials', '')
 
     return url.toString()
-  }, [origin, projectId])
+  }, [origin, projectURL])
 
   useEffect(() => {
     const handleFocus = () => {
@@ -37,8 +34,12 @@ export function CorsOriginErrorScreen(props: CorsOriginErrorScreenProps) {
       <Dialog id="cors-error-dialog" header="Before you continue..." width={1}>
         <Stack paddingX={4} paddingY={5} space={4}>
           <Text>
-            To access your content, you need to{' '}
-            <b>add the following URLas an allowed CORS origin</b> to your Sanity project.
+            To access your content, you need to <b>add the following URL as a CORS origin</b> to
+            your{' '}
+            <a href={projectURL} target="_blank" rel="noreferrer">
+              Sanity project
+            </a>
+            .
           </Text>
 
           <TextInput value={origin} readOnly />
@@ -48,7 +49,7 @@ export function CorsOriginErrorScreen(props: CorsOriginErrorScreenProps) {
             href={corsUrl}
             target="_blank"
             rel="noopener noreferrer"
-            text="Add CORS origin"
+            text="Continue"
             tone="primary"
           />
         </Stack>
