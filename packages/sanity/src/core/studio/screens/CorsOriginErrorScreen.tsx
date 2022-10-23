@@ -1,56 +1,66 @@
-import {Card, Dialog, Stack, Button, Text} from '@sanity/ui'
-import React, {useCallback} from 'react'
+import {Card, Dialog, Stack, Button, Text, TextInput, Flex} from '@sanity/ui'
+import React, {useEffect, useMemo} from 'react'
+import {LaunchIcon} from '@sanity/icons'
+import styled from 'styled-components'
 
 interface CorsOriginErrorScreenProps {
   projectId?: string
 }
 
+export const ScreenReaderLabel = styled.label`
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  height: 1px;
+  overflow: hidden;
+  position: absolute;
+  white-space: nowrap;
+  width: 1px;
+`
+
 export function CorsOriginErrorScreen(props: CorsOriginErrorScreenProps) {
   const {projectId} = props
 
-  const corsUrl = `https://sanity.io/manage/project/${projectId}/settings/api`
   const origin = window.location.origin
+  const corsUrl = useMemo(() => {
+    const url = new URL(`https://sanity.io/manage/project/${projectId}/api`)
+    url.searchParams.set('cors', 'add')
+    url.searchParams.set('origin', origin)
+    url.searchParams.set('credentials', '')
 
-  const handleRetry = useCallback(() => {
-    window.location.reload()
+    return url.toString()
+  }, [origin, projectId])
+
+  useEffect(() => {
+    const handleFocus = () => {
+      window.location.reload()
+    }
+    window.addEventListener('focus', handleFocus)
+    return () => {
+      window.removeEventListener('focus', handleFocus)
+    }
   }, [])
 
   return (
     <Card height="fill">
-      <Dialog
-        id="cors-error-dialog"
-        header="Error"
-        width={1}
-        footer={
-          <Stack paddingX={3} paddingY={2}>
-            <Button text="Retry" onClick={handleRetry} />
-          </Stack>
-        }
-      >
+      <Dialog id="cors-error-dialog" header="Before you continue..." width={1}>
         <Stack paddingX={4} paddingY={5} space={4}>
           <Text>
-            It looks like the error is being caused by the current origin (<code>{origin}</code>)
-            not being allowed for this project.
+            To access your content, you need to <b>add the following URL as a CORS origin</b> to
+            your Sanity project.
           </Text>
 
-          <Text>
-            If you are a project administrator or developer, you can head to{' '}
-            <a rel="noopener noreferrer" target="_blank" href={corsUrl}>
-              the project management
-            </a>{' '}
-            interface to configure CORS origins for this project.
-          </Text>
+          {/* added for accessibility */}
+          <ScreenReaderLabel aria-hidden="true">CORS URL to be added</ScreenReaderLabel>
+          <TextInput value={origin} readOnly />
 
-          <Text>
-            <a
-              href="https://www.sanity.io/docs/front-ends/cors"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Read more about CORS Origins
-            </a>
-            .
-          </Text>
+          <Button as="a" href={corsUrl} target="_blank" rel="noopener noreferrer" tone="primary">
+            <Flex align="center" justify="center" gap={3}>
+              <Text weight="medium">Continue</Text>
+              <Text weight="medium">
+                <LaunchIcon />
+              </Text>
+            </Flex>
+          </Button>
         </Stack>
       </Dialog>
     </Card>
