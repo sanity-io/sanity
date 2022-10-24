@@ -1,6 +1,6 @@
 import {Box, ResponsivePaddingProps} from '@sanity/ui'
 import React, {forwardRef, MouseEvent, useMemo} from 'react'
-import type {VirtualItem} from 'react-virtual'
+import type {VirtualItem} from '@tanstack/react-virtual'
 import styled, {css} from 'styled-components'
 import {PreviewCard} from '../../../../../../components/PreviewCard'
 import {FIXME} from '../../../../../../FIXME'
@@ -21,7 +21,7 @@ interface SearchItemProps extends ResponsivePaddingProps {
   onMouseDown?: (event: MouseEvent) => void
   onMouseEnter?: () => void
   documentId: string
-  virtualRow: VirtualItem
+  virtualRow: VirtualItem<unknown>
 }
 
 const SearchResultItemBox = styled(Box)<{$level: number}>(({$level}) => {
