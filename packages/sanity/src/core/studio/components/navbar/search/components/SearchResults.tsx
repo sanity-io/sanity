@@ -1,6 +1,6 @@
 import {Box, Flex} from '@sanity/ui'
+import {useVirtualizer} from '@tanstack/react-virtual'
 import React, {Dispatch, SetStateAction, useCallback, useEffect, useRef} from 'react'
-import {useVirtual} from 'react-virtual'
 import styled from 'styled-components'
 import {getPublishedId} from '../../../../../util/draftUtils'
 import {VIRTUAL_LIST_ITEM_HEIGHT, VIRTUAL_LIST_OVERSCAN} from '../constants'
@@ -59,11 +59,12 @@ export function SearchResults({
 
   const childParentRef = useRef<HTMLDivElement | null>(null)
 
-  const {scrollToIndex, totalSize, virtualItems} = useVirtual({
-    estimateSize: useCallback(() => VIRTUAL_LIST_ITEM_HEIGHT, []),
+  const {getTotalSize, getVirtualItems, scrollToIndex} = useVirtualizer({
+    count: result.hits.length,
+    enableSmoothScroll: false,
+    getScrollElement: () => childParentRef.current,
+    estimateSize: () => VIRTUAL_LIST_ITEM_HEIGHT,
     overscan: VIRTUAL_LIST_OVERSCAN,
-    parentRef: childParentRef,
-    size: result.hits.length,
   })
 
   const {onChildClick, onChildMouseDown, onChildMouseEnter, setVirtualListScrollToIndex} =
@@ -110,11 +111,11 @@ export function SearchResults({
               <VirtualListBox data-overflow ref={childParentRef} tabIndex={-1}>
                 <PointerOverlay ref={setPointerOverlayRef} />
                 <VirtualListChildBox
-                  $height={totalSize}
+                  $height={getTotalSize()}
                   paddingBottom={1}
                   ref={setChildContainerRef}
                 >
-                  {virtualItems.map((virtualRow) => {
+                  {getVirtualItems().map((virtualRow) => {
                     const hit = result.hits[virtualRow.index]
                     return (
                       <SearchResultItem
@@ -122,7 +123,7 @@ export function SearchResults({
                         debug={debug}
                         documentId={getPublishedId(hit.hit._id) || ''}
                         index={virtualRow.index}
-                        key={hit.hit._id}
+                        key={virtualRow.key}
                         onClick={handleResultClick}
                         onMouseDown={onChildMouseDown}
                         onMouseEnter={onChildMouseEnter(virtualRow.index)}
