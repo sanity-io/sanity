@@ -57,7 +57,6 @@ const ContentScrollerBox = styled(Box)`
 `
 
 const ContentHeaderBox = styled(Box)`
-  background-color: var(--card-bg-color);
   box-shadow: 0 1px 0 var(--card-shadow-outline-color);
   position: relative;
   z-index: 10;
