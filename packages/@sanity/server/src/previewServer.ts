@@ -27,7 +27,7 @@ export async function startPreviewServer(options: PreviewServerOptions): Promise
   // eslint-disable-next-line no-sync
   if (!fs.existsSync(path.join(root, 'index.html'))) {
     const err = new Error(
-      `Could not find a production build in the '${root}' directory. Try building your app with 'sanity build' before starting the preview server.`
+      `Could not find a production build in the '${root}' directory. Try building your studio app with 'sanity build' before starting the preview server.`
     )
     err.name = 'BUILD_NOT_FOUND'
     throw err

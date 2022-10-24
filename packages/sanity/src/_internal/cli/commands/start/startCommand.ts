@@ -38,7 +38,7 @@ const startCommand: CliCommandDefinition = {
       // hint that they might want to use `sanity dev` instead if we fail to find a build.
       const warn = (msg: string) => output.warn(`${chalk.yellow.bgBlack('[warn]')} ${msg}`)
       warn(`\`sanity start\` is now an alias of \`sanity preview\``)
-      warn(`and is used to preview a production build.`)
+      warn(`and is used to preview a production build of the Sanity Studio.`)
       warn(`Use \`sanity dev\` to start a development server.`)
       output.warn('') // Newline to separate from error below
 
