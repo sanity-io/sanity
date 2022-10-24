@@ -3,7 +3,7 @@ import type {StartPreviewServerCommandFlags} from '../../actions/preview/preview
 
 const helpText = `
 Notes
-  Changing the hostname or port number might require a new CORS-entry to be added.
+  Changing the hostname or port number might require a new entry to the CORS-origins allow list.
 
 Options
   --port <port> TCP port to start server on. [default: 3333]
