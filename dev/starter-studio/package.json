@@ -5,7 +5,7 @@
   "scripts": {
     "build": "../.bin/sanity build",
     "clean": "rimraf .sanity dist",
-    "dev": "../.bin/sanity start --port 3337",
+    "dev": "../.bin/sanity dev --port 3337",
     "start": "http-server -a localhost -c-0 -p 3337 -s -P http://localhost:3337/index.html? dist"
   },
   "dependencies": {

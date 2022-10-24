@@ -9,7 +9,7 @@ export function testServerCommand({
   expectedTitle,
   args,
 }: {
-  command: 'preview' | 'start'
+  command: 'preview' | 'dev' | 'start'
   port: number
   cwd: string
   expectedTitle: string

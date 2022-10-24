@@ -128,7 +128,7 @@ export async function reconfigureV2Project(
   print(`▪ ${chalk.cyan('sanity docs')} to open the documentation in a browser`)
   print(`▪ ${chalk.cyan('sanity manage')} to open the project settings in a browser`)
   print(`▪ ${chalk.cyan('sanity help')} to explore the CLI manual`)
-  print(`▪ ${chalk.green('sanity start')} to run your studio\n`)
+  print(`▪ ${chalk.green('sanity start')} to run your studio\n`) // v2 uses `start`, not `dev`
 
   if (successMessage) {
     print(`\n${successMessage}`)

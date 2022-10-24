@@ -39,7 +39,7 @@ export default async function startSanityDevServer(
   try {
     await startDevServer(config)
   } catch (err) {
-    gracefulServerDeath(config.httpHost, config.httpPort, err)
+    gracefulServerDeath('dev', config.httpHost, config.httpPort, err)
   }
 }
 

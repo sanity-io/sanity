@@ -48,7 +48,7 @@ export async function checkRequiredDependencies(context: CliCommandContext): Pro
     const deps = {'styled-components': wantedStyledComponentsVersionRange}
     await installDependencies(deps, context)
 
-    // Re-run the same command (sanity start/sanity build etc) after installation,
+    // Re-run the same command (sanity dev/sanity build etc) after installation,
     // as it can have shifted the entire `node_modules` folder around, result in
     // broken assumptions about installation paths. This is a hack, and should be
     // solved properly.

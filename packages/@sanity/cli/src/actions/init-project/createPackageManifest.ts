@@ -29,7 +29,7 @@ export function createPackageManifest(
     main: 'package.json',
     keywords: ['sanity'],
     scripts: {
-      start: 'sanity start',
+      start: 'sanity dev',
       build: 'sanity build',
       deploy: 'sanity deploy',
       'deploy-graphql': 'sanity graphql deploy',

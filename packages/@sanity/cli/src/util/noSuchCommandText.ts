@@ -11,6 +11,7 @@ const coreCommands = [
   'cors',
   'dataset',
   'deploy',
+  'dev',
   'documents',
   'exec',
   'graphql',
