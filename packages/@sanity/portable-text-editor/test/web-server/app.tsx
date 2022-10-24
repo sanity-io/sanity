@@ -1,6 +1,8 @@
 import {Box, Card, Stack, studioTheme, ThemeProvider} from '@sanity/ui'
 import React, {useCallback, useMemo, useState} from 'react'
-import {createRoot} from 'react-dom/client'
+//@todo: fixme: investigate why switching to React 18 root API breaks the test
+// import {createRoot} from 'react-dom/client'
+import {render} from 'react-dom'
 import {Subject} from 'rxjs'
 import {EditorSelection, Patch, PortableTextBlock} from '../../src'
 import {Editor} from './components/Editor'
@@ -10,9 +12,10 @@ const rootEl = document.getElementById('root')
 if (!rootEl) {
   throw new Error('Root element not found')
 }
-
-const root = createRoot(rootEl)
-root.render(<App />)
+//@todo: fixme: investigate why switching to React 18 root API breaks the test
+// const root = createRoot(rootEl)
+// root.render(<App />)
+render(<App />, rootEl)
 
 export function App() {
   const incomingPatches$ = useMemo(
