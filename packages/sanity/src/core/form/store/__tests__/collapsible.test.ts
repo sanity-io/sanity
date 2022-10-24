@@ -167,7 +167,7 @@ describe('collapsible object fields', () => {
     }
     const aboveMember = getDeepFieldMember(result, new Array(2).fill('deep'))
     expect(aboveMember.collapsible).toBeFalsy()
-    expect(aboveMember.collapsed).toBe(false)
+    expect(aboveMember.collapsed).toBeFalsy()
 
     const atMember = getDeepFieldMember(result, new Array(3).fill('deep'))
     expect(atMember.collapsible).toBe(true)
