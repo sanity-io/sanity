@@ -36,11 +36,10 @@ const startCommand: CliCommandDefinition = {
 
       // `sanity dev` used to be `sanity start` in v2. To ease transition for existing users,
       // hint that they might want to use `sanity dev` instead if we fail to find a build.
-      output.warn(
-        `${chalk.bgYellow('[warn]')} \`sanity start\` is now an alias of \`sanity preview\``
-      )
-      output.warn(`${chalk.bgYellow('[warn]')} and is used to preview a production build.`)
-      output.warn(`${chalk.bgYellow('[warn]')} Use \`sanity dev\` to start a development server.`)
+      const warn = (msg: string) => output.warn(`${chalk.yellow.bgBlack('[warn]')} ${msg}`)
+      warn(`\`sanity start\` is now an alias of \`sanity preview\``)
+      warn(`and is used to preview a production build.`)
+      warn(`Use \`sanity dev\` to start a development server.`)
       output.warn('') // Newline to separate from error below
 
       throw err
