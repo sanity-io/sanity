@@ -18,7 +18,7 @@ interface MenuItemGroup {
 
 const CONTEXT_MENU_POPOVER_PROPS: PopoverProps = {
   constrainSize: true,
-  placement: 'bottom',
+  placement: 'bottom-end',
   portal: true,
 }
 
@@ -80,7 +80,6 @@ export function PaneContextMenuButton(props: PaneContextMenuButtonProps) {
         </Menu>
       }
       popover={CONTEXT_MENU_POPOVER_PROPS}
-      portal
     />
   )
 }
