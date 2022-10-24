@@ -165,8 +165,6 @@ export function AnnotationToolbarPopover(props: AnnotationToolbarPopoverProps) {
 
   return (
     <ToolbarPopover
-      boundaryElement={scrollElement}
-      constrainSize
       content={
         <Box padding={1}>
           <Inline space={1}>
@@ -197,7 +195,7 @@ export function AnnotationToolbarPopover(props: AnnotationToolbarPopoverProps) {
       fallbackPlacements={POPOVER_FALLBACK_PLACEMENTS}
       open={open}
       placement="top"
-      portal="editor"
+      portal="default"
       referenceElement={cursorElement}
       scheme={popoverScheme}
     />
