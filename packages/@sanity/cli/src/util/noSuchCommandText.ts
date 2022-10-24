@@ -16,6 +16,7 @@ const coreCommands = [
   'exec',
   'graphql',
   'hook',
+  'preview',
   'start',
   'undeploy',
   'uninstall',
