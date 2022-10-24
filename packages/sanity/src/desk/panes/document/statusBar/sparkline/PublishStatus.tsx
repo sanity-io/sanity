@@ -28,6 +28,7 @@ export function PublishStatus(props: PublishStatusProps) {
   return (
     <Root align="center" data-ui="SessionLayout" sizing="border">
       <Tooltip
+        placement="top"
         portal
         content={
           <Stack padding={3} space={3}>
