@@ -1,13 +1,14 @@
 import type {CliConfig} from '@sanity/cli'
 
 export function gracefulServerDeath(
+  command: 'start' | 'dev' | 'preview',
   httpHost: string | undefined,
   httpPort: number,
   err: Error & {code?: string}
 ): void {
   if (err.code === 'EADDRINUSE') {
     throw new Error(
-      'Port number is already in use, configure `server.port` in `sanity.cli.js` or pass `--port <somePort>` to `sanity start`'
+      `Port number is already in use, configure \`server.port\` in \`sanity.cli.js\` or pass \`--port <somePort>\` to \`sanity ${command}\``
     )
   }
 

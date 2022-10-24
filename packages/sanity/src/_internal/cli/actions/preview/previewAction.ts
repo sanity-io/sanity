@@ -24,7 +24,7 @@ export default async function startSanityPreviewServer(
   try {
     await startPreviewServer(config)
   } catch (err) {
-    gracefulServerDeath(config.httpHost, config.httpPort, err)
+    gracefulServerDeath('preview', config.httpHost, config.httpPort, err)
   }
 }
 

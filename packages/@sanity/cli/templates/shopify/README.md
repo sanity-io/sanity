@@ -206,7 +206,7 @@ npm run deploy
 npm run upgrade
 ```
 
-If you have the [Sanity CLI][sanity-cli] installed, you can also run thes with `sanity start|deploy|upgrade`. It comes with additional useful functionality.
+If you have the [Sanity CLI][sanity-cli] installed, you can also run these with `sanity start|deploy|upgrade`. It comes with additional useful functionality.
 
 ## License
 

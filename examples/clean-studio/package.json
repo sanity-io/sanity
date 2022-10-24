@@ -7,7 +7,7 @@
   "author": "Sanity.io <hello@sanity.io>",
   "license": "MIT",
   "scripts": {
-    "start": "sanity start --port 3338"
+    "start": "sanity dev --port 3338"
   },
   "keywords": [
     "sanity",
