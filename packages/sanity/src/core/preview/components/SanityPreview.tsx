@@ -33,6 +33,10 @@ export function SanityPreview(props: SanityPreviewProps & {style?: CSSProperties
   const [element, setElement] = useState<HTMLDivElement | null>(null)
   const isPTE = ['inline', 'block', 'blockImage'].includes(layout)
 
+  const icon = useMemo(() => {
+    return schemaType?.icon
+  }, [schemaType])
+
   // Subscribe to visiblity
   const visibility = useVisibility({
     // NOTE: disable when PTE preview
@@ -67,6 +71,7 @@ export function SanityPreview(props: SanityPreviewProps & {style?: CSSProperties
       description: description || value?.description,
       error,
       isPlaceholder: isLoading,
+      icon,
       layout,
       media: media || value?.media,
       schemaType,
@@ -74,7 +79,19 @@ export function SanityPreview(props: SanityPreviewProps & {style?: CSSProperties
       title: title || value?.title,
       value,
     }),
-    [description, error, isLoading, layout, media, restProps, schemaType, subtitle, title, value]
+    [
+      description,
+      error,
+      icon,
+      isLoading,
+      layout,
+      media,
+      restProps,
+      schemaType,
+      subtitle,
+      title,
+      value,
+    ]
   )
 
   // Remove components property to avoid component rendering itself
