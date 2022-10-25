@@ -23,9 +23,9 @@ export interface ObjectRule extends RuleDef<ObjectRule, Record<string, unknown>>
 export interface ObjectDefinition extends BaseSchemaDefinition {
   type: 'object'
   /**
-   * Object must have at least one field.
+   * Object must have at least one field. This is validated at Studio startup.
    */
-  fields: [FieldDefinition, ...FieldDefinition[]]
+  fields: FieldDefinition[]
   groups?: FieldGroupDefinition[]
   fieldsets?: FieldsetDefinition[]
   preview?: PreviewConfig
