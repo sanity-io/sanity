@@ -15,32 +15,53 @@ export function FilterContent({filter, onClose}: FilterContentProps) {
   return (
     <FilterPopoverWrapper onClose={onClose}>
       <Flex
-        // padding={3}
+        direction="column"
         style={{
           maxHeight: '600px',
           maxWidth: '350px',
+          minWidth: '200px',
           overflow: 'hidden',
           width: '100%',
         }}
       >
-        {filter.type === 'compound' && createElement(FILTERS.compound[filter.id].content, {filter})}
-
-        {filter.type === 'field' && (
-          <Box>
-            <FieldFilterForm filter={filter} title={filter.path.join(' / ')} />
+        {filter.type === 'compound' && (
+          <>
+            {createElement(FILTERS.compound[filter.id].content, {filter})}
 
             {/* Debug */}
-            <Card borderTop overflow="hidden" padding={3}>
+            <Card borderTop overflow="hidden" padding={3} tone="default">
               <Stack space={2}>
-                <Code size={0}>Path: {filter.fieldPath}</Code>
-                <Code size={0}>Operator: {filter.operatorType}</Code>
-                <Code size={0}>Field type: {filter.fieldType}</Code>
+                <Text size={0} weight="semibold">
+                  Compound
+                </Text>
+                <Code size={0}>id: {filter.id}</Code>
                 <Code size={0}>
-                  Value: {typeof filter?.value === 'undefined' ? '' : JSON.stringify(filter.value)}
+                  value: {typeof filter?.value === 'undefined' ? '' : JSON.stringify(filter.value)}
                 </Code>
               </Stack>
             </Card>
-          </Box>
+          </>
+        )}
+
+        {filter.type === 'field' && (
+          <>
+            <FieldFilterForm filter={filter} title={filter.path.join(' / ')} />
+
+            {/* Debug */}
+            <Card borderTop overflow="hidden" padding={3} tone="primary">
+              <Stack space={2}>
+                <Text size={0} weight="semibold">
+                  Field
+                </Text>
+                <Code size={0}>fieldPath: {filter.fieldPath}</Code>
+                <Code size={0}>fieldType: {filter.fieldType}</Code>
+                <Code size={0}>operatorType: {filter.operatorType}</Code>
+                <Code size={0}>
+                  value: {typeof filter?.value === 'undefined' ? '' : JSON.stringify(filter.value)}
+                </Code>
+              </Stack>
+            </Card>
+          </>
         )}
       </Flex>
     </FilterPopoverWrapper>

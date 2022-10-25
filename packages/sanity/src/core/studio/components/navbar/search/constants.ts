@@ -8,7 +8,7 @@ const IS_MAC =
 export const DEBUG_FRAGMENT = '_debug_search_score'
 
 // Findability version, prepended to every search query for future measurement
-export const FINDABILITY_MVI = 2
+export const FINDABILITY_MVI = 3
 
 // Max number of records to fetch per search request - intentionally set high to workaround
 // current limitations with studio search config

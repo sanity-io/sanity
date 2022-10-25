@@ -1,5 +1,5 @@
 import {Autocomplete, Card, Popover, Text} from '@sanity/ui'
-import React, {forwardRef, ReactElement, Ref, useCallback, useId, useRef, useState} from 'react'
+import React, {forwardRef, ReactElement, useCallback, useId, useRef, useState} from 'react'
 import {useSchema} from '../../../../../../../hooks'
 import {WeightedHit} from '../../../../../../../search'
 import {useDocumentPreviewStore} from '../../../../../../../store'

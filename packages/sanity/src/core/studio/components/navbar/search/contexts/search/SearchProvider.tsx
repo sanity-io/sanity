@@ -31,14 +31,57 @@ export function SearchProvider({children}: SearchProviderProps) {
   const availableFilters: KeyedSearchFilter[] = useMemo(() => {
     const flattenedFields = getSchemaFields(schema)
 
-    return flattenedFields.map((field) => ({
-      _key: generateKey(),
-      fieldPath: field.fieldPath,
-      fieldType: field.type,
-      path: field.path,
-      type: 'field',
-    }))
-  }, [])
+    // TODO: wrap in `defineFilter` or equivalent
+    const commonFilters: KeyedSearchFilter[] = [
+      {
+        _key: generateKey(),
+        fieldPath: '_updatedAt',
+        fieldType: 'datetime',
+        path: ['Updated at'],
+        type: 'field',
+      },
+      {
+        _key: generateKey(),
+        fieldPath: '_createdAt',
+        fieldType: 'datetime',
+        path: ['Created at'],
+        type: 'field',
+      },
+      {
+        _key: generateKey(),
+        id: 'isPublished',
+        type: 'compound',
+      },
+      {
+        _key: generateKey(),
+        id: 'hasDraft',
+        type: 'compound',
+      },
+      {
+        _key: generateKey(),
+        id: 'hasReference',
+        type: 'compound',
+      },
+    ]
+
+    const schemaFieldFilters: KeyedSearchFilter[] = flattenedFields.map(
+      (field) =>
+        ({
+          _key: generateKey(),
+          fieldPath: field.fieldPath,
+          fieldType: field.type,
+          path: field.path,
+          type: 'field',
+        } as KeyedSearchFilter)
+    )
+
+    return [
+      // Common filters
+      ...commonFilters,
+      // Schema fields
+      ...schemaFieldFilters,
+    ]
+  }, [schema])
 
   // Create local storage store
   const recentSearchesStore = useMemo(

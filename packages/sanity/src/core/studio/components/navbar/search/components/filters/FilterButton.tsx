@@ -2,6 +2,7 @@ import {CloseIcon} from '@sanity/icons'
 import {Button, Flex, Popover, rem, Text, Theme} from '@sanity/ui'
 import React, {useCallback, useState} from 'react'
 import styled, {css} from 'styled-components'
+import {FILTERS} from '../../config/filters'
 import {useSearchState} from '../../contexts/search/useSearchState'
 import type {KeyedSearchFilter} from '../../types'
 import {FilterButtonValue} from './FilterButtonValue'
@@ -61,7 +62,7 @@ export default function FilterButton({closable = true, filter, initialOpen}: Fil
             <>
               {/* Field name */}
               <span style={{fontWeight: 500}}>
-                {filter.type === 'compound' && filter.id}
+                {filter.type === 'compound' && FILTERS.compound[filter.id].title}
                 {filter.type === 'custom' && filter.title}
                 {filter.type === 'field' && filter.path[filter.path.length - 1]}:
               </span>

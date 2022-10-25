@@ -63,7 +63,6 @@ export function initialSearchState(
   }
 }
 
-// export type CurrentFilterSet = {filter: KeyedSearchFilter; type: 'CURRENT_FILTER_SET'}
 export type FiltersVisibleSet = {type: 'FILTERS_VISIBLE_SET'; visible: boolean}
 export type PageIncrement = {type: 'PAGE_INCREMENT'}
 export type RecentSearchesSet = {
@@ -93,12 +92,7 @@ export type TermsFiltersFieldSet = {
   type: 'TERMS_FILTERS_FIELD_SET'
   value?: any
 }
-export type TermsFiltersRemove = {
-  _key: string
-  // index: number
-  // filter: SearchFilter;
-  type: 'TERMS_FILTERS_REMOVE'
-}
+export type TermsFiltersRemove = {_key: string; type: 'TERMS_FILTERS_REMOVE'}
 export type TermsQuerySet = {type: 'TERMS_QUERY_SET'; query: string}
 export type TermsSet = {type: 'TERMS_SET'; terms: OmnisearchTerms}
 export type TermsTypeAdd = {type: 'TERMS_TYPE_ADD'; schemaType: SearchableType}
@@ -141,13 +135,6 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
   debug(prefix, action)
 
   switch (action.type) {
-    /*
-    case 'CURRENT_FILTER_SET':
-      return {
-        ...state,
-        lastAddedFilter: action.filter,
-      }
-    */
     case 'FILTERS_VISIBLE_SET':
       return {
         ...state,

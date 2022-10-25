@@ -1,4 +1,4 @@
-import {Box, Card, useClickOutside, useGlobalKeyDown} from '@sanity/ui'
+import {Card, useClickOutside, useGlobalKeyDown} from '@sanity/ui'
 import isHotkey from 'is-hotkey'
 import React, {ReactNode, useCallback, useState} from 'react'
 import FocusLock from 'react-focus-lock'
@@ -26,7 +26,7 @@ export function FilterPopoverWrapper({children, onClose}: FilterPopoverWrapperPr
   useGlobalKeyDown(handleGlobalKeyDown)
 
   return (
-    <FocusLock autoFocus>
+    <FocusLock autoFocus returnFocus>
       <Card overflow="hidden" radius={3} ref={setRootElement}>
         {children}
       </Card>

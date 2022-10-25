@@ -26,11 +26,6 @@ export function FieldFilterForm({filter, title}: FilterFormProps) {
   const handleOperatorChange = useCallback(
     (event: ChangeEvent<HTMLSelectElement>) => {
       const operatorType = event.currentTarget.value as SearchOperatorType
-      /*
-      const targetFormState = FILTERS.field[filter.fieldType].form.find(
-        (formState) => formState.operator === operatorType
-      )
-      */
 
       dispatch({
         fieldPath: filter.fieldPath,
@@ -39,7 +34,7 @@ export function FieldFilterForm({filter, title}: FilterFormProps) {
         value: null,
       })
     },
-    [dispatch, filter.fieldPath, filter.fieldType]
+    [dispatch, filter.fieldPath]
   )
 
   const handleValueChange = useCallback(
