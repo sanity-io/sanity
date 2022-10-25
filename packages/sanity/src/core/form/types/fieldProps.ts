@@ -39,7 +39,7 @@ export interface BaseFieldProps {
 }
 
 /** @beta */
-export interface ObjectFieldProps extends BaseFieldProps {
+export interface ObjectFieldProps<T = {[key in string]: unknown}> extends BaseFieldProps {
   schemaType: ObjectSchemaType
   value: {[field in string]: unknown} | undefined
   collapsed?: boolean
@@ -49,7 +49,7 @@ export interface ObjectFieldProps extends BaseFieldProps {
   open: boolean
   onClose: () => void
   onOpen: () => void
-  inputProps: ObjectInputProps
+  inputProps: ObjectInputProps<T>
 }
 
 /** @beta */
