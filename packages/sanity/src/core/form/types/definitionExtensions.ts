@@ -26,6 +26,9 @@ import {
 } from './inputProps'
 import {ObjectItem, ObjectItemProps, PrimitiveItemProps} from './itemProps'
 
+/**
+ * @beta
+ */
 export interface ArrayOfObjectsComponents {
   diff?: ComponentType<any>
   field?: ComponentType<ArrayFieldProps>
@@ -34,6 +37,9 @@ export interface ArrayOfObjectsComponents {
   preview?: ComponentType<PreviewProps>
 }
 
+/**
+ * @beta
+ */
 export interface ArrayOfPrimitivesComponents {
   diff?: ComponentType<any>
   field?: ComponentType<ArrayOfPrimitivesFieldProps>
@@ -50,6 +56,9 @@ export interface BlockComponents {
   preview?: ComponentType<PreviewProps>
 }
 
+/**
+ * @beta
+ */
 export interface BooleanComponents {
   diff?: ComponentType<any>
   field?: ComponentType<BooleanFieldProps>
@@ -58,6 +67,9 @@ export interface BooleanComponents {
   preview?: ComponentType<PreviewProps>
 }
 
+/**
+ * @beta
+ */
 export interface DateComponents {
   diff?: ComponentType<any>
   field?: ComponentType<StringFieldProps>
@@ -66,6 +78,9 @@ export interface DateComponents {
   preview?: ComponentType<PreviewProps>
 }
 
+/**
+ * @beta
+ */
 export interface DatetimeComponents {
   diff?: ComponentType<any>
   field?: ComponentType<StringFieldProps>
@@ -74,6 +89,9 @@ export interface DatetimeComponents {
   preview?: ComponentType<PreviewProps>
 }
 
+/**
+ * @beta
+ */
 export interface DocumentComponents {
   diff?: ComponentType<any>
   field?: ComponentType<ObjectFieldProps>
@@ -82,6 +100,9 @@ export interface DocumentComponents {
   preview?: ComponentType<PreviewProps>
 }
 
+/**
+ * @beta
+ */
 export interface FileComponents {
   diff?: ComponentType<any>
   field?: ComponentType<ObjectFieldProps<FileValue>>
@@ -98,6 +119,9 @@ export interface GeopointComponents {
   preview?: ComponentType<PreviewProps>
 }
 
+/**
+ * @beta
+ */
 export interface ImageComponents {
   diff?: ComponentType<any>
   field?: ComponentType<ObjectFieldProps<ImageValue>>
@@ -106,6 +130,9 @@ export interface ImageComponents {
   preview?: ComponentType<PreviewProps>
 }
 
+/**
+ * @beta
+ */
 export interface NumberComponents {
   diff?: ComponentType<any>
   field?: ComponentType<NumberFieldProps>
@@ -114,6 +141,9 @@ export interface NumberComponents {
   preview?: ComponentType<PreviewProps>
 }
 
+/**
+ * @beta
+ */
 export interface ObjectComponents {
   diff?: ComponentType<any>
   field?: ComponentType<ObjectFieldProps>
@@ -122,6 +152,9 @@ export interface ObjectComponents {
   preview?: ComponentType<PreviewProps>
 }
 
+/**
+ * @beta
+ */
 export interface ReferenceComponents {
   diff?: ComponentType<any>
   field?: ComponentType<ObjectFieldProps<ReferenceValue>>
@@ -130,6 +163,9 @@ export interface ReferenceComponents {
   preview?: ComponentType<PreviewProps>
 }
 
+/**
+ * @beta
+ */
 export interface CrossDatasetReferenceComponents {
   diff?: ComponentType<any>
   field?: ComponentType<ObjectFieldProps<CrossDatasetReference>>
@@ -138,6 +174,9 @@ export interface CrossDatasetReferenceComponents {
   preview?: ComponentType<PreviewProps>
 }
 
+/**
+ * @beta
+ */
 export interface SlugComponents {
   diff?: ComponentType<any>
   field?: ComponentType<ObjectFieldProps<SlugValue>>
@@ -146,6 +185,9 @@ export interface SlugComponents {
   preview?: ComponentType<PreviewProps>
 }
 
+/**
+ * @beta
+ */
 export interface SpanComponents {
   diff?: ComponentType<any>
   field?: ComponentType<ObjectFieldProps>
@@ -154,6 +196,9 @@ export interface SpanComponents {
   preview?: ComponentType<PreviewProps>
 }
 
+/**
+ * @beta
+ */
 export interface StringComponents {
   diff?: ComponentType<any>
   field?: ComponentType<StringFieldProps>
@@ -162,6 +207,9 @@ export interface StringComponents {
   preview?: ComponentType<PreviewProps>
 }
 
+/**
+ * @beta
+ */
 export interface TextComponents {
   diff?: ComponentType<any>
   field?: ComponentType<StringFieldProps>
@@ -170,6 +218,9 @@ export interface TextComponents {
   preview?: ComponentType<PreviewProps>
 }
 
+/**
+ * @beta
+ */
 export interface UrlComponents {
   diff?: ComponentType<any>
   field?: ComponentType<StringFieldProps>
@@ -181,10 +232,16 @@ export interface UrlComponents {
 /* To avoid cyclic dependencies on Props, we extend all type definitions here, to add the correct component props */
 declare module '@sanity/types' {
   export interface ArrayDefinition {
+    /**
+     * @beta
+     */
     components?: ArrayOfObjectsComponents | ArrayOfPrimitivesComponents
   }
 
   export interface BlockDefinition {
+    /**
+     * @beta
+     */
     components?: BlockComponents
   }
 
@@ -193,6 +250,9 @@ declare module '@sanity/types' {
   }
 
   export interface DateDefinition {
+    /**
+     * @beta
+     */
     components?: DateComponents
   }
 
@@ -201,38 +261,65 @@ declare module '@sanity/types' {
   }
 
   export interface DocumentDefinition {
+    /**
+     * @beta
+     */
     components?: DocumentComponents
   }
 
   export interface FileDefinition {
+    /**
+     * @beta
+     */
     components?: FileComponents
   }
 
   export interface GeopointDefinition {
+    /**
+     * @beta
+     */
     components?: GeopointComponents
   }
 
   export interface ImageDefinition {
+    /**
+     * @beta
+     */
     components?: ImageComponents
   }
 
   export interface NumberDefinition {
+    /**
+     * @beta
+     */
     components?: NumberComponents
   }
 
   export interface ObjectDefinition {
+    /**
+     * @beta
+     */
     components?: ObjectComponents
   }
 
   export interface ReferenceDefinition {
+    /**
+     * @beta
+     */
     components?: ReferenceComponents
   }
 
   export interface CrossDatasetReferenceDefinition {
+    /**
+     * @beta
+     */
     components?: CrossDatasetReferenceComponents
   }
 
   export interface SlugDefinition {
+    /**
+     * @beta
+     */
     components?: SlugComponents
   }
 
@@ -241,14 +328,23 @@ declare module '@sanity/types' {
   }
 
   export interface StringDefinition {
+    /**
+     * @beta
+     */
     components?: StringComponents
   }
 
   export interface TextDefinition {
+    /**
+     * @beta
+     */
     components?: TextComponents
   }
 
   export interface UrlDefinition {
+    /**
+     * @beta
+     */
     components?: UrlComponents
   }
 }
