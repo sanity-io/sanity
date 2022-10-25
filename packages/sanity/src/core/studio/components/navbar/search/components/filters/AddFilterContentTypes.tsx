@@ -33,23 +33,7 @@ const MenuItemByIndex = React.memo(function MenuItemByIndex({
   filter: KeyedSearchFilter
   onClose: () => void
 }) {
-  if (filter.type === 'field') {
-    return (
-      <FilterMenuItem
-        filter={{
-          fieldPath: filter.fieldPath,
-          fieldType: filter.fieldType,
-          path: filter.path,
-          type: 'field',
-        }}
-        onClose={onClose}
-      />
-    )
-  }
-
-  // TODO: handle other menu items
-
-  return null
+  return <FilterMenuItem filter={filter} onClose={onClose} />
 })
 
 export function AddFilterContentTypes({
@@ -68,6 +52,7 @@ export function AddFilterContentTypes({
     overscan: 20,
   })
 
+  // Scroll to top whenever filters change
   useEffect(() => {
     scrollToIndex(0)
   }, [filteredFilters.length, scrollToIndex])
@@ -103,52 +88,3 @@ export function AddFilterContentTypes({
     </VirtualListBox>
   )
 }
-
-/*
-                <FilterMenuItem
-                  filter={{
-                    fieldPath: '_updatedAt',
-                    fieldType: 'datetime',
-                    label: 'Last edited',
-                    operatorType: 'dateLast',
-                    type: 'field',
-                  }}
-                  onClose={onClose}
-                />
-                <FilterMenuItem
-                  filter={{
-                    fieldPath: '_createdAt',
-                    fieldType: 'datetime',
-                    label: 'Created',
-                    operatorType: 'dateLast',
-                    type: 'field',
-                  }}
-                  onClose={onClose}
-                />
-                <FilterMenuItem
-                  filter={{
-                    id: 'isPublished',
-                    label: 'Is published',
-                    type: 'compound',
-                  }}
-                  onClose={onClose}
-                />
-                <FilterMenuItem
-                  filter={{
-                    id: 'hasDraft',
-                    label: 'Has drafts',
-                    type: 'compound',
-                  }}
-                  onClose={onClose}
-                />
-                <FilterMenuItem
-                  filter={{
-                    id: 'hasReference',
-                    label: 'Has reference',
-                    type: 'compound',
-                  }}
-                  onClose={onClose}
-                />
-
-                <MenuDivider />
-                  */

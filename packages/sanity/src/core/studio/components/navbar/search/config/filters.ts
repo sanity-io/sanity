@@ -40,6 +40,7 @@ export const FILTERS: {
       content: ComponentType<CompoundContentProps>
       icon: ComponentType
       initialValue: any
+      title: string
       // label: string
     }
   >
@@ -57,19 +58,19 @@ export const FILTERS: {
       content: CompoundContentHasDraft,
       icon: CheckmarkCircleIcon,
       initialValue: true,
-      // label: 'Has draft',
+      title: 'Has draft',
     },
     hasReference: {
       content: CompoundContentHasReferences,
       icon: LinkIcon,
       initialValue: null,
-      // label: 'Has reference',
+      title: 'Has reference',
     },
     isPublished: {
       content: CompoundContentIsPublished,
       icon: CheckmarkCircleIcon,
       initialValue: true,
-      // label: 'Is published',
+      title: 'Is published',
     },
   },
   field: {
@@ -83,7 +84,6 @@ export const FILTERS: {
     },
     date: {
       icon: CalendarIcon,
-      // TODO: correctly type
       form: DATE_FORM_STATES,
     },
     datetime: {

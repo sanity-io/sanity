@@ -13,7 +13,7 @@ export function FilterButtonValue({filter}: FilterButtonValueProps) {
     return (
       <span>
         {/* Value */}
-        {<>&nbsp;{getCompoundValue(filter)}</>}
+        {` ${getCompoundValue(filter)}`}
       </span>
     )
   }
@@ -35,7 +35,7 @@ function getCompoundValue(filter: CompoundSearchFilter) {
       }
       return filter.value ? 'yes' : 'no'
     case 'hasReference':
-      return filter?.value?.slice(0, 8)
+      return filter?.value ? filter.value.slice(0, 8) : ''
     default:
       return filter?.value
   }

@@ -2,6 +2,7 @@ import {SearchIcon} from '@sanity/icons'
 import {Box, Flex} from '@sanity/ui'
 import React, {useCallback, useId, useMemo, useState} from 'react'
 import styled from 'styled-components'
+import {FILTERS} from '../../config/filters'
 import {SUBHEADER_HEIGHT_SMALL} from '../../constants'
 import {CommandListProvider} from '../../contexts/commandList'
 import {useSearchState} from '../../contexts/search/useSearchState'
@@ -33,7 +34,9 @@ export function AddFilterContent({onClose}: AddFilterContentProps) {
 
   const filteredFilters = useMemo(() => {
     return availableFilters.filter((filter) => {
-      // TODO: handle compound
+      if (filter.type === 'compound') {
+        return FILTERS.compound[filter.id]?.title
+      }
       if (filter.type === 'custom') {
         return filter.title.toLowerCase().includes(titleFilter?.toLowerCase())
       }
