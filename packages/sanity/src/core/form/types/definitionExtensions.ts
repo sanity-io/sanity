@@ -48,6 +48,9 @@ export interface ArrayOfPrimitivesComponents {
   preview?: ComponentType<PreviewProps>
 }
 
+/**
+ * @beta
+ */
 export interface BlockComponents {
   diff?: ComponentType<any>
   field?: ComponentType<ArrayFieldProps>
@@ -111,6 +114,9 @@ export interface FileComponents {
   preview?: ComponentType<PreviewProps>
 }
 
+/**
+ * @beta
+ */
 export interface GeopointComponents {
   diff?: ComponentType<any>
   field?: ComponentType<ObjectFieldProps<Geopoint>>

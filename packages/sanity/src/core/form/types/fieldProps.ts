@@ -63,7 +63,7 @@ export interface ArrayFieldProps extends BaseFieldProps {
   inputProps: ArrayOfObjectsInputProps
 }
 
-/** @internal */
+/** @beta */
 export interface ArrayOfPrimitivesFieldProps extends BaseFieldProps {
   schemaType: ArraySchemaType
   value: unknown[] | undefined
