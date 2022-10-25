@@ -2,8 +2,7 @@
 
 import '../setup/globals.jest'
 
-// @todo Temporarily disabled until flakey tests can be addressed in CI
-describe.skip('selection adjustment', () => {
+describe('selection adjustment', () => {
   describe('insert and unset blocks', () => {
     it('will keep A on same line if B insert above', async () => {
       await setDocumentValue([
