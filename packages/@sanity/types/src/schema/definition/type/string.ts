@@ -23,6 +23,7 @@ export interface StringRule extends RuleDef<StringRule, string> {
 export interface StringDefinition extends BaseSchemaDefinition {
   type: 'string'
   options?: StringOptions
+  placeholder?: string
   validation?: ValidationBuilder<StringRule, string>
   initialValue?: InitialValueProperty<any, string>
 }

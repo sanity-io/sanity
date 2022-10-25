@@ -17,6 +17,7 @@ export interface UrlOptions {}
 export interface UrlDefinition extends BaseSchemaDefinition {
   type: 'url'
   options?: UrlOptions
+  placeholder?: string
   validation?: ValidationBuilder<UrlRule, string>
   initialValue?: InitialValueProperty<any, string>
 }

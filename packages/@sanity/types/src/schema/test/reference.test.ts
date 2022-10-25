@@ -30,7 +30,6 @@ describe('reference types', () => {
         to: [{type: 'crewMember'}],
         options: {
           disableNew: false,
-          //todo make tests for all variants
           filter: ({document, parent, parentPath}) =>
             Promise.resolve({
               filter: '*[field==$param]',
@@ -38,9 +37,6 @@ describe('reference types', () => {
                 param: document._type,
               },
             }),
-          filterParams: {
-            param: 'is this an override?',
-          },
         },
       })
 
@@ -48,6 +44,45 @@ describe('reference types', () => {
 
       // @ts-expect-error reference is not assignable to boolean
       const notAssignableToBoolean: BooleanDefinition = referenceDef
+    })
+
+    it('should allow reference without filter in options', () => {
+      defineType({
+        type: 'reference',
+        name: 'custom-reference',
+        title: 'Custom PTE',
+        to: [{type: 'crewMember'}],
+        options: {
+          disableNew: false,
+        },
+      })
+    })
+
+    it('should not allow filterParams when filter is function', () => {
+      defineType({
+        type: 'reference',
+        name: 'custom-reference',
+        title: 'Custom PTE',
+        to: [{type: 'crewMember'}],
+        options: {
+          //@ts-expect-error function is not assignable to string (when filterParams is provided, filter must be string)
+          filter: () => ({}),
+          filterParams: {not: 'allowed'},
+        },
+      })
+    })
+
+    it('should allow filterParams when filter is string', () => {
+      defineType({
+        type: 'reference',
+        name: 'custom-reference',
+        title: 'Custom PTE',
+        to: [{type: 'crewMember'}],
+        options: {
+          filter: '*',
+          filterParams: {is: 'allowed'},
+        },
+      })
     })
   })
 })

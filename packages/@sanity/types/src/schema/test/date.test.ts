@@ -13,6 +13,7 @@ describe('date types', () => {
         type: 'date',
         name: 'custom-date',
         title: 'Custom',
+        placeholder: 'blabal',
         icon: () => null,
         description: 'Description',
         initialValue: () => Promise.resolve('2021-01-01'),

@@ -14,6 +14,7 @@ describe('url types', () => {
         name: 'custom-url',
         title: 'Custom url',
         description: 'Description',
+        placeholder: 'daff',
         initialValue: () => Promise.resolve('url'),
         validation: (Rule) => [
           Rule.required()
