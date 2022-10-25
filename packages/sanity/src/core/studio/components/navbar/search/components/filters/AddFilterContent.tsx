@@ -34,16 +34,17 @@ export function AddFilterContent({onClose}: AddFilterContentProps) {
 
   const filteredFilters = useMemo(() => {
     return availableFilters.filter((filter) => {
+      let title = ''
       if (filter.type === 'compound') {
-        return FILTERS.compound[filter.id]?.title
+        title = FILTERS.compound[filter.id].title
       }
       if (filter.type === 'custom') {
-        return filter.title.toLowerCase().includes(titleFilter?.toLowerCase())
+        title = filter.title
       }
       if (filter.type === 'field') {
-        return filter.path.join(' / ').toLowerCase().includes(titleFilter?.toLowerCase())
+        title = filter.path.join(' / ')
       }
-      return false
+      return title.toLowerCase().includes(titleFilter?.toLowerCase())
     })
     // .sort((a, b) => a.path.join(',').localeCompare(b.path.join(',')))
   }, [availableFilters, titleFilter])

@@ -1,6 +1,6 @@
 import {CloseIcon} from '@sanity/icons'
 import {Button, Flex, Popover, rem, Text, Theme} from '@sanity/ui'
-import React, {useCallback, useState} from 'react'
+import React, {useCallback, useMemo, useState} from 'react'
 import styled, {css} from 'styled-components'
 import {FILTERS} from '../../config/filters'
 import {useSearchState} from '../../contexts/search/useSearchState'
@@ -41,9 +41,23 @@ export default function FilterButton({closable = true, filter, initialOpen}: Fil
     [dispatch, filter._key]
   )
 
+  const title = useMemo(() => {
+    switch (filter.type) {
+      case 'compound':
+        return FILTERS.compound[filter.id].title
+      case 'custom':
+        return filter.title
+      case 'field': {
+        const prefix = filter.path.length > 1 ? '... / ' : ''
+        return prefix + filter.path[filter.path.length - 1]
+      }
+      default:
+        return 'Unknown type'
+    }
+  }, [filter])
+
   return (
     <Popover
-      // arrow={false}
       content={<FilterContent filter={filter} onClose={handleClose} />}
       open={open}
       placement="bottom-start"
@@ -59,17 +73,10 @@ export default function FilterButton({closable = true, filter, initialOpen}: Fil
           tone={filter.type === 'field' ? 'primary' : 'default'}
         >
           <Text size={1} textOverflow="ellipsis">
-            <>
-              {/* Field name */}
-              <span style={{fontWeight: 500}}>
-                {filter.type === 'compound' && FILTERS.compound[filter.id].title}
-                {filter.type === 'custom' && filter.title}
-                {filter.type === 'field' && filter.path[filter.path.length - 1]}:
-              </span>
-
-              {/* Value */}
-              <FilterButtonValue filter={filter} />
-            </>
+            {/* Field name */}
+            <span style={{fontWeight: 500}}>{title}:</span>
+            {/* Value */}
+            <FilterButtonValue filter={filter} />
           </Text>
         </LabelButton>
 
