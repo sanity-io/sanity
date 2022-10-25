@@ -5,7 +5,7 @@ import {PopoverDialog} from '../../components'
 
 const PRESENCE_MARGINS: [number, number, number, number] = [0, 0, 1, 0]
 
-interface Props {
+export interface EditPortalProps {
   type: 'popover' | 'dialog'
   width: ResponsiveWidthProps['width']
   header: string
@@ -16,7 +16,7 @@ interface Props {
   legacy_referenceElement: HTMLElement | null
 }
 
-export function EditPortal(props: Props): React.ReactElement {
+export function EditPortal(props: EditPortalProps): React.ReactElement {
   const {
     type,
     id,

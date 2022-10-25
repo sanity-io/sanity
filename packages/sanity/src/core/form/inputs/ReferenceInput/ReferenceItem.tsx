@@ -35,10 +35,10 @@ import {RowLayout} from '../arrays/layouts/RowLayout'
 import {AlertStrip} from '../../components/AlertStrip'
 import {set, unset} from '../../patch'
 import {createProtoArrayValue} from '../arrays/ArrayOfObjectsInput/createProtoArrayValue'
-import {InsertMenu} from '../arrays/ArrayOfObjectsInput/InsertMenu'
 import {useReferenceInfo} from './useReferenceInfo'
 import {PreviewReferenceValue} from './PreviewReferenceValue'
 import {useReferenceInput} from './useReferenceInput'
+import {ArrayItemInsertMenu} from '../arrays'
 
 export interface ReferenceItemValue extends Omit<ObjectItem, '_type'>, Omit<Reference, '_key'> {}
 
@@ -197,7 +197,7 @@ export function ReferenceItem<Item extends ReferenceItemValue = ReferenceItemVal
                       }
                     />
                     <MenuItem text="Duplicate" icon={DuplicateIcon} onClick={handleDuplicate} />
-                    <InsertMenu onInsert={handleInsert} types={insertableTypes} />
+                    <ArrayItemInsertMenu onInsert={handleInsert} types={insertableTypes} />
                   </>
                 )}
 

@@ -1,19 +1,21 @@
-/* eslint-disable react/jsx-handler-names */
+import {
+  ArrayOfObjectsInputProps,
+  ArraySortableList,
+  ArraySortableItem,
+  ArrayOfObjectsItem,
+  GridErrorItem,
+  ObjectItem,
+  UploadTargetCard,
+  useArrayFunctionHandlers,
+  createProtoArrayValue,
+  DefaultArrayInputFunctions,
+} from 'sanity'
+import React from 'react'
 import {Card, Stack, Text} from '@sanity/ui'
-import React, {useCallback} from 'react'
-import {ArraySortableItem, ArraySortableList} from '../../common/arraySortableList'
-import {ArrayOfObjectsInputProps, ObjectItem, ObjectItemProps} from '../../../../types'
-import {DefaultArrayInputFunctions} from '../../common/ArrayFunctions'
-import {ArrayOfObjectsItem} from '../../../../members'
-import {createProtoArrayValue} from '../createProtoArrayValue'
-import {UploadTargetCard} from '../../common/UploadTargetCard'
-import {useArrayFunctionHandlers} from '../useArrayFunctionHandlers'
-import {GridItem} from './GridItem'
-import {GridErrorItem} from './GridErrorItem'
 
 const EMPTY: [] = []
 
-export function GridArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInputProps<Item>) {
+export function GridArrayInputMod<Item extends ObjectItem>(props: ArrayOfObjectsInputProps<Item>) {
   const {
     schemaType,
     onChange,
@@ -27,16 +29,12 @@ export function GridArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
     renderPreview,
     renderField,
     renderInput,
+    renderItem,
   } = props
 
   const {handlePrepend, handleAppend} = useArrayFunctionHandlers(props)
 
   const sortable = schemaType.options?.sortable !== false
-
-  const renderItem = useCallback((itemProps: Omit<ObjectItemProps, 'renderDefault'>) => {
-    // todo: consider using a different item component for references
-    return <GridItem {...itemProps} />
-  }, [])
 
   return (
     <Stack space={3}>

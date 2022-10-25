@@ -3,10 +3,10 @@ import {get} from 'lodash'
 import {ArraySchemaType} from '@sanity/types'
 import {Card, Stack, Text} from '@sanity/ui'
 import {ArrayOfPrimitivesInputProps, FormArrayInputFunctionsProps} from '../../../types'
-import {Item, List} from '../common/list'
+import {ArraySortableItem, ArraySortableList} from '../common/arraySortableList'
 import {PrimitiveItemProps} from '../../../types/itemProps'
 import {ArrayOfPrimitivesItem} from '../../../members'
-import {ErrorItem} from '../ArrayOfObjectsInput/List/ErrorItem'
+import {ListErrorItem} from '../ArrayOfObjectsInput/List/ListErrorItem'
 import {UploadTargetCard} from '../common/UploadTargetCard'
 import {getEmptyValue} from './getEmptyValue'
 
@@ -175,10 +175,10 @@ export class ArrayOfPrimitivesInput extends React.PureComponent<ArrayOfPrimitive
               </Card>
             ) : (
               <Card padding={1} border>
-                <List onItemMove={this.handleSortEnd} sortable={isSortable} gap={1}>
+                <ArraySortableList onItemMove={this.handleSortEnd} sortable={isSortable} gap={1}>
                   {members.map((member, index) => {
                     return (
-                      <Item key={member.key} sortable={isSortable} index={index}>
+                      <ArraySortableItem key={member.key} sortable={isSortable} index={index}>
                         {member.kind === 'item' && (
                           <ArrayOfPrimitivesItem
                             member={member}
@@ -187,12 +187,12 @@ export class ArrayOfPrimitivesInput extends React.PureComponent<ArrayOfPrimitive
                           />
                         )}
                         {member.kind === 'error' && (
-                          <ErrorItem sortable={isSortable} member={member} />
+                          <ListErrorItem sortable={isSortable} member={member} />
                         )}
-                      </Item>
+                      </ArraySortableItem>
                     )
                   })}
-                </List>
+                </ArraySortableList>
               </Card>
             )}
           </Stack>

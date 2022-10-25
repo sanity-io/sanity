@@ -1,34 +1,15 @@
-import {
-  Box,
-  Button,
-  Card,
-  CardTone,
-  Flex,
-  Menu,
-  MenuButton,
-  MenuItem,
-  Spinner,
-  Text,
-} from '@sanity/ui'
-import React, {useCallback, useMemo, useRef} from 'react'
-import {SchemaType} from '@sanity/types'
-import {CopyIcon as DuplicateIcon, EllipsisVerticalIcon, TrashIcon} from '@sanity/icons'
+import {Box, Card, Flex, Spinner, Text} from '@sanity/ui'
+import React, {useMemo} from 'react'
 import styled from 'styled-components'
 import {getSchemaTypeTitle} from '../../../../../schema'
 import {ObjectItem, ObjectItemProps} from '../../../../types'
-import {useScrollIntoViewOnFocusWithin} from '../../../../hooks/useScrollIntoViewOnFocusWithin'
-import {useDidUpdate} from '../../../../hooks/useDidUpdate'
-import {useChildPresence} from '../../../../studio/contexts/Presence'
-import {randomKey} from '../../../../utils/randomKey'
-import {FormFieldValidationStatus} from '../../../../components'
-import {FieldPresence} from '../../../../../presence'
-import {useChildValidation} from '../../../../studio/contexts/Validation'
 import {ChangeIndicator} from '../../../../../changeIndicators'
 import {CellLayout} from '../../layouts/CellLayout'
-import {createProtoArrayValue} from '../createProtoArrayValue'
-import {InsertMenu} from '../InsertMenu'
-import {FIXME} from '../../../../../FIXME'
 import {EditPortal} from '../../../../components/EditPortal'
+import {useArrayItemState} from '../useArrayItemState'
+import {useArrayItemTone} from '../useArrayItemTone'
+import {ArrayItemMenuButton} from '../ArrayItemMenu/ArrayItemMenuButton'
+import {useArrayItemPresence, useArrayItemValidation} from '../useArrayItemComponent'
 
 type GridItemProps<Item extends ObjectItem> = Omit<ObjectItemProps<Item>, 'renderDefault'>
 
@@ -49,24 +30,6 @@ const PreviewCard = styled(Card)`
   }
 `
 
-function getTone({
-  readOnly,
-  hasErrors,
-  hasWarnings,
-}: {
-  readOnly: boolean | undefined
-  hasErrors: boolean
-  hasWarnings: boolean
-}): CardTone {
-  if (readOnly) {
-    return 'transparent'
-  }
-  if (hasErrors) {
-    return 'critical'
-  }
-  return hasWarnings ? 'caution' : 'default'
-}
-const MENU_POPOVER_PROPS = {portal: true, tone: 'default'} as const
 const INITIAL_VALUE_CARD_STYLE = {
   position: 'absolute',
   top: 0,
@@ -84,7 +47,6 @@ export function GridItem<Item extends ObjectItem = ObjectItem>(props: GridItemPr
     onRemove,
     value,
     open,
-    onInsert,
     onFocus,
     onOpen,
     onClose,
@@ -94,79 +56,35 @@ export function GridItem<Item extends ObjectItem = ObjectItem>(props: GridItemPr
     inputProps: {renderPreview},
   } = props
 
-  const sortable = parentSchemaType.options?.sortable !== false
-  const insertableTypes = parentSchemaType.of
+  const {
+    sortable,
+    insertableTypes,
+    resolvingInitialValue,
+    handleDuplicate,
+    handleInsert,
+    childPresence,
+    childValidation,
+    previewCardRef,
+  } = useArrayItemState(props)
 
-  const previewCardRef = useRef<FIXME | null>(null)
-
-  // this is here to make sure the item is visible if it's being edited behind a modal
-  useScrollIntoViewOnFocusWithin(previewCardRef, open)
-
-  useDidUpdate(focused, (hadFocus, hasFocus) => {
-    if (!hadFocus && hasFocus && previewCardRef.current) {
-      // Note: if editing an inline item, focus is handled by the item input itself and no ref is being set
-      previewCardRef.current?.focus()
-    }
-  })
-
-  const resolvingInitialValue = (value as any)._resolvingInitialValue
-
-  const handleDuplicate = useCallback(() => {
-    onInsert({
-      items: [{...value, _key: randomKey()}],
-      position: 'after',
-    })
-  }, [onInsert, value])
-
-  const handleInsert = useCallback(
-    (pos: 'before' | 'after', insertType: SchemaType) => {
-      onInsert({
-        items: [createProtoArrayValue(insertType)],
-        position: pos,
-      })
-    },
-    [onInsert]
-  )
-
-  const childPresence = useChildPresence(path, true)
-  const presence = useMemo(() => {
-    return childPresence.length === 0 ? null : (
-      <FieldPresence presence={childPresence} maxAvatars={1} />
-    )
-  }, [childPresence])
-
-  const childValidation = useChildValidation(path, true)
-  const validation = useMemo(() => {
-    return childValidation.length === 0 ? null : (
-      <Box marginLeft={1} paddingX={1} paddingY={3}>
-        <FormFieldValidationStatus validation={childValidation} __unstable_showSummary />
-      </Box>
-    )
-  }, [childValidation])
-
-  const hasErrors = childValidation.some((v) => v.level === 'error')
-  const hasWarnings = childValidation.some((v) => v.level === 'warning')
+  const presence = useArrayItemPresence(childPresence)
+  const validation = useArrayItemValidation(childValidation)
 
   const menu = useMemo(
     () =>
       readOnly ? null : (
-        <MenuButton
-          button={<Button padding={2} mode="bleed" icon={EllipsisVerticalIcon} />}
-          id={`${props.inputId}-menuButton`}
-          menu={
-            <Menu>
-              <MenuItem text="Remove" tone="critical" icon={TrashIcon} onClick={onRemove} />
-              <MenuItem text="Duplicate" icon={DuplicateIcon} onClick={handleDuplicate} />
-              <InsertMenu types={insertableTypes} onInsert={handleInsert} />
-            </Menu>
-          }
-          popover={MENU_POPOVER_PROPS}
+        <ArrayItemMenuButton
+          inputId={props.inputId}
+          insertableTypes={insertableTypes}
+          handleDuplicate={handleDuplicate}
+          handleInsert={handleInsert}
+          onRemove={onRemove}
         />
       ),
     [handleDuplicate, handleInsert, onRemove, insertableTypes, props.inputId, readOnly]
   )
 
-  const tone = getTone({readOnly, hasErrors, hasWarnings})
+  const tone = useArrayItemTone({childValidation, readOnly})
 
   const item = (
     <CellLayout

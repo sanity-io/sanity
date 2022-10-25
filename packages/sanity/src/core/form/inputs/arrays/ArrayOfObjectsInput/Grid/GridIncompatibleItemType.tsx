@@ -1,4 +1,4 @@
-import {Box, Card, Code, Flex, Popover, Stack, Text, Theme, useClickOutside} from '@sanity/ui'
+import {Box, Card, Code, Popover, Stack, Text, Theme, useClickOutside} from '@sanity/ui'
 import React, {useCallback} from 'react'
 import {BulbOutlineIcon, UnknownIcon} from '@sanity/icons'
 import {resolveTypeName} from '@sanity/util/content'
@@ -14,7 +14,7 @@ interface Props {
   vertical?: boolean
 }
 
-export function IncompatibleItemType(props: Props) {
+export function GridIncompatibleItemType(props: Props) {
   const {value, onFocus, vertical, ...rest} = props
   const [showDetails, setShowDetails] = React.useState(false)
   const [popoverRef, setPopoverRef] = React.useState<HTMLElement | null>(null)
@@ -78,26 +78,23 @@ export function IncompatibleItemType(props: Props) {
         tone="inherit"
         paddingX={2}
         paddingY={3}
-        flex={1}
+        style={{height: '100%'}}
         onFocus={onFocus}
         onClick={handleShowDetails}
         onKeyDown={handleKeyDown}
         __unstable_focusRing
         {...rest}
       >
-        <Flex align="center">
-          <Box marginRight={3}>
-            <Text>
+        <Stack space={4} marginTop={2}>
+          <Box margin={1}>
+            <Text align="center" size={4}>
               <UnknownIcon />
             </Text>
           </Box>
-
-          <Box flex={1}>
-            <Text size={1} textOverflow="ellipsis">
-              Item of type <code>{typeName}</code> not valid for this list
-            </Text>
-          </Box>
-        </Flex>
+          <Text align="center" size={1}>
+            Items of type <code>{typeName}</code> is not valid for this list
+          </Text>
+        </Stack>
       </Card>
     </Popover>
   )

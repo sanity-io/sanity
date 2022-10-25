@@ -1,6 +1,8 @@
 import React from 'react'
 import {ImageIcon, OlistIcon} from '@sanity/icons'
 import {defineField, defineType} from 'sanity'
+import {InlineItemComposedOfParts} from './components/InlineItemComposedOfParts'
+import {GridArrayInputMod} from './components/GridArrayInputMod'
 
 export const topLevelArrayType = defineType({
   name: 'topLevelArrayType',
@@ -69,12 +71,16 @@ export default defineType({
       type: 'array',
       of: [
         {
+          components: {
+            item: InlineItemComposedOfParts,
+          },
           type: 'object',
           fields: [
             {
               name: 'stringOptions',
               title: 'String options',
               type: 'string',
+              validation: (rule) => rule.required(),
               options: {
                 list: [
                   {title: 'Cats', value: 'cats4ever'},

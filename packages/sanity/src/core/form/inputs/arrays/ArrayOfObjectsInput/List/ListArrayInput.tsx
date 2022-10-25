@@ -1,14 +1,15 @@
 /* eslint-disable react/jsx-handler-names */
 import {Card, Stack, Text} from '@sanity/ui'
-import React, {useCallback} from 'react'
-import {Item, List} from '../../common/list'
+import React from 'react'
+import {ArraySortableItem, ArraySortableList} from '../../common/arraySortableList'
 import {ArrayOfObjectsInputProps, ObjectItem} from '../../../../types'
 import {DefaultArrayInputFunctions} from '../../common/ArrayFunctions'
 import {ArrayOfObjectsItem} from '../../../../members'
 
 import {createProtoArrayValue} from '../createProtoArrayValue'
 import {UploadTargetCard} from '../../common/UploadTargetCard'
-import {ErrorItem} from './ErrorItem'
+import {useArrayFunctionHandlers} from '../useArrayFunctionHandlers'
+import {ListErrorItem} from './ListErrorItem'
 
 const EMPTY: [] = []
 
@@ -21,7 +22,6 @@ export function ListArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
     members,
     elementProps,
     resolveUploader,
-    onInsert,
     onItemMove,
     onUpload,
     renderPreview,
@@ -30,19 +30,7 @@ export function ListArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
     renderInput,
   } = props
 
-  const handlePrepend = useCallback(
-    (item: Item) => {
-      onInsert({items: [item], position: 'before', referenceItem: 0})
-    },
-    [onInsert]
-  )
-
-  const handleAppend = useCallback(
-    (item: Item) => {
-      onInsert({items: [item], position: 'after', referenceItem: -1})
-    },
-    [onInsert]
-  )
+  const {handlePrepend, handleAppend} = useArrayFunctionHandlers(props)
 
   const sortable = schemaType.options?.sortable !== false
 
@@ -56,7 +44,7 @@ export function ListArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
         tabIndex={0}
       >
         <Stack data-ui="ArrayInput__content" space={3}>
-          {members.length === 0 ? (
+          {members?.length === 0 ? (
             <Card padding={3} border style={{borderStyle: 'dashed'}} radius={2}>
               <Text align="center" muted size={1}>
                 {schemaType.placeholder || <>No items</>}
@@ -64,9 +52,9 @@ export function ListArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
             </Card>
           ) : (
             <Card border radius={1}>
-              <List gap={1} paddingY={1} onItemMove={onItemMove} sortable={sortable}>
+              <ArraySortableList gap={1} paddingY={1} onItemMove={onItemMove} sortable={sortable}>
                 {members.map((member, index) => (
-                  <Item key={member.key} sortable={sortable} index={index}>
+                  <ArraySortableItem key={member.key} sortable={sortable} index={index}>
                     {member.kind === 'item' && (
                       <ArrayOfObjectsItem
                         member={member}
@@ -76,10 +64,12 @@ export function ListArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
                         renderPreview={renderPreview}
                       />
                     )}
-                    {member.kind === 'error' && <ErrorItem sortable={sortable} member={member} />}
-                  </Item>
+                    {member.kind === 'error' && (
+                      <ListErrorItem sortable={sortable} member={member} />
+                    )}
+                  </ArraySortableItem>
                 ))}
-              </List>
+              </ArraySortableList>
             </Card>
           )}
         </Stack>

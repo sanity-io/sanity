@@ -3,10 +3,10 @@ import {Box, Button, Flex, Menu, MenuButton, MenuItem} from '@sanity/ui'
 import {SchemaType} from '@sanity/types'
 import {CopyIcon as DuplicateIcon, EllipsisVerticalIcon, TrashIcon} from '@sanity/icons'
 import {FormFieldValidationStatus} from '../../../components/formField'
-import {InsertMenu} from '../ArrayOfObjectsInput/InsertMenu'
 import {PrimitiveItemProps} from '../../../types/itemProps'
 import {RowLayout} from '../layouts/RowLayout'
 import {FieldPresence} from '../../../../presence'
+import {ArrayItemInsertMenu} from '../ArrayOfObjectsInput'
 import {getEmptyValue} from './getEmptyValue'
 
 export type DefaultItemProps = Omit<PrimitiveItemProps, 'renderDefault'> & {
@@ -102,7 +102,7 @@ export const ItemRow = React.forwardRef(function ItemRow(
           <MenuItem text="Remove" tone="critical" icon={TrashIcon} onClick={handleRemove} />
 
           <MenuItem text="Duplicate" icon={DuplicateIcon} onClick={handleDuplicate} />
-          <InsertMenu types={insertableTypes} onInsert={handleInsert} />
+          <ArrayItemInsertMenu types={insertableTypes} onInsert={handleInsert} />
         </Menu>
       }
     />

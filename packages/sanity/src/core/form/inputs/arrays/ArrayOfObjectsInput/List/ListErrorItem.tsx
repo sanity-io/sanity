@@ -5,11 +5,11 @@ import {ArrayItemError} from '../../../../store'
 import {useFormCallbacks} from '../../../../studio/contexts/FormCallbacks'
 import {PatchEvent, unset} from '../../../../patch'
 import {RowLayout} from '../../layouts/RowLayout'
-import {IncompatibleItemType} from './IncompatibleItemType'
+import {ListIncompatibleItemType} from './ListIncompatibleItemType'
 
 const MENU_POPOVER_PROPS = {portal: true, tone: 'default'} as const
 
-export function ErrorItem(props: {member: ArrayItemError; sortable?: boolean}) {
+export function ListErrorItem(props: {member: ArrayItemError; sortable?: boolean}) {
   const {member, sortable} = props
   const id = useId()
   const {onChange} = useFormCallbacks()
@@ -37,7 +37,7 @@ export function ErrorItem(props: {member: ArrayItemError; sortable?: boolean}) {
         }
       >
         {member.error.type === 'INVALID_ITEM_TYPE' ? (
-          <IncompatibleItemType value={member.error.value} />
+          <ListIncompatibleItemType value={member.error.value} />
         ) : (
           <div>Unexpected Error: {member.error.type}</div>
         )}

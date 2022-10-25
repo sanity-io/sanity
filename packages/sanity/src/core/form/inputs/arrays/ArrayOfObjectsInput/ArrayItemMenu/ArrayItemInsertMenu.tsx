@@ -16,7 +16,7 @@ const MENU_POPOVER_PROPS: PopoverProps = {
   constrainSize: true,
 } as const
 
-export const InsertMenu = memo(function InsertMenu(props: Props) {
+export const ArrayItemInsertMenu = memo(function InsertMenu(props: Props) {
   const {types, onInsert} = props
   return (
     <>

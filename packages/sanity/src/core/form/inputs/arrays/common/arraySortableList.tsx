@@ -39,7 +39,7 @@ interface ListProps extends ComponentProps<typeof Grid> {
   tabIndex?: number
 }
 
-export function List(props: ListProps) {
+export function ArraySortableList(props: ListProps) {
   const {onItemMove, sortable, ...rest} = props
 
   // Note: this is here to make SortableList API compatible with onItemMove
@@ -57,7 +57,7 @@ export function List(props: ListProps) {
 
 type ItemProps = {sortable?: boolean; children?: React.ReactNode; index: number}
 
-export function Item(props: ItemProps & ComponentProps<typeof Card>) {
+export function ArraySortableItem(props: ItemProps & ComponentProps<typeof Card>) {
   const {sortable, ...rest} = props
   return sortable ? <SortableListItem {...rest} /> : <ListItem {...rest} />
 }

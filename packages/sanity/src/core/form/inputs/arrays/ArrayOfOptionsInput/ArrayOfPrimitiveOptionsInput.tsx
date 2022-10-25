@@ -5,7 +5,7 @@ import {resolveTypeName} from '@sanity/util/content'
 import {ArraySchemaType} from '@sanity/types'
 import {set, unset} from '../../../patch'
 import {ArrayOfPrimitivesInputProps} from '../../../types'
-import {IncompatibleItemType} from '../ArrayOfObjectsInput/List/IncompatibleItemType'
+import {ListIncompatibleItemType} from '../ArrayOfObjectsInput/List/ListIncompatibleItemType'
 import {ChangeIndicator} from '../../../../changeIndicators'
 
 function isPrimitiveOption(option: unknown): option is NormalizedPrimitiveOption {
@@ -94,7 +94,7 @@ export function ArrayOfPrimitiveOptionsInput(props: ArrayOfPrimitivesInputProps)
               </Box>
 
               {!optionType && (
-                <IncompatibleItemType value={option} onFocus={() => onIndexFocus(index)} />
+                <ListIncompatibleItemType value={option} onFocus={() => onIndexFocus(index)} />
               )}
             </Flex>
           )
