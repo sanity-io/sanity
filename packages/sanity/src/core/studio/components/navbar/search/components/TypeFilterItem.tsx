@@ -9,7 +9,6 @@ import {useSearchState} from '../contexts/search/useSearchState'
 interface TypeFilterItemProps {
   index: number
   selected: boolean
-  small?: boolean
   type: SearchableType
 }
 
@@ -18,6 +17,7 @@ const TypeFilterItemButton = styled(Button)<{$level: number}>(({$level}) => {
     [data-focused='true'][data-level='${$level}'] &,
     [data-hovered='true'][data-level='${$level}'] & {
       &[data-active='true'] {
+        outline: 1px solid lime;
         // TODO: investigate issue where this background isn't respected after switching studio theme _multiple_ times (at least twice)
         background: ${({theme}) => theme.sanity.color.button.bleed.default.hovered.bg};
         // Disable box-shadow to hide the halo effect when we have keyboard focus over a selected <Button>
@@ -27,7 +27,7 @@ const TypeFilterItemButton = styled(Button)<{$level: number}>(({$level}) => {
   `
 })
 
-export function TypeFilterItem({index, selected, small, type}: TypeFilterItemProps) {
+export function TypeFilterItem({index, selected, type}: TypeFilterItemProps) {
   const {dispatch} = useSearchState()
 
   const {level, onChildClick, onChildMouseDown, onChildMouseEnter} = useCommandList()
@@ -54,7 +54,7 @@ export function TypeFilterItem({index, selected, small, type}: TypeFilterItemPro
       $level={level}
       aria-selected={selected}
       data-index={index}
-      fontSize={small ? 1 : 2}
+      fontSize={1}
       iconRight={selected && CheckmarkIcon}
       justify="flex-start"
       key={type.title ?? type.name}

@@ -1,7 +1,7 @@
 import {LayerProvider} from '@sanity/ui'
 import React from 'react'
-import {SearchPopover} from '../search/components/SearchPopover'
-import {SearchProvider} from '../search/contexts/search/SearchProvider'
+import {SearchPopover} from '../components/SearchPopover'
+import {SearchProvider} from '../contexts/search/SearchProvider'
 
 const noop = () => null
 

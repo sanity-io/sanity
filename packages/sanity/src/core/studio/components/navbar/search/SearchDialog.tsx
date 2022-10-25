@@ -3,10 +3,10 @@ import React, {useCallback, useEffect, useId, useRef, useState} from 'react'
 import FocusLock from 'react-focus-lock'
 import styled from 'styled-components'
 import {useColorScheme} from '../../../colorScheme'
-import {RecentSearches} from './components/RecentSearches'
+import {RecentSearches} from './components/recentSearches/RecentSearches'
 import {SearchHeader} from './components/SearchHeader'
 import {SearchResults} from './components/SearchResults'
-import {TypeFilters} from './components/TypeFilters'
+import {DocumentTypes} from './components/filters/compound/DocumentTypes'
 import {CommandListProvider} from './contexts/commandList'
 import {useSearchState} from './contexts/search/useSearchState'
 import {useMeasureSearchResultsIndex} from './hooks/useMeasureSearchResultsIndex'
@@ -108,7 +108,7 @@ export function SearchDialog({onClose, onOpen, open}: SearchDialogProps) {
    */
   useEffect(() => {
     if (!hasValidTerms && isMountedRef.current && !open) {
-      dispatch({type: 'SEARCH_ORDERING_RESET'})
+      dispatch({type: 'ORDERING_RESET'})
     }
   }, [dispatch, hasValidTerms, open])
 
@@ -175,7 +175,7 @@ function SearchDialogFilters() {
   const {dispatch} = useSearchState()
 
   const handleClose = useCallback(() => {
-    dispatch({type: 'FILTERS_HIDE'})
+    dispatch({type: 'FILTERS_VISIBLE_SET', visible: false})
   }, [dispatch])
 
   return (
@@ -189,7 +189,7 @@ function SearchDialogFilters() {
         width={2}
       >
         <DialogContentCard tone="default">
-          <TypeFilters />
+          <DocumentTypes />
         </DialogContentCard>
       </StyledDialog>
     </FocusLock>

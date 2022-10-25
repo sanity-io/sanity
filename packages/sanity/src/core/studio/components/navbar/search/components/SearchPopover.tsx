@@ -1,4 +1,4 @@
-import {Box, Card, Flex, Portal, Theme, useClickOutside, useLayer} from '@sanity/ui'
+import {Card, Flex, Portal, Theme, useClickOutside, useLayer} from '@sanity/ui'
 import React, {useCallback, useEffect, useId, useRef, useState} from 'react'
 import FocusLock from 'react-focus-lock'
 import styled, {css} from 'styled-components'
@@ -9,10 +9,10 @@ import {useSearchState} from '../contexts/search/useSearchState'
 import {useMeasureSearchResultsIndex} from '../hooks/useMeasureSearchResultsIndex'
 import {useSearchHotkeys} from '../hooks/useSearchHotkeys'
 import {hasSearchableTerms} from '../utils/hasSearchableTerms'
-import {RecentSearches} from './RecentSearches'
+import {Filters} from './filters/Filters'
+import {RecentSearches} from './recentSearches/RecentSearches'
 import {SearchHeader} from './SearchHeader'
 import {SearchResults} from './SearchResults'
-import {TypeFilters} from './TypeFilters'
 
 export type PopoverPosition = {
   x: number | null
@@ -35,7 +35,7 @@ const Overlay = styled.div`
   top: 0;
 `
 
-const SearchContentBox = styled(Box)`
+const SearchContentCard = styled(Card)`
   overflow-x: hidden;
   overflow-y: auto;
   position: relative;
@@ -60,12 +60,6 @@ const SearchPopoverCard = styled(Card)<{$position: PopoverPosition}>`
   width: min(calc(100vw - ${POPOVER_INPUT_PADDING * 2}px), ${POPOVER_MAX_WIDTH}px);
 `
 
-const TypeFilterCard = styled(Card)`
-  border-left: 1px solid ${({theme}) => theme.sanity.color.base.border};
-  max-width: 250px;
-  width: 100%;
-`
-
 export function SearchPopover({
   disableFocusLock,
   onClose,
@@ -85,7 +79,7 @@ export function SearchPopover({
 
   const {
     dispatch,
-    state: {recentSearches, result, terms},
+    state: {filtersVisible, recentSearches, result, terms},
   } = useSearchState()
 
   const hasValidTerms = hasSearchableTerms(terms)
@@ -139,7 +133,7 @@ export function SearchPopover({
    */
   useEffect(() => {
     if (!hasValidTerms && isMountedRef.current && !open) {
-      dispatch({type: 'SEARCH_ORDERING_RESET'})
+      dispatch({type: 'ORDERING_RESET'})
     }
   }, [dispatch, hasValidTerms, open])
 
@@ -189,10 +183,19 @@ export function SearchPopover({
           >
             <SearchHeader setHeaderInputRef={setHeaderInputRef} />
 
-            {/* Reverse flex direction is used to ensure filters are focusable before recent searches */}
+            {filtersVisible && (
+              <Card
+                borderBottom
+                borderTop
+                // TODO: create styled component
+                style={{flexShrink: 0}}
+              >
+                <Filters />
+              </Card>
+            )}
+
             <Flex align="stretch" direction="row-reverse">
-              <SearchPopoverFilters />
-              <SearchContentBox flex={1}>
+              <SearchContentCard borderTop={!filtersVisible} flex={1}>
                 {hasValidTerms ? (
                   <SearchResults
                     onClose={handleClose}
@@ -208,27 +211,11 @@ export function SearchPopover({
                     showFiltersOnClick
                   />
                 )}
-              </SearchContentBox>
+              </SearchContentCard>
             </Flex>
           </SearchPopoverCard>
         </CommandListProvider>
       </FocusLock>
     </Portal>
-  )
-}
-
-function SearchPopoverFilters() {
-  const {
-    state: {filtersVisible},
-  } = useSearchState()
-
-  if (!filtersVisible) {
-    return null
-  }
-
-  return (
-    <TypeFilterCard tone="transparent">
-      <TypeFilters small />
-    </TypeFilterCard>
   )
 }

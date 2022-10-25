@@ -2,19 +2,15 @@ import {SearchIcon} from '@sanity/icons'
 import {Box, Button, Flex, Stack, Text} from '@sanity/ui'
 import React, {useCallback, useId, useMemo, useState} from 'react'
 import styled from 'styled-components'
-import {useSchema} from '../../../../../hooks'
-import {SUBHEADER_HEIGHT_LARGE, SUBHEADER_HEIGHT_SMALL} from '../constants'
-import {CommandListProvider} from '../contexts/commandList'
-import {useSearchState} from '../contexts/search/useSearchState'
-import {getSelectableOmnisearchTypes} from '../utils/selectors'
-import {supportsTouch} from '../utils/supportsTouch'
-import {CustomTextInput} from './CustomTextInput'
-import {PointerOverlay} from './PointerOverlay'
-import {TypeFilterItem} from './TypeFilterItem'
-
-interface TypeFiltersProps {
-  small?: boolean
-}
+import {useSchema} from '../../../../../../../hooks'
+import {SUBHEADER_HEIGHT_SMALL} from '../../../constants'
+import {CommandListProvider} from '../../../contexts/commandList'
+import {useSearchState} from '../../../contexts/search/useSearchState'
+import {getSelectableOmnisearchTypes} from '../../../utils/selectors'
+import {supportsTouch} from '../../../utils/supportsTouch'
+import {CustomTextInput} from '../../CustomTextInput'
+import {PointerOverlay} from '../../PointerOverlay'
+import {TypeFilterItem} from '../../TypeFilterItem'
 
 const ClearButtonBox = styled(Box)`
   border-top: 1px solid ${({theme}) => theme.sanity.color.base.border};
@@ -24,9 +20,9 @@ const SearchHeaderBox = styled(Box)`
   border-bottom: 1px solid ${({theme}) => theme.sanity.color.base.border};
 `
 
-const SearchHeaderContentFlex = styled(Flex)<{$small?: boolean}>`
+const SearchHeaderContentFlex = styled(Flex)`
   box-sizing: border-box;
-  height: ${({$small}) => ($small ? SUBHEADER_HEIGHT_SMALL : SUBHEADER_HEIGHT_LARGE)}px;
+  height: ${SUBHEADER_HEIGHT_SMALL};
 `
 
 const TypeFiltersContentBox = styled(Box)`
@@ -39,11 +35,7 @@ const TypeFiltersContentDiv = styled.div`
   position: relative;
 `
 
-const TypeFiltersFlex = styled(Flex)<{$lightHighlight: boolean}>`
-  height: 100%;
-`
-
-export function TypeFilters({small}: TypeFiltersProps) {
+export function DocumentTypes() {
   const [childContainerElement, setChildContainerRef] = useState<HTMLDivElement | null>(null)
   const [containerElement, setContainerRef] = useState<HTMLDivElement | null>(null)
   const [filtersContentElement, setFiltersContentRef] = useState<HTMLDivElement | null>(null)
@@ -78,8 +70,6 @@ export function TypeFilters({small}: TypeFiltersProps) {
   )
   const handleFilterClear = useCallback(() => setTypeFilter(''), [])
 
-  const padding = small ? 1 : 2
-
   const commandListId = useId()
 
   return (
@@ -95,20 +85,20 @@ export function TypeFilters({small}: TypeFiltersProps) {
       level={1}
       pointerOverlayElement={pointerOverlayElement}
     >
-      <TypeFiltersFlex $lightHighlight={!small} direction="column" ref={setContainerRef}>
+      <Flex direction="column" ref={setContainerRef}>
         {/* Search header */}
         <SearchHeaderBox>
-          <SearchHeaderContentFlex $small={small} align="center" flex={1} padding={padding}>
+          <SearchHeaderContentFlex align="center" flex={1} padding={1}>
             <CustomTextInput
               autoComplete="off"
-              // border={false} // TODO: re-enable when flashing border issue is fixed
+              border={false}
               clearButton={!!typeFilter}
-              fontSize={small ? 1 : 2}
+              fontSize={1}
               icon={SearchIcon}
               muted
               onChange={handleFilterChange}
               onClear={handleFilterClear}
-              placeholder="Document type"
+              placeholder="Filter"
               ref={setHeaderInputRef}
               smallClearButton
               spellCheck={false}
@@ -121,7 +111,7 @@ export function TypeFilters({small}: TypeFiltersProps) {
         <TypeFiltersContentBox
           data-overflow
           flex={1}
-          padding={padding}
+          padding={1}
           ref={setFiltersContentRef}
           tabIndex={-1}
         >
@@ -135,7 +125,6 @@ export function TypeFilters({small}: TypeFiltersProps) {
                   index={index}
                   key={type.name}
                   selected={selectedTypes.includes(type)}
-                  small={small}
                   type={type}
                 />
               ))}
@@ -145,7 +134,7 @@ export function TypeFilters({small}: TypeFiltersProps) {
           {/* No results */}
           {!selectableDocumentTypes.length && (
             <Box padding={3}>
-              <Text muted size={small ? 1 : 2} textOverflow="ellipsis">
+              <Text muted size={1} textOverflow="ellipsis">
                 No matches for '{typeFilter}'.
               </Text>
             </Box>
@@ -154,13 +143,13 @@ export function TypeFilters({small}: TypeFiltersProps) {
 
         {/* Clear button */}
         {!typeFilter && selectedTypes.length > 0 && (
-          <ClearButtonBox padding={padding}>
+          <ClearButtonBox padding={1}>
             <Stack>
               <Button
                 aria-label="Clear checked filters"
                 data-name="type-filter-button"
                 disabled={selectedTypes.length === 0}
-                fontSize={small ? 1 : 2}
+                fontSize={1}
                 mode="bleed"
                 onClick={handleClearTypes}
                 padding={3}
@@ -170,7 +159,7 @@ export function TypeFilters({small}: TypeFiltersProps) {
             </Stack>
           </ClearButtonBox>
         )}
-      </TypeFiltersFlex>
+      </Flex>
     </CommandListProvider>
   )
 }
