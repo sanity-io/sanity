@@ -14,7 +14,7 @@ const initialValue: PortableTextBlock[] | undefined = [
 ]
 
 // @todo Temporarily disabled until flakey tests can be addressed in CI
-describe.skip('collaborate editing', () => {
+describe('collaborate editing', () => {
   it('will have the same start value for editor A and B', async () => {
     await setDocumentValue(initialValue)
     const editors = await getEditors()
