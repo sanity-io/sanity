@@ -88,7 +88,7 @@ export const DateTimeInput = forwardRef(function DateTimeInput(
                 </Box>
               }
               open
-              placement="bottom-end"
+              placement="bottom"
               ref={setPopoverRef}
               radius={2}
             >

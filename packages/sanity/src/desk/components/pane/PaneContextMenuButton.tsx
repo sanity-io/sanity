@@ -18,8 +18,9 @@ interface MenuItemGroup {
 
 const CONTEXT_MENU_POPOVER_PROPS: PopoverProps = {
   constrainSize: true,
-  placement: 'bottom-end',
+  placement: 'bottom',
   portal: true,
+  width: 0,
 }
 
 /**
