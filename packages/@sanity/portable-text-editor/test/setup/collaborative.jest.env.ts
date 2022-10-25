@@ -19,8 +19,8 @@ const WEB_SERVER_ROOT_URL = 'http://localhost:3000'
 const DEBUG = process.env.DEBUG || false
 
 // Wait this long for selections and a new doc revision to appear on the clients
-const SELECTION_TIMEOUT_MS = 1000 // This will also be an indicator of the performance in the editor. Set it as low as possible without breaking the tests.
-const REVISION_TIMEOUT_MS = FLUSH_PATCHES_DEBOUNCE_MS + 300 // 300 seems to be the limit for the doc patching to go full circle (increase this if tests starts to time out)
+const SELECTION_TIMEOUT_MS = 1500 // This will also be an indicator of the performance in the editor. Set it as low as possible without breaking the tests.
+const REVISION_TIMEOUT_MS = FLUSH_PATCHES_DEBOUNCE_MS + 1000 // 300 seems to be the limit for the doc patching to go full circle (increase this if tests starts to time out)
 
 // eslint-disable-next-line no-process-env
 const launchConfig = process.env.CI
@@ -171,7 +171,7 @@ export default class CollaborationEnvironment extends NodeEnvironment {
           const waitForNewSelection = async (selectionChangeFn: () => Promise<void>) => {
             const oldSelection = await getSelection()
             const dataVal = oldSelection ? JSON.stringify(oldSelection) : 'null'
-            selectionChangeFn() // Don't await this
+            await selectionChangeFn()
             await page.waitForSelector(`code[data-selection]:not([data-selection='${dataVal}'])`, {
               timeout: SELECTION_TIMEOUT_MS,
             })
