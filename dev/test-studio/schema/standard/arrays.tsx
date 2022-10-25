@@ -2,7 +2,6 @@ import React from 'react'
 import {ImageIcon, OlistIcon} from '@sanity/icons'
 import {defineField, defineType} from 'sanity'
 import {InlineItemComposedOfParts} from './components/InlineItemComposedOfParts'
-import {GridArrayInputMod} from './components/GridArrayInputMod'
 
 export const topLevelArrayType = defineType({
   name: 'topLevelArrayType',
