@@ -42,7 +42,6 @@ describe('object types', () => {
       ],
       groups: [{name: 'group', title: 'Group title', icon: () => null, default: true}],
       preview: {select: {title: 'title', subtitle: 'title'}},
-      //@ts-expect-error requires one field def
       fields: [],
     })
 
@@ -56,7 +55,6 @@ describe('object types', () => {
     defineType({
       type: 'object',
       name: 'custom-object',
-      //@ts-expect-error require one field
       fields: [],
     })
 
