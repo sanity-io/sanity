@@ -1,13 +1,14 @@
 import isEqual from 'lodash/isEqual'
 import React, {ReactNode, useEffect, useMemo, useReducer, useRef} from 'react'
 import {useClient, useSchema} from '../../../../../../hooks'
-import type {SearchTerms} from '../../../../../../search'
 import {useCurrentUser} from '../../../../../../store'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../../../studioClient'
+import {getSchemaFields} from '../../components/getSchemaFields'
 import {FINDABILITY_MVI, SEARCH_LIMIT} from '../../constants'
-import {createRecentSearchesStore, RecentSearchTerms} from '../../datastores/recentSearches'
+import {createRecentSearchesStore, RecentOmnisearchTerms} from '../../datastores/recentSearches'
 import {useSearch} from '../../hooks/useSearch'
-import type {SearchOrdering} from '../../types'
+import type {KeyedSearchFilter, OmnisearchTerms, SearchFilter, SearchOrdering} from '../../types'
+import {generateKey} from '../../utils/generateKey'
 import {hasSearchableTerms} from '../../utils/hasSearchableTerms'
 import {isRecentSearchTerms} from '../../utils/isRecentSearchTerms'
 import {initialSearchState, searchReducer} from './reducer'
@@ -26,6 +27,18 @@ export function SearchProvider({children}: SearchProviderProps) {
   const currentUser = useCurrentUser()
 
   const {dataset, projectId} = client.config()
+
+  const availableFilters: KeyedSearchFilter[] = useMemo(() => {
+    const flattenedFields = getSchemaFields(schema)
+
+    return flattenedFields.map((field) => ({
+      _key: generateKey(),
+      fieldPath: field.fieldPath,
+      fieldType: field.type,
+      path: field.path,
+      type: 'field',
+    }))
+  }, [])
 
   // Create local storage store
   const recentSearchesStore = useMemo(
@@ -49,7 +62,7 @@ export function SearchProvider({children}: SearchProviderProps) {
   const isMountedRef = useRef(false)
   const previousOrderingRef = useRef<SearchOrdering>(initialState.ordering)
   const previousPageIndexRef = useRef<number>(initialState.pageIndex)
-  const previousTermsRef = useRef<SearchTerms | RecentSearchTerms>(initialState.terms)
+  const previousTermsRef = useRef<OmnisearchTerms | RecentOmnisearchTerms>(initialState.terms)
 
   const {handleSearch, searchState} = useSearch({
     initialState: {...result, terms},
@@ -78,6 +91,8 @@ export function SearchProvider({children}: SearchProviderProps) {
       const sortLabel =
         ordering?.customMeasurementLabel || `${ordering.sort.field} ${ordering.sort.direction}`
 
+      // TODO: re-enable
+      /*
       handleSearch({
         options: {
           // Comments prepended to each query for future measurement
@@ -96,6 +111,7 @@ export function SearchProvider({children}: SearchProviderProps) {
         },
         terms,
       })
+      */
 
       // Update pageIndex snapshot only on a valid search request
       previousPageIndexRef.current = pageIndex
@@ -120,7 +136,14 @@ export function SearchProvider({children}: SearchProviderProps) {
   }, [dispatch, hasValidTerms, result.hits, terms.query, terms.types])
 
   return (
-    <SearchContext.Provider value={{dispatch, recentSearchesStore, state}}>
+    <SearchContext.Provider
+      value={{
+        availableFilters, //
+        dispatch,
+        recentSearchesStore,
+        state,
+      }}
+    >
       {children}
     </SearchContext.Provider>
   )

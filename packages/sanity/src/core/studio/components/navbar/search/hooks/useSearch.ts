@@ -14,23 +14,23 @@ import {
   tap,
 } from 'rxjs/operators'
 import {useClient} from '../../../../../hooks'
-import {createWeightedSearch, SearchOptions, SearchTerms, WeightedHit} from '../../../../../search'
+import {createWeightedSearch, SearchOptions, WeightedHit} from '../../../../../search'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../../studioClient'
-import {SearchState} from '../types'
+import type {OmnisearchTerms, SearchState} from '../types'
 import {hasSearchableTerms} from '../utils/hasSearchableTerms'
 import {getSearchableOmnisearchTypes} from '../utils/selectors'
 
 interface SearchRequest {
   options?: SearchOptions
-  terms: SearchTerms
+  terms: OmnisearchTerms
 }
 
 const INITIAL_SEARCH_STATE: SearchState = {
   error: null,
   hits: [],
   loading: false,
-  options: {},
   terms: {
+    filters: [],
     query: '',
     types: [],
   },
@@ -120,6 +120,7 @@ export function useSearch({
       )
     },
     []
+    // [onComplete, onError, onStart, searchWeighted]
   )
 
   const handleClearSearch = useCallback(() => {

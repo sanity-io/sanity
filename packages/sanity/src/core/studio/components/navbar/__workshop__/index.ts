@@ -1,7 +1,7 @@
 import {defineScope} from '@sanity/ui-workshop'
 import {lazy} from 'react'
 
-export default defineScope('sanity/studio/navbar', 'Navbar', [
+export default defineScope('sanity/studio/navbar/base', 'Base', [
   {
     name: 'navbar',
     title: 'Navbar',
@@ -11,15 +11,5 @@ export default defineScope('sanity/studio/navbar', 'Navbar', [
     name: 'changelog-dialog',
     title: 'ChangelogDialog',
     component: lazy(() => import('./ChangelogDialogStory')),
-  },
-  {
-    name: 'searchPopover',
-    title: 'SearchPopover',
-    component: lazy(() => import('./SearchPopoverStory')),
-  },
-  {
-    name: 'searchDialog',
-    title: 'SearchDialog',
-    component: lazy(() => import('./SearchDialogStory')),
   },
 ])

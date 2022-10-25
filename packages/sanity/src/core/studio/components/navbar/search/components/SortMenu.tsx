@@ -14,16 +14,10 @@ import {
 import isEqual from 'lodash/isEqual'
 import React, {useCallback, useId, useMemo} from 'react'
 import styled from 'styled-components'
-import {SUBHEADER_HEIGHT_LARGE, SUBHEADER_HEIGHT_SMALL} from '../constants'
+import {ORDERINGS} from '../config/orderings'
+import {SUBHEADER_HEIGHT_SMALL} from '../constants'
 import {useSearchState} from '../contexts/search/useSearchState'
-import {
-  SearchOrdering,
-  ORDER_CREATED_ASC,
-  ORDER_CREATED_DESC,
-  ORDER_RELEVANCE,
-  ORDER_UPDATED_ASC,
-  ORDER_UPDATED_DESC,
-} from '../types'
+import type {SearchOrdering} from '../types'
 
 interface SortMenuProps {
   small?: boolean
@@ -34,13 +28,13 @@ interface SearchDivider {
 }
 
 const MENU_ORDERINGS: (SearchDivider | SearchOrdering)[] = [
-  ORDER_RELEVANCE,
+  ORDERINGS.relevance,
   {type: 'divider'},
-  ORDER_CREATED_ASC,
-  ORDER_CREATED_DESC,
+  ORDERINGS.createdAsc,
+  ORDERINGS.createdDesc,
   {type: 'divider'},
-  ORDER_UPDATED_ASC,
-  ORDER_UPDATED_DESC,
+  ORDERINGS.updatedAsc,
+  ORDERINGS.updatedDesc,
 ]
 
 const IconWrapperBox = styled(Box)<{$visible: boolean}>`
@@ -49,7 +43,7 @@ const IconWrapperBox = styled(Box)<{$visible: boolean}>`
 
 const SortMenuContentFlex = styled(Flex)<{$small?: boolean}>`
   box-sizing: border-box;
-  height: ${({$small}) => ($small ? SUBHEADER_HEIGHT_SMALL : SUBHEADER_HEIGHT_LARGE)}px;
+  height: ${SUBHEADER_HEIGHT_SMALL};
 `
 
 function isSearchDivider(item: SearchDivider | SearchOrdering): item is SearchDivider {
@@ -63,7 +57,7 @@ function CustomMenuItem({ordering}: {ordering: SearchOrdering}) {
   } = useSearchState()
 
   const handleClick = useCallback(() => {
-    dispatch({ordering, type: 'SEARCH_ORDERING_SET'})
+    dispatch({ordering, type: 'ORDERING_SET'})
   }, [dispatch, ordering])
 
   const isSelected = useMemo(() => isEqual(currentOrdering, ordering), [currentOrdering, ordering])

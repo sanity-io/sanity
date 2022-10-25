@@ -1,5 +1,5 @@
 import {CloseIcon, ControlsIcon, SearchIcon, SpinnerIcon} from '@sanity/icons'
-import {Box, Button, Card, Flex, studioTheme, Theme} from '@sanity/ui'
+import {Box, Button, Card, Flex, Theme} from '@sanity/ui'
 import React, {Dispatch, SetStateAction, useCallback, useEffect, useRef, useState} from 'react'
 import styled, {keyframes} from 'styled-components'
 import {useSearchState} from '../contexts/search/useSearchState'
@@ -33,21 +33,13 @@ const SearchHeaderCard = styled(Card)`
 `
 
 const NotificationBadge = styled.div`
-  align-items: center;
-  background: ${({theme}: {theme: Theme}) => theme.sanity.color.solid.primary.hovered.bg};
-  color: ${({theme}: {theme: Theme}) => theme.sanity.color.solid.primary.hovered.fg};
+  background: ${({theme}: {theme: Theme}) => theme.sanity.color.selectable?.primary.enabled.fg};
   border-radius: 100%;
-  display: flex;
-  font-family: ${studioTheme.fonts.text.family};
-  font-size: calc(8 / 16 * 1rem);
-  font-weight: ${studioTheme.fonts.text.weights.semibold};
-  height: 14px;
-  justify-content: center;
-  pointer-events: none;
+  height: 6px;
   position: absolute;
-  right: -2px;
-  top: -2px;
-  width: 14px;
+  right: 2px;
+  top: 2px;
+  width: 6px;
 `
 
 export function SearchHeader({onClose, setHeaderInputRef}: SearchHeaderProps) {
@@ -59,11 +51,14 @@ export function SearchHeader({onClose, setHeaderInputRef}: SearchHeaderProps) {
     state: {
       filtersVisible,
       result: {loading},
-      terms,
+      terms: {filters, types, query},
     },
   } = useSearchState()
 
-  const handleFiltersToggle = useCallback(() => dispatch({type: 'FILTERS_TOGGLE'}), [dispatch])
+  const handleFiltersToggle = useCallback(
+    () => dispatch({type: 'FILTERS_VISIBLE_SET', visible: !filtersVisible}),
+    [dispatch, filtersVisible]
+  )
   const handleQueryChange = useCallback(
     (e: React.KeyboardEvent<HTMLInputElement>) =>
       dispatch({type: 'TERMS_QUERY_SET', query: e.currentTarget.value}),
@@ -84,8 +79,12 @@ export function SearchHeader({onClose, setHeaderInputRef}: SearchHeaderProps) {
     isMountedRef.current = true
   }, [])
 
+  const notificationBadgeVisible = filters.length > 0 || types.length > 0
+
   return (
-    <SearchHeaderCard borderBottom>
+    <SearchHeaderCard
+    // borderBottom
+    >
       <Flex align="center" flex={1}>
         {/* Search field */}
         <Box
@@ -96,17 +95,16 @@ export function SearchHeader({onClose, setHeaderInputRef}: SearchHeaderProps) {
         >
           <CustomTextInput
             autoComplete="off"
-            // border={false} // TODO: re-enable when flashing border issue is fixed
-            clearButton={!!terms.query}
+            border={false}
+            clearButton={!!query}
             fontSize={2}
             icon={loading ? AnimatedSpinnerIcon : SearchIcon}
             onChange={handleQueryChange}
             onClear={handleQueryClear}
             placeholder="Search"
             ref={setHeaderInputRef}
-            // smallClearButton
             spellCheck={false}
-            value={terms.query}
+            value={query}
           />
         </Box>
 
@@ -125,7 +123,7 @@ export function SearchHeader({onClose, setHeaderInputRef}: SearchHeaderProps) {
               selected={filtersVisible}
               tone="default"
             />
-            {terms.types.length > 0 && <NotificationBadge>{terms.types.length}</NotificationBadge>}
+            {notificationBadgeVisible && <NotificationBadge />}
           </FilterBox>
         </Card>
 

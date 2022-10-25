@@ -2,16 +2,16 @@ import {ClockIcon, CloseIcon} from '@sanity/icons'
 import {Box, Button, Flex, Text} from '@sanity/ui'
 import React, {MouseEvent, useCallback} from 'react'
 import styled, {css} from 'styled-components'
-import {useCommandList} from '../contexts/commandList'
-import type {RecentSearchTerms} from '../datastores/recentSearches'
-import {TypePills} from './TypePills'
+import {useCommandList} from '../../contexts/commandList'
+import type {RecentOmnisearchTerms} from '../../datastores/recentSearches'
+import {TypePills} from '../TypePills'
 
 export interface RecentSearchesProps {
   index: number
   maxVisibleTypePillChars?: number
-  onClick: (value: RecentSearchTerms) => void
+  onClick: (value: RecentOmnisearchTerms) => void
   onDelete: (event: MouseEvent) => void
-  value: RecentSearchTerms
+  value: RecentOmnisearchTerms
 }
 
 const DEFAULT_COMBINED_TYPE_COUNT = 40
