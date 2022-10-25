@@ -167,7 +167,6 @@ describe('document types', () => {
       defineType({
         type: 'document',
         name: 'custom-document',
-        // @ts-expect-error require at least on field
         fields: [],
       })
 
