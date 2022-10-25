@@ -78,7 +78,7 @@ export function ValidationMenu(props: ValidationMenuProps) {
         preventOverflow: true,
         width: 0,
       }}
-      placement="bottom-end"
+      placement="bottom"
     />
   )
 }
