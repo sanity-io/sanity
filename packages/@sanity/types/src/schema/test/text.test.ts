@@ -14,6 +14,7 @@ describe('text types', () => {
         name: 'custom-text',
         title: 'Custom text',
         description: 'Description',
+        placeholder: 'fdsasfd',
         initialValue: () => Promise.resolve('text'),
         validation: (Rule) => [
           Rule.required()

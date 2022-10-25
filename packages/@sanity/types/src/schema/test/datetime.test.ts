@@ -13,6 +13,7 @@ describe('datetime types', () => {
         type: 'datetime',
         name: 'custom-datetime',
         title: 'Custom',
+        placeholder: 'balba',
         icon: () => null,
         description: 'Description',
         initialValue: () => Promise.resolve('2021-01-01'),

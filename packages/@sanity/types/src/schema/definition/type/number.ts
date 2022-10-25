@@ -22,6 +22,7 @@ export interface NumberRule extends RuleDef<NumberRule, number> {
 export interface NumberDefinition extends BaseSchemaDefinition {
   type: 'number'
   options?: NumberOptions
+  placeholder?: string
   validation?: ValidationBuilder<NumberRule, number>
   initialValue?: InitialValueProperty<any, number>
 }

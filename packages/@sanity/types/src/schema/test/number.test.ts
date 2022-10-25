@@ -13,6 +13,7 @@ describe('number types', () => {
         type: 'number',
         name: 'custom-number',
         title: 'Custom',
+        placeholder: 'badbf',
         icon: () => null,
         description: 'Description',
         initialValue: 10,

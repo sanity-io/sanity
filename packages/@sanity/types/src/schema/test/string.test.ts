@@ -19,6 +19,7 @@ describe('string types', () => {
         name: 'custom-string',
         title: 'Custom string',
         description: 'Description',
+        placeholder: 'fdsasfd',
         initialValue: () => Promise.resolve('string'),
         validation: (Rule) => [
           Rule.required()
