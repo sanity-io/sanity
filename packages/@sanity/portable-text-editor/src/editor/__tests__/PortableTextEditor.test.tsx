@@ -5,8 +5,7 @@
 // eslint-disable-next-line import/no-unassigned-import
 import '@testing-library/jest-dom/extend-expect'
 import React from 'react'
-import {act} from 'react-dom/test-utils'
-import {render} from '@testing-library/react'
+import {render, waitFor} from '@testing-library/react'
 import {PortableTextEditor} from '../PortableTextEditor'
 import {EditorSelection, PortableTextBlock} from '../..'
 import {PortableTextEditorTester, type} from './PortableTextEditorTester'
@@ -97,7 +96,7 @@ describe('initialization', () => {
     render(<PortableTextEditorTester onChange={onChange} type={type} value={initialValue} />)
     expect(onChange).toHaveBeenCalledWith({type: 'value', value: initialValue})
   })
-  it('takes initial selection from props', () => {
+  it('takes initial selection from props', async () => {
     const editorRef: React.RefObject<PortableTextEditor> = React.createRef()
     const initialValue = [helloBlock]
     const initialSelection: EditorSelection = {
@@ -114,18 +113,15 @@ describe('initialization', () => {
         value={initialValue}
       />
     )
-    if (!editorRef.current) {
-      throw new Error('No editor')
-    }
-    act(() => {
+    await waitFor(() => {
       if (editorRef.current) {
         PortableTextEditor.focus(editorRef.current)
+        expect(PortableTextEditor.getSelection(editorRef.current)).toEqual(initialSelection)
       }
     })
-    expect(PortableTextEditor.getSelection(editorRef.current)).toEqual(initialSelection)
   })
 
-  it('updates editor selection from new prop and keeps object equality in editor.getSelection()', () => {
+  it('updates editor selection from new prop and keeps object equality in editor.getSelection()', async () => {
     const editorRef: React.RefObject<PortableTextEditor> = React.createRef()
     const initialValue = [helloBlock]
     const initialSelection: EditorSelection = {
@@ -146,10 +142,7 @@ describe('initialization', () => {
         value={initialValue}
       />
     )
-    if (!editorRef.current) {
-      throw new Error('No editor')
-    }
-    act(() => {
+    await waitFor(() => {
       if (editorRef.current) {
         const sel = PortableTextEditor.getSelection(editorRef.current)
         PortableTextEditor.focus(editorRef.current)
@@ -169,7 +162,7 @@ describe('initialization', () => {
         value={initialValue}
       />
     )
-    act(() => {
+    await waitFor(() => {
       if (editorRef.current) {
         expect(PortableTextEditor.getSelection(editorRef.current)).toEqual(newSelection)
       }

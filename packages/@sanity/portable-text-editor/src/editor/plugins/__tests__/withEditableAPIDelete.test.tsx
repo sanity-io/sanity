@@ -5,7 +5,7 @@
 // eslint-disable-next-line import/no-unassigned-import
 import '@testing-library/jest-dom/extend-expect'
 import {act} from 'react-dom/test-utils'
-import {render} from '@testing-library/react'
+import {render, waitFor, screen} from '@testing-library/react'
 
 import React from 'react'
 import {PortableTextEditor} from '../../PortableTextEditor'
@@ -48,116 +48,101 @@ const initialSelection = {
 }
 
 describe('plugin:withEditableAPI: .delete()', () => {
-  it('deletes block', () => {
+  it('deletes block', async () => {
     const editorRef: React.RefObject<PortableTextEditor> = React.createRef()
     const onChange = jest.fn()
-    act(() => {
-      render(
-        <PortableTextEditorTester
-          onChange={onChange}
-          ref={editorRef}
-          type={type}
-          value={initialValue}
-        />
-      )
-    })
-    act(() => {
+    render(
+      <PortableTextEditorTester
+        onChange={onChange}
+        ref={editorRef}
+        type={type}
+        value={initialValue}
+      />
+    )
+    await waitFor(() => {
       if (editorRef.current) {
         PortableTextEditor.focus(editorRef.current)
         PortableTextEditor.select(editorRef.current, initialSelection)
-      }
-    })
-    act(() => {
-      if (editorRef.current) {
         PortableTextEditor.delete(
           editorRef.current,
           PortableTextEditor.getSelection(editorRef.current),
           {mode: 'blocks'}
         )
+        expect(PortableTextEditor.getValue(editorRef.current)).toMatchInlineSnapshot(`
+          Array [
+            Object {
+              "_key": "a",
+              "_type": "myTestBlockType",
+              "children": Array [
+                Object {
+                  "_key": "a1",
+                  "_type": "span",
+                  "marks": Array [],
+                  "text": "Block A",
+                },
+              ],
+              "markDefs": Array [],
+              "style": "normal",
+            },
+          ]
+        `)
       }
     })
-    expect(editorRef.current && PortableTextEditor.getValue(editorRef.current))
-      .toMatchInlineSnapshot(`
-      Array [
-        Object {
-          "_key": "a",
-          "_type": "myTestBlockType",
-          "children": Array [
-            Object {
-              "_key": "a1",
-              "_type": "span",
-              "marks": Array [],
-              "text": "Block A",
-            },
-          ],
-          "markDefs": Array [],
-          "style": "normal",
-        },
-      ]
-    `)
   })
-  it('deletes children', () => {
+  it('deletes children', async () => {
     const editorRef: React.RefObject<PortableTextEditor> = React.createRef()
     const onChange = jest.fn()
-    act(() => {
-      render(
-        <PortableTextEditorTester
-          onChange={onChange}
-          ref={editorRef}
-          type={type}
-          value={initialValue}
-        />
-      )
-    })
-    if (!editorRef.current) {
-      throw new Error('No editor')
-    }
-    act(() => {
+    render(
+      <PortableTextEditorTester
+        onChange={onChange}
+        ref={editorRef}
+        type={type}
+        value={initialValue}
+      />
+    )
+
+    await waitFor(() => {
       if (editorRef.current) {
-        PortableTextEditor.focus(editorRef.current)
         PortableTextEditor.select(editorRef.current, initialSelection)
-      }
-    })
-    act(() => {
-      if (editorRef.current) {
+        PortableTextEditor.focus(editorRef.current)
         PortableTextEditor.delete(
           editorRef.current,
           PortableTextEditor.getSelection(editorRef.current),
           {mode: 'children'}
         )
+        expect(PortableTextEditor.getValue(editorRef.current)).toMatchInlineSnapshot(`
+                  Array [
+                    Object {
+                      "_key": "a",
+                      "_type": "myTestBlockType",
+                      "children": Array [
+                        Object {
+                          "_key": "a1",
+                          "_type": "span",
+                          "marks": Array [],
+                          "text": "Block A",
+                        },
+                      ],
+                      "markDefs": Array [],
+                      "style": "normal",
+                    },
+                    Object {
+                      "_key": "b",
+                      "_type": "myTestBlockType",
+                      "children": Array [
+                        Object {
+                          "_key": "1",
+                          "_type": "span",
+                          "marks": Array [],
+                          "text": "",
+                        },
+                      ],
+                      "markDefs": Array [],
+                      "style": "normal",
+                    },
+                  ]
+              `)
       }
     })
-    expect(PortableTextEditor.getValue(editorRef.current)).toMatchInlineSnapshot(`
-      Array [
-        Object {
-          "_key": "a",
-          "_type": "myTestBlockType",
-          "children": Array [
-            Object {
-              "_key": "a1",
-              "_type": "span",
-              "marks": Array [],
-              "text": "Block A",
-            },
-          ],
-          "markDefs": Array [],
-          "style": "normal",
-        },
-        Object {
-          "_key": "b",
-          "_type": "myTestBlockType",
-          "children": Array [
-            Object {
-              "_key": "1",
-              "_type": "span",
-              "marks": Array [],
-              "text": "",
-            },
-          ],
-          "markDefs": Array [],
-          "style": "normal",
-        },
-      ]
-    `)
   })
 })
