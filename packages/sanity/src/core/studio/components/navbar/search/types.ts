@@ -23,7 +23,13 @@ export type SearchOperatorType =
 /**
  * @internal
  */
+export type SearchFilterType = 'compound' | 'custom' | 'field'
+
+/**
+ * @internal
+ */
 export interface BaseSearchFilter {
+  type: SearchFilterType
   value?: any
 }
 
