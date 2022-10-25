@@ -28,15 +28,20 @@ export interface BaseSchemaDefinition {
   hidden?: ConditionalProperty
   readOnly?: ConditionalProperty
   icon?: ComponentType | ReactNode
-  components?: {
-    diff?: ComponentType<any> // @todo: use `DiffProps` here
-    field?: ComponentType<any> // @todo: use `FieldProps` here
-    input?: ComponentType<any> // @todo: use `InputProps` here
-    item?: ComponentType<any> // @todo: use `ItemProps` here
-    preview?: ComponentType<any> // @todo: use `PreviewProps` here
-  }
   validation?: unknown
   initialValue?: unknown
+  /*
+   * These are not the properties you are looking for.
+   * To avoid cyclic dependencies on Prop-types, the components property is
+   * added to each intrinsic definition in sanity/core/schema/definitionExtensions.ts
+   */
+  /*components?: {
+    diff?: ComponentType<any>
+    field?: ComponentType<any>
+    input?: ComponentType<any>
+    item?: ComponentType<any>
+    preview?: ComponentType<any>
+  }*/
 }
 
 /** @public */

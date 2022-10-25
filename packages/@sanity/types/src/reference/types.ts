@@ -35,7 +35,8 @@ export type ReferenceFilterResolver = (options: {
 
 /** @public */
 export interface ReferenceFilterResolverOptions {
-  filter: ReferenceFilterResolver
+  filter?: ReferenceFilterResolver
+  filterParams?: never
 }
 
 /** @public */
