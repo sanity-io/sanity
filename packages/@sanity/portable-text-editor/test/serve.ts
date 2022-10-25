@@ -1,6 +1,6 @@
 // Start servers file for 'npm start'
 
-const globalSetup = require('./setup/globalSetup')
+import globalSetup from './setup/globalSetup'
 
 globalSetup().then(() => {
   // eslint-disable-next-line no-console
