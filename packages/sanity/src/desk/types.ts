@@ -35,6 +35,7 @@ export interface DeskToolContextValue {
   structureContext: StructureContext
 }
 
+/** @public */
 export interface StructureResolverContext extends ConfigContext {
   /**
    * This can be replaced by a different API in the future.
