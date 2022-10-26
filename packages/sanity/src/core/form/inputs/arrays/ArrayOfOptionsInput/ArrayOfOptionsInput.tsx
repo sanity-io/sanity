@@ -7,6 +7,9 @@ import {
 import {ArrayOfObjectOptionsInput} from './ArrayOfObjectOptionsInput'
 import {ArrayOfPrimitiveOptionsInput} from './ArrayOfPrimitiveOptionsInput'
 
+/**
+ * @beta
+ */
 export function ArrayOfOptionsInput(props: ArrayOfObjectsInputProps | ArrayOfPrimitivesInputProps) {
   return isArrayOfObjectsInputProps(props) ? (
     <ArrayOfObjectOptionsInput {...props} />

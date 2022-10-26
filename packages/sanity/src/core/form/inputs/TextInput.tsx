@@ -4,6 +4,9 @@ import {TextArea} from '@sanity/ui'
 import styled from 'styled-components'
 import {StringInputProps} from '../types'
 
+/**
+ * @beta
+ */
 export type TextInputProps = StringInputProps<TextSchemaType>
 
 const StyledTextArea = styled(TextArea)`
@@ -12,6 +15,9 @@ const StyledTextArea = styled(TextArea)`
   }
 `
 
+/**
+ * @beta
+ */
 export function TextInput(props: TextInputProps) {
   const {schemaType, validationError, value, elementProps} = props
 

@@ -53,6 +53,7 @@ import {
   TextComponents,
   UrlComponents,
 } from './definitionExtensions'
+import {CrossDatasetReferenceInputProps, ReferenceInputProps} from '../studio'
 
 describe('definitionExtensions', () => {
   describe('array-like types', () => {
@@ -540,6 +541,7 @@ describe('definitionExtensions', () => {
           },
           input: (props) => {
             const obj: ObjectInputProps<ReferenceValue> = props
+            const advancedObj: ReferenceInputProps = props
             return null
           },
           item: (props) => {
@@ -598,6 +600,7 @@ describe('definitionExtensions', () => {
           },
           input: (props) => {
             const obj: ObjectInputProps<CrossDatasetReferenceValue> = props
+            const advancedObj: CrossDatasetReferenceInputProps = props
             return null
           },
           item: (props) => {

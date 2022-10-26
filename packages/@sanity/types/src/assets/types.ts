@@ -9,13 +9,13 @@ export interface EmptyProps {}
 /** @public */
 export interface File {
   [key: string]: unknown // We allow meta-fields on file
-  asset: Reference
+  asset?: Reference
 }
 
 /** @public */
 export interface Image {
   [key: string]: unknown // We allow meta-fields on image
-  asset: Reference
+  asset?: Reference
   crop?: ImageCrop
   hotspot?: ImageHotspot
 }

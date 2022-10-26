@@ -7,6 +7,7 @@ import {BaseSchemaDefinition} from './common'
 
 /** @public */
 export interface SlugValue {
+  _type: 'slug'
   current?: string
 }
 

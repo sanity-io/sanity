@@ -68,6 +68,7 @@ export const DEBUG_INPUT_TYPES = [
   'typeWithNoToplevelStrings',
   'uploadsTest',
   'validationTest',
+  'allNativeInputComponents',
 ]
 
 export const CI_INPUT_TYPES = ['conditionalFieldset', 'validationCI']

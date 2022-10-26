@@ -8,6 +8,7 @@ import {
   SlugValue,
 } from '@sanity/types'
 import {PreviewProps} from '../../components'
+import {CrossDatasetReferenceInputProps, ReferenceInputProps} from '../studio'
 import {
   ArrayFieldProps,
   ArrayOfPrimitivesFieldProps,
@@ -164,7 +165,7 @@ export interface ObjectComponents {
 export interface ReferenceComponents {
   diff?: ComponentType<any>
   field?: ComponentType<ObjectFieldProps<ReferenceValue>>
-  input?: ComponentType<ObjectInputProps<ReferenceValue>>
+  input?: ComponentType<ReferenceInputProps>
   item?: ComponentType<ObjectItemProps<ReferenceValue & ObjectItem>>
   preview?: ComponentType<PreviewProps>
 }
@@ -175,7 +176,7 @@ export interface ReferenceComponents {
 export interface CrossDatasetReferenceComponents {
   diff?: ComponentType<any>
   field?: ComponentType<ObjectFieldProps<CrossDatasetReferenceValue>>
-  input?: ComponentType<ObjectInputProps<CrossDatasetReferenceValue>>
+  input?: ComponentType<CrossDatasetReferenceInputProps>
   item?: ComponentType<ObjectItemProps<CrossDatasetReferenceValue & ObjectItem>>
   preview?: ComponentType<PreviewProps>
 }

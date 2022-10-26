@@ -14,6 +14,9 @@ function toSelectItem(
 
 const EMPTY_ITEM = {title: '', value: undefined}
 
+/**
+ * @beta
+ */
 export function SelectInput(props: StringInputProps) {
   const {
     value,

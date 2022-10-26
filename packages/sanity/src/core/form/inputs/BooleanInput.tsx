@@ -13,6 +13,9 @@ const ZeroLineHeightBox = styled(Box)`
   line-height: 0;
 `
 
+/**
+ * @beta
+ */
 export function BooleanInput(props: BooleanInputProps) {
   const {id, value, schemaType, readOnly, elementProps} = props
   const layout = schemaType.options?.layout || 'switch'

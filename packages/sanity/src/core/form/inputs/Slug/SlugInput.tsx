@@ -6,6 +6,7 @@ import {
   SlugSchemaType,
   SlugSourceContext,
   SlugSourceFn,
+  SlugValue,
 } from '@sanity/types'
 import * as PathUtils from '@sanity/util/paths'
 import {Box, Button, Card, Flex, Stack, TextInput} from '@sanity/ui'
@@ -16,12 +17,10 @@ import {slugify} from './utils/slugify'
 import {useAsync} from './utils/useAsync'
 import {SlugContext, useSlugContext} from './utils/useSlugContext'
 
-export type Slug = {
-  _type: 'slug'
-  current?: string
-}
-
-export type SlugInputProps = ObjectInputProps<Slug, SlugSchemaType>
+/**
+ * @beta
+ */
+export type SlugInputProps = ObjectInputProps<SlugValue, SlugSchemaType>
 
 function getSlugSourceContext(
   valuePath: Path,
@@ -44,6 +43,9 @@ async function getNewFromSource(
     : (PathUtils.get(document, source) as string | undefined)
 }
 
+/**
+ * @beta
+ */
 export function SlugInput(props: SlugInputProps) {
   const {getDocument} = useFormBuilder().__internal
   const {path, value, schemaType, validation, onChange, readOnly, elementProps} = props

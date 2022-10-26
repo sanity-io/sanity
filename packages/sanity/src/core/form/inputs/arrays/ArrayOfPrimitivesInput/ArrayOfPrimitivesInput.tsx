@@ -15,7 +15,7 @@ import {ItemRow} from './ItemRow'
 import {ArrayOfPrimitivesFunctions} from './ArrayOfPrimitivesFunctions'
 
 // Note: this should be a class component until React provides support for a hook version of getSnapshotBeforeUpdate
-/** @public */
+/** @beta */
 export class ArrayOfPrimitivesInput extends React.PureComponent<ArrayOfPrimitivesInputProps> {
   _element: HTMLElement | null = null
   _lastAddedIndex = -1
