@@ -147,7 +147,7 @@ const importDatasetCommand: CliCommandDefinition = {
     let currentStep: string | undefined
     let currentProgress: ReturnType<CliOutputter['spinner']> | undefined
     let stepStart: number | undefined
-    let spinInterval: NodeJS.Timeout | null = null
+    let spinInterval: ReturnType<typeof setInterval> | null = null
     let percent: string | undefined
 
     function onProgress(opts: ProgressEvent) {
