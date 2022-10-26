@@ -1,7 +1,7 @@
 /* eslint-disable complexity, max-nested-callbacks, no-nested-ternary */
 
 import React, {useCallback, useMemo, useRef, useState, useId} from 'react'
-import {CrossDatasetReference, CrossDatasetReferenceSchemaType} from '@sanity/types'
+import {CrossDatasetReferenceValue, CrossDatasetReferenceSchemaType} from '@sanity/types'
 import {EllipsisVerticalIcon, ResetIcon as ClearIcon, SyncIcon as ReplaceIcon} from '@sanity/icons'
 import {concat, Observable, of} from 'rxjs'
 import {catchError, distinctUntilChanged, filter, map, scan, switchMap, tap} from 'rxjs/operators'
@@ -40,7 +40,7 @@ const INITIAL_SEARCH_STATE: SearchState = {
 
 /** @internal */
 export interface CrossDatasetReferenceInputProps
-  extends ObjectInputProps<CrossDatasetReference, CrossDatasetReferenceSchemaType> {
+  extends ObjectInputProps<CrossDatasetReferenceValue, CrossDatasetReferenceSchemaType> {
   getReferenceInfo: (
     doc: {_id: string; _type?: string},
     type: CrossDatasetReferenceSchemaType

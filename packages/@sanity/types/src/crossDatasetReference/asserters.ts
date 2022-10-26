@@ -1,8 +1,10 @@
 import {isObject} from '../helpers'
-import type {CrossDatasetReference} from './types'
+import type {CrossDatasetReferenceValue} from './types'
 
 /** @beta */
-export function isCrossDatasetReference(reference: unknown): reference is CrossDatasetReference {
+export function isCrossDatasetReference(
+  reference: unknown
+): reference is CrossDatasetReferenceValue {
   return (
     isObject(reference) &&
     typeof reference._ref === 'string' &&

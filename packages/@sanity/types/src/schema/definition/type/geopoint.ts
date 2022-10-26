@@ -10,7 +10,7 @@ import {BaseSchemaDefinition} from './common'
  *
  * @public
  */
-export interface Geopoint {
+export interface GeopointValue {
   /**
    * Type of the object. Must be `geopoint`.
    */
@@ -34,7 +34,7 @@ export interface Geopoint {
 
 /** @public */
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface GeopointRule extends RuleDef<GeopointRule, Geopoint> {}
+export interface GeopointRule extends RuleDef<GeopointRule, GeopointValue> {}
 
 /** @public */
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
@@ -44,6 +44,6 @@ export interface GeopointOptions {}
 export interface GeopointDefinition extends BaseSchemaDefinition {
   type: 'geopoint'
   options?: GeopointOptions
-  validation?: ValidationBuilder<GeopointRule, Geopoint>
-  initialValue?: InitialValueProperty<any, Omit<Geopoint, '_type'>>
+  validation?: ValidationBuilder<GeopointRule, GeopointValue>
+  initialValue?: InitialValueProperty<any, Omit<GeopointValue, '_type'>>
 }

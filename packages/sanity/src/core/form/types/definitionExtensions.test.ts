@@ -1,10 +1,12 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
+// noinspection JSUnusedLocalSymbols
+
 import {
-  CrossDatasetReference,
+  CrossDatasetReferenceValue,
   defineField,
   defineType,
   FileValue,
-  Geopoint,
+  GeopointValue,
   ImageValue,
   ReferenceValue,
   SlugValue,
@@ -450,15 +452,15 @@ describe('definitionExtensions', () => {
         components: {
           diff: (props) => null,
           field: (props) => {
-            const obj: ObjectFieldProps<Geopoint> = props
+            const obj: ObjectFieldProps<GeopointValue> = props
             return null
           },
           input: (props) => {
-            const obj: ObjectInputProps<Geopoint> = props
+            const obj: ObjectInputProps<GeopointValue> = props
             return null
           },
           item: (props) => {
-            const obj: ObjectItemProps<Geopoint & ObjectItem> = props
+            const obj: ObjectItemProps<GeopointValue & ObjectItem> = props
             return null
           },
           preview: (props) => {
@@ -591,15 +593,15 @@ describe('definitionExtensions', () => {
         components: {
           diff: (props) => null,
           field: (props) => {
-            const obj: ObjectFieldProps<CrossDatasetReference> = props
+            const obj: ObjectFieldProps<CrossDatasetReferenceValue> = props
             return null
           },
           input: (props) => {
-            const obj: ObjectInputProps<CrossDatasetReference> = props
+            const obj: ObjectInputProps<CrossDatasetReferenceValue> = props
             return null
           },
           item: (props) => {
-            const obj: ObjectItemProps<CrossDatasetReference & ObjectItem> = props
+            const obj: ObjectItemProps<CrossDatasetReferenceValue & ObjectItem> = props
             return null
           },
           preview: (props) => {

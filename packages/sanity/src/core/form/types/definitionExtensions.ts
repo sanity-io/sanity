@@ -1,8 +1,8 @@
 import {ComponentType} from 'react'
 import {
-  CrossDatasetReference,
+  CrossDatasetReferenceValue,
   FileValue,
-  Geopoint,
+  GeopointValue,
   ImageValue,
   ReferenceValue,
   SlugValue,
@@ -119,9 +119,9 @@ export interface FileComponents {
  */
 export interface GeopointComponents {
   diff?: ComponentType<any>
-  field?: ComponentType<ObjectFieldProps<Geopoint>>
-  input?: ComponentType<ObjectInputProps<Geopoint>>
-  item?: ComponentType<ObjectItemProps<Geopoint & ObjectItem>>
+  field?: ComponentType<ObjectFieldProps<GeopointValue>>
+  input?: ComponentType<ObjectInputProps<GeopointValue>>
+  item?: ComponentType<ObjectItemProps<GeopointValue & ObjectItem>>
   preview?: ComponentType<PreviewProps>
 }
 
@@ -174,9 +174,9 @@ export interface ReferenceComponents {
  */
 export interface CrossDatasetReferenceComponents {
   diff?: ComponentType<any>
-  field?: ComponentType<ObjectFieldProps<CrossDatasetReference>>
-  input?: ComponentType<ObjectInputProps<CrossDatasetReference>>
-  item?: ComponentType<ObjectItemProps<CrossDatasetReference & ObjectItem>>
+  field?: ComponentType<ObjectFieldProps<CrossDatasetReferenceValue>>
+  input?: ComponentType<ObjectInputProps<CrossDatasetReferenceValue>>
+  item?: ComponentType<ObjectItemProps<CrossDatasetReferenceValue & ObjectItem>>
   preview?: ComponentType<PreviewProps>
 }
 

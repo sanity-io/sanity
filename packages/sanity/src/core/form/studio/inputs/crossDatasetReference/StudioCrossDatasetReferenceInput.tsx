@@ -1,6 +1,6 @@
 import React, {useCallback, useMemo, useRef} from 'react'
 import {
-  CrossDatasetReference,
+  CrossDatasetReferenceValue,
   CrossDatasetReferenceSchemaType,
   Path,
   ReferenceFilterOptions,
@@ -46,7 +46,7 @@ async function resolveUserDefinedFilter(
 }
 
 export type StudioCrossDatasetReferenceInputProps = ObjectInputProps<
-  CrossDatasetReference,
+  CrossDatasetReferenceValue,
   CrossDatasetReferenceSchemaType
 >
 

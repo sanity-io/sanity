@@ -5,7 +5,7 @@ import type {ObjectSchemaType, PreviewConfig} from '../schema'
 import type {ReferenceFilterOptions} from '../reference'
 
 /** @beta */
-export interface CrossDatasetReference {
+export interface CrossDatasetReferenceValue {
   _type: string
   _dataset: string
   _projectId: string
@@ -15,7 +15,7 @@ export interface CrossDatasetReference {
 }
 
 /** @beta */
-export interface WeakCrossDatasetReference extends CrossDatasetReference {
+export interface WeakCrossDatasetReferenceValue extends CrossDatasetReferenceValue {
   _weak: true
 }
 
