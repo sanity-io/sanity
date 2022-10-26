@@ -1,34 +1,34 @@
 import {Box, Flex, TextInput} from '@sanity/ui'
-import React, {ChangeEvent, useCallback, useRef} from 'react'
+import isNumber from 'lodash/isNumber'
+import React, {ChangeEvent, useCallback, useState} from 'react'
 import type {FilterInputTypeNumberRangeComponentProps} from '../../../config/inputTypes'
 
 export function FieldInputNumberRange({
   filter,
   onChange,
 }: FilterInputTypeNumberRangeComponentProps) {
-  const numberMax = useRef<string | null>(filter?.value?.max || null)
-  const numberMin = useRef<string | null>(filter?.value?.min || null)
-
-  const handleChange = useCallback(() => {
-    onChange({
-      max: numberMax?.current,
-      min: numberMin?.current,
-    })
-  }, [onChange])
+  const [max, setMax] = useState(filter?.value?.max || '')
+  const [min, setMin] = useState(filter?.value?.min || '')
 
   const handleMaxChange = useCallback(
     (event: ChangeEvent<HTMLInputElement>) => {
-      numberMax.current = event.currentTarget.value
-      handleChange()
+      setMax(event.currentTarget.value)
+      const numValue = parseFloat(event.currentTarget.value)
+      if (isNumber(numValue)) {
+        onChange({max: numValue, min: filter?.value?.min})
+      }
     },
-    [handleChange]
+    [filter?.value?.min, onChange]
   )
   const handleMinChange = useCallback(
     (event: ChangeEvent<HTMLInputElement>) => {
-      numberMin.current = event.currentTarget.value
-      handleChange()
+      setMin(event.currentTarget.value)
+      const numValue = parseFloat(event.currentTarget.value)
+      if (isNumber(numValue)) {
+        onChange({max: filter?.value?.max, min: numValue})
+      }
     },
-    [handleChange]
+    [filter?.value?.max, onChange]
   )
 
   return (
@@ -40,7 +40,7 @@ export function FieldInputNumberRange({
           onChange={handleMinChange}
           pattern="^\d+\.?\d*$"
           placeholder="Enter value..."
-          value={filter?.value?.min || ''}
+          value={min}
         />
       </Box>
       <Box flex={1}>
@@ -50,7 +50,7 @@ export function FieldInputNumberRange({
           onChange={handleMaxChange}
           pattern="^\d+\.?\d*$"
           placeholder="Enter value..."
-          value={filter?.value?.max || ''}
+          value={max}
         />
       </Box>
     </Flex>

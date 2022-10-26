@@ -43,8 +43,8 @@ function getCompoundValue(filter: CompoundSearchFilter) {
 
 function getFieldValue(filter: FieldSearchFilter, hasMultipleOperators: boolean) {
   switch (filter.operatorType) {
-    case 'defined':
-    case 'notDefined':
+    case 'empty':
+    case 'notEmpty':
       return ` ${OPERATORS[filter.operatorType].buttonLabel}`
     default:
       break
@@ -58,7 +58,7 @@ function getFieldValue(filter: FieldSearchFilter, hasMultipleOperators: boolean)
   switch (filter.fieldType) {
     case 'boolean':
       if (typeof filter.value !== 'undefined') {
-        value = filter.value ? 'yes' : 'no'
+        value = filter.value ? 'Yes' : 'No'
       }
       break
     case 'date':

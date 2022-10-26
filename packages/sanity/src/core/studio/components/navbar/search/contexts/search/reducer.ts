@@ -265,10 +265,12 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
             if (index === filterIndex) {
               return {
                 ...filter,
+                // TODO: double check
                 ...(typeof action?.operatorType !== 'undefined' && {
                   operatorType: action.operatorType,
                 }),
-                ...(typeof action?.value !== 'undefined' && {value: action.value}),
+                // ...(typeof action?.value !== 'undefined' && {value: action.value}),
+                value: action.value,
               }
             }
             return filter
@@ -290,10 +292,12 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
             if (index === filterIndex) {
               return {
                 ...filter,
+                // TODO: double check
                 ...(typeof action?.operatorType !== 'undefined' && {
                   operatorType: action.operatorType,
                 }),
-                ...(typeof action?.value !== 'undefined' && {value: action.value}),
+                // ...(typeof action?.value !== 'undefined' && {value: action.value}),
+                value: action.value,
               }
             }
             return filter

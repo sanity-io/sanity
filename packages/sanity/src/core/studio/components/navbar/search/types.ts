@@ -9,14 +9,14 @@ export type SearchOperatorType =
   | 'dateBefore'
   | 'dateRange'
   | 'dateLast'
-  | 'defined'
+  | 'empty'
   | 'equalTo'
   | 'greaterThan'
   | 'greaterThanOrEqualTo'
   | 'lessThan'
   | 'lessThanOrEqualTo'
   | 'matches'
-  | 'notDefined'
+  | 'notEmpty'
   | 'notEqualTo'
   | 'numberRange'
 
@@ -29,6 +29,7 @@ export type SearchFilterType = 'compound' | 'custom' | 'field'
  * @internal
  */
 export interface BaseSearchFilter {
+  operatorType?: SearchOperatorType
   type: SearchFilterType
   value?: any
 }
@@ -38,7 +39,6 @@ export interface BaseSearchFilter {
  */
 export interface CompoundSearchFilter extends BaseSearchFilter {
   id: 'hasDraft' | 'hasReference' | 'isPublished'
-  operatorType?: SearchOperatorType
   type: 'compound'
 }
 
@@ -57,7 +57,6 @@ export interface CustomSearchFilter extends BaseSearchFilter {
 export interface FieldSearchFilter extends BaseSearchFilter {
   fieldPath: string
   fieldType: SupportedFieldType
-  operatorType?: SearchOperatorType
   path: string[] // titles
   type: 'field'
 }
@@ -85,7 +84,7 @@ export type KeyedSearchFilter = SearchFilter & {_key: string}
  */
 export interface SearchOperator {
   buttonLabel: string
-  fn: (value: string, field: string) => string
+  fn: (value: any, field: string) => string | null
   label: string
 }
 

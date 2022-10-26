@@ -42,7 +42,7 @@ export interface FilterInputTypeBooleanComponentProps extends BaseFilterInputTyp
 
 export interface FilterInputTypeDateComponentProps extends BaseFilterInputTypeComponentProps {
   inputType: 'date'
-  onChange: (value: string) => void
+  onChange: (value: Date) => void
 }
 
 export interface FilterInputTypeDateLastComponentProps extends BaseFilterInputTypeComponentProps {
@@ -52,18 +52,18 @@ export interface FilterInputTypeDateLastComponentProps extends BaseFilterInputTy
 
 export interface FilterInputTypeDateRangeComponentProps extends BaseFilterInputTypeComponentProps {
   inputType: 'dateRange'
-  onChange: (value: {max: string | null; min: string | null}) => void
+  onChange: (value: {max: Date | null; min: Date | null}) => void
 }
 
 export interface FilterInputTypeNumberComponentProps extends BaseFilterInputTypeComponentProps {
-  inputType: 'number'
-  onChange: (value: string) => void
+  inputType: 'string'
+  onChange: (value: number) => void
 }
 
 export interface FilterInputTypeNumberRangeComponentProps
   extends BaseFilterInputTypeComponentProps {
   inputType: 'numberRange'
-  onChange: (value: {max: string | null; min: string | null}) => void
+  onChange: (value: {max: number | null; min: number | null}) => void
 }
 
 export interface FilterInputTypeReferenceComponentProps extends BaseFilterInputTypeComponentProps {
@@ -73,7 +73,7 @@ export interface FilterInputTypeReferenceComponentProps extends BaseFilterInputT
 
 export interface FilterInputTypeStringComponentProps extends BaseFilterInputTypeComponentProps {
   inputType: 'string'
-  onChange: (value: string) => void
+  onChange: (value: string | null) => void
 }
 
 export type FilterInputTypeComponentProps =
