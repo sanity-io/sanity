@@ -7,8 +7,8 @@
     "clean": "rimraf .sanity dist",
     "dev": "run-p workshop:dev sanity:dev",
     "sanity:build": "../.bin/sanity build",
-    "sanity:dev": "../.bin/sanity start",
-    "start": "http-server -a localhost -c-0 -p 3333 -s -P http://localhost:3333/index.html? dist",
+    "sanity:dev": "../.bin/sanity dev",
+    "start": "../.bin/sanity start",
     "workshop:build": "node -r esbuild-register scripts/workshop/build.ts",
     "workshop:dev": "node -r esbuild-register scripts/workshop/dev.ts"
   },
@@ -44,7 +44,6 @@
   "devDependencies": {
     "@types/history": "^4.7.9",
     "chokidar": "^3.5.3",
-    "http-server": "^14.0.0",
     "vite": "^3.0.0"
   }
 }

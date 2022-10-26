@@ -29,6 +29,7 @@ export function createPackageManifest(
     main: 'package.json',
     keywords: ['sanity'],
     scripts: {
+      dev: 'sanity dev',
       start: 'sanity start',
       build: 'sanity build',
       deploy: 'sanity deploy',

@@ -9,8 +9,8 @@
   "scripts": {
     "build": "../.bin/sanity build",
     "clean": "rimraf .sanity dist",
-    "dev": "../.bin/sanity start --port 4000",
-    "start": "http-server -a localhost -c-0 -p 4000 -s -P http://localhost:4000/index.html? dist"
+    "dev": "../.bin/sanity dev --port 4000",
+    "start": "../.bin/sanity start --port 4000"
   },
   "keywords": [
     "sanity",

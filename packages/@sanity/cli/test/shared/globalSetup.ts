@@ -20,7 +20,7 @@ import {
   nodePath,
   npmPath,
   packPath,
-  studioFixturesPath,
+  fixturesPath,
   studiosPath,
   studioVersions,
   testIdPath,
@@ -50,17 +50,26 @@ export default async function globalSetup(): Promise<void> {
   await Promise.all([
     packCli().then((packedFilePath) => installAndVerifyPackedCli({packedFilePath})),
     prepareCliInstall(),
+    prepareStaticFixture(),
     prepareStudios(),
     prepareCliAuth(cliConfigPath),
     prepareDatasets(),
   ])
 }
 
+async function prepareStaticFixture() {
+  const sourcePath = path.join(fixturesPath, 'static')
+  const destinationPath = path.join(baseTestPath, 'static')
+
+  await mkdir(destinationPath, {recursive: true})
+  await copy(`${sourcePath}/**`, destinationPath, {dereference: true})
+}
+
 function prepareStudios() {
   // Copy the studios and install dependencies
   return Promise.all(
     studioVersions.map(async (version) => {
-      const sourceStudioPath = path.join(studioFixturesPath, version)
+      const sourceStudioPath = path.join(fixturesPath, version)
       const destinationPath = path.join(studiosPath, version)
 
       await mkdir(destinationPath, {recursive: true})

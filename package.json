@@ -121,7 +121,6 @@
     "hard-rejection": "^2.1.0",
     "hashids": "^2.2.10",
     "history-server": "^1.3.1",
-    "http-server": "^14.1.1",
     "husky": "^7.0.4",
     "jest": "^27.4.3",
     "lerna": "^4.0.0",

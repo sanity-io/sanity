@@ -7,7 +7,7 @@
   "license": "MIT",
   "scripts": {
     "build": "sanity build",
-    "start": "sanity start"
+    "start": "sanity dev"
   },
   "keywords": [
     "fixture"

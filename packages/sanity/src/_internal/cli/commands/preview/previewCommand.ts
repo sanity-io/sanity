@@ -3,47 +3,29 @@ import type {StartPreviewServerCommandFlags} from '../../actions/preview/preview
 
 const helpText = `
 Notes
-  Changing the hostname or port number might require a new CORS-entry to be added.
+  Changing the hostname or port number might require a new entry to the CORS-origins allow list.
 
 Options
   --port <port> TCP port to start server on. [default: 3333]
   --host <host> The local network interface at which to listen. [default: "127.0.0.1"]
 
 Examples
-  sanity start --host=0.0.0.0
-  sanity start --port=1942
-  sanity start some/build-output-dir
+  sanity preview --host=0.0.0.0
+  sanity preview --port=1942
+  sanity preview some/build-output-dir
 `
 
-const startCommand: CliCommandDefinition = {
-  name: 'start',
+const previewCommand: CliCommandDefinition = {
+  name: 'preview',
   signature: '[BUILD_OUTPUT_DIR] [--port <port>] [--host <host>]',
-  description: 'Alias of `sanity preview`',
+  description: 'Starts a local web server for previewing production build',
   action: async (
     args: CliCommandArguments<StartPreviewServerCommandFlags>,
     context: CliCommandContext
   ) => {
-    const {output, chalk} = context
     const previewAction = await getPreviewAction()
 
-    try {
-      await previewAction(args, context)
-      return
-    } catch (err) {
-      if (err.name !== 'BUILD_NOT_FOUND') {
-        throw err
-      }
-
-      // `sanity dev` used to be `sanity start` in v2. To ease transition for existing users,
-      // hint that they might want to use `sanity dev` instead if we fail to find a build.
-      const warn = (msg: string) => output.warn(`${chalk.yellow.bgBlack('[warn]')} ${msg}`)
-      warn(`\`sanity start\` is now an alias of \`sanity preview\``)
-      warn(`and is used to preview a production build of the Sanity Studio.`)
-      warn(`Use \`sanity dev\` to start a development server.`)
-      output.warn('') // Newline to separate from error below
-
-      throw err
-    }
+    return previewAction(args, context)
   },
   helpText,
 }
@@ -63,4 +45,4 @@ async function getPreviewAction() {
   return mod.default
 }
 
-export default startCommand
+export default previewCommand

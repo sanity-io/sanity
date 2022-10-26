@@ -1,5 +1,5 @@
 const entryModule = `
-// This file is auto-generated on 'sanity start'
+// This file is auto-generated on 'sanity dev'
 // Modifications to this file is automatically discarded
 import {renderStudio} from "sanity"
 import studioConfig from %STUDIO_CONFIG_LOCATION%

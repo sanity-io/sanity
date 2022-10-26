@@ -18,7 +18,9 @@ import getDocumentsCommand from './documents/getDocumentsCommand'
 import queryDocumentsCommand from './documents/queryDocumentsCommand'
 import deleteDocumentsCommand from './documents/deleteDocumentsCommand'
 import createDocumentsCommand from './documents/createDocumentsCommand'
+import devCommand from './dev/devCommand'
 import startCommand from './start/startCommand'
+import previewCommand from './preview/previewCommand'
 import uninstallCommand from './uninstall/uninstallCommand'
 import hookGroup from './hook/hookGroup'
 import createHookCommand from './hook/createHookCommand'
@@ -76,7 +78,9 @@ const commands: (CliCommandDefinition | CliCommandGroupDefinition)[] = [
   listGraphQLAPIsCommand,
   deployGraphQLAPICommand,
   deleteGraphQLAPICommand,
+  devCommand,
   startCommand,
+  previewCommand,
   uninstallCommand,
   execCommand,
 ]
