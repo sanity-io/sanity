@@ -1,7 +1,14 @@
 import React from 'react'
 import {defineType} from 'sanity'
 import {structureGroupOptions} from '../../../../structure/groupByOption'
-import {FormInput, CustomField, CustomInput, CustomPreview, CustomItem} from './components'
+import {
+  FormInput,
+  CustomField,
+  CustomInput,
+  CustomPreview,
+  CustomItem,
+  ArrayWithCustomActions,
+} from './components'
 
 export const formComponentsSchema = defineType({
   type: 'document',
@@ -130,6 +137,19 @@ export const formComponentsSchema = defineType({
               title: 'Image',
             },
           ],
+        },
+      ],
+    },
+    {
+      type: 'array',
+      name: 'arrayWithCustomActions',
+      components: {
+        input: ArrayWithCustomActions,
+      },
+      of: [
+        {
+          type: 'string',
+          name: 'testString',
         },
       ],
     },
