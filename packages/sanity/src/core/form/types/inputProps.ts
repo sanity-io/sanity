@@ -1,10 +1,16 @@
 import {
   ArraySchemaType,
   BooleanSchemaType,
+  CrossDatasetReferenceValue,
+  FileValue,
+  GeopointValue,
+  ImageValue,
   NumberSchemaType,
   ObjectSchemaType,
   Path,
+  ReferenceValue,
   SchemaType,
+  SlugValue,
   StringSchemaType,
 } from '@sanity/types'
 import React, {FocusEventHandler, FormEventHandler} from 'react'
@@ -284,6 +290,12 @@ export type PrimitiveInputProps = StringInputProps | BooleanInputProps | NumberI
 /** @beta */
 export type InputProps =
   | ObjectInputProps
+  | ObjectInputProps<CrossDatasetReferenceValue>
+  | ObjectInputProps<FileValue>
+  | ObjectInputProps<GeopointValue>
+  | ObjectInputProps<ImageValue>
+  | ObjectInputProps<ReferenceValue>
+  | ObjectInputProps<SlugValue>
   | ArrayOfObjectsInputProps
   | ArrayOfPrimitivesInputProps
   | StringInputProps

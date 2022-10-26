@@ -1,11 +1,17 @@
 import {
   ArraySchemaType,
   BooleanSchemaType,
+  CrossDatasetReferenceValue,
+  FileValue,
   FormNodeValidation,
+  GeopointValue,
+  ImageValue,
   NumberSchemaType,
   ObjectSchemaType,
   Path,
+  ReferenceValue,
   SchemaType,
+  SlugValue,
   StringSchemaType,
 } from '@sanity/types'
 import React from 'react'
@@ -71,7 +77,15 @@ export interface ObjectItemProps<Item extends ObjectItem = ObjectItem> extends B
 }
 
 /** @public */
-export type ItemProps = ObjectItemProps | PrimitiveItemProps
+export type ItemProps =
+  | ObjectItemProps
+  | ObjectItemProps<CrossDatasetReferenceValue & ObjectItem>
+  | ObjectItemProps<FileValue & ObjectItem>
+  | ObjectItemProps<GeopointValue & ObjectItem>
+  | ObjectItemProps<ImageValue & ObjectItem>
+  | ObjectItemProps<ReferenceValue & ObjectItem>
+  | ObjectItemProps<SlugValue & ObjectItem>
+  | PrimitiveItemProps
 
 /** @public */
 export interface PrimitiveItemProps extends BaseItemProps<string | number | boolean> {

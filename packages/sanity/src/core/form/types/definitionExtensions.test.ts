@@ -1,10 +1,12 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
+// noinspection JSUnusedLocalSymbols
+
 import {
-  CrossDatasetReference,
+  CrossDatasetReferenceValue,
   defineField,
   defineType,
   FileValue,
-  Geopoint,
+  GeopointValue,
   ImageValue,
   ReferenceValue,
   SlugValue,
@@ -15,6 +17,7 @@ import {
   ArrayOfObjectsInputProps,
   ArrayOfPrimitivesInputProps,
   BooleanInputProps,
+  InputProps,
   NumberInputProps,
   ObjectInputProps,
   StringInputProps,
@@ -23,6 +26,7 @@ import {
   ArrayFieldProps,
   ArrayOfPrimitivesFieldProps,
   BooleanFieldProps,
+  FieldProps,
   NumberFieldProps,
   ObjectFieldProps,
   StringFieldProps,
@@ -448,15 +452,15 @@ describe('definitionExtensions', () => {
         components: {
           diff: (props) => null,
           field: (props) => {
-            const obj: ObjectFieldProps<Geopoint> = props
+            const obj: ObjectFieldProps<GeopointValue> = props
             return null
           },
           input: (props) => {
-            const obj: ObjectInputProps<Geopoint> = props
+            const obj: ObjectInputProps<GeopointValue> = props
             return null
           },
           item: (props) => {
-            const obj: ObjectItemProps<Geopoint & ObjectItem> = props
+            const obj: ObjectItemProps<GeopointValue & ObjectItem> = props
             return null
           },
           preview: (props) => {
@@ -539,7 +543,7 @@ describe('definitionExtensions', () => {
             return null
           },
           item: (props) => {
-            const obj: ObjectItemProps = props
+            const obj: ObjectItemProps<ReferenceValue & ObjectItem> = props
             return null
           },
           preview: (props) => {
@@ -549,6 +553,34 @@ describe('definitionExtensions', () => {
         },
       })
       const components: ReferenceComponents | undefined = type.components
+    })
+
+    it('should assign props to InputProps ect', () => {
+      const type = defineType({
+        type: 'reference',
+        name: 'test',
+        to: [{type: 'some-object'}],
+        components: {
+          diff: (props) => null,
+          field: (props) => {
+            const obj: FieldProps = props
+            return null
+          },
+          input: (props) => {
+            const obj: InputProps = props
+            return null
+          },
+          item: (props) => {
+            const obj: ObjectItemProps<ReferenceValue & ObjectItem> = props
+            const genericObj: ObjectItemProps = props
+            return null
+          },
+          preview: (props) => {
+            const obj: PreviewProps = props
+            return null
+          },
+        },
+      })
     })
 
     it('should extend components for crossDatasetReference', () => {
@@ -561,15 +593,15 @@ describe('definitionExtensions', () => {
         components: {
           diff: (props) => null,
           field: (props) => {
-            const obj: ObjectFieldProps<CrossDatasetReference> = props
+            const obj: ObjectFieldProps<CrossDatasetReferenceValue> = props
             return null
           },
           input: (props) => {
-            const obj: ObjectInputProps<CrossDatasetReference> = props
+            const obj: ObjectInputProps<CrossDatasetReferenceValue> = props
             return null
           },
           item: (props) => {
-            const obj: ObjectItemProps<CrossDatasetReference & ObjectItem> = props
+            const obj: ObjectItemProps<CrossDatasetReferenceValue & ObjectItem> = props
             return null
           },
           preview: (props) => {

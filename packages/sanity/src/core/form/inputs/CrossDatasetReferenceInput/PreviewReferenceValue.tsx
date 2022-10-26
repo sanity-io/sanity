@@ -1,12 +1,12 @@
 import React from 'react'
-import {CrossDatasetReference, CrossDatasetReferenceSchemaType} from '@sanity/types'
+import {CrossDatasetReferenceValue, CrossDatasetReferenceSchemaType} from '@sanity/types'
 import {Stack, Text, TextSkeleton} from '@sanity/ui'
 import {Loadable} from './useReferenceInfo'
 import {CrossDatasetReferenceInfo} from './types'
 import {CrossDatasetReferencePreview} from './CrossDatasetReferencePreview'
 
 export function PreviewReferenceValue(props: {
-  value: CrossDatasetReference
+  value: CrossDatasetReferenceValue
   showStudioUrlIcon?: boolean
   hasStudioUrl?: boolean
   type: CrossDatasetReferenceSchemaType
