@@ -18,9 +18,11 @@ const WEB_SERVER_ROOT_URL = 'http://localhost:3000'
 // eslint-disable-next-line no-process-env
 const DEBUG = process.env.DEBUG || false
 
-// Wait this long for selections and a new doc revision to appear on the clients
-const SELECTION_TIMEOUT_MS = 1500 // This will also be an indicator of the performance in the editor. Set it as low as possible without breaking the tests.
-const REVISION_TIMEOUT_MS = FLUSH_PATCHES_DEBOUNCE_MS + 1000 // 300 seems to be the limit for the doc patching to go full circle (increase this if tests starts to time out)
+// Wait this long for selections and a new doc revision to appear in the clients.
+const SELECTION_TIMEOUT_MS = 1500
+
+// How long to wait for a new revision to come back to the client(s) when patched through the server.
+const REVISION_TIMEOUT_MS = FLUSH_PATCHES_DEBOUNCE_MS + 1000
 
 // eslint-disable-next-line no-process-env
 const launchConfig = process.env.CI
