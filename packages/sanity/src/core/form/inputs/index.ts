@@ -7,3 +7,6 @@ export * from './files/types'
 export * from './ObjectInput'
 export * from './PortableText/PortableTextInput'
 export {PortableTextInput as BlockEditor} from './PortableText/PortableTextInput'
+
+export {ArrayOfPrimitivesFunctions} from './arrays/ArrayOfPrimitivesInput/ArrayOfPrimitivesFunctions'
+export {ArrayOfObjectsFunctions} from './arrays/ArrayOfObjectsInput/ArrayOfObjectsFunctions'
