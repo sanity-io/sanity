@@ -3,7 +3,7 @@ import {set, unset} from '../patch'
 import {TagInput} from '../components/tagInput'
 import {ArrayOfPrimitivesInputProps} from '../types'
 
-export type TagsArrayInputProps = ArrayOfPrimitivesInputProps<string[]>
+export type TagsArrayInputProps = ArrayOfPrimitivesInputProps<string>
 
 export function TagsArrayInput(props: TagsArrayInputProps) {
   const {onChange, readOnly, value = [], elementProps} = props
