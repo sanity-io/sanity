@@ -60,6 +60,10 @@ describe('Config: form components', () => {
         .find('[data-testid="input-schema-array-primitives"]')
         .find('[data-testid="array-primitives-input"]')
         .should('be.visible')
+
+      cy.get('[data-testid="input-schema-array-primitives-custom-functions"]', {
+        timeout: TIMEOUT,
+      }).should('be.visible')
     })
 
     it('array', () => {
