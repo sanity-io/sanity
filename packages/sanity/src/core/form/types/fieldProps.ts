@@ -1,10 +1,10 @@
 import {
   ArraySchemaType,
   BooleanSchemaType,
-  CrossDatasetReference,
+  CrossDatasetReferenceValue,
   FileValue,
   FormNodeValidation,
-  Geopoint,
+  GeopointValue,
   ImageValue,
   NumberSchemaType,
   ObjectSchemaType,
@@ -107,9 +107,9 @@ export type PrimitiveFieldProps = NumberFieldProps | BooleanFieldProps | StringF
 /** @beta */
 export type FieldProps =
   | ObjectFieldProps
-  | ObjectFieldProps<CrossDatasetReference>
+  | ObjectFieldProps<CrossDatasetReferenceValue>
   | ObjectFieldProps<FileValue>
-  | ObjectFieldProps<Geopoint>
+  | ObjectFieldProps<GeopointValue>
   | ObjectFieldProps<ImageValue>
   | ObjectFieldProps<ReferenceValue>
   | ObjectFieldProps<SlugValue>

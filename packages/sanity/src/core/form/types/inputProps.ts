@@ -1,9 +1,9 @@
 import {
   ArraySchemaType,
   BooleanSchemaType,
-  CrossDatasetReference,
+  CrossDatasetReferenceValue,
   FileValue,
-  Geopoint,
+  GeopointValue,
   ImageValue,
   NumberSchemaType,
   ObjectSchemaType,
@@ -290,9 +290,9 @@ export type PrimitiveInputProps = StringInputProps | BooleanInputProps | NumberI
 /** @beta */
 export type InputProps =
   | ObjectInputProps
-  | ObjectInputProps<CrossDatasetReference>
+  | ObjectInputProps<CrossDatasetReferenceValue>
   | ObjectInputProps<FileValue>
-  | ObjectInputProps<Geopoint>
+  | ObjectInputProps<GeopointValue>
   | ObjectInputProps<ImageValue>
   | ObjectInputProps<ReferenceValue>
   | ObjectInputProps<SlugValue>

@@ -1,10 +1,10 @@
 import {
   ArraySchemaType,
   BooleanSchemaType,
-  CrossDatasetReference,
+  CrossDatasetReferenceValue,
   FileValue,
   FormNodeValidation,
-  Geopoint,
+  GeopointValue,
   ImageValue,
   NumberSchemaType,
   ObjectSchemaType,
@@ -79,9 +79,9 @@ export interface ObjectItemProps<Item extends ObjectItem = ObjectItem> extends B
 /** @public */
 export type ItemProps =
   | ObjectItemProps
-  | ObjectItemProps<CrossDatasetReference & ObjectItem>
+  | ObjectItemProps<CrossDatasetReferenceValue & ObjectItem>
   | ObjectItemProps<FileValue & ObjectItem>
-  | ObjectItemProps<Geopoint & ObjectItem>
+  | ObjectItemProps<GeopointValue & ObjectItem>
   | ObjectItemProps<ImageValue & ObjectItem>
   | ObjectItemProps<ReferenceValue & ObjectItem>
   | ObjectItemProps<SlugValue & ObjectItem>
