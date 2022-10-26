@@ -574,7 +574,6 @@ describe('definitionExtensions', () => {
           },
           item: (props) => {
             const obj: ObjectItemProps<ReferenceValue & ObjectItem> = props
-            const genericObj: ObjectItemProps = props
             return null
           },
           preview: (props) => {
