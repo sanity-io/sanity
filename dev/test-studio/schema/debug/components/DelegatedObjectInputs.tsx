@@ -89,7 +89,7 @@ export function DelegatedTagsArrayInput(props: ArrayOfPrimitivesInputProps) {
   // lets just live with the need to cast here
   return (
     <DelegateBorder>
-      <TagsArrayInput {...(props as ArrayOfPrimitivesInputProps<string[]>)} />
+      <TagsArrayInput {...(props as ArrayOfPrimitivesInputProps<string>)} />
     </DelegateBorder>
   )
 }
