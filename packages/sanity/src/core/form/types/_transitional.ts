@@ -34,7 +34,7 @@ export interface PortableTextMarker {
  * @beta
  */
 export type FormBuilderArrayFunctionComponent = React.ComponentType<
-  FormArrayInputFunctionsProps<any, any>
+  ArrayInputFunctionsProps<unknown, ArraySchemaType>
 >
 
 /**
@@ -69,15 +69,14 @@ export type FormBuilderInputComponentMap = Record<
  *
  * @beta
  */
-export interface FormArrayInputFunctionsProps<SchemaType extends ArraySchemaType, Item> {
+export interface ArrayInputFunctionsProps<Item, SchemaType extends ArraySchemaType> {
   children?: React.ReactNode
-  className?: string
   onItemAppend: (itemValue: Item) => void
   onChange: (event: PatchEvent) => void
   onValueCreate: (type: SchemaType) => Item
   onItemPrepend: (itemValue: Item) => void
   readOnly?: boolean
-  type: SchemaType
+  schemaType: SchemaType
   value?: Item[]
 }
 

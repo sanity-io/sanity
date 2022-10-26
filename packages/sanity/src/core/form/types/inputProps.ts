@@ -13,7 +13,7 @@ import {
   SlugValue,
   StringSchemaType,
 } from '@sanity/types'
-import React, {FocusEventHandler, FormEventHandler} from 'react'
+import React, {ComponentType, FocusEventHandler, FormEventHandler} from 'react'
 import {FormPatch, PatchEvent} from '../patch'
 import {
   ArrayOfObjectsFormNode,
@@ -34,6 +34,7 @@ import {
   RenderPreviewCallback,
 } from './renderCallback'
 import {ArrayInputInsertEvent, ArrayInputMoveItemEvent, UploadEvent} from './event'
+import {ArrayInputFunctionsProps} from './_transitional'
 
 /** @beta */
 export interface BaseInputProps {
@@ -98,6 +99,9 @@ export interface ArrayOfObjectsInputProps<
   S extends ArraySchemaType = ArraySchemaType
 > extends BaseInputProps,
     ArrayOfObjectsFormNode<T[], S> {
+  /** @beta */
+  arrayFunctions?: ComponentType<ArrayInputFunctionsProps<T, S>>
+
   /** @beta */
   // Data manipulation callbacks special for array inputs
   onChange: (patch: FormPatch | FormPatch[] | PatchEvent) => void
@@ -177,10 +181,13 @@ export type ArrayOfPrimitivesElementType<T extends any[]> = T extends (infer K)[
 
 /** @beta */
 export interface ArrayOfPrimitivesInputProps<
-  T extends (string | boolean | number)[] = (string | boolean | number)[],
+  T extends string | boolean | number = string | boolean | number,
   S extends ArraySchemaType = ArraySchemaType
 > extends BaseInputProps,
-    ArrayOfPrimitivesFormNode<T, S> {
+    ArrayOfPrimitivesFormNode<T[], S> {
+  /** @beta */
+  arrayFunctions?: ComponentType<ArrayInputFunctionsProps<T, S>>
+
   // note: not a priority to support collapsible arrays right now
   onSetCollapsed: (collapsed: boolean) => void
 
@@ -188,10 +195,10 @@ export interface ArrayOfPrimitivesInputProps<
   onChange: (patch: FormPatch | FormPatch[] | PatchEvent) => void
 
   /** @beta */
-  onItemAppend: (item: ArrayOfPrimitivesElementType<T>) => void
+  onItemAppend: (item: ArrayOfPrimitivesElementType<T[]>) => void
 
   /** @beta */
-  onItemPrepend: (item: ArrayOfPrimitivesElementType<T>) => void
+  onItemPrepend: (item: ArrayOfPrimitivesElementType<T[]>) => void
 
   /** @beta */
   onItemRemove: (index: number) => void
@@ -200,7 +207,7 @@ export interface ArrayOfPrimitivesInputProps<
   onMoveItem: (event: ArrayInputMoveItemEvent) => void
 
   /** @beta */
-  onInsert: (event: {items: T; position: 'before' | 'after'; referenceIndex: number}) => void
+  onInsert: (event: {items: T[]; position: 'before' | 'after'; referenceIndex: number}) => void
 
   /** @beta */
   resolveUploader: UploaderResolver<NumberSchemaType | BooleanSchemaType | StringSchemaType>

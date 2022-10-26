@@ -12,7 +12,7 @@ import {getEmptyValue} from './getEmptyValue'
 import {PrimitiveValue} from './types'
 import {nearestIndexOf} from './utils/nearestIndex'
 import {ItemRow} from './ItemRow'
-import {DefaultArrayOfPrimitivesFunctions} from './DefaultArrayOfPrimitivesFunctions'
+import {ArrayOfPrimitivesFunctions} from './ArrayOfPrimitivesFunctions'
 
 // Note: this should be a class component until React provides support for a hook version of getSnapshotBeforeUpdate
 /** @public */
@@ -150,7 +150,7 @@ export class ArrayOfPrimitivesInput extends React.PureComponent<ArrayOfPrimitive
       onUpload,
       resolveUploader,
       elementProps,
-      arrayFunctions: ArrayFunctions = DefaultArrayOfPrimitivesFunctions,
+      arrayFunctions: ArrayFunctions = ArrayOfPrimitivesFunctions,
     } = this.props
 
     const isSortable = !readOnly && get(schemaType, 'options.sortable') !== false

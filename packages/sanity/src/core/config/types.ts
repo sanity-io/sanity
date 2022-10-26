@@ -55,7 +55,6 @@ export interface SanityFormConfig {
    * @beta
    */
   unstable?: {
-    ArrayFunctions?: FormBuilderArrayFunctionComponent
     CustomMarkers?: FormBuilderCustomMarkersComponent
     Markers?: FormBuilderMarkersComponent
   }
@@ -355,7 +354,6 @@ export interface Source {
      * @beta
      */
     unstable?: {
-      ArrayFunctions?: FormBuilderArrayFunctionComponent
       CustomMarkers?: FormBuilderCustomMarkersComponent
       Markers?: FormBuilderMarkersComponent
     }

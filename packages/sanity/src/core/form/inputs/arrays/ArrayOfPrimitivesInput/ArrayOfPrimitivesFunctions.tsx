@@ -1,16 +1,16 @@
 /* eslint-disable react/no-unused-prop-types */
-
 import {ArraySchemaType, isReferenceSchemaType} from '@sanity/types'
 import {AddIcon} from '@sanity/icons'
 import React, {useMemo, useId} from 'react'
 import {Box, Button, Grid, Menu, MenuButton, MenuItem, Tooltip, Text} from '@sanity/ui'
-import {FormArrayInputFunctionsProps} from '../../../types'
+import {ArrayInputFunctionsProps} from '../../../types'
 
+/** @beta */
 export function ArrayOfPrimitivesFunctions<
-  SchemaType extends ArraySchemaType,
-  MemberType extends string | boolean | number
->(props: FormArrayInputFunctionsProps<SchemaType, MemberType>) {
-  const {type, readOnly, children, onValueCreate, onItemAppend} = props
+  MemberType extends string | boolean | number,
+  SchemaType extends ArraySchemaType
+>(props: ArrayInputFunctionsProps<MemberType, SchemaType>) {
+  const {schemaType, readOnly, children, onValueCreate, onItemAppend} = props
   const menuButtonId = useId()
 
   const insertItem = React.useCallback(
@@ -21,8 +21,8 @@ export function ArrayOfPrimitivesFunctions<
   )
 
   const handleAddBtnClick = React.useCallback(() => {
-    insertItem(type.of[0])
-  }, [type, insertItem])
+    insertItem(schemaType.of[0])
+  }, [schemaType, insertItem])
 
   const popoverProps = useMemo(() => ({constrainSize: true, portal: true}), [])
 
@@ -43,7 +43,7 @@ export function ArrayOfPrimitivesFunctions<
             icon={AddIcon}
             mode="ghost"
             disabled
-            text={type.of.length === 1 ? 'Add item' : 'Add item...'}
+            text={schemaType.of.length === 1 ? 'Add item' : 'Add item...'}
           />
         </Grid>
       </Tooltip>
@@ -52,7 +52,7 @@ export function ArrayOfPrimitivesFunctions<
 
   return (
     <Grid gap={1} style={{gridTemplateColumns: 'repeat(auto-fit, minmax(100px, 1fr))'}}>
-      {type.of.length === 1 ? (
+      {schemaType.of.length === 1 ? (
         <Button icon={AddIcon} mode="ghost" onClick={handleAddBtnClick} text="Add item" />
       ) : (
         <MenuButton
@@ -60,8 +60,8 @@ export function ArrayOfPrimitivesFunctions<
           id={menuButtonId || ''}
           menu={
             <Menu>
-              {type.of.map((memberDef, i) => {
-                // Use reference icon if reference is to one type only
+              {schemaType.of.map((memberDef, i) => {
+                // Use reference icon if reference is to one schemaType only
                 const referenceIcon =
                   isReferenceSchemaType(memberDef) &&
                   (memberDef.to || []).length === 1 &&
@@ -87,5 +87,3 @@ export function ArrayOfPrimitivesFunctions<
     </Grid>
   )
 }
-
-ArrayOfPrimitivesFunctions.__SANITY_INTERNAL_IMPLEMENTATION = true

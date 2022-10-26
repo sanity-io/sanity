@@ -1,19 +1,30 @@
-/* eslint-disable react/no-unused-prop-types */
-
 import {ArraySchemaType, isReferenceSchemaType} from '@sanity/types'
 import {AddIcon} from '@sanity/icons'
-import React, {useMemo, useId} from 'react'
-import {Box, Button, Grid, Menu, MenuButton, MenuItem, Tooltip, Text} from '@sanity/ui'
-import {FormArrayInputFunctionsProps, ObjectItem} from '../../../types'
+import React, {useId, useCallback} from 'react'
+import {
+  Box,
+  Button,
+  Grid,
+  Menu,
+  MenuButton,
+  MenuItem,
+  Tooltip,
+  Text,
+  MenuButtonProps,
+} from '@sanity/ui'
+import {ArrayInputFunctionsProps, ObjectItem} from '../../../types'
 
-export function DefaultArrayInputFunctions<
-  SchemaType extends ArraySchemaType,
-  Item extends ObjectItem
->(props: FormArrayInputFunctionsProps<SchemaType, Item>) {
-  const {type, readOnly, children, onValueCreate, onItemAppend} = props
+const POPOVER_PROPS: MenuButtonProps['popover'] = {constrainSize: true, portal: true}
+
+/** @beta */
+export function ArrayOfObjectsFunctions<
+  Item extends ObjectItem,
+  SchemaType extends ArraySchemaType
+>(props: ArrayInputFunctionsProps<Item, SchemaType>) {
+  const {schemaType, readOnly, children, onValueCreate, onItemAppend} = props
   const menuButtonId = useId()
 
-  const insertItem = React.useCallback(
+  const insertItem = useCallback(
     (itemType: any) => {
       const item = onValueCreate(itemType)
 
@@ -23,10 +34,8 @@ export function DefaultArrayInputFunctions<
   )
 
   const handleAddBtnClick = React.useCallback(() => {
-    insertItem(type.of[0])
-  }, [type, insertItem])
-
-  const popoverProps = useMemo(() => ({constrainSize: true, portal: true}), [])
+    insertItem(schemaType.of[0])
+  }, [schemaType, insertItem])
 
   if (readOnly) {
     return (
@@ -45,7 +54,7 @@ export function DefaultArrayInputFunctions<
             icon={AddIcon}
             mode="ghost"
             disabled
-            text={type.of.length === 1 ? 'Add item' : 'Add item...'}
+            text={schemaType.of.length === 1 ? 'Add item' : 'Add item...'}
           />
         </Grid>
       </Tooltip>
@@ -54,7 +63,7 @@ export function DefaultArrayInputFunctions<
 
   return (
     <Grid gap={1} style={{gridTemplateColumns: 'repeat(auto-fit, minmax(100px, 1fr))'}}>
-      {type.of.length === 1 ? (
+      {schemaType.of.length === 1 ? (
         <Button icon={AddIcon} mode="ghost" onClick={handleAddBtnClick} text="Add item" />
       ) : (
         <MenuButton
@@ -62,8 +71,8 @@ export function DefaultArrayInputFunctions<
           id={menuButtonId || ''}
           menu={
             <Menu>
-              {type.of.map((memberDef, i) => {
-                // Use reference icon if reference is to one type only
+              {schemaType.of.map((memberDef, i) => {
+                // Use reference icon if reference is to one schemaType only
                 const referenceIcon =
                   isReferenceSchemaType(memberDef) &&
                   (memberDef.to || []).length === 1 &&
@@ -81,7 +90,7 @@ export function DefaultArrayInputFunctions<
               })}
             </Menu>
           }
-          popover={popoverProps}
+          popover={POPOVER_PROPS}
         />
       )}
 
@@ -89,5 +98,3 @@ export function DefaultArrayInputFunctions<
     </Grid>
   )
 }
-
-DefaultArrayInputFunctions.__SANITY_INTERNAL_IMPLEMENTATION = true

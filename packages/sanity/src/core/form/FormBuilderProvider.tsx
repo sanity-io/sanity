@@ -14,7 +14,7 @@ import {
   RenderPreviewCallback,
 } from './types'
 import {FormFieldGroup, ObjectMember, StateTree} from './store'
-import {DefaultArrayFunctions} from './inputs/arrays/ArrayOfObjectsInput/DefaultArrayFunctions'
+import {ArrayOfObjectsFunctions} from './inputs/arrays/ArrayOfObjectsInput/ArrayOfObjectsFunctions'
 import {DefaultMarkers} from './inputs/PortableText/_legacyDefaultParts/Markers'
 import {DefaultCustomMarkers} from './inputs/PortableText/_legacyDefaultParts/CustomMarkers'
 import {PatchChannel, PatchEvent} from './patch'
@@ -115,7 +115,7 @@ export function FormBuilderProvider(props: FormBuilderProviderProps) {
     () => ({
       patchChannel, // eslint-disable-line camelcase
       components: {
-        ArrayFunctions: DefaultArrayFunctions,
+        ArrayFunctions: ArrayOfObjectsFunctions,
         CustomMarkers: unstable?.CustomMarkers || DefaultCustomMarkers,
         Markers: unstable?.Markers || DefaultMarkers,
       },
