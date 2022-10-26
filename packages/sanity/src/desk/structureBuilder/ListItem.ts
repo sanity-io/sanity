@@ -1,7 +1,8 @@
 import {camelCase} from 'lodash'
 import {SchemaType} from '@sanity/types'
+import {Observable} from 'rxjs'
 import {SerializeOptions, Serializable, Collection, CollectionBuilder} from './StructureNodes'
-import {ChildResolver} from './ChildResolver'
+import {ChildResolver, ItemChild} from './ChildResolver'
 import {DocumentListBuilder} from './DocumentList'
 import {SerializeError, HELP_URL} from './SerializeError'
 import {ListBuilder} from './List'
@@ -11,10 +12,14 @@ import {validateId} from './util/validateId'
 import {StructureContext} from './types'
 
 /** @beta */
-export type UnserializedListItemChild = Collection | CollectionBuilder | ChildResolver
+export type UnserializedListItemChild =
+  | Collection
+  | CollectionBuilder
+  | ChildResolver
+  | Observable<ItemChild>
 
 /** @beta */
-export type ListItemChild = Collection | ChildResolver | undefined
+export type ListItemChild = Collection | ChildResolver | Observable<ItemChild> | undefined
 
 /** @beta */
 export interface ListItemSerializeOptions extends SerializeOptions {
