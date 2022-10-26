@@ -45,9 +45,7 @@ export const structure: StructureResolver = (S, {schema, documentStore}) => {
               S.listItem()
                 .id('randomObservable')
                 .title('Random observable')
-                .child(
-                  timer(0, 1000).pipe(map(() => S.list().title(`Random title ${Math.random()}`)))
-                ),
+                .child(itemTitleChangesEverySecond(S)),
             ])
         ),
 
@@ -391,4 +389,8 @@ function documentStoreDrivenChild(
           .items(docs.map((doc) => S.documentListItem().schemaType(doc._type).id(doc._id)))
       })
     )
+}
+
+function itemTitleChangesEverySecond(S: StructureBuilder) {
+  return timer(0, 1000).pipe(map(() => S.list().title(`Random title ${Math.random()}`)))
 }
