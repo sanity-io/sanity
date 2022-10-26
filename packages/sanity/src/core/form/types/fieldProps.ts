@@ -1,11 +1,17 @@
 import {
   ArraySchemaType,
   BooleanSchemaType,
+  CrossDatasetReference,
+  FileValue,
   FormNodeValidation,
+  Geopoint,
+  ImageValue,
   NumberSchemaType,
   ObjectSchemaType,
   Path,
+  ReferenceValue,
   SchemaType,
+  SlugValue,
   StringSchemaType,
 } from '@sanity/types'
 import {ReactElement, ReactNode} from 'react'
@@ -101,6 +107,12 @@ export type PrimitiveFieldProps = NumberFieldProps | BooleanFieldProps | StringF
 /** @beta */
 export type FieldProps =
   | ObjectFieldProps
+  | ObjectFieldProps<CrossDatasetReference>
+  | ObjectFieldProps<FileValue>
+  | ObjectFieldProps<Geopoint>
+  | ObjectFieldProps<ImageValue>
+  | ObjectFieldProps<ReferenceValue>
+  | ObjectFieldProps<SlugValue>
   | ArrayFieldProps
   | NumberFieldProps
   | BooleanFieldProps

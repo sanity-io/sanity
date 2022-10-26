@@ -15,6 +15,7 @@ import {
   ArrayOfObjectsInputProps,
   ArrayOfPrimitivesInputProps,
   BooleanInputProps,
+  InputProps,
   NumberInputProps,
   ObjectInputProps,
   StringInputProps,
@@ -23,6 +24,7 @@ import {
   ArrayFieldProps,
   ArrayOfPrimitivesFieldProps,
   BooleanFieldProps,
+  FieldProps,
   NumberFieldProps,
   ObjectFieldProps,
   StringFieldProps,
@@ -539,7 +541,7 @@ describe('definitionExtensions', () => {
             return null
           },
           item: (props) => {
-            const obj: ObjectItemProps = props
+            const obj: ObjectItemProps<ReferenceValue & ObjectItem> = props
             return null
           },
           preview: (props) => {
@@ -549,6 +551,34 @@ describe('definitionExtensions', () => {
         },
       })
       const components: ReferenceComponents | undefined = type.components
+    })
+
+    it('should assign props to InputProps ect', () => {
+      const type = defineType({
+        type: 'reference',
+        name: 'test',
+        to: [{type: 'some-object'}],
+        components: {
+          diff: (props) => null,
+          field: (props) => {
+            const obj: FieldProps = props
+            return null
+          },
+          input: (props) => {
+            const obj: InputProps = props
+            return null
+          },
+          item: (props) => {
+            const obj: ObjectItemProps<ReferenceValue & ObjectItem> = props
+            const genericObj: ObjectItemProps = props
+            return null
+          },
+          preview: (props) => {
+            const obj: PreviewProps = props
+            return null
+          },
+        },
+      })
     })
 
     it('should extend components for crossDatasetReference', () => {
