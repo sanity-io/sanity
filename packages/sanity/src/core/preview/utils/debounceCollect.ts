@@ -17,7 +17,7 @@ export function debounceCollect<Fn extends (...args: any[]) => Observable<any[]>
   ? (...args: TArgs) => Observable<TReturnValue>
   : never
 export function debounceCollect(fn: any, wait: number) {
-  let timer: NodeJS.Timeout
+  let timer: ReturnType<typeof setTimeout>
   let queue: Record<number | string, QueueItem | undefined> = {}
   let idx = 0
   return function debounced(...args: any[]) {
