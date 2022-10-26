@@ -809,11 +809,13 @@ function prepareArrayOfObjectsMember(props: {
     parent.readOnly ||
     resolveConditionalProperty(parent.schemaType.readOnly, conditionalPropertyContext)
 
+  const fieldGroupState = parent.fieldGroupState?.children?.[key]
   const collapsedItemPaths = parent.collapsedPaths?.children?.[key]
   const comparisonValue =
     (Array.isArray(parent.comparisonValue) &&
       parent.comparisonValue.find((i) => i._key === arrayItem._key)) ||
     undefined
+
   const itemState = prepareObjectInputState(
     {
       schemaType: itemType,
@@ -829,6 +831,7 @@ function prepareArrayOfObjectsMember(props: {
       collapsedPaths: collapsedItemPaths,
       presence: parent.presence,
       validation: parent.validation,
+      fieldGroupState,
       readOnly,
     },
     false
