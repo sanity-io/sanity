@@ -1,8 +1,7 @@
 import React from 'react'
 import {get} from 'lodash'
-import {ArraySchemaType} from '@sanity/types'
 import {Card, Stack, Text} from '@sanity/ui'
-import {ArrayOfPrimitivesInputProps, FormArrayInputFunctionsProps} from '../../../types'
+import {ArrayOfPrimitivesInputProps} from '../../../types'
 import {Item, List} from '../common/list'
 import {PrimitiveItemProps} from '../../../types/itemProps'
 import {ArrayOfPrimitivesItem} from '../../../members'
@@ -13,7 +12,7 @@ import {getEmptyValue} from './getEmptyValue'
 import {PrimitiveValue} from './types'
 import {nearestIndexOf} from './utils/nearestIndex'
 import {ItemRow} from './ItemRow'
-import {ArrayOfPrimitivesFunctions} from './ArrayOfPrimitivesFunctions'
+import {DefaultArrayOfPrimitivesFunctions} from './DefaultArrayOfPrimitivesFunctions'
 
 // Note: this should be a class component until React provides support for a hook version of getSnapshotBeforeUpdate
 /** @public */
@@ -147,12 +146,11 @@ export class ArrayOfPrimitivesInput extends React.PureComponent<ArrayOfPrimitive
       schemaType,
       members,
       readOnly,
-      value,
-      onChange,
       renderInput,
       onUpload,
       resolveUploader,
       elementProps,
+      arrayFunctions: ArrayFunctions = DefaultArrayOfPrimitivesFunctions,
     } = this.props
 
     const isSortable = !readOnly && get(schemaType, 'options.sortable') !== false
@@ -198,14 +196,14 @@ export class ArrayOfPrimitivesInput extends React.PureComponent<ArrayOfPrimitive
           </Stack>
         </UploadTargetCard>
 
-        <ArrayOfPrimitivesFunctions
-          type={schemaType}
-          value={value}
-          readOnly={readOnly}
+        <ArrayFunctions
+          onChange={this.props.onChange}
           onItemAppend={this.handleAppend}
           onItemPrepend={this.handlePrepend}
           onValueCreate={getEmptyValue}
-          onChange={onChange}
+          readOnly={this.props.readOnly}
+          schemaType={this.props.schemaType}
+          value={this.props.value}
         />
       </Stack>
     )
