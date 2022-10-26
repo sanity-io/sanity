@@ -6,6 +6,7 @@ import {FieldInputDateLast} from '../components/filters/inputTypes/DateLast'
 import {FieldInputDateRange} from '../components/filters/inputTypes/DateRange'
 import {FieldInputNumber} from '../components/filters/inputTypes/Number'
 import {FieldInputNumberRange} from '../components/filters/inputTypes/NumberRange'
+import {FieldInputReference} from '../components/filters/inputTypes/Reference'
 import {FieldInputString} from '../components/filters/inputTypes/String'
 import {FieldSearchFilter} from '../types'
 
@@ -67,7 +68,7 @@ export interface FilterInputTypeNumberRangeComponentProps
 
 export interface FilterInputTypeReferenceComponentProps extends BaseFilterInputTypeComponentProps {
   inputType: 'reference'
-  onChange: (value: string) => void
+  onChange: (value: string | null) => void
 }
 
 export interface FilterInputTypeStringComponentProps extends BaseFilterInputTypeComponentProps {
@@ -98,7 +99,7 @@ export const FILTER_INPUT_TYPE_COMPONENTS: Record<
   dateRange: FieldInputDateRange,
   file: FieldInputAsset,
   image: FieldInputAsset,
-  reference: FieldInputDateLast,
+  reference: FieldInputReference,
   number: FieldInputNumber,
   numberRange: FieldInputNumberRange,
   string: FieldInputString,

@@ -4,48 +4,47 @@ import {FILTERS} from '../../../config/filters'
 import {FILTER_INPUT_TYPE_COMPONENTS} from '../../../config/inputTypes'
 import {OPERATORS} from '../../../config/operators'
 import {useSearchState} from '../../../contexts/search/useSearchState'
-import type {FieldSearchFilter, SearchOperatorType} from '../../../types'
+import type {CompoundSearchFilter, SearchOperatorType} from '../../../types'
 
 interface FilterFormProps {
-  filter: FieldSearchFilter
+  filter: CompoundSearchFilter
   title: string
 }
 
-export function FieldFilterForm({filter, title}: FilterFormProps) {
+export function CompoundFilterForm({filter, title}: FilterFormProps) {
   const {dispatch} = useSearchState()
 
-  const operatorTypes = FILTERS.field[filter.fieldType].form.map((v) => v.operator)
+  const operatorTypes = FILTERS.compound[filter.id].form.map((v) => v.operator)
   // Default to first form state if no operatorType provided
   // TODO: refactor
   const currentFormState = filter.operatorType
-    ? FILTERS.field[filter.fieldType].form.find(
+    ? FILTERS.compound[filter.id].form.find(
         (formState) => formState.operator === filter.operatorType
       )
-    : FILTERS.field[filter.fieldType].form?.[0]
+    : FILTERS.compound[filter.id].form?.[0]
 
   const handleOperatorChange = useCallback(
     (event: ChangeEvent<HTMLSelectElement>) => {
       const operatorType = event.currentTarget.value as SearchOperatorType
-
       dispatch({
-        fieldPath: filter.fieldPath,
+        id: filter.id,
         operatorType,
-        type: 'TERMS_FILTERS_FIELD_SET',
+        type: 'TERMS_FILTERS_COMPOUND_SET',
         value: null,
       })
     },
-    [dispatch, filter.fieldPath]
+    [dispatch, filter]
   )
 
   const handleValueChange = useCallback(
     (value: any) => {
       dispatch({
-        fieldPath: filter.fieldPath,
-        type: 'TERMS_FILTERS_FIELD_SET',
+        id: filter.id,
+        type: 'TERMS_FILTERS_COMPOUND_SET',
         value,
       })
     },
-    [dispatch, filter.fieldPath]
+    [dispatch, filter.id]
   )
 
   return (

@@ -1,8 +1,8 @@
-import {Box, Card, Code, Flex, Inline, Stack, Text} from '@sanity/ui'
-import React, {createElement} from 'react'
-// import type {CompoundSearchFilter, FieldSearchFilter} from '../../../../../../search'
+import {Card, Code, Flex, Stack, Text} from '@sanity/ui'
+import React from 'react'
 import {FILTERS} from '../../config/filters'
 import type {SearchFilter} from '../../types'
+import {CompoundFilterForm} from './compound/CompoundFilterForm'
 import {FieldFilterForm} from './field/FieldFilterForm'
 import {FilterPopoverWrapper} from './FilterPopoverWrapper'
 
@@ -26,7 +26,7 @@ export function FilterContent({filter, onClose}: FilterContentProps) {
       >
         {filter.type === 'compound' && (
           <>
-            {createElement(FILTERS.compound[filter.id].content, {filter})}
+            <CompoundFilterForm filter={filter} title={FILTERS.compound[filter.id].title} />
 
             {/* Debug */}
             <Card borderTop overflow="hidden" padding={3} tone="default">

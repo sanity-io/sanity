@@ -38,6 +38,7 @@ export interface BaseSearchFilter {
  */
 export interface CompoundSearchFilter extends BaseSearchFilter {
   id: 'hasDraft' | 'hasReference' | 'isPublished'
+  operatorType?: SearchOperatorType
   type: 'compound'
 }
 

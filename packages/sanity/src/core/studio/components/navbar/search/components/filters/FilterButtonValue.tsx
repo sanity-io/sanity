@@ -85,6 +85,9 @@ function getFieldValue(filter: FieldSearchFilter, hasMultipleOperators: boolean)
         value = filter?.value
       }
       break
+    case 'reference':
+      value = filter?.value?.slice(0, 8)
+      break
     case 'string':
     case 'text':
       if (filter.operatorType === 'equalTo') {

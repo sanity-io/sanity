@@ -210,7 +210,7 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
         _key: generateKey(),
         // Set initial value + operator
         ...(action.filter.type === 'compound' && {
-          value: FILTERS[action.filter.type][action.filter.id].initialValue,
+          value: FILTERS[action.filter.type][action.filter.id].form[0].initialValue,
         }),
         ...(action.filter.type === 'field' && {
           operatorType: FILTERS[action.filter.type][action.filter.fieldType].form[0].operator,

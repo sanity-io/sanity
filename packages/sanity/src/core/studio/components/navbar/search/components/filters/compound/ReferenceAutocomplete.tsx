@@ -1,4 +1,4 @@
-import {Autocomplete, Card, Popover, Text} from '@sanity/ui'
+import {Autocomplete, Button, Card, Popover, Stack, Text} from '@sanity/ui'
 import React, {forwardRef, ReactElement, useCallback, useId, useRef, useState} from 'react'
 import {useSchema} from '../../../../../../../hooks'
 import {WeightedHit} from '../../../../../../../search'
@@ -19,14 +19,15 @@ interface PopoverContentProps {
   onMouseLeave: () => void
 }
 
-interface DebugMiniReferenceInputProps {
-  onSelect?: (documentId: string) => void
+interface ReferenceAutocompleteProps {
+  onSelect?: (documentId: string | null) => void
+  value?: string
 }
 
 const NO_FILTER = () => true
 
-export const DebugMiniReferenceInput = forwardRef(function DebugMiniReferenceInput(
-  {onSelect}: DebugMiniReferenceInputProps,
+export const ReferenceAutocomplete = forwardRef(function DebugMiniReferenceInput(
+  {onSelect, value}: ReferenceAutocompleteProps,
   ref: React.ForwardedRef<HTMLInputElement>
 ) {
   const autocompletePopoverReferenceElementRef = useRef<HTMLDivElement | null>(null)
@@ -37,7 +38,7 @@ export const DebugMiniReferenceInput = forwardRef(function DebugMiniReferenceInp
   const autocompleteId = useId()
 
   const [autocompleteOptions, setAutocompleteOptions] = useState<SearchHit[]>([])
-  const {handleSearch, searchState} = useSearch({
+  const {handleSearch} = useSearch({
     initialState: {
       hits: [],
       loading: false,
@@ -65,11 +66,12 @@ export const DebugMiniReferenceInput = forwardRef(function DebugMiniReferenceInp
     schema,
   })
 
-  const [searchQuery, setSearchQuery] = useState<string | null>(null)
+  const handleClear = useCallback(() => {
+    onSelect?.(null)
+  }, [onSelect])
 
   const handleQueryChange = useCallback(
     (query: string | null) => {
-      setSearchQuery(query)
       if (query) {
         handleSearch({
           options: {limit: 10},
@@ -122,6 +124,7 @@ export const DebugMiniReferenceInput = forwardRef(function DebugMiniReferenceInp
           // matchReferenceWidth
           placement="bottom-start"
           referenceElement={inputElement}
+          // TODO: re-enable and fix usage with `useClickOutside`
           // portal
         />
       )
@@ -131,20 +134,27 @@ export const DebugMiniReferenceInput = forwardRef(function DebugMiniReferenceInp
 
   return (
     <div ref={autocompletePopoverReferenceElementRef}>
-      <Autocomplete
-        filterOption={NO_FILTER}
-        fontSize={1}
-        id={autocompleteId}
-        openButton
-        options={autocompleteOptions}
-        onQueryChange={handleQueryChange}
-        onSelect={onSelect}
-        placeholder="Type to search"
-        ref={ref}
-        renderOption={renderOption}
-        renderPopover={renderPopover}
-        // value={searchQuery}
-      />
+      {value ? (
+        <Stack space={3}>
+          <Text size={1}>Selected reference: {value}</Text>
+          <Button fontSize={1} mode="ghost" onClick={handleClear} text="Clear" tone="critical" />
+        </Stack>
+      ) : (
+        <Autocomplete
+          filterOption={NO_FILTER}
+          fontSize={1}
+          id={autocompleteId}
+          // openButton
+          options={autocompleteOptions}
+          onQueryChange={handleQueryChange}
+          onSelect={onSelect}
+          placeholder="Type to search"
+          ref={ref}
+          renderOption={renderOption}
+          renderPopover={renderPopover}
+          value={value}
+        />
+      )}
     </div>
   )
 })

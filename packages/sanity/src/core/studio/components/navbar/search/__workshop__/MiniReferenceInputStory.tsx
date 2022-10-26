@@ -1,6 +1,6 @@
 import React from 'react'
-import {DebugMiniReferenceInput} from '../components/filters/compound/DebugMiniReferenceInput'
+import {ReferenceAutocomplete} from '../components/filters/compound/ReferenceAutocomplete'
 
 export default function MiniReferenceInputStory() {
-  return <DebugMiniReferenceInput />
+  return <ReferenceAutocomplete />
 }

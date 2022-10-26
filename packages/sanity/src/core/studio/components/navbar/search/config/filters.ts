@@ -9,10 +9,6 @@ import {
 } from '@sanity/icons'
 import {ComponentType} from 'react'
 import type {CompoundSearchFilter, FieldSearchFilter, SearchOperatorType} from '../types'
-import {CompoundContentHasDraft} from '../components/filters/compound/HasDraft'
-import {CompoundContentHasReferences} from '../components/filters/compound/HasReferences'
-import {CompoundContentIsPublished} from '../components/filters/compound/IsPublished'
-import {CompoundContentProps} from '../components/filters/compound/types'
 import {NumberIcon} from '../components/filters/icons/NumberIcon'
 import {StringIcon} from '../components/filters/icons/StringIcon'
 import {
@@ -37,40 +33,40 @@ export const FILTERS: {
   compound: Record<
     CompoundSearchFilter['id'],
     {
-      content: ComponentType<CompoundContentProps>
+      form: FilterFormState[]
       icon: ComponentType
-      initialValue: any
       title: string
-      // label: string
     }
   >
   field: Record<
     FieldSearchFilter['fieldType'],
     {
       icon: ComponentType
-      // label: string
       form: FilterFormState[]
     }
   >
 } = {
   compound: {
     hasDraft: {
-      content: CompoundContentHasDraft,
       icon: CheckmarkCircleIcon,
-      initialValue: true,
       title: 'Has draft',
+      form: BOOLEAN_FORM_STATES,
     },
     hasReference: {
-      content: CompoundContentHasReferences,
       icon: LinkIcon,
-      initialValue: null,
       title: 'Has reference',
+      form: [
+        {
+          initialValue: null,
+          input: 'reference',
+          operator: 'equalTo',
+        },
+      ],
     },
     isPublished: {
-      content: CompoundContentIsPublished,
       icon: CheckmarkCircleIcon,
-      initialValue: true,
       title: 'Is published',
+      form: BOOLEAN_FORM_STATES,
     },
   },
   field: {
