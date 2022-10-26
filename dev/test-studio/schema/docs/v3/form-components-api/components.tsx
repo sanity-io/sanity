@@ -1,7 +1,16 @@
-import React from 'react'
+import React, {useCallback} from 'react'
 import {hues} from '@sanity/color'
-import {Box, Stack, Heading, Flex, Inline, Text} from '@sanity/ui'
-import {FieldProps, InputProps, ItemProps, PreviewProps} from 'sanity'
+import {Box, Stack, Heading, Flex, Inline, Text, Grid, Button} from '@sanity/ui'
+import {
+  ArrayOfPrimitivesInputProps,
+  ArraySchemaType,
+  ArrayOfPrimitivesFunctions,
+  FieldProps,
+  ArrayInputFunctionsProps,
+  InputProps,
+  ItemProps,
+  PreviewProps,
+} from 'sanity'
 
 const COMPONENT_COLORS = {
   input: hues.blue[400].hex,
@@ -85,4 +94,22 @@ export function CustomPreview(props: PreviewProps & {testId: string}) {
       {props.renderDefault(props)}
     </Box>
   )
+}
+
+function ArrayActions(props: ArrayInputFunctionsProps<string | number | boolean, ArraySchemaType>) {
+  const handleAdd = useCallback(() => {
+    props.onItemAppend('Hello!')
+  }, [props])
+
+  return (
+    <Grid columns={1} gap={2} data-testid="input-schema-array-primitives-custom-functions">
+      <Button text="Custom array function" onClick={handleAdd} />
+
+      <ArrayOfPrimitivesFunctions {...props} />
+    </Grid>
+  )
+}
+
+export function ArrayWithCustomActions(props: ArrayOfPrimitivesInputProps) {
+  return props.renderDefault({...props, arrayFunctions: ArrayActions})
 }
