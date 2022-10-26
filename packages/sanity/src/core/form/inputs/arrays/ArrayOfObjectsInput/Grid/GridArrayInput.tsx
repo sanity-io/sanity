@@ -3,10 +3,10 @@ import {Card, Stack, Text} from '@sanity/ui'
 import React, {useCallback} from 'react'
 import {Item, List} from '../../common/list'
 import {ArrayOfObjectsInputProps, ObjectItem, ObjectItemProps} from '../../../../types'
-import {DefaultArrayInputFunctions} from '../../common/ArrayFunctions'
 import {ArrayOfObjectsItem} from '../../../../members'
 import {createProtoArrayValue} from '../createProtoArrayValue'
 import {UploadTargetCard} from '../../common/UploadTargetCard'
+import {DefaultArrayFunctions} from '../DefaultArrayFunctions'
 import {GridItem} from './GridItem'
 import {ErrorItem} from './ErrorItem'
 
@@ -27,6 +27,7 @@ export function GridArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
     renderPreview,
     renderField,
     renderInput,
+    arrayFunctions: ArrayFunctions = DefaultArrayFunctions,
   } = props
 
   const handlePrepend = useCallback(
@@ -99,14 +100,14 @@ export function GridArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
         </Stack>
       </UploadTargetCard>
 
-      <DefaultArrayInputFunctions
-        type={schemaType}
-        value={value}
-        readOnly={readOnly}
+      <ArrayFunctions
+        onChange={onChange}
         onItemAppend={handleAppend}
         onItemPrepend={handlePrepend}
         onValueCreate={createProtoArrayValue}
-        onChange={onChange}
+        readOnly={readOnly}
+        schemaType={schemaType}
+        value={value}
       />
     </Stack>
   )
