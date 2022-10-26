@@ -28,5 +28,5 @@ export interface SlugDefinition extends BaseSchemaDefinition {
   type: 'slug'
   options?: SlugOptions
   validation?: ValidationBuilder<SlugRule, SlugValue>
-  initialValue?: InitialValueProperty<any, SlugValue>
+  initialValue?: InitialValueProperty<any, Omit<SlugValue, '_type'>>
 }

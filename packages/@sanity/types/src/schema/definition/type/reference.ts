@@ -37,5 +37,5 @@ export interface ReferenceDefinition extends BaseSchemaDefinition {
   weak?: boolean
   options?: ReferenceOptions
   validation?: ValidationBuilder<ReferenceRule, ReferenceValue>
-  initialValue?: InitialValueProperty<any, ReferenceValue>
+  initialValue?: InitialValueProperty<any, Omit<ReferenceValue, '_type'>>
 }
