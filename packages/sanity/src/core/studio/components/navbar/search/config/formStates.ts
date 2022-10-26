@@ -140,19 +140,13 @@ export const NUMBER_FORM_STATES: FilterFormState[] = [
 export const REFERENCE_FORM_STATES: FilterFormState[] = [
   {
     initialValue: null,
+    input: 'reference',
     operator: 'equalTo',
   },
   {
     initialValue: null,
+    input: 'reference',
     operator: 'notEqualTo',
-  },
-  {
-    initialValue: null,
-    operator: 'defined',
-  },
-  {
-    initialValue: null,
-    operator: 'notDefined',
   },
 ]
 
