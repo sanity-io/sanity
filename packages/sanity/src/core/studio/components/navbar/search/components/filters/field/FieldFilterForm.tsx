@@ -11,6 +11,8 @@ interface FilterFormProps {
   title: string
 }
 
+// TODO: DRY with CompoundFilterForm
+
 export function FieldFilterForm({filter, title}: FilterFormProps) {
   const {dispatch} = useSearchState()
 
@@ -26,15 +28,18 @@ export function FieldFilterForm({filter, title}: FilterFormProps) {
   const handleOperatorChange = useCallback(
     (event: ChangeEvent<HTMLSelectElement>) => {
       const operatorType = event.currentTarget.value as SearchOperatorType
+      const nextFormState = FILTERS.field[filter.fieldType].form.find(
+        (formState) => formState.operator === operatorType
+      )
 
       dispatch({
         fieldPath: filter.fieldPath,
         operatorType,
         type: 'TERMS_FILTERS_FIELD_SET',
-        value: null,
+        value: nextFormState?.initialValue,
       })
     },
-    [dispatch, filter.fieldPath]
+    [dispatch, filter.fieldPath, filter.fieldType]
   )
 
   const handleValueChange = useCallback(

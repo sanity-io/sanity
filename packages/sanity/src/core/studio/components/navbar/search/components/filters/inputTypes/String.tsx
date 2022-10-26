@@ -4,9 +4,7 @@ import type {FilterInputTypeStringComponentProps} from '../../../config/inputTyp
 
 export function FieldInputString({filter, onChange}: FilterInputTypeStringComponentProps) {
   const handleChange = useCallback(
-    (event: ChangeEvent<HTMLInputElement>) => {
-      onChange(event.currentTarget.value)
-    },
+    (event: ChangeEvent<HTMLInputElement>) => onChange(event.currentTarget.value || null),
     [onChange]
   )
 

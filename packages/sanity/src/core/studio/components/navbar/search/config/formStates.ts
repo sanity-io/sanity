@@ -3,11 +3,11 @@ import type {FilterFormState} from './filters'
 export const ARRAY_FORM_STATES: FilterFormState[] = [
   {
     initialValue: null,
-    operator: 'defined',
+    operator: 'notEmpty',
   },
   {
     initialValue: null,
-    operator: 'notDefined',
+    operator: 'empty',
   },
 ]
 
@@ -22,11 +22,11 @@ export const ASSET_FORM_STATES: FilterFormState[] = [
   },
   {
     initialValue: null,
-    operator: 'defined',
+    operator: 'notEmpty',
   },
   {
     initialValue: null,
-    operator: 'notDefined',
+    operator: 'empty',
   },
 ]
 
@@ -35,6 +35,10 @@ export const BOOLEAN_FORM_STATES: FilterFormState[] = [
     initialValue: true,
     input: 'boolean',
     operator: 'equalTo',
+  },
+  {
+    initialValue: null,
+    operator: 'empty',
   },
 ]
 
@@ -80,11 +84,11 @@ export const DATE_FORM_STATES: FilterFormState[] = [
 export const GEOPOINT_FORM_STATES: FilterFormState[] = [
   {
     initialValue: null,
-    operator: 'defined',
+    operator: 'notEmpty',
   },
   {
     initialValue: null,
-    operator: 'notDefined',
+    operator: 'empty',
   },
 ]
 
@@ -129,11 +133,11 @@ export const NUMBER_FORM_STATES: FilterFormState[] = [
   },
   {
     initialValue: null,
-    operator: 'defined',
+    operator: 'notEmpty',
   },
   {
     initialValue: null,
-    operator: 'notDefined',
+    operator: 'empty',
   },
 ]
 
@@ -168,10 +172,10 @@ export const STRING_FORM_STATES: FilterFormState[] = [
   },
   {
     initialValue: null,
-    operator: 'defined',
+    operator: 'notEmpty',
   },
   {
     initialValue: null,
-    operator: 'notDefined',
+    operator: 'empty',
   },
 ]

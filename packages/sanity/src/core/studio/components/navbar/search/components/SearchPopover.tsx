@@ -9,6 +9,7 @@ import {useSearchState} from '../contexts/search/useSearchState'
 import {useMeasureSearchResultsIndex} from '../hooks/useMeasureSearchResultsIndex'
 import {useSearchHotkeys} from '../hooks/useSearchHotkeys'
 import {hasSearchableTerms} from '../utils/hasSearchableTerms'
+import {DebugFilterQuery} from './filters/DebugFilterQuery'
 import {Filters} from './filters/Filters'
 import {RecentSearches} from './recentSearches/RecentSearches'
 import {SearchHeader} from './SearchHeader'
@@ -191,6 +192,7 @@ export function SearchPopover({
                 style={{flexShrink: 0}}
               >
                 <Filters />
+                <DebugFilterQuery />
               </Card>
             )}
 

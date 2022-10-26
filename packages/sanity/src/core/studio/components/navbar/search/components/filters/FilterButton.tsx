@@ -1,5 +1,5 @@
 import {CloseIcon} from '@sanity/icons'
-import {Button, Flex, Popover, rem, Text, Theme} from '@sanity/ui'
+import {Button, Flex, Popover, rem, Text, Theme, useClickOutside} from '@sanity/ui'
 import React, {useCallback, useMemo, useState} from 'react'
 import styled, {css} from 'styled-components'
 import {FILTERS} from '../../config/filters'
@@ -27,6 +27,8 @@ const LabelButton = styled(Button)(({$joined, theme}: {$joined?: boolean; theme:
 
 export default function FilterButton({closable = true, filter, initialOpen}: FilterButtonProps) {
   const [open, setOpen] = useState(initialOpen)
+  const [buttonElement, setButtonElement] = useState<HTMLElement | null>(null)
+  const [popoverElement, setPopoverElement] = useState<HTMLElement | null>(null)
 
   const {dispatch} = useSearchState()
 
@@ -40,6 +42,8 @@ export default function FilterButton({closable = true, filter, initialOpen}: Fil
       }),
     [dispatch, filter._key]
   )
+
+  useClickOutside(handleClose, [buttonElement, popoverElement])
 
   const title = useMemo(() => {
     switch (filter.type) {
@@ -62,8 +66,9 @@ export default function FilterButton({closable = true, filter, initialOpen}: Fil
       open={open}
       placement="bottom-start"
       portal
+      ref={setPopoverElement}
     >
-      <Flex>
+      <Flex ref={setButtonElement}>
         <LabelButton
           $joined={closable}
           fontSize={1}
