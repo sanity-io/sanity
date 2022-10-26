@@ -23,7 +23,6 @@ export interface FormBuilderContextValue {
    */
   __internal: {
     components: {
-      ArrayFunctions: FormBuilderArrayFunctionComponent
       CustomMarkers: FormBuilderCustomMarkersComponent
       Markers: FormBuilderMarkersComponent
     }
