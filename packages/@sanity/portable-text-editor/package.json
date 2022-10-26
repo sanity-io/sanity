@@ -25,7 +25,7 @@
     "prebuild": "run-s clean",
     "prettier": "prettier --write './**/*.{ts,tsx,js,css,html}'",
     "start": "cd ./test/ && ts-node serve",
-    "test": "jest",
+    "test": "jest --runInBand",
     "test:watch": "jest --watch",
     "watch": "pkg-utils watch --tsconfig tsconfig.lib.json"
   },
