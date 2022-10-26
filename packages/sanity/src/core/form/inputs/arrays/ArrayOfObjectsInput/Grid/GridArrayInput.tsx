@@ -6,7 +6,7 @@ import {ArrayOfObjectsInputProps, ObjectItem, ObjectItemProps} from '../../../..
 import {ArrayOfObjectsItem} from '../../../../members'
 import {createProtoArrayValue} from '../createProtoArrayValue'
 import {UploadTargetCard} from '../../common/UploadTargetCard'
-import {DefaultArrayFunctions} from '../DefaultArrayFunctions'
+import {ArrayOfObjectsFunctions} from '../ArrayOfObjectsFunctions'
 import {GridItem} from './GridItem'
 import {ErrorItem} from './ErrorItem'
 
@@ -27,7 +27,7 @@ export function GridArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
     renderPreview,
     renderField,
     renderInput,
-    arrayFunctions: ArrayFunctions = DefaultArrayFunctions,
+    arrayFunctions: ArrayFunctions = ArrayOfObjectsFunctions,
   } = props
 
   const handlePrepend = useCallback(

@@ -7,7 +7,7 @@ import {ArrayOfObjectsItem} from '../../../../members'
 
 import {createProtoArrayValue} from '../createProtoArrayValue'
 import {UploadTargetCard} from '../../common/UploadTargetCard'
-import {DefaultArrayFunctions} from '../DefaultArrayFunctions'
+import {ArrayOfObjectsFunctions} from '../ArrayOfObjectsFunctions'
 import {ErrorItem} from './ErrorItem'
 
 const EMPTY: [] = []
@@ -28,7 +28,7 @@ export function ListArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
     renderField,
     renderItem,
     renderInput,
-    arrayFunctions: ArrayFunctions = DefaultArrayFunctions,
+    arrayFunctions: ArrayFunctions = ArrayOfObjectsFunctions,
   } = props
 
   const handlePrepend = useCallback(
