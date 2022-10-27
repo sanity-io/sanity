@@ -7,7 +7,12 @@ import {
   UserComponent,
   View,
 } from './structureBuilder'
-import {GeneralPreviewLayoutKey, ConfigContext, InitialValueTemplateItem} from 'sanity'
+import {
+  GeneralPreviewLayoutKey,
+  ConfigContext,
+  InitialValueTemplateItem,
+  DocumentStore,
+} from 'sanity'
 
 /** @internal */
 export interface DeskToolFeatures {
@@ -30,9 +35,19 @@ export interface DeskToolContextValue {
   structureContext: StructureContext
 }
 
+/** @public */
+export interface StructureResolverContext extends ConfigContext {
+  /**
+   * This can be replaced by a different API in the future.
+   * It is provided as-is to support common structure patterns found in V2 in V3.
+   * @alpha
+   * */
+  documentStore: DocumentStore
+}
+
 /** @beta */
 // TODO: this should be updated to enforce the correct return type
-export type StructureResolver = (S: StructureBuilder, context: ConfigContext) => unknown
+export type StructureResolver = (S: StructureBuilder, context: StructureResolverContext) => unknown
 
 /** @internal */
 export type DeskToolPaneActionHandler = (params: any, scope?: unknown) => void

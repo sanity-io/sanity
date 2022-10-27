@@ -1,5 +1,6 @@
 import {CollectionBuilder, Collection, SerializeOptions} from './StructureNodes'
 import {StructureContext} from './types'
+import {Observable} from 'rxjs'
 
 /** @beta */
 // TODO: unify with the RouterSplitPaneContext
@@ -28,5 +29,6 @@ export interface ChildResolver {
     | ItemChild
     | Promise<ItemChild>
     | ChildObservable
+    | Observable<ItemChild>
     | undefined
 }

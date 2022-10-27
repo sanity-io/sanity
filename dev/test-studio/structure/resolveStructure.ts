@@ -8,7 +8,10 @@ import {
   UsersIcon,
 } from '@sanity/icons'
 import {uuid} from '@sanity/uuid'
-import {StructureResolver} from 'sanity/desk'
+import {DocumentStore, SanityDocument} from 'sanity'
+import {ItemChild, StructureBuilder, StructureResolver} from 'sanity/desk'
+import {map} from 'rxjs/operators'
+import {Observable, timer} from 'rxjs'
 import {DebugPane} from '../components/panes/debug'
 import {JsonDocumentDump} from '../components/panes/JsonDocumentDump'
 import {_buildTypeGroup} from './_buildTypeGroup'
@@ -24,7 +27,7 @@ import {
 import {delayValue} from './_helpers'
 import {typesInOptionGroup} from './groupByOption'
 
-export const structure: StructureResolver = (S, {schema}) => {
+export const structure: StructureResolver = (S, {schema, documentStore}) => {
   return S.list()
     .title('Content')
     .items([
@@ -33,7 +36,17 @@ export const structure: StructureResolver = (S, {schema}) => {
         .child(
           S.list()
             .title('Untitled repro')
-            .items([S.documentListItem().id('grrm').schemaType('author')])
+            .items([
+              S.documentListItem().id('grrm').schemaType('author'),
+              S.listItem()
+                .id('documentStore')
+                .title('Document store')
+                .child(documentStoreDrivenChild(S, documentStore)),
+              S.listItem()
+                .id('randomObservable')
+                .title('Random observable')
+                .child(itemTitleChangesEverySecond(S)),
+            ])
         ),
 
       _buildTypeGroup(S, schema, {
@@ -357,4 +370,27 @@ export const structure: StructureResolver = (S, {schema}) => {
         )
       }),
     ])
+}
+
+function documentStoreDrivenChild(
+  S: StructureBuilder,
+  documentStore: DocumentStore
+): Observable<ItemChild> {
+  return documentStore
+    .listenQuery(
+      '*[!(_type match "**.**")] | order(_updatedAt desc)[0...10]',
+      {},
+      {throttleTime: 1000}
+    )
+    .pipe(
+      map((docs: SanityDocument[]) => {
+        return S.list()
+          .title('Some recently edited documents')
+          .items(docs.map((doc) => S.documentListItem().schemaType(doc._type).id(doc._id)))
+      })
+    )
+}
+
+function itemTitleChangesEverySecond(S: StructureBuilder) {
+  return timer(0, 1000).pipe(map(() => S.list().title(`Random title ${Math.random()}`)))
 }
