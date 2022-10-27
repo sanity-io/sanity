@@ -35,7 +35,7 @@ export const structure: StructureResolver = (S, {schema, documentStore}) => {
         .title('Untitled repro')
         .child(
           S.list()
-            .title('Untitled repo')
+            .title('Untitled repro')
             .items([
               S.documentListItem().id('grrm').schemaType('author'),
               S.listItem()
