@@ -191,7 +191,7 @@ export default class CollaborationEnvironment extends NodeEnvironment {
             testId,
             editorId,
             insertText: async (text: string) => {
-              await delay(generateRandomInteger(0, 100))
+              // await delay(generateRandomInteger(0, 100))
               await Promise.all([
                 waitForRevision(),
                 waitForNewSelection(async () => {
@@ -224,7 +224,7 @@ export default class CollaborationEnvironment extends NodeEnvironment {
               await waitForRevision()
             },
             pressKey: async (keyName: KeyInput, times?: number) => {
-              await delay(generateRandomInteger(0, 100))
+              // await delay(generateRandomInteger(0, 100))
               const pressKey = async () => {
                 await editableHandle.press(keyName)
               }
