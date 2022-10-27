@@ -2,14 +2,15 @@ import {SearchIcon} from '@sanity/icons'
 import {Box, Flex} from '@sanity/ui'
 import React, {useCallback, useId, useMemo, useState} from 'react'
 import styled from 'styled-components'
+import {useSchema} from '../../../../../../hooks'
 import {FILTERS} from '../../config/filters'
 import {SUBHEADER_HEIGHT_SMALL} from '../../constants'
 import {CommandListProvider} from '../../contexts/commandList'
 import {useSearchState} from '../../contexts/search/useSearchState'
 import {useSelectedDocumentTypes} from '../../hooks/useSelectedDocumentTypes'
-import {KeyedSearchFilter} from '../../types'
+import {SearchFilterMenuItem} from '../../types'
 import {CustomTextInput} from '../CustomTextInput'
-import {AddFilterContentTypes} from './AddFilterContentTypes'
+import {AddFilterContentMenuItems} from './AddFilterContentMenuItems'
 import {FilterPopoverWrapper} from './FilterPopoverWrapper'
 
 interface AddFilterContentProps {
@@ -32,15 +33,39 @@ export function AddFilterContent({onClose}: AddFilterContentProps) {
   const [pointerOverlayElement, setPointerOverlayRef] = useState<HTMLDivElement | null>(null)
   const [titleFilter, setTitleFilter] = useState('')
 
-  const {availableFilters} = useSearchState()
-
+  const schema = useSchema()
+  const {filterGroups} = useSearchState()
   const currentDocumentTypes = useSelectedDocumentTypes()
 
-  const filteredFilters = useMemo(() => {
-    return availableFilters
+  const filteredMenuItems = useMemo(() => {
+    return filterGroups
+      .reduce<SearchFilterMenuItem[]>((acc, val) => {
+        // Header
+        if (val.type === 'fields') {
+          let headerTitle = 'All fields'
+          if (currentDocumentTypes.length > 0) {
+            const firstDocumentType = schema.get(currentDocumentTypes[0])
+            const firstDocumentTitle = firstDocumentType?.title || firstDocumentType?.name || ''
+            headerTitle = `Fields in ${firstDocumentTitle}`
+            if (currentDocumentTypes.length > 1) {
+              headerTitle += ` +${currentDocumentTypes.length - 1}`
+            }
+          }
+
+          acc.push({
+            title: headerTitle,
+            type: 'header',
+          })
+        }
+        // Filters
+        val.items.forEach((filter) => {
+          acc.push({filter, type: 'filter'})
+        })
+        return acc
+      }, [])
       .filter((filter) => includesDocumentTypes(filter, currentDocumentTypes))
       .filter((filter) => includesFilterTitle(filter, titleFilter))
-  }, [availableFilters, currentDocumentTypes, titleFilter])
+  }, [currentDocumentTypes, filterGroups, schema, titleFilter])
 
   const handleFilterChange = useCallback(
     (e: React.KeyboardEvent<HTMLInputElement>) => setTitleFilter(e.currentTarget.value),
@@ -53,7 +78,6 @@ export function AddFilterContent({onClose}: AddFilterContentProps) {
   return (
     <FilterPopoverWrapper onClose={onClose}>
       <Flex
-        // padding={3}
         style={{
           maxHeight: '600px',
           maxWidth: '350px',
@@ -64,7 +88,7 @@ export function AddFilterContent({onClose}: AddFilterContentProps) {
         <CommandListProvider
           ariaChildrenLabel="Filters"
           ariaHeaderLabel="Filter by title"
-          childCount={filteredFilters.length}
+          childCount={filteredMenuItems.length}
           childContainerElement={childContainerElement}
           containerElement={containerElement}
           headerInputElement={headerInputElement}
@@ -96,8 +120,8 @@ export function AddFilterContent({onClose}: AddFilterContentProps) {
             </FilterHeaderBox>
 
             <Box flex={1}>
-              <AddFilterContentTypes
-                filteredFilters={filteredFilters}
+              <AddFilterContentMenuItems
+                menuItems={filteredMenuItems}
                 onClose={onClose}
                 setChildContainerRef={setChildContainerRef}
                 setPointerOverlayRef={setPointerOverlayRef}
@@ -110,23 +134,32 @@ export function AddFilterContent({onClose}: AddFilterContentProps) {
   )
 }
 
-function includesDocumentTypes(filter: KeyedSearchFilter, documentTypes: string[]) {
-  if (!filter.documentTypes || filter.documentTypes.length === 0) {
-    return true
+function includesDocumentTypes(menuItem: SearchFilterMenuItem, documentTypes: string[]) {
+  if (menuItem.type === 'filter') {
+    if (!menuItem.filter.documentTypes || menuItem.filter.documentTypes.length === 0) {
+      return true
+    }
+
+    return documentTypes.every((type) => menuItem.filter.documentTypes?.includes(type))
   }
-  return documentTypes.every((type) => filter.documentTypes?.includes(type))
+
+  return true
 }
 
-function includesFilterTitle(filter: KeyedSearchFilter, currentTitle: string) {
+function includesFilterTitle(menuItem: SearchFilterMenuItem, currentTitle: string) {
   let title = ''
-  if (filter.type === 'compound') {
-    title = FILTERS.compound[filter.id].title
+  if (menuItem.type === 'filter') {
+    if (menuItem.filter.type === 'compound') {
+      title = FILTERS.compound[menuItem.filter.id].title
+    }
+    if (menuItem.filter.type === 'custom') {
+      title = menuItem.filter.title
+    }
+    if (menuItem.filter.type === 'field') {
+      title = menuItem.filter.path.join(' / ')
+    }
+    return title.toLowerCase().includes(currentTitle.toLowerCase())
   }
-  if (filter.type === 'custom') {
-    title = filter.title
-  }
-  if (filter.type === 'field') {
-    title = filter.path.join(' / ')
-  }
-  return title.toLowerCase().includes(currentTitle.toLowerCase())
+
+  return true
 }

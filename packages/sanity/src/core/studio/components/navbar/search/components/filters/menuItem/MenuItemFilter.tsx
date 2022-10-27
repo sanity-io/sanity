@@ -1,16 +1,19 @@
 import {Button, Code, Flex, Stack, Text} from '@sanity/ui'
 import React, {useCallback, useMemo} from 'react'
-import {FILTERS} from '../../config/filters'
-import {useSearchState} from '../../contexts/search/useSearchState'
-import type {KeyedSearchFilter} from '../../types'
-import {FilterIcon} from './FilterIcon'
+import {FILTERS} from '../../../config/filters'
+import {useSearchState} from '../../../contexts/search/useSearchState'
+import type {KeyedSearchFilter} from '../../../types'
+import {FilterIcon} from '../FilterIcon'
 
 interface FilterMenuItemProps {
   filter: KeyedSearchFilter
   onClose: () => void
 }
 
-export function FilterMenuItem({filter, onClose}: FilterMenuItemProps) {
+export const MenuItemFilter = React.memo(function MenuItemFilter({
+  filter,
+  onClose,
+}: FilterMenuItemProps) {
   const {dispatch} = useSearchState()
 
   const handleClick = useCallback(() => {
@@ -38,7 +41,7 @@ export function FilterMenuItem({filter, onClose}: FilterMenuItemProps) {
         whiteSpace: 'normal',
         width: '100%',
       }}
-      tone={filter.type === 'field' ? 'primary' : 'default'}
+      // tone={filter.type === 'field' ? 'primary' : 'default'}
     >
       <Flex align="flex-start" gap={3}>
         <Text size={1}>
@@ -55,4 +58,4 @@ export function FilterMenuItem({filter, onClose}: FilterMenuItemProps) {
       </Flex>
     </Button>
   )
-}
+})

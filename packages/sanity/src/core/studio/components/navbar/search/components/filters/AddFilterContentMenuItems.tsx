@@ -2,12 +2,13 @@ import {Box} from '@sanity/ui'
 import {useVirtualizer} from '@tanstack/react-virtual'
 import React, {Dispatch, SetStateAction, useEffect, useRef} from 'react'
 import styled from 'styled-components'
-import type {KeyedSearchFilter} from '../../types'
+import type {SearchFilterMenuItem} from '../../types'
 // import {PointerOverlay} from '../PointerOverlay'
-import {FilterMenuItem} from './FilterMenuItem'
+import {MenuItemFilter} from './menuItem/MenuItemFilter'
+import {MenuItemHeader} from './menuItem/MenuItemHeader'
 
 interface AddFilterContentTypesProps {
-  filteredFilters: KeyedSearchFilter[]
+  menuItems: SearchFilterMenuItem[]
   onClose: () => void
   setChildContainerRef: Dispatch<SetStateAction<HTMLDivElement | null>>
   setPointerOverlayRef: Dispatch<SetStateAction<HTMLDivElement | null>>
@@ -26,18 +27,9 @@ const VirtualListChildBox = styled(Box)<{$height: number}>`
   position: relative;
   width: 100%;
 `
-const MenuItemByIndex = React.memo(function MenuItemByIndex({
-  filter,
-  onClose,
-}: {
-  filter: KeyedSearchFilter
-  onClose: () => void
-}) {
-  return <FilterMenuItem filter={filter} onClose={onClose} />
-})
 
-export function AddFilterContentTypes({
-  filteredFilters,
+export function AddFilterContentMenuItems({
+  menuItems,
   onClose,
   setChildContainerRef,
   setPointerOverlayRef,
@@ -45,7 +37,7 @@ export function AddFilterContentTypes({
   const childParentRef = useRef<HTMLDivElement | null>(null)
 
   const {getTotalSize, getVirtualItems, scrollToIndex} = useVirtualizer({
-    count: filteredFilters.length,
+    count: menuItems.length,
     enableSmoothScroll: false,
     estimateSize: () => 40,
     getScrollElement: () => childParentRef.current,
@@ -55,17 +47,25 @@ export function AddFilterContentTypes({
   // Scroll to top whenever filters change
   useEffect(() => {
     scrollToIndex(0)
-  }, [filteredFilters.length, scrollToIndex])
+  }, [menuItems.length, scrollToIndex])
 
   return (
     <VirtualListBox data-overflow ref={childParentRef} tabIndex={-1}>
       {/* <PointerOverlay ref={setPointerOverlayRef} /> */}
       <VirtualListChildBox $height={getTotalSize()} flex={1} ref={setChildContainerRef}>
         {getVirtualItems().map((virtualRow) => {
-          const filter = filteredFilters[virtualRow.index]
+          const menuItem = menuItems[virtualRow.index]
+          let key = ''
+          if (menuItem.type === 'header') {
+            key = menuItem.title
+          }
+          if (menuItem.type === 'filter') {
+            key = menuItem.filter._key
+          }
+
           return (
             <div
-              key={filter._key}
+              key={key}
               ref={virtualRow.measureElement}
               // onClick={handleResultClick}
               // onMouseDown={onChildMouseDown}
@@ -80,7 +80,13 @@ export function AddFilterContentTypes({
                 width: '100%',
               }}
             >
-              <MenuItemByIndex filter={filter} onClose={onClose} />
+              {menuItem.type === 'filter' && (
+                <MenuItemFilter filter={menuItem.filter} onClose={onClose} />
+              )}
+
+              {menuItem.type === 'header' && (
+                <MenuItemHeader isFirst={virtualRow.index === 0} title={menuItem.title} />
+              )}
             </div>
           )
         })}

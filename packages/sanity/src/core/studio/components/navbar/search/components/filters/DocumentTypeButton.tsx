@@ -56,7 +56,7 @@ export default function DocumentTypeButton() {
         padding={2}
         ref={setButtonElement}
         style={{maxWidth: '100%'}}
-        tone="critical"
+        tone="primary"
       >
         <Text size={1} textOverflow="ellipsis">
           <span style={{fontWeight: 500}}>Document type:</span>&nbsp;{value}

@@ -75,7 +75,8 @@ export default function FilterButton({closable = true, filter, initialOpen}: Fil
           onClick={handleOpen}
           padding={2}
           style={{maxWidth: '100%'}}
-          tone={filter.type === 'field' ? 'primary' : 'default'}
+          // tone={filter.type === 'field' ? 'primary' : 'default'}
+          tone="primary"
         >
           <Text size={1} textOverflow="ellipsis">
             {/* Field name */}
@@ -91,7 +92,8 @@ export default function FilterButton({closable = true, filter, initialOpen}: Fil
             icon={CloseIcon}
             onClick={handleRemove}
             padding={2}
-            tone={filter.type === 'field' ? 'primary' : 'default'}
+            // tone={filter.type === 'field' ? 'primary' : 'default'}
+            tone="primary"
           />
         )}
       </Flex>
