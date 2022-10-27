@@ -61,7 +61,7 @@ export const Editor = ({
   const [selectionValue, setSelectionValue] = useState<EditorSelection | null>(selection)
   const selectionString = useMemo(() => JSON.stringify(selectionValue), [selectionValue])
   const editor = useRef<PortableTextEditor>(null)
-  const keyGenFn = useMemo(() => createKeyGenerator(editorId), [editorId])
+  const keyGenFn = useMemo(() => createKeyGenerator(editorId.substring(0, 1)), [editorId])
 
   const renderBlock: RenderBlockFunction = useCallback((block, type, attributes, defaultRender) => {
     if (editor.current) {

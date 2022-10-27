@@ -33,8 +33,6 @@ const launchConfig = process.env.CI
     }
   : {}
 
-let testId: string
-
 function generateRandomInteger(min: number, max: number) {
   return Math.floor(min + Math.random() * (max - min + 1))
 }
@@ -102,9 +100,9 @@ export default class CollaborationEnvironment extends NodeEnvironment {
   }
 
   private async _setupInstance(): Promise<void> {
-    testId = (Math.random() + 1).toString(36).substring(7)
-    await this._pageA?.goto(`${WEB_SERVER_ROOT_URL}?editorId=A&testId=${testId}`)
-    await this._pageB?.goto(`${WEB_SERVER_ROOT_URL}?editorId=B&testId=${testId}`)
+    const testId = (Math.random() + 1).toString(36).substring(7)
+    await this._pageA?.goto(`${WEB_SERVER_ROOT_URL}?editorId=A${testId}&testId=${testId}`)
+    await this._pageB?.goto(`${WEB_SERVER_ROOT_URL}?editorId=B${testId}&testId=${testId}`)
     this.global.setDocumentValue = async (
       value: PortableTextBlock[] | undefined
     ): Promise<void> => {
@@ -139,7 +137,7 @@ export default class CollaborationEnvironment extends NodeEnvironment {
           const userAgent = await page.evaluate(() => navigator.userAgent)
           const isMac = /Mac|iPod|iPhone|iPad/.test(userAgent)
           const metaKey = isMac ? 'Meta' : 'Control'
-          const editorId = ['A', 'B'][index]
+          const editorId = `${['A', 'B'][index]}${testId}`
           const [
             editableHandle,
             selectionHandle,

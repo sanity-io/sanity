@@ -13,7 +13,6 @@ const initialValue: PortableTextBlock[] | undefined = [
   },
 ]
 
-// @todo Temporarily disabled until flakey tests can be addressed in CI
 describe('collaborate editing', () => {
   it('will have the same start value for editor A and B', async () => {
     await setDocumentValue(initialValue)
@@ -63,7 +62,7 @@ describe('collaborate editing', () => {
     })
   })
 
-  xit('will reset the value when someone deletes everything, and when they start to type again, they will produce their own respective blocks.', async () => {
+  it('will reset the value when someone deletes everything, and when they start to type again, they will produce their own respective blocks.', async () => {
     await setDocumentValue(initialValue)
     const [editorA, editorB] = await getEditors()
     await editorA.setSelection({
@@ -124,11 +123,11 @@ describe('collaborate editing', () => {
           "offset": 0,
           "path": Array [
             Object {
-              "_key": "randomKey0",
+              "_key": "B-2",
             },
             "children",
             Object {
-              "_key": "randomKey1",
+              "_key": "B-3",
             },
           ],
         },
@@ -136,36 +135,22 @@ describe('collaborate editing', () => {
           "offset": 0,
           "path": Array [
             Object {
-              "_key": "randomKey0",
+              "_key": "B-2",
             },
             "children",
             Object {
-              "_key": "randomKey1",
+              "_key": "B-3",
             },
           ],
         },
       }
     `)
     await editorA.pressKey('2')
-    valA = await editorB.getValue()
+    valA = await editorA.getValue()
     valB = await editorB.getValue()
     expect(valA).toEqual(valB)
     expect(valB).toMatchInlineSnapshot(`
       Array [
-        Object {
-          "_key": "randomKey0",
-          "_type": "block",
-          "children": Array [
-            Object {
-              "_key": "randomKey1",
-              "_type": "span",
-              "marks": Array [],
-              "text": "2",
-            },
-          ],
-          "markDefs": Array [],
-          "style": "normal",
-        },
         Object {
           "_key": "B-2",
           "_type": "block",
@@ -174,7 +159,7 @@ describe('collaborate editing', () => {
               "_key": "B-3",
               "_type": "span",
               "marks": Array [],
-              "text": "1",
+              "text": "21",
             },
           ],
           "markDefs": Array [],
