@@ -51,6 +51,8 @@ interface ObjectOption {
 /**
  * Array of predefined object options input
  * Note: this input can handle only object values
+ *
+ * @beta
  */
 export function ArrayOfObjectOptionsInput(props: ArrayOfObjectsInputProps) {
   const {

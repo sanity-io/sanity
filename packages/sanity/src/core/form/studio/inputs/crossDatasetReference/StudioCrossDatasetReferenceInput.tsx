@@ -45,6 +45,9 @@ async function resolveUserDefinedFilter(
   }
 }
 
+/**
+ * @beta
+ */
 export type StudioCrossDatasetReferenceInputProps = ObjectInputProps<
   CrossDatasetReferenceValue,
   CrossDatasetReferenceSchemaType
@@ -64,6 +67,9 @@ type SearchError = {
   }
 }
 
+/**
+ * @beta
+ */
 export function StudioCrossDatasetReferenceInput(props: StudioCrossDatasetReferenceInputProps) {
   const {path, schemaType} = props
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)

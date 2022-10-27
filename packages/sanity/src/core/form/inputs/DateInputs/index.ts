@@ -1,2 +1,2 @@
-export {DateTimeInput} from './DateTimeInput'
-export {DateInput} from './DateInput'
+export {DateTimeInput, type DateTimeInputProps} from './DateTimeInput'
+export {DateInput, type DateInputProps} from './DateInput'

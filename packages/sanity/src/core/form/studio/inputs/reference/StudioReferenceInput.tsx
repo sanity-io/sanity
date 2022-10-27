@@ -45,6 +45,9 @@ async function resolveUserDefinedFilter(
   }
 }
 
+/**
+ * @beta
+ */
 export type StudioReferenceInputProps = ObjectInputProps<Reference, ReferenceSchemaType>
 
 function useValueRef<T>(value: T): {current: T} {
@@ -61,6 +64,9 @@ type SearchError = {
   }
 }
 
+/**
+ * @beta
+ */
 export function StudioReferenceInput(props: StudioReferenceInputProps) {
   const searchClient = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const schema = useSchema()

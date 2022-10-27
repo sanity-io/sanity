@@ -4,6 +4,9 @@ import {TextInput} from '@sanity/ui'
 import {getValidationRule} from '../utils/getValidationRule'
 import {NumberInputProps} from '../types'
 
+/**
+ * @beta
+ */
 export function NumberInput(props: NumberInputProps) {
   const {schemaType, validationError, value, elementProps} = props
 

@@ -3,9 +3,14 @@ import React from 'react'
 import {getValidationRule} from '../utils/getValidationRule'
 import {StringInputProps} from '../types'
 
+/**
+ * @beta
+ */
 export type UrlInputProps = StringInputProps
 
-// @todo Rename to `URLInput`?
+/**
+ * @beta
+ */
 export function UrlInput(props: UrlInputProps) {
   const {schemaType, validationError, elementProps} = props
 

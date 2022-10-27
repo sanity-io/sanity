@@ -1,6 +1,7 @@
 import {RuleDef, ValidationBuilder} from '../../ruleBuilder'
 import {InitialValueProperty} from '../../types'
 import {FieldDefinition} from '../schemaDefinition'
+import {ImageCrop, ImageHotspot} from '../../../assets'
 import {FileOptions, FileValue} from './file'
 import {ObjectDefinition} from './object'
 
@@ -15,18 +16,8 @@ export interface ImageOptions extends FileOptions {
 
 /** @public */
 export interface ImageValue extends FileValue {
-  crop?: {
-    top?: number
-    bottom?: number
-    left?: number
-    right?: number
-  }
-  hotspot?: {
-    x?: number
-    y?: number
-    height: number
-    width: number
-  }
+  crop?: ImageCrop
+  hotspot?: ImageHotspot
   [index: string]: unknown
 }
 

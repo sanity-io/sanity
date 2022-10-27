@@ -2,13 +2,11 @@
 import {RuleDef, ValidationBuilder} from '../../ruleBuilder'
 import {InitialValueProperty} from '../../types'
 import {SchemaTypeDefinition, TypeReference} from '../schemaDefinition'
-import {ReferenceBaseOptions, ReferenceFilterOptions} from '../../../reference'
+import {Reference, ReferenceBaseOptions, ReferenceFilterOptions} from '../../../reference'
 import {BaseSchemaDefinition} from './common'
 
 /** @public */
-export interface ReferenceValue {
-  _ref?: string
-}
+export type ReferenceValue = Reference
 
 /** @public */
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
@@ -39,5 +37,5 @@ export interface ReferenceDefinition extends BaseSchemaDefinition {
   weak?: boolean
   options?: ReferenceOptions
   validation?: ValidationBuilder<ReferenceRule, ReferenceValue>
-  initialValue?: InitialValueProperty<any, ReferenceValue>
+  initialValue?: InitialValueProperty<any, Omit<ReferenceValue, '_type'>>
 }

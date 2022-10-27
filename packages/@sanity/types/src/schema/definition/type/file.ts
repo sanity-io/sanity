@@ -1,4 +1,5 @@
 import {AssetSource} from '../../../assets'
+import {Reference} from '../../../reference'
 import {RuleDef, ValidationBuilder} from '../../ruleBuilder'
 import {InitialValueProperty} from '../../types'
 import {ObjectDefinition, ObjectOptions} from './object'
@@ -16,10 +17,7 @@ export interface FileRule extends RuleDef<FileRule, FileValue> {}
 
 /** @public */
 export interface FileValue {
-  asset?: {
-    _type?: 'reference'
-    _ref?: string
-  }
+  asset?: Reference
   [index: string]: unknown
 }
 

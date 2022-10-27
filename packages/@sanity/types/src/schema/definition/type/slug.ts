@@ -7,6 +7,7 @@ import {BaseSchemaDefinition} from './common'
 
 /** @public */
 export interface SlugValue {
+  _type: 'slug'
   current?: string
 }
 
@@ -27,5 +28,5 @@ export interface SlugDefinition extends BaseSchemaDefinition {
   type: 'slug'
   options?: SlugOptions
   validation?: ValidationBuilder<SlugRule, SlugValue>
-  initialValue?: InitialValueProperty<any, SlugValue>
+  initialValue?: InitialValueProperty<any, Omit<SlugValue, '_type'>>
 }
