@@ -21,6 +21,7 @@ export type SearchOperatorType =
   | 'matches'
   | 'notEmpty'
   | 'notEqualTo'
+  | 'notMatches'
   | 'numberRange'
 
 /**

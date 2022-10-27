@@ -1,4 +1,5 @@
 /* eslint-disable complexity */
+import pluralize from 'pluralize-esm'
 import React from 'react'
 import {FILTERS} from '../../config/filters'
 import {OPERATORS} from '../../config/operators'
@@ -33,7 +34,7 @@ function getCompoundValue(filter: CompoundSearchFilter) {
       if (typeof filter.value === 'undefined') {
         return null
       }
-      return filter.value ? 'yes' : 'no'
+      return filter.value ? 'True' : 'False'
     case 'hasReference':
       return filter?.value ? filter.value.slice(0, 8) : ''
     default:
@@ -56,9 +57,12 @@ function getFieldValue(filter: FieldSearchFilter, hasMultipleOperators: boolean)
   const fieldValue: string[] = []
 
   switch (filter.fieldType) {
+    case 'array':
+      value = filter?.value && `${filter.value} ${pluralize('item', filter.value)}`
+      break
     case 'boolean':
       if (typeof filter.value !== 'undefined') {
-        value = filter.value ? 'Yes' : 'No'
+        value = filter.value ? 'True' : 'False'
       }
       break
     case 'date':
@@ -90,13 +94,22 @@ function getFieldValue(filter: FieldSearchFilter, hasMultipleOperators: boolean)
       break
     case 'string':
     case 'text':
-      if (filter.operatorType === 'equalTo') {
-        showOperator = false
+      switch (filter.operatorType) {
+        case 'equalTo':
+          showOperator = false
+          value = filter?.value && `"${filter.value}"`
+          break
+        case 'matches':
+          showOperator = false
+          value = filter?.value
+          break
+        case 'notEqualTo':
+          value = filter?.value && `"${filter.value}"`
+          break
+        default:
+          value = filter?.value
+          break
       }
-      if (filter.operatorType === 'matches') {
-        showOperator = false
-      }
-      value = filter?.value
       break
     default:
       value = filter?.value

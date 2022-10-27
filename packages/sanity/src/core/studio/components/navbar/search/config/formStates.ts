@@ -45,18 +45,6 @@ export const ASSET_FORM_STATES: FilterFormState[] = [
   },
 ]
 
-export const BOOLEAN_FORM_STATES: FilterFormState[] = [
-  {
-    initialValue: true,
-    input: 'boolean',
-    operator: 'equalTo',
-  },
-  {
-    initialValue: null,
-    operator: 'empty',
-  },
-]
-
 export const DATE_FORM_STATES: FilterFormState[] = [
   {
     initialValue: {
@@ -174,6 +162,11 @@ export const STRING_FORM_STATES: FilterFormState[] = [
     initialValue: null,
     input: 'string',
     operator: 'matches',
+  },
+  {
+    initialValue: null,
+    input: 'string',
+    operator: 'notMatches',
   },
   {
     initialValue: null,

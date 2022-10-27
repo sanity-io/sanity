@@ -12,8 +12,8 @@ export function FieldInputBoolean({filter, onChange}: FilterInputTypeBooleanComp
 
   return (
     <Select fontSize={1} onChange={handleChange} value={String(filter?.value ?? true)}>
-      <option value="true">Yes</option>
-      <option value="false">No</option>
+      <option value="true">True</option>
+      <option value="false">False</option>
     </Select>
   )
 }

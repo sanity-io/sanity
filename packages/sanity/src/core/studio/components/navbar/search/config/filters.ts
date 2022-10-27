@@ -14,7 +14,6 @@ import {StringIcon} from '../components/filters/icons/StringIcon'
 import {
   ARRAY_FORM_STATES,
   ASSET_FORM_STATES,
-  BOOLEAN_FORM_STATES,
   DATE_FORM_STATES,
   GEOPOINT_FORM_STATES,
   NUMBER_FORM_STATES,
@@ -50,7 +49,13 @@ export const FILTERS: {
     hasDraft: {
       icon: CheckmarkCircleIcon,
       title: 'Has draft',
-      form: BOOLEAN_FORM_STATES,
+      form: [
+        {
+          initialValue: true,
+          input: 'boolean',
+          operator: 'equalTo',
+        },
+      ],
     },
     hasReference: {
       icon: LinkIcon,
@@ -66,7 +71,13 @@ export const FILTERS: {
     isPublished: {
       icon: CheckmarkCircleIcon,
       title: 'Is published',
-      form: BOOLEAN_FORM_STATES,
+      form: [
+        {
+          initialValue: true,
+          input: 'boolean',
+          operator: 'equalTo',
+        },
+      ],
     },
   },
   field: {
@@ -76,7 +87,17 @@ export const FILTERS: {
     },
     boolean: {
       icon: CheckmarkCircleIcon,
-      form: BOOLEAN_FORM_STATES,
+      form: [
+        {
+          initialValue: true,
+          input: 'boolean',
+          operator: 'equalTo',
+        },
+        {
+          initialValue: null,
+          operator: 'empty',
+        },
+      ],
     },
     date: {
       icon: CalendarIcon,
