@@ -1,13 +1,14 @@
-import {CloseIcon, WarningOutlineIcon} from '@sanity/icons'
-import {Button, Flex, Popover, rem, Text, Theme, useClickOutside} from '@sanity/ui'
+import {CloseIcon} from '@sanity/icons'
+import {Button, Flex, Inline, Popover, rem, Text, Theme, useClickOutside} from '@sanity/ui'
 import {intersection} from 'lodash'
 import React, {useCallback, useMemo, useState} from 'react'
 import styled, {css} from 'styled-components'
 import {FILTERS} from '../../config/filters'
+import {OPERATORS} from '../../config/operators'
 import {useSearchState} from '../../contexts/search/useSearchState'
 import type {KeyedSearchFilter} from '../../types'
-import {FilterButtonValue} from './FilterButtonValue'
 import {FilterContent} from './FilterContent'
+import {getFilterValue} from './getFilterValue'
 
 interface FilterButtonProps {
   closable?: boolean
@@ -68,13 +69,15 @@ export default function FilterButton({closable = true, filter, initialOpen}: Fil
       case 'compound':
         return FILTERS.compound[filter.id].title
       case 'field': {
-        const prefix = filter.path.length > 1 ? '... / ' : ''
-        return prefix + filter.path[filter.path.length - 1]
+        return filter.path[filter.path.length - 1]
       }
       default:
         return 'Unknown type'
     }
   }, [filter])
+
+  const operator = filter?.operatorType && OPERATORS[filter.operatorType].buttonLabel
+  const value = getFilterValue(filter)
 
   return (
     <Popover
@@ -90,22 +93,29 @@ export default function FilterButton({closable = true, filter, initialOpen}: Fil
           fontSize={1}
           onClick={handleOpen}
           padding={2}
-          style={{maxWidth: '100%'}}
-          tone={isValid ? 'primary' : 'caution'}
+          style={{
+            maxWidth: '100%', //
+          }}
+          // tone={filter.type === 'field' ? 'primary' : 'default'}
+          tone="primary"
         >
-          <Flex align="center" gap={3}>
-            {!isValid && (
-              <Text size={1}>
-                <WarningOutlineIcon />
+          <Inline space={1}>
+            <Text size={1} weight="medium">
+              {title}
+            </Text>
+            {/* Operator */}
+            {operator && (
+              <Text muted size={1} weight="regular">
+                {operator}
               </Text>
             )}
-            <Text size={1} textOverflow="ellipsis">
-              {/* Field name */}
-              <span style={{fontWeight: 500}}>{title}:</span>
-              {/* Value */}
-              <FilterButtonValue filter={filter} />
-            </Text>
-          </Flex>
+            {/* Value */}
+            {value && (
+              <Text size={1} textOverflow="ellipsis">
+                {value}
+              </Text>
+            )}
+          </Inline>
         </LabelButton>
 
         {closable && (

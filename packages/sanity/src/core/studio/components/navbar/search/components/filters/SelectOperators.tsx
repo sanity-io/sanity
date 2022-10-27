@@ -1,4 +1,4 @@
-import {Select} from '@sanity/ui'
+import {Inline, Select} from '@sanity/ui'
 import React, {ChangeEvent} from 'react'
 import {OPERATORS} from '../../config/operators'
 import {SearchOperatorType} from '../../types'
@@ -11,12 +11,14 @@ interface SelectOperatorsProps {
 
 export function SelectOperators({onChange, operatorTypes, value}: SelectOperatorsProps) {
   return (
-    <Select fontSize={1} onChange={onChange} value={value}>
-      {operatorTypes.map((operatorType) => (
-        <option key={operatorType} value={operatorType}>
-          {OPERATORS[operatorType].label}
-        </option>
-      ))}
-    </Select>
+    <Inline>
+      <Select fontSize={1} onChange={onChange} radius={2} value={value}>
+        {operatorTypes.map((operatorType) => (
+          <option key={operatorType} value={operatorType}>
+            {OPERATORS[operatorType].label}
+          </option>
+        ))}
+      </Select>
+    </Inline>
   )
 }
