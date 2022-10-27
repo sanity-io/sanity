@@ -2,69 +2,69 @@ import type {SearchOperator, SearchOperatorType} from '../types'
 
 export const OPERATORS: Record<SearchOperatorType, SearchOperator> = {
   countEqualTo: {
-    buttonLabel: 'Quantity',
+    buttonLabel: '',
     fn: (value, field) => (value && field ? `count(${field}) == ${value}` : null),
-    label: 'quantity',
+    label: 'quantity equals',
   },
   countGreaterThan: {
-    buttonLabel: 'Quantity >',
+    buttonLabel: '>',
     fn: (value, field) => (value && field ? `count(${field}) > ${value}` : null),
     label: 'quantity more than',
   },
   countLessThan: {
-    buttonLabel: 'Quantity <',
+    buttonLabel: '<',
     fn: (value, field) => (value && field ? `count(${field}) < ${value}` : null),
     label: 'quantity less than',
   },
   dateAfter: {
-    buttonLabel: 'After',
+    buttonLabel: 'after',
     fn: (_value, _field) => `// TODO`,
     label: 'is after',
   },
   dateBefore: {
-    buttonLabel: 'Before',
+    buttonLabel: 'before',
     fn: (_value, _field) => `// TODO`,
     label: 'is before',
   },
   dateLast: {
-    buttonLabel: 'Last',
+    buttonLabel: 'last',
     fn: (_value, _field) => `// TODO`,
     label: 'is in the last',
   },
   dateRange: {
-    buttonLabel: '', // not used
+    buttonLabel: 'is better',
     fn: (_value, _field) => `// TODO`,
     label: 'is between',
   },
   empty: {
-    buttonLabel: 'Empty',
+    buttonLabel: 'is empty',
     fn: (_value, field) => (field ? `!defined(${field})` : null),
     label: 'is empty',
   },
   equalTo: {
-    buttonLabel: 'Exactly',
+    buttonLabel: 'is',
     fn: (value, field) => (value && field ? `${field} == ${value}` : null),
     label: 'is',
   },
   greaterThan: {
-    buttonLabel: 'More than',
+    buttonLabel: '>',
     fn: (value, field) => (value && field ? `${field} > ${value}` : null),
-    label: 'is more than',
+    label: 'greater than',
   },
   greaterThanOrEqualTo: {
-    buttonLabel: 'More than or equal to',
+    buttonLabel: '≥',
     fn: (value, field) => (value && field ? `${field} >= ${value}` : null),
-    label: 'is more than or equal to',
+    label: 'greater than or equal to',
   },
   lessThan: {
-    buttonLabel: 'Less than',
+    buttonLabel: '<',
     fn: (value, field) => (value && field ? `${field} < ${value}` : null),
-    label: 'is less than',
+    label: 'less than',
   },
   lessThanOrEqualTo: {
-    buttonLabel: 'Less than or equal to',
+    buttonLabel: '≤',
     fn: (value, field) => (value && field ? `${field} <= ${value}` : null),
-    label: 'is less than or equal to',
+    label: 'less than or equal to',
   },
   matches: {
     buttonLabel: 'contains',
@@ -72,17 +72,17 @@ export const OPERATORS: Record<SearchOperatorType, SearchOperator> = {
     label: 'contains',
   },
   notEmpty: {
-    buttonLabel: 'Not empty',
+    buttonLabel: 'not empty',
     fn: (_value, field) => (field ? `defined(${field})` : null),
-    label: 'is not empty',
+    label: 'not empty',
   },
   notEqualTo: {
-    buttonLabel: 'Not',
+    buttonLabel: 'is not',
     fn: (value, field) => (value && field ? `${field} != ${value}` : null),
     label: 'is not',
   },
   notMatches: {
-    buttonLabel: 'Not',
+    buttonLabel: 'does not contain',
     fn: (value, field) => (value && field ? `!(${field} match ${value})` : null),
     label: 'does not contain',
   },
