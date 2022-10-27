@@ -1,4 +1,4 @@
-import {Button, Flex, Popover, Text} from '@sanity/ui'
+import {Button, Flex, Popover, Text, useClickOutside} from '@sanity/ui'
 import React, {useCallback, useState} from 'react'
 import {useSearchState} from '../../contexts/search/useSearchState'
 import {DocumentTypes} from './compound/DocumentTypes'
@@ -25,6 +25,8 @@ function FilterContent({onClose}: {onClose: () => void}) {
 
 export default function DocumentTypeButton() {
   const [open, setOpen] = useState(false)
+  const [buttonElement, setButtonElement] = useState<HTMLElement | null>(null)
+  const [popoverElement, setPopoverElement] = useState<HTMLElement | null>(null)
 
   const {
     state: {
@@ -35,6 +37,8 @@ export default function DocumentTypeButton() {
   const handleClose = useCallback(() => setOpen(false), [])
   const handleOpen = useCallback(() => setOpen(true), [])
 
+  useClickOutside(handleClose, [buttonElement, popoverElement])
+
   const value = types.length > 0 ? types.map((type) => type?.title || type.name).join(', ') : 'Any'
 
   return (
@@ -44,11 +48,13 @@ export default function DocumentTypeButton() {
       open={open}
       placement="bottom-start"
       portal
+      ref={setPopoverElement}
     >
       <Button
         fontSize={1}
         onClick={handleOpen}
         padding={2}
+        ref={setButtonElement}
         style={{maxWidth: '100%'}}
         tone="critical"
       >

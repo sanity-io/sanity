@@ -68,6 +68,7 @@ export function SearchProvider({children}: SearchProviderProps) {
       (field) =>
         ({
           _key: generateKey(),
+          documentTypes: field.documentTypes,
           fieldPath: field.fieldPath,
           fieldType: field.type,
           path: field.path,

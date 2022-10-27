@@ -100,7 +100,6 @@ export type TermsTypeRemove = {type: 'TERMS_TYPE_REMOVE'; schemaType: Searchable
 export type TermsTypesClear = {type: 'TERMS_TYPES_CLEAR'}
 
 export type SearchAction =
-  // | CurrentFilterSet
   | FiltersVisibleSet
   | OrderingReset
   | OrderingSet
@@ -338,6 +337,7 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
         },
         terms: stripRecent({
           ...state.terms,
+          filters: [], // Clear all filters
           types: [
             ...(state.terms.types || []), //
             action.schemaType,
