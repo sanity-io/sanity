@@ -81,7 +81,11 @@ export type SearchFilter = CompoundSearchFilter | FieldSearchFilter | CustomSear
  * @internal
  */
 // TODO: rename - ValidatedSearchFilter?
-export type KeyedSearchFilter = SearchFilter & {_key: string; documentTypes?: string[]}
+export type KeyedSearchFilter = SearchFilter & {
+  _key: string
+  documentTypes?: string[]
+  showSubtitle?: boolean
+}
 
 /**
  * @internal

@@ -1,12 +1,12 @@
-import {Button, Flex, Text} from '@sanity/ui'
+import {Button, Code, Flex, Stack, Text} from '@sanity/ui'
 import React, {useCallback, useMemo} from 'react'
 import {FILTERS} from '../../config/filters'
 import {useSearchState} from '../../contexts/search/useSearchState'
-import type {SearchFilter} from '../../types'
+import type {KeyedSearchFilter} from '../../types'
 import {FilterIcon} from './FilterIcon'
 
 interface FilterMenuItemProps {
-  filter: SearchFilter
+  filter: KeyedSearchFilter
   onClose: () => void
 }
 
@@ -44,7 +44,14 @@ export function FilterMenuItem({filter, onClose}: FilterMenuItemProps) {
         <Text size={1}>
           <FilterIcon filter={filter} />
         </Text>
-        <Text size={1}>{title}</Text>
+        <Stack space={2}>
+          <Text size={1}>{title}</Text>
+          {filter.showSubtitle && (
+            <Code muted size={0}>
+              {filter.type === 'field' ? filter.fieldPath : ''}
+            </Code>
+          )}
+        </Stack>
       </Flex>
     </Button>
   )

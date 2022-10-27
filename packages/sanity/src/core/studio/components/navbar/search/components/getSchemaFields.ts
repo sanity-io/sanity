@@ -133,6 +133,7 @@ export function getSchemaFields(schema: Schema): MappedSchemaObject[] {
     .sort((a, b) => a.path.join(',').localeCompare(b.path.join(',')))
 
   // 4. fields by path
+  /*
   const fieldsByPath = flattenedWithDocumentTypes.reduce<Record<string, MappedSchemaObject[]>>(
     (acc, val) => {
       acc[val.fieldPath] = [
@@ -143,6 +144,7 @@ export function getSchemaFields(schema: Schema): MappedSchemaObject[] {
     },
     {}
   )
+  */
 
   // console.log('documentTypes', documentTypes)
   // console.log('objectTypes', objectTypes)
