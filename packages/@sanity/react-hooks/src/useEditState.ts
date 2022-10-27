@@ -4,8 +4,8 @@
 import type {EditStateFor} from '@sanity/base/_internal'
 import documentStore from 'part:@sanity/base/datastore/document'
 import {useMemoObservable} from 'react-rx'
-import {merge, timer} from 'rxjs'
-import {debounce, share, skip, take} from 'rxjs/operators'
+import {timer, of} from 'rxjs'
+import {map, share, switchMap} from 'rxjs/operators'
 
 export function useEditState(
   publishedDocId: string,
@@ -14,15 +14,17 @@ export function useEditState(
 ): EditStateFor {
   return useMemoObservable(() => {
     const base = documentStore.pair.editState(publishedDocId, docTypeName).pipe(share())
+
     if (priority === 'low') {
-      return merge(
-        base.pipe(take(1)),
-        base.pipe(
-          skip(1),
-          debounce(() => timer(1000))
-        )
+      return base.pipe(
+        switchMap((editState, index) => {
+          if (index === 0) return of(editState)
+
+          return timer(1000).pipe(map(() => editState))
+        })
       )
     }
+
     return base
   }, [publishedDocId, docTypeName, priority]) as EditStateFor
 }
