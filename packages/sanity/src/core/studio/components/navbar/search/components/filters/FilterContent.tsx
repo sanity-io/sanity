@@ -1,13 +1,14 @@
 import {Card, Code, Flex, Stack, Text} from '@sanity/ui'
 import React from 'react'
+import {TextWithTone} from '../../../../../../components'
 import {FILTERS} from '../../config/filters'
-import type {SearchFilter} from '../../types'
+import type {KeyedSearchFilter} from '../../types'
 import {CompoundFilterForm} from './compound/CompoundFilterForm'
 import {FieldFilterForm} from './field/FieldFilterForm'
 import {FilterPopoverWrapper} from './FilterPopoverWrapper'
 
 interface FilterContentProps {
-  filter: SearchFilter
+  filter: KeyedSearchFilter
   onClose: () => void
 }
 
@@ -29,7 +30,7 @@ export function FilterContent({filter, onClose}: FilterContentProps) {
             <CompoundFilterForm filter={filter} title={FILTERS.compound[filter.id].title} />
 
             {/* Debug */}
-            <Card borderTop overflow="hidden" padding={3} tone="default">
+            <Card borderTop overflow="hidden" padding={3} tone="transparent">
               <Stack space={2}>
                 <Text size={0} weight="semibold">
                   Compound
@@ -48,7 +49,7 @@ export function FilterContent({filter, onClose}: FilterContentProps) {
             <FieldFilterForm filter={filter} title={filter.path.join(' / ')} />
 
             {/* Debug */}
-            <Card borderTop overflow="hidden" padding={3} tone="primary">
+            <Card borderTop overflow="hidden" padding={3} tone="transparent">
               <Stack space={2}>
                 <Text size={0} weight="semibold">
                   Field
@@ -63,6 +64,17 @@ export function FilterContent({filter, onClose}: FilterContentProps) {
             </Card>
           </>
         )}
+
+        <Card borderTop overflow="hidden" padding={3} tone="transparent">
+          <Stack space={2}>
+            <Text size={0} weight="semibold">
+              Document types
+            </Text>
+            <Code muted size={0}>
+              {filter.documentTypes ? filter.documentTypes?.join(', ') : '(all)'}
+            </Code>
+          </Stack>
+        </Card>
       </Flex>
     </FilterPopoverWrapper>
   )

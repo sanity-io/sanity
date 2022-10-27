@@ -56,7 +56,6 @@ export function getSchemaFields(schema: Schema): MappedSchemaObject[] {
     depth = 0,
     prevFieldPath: string | null = null,
     prevPath: string[] = [],
-    // prevPathTitle: string | null = null,
     documentType?: string
   ): MappedSchemaObject {
     // TODO: refactor
@@ -78,7 +77,6 @@ export function getSchemaFields(schema: Schema): MappedSchemaObject[] {
           fields: defType.fields.map((field) => {
             const fieldTitle = field?.title || startCase(field.name)
 
-            // const existingObject = nonDocumentTypes[field.type]
             const existingObject = objectTypes[field.type]
             const fieldPath = prevFieldPath ? `${prevFieldPath}.${field.name}` : field.name
             const path = prevPath ? [...prevPath, fieldTitle] : [fieldTitle]
@@ -146,7 +144,7 @@ export function getSchemaFields(schema: Schema): MappedSchemaObject[] {
     {}
   )
 
-  // console.log('nonDocumentTypes', nonDocumentTypes)
+  // console.log('documentTypes', documentTypes)
   // console.log('objectTypes', objectTypes)
   // console.log('1. mappedDocuments', mappedDocuments)
   // console.log('2. flattened', flattened)

@@ -6,6 +6,8 @@ import {FILTERS} from '../../config/filters'
 import {SUBHEADER_HEIGHT_SMALL} from '../../constants'
 import {CommandListProvider} from '../../contexts/commandList'
 import {useSearchState} from '../../contexts/search/useSearchState'
+import {useSelectedDocumentTypes} from '../../hooks/useSelectedDocumentTypes'
+import {KeyedSearchFilter} from '../../types'
 import {CustomTextInput} from '../CustomTextInput'
 import {AddFilterContentTypes} from './AddFilterContentTypes'
 import {FilterPopoverWrapper} from './FilterPopoverWrapper'
@@ -32,22 +34,13 @@ export function AddFilterContent({onClose}: AddFilterContentProps) {
 
   const {availableFilters} = useSearchState()
 
+  const currentDocumentTypes = useSelectedDocumentTypes()
+
   const filteredFilters = useMemo(() => {
-    return availableFilters.filter((filter) => {
-      let title = ''
-      if (filter.type === 'compound') {
-        title = FILTERS.compound[filter.id].title
-      }
-      if (filter.type === 'custom') {
-        title = filter.title
-      }
-      if (filter.type === 'field') {
-        title = filter.path.join(' / ')
-      }
-      return title.toLowerCase().includes(titleFilter?.toLowerCase())
-    })
-    // .sort((a, b) => a.path.join(',').localeCompare(b.path.join(',')))
-  }, [availableFilters, titleFilter])
+    return availableFilters
+      .filter((filter) => includesDocumentTypes(filter, currentDocumentTypes))
+      .filter((filter) => includesFilterTitle(filter, titleFilter))
+  }, [availableFilters, currentDocumentTypes, titleFilter])
 
   const handleFilterChange = useCallback(
     (e: React.KeyboardEvent<HTMLInputElement>) => setTitleFilter(e.currentTarget.value),
@@ -115,4 +108,25 @@ export function AddFilterContent({onClose}: AddFilterContentProps) {
       </Flex>
     </FilterPopoverWrapper>
   )
+}
+
+function includesDocumentTypes(filter: KeyedSearchFilter, documentTypes: string[]) {
+  if (!filter.documentTypes || filter.documentTypes.length === 0) {
+    return true
+  }
+  return documentTypes.every((type) => filter.documentTypes?.includes(type))
+}
+
+function includesFilterTitle(filter: KeyedSearchFilter, currentTitle: string) {
+  let title = ''
+  if (filter.type === 'compound') {
+    title = FILTERS.compound[filter.id].title
+  }
+  if (filter.type === 'custom') {
+    title = filter.title
+  }
+  if (filter.type === 'field') {
+    title = filter.path.join(' / ')
+  }
+  return title.toLowerCase().includes(currentTitle.toLowerCase())
 }

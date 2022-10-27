@@ -23,10 +23,10 @@ export function DebugFilterQuery() {
   }
 
   return (
-    <Card padding={3} tone="transparent">
+    <Card padding={4} tone="transparent">
       <Stack space={3}>
         {filterQueries.map((query, index) => (
-          <Code key={index} size={1}>
+          <Code key={index} size={2}>
             {query}
           </Code>
         ))}
