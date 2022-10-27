@@ -70,6 +70,9 @@ export async function getViteConfig(options: ViteOptions): Promise<InlineConfig>
   const staticPath = `${basePath}static`
 
   const viteConfig: InlineConfig = {
+    // Define a custom cache directory so that sanity's vite cache
+    // does not conflict with any potential local vite projects
+    cacheDir: 'node_modules/.sanity/vite',
     root: cwd,
     base: basePath,
     build: {
