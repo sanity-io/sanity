@@ -1,10 +1,10 @@
-import {Box, Card, Select, Text} from '@sanity/ui'
+import {Box, Card, Text} from '@sanity/ui'
 import React, {ChangeEvent, createElement, useCallback} from 'react'
 import {FILTERS} from '../../../config/filters'
 import {FILTER_INPUT_TYPE_COMPONENTS} from '../../../config/inputTypes'
-import {OPERATORS} from '../../../config/operators'
 import {useSearchState} from '../../../contexts/search/useSearchState'
 import type {CompoundSearchFilter, SearchOperatorType} from '../../../types'
+import {SelectOperators} from '../SelectOperators'
 
 interface FilterFormProps {
   filter: CompoundSearchFilter
@@ -65,13 +65,11 @@ export function CompoundFilterForm({filter, title}: FilterFormProps) {
         {/* Operator */}
         {operatorTypes.length > 1 && (
           <Box marginTop={3}>
-            <Select fontSize={1} onChange={handleOperatorChange} value={filter.operatorType}>
-              {operatorTypes.map((operatorType) => (
-                <option key={operatorType} value={operatorType}>
-                  {OPERATORS[operatorType].label}
-                </option>
-              ))}
-            </Select>
+            <SelectOperators
+              onChange={handleOperatorChange}
+              operatorTypes={operatorTypes}
+              value={filter.operatorType}
+            />
           </Box>
         )}
       </Card>

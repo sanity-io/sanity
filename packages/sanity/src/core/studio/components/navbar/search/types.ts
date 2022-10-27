@@ -5,6 +5,9 @@ import type {SearchOptions, SearchSort, SearchTerms, WeightedHit} from '../../..
  * @internal
  */
 export type SearchOperatorType =
+  | 'countEqualTo'
+  | 'countGreaterThan'
+  | 'countLessThan'
   | 'dateAfter'
   | 'dateBefore'
   | 'dateRange'

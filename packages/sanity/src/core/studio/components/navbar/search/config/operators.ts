@@ -1,6 +1,21 @@
 import type {SearchOperator, SearchOperatorType} from '../types'
 
 export const OPERATORS: Record<SearchOperatorType, SearchOperator> = {
+  countEqualTo: {
+    buttonLabel: 'count =',
+    fn: (value, field) => (value && field ? `count(${field}) == ${value}` : null),
+    label: 'count equal to',
+  },
+  countGreaterThan: {
+    buttonLabel: 'count >',
+    fn: (value, field) => (value && field ? `count(${field}) > ${value}` : null),
+    label: 'count greater than',
+  },
+  countLessThan: {
+    buttonLabel: '<',
+    fn: (value, field) => (value && field ? `count(${field}) < ${value}` : null),
+    label: 'count less than',
+  },
   dateAfter: {
     buttonLabel: 'after',
     fn: (_value, _field) => `// TODO`,
@@ -18,7 +33,7 @@ export const OPERATORS: Record<SearchOperatorType, SearchOperator> = {
   },
   dateRange: {
     buttonLabel: '', // not used
-    fn: (_value, field) => (field ? `${field} < foo` : null),
+    fn: (_value, _field) => `// TODO`,
     label: 'is between',
   },
   empty: {

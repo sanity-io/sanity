@@ -1,56 +1,65 @@
 import {CalendarIcon} from '@sanity/icons'
-import {Box, Flex, TextInput} from '@sanity/ui'
-import React, {ChangeEvent, useCallback, useRef} from 'react'
+import {Box, Card, Flex, Stack, Text, TextInput} from '@sanity/ui'
+import {isDate} from 'lodash'
+import React, {ChangeEvent, useCallback, useState} from 'react'
 import type {FilterInputTypeDateRangeComponentProps} from '../../../config/inputTypes'
 
 export function FieldInputDateRange({filter, onChange}: FilterInputTypeDateRangeComponentProps) {
-  const numberMax = useRef<string | null>(filter?.value?.max || null)
-  const numberMin = useRef<string | null>(filter?.value?.min || null)
-
-  const handleChange = useCallback(() => {
-    onChange({
-      max: numberMax?.current,
-      min: numberMin?.current,
-    })
-  }, [onChange])
+  const [max, setMax] = useState(filter?.value?.max || '')
+  const [min, setMin] = useState(filter?.value?.min || '')
 
   const handleMaxChange = useCallback(
     (event: ChangeEvent<HTMLInputElement>) => {
-      numberMax.current = event.currentTarget.value
-      handleChange()
+      const newValue = event.currentTarget.value
+      setMax(newValue)
+      if (isDate(newValue)) {
+        onChange({max: newValue, min: filter?.value?.min})
+      }
     },
-    [handleChange]
+    [filter?.value?.min, onChange]
   )
   const handleMinChange = useCallback(
     (event: ChangeEvent<HTMLInputElement>) => {
-      numberMin.current = event.currentTarget.value
-      handleChange()
+      const newValue = event.currentTarget.value
+      setMin(newValue)
+      if (isDate(newValue)) {
+        onChange({max: filter?.value?.max, min: newValue})
+      }
     },
-    [handleChange]
+    [filter?.value?.max, onChange]
   )
 
   return (
-    <Flex gap={2}>
-      <Box flex={1}>
-        <TextInput
-          fontSize={1}
-          icon={CalendarIcon}
-          onChange={handleMinChange}
-          placeholder="Date 1"
-          size={1}
-          style={{minWidth: '200px'}}
-        />
-      </Box>
-      <Box flex={1}>
-        <TextInput
-          fontSize={1}
-          icon={CalendarIcon}
-          onChange={handleMaxChange}
-          placeholder="Date 2"
-          size={1}
-          style={{minWidth: '200px'}}
-        />
-      </Box>
-    </Flex>
+    <Stack space={2}>
+      <Flex gap={2}>
+        <Box flex={1}>
+          <TextInput
+            fontSize={1}
+            icon={CalendarIcon}
+            onChange={handleMinChange}
+            placeholder="Date 1"
+            size={1}
+            style={{minWidth: '200px'}}
+            value={min}
+          />
+        </Box>
+        <Box flex={1}>
+          <TextInput
+            fontSize={1}
+            icon={CalendarIcon}
+            onChange={handleMaxChange}
+            placeholder="Date 2"
+            size={1}
+            style={{minWidth: '200px'}}
+            value={max}
+          />
+        </Box>
+      </Flex>
+      <Card border padding={3} radius={1} tone="caution">
+        <Text muted size={1}>
+          TODO: use date input
+        </Text>
+      </Card>
+    </Stack>
   )
 }
