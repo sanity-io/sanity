@@ -77,11 +77,11 @@ export interface FilterInputTypeStringComponentProps extends BaseFilterInputType
 }
 
 export type FilterInputTypeComponentProps =
+  | FilterInputTypeAssetComponentProps
   | FilterInputTypeBooleanComponentProps
   | FilterInputTypeDateComponentProps
   | FilterInputTypeDateLastComponentProps
   | FilterInputTypeDateRangeComponentProps
-  | FilterInputTypeAssetComponentProps
   | FilterInputTypeNumberComponentProps
   | FilterInputTypeNumberRangeComponentProps
   | FilterInputTypeReferenceComponentProps

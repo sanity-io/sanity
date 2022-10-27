@@ -3,6 +3,21 @@ import type {FilterFormState} from './filters'
 export const ARRAY_FORM_STATES: FilterFormState[] = [
   {
     initialValue: null,
+    input: 'number',
+    operator: 'countEqualTo',
+  },
+  {
+    initialValue: null,
+    input: 'number',
+    operator: 'countGreaterThan',
+  },
+  {
+    initialValue: null,
+    input: 'number',
+    operator: 'countLessThan',
+  },
+  {
+    initialValue: null,
     operator: 'notEmpty',
   },
   {
