@@ -7,7 +7,13 @@ import {getSchemaFields} from '../../components/getSchemaFields'
 import {FINDABILITY_MVI, SEARCH_LIMIT} from '../../constants'
 import {createRecentSearchesStore, RecentOmnisearchTerms} from '../../datastores/recentSearches'
 import {useSearch} from '../../hooks/useSearch'
-import type {KeyedSearchFilter, OmnisearchTerms, SearchFilter, SearchOrdering} from '../../types'
+import type {
+  KeyedSearchFilter,
+  OmnisearchTerms,
+  SearchFilter,
+  SearchFilterGroup,
+  SearchOrdering,
+} from '../../types'
 import {generateKey} from '../../utils/generateKey'
 import {hasSearchableTerms} from '../../utils/hasSearchableTerms'
 import {isRecentSearchTerms} from '../../utils/isRecentSearchTerms'
@@ -28,7 +34,7 @@ export function SearchProvider({children}: SearchProviderProps) {
 
   const {dataset, projectId} = client.config()
 
-  const availableFilters: KeyedSearchFilter[] = useMemo(() => {
+  const filterGroups: SearchFilterGroup[] = useMemo(() => {
     const flattenedFields = getSchemaFields(schema)
 
     // TODO: wrap in `defineFilter` or equivalent
@@ -62,6 +68,13 @@ export function SearchProvider({children}: SearchProviderProps) {
         id: 'hasReference',
         type: 'compound',
       },
+      {
+        _key: generateKey(),
+        fieldPath: '_id',
+        fieldType: 'string',
+        path: ['ID'],
+        type: 'field',
+      },
     ]
 
     const schemaFieldFilters: KeyedSearchFilter[] = flattenedFields.map(
@@ -81,10 +94,14 @@ export function SearchProvider({children}: SearchProviderProps) {
     )
 
     return [
-      // Common filters
-      ...commonFilters,
-      // Schema fields
-      ...schemaFieldFilters,
+      {
+        items: commonFilters,
+        type: 'common',
+      } as SearchFilterGroup,
+      {
+        items: schemaFieldFilters,
+        type: 'fields',
+      } as SearchFilterGroup,
     ]
   }, [schema])
 
@@ -186,8 +203,8 @@ export function SearchProvider({children}: SearchProviderProps) {
   return (
     <SearchContext.Provider
       value={{
-        availableFilters, //
         dispatch,
+        filterGroups,
         recentSearchesStore,
         state,
       }}

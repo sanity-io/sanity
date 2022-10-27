@@ -80,12 +80,32 @@ export type SearchFilter = CompoundSearchFilter | FieldSearchFilter | CustomSear
 /**
  * @internal
  */
+export interface SearchFilterGroup {
+  items: KeyedSearchFilter[]
+  type: 'common' | 'custom' | 'fields'
+}
+
+/**
+ * @internal
+ */
 // TODO: rename - ValidatedSearchFilter?
 export type KeyedSearchFilter = SearchFilter & {
   _key: string
   documentTypes?: string[]
   showSubtitle?: boolean
 }
+
+export interface SearchFilterMenuItemFilter {
+  filter: KeyedSearchFilter
+  type: 'filter'
+}
+
+export interface SearchFilterMenuItemHeader {
+  title: string
+  type: 'header'
+}
+
+export type SearchFilterMenuItem = SearchFilterMenuItemFilter | SearchFilterMenuItemHeader
 
 /**
  * @internal
