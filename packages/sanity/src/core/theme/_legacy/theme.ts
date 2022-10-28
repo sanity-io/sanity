@@ -13,9 +13,9 @@ import {LegacyThemeProps} from './types'
  *
  * @example
  * ```tsx
- * import {buildLegacyTheme, createConfig} from 'sanity'
+ * import {buildLegacyTheme, defineConfig} from 'sanity'
  *
- * export default createConfig({
+ * export default defineConfig({
  *   // project configuration ...
  *
  *   // Customize theming

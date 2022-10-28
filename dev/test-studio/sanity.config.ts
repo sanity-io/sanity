@@ -1,6 +1,6 @@
 import {BookIcon} from '@sanity/icons'
 import {visionTool} from '@sanity/vision'
-import {createConfig, createPlugin} from 'sanity'
+import {defineConfig, definePlugin} from 'sanity'
 import {deskTool} from 'sanity/desk'
 import {muxInput} from 'sanity-plugin-mux-input'
 import {theme as tailwindTheme} from 'https://themer.sanity.build/api/hues?preset=tw-cyan&default=64748b&primary=d946ef;lightest:fdf4ff;darkest:701a75&transparent=6b7180;darkest:111826&positive=43d675;400;lightest:f8fafc&caution=f59e09;300;lightest:fffbeb;darkest:783510&critical=f43f5e;lightest:fef1f2;darkest:881337&lightest=ffffff&darkest=0f172a'
@@ -24,7 +24,7 @@ import {Field, formComponentsPlugin, Input, Item, Preview} from './components/fo
 import {googleTheme} from './themes/google'
 import {vercelTheme} from './themes/vercel'
 
-const sharedSettings = createPlugin({
+const sharedSettings = definePlugin({
   name: 'sharedSettings',
   schema: {
     types: schemaTypes,
@@ -81,7 +81,7 @@ const sharedSettings = createPlugin({
   ],
 })
 
-export default createConfig([
+export default defineConfig([
   {
     name: 'default',
     title: 'Test Studio',

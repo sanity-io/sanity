@@ -1,14 +1,14 @@
 import type {SanityClient} from '@sanity/client'
-import {act, renderHook, waitFor} from '@testing-library/react'
+import {renderHook, waitFor} from '@testing-library/react'
 import {asyncScheduler, defer, of} from 'rxjs'
 import {delay, observeOn, tap} from 'rxjs/operators'
 import {createMockSanityClient} from '../../../../../../../test/mocks/mockSanityClient'
 import {createTestProvider} from '../../../../../../../test/testUtils/TestProvider'
-import {createConfig} from '../../../../../config'
+import {defineConfig} from '../../../../../config'
 import {useDocumentType} from '../useDocumentType'
 
 function createWrapperComponent(client: SanityClient) {
-  const config = createConfig({
+  const config = defineConfig({
     projectId: 'foo',
     dataset: 'test',
   })

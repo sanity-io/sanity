@@ -1,4 +1,4 @@
-import {createPlugin} from '../createPlugin'
+import {createPlugin} from '../definePlugin'
 
 describe('createPlugin', () => {
   it.todo('normalizes its input to a function')

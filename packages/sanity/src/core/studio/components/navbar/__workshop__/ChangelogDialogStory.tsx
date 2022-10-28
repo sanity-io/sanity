@@ -39,7 +39,7 @@ const changelog = [
           {
             _key: '527d1e404b08',
             _type: 'code',
-            code: "import {createConfig} from 'sanity'\nimport {deskTool} from 'sanity/desk'\nimport {schemaTypes} from './schema/schema'\n\nexport default createConfig({\n  name: 'default',\n  title: 'My Cool Project',\n  projectId: 'my-project-id',\n  dataset: 'production',\n  plugins: [\n    deskTool(),\n  ],\n  schema: {\n    types: schemaTypes,\n  },\n})",
+            code: "import {defineConfig} from 'sanity'\nimport {deskTool} from 'sanity/desk'\nimport {schemaTypes} from './schema/schema'\n\nexport default defineConfig({\n  name: 'default',\n  title: 'My Cool Project',\n  projectId: 'my-project-id',\n  dataset: 'production',\n  plugins: [\n    deskTool(),\n  ],\n  schema: {\n    types: schemaTypes,\n  },\n})",
             language: 'javascript',
           },
         ],

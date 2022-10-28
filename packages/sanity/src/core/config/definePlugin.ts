@@ -18,7 +18,7 @@ function validatePlugin(pluginResult: PluginOptions) {
 }
 
 /** @beta */
-export function createPlugin<TOptions = void>(
+export function definePlugin<TOptions = void>(
   arg: PluginFactory<TOptions> | PluginOptions
 ): Plugin<TOptions> {
   if (typeof arg === 'function') {
@@ -36,4 +36,14 @@ export function createPlugin<TOptions = void>(
 
   validatePlugin(arg)
   return () => arg
+}
+
+/**
+ * @deprecated Use `definePlugin` instead
+ * @beta
+ */
+export function createPlugin<TOptions = void>(
+  arg: PluginFactory<TOptions> | PluginOptions
+): Plugin<TOptions> {
+  return definePlugin(arg)
 }

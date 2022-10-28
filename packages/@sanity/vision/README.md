@@ -17,10 +17,10 @@ Vision is a plugin for Sanity Studio for testing GROQ queries. It features:
 
 ```ts
 // `sanity.config.ts` / `sanity.config.js`:
-import {createConfig} from 'sanity'
+import {defineConfig} from 'sanity'
 import {visionTool} from '@sanity/vision'
 
-export default createConfig({
+export default defineConfig({
   // ...
   plugins: [
     visionTool({
@@ -38,12 +38,12 @@ If you only want the tool available in development (eg not in deployed studios),
 
 ```ts
 // `sanity.config.ts` / `sanity.config.js`:
-import {createConfig, isDev} from 'sanity'
+import {defineConfig, isDev} from 'sanity'
 import {visionTool} from '@sanity/vision'
 
 const devOnlyPlugins = [visionTool()]
 
-export default createConfig({
+export default defineConfig({
   // ...
   plugins: [
     // ... your other plugins here ...

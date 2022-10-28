@@ -11,7 +11,7 @@ import {
   ReferenceValue,
   SlugValue,
 } from '@sanity/types'
-import {createConfig} from '../../config'
+import {defineConfig} from '../../config'
 import {PreviewProps} from '../../components'
 import {
   ArrayOfObjectsInputProps,
@@ -190,7 +190,7 @@ describe('definitionExtensions', () => {
       const components: ArrayOfObjectsComponents | undefined = type.components
 
       // ensure we can assign this to config.schema.types
-      createConfig({
+      defineConfig({
         name: 'test',
         projectId: 'test',
         dataset: 'test',
@@ -237,7 +237,7 @@ describe('definitionExtensions', () => {
       const components: BlockComponents | undefined = type.components
 
       // ensure we can assign this to config.schema.types
-      createConfig({
+      defineConfig({
         name: 'test',
         projectId: 'test',
         dataset: 'test',

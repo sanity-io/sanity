@@ -1,7 +1,7 @@
-import {createConfig} from 'sanity'
+import {defineConfig} from 'sanity'
 import {deskTool} from 'sanity/desk'
 
-export default createConfig({
+export default defineConfig({
   dataset: 'test',
   plugins: [deskTool()],
   name: 'default',

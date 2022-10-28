@@ -1,12 +1,12 @@
 import type {ProjectTemplate} from '../initProject'
 
 const configTemplate = `
-import {createConfig} from 'sanity'
+import {defineConfig} from 'sanity'
 import {deskTool} from 'sanity/desk'
 //import {googleMapsInput} from '@sanity/google-maps-input'
 import {schemaTypes} from './schemas'
 
-export default createConfig({
+export default defineConfig({
   name: '%sourceName%',
   title: '%projectName%',
 

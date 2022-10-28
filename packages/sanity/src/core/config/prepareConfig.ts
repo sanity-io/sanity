@@ -57,7 +57,7 @@ function normalizeIcon(
 }
 
 /**
- * Takes in a config (created from the `createConfig` function) and returns
+ * Takes in a config (created from the `defineConfig` function) and returns
  * an array of `WorkspaceSummary`. Note: this only partially resolves a config.
  *
  * For usage inside the Studio, it's preferred to pull the pre-resolved

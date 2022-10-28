@@ -1,10 +1,10 @@
 /* eslint-disable react/jsx-filename-extension */
 /* eslint-disable react/react-in-jsx-scope */
 
-import {createConfig, Studio} from 'sanity'
+import {defineConfig, Studio} from 'sanity'
 import {deskTool} from 'sanity/desk'
 
-const config = createConfig({
+const config = defineConfig({
   plugins: [deskTool()],
   name: 'default',
   projectId: 'ppsg7ml5',

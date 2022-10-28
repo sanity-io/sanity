@@ -3,11 +3,11 @@ import * as parser from 'recast/parsers/typescript'
 import traverse from '@babel/traverse'
 
 const defaultTemplate = `
-import {createConfig} from 'sanity'
+import {defineConfig} from 'sanity'
 import {deskTool} from 'sanity/desk'
 import {schemaTypes} from './schemas'
 
-export default createConfig({
+export default defineConfig({
   name: '%sourceName%',
   title: '%projectName%',
 

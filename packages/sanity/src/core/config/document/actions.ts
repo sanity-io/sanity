@@ -20,10 +20,10 @@ export interface DocumentActionComponent extends ActionComponent<DocumentActionP
    * with another. E.g.:
    *
    * ```js
-   * import {createConfig} from 'sanity'
+   * import {defineConfig} from 'sanity'
    * import {MyPublishAction} from '...'
    *
-   * export default createConfig({
+   * export default defineConfig({
    *   document: {
    *     actions: (prev) =>
    *       prev.map((previousAction) =>

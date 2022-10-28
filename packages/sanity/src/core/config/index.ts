@@ -1,5 +1,5 @@
-export * from './createConfig'
-export * from './createPlugin'
+export * from './defineConfig'
+export * from './definePlugin'
 export * from './document'
 export * from './types'
 export * from './prepareConfig'

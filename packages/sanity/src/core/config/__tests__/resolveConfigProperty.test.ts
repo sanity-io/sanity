@@ -1,5 +1,5 @@
 import {resolveConfigProperty} from '../resolveConfigProperty'
-import {createPlugin} from '../createPlugin'
+import {createPlugin} from '../definePlugin'
 
 describe('resolveConfigProperty', () => {
   it('traverses configs and returns a resolved configuration property', () => {
