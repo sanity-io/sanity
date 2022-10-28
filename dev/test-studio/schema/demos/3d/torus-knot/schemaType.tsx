@@ -1,41 +1,22 @@
-import React, {lazy, Suspense} from 'react'
+import React from 'react'
 import {defineType} from 'sanity'
-import styled from 'styled-components'
-import {Box, Inline} from '@sanity/ui'
 import {structureGroupOptions} from '../../../../structure/groupByOption'
-import {SchemaIcon} from './SchemaIcon'
+import TorusKnotInput from './TorusKnotInput'
+import {LazyPreviewMedia, LazyColorInput} from './TorusKnotLazyComponents'
 
-const TorusKnotInput = lazy(() => import('./TorusKnotInput'))
-const TorusKnotPreview = lazy(() => import('./TorusKnotPreview'))
-// const TorusKnotInputPreview = lazy(() => import('./TorusKnotInputPreview'))
-const ColorInput = lazy(() => import('./ColorInput'))
-const ColorPreview = styled(Box).attrs({padding: 2})`
-  border-radius: 2px;
-  background: red;
-`
+const initialBase = '#ff4eb8'
+const initialColorA = '#00ffff'
+const initialColorB = '#ff8f00'
 
-/*
-
- <Suspense fallback={null}>
-            <div
-              className="overflow-hidden rounded-[3px] bg-[#f0f0f0]"
-              style={{
-                height: '35px',
-                width: '35px',
-                overflow: 'hidden',
-                borderRadius: '3px',
-              }}
-            >
-              <LaminaLayering thumbnail element={props} />
-            </div>
-          </Suspense>
-// */
+const TorusKnotIcon = () => (
+  <LazyPreviewMedia base={initialBase} colorA={initialColorA} colorB={initialColorB} />
+)
 
 export const torusKnotType = defineType({
   type: 'document',
   name: 'demo-3d-torus-knot',
   title: '3D Torus Knot',
-  icon: SchemaIcon,
+  icon: TorusKnotIcon,
   options: structureGroupOptions({
     structureGroup: '3d',
   }),
@@ -48,9 +29,9 @@ export const torusKnotType = defineType({
     },
     prepare: (props: any) => {
       return {
-        subtitle: `base: ${props.base}, colorA: ${props.colorA}, colorB: ${props.colorB}`,
         title: props.title,
-        media: <TorusKnotPreview {...props} />,
+        subtitle: `base: ${props.base}, colorA: ${props.colorA}, colorB: ${props.colorB}`,
+        media: <LazyPreviewMedia {...props} />,
       }
     },
   },
@@ -65,6 +46,7 @@ export const torusKnotType = defineType({
       type: 'object',
       name: 'scene',
       title: '3D Scene',
+      description: 'Based on the delightful https://codesandbox.io/s/layer-materials-nvup4',
 
       components: {
         input: TorusKnotInput,
@@ -82,30 +64,24 @@ export const torusKnotType = defineType({
           name: 'base',
           title: 'Base',
           fieldset: 'colors',
-          initialValue: '#ff4eb8',
-          components: {
-            input: ColorInput,
-          },
+          initialValue: initialBase,
+          components: {input: LazyColorInput},
         },
         {
           type: 'string',
           name: 'colorA',
           title: 'Color A',
           fieldset: 'colors',
-          initialValue: '#00ffff',
-          components: {
-            input: ColorInput,
-          },
+          initialValue: initialColorA,
+          components: {input: LazyColorInput},
         },
         {
           type: 'string',
           name: 'colorB',
           title: 'Color B',
           fieldset: 'colors',
-          initialValue: '#ff8f00',
-          components: {
-            input: ColorInput,
-          },
+          initialValue: initialColorB,
+          components: {input: LazyColorInput},
         },
       ],
     },

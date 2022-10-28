@@ -9,10 +9,9 @@ import {useLazyFrameloop} from './useLazyFrameLoop'
 const Container = styled(Box)`
   overflow: hidden;
   overflow: clip;
-  border-radius: 3px;
+  border-radius: 1px;
   aspect-ratio: 1/1;
-  height: 35px;
-  width: 35px;
+  width: 100%;
 `
 
 export type Props = {
