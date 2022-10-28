@@ -159,10 +159,6 @@ export interface Rule {
   uri(options?: UriValidationOptions): Rule
   unique(): Rule
   reference(): Rule
-  /**
-   * @deprecated use `Rule.custom` instead
-   */
-  block(blockValidators: BlockValidator): Rule
   fields(rules: FieldRules): Rule
   assetRequired(): Rule
   validate(value: unknown, options: ValidationContext): Promise<ValidationMarker[]>
@@ -341,23 +337,6 @@ export type CustomValidator<T = unknown> = (
   value: T,
   context: ValidationContext
 ) => CustomValidatorResult | Promise<CustomValidatorResult>
-
-/**
- * @deprecated use `Rule.custom` instead
- *
- * @see CustomValidator
- *
- * @public
- */
-export type BlockValidator = (
-  block: Block,
-  options: ValidationContext
-) =>
-  | ValidationError[]
-  | ValidationError
-  | string
-  | true
-  | Promise<ValidationError[] | ValidationError | string | true>
 
 /** @public */
 export interface SlugValidationContext extends ValidationContext {
