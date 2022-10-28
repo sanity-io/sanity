@@ -44,12 +44,15 @@ export function AddFilterContent({onClose}: AddFilterContentProps) {
         if (val.type === 'fields') {
           let headerTitle = 'All fields'
           if (currentDocumentTypes.length > 0) {
+            /*
             const firstDocumentType = schema.get(currentDocumentTypes[0])
             const firstDocumentTitle = firstDocumentType?.title || firstDocumentType?.name || ''
             headerTitle = `Fields in ${firstDocumentTitle}`
             if (currentDocumentTypes.length > 1) {
               headerTitle += ` +${currentDocumentTypes.length - 1}`
             }
+            */
+            headerTitle = 'Applicable fields'
           }
 
           acc.push({
