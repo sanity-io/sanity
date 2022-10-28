@@ -18,6 +18,7 @@
       "types": "./lib/dts/src/default-config.d.ts",
       "source": "./src/defaultStudioConfig.ts",
       "import": "./lib/default-config.esm.js",
+      "require": "./lib/default-config.js",
       "default": "./lib/default-config.esm.js"
     }
   },
