@@ -8,7 +8,7 @@ import {createPatchChannel} from '../../../../patch/PatchChannel'
 import {ArrayOfObjectsMember} from '../../../../store'
 import {applyAll} from '../../../../patch/applyPatch'
 import {FormPatch, PatchEvent} from '../../../../patch'
-import {createConfig} from '../../../../../config'
+import {defineConfig} from '../../../../../config'
 import {StudioProvider} from '../../../../../studio'
 import {useSchema} from '../../../../../hooks'
 import {valueOptions, values} from './values'
@@ -19,7 +19,7 @@ const ptType = {
   of: [{type: 'block'}],
 }
 
-const config = createConfig({
+const config = defineConfig({
   name: 'test',
   dataset: 'test',
   projectId: 'test',

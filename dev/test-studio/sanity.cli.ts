@@ -1,8 +1,8 @@
 import path from 'path'
-import {createCliConfig} from 'sanity/cli'
+import {defineCliConfig} from 'sanity/cli'
 import {UserConfig} from 'vite'
 
-export default createCliConfig({
+export default defineCliConfig({
   api: {
     projectId: 'ppsg7ml5',
     dataset: 'test',

@@ -1,7 +1,7 @@
 /* eslint-disable react/react-in-jsx-scope */
 
 import {useMemo} from 'react'
-import {createConfig, Studio} from 'sanity'
+import {defineConfig, Studio} from 'sanity'
 import {deskTool} from 'sanity/desk'
 
 const wrapperStyles = {height: '100vh', width: '100vw'}
@@ -9,7 +9,7 @@ const wrapperStyles = {height: '100vh', width: '100vw'}
 export default function StudioRoot({basePath}: {basePath: string}) {
   const config = useMemo(
     () =>
-      createConfig({
+      defineConfig({
         basePath,
         plugins: [deskTool()],
         title: 'Next.js Starter',

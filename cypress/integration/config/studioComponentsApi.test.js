@@ -3,7 +3,7 @@ describe('Config: studio components', () => {
     cy.visit('custom-components/content')
   })
 
-  describe('createConfig', () => {
+  describe('defineConfig', () => {
     it('default layout is displayed inside renderLayout component', () => {
       cy.get('[data-testid="test-layout-config"]')
         .find('[data-testid="studio-layout"]')
@@ -31,21 +31,21 @@ describe('Config: studio components', () => {
   })
 
   describe('createPlugin', () => {
-    it('custom layout in createConfig is displayed inside renderLayout component', () => {
+    it('custom layout in defineConfig is displayed inside renderLayout component', () => {
       cy.get('[data-testid="test-layout-plugin"]')
         .find('[data-testid="test-layout-config"]')
         .find('[data-testid="studio-layout"]')
         .should('be.visible')
     })
 
-    it('custom navbar in createConfig is displayed inside renderNavbar component', () => {
+    it('custom navbar in defineConfig is displayed inside renderNavbar component', () => {
       cy.get('[data-testid="test-navbar-plugin"]')
         .find('[data-testid="test-navbar-config"]')
         .find('[data-testid="navbar"]')
         .should('be.visible')
     })
 
-    it('custom tool menu in createConfig is displayed inside renderToolMenu component', () => {
+    it('custom tool menu in defineConfig is displayed inside renderToolMenu component', () => {
       cy.get('[data-testid="test-tool-menu-plugin"]')
         .find('[data-testid="test-tool-menu-config"]')
         .find('[data-testid="tool-collapse-menu"]')

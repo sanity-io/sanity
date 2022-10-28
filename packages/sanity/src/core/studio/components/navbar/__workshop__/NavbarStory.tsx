@@ -10,7 +10,7 @@ import {Card} from '@sanity/ui'
 import {useBoolean, useString} from '@sanity/ui-workshop'
 import React, {createContext, useMemo, useState} from 'react'
 import styled from 'styled-components'
-import {createConfig, Tool} from '../../../../config'
+import {defineConfig, Tool} from '../../../../config'
 import {isNonNullable} from '../../../../util/isNonNullable'
 import {isTruthy} from '../../../../util/isTruthy'
 import {useNavbarComponent} from '../../../studio-components-hooks'
@@ -46,7 +46,7 @@ export default function NavbarStory() {
   const tools = useTools()
   const config = useMemo(
     () =>
-      createConfig({
+      defineConfig({
         // The same id as in the test-studio sanity.config.ts
         projectId: 'ppsg7ml5',
         dataset: 'production',

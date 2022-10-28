@@ -1,8 +1,8 @@
-import {createConfig} from 'sanity'
+import {defineConfig} from 'sanity'
 import {deskTool} from 'sanity/desk'
 import {schemaTypes} from './schema'
 
-export default createConfig({
+export default defineConfig({
   plugins: [deskTool()],
   title: 'Strict',
   name: 'default',

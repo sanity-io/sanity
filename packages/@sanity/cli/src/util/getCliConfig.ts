@@ -145,7 +145,7 @@ function importConfig(filePath: string): CliConfig | null {
 
     return 'default' in config ? config.default : config
   } catch (err) {
-    // If attempting to import `createCliConfig` or similar from `sanity/cli`,
+    // If attempting to import `defineCliConfig` or similar from `sanity/cli`,
     // accept the fact that it might not be installed. Instead, let the CLI
     // give a warning about the `sanity` module not being installed
     if (err.code === 'MODULE_NOT_FOUND' && err.message.includes('sanity/cli')) {

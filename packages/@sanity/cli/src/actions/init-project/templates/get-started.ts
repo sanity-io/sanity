@@ -1,12 +1,12 @@
 import type {ProjectTemplate} from '../initProject'
 
 const configTemplate = `
-import {createConfig} from 'sanity'
+import {defineConfig} from 'sanity'
 import {deskTool} from 'sanity/desk'
 import {tutorialLayout} from './plugins/tutorial'
 import {schemaTypes} from './schemas'
 
-export default createConfig({
+export default defineConfig({
   name: '%sourceName%',
   title: '%projectName%',
 

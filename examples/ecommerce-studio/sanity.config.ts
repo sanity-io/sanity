@@ -1,9 +1,9 @@
-import {createConfig} from 'sanity'
+import {defineConfig} from 'sanity'
 import {deskTool} from 'sanity/desk'
 import {schemaTypes} from '../../packages/@sanity/cli/templates/ecommerce/schemas'
 import {barcodeInput} from './plugins/barcode-input'
 
-export default createConfig({
+export default defineConfig({
   name: 'default',
   title: 'Sanity E-commerce example studio',
 

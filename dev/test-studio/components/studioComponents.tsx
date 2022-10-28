@@ -1,8 +1,8 @@
 import React, {createContext, useContext} from 'react'
 import {Box, Card, Flex, Stack, Text} from '@sanity/ui'
-import {LogoProps, NavbarProps, LayoutProps, createPlugin, ToolMenuProps} from 'sanity'
+import {LogoProps, NavbarProps, LayoutProps, definePlugin, ToolMenuProps} from 'sanity'
 
-export const studioComponentsPlugin = createPlugin({
+export const studioComponentsPlugin = definePlugin({
   name: 'studio-components-plugin',
   studio: {
     components: {
@@ -51,7 +51,7 @@ export function CustomNavbar(props: NavbarProps) {
         <Flex align="center" gap={4}>
           <Text weight="semibold" size={1}>
             This banner is rendered with <code>{`components.navbar`}</code> in{' '}
-            <code>{`createConfig`}</code>
+            <code>{`defineConfig`}</code>
           </Text>
         </Flex>
       </Card>

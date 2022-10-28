@@ -1,11 +1,11 @@
-import {createConfig} from 'sanity'
+import {defineConfig} from 'sanity'
 import {deskTool} from 'sanity/desk'
 import {googleMapsInput} from '@sanity/google-maps-input'
 
 import {schemaTypes} from '../../packages/@sanity/cli/templates/moviedb/schemas'
 import {BrandLogo} from './components/BrandLogo'
 
-export default createConfig({
+export default defineConfig({
   name: 'default',
   title: 'Movies Unlimited',
 
