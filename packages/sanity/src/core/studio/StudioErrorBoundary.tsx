@@ -1,7 +1,7 @@
 import React, {useCallback, useEffect, useState} from 'react'
 import {Button, Card, Code, Container, ErrorBoundary, Heading, Stack, useToast} from '@sanity/ui'
 import {useHotModuleReload} from 'use-hot-module-reload'
-import {SchemaError} from '../config'
+import {ConfigResolutionError, SchemaError} from '../config'
 import {globalScope, isRecord} from '../util'
 import {CorsOriginError} from '../store'
 import {CorsOriginErrorScreen, SchemaErrorsScreen} from './screens'
@@ -18,6 +18,10 @@ function isKnownError(err: Error): boolean {
   }
 
   if (err instanceof CorsOriginError) {
+    return true
+  }
+
+  if (err instanceof ConfigResolutionError) {
     return true
   }
 
