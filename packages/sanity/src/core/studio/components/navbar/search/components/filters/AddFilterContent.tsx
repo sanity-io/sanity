@@ -1,14 +1,14 @@
 import {SearchIcon} from '@sanity/icons'
 import {Box, Flex} from '@sanity/ui'
+import {difference, isEqual} from 'lodash'
 import React, {useCallback, useId, useMemo, useState} from 'react'
 import styled from 'styled-components'
-import {useSchema} from '../../../../../../hooks'
 import {FILTERS} from '../../config/filters'
 import {SUBHEADER_HEIGHT_SMALL} from '../../constants'
 import {CommandListProvider} from '../../contexts/commandList'
 import {useSearchState} from '../../contexts/search/useSearchState'
 import {useSelectedDocumentTypes} from '../../hooks/useSelectedDocumentTypes'
-import {SearchFilterMenuItem} from '../../types'
+import {KeyedSearchFilter, SearchFilterMenuItem} from '../../types'
 import {CustomTextInput} from '../CustomTextInput'
 import {AddFilterContentMenuItems} from './AddFilterContentMenuItems'
 import {FilterPopoverWrapper} from './FilterPopoverWrapper'
@@ -33,42 +33,80 @@ export function AddFilterContent({onClose}: AddFilterContentProps) {
   const [pointerOverlayElement, setPointerOverlayRef] = useState<HTMLDivElement | null>(null)
   const [titleFilter, setTitleFilter] = useState('')
 
-  const schema = useSchema()
   const {filterGroups} = useSearchState()
   const currentDocumentTypes = useSelectedDocumentTypes()
 
+  // TODO: refactor
   const filteredMenuItems = useMemo(() => {
-    return filterGroups
-      .reduce<SearchFilterMenuItem[]>((acc, val) => {
-        // Header
-        if (val.type === 'fields') {
-          let headerTitle = 'All fields'
-          if (currentDocumentTypes.length > 0) {
-            /*
-            const firstDocumentType = schema.get(currentDocumentTypes[0])
-            const firstDocumentTitle = firstDocumentType?.title || firstDocumentType?.name || ''
-            headerTitle = `Fields in ${firstDocumentTitle}`
-            if (currentDocumentTypes.length > 1) {
-              headerTitle += ` +${currentDocumentTypes.length - 1}`
-            }
-            */
-            headerTitle = 'Applicable fields'
-          }
+    return filterGroups.reduce<SearchFilterMenuItem[]>((acc, val) => {
+      if (val.type === 'fields') {
+        // Get shared fields
+        if (currentDocumentTypes.length > 1) {
+          const sharedItems = val.items
+            .filter(
+              (filter) => difference(currentDocumentTypes, filter?.documentTypes || []).length === 0
+            )
+            .filter((filter) => includesFilterTitle(filter, titleFilter))
+            .map(toggleSubtitleVisibility)
 
-          acc.push({
-            title: headerTitle,
-            type: 'header',
-          })
+          if (sharedItems.length > 0) {
+            // Header
+            acc.push({title: 'Shared fields in selection', type: 'header'})
+            // Items
+            sharedItems.forEach((filter) => {
+              acc.push({filter, type: 'filter'})
+            })
+          }
         }
+
+        if (currentDocumentTypes.length > 0) {
+          // Applicable fields
+          const applicableItems = val.items
+            .filter((filter) =>
+              // eslint-disable-next-line max-nested-callbacks
+              filter.documentTypes?.some((type) => currentDocumentTypes.includes(type))
+            )
+            .filter((filter) => includesFilterTitle(filter, titleFilter))
+            .map(toggleSubtitleVisibility)
+
+          if (applicableItems.length > 0) {
+            // Header
+            acc.push({title: 'All fields in selection', type: 'header'})
+            // Items
+            applicableItems.forEach((filter) => {
+              acc.push({filter, type: 'filter'})
+            })
+          }
+        }
+
+        if (currentDocumentTypes.length === 0) {
+          const allItems = val.items
+            .filter((filter) => includesFilterTitle(filter, titleFilter))
+            .map(toggleSubtitleVisibility)
+
+          if (allItems.length > 0) {
+            // Header
+            acc.push({title: 'All fields', type: 'header'})
+            // Filters
+            allItems.forEach((filter) => {
+              acc.push({filter, type: 'filter'})
+            })
+          }
+        }
+      } else {
         // Filters
         val.items.forEach((filter) => {
           acc.push({filter, type: 'filter'})
         })
-        return acc
-      }, [])
-      .filter((filter) => includesDocumentTypes(filter, currentDocumentTypes))
-      .filter((filter) => includesFilterTitle(filter, titleFilter))
-  }, [currentDocumentTypes, filterGroups, schema, titleFilter])
+      }
+      return acc
+    }, [])
+  }, [
+    currentDocumentTypes,
+    filterGroups,
+    // schema,
+    titleFilter,
+  ])
 
   const handleFilterChange = useCallback(
     (e: React.KeyboardEvent<HTMLInputElement>) => setTitleFilter(e.currentTarget.value),
@@ -137,32 +175,36 @@ export function AddFilterContent({onClose}: AddFilterContentProps) {
   )
 }
 
-function includesDocumentTypes(menuItem: SearchFilterMenuItem, documentTypes: string[]) {
-  if (menuItem.type === 'filter') {
-    if (!menuItem.filter.documentTypes || menuItem.filter.documentTypes.length === 0) {
-      return true
-    }
-
-    return documentTypes.every((type) => menuItem.filter.documentTypes?.includes(type))
+function includesFilterTitle(filter: KeyedSearchFilter, currentTitle: string) {
+  let title = ''
+  if (filter.type === 'compound') {
+    title = FILTERS.compound[filter.id].title
   }
-
-  return true
+  if (filter.type === 'custom') {
+    title = filter.title
+  }
+  if (filter.type === 'field') {
+    title = filter.path.join(' / ')
+  }
+  return title.toLowerCase().includes(currentTitle.toLowerCase())
 }
 
-function includesFilterTitle(menuItem: SearchFilterMenuItem, currentTitle: string) {
-  let title = ''
-  if (menuItem.type === 'filter') {
-    if (menuItem.filter.type === 'compound') {
-      title = FILTERS.compound[menuItem.filter.id].title
-    }
-    if (menuItem.filter.type === 'custom') {
-      title = menuItem.filter.title
-    }
-    if (menuItem.filter.type === 'field') {
-      title = menuItem.filter.path.join(' / ')
-    }
-    return title.toLowerCase().includes(currentTitle.toLowerCase())
+function toggleSubtitleVisibility(
+  filter: KeyedSearchFilter,
+  index: number,
+  arr: KeyedSearchFilter[]
+) {
+  return {
+    ...filter,
+    // TODO: refactor
+    showSubtitle:
+      arr.filter((f) => {
+        return (
+          filter.type === 'field' &&
+          f.type === 'field' &&
+          isEqual(f.path, filter.path) &&
+          f.type === filter.type
+        )
+      }).length > 1,
   }
-
-  return true
 }

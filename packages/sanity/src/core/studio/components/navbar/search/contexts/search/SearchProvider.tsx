@@ -85,10 +85,6 @@ export function SearchProvider({children}: SearchProviderProps) {
           fieldPath: field.fieldPath,
           fieldType: field.type,
           path: field.path,
-          showSubtitle:
-            flattenedFields.filter(
-              (def) => isEqual(def.path, field.path) && def.type === field.type
-            ).length > 1,
           type: 'field',
         } as KeyedSearchFilter)
     )
