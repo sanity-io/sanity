@@ -1,5 +1,5 @@
 import {CloseIcon} from '@sanity/icons'
-import {Button, Flex, Inline, Popover, rem, Text, Theme, useClickOutside} from '@sanity/ui'
+import {Box, Button, Flex, Inline, Popover, rem, Text, Theme, useClickOutside} from '@sanity/ui'
 import {intersection} from 'lodash'
 import React, {useCallback, useMemo, useState} from 'react'
 import styled, {css} from 'styled-components'
@@ -8,6 +8,7 @@ import {OPERATORS} from '../../config/operators'
 import {useSearchState} from '../../contexts/search/useSearchState'
 import type {KeyedSearchFilter} from '../../types'
 import {FilterContent} from './FilterContent'
+import {FilterIcon} from './FilterIcon'
 import {getFilterValue} from './getFilterValue'
 
 interface FilterButtonProps {
@@ -100,6 +101,12 @@ export default function FilterButton({closable = true, filter, initialOpen}: Fil
           tone="primary"
         >
           <Inline space={1}>
+            <Box marginRight={1}>
+              <Text size={1}>
+                <FilterIcon filter={filter} />
+              </Text>
+            </Box>
+
             <Text size={1} weight="medium">
               {title}
             </Text>
