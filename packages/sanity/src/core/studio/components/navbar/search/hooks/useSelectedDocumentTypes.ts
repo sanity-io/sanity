@@ -14,12 +14,17 @@ export function useSelectedDocumentTypes(): string[] {
     const selectedDocumentTypes = types.map((type) => type.name)
 
     // Document types from active filters
+    /*
     const filterDocumentTypes = filters.reduce<string[]>((acc, val) => {
       acc.push(...(val?.documentTypes || []))
       return acc
     }, [])
+    */
 
-    return uniq([...selectedDocumentTypes, ...filterDocumentTypes]).sort()
+    return uniq([
+      ...selectedDocumentTypes,
+      // ...filterDocumentTypes
+    ]).sort()
   }, [filters, types])
 
   return currentDocumentTypes
