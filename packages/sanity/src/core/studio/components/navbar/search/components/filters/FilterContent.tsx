@@ -68,7 +68,6 @@ export function FilterContent({filter, onClose}: FilterContentProps) {
         )}
 
         {/* Debug */}
-        {/*
         <Card borderTop overflow="hidden" padding={3} tone="transparent">
           <Stack space={2}>
             <Text size={0} weight="semibold">
@@ -79,7 +78,6 @@ export function FilterContent({filter, onClose}: FilterContentProps) {
             </Code>
           </Stack>
         </Card>
-        */}
       </Flex>
     </FilterPopoverWrapper>
   )
