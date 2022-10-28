@@ -35,9 +35,9 @@ describe('block types', () => {
             {
               title: 'Sup',
               value: 'sup',
-              blockEditor: {
-                icon: () => null,
-                render: (props) => props,
+              icon: () => null,
+              components: {
+                item: (props) => props.defaultRender(props),
               },
             },
           ],
@@ -70,9 +70,9 @@ describe('block types', () => {
           {
             title: 'Sup',
             value: 'sup',
-            blockEditor: {
-              icon: () => null,
-              render: (props) => props,
+            icon: () => null,
+            components: {
+              item: (props) => props.defaultRender(props),
             },
           },
         ],
@@ -96,9 +96,9 @@ describe('block types', () => {
           {
             title: 'Sup',
             value: 'sup',
-            blockEditor: {
-              icon: () => null,
-              render: (props) => props,
+            icon: () => null,
+            components: {
+              item: (props) => props.defaultRender(props),
             },
           },
         ],

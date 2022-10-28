@@ -17,8 +17,8 @@ const allowedKeys = [
   'validation',
 ]
 const allowedMarkKeys = ['decorators', 'annotations']
-const allowedStyleKeys = ['title', 'value', 'blockEditor']
-const allowedDecoratorKeys = ['title', 'value', 'blockEditor', 'icon']
+const allowedStyleKeys = ['title', 'value', 'components']
+const allowedDecoratorKeys = ['title', 'value', 'icon', 'components']
 
 export default function validateBlockType(typeDef, visitorContext) {
   const problems = []
@@ -49,11 +49,11 @@ export default function validateBlockType(typeDef, visitorContext) {
   if (members) {
     members = validateMembers(members, visitorContext, problems)
   }
-
   return {
     ...omit(typeDef, disallowedKeys),
     marks,
     styles,
+    name: typeDef.name || typeDef.type,
     of: members,
     _problems: problems,
   }
