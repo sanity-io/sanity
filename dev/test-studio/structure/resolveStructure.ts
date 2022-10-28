@@ -6,6 +6,7 @@ import {
   SyncIcon,
   TerminalIcon,
   UsersIcon,
+  JoystickIcon,
 } from '@sanity/icons'
 import {uuid} from '@sanity/uuid'
 import {DocumentStore, SanityDocument} from 'sanity'
@@ -352,6 +353,13 @@ export const structure: StructureResolver = (S, {schema, documentStore}) => {
         types: typesInOptionGroup(S, schema, 'v3'),
       }),
 
+      _buildTypeGroup(S, schema, {
+        id: '3d',
+        title: '3D Demos',
+        icon: JoystickIcon,
+        types: typesInOptionGroup(S, schema, '3d'),
+      }),
+
       S.divider(),
 
       ...S.documentTypeListItems().filter((listItem) => {
@@ -366,7 +374,8 @@ export const structure: StructureResolver = (S, {schema, documentStore}) => {
           !PLUGIN_INPUT_TYPES.includes(id) &&
           !EXTERNAL_PLUGIN_INPUT_TYPES.includes(id) &&
           !DEBUG_FIELD_GROUP_TYPES.includes(id) &&
-          !typesInOptionGroup(S, schema, 'v3').includes(id)
+          !typesInOptionGroup(S, schema, 'v3').includes(id) &&
+          !typesInOptionGroup(S, schema, '3d').includes(id)
         )
       }),
     ])

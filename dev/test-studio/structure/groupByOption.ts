@@ -1,7 +1,7 @@
 import type {StructureBuilder} from 'sanity/desk'
 import {ObjectOptions, Schema} from '@sanity/types'
 
-type StructureGroup = 'v3' // extend with union strings
+type StructureGroup = 'v3' | '3d' // extend with union strings
 
 export interface StructureGroupOption {
   structureGroup?: StructureGroup

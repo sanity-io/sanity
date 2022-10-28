@@ -26,6 +26,8 @@ import urls from './standard/urls'
 
 // Test documents for docs
 import {v3docs} from './docs/v3'
+// Demo documents for 3d experiments
+import {demos3d} from './demos/3d'
 
 // Test documents for debugging
 import actions from './debug/actions'
@@ -237,4 +239,5 @@ export const schemaTypes = [
   fieldGroupsWithValidation,
   allNativeInputComponents,
   ...v3docs.types,
+  ...demos3d.types,
 ]

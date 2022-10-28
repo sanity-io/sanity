@@ -14,6 +14,8 @@
   },
   "dependencies": {
     "@portabletext/react": "^1.0.6",
+    "@react-three/drei": "^9.38.1",
+    "@react-three/fiber": "^8.8.10",
     "@sanity/block-tools": "3.0.0-dev-preview.22",
     "@sanity/color": "2.1.19-beta.2",
     "@sanity/icons": "1.3.9-beta.2",
@@ -27,10 +29,13 @@
     "@sanity/vision": "3.0.0-dev-preview.22",
     "@turf/helpers": "^6.0.1",
     "@turf/points-within-polygon": "^5.1.5",
+    "@types/three": "^0.144.0",
     "chokidar": "^3.5.3",
     "globby": "^10.0.0",
     "history": "^4.6.3",
+    "lamina": "^1.1.23",
     "lodash": "^4.17.21",
+    "polished": "^4.2.2",
     "qs": "^6.10.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
@@ -38,8 +43,9 @@
     "refractor": "^3.6.0",
     "rxjs": "^6.5.3",
     "sanity": "3.0.0-dev-preview.22",
-    "sanity-plugin-mux-input": "2.0.0-v3-studio.19",
-    "styled-components": "^5.2.0"
+    "sanity-plugin-mux-input": "2.0.0-v3-studio.20",
+    "styled-components": "^5.2.0",
+    "three": "^0.146.0"
   },
   "devDependencies": {
     "@types/history": "^4.7.9",
