@@ -337,7 +337,7 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
         },
         terms: stripRecent({
           ...state.terms,
-          filters: [], // Clear all filters
+          // filters: [], // Clear all filters
           types: [
             ...(state.terms.types || []), //
             action.schemaType,

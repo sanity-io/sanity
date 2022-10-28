@@ -13,8 +13,8 @@ export function useSelectedDocumentTypes(): string[] {
     // Selected document types
     const selectedDocumentTypes = types.map((type) => type.name)
 
-    // Document types from active filters
     /*
+    // Document types from active filters
     const filterDocumentTypes = filters.reduce<string[]>((acc, val) => {
       acc.push(...(val?.documentTypes || []))
       return acc
