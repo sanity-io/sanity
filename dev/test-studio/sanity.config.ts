@@ -3,6 +3,7 @@ import {visionTool} from '@sanity/vision'
 import {createConfig, createPlugin} from 'sanity'
 import {deskTool} from 'sanity/desk'
 import {muxInput} from 'sanity-plugin-mux-input'
+import {theme as tailwindTheme} from 'https://themer.sanity.build/api/hues?preset=tw-cyan&default=64748b&primary=d946ef;lightest:fdf4ff;darkest:701a75&transparent=6b7180;darkest:111826&positive=43d675;400;lightest:f8fafc&caution=f59e09;300;lightest:fffbeb;darkest:783510&critical=f43f5e;lightest:fef1f2;darkest:881337&lightest=ffffff&darkest=0f172a'
 import {imageAssetSource} from './assetSources'
 import {Branding} from './components/Branding'
 import {resolveDocumentActions as documentActions} from './documentActions'
@@ -22,7 +23,6 @@ import {
 import {Field, formComponentsPlugin, Input, Item, Preview} from './components/formComponents'
 import {googleTheme} from './themes/google'
 import {vercelTheme} from './themes/vercel'
-import {theme as tailwindTheme} from 'https://themer.sanity.build/api/hues?preset=tw-cyan&default=64748b&primary=d946ef;lightest:fdf4ff;darkest:701a75&transparent=6b7180;darkest:111826&positive=43d675;400;lightest:f8fafc&caution=f59e09;300;lightest:fffbeb;darkest:783510&critical=f43f5e;lightest:fef1f2;darkest:881337&lightest=ffffff&darkest=0f172a'
 
 const sharedSettings = createPlugin({
   name: 'sharedSettings',
@@ -33,6 +33,11 @@ const sharedSettings = createPlugin({
   form: {
     image: {
       assetSources: [imageAssetSource],
+    },
+  },
+  studio: {
+    components: {
+      logo: Branding,
     },
   },
   document: {
@@ -84,11 +89,6 @@ export default createConfig([
     dataset: 'test',
     plugins: [sharedSettings()],
     basePath: '/test',
-    studio: {
-      components: {
-        logo: Branding,
-      },
-    },
   },
   {
     name: 'google-theme',
@@ -97,11 +97,6 @@ export default createConfig([
     dataset: 'test',
     plugins: [sharedSettings()],
     basePath: '/google',
-    studio: {
-      components: {
-        logo: Branding,
-      },
-    },
     theme: googleTheme,
   },
   {
@@ -111,11 +106,6 @@ export default createConfig([
     dataset: 'test',
     plugins: [sharedSettings()],
     basePath: '/vercel',
-    studio: {
-      components: {
-        logo: Branding,
-      },
-    },
     theme: vercelTheme,
   },
   {
@@ -125,11 +115,6 @@ export default createConfig([
     dataset: 'test',
     plugins: [sharedSettings()],
     basePath: '/tailwind',
-    studio: {
-      components: {
-        logo: Branding,
-      },
-    },
     theme: tailwindTheme,
   },
   {
@@ -139,11 +124,6 @@ export default createConfig([
     dataset: 'playground',
     plugins: [sharedSettings()],
     basePath: '/playground',
-    studio: {
-      components: {
-        logo: Branding,
-      },
-    },
   },
   {
     name: 'custom-components',
