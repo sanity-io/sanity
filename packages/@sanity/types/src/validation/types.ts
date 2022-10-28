@@ -3,9 +3,9 @@ import type {Path} from '../paths'
 import type {Schema, SchemaType, SchemaValidationValue} from '../schema'
 import type {SanityDocument} from '../documents'
 import type {ValidationMarker} from '../markers'
-import type {Block} from '../portableText'
 import {SlugSchemaType} from '../schema'
 import {SlugParent} from '../slug'
+import {PortableTextBlock} from '../portableText'
 
 /** @public */
 export type RuleTypeConstraint = 'Array' | 'Boolean' | 'Date' | 'Number' | 'Object' | 'String'
