@@ -21,7 +21,7 @@ export type Props = {
   position?: {x: number; y: number; z: number}
 }
 export default memo(function TorusKnotPreview(props: Props) {
-  const {base, colorA, colorB, position = {x: 0, y: -0.75, z: 0.75}} = props
+  const {base, colorA, colorB, position = {x: -1.75, y: 0, z: 0}} = props
   const {x, y, z} = position
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const frameloop = useLazyFrameloop(canvasRef)
@@ -34,7 +34,7 @@ export default memo(function TorusKnotPreview(props: Props) {
         frameloop={frameloop}
       >
         <Suspense fallback={null}>
-          <View element={{base, colorA, colorB, position: {x, y, z}}} />
+          <View element={{base, colorA, colorB, position: {x, y, z}}} preview />
         </Suspense>
       </Canvas>
     </Container>

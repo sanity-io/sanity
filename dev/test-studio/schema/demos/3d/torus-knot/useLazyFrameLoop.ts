@@ -1,6 +1,38 @@
-import {useEffect, useState, startTransition} from 'react'
+import {
+  useEffect,
+  useState,
+  useSyncExternalStore,
+  useMemo,
+  startTransition,
+  useCallback,
+} from 'react'
+
+function useReducedMotion() {
+  const mql = useMemo(
+    () =>
+      typeof document === 'undefined'
+        ? null
+        : window.matchMedia('(prefers-reduced-motion: reduce)'),
+    []
+  )
+
+  return useSyncExternalStore(
+    useCallback(
+      (onStoreChange) => {
+        mql?.addEventListener('change', onStoreChange)
+        return () => {
+          mql?.removeEventListener('change', onStoreChange)
+        }
+      },
+      [mql]
+    ),
+    () => mql?.matches,
+    () => true
+  )
+}
 
 export function useLazyFrameloop(ref: React.RefObject<any>) {
+  const reduceMotion = useReducedMotion()
   const [frameloop, setFrameloop] = useState<'always' | 'never'>('never')
 
   useEffect(() => {
@@ -16,6 +48,10 @@ export function useLazyFrameloop(ref: React.RefObject<any>) {
     // eslint-disable-next-line consistent-return
     return () => observer.disconnect()
   }, [ref])
+
+  if (reduceMotion && frameloop === 'always') {
+    return 'demand'
+  }
 
   return frameloop
 }

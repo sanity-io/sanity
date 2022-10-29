@@ -8,7 +8,7 @@ import {Color, Depth, Fresnel, LayerMaterial} from 'lamina'
 import React, {memo, useEffect, useRef} from 'react'
 import * as THREE from 'three'
 
-export default function View({element: {base, colorA, colorB, position, beNice = false}}: any) {
+export default function View({element: {base, colorA, colorB, position}, preview = false}: any) {
   return (
     <>
       <Bg base={base} colorA={colorA} colorB={colorB} />
@@ -17,8 +17,8 @@ export default function View({element: {base, colorA, colorB, position, beNice =
         <sphereGeometry args={[0.2, 64, 64]} />
         <meshPhysicalMaterial depthWrite={false} transmission={1} thickness={10} roughness={0.65} />
       </mesh>
-      {beNice !== true && <SyncCamera {...position} />}
-      {beNice !== true && <OrbitControls enableZoom={false} />}
+      <SyncCamera {...position} />
+      <OrbitControls enableZoom={!preview} />
       <pointLight position={[10, 10, 5]} />
       <pointLight position={[-10, -10, -5]} color={colorA} />
       <ambientLight intensity={0.4} />
@@ -31,7 +31,7 @@ export const SyncCamera = memo(function SyncCamera({x, y, z}: any) {
   const camera = useThree((state) => state.camera)
   useEffect(() => {
     camera.position.set(x, y, z)
-  }, [x, y, z])
+  }, [x, y, z, camera.position])
 
   return null
 })
