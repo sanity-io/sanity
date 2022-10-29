@@ -358,6 +358,7 @@ export const structure: StructureResolver = (S, {schema, documentStore}) => {
         title: '3D Demos',
         icon: JoystickIcon,
         types: typesInOptionGroup(S, schema, '3d'),
+        defaultLayout: 'detail',
       }),
 
       S.divider(),

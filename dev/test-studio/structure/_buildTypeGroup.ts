@@ -1,6 +1,7 @@
 import {StructureBuilder} from 'sanity/desk'
 import {Schema} from '@sanity/types'
 import {isObject} from 'lodash'
+import {PreviewLayoutKey} from 'sanity'
 
 const isNonNullable = isObject as <T>(value: T) => value is NonNullable<T>
 
@@ -12,16 +13,17 @@ interface TypeGroupOpts {
   title: string
   types: string[]
   groups?: TypeGroupOpts[]
+  defaultLayout?: PreviewLayoutKey
 }
 
-const TYPE_GROUP_SUPPORTED_INTENTS = ['create', 'edit']
+const TYPE_GROUP_SUPPORTED_INTENTS = ['create', 'edit', 'setLayout']
 
 export function _buildTypeGroup(
   S: StructureBuilder,
   schema: Schema,
   opts: TypeGroupOpts
 ): ListItemBuilder {
-  const {groups = [], icon, id, title, types} = opts
+  const {groups = [], icon, id, title, types, defaultLayout} = opts
 
   return S.listItem()
     .title(title)
@@ -53,6 +55,7 @@ export function _buildTypeGroup(
                     .id(typeName)
                     .child(
                       S.documentList()
+                        .defaultLayout(defaultLayout)
                         .canHandleIntent((intentName, params) => {
                           return (
                             TYPE_GROUP_SUPPORTED_INTENTS.includes(intentName) &&

@@ -17,9 +17,7 @@ export const torusKnotType = defineType({
   name: 'demo-3d-torus-knot',
   title: '3D Torus Knot',
   icon: TorusKnotIcon,
-  options: structureGroupOptions({
-    structureGroup: '3d',
-  }),
+  options: structureGroupOptions({structureGroup: '3d'}),
   preview: {
     select: {
       title: 'title',
@@ -30,8 +28,9 @@ export const torusKnotType = defineType({
     prepare: (props: any) => {
       return {
         title: props.title,
-        subtitle: `base: ${props.base}, colorA: ${props.colorA}, colorB: ${props.colorB}`,
+        subtitle: `${props.base} | ${props.colorA} | ${props.colorB}`,
         media: <LazyPreviewMedia {...props} />,
+        layout: 'detail',
       }
     },
   },
