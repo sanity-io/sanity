@@ -11,6 +11,7 @@ import {languageFilter} from './plugins/language-filter'
 import {schemaTypes} from './schema'
 import {defaultDocumentNode, newDocumentOptions, structure} from './structure'
 import {workshopTool} from './workshop'
+import {presenceTool} from './plugins/presence'
 import {
   CustomLogo,
   CustomLayout,
@@ -71,6 +72,7 @@ const sharedSettings = createPlugin({
     }),
     // eslint-disable-next-line camelcase
     muxInput({mp4_support: 'standard'}),
+    presenceTool(),
   ],
 })
 
