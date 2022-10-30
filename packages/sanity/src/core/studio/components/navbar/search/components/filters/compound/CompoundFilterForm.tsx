@@ -1,10 +1,10 @@
-import {Box, Card, Flex, Text} from '@sanity/ui'
+import {Box, Card} from '@sanity/ui'
 import React, {ChangeEvent, createElement, useCallback} from 'react'
 import {FILTERS} from '../../../config/filters'
 import {FILTER_INPUT_TYPE_COMPONENTS} from '../../../config/inputTypes'
 import {useSearchState} from '../../../contexts/search/useSearchState'
-import type {CompoundSearchFilter, SearchOperatorType} from '../../../types'
-import {FilterIcon} from '../FilterIcon'
+import type {CompoundSearchFilter, KeyedSearchFilter, SearchOperatorType} from '../../../types'
+import {FilterTitle} from '../FilterTitle'
 import {SelectOperators} from '../SelectOperators'
 
 interface FilterFormProps {
@@ -58,13 +58,9 @@ export function CompoundFilterForm({filter, title}: FilterFormProps) {
     <Box>
       <Card borderBottom padding={3}>
         {/* Title */}
-        <Box marginY={1}>
-          <Flex gap={2} marginLeft={1} paddingRight={2}>
-            <Text size={1}>
-              <FilterIcon filter={filter} />
-            </Text>
-            <Text size={1}>{title}</Text>
-          </Flex>
+        <Box marginY={1} paddingRight={4}>
+          {/* TODO: don't manually cast */}
+          <FilterTitle filter={filter as KeyedSearchFilter} />
         </Box>
         {/* Operator */}
         {operatorTypes.length > 1 && (

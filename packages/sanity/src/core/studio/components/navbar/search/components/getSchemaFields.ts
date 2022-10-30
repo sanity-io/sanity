@@ -130,7 +130,18 @@ export function getSchemaFields(schema: Schema): MappedSchemaObject[] {
     // TODO: Filter out hidden fields
     // Filter out non-recognised field types and hidden types
     .filter((schemaType) => Object.keys(FILTERS.field).includes(schemaType.type))
-    .sort((a, b) => a.path.join(',').localeCompare(b.path.join(',')))
+    // .sort((a, b) => a.path.join(',').localeCompare(b.path.join(',')))
+    .sort((a, b) => {
+      const aTitle = a.path[a.path.length - 1]
+      const bTitle = b.path[b.path.length - 1]
+      if (aTitle === bTitle) {
+        return (
+          a.path.slice(0, -1).join(',').localeCompare(b.path.slice(0, -1).join(',')) ||
+          a.fieldPath.localeCompare(b.fieldPath)
+        )
+      }
+      return aTitle.localeCompare(bTitle)
+    })
 
   // 4. fields by path
   /*
