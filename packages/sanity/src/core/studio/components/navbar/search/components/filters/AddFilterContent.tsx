@@ -33,15 +33,21 @@ export function AddFilterContent({onClose}: AddFilterContentProps) {
   const [pointerOverlayElement, setPointerOverlayRef] = useState<HTMLDivElement | null>(null)
   const [titleFilter, setTitleFilter] = useState('')
 
-  const {filterGroups} = useSearchState()
+  const {
+    filterGroups,
+    state: {
+      terms: {filters, types},
+    },
+  } = useSearchState()
   const currentDocumentTypes = useSelectedDocumentTypes()
 
   // TODO: refactor
   const filteredMenuItems = useMemo(() => {
     return filterGroups.reduce<SearchFilterMenuItem[]>((acc, val) => {
       if (val.type === 'fields') {
+        // TODO: only show shared fields if filter count > 1 ||
         // Get shared fields
-        if (currentDocumentTypes.length > 1) {
+        if (currentDocumentTypes.length > 1 && (filters.length > 1 || types.length > 1)) {
           const sharedItems = val.items
             .filter(
               (filter) => difference(currentDocumentTypes, filter?.documentTypes || []).length === 0
