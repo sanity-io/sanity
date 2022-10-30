@@ -1,6 +1,5 @@
 import {Card, Code, Flex, Stack, Text} from '@sanity/ui'
 import React from 'react'
-import {TextWithTone} from '../../../../../../components'
 import {FILTERS} from '../../config/filters'
 import type {KeyedSearchFilter} from '../../types'
 import {CompoundFilterForm} from './compound/CompoundFilterForm'
@@ -70,7 +69,7 @@ export function FilterContent({filter, onClose}: FilterContentProps) {
             <Text size={0} weight="semibold">
               Document types
             </Text>
-            <Code muted size={0}>
+            <Code muted size={0} style={{whiteSpace: 'normal'}}>
               {filter.documentTypes ? filter.documentTypes?.join(', ') : '(all)'}
             </Code>
           </Stack>
