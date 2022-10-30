@@ -1,5 +1,6 @@
-import {CloseIcon} from '@sanity/icons'
+import {CloseIcon, WarningOutlineIcon} from '@sanity/icons'
 import {Button, Flex, Popover, rem, Text, Theme, useClickOutside} from '@sanity/ui'
+import {intersection} from 'lodash'
 import React, {useCallback, useMemo, useState} from 'react'
 import styled, {css} from 'styled-components'
 import {FILTERS} from '../../config/filters'
@@ -30,7 +31,12 @@ export default function FilterButton({closable = true, filter, initialOpen}: Fil
   const [buttonElement, setButtonElement] = useState<HTMLElement | null>(null)
   const [popoverElement, setPopoverElement] = useState<HTMLElement | null>(null)
 
-  const {dispatch} = useSearchState()
+  const {
+    dispatch,
+    state: {
+      terms: {filters, types},
+    },
+  } = useSearchState()
 
   const handleClose = useCallback(() => setOpen(false), [])
   const handleOpen = useCallback(() => setOpen(true), [])
@@ -44,6 +50,18 @@ export default function FilterButton({closable = true, filter, initialOpen}: Fil
   )
 
   useClickOutside(handleClose, [buttonElement, popoverElement])
+
+  const isValid = useMemo(() => {
+    if (filter.type === 'compound') {
+      return true
+    }
+    const intersectingArrays = filters.map((f) => f?.documentTypes || [])
+    if (types.length > 0) {
+      intersectingArrays.push(types.map((type) => type.name))
+    }
+    const intersecting = intersection(...intersectingArrays)
+    return intersecting.length > 0
+  }, [filter.type, filters, types])
 
   const title = useMemo(() => {
     switch (filter.type) {
@@ -75,15 +93,21 @@ export default function FilterButton({closable = true, filter, initialOpen}: Fil
           onClick={handleOpen}
           padding={2}
           style={{maxWidth: '100%'}}
-          // tone={filter.type === 'field' ? 'primary' : 'default'}
-          tone="primary"
+          tone={isValid ? 'primary' : 'caution'}
         >
-          <Text size={1} textOverflow="ellipsis">
-            {/* Field name */}
-            <span style={{fontWeight: 500}}>{title}:</span>
-            {/* Value */}
-            <FilterButtonValue filter={filter} />
-          </Text>
+          <Flex align="center" gap={3}>
+            {!isValid && (
+              <Text size={1}>
+                <WarningOutlineIcon />
+              </Text>
+            )}
+            <Text size={1} textOverflow="ellipsis">
+              {/* Field name */}
+              <span style={{fontWeight: 500}}>{title}:</span>
+              {/* Value */}
+              <FilterButtonValue filter={filter} />
+            </Text>
+          </Flex>
         </LabelButton>
 
         {closable && (
@@ -92,8 +116,7 @@ export default function FilterButton({closable = true, filter, initialOpen}: Fil
             icon={CloseIcon}
             onClick={handleRemove}
             padding={2}
-            // tone={filter.type === 'field' ? 'primary' : 'default'}
-            tone="primary"
+            tone={isValid ? 'primary' : 'caution'}
           />
         )}
       </Flex>
