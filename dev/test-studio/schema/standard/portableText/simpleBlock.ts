@@ -1,6 +1,5 @@
 import {defineType} from 'sanity'
 import {toPlainText} from '@portabletext/react'
-import {CalloutPreview} from './components/CalloutPreview'
 
 const linkType = defineType({
   type: 'object',
@@ -15,7 +14,7 @@ const linkType = defineType({
   options: {
     modal: {
       type: 'popover',
-      width: 'medium',
+      width: 2,
     },
   },
 })
@@ -65,54 +64,6 @@ export default defineType({
             spellCheck: true,
           },
         },
-        {
-          type: 'image',
-          name: 'image',
-          options: {
-            modal: {
-              // The default `type` of object blocks is 'dialog'
-              // type: 'dialog',
-              // The default `width` of object blocks is 'medium'
-              // width: 'small',
-            },
-          },
-        },
-        {
-          type: 'object',
-          name: 'callout',
-          title: 'Callout',
-          components: {
-            preview: CalloutPreview,
-          },
-          fields: [
-            {
-              type: 'string',
-              name: 'title',
-              title: 'Title',
-            },
-            {
-              type: 'string',
-              name: 'tone',
-              title: 'Tone',
-              options: {
-                list: [
-                  {value: 'default', title: 'Default'},
-                  {value: 'primary', title: 'Primary'},
-                  {value: 'positive', title: 'Positive'},
-                  {value: 'caution', title: 'Caution'},
-                  {value: 'critical', title: 'Critical'},
-                ],
-              },
-            },
-          ],
-          preview: {
-            select: {
-              title: 'title',
-              tone: 'tone',
-            },
-          },
-        },
-        myStringType,
       ],
     },
     {

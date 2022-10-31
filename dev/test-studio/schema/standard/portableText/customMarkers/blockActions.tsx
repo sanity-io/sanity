@@ -1,5 +1,5 @@
 import {CommentIcon} from '@sanity/icons'
-import {PortableTextBlock} from '@sanity/portable-text-editor'
+import {PortableTextBlock} from '@sanity/types'
 import {Box, Button, Popover, Stack, Text, TextArea} from '@sanity/ui'
 import React, {ChangeEvent, useCallback, useState} from 'react'
 import {RenderBlockActionsCallback} from 'sanity'
@@ -7,10 +7,13 @@ import {RenderBlockActionsCallback} from 'sanity'
 export const renderBlockActions: RenderBlockActionsCallback = (props) => {
   const {block, set} = props
 
-  return <CommentButton set={set} value={block} />
+  return <CommentButton set={set} value={{...block, comments: []}} />
 }
 
-function CommentButton(props: {set: (block: PortableTextBlock) => void; value: PortableTextBlock}) {
+function CommentButton(props: {
+  set: (block: PortableTextBlock) => void
+  value: PortableTextBlock & {comments: any}
+}) {
   const {set, value} = props
   const [open, setOpen] = useState(false)
   const [comment, setComment] = useState('')
@@ -30,7 +33,7 @@ function CommentButton(props: {set: (block: PortableTextBlock) => void; value: P
   const handleClick = useCallback(() => setOpen(true), [])
 
   const content = open && (
-    <Box padding={3}>
+    <Box padding={3} style={{pointerEvents: 'all'}}>
       <Stack space={2}>
         <Text size={1} weight="semibold">
           Comment

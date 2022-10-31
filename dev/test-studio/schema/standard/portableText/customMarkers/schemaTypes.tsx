@@ -1,15 +1,19 @@
 import React from 'react'
-import {defineType} from 'sanity'
+import {defineType, BlockMemberRenderProps} from 'sanity'
 import {LinkIcon, RocketIcon} from '@sanity/icons'
 import {CustomContentInput} from './CustomContentInput'
 
-const boostRender = (props: any) => (
-  <span style={{backgroundColor: 'yellow'}}>{props.children}</span>
-)
+const DecoratorBoost = (props: BlockMemberRenderProps) => {
+  return <span style={{backgroundColor: 'yellow'}}>{props.defaultRender(props)}</span>
+}
 
-const normalRender = (props: any) => <span style={{fontFamily: 'monospace'}}>{props.children}</span>
+const StyleNormal = (props: BlockMemberRenderProps) => {
+  return <span style={{fontFamily: 'monospace'}}>{props.defaultRender(props)}</span>
+}
 
-const hyperLinkRender = (props: any) => <span style={{color: 'blue'}}>{props.children}</span>
+const HyperLinkItem = (props: BlockMemberRenderProps) => {
+  return <span style={{color: 'blue'}}>{props.defaultRender(props)}</span>
+}
 
 export const ptCustomMarkersTestType = defineType({
   type: 'document',
@@ -37,9 +41,9 @@ export const ptCustomMarkersTestType = defineType({
                 name: 'hyperlink',
                 title: 'Hyperlink',
                 fields: [{type: 'string', name: 'href', title: 'URL'}],
-                blockEditor: {
-                  icon: LinkIcon,
-                  render: hyperLinkRender,
+                icon: LinkIcon,
+                components: {
+                  item: HyperLinkItem,
                 },
               },
             ],
@@ -47,9 +51,9 @@ export const ptCustomMarkersTestType = defineType({
               {
                 title: 'Boost',
                 value: 'boost',
-                blockEditor: {
-                  icon: RocketIcon,
-                  render: boostRender,
+                icon: RocketIcon,
+                components: {
+                  item: DecoratorBoost,
                 },
               },
             ],
@@ -58,8 +62,8 @@ export const ptCustomMarkersTestType = defineType({
             {
               title: 'Normal',
               value: 'normal',
-              blockEditor: {
-                render: normalRender,
+              components: {
+                item: StyleNormal,
               },
             },
           ],
