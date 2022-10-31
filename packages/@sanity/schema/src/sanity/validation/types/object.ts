@@ -1,7 +1,7 @@
 import {isPlainObject} from 'lodash'
 import {error, HELP_IDS, warning} from '../createValidationResult'
 import inspect from '../../inspect'
-import {validateInputComponent} from '../utils/validateInputComponent'
+import {validateComponent} from '../utils/validateComponent'
 
 const VALID_FIELD_RE = /^[A-Za-z]+[0-9A-Za-z_]*$/
 const CONVENTIONAL_FIELD_RE = /^[A-Za-z_]+[0-9A-Za-z_]*$/
@@ -73,7 +73,7 @@ export function validateField(field, _visitorContext) {
       ? validateFieldName(field.name)
       : [error('Missing field name', HELP_IDS.OBJECT_FIELD_NAME_INVALID)])
   )
-  problems.push(...validateInputComponent(field))
+  problems.push(...validateComponent(field))
   return problems
 }
 
