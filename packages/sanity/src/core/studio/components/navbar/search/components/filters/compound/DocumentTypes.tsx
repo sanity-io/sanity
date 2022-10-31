@@ -1,5 +1,6 @@
 import {SearchIcon} from '@sanity/icons'
-import {Box, Button, Flex, Stack, Text} from '@sanity/ui'
+import {Box, Button, Flex, Label, MenuDivider, Stack, Text} from '@sanity/ui'
+import {partition} from 'lodash'
 import React, {useCallback, useId, useMemo, useState} from 'react'
 import styled from 'styled-components'
 import {useSchema} from '../../../../../../../hooks'
@@ -52,18 +53,28 @@ export function DocumentTypes() {
     },
   } = useSearchState()
 
-  const selectableDocumentTypes = useMemo(
-    () => getSelectableOmnisearchTypes(schema, typeFilter),
-    [schema, typeFilter]
-  )
+  // Get a snapshot of initial selected types
+  const [selectedTypesSnapshot, setSelectedTypesSnapshot] = useState(selectedTypes)
+
+  const {filteredSelected, filteredUnselected} = useMemo(() => {
+    const partitionedTypes = partition(getSelectableOmnisearchTypes(schema, typeFilter), (type) =>
+      selectedTypesSnapshot.includes(type)
+    )
+    return {
+      filteredSelected: partitionedTypes[0],
+      filteredUnselected: partitionedTypes[1],
+    }
+  }, [schema, selectedTypesSnapshot, typeFilter])
 
   const handleClearTypes = useCallback(() => {
     if (!supportsTouch) {
       headerInputElement?.focus()
     }
+    setSelectedTypesSnapshot([])
     filtersContentElement?.scrollTo(0, 0)
     dispatch({type: 'TERMS_TYPES_CLEAR'})
   }, [dispatch, filtersContentElement, headerInputElement])
+
   const handleFilterChange = useCallback(
     (e: React.KeyboardEvent<HTMLInputElement>) => setTypeFilter(e.currentTarget.value),
     [setTypeFilter]
@@ -72,13 +83,15 @@ export function DocumentTypes() {
 
   const commandListId = useId()
 
+  const documentTypeCount = filteredSelected.length + filteredUnselected.length
+
   return (
     <CommandListProvider
       ariaChildrenLabel="Document types"
       ariaHeaderLabel="Filter by document type"
       ariaMultiselectable
       childContainerElement={childContainerElement}
-      childCount={selectableDocumentTypes.length}
+      childCount={documentTypeCount}
       containerElement={containerElement}
       headerInputElement={headerInputElement}
       id={commandListId}
@@ -120,7 +133,28 @@ export function DocumentTypes() {
 
             {/* Selectable document types */}
             <Stack ref={setChildContainerRef} space={1}>
-              {selectableDocumentTypes.map((type, index) => (
+              {/* Selected */}
+              {filteredSelected.length > 0 && (
+                <>
+                  <Box padding={3}>
+                    <Label muted size={0}>
+                      Selected
+                    </Label>
+                  </Box>
+                  {filteredSelected.map((type, index) => (
+                    <TypeFilterItem
+                      index={index}
+                      key={type.name}
+                      selected={selectedTypes.includes(type)}
+                      type={type}
+                    />
+                  ))}
+                </>
+              )}
+              {/* Divider */}
+              {filteredSelected.length > 0 && filteredUnselected.length > 0 && <MenuDivider />}
+              {/* Unselected */}
+              {filteredUnselected.map((type, index) => (
                 <TypeFilterItem
                   index={index}
                   key={type.name}
@@ -132,7 +166,7 @@ export function DocumentTypes() {
           </TypeFiltersContentDiv>
 
           {/* No results */}
-          {!selectableDocumentTypes.length && (
+          {!documentTypeCount && (
             <Box padding={3}>
               <Text muted size={1} textOverflow="ellipsis">
                 No matches for '{typeFilter}'.
