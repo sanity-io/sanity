@@ -3,13 +3,13 @@ import {
   EditorSelection,
   OnCopyFn,
   OnPasteFn,
-  PortableTextBlock,
-  PortableTextEditor,
   usePortableTextEditor,
   HotkeyOptions,
-  RenderAttributes,
+  RenderPortableTextBlockProps,
+  RenderPortableTextChildProps,
+  RenderAnnotationProps,
 } from '@sanity/portable-text-editor'
-import {ObjectSchemaType, Path} from '@sanity/types'
+import {Path, PortableTextBlock, PortableTextTextBlock} from '@sanity/types'
 import {
   BoundaryElementProvider,
   Portal,
@@ -53,7 +53,7 @@ interface InputProps extends ArrayOfObjectsInputProps<PortableTextBlock> {
 export type PortableTextEditorElement = HTMLDivElement | HTMLSpanElement | null
 
 /** @internal */
-export function Compositor(props: InputProps) {
+export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunctions'>) {
   const {
     changed,
     focusPath = EMPTY_ARRAY,
@@ -111,8 +111,8 @@ export function Compositor(props: InputProps) {
 
   const editorHotkeys = useHotkeys(hotkeysWithFullscreenToggle)
 
-  const ptFeatures = useMemo(() => PortableTextEditor.getPortableTextFeatures(editor), [editor])
-  const hasContent = !!value
+  const _renderBlockActions = !!value && renderBlockActions ? renderBlockActions : undefined
+  const _renderCustomMarkers = !!value && renderCustomMarkers ? renderCustomMarkers : undefined
 
   const initialSelection = useMemo(
     (): EditorSelection =>
@@ -127,25 +127,21 @@ export function Compositor(props: InputProps) {
   )
 
   const renderBlock = useCallback(
-    (
-      block: PortableTextBlock,
-      blockType: ObjectSchemaType,
-      attributes: RenderAttributes,
-      defaultRender: (b: PortableTextBlock) => JSX.Element
-    ) => {
-      const isTextBlock = block._type === ptFeatures.types.block.name
+    (blockProps: RenderPortableTextBlockProps) => {
+      const {value: block, type: blockType, attributes, defaultRender} = blockProps
+      const isTextBlock = block._type === editor.types.block.name
       if (isTextBlock) {
         return (
           <TextBlock
             attributes={attributes}
-            block={block}
+            block={block as PortableTextTextBlock}
             isFullscreen={isFullscreen}
             onChange={onChange}
             readOnly={readOnly}
-            renderBlockActions={hasContent ? renderBlockActions : undefined}
-            renderCustomMarkers={hasContent ? renderCustomMarkers : undefined}
+            renderBlockActions={_renderBlockActions}
+            renderCustomMarkers={_renderCustomMarkers}
           >
-            {defaultRender(block)}
+            {defaultRender(blockProps)}
           </TextBlock>
         )
       }
@@ -158,31 +154,31 @@ export function Compositor(props: InputProps) {
           onChange={onChange}
           onItemOpen={onItemOpen}
           readOnly={readOnly}
-          renderBlockActions={hasContent ? renderBlockActions : undefined}
-          renderCustomMarkers={hasContent ? renderCustomMarkers : undefined}
+          renderBlockActions={_renderBlockActions}
+          renderCustomMarkers={_renderCustomMarkers}
           renderPreview={renderPreview}
           type={blockType}
         />
       )
     },
     [
-      hasContent,
+      _renderBlockActions,
+      _renderCustomMarkers,
+      editor.types.block.name,
       isFullscreen,
       onChange,
       onItemOpen,
-      ptFeatures.types.block.name,
       readOnly,
-      renderBlockActions,
-      renderCustomMarkers,
       renderPreview,
     ]
   )
 
   const renderChild = useCallback(
-    (child: any, childType: any, attributes: any, defaultRender: any) => {
-      const isSpan = child._type === ptFeatures.types.span.name
+    (childProps: RenderPortableTextChildProps) => {
+      const {value: child, type: childType, attributes, defaultRender} = childProps
+      const isSpan = child._type === editor.types.span.name
       if (isSpan) {
-        return defaultRender(child)
+        return defaultRender(childProps)
       }
 
       return (
@@ -198,18 +194,14 @@ export function Compositor(props: InputProps) {
         />
       )
     },
-    [
-      onItemOpen,
-      ptFeatures.types.span.name,
-      readOnly,
-      renderCustomMarkers,
-      renderPreview,
-      scrollElement,
-    ]
+    [editor, onItemOpen, readOnly, renderCustomMarkers, renderPreview, scrollElement]
   )
 
   const renderAnnotation = useCallback(
-    (annotation: any, annotationType: any, attributes: any, defaultRender: any) => {
+    (annotationProps: RenderAnnotationProps) => {
+      const {value: aValue, type, attributes, defaultRender} = annotationProps
+      const CustomComponent = 'components' in type && type.components?.item
+      const rendered = defaultRender(annotationProps)
       return (
         <Annotation
           attributes={attributes}
@@ -217,10 +209,15 @@ export function Compositor(props: InputProps) {
           readOnly={readOnly}
           renderCustomMarkers={renderCustomMarkers}
           scrollElement={scrollElement}
-          value={annotation}
-          type={annotationType}
+          value={aValue}
+          type={type}
         >
-          {defaultRender()}
+          {CustomComponent ? (
+            // eslint-disable-next-line react/jsx-no-bind
+            <CustomComponent {...annotationProps} defaultRender={() => rendered} />
+          ) : (
+            rendered
+          )}
         </Annotation>
       )
     },

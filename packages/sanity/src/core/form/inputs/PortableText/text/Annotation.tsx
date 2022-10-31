@@ -1,15 +1,13 @@
 import {hues} from '@sanity/color'
 import {
-  PortableTextChild,
   PortableTextEditor,
   RenderAttributes,
   usePortableTextEditor,
 } from '@sanity/portable-text-editor'
-import {ObjectSchemaType, Path} from '@sanity/types'
+import {ObjectSchemaType, Path, PortableTextObject} from '@sanity/types'
 import {Box, Theme, ThemeColorToneKey, Tooltip} from '@sanity/ui'
 import React, {SyntheticEvent, useCallback, useMemo, useRef, useState} from 'react'
 import styled, {css} from 'styled-components'
-import {FIXME} from '../../../../FIXME'
 import {pathToString} from '../../../../field'
 import {RenderCustomMarkers} from '../../../types'
 import {DefaultMarkers} from '../_legacyDefaultParts/Markers'
@@ -27,7 +25,7 @@ interface AnnotationProps {
   renderCustomMarkers?: RenderCustomMarkers
   scrollElement: HTMLElement | null
   type: ObjectSchemaType
-  value: PortableTextChild
+  value: PortableTextObject
 }
 
 const Root = styled.span<{$toneKey?: Exclude<ThemeColorToneKey, 'transparent'>}>(
@@ -139,7 +137,7 @@ export const Annotation = function Annotation(props: AnnotationProps) {
     (event: React.MouseEvent<HTMLButtonElement>): void => {
       event.preventDefault()
       event.stopPropagation()
-      PortableTextEditor.removeAnnotation(editor, type as FIXME)
+      PortableTextEditor.removeAnnotation(editor, type)
       PortableTextEditor.focus(editor)
     },
     [editor, type]

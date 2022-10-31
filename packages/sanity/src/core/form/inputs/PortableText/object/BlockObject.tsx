@@ -1,11 +1,10 @@
 import {
   PortableTextEditor,
-  PortableTextBlock,
   RenderAttributes,
   EditorSelection,
   usePortableTextEditor,
 } from '@sanity/portable-text-editor'
-import {ObjectSchemaType, Path} from '@sanity/types'
+import {ObjectSchemaType, Path, PortableTextBlock} from '@sanity/types'
 import {Tooltip, Flex, ResponsivePaddingProps} from '@sanity/ui'
 import React, {useCallback, useMemo, useRef, useState} from 'react'
 import {PatchArg} from '../../../patch'

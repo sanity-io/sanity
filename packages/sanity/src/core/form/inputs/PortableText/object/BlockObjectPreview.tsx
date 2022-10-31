@@ -1,9 +1,5 @@
 import {EditIcon, LinkIcon, TrashIcon, EyeOpenIcon, EllipsisVerticalIcon} from '@sanity/icons'
-import {
-  PortableTextBlock,
-  PortableTextEditor,
-  usePortableTextEditor,
-} from '@sanity/portable-text-editor'
+import {PortableTextEditor, usePortableTextEditor} from '@sanity/portable-text-editor'
 import {
   Box,
   Button,
@@ -24,11 +20,10 @@ import React, {
   useRef,
   useId,
 } from 'react'
-import {ObjectSchemaType} from '@sanity/types'
+import {ObjectSchemaType, PortableTextBlock} from '@sanity/types'
 import {RenderPreviewCallback} from '../../../types'
 import {is} from '../../../utils/is'
 import {PreviewProps} from '../../../../components'
-import {FIXME} from '../../../../FIXME'
 import {IntentLink} from 'sanity/router'
 
 interface BlockObjectPreviewProps {
@@ -70,10 +65,15 @@ export function BlockObjectPreview(props: BlockObjectPreviewProps): ReactElement
 
   const referenceLink = useMemo(
     () =>
-      forwardRef(function ReferenceLink(linkProps: FIXME, ref: FIXME) {
-        return <IntentLink {...linkProps} intent="edit" params={{id: value._ref}} ref={ref} />
-      }),
-    [value?._ref]
+      '_ref' in value && value._ref
+        ? forwardRef(function ReferenceLink(
+            linkProps,
+            ref: React.Ref<HTMLAnchorElement> | undefined
+          ) {
+            return <IntentLink {...linkProps} intent="edit" params={{id: value._ref}} ref={ref} />
+          })
+        : undefined,
+    [value]
   )
 
   // Go to menu when tabbed to
@@ -119,15 +119,17 @@ export function BlockObjectPreview(props: BlockObjectPreviewProps): ReactElement
       id={menuButtonId}
       menu={
         <Menu>
-          {value?._ref && (
-            <MenuItem as={referenceLink} data-as="a" icon={LinkIcon} text="Open reference" />
-          )}
+          <>
+            {'_ref' in value && value._ref && (
+              <MenuItem as={referenceLink} data-as="a" icon={LinkIcon} text="Open reference" />
+            )}
 
-          {readOnly && <MenuItem icon={EyeOpenIcon} onClick={onClickingEdit} text="View" />}
-          {!readOnly && <MenuItem icon={EditIcon} onClick={onClickingEdit} text="Edit" />}
-          {!readOnly && (
-            <MenuItem icon={TrashIcon} onClick={onClickingDelete} text="Delete" tone="critical" />
-          )}
+            {readOnly && <MenuItem icon={EyeOpenIcon} onClick={onClickingEdit} text="View" />}
+            {!readOnly && <MenuItem icon={EditIcon} onClick={onClickingEdit} text="Edit" />}
+            {!readOnly && (
+              <MenuItem icon={TrashIcon} onClick={onClickingDelete} text="Delete" tone="critical" />
+            )}
+          </>
         </Menu>
       }
       popover={POPOVER_PROPS}

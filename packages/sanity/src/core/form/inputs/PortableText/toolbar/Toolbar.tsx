@@ -16,7 +16,7 @@ import {ActionMenu} from './ActionMenu'
 import {BlockStyleSelect} from './BlockStyleSelect'
 import {InsertMenu} from './InsertMenu'
 import {getBlockStyles, getInsertMenuItems} from './helpers'
-import {useActionGroups, useFeatures} from './hooks'
+import {useActionGroups} from './hooks'
 import {BlockItem, BlockStyleItem, PTEToolbarActionGroup} from './types'
 
 interface ToolbarProps {
@@ -148,7 +148,6 @@ const InnerToolbar = memo(function InnerToolbar({
 
 export function Toolbar(props: ToolbarProps) {
   const {hotkeys, isFullscreen, readOnly, onMemberOpen, onToggleFullscreen} = props
-  const features = useFeatures()
   const editor = usePortableTextEditor()
   const selection = usePortableTextEditorSelection()
   const resolveInitialValueForType = useResolveInitialValueForType()
@@ -225,11 +224,11 @@ export function Toolbar(props: ToolbarProps) {
     disabled: true,
   })
 
-  const blockStyles = useMemo(() => getBlockStyles(features), [features])
+  const blockStyles = useMemo(() => getBlockStyles(editor.types), [editor])
 
   const insertMenuItems = useMemo(
-    () => getInsertMenuItems(features, disabled, handleInsertBlock, handleInsertInline),
-    [disabled, features, handleInsertBlock, handleInsertInline]
+    () => getInsertMenuItems(editor.types, disabled, handleInsertBlock, handleInsertInline),
+    [disabled, editor, handleInsertBlock, handleInsertInline]
   )
 
   return (

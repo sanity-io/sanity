@@ -1,6 +1,7 @@
-import {PortableTextBlock, RenderAttributes} from '@sanity/portable-text-editor'
+import {RenderAttributes} from '@sanity/portable-text-editor'
 import {Box, Flex, ResponsivePaddingProps, Tooltip} from '@sanity/ui'
 import React, {RefObject, useCallback, useMemo, useState} from 'react'
+import {PortableTextTextBlock} from '@sanity/types'
 import {RenderCustomMarkers} from '../../../types'
 import {PatchArg} from '../../../patch'
 import {useFormBuilder} from '../../../useFormBuilder'
@@ -28,7 +29,7 @@ import {TEXT_STYLES} from './textStyles'
 
 export interface TextBlockProps {
   attributes: RenderAttributes
-  block: PortableTextBlock
+  block: PortableTextTextBlock
   children: React.ReactNode
   isFullscreen?: boolean
   onChange: (...patches: PatchArg[]) => void
@@ -64,9 +65,13 @@ export function TextBlock(props: TextBlockProps) {
 
   const tooltipEnabled = hasError || hasWarning || hasMarkers || hasInfo
 
-  const text = useMemo(() => {
-    const TextStyle = TEXT_STYLES[block.style] || TEXT_STYLES.normal
+  const blockStyle = useMemo(
+    () => (block.style && TEXT_STYLES[block.style] ? TEXT_STYLES[block.style] : TEXT_STYLES[0]),
+    [block.style]
+  )
 
+  const text = useMemo(() => {
+    const TextStyle = blockStyle
     return (
       <TextFlex align="flex-start" $level={block?.level}>
         {block.listItem && (
@@ -79,7 +84,7 @@ export function TextBlock(props: TextBlockProps) {
         </TextStyle>
       </TextFlex>
     )
-  }, [block.style, block.listItem, block.level, children])
+  }, [blockStyle, block.listItem, block.level, children])
 
   const innerPaddingProps: ResponsivePaddingProps = useMemo(() => {
     if (isFullscreen && !renderBlockActions) {
@@ -105,7 +110,7 @@ export function TextBlock(props: TextBlockProps) {
       return {paddingY: 2}
     }
 
-    return TEXT_STYLE_PADDING[block.style] || {paddingY: 2}
+    return TEXT_STYLE_PADDING[block.style || 'normal'] || {paddingY: 2}
   }, [block])
 
   return (
@@ -140,7 +145,7 @@ export function TextBlock(props: TextBlockProps) {
                 data-read-only={readOnly}
                 data-testid="text-block__text"
                 data-warning={hasWarning ? '' : undefined}
-                $level={block.level}
+                $level={block.level || 1}
                 spellCheck={spellCheck}
               >
                 {text}

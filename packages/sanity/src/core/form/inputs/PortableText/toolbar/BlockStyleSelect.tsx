@@ -13,7 +13,7 @@ import {
   BlockQuote,
   Normal,
 } from '../text/textStyles'
-import {useActiveStyleKeys, useFeatures, useFocusBlock} from './hooks'
+import {useActiveStyleKeys, useFocusBlock} from './hooks'
 import {BlockStyleItem} from './types'
 
 const MenuButtonMemo = memo(MenuButton)
@@ -69,12 +69,10 @@ export const BlockStyleSelect = memo(function BlockStyleSelect(
 ): JSX.Element {
   const {disabled, items: itemsProp} = props
   const editor = usePortableTextEditor()
-  const features = useFeatures()
   const focusBlock = useFocusBlock()
   const [changed, setChanged] = useState(false)
 
-  const _disabled =
-    disabled || (focusBlock ? features.types.block.name !== focusBlock._type : false)
+  const _disabled = disabled || (focusBlock ? editor.types.block.name !== focusBlock._type : false)
 
   // @todo: Explain what this does
   const activeKeys = useActiveStyleKeys({items: itemsProp})

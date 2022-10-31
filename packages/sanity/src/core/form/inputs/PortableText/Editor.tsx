@@ -46,8 +46,15 @@ interface EditorProps {
   setScrollElement: (scrollElement: HTMLElement | null) => void
 }
 
-const renderDecorator: RenderDecoratorFunction = (mark, mType, attributes, defaultRender) => {
-  return <Decorator mark={mark}>{defaultRender()}</Decorator>
+const renderDecorator: RenderDecoratorFunction = (props) => {
+  const {value, defaultRender, type} = props
+  const CustomComponent = type.components?.item
+  const rendered = defaultRender(props)
+  if (CustomComponent) {
+    // eslint-disable-next-line react/jsx-no-bind
+    return <CustomComponent {...props} defaultRender={() => rendered} />
+  }
+  return <Decorator mark={value}>{rendered}</Decorator>
 }
 
 export function Editor(props: EditorProps) {

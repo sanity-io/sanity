@@ -1,4 +1,4 @@
-import {PortableTextBlock} from '@sanity/portable-text-editor'
+import {PortableTextBlock} from '@sanity/types'
 
 export const valueOptions = {
   Empty: 'empty',

@@ -1,10 +1,9 @@
-import {ArraySchemaType} from '@sanity/types'
+import {ArraySchemaType, PortableTextBlock} from '@sanity/types'
 import {
   EditorChange,
   OnCopyFn,
   OnPasteFn,
   Patch as EditorPatch,
-  PortableTextBlock,
   PortableTextEditor,
   HotkeyOptions,
   InvalidValue,
@@ -55,7 +54,7 @@ export interface PortableTextMemberItem {
  * @alpha
  */
 export interface PortableTextInputProps
-  extends ArrayOfObjectsInputProps<PortableTextBlock, ArraySchemaType> {
+  extends ArrayOfObjectsInputProps<PortableTextBlock, ArraySchemaType<PortableTextBlock>> {
   hotkeys?: HotkeyOptions
   markers?: PortableTextMarker[]
   onCopy?: OnCopyFn
@@ -343,7 +342,7 @@ export function PortableTextInput(props: PortableTextInputProps) {
               onChange={handleEditorChange}
               maxBlocks={undefined} // TODO: from schema?
               readOnly={readOnly}
-              type={type as FIXME}
+              type={type}
               value={value}
             >
               <Compositor

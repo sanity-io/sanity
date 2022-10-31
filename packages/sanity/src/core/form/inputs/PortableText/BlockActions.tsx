@@ -1,10 +1,7 @@
-import {
-  PortableTextEditor,
-  PortableTextBlock,
-  usePortableTextEditor,
-} from '@sanity/portable-text-editor'
+import {PortableTextEditor, usePortableTextEditor} from '@sanity/portable-text-editor'
 import React, {useCallback, useMemo} from 'react'
 import styled from 'styled-components'
+import {PortableTextBlock} from '@sanity/types'
 import {PatchArg} from '../../patch'
 import {RenderBlockActionsCallback, RenderBlockActionsProps} from './types'
 import {createInsertCallback, createSetCallback, createUnsetCallback} from './callbacks'
@@ -20,21 +17,10 @@ const Root = styled.div`
   pointer-events: 'all';
 `
 
-// function isClassComponent(component: React.ComponentType) {
-//   return typeof component === 'function' && !!component.prototype?.isReactComponent
-// }
-
-// function isFunctionComponent(component: React.ComponentType) {
-//   return typeof component === 'function' && String(component).includes('return React.createElement')
-// }
-
 export function BlockActions(props: BlockActionsProps) {
   const editor = usePortableTextEditor()
   const {block, onChange, renderBlockActions} = props
-  const decoratorValues = useMemo(
-    () => PortableTextEditor.getPortableTextFeatures(editor).decorators.map((d) => d.value),
-    [editor]
-  )
+  const decoratorValues = useMemo(() => editor.types.decorators.map((d) => d.value), [editor])
 
   const blockActions = useMemo(() => {
     if (renderBlockActions) {

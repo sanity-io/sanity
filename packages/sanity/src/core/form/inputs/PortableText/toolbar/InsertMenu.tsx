@@ -4,7 +4,7 @@ import {Button, PopoverProps} from '@sanity/ui'
 import {PortableTextEditor, usePortableTextEditor} from '@sanity/portable-text-editor'
 import {CollapseMenu, CollapseMenuButton} from '../../../../components/collapseMenu'
 import {BlockItem} from './types'
-import {useFeatures, useFocusBlock} from './hooks'
+import {useFocusBlock} from './hooks'
 
 const CollapseMenuMemo = memo(CollapseMenu)
 
@@ -19,11 +19,10 @@ interface InsertMenuProps {
 
 export const InsertMenu = memo(function InsertMenu(props: InsertMenuProps) {
   const {disabled, items, isFullscreen, collapsed} = props
-  const features = useFeatures()
   const focusBlock = useFocusBlock()
   const editor = usePortableTextEditor()
 
-  const isVoidFocus = focusBlock && focusBlock._type !== features.types.block.name
+  const isVoidFocus = focusBlock && focusBlock._type !== editor.types.block.name
 
   const handleMenuClose = useCallback(() => {
     PortableTextEditor.focus(editor)
