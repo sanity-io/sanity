@@ -1,6 +1,6 @@
 const REACT_SYM_RE = /^Symbol\(react\..+\)$/
 
-export function isInputComponentLike(value: any) {
+export function isComponentLike(value: any) {
   const type = typeof value
   // Note: we're not using `isValidElementType` from react-is here since it accepts too much, e.g. any strings.
   return (
