@@ -1,5 +1,5 @@
 import {Observable} from 'rxjs'
-import {distinctUntilChanged, map} from 'rxjs/operators'
+import {distinctUntilChanged, map, tap} from 'rxjs/operators'
 import {SanityClient} from '@sanity/client'
 import {PrepareViewOptions, SanityDocument} from '@sanity/types'
 import {isRecord} from '../util'
@@ -75,7 +75,7 @@ export function createDocumentPreviewStore({
     id: string,
     apiConfig?: ApiConfig
   ): Observable<string | undefined> {
-    return observePaths({_type: 'reference', _ref: id}, ['_type']).pipe(
+    return observePaths({_type: 'reference', _ref: id}, ['_type'], apiConfig).pipe(
       map((res) => (isRecord(res) && typeof res._type === 'string' ? res._type : undefined)),
       distinctUntilChanged()
     )
