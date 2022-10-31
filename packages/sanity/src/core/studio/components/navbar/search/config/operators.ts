@@ -2,17 +2,17 @@ import type {SearchOperator, SearchOperatorType} from '../types'
 
 export const OPERATORS: Record<SearchOperatorType, SearchOperator> = {
   countEqualTo: {
-    buttonLabel: '',
+    buttonLabel: 'has',
     fn: (value, field) => (value && field ? `count(${field}) == ${value}` : null),
     label: 'quantity equals',
   },
   countGreaterThan: {
-    buttonLabel: '>',
+    buttonLabel: 'has >',
     fn: (value, field) => (value && field ? `count(${field}) > ${value}` : null),
     label: 'quantity more than',
   },
   countLessThan: {
-    buttonLabel: '<',
+    buttonLabel: 'has <',
     fn: (value, field) => (value && field ? `count(${field}) < ${value}` : null),
     label: 'quantity less than',
   },

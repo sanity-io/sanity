@@ -1,3 +1,4 @@
+import {isBoolean} from 'lodash'
 import pluralize from 'pluralize-esm'
 import type {CompoundSearchFilter, FieldSearchFilter, SearchFilter} from '../../types'
 
@@ -21,7 +22,7 @@ function getCompoundValue(filter: CompoundSearchFilter) {
       if (typeof filter.value === 'undefined') {
         return null
       }
-      return filter.value ? 'true' : 'false'
+      return filter.value ? 'True' : 'False'
     case 'hasReference':
       return filter?.value ? filter.value.slice(0, 8) : ''
     default:
@@ -38,7 +39,7 @@ function getFieldValue(filter: FieldSearchFilter) {
       value = filter?.value && `${filter.value} ${pluralize('item', filter.value)}`
       break
     case 'boolean':
-      if (typeof filter.value !== 'undefined') {
+      if (isBoolean(filter.value)) {
         value = filter.value ? 'True' : 'False'
       }
       break
