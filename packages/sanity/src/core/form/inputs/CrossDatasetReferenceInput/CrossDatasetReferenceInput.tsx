@@ -19,6 +19,7 @@ import {
   useToast,
 } from '@sanity/ui'
 import {useObservableCallback} from 'react-rx'
+import {FOCUS_TERMINATOR} from '@sanity/util/paths'
 import {ObjectInputProps} from '../../types'
 import {set, unset} from '../../patch'
 import {AlertStrip} from '../../components/AlertStrip'
@@ -26,16 +27,16 @@ import {useOnClickOutside} from '../../hooks/useOnClickOutside'
 import {getPublishedId, isNonNullable} from '../../../util'
 import {FIXME} from '../../../FIXME'
 import {ChangeIndicator} from '../../../changeIndicators'
+import {PreviewCard} from '../../../components'
+import {useDidUpdate} from '../../hooks/useDidUpdate'
 import {CrossDatasetReferenceInfo, CrossDatasetSearchHit, SearchState} from './types'
 import {OptionPreview} from './OptionPreview'
 import {GetReferenceInfoFn, useReferenceInfo} from './useReferenceInfo'
 import {PreviewReferenceValue} from './PreviewReferenceValue'
 import {ReferenceAutocomplete} from './ReferenceAutocomplete'
-import {PreviewCard} from '../../../components'
 import {DisabledFeatureWarning} from './DisabledFeatureWarning'
 import {useFeatureEnabled} from './useFeatureEnabled'
 import {useProjectId} from './utils/useProjectId'
-import { FOCUS_TERMINATOR } from '@sanity/util/src/paths'
 
 const INITIAL_SEARCH_STATE: SearchState = {
   hits: [],
@@ -148,17 +149,17 @@ export function CrossDatasetReferenceInput(props: CrossDatasetReferenceInputProp
   const hasFocusAtRef = focusPath.length === 1 && focusPath[0] === '_ref'
 
   // --- focus handling
-  // const focusElementRef = useForwardedRef(forwardedRef)
-  // useDidUpdate({hasFocusAt: hasFocusAtRef, ref: value?._ref}, (prev, current) => {
-  //   const refUpdated = prev?.ref !== current.ref
-  //   const focusAtUpdated = prev?.hasFocusAt !== current.hasFocusAt
+  const focusElementRef = elementProps.ref
+  useDidUpdate({hasFocusAt: hasFocusAtRef, ref: value?._ref}, (prev, current) => {
+    const refUpdated = prev?.ref !== current.ref
+    const focusAtUpdated = prev?.hasFocusAt !== current.hasFocusAt
 
-  //   if ((focusAtUpdated || refUpdated) && current.hasFocusAt) {
-  //     // if search mode changed and we're having focus always ensure the
-  //     // ref element gets focus
-  //     focusElementRef.current?.focus()
-  //   }
-  // })
+    if ((focusAtUpdated || refUpdated) && current.hasFocusAt) {
+      // if search mode changed and we're having focus always ensure the
+      // ref element gets focus
+      focusElementRef.current?.focus()
+    }
+  })
 
   const weakIs = value?._weak ? 'weak' : 'strong'
   const weakShouldBe = schemaType.weak === true ? 'weak' : 'strong'
@@ -183,13 +184,16 @@ export function CrossDatasetReferenceInput(props: CrossDatasetReferenceInputProp
   )
 
   const handleAutocompleteFocus = useCallback(
-    (event: any) => {
+    (event: FIXME) => {
       if (event.currentTarget === elementProps.ref.current) {
         onPathFocus?.(REF_PATH)
       }
     },
     [elementProps.ref, onPathFocus]
   )
+  const handleReplace = useCallback(() => {
+    onPathFocus?.(REF_PATH)
+  }, [onPathFocus])
 
   const inputId = useId()
 
@@ -405,9 +409,7 @@ export function CrossDatasetReferenceInput(props: CrossDatasetReferenceInputProp
                                 text="Replace"
                                 icon={ReplaceIcon}
                                 data-testid="menu-item-replace"
-                                onClick={() => {
-                                  onPathFocus(REF_PATH)
-                                }}
+                                onClick={handleReplace}
                               />
                             </>
                           )}
