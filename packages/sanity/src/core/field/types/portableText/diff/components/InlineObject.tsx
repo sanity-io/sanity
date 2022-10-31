@@ -1,12 +1,17 @@
 import {ChevronDownIcon} from '@sanity/icons'
-import {isKeySegment, ObjectSchemaType, Path} from '@sanity/types'
+import {
+  isKeySegment,
+  ObjectSchemaType,
+  Path,
+  PortableTextChild,
+  PortableTextObject,
+} from '@sanity/types'
 import {Card, Flex, Label, Popover, useClickOutside} from '@sanity/ui'
 import {FOCUS_TERMINATOR, toString} from '@sanity/util/paths'
 import React, {useCallback, useContext, useState, useEffect, useMemo} from 'react'
 import styled from 'styled-components'
 import {ChangeList, DiffContext, DiffTooltip, useDiffAnnotationColor} from '../../../../diff'
 import {ObjectDiff} from '../../../../types'
-import {PortableTextChild} from '../types'
 import {isEmptyObject} from '../helpers'
 import {ConnectorContext, useReportedValues} from '../../../../../changeIndicators'
 import {Preview} from '../../../../../preview/components/Preview'
@@ -14,7 +19,7 @@ import {InlineBox, InlineText, PopoverContainer, PreviewContainer} from './style
 
 interface InlineObjectProps {
   diff?: ObjectDiff
-  object: PortableTextChild
+  object: PortableTextObject
   path: Path
   schemaType?: ObjectSchemaType
 }
