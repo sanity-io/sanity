@@ -9,7 +9,7 @@ import {useSearchState} from '../contexts/search/useSearchState'
 import {useMeasureSearchResultsIndex} from '../hooks/useMeasureSearchResultsIndex'
 import {useSearchHotkeys} from '../hooks/useSearchHotkeys'
 import {hasSearchableTerms} from '../utils/hasSearchableTerms'
-// import {DebugDocumentTypes} from './filters/_DebugDocumentTypes'
+import {DebugDocumentTypes} from './filters/_DebugDocumentTypes'
 import {DebugFilterQuery} from './filters/_DebugFilterQuery'
 import {Filters} from './filters/Filters'
 import {RecentSearches} from './recentSearches/RecentSearches'
@@ -195,7 +195,7 @@ export function SearchPopover({
                 <Filters />
                 {/* Debug */}
                 <DebugFilterQuery />
-                {/* <DebugDocumentTypes /> */}
+                <DebugDocumentTypes />
               </Card>
             )}
 
