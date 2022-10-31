@@ -1,6 +1,7 @@
 import {ChevronRightIcon} from '@sanity/icons'
-import {Box, Code, Flex, Inline, Stack, Text} from '@sanity/ui'
+import {Box, Flex, rem, Stack, Text} from '@sanity/ui'
 import React, {useMemo} from 'react'
+import styled from 'styled-components'
 import {FILTERS} from '../../config/filters'
 import type {KeyedSearchFilter} from '../../types'
 import {FilterIcon} from './FilterIcon'
@@ -9,6 +10,16 @@ interface FilterTitleProps {
   filter: KeyedSearchFilter
   showSubtitle?: boolean
 }
+
+// TODO: refactor / use idiomatic sanity/ui components
+const CodeWithOverflow = styled.span`
+  font-family: ${({theme}) => theme.sanity.fonts.code.family};
+  font-size: ${({theme}) => rem(theme.sanity.fonts.code.sizes[0].fontSize)};
+  opacity: 0.6;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+`
 
 export function FilterTitle({filter, showSubtitle}: FilterTitleProps) {
   const title = useMemo(() => {
@@ -22,44 +33,52 @@ export function FilterTitle({filter, showSubtitle}: FilterTitleProps) {
   }, [filter])
 
   return (
-    <Flex align="flex-start" gap={3}>
-      <Text size={1}>
-        <FilterIcon filter={filter} />
-      </Text>
-      <Stack space={2}>
-        <Text size={1} weight="medium">
-          {title}
+    <Stack space={2}>
+      {/* Path */}
+      {filter.type === 'field' && filter.path.length > 1 && (
+        <Text
+          // muted
+          size={0}
+          style={{opacity: 0.6}}
+        >
+          {filter.path.slice(0, -1).map((pathTitle, index) => {
+            return (
+              <>
+                <span key={index}>{pathTitle}</span>
+                {index !== filter.path.length - 2 && (
+                  <span
+                    key={`${index}-icon`}
+                    style={{
+                      opacity: 0.75,
+                      paddingLeft: '0.25em',
+                      paddingRight: '0.25em',
+                    }}
+                  >
+                    <ChevronRightIcon />
+                  </span>
+                )}
+              </>
+            )
+          })}
         </Text>
-        {/* Path */}
-        {filter.type === 'field' && filter.path.length > 1 && (
-          <Text muted size={1} style={{opacity: 0.75}}>
-            {filter.path.slice(0, -1).map((pathTitle, index) => {
-              return (
-                <>
-                  <span key={index}>{pathTitle}</span>
-                  {index !== filter.path.length - 2 && (
-                    <span
-                      key={`${index}-icon`}
-                      style={{
-                        opacity: 0.75,
-                        paddingLeft: '0.25em',
-                        paddingRight: '0.25em',
-                      }}
-                    >
-                      <ChevronRightIcon />
-                    </span>
-                  )}
-                </>
-              )
-            })}
+      )}
+
+      <Flex align="flex-start" gap={3}>
+        <Box marginLeft={1}>
+          <Text size={1}>
+            <FilterIcon filter={filter} />
           </Text>
-        )}
-        {showSubtitle && filter.showSubtitle && (
-          <Code muted size={0}>
-            {filter.type === 'field' ? filter.fieldPath : ''}
-          </Code>
-        )}
-      </Stack>
-    </Flex>
+        </Box>
+        <Stack space={2}>
+          {/* Icon + Title */}
+          <Text size={1} weight="medium">
+            {title}
+          </Text>
+          {showSubtitle && filter.showSubtitle && (
+            <CodeWithOverflow>{filter.type === 'field' ? filter.fieldPath : ''}</CodeWithOverflow>
+          )}
+        </Stack>
+      </Flex>
+    </Stack>
   )
 }
