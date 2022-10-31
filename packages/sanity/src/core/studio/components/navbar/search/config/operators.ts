@@ -9,12 +9,12 @@ export const OPERATORS: Record<SearchOperatorType, SearchOperator> = {
   countGreaterThan: {
     buttonLabel: 'has >',
     fn: (value, field) => (value && field ? `count(${field}) > ${value}` : null),
-    label: 'quantity more than',
+    label: 'quantity more than (>)',
   },
   countLessThan: {
     buttonLabel: 'has <',
     fn: (value, field) => (value && field ? `count(${field}) < ${value}` : null),
-    label: 'quantity less than',
+    label: 'quantity less than (<)',
   },
   dateAfter: {
     buttonLabel: 'after',
@@ -49,22 +49,22 @@ export const OPERATORS: Record<SearchOperatorType, SearchOperator> = {
   greaterThan: {
     buttonLabel: '>',
     fn: (value, field) => (value && field ? `${field} > ${value}` : null),
-    label: 'greater than',
+    label: 'greater than (>)',
   },
   greaterThanOrEqualTo: {
     buttonLabel: '≥',
     fn: (value, field) => (value && field ? `${field} >= ${value}` : null),
-    label: 'greater than or equal to',
+    label: 'greater than or equal to (≥)',
   },
   lessThan: {
     buttonLabel: '<',
     fn: (value, field) => (value && field ? `${field} < ${value}` : null),
-    label: 'less than',
+    label: 'less than (<)',
   },
   lessThanOrEqualTo: {
     buttonLabel: '≤',
     fn: (value, field) => (value && field ? `${field} <= ${value}` : null),
-    label: 'less than or equal to',
+    label: 'less than or equal to (≤)',
   },
   matches: {
     buttonLabel: 'contains',
