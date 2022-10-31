@@ -77,8 +77,21 @@ export default function FilterButton({closable = true, filter, initialOpen}: Fil
     }
   }, [filter])
 
+  // TODO: refactor, store this in `filters or equivalent
+  const supportsValue = useMemo(() => {
+    if (filter.type === 'compound') {
+      return true
+    }
+    if (filter.type === 'field') {
+      return !['empty', 'notEmpty'].includes(filter?.operatorType || '')
+    }
+    return true
+  }, [filter])
+
   const operator = filter?.operatorType && OPERATORS[filter.operatorType].buttonLabel
   const value = getFilterValue(filter)
+
+  const isFilled = operator && (supportsValue ? value : true)
 
   return (
     <Popover
@@ -96,9 +109,11 @@ export default function FilterButton({closable = true, filter, initialOpen}: Fil
           padding={2}
           style={{
             maxWidth: '100%', //
+            opacity: isFilled ? 1 : 0.8,
           }}
           // tone={filter.type === 'field' ? 'primary' : 'default'}
           tone="primary"
+          // tone={isFilled ? 'primary' : 'default'}
         >
           <Inline space={1}>
             <Box marginRight={1}>
@@ -111,8 +126,8 @@ export default function FilterButton({closable = true, filter, initialOpen}: Fil
               {title}
             </Text>
             {/* Operator */}
-            {operator && (
-              <Text muted size={1} weight="regular">
+            {operator && (supportsValue ? value : true) && (
+              <Text muted size={1} style={{opacity: 0.9}} weight="regular">
                 {operator}
               </Text>
             )}
@@ -131,7 +146,9 @@ export default function FilterButton({closable = true, filter, initialOpen}: Fil
             icon={CloseIcon}
             onClick={handleRemove}
             padding={2}
-            tone={isValid ? 'primary' : 'caution'}
+            style={{opacity: isFilled ? 1 : 0.8}}
+            // tone={filter.type === 'field' ? 'primary' : 'default'}
+            tone="primary"
           />
         )}
       </Flex>
