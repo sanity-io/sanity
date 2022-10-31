@@ -3,9 +3,10 @@ import NodeEnvironment from 'jest-environment-node'
 import {isEqual} from 'lodash'
 import ipc from 'node-ipc'
 import puppeteer, {ElementHandle, KeyInput} from 'puppeteer'
+import {PortableTextBlock} from '@sanity/types'
 import {FLUSH_PATCHES_DEBOUNCE_MS} from '../../src/constants'
 import {normalizeSelection} from '../../src/utils/selection'
-import type {EditorSelection, PortableTextBlock} from '../../src'
+import type {EditorSelection} from '../../src'
 
 ipc.config.id = 'collaborative-jest-environment-ipc-client'
 ipc.config.retry = 1500
@@ -32,10 +33,6 @@ const launchConfig = process.env.CI
       executablePath: childProcess.execSync('which chrome', {encoding: 'utf8'}).trim(),
     }
   : {}
-
-function generateRandomInteger(min: number, max: number) {
-  return Math.floor(min + Math.random() * (max - min + 1))
-}
 
 export const delay = (time: number): Promise<void> => {
   return new Promise((resolve) => {
@@ -75,9 +72,11 @@ export default class CollaborationEnvironment extends NodeEnvironment {
     }
     this._pageA.on('pageerror', (err) => {
       console.error('Editor A crashed', err)
+      throw err
     })
     this._pageB.on('pageerror', (err) => {
       console.error('Editor B crashed', err)
+      throw err
     })
     await new Promise<void>((resolve) => {
       ipc.connectToNet('socketServer', () => {

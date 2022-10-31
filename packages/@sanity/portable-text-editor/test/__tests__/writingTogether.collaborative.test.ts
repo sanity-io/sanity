@@ -1,9 +1,9 @@
 /** @jest-environment ./test/setup/collaborative.jest.env.ts */
 
 import '../setup/globals.jest'
-import type {PortableTextBlock} from '../../src'
+import type {PortableTextBlock} from '@sanity/types'
 
-const initialValue: PortableTextBlock[] | undefined = [
+const initialValue: PortableTextBlock[] = [
   {
     _key: 'randomKey0',
     _type: 'block',

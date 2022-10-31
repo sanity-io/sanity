@@ -13,28 +13,27 @@ const editor = withPlugins(createEditor(), {
   portableTextEditor: new PortableTextEditor({type} as PortableTextEditorProps),
 })
 
-const createDefaultValue = () =>
-  [
-    {
-      _type: 'image',
-      _key: 'c01739b0d03b',
-      children: [
-        {
-          _key: 'c01739b0d03b-void-child',
-          _type: 'span',
-          text: '',
-          marks: [],
-        },
-      ],
-      __inline: false,
-      value: {
-        asset: {
-          _ref: 'image-f52f71bc1df46e080dabe43a8effe8ccfb5f21de-4032x3024-png',
-          _type: 'reference',
-        },
+const createDefaultValue = (): Descendant[] => [
+  {
+    _type: 'image',
+    _key: 'c01739b0d03b',
+    children: [
+      {
+        _key: 'c01739b0d03b-void-child',
+        _type: 'span',
+        text: '',
+        marks: [],
+      },
+    ],
+    __inline: false,
+    value: {
+      asset: {
+        _ref: 'image-f52f71bc1df46e080dabe43a8effe8ccfb5f21de-4032x3024-png',
+        _type: 'reference',
       },
     },
-  ] as Descendant[]
+  },
+]
 
 describe('operationToPatches', () => {
   beforeEach(() => {

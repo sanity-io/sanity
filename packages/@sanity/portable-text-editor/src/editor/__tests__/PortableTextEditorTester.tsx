@@ -1,22 +1,21 @@
 import React, {ForwardedRef, forwardRef, useCallback, useEffect} from 'react'
 import Schema from '@sanity/schema'
-import {RawType} from '../../types/schema'
 
 import {PortableTextEditor, PortableTextEditable} from '../../index'
 import type {PortableTextEditorProps, PortableTextEditableProps} from '../../index'
 
-const imageType: RawType = {
+const imageType = {
   type: 'image',
   name: 'blockImage',
 }
 
-const someObject: RawType = {
+const someObject = {
   type: 'object',
   name: 'someObject',
   fields: [{type: 'string', name: 'color'}],
 }
 
-const blockType: RawType = {
+const blockType = {
   type: 'block',
   name: 'myTestBlockType',
   styles: [
@@ -32,7 +31,7 @@ const blockType: RawType = {
   of: [someObject, imageType],
 }
 
-const portableTextType: RawType = {
+const portableTextType = {
   type: 'array',
   name: 'body',
   of: [blockType, someObject],

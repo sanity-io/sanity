@@ -103,7 +103,7 @@ describe('operationToPatches', () => {
           node: {
             _type: 'someObject',
             _key: 'c130395c640c',
-            value: {},
+            value: {title: 'The Object'},
             __inline: false,
             children: [{_key: '1', _type: 'span', text: '', marks: []}],
           },
@@ -117,6 +117,7 @@ describe('operationToPatches', () => {
             Object {
               "_key": "c130395c640c",
               "_type": "someObject",
+              "title": "The Object",
             },
           ],
           "path": Array [
@@ -185,7 +186,7 @@ describe('operationToPatches', () => {
           node: {
             _type: 'someObject',
             _key: 'c130395c640c',
-            value: {},
+            value: {title: 'The Object'},
             __inline: true,
             children: [{_key: '1', _type: 'span', text: '', marks: []}],
           },
@@ -200,6 +201,7 @@ describe('operationToPatches', () => {
             Object {
               "_key": "c130395c640c",
               "_type": "someObject",
+              "title": "The Object",
             },
           ],
           "path": Array [
@@ -302,7 +304,7 @@ describe('operationToPatches', () => {
           node: {
             _key: '773866318fa8',
             _type: 'someObject',
-            value: {title: 'The Object'},
+            value: {title: 'The object'},
             __inline: true,
             children: [{_type: 'span', _key: 'bogus', text: '', marks: []}],
           },

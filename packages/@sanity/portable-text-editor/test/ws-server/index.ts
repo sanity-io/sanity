@@ -3,8 +3,9 @@ import express from 'express'
 import expressWS from 'express-ws'
 import {Subject} from 'rxjs'
 import type {WebSocket} from 'ws'
+import {PortableTextBlock} from '@sanity/types'
 import {applyAll} from '../../src/patch/applyPatch'
-import {Patch, PortableTextBlock} from '../../src'
+import {Patch} from '../../src'
 
 const expressApp = express()
 const {app} = expressWS(expressApp)
