@@ -48,6 +48,7 @@ export function ToolCollapseMenu(props: ToolCollapseMenuProps) {
         return (
           <CollapseMenuButton
             as={Link}
+            data-as="a"
             collapsedProps={{tooltipText: tool.title}}
             icon={tool.icon || UnknownIcon}
             // eslint-disable-next-line react/no-array-index-key
