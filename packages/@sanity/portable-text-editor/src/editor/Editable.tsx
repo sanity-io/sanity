@@ -1,6 +1,11 @@
-import {BaseRange, Transforms} from 'slate'
+import {BaseRange, Transforms, Text} from 'slate'
 import React, {useCallback, useMemo, useEffect, forwardRef} from 'react'
-import {Editable as SlateEditable, ReactEditor} from '@sanity/slate-react'
+import {
+  Editable as SlateEditable,
+  ReactEditor,
+  RenderElementProps,
+  RenderLeafProps,
+} from '@sanity/slate-react'
 import {
   EditorSelection,
   OnBeforeInputFn,
