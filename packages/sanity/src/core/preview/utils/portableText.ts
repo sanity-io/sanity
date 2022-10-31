@@ -1,17 +1,17 @@
-import {Block, isBlock, isSpan} from '@sanity/types'
+import {isPortableTextTextBlock, isPortableTextSpan, PortableTextBlock} from '@sanity/types'
 
-export function isPortableTextArray(blocks: unknown): blocks is Block[] {
-  return Array.isArray(blocks) && (blocks.length === 0 || blocks.some(isBlock))
+export function isPortableTextPreviewValue(value: unknown): value is PortableTextBlock[] {
+  return Array.isArray(value) && (value.length === 0 || value.some(isPortableTextTextBlock))
 }
 
-export function extractTextFromBlocks(blocks: Block[]): string {
-  const firstBlock = blocks.find(isBlock)
+export function extractTextFromBlocks(blocks: unknown): string {
+  const firstBlock = Array.isArray(blocks) && blocks.find(isPortableTextTextBlock)
   if (!firstBlock || !firstBlock.children) {
     return ''
   }
 
   return firstBlock.children
-    .filter(isSpan)
+    .filter(isPortableTextSpan)
     .map((span) => span.text)
     .join('')
 }
