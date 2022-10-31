@@ -4,17 +4,37 @@ import {act, waitForElementToBeRemoved, within} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
 import {Observable, of} from 'rxjs'
+import {SanityClient} from '@sanity/client'
 import {renderCrossDatasetReferenceInput} from '../../../../../../test/form'
 import {CrossDatasetReferenceInput} from '../CrossDatasetReferenceInput'
 import {CrossDatasetSearchHit} from '../types'
+import {createConfig} from '../../../../config'
+import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
+import {createMockSanityClient} from '../../../../../../test/mocks/mockSanityClient'
+import {featureDisabledRequest, featureEnabledRequest} from './mocks'
 
 const AVAILABLE = {
   available: true,
   reason: 'READABLE',
 } as const
 
+function createWrapperComponent(client: SanityClient) {
+  const config = createConfig({
+    projectId: 'abcxyz',
+    dataset: 'test',
+  })
+
+  return createTestProvider({
+    client,
+    config,
+  })
+}
+
 describe('render states', () => {
   test('it renders the autocomplete when no value is given', async () => {
+    const client = createMockSanityClient({requests: {'/features': featureEnabledRequest}})
+    const TestProvider = await createWrapperComponent(client as any)
+
     const getReferenceInfo = ({_id: id, _type: type}: {_id: string; _type?: string}) => {
       return of({
         id,
@@ -45,7 +65,11 @@ describe('render states', () => {
       } as any,
       getReferenceInfo,
       render: (inputProps) => {
-        return <CrossDatasetReferenceInput {...inputProps} />
+        return (
+          <TestProvider>
+            <CrossDatasetReferenceInput {...inputProps} />
+          </TestProvider>
+        )
       },
     })
 
@@ -53,6 +77,9 @@ describe('render states', () => {
   })
 
   test('it renders the autocomplete when it has a value but focus is on the _ref', async () => {
+    const client = createMockSanityClient({requests: {'/features': featureEnabledRequest}})
+    const TestProvider = await createWrapperComponent(client as any)
+
     const getReferenceInfo = jest.fn().mockReturnValue(
       of({
         _id: 'foo',
@@ -90,7 +117,11 @@ describe('render states', () => {
       } as any,
       getReferenceInfo,
       render: (inputProps) => {
-        return <CrossDatasetReferenceInput {...inputProps} focusPath={['_ref']} value={value} />
+        return (
+          <TestProvider>
+            <CrossDatasetReferenceInput {...inputProps} focusPath={['_ref']} value={value} />
+          </TestProvider>
+        )
       },
     })
 
@@ -98,6 +129,9 @@ describe('render states', () => {
   })
 
   test.skip('a warning is displayed if the reference value is strong while the schema says it should be weak', async () => {
+    const client = createMockSanityClient({requests: {'/features': featureEnabledRequest}})
+    const TestProvider = await createWrapperComponent(client as any)
+
     const getReferenceInfo = jest.fn().mockReturnValue(
       of({
         _id: 'foo',
@@ -136,16 +170,77 @@ describe('render states', () => {
       } as any,
       getReferenceInfo,
       render: (inputProps) => {
-        return <CrossDatasetReferenceInput {...inputProps} focusPath={['_ref']} value={value} />
+        return (
+          <TestProvider>
+            <CrossDatasetReferenceInput {...inputProps} focusPath={['_ref']} value={value} />
+          </TestProvider>
+        )
       },
     })
 
     expect(result.getByTestId('alert-reference-strength-mismatch')).toBeInTheDocument()
   })
+
+  // @todo Need to update useFeatureEnabled so we can skip caching for the feature check
+  test.skip('a warning is displayed if there is a reference value and the feature is disabled', async () => {
+    const client = createMockSanityClient({requests: {'/features': featureDisabledRequest}})
+    const TestProvider = await createWrapperComponent(client as any)
+
+    const getReferenceInfo = jest.fn().mockReturnValue(
+      of({
+        _id: 'foo',
+        type: 'product',
+        availability: AVAILABLE,
+        preview: {
+          published: {title: `Foo`},
+        },
+      })
+    )
+
+    const value = {
+      _type: 'reference',
+      _ref: 'someActor',
+      _dataset: 'otherDataset',
+      _projectId: 'otherProject',
+    }
+
+    const {result} = await renderCrossDatasetReferenceInput({
+      fieldDefinition: {
+        name: 'productReference',
+        type: 'crossDatasetReference',
+        dataset: 'products',
+        projectId: 'abcxyz',
+        weak: true,
+        to: [
+          {
+            type: 'product',
+            preview: {
+              select: {
+                title: 'title',
+              },
+            },
+          },
+        ],
+      } as any,
+      getReferenceInfo,
+      render: (inputProps) => {
+        return (
+          <TestProvider>
+            <CrossDatasetReferenceInput {...inputProps} value={value} />
+          </TestProvider>
+        )
+      },
+    })
+
+    expect(result.getByTestId('alert-cross-dataset-reference-feature-disabled')).toBeInTheDocument()
+  })
 })
 
 describe('user interaction happy paths', () => {
   test.skip('an input without a value support searching for references and emits patches when a reference is chosen', async () => {
+    const client = createMockSanityClient({requests: {'/features': featureEnabledRequest}})
+    const TestProvider = await createWrapperComponent(client as any)
+
     const handleSearch = jest.fn<Observable<CrossDatasetSearchHit[]>, [string]>().mockReturnValue(
       of([
         {id: 'one', type: 'product', published: {_id: 'one', _type: 'product'}},
@@ -182,7 +277,11 @@ describe('user interaction happy paths', () => {
           },
         ],
       } as any,
-      render: (inputProps) => <CrossDatasetReferenceInput {...inputProps} />,
+      render: (inputProps) => (
+        <TestProvider>
+          <CrossDatasetReferenceInput {...inputProps} />
+        </TestProvider>
+      ),
     })
 
     const autocomplete = await result.findByTestId('autocomplete')
@@ -228,6 +327,9 @@ describe('user interaction happy paths', () => {
 
   // todo: look into why these fails
   test.skip('an input with an existing value support replacing the value, and emits patches when a new reference is chosen', async () => {
+    const client = createMockSanityClient({requests: {'/features': featureEnabledRequest}})
+    const TestProvider = await createWrapperComponent(client as any)
+
     const handleSearch = jest.fn<Observable<CrossDatasetSearchHit[]>, [string]>().mockReturnValue(
       of([
         {id: 'one', type: 'product', published: {_id: 'one', _type: 'product'}},
@@ -273,7 +375,11 @@ describe('user interaction happy paths', () => {
         ],
       } as any,
 
-      render: (inputProps) => <CrossDatasetReferenceInput {...inputProps} value={value} />,
+      render: (inputProps) => (
+        <TestProvider>
+          <CrossDatasetReferenceInput {...inputProps} value={value} />,
+        </TestProvider>
+      ),
     })
 
     const preview = result.getByTestId('preview')
@@ -285,7 +391,11 @@ describe('user interaction happy paths', () => {
     expect(onPathFocus).toHaveBeenCalledTimes(1)
     expect(onPathFocus).toHaveBeenCalledWith(['_ref'])
 
-    rerender((inputProps) => <CrossDatasetReferenceInput {...inputProps} focusPath={['_ref']} />)
+    rerender((inputProps) => (
+      <TestProvider>
+        <CrossDatasetReferenceInput {...inputProps} focusPath={['_ref']} />
+      </TestProvider>
+    ))
 
     // rerender({
     //   focusPath: ['_ref'],
@@ -330,6 +440,9 @@ describe('user interaction happy paths', () => {
   })
 
   test('an input with an existing value support clearing the value', async () => {
+    const client = createMockSanityClient({requests: {'/features': featureEnabledRequest}})
+    const TestProvider = await createWrapperComponent(client as any)
+
     const getReferenceInfo = ({_id: id}: {_id: string}) =>
       of({
         id,
@@ -367,7 +480,11 @@ describe('user interaction happy paths', () => {
         ],
       } as any,
 
-      render: (inputProps) => <CrossDatasetReferenceInput {...inputProps} value={value} />,
+      render: (inputProps) => (
+        <TestProvider>
+          <CrossDatasetReferenceInput {...inputProps} value={value} />,
+        </TestProvider>
+      ),
     })
 
     const preview = result.getByTestId('preview')
