@@ -95,21 +95,18 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
   const readOnly = usePortableTextEditorReadOnlyStatus()
   const ref = useForwardedRef(forwardedRef)
 
-  const {
-    change$,
-    keyGenerator,
-    portableTextFeatures,
-    slateInstance: slateEditor,
-  } = portableTextEditor
+  const {change$, keyGenerator, types, slateInstance: slateEditor} = portableTextEditor
+
+  const blockTypeName = types.block.name
 
   // React/UI-spesific plugins
   const withInsertData = useMemo(
-    () => createWithInsertData(change$, portableTextFeatures, keyGenerator),
-    [change$, keyGenerator, portableTextFeatures]
+    () => createWithInsertData(change$, types, keyGenerator),
+    [change$, keyGenerator, types]
   )
   const withHotKeys = useMemo(
-    () => createWithHotkeys(portableTextFeatures, keyGenerator, portableTextEditor, hotkeys),
-    [hotkeys, keyGenerator, portableTextEditor, portableTextFeatures]
+    () => createWithHotkeys(types, keyGenerator, portableTextEditor, hotkeys),
+    [hotkeys, keyGenerator, portableTextEditor, types]
   )
 
   // Output a minimal React editor inside Editable when in readOnly mode.
@@ -125,21 +122,21 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
   }, [readOnly, slateEditor, withHotKeys, withInsertData])
 
   const renderElement = useCallback(
-    (eProps: any) => (
+    (eProps: RenderElementProps) => (
       <Element
         {...eProps}
-        portableTextFeatures={portableTextFeatures}
+        types={types}
         readOnly={readOnly}
         renderBlock={renderBlock}
         renderChild={renderChild}
         spellCheck={spellCheck}
       />
     ),
-    [portableTextFeatures, spellCheck, readOnly, renderBlock, renderChild]
+    [types, spellCheck, readOnly, renderBlock, renderChild]
   )
 
   const renderLeaf = useCallback(
-    (lProps: any) => {
+    (lProps: RenderLeafProps & {leaf: Text & {placeholder?: boolean}}) => {
       if (renderPlaceholder && lProps.leaf.placeholder && lProps.text.text === '') {
         return (
           <>
@@ -149,7 +146,7 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
             <Leaf
               {...lProps}
               keyGenerator={keyGenerator}
-              portableTextFeatures={portableTextFeatures}
+              types={types}
               renderAnnotation={renderAnnotation}
               renderChild={renderChild}
               renderDecorator={renderDecorator}
@@ -162,7 +159,7 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
         <Leaf
           {...lProps}
           keyGenerator={keyGenerator}
-          portableTextFeatures={portableTextFeatures}
+          types={types}
           renderAnnotation={renderAnnotation}
           renderChild={renderChild}
           renderDecorator={renderDecorator}
@@ -171,13 +168,13 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
       )
     },
     [
-      readOnly,
       keyGenerator,
-      portableTextFeatures,
+      readOnly,
       renderAnnotation,
       renderChild,
       renderDecorator,
       renderPlaceholder,
+      types,
     ]
   )
 
@@ -187,7 +184,7 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
       debug(`Selection from props ${JSON.stringify(propsSelection)}`)
       const normalizedSelection = normalizeSelection(
         propsSelection,
-        fromSlateValue(slateEditor.children, portableTextFeatures.types.block.name)
+        fromSlateValue(slateEditor.children, blockTypeName)
       )
       if (normalizedSelection !== null) {
         debug(`Normalized selection from props ${JSON.stringify(normalizedSelection)}`)
@@ -203,7 +200,7 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
         }
       }
     }
-  }, [slateEditor, propsSelection, portableTextFeatures.types.block.name, change$])
+  }, [slateEditor, propsSelection, blockTypeName, change$])
 
   // Set initial selection from props
   useEffect(() => {
@@ -246,8 +243,7 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
             event,
             value: PortableTextEditor.getValue(portableTextEditor),
             path: slateEditor.selection?.focus.path || [],
-            portableTextFeatures, // New key added in v.2.23.2
-            type: portableTextFeatures.types.portableText, // For legacy support
+            types,
           })
         )
       })
@@ -260,7 +256,7 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
             return
           }
           if (result && result.insert) {
-            slateEditor.insertFragment(toSlateValue(result.insert, {portableTextFeatures}))
+            slateEditor.insertFragment(toSlateValue(result.insert, {types}))
             change$.next({type: 'loading', isLoading: false})
             return
           }
@@ -272,7 +268,7 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
           return error
         })
     },
-    [change$, onPaste, portableTextEditor, portableTextFeatures, slateEditor]
+    [change$, onPaste, portableTextEditor, types, slateEditor]
   )
 
   const handleOnFocus = useCallback(() => {
@@ -310,7 +306,7 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
   }, [portableTextEditor, scrollSelectionIntoView])
 
   const decorate = useCallback(() => {
-    if (isEqualToEmptyEditor(slateEditor.children, portableTextFeatures)) {
+    if (isEqualToEmptyEditor(slateEditor.children, types)) {
       return [
         {
           anchor: {
@@ -326,7 +322,7 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
       ]
     }
     return EMPTY_DECORATORS
-  }, [portableTextFeatures, slateEditor.children])
+  }, [types, slateEditor.children])
 
   // The editor
   const slateEditable = useMemo(

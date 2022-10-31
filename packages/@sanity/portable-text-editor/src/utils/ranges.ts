@@ -1,26 +1,26 @@
+import {PortableTextBlock} from '@sanity/types'
 import {BaseRange, Editor, Range} from 'slate'
-import {EditorSelection, EditorSelectionPoint} from '../types/editor'
-import {PortableTextBlock, PortableTextFeatures} from '../types/portableText'
+import {EditorSelection, EditorSelectionPoint, PortableTextMemberTypes} from '../types/editor'
 import {createArrayedPath, createKeyedPath} from './paths'
 
 export function toPortableTextRange(
   value: PortableTextBlock[] | undefined,
   range: BaseRange | Partial<BaseRange> | null,
-  portableTextFeatures: PortableTextFeatures
+  types: PortableTextMemberTypes
 ): EditorSelection {
   if (!range) {
     return null
   }
   let anchor: EditorSelectionPoint | null = null
   let focus: EditorSelectionPoint | null = null
-  const anchorPath = range.anchor && createKeyedPath(range.anchor, value, portableTextFeatures)
+  const anchorPath = range.anchor && createKeyedPath(range.anchor, value, types)
   if (anchorPath && range.anchor) {
     anchor = {
       path: anchorPath,
       offset: range.anchor.offset,
     }
   }
-  const focusPath = range.focus && createKeyedPath(range.focus, value, portableTextFeatures)
+  const focusPath = range.focus && createKeyedPath(range.focus, value, types)
   if (focusPath && range.focus) {
     focus = {
       path: focusPath,

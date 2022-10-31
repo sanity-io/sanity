@@ -1,19 +1,18 @@
-import {Editor, Range, Transforms, Text, Descendant} from 'slate'
-import {PortableTextSlateEditor} from '../../types/editor'
-import {PortableTextFeatures} from '../../types/portableText'
+import {Editor, Range, Transforms, Text} from 'slate'
+import {PortableTextMemberTypes, PortableTextSlateEditor} from '../../types/editor'
 import {debugWithName} from '../../utils/debug'
 
 const debug = debugWithName('plugin:withUtils')
 
 interface Options {
-  portableTextFeatures: PortableTextFeatures
+  types: PortableTextMemberTypes
   keyGenerator: () => string
 }
 /**
  * This plugin makes various util commands available in the editor
  *
  */
-export function createWithUtils({portableTextFeatures, keyGenerator}: Options) {
+export function createWithUtils({types, keyGenerator}: Options) {
   return function withUtils(editor: PortableTextSlateEditor): PortableTextSlateEditor {
     // Expands the the selection to wrap around the word the focus is at
     editor.pteExpandToWord = () => {

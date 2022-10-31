@@ -1,17 +1,17 @@
 import {fromSlateValue, toSlateValue} from '../values'
 import {type} from '../../editor/__tests__/PortableTextEditorTester'
-import {getPortableTextFeatures} from '../getPortableTextFeatures'
+import {getPortableTextMemberTypes} from '../getPortableTextMemberTypes'
 
-const portableTextFeatures = getPortableTextFeatures(type)
+const types = getPortableTextMemberTypes(type)
 
 describe('toSlateValue', () => {
   it('checks undefined', () => {
-    const result = toSlateValue(undefined, {portableTextFeatures})
+    const result = toSlateValue(undefined, {types})
     expect(result).toHaveLength(0)
   })
 
   it('runs given empty array', () => {
-    const result = toSlateValue([], {portableTextFeatures})
+    const result = toSlateValue([], {types})
     expect(result).toHaveLength(0)
   })
 
@@ -23,7 +23,7 @@ describe('toSlateValue', () => {
           _key: '123',
         },
       ],
-      {portableTextFeatures}
+      {types}
     )
 
     expect(result).toMatchObject([
@@ -44,7 +44,7 @@ describe('toSlateValue', () => {
     const result = toSlateValue(
       [
         {
-          _type: portableTextFeatures.types.block.name,
+          _type: types.block.name,
           _key: '123',
           children: [
             {
@@ -55,7 +55,7 @@ describe('toSlateValue', () => {
           ],
         },
       ],
-      {portableTextFeatures}
+      {types}
     )
     expect(result).toMatchInlineSnapshot(`
       Array [
@@ -80,7 +80,7 @@ describe('toSlateValue', () => {
     const result = toSlateValue(
       [
         {
-          _type: portableTextFeatures.types.block.name,
+          _type: types.block.name,
           _key: '123',
           children: [
             {
@@ -98,7 +98,7 @@ describe('toSlateValue', () => {
           ],
         },
       ],
-      {portableTextFeatures}
+      {types}
     )
     expect(result).toMatchInlineSnapshot(`
       Array [
@@ -237,8 +237,8 @@ describe('fromSlateValue', () => {
         style: 'normal',
       },
     ]
-    const toSlate1 = toSlateValue(value, {portableTextFeatures}, keyMap)
-    const toSlate2 = toSlateValue(value, {portableTextFeatures}, keyMap)
+    const toSlate1 = toSlateValue(value, {types}, keyMap)
+    const toSlate2 = toSlateValue(value, {types}, keyMap)
     expect(toSlate1[0]).toBe(toSlate2[0])
     expect(toSlate1[1]).toBe(toSlate2[1])
     const fromSlate1 = fromSlateValue(toSlate1, 'block', keyMap)

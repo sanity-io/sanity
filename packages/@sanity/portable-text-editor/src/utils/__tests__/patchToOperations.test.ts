@@ -1,14 +1,14 @@
 import {createEditor, Descendant} from 'slate'
-import {getPortableTextFeatures} from '../getPortableTextFeatures'
 import {type} from '../../editor/__tests__/PortableTextEditorTester'
 import {createPatchToOperations} from '../patchToOperations'
 import {withPlugins} from '../../editor/plugins'
 import {keyGenerator, Patch, PortableTextEditor, PortableTextEditorProps} from '../..'
 import {fromSlateValue} from '../values'
+import {getPortableTextMemberTypes} from '../getPortableTextMemberTypes'
 
-const portableTextFeatures = getPortableTextFeatures(type)
+const types = getPortableTextMemberTypes(type)
 
-const patchToOperations = createPatchToOperations(portableTextFeatures, keyGenerator)
+const patchToOperations = createPatchToOperations(types, keyGenerator)
 const editor = withPlugins(createEditor(), {
   portableTextEditor: new PortableTextEditor({type} as PortableTextEditorProps),
 })
@@ -56,7 +56,7 @@ describe('operationToPatches', () => {
         origin: 'remote',
       },
     ] as Patch[]
-    const snapShot = fromSlateValue(editor.children, portableTextFeatures.types.block.name)
+    const snapShot = fromSlateValue(editor.children, types.block.name)
     patches.forEach((p) => {
       patchToOperations(editor, p, patches, snapShot)
     })

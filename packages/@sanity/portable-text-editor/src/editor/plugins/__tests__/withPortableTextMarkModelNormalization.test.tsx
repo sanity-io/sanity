@@ -3,10 +3,10 @@
  */
 // eslint-disable-next-line import/no-unassigned-import
 import '@testing-library/jest-dom/extend-expect'
-import {act} from 'react-dom/test-utils'
 import {render, waitFor} from '@testing-library/react'
 
 import React from 'react'
+import {ObjectSchemaType} from '@sanity/types'
 import {PortableTextEditor} from '../../PortableTextEditor'
 import {PortableTextEditorTester, type} from '../../../editor/__tests__/PortableTextEditorTester'
 import {EditorSelection} from '../../../types/editor'
@@ -92,10 +92,8 @@ describe('plugin:withPortableTextMarksModel: normalization', () => {
           focus: {path: [{_key: '5fc57af23597'}, 'children', {_key: '11c8c9f783a8'}], offset: 4},
           anchor: {path: [{_key: '5fc57af23597'}, 'children', {_key: '11c8c9f783a8'}], offset: 0},
         })
-        const linkType = PortableTextEditor.getPortableTextFeatures(
-          editorRef.current
-          // eslint-disable-next-line max-nested-callbacks
-        ).annotations.find((a) => a.type.name === 'link')?.type
+        // eslint-disable-next-line max-nested-callbacks
+        const linkType = editorRef.current.types.annotations.find((a) => a.name === 'link')
         if (!linkType) {
           throw new Error('No link type found')
         }

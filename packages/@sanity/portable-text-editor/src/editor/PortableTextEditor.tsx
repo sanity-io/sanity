@@ -1,5 +1,15 @@
 import React, {PropsWithChildren} from 'react'
-import {ArraySchemaType, Path} from '@sanity/types'
+import {
+  ArrayDefinition,
+  ArraySchemaType,
+  BlockSchemaType,
+  ObjectSchemaType,
+  Path,
+  PortableTextBlock,
+  PortableTextChild,
+  PortableTextObject,
+  SpanSchemaType,
+} from '@sanity/types'
 import {Subscription, Subject, defer, of, EMPTY, Observable, OperatorFunction} from 'rxjs'
 import {concatMap, share, switchMap, tap} from 'rxjs/operators'
 import {randomKey} from '@sanity/util/content'
@@ -7,9 +17,7 @@ import {createEditor, Descendant, Transforms} from 'slate'
 import {debounce, isEqual, throttle} from 'lodash'
 import {Slate, withReact} from '@sanity/slate-react'
 import {compileType} from '../utils/schema'
-import {getPortableTextFeatures} from '../utils/getPortableTextFeatures'
-import {PortableTextBlock, PortableTextFeatures, PortableTextChild} from '../types/portableText'
-import {RawType, Type} from '../types/schema'
+import {getPortableTextMemberTypes} from '../utils/getPortableTextMemberTypes'
 import type {Patch} from '../types/patch'
 import {
   EditorSelection,
@@ -20,6 +28,7 @@ import {
   PatchObservable,
   PortableTextSlateEditor,
   EditableAPIDeleteOptions,
+  PortableTextMemberTypes,
 } from '../types/editor'
 import {validateValue} from '../utils/validateValue'
 import {debugWithName} from '../utils/debug'
@@ -55,7 +64,7 @@ export type PortableTextEditorProps = PropsWithChildren<{
   /**
    * (Compiled or raw JSON) schema type for the portable text field
    */
-  type: ArraySchemaType<PortableTextBlock> | RawType
+  type: ArraySchemaType<PortableTextBlock> | ArrayDefinition
 
   /**
    * Maximum number of blocks to allow within the editor
@@ -100,7 +109,7 @@ export class PortableTextEditor extends React.Component<
   public change$: EditorChanges = new Subject()
   public keyGenerator: () => string
   public maxBlocks: number | undefined
-  public portableTextFeatures: PortableTextFeatures
+  public types: PortableTextMemberTypes
   public readOnly: boolean
   public slateInstance: PortableTextSlateEditor
   public type: ArraySchemaType<PortableTextBlock>
@@ -134,7 +143,7 @@ export class PortableTextEditor extends React.Component<
     this.change$.next({type: 'loading', isLoading: true})
 
     // Get the block types feature set (lookup table)
-    this.portableTextFeatures = getPortableTextFeatures(this.type)
+    this.types = getPortableTextMemberTypes(this.type)
 
     // Setup keyGenerator (either from props, or default)
     this.keyGenerator = props.keyGenerator || defaultKeyGenerator
@@ -189,7 +198,7 @@ export class PortableTextEditor extends React.Component<
     this.readOnly = Boolean(props.readOnly) || false
     // Validate the incoming value
     if (props.value) {
-      const validation = validateValue(props.value, this.portableTextFeatures, this.keyGenerator)
+      const validation = validateValue(props.value, this.types, this.keyGenerator)
       if (props.value && !validation.valid) {
         this.change$.next({type: 'loading', isLoading: false})
         this.change$.next({
@@ -209,8 +218,10 @@ export class PortableTextEditor extends React.Component<
     this.state = {
       ...this.state,
       initialValue: toSlateValue(
-        getValueOrInitialValue(props.value, [this.slateInstance.createPlaceholderBlock()]),
-        {portableTextFeatures: this.portableTextFeatures},
+        getValueOrInitialValue(props.value, [
+          this.slateInstance.createPlaceholderBlock(),
+        ] as PortableTextBlock[]),
+        {types: this.types},
         KEY_TO_SLATE_ELEMENT.get(this.slateInstance)
       ),
     }
@@ -293,16 +304,13 @@ export class PortableTextEditor extends React.Component<
       return
     }
     // If the  editor is empty and there is a new value, just set that value directly.
-    if (
-      isEqualToEmptyEditor(this.slateInstance.children, this.portableTextFeatures) &&
-      this.props.value
-    ) {
+    if (isEqualToEmptyEditor(this.slateInstance.children, this.types) && this.props.value) {
       const oldSel = this.slateInstance.selection
       Transforms.deselect(this.slateInstance)
       this.slateInstance.children = toSlateValue(
         val,
         {
-          portableTextFeatures: this.portableTextFeatures,
+          types: this.types,
         },
         KEY_TO_SLATE_ELEMENT.get(this.slateInstance)
       )
@@ -317,7 +325,7 @@ export class PortableTextEditor extends React.Component<
     const isEqualToValue = !(val || []).some((blk, index) => {
       const compareBlock = toSlateValue(
         [blk],
-        {portableTextFeatures: this.portableTextFeatures},
+        {types: this.types},
         KEY_TO_SLATE_ELEMENT.get(this.slateInstance)
       )[0]
       if (!isEqual(compareBlock, this.slateInstance.children[index])) {
@@ -331,7 +339,7 @@ export class PortableTextEditor extends React.Component<
     }
     // Value is different - validate it.
     debug('Validating')
-    const validation = validateValue(val, this.portableTextFeatures, this.keyGenerator)
+    const validation = validateValue(val, this.types, this.keyGenerator)
     if (val && !validation.valid) {
       this.change$.next({
         type: 'invalidValue',
@@ -348,7 +356,7 @@ export class PortableTextEditor extends React.Component<
       const slateValueFromProps = toSlateValue(
         val,
         {
-          portableTextFeatures: this.portableTextFeatures,
+          types: this.types,
         },
         KEY_TO_SLATE_ELEMENT.get(this.slateInstance)
       )
@@ -378,12 +386,12 @@ export class PortableTextEditor extends React.Component<
   })
 
   // Static API methods
-  static activeAnnotations = (editor: PortableTextEditor): PortableTextBlock[] => {
+  static activeAnnotations = (editor: PortableTextEditor): PortableTextObject[] => {
     return editor && editor.editable ? editor.editable.activeAnnotations() : []
   }
   static addAnnotation = (
     editor: PortableTextEditor,
-    type: Type,
+    type: ObjectSchemaType,
     value?: {[prop: string]: unknown}
   ): {spanPath: Path; markDefPath: Path} | undefined => editor.editable?.addAnnotation(type, value)
   static blur = (editor: PortableTextEditor): void => {
@@ -415,8 +423,8 @@ export class PortableTextEditor extends React.Component<
   static focusChild = (editor: PortableTextEditor): PortableTextChild | undefined => {
     return editor.editable?.focusChild()
   }
-  static getPortableTextFeatures = (editor: PortableTextEditor) => {
-    return editor.portableTextFeatures
+  static getTypes = (editor: PortableTextEditor) => {
+    return editor.types
   }
   static getSelection = (editor: PortableTextEditor) => {
     return editor.editable ? editor.editable.getSelection() : null
@@ -438,7 +446,7 @@ export class PortableTextEditor extends React.Component<
     editor.editable?.isMarkActive(mark)
   static insertChild = (
     editor: PortableTextEditor,
-    type: Type,
+    type: SpanSchemaType | ObjectSchemaType,
     value?: {[prop: string]: unknown}
   ): Path | undefined => {
     debug(`Host inserting child`)
@@ -446,7 +454,7 @@ export class PortableTextEditor extends React.Component<
   }
   static insertBlock = (
     editor: PortableTextEditor,
-    type: Type,
+    type: BlockSchemaType | ObjectSchemaType,
     value?: {[prop: string]: unknown}
   ): Path | undefined => {
     return editor.editable?.insertBlock(type, value)
@@ -467,7 +475,7 @@ export class PortableTextEditor extends React.Component<
     debug(`Host setting selection`, selection)
     editor.editable?.select(selection)
   }
-  static removeAnnotation = (editor: PortableTextEditor, type: Type) =>
+  static removeAnnotation = (editor: PortableTextEditor, type: ObjectSchemaType) =>
     editor.editable?.removeAnnotation(type)
   static toggleBlockStyle = (editor: PortableTextEditor, blockStyle: string) => {
     debug(`Host is toggling block style`)

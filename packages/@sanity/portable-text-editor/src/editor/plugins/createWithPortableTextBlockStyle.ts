@@ -1,7 +1,6 @@
 import {Subject} from 'rxjs'
-import {Editor, Transforms, Element, Path, Text as SlateText} from 'slate'
-import {PortableTextBlock, PortableTextFeatures} from '../../types/portableText'
-import {EditorChange, PortableTextSlateEditor} from '../../types/editor'
+import {Editor, Transforms, Element, Path, Text as SlateText, Node} from 'slate'
+import {EditorChange, PortableTextMemberTypes, PortableTextSlateEditor} from '../../types/editor'
 import {debugWithName} from '../../utils/debug'
 import {toPortableTextRange} from '../../utils/ranges'
 import {fromSlateValue} from '../../utils/values'
@@ -9,10 +8,10 @@ import {fromSlateValue} from '../../utils/values'
 const debug = debugWithName('plugin:withPortableTextBlockStyle')
 
 export function createWithPortableTextBlockStyle(
-  portableTextFeatures: PortableTextFeatures,
+  types: PortableTextMemberTypes,
   change$: Subject<EditorChange>
 ): (editor: PortableTextSlateEditor) => PortableTextSlateEditor {
-  const defaultStyle = portableTextFeatures.styles[0].value
+  const defaultStyle = types.styles[0].value
   return function withPortableTextBlockStyle(
     editor: PortableTextSlateEditor
   ): PortableTextSlateEditor {
@@ -63,14 +62,13 @@ export function createWithPortableTextBlockStyle(
       const selectedBlocks = [
         ...Editor.nodes(editor, {
           at: editor.selection,
-          match: (node) =>
-            Element.isElement(node) && node._type === portableTextFeatures.types.block.name,
+          match: (node) => Element.isElement(node) && node._type === types.block.name,
         }),
       ]
       selectedBlocks.forEach(([node, path]) => {
         if (editor.isTextBlock(node) && node.style === blockStyle) {
           debug(`Unsetting block style '${blockStyle}'`)
-          Transforms.setNodes(editor, {...node, style: defaultStyle} as PortableTextBlock, {
+          Transforms.setNodes(editor, {...node, style: defaultStyle} as Partial<Node>, {
             at: path,
           })
         } else {
@@ -84,7 +82,7 @@ export function createWithPortableTextBlockStyle(
             {
               ...node,
               style: blockStyle || defaultStyle,
-            } as PortableTextBlock,
+            } as Partial<Node>,
             {at: path}
           )
         }
@@ -94,9 +92,9 @@ export function createWithPortableTextBlockStyle(
       change$.next({
         type: 'selection',
         selection: toPortableTextRange(
-          fromSlateValue(editor.children, portableTextFeatures.types.block.name),
+          fromSlateValue(editor.children, types.block.name),
           editor.selection,
-          portableTextFeatures
+          types
         ),
       })
       editor.onChange()

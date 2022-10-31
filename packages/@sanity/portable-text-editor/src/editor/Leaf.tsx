@@ -1,27 +1,25 @@
 import React, {ReactElement, SyntheticEvent, useCallback} from 'react'
-import {Element, Range, Text} from 'slate'
-import {useSelected, useSlateStatic} from '@sanity/slate-react'
+import {Range, Text} from 'slate'
+import {RenderLeafProps, useSelected, useSlateStatic} from '@sanity/slate-react'
 import {uniq} from 'lodash'
-import {PortableTextBlock, PortableTextFeatures, TextBlock} from '../types/portableText'
+import {PortableTextObject, PortableTextTextBlock} from '@sanity/types'
 import {
   RenderChildFunction,
   RenderDecoratorFunction,
   RenderAnnotationFunction,
+  PortableTextMemberTypes,
 } from '../types/editor'
 import {debugWithName} from '../utils/debug'
 import {DefaultAnnotation} from './nodes/DefaultAnnotation'
 import {DraggableChild} from './DraggableChild'
-import {ElementAttributes} from './Element'
 
 const debug = debugWithName('components:Leaf')
 const debugRenders = false
 
-type LeafProps = {
-  attributes: ElementAttributes
+interface LeafProps extends RenderLeafProps {
   children: ReactElement
   keyGenerator: () => string
-  leaf: Element
-  portableTextFeatures: PortableTextFeatures
+  types: PortableTextMemberTypes
   renderAnnotation?: RenderAnnotationFunction
   renderChild?: RenderChildFunction
   renderDecorator?: RenderDecoratorFunction
@@ -31,8 +29,7 @@ type LeafProps = {
 export const Leaf = (props: LeafProps) => {
   const editor = useSlateStatic()
   const selected = useSelected()
-  const {attributes, children, leaf, portableTextFeatures, keyGenerator, renderChild, readOnly} =
-    props
+  const {attributes, children, leaf, types, keyGenerator, renderChild, readOnly} = props
   const spanRef = React.useRef(null)
   let returnedChildren = children
   const focused = (selected && editor.selection && Range.isCollapsed(editor.selection)) || false
@@ -46,30 +43,24 @@ export const Leaf = (props: LeafProps) => {
     },
     [focused]
   )
-  if (Text.isText(leaf) && leaf._type === portableTextFeatures.types.span.name) {
-    const blockElement = children.props.parent as TextBlock | undefined
-    const path = blockElement ? [{_key: blockElement._key}, 'children', {_key: leaf._key}] : []
-    const decoratorValues = portableTextFeatures.decorators.map((dec) => dec.value)
+  // Render text nodes
+  if (Text.isText(leaf) && leaf._type === types.span.name) {
+    const block = children.props.parent as PortableTextTextBlock | undefined
+    const path = block ? [{_key: block._key}, 'children', {_key: leaf._key}] : []
+    const decoratorValues = types.decorators.map((dec) => dec.value)
     const marks: string[] = uniq(
       (Array.isArray(leaf.marks) ? leaf.marks : []).filter((mark) => decoratorValues.includes(mark))
     )
     marks.forEach((mark) => {
-      const type = portableTextFeatures.decorators.find((dec) => dec.value === mark)
-      if (type) {
-        // TODO: look into this API!
-        if (type?.blockEditor?.render) {
-          const CustomComponent = type?.blockEditor?.render
-          returnedChildren = <CustomComponent mark={mark}>{returnedChildren}</CustomComponent>
-        }
-        if (props.renderDecorator) {
-          returnedChildren = props.renderDecorator(
-            mark,
-            type,
-            {focused, selected, path},
-            () => <>{returnedChildren}</>,
-            spanRef
-          )
-        }
+      const type = types.decorators.find((dec) => dec.value === mark)
+      if (type && props.renderDecorator) {
+        returnedChildren = props.renderDecorator({
+          value: mark,
+          type,
+          attributes: {focused, selected, path},
+          defaultRender: () => returnedChildren,
+          editorElementRef: spanRef,
+        })
       }
     })
     const annotationMarks = Array.isArray(leaf.marks) ? leaf.marks : []
@@ -77,45 +68,34 @@ export const Leaf = (props: LeafProps) => {
       .map(
         (mark) =>
           !decoratorValues.includes(mark) &&
-          blockElement &&
-          blockElement.markDefs &&
-          (blockElement.markDefs.find((def) => def._key === mark) as PortableTextBlock | undefined)
+          block &&
+          block.markDefs &&
+          block.markDefs.find((def) => def._key === mark)
       )
-      .filter(Boolean) as PortableTextBlock[]
+      .filter(Boolean) as PortableTextObject[]
 
     if (annotations.length > 0) {
+      const aAttributes = {focused, selected, path, annotations}
       annotations.forEach((annotation) => {
-        const type = portableTextFeatures.types.annotations.find((t) => t.name === annotation._type)
-        // TODO: look into this API!
-        const CustomComponent = (type as any)?.blockEditor?.render
-        const defaultRender = (): JSX.Element =>
-          // TODO: annotation should be an own prop here, keeping for backward compability (2020/05/18).
-          CustomComponent ? (
-            <CustomComponent {...annotation} attributes={attributes}>
-              {returnedChildren}
-            </CustomComponent>
-          ) : (
-            <>{returnedChildren}</>
-          )
-
+        const type = types.annotations.find((t) => t.name === annotation._type)
         if (type) {
           if (props.renderAnnotation) {
             returnedChildren = (
               <span ref={spanRef} key={keyGenerator()}>
-                {props.renderAnnotation(
-                  annotation,
+                {props.renderAnnotation({
+                  value: annotation,
                   type,
-                  {focused, selected, path, annotations},
-                  defaultRender,
-                  spanRef
-                )}
+                  attributes: aAttributes,
+                  defaultRender: () => <>{returnedChildren}</>,
+                  editorElementRef: spanRef,
+                })}
               </span>
             )
           } else {
             returnedChildren = (
               <DefaultAnnotation annotation={annotation}>
                 <span ref={spanRef} key={keyGenerator()} onMouseDown={handleMouseDown}>
-                  {defaultRender()}
+                  {returnedChildren}
                 </span>
               </DefaultAnnotation>
             )
@@ -123,16 +103,16 @@ export const Leaf = (props: LeafProps) => {
         }
       })
     }
-    if (blockElement && renderChild) {
-      const child = blockElement.children.find((_child) => _child._key === leaf._key) // Ensure object equality
+    if (block && renderChild) {
+      const child = block.children.find((_child) => _child._key === leaf._key) // Ensure object equality
       if (child) {
-        returnedChildren = renderChild(
-          child,
-          portableTextFeatures.types.span,
-          {focused, selected, path, annotations},
-          () => returnedChildren,
-          spanRef
-        )
+        returnedChildren = renderChild({
+          value: child,
+          type: types.span,
+          attributes: {focused, selected, path, annotations},
+          defaultRender: () => returnedChildren,
+          editorElementRef: spanRef,
+        })
       }
     }
   }

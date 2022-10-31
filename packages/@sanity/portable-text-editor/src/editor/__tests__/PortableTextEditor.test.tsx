@@ -6,8 +6,9 @@
 import '@testing-library/jest-dom/extend-expect'
 import React from 'react'
 import {render, waitFor} from '@testing-library/react'
+import {PortableTextBlock} from '@sanity/types'
 import {PortableTextEditor} from '../PortableTextEditor'
-import {EditorSelection, PortableTextBlock} from '../..'
+import {EditorSelection} from '../..'
 import {PortableTextEditorTester, type} from './PortableTextEditorTester'
 
 const helloBlock: PortableTextBlock = {

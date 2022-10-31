@@ -1,12 +1,12 @@
 import {createEditor, Descendant} from 'slate'
-import {getPortableTextFeatures} from '../getPortableTextFeatures'
+import {PortableTextTextBlock} from '@sanity/types'
+import {getPortableTextMemberTypes} from '../getPortableTextMemberTypes'
 import {type} from '../../editor/__tests__/PortableTextEditorTester'
 import {createOperationToPatches} from '../operationToPatches'
 import {withPlugins} from '../../editor/plugins'
 import {PortableTextEditor, PortableTextEditorProps} from '../..'
-import {TextBlock} from '../../types/portableText'
 
-const portableTextFeatures = getPortableTextFeatures(type)
+const portableTextFeatures = getPortableTextMemberTypes(type)
 
 const operationToPatches = createOperationToPatches(portableTextFeatures)
 const editor = withPlugins(createEditor(), {
@@ -219,7 +219,7 @@ describe('operationToPatches', () => {
   })
 
   it('produce correct insert text patch', () => {
-    ;(editor.children[0] as TextBlock).children[2].text = '1'
+    ;(editor.children[0] as PortableTextTextBlock).children[2].text = '1'
     editor.onChange()
     expect(
       operationToPatches.insertTextPatch(
@@ -257,7 +257,7 @@ describe('operationToPatches', () => {
 
   it('produces correct remove text patch', () => {
     const before = createDefaultValue()
-    ;(before[0] as TextBlock).children[2].text = '1'
+    ;(before[0] as PortableTextTextBlock).children[2].text = '1'
     expect(
       operationToPatches.removeTextPatch(
         editor,
@@ -357,13 +357,13 @@ describe('operationToPatches', () => {
 
   it('produce correct merge node patch', () => {
     const val = createDefaultValue()
-    ;(val[0] as TextBlock).children.push({
+    ;(val[0] as PortableTextTextBlock).children.push({
       _type: 'span',
       _key: 'r4wr323432',
       text: '1234',
       marks: [],
     })
-    const block = editor.children[0] as TextBlock
+    const block = editor.children[0] as PortableTextTextBlock
     block.children = block.children.splice(0, 3)
     block.children[2].text = '1234'
     editor.onChange()
