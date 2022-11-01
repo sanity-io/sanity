@@ -1,6 +1,5 @@
 import {CloseIcon} from '@sanity/icons'
 import {Box, Button, Flex, Inline, Popover, rem, Text, Theme, useClickOutside} from '@sanity/ui'
-import {intersection} from 'lodash'
 import React, {useCallback, useMemo, useState} from 'react'
 import styled, {css} from 'styled-components'
 import {FILTERS} from '../../config/filters'
@@ -33,12 +32,7 @@ export default function FilterButton({closable = true, filter, initialOpen}: Fil
   const [buttonElement, setButtonElement] = useState<HTMLElement | null>(null)
   const [popoverElement, setPopoverElement] = useState<HTMLElement | null>(null)
 
-  const {
-    dispatch,
-    state: {
-      terms: {filters, types},
-    },
-  } = useSearchState()
+  const {dispatch} = useSearchState()
 
   const handleClose = useCallback(() => setOpen(false), [])
   const handleOpen = useCallback(() => setOpen(true), [])
@@ -52,18 +46,6 @@ export default function FilterButton({closable = true, filter, initialOpen}: Fil
   )
 
   useClickOutside(handleClose, [buttonElement, popoverElement])
-
-  const isValid = useMemo(() => {
-    if (filter.type === 'compound') {
-      return true
-    }
-    const intersectingArrays = filters.map((f) => f?.documentTypes || [])
-    if (types.length > 0) {
-      intersectingArrays.push(types.map((type) => type.name))
-    }
-    const intersecting = intersection(...intersectingArrays)
-    return intersecting.length > 0
-  }, [filter.type, filters, types])
 
   const title = useMemo(() => {
     switch (filter.type) {
@@ -111,9 +93,7 @@ export default function FilterButton({closable = true, filter, initialOpen}: Fil
             maxWidth: '100%', //
             opacity: isFilled ? 1 : 0.8,
           }}
-          // tone={filter.type === 'field' ? 'primary' : 'default'}
           tone="primary"
-          // tone={isFilled ? 'primary' : 'default'}
         >
           <Inline space={1}>
             <Box marginRight={1}>
@@ -147,7 +127,6 @@ export default function FilterButton({closable = true, filter, initialOpen}: Fil
             onClick={handleRemove}
             padding={2}
             style={{opacity: isFilled ? 1 : 0.8}}
-            // tone={filter.type === 'field' ? 'primary' : 'default'}
             tone="primary"
           />
         )}
