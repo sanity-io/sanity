@@ -43,11 +43,10 @@ export function FilterTitle({filter, showSubtitle}: FilterTitleProps) {
         >
           {filter.path.slice(0, -1).map((pathTitle, index) => {
             return (
-              <>
-                <span key={index}>{pathTitle}</span>
+              <React.Fragment key={index}>
+                <span>{pathTitle}</span>
                 {index !== filter.path.length - 2 && (
                   <span
-                    key={`${index}-icon`}
                     style={{
                       opacity: 0.75,
                       paddingLeft: '0.25em',
@@ -57,7 +56,7 @@ export function FilterTitle({filter, showSubtitle}: FilterTitleProps) {
                     <ChevronRightIcon />
                   </span>
                 )}
-              </>
+              </React.Fragment>
             )
           })}
         </Text>
