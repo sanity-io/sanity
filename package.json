@@ -55,6 +55,7 @@
     "publish-current-branch": "RELEASE_TAG=`git rev-parse --abbrev-ref HEAD | sed 's/\\//\\_/g'` yarn publish-tag",
     "publish-dev-preview": "yarn build && lerna publish --force-publish --dist-tag=dev-preview --preid=dev-preview --exact",
     "publish-purple-unicorn": "RELEASE_TAG=purple-unicorn yarn publish-tag",
+    "publish-rc": "yarn build && lerna publish --force-publish --dist-tag=dev-preview --preid=rc --exact",
     "publish-tag": "RELEASE_TAG=\"${RELEASE_TAG:-canary}\"; yarn build && lerna publish --canary --force-publish --no-git-tag-version --dist-tag=$RELEASE_TAG --preid=$RELEASE_TAG --exact",
     "publish-when-v3-is-ready": "yarn build && lerna publish --exact",
     "publish:tarball": "node -r esbuild-register scripts/publish/tarball",
