@@ -2,7 +2,6 @@ import {flatten, isPlainObject} from 'lodash'
 import {error, HELP_IDS} from '../createValidationResult'
 import {getDupes} from '../utils/getDupes'
 import {SchemaValidationResult} from '../../typedefs'
-import {validateExperimentalSearch} from '../utils/validateExperimentalSearch'
 
 function normalizeToProp(typeDef) {
   if (Array.isArray(typeDef.to)) {
@@ -17,15 +16,6 @@ export function isValidDatasetName(name: string): string | true {
   return (
     isValid ||
     `The provided dataset "${name}" doesn't look like a valid dataset. Dataset names must be more than 2 characters, can only contain lowercase characters, numbers, underscores and dashes and can not start with a dash or an underscore`
-  )
-}
-
-const VALID_TOKEN_ID = /^[a-zA-Z0-9_][a-zA-Z0-9_-]+$/
-export function isValidTokenId(tokenId: string): string | true {
-  const isValid = tokenId.length >= 2 && VALID_TOKEN_ID.test(tokenId)
-  return (
-    isValid ||
-    `The provided tokenId "${tokenId}" is invalid. The tokenId must be a string made up of at least 2 characters in the a-zA-Z0-9_- range and cannot start with a - (dash) character`
   )
 }
 
@@ -76,33 +66,8 @@ export default (typeDef, visitorContext) => {
         )
       )
     }
-    validateExperimentalSearch(crossDatasetTypeDef.__experimental_search).forEach((err) => {
-      problems.push(
-        error(
-          `Invalid "__experimental_search" config for referenced type "${
-            crossDatasetTypeDef.type || '<unknown type>'
-          }": ${err}`,
-          HELP_IDS.CROSS_DATASET_REFERENCE_INVALID
-        )
-      )
-    })
   })
 
-  if (typeof typeDef.tokenId === 'string') {
-    const validationResult = isValidTokenId(typeDef.tokenId)
-    if (validationResult !== true) {
-      problems.push(error(validationResult, HELP_IDS.CROSS_DATASET_REFERENCE_INVALID))
-    }
-  }
-
-  if (typeof typeDef.projectId !== 'string') {
-    problems.push(
-      error(
-        'A cross dataset reference must specify a `projectId`',
-        HELP_IDS.CROSS_DATASET_REFERENCE_INVALID
-      )
-    )
-  }
   if (typeof typeDef.dataset === 'string') {
     const datasetValidation = isValidDatasetName(typeDef.dataset)
     if (datasetValidation !== true) {

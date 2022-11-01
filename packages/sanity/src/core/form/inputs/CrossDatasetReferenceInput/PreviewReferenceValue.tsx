@@ -4,6 +4,7 @@ import {Stack, Text, TextSkeleton} from '@sanity/ui'
 import {Loadable} from './useReferenceInfo'
 import {CrossDatasetReferenceInfo} from './types'
 import {CrossDatasetReferencePreview} from './CrossDatasetReferencePreview'
+import {useProjectId} from './utils/useProjectId'
 
 export function PreviewReferenceValue(props: {
   value: CrossDatasetReferenceValue
@@ -13,6 +14,7 @@ export function PreviewReferenceValue(props: {
   referenceInfo: Loadable<CrossDatasetReferenceInfo>
 }) {
   const {value, type, showStudioUrlIcon, hasStudioUrl, referenceInfo} = props
+  const projectId = useProjectId()
 
   if (referenceInfo.isLoading || referenceInfo.error) {
     return (
@@ -45,7 +47,7 @@ export function PreviewReferenceValue(props: {
       showStudioUrlIcon={showStudioUrlIcon}
       preview={referenceInfo.result.preview}
       refType={refType}
-      projectId={type.projectId}
+      projectId={projectId}
       dataset={type.dataset}
       id={value._ref}
       showTypeLabel={showTypeLabel}

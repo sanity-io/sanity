@@ -1,33 +1,26 @@
-import React, {ComponentType, createElement, ReactNode, useMemo} from 'react'
+import React, {createElement, ReactNode, useMemo} from 'react'
 import {CrossDatasetType, PreviewValue} from '@sanity/types'
 import {Box, Flex, Inline, Label, Text, Tooltip} from '@sanity/ui'
 import {AccessDeniedIcon, HelpCircleIcon, LaunchIcon} from '@sanity/icons'
 import imageUrlBuilder from '@sanity/image-url'
+import {isImageSource} from '@sanity/asset-utils'
 import {DocumentAvailability} from '../../../preview'
 import {DefaultPreview, PreviewMediaDimensions, TextWithTone} from '../../../components'
 import {FIXME} from '../../../FIXME'
 
-function UnavailableMessage(props: {icon: ComponentType; children: ReactNode; title: ReactNode}) {
-  const Icon = props.icon
-  return (
-    <Flex padding={3}>
-      <Box>
-        <Text size={1}>
-          <Icon />
-        </Text>
-      </Box>
-      <Box flex={1} marginLeft={3}>
-        <Text size={1} weight="semibold">
-          {props.title}
-        </Text>
+import {StyledPreviewFlex, TooltipContent} from './CrossDatasetReferencePreview.styled'
 
-        <Box marginTop={3}>
-          <Text as="p" muted size={1}>
+function UnavailableMessage(props: {children: ReactNode}) {
+  return (
+    <TooltipContent padding={3}>
+      <Box flex={1}>
+        <Box>
+          <Text as="p" size={1}>
             {props.children}
           </Text>
         </Box>
       </Box>
-    </Flex>
+    </TooltipContent>
   )
 }
 
@@ -64,8 +57,16 @@ export function CrossDatasetReferencePreview(props: {
 
   const media = useMemo(() => {
     if (previewMedia) {
+      const isValidImageAsset =
+        typeof (previewMedia as FIXME)?.asset !== 'undefined' && isImageSource(previewMedia)
+      const isValidElement = React.isValidElement(previewMedia)
+
+      if (!isValidImageAsset && !isValidElement) {
+        return null
+      }
+
       return function MediaPreview({dimensions}: {dimensions: PreviewMediaDimensions}) {
-        return React.isValidElement(previewMedia) ? (
+        return isValidElement ? (
           previewMedia
         ) : (
           <img
@@ -83,9 +84,9 @@ export function CrossDatasetReferencePreview(props: {
   }, [previewMedia, dataset, projectId, refType?.icon])
 
   return (
-    <Flex align="center" data-testid="preview">
+    <StyledPreviewFlex align="center" justify="center" flex={1} data-testid="preview">
       {availability?.available ? (
-        <Box flex={1} paddingX={2} paddingY={1}>
+        <Box flex={1}>
           <DefaultPreview
             title={preview.published?.title}
             subtitle={preview.published?.subtitle}
@@ -93,8 +94,8 @@ export function CrossDatasetReferencePreview(props: {
           />
         </Box>
       ) : (
-        <Box flex={1} padding={2}>
-          <Flex align="center" justify="center">
+        <Box flex={1}>
+          <Flex align="center">
             <Box flex={1} paddingY={2}>
               <Text muted>Document unavailable</Text>
             </Box>
@@ -116,13 +117,13 @@ export function CrossDatasetReferencePreview(props: {
                 portal
                 content={
                   notFound ? (
-                    <UnavailableMessage title="Not found" icon={HelpCircleIcon}>
-                      The referenced document does not exist
+                    <UnavailableMessage>
+                      The referenced document no longer exist and might have been deleted.
                       <br />
                       (id: <code>{id}</code>)
                     </UnavailableMessage>
                   ) : (
-                    <UnavailableMessage title="Insufficient permissions" icon={AccessDeniedIcon}>
+                    <UnavailableMessage>
                       The referenced document could not be accessed due to insufficient permissions
                     </UnavailableMessage>
                   )
@@ -140,15 +141,15 @@ export function CrossDatasetReferencePreview(props: {
               <Tooltip
                 portal
                 content={
-                  <Box padding={2}>
+                  <TooltipContent padding={2}>
                     {hasStudioUrl ? (
                       <Text size={1}>This document opens in another Studio</Text>
                     ) : (
                       <Text size={1}>
-                        This document cannot be opened (unable to resolve URL to Studio)
+                        This document cannot be opened <br /> (unable to resolve URL to Studio)
                       </Text>
                     )}
-                  </Box>
+                  </TooltipContent>
                 }
               >
                 <TextWithTone size={1} tone="default" muted={!hasStudioUrl}>
@@ -159,6 +160,6 @@ export function CrossDatasetReferencePreview(props: {
           )}
         </Inline>
       </Box>
-    </Flex>
+    </StyledPreviewFlex>
   )
 }

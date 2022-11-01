@@ -24,18 +24,12 @@ import {
 } from 'rxjs/operators'
 import {difference, flatten, memoize} from 'lodash'
 import {SanityClient} from '@sanity/client'
-import {CrossProjectTokenStore} from '../store'
 import {debounceCollect} from './utils/debounceCollect'
 import {combineSelections, reassemble, toQuery} from './utils/optimizeQuery'
 import {ApiConfig, FieldName, Id, ObservePathsFn, PreviewPath, Selection} from './types'
 import {INCLUDE_FIELDS} from './constants'
 import {hasEqualFields} from './utils/hasEqualFields'
 import {isUniqueBy} from './utils/isUniqueBy'
-
-interface CrossProjectToken {
-  projectId: string
-  value: string
-}
 
 type CachedFieldObserver = {
   id: Id
@@ -48,11 +42,10 @@ type Cache = {
 }
 
 export function create_preview_observeFields(context: {
-  crossProjectTokenStore: CrossProjectTokenStore
   observePaths: ObservePathsFn
   versionedClient: SanityClient
 }) {
-  const {crossProjectTokenStore, observePaths, versionedClient} = context
+  const {observePaths, versionedClient} = context
 
   let _globalListener: any
 
@@ -104,13 +97,11 @@ export function create_preview_observeFields(context: {
     )
   }
 
-  function fetchAllDocumentPathsWith(client: SanityClient, token?: CrossProjectToken) {
-    const headers = token ? {'sanity-project-tokens': `${token.projectId}=${token.value}`} : {}
-
+  function fetchAllDocumentPathsWith(client: SanityClient) {
     return function fetchAllDocumentPath(selections: Selection[]) {
       const combinedSelections = combineSelections(selections)
       return client.observable
-        .fetch(toQuery(combinedSelections), {}, {tag: 'preview.document-paths', headers} as any)
+        .fetch(toQuery(combinedSelections), {}, {tag: 'preview.document-paths'} as any)
         .pipe(map((result: any) => reassemble(result, combinedSelections)))
     }
   }
@@ -149,12 +140,9 @@ export function create_preview_observeFields(context: {
   const CACHE: Cache = {} // todo: use a LRU cache instead (e.g. hashlru or quick-lru)
 
   const getBatchFetcherForDataset = memoize(
-    function getBatchFetcherForDataset(
-      apiConfig: ApiConfig,
-      token?: CrossProjectToken | undefined
-    ) {
+    function getBatchFetcherForDataset(apiConfig: ApiConfig) {
       const client = versionedClient.withConfig(apiConfig)
-      const fetchAll = fetchAllDocumentPathsWith(client, token)
+      const fetchAll = fetchAllDocumentPathsWith(client)
       return debounceCollect(fetchAll, 10)
     },
     (apiConfig) => apiConfig.dataset + apiConfig.projectId
@@ -172,24 +160,9 @@ export function create_preview_observeFields(context: {
   )
 
   function crossDatasetListenFields(id: Id, fields: PreviewPath[], apiConfig: ApiConfig) {
-    const token$ = observePaths(
-      {
-        _type: 'reference',
-        _ref: crossProjectTokenStore.getTokenDocumentId({projectId: apiConfig.projectId}),
-      },
-      ['token']
-    ).pipe(map((document) => (document as any)?.token as string | undefined))
-    return combineLatest([token$, visiblePoll$.pipe(startWith(0))]).pipe(
-      switchMap(([token]) => {
-        const batchFetcher = getBatchFetcherForDataset(
-          apiConfig,
-          token
-            ? {
-                projectId: apiConfig.projectId,
-                value: token as any,
-              }
-            : undefined
-        )
+    return visiblePoll$.pipe(startWith(0)).pipe(
+      switchMap(() => {
+        const batchFetcher = getBatchFetcherForDataset(apiConfig)
         return batchFetcher(id, fields as any)
       })
     )

@@ -58,8 +58,18 @@ const PREVIEW_FIELD_WEIGHT_MAP = {
   description: 1.5,
 }
 
-function deriveFromPreview(type) {
-  const select = type.preview.select
+/**
+ * @internal
+ */
+export function deriveFromPreview(type: {
+  preview: {select: Record<string, string>}
+}): {weight?: number; path: (string | number)[]}[] {
+  const select = type?.preview?.select
+
+  if (!select) {
+    return []
+  }
+
   return Object.keys(select)
     .filter((fieldName) => fieldName in PREVIEW_FIELD_WEIGHT_MAP)
     .map((fieldName) => ({
@@ -87,6 +97,15 @@ function getCachedStringFieldPaths(type, maxDepth) {
   return type[stringFieldsSymbol]
 }
 
+function getCachedBaseFieldPaths(type) {
+  if (!type[stringFieldsSymbol]) {
+    type[stringFieldsSymbol] = uniqBy([...BASE_WEIGHTS, ...deriveFromPreview(type)], (spec) =>
+      spec.path.join('.')
+    )
+  }
+  return type[stringFieldsSymbol]
+}
+
 function getStringFieldPaths(type, maxDepth) {
   const reducer = (accumulator, childType, path) =>
     childType.jsonType === 'string' ? [...accumulator, path] : accumulator
@@ -99,6 +118,10 @@ function getPortableTextFieldPaths(type, maxDepth) {
     isPortableTextArray(childType) ? [...accumulator, path] : accumulator
 
   return reduceType(type, reducer, [], [], maxDepth)
+}
+
+export function resolveSearchConfigForBaseFieldPaths(type) {
+  return getCachedBaseFieldPaths(type)
 }
 
 export default function resolveSearchConfig(type) {

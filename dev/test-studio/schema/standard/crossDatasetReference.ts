@@ -6,13 +6,10 @@ export const crossDatasetSubtype = defineType({
   name: 'crossDatasetSubtype',
   title: 'Subtype of cross dataset references',
   dataset: 'playground',
-  projectId: 'ppsg7ml5',
   to: [
     {
       type: 'book',
       icon: BookIcon,
-      // eslint-disable-next-line camelcase
-      __experimental_search: [{path: ['title'], weight: 10}],
       preview: {
         select: {
           title: 'title',
@@ -39,13 +36,9 @@ export default defineType({
     {name: 'title', type: 'string'},
     {
       name: 'bookInPlayground',
-      title: 'Reference to book or author in the "playground" dataset in project "ppsg7ml5"',
-      description:
-        "Note: The current token for the dataset does not have read access to documents in the 'restricted.**' path",
+      title: 'Reference to book in the "playground" dataset in project "ppsg7ml5"',
       type: 'crossDatasetReference',
       dataset: 'playground',
-      projectId: 'ppsg7ml5',
-      tokenId: 'restricted',
       studioUrl: ({id, type}) => {
         return type
           ? `${document.location.protocol}//${document.location.host}/playground/desk/${type};${id}`
@@ -55,16 +48,16 @@ export default defineType({
         {
           type: 'book',
           icon: BookIcon,
-          // eslint-disable-next-line camelcase
-          __experimental_search: [{path: 'title', weight: 10}],
           preview: {
             select: {
               title: 'title',
+              subtitle: 'descriptionMd',
               media: 'coverImage',
             },
             prepare(val) {
               return {
                 title: val.title,
+                subtitle: val.subtitle,
                 media: val.coverImage,
               }
             },
@@ -77,8 +70,6 @@ export default defineType({
       name: 'bookOrAuthorInPlayground',
       type: 'crossDatasetReference',
       dataset: 'playground',
-      projectId: 'ppsg7ml5',
-      tokenId: 'readToken',
       studioUrl: ({id, type}) => {
         return type
           ? `${document.location.protocol}//${document.location.host}/playground/desk/${type};${id}`
@@ -88,16 +79,16 @@ export default defineType({
         {
           type: 'book',
           icon: BookIcon,
-          // eslint-disable-next-line camelcase
-          __experimental_search: [{path: 'title', weight: 10}],
           preview: {
             select: {
               title: 'title',
+              subtitle: 'descriptionMd',
               coverImage: 'coverImage',
             },
             prepare(val) {
               return {
                 title: val.title,
+                subtitle: val.subtitle,
                 media: val.coverImage,
               }
             },
@@ -106,40 +97,15 @@ export default defineType({
         {
           type: 'author',
           icon: UserIcon,
-          // eslint-disable-next-line camelcase
-          __experimental_search: [{path: 'name', weight: 10}],
           preview: {
             select: {
-              name: 'name',
+              title: 'name',
             },
             prepare(val) {
               return {
-                title: val.name,
+                title: val.title,
                 media: val.media,
               }
-            },
-          },
-        },
-      ],
-    },
-    {
-      title: 'Article in docs dataset',
-      name: 'docsArticle',
-      type: 'crossDatasetReference',
-      dataset: 'next',
-      projectId: '3do82whm',
-      studioUrl: ({id, type}) => {
-        return type ? `https://admin.sanity.io/desk/docs;${type};${id}` : null
-      },
-      to: [
-        {
-          type: 'article',
-          icon: BookIcon,
-          // eslint-disable-next-line camelcase
-          __experimental_search: [{path: 'title', weight: 10}],
-          preview: {
-            select: {
-              title: 'title',
             },
           },
         },
@@ -156,28 +122,6 @@ export default defineType({
           name: 'crossDatasetSubtype',
           type: 'crossDatasetSubtype',
         },
-        {
-          type: 'crossDatasetReference',
-          dataset: 'next',
-          projectId: '3do82whm',
-          studioUrl: ({id, type}) => {
-            return type ? `https://admin.sanity.io/desk/docs;${type};${id}` : null
-          },
-          title: 'Cross dataset reference to docs article in admin.sanity.io',
-          to: [
-            {
-              type: 'article',
-              icon: BookIcon,
-              // eslint-disable-next-line camelcase
-              __experimental_search: [{path: 'title', weight: 10}],
-              preview: {
-                select: {
-                  title: 'title',
-                },
-              },
-            },
-          ],
-        },
       ],
     },
     {
@@ -189,28 +133,6 @@ export default defineType({
           title: 'Cross Dataset reference subtype test',
           name: 'crossDatasetSubtype',
           type: 'crossDatasetSubtype',
-        },
-        {
-          type: 'crossDatasetReference',
-          dataset: 'next',
-          projectId: '3do82whm',
-          studioUrl: ({id, type}) => {
-            return type ? `https://admin.sanity.io/desk/docs;${type};${id}` : null
-          },
-          title: 'Cross dataset reference to docs article in admin.sanity.io',
-          to: [
-            {
-              type: 'article',
-              icon: BookIcon,
-              // eslint-disable-next-line camelcase
-              __experimental_search: [{path: 'title', weight: 10}],
-              preview: {
-                select: {
-                  title: 'title',
-                },
-              },
-            },
-          ],
         },
       ],
     },

@@ -59,8 +59,15 @@ export function ConfirmDeleteDialog({
   onConfirm,
 }: ConfirmDeleteDialogProps) {
   const dialogId = `deletion-confirmation-${useId()}`
-  const {internalReferences, crossDatasetReferences, isLoading, totalCount, projectIds} =
-    useReferringDocuments(id)
+  const {
+    internalReferences,
+    crossDatasetReferences,
+    isLoading,
+    totalCount,
+    projectIds,
+    datasetNames,
+    hasUnknownDatasetNames,
+  } = useReferringDocuments(id)
   const capitalizedAction = `${action.substring(0, 1).toUpperCase()}${action.substring(1)}`
 
   const documentTitle = <DocTitle document={useMemo(() => ({_id: id, _type: type}), [id, type])} />
@@ -98,6 +105,8 @@ export function ConfirmDeleteDialog({
             totalCount={totalCount}
             action={action}
             projectIds={projectIds}
+            datasetNames={datasetNames}
+            hasUnknownDatasetNames={hasUnknownDatasetNames}
             onReferenceLinkClick={onCancel}
           />
         ) : (
