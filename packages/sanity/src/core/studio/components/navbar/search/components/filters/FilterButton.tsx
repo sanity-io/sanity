@@ -1,5 +1,5 @@
 import {CloseIcon} from '@sanity/icons'
-import {Box, Button, Flex, Inline, Popover, rem, Text, Theme, useClickOutside} from '@sanity/ui'
+import {Button, Flex, Inline, Popover, rem, Text, Theme, useClickOutside} from '@sanity/ui'
 import React, {useCallback, useMemo, useState} from 'react'
 import styled, {css} from 'styled-components'
 import {FILTERS} from '../../config/filters'
@@ -7,7 +7,7 @@ import {OPERATORS} from '../../config/operators'
 import {useSearchState} from '../../contexts/search/useSearchState'
 import type {KeyedSearchFilter} from '../../types'
 import {FilterContent} from './FilterContent'
-import {FilterIcon} from './FilterIcon'
+// import {FilterIcon} from './FilterIcon'
 import {getFilterValue} from './getFilterValue'
 
 interface FilterButtonProps {
@@ -96,24 +96,31 @@ export default function FilterButton({closable = true, filter, initialOpen}: Fil
           tone="primary"
         >
           <Inline space={1}>
+            {/*
             <Box marginRight={1}>
               <Text size={1}>
                 <FilterIcon filter={filter} />
               </Text>
             </Box>
+            */}
 
             <Text size={1} weight="medium">
               {title}
             </Text>
             {/* Operator */}
             {operator && (supportsValue ? value : true) && (
-              <Text muted size={1} style={{opacity: 0.9}} weight="regular">
+              <Text
+                muted
+                size={1}
+                // style={{opacity: 0.9}}
+                weight="regular"
+              >
                 {operator}
               </Text>
             )}
             {/* Value */}
             {value && (
-              <Text size={1} textOverflow="ellipsis">
+              <Text size={1} textOverflow="ellipsis" weight="medium">
                 {value}
               </Text>
             )}
