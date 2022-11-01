@@ -27,7 +27,7 @@ export type SearchOperatorType =
 /**
  * @internal
  */
-export type SearchFilterType = 'compound' | 'custom' | 'field'
+export type SearchFilterType = 'compound' | 'field'
 
 /**
  * @internal
@@ -44,15 +44,6 @@ export interface BaseSearchFilter {
 export interface CompoundSearchFilter extends BaseSearchFilter {
   id: 'hasDraft' | 'hasReference' | 'isPublished'
   type: 'compound'
-}
-
-/**
- * @internal
- */
-export interface CustomSearchFilter extends BaseSearchFilter {
-  description?: string
-  title: string
-  type: 'custom'
 }
 
 /**
@@ -76,14 +67,14 @@ export type SupportedFieldType = Exclude<
 /**
  * @internal
  */
-export type SearchFilter = CompoundSearchFilter | FieldSearchFilter | CustomSearchFilter
+export type SearchFilter = CompoundSearchFilter | FieldSearchFilter
 
 /**
  * @internal
  */
 export interface SearchFilterGroup {
   items: KeyedSearchFilter[]
-  type: 'common' | 'custom' | 'fields'
+  type: 'common' | 'fields' // TODO: double check
 }
 
 /**
@@ -106,7 +97,9 @@ export interface SearchFilterMenuItemHeader {
   type: 'header'
 }
 
-export type SearchFilterMenuItem = SearchFilterMenuItemFilter | SearchFilterMenuItemHeader
+export type SearchFilterMenuItem = (SearchFilterMenuItemFilter | SearchFilterMenuItemHeader) & {
+  groupType: SearchFilterGroup['type']
+}
 
 /**
  * @internal
