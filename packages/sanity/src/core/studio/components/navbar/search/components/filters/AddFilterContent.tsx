@@ -59,7 +59,7 @@ export function AddFilterContent({onClose}: AddFilterContentProps) {
             // Header
             acc.push({
               groupType: val.type,
-              title: 'Shared fields in selection',
+              title: 'Shared fields',
               type: 'header',
             })
             // Items
@@ -81,10 +81,18 @@ export function AddFilterContent({onClose}: AddFilterContentProps) {
 
           if (applicableItems.length > 0) {
             // Header
-            acc.push({title: 'All fields in selection', type: 'header'})
+            acc.push({
+              groupType: val.type,
+              title: 'Applicable fields',
+              type: 'header',
+            })
             // Items
             applicableItems.forEach((filter) => {
-              acc.push({filter, type: 'filter'})
+              acc.push({
+                filter,
+                groupType: val.type,
+                type: 'filter',
+              })
             })
           }
         }
@@ -96,17 +104,25 @@ export function AddFilterContent({onClose}: AddFilterContentProps) {
 
           if (allItems.length > 0) {
             // Header
-            acc.push({title: 'All fields', type: 'header'})
+            acc.push({
+              groupType: val.type,
+              title: 'All fields',
+              type: 'header',
+            })
             // Filters
             allItems.forEach((filter) => {
-              acc.push({filter, type: 'filter'})
+              acc.push({filter, groupType: val.type, type: 'filter'})
             })
           }
         }
       } else {
         // Filters
         val.items.forEach((filter) => {
-          acc.push({filter, type: 'filter'})
+          acc.push({
+            filter, //
+            groupType: val.type,
+            type: 'filter',
+          })
         })
       }
       return acc
@@ -114,8 +130,10 @@ export function AddFilterContent({onClose}: AddFilterContentProps) {
   }, [
     currentDocumentTypes,
     filterGroups,
+    filters.length,
     // schema,
     titleFilter,
+    types.length,
   ])
 
   const handleFilterChange = useCallback(
