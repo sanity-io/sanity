@@ -3500,10 +3500,10 @@
   resolved "https://registry.yarnpkg.com/@sanity/color/-/color-2.1.17-next.30.tgz#2c64c07cb6332a1d55cfd7532c42b826482307d0"
   integrity sha512-aodt2NtC1EPTdZLRRS2zcSYyMUfhqit2GpHh07ptWDRZy0ZLxZoBnRNJPsHK5DvCXeguNP1kHSRgn5h/B/g+AQ==
 
-"@sanity/color@2.1.19-beta.2":
-  version "2.1.19-beta.2"
-  resolved "https://registry.yarnpkg.com/@sanity/color/-/color-2.1.19-beta.2.tgz#d69cf799b83987c2a18fa6ec4e39a5b6a2c7a9d3"
-  integrity sha512-p9KRVQaUQw4kE5oyJpMA0Gc9W/iIdpuefDBnTQAyccUtZptDqhOcULx+AAebU+K0uFE4ObH26L+KkOL8AQP17g==
+"@sanity/color@2.1.19-beta.3":
+  version "2.1.19-beta.3"
+  resolved "https://registry.yarnpkg.com/@sanity/color/-/color-2.1.19-beta.3.tgz#f4f9a377825f332a9908e3ffb4945dccccc3f73b"
+  integrity sha512-421F+o3BbumkPzj93wsM9VXeX4wuhrXp/B/AHVuB0uXWLEGYnrY2mBzRU44fsZGQWW4fgy139B5eV5orFzYJkA==
 
 "@sanity/eslint-config-studio@^2.0.0":
   version "2.0.0"
@@ -3557,10 +3557,10 @@
   resolved "https://registry.yarnpkg.com/@sanity/icons/-/icons-1.3.7-next.30.tgz#a15ba648c94348e1fbf6804a29441da837f585d2"
   integrity sha512-k+R4zHb1XzhHgXZDP/u7bUP6PRvHFOp0YrBme4tyJ+qbH2aLhQo5OVmvp9R3Zx74GtC7y3IIq19rIiiZDM0U+Q==
 
-"@sanity/icons@1.3.9-beta.2":
-  version "1.3.9-beta.2"
-  resolved "https://registry.yarnpkg.com/@sanity/icons/-/icons-1.3.9-beta.2.tgz#694ec80ff9a6fd305b760dc652641aeb0a8b50be"
-  integrity sha512-/F7AAygSDuYiQhg5zoeN5rnEh7raItEU0JtOWHrUHwVErK+UqVsQDpUBXzgMjWnFTAheeqiZ2MCeK1fgQ0eoEQ==
+"@sanity/icons@1.3.9-beta.3":
+  version "1.3.9-beta.3"
+  resolved "https://registry.yarnpkg.com/@sanity/icons/-/icons-1.3.9-beta.3.tgz#3ea91b07ad62ff23a601a320dedcfd17349e78a5"
+  integrity sha512-IHacaR96czI6402cBlkiKqmi7AASj3jLVYZ8dTD9caRGi0Dp7eJzI9RFp0ptJNxQYdYbZCZu0D/oEdhJfHEMGA==
 
 "@sanity/icons@^1.3":
   version "1.3.6"
@@ -3580,10 +3580,10 @@
     "@sanity/icons" "^1.3"
     react-copy-to-clipboard "^5.1.0"
 
-"@sanity/logos@1.1.20-beta.2":
-  version "1.1.20-beta.2"
-  resolved "https://registry.yarnpkg.com/@sanity/logos/-/logos-1.1.20-beta.2.tgz#0e1e6a55b3d50a208b1ca88f317e5602dde07c6f"
-  integrity sha512-d2ptJ8cnXMlnIMQcecV9ogXgsp1/+pEpSSHtbfl1smj3bvUEtFXdHFtc4rSCJNgg4USz3/fg0f0vgvIC5Y4tCw==
+"@sanity/logos@1.1.20-beta.3":
+  version "1.1.20-beta.3"
+  resolved "https://registry.yarnpkg.com/@sanity/logos/-/logos-1.1.20-beta.3.tgz#40e24269cfa25b20b6b05ecefa5847ce3350e976"
+  integrity sha512-aMxqGIemeO12BxbpWD+5dQeTK2maYRsLa4f5cdr+ah9uyfooNTmpz9vQlSaukyUIKG+Skzx+aMzj1qWjzB2pig==
 
 "@sanity/pkg-utils@^1.15.0":
   version "1.16.0"
@@ -3683,14 +3683,14 @@
     react-popper "^2.3.0"
     react-refractor "^2.1.7"
 
-"@sanity/ui@1.0.0-beta.31":
-  version "1.0.0-beta.31"
-  resolved "https://registry.yarnpkg.com/@sanity/ui/-/ui-1.0.0-beta.31.tgz#1eb4273b4f9771714497bac29e5862e6c350ea43"
-  integrity sha512-kQxg779eIlILVmFnixmAqm0zA/3QMb83Ok8j/ihpvFFcQdq8BrsgaXtTIZLPfqHj/TiEz3nAvfBXcvwqTc5pyQ==
+"@sanity/ui@1.0.0-beta.32":
+  version "1.0.0-beta.32"
+  resolved "https://registry.yarnpkg.com/@sanity/ui/-/ui-1.0.0-beta.32.tgz#5b057e7579c0769c9ae86cdc2442d2d6f12525ef"
+  integrity sha512-mzJXwdevJr/LAPnXHFnkhs4fXEuS7uDQqnvPRdX9t76GG9diyW5TOBemsujuFk4qFRKRUzgFDM3CyqllWbL2zw==
   dependencies:
     "@floating-ui/react-dom" "^1.0.0"
-    "@sanity/color" "2.1.19-beta.2"
-    "@sanity/icons" "1.3.9-beta.2"
+    "@sanity/color" "2.1.19-beta.3"
+    "@sanity/icons" "1.3.9-beta.3"
     framer-motion "^7.5.3"
     react-refractor "^2.1.7"
 
