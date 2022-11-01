@@ -14,7 +14,12 @@ export const MenuItemFilter = React.memo(function MenuItemFilter({
   filter,
   onClose,
 }: FilterMenuItemProps) {
-  const {dispatch} = useSearchState()
+  const {
+    dispatch,
+    state: {
+      terms: {filters},
+    },
+  } = useSearchState()
 
   const handleClick = useCallback(() => {
     dispatch({filter, type: 'TERMS_FILTERS_ADD'})
@@ -31,8 +36,19 @@ export const MenuItemFilter = React.memo(function MenuItemFilter({
     return 'Unknown type'
   }, [filter])
 
+  const disabled = useMemo(() => {
+    if (filter.type === 'compound') {
+      return !!filters.find((f) => f.type === 'compound' && f.id === filter.id)
+    }
+    if (filter.type === 'field') {
+      return false
+    }
+    return false
+  }, [filter, filters])
+
   return (
     <Button
+      disabled={disabled}
       fontSize={1}
       justify="flex-start"
       mode="bleed"
@@ -41,7 +57,6 @@ export const MenuItemFilter = React.memo(function MenuItemFilter({
         whiteSpace: 'normal',
         width: '100%',
       }}
-      // tone={filter.type === 'field' ? 'primary' : 'default'}
     >
       <Flex align="flex-start" gap={3}>
         <Text size={1}>

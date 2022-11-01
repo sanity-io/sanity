@@ -59,7 +59,7 @@ export const FILTERS: {
     },
     hasReference: {
       icon: LinkIcon,
-      title: 'Has reference',
+      title: 'References document',
       form: [
         {
           initialValue: null,

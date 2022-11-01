@@ -51,10 +51,14 @@ export function AddFilterContent({onClose}: AddFilterContentProps) {
 
           if (sharedItems.length > 0) {
             // Header
-            acc.push({title: 'Shared fields in selection', type: 'header'})
+            acc.push({
+              groupType: val.type,
+              title: 'Shared fields in selection',
+              type: 'header',
+            })
             // Items
             sharedItems.forEach((filter) => {
-              acc.push({filter, type: 'filter'})
+              acc.push({filter, groupType: val.type, type: 'filter'})
             })
           }
         }

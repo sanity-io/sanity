@@ -55,17 +55,17 @@ export function AddFilterContentMenuItems({
       <VirtualListChildBox $height={getTotalSize()} flex={1} ref={setChildContainerRef}>
         {getVirtualItems().map((virtualRow) => {
           const menuItem = menuItems[virtualRow.index]
-          let key = ''
+          const key: string[] = [menuItem.groupType]
           if (menuItem.type === 'header') {
-            key = menuItem.title
+            key.push(menuItem.title)
           }
           if (menuItem.type === 'filter') {
-            key = menuItem.filter._key
+            key.push(menuItem.filter._key)
           }
 
           return (
             <div
-              key={key}
+              key={key.join('-')}
               ref={virtualRow.measureElement}
               // onClick={handleResultClick}
               // onMouseDown={onChildMouseDown}

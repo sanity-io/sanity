@@ -8,7 +8,6 @@ import type {RecentOmnisearchTerms} from '../../datastores/recentSearches'
 import type {
   KeyedSearchFilter,
   OmnisearchTerms,
-  SearchFilter,
   SearchOperatorType,
   SearchOrdering,
 } from '../../types'
@@ -78,16 +77,17 @@ export type SearchRequestComplete = {
 }
 export type SearchRequestError = {type: 'SEARCH_REQUEST_ERROR'; error: Error}
 export type SearchRequestStart = {type: 'SEARCH_REQUEST_START'}
-export type TermsFiltersAdd = {filter: SearchFilter; type: 'TERMS_FILTERS_ADD'}
+export type TermsFiltersAdd = {filter: KeyedSearchFilter; type: 'TERMS_FILTERS_ADD'}
 export type TermsFiltersClear = {type: 'TERMS_FILTERS_CLEAR'}
 export type TermsFiltersCompoundSet = {
-  id: string
+  key: string
   operatorType?: SearchOperatorType
   type: 'TERMS_FILTERS_COMPOUND_SET'
   value?: any
 }
 export type TermsFiltersFieldSet = {
   fieldPath: string
+  key: string
   operatorType?: SearchOperatorType
   type: 'TERMS_FILTERS_FIELD_SET'
   value?: any
@@ -251,17 +251,12 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
       }
     }
     case 'TERMS_FILTERS_COMPOUND_SET': {
-      let filterIndex = -1
-      filterIndex = state.terms.filters.findIndex(
-        (filter) => filter.type === 'compound' && filter.id === action.id
-      )
-
       return {
         ...state,
         terms: {
           ...state.terms,
-          filters: state.terms.filters.map((filter, index) => {
-            if (index === filterIndex) {
+          filters: state.terms.filters.map((filter) => {
+            if (filter._key === action.key) {
               return {
                 ...filter,
                 // TODO: double check
@@ -278,17 +273,12 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
       }
     }
     case 'TERMS_FILTERS_FIELD_SET': {
-      let filterIndex = -1
-      filterIndex = state.terms?.filters?.findIndex(
-        (filter) => filter.type === 'field' && filter.fieldPath === action.fieldPath
-      )
-
       return {
         ...state,
         terms: {
           ...state.terms,
-          filters: state.terms.filters.map((filter, index) => {
-            if (index === filterIndex) {
+          filters: state.terms.filters.map((filter) => {
+            if (filter._key === action.key) {
               return {
                 ...filter,
                 // TODO: double check

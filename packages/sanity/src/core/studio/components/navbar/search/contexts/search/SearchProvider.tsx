@@ -68,13 +68,6 @@ export function SearchProvider({children}: SearchProviderProps) {
         id: 'hasReference',
         type: 'compound',
       },
-      {
-        _key: generateKey(),
-        fieldPath: '_id',
-        fieldType: 'string',
-        path: ['ID'],
-        type: 'field',
-      },
     ]
 
     const schemaFieldFilters: KeyedSearchFilter[] = flattenedFields.map(

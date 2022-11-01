@@ -2,8 +2,7 @@ import {Card, Code, Flex, Stack, Text} from '@sanity/ui'
 import React from 'react'
 import {FILTERS} from '../../config/filters'
 import type {KeyedSearchFilter} from '../../types'
-import {CompoundFilterForm} from './compound/CompoundFilterForm'
-import {FieldFilterForm} from './field/FieldFilterForm'
+import {FilterForm} from './FilterForm'
 import {FilterPopoverWrapper} from './FilterPopoverWrapper'
 
 interface FilterContentProps {
@@ -26,7 +25,7 @@ export function FilterContent({filter, onClose}: FilterContentProps) {
       >
         {filter.type === 'compound' && (
           <>
-            <CompoundFilterForm filter={filter} title={FILTERS.compound[filter.id].title} />
+            <FilterForm filter={filter} title={FILTERS.compound[filter.id].title} />
 
             {/* Debug */}
             <Card borderTop overflow="hidden" padding={3} tone="transparent">
@@ -45,7 +44,7 @@ export function FilterContent({filter, onClose}: FilterContentProps) {
 
         {filter.type === 'field' && (
           <>
-            <FieldFilterForm filter={filter} title={filter.path.join(' / ')} />
+            <FilterForm filter={filter} title={filter.path.join(' / ')} />
 
             {/* Debug */}
             <Card borderTop overflow="hidden" padding={3} tone="transparent">

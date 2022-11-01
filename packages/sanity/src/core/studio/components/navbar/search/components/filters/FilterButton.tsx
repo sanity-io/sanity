@@ -67,8 +67,6 @@ export default function FilterButton({closable = true, filter, initialOpen}: Fil
     switch (filter.type) {
       case 'compound':
         return FILTERS.compound[filter.id].title
-      case 'custom':
-        return filter.title
       case 'field': {
         const prefix = filter.path.length > 1 ? '... / ' : ''
         return prefix + filter.path[filter.path.length - 1]
