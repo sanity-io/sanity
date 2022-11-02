@@ -23,6 +23,7 @@ import {
 import {Field, formComponentsPlugin, Input, Item, Preview} from './components/formComponents'
 import {googleTheme} from './themes/google'
 import {vercelTheme} from './themes/vercel'
+import {GoogleLogo, TailwindLogo, VercelLogo} from './components/workspaceLogos'
 
 const sharedSettings = definePlugin({
   name: 'sharedSettings',
@@ -91,35 +92,9 @@ export default defineConfig([
     basePath: '/test',
   },
   {
-    name: 'google-theme',
-    title: 'Google Colors',
-    projectId: 'ppsg7ml5',
-    dataset: 'test',
-    plugins: [sharedSettings()],
-    basePath: '/google',
-    theme: googleTheme,
-  },
-  {
-    name: 'vercel-theme',
-    title: 'Vercel Colors',
-    projectId: 'ppsg7ml5',
-    dataset: 'test',
-    plugins: [sharedSettings()],
-    basePath: '/vercel',
-    theme: vercelTheme,
-  },
-  {
-    name: 'tailwind-theme',
-    title: 'Tailwind Colors',
-    projectId: 'ppsg7ml5',
-    dataset: 'test',
-    plugins: [sharedSettings()],
-    basePath: '/tailwind',
-    theme: tailwindTheme,
-  },
-  {
     name: 'playground',
-    title: 'Test Studio (playground)',
+    title: 'Test Studio',
+    subtitle: 'Playground dataset',
     projectId: 'ppsg7ml5',
     dataset: 'playground',
     plugins: [sharedSettings()],
@@ -127,7 +102,8 @@ export default defineConfig([
   },
   {
     name: 'custom-components',
-    title: 'Test Studio (custom-components)',
+    title: 'Test Studio',
+    subtitle: 'Components API playground',
     projectId: 'ppsg7ml5',
     dataset: 'test',
     plugins: [sharedSettings(), studioComponentsPlugin(), formComponentsPlugin()],
@@ -148,5 +124,35 @@ export default defineConfig([
         toolMenu: CustomToolMenu,
       },
     },
+  },
+  {
+    name: 'google-theme',
+    title: 'Google Colors',
+    projectId: 'ppsg7ml5',
+    dataset: 'test',
+    plugins: [sharedSettings()],
+    basePath: '/google',
+    theme: googleTheme,
+    icon: GoogleLogo,
+  },
+  {
+    name: 'vercel-theme',
+    title: 'Vercel Colors',
+    projectId: 'ppsg7ml5',
+    dataset: 'test',
+    plugins: [sharedSettings()],
+    basePath: '/vercel',
+    theme: vercelTheme,
+    icon: VercelLogo,
+  },
+  {
+    name: 'tailwind-theme',
+    title: 'Tailwind Colors',
+    projectId: 'ppsg7ml5',
+    dataset: 'test',
+    plugins: [sharedSettings()],
+    basePath: '/tailwind',
+    theme: tailwindTheme,
+    icon: TailwindLogo,
   },
 ])
