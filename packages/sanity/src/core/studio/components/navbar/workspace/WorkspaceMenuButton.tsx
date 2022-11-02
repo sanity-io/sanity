@@ -1,4 +1,4 @@
-import {AddIcon, SelectIcon} from '@sanity/icons'
+import {SelectIcon} from '@sanity/icons'
 import {
   Button,
   MenuButton,
@@ -7,7 +7,6 @@ import {
   MenuButtonProps,
   ButtonProps,
   Box,
-  Card,
   Label,
 } from '@sanity/ui'
 import React, {useMemo} from 'react'
@@ -15,7 +14,6 @@ import styled from 'styled-components'
 import {useActiveWorkspace} from '../../../activeWorkspaceMatcher'
 import {useColorScheme} from '../../../colorScheme'
 import {useWorkspaces} from '../../../workspaces'
-import {WORKSPACES_DOCS_URL} from './constants'
 import {useWorkspaceAuthStates} from './hooks'
 import {WorkspacePreview} from './WorkspacePreview'
 import {useRouter} from 'sanity/router'
@@ -23,11 +21,6 @@ import {useRouter} from 'sanity/router'
 const StyledMenu = styled(Menu)`
   max-width: 350px;
   min-width: 250px;
-`
-
-const FooterCard = styled(Card)`
-  position: sticky;
-  bottom: 0;
 `
 
 export function WorkspaceMenuButton(props: ButtonProps) {
@@ -47,7 +40,7 @@ export function WorkspaceMenuButton(props: ButtonProps) {
       button={<Button icon={SelectIcon} mode="bleed" {...props} disabled={!authStates} />}
       id="workspace-menu"
       menu={
-        <StyledMenu paddingBottom={0}>
+        <StyledMenu>
           <Box paddingX={3} paddingY={3}>
             <Label size={1} muted>
               Workspaces
@@ -88,23 +81,12 @@ export function WorkspaceMenuButton(props: ButtonProps) {
                     icon={workspace?.icon}
                     selected={workspace.name === activeWorkspace.name}
                     state={state}
-                    subtitle={workspace.dataset}
+                    subtitle={workspace?.subtitle}
                     title={workspace?.title || workspace.name}
                   />
                 </MenuItem>
               )
             })}
-
-          <FooterCard borderTop paddingY={1}>
-            <MenuItem
-              as="a"
-              href={WORKSPACES_DOCS_URL}
-              icon={AddIcon}
-              rel="noopener noreferrer"
-              target="__blank"
-              text="Add workspace"
-            />
-          </FooterCard>
         </StyledMenu>
       }
       popover={popoverProps}

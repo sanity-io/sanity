@@ -49,7 +49,7 @@ export function WorkspaceAuth() {
               <WorkspacePreview
                 icon={selectedWorkspace.icon}
                 title={selectedWorkspace.title}
-                subtitle={selectedWorkspace.dataset}
+                subtitle={selectedWorkspace?.subtitle}
               />
             </Box>
           }
@@ -116,7 +116,7 @@ export function WorkspaceAuth() {
                 icon={workspace?.icon}
                 iconRight={ChevronRightIcon}
                 state={state}
-                subtitle={workspace.dataset}
+                subtitle={workspace?.subtitle}
                 title={workspace?.title || workspace.name}
               />
             </Card>
