@@ -4,7 +4,7 @@ export function promptForTypeScript(prompt: CliPrompter): Promise<boolean> {
   return prompt.single({
     type: 'confirm',
     message: 'Do you want to use TypeScript?',
-    default: false,
+    default: true,
   })
 }
 
