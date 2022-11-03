@@ -186,7 +186,7 @@ export default async function initSanity(
   }
 
   // Use typescript?
-  let useTypeScript = false
+  let useTypeScript = true
   if (typeof cliFlags.typescript === 'boolean') {
     useTypeScript = cliFlags.typescript
   } else if (!unattended) {

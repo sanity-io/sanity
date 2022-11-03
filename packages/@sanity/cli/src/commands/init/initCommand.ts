@@ -17,7 +17,7 @@ Options
   --project-plan <name> Optionally select a plan for a new project
   --coupon <name> Optionally select a coupon for a new project (cannot be used with --project-plan)
   --reconfigure Reconfigure Sanity studio in current folder with new project/dataset
-  --typescript Use TypeScript for template files
+  --no-typescript Do not use TypeScript for template files
 
 Examples
   # Initialize a new project, prompt for required information along the way
