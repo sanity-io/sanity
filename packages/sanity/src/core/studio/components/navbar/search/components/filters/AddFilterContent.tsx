@@ -3,12 +3,12 @@ import {Box, Flex} from '@sanity/ui'
 import {difference, isEqual} from 'lodash'
 import React, {useCallback, useId, useMemo, useState} from 'react'
 import styled from 'styled-components'
-import {FILTERS} from '../../config/filters'
 import {SUBHEADER_HEIGHT_SMALL} from '../../constants'
 import {CommandListProvider} from '../../contexts/commandList'
 import {useSearchState} from '../../contexts/search/useSearchState'
+import {FILTERS} from '../../definitions/filters'
 import {useSelectedDocumentTypes} from '../../hooks/useSelectedDocumentTypes'
-import {KeyedSearchFilter, SearchFilterMenuItem} from '../../types'
+import {ValidatedFilter, SearchFilterMenuItem} from '../../types'
 import {CustomTextInput} from '../CustomTextInput'
 import {AddFilterContentMenuItems} from './AddFilterContentMenuItems'
 import {FilterPopoverWrapper} from './FilterPopoverWrapper'
@@ -203,13 +203,10 @@ export function AddFilterContent({onClose}: AddFilterContentProps) {
   )
 }
 
-function includesFilterTitle(filter: KeyedSearchFilter, currentTitle: string) {
+function includesFilterTitle(filter: ValidatedFilter, currentTitle: string) {
   let title = ''
-  if (filter.type === 'compound') {
-    title = FILTERS.compound[filter.id].title
-  }
   if (filter.type === 'custom') {
-    title = filter.title
+    title = FILTERS.custom[filter.id].title
   }
   if (filter.type === 'field') {
     title = filter.path.join(' / ')
@@ -217,11 +214,7 @@ function includesFilterTitle(filter: KeyedSearchFilter, currentTitle: string) {
   return title.toLowerCase().includes(currentTitle.toLowerCase())
 }
 
-function toggleSubtitleVisibility(
-  filter: KeyedSearchFilter,
-  index: number,
-  arr: KeyedSearchFilter[]
-) {
+function toggleSubtitleVisibility(filter: ValidatedFilter, index: number, arr: ValidatedFilter[]) {
   return {
     ...filter,
     // TODO: refactor

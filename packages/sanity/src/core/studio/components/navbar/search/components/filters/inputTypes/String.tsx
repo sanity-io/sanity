@@ -1,8 +1,8 @@
 import {TextInput} from '@sanity/ui'
 import React, {ChangeEvent, useCallback} from 'react'
-import type {FilterInputTypeStringComponentProps} from '../../../config/inputTypes'
+import type {InputComponentProps} from '../../../definitions/operators/types'
 
-export function FieldInputString({filter, onChange}: FilterInputTypeStringComponentProps) {
+export function FieldInputString({filter, onChange}: InputComponentProps<string>) {
   const handleChange = useCallback(
     (event: ChangeEvent<HTMLInputElement>) => onChange(event.currentTarget.value || null),
     [onChange]

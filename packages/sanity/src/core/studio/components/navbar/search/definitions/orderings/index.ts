@@ -1,4 +1,4 @@
-import type {SearchOrdering} from '../types'
+import type {SearchOrdering} from '../../types'
 
 type OrderType = 'createdAsc' | 'createdDesc' | 'relevance' | 'updatedAsc' | 'updatedDesc'
 

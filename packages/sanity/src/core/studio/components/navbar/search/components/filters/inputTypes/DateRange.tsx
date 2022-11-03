@@ -2,9 +2,9 @@ import {CalendarIcon} from '@sanity/icons'
 import {Box, Card, Flex, Stack, Text, TextInput} from '@sanity/ui'
 import {isDate} from 'lodash'
 import React, {ChangeEvent, useCallback, useState} from 'react'
-import type {FilterInputTypeDateRangeComponentProps} from '../../../config/inputTypes'
+import type {DateRangeValue, InputComponentProps} from '../../../definitions/operators/types'
 
-export function FieldInputDateRange({filter, onChange}: FilterInputTypeDateRangeComponentProps) {
+export function FieldInputDateRange({filter, onChange}: InputComponentProps<DateRangeValue>) {
   const [max, setMax] = useState(filter?.value?.max || '')
   const [min, setMin] = useState(filter?.value?.min || '')
 
@@ -13,7 +13,7 @@ export function FieldInputDateRange({filter, onChange}: FilterInputTypeDateRange
       const newValue = event.currentTarget.value
       setMax(newValue)
       if (isDate(newValue)) {
-        onChange({max: newValue, min: filter?.value?.min})
+        onChange({max: newValue, min: filter?.value?.min ?? null})
       }
     },
     [filter?.value?.min, onChange]
@@ -23,7 +23,7 @@ export function FieldInputDateRange({filter, onChange}: FilterInputTypeDateRange
       const newValue = event.currentTarget.value
       setMin(newValue)
       if (isDate(newValue)) {
-        onChange({max: filter?.value?.max, min: newValue})
+        onChange({max: filter?.value?.max ?? null, min: newValue})
       }
     },
     [filter?.value?.max, onChange]

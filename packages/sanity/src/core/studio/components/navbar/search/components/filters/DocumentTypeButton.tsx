@@ -2,7 +2,7 @@ import {SelectIcon} from '@sanity/icons'
 import {Button, Flex, Popover, Text, useClickOutside} from '@sanity/ui'
 import React, {useCallback, useState} from 'react'
 import {useSearchState} from '../../contexts/search/useSearchState'
-import {DocumentTypes} from './compound/DocumentTypes'
+import {DocumentTypes} from './DocumentTypes'
 import {FilterPopoverWrapper} from './FilterPopoverWrapper'
 
 function FilterContent({onClose}: {onClose: () => void}) {
@@ -54,11 +54,12 @@ export default function DocumentTypeButton() {
     >
       <Button
         fontSize={1}
+        mode="ghost"
         onClick={handleOpen}
         padding={2}
         ref={setButtonElement}
         style={{maxWidth: '100%'}}
-        tone="primary"
+        tone="default"
       >
         <Flex align="center" justify="space-between" gap={2}>
           <Text size={1} textOverflow="ellipsis" weight="medium">

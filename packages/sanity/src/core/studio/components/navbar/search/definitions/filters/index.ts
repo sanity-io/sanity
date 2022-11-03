@@ -1,0 +1,192 @@
+import {
+  CalendarIcon,
+  CheckmarkCircleIcon,
+  DocumentIcon,
+  ImageIcon,
+  LinkIcon,
+  PinIcon,
+  UlistIcon,
+} from '@sanity/icons'
+import {NumberIcon} from '../../components/filters/icons/NumberIcon'
+import {StringIcon} from '../../components/filters/icons/StringIcon'
+import type {FilterDefinitions} from './types'
+
+export const FILTERS: FilterDefinitions = {
+  custom: {
+    references: {
+      icon: LinkIcon,
+      initialOperator: 'references',
+      operators: [{name: 'references', type: 'item'}],
+      title: 'Referenced document',
+    },
+  },
+  field: {
+    array: {
+      icon: UlistIcon,
+      initialOperator: 'arrayCountEqual',
+      operators: [
+        {name: 'arrayCountEqual', type: 'item'},
+        {name: 'arrayCountNotEqual', type: 'item'},
+        {type: 'divider'},
+        {name: 'arrayCountGt', type: 'item'},
+        {name: 'arrayCountGte', type: 'item'},
+        {name: 'arrayCountLt', type: 'item'},
+        {name: 'arrayCountLte', type: 'item'},
+        {type: 'divider'},
+        {name: 'defined', type: 'item'},
+        {name: 'notDefined', type: 'item'},
+      ],
+    },
+    boolean: {
+      icon: CheckmarkCircleIcon,
+      initialOperator: 'booleanEqual',
+      operators: [
+        {name: 'booleanEqual', type: 'item'},
+        {type: 'divider'},
+        {name: 'notDefined', type: 'item'},
+      ],
+    },
+    date: {
+      icon: CalendarIcon,
+      initialOperator: 'dateLast',
+      operators: [
+        {name: 'dateLast', type: 'item'},
+        {name: 'dateAfter', type: 'item'},
+        {name: 'dateBefore', type: 'item'},
+        {type: 'divider'},
+        {name: 'dateRange', type: 'item'},
+        {type: 'divider'},
+        {name: 'dateEqual', type: 'item'},
+        {name: 'dateNotEqual', type: 'item'},
+        {type: 'divider'},
+        {name: 'defined', type: 'item'},
+        {name: 'notDefined', type: 'item'},
+      ],
+    },
+    datetime: {
+      icon: CalendarIcon,
+      initialOperator: 'dateLast',
+      operators: [
+        {name: 'dateLast', type: 'item'},
+        {name: 'dateAfter', type: 'item'},
+        {name: 'dateBefore', type: 'item'},
+        {type: 'divider'},
+        {name: 'dateRange', type: 'item'},
+        {type: 'divider'},
+        {name: 'dateEqual', type: 'item'},
+        {name: 'dateNotEqual', type: 'item'},
+        {type: 'divider'},
+        {name: 'defined', type: 'item'},
+        {name: 'notDefined', type: 'item'},
+      ],
+    },
+    file: {
+      icon: DocumentIcon,
+      initialOperator: 'defined',
+      operators: [
+        {name: 'defined', type: 'item'},
+        {name: 'notDefined', type: 'item'},
+      ],
+    },
+    geopoint: {
+      icon: PinIcon,
+      initialOperator: 'defined',
+      operators: [
+        {name: 'defined', type: 'item'},
+        {name: 'notDefined', type: 'item'},
+      ],
+    },
+    image: {
+      icon: ImageIcon,
+      initialOperator: 'defined',
+      operators: [
+        {name: 'defined', type: 'item'},
+        {name: 'notDefined', type: 'item'},
+      ],
+    },
+    number: {
+      icon: NumberIcon,
+      initialOperator: 'numberEqual',
+      operators: [
+        {name: 'numberEqual', type: 'item'},
+        {name: 'numberNotEqual', type: 'item'},
+        {type: 'divider'},
+        {name: 'numberGt', type: 'item'},
+        {name: 'numberGte', type: 'item'},
+        {name: 'numberLt', type: 'item'},
+        {name: 'numberLte', type: 'item'},
+        {type: 'divider'},
+        {name: 'numberRange', type: 'item'},
+        {type: 'divider'},
+        {name: 'defined', type: 'item'},
+        {name: 'notDefined', type: 'item'},
+      ],
+    },
+    reference: {
+      icon: LinkIcon,
+      initialOperator: 'referenceEqual',
+      operators: [
+        {name: 'referenceEqual', type: 'item'},
+        {type: 'divider'},
+        {name: 'defined', type: 'item'},
+        {name: 'notDefined', type: 'item'},
+      ],
+    },
+    slug: {
+      icon: StringIcon,
+      initialOperator: 'stringMatches',
+      operators: [
+        {name: 'stringMatches', type: 'item'},
+        {name: 'stringNotMatches', type: 'item'},
+        {type: 'divider'},
+        {name: 'stringEqual', type: 'item'},
+        {name: 'stringNotEqual', type: 'item'},
+        {type: 'divider'},
+        {name: 'defined', type: 'item'},
+        {name: 'notDefined', type: 'item'},
+      ],
+    },
+    string: {
+      icon: StringIcon,
+      initialOperator: 'stringMatches',
+      operators: [
+        {name: 'stringMatches', type: 'item'},
+        {name: 'stringNotMatches', type: 'item'},
+        {type: 'divider'},
+        {name: 'stringEqual', type: 'item'},
+        {name: 'stringNotEqual', type: 'item'},
+        {type: 'divider'},
+        {name: 'defined', type: 'item'},
+        {name: 'notDefined', type: 'item'},
+      ],
+    },
+    text: {
+      icon: StringIcon,
+      initialOperator: 'stringMatches',
+      operators: [
+        {name: 'stringMatches', type: 'item'},
+        {name: 'stringNotMatches', type: 'item'},
+        {type: 'divider'},
+        {name: 'stringEqual', type: 'item'},
+        {name: 'stringNotEqual', type: 'item'},
+        {type: 'divider'},
+        {name: 'defined', type: 'item'},
+        {name: 'notDefined', type: 'item'},
+      ],
+    },
+    url: {
+      icon: StringIcon,
+      initialOperator: 'stringMatches',
+      operators: [
+        {name: 'stringMatches', type: 'item'},
+        {name: 'stringNotMatches', type: 'item'},
+        {type: 'divider'},
+        {name: 'stringEqual', type: 'item'},
+        {name: 'stringNotEqual', type: 'item'},
+        {type: 'divider'},
+        {name: 'defined', type: 'item'},
+        {name: 'notDefined', type: 'item'},
+      ],
+    },
+  },
+}

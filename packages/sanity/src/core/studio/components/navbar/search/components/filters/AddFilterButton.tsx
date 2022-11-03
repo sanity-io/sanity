@@ -25,7 +25,7 @@ export default function AddFilterButton() {
       <Button
         fontSize={1}
         icon={AddIcon}
-        mode="ghost"
+        mode="bleed"
         onClick={handleOpen}
         padding={2}
         ref={setButtonElement}

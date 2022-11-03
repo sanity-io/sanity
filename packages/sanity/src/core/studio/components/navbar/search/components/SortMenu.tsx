@@ -14,7 +14,7 @@ import {
 import isEqual from 'lodash/isEqual'
 import React, {useCallback, useId, useMemo} from 'react'
 import styled from 'styled-components'
-import {ORDERINGS} from '../config/orderings'
+import {ORDERINGS} from '../definitions/orderings'
 import {SUBHEADER_HEIGHT_SMALL} from '../constants'
 import {useSearchState} from '../contexts/search/useSearchState'
 import type {SearchOrdering} from '../types'

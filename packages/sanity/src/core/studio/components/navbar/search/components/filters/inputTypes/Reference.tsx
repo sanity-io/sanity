@@ -1,8 +1,8 @@
 import React, {useCallback} from 'react'
-import type {FilterInputTypeReferenceComponentProps} from '../../../config/inputTypes'
-import {ReferenceAutocomplete} from '../compound/ReferenceAutocomplete'
+import type {InputComponentProps} from '../../../definitions/operators/types'
+import {ReferenceAutocomplete} from '../ReferenceAutocomplete'
 
-export function FieldInputReference({filter, onChange}: FilterInputTypeReferenceComponentProps) {
+export function FieldInputReference({filter, onChange}: InputComponentProps<string>) {
   const handleChange = useCallback(
     (documentId: string | null) => {
       onChange(documentId)

@@ -1,94 +1,61 @@
-import type {IntrinsicDefinitions} from '@sanity/types'
 import type {SearchOptions, SearchSort, SearchTerms, WeightedHit} from '../../../../search'
+import type {SupportedCustomType, SupportedFieldType} from './definitions/filters/types'
+import type {SearchOperatorType} from './definitions/operators/types'
 
 /**
  * @internal
  */
-export type SearchOperatorType =
-  | 'countEqualTo'
-  | 'countGreaterThan'
-  | 'countLessThan'
-  | 'dateAfter'
-  | 'dateBefore'
-  | 'dateRange'
-  | 'dateLast'
-  | 'empty'
-  | 'equalTo'
-  | 'greaterThan'
-  | 'greaterThanOrEqualTo'
-  | 'lessThan'
-  | 'lessThanOrEqualTo'
-  | 'matches'
-  | 'notEmpty'
-  | 'notEqualTo'
-  | 'notMatches'
-  | 'numberRange'
-
-/**
- * @internal
- */
-export type SearchFilterType = 'compound' | 'field'
-
-/**
- * @internal
- */
-export interface BaseSearchFilter {
-  operatorType?: SearchOperatorType
-  type: SearchFilterType
-  value?: any
+export interface BaseFilter<T> {
+  operatorType: SearchOperatorType
+  type: 'custom' | 'field'
+  value?: T
 }
 
 /**
  * @internal
  */
-export interface CompoundSearchFilter extends BaseSearchFilter {
-  id: 'hasDraft' | 'hasReference' | 'isPublished'
-  type: 'compound'
+export interface CustomFilter<T> extends BaseFilter<T> {
+  id: SupportedCustomType
+  type: 'custom'
 }
 
 /**
  * @internal
  */
-export interface FieldSearchFilter extends BaseSearchFilter {
+export interface FieldFilter<T> extends BaseFilter<T> {
   fieldPath: string
   fieldType: SupportedFieldType
-  path: string[] // titles
+  path: string[]
   type: 'field'
 }
 
 /**
  * @internal
  */
-export type SupportedFieldType = Exclude<
-  keyof IntrinsicDefinitions,
-  'block' | 'crossDatasetReference' | 'document' | 'object' | 'span'
->
-
-/**
- * @internal
- */
-export type SearchFilter = CompoundSearchFilter | FieldSearchFilter
+export type SearchFilter<T = unknown> = CustomFilter<T> | FieldFilter<T>
 
 /**
  * @internal
  */
 export interface SearchFilterGroup {
-  items: KeyedSearchFilter[]
+  items: ValidatedFilter[]
   type: 'common' | 'fields' // TODO: double check
 }
 
 /**
+ * Validated filters are guaranteed to work with the current studio schema
+ * and contain additional metadata.
+ *
  * @internal
  */
-// TODO: rename - ValidatedSearchFilter?
-export type KeyedSearchFilter = SearchFilter & {
+export type ValidatedFilter = SearchFilter & {
   _key: string
   documentTypes?: string[]
   showSubtitle?: boolean
 }
 
 export interface SearchFilterMenuItemFilter {
-  filter: KeyedSearchFilter
+  filter: ValidatedFilter
   type: 'filter'
 }
 
@@ -104,17 +71,8 @@ export type SearchFilterMenuItem = (SearchFilterMenuItemFilter | SearchFilterMen
 /**
  * @internal
  */
-export interface SearchOperator {
-  buttonLabel: string
-  fn: (value: any, field: string) => string | null
-  label: string
-}
-
-/**
- * @internal
- */
 export interface OmnisearchTerms extends SearchTerms {
-  filters: KeyedSearchFilter[]
+  filters: ValidatedFilter[]
 }
 
 /**

@@ -1,10 +1,10 @@
 import {Box, Flex, Select, TextInput} from '@sanity/ui'
 import React, {ChangeEvent, useCallback, useRef} from 'react'
-import type {FilterInputTypeDateLastComponentProps} from '../../../config/inputTypes'
+import type {DateLastValue, InputComponentProps} from '../../../definitions/operators/types'
 
-export function FieldInputDateLast({filter, onChange}: FilterInputTypeDateLastComponentProps) {
-  const dateUnit = useRef<string | null>(filter?.value?.unit || null)
-  const dateValue = useRef<string | null>(filter?.value?.value || null)
+export function FieldInputDateLast({filter, onChange}: InputComponentProps<DateLastValue>) {
+  const dateUnit = useRef<DateLastValue['unit']>(filter?.value?.unit || null)
+  const dateValue = useRef<DateLastValue['value']>(filter?.value?.value || null)
 
   const handleChange = useCallback(() => {
     onChange({
@@ -15,14 +15,14 @@ export function FieldInputDateLast({filter, onChange}: FilterInputTypeDateLastCo
 
   const handleUnitChange = useCallback(
     (event: ChangeEvent<HTMLSelectElement>) => {
-      dateUnit.current = event.currentTarget.value
+      dateUnit.current = event.currentTarget.value as DateLastValue['unit']
       handleChange()
     },
     [handleChange]
   )
   const handleValueChange = useCallback(
     (event: ChangeEvent<HTMLInputElement>) => {
-      dateValue.current = event.currentTarget.value
+      dateValue.current = Number(event.currentTarget.value)
       handleChange()
     },
     [handleChange]
@@ -33,10 +33,8 @@ export function FieldInputDateLast({filter, onChange}: FilterInputTypeDateLastCo
       <Box flex={1}>
         <TextInput
           fontSize={1}
-          inputMode="numeric"
           onChange={handleValueChange}
-          pattern="^\d+\.?\d*$"
-          placeholder="Enter value..."
+          type="number"
           value={filter?.value?.value || ''}
         />
       </Box>

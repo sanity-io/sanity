@@ -2,17 +2,17 @@ import {CloseIcon} from '@sanity/icons'
 import {Button, Flex, Inline, Popover, rem, Text, Theme, useClickOutside} from '@sanity/ui'
 import React, {useCallback, useMemo, useState} from 'react'
 import styled, {css} from 'styled-components'
-import {FILTERS} from '../../config/filters'
-import {OPERATORS} from '../../config/operators'
 import {useSearchState} from '../../contexts/search/useSearchState'
-import type {KeyedSearchFilter} from '../../types'
+import {FILTERS} from '../../definitions/filters'
+import {OPERATORS} from '../../definitions/operators'
+import type {ValidatedFilter} from '../../types'
+import {getOperator} from '../../utils/getOperator'
 import {FilterContent} from './FilterContent'
 // import {FilterIcon} from './FilterIcon'
 import {getFilterValue} from './getFilterValue'
-
 interface FilterButtonProps {
   closable?: boolean
-  filter: KeyedSearchFilter
+  filter: ValidatedFilter
   initialOpen?: boolean
 }
 
@@ -49,8 +49,8 @@ export default function FilterButton({closable = true, filter, initialOpen}: Fil
 
   const title = useMemo(() => {
     switch (filter.type) {
-      case 'compound':
-        return FILTERS.compound[filter.id].title
+      case 'custom':
+        return FILTERS.custom[filter.id].title
       case 'field': {
         return filter.path[filter.path.length - 1]
       }
@@ -59,21 +59,12 @@ export default function FilterButton({closable = true, filter, initialOpen}: Fil
     }
   }, [filter])
 
-  // TODO: refactor, store this in `filters or equivalent
-  const supportsValue = useMemo(() => {
-    if (filter.type === 'compound') {
-      return true
-    }
-    if (filter.type === 'field') {
-      return !['empty', 'notEmpty'].includes(filter?.operatorType || '')
-    }
-    return true
-  }, [filter])
-
-  const operator = filter?.operatorType && OPERATORS[filter.operatorType].buttonLabel
+  const operator = OPERATORS[filter.operatorType].buttonLabel
   const value = getFilterValue(filter)
+  const hasOperator = filter.operatorType
+  const hasValue = getOperator(filter.operatorType)?.inputComponent ? value : true
 
-  const isFilled = operator && (supportsValue ? value : true)
+  const isFilled = hasOperator && hasValue
 
   return (
     <Popover
@@ -91,9 +82,8 @@ export default function FilterButton({closable = true, filter, initialOpen}: Fil
           padding={2}
           style={{
             maxWidth: '100%', //
-            opacity: isFilled ? 1 : 0.8,
           }}
-          tone="primary"
+          tone={isFilled ? 'primary' : 'default'}
         >
           <Inline space={1}>
             {/*
@@ -103,12 +93,12 @@ export default function FilterButton({closable = true, filter, initialOpen}: Fil
               </Text>
             </Box>
             */}
-
+            {/* Title */}
             <Text size={1} weight="medium">
               {title}
             </Text>
             {/* Operator */}
-            {operator && (supportsValue ? value : true) && (
+            {isFilled && (
               <Text
                 muted
                 size={1}
@@ -119,7 +109,7 @@ export default function FilterButton({closable = true, filter, initialOpen}: Fil
               </Text>
             )}
             {/* Value */}
-            {value && (
+            {isFilled && (
               <Text size={1} textOverflow="ellipsis" weight="medium">
                 {value}
               </Text>
@@ -133,8 +123,7 @@ export default function FilterButton({closable = true, filter, initialOpen}: Fil
             icon={CloseIcon}
             onClick={handleRemove}
             padding={2}
-            style={{opacity: isFilled ? 1 : 0.8}}
-            tone="primary"
+            tone={isFilled ? 'primary' : 'default'}
           />
         )}
       </Flex>
