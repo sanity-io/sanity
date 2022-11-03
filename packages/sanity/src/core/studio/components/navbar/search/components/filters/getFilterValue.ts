@@ -1,11 +1,11 @@
 import {isBoolean} from 'lodash'
 import pluralize from 'pluralize-esm'
-import type {CompoundSearchFilter, FieldSearchFilter, SearchFilter} from '../../types'
+import type {CustomFilter, FieldFilter, SearchFilter} from '../../types'
 
 export function getFilterValue(filter: SearchFilter): string {
   let value = ''
-  if (filter.type === 'compound') {
-    value = getCompoundValue(filter)
+  if (filter.type === 'custom') {
+    value = getCustomValue(filter)
   }
 
   if (filter.type === 'field') {
@@ -15,22 +15,16 @@ export function getFilterValue(filter: SearchFilter): string {
   return value
 }
 
-function getCompoundValue(filter: CompoundSearchFilter) {
+function getCustomValue(filter: CustomFilter) {
   switch (filter.id) {
-    case 'hasDraft':
-    case 'isPublished':
-      if (typeof filter.value === 'undefined') {
-        return null
-      }
-      return filter.value ? 'True' : 'False'
-    case 'hasReference':
+    case 'references':
       return filter?.value ? filter.value.slice(0, 8) : ''
     default:
       return filter?.value
   }
 }
 
-function getFieldValue(filter: FieldSearchFilter) {
+function getFieldValue(filter: FieldFilter) {
   let value
   const fieldValue: string[] = []
 

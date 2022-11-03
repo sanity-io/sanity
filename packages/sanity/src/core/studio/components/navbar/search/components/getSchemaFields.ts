@@ -5,8 +5,8 @@ import type {
   SchemaTypeDefinition,
 } from '@sanity/types'
 import {startCase} from 'lodash'
-import {FILTERS} from '../config/filters'
-import {SupportedFieldType} from '../types'
+import {FILTERS} from '../definitions/filters'
+import type {SupportedFieldType} from '../definitions/filters/types'
 
 export interface MappedSchemaObject {
   documentTypes: string[]

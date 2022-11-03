@@ -1,10 +1,10 @@
 import {TextInput} from '@sanity/ui'
 import isNumber from 'lodash/isNumber'
 import React, {ChangeEvent, useCallback, useState} from 'react'
-import type {FilterInputTypeNumberComponentProps} from '../../../config/inputTypes'
+import type {InputComponentProps} from '../../../definitions/operators/types'
 
-export function FieldInputNumber({filter, onChange}: FilterInputTypeNumberComponentProps) {
-  const [value, setValue] = useState(filter?.value || '')
+export function FieldInputNumber({filter, onChange}: InputComponentProps<number>) {
+  const [value, setValue] = useState<string>(String(filter?.value) || '')
 
   const handleChange = useCallback(
     (event: ChangeEvent<HTMLInputElement>) => {
@@ -20,10 +20,9 @@ export function FieldInputNumber({filter, onChange}: FilterInputTypeNumberCompon
   return (
     <TextInput
       fontSize={1}
-      inputMode="numeric"
       onChange={handleChange}
-      pattern="^\d+\.?\d*$"
       placeholder="Enter value..."
+      type="number"
       value={value}
     />
   )

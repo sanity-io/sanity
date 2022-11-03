@@ -1,12 +1,9 @@
 import {Box, Flex, TextInput} from '@sanity/ui'
 import isNumber from 'lodash/isNumber'
 import React, {ChangeEvent, useCallback, useState} from 'react'
-import type {FilterInputTypeNumberRangeComponentProps} from '../../../config/inputTypes'
+import type {InputComponentProps, NumberRangeValue} from '../../../definitions/operators/types'
 
-export function FieldInputNumberRange({
-  filter,
-  onChange,
-}: FilterInputTypeNumberRangeComponentProps) {
+export function FieldInputNumberRange({filter, onChange}: InputComponentProps<NumberRangeValue>) {
   const [max, setMax] = useState(filter?.value?.max || '')
   const [min, setMin] = useState(filter?.value?.min || '')
 
@@ -15,7 +12,7 @@ export function FieldInputNumberRange({
       setMax(event.currentTarget.value)
       const numValue = parseFloat(event.currentTarget.value)
       if (isNumber(numValue)) {
-        onChange({max: numValue, min: filter?.value?.min})
+        onChange({max: numValue, min: filter?.value?.min ?? null})
       }
     },
     [filter?.value?.min, onChange]
@@ -25,7 +22,7 @@ export function FieldInputNumberRange({
       setMin(event.currentTarget.value)
       const numValue = parseFloat(event.currentTarget.value)
       if (isNumber(numValue)) {
-        onChange({max: filter?.value?.max, min: numValue})
+        onChange({max: filter?.value?.max ?? null, min: numValue})
       }
     },
     [filter?.value?.max, onChange]
@@ -36,20 +33,18 @@ export function FieldInputNumberRange({
       <Box flex={1}>
         <TextInput
           fontSize={1}
-          inputMode="numeric"
           onChange={handleMinChange}
-          pattern="^\d+\.?\d*$"
           placeholder="Enter value..."
+          type="number"
           value={min}
         />
       </Box>
       <Box flex={1}>
         <TextInput
           fontSize={1}
-          inputMode="numeric"
           onChange={handleMaxChange}
-          pattern="^\d+\.?\d*$"
           placeholder="Enter value..."
+          type="number"
           value={max}
         />
       </Box>

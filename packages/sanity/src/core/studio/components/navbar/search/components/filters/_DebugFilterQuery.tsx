@@ -1,8 +1,8 @@
 import {Card, Code, Stack} from '@sanity/ui'
 import React, {useEffect, useState} from 'react'
 import {isNonNullable} from '../../../../../../util'
-import {OPERATORS} from '../../config/operators'
 import {useSearchState} from '../../contexts/search/useSearchState'
+import {OPERATORS} from '../../definitions/operators'
 import type {SearchFilter} from '../../types'
 
 export function DebugFilterQuery() {
@@ -26,7 +26,11 @@ export function DebugFilterQuery() {
     <Card padding={4} tone="transparent">
       <Stack space={3}>
         {filterQueries.map((query, index) => (
-          <Code key={index} size={2}>
+          <Code
+            // eslint-disable-next-line react/no-array-index-key
+            key={index}
+            size={2}
+          >
             {query}
           </Code>
         ))}
@@ -38,18 +42,10 @@ export function DebugFilterQuery() {
 function generateFilterQuery(filters: SearchFilter[]) {
   const query = filters
     .map((filter) => {
-      if (filter.type === 'field') {
-        // TODO: correctly type
-        let value = filter.value
-        if (filter.operatorType) {
-          const fn = OPERATORS[filter.operatorType].fn
-          if (value !== null && value !== undefined) {
-            value = JSON.stringify(value)
-          }
-          return fn(value, filter.fieldPath)
-        }
-      }
-      return null
+      // TODO: fixme
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      return OPERATORS[filter.operatorType].fn(filter)
     })
     .filter(isNonNullable)
 

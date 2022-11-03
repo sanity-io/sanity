@@ -1,45 +1,40 @@
-import {Box, Card, Text} from '@sanity/ui'
-import React, {ChangeEvent, createElement, useCallback} from 'react'
-import {FilterFormState, FILTERS} from '../../config/filters'
-import {FILTER_INPUT_TYPE_COMPONENTS} from '../../config/inputTypes'
+import {Box, Card, Stack} from '@sanity/ui'
+import React, {ChangeEvent, useCallback} from 'react'
 import {useSearchState} from '../../contexts/search/useSearchState'
-import type {KeyedSearchFilter, SearchOperatorType} from '../../types'
+import type {SearchOperatorType} from '../../definitions/operators/types'
+import type {ValidatedFilter} from '../../types'
+import {getOperator} from '../../utils/getOperator'
+import {getOperatorInitialValue} from '../../utils/getOperatorInitialValue'
+import {FilterTitle} from './FilterTitle'
 import {SelectOperators} from './SelectOperators'
 
 interface FilterFormProps {
-  filter: KeyedSearchFilter
-  title: string
+  filter: ValidatedFilter
 }
 
-export function FilterForm({filter, title}: FilterFormProps) {
+export function FilterForm({filter}: FilterFormProps) {
   const {dispatch} = useSearchState()
 
-  let operatorTypes: SearchOperatorType[] = []
-  switch (filter.type) {
-    case 'compound':
-      operatorTypes = FILTERS[filter.type][filter.id].form.map((v) => v.operator)
-      break
-    case 'field':
-      operatorTypes = FILTERS[filter.type][filter.fieldType].form.map((v) => v.operator)
-      break
-    default:
-      break
-  }
-  // Default to first form state if no operatorType provided
-  // TODO: refactor
-  const currentFormState = getFormState(filter, filter.operatorType)
+  const operator = getOperator(filter.operatorType)
 
   const handleOperatorChange = useCallback(
     (event: ChangeEvent<HTMLSelectElement>) => {
       const operatorType = event.currentTarget.value as SearchOperatorType
-      const nextFormState = getFormState(filter, operatorType)
 
-      if (filter.type === 'compound') {
+      const nextOperator = getOperator(operatorType)
+      const initialValue = getOperatorInitialValue(operatorType)
+
+      const inputComponentChanged = operator?.inputComponent != nextOperator?.inputComponent
+
+      // Set initial value if new operator uses a different input component
+      const value = inputComponentChanged ? initialValue : filter.value
+
+      if (filter.type === 'custom') {
         dispatch({
           key: filter._key,
           operatorType,
-          type: 'TERMS_FILTERS_COMPOUND_SET',
-          value: nextFormState?.initialValue,
+          type: 'TERMS_FILTERS_CUSTOM_SET',
+          value,
         })
       }
 
@@ -49,19 +44,19 @@ export function FilterForm({filter, title}: FilterFormProps) {
           key: filter._key,
           operatorType,
           type: 'TERMS_FILTERS_FIELD_SET',
-          value: nextFormState?.initialValue,
+          value,
         })
       }
     },
-    [dispatch, filter]
+    [dispatch, filter, operator?.inputComponent]
   )
 
   const handleValueChange = useCallback(
     (value: any) => {
-      if (filter.type === 'compound') {
+      if (filter.type === 'custom') {
         dispatch({
           key: filter._key,
-          type: 'TERMS_FILTERS_COMPOUND_SET',
+          type: 'TERMS_FILTERS_CUSTOM_SET',
           value,
         })
       }
@@ -78,58 +73,36 @@ export function FilterForm({filter, title}: FilterFormProps) {
     [dispatch, filter]
   )
 
+  const Component = operator.inputComponent
+
   return (
     <Box>
       <Card borderBottom padding={3}>
-        {/* Title */}
-        <Box marginY={1}>
-          <Text size={1} weight="medium">
-            {title}
-          </Text>
-        </Box>
-        {/* Operator */}
-        {operatorTypes.length > 1 && (
-          <Box marginTop={3}>
-            <SelectOperators
-              onChange={handleOperatorChange}
-              operatorTypes={operatorTypes}
-              value={filter.operatorType}
-            />
+        <Stack space={3}>
+          {/* Title */}
+          <Box marginY={1}>
+            <FilterTitle filter={filter} />
           </Box>
-        )}
+          {/* Operator */}
+          <SelectOperators
+            filter={filter}
+            onChange={handleOperatorChange}
+            value={filter.operatorType}
+          />
+        </Stack>
       </Card>
+
       {/* Value */}
-      {currentFormState?.input && (
+      {Component && (
         <Card padding={3}>
-          {createElement(FILTER_INPUT_TYPE_COMPONENTS[currentFormState.input], {
-            filter,
-            inputType: currentFormState.input,
-            onChange: handleValueChange,
-          })}
+          <Component
+            filter={filter}
+            // re-render on new operators
+            key={filter.operatorType}
+            onChange={handleValueChange}
+          />
         </Card>
       )}
     </Box>
   )
-}
-
-// TODO: refactor
-function getFormState(
-  filter: KeyedSearchFilter,
-  operatorType?: SearchOperatorType
-): FilterFormState | undefined {
-  if (filter.type === 'compound') {
-    return filter.operatorType
-      ? FILTERS.compound[filter.id].form.find((formState) => formState.operator === operatorType)
-      : FILTERS.compound[filter.id].form?.[0]
-  }
-
-  if (filter.type === 'field') {
-    return filter.operatorType
-      ? FILTERS.field[filter.fieldType].form.find(
-          (formState) => formState.operator === operatorType
-        )
-      : FILTERS.field[filter.fieldType].form?.[0]
-  }
-
-  return undefined
 }

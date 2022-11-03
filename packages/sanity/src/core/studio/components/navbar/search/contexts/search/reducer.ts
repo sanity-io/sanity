@@ -2,25 +2,22 @@
 // TODO: re-enable the above
 import type {CurrentUser} from '@sanity/types'
 import type {SearchableType, WeightedHit} from '../../../../../../search'
-import {FILTERS} from '../../config/filters'
-import {ORDERINGS} from '../../config/orderings'
+import {ORDERINGS} from '../../definitions/orderings'
 import type {RecentOmnisearchTerms} from '../../datastores/recentSearches'
-import type {
-  KeyedSearchFilter,
-  OmnisearchTerms,
-  SearchOperatorType,
-  SearchOrdering,
-} from '../../types'
+import type {SearchOperatorType} from '../../definitions/operators/types'
+import type {ValidatedFilter, OmnisearchTerms, SearchOrdering} from '../../types'
 import {debugWithName, isDebugMode} from '../../utils/debug'
 import {generateKey} from '../../utils/generateKey'
 import {isRecentSearchTerms} from '../../utils/isRecentSearchTerms'
 import {sortTypes} from '../../utils/selectors'
+import {getFilterInitialOperator} from '../../utils/getFilterInitialOperator'
+import {getFilterInitialValue} from '../../utils/getFilterInitialValue'
 
 export interface SearchReducerState {
   currentUser: CurrentUser | null
   debug: boolean
   filtersVisible: boolean
-  lastAddedFilter?: KeyedSearchFilter
+  lastAddedFilter?: ValidatedFilter
   ordering: SearchOrdering
   pageIndex: number
   recentSearches: RecentOmnisearchTerms[]
@@ -77,12 +74,12 @@ export type SearchRequestComplete = {
 }
 export type SearchRequestError = {type: 'SEARCH_REQUEST_ERROR'; error: Error}
 export type SearchRequestStart = {type: 'SEARCH_REQUEST_START'}
-export type TermsFiltersAdd = {filter: KeyedSearchFilter; type: 'TERMS_FILTERS_ADD'}
+export type TermsFiltersAdd = {filter: ValidatedFilter; type: 'TERMS_FILTERS_ADD'}
 export type TermsFiltersClear = {type: 'TERMS_FILTERS_CLEAR'}
-export type TermsFiltersCompoundSet = {
+export type TermsFiltersCustomSet = {
   key: string
   operatorType?: SearchOperatorType
-  type: 'TERMS_FILTERS_COMPOUND_SET'
+  type: 'TERMS_FILTERS_CUSTOM_SET'
   value?: any
 }
 export type TermsFiltersFieldSet = {
@@ -111,7 +108,7 @@ export type SearchAction =
   | SearchRequestStart
   | TermsFiltersAdd
   | TermsFiltersClear
-  | TermsFiltersCompoundSet
+  | TermsFiltersCustomSet
   | TermsFiltersFieldSet
   | TermsFiltersRemove
   | TermsQuerySet
@@ -204,17 +201,12 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
         },
       }
     case 'TERMS_FILTERS_ADD': {
-      const newFilter = {
+      const newFilter: ValidatedFilter = {
         ...action.filter,
         _key: generateKey(),
         // Set initial value + operator
-        ...(action.filter.type === 'compound' && {
-          value: FILTERS[action.filter.type][action.filter.id].form[0].initialValue,
-        }),
-        ...(action.filter.type === 'field' && {
-          operatorType: FILTERS[action.filter.type][action.filter.fieldType].form[0].operator,
-          value: FILTERS[action.filter.type][action.filter.fieldType].form[0].initialValue,
-        }),
+        operatorType: getFilterInitialOperator(action.filter),
+        value: getFilterInitialValue(action.filter),
       }
 
       return {
@@ -250,7 +242,7 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
         },
       }
     }
-    case 'TERMS_FILTERS_COMPOUND_SET': {
+    case 'TERMS_FILTERS_CUSTOM_SET': {
       return {
         ...state,
         terms: {
@@ -259,11 +251,9 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
             if (filter._key === action.key) {
               return {
                 ...filter,
-                // TODO: double check
                 ...(typeof action?.operatorType !== 'undefined' && {
                   operatorType: action.operatorType,
                 }),
-                // ...(typeof action?.value !== 'undefined' && {value: action.value}),
                 value: action.value,
               }
             }
@@ -281,11 +271,9 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
             if (filter._key === action.key) {
               return {
                 ...filter,
-                // TODO: double check
                 ...(typeof action?.operatorType !== 'undefined' && {
                   operatorType: action.operatorType,
                 }),
-                // ...(typeof action?.value !== 'undefined' && {value: action.value}),
                 value: action.value,
               }
             }

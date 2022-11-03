@@ -7,13 +7,7 @@ import {getSchemaFields} from '../../components/getSchemaFields'
 import {FINDABILITY_MVI, SEARCH_LIMIT} from '../../constants'
 import {createRecentSearchesStore, RecentOmnisearchTerms} from '../../datastores/recentSearches'
 import {useSearch} from '../../hooks/useSearch'
-import type {
-  KeyedSearchFilter,
-  OmnisearchTerms,
-  SearchFilter,
-  SearchFilterGroup,
-  SearchOrdering,
-} from '../../types'
+import type {ValidatedFilter, OmnisearchTerms, SearchFilterGroup, SearchOrdering} from '../../types'
 import {generateKey} from '../../utils/generateKey'
 import {hasSearchableTerms} from '../../utils/hasSearchableTerms'
 import {isRecentSearchTerms} from '../../utils/isRecentSearchTerms'
@@ -37,12 +31,14 @@ export function SearchProvider({children}: SearchProviderProps) {
   const filterGroups: SearchFilterGroup[] = useMemo(() => {
     const flattenedFields = getSchemaFields(schema)
 
+    // Define our default / common filters
     // TODO: wrap in `defineFilter` or equivalent
-    const commonFilters: KeyedSearchFilter[] = [
+    const commonFilters: ValidatedFilter[] = [
       {
         _key: generateKey(),
         fieldPath: '_updatedAt',
         fieldType: 'datetime',
+        operatorType: 'dateEqual',
         path: ['Updated at'],
         type: 'field',
       },
@@ -50,27 +46,19 @@ export function SearchProvider({children}: SearchProviderProps) {
         _key: generateKey(),
         fieldPath: '_createdAt',
         fieldType: 'datetime',
+        operatorType: 'dateEqual',
         path: ['Created at'],
         type: 'field',
       },
       {
         _key: generateKey(),
-        id: 'isPublished',
-        type: 'compound',
-      },
-      {
-        _key: generateKey(),
-        id: 'hasDraft',
-        type: 'compound',
-      },
-      {
-        _key: generateKey(),
-        id: 'hasReference',
-        type: 'compound',
+        id: 'references',
+        operatorType: 'referenceEqual',
+        type: 'custom',
       },
     ]
 
-    const schemaFieldFilters: KeyedSearchFilter[] = flattenedFields.map(
+    const schemaFieldFilters: ValidatedFilter[] = flattenedFields.map(
       (field) =>
         ({
           _key: generateKey(),
@@ -79,7 +67,7 @@ export function SearchProvider({children}: SearchProviderProps) {
           fieldType: field.type,
           path: field.path,
           type: 'field',
-        } as KeyedSearchFilter)
+        } as ValidatedFilter)
     )
 
     return [

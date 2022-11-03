@@ -1,8 +1,8 @@
 import {Select} from '@sanity/ui'
 import React, {ChangeEvent, useCallback} from 'react'
-import type {FilterInputTypeBooleanComponentProps} from '../../../config/inputTypes'
+import type {InputComponentProps} from '../../../definitions/operators/types'
 
-export function FieldInputBoolean({filter, onChange}: FilterInputTypeBooleanComponentProps) {
+export function FieldInputBoolean({filter, onChange}: InputComponentProps<boolean>) {
   const handleChange = useCallback(
     (event: ChangeEvent<HTMLSelectElement>) => {
       onChange(event.currentTarget.value === 'true')

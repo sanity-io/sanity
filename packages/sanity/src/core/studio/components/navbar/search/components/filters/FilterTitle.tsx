@@ -2,12 +2,12 @@ import {ChevronRightIcon} from '@sanity/icons'
 import {Box, Flex, rem, Stack, Text} from '@sanity/ui'
 import React, {useMemo} from 'react'
 import styled from 'styled-components'
-import {FILTERS} from '../../config/filters'
-import type {KeyedSearchFilter} from '../../types'
+import {FILTERS} from '../../definitions/filters'
+import type {ValidatedFilter} from '../../types'
 import {FilterIcon} from './FilterIcon'
 
 interface FilterTitleProps {
-  filter: KeyedSearchFilter
+  filter: ValidatedFilter
   showSubtitle?: boolean
 }
 
@@ -23,8 +23,8 @@ const CodeWithOverflow = styled.span`
 
 export function FilterTitle({filter, showSubtitle}: FilterTitleProps) {
   const title = useMemo(() => {
-    if (filter.type === 'compound') {
-      return FILTERS.compound[filter.id].title
+    if (filter.type === 'custom') {
+      return FILTERS.custom[filter.id].title
     }
     if (filter.type === 'field') {
       return filter.path[filter.path.length - 1]
@@ -43,7 +43,10 @@ export function FilterTitle({filter, showSubtitle}: FilterTitleProps) {
         >
           {filter.path.slice(0, -1).map((pathTitle, index) => {
             return (
-              <React.Fragment key={index}>
+              <React.Fragment
+                // eslint-disable-next-line react/no-array-index-key
+                key={index}
+              >
                 <span>{pathTitle}</span>
                 {index !== filter.path.length - 2 && (
                   <span
