@@ -44,7 +44,14 @@ export function Filters() {
       </Flex>
 
       {clearFiltersButtonVisible && (
-        <Button fontSize={1} mode="ghost" onClick={handleClear} padding={2} text="Clear filters" />
+        <Button
+          fontSize={1}
+          mode="bleed"
+          onClick={handleClear}
+          padding={2}
+          text="Clear filters"
+          tone="critical"
+        />
       )}
     </Flex>
   )
