@@ -1,4 +1,4 @@
-import {Box, Button, Card, Code, ErrorBoundary, Flex, Heading, Spinner} from '@sanity/ui'
+import {Box, Button, Card, Code, ErrorBoundary, Flex, Heading, Spinner, Stack} from '@sanity/ui'
 import {startCase} from 'lodash'
 import React, {
   createContext,
@@ -100,19 +100,23 @@ export function StudioLayout() {
       )}
 
       {toolError && activeTool && (
-        <Card flex={1} overflow="auto" padding={4}>
-          <Heading as="h1">
-            The <code>{activeToolName}</code> tool crashed
-          </Heading>
-          <Box marginTop={4}>
-            <Button onClick={resetToolError} text="Retry" />
-          </Box>
-          <Card marginTop={4} overflow="auto" padding={3} tone="critical">
-            <Code size={1}>{toolError.error.stack}</Code>
-          </Card>
-          <Card marginTop={4} overflow="auto" padding={3} tone="critical">
-            <Code size={1}>{toolError.info.componentStack}</Code>
-          </Card>
+        <Card flex={1} overflow="auto" padding={4} sizing="border">
+          <Stack space={4}>
+            <Heading as="h1">
+              The <code>{activeToolName}</code> tool crashed
+            </Heading>
+            <Box>
+              <Button onClick={resetToolError} text="Retry" />
+            </Box>
+
+            <Card overflow="auto" padding={3} tone="critical" radius={2}>
+              <Code size={1}>{toolError.error.stack}</Code>
+            </Card>
+
+            <Card overflow="auto" padding={3} tone="critical" radius={2}>
+              <Code size={1}>{toolError.info.componentStack}</Code>
+            </Card>
+          </Stack>
         </Card>
       )}
 
@@ -120,17 +124,19 @@ export function StudioLayout() {
         <SearchFullscreenPortalCard ref={setSearchFullscreenPortalEl} overflow="auto" />
       )}
 
-      <Card flex={1} hidden={searchFullscreenOpen}>
-        {!toolError && activeTool && activeToolName && (
-          <RouteScope scope={activeToolName}>
-            <ErrorBoundary onCatch={setToolError}>
-              <Suspense fallback={<LoadingTool />}>
-                {createElement(activeTool.component, {tool: activeTool})}
-              </Suspense>
-            </ErrorBoundary>
-          </RouteScope>
-        )}
-      </Card>
+      {!toolError && (
+        <Card flex={1} hidden={searchFullscreenOpen}>
+          {activeTool && activeToolName && (
+            <RouteScope scope={activeToolName}>
+              <ErrorBoundary onCatch={setToolError}>
+                <Suspense fallback={<LoadingTool />}>
+                  {createElement(activeTool.component, {tool: activeTool})}
+                </Suspense>
+              </ErrorBoundary>
+            </RouteScope>
+          )}
+        </Card>
+      )}
     </Flex>
   )
 }
