@@ -73,7 +73,7 @@ export const OPERATORS: OperatorDefinitions = {
   booleanEqual: {
     buttonLabel: 'is',
     fn: ({fieldPath, value}) => (value && fieldPath ? `${fieldPath} == ${toJSON(value)}` : null),
-    initialValue: null,
+    initialValue: true,
     inputComponent: FieldInputBoolean,
     label: 'is',
   },
