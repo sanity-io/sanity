@@ -36,7 +36,7 @@
   ],
   "scripts": {
     "build": "pkg-utils build --tsconfig tsconfig.lib.json",
-    "check:package": "pkg-utils --strict --tsconfig tsconfig.lib.json",
+    "check:package": "pkg-utils --tsconfig tsconfig.lib.json",
     "clean": "rimraf lib",
     "postbuild": "run-s check:package",
     "prebuild": "run-s clean",

@@ -69,7 +69,7 @@
   ],
   "scripts": {
     "build": "pkg-utils build --tsconfig tsconfig.lib.json",
-    "check:package": "pkg-utils --strict --tsconfig tsconfig.lib.json",
+    "check:package": "pkg-utils --tsconfig tsconfig.lib.json",
     "clean": "rimraf content.js fs.js legacyDateFormat.js lib paths.js",
     "test": "jest",
     "postbuild": "run-s check:package",

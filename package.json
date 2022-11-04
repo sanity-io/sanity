@@ -76,7 +76,7 @@
     "@babel/preset-typescript": "^7.18.6",
     "@rexxars/babel-plugin-inline-json-import": "^0.3.4",
     "@sanity/client": "^3.4.1",
-    "@sanity/pkg-utils": "^1.15.0",
+    "@sanity/pkg-utils": "^1.17.2",
     "@sanity/tsdoc-to-portable-text": "^0.4.1",
     "@sanity/uuid": "^3.0.1",
     "@types/jest": "^27.0.3",
