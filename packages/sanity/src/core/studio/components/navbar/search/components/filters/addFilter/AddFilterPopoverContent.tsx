@@ -33,109 +33,6 @@ export function AddFilterPopoverContent({onClose}: AddFilterPopoverContentProps)
   const [pointerOverlayElement, setPointerOverlayRef] = useState<HTMLDivElement | null>(null)
   const [titleFilter, setTitleFilter] = useState('')
 
-  const {
-    filterGroups,
-    state: {
-      terms: {filters, types},
-    },
-  } = useSearchState()
-  const currentDocumentTypes = useSelectedDocumentTypes()
-
-  // TODO: refactor
-  const filteredMenuItems = useMemo(() => {
-    return filterGroups.reduce<SearchFilterMenuItem[]>((acc, val) => {
-      if (val.type === 'fields') {
-        // TODO: only show shared fields if filter count > 1 ||
-        // Get shared fields
-        if (currentDocumentTypes.length > 1 && (filters.length > 1 || types.length > 1)) {
-          const sharedItems = val.items
-            .filter(
-              (filter) => difference(currentDocumentTypes, filter?.documentTypes || []).length === 0
-            )
-            .filter((filter) => includesFilterTitle(filter, titleFilter))
-            .map(toggleSubtitleVisibility)
-
-          if (sharedItems.length > 0) {
-            // Header
-            acc.push({
-              groupType: val.type,
-              title: 'Shared fields',
-              type: 'header',
-            })
-            // Items
-            sharedItems.forEach((filter) => {
-              acc.push({filter, groupType: val.type, type: 'filter'})
-            })
-          }
-        }
-
-        if (currentDocumentTypes.length > 0) {
-          // Applicable fields
-          const applicableItems = val.items
-            .filter((filter) =>
-              // eslint-disable-next-line max-nested-callbacks
-              filter.documentTypes?.some((type) => currentDocumentTypes.includes(type))
-            )
-            .filter((filter) => includesFilterTitle(filter, titleFilter))
-            .map(toggleSubtitleVisibility)
-
-          if (applicableItems.length > 0) {
-            // Header
-            acc.push({
-              groupType: val.type,
-              title: 'Applicable fields',
-              type: 'header',
-            })
-            // Items
-            applicableItems.forEach((filter) => {
-              acc.push({
-                filter,
-                groupType: val.type,
-                type: 'filter',
-              })
-            })
-          }
-        }
-
-        if (currentDocumentTypes.length === 0) {
-          const allItems = val.items
-            .filter((filter) => includesFilterTitle(filter, titleFilter))
-            .map(toggleSubtitleVisibility)
-
-          if (allItems.length > 0) {
-            // Header
-            acc.push({
-              groupType: val.type,
-              title: 'All fields',
-              type: 'header',
-            })
-            // Filters
-            allItems.forEach((filter) => {
-              acc.push({filter, groupType: val.type, type: 'filter'})
-            })
-          }
-        }
-      } else {
-        // Filters
-        val.items.forEach((filter) => {
-          acc.push({
-            filter, //
-            groupType: val.type,
-            type: 'filter',
-          })
-        })
-      }
-      return acc
-    }, [])
-  }, [
-    currentDocumentTypes,
-    filterGroups,
-    filters.length,
-    // schema,
-    titleFilter,
-    types.length,
-  ])
-
   const handleFilterChange = useCallback(
     (e: React.KeyboardEvent<HTMLInputElement>) => setTitleFilter(e.currentTarget.value),
     [setTitleFilter]
@@ -143,6 +40,8 @@ export function AddFilterPopoverContent({onClose}: AddFilterPopoverContentProps)
   const handleFilterClear = useCallback(() => setTitleFilter(''), [])
 
   const filterListId = useId()
+
+  const filteredMenuItems = useCreateFilteredMenuItems(titleFilter)
 
   return (
     <FilterPopoverWrapper onClose={onClose}>
@@ -228,4 +127,83 @@ function toggleSubtitleVisibility(filter: ValidatedFilter, _index: number, arr: 
         )
       }).length > 1,
   }
+}
+
+// TODO: refactor
+function useCreateFilteredMenuItems(titleFilter: string): SearchFilterMenuItem[] {
+  const {
+    filterGroups,
+    state: {
+      terms: {filters, types},
+    },
+  } = useSearchState()
+  const currentDocumentTypes = useSelectedDocumentTypes()
+
+  const filteredMenuItems = useMemo(() => {
+    return filterGroups.reduce<SearchFilterMenuItem[]>((acc, val) => {
+      if (val.type === 'fields') {
+        // Get shared fields
+        if (currentDocumentTypes.length > 1 && (filters.length > 1 || types.length > 1)) {
+          const sharedItems = val.items
+            .filter(
+              (filter) => difference(currentDocumentTypes, filter?.documentTypes || []).length === 0
+            )
+            .filter((filter) => includesFilterTitle(filter, titleFilter))
+            .map(toggleSubtitleVisibility)
+
+          if (sharedItems.length > 0) {
+            // Header
+            acc.push({groupType: val.type, title: 'Shared fields', type: 'header'})
+            // Items
+            sharedItems.forEach((filter) => {
+              acc.push({filter, groupType: val.type, type: 'filter'})
+            })
+          }
+        }
+
+        if (currentDocumentTypes.length > 0) {
+          // Applicable fields
+          const applicableItems = val.items
+            .filter((filter) =>
+              // eslint-disable-next-line max-nested-callbacks
+              filter.documentTypes?.some((type) => currentDocumentTypes.includes(type))
+            )
+            .filter((filter) => includesFilterTitle(filter, titleFilter))
+            .map(toggleSubtitleVisibility)
+
+          if (applicableItems.length > 0) {
+            // Header
+            acc.push({groupType: val.type, title: 'Applicable fields', type: 'header'})
+            // Items
+            applicableItems.forEach((filter) => {
+              acc.push({filter, groupType: val.type, type: 'filter'})
+            })
+          }
+        }
+
+        if (currentDocumentTypes.length === 0) {
+          const allItems = val.items
+            .filter((filter) => includesFilterTitle(filter, titleFilter))
+            .map(toggleSubtitleVisibility)
+
+          if (allItems.length > 0) {
+            // Header
+            acc.push({groupType: val.type, title: 'All fields', type: 'header'})
+            // Filters
+            allItems.forEach((filter) => {
+              acc.push({filter, groupType: val.type, type: 'filter'})
+            })
+          }
+        }
+      } else {
+        // Filters
+        val.items.forEach((filter) => {
+          acc.push({filter, groupType: val.type, type: 'filter'})
+        })
+      }
+      return acc
+    }, [])
+  }, [currentDocumentTypes, filterGroups, filters.length, titleFilter, types.length])
+
+  return filteredMenuItems
 }
