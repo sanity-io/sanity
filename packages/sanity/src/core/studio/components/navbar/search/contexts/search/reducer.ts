@@ -53,7 +53,7 @@ export function initialSearchState(
     },
     terms: {
       filters: [],
-      query: 'winnie',
+      query: '',
       types: [],
     },
   }

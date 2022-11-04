@@ -3,12 +3,12 @@ import React, {ReactNode, useEffect, useMemo, useReducer, useRef} from 'react'
 import {useClient, useSchema} from '../../../../../../hooks'
 import {useCurrentUser} from '../../../../../../store'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../../../studioClient'
-import {getSchemaFields} from '../../utils/getSchemaFields'
 import {FINDABILITY_MVI, SEARCH_LIMIT} from '../../constants'
 import {createRecentSearchesStore, RecentOmnisearchTerms} from '../../datastores/recentSearches'
 import {useSearch} from '../../hooks/useSearch'
-import type {ValidatedFilter, OmnisearchTerms, SearchFilterGroup, SearchOrdering} from '../../types'
+import type {OmnisearchTerms, SearchFilterGroup, SearchOrdering, ValidatedFilter} from '../../types'
 import {generateKey} from '../../utils/generateKey'
+import {getSchemaFields} from '../../utils/getSchemaFields'
 import {hasSearchableTerms} from '../../utils/hasSearchableTerms'
 import {isRecentSearchTerms} from '../../utils/isRecentSearchTerms'
 import {initialSearchState, searchReducer} from './reducer'
@@ -133,8 +133,6 @@ export function SearchProvider({children}: SearchProviderProps) {
       const sortLabel =
         ordering?.customMeasurementLabel || `${ordering.sort.field} ${ordering.sort.direction}`
 
-      // TODO: re-enable
-      /*
       handleSearch({
         options: {
           // Comments prepended to each query for future measurement
@@ -153,7 +151,6 @@ export function SearchProvider({children}: SearchProviderProps) {
         },
         terms,
       })
-      */
 
       // Update pageIndex snapshot only on a valid search request
       previousPageIndexRef.current = pageIndex

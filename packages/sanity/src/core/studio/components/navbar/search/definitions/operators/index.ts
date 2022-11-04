@@ -34,7 +34,7 @@ export const OPERATORS: OperatorDefinitions = {
   arrayCountGte: {
     buttonLabel: 'has ≥',
     fn: ({fieldPath, value}) =>
-      value && fieldPath ? `count(${fieldPath}) > ${toJSON(value)}` : null,
+      value && fieldPath ? `count(${fieldPath}) >= ${toJSON(value)}` : null,
     initialValue: null,
     inputComponent: FieldInputNumber,
     label: 'quantity more than (≥)',

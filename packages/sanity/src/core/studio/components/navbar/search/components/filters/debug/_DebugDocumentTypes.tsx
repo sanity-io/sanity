@@ -9,7 +9,7 @@ export function DebugDocumentTypes() {
     <Card borderTop padding={4} tone="transparent">
       <Stack space={3}>
         <Text size={1} weight="semibold">
-          Document types (selected + union from active filters)
+          Document types
         </Text>
         <Code muted size={1} style={{whiteSpace: 'normal'}}>
           {selectedDocumentTypes.length > 0 ? selectedDocumentTypes.join(', ') : '(All)'}
