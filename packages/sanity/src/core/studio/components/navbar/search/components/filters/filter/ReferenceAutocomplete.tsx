@@ -1,10 +1,10 @@
 import {Autocomplete, Button, Card, Popover, Stack, Text} from '@sanity/ui'
 import React, {forwardRef, ReactElement, useCallback, useId, useRef, useState} from 'react'
-import {useSchema} from '../../../../../../hooks'
-import {WeightedHit} from '../../../../../../search'
-import {useDocumentPreviewStore} from '../../../../../../store'
-import {useSearch} from '../../hooks/useSearch'
-import SearchResultItemPreview from '../searchResultItem/SearchResultItemPreview'
+import {useSchema} from '../../../../../../../hooks'
+import {WeightedHit} from '../../../../../../../search'
+import {useDocumentPreviewStore} from '../../../../../../../store'
+import {useSearch} from '../../../hooks/useSearch'
+import SearchResultItemPreview from '../../searchResultItem/SearchResultItemPreview'
 
 interface SearchHit {
   hit: WeightedHit

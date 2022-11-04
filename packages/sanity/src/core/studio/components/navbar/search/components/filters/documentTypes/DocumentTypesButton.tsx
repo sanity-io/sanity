@@ -1,30 +1,10 @@
 import {SelectIcon} from '@sanity/icons'
 import {Button, Flex, Popover, Text, useClickOutside} from '@sanity/ui'
 import React, {useCallback, useState} from 'react'
-import {useSearchState} from '../../contexts/search/useSearchState'
-import {DocumentTypes} from './DocumentTypes'
-import {FilterPopoverWrapper} from './FilterPopoverWrapper'
+import {useSearchState} from '../../../contexts/search/useSearchState'
+import {DocumentTypesPopoverContent} from './DocumentTypesPopoverContent'
 
-function FilterContent({onClose}: {onClose: () => void}) {
-  // TODO: DRY
-  return (
-    <FilterPopoverWrapper onClose={onClose}>
-      <Flex
-        // padding={3}
-        style={{
-          maxHeight: '600px',
-          maxWidth: '350px',
-          overflow: 'hidden',
-          width: '100%',
-        }}
-      >
-        <DocumentTypes />
-      </Flex>
-    </FilterPopoverWrapper>
-  )
-}
-
-export default function DocumentTypeButton() {
+export default function DocumentTypesButton() {
   const [open, setOpen] = useState(false)
   const [buttonElement, setButtonElement] = useState<HTMLElement | null>(null)
   const [popoverElement, setPopoverElement] = useState<HTMLElement | null>(null)
@@ -45,8 +25,7 @@ export default function DocumentTypeButton() {
 
   return (
     <Popover
-      // arrow={false}
-      content={<FilterContent onClose={handleClose} />}
+      content={<DocumentTypesPopoverContent onClose={handleClose} />}
       open={open}
       placement="bottom-start"
       portal

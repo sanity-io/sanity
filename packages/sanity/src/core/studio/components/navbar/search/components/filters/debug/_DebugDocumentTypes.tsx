@@ -1,6 +1,6 @@
 import {Card, Code, Stack, Text} from '@sanity/ui'
 import React from 'react'
-import {useSelectedDocumentTypes} from '../../hooks/useSelectedDocumentTypes'
+import {useSelectedDocumentTypes} from '../../../hooks/useSelectedDocumentTypes'
 
 export function DebugDocumentTypes() {
   const selectedDocumentTypes = useSelectedDocumentTypes()

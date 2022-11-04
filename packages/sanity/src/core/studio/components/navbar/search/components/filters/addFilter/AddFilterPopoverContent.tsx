@@ -3,17 +3,17 @@ import {Box, Flex} from '@sanity/ui'
 import {difference, isEqual} from 'lodash'
 import React, {useCallback, useId, useMemo, useState} from 'react'
 import styled from 'styled-components'
-import {SUBHEADER_HEIGHT_SMALL} from '../../constants'
-import {CommandListProvider} from '../../contexts/commandList'
-import {useSearchState} from '../../contexts/search/useSearchState'
-import {FILTERS} from '../../definitions/filters'
-import {useSelectedDocumentTypes} from '../../hooks/useSelectedDocumentTypes'
-import {ValidatedFilter, SearchFilterMenuItem} from '../../types'
-import {CustomTextInput} from '../CustomTextInput'
+import {SUBHEADER_HEIGHT_SMALL} from '../../../constants'
+import {CommandListProvider} from '../../../contexts/commandList'
+import {useSearchState} from '../../../contexts/search/useSearchState'
+import {FILTERS} from '../../../definitions/filters'
+import {useSelectedDocumentTypes} from '../../../hooks/useSelectedDocumentTypes'
+import type {SearchFilterMenuItem, ValidatedFilter} from '../../../types'
+import {CustomTextInput} from '../../CustomTextInput'
+import {FilterPopoverWrapper} from '../common/FilterPopoverWrapper'
 import {AddFilterContentMenuItems} from './AddFilterContentMenuItems'
-import {FilterPopoverWrapper} from './FilterPopoverWrapper'
 
-interface AddFilterContentProps {
+interface AddFilterPopoverContentProps {
   onClose: () => void
 }
 
@@ -26,7 +26,7 @@ const FilterHeaderContentFlex = styled(Flex)`
   height: ${SUBHEADER_HEIGHT_SMALL};
 `
 
-export function AddFilterContent({onClose}: AddFilterContentProps) {
+export function AddFilterPopoverContent({onClose}: AddFilterPopoverContentProps) {
   const [childContainerElement, setChildContainerRef] = useState<HTMLDivElement | null>(null)
   const [containerElement, setContainerRef] = useState<HTMLDivElement | null>(null)
   const [headerInputElement, setHeaderInputRef] = useState<HTMLInputElement | null>(null)
@@ -214,7 +214,7 @@ function includesFilterTitle(filter: ValidatedFilter, currentTitle: string) {
   return title.toLowerCase().includes(currentTitle.toLowerCase())
 }
 
-function toggleSubtitleVisibility(filter: ValidatedFilter, index: number, arr: ValidatedFilter[]) {
+function toggleSubtitleVisibility(filter: ValidatedFilter, _index: number, arr: ValidatedFilter[]) {
   return {
     ...filter,
     // TODO: refactor

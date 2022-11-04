@@ -2,14 +2,15 @@ import {CloseIcon} from '@sanity/icons'
 import {Button, Flex, Inline, Popover, rem, Text, Theme, useClickOutside} from '@sanity/ui'
 import React, {useCallback, useMemo, useState} from 'react'
 import styled, {css} from 'styled-components'
-import {useSearchState} from '../../contexts/search/useSearchState'
-import {FILTERS} from '../../definitions/filters'
-import {OPERATORS} from '../../definitions/operators'
-import type {ValidatedFilter} from '../../types'
-import {getOperator} from '../../utils/getOperator'
-import {FilterContent} from './FilterContent'
+import {useSearchState} from '../../../contexts/search/useSearchState'
+import {FILTERS} from '../../../definitions/filters'
+import {OPERATORS} from '../../../definitions/operators'
+import type {ValidatedFilter} from '../../../types'
+import {getOperator} from '../../../utils/getOperator'
+import {FilterPopoverContent} from './FilterPopoverContent'
 // import {FilterIcon} from './FilterIcon'
 import {getFilterValue} from './getFilterValue'
+
 interface FilterButtonProps {
   closable?: boolean
   filter: ValidatedFilter
@@ -68,7 +69,7 @@ export default function FilterButton({closable = true, filter, initialOpen}: Fil
 
   return (
     <Popover
-      content={<FilterContent filter={filter} onClose={handleClose} />}
+      content={<FilterPopoverContent filter={filter} onClose={handleClose} />}
       open={open}
       placement="bottom-start"
       portal
@@ -99,12 +100,7 @@ export default function FilterButton({closable = true, filter, initialOpen}: Fil
             </Text>
             {/* Operator */}
             {isFilled && (
-              <Text
-                muted
-                size={1}
-                // style={{opacity: 0.9}}
-                weight="regular"
-              >
+              <Text muted size={1} weight="regular">
                 {operator}
               </Text>
             )}

@@ -3,15 +3,15 @@ import {Box, Button, Flex, Label, MenuDivider, Stack, Text} from '@sanity/ui'
 import {partition} from 'lodash'
 import React, {useCallback, useId, useMemo, useState} from 'react'
 import styled from 'styled-components'
-import {useSchema} from '../../../../../../hooks'
-import {SUBHEADER_HEIGHT_SMALL} from '../../constants'
-import {CommandListProvider} from '../../contexts/commandList'
-import {useSearchState} from '../../contexts/search/useSearchState'
-import {getSelectableOmnisearchTypes} from '../../utils/selectors'
-import {supportsTouch} from '../../utils/supportsTouch'
-import {CustomTextInput} from '../CustomTextInput'
-import {PointerOverlay} from '../PointerOverlay'
-import {TypeFilterItem} from '../TypeFilterItem'
+import {useSchema} from '../../../../../../../hooks'
+import {SUBHEADER_HEIGHT_SMALL} from '../../../constants'
+import {CommandListProvider} from '../../../contexts/commandList'
+import {useSearchState} from '../../../contexts/search/useSearchState'
+import {getSelectableOmnisearchTypes} from '../../../utils/selectors'
+import {supportsTouch} from '../../../utils/supportsTouch'
+import {CustomTextInput} from '../../CustomTextInput'
+import {PointerOverlay} from '../../PointerOverlay'
+import {TypeFilterItem} from '../../TypeFilterItem'
 
 const ClearButtonBox = styled(Box)`
   border-top: 1px solid ${({theme}) => theme.sanity.color.base.border};
@@ -36,7 +36,8 @@ const TypeFiltersContentDiv = styled.div`
   position: relative;
 `
 
-export function DocumentTypes() {
+// TODO: Convert to virtual list
+export function DocumentTypesList() {
   const [childContainerElement, setChildContainerRef] = useState<HTMLDivElement | null>(null)
   const [containerElement, setContainerRef] = useState<HTMLDivElement | null>(null)
   const [filtersContentElement, setFiltersContentRef] = useState<HTMLDivElement | null>(null)
