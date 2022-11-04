@@ -1,15 +1,15 @@
 import {Card, Code, Flex, Stack, Text} from '@sanity/ui'
 import React from 'react'
-import type {ValidatedFilter} from '../../types'
+import type {ValidatedFilter} from '../../../types'
+import {FilterPopoverWrapper} from '../common/FilterPopoverWrapper'
 import {FilterForm} from './FilterForm'
-import {FilterPopoverWrapper} from './FilterPopoverWrapper'
 
-interface FilterContentProps {
+interface FilterPopoverContentProps {
   filter: ValidatedFilter
   onClose: () => void
 }
 
-export function FilterContent({filter, onClose}: FilterContentProps) {
+export function FilterPopoverContent({filter, onClose}: FilterPopoverContentProps) {
   return (
     <FilterPopoverWrapper onClose={onClose}>
       <Flex

@@ -1,14 +1,18 @@
 import sub from 'date-fns/sub'
-import {FieldInputAsset} from '../../components/filters/inputTypes/Asset'
-import {FieldInputBoolean} from '../../components/filters/inputTypes/Boolean'
-import {FieldInputDate} from '../../components/filters/inputTypes/Date'
-import {FieldInputDateLast} from '../../components/filters/inputTypes/DateLast'
-import {FieldInputDateRange} from '../../components/filters/inputTypes/DateRange'
-import {FieldInputNumber} from '../../components/filters/inputTypes/Number'
-import {FieldInputNumberRange} from '../../components/filters/inputTypes/NumberRange'
-import {FieldInputReference} from '../../components/filters/inputTypes/Reference'
-import {FieldInputString} from '../../components/filters/inputTypes/String'
+import {FieldInputAsset} from '../../components/filters/filter/inputTypes/Asset'
+import {FieldInputBoolean} from '../../components/filters/filter/inputTypes/Boolean'
+import {FieldInputDate} from '../../components/filters/filter/inputTypes/Date'
+import {FieldInputDateLast} from '../../components/filters/filter/inputTypes/DateLast'
+import {FieldInputDateRange} from '../../components/filters/filter/inputTypes/DateRange'
+import {FieldInputNumber} from '../../components/filters/filter/inputTypes/Number'
+import {FieldInputNumberRange} from '../../components/filters/filter/inputTypes/NumberRange'
+import {FieldInputReference} from '../../components/filters/filter/inputTypes/Reference'
+import {FieldInputString} from '../../components/filters/filter/inputTypes/String'
 import type {OperatorDefinitions} from './types'
+
+function toJSON(val: unknown): string {
+  return JSON.stringify(val)
+}
 
 export const OPERATORS: OperatorDefinitions = {
   arrayCountEqual: {
@@ -239,8 +243,4 @@ export const OPERATORS: OperatorDefinitions = {
     inputComponent: FieldInputString,
     label: 'does not contain',
   },
-}
-
-function toJSON(val: any): string {
-  return JSON.stringify(val)
 }

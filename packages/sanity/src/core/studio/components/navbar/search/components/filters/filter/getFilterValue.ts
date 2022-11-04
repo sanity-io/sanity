@@ -1,6 +1,6 @@
 import {isBoolean} from 'lodash'
 import pluralize from 'pluralize-esm'
-import type {CustomFilter, FieldFilter, SearchFilter} from '../../types'
+import type {CustomFilter, FieldFilter, SearchFilter} from '../../../types'
 
 export function getFilterValue(filter: SearchFilter): string {
   let value = ''

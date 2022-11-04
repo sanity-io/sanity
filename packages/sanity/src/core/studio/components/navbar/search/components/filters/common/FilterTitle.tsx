@@ -2,8 +2,8 @@ import {ChevronRightIcon} from '@sanity/icons'
 import {Box, Flex, rem, Stack, Text} from '@sanity/ui'
 import React, {useMemo} from 'react'
 import styled from 'styled-components'
-import {FILTERS} from '../../definitions/filters'
-import type {ValidatedFilter} from '../../types'
+import {FILTERS} from '../../../definitions/filters'
+import type {ValidatedFilter} from '../../../types'
 import {FilterIcon} from './FilterIcon'
 
 interface FilterTitleProps {

@@ -1,7 +1,7 @@
 import {Box, Flex, TextInput} from '@sanity/ui'
 import isNumber from 'lodash/isNumber'
 import React, {ChangeEvent, useCallback, useState} from 'react'
-import type {InputComponentProps, NumberRangeValue} from '../../../definitions/operators/types'
+import type {InputComponentProps, NumberRangeValue} from '../../../../definitions/operators/types'
 
 export function FieldInputNumberRange({filter, onChange}: InputComponentProps<NumberRangeValue>) {
   const [max, setMax] = useState(filter?.value?.max || '')

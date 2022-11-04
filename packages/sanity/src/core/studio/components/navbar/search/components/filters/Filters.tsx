@@ -1,9 +1,9 @@
 import {Button, Flex} from '@sanity/ui'
 import React, {useCallback, useEffect, useRef} from 'react'
 import {useSearchState} from '../../contexts/search/useSearchState'
-import AddFilterButton from './AddFilterButton'
-import DocumentTypeButton from './DocumentTypeButton'
-import FilterButton from './FilterButton'
+import AddFilterButton from './addFilter/AddFilterButton'
+import DocumentTypesButton from './documentTypes/DocumentTypesButton'
+import FilterButton from './filter/FilterButton'
 
 export function Filters() {
   const {
@@ -30,7 +30,7 @@ export function Filters() {
   return (
     <Flex align="flex-start" gap={3} justify="space-between" padding={2}>
       <Flex flex={1} gap={2} wrap="wrap">
-        <DocumentTypeButton />
+        <DocumentTypesButton />
 
         {filters?.map((filter) => (
           <FilterButton

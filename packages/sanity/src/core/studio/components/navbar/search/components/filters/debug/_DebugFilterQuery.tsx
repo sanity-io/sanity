@@ -1,9 +1,9 @@
 import {Card, Code, Stack} from '@sanity/ui'
 import React, {useEffect, useState} from 'react'
-import {isNonNullable} from '../../../../../../util'
-import {useSearchState} from '../../contexts/search/useSearchState'
-import {OPERATORS} from '../../definitions/operators'
-import type {SearchFilter} from '../../types'
+import {isNonNullable} from '../../../../../../../util'
+import {useSearchState} from '../../../contexts/search/useSearchState'
+import {OPERATORS} from '../../../definitions/operators'
+import type {SearchFilter} from '../../../types'
 
 export function DebugFilterQuery() {
   const {

@@ -1,7 +1,7 @@
 import {UnknownIcon} from '@sanity/icons'
 import React, {ComponentType, createElement} from 'react'
-import {FILTERS} from '../../definitions/filters'
-import {SearchFilter} from '../../types'
+import {FILTERS} from '../../../definitions/filters'
+import {SearchFilter} from '../../../types'
 
 interface FilterIconProps {
   filter: SearchFilter

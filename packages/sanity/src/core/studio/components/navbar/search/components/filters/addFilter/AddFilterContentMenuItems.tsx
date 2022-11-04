@@ -2,10 +2,10 @@ import {Box} from '@sanity/ui'
 import {useVirtualizer} from '@tanstack/react-virtual'
 import React, {Dispatch, SetStateAction, useEffect, useRef} from 'react'
 import styled from 'styled-components'
-import type {SearchFilterMenuItem} from '../../types'
+import type {SearchFilterMenuItem} from '../../../types'
 // import {PointerOverlay} from '../PointerOverlay'
-import {MenuItemFilter} from './menuItem/MenuItemFilter'
-import {MenuItemHeader} from './menuItem/MenuItemHeader'
+import {MenuItemFilter} from '../menuItem/MenuItemFilter'
+import {MenuItemHeader} from '../menuItem/MenuItemHeader'
 
 interface AddFilterContentTypesProps {
   menuItems: SearchFilterMenuItem[]

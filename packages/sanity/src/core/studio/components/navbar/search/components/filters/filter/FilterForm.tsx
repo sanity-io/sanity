@@ -1,11 +1,11 @@
 import {Box, Card, Stack} from '@sanity/ui'
 import React, {ChangeEvent, useCallback} from 'react'
-import {useSearchState} from '../../contexts/search/useSearchState'
-import type {SearchOperatorType} from '../../definitions/operators/types'
-import type {ValidatedFilter} from '../../types'
-import {getOperator} from '../../utils/getOperator'
-import {getOperatorInitialValue} from '../../utils/getOperatorInitialValue'
-import {FilterTitle} from './FilterTitle'
+import {useSearchState} from '../../../contexts/search/useSearchState'
+import type {SearchOperatorType} from '../../../definitions/operators/types'
+import type {ValidatedFilter} from '../../../types'
+import {getOperator} from '../../../utils/getOperator'
+import {getOperatorInitialValue} from '../../../utils/getOperatorInitialValue'
+import {FilterTitle} from '../common/FilterTitle'
 import {SelectOperators} from './SelectOperators'
 
 interface FilterFormProps {
@@ -96,6 +96,9 @@ export function FilterForm({filter}: FilterFormProps) {
       {Component && (
         <Card padding={3}>
           <Component
+            // TODO: fixme
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
             filter={filter}
             // re-render on new operators
             key={filter.operatorType}

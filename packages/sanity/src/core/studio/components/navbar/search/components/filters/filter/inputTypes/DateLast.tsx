@@ -1,9 +1,9 @@
 import {Box, Flex, Select, TextInput} from '@sanity/ui'
 import React, {ChangeEvent, useCallback, useRef} from 'react'
-import type {DateLastValue, InputComponentProps} from '../../../definitions/operators/types'
+import type {DateLastValue, InputComponentProps} from '../../../../definitions/operators/types'
 
 export function FieldInputDateLast({filter, onChange}: InputComponentProps<DateLastValue>) {
-  const dateUnit = useRef<DateLastValue['unit']>(filter?.value?.unit || null)
+  const dateUnit = useRef<DateLastValue['unit']>('days')
   const dateValue = useRef<DateLastValue['value']>(filter?.value?.value || null)
 
   const handleChange = useCallback(() => {

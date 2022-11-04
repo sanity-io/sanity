@@ -2,7 +2,7 @@ import {CalendarIcon} from '@sanity/icons'
 import {Box, Card, Flex, Stack, Text, TextInput} from '@sanity/ui'
 import {isDate} from 'lodash'
 import React, {ChangeEvent, useCallback, useState} from 'react'
-import type {DateRangeValue, InputComponentProps} from '../../../definitions/operators/types'
+import type {DateRangeValue, InputComponentProps} from '../../../../definitions/operators/types'
 
 export function FieldInputDateRange({filter, onChange}: InputComponentProps<DateRangeValue>) {
   const [max, setMax] = useState(filter?.value?.max || '')
@@ -40,7 +40,7 @@ export function FieldInputDateRange({filter, onChange}: InputComponentProps<Date
             placeholder="Date 1"
             size={1}
             style={{minWidth: '200px'}}
-            value={min}
+            // value={min} // TODO: handle date objects with date input
           />
         </Box>
         <Box flex={1}>
@@ -51,7 +51,7 @@ export function FieldInputDateRange({filter, onChange}: InputComponentProps<Date
             placeholder="Date 2"
             size={1}
             style={{minWidth: '200px'}}
-            value={max}
+            // value={max} // TODO: handle date objects with date input
           />
         </Box>
       </Flex>

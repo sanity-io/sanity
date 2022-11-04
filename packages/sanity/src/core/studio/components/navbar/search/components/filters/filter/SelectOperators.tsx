@@ -1,9 +1,9 @@
 import {Inline, Select} from '@sanity/ui'
 import React, {ChangeEvent} from 'react'
-import {FILTERS} from '../../definitions/filters'
-import type {MenuFieldOperatorItem, SearchOperatorType} from '../../definitions/operators/types'
-import type {SearchFilter} from '../../types'
-import {getOperator} from '../../utils/getOperator'
+import {FILTERS} from '../../../definitions/filters'
+import type {MenuFieldOperatorItem, SearchOperatorType} from '../../../definitions/operators/types'
+import type {SearchFilter} from '../../../types'
+import {getOperator} from '../../../utils/getOperator'
 
 interface SelectOperatorsProps {
   filter: SearchFilter
@@ -52,7 +52,7 @@ export function SelectOperators({filter, onChange, value}: SelectOperatorsProps)
                 // eslint-disable-next-line react/no-array-index-key
                 key={index}
               >
-                ---
+                -
               </option>
             )
           }

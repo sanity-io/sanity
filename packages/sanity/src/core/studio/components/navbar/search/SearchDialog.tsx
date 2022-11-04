@@ -6,7 +6,7 @@ import {useColorScheme} from '../../../colorScheme'
 import {RecentSearches} from './components/recentSearches/RecentSearches'
 import {SearchHeader} from './components/SearchHeader'
 import {SearchResults} from './components/SearchResults'
-import {DocumentTypes} from './components/filters/DocumentTypes'
+import {DocumentTypesList} from './components/filters/documentTypes/DocumentTypesList'
 import {CommandListProvider} from './contexts/commandList'
 import {useSearchState} from './contexts/search/useSearchState'
 import {useMeasureSearchResultsIndex} from './hooks/useMeasureSearchResultsIndex'
@@ -189,7 +189,7 @@ function SearchDialogFilters() {
         width={2}
       >
         <DialogContentCard tone="default">
-          <DocumentTypes />
+          <DocumentTypesList />
         </DialogContentCard>
       </StyledDialog>
     </FocusLock>

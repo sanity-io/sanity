@@ -2,7 +2,7 @@ import {Button} from '@sanity/ui'
 import React, {useCallback} from 'react'
 import {useSearchState} from '../../../contexts/search/useSearchState'
 import type {ValidatedFilter} from '../../../types'
-import {FilterTitle} from '../FilterTitle'
+import {FilterTitle} from '../common/FilterTitle'
 
 interface FilterMenuItemProps {
   filter: ValidatedFilter
