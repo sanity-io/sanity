@@ -1,3 +1,4 @@
+import {Schema} from '@sanity/types'
 import isEqual from 'lodash/isEqual'
 import React, {ReactNode, useEffect, useMemo, useReducer, useRef} from 'react'
 import {useClient, useSchema} from '../../../../../../hooks'
@@ -28,65 +29,13 @@ export function SearchProvider({children}: SearchProviderProps) {
 
   const {dataset, projectId} = client.config()
 
-  const filterGroups: SearchFilterGroup[] = useMemo(() => {
-    const flattenedFields = getSchemaFields(schema)
-
-    // Define our default / common filters
-    // TODO: wrap in `defineFilter` or equivalent
-    const commonFilters: ValidatedFilter[] = [
-      {
-        _key: generateKey(),
-        fieldPath: '_updatedAt',
-        fieldType: 'datetime',
-        operatorType: 'dateEqual',
-        path: ['Updated at'],
-        type: 'field',
-      },
-      {
-        _key: generateKey(),
-        fieldPath: '_createdAt',
-        fieldType: 'datetime',
-        operatorType: 'dateEqual',
-        path: ['Created at'],
-        type: 'field',
-      },
-      {
-        _key: generateKey(),
-        id: 'references',
-        operatorType: 'referenceEqual',
-        type: 'custom',
-      },
-    ]
-
-    const schemaFieldFilters: ValidatedFilter[] = flattenedFields.map(
-      (field) =>
-        ({
-          _key: generateKey(),
-          documentTypes: field.documentTypes,
-          fieldPath: field.fieldPath,
-          fieldType: field.type,
-          path: field.path,
-          type: 'field',
-        } as ValidatedFilter)
-    )
-
-    return [
-      {
-        items: commonFilters,
-        type: 'common',
-      } as SearchFilterGroup,
-      {
-        items: schemaFieldFilters,
-        type: 'fields',
-      } as SearchFilterGroup,
-    ]
-  }, [schema])
-
   // Create local storage store
   const recentSearchesStore = useMemo(
     () => createRecentSearchesStore({dataset, projectId, schema, user: currentUser}),
     [currentUser, dataset, projectId, schema]
   )
+
+  const filterGroups = useCreateFilterGroups(schema)
 
   const recentSearches = useMemo(
     () => recentSearchesStore?.getRecentSearchTerms(),
@@ -186,4 +135,62 @@ export function SearchProvider({children}: SearchProviderProps) {
       {children}
     </SearchContext.Provider>
   )
+}
+
+function useCreateFilterGroups(schema: Schema): SearchFilterGroup[] {
+  const filterGroups: SearchFilterGroup[] = useMemo(() => {
+    const flattenedFields = getSchemaFields(schema)
+
+    // Define our default / common filters
+    // TODO: wrap in `defineFilter` or equivalent
+    const COMMON_FILTERS: ValidatedFilter[] = [
+      {
+        _key: generateKey(),
+        fieldPath: '_updatedAt',
+        fieldType: 'datetime',
+        operatorType: 'dateEqual',
+        path: ['Updated at'],
+        type: 'field',
+      },
+      {
+        _key: generateKey(),
+        fieldPath: '_createdAt',
+        fieldType: 'datetime',
+        operatorType: 'dateEqual',
+        path: ['Created at'],
+        type: 'field',
+      },
+      {
+        _key: generateKey(),
+        id: 'references',
+        operatorType: 'referenceEqual',
+        type: 'custom',
+      },
+    ]
+
+    const schemaFieldFilters: ValidatedFilter[] = flattenedFields.map(
+      (field) =>
+        ({
+          _key: generateKey(),
+          documentTypes: field.documentTypes,
+          fieldPath: field.fieldPath,
+          fieldType: field.type,
+          path: field.path,
+          type: 'field',
+        } as ValidatedFilter)
+    )
+
+    return [
+      {
+        items: COMMON_FILTERS,
+        type: 'common',
+      } as SearchFilterGroup,
+      {
+        items: schemaFieldFilters,
+        type: 'fields',
+      } as SearchFilterGroup,
+    ]
+  }, [schema])
+
+  return filterGroups
 }

@@ -39,13 +39,11 @@ export type SearchFilter<T = unknown> = CustomFilter<T> | FieldFilter<T>
  */
 export interface SearchFilterGroup {
   items: ValidatedFilter[]
-  type: 'common' | 'fields' // TODO: double check
+  type: 'common' | 'fields'
 }
 
 /**
- * Validated filters are guaranteed to work with the current studio schema
- * and contain additional metadata.
- *
+ * TODO: refactor out
  * @internal
  */
 export type ValidatedFilter = SearchFilter & {
