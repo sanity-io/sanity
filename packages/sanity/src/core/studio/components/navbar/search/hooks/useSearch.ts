@@ -119,6 +119,7 @@ export function useSearch({
         tap(setSearchState)
       )
     },
+    // TODO: understand why onComplete isn't being triggered when defined in this dependency array, re-enable
     []
     // [onComplete, onError, onStart, searchWeighted]
   )

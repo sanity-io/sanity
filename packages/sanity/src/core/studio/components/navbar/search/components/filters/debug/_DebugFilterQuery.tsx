@@ -1,4 +1,4 @@
-import {Card, Code, Stack} from '@sanity/ui'
+import {Card, Code, Stack, Text} from '@sanity/ui'
 import React, {useEffect, useState} from 'react'
 import {isNonNullable} from '../../../../../../../util'
 import {useSearchState} from '../../../contexts/search/useSearchState'
@@ -25,11 +25,14 @@ export function DebugFilterQuery() {
   return (
     <Card padding={4} tone="transparent">
       <Stack space={3}>
+        <Text size={1} weight="semibold">
+          Filters
+        </Text>
         {filterQueries.map((query, index) => (
           <Code
             // eslint-disable-next-line react/no-array-index-key
             key={index}
-            size={2}
+            size={1}
           >
             {query}
           </Code>
