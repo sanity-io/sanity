@@ -2,31 +2,37 @@ import {CalendarIcon} from '@sanity/icons'
 import {Box, Card, Flex, Stack, Text, TextInput} from '@sanity/ui'
 import {isDate} from 'lodash'
 import React, {ChangeEvent, useCallback, useState} from 'react'
-import type {DateRangeValue, InputComponentProps} from '../../../../definitions/operators/types'
+import type {
+  OperatorDateRangeValue,
+  OperatorInputComponentProps,
+} from '../../../../definitions/operators'
 
-export function FieldInputDateRange({filter, onChange}: InputComponentProps<DateRangeValue>) {
-  const [max, setMax] = useState(filter?.value?.max || '')
-  const [min, setMin] = useState(filter?.value?.min || '')
+export function FieldInputDateRange({
+  onChange,
+  value,
+}: OperatorInputComponentProps<OperatorDateRangeValue>) {
+  const [max, setMax] = useState(value?.max || '')
+  const [min, setMin] = useState(value?.min || '')
 
   const handleMaxChange = useCallback(
     (event: ChangeEvent<HTMLInputElement>) => {
       const newValue = event.currentTarget.value
       setMax(newValue)
       if (isDate(newValue)) {
-        onChange({max: newValue, min: filter?.value?.min ?? null})
+        onChange({max: newValue, min: value?.min ?? null})
       }
     },
-    [filter?.value?.min, onChange]
+    [value?.min, onChange]
   )
   const handleMinChange = useCallback(
     (event: ChangeEvent<HTMLInputElement>) => {
       const newValue = event.currentTarget.value
       setMin(newValue)
       if (isDate(newValue)) {
-        onChange({max: filter?.value?.max ?? null, min: newValue})
+        onChange({max: value?.max ?? null, min: newValue})
       }
     },
-    [filter?.value?.max, onChange]
+    [value?.max, onChange]
   )
 
   return (

@@ -1,11 +1,12 @@
 import {Card, Code, Flex, Stack, Text} from '@sanity/ui'
 import React from 'react'
-import type {ValidatedFilter} from '../../../types'
+import {DEBUG_MODE} from '../../../constants'
+import type {ValidatedFilterState} from '../../../types'
 import {FilterPopoverWrapper} from '../common/FilterPopoverWrapper'
 import {FilterForm} from './FilterForm'
 
 interface FilterPopoverContentProps {
-  filter: ValidatedFilter
+  filter: ValidatedFilterState
   onClose: () => void
 }
 
@@ -23,14 +24,20 @@ export function FilterPopoverContent({filter, onClose}: FilterPopoverContentProp
         }}
       >
         <FilterForm filter={filter} />
-        <DebugValues filter={filter} />
-        <DebugDocumentTypes filter={filter} />
+
+        {/* Debug panels */}
+        {DEBUG_MODE && (
+          <>
+            <DebugValues filter={filter} />
+            <DebugDocumentTypes filter={filter} />
+          </>
+        )}
       </Flex>
     </FilterPopoverWrapper>
   )
 }
 
-function DebugDocumentTypes({filter}: {filter: ValidatedFilter}) {
+function DebugDocumentTypes({filter}: {filter: ValidatedFilterState}) {
   return (
     <Card borderTop overflow="hidden" padding={3} tone="transparent">
       <Stack space={2}>
@@ -45,40 +52,20 @@ function DebugDocumentTypes({filter}: {filter: ValidatedFilter}) {
   )
 }
 
-function DebugValues({filter}: {filter: ValidatedFilter}) {
+function DebugValues({filter}: {filter: ValidatedFilterState}) {
   return (
-    <>
-      {/* Debug */}
-      {filter.type === 'custom' && (
-        <Card borderTop overflow="hidden" padding={3} tone="transparent">
-          <Stack space={2}>
-            <Text size={0} weight="semibold">
-              Custom
-            </Text>
-            <Code size={0}>id: {filter.id}</Code>
-            <Code size={0}>
-              value: {typeof filter?.value === 'undefined' ? '' : JSON.stringify(filter.value)}
-            </Code>
-          </Stack>
-        </Card>
-      )}
-
-      {/* Debug */}
-      {filter.type === 'field' && (
-        <Card borderTop overflow="hidden" padding={3} tone="transparent">
-          <Stack space={2}>
-            <Text size={0} weight="semibold">
-              Field
-            </Text>
-            <Code size={0}>fieldPath: {filter.fieldPath}</Code>
-            <Code size={0}>fieldType: {filter.fieldType}</Code>
-            <Code size={0}>operatorType: {filter.operatorType}</Code>
-            <Code size={0}>
-              value: {typeof filter?.value === 'undefined' ? '' : JSON.stringify(filter.value)}
-            </Code>
-          </Stack>
-        </Card>
-      )}
-    </>
+    <Card borderTop overflow="hidden" padding={3} tone="transparent">
+      <Stack space={2}>
+        <Text size={0} weight="semibold">
+          Field
+        </Text>
+        {filter?.fieldPath && <Code size={0}>fieldPath: {filter.fieldPath}</Code>}
+        <Code size={0}>filterType: {filter.filterType}</Code>
+        <Code size={0}>operatorType: {filter.operatorType}</Code>
+        <Code size={0}>
+          value: {typeof filter?.value === 'undefined' ? '' : JSON.stringify(filter.value)}
+        </Code>
+      </Stack>
+    </Card>
   )
 }

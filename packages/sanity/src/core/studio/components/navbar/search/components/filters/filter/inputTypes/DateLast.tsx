@@ -1,10 +1,13 @@
 import {Box, Flex, Select, TextInput} from '@sanity/ui'
 import React, {ChangeEvent, useCallback, useRef} from 'react'
-import type {DateLastValue, InputComponentProps} from '../../../../definitions/operators/types'
+import {OperatorDateLastValue, OperatorInputComponentProps} from '../../../../definitions/operators'
 
-export function FieldInputDateLast({filter, onChange}: InputComponentProps<DateLastValue>) {
-  const dateUnit = useRef<DateLastValue['unit']>('days')
-  const dateValue = useRef<DateLastValue['value']>(filter?.value?.value || null)
+export function FieldInputDateLast({
+  onChange,
+  value,
+}: OperatorInputComponentProps<OperatorDateLastValue>) {
+  const dateUnit = useRef<OperatorDateLastValue['unit']>('days')
+  const dateValue = useRef<OperatorDateLastValue['value']>(value?.value || null)
 
   const handleChange = useCallback(() => {
     onChange({
@@ -15,7 +18,7 @@ export function FieldInputDateLast({filter, onChange}: InputComponentProps<DateL
 
   const handleUnitChange = useCallback(
     (event: ChangeEvent<HTMLSelectElement>) => {
-      dateUnit.current = event.currentTarget.value as DateLastValue['unit']
+      dateUnit.current = event.currentTarget.value as OperatorDateLastValue['unit']
       handleChange()
     },
     [handleChange]
@@ -35,11 +38,11 @@ export function FieldInputDateLast({filter, onChange}: InputComponentProps<DateL
           fontSize={1}
           onChange={handleValueChange}
           type="number"
-          value={filter?.value?.value || ''}
+          value={value?.value || ''}
         />
       </Box>
       <Box flex={1}>
-        <Select fontSize={1} onChange={handleUnitChange} value={filter?.value?.unit}>
+        <Select fontSize={1} onChange={handleUnitChange} value={value?.unit}>
           <option value="days">Days</option>
           <option value="months">Months</option>
           <option value="years">Years</option>

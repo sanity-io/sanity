@@ -1,31 +1,37 @@
 import {Box, Flex, TextInput} from '@sanity/ui'
 import isNumber from 'lodash/isNumber'
 import React, {ChangeEvent, useCallback, useState} from 'react'
-import type {InputComponentProps, NumberRangeValue} from '../../../../definitions/operators/types'
+import type {
+  OperatorInputComponentProps,
+  OperatorNumberRangeValue,
+} from '../../../../definitions/operators'
 
-export function FieldInputNumberRange({filter, onChange}: InputComponentProps<NumberRangeValue>) {
-  const [max, setMax] = useState(filter?.value?.max || '')
-  const [min, setMin] = useState(filter?.value?.min || '')
+export function FieldInputNumberRange({
+  onChange,
+  value,
+}: OperatorInputComponentProps<OperatorNumberRangeValue>) {
+  const [max, setMax] = useState(value?.max || '')
+  const [min, setMin] = useState(value?.min || '')
 
   const handleMaxChange = useCallback(
     (event: ChangeEvent<HTMLInputElement>) => {
       setMax(event.currentTarget.value)
       const numValue = parseFloat(event.currentTarget.value)
       if (isNumber(numValue)) {
-        onChange({max: numValue, min: filter?.value?.min ?? null})
+        onChange({max: numValue, min: value?.min ?? null})
       }
     },
-    [filter?.value?.min, onChange]
+    [value?.min, onChange]
   )
   const handleMinChange = useCallback(
     (event: ChangeEvent<HTMLInputElement>) => {
       setMin(event.currentTarget.value)
       const numValue = parseFloat(event.currentTarget.value)
       if (isNumber(numValue)) {
-        onChange({max: filter?.value?.max ?? null, min: numValue})
+        onChange({max: value?.max ?? null, min: numValue})
       }
     },
-    [filter?.value?.max, onChange]
+    [value?.max, onChange]
   )
 
   return (

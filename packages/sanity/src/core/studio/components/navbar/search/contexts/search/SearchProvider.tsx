@@ -7,7 +7,12 @@ import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../../../studioClient'
 import {FINDABILITY_MVI, SEARCH_LIMIT} from '../../constants'
 import {createRecentSearchesStore, RecentOmnisearchTerms} from '../../datastores/recentSearches'
 import {useSearch} from '../../hooks/useSearch'
-import type {OmnisearchTerms, SearchFilterGroup, SearchOrdering, ValidatedFilter} from '../../types'
+import type {
+  OmnisearchTerms,
+  SearchFilterGroup,
+  SearchOrdering,
+  ValidatedFilterState,
+} from '../../types'
 import {generateKey} from '../../utils/generateKey'
 import {getSchemaFields} from '../../utils/getSchemaFields'
 import {hasSearchableTerms} from '../../utils/hasSearchableTerms'
@@ -143,41 +148,38 @@ function useCreateFilterGroups(schema: Schema): SearchFilterGroup[] {
 
     // Define our default / common filters
     // TODO: wrap in `defineFilter` or equivalent
-    const COMMON_FILTERS: ValidatedFilter[] = [
+    const COMMON_FILTERS: ValidatedFilterState[] = [
       {
         _key: generateKey(),
         fieldPath: '_updatedAt',
-        fieldType: 'datetime',
+        filterType: 'datetime',
         operatorType: 'dateEqual',
         path: ['Updated at'],
-        type: 'field',
       },
       {
         _key: generateKey(),
         fieldPath: '_createdAt',
-        fieldType: 'datetime',
+        filterType: 'datetime',
         operatorType: 'dateEqual',
         path: ['Created at'],
-        type: 'field',
       },
       {
         _key: generateKey(),
-        id: 'references',
+        filterType: 'references',
         operatorType: 'referenceEqual',
-        type: 'custom',
       },
     ]
 
-    const schemaFieldFilters: ValidatedFilter[] = flattenedFields.map(
+    const schemaFieldFilters: ValidatedFilterState[] = flattenedFields.map(
       (field) =>
         ({
           _key: generateKey(),
           documentTypes: field.documentTypes,
           fieldPath: field.fieldPath,
-          fieldType: field.type,
+          filterType: field.type,
           path: field.path,
           type: 'field',
-        } as ValidatedFilter)
+        } as ValidatedFilterState)
     )
 
     return [

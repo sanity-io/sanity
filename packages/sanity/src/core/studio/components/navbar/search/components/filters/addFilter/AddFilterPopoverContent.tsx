@@ -6,9 +6,9 @@ import styled from 'styled-components'
 import {SUBHEADER_HEIGHT_SMALL} from '../../../constants'
 import {CommandListProvider} from '../../../contexts/commandList'
 import {useSearchState} from '../../../contexts/search/useSearchState'
-import {FILTERS} from '../../../definitions/filters'
+import {getFilter} from '../../../definitions/filters'
 import {useSelectedDocumentTypes} from '../../../hooks/useSelectedDocumentTypes'
-import type {SearchFilterMenuItem, ValidatedFilter} from '../../../types'
+import type {SearchFilterMenuItem, ValidatedFilterState} from '../../../types'
 import {CustomTextInput} from '../../CustomTextInput'
 import {FilterPopoverWrapper} from '../common/FilterPopoverWrapper'
 import {AddFilterContentMenuItems} from './AddFilterContentMenuItems'
@@ -102,28 +102,37 @@ export function AddFilterPopoverContent({onClose}: AddFilterPopoverContentProps)
   )
 }
 
-function includesFilterTitle(filter: ValidatedFilter, currentTitle: string) {
-  let title = ''
-  if (filter.type === 'custom') {
-    title = FILTERS.custom[filter.id].title
+function includesFilterTitle(filterState: ValidatedFilterState, currentTitle: string) {
+  const filter = getFilter(filterState.filterType)
+
+  if (!filter) {
+    return false
   }
-  if (filter.type === 'field') {
-    title = filter.path.join(' / ')
+
+  let title = ''
+  if (filter?.fieldType) {
+    title = filterState.path.join(' / ')
+  } else {
+    title = filter?.title
   }
   return title.toLowerCase().includes(currentTitle.toLowerCase())
 }
 
-function toggleSubtitleVisibility(filter: ValidatedFilter, _index: number, arr: ValidatedFilter[]) {
+function toggleSubtitleVisibility(
+  filterState: ValidatedFilterState,
+  _index: number,
+  arr: ValidatedFilterState[]
+) {
   return {
-    ...filter,
+    ...filterState,
     // TODO: refactor
     showSubtitle:
       arr.filter((f) => {
         return (
-          filter.type === 'field' &&
+          filterState.type === 'field' &&
           f.type === 'field' &&
-          isEqual(f.path, filter.path) &&
-          f.type === filter.type
+          isEqual(f.path, filterState.path) &&
+          f.type === filterState.type
         )
       }).length > 1,
   }

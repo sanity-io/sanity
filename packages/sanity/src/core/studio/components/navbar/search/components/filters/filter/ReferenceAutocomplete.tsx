@@ -21,7 +21,7 @@ interface PopoverContentProps {
 
 interface ReferenceAutocompleteProps {
   onSelect?: (documentId: string | null) => void
-  value?: string
+  value?: string | null
 }
 
 const NO_FILTER = () => true

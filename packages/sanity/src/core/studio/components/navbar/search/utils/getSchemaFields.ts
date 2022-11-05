@@ -6,7 +6,6 @@ import type {
 } from '@sanity/types'
 import {startCase} from 'lodash'
 import {FILTERS} from '../definitions/filters'
-import type {SupportedFieldType} from '../definitions/filters/types'
 
 export interface MappedSchemaObject {
   documentTypes: string[]
@@ -16,60 +15,51 @@ export interface MappedSchemaObject {
   path: string[]
   title: string // created if missing
   // type: keyof IntrinsicDefinitions
-  type: SupportedFieldType
+  // type: SupportedFieldType
+  type: string
 }
 
 const MAX_OBJECT_DEPTH = 4
+
+function isDocumentDefinition(defType: SchemaTypeDefinition): defType is DocumentDefinition {
+  return defType.type === 'document'
+}
 
 function isDocumentType(schemaType: SchemaTypeDefinition): schemaType is ObjectDefinition {
   return schemaType.type === 'document'
 }
 
-export function getSchemaFields(schema: Schema): MappedSchemaObject[] {
-  // Get document types
-  const originalSchema = schema._original
-  const documentTypes: ObjectDefinition[] = []
-  const objectTypes: Record<string, ObjectDefinition> = {}
+function isObjectDefinition(defType: SchemaTypeDefinition): defType is ObjectDefinition {
+  return defType.type === 'object'
+}
 
-  // Separate documents and everything else
-  originalSchema?.types
-    .filter((schemaType) => !schemaType.name.startsWith('sanity.'))
-    .forEach((schemaType) => {
-      if (isDocumentType(schemaType)) {
-        documentTypes.push(schemaType)
-      }
-      objectTypes[schemaType.name] = schemaType as ObjectDefinition
-    })
-
+function mapDocumentTypesRecursive(
+  documentTypes: ObjectDefinition[],
+  objectTypes: Record<string, ObjectDefinition>
+) {
   // TODO: update, these can contain pretty much anything
-
-  function isDocumentDefinition(defType: SchemaTypeDefinition): defType is DocumentDefinition {
-    return defType.type === 'document'
-  }
-
-  function isObjectDefinition(defType: SchemaTypeDefinition): defType is ObjectDefinition {
-    return defType.type === 'object'
-  }
-
   function mapSchemaTypeFields(
     defType: SchemaTypeDefinition,
     depth = 0,
     prevFieldPath: string | null = null,
     prevPath: string[] = [],
     documentType?: string
+    // documentType: string
   ): MappedSchemaObject {
     // TODO: refactor
     const docType = isDocumentDefinition(defType) ? defType.name : documentType
     const renderFields = depth < MAX_OBJECT_DEPTH // render fields
     return {
-      documentTypes: [docType as SupportedFieldType],
+      // documentTypes: [docType as SupportedFieldType],
+      documentTypes: docType ? [docType] : [],
       name: defType.name,
       fieldPath: prevFieldPath ?? '',
       path: prevPath ?? [],
       // TODO: if title is missing, should we mark a separate boolean?
       title: defType?.title || startCase(defType.name),
       // TODO: refactor
-      type: defType.type as SupportedFieldType,
+      // type: defType.type as SupportedFieldType,
+      type: defType.type,
       // Fields
       // TODO: refactor
       ...((isObjectDefinition(defType) || isDocumentDefinition(defType)) &&
@@ -100,8 +90,35 @@ export function getSchemaFields(schema: Schema): MappedSchemaObject[] {
     }
   }
 
+  return documentTypes.map((t) => mapSchemaTypeFields(t))
+}
+
+export function getSchemaFields(schema: Schema): MappedSchemaObject[] {
+  // Get document types
+  const originalSchema = schema._original
+  const documentTypes: ObjectDefinition[] = []
+  const objectTypes: Record<string, ObjectDefinition> = {}
+
+  // Get filter types with fieldTypes
+  const filterTypes = FILTERS.reduce<string[]>((acc, val) => {
+    if (val?.fieldType) {
+      acc.push(val.type)
+    }
+    return acc
+  }, [])
+
+  // Separate documents and everything else
+  originalSchema?.types
+    .filter((schemaType) => !schemaType.name.startsWith('sanity.'))
+    .forEach((schemaType) => {
+      if (isDocumentType(schemaType)) {
+        documentTypes.push(schemaType)
+      }
+      objectTypes[schemaType.name] = schemaType as ObjectDefinition
+    })
+
   // 1. Recursively iterate through all documents and resolve objects
-  const mappedDocuments = documentTypes.map((t) => mapSchemaTypeFields(t))
+  const mappedDocuments = mapDocumentTypesRecursive(documentTypes, objectTypes)
 
   // 2. Try flatten fields
   const flattened = flattenFieldsByKey(mappedDocuments, 'fields').filter(
@@ -112,7 +129,6 @@ export function getSchemaFields(schema: Schema): MappedSchemaObject[] {
   const flattenedWithDocumentTypes = flattened
     .reduce<MappedSchemaObject[]>((acc, val) => {
       const prevIndex = acc.findIndex((v) => v.fieldPath === val.fieldPath && v.title === val.title)
-
       if (prevIndex > -1) {
         acc[prevIndex] = {
           ...acc[prevIndex],
@@ -129,8 +145,7 @@ export function getSchemaFields(schema: Schema): MappedSchemaObject[] {
     }, [])
     // TODO: Filter out hidden fields
     // Filter out non-recognised field types and hidden types
-    .filter((schemaType) => Object.keys(FILTERS.field).includes(schemaType.type))
-    // .sort((a, b) => a.path.join(',').localeCompare(b.path.join(',')))
+    .filter((schemaType) => filterTypes.includes(schemaType.type))
     .sort((a, b) => {
       const aTitle = a.path[a.path.length - 1]
       const bTitle = b.path[b.path.length - 1]

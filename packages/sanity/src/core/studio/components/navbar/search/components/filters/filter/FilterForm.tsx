@@ -1,79 +1,55 @@
 import {Box, Card, Stack} from '@sanity/ui'
 import React, {ChangeEvent, useCallback} from 'react'
 import {useSearchState} from '../../../contexts/search/useSearchState'
-import type {SearchOperatorType} from '../../../definitions/operators/types'
-import type {ValidatedFilter} from '../../../types'
-import {getOperator} from '../../../utils/getOperator'
-import {getOperatorInitialValue} from '../../../utils/getOperatorInitialValue'
-import {FilterTitle} from '../common/FilterTitle'
+import {getOperator, getOperatorInitialValue, OperatorType} from '../../../definitions/operators'
+import type {ValidatedFilterState} from '../../../types'
+import {FilterDetails} from '../common/FilterDetails'
 import {SelectOperators} from './SelectOperators'
 
 interface FilterFormProps {
-  filter: ValidatedFilter
+  filter: ValidatedFilterState
 }
 
 export function FilterForm({filter}: FilterFormProps) {
   const {dispatch} = useSearchState()
 
-  const operator = getOperator(filter.operatorType)
+  const operator = filter.operatorType && getOperator(filter.operatorType)
 
   const handleOperatorChange = useCallback(
     (event: ChangeEvent<HTMLSelectElement>) => {
-      const operatorType = event.currentTarget.value as SearchOperatorType
+      const operatorType = event.currentTarget.value as OperatorType
 
       const nextOperator = getOperator(operatorType)
       const initialValue = getOperatorInitialValue(operatorType)
-
       const inputComponentChanged = operator?.inputComponent != nextOperator?.inputComponent
 
       // Set initial value if new operator uses a different input component
       const value = inputComponentChanged ? initialValue : filter.value
 
-      if (filter.type === 'custom') {
-        dispatch({
-          key: filter._key,
-          operatorType,
-          type: 'TERMS_FILTERS_CUSTOM_SET',
-          value,
-        })
-      }
-
-      if (filter.type === 'field') {
-        dispatch({
-          fieldPath: filter.fieldPath,
-          key: filter._key,
-          operatorType,
-          type: 'TERMS_FILTERS_FIELD_SET',
-          value,
-        })
-      }
+      dispatch({
+        fieldPath: filter.fieldPath,
+        key: filter._key,
+        operatorType,
+        type: 'TERMS_FILTERS_SET',
+        value,
+      })
     },
     [dispatch, filter, operator?.inputComponent]
   )
 
   const handleValueChange = useCallback(
     (value: any) => {
-      if (filter.type === 'custom') {
-        dispatch({
-          key: filter._key,
-          type: 'TERMS_FILTERS_CUSTOM_SET',
-          value,
-        })
-      }
-
-      if (filter.type === 'field') {
-        dispatch({
-          fieldPath: filter.fieldPath,
-          key: filter._key,
-          type: 'TERMS_FILTERS_FIELD_SET',
-          value,
-        })
-      }
+      dispatch({
+        fieldPath: filter?.fieldPath,
+        key: filter._key,
+        type: 'TERMS_FILTERS_SET',
+        value,
+      })
     },
     [dispatch, filter]
   )
 
-  const Component = operator.inputComponent
+  const Component = operator?.inputComponent
 
   return (
     <Box>
@@ -81,7 +57,7 @@ export function FilterForm({filter}: FilterFormProps) {
         <Stack space={3}>
           {/* Title */}
           <Box marginY={1}>
-            <FilterTitle filter={filter} />
+            <FilterDetails filter={filter} />
           </Box>
           {/* Operator */}
           <SelectOperators
@@ -96,13 +72,10 @@ export function FilterForm({filter}: FilterFormProps) {
       {Component && (
         <Card padding={3}>
           <Component
-            // TODO: fixme
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-ignore
-            filter={filter}
             // re-render on new operators
             key={filter.operatorType}
             onChange={handleValueChange}
+            value={filter.value}
           />
         </Card>
       )}

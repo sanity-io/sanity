@@ -1,8 +1,6 @@
 import type {SearchOrdering} from '../../types'
 
-type OrderType = 'createdAsc' | 'createdDesc' | 'relevance' | 'updatedAsc' | 'updatedDesc'
-
-export const ORDERINGS: Record<OrderType, SearchOrdering> = {
+export const ORDERINGS: Record<string, SearchOrdering> = {
   createdAsc: {
     ignoreScore: true,
     sort: {direction: 'asc', field: '_createdAt'},

@@ -1,21 +1,14 @@
 import {UnknownIcon} from '@sanity/icons'
-import React, {ComponentType, createElement} from 'react'
-import {FILTERS} from '../../../definitions/filters'
-import {SearchFilter} from '../../../types'
+import React, {createElement} from 'react'
+import {getFilter} from '../../../definitions/filters'
+import type {SearchFilterState} from '../../../types'
 
 interface FilterIconProps {
-  filter: SearchFilter
+  filter: SearchFilterState
 }
 
 export function FilterIcon({filter}: FilterIconProps) {
-  let icon: ComponentType | null = null
-  if (filter.type === 'custom') {
-    icon = FILTERS.custom[filter.id]?.icon
-  }
-  if (filter.type === 'field') {
-    icon = FILTERS.field[filter.fieldType]?.icon
-  }
-
+  const icon = getFilter(filter.filterType)?.icon
   if (icon) {
     return createElement(icon)
   }

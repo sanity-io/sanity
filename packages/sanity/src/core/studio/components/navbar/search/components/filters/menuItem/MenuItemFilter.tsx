@@ -1,11 +1,11 @@
 import {Button} from '@sanity/ui'
 import React, {useCallback} from 'react'
 import {useSearchState} from '../../../contexts/search/useSearchState'
-import type {ValidatedFilter} from '../../../types'
-import {FilterTitle} from '../common/FilterTitle'
+import type {ValidatedFilterState} from '../../../types'
+import {FilterDetails} from '../common/FilterDetails'
 
 interface FilterMenuItemProps {
-  filter: ValidatedFilter
+  filter: ValidatedFilterState
   onClose: () => void
 }
 
@@ -31,7 +31,7 @@ export const MenuItemFilter = React.memo(function MenuItemFilter({
         width: '100%',
       }}
     >
-      <FilterTitle filter={filter} showSubtitle />
+      <FilterDetails filter={filter} showSubtitle />
     </Button>
   )
 })

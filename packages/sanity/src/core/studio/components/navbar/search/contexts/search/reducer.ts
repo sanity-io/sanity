@@ -4,20 +4,19 @@ import type {CurrentUser} from '@sanity/types'
 import type {SearchableType, WeightedHit} from '../../../../../../search'
 import {ORDERINGS} from '../../definitions/orderings'
 import type {RecentOmnisearchTerms} from '../../datastores/recentSearches'
-import type {SearchOperatorType} from '../../definitions/operators/types'
-import type {ValidatedFilter, OmnisearchTerms, SearchOrdering} from '../../types'
+import {getFilterInitialOperator} from '../../definitions/filters'
+import type {ValidatedFilterState, OmnisearchTerms, SearchOrdering} from '../../types'
 import {debugWithName, isDebugMode} from '../../utils/debug'
 import {generateKey} from '../../utils/generateKey'
 import {isRecentSearchTerms} from '../../utils/isRecentSearchTerms'
 import {sortTypes} from '../../utils/selectors'
-import {getFilterInitialOperator} from '../../utils/getFilterInitialOperator'
-import {getFilterInitialValue} from '../../utils/getFilterInitialValue'
+import {getOperatorInitialValue, OperatorType} from '../../definitions/operators'
 
 export interface SearchReducerState {
   currentUser: CurrentUser | null
   debug: boolean
   filtersVisible: boolean
-  lastAddedFilter?: ValidatedFilter
+  lastAddedFilter?: ValidatedFilterState
   ordering: SearchOrdering
   pageIndex: number
   recentSearches: RecentOmnisearchTerms[]
@@ -74,22 +73,16 @@ export type SearchRequestComplete = {
 }
 export type SearchRequestError = {type: 'SEARCH_REQUEST_ERROR'; error: Error}
 export type SearchRequestStart = {type: 'SEARCH_REQUEST_START'}
-export type TermsFiltersAdd = {filter: ValidatedFilter; type: 'TERMS_FILTERS_ADD'}
+export type TermsFiltersAdd = {filter: ValidatedFilterState; type: 'TERMS_FILTERS_ADD'}
 export type TermsFiltersClear = {type: 'TERMS_FILTERS_CLEAR'}
-export type TermsFiltersCustomSet = {
-  key: string
-  operatorType?: SearchOperatorType
-  type: 'TERMS_FILTERS_CUSTOM_SET'
-  value?: any
-}
-export type TermsFiltersFieldSet = {
-  fieldPath: string
-  key: string
-  operatorType?: SearchOperatorType
-  type: 'TERMS_FILTERS_FIELD_SET'
-  value?: any
-}
 export type TermsFiltersRemove = {_key: string; type: 'TERMS_FILTERS_REMOVE'}
+export type TermsFiltersSet = {
+  fieldPath?: string
+  key: string
+  operatorType?: OperatorType
+  type: 'TERMS_FILTERS_SET'
+  value?: any
+}
 export type TermsQuerySet = {type: 'TERMS_QUERY_SET'; query: string}
 export type TermsSet = {type: 'TERMS_SET'; terms: OmnisearchTerms}
 export type TermsTypeAdd = {type: 'TERMS_TYPE_ADD'; schemaType: SearchableType}
@@ -108,9 +101,8 @@ export type SearchAction =
   | SearchRequestStart
   | TermsFiltersAdd
   | TermsFiltersClear
-  | TermsFiltersCustomSet
-  | TermsFiltersFieldSet
   | TermsFiltersRemove
+  | TermsFiltersSet
   | TermsQuerySet
   | TermsSet
   | TermsTypeAdd
@@ -201,12 +193,14 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
         },
       }
     case 'TERMS_FILTERS_ADD': {
-      const newFilter: ValidatedFilter = {
+      const operatorType = getFilterInitialOperator(action.filter.filterType)
+
+      const newFilter: ValidatedFilterState = {
         ...action.filter,
         _key: generateKey(),
         // Set initial value + operator
-        operatorType: getFilterInitialOperator(action.filter),
-        value: getFilterInitialValue(action.filter),
+        operatorType,
+        value: operatorType && getOperatorInitialValue(operatorType),
       }
 
       return {
@@ -242,27 +236,7 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
         },
       }
     }
-    case 'TERMS_FILTERS_CUSTOM_SET': {
-      return {
-        ...state,
-        terms: {
-          ...state.terms,
-          filters: state.terms.filters.map((filter) => {
-            if (filter._key === action.key) {
-              return {
-                ...filter,
-                ...(typeof action?.operatorType !== 'undefined' && {
-                  operatorType: action.operatorType,
-                }),
-                value: action.value,
-              }
-            }
-            return filter
-          }),
-        },
-      }
-    }
-    case 'TERMS_FILTERS_FIELD_SET': {
+    case 'TERMS_FILTERS_SET': {
       return {
         ...state,
         terms: {

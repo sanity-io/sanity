@@ -3,7 +3,12 @@ import React, {useCallback, useEffect, useId, useRef, useState} from 'react'
 import FocusLock from 'react-focus-lock'
 import styled, {css} from 'styled-components'
 import {useColorScheme} from '../../../../colorScheme'
-import {POPOVER_INPUT_PADDING, POPOVER_MAX_HEIGHT, POPOVER_MAX_WIDTH} from '../constants'
+import {
+  DEBUG_MODE,
+  POPOVER_INPUT_PADDING,
+  POPOVER_MAX_HEIGHT,
+  POPOVER_MAX_WIDTH,
+} from '../constants'
 import {CommandListProvider} from '../contexts/commandList'
 import {useSearchState} from '../contexts/search/useSearchState'
 import {useMeasureSearchResultsIndex} from '../hooks/useMeasureSearchResultsIndex'
@@ -193,9 +198,14 @@ export function SearchPopover({
                 style={{flexShrink: 0}}
               >
                 <Filters />
-                {/* Debug */}
-                <DebugFilterQuery />
-                <DebugDocumentTypes />
+
+                {/* Debug panels */}
+                {DEBUG_MODE && (
+                  <>
+                    <DebugFilterQuery />
+                    <DebugDocumentTypes />
+                  </>
+                )}
               </Card>
             )}
 

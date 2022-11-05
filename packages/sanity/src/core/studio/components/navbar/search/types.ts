@@ -1,44 +1,24 @@
 import type {SearchOptions, SearchSort, SearchTerms, WeightedHit} from '../../../../search'
-import type {SupportedCustomType, SupportedFieldType} from './definitions/filters/types'
-import type {SearchOperatorType} from './definitions/operators/types'
+import {FilterType} from './definitions/filters'
+import type {OperatorType} from './definitions/operators'
 
 /**
  * @internal
  */
-export interface BaseFilter<T> {
-  operatorType: SearchOperatorType
-  type: 'custom' | 'field'
-  value?: T
+export interface SearchFilterState {
+  fieldPath?: string
+  filterType: FilterType
+  operatorType?: OperatorType
+  path?: string[] // TODO: remove?
+  // value?: unknown
+  value?: any
 }
-
-/**
- * @internal
- */
-export interface CustomFilter<T> extends BaseFilter<T> {
-  id: SupportedCustomType
-  type: 'custom'
-}
-
-/**
- * @internal
- */
-export interface FieldFilter<T> extends BaseFilter<T> {
-  fieldPath: string
-  fieldType: SupportedFieldType
-  path: string[]
-  type: 'field'
-}
-
-/**
- * @internal
- */
-export type SearchFilter<T = unknown> = CustomFilter<T> | FieldFilter<T>
 
 /**
  * @internal
  */
 export interface SearchFilterGroup {
-  items: ValidatedFilter[]
+  items: ValidatedFilterState[]
   type: 'common' | 'fields'
 }
 
@@ -46,14 +26,14 @@ export interface SearchFilterGroup {
  * TODO: refactor out
  * @internal
  */
-export type ValidatedFilter = SearchFilter & {
+export type ValidatedFilterState = SearchFilterState & {
   _key: string
   documentTypes?: string[]
   showSubtitle?: boolean
 }
 
 export interface SearchFilterMenuItemFilter {
-  filter: ValidatedFilter
+  filter: ValidatedFilterState
   type: 'filter'
 }
 
@@ -70,7 +50,7 @@ export type SearchFilterMenuItem = (SearchFilterMenuItemFilter | SearchFilterMen
  * @internal
  */
 export interface OmnisearchTerms extends SearchTerms {
-  filters: ValidatedFilter[]
+  filters: ValidatedFilterState[]
 }
 
 /**

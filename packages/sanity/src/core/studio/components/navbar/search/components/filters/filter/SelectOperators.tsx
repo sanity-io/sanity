@@ -1,31 +1,19 @@
 import {Inline, Select} from '@sanity/ui'
 import React, {ChangeEvent} from 'react'
-import {FILTERS} from '../../../definitions/filters'
-import type {MenuFieldOperatorItem, SearchOperatorType} from '../../../definitions/operators/types'
-import type {SearchFilter} from '../../../types'
-import {getOperator} from '../../../utils/getOperator'
+import {getFilter} from '../../../definitions/filters'
+import {getOperator, OperatorType} from '../../../definitions/operators'
+import type {SearchFilterState} from '../../../types'
 
 interface SelectOperatorsProps {
-  filter: SearchFilter
+  filter: SearchFilterState
   onChange: (event: ChangeEvent<HTMLSelectElement>) => void
-  value?: SearchOperatorType
+  value?: OperatorType
 }
 
 export function SelectOperators({filter, onChange, value}: SelectOperatorsProps) {
-  let operatorItems: MenuFieldOperatorItem<any>[] = []
-  switch (filter.type) {
-    case 'custom':
-      operatorItems = []
-      break
-    case 'field': {
-      operatorItems = FILTERS[filter.type][filter.fieldType].operators
-      break
-    }
-    default:
-      break
-  }
+  const operatorItems = getFilter(filter.filterType)?.operators
 
-  if (operatorItems.length < 1) {
+  if (!operatorItems || operatorItems.length < 1) {
     return null
   }
 
@@ -41,7 +29,7 @@ export function SelectOperators({filter, onChange, value}: SelectOperatorsProps)
                 key={index}
                 value={item.name}
               >
-                {operator.label}
+                {operator?.label}
               </option>
             )
           }
