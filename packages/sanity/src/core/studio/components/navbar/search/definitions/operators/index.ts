@@ -40,7 +40,7 @@ type ValuelessOperatorBuilder<
   type: TType
 }
 
-type Operator =
+export type Operator =
   | OperatorBuilder<'arrayCountEqual', number>
   | OperatorBuilder<'arrayCountGt', number>
   | OperatorBuilder<'arrayCountGte', number>

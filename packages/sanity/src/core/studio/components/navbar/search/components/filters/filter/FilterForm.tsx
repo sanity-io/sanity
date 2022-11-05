@@ -4,7 +4,7 @@ import {useSearchState} from '../../../contexts/search/useSearchState'
 import {getOperator, getOperatorInitialValue, OperatorType} from '../../../definitions/operators'
 import type {ValidatedFilterState} from '../../../types'
 import {FilterDetails} from '../common/FilterDetails'
-import {SelectOperators} from './SelectOperators'
+import {OperatorsMenuButton} from './SelectOperators'
 
 interface FilterFormProps {
   filter: ValidatedFilterState
@@ -15,34 +15,11 @@ export function FilterForm({filter}: FilterFormProps) {
 
   const operator = filter.operatorType && getOperator(filter.operatorType)
 
-  const handleOperatorChange = useCallback(
-    (event: ChangeEvent<HTMLSelectElement>) => {
-      const operatorType = event.currentTarget.value as OperatorType
-
-      const nextOperator = getOperator(operatorType)
-      const initialValue = getOperatorInitialValue(operatorType)
-      const inputComponentChanged = operator?.inputComponent != nextOperator?.inputComponent
-
-      // Set initial value if new operator uses a different input component
-      const value = inputComponentChanged ? initialValue : filter.value
-
-      dispatch({
-        fieldPath: filter.fieldPath,
-        key: filter._key,
-        operatorType,
-        type: 'TERMS_FILTERS_SET',
-        value,
-      })
-    },
-    [dispatch, filter, operator?.inputComponent]
-  )
-
   const handleValueChange = useCallback(
     (value: any) => {
       dispatch({
-        fieldPath: filter?.fieldPath,
         key: filter._key,
-        type: 'TERMS_FILTERS_SET',
+        type: 'TERMS_FILTERS_SET_VALUE',
         value,
       })
     },
@@ -60,11 +37,7 @@ export function FilterForm({filter}: FilterFormProps) {
             <FilterDetails filter={filter} />
           </Box>
           {/* Operator */}
-          <SelectOperators
-            filter={filter}
-            onChange={handleOperatorChange}
-            value={filter.operatorType}
-          />
+          <OperatorsMenuButton filter={filter} operator={getOperator(filter.operatorType)} />
         </Stack>
       </Card>
 

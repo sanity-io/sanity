@@ -10,7 +10,7 @@ import {debugWithName, isDebugMode} from '../../utils/debug'
 import {generateKey} from '../../utils/generateKey'
 import {isRecentSearchTerms} from '../../utils/isRecentSearchTerms'
 import {sortTypes} from '../../utils/selectors'
-import {getOperatorInitialValue, OperatorType} from '../../definitions/operators'
+import {getOperator, getOperatorInitialValue, OperatorType} from '../../definitions/operators'
 
 export interface SearchReducerState {
   currentUser: CurrentUser | null
@@ -76,11 +76,14 @@ export type SearchRequestStart = {type: 'SEARCH_REQUEST_START'}
 export type TermsFiltersAdd = {filter: ValidatedFilterState; type: 'TERMS_FILTERS_ADD'}
 export type TermsFiltersClear = {type: 'TERMS_FILTERS_CLEAR'}
 export type TermsFiltersRemove = {_key: string; type: 'TERMS_FILTERS_REMOVE'}
-export type TermsFiltersSet = {
-  fieldPath?: string
+export type TermsFiltersSetOperator = {
   key: string
-  operatorType?: OperatorType
-  type: 'TERMS_FILTERS_SET'
+  operatorType: OperatorType
+  type: 'TERMS_FILTERS_SET_OPERATOR'
+}
+export type TermsFiltersSetValue = {
+  key: string
+  type: 'TERMS_FILTERS_SET_VALUE'
   value?: any
 }
 export type TermsQuerySet = {type: 'TERMS_QUERY_SET'; query: string}
@@ -101,8 +104,9 @@ export type SearchAction =
   | SearchRequestStart
   | TermsFiltersAdd
   | TermsFiltersClear
+  | TermsFiltersSetOperator
   | TermsFiltersRemove
-  | TermsFiltersSet
+  | TermsFiltersSetValue
   | TermsQuerySet
   | TermsSet
   | TermsTypeAdd
@@ -236,7 +240,15 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
         },
       }
     }
-    case 'TERMS_FILTERS_SET': {
+    case 'TERMS_FILTERS_SET_OPERATOR': {
+      // Compare input components between current and target operators, and update
+      // target filter value if it has changed.
+      const matchedFilter = state.terms.filters.find((filter) => filter._key === action.key)
+      const currentOperator = getOperator(matchedFilter?.operatorType)
+      const nextOperator = getOperator(action.operatorType)
+      const nextInitialValue = getOperatorInitialValue(action.operatorType)
+      const inputComponentChanged = currentOperator?.inputComponent != nextOperator?.inputComponent
+
       return {
         ...state,
         terms: {
@@ -245,9 +257,24 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
             if (filter._key === action.key) {
               return {
                 ...filter,
-                ...(typeof action?.operatorType !== 'undefined' && {
-                  operatorType: action.operatorType,
-                }),
+                operatorType: action.operatorType,
+                ...(inputComponentChanged ? {value: nextInitialValue} : {}),
+              }
+            }
+            return filter
+          }),
+        },
+      }
+    }
+    case 'TERMS_FILTERS_SET_VALUE': {
+      return {
+        ...state,
+        terms: {
+          ...state.terms,
+          filters: state.terms.filters.map((filter) => {
+            if (filter._key === action.key) {
+              return {
+                ...filter,
                 value: action.value,
               }
             }
