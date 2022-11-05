@@ -2,8 +2,8 @@ import {Card, Code, Stack, Text} from '@sanity/ui'
 import React, {useEffect, useState} from 'react'
 import {isNonNullable} from '../../../../../../../util'
 import {useSearchState} from '../../../contexts/search/useSearchState'
-import {OPERATORS} from '../../../definitions/operators'
-import type {SearchFilter} from '../../../types'
+import {getOperator} from '../../../definitions/operators'
+import type {SearchFilterState} from '../../../types'
 
 export function DebugFilterQuery() {
   const {
@@ -42,14 +42,14 @@ export function DebugFilterQuery() {
   )
 }
 
-function generateFilterQuery(filters: SearchFilter[]) {
+function generateFilterQuery(filters: SearchFilterState[]) {
   const query = filters
-    .map((filter) => {
-      // TODO: fixme
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      return OPERATORS[filter.operatorType].fn(filter)
-    })
+    .map((filter) =>
+      getOperator(filter.operatorType)?.fn({
+        fieldPath: filter?.fieldPath,
+        value: filter?.value,
+      })
+    )
     .filter(isNonNullable)
 
   return query

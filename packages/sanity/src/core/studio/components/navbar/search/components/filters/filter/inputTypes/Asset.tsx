@@ -1,13 +1,11 @@
 import {Button, Stack} from '@sanity/ui'
 import React, {ChangeEvent, useCallback} from 'react'
+import type {OperatorInputComponentProps} from '../../../../definitions/operators'
 
-export function FieldInputAsset({filter, onChange}: any) {
-  const handleChange = useCallback(
-    (event: ChangeEvent<HTMLElement>) => {
-      // onChange(event.currentTarget.value)
-    },
-    [onChange]
-  )
+export function FieldInputAsset({onChange}: OperatorInputComponentProps<any>) {
+  const handleChange = useCallback((event: ChangeEvent<HTMLElement>) => {
+    // onChange(event.currentTarget.value)
+  }, [])
 
   return (
     <Stack space={2}>

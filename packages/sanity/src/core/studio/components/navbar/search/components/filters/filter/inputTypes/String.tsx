@@ -1,8 +1,8 @@
 import {TextInput} from '@sanity/ui'
 import React, {ChangeEvent, useCallback} from 'react'
-import type {InputComponentProps} from '../../../../definitions/operators/types'
+import type {OperatorInputComponentProps} from '../../../../definitions/operators'
 
-export function FieldInputString({filter, onChange}: InputComponentProps<string>) {
+export function FieldInputString({onChange, value}: OperatorInputComponentProps<string>) {
   const handleChange = useCallback(
     (event: ChangeEvent<HTMLInputElement>) => onChange(event.currentTarget.value || null),
     [onChange]
@@ -13,7 +13,7 @@ export function FieldInputString({filter, onChange}: InputComponentProps<string>
       fontSize={1}
       onChange={handleChange}
       placeholder="Enter value..."
-      value={filter?.value || ''}
+      value={value || ''}
     />
   )
 }

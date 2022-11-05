@@ -1,8 +1,8 @@
 import React, {useCallback} from 'react'
-import type {InputComponentProps} from '../../../../definitions/operators/types'
+import {OperatorInputComponentProps} from '../../../../definitions/operators'
 import {ReferenceAutocomplete} from '../ReferenceAutocomplete'
 
-export function FieldInputReference({filter, onChange}: InputComponentProps<string>) {
+export function FieldInputReference({onChange, value}: OperatorInputComponentProps<string>) {
   const handleChange = useCallback(
     (documentId: string | null) => {
       onChange(documentId)
@@ -10,5 +10,5 @@ export function FieldInputReference({filter, onChange}: InputComponentProps<stri
     [onChange]
   )
 
-  return <ReferenceAutocomplete onSelect={handleChange} value={filter?.value} />
+  return <ReferenceAutocomplete onSelect={handleChange} value={value} />
 }

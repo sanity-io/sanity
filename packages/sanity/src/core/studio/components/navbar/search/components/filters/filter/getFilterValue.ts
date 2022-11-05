@@ -1,70 +1,52 @@
 import {isBoolean} from 'lodash'
 import pluralize from 'pluralize-esm'
-import type {CustomFilter, FieldFilter, SearchFilter} from '../../../types'
+import type {SearchFilterState} from '../../../types'
 
-export function getFilterValue(filter: SearchFilter): string {
-  let value = ''
-  if (filter.type === 'custom') {
-    value = getCustomValue(filter)
-  }
-
-  if (filter.type === 'field') {
-    value = getFieldValue(filter)
-  }
-
-  return value
-}
-
-function getCustomValue(filter: CustomFilter) {
-  switch (filter.id) {
-    case 'references':
-      return filter?.value ? filter.value.slice(0, 8) : ''
-    default:
-      return filter?.value
-  }
-}
-
-function getFieldValue(filter: FieldFilter) {
+export function getFilterValue(filterState: SearchFilterState): string {
   let value
   const fieldValue: string[] = []
 
-  switch (filter.fieldType) {
+  switch (filterState.filterType) {
     case 'array':
-      value = filter?.value && `${filter.value} ${pluralize('item', filter.value)}`
+      value = filterState?.value && `${filterState.value} ${pluralize('item', filterState.value)}`
       break
     case 'boolean':
-      if (isBoolean(filter.value)) {
-        value = filter.value ? 'True' : 'False'
+      if (isBoolean(filterState.value)) {
+        value = filterState.value ? 'True' : 'False'
       }
       break
     case 'date':
     case 'datetime':
-      if (filter.operatorType === 'dateLast') {
-        if (filter?.value?.value && filter?.value?.unit) {
-          value = `${filter.value.value} ${filter.value.unit}`
-        }
-      } else if (filter.operatorType === 'dateRange') {
-        if (filter?.value?.min && filter?.value?.max) {
-          value = `${filter.value.min} → ${filter.value.max}`
-        }
-      } else {
-        value = filter?.value
+      switch (filterState.operatorType) {
+        case 'dateLast':
+          if (filterState?.value?.value && filterState?.value?.unit) {
+            value = `${filterState.value.value} ${filterState.value.unit}`
+          }
+          break
+        case 'dateRange':
+          if (filterState?.value?.min && filterState?.value?.max) {
+            value = `${filterState.value.min} → ${filterState.value.max}`
+          }
+          break
+        default:
+          value = filterState?.value
       }
       break
     case 'number':
-      if (filter.operatorType === 'numberRange') {
-        if (filter?.value?.min && filter?.value?.max) {
-          value = `${filter.value.min} – ${filter.value.max}`
+      if (filterState.operatorType === 'numberRange') {
+        if (filterState?.value?.min && filterState?.value?.max) {
+          value = `${filterState.value.min} – ${filterState.value.max}`
         }
       } else {
-        value = filter?.value
+        value = filterState?.value
       }
       break
     case 'reference':
-      value = filter?.value?.slice(0, 8)
+    case 'references':
+      value = filterState?.value?.slice(0, 8)
       break
     default:
-      value = filter?.value
+      value = filterState?.value
       break
   }
 

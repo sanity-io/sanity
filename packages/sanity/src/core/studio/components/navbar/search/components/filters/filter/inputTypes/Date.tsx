@@ -1,9 +1,9 @@
 import {CalendarIcon} from '@sanity/icons'
 import {Card, Stack, Text, TextInput} from '@sanity/ui'
 import React, {ChangeEvent, useCallback} from 'react'
-import type {InputComponentProps} from '../../../../definitions/operators/types'
+import {OperatorInputComponentProps} from '../../../../definitions/operators'
 
-export function FieldInputDate({filter, onChange}: InputComponentProps<Date>) {
+export function FieldInputDate({onChange, value}: OperatorInputComponentProps<Date>) {
   const handleChange = useCallback(
     (event: ChangeEvent<HTMLInputElement>) => {
       // onChange(event.currentTarget.value)
@@ -18,7 +18,7 @@ export function FieldInputDate({filter, onChange}: InputComponentProps<Date>) {
         icon={CalendarIcon}
         onChange={handleChange}
         placeholder="Enter or select date"
-        // value={filter?.value || ''}
+        // value={value || ''}
       />
       <Card border padding={3} radius={1} tone="caution">
         <Text muted size={1}>

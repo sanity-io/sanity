@@ -1,4 +1,5 @@
 import sub from 'date-fns/sub'
+import {ComponentType} from 'react'
 import {FieldInputAsset} from '../../components/filters/filter/inputTypes/Asset'
 import {FieldInputBoolean} from '../../components/filters/filter/inputTypes/Boolean'
 import {FieldInputDate} from '../../components/filters/filter/inputTypes/Date'
@@ -8,97 +9,192 @@ import {FieldInputNumber} from '../../components/filters/filter/inputTypes/Numbe
 import {FieldInputNumberRange} from '../../components/filters/filter/inputTypes/NumberRange'
 import {FieldInputReference} from '../../components/filters/filter/inputTypes/Reference'
 import {FieldInputString} from '../../components/filters/filter/inputTypes/String'
-import type {OperatorDefinitions} from './types'
+
+/**
+ * @internal
+ */
+interface BaseOperator {
+  buttonLabel: string
+  fn: unknown
+  label: string
+  type: string
+}
+
+type OperatorBuilder<
+  TType extends string,
+  TValue = unknown,
+  TInputComponent = ComponentType<OperatorInputComponentProps<TValue>>
+> = BaseOperator & {
+  fn: ({fieldPath, value}: {fieldPath?: string; value?: TValue}) => string | null
+  initialValue: TValue | null
+  inputComponent: TInputComponent
+  type: TType
+}
+
+type ValuelessOperatorBuilder<
+  TType extends string //
+> = BaseOperator & {
+  fn: ({fieldPath}: {fieldPath?: string}) => string | null
+  initialValue?: never
+  inputComponent?: never
+  type: TType
+}
+
+type Operator =
+  | OperatorBuilder<'arrayCountEqual', number>
+  | OperatorBuilder<'arrayCountGt', number>
+  | OperatorBuilder<'arrayCountGte', number>
+  | OperatorBuilder<'arrayCountLt', number>
+  | OperatorBuilder<'arrayCountLte', number>
+  | OperatorBuilder<'arrayCountNotEqual', number>
+  | OperatorBuilder<'assetEqual', string>
+  | OperatorBuilder<'booleanEqual', boolean>
+  | OperatorBuilder<'dateAfter', Date>
+  | OperatorBuilder<'dateBefore', Date>
+  | OperatorBuilder<'dateEqual', Date>
+  | OperatorBuilder<'dateLast', OperatorDateLastValue>
+  | OperatorBuilder<'dateNotEqual', Date>
+  | OperatorBuilder<'dateRange', OperatorDateRangeValue>
+  | OperatorBuilder<'numberEqual', number>
+  | OperatorBuilder<'numberGt', number>
+  | OperatorBuilder<'numberGte', number>
+  | OperatorBuilder<'numberLt', number>
+  | OperatorBuilder<'numberLte', number>
+  | OperatorBuilder<'numberNotEqual', number>
+  | OperatorBuilder<'numberRange', OperatorNumberRangeValue>
+  | OperatorBuilder<'referenceEqual', string>
+  | OperatorBuilder<'references', string>
+  | OperatorBuilder<'stringEqual', string>
+  | OperatorBuilder<'stringMatches', string>
+  | OperatorBuilder<'stringNotEqual', string>
+  | OperatorBuilder<'stringNotMatches', string>
+  | ValuelessOperatorBuilder<'defined'>
+  | ValuelessOperatorBuilder<'notDefined'>
+
+export type OperatorType = Operator['type']
+
+export interface OperatorInputComponentProps<T> {
+  value: T | null
+  onChange: (value: T | null) => void
+}
+export interface OperatorDateLastValue {
+  unit: 'days' | 'months' | 'years'
+  value: number | null
+}
+
+export interface OperatorDateRangeValue {
+  max: Date | null
+  min: Date | null
+}
+
+export interface OperatorNumberRangeValue {
+  max: number | null
+  min: number | null
+}
 
 function toJSON(val: unknown): string {
   return JSON.stringify(val)
 }
 
-export const OPERATORS: OperatorDefinitions = {
-  arrayCountEqual: {
+export const OPERATORS: Operator[] = [
+  {
     buttonLabel: 'has',
     fn: ({fieldPath, value}) =>
       value && fieldPath ? `count(${fieldPath}) == ${toJSON(value)}` : null,
     initialValue: null,
     inputComponent: FieldInputNumber,
     label: 'quantity is',
+    type: 'arrayCountEqual',
   },
-  arrayCountGt: {
+  {
     buttonLabel: 'has >',
     fn: ({fieldPath, value}) =>
       value && fieldPath ? `count(${fieldPath}) > ${toJSON(value)}` : null,
     initialValue: null,
     inputComponent: FieldInputNumber,
     label: 'quantity more than (>)',
+    type: 'arrayCountGt',
   },
-  arrayCountGte: {
+  {
     buttonLabel: 'has ≥',
     fn: ({fieldPath, value}) =>
       value && fieldPath ? `count(${fieldPath}) >= ${toJSON(value)}` : null,
     initialValue: null,
     inputComponent: FieldInputNumber,
     label: 'quantity more than (≥)',
+    type: 'arrayCountGte',
   },
-  arrayCountLt: {
+  {
     buttonLabel: 'has <',
     fn: ({fieldPath, value}) =>
       value && fieldPath ? `count(${fieldPath}) < ${toJSON(value)}` : null,
     initialValue: null,
     inputComponent: FieldInputNumber,
     label: 'quantity less than (<)',
+    type: 'arrayCountLt',
   },
-  arrayCountLte: {
+  {
     buttonLabel: 'has ≤',
     fn: ({fieldPath, value}) =>
       value && fieldPath ? `count(${fieldPath}) <= ${toJSON(value)}` : null,
     initialValue: null,
     inputComponent: FieldInputNumber,
     label: 'quantity less than (≤)',
+    type: 'arrayCountLte',
   },
-  arrayCountNotEqual: {
+  {
     buttonLabel: 'does not have',
     fn: ({fieldPath, value}) =>
       value && fieldPath ? `count(${fieldPath}) != ${toJSON(value)}` : null,
     initialValue: null,
     inputComponent: FieldInputNumber,
     label: 'quantity is not',
+    type: 'arrayCountNotEqual',
   },
-  assetEqual: {
+  {
     buttonLabel: 'is',
     fn: ({fieldPath, value}) => (value && fieldPath ? `${fieldPath} == ${toJSON(value)}` : null),
     initialValue: null,
     inputComponent: FieldInputAsset,
     label: 'is',
+    type: 'assetEqual',
   },
-  booleanEqual: {
+  {
     buttonLabel: 'is',
     fn: ({fieldPath, value}) => (value && fieldPath ? `${fieldPath} == ${toJSON(value)}` : null),
     initialValue: true,
     inputComponent: FieldInputBoolean,
     label: 'is',
+    type: 'booleanEqual',
   },
-  dateAfter: {
+  {
     buttonLabel: 'after',
     fn: ({fieldPath, value}) => `// TODO`,
     initialValue: null,
     inputComponent: FieldInputDate,
     label: 'is after',
+    type: 'dateAfter',
   },
-  dateBefore: {
+  {
     buttonLabel: 'before',
     fn: ({fieldPath, value}) => `// TODO`,
     initialValue: null,
     inputComponent: FieldInputDate,
     label: 'is before',
+    type: 'dateBefore',
   },
-  dateEqual: {
+  {
     buttonLabel: 'is',
-    fn: ({fieldPath, value}) => (value && fieldPath ? `${fieldPath} == ${toJSON(value)}` : null),
+    fn: ({fieldPath, value}) => {
+      const timestamp = value?.toISOString()
+      return timestamp && fieldPath ? `${fieldPath} == ${toJSON(timestamp)}` : null
+    },
     initialValue: null,
     inputComponent: FieldInputDate,
     label: 'is',
+    type: 'dateEqual',
   },
-  dateLast: {
+  {
     buttonLabel: 'last',
     fn: ({fieldPath, value}) => {
       const timestampAgo = sub(new Date(), {
@@ -116,15 +212,20 @@ export const OPERATORS: OperatorDefinitions = {
     },
     inputComponent: FieldInputDateLast,
     label: 'is in the last',
+    type: 'dateLast',
   },
-  dateNotEqual: {
+  {
     buttonLabel: 'is not',
-    fn: ({fieldPath, value}) => (value && fieldPath ? `${fieldPath} != ${toJSON(value)}` : null),
+    fn: ({fieldPath, value}) => {
+      const timestamp = value?.toISOString()
+      return timestamp && fieldPath ? `${fieldPath} != ${toJSON(timestamp)}` : null
+    },
     initialValue: null,
     inputComponent: FieldInputDate,
     label: 'is not',
+    type: 'dateNotEqual',
   },
-  dateRange: {
+  {
     buttonLabel: 'is between',
     fn: ({fieldPath, value}) => `// TODO`,
     initialValue: {
@@ -133,114 +234,136 @@ export const OPERATORS: OperatorDefinitions = {
     },
     inputComponent: FieldInputDateRange,
     label: 'is between',
+    type: 'dateRange',
   },
-  defined: {
+  {
     buttonLabel: 'not empty',
     fn: ({fieldPath}) => (fieldPath ? `defined(${fieldPath})` : null),
-    initialValue: null,
     label: 'not empty',
+    type: 'defined',
   },
-  notDefined: {
-    buttonLabel: 'is empty',
+  {
+    buttonLabel: 'empty',
     fn: ({fieldPath}) => (fieldPath ? `!defined(${fieldPath})` : null),
-    initialValue: null,
-    label: 'is empty',
+    label: 'empty',
+    type: 'notDefined',
   },
-  numberEqual: {
+  {
     buttonLabel: 'is',
     fn: ({fieldPath, value}) => (value && fieldPath ? `${fieldPath} == ${toJSON(value)}` : null),
     inputComponent: FieldInputNumber,
     initialValue: null,
     label: 'is',
+    type: 'numberEqual',
   },
-  numberGt: {
+  {
     buttonLabel: '>',
     fn: ({fieldPath, value}) => (value && fieldPath ? `${fieldPath} > ${toJSON(value)}` : null),
     inputComponent: FieldInputNumber,
     initialValue: null,
     label: 'greater than (>)',
+    type: 'numberGt',
   },
-  numberGte: {
+  {
     buttonLabel: '≥',
     fn: ({fieldPath, value}) => (value && fieldPath ? `${fieldPath} >= ${toJSON(value)}` : null),
     inputComponent: FieldInputNumber,
     initialValue: null,
     label: 'greater than or equal to (≥)',
+    type: 'numberGte',
   },
-  numberLt: {
+  {
     buttonLabel: '<',
     fn: ({fieldPath, value}) => (value && fieldPath ? `${fieldPath} < ${toJSON(value)}` : null),
     inputComponent: FieldInputNumber,
     initialValue: null,
     label: 'less than (<)',
+    type: 'numberLt',
   },
-  numberLte: {
+  {
     buttonLabel: '≤',
     fn: ({fieldPath, value}) => (value && fieldPath ? `${fieldPath} <= ${toJSON(value)}` : null),
     inputComponent: FieldInputNumber,
     initialValue: null,
     label: 'less than or equal to (≤)',
+    type: 'numberLte',
   },
-  numberNotEqual: {
+  {
     buttonLabel: 'is not',
     fn: ({fieldPath, value}) => (value && fieldPath ? `${fieldPath} != ${toJSON(value)}` : null),
     inputComponent: FieldInputNumber,
     initialValue: null,
     label: 'is not',
+    type: 'numberNotEqual',
   },
-  numberRange: {
+  {
     buttonLabel: 'is between',
     inputComponent: FieldInputNumberRange,
     initialValue: {max: null, min: null},
-    fn: ({fieldPath, value}) => {
-      return value?.max && value?.min && fieldPath
+    fn: ({fieldPath, value}) =>
+      value?.max && value?.min && fieldPath
         ? `${fieldPath} > ${toJSON(value.min)} && ${fieldPath} < ${toJSON(value.max)}`
-        : ''
-    },
+        : '',
     label: 'is between',
+    type: 'numberRange',
   },
-  referenceEqual: {
+  {
     buttonLabel: 'is',
     fn: ({fieldPath, value}) =>
       value && fieldPath ? `${fieldPath}._ref == ${toJSON(value)}` : null,
     initialValue: null,
     inputComponent: FieldInputReference,
     label: 'is',
+    type: 'referenceEqual',
   },
-  references: {
+  {
     buttonLabel: 'references document',
     fn: ({value}) => (value ? `references(${toJSON(value)})` : null),
     initialValue: null,
     inputComponent: FieldInputReference,
     label: 'references document',
+    type: 'references',
   },
-  stringEqual: {
+  {
     buttonLabel: 'is',
     fn: ({fieldPath, value}) => (value && fieldPath ? `${fieldPath} == ${toJSON(value)}` : null),
     initialValue: null,
     inputComponent: FieldInputString,
     label: 'is',
+    type: 'stringEqual',
   },
-  stringMatches: {
+  {
     buttonLabel: 'contains',
     fn: ({fieldPath, value}) => (value && fieldPath ? `${fieldPath} match ${toJSON(value)}` : null),
     initialValue: null,
     inputComponent: FieldInputString,
     label: 'contains',
+    type: 'stringMatches',
   },
-  stringNotEqual: {
+  {
     buttonLabel: 'is not',
     fn: ({fieldPath, value}) => (value && fieldPath ? `${fieldPath} != ${toJSON(value)}` : null),
     initialValue: null,
     inputComponent: FieldInputString,
     label: 'is not',
+    type: 'stringNotEqual',
   },
-  stringNotMatches: {
+  {
     buttonLabel: 'does not contain',
-    fn: ({fieldPath, value}) =>
-      value && fieldPath ? `!(${fieldPath} match ${toJSON(value)})` : null,
+    fn: ({fieldPath, value}) => (value && fieldPath ? `${fieldPath} match ${toJSON(value)}` : null),
     initialValue: null,
     inputComponent: FieldInputString,
     label: 'does not contain',
+    type: 'stringNotMatches',
   },
+]
+
+export function getOperator(operatorType?: OperatorType): Operator | undefined {
+  return OPERATORS.find((operator) => operator.type === operatorType)
+}
+
+export function getOperatorInitialValue(
+  operatorType: OperatorType
+): Operator['initialValue'] | undefined {
+  return getOperator(operatorType)?.initialValue
 }

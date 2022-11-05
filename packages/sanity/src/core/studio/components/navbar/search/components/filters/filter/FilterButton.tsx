@@ -1,19 +1,18 @@
 import {CloseIcon} from '@sanity/icons'
 import {Button, Flex, Inline, Popover, rem, Text, Theme, useClickOutside} from '@sanity/ui'
-import React, {useCallback, useMemo, useState} from 'react'
+import React, {useCallback, useState} from 'react'
 import styled, {css} from 'styled-components'
 import {useSearchState} from '../../../contexts/search/useSearchState'
-import {FILTERS} from '../../../definitions/filters'
-import {OPERATORS} from '../../../definitions/operators'
-import type {ValidatedFilter} from '../../../types'
-import {getOperator} from '../../../utils/getOperator'
+import {getOperator} from '../../../definitions/operators'
+import type {ValidatedFilterState} from '../../../types'
+import {FilterTitle} from '../common/FilterTitle'
 import {FilterPopoverContent} from './FilterPopoverContent'
 // import {FilterIcon} from './FilterIcon'
 import {getFilterValue} from './getFilterValue'
 
 interface FilterButtonProps {
   closable?: boolean
-  filter: ValidatedFilter
+  filter: ValidatedFilterState
   initialOpen?: boolean
 }
 
@@ -48,24 +47,10 @@ export default function FilterButton({closable = true, filter, initialOpen}: Fil
 
   useClickOutside(handleClose, [buttonElement, popoverElement])
 
-  const title = useMemo(() => {
-    switch (filter.type) {
-      case 'custom':
-        return FILTERS.custom[filter.id].title
-      case 'field': {
-        return filter.path[filter.path.length - 1]
-      }
-      default:
-        return 'Unknown type'
-    }
-  }, [filter])
-
-  const operator = OPERATORS[filter.operatorType].buttonLabel
+  const operator = filter.operatorType && getOperator(filter.operatorType)
   const value = getFilterValue(filter)
-  const hasOperator = filter.operatorType
-  const hasValue = getOperator(filter.operatorType)?.inputComponent ? value : true
-
-  const isFilled = hasOperator && hasValue
+  const hasValue = operator?.inputComponent ? value : true
+  const isFilled = filter.operatorType && hasValue
 
   return (
     <Popover
@@ -96,12 +81,12 @@ export default function FilterButton({closable = true, filter, initialOpen}: Fil
             */}
             {/* Title */}
             <Text size={1} weight="medium">
-              {title}
+              <FilterTitle filter={filter} />
             </Text>
             {/* Operator */}
             {isFilled && (
               <Text muted size={1} weight="regular">
-                {operator}
+                {operator?.buttonLabel}
               </Text>
             )}
             {/* Value */}
