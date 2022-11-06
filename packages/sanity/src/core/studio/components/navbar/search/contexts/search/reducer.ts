@@ -8,6 +8,7 @@ import {getOperator, getOperatorInitialValue, OperatorType} from '../../definiti
 import {ORDERINGS} from '../../definitions/orderings'
 import type {OmnisearchTerms, SearchFilter, SearchOrdering} from '../../types'
 import {debugWithName, isDebugMode} from '../../utils/debug'
+import {generateKey} from '../../utils/generateKey'
 import {isRecentSearchTerms} from '../../utils/isRecentSearchTerms'
 import {sortTypes} from '../../utils/selectors'
 
@@ -200,6 +201,8 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
 
       const newFilter: SearchFilter = {
         ...action.filter,
+        // Generate a new key to handle duplicate filters
+        _key: generateKey(),
         // Set initial value + operator
         operatorType,
         value: operatorType && getOperatorInitialValue(operatorType),
