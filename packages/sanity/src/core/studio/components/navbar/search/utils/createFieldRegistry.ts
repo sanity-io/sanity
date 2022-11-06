@@ -1,4 +1,5 @@
 import type {
+  ConditionalProperty,
   DocumentDefinition,
   ObjectDefinition,
   Schema,
@@ -6,20 +7,24 @@ import type {
 } from '@sanity/types'
 import {startCase} from 'lodash'
 import {getSupportedFieldTypes} from '../definitions/filters'
+import {generateKey} from './generateKey'
 
-export interface MappedSchemaObject {
+export interface ResolvedField {
+  _key: string
   documentTypes: string[]
-  fields?: MappedSchemaObject[]
+  fields?: ResolvedField[]
   fieldPath: string
+  hidden: ConditionalProperty
   name: string
-  path: string[]
   title: string
+  titlePath: string[]
   type: string
 }
 
 const MAX_OBJECT_DEPTH = 4
+const UNSUPPORTED_TYPES = ['crossDatasetReference', 'document', 'object']
 
-export function getSchemaFields(schema: Schema): MappedSchemaObject[] {
+export function createFieldRegistry(schema: Schema): ResolvedField[] {
   // Get document types from current schema
   const originalSchema = schema._original
   const documentTypes: ObjectDefinition[] = []
@@ -41,14 +46,14 @@ export function getSchemaFields(schema: Schema): MappedSchemaObject[] {
   // 1. Recursively iterate through all documents and resolve objects
   const mappedDocuments = mapDocumentTypesRecursive(documentTypes, objectTypes)
 
-  // 2. Try flatten fields
-  const flattened = flattenFieldsByKey(mappedDocuments, 'fields').filter(
-    (doc) => !['crossDatasetReference', 'document', 'object'].includes(doc.type)
-  )
+  // 2. Flatten fields - remove unsupported types + hidden fields
+  const flattened = flattenFieldsByKey(mappedDocuments, 'fields')
+    .filter((field) => !UNSUPPORTED_TYPES.includes(field.type))
+    .filter((field) => !field.hidden)
 
   // 3. Flatten with document types
   const flattenedWithDocumentTypes = flattened
-    .reduce<MappedSchemaObject[]>((acc, val) => {
+    .reduce<ResolvedField[]>((acc, val) => {
       const prevIndex = acc.findIndex((v) => v.fieldPath === val.fieldPath && v.title === val.title)
       if (prevIndex > -1) {
         acc[prevIndex] = {
@@ -64,34 +69,33 @@ export function getSchemaFields(schema: Schema): MappedSchemaObject[] {
 
       return acc
     }, [])
+    /*
     // TODO: Filter out hidden fields
-
+    .filter((schemaType) => {
+      console.log('schemaType', schemaType)
+      return true
+    })
+    */
     // Filter out non-recognised field types and hidden types
     .filter((schemaType) => supportedFieldTypes.includes(schemaType.type))
-
+    // Sort by title, path length and then path title
     .sort((a, b) => {
-      const aTitle = a.path[a.path.length - 1]
-      const bTitle = b.path[b.path.length - 1]
+      const aTitle = a.titlePath[a.titlePath.length - 1]
+      const bTitle = b.titlePath[b.titlePath.length - 1]
       if (aTitle === bTitle) {
         return (
-          a.path.slice(0, -1).join(',').localeCompare(b.path.slice(0, -1).join(',')) ||
+          a.titlePath.slice(0, -1).join(',').localeCompare(b.titlePath.slice(0, -1).join(',')) ||
           a.fieldPath.localeCompare(b.fieldPath)
         )
       }
       return aTitle.localeCompare(bTitle)
     })
 
-  // console.log('documentTypes', documentTypes)
-  // console.log('objectTypes', objectTypes)
-  // console.log('1. mappedDocuments', mappedDocuments)
-  // console.log('2. flattened', flattened)
-  // console.log('3. flattenedWithDocumentTypes', flattenedWithDocumentTypes)
-
   return flattenedWithDocumentTypes
 }
 
-function flattenFieldsByKey(data: MappedSchemaObject[], key: string, depth = 0) {
-  return data?.reduce<MappedSchemaObject[]>((acc, val) => {
+function flattenFieldsByKey(data: ResolvedField[], key: string, depth = 0) {
+  return data?.reduce<ResolvedField[]>((acc, val) => {
     if (depth > 0) {
       acc.push(val)
     }
@@ -124,15 +128,17 @@ function mapDocumentTypesRecursive(
     prevFieldPath: string | null = null,
     prevPath: string[] = [],
     documentType?: string
-  ): MappedSchemaObject {
+  ): ResolvedField {
     const docType = isDocumentDefinition(defType) ? defType.name : documentType
     const continueRecursion = depth < MAX_OBJECT_DEPTH
 
     return {
+      _key: generateKey(),
       documentTypes: docType ? [docType] : [],
       fieldPath: prevFieldPath ?? '',
+      hidden: defType.hidden,
       name: defType.name,
-      path: prevPath ?? [],
+      titlePath: prevPath ?? [],
       title: defType?.title || startCase(defType.name),
       type: defType.type,
       // Fields

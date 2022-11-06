@@ -63,7 +63,7 @@ export function OperatorsMenuButton({filter, operator}: OperatorsMenuButtonProps
     [dispatch, filter._key]
   )
 
-  if (!operator || !operatorItems || operatorItems.length < 1) {
+  if (!operator || !operatorItems || operatorItems.length <= 1) {
     return null
   }
 

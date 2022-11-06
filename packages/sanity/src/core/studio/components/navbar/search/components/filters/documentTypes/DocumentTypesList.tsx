@@ -170,7 +170,7 @@ export function DocumentTypesList() {
           {!documentTypeCount && (
             <Box padding={3}>
               <Text muted size={1} textOverflow="ellipsis">
-                No matches for '{typeFilter}'.
+                No matches for '{typeFilter}'
               </Text>
             </Box>
           )}

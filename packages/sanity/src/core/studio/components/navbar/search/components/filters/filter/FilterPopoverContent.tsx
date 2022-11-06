@@ -1,12 +1,12 @@
 import {Card, Code, Flex, Stack, Text} from '@sanity/ui'
 import React from 'react'
 import {DEBUG_MODE} from '../../../constants'
-import type {ValidatedSearchFilter} from '../../../types'
+import type {SearchFilter} from '../../../types'
 import {FilterPopoverWrapper} from '../common/FilterPopoverWrapper'
 import {FilterForm} from './FilterForm'
 
 interface FilterPopoverContentProps {
-  filter: ValidatedSearchFilter
+  filter: SearchFilter
   onClose: () => void
 }
 
@@ -37,7 +37,7 @@ export function FilterPopoverContent({filter, onClose}: FilterPopoverContentProp
   )
 }
 
-function DebugDocumentTypes({filter}: {filter: ValidatedSearchFilter}) {
+function DebugDocumentTypes({filter}: {filter: SearchFilter}) {
   return (
     <Card borderTop overflow="hidden" padding={3} tone="transparent">
       <Stack space={2}>
@@ -45,14 +45,14 @@ function DebugDocumentTypes({filter}: {filter: ValidatedSearchFilter}) {
           Document types
         </Text>
         <Code muted size={0} style={{whiteSpace: 'normal'}}>
-          {filter.documentTypes ? filter.documentTypes?.join(', ') : '(all)'}
+          {filter.documentTypes.length > 0 ? filter.documentTypes?.join(', ') : '(all)'}
         </Code>
       </Stack>
     </Card>
   )
 }
 
-function DebugValues({filter}: {filter: ValidatedSearchFilter}) {
+function DebugValues({filter}: {filter: SearchFilter}) {
   return (
     <Card borderTop overflow="hidden" padding={3} tone="transparent">
       <Stack space={2}>

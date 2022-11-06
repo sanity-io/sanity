@@ -11,7 +11,7 @@ export function FilterTitle({filter}: FilterTitleProps) {
     // Display field path title, if present.
     // Otherwise fallback and display filter definition title.
     if (filter.fieldPath) {
-      return filter.path[filter.path.length - 1]
+      return filter.titlePath[filter.titlePath.length - 1]
     }
     return getFilterDefinition(filter.filterType)?.title
   }, [filter])

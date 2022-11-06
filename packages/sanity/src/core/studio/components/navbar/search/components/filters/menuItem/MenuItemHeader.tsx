@@ -1,19 +1,20 @@
 import {Card, Label} from '@sanity/ui'
 import React from 'react'
+import type {SearchFilterMenuItemHeader} from '../../../types'
 
 interface MenuItemHeaderFields {
   isFirst?: boolean
-  title: string
+  item: SearchFilterMenuItemHeader
 }
 
 export const MenuItemHeader = React.memo(function MenuItemHeader({
   isFirst,
-  title,
+  item,
 }: MenuItemHeaderFields) {
   return (
     <Card borderBottom marginTop={isFirst ? 0 : 2} padding={3}>
       <Label muted size={0} textOverflow="ellipsis">
-        {title}
+        {item.title}
       </Label>
     </Card>
   )
