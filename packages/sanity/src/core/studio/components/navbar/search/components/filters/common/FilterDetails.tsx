@@ -2,12 +2,12 @@ import {ChevronRightIcon} from '@sanity/icons'
 import {Box, Flex, rem, Stack, Text} from '@sanity/ui'
 import React from 'react'
 import styled from 'styled-components'
-import type {ValidatedSearchFilter} from '../../../types'
+import type {SearchFilter} from '../../../types'
 import {FilterIcon} from './FilterIcon'
 import {FilterTitle} from './FilterTitle'
 
 interface FilterDetailsProps {
-  filter: ValidatedSearchFilter
+  filter: SearchFilter
   showSubtitle?: boolean
 }
 
@@ -25,20 +25,20 @@ export function FilterDetails({filter, showSubtitle}: FilterDetailsProps) {
   return (
     <Stack space={2}>
       {/* Path */}
-      {filter.type === 'field' && filter.path.length > 1 && (
+      {filter.titlePath && filter.titlePath?.length > 1 && (
         <Text
           // muted
           size={0}
           style={{opacity: 0.6}}
         >
-          {filter.path.slice(0, -1).map((pathTitle, index) => {
+          {filter.titlePath.slice(0, -1).map((pathTitle, index) => {
             return (
               <React.Fragment
                 // eslint-disable-next-line react/no-array-index-key
                 key={index}
               >
                 <span>{pathTitle}</span>
-                {index !== filter.path.length - 2 && (
+                {index !== filter.titlePath.length - 2 && (
                   <span
                     style={{
                       opacity: 0.75,
@@ -66,9 +66,7 @@ export function FilterDetails({filter, showSubtitle}: FilterDetailsProps) {
           <Text size={1} weight="medium">
             <FilterTitle filter={filter} />
           </Text>
-          {showSubtitle && filter.showSubtitle && (
-            <CodeWithOverflow>{filter.type === 'field' ? filter.fieldPath : ''}</CodeWithOverflow>
-          )}
+          {showSubtitle && <CodeWithOverflow>{filter.fieldPath}</CodeWithOverflow>}
         </Stack>
       </Flex>
     </Stack>

@@ -6,33 +6,24 @@ import type {OperatorType} from './definitions/operators'
  * @internal
  */
 export interface SearchFilter {
+  _key: string
+  documentTypes: string[]
   fieldPath?: string
   filterType: FilterDefinitionType
   operatorType?: OperatorType
-  path?: string[] // TODO: remove?
+  titlePath: string[]
   value?: any
 }
 
 /**
  * @internal
  */
-export interface SearchFilterGroup {
-  items: ValidatedSearchFilter[]
-  type: 'common' | 'fields'
-}
-
-/**
- * TODO: refactor out
- * @internal
- */
-export type ValidatedSearchFilter = SearchFilter & {
-  _key: string
-  documentTypes?: string[]
-  showSubtitle?: boolean
-}
+export type SavedSearchFilter = Omit<SearchFilter, '_key' | 'documentTypes' | 'titlePath'>
 
 export interface SearchFilterMenuItemFilter {
-  filter: ValidatedSearchFilter
+  filter: SearchFilter
+  group?: string
+  showSubtitle?: boolean
   type: 'filter'
 }
 
@@ -41,15 +32,13 @@ export interface SearchFilterMenuItemHeader {
   type: 'header'
 }
 
-export type SearchFilterMenuItem = (SearchFilterMenuItemFilter | SearchFilterMenuItemHeader) & {
-  groupType: SearchFilterGroup['type']
-}
+export type SearchFilterMenuItem = SearchFilterMenuItemFilter | SearchFilterMenuItemHeader
 
 /**
  * @internal
  */
 export interface OmnisearchTerms extends SearchTerms {
-  filters: ValidatedSearchFilter[]
+  filters: SearchFilter[]
 }
 
 /**

@@ -1,11 +1,11 @@
 import {createContext, Dispatch} from 'react'
 import {RecentSearchesStore} from '../../datastores/recentSearches'
-import type {SearchFilterGroup} from '../../types'
+import {ResolvedField} from '../../utils/createFieldRegistry'
 import {SearchAction, SearchReducerState} from './reducer'
 
 export interface SearchContextValue {
   dispatch: Dispatch<SearchAction>
-  filterGroups: SearchFilterGroup[]
+  fieldRegistry: ResolvedField[]
   recentSearchesStore?: RecentSearchesStore
   state: SearchReducerState
 }

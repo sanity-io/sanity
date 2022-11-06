@@ -1,9 +1,9 @@
 import {Card, Code, Stack, Text} from '@sanity/ui'
 import React from 'react'
-import {useSelectedDocumentTypes} from '../../../hooks/useSelectedDocumentTypes'
+import {useAvailableDocumentTypes} from '../../../hooks/useAvailableDocumentTypes'
 
 export function DebugDocumentTypes() {
-  const selectedDocumentTypes = useSelectedDocumentTypes()
+  const selectedDocumentTypes = useAvailableDocumentTypes()
 
   return (
     <Card borderTop padding={4} tone="transparent">

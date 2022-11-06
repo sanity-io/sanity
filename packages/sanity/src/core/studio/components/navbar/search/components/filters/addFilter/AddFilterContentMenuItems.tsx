@@ -55,17 +55,20 @@ export function AddFilterContentMenuItems({
       <VirtualListChildBox $height={getTotalSize()} flex={1} ref={setChildContainerRef}>
         {getVirtualItems().map((virtualRow) => {
           const menuItem = menuItems[virtualRow.index]
-          const key: string[] = [menuItem.groupType]
+          let key = ''
           if (menuItem.type === 'header') {
-            key.push(menuItem.title)
+            key = menuItem.title
           }
           if (menuItem.type === 'filter') {
-            key.push(menuItem.filter._key)
+            key = [
+              ...(menuItem.group ? [menuItem.group] : []), //
+              menuItem.filter._key,
+            ].join('-')
           }
 
           return (
             <div
-              key={key.join('-')}
+              key={key}
               ref={virtualRow.measureElement}
               // onClick={handleResultClick}
               // onMouseDown={onChildMouseDown}
@@ -80,12 +83,10 @@ export function AddFilterContentMenuItems({
                 width: '100%',
               }}
             >
-              {menuItem.type === 'filter' && (
-                <MenuItemFilter filter={menuItem.filter} onClose={onClose} />
-              )}
+              {menuItem.type === 'filter' && <MenuItemFilter item={menuItem} onClose={onClose} />}
 
               {menuItem.type === 'header' && (
-                <MenuItemHeader isFirst={virtualRow.index === 0} title={menuItem.title} />
+                <MenuItemHeader isFirst={virtualRow.index === 0} item={menuItem} />
               )}
             </div>
           )

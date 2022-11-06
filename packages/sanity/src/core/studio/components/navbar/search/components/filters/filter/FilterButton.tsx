@@ -4,7 +4,7 @@ import React, {useCallback, useState} from 'react'
 import styled, {css} from 'styled-components'
 import {useSearchState} from '../../../contexts/search/useSearchState'
 import {getOperator} from '../../../definitions/operators'
-import type {ValidatedSearchFilter} from '../../../types'
+import type {SearchFilter} from '../../../types'
 import {FilterTitle} from '../common/FilterTitle'
 import {FilterPopoverContent} from './FilterPopoverContent'
 // import {FilterIcon} from './FilterIcon'
@@ -12,7 +12,7 @@ import {getFilterValue} from './getFilterValue'
 
 interface FilterButtonProps {
   closable?: boolean
-  filter: ValidatedSearchFilter
+  filter: SearchFilter
   initialOpen?: boolean
 }
 
