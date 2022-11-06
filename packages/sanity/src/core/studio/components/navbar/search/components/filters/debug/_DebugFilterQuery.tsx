@@ -3,7 +3,7 @@ import React, {useEffect, useState} from 'react'
 import {isNonNullable} from '../../../../../../../util'
 import {useSearchState} from '../../../contexts/search/useSearchState'
 import {getOperator} from '../../../definitions/operators'
-import type {SearchFilterState} from '../../../types'
+import type {SearchFilter} from '../../../types'
 
 export function DebugFilterQuery() {
   const {
@@ -42,7 +42,7 @@ export function DebugFilterQuery() {
   )
 }
 
-function generateFilterQuery(filters: SearchFilterState[]) {
+function generateFilterQuery(filters: SearchFilter[]) {
   const query = filters
     .map((filter) =>
       getOperator(filter.operatorType)?.fn({

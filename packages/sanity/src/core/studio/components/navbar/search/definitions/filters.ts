@@ -7,17 +7,33 @@ import {
   PinIcon,
   UlistIcon,
 } from '@sanity/icons'
-import {NumberIcon} from '../../components/filters/icons/NumberIcon'
-import {StringIcon} from '../../components/filters/icons/StringIcon'
+import {IntrinsicTypeName} from '@sanity/types'
+import {ComponentType} from 'react'
+import {NumberIcon} from '../components/filters/icons/NumberIcon'
+import {StringIcon} from '../components/filters/icons/StringIcon'
+import {OperatorType} from './operators'
 
-// TODO: document
-// These are filter DEFINITIONS and not saved filter STATE
-// State is stored in local storage and shared documents
+export type FilterDefinitionType = FilterDefinition['type']
+export type SupportedFilterDefinitionFieldType = NonNullable<FilterDefinition['fieldType']>
 
-type Filter = typeof FILTERS[number]
-export type FilterType = Filter['type']
+interface FilterDefinition {
+  fieldType: IntrinsicTypeName | 'email' | null
+  icon: ComponentType
+  initialOperator: OperatorType
+  operators: (
+    | {
+        type: 'divider'
+      }
+    | {
+        name: OperatorType
+        type: 'item'
+      }
+  )[]
+  title: string
+  type: string
+}
 
-export const FILTERS = [
+export const FILTER_DEFINITIONS: FilterDefinition[] = [
   {
     fieldType: 'array',
     icon: UlistIcon,
@@ -232,14 +248,25 @@ export const FILTERS = [
     title: 'URL',
     type: 'url',
   },
-] as const
+]
 
-export function getFilter(filterType: FilterType): Filter | undefined {
-  return FILTERS.find((filter) => filter.type === filterType)
+export function getFilterDefinition(
+  filterType: FilterDefinitionType
+): FilterDefinition | undefined {
+  return FILTER_DEFINITIONS.find((filter) => filter.type === filterType)
 }
 
-export function getFilterInitialOperator(
-  filterName: FilterType
-): Filter['initialOperator'] | undefined {
-  return getFilter(filterName)?.initialOperator
+export function getFilterDefinitionInitialOperator(
+  filterName: FilterDefinitionType
+): FilterDefinition['initialOperator'] | undefined {
+  return getFilterDefinition(filterName)?.initialOperator
+}
+
+export function getSupportedFieldTypes(): string[] {
+  return FILTER_DEFINITIONS.reduce<string[]>((acc, val) => {
+    if (val?.fieldType) {
+      acc.push(val.fieldType)
+    }
+    return acc
+  }, [])
 }

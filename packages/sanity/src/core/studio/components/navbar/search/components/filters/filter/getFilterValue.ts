@@ -1,8 +1,8 @@
 import {isBoolean} from 'lodash'
 import pluralize from 'pluralize-esm'
-import type {SearchFilterState} from '../../../types'
+import type {SearchFilter} from '../../../types'
 
-export function getFilterValue(filterState: SearchFilterState): string {
+export function getFilterValue(filterState: SearchFilter): string {
   let value
   const fieldValue: string[] = []
 

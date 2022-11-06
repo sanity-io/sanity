@@ -9,9 +9,10 @@ import {createRecentSearchesStore, RecentOmnisearchTerms} from '../../datastores
 import {useSearch} from '../../hooks/useSearch'
 import type {
   OmnisearchTerms,
+  SearchFilter,
   SearchFilterGroup,
   SearchOrdering,
-  ValidatedFilterState,
+  ValidatedSearchFilter,
 } from '../../types'
 import {generateKey} from '../../utils/generateKey'
 import {getSchemaFields} from '../../utils/getSchemaFields'
@@ -40,12 +41,13 @@ export function SearchProvider({children}: SearchProviderProps) {
     [currentUser, dataset, projectId, schema]
   )
 
-  const filterGroups = useCreateFilterGroups(schema)
-
   const recentSearches = useMemo(
     () => recentSearchesStore?.getRecentSearchTerms(),
     [recentSearchesStore]
   )
+
+  // Create filter groups store
+  const filterGroups = useCreateFilterGroups(schema)
 
   const initialState = useMemo(
     () => initialSearchState(currentUser, recentSearches),
@@ -146,51 +148,43 @@ function useCreateFilterGroups(schema: Schema): SearchFilterGroup[] {
   const filterGroups: SearchFilterGroup[] = useMemo(() => {
     const flattenedFields = getSchemaFields(schema)
 
-    // Define our default / common filters
-    // TODO: wrap in `defineFilter` or equivalent
-    const COMMON_FILTERS: ValidatedFilterState[] = [
+    // Define common filters applicable to all document types
+    const COMMON_FILTERS: SearchFilter[] = [
       {
-        _key: generateKey(),
         fieldPath: '_updatedAt',
         filterType: 'datetime',
         operatorType: 'dateEqual',
         path: ['Updated at'],
       },
       {
-        _key: generateKey(),
         fieldPath: '_createdAt',
         filterType: 'datetime',
         operatorType: 'dateEqual',
         path: ['Created at'],
       },
       {
-        _key: generateKey(),
         filterType: 'references',
         operatorType: 'referenceEqual',
       },
     ]
 
-    const schemaFieldFilters: ValidatedFilterState[] = flattenedFields.map(
-      (field) =>
-        ({
-          _key: generateKey(),
-          documentTypes: field.documentTypes,
-          fieldPath: field.fieldPath,
-          filterType: field.type,
-          path: field.path,
-          type: 'field',
-        } as ValidatedFilterState)
-    )
+    const commonFilters: ValidatedSearchFilter[] = COMMON_FILTERS.map((filter) => ({
+      _key: generateKey(),
+      ...filter,
+    }))
+
+    const schemaFieldFilters: ValidatedSearchFilter[] = flattenedFields.map((field) => ({
+      _key: generateKey(),
+      documentTypes: field.documentTypes,
+      fieldPath: field.fieldPath,
+      filterType: field.type,
+      path: field.path,
+      type: 'field',
+    }))
 
     return [
-      {
-        items: COMMON_FILTERS,
-        type: 'common',
-      } as SearchFilterGroup,
-      {
-        items: schemaFieldFilters,
-        type: 'fields',
-      } as SearchFilterGroup,
+      {items: commonFilters, type: 'common'},
+      {items: schemaFieldFilters, type: 'fields'},
     ]
   }, [schema])
 

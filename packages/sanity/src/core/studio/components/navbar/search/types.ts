@@ -1,16 +1,15 @@
 import type {SearchOptions, SearchSort, SearchTerms, WeightedHit} from '../../../../search'
-import {FilterType} from './definitions/filters'
+import {FilterDefinitionType} from './definitions/filters'
 import type {OperatorType} from './definitions/operators'
 
 /**
  * @internal
  */
-export interface SearchFilterState {
+export interface SearchFilter {
   fieldPath?: string
-  filterType: FilterType
+  filterType: FilterDefinitionType
   operatorType?: OperatorType
   path?: string[] // TODO: remove?
-  // value?: unknown
   value?: any
 }
 
@@ -18,7 +17,7 @@ export interface SearchFilterState {
  * @internal
  */
 export interface SearchFilterGroup {
-  items: ValidatedFilterState[]
+  items: ValidatedSearchFilter[]
   type: 'common' | 'fields'
 }
 
@@ -26,14 +25,14 @@ export interface SearchFilterGroup {
  * TODO: refactor out
  * @internal
  */
-export type ValidatedFilterState = SearchFilterState & {
+export type ValidatedSearchFilter = SearchFilter & {
   _key: string
   documentTypes?: string[]
   showSubtitle?: boolean
 }
 
 export interface SearchFilterMenuItemFilter {
-  filter: ValidatedFilterState
+  filter: ValidatedSearchFilter
   type: 'filter'
 }
 
@@ -50,7 +49,7 @@ export type SearchFilterMenuItem = (SearchFilterMenuItemFilter | SearchFilterMen
  * @internal
  */
 export interface OmnisearchTerms extends SearchTerms {
-  filters: ValidatedFilterState[]
+  filters: ValidatedSearchFilter[]
 }
 
 /**

@@ -4,8 +4,8 @@ import type {CurrentUser} from '@sanity/types'
 import type {SearchableType, WeightedHit} from '../../../../../../search'
 import {ORDERINGS} from '../../definitions/orderings'
 import type {RecentOmnisearchTerms} from '../../datastores/recentSearches'
-import {getFilterInitialOperator} from '../../definitions/filters'
-import type {ValidatedFilterState, OmnisearchTerms, SearchOrdering} from '../../types'
+import {getFilterDefinitionInitialOperator} from '../../definitions/filters'
+import type {ValidatedSearchFilter, OmnisearchTerms, SearchOrdering} from '../../types'
 import {debugWithName, isDebugMode} from '../../utils/debug'
 import {generateKey} from '../../utils/generateKey'
 import {isRecentSearchTerms} from '../../utils/isRecentSearchTerms'
@@ -16,7 +16,7 @@ export interface SearchReducerState {
   currentUser: CurrentUser | null
   debug: boolean
   filtersVisible: boolean
-  lastAddedFilter?: ValidatedFilterState
+  lastAddedFilter?: ValidatedSearchFilter
   ordering: SearchOrdering
   pageIndex: number
   recentSearches: RecentOmnisearchTerms[]
@@ -73,7 +73,7 @@ export type SearchRequestComplete = {
 }
 export type SearchRequestError = {type: 'SEARCH_REQUEST_ERROR'; error: Error}
 export type SearchRequestStart = {type: 'SEARCH_REQUEST_START'}
-export type TermsFiltersAdd = {filter: ValidatedFilterState; type: 'TERMS_FILTERS_ADD'}
+export type TermsFiltersAdd = {filter: ValidatedSearchFilter; type: 'TERMS_FILTERS_ADD'}
 export type TermsFiltersClear = {type: 'TERMS_FILTERS_CLEAR'}
 export type TermsFiltersRemove = {_key: string; type: 'TERMS_FILTERS_REMOVE'}
 export type TermsFiltersSetOperator = {
@@ -197,9 +197,9 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
         },
       }
     case 'TERMS_FILTERS_ADD': {
-      const operatorType = getFilterInitialOperator(action.filter.filterType)
+      const operatorType = getFilterDefinitionInitialOperator(action.filter.filterType)
 
-      const newFilter: ValidatedFilterState = {
+      const newFilter: ValidatedSearchFilter = {
         ...action.filter,
         _key: generateKey(),
         // Set initial value + operator

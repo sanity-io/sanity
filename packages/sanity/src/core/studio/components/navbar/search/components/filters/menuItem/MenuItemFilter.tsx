@@ -1,11 +1,11 @@
 import {Button} from '@sanity/ui'
 import React, {useCallback} from 'react'
 import {useSearchState} from '../../../contexts/search/useSearchState'
-import type {ValidatedFilterState} from '../../../types'
+import type {ValidatedSearchFilter} from '../../../types'
 import {FilterDetails} from '../common/FilterDetails'
 
 interface FilterMenuItemProps {
-  filter: ValidatedFilterState
+  filter: ValidatedSearchFilter
   onClose: () => void
 }
 

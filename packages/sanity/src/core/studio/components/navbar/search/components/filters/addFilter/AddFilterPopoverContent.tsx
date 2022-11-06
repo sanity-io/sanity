@@ -6,9 +6,9 @@ import styled from 'styled-components'
 import {SUBHEADER_HEIGHT_SMALL} from '../../../constants'
 import {CommandListProvider} from '../../../contexts/commandList'
 import {useSearchState} from '../../../contexts/search/useSearchState'
-import {getFilter} from '../../../definitions/filters'
+import {getFilterDefinition} from '../../../definitions/filters'
 import {useSelectedDocumentTypes} from '../../../hooks/useSelectedDocumentTypes'
-import type {SearchFilterMenuItem, ValidatedFilterState} from '../../../types'
+import type {SearchFilterMenuItem, ValidatedSearchFilter} from '../../../types'
 import {CustomTextInput} from '../../CustomTextInput'
 import {FilterPopoverWrapper} from '../common/FilterPopoverWrapper'
 import {AddFilterContentMenuItems} from './AddFilterContentMenuItems'
@@ -102,8 +102,8 @@ export function AddFilterPopoverContent({onClose}: AddFilterPopoverContentProps)
   )
 }
 
-function includesFilterTitle(filterState: ValidatedFilterState, currentTitle: string) {
-  const filter = getFilter(filterState.filterType)
+function includesFilterTitle(filterState: ValidatedSearchFilter, currentTitle: string) {
+  const filter = getFilterDefinition(filterState.filterType)
 
   if (!filter) {
     return false
@@ -119,9 +119,9 @@ function includesFilterTitle(filterState: ValidatedFilterState, currentTitle: st
 }
 
 function toggleSubtitleVisibility(
-  filterState: ValidatedFilterState,
+  filterState: ValidatedSearchFilter,
   _index: number,
-  arr: ValidatedFilterState[]
+  arr: ValidatedSearchFilter[]
 ) {
   return {
     ...filterState,

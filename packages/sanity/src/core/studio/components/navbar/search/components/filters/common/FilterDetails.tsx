@@ -2,12 +2,12 @@ import {ChevronRightIcon} from '@sanity/icons'
 import {Box, Flex, rem, Stack, Text} from '@sanity/ui'
 import React from 'react'
 import styled from 'styled-components'
-import type {ValidatedFilterState} from '../../../types'
+import type {ValidatedSearchFilter} from '../../../types'
 import {FilterIcon} from './FilterIcon'
 import {FilterTitle} from './FilterTitle'
 
 interface FilterDetailsProps {
-  filter: ValidatedFilterState
+  filter: ValidatedSearchFilter
   showSubtitle?: boolean
 }
 
