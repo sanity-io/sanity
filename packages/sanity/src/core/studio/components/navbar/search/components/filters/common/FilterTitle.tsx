@@ -1,9 +1,9 @@
 import React, {useMemo} from 'react'
-import {getFilter} from '../../../definitions/filters'
-import type {SearchFilterState} from '../../../types'
+import {getFilterDefinition} from '../../../definitions/filters'
+import type {SearchFilter} from '../../../types'
 
 interface FilterTitleProps {
-  filter: SearchFilterState
+  filter: SearchFilter
 }
 
 export function FilterTitle({filter}: FilterTitleProps) {
@@ -13,7 +13,7 @@ export function FilterTitle({filter}: FilterTitleProps) {
     if (filter.fieldPath) {
       return filter.path[filter.path.length - 1]
     }
-    return getFilter(filter.filterType)?.title
+    return getFilterDefinition(filter.filterType)?.title
   }, [filter])
 
   return <span>{title}</span>

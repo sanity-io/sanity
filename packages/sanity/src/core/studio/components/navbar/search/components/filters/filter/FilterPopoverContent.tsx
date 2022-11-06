@@ -1,12 +1,12 @@
 import {Card, Code, Flex, Stack, Text} from '@sanity/ui'
 import React from 'react'
 import {DEBUG_MODE} from '../../../constants'
-import type {ValidatedFilterState} from '../../../types'
+import type {ValidatedSearchFilter} from '../../../types'
 import {FilterPopoverWrapper} from '../common/FilterPopoverWrapper'
 import {FilterForm} from './FilterForm'
 
 interface FilterPopoverContentProps {
-  filter: ValidatedFilterState
+  filter: ValidatedSearchFilter
   onClose: () => void
 }
 
@@ -37,7 +37,7 @@ export function FilterPopoverContent({filter, onClose}: FilterPopoverContentProp
   )
 }
 
-function DebugDocumentTypes({filter}: {filter: ValidatedFilterState}) {
+function DebugDocumentTypes({filter}: {filter: ValidatedSearchFilter}) {
   return (
     <Card borderTop overflow="hidden" padding={3} tone="transparent">
       <Stack space={2}>
@@ -52,7 +52,7 @@ function DebugDocumentTypes({filter}: {filter: ValidatedFilterState}) {
   )
 }
 
-function DebugValues({filter}: {filter: ValidatedFilterState}) {
+function DebugValues({filter}: {filter: ValidatedSearchFilter}) {
   return (
     <Card borderTop overflow="hidden" padding={3} tone="transparent">
       <Stack space={2}>

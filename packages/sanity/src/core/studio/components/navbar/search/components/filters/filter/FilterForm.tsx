@@ -2,12 +2,12 @@ import {Box, Card, Stack} from '@sanity/ui'
 import React, {ChangeEvent, useCallback} from 'react'
 import {useSearchState} from '../../../contexts/search/useSearchState'
 import {getOperator, getOperatorInitialValue, OperatorType} from '../../../definitions/operators'
-import type {ValidatedFilterState} from '../../../types'
+import type {ValidatedSearchFilter} from '../../../types'
 import {FilterDetails} from '../common/FilterDetails'
 import {OperatorsMenuButton} from './SelectOperators'
 
 interface FilterFormProps {
-  filter: ValidatedFilterState
+  filter: ValidatedSearchFilter
 }
 
 export function FilterForm({filter}: FilterFormProps) {

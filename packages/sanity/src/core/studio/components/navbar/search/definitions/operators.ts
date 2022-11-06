@@ -1,14 +1,14 @@
 import sub from 'date-fns/sub'
 import {ComponentType} from 'react'
-import {FieldInputAsset} from '../../components/filters/filter/inputTypes/Asset'
-import {FieldInputBoolean} from '../../components/filters/filter/inputTypes/Boolean'
-import {FieldInputDate} from '../../components/filters/filter/inputTypes/Date'
-import {FieldInputDateLast} from '../../components/filters/filter/inputTypes/DateLast'
-import {FieldInputDateRange} from '../../components/filters/filter/inputTypes/DateRange'
-import {FieldInputNumber} from '../../components/filters/filter/inputTypes/Number'
-import {FieldInputNumberRange} from '../../components/filters/filter/inputTypes/NumberRange'
-import {FieldInputReference} from '../../components/filters/filter/inputTypes/Reference'
-import {FieldInputString} from '../../components/filters/filter/inputTypes/String'
+import {FieldInputAsset} from '../components/filters/filter/inputTypes/Asset'
+import {FieldInputBoolean} from '../components/filters/filter/inputTypes/Boolean'
+import {FieldInputDate} from '../components/filters/filter/inputTypes/Date'
+import {FieldInputDateLast} from '../components/filters/filter/inputTypes/DateLast'
+import {FieldInputDateRange} from '../components/filters/filter/inputTypes/DateRange'
+import {FieldInputNumber} from '../components/filters/filter/inputTypes/Number'
+import {FieldInputNumberRange} from '../components/filters/filter/inputTypes/NumberRange'
+import {FieldInputReference} from '../components/filters/filter/inputTypes/Reference'
+import {FieldInputString} from '../components/filters/filter/inputTypes/String'
 
 /**
  * @internal
@@ -96,7 +96,7 @@ function toJSON(val: unknown): string {
   return JSON.stringify(val)
 }
 
-export const OPERATORS: Operator[] = [
+const OPERATORS: Operator[] = [
   {
     buttonLabel: 'has',
     fn: ({fieldPath, value}) =>

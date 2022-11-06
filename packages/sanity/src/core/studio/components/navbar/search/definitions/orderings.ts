@@ -1,4 +1,4 @@
-import type {SearchOrdering} from '../../types'
+import type {SearchOrdering} from '../types'
 
 export const ORDERINGS: Record<string, SearchOrdering> = {
   createdAsc: {
