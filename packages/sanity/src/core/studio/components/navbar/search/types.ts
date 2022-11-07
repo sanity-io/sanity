@@ -1,3 +1,4 @@
+import {ButtonTone, CardTone} from '@sanity/ui'
 import type {SearchOptions, SearchSort, SearchTerms, WeightedHit} from '../../../../search'
 import {FilterDefinitionType} from './definitions/filters'
 import type {OperatorType} from './definitions/operators'
@@ -24,11 +25,13 @@ export interface SearchFilterMenuItemFilter {
   filter: SearchFilter
   group?: string
   showSubtitle?: boolean
+  tone?: ButtonTone
   type: 'filter'
 }
 
 export interface SearchFilterMenuItemHeader {
   title: string
+  tone?: CardTone
   type: 'header'
 }
 

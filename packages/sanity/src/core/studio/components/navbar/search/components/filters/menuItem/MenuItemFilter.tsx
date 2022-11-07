@@ -30,6 +30,7 @@ export const MenuItemFilter = React.memo(function MenuItemFilter({
         whiteSpace: 'normal',
         width: '100%',
       }}
+      tone={item?.tone}
     >
       <FilterDetails filter={item.filter} showSubtitle={item.showSubtitle} />
     </Button>

@@ -215,15 +215,20 @@ function useCreateFilteredMenuItems(titleFilter: string): SearchFilterMenuItem[]
 
     // Add common filters
     commonFilters.forEach((searchFilter) => {
-      filteredMenuItems.push({filter: searchFilter, type: 'filter'})
+      filteredMenuItems.push({filter: searchFilter, tone: 'primary', type: 'filter'})
     })
 
     // Add shared fields
     if (sharedFilters.length > 0) {
       const groupTitle = 'Shared fields'
-      filteredMenuItems.push({title: groupTitle, type: 'header'})
+      filteredMenuItems.push({title: groupTitle, tone: 'primary', type: 'header'})
       sharedFilters.forEach((searchFilter) => {
-        filteredMenuItems.push({filter: searchFilter, group: groupTitle, type: 'filter'})
+        filteredMenuItems.push({
+          filter: searchFilter,
+          group: groupTitle,
+          tone: 'primary',
+          type: 'filter',
+        })
       })
     }
 

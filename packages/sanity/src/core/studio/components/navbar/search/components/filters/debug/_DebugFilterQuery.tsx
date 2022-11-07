@@ -1,4 +1,4 @@
-import {Card, Code, Stack, Text} from '@sanity/ui'
+import {Card, Code, Stack} from '@sanity/ui'
 import React, {useEffect, useState} from 'react'
 import {isNonNullable} from '../../../../../../../util'
 import {useSearchState} from '../../../contexts/search/useSearchState'
@@ -23,9 +23,9 @@ export function DebugFilterQuery() {
   return (
     <Card padding={4} tone="transparent">
       <Stack space={3}>
-        <Text size={1} weight="semibold">
-          Filter
-        </Text>
+        <Code size={1} weight="semibold">
+          Filter:
+        </Code>
         {filterQuery && <Code size={1}>{filterQuery}</Code>}
       </Stack>
     </Card>
