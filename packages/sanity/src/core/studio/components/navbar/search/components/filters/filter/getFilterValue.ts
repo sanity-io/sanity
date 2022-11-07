@@ -1,7 +1,10 @@
 import isBoolean from 'lodash/isBoolean'
+import isFinite from 'lodash/isFinite'
 import pluralize from 'pluralize-esm'
+import {isNonNullable} from '../../../../../../../util'
 import type {SearchFilter} from '../../../types'
 
+// TODO: should probably be moved into operators
 export function getFilterValue(filterState: SearchFilter): string {
   let value
   const fieldValue: string[] = []
@@ -33,12 +36,14 @@ export function getFilterValue(filterState: SearchFilter): string {
       }
       break
     case 'number':
-      if (filterState.operatorType === 'numberRange') {
-        if (filterState?.value?.min && filterState?.value?.max) {
-          value = `${filterState.value.min} – ${filterState.value.max}`
-        }
-      } else {
-        value = filterState?.value
+      switch (filterState.operatorType) {
+        case 'numberRange':
+          if (isFinite(filterState?.value?.min) && isFinite(filterState?.value?.max)) {
+            value = `${filterState.value.min} → ${filterState.value.max}`
+          }
+          break
+        default:
+          value = filterState?.value
       }
       break
     case 'reference':
@@ -50,7 +55,7 @@ export function getFilterValue(filterState: SearchFilter): string {
       break
   }
 
-  if (value) {
+  if (isNonNullable(value)) {
     fieldValue.push(value)
   }
 

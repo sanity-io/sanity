@@ -2,6 +2,7 @@
 // TODO: re-enable the above
 import type {CurrentUser} from '@sanity/types'
 import intersection from 'lodash/intersection'
+import isEmpty from 'lodash/isEmpty'
 import union from 'lodash/union'
 import type {SearchableType, SearchTerms, WeightedHit} from '../../../../../../search'
 import {isNonNullable} from '../../../../../../util'
@@ -434,15 +435,14 @@ function narrowDocumentTypes(types: SearchableType[], filters: SearchFilter[]): 
 }
 
 function generateFilterQuery(filters: SearchFilter[]) {
-  const query = filters
+  return filters
     .map((filter) =>
       getOperator(filter.operatorType)?.fn({
         fieldPath: filter?.fieldPath,
         value: filter?.value,
       })
     )
+    .filter((filter) => !isEmpty(filter))
     .filter(isNonNullable)
     .join(' && ')
-
-  return query
 }

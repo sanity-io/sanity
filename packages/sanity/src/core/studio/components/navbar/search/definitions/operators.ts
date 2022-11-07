@@ -1,4 +1,5 @@
 import sub from 'date-fns/sub'
+import isFinite from 'lodash/isFinite'
 import {ComponentType} from 'react'
 import {FieldInputAsset} from '../components/filters/filter/inputTypes/Asset'
 import {FieldInputBoolean} from '../components/filters/filter/inputTypes/Boolean'
@@ -250,7 +251,8 @@ const OPERATORS: Operator[] = [
   },
   {
     buttonLabel: 'is',
-    fn: ({fieldPath, value}) => (value && fieldPath ? `${fieldPath} == ${toJSON(value)}` : null),
+    fn: ({fieldPath, value}) =>
+      isFinite(value) && fieldPath ? `${fieldPath} == ${toJSON(value)}` : null,
     inputComponent: FieldInputNumber,
     initialValue: null,
     label: 'is',
@@ -258,7 +260,8 @@ const OPERATORS: Operator[] = [
   },
   {
     buttonLabel: '>',
-    fn: ({fieldPath, value}) => (value && fieldPath ? `${fieldPath} > ${toJSON(value)}` : null),
+    fn: ({fieldPath, value}) =>
+      isFinite(value) && fieldPath ? `${fieldPath} > ${toJSON(value)}` : null,
     inputComponent: FieldInputNumber,
     initialValue: null,
     label: 'greater than (>)',
@@ -266,7 +269,8 @@ const OPERATORS: Operator[] = [
   },
   {
     buttonLabel: '≥',
-    fn: ({fieldPath, value}) => (value && fieldPath ? `${fieldPath} >= ${toJSON(value)}` : null),
+    fn: ({fieldPath, value}) =>
+      isFinite(value) && fieldPath ? `${fieldPath} >= ${toJSON(value)}` : null,
     inputComponent: FieldInputNumber,
     initialValue: null,
     label: 'greater than or equal to (≥)',
@@ -274,7 +278,8 @@ const OPERATORS: Operator[] = [
   },
   {
     buttonLabel: '<',
-    fn: ({fieldPath, value}) => (value && fieldPath ? `${fieldPath} < ${toJSON(value)}` : null),
+    fn: ({fieldPath, value}) =>
+      isFinite(value) && fieldPath ? `${fieldPath} < ${toJSON(value)}` : null,
     inputComponent: FieldInputNumber,
     initialValue: null,
     label: 'less than (<)',
@@ -282,7 +287,8 @@ const OPERATORS: Operator[] = [
   },
   {
     buttonLabel: '≤',
-    fn: ({fieldPath, value}) => (value && fieldPath ? `${fieldPath} <= ${toJSON(value)}` : null),
+    fn: ({fieldPath, value}) =>
+      isFinite(value) && fieldPath ? `${fieldPath} <= ${toJSON(value)}` : null,
     inputComponent: FieldInputNumber,
     initialValue: null,
     label: 'less than or equal to (≤)',
@@ -290,7 +296,8 @@ const OPERATORS: Operator[] = [
   },
   {
     buttonLabel: 'is not',
-    fn: ({fieldPath, value}) => (value && fieldPath ? `${fieldPath} != ${toJSON(value)}` : null),
+    fn: ({fieldPath, value}) =>
+      isFinite(value) && fieldPath ? `${fieldPath} != ${toJSON(value)}` : null,
     inputComponent: FieldInputNumber,
     initialValue: null,
     label: 'is not',
@@ -301,9 +308,9 @@ const OPERATORS: Operator[] = [
     inputComponent: FieldInputNumberRange,
     initialValue: {max: null, min: null},
     fn: ({fieldPath, value}) =>
-      value?.max && value?.min && fieldPath
-        ? `${fieldPath} > ${toJSON(value.min)} && ${fieldPath} < ${toJSON(value.max)}`
-        : '',
+      isFinite(value?.min) && isFinite(value?.max) && fieldPath
+        ? `${fieldPath} > ${toJSON(value?.min)} && ${fieldPath} < ${toJSON(value?.max)}`
+        : null,
     label: 'is between',
     type: 'numberRange',
   },

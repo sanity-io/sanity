@@ -1,18 +1,16 @@
 import {TextInput} from '@sanity/ui'
-import isNumber from 'lodash/isNumber'
+import isFinite from 'lodash/isFinite'
 import React, {ChangeEvent, useCallback, useState} from 'react'
 import type {OperatorInputComponentProps} from '../../../../definitions/operators'
 
 export function FieldInputNumber({value, onChange}: OperatorInputComponentProps<number>) {
-  const [uncontrolledValue, setUncontrolledValue] = useState<string>(String(value) || '')
+  const [uncontrolledValue, setUncontrolledValue] = useState(value ?? '')
 
   const handleChange = useCallback(
     (event: ChangeEvent<HTMLInputElement>) => {
       setUncontrolledValue(event.currentTarget.value)
       const numValue = parseFloat(event.currentTarget.value)
-      if (isNumber(numValue)) {
-        onChange(numValue)
-      }
+      onChange(isFinite(numValue) ? numValue : null)
     },
     [onChange]
   )
@@ -22,6 +20,7 @@ export function FieldInputNumber({value, onChange}: OperatorInputComponentProps<
       fontSize={1}
       onChange={handleChange}
       placeholder="Enter value..."
+      step="any"
       type="number"
       value={uncontrolledValue}
     />
