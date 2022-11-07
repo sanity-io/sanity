@@ -9,10 +9,11 @@ import {
 } from '@sanity/icons'
 import {NumberIcon} from '../components/filters/icons/NumberIcon'
 import {StringIcon} from '../components/filters/icons/StringIcon'
-import {SearchFilterDefinition} from './filters'
+import {defineSearchFilter, SearchFilterDefinition} from './filters'
+import {SearchOperatorType} from './operators/defaultOperators'
 
 export const filterDefinitions: SearchFilterDefinition[] = [
-  {
+  defineSearchFilter<SearchOperatorType>({
     fieldType: 'array',
     icon: UlistIcon,
     initialOperator: 'arrayCountEqual',
@@ -30,8 +31,8 @@ export const filterDefinitions: SearchFilterDefinition[] = [
     ],
     title: 'Array',
     type: 'array',
-  },
-  {
+  }),
+  defineSearchFilter<SearchOperatorType>({
     fieldType: 'boolean',
     icon: CheckmarkCircleIcon,
     initialOperator: 'booleanEqual',
@@ -42,8 +43,8 @@ export const filterDefinitions: SearchFilterDefinition[] = [
     ],
     title: 'Boolean',
     type: 'boolean',
-  },
-  {
+  }),
+  defineSearchFilter<SearchOperatorType>({
     fieldType: 'date',
     icon: CalendarIcon,
     initialOperator: 'dateLast',
@@ -62,8 +63,8 @@ export const filterDefinitions: SearchFilterDefinition[] = [
     ],
     title: 'Date',
     type: 'date',
-  },
-  {
+  }),
+  defineSearchFilter<SearchOperatorType>({
     fieldType: 'datetime',
     icon: CalendarIcon,
     initialOperator: 'dateLast',
@@ -82,8 +83,8 @@ export const filterDefinitions: SearchFilterDefinition[] = [
     ],
     title: 'Datetime',
     type: 'datetime',
-  },
-  {
+  }),
+  defineSearchFilter<SearchOperatorType>({
     fieldType: 'file',
     icon: DocumentIcon,
     initialOperator: 'defined',
@@ -93,8 +94,8 @@ export const filterDefinitions: SearchFilterDefinition[] = [
     ],
     title: 'File',
     type: 'file',
-  },
-  {
+  }),
+  defineSearchFilter<SearchOperatorType>({
     fieldType: 'geopoint',
     icon: PinIcon,
     initialOperator: 'defined',
@@ -104,8 +105,8 @@ export const filterDefinitions: SearchFilterDefinition[] = [
     ],
     title: 'Geopoint',
     type: 'geopoint',
-  },
-  {
+  }),
+  defineSearchFilter<SearchOperatorType>({
     fieldType: 'image',
     icon: ImageIcon,
     initialOperator: 'defined',
@@ -115,8 +116,8 @@ export const filterDefinitions: SearchFilterDefinition[] = [
     ],
     title: 'Image',
     type: 'image',
-  },
-  {
+  }),
+  defineSearchFilter<SearchOperatorType>({
     fieldType: 'number',
     icon: NumberIcon,
     initialOperator: 'numberEqual',
@@ -136,8 +137,8 @@ export const filterDefinitions: SearchFilterDefinition[] = [
     ],
     title: 'Number',
     type: 'number',
-  },
-  {
+  }),
+  defineSearchFilter<SearchOperatorType>({
     fieldType: 'reference',
     icon: LinkIcon,
     initialOperator: 'referenceEqual',
@@ -149,16 +150,16 @@ export const filterDefinitions: SearchFilterDefinition[] = [
     ],
     title: 'Reference',
     type: 'reference',
-  },
-  {
+  }),
+  defineSearchFilter<SearchOperatorType>({
     fieldType: null,
     icon: LinkIcon,
     initialOperator: 'references',
     operators: [{name: 'references', type: 'item'}],
     title: 'Referenced document',
     type: 'references',
-  },
-  {
+  }),
+  defineSearchFilter<SearchOperatorType>({
     fieldType: 'slug',
     icon: StringIcon,
     initialOperator: 'stringMatches',
@@ -174,8 +175,8 @@ export const filterDefinitions: SearchFilterDefinition[] = [
     ],
     title: 'Slug',
     type: 'slug',
-  },
-  {
+  }),
+  defineSearchFilter<SearchOperatorType>({
     fieldType: 'string',
     icon: StringIcon,
     initialOperator: 'stringMatches',
@@ -191,8 +192,8 @@ export const filterDefinitions: SearchFilterDefinition[] = [
     ],
     title: 'String',
     type: 'string',
-  },
-  {
+  }),
+  defineSearchFilter<SearchOperatorType>({
     fieldType: 'text',
     icon: StringIcon,
     initialOperator: 'stringMatches',
@@ -208,8 +209,8 @@ export const filterDefinitions: SearchFilterDefinition[] = [
     ],
     title: 'Text',
     type: 'text',
-  },
-  {
+  }),
+  defineSearchFilter<SearchOperatorType>({
     fieldType: 'url',
     icon: StringIcon,
     initialOperator: 'stringMatches',
@@ -225,5 +226,5 @@ export const filterDefinitions: SearchFilterDefinition[] = [
     ],
     title: 'URL',
     type: 'url',
-  },
+  }),
 ]

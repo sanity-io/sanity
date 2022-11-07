@@ -16,9 +16,9 @@ import {isNonNullable} from '../util'
 import {validateWorkspaces} from '../studio'
 import {filterDefinitions} from '../studio/components/navbar/search/definitions/defaultFilters'
 import {operatorDefinitions} from '../studio/components/navbar/search/definitions/operators/defaultOperators'
+import {SearchOperator} from '../studio/components/navbar/search/definitions/operators'
 import {
   Config,
-  PluginOptions,
   PreparedConfig,
   SingleWorkspace,
   Source,
@@ -28,9 +28,9 @@ import {
   WorkspaceSummary,
 } from './types'
 import {
-  documentLanguageFilterReducer,
   documentActionsReducer,
   documentBadgesReducer,
+  documentLanguageFilterReducer,
   fileAssetSourceResolver,
   imageAssetSourceResolver,
   initialDocumentActions,
@@ -40,15 +40,14 @@ import {
   resolveProductionUrlReducer,
   schemaTemplatesReducer,
   schemaTypesReducer,
-  toolsReducer,
   searchFilterReducer,
   searchOperatorsReducer,
+  toolsReducer,
 } from './configPropertyReducers'
 import {resolveConfigProperty} from './resolveConfigProperty'
 import {ConfigResolutionError} from './ConfigResolutionError'
 import {SchemaError} from './SchemaError'
 import {createDefaultIcon} from './createDefaultIcon'
-import {SearchOperator} from '../studio/components/navbar/search/definitions/operators'
 
 type InternalSource = WorkspaceSummary['__internal']['sources'][number]
 

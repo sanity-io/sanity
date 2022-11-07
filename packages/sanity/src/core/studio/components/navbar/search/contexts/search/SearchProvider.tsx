@@ -13,8 +13,6 @@ import {hasSearchableTerms} from '../../utils/hasSearchableTerms'
 import {isRecentSearchTerms} from '../../utils/isRecentSearchTerms'
 import {initialSearchState, searchReducer} from './reducer'
 import {SearchContext} from './SearchContext'
-import {operatorDefinitions, searchOperators} from '../../definitions/operators/defaultOperators'
-import {filterDefinitions} from '../../definitions/defaultFilters'
 import {useSource} from '../../../../../source'
 
 interface SearchProviderProps {
