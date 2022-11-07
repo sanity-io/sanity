@@ -16,25 +16,21 @@ export interface OperatorInputComponentProps<T> {
   onChange: (value: T | null) => void
 }
 
+export type SearchOperatorParams<TValue> = {fieldPath?: string; value?: TValue}
+export type ValuelessSearchOperatorParams = {fieldPath?: string}
+
 export interface SearchOperatorBuilder<TType extends string, TValue> extends SearchOperatorBase {
-  fn: (params: {fieldPath?: string; value?: TValue}) => string | null
+  fn: (params: SearchOperatorParams<TValue>) => string | null
   initialValue: TValue | null
   inputComponent: SearchOperatorInput<TValue>
   type: TType
 }
 
-export type ValuelessSearchOperatorBuilder<TType extends string> = SearchOperatorBase & {
-  fn: (params: {fieldPath?: string}) => string | null
+export interface ValuelessSearchOperatorBuilder<TType extends string> extends SearchOperatorBase {
+  fn: (params: ValuelessSearchOperatorParams) => string | null
   initialValue?: never
   inputComponent?: never
   type: TType
-}
-
-export interface SearchOperator extends SearchOperatorBase {
-  fn: (params: {fieldPath?: string; value?: any}) => string | null
-  initialValue?: unknown
-  inputComponent?: SearchOperatorInput<any>
-  type: string
 }
 
 export function defineSearchOperator<

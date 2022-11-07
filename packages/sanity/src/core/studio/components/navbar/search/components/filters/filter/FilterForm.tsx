@@ -12,9 +12,12 @@ interface FilterFormProps {
 }
 
 export function FilterForm({filter}: FilterFormProps) {
-  const {dispatch} = useSearchState()
+  const {
+    dispatch,
+    state: {definitions},
+  } = useSearchState()
 
-  const operator = filter.operatorType && getOperator(filter.operatorType)
+  const operator = getOperator(definitions.operators, filter.operatorType)
 
   const handleValueChange = useCallback(
     (value: any) => {
@@ -38,7 +41,10 @@ export function FilterForm({filter}: FilterFormProps) {
             <FilterDetails filter={filter} />
           </Box>
           {/* Operator */}
-          <OperatorsMenuButton filter={filter} operator={getOperator(filter.operatorType)} />
+          <OperatorsMenuButton
+            filter={filter}
+            operator={getOperator(definitions.operators, filter.operatorType)}
+          />
         </Stack>
       </Card>
 

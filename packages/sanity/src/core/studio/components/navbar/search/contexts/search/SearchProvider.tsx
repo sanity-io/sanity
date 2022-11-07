@@ -13,6 +13,8 @@ import {hasSearchableTerms} from '../../utils/hasSearchableTerms'
 import {isRecentSearchTerms} from '../../utils/isRecentSearchTerms'
 import {initialSearchState, searchReducer} from './reducer'
 import {SearchContext} from './SearchContext'
+import {operatorDefinitions, searchOperators} from '../../definitions/operators/defaultOperators'
+import {filterDefinitions} from '../../definitions/defaultFilters'
 
 interface SearchProviderProps {
   children?: ReactNode
@@ -39,12 +41,16 @@ export function SearchProvider({children}: SearchProviderProps) {
     [recentSearchesStore]
   )
 
+  // TODO feed these through the defineConfig API ala actions and badges
+  const operators = operatorDefinitions
+  const filters = filterDefinitions
+
   // Create our field registry: this is a list of all applicable fields which we can filter on.
-  const fieldRegistry = useMemo(() => createFieldRegistry(schema), [schema])
+  const fieldRegistry = useMemo(() => createFieldRegistry(schema, filters), [schema, filters])
 
   const initialState = useMemo(
-    () => initialSearchState(currentUser, recentSearches),
-    [currentUser, recentSearches]
+    () => initialSearchState({currentUser, recentSearches, definitions: {operators, filters}}),
+    [currentUser, recentSearches, operators, filters]
   )
   const [state, dispatch] = useReducer(searchReducer, initialState)
 

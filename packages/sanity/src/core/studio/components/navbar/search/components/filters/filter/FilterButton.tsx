@@ -32,7 +32,10 @@ export default function FilterButton({closable = true, filter, initialOpen}: Fil
   const [buttonElement, setButtonElement] = useState<HTMLElement | null>(null)
   const [popoverElement, setPopoverElement] = useState<HTMLElement | null>(null)
 
-  const {dispatch} = useSearchState()
+  const {
+    dispatch,
+    state: {definitions},
+  } = useSearchState()
 
   const handleClose = useCallback(() => setOpen(false), [])
   const handleOpen = useCallback(() => setOpen(true), [])
@@ -47,7 +50,7 @@ export default function FilterButton({closable = true, filter, initialOpen}: Fil
 
   useClickOutside(handleClose, [buttonElement, popoverElement])
 
-  const operator = filter.operatorType && getOperator(filter.operatorType)
+  const operator = getOperator(definitions.operators, filter.operatorType)
   const value = getFilterValue(filter)
   const hasValue = operator?.inputComponent ? value : true
   const isFilled = filter.operatorType && hasValue

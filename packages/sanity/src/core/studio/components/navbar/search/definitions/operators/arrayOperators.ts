@@ -1,6 +1,6 @@
 import {FieldInputNumber} from '../../components/filters/filter/inputTypes/Number'
 import {toJSON} from './operatorUtils'
-import {defineSearchOperator} from './operatorTypes'
+import {defineSearchOperator, SearchOperatorParams} from './operatorTypes'
 
 export const arrayOperators = {
   arrayCountEqual: defineSearchOperator({

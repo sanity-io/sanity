@@ -6,8 +6,8 @@ import isEmpty from 'lodash/isEmpty'
 import type {SearchableType, SearchTerms, WeightedHit} from '../../../../../../search'
 import {isNonNullable} from '../../../../../../util'
 import type {RecentSearchTerms} from '../../datastores/recentSearches'
-import {getFilterDefinitionInitialOperator} from '../../definitions/filters'
-import {getOperator, getOperatorInitialValue, SearchOperatorType} from '../../definitions/operators'
+import {getFilterDefinitionInitialOperator, SearchFilterDefinition} from '../../definitions/filters'
+import {getOperator, getOperatorInitialValue, SearchOperator} from '../../definitions/operators'
 import {ORDERINGS} from '../../definitions/orderings'
 import type {SearchFilter, SearchOrdering} from '../../types'
 import {debugWithName, isDebugMode} from '../../utils/debug'
@@ -28,6 +28,12 @@ export interface SearchReducerState {
   recentSearches: RecentSearchTerms[]
   result: SearchResult
   terms: RecentSearchTerms | SearchTerms
+  definitions: SearchDefinitions
+}
+
+export interface SearchDefinitions {
+  filters: SearchFilterDefinition[]
+  operators: SearchOperator[]
 }
 
 export interface SearchResult {
@@ -38,10 +44,17 @@ export interface SearchResult {
   loading: boolean
 }
 
-export function initialSearchState(
-  currentUser: CurrentUser | null,
+export interface InitialSearchState {
+  currentUser: CurrentUser | null
   recentSearches?: RecentSearchTerms[]
-): SearchReducerState {
+  definitions: SearchDefinitions
+}
+
+export function initialSearchState({
+  currentUser,
+  recentSearches = [],
+  definitions,
+}: InitialSearchState): SearchReducerState {
   return {
     currentUser,
     debug: isDebugMode(),
@@ -50,7 +63,7 @@ export function initialSearchState(
     filtersVisible: true,
     ordering: ORDERINGS.relevance,
     pageIndex: 0,
-    recentSearches: recentSearches || [],
+    recentSearches,
     result: {
       error: null,
       hasMore: null,
@@ -62,6 +75,7 @@ export function initialSearchState(
       query: '',
       types: [],
     },
+    definitions,
   }
 }
 
@@ -85,7 +99,7 @@ export type TermsFiltersClear = {type: 'TERMS_FILTERS_CLEAR'}
 export type TermsFiltersRemove = {_key: string; type: 'TERMS_FILTERS_REMOVE'}
 export type TermsFiltersSetOperator = {
   key: string
-  operatorType: SearchOperatorType
+  operatorType: string
   type: 'TERMS_FILTERS_SET_OPERATOR'
 }
 export type TermsFiltersSetValue = {
@@ -204,7 +218,10 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
         },
       }
     case 'TERMS_FILTERS_ADD': {
-      const operatorType = getFilterDefinitionInitialOperator(action.filter.filterType)
+      const operatorType = getFilterDefinitionInitialOperator(
+        state.definitions.filters,
+        action.filter.filterType
+      )
 
       const newFilter: SearchFilter = {
         ...action.filter,
@@ -212,7 +229,7 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
         _key: generateKey(),
         // Set initial value + operator
         operatorType,
-        value: operatorType && getOperatorInitialValue(operatorType),
+        value: operatorType && getOperatorInitialValue(state.definitions.operators, operatorType),
       }
 
       const filters = [
@@ -227,7 +244,7 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
         lastAddedFilter: newFilter,
         terms: {
           ...state.terms,
-          filter: generateFilterQuery(filters),
+          filter: generateFilterQuery(state.definitions.operators, filters),
         },
       }
     }
@@ -239,7 +256,7 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
         filters,
         terms: {
           ...state.terms,
-          filter: generateFilterQuery(filters),
+          filter: generateFilterQuery(state.definitions.operators, filters),
         },
       }
     }
@@ -257,7 +274,7 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
         filters,
         terms: {
           ...state.terms,
-          filter: generateFilterQuery(filters),
+          filter: generateFilterQuery(state.definitions.operators, filters),
         },
       }
     }
@@ -265,9 +282,9 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
       // Compare input components between current and target operators, and update
       // target filter value if it has changed.
       const matchedFilter = state.filters.find((filter) => filter._key === action.key)
-      const currentOperator = getOperator(matchedFilter?.operatorType)
-      const nextOperator = getOperator(action.operatorType)
-      const nextInitialValue = getOperatorInitialValue(action.operatorType)
+      const currentOperator = getOperator(state.definitions.operators, matchedFilter?.operatorType)
+      const nextOperator = getOperator(state.definitions.operators, action.operatorType)
+      const nextInitialValue = nextOperator?.initialValue
       const inputComponentChanged = currentOperator?.inputComponent != nextOperator?.inputComponent
 
       const filters = state.filters.map((filter) => {
@@ -286,7 +303,7 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
         filters,
         terms: {
           ...state.terms,
-          filter: generateFilterQuery(filters),
+          filter: generateFilterQuery(state.definitions.operators, filters),
         },
       }
     }
@@ -305,7 +322,7 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
         filters,
         terms: {
           ...state.terms,
-          filter: generateFilterQuery(filters),
+          filter: generateFilterQuery(state.definitions.operators, filters),
         },
       }
     }
@@ -352,7 +369,7 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
         },
         terms: stripRecent({
           ...state.terms,
-          filter: generateFilterQuery(filters),
+          filter: generateFilterQuery(state.definitions.operators, filters),
           types,
         }),
       }
@@ -436,10 +453,10 @@ function narrowDocumentTypes(types: SearchableType[], filters: SearchFilter[]): 
   return intersection(...documentTypes).sort()
 }
 
-function generateFilterQuery(filters: SearchFilter[]) {
+function generateFilterQuery(operators: SearchOperator[], filters: SearchFilter[]) {
   return filters
     .map((filter) =>
-      (getOperator(filter.operatorType) as SearchOperatorBuilder<string, unknown>)?.fn({
+      getOperator(operators, filter.operatorType)?.fn({
         fieldPath: filter?.fieldPath,
         value: filter?.value,
       })

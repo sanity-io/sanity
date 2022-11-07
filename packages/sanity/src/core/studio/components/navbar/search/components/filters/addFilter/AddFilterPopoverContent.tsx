@@ -11,7 +11,7 @@ import {useSchema} from '../../../../../../../hooks'
 import {SUBHEADER_HEIGHT_SMALL} from '../../../constants'
 import {CommandListProvider} from '../../../contexts/commandList'
 import {useSearchState} from '../../../contexts/search/useSearchState'
-import {getFilterDefinition} from '../../../definitions/filters'
+import {getFilterDefinition, SearchFilterDefinition} from '../../../definitions/filters'
 import type {SearchFilterMenuItem, SearchFilter} from '../../../types'
 import {generateKey} from '../../../utils/generateKey'
 import {CustomTextInput} from '../../CustomTextInput'
@@ -154,8 +154,12 @@ function sharesDocumentTypes(documentTypes: string[], searchFilter: SearchFilter
   return difference(documentTypes, searchFilter.documentTypes || []).length === 0
 }
 
-function includesFilterTitle(searchFilter: SearchFilter, currentTitle: string) {
-  const filter = getFilterDefinition(searchFilter.filterType)
+function includesFilterTitle(
+  filters: SearchFilterDefinition[],
+  searchFilter: SearchFilter,
+  currentTitle: string
+) {
+  const filter = getFilterDefinition(filters, searchFilter.filterType)
   if (!filter) {
     return false
   }
@@ -178,6 +182,7 @@ function useCreateFilteredMenuItems(schema: Schema, titleFilter: string): Search
     state: {
       documentTypesNarrowed,
       terms: {types},
+      definitions,
     },
   } = useSearchState()
 
@@ -186,7 +191,7 @@ function useCreateFilteredMenuItems(schema: Schema, titleFilter: string): Search
 
     // Common filters
     const commonFilters: SearchFilter[] = COMMON_FILTERS.filter((searchFilter) =>
-      includesFilterTitle(searchFilter, titleFilter)
+      includesFilterTitle(definitions.filters, searchFilter, titleFilter)
     )
 
     // Create search filters from field registry
@@ -200,7 +205,7 @@ function useCreateFilteredMenuItems(schema: Schema, titleFilter: string): Search
         type: 'field',
         titlePath: object.titlePath,
       }))
-      .filter((searchFilter) => includesFilterTitle(searchFilter, titleFilter))
+      .filter((searchFilter) => includesFilterTitle(definitions.filters, searchFilter, titleFilter))
 
     // Add common filters
     commonFilters.forEach((searchFilter) => {
@@ -286,7 +291,7 @@ function useCreateFilteredMenuItems(schema: Schema, titleFilter: string): Search
         // Mark any filter items with duplicate titles
         .map((menuItem) => mapDuplicatedTitles(filteredMenuItems, menuItem))
     )
-  }, [documentTypesNarrowed, fieldRegistry, schema, titleFilter, types.length])
+  }, [documentTypesNarrowed, fieldRegistry, schema, titleFilter, types.length, definitions])
 }
 
 function mapDuplicatedTitles(allMenuItems: SearchFilterMenuItem[], menuItem: SearchFilterMenuItem) {

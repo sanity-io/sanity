@@ -1,13 +1,13 @@
 import {FieldInputAsset} from '../../components/filters/filter/inputTypes/Asset'
 import {toJSON} from './operatorUtils'
-import {defineSearchOperator} from './operatorTypes'
+import {defineSearchOperator, SearchOperatorParams} from './operatorTypes'
 
 export const assetOperators = {
   assetEqual: defineSearchOperator({
     buttonLabel: 'is',
-    fn: ({fieldPath, value}: {fieldPath?: string; value?: unknown}) =>
+    fn: ({fieldPath, value}: SearchOperatorParams<unknown>) =>
       value && fieldPath ? `${fieldPath} == ${toJSON(value)}` : null,
-    initialValue: null as unknown,
+    initialValue: null,
     inputComponent: FieldInputAsset,
     label: 'is',
     type: 'assetEqual',

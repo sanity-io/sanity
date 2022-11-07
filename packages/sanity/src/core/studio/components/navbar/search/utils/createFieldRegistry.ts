@@ -6,7 +6,7 @@ import type {
   SchemaTypeDefinition,
 } from '@sanity/types'
 import startCase from 'lodash/startCase'
-import {getSupportedFieldTypes} from '../definitions/filters'
+import {getSupportedFieldTypes, SearchFilterDefinition} from '../definitions/filters'
 import {generateKey} from './generateKey'
 
 export interface ResolvedField {
@@ -24,14 +24,17 @@ export interface ResolvedField {
 const MAX_OBJECT_DEPTH = 4
 const UNSUPPORTED_TYPES = ['crossDatasetReference', 'document', 'object']
 
-export function createFieldRegistry(schema: Schema): ResolvedField[] {
+export function createFieldRegistry(
+  schema: Schema,
+  filterDefinitions: SearchFilterDefinition[]
+): ResolvedField[] {
   // Get document types from current schema
   const originalSchema = schema._original
   const documentTypes: ObjectDefinition[] = []
   const objectTypes: Record<string, ObjectDefinition> = {}
 
   // Get supported filter field types
-  const supportedFieldTypes = getSupportedFieldTypes()
+  const supportedFieldTypes = getSupportedFieldTypes(filterDefinitions)
 
   // Separate documents and everything else
   originalSchema?.types
