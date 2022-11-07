@@ -215,6 +215,10 @@ export interface PluginOptions {
   studio?: {
     components?: StudioComponentsPluginOptions
   }
+  /**
+   * This api is experimental and could change or be removed.
+   * @alpha
+   */
   search?: {
     filters?:
       | SearchFilterDefinition<string>[]

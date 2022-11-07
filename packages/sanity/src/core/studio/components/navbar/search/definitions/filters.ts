@@ -11,6 +11,9 @@ type Operator<TOperators = SearchOperatorType> =
       type: 'item'
     }
 
+/**
+ * @alpha
+ */
 export interface SearchFilterDefinition<TOperators = string> {
   fieldType: IntrinsicTypeName | 'email' | null
   icon: ComponentType
@@ -20,12 +23,18 @@ export interface SearchFilterDefinition<TOperators = string> {
   type: string
 }
 
+/**
+ * @alpha
+ */
 export function defineSearchFilter<TOperators = SearchOperatorType>(
   filterDef: SearchFilterDefinition<TOperators>
 ): typeof filterDef {
   return filterDef
 }
 
+/**
+ * @alpha
+ */
 export function defineSearchFilterOperators<TOperators = SearchOperatorType>(
   operators: Operator<TOperators>[]
 ): typeof operators {

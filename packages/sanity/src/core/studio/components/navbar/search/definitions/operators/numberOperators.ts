@@ -77,4 +77,4 @@ export const numberOperators = {
     label: 'is between',
     type: 'numberRange',
   }),
-} as const
+}

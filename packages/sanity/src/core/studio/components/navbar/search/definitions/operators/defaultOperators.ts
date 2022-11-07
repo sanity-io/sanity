@@ -7,7 +7,7 @@ import {numberOperators} from './numberOperators'
 import {referenceOperators} from './referenceOperators'
 import {stringOperators} from './stringOperators'
 
-export const searchOperators = {
+const searchOperators = {
   ...arrayOperators,
   ...assetOperators,
   ...booleanOperators,
@@ -16,9 +16,16 @@ export const searchOperators = {
   ...numberOperators,
   ...referenceOperators,
   ...stringOperators,
-} as const
+}
 
 type DefaultOperators = typeof searchOperators
+
+/**
+ * @alpha
+ */
 export type SearchOperatorType = keyof DefaultOperators
 
+/**
+ * @internal
+ */
 export const operatorDefinitions = Object.values(searchOperators)

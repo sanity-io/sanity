@@ -12,4 +12,4 @@ export const assetOperators = {
     label: 'is',
     type: 'assetEqual',
   }),
-} as const
+}

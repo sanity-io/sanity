@@ -20,4 +20,4 @@ export const referenceOperators = {
     label: 'references document',
     type: 'references',
   }),
-} as const
+}

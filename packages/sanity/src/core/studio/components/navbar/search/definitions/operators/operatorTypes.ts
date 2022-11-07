@@ -1,7 +1,7 @@
 import {ComponentType} from 'react'
 
 /**
- * @internal
+ * @alpha
  */
 export interface SearchOperatorBase {
   buttonLabel: string
@@ -10,16 +10,32 @@ export interface SearchOperatorBase {
   type: string
 }
 
+/**
+ * @alpha
+ */
 export type SearchOperatorInput<TValue> = ComponentType<OperatorInputComponentProps<TValue>>
 
+/**
+ * @alpha
+ */
 export interface OperatorInputComponentProps<T> {
   value: T | null
   onChange: (value: T | null) => void
 }
 
+/**
+ * @alpha
+ */
 export type SearchOperatorParams<TValue> = {fieldPath?: string; value?: TValue}
+
+/**
+ * @alpha
+ */
 export type ValuelessSearchOperatorParams = {fieldPath?: string}
 
+/**
+ * @alpha
+ */
 export interface SearchOperatorBuilder<TType extends string, TValue> extends SearchOperatorBase {
   fn: (params: SearchOperatorParams<TValue>) => string | null
   initialValue: TValue | null
@@ -27,6 +43,9 @@ export interface SearchOperatorBuilder<TType extends string, TValue> extends Sea
   type: TType
 }
 
+/**
+ * @alpha
+ */
 export interface ValuelessSearchOperatorBuilder<TType extends string> extends SearchOperatorBase {
   fn: (params: ValuelessSearchOperatorParams) => string | null
   initialValue?: never
@@ -34,6 +53,9 @@ export interface ValuelessSearchOperatorBuilder<TType extends string> extends Se
   type: TType
 }
 
+/**
+ * @alpha
+ */
 export function defineSearchOperator<
   TType extends string,
   TValue extends unknown | never,

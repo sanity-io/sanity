@@ -36,4 +36,4 @@ export const stringOperators = {
     label: 'does not contain',
     type: 'stringNotMatches',
   }),
-} as const
+}

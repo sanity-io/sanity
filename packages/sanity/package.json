@@ -83,7 +83,7 @@
   ],
   "scripts": {
     "build": "pkg-utils build --tsconfig tsconfig.lib.json",
-    "check:package": "pkg-utils --strict --tsconfig tsconfig.lib.json",
+    "check:package": "pkg-utils --tsconfig tsconfig.lib.json",
     "clean": "rimraf _internal.js cli.js desk.js lib router.js",
     "coverage": "jest --coverage",
     "postbuild": "run-s check:package",

@@ -13,4 +13,4 @@ export const definedOperators = {
     label: 'empty',
     type: 'notDefined',
   }),
-} as const
+}

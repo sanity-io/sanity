@@ -1,10 +1,10 @@
 import {FieldInputNumber} from '../../components/filters/filter/inputTypes/Number'
-import {toJSON} from './operatorUtils'
-import {defineSearchOperator, SearchOperatorParams} from './operatorTypes'
 import {GtIcon} from '../../components/filters/icons/GtIcon'
 import {GteIcon} from '../../components/filters/icons/GteIcon'
 import {LtIcon} from '../../components/filters/icons/LtIcon'
 import {LteIcon} from '../../components/filters/icons/LteIcon'
+import {toJSON} from './operatorUtils'
+import {defineSearchOperator} from './operatorTypes'
 
 export const arrayOperators = {
   arrayCountEqual: defineSearchOperator({
@@ -65,4 +65,4 @@ export const arrayOperators = {
     label: 'quantity is not',
     type: 'arrayCountNotEqual',
   }),
-} as const
+}

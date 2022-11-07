@@ -12,4 +12,4 @@ export const booleanOperators = {
     label: 'is',
     type: 'booleanEqual',
   }),
-} as const
+}

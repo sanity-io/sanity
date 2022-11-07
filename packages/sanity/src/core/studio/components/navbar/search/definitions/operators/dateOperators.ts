@@ -86,4 +86,4 @@ export const dateOperators = {
     label: 'is between',
     type: 'dateRange',
   }),
-} as const
+}
