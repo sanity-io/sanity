@@ -14,15 +14,15 @@ import {
   tap,
 } from 'rxjs/operators'
 import {useClient} from '../../../../../hooks'
-import {createWeightedSearch, SearchOptions, WeightedHit} from '../../../../../search'
+import {createWeightedSearch, SearchOptions, SearchTerms, WeightedHit} from '../../../../../search'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../../studioClient'
-import type {OmnisearchTerms, SearchState} from '../types'
+import type {SearchState} from '../types'
 import {hasSearchableTerms} from '../utils/hasSearchableTerms'
 import {getSearchableOmnisearchTypes} from '../utils/selectors'
 
 interface SearchRequest {
   options?: SearchOptions
-  terms: OmnisearchTerms
+  terms: SearchTerms
 }
 
 const INITIAL_SEARCH_STATE: SearchState = {
@@ -30,7 +30,6 @@ const INITIAL_SEARCH_STATE: SearchState = {
   hits: [],
   loading: false,
   terms: {
-    filters: [],
     query: '',
     types: [],
   },

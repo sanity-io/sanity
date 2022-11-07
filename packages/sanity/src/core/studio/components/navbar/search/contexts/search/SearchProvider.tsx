@@ -1,13 +1,13 @@
 import isEqual from 'lodash/isEqual'
 import React, {ReactNode, useEffect, useMemo, useReducer, useRef} from 'react'
 import {useClient, useSchema} from '../../../../../../hooks'
-import {SearchableType} from '../../../../../../search'
+import type {SearchableType, SearchTerms} from '../../../../../../search'
 import {useCurrentUser} from '../../../../../../store'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../../../studioClient'
 import {FINDABILITY_MVI, SEARCH_LIMIT} from '../../constants'
-import {createRecentSearchesStore, RecentOmnisearchTerms} from '../../datastores/recentSearches'
+import {createRecentSearchesStore, RecentSearchTerms} from '../../datastores/recentSearches'
 import {useSearch} from '../../hooks/useSearch'
-import type {OmnisearchTerms, SearchOrdering} from '../../types'
+import type {SearchOrdering} from '../../types'
 import {createFieldRegistry} from '../../utils/createFieldRegistry'
 import {hasSearchableTerms} from '../../utils/hasSearchableTerms'
 import {isRecentSearchTerms} from '../../utils/isRecentSearchTerms'
@@ -53,7 +53,7 @@ export function SearchProvider({children}: SearchProviderProps) {
   const isMountedRef = useRef(false)
   const previousOrderingRef = useRef<SearchOrdering>(initialState.ordering)
   const previousPageIndexRef = useRef<number>(initialState.pageIndex)
-  const previousTermsRef = useRef<OmnisearchTerms | RecentOmnisearchTerms>(initialState.terms)
+  const previousTermsRef = useRef<SearchTerms | RecentSearchTerms>(initialState.terms)
 
   const {handleSearch, searchState} = useSearch({
     initialState: {...result, terms},

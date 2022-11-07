@@ -7,18 +7,16 @@ import type {SearchFilter} from '../../../types'
 
 export function DebugFilterQuery() {
   const {
-    state: {
-      terms: {filters},
-    },
+    state: {filters},
   } = useSearchState()
 
-  const [filterQueries, setFilterQueries] = useState<string[]>([])
+  const [filterQuery, setFilterQuery] = useState<string>()
 
   useEffect(() => {
-    setFilterQueries(generateFilterQuery(filters))
+    setFilterQuery(generateFilterQuery(filters))
   }, [filters])
 
-  if (filterQueries.length < 1) {
+  if (!filterQuery) {
     return null
   }
 
@@ -26,17 +24,9 @@ export function DebugFilterQuery() {
     <Card padding={4} tone="transparent">
       <Stack space={3}>
         <Text size={1} weight="semibold">
-          Filters
+          Filter
         </Text>
-        {filterQueries.map((query, index) => (
-          <Code
-            // eslint-disable-next-line react/no-array-index-key
-            key={index}
-            size={1}
-          >
-            {query}
-          </Code>
-        ))}
+        {filterQuery && <Code size={1}>{filterQuery}</Code>}
       </Stack>
     </Card>
   )
@@ -51,6 +41,7 @@ function generateFilterQuery(filters: SearchFilter[]) {
       })
     )
     .filter(isNonNullable)
+    .join(' && ')
 
   return query
 }

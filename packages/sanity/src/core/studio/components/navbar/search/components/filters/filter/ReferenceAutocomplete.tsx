@@ -44,7 +44,6 @@ export const ReferenceAutocomplete = forwardRef(function DebugMiniReferenceInput
       loading: false,
       error: null,
       terms: {
-        filters: [],
         query: '',
         types: [],
       },
@@ -76,7 +75,6 @@ export const ReferenceAutocomplete = forwardRef(function DebugMiniReferenceInput
         handleSearch({
           options: {limit: 10},
           terms: {
-            filters: [],
             query,
             types: [],
           },

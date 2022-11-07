@@ -1,6 +1,6 @@
 import Schema from '@sanity/schema'
 import type {CurrentUser, ObjectSchemaType} from '@sanity/types'
-import type {OmnisearchTerms} from '../types'
+import type {SearchTerms} from '../../../../../search'
 import {createRecentSearchesStore, MAX_RECENT_SEARCHES, RecentSearchesStore} from './recentSearches'
 
 const mockSchema = Schema.compile({
@@ -56,23 +56,19 @@ describe('search-store', () => {
         ...mockArticle,
         name: 'invalid',
       }
-      const searchTerms1: OmnisearchTerms = {
-        filters: [],
+      const searchTerms1: SearchTerms = {
         query: 'foo',
         types: [mockArticle],
       }
-      const searchTerms2: OmnisearchTerms = {
-        filters: [],
+      const searchTerms2: SearchTerms = {
         query: '',
         types: [mockInvalidType],
       }
-      const searchTerms3: OmnisearchTerms = {
-        filters: [],
+      const searchTerms3: SearchTerms = {
         query: 'bar',
         types: [mockInvalidType],
       }
-      const searchTerms4: OmnisearchTerms = {
-        filters: [],
+      const searchTerms4: SearchTerms = {
         query: 'baz',
         types: [mockArticle, mockInvalidType],
       }
@@ -86,13 +82,11 @@ describe('search-store', () => {
     })
 
     it('should filter out search terms with document types hidden from omnisearch', () => {
-      const searchTerms1: OmnisearchTerms = {
-        filters: [],
+      const searchTerms1: SearchTerms = {
         query: 'foo',
         types: [mockArticle],
       }
-      const searchTerms2: OmnisearchTerms = {
-        filters: [],
+      const searchTerms2: SearchTerms = {
         query: 'bar',
         types: [mockBook],
       }
@@ -104,8 +98,7 @@ describe('search-store', () => {
     })
 
     it('should return recent terms', () => {
-      const searchTerms: OmnisearchTerms = {
-        filters: [],
+      const searchTerms: SearchTerms = {
         query: 'test1',
         types: [mockArticle],
       }
@@ -117,13 +110,11 @@ describe('search-store', () => {
     })
 
     it('should remove duplicate terms', () => {
-      const search1: OmnisearchTerms = {
-        filters: [],
+      const search1: SearchTerms = {
         query: '1',
         types: [mockArticle],
       }
-      const search2: OmnisearchTerms = {
-        filters: [],
+      const search2: SearchTerms = {
         query: '2',
         types: [mockArticle],
       }
@@ -151,7 +142,6 @@ describe('search-store', () => {
       // eslint-disable-next-line max-nested-callbacks
       ;[...Array(MAX_RECENT_SEARCHES + 10).keys()].forEach((i) =>
         recentSearchesStore.addSearchTerm({
-          filters: [],
           query: `${i}`,
           types: [],
         })
@@ -164,13 +154,11 @@ describe('search-store', () => {
   })
   describe('addSearchTerms', () => {
     it('should trim search queries before adding', () => {
-      const searchTerms1: OmnisearchTerms = {
-        filters: [],
+      const searchTerms1: SearchTerms = {
         query: 'foo',
         types: [mockArticle],
       }
-      const searchTerms2: OmnisearchTerms = {
-        filters: [],
+      const searchTerms2: SearchTerms = {
         query: ' foo ',
         types: [mockArticle],
       }
@@ -183,13 +171,11 @@ describe('search-store', () => {
   })
   describe('removeSearchTerms', () => {
     it('should delete all saved searches', () => {
-      const searchTerms1: OmnisearchTerms = {
-        filters: [],
+      const searchTerms1: SearchTerms = {
         query: '1',
         types: [mockArticle],
       }
-      const searchTerms2: OmnisearchTerms = {
-        filters: [],
+      const searchTerms2: SearchTerms = {
         query: '2',
         types: [mockArticle],
       }
@@ -204,13 +190,11 @@ describe('search-store', () => {
   })
   describe('removeSearchTermAtIndex', () => {
     it('should delete saved searches by index', () => {
-      const searchTerms1: OmnisearchTerms = {
-        filters: [],
+      const searchTerms1: SearchTerms = {
         query: '1',
         types: [mockArticle],
       }
-      const searchTerms2: OmnisearchTerms = {
-        filters: [],
+      const searchTerms2: SearchTerms = {
         query: '2',
         types: [mockArticle],
       }
@@ -227,8 +211,7 @@ describe('search-store', () => {
     })
 
     it('should no-op when deleting out of range indices', () => {
-      const searchTerms: OmnisearchTerms = {
-        filters: [],
+      const searchTerms: SearchTerms = {
         query: '1',
         types: [mockArticle],
       }

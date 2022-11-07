@@ -1,8 +1,8 @@
 import {Box, Button, Label, Stack, Text, useMediaIndex} from '@sanity/ui'
 import React, {Dispatch, MouseEvent, SetStateAction, useCallback, useMemo} from 'react'
 import styled from 'styled-components'
+import type {SearchTerms} from '../../../../../../search'
 import {useSearchState} from '../../contexts/search/useSearchState'
-import type {OmnisearchTerms} from '../../types'
 import {Instructions} from '../Instructions'
 import {PointerOverlay} from '../PointerOverlay'
 import {RecentSearchItem} from './RecentSearchItem'
@@ -54,7 +54,7 @@ export function RecentSearches({
   }, [dispatch, recentSearchesStore, onClear])
 
   const handleRecentSearchClick = useCallback(
-    (searchTerms: OmnisearchTerms) => {
+    (searchTerms: SearchTerms) => {
       // Optionally show filters panel if search terms are present
       if (showFiltersOnClick && searchTerms.types.length) {
         dispatch({type: 'FILTERS_VISIBLE_SET', visible: true})

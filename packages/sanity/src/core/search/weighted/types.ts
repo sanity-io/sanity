@@ -4,6 +4,7 @@ import type {ObjectSchemaType} from '@sanity/types'
  * @internal
  */
 export interface SearchTerms {
+  filter?: string
   query: string
   types: SearchableType[]
 }

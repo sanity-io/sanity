@@ -9,8 +9,9 @@ export function Filters() {
   const {
     dispatch,
     state: {
+      filters,
       lastAddedFilter,
-      terms: {filters, types},
+      terms: {types},
     },
   } = useSearchState()
 

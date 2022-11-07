@@ -3,12 +3,13 @@
 import type {CurrentUser} from '@sanity/types'
 import intersection from 'lodash/intersection'
 import union from 'lodash/union'
-import type {SearchableType, WeightedHit} from '../../../../../../search'
-import type {RecentOmnisearchTerms} from '../../datastores/recentSearches'
+import type {SearchableType, SearchTerms, WeightedHit} from '../../../../../../search'
+import {isNonNullable} from '../../../../../../util'
+import type {RecentSearchTerms} from '../../datastores/recentSearches'
 import {getFilterDefinitionInitialOperator} from '../../definitions/filters'
 import {getOperator, getOperatorInitialValue, OperatorType} from '../../definitions/operators'
 import {ORDERINGS} from '../../definitions/orderings'
-import type {OmnisearchTerms, SearchFilter, SearchOrdering} from '../../types'
+import type {SearchFilter, SearchOrdering} from '../../types'
 import {debugWithName, isDebugMode} from '../../utils/debug'
 import {generateKey} from '../../utils/generateKey'
 import {isRecentSearchTerms} from '../../utils/isRecentSearchTerms'
@@ -18,13 +19,14 @@ export interface SearchReducerState {
   currentUser: CurrentUser | null
   debug: boolean
   documentTypesNarrowed: string[]
+  filters: SearchFilter[]
   filtersVisible: boolean
   lastAddedFilter?: SearchFilter
   ordering: SearchOrdering
   pageIndex: number
-  recentSearches: RecentOmnisearchTerms[]
+  recentSearches: RecentSearchTerms[]
   result: SearchResult
-  terms: RecentOmnisearchTerms | OmnisearchTerms
+  terms: RecentSearchTerms | SearchTerms
 }
 
 export interface SearchResult {
@@ -37,12 +39,13 @@ export interface SearchResult {
 
 export function initialSearchState(
   currentUser: CurrentUser | null,
-  recentSearches?: RecentOmnisearchTerms[]
+  recentSearches?: RecentSearchTerms[]
 ): SearchReducerState {
   return {
     currentUser,
     debug: isDebugMode(),
     documentTypesNarrowed: [],
+    filters: [],
     filtersVisible: true,
     ordering: ORDERINGS.relevance,
     pageIndex: 0,
@@ -55,7 +58,6 @@ export function initialSearchState(
       loading: false,
     },
     terms: {
-      filters: [],
       query: '',
       types: [],
     },
@@ -65,7 +67,7 @@ export function initialSearchState(
 export type FiltersVisibleSet = {type: 'FILTERS_VISIBLE_SET'; visible: boolean}
 export type PageIncrement = {type: 'PAGE_INCREMENT'}
 export type RecentSearchesSet = {
-  recentSearches: RecentOmnisearchTerms[]
+  recentSearches: RecentSearchTerms[]
   type: 'RECENT_SEARCHES_SET'
 }
 export type OrderingReset = {type: 'ORDERING_RESET'}
@@ -91,7 +93,7 @@ export type TermsFiltersSetValue = {
   value?: any
 }
 export type TermsQuerySet = {type: 'TERMS_QUERY_SET'; query: string}
-export type TermsSet = {type: 'TERMS_SET'; terms: OmnisearchTerms}
+export type TermsSet = {type: 'TERMS_SET'; terms: SearchTerms}
 export type TermsTypeAdd = {type: 'TERMS_TYPE_ADD'; schemaType: SearchableType}
 export type TermsTypeRemove = {type: 'TERMS_TYPE_REMOVE'; schemaType: SearchableType}
 export type TermsTypesClear = {type: 'TERMS_TYPES_CLEAR'}
@@ -212,89 +214,97 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
         value: operatorType && getOperatorInitialValue(operatorType),
       }
 
-      const terms = {
-        ...state.terms,
-        filters: [
-          ...state.terms.filters, //
-          newFilter,
-        ],
-      }
+      const filters = [
+        ...state.filters, //
+        newFilter,
+      ]
 
       return {
         ...state,
-        documentTypesNarrowed: narrowDocumentTypes(terms),
+        documentTypesNarrowed: narrowDocumentTypes(state.terms.types, filters),
+        filters,
         lastAddedFilter: newFilter,
-        terms,
+        terms: {
+          ...state.terms,
+          filter: generateFilterQuery(filters),
+        },
       }
     }
     case 'TERMS_FILTERS_CLEAR': {
-      const terms = {
-        ...state.terms,
-        filters: [],
-      }
+      const filters: SearchFilter[] = []
       return {
         ...state,
-        documentTypesNarrowed: narrowDocumentTypes(terms),
-        terms,
+        documentTypesNarrowed: narrowDocumentTypes(state.terms.types, filters),
+        filters,
+        terms: {
+          ...state.terms,
+          filter: generateFilterQuery(filters),
+        },
       }
     }
     case 'TERMS_FILTERS_REMOVE': {
-      const index = state.terms.filters.findIndex((filter) => filter._key === action._key)
+      const index = state.filters.findIndex((filter) => filter._key === action._key)
 
-      const terms = {
-        ...state.terms,
-        filters: [
-          ...state.terms.filters.slice(0, index), //
-          ...state.terms.filters.slice(index + 1),
-        ],
-      }
+      const filters = [
+        ...state.filters.slice(0, index), //
+        ...state.filters.slice(index + 1),
+      ]
 
       return {
         ...state,
-        documentTypesNarrowed: narrowDocumentTypes(terms),
-        terms,
+        documentTypesNarrowed: narrowDocumentTypes(state.terms.types, filters),
+        filters,
+        terms: {
+          ...state.terms,
+          filter: generateFilterQuery(filters),
+        },
       }
     }
     case 'TERMS_FILTERS_SET_OPERATOR': {
       // Compare input components between current and target operators, and update
       // target filter value if it has changed.
-      const matchedFilter = state.terms.filters.find((filter) => filter._key === action.key)
+      const matchedFilter = state.filters.find((filter) => filter._key === action.key)
       const currentOperator = getOperator(matchedFilter?.operatorType)
       const nextOperator = getOperator(action.operatorType)
       const nextInitialValue = getOperatorInitialValue(action.operatorType)
       const inputComponentChanged = currentOperator?.inputComponent != nextOperator?.inputComponent
 
+      const filters = state.filters.map((filter) => {
+        if (filter._key === action.key) {
+          return {
+            ...filter,
+            operatorType: action.operatorType,
+            ...(inputComponentChanged ? {value: nextInitialValue} : {}),
+          }
+        }
+        return filter
+      })
+
       return {
         ...state,
+        filters,
         terms: {
           ...state.terms,
-          filters: state.terms.filters.map((filter) => {
-            if (filter._key === action.key) {
-              return {
-                ...filter,
-                operatorType: action.operatorType,
-                ...(inputComponentChanged ? {value: nextInitialValue} : {}),
-              }
-            }
-            return filter
-          }),
+          filter: generateFilterQuery(filters),
         },
       }
     }
     case 'TERMS_FILTERS_SET_VALUE': {
+      const filters = state.filters.map((filter) => {
+        if (filter._key === action.key) {
+          return {
+            ...filter,
+            value: action.value,
+          }
+        }
+        return filter
+      })
       return {
         ...state,
+        filters,
         terms: {
           ...state.terms,
-          filters: state.terms.filters.map((filter) => {
-            if (filter._key === action.key) {
-              return {
-                ...filter,
-                value: action.value,
-              }
-            }
-            return filter
-          }),
+          filter: generateFilterQuery(filters),
         },
       }
     }
@@ -322,55 +332,62 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
         terms: action.terms,
       }
     case 'TERMS_TYPE_ADD': {
-      const terms = stripRecent({
-        ...state.terms,
-        filters: [], // Clear all filters
-        types: [
-          ...(state.terms.types || []), //
-          action.schemaType,
-        ].sort(sortTypes),
-      })
+      // Clear all filters
+      const filters: SearchFilter[] = []
+
+      const types = [
+        ...(state.terms.types || []), //
+        action.schemaType,
+      ].sort(sortTypes)
+
       return {
         ...state,
-        documentTypesNarrowed: narrowDocumentTypes(terms),
+        documentTypesNarrowed: narrowDocumentTypes(types, filters),
+        filters,
         pageIndex: 0,
         result: {
           ...state.result,
           loaded: false,
         },
-        terms,
+        terms: stripRecent({
+          ...state.terms,
+          filter: generateFilterQuery(filters),
+          types,
+        }),
       }
     }
     case 'TERMS_TYPE_REMOVE': {
-      const terms = stripRecent({
-        ...state.terms,
-        types: (state.terms.types || []).filter((s) => s !== action.schemaType),
-      })
+      const types = (state.terms.types || []).filter((s) => s !== action.schemaType)
+
       return {
         ...state,
-        documentTypesNarrowed: narrowDocumentTypes(terms),
+        documentTypesNarrowed: narrowDocumentTypes(types, state.filters),
         pageIndex: 0,
         result: {
           ...state.result,
           loaded: false,
         },
-        terms,
+        terms: stripRecent({
+          ...state.terms,
+          types,
+        }),
       }
     }
     case 'TERMS_TYPES_CLEAR': {
-      const terms = stripRecent({
-        ...state.terms,
-        types: [],
-      })
+      const types: SearchableType[] = []
       return {
         ...state,
-        documentTypesNarrowed: narrowDocumentTypes(terms),
+        documentTypesNarrowed: narrowDocumentTypes(types, state.filters),
         pageIndex: 0,
         result: {
           ...state.result,
           loaded: false,
         },
-        terms,
+        terms: stripRecent({
+          ...state.terms,
+          filter: '',
+          types: [],
+        }),
       }
     }
     default:
@@ -388,7 +405,7 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
  *
  * TODO: remove this (and associated tests) once client-side instrumentation is available
  */
-function stripRecent(terms: RecentOmnisearchTerms | OmnisearchTerms) {
+function stripRecent(terms: RecentSearchTerms | SearchTerms) {
   if (isRecentSearchTerms(terms)) {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const {__recent, ...rest} = terms
@@ -397,8 +414,7 @@ function stripRecent(terms: RecentOmnisearchTerms | OmnisearchTerms) {
   return terms
 }
 
-function narrowDocumentTypes(terms: RecentOmnisearchTerms | OmnisearchTerms): string[] {
-  const {filters, types} = terms
+function narrowDocumentTypes(types: SearchableType[], filters: SearchFilter[]): string[] {
   // Selected document types
   const selectedDocumentTypes = types.map((type) => type.name)
   // Intersecting document types across all filters
@@ -413,4 +429,18 @@ function narrowDocumentTypes(terms: RecentOmnisearchTerms | OmnisearchTerms): st
     return intersection(selectedDocumentTypes, intersectionFilterDocumentTypes)
   }
   return union(selectedDocumentTypes, intersectionFilterDocumentTypes)
+}
+
+function generateFilterQuery(filters: SearchFilter[]) {
+  const query = filters
+    .map((filter) =>
+      getOperator(filter.operatorType)?.fn({
+        fieldPath: filter?.fieldPath,
+        value: filter?.value,
+      })
+    )
+    .filter(isNonNullable)
+    .join(' && ')
+
+  return query
 }

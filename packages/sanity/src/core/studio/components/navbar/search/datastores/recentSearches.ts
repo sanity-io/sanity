@@ -1,5 +1,5 @@
 import type {CurrentUser, ObjectSchemaType, Schema} from '@sanity/types'
-import type {OmnisearchTerms} from '../types'
+import type {SearchTerms} from '../../../../../search'
 import {getSearchableOmnisearchTypes} from '../utils/selectors'
 
 const SEARCH_TERMS_KEY = 'search-terms::recent'
@@ -7,7 +7,7 @@ export const MAX_RECENT_SEARCHES = 5
 // might come in handy in the future
 const CURRENT_VERSION = 1
 
-export type RecentOmnisearchTerms = OmnisearchTerms & {
+export type RecentSearchTerms = SearchTerms & {
   __recent: {
     index: number
     timestamp: number
@@ -15,10 +15,10 @@ export type RecentOmnisearchTerms = OmnisearchTerms & {
 }
 
 export interface RecentSearchesStore {
-  addSearchTerm: (searchTerm: OmnisearchTerms) => RecentOmnisearchTerms[]
-  getRecentSearchTerms: () => RecentOmnisearchTerms[]
-  removeSearchTerms: () => RecentOmnisearchTerms[]
-  removeSearchTermAtIndex: (index: number) => RecentOmnisearchTerms[]
+  addSearchTerm: (searchTerm: SearchTerms) => RecentSearchTerms[]
+  getRecentSearchTerms: () => RecentSearchTerms[]
+  removeSearchTerms: () => RecentSearchTerms[]
+  removeSearchTermAtIndex: (index: number) => RecentSearchTerms[]
 }
 
 interface StoredSearch {
@@ -28,7 +28,7 @@ interface StoredSearch {
 
 interface StoredSearchItem {
   created: string
-  terms: Omit<OmnisearchTerms, 'types'> & {typeNames: string[]}
+  terms: Omit<SearchTerms, 'types'> & {typeNames: string[]}
 }
 
 export function createRecentSearchesStore({
@@ -52,11 +52,10 @@ export function createRecentSearchesStore({
     /**
      * Write a search term to Local Storage and return updated recent searches.
      */
-    addSearchTerm: (searchTerm: OmnisearchTerms): RecentOmnisearchTerms[] => {
+    addSearchTerm: (searchTerm: SearchTerms): RecentSearchTerms[] => {
       const saveTerm: StoredSearchItem = {
         created: new Date().toISOString(),
         terms: {
-          filters: [],
           query: searchTerm.query.trim(),
           typeNames: searchTerm.types.map((s) => s.name),
         },
@@ -136,7 +135,7 @@ function getRecentStoredSearchTerms(lsKey: string): StoredSearch {
  * Get a list of recent searches from Local Storage.
  * Recent searches contain full document schemas.
  */
-function getRecentSearchTerms(lsKey: string, schema: Schema): RecentOmnisearchTerms[] {
+function getRecentSearchTerms(lsKey: string, schema: Schema): RecentSearchTerms[] {
   const storedSearchTerms = getRecentStoredSearchTerms(lsKey)
 
   return sanitizeStoredSearchTerms(schema, storedSearchTerms, lsKey)
@@ -146,7 +145,6 @@ function getRecentSearchTerms(lsKey: string, schema: Schema): RecentOmnisearchTe
         index,
         timestamp: new Date(r.created).getTime(),
       },
-      filters: [],
       query: r.terms.query,
       types: r.terms.typeNames
         .map((typeName) => schema.get(typeName))
