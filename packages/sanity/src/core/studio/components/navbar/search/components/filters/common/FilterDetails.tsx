@@ -15,7 +15,6 @@ interface FilterDetailsProps {
 const CodeWithOverflow = styled.span`
   font-family: ${({theme}) => theme.sanity.fonts.code.family};
   font-size: ${({theme}) => rem(theme.sanity.fonts.code.sizes[0].fontSize)};
-  opacity: 0.6;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -29,7 +28,7 @@ export function FilterDetails({filter, showSubtitle}: FilterDetailsProps) {
         <Text
           // muted
           size={0}
-          style={{opacity: 0.6}}
+          style={{opacity: 0.7}}
         >
           {filter.titlePath.slice(0, -1).map((pathTitle, index) => {
             return (

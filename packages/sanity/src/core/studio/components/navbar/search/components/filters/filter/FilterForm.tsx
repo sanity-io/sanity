@@ -33,7 +33,7 @@ export function FilterForm({filter}: FilterFormProps) {
       <Card borderBottom padding={3}>
         <Stack space={3}>
           {/* Title */}
-          <Box marginY={1}>
+          <Box marginY={1} paddingRight={2}>
             <FilterDetails filter={filter} />
           </Box>
           {/* Operator */}
