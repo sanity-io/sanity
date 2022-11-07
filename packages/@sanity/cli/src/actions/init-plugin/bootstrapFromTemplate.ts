@@ -7,7 +7,7 @@ import decompress from 'decompress'
 import resolveFrom from 'resolve-from'
 import validateNpmPackageName from 'validate-npm-package-name'
 import {absolutify, pathIsEmpty} from '@sanity/util/fs'
-import * as pkg from '../../../package.json'
+import {getCliVersion} from '../../util/getCliVersion'
 import {readJson} from '../../util/readJson'
 import {dynamicRequire} from '../../util/dynamicRequire'
 import {SanityJson} from '../../types'
@@ -36,6 +36,7 @@ export async function bootstrapFromTemplate(
   dependencies: any
 }> {
   const {prompt, workDir} = context
+  const cliVersion = await getCliVersion()
   let inProjectContext = false
   try {
     const projectManifest = await readJson<SanityJson>(path.join(workDir, 'sanity.json'))
@@ -81,7 +82,7 @@ export async function bootstrapFromTemplate(
 
   if (minimumBaseVersion) {
     debug('Template requires Sanity version %s', minimumBaseVersion)
-    const installed = getSanityVersion(workDir)
+    const installed = getSanityVersion(workDir, cliVersion)
     debug('Installed Sanity version is %s', installed)
 
     if (semver.lt(installed, minimumBaseVersion)) {
@@ -93,11 +94,11 @@ export async function bootstrapFromTemplate(
 
   if (minimumCliVersion) {
     debug('Template requires Sanity CLI version %s', minimumCliVersion)
-    debug('Installed CLI version is %s', pkg.version)
+    debug('Installed CLI version is %s', cliVersion)
 
-    if (semver.lt(pkg.version, minimumCliVersion)) {
+    if (semver.lt(cliVersion, minimumCliVersion)) {
       throw new Error(
-        `Template requires @sanity/cli at version ${minimumCliVersion}, installed is ${pkg.version}`
+        `Template requires @sanity/cli at version ${minimumCliVersion}, installed is ${cliVersion}`
       )
     }
   }
@@ -186,8 +187,8 @@ function parseJson<T = any>(json: string): T | undefined {
   }
 }
 
-function getSanityVersion(workDir: string): string {
+function getSanityVersion(workDir: string, fallback: string): string {
   // This is only used in v2, thus `@sanity/base`
   const basePkg = resolveFrom.silent(workDir, '@sanity/base/package.json')
-  return basePkg ? dynamicRequire(basePkg).version : pkg.version
+  return basePkg ? dynamicRequire(basePkg).version : fallback
 }

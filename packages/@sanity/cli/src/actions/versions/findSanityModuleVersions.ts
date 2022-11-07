@@ -3,10 +3,10 @@ import promiseProps from 'promise-props-recursive'
 import semver from 'semver'
 import semverCompare from 'semver-compare'
 import getLatestVersion from 'get-latest-version'
-import * as pkg from '../../../package.json'
 import type {CliCommandContext, PackageJson} from '../../types'
 import {dynamicRequire} from '../../util/dynamicRequire'
 import {getLocalVersion} from '../../util/getLocalVersion'
+import {getCliVersion} from '../../util/getCliVersion'
 
 /*
  * The `sanity upgrade` command should only be responsible for upgrading the
@@ -62,6 +62,7 @@ export async function findSanityModuleVersions(
 ): Promise<ModuleVersionResult[]> {
   const {spinner} = context.output
   const {target, includeCli} = {...defaultOptions, ...options}
+  const cliVersion = await getCliVersion()
 
   // Declared @sanity modules and their wanted version ranges in package.json
   const sanityModules = filterSanityModules(getLocalManifest(context.workDir))
@@ -70,7 +71,7 @@ export async function findSanityModuleVersions(
   const resolveOpts = {includeCli, target}
   const spin = spinner('Resolving latest versions').start()
   const versions = await promiseProps<ModuleVersionInfo[]>(
-    buildPackageArray(sanityModules, context.workDir, resolveOpts)
+    buildPackageArray(sanityModules, context.workDir, resolveOpts, cliVersion)
   )
 
   const packages = Object.values(versions)
@@ -114,18 +115,19 @@ function filterSanityModules(manifest: Partial<PackageJson>): Record<string, str
 function buildPackageArray(
   packages: Record<string, string>,
   workDir: string,
-  options: FindModuleVersionOptions = {}
+  options: FindModuleVersionOptions = {},
+  cliVersion: string
 ): PromisedModuleVersionInfo[] {
   const {includeCli, target} = options
 
   const modules = []
   if (includeCli) {
-    const [cliMajor] = pkg.version.split('.')
-    const latest = tryFindLatestVersion(pkg.name, target || `^${cliMajor}`)
+    const [cliMajor] = cliVersion.split('.')
+    const latest = tryFindLatestVersion('@sanity/cli', target || `^${cliMajor}`)
     modules.push({
-      name: pkg.name,
-      declared: `^${pkg.version}`,
-      installed: trimHash(pkg.version),
+      name: '@sanity/cli',
+      declared: `^${cliVersion}`,
+      installed: trimHash(cliVersion),
       latest: latest.then((versions) => versions.latest),
       latestInRange: latest.then((versions) => versions.latestInRange),
       isPinned: false,

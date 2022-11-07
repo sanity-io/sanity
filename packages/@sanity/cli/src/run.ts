@@ -1,5 +1,7 @@
 import path from 'path'
-import {version} from '../package.json'
 import {runCli} from './cli'
+import {getCliVersion} from './util/getCliVersion'
 
-runCli(path.join(__dirname, '..'), {cliVersion: version})
+getCliVersion().then((cliVersion) => {
+  runCli(path.join(__dirname, '..'), {cliVersion})
+})
