@@ -416,9 +416,12 @@ function stripRecent(terms: RecentSearchTerms | SearchTerms) {
 function narrowDocumentTypes(types: SearchableType[], filters: SearchFilter[]): string[] {
   // Selected document types
   const selectedDocumentTypes = types.map((type) => type.name)
-  // Intersecting document types across all filters
+  // Intersecting document types across all active filters (that have at least one document type).
+  // Filters that have no document types (i.e. that are available to all) are ignored.
   const intersectionFilterDocumentTypes = intersection(
-    ...filters.map((filter) => filter.documentTypes || [])
+    ...filters
+      .filter((filter) => filter.documentTypes.length > 0)
+      .map((filter) => filter.documentTypes)
   )
 
   const hasSelectedDocumentTypes = types.length > 0
