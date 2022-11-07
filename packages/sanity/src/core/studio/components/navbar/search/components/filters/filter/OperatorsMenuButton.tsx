@@ -1,7 +1,6 @@
-import {CheckmarkIcon, SelectIcon} from '@sanity/icons'
+import {SelectIcon} from '@sanity/icons'
 import {Box, Button, Flex, Inline, Menu, MenuButton, MenuDivider, MenuItem, Text} from '@sanity/ui'
-import React, {useCallback, useId} from 'react'
-import styled from 'styled-components'
+import React, {createElement, useCallback, useId} from 'react'
 import {useSearchState} from '../../../contexts/search/useSearchState'
 import {getFilterDefinition} from '../../../definitions/filters'
 import {getOperator, Operator, OperatorType} from '../../../definitions/operators'
@@ -11,10 +10,6 @@ interface OperatorsMenuButtonProps {
   filter: SearchFilter
   operator?: Operator
 }
-
-const IconWrapperBox = styled(Box)<{$visible: boolean}>`
-  visibility: ${({$visible}) => ($visible ? 'visible' : 'hidden')};
-`
 
 function CustomMenuItem({
   onClick,
@@ -28,18 +23,24 @@ function CustomMenuItem({
   const handleClick = useCallback(() => onClick(operator.type), [onClick, operator.type])
 
   return (
-    <MenuItem onClick={handleClick} padding={3} selected={selected} tone="default">
-      <Flex align="center" justify="space-between" gap={4}>
-        <Inline space={1}>
+    <MenuItem
+      onClick={handleClick}
+      padding={3}
+      pressed={selected}
+      selected={selected}
+      tone="default"
+    >
+      <Flex align="center" justify="space-between" gap={3}>
+        <Box paddingRight={2}>
           <Text size={1} weight="regular">
             {operator.label}
           </Text>
-        </Inline>
-        <IconWrapperBox $visible={selected}>
-          <Text size={1}>
-            <CheckmarkIcon />
+        </Box>
+        {operator?.icon && (
+          <Text muted size={1}>
+            {createElement(operator.icon)}
           </Text>
-        </IconWrapperBox>
+        )}
       </Flex>
     </MenuItem>
   )
