@@ -8,7 +8,6 @@ import {SUBHEADER_HEIGHT_SMALL} from '../../../constants'
 import {CommandListProvider} from '../../../contexts/commandList'
 import {useSearchState} from '../../../contexts/search/useSearchState'
 import {getFilterDefinition} from '../../../definitions/filters'
-import {useAvailableDocumentTypes} from '../../../hooks/useAvailableDocumentTypes'
 import type {SearchFilterMenuItem, SearchFilter} from '../../../types'
 import {generateKey} from '../../../utils/generateKey'
 import {CustomTextInput} from '../../CustomTextInput'
@@ -141,12 +140,12 @@ export function AddFilterPopoverContent({onClose}: AddFilterPopoverContentProps)
   )
 }
 
-function includesDocumentTypes(availableDocumentTypes: string[], searchFilter: SearchFilter) {
-  return searchFilter.documentTypes.some((type) => availableDocumentTypes.includes(type))
+function includesDocumentTypes(documentTypes: string[], searchFilter: SearchFilter) {
+  return searchFilter.documentTypes.some((type) => documentTypes.includes(type))
 }
 
-function sharesDocumentTypes(availableDocumentTypes: string[], searchFilter: SearchFilter) {
-  return difference(availableDocumentTypes, searchFilter.documentTypes || []).length === 0
+function sharesDocumentTypes(documentTypes: string[], searchFilter: SearchFilter) {
+  return difference(documentTypes, searchFilter.documentTypes || []).length === 0
 }
 
 function includesFilterTitle(searchFilter: SearchFilter, currentTitle: string) {
@@ -171,11 +170,10 @@ function useCreateFilteredMenuItems(titleFilter: string): SearchFilterMenuItem[]
   const {
     fieldRegistry,
     state: {
+      documentTypesNarrowed,
       terms: {types},
     },
   } = useSearchState()
-
-  const availableDocumentTypes = useAvailableDocumentTypes()
 
   return useMemo(() => {
     const filteredMenuItems: SearchFilterMenuItem[] = []
@@ -200,18 +198,18 @@ function useCreateFilteredMenuItems(titleFilter: string): SearchFilterMenuItem[]
 
     // Extract shared filters (when more than 1 document type is selected)
     let sharedFilters: SearchFilter[] = []
-    // if (availableDocumentTypes.length > 1 && (filters.length > 1 || types.length > 1)) {
-    if (availableDocumentTypes.length > 1 && types.length > 1) {
+    // if (documentTypesNarrowed.length > 1 && (filters.length > 1 || types.length > 1)) {
+    if (documentTypesNarrowed.length > 1 && types.length > 1) {
       sharedFilters = allFilters.filter((searchFilter) =>
-        sharesDocumentTypes(availableDocumentTypes, searchFilter)
+        sharesDocumentTypes(documentTypesNarrowed, searchFilter)
       )
     }
 
     // Extract applicable fields
     let applicableFilters: SearchFilter[] = []
-    if (availableDocumentTypes.length > 0) {
+    if (documentTypesNarrowed.length > 0) {
       applicableFilters = allFilters.filter((searchFilter) =>
-        includesDocumentTypes(availableDocumentTypes, searchFilter)
+        includesDocumentTypes(documentTypesNarrowed, searchFilter)
       )
     }
 
@@ -239,7 +237,7 @@ function useCreateFilteredMenuItems(titleFilter: string): SearchFilterMenuItem[]
     }
 
     // Add all fields
-    if (availableDocumentTypes.length === 0) {
+    if (documentTypesNarrowed.length === 0) {
       const groupTitle = 'All fields'
       if (allFilters.length > 0) {
         filteredMenuItems.push({title: groupTitle, type: 'header'})
@@ -250,7 +248,7 @@ function useCreateFilteredMenuItems(titleFilter: string): SearchFilterMenuItem[]
     }
 
     return filteredMenuItems.map((menuItem) => mapDuplicatedTitles(filteredMenuItems, menuItem))
-  }, [availableDocumentTypes, fieldRegistry, titleFilter, types.length])
+  }, [documentTypesNarrowed, fieldRegistry, titleFilter, types.length])
 }
 
 function mapDuplicatedTitles(allMenuItems: SearchFilterMenuItem[], menuItem: SearchFilterMenuItem) {
