@@ -10,6 +10,10 @@ import {FieldInputNumber} from '../components/filters/filter/inputTypes/Number'
 import {FieldInputNumberRange} from '../components/filters/filter/inputTypes/NumberRange'
 import {FieldInputReference} from '../components/filters/filter/inputTypes/Reference'
 import {FieldInputString} from '../components/filters/filter/inputTypes/String'
+import {GteIcon} from '../components/filters/icons/GteIcon'
+import {GtIcon} from '../components/filters/icons/GtIcon'
+import {LteIcon} from '../components/filters/icons/LteIcon'
+import {LtIcon} from '../components/filters/icons/LtIcon'
 
 /**
  * @internal
@@ -17,6 +21,7 @@ import {FieldInputString} from '../components/filters/filter/inputTypes/String'
 interface BaseOperator {
   buttonLabel: string
   fn: unknown
+  icon?: ComponentType
   label: string
   type: string
 }
@@ -111,36 +116,40 @@ const OPERATORS: Operator[] = [
     buttonLabel: 'has >',
     fn: ({fieldPath, value}) =>
       value && fieldPath ? `count(${fieldPath}) > ${toJSON(value)}` : null,
+    icon: GtIcon,
     initialValue: null,
     inputComponent: FieldInputNumber,
-    label: 'quantity more than (>)',
+    label: 'quantity more than',
     type: 'arrayCountGt',
   },
   {
     buttonLabel: 'has ≥',
     fn: ({fieldPath, value}) =>
       value && fieldPath ? `count(${fieldPath}) >= ${toJSON(value)}` : null,
+    icon: GteIcon,
     initialValue: null,
     inputComponent: FieldInputNumber,
-    label: 'quantity more than (≥)',
+    label: 'quantity more than',
     type: 'arrayCountGte',
   },
   {
     buttonLabel: 'has <',
     fn: ({fieldPath, value}) =>
       value && fieldPath ? `count(${fieldPath}) < ${toJSON(value)}` : null,
+    icon: LtIcon,
     initialValue: null,
     inputComponent: FieldInputNumber,
-    label: 'quantity less than (<)',
+    label: 'quantity less than',
     type: 'arrayCountLt',
   },
   {
     buttonLabel: 'has ≤',
     fn: ({fieldPath, value}) =>
       value && fieldPath ? `count(${fieldPath}) <= ${toJSON(value)}` : null,
+    icon: LteIcon,
     initialValue: null,
     inputComponent: FieldInputNumber,
-    label: 'quantity less than (≤)',
+    label: 'quantity less than',
     type: 'arrayCountLte',
   },
   {
@@ -262,36 +271,40 @@ const OPERATORS: Operator[] = [
     buttonLabel: '>',
     fn: ({fieldPath, value}) =>
       isFinite(value) && fieldPath ? `${fieldPath} > ${toJSON(value)}` : null,
+    icon: GtIcon,
     inputComponent: FieldInputNumber,
     initialValue: null,
-    label: 'greater than (>)',
+    label: 'greater than',
     type: 'numberGt',
   },
   {
     buttonLabel: '≥',
     fn: ({fieldPath, value}) =>
       isFinite(value) && fieldPath ? `${fieldPath} >= ${toJSON(value)}` : null,
+    icon: GteIcon,
     inputComponent: FieldInputNumber,
     initialValue: null,
-    label: 'greater than or equal to (≥)',
+    label: 'greater than or equal to',
     type: 'numberGte',
   },
   {
     buttonLabel: '<',
     fn: ({fieldPath, value}) =>
       isFinite(value) && fieldPath ? `${fieldPath} < ${toJSON(value)}` : null,
+    icon: LtIcon,
     inputComponent: FieldInputNumber,
     initialValue: null,
-    label: 'less than (<)',
+    label: 'less than',
     type: 'numberLt',
   },
   {
     buttonLabel: '≤',
     fn: ({fieldPath, value}) =>
       isFinite(value) && fieldPath ? `${fieldPath} <= ${toJSON(value)}` : null,
+    icon: LteIcon,
     inputComponent: FieldInputNumber,
     initialValue: null,
-    label: 'less than or equal to (≤)',
+    label: 'less than or equal to',
     type: 'numberLte',
   },
   {

@@ -1,4 +1,4 @@
-import {CheckmarkIcon, SortIcon} from '@sanity/icons'
+import {SortIcon} from '@sanity/icons'
 import {
   Box,
   Button,
@@ -37,10 +37,6 @@ const MENU_ORDERINGS: (SearchDivider | SearchOrdering)[] = [
   ORDERINGS.updatedDesc,
 ]
 
-const IconWrapperBox = styled(Box)<{$visible: boolean}>`
-  visibility: ${({$visible}) => ($visible ? 'visible' : 'hidden')};
-`
-
 const SortMenuContentFlex = styled(Flex)<{$small?: boolean}>`
   box-sizing: border-box;
   height: ${SUBHEADER_HEIGHT_SMALL};
@@ -63,18 +59,17 @@ function CustomMenuItem({ordering}: {ordering: SearchOrdering}) {
   const isSelected = useMemo(() => isEqual(currentOrdering, ordering), [currentOrdering, ordering])
 
   return (
-    <MenuItem onClick={handleClick} padding={3} selected={isSelected} tone="default">
-      <Flex align="center" justify="space-between" gap={4}>
-        <Inline space={1}>
-          <Text size={1} weight="medium">
-            {ordering.title}
-          </Text>
-        </Inline>
-        <IconWrapperBox $visible={isSelected}>
-          <Text size={1}>
-            <CheckmarkIcon />
-          </Text>
-        </IconWrapperBox>
+    <MenuItem
+      onClick={handleClick}
+      padding={3}
+      pressed={isSelected}
+      selected={isSelected}
+      tone="default"
+    >
+      <Flex align="center" justify="space-between" paddingRight={2}>
+        <Text size={1} weight="medium">
+          {ordering.title}
+        </Text>
       </Flex>
     </MenuItem>
   )
