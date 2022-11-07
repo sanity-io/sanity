@@ -1,10 +1,11 @@
 import {Box, Card, Stack} from '@sanity/ui'
-import React, {ChangeEvent, useCallback} from 'react'
+import React, {ComponentType, useCallback} from 'react'
 import {useSearchState} from '../../../contexts/search/useSearchState'
-import {getOperator, getOperatorInitialValue, OperatorType} from '../../../definitions/operators'
+import {getOperator} from '../../../definitions/operators'
 import type {SearchFilter} from '../../../types'
 import {FilterDetails} from '../common/FilterDetails'
 import {OperatorsMenuButton} from './OperatorsMenuButton'
+import {SearchOperatorInput} from '../../../definitions/operators/operatorTypes'
 
 interface FilterFormProps {
   filter: SearchFilter
@@ -26,7 +27,7 @@ export function FilterForm({filter}: FilterFormProps) {
     [dispatch, filter]
   )
 
-  const Component = operator?.inputComponent
+  const Component: SearchOperatorInput<any> | undefined = operator?.inputComponent
 
   return (
     <Box>

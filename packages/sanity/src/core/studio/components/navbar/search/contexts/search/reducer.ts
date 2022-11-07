@@ -7,13 +7,14 @@ import type {SearchableType, SearchTerms, WeightedHit} from '../../../../../../s
 import {isNonNullable} from '../../../../../../util'
 import type {RecentSearchTerms} from '../../datastores/recentSearches'
 import {getFilterDefinitionInitialOperator} from '../../definitions/filters'
-import {getOperator, getOperatorInitialValue, OperatorType} from '../../definitions/operators'
+import {getOperator, getOperatorInitialValue, SearchOperatorType} from '../../definitions/operators'
 import {ORDERINGS} from '../../definitions/orderings'
 import type {SearchFilter, SearchOrdering} from '../../types'
 import {debugWithName, isDebugMode} from '../../utils/debug'
 import {generateKey} from '../../utils/generateKey'
 import {isRecentSearchTerms} from '../../utils/isRecentSearchTerms'
 import {sortTypes} from '../../utils/selectors'
+import {SearchOperatorBuilder} from '../../definitions/operators/operatorTypes'
 
 export interface SearchReducerState {
   currentUser: CurrentUser | null
@@ -84,7 +85,7 @@ export type TermsFiltersClear = {type: 'TERMS_FILTERS_CLEAR'}
 export type TermsFiltersRemove = {_key: string; type: 'TERMS_FILTERS_REMOVE'}
 export type TermsFiltersSetOperator = {
   key: string
-  operatorType: OperatorType
+  operatorType: SearchOperatorType
   type: 'TERMS_FILTERS_SET_OPERATOR'
 }
 export type TermsFiltersSetValue = {
@@ -402,8 +403,8 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
  * This is done so we can better disambiguate between requests sent as a result of clicking a 'recent search'
  * for purposes of measurement.
  *
- * TODO: remove this (and associated tests) once client-side instrumentation is available
  */
+// TODO: remove this (and associated tests) once client-side instrumentation is available
 function stripRecent(terms: RecentSearchTerms | SearchTerms) {
   if (isRecentSearchTerms(terms)) {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -438,7 +439,7 @@ function narrowDocumentTypes(types: SearchableType[], filters: SearchFilter[]): 
 function generateFilterQuery(filters: SearchFilter[]) {
   return filters
     .map((filter) =>
-      getOperator(filter.operatorType)?.fn({
+      (getOperator(filter.operatorType) as SearchOperatorBuilder<string, unknown>)?.fn({
         fieldPath: filter?.fieldPath,
         value: filter?.value,
       })

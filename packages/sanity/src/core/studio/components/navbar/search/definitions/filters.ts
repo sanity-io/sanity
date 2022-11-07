@@ -11,21 +11,21 @@ import {IntrinsicTypeName} from '@sanity/types'
 import {ComponentType} from 'react'
 import {NumberIcon} from '../components/filters/icons/NumberIcon'
 import {StringIcon} from '../components/filters/icons/StringIcon'
-import {OperatorType} from './operators'
+import {SearchOperatorType} from './operators'
 
-export type FilterDefinitionType = FilterDefinition['type']
-export type SupportedFilterDefinitionFieldType = NonNullable<FilterDefinition['fieldType']>
+export type FilterDefinitionType = SearchFilterDefinition['type']
+export type SupportedFilterDefinitionFieldType = NonNullable<SearchFilterDefinition['fieldType']>
 
-interface FilterDefinition {
+export interface SearchFilterDefinition {
   fieldType: IntrinsicTypeName | 'email' | null
   icon: ComponentType
-  initialOperator: OperatorType
+  initialOperator: SearchOperatorType
   operators: (
     | {
         type: 'divider'
       }
     | {
-        name: OperatorType
+        name: SearchOperatorType
         type: 'item'
       }
   )[]
@@ -33,7 +33,7 @@ interface FilterDefinition {
   type: string
 }
 
-export const FILTER_DEFINITIONS: FilterDefinition[] = [
+export const FILTER_DEFINITIONS: SearchFilterDefinition[] = [
   {
     fieldType: 'array',
     icon: UlistIcon,
@@ -252,13 +252,13 @@ export const FILTER_DEFINITIONS: FilterDefinition[] = [
 
 export function getFilterDefinition(
   filterType: FilterDefinitionType
-): FilterDefinition | undefined {
+): SearchFilterDefinition | undefined {
   return FILTER_DEFINITIONS.find((filter) => filter.type === filterType)
 }
 
 export function getFilterDefinitionInitialOperator(
   filterName: FilterDefinitionType
-): FilterDefinition['initialOperator'] | undefined {
+): SearchFilterDefinition['initialOperator'] | undefined {
   return getFilterDefinition(filterName)?.initialOperator
 }
 

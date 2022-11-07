@@ -1,7 +1,7 @@
 import {CalendarIcon} from '@sanity/icons'
 import {Card, Stack, Text, TextInput} from '@sanity/ui'
 import React, {ChangeEvent, useCallback} from 'react'
-import {OperatorInputComponentProps} from '../../../../definitions/operators'
+import {OperatorInputComponentProps} from '../../../../definitions/operators/operatorTypes'
 
 export function FieldInputDate({onChange, value}: OperatorInputComponentProps<Date>) {
   const handleChange = useCallback(

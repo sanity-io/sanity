@@ -1,7 +1,7 @@
 import {ButtonTone, CardTone} from '@sanity/ui'
 import type {SearchOptions, SearchSort, SearchTerms, WeightedHit} from '../../../../search'
 import {FilterDefinitionType} from './definitions/filters'
-import type {OperatorType} from './definitions/operators'
+import type {SearchOperatorType} from './definitions/operators'
 
 /**
  * @internal
@@ -11,7 +11,7 @@ export interface SearchFilter {
   documentTypes: string[]
   fieldPath?: string
   filterType: FilterDefinitionType
-  operatorType?: OperatorType
+  operatorType?: SearchOperatorType
   titlePath: string[]
   value?: any
 }

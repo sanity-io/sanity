@@ -2,10 +2,8 @@ import {CalendarIcon} from '@sanity/icons'
 import {Box, Card, Flex, Stack, Text, TextInput} from '@sanity/ui'
 import isDate from 'lodash/isDate'
 import React, {ChangeEvent, useCallback, useState} from 'react'
-import type {
-  OperatorDateRangeValue,
-  OperatorInputComponentProps,
-} from '../../../../definitions/operators'
+import {OperatorDateRangeValue} from '../../../../definitions/operators/dateOperators'
+import {OperatorInputComponentProps} from '../../../../definitions/operators/operatorTypes'
 
 export function FieldInputDateRange({
   onChange,

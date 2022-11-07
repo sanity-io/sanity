@@ -1,6 +1,7 @@
 import {Box, Flex, Select, TextInput} from '@sanity/ui'
 import React, {ChangeEvent, useCallback, useRef} from 'react'
-import {OperatorDateLastValue, OperatorInputComponentProps} from '../../../../definitions/operators'
+import {OperatorDateLastValue} from '../../../../definitions/operators/dateOperators'
+import {OperatorInputComponentProps} from '../../../../definitions/operators/operatorTypes'
 
 export function FieldInputDateLast({
   onChange,
