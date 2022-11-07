@@ -123,7 +123,7 @@ function mapDocumentTypesRecursive(
     previousDocumentType?: string
   ): ResolvedField {
     const isDocument = isDocumentDefinition(defType) && objectTypes[defType.name]
-    const isObject = isObjectDefinition(defType) && objectTypes[defType.name]
+    const isObject = isObjectDefinition(defType)
 
     // Get document type from existing definition (if it exists)
     const documentType = isDocument ? defType.name : previousDocumentType
