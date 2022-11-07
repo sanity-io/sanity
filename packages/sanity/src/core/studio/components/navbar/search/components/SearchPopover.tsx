@@ -86,10 +86,10 @@ export function SearchPopover({
 
   const {
     dispatch,
-    state: {filters, filtersVisible, recentSearches, result, terms},
+    state: {filtersVisible, recentSearches, result, terms},
   } = useSearchState()
 
-  const hasValidTerms = hasSearchableTerms(terms, filters)
+  const hasValidTerms = hasSearchableTerms(terms)
 
   /**
    * Measure top-most visible search result index
