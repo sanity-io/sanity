@@ -5,7 +5,7 @@ import type {
   Schema,
   SchemaTypeDefinition,
 } from '@sanity/types'
-import {startCase} from 'lodash'
+import startCase from 'lodash/startCase'
 import {getSupportedFieldTypes} from '../definitions/filters'
 import {generateKey} from './generateKey'
 

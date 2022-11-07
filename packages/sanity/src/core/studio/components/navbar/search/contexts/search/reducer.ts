@@ -425,9 +425,9 @@ function narrowDocumentTypes(types: SearchableType[], filters: SearchFilter[]): 
   const hasFilters = filters.length > 0
 
   if (hasSelectedDocumentTypes && hasFilters) {
-    return intersection(selectedDocumentTypes, intersectionFilterDocumentTypes)
+    return intersection(selectedDocumentTypes, intersectionFilterDocumentTypes).sort()
   }
-  return union(selectedDocumentTypes, intersectionFilterDocumentTypes)
+  return union(selectedDocumentTypes, intersectionFilterDocumentTypes).sort()
 }
 
 function generateFilterQuery(filters: SearchFilter[]) {

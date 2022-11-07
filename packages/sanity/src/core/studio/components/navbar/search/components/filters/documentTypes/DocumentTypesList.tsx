@@ -1,6 +1,6 @@
 import {SearchIcon} from '@sanity/icons'
 import {Box, Button, Flex, Label, MenuDivider, Stack, Text} from '@sanity/ui'
-import {partition} from 'lodash'
+import partition from 'lodash/partition'
 import React, {useCallback, useId, useMemo, useState} from 'react'
 import styled from 'styled-components'
 import {useSchema} from '../../../../../../../hooks'
