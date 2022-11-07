@@ -69,13 +69,6 @@ export function createFieldRegistry(schema: Schema): ResolvedField[] {
 
       return acc
     }, [])
-    /*
-    // TODO: Filter out hidden fields
-    .filter((schemaType) => {
-      console.log('schemaType', schemaType)
-      return true
-    })
-    */
     // Filter out non-recognised field types and hidden types
     .filter((schemaType) => supportedFieldTypes.includes(schemaType.type))
     // Sort by title, path length and then path title
@@ -126,45 +119,48 @@ function mapDocumentTypesRecursive(
     defType: SchemaTypeDefinition,
     depth = 0,
     prevFieldPath: string | null = null,
-    prevPath: string[] = [],
-    documentType?: string
+    prevTitlePath: string[] = [],
+    previousDocumentType?: string
   ): ResolvedField {
-    const docType = isDocumentDefinition(defType) ? defType.name : documentType
+    const isDocument = isDocumentDefinition(defType) && objectTypes[defType.name]
+    const isObject = isObjectDefinition(defType) && objectTypes[defType.name]
+
+    // Get document type from existing definition (if it exists)
+    const documentType = isDocument ? defType.name : previousDocumentType
+
     const continueRecursion = depth < MAX_OBJECT_DEPTH
 
     return {
       _key: generateKey(),
-      documentTypes: docType ? [docType] : [],
+      documentTypes: documentType ? [documentType] : [],
       fieldPath: prevFieldPath ?? '',
       hidden: defType.hidden,
       name: defType.name,
-      titlePath: prevPath ?? [],
+      titlePath: prevTitlePath ?? [],
       title: defType?.title || startCase(defType.name),
       type: defType.type,
       // Fields
-      // TODO: refactor
-      ...((isObjectDefinition(defType) || isDocumentDefinition(defType)) &&
+      ...((isDocument || isObject) &&
         continueRecursion && {
           fields: defType.fields.map((field) => {
+            // Check if current field can be mapped to an existing object definition
             const existingObject = objectTypes[field.type]
             const fieldTitle = field?.title || startCase(field.name)
+            // Construct the full queryable field path
             const fieldPath = prevFieldPath ? `${prevFieldPath}.${field.name}` : field.name
-            const path = prevPath ? [...prevPath, fieldTitle] : [fieldTitle]
+            // Construct the full title path (used to render field breadcrumbs)
+            const titlePath = prevTitlePath ? [...prevTitlePath, fieldTitle] : [fieldTitle]
+            // If an existing object has been found, override with current name and continue,
+            // otherwise pass through the field as normal.
+            const fieldDefType = existingObject
+              ? {
+                  ...existingObject,
+                  name: field.name,
+                }
+              : (field as ObjectDefinition)
 
-            return {
-              ...mapSchemaTypeFields(
-                existingObject
-                  ? {
-                      ...existingObject,
-                      name: field.name,
-                    }
-                  : (field as ObjectDefinition),
-                depth + 1,
-                fieldPath,
-                path,
-                docType
-              ),
-            }
+            // Call recursively
+            return mapSchemaTypeFields(fieldDefType, depth + 1, fieldPath, titlePath, documentType)
           }),
         }),
     }
