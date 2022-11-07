@@ -385,7 +385,6 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
         },
         terms: stripRecent({
           ...state.terms,
-          filter: '',
           types: [],
         }),
       }
