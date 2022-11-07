@@ -1,6 +1,6 @@
 import {CalendarIcon} from '@sanity/icons'
 import {Box, Card, Flex, Stack, Text, TextInput} from '@sanity/ui'
-import {isDate} from 'lodash'
+import isDate from 'lodash/isDate'
 import React, {ChangeEvent, useCallback, useState} from 'react'
 import type {
   OperatorDateRangeValue,

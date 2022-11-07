@@ -1,4 +1,4 @@
-import {isBoolean} from 'lodash'
+import isBoolean from 'lodash/isBoolean'
 import pluralize from 'pluralize-esm'
 import type {SearchFilter} from '../../../types'
 
