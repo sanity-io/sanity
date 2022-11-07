@@ -114,7 +114,7 @@ export const ReferenceAutocomplete = forwardRef(function DebugMiniReferenceInput
       return (
         <Popover
           arrow={false}
-          constrainSize
+          // constrainSize
           content={<div ref={contentRef}>{content}</div>} //
           onMouseEnter={onMouseEnter}
           onMouseLeave={onMouseLeave}
