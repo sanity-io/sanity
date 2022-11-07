@@ -1,5 +1,5 @@
 import {Box, Flex, TextInput} from '@sanity/ui'
-import isNumber from 'lodash/isNumber'
+import isFinite from 'lodash/isFinite'
 import React, {ChangeEvent, useCallback, useState} from 'react'
 import type {
   OperatorInputComponentProps,
@@ -10,16 +10,17 @@ export function FieldInputNumberRange({
   onChange,
   value,
 }: OperatorInputComponentProps<OperatorNumberRangeValue>) {
-  const [max, setMax] = useState(value?.max || '')
-  const [min, setMin] = useState(value?.min || '')
+  const [max, setMax] = useState(value?.max ?? '')
+  const [min, setMin] = useState(value?.min ?? '')
 
   const handleMaxChange = useCallback(
     (event: ChangeEvent<HTMLInputElement>) => {
       setMax(event.currentTarget.value)
       const numValue = parseFloat(event.currentTarget.value)
-      if (isNumber(numValue)) {
-        onChange({max: numValue, min: value?.min ?? null})
-      }
+      onChange({
+        max: isFinite(numValue) ? numValue : null,
+        min: value?.min ?? null,
+      })
     },
     [value?.min, onChange]
   )
@@ -27,9 +28,10 @@ export function FieldInputNumberRange({
     (event: ChangeEvent<HTMLInputElement>) => {
       setMin(event.currentTarget.value)
       const numValue = parseFloat(event.currentTarget.value)
-      if (isNumber(numValue)) {
-        onChange({max: value?.max ?? null, min: numValue})
-      }
+      onChange({
+        max: value?.max ?? null,
+        min: isFinite(numValue) ? numValue : null,
+      })
     },
     [value?.max, onChange]
   )
@@ -41,6 +43,7 @@ export function FieldInputNumberRange({
           fontSize={1}
           onChange={handleMinChange}
           placeholder="Enter value..."
+          step="any"
           type="number"
           value={min}
         />
@@ -50,6 +53,7 @@ export function FieldInputNumberRange({
           fontSize={1}
           onChange={handleMaxChange}
           placeholder="Enter value..."
+          step="any"
           type="number"
           value={max}
         />
