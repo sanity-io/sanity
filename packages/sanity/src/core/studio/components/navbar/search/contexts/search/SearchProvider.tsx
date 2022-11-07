@@ -1,6 +1,7 @@
 import isEqual from 'lodash/isEqual'
 import React, {ReactNode, useEffect, useMemo, useReducer, useRef} from 'react'
 import {useClient, useSchema} from '../../../../../../hooks'
+import {SearchableType} from '../../../../../../search'
 import {useCurrentUser} from '../../../../../../store'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../../../studioClient'
 import {FINDABILITY_MVI, SEARCH_LIMIT} from '../../constants'
@@ -38,6 +39,7 @@ export function SearchProvider({children}: SearchProviderProps) {
     [recentSearchesStore]
   )
 
+  // Create our field registry: this is a list of all applicable fields which we can filter on.
   const fieldRegistry = useMemo(() => createFieldRegistry(schema), [schema])
 
   const initialState = useMemo(
@@ -46,7 +48,7 @@ export function SearchProvider({children}: SearchProviderProps) {
   )
   const [state, dispatch] = useReducer(searchReducer, initialState)
 
-  const {ordering, pageIndex, result, terms} = state
+  const {documentTypesNarrowed, ordering, pageIndex, result, terms} = state
 
   const isMountedRef = useRef(false)
   const previousOrderingRef = useRef<SearchOrdering>(initialState.ordering)
@@ -62,6 +64,11 @@ export function SearchProvider({children}: SearchProviderProps) {
   })
 
   const hasValidTerms = hasSearchableTerms(terms)
+
+  // Get a narrowed list of document types to search on based on any current active filters.
+  const documentTypes = documentTypesNarrowed.map(
+    (documentType) => schema.get(documentType) as SearchableType
+  )
 
   /**
    * Trigger search when any terms (query or selected types) OR current pageIndex has changed
@@ -96,7 +103,11 @@ export function SearchProvider({children}: SearchProviderProps) {
           skipSortByScore: ordering.ignoreScore,
           sort: ordering.sort,
         },
-        terms,
+        terms: {
+          ...terms,
+          // Narrow document type search
+          ...(documentTypes ? {types: documentTypes} : {}),
+        },
       })
 
       // Update pageIndex snapshot only on a valid search request
@@ -106,7 +117,7 @@ export function SearchProvider({children}: SearchProviderProps) {
     // Update snapshots, even if no search request was executed
     previousOrderingRef.current = ordering
     previousTermsRef.current = terms
-  }, [handleSearch, hasValidTerms, ordering, pageIndex, searchState.terms, terms])
+  }, [documentTypes, handleSearch, hasValidTerms, ordering, pageIndex, searchState.terms, terms])
 
   /**
    * Reset search hits / state when (after initial amount):

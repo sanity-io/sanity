@@ -1,9 +1,11 @@
 import {Card, Code, Stack, Text} from '@sanity/ui'
 import React from 'react'
-import {useAvailableDocumentTypes} from '../../../hooks/useAvailableDocumentTypes'
+import {useSearchState} from '../../../contexts/search/useSearchState'
 
 export function DebugDocumentTypes() {
-  const selectedDocumentTypes = useAvailableDocumentTypes()
+  const {
+    state: {documentTypesNarrowed},
+  } = useSearchState()
 
   return (
     <Card borderTop padding={4} tone="transparent">
@@ -12,7 +14,7 @@ export function DebugDocumentTypes() {
           Document types
         </Text>
         <Code muted size={1} style={{whiteSpace: 'normal'}}>
-          {selectedDocumentTypes.length > 0 ? selectedDocumentTypes.join(', ') : '(All)'}
+          {documentTypesNarrowed.length > 0 ? documentTypesNarrowed.join(', ') : '(All)'}
         </Code>
       </Stack>
     </Card>
