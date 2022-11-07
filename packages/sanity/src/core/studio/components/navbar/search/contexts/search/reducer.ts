@@ -3,7 +3,6 @@
 import type {CurrentUser} from '@sanity/types'
 import intersection from 'lodash/intersection'
 import isEmpty from 'lodash/isEmpty'
-import union from 'lodash/union'
 import type {SearchableType, SearchTerms, WeightedHit} from '../../../../../../search'
 import {isNonNullable} from '../../../../../../util'
 import type {RecentSearchTerms} from '../../datastores/recentSearches'
@@ -415,23 +414,25 @@ function stripRecent(terms: RecentSearchTerms | SearchTerms) {
 }
 
 function narrowDocumentTypes(types: SearchableType[], filters: SearchFilter[]): string[] {
-  // Selected document types
+  // Get all 'manually' selected document types
   const selectedDocumentTypes = types.map((type) => type.name)
-  // Intersecting document types across all active filters (that have at least one document type).
-  // Filters that have no document types (i.e. that are available to all) are ignored.
-  const intersectionFilterDocumentTypes = intersection(
+  // Get intersecting document types across all active filters (that have at least one document type).
+  // Filters that have no document types (i.e. `_updatedAt` which is available to all) are ignored.
+  const filterDocumentTypes = intersection(
     ...filters
       .filter((filter) => filter.documentTypes.length > 0)
       .map((filter) => filter.documentTypes)
   )
 
-  const hasSelectedDocumentTypes = types.length > 0
-  const hasFilters = filters.length > 0
-
-  if (hasSelectedDocumentTypes && hasFilters) {
-    return intersection(selectedDocumentTypes, intersectionFilterDocumentTypes).sort()
+  const documentTypes: string[][] = []
+  if (selectedDocumentTypes.length > 0) {
+    documentTypes.push(selectedDocumentTypes)
   }
-  return union(selectedDocumentTypes, intersectionFilterDocumentTypes).sort()
+  if (filterDocumentTypes.length > 0) {
+    documentTypes.push(filterDocumentTypes)
+  }
+
+  return intersection(...documentTypes).sort()
 }
 
 function generateFilterQuery(filters: SearchFilter[]) {
