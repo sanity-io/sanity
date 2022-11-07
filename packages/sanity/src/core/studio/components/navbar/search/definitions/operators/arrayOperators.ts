@@ -1,6 +1,10 @@
 import {FieldInputNumber} from '../../components/filters/filter/inputTypes/Number'
 import {toJSON} from './operatorUtils'
 import {defineSearchOperator, SearchOperatorParams} from './operatorTypes'
+import {GtIcon} from '../../components/filters/icons/GtIcon'
+import {GteIcon} from '../../components/filters/icons/GteIcon'
+import {LtIcon} from '../../components/filters/icons/LtIcon'
+import {LteIcon} from '../../components/filters/icons/LteIcon'
 
 export const arrayOperators = {
   arrayCountEqual: defineSearchOperator({
@@ -16,6 +20,7 @@ export const arrayOperators = {
     buttonLabel: 'has >',
     fn: ({fieldPath, value}) =>
       value && fieldPath ? `count(${fieldPath}) > ${toJSON(value)}` : null,
+    icon: GtIcon,
     initialValue: null,
     inputComponent: FieldInputNumber,
     label: 'quantity more than (>)',
@@ -25,6 +30,7 @@ export const arrayOperators = {
     buttonLabel: 'has ≥',
     fn: ({fieldPath, value}) =>
       value && fieldPath ? `count(${fieldPath}) >= ${toJSON(value)}` : null,
+    icon: GteIcon,
     initialValue: null,
     inputComponent: FieldInputNumber,
     label: 'quantity more than (≥)',
@@ -34,6 +40,7 @@ export const arrayOperators = {
     buttonLabel: 'has <',
     fn: ({fieldPath, value}) =>
       value && fieldPath ? `count(${fieldPath}) < ${toJSON(value)}` : null,
+    icon: LtIcon,
     initialValue: null,
     inputComponent: FieldInputNumber,
     label: 'quantity less than (<)',
@@ -43,6 +50,7 @@ export const arrayOperators = {
     buttonLabel: 'has ≤',
     fn: ({fieldPath, value}) =>
       value && fieldPath ? `count(${fieldPath}) <= ${toJSON(value)}` : null,
+    icon: LteIcon,
     initialValue: null,
     inputComponent: FieldInputNumber,
     label: 'quantity less than (≤)',

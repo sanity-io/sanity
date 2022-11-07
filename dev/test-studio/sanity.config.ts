@@ -23,6 +23,7 @@ import {
 import {Field, formComponentsPlugin, Input, Item, Preview} from './components/formComponents'
 import {googleTheme} from './themes/google'
 import {vercelTheme} from './themes/vercel'
+import {searchExtensions} from './plugins/searchExtensions'
 
 const sharedSettings = definePlugin({
   name: 'sharedSettings',
@@ -87,7 +88,7 @@ export default defineConfig([
     title: 'Test Studio',
     projectId: 'ppsg7ml5',
     dataset: 'test',
-    plugins: [sharedSettings()],
+    plugins: [sharedSettings(), searchExtensions()],
     basePath: '/test',
   },
   {

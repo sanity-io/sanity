@@ -15,6 +15,7 @@ import {initialSearchState, searchReducer} from './reducer'
 import {SearchContext} from './SearchContext'
 import {operatorDefinitions, searchOperators} from '../../definitions/operators/defaultOperators'
 import {filterDefinitions} from '../../definitions/defaultFilters'
+import {useSource} from '../../../../../source'
 
 interface SearchProviderProps {
   children?: ReactNode
@@ -27,6 +28,9 @@ export function SearchProvider({children}: SearchProviderProps) {
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const schema = useSchema()
   const currentUser = useCurrentUser()
+  const {
+    search: {operators, filters},
+  } = useSource()
 
   const {dataset, projectId} = client.config()
 
@@ -40,10 +44,6 @@ export function SearchProvider({children}: SearchProviderProps) {
     () => recentSearchesStore?.getRecentSearchTerms(),
     [recentSearchesStore]
   )
-
-  // TODO feed these through the defineConfig API ala actions and badges
-  const operators = operatorDefinitions
-  const filters = filterDefinitions
 
   // Create our field registry: this is a list of all applicable fields which we can filter on.
   const fieldRegistry = useMemo(() => createFieldRegistry(schema, filters), [schema, filters])

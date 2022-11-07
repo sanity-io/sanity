@@ -1,9 +1,10 @@
 import {SearchOperatorBase, SearchOperatorInput, SearchOperatorParams} from './operatorTypes'
 
-export interface SearchOperator extends SearchOperatorBase {
-  fn: (params: SearchOperatorParams<any>) => string | null
-  initialValue?: any
-  inputComponent?: SearchOperatorInput<any>
+/** @internal */
+export interface SearchOperator<TValue = any> extends SearchOperatorBase {
+  fn: (params: SearchOperatorParams<TValue>) => string | null
+  initialValue?: TValue
+  inputComponent?: SearchOperatorInput<TValue>
   type: string
 }
 

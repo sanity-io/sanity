@@ -3,6 +3,10 @@ import {FieldInputNumber} from '../../components/filters/filter/inputTypes/Numbe
 import {FieldInputNumberRange} from '../../components/filters/filter/inputTypes/NumberRange'
 import {toJSON} from './operatorUtils'
 import {defineSearchOperator} from './operatorTypes'
+import {GtIcon} from '../../components/filters/icons/GtIcon'
+import {GteIcon} from '../../components/filters/icons/GteIcon'
+import {LtIcon} from '../../components/filters/icons/LtIcon'
+import {LteIcon} from '../../components/filters/icons/LteIcon'
 
 export interface OperatorNumberRangeValue {
   max: number | null
@@ -22,6 +26,7 @@ export const numberOperators = {
     buttonLabel: '>',
     fn: ({fieldPath, value}) => (value && fieldPath ? `${fieldPath} > ${toJSON(value)}` : null),
     inputComponent: FieldInputNumber,
+    icon: GtIcon,
     initialValue: null,
     label: 'greater than (>)',
     type: 'numberGt',
@@ -29,6 +34,7 @@ export const numberOperators = {
   numberGte: defineSearchOperator({
     buttonLabel: '≥',
     fn: ({fieldPath, value}) => (value && fieldPath ? `${fieldPath} >= ${toJSON(value)}` : null),
+    icon: GteIcon,
     inputComponent: FieldInputNumber,
     initialValue: null,
     label: 'greater than or equal to (≥)',
@@ -37,6 +43,7 @@ export const numberOperators = {
   numberLt: defineSearchOperator({
     buttonLabel: '<',
     fn: ({fieldPath, value}) => (value && fieldPath ? `${fieldPath} < ${toJSON(value)}` : null),
+    icon: LtIcon,
     inputComponent: FieldInputNumber,
     initialValue: null,
     label: 'less than (<)',
@@ -45,6 +52,7 @@ export const numberOperators = {
   numberLte: defineSearchOperator({
     buttonLabel: '≤',
     fn: ({fieldPath, value}) => (value && fieldPath ? `${fieldPath} <= ${toJSON(value)}` : null),
+    icon: LteIcon,
     inputComponent: FieldInputNumber,
     initialValue: null,
     label: 'less than or equal to (≤)',

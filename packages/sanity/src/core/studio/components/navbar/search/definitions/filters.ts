@@ -2,21 +2,34 @@ import {IntrinsicTypeName} from '@sanity/types'
 import {ComponentType} from 'react'
 import {SearchOperatorType} from './operators/defaultOperators'
 
-export interface SearchFilterDefinition<TOperator = SearchOperatorType> {
+type Operator<TOperators = SearchOperatorType> =
+  | {
+      type: 'divider'
+    }
+  | {
+      name: TOperators
+      type: 'item'
+    }
+
+export interface SearchFilterDefinition<TOperators = string> {
   fieldType: IntrinsicTypeName | 'email' | null
   icon: ComponentType
-  initialOperator: TOperator
-  operators: (
-    | {
-        type: 'divider'
-      }
-    | {
-        name: TOperator
-        type: 'item'
-      }
-  )[]
+  initialOperator: TOperators
+  operators: Operator<TOperators>[]
   title: string
   type: string
+}
+
+export function defineSearchFilter<TOperators = SearchOperatorType>(
+  filterDef: SearchFilterDefinition<TOperators>
+): typeof filterDef {
+  return filterDef
+}
+
+export function defineSearchFilterOperators<TOperators = SearchOperatorType>(
+  operators: Operator<TOperators>[]
+): typeof operators {
+  return operators
 }
 
 export function getFilterDefinition(

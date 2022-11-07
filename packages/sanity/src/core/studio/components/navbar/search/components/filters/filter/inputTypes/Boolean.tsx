@@ -1,6 +1,6 @@
 import {Select} from '@sanity/ui'
 import React, {ChangeEvent, useCallback} from 'react'
-import {OperatorInputComponentProps} from '../../../../definitions/operators/operatorTypes'
+import {type OperatorInputComponentProps} from '../../../../definitions/operators/operatorTypes'
 
 export function FieldInputBoolean({onChange, value}: OperatorInputComponentProps<boolean>) {
   const handleChange = useCallback(
