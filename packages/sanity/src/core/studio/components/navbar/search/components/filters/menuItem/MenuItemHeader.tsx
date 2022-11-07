@@ -12,7 +12,7 @@ export const MenuItemHeader = React.memo(function MenuItemHeader({
   item,
 }: MenuItemHeaderFields) {
   return (
-    <Card borderBottom marginTop={isFirst ? 0 : 2} padding={3}>
+    <Card borderBottom marginTop={isFirst ? 0 : 2} padding={3} tone={item?.tone}>
       <Label muted size={0} textOverflow="ellipsis">
         {item.title}
       </Label>
