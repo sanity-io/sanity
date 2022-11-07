@@ -37,13 +37,6 @@ export type SearchFilterMenuItem = SearchFilterMenuItemFilter | SearchFilterMenu
 /**
  * @internal
  */
-export interface OmnisearchTerms extends SearchTerms {
-  filters: SearchFilter[]
-}
-
-/**
- * @internal
- */
 export interface SearchOrdering {
   customMeasurementLabel?: string
   ignoreScore?: boolean
@@ -58,5 +51,5 @@ export interface SearchState {
   loading: boolean
   error: Error | null
   options?: SearchOptions
-  terms: OmnisearchTerms
+  terms: SearchTerms
 }

@@ -1,5 +1,5 @@
-import type {OmnisearchTerms} from '../types'
+import type {SearchTerms} from '../../../../../search'
 
-export function hasSearchableTerms(terms: OmnisearchTerms): boolean {
-  return terms.query.trim() !== '' || terms.filters.length > 0 || terms.types.length > 0
+export function hasSearchableTerms(terms: SearchTerms): boolean {
+  return terms.query.trim() !== '' || terms.filter?.trim() !== '' || terms.types.length > 0
 }

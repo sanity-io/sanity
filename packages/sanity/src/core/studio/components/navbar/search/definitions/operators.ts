@@ -350,7 +350,8 @@ const OPERATORS: Operator[] = [
   },
   {
     buttonLabel: 'does not contain',
-    fn: ({fieldPath, value}) => (value && fieldPath ? `${fieldPath} match ${toJSON(value)}` : null),
+    fn: ({fieldPath, value}) =>
+      value && fieldPath ? `!(${fieldPath} match ${toJSON(value)})` : null,
     initialValue: null,
     inputComponent: FieldInputString,
     label: 'does not contain',

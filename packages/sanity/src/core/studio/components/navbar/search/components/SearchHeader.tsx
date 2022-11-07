@@ -49,9 +49,10 @@ export function SearchHeader({onClose, setHeaderInputRef}: SearchHeaderProps) {
   const {
     dispatch,
     state: {
+      filters,
       filtersVisible,
       result: {loading},
-      terms: {filters, types, query},
+      terms: {types, query},
     },
   } = useSearchState()
 
