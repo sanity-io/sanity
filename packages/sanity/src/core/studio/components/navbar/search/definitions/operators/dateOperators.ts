@@ -19,6 +19,7 @@ export interface OperatorDateLastValue {
 export const dateOperators = {
   dateAfter: defineSearchOperator({
     buttonLabel: 'after',
+    buttonValue: (value) => (value ? value.toISOString() : null),
     fn: ({fieldPath, value}) => `// TODO`,
     initialValue: null,
     inputComponent: FieldInputDate,
@@ -27,6 +28,7 @@ export const dateOperators = {
   }),
   dateBefore: defineSearchOperator({
     buttonLabel: 'before',
+    buttonValue: (value) => (value ? value.toISOString() : null),
     fn: ({fieldPath, value}) => `// TODO`,
     initialValue: null,
     inputComponent: FieldInputDate,
@@ -35,6 +37,7 @@ export const dateOperators = {
   }),
   dateEqual: defineSearchOperator({
     buttonLabel: 'is',
+    buttonValue: (value) => (value ? value.toISOString() : null),
     fn: ({fieldPath, value}: {fieldPath?: string; value?: Date}) => {
       const timestamp = value?.toISOString()
       return timestamp && fieldPath ? `${fieldPath} == ${toJSON(timestamp)}` : null
@@ -46,6 +49,7 @@ export const dateOperators = {
   }),
   dateLast: defineSearchOperator({
     buttonLabel: 'last',
+    buttonValue: (value) => (value.value && value.unit ? `${value.value} ${value.unit}` : null),
     fn: ({fieldPath, value}) => {
       const timestampAgo = sub(new Date(), {
         days: value?.unit === 'days' ? value?.value || 0 : 0,
@@ -66,6 +70,7 @@ export const dateOperators = {
   }),
   dateNotEqual: defineSearchOperator({
     buttonLabel: 'is not',
+    buttonValue: (value) => (value ? value.toISOString() : null),
     fn: ({fieldPath, value}: {fieldPath?: string; value?: Date}) => {
       const timestamp = value?.toISOString()
       return timestamp && fieldPath ? `${fieldPath} != ${toJSON(timestamp)}` : null
@@ -77,6 +82,7 @@ export const dateOperators = {
   }),
   dateRange: defineSearchOperator({
     buttonLabel: 'is between',
+    buttonValue: (value) => (value?.max && value?.min ? `${value.min} → ${value.max}` : null),
     fn: ({fieldPath, value}) => `// TODO`,
     initialValue: typed<OperatorDateRangeValue>({
       max: null,

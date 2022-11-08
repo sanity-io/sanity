@@ -1,14 +1,23 @@
+import {typed} from '@sanity/types'
+import pluralize from 'pluralize-esm'
 import {FieldInputNumber} from '../../components/filters/filter/inputTypes/Number'
-import {GtIcon} from '../../components/filters/icons/GtIcon'
+import {FieldInputNumberRange} from '../../components/filters/filter/inputTypes/NumberRange'
 import {GteIcon} from '../../components/filters/icons/GteIcon'
-import {LtIcon} from '../../components/filters/icons/LtIcon'
+import {GtIcon} from '../../components/filters/icons/GtIcon'
 import {LteIcon} from '../../components/filters/icons/LteIcon'
-import {toJSON} from './operatorUtils'
+import {LtIcon} from '../../components/filters/icons/LtIcon'
+import {OperatorNumberRangeValue} from './common'
 import {defineSearchOperator} from './operatorTypes'
+import {toJSON} from './operatorUtils'
+
+function buttonValue(value: number) {
+  return Number.isFinite(value) ? `${value} ${pluralize('item', value)}` : null
+}
 
 export const arrayOperators = {
   arrayCountEqual: defineSearchOperator({
     buttonLabel: 'has',
+    buttonValue,
     fn: ({fieldPath, value}) =>
       value && fieldPath ? `count(${fieldPath}) == ${toJSON(value)}` : null,
     initialValue: null,
@@ -18,51 +27,73 @@ export const arrayOperators = {
   }),
   arrayCountGt: defineSearchOperator({
     buttonLabel: 'has >',
+    buttonValue,
     fn: ({fieldPath, value}) =>
       value && fieldPath ? `count(${fieldPath}) > ${toJSON(value)}` : null,
     icon: GtIcon,
     initialValue: null,
     inputComponent: FieldInputNumber,
-    label: 'quantity more than (>)',
+    label: 'quantity more than',
     type: 'arrayCountGt',
   }),
   arrayCountGte: defineSearchOperator({
     buttonLabel: 'has ≥',
+    buttonValue,
     fn: ({fieldPath, value}) =>
       value && fieldPath ? `count(${fieldPath}) >= ${toJSON(value)}` : null,
     icon: GteIcon,
     initialValue: null,
     inputComponent: FieldInputNumber,
-    label: 'quantity more than (≥)',
+    label: 'quantity more than',
     type: 'arrayCountGte',
   }),
   arrayCountLt: defineSearchOperator({
     buttonLabel: 'has <',
+    buttonValue,
     fn: ({fieldPath, value}) =>
       value && fieldPath ? `count(${fieldPath}) < ${toJSON(value)}` : null,
     icon: LtIcon,
     initialValue: null,
     inputComponent: FieldInputNumber,
-    label: 'quantity less than (<)',
+    label: 'quantity less than',
     type: 'arrayCountLt',
   }),
   arrayCountLte: defineSearchOperator({
     buttonLabel: 'has ≤',
+    buttonValue,
     fn: ({fieldPath, value}) =>
       value && fieldPath ? `count(${fieldPath}) <= ${toJSON(value)}` : null,
     icon: LteIcon,
     initialValue: null,
     inputComponent: FieldInputNumber,
-    label: 'quantity less than (≤)',
+    label: 'quantity less than',
     type: 'arrayCountLte',
   }),
   arrayCountNotEqual: defineSearchOperator({
     buttonLabel: 'does not have',
+    buttonValue,
     fn: ({fieldPath, value}) =>
       value && fieldPath ? `count(${fieldPath}) != ${toJSON(value)}` : null,
     initialValue: null,
     inputComponent: FieldInputNumber,
     label: 'quantity is not',
     type: 'arrayCountNotEqual',
+  }),
+  arrayCountRange: defineSearchOperator({
+    buttonLabel: 'has between',
+    buttonValue: (value) =>
+      Number.isFinite(value?.max) && Number.isFinite(value?.min)
+        ? `${value.min} → ${value.max} items`
+        : null,
+    inputComponent: FieldInputNumberRange,
+    initialValue: typed<OperatorNumberRangeValue>({max: null, min: null}),
+    fn: ({fieldPath, value}) =>
+      Number.isFinite(value?.max) && Number.isFinite(value?.min) && fieldPath
+        ? `count(${fieldPath}) > ${toJSON(value?.min)} && count(${fieldPath}) < ${toJSON(
+            value?.max
+          )}`
+        : '',
+    label: 'quantity is between',
+    type: 'arrayCountRange',
   }),
 }

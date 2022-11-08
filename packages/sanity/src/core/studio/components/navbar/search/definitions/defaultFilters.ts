@@ -26,6 +26,8 @@ export const filterDefinitions: SearchFilterDefinition[] = [
       {name: 'arrayCountLt', type: 'item'},
       {name: 'arrayCountLte', type: 'item'},
       {type: 'divider'},
+      {name: 'arrayCountRange', type: 'item'},
+      {type: 'divider'},
       {name: 'defined', type: 'item'},
       {name: 'notDefined', type: 'item'},
     ],

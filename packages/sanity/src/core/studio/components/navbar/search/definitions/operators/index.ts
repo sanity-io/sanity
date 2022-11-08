@@ -2,6 +2,7 @@ import {SearchOperatorBase, SearchOperatorInput, SearchOperatorParams} from './o
 
 /** @internal */
 export interface SearchOperator<TValue = any> extends SearchOperatorBase {
+  buttonValue?: (value: TValue) => string | number | null
   fn: (params: SearchOperatorParams<TValue>) => string | null
   initialValue?: TValue
   inputComponent?: SearchOperatorInput<TValue>

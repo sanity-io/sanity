@@ -8,7 +8,6 @@ import type {SearchFilter} from '../../../types'
 import {FilterTitle} from '../common/FilterTitle'
 import {FilterPopoverContent} from './FilterPopoverContent'
 // import {FilterIcon} from './FilterIcon'
-import {getFilterValue} from './getFilterValue'
 
 interface FilterButtonProps {
   closable?: boolean
@@ -51,9 +50,10 @@ export default function FilterButton({closable = true, filter, initialOpen}: Fil
   useClickOutside(handleClose, [buttonElement, popoverElement])
 
   const operator = getOperator(definitions.operators, filter.operatorType)
-  const value = getFilterValue(filter)
-  const hasValue = operator?.inputComponent ? value : true
-  const isFilled = filter.operatorType && hasValue
+  const value = operator?.buttonValue && operator.buttonValue(filter.value)
+  const hasValue = value !== undefined && value !== null
+  // Mark as 'filled' if both operator and value are present (or no input component is defined).
+  const isFilled = operator?.inputComponent ? filter.operatorType && hasValue : true
 
   return (
     <Popover

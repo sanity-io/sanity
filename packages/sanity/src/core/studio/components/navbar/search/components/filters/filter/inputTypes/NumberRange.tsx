@@ -1,5 +1,4 @@
 import {Box, Flex, TextInput} from '@sanity/ui'
-import isFinite from 'lodash/isFinite'
 import React, {ChangeEvent, useCallback, useState} from 'react'
 import {OperatorNumberRangeValue} from '../../../../definitions/operators/numberOperators'
 import {OperatorInputComponentProps} from '../../../../definitions/operators/operatorTypes'
@@ -16,7 +15,7 @@ export function FieldInputNumberRange({
       setMax(event.currentTarget.value)
       const numValue = parseFloat(event.currentTarget.value)
       onChange({
-        max: isFinite(numValue) ? numValue : null,
+        max: Number.isFinite(numValue) ? numValue : null,
         min: value?.min ?? null,
       })
     },
@@ -28,7 +27,7 @@ export function FieldInputNumberRange({
       const numValue = parseFloat(event.currentTarget.value)
       onChange({
         max: value?.max ?? null,
-        min: isFinite(numValue) ? numValue : null,
+        min: Number.isFinite(numValue) ? numValue : null,
       })
     },
     [value?.max, onChange]

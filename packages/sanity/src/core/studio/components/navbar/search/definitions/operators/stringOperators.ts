@@ -5,6 +5,7 @@ import {defineSearchOperator} from './operatorTypes'
 export const stringOperators = {
   stringEqual: defineSearchOperator({
     buttonLabel: 'is',
+    buttonValue: (value) => value || null,
     fn: ({fieldPath, value}) => (value && fieldPath ? `${fieldPath} == ${toJSON(value)}` : null),
     initialValue: null,
     inputComponent: FieldInputString,
@@ -13,6 +14,7 @@ export const stringOperators = {
   }),
   stringMatches: defineSearchOperator({
     buttonLabel: 'contains',
+    buttonValue: (value) => value || null,
     fn: ({fieldPath, value}) => (value && fieldPath ? `${fieldPath} match ${toJSON(value)}` : null),
     initialValue: null,
     inputComponent: FieldInputString,
@@ -21,6 +23,7 @@ export const stringOperators = {
   }),
   stringNotEqual: defineSearchOperator({
     buttonLabel: 'is not',
+    buttonValue: (value) => value || null,
     fn: ({fieldPath, value}) => (value && fieldPath ? `${fieldPath} != ${toJSON(value)}` : null),
     initialValue: null,
     inputComponent: FieldInputString,
@@ -29,6 +32,7 @@ export const stringOperators = {
   }),
   stringNotMatches: defineSearchOperator({
     buttonLabel: 'does not contain',
+    buttonValue: (value) => value || null,
     fn: ({fieldPath, value}) =>
       value && fieldPath ? `!(${fieldPath} match ${toJSON(value)})` : null,
     initialValue: null,

@@ -5,7 +5,8 @@ import {defineSearchOperator, SearchOperatorParams} from './operatorTypes'
 export const assetOperators = {
   assetEqual: defineSearchOperator({
     buttonLabel: 'is',
-    fn: ({fieldPath, value}: SearchOperatorParams<unknown>) =>
+    buttonValue: (value) => (value ? value.slice(0, 8) : null),
+    fn: ({fieldPath, value}: SearchOperatorParams<string>) =>
       value && fieldPath ? `${fieldPath} == ${toJSON(value)}` : null,
     initialValue: null,
     inputComponent: FieldInputAsset,
