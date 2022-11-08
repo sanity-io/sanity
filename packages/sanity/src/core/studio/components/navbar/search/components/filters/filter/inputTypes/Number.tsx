@@ -1,7 +1,7 @@
 import {TextInput} from '@sanity/ui'
 import isFinite from 'lodash/isFinite'
 import React, {ChangeEvent, useCallback, useState} from 'react'
-import type {OperatorInputComponentProps} from '../../../../definitions/operators'
+import {OperatorInputComponentProps} from '../../../../definitions/operators/operatorTypes'
 
 export function FieldInputNumber({value, onChange}: OperatorInputComponentProps<number>) {
   const [uncontrolledValue, setUncontrolledValue] = useState(value ?? '')

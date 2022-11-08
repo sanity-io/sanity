@@ -150,7 +150,7 @@ export const ReferenceAutocomplete = forwardRef(function DebugMiniReferenceInput
           ref={ref}
           renderOption={renderOption}
           renderPopover={renderPopover}
-          value={value}
+          value={value ?? undefined}
         />
       )}
     </div>

@@ -1,19 +1,23 @@
 import {Box, Card, Stack} from '@sanity/ui'
-import React, {ChangeEvent, useCallback} from 'react'
+import React, {ComponentType, useCallback} from 'react'
 import {useSearchState} from '../../../contexts/search/useSearchState'
-import {getOperator, getOperatorInitialValue, OperatorType} from '../../../definitions/operators'
+import {getOperator} from '../../../definitions/operators'
 import type {SearchFilter} from '../../../types'
 import {FilterDetails} from '../common/FilterDetails'
 import {OperatorsMenuButton} from './OperatorsMenuButton'
+import {SearchOperatorInput} from '../../../definitions/operators/operatorTypes'
 
 interface FilterFormProps {
   filter: SearchFilter
 }
 
 export function FilterForm({filter}: FilterFormProps) {
-  const {dispatch} = useSearchState()
+  const {
+    dispatch,
+    state: {definitions},
+  } = useSearchState()
 
-  const operator = filter.operatorType && getOperator(filter.operatorType)
+  const operator = getOperator(definitions.operators, filter.operatorType)
 
   const handleValueChange = useCallback(
     (value: any) => {
@@ -26,7 +30,7 @@ export function FilterForm({filter}: FilterFormProps) {
     [dispatch, filter]
   )
 
-  const Component = operator?.inputComponent
+  const Component: SearchOperatorInput<any> | undefined = operator?.inputComponent
 
   return (
     <Box>
@@ -37,7 +41,10 @@ export function FilterForm({filter}: FilterFormProps) {
             <FilterDetails filter={filter} />
           </Box>
           {/* Operator */}
-          <OperatorsMenuButton filter={filter} operator={getOperator(filter.operatorType)} />
+          <OperatorsMenuButton
+            filter={filter}
+            operator={getOperator(definitions.operators, filter.operatorType)}
+          />
         </Stack>
       </Card>
 

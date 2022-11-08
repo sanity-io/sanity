@@ -1,6 +1,6 @@
 import {TextInput} from '@sanity/ui'
 import React, {ChangeEvent, useCallback} from 'react'
-import type {OperatorInputComponentProps} from '../../../../definitions/operators'
+import {OperatorInputComponentProps} from '../../../../definitions/operators/operatorTypes'
 
 export function FieldInputString({onChange, value}: OperatorInputComponentProps<string>) {
   const handleChange = useCallback(

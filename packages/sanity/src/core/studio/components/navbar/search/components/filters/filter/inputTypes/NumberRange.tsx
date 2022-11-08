@@ -1,10 +1,8 @@
 import {Box, Flex, TextInput} from '@sanity/ui'
 import isFinite from 'lodash/isFinite'
 import React, {ChangeEvent, useCallback, useState} from 'react'
-import type {
-  OperatorInputComponentProps,
-  OperatorNumberRangeValue,
-} from '../../../../definitions/operators'
+import {OperatorNumberRangeValue} from '../../../../definitions/operators/numberOperators'
+import {OperatorInputComponentProps} from '../../../../definitions/operators/operatorTypes'
 
 export function FieldInputNumberRange({
   onChange,

@@ -3,12 +3,12 @@ import {Box, Button, Flex, Inline, Menu, MenuButton, MenuDivider, MenuItem, Text
 import React, {createElement, useCallback, useId} from 'react'
 import {useSearchState} from '../../../contexts/search/useSearchState'
 import {getFilterDefinition} from '../../../definitions/filters'
-import {getOperator, Operator, OperatorType} from '../../../definitions/operators'
+import {getOperator, SearchOperator} from '../../../definitions/operators'
 import type {SearchFilter} from '../../../types'
 
 interface OperatorsMenuButtonProps {
   filter: SearchFilter
-  operator?: Operator
+  operator?: SearchOperator
 }
 
 function CustomMenuItem({
@@ -16,8 +16,8 @@ function CustomMenuItem({
   operator,
   selected,
 }: {
-  onClick: (operatorType: OperatorType) => void
-  operator: Operator
+  onClick: (operatorType: string) => void
+  operator: SearchOperator
   selected: boolean
 }) {
   const handleClick = useCallback(() => onClick(operator.type), [onClick, operator.type])
@@ -47,14 +47,13 @@ function CustomMenuItem({
 }
 
 export function OperatorsMenuButton({filter, operator}: OperatorsMenuButtonProps) {
-  const operatorItems = getFilterDefinition(filter.filterType)?.operators
-
   const menuButtonId = useId()
 
-  const {dispatch} = useSearchState()
+  const {dispatch, state} = useSearchState()
+  const operatorItems = getFilterDefinition(state.definitions.filters, filter.filterType)?.operators
 
   const handleClick = useCallback(
-    (operatorType: OperatorType) => {
+    (operatorType: string) => {
       dispatch({
         key: filter._key,
         operatorType,
@@ -90,7 +89,7 @@ export function OperatorsMenuButton({filter, operator}: OperatorsMenuButtonProps
           <Menu>
             {operatorItems.map((item, index) => {
               if (item.type === 'item') {
-                const menuOperator = getOperator(item.name)
+                const menuOperator = getOperator(state.definitions.operators, item.name)
                 if (!menuOperator) {
                   return null
                 }

@@ -14,6 +14,8 @@ import type {
   ResolveProductionUrlContext,
   Tool,
 } from './types'
+import {SearchFilterDefinition} from '../studio/components/navbar/search/definitions/filters'
+import {SearchOperator} from '../studio/components/navbar/search/definitions/operators'
 
 export const initialDocumentBadges: DocumentBadgeComponent[] = []
 
@@ -58,6 +60,35 @@ export const toolsReducer: ConfigPropertyReducer<Tool[], ConfigContext> = (
   if (Array.isArray(tools)) return [...prev, ...tools]
 
   throw new Error(`Expected \`tools\` to an array or a function but found ${typeof tools} instead.`)
+}
+
+export const searchFilterReducer: ConfigPropertyReducer<
+  SearchFilterDefinition<string>[],
+  ConfigContext
+> = (prev, {search}, context) => {
+  const filters = search?.filters
+  if (!filters) return prev
+  if (typeof filters === 'function') return filters(prev, context)
+  if (Array.isArray(filters)) return [...prev, ...filters]
+
+  throw new Error(
+    `Expected \`filters\` to be an array or a function but found ${typeof filters} instead.`
+  )
+}
+
+export const searchOperatorsReducer: ConfigPropertyReducer<SearchOperator[], ConfigContext> = (
+  prev,
+  {search},
+  context
+) => {
+  const operators = search?.operators
+  if (!operators) return prev
+  if (typeof operators === 'function') return operators(prev, context)
+  if (Array.isArray(operators)) return [...prev, ...operators]
+
+  throw new Error(
+    `Expected \`operators\` to be an array or a function but found ${typeof operators} instead.`
+  )
 }
 
 export const schemaTemplatesReducer: ConfigPropertyReducer<Template[], ConfigContext> = (

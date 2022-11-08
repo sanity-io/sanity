@@ -13,6 +13,7 @@ import {hasSearchableTerms} from '../../utils/hasSearchableTerms'
 import {isRecentSearchTerms} from '../../utils/isRecentSearchTerms'
 import {initialSearchState, searchReducer} from './reducer'
 import {SearchContext} from './SearchContext'
+import {useSource} from '../../../../../source'
 
 interface SearchProviderProps {
   children?: ReactNode
@@ -25,6 +26,9 @@ export function SearchProvider({children}: SearchProviderProps) {
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const schema = useSchema()
   const currentUser = useCurrentUser()
+  const {
+    search: {operators, filters},
+  } = useSource()
 
   const {dataset, projectId} = client.config()
 
@@ -40,11 +44,11 @@ export function SearchProvider({children}: SearchProviderProps) {
   )
 
   // Create our field registry: this is a list of all applicable fields which we can filter on.
-  const fieldRegistry = useMemo(() => createFieldRegistry(schema), [schema])
+  const fieldRegistry = useMemo(() => createFieldRegistry(schema, filters), [schema, filters])
 
   const initialState = useMemo(
-    () => initialSearchState(currentUser, recentSearches),
-    [currentUser, recentSearches]
+    () => initialSearchState({currentUser, recentSearches, definitions: {operators, filters}}),
+    [currentUser, recentSearches, operators, filters]
   )
   const [state, dispatch] = useReducer(searchReducer, initialState)
 
