@@ -44,7 +44,7 @@
     "refractor": "^3.6.0",
     "rxjs": "^6.5.3",
     "sanity": "3.0.0-rc.2",
-    "sanity-plugin-mux-input": "2.0.0-v3-studio.20",
+    "sanity-plugin-mux-input": "2.0.0-v3-studio.22",
     "styled-components": "^5.2.0",
     "three": "^0.146.0",
     "three-stdlib": "^2.17.3"
