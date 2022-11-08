@@ -200,7 +200,7 @@ function useCreateFilteredMenuItems(schema: Schema, titleFilter: string): Search
         _key: object._key,
         documentTypes: object.documentTypes,
         fieldPath: object.fieldPath,
-        filterType: object.type,
+        filterType: object.filterType,
         path: object.titlePath,
         type: 'field',
         titlePath: object.titlePath,

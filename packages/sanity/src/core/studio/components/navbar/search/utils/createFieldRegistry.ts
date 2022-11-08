@@ -1,6 +1,6 @@
-import type {
+import {
+  ArrayDefinition,
   ConditionalProperty,
-  DocumentDefinition,
   ObjectDefinition,
   Schema,
   SchemaTypeDefinition,
@@ -13,6 +13,7 @@ export interface ResolvedField {
   _key: string
   documentTypes: string[]
   fields?: ResolvedField[]
+  filterType: string
   fieldPath: string
   hidden: ConditionalProperty
   name: string
@@ -35,7 +36,6 @@ export function createFieldRegistry(
 
   // Get supported filter field types
   const supportedFieldTypes = getSupportedFieldTypes(filterDefinitions)
-
   // Separate documents and everything else
   originalSchema?.types
     .filter((schemaType) => !schemaType.name.startsWith('sanity.'))
@@ -46,15 +46,15 @@ export function createFieldRegistry(
       objectTypes[schemaType.name] = schemaType as ObjectDefinition
     })
 
-  // 1. Recursively iterate through all documents and resolve objects
+  // Recursively iterate through all documents and resolve objects
   const mappedDocuments = mapDocumentTypesRecursive(documentTypes, objectTypes)
 
-  // 2. Flatten fields - remove unsupported types + hidden fields
+  // Flatten fields - remove unsupported types + hidden fields
   const flattened = flattenFieldsByKey(mappedDocuments, 'fields')
     .filter((field) => !UNSUPPORTED_TYPES.includes(field.type))
     .filter((field) => !field.hidden)
 
-  // 3. Flatten with document types
+  // Flatten with document types
   const flattenedWithDocumentTypes = flattened
     .reduce<ResolvedField[]>((acc, val) => {
       const prevIndex = acc.findIndex((v) => v.fieldPath === val.fieldPath && v.title === val.title)
@@ -72,7 +72,7 @@ export function createFieldRegistry(
 
       return acc
     }, [])
-    // Filter out non-recognised field types and hidden types
+    // Filter out non-recognised field types and hidden fields
     .filter((schemaType) => supportedFieldTypes.includes(schemaType.type))
     // Sort by title, path length and then path title
     .sort((a, b) => {
@@ -102,16 +102,16 @@ function flattenFieldsByKey(data: ResolvedField[], key: string, depth = 0) {
   }, [])
 }
 
-function isDocumentDefinition(defType: SchemaTypeDefinition): defType is DocumentDefinition {
-  return defType.type === 'document'
-}
-
 function isDocumentType(schemaType: SchemaTypeDefinition): schemaType is ObjectDefinition {
   return schemaType.type === 'document'
 }
 
-function isObjectDefinition(defType: SchemaTypeDefinition): defType is ObjectDefinition {
-  return defType.type === 'object'
+function isArrayDefinition(schemaType: SchemaTypeDefinition): schemaType is ArrayDefinition {
+  return schemaType.type === 'array'
+}
+
+function isObjectDefinition(schemaType: SchemaTypeDefinition): schemaType is ObjectDefinition {
+  return schemaType.type === 'object'
 }
 
 function mapDocumentTypesRecursive(
@@ -125,7 +125,7 @@ function mapDocumentTypesRecursive(
     prevTitlePath: string[] = [],
     previousDocumentType?: string
   ): ResolvedField {
-    const isDocument = isDocumentDefinition(defType) && objectTypes[defType.name]
+    const isDocument = isDocumentType(defType) && objectTypes[defType.name]
     const isObject = isObjectDefinition(defType)
 
     // Get document type from existing definition (if it exists)
@@ -137,6 +137,7 @@ function mapDocumentTypesRecursive(
       _key: generateKey(),
       documentTypes: documentType ? [documentType] : [],
       fieldPath: prevFieldPath ?? '',
+      filterType: resolveFilterType(defType),
       hidden: defType.hidden,
       name: defType.name,
       titlePath: prevTitlePath ?? [],
@@ -170,4 +171,11 @@ function mapDocumentTypesRecursive(
   }
 
   return documentTypes.map((t) => mapSchemaTypeFields(t))
+}
+
+function resolveFilterType(schemaType: SchemaTypeDefinition) {
+  if (isArrayDefinition(schemaType) && schemaType.of.find((item) => item.type === 'block')) {
+    return 'portableText'
+  }
+  return schemaType.type
 }

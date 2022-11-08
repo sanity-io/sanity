@@ -4,6 +4,7 @@ import {booleanOperators} from './booleanOperators'
 import {definedOperators} from './defineOperators'
 import {dateOperators} from './dateOperators'
 import {numberOperators} from './numberOperators'
+import {portableTextOperators} from './portableTextOperators'
 import {referenceOperators} from './referenceOperators'
 import {stringOperators} from './stringOperators'
 
@@ -14,6 +15,7 @@ const searchOperators = {
   ...definedOperators,
   ...dateOperators,
   ...numberOperators,
+  ...portableTextOperators,
   ...referenceOperators,
   ...stringOperators,
 }

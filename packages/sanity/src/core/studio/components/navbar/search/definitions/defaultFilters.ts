@@ -7,6 +7,7 @@ import {
   PinIcon,
   UlistIcon,
 } from '@sanity/icons'
+import {BlockContentIcon} from '../components/filters/icons/BlockContentIcon'
 import {NumberIcon} from '../components/filters/icons/NumberIcon'
 import {StringIcon} from '../components/filters/icons/StringIcon'
 import {defineSearchFilter, SearchFilterDefinition} from './filters'
@@ -139,6 +140,23 @@ export const filterDefinitions: SearchFilterDefinition[] = [
     ],
     title: 'Number',
     type: 'number',
+  }),
+  defineSearchFilter<SearchOperatorType>({
+    fieldType: 'array',
+    icon: BlockContentIcon,
+    initialOperator: 'portableTextMatches',
+    operators: [
+      {name: 'portableTextMatches', type: 'item'},
+      {name: 'portableTextNotMatches', type: 'item'},
+      {type: 'divider'},
+      {name: 'portableTextEqual', type: 'item'},
+      {name: 'portableTextNotEqual', type: 'item'},
+      {type: 'divider'},
+      {name: 'defined', type: 'item'},
+      {name: 'notDefined', type: 'item'},
+    ],
+    title: 'Portable Text',
+    type: 'portableText',
   }),
   defineSearchFilter<SearchOperatorType>({
     fieldType: 'reference',
