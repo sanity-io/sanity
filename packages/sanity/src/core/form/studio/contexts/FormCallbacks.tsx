@@ -1,10 +1,11 @@
 /* eslint-disable react/no-unused-prop-types */
 import {Path} from '@sanity/types'
 import React, {memo, useContext} from 'react'
-import {PatchEvent} from '../../patch'
+import {FormPatch, PatchEvent} from '../../patch'
 
 /** @internal */
 export interface FormCallbacksValue {
+  transformPatches?: (patches: FormPatch[]) => FormPatch[]
   onChange: (patchEvent: PatchEvent) => void
   onPathFocus: (path: Path) => void
   onPathBlur: (path: Path) => void
@@ -14,7 +15,10 @@ export interface FormCallbacksValue {
   onFieldGroupSelect: (path: Path, fieldGroupName: string) => void
 }
 
-const FormCallbacksContext = React.createContext<FormCallbacksValue | null>(null)
+/**
+ * @internal
+ */
+export const FormCallbacksContext = React.createContext<FormCallbacksValue | null>(null)
 
 /** @internal */
 export const FormCallbacksProvider = memo(function FormCallbacksProvider(
