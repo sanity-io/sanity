@@ -1,9 +1,9 @@
 import {resolveConfigProperty} from '../resolveConfigProperty'
-import {createPlugin} from '../definePlugin'
+import {definePlugin} from '../definePlugin'
 
 describe('resolveConfigProperty', () => {
   it('traverses configs and returns a resolved configuration property', () => {
-    const foo = createPlugin({
+    const foo = definePlugin({
       name: 'foo',
       schema: {
         types: [
@@ -16,7 +16,7 @@ describe('resolveConfigProperty', () => {
       },
     })
 
-    const parent = createPlugin({
+    const parent = definePlugin({
       name: 'parent',
       plugins: [foo()],
       schema: {
@@ -67,7 +67,7 @@ describe('resolveConfigProperty', () => {
   })
 
   it('works with `asyncReducer`s', async () => {
-    const foo = createPlugin({
+    const foo = definePlugin({
       name: 'foo',
       schema: {
         types: [
@@ -80,7 +80,7 @@ describe('resolveConfigProperty', () => {
       },
     })
 
-    const parent = createPlugin({
+    const parent = definePlugin({
       name: 'parent',
       plugins: [foo()],
       schema: {
@@ -132,9 +132,9 @@ describe('resolveConfigProperty', () => {
   })
 
   it('throws `ConfigPropertyError`s with breadcrumbs', () => {
-    const deepest = createPlugin({name: 'deepest'})
-    const deeper = createPlugin({name: 'deeper', plugins: [deepest()]})
-    const deep = createPlugin({name: 'deep', plugins: [deeper()]})
+    const deepest = definePlugin({name: 'deepest'})
+    const deeper = definePlugin({name: 'deeper', plugins: [deepest()]})
+    const deep = definePlugin({name: 'deep', plugins: [deeper()]})
 
     expect(
       resolveConfigProperty({

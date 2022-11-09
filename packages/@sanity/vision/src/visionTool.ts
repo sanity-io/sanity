@@ -1,10 +1,10 @@
 import {lazy} from 'react'
-import {createPlugin} from 'sanity'
+import {definePlugin} from 'sanity'
 import {route} from 'sanity/router'
 import {EyeOpenIcon} from '@sanity/icons'
 import {VisionToolConfig} from './types'
 
-export const visionTool = createPlugin<VisionToolConfig | void>((options) => {
+export const visionTool = definePlugin<VisionToolConfig | void>((options) => {
   const {name, title, icon, ...config} = options || {}
   return {
     name: '@sanity/vision',

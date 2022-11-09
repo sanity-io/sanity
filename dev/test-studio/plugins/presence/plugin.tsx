@@ -1,5 +1,5 @@
 import {lazy} from 'react'
-import {createPlugin} from 'sanity'
+import {definePlugin} from 'sanity'
 import {JoystickIcon} from '@sanity/icons'
 import {route} from 'sanity/router'
 import {PresenceToolConfig} from './types'
@@ -9,7 +9,7 @@ const Presence3D = lazy(() => import('./Presence3D'))
 /**
  * Presence playground plugin
  */
-export const presenceTool = createPlugin<PresenceToolConfig | void>((options) => {
+export const presenceTool = definePlugin<PresenceToolConfig | void>((options) => {
   const {name, title, icon} = options || {}
 
   return {

@@ -1,9 +1,9 @@
-import {createPlugin} from 'sanity'
+import {definePlugin} from 'sanity'
 import {IceCreamIcon} from '@sanity/icons'
 import {ColorCanvas} from './ColorCanvas'
 
 export function themePreviewTool() {
-  return createPlugin({
+  return definePlugin({
     name: 'design-studio/theme-preview-tool',
     tools: [
       {

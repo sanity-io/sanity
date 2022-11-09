@@ -1,6 +1,6 @@
 import {MasterDetailIcon} from '@sanity/icons'
 import {lazy} from 'react'
-import {createPlugin} from 'sanity'
+import {definePlugin} from 'sanity'
 import {
   DeleteAction,
   DiscardChangesAction,
@@ -26,7 +26,7 @@ const documentActions = [
 const documentBadges = [LiveEditBadge]
 
 /** @beta */
-export const deskTool = createPlugin<DeskToolOptions | void>((options) => ({
+export const deskTool = definePlugin<DeskToolOptions | void>((options) => ({
   name: '@sanity/desk-tool',
   document: {
     actions: (prevActions) => {

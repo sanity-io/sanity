@@ -1,5 +1,5 @@
 import React from 'react'
-import {createPlugin, ObjectInputProps, _DocumentLanguageFilterComponent} from 'sanity'
+import {definePlugin, ObjectInputProps, _DocumentLanguageFilterComponent} from 'sanity'
 import {LanguageFilterMenuButton} from './LanguageFilterMenuButton'
 import {LanguageFilterObjectInput} from './LanguageFilterObjectInput'
 import {LanguageFilterPluginOptions} from './types'
@@ -7,7 +7,7 @@ import {LanguageFilterPluginOptions} from './types'
 /**
  * Language filter plugin for Sanity
  */
-export const languageFilter = createPlugin<LanguageFilterPluginOptions>((options) => {
+export const languageFilter = definePlugin<LanguageFilterPluginOptions>((options) => {
   const RenderLanguageFilter: _DocumentLanguageFilterComponent = (props) => {
     return <LanguageFilterMenuButton options={options} schemaType={props.schemaType} />
   }

@@ -1,6 +1,6 @@
 import React from 'react'
 import {Card} from '@sanity/ui'
-import {createPlugin, InputProps, FieldProps, ItemProps, PreviewProps} from 'sanity'
+import {definePlugin, InputProps, FieldProps, ItemProps, PreviewProps} from 'sanity'
 
 export function Input(props: InputProps) {
   return (
@@ -34,7 +34,7 @@ export function Preview(props: PreviewProps) {
   )
 }
 
-export const formComponentsPlugin = createPlugin({
+export const formComponentsPlugin = definePlugin({
   name: 'form-components-plugin',
   form: {
     components: {

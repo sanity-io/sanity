@@ -1,7 +1,7 @@
-import {createPlugin} from 'sanity'
+import {definePlugin} from 'sanity'
 import {barcodeSchemaType} from './schemaType'
 
-export const barcodeInput = createPlugin({
+export const barcodeInput = definePlugin({
   name: 'barcode-input',
   schema: {
     types: [barcodeSchemaType],
