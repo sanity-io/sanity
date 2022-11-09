@@ -4,7 +4,6 @@ import {BaseSchemaDefinition} from './common'
 
 /** @public */
 export interface DateOptions {
-  calendarTodayLabel?: string
   dateFormat?: string
 }
 
