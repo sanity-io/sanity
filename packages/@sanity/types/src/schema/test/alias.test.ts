@@ -13,6 +13,13 @@ describe('alias type test', () => {
       type: 'custom-string',
       name: 'custom-string-redefined',
 
+      components: {
+        input: (props: {any: 'cannot-know-prop-type-for-alias'}) => null,
+        field: (props) => null,
+        item: (props) => null,
+        preview: (props) => null,
+      },
+
       options: {
         // atm this is allowed
         direction: 'horizontal',
