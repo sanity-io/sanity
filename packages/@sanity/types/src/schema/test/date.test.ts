@@ -27,7 +27,6 @@ describe('date types', () => {
         ],
         hidden: () => false,
         options: {
-          calendarTodayLabel: 'Today',
           dateFormat: 'YYYY-MM-DD',
         },
       })
