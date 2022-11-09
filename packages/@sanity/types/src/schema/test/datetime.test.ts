@@ -29,7 +29,6 @@ describe('datetime types', () => {
         ],
         hidden: () => false,
         options: {
-          calendarTodayLabel: 'Today',
           dateFormat: 'YYYY-MM-DD',
           timeFormat: '10:10',
           timeStep: 2,
