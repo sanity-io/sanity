@@ -1,3 +1,4 @@
+import {ComponentType} from 'react'
 import {PreviewConfig} from '../preview'
 import {InitialValueProperty, SchemaValidationValue} from '../types'
 import {
@@ -112,6 +113,14 @@ export type TypeAliasDefinition<
   validation?: SchemaValidationValue
   initialValue?: InitialValueProperty<any, any>
   preview?: PreviewConfig
+
+  components?: {
+    diff?: ComponentType<any>
+    field?: ComponentType<any>
+    input?: ComponentType<any>
+    item?: ComponentType<any>
+    preview?: ComponentType<any>
+  }
 }
 
 /** @public */
