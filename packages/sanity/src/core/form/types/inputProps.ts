@@ -43,7 +43,7 @@ export interface BaseInputProps {
 
 /** @beta */
 export interface ObjectInputProps<
-  T = {[key in string]: unknown},
+  T = Record<string, any>,
   S extends ObjectSchemaType = ObjectSchemaType
 > extends BaseInputProps,
     ObjectFormNode<T, S> {
