@@ -168,7 +168,7 @@ function useCreateFilteredMenuItems(
       return [
         ...filterGroup({filters: sortedInternalFieldFilters, id: 'internal', tone: 'primary'}),
         ...filterGroup({filters: nonFieldFilters, id: 'non-field', tone: 'primary'}),
-        ...filterGroup({filters: allFilters, headerTitle: 'All fields', id: 'all-fields'}),
+        ...filterGroup({filters: otherFieldFilters, headerTitle: 'All fields', id: 'all-fields'}),
       ]
     }
 
