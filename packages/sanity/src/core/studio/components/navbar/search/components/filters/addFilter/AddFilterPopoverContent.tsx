@@ -1,7 +1,8 @@
 /* eslint-disable max-nested-callbacks */
 import {SearchIcon} from '@sanity/icons'
 import {Schema} from '@sanity/types'
-import {Box, Flex, Text} from '@sanity/ui'
+import {Box, ButtonTone, Flex, Text} from '@sanity/ui'
+import {partition} from 'lodash'
 import difference from 'lodash/difference'
 import isEqual from 'lodash/isEqual'
 import startCase from 'lodash/startCase'
@@ -12,8 +13,13 @@ import {SUBHEADER_HEIGHT_SMALL} from '../../../constants'
 import {CommandListProvider} from '../../../contexts/commandList'
 import {useSearchState} from '../../../contexts/search/useSearchState'
 import {getFilterDefinition, SearchFilterDefinition} from '../../../definitions/filters'
-import type {SearchFilterMenuItem, SearchFilter} from '../../../types'
-import {generateKey} from '../../../utils/generateKey'
+import type {
+  SearchFilter,
+  SearchFilterMenuItem,
+  SearchFilterMenuItemFilter,
+  SearchFilterMenuItemHeader,
+} from '../../../types'
+import {INTERNAL_FIELDS, ResolvedField} from '../../../utils/createFieldRegistry'
 import {CustomTextInput} from '../../CustomTextInput'
 import {FilterPopoverWrapper} from '../common/FilterPopoverWrapper'
 import {AddFilterContentMenuItems} from './AddFilterContentMenuItems'
@@ -21,32 +27,6 @@ import {AddFilterContentMenuItems} from './AddFilterContentMenuItems'
 interface AddFilterPopoverContentProps {
   onClose: () => void
 }
-
-const COMMON_FILTERS: SearchFilter[] = [
-  {
-    _key: generateKey(),
-    documentTypes: [],
-    fieldPath: '_updatedAt',
-    filterType: 'datetime',
-    operatorType: 'dateEqual',
-    titlePath: ['Updated at'],
-  },
-  {
-    _key: generateKey(),
-    documentTypes: [],
-    fieldPath: '_createdAt',
-    filterType: 'datetime',
-    operatorType: 'dateEqual',
-    titlePath: ['Created at'],
-  },
-  {
-    _key: generateKey(),
-    documentTypes: [],
-    filterType: 'references',
-    operatorType: 'referenceEqual',
-    titlePath: [],
-  },
-]
 
 const FilterHeaderBox = styled(Box)`
   border-bottom: 1px solid ${({theme}) => theme.sanity.color.base.border};
@@ -74,7 +54,11 @@ export function AddFilterPopoverContent({onClose}: AddFilterPopoverContentProps)
 
   const schema = useSchema()
 
-  const filteredMenuItems = useCreateFilteredMenuItems(schema, titleFilter)
+  const {
+    state: {definitions},
+  } = useSearchState()
+
+  const filteredMenuItems = useCreateFilteredMenuItems(definitions.filters, schema, titleFilter)
 
   return (
     <FilterPopoverWrapper onClose={onClose}>
@@ -146,12 +130,154 @@ export function AddFilterPopoverContent({onClose}: AddFilterPopoverContentProps)
   )
 }
 
-function includesDocumentTypes(documentTypes: string[], searchFilter: SearchFilter) {
-  return searchFilter.documentTypes.some((type) => documentTypes.includes(type))
+/**
+ * Creates a flat list of filter menu items based on the current filter text input.
+ */
+function useCreateFilteredMenuItems(
+  searchDefinitions: SearchFilterDefinition[],
+  schema: Schema,
+  titleFilter: string
+): SearchFilterMenuItem[] {
+  const {
+    fieldRegistry,
+    state: {
+      documentTypesNarrowed,
+      terms: {types},
+      definitions,
+    },
+  } = useSearchState()
+
+  return useMemo(() => {
+    // Get all filter definitions without field types
+    const nonFieldFilters = searchDefinitions
+      .filter((searchDefinition) => !searchDefinition.fieldType)
+      .map(createFilterFromDefinition)
+      .filter((searchFilter) => includesFilterTitle(definitions.filters, searchFilter, titleFilter))
+
+    const allFilters = fieldRegistry
+      .map(createFilterFromField)
+      .filter((searchFilter) => includesFilterTitle(definitions.filters, searchFilter, titleFilter))
+
+    const [internalFieldFilters, otherFieldFilters] = partition(allFilters, (filter) =>
+      filter?.fieldPath?.startsWith('_')
+    )
+
+    const sortedInternalFieldFilters = internalFieldFilters.sort(sortByInternalFieldName)
+
+    if (documentTypesNarrowed.length === 0) {
+      return [
+        ...filterGroup({filters: sortedInternalFieldFilters, id: 'internal', tone: 'primary'}),
+        ...filterGroup({filters: nonFieldFilters, id: 'non-field', tone: 'primary'}),
+        ...filterGroup({filters: allFilters, headerTitle: 'All fields', id: 'all-fields'}),
+      ]
+    }
+
+    const sharedFilters = otherFieldFilters.filter((searchFilter) =>
+      sharesDocumentTypes(documentTypesNarrowed, searchFilter)
+    )
+
+    const groupedItems = documentTypesNarrowed
+      .map((documentType) => {
+        const docType = schema.get(documentType)
+        return {
+          title: docType?.title || startCase(docType?.name) || '(Unknown type)',
+          documentType,
+        }
+      })
+      // Sort groups by title
+      .sort((a, b) => a.title.localeCompare(b.title))
+      .map(({documentType, title}) => {
+        const groupFilters = otherFieldFilters.filter((searchFilter) =>
+          includesDocumentTypes([documentType], searchFilter)
+        )
+        return filterGroup({filters: groupFilters, id: title, headerTitle: title})
+      })
+      .flat()
+
+    return [
+      ...filterGroup({filters: sortedInternalFieldFilters, id: 'internal', tone: 'primary'}),
+      ...filterGroup({filters: nonFieldFilters, id: 'non-field', tone: 'primary'}),
+      ...(documentTypesNarrowed.length > 1 && types.length > 1
+        ? filterGroup({
+            filters: sharedFilters,
+            headerTitle: 'Shared fields',
+            id: 'shared',
+            tone: 'primary',
+          })
+        : []),
+      ...groupedItems,
+    ]
+  }, [
+    definitions.filters,
+    documentTypesNarrowed,
+    fieldRegistry,
+    schema,
+    searchDefinitions,
+    titleFilter,
+    types.length,
+  ])
 }
 
-function sharesDocumentTypes(documentTypes: string[], searchFilter: SearchFilter) {
-  return difference(documentTypes, searchFilter.documentTypes || []).length === 0
+function createFilterFromDefinition(
+  filterDefinition: SearchFilterDefinition,
+  index: number
+): SearchFilter {
+  return {
+    _key: `${filterDefinition.type}-${index}`,
+    documentTypes: [],
+    filterType: filterDefinition.type,
+    titlePath: [],
+  }
+}
+
+function createFilterFromField(field: ResolvedField): SearchFilter {
+  return {
+    _key: field._key,
+    documentTypes: field.documentTypes,
+    fieldPath: field.fieldPath,
+    filterType: field.filterType,
+    titlePath: field.titlePath,
+  }
+}
+
+function filterGroup({
+  filters,
+  id,
+  headerTitle,
+  tone,
+}: {
+  filters: SearchFilter[]
+  id: string
+  headerTitle?: string
+  tone?: ButtonTone
+}): SearchFilterMenuItem[] {
+  const header: SearchFilterMenuItemHeader = {
+    title: headerTitle || '',
+    tone: tone || 'default',
+    type: 'header',
+  }
+  const filterItems = filters
+    .map(
+      (filter) =>
+        ({
+          filter,
+          group: id,
+          tone: tone || 'default',
+          type: 'filter',
+        } as SearchFilterMenuItemFilter)
+    )
+    .map(mapDuplicatedTitles)
+
+  return filterItems.length > 0
+    ? [
+        ...(headerTitle ? [header] : []), //
+        ...filterItems,
+      ]
+    : []
+}
+
+function includesDocumentTypes(documentTypes: string[], searchFilter: SearchFilter) {
+  return searchFilter.documentTypes.some((type) => documentTypes.includes(type))
 }
 
 function includesFilterTitle(
@@ -173,136 +299,27 @@ function includesFilterTitle(
   return title.toLowerCase().includes(currentTitle.toLowerCase())
 }
 
-/**
- * Creates a flat list of filter menu items based on the current filter text input.
- */
-function useCreateFilteredMenuItems(schema: Schema, titleFilter: string): SearchFilterMenuItem[] {
-  const {
-    fieldRegistry,
-    state: {
-      documentTypesNarrowed,
-      terms: {types},
-      definitions,
-    },
-  } = useSearchState()
-
-  return useMemo(() => {
-    const filteredMenuItems: SearchFilterMenuItem[] = []
-
-    // Common filters
-    const commonFilters: SearchFilter[] = COMMON_FILTERS.filter((searchFilter) =>
-      includesFilterTitle(definitions.filters, searchFilter, titleFilter)
-    )
-
-    // Create search filters from field registry
-    const allFilters: SearchFilter[] = fieldRegistry
-      .map((object) => ({
-        _key: object._key,
-        documentTypes: object.documentTypes,
-        fieldPath: object.fieldPath,
-        filterType: object.filterType,
-        path: object.titlePath,
-        type: 'field',
-        titlePath: object.titlePath,
-      }))
-      .filter((searchFilter) => includesFilterTitle(definitions.filters, searchFilter, titleFilter))
-
-    // Add common filters
-    commonFilters.forEach((searchFilter) => {
-      filteredMenuItems.push({filter: searchFilter, tone: 'primary', type: 'filter'})
-    })
-
-    // Add shared filters (when more than 1 document type is selected)
-    let sharedFilters: SearchFilter[] = []
-    if (documentTypesNarrowed.length > 1 && types.length > 1) {
-      sharedFilters = allFilters.filter((searchFilter) =>
-        sharesDocumentTypes(documentTypesNarrowed, searchFilter)
-      )
-
-      if (sharedFilters.length > 0) {
-        const groupTitle = 'Shared fields'
-        filteredMenuItems.push({title: groupTitle, tone: 'primary', type: 'header'})
-        sharedFilters.forEach((searchFilter) => {
-          filteredMenuItems.push({
-            filter: searchFilter,
-            group: groupTitle,
-            tone: 'primary',
-            type: 'filter',
-          })
-        })
-      }
-    }
-
-    /*
-    // Add applicable fields
-    let applicableFilters: SearchFilter[] = []
-    if (documentTypesNarrowed.length > 0) {
-      applicableFilters = allFilters.filter((searchFilter) =>
-        includesDocumentTypes(documentTypesNarrowed, searchFilter)
-      )
-
-      if (applicableFilters.length > 0) {
-        const groupTitle = 'Applicable fields'
-        filteredMenuItems.push({title: groupTitle, type: 'header'})
-        applicableFilters.forEach((searchFilter) => {
-          filteredMenuItems.push({filter: searchFilter, group: groupTitle, type: 'filter'})
-        })
-      }
-    }
-    */
-
-    // Add fields by document type
-    let applicableFilters: SearchFilter[] = []
-    if (documentTypesNarrowed.length > 0) {
-      documentTypesNarrowed
-        .map((documentType) => {
-          const docType = schema.get(documentType)
-          return {
-            title: docType?.title || startCase(docType?.name) || '(Unknown type)',
-            documentType,
-          }
-        })
-        .sort((a, b) => a.title.localeCompare(b.title))
-        .forEach(({documentType, title}) => {
-          const groupTitle = title
-          filteredMenuItems.push({title: groupTitle, type: 'header'})
-          applicableFilters = allFilters.filter((searchFilter) =>
-            includesDocumentTypes([documentType], searchFilter)
-          )
-          applicableFilters.forEach((searchFilter) => {
-            filteredMenuItems.push({filter: searchFilter, group: groupTitle, type: 'filter'})
-          })
-        })
-    }
-
-    // Add all fields
-    if (documentTypesNarrowed.length === 0) {
-      const groupTitle = 'All fields'
-      if (allFilters.length > 0) {
-        filteredMenuItems.push({title: groupTitle, type: 'header'})
-        allFilters.forEach((searchFilter) => {
-          filteredMenuItems.push({filter: searchFilter, group: groupTitle, type: 'filter'})
-        })
-      }
-    }
-
-    return (
-      filteredMenuItems
-        // Mark any filter items with duplicate titles
-        .map((menuItem) => mapDuplicatedTitles(filteredMenuItems, menuItem))
-    )
-  }, [documentTypesNarrowed, fieldRegistry, schema, titleFilter, types.length, definitions])
-}
-
-function mapDuplicatedTitles(allMenuItems: SearchFilterMenuItem[], menuItem: SearchFilterMenuItem) {
+function mapDuplicatedTitles(
+  menuItem: SearchFilterMenuItemFilter,
+  _index: number,
+  allMenuItems: SearchFilterMenuItemFilter[]
+): SearchFilterMenuItemFilter {
   const hasDuplicateTitle =
-    menuItem.type === 'filter' &&
-    allMenuItems.filter(
-      (f) => f.type === 'filter' && isEqual(f.filter.titlePath, menuItem.filter.titlePath)
-    ).length > 1
+    allMenuItems.filter((f) => isEqual(f.filter.titlePath, menuItem.filter.titlePath)).length > 1
 
   return {
     ...menuItem,
-    ...(hasDuplicateTitle && menuItem.type === 'filter' ? {showSubtitle: hasDuplicateTitle} : {}),
+    ...(hasDuplicateTitle ? {showSubtitle: hasDuplicateTitle} : {}),
   }
+}
+
+function sortByInternalFieldName(a: SearchFilter, b: SearchFilter) {
+  return (
+    INTERNAL_FIELDS.findIndex((f) => f.name === a.fieldPath) -
+    INTERNAL_FIELDS.findIndex((f) => f.name === b.fieldPath)
+  )
+}
+
+function sharesDocumentTypes(documentTypes: string[], searchFilter: SearchFilter) {
+  return difference(documentTypes, searchFilter.documentTypes || []).length === 0
 }

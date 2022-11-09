@@ -87,9 +87,9 @@ export default function FilterButton({closable = true, filter, initialOpen}: Fil
               <FilterTitle filter={filter} />
             </Text>
             {/* Operator */}
-            {isFilled && (
+            {isFilled && operator?.buttonLabel && (
               <Text muted size={1} weight="regular">
-                {operator?.buttonLabel}
+                {operator.buttonLabel}
               </Text>
             )}
             {/* Value */}

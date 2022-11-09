@@ -4,7 +4,7 @@ import {ComponentType} from 'react'
  * @alpha
  */
 export interface SearchOperatorBase {
-  buttonLabel: string
+  buttonLabel?: string
   label: string
   icon?: ComponentType
   type: string

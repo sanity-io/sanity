@@ -65,7 +65,9 @@ export function FilterDetails({filter, showSubtitle}: FilterDetailsProps) {
           <Text size={1} weight="medium">
             <FilterTitle filter={filter} />
           </Text>
-          {showSubtitle && <CodeWithOverflow>{filter.fieldPath}</CodeWithOverflow>}
+          {showSubtitle && filter.fieldPath && (
+            <CodeWithOverflow>{filter.fieldPath}</CodeWithOverflow>
+          )}
         </Stack>
       </Flex>
     </Stack>

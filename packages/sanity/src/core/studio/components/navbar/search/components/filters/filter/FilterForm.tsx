@@ -1,6 +1,7 @@
-import {Box, Card, Stack} from '@sanity/ui'
+import {Box, Card, Stack, Text} from '@sanity/ui'
 import React, {useCallback} from 'react'
 import {useSearchState} from '../../../contexts/search/useSearchState'
+import {getFilterDefinition} from '../../../definitions/filters'
 import {getOperator} from '../../../definitions/operators'
 import {SearchOperatorInput} from '../../../definitions/operators/operatorTypes'
 import type {SearchFilter} from '../../../types'
@@ -17,6 +18,7 @@ export function FilterForm({filter}: FilterFormProps) {
     state: {definitions},
   } = useSearchState()
 
+  const filterDefinition = getFilterDefinition(definitions.filters, filter.filterType)
   const operator = getOperator(definitions.operators, filter.operatorType)
 
   const handleValueChange = useCallback(
@@ -40,6 +42,16 @@ export function FilterForm({filter}: FilterFormProps) {
           <Box marginY={1} paddingRight={2}>
             <FilterDetails filter={filter} />
           </Box>
+
+          {/* Description (optional) */}
+          {filterDefinition?.description && (
+            <Card border padding={3} radius={2} tone="transparent">
+              <Text muted size={1}>
+                {filterDefinition.description}
+              </Text>
+            </Card>
+          )}
+
           {/* Operator */}
           <OperatorsMenuButton filter={filter} operator={operator} />
         </Stack>

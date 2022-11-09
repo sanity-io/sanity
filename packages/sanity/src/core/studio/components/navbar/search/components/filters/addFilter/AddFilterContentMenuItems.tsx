@@ -36,7 +36,7 @@ export function AddFilterContentMenuItems({
 }: AddFilterContentTypesProps) {
   const childParentRef = useRef<HTMLDivElement | null>(null)
 
-  const {getTotalSize, getVirtualItems, scrollToIndex} = useVirtualizer({
+  const {getTotalSize, getVirtualItems, measureElement, scrollToIndex} = useVirtualizer({
     count: menuItems.length,
     enableSmoothScroll: false,
     estimateSize: () => 40,
@@ -55,6 +55,7 @@ export function AddFilterContentMenuItems({
       <VirtualListChildBox $height={getTotalSize()} flex={1} ref={setChildContainerRef}>
         {getVirtualItems().map((virtualRow) => {
           const menuItem = menuItems[virtualRow.index]
+          // TODO: simplify
           let key = ''
           if (menuItem.type === 'header') {
             key = menuItem.title
@@ -68,8 +69,9 @@ export function AddFilterContentMenuItems({
 
           return (
             <div
-              key={key}
-              ref={virtualRow.measureElement}
+              data-index={virtualRow.index}
+              key={`${key}-${virtualRow.key}`}
+              ref={measureElement}
               // onClick={handleResultClick}
               // onMouseDown={onChildMouseDown}
               // onMouseEnter={onChildMouseEnter(virtualRow.index)}

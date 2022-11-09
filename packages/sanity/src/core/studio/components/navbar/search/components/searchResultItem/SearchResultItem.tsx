@@ -21,7 +21,7 @@ interface SearchItemProps extends ResponsivePaddingProps {
   onMouseDown?: (event: MouseEvent) => void
   onMouseEnter?: () => void
   documentId: string
-  virtualRow: VirtualItem<unknown>
+  virtualRow: VirtualItem
 }
 
 const SearchResultItemBox = styled(Box)<{$level: number}>(({$level}) => {
