@@ -32,6 +32,7 @@ describe('string types', () => {
             .regex(/a+/, {name: 'yeah', invert: true})
             .regex(/a+/, 'test')
             .regex(/a+/)
+            .email()
             .custom((value) => (value?.toUpperCase() == 'SHOUT' ? 'Error' : true))
             .warning(),
           // @ts-expect-error greaterThan is not on StringRule

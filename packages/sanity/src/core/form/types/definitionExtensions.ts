@@ -236,6 +236,17 @@ export interface UrlComponents {
   preview?: ComponentType<PreviewProps>
 }
 
+/**
+ * @beta
+ */
+export interface EmailComponents {
+  diff?: ComponentType<any>
+  field?: ComponentType<StringFieldProps>
+  input?: ComponentType<StringInputProps>
+  item?: ComponentType<PrimitiveItemProps>
+  preview?: ComponentType<PreviewProps>
+}
+
 /* To avoid cyclic dependencies on Props, we extend all type definitions here, to add the correct component props */
 declare module '@sanity/types' {
   export interface ArrayDefinition {
@@ -353,5 +364,12 @@ declare module '@sanity/types' {
      * @beta
      */
     components?: UrlComponents
+  }
+
+  export interface EmailDefinition {
+    /**
+     * @beta
+     */
+    components?: EmailComponents
   }
 }

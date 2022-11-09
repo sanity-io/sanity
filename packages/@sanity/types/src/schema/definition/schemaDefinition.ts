@@ -19,6 +19,7 @@ import {
   StringDefinition,
   TextDefinition,
   UrlDefinition,
+  EmailDefinition,
 } from './type'
 import {BaseSchemaDefinition} from './type/common'
 
@@ -56,6 +57,7 @@ export interface IntrinsicDefinitions {
   string: StringDefinition
   text: TextDefinition
   url: UrlDefinition
+  email: EmailDefinition
 }
 
 /**
