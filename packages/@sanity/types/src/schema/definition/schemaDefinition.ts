@@ -103,10 +103,10 @@ export interface TypeReference {
  *
  * @public
  */
-export type TypeAliasDefinition<
+export interface TypeAliasDefinition<
   TType extends string,
   TAlias extends IntrinsicTypeName | undefined
-> = BaseSchemaDefinition & {
+> extends BaseSchemaDefinition {
   type: TType
   options?: TAlias extends IntrinsicTypeName ? IntrinsicDefinitions[TAlias]['options'] : unknown
 
