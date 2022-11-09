@@ -1,6 +1,6 @@
 import {Box, Flex, TextInput} from '@sanity/ui'
 import React, {ChangeEvent, useCallback, useState} from 'react'
-import {OperatorNumberRangeValue} from '../../../../definitions/operators/numberOperators'
+import {OperatorNumberRangeValue} from '../../../../definitions/operators/common'
 import {OperatorInputComponentProps} from '../../../../definitions/operators/operatorTypes'
 
 export function FieldInputNumberRange({
