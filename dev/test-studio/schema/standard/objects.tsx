@@ -1,6 +1,8 @@
+/* eslint-disable func-name-matching */
 // import {FaPuzzlePiece as icon} from 'react-icons/fa'
 
-import {defineType} from 'sanity'
+import {defineType, FormPatch, set, TransformPatches} from 'sanity'
+import React, {useCallback} from 'react'
 
 export const myObject = defineType({
   type: 'object',
@@ -30,6 +32,21 @@ export default defineType({
   preview: {
     select: {
       title: 'myObject.first',
+    },
+  },
+  components: {
+    input: function Input(props) {
+      const transformPatches = useCallback((patches: FormPatch[]) => {
+        if (patches.some((patch) => patch.type === 'set' && patch.value === 'what date is it?')) {
+          return [...patches, set(new Date().toString(), ['myObject', 'second'])]
+        }
+        return patches
+      }, [])
+      return (
+        <TransformPatches transform={transformPatches}>
+          {props.renderDefault(props)}
+        </TransformPatches>
+      )
     },
   },
   fieldsets: [{name: 'recursive', title: 'Recursive', options: {collapsible: true}}],
