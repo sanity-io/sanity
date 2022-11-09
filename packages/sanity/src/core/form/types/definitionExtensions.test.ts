@@ -41,6 +41,7 @@ import {
   DateComponents,
   DatetimeComponents,
   DocumentComponents,
+  EmailComponents,
   FileComponents,
   GeopointComponents,
   ImageComponents,
@@ -387,6 +388,15 @@ describe('definitionExtensions', () => {
         components: stringlikeComponents,
       })
       const components: UrlComponents | undefined = type.components
+    })
+
+    it('should extend components for email', () => {
+      const type = defineType({
+        type: 'email',
+        name: 'test',
+        components: stringlikeComponents,
+      })
+      const components: EmailComponents | undefined = type.components
     })
   })
 

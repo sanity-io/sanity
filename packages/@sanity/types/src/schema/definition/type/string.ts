@@ -17,6 +17,7 @@ export interface StringRule extends RuleDef<StringRule, string> {
   regex(pattern: RegExp, options: {name?: string; invert?: boolean}): StringRule
   regex(pattern: RegExp, name: string): StringRule
   regex(pattern: RegExp): StringRule
+  email(): StringRule
 }
 
 /** @public */
