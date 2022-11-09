@@ -456,6 +456,26 @@ describe('definitionExtensions', () => {
       const components: FileComponents | undefined = type.components
     })
 
+    it('should allow value-type narrowing for file', () => {
+      const type = defineType({
+        type: 'file',
+        name: 'test',
+        components: {
+          diff: (props) => null,
+          field: (props: ObjectFieldProps<FileValue & {narrow?: true}>) => {
+            return null
+          },
+          input: (props: ObjectInputProps<FileValue & {narrow?: true}>) => {
+            return null
+          },
+          item: (props: ObjectItemProps<FileValue & ObjectItem & {narrow?: true}>) => {
+            return null
+          },
+        },
+      })
+      const components: FileComponents | undefined = type.components
+    })
+
     it('should extend components for geopoint', () => {
       const type = defineType({
         type: 'geopoint',
@@ -531,6 +551,26 @@ describe('definitionExtensions', () => {
           },
           preview: (props) => {
             const obj: PreviewProps = props
+            return null
+          },
+        },
+      })
+      const components: ObjectComponents | undefined = type.components
+    })
+
+    it('should allow developer to narrow value-type  props for object', () => {
+      const type = defineType({
+        type: 'object',
+        name: 'test',
+        fields: [],
+        components: {
+          field: (props: ObjectFieldProps<{narrow?: true}>) => {
+            return null
+          },
+          input: (props: ObjectInputProps<{narrow?: true}>) => {
+            return null
+          },
+          item: (props: ObjectItemProps<ObjectItem & {narrow?: true}>) => {
             return null
           },
         },
