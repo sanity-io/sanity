@@ -50,6 +50,9 @@ function commitMutations(mutationParams: MutatorMutation['params']) {
     visibility: 'async',
     returnDocuments: false,
     tag: 'document.commit',
+    // This makes sure the studio doesn't crash when a draft is crated
+    // because someone deleted a referenced document in the target dataset
+    skipCrossDatasetReferenceValidation: true,
   })
 }
 
