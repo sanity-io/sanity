@@ -26,7 +26,8 @@ export interface ImageValue extends FileValue {
 export interface ImageRule extends RuleDef<ImageRule, ImageValue> {}
 
 /** @public */
-export interface ImageDefinition extends Omit<ObjectDefinition, 'type' | 'fields' | 'options'> {
+export interface ImageDefinition
+  extends Omit<ObjectDefinition, 'type' | 'fields' | 'options' | 'groups'> {
   type: 'image'
   fields?: FieldDefinition[]
   options?: ImageOptions
