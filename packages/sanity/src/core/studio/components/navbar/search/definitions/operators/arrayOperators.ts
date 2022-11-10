@@ -33,7 +33,7 @@ export const arrayOperators = {
     icon: GtIcon,
     initialValue: null,
     inputComponent: FieldInputNumber,
-    label: 'quantity more than',
+    label: 'quantity greater than',
     type: 'arrayCountGt',
   }),
   arrayCountGte: defineSearchOperator({
@@ -44,7 +44,7 @@ export const arrayOperators = {
     icon: GteIcon,
     initialValue: null,
     inputComponent: FieldInputNumber,
-    label: 'quantity more than',
+    label: 'quantity greater than or equal to',
     type: 'arrayCountGte',
   }),
   arrayCountLt: defineSearchOperator({
@@ -66,7 +66,7 @@ export const arrayOperators = {
     icon: LteIcon,
     initialValue: null,
     inputComponent: FieldInputNumber,
-    label: 'quantity less than',
+    label: 'quantity less than or equal to',
     type: 'arrayCountLte',
   }),
   arrayCountNotEqual: defineSearchOperator({

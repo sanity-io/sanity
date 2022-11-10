@@ -5,6 +5,7 @@ import {
   ImageIcon,
   LinkIcon,
   PinIcon,
+  SelectIcon,
   UlistIcon,
 } from '@sanity/icons'
 import {BlockContentIcon} from '../components/filters/icons/BlockContentIcon'
@@ -214,7 +215,7 @@ export const filterDefinitions: SearchFilterDefinition[] = [
   }),
   defineSearchFilter<SearchOperatorType>({
     fieldType: 'string',
-    icon: StringIcon,
+    icon: SelectIcon,
     initialOperator: 'stringListEqual',
     operators: [
       {name: 'stringMatches', type: 'item'},

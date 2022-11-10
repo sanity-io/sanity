@@ -97,11 +97,11 @@ export function SortMenu({small}: SortMenuProps) {
         align="center"
         flex={1}
         marginLeft={small ? 0 : 1}
-        padding={1}
+        padding={2}
       >
         <MenuButton
           button={
-            <Button mode="bleed" padding={3}>
+            <Button mode="bleed" padding={2}>
               <Flex align="center" gap={1} justify="space-between">
                 <Box marginRight={1}>
                   <Text size={1}>

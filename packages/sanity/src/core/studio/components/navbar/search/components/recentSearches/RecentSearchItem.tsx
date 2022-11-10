@@ -4,7 +4,7 @@ import React, {MouseEvent, useCallback} from 'react'
 import styled, {css} from 'styled-components'
 import {useCommandList} from '../../contexts/commandList'
 import type {RecentSearchTerms} from '../../datastores/recentSearches'
-import {TypePills} from '../TypePills'
+import {DocumentTypesPill} from '../DocumentTypesPill'
 
 export interface RecentSearchesProps {
   index: number
@@ -99,7 +99,7 @@ export function RecentSearchItem(props: RecentSearchesProps) {
           )}
           {typesSelected && (
             <SearchItemPillsBox>
-              <TypePills availableCharacters={availableCharacters} types={value.types} />
+              <DocumentTypesPill availableCharacters={availableCharacters} types={value.types} />
             </SearchItemPillsBox>
           )}
         </Flex>

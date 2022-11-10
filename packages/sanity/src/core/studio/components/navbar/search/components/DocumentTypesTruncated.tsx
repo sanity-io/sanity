@@ -1,7 +1,5 @@
-import {Box, Card, Flex, Text, Theme} from '@sanity/ui'
+import {Inline, Text} from '@sanity/ui'
 import React, {useMemo} from 'react'
-import styled from 'styled-components'
-import {TextWithTone} from '../../../../../components/TextWithTone'
 import type {SearchableType} from '../../../../../search'
 
 interface TypePillsProps {
@@ -11,18 +9,10 @@ interface TypePillsProps {
 
 const DEFAULT_AVAILABLE_CHARS = 40 // excluding "+x more" suffix
 
-const PillCard = styled(Card)<{$collapsible?: boolean}>`
-  background: ${({theme}: {theme: Theme}) =>
-    theme.sanity.color.selectable?.primary.enabled.code.bg};
-  flex-shrink: ${({$collapsible}) => ($collapsible ? 1 : 0)};
-  overflow: hidden;
-`
-
-const RemainingCountBox = styled(Box)`
-  flex-shrink: 0;
-`
-
-export function TypePills({availableCharacters = DEFAULT_AVAILABLE_CHARS, types}: TypePillsProps) {
+export function DocumentTypesTruncated({
+  availableCharacters = DEFAULT_AVAILABLE_CHARS,
+  types,
+}: TypePillsProps) {
   /**
    * Get the total number of visible document types whose titles fit within `availableCharacters` count.
    * The first document is always included, regardless of whether it fits within `availableCharacters` or not.
@@ -57,24 +47,16 @@ export function TypePills({availableCharacters = DEFAULT_AVAILABLE_CHARS, types}
   }
 
   return (
-    <Flex align="center" gap={1}>
-      {visibleTypes.map((schemaType) => {
-        const title = typeTitle(schemaType)
-
-        return (
-          <PillCard $collapsible={visibleTypes.length === 1} key={title} padding={2} radius={2}>
-            <TextWithTone size={1} textOverflow="ellipsis" tone="primary" weight="medium">
-              {title}
-            </TextWithTone>
-          </PillCard>
-        )
-      })}
+    <Inline space={1}>
+      <Text muted size={1}>
+        {visibleTypes.map(typeTitle).join(', ')}
+      </Text>
       {!!remainingCount && (
         <Text muted size={1}>
-          <RemainingCountBox marginLeft={1}>+{remainingCount} more</RemainingCountBox>
+          +{remainingCount} more
         </Text>
       )}
-    </Flex>
+    </Inline>
   )
 }
 

@@ -2,7 +2,7 @@ import {Flex, Inline, Text, Theme} from '@sanity/ui'
 import React from 'react'
 import styled from 'styled-components'
 import {useSearchState} from '../contexts/search/useSearchState'
-import {TypePills} from './TypePills'
+import {DocumentTypesPill} from './DocumentTypesPill'
 
 const Semibold = styled.span`
   font-weight: ${({theme}: {theme: Theme}) => theme.sanity.fonts.text.weights.semibold};
@@ -38,7 +38,7 @@ export function NoResults() {
             <Text muted size={1}>
               in
             </Text>
-            <TypePills types={state.terms.types} />
+            <DocumentTypesPill types={state.terms.types} />
           </Inline>
         </Flex>
       )}

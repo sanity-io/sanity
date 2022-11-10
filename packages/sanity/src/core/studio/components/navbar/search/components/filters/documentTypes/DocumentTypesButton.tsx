@@ -2,6 +2,7 @@ import {SelectIcon} from '@sanity/icons'
 import {Button, Flex, Popover, Text, useClickOutside} from '@sanity/ui'
 import React, {useCallback, useState} from 'react'
 import {useSearchState} from '../../../contexts/search/useSearchState'
+import {DocumentTypesTruncated} from '../../DocumentTypesTruncated'
 import {DocumentTypesPopoverContent} from './DocumentTypesPopoverContent'
 
 export default function DocumentTypesButton() {
@@ -20,9 +21,6 @@ export default function DocumentTypesButton() {
 
   useClickOutside(handleClose, [buttonElement, popoverElement])
 
-  const value =
-    types.length > 0 ? types.map((type) => type?.title || type.name).join(', ') : 'All types'
-
   return (
     <Popover
       content={<DocumentTypesPopoverContent onClose={handleClose} />}
@@ -32,7 +30,6 @@ export default function DocumentTypesButton() {
       ref={setPopoverElement}
     >
       <Button
-        fontSize={1}
         mode="ghost"
         onClick={handleOpen}
         padding={2}
@@ -41,9 +38,11 @@ export default function DocumentTypesButton() {
         tone="default"
       >
         <Flex align="center" justify="space-between" gap={2}>
-          <Text size={1} textOverflow="ellipsis" weight="medium">
-            {value}
-          </Text>
+          {types.length > 0 ? (
+            <DocumentTypesTruncated types={types} />
+          ) : (
+            <Text size={1}>All types</Text>
+          )}
           <Text size={1}>
             <SelectIcon />
           </Text>
