@@ -18,10 +18,10 @@ export interface BlockRule extends RuleDef<BlockRule, any[]> {}
 export interface DecoratorDefinition {
   title: string
   value: string
-  icon?: ReactNode | ComponentType
-  portableText?: {
-    icon?: ReactNode | ComponentType
-    render?: ComponentType
+  icon?: ReactNode | ComponentType<any>
+  blockEditor?: {
+    icon?: ReactNode | ComponentType<any>
+    render?: ComponentType<any>
   }
 }
 
