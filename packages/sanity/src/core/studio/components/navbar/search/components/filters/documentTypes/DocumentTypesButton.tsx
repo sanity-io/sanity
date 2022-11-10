@@ -2,7 +2,7 @@ import {SelectIcon} from '@sanity/icons'
 import {Button, Flex, Popover, Text, useClickOutside} from '@sanity/ui'
 import React, {useCallback, useState} from 'react'
 import {useSearchState} from '../../../contexts/search/useSearchState'
-import {DocumentTypesTruncated} from '../../DocumentTypesTruncated'
+import {DocumentTypesTruncated} from '../../common/DocumentTypesTruncated'
 import {DocumentTypesPopoverContent} from './DocumentTypesPopoverContent'
 
 export default function DocumentTypesButton() {

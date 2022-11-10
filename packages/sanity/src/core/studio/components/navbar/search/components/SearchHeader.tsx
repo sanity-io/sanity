@@ -4,7 +4,7 @@ import React, {Dispatch, SetStateAction, useCallback, useEffect, useRef, useStat
 import styled, {keyframes} from 'styled-components'
 import {useSearchState} from '../contexts/search/useSearchState'
 import {supportsTouch} from '../utils/supportsTouch'
-import {CustomTextInput} from './CustomTextInput'
+import {CustomTextInput} from './common/CustomTextInput'
 
 interface SearchHeaderProps {
   onClose?: () => void

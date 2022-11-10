@@ -2,7 +2,7 @@ import {Flex, Inline, Text, Theme} from '@sanity/ui'
 import React from 'react'
 import styled from 'styled-components'
 import {useSearchState} from '../contexts/search/useSearchState'
-import {DocumentTypesPill} from './DocumentTypesPill'
+import {DocumentTypesPill} from './common/DocumentTypesPill'
 
 const Semibold = styled.span`
   font-weight: ${({theme}: {theme: Theme}) => theme.sanity.fonts.text.weights.semibold};

@@ -1,6 +1,6 @@
 import {Inline, Text} from '@sanity/ui'
 import React, {useMemo} from 'react'
-import type {SearchableType} from '../../../../../search'
+import type {SearchableType} from '../../../../../../search'
 
 interface TypePillsProps {
   availableCharacters?: number

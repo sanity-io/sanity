@@ -4,7 +4,7 @@ import styled from 'styled-components'
 import type {SearchTerms} from '../../../../../../search'
 import {useSearchState} from '../../contexts/search/useSearchState'
 import {Instructions} from '../Instructions'
-import {PointerOverlay} from '../PointerOverlay'
+import {PointerOverlay} from '../filters/common/PointerOverlay'
 import {RecentSearchItem} from './RecentSearchItem'
 
 interface RecentSearchesProps {

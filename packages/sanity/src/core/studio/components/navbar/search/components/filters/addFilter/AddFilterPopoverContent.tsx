@@ -20,7 +20,7 @@ import type {
   SearchFilterMenuItemHeader,
 } from '../../../types'
 import {INTERNAL_FIELDS, ResolvedField} from '../../../utils/createFieldRegistry'
-import {CustomTextInput} from '../../CustomTextInput'
+import {CustomTextInput} from '../../common/CustomTextInput'
 import {FilterPopoverWrapper} from '../common/FilterPopoverWrapper'
 import {AddFilterContentMenuItems} from './AddFilterContentMenuItems'
 

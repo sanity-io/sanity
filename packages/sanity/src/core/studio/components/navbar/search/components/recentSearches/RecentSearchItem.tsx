@@ -4,7 +4,7 @@ import React, {MouseEvent, useCallback} from 'react'
 import styled, {css} from 'styled-components'
 import {useCommandList} from '../../contexts/commandList'
 import type {RecentSearchTerms} from '../../datastores/recentSearches'
-import {DocumentTypesPill} from '../DocumentTypesPill'
+import {DocumentTypesPill} from '../common/DocumentTypesPill'
 
 export interface RecentSearchesProps {
   index: number

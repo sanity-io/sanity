@@ -9,9 +9,9 @@ import {CommandListProvider} from '../../../contexts/commandList'
 import {useSearchState} from '../../../contexts/search/useSearchState'
 import {getSelectableOmnisearchTypes} from '../../../utils/selectors'
 import {supportsTouch} from '../../../utils/supportsTouch'
-import {CustomTextInput} from '../../CustomTextInput'
-import {PointerOverlay} from '../../PointerOverlay'
-import {TypeFilterItem} from '../../TypeFilterItem'
+import {CustomTextInput} from '../../common/CustomTextInput'
+import {PointerOverlay} from '../common/PointerOverlay'
+import {TypeFilterItem} from './TypeFilterItem'
 
 const ClearButtonBox = styled(Box)`
   border-top: 1px solid ${({theme}) => theme.sanity.color.base.border};

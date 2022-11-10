@@ -1,6 +1,6 @@
 import {Card} from '@sanity/ui'
 import React from 'react'
-import type {SearchableType} from '../../../../../search'
+import type {SearchableType} from '../../../../../../search'
 import {DocumentTypesTruncated} from './DocumentTypesTruncated'
 
 interface TypePillsProps {
