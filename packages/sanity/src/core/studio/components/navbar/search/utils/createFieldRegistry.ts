@@ -5,6 +5,7 @@ import {
   ObjectDefinition,
   Schema,
   SchemaTypeDefinition,
+  StringDefinition,
 } from '@sanity/types'
 import startCase from 'lodash/startCase'
 import {getSupportedFieldTypes, SearchFilterDefinition} from '../definitions/filters'
@@ -16,8 +17,9 @@ export interface ResolvedField {
   fields?: ResolvedField[]
   filterType: string
   fieldPath: string
-  hidden: ConditionalProperty
+  hidden?: ConditionalProperty
   name: string
+  options?: any
   title: string
   titlePath: string[]
   type: string
@@ -125,6 +127,10 @@ function isObjectDefinition(schemaType: SchemaTypeDefinition): schemaType is Obj
   return schemaType.type === 'object'
 }
 
+function isStringDefinition(schemaType: SchemaTypeDefinition): schemaType is StringDefinition {
+  return schemaType.type === 'string'
+}
+
 function mapDocumentTypesRecursive(
   documentTypes: ObjectDefinition[],
   objectTypes: Record<string, ObjectDefinition>
@@ -150,8 +156,9 @@ function mapDocumentTypesRecursive(
       documentTypes: documentType && !isInternalField ? [documentType] : [],
       fieldPath: prevFieldPath ?? '',
       filterType: resolveFilterType(defType),
-      hidden: defType.hidden,
+      ...(defType?.hidden ? {hidden: defType.hidden} : {}),
       name: defType.name,
+      ...(defType?.options ? {options: defType.options} : {}),
       titlePath: prevTitlePath ?? [],
       title: defType?.title || startCase(defType.name),
       type: defType.type,
@@ -186,6 +193,13 @@ function mapDocumentTypesRecursive(
 }
 
 function resolveFilterType(schemaType: SchemaTypeDefinition) {
+  if (
+    isStringDefinition(schemaType) &&
+    schemaType.options?.list &&
+    schemaType.options.list.length > 0
+  ) {
+    return 'stringList'
+  }
   if (isArrayDefinition(schemaType) && schemaType.of.find((item) => item.type === 'block')) {
     return 'portableText'
   }

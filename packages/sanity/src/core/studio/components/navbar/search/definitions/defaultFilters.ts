@@ -172,7 +172,6 @@ export const filterDefinitions: SearchFilterDefinition[] = [
     type: 'reference',
   }),
   defineSearchFilter<SearchOperatorType>({
-    fieldType: null,
     icon: LinkIcon,
     initialOperator: 'references',
     operators: [{name: 'references', type: 'item'}],
@@ -212,6 +211,23 @@ export const filterDefinitions: SearchFilterDefinition[] = [
     ],
     title: 'String',
     type: 'string',
+  }),
+  defineSearchFilter<SearchOperatorType>({
+    fieldType: 'string',
+    icon: StringIcon,
+    initialOperator: 'stringListEqual',
+    operators: [
+      {name: 'stringMatches', type: 'item'},
+      {name: 'stringNotMatches', type: 'item'},
+      {type: 'divider'},
+      {name: 'stringListEqual', type: 'item'},
+      {name: 'stringListNotEqual', type: 'item'},
+      {type: 'divider'},
+      {name: 'defined', type: 'item'},
+      {name: 'notDefined', type: 'item'},
+    ],
+    title: 'String (list)',
+    type: 'stringList',
   }),
   defineSearchFilter<SearchOperatorType>({
     fieldType: 'text',

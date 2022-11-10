@@ -23,11 +23,6 @@ const customOperators = [
     label: 'updated in the last day',
     fn: () => `dateTime(_updatedAt) > dateTime(now()) - 60*60*24`,
   }),
-  defineSearchOperator({
-    type: 'customContainsAuthors',
-    label: 'updated in the last day',
-    fn: () => `dateTime(_updatedAt) > dateTime(now()) - 60*60*24`,
-  }),
 ] as const
 
 const customFilters = [

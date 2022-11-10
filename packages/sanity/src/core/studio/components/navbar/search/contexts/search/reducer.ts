@@ -14,7 +14,6 @@ import {debugWithName, isDebugMode} from '../../utils/debug'
 import {generateKey} from '../../utils/generateKey'
 import {isRecentSearchTerms} from '../../utils/isRecentSearchTerms'
 import {sortTypes} from '../../utils/selectors'
-import {SearchOperatorBuilder} from '../../definitions/operators/operatorTypes'
 
 export interface SearchReducerState {
   currentUser: CurrentUser | null
@@ -226,7 +225,7 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
       const newFilter: SearchFilter = {
         ...action.filter,
         // Generate a new key to handle duplicate filters
-        _key: generateKey(),
+        // _key: generateKey(),
         // Set initial value + operator
         operatorType,
         value: operatorType && getOperatorInitialValue(state.definitions.operators, operatorType),

@@ -24,7 +24,13 @@ export function NoResults() {
       paddingY={5}
     >
       <Text muted>
-        No results for <Semibold>{state.terms.query}</Semibold>
+        {state.terms.query ? (
+          <>
+            No results for <Semibold>{state.terms.query}</Semibold>
+          </>
+        ) : (
+          <>No results</>
+        )}
       </Text>
       {typesSelected && (
         <Flex align="center">

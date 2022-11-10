@@ -1,6 +1,7 @@
 import {FieldInputString} from '../../components/filters/filter/inputTypes/String'
-import {toJSON} from './operatorUtils'
+import {FieldInputStringList} from '../../components/filters/filter/inputTypes/StringList'
 import {defineSearchOperator} from './operatorTypes'
+import {toJSON} from './operatorUtils'
 
 export const stringOperators = {
   stringEqual: defineSearchOperator({
@@ -11,6 +12,24 @@ export const stringOperators = {
     inputComponent: FieldInputString,
     label: 'is',
     type: 'stringEqual',
+  }),
+  stringListEqual: defineSearchOperator({
+    buttonLabel: 'is',
+    buttonValue: (value) => value || null,
+    fn: ({fieldPath, value}) => (value && fieldPath ? `${fieldPath} == ${toJSON(value)}` : null),
+    initialValue: null,
+    inputComponent: FieldInputStringList,
+    label: 'is',
+    type: 'stringListEqual',
+  }),
+  stringListNotEqual: defineSearchOperator({
+    buttonLabel: 'is not',
+    buttonValue: (value) => value || null,
+    fn: ({fieldPath, value}) => (value && fieldPath ? `${fieldPath} != ${toJSON(value)}` : null),
+    initialValue: null,
+    inputComponent: FieldInputStringList,
+    label: 'is not',
+    type: 'stringListNotEqual',
   }),
   stringMatches: defineSearchOperator({
     buttonLabel: 'contains',

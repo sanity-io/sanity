@@ -13,15 +13,21 @@ export const MenuItemFilter = React.memo(function MenuItemFilter({
   item,
   onClose,
 }: FilterMenuItemProps) {
-  const {dispatch} = useSearchState()
+  const {
+    dispatch,
+    state: {filters},
+  } = useSearchState()
 
   const handleClick = useCallback(() => {
     dispatch({filter: item.filter, type: 'TERMS_FILTERS_ADD'})
     onClose?.()
   }, [dispatch, item.filter, onClose])
 
+  const isAlreadyActive = !!filters.find((f) => f._key === item.filter._key)
+
   return (
     <Button
+      disabled={isAlreadyActive}
       fontSize={1}
       justify="flex-start"
       mode="bleed"
