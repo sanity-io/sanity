@@ -22,7 +22,8 @@ export interface FileValue {
 }
 
 /** @public */
-export interface FileDefinition extends Omit<ObjectDefinition, 'type' | 'fields' | 'options'> {
+export interface FileDefinition
+  extends Omit<ObjectDefinition, 'type' | 'fields' | 'options' | 'groups'> {
   type: 'file'
   fields?: ObjectDefinition['fields']
   options?: FileOptions
