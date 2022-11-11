@@ -3,15 +3,16 @@ import {Box, Button, Flex, Text} from '@sanity/ui'
 import React, {MouseEvent, useCallback} from 'react'
 import styled, {css} from 'styled-components'
 import {useCommandList} from '../../contexts/commandList'
-import type {RecentSearchTerms} from '../../datastores/recentSearches'
+import type {RecentSearch} from '../../datastores/recentSearches'
 import {DocumentTypesPill} from '../common/DocumentTypesPill'
+import {FilterPill} from '../common/FilterPill'
 
 export interface RecentSearchesProps {
   index: number
   maxVisibleTypePillChars?: number
-  onClick: (value: RecentSearchTerms) => void
+  onClick: (value: RecentSearch) => void
   onDelete: (event: MouseEvent) => void
-  value: RecentSearchTerms
+  value: RecentSearch
 }
 
 const DEFAULT_COMBINED_TYPE_COUNT = 40
@@ -56,9 +57,9 @@ export function RecentSearchItem(props: RecentSearchesProps) {
   const {
     index,
     maxVisibleTypePillChars = DEFAULT_COMBINED_TYPE_COUNT,
-    value,
     onClick,
     onDelete,
+    value,
   } = props
 
   const {level, onChildClick, onChildMouseDown, onChildMouseEnter} = useCommandList()
@@ -67,8 +68,6 @@ export function RecentSearchItem(props: RecentSearchesProps) {
     onChildClick?.()
     onClick(value)
   }, [onChildClick, onClick, value])
-
-  const typesSelected = value.types.length > 0
 
   // Determine how many characters are left to render type pills
   const availableCharacters = maxVisibleTypePillChars - value.query.length
@@ -85,33 +84,41 @@ export function RecentSearchItem(props: RecentSearchesProps) {
       paddingRight={1}
       paddingY={1}
     >
-      <Flex align="center">
+      <Flex align="stretch">
         <Box paddingY={2}>
           <Text size={1}>
             <ClockIcon />
           </Text>
         </Box>
-        <Flex align="center" flex={1} gap={3} justify="flex-start" marginLeft={3}>
+        <Flex align="center" flex={1} gap={2} justify="flex-start" marginLeft={3} wrap="wrap">
+          {/* Text query */}
           {value.query && (
             <SearchItemQueryBox marginLeft={1}>
               <Text textOverflow="ellipsis">{value.query}</Text>
             </SearchItemQueryBox>
           )}
-          {typesSelected && (
+          {/* Document type */}
+          {value.types.length > 0 && (
             <SearchItemPillsBox>
               <DocumentTypesPill availableCharacters={availableCharacters} types={value.types} />
             </SearchItemPillsBox>
           )}
+          {/* Filters */}
+          {value?.filters?.map((filter, i) => {
+            return <FilterPill filter={filter} key={i} />
+          })}
         </Flex>
 
         {/* TODO: this is neither semantic nor accessible, consider revising */}
-        <CloseButtonDiv onClick={onDelete}>
-          <Flex padding={2}>
-            <Text size={1}>
-              <CloseIcon />
-            </Text>
-          </Flex>
-        </CloseButtonDiv>
+        <Flex align="center">
+          <CloseButtonDiv onClick={onDelete}>
+            <Flex padding={2}>
+              <Text size={1}>
+                <CloseIcon />
+              </Text>
+            </Flex>
+          </CloseButtonDiv>
+        </Flex>
       </Flex>
     </RecentSearchItemButton>
   )

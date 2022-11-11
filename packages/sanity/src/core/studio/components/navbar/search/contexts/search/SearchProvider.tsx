@@ -5,7 +5,7 @@ import type {SearchableType, SearchTerms} from '../../../../../../search'
 import {useCurrentUser} from '../../../../../../store'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../../../studioClient'
 import {FINDABILITY_MVI, SEARCH_LIMIT} from '../../constants'
-import {createRecentSearchesStore, RecentSearchTerms} from '../../datastores/recentSearches'
+import {createRecentSearchesStore, RecentSearch} from '../../datastores/recentSearches'
 import {useSearch} from '../../hooks/useSearch'
 import type {SearchOrdering} from '../../types'
 import {createFieldRegistry} from '../../utils/createFieldRegistry'
@@ -32,19 +32,26 @@ export function SearchProvider({children}: SearchProviderProps) {
 
   const {dataset, projectId} = client.config()
 
+  // Create our field registry: this is a list of all applicable fields which we can filter on.
+  const fieldRegistry = useMemo(() => createFieldRegistry(schema, filters), [schema, filters])
+
   // Create local storage store
   const recentSearchesStore = useMemo(
-    () => createRecentSearchesStore({dataset, projectId, schema, user: currentUser}),
-    [currentUser, dataset, projectId, schema]
+    () =>
+      createRecentSearchesStore({
+        dataset,
+        fields: fieldRegistry,
+        projectId,
+        schema,
+        user: currentUser,
+      }),
+    [currentUser, dataset, fieldRegistry, projectId, schema]
   )
 
   const recentSearches = useMemo(
-    () => recentSearchesStore?.getRecentSearchTerms(),
+    () => recentSearchesStore?.getRecentSearches(),
     [recentSearchesStore]
   )
-
-  // Create our field registry: this is a list of all applicable fields which we can filter on.
-  const fieldRegistry = useMemo(() => createFieldRegistry(schema, filters), [schema, filters])
 
   const initialState = useMemo(
     () => initialSearchState({currentUser, recentSearches, definitions: {operators, filters}}),
@@ -57,7 +64,7 @@ export function SearchProvider({children}: SearchProviderProps) {
   const isMountedRef = useRef(false)
   const previousOrderingRef = useRef<SearchOrdering>(initialState.ordering)
   const previousPageIndexRef = useRef<number>(initialState.pageIndex)
-  const previousTermsRef = useRef<SearchTerms | RecentSearchTerms>(initialState.terms)
+  const previousTermsRef = useRef<SearchTerms | RecentSearch>(initialState.terms)
 
   const {handleSearch, searchState} = useSearch({
     initialState: {...result, terms},

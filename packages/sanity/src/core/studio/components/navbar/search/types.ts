@@ -8,6 +8,7 @@ import type {SearchOptions, SearchSort, SearchTerms, WeightedHit} from '../../..
 export interface SearchFilter {
   documentTypes: string[]
   fieldPath?: string
+  fieldType?: string
   filterType: string
   operatorType?: string
   titlePath: string[]
@@ -17,7 +18,7 @@ export interface SearchFilter {
 /**
  * @internal
  */
-export type SavedSearchFilter = Omit<SearchFilter, 'documentTypes' | 'titlePath'>
+export type StoredSearchFilter = Omit<SearchFilter, 'documentTypes' | 'titlePath'>
 
 export interface SearchFilterMenuItemFilter {
   filter: SearchFilter

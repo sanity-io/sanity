@@ -5,7 +5,7 @@ import intersection from 'lodash/intersection'
 import isEmpty from 'lodash/isEmpty'
 import type {SearchableType, SearchTerms, WeightedHit} from '../../../../../../search'
 import {isNonNullable} from '../../../../../../util'
-import type {RecentSearchTerms} from '../../datastores/recentSearches'
+import type {RecentSearch} from '../../datastores/recentSearches'
 import {getFilterDefinitionInitialOperator, SearchFilterDefinition} from '../../definitions/filters'
 import {getOperator, getOperatorInitialValue, SearchOperator} from '../../definitions/operators'
 import {ORDERINGS} from '../../definitions/orderings'
@@ -24,9 +24,9 @@ export interface SearchReducerState {
   lastAddedFilter?: SearchFilter
   ordering: SearchOrdering
   pageIndex: number
-  recentSearches: RecentSearchTerms[]
+  recentSearches: RecentSearch[]
   result: SearchResult
-  terms: RecentSearchTerms | SearchTerms
+  terms: RecentSearch | SearchTerms
   definitions: SearchDefinitions
 }
 
@@ -45,7 +45,7 @@ export interface SearchResult {
 
 export interface InitialSearchState {
   currentUser: CurrentUser | null
-  recentSearches?: RecentSearchTerms[]
+  recentSearches?: RecentSearch[]
   definitions: SearchDefinitions
 }
 
@@ -81,7 +81,7 @@ export function initialSearchState({
 export type FiltersVisibleSet = {type: 'FILTERS_VISIBLE_SET'; visible: boolean}
 export type PageIncrement = {type: 'PAGE_INCREMENT'}
 export type RecentSearchesSet = {
-  recentSearches: RecentSearchTerms[]
+  recentSearches: RecentSearch[]
   type: 'RECENT_SEARCHES_SET'
 }
 export type OrderingReset = {type: 'ORDERING_RESET'}
@@ -107,7 +107,7 @@ export type TermsFiltersSetValue = {
   value?: any
 }
 export type TermsQuerySet = {type: 'TERMS_QUERY_SET'; query: string}
-export type TermsSet = {type: 'TERMS_SET'; terms: SearchTerms}
+export type TermsSet = {type: 'TERMS_SET'; filters?: SearchFilter[]; terms: SearchTerms}
 export type TermsTypeAdd = {type: 'TERMS_TYPE_ADD'; schemaType: SearchableType}
 export type TermsTypeRemove = {type: 'TERMS_TYPE_REMOVE'; schemaType: SearchableType}
 export type TermsTypesClear = {type: 'TERMS_TYPES_CLEAR'}
@@ -338,16 +338,28 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
           query: action.query,
         }),
       }
-    case 'TERMS_SET':
+    case 'TERMS_SET': {
+      const filters = action.filters || []
+      const types = [
+        ...(state.terms.types || []), //
+        ...action.terms.types,
+      ].sort(sortTypes)
+
       return {
         ...state,
+        documentTypesNarrowed: narrowDocumentTypes(types, filters),
+        filters,
         pageIndex: 0,
         result: {
           ...state.result,
           loaded: false,
         },
-        terms: action.terms,
+        terms: {
+          ...action.terms,
+          filter: generateFilterQuery(state.definitions.operators, filters),
+        },
       }
+    }
     case 'TERMS_TYPE_ADD': {
       // Clear all filters
       const filters: SearchFilter[] = []
@@ -421,7 +433,7 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
  *
  */
 // TODO: remove this (and associated tests) once client-side instrumentation is available
-function stripRecent(terms: RecentSearchTerms | SearchTerms) {
+function stripRecent(terms: RecentSearch | SearchTerms) {
   if (isRecentSearchTerms(terms)) {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const {__recent, ...rest} = terms

@@ -47,7 +47,7 @@ afterEach(() => {
 describe('search-store', () => {
   describe('getRecentSearchTerms', () => {
     it('should return empty array for empty storage', () => {
-      const recentSearches = recentSearchesStore.getRecentSearchTerms()
+      const recentSearches = recentSearchesStore.getRecentSearches()
       expect(recentSearches).toEqual([])
     })
 
@@ -72,11 +72,11 @@ describe('search-store', () => {
         query: 'baz',
         types: [mockArticle, mockInvalidType],
       }
-      recentSearchesStore.addSearchTerm(searchTerms1)
-      recentSearchesStore.addSearchTerm(searchTerms2)
-      recentSearchesStore.addSearchTerm(searchTerms3)
-      recentSearchesStore.addSearchTerm(searchTerms4)
-      const recentTerms = recentSearchesStore.getRecentSearchTerms()
+      recentSearchesStore.addSearch(searchTerms1)
+      recentSearchesStore.addSearch(searchTerms2)
+      recentSearchesStore.addSearch(searchTerms3)
+      recentSearchesStore.addSearch(searchTerms4)
+      const recentTerms = recentSearchesStore.getRecentSearches()
 
       expect(recentTerms.length).toEqual(1)
     })
@@ -90,9 +90,9 @@ describe('search-store', () => {
         query: 'bar',
         types: [mockBook],
       }
-      recentSearchesStore.addSearchTerm(searchTerms1)
-      recentSearchesStore.addSearchTerm(searchTerms2)
-      const recentTerms = recentSearchesStore.getRecentSearchTerms()
+      recentSearchesStore.addSearch(searchTerms1)
+      recentSearchesStore.addSearch(searchTerms2)
+      const recentTerms = recentSearchesStore.getRecentSearches()
 
       expect(recentTerms.length).toEqual(1)
     })
@@ -102,8 +102,8 @@ describe('search-store', () => {
         query: 'test1',
         types: [mockArticle],
       }
-      recentSearchesStore.addSearchTerm(searchTerms)
-      const recentTerms = recentSearchesStore.getRecentSearchTerms()
+      recentSearchesStore.addSearch(searchTerms)
+      const recentTerms = recentSearchesStore.getRecentSearches()
 
       expect(recentTerms.length).toEqual(1)
       expect(recentTerms[0]).toMatchObject(searchTerms)
@@ -118,17 +118,17 @@ describe('search-store', () => {
         query: '2',
         types: [mockArticle],
       }
-      recentSearchesStore.addSearchTerm(search1)
-      recentSearchesStore.addSearchTerm(search2)
+      recentSearchesStore.addSearch(search1)
+      recentSearchesStore.addSearch(search2)
 
-      let recentTerms = recentSearchesStore.getRecentSearchTerms()
+      let recentTerms = recentSearchesStore.getRecentSearches()
       expect(recentTerms.length).toEqual(2)
       // expect reverse order
       expect(recentTerms[0]).toMatchObject(search2)
       expect(recentTerms[1]).toMatchObject(search1)
 
-      recentSearchesStore.addSearchTerm(search1)
-      recentTerms = recentSearchesStore.getRecentSearchTerms()
+      recentSearchesStore.addSearch(search1)
+      recentTerms = recentSearchesStore.getRecentSearches()
 
       // still 2 recent, since duplicate is removed
       expect(recentTerms.length).toEqual(2)
@@ -141,13 +141,13 @@ describe('search-store', () => {
     it('it should limit number of saved searches', () => {
       // eslint-disable-next-line max-nested-callbacks
       ;[...Array(MAX_RECENT_SEARCHES + 10).keys()].forEach((i) =>
-        recentSearchesStore.addSearchTerm({
+        recentSearchesStore.addSearch({
           query: `${i}`,
           types: [],
         })
       )
 
-      const recentSearches = recentSearchesStore.getRecentSearchTerms()
+      const recentSearches = recentSearchesStore.getRecentSearches()
       expect(recentSearches.length).toEqual(MAX_RECENT_SEARCHES)
       expect(recentSearches[0].query).toEqual(`${MAX_RECENT_SEARCHES + 9}`)
     })
@@ -163,8 +163,8 @@ describe('search-store', () => {
         types: [mockArticle],
       }
 
-      recentSearchesStore.addSearchTerm(searchTerms1)
-      const recentSearches = recentSearchesStore.addSearchTerm(searchTerms2)
+      recentSearchesStore.addSearch(searchTerms1)
+      const recentSearches = recentSearchesStore.addSearch(searchTerms2)
 
       expect(recentSearches.length).toEqual(1)
     })
@@ -180,10 +180,10 @@ describe('search-store', () => {
         types: [mockArticle],
       }
 
-      recentSearchesStore.addSearchTerm(searchTerms1)
-      recentSearchesStore.addSearchTerm(searchTerms2)
+      recentSearchesStore.addSearch(searchTerms1)
+      recentSearchesStore.addSearch(searchTerms2)
 
-      const recentSearches = recentSearchesStore.removeSearchTerms()
+      const recentSearches = recentSearchesStore.removeSearch()
 
       expect(recentSearches.length).toEqual(0)
     })
@@ -200,11 +200,11 @@ describe('search-store', () => {
       }
 
       // Added search terms are unshifted
-      recentSearchesStore.addSearchTerm(searchTerms1)
-      recentSearchesStore.addSearchTerm(searchTerms2)
+      recentSearchesStore.addSearch(searchTerms1)
+      recentSearchesStore.addSearch(searchTerms2)
 
       // This should remove search with query '2'
-      const recentSearches = recentSearchesStore.removeSearchTermAtIndex(0)
+      const recentSearches = recentSearchesStore.removeSearchAtIndex(0)
 
       expect(recentSearches.length).toEqual(1)
       expect(recentSearches[0].query).toEqual('1')
@@ -216,14 +216,14 @@ describe('search-store', () => {
         types: [mockArticle],
       }
 
-      recentSearchesStore.addSearchTerm(searchTerms)
-      recentSearchesStore.removeSearchTermAtIndex(9000)
+      recentSearchesStore.addSearch(searchTerms)
+      recentSearchesStore.removeSearchAtIndex(9000)
 
-      let recentSearches = recentSearchesStore.getRecentSearchTerms()
+      let recentSearches = recentSearchesStore.getRecentSearches()
       expect(recentSearches.length).toEqual(1)
 
-      recentSearchesStore.removeSearchTermAtIndex(-1)
-      recentSearches = recentSearchesStore.getRecentSearchTerms()
+      recentSearchesStore.removeSearchAtIndex(-1)
+      recentSearches = recentSearchesStore.getRecentSearches()
       expect(recentSearches.length).toEqual(1)
     })
   })

@@ -2,7 +2,7 @@ import type {CurrentUser} from '@sanity/types'
 import {act, renderHook} from '@testing-library/react'
 import {useReducer} from 'react'
 import type {SearchableType} from '../../../../../../search'
-import type {RecentSearchTerms} from '../../datastores/recentSearches'
+import type {RecentSearch} from '../../datastores/recentSearches'
 import type {SearchOrdering} from '../../types'
 import {initialSearchState, searchReducer, SearchReducerState} from './reducer'
 
@@ -34,7 +34,7 @@ const recentSearchTerms = {
   filters: [],
   query: 'foo',
   types: [],
-} as RecentSearchTerms
+} as RecentSearch
 const initialState: SearchReducerState = {
   ...initialSearchState({currentUser: mockUser, definitions: {filters: [], operators: []}}),
   terms: recentSearchTerms,
@@ -48,7 +48,7 @@ describe('searchReducer', () => {
     act(() => dispatch({type: 'PAGE_INCREMENT'}))
 
     const [state] = result.current
-    expect((state.terms as RecentSearchTerms).__recent).toBeUndefined()
+    expect((state.terms as RecentSearch).__recent).toBeUndefined()
   })
 
   it('should clear __recent after resetting sort order', () => {
@@ -58,7 +58,7 @@ describe('searchReducer', () => {
     act(() => dispatch({type: 'ORDERING_RESET'}))
 
     const [state] = result.current
-    expect((state.terms as RecentSearchTerms).__recent).toBeUndefined()
+    expect((state.terms as RecentSearch).__recent).toBeUndefined()
   })
 
   it('should clear __recent after updating sort order', () => {
@@ -68,7 +68,7 @@ describe('searchReducer', () => {
     act(() => dispatch({ordering: mockOrdering, type: 'ORDERING_SET'}))
 
     const [state] = result.current
-    expect((state.terms as RecentSearchTerms).__recent).toBeUndefined()
+    expect((state.terms as RecentSearch).__recent).toBeUndefined()
   })
 
   it('should clear __recent after updating query', () => {
@@ -78,7 +78,7 @@ describe('searchReducer', () => {
     act(() => dispatch({query: 'bar', type: 'TERMS_QUERY_SET'}))
 
     const [state] = result.current
-    expect((state.terms as RecentSearchTerms).__recent).toBeUndefined()
+    expect((state.terms as RecentSearch).__recent).toBeUndefined()
   })
 
   it('should clear __recent after adding a document type', () => {
@@ -88,7 +88,7 @@ describe('searchReducer', () => {
     act(() => dispatch({schemaType: mockSearchableType, type: 'TERMS_TYPE_ADD'}))
 
     const [state] = result.current
-    expect((state.terms as RecentSearchTerms).__recent).toBeUndefined()
+    expect((state.terms as RecentSearch).__recent).toBeUndefined()
   })
 
   it('should clear __recent after remove a document type', () => {
@@ -98,7 +98,7 @@ describe('searchReducer', () => {
     act(() => dispatch({schemaType: mockSearchableType, type: 'TERMS_TYPE_REMOVE'}))
 
     const [state] = result.current
-    expect((state.terms as RecentSearchTerms).__recent).toBeUndefined()
+    expect((state.terms as RecentSearch).__recent).toBeUndefined()
   })
 
   it('should clear __recent after clearing all document types', () => {
@@ -108,6 +108,6 @@ describe('searchReducer', () => {
     act(() => dispatch({type: 'TERMS_TYPES_CLEAR'}))
 
     const [state] = result.current
-    expect((state.terms as RecentSearchTerms).__recent).toBeUndefined()
+    expect((state.terms as RecentSearch).__recent).toBeUndefined()
   })
 })

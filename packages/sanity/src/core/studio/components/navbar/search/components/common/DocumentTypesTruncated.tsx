@@ -43,7 +43,11 @@ export function DocumentTypesTruncated({
   const remainingCount = types.length - visibleTypes.length
 
   if (!types.length) {
-    return null
+    return (
+      <Text muted size={1}>
+        All types
+      </Text>
+    )
   }
 
   return (

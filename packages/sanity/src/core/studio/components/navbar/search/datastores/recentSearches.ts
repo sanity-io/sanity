@@ -1,24 +1,28 @@
 import type {CurrentUser, ObjectSchemaType, Schema} from '@sanity/types'
+import omit from 'lodash/omit'
 import type {SearchTerms} from '../../../../../search'
+import type {ResolvedField, SearchFilter, StoredSearchFilter} from '../types'
+import {expandStoredSearchFilter} from '../utils/filterUtils'
 import {getSearchableOmnisearchTypes} from '../utils/selectors'
 
-const SEARCH_TERMS_KEY = 'search-terms::recent'
+const RECENT_SEARCHES_KEY = 'search::recent'
 export const MAX_RECENT_SEARCHES = 5
 // might come in handy in the future
 const CURRENT_VERSION = 1
 
-export type RecentSearchTerms = SearchTerms & {
+export type RecentSearch = SearchTerms & {
   __recent: {
     index: number
     timestamp: number
   }
+  filters?: SearchFilter[]
 }
 
 export interface RecentSearchesStore {
-  addSearchTerm: (searchTerm: SearchTerms) => RecentSearchTerms[]
-  getRecentSearchTerms: () => RecentSearchTerms[]
-  removeSearchTerms: () => RecentSearchTerms[]
-  removeSearchTermAtIndex: (index: number) => RecentSearchTerms[]
+  addSearch: (searchTerm: SearchTerms, filters?: SearchFilter[]) => RecentSearch[]
+  getRecentSearches: () => RecentSearch[]
+  removeSearch: () => RecentSearch[]
+  removeSearchAtIndex: (index: number) => RecentSearch[]
 }
 
 interface StoredSearch {
@@ -28,16 +32,19 @@ interface StoredSearch {
 
 interface StoredSearchItem {
   created: string
+  filters: StoredSearchFilter[]
   terms: Omit<SearchTerms, 'types'> & {typeNames: string[]}
 }
 
 export function createRecentSearchesStore({
   dataset,
+  fields,
   projectId,
   schema,
   user,
 }: {
   dataset?: string
+  fields: ResolvedField[]
   projectId?: string
   schema: Schema
   user: CurrentUser | null
@@ -46,44 +53,57 @@ export function createRecentSearchesStore({
     return undefined
   }
 
-  const lsKey = `${SEARCH_TERMS_KEY}__${projectId}:${dataset}:${user.id}`
+  const lsKey = `${RECENT_SEARCHES_KEY}__${projectId}:${dataset}:${user.id}`
 
   return {
     /**
      * Write a search term to Local Storage and return updated recent searches.
      */
-    addSearchTerm: (searchTerm: SearchTerms): RecentSearchTerms[] => {
-      const saveTerm: StoredSearchItem = {
+    addSearch: (searchTerm: SearchTerms, filters?: SearchFilter[]): RecentSearch[] => {
+      const storedFilters = (filters || []).map(
+        (filter): StoredSearchFilter => ({
+          fieldPath: filter.fieldPath,
+          fieldType: filter.fieldType,
+          filterType: filter.filterType,
+          operatorType: filter.operatorType,
+          value: filter.value,
+        })
+      )
+
+      const newSearchItem: StoredSearchItem = {
         created: new Date().toISOString(),
+        filters: storedFilters,
         terms: {
           query: searchTerm.query.trim(),
           typeNames: searchTerm.types.map((s) => s.name),
         },
       }
-      const comparator = JSON.stringify(saveTerm.terms)
+      // Add new search item, remove previous duplicates (if any) and truncate array.
+      // When comparing search items, don't compare against the created date (which will always be different).
+      const comparator = JSON.stringify(omit(newSearchItem, 'created'))
       const newRecent: StoredSearch = {
         version: CURRENT_VERSION,
         recentSearches: [
-          saveTerm,
-          ...getRecentStoredSearchTerms(lsKey).recentSearches.filter((r) => {
-            return JSON.stringify(r.terms) !== comparator
+          newSearchItem,
+          ...getRecentStoredSearch(lsKey).recentSearches.filter((r) => {
+            return JSON.stringify(omit(r, 'created')) !== comparator
           }),
         ].slice(0, MAX_RECENT_SEARCHES),
       }
       window.localStorage.setItem(lsKey, JSON.stringify(newRecent))
 
-      return getRecentSearchTerms(lsKey, schema)
+      return getRecentSearchTerms(lsKey, schema, fields)
     },
     /**
      * Fetch all recent searches from Local Storage.
      * Invalid search terms will be filtered out and terms will be re-written to Local Storage.
      */
-    getRecentSearchTerms: getRecentSearchTerms.bind(undefined, lsKey, schema),
+    getRecentSearches: getRecentSearchTerms.bind(undefined, lsKey, schema, fields),
     /**
      * Remove all search terms from Local Storage and return updated recent searches.
      */
-    removeSearchTerms: () => {
-      const searchTerms = getRecentStoredSearchTerms(lsKey)
+    removeSearch: () => {
+      const searchTerms = getRecentStoredSearch(lsKey)
 
       const newRecent: StoredSearch = {
         ...searchTerms,
@@ -92,16 +112,16 @@ export function createRecentSearchesStore({
 
       window.localStorage.setItem(lsKey, JSON.stringify(newRecent))
 
-      return getRecentSearchTerms(lsKey, schema)
+      return getRecentSearchTerms(lsKey, schema, fields)
     },
     /**
      * Remove a search term from Local Storage and return updated recent searches.
      */
-    removeSearchTermAtIndex: (index: number) => {
-      const searchTerms = getRecentStoredSearchTerms(lsKey)
+    removeSearchAtIndex: (index: number) => {
+      const searchTerms = getRecentStoredSearch(lsKey)
 
       if (index < 0 || index > searchTerms.recentSearches.length) {
-        return getRecentSearchTerms(lsKey, schema)
+        return getRecentSearchTerms(lsKey, schema, fields)
       }
 
       const newRecent: StoredSearch = {
@@ -114,7 +134,7 @@ export function createRecentSearchesStore({
 
       window.localStorage.setItem(lsKey, JSON.stringify(newRecent))
 
-      return getRecentSearchTerms(lsKey, schema)
+      return getRecentSearchTerms(lsKey, schema, fields)
     },
   }
 }
@@ -123,7 +143,7 @@ export function createRecentSearchesStore({
  * Get the 'raw' stored search terms from Local Storage.
  * Stored search terms are the minimal representation of saved terms and only include schema names.
  */
-function getRecentStoredSearchTerms(lsKey: string): StoredSearch {
+function getRecentStoredSearch(lsKey: string): StoredSearch {
   const recentString = supportsLocalStorage ? window.localStorage.getItem(lsKey) : undefined
 
   return recentString
@@ -135,8 +155,12 @@ function getRecentStoredSearchTerms(lsKey: string): StoredSearch {
  * Get a list of recent searches from Local Storage.
  * Recent searches contain full document schemas.
  */
-function getRecentSearchTerms(lsKey: string, schema: Schema): RecentSearchTerms[] {
-  const storedSearchTerms = getRecentStoredSearchTerms(lsKey)
+function getRecentSearchTerms(
+  lsKey: string,
+  schema: Schema,
+  fields: ResolvedField[]
+): RecentSearch[] {
+  const storedSearchTerms = getRecentStoredSearch(lsKey)
 
   return sanitizeStoredSearchTerms(schema, storedSearchTerms, lsKey)
     .recentSearches.filter((r) => !!r.terms)
@@ -145,6 +169,7 @@ function getRecentSearchTerms(lsKey: string, schema: Schema): RecentSearchTerms[
         index,
         timestamp: new Date(r.created).getTime(),
       },
+      filters: r.filters.map((filter) => expandStoredSearchFilter(fields, filter)),
       query: r.terms.query,
       types: r.terms.typeNames
         .map((typeName) => schema.get(typeName))
@@ -153,7 +178,7 @@ function getRecentSearchTerms(lsKey: string, schema: Schema): RecentSearchTerms[
 }
 
 /**
- * Sanitize stored search terms - recent searches containing _any_ number of invalid document schemas are removed.
+ * Sanitize stored search - recent searches containing _any_ number of invalid document schemas are removed.
  * Document types hidden from omnisearch with __experimental_omnisearch_visibility are also omitted.
  * This mutates Local Storage if any invalid terms are found.
  */
@@ -179,7 +204,7 @@ function sanitizeStoredSearchTerms(
     window.localStorage.setItem(lsKey, JSON.stringify(newStoredSearchTerms))
   }
 
-  return getRecentStoredSearchTerms(lsKey)
+  return getRecentStoredSearch(lsKey)
 }
 
 const supportsLocalStorage = (() => {

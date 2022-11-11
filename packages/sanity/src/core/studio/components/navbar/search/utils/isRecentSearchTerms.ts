@@ -1,8 +1,6 @@
 import type {SearchTerms} from '../../../../../search'
-import type {RecentSearchTerms} from '../datastores/recentSearches'
+import type {RecentSearch} from '../datastores/recentSearches'
 
-export function isRecentSearchTerms(
-  terms: SearchTerms | RecentSearchTerms
-): terms is RecentSearchTerms {
-  return typeof (terms as RecentSearchTerms).__recent !== 'undefined'
+export function isRecentSearchTerms(terms: SearchTerms | RecentSearch): terms is RecentSearch {
+  return typeof (terms as RecentSearch).__recent !== 'undefined'
 }

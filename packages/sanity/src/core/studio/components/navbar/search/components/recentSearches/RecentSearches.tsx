@@ -1,10 +1,10 @@
 import {Box, Button, Label, Stack, Text, useMediaIndex} from '@sanity/ui'
 import React, {Dispatch, MouseEvent, SetStateAction, useCallback, useMemo} from 'react'
 import styled from 'styled-components'
-import type {SearchTerms} from '../../../../../../search'
 import {useSearchState} from '../../contexts/search/useSearchState'
-import {Instructions} from '../Instructions'
+import {RecentSearch} from '../../datastores/recentSearches'
 import {PointerOverlay} from '../filters/common/PointerOverlay'
+import {Instructions} from '../Instructions'
 import {RecentSearchItem} from './RecentSearchItem'
 
 interface RecentSearchesProps {
@@ -47,22 +47,29 @@ export function RecentSearches({
   const handleClearRecentSearchesClick = useCallback(() => {
     // Remove terms from Local Storage
     if (recentSearchesStore) {
-      const updatedRecentSearches = recentSearchesStore.removeSearchTerms()
+      const updatedRecentSearches = recentSearchesStore.removeSearch()
       dispatch({recentSearches: updatedRecentSearches, type: 'RECENT_SEARCHES_SET'})
     }
     onClear?.()
   }, [dispatch, recentSearchesStore, onClear])
 
   const handleRecentSearchClick = useCallback(
-    (searchTerms: SearchTerms) => {
-      // Optionally show filters panel if search terms are present
-      if (showFiltersOnClick && searchTerms.types.length) {
+    (searchTerms: RecentSearch) => {
+      const hasFilters = searchTerms.filters && searchTerms.filters.length
+      const hasTypes = searchTerms.types.length
+
+      // Optionally show filters panel if search terms or filters are present
+      if (showFiltersOnClick && (hasFilters || hasTypes)) {
         dispatch({type: 'FILTERS_VISIBLE_SET', visible: true})
       }
-      dispatch({type: 'TERMS_SET', terms: searchTerms})
+      dispatch({type: 'TERMS_SET', filters: searchTerms?.filters, terms: searchTerms})
+
       // Add to Local Storage
       if (recentSearchesStore) {
-        const updatedRecentSearches = recentSearchesStore?.addSearchTerm(searchTerms)
+        const updatedRecentSearches = recentSearchesStore?.addSearch(
+          searchTerms,
+          searchTerms?.filters
+        )
         dispatch({recentSearches: updatedRecentSearches, type: 'RECENT_SEARCHES_SET'})
       }
     },
@@ -74,7 +81,7 @@ export function RecentSearches({
       event.stopPropagation()
       // Remove from Local Storage
       if (recentSearchesStore) {
-        const updatedRecentSearches = recentSearchesStore?.removeSearchTermAtIndex(index)
+        const updatedRecentSearches = recentSearchesStore?.removeSearchAtIndex(index)
         dispatch({recentSearches: updatedRecentSearches, type: 'RECENT_SEARCHES_SET'})
       }
     },

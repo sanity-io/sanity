@@ -14,13 +14,13 @@ import {CommandListProvider} from '../../../contexts/commandList'
 import {useSearchState} from '../../../contexts/search/useSearchState'
 import {getFilterDefinition, SearchFilterDefinition} from '../../../definitions/filters'
 import type {
-  ResolvedField,
   SearchFilter,
   SearchFilterMenuItem,
   SearchFilterMenuItemFilter,
   SearchFilterMenuItemHeader,
 } from '../../../types'
 import {INTERNAL_FIELDS} from '../../../utils/createFieldRegistry'
+import {createFilterFromDefinition, createFilterFromField} from '../../../utils/filterUtils'
 import {CustomTextInput} from '../../common/CustomTextInput'
 import {FilterPopoverWrapper} from '../common/FilterPopoverWrapper'
 import {AddFilterContentMenuItems} from './AddFilterContentMenuItems'
@@ -217,23 +217,6 @@ function useCreateFilteredMenuItems(
     titleFilter,
     types.length,
   ])
-}
-
-function createFilterFromDefinition(filterDefinition: SearchFilterDefinition): SearchFilter {
-  return {
-    documentTypes: [],
-    filterType: filterDefinition.type,
-    titlePath: [],
-  }
-}
-
-function createFilterFromField(field: ResolvedField): SearchFilter {
-  return {
-    documentTypes: field.documentTypes,
-    fieldPath: field.fieldPath,
-    filterType: field.filterType,
-    titlePath: field.titlePath,
-  }
 }
 
 function filterGroup({

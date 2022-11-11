@@ -38,11 +38,7 @@ export default function DocumentTypesButton() {
         tone="default"
       >
         <Flex align="center" justify="space-between" gap={2}>
-          {types.length > 0 ? (
-            <DocumentTypesTruncated types={types} />
-          ) : (
-            <Text size={1}>All types</Text>
-          )}
+          <DocumentTypesTruncated types={types} />
           <Text size={1}>
             <SelectIcon />
           </Text>

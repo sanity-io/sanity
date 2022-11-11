@@ -5,7 +5,7 @@ import styled from 'styled-components'
 import type {SearchFilter} from '../../../types'
 import {ReturnIcon} from '../icons/ReturnIcon'
 import {FilterIcon} from './FilterIcon'
-import {FilterTitle} from './FilterTitle'
+import {FilterTitle} from '../../common/FilterTitle'
 
 interface FilterDetailsProps {
   filter: SearchFilter

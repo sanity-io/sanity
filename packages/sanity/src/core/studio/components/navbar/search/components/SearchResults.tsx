@@ -54,7 +54,7 @@ export function SearchResults({
   const {
     dispatch,
     recentSearchesStore,
-    state: {debug, terms, result},
+    state: {debug, filters, terms, result},
   } = useSearchState()
 
   const childParentRef = useRef<HTMLDivElement | null>(null)
@@ -78,12 +78,11 @@ export function SearchResults({
   }, [setVirtualListScrollToIndex, scrollToIndex])
 
   /**
-   * Add current search terms to recent searches, trigger child item click and close search
+   * Add current search to recent searches, trigger child item click and close search
    */
   const handleResultClick = useCallback(() => {
-    // Add terms to Local Storage
     if (recentSearchesStore) {
-      const updatedRecentSearches = recentSearchesStore.addSearchTerm(terms)
+      const updatedRecentSearches = recentSearchesStore.addSearch(terms, filters)
       dispatch({
         recentSearches: updatedRecentSearches,
         type: 'RECENT_SEARCHES_SET',
@@ -91,7 +90,7 @@ export function SearchResults({
     }
     onChildClick?.()
     onClose()
-  }, [dispatch, onChildClick, onClose, recentSearchesStore, terms])
+  }, [dispatch, filters, onChildClick, onClose, recentSearchesStore, terms])
 
   const hasSearchResults = !!result.hits.length
 

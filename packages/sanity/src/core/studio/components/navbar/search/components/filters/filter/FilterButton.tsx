@@ -1,14 +1,13 @@
 import {CloseIcon} from '@sanity/icons'
-import {Button, Flex, Inline, Popover, rem, Text, Theme, useClickOutside} from '@sanity/ui'
+import {Button, Flex, Popover, rem, Theme, useClickOutside} from '@sanity/ui'
 import React, {useCallback, useState} from 'react'
 import styled, {css} from 'styled-components'
 import {useSearchState} from '../../../contexts/search/useSearchState'
 import {getOperator} from '../../../definitions/operators'
 import type {SearchFilter} from '../../../types'
 import {getFilterKey} from '../../../utils/filterUtils'
-import {FilterTitle} from '../common/FilterTitle'
+import {FilterLabel} from '../../common/FilterLabel'
 import {FilterPopoverContent} from './FilterPopoverContent'
-// import {FilterIcon} from './FilterIcon'
 
 interface FilterButtonProps {
   closable?: boolean
@@ -54,7 +53,7 @@ export default function FilterButton({closable = true, filter, initialOpen}: Fil
   const value = operator?.buttonValue && operator.buttonValue(filter.value)
   const hasValue = value !== undefined && value !== null
   // Mark as 'filled' if both operator and value are present (or no input component is defined).
-  const isFilled = operator?.inputComponent ? filter.operatorType && hasValue : true
+  const isFilled = operator?.inputComponent ? !!(filter.operatorType && hasValue) : true
 
   return (
     <Popover
@@ -75,31 +74,7 @@ export default function FilterButton({closable = true, filter, initialOpen}: Fil
           }}
           tone={isFilled ? 'primary' : 'default'}
         >
-          <Inline space={1}>
-            {/*
-            <Box marginRight={1}>
-              <Text size={1}>
-                <FilterIcon filter={filter} />
-              </Text>
-            </Box>
-            */}
-            {/* Title */}
-            <Text size={1} weight="medium">
-              <FilterTitle filter={filter} />
-            </Text>
-            {/* Operator */}
-            {isFilled && operator?.buttonLabel && (
-              <Text muted size={1} weight="regular">
-                {operator.buttonLabel}
-              </Text>
-            )}
-            {/* Value */}
-            {isFilled && (
-              <Text size={1} textOverflow="ellipsis" weight="medium">
-                {value}
-              </Text>
-            )}
-          </Inline>
+          <FilterLabel filter={filter} showContent={isFilled} />
         </LabelButton>
 
         {closable && (
