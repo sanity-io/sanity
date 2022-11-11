@@ -6,6 +6,7 @@ import {useWorkspace} from '../../workspace'
 import {Tool} from '../../../config'
 import {useToolMenuComponent} from '../../studio-components-hooks'
 import {UserAvatar, useRovingFocus} from '../../../components'
+import {useWorkspaces} from '../../workspaces'
 import {WorkspaceMenuButton} from './workspace'
 
 const Root = styled(Layer)`
@@ -61,6 +62,7 @@ export const NavDrawer = memo(function NavDrawer(props: NavDrawerProps) {
   const [innerCardElement, setInnerCardElement] = useState<HTMLDivElement | null>(null)
   const tabIndex = isOpen ? 0 : -1
   const {auth, currentUser} = useWorkspace()
+  const workspaces = useWorkspaces()
 
   useRovingFocus({
     rootElement: innerCardElement,
@@ -119,7 +121,9 @@ export const NavDrawer = memo(function NavDrawer(props: NavDrawerProps) {
               </Box>
             </Flex>
 
-            <WorkspaceMenuButton text="Select workspace" justify="flex-start" />
+            {workspaces.length > 1 && (
+              <WorkspaceMenuButton text="Select workspace" justify="flex-start" />
+            )}
           </Stack>
         </Card>
 
