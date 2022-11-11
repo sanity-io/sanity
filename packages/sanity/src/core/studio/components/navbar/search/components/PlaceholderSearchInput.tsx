@@ -70,7 +70,7 @@ export const PlaceholderSearchInput = forwardRef(function DummyInput(
         value={terms.query}
       />
       <KeyboardShortcutFlex align="center" height="fill" marginRight={2}>
-        <KBD>{GLOBAL_SEARCH_KEY_MODIFIER.toUpperCase()}</KBD>
+        <KBD>{GLOBAL_SEARCH_KEY_MODIFIER}</KBD>
         <KBD>{GLOBAL_SEARCH_KEY.toUpperCase()}</KBD>
       </KeyboardShortcutFlex>
     </PlaceholderSearchInputFlex>
