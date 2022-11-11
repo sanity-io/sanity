@@ -1,6 +1,5 @@
 import {
   ArrayDefinition,
-  ConditionalProperty,
   FieldDefinition,
   ObjectDefinition,
   Schema,
@@ -9,21 +8,7 @@ import {
 } from '@sanity/types'
 import startCase from 'lodash/startCase'
 import {getSupportedFieldTypes, SearchFilterDefinition} from '../definitions/filters'
-import {generateKey} from './generateKey'
-
-export interface ResolvedField {
-  _key: string
-  documentTypes: string[]
-  fields?: ResolvedField[]
-  filterType: string
-  fieldPath: string
-  hidden?: ConditionalProperty
-  name: string
-  options?: any
-  title: string
-  titlePath: string[]
-  type: string
-}
+import type {ResolvedField} from '../types'
 
 // Internal fields to include with every document.
 // These fields always appear at the top of the filters list, in the order specified.
@@ -152,7 +137,6 @@ function mapDocumentTypesRecursive(
     const isInternalField = defType.name.startsWith('_')
 
     return {
-      _key: generateKey(),
       documentTypes: documentType && !isInternalField ? [documentType] : [],
       fieldPath: prevFieldPath ?? '',
       filterType: resolveFilterType(defType),

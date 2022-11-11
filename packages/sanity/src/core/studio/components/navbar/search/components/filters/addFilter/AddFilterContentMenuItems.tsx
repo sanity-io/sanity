@@ -3,6 +3,7 @@ import {useVirtualizer} from '@tanstack/react-virtual'
 import React, {Dispatch, SetStateAction, useEffect, useRef} from 'react'
 import styled from 'styled-components'
 import type {SearchFilterMenuItem} from '../../../types'
+import {getFilterKey} from '../../../utils/filterUtils'
 // import {PointerOverlay} from '../PointerOverlay'
 import {MenuItemFilter} from '../menuItem/MenuItemFilter'
 import {MenuItemHeader} from '../menuItem/MenuItemHeader'
@@ -63,7 +64,7 @@ export function AddFilterContentMenuItems({
           if (menuItem.type === 'filter') {
             key = [
               ...(menuItem.group ? [menuItem.group] : []), //
-              menuItem.filter._key,
+              getFilterKey(menuItem.filter),
             ].join('-')
           }
 

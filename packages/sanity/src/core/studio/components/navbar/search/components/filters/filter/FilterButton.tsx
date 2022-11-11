@@ -5,6 +5,7 @@ import styled, {css} from 'styled-components'
 import {useSearchState} from '../../../contexts/search/useSearchState'
 import {getOperator} from '../../../definitions/operators'
 import type {SearchFilter} from '../../../types'
+import {getFilterKey} from '../../../utils/filterUtils'
 import {FilterTitle} from '../common/FilterTitle'
 import {FilterPopoverContent} from './FilterPopoverContent'
 // import {FilterIcon} from './FilterIcon'
@@ -41,10 +42,10 @@ export default function FilterButton({closable = true, filter, initialOpen}: Fil
   const handleRemove = useCallback(
     () =>
       dispatch({
-        _key: filter._key,
+        filterKey: getFilterKey(filter),
         type: 'TERMS_FILTERS_REMOVE',
       }),
-    [dispatch, filter._key]
+    [dispatch, filter]
   )
 
   useClickOutside(handleClose, [buttonElement, popoverElement])

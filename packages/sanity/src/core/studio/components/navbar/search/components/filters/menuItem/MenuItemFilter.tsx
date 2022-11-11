@@ -2,6 +2,7 @@ import {Button} from '@sanity/ui'
 import React, {useCallback} from 'react'
 import {useSearchState} from '../../../contexts/search/useSearchState'
 import type {SearchFilterMenuItemFilter} from '../../../types'
+import {getFilterKey} from '../../../utils/filterUtils'
 import {FilterDetails} from '../common/FilterDetails'
 
 interface FilterMenuItemProps {
@@ -23,7 +24,7 @@ export const MenuItemFilter = React.memo(function MenuItemFilter({
     onClose?.()
   }, [dispatch, item.filter, onClose])
 
-  const isAlreadyActive = !!filters.find((f) => f._key === item.filter._key)
+  const isAlreadyActive = !!filters.find((f) => getFilterKey(f) === getFilterKey(item.filter))
 
   return (
     <Button

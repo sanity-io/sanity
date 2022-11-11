@@ -11,7 +11,7 @@ import {getOperator, getOperatorInitialValue, SearchOperator} from '../../defini
 import {ORDERINGS} from '../../definitions/orderings'
 import type {SearchFilter, SearchOrdering} from '../../types'
 import {debugWithName, isDebugMode} from '../../utils/debug'
-import {generateKey} from '../../utils/generateKey'
+import {getFilterKey} from '../../utils/filterUtils'
 import {isRecentSearchTerms} from '../../utils/isRecentSearchTerms'
 import {sortTypes} from '../../utils/selectors'
 
@@ -95,14 +95,14 @@ export type SearchRequestError = {type: 'SEARCH_REQUEST_ERROR'; error: Error}
 export type SearchRequestStart = {type: 'SEARCH_REQUEST_START'}
 export type TermsFiltersAdd = {filter: SearchFilter; type: 'TERMS_FILTERS_ADD'}
 export type TermsFiltersClear = {type: 'TERMS_FILTERS_CLEAR'}
-export type TermsFiltersRemove = {_key: string; type: 'TERMS_FILTERS_REMOVE'}
+export type TermsFiltersRemove = {filterKey: string; type: 'TERMS_FILTERS_REMOVE'}
 export type TermsFiltersSetOperator = {
-  key: string
+  filterKey: string
   operatorType: string
   type: 'TERMS_FILTERS_SET_OPERATOR'
 }
 export type TermsFiltersSetValue = {
-  key: string
+  filterKey: string
   type: 'TERMS_FILTERS_SET_VALUE'
   value?: any
 }
@@ -224,8 +224,6 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
 
       const newFilter: SearchFilter = {
         ...action.filter,
-        // Generate a new key to handle duplicate filters
-        // _key: generateKey(),
         // Set initial value + operator
         operatorType,
         value: operatorType && getOperatorInitialValue(state.definitions.operators, operatorType),
@@ -260,7 +258,7 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
       }
     }
     case 'TERMS_FILTERS_REMOVE': {
-      const index = state.filters.findIndex((filter) => filter._key === action._key)
+      const index = state.filters.findIndex((filter) => getFilterKey(filter) === action.filterKey)
 
       const filters = [
         ...state.filters.slice(0, index), //
@@ -280,14 +278,16 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
     case 'TERMS_FILTERS_SET_OPERATOR': {
       // Compare input components between current and target operators, and update
       // target filter value if it has changed.
-      const matchedFilter = state.filters.find((filter) => filter._key === action.key)
+      const matchedFilter = state.filters.find(
+        (filter) => getFilterKey(filter) === action.filterKey
+      )
       const currentOperator = getOperator(state.definitions.operators, matchedFilter?.operatorType)
       const nextOperator = getOperator(state.definitions.operators, action.operatorType)
       const nextInitialValue = nextOperator?.initialValue
       const inputComponentChanged = currentOperator?.inputComponent != nextOperator?.inputComponent
 
       const filters = state.filters.map((filter) => {
-        if (filter._key === action.key) {
+        if (getFilterKey(filter) === action.filterKey) {
           return {
             ...filter,
             operatorType: action.operatorType,
@@ -308,7 +308,7 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
     }
     case 'TERMS_FILTERS_SET_VALUE': {
       const filters = state.filters.map((filter) => {
-        if (filter._key === action.key) {
+        if (getFilterKey(filter) === action.filterKey) {
           return {
             ...filter,
             value: action.value,

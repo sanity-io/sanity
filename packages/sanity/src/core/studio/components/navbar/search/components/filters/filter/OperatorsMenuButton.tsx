@@ -5,6 +5,7 @@ import {useSearchState} from '../../../contexts/search/useSearchState'
 import {getFilterDefinition} from '../../../definitions/filters'
 import {getOperator, SearchOperator} from '../../../definitions/operators'
 import type {SearchFilter} from '../../../types'
+import {getFilterKey} from '../../../utils/filterUtils'
 
 interface OperatorsMenuButtonProps {
   filter: SearchFilter
@@ -55,12 +56,12 @@ export function OperatorsMenuButton({filter, operator}: OperatorsMenuButtonProps
   const handleClick = useCallback(
     (operatorType: string) => {
       dispatch({
-        key: filter._key,
+        filterKey: getFilterKey(filter),
         operatorType,
         type: 'TERMS_FILTERS_SET_OPERATOR',
       })
     },
-    [dispatch, filter._key]
+    [dispatch, filter]
   )
 
   if (!operator || !operatorItems || operatorItems.length <= 1) {

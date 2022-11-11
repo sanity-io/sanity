@@ -5,6 +5,7 @@ import {getFilterDefinition} from '../../../definitions/filters'
 import {getOperator} from '../../../definitions/operators'
 import {SearchOperatorInput} from '../../../definitions/operators/operatorTypes'
 import type {SearchFilter} from '../../../types'
+import {getFieldFromFilter, getFilterKey} from '../../../utils/filterUtils'
 import {FilterDetails} from '../common/FilterDetails'
 import {OperatorsMenuButton} from './OperatorsMenuButton'
 
@@ -21,17 +22,18 @@ export function FilterForm({filter}: FilterFormProps) {
 
   const filterDefinition = getFilterDefinition(definitions.filters, filter.filterType)
   const operator = getOperator(definitions.operators, filter.operatorType)
-  const resolvedField = fieldRegistry.find((f) => f._key === filter._key)
+  const resolvedField = getFieldFromFilter(fieldRegistry, filter)
+  const filterKey = getFilterKey(filter)
 
   const handleValueChange = useCallback(
     (value: any) => {
       dispatch({
-        key: filter._key,
+        filterKey: filterKey,
         type: 'TERMS_FILTERS_SET_VALUE',
         value,
       })
     },
-    [dispatch, filter]
+    [dispatch, filterKey]
   )
 
   const Component: SearchOperatorInput<any> | undefined = operator?.inputComponent

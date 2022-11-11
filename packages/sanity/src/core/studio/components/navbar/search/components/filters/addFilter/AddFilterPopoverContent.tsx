@@ -14,12 +14,13 @@ import {CommandListProvider} from '../../../contexts/commandList'
 import {useSearchState} from '../../../contexts/search/useSearchState'
 import {getFilterDefinition, SearchFilterDefinition} from '../../../definitions/filters'
 import type {
+  ResolvedField,
   SearchFilter,
   SearchFilterMenuItem,
   SearchFilterMenuItemFilter,
   SearchFilterMenuItemHeader,
 } from '../../../types'
-import {INTERNAL_FIELDS, ResolvedField} from '../../../utils/createFieldRegistry'
+import {INTERNAL_FIELDS} from '../../../utils/createFieldRegistry'
 import {CustomTextInput} from '../../common/CustomTextInput'
 import {FilterPopoverWrapper} from '../common/FilterPopoverWrapper'
 import {AddFilterContentMenuItems} from './AddFilterContentMenuItems'
@@ -218,12 +219,8 @@ function useCreateFilteredMenuItems(
   ])
 }
 
-function createFilterFromDefinition(
-  filterDefinition: SearchFilterDefinition,
-  index: number
-): SearchFilter {
+function createFilterFromDefinition(filterDefinition: SearchFilterDefinition): SearchFilter {
   return {
-    _key: `${filterDefinition.type}-${index}`,
     documentTypes: [],
     filterType: filterDefinition.type,
     titlePath: [],
@@ -232,7 +229,6 @@ function createFilterFromDefinition(
 
 function createFilterFromField(field: ResolvedField): SearchFilter {
   return {
-    _key: field._key,
     documentTypes: field.documentTypes,
     fieldPath: field.fieldPath,
     filterType: field.filterType,

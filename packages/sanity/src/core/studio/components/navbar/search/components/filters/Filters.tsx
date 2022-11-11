@@ -1,6 +1,7 @@
 import {Button, Flex} from '@sanity/ui'
 import React, {useCallback, useEffect, useRef} from 'react'
 import {useSearchState} from '../../contexts/search/useSearchState'
+import {getFilterKey} from '../../utils/filterUtils'
 import AddFilterButton from './addFilter/AddFilterButton'
 import DocumentTypesButton from './documentTypes/DocumentTypesButton'
 import FilterButton from './filter/FilterButton'
@@ -28,19 +29,22 @@ export function Filters() {
     isMounted.current = true
   }, [])
 
+  const lastAddedFilterKey = lastAddedFilter && getFilterKey(lastAddedFilter)
+
   return (
     <Flex align="flex-start" gap={3} justify="space-between" padding={2}>
       <Flex flex={1} gap={2} wrap="wrap">
         <DocumentTypesButton />
-
-        {filters?.map((filter) => (
-          <FilterButton
-            filter={filter}
-            initialOpen={isMounted.current && lastAddedFilter?._key === filter._key}
-            key={filter._key}
-          />
-        ))}
-
+        {filters?.map((filter) => {
+          const key = getFilterKey(filter)
+          return (
+            <FilterButton
+              filter={filter}
+              initialOpen={isMounted.current && lastAddedFilterKey === key}
+              key={key}
+            />
+          )
+        })}
         <AddFilterButton />
       </Flex>
 
