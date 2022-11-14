@@ -1,6 +1,10 @@
+import {CalendarIcon} from '@sanity/icons'
 import Schema from '@sanity/schema'
 import type {CurrentUser, ObjectSchemaType} from '@sanity/types'
 import type {SearchTerms} from '../../../../../search'
+import {defineSearchFilter, SearchFilterDefinition} from '../definitions/filters'
+import {SearchFilter} from '../types'
+import {createFieldRegistry} from '../utils/createFieldRegistry'
 import {createRecentSearchesStore, MAX_RECENT_SEARCHES, RecentSearchesStore} from './recentSearches'
 
 const mockSchema = Schema.compile({
@@ -24,6 +28,19 @@ const mockSchema = Schema.compile({
 })
 const mockArticle: ObjectSchemaType = mockSchema.get('article')
 const mockBook: ObjectSchemaType = mockSchema.get('book')
+const mockFilterDefinitions: SearchFilterDefinition[] = [
+  defineSearchFilter({
+    fieldType: 'datetime',
+    icon: CalendarIcon,
+    initialOperator: 'dateLast',
+    operators: [
+      {name: 'defined', type: 'item'},
+      {name: 'notDefined', type: 'item'},
+    ],
+    title: 'Datetime',
+    type: 'datetime',
+  }),
+]
 
 const mockUser: CurrentUser = {
   id: 'mock-user',
@@ -33,8 +50,12 @@ const mockUser: CurrentUser = {
   roles: [],
 }
 
+const mockFieldRegistry = createFieldRegistry(mockSchema, mockFilterDefinitions)
+
 const recentSearchesStore = createRecentSearchesStore({
   dataset: 'dataset',
+  fields: mockFieldRegistry,
+  filterDefinitions: mockFilterDefinitions,
   projectId: ' projectId',
   schema: mockSchema,
   user: mockUser,
@@ -94,6 +115,47 @@ describe('search-store', () => {
       recentSearchesStore.addSearch(searchTerms2)
       const recentTerms = recentSearchesStore.getRecentSearches()
 
+      expect(recentTerms.length).toEqual(1)
+    })
+
+    it('should filter out searches that contain invalid filters', () => {
+      const searchTerms1: SearchTerms = {query: 'foo', types: [mockArticle]}
+      const searchTerms2: SearchTerms = {query: 'bar', types: [mockArticle]}
+      const searchTerms3: SearchTerms = {query: 'baz', types: [mockArticle]}
+      const searchTerms4: SearchTerms = {query: 'qux', types: [mockArticle]}
+      const invalidFilter1: SearchFilter = {
+        documentTypes: [],
+        fieldPath: '_invalidFieldPath',
+        fieldType: 'datetime',
+        filterType: 'datetime',
+        operatorType: 'defined',
+        titlePath: ['Updated at'],
+        value: null,
+      }
+      const invalidFilter2: SearchFilter = {
+        documentTypes: [],
+        fieldPath: '_updatedAt',
+        fieldType: 'datetime',
+        filterType: '_invalidFilterType',
+        operatorType: 'defined',
+        titlePath: ['Updated at'],
+        value: null,
+      }
+      const invalidFilter3: SearchFilter = {
+        documentTypes: [],
+        fieldPath: '_updatedAt',
+        fieldType: 'datetime',
+        filterType: 'datetime',
+        operatorType: '_invalidOperatorType',
+        titlePath: ['Updated at'],
+        value: null,
+      }
+
+      recentSearchesStore.addSearch(searchTerms1, [invalidFilter1])
+      recentSearchesStore.addSearch(searchTerms2, [invalidFilter2])
+      recentSearchesStore.addSearch(searchTerms3, [invalidFilter3])
+      recentSearchesStore.addSearch(searchTerms4)
+      const recentTerms = recentSearchesStore.getRecentSearches()
       expect(recentTerms.length).toEqual(1)
     })
 
@@ -167,6 +229,32 @@ describe('search-store', () => {
       const recentSearches = recentSearchesStore.addSearch(searchTerms2)
 
       expect(recentSearches.length).toEqual(1)
+    })
+    it('should also include filters', () => {
+      const searchTerms: SearchTerms = {
+        query: 'foo',
+        types: [mockArticle],
+      }
+      const searchFilter: SearchFilter = {
+        documentTypes: [],
+        fieldPath: '_updatedAt',
+        fieldType: 'datetime',
+        filterType: 'datetime',
+        operatorType: 'defined',
+        titlePath: ['Updated at'],
+        value: null,
+      }
+      const recentSearches = recentSearchesStore.addSearch(searchTerms, [searchFilter])
+      expect(recentSearches[0].filters).toEqual([
+        {
+          documentTypes: [],
+          fieldPath: '_updatedAt',
+          filterType: 'datetime',
+          titlePath: ['Updated at'],
+          operatorType: 'defined',
+          value: null,
+        },
+      ])
     })
   })
   describe('removeSearchTerms', () => {
