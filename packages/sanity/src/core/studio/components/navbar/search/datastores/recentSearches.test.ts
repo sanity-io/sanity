@@ -32,7 +32,6 @@ const mockFilterDefinitions: SearchFilterDefinition[] = [
   defineSearchFilter({
     fieldType: 'datetime',
     icon: CalendarIcon,
-    initialOperator: 'dateLast',
     operators: [
       {name: 'defined', type: 'item'},
       {name: 'notDefined', type: 'item'},

@@ -264,16 +264,16 @@ function includesFilterTitle(
   searchFilter: SearchFilter,
   currentTitle: string
 ) {
-  const filter = getFilterDefinition(filters, searchFilter.filterType)
-  if (!filter) {
+  const filterDef = getFilterDefinition(filters, searchFilter.filterType)
+  if (!filterDef) {
     return false
   }
 
   let title = ''
-  if (filter?.fieldType) {
+  if (filterDef?.fieldType) {
     title = searchFilter.titlePath.join('/')
   } else {
-    title = filter?.title
+    title = filterDef?.title
   }
   return title.toLowerCase().includes(currentTitle.toLowerCase())
 }

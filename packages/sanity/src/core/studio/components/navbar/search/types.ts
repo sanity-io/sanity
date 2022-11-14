@@ -8,7 +8,6 @@ import type {SearchOptions, SearchSort, SearchTerms, WeightedHit} from '../../..
 export interface SearchFilter {
   documentTypes: string[]
   fieldPath?: string
-  fieldType?: string
   filterType: string
   operatorType?: string
   titlePath: string[]

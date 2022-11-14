@@ -66,7 +66,6 @@ export function createRecentSearchesStore({
       const storedFilters = (filters || []).map(
         (filter): StoredSearchFilter => ({
           fieldPath: filter.fieldPath,
-          fieldType: filter.fieldType,
           filterType: filter.filterType,
           operatorType: filter.operatorType,
           value: filter.value,

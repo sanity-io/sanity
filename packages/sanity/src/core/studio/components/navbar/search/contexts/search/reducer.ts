@@ -6,7 +6,10 @@ import isEmpty from 'lodash/isEmpty'
 import type {SearchableType, SearchTerms, WeightedHit} from '../../../../../../search'
 import {isNonNullable} from '../../../../../../util'
 import type {RecentSearch} from '../../datastores/recentSearches'
-import {getFilterDefinitionInitialOperator, SearchFilterDefinition} from '../../definitions/filters'
+import {
+  getFilterDefinitionInitialOperatorType,
+  SearchFilterDefinition,
+} from '../../definitions/filters'
 import {getOperator, getOperatorInitialValue, SearchOperator} from '../../definitions/operators'
 import {ORDERINGS} from '../../definitions/orderings'
 import type {SearchFilter, SearchOrdering} from '../../types'
@@ -217,7 +220,7 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
         },
       }
     case 'TERMS_FILTERS_ADD': {
-      const operatorType = getFilterDefinitionInitialOperator(
+      const operatorType = getFilterDefinitionInitialOperatorType(
         state.definitions.filters,
         action.filter.filterType
       )

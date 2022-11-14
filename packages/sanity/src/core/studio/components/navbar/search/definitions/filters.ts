@@ -2,23 +2,23 @@ import {IntrinsicTypeName} from '@sanity/types'
 import {ComponentType} from 'react'
 import {SearchOperatorType} from './operators/defaultOperators'
 
-type Operator<TOperators = SearchOperatorType> =
-  | {
-      type: 'divider'
-    }
-  | {
-      name: TOperators
-      type: 'item'
-    }
+type Operator<TOperators = SearchOperatorType> = OperatorDivider | OperatorItem<TOperators>
+
+type OperatorDivider = {
+  type: 'divider'
+}
+type OperatorItem<TOperators = SearchOperatorType> = {
+  name: TOperators
+  type: 'item'
+}
 
 /**
  * @alpha
  */
-export interface SearchFilterDefinition<TOperators = string> {
+export interface SearchFilterDefinition<TOperators = SearchOperatorType> {
   description?: string
   fieldType?: IntrinsicTypeName | 'email'
   icon: ComponentType
-  initialOperator: TOperators
   operators: Operator<TOperators>[]
   title: string
   type: string
@@ -49,11 +49,12 @@ export function getFilterDefinition(
   return definitions.find((filter) => filter.type === filterType)
 }
 
-export function getFilterDefinitionInitialOperator(
+export function getFilterDefinitionInitialOperatorType(
   definitions: SearchFilterDefinition[],
   filterName: string
-): SearchFilterDefinition['initialOperator'] | undefined {
-  return getFilterDefinition(definitions, filterName)?.initialOperator
+): SearchOperatorType | undefined {
+  const filterDefinition = getFilterDefinition(definitions, filterName)
+  return filterDefinition?.operators.find(isOperatorItem)?.name
 }
 
 export function getSupportedFieldTypes(definitions: SearchFilterDefinition[]): string[] {
@@ -63,4 +64,8 @@ export function getSupportedFieldTypes(definitions: SearchFilterDefinition[]): s
     }
     return acc
   }, [])
+}
+
+function isOperatorItem(operator: Operator): operator is OperatorItem {
+  return operator.type === 'item'
 }

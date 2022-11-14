@@ -29,7 +29,6 @@ const customFilters = [
   defineSearchFilter({
     description: 'This custom filter returns all documents updated in the last 24 hours',
     icon: ClockIcon,
-    initialOperator: 'customUpdatedInTheLastDay',
     operators: [{name: 'customUpdatedInTheLastDay', type: 'item'}],
     title: 'Updated in the last day (custom)',
     type: 'customUpdatedLastDay',
