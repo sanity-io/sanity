@@ -20,7 +20,7 @@ const dummyDocument = {
   _rev: '5hb8s6-k75-ip4-4bq-5ztbf3fbx',
   _type: 'numberFieldTest',
   _updatedAt: '2021-11-05T12:34:29Z',
-  num: 0,
+  num: 1,
   title: 'Hello world',
 }
 
@@ -44,5 +44,49 @@ describe('number-input', () => {
     input.value = '1.2'
     expect(input.value).toBe('1.2')
     expect(input.checkValidity()).toBe(true)
+  })
+
+  it('renders inputMode equals text if there is no min rule', () => {
+    const {inputContainer} = renderInput('input-num')
+    const input = inputContainer.querySelector('input')
+
+    input.value = '1.2'
+    expect(input.inputMode).toBe('text')
+  })
+
+  it.skip('renders inputMode equals "decimal" if there ', () => {
+    const customSchema = Schema.compile({
+      name: 'test',
+      types: [
+        {
+          name: 'book',
+          type: 'document',
+          fields: [
+            {
+              name: 'num',
+              title: 'Number',
+              type: 'number',
+              /**
+               * For some reason this throw an error:
+               *
+               * Uncaught [Error: Schema type "number"'s `validation` was not run though `inferFromSchema`]
+               */
+              validation: (Rule) => Rule.min(0),
+            },
+          ],
+        },
+      ],
+    })
+
+    const customDocumentType = customSchema.get('book')
+
+    const testId = 'input-num'
+
+    const {inputContainer} = inputTester(dummyDocument, customDocumentType, customSchema, testId)
+
+    const input = inputContainer.querySelector('input')
+
+    input.value = '1.2'
+    expect(input.inputMode).toBe('decimal')
   })
 })
