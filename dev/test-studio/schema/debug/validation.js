@@ -147,6 +147,20 @@ export default {
       validation: (Rule) => Rule.integer(),
     },
     {
+      name: 'precision',
+      type: 'number',
+      title: 'Precision',
+      description: 'Max precision of 2',
+      validation: (Rule) => Rule.precision(2),
+    },
+    {
+      name: 'zeroPrecision',
+      type: 'number',
+      title: 'Zero precision',
+      description: 'Max precision of 0',
+      validation: (Rule) => Rule.precision(0),
+    },
+    {
       name: 'quotes',
       title: 'Quotes',
       description: 'Unique quotes - minimum of one',
