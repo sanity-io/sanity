@@ -19,9 +19,9 @@ export type SearchOperatorInput<TValue> = ComponentType<OperatorInputComponentPr
  * @alpha
  */
 export interface OperatorInputComponentProps<T> {
-  value: T | null
   onChange: (value: T | null) => void
   options?: any
+  value: T | null
 }
 
 /**

@@ -1,10 +1,12 @@
-import sub from 'date-fns/sub'
+import {format, sub} from 'date-fns'
 import {typed} from '@sanity/types'
 import {FieldInputDateLast} from '../../components/filters/filter/inputTypes/DateLast'
 import {FieldInputDate} from '../../components/filters/filter/inputTypes/Date'
 import {FieldInputDateRange} from '../../components/filters/filter/inputTypes/DateRange'
 import {toJSON} from './operatorUtils'
 import {defineSearchOperator} from './operatorTypes'
+
+const DEFAULT_DATE_FORMAT = 'yyyy-MM-dd'
 
 export interface OperatorDateRangeValue {
   max: Date | null
@@ -19,8 +21,13 @@ export interface OperatorDateLastValue {
 export const dateOperators = {
   dateAfter: defineSearchOperator({
     buttonLabel: 'after',
-    buttonValue: (value) => (value ? value.toISOString() : null),
-    fn: ({fieldPath, value}) => `// TODO`,
+    buttonValue: (value) => (value ? format(value, DEFAULT_DATE_FORMAT) : null),
+    fn: ({fieldPath, value}) => {
+      const timestamp = value?.toISOString()
+      return timestamp && fieldPath
+        ? `dateTime(${fieldPath}) > dateTime(${toJSON(timestamp)})`
+        : null
+    },
     initialValue: null,
     inputComponent: FieldInputDate,
     label: 'is after',
@@ -28,8 +35,13 @@ export const dateOperators = {
   }),
   dateBefore: defineSearchOperator({
     buttonLabel: 'before',
-    buttonValue: (value) => (value ? value.toISOString() : null),
-    fn: ({fieldPath, value}) => `// TODO`,
+    buttonValue: (value) => (value ? format(value, DEFAULT_DATE_FORMAT) : null),
+    fn: ({fieldPath, value}) => {
+      const timestamp = value?.toISOString()
+      return timestamp && fieldPath
+        ? `dateTime(${fieldPath}) < dateTime(${toJSON(timestamp)})`
+        : null
+    },
     initialValue: null,
     inputComponent: FieldInputDate,
     label: 'is before',
@@ -37,7 +49,7 @@ export const dateOperators = {
   }),
   dateEqual: defineSearchOperator({
     buttonLabel: 'is',
-    buttonValue: (value) => (value ? value.toISOString() : null),
+    buttonValue: (value) => (value ? format(value, DEFAULT_DATE_FORMAT) : null),
     fn: ({fieldPath, value}: {fieldPath?: string; value?: Date}) => {
       const timestamp = value?.toISOString()
       return timestamp && fieldPath ? `${fieldPath} == ${toJSON(timestamp)}` : null
@@ -70,7 +82,7 @@ export const dateOperators = {
   }),
   dateNotEqual: defineSearchOperator({
     buttonLabel: 'is not',
-    buttonValue: (value) => (value ? value.toISOString() : null),
+    buttonValue: (value) => (value ? format(value, DEFAULT_DATE_FORMAT) : null),
     fn: ({fieldPath, value}: {fieldPath?: string; value?: Date}) => {
       const timestamp = value?.toISOString()
       return timestamp && fieldPath ? `${fieldPath} != ${toJSON(timestamp)}` : null
@@ -83,7 +95,7 @@ export const dateOperators = {
   dateRange: defineSearchOperator({
     buttonLabel: 'is between',
     buttonValue: (value) => (value?.max && value?.min ? `${value.min} → ${value.max}` : null),
-    fn: ({fieldPath, value}) => `// TODO`,
+    fn: ({fieldPath, value}) => ``,
     initialValue: typed<OperatorDateRangeValue>({
       max: null,
       min: null,

@@ -17,7 +17,7 @@ export function FilterPopoverContent({filter, onClose}: FilterPopoverContentProp
         direction="column"
         style={{
           maxHeight: '600px',
-          maxWidth: '350px',
+          maxWidth: '380px',
           minWidth: '200px',
           overflow: 'hidden',
           width: '100%',
