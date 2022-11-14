@@ -22,7 +22,13 @@ const NumberInput = React.forwardRef(function NumberInput(
 
   // Show numpad on mobile if only positive numbers is preferred
   const minRule = getValidationRule(type, 'min')
+  const integerRule = getValidationRule(type, 'integer')
+  const precisionRule = getValidationRule(type, 'precision')
   const onlyPositiveNumber = minRule?.constraint >= 0
+  const onlyIntegers = integerRule || precisionRule?.constraint === 0
+
+  // eslint-disable-next-line no-nested-ternary
+  const inputMode = onlyPositiveNumber ? (onlyIntegers ? 'numeric' : 'decimal') : 'text'
 
   const handleChange = React.useCallback(
     (event: React.SyntheticEvent<HTMLInputElement>) => {
@@ -43,7 +49,7 @@ const NumberInput = React.forwardRef(function NumberInput(
       <TextInput
         type="number"
         step="any"
-        inputMode={onlyPositiveNumber ? 'numeric' : 'text'}
+        inputMode={inputMode}
         id={id}
         customValidity={errors && errors.length > 0 ? errors[0].item.message : ''}
         value={value}
