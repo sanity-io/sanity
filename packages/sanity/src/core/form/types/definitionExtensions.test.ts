@@ -691,33 +691,6 @@ describe('definitionExtensions', () => {
       })
       const components: SlugComponents | undefined = type.components
     })
-
-    it('should extend components for span', () => {
-      const type = defineType({
-        type: 'span',
-        name: 'test',
-        components: {
-          diff: (props) => null,
-          field: (props) => {
-            const obj: ObjectFieldProps = props
-            return null
-          },
-          input: (props) => {
-            const obj: ObjectInputProps = props
-            return null
-          },
-          item: (props) => {
-            const obj: ObjectItemProps = props
-            return null
-          },
-          preview: (props) => {
-            const obj: PreviewProps = props
-            return null
-          },
-        },
-      })
-      const components: SpanComponents | undefined = type.components
-    })
   })
 
   it('should allow components for fields without defineField', () => {
