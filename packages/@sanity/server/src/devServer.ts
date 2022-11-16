@@ -25,6 +25,7 @@ export async function startDevServer(options: DevServerOptions): Promise<DevServ
   const {cwd, httpPort, httpHost, basePath: base, reactStrictMode, vite: extendViteConfig} = options
 
   const startTime = Date.now()
+  debug('Writing Sanity runtime files')
   await writeSanityRuntime({cwd, reactStrictMode, watch: true})
 
   debug('Resolving vite config')
@@ -36,6 +37,7 @@ export async function startDevServer(options: DevServerOptions): Promise<DevServ
   })
 
   if (extendViteConfig) {
+    debug('Extending vite config using user-specified function')
     viteConfig = extendViteConfig(viteConfig)
   }
 
@@ -43,6 +45,7 @@ export async function startDevServer(options: DevServerOptions): Promise<DevServ
   const server = await createServer(viteConfig)
   const info = server.config.logger.info
 
+  debug('Listening on specified port')
   await server.listen()
 
   const startupDuration = Date.now() - startTime
