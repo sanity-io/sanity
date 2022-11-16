@@ -104,17 +104,17 @@ function Debug(props: {documentId: string; documentType: string}) {
           </Stack>
 
           {documentActions.items.map((actionItem, idx) => {
-            if (actionItem?.modal && actionItem.modal.type === 'dialog') {
+            if (actionItem?.dialog && actionItem.dialog.type === 'dialog') {
               return (
                 <Dialog
-                  footer={actionItem.modal.footer}
-                  header={actionItem.modal.header}
+                  footer={actionItem.dialog.footer}
+                  header={actionItem.dialog.header}
                   id={`document-action-modal-${idx}`}
                   key={idx}
                   // eslint-disable-next-line react/jsx-handler-names
-                  onClose={actionItem.modal.onClose}
+                  onClose={actionItem.dialog.onClose}
                 >
-                  <Box padding={4}>{actionItem.modal.content}</Box>
+                  <Box padding={4}>{actionItem.dialog.content}</Box>
                 </Dialog>
               )
             }

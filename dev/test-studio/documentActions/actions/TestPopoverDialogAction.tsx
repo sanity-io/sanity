@@ -5,7 +5,7 @@ import React, {useCallback, useMemo, useState} from 'react'
 
 export const TestPopoverDialogAction: DocumentActionComponent = (props) => {
   const {onComplete} = props
-  const [modalOpen, setDialogOpen] = useState(false)
+  const [dialogOpen, setDialogOpen] = useState(false)
   const {push: pushToast} = useToast()
 
   const handleOpen = useCallback(() => {
@@ -19,27 +19,27 @@ export const TestPopoverDialogAction: DocumentActionComponent = (props) => {
     onComplete()
   }, [onComplete, pushToast])
 
-  const modal: DocumentActionDescription['modal'] = useMemo(
+  const dialog: DocumentActionDescription['dialog'] = useMemo(
     () =>
-      modalOpen && {
+      dialogOpen && {
         type: 'popover',
         content: (
           <Stack padding={4} space={4}>
             <Text>
-              This is the <code>popover</code> modal
+              This is the <code>popover</code> dialog
             </Text>
             <Button onClick={handleClose} text="Close" />
           </Stack>
         ),
         onClose: handleClose,
       },
-    [modalOpen, handleClose]
+    [dialogOpen, handleClose]
   )
 
   return {
-    modal,
+    dialog,
     icon: LaunchIcon,
-    label: 'Test popover modal',
+    label: 'Test popover dialog',
     onHandle: handleOpen,
   }
 }

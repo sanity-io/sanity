@@ -3,7 +3,12 @@ import React, {useCallback, useMemo, useState} from 'react'
 import {ActionStateDialog} from '../statusBar'
 import {Pane, RenderActionCollectionState} from '../../../components'
 import {useDocumentPane} from '../useDocumentPane'
-import {DocumentActionDescription, DocumentActionProps, LegacyLayerProvider} from 'sanity'
+import {
+  DocumentActionDescription,
+  DocumentActionDialogProps,
+  DocumentActionProps,
+  LegacyLayerProvider,
+} from 'sanity'
 
 export interface KeyboardShortcutResponderProps {
   actionsBoxElement: HTMLElement | null
@@ -67,9 +72,12 @@ function KeyboardShortcutResponder(
     <Pane id={id} onKeyDown={handleKeyDown} tabIndex={-1} {...rest} ref={rootRef}>
       {children}
 
-      {activeAction && activeAction.modal && (
+      {activeAction && (activeAction.dialog || activeAction.modal) && (
         <LegacyLayerProvider zOffset="paneFooter">
-          <ActionStateDialog modal={activeAction.modal} referenceElement={actionsBoxElement} />
+          <ActionStateDialog
+            dialog={(activeAction.dialog || activeAction.modal) as DocumentActionDialogProps}
+            referenceElement={actionsBoxElement}
+          />
         </LegacyLayerProvider>
       )}
     </Pane>

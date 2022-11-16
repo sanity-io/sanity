@@ -5,15 +5,15 @@ import React, {useCallback, useMemo, useState} from 'react'
 
 export const TestConfirmDialogAction: DocumentActionComponent = (props) => {
   const {onComplete} = props
-  const [modalOpen, setDialogOpen] = useState(false)
+  const [dialogOpen, setDialogOpen] = useState(false)
   const {push: pushToast} = useToast()
 
   const handleOpen = useCallback(() => {
-    if (!modalOpen) {
+    if (!dialogOpen) {
       setDialogOpen(true)
       pushToast({closable: true, title: '[confirm] Opened'})
     }
-  }, [modalOpen, pushToast])
+  }, [dialogOpen, pushToast])
 
   const handleClose = useCallback(() => {
     setDialogOpen(false)
@@ -33,20 +33,20 @@ export const TestConfirmDialogAction: DocumentActionComponent = (props) => {
     onComplete()
   }, [onComplete, pushToast])
 
-  const modal: DocumentActionDescription['modal'] = useMemo(
+  const dialog: DocumentActionDescription['dialog'] = useMemo(
     () =>
-      modalOpen && {
+      dialogOpen && {
         type: 'confirm',
         tone: 'positive',
         content: (
           <>
             <Text>
-              This is the <code>confirm</code> modal
+              This is the <code>confirm</code> dialog
             </Text>
             <Button onClick={handleClose} text="Close" />
           </>
         ),
-        message: 'Test confirm modal',
+        message: 'Test confirm dialog',
         onCancel: handleCancel,
         onConfirm: handleConfirm,
         cancelButtonIcon: CloseCircleIcon,
@@ -54,14 +54,14 @@ export const TestConfirmDialogAction: DocumentActionComponent = (props) => {
         confirmButtonIcon: CheckmarkCircleIcon,
         confirmButtonText: 'Yes',
       },
-    [modalOpen, handleCancel, handleClose, handleConfirm]
+    [dialogOpen, handleCancel, handleClose, handleConfirm]
   )
 
   return {
     tone: 'positive',
-    modal,
+    dialog,
     onHandle: handleOpen,
-    label: 'Test confirm modal',
+    label: 'Test confirm dialog',
     shortcut: 'mod+p',
   }
 }

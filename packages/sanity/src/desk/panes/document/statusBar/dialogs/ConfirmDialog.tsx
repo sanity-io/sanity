@@ -10,17 +10,17 @@ import {
 } from '@sanity/ui'
 import React, {useCallback, useState} from 'react'
 import {POPOVER_FALLBACK_PLACEMENTS} from './constants'
-import {DocumentActionConfirmModalProps} from 'sanity'
+import {DocumentActionConfirmDialogProps} from 'sanity'
 
 export function ConfirmDialog(props: {
-  modal: DocumentActionConfirmModalProps
+  dialog: DocumentActionConfirmDialogProps
   referenceElement: HTMLElement | null
 }) {
-  const {modal, referenceElement} = props
+  const {dialog, referenceElement} = props
 
   return (
     <Popover
-      content={<ConfirmDialogContent modal={modal} />}
+      content={<ConfirmDialogContent dialog={dialog} />}
       fallbackPlacements={POPOVER_FALLBACK_PLACEMENTS}
       open
       placement="top"
@@ -31,8 +31,8 @@ export function ConfirmDialog(props: {
   )
 }
 
-function ConfirmDialogContent(props: {modal: DocumentActionConfirmModalProps}) {
-  const {modal} = props
+function ConfirmDialogContent(props: {dialog: DocumentActionConfirmDialogProps}) {
+  const {dialog} = props
   const {
     cancelButtonIcon,
     cancelButtonText,
@@ -43,7 +43,7 @@ function ConfirmDialogContent(props: {modal: DocumentActionConfirmModalProps}) {
     onCancel,
     onConfirm,
     tone,
-  } = modal
+  } = dialog
   const {isTopLayer} = useLayer()
   const [element, setElement] = useState<HTMLElement | null>(null)
 
