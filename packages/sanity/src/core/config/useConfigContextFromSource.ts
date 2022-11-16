@@ -11,20 +11,7 @@ import type {Source, ConfigContext} from './types'
 export function useConfigContextFromSource(source: Source): ConfigContext {
   const {projectId, dataset, schema, currentUser, getClient} = source
   return useMemo(() => {
-    const client = getClient({apiVersion: '2021-06-07'})
-    const context = Object.defineProperty(
-      {projectId, dataset, schema, currentUser, getClient, client},
-      'client',
-      {
-        get() {
-          console.warn(
-            '`configContext.client` is deprecated and will be removed in the next version! Use `configContext.getClient({apiVersion: "2021-06-07"})` instead.'
-          )
-          return client
-        },
-      }
-    )
-    return context
+    return {projectId, dataset, schema, currentUser, getClient}
   }, [projectId, dataset, schema, currentUser, getClient])
 }
 
@@ -37,6 +24,5 @@ export function useConfigContextFromSource(source: Source): ConfigContext {
  */
 export function getConfigContextFromSource(source: Source): ConfigContext {
   const {projectId, dataset, schema, currentUser, getClient} = source
-  const client = getClient({apiVersion: '2021-06-07'})
-  return {projectId, dataset, schema, currentUser, getClient, client}
+  return {projectId, dataset, schema, currentUser, getClient}
 }

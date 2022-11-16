@@ -118,10 +118,6 @@ export interface ConfigContext {
   dataset: string
   schema: Schema
   currentUser: CurrentUser | null
-  /**
-   * @deprecated Will be removed in the next version! Use `getClient({apiVersion: '2021-06-07'})` instead
-   */
-  client: SanityClient
   getClient: (options: SourceClientOptions) => SanityClient
 }
 
