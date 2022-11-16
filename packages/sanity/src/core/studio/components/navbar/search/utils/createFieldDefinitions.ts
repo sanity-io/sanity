@@ -34,8 +34,6 @@ export function createFieldDefinitions(
 
   // Separate documents and everything else
   originalSchema?.types
-    // .filter((schemaType) => ['book', 'readOnlyTest', 'stringsTest'].includes(schemaType.name))
-    // .filter((schemaType) => ['book'].includes(schemaType.name))
     .filter((schemaType) => !schemaType.name.startsWith('sanity.'))
     .forEach((schemaType) => {
       if (isDocumentType(schemaType)) {
@@ -154,8 +152,12 @@ function getDocumentFieldDefinitions(
   return fieldDefinitions
 }
 
+/**
+ * Build list options for strings and arrays with list options.
+ * (Only arrays with primitive values are supported).
+ */
 function buildOptions(defType: SchemaTypeDefinition): any {
-  if (isStringDefinition(defType)) {
+  if (isArrayOfPrimitives(defType) || isStringList(defType)) {
     if (defType?.options?.list) {
       return defType.options.list.map(toSelectItem)
     }
@@ -171,6 +173,16 @@ function addFieldDefinitionId(field: SearchFieldDefinition) {
     ...field,
     id: Md5.hashStr(JSON.stringify([field.documentTypes, field.fieldPath, field.filterType])),
   }
+}
+
+function isArrayOfPrimitives(schemaType: SchemaTypeDefinition): schemaType is ArrayDefinition {
+  if (isArrayDefinition(schemaType)) {
+    return (
+      schemaType.of.every((item) => ['boolean', 'number', 'string'].includes(item.type)) &&
+      (schemaType.options?.list ? schemaType.options.list.length > 0 : false)
+    )
+  }
+  return false
 }
 
 function isArrayDefinition(schemaType: SchemaTypeDefinition): schemaType is ArrayDefinition {
@@ -189,16 +201,22 @@ function isStringDefinition(schemaType: SchemaTypeDefinition): schemaType is Str
   return schemaType.type === 'string'
 }
 
+function isStringList(schemaType: SchemaTypeDefinition): schemaType is StringDefinition {
+  if (isStringDefinition(schemaType)) {
+    return schemaType.options?.list ? schemaType.options.list.length > 0 : false
+  }
+  return false
+}
+
 function resolveFilterType(schemaType: SchemaTypeDefinition) {
-  if (
-    isStringDefinition(schemaType) &&
-    schemaType.options?.list &&
-    schemaType.options.list.length > 0
-  ) {
+  if (isStringList(schemaType)) {
     return 'stringList'
   }
   if (isArrayDefinition(schemaType) && schemaType.of.find((item) => item.type === 'block')) {
     return 'portableText'
+  }
+  if (isArrayOfPrimitives(schemaType)) {
+    return 'arrayList'
   }
   return schemaType.type
 }
@@ -218,8 +236,6 @@ function sortFieldDefinitions(a: SearchFieldDefinition, b: SearchFieldDefinition
   )
 }
 
-function toSelectItem(
-  option: TitledListValue<string | number> | string | number
-): TitledListValue<string | number> {
+function toSelectItem(option: TitledListValue<unknown> | unknown): TitledListValue<unknown> {
   return isTitledListValue(option) ? option : {title: capitalize(`${option}`), value: option}
 }

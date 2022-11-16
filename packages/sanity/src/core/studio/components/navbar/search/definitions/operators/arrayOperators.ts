@@ -2,6 +2,7 @@ import {typed} from '@sanity/types'
 import pluralize from 'pluralize-esm'
 import {FieldInputNumber} from '../../components/filters/filter/inputTypes/Number'
 import {FieldInputNumberRange} from '../../components/filters/filter/inputTypes/NumberRange'
+import {FieldInputStringList} from '../../components/filters/filter/inputTypes/StringList'
 import {GteIcon} from '../../components/filters/icons/GteIcon'
 import {GtIcon} from '../../components/filters/icons/GtIcon'
 import {LteIcon} from '../../components/filters/icons/LteIcon'
@@ -95,5 +96,23 @@ export const arrayOperators = {
         : '',
     label: 'quantity is between',
     type: 'arrayCountRange',
+  }),
+  arrayListContains: defineSearchOperator({
+    buttonLabel: 'contains',
+    buttonValue: (value) => value || null,
+    fn: ({fieldPath, value}) => (value && fieldPath ? `${fieldPath} == ${toJSON(value)}` : null),
+    initialValue: null,
+    inputComponent: FieldInputStringList,
+    label: 'contains',
+    type: 'arrayListContains',
+  }),
+  arrayListNotContains: defineSearchOperator({
+    buttonLabel: 'does not contain',
+    buttonValue: (value) => value || null,
+    fn: ({fieldPath, value}) => (value && fieldPath ? `${fieldPath} != ${toJSON(value)}` : null),
+    initialValue: null,
+    inputComponent: FieldInputStringList,
+    label: 'does not contain',
+    type: 'arrayListNotContains',
   }),
 }
