@@ -1,7 +1,9 @@
 import {Card, Code, Flex, Stack, Text} from '@sanity/ui'
 import React from 'react'
 import {DEBUG_MODE} from '../../../constants'
+import {useSearchState} from '../../../contexts/search/useSearchState'
 import type {SearchFilter} from '../../../types'
+import {getFieldFromFilter} from '../../../utils/filterUtils'
 import {FilterPopoverWrapper} from '../common/FilterPopoverWrapper'
 import {FilterForm} from './FilterForm'
 
@@ -38,6 +40,13 @@ export function FilterPopoverContent({filter, onClose}: FilterPopoverContentProp
 }
 
 function DebugDocumentTypes({filter}: {filter: SearchFilter}) {
+  const {
+    state: {
+      definitions: {fields},
+    },
+  } = useSearchState()
+  const fieldDefinition = getFieldFromFilter(fields, filter)
+
   return (
     <Card borderTop overflow="hidden" padding={3} tone="transparent">
       <Stack space={2}>
@@ -45,7 +54,9 @@ function DebugDocumentTypes({filter}: {filter: SearchFilter}) {
           Document types
         </Text>
         <Code muted size={0} style={{whiteSpace: 'normal'}}>
-          {filter.documentTypes.length > 0 ? filter.documentTypes?.join(', ') : '(all)'}
+          {fieldDefinition?.documentTypes && fieldDefinition.documentTypes.length > 0
+            ? fieldDefinition.documentTypes?.join(', ')
+            : '(all)'}
         </Code>
       </Stack>
     </Card>
@@ -53,13 +64,18 @@ function DebugDocumentTypes({filter}: {filter: SearchFilter}) {
 }
 
 function DebugValues({filter}: {filter: SearchFilter}) {
+  const {
+    state: {definitions},
+  } = useSearchState()
+  const fieldDefinition = getFieldFromFilter(definitions.fields, filter)
+
   return (
     <Card borderTop overflow="hidden" padding={3} tone="transparent">
       <Stack space={2}>
         <Text size={0} weight="semibold">
           Field
         </Text>
-        {filter?.fieldPath && <Code size={0}>fieldPath: {filter.fieldPath}</Code>}
+        {fieldDefinition?.fieldPath && <Code size={0}>fieldPath: {fieldDefinition.fieldPath}</Code>}
         <Code size={0}>filterType: {filter.filterType}</Code>
         <Code size={0}>operatorType: {filter.operatorType}</Code>
         <Code size={0}>

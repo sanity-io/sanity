@@ -2,8 +2,7 @@ import type {CurrentUser, ObjectSchemaType, Schema} from '@sanity/types'
 import omit from 'lodash/omit'
 import type {SearchTerms} from '../../../../../search'
 import type {SearchFilterDefinition} from '../definitions/filters'
-import type {ResolvedField, SearchFilter, StoredSearchFilter} from '../types'
-import {expandStoredSearchFilter} from '../utils/filterUtils'
+import type {SearchFieldDefinition, SearchFilter} from '../types'
 import {getSearchableOmnisearchTypes} from '../utils/selectors'
 
 const RECENT_SEARCHES_KEY = 'search::recent'
@@ -33,20 +32,20 @@ interface StoredSearch {
 
 interface StoredSearchItem {
   created: string
-  filters: StoredSearchFilter[]
+  filters: SearchFilter[]
   terms: Omit<SearchTerms, 'types'> & {typeNames: string[]}
 }
 
 export function createRecentSearchesStore({
   dataset,
-  fields,
+  fieldDefinitions,
   filterDefinitions,
   projectId,
   schema,
   user,
 }: {
   dataset?: string
-  fields: ResolvedField[]
+  fieldDefinitions: SearchFieldDefinition[]
   filterDefinitions: SearchFilterDefinition[]
   projectId?: string
   schema: Schema
@@ -64,8 +63,8 @@ export function createRecentSearchesStore({
      */
     addSearch: (searchTerm: SearchTerms, filters?: SearchFilter[]): RecentSearch[] => {
       const storedFilters = (filters || []).map(
-        (filter): StoredSearchFilter => ({
-          fieldPath: filter.fieldPath,
+        (filter): SearchFilter => ({
+          fieldId: filter.fieldId,
           filterType: filter.filterType,
           operatorType: filter.operatorType,
           value: filter.value,
@@ -94,7 +93,7 @@ export function createRecentSearchesStore({
       }
       window.localStorage.setItem(lsKey, JSON.stringify(newRecent))
 
-      return getRecentSearchTerms(lsKey, schema, fields, filterDefinitions)
+      return getRecentSearchTerms(lsKey, schema, fieldDefinitions, filterDefinitions)
     },
     /**
      * Fetch all recent searches from Local Storage.
@@ -104,7 +103,7 @@ export function createRecentSearchesStore({
       undefined,
       lsKey,
       schema,
-      fields,
+      fieldDefinitions,
       filterDefinitions
     ),
     /**
@@ -120,7 +119,7 @@ export function createRecentSearchesStore({
 
       window.localStorage.setItem(lsKey, JSON.stringify(newRecent))
 
-      return getRecentSearchTerms(lsKey, schema, fields, filterDefinitions)
+      return getRecentSearchTerms(lsKey, schema, fieldDefinitions, filterDefinitions)
     },
     /**
      * Remove a search term from Local Storage and return updated recent searches.
@@ -129,7 +128,7 @@ export function createRecentSearchesStore({
       const searchTerms = getRecentStoredSearch(lsKey)
 
       if (index < 0 || index > searchTerms.recentSearches.length) {
-        return getRecentSearchTerms(lsKey, schema, fields, filterDefinitions)
+        return getRecentSearchTerms(lsKey, schema, fieldDefinitions, filterDefinitions)
       }
 
       const newRecent: StoredSearch = {
@@ -142,7 +141,7 @@ export function createRecentSearchesStore({
 
       window.localStorage.setItem(lsKey, JSON.stringify(newRecent))
 
-      return getRecentSearchTerms(lsKey, schema, fields, filterDefinitions)
+      return getRecentSearchTerms(lsKey, schema, fieldDefinitions, filterDefinitions)
     },
   }
 }
@@ -166,19 +165,19 @@ function getRecentStoredSearch(lsKey: string): StoredSearch {
 function getRecentSearchTerms(
   lsKey: string,
   schema: Schema,
-  fields: ResolvedField[],
+  fieldDefinitions: SearchFieldDefinition[],
   filterDefinitions: SearchFilterDefinition[]
 ): RecentSearch[] {
   const storedSearchTerms = getRecentStoredSearch(lsKey)
 
-  return sanitizeStoredSearch(schema, storedSearchTerms, lsKey, filterDefinitions, fields)
+  return sanitizeStoredSearch(schema, storedSearchTerms, lsKey, filterDefinitions, fieldDefinitions)
     .recentSearches.filter((r) => !!r.terms)
     .map((r, index) => ({
       __recent: {
         index,
         timestamp: new Date(r.created).getTime(),
       },
-      filters: r.filters.map((filter) => expandStoredSearchFilter(fields, filter)),
+      filters: r.filters,
       query: r.terms.query,
       types: r.terms.typeNames
         .map((typeName) => schema.get(typeName))
@@ -199,7 +198,7 @@ function sanitizeStoredSearch(
   storedSearch: StoredSearch,
   lsKey: string,
   filterDefinitions: SearchFilterDefinition[],
-  fields: ResolvedField[]
+  fieldDefinitions: SearchFieldDefinition[]
 ): StoredSearch {
   // Obtain all 'searchable' type names – defined as a type that exists in
   // the current schema and also visible to omnisearch.
@@ -210,7 +209,9 @@ function sanitizeStoredSearch(
   const filteredSearch = storedSearch.recentSearches.filter((recentSearch) => {
     return (
       recentSearch.terms.typeNames.every((typeName) => searchableTypeNames.includes(typeName)) &&
-      recentSearch.filters.every((filter) => validateFilter(filter, filterDefinitions, fields))
+      recentSearch.filters.every((filter) =>
+        validateFilter(filter, filterDefinitions, fieldDefinitions)
+      )
     )
   })
 
@@ -227,9 +228,9 @@ function sanitizeStoredSearch(
 }
 
 function validateFilter(
-  filter: StoredSearchFilter,
+  filter: SearchFilter,
   filterDefinitions: SearchFilterDefinition[],
-  fields: ResolvedField[]
+  fieldDefinitions: SearchFieldDefinition[]
 ): boolean {
   const filterDefinition = filterDefinitions.find((f) => f.type === filter.filterType)
   if (!filterDefinition) {
@@ -244,10 +245,14 @@ function validateFilter(
     }
   }
 
-  if (filter.fieldPath) {
-    if (!fields.find((f) => f.fieldPath === filter.fieldPath)) {
+  if (filter.fieldId) {
+    if (!fieldDefinitions.find((f) => f.id === filter.fieldId)) {
       return false
     }
+  }
+
+  if (!filter.fieldId && filterDefinition.fieldType) {
+    return false
   }
 
   return true

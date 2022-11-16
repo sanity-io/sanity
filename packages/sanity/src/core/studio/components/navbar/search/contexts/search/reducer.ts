@@ -1,5 +1,3 @@
-/* eslint-disable complexity */
-// TODO: re-enable the above
 import type {CurrentUser} from '@sanity/types'
 import intersection from 'lodash/intersection'
 import isEmpty from 'lodash/isEmpty'
@@ -12,7 +10,7 @@ import {
 } from '../../definitions/filters'
 import {getOperator, getOperatorInitialValue, SearchOperator} from '../../definitions/operators'
 import {ORDERINGS} from '../../definitions/orderings'
-import type {SearchFilter, SearchOrdering} from '../../types'
+import type {SearchFieldDefinition, SearchFilter, SearchOrdering} from '../../types'
 import {debugWithName, isDebugMode} from '../../utils/debug'
 import {getFilterKey} from '../../utils/filterUtils'
 import {isRecentSearchTerms} from '../../utils/isRecentSearchTerms'
@@ -34,6 +32,7 @@ export interface SearchReducerState {
 }
 
 export interface SearchDefinitions {
+  fields: SearchFieldDefinition[]
   filters: SearchFilterDefinition[]
   operators: SearchOperator[]
 }
@@ -239,12 +238,20 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
 
       return {
         ...state,
-        documentTypesNarrowed: narrowDocumentTypes(state.terms.types, filters),
+        documentTypesNarrowed: narrowDocumentTypes(
+          state.definitions.fields,
+          state.terms.types,
+          filters
+        ),
         filters,
         lastAddedFilter: newFilter,
         terms: {
           ...state.terms,
-          filter: generateFilterQuery(state.definitions.operators, filters),
+          filter: generateFilterQuery(
+            state.definitions.fields,
+            state.definitions.operators,
+            filters
+          ),
         },
       }
     }
@@ -252,11 +259,19 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
       const filters: SearchFilter[] = []
       return {
         ...state,
-        documentTypesNarrowed: narrowDocumentTypes(state.terms.types, filters),
+        documentTypesNarrowed: narrowDocumentTypes(
+          state.definitions.fields,
+          state.terms.types,
+          filters
+        ),
         filters,
         terms: {
           ...state.terms,
-          filter: generateFilterQuery(state.definitions.operators, filters),
+          filter: generateFilterQuery(
+            state.definitions.fields,
+            state.definitions.operators,
+            filters
+          ),
         },
       }
     }
@@ -270,11 +285,19 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
 
       return {
         ...state,
-        documentTypesNarrowed: narrowDocumentTypes(state.terms.types, filters),
+        documentTypesNarrowed: narrowDocumentTypes(
+          state.definitions.fields,
+          state.terms.types,
+          filters
+        ),
         filters,
         terms: {
           ...state.terms,
-          filter: generateFilterQuery(state.definitions.operators, filters),
+          filter: generateFilterQuery(
+            state.definitions.fields,
+            state.definitions.operators,
+            filters
+          ),
         },
       }
     }
@@ -305,7 +328,11 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
         filters,
         terms: {
           ...state.terms,
-          filter: generateFilterQuery(state.definitions.operators, filters),
+          filter: generateFilterQuery(
+            state.definitions.fields,
+            state.definitions.operators,
+            filters
+          ),
         },
       }
     }
@@ -324,7 +351,11 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
         filters,
         terms: {
           ...state.terms,
-          filter: generateFilterQuery(state.definitions.operators, filters),
+          filter: generateFilterQuery(
+            state.definitions.fields,
+            state.definitions.operators,
+            filters
+          ),
         },
       }
     }
@@ -350,7 +381,7 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
 
       return {
         ...state,
-        documentTypesNarrowed: narrowDocumentTypes(types, filters),
+        documentTypesNarrowed: narrowDocumentTypes(state.definitions.fields, types, filters),
         filters,
         pageIndex: 0,
         result: {
@@ -359,7 +390,11 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
         },
         terms: {
           ...action.terms,
-          filter: generateFilterQuery(state.definitions.operators, filters),
+          filter: generateFilterQuery(
+            state.definitions.fields,
+            state.definitions.operators,
+            filters
+          ),
         },
       }
     }
@@ -374,7 +409,7 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
 
       return {
         ...state,
-        documentTypesNarrowed: narrowDocumentTypes(types, filters),
+        documentTypesNarrowed: narrowDocumentTypes(state.definitions.fields, types, filters),
         filters,
         pageIndex: 0,
         result: {
@@ -383,7 +418,11 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
         },
         terms: stripRecent({
           ...state.terms,
-          filter: generateFilterQuery(state.definitions.operators, filters),
+          filter: generateFilterQuery(
+            state.definitions.fields,
+            state.definitions.operators,
+            filters
+          ),
           types,
         }),
       }
@@ -393,7 +432,7 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
 
       return {
         ...state,
-        documentTypesNarrowed: narrowDocumentTypes(types, state.filters),
+        documentTypesNarrowed: narrowDocumentTypes(state.definitions.fields, types, state.filters),
         pageIndex: 0,
         result: {
           ...state.result,
@@ -409,7 +448,7 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
       const types: SearchableType[] = []
       return {
         ...state,
-        documentTypesNarrowed: narrowDocumentTypes(types, state.filters),
+        documentTypesNarrowed: narrowDocumentTypes(state.definitions.fields, types, state.filters),
         pageIndex: 0,
         result: {
           ...state.result,
@@ -445,36 +484,47 @@ function stripRecent(terms: RecentSearch | SearchTerms) {
   return terms
 }
 
-function narrowDocumentTypes(types: SearchableType[], filters: SearchFilter[]): string[] {
+function narrowDocumentTypes(
+  fieldDefinitions: SearchFieldDefinition[],
+  types: SearchableType[],
+  filters: SearchFilter[]
+): string[] {
   // Get all 'manually' selected document types
   const selectedDocumentTypes = types.map((type) => type.name)
+
+  const filteredDocumentTypes = fieldDefinitions
+    .filter((field) => filters.map((filter) => filter?.fieldId).includes(field.id))
+    .filter((field) => field.documentTypes.length > 0)
+    .map((field) => field.documentTypes)
+
   // Get intersecting document types across all active filters (that have at least one document type).
   // Filters that have no document types (i.e. `_updatedAt` which is available to all) are ignored.
-  const filterDocumentTypes = intersection(
-    ...filters
-      .filter((filter) => filter.documentTypes.length > 0)
-      .map((filter) => filter.documentTypes)
-  )
+  const intersectingDocumentTypes = intersection(...filteredDocumentTypes)
 
   const documentTypes: string[][] = []
   if (selectedDocumentTypes.length > 0) {
     documentTypes.push(selectedDocumentTypes)
   }
-  if (filterDocumentTypes.length > 0) {
-    documentTypes.push(filterDocumentTypes)
+  if (intersectingDocumentTypes.length > 0) {
+    documentTypes.push(intersectingDocumentTypes)
   }
 
   return intersection(...documentTypes).sort()
 }
 
-function generateFilterQuery(operators: SearchOperator[], filters: SearchFilter[]) {
+function generateFilterQuery(
+  fieldDefinitions: SearchFieldDefinition[],
+  operators: SearchOperator[],
+  filters: SearchFilter[]
+) {
   return filters
-    .map((filter) =>
-      getOperator(operators, filter.operatorType)?.fn({
-        fieldPath: filter?.fieldPath,
+    .map((filter) => {
+      const fieldDefinition = fieldDefinitions.find((field) => field.id === filter?.fieldId)
+      return getOperator(operators, filter.operatorType)?.fn({
+        fieldPath: fieldDefinition?.fieldPath,
         value: filter?.value,
       })
-    )
+    })
     .filter((filter) => !isEmpty(filter))
     .filter(isNonNullable)
     .join(' && ')

@@ -16,13 +16,12 @@ interface FilterFormProps {
 export function FilterForm({filter}: FilterFormProps) {
   const {
     dispatch,
-    fieldRegistry,
     state: {definitions},
   } = useSearchState()
 
   const filterDefinition = getFilterDefinition(definitions.filters, filter.filterType)
   const operator = getOperator(definitions.operators, filter.operatorType)
-  const resolvedField = getFieldFromFilter(fieldRegistry, filter)
+  const fieldDefinition = getFieldFromFilter(definitions.fields, filter)
   const filterKey = getFilterKey(filter)
 
   const handleValueChange = useCallback(
@@ -68,7 +67,7 @@ export function FilterForm({filter}: FilterFormProps) {
             // re-render on new operators
             key={filter.operatorType}
             onChange={handleValueChange}
-            options={resolvedField?.options}
+            options={fieldDefinition?.options}
             value={filter.value}
           />
         </Card>

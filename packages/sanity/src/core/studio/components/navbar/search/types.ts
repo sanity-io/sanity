@@ -1,4 +1,3 @@
-import {ConditionalProperty} from '@sanity/types'
 import {ButtonTone, CardTone} from '@sanity/ui'
 import type {SearchOptions, SearchSort, SearchTerms, WeightedHit} from '../../../../search'
 
@@ -6,20 +5,14 @@ import type {SearchOptions, SearchSort, SearchTerms, WeightedHit} from '../../..
  * @internal
  */
 export interface SearchFilter {
-  documentTypes: string[]
-  fieldPath?: string
+  fieldId?: string
   filterType: string
   operatorType?: string
-  titlePath: string[]
   value?: any
 }
 
-/**
- * @internal
- */
-export type StoredSearchFilter = Omit<SearchFilter, 'documentTypes' | 'titlePath'>
-
 export interface SearchFilterMenuItemFilter {
+  field?: SearchFieldDefinition
   filter: SearchFilter
   group?: string
   showSubtitle?: boolean
@@ -58,14 +51,13 @@ export interface SearchState {
 /**
  * @internal
  */
-export interface ResolvedField {
+export interface SearchFieldDefinition {
   documentTypes: string[]
-  fields?: ResolvedField[]
-  filterType: string
   fieldPath: string
-  hidden?: ConditionalProperty
+  filterType: string
+  id: string
   name: string
-  options?: any
+  options?: any[]
   title: string
   titlePath: string[]
   type: string

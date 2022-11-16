@@ -2,10 +2,12 @@ import {ChevronRightIcon} from '@sanity/icons'
 import {Box, Flex, rem, Stack, Text} from '@sanity/ui'
 import React from 'react'
 import styled from 'styled-components'
+import {useSearchState} from '../../../contexts/search/useSearchState'
 import type {SearchFilter} from '../../../types'
+import {getFieldFromFilter} from '../../../utils/filterUtils'
+import {FilterTitle} from '../../common/FilterTitle'
 import {ReturnIcon} from '../icons/ReturnIcon'
 import {FilterIcon} from './FilterIcon'
-import {FilterTitle} from '../../common/FilterTitle'
 
 interface FilterDetailsProps {
   filter: SearchFilter
@@ -22,6 +24,11 @@ const CodeWithOverflow = styled.span`
 `
 
 export function FilterDetails({filter, showSubtitle}: FilterDetailsProps) {
+  const {
+    state: {definitions},
+  } = useSearchState()
+  const fieldDefinition = getFieldFromFilter(definitions.fields, filter)
+
   return (
     <Stack space={2}>
       <Flex align="flex-start" gap={3}>
@@ -34,25 +41,25 @@ export function FilterDetails({filter, showSubtitle}: FilterDetailsProps) {
           <Text size={1} weight="medium">
             <FilterTitle filter={filter} />
           </Text>
-          {showSubtitle && filter.fieldPath && (
-            <CodeWithOverflow>{filter.fieldPath}</CodeWithOverflow>
+          {showSubtitle && fieldDefinition?.fieldPath && (
+            <CodeWithOverflow>{fieldDefinition.fieldPath}</CodeWithOverflow>
           )}
           {/* Path */}
-          {filter.titlePath && filter.titlePath?.length > 1 && (
+          {fieldDefinition?.titlePath && fieldDefinition.titlePath?.length > 1 && (
             <>
               <Flex gap={2}>
                 <Text muted size={0}>
                   <ReturnIcon />
                 </Text>
                 <Text muted size={0}>
-                  {filter.titlePath.slice(0, -1).map((pathTitle, index) => {
+                  {fieldDefinition.titlePath.slice(0, -1).map((pathTitle, index) => {
                     return (
                       <React.Fragment
                         // eslint-disable-next-line react/no-array-index-key
                         key={index}
                       >
                         <span>{pathTitle}</span>
-                        {index !== filter.titlePath.length - 2 && (
+                        {index !== fieldDefinition.titlePath.length - 2 && (
                           <span
                             style={{
                               opacity: 0.75,

@@ -36,7 +36,10 @@ const recentSearchTerms = {
   types: [],
 } as RecentSearch
 const initialState: SearchReducerState = {
-  ...initialSearchState({currentUser: mockUser, definitions: {filters: [], operators: []}}),
+  ...initialSearchState({
+    currentUser: mockUser,
+    definitions: {fields: [], filters: [], operators: []},
+  }),
   terms: recentSearchTerms,
 }
 

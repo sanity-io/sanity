@@ -4,7 +4,7 @@ import type {CurrentUser, ObjectSchemaType} from '@sanity/types'
 import type {SearchTerms} from '../../../../../search'
 import {defineSearchFilter, SearchFilterDefinition} from '../definitions/filters'
 import {SearchFilter} from '../types'
-import {createFieldRegistry} from '../utils/createFieldRegistry'
+import {createFieldDefinitions} from '../utils/createFieldDefinitions'
 import {createRecentSearchesStore, MAX_RECENT_SEARCHES, RecentSearchesStore} from './recentSearches'
 
 const mockSchema = Schema.compile({
@@ -49,11 +49,11 @@ const mockUser: CurrentUser = {
   roles: [],
 }
 
-const mockFieldRegistry = createFieldRegistry(mockSchema, mockFilterDefinitions)
+const mockFieldDefinitions = createFieldDefinitions(mockSchema, mockFilterDefinitions)
 
 const recentSearchesStore = createRecentSearchesStore({
   dataset: 'dataset',
-  fields: mockFieldRegistry,
+  fieldDefinitions: mockFieldDefinitions,
   filterDefinitions: mockFilterDefinitions,
   projectId: ' projectId',
   schema: mockSchema,
@@ -123,30 +123,18 @@ describe('search-store', () => {
       const searchTerms3: SearchTerms = {query: 'baz', types: [mockArticle]}
       const searchTerms4: SearchTerms = {query: 'qux', types: [mockArticle]}
       const invalidFilter1: SearchFilter = {
-        documentTypes: [],
-        fieldPath: '_invalidFieldPath',
-        fieldType: 'datetime',
         filterType: 'datetime',
         operatorType: 'defined',
-        titlePath: ['Updated at'],
         value: null,
       }
       const invalidFilter2: SearchFilter = {
-        documentTypes: [],
-        fieldPath: '_updatedAt',
-        fieldType: 'datetime',
         filterType: '_invalidFilterType',
         operatorType: 'defined',
-        titlePath: ['Updated at'],
         value: null,
       }
       const invalidFilter3: SearchFilter = {
-        documentTypes: [],
-        fieldPath: '_updatedAt',
-        fieldType: 'datetime',
         filterType: 'datetime',
         operatorType: '_invalidOperatorType',
-        titlePath: ['Updated at'],
         value: null,
       }
 
@@ -234,22 +222,19 @@ describe('search-store', () => {
         query: 'foo',
         types: [mockArticle],
       }
+      // eslint-disable-next-line max-nested-callbacks
+      const fieldId = mockFieldDefinitions.find((def) => def.filterType === 'datetime')?.id
       const searchFilter: SearchFilter = {
-        documentTypes: [],
-        fieldPath: '_updatedAt',
-        fieldType: 'datetime',
+        fieldId,
         filterType: 'datetime',
         operatorType: 'defined',
-        titlePath: ['Updated at'],
         value: null,
       }
       const recentSearches = recentSearchesStore.addSearch(searchTerms, [searchFilter])
       expect(recentSearches[0].filters).toEqual([
         {
-          documentTypes: [],
-          fieldPath: '_updatedAt',
+          fieldId,
           filterType: 'datetime',
-          titlePath: ['Updated at'],
           operatorType: 'defined',
           value: null,
         },

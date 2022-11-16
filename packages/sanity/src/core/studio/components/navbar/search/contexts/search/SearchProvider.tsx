@@ -4,16 +4,16 @@ import {useClient, useSchema} from '../../../../../../hooks'
 import type {SearchableType, SearchTerms} from '../../../../../../search'
 import {useCurrentUser} from '../../../../../../store'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../../../studioClient'
+import {useSource} from '../../../../../source'
 import {FINDABILITY_MVI, SEARCH_LIMIT} from '../../constants'
 import {createRecentSearchesStore, RecentSearch} from '../../datastores/recentSearches'
 import {useSearch} from '../../hooks/useSearch'
 import type {SearchOrdering} from '../../types'
-import {createFieldRegistry} from '../../utils/createFieldRegistry'
+import {createFieldDefinitions} from '../../utils/createFieldDefinitions'
 import {hasSearchableTerms} from '../../utils/hasSearchableTerms'
 import {isRecentSearchTerms} from '../../utils/isRecentSearchTerms'
 import {initialSearchState, searchReducer} from './reducer'
 import {SearchContext} from './SearchContext'
-import {useSource} from '../../../../../source'
 
 interface SearchProviderProps {
   children?: ReactNode
@@ -32,21 +32,21 @@ export function SearchProvider({children}: SearchProviderProps) {
 
   const {dataset, projectId} = client.config()
 
-  // Create our field registry: this is a list of all applicable fields which we can filter on.
-  const fieldRegistry = useMemo(() => createFieldRegistry(schema, filters), [schema, filters])
+  // Create our field definitions: all applicable fields which we can filter on.
+  const fields = useMemo(() => createFieldDefinitions(schema, filters), [schema, filters])
 
   // Create local storage store
   const recentSearchesStore = useMemo(
     () =>
       createRecentSearchesStore({
         dataset,
-        fields: fieldRegistry,
+        fieldDefinitions: fields,
         filterDefinitions: filters,
         projectId,
         schema,
         user: currentUser,
       }),
-    [currentUser, dataset, fieldRegistry, filters, projectId, schema]
+    [currentUser, dataset, fields, filters, projectId, schema]
   )
 
   const recentSearches = useMemo(
@@ -55,8 +55,9 @@ export function SearchProvider({children}: SearchProviderProps) {
   )
 
   const initialState = useMemo(
-    () => initialSearchState({currentUser, recentSearches, definitions: {operators, filters}}),
-    [currentUser, recentSearches, operators, filters]
+    () =>
+      initialSearchState({currentUser, recentSearches, definitions: {fields, operators, filters}}),
+    [currentUser, fields, filters, operators, recentSearches]
   )
   const [state, dispatch] = useReducer(searchReducer, initialState)
 
@@ -148,7 +149,6 @@ export function SearchProvider({children}: SearchProviderProps) {
     <SearchContext.Provider
       value={{
         dispatch,
-        fieldRegistry,
         recentSearchesStore,
         state,
       }}
