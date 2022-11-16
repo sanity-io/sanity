@@ -1,4 +1,4 @@
-import {format, sub} from 'date-fns'
+import {format, isValid, sub} from 'date-fns'
 import {typed} from '@sanity/types'
 import {FieldInputDateLast} from '../../components/filters/filter/inputTypes/DateLast'
 import {FieldInputDate} from '../../components/filters/filter/inputTypes/Date'
@@ -24,45 +24,31 @@ export interface OperatorDateLastValue {
 const COMMON = {
   dateAfter: {
     buttonLabel: 'after',
-    fn: ({fieldPath, value}: SearchOperatorParams<Date>) => {
-      const timestamp = value?.toISOString()
-      return timestamp && fieldPath
-        ? `dateTime(${fieldPath}) > dateTime(${toJSON(timestamp)})`
-        : null
-    },
     initialValue: null,
     label: 'is after',
   },
   dateBefore: {
     buttonLabel: 'before',
-    fn: ({fieldPath, value}: SearchOperatorParams<Date>) => {
-      const timestamp = value?.toISOString()
-      return timestamp && fieldPath
-        ? `dateTime(${fieldPath}) < dateTime(${toJSON(timestamp)})`
-        : null
-    },
     initialValue: null,
     label: 'is before',
   },
   dateEqual: {
     buttonLabel: 'is',
-    fn: ({fieldPath, value}: SearchOperatorParams<Date>) => {
-      const timestamp = value?.toISOString()
-      return timestamp && fieldPath ? `${fieldPath} == ${toJSON(timestamp)}` : null
+    fn: ({fieldPath, value}: SearchOperatorParams<string>) => {
+      return value && fieldPath ? `${fieldPath} == ${toJSON(value)}` : null
     },
     initialValue: null,
     label: 'is',
   },
-  dateLast: {},
   dateNotEqual: {
     buttonLabel: 'is not',
-    fn: ({fieldPath, value}: SearchOperatorParams<Date>) => {
-      const timestamp = value?.toISOString()
-      return timestamp && fieldPath ? `${fieldPath} != ${toJSON(timestamp)}` : null
+    fn: ({fieldPath, value}: SearchOperatorParams<string>) => {
+      return value && fieldPath ? `${fieldPath} != ${toJSON(value)}` : null
     },
     initialValue: null,
     label: 'is not',
   },
+  // TODO:
   dateRange: {
     buttonLabel: 'is between',
     buttonValue: (value: OperatorDateRangeValue) => {
@@ -80,23 +66,84 @@ const COMMON = {
 export const dateOperators = {
   dateAfter: defineSearchOperator({
     ...COMMON.dateAfter,
-    buttonValue: (value) => (value ? format(value, DEFAULT_DATE_FORMAT) : null),
+    buttonValue: (value) => buttonDateValue({value}),
+    fn: ({fieldPath, value}: SearchOperatorParams<string>) => {
+      return value && fieldPath ? `${fieldPath} > ${toJSON(value)}` : null
+    },
     inputComponent: FieldInputDate,
     type: 'dateAfter',
   }),
   dateBefore: defineSearchOperator({
     ...COMMON.dateBefore,
-    buttonValue: (value) => (value ? format(value, DEFAULT_DATE_FORMAT) : null),
+    buttonValue: (value) => buttonDateValue({value}),
+    fn: ({fieldPath, value}: SearchOperatorParams<string>) => {
+      return value && fieldPath ? `${fieldPath} < ${toJSON(value)}` : null
+    },
     inputComponent: FieldInputDate,
     type: 'dateBefore',
   }),
   dateEqual: defineSearchOperator({
     ...COMMON.dateEqual,
-    buttonValue: (value) => (value ? format(value, DEFAULT_DATE_FORMAT) : null),
+    buttonValue: (value) => buttonDateValue({value}),
     inputComponent: FieldInputDate,
     type: 'dateEqual',
   }),
   dateLast: defineSearchOperator({
+    buttonLabel: 'last',
+    buttonValue: (value) => (value.value && value.unit ? `${value.value} ${value.unit}` : null),
+    fn: ({fieldPath, value}: SearchOperatorParams<OperatorDateLastValue>) => {
+      const timestampAgo = sub(new Date(), {
+        days: value?.unit === 'days' ? value?.value || 0 : 0,
+        months: value?.unit === 'months' ? value?.value || 0 : 0,
+        years: value?.unit === 'years' ? value?.value || 0 : 0,
+      }).toISOString()
+      return timestampAgo && fieldPath ? `${fieldPath} > ${toJSON(timestampAgo)}` : null
+    },
+    inputComponent: FieldInputDateLast,
+    initialValue: {
+      unit: 'days',
+      value: 7,
+    },
+    label: 'is in the last',
+    type: 'dateLast',
+  }),
+  dateNotEqual: defineSearchOperator({
+    ...COMMON.dateNotEqual,
+    buttonValue: (value) => buttonDateValue({value}),
+    inputComponent: FieldInputDate,
+    type: 'dateNotEqual',
+  }),
+  dateRange: defineSearchOperator({
+    ...COMMON.dateRange,
+    inputComponent: FieldInputDateRange,
+    type: 'dateRange',
+  }),
+  dateTimeAfter: defineSearchOperator({
+    ...COMMON.dateAfter,
+    buttonValue: (value) => buttonDateValue({showTime: true, value}),
+    fn: ({fieldPath, value}: SearchOperatorParams<string>) => {
+      return value && fieldPath ? `dateTime(${fieldPath}) > dateTime(${toJSON(value)})` : null
+    },
+    inputComponent: FieldInputDateTime,
+    label: 'is after',
+    type: 'dateTimeAfter',
+  }),
+  dateTimeBefore: defineSearchOperator({
+    ...COMMON.dateBefore,
+    buttonValue: (value) => buttonDateValue({showTime: true, value}),
+    fn: ({fieldPath, value}: SearchOperatorParams<string>) => {
+      return value && fieldPath ? `dateTime(${fieldPath}) < dateTime(${toJSON(value)})` : null
+    },
+    inputComponent: FieldInputDateTime,
+    type: 'dateTimeBefore',
+  }),
+  dateTimeEqual: defineSearchOperator({
+    ...COMMON.dateEqual,
+    buttonValue: (value) => buttonDateValue({showTime: true, value}),
+    inputComponent: FieldInputDateTime,
+    type: 'dateTimeEqual',
+  }),
+  dateTimeLast: defineSearchOperator({
     buttonLabel: 'last',
     buttonValue: (value) => (value.value && value.unit ? `${value.value} ${value.unit}` : null),
     fn: ({fieldPath, value}: SearchOperatorParams<OperatorDateLastValue>) => {
@@ -115,45 +162,11 @@ export const dateOperators = {
       value: 7,
     },
     label: 'is in the last',
-    type: 'dateLast',
-  }),
-  dateNotEqual: defineSearchOperator({
-    ...COMMON.dateNotEqual,
-    buttonValue: (value) => (value ? format(value, DEFAULT_DATE_FORMAT) : null),
-    inputComponent: FieldInputDate,
-    type: 'dateNotEqual',
-  }),
-  dateRange: defineSearchOperator({
-    ...COMMON.dateRange,
-    inputComponent: FieldInputDateRange,
-    type: 'dateRange',
-  }),
-  dateTimeAfter: defineSearchOperator({
-    ...COMMON.dateAfter,
-    buttonValue: (value) =>
-      value ? format(value, `${DEFAULT_DATE_FORMAT} ${DEFAULT_TIME_FORMAT}`) : null,
-    inputComponent: FieldInputDateTime,
-    label: 'is after',
-    type: 'dateTimeAfter',
-  }),
-  dateTimeBefore: defineSearchOperator({
-    ...COMMON.dateBefore,
-    buttonValue: (value) =>
-      value ? format(value, `${DEFAULT_DATE_FORMAT} ${DEFAULT_TIME_FORMAT}`) : null,
-    inputComponent: FieldInputDateTime,
-    type: 'dateTimeBefore',
-  }),
-  dateTimeEqual: defineSearchOperator({
-    ...COMMON.dateEqual,
-    buttonValue: (value) =>
-      value ? format(value, `${DEFAULT_DATE_FORMAT} ${DEFAULT_TIME_FORMAT}`) : null,
-    inputComponent: FieldInputDateTime,
-    type: 'dateTimeEqual',
+    type: 'dateTimeLast',
   }),
   dateTimeNotEqual: defineSearchOperator({
     ...COMMON.dateNotEqual,
-    buttonValue: (value) =>
-      value ? format(value, `${DEFAULT_DATE_FORMAT} ${DEFAULT_TIME_FORMAT}`) : null,
+    buttonValue: (value) => buttonDateValue({showTime: true, value}),
     inputComponent: FieldInputDateTime,
     type: 'dateTimeNotEqual',
   }),
@@ -162,4 +175,13 @@ export const dateOperators = {
     inputComponent: FieldInputDateRange,
     type: 'dateTimeRange',
   }),
+}
+
+function buttonDateValue({showTime, value}: {value: string; showTime?: boolean}) {
+  const dateFormat = [
+    DEFAULT_DATE_FORMAT, //
+    ...(showTime ? [DEFAULT_TIME_FORMAT] : []),
+  ].join(' ')
+  const date = value ? new Date(value) : null
+  return date && isValid(date) ? format(date, dateFormat) : null
 }

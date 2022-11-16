@@ -12,7 +12,7 @@ export function CommonDateInput({
   onChange,
   selectTime,
   value,
-}: OperatorInputComponentProps<Date> & {
+}: OperatorInputComponentProps<string> & {
   selectTime?: boolean
 }) {
   const dateFormat = useMemo(
@@ -22,12 +22,15 @@ export function CommonDateInput({
 
   const [customValidity, setCustomValidity] = useState<string | undefined>(undefined)
   const [inputValue, setInputValue] = useState<string>(() =>
-    value ? format(value, dateFormat) : ''
+    value ? format(new Date(value), dateFormat) : ''
   )
 
   const handleDatePickerChange = useCallback(
     (date: Date | null) => {
-      onChange(date)
+      const timestamp = date?.toISOString()
+      if (timestamp) {
+        onChange(timestamp)
+      }
     },
     [onChange]
   )
@@ -36,7 +39,7 @@ export function CommonDateInput({
     if (inputValue) {
       const parsed = parse(inputValue, dateFormat, new Date())
       const validDate = isValid(parsed)
-      onChange(validDate ? parsed : null)
+      onChange(validDate ? parsed.toISOString() : null)
       setCustomValidity(validDate ? undefined : 'Invalid date')
     }
   }, [dateFormat, inputValue, onChange])
@@ -65,8 +68,10 @@ export function CommonDateInput({
   )
 
   useEffect(() => {
-    if (value && isValid(value)) {
-      setInputValue(format(value, dateFormat))
+    const updatedDate = value && new Date(value)
+
+    if (updatedDate && isValid(updatedDate)) {
+      setInputValue(format(updatedDate, dateFormat))
       setCustomValidity(undefined)
     }
   }, [dateFormat, value])
@@ -89,7 +94,7 @@ export function CommonDateInput({
       <DatePicker
         onChange={handleDatePickerChange}
         selectTime={selectTime}
-        value={value || undefined}
+        value={value ? new Date(value) : undefined}
       />
     </Stack>
   )

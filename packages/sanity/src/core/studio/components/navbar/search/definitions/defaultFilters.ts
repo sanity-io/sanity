@@ -70,7 +70,7 @@ export const filterDefinitions: SearchFilterDefinition[] = [
     fieldType: 'datetime',
     icon: CalendarIcon,
     operators: [
-      {name: 'dateLast', type: 'item'},
+      {name: 'dateTimeLast', type: 'item'},
       {type: 'divider'},
       {name: 'dateTimeAfter', type: 'item'},
       {name: 'dateTimeBefore', type: 'item'},

@@ -42,11 +42,12 @@ export function SearchProvider({children}: SearchProviderProps) {
         dataset,
         fieldDefinitions: fields,
         filterDefinitions: filters,
+        operatorDefinitions: operators,
         projectId,
         schema,
         user: currentUser,
       }),
-    [currentUser, dataset, fields, filters, projectId, schema]
+    [currentUser, dataset, fields, filters, operators, projectId, schema]
   )
 
   const recentSearches = useMemo(
