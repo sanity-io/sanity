@@ -33,7 +33,7 @@
   "dependencies": {
     "@sanity/resolver": "2.35.0",
     "@sanity/util": "2.35.0",
-    "loader-utils": "1.1.0"
+    "loader-utils": "1.4.2"
   },
   "devDependencies": {
     "rimraf": "^2.7.1"
