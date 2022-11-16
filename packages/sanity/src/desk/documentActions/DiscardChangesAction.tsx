@@ -42,7 +42,7 @@ export const DiscardChangesAction: DocumentActionComponent = ({
     setConfirmDialogOpen(true)
   }, [])
 
-  const modal: DocumentActionModalProps | false = useMemo(
+  const dialog: DocumentActionModalProps | false = useMemo(
     () =>
       isConfirmDialogOpen && {
         type: 'confirm',
@@ -83,7 +83,7 @@ export const DiscardChangesAction: DocumentActionComponent = ({
       '',
     label: 'Discard changes',
     onHandle: handle,
-    modal,
+    dialog,
   }
 }
 

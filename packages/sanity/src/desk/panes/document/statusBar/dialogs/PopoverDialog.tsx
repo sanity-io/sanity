@@ -1,17 +1,17 @@
 import {Popover, useClickOutside, useGlobalKeyDown, useLayer} from '@sanity/ui'
 import React, {useCallback, useState} from 'react'
 import {POPOVER_FALLBACK_PLACEMENTS} from './constants'
-import {DocumentActionPopoverModalProps} from 'sanity'
+import {DocumentActionPopoverDialogProps} from 'sanity'
 
 export function PopoverDialog(props: {
-  modal: DocumentActionPopoverModalProps
+  dialog: DocumentActionPopoverDialogProps
   referenceElement: HTMLElement | null
 }) {
-  const {modal, referenceElement} = props
+  const {dialog, referenceElement} = props
 
   return (
     <Popover
-      content={<PopoverDialogContent modal={modal} />}
+      content={<PopoverDialogContent dialog={dialog} />}
       fallbackPlacements={POPOVER_FALLBACK_PLACEMENTS}
       open
       placement="top"
@@ -22,9 +22,9 @@ export function PopoverDialog(props: {
   )
 }
 
-function PopoverDialogContent(props: {modal: DocumentActionPopoverModalProps}) {
-  const {modal} = props
-  const {content, onClose} = modal
+function PopoverDialogContent(props: {dialog: DocumentActionPopoverDialogProps}) {
+  const {dialog} = props
+  const {content, onClose} = dialog
   const {isTopLayer} = useLayer()
   const [element, setElement] = useState<HTMLElement | null>(null)
 

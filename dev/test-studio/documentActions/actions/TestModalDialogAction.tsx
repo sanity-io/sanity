@@ -5,7 +5,7 @@ import React, {useCallback, useMemo, useState} from 'react'
 
 export const TestModalDialogAction: DocumentActionComponent = (props) => {
   const {onComplete} = props
-  const [modalOpen, setDialogOpen] = useState(false)
+  const [dialogOpen, setDialogOpen] = useState(false)
   const {push: pushToast} = useToast()
 
   const handleOpen = useCallback(() => {
@@ -19,9 +19,9 @@ export const TestModalDialogAction: DocumentActionComponent = (props) => {
     onComplete()
   }, [onComplete, pushToast])
 
-  const modal: DocumentActionDescription['modal'] = useMemo(
+  const dialog: DocumentActionDescription['dialog'] = useMemo(
     () =>
-      modalOpen && {
+      dialogOpen && {
         type: 'dialog',
         content: (
           <Text>
@@ -38,11 +38,11 @@ export const TestModalDialogAction: DocumentActionComponent = (props) => {
         showCloseButton: false,
         width: 'medium',
       },
-    [modalOpen, handleClose]
+    [dialogOpen, handleClose]
   )
 
   return {
-    modal,
+    dialog,
     icon: CopyIcon,
     label: 'Test dialog modal',
     onHandle: handleOpen,

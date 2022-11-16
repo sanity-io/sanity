@@ -37,7 +37,7 @@ export interface DocumentActionComponent extends ActionComponent<DocumentActionP
 }
 
 /** @beta */
-export interface DocumentActionConfirmModalProps {
+export interface DocumentActionConfirmDialogProps {
   type: 'confirm'
   tone?: ButtonTone
   message: React.ReactNode
@@ -50,8 +50,8 @@ export interface DocumentActionConfirmModalProps {
 }
 
 /** @beta */
-export interface DocumentActionDialogModalProps {
-  type: 'dialog'
+export interface DocumentActionModalDialogProps {
+  type?: 'dialog'
   content: React.ReactNode
   /**
    * @beta
@@ -70,22 +70,25 @@ export interface DocumentActionDialogModalProps {
 }
 
 /** @beta */
-export interface DocumentActionPopoverModalProps {
+export interface DocumentActionPopoverDialogProps {
   type: 'popover'
   content: React.ReactNode
   onClose: () => void
 }
 
 /** @beta */
-export type DocumentActionModalProps =
-  | DocumentActionConfirmModalProps
-  | DocumentActionPopoverModalProps
-  | DocumentActionDialogModalProps
+export type DocumentActionDialogProps =
+  | DocumentActionConfirmDialogProps
+  | DocumentActionPopoverDialogProps
+  | DocumentActionModalDialogProps
 
 /** @beta */
 export interface DocumentActionDescription {
   tone?: ButtonTone
-  modal?: DocumentActionModalProps | false | null
+  dialog?: DocumentActionDialogProps | false | null
+  // @todo: remove the following types for v3 GA
+  /** @deprecated Use `dialog` */
+  modal?: never
   disabled?: boolean
   icon?: React.ReactNode | React.ComponentType
   label: string
@@ -93,3 +96,29 @@ export interface DocumentActionDescription {
   shortcut?: string | null
   title?: React.ReactNode
 }
+
+// @todo: remove the following types for v3 GA
+
+/**
+ * @beta
+ * @deprecated Use `DocumentActionDialogProps` instead
+ */
+export type DocumentActionModalProps = DocumentActionDialogProps
+
+/**
+ * @beta
+ * @deprecated Use `DocumentActionConfirmDialogProps` instead
+ */
+export type DocumentActionConfirmModalProps = DocumentActionConfirmDialogProps
+
+/**
+ * @beta
+ * @deprecated Use `DocumentActionPopoverDialogProps` instead
+ */
+export type DocumentActionPopoverModalProps = DocumentActionPopoverDialogProps
+
+/**
+ * @beta
+ * @deprecated Use `DocumentActionModalDialogProps` instead
+ */
+export type DocumentActionDialogModalProps = DocumentActionModalDialogProps

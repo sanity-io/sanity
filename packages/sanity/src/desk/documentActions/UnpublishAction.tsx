@@ -3,11 +3,11 @@ import React, {useCallback, useMemo, useState} from 'react'
 import {ConfirmDeleteDialog} from '../components'
 import {
   DocumentActionComponent,
-  DocumentActionModalProps,
   InsufficientPermissionsMessage,
   useDocumentPairPermissions,
   useCurrentUser,
   useDocumentOperation,
+  DocumentActionModalDialogProps,
 } from 'sanity'
 
 const DISABLED_REASON_TITLE = {
@@ -42,7 +42,7 @@ export const UnpublishAction: DocumentActionComponent = ({
     onComplete()
   }, [onComplete, unpublish])
 
-  const modal: DocumentActionModalProps | null = useMemo(() => {
+  const dialog: DocumentActionModalDialogProps | null = useMemo(() => {
     if (isConfirmDialogOpen) {
       return {
         type: 'dialog',
@@ -90,7 +90,7 @@ export const UnpublishAction: DocumentActionComponent = ({
       ? DISABLED_REASON_TITLE[unpublish.disabled as keyof typeof DISABLED_REASON_TITLE]
       : '',
     onHandle: () => setConfirmDialogOpen(true),
-    modal,
+    dialog,
   }
 }
 

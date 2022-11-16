@@ -3,31 +3,31 @@ import React, {useId} from 'react'
 import {ConfirmDialog} from './dialogs/ConfirmDialog'
 import {ModalDialog} from './dialogs/ModalDialog'
 import {PopoverDialog} from './dialogs/PopoverDialog'
-import {DocumentActionModalProps} from 'sanity'
+import {DocumentActionDialogProps} from 'sanity'
 
 export interface ActionStateDialogProps {
-  modal: DocumentActionModalProps
+  dialog: DocumentActionDialogProps
   referenceElement?: HTMLElement | null
 }
 
 export function ActionStateDialog(props: ActionStateDialogProps) {
-  const {modal, referenceElement = null} = props
+  const {dialog, referenceElement = null} = props
   const modalId = useId()
 
-  if (modal.type === 'confirm') {
-    return <ConfirmDialog modal={modal} referenceElement={referenceElement} />
+  if (dialog.type === 'confirm') {
+    return <ConfirmDialog dialog={dialog} referenceElement={referenceElement} />
   }
 
-  if (modal.type === 'dialog') {
-    return <ModalDialog modal={modal} />
+  if (dialog.type === 'popover') {
+    return <PopoverDialog dialog={dialog} referenceElement={referenceElement} />
   }
 
-  if (modal.type === 'popover') {
-    return <PopoverDialog modal={modal} referenceElement={referenceElement} />
+  if (dialog.type === 'dialog' || !dialog.type) {
+    return <ModalDialog dialog={dialog} />
   }
 
   // @todo: add validation?
-  const unknownModal: any = modal
+  const unknownModal: any = dialog
 
   // eslint-disable-next-line no-console
   console.warn(`Unsupported modal type ${unknownModal.type}`)

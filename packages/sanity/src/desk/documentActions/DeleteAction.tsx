@@ -71,7 +71,7 @@ export const DeleteAction: DocumentActionComponent = ({id, type, draft, onComple
     label: isDeleting ? 'Deleting…' : 'Delete',
     shortcut: 'Ctrl+Alt+D',
     onHandle: handle,
-    modal: isConfirmDialogOpen && {
+    dialog: isConfirmDialogOpen && {
       type: 'dialog',
       onClose: onComplete,
       content: (

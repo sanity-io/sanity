@@ -1,6 +1,6 @@
 import {RestoreIcon} from '@sanity/icons'
 import React, {useCallback, useMemo, useState} from 'react'
-import {DocumentActionComponent, DocumentActionModalProps, useDocumentOperation} from 'sanity'
+import {DocumentActionComponent, DocumentActionDialogProps, useDocumentOperation} from 'sanity'
 import {useRouter} from 'sanity/router'
 
 /** @internal */
@@ -19,7 +19,7 @@ export const HistoryRestoreAction: DocumentActionComponent = ({id, type, revisio
     setConfirmDialogOpen(true)
   }, [])
 
-  const modal: DocumentActionModalProps | null = useMemo(() => {
+  const dialog: DocumentActionDialogProps | null = useMemo(() => {
     if (isConfirmDialogOpen) {
       return {
         type: 'confirm',
@@ -43,7 +43,7 @@ export const HistoryRestoreAction: DocumentActionComponent = ({id, type, revisio
       ? "You can't restore to the initial version"
       : 'Restore to this version',
     icon: RestoreIcon,
-    modal,
+    dialog,
     disabled: isRevisionInitialVersion,
   }
 }
