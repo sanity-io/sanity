@@ -225,12 +225,10 @@ function resolveFilterType(schemaType: SchemaTypeDefinition) {
  * Sort definitions by title, joined titlePath and fieldPath (in that order)
  */
 function sortFieldDefinitions(a: SearchFieldDefinition, b: SearchFieldDefinition): number {
-  const aTitle = a.titlePath[a.titlePath.length - 1]
-  const bTitle = b.titlePath[b.titlePath.length - 1]
-  const aTitlePath = a.titlePath.slice(0, -1).join('')
-  const bTitlePath = b.titlePath.slice(0, -1).join('')
+  const aTitlePath = a.titlePath.slice(0, -1).join('/')
+  const bTitlePath = b.titlePath.slice(0, -1).join('/')
   return (
-    aTitle.localeCompare(bTitle) ||
+    a.title.localeCompare(b.title) ||
     aTitlePath.localeCompare(bTitlePath) ||
     a.fieldPath.localeCompare(b.fieldPath)
   )

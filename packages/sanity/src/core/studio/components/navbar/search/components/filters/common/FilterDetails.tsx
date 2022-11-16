@@ -41,8 +41,8 @@ export function FilterDetails({filter, showSubtitle}: FilterDetailsProps) {
           <Text size={1} weight="medium">
             <FilterTitle filter={filter} />
           </Text>
-          {showSubtitle && fieldDefinition?.fieldPath && (
-            <CodeWithOverflow>{fieldDefinition.fieldPath}</CodeWithOverflow>
+          {showSubtitle && fieldDefinition?.name && (
+            <CodeWithOverflow>{fieldDefinition.name}</CodeWithOverflow>
           )}
           {/* Path */}
           {fieldDefinition?.titlePath && fieldDefinition.titlePath?.length > 1 && (
