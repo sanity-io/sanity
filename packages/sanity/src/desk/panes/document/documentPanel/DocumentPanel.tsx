@@ -9,18 +9,13 @@ import {ReferenceChangedBanner} from './ReferenceChangedBanner'
 import {PermissionCheckBanner} from './PermissionCheckBanner'
 import {FormView} from './documentViews'
 import {DocumentPanelHeader} from './header'
-import {
-  ScrollContainer,
-  useDocumentValuePermissions,
-  useSchema,
-  getDraftId,
-  getPublishedId,
-} from 'sanity'
+import {ScrollContainer} from 'sanity'
 
 interface DocumentPanelProps {
   footerHeight: number | null
   rootElement: HTMLDivElement | null
   isInspectOpen: boolean
+  setDocumentPanelPortalElement: (el: HTMLElement | null) => void
 }
 
 const Scroller = styled(ScrollContainer)<{$disabled: boolean}>(({$disabled}) => {
@@ -38,7 +33,7 @@ const Scroller = styled(ScrollContainer)<{$disabled: boolean}>(({$disabled}) => 
 })
 
 export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
-  const {footerHeight, isInspectOpen, rootElement} = props
+  const {footerHeight, isInspectOpen, rootElement, setDocumentPanelPortalElement} = props
   const {
     activeViewId,
     displayed,
@@ -105,6 +100,13 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
     if (!documentScrollElement?.scrollTo) return
     documentScrollElement.scrollTo(0, 0)
   }, [documentId, documentScrollElement])
+
+  // Pass portal element to `DocumentPane`
+  useEffect(() => {
+    if (portalElement) {
+      setDocumentPanelPortalElement(portalElement)
+    }
+  }, [portalElement, setDocumentPanelPortalElement])
 
   const inspectDialog = useMemo(() => {
     return isInspectOpen ? <InspectDialog value={displayed || value} /> : null
