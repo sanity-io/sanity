@@ -1,5 +1,8 @@
 import path from 'path'
 import fs from 'fs/promises'
+import {debug as serverDebug} from './debug'
+
+const debug = serverDebug.extend('config')
 
 /**
  * Resolves the path to the studio configuration file with the following extensions,
@@ -18,6 +21,7 @@ export async function getSanityStudioConfigPath(studioRootPath: string): Promise
     path.join(studioRootPath, 'sanity.config.tsx'),
   ]
 
+  debug('Looking for configuration file in %d possible locations', configPaths.length)
   const configs = await Promise.all(
     configPaths.map(async (configPath) => ({
       path: configPath,
@@ -25,8 +29,10 @@ export async function getSanityStudioConfigPath(studioRootPath: string): Promise
     }))
   )
 
-  // No config file exists?
   const availableConfigs = configs.filter((config) => config.exists)
+  debug('Found %d available configuration files', availableConfigs.length)
+
+  // No config file exists?
   if (availableConfigs.length === 0) {
     console.warn('No `sanity.config.js`/`sanity.config.ts` found - using default studio config')
     return path.resolve(__dirname, './default-config.js')

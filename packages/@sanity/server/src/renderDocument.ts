@@ -16,7 +16,9 @@ import {createElement} from 'react'
 import {renderToStaticMarkup} from 'react-dom/server'
 import {getAliases} from './aliases'
 import {SanityMonorepo} from './sanityMonorepo'
-import {debug} from './debug'
+import {debug as serverDebug} from './debug'
+
+const debug = serverDebug.extend('renderDocument')
 
 // Don't use threads in the jest world
 // eslint-disable-next-line no-process-env
@@ -51,6 +53,7 @@ export function renderDocument(options: {
       return
     }
 
+    debug('Starting worker thread for %s', __filename)
     const worker = new Worker(__filename, {
       execArgv: __DEV__ ? ['-r', 'esbuild-register'] : undefined,
       workerData: {...options, shouldWarn: true},
@@ -75,17 +78,23 @@ export function renderDocument(options: {
       }
 
       if (msg.type === 'error') {
+        debug('Error from worker: %s', msg.error || 'Unknown error')
         reject(new Error(msg.error || 'Document rendering worker stopped with an unknown error'))
         return
       }
 
       if (msg.type === 'result') {
+        debug('Document HTML rendered, %d bytes', msg.html.length)
         resolve(msg.html)
       }
     })
-    worker.on('error', reject)
+    worker.on('error', (err) => {
+      debug('Worker errored: %s', err.message)
+      reject(err)
+    })
     worker.on('exit', (code) => {
       if (code !== 0) {
+        debug('Worker stopped with code %d', code)
         reject(new Error(`Document rendering worker stopped with exit code ${code}`))
       }
     })
@@ -123,10 +132,12 @@ function renderDocumentFromWorkerData() {
 
   // Require hook #1
   // Alias monorepo modules
+  debug('Registering potential aliases')
   require('module-alias').addAliases(getAliases({monorepo}))
 
   // Require hook #2
   // Use `esbuild` to allow JSX/TypeScript and modern JS features
+  debug('Registering esbuild for node %s', process.version)
   const {unregister} = require('esbuild-register/dist/node').register({
     target: `node${process.version.slice(1)}`,
     extensions: ['.jsx', '.ts', '.tsx', '.mjs'],
@@ -134,6 +145,7 @@ function renderDocumentFromWorkerData() {
 
   // Require hook #3
   // Same as above, but we don't want to enforce a .jsx extension for anything with JSX
+  debug('Registering esbuild for .js files using jsx loader')
   const {unregister: unregisterJs} = require('esbuild-register/dist/node').register({
     target: `node${process.version.slice(1)}`,
     extensions: ['.js'],
@@ -164,12 +176,16 @@ function getDocumentHtml(studioRootPath: string, props?: DocumentProps): string 
     }
   })
 
+  debug('Rendering document component using React')
   const result = renderToStaticMarkup(createElement(Document, {...defaultProps, ...props, css}))
   return `<!DOCTYPE html>${result}`
 }
 
 function getDocumentComponent(studioRootPath: string) {
+  debug('Loading default document component from `sanity` module')
   const {DefaultDocument} = require('sanity')
+
+  debug('Attempting to load user-defined document component from %s', studioRootPath)
   const userDefined = tryLoadDocumentComponent(studioRootPath)
 
   if (!userDefined) {
@@ -212,6 +228,7 @@ function tryLoadDocumentComponent(studioRootPath: string) {
   const locations = getPossibleDocumentComponentLocations(studioRootPath)
 
   for (const componentPath of locations) {
+    debug('Trying to load document component from %s', componentPath)
     try {
       return {
         // eslint-disable-next-line import/no-dynamic-require
@@ -223,8 +240,11 @@ function tryLoadDocumentComponent(studioRootPath: string) {
     } catch (err) {
       // Allow "not found" errors
       if (err.code !== 'MODULE_NOT_FOUND') {
+        debug('Failed to load document component: %s', err.message)
         throw err
       }
+
+      debug('Document component not found at %s', componentPath)
     }
   }
 

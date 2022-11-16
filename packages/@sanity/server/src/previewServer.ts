@@ -2,7 +2,9 @@ import fs from 'fs'
 import path from 'path'
 import chalk from 'chalk'
 import {InlineConfig, preview} from 'vite'
-import {debug} from './debug'
+import {debug as serverDebug} from './debug'
+
+const debug = serverDebug.extend('preview')
 
 export interface PreviewServer {
   urls: {local: string[]; network: string[]}

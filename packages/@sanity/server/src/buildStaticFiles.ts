@@ -5,6 +5,9 @@ import {build, InlineConfig} from 'vite'
 import {finalizeViteConfig, getViteConfig} from './getViteConfig'
 import {generateWebManifest} from './webManifest'
 import {writeSanityRuntime} from './runtime'
+import {debug as serverDebug} from './debug'
+
+const debug = serverDebug.extend('static')
 
 export interface ChunkModule {
   name: string
@@ -40,8 +43,10 @@ export async function buildStaticFiles(
     vite: extendViteConfig,
   } = options
 
+  debug('Writing Sanity runtime files')
   await writeSanityRuntime({cwd, reactStrictMode: false, watch: false})
 
+  debug('Resolving vite config')
   let viteConfig = await getViteConfig({
     cwd,
     basePath,
@@ -52,18 +57,23 @@ export async function buildStaticFiles(
   })
 
   if (extendViteConfig) {
+    debug('Extending vite config with user-specified config')
     viteConfig = finalizeViteConfig(extendViteConfig(viteConfig))
   }
 
   // Copy files placed in /static to the built /static
+  debug('Copying static files from /static to output dir')
   const staticPath = path.join(outputDir, 'static')
   await copyDir(path.join(cwd, 'static'), staticPath)
 
   // Write favicons, not overwriting ones that already exist, to static folder
+  debug('Writing favicons to output dir')
   const faviconBasePath = `${basePath.replace(/\/+$/, '')}/static`
   await writeFavicons(faviconBasePath, staticPath)
 
+  debug('Bundling using vite')
   const bundle = await build(viteConfig)
+  debug('Bundling complete')
 
   // For typescript only - this shouldn't ever be the case given we're not watching
   if (Array.isArray(bundle) || !('output' in bundle)) {

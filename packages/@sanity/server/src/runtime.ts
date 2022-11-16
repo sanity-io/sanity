@@ -1,7 +1,7 @@
 import fs from 'fs/promises'
 import path from 'path'
 import chokidar from 'chokidar'
-import {debug} from './debug'
+import {debug as serverDebug} from './debug'
 import {getEntryModule} from './getEntryModule'
 import {getSanityStudioConfigPath} from './sanityConfig'
 import {loadSanityMonorepo} from './sanityMonorepo'
@@ -10,6 +10,8 @@ import {
   getPossibleDocumentComponentLocations,
   renderDocument,
 } from './renderDocument'
+
+const debug = serverDebug.extend('runtime')
 
 export interface RuntimeOptions {
   cwd: string
@@ -29,6 +31,7 @@ export async function writeSanityRuntime({
   reactStrictMode,
   watch,
 }: RuntimeOptions): Promise<void> {
+  debug('Resolving Sanity monorepo information')
   const monorepo = await loadSanityMonorepo(cwd)
   const runtimeDir = path.join(cwd, '.sanity', 'runtime')
 
