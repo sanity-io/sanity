@@ -5,6 +5,7 @@ import {
   DialogProvider,
   DialogProviderProps,
   Flex,
+  PortalProvider,
   Stack,
   Text,
   useElementRect,
@@ -213,6 +214,9 @@ function InnerDocumentPane() {
   const [rootElement, setRootElement] = useState<HTMLDivElement | null>(null)
   const [footerElement, setFooterElement] = useState<HTMLDivElement | null>(null)
   const [actionsBoxElement, setActionsBoxElement] = useState<HTMLDivElement | null>(null)
+  const [documentPanelPortalElement, setDocumentPanelPortalElement] = useState<HTMLElement | null>(
+    null
+  )
   const footerRect = useElementRect(footerElement)
   const footerH = footerRect?.height
 
@@ -220,20 +224,27 @@ function InnerDocumentPane() {
     () => (
       <DocumentPanel
         footerHeight={footerH || null}
-        rootElement={rootElement}
         isInspectOpen={inspectOpen}
+        rootElement={rootElement}
+        setDocumentPanelPortalElement={setDocumentPanelPortalElement}
       />
     ),
     [footerH, rootElement, inspectOpen]
   )
 
+  // These providers are added because we want the dialogs in `DocumentStatusBar` to be scoped to the document pane.
+  // The portal element comes from `DocumentPanel`.
   const footer = useMemo(
     () => (
-      <PaneFooter ref={setFooterElement}>
-        <DocumentStatusBar actionsBoxRef={setActionsBoxElement} />
-      </PaneFooter>
+      <PortalProvider __unstable_elements={{documentPanelPortalElement}}>
+        <DialogProvider position={DIALOG_PROVIDER_POSITION} zOffset={zOffsets.portal}>
+          <PaneFooter ref={setFooterElement}>
+            <DocumentStatusBar actionsBoxRef={setActionsBoxElement} />
+          </PaneFooter>
+        </DialogProvider>
+      </PortalProvider>
     ),
-    []
+    [documentPanelPortalElement, zOffsets.portal]
   )
 
   const changesPanel = useMemo(() => {
@@ -318,18 +329,18 @@ function InnerDocumentPane() {
       </>
     )
   }, [
-    changesOpen,
-    changesPanel,
-    documentPanel,
-    documentType,
-    footer,
-    onConnectorSetFocus,
-    onHistoryOpen,
-    layoutCollapsed,
-    paneKey,
     schemaType,
-    value,
     zOffsets.portal,
+    layoutCollapsed,
+    changesOpen,
+    onHistoryOpen,
+    onConnectorSetFocus,
+    documentPanel,
+    changesPanel,
+    footer,
+    paneKey,
+    documentType,
+    value,
   ])
 
   const currentMinWidth = changesOpen
