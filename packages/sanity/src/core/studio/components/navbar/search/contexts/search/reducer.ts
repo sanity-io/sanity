@@ -22,7 +22,7 @@ export interface SearchReducerState {
   documentTypesNarrowed: string[]
   filters: SearchFilter[]
   filtersVisible: boolean
-  lastAddedFilter?: SearchFilter
+  lastAddedFilter?: SearchFilter | null
   ordering: SearchOrdering
   pageIndex: number
   recentSearches: RecentSearch[]
@@ -383,6 +383,7 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
         ...state,
         documentTypesNarrowed: narrowDocumentTypes(state.definitions.fields, types, filters),
         filters,
+        lastAddedFilter: null,
         pageIndex: 0,
         result: {
           ...state.result,
