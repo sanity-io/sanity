@@ -30,8 +30,8 @@ describeCliTest('CLI: `sanity preview`', () => {
     testConcurrent('start (hint for new `dev` command)', async () => {
       const result = await runSanityCmdCommand('v3', ['start'])
       const error = result.stderr.trim()
-      expect(error).toContain('`sanity start` is now an alias of `sanity preview`')
-      expect(error).toContain('Use `sanity dev` to start a development server.')
+      expect(error).toContain('`sanity start` aliases `sanity preview`')
+      expect(error).toContain('to start the development server')
     })
   })
 })
