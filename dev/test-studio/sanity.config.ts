@@ -51,7 +51,7 @@ const sharedSettings = definePlugin({
       icon: BookIcon,
       name: 'content',
       title: 'Content',
-      // structure,
+      structure,
       defaultDocumentNode,
     }),
     languageFilter({
