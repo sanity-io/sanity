@@ -1,14 +1,11 @@
 import {
   ArrayDefinition,
   FieldDefinition,
-  isTitledListValue,
   ObjectDefinition,
   Schema,
   SchemaTypeDefinition,
   StringDefinition,
-  TitledListValue,
 } from '@sanity/types'
-import {capitalize} from 'lodash'
 import startCase from 'lodash/startCase'
 import {Md5} from 'ts-md5'
 import {getSupportedFieldTypes, SearchFilterDefinition} from '../definitions/filters'
@@ -86,8 +83,8 @@ function getDocumentFieldDefinitions(
     // Ignore hidden fields
     if (defType.hidden) return
 
-    // Check if current field can be mapped to an existing object definition
-    // Check if current field is an inline object
+    // Check if current field can be mapped to an existing object
+    // defined in our schema, or if it's an inline object
     const existingObject = objectTypes[defType.type]
     if (existingObject || isObject) {
       const targetObject = existingObject || isObject
@@ -107,15 +104,12 @@ function getDocumentFieldDefinitions(
     // Fail early if the current field type isn't supported
     if (!supportedFieldTypes.includes(defType.type)) return
 
-    const options = buildOptions(defType)
-
     acc.push({
       documentTypes: documentType && !isInternalField ? [documentType] : [],
       fieldPath,
       filterType: resolveFilterType(defType),
       id: '',
       name: defType.name,
-      ...(options ? {options} : {}),
       titlePath,
       title,
       type: defType.type,
@@ -139,7 +133,6 @@ function getDocumentFieldDefinitions(
         acc[prevIndex] = {
           ...acc[prevIndex],
           documentTypes: [...acc[prevIndex].documentTypes, ...val.documentTypes],
-          options: [...(acc[prevIndex]?.options || []), ...(val?.options || [])],
         }
       } else {
         acc.push(val)
@@ -150,19 +143,6 @@ function getDocumentFieldDefinitions(
     .sort(sortFieldDefinitions)
 
   return fieldDefinitions
-}
-
-/**
- * Build list options for strings and arrays with list options.
- * (Only arrays with primitive values are supported).
- */
-function buildOptions(defType: SchemaTypeDefinition): any {
-  if (isArrayOfPrimitives(defType) || isStringList(defType)) {
-    if (defType?.options?.list) {
-      return defType.options.list.map(toSelectItem)
-    }
-  }
-  return null
 }
 
 /**
@@ -232,8 +212,4 @@ function sortFieldDefinitions(a: SearchFieldDefinition, b: SearchFieldDefinition
     aTitlePath.localeCompare(bTitlePath) ||
     a.fieldPath.localeCompare(b.fieldPath)
   )
-}
-
-function toSelectItem(option: TitledListValue<unknown> | unknown): TitledListValue<unknown> {
-  return isTitledListValue(option) ? option : {title: capitalize(`${option}`), value: option}
 }

@@ -1,5 +1,8 @@
+import {isObjectSchemaType, ObjectField, SchemaType} from '@sanity/types'
 import {Box, Card, Stack, Text} from '@sanity/ui'
-import React, {useCallback} from 'react'
+import React, {useCallback, useMemo} from 'react'
+import {useSchema} from '../../../../../../../hooks'
+import {isNonNullable} from '../../../../../../../util'
 import {useSearchState} from '../../../contexts/search/useSearchState'
 import {getFilterDefinition} from '../../../definitions/filters'
 import {getOperator} from '../../../definitions/operators'
@@ -16,13 +19,14 @@ interface FilterFormProps {
 export function FilterForm({filter}: FilterFormProps) {
   const {
     dispatch,
-    state: {definitions},
+    state: {definitions, documentTypesNarrowed},
   } = useSearchState()
 
   const filterDefinition = getFilterDefinition(definitions.filters, filter.filterType)
   const operator = getOperator(definitions.operators, filter.operatorType)
   const fieldDefinition = getFieldFromFilter(definitions.fields, filter)
   const filterKey = getFilterKey(filter)
+  const schema = useSchema()
 
   const handleValueChange = useCallback(
     (value: any) => {
@@ -36,6 +40,20 @@ export function FilterForm({filter}: FilterFormProps) {
   )
 
   const Component: SearchOperatorInput<any> | undefined = operator?.inputComponent
+
+  const options = useMemo(() => {
+    return fieldDefinition?.documentTypes
+      .filter((d) => documentTypesNarrowed.includes(d))
+      .map((type) => {
+        const schemaType = schema.get(type)
+        if (schemaType) {
+          const field = getFieldRecursive(schemaType, fieldDefinition.fieldPath.split('.'))
+          return field?.type.options
+        }
+        return null
+      })
+      .filter(isNonNullable)
+  }, [documentTypesNarrowed, fieldDefinition, schema])
 
   return (
     <Box>
@@ -67,11 +85,30 @@ export function FilterForm({filter}: FilterFormProps) {
             // re-render on new operators
             key={filter.operatorType}
             onChange={handleValueChange}
-            options={fieldDefinition?.options}
+            options={options}
             value={filter.value}
           />
         </Card>
       )}
     </Box>
   )
+}
+
+function getFieldRecursive(
+  schemaType: SchemaType,
+  paths: string[]
+): ObjectField<SchemaType> | undefined {
+  const firstPath = paths[0]
+  if (firstPath) {
+    if (isObjectSchemaType(schemaType)) {
+      const field = schemaType.fields.find((f) => f.name === firstPath)
+      if (field) {
+        if (isObjectSchemaType(field)) {
+          return getFieldRecursive(field, paths.slice(1))
+        }
+        return field
+      }
+    }
+  }
+  return undefined
 }

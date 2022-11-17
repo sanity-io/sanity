@@ -57,7 +57,6 @@ export interface SearchFieldDefinition {
   filterType: string
   id: string
   name: string
-  options?: any[]
   title: string
   titlePath: string[]
   type: string

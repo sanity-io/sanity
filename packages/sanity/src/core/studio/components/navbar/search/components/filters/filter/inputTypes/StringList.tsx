@@ -1,8 +1,9 @@
 import {SelectIcon} from '@sanity/icons'
-import {TitledListValue} from '@sanity/types'
+import {isTitledListValue, StringOptions, TitledListValue} from '@sanity/types'
 import {Box, Button, Code, Flex, Menu, MenuButton, MenuItem, Stack, Text} from '@sanity/ui'
-import {uniq} from 'lodash'
+import {capitalize, uniq} from 'lodash'
 import React, {useCallback, useId, useMemo} from 'react'
+import {isNonNullable} from '../../../../../../../../util'
 import {OperatorInputComponentProps} from '../../../../definitions/operators/operatorTypes'
 
 interface TitledListValueGroup extends Omit<TitledListValue<number | string>, 'title'> {
@@ -53,11 +54,16 @@ export function FieldInputStringList({
 }: OperatorInputComponentProps<number | string>) {
   const menuButtonId = useId()
 
-  // Sort and dedupe options
+  // Build list items
   const items = useMemo(() => {
-    const menuItems = (options || []) as TitledListValue<number | string>[]
-    return menuItems.reduce<TitledListValueGroup[]>((acc, val) => {
-      const prevIndex = acc.findIndex((v) => v.value === val.value)
+    const lists = (options as StringOptions[]).map((o) => o.list)
+
+    const selectOptions = lists
+      .flatMap((list) => list?.map((l) => toSelectItem(l)))
+      .filter(isNonNullable)
+
+    return selectOptions.reduce<TitledListValueGroup[]>((acc, val) => {
+      const prevIndex = acc.findIndex((v) => v.value === val?.value)
       if (prevIndex > -1) {
         const prevValue = acc[prevIndex]
         acc[prevIndex] = {
@@ -116,4 +122,10 @@ export function FieldInputStringList({
       popover={{portal: false, radius: 2}}
     />
   )
+}
+
+function toSelectItem(
+  option: TitledListValue<string | number> | string | number
+): TitledListValue<string | number> {
+  return isTitledListValue(option) ? option : {title: capitalize(`${option}`), value: option}
 }
