@@ -37,7 +37,7 @@ describe('block types', () => {
               value: 'sup',
               icon: () => null,
               components: {
-                item: (props) => props.defaultRender(props),
+                item: (props) => props.renderDefault(props),
               },
             },
           ],
@@ -72,7 +72,7 @@ describe('block types', () => {
             value: 'sup',
             icon: () => null,
             components: {
-              item: (props) => props.defaultRender(props),
+              item: (props) => props.renderDefault(props),
             },
           },
         ],
@@ -98,7 +98,7 @@ describe('block types', () => {
             value: 'sup',
             icon: () => null,
             components: {
-              item: (props) => props.defaultRender(props),
+              item: (props) => props.renderDefault(props),
             },
           },
         ],
