@@ -286,6 +286,7 @@ export function ArrayOfObjectsField(props: {
         items: [item],
         position: 'after',
         referenceItem: -1,
+        open: false,
       })
 
       const events$ = uploader.upload(client, file, schemaType).pipe(
