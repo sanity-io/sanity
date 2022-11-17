@@ -24,13 +24,7 @@ function CustomMenuItem({
   const handleClick = useCallback(() => onClick(value), [onClick, value])
 
   return (
-    <MenuItem
-      onClick={handleClick}
-      padding={3}
-      pressed={selected}
-      selected={selected}
-      tone="default"
-    >
+    <MenuItem onClick={handleClick} padding={3} pressed={selected} tone="default">
       <Flex align="center" justify="space-between" gap={3}>
         <Stack paddingRight={2} space={2}>
           <Text size={1} weight="regular">
@@ -119,7 +113,11 @@ export function FieldInputStringList({
         </Menu>
       }
       placement="bottom-start"
-      popover={{portal: false, radius: 2}}
+      popover={{
+        constrainSize: true,
+        portal: false,
+        radius: 2,
+      }}
     />
   )
 }

@@ -59,13 +59,7 @@ function CustomMenuItem({ordering}: {ordering: SearchOrdering}) {
   const isSelected = useMemo(() => isEqual(currentOrdering, ordering), [currentOrdering, ordering])
 
   return (
-    <MenuItem
-      onClick={handleClick}
-      padding={3}
-      pressed={isSelected}
-      selected={isSelected}
-      tone="default"
-    >
+    <MenuItem onClick={handleClick} padding={3} pressed={isSelected} tone="default">
       <Flex align="center" justify="space-between" paddingRight={2}>
         <Text size={1} weight="medium">
           {ordering.title}

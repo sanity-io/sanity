@@ -24,13 +24,7 @@ function CustomMenuItem({
   const handleClick = useCallback(() => onClick(operator.type), [onClick, operator.type])
 
   return (
-    <MenuItem
-      onClick={handleClick}
-      padding={3}
-      pressed={selected}
-      selected={selected}
-      tone="default"
-    >
+    <MenuItem onClick={handleClick} padding={3} pressed={selected} tone="default">
       <Flex align="center" justify="space-between" gap={3}>
         <Box paddingRight={2}>
           <Text size={1} weight="regular">
@@ -113,7 +107,11 @@ export function OperatorsMenuButton({filter, operator}: OperatorsMenuButtonProps
           </Menu>
         }
         placement="bottom-start"
-        popover={{portal: false, radius: 2}}
+        popover={{
+          constrainSize: true,
+          portal: false,
+          radius: 2,
+        }}
       />
     </Inline>
   )

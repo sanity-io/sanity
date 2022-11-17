@@ -58,6 +58,7 @@ export default function FilterButton({closable = true, filter, initialOpen}: Fil
   return (
     <Popover
       content={<FilterPopoverContent filter={filter} onClose={handleClose} />}
+      constrainSize
       open={open}
       placement="bottom-start"
       portal

@@ -33,6 +33,7 @@ export default function AddFilterButton() {
         onClick={handleOpen}
         padding={2}
         ref={setButtonElement}
+        space={2}
         text="Add filter"
       />
     </Popover>

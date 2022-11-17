@@ -1,5 +1,6 @@
 import {MenuIcon, SearchIcon} from '@sanity/icons'
 import {
+  BoundaryElementProvider,
   Box,
   Button,
   Card,
@@ -189,16 +190,18 @@ export function StudioNavbar() {
             {/* Search */}
             <LayerProvider>
               <SearchProvider>
-                <PortalProvider element={searchFullscreenPortalEl}>
-                  {shouldRender.searchFullscreen && (
-                    <SearchDialog
-                      onClose={handleCloseSearchFullscreen}
-                      onOpen={handleOpenSearchFullscreen}
-                      open={searchFullscreenOpen}
-                    />
-                  )}
-                </PortalProvider>
-                {!shouldRender.searchFullscreen && <SearchField />}
+                <BoundaryElementProvider element={document.body}>
+                  <PortalProvider element={searchFullscreenPortalEl}>
+                    {shouldRender.searchFullscreen && (
+                      <SearchDialog
+                        onClose={handleCloseSearchFullscreen}
+                        onOpen={handleOpenSearchFullscreen}
+                        open={searchFullscreenOpen}
+                      />
+                    )}
+                  </PortalProvider>
+                  {!shouldRender.searchFullscreen && <SearchField />}
+                </BoundaryElementProvider>
               </SearchProvider>
             </LayerProvider>
 
