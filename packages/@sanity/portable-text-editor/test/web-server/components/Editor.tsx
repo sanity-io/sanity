@@ -2,15 +2,13 @@ import React, {useCallback, useMemo, useRef, useState, useEffect} from 'react'
 import {Text, Box, Card, Code} from '@sanity/ui'
 import styled from 'styled-components'
 import {Subject} from 'rxjs'
-import {PortableTextBlock} from '@sanity/types'
+import {PortableTextBlock, BlockDecoratorRenderProps, BlockRenderProps} from '@sanity/types'
 import {
   PortableTextEditor,
   PortableTextEditable,
-  RenderDecoratorFunction,
   EditorChange,
   RenderBlockFunction,
   RenderChildFunction,
-  RenderAttributes,
   EditorSelection,
   Patch,
 } from '../../../src'
@@ -25,9 +23,9 @@ export const HOTKEYS = {
 }
 
 export const BlockObject = styled.div`
-  border: ${(props: RenderAttributes) =>
+  border: ${(props: BlockRenderProps) =>
     props.focused ? '1px solid blue' : '1px solid transparent'};
-  background: ${(props: RenderAttributes) => (props.selected ? '#eeeeff' : 'transparent')};
+  background: ${(props: BlockRenderProps) => (props.selected ? '#eeeeff' : 'transparent')};
   padding: 2em;
 `
 
@@ -64,55 +62,55 @@ export const Editor = ({
   const keyGenFn = useMemo(() => createKeyGenerator(editorId.substring(0, 1)), [editorId])
 
   const renderBlock: RenderBlockFunction = useCallback((props) => {
-    const {value: block, type, attributes, defaultRender} = props
+    const {value: block, type, renderDefault} = props
     if (editor.current) {
       const textType = editor.current.types.block
       // Text blocks
       if (type.name === textType.name) {
         return (
           <Box marginBottom={4}>
-            <Text style={{color: getRandomColor()}}>{defaultRender(props)}</Text>
+            <Text style={{color: getRandomColor()}}>{renderDefault(props)}</Text>
           </Box>
         )
       }
       // Object blocks
       return (
         <Card marginBottom={4}>
-          <BlockObject {...attributes}>{JSON.stringify(block)}</BlockObject>
+          <BlockObject {...props}>{JSON.stringify(block)}</BlockObject>
         </Card>
       )
     }
-    return defaultRender(props)
+    return renderDefault(props)
   }, [])
 
   const renderChild: RenderChildFunction = useCallback((props) => {
-    const {type, defaultRender} = props
+    const {type, renderDefault} = props
     if (editor.current) {
       const textType = editor.current.types.span
       // Text spans
       if (type.name === textType.name) {
-        return defaultRender(props)
+        return renderDefault(props)
       }
       // Inline objects
     }
-    return defaultRender(props)
+    return renderDefault(props)
   }, [])
 
-  const renderDecorator: RenderDecoratorFunction = useCallback((props) => {
-    const {value: mark, defaultRender} = props
+  const renderDecorator = useCallback((props: BlockDecoratorRenderProps) => {
+    const {value: mark, renderDefault} = props
     switch (mark) {
       case 'strong':
-        return <strong>{defaultRender(props)}</strong>
+        return <strong>{renderDefault(props)}</strong>
       case 'em':
-        return <em>{defaultRender(props)}</em>
+        return <em>{renderDefault(props)}</em>
       case 'code':
-        return <code>{defaultRender(props)}</code>
+        return <code>{renderDefault(props)}</code>
       case 'underline':
-        return <u>{defaultRender(props)}</u>
+        return <u>{renderDefault(props)}</u>
       case 'strike-through':
-        return <s>{defaultRender(props)}</s>
+        return <s>{renderDefault(props)}</s>
       default:
-        return defaultRender(props)
+        return renderDefault(props)
     }
   }, [])
 

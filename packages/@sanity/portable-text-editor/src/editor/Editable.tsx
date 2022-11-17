@@ -1,4 +1,5 @@
 import {BaseRange, Transforms, Text} from 'slate'
+import {BlockAnnotationRenderProps, BlockDecoratorRenderProps} from '@sanity/types'
 import React, {useCallback, useMemo, useEffect, forwardRef} from 'react'
 import {
   Editable as SlateEditable,
@@ -12,10 +13,8 @@ import {
   OnCopyFn,
   OnPasteFn,
   OnPasteResult,
-  RenderAnnotationFunction,
   RenderBlockFunction,
   RenderChildFunction,
-  RenderDecoratorFunction,
   ScrollSelectionIntoViewFunction,
 } from '../types/editor'
 import {HotkeyOptions} from '../types/options'
@@ -64,10 +63,10 @@ export type PortableTextEditableProps = {
   onBeforeInput?: OnBeforeInputFn
   onPaste?: OnPasteFn
   onCopy?: OnCopyFn
-  renderAnnotation?: RenderAnnotationFunction
+  renderAnnotation?: (props: BlockAnnotationRenderProps) => JSX.Element
   renderBlock?: RenderBlockFunction
   renderChild?: RenderChildFunction
-  renderDecorator?: RenderDecoratorFunction
+  renderDecorator?: (props: BlockDecoratorRenderProps) => JSX.Element
   renderPlaceholder?: () => React.ReactNode
   scrollSelectionIntoView?: ScrollSelectionIntoViewFunction
   selection?: EditorSelection

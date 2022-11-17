@@ -1,15 +1,8 @@
 import React, {ReactElement, FunctionComponent, useRef, useMemo, useCallback} from 'react'
 import {Element as SlateElement, Editor, Range} from 'slate'
-import {Path, PortableTextChild} from '@sanity/types'
+import {BlockRenderProps, Path, PortableTextChild, PortableTextObject} from '@sanity/types'
 import {useSelected, useSlateStatic, ReactEditor, RenderElementProps} from '@sanity/slate-react'
-import {
-  PortableTextMemberTypes,
-  RenderAttributes,
-  RenderBlockFunction,
-  RenderChildFunction,
-  RenderPortableTextBlockProps,
-  RenderPortableTextChildProps,
-} from '../types/editor'
+import {PortableTextMemberTypes, RenderBlockFunction, RenderChildFunction} from '../types/editor'
 import {fromSlateValue} from '../utils/values'
 import {debugWithName} from '../utils/debug'
 import {KEY_TO_VALUE_ELEMENT} from '../utils/weakMaps'
@@ -20,7 +13,7 @@ import {DraggableChild} from './DraggableChild'
 
 const debug = debugWithName('components:Element')
 const debugRenders = false
-
+const EMPTY_ANNOTATIONS: PortableTextObject[] = []
 interface ElementProps {
   attributes: RenderElementProps['attributes']
   children: ReactElement
@@ -58,9 +51,11 @@ export const Element: FunctionComponent<ElementProps> = ({
 
   let renderedBlock = children
 
-  const defaultRender = useCallback(() => children, [children])
+  const renderDefault = useCallback(() => children, [children])
 
   let className
+
+  const blockPath: Path = useMemo(() => [{_key: element._key}], [element])
 
   if (typeof element._type !== 'string') {
     throw new Error(`Expected element to have a _type property`)
@@ -97,12 +92,13 @@ export const Element: FunctionComponent<ElementProps> = ({
             >
               {renderChild &&
                 renderChild({
+                  annotations: EMPTY_ANNOTATIONS, // These inline objects currently doesn't support annotations. This is a limitation of the current PT spec/model.
                   value: value as PortableTextChild,
                   type,
-                  attributes: {focused, selected, path: elmPath},
-                  defaultRender: (props: RenderPortableTextChildProps) => (
-                    <ObjectNode value={props.value} />
-                  ),
+                  focused,
+                  selected,
+                  path: elmPath,
+                  renderDefault: (props) => <ObjectNode value={props.value} />,
                   editorElementRef: inlineBlockObjectRef,
                 })}
               {!renderChild && <ObjectNode value={value} />}
@@ -114,8 +110,6 @@ export const Element: FunctionComponent<ElementProps> = ({
     throw new Error('Block not found!')
   }
 
-  const renderAttribs: RenderAttributes = {focused, selected, path: [{_key: element._key}]}
-
   // If not inline, it's either a block (text) or a block object (non-text)
   // NOTE: text blocks aren't draggable with DraggableBlock (yet?)
   if (element._type === types.block.name) {
@@ -126,33 +120,30 @@ export const Element: FunctionComponent<ElementProps> = ({
       debug(`Render ${element._key} (text block)`)
     }
     if (hasStyle) {
-      renderAttribs.style = element.style || 'normal'
+      const style = element.style || 'normal'
       className = `pt-block pt-text-block pt-text-block-style-${element.style}`
-      let CustomStyle
-      const blockStyle = types.styles.find((item) => item.value === renderAttribs.style)
-      if (blockStyle) {
-        CustomStyle = blockStyle.components?.item
-      }
-      if (CustomStyle) {
+      const blockStyle = types.styles.find((item) => item.value === style)
+      const CustomStyle = blockStyle?.components?.item
+      if (CustomStyle && blockStyle) {
         renderedBlock = (
           <CustomStyle
-            attributes={renderAttribs}
-            value={value}
-            type={types.block}
+            focused={focused}
+            selected={selected}
+            value={style}
+            path={blockPath}
+            type={blockStyle}
             editorElementRef={blockRef}
-            defaultRender={defaultRender}
+            renderDefault={renderDefault}
           />
         )
       }
     }
+    let level
     if (isListItem) {
-      renderAttribs.listItem = element.listItem
-      if (Number.isInteger(element.level)) {
-        renderAttribs.level = element.level
-      } else {
-        renderAttribs.level = 1
+      if (typeof element.level === 'number') {
+        level = element.level
       }
-      className += ` pt-list-item pt-list-item-${renderAttribs.listItem} pt-list-item-level-${renderAttribs.level}`
+      className += ` pt-list-item pt-list-item-${element.listItem} pt-list-item-level-${level || 1}`
     }
     if (editor.isListBlock(value)) {
       renderedBlock = (
@@ -164,12 +155,17 @@ export const Element: FunctionComponent<ElementProps> = ({
         </DefaultListItem>
       )
     }
-    const renderProps = {
+    const renderProps: BlockRenderProps = {
       value,
       type: types.block,
-      attributes: renderAttribs,
-      defaultRender: () => renderedBlock,
+      focused,
+      path: blockPath,
+      selected,
+      renderDefault: () => renderedBlock,
       editorElementRef: blockRef,
+      style: hasStyle ? element.style : 'normal',
+      listItem: isListItem ? element.listItem : undefined,
+      level,
     }
 
     const propsOrDefaultRendered = renderBlock ? renderBlock(renderProps) : children
@@ -195,8 +191,10 @@ export const Element: FunctionComponent<ElementProps> = ({
     renderBlock({
       value: block,
       type,
-      attributes: renderAttribs,
-      defaultRender: (props: RenderPortableTextBlockProps) => <ObjectNode value={props.value} />,
+      selected,
+      focused,
+      path: blockPath,
+      renderDefault: (props) => <ObjectNode value={props.value} />,
       editorElementRef: blockRef,
     })
   return (

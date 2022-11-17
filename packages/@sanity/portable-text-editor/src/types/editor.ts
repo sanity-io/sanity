@@ -1,9 +1,14 @@
 import {
   ArraySchemaType,
+  BlockAnnotationRenderProps,
+  BlockChildRenderProps,
   BlockDecoratorDefinition,
+  BlockDecoratorRenderProps,
   BlockListDefinition,
+  BlockRenderProps,
   BlockSchemaType,
   BlockStyleDefinition,
+  BlockStyleRenderProps,
   ObjectSchemaType,
   Path,
   PortableTextBlock,
@@ -303,55 +308,15 @@ export type PatchObservable = Observable<{
   snapshot: PortableTextBlock[] | undefined
 }>
 
-export type RenderAttributes = {
-  annotations?: PortableTextObject[]
-  focused: boolean
-  level?: number
-  listItem?: string
-  path: Path
-  selected: boolean
-  style?: string
-}
+export type RenderBlockFunction = (props: BlockRenderProps) => JSX.Element
 
-export interface RenderPortableTextBlockProps {
-  value: PortableTextBlock
-  type: BlockSchemaType | ObjectSchemaType
-  attributes: RenderAttributes
-  defaultRender: (props: RenderPortableTextBlockProps) => JSX.Element
-  editorElementRef: React.RefObject<HTMLDivElement>
-}
+export type RenderChildFunction = (props: BlockChildRenderProps) => JSX.Element
 
-export type RenderBlockFunction = (props: RenderPortableTextBlockProps) => JSX.Element
+export type RenderAnnotationFunction = (props: BlockAnnotationRenderProps) => JSX.Element
 
-export interface RenderPortableTextChildProps {
-  value: PortableTextChild
-  type: ObjectSchemaType
-  attributes: RenderAttributes
-  defaultRender: (props: RenderPortableTextChildProps) => JSX.Element
-  editorElementRef: React.RefObject<HTMLSpanElement>
-}
+export type RenderStyleFunction = (props: BlockStyleRenderProps) => JSX.Element
 
-export type RenderChildFunction = (props: RenderPortableTextChildProps) => JSX.Element
-
-export interface RenderAnnotationProps {
-  value: PortableTextObject
-  type: ObjectSchemaType
-  attributes: RenderAttributes
-  defaultRender: (props: RenderAnnotationProps) => JSX.Element
-  editorElementRef: React.RefObject<HTMLSpanElement>
-}
-
-export type RenderAnnotationFunction = (props: RenderAnnotationProps) => JSX.Element
-
-export interface RenderDecoratorProps {
-  value: string
-  type: BlockDecoratorDefinition
-  attributes: RenderAttributes
-  defaultRender: (props: RenderDecoratorProps) => JSX.Element
-  editorElementRef: React.RefObject<HTMLSpanElement>
-}
-
-export type RenderDecoratorFunction = (props: RenderDecoratorProps) => JSX.Element
+export type RenderDecoratorFunction = (props: BlockDecoratorRenderProps) => JSX.Element
 
 export type ScrollSelectionIntoViewFunction = (
   editor: PortableTextEditor,

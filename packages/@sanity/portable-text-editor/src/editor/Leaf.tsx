@@ -5,9 +5,9 @@ import {uniq} from 'lodash'
 import {PortableTextObject, PortableTextTextBlock} from '@sanity/types'
 import {
   RenderChildFunction,
-  RenderDecoratorFunction,
-  RenderAnnotationFunction,
   PortableTextMemberTypes,
+  RenderAnnotationFunction,
+  RenderDecoratorFunction,
 } from '../types/editor'
 import {debugWithName} from '../utils/debug'
 import {DefaultAnnotation} from './nodes/DefaultAnnotation'
@@ -57,8 +57,10 @@ export const Leaf = (props: LeafProps) => {
         returnedChildren = props.renderDecorator({
           value: mark,
           type,
-          attributes: {focused, selected, path},
-          defaultRender: () => returnedChildren,
+          focused,
+          selected,
+          path,
+          renderDefault: () => returnedChildren,
           editorElementRef: spanRef,
         })
       }
@@ -75,26 +77,29 @@ export const Leaf = (props: LeafProps) => {
       .filter(Boolean) as PortableTextObject[]
 
     if (annotations.length > 0) {
-      const aAttributes = {focused, selected, path, annotations}
       annotations.forEach((annotation) => {
         const type = types.annotations.find((t) => t.name === annotation._type)
         if (type) {
           if (props.renderAnnotation) {
+            const defaultRendered = returnedChildren
+            const renderDefault = () => defaultRendered
             returnedChildren = (
-              <span ref={spanRef} key={keyGenerator()}>
+              <span ref={spanRef}>
                 {props.renderAnnotation({
-                  value: annotation,
-                  type,
-                  attributes: aAttributes,
-                  defaultRender: () => <>{returnedChildren}</>,
                   editorElementRef: spanRef,
+                  focused,
+                  path,
+                  renderDefault,
+                  selected,
+                  type,
+                  value: annotation,
                 })}
               </span>
             )
           } else {
             returnedChildren = (
               <DefaultAnnotation annotation={annotation}>
-                <span ref={spanRef} key={keyGenerator()} onMouseDown={handleMouseDown}>
+                <span ref={spanRef} onMouseDown={handleMouseDown}>
                   {returnedChildren}
                 </span>
               </DefaultAnnotation>
@@ -106,11 +111,16 @@ export const Leaf = (props: LeafProps) => {
     if (block && renderChild) {
       const child = block.children.find((_child) => _child._key === leaf._key) // Ensure object equality
       if (child) {
+        const defaultRendered = <>{returnedChildren}</>
+        const renderDefault = () => defaultRendered
         returnedChildren = renderChild({
           value: child,
           type: types.span,
-          attributes: {focused, selected, path, annotations},
-          defaultRender: () => returnedChildren,
+          focused,
+          selected,
+          path,
+          annotations,
+          renderDefault,
           editorElementRef: spanRef,
         })
       }
