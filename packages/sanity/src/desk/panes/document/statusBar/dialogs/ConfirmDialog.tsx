@@ -4,6 +4,7 @@ import {
   Flex,
   Grid,
   Popover,
+  Text,
   useClickOutside,
   useGlobalKeyDown,
   useLayer,
@@ -64,7 +65,7 @@ function ConfirmDialogContent(props: {modal: DocumentActionConfirmModalProps}) {
   return (
     <Flex direction="column" ref={setElement} style={{minWidth: 320 - 16, maxWidth: 400}}>
       <Box flex={1} overflow="auto" padding={4}>
-        {message}
+        <Text>{message}</Text>
       </Box>
       <Box paddingX={4} paddingY={3} style={{borderTop: '1px solid var(--card-border-color)'}}>
         <Grid columns={2} gap={2}>
