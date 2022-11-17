@@ -313,8 +313,6 @@ export function ArrayOfObjectsField(props: {
       schemaType: member.field.schemaType,
       changed: member.field.changed,
       id: member.field.id,
-      onExpand: handleExpand,
-      onCollapse: handleCollapse,
       onItemExpand: handleExpandItem,
       onItemCollapse: handleCollapseItem,
       onItemClose: handleCloseItem,
