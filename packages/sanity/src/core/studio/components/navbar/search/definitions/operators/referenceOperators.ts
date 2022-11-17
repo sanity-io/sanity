@@ -14,12 +14,12 @@ export const referenceOperators = {
     type: 'referenceEqual',
   }),
   references: defineSearchOperator({
-    buttonLabel: 'references document',
+    buttonLabel: 'to',
     buttonValue: (value) => (value ? value.slice(0, 8) : null),
     fn: ({value}) => (value ? `references(${toJSON(value)})` : null),
     initialValue: null,
     inputComponent: FieldInputReference,
-    label: 'references document',
+    label: 'contains reference',
     type: 'references',
   }),
 }

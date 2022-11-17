@@ -190,7 +190,7 @@ export const filterDefinitions: SearchFilterDefinition[] = [
   defineSearchFilter<SearchOperatorType>({
     icon: LinkIcon,
     operators: [{name: 'references', type: 'item'}],
-    title: 'Referenced document',
+    title: 'Contains reference',
     type: 'references',
   }),
   defineSearchFilter<SearchOperatorType>({

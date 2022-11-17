@@ -8,7 +8,6 @@ import {toJSON} from './operatorUtils'
 import {defineSearchOperator, SearchOperatorParams} from './operatorTypes'
 
 const DEFAULT_DATE_FORMAT = 'yyyy-MM-dd'
-const DEFAULT_TIME_FORMAT = 'HH:mm'
 
 export interface OperatorDateRangeValue {
   max: Date | null
@@ -120,7 +119,7 @@ export const dateOperators = {
   }),
   dateTimeAfter: defineSearchOperator({
     ...COMMON.dateAfter,
-    buttonValue: (value) => buttonDateValue({showTime: true, value}),
+    buttonValue: (value) => buttonDateValue({value}),
     fn: ({fieldPath, value}: SearchOperatorParams<string>) => {
       return value && fieldPath ? `dateTime(${fieldPath}) > dateTime(${toJSON(value)})` : null
     },
@@ -130,7 +129,7 @@ export const dateOperators = {
   }),
   dateTimeBefore: defineSearchOperator({
     ...COMMON.dateBefore,
-    buttonValue: (value) => buttonDateValue({showTime: true, value}),
+    buttonValue: (value) => buttonDateValue({value}),
     fn: ({fieldPath, value}: SearchOperatorParams<string>) => {
       return value && fieldPath ? `dateTime(${fieldPath}) < dateTime(${toJSON(value)})` : null
     },
@@ -139,7 +138,7 @@ export const dateOperators = {
   }),
   dateTimeEqual: defineSearchOperator({
     ...COMMON.dateEqual,
-    buttonValue: (value) => buttonDateValue({showTime: true, value}),
+    buttonValue: (value) => buttonDateValue({value}),
     inputComponent: FieldInputDateTime,
     type: 'dateTimeEqual',
   }),
@@ -166,7 +165,7 @@ export const dateOperators = {
   }),
   dateTimeNotEqual: defineSearchOperator({
     ...COMMON.dateNotEqual,
-    buttonValue: (value) => buttonDateValue({showTime: true, value}),
+    buttonValue: (value) => buttonDateValue({value}),
     inputComponent: FieldInputDateTime,
     type: 'dateTimeNotEqual',
   }),
@@ -177,11 +176,7 @@ export const dateOperators = {
   }),
 }
 
-function buttonDateValue({showTime, value}: {value: string; showTime?: boolean}) {
-  const dateFormat = [
-    DEFAULT_DATE_FORMAT, //
-    ...(showTime ? [DEFAULT_TIME_FORMAT] : []),
-  ].join(' ')
+function buttonDateValue({value}: {value: string}) {
   const date = value ? new Date(value) : null
-  return date && isValid(date) ? format(date, dateFormat) : null
+  return date && isValid(date) ? format(date, DEFAULT_DATE_FORMAT) : null
 }
