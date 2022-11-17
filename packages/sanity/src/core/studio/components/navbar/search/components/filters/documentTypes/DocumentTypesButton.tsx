@@ -3,6 +3,7 @@ import {Button, Flex, Popover, Text, useClickOutside} from '@sanity/ui'
 import React, {useCallback, useState} from 'react'
 import {useSearchState} from '../../../contexts/search/useSearchState'
 import {DocumentTypesTruncated} from '../../common/DocumentTypesTruncated'
+import {FilterPopoverWrapper} from '../common/FilterPopoverWrapper'
 import {DocumentTypesPopoverContent} from './DocumentTypesPopoverContent'
 
 export default function DocumentTypesButton() {
@@ -23,7 +24,11 @@ export default function DocumentTypesButton() {
 
   return (
     <Popover
-      content={<DocumentTypesPopoverContent onClose={handleClose} />}
+      content={
+        <FilterPopoverWrapper anchorElement={buttonElement} onClose={handleClose}>
+          <DocumentTypesPopoverContent onClose={handleClose} />
+        </FilterPopoverWrapper>
+      }
       open={open}
       placement="bottom-start"
       portal

@@ -1,6 +1,7 @@
 import {AddIcon} from '@sanity/icons'
 import {Button, Popover, useClickOutside} from '@sanity/ui'
 import React, {useCallback, useState} from 'react'
+import {FilterPopoverWrapper} from '../common/FilterPopoverWrapper'
 import {AddFilterPopoverContent} from './AddFilterPopoverContent'
 
 export default function AddFilterButton() {
@@ -15,8 +16,11 @@ export default function AddFilterButton() {
 
   return (
     <Popover
-      // arrow={false}
-      content={<AddFilterPopoverContent onClose={handleClose} />}
+      content={
+        <FilterPopoverWrapper anchorElement={buttonElement} onClose={handleClose}>
+          <AddFilterPopoverContent onClose={handleClose} />
+        </FilterPopoverWrapper>
+      }
       open={open}
       placement="bottom-start"
       portal

@@ -7,8 +7,7 @@ import {SUBHEADER_HEIGHT_SMALL} from '../../../constants'
 import {CommandListProvider} from '../../../contexts/commandList'
 import {useSearchState} from '../../../contexts/search/useSearchState'
 import {CustomTextInput} from '../../common/CustomTextInput'
-import {FilterPopoverWrapper} from '../common/FilterPopoverWrapper'
-import {AddFilterContentMenuItems} from './AddFilterContentMenuItems'
+import {AddFilterVirtualList} from './AddFilterVirtualList'
 import {createFilterMenuItems} from './createFilterMenuItems'
 
 interface AddFilterPopoverContentProps {
@@ -63,71 +62,60 @@ export function AddFilterPopoverContent({onClose}: AddFilterPopoverContentProps)
   )
 
   return (
-    <FilterPopoverWrapper onClose={onClose}>
-      <Flex
-        style={{
-          maxHeight: '600px',
-          maxWidth: '350px',
-          overflow: 'hidden',
-          width: '100%',
-        }}
-      >
-        <CommandListProvider
-          ariaChildrenLabel="Filters"
-          ariaHeaderLabel="Filter by title"
-          childCount={filteredMenuItems.length}
-          childContainerElement={childContainerElement}
-          containerElement={containerElement}
-          headerInputElement={headerInputElement}
-          id={filterListId}
-          level={1}
-          pointerOverlayElement={pointerOverlayElement}
-        >
-          <Flex direction="column" ref={setContainerRef} style={{width: '300px'}}>
-            {/* Filter header */}
-            <FilterHeaderBox>
-              <FilterHeaderContentFlex align="center" flex={1} padding={1}>
-                <CustomTextInput
-                  autoComplete="off"
-                  border={false}
-                  clearButton={!!titleFilter}
-                  fontSize={1}
-                  icon={SearchIcon}
-                  muted
-                  onChange={handleFilterChange}
-                  onClear={handleFilterClear}
-                  placeholder="Filter"
-                  ref={setHeaderInputRef}
-                  smallClearButton
-                  spellCheck={false}
-                  radius={2}
-                  value={titleFilter}
-                />
-              </FilterHeaderContentFlex>
-            </FilterHeaderBox>
+    <CommandListProvider
+      ariaChildrenLabel="Filters"
+      ariaHeaderLabel="Filter by title"
+      childCount={filteredMenuItems.length}
+      childContainerElement={childContainerElement}
+      containerElement={containerElement}
+      headerInputElement={headerInputElement}
+      id={filterListId}
+      level={1}
+      pointerOverlayElement={pointerOverlayElement}
+    >
+      <Flex direction="column" ref={setContainerRef} style={{width: '300px'}}>
+        {/* Filter header */}
+        <FilterHeaderBox>
+          <FilterHeaderContentFlex align="center" flex={1} padding={1}>
+            <CustomTextInput
+              autoComplete="off"
+              border={false}
+              clearButton={!!titleFilter}
+              fontSize={1}
+              icon={SearchIcon}
+              muted
+              onChange={handleFilterChange}
+              onClear={handleFilterClear}
+              placeholder="Filter"
+              ref={setHeaderInputRef}
+              smallClearButton
+              spellCheck={false}
+              radius={2}
+              value={titleFilter}
+            />
+          </FilterHeaderContentFlex>
+        </FilterHeaderBox>
 
-            <Box flex={1}>
-              {filteredMenuItems.length > 0 && (
-                <AddFilterContentMenuItems
-                  menuItems={filteredMenuItems}
-                  onClose={onClose}
-                  setChildContainerRef={setChildContainerRef}
-                  setPointerOverlayRef={setPointerOverlayRef}
-                />
-              )}
+        <Box flex={1}>
+          {filteredMenuItems.length > 0 && (
+            <AddFilterVirtualList
+              menuItems={filteredMenuItems}
+              onClose={onClose}
+              setChildContainerRef={setChildContainerRef}
+              setPointerOverlayRef={setPointerOverlayRef}
+            />
+          )}
 
-              {/* No results */}
-              {filteredMenuItems.length == 0 && (
-                <Box padding={3}>
-                  <Text muted size={1} textOverflow="ellipsis">
-                    No matches for '{titleFilter}'
-                  </Text>
-                </Box>
-              )}
+          {/* No results */}
+          {filteredMenuItems.length == 0 && (
+            <Box padding={3}>
+              <Text muted size={1} textOverflow="ellipsis">
+                No matches for '{titleFilter}'
+              </Text>
             </Box>
-          </Flex>
-        </CommandListProvider>
+          )}
+        </Box>
       </Flex>
-    </FilterPopoverWrapper>
+    </CommandListProvider>
   )
 }

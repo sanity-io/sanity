@@ -8,7 +8,7 @@ import {getFilterKey} from '../../../utils/filterUtils'
 import {MenuItemFilter} from '../menuItem/MenuItemFilter'
 import {MenuItemHeader} from '../menuItem/MenuItemHeader'
 
-interface AddFilterContentTypesProps {
+interface AddFilterVirtualListProps {
   menuItems: SearchFilterMenuItem[]
   onClose: () => void
   setChildContainerRef: Dispatch<SetStateAction<HTMLDivElement | null>>
@@ -29,12 +29,12 @@ const VirtualListChildBox = styled(Box)<{$height: number}>`
   width: 100%;
 `
 
-export function AddFilterContentMenuItems({
+export function AddFilterVirtualList({
   menuItems,
   onClose,
   setChildContainerRef,
   setPointerOverlayRef,
-}: AddFilterContentTypesProps) {
+}: AddFilterVirtualListProps) {
   const childParentRef = useRef<HTMLDivElement | null>(null)
 
   const {getTotalSize, getVirtualItems, measureElement, scrollToIndex} = useVirtualizer({

@@ -3,6 +3,7 @@ import Schema from '@sanity/schema'
 import type {CurrentUser, ObjectSchemaType} from '@sanity/types'
 import type {SearchTerms} from '../../../../../search'
 import {defineSearchFilter, SearchFilterDefinition} from '../definitions/filters'
+import {SearchOperator} from '../definitions/operators'
 import {SearchFilter} from '../types'
 import {createFieldDefinitions} from '../utils/createFieldDefinitions'
 import {createRecentSearchesStore, MAX_RECENT_SEARCHES, RecentSearchesStore} from './recentSearches'
@@ -40,6 +41,7 @@ const mockFilterDefinitions: SearchFilterDefinition[] = [
     type: 'datetime',
   }),
 ]
+const mockOperatorDefinitions: SearchOperator[] = []
 
 const mockUser: CurrentUser = {
   id: 'mock-user',
@@ -55,6 +57,7 @@ const recentSearchesStore = createRecentSearchesStore({
   dataset: 'dataset',
   fieldDefinitions: mockFieldDefinitions,
   filterDefinitions: mockFilterDefinitions,
+  operatorDefinitions: mockOperatorDefinitions,
   projectId: ' projectId',
   schema: mockSchema,
   user: mockUser,
