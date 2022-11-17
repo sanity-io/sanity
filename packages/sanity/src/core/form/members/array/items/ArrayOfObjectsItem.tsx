@@ -2,7 +2,7 @@ import React, {useCallback, useMemo, useRef} from 'react'
 import {Path} from '@sanity/types'
 import {tap} from 'rxjs/operators'
 import {useToast} from '@sanity/ui'
-import {useDidUpdate} from '../../hooks/useDidUpdate'
+import {useDidUpdate} from '../../../hooks/useDidUpdate'
 import {
   ArrayInputInsertEvent,
   ObjectInputProps,
@@ -12,15 +12,15 @@ import {
   RenderFieldCallback,
   RenderInputCallback,
   RenderPreviewCallback,
-} from '../../types'
-import {insert, PatchArg, PatchEvent, setIfMissing, unset} from '../../patch'
-import {ensureKey} from '../../utils/ensureKey'
-import {FormCallbacksProvider, useFormCallbacks} from '../../studio/contexts/FormCallbacks'
-import {ArrayOfObjectsItemMember} from '../../store'
-import {createProtoValue} from '../../utils/createProtoValue'
-import {isEmptyItem} from '../../store/utils/isEmptyItem'
-import {useResolveInitialValueForType} from '../../../store'
-import {resolveInitialArrayValues} from '../utils/resolveInitialArrayValues'
+} from '../../../types'
+import {insert, PatchArg, PatchEvent, setIfMissing, unset} from '../../../patch'
+import {ensureKey} from '../../../utils/ensureKey'
+import {FormCallbacksProvider, useFormCallbacks} from '../../../studio/contexts/FormCallbacks'
+import {ArrayOfObjectsItemMember} from '../../../store'
+import {createProtoValue} from '../../../utils/createProtoValue'
+import {isEmptyItem} from '../../../store/utils/isEmptyItem'
+import {useResolveInitialValueForType} from '../../../../store'
+import {resolveInitialArrayValues} from '../../common/resolveInitialArrayValues'
 
 /**
  * @beta

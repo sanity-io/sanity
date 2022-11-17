@@ -4,7 +4,7 @@ import {
   ArrayOfPrimitivesFormNode,
   FieldMember,
   ObjectFormNode,
-} from '../../store'
+} from '../../../store'
 
 export function isMemberObject(member: FieldMember): member is FieldMember<ObjectFormNode> {
   return isObjectSchemaType(member.field.schemaType)

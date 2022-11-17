@@ -1,7 +1,7 @@
 import React, {memo, useCallback, useMemo} from 'react'
 import {Grid, Stack} from '@sanity/ui'
 import {ObjectInputProps} from '../../types'
-import {ObjectMembers} from '../../members'
+import {ObjectInputMembers} from '../../members'
 import {UnknownFields} from './UnknownFields'
 import {FieldGroupTabsWrapper} from './ObjectInput.styled'
 import {FieldGroupTabs} from './fieldGroups/FieldGroupTabs'
@@ -45,7 +45,7 @@ export const ObjectInput = memo(function ObjectInput(props: ObjectInputProps) {
 
   const renderObjectMembers = useCallback(
     () => (
-      <ObjectMembers
+      <ObjectInputMembers
         members={members}
         renderInput={renderInput}
         renderField={renderField}

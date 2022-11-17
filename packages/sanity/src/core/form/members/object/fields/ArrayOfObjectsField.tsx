@@ -3,7 +3,7 @@ import {Path, SchemaType} from '@sanity/types'
 import {map, tap} from 'rxjs/operators'
 import {Subscription} from 'rxjs'
 import {useToast} from '@sanity/ui'
-import {ArrayOfObjectsFormNode, FieldMember} from '../../store'
+import {ArrayOfObjectsFormNode, FieldMember} from '../../../store'
 import {
   ArrayFieldProps,
   ArrayInputInsertEvent,
@@ -15,20 +15,20 @@ import {
   RenderInputCallback,
   RenderPreviewCallback,
   UploadEvent,
-} from '../../types'
-import {FormCallbacksProvider, useFormCallbacks} from '../../studio/contexts/FormCallbacks'
-import {useDidUpdate} from '../../hooks/useDidUpdate'
-import {insert, PatchArg, PatchEvent, setIfMissing, unset} from '../../patch'
-import {ensureKey} from '../../utils/ensureKey'
-import {FileLike, UploadProgressEvent} from '../../studio/uploads/types'
-import {createProtoArrayValue} from '../../inputs/arrays/ArrayOfObjectsInput/createProtoArrayValue'
-import {useClient} from '../../../hooks'
-import {resolveUploader as defaultResolveUploader} from '../../studio/uploads/resolveUploader'
-import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../studioClient'
-import {useFormBuilder} from '../../useFormBuilder'
-import * as is from '../../utils/is'
-import {useResolveInitialValueForType} from '../../../store'
-import {resolveInitialArrayValues} from '../utils/resolveInitialArrayValues'
+} from '../../../types'
+import {FormCallbacksProvider, useFormCallbacks} from '../../../studio/contexts/FormCallbacks'
+import {useDidUpdate} from '../../../hooks/useDidUpdate'
+import {insert, PatchArg, PatchEvent, setIfMissing, unset} from '../../../patch'
+import {ensureKey} from '../../../utils/ensureKey'
+import {FileLike, UploadProgressEvent} from '../../../studio/uploads/types'
+import {createProtoArrayValue} from '../../../inputs/arrays/ArrayOfObjectsInput/createProtoArrayValue'
+import {useClient} from '../../../../hooks'
+import {resolveUploader as defaultResolveUploader} from '../../../studio/uploads/resolveUploader'
+import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../studioClient'
+import {useFormBuilder} from '../../../useFormBuilder'
+import * as is from '../../../utils/is'
+import {useResolveInitialValueForType} from '../../../../store'
+import {resolveInitialArrayValues} from '../../common/resolveInitialArrayValues'
 
 /**
  * Responsible for creating inputProps and fieldProps to pass to ´renderInput´ and ´renderField´ for an array input

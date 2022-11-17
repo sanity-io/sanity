@@ -1,13 +1,13 @@
 import React, {memo, useCallback} from 'react'
-import {FieldSetMember} from '../store'
+import {FieldSetMember} from '../../store'
 import {
   RenderArrayOfObjectsItemCallback,
   RenderFieldCallback,
   RenderInputCallback,
   RenderPreviewCallback,
-} from '../types'
-import {FormFieldSet} from '../components/formField'
-import {useFormCallbacks} from '../studio/contexts/FormCallbacks'
+} from '../../types'
+import {FormFieldSet} from '../../components/formField'
+import {useFormCallbacks} from '../../studio/contexts/FormCallbacks'
 import {MemberField} from './MemberField'
 import {MemberFieldError} from './MemberFieldError'
 

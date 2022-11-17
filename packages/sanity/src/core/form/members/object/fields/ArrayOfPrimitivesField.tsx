@@ -11,8 +11,8 @@ import {
 } from '@sanity/types'
 import {filter, map, tap} from 'rxjs/operators'
 import {Subscription} from 'rxjs'
-import {FIXME} from '../../../FIXME'
-import {ArrayOfPrimitivesFormNode, FieldMember} from '../../store'
+import {FIXME} from '../../../../FIXME'
+import {ArrayOfPrimitivesFormNode, FieldMember} from '../../../store'
 import {
   ArrayOfObjectsInputProps,
   ArrayOfPrimitivesFieldProps,
@@ -23,16 +23,16 @@ import {
   RenderInputCallback,
   RenderPreviewCallback,
   UploadEvent,
-} from '../../types'
-import {FormCallbacksProvider, useFormCallbacks} from '../../studio/contexts/FormCallbacks'
-import {useDidUpdate} from '../../hooks/useDidUpdate'
-import {insert, PatchArg, PatchEvent, set, setIfMissing, unset} from '../../patch'
-import {PrimitiveValue} from '../../inputs/arrays/ArrayOfPrimitivesInput/types'
-import {Uploader, UploaderResolver, UploadProgressEvent} from '../../studio'
-import {useClient} from '../../../hooks'
-import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../studioClient'
-import {readAsText} from '../../studio/uploads/file/readAsText'
-import {accepts} from '../../studio/uploads/accepts'
+} from '../../../types'
+import {FormCallbacksProvider, useFormCallbacks} from '../../../studio/contexts/FormCallbacks'
+import {useDidUpdate} from '../../../hooks/useDidUpdate'
+import {insert, PatchArg, PatchEvent, set, setIfMissing, unset} from '../../../patch'
+import {PrimitiveValue} from '../../../inputs/arrays/ArrayOfPrimitivesInput/types'
+import {Uploader, UploaderResolver, UploadProgressEvent} from '../../../studio'
+import {useClient} from '../../../../hooks'
+import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../studioClient'
+import {readAsText} from '../../../studio/uploads/file/readAsText'
+import {accepts} from '../../../studio/uploads/accepts'
 
 function move<T>(arr: T[], from: number, to: number): T[] {
   const copy = arr.slice()

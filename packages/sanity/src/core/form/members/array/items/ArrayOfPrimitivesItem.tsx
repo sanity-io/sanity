@@ -1,17 +1,17 @@
 import {isBooleanSchemaType, isNumberSchemaType} from '@sanity/types'
 import React, {useCallback, useMemo, useRef} from 'react'
-import {FIXME} from '../../../FIXME'
-import {ArrayOfPrimitivesItemMember} from '../../store'
-import {useDidUpdate} from '../../hooks/useDidUpdate'
-import {getEmptyValue} from '../../inputs/arrays/ArrayOfPrimitivesInput/getEmptyValue'
+import {FIXME} from '../../../../FIXME'
+import {ArrayOfPrimitivesItemMember} from '../../../store'
+import {useDidUpdate} from '../../../hooks/useDidUpdate'
+import {getEmptyValue} from '../../../inputs/arrays/ArrayOfPrimitivesInput/getEmptyValue'
 import {
   PrimitiveInputProps,
   PrimitiveItemProps,
   RenderArrayOfPrimitivesItemCallback,
   RenderInputCallback,
-} from '../../types'
-import {insert, PatchArg, PatchEvent, set, unset} from '../../patch'
-import {useFormCallbacks} from '../../studio/contexts/FormCallbacks'
+} from '../../../types'
+import {insert, PatchArg, PatchEvent, set, unset} from '../../../patch'
+import {useFormCallbacks} from '../../../studio/contexts/FormCallbacks'
 
 /**
  * @beta

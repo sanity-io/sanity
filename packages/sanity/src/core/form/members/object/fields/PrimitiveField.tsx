@@ -1,14 +1,14 @@
 import React, {useCallback, useEffect, useMemo, useRef} from 'react'
 import {isBooleanSchemaType, isNumberSchemaType} from '@sanity/types'
-import {FieldMember} from '../../store'
+import {FieldMember} from '../../../store'
 import {
   PrimitiveFieldProps,
   PrimitiveInputProps,
   RenderFieldCallback,
   RenderInputCallback,
-} from '../../types'
-import {FormPatch, PatchEvent, set, unset} from '../../patch'
-import {useFormCallbacks} from '../../studio/contexts/FormCallbacks'
+} from '../../../types'
+import {FormPatch, PatchEvent, set, unset} from '../../../patch'
+import {useFormCallbacks} from '../../../studio/contexts/FormCallbacks'
 
 /**
  * Responsible for creating inputProps and fieldProps to pass to ´renderInput´ and ´renderField´ for a primitive field/input
