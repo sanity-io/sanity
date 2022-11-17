@@ -104,9 +104,12 @@ function getDocumentFieldDefinitions(
     // Fail early if the current field type isn't supported
     if (!supportedFieldTypes.includes(defType.type)) return
 
+    // For slugs: append `.current` to field path
+    const updatedFieldPath = defType.type === 'slug' ? `${fieldPath}.current` : fieldPath
+
     acc.push({
       documentTypes: documentType && !isInternalField ? [documentType] : [],
-      fieldPath,
+      fieldPath: updatedFieldPath,
       filterType: resolveFilterType(defType),
       id: '',
       name: defType.name,
