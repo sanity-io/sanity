@@ -8,6 +8,8 @@ import {
   OnPasteFn,
   OnCopyFn,
   EditorSelection,
+  PortableTextEditor,
+  usePortableTextEditor,
 } from '@sanity/portable-text-editor'
 import {Path} from '@sanity/types'
 import {BoundaryElementProvider, useBoundaryElement, useGlobalKeyDown, useLayer} from '@sanity/ui'
@@ -69,6 +71,7 @@ export function Editor(props: EditorProps) {
   } = props
   const {isTopLayer} = useLayer()
   const editableRef = useRef<HTMLDivElement | null>(null)
+  const editor = usePortableTextEditor()
 
   const {element: boundaryElement} = useBoundaryElement()
 
@@ -131,11 +134,12 @@ export function Editor(props: EditorProps) {
     ]
   )
 
-  const handleToolBarOnExpand = useCallback(
+  const handleToolBarOnMemberOpen = useCallback(
     (relativePath: Path) => {
+      PortableTextEditor.blur(editor)
       onItemOpen(path.concat(relativePath))
     },
-    [onItemOpen, path]
+    [editor, onItemOpen, path]
   )
 
   return (
@@ -145,7 +149,7 @@ export function Editor(props: EditorProps) {
           <Toolbar
             isFullscreen={isFullscreen}
             hotkeys={hotkeys}
-            onExpand={handleToolBarOnExpand}
+            onMemberOpen={handleToolBarOnMemberOpen}
             readOnly={readOnly}
             onToggleFullscreen={onToggleFullscreen}
           />

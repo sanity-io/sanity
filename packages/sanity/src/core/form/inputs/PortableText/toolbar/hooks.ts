@@ -38,12 +38,12 @@ export function useFeatures(): PortableTextFeatures {
 
 export function useActionGroups({
   hotkeys,
-  onExpand,
+  onMemberOpen,
   resolveInitialValue,
   disabled,
 }: {
   hotkeys: HotkeyOptions
-  onExpand: (path: Path) => void
+  onMemberOpen: (relativePath: Path) => void
   resolveInitialValue: (type: ObjectSchemaType) => FIXME
   disabled: boolean
 }): PTEToolbarActionGroup[] {
@@ -54,11 +54,10 @@ export function useActionGroups({
       const initialValue = await resolveInitialValue(type)
       const paths = PortableTextEditor.addAnnotation(editor, type as FIXME, initialValue)
       if (paths && paths.markDefPath) {
-        PortableTextEditor.blur(editor)
-        onExpand(paths.markDefPath)
+        onMemberOpen(paths.markDefPath)
       }
     },
-    [editor, onExpand, resolveInitialValue]
+    [editor, onMemberOpen, resolveInitialValue]
   )
 
   return useMemo(

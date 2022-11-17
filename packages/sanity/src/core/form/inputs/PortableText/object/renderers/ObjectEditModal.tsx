@@ -56,7 +56,10 @@ export function ObjectEditModal(props: {
   }, [firstField, memberItem])
 
   if (modalType === 'popover') {
-    return (
+    // 2022/11/18: Test if the elementRef is set before opening. On newly created annotations,
+    // this might not be true, and currently the @sanity/ui Popover code will not
+    // properly show the Popover if it's given at a later point.
+    return memberItem.elementRef?.current ? (
       <PopoverEditDialog
         elementRef={memberItem.elementRef}
         onClose={handleClose}
@@ -66,7 +69,7 @@ export function ObjectEditModal(props: {
       >
         {props.children}
       </PopoverEditDialog>
-    )
+    ) : null
   }
 
   return (
