@@ -66,7 +66,7 @@ const TooltipBox = styled(Box).attrs({forwardedAs: 'span'})`
 
 export const Annotation = function Annotation(props: AnnotationProps) {
   const {
-    attributes: {focused, path},
+    attributes: {path},
     children,
     onItemOpen,
     renderCustomMarkers,
@@ -163,7 +163,6 @@ export const Annotation = function Annotation(props: AnnotationProps) {
   }, [isLink, hasError, hasWarning])
 
   const hasCustomMarkers = markers.length > 0
-
   return (
     <Root
       $toneKey={toneKey}
@@ -175,7 +174,7 @@ export const Annotation = function Annotation(props: AnnotationProps) {
       onClick={readOnly ? openItem : undefined}
     >
       <span ref={memberItem?.elementRef}>{markersToolTip || text}</span>
-      {focused && !readOnly && (
+      {!readOnly && (
         <AnnotationToolbarPopover
           textElement={textElement || undefined}
           annotationElement={annotationRef.current || undefined}
