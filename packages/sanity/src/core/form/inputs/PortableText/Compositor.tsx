@@ -5,11 +5,15 @@ import {
   OnPasteFn,
   usePortableTextEditor,
   HotkeyOptions,
-  RenderPortableTextBlockProps,
-  RenderPortableTextChildProps,
-  RenderAnnotationProps,
 } from '@sanity/portable-text-editor'
-import {Path, PortableTextBlock, PortableTextTextBlock} from '@sanity/types'
+import {
+  BlockAnnotationRenderProps,
+  BlockChildRenderProps,
+  BlockRenderProps,
+  Path,
+  PortableTextBlock,
+  PortableTextTextBlock,
+} from '@sanity/types'
 import {
   BoundaryElementProvider,
   Portal,
@@ -127,13 +131,21 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
   )
 
   const renderBlock = useCallback(
-    (blockProps: RenderPortableTextBlockProps) => {
-      const {value: block, type: blockType, attributes, defaultRender} = blockProps
+    (blockProps: BlockRenderProps) => {
+      const {
+        value: block,
+        type: blockType,
+        renderDefault,
+        focused: blockFocused,
+        selected,
+        path: blockPath,
+      } = blockProps
       const isTextBlock = block._type === editor.types.block.name
       if (isTextBlock) {
         return (
           <TextBlock
-            attributes={attributes}
+            focused={blockFocused}
+            path={blockPath}
             block={block as PortableTextTextBlock}
             isFullscreen={isFullscreen}
             onChange={onChange}
@@ -141,22 +153,24 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
             renderBlockActions={_renderBlockActions}
             renderCustomMarkers={_renderCustomMarkers}
           >
-            {defaultRender(blockProps)}
+            {renderDefault(blockProps)}
           </TextBlock>
         )
       }
 
       return (
         <BlockObject
-          attributes={attributes}
           block={block}
+          focused={blockFocused}
           isFullscreen={isFullscreen}
           onChange={onChange}
           onItemOpen={onItemOpen}
+          path={blockPath}
           readOnly={readOnly}
           renderBlockActions={_renderBlockActions}
           renderCustomMarkers={_renderCustomMarkers}
           renderPreview={renderPreview}
+          selected={selected}
           type={blockType}
         />
       )
@@ -174,23 +188,32 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
   )
 
   const renderChild = useCallback(
-    (childProps: RenderPortableTextChildProps) => {
-      const {value: child, type: childType, attributes, defaultRender} = childProps
+    (childProps: BlockChildRenderProps) => {
+      const {
+        focused: childFocused,
+        path: childPath,
+        renderDefault,
+        selected,
+        type: childType,
+        value: child,
+      } = childProps
       const isSpan = child._type === editor.types.span.name
       if (isSpan) {
-        return defaultRender(childProps)
+        return renderDefault(childProps)
       }
 
       return (
         <InlineObject
-          attributes={attributes}
+          focused={childFocused}
           onItemOpen={onItemOpen}
+          path={childPath}
           readOnly={readOnly}
           renderCustomMarkers={renderCustomMarkers}
+          renderPreview={renderPreview}
           scrollElement={scrollElement}
+          selected={selected}
           type={childType}
           value={child}
-          renderPreview={renderPreview}
         />
       )
     },
@@ -198,19 +221,17 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
   )
 
   const renderAnnotation = useCallback(
-    (annotationProps: RenderAnnotationProps) => {
-      const {value: aValue, type, attributes, defaultRender} = annotationProps
-      const CustomComponent = 'components' in type && type.components?.item
-      const rendered = defaultRender(annotationProps)
+    (annotationProps: BlockAnnotationRenderProps) => {
+      const {type, renderDefault} = annotationProps
+      const CustomComponent = type.components?.item
+      const rendered = renderDefault(annotationProps)
       return (
         <Annotation
-          attributes={attributes}
+          renderProps={annotationProps}
           onItemOpen={onItemOpen}
           readOnly={readOnly}
           renderCustomMarkers={renderCustomMarkers}
           scrollElement={scrollElement}
-          value={aValue}
-          type={type}
         >
           {CustomComponent ? (
             // eslint-disable-next-line react/jsx-no-bind

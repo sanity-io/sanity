@@ -1,6 +1,5 @@
 import {
   PortableTextEditor,
-  RenderAttributes,
   EditorSelection,
   usePortableTextEditor,
 } from '@sanity/portable-text-editor'
@@ -31,31 +30,35 @@ import {
 } from './BlockObject.styles'
 
 interface BlockObjectProps {
-  attributes: RenderAttributes
   block: PortableTextBlock
+  focused: boolean
   isActive?: boolean
   isFullscreen?: boolean
   onChange: (...patches: PatchArg[]) => void
   onItemOpen: (path: Path) => void
+  path: Path
   readOnly?: boolean
   renderBlockActions?: RenderBlockActionsCallback
   renderCustomMarkers?: RenderCustomMarkers
   renderPreview: RenderPreviewCallback
+  selected: boolean
   type: ObjectSchemaType
 }
 
 export function BlockObject(props: BlockObjectProps) {
   const {
-    attributes: {focused, selected, path},
     block,
+    focused,
     isActive,
     isFullscreen,
     onChange,
     onItemOpen,
+    path,
     readOnly,
     renderBlockActions,
     renderCustomMarkers,
     renderPreview,
+    selected,
     type,
   } = props
   const {Markers} = useFormBuilder().__internal.components

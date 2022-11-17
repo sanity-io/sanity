@@ -47,12 +47,12 @@ interface EditorProps {
 }
 
 const renderDecorator: RenderDecoratorFunction = (props) => {
-  const {value, defaultRender, type} = props
+  const {value, renderDefault, type} = props
   const CustomComponent = type.components?.item
-  const rendered = defaultRender(props)
+  const rendered = renderDefault(props)
   if (CustomComponent) {
     // eslint-disable-next-line react/jsx-no-bind
-    return <CustomComponent {...props} defaultRender={() => rendered} />
+    return <CustomComponent {...props} renderDefault={() => rendered} />
   }
   return <Decorator mark={value}>{rendered}</Decorator>
 }

@@ -1,7 +1,6 @@
-import {RenderAttributes} from '@sanity/portable-text-editor'
 import {Box, Flex, ResponsivePaddingProps, Tooltip} from '@sanity/ui'
 import React, {RefObject, useCallback, useMemo, useState} from 'react'
-import {PortableTextTextBlock} from '@sanity/types'
+import {Path, PortableTextTextBlock} from '@sanity/types'
 import {RenderCustomMarkers} from '../../../types'
 import {PatchArg} from '../../../patch'
 import {useFormBuilder} from '../../../useFormBuilder'
@@ -28,11 +27,12 @@ import {
 import {TEXT_STYLES} from './textStyles'
 
 export interface TextBlockProps {
-  attributes: RenderAttributes
   block: PortableTextTextBlock
   children: React.ReactNode
+  focused: boolean
   isFullscreen?: boolean
   onChange: (...patches: PatchArg[]) => void
+  path: Path
   readOnly?: boolean
   renderBlockActions?: RenderBlockActionsCallback
   renderCustomMarkers?: RenderCustomMarkers
@@ -41,11 +41,12 @@ export interface TextBlockProps {
 
 export function TextBlock(props: TextBlockProps) {
   const {
-    attributes: {path, focused},
     block,
     children,
+    focused,
     isFullscreen,
     onChange,
+    path,
     readOnly,
     renderBlockActions,
     renderCustomMarkers,

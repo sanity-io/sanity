@@ -1,10 +1,6 @@
 import {hues} from '@sanity/color'
-import {
-  PortableTextEditor,
-  RenderAttributes,
-  usePortableTextEditor,
-} from '@sanity/portable-text-editor'
-import {ObjectSchemaType, Path, PortableTextObject} from '@sanity/types'
+import {PortableTextEditor, usePortableTextEditor} from '@sanity/portable-text-editor'
+import {BlockAnnotationRenderProps, Path} from '@sanity/types'
 import {Box, Theme, ThemeColorToneKey, Tooltip} from '@sanity/ui'
 import React, {SyntheticEvent, useCallback, useMemo, useRef, useState} from 'react'
 import styled, {css} from 'styled-components'
@@ -18,14 +14,12 @@ import {usePortableTextMemberItem} from '../hooks/usePortableTextMembers'
 import {AnnotationToolbarPopover} from './AnnotationToolbarPopover'
 
 interface AnnotationProps {
-  attributes: RenderAttributes
+  renderProps: BlockAnnotationRenderProps
   children: JSX.Element
   onItemOpen: (path: Path) => void
   readOnly?: boolean
   renderCustomMarkers?: RenderCustomMarkers
   scrollElement: HTMLElement | null
-  type: ObjectSchemaType
-  value: PortableTextObject
 }
 
 const Root = styled.span<{$toneKey?: Exclude<ThemeColorToneKey, 'transparent'>}>(
@@ -63,16 +57,8 @@ const TooltipBox = styled(Box).attrs({forwardedAs: 'span'})`
 `
 
 export const Annotation = function Annotation(props: AnnotationProps) {
-  const {
-    attributes: {path},
-    children,
-    onItemOpen,
-    renderCustomMarkers,
-    scrollElement,
-    readOnly,
-    type,
-    value,
-  } = props
+  const {children, onItemOpen, renderCustomMarkers, scrollElement, renderProps, readOnly} = props
+  const {type, value, path} = renderProps
   const {Markers = DefaultMarkers} = useFormBuilder().__internal.components
   const annotationRef = useRef<HTMLElement>(null)
   const editor = usePortableTextEditor()
