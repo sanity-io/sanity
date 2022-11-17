@@ -1,47 +1,17 @@
-import {Flex, Inline, Text, Theme} from '@sanity/ui'
+import {Container, Stack, Text} from '@sanity/ui'
 import React from 'react'
-import styled from 'styled-components'
-import {useSearchState} from '../contexts/search/useSearchState'
-import {DocumentTypesPill} from './common/DocumentTypesPill'
-
-const Semibold = styled.span`
-  font-weight: ${({theme}: {theme: Theme}) => theme.sanity.fonts.text.weights.semibold};
-`
 
 export function NoResults() {
-  const {state} = useSearchState()
-
-  const typesSelected = state.terms.types.length > 0
-
   return (
-    <Flex
-      align="center"
-      aria-live="assertive"
-      direction="column"
-      flex={1}
-      gap={4}
-      paddingX={4}
-      paddingY={5}
-    >
-      <Text muted>
-        {state.terms.query ? (
-          <>
-            No results for <Semibold>{state.terms.query}</Semibold>
-          </>
-        ) : (
-          <>No results</>
-        )}
-      </Text>
-      {typesSelected && (
-        <Flex align="center">
-          <Inline space={2}>
-            <Text muted size={1}>
-              in
-            </Text>
-            <DocumentTypesPill types={state.terms.types} />
-          </Inline>
-        </Flex>
-      )}
-    </Flex>
+    <Container width={0}>
+      <Stack aria-live="assertive" space={4} paddingX={4} paddingY={5}>
+        <Text align="center" muted weight="semibold">
+          No results found
+        </Text>
+        <Text align="center" muted size={1}>
+          Try another keyword or adjust your filters to include more results
+        </Text>
+      </Stack>
+    </Container>
   )
 }
