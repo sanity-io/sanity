@@ -8,6 +8,7 @@ import {
   SelectIcon,
   UlistIcon,
 } from '@sanity/icons'
+import {ArrayListIcon} from '../components/filters/icons/ArrayListIcon'
 import {BlockContentIcon} from '../components/filters/icons/BlockContentIcon'
 import {NumberIcon} from '../components/filters/icons/NumberIcon'
 import {StringIcon} from '../components/filters/icons/StringIcon'
@@ -37,7 +38,7 @@ export const filterDefinitions: SearchFilterDefinition[] = [
   }),
   defineSearchFilter<SearchOperatorType>({
     fieldType: 'array',
-    icon: UlistIcon,
+    icon: ArrayListIcon,
     operators: [
       {name: 'arrayListContains', type: 'item'},
       {name: 'arrayListNotContains', type: 'item'},
