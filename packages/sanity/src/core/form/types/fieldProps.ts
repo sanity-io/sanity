@@ -59,25 +59,31 @@ export interface ObjectFieldProps<T = Record<string, any>> extends BaseFieldProp
 }
 
 /** @beta */
-export interface ArrayFieldProps extends BaseFieldProps {
-  schemaType: ArraySchemaType
+export interface ArrayFieldProps<
+  T extends {_key: string} = {_key: string},
+  S extends ArraySchemaType = ArraySchemaType<T>
+> extends BaseFieldProps {
+  schemaType: ArraySchemaType<T>
   value: unknown[] | undefined
   collapsed?: boolean
   collapsible?: boolean
   onCollapse: () => void
   onExpand: () => void
-  inputProps: ArrayOfObjectsInputProps
+  inputProps: ArrayOfObjectsInputProps<T, S>
 }
 
 /** @beta */
-export interface ArrayOfPrimitivesFieldProps extends BaseFieldProps {
-  schemaType: ArraySchemaType
+export interface ArrayOfPrimitivesFieldProps<
+  T extends string | boolean | number = string | boolean | number,
+  S extends ArraySchemaType = ArraySchemaType<T>
+> extends BaseFieldProps {
+  schemaType: S
   value: unknown[] | undefined
   collapsed?: boolean
   collapsible?: boolean
   onCollapse: () => void
   onExpand: () => void
-  inputProps: ArrayOfPrimitivesInputProps
+  inputProps: ArrayOfPrimitivesInputProps<T, S>
 }
 
 /** @beta */

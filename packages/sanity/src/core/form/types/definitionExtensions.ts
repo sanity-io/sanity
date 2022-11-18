@@ -1,5 +1,6 @@
 import {ComponentType} from 'react'
 import {
+  ArraySchemaType,
   CrossDatasetReferenceValue,
   FileValue,
   GeopointValue,
@@ -32,9 +33,9 @@ import {ObjectItem, ObjectItemProps, PrimitiveItemProps} from './itemProps'
  */
 export interface ArrayOfObjectsComponents {
   diff?: ComponentType<any>
-  field?: ComponentType<ArrayFieldProps>
-  input?: ComponentType<ArrayOfObjectsInputProps>
-  item?: ComponentType<ObjectItemProps>
+  field?: ComponentType<ArrayFieldProps<any>>
+  input?: ComponentType<ArrayOfObjectsInputProps<any, ArraySchemaType<any>>>
+  item?: ComponentType<ObjectItemProps<any>>
   preview?: ComponentType<PreviewProps>
 }
 
@@ -43,9 +44,9 @@ export interface ArrayOfObjectsComponents {
  */
 export interface ArrayOfPrimitivesComponents {
   diff?: ComponentType<any>
-  field?: ComponentType<ArrayOfPrimitivesFieldProps>
-  input?: ComponentType<ArrayOfPrimitivesInputProps>
-  item?: ComponentType<PrimitiveItemProps>
+  field?: ComponentType<ArrayOfPrimitivesFieldProps<any>>
+  input?: ComponentType<ArrayOfPrimitivesInputProps<any>>
+  item?: ComponentType<PrimitiveItemProps<any, any>>
   preview?: ComponentType<PreviewProps>
 }
 

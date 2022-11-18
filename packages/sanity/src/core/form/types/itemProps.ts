@@ -88,8 +88,11 @@ export type ItemProps =
   | PrimitiveItemProps
 
 /** @public */
-export interface PrimitiveItemProps extends BaseItemProps<string | number | boolean> {
-  value: string | number | boolean
-  schemaType: NumberSchemaType | BooleanSchemaType | StringSchemaType
+export interface PrimitiveItemProps<
+  T = string | number | boolean,
+  S extends SchemaType = NumberSchemaType | BooleanSchemaType | StringSchemaType
+> extends BaseItemProps<T> {
+  value: T
+  schemaType: S
   parentSchemaType: ArraySchemaType
 }

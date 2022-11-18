@@ -96,7 +96,7 @@ export interface ObjectInputProps<
 /** @beta */
 export interface ArrayOfObjectsInputProps<
   T extends {_key: string} = {_key: string},
-  S extends ArraySchemaType = ArraySchemaType
+  S extends ArraySchemaType = ArraySchemaType<T>
 > extends BaseInputProps,
     ArrayOfObjectsFormNode<T[], S> {
   /** @beta */
@@ -182,7 +182,7 @@ export type ArrayOfPrimitivesElementType<T extends any[]> = T extends (infer K)[
 /** @beta */
 export interface ArrayOfPrimitivesInputProps<
   T extends string | boolean | number = string | boolean | number,
-  S extends ArraySchemaType = ArraySchemaType
+  S extends ArraySchemaType = ArraySchemaType<T>
 > extends BaseInputProps,
     ArrayOfPrimitivesFormNode<T[], S> {
   /** @beta */

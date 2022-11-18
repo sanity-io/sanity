@@ -2,6 +2,7 @@
 // noinspection JSUnusedLocalSymbols
 
 import {
+  ArraySchemaType,
   CrossDatasetReferenceValue,
   defineField,
   defineType,
@@ -13,6 +14,7 @@ import {
 } from '@sanity/types'
 import {defineConfig} from '../../config'
 import {PreviewProps} from '../../components'
+import {CrossDatasetReferenceInputProps, ReferenceInputProps} from '../studio'
 import {
   ArrayOfObjectsInputProps,
   ArrayOfPrimitivesInputProps,
@@ -54,7 +56,6 @@ import {
   TextComponents,
   UrlComponents,
 } from './definitionExtensions'
-import {CrossDatasetReferenceInputProps, ReferenceInputProps} from '../studio'
 
 describe('definitionExtensions', () => {
   describe('array-like types', () => {
@@ -85,6 +86,37 @@ describe('definitionExtensions', () => {
         type.components
     })
 
+    it('should allow narrow typing for array input props', () => {
+      interface A {
+        _key: string
+        foo: string
+      }
+      const type = defineType({
+        type: 'array',
+        name: 'test',
+        of: [{type: 'some-object'}],
+        // we dont narrow array type yet
+        // therefor we have to explicitly put the prop types do differentiate between object/primitive
+        components: {
+          diff: (props) => null,
+          field: (props: ArrayFieldProps<A>) => {
+            return null
+          },
+          input: (props: ArrayOfObjectsInputProps<A, ArraySchemaType<A>>) => {
+            return null
+          },
+          item: (props: ObjectItemProps<A & ObjectItem>) => {
+            return null
+          },
+          preview: (props) => null,
+        },
+      })
+
+      // this typing is not ideal, but leaving it as this until we decide to narrow array type
+      const components: ArrayOfObjectsComponents | ArrayOfPrimitivesComponents | undefined =
+        type.components
+    })
+
     it('should extend components for array of primitives', () => {
       defineType({
         type: 'array',
@@ -96,6 +128,27 @@ describe('definitionExtensions', () => {
             return null
           },
           input: (props: ArrayOfPrimitivesInputProps) => {
+            return null
+          },
+          item: (props: PrimitiveItemProps) => {
+            return null
+          },
+          preview: (props) => null,
+        },
+      })
+    })
+
+    it('should allow narrow typing for primitive input props', () => {
+      defineType({
+        type: 'array',
+        name: 'test',
+        of: [{type: 'number'}],
+        components: {
+          diff: (props) => null,
+          field: (props: ArrayOfPrimitivesFieldProps<number>) => {
+            return null
+          },
+          input: (props: ArrayOfPrimitivesInputProps<number>) => {
             return null
           },
           item: (props: PrimitiveItemProps) => {
