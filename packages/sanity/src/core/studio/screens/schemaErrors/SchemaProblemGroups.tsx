@@ -136,7 +136,7 @@ function getTypeInfo(problem: SchemaValidationProblemGroup): {name: string; type
 }
 
 function _renderSegmentName(str: string) {
-  if (str.startsWith('<unnamed_type_@_index')) {
+  if (str?.startsWith('<unnamed_type_@_index')) {
     const parts = str.slice(1, -1).split('_')
 
     return `[${parts[4]}]`
