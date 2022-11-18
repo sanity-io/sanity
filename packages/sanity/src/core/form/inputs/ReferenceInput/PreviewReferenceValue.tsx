@@ -34,15 +34,15 @@ export function PreviewReferenceValue(props: {
           }
         : value
 
-      const previewProps: Omit<PreviewProps, 'renderDefault'> = {
-        layout: 'default',
-        schemaType: refType,
-        value: stub,
-      }
-
       return (
         <Flex align="center">
-          <Box flex={1}>{renderPreview(previewProps)}</Box>
+          <Box flex={1}>
+            {renderPreview({
+              layout: 'default',
+              schemaType: refType,
+              value: stub,
+            })}
+          </Box>
           <Box>
             <Inline space={4}>
               {showTypeLabel && (

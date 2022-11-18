@@ -134,12 +134,13 @@ export function BlockObjectPreview(props: BlockObjectPreviewProps): ReactElement
     />
   )
 
-  const previewProps: Omit<PreviewProps, 'renderDefault'> = useMemo(
-    () => ({
-      layout: isImageType ? 'blockImage' : 'block',
-      schemaType: type,
-      value,
-    }),
+  const previewProps = useMemo(
+    () =>
+      ({
+        layout: isImageType ? 'blockImage' : 'block',
+        schemaType: type,
+        value,
+      } as const),
     [isImageType, type, value]
   )
 
@@ -159,7 +160,6 @@ export function BlockObjectPreview(props: BlockObjectPreviewProps): ReactElement
         layout: isImageType ? 'blockImage' : 'block',
         schemaType: type,
         value,
-        media: (isImageType ? value : undefined) as any, // TODO
       })}
     </>
   )

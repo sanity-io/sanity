@@ -1,9 +1,9 @@
 import {hues} from '@sanity/color'
 import {
   PortableTextChild,
-  Type,
-  RenderAttributes,
   PortableTextEditor,
+  RenderAttributes,
+  Type,
   usePortableTextEditor,
 } from '@sanity/portable-text-editor'
 import {Path} from '@sanity/types'
@@ -17,7 +17,6 @@ import {usePortableTextMarkers} from '../hooks/usePortableTextMarkers'
 import {useMemberValidation} from '../hooks/useMemberValidation'
 import {usePortableTextMemberItem} from '../hooks/usePortableTextMembers'
 import {pathToString} from '../../../../field/paths'
-import {PreviewProps} from '../../../../components'
 import {FIXME} from '../../../../FIXME'
 import {InlineObjectToolbarPopover} from './InlineObjectToolbarPopover'
 
@@ -148,14 +147,16 @@ export const InlineObject = React.forwardRef(function InlineObject(
   }, [focused, hasError, hasWarning, selected])
 
   const preview = useMemo(() => {
-    const previewProps: Omit<PreviewProps, 'renderDefault'> = {
-      fallbackTitle: 'Click to edit',
-      layout: 'inline',
-      schemaType: type as FIXME,
-      value,
-    }
-
-    return <PreviewSpan>{renderPreview(previewProps)}</PreviewSpan>
+    return (
+      <PreviewSpan>
+        {renderPreview({
+          fallbackTitle: 'Click to edit',
+          layout: 'inline',
+          schemaType: type as FIXME,
+          value,
+        })}
+      </PreviewSpan>
+    )
   }, [renderPreview, type, value])
 
   const markersToolTip = useMemo(
