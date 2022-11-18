@@ -3,12 +3,26 @@ import {definePlugin} from '../definePlugin'
 
 describe('resolveConfigProperty', () => {
   it('traverses configs and returns a resolved configuration property', () => {
-    const foo = definePlugin({
-      name: 'foo',
+    const subPlugin = definePlugin({
+      name: 'sub-plugin',
       schema: {
         types: [
           {
-            name: 'foo',
+            name: 'sub-plugin',
+            type: 'document',
+            fields: [{name: 'name', type: 'string'}],
+          },
+        ],
+      },
+    })
+
+    const plugin = definePlugin({
+      name: 'plugin',
+      plugins: [subPlugin()],
+      schema: {
+        types: [
+          {
+            name: 'plugin',
             type: 'document',
             fields: [{name: 'name', type: 'string'}],
           },
@@ -18,7 +32,7 @@ describe('resolveConfigProperty', () => {
 
     const parent = definePlugin({
       name: 'parent',
-      plugins: [foo()],
+      plugins: [plugin()],
       schema: {
         types: [
           {
@@ -52,17 +66,22 @@ describe('resolveConfigProperty', () => {
     expect(result).toEqual([
       {
         fields: [{name: 'name', type: 'string'}],
-        name: 'parent',
+        name: 'sub-plugin',
         type: 'document',
       },
       {
         fields: [{name: 'name', type: 'string'}],
-        name: 'foo',
+        name: 'plugin',
+        type: 'document',
+      },
+      {
+        fields: [{name: 'name', type: 'string'}],
+        name: 'parent',
         type: 'document',
       },
     ])
 
-    expect(reducer).toBeCalledTimes(3)
+    expect(reducer).toBeCalledTimes(4)
     expect(reducer.mock.calls[0][2]).toBe(context)
   })
 
@@ -117,12 +136,12 @@ describe('resolveConfigProperty', () => {
     expect(result).toEqual([
       {
         fields: [{name: 'name', type: 'string'}],
-        name: 'parent',
+        name: 'foo',
         type: 'document',
       },
       {
         fields: [{name: 'name', type: 'string'}],
-        name: 'foo',
+        name: 'parent',
         type: 'document',
       },
     ])
