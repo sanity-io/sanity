@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/ban-types */
-
 import {ComponentType, createElement, Fragment, useMemo} from 'react'
 import {useSource} from '../../studio'
+import {flattenConfig} from '../../config'
 import {PluginOptions} from '../types'
 
 const emptyRender = () => createElement(Fragment)
@@ -15,9 +15,6 @@ function _createMiddlewareComponent<T extends {}>(
     // Here we render the _default_ component (typically Sanity's component)
     let next = (props: T) => createElement(defaultComponent, props)
 
-    // Since the middleware array is actually a middleware _stack_ data structure, we are
-    // essentially looping backwards here. This makes it possible to define the _next_ layer for
-    // each layer.
     for (const middleware of middlewareComponents) {
       // As we progress through the chain, the meaning of "renderDefault" changes.
       // At a given layer in the chain, the _next_ layer is the "default".
@@ -37,35 +34,6 @@ function _createMiddlewareComponent<T extends {}>(
   }
 }
 
-function _collectPluginValues<T>(
-  middleware: T[],
-  plugins: PluginOptions[],
-  pick: (p: PluginOptions) => T | undefined
-): void {
-  for (const plugin of plugins) {
-    const value = pick(plugin)
-
-    if (value) {
-      middleware.push(value)
-    }
-
-    if (plugin.plugins) {
-      _collectPluginValues(middleware, plugin.plugins, pick)
-    }
-  }
-}
-
-function _pickFromPluginOptions<T>(
-  plugin: PluginOptions,
-  pick: (p: PluginOptions) => T | undefined
-): T[] {
-  const _middleware: T[] = []
-
-  _collectPluginValues(_middleware, [plugin], pick)
-
-  return _middleware
-}
-
 /** @internal */
 export function useMiddlewareComponents<T extends {}>(props: {
   pick: (plugin: PluginOptions) => ComponentType<T>
@@ -74,12 +42,18 @@ export function useMiddlewareComponents<T extends {}>(props: {
   const {options} = useSource().__internal
   const {defaultComponent, pick} = props
 
-  const middlewareComponents = useMemo(() => {
-    return _pickFromPluginOptions(options, pick)
-  }, [options, pick])
+  return useMemo(() => {
+    // 1. Flatten the config tree into a list of configs
+    const flattened = flattenConfig(options, [])
 
-  return useMemo(
-    () => _createMiddlewareComponent(defaultComponent, middlewareComponents),
-    [defaultComponent, middlewareComponents]
-  )
+    // 2. Pick the middleware components from the configs
+    const pickedComponents = flattened.map(({config}) => pick(config))
+
+    // 3: Since we try to pick the components in all configs, some results may be undefined.
+    // Therefore, we filter these values out before passing the result to the middleware creator.
+    const result = pickedComponents.filter(Boolean)
+
+    // 4. Create the middleware component
+    return _createMiddlewareComponent(defaultComponent, result)
+  }, [defaultComponent, options, pick])
 }
