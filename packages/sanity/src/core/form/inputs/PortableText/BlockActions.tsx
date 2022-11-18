@@ -31,12 +31,6 @@ export function BlockActions(props: BlockActionsProps) {
         unset: createUnsetCallback({block, onChange}),
         insert: createInsertCallback({allowedDecorators: decoratorValues, block, onChange}),
       }
-
-      // // Support returning a class component for renderBlockActions (to keep backward compatability as it was possible before)
-      // if (isClassComponent(renderBlockActions) || isFunctionComponent(renderBlockActions)) {
-      //   const RenderComponent = renderBlockActions
-      //   return <RenderComponent {...blockActionProps} />
-      // }
       return renderBlockActions(blockActionProps)
     }
     return undefined
