@@ -37,7 +37,6 @@ export interface PreviewProps<TLayoutKey = PreviewLayoutKey> {
   status?: ReactNode | ComponentType<{layout: TLayoutKey}>
   subtitle?: ReactNode | ComponentType<{layout: TLayoutKey}>
   title?: ReactNode | ComponentType<{layout: TLayoutKey}>
-  value?: unknown
   withBorder?: boolean
   withRadius?: boolean
   withShadow?: boolean
