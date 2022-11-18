@@ -139,7 +139,6 @@ export function SearchDialog({onClose, onOpen, open}: SearchDialogProps) {
       id={commandListId || ''}
       data-testid="search-results-dialog"
       initialSelectedIndex={hasValidTerms ? lastSearchIndex : 0}
-      level={0}
       pointerOverlayElement={pointerOverlayElement}
       virtualList={hasValidTerms}
     >

@@ -1,5 +1,47 @@
 import {ButtonTone, CardTone} from '@sanity/ui'
-import type {SearchOptions, SearchSort, SearchTerms, WeightedHit} from '../../../../search'
+import type {
+  SearchableType,
+  SearchOptions,
+  SearchSort,
+  SearchTerms,
+  WeightedHit,
+} from '../../../../search'
+
+export type DocumentTypeMenuItem =
+  | DocumentTypeMenuDivider
+  | DocumentTypeMenuHeader
+  | DocumentTypeMenuItemType
+
+interface DocumentTypeMenuItemType {
+  selected: boolean
+  item: SearchableType
+  type: 'item'
+}
+
+interface DocumentTypeMenuDivider {
+  type: 'divider'
+}
+
+interface DocumentTypeMenuHeader {
+  title: string
+  type: 'header'
+}
+
+export type FilterMenuItem = FilterMenuItemFilter | FilterMenuItemHeader
+export interface FilterMenuItemFilter {
+  field?: SearchFieldDefinition
+  filter: SearchFilter
+  group?: string
+  showSubtitle?: boolean
+  tone?: ButtonTone
+  type: 'filter'
+}
+
+export interface FilterMenuItemHeader {
+  title: string
+  tone?: CardTone
+  type: 'header'
+}
 
 /**
  * @internal
@@ -10,23 +52,6 @@ export interface SearchFilter {
   operatorType?: string
   value?: any
 }
-
-export interface SearchFilterMenuItemFilter {
-  field?: SearchFieldDefinition
-  filter: SearchFilter
-  group?: string
-  showSubtitle?: boolean
-  tone?: ButtonTone
-  type: 'filter'
-}
-
-export interface SearchFilterMenuItemHeader {
-  title: string
-  tone?: CardTone
-  type: 'header'
-}
-
-export type SearchFilterMenuItem = SearchFilterMenuItemFilter | SearchFilterMenuItemHeader
 
 /**
  * @internal

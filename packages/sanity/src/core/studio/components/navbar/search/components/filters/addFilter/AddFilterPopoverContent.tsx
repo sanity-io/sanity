@@ -70,8 +70,8 @@ export function AddFilterPopoverContent({onClose}: AddFilterPopoverContentProps)
       containerElement={containerElement}
       headerInputElement={headerInputElement}
       id={filterListId}
-      level={1}
       pointerOverlayElement={pointerOverlayElement}
+      virtualList
     >
       <Flex direction="column" ref={setContainerRef} style={{width: '300px'}}>
         {/* Filter header */}

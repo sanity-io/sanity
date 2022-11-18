@@ -175,7 +175,6 @@ export function SearchPopover({
           id={commandListId || ''}
           data-testid="search-results-popover"
           initialSelectedIndex={hasValidTerms ? lastSearchIndex : 0}
-          level={0}
           pointerOverlayElement={pointerOverlayElement}
           virtualList={hasValidTerms}
         >

@@ -6,9 +6,9 @@ import {SearchFilterDefinition} from '../../../definitions/filters'
 import {
   SearchFieldDefinition,
   SearchFilter,
-  SearchFilterMenuItem,
-  SearchFilterMenuItemFilter,
-  SearchFilterMenuItemHeader,
+  FilterMenuItem,
+  FilterMenuItemFilter,
+  FilterMenuItemHeader,
 } from '../../../types'
 import {INTERNAL_FIELDS} from '../../../utils/createFieldDefinitions'
 import {
@@ -34,7 +34,7 @@ export function createFilterMenuItems({
   titleFilter: string
   types: SearchableType[]
   documentTypesNarrowed: string[]
-}): SearchFilterMenuItem[] {
+}): FilterMenuItem[] {
   // Get all filter definitions without field types
   const nonFieldFilters = filterDefinitions
     .filter((filterDefinition) => !filterDefinition.fieldType)
@@ -131,8 +131,8 @@ function filterGroup({
   id: string
   headerTitle?: string
   tone?: ButtonTone
-}): SearchFilterMenuItem[] {
-  const header: SearchFilterMenuItemHeader = {
+}): FilterMenuItem[] {
+  const header: FilterMenuItemHeader = {
     title: headerTitle || '',
     tone: tone || 'default',
     type: 'header',
@@ -146,7 +146,7 @@ function filterGroup({
           group: id,
           tone: tone || 'default',
           type: 'filter',
-        } as SearchFilterMenuItemFilter)
+        } as FilterMenuItemFilter)
     )
     .map(mapDuplicatedTitles)
 
@@ -172,10 +172,10 @@ function includesTitleInFilterDefinition(filter: SearchFilterDefinition, current
 }
 
 function mapDuplicatedTitles(
-  menuItem: SearchFilterMenuItemFilter,
+  menuItem: FilterMenuItemFilter,
   _index: number,
-  allMenuItems: SearchFilterMenuItemFilter[]
-): SearchFilterMenuItemFilter {
+  allMenuItems: FilterMenuItemFilter[]
+): FilterMenuItemFilter {
   const hasDuplicateTitle =
     allMenuItems.filter((f) => isEqual(f?.field?.titlePath, menuItem?.field?.titlePath)).length > 1
 

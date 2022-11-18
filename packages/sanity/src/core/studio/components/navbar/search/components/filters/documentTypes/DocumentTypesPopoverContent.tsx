@@ -1,20 +1,19 @@
 import {SearchIcon} from '@sanity/icons'
+import {Schema} from '@sanity/types'
 import {Box, Button, Flex, Stack, Text} from '@sanity/ui'
 import {partition} from 'lodash'
 import React, {useCallback, useId, useMemo, useState} from 'react'
 import styled from 'styled-components'
 import {useSchema} from '../../../../../../../hooks'
+import type {SearchableType} from '../../../../../../../search'
 import {SUBHEADER_HEIGHT_SMALL} from '../../../constants'
 import {CommandListProvider} from '../../../contexts/commandList'
 import {useSearchState} from '../../../contexts/search/useSearchState'
+import type {DocumentTypeMenuItem} from '../../../types'
 import {getSelectableOmnisearchTypes} from '../../../utils/selectors'
 import {supportsTouch} from '../../../utils/supportsTouch'
 import {CustomTextInput} from '../../common/CustomTextInput'
 import {DocumentTypesVirtualList} from './DocumentTypesVirtualList'
-
-interface DocumentTypesPopoverContentProps {
-  onClose: () => void
-}
 
 const ClearButtonBox = styled(Box)`
   border-top: 1px solid ${({theme}) => theme.sanity.color.base.border};
@@ -29,16 +28,9 @@ const SearchHeaderContentFlex = styled(Flex)`
   height: ${SUBHEADER_HEIGHT_SMALL};
 `
 
-const TypeFiltersContentBox = styled(Box)`
-  outline: none;
-  overflow-x: hidden;
-  overflow-y: scroll;
-`
-
-export function DocumentTypesPopoverContent({onClose}: DocumentTypesPopoverContentProps) {
+export function DocumentTypesPopoverContent() {
   const [childContainerElement, setChildContainerRef] = useState<HTMLDivElement | null>(null)
   const [containerElement, setContainerRef] = useState<HTMLDivElement | null>(null)
-  const [filtersContentElement, setFiltersContentRef] = useState<HTMLDivElement | null>(null)
   const [headerInputElement, setHeaderInputRef] = useState<HTMLInputElement | null>(null)
   const [pointerOverlayElement, setPointerOverlayRef] = useState<HTMLDivElement | null>(null)
   const [typeFilter, setTypeFilter] = useState('')
@@ -55,24 +47,15 @@ export function DocumentTypesPopoverContent({onClose}: DocumentTypesPopoverConte
   // Get a snapshot of initial selected types
   const [selectedTypesSnapshot, setSelectedTypesSnapshot] = useState(selectedTypes)
 
-  const {filteredSelected, filteredUnselected} = useMemo(() => {
-    const partitionedTypes = partition(getSelectableOmnisearchTypes(schema, typeFilter), (type) =>
-      selectedTypesSnapshot.includes(type)
-    )
-    return {
-      filteredSelected: partitionedTypes[0],
-      filteredUnselected: partitionedTypes[1],
-    }
-  }, [schema, selectedTypesSnapshot, typeFilter])
+  const filteredItems = useGetVirtualItems(schema, selectedTypes, selectedTypesSnapshot, typeFilter)
 
   const handleClearTypes = useCallback(() => {
     if (!supportsTouch) {
       headerInputElement?.focus()
     }
     setSelectedTypesSnapshot([])
-    filtersContentElement?.scrollTo(0, 0)
     dispatch({type: 'TERMS_TYPES_CLEAR'})
-  }, [dispatch, filtersContentElement, headerInputElement])
+  }, [dispatch, headerInputElement])
 
   const handleFilterChange = useCallback(
     (e: React.KeyboardEvent<HTMLInputElement>) => setTypeFilter(e.currentTarget.value),
@@ -82,22 +65,20 @@ export function DocumentTypesPopoverContent({onClose}: DocumentTypesPopoverConte
 
   const commandListId = useId()
 
-  const documentTypeCount = filteredSelected.length + filteredUnselected.length
-
   return (
     <CommandListProvider
       ariaChildrenLabel="Document types"
       ariaHeaderLabel="Filter by document type"
       ariaMultiselectable
       childContainerElement={childContainerElement}
-      childCount={documentTypeCount}
+      childCount={filteredItems.length}
       containerElement={containerElement}
       headerInputElement={headerInputElement}
       id={commandListId}
-      level={1}
       pointerOverlayElement={pointerOverlayElement}
+      virtualList
     >
-      <Flex direction="column" ref={setContainerRef}>
+      <Flex direction="column" ref={setContainerRef} style={{width: '250px'}}>
         {/* Search header */}
         <SearchHeaderBox>
           <SearchHeaderContentFlex align="center" flex={1} padding={1}>
@@ -120,30 +101,24 @@ export function DocumentTypesPopoverContent({onClose}: DocumentTypesPopoverConte
           </SearchHeaderContentFlex>
         </SearchHeaderBox>
 
-        <TypeFiltersContentBox
-          data-overflow
-          flex={1}
-          padding={1}
-          ref={setFiltersContentRef}
-          tabIndex={-1}
-        >
-          <DocumentTypesVirtualList
-            itemsSelected={filteredSelected}
-            itemsUnselected={filteredUnselected}
-            selectedTypes={selectedTypes}
-            setChildContainerRef={setChildContainerRef}
-            setPointerOverlayRef={setPointerOverlayRef}
-          />
+        <Box flex={1}>
+          {filteredItems.length > 0 && (
+            <DocumentTypesVirtualList
+              filteredItems={filteredItems}
+              setChildContainerRef={setChildContainerRef}
+              setPointerOverlayRef={setPointerOverlayRef}
+            />
+          )}
 
           {/* No results */}
-          {!documentTypeCount && (
+          {!filteredItems.length && (
             <Box padding={3}>
               <Text muted size={1} textOverflow="ellipsis">
                 No matches for '{typeFilter}'
               </Text>
             </Box>
           )}
-        </TypeFiltersContentBox>
+        </Box>
 
         {/* Clear button */}
         {!typeFilter && selectedTypes.length > 0 && (
@@ -166,4 +141,36 @@ export function DocumentTypesPopoverContent({onClose}: DocumentTypesPopoverConte
       </Flex>
     </CommandListProvider>
   )
+}
+
+function useGetVirtualItems(
+  schema: Schema,
+  selectedTypes: SearchableType[],
+  selectedTypesSnapshot: SearchableType[],
+  typeFilter: string
+) {
+  return useMemo(() => {
+    const [itemsSelected, itemsUnselected] = partition(
+      getSelectableOmnisearchTypes(schema, typeFilter),
+      (type) => selectedTypesSnapshot.includes(type)
+    )
+
+    const hasSelectedItems = itemsSelected.length > 0
+    const hasUnselectedItems = itemsSelected.length > 0
+
+    const items: DocumentTypeMenuItem[] = []
+    if (hasSelectedItems) {
+      items.push({title: 'Selected', type: 'header'})
+    }
+    itemsSelected.forEach((item) =>
+      items.push({item, selected: selectedTypes.includes(item), type: 'item'})
+    )
+    if (hasSelectedItems && hasUnselectedItems) {
+      items.push({type: 'divider'})
+    }
+    itemsUnselected.forEach((item) =>
+      items.push({item, selected: selectedTypes.includes(item), type: 'item'})
+    )
+    return items
+  }, [schema, selectedTypes, selectedTypesSnapshot, typeFilter])
 }

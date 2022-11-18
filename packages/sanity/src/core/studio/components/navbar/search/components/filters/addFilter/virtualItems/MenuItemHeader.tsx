@@ -1,10 +1,10 @@
 import {Card, Label} from '@sanity/ui'
 import React from 'react'
-import type {SearchFilterMenuItemHeader} from '../../../types'
+import type {FilterMenuItemHeader} from '../../../../types'
 
 interface MenuItemHeaderFields {
   isFirst?: boolean
-  item: SearchFilterMenuItemHeader
+  item: FilterMenuItemHeader
 }
 
 export const MenuItemHeader = React.memo(function MenuItemHeader({

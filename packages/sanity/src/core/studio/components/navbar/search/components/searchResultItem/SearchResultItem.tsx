@@ -1,14 +1,13 @@
 import {Box, ResponsivePaddingProps} from '@sanity/ui'
 import React, {forwardRef, MouseEvent, useMemo} from 'react'
 import type {VirtualItem} from '@tanstack/react-virtual'
-import styled, {css} from 'styled-components'
+import styled from 'styled-components'
 import {PreviewCard} from '../../../../../../components/PreviewCard'
 import {FIXME} from '../../../../../../FIXME'
 import {useSchema} from '../../../../../../hooks'
 import type {WeightedHit} from '../../../../../../search'
 import {useDocumentPresence, useDocumentPreviewStore} from '../../../../../../store'
 import {getPublishedId} from '../../../../../../util/draftUtils'
-import {useCommandList} from '../../contexts/commandList'
 import {DebugOverlay} from './DebugOverlay'
 import SearchResultItemPreview from './SearchResultItemPreview'
 import {IntentLink} from 'sanity/router'
@@ -24,25 +23,20 @@ interface SearchItemProps extends ResponsivePaddingProps {
   virtualRow: VirtualItem
 }
 
-const SearchResultItemBox = styled(Box)<{$level: number}>(({$level}) => {
-  return css`
-    left: 0;
-    position: absolute;
-    top: 0;
-    width: 100%;
+const SearchResultItemBox = styled(Box)`
+  left: 0;
+  position: absolute;
+  top: 0;
+  width: 100%;
 
-    [data-focused='true'][data-level='${$level}'] &,
-    [data-hovered='true'][data-level='${$level}'] & {
-      &[data-active='true'] a {
-        // Allow nested cards to inherit the correct background color
-        --card-bg-color: ${({theme}) => theme.sanity.color.button.bleed.default.hovered.bg};
-        background: var(--card-bg-color);
-        // Disable box-shadow to hide the halo effect when we have keyboard focus over a selected <Button>
-        box-shadow: none;
-      }
-    }
-  `
-})
+  &[data-active='true'] a {
+    // Allow nested cards to inherit the correct background color
+    --card-bg-color: ${({theme}) => theme.sanity.color.button.bleed.default.hovered.bg};
+    background: var(--card-bg-color);
+    // Disable box-shadow to hide the halo effect when we have keyboard focus over a selected <Button>
+    box-shadow: none;
+  }
+`
 
 export function SearchResultItem({
   data,
@@ -59,7 +53,6 @@ export function SearchResultItem({
   const type = schema.get(hit?._type)
   const documentPresence = useDocumentPresence(documentId)
   const documentPreviewStore = useDocumentPreviewStore()
-  const {level} = useCommandList()
 
   const LinkComponent = useMemo(
     () =>
@@ -83,7 +76,6 @@ export function SearchResultItem({
 
   return (
     <SearchResultItemBox
-      $level={level}
       data-index={index}
       flex={1}
       style={{

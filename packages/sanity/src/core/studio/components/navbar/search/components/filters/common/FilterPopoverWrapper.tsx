@@ -37,9 +37,7 @@ export function FilterPopoverWrapper({
         display="flex"
         overflow="hidden"
         radius={3}
-        style={{
-          maxHeight: `min(calc(100vh - ${maxHeight}px), ${MAX_HEIGHT}px`,
-        }}
+        style={{maxHeight: `min(calc(100vh - ${maxHeight}px), ${MAX_HEIGHT}px`}}
       >
         <Flex>{children}</Flex>
       </Card>

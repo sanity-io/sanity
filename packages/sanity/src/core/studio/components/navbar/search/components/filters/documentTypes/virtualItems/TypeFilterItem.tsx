@@ -1,10 +1,10 @@
 import {CheckmarkIcon} from '@sanity/icons'
 import {Button} from '@sanity/ui'
 import React, {useCallback} from 'react'
-import styled, {css} from 'styled-components'
-import type {SearchableType} from '../../../../../../../search'
-import {useCommandList} from '../../../contexts/commandList'
-import {useSearchState} from '../../../contexts/search/useSearchState'
+import styled from 'styled-components'
+import type {SearchableType} from '../../../../../../../../search'
+import {useCommandList} from '../../../../contexts/commandList'
+import {useSearchState} from '../../../../contexts/search/useSearchState'
 
 interface TypeFilterItemProps {
   index: number
@@ -12,25 +12,25 @@ interface TypeFilterItemProps {
   type: SearchableType
 }
 
-const TypeFilterItemButton = styled(Button)<{$level: number}>(({$level}) => {
-  return css`
-    [data-focused='true'][data-level='${$level}'] &,
-    [data-hovered='true'][data-level='${$level}'] & {
-      &[data-active='true'] {
-        outline: 1px solid lime;
-        // TODO: investigate issue where this background isn't respected after switching studio theme _multiple_ times (at least twice)
-        background: ${({theme}) => theme.sanity.color.button.bleed.default.hovered.bg};
-        // Disable box-shadow to hide the halo effect when we have keyboard focus over a selected <Button>
-        box-shadow: none;
-      }
-    }
-  `
-})
+const TypeFilterItemButton = styled(Button)`
+  white-space: normal;
+  width: 100%;
+  [data-active='true'] & {
+    // TODO: investigate issue where this background isn't respected after switching studio theme _multiple_ times (at least twice)
+    background: ${({theme}) => theme.sanity.color.button.bleed.default.hovered.bg};
+    // Disable box-shadow to hide the halo effect when we have keyboard focus over a selected <Button>
+    box-shadow: none;
+  }
+`
 
-export function TypeFilterItem({index, selected, type}: TypeFilterItemProps) {
+export const TypeFilterItem = React.memo(function TypeFilterItem({
+  index,
+  selected,
+  type,
+}: TypeFilterItemProps) {
   const {dispatch} = useSearchState()
 
-  const {level, onChildClick, onChildMouseDown, onChildMouseEnter} = useCommandList()
+  const {onChildClick, onChildMouseDown, onChildMouseEnter} = useCommandList()
 
   const handleTypeAdd = useCallback(() => {
     dispatch({type: 'TERMS_TYPE_ADD', schemaType: type})
@@ -51,9 +51,6 @@ export function TypeFilterItem({index, selected, type}: TypeFilterItemProps) {
 
   return (
     <TypeFilterItemButton
-      $level={level}
-      aria-selected={selected}
-      data-index={index}
       fontSize={1}
       iconRight={selected && CheckmarkIcon}
       justify="flex-start"
@@ -63,8 +60,9 @@ export function TypeFilterItem({index, selected, type}: TypeFilterItemProps) {
       onMouseDown={onChildMouseDown}
       onMouseEnter={onChildMouseEnter(index)}
       selected={selected}
+      tabIndex={-1}
       text={type.title ?? type.name}
       tone={selected ? 'primary' : 'default'}
     />
   )
-}
+})

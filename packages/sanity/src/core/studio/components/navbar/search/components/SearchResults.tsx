@@ -1,15 +1,10 @@
-import {Box, Flex} from '@sanity/ui'
-import {useVirtualizer} from '@tanstack/react-virtual'
-import React, {Dispatch, SetStateAction, useCallback, useEffect, useRef} from 'react'
+import {Flex} from '@sanity/ui'
+import React, {Dispatch, SetStateAction} from 'react'
 import styled from 'styled-components'
-import {getPublishedId} from '../../../../../util/draftUtils'
-import {VIRTUAL_LIST_ITEM_HEIGHT, VIRTUAL_LIST_OVERSCAN} from '../constants'
-import {useCommandList} from '../contexts/commandList'
 import {useSearchState} from '../contexts/search/useSearchState'
 import {NoResults} from './NoResults'
-import {PointerOverlay} from './filters/common/PointerOverlay'
 import {SearchError} from './SearchError'
-import {SearchResultItem} from './searchResultItem'
+import {SearchResultsVirtualList} from './SearchResultsVirtualList'
 import {SortMenu} from './SortMenu'
 
 interface SearchResultsProps {
@@ -31,20 +26,6 @@ const SearchResultsInnerFlex = styled(Flex)<{$loading: boolean}>`
   width: 100%;
 `
 
-const VirtualListBox = styled(Box)`
-  height: 100%;
-  outline: none;
-  overflow-x: hidden;
-  overflow-y: auto;
-  width: 100%;
-`
-
-const VirtualListChildBox = styled(Box)<{$height: number}>`
-  height: ${({$height}) => `${$height}px`};
-  position: relative;
-  width: 100%;
-`
-
 export function SearchResults({
   onClose,
   setChildContainerRef,
@@ -52,45 +33,8 @@ export function SearchResults({
   small,
 }: SearchResultsProps) {
   const {
-    dispatch,
-    recentSearchesStore,
-    state: {debug, filters, terms, result},
+    state: {result},
   } = useSearchState()
-
-  const childParentRef = useRef<HTMLDivElement | null>(null)
-
-  const {getTotalSize, getVirtualItems, scrollToIndex} = useVirtualizer({
-    count: result.hits.length,
-    enableSmoothScroll: false,
-    getScrollElement: () => childParentRef.current,
-    estimateSize: () => VIRTUAL_LIST_ITEM_HEIGHT,
-    overscan: VIRTUAL_LIST_OVERSCAN,
-  })
-
-  const {onChildClick, onChildMouseDown, onChildMouseEnter, setVirtualListScrollToIndex} =
-    useCommandList()
-
-  /**
-   * Send react-virtual's `scrollToIndex` function to shared CommandList context
-   */
-  useEffect(() => {
-    setVirtualListScrollToIndex(scrollToIndex)
-  }, [setVirtualListScrollToIndex, scrollToIndex])
-
-  /**
-   * Add current search to recent searches, trigger child item click and close search
-   */
-  const handleResultClick = useCallback(() => {
-    if (recentSearchesStore) {
-      const updatedRecentSearches = recentSearchesStore.addSearch(terms, filters)
-      dispatch({
-        recentSearches: updatedRecentSearches,
-        type: 'RECENT_SEARCHES_SET',
-      })
-    }
-    onChildClick?.()
-    onClose()
-  }, [dispatch, filters, onChildClick, onClose, recentSearchesStore, terms])
 
   const hasSearchResults = !!result.hits.length
 
@@ -106,32 +50,11 @@ export function SearchResults({
         ) : (
           <>
             {hasSearchResults && (
-              // (Has search results)
-              <VirtualListBox data-overflow ref={childParentRef} tabIndex={-1}>
-                <PointerOverlay ref={setPointerOverlayRef} />
-                <VirtualListChildBox
-                  $height={getTotalSize()}
-                  paddingBottom={1}
-                  ref={setChildContainerRef}
-                >
-                  {getVirtualItems().map((virtualRow) => {
-                    const hit = result.hits[virtualRow.index]
-                    return (
-                      <SearchResultItem
-                        data={hit}
-                        debug={debug}
-                        documentId={getPublishedId(hit.hit._id) || ''}
-                        index={virtualRow.index}
-                        key={virtualRow.key}
-                        onClick={handleResultClick}
-                        onMouseDown={onChildMouseDown}
-                        onMouseEnter={onChildMouseEnter(virtualRow.index)}
-                        virtualRow={virtualRow}
-                      />
-                    )
-                  })}
-                </VirtualListChildBox>
-              </VirtualListBox>
+              <SearchResultsVirtualList
+                onClose={onClose}
+                setChildContainerRef={setChildContainerRef}
+                setPointerOverlayRef={setPointerOverlayRef}
+              />
             )}
 
             {!result.hits.length && result.loaded && <NoResults />}

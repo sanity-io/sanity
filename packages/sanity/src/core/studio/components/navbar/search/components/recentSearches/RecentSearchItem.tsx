@@ -1,7 +1,7 @@
 import {ClockIcon, CloseIcon} from '@sanity/icons'
 import {Box, Button, Flex, Text} from '@sanity/ui'
 import React, {MouseEvent, useCallback} from 'react'
-import styled, {css} from 'styled-components'
+import styled from 'styled-components'
 import {useCommandList} from '../../contexts/commandList'
 import type {RecentSearch} from '../../datastores/recentSearches'
 import {DocumentTypesPill} from '../common/DocumentTypesPill'
@@ -17,19 +17,14 @@ export interface RecentSearchesProps {
 
 const DEFAULT_COMBINED_TYPE_COUNT = 40
 
-const RecentSearchItemButton = styled(Button)<{$level: number}>(({$level}) => {
-  return css`
-    [data-focused='true'][data-level='${$level}'] &,
-    [data-hovered='true'][data-level='${$level}'] & {
-      &[data-active='true'] {
-        // TODO: investigate issue where this background isn't respected after switching studio theme _multiple_ times (at least twice)
-        background: ${({theme}) => theme.sanity.color.button.bleed.default.hovered.bg};
-        // Disable box-shadow to hide the halo effect when we have keyboard focus over a selected <Button>
-        box-shadow: none;
-      }
-    }
-  `
-})
+const RecentSearchItemButton = styled(Button)`
+  &[data-active='true'] {
+    // TODO: investigate issue where this background isn't respected after switching studio theme _multiple_ times (at least twice)
+    background: ${({theme}) => theme.sanity.color.button.bleed.default.hovered.bg};
+    // Disable box-shadow to hide the halo effect when we have keyboard focus over a selected <Button>
+    box-shadow: none;
+  }
+`
 
 const SearchItemPillsBox = styled(Box)`
   flex-shrink: 3;
@@ -62,7 +57,7 @@ export function RecentSearchItem(props: RecentSearchesProps) {
     value,
   } = props
 
-  const {level, onChildClick, onChildMouseDown, onChildMouseEnter} = useCommandList()
+  const {onChildClick, onChildMouseDown, onChildMouseEnter} = useCommandList()
 
   const handleRecentSearchClick = useCallback(() => {
     onChildClick?.()
@@ -74,7 +69,6 @@ export function RecentSearchItem(props: RecentSearchesProps) {
 
   return (
     <RecentSearchItemButton
-      $level={level}
       data-index={index}
       mode="bleed"
       onClick={handleRecentSearchClick}

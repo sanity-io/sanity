@@ -2,14 +2,15 @@ import {Box} from '@sanity/ui'
 import {useVirtualizer} from '@tanstack/react-virtual'
 import React, {Dispatch, SetStateAction, useEffect, useRef} from 'react'
 import styled from 'styled-components'
-import type {SearchFilterMenuItem} from '../../../types'
+import {useCommandList} from '../../../contexts/commandList'
+import type {FilterMenuItem} from '../../../types'
 import {getFilterKey} from '../../../utils/filterUtils'
-// import {PointerOverlay} from '../PointerOverlay'
-import {MenuItemFilter} from '../menuItem/MenuItemFilter'
-import {MenuItemHeader} from '../menuItem/MenuItemHeader'
+import {PointerOverlay} from '../common/PointerOverlay'
+import {MenuItemFilter} from './virtualItems/MenuItemFilter'
+import {MenuItemHeader} from './virtualItems/MenuItemHeader'
 
 interface AddFilterVirtualListProps {
-  menuItems: SearchFilterMenuItem[]
+  menuItems: FilterMenuItem[]
   onClose: () => void
   setChildContainerRef: Dispatch<SetStateAction<HTMLDivElement | null>>
   setPointerOverlayRef: Dispatch<SetStateAction<HTMLDivElement | null>>
@@ -37,6 +38,8 @@ export function AddFilterVirtualList({
 }: AddFilterVirtualListProps) {
   const childParentRef = useRef<HTMLDivElement | null>(null)
 
+  const {setVirtualListScrollToIndex} = useCommandList()
+
   const {getTotalSize, getVirtualItems, measureElement, scrollToIndex} = useVirtualizer({
     count: menuItems.length,
     enableSmoothScroll: false,
@@ -50,9 +53,16 @@ export function AddFilterVirtualList({
     scrollToIndex(0)
   }, [menuItems.length, scrollToIndex])
 
+  /**
+   * Send react-virtual's `scrollToIndex` function to shared CommandList context
+   */
+  useEffect(() => {
+    setVirtualListScrollToIndex(scrollToIndex)
+  }, [setVirtualListScrollToIndex, scrollToIndex])
+
   return (
     <VirtualListBox data-overflow ref={childParentRef} tabIndex={-1}>
-      {/* <PointerOverlay ref={setPointerOverlayRef} /> */}
+      <PointerOverlay ref={setPointerOverlayRef} />
       <VirtualListChildBox $height={getTotalSize()} flex={1} ref={setChildContainerRef}>
         {getVirtualItems().map((virtualRow) => {
           const menuItem = menuItems[virtualRow.index]
@@ -73,9 +83,6 @@ export function AddFilterVirtualList({
               data-index={virtualRow.index}
               key={`${key}-${virtualRow.key}`}
               ref={measureElement}
-              // onClick={handleResultClick}
-              // onMouseDown={onChildMouseDown}
-              // onMouseEnter={onChildMouseEnter(virtualRow.index)}
               style={{
                 flex: 1,
                 // Kept inline to prevent styled-components from generating loads of classes on virtual list scroll
@@ -86,7 +93,9 @@ export function AddFilterVirtualList({
                 width: '100%',
               }}
             >
-              {menuItem.type === 'filter' && <MenuItemFilter item={menuItem} onClose={onClose} />}
+              {menuItem.type === 'filter' && (
+                <MenuItemFilter index={virtualRow.index} item={menuItem} onClose={onClose} />
+              )}
 
               {menuItem.type === 'header' && (
                 <MenuItemHeader isFirst={virtualRow.index === 0} item={menuItem} />
