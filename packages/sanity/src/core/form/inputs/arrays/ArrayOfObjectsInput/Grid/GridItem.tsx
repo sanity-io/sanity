@@ -199,6 +199,8 @@ export function GridItem<Item extends ObjectItem = ObjectItem>(props: GridItemPr
           schemaType,
           value,
           layout: 'media',
+          withBorder: false,
+          withShadow: false,
         })}
         {resolvingInitialValue && (
           <Card as={Flex} style={INITIAL_VALUE_CARD_STYLE}>
