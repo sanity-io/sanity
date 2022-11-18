@@ -21,10 +21,10 @@ export function UploadProgress({uploadState, onCancel, onStale, height}: Props) 
   const filename = uploadState.file.name
 
   useEffect(() => {
-    if (elapsedMs(uploadState.updated) > STALE_UPLOAD_MS) {
+    if (elapsedMs(uploadState.updatedAt) > STALE_UPLOAD_MS) {
       onStale?.()
     }
-  }, [uploadState.updated, onStale])
+  }, [uploadState.updatedAt, onStale])
 
   return (
     <CardWrapper tone="primary" padding={4} border style={{height: `${height}px`}}>

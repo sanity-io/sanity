@@ -102,8 +102,7 @@ export default function guessPreviewFields(rawObjectTypeDef) {
     {
       title: titleField,
       description: descField,
-      imageUrl: !mediaField && imageAssetPath ? `${imageAssetPath}.url` : undefined,
-      media: mediaField ? mediaField.name : undefined,
+      media: mediaField ? mediaField.name : imageAssetPath,
     },
     isUndefined
   )

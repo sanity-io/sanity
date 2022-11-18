@@ -1,4 +1,4 @@
-import {FormPatch, set, setIfMissing, unset} from '../../patch'
+import {FormPatch, set, unset} from '../../patch'
 import {UploadProgressEvent} from './types'
 import {UPLOAD_STATUS_KEY} from './constants'
 
@@ -17,13 +17,10 @@ export function createInitialUploadEvent(file: File) {
   const now = new Date().toISOString()
   const value = {
     progress: 2,
-    initiated: now,
-    updated: now,
+    createdAt: now,
+    updatedAt: now,
     file: {name: file.name, type: file.type},
   }
 
-  return createUploadEvent([
-    setIfMissing({[UPLOAD_STATUS_KEY]: value}, []),
-    set(value, [UPLOAD_STATUS_KEY]),
-  ])
+  return createUploadEvent([set(value, [UPLOAD_STATUS_KEY])])
 }

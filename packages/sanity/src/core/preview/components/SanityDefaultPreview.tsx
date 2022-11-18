@@ -1,6 +1,6 @@
 import {DocumentIcon} from '@sanity/icons'
 import imageUrlBuilder from '@sanity/image-url'
-import {ImageUrlFitMode, isImage, isReference} from '@sanity/types'
+import {ImageUrlFitMode} from '@sanity/types'
 import React, {
   ComponentType,
   createElement,
@@ -11,6 +11,8 @@ import React, {
   useMemo,
 } from 'react'
 import {isValidElementType} from 'react-is'
+import {SanityImageSource} from '@sanity/image-url/lib/types/types'
+import {isImageSource} from '@sanity/asset-utils'
 import {PreviewProps} from '../../components/previews'
 import {useClient} from '../../hooks'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
@@ -29,6 +31,7 @@ export interface SanityDefaultPreviewProps
 }
 
 /**
+ * Used in cases where no custom preview component is provided
  * @internal
  * */
 export function SanityDefaultPreview(props: SanityDefaultPreviewProps): ReactElement {
@@ -37,18 +40,12 @@ export function SanityDefaultPreview(props: SanityDefaultPreviewProps): ReactEle
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const imageBuilder = useMemo(() => imageUrlBuilder(client), [client])
 
-  const component = _previewComponents[layout || 'default'] || _previewComponents.default
-
   // NOTE: This function exists because the previews provides options
   // for the rendering of the media (dimensions)
   const renderMedia = useCallback(
     (options: {
       dimensions: {width?: number; height?: number; fit: ImageUrlFitMode; dpr?: number}
     }) => {
-      if (!isImage(mediaProp)) {
-        return null
-      }
-
       const {dimensions} = options
 
       // Handle sanity image
@@ -58,7 +55,9 @@ export function SanityDefaultPreview(props: SanityDefaultPreviewProps): ReactEle
           referrerPolicy="strict-origin-when-cross-origin"
           src={
             imageBuilder
-              .image(mediaProp)
+              .image(
+                mediaProp as SanityImageSource /*will only enter this code path if it's compatible*/
+              )
               .width(dimensions.width || 100)
               .height(dimensions.height || 100)
               .fit(dimensions.fit)
@@ -89,13 +88,7 @@ export function SanityDefaultPreview(props: SanityDefaultPreviewProps): ReactEle
       return mediaProp
     }
 
-    // If the asset is on media
-    if (isReference(mediaProp) && mediaProp._type === 'reference') {
-      return renderMedia
-    }
-
-    // Handle sanity image
-    if (isImage(mediaProp)) {
+    if (isImageSource(mediaProp)) {
       return renderMedia
     }
 
@@ -112,7 +105,7 @@ export function SanityDefaultPreview(props: SanityDefaultPreviewProps): ReactEle
 
     // Render fallback icon
     return renderIcon
-  }, [icon, imageUrl, mediaProp, renderIcon, renderMedia])
+  }, [icon, imageUrl, mediaProp, renderIcon, renderMedia, title])
 
   const previewProps: Omit<PreviewProps, 'renderDefault'> = useMemo(
     () => ({
@@ -123,8 +116,11 @@ export function SanityDefaultPreview(props: SanityDefaultPreviewProps): ReactEle
     }),
     [media, restProps, title]
   )
+
+  const layoutComponent = _previewComponents[layout || 'default']
+
   return createElement(
-    component as ComponentType<Omit<PreviewProps, 'renderDefault'>>,
+    layoutComponent as ComponentType<Omit<PreviewProps, 'renderDefault'>>,
     previewProps
   )
 }
