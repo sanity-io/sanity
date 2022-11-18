@@ -2,12 +2,12 @@ import {Box} from '@sanity/ui'
 import {useVirtualizer} from '@tanstack/react-virtual'
 import React, {Dispatch, SetStateAction, useCallback, useEffect, useRef} from 'react'
 import styled from 'styled-components'
-import {getPublishedId} from '../../../../../util/draftUtils'
-import {VIRTUAL_LIST_ITEM_HEIGHT, VIRTUAL_LIST_OVERSCAN} from '../constants'
-import {useCommandList} from '../contexts/commandList'
-import {useSearchState} from '../contexts/search/useSearchState'
-import {PointerOverlay} from './filters/common/PointerOverlay'
-import {SearchResultItem} from './searchResultItem'
+import {getPublishedId} from '../../../../../../util/draftUtils'
+import {VIRTUAL_LIST_ITEM_HEIGHT, VIRTUAL_LIST_OVERSCAN} from '../../constants'
+import {useCommandList} from '../../contexts/commandList'
+import {useSearchState} from '../../contexts/search/useSearchState'
+import {PointerOverlay} from '../filters/common/PointerOverlay'
+import {SearchResultItem} from './items/SearchResultItem'
 
 interface SearchResultsVirtualListProps {
   onClose: () => void

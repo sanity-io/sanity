@@ -1,11 +1,11 @@
 import {Flex} from '@sanity/ui'
 import React, {Dispatch, SetStateAction} from 'react'
 import styled from 'styled-components'
-import {useSearchState} from '../contexts/search/useSearchState'
-import {NoResults} from './NoResults'
-import {SearchError} from './SearchError'
+import {useSearchState} from '../../contexts/search/useSearchState'
+import {NoResults} from '../NoResults'
+import {SearchError} from '../SearchError'
 import {SearchResultsVirtualList} from './SearchResultsVirtualList'
-import {SortMenu} from './SortMenu'
+import {SortMenu} from '../SortMenu'
 
 interface SearchResultsProps {
   onClose: () => void

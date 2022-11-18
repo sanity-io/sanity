@@ -6,7 +6,7 @@ import {useCommandList} from '../../../contexts/commandList'
 import {useSearchState} from '../../../contexts/search/useSearchState'
 import type {DocumentTypeMenuItem} from '../../../types'
 import {PointerOverlay} from '../common/PointerOverlay'
-import {TypeFilterItem} from './virtualItems/TypeFilterItem'
+import {TypeFilterItem} from './items/TypeFilterItem'
 
 interface DocumentTypesVirtualListProps {
   filteredItems: DocumentTypeMenuItem[]

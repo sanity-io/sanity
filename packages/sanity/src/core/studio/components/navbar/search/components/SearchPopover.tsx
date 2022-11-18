@@ -19,7 +19,7 @@ import {DebugFilterQuery} from './filters/debug/_DebugFilterQuery'
 import {Filters} from './filters/Filters'
 import {RecentSearches} from './recentSearches/RecentSearches'
 import {SearchHeader} from './SearchHeader'
-import {SearchResults} from './SearchResults'
+import {SearchResults} from './searchResults/SearchResults'
 
 export type PopoverPosition = {
   x: number | null

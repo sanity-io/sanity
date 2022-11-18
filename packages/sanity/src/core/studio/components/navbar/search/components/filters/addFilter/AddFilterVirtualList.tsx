@@ -6,8 +6,8 @@ import {useCommandList} from '../../../contexts/commandList'
 import type {FilterMenuItem} from '../../../types'
 import {getFilterKey} from '../../../utils/filterUtils'
 import {PointerOverlay} from '../common/PointerOverlay'
-import {MenuItemFilter} from './virtualItems/MenuItemFilter'
-import {MenuItemHeader} from './virtualItems/MenuItemHeader'
+import {MenuItemFilter} from './items/MenuItemFilter'
+import {MenuItemHeader} from './items/MenuItemHeader'
 
 interface AddFilterVirtualListProps {
   menuItems: FilterMenuItem[]

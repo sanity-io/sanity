@@ -4,7 +4,7 @@ import {useSchema} from '../../../../../../../hooks'
 import {WeightedHit} from '../../../../../../../search'
 import {useDocumentPreviewStore} from '../../../../../../../store'
 import {useSearch} from '../../../hooks/useSearch'
-import SearchResultItemPreview from '../../searchResultItem/SearchResultItemPreview'
+import SearchResultItemPreview from '../../searchResults/items/SearchResultItemPreview'
 
 interface SearchHit {
   hit: WeightedHit

@@ -1,12 +1,11 @@
 import {isObjectSchemaType, ObjectField, SchemaType} from '@sanity/types'
-import {Box, Card, Stack, Text} from '@sanity/ui'
+import {Box, Card, Flex, Stack, Text} from '@sanity/ui'
 import React, {useCallback, useMemo} from 'react'
 import {useSchema} from '../../../../../../../hooks'
 import {isNonNullable} from '../../../../../../../util'
 import {useSearchState} from '../../../contexts/search/useSearchState'
 import {getFilterDefinition} from '../../../definitions/filters'
 import {getOperator} from '../../../definitions/operators'
-import {SearchOperatorInput} from '../../../definitions/operators/operatorTypes'
 import type {SearchFilter} from '../../../types'
 import {getFieldFromFilter, getFilterKey} from '../../../utils/filterUtils'
 import {FilterDetails} from '../common/FilterDetails'
@@ -39,7 +38,7 @@ export function FilterForm({filter}: FilterFormProps) {
     [dispatch, filterKey]
   )
 
-  const Component: SearchOperatorInput<any> | undefined = operator?.inputComponent
+  const Component = operator?.inputComponent
 
   const options = useMemo(() => {
     return fieldDefinition?.documentTypes
@@ -55,29 +54,9 @@ export function FilterForm({filter}: FilterFormProps) {
       .filter(isNonNullable)
   }, [documentTypesNarrowed, fieldDefinition, schema])
 
+  // Flex order is reversed to ensure form inputs are focusable first
   return (
-    <Box>
-      <Card borderBottom padding={3}>
-        <Stack space={3}>
-          {/* Title */}
-          <Box marginY={1} paddingRight={2}>
-            <FilterDetails filter={filter} />
-          </Box>
-
-          {/* Description (optional) */}
-          {filterDefinition?.description && (
-            <Card border padding={3} radius={2} tone="transparent">
-              <Text muted size={1}>
-                {filterDefinition.description}
-              </Text>
-            </Card>
-          )}
-
-          {/* Operator */}
-          <OperatorsMenuButton filter={filter} operator={operator} />
-        </Stack>
-      </Card>
-
+    <Flex direction="column-reverse">
       {/* Value */}
       {Component && (
         <Card padding={3}>
@@ -90,7 +69,24 @@ export function FilterForm({filter}: FilterFormProps) {
           />
         </Card>
       )}
-    </Box>
+
+      {/* Title, description and operator */}
+      <Card borderBottom padding={3}>
+        <Stack space={3}>
+          <Box marginY={1} paddingRight={2}>
+            <FilterDetails filter={filter} />
+          </Box>
+          {filterDefinition?.description && (
+            <Card border padding={3} radius={2} tone="transparent">
+              <Text muted size={1}>
+                {filterDefinition.description}
+              </Text>
+            </Card>
+          )}
+          <OperatorsMenuButton filter={filter} operator={operator} />
+        </Stack>
+      </Card>
+    </Flex>
   )
 }
 

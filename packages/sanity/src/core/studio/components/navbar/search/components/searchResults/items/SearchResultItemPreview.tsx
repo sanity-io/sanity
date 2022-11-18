@@ -4,14 +4,14 @@ import {Box, Inline, Label} from '@sanity/ui'
 import React, {useMemo} from 'react'
 import {useMemoObservable} from 'react-rx'
 import styled from 'styled-components'
-import {DocumentPreviewPresence} from '../../../../../../presence'
+import {DocumentPreviewPresence} from '../../../../../../../presence'
 import {
   DocumentPreviewStore,
   getPreviewStateObservable,
   getPreviewValueWithFallback,
   SanityDefaultPreview,
-} from '../../../../../../preview'
-import type {DocumentPresence} from '../../../../../../store'
+} from '../../../../../../../preview'
+import type {DocumentPresence} from '../../../../../../../store'
 
 interface SearchResultItemPreviewProps {
   documentId: string
