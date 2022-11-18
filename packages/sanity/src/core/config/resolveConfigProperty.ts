@@ -1,15 +1,6 @@
 import {ConfigPropertyError} from './ConfigPropertyError'
+import {flattenConfig} from './flattenConfig'
 import {PluginOptions, ConfigPropertyReducer, AsyncConfigPropertyReducer} from './types'
-
-const flattenConfig = (
-  {plugins = [], ...currentConfig}: PluginOptions,
-  path: string[]
-): Array<{config: PluginOptions; path: string[]}> => {
-  return [
-    {config: currentConfig, path: [...path, currentConfig.name]},
-    ...plugins.flatMap((config) => flattenConfig(config, [...path, currentConfig.name])),
-  ]
-}
 
 interface ResolveConfigPropertyOptions<TValue, TContext> {
   propertyName: string
