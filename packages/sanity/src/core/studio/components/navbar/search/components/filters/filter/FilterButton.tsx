@@ -1,7 +1,7 @@
 import {CloseIcon} from '@sanity/icons'
-import {Button, Flex, Popover, rem, Theme, useClickOutside} from '@sanity/ui'
-import React, {useCallback, useState} from 'react'
-import styled, {css} from 'styled-components'
+import {Button, Flex, Popover, rem, useClickOutside} from '@sanity/ui'
+import React, {KeyboardEvent, useCallback, useState} from 'react'
+import styled from 'styled-components'
 import {useSearchState} from '../../../contexts/search/useSearchState'
 import {getOperator} from '../../../definitions/operators'
 import type {SearchFilter} from '../../../types'
@@ -10,7 +10,6 @@ import {FilterLabel} from '../../common/FilterLabel'
 import {FilterPopoverContent} from './FilterPopoverContent'
 
 interface FilterButtonProps {
-  closable?: boolean
   filter: SearchFilter
   initialOpen?: boolean
 }
@@ -19,14 +18,8 @@ const CloseButton = styled(Button)`
   border-radius: ${({theme}) =>
     `0 ${rem(theme.sanity.radius[2])} ${rem(theme.sanity.radius[2])} 0`};
 `
-const LabelButton = styled(Button)(({$joined, theme}: {$joined?: boolean; theme: Theme}) => {
-  const radius = rem(theme.sanity.radius[2])
-  return css`
-    border-radius: ${$joined ? `${radius} 0 0 ${radius}` : radius};
-  `
-})
 
-export default function FilterButton({closable = true, filter, initialOpen}: FilterButtonProps) {
+export default function FilterButton({filter, initialOpen}: FilterButtonProps) {
   const [open, setOpen] = useState(initialOpen)
   const [buttonElement, setButtonElement] = useState<HTMLElement | null>(null)
   const [popoverElement, setPopoverElement] = useState<HTMLElement | null>(null)
@@ -46,6 +39,14 @@ export default function FilterButton({closable = true, filter, initialOpen}: Fil
       }),
     [dispatch, filter]
   )
+  const handleKeyDown = useCallback(
+    (event: KeyboardEvent<HTMLButtonElement>) => {
+      if (['Backspace', 'Delete'].includes(event.key)) {
+        handleRemove()
+      }
+    },
+    [handleRemove]
+  )
 
   useClickOutside(handleClose, [buttonElement, popoverElement])
 
@@ -64,29 +65,33 @@ export default function FilterButton({closable = true, filter, initialOpen}: Fil
       portal
       ref={setPopoverElement}
     >
-      <Flex ref={setButtonElement}>
-        <LabelButton
-          $joined={closable}
+      <Flex align="center" ref={setButtonElement} style={{position: 'relative'}}>
+        <Button
           fontSize={1}
           onClick={handleOpen}
-          padding={2}
-          style={{
-            maxWidth: '100%', //
-          }}
+          onKeyDown={handleKeyDown}
+          paddingLeft={2}
+          paddingRight={5}
+          paddingY={2}
+          radius={2}
+          style={{maxWidth: '100%'}}
           tone={isFilled ? 'primary' : 'default'}
         >
           <FilterLabel filter={filter} showContent={isFilled} />
-        </LabelButton>
+        </Button>
 
-        {closable && (
-          <CloseButton
-            fontSize={1}
-            icon={CloseIcon}
-            onClick={handleRemove}
-            padding={2}
-            tone={isFilled ? 'primary' : 'default'}
-          />
-        )}
+        <CloseButton
+          fontSize={1}
+          icon={CloseIcon}
+          onClick={handleRemove}
+          onKeyDown={handleKeyDown}
+          padding={2}
+          style={{
+            position: 'absolute',
+            right: 0,
+          }}
+          tone={isFilled ? 'primary' : 'default'}
+        />
       </Flex>
     </Popover>
   )
