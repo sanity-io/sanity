@@ -1,14 +1,14 @@
-import {defineType} from 'sanity'
+import {defineType, PortableTextBlock} from 'sanity'
 import {toPlainText} from '@portabletext/react'
 
-const linkType = defineType({
+const linkType = {
   type: 'object',
   name: 'link',
   fields: [
     {
       type: 'string',
       name: 'href',
-      validation: (Rule) => Rule.uri({scheme: ['http', 'https']}).required(),
+      validation: (Rule: any) => Rule.uri({scheme: ['http', 'https']}).required(),
     },
   ],
   options: {
@@ -17,13 +17,13 @@ const linkType = defineType({
       width: 2,
     },
   },
-})
+}
 
-const myStringType = defineType({
+const myStringType = {
   type: 'object',
   name: 'test',
-  fields: [{type: 'string', name: 'mystring', validation: (Rule) => Rule.required()}],
-})
+  fields: [{type: 'string', name: 'mystring', validation: (Rule: any) => Rule.required()}],
+}
 
 export default defineType({
   name: 'simpleBlock',
@@ -56,7 +56,7 @@ export default defineType({
             },
           ],
           validation: (Rule) =>
-            Rule.custom<any>((block) => {
+            Rule.custom<PortableTextBlock>((block) => {
               const text = toPlainText(block ? [block] : [])
               return text.length === 1 ? 'Please write a longer paragraph.' : true
             }),
@@ -64,6 +64,7 @@ export default defineType({
             spellCheck: true,
           },
         },
+        {type: 'image', name: 'image'},
       ],
     },
     {

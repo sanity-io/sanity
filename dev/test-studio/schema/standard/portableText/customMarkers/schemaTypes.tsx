@@ -1,18 +1,23 @@
 import React from 'react'
-import {defineType, BlockMemberRenderProps} from 'sanity'
+import {
+  defineType,
+  BlockDecoratorRenderProps,
+  BlockStyleRenderProps,
+  BlockAnnotationRenderProps,
+} from 'sanity'
 import {LinkIcon, RocketIcon} from '@sanity/icons'
 import {CustomContentInput} from './CustomContentInput'
 
-const DecoratorBoost = (props: BlockMemberRenderProps) => {
-  return <span style={{backgroundColor: 'yellow'}}>{props.defaultRender(props)}</span>
+const DecoratorBoost = (props: BlockDecoratorRenderProps) => {
+  return <span style={{backgroundColor: 'yellow'}}>{props.renderDefault(props)}</span>
 }
 
-const StyleNormal = (props: BlockMemberRenderProps) => {
-  return <span style={{fontFamily: 'monospace'}}>{props.defaultRender(props)}</span>
+const StyleNormal = (props: BlockStyleRenderProps) => {
+  return <span style={{fontFamily: 'monospace'}}>{props.renderDefault(props)}</span>
 }
 
-const HyperLinkItem = (props: BlockMemberRenderProps) => {
-  return <span style={{color: 'blue'}}>{props.defaultRender(props)}</span>
+const HyperLinkItem = (props: BlockAnnotationRenderProps) => {
+  return <span style={{color: 'blue'}}>{props.renderDefault(props)}</span>
 }
 
 export const ptCustomMarkersTestType = defineType({

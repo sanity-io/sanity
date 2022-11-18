@@ -1,24 +1,27 @@
 import React, {useCallback, useMemo} from 'react'
 import {PortableTextInput, PortableTextInputProps, PortableTextMarker} from 'sanity'
+import {PortableTextBlock} from '@sanity/types'
 import {htmlToBlocks} from '@sanity/block-tools'
-import {OnPasteFn, PortableTextBlock} from '@sanity/portable-text-editor'
+import {OnPasteFn} from '@sanity/portable-text-editor'
 import {renderBlockActions} from './blockActions'
 import {renderCustomMarkers} from './customMarkers'
+
+export const commentStore: any = {}
 
 export function CustomContentInput(inputProps: PortableTextInputProps) {
   const {value} = inputProps
 
   const handlePaste: OnPasteFn = useCallback((input) => {
-    const {event, type, path} = input
+    const {event, types, path} = input
     const html = event.clipboardData.getData('text/html')
     // check if schema has the code type
-    const hasCodeType = type.of.map(({name}) => name).includes('code')
+    const hasCodeType = types.portableText.of.map(({name}) => name).includes('code')
     if (!hasCodeType) {
       // eslint-disable-next-line no-console
       console.log('Run `sanity install @sanity/code-input, and add `type: "code"` to your schema.')
     }
     if (html && hasCodeType) {
-      const blocks = htmlToBlocks(html, type, {
+      const blocks = htmlToBlocks(html, types.portableText, {
         rules: [
           {
             deserialize(el, next, block) {
@@ -64,14 +67,12 @@ export function CustomContentInput(inputProps: PortableTextInputProps) {
     if (!value) return ret
 
     for (const block of value) {
-      if (block.comments) {
-        for (const comment of block.comments) {
-          ret.push({
-            type: 'comment',
-            data: comment,
-            path: [{_key: block._key}],
-          })
-        }
+      if (commentStore[block._key]) {
+        ret.push({
+          type: 'comment',
+          data: commentStore[block._key],
+          path: [{_key: block._key}],
+        })
       }
     }
 
