@@ -1,11 +1,12 @@
-import {Button} from '@sanity/ui'
-import React, {useCallback} from 'react'
+import {Box, Button} from '@sanity/ui'
+import React, {useCallback, useEffect, useRef, useState} from 'react'
 import styled from 'styled-components'
 import {useCommandList} from '../../../../contexts/commandList'
 import {useSearchState} from '../../../../contexts/search/useSearchState'
 import type {FilterMenuItemFilter} from '../../../../types'
 import {getFilterKey} from '../../../../utils/filterUtils'
 import {FilterDetails} from '../../common/FilterDetails'
+import {FilterTooltip} from './FilterTooltip'
 
 interface FilterMenuItemProps {
   index: number
@@ -29,6 +30,8 @@ export const MenuItemFilter = React.memo(function MenuItemFilter({
   item,
   onClose,
 }: FilterMenuItemProps) {
+  const [tooltipVisible, setTooltipVisible] = useState(false)
+
   const {
     dispatch,
     state: {filters},
@@ -44,19 +47,41 @@ export const MenuItemFilter = React.memo(function MenuItemFilter({
 
   const isAlreadyActive = !!filters.find((f) => getFilterKey(f) === getFilterKey(item.filter))
 
+  const timeoutRef = useRef<ReturnType<typeof setTimeout>>()
+
+  const handleMouseEnter = useCallback(() => {
+    onChildMouseEnter(index)()
+    timeoutRef.current = setTimeout(() => {
+      setTooltipVisible(true)
+    }, 500)
+  }, [index, onChildMouseEnter])
+  const handleMouseLeave = useCallback(() => {
+    setTooltipVisible(false)
+    clearTimeout(timeoutRef.current)
+  }, [])
+
+  useEffect(() => {
+    return () => {
+      clearTimeout(timeoutRef.current)
+    }
+  }, [])
+
   return (
-    <MenuItemFilterButton
-      disabled={isAlreadyActive}
-      fontSize={1}
-      justify="flex-start"
-      mode="bleed"
-      onClick={handleClick}
-      onMouseDown={onChildMouseDown}
-      onMouseEnter={onChildMouseEnter(index)}
-      tabIndex={-1}
-      tone={item?.tone}
-    >
-      <FilterDetails filter={item.filter} showSubtitle={item.showSubtitle} />
-    </MenuItemFilterButton>
+    <Box onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
+      <FilterTooltip filter={item.filter} visible={tooltipVisible}>
+        <MenuItemFilterButton
+          disabled={isAlreadyActive}
+          fontSize={1}
+          justify="flex-start"
+          mode="bleed"
+          onClick={handleClick}
+          onMouseDown={onChildMouseDown}
+          tabIndex={-1}
+          tone={item?.tone}
+        >
+          <FilterDetails filter={item.filter} />
+        </MenuItemFilterButton>
+      </FilterTooltip>
+    </Box>
   )
 })

@@ -1,14 +1,14 @@
 import {Schema} from '@sanity/types'
 import {ButtonTone} from '@sanity/ui'
-import {difference, isEqual, partition, startCase} from 'lodash'
+import {difference, partition, startCase} from 'lodash'
 import {SearchableType} from '../../../../../../../search'
 import {SearchFilterDefinition} from '../../../definitions/filters'
 import {
-  SearchFieldDefinition,
-  SearchFilter,
   FilterMenuItem,
   FilterMenuItemFilter,
   FilterMenuItemHeader,
+  SearchFieldDefinition,
+  SearchFilter,
 } from '../../../types'
 import {INTERNAL_FIELDS} from '../../../utils/createFieldDefinitions'
 import {
@@ -137,18 +137,16 @@ function filterGroup({
     tone: tone || 'default',
     type: 'header',
   }
-  const filterItems = filters
-    .map(
-      (filter) =>
-        ({
-          field: getFieldFromFilter(fieldDefinitions, filter),
-          filter,
-          group: id,
-          tone: tone || 'default',
-          type: 'filter',
-        } as FilterMenuItemFilter)
-    )
-    .map(mapDuplicatedTitles)
+  const filterItems = filters.map(
+    (filter) =>
+      ({
+        field: getFieldFromFilter(fieldDefinitions, filter),
+        filter,
+        group: id,
+        tone: tone || 'default',
+        type: 'filter',
+      } as FilterMenuItemFilter)
+  )
 
   return filterItems.length > 0
     ? [
@@ -169,20 +167,6 @@ function includesTitleInFieldDefinition(field: SearchFieldDefinition, currentTit
 
 function includesTitleInFilterDefinition(filter: SearchFilterDefinition, currentTitle: string) {
   return filter.title.toLowerCase().includes(currentTitle.toLowerCase())
-}
-
-function mapDuplicatedTitles(
-  menuItem: FilterMenuItemFilter,
-  _index: number,
-  allMenuItems: FilterMenuItemFilter[]
-): FilterMenuItemFilter {
-  const hasDuplicateTitle =
-    allMenuItems.filter((f) => isEqual(f?.field?.titlePath, menuItem?.field?.titlePath)).length > 1
-
-  return {
-    ...menuItem,
-    ...(hasDuplicateTitle ? {showSubtitle: hasDuplicateTitle} : {}),
-  }
 }
 
 function sharesDocumentTypes(documentTypes: string[], fieldDefinition?: SearchFieldDefinition) {

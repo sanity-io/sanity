@@ -32,7 +32,6 @@ export interface FilterMenuItemFilter {
   field?: SearchFieldDefinition
   filter: SearchFilter
   group?: string
-  showSubtitle?: boolean
   tone?: ButtonTone
   type: 'filter'
 }

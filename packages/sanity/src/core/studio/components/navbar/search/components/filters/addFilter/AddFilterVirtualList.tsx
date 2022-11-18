@@ -43,7 +43,7 @@ export function AddFilterVirtualList({
   const {getTotalSize, getVirtualItems, measureElement, scrollToIndex} = useVirtualizer({
     count: menuItems.length,
     enableSmoothScroll: false,
-    estimateSize: () => 40,
+    estimateSize: () => 45,
     getScrollElement: () => childParentRef.current,
     overscan: 20,
   })
@@ -64,7 +64,7 @@ export function AddFilterVirtualList({
     <VirtualListBox data-overflow ref={childParentRef} tabIndex={-1}>
       <PointerOverlay ref={setPointerOverlayRef} />
       <VirtualListChildBox $height={getTotalSize()} flex={1} ref={setChildContainerRef}>
-        {getVirtualItems().map((virtualRow) => {
+        {getVirtualItems().map((virtualRow, index) => {
           const menuItem = menuItems[virtualRow.index]
           // TODO: simplify
           let key = ''
@@ -94,11 +94,15 @@ export function AddFilterVirtualList({
               }}
             >
               {menuItem.type === 'filter' && (
-                <MenuItemFilter index={virtualRow.index} item={menuItem} onClose={onClose} />
+                <Box paddingX={1} paddingBottom={1} paddingTop={index === 0 ? 1 : 0}>
+                  <MenuItemFilter index={virtualRow.index} item={menuItem} onClose={onClose} />
+                </Box>
               )}
 
               {menuItem.type === 'header' && (
-                <MenuItemHeader isFirst={virtualRow.index === 0} item={menuItem} />
+                <Box paddingBottom={1}>
+                  <MenuItemHeader isFirst={virtualRow.index === 0} item={menuItem} />
+                </Box>
               )}
             </div>
           )
