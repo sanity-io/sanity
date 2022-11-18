@@ -1,41 +1,38 @@
-import {SchemaType, SortOrdering} from '@sanity/types'
-import React, {createElement, CSSProperties, useCallback, useMemo, useState} from 'react'
-import {PreviewProps} from '../../components'
-import {Previewable} from '../types'
-import {unstable_useDocumentPreview as useDocumentPreview} from '../useDocumentPreview'
+import {DocumentIcon} from '@sanity/icons'
+import React, {
+  createElement,
+  CSSProperties,
+  ReactElement,
+  useCallback,
+  useMemo,
+  useState,
+} from 'react'
+import {PreviewProps} from '../../components/previews'
+import {RenderPreviewCallbackProps} from '../../form'
 import {useVisibility} from '../useVisibility'
+
+import {unstable_useValuePreview as useValuePreview} from '../useValuePreview'
+import {_extractUploadState} from './_extractUploadState'
 import {_HIDE_DELAY} from './_constants'
 import {_resolvePreviewComponent} from './_resolvePreviewComponent'
 
-/** @internal */
-export interface SanityPreviewProps
-  extends Omit<PreviewProps, 'value' | 'renderDefault' | 'schemaType'> {
-  ordering?: SortOrdering
-  schemaType: SchemaType
-  value: Previewable
+function FallbackIcon() {
+  return <DocumentIcon className="sanity-studio__preview-fallback-icon" />
 }
 
-/** @internal */
-export function SanityPreview(props: SanityPreviewProps & {style?: CSSProperties}) {
-  const {
-    layout = 'default',
-    ordering,
-    schemaType,
-    style: styleProp,
-    value: valueProp,
-    media,
-    description,
-    title,
-    subtitle,
-    ...restProps
-  } = props
-  const component = _resolvePreviewComponent(schemaType)
-  const [element, setElement] = useState<HTMLDivElement | null>(null)
-  const isPTE = ['inline', 'block', 'blockImage'].includes(layout)
+/**
+ * This component is responsible for converting renderPreview() calls into an element.
+ * It:
+ * - subscribes to "prepared" preview value as long as the element is visible on screen
+ * - resolves the configured preview component for the schema type
+ * - prepares "preview"-props and passes this to the configured preview component
+ * @internal
+ * */
+export function SanityPreview(props: RenderPreviewCallbackProps): ReactElement {
+  const {layout, value: valueProp, style: styleProp, schemaType, ...restProps} = props
 
-  const icon = useMemo(() => {
-    return schemaType?.icon
-  }, [schemaType])
+  const [element, setElement] = useState<HTMLDivElement | null>(null)
+  const isPTE = layout && ['inline', 'block', 'blockImage'].includes(layout)
 
   // Subscribe to visiblity
   const visibility = useVisibility({
@@ -45,17 +42,51 @@ export function SanityPreview(props: SanityPreviewProps & {style?: CSSProperties
   })
 
   // Subscribe document preview value
-  const {error, value, isLoading} = useDocumentPreview({
+  const preview = useValuePreview({
     enabled: isPTE || visibility,
-    ordering,
     schemaType,
     value: valueProp,
   })
 
+  const {_upload, value} = useMemo(() => {
+    return valueProp ? _extractUploadState(valueProp) : {_upload: undefined, value: undefined}
+  }, [valueProp])
+
   const setRef = useCallback((refValue: HTMLDivElement | null) => {
     setElement(refValue)
   }, [])
-
+  const previewProps: Omit<PreviewProps, 'renderDefault'> = useMemo(
+    () => ({
+      ...restProps,
+      title: preview?.value?.title,
+      description: preview?.value?.description,
+      subtitle: preview?.value?.subtitle,
+      imageUrl: _upload?.previewImage || preview?.value?.imageUrl,
+      progress: _upload?.progress,
+      media: _upload?.previewImage ? <img src={_upload.previewImage} /> : preview?.value?.media,
+      error: preview?.error,
+      isPlaceholder: preview?.isLoading,
+      icon: schemaType?.icon || FallbackIcon,
+      layout,
+      schemaType,
+      value,
+    }),
+    [
+      _upload?.previewImage,
+      _upload?.progress,
+      layout,
+      preview?.error,
+      preview?.isLoading,
+      preview?.value?.description,
+      preview?.value?.imageUrl,
+      preview?.value?.media,
+      preview?.value?.subtitle,
+      preview?.value?.title,
+      restProps,
+      schemaType,
+      value,
+    ]
+  )
   const style: CSSProperties = useMemo(
     () => ({
       ...styleProp,
@@ -65,42 +96,11 @@ export function SanityPreview(props: SanityPreviewProps & {style?: CSSProperties
     [styleProp]
   )
 
-  const previewProps: Omit<PreviewProps, 'renderDefault'> = useMemo(
-    () => ({
-      ...restProps,
-      description: description || value?.description,
-      error,
-      isPlaceholder: isLoading,
-      icon,
-      layout,
-      media: media || value?.media,
-      schemaType,
-      subtitle: subtitle || value?.subtitle,
-      title: title || value?.title,
-      value,
-    }),
-    [
-      description,
-      error,
-      icon,
-      isLoading,
-      layout,
-      media,
-      restProps,
-      schemaType,
-      subtitle,
-      title,
-      value,
-    ]
-  )
-
-  // Remove components property to avoid component rendering itself
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const {components, ...restSchemaType} = schemaType
+  const component = _resolvePreviewComponent(schemaType)
 
   return (
     <div ref={setRef} style={style}>
-      {createElement(component, {...previewProps, schemaType: restSchemaType})}
+      {createElement(component as any, previewProps as any)}
     </div>
   )
 }

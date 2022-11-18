@@ -6,17 +6,13 @@ import {
   DetailPreview,
   InlinePreview,
   MediaPreview,
-  PreviewLayoutKey,
-  PreviewProps,
 } from '../../components'
 
-export const _previewComponents: {
-  [TLayoutKey in PreviewLayoutKey]: ComponentType<PreviewProps<TLayoutKey>>
-} = {
+export const _previewComponents = {
   default: DefaultPreview,
   media: MediaPreview,
   detail: DetailPreview,
   inline: InlinePreview,
   block: BlockPreview,
   blockImage: BlockImagePreview,
-}
+} as const

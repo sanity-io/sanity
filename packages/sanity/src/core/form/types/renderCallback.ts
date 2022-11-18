@@ -1,4 +1,4 @@
-import React, {ComponentType, ReactNode} from 'react'
+import React, {ComponentType, CSSProperties, ReactNode} from 'react'
 import {SchemaType} from '@sanity/types'
 import {PreviewLayoutKey, PreviewMediaDimensions, PreviewProps} from '../../components'
 import {ObjectItemProps, PrimitiveItemProps} from './itemProps'
@@ -38,7 +38,6 @@ export interface RenderPreviewCallbackProps<TLayoutKey = PreviewLayoutKey> {
   children?: ReactNode
   error?: Error | null
   fallbackTitle?: ReactNode
-  imageUrl?: string
   isPlaceholder?: boolean
   layout?: TLayoutKey
   mediaDimensions?: PreviewMediaDimensions
@@ -48,7 +47,8 @@ export interface RenderPreviewCallbackProps<TLayoutKey = PreviewLayoutKey> {
   withBorder?: boolean
   withRadius?: boolean
   withShadow?: boolean
-  schemaType?: SchemaType
+  schemaType: SchemaType
+  style?: CSSProperties
 }
 /** @beta */
 

@@ -5,10 +5,8 @@ import {
   RenderItemCallback,
   RenderPreviewCallback,
 } from '../types'
-import {
-  defaultResolveInputComponent,
-  defaultResolvePreviewComponent,
-} from './inputResolver/inputResolver'
+import {SanityPreview} from '../../preview'
+import {defaultResolveInputComponent} from './inputResolver/inputResolver'
 import {defaultResolveItemComponent} from './inputResolver/itemResolver'
 import {defaultResolveFieldComponent} from './inputResolver/fieldResolver'
 
@@ -29,5 +27,6 @@ export const defaultRenderItem: RenderItemCallback = (props) => {
 
 /** @internal */
 export const defaultRenderPreview: RenderPreviewCallback = (props) => {
-  return createElement(defaultResolvePreviewComponent(), props)
+  // Note: the actual preview component resolving happens inside `RenderPreview`
+  return createElement(SanityPreview, props)
 }

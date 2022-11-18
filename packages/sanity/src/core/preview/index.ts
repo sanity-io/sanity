@@ -9,4 +9,4 @@ export {prepareForPreview} from './utils/prepareForPreview'
 export * from './documentPreviewStore'
 export * from './types'
 
-export * from './useDocumentPreview'
+export * from './useValuePreview'

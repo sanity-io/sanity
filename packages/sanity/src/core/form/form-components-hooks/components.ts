@@ -5,7 +5,7 @@ import {
   defaultResolveInputComponent,
   defaultResolvePreviewComponent,
 } from '../studio/inputResolver/inputResolver'
-import {FieldProps, InputProps, ItemProps} from '../types'
+import {FieldProps, InputProps, ItemProps, RenderPreviewCallbackProps} from '../types'
 import {defaultResolveFieldComponent} from '../studio/inputResolver/fieldResolver'
 import {defaultResolveItemComponent} from '../studio/inputResolver/itemResolver'
 
@@ -79,8 +79,10 @@ export function DefaultItem(props: Omit<ItemProps, 'renderDefault'>): React.Reac
 /**
  * @internal
  */
-export function DefaultPreview(props: Omit<PreviewProps, 'renderDefault'>): React.ReactElement {
-  return useResolveDefaultComponent<Omit<PreviewProps, 'renderDefault'>>({
+export function DefaultPreview(
+  props: Omit<RenderPreviewCallbackProps, 'renderDefault'>
+): React.ReactElement {
+  return useResolveDefaultComponent<Omit<RenderPreviewCallbackProps, 'renderDefault'>>({
     componentProps: props,
     componentResolver: defaultResolvePreviewComponent,
   })

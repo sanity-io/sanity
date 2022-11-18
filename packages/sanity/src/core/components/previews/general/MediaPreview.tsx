@@ -15,7 +15,7 @@ import {
 } from './MediaPreview.styled'
 
 /** @beta */
-export type MediaPreviewProps = PreviewProps<'media'>
+export type MediaPreviewProps = Omit<PreviewProps<'media'>, 'renderDefault'>
 
 const DEFAULT_MEDIA_DIMENSIONS: PreviewMediaDimensions = {
   ...PREVIEW_MEDIA_SIZE.media,

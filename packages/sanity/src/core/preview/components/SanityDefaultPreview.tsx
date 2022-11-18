@@ -14,8 +14,7 @@ import {isValidElementType} from 'react-is'
 import {PreviewProps} from '../../components/previews'
 import {useClient} from '../../hooks'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
-import {isRecord, isString} from '../../util'
-import {_extractUploadState} from './_extractUploadState'
+import {isString} from '../../util'
 import {_previewComponents} from './_previewComponents'
 
 function FallbackIcon() {
@@ -27,40 +26,18 @@ export interface SanityDefaultPreviewProps
   extends Omit<PreviewProps, 'value' | 'renderDefault' | 'schemaType'> {
   error?: Error | null
   icon?: ElementType | false
-  value?: unknown
 }
 
-/** @internal */
+/**
+ * @internal
+ * */
 export function SanityDefaultPreview(props: SanityDefaultPreviewProps): ReactElement {
-  const {
-    description: descriptionProp,
-    icon,
-    layout,
-    media: mediaProp,
-    subtitle: subtitleProp,
-    title: titleProp,
-    value: valueProp,
-    ...restProps
-  } = props
+  const {icon, layout, media: mediaProp, imageUrl, title, ...restProps} = props
 
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const imageBuilder = useMemo(() => imageUrlBuilder(client), [client])
 
   const component = _previewComponents[layout || 'default'] || _previewComponents.default
-
-  const {_upload, value} = useMemo(() => {
-    return valueProp ? _extractUploadState(valueProp) : {_upload: undefined, value: undefined}
-  }, [valueProp])
-
-  const description: PreviewProps['description'] =
-    descriptionProp ||
-    (isRecord(value) && value?.description ? String(value?.description) : undefined)
-
-  const title: PreviewProps['title'] =
-    titleProp || (isRecord(value) && value?.title ? String(value?.title) : undefined)
-
-  const subtitle: PreviewProps['subtitle'] =
-    subtitleProp || (isRecord(value) && value?.subtitle ? String(value?.subtitle) : undefined)
 
   // NOTE: This function exists because the previews provides options
   // for the rendering of the media (dimensions)
@@ -122,34 +99,30 @@ export function SanityDefaultPreview(props: SanityDefaultPreviewProps): ReactEle
       return renderMedia
     }
 
+    // Handle image urls
+    if (isString(imageUrl)) {
+      return (
+        <img
+          src={imageUrl}
+          alt={isString(title) ? title : undefined}
+          referrerPolicy="strict-origin-when-cross-origin"
+        />
+      )
+    }
+
     // Render fallback icon
     return renderIcon
-  }, [icon, mediaProp, renderIcon, renderMedia])
+  }, [icon, imageUrl, mediaProp, renderIcon, renderMedia])
 
   const previewProps: Omit<PreviewProps, 'renderDefault'> = useMemo(
     () => ({
-      imageUrl: _upload?.previewImage,
-      progress: _upload?.progress,
       ...restProps,
       // @todo: fix `TS2769: No overload matches this call.`
       media: media as any,
-      description,
       title,
-      subtitle,
-      value,
     }),
-    [
-      _upload?.previewImage,
-      _upload?.progress,
-      description,
-      media,
-      restProps,
-      subtitle,
-      title,
-      value,
-    ]
+    [media, restProps, title]
   )
-
   return createElement(
     component as ComponentType<Omit<PreviewProps, 'renderDefault'>>,
     previewProps

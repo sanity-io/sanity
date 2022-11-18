@@ -1,7 +1,7 @@
 /* eslint-disable react/jsx-handler-names */
 import {ArraySchemaType, NumberSchemaType, SchemaType, StringSchemaType} from '@sanity/types'
 import React from 'react'
-import {InputProps} from '../../types'
+import {InputProps, RenderPreviewCallbackProps} from '../../types'
 import * as is from '../../utils/is'
 import {PreviewProps} from '../../../components'
 import {SanityPreview} from '../../../preview'
@@ -63,7 +63,7 @@ export function defaultResolveInputComponent(
 }
 
 export function defaultResolvePreviewComponent(): React.ComponentType<
-  Omit<PreviewProps, 'renderDefault'>
+  Omit<RenderPreviewCallbackProps, 'renderDefault'>
 > {
-  return SanityPreview as any
+  return SanityPreview
 }

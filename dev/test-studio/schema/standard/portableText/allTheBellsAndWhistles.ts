@@ -1,8 +1,8 @@
 import {BellIcon, ImageIcon, InfoOutlineIcon} from '@sanity/icons'
 import {Rule} from '@sanity/types'
+import {defineArrayMember, defineField, defineType} from 'sanity'
 import {InfoBoxPreview} from './InfoBoxPreview'
 import {LinkAnnotationInput} from './LinkAnnotationInput'
-import {defineArrayMember, defineField, defineType} from 'sanity'
 
 export const ptAllTheBellsAndWhistlesType = defineType({
   type: 'document',
@@ -86,7 +86,7 @@ export const ptAllTheBellsAndWhistlesType = defineType({
           },
           preview: {
             select: {
-              imageUrl: 'asset.url',
+              media: 'asset',
               title: 'caption',
             },
           },

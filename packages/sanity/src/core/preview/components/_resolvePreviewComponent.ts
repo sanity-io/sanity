@@ -1,16 +1,10 @@
 import {SchemaType} from '@sanity/types'
-import {ElementType} from 'react'
-import {PreviewProps} from '../../components/previews'
+import {ComponentType} from 'react'
+import {RenderPreviewCallbackProps} from '../../form'
 import {SanityDefaultPreview} from './SanityDefaultPreview'
 
-type PreviewElementType = ElementType<
-  Omit<PreviewProps, 'renderDefault'> & {
-    icon?: React.ElementType
-    schemaType?: SchemaType
-  }
->
-
-export function _resolvePreviewComponent(type: SchemaType): PreviewElementType {
-  // @todo: find out why `type.components?.preview` isn't inferred as `PreviewElementType`
-  return (type.components?.preview as any) || SanityDefaultPreview
+export function _resolvePreviewComponent(
+  type: SchemaType
+): ComponentType<RenderPreviewCallbackProps> {
+  return type.components?.preview || SanityDefaultPreview
 }

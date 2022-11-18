@@ -20,6 +20,13 @@ function isReferenceLike(value: Previewable): value is {_ref: string} {
   return '_ref' in value
 }
 
+function getDocumentId(value: Previewable) {
+  if (isReferenceLike(value)) {
+    return value._ref
+  }
+  return '_id' in value ? value._id : undefined
+}
+
 type ObserveFieldsFn = (
   id: string,
   fields: FieldName[],
@@ -37,9 +44,9 @@ function observePaths(
     return observableOf(value as null) // @todo
   }
 
-  const id: string | undefined = isReferenceLike(value) ? value._ref : value._id
+  const id = getDocumentId(value)
 
-  const currentValue: Record<string, unknown> = {...value, _id: id}
+  const currentValue: Record<string, unknown> = id ? {...value, _id: id} : {...value}
 
   if (currentValue._type === 'reference') {
     delete currentValue._type
