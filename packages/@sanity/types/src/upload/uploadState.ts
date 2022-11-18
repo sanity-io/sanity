@@ -1,8 +1,13 @@
 /** @internal */
 export interface UploadState {
   progress: number
-  initiated: string
-  updated: string
+  /** @deprecated use createdAt instead */
+  initiated?: string
+  /** @deprecated use updatedAt instead */
+  updated?: string
+
+  createdAt: string
+  updatedAt: string
   file: {name: string; type: string}
   previewImage?: string
 }

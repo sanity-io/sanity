@@ -1,5 +1,5 @@
-import {of as observableOf, Observable} from 'rxjs'
-import {map, concat} from 'rxjs/operators'
+import {of, concat, Observable} from 'rxjs'
+import {map} from 'rxjs/operators'
 import {SanityClient} from '@sanity/client'
 import {set} from '../../patch'
 import {uploadFileAsset} from '../inputs/client-adapters/assets'
@@ -28,8 +28,5 @@ export function uploadFile(
     })
   )
 
-  return observableOf(createInitialUploadEvent(file)).pipe(
-    concat(upload$),
-    concat(observableOf(CLEANUP_EVENT))
-  )
+  return concat(of(createInitialUploadEvent(file)), upload$, of(CLEANUP_EVENT))
 }
