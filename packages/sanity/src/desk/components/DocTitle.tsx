@@ -1,6 +1,6 @@
 import {SanityDocumentLike} from '@sanity/types'
 import React from 'react'
-import {useSchema, unstable_useDocumentPreview as useDocumentPreview} from 'sanity'
+import {useSchema, unstable_useValuePreview as useValuePreview} from 'sanity'
 
 export interface DocTitleProps {
   document: SanityDocumentLike
@@ -11,7 +11,7 @@ export function DocTitle(props: DocTitleProps) {
   const schema = useSchema()
   const schemaType = schema.get(documentValue._type)
 
-  const {error, value} = useDocumentPreview({
+  const {error, value} = useValuePreview({
     schemaType: schemaType!,
     value: documentValue,
   })

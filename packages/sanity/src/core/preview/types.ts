@@ -6,7 +6,8 @@ export type Id = string
 
 /** @beta */
 export type Previewable = (
-  | {_id: string; _type: string; [key: string]: unknown}
+  | {_id: string}
+  | {_type: string}
   | {_ref: string; _dataset?: string; _projectId?: string}
 ) & {
   /**

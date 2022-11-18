@@ -11,7 +11,7 @@ export function create_preview_documentPair(
   observePaths: ObservePathsFn
 ): {
   observePathsDocumentPair: <T extends SanityDocument = SanityDocument>(
-    value: Previewable,
+    id: string,
     paths: PreviewPath[]
   ) => Observable<DraftsModelDocument<T>>
 } {
@@ -25,10 +25,10 @@ export function create_preview_documentPair(
   return {observePathsDocumentPair}
 
   function observePathsDocumentPair<T extends SanityDocument = SanityDocument>(
-    value: Previewable,
+    id: string,
     paths: PreviewPath[]
   ): Observable<DraftsModelDocument<T>> {
-    const {draftId, publishedId} = getIdPair('_id' in value ? value._id : value._ref)
+    const {draftId, publishedId} = getIdPair(id)
 
     return observeDocumentPairAvailability(draftId).pipe(
       switchMap((availability) => {

@@ -370,6 +370,21 @@ export default defineType({
       type: 'topLevelPrimitiveArrayType',
     },
     {
+      name: 'imageArrayInGrid2',
+      title: 'Image array',
+      description: 'An array of images. options: {layout: "grid"}',
+      type: 'array',
+      options: {
+        layout: 'grid',
+      },
+      of: [
+        {
+          title: 'My Image',
+          type: 'image',
+        },
+      ],
+    },
+    {
       name: 'imageArrayInGrid',
       title: 'Image array',
       description: 'An array of images. options: {layout: "grid"}',

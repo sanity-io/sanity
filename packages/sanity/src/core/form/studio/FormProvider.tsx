@@ -5,7 +5,7 @@ import {useSource} from '../../studio'
 import {PatchChannel, PatchEvent} from '../patch'
 import {FormBuilderProvider} from '../FormBuilderProvider'
 import {FormFieldGroup, ObjectMember, StateTree} from '../store'
-import {FieldProps, InputProps, ItemProps} from '../types'
+import {FieldProps, InputProps, ItemProps, RenderPreviewCallbackProps} from '../types'
 import {
   useFieldComponent,
   useInputComponent,
@@ -101,7 +101,9 @@ export function FormProvider(props: FormProviderProps) {
     [Item]
   )
   const renderPreview = useCallback(
-    (previewProps: Omit<PreviewProps, 'renderDefault'>) => <Preview {...previewProps} />,
+    (previewProps: Omit<RenderPreviewCallbackProps, 'renderDefault'>) => (
+      <Preview {...previewProps} />
+    ),
     [Preview]
   )
 

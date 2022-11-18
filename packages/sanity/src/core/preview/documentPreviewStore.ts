@@ -1,5 +1,5 @@
 import {Observable} from 'rxjs'
-import {distinctUntilChanged, map, tap} from 'rxjs/operators'
+import {distinctUntilChanged, map} from 'rxjs/operators'
 import {SanityClient} from '@sanity/client'
 import {PrepareViewOptions, SanityDocument} from '@sanity/types'
 import {isRecord} from '../util'
@@ -13,10 +13,10 @@ import {
   DraftsModelDocument,
   DraftsModelDocumentAvailability,
   ObservePathsFn,
-  PreviewPath,
   PreparedSnapshot,
   Previewable,
   PreviewableType,
+  PreviewPath,
 } from './types'
 
 /** @beta */
@@ -41,7 +41,7 @@ export interface DocumentPreviewStore {
   ) => Observable<DraftsModelDocumentAvailability>
 
   unstable_observePathsDocumentPair: <T extends SanityDocument = SanityDocument>(
-    id: Previewable,
+    id: string,
     paths: PreviewPath[]
   ) => Observable<DraftsModelDocument<T>>
 }

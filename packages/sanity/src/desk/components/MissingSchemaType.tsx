@@ -1,5 +1,5 @@
 import {WarningOutlineIcon} from '@sanity/icons'
-import {PreviewValue, SanityDocument} from '@sanity/types'
+import {SanityDocument} from '@sanity/types'
 import React from 'react'
 import {GeneralPreviewLayoutKey, SanityDefaultPreview} from 'sanity'
 

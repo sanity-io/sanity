@@ -1,13 +1,13 @@
 import {ComponentType} from 'react'
-import {PreviewProps} from '../../components/previews'
 import {useMiddlewareComponents} from '../../config/components'
-import {InputProps, FieldProps, ItemProps} from '../types'
-import {DefaultInput, DefaultField, DefaultItem, DefaultPreview} from './components'
+import {FieldProps, InputProps, ItemProps, RenderPreviewCallbackProps} from '../types'
+import {SanityPreview} from '../../preview'
+import {DefaultField, DefaultInput, DefaultItem} from './components'
 import {
-  pickInputComponent,
   pickFieldComponent,
-  pickPreviewComponent,
+  pickInputComponent,
   pickItemComponent,
+  pickPreviewComponent,
 } from './picks'
 
 /**
@@ -33,9 +33,11 @@ export function useFieldComponent(): ComponentType<Omit<FieldProps, 'renderDefau
 /**
  * @internal
  */
-export function usePreviewComponent(): ComponentType<Omit<PreviewProps, 'renderDefault'>> {
+export function usePreviewComponent(): ComponentType<
+  Omit<RenderPreviewCallbackProps, 'renderDefault'>
+> {
   return useMiddlewareComponents({
-    defaultComponent: DefaultPreview,
+    defaultComponent: SanityPreview,
     pick: pickPreviewComponent,
   })
 }
