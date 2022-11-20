@@ -1,4 +1,3 @@
-import {isObjectSchemaType, ObjectField, SchemaType} from '@sanity/types'
 import {Box, Card, Flex, Stack, Text} from '@sanity/ui'
 import React, {useCallback, useMemo} from 'react'
 import {useSchema} from '../../../../../../../hooks'
@@ -8,6 +7,7 @@ import {getFilterDefinition} from '../../../definitions/filters'
 import {getOperator} from '../../../definitions/operators'
 import type {SearchFilter} from '../../../types'
 import {getFieldFromFilter, getFilterKey} from '../../../utils/filterUtils'
+import {getSchemaField} from '../../../utils/getSchemaField'
 import {FilterDetails} from '../common/FilterDetails'
 import {OperatorsMenuButton} from './OperatorsMenuButton'
 
@@ -46,7 +46,7 @@ export function FilterForm({filter}: FilterFormProps) {
       .map((type) => {
         const schemaType = schema.get(type)
         if (schemaType) {
-          const field = getFieldRecursive(schemaType, fieldDefinition.fieldPath.split('.'))
+          const field = getSchemaField(schemaType, fieldDefinition.fieldPath)
           return field?.type.options
         }
         return null
@@ -88,23 +88,4 @@ export function FilterForm({filter}: FilterFormProps) {
       </Card>
     </Flex>
   )
-}
-
-function getFieldRecursive(
-  schemaType: SchemaType,
-  paths: string[]
-): ObjectField<SchemaType> | undefined {
-  const firstPath = paths[0]
-  if (firstPath) {
-    if (isObjectSchemaType(schemaType)) {
-      const field = schemaType.fields.find((f) => f.name === firstPath)
-      if (field) {
-        if (isObjectSchemaType(field)) {
-          return getFieldRecursive(field, paths.slice(1))
-        }
-        return field
-      }
-    }
-  }
-  return undefined
 }

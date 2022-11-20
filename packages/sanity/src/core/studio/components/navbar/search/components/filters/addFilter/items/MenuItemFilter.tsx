@@ -51,9 +51,7 @@ export const MenuItemFilter = React.memo(function MenuItemFilter({
 
   const handleMouseEnter = useCallback(() => {
     onChildMouseEnter(index)()
-    timeoutRef.current = setTimeout(() => {
-      setTooltipVisible(true)
-    }, 500)
+    timeoutRef.current = setTimeout(() => setTooltipVisible(true), 500)
   }, [index, onChildMouseEnter])
   const handleMouseLeave = useCallback(() => {
     setTooltipVisible(false)
@@ -61,9 +59,7 @@ export const MenuItemFilter = React.memo(function MenuItemFilter({
   }, [])
 
   useEffect(() => {
-    return () => {
-      clearTimeout(timeoutRef.current)
-    }
+    return () => clearTimeout(timeoutRef.current)
   }, [])
 
   return (
