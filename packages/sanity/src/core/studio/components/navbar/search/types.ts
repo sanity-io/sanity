@@ -6,6 +6,7 @@ import type {
   SearchTerms,
   WeightedHit,
 } from '../../../../search'
+import type {SearchFilterDefinition} from './definitions/filters'
 
 export type DocumentTypeMenuItem =
   | DocumentTypeMenuDivider
@@ -29,7 +30,8 @@ interface DocumentTypeMenuHeader {
 
 export type FilterMenuItem = FilterMenuItemFilter | FilterMenuItemHeader
 export interface FilterMenuItemFilter {
-  field?: SearchFieldDefinition
+  fieldDefinition?: SearchFieldDefinition
+  filterDefinition: SearchFilterDefinition
   filter: SearchFilter
   group?: string
   tone?: ButtonTone

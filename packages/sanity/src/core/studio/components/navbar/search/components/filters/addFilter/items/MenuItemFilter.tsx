@@ -62,6 +62,9 @@ export const MenuItemFilter = React.memo(function MenuItemFilter({
     return () => clearTimeout(timeoutRef.current)
   }, [])
 
+  // Only enable tooltips if an associated field definition exists, or the filter has a valid description
+  const tooltipEnabled = !!(item.fieldDefinition || item.filterDefinition.description)
+
   return (
     <Box
       onMouseEnter={handleMouseEnter}
@@ -69,7 +72,11 @@ export const MenuItemFilter = React.memo(function MenuItemFilter({
       paddingTop={1}
       paddingX={1}
     >
-      <FilterTooltip filter={item.filter} visible={tooltipVisible}>
+      <FilterTooltip
+        fieldDefinition={item.fieldDefinition}
+        filterDefinition={item.filterDefinition}
+        visible={tooltipEnabled && tooltipVisible}
+      >
         <MenuItemFilterButton
           disabled={isAlreadyActive}
           fontSize={1}

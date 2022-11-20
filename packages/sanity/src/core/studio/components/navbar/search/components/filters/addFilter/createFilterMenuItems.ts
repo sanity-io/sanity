@@ -2,7 +2,7 @@ import {Schema} from '@sanity/types'
 import {ButtonTone} from '@sanity/ui'
 import {difference, partition, startCase} from 'lodash'
 import {SearchableType} from '../../../../../../../search'
-import {SearchFilterDefinition} from '../../../definitions/filters'
+import {getFilterDefinition, SearchFilterDefinition} from '../../../definitions/filters'
 import {
   FilterMenuItem,
   FilterMenuItemFilter,
@@ -55,18 +55,21 @@ export function createFilterMenuItems({
     return [
       ...filterGroup({
         fieldDefinitions,
+        filterDefinitions,
         filters: internalFieldFilters,
         id: 'internal',
         tone: 'primary',
       }),
       ...filterGroup({
         fieldDefinitions,
+        filterDefinitions,
         filters: nonFieldFilters,
         id: 'non-field',
         tone: 'primary',
       }),
       ...filterGroup({
         fieldDefinitions,
+        filterDefinitions,
         filters: otherFieldFilters,
         headerTitle: 'All fields',
         id: 'all-fields',
@@ -94,21 +97,35 @@ export function createFilterMenuItems({
         const fieldDefinition = getFieldFromFilter(fieldDefinitions, filter)
         return includesDocumentTypes([documentType], fieldDefinition)
       })
-      return filterGroup({fieldDefinitions, filters: groupFilters, id: title, headerTitle: title})
+      return filterGroup({
+        fieldDefinitions,
+        filterDefinitions,
+        filters: groupFilters,
+        id: title,
+        headerTitle: title,
+      })
     })
     .flat()
 
   return [
     ...filterGroup({
       fieldDefinitions,
+      filterDefinitions,
       filters: internalFieldFilters,
       id: 'internal',
       tone: 'primary',
     }),
-    ...filterGroup({fieldDefinitions, filters: nonFieldFilters, id: 'non-field', tone: 'primary'}),
+    ...filterGroup({
+      fieldDefinitions,
+      filterDefinitions,
+      filters: nonFieldFilters,
+      id: 'non-field',
+      tone: 'primary',
+    }),
     ...(documentTypesNarrowed.length > 1 && types.length > 1
       ? filterGroup({
           fieldDefinitions,
+          filterDefinitions,
           filters: sharedFilters,
           headerTitle: 'Shared fields',
           id: 'shared',
@@ -121,12 +138,14 @@ export function createFilterMenuItems({
 
 function filterGroup({
   fieldDefinitions,
+  filterDefinitions,
   filters,
   id,
   headerTitle,
   tone,
 }: {
   fieldDefinitions: SearchFieldDefinition[]
+  filterDefinitions: SearchFilterDefinition[]
   filters: SearchFilter[]
   id: string
   headerTitle?: string
@@ -140,7 +159,8 @@ function filterGroup({
   const filterItems = filters.map(
     (filter) =>
       ({
-        field: getFieldFromFilter(fieldDefinitions, filter),
+        fieldDefinition: getFieldFromFilter(fieldDefinitions, filter),
+        filterDefinition: getFilterDefinition(filterDefinitions, filter.filterType),
         filter,
         group: id,
         tone: tone || 'default',

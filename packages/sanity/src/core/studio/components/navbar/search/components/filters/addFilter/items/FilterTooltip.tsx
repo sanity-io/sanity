@@ -4,26 +4,29 @@ import React, {ReactElement, useMemo} from 'react'
 import {useSchema} from '../../../../../../../../hooks'
 import {isNonNullable} from '../../../../../../../../util'
 import {useSearchState} from '../../../../contexts/search/useSearchState'
-import {getFilterDefinition} from '../../../../definitions/filters'
-import type {SearchFilter} from '../../../../types'
-import {getFieldFromFilter} from '../../../../utils/filterUtils'
+import type {SearchFilterDefinition} from '../../../../definitions/filters'
+import type {SearchFieldDefinition} from '../../../../types'
 import {getSchemaField} from '../../../../utils/getSchemaField'
 
 interface FilterTooltipProps {
   children: ReactElement
-  filter: SearchFilter
+  fieldDefinition?: SearchFieldDefinition
+  filterDefinition: SearchFilterDefinition
   visible?: boolean
 }
 
 const MAX_VISIBLE_TYPES = 10
 
-export function FilterTooltip({children, filter, visible}: FilterTooltipProps) {
+export function FilterTooltip({
+  children,
+  fieldDefinition,
+  filterDefinition,
+  visible,
+}: FilterTooltipProps) {
   const {
-    state: {definitions, documentTypesNarrowed},
+    state: {documentTypesNarrowed},
   } = useSearchState()
 
-  const fieldDefinition = getFieldFromFilter(definitions.fields, filter)
-  const filterDefinition = getFilterDefinition(definitions.filters, filter.filterType)
   const schema = useSchema()
 
   const fieldDefinitionDocumentTypeTitles = useMemo(() => {
