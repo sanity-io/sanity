@@ -17,7 +17,7 @@ type OperatorItem<TOperators = SearchOperatorType> = {
  */
 export interface SearchFilterDefinition<TOperators = SearchOperatorType> {
   description?: string
-  fieldType?: IntrinsicTypeName | 'email'
+  fieldType?: IntrinsicTypeName
   icon: ComponentType
   operators: Operator<TOperators>[]
   title: string

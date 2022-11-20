@@ -44,6 +44,20 @@ export function AddFilterVirtualList({
     count: menuItems.length,
     enableSmoothScroll: false,
     estimateSize: () => 45,
+    getItemKey: (index) => {
+      const menuItem = menuItems[index]
+      switch (menuItem.type) {
+        case 'filter':
+          return [
+            ...(menuItem.group ? [menuItem.group] : []), //
+            getFilterKey(menuItem.filter),
+          ].join('-')
+        case 'header':
+          return `${menuItem.type}-${menuItem.title}`
+        default:
+          return index
+      }
+    },
     getScrollElement: () => childParentRef.current,
     overscan: 20,
   })
@@ -63,47 +77,33 @@ export function AddFilterVirtualList({
   return (
     <VirtualListBox data-overflow ref={childParentRef} tabIndex={-1}>
       <PointerOverlay ref={setPointerOverlayRef} />
-      <VirtualListChildBox $height={getTotalSize()} flex={1} ref={setChildContainerRef}>
-        {getVirtualItems().map((virtualRow, index) => {
+      <VirtualListChildBox
+        $height={getTotalSize()}
+        flex={1}
+        paddingBottom={1}
+        ref={setChildContainerRef}
+      >
+        {getVirtualItems().map((virtualRow) => {
           const menuItem = menuItems[virtualRow.index]
-          // TODO: simplify
-          let key = ''
-          if (menuItem.type === 'header') {
-            key = menuItem.title
-          }
-          if (menuItem.type === 'filter') {
-            key = [
-              ...(menuItem.group ? [menuItem.group] : []), //
-              getFilterKey(menuItem.filter),
-            ].join('-')
-          }
-
           return (
             <div
               data-index={virtualRow.index}
-              key={`${key}-${virtualRow.key}`}
+              key={virtualRow.key}
               ref={measureElement}
+              // Kept inline to prevent styled-components from generating loads of classes on virtual list scroll
               style={{
                 flex: 1,
-                // Kept inline to prevent styled-components from generating loads of classes on virtual list scroll
-                transform: `translateY(${virtualRow.start}px)`,
                 left: 0,
                 position: 'absolute',
                 top: 0,
+                transform: `translateY(${virtualRow.start}px)`,
                 width: '100%',
               }}
             >
               {menuItem.type === 'filter' && (
-                <Box paddingX={1} paddingBottom={1} paddingTop={index === 0 ? 1 : 0}>
-                  <MenuItemFilter index={virtualRow.index} item={menuItem} onClose={onClose} />
-                </Box>
+                <MenuItemFilter index={virtualRow.index} item={menuItem} onClose={onClose} />
               )}
-
-              {menuItem.type === 'header' && (
-                <Box paddingBottom={1}>
-                  <MenuItemHeader isFirst={virtualRow.index === 0} item={menuItem} />
-                </Box>
-              )}
+              {menuItem.type === 'header' && <MenuItemHeader item={menuItem} />}
             </div>
           )
         })}

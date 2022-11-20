@@ -1,5 +1,5 @@
 import {CheckmarkIcon} from '@sanity/icons'
-import {Button} from '@sanity/ui'
+import {Box, Button} from '@sanity/ui'
 import React, {useCallback} from 'react'
 import styled from 'styled-components'
 import type {SearchableType} from '../../../../../../../../search'
@@ -50,19 +50,21 @@ export const TypeFilterItem = React.memo(function TypeFilterItem({
   }, [handleTypeAdd, handleTypeRemove, onChildClick, selected])
 
   return (
-    <TypeFilterItemButton
-      fontSize={1}
-      iconRight={selected && CheckmarkIcon}
-      justify="flex-start"
-      key={type.title ?? type.name}
-      mode="bleed"
-      onClick={handleClick}
-      onMouseDown={onChildMouseDown}
-      onMouseEnter={onChildMouseEnter(index)}
-      selected={selected}
-      tabIndex={-1}
-      text={type.title ?? type.name}
-      tone={selected ? 'primary' : 'default'}
-    />
+    <Box paddingX={1} paddingTop={1}>
+      <TypeFilterItemButton
+        fontSize={1}
+        iconRight={selected && CheckmarkIcon}
+        justify="flex-start"
+        key={type.title ?? type.name}
+        mode="bleed"
+        onClick={handleClick}
+        onMouseDown={onChildMouseDown}
+        onMouseEnter={onChildMouseEnter(index)}
+        selected={selected}
+        tabIndex={-1}
+        text={type.title ?? type.name}
+        tone={selected ? 'primary' : 'default'}
+      />
+    </Box>
   )
 })

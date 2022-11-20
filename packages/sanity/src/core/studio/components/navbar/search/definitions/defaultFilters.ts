@@ -111,6 +111,22 @@ export const filterDefinitions: SearchFilterDefinition[] = [
     type: 'datetime',
   }),
   defineSearchFilter<SearchOperatorType>({
+    fieldType: 'email',
+    icon: StringIcon,
+    operators: [
+      {name: 'stringMatches', type: 'item'},
+      {name: 'stringNotMatches', type: 'item'},
+      {type: 'divider'},
+      {name: 'stringEqual', type: 'item'},
+      {name: 'stringNotEqual', type: 'item'},
+      {type: 'divider'},
+      {name: 'defined', type: 'item'},
+      {name: 'notDefined', type: 'item'},
+    ],
+    title: 'Email',
+    type: 'email',
+  }),
+  defineSearchFilter<SearchOperatorType>({
     fieldType: 'file',
     icon: DocumentIcon,
     operators: [

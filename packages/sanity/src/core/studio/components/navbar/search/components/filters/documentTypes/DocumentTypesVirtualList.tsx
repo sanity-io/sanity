@@ -45,6 +45,19 @@ export function DocumentTypesVirtualList({
     count: filteredItems.length,
     enableSmoothScroll: false,
     estimateSize: () => 37,
+    getItemKey: (index) => {
+      const virtualItem = filteredItems[index]
+      switch (virtualItem.type) {
+        case 'divider':
+          return `${virtualItem.type}-${index}`
+        case 'header':
+          return `${virtualItem.type}-${virtualItem.title}`
+        case 'item':
+          return `${virtualItem.type}-${virtualItem.item.name}`
+        default:
+          return index
+      }
+    },
     getScrollElement: () => childParentRef.current,
     overscan: 20,
   })
@@ -68,46 +81,49 @@ export function DocumentTypesVirtualList({
   return (
     <VirtualListBox data-overflow ref={childParentRef} tabIndex={-1}>
       <PointerOverlay ref={setPointerOverlayRef} />
-      <VirtualListChildBox $height={getTotalSize()} flex={1} ref={setChildContainerRef}>
+      <VirtualListChildBox
+        $height={getTotalSize()}
+        flex={1}
+        paddingBottom={1}
+        ref={setChildContainerRef}
+      >
         {getVirtualItems().map((virtualRow, index) => {
           const virtualItem = filteredItems[virtualRow.index]
 
           return (
             <div
               data-index={virtualRow.index}
-              key={`${virtualItem.type}-${virtualRow.key}`}
+              key={virtualRow.key}
               ref={measureElement}
+              // Kept inline to prevent styled-components from generating loads of classes on virtual list scroll
               style={{
                 flex: 1,
-                // Kept inline to prevent styled-components from generating loads of classes on virtual list scroll
-                transform: `translateY(${virtualRow.start}px)`,
                 left: 0,
                 position: 'absolute',
                 top: 0,
+                transform: `translateY(${virtualRow.start}px)`,
                 width: '100%',
               }}
             >
               {virtualItem.type === 'divider' && (
-                <Box paddingBottom={1} paddingX={1}>
+                <Box padding={1}>
                   <MenuDivider />
                 </Box>
               )}
               {virtualItem.type === 'header' && (
-                <Box margin={1} padding={3}>
+                <Box margin={1} paddingBottom={2} paddingTop={3} paddingX={3}>
                   <Label muted size={0}>
                     {virtualItem.title}
                   </Label>
                 </Box>
               )}
               {virtualItem.type === 'item' && (
-                <Box paddingX={1} paddingBottom={1} paddingTop={index === 0 ? 1 : 0}>
-                  <TypeFilterItem
-                    index={virtualRow.index}
-                    key={virtualRow.key}
-                    selected={virtualItem.selected}
-                    type={virtualItem.item}
-                  />
-                </Box>
+                <TypeFilterItem
+                  index={virtualRow.index}
+                  key={virtualRow.key}
+                  selected={virtualItem.selected}
+                  type={virtualItem.item}
+                />
               )}
             </div>
           )

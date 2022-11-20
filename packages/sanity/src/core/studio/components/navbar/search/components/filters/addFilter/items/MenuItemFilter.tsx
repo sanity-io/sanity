@@ -67,7 +67,12 @@ export const MenuItemFilter = React.memo(function MenuItemFilter({
   }, [])
 
   return (
-    <Box onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
+    <Box
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+      paddingTop={1}
+      paddingX={1}
+    >
       <FilterTooltip filter={item.filter} visible={tooltipVisible}>
         <MenuItemFilterButton
           disabled={isAlreadyActive}
