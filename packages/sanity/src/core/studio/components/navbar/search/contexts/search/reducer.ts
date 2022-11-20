@@ -12,7 +12,7 @@ import {getOperator, getOperatorInitialValue, SearchOperator} from '../../defini
 import {ORDERINGS} from '../../definitions/orderings'
 import type {SearchFieldDefinition, SearchFilter, SearchOrdering} from '../../types'
 import {debugWithName, isDebugMode} from '../../utils/debug'
-import {getFilterKey} from '../../utils/filterUtils'
+import {getFilterKey, isFilterComplete} from '../../utils/filterUtils'
 import {isRecentSearchTerms} from '../../utils/isRecentSearchTerms'
 import {sortTypes} from '../../utils/selectors'
 
@@ -519,6 +519,7 @@ function generateFilterQuery(
   filters: SearchFilter[]
 ) {
   return filters
+    .filter((filter) => isFilterComplete(filter, operators))
     .map((filter) => {
       const fieldDefinition = fieldDefinitions.find((field) => field.id === filter?.fieldId)
       return getOperator(operators, filter.operatorType)?.fn({

@@ -10,6 +10,7 @@ import {createRecentSearchesStore, RecentSearch} from '../../datastores/recentSe
 import {useSearch} from '../../hooks/useSearch'
 import type {SearchOrdering} from '../../types'
 import {createFieldDefinitions} from '../../utils/createFieldDefinitions'
+import {isFilterComplete} from '../../utils/filterUtils'
 import {hasSearchableTerms} from '../../utils/hasSearchableTerms'
 import {isRecentSearchTerms} from '../../utils/isRecentSearchTerms'
 import {initialSearchState, searchReducer} from './reducer'
@@ -62,7 +63,7 @@ export function SearchProvider({children}: SearchProviderProps) {
   )
   const [state, dispatch] = useReducer(searchReducer, initialState)
 
-  const {documentTypesNarrowed, ordering, pageIndex, result, terms} = state
+  const {documentTypesNarrowed, filters: currentFilters, ordering, pageIndex, result, terms} = state
 
   const isMountedRef = useRef(false)
   const previousOrderingRef = useRef<SearchOrdering>(initialState.ordering)
@@ -83,6 +84,9 @@ export function SearchProvider({children}: SearchProviderProps) {
   const documentTypes = documentTypesNarrowed.map(
     (documentType) => schema.get(documentType) as SearchableType
   )
+
+  // Get a list of 'complete' filters (filters that return valid values)
+  const completeFilters = currentFilters.filter((filter) => isFilterComplete(filter, operators))
 
   /**
    * Trigger search when any terms (query or selected types) OR current pageIndex has changed
@@ -111,6 +115,7 @@ export function SearchProvider({children}: SearchProviderProps) {
               : []),
             `findability-selected-types:${terms.types.length}`,
             `findability-sort:${sortLabel}`,
+            `findability-filter-count:${completeFilters.length}`,
           ],
           limit: SEARCH_LIMIT,
           offset: pageIndex * SEARCH_LIMIT,
@@ -131,7 +136,17 @@ export function SearchProvider({children}: SearchProviderProps) {
     // Update snapshots, even if no search request was executed
     previousOrderingRef.current = ordering
     previousTermsRef.current = terms
-  }, [documentTypes, handleSearch, hasValidTerms, ordering, pageIndex, searchState.terms, terms])
+  }, [
+    completeFilters.length,
+    currentFilters,
+    documentTypes,
+    handleSearch,
+    hasValidTerms,
+    ordering,
+    pageIndex,
+    searchState.terms,
+    terms,
+  ])
 
   /**
    * Reset search hits / state when (after initial amount):

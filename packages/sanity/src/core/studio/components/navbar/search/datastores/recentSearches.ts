@@ -2,7 +2,7 @@ import type {CurrentUser, ObjectSchemaType, Schema} from '@sanity/types'
 import omit from 'lodash/omit'
 import type {SearchTerms} from '../../../../../search'
 import type {SearchFilterDefinition} from '../definitions/filters'
-import {getOperator, SearchOperator} from '../definitions/operators'
+import {SearchOperator} from '../definitions/operators'
 import type {SearchFieldDefinition, SearchFilter} from '../types'
 import {getSearchableOmnisearchTypes} from '../utils/selectors'
 
@@ -75,15 +75,9 @@ export function createRecentSearchesStore({
       )
 
       // Remove filters in 'incomplete' states prior to writing to local storage.
-      // Filters are defined as incomplete if they _can_ contain a value (`initialValue` is present)
-      // and they are undefined or null value.
-      const validStoredFilters = storedFilters.filter((filter) => {
-        const operator = getOperator(operatorDefinitions, filter.operatorType)
-        if (typeof operator?.initialValue !== 'undefined') {
-          return filter.value !== undefined && filter.value !== null
-        }
-        return true
-      })
+      const validStoredFilters = storedFilters.filter((filter) =>
+        isFilterComplete(filter, operatorDefinitions)
+      )
 
       const newSearchItem: StoredSearchItem = {
         created: new Date().toISOString(),
@@ -241,6 +235,12 @@ function sanitizeStoredSearch(
   return getRecentStoredSearch(lsKey)
 }
 
+/**
+ * Validate if the supplied filter:
+ * - has a corresponding filter defintion
+ * - contains a valid `operatorType` (if present)
+ * - has a valid `fieldId` which exists in our current list of field definitions
+ */
 function validateFilter(
   filter: SearchFilter,
   filterDefinitions: SearchFilterDefinition[],

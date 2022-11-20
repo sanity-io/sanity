@@ -3,9 +3,8 @@ import {Button, Flex, Popover, rem, useClickOutside} from '@sanity/ui'
 import React, {KeyboardEvent, useCallback, useState} from 'react'
 import styled from 'styled-components'
 import {useSearchState} from '../../../contexts/search/useSearchState'
-import {getOperator} from '../../../definitions/operators'
 import type {SearchFilter} from '../../../types'
-import {getFilterKey} from '../../../utils/filterUtils'
+import {getFilterKey, isFilterComplete} from '../../../utils/filterUtils'
 import {FilterLabel} from '../../common/FilterLabel'
 import {FilterPopoverContent} from './FilterPopoverContent'
 
@@ -50,11 +49,7 @@ export default function FilterButton({filter, initialOpen}: FilterButtonProps) {
 
   useClickOutside(handleClose, [buttonElement, popoverElement])
 
-  const operator = getOperator(definitions.operators, filter.operatorType)
-  const value = operator?.buttonValue && operator.buttonValue(filter.value)
-  const hasValue = value !== undefined && value !== null
-  // Mark as 'filled' if both operator and value are present (or no input component is defined).
-  const isFilled = operator?.inputComponent ? !!(filter.operatorType && hasValue) : true
+  const isComplete = isFilterComplete(filter, definitions.operators)
 
   return (
     <Popover
@@ -75,9 +70,9 @@ export default function FilterButton({filter, initialOpen}: FilterButtonProps) {
           paddingY={2}
           radius={2}
           style={{maxWidth: '100%'}}
-          tone={isFilled ? 'primary' : 'default'}
+          tone={isComplete ? 'primary' : 'default'}
         >
-          <FilterLabel filter={filter} showContent={isFilled} />
+          <FilterLabel filter={filter} showContent={isComplete} />
         </Button>
 
         <CloseButton
@@ -90,7 +85,7 @@ export default function FilterButton({filter, initialOpen}: FilterButtonProps) {
             position: 'absolute',
             right: 0,
           }}
-          tone={isFilled ? 'primary' : 'default'}
+          tone={isComplete ? 'primary' : 'default'}
         />
       </Flex>
     </Popover>
