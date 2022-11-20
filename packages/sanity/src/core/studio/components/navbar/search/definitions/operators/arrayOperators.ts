@@ -100,7 +100,7 @@ export const arrayOperators = {
   arrayListContains: defineSearchOperator({
     buttonLabel: 'contains',
     buttonValue: (value) => value || null,
-    fn: ({fieldPath, value}) => (value && fieldPath ? `${fieldPath} == ${toJSON(value)}` : null),
+    fn: ({fieldPath, value}) => (value && fieldPath ? `${toJSON(value)} in ${fieldPath}` : null),
     initialValue: null,
     inputComponent: FieldInputStringList,
     label: 'contains',
@@ -109,7 +109,7 @@ export const arrayOperators = {
   arrayListNotContains: defineSearchOperator({
     buttonLabel: 'does not contain',
     buttonValue: (value) => value || null,
-    fn: ({fieldPath, value}) => (value && fieldPath ? `${fieldPath} != ${toJSON(value)}` : null),
+    fn: ({fieldPath, value}) => (value && fieldPath ? `!(${toJSON(value)} in ${fieldPath})` : null),
     initialValue: null,
     inputComponent: FieldInputStringList,
     label: 'does not contain',
