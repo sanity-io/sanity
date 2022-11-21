@@ -1,10 +1,10 @@
 /* eslint-disable react/jsx-handler-names */
 import {ArraySchemaType, NumberSchemaType, SchemaType, StringSchemaType} from '@sanity/types'
 import React from 'react'
-import {InputProps, RenderPreviewCallbackProps} from '../../types'
+import {InputProps} from '../../types'
 import * as is from '../../utils/is'
 import {PreviewProps} from '../../../components'
-import {SanityPreview} from '../../../preview'
+import {SanityDefaultPreview} from '../../../preview'
 import {FIXME} from '../../../FIXME'
 import {StudioReferenceInput} from '../inputs/reference/StudioReferenceInput'
 import {resolveArrayInput} from './resolveArrayInput'
@@ -62,8 +62,10 @@ export function defaultResolveInputComponent(
   throw new Error(`Could not find input component for schema type \`${schemaType.name}\``)
 }
 
-export function defaultResolvePreviewComponent(): React.ComponentType<
-  Omit<RenderPreviewCallbackProps, 'renderDefault'>
-> {
-  return SanityPreview
+export function defaultResolvePreviewComponent(
+  schemaType: SchemaType
+): React.ComponentType<Omit<PreviewProps, 'renderDefault'>> {
+  if (schemaType.components?.preview) return schemaType.components.preview
+
+  return SanityDefaultPreview
 }

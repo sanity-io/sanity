@@ -17,10 +17,8 @@ export function pickFieldComponent(
 
 export function pickPreviewComponent(
   plugin: PluginOptions
-): ComponentType<Omit<RenderPreviewCallbackProps, 'renderDefault'>> {
-  return plugin.form?.components?.preview as ComponentType<
-    Omit<RenderPreviewCallbackProps, 'renderDefault'>
-  >
+): ComponentType<Omit<PreviewProps, 'renderDefault'>> {
+  return plugin.form?.components?.preview as ComponentType<Omit<PreviewProps, 'renderDefault'>>
 }
 
 export function pickItemComponent(

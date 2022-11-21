@@ -2,10 +2,11 @@ import {Box, Card, Container} from '@sanity/ui'
 import {useSelect} from '@sanity/ui-workshop'
 import React, {useMemo} from 'react'
 import {Image, ObjectSchemaType} from '@sanity/types'
-import {SanityPreview} from '../components/SanityPreview'
+import {PreviewLoader} from '../components/PreviewLoader'
 import {Previewable} from '../types'
 import {PreviewLayoutKey} from '../../components'
 import {useSchema} from '../../hooks'
+import {Preview} from '../components/Preview'
 
 const LAYOUT_OPTIONS: Record<string, PreviewLayoutKey> = {
   Default: 'default',
@@ -55,7 +56,7 @@ export default function SanityPreviewStory() {
     <Box padding={4}>
       <Container width={1}>
         <Card border padding={2} radius={2} style={{lineHeight: 0}}>
-          <SanityPreview layout={layout} schemaType={schemaType} value={value as Previewable} />
+          <Preview layout={layout} schemaType={schemaType} value={value} />
         </Card>
       </Container>
     </Box>

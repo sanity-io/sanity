@@ -12,8 +12,8 @@ import {
   useItemComponent,
   usePreviewComponent,
 } from '../form-components-hooks'
-import {PreviewProps} from '../../components'
 import {FormNodePresence} from '../../presence'
+import {PreviewLoader} from '../../preview/components/PreviewLoader'
 
 /**
  * @alpha This API might change.
@@ -101,8 +101,8 @@ export function FormProvider(props: FormProviderProps) {
     [Item]
   )
   const renderPreview = useCallback(
-    (previewProps: Omit<RenderPreviewCallbackProps, 'renderDefault'>) => (
-      <Preview {...previewProps} />
+    (previewProps: RenderPreviewCallbackProps) => (
+      <PreviewLoader component={Preview} {...previewProps} />
     ),
     [Preview]
   )

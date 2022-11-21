@@ -1,5 +1,6 @@
 export * from './components/SanityDefaultPreview'
-export * from './components/SanityPreview'
+export * from './components/PreviewLoader'
+export * from './components/Preview'
 
 export {getPreviewPaths} from './utils/getPreviewPaths'
 export {getPreviewStateObservable} from './utils/getPreviewStateObservable'

@@ -24,8 +24,7 @@ function FallbackIcon() {
 }
 
 /** @internal */
-export interface SanityDefaultPreviewProps
-  extends Omit<PreviewProps, 'value' | 'renderDefault' | 'schemaType'> {
+export interface SanityDefaultPreviewProps extends Omit<PreviewProps, 'renderDefault'> {
   error?: Error | null
   icon?: ElementType | false
 }

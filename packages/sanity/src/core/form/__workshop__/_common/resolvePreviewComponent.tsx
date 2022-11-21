@@ -1,6 +1,6 @@
 import {Button, Card, Code, ErrorBoundary, Stack} from '@sanity/ui'
 import React, {useCallback, useState} from 'react'
-import {SanityPreview} from '../../../preview'
+import {PreviewLoader} from '../../../preview'
 
 export const resolvePreviewComponent = () => TestPreview
 
@@ -30,7 +30,7 @@ function TestPreview(props: any) {
   }
   return (
     <ErrorBoundary onCatch={handleCatch}>
-      <SanityPreview {...props} />
+      <PreviewLoader {...props} />
     </ErrorBoundary>
   )
 }
