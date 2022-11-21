@@ -203,6 +203,7 @@ export interface PluginOptions {
   name: string
   plugins?: PluginOptions[]
   schema?: SchemaPluginOptions
+  order?: 'pre' | 'post'
   // TODO:
   // components?: ComponentPluginOptions
   document?: DocumentPluginOptions
