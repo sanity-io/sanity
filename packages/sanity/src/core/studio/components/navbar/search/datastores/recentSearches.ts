@@ -4,6 +4,7 @@ import type {SearchTerms} from '../../../../../search'
 import type {SearchFilterDefinition} from '../definitions/filters'
 import {SearchOperator} from '../definitions/operators'
 import type {SearchFieldDefinition, SearchFilter} from '../types'
+import {isFilterComplete} from '../utils/filterUtils'
 import {getSearchableOmnisearchTypes} from '../utils/selectors'
 
 const RECENT_SEARCHES_KEY = 'search::recent'
