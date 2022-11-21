@@ -7,12 +7,12 @@ import {BaseSchemaDefinition, TitledListValue} from './common'
 export interface ArrayOptions<V = unknown> {
   list?: TitledListValue<V>[] | V[]
   /**
-   * layout: 'tags' only works for string array
-   * layout: 'grid' only works for arrays with objects
+   * layout: 'tags' and 'checkbox' only apply to arrays of strings
+   * layout: 'grid' only apply to arrays of objects
    */
   // inferring the array.of value for ArrayDefinition cause too much code-noise and was removed.
   // Since we don't have the type-info needed here, we allow values
-  layout?: 'tags' | 'grid'
+  layout?: 'tags' | 'checkbox' | 'grid'
   direction?: 'horizontal' | 'vertical'
   sortable?: boolean
   modal?: {type?: 'dialog' | 'popover'; width?: number | 'auto'}
