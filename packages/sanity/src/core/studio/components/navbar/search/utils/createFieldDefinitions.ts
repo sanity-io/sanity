@@ -80,9 +80,6 @@ function getDocumentFieldDefinitions(
       return
     }
 
-    // Ignore hidden fields
-    if (defType.hidden) return
-
     // Check if current field can be mapped to an existing object
     // defined in our schema, or if it's an inline object
     const existingObject = objectTypes[defType.type]
