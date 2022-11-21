@@ -1,4 +1,6 @@
-import {PluginOptions} from './types'
+import type {PluginOptions} from './types'
+
+type PluginOption = {config: PluginOptions; path: string[]}
 
 /**
  * @internal
@@ -8,16 +10,31 @@ import {PluginOptions} from './types'
 export const flattenConfig = (
   {plugins = [], ...currentConfig}: PluginOptions,
   path: string[]
-): Array<{config: PluginOptions; path: string[]}> => {
+): PluginOption[] => {
   // The APIs used at the root config level
   const rootConfig = {config: currentConfig, path: [...path, currentConfig.name]}
 
+  const prePlugins: PluginOption[] = []
+  const normalPlugins: PluginOption[] = []
+  const postPlugins: PluginOption[] = []
+
   // An array with the APIs used in plugins
-  const allPlugins = plugins.flatMap((plugin) =>
-    flattenConfig(plugin, [...path, currentConfig.name])
-  )
+  const allPlugins = plugins.flatMap((plugin) => {
+    return flattenConfig(plugin, [...path, currentConfig.name])
+  })
 
   const resolved = [...allPlugins, rootConfig]
 
-  return resolved
+  // Sort the configs based on the order property
+  resolved.forEach((plugin) => {
+    if (plugin.config?.order === 'pre') {
+      prePlugins.push(plugin)
+    } else if (plugin.config?.order === 'post') {
+      postPlugins.push(plugin)
+    } else {
+      normalPlugins.push(plugin)
+    }
+  })
+
+  return [prePlugins, normalPlugins, postPlugins].flat()
 }
