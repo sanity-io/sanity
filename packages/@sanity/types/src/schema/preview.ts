@@ -24,20 +24,3 @@ export interface PreviewConfig<
   select?: Select
   prepare?: (value: PrepareValue, viewOptions?: PrepareViewOptions) => PreviewValue
 }
-
-function test<
-  Select extends Record<string, string>,
-  PrepareValue extends Record<keyof Select, any>
->(preview: PreviewConfig<Select, PrepareValue>) {
-  return preview
-}
-
-const t = test({
-  select: {
-    title: 'title',
-    subtitle: 'subtitle',
-  },
-  prepare({title}: {title: string}) {
-    return {}
-  },
-})
