@@ -1,4 +1,4 @@
-import {Box, Button, Label, Stack, Text, useMediaIndex} from '@sanity/ui'
+import {Box, Card, Button, Label, Stack, Text, useMediaIndex} from '@sanity/ui'
 import React, {Dispatch, MouseEvent, SetStateAction, useCallback, useMemo} from 'react'
 import styled from 'styled-components'
 import {useSearchState} from '../../contexts/search/useSearchState'
@@ -18,7 +18,7 @@ interface RecentSearchesProps {
 const MAX_COMBINED_TYPE_COUNT_SMALL = 20
 const MAX_COMBINED_TYPE_COUNT_LARGE = 40
 
-const RecentSearchesBox = styled(Box)`
+const RecentSearchesBox = styled(Card)`
   position: relative;
 `
 
@@ -89,7 +89,7 @@ export function RecentSearches({
   )
 
   return (
-    <RecentSearchesBox flex={1}>
+    <RecentSearchesBox borderTop flex={1}>
       {recentSearches.length ? (
         <>
           <Box paddingBottom={2} paddingTop={4} paddingX={3}>

@@ -3,19 +3,12 @@ import React, {useCallback, useEffect, useId, useRef, useState} from 'react'
 import FocusLock from 'react-focus-lock'
 import styled, {css} from 'styled-components'
 import {useColorScheme} from '../../../../colorScheme'
-import {
-  DEBUG_MODE,
-  POPOVER_INPUT_PADDING,
-  POPOVER_MAX_HEIGHT,
-  POPOVER_MAX_WIDTH,
-} from '../constants'
+import {POPOVER_INPUT_PADDING, POPOVER_MAX_HEIGHT, POPOVER_MAX_WIDTH} from '../constants'
 import {CommandListProvider} from '../contexts/commandList'
 import {useSearchState} from '../contexts/search/useSearchState'
 import {useMeasureSearchResultsIndex} from '../hooks/useMeasureSearchResultsIndex'
 import {useSearchHotkeys} from '../hooks/useSearchHotkeys'
 import {hasSearchableTerms} from '../utils/hasSearchableTerms'
-import {DebugDocumentTypes} from './filters/debug/_DebugDocumentTypes'
-import {DebugFilterQuery} from './filters/debug/_DebugFilterQuery'
 import {Filters} from './filters/Filters'
 import {RecentSearches} from './recentSearches/RecentSearches'
 import {SearchHeader} from './SearchHeader'
@@ -40,12 +33,6 @@ const Overlay = styled.div`
   position: absolute;
   right: 0;
   top: 0;
-`
-
-const SearchContentCard = styled(Card)`
-  overflow-x: hidden;
-  overflow-y: auto;
-  position: relative;
 `
 
 const SearchPopoverCard = styled(Card)<{$position: PopoverPosition}>`
@@ -191,41 +178,29 @@ export function SearchPopover({
 
             {filtersVisible && (
               <Card
-                borderBottom
                 borderTop
                 // TODO: create styled component
                 style={{flexShrink: 0}}
               >
                 <Filters />
-
-                {/* Debug panels */}
-                {DEBUG_MODE && (
-                  <>
-                    <DebugFilterQuery />
-                    <DebugDocumentTypes />
-                  </>
-                )}
               </Card>
             )}
 
             <Flex align="stretch" direction="row-reverse">
-              <SearchContentCard borderTop={!filtersVisible} flex={1}>
-                {hasValidTerms ? (
-                  <SearchResults
-                    onClose={handleClose}
-                    setChildContainerRef={setChildContainerRef}
-                    setPointerOverlayRef={setPointerOverlayRef}
-                    small
-                  />
-                ) : (
-                  <RecentSearches
-                    setChildContainerRef={setChildContainerRef}
-                    setPointerOverlayRef={setPointerOverlayRef}
-                    onClear={handleClearRecentSearches}
-                    showFiltersOnClick
-                  />
-                )}
-              </SearchContentCard>
+              {hasValidTerms ? (
+                <SearchResults
+                  onClose={handleClose}
+                  setChildContainerRef={setChildContainerRef}
+                  setPointerOverlayRef={setPointerOverlayRef}
+                />
+              ) : (
+                <RecentSearches
+                  setChildContainerRef={setChildContainerRef}
+                  setPointerOverlayRef={setPointerOverlayRef}
+                  onClear={handleClearRecentSearches}
+                  showFiltersOnClick
+                />
+              )}
             </Flex>
           </SearchPopoverCard>
         </CommandListProvider>

@@ -6,7 +6,6 @@ import React, {useCallback, useId, useMemo, useState} from 'react'
 import styled from 'styled-components'
 import {useSchema} from '../../../../../../../hooks'
 import type {SearchableType} from '../../../../../../../search'
-import {SUBHEADER_HEIGHT_SMALL} from '../../../constants'
 import {CommandListProvider} from '../../../contexts/commandList'
 import {useSearchState} from '../../../contexts/search/useSearchState'
 import type {DocumentTypeMenuItem} from '../../../types'
@@ -25,7 +24,6 @@ const SearchHeaderBox = styled(Box)`
 
 const SearchHeaderContentFlex = styled(Flex)`
   box-sizing: border-box;
-  height: ${SUBHEADER_HEIGHT_SMALL};
 `
 
 export function DocumentTypesPopoverContent() {

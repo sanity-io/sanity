@@ -189,7 +189,7 @@ export function StudioNavbar() {
 
             {/* Search */}
             <LayerProvider>
-              <SearchProvider>
+              <SearchProvider fullscreen={shouldRender.searchFullscreen}>
                 <BoundaryElementProvider element={document.body}>
                   <PortalProvider element={searchFullscreenPortalEl}>
                     {shouldRender.searchFullscreen && (

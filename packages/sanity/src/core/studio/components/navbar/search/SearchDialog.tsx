@@ -6,22 +6,18 @@ import {useColorScheme} from '../../../colorScheme'
 import {RecentSearches} from './components/recentSearches/RecentSearches'
 import {SearchHeader} from './components/SearchHeader'
 import {SearchResults} from './components/searchResults/SearchResults'
-import {DocumentTypesVirtualList} from './components/filters/documentTypes/DocumentTypesVirtualList'
 import {CommandListProvider} from './contexts/commandList'
 import {useSearchState} from './contexts/search/useSearchState'
 import {useMeasureSearchResultsIndex} from './hooks/useMeasureSearchResultsIndex'
 import {useSearchHotkeys} from './hooks/useSearchHotkeys'
 import {hasSearchableTerms} from './utils/hasSearchableTerms'
+import {Filters} from './components/filters/Filters'
 
 interface SearchDialogProps {
   onClose: () => void
   onOpen: () => void
   open: boolean
 }
-
-const DialogContentCard = styled(Card)`
-  height: 100%;
-`
 
 const InnerCard = styled(Card)`
   flex-direction: column;
@@ -39,19 +35,6 @@ const SearchDialogBox = styled(Box)`
   top: 0;
   width: 100%;
   z-index: 1;
-`
-
-const SearchContentBox = styled(Box)`
-  height: 100%;
-  width: 100%;
-  overflow-x: hidden;
-  overflow-y: auto;
-`
-
-const StyledDialog = styled(Dialog)`
-  [data-ui='DialogCard'] > [data-ui='Card'] {
-    flex: 1;
-  }
 `
 
 /**
@@ -147,50 +130,28 @@ export function SearchDialog({onClose, onOpen, open}: SearchDialogProps) {
           <SearchDialogBox ref={setContainerRef}>
             <InnerCard display="flex" height="fill" scheme={scheme} tone="default">
               <SearchHeader onClose={handleClose} setHeaderInputRef={setHeaderInputRef} />
-              <SearchContentBox flex={1}>
-                {hasValidTerms ? (
-                  <SearchResults
-                    onClose={handleClose}
-                    setChildContainerRef={setChildContainerRef}
-                    setPointerOverlayRef={setPointerOverlayRef}
-                  />
-                ) : (
-                  <RecentSearches
-                    setChildContainerRef={setChildContainerRef}
-                    setPointerOverlayRef={setPointerOverlayRef}
-                  />
-                )}
-              </SearchContentBox>
-              {filtersVisible && <SearchDialogFilters />}
+              {filtersVisible && (
+                <Card borderTop>
+                  <Filters />
+                </Card>
+              )}
+
+              {hasValidTerms ? (
+                <SearchResults
+                  onClose={handleClose}
+                  setChildContainerRef={setChildContainerRef}
+                  setPointerOverlayRef={setPointerOverlayRef}
+                />
+              ) : (
+                <RecentSearches
+                  setChildContainerRef={setChildContainerRef}
+                  setPointerOverlayRef={setPointerOverlayRef}
+                />
+              )}
             </InnerCard>
           </SearchDialogBox>
         </FocusLock>
       </Portal>
     </CommandListProvider>
-  )
-}
-
-function SearchDialogFilters() {
-  const {dispatch} = useSearchState()
-
-  const handleClose = useCallback(() => {
-    dispatch({type: 'FILTERS_VISIBLE_SET', visible: false})
-  }, [dispatch])
-
-  return (
-    <FocusLock autoFocus={false}>
-      <StyledDialog
-        cardRadius={1}
-        header="Filter"
-        height="fill"
-        id="search-filter"
-        onClose={handleClose}
-        width={2}
-      >
-        <DialogContentCard tone="default">
-          <DocumentTypesVirtualList />
-        </DialogContentCard>
-      </StyledDialog>
-    </FocusLock>
   )
 }

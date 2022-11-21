@@ -15,13 +15,8 @@ import isEqual from 'lodash/isEqual'
 import React, {useCallback, useId, useMemo} from 'react'
 import styled from 'styled-components'
 import {ORDERINGS} from '../definitions/orderings'
-import {SUBHEADER_HEIGHT_SMALL} from '../constants'
 import {useSearchState} from '../contexts/search/useSearchState'
 import type {SearchOrdering} from '../types'
-
-interface SortMenuProps {
-  small?: boolean
-}
 
 interface SearchDivider {
   type: 'divider'
@@ -37,9 +32,8 @@ const MENU_ORDERINGS: (SearchDivider | SearchOrdering)[] = [
   ORDERINGS.updatedDesc,
 ]
 
-const SortMenuContentFlex = styled(Flex)<{$small?: boolean}>`
+const SortMenuContentFlex = styled(Flex)`
   box-sizing: border-box;
-  height: ${SUBHEADER_HEIGHT_SMALL};
 `
 
 function isSearchDivider(item: SearchDivider | SearchOrdering): item is SearchDivider {
@@ -69,7 +63,7 @@ function CustomMenuItem({ordering}: {ordering: SearchOrdering}) {
   )
 }
 
-export function SortMenu({small}: SortMenuProps) {
+export function SortMenu() {
   const {
     state: {ordering},
   } = useSearchState()
@@ -86,13 +80,7 @@ export function SortMenu({small}: SortMenuProps) {
 
   return (
     <Card borderBottom>
-      <SortMenuContentFlex
-        $small={small}
-        align="center"
-        flex={1}
-        marginLeft={small ? 0 : 1}
-        padding={2}
-      >
+      <SortMenuContentFlex align="center" flex={1} padding={2}>
         <MenuButton
           button={
             <Button mode="bleed" padding={2}>

@@ -24,7 +24,5 @@ export const POPOVER_INPUT_PADDING = studioTheme.space[1] // px
 export const POPOVER_MAX_HEIGHT = 735 // px
 export const POPOVER_MAX_WIDTH = 800 // px
 
-export const SUBHEADER_HEIGHT_SMALL = 43 // px
-
 export const VIRTUAL_LIST_ITEM_HEIGHT = 55 // px
 export const VIRTUAL_LIST_OVERSCAN = 4

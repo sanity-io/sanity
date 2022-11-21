@@ -18,12 +18,13 @@ import {SearchContext} from './SearchContext'
 
 interface SearchProviderProps {
   children?: ReactNode
+  fullscreen?: boolean
 }
 
 /**
  * @internal
  */
-export function SearchProvider({children}: SearchProviderProps) {
+export function SearchProvider({children, fullscreen}: SearchProviderProps) {
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const schema = useSchema()
   const currentUser = useCurrentUser()
@@ -58,8 +59,13 @@ export function SearchProvider({children}: SearchProviderProps) {
 
   const initialState = useMemo(
     () =>
-      initialSearchState({currentUser, recentSearches, definitions: {fields, operators, filters}}),
-    [currentUser, fields, filters, operators, recentSearches]
+      initialSearchState({
+        currentUser,
+        fullscreen,
+        recentSearches,
+        definitions: {fields, operators, filters},
+      }),
+    [currentUser, fields, filters, fullscreen, operators, recentSearches]
   )
   const [state, dispatch] = useReducer(searchReducer, initialState)
 

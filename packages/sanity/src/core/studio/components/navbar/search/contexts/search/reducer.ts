@@ -19,16 +19,17 @@ import {sortTypes} from '../../utils/selectors'
 export interface SearchReducerState {
   currentUser: CurrentUser | null
   debug: boolean
+  definitions: SearchDefinitions
   documentTypesNarrowed: string[]
   filters: SearchFilter[]
   filtersVisible: boolean
+  fullscreen?: boolean
   lastAddedFilter?: SearchFilter | null
   ordering: SearchOrdering
   pageIndex: number
   recentSearches: RecentSearch[]
   result: SearchResult
   terms: RecentSearch | SearchTerms
-  definitions: SearchDefinitions
 }
 
 export interface SearchDefinitions {
@@ -47,12 +48,14 @@ export interface SearchResult {
 
 export interface InitialSearchState {
   currentUser: CurrentUser | null
+  fullscreen?: boolean
   recentSearches?: RecentSearch[]
   definitions: SearchDefinitions
 }
 
 export function initialSearchState({
   currentUser,
+  fullscreen,
   recentSearches = [],
   definitions,
 }: InitialSearchState): SearchReducerState {
@@ -62,6 +65,7 @@ export function initialSearchState({
     documentTypesNarrowed: [],
     filters: [],
     filtersVisible: true,
+    fullscreen,
     ordering: ORDERINGS.relevance,
     pageIndex: 0,
     recentSearches,

@@ -3,7 +3,6 @@ import {Box, Flex, Text} from '@sanity/ui'
 import React, {useCallback, useId, useMemo, useState} from 'react'
 import styled from 'styled-components'
 import {useSchema} from '../../../../../../../hooks'
-import {SUBHEADER_HEIGHT_SMALL} from '../../../constants'
 import {CommandListProvider} from '../../../contexts/commandList'
 import {useSearchState} from '../../../contexts/search/useSearchState'
 import {CustomTextInput} from '../../common/CustomTextInput'
@@ -20,7 +19,6 @@ const FilterHeaderBox = styled(Box)`
 
 const FilterHeaderContentFlex = styled(Flex)`
   box-sizing: border-box;
-  height: ${SUBHEADER_HEIGHT_SMALL};
 `
 
 export function AddFilterPopoverContent({onClose}: AddFilterPopoverContentProps) {
