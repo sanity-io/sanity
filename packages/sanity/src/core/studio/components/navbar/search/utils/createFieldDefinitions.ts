@@ -128,7 +128,9 @@ function getDocumentFieldDefinitions(
       return acc
     }, [])
     .reduce<SearchFieldDefinition[]>((acc, val) => {
-      const prevIndex = acc.findIndex((v) => v.fieldPath === val.fieldPath && v.title === val.title)
+      const prevIndex = acc.findIndex(
+        (v) => v.fieldPath === val.fieldPath && v.title === val.title && v.type === val.type
+      )
       if (prevIndex > -1) {
         acc[prevIndex] = {
           ...acc[prevIndex],
@@ -146,12 +148,14 @@ function getDocumentFieldDefinitions(
 }
 
 /**
- * Create unique ID as a hash from documentType, fieldPath and field type
+ * Create unique ID as a hash from documentTypes, full field path, filter and field types
  */
 function addFieldDefinitionId(field: SearchFieldDefinition) {
   return {
     ...field,
-    id: Md5.hashStr(JSON.stringify([field.documentTypes, field.fieldPath, field.filterType])),
+    id: Md5.hashStr(
+      JSON.stringify([field.documentTypes, field.fieldPath, field.filterType, field.type])
+    ),
   }
 }
 
