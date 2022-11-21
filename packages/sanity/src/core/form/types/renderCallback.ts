@@ -50,6 +50,6 @@ export interface RenderPreviewCallbackProps<TLayoutKey = PreviewLayoutKey> {
   schemaType: SchemaType
   style?: CSSProperties
 }
-/** @beta */
 
+/** @beta */
 export type RenderPreviewCallback = (props: RenderPreviewCallbackProps) => ReactNode

@@ -2,7 +2,7 @@ import React, {useCallback} from 'react'
 import {Card, Text, Flex} from '@sanity/ui'
 import {Asset as AssetType, SanityDocument} from '@sanity/types'
 import {useSchema} from '../../../hooks'
-import {SanityPreview} from '../../../preview'
+import {Preview} from '../../../preview/components/Preview'
 import {IntentLink} from 'sanity/router'
 
 export const DocumentList = ({
@@ -66,7 +66,7 @@ const DocumentLink = ({document}: {document: SanityDocument}) => {
       tabIndex={0}
     >
       <Flex align="center" gap={2}>
-        <SanityPreview
+        <Preview
           layout="default"
           value={{_type: 'reference', _ref: document._id}}
           schemaType={schema.get(document._type)!}

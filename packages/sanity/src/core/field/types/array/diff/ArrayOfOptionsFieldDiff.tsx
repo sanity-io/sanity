@@ -1,12 +1,12 @@
 import {ArraySchemaType, isKeyedObject, SchemaType, TypedObject} from '@sanity/types'
 import {Box, Flex} from '@sanity/ui'
 import React from 'react'
-import {SanityPreview} from '../../../../preview'
 import {useUserColorManager} from '../../../../user-color'
 import {DiffTooltip, FromToArrow, getAnnotationColor} from '../../../diff'
 import {Annotation, ArrayDiff, Diff, DiffComponent, ItemDiff} from '../../../types'
 import {Checkbox} from '../../boolean/preview'
 import {isEqual} from '../util/arrayUtils'
+import {Preview} from '../../../../preview/components/Preview'
 
 interface NamedListOption {
   title?: string
@@ -98,7 +98,7 @@ function ItemPreview({value, memberType}: {memberType?: SchemaType; value: unkno
       {typeof value === 'string' || typeof value === 'number' ? (
         value
       ) : (
-        <SanityPreview schemaType={memberType!} value={value as any} layout="default" />
+        <Preview schemaType={memberType!} value={value as any} layout="default" />
       )}
     </Box>
   )

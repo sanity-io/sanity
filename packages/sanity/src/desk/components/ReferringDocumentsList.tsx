@@ -2,7 +2,7 @@ import {EditIcon} from '@sanity/icons'
 import {Box, Card, Flex, Stack, Text} from '@sanity/ui'
 import React, {useCallback, useMemo} from 'react'
 import {useRouter} from 'sanity/router'
-import {useSchema, SanityPreview} from 'sanity'
+import {useSchema, Preview} from 'sanity'
 
 export interface ReferringDocumentsListProps {
   documents: Record<string, any>[]
@@ -58,7 +58,7 @@ function DocumentPreviewLink(props: DocumentPreviewLinkProps) {
     <Card as="a" href={href} onClick={handleClick} padding={1} radius={2}>
       <Flex align="center">
         <Box flex={1}>
-          <SanityPreview layout="default" schemaType={schemaType} value={document as any} />
+          <Preview layout="default" schemaType={schemaType} value={document} />
         </Box>
         {document._hasDraft && (
           <Box marginLeft={3}>

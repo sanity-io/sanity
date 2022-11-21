@@ -1,14 +1,14 @@
 import React from 'react'
 import {Box} from '@sanity/ui'
-import {SanityPreview} from '../../../preview'
 import {FieldPreviewComponent} from '../../preview'
 import {Diff, DiffComponent} from '../../types'
+import {Preview} from '../../../preview/components/Preview'
 import {DiffFromTo} from './DiffFromTo'
 
 const FallbackPreview: FieldPreviewComponent<React.ReactNode> = ({value, schemaType}) => {
   return (
     <Box padding={2}>
-      <SanityPreview schemaType={schemaType} value={value as any} layout="default" />
+      <Preview schemaType={schemaType} value={value as any} layout="default" />
     </Box>
   )
 }

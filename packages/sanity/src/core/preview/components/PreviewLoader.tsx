@@ -1,11 +1,18 @@
-import React, {createElement, CSSProperties, ReactElement, useMemo, useState} from 'react'
+import React, {
+  ComponentType,
+  createElement,
+  CSSProperties,
+  ReactElement,
+  useMemo,
+  useState,
+} from 'react'
 import {RenderPreviewCallbackProps} from '../../form'
 import {useVisibility} from '../useVisibility'
 
 import {unstable_useValuePreview as useValuePreview} from '../useValuePreview'
+import {PreviewProps} from '../../components'
 import {_extractUploadState} from './_extractUploadState'
 import {_HIDE_DELAY} from './_constants'
-import {_resolvePreviewComponent} from './_resolvePreviewComponent'
 
 /**
  * This component is responsible for converting renderPreview() calls into an element.
@@ -15,8 +22,12 @@ import {_resolvePreviewComponent} from './_resolvePreviewComponent'
  * - prepares "preview"-props and passes this to the configured preview component
  * @internal
  * */
-export function SanityPreview(props: RenderPreviewCallbackProps): ReactElement {
-  const {layout, value, style: styleProp, schemaType, ...restProps} = props
+export function PreviewLoader(
+  props: RenderPreviewCallbackProps & {
+    component: ComponentType<Omit<PreviewProps, 'renderDefault'>>
+  }
+): ReactElement {
+  const {layout, value, component, style: styleProp, schemaType, ...restProps} = props
 
   const [element, setElement] = useState<HTMLDivElement | null>(null)
   const isPTE = layout && ['inline', 'block', 'blockImage'].includes(layout)
@@ -45,7 +56,6 @@ export function SanityPreview(props: RenderPreviewCallbackProps): ReactElement {
   )
 
   const uploadState = useMemo(() => _extractUploadState(value), [value])
-  const component = _resolvePreviewComponent(schemaType)
 
   return (
     <div ref={setElement} style={style}>
@@ -64,7 +74,6 @@ export function SanityPreview(props: RenderPreviewCallbackProps): ReactElement {
         error: preview?.error,
         isPlaceholder: preview?.isLoading,
         layout,
-        // @ts-expect-error TODO: fixme
         schemaType,
       })}
     </div>

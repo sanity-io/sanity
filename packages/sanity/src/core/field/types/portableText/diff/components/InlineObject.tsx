@@ -8,8 +8,8 @@ import {ChangeList, DiffContext, DiffTooltip, useDiffAnnotationColor} from '../.
 import {ObjectDiff} from '../../../../types'
 import {PortableTextChild} from '../types'
 import {isEmptyObject} from '../helpers'
-import {SanityPreview} from '../../../../../preview'
 import {ConnectorContext, useReportedValues} from '../../../../../changeIndicators'
+import {Preview} from '../../../../../preview/components/Preview'
 import {InlineBox, InlineText, PopoverContainer, PreviewContainer} from './styledComponents'
 
 interface InlineObjectProps {
@@ -53,7 +53,7 @@ export function InlineObject({diff, object, schemaType, ...restProps}: InlineObj
 
   return (
     <InlineObjectWrapper>
-      <SanityPreview schemaType={schemaType} value={object as any} layout="inline" />
+      <Preview schemaType={schemaType} value={object} layout="inline" />
     </InlineObjectWrapper>
   )
 }
@@ -144,7 +144,7 @@ function InlineObjectWithDiff({
         <PreviewContainer>
           <DiffTooltip annotations={annotations} description={`${diff.action} inline object`}>
             <InlineBox>
-              <SanityPreview schemaType={schemaType} value={object as any} layout="inline" />
+              <Preview schemaType={schemaType} value={object} layout="inline" />
               <Flex align="center" paddingX={1}>
                 <InlineText size={0}>
                   <ChevronDownIcon />

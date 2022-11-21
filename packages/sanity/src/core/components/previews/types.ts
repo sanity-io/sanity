@@ -40,6 +40,7 @@ export interface PreviewProps<TLayoutKey = PreviewLayoutKey> {
   withBorder?: boolean
   withRadius?: boolean
   withShadow?: boolean
+  schemaType?: SchemaType
   renderDefault: (props: PreviewProps) => React.ReactElement
 }
 
