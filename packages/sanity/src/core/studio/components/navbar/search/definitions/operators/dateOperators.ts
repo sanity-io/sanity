@@ -39,6 +39,13 @@ const COMMON = {
     initialValue: null,
     label: 'is',
   },
+  // Don't accept 0 as a value
+  dateLast: {
+    buttonValue: (value: OperatorDateLastValue) =>
+      value.value && Number.isFinite(value.value) && value.unit
+        ? `${Math.floor(value.value)} ${value.unit}`
+        : null,
+  },
   dateNotEqual: {
     buttonLabel: 'is not',
     fn: ({fieldPath, value}: SearchOperatorParams<string>) => {
@@ -88,13 +95,14 @@ export const dateOperators = {
     type: 'dateEqual',
   }),
   dateLast: defineSearchOperator({
+    ...COMMON.dateLast,
     buttonLabel: 'last',
-    buttonValue: (value) => (value.value && value.unit ? `${value.value} ${value.unit}` : null),
     fn: ({fieldPath, value}: SearchOperatorParams<OperatorDateLastValue>) => {
+      const flooredValue = Math.floor(value?.value ?? 0)
       const timestampAgo = sub(new Date(), {
-        days: value?.unit === 'days' ? value?.value || 0 : 0,
-        months: value?.unit === 'months' ? value?.value || 0 : 0,
-        years: value?.unit === 'years' ? value?.value || 0 : 0,
+        days: value?.unit === 'days' ? flooredValue : 0,
+        months: value?.unit === 'months' ? flooredValue : 0,
+        years: value?.unit === 'years' ? flooredValue : 0,
       }).toISOString()
       return timestampAgo && fieldPath ? `${fieldPath} > ${toJSON(timestampAgo)}` : null
     },
@@ -143,13 +151,14 @@ export const dateOperators = {
     type: 'dateTimeEqual',
   }),
   dateTimeLast: defineSearchOperator({
+    ...COMMON.dateLast,
     buttonLabel: 'last',
-    buttonValue: (value) => (value.value && value.unit ? `${value.value} ${value.unit}` : null),
     fn: ({fieldPath, value}: SearchOperatorParams<OperatorDateLastValue>) => {
+      const flooredValue = Math.floor(value?.value ?? 0)
       const timestampAgo = sub(new Date(), {
-        days: value?.unit === 'days' ? value?.value || 0 : 0,
-        months: value?.unit === 'months' ? value?.value || 0 : 0,
-        years: value?.unit === 'years' ? value?.value || 0 : 0,
+        days: value?.unit === 'days' ? flooredValue : 0,
+        months: value?.unit === 'months' ? flooredValue : 0,
+        years: value?.unit === 'years' ? flooredValue : 0,
       }).toISOString()
       return timestampAgo && fieldPath
         ? `dateTime(${fieldPath}) > dateTime(${toJSON(timestampAgo)})`

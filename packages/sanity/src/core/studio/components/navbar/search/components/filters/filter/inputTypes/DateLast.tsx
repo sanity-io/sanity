@@ -1,5 +1,5 @@
 import {Box, Flex, Select, TextInput} from '@sanity/ui'
-import React, {ChangeEvent, useCallback, useRef} from 'react'
+import React, {ChangeEvent, useCallback, useRef, useState} from 'react'
 import {OperatorDateLastValue} from '../../../../definitions/operators/dateOperators'
 import {OperatorInputComponentProps} from '../../../../definitions/operators/operatorTypes'
 
@@ -7,6 +7,7 @@ export function FieldInputDateLast({
   onChange,
   value,
 }: OperatorInputComponentProps<OperatorDateLastValue>) {
+  const [uncontrolledValue, setUncontrolledValue] = useState(value?.value || '')
   const dateUnit = useRef<OperatorDateLastValue['unit']>('days')
   const dateValue = useRef<OperatorDateLastValue['value']>(value?.value || null)
 
@@ -26,7 +27,9 @@ export function FieldInputDateLast({
   )
   const handleValueChange = useCallback(
     (event: ChangeEvent<HTMLInputElement>) => {
-      dateValue.current = Number(event.currentTarget.value)
+      setUncontrolledValue(event.currentTarget.value)
+      const numValue = parseFloat(event.currentTarget.value)
+      dateValue.current = Number.isFinite(numValue) ? numValue : null
       handleChange()
     },
     [handleChange]
@@ -38,8 +41,10 @@ export function FieldInputDateLast({
         <TextInput
           fontSize={1}
           onChange={handleValueChange}
+          pattern="\d*"
+          step="1"
           type="number"
-          value={value?.value || ''}
+          value={uncontrolledValue}
         />
       </Box>
       <Box flex={1}>
