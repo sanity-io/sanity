@@ -27,7 +27,6 @@ export function NumberInput(props: NumberInputProps) {
       step="any"
       inputMode={inputMode}
       customValidity={validationError}
-      value={value}
       placeholder={schemaType.placeholder}
       pattern={onlyPositiveNumber ? '[d]*' : undefined}
     />
