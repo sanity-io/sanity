@@ -1,4 +1,5 @@
 import React, {memo, useCallback} from 'react'
+import {capitalize} from 'lodash'
 import {FieldSetMember} from '../../store'
 import {
   RenderArrayOfObjectsItemCallback,
@@ -33,7 +34,7 @@ export const MemberFieldSet = memo(function MemberFieldSet(props: {
 
   return (
     <FormFieldSet
-      title={member.fieldSet.title}
+      title={member.fieldSet.title || capitalize(member.fieldSet.name)}
       description={member.fieldSet.description}
       level={member.fieldSet.level}
       collapsible={member.fieldSet.collapsible}
