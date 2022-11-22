@@ -1,4 +1,4 @@
-import {CloseIcon, ControlsIcon, SearchIcon, SpinnerIcon} from '@sanity/icons'
+import {ArrowLeftIcon, ControlsIcon, SearchIcon, SpinnerIcon} from '@sanity/icons'
 import {Box, Button, Card, Flex, Theme} from '@sanity/ui'
 import React, {Dispatch, SetStateAction, useCallback, useEffect, useRef, useState} from 'react'
 import styled, {keyframes} from 'styled-components'
@@ -7,7 +7,7 @@ import {supportsTouch} from '../utils/supportsTouch'
 import {CustomTextInput} from './common/CustomTextInput'
 
 interface SearchHeaderProps {
-  onClose?: () => void
+  onClose: () => void
   setHeaderInputRef: Dispatch<SetStateAction<HTMLInputElement | null>>
 }
 
@@ -47,6 +47,10 @@ export function SearchHeader({onClose, setHeaderInputRef}: SearchHeaderProps) {
   const isMountedRef = useRef(false)
 
   const {
+    state: {fullscreen},
+  } = useSearchState()
+
+  const {
     dispatch,
     state: {
       filters,
@@ -83,19 +87,20 @@ export function SearchHeader({onClose, setHeaderInputRef}: SearchHeaderProps) {
   const notificationBadgeVisible = filters.length > 0 || types.length > 0
 
   return (
-    <SearchHeaderCard
-    // borderBottom
-    >
-      <Flex align="center" flex={1}>
+    <SearchHeaderCard>
+      <Flex align="center" flex={1} gap={fullscreen ? 2 : 1} padding={fullscreen ? 2 : 1}>
+        {/* (Fullscreen) Close button */}
+        {fullscreen && (
+          <Card>
+            <Button aria-label="Close search" icon={ArrowLeftIcon} mode="bleed" onClick={onClose} />
+          </Card>
+        )}
+
         {/* Search field */}
-        <Box
-          flex={1}
-          paddingLeft={onClose ? 2 : 1}
-          paddingRight={onClose ? 2 : 0}
-          paddingY={onClose ? 2 : 1}
-        >
+        <Box flex={1}>
           <CustomTextInput
             autoComplete="off"
+            background={fullscreen}
             border={false}
             clearButton={!!query}
             fontSize={2}
@@ -104,36 +109,28 @@ export function SearchHeader({onClose, setHeaderInputRef}: SearchHeaderProps) {
             onClear={handleQueryClear}
             placeholder="Search"
             ref={setHeaderInputRef}
+            smallClearButton={fullscreen}
             spellCheck={false}
             value={query}
           />
         </Box>
 
         {/* Filter toggle */}
-        <Card borderLeft={!!onClose} padding={onClose ? 2 : 1}>
-          <FilterBox>
-            <Button
-              aria-expanded={filtersVisible}
-              aria-label="Filter"
-              height="fill"
-              icon={ControlsIcon}
-              mode="bleed"
-              onClick={handleFiltersToggle}
-              padding={3}
-              ref={setFilterButtonRef}
-              selected={filtersVisible}
-              tone="default"
-            />
-            {notificationBadgeVisible && <NotificationBadge />}
-          </FilterBox>
-        </Card>
-
-        {/* (Fullscreen) Close button */}
-        {onClose && (
-          <Card borderLeft padding={2}>
-            <Button aria-label="Close search" icon={CloseIcon} mode="bleed" onClick={onClose} />
-          </Card>
-        )}
+        <FilterBox>
+          <Button
+            aria-expanded={filtersVisible}
+            aria-label="Filter"
+            height="fill"
+            icon={ControlsIcon}
+            mode="bleed"
+            onClick={handleFiltersToggle}
+            padding={3}
+            ref={setFilterButtonRef}
+            selected={filtersVisible}
+            tone="default"
+          />
+          {notificationBadgeVisible && <NotificationBadge />}
+        </FilterBox>
       </Flex>
     </SearchHeaderCard>
   )

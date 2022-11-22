@@ -174,7 +174,7 @@ export function SearchPopover({
             shadow={2}
             style={{zIndex}}
           >
-            <SearchHeader setHeaderInputRef={setHeaderInputRef} />
+            <SearchHeader onClose={handleClose} setHeaderInputRef={setHeaderInputRef} />
 
             {filtersVisible && (
               <Card

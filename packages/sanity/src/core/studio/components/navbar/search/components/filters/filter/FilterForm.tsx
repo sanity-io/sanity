@@ -67,7 +67,7 @@ export function FilterForm({filter}: FilterFormProps) {
     <Flex direction="column-reverse">
       {/* Value */}
       {Component && (
-        <Card padding={3}>
+        <Card borderTop padding={3}>
           <Component
             // re-render on new operators
             key={filter.operatorType}
@@ -79,7 +79,7 @@ export function FilterForm({filter}: FilterFormProps) {
       )}
 
       {/* Title, description and operator */}
-      <Card borderBottom padding={3}>
+      <Card padding={3}>
         <Stack space={3}>
           <Flex align="flex-start" gap={3} justify="space-between">
             <Box paddingBottom={1} paddingLeft={1} paddingRight={2} paddingTop={2}>

@@ -22,7 +22,7 @@ const HiddenOverlay = styled.div`
   position: fixed;
   top: 0;
   width: 100%;
-  z-index: 0;
+  z-index: -1;
 `
 
 export function FilterPopoverWrapper({
