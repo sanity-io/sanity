@@ -1,4 +1,4 @@
-import {Box, Button, Card, Code, ErrorBoundary, Flex, Heading, Spinner, Stack} from '@sanity/ui'
+import {Card, Flex, Spinner} from '@sanity/ui'
 import {startCase} from 'lodash'
 import React, {
   createContext,
@@ -10,10 +10,10 @@ import React, {
   useState,
 } from 'react'
 import styled from 'styled-components'
-import {useHotModuleReload} from 'use-hot-module-reload'
 import {NoToolsScreen} from './screens/NoToolsScreen'
 import {ToolNotFoundScreen} from './screens/ToolNotFoundScreen'
 import {useNavbarComponent} from './studio-components-hooks'
+import {StudioErrorBoundary} from './StudioErrorBoundary'
 import {useWorkspace} from './workspace'
 import {RouteScope, useRouter} from 'sanity/router'
 
@@ -51,7 +51,6 @@ export function StudioLayout() {
   const [searchFullscreenPortalEl, setSearchFullscreenPortalEl] = useState<HTMLDivElement | null>(
     null
   )
-  const [toolError, setToolError] = useState<{error: Error; info: React.ErrorInfo} | null>(null)
 
   const documentTitle = useMemo(() => {
     const mainTitle = title || startCase(name)
@@ -71,11 +70,6 @@ export function StudioLayout() {
     setSearchFullscreenOpen(open)
   }, [])
 
-  const resetToolError = useCallback(() => setToolError(null), [setToolError])
-
-  useEffect(resetToolError, [activeToolName, resetToolError])
-  useHotModuleReload(resetToolError)
-
   const navbarContextValue = useMemo(
     () => ({
       searchFullscreenOpen,
@@ -92,51 +86,26 @@ export function StudioLayout() {
       <NavbarContext.Provider value={navbarContextValue}>
         <Navbar />
       </NavbarContext.Provider>
-
       {tools.length === 0 && <NoToolsScreen />}
-
       {tools.length > 0 && !activeTool && activeToolName && (
         <ToolNotFoundScreen toolName={activeToolName} />
       )}
-
-      {toolError && activeTool && (
-        <Card flex={1} overflow="auto" padding={4} sizing="border">
-          <Stack space={4}>
-            <Heading as="h1">
-              The <code>{activeToolName}</code> tool crashed
-            </Heading>
-            <Box>
-              <Button onClick={resetToolError} text="Retry" />
-            </Box>
-
-            <Card overflow="auto" padding={3} tone="critical" radius={2}>
-              <Code size={1}>{toolError.error.stack}</Code>
-            </Card>
-
-            <Card overflow="auto" padding={3} tone="critical" radius={2}>
-              <Code size={1}>{toolError.info.componentStack}</Code>
-            </Card>
-          </Stack>
-        </Card>
-      )}
-
       {searchFullscreenOpen && (
         <SearchFullscreenPortalCard ref={setSearchFullscreenPortalEl} overflow="auto" />
       )}
-
-      {!toolError && (
+      {/* By using the tool name as the key on the error boundary, we force it to re-render
+          when switching tools, which ensures we don't show the wrong tool having crashed */}
+      <StudioErrorBoundary key={activeTool?.name} heading={`The ${activeTool?.name} tool crashed`}>
         <Card flex={1} hidden={searchFullscreenOpen}>
           {activeTool && activeToolName && (
             <RouteScope scope={activeToolName}>
-              <ErrorBoundary onCatch={setToolError}>
-                <Suspense fallback={<LoadingTool />}>
-                  {createElement(activeTool.component, {tool: activeTool})}
-                </Suspense>
-              </ErrorBoundary>
+              <Suspense fallback={<LoadingTool />}>
+                {createElement(activeTool.component, {tool: activeTool})}
+              </Suspense>
             </RouteScope>
           )}
         </Card>
-      )}
+      </StudioErrorBoundary>
     </Flex>
   )
 }

@@ -7,6 +7,7 @@ import json from 'refractor/lang/json'
 import jsx from 'refractor/lang/jsx'
 import typescript from 'refractor/lang/typescript'
 import {UserColorManagerProvider} from '../user-color'
+import {ErrorLogger} from '../error/ErrorLogger'
 import {ResourceCacheProvider} from '../store'
 import {AuthBoundary} from './AuthBoundary'
 import {StudioProps} from './Studio'
@@ -53,6 +54,7 @@ export function StudioProvider({
   return (
     <ColorSchemeProvider onSchemeChange={onSchemeChange} scheme={scheme}>
       <ToastProvider paddingY={7} zOffset={Z_OFFSET.toast}>
+        <ErrorLogger />
         <StudioErrorBoundary>
           <WorkspacesProvider config={config}>
             <ActiveWorkspaceMatcher
