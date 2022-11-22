@@ -68,7 +68,7 @@ export function OperatorsMenuButton({filter, operator}: OperatorsMenuButtonProps
         button={
           <Button mode="ghost" padding={3}>
             <Flex align="center" gap={2} justify="space-between">
-              <Text size={1} weight="regular">
+              <Text size={state.fullscreen ? 2 : 1} weight="regular">
                 {operator.label}
               </Text>
               <Box marginLeft={1}>

@@ -3,7 +3,6 @@ import {typed} from '@sanity/types'
 import {FieldInputDateLast} from '../../components/filters/filter/inputTypes/DateLast'
 import {FieldInputDate} from '../../components/filters/filter/inputTypes/Date'
 import {FieldInputDateTime} from '../../components/filters/filter/inputTypes/DateTime'
-import {FieldInputDateRange} from '../../components/filters/filter/inputTypes/DateRange'
 import {toJSON} from './operatorUtils'
 import {defineSearchOperator, SearchOperatorParams} from './operatorTypes'
 
@@ -120,11 +119,6 @@ export const dateOperators = {
     inputComponent: FieldInputDate,
     type: 'dateNotEqual',
   }),
-  dateRange: defineSearchOperator({
-    ...COMMON.dateRange,
-    inputComponent: FieldInputDateRange,
-    type: 'dateRange',
-  }),
   dateTimeAfter: defineSearchOperator({
     ...COMMON.dateAfter,
     buttonValue: (value) => buttonDateValue({value}),
@@ -177,11 +171,6 @@ export const dateOperators = {
     buttonValue: (value) => buttonDateValue({value}),
     inputComponent: FieldInputDateTime,
     type: 'dateTimeNotEqual',
-  }),
-  dateTimeRange: defineSearchOperator({
-    ...COMMON.dateRange,
-    inputComponent: FieldInputDateRange,
-    type: 'dateTimeRange',
   }),
 }
 

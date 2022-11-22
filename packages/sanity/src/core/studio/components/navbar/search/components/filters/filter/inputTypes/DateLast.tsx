@@ -1,5 +1,6 @@
 import {Box, Flex, Select, TextInput} from '@sanity/ui'
 import React, {ChangeEvent, useCallback, useRef, useState} from 'react'
+import {useSearchState} from '../../../../contexts/search/useSearchState'
 import {OperatorDateLastValue} from '../../../../definitions/operators/dateOperators'
 import {OperatorInputComponentProps} from '../../../../definitions/operators/operatorTypes'
 
@@ -10,6 +11,10 @@ export function FieldInputDateLast({
   const [uncontrolledValue, setUncontrolledValue] = useState(value?.value || '')
   const dateUnit = useRef<OperatorDateLastValue['unit']>('days')
   const dateValue = useRef<OperatorDateLastValue['value']>(value?.value || null)
+
+  const {
+    state: {fullscreen},
+  } = useSearchState()
 
   const handleChange = useCallback(() => {
     onChange({
@@ -39,7 +44,7 @@ export function FieldInputDateLast({
     <Flex gap={2}>
       <Box flex={1}>
         <TextInput
-          fontSize={1}
+          fontSize={fullscreen ? 2 : 1}
           onChange={handleValueChange}
           pattern="\d*"
           step="1"
@@ -48,7 +53,7 @@ export function FieldInputDateLast({
         />
       </Box>
       <Box flex={1}>
-        <Select fontSize={1} onChange={handleUnitChange} value={value?.unit}>
+        <Select fontSize={fullscreen ? 2 : 1} onChange={handleUnitChange} value={value?.unit}>
           <option value="days">Days</option>
           <option value="months">Months</option>
           <option value="years">Years</option>

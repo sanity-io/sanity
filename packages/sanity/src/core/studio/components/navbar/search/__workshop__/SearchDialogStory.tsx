@@ -8,7 +8,7 @@ const noop = () => null
 export default function SearchDialogStory() {
   return (
     <LayerProvider>
-      <SearchProvider>
+      <SearchProvider fullscreen>
         <SearchDialog onClose={noop} onOpen={noop} open />
       </SearchProvider>
     </LayerProvider>

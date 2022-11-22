@@ -1,5 +1,6 @@
 import {Card, Text} from '@sanity/ui'
 import React, {useCallback} from 'react'
+import {useDatePicker} from '../contexts/useDatePicker'
 
 interface CalendarDayProps {
   date: Date
@@ -16,6 +17,8 @@ export function CalendarDay(props: CalendarDayProps) {
   const handleClick = useCallback(() => {
     onSelect(date)
   }, [date, onSelect])
+
+  const {fontSize} = useDatePicker()
 
   return (
     <div aria-selected={selected} data-ui="CalendarDay">
@@ -36,7 +39,7 @@ export function CalendarDay(props: CalendarDayProps) {
       >
         <Text
           muted={!selected && !isCurrentMonth}
-          size={1}
+          size={fontSize}
           style={{textAlign: 'center'}}
           // weight={isCurrentMonth ? 'medium' : 'regular'}
           weight="regular"

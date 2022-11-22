@@ -1,5 +1,6 @@
 import React from 'react'
 import {Calendar} from './calendar/Calendar'
+import {DatePickerProvider} from './contexts/DatePickerProvider'
 
 export const DatePicker = React.forwardRef(function DatePicker(
   props: Omit<React.ComponentProps<'div'>, 'onChange'> & {
@@ -22,13 +23,15 @@ export const DatePicker = React.forwardRef(function DatePicker(
   )
 
   return (
-    <Calendar
-      {...rest}
-      ref={ref}
-      selectedDate={value}
-      onSelect={handleSelect}
-      focusedDate={focusedDate || value}
-      onFocusedDateChange={setFocusedDay}
-    />
+    <DatePickerProvider fontSize={2}>
+      <Calendar
+        {...rest}
+        ref={ref}
+        selectedDate={value}
+        onSelect={handleSelect}
+        focusedDate={focusedDate || value}
+        onFocusedDateChange={setFocusedDay}
+      />
+    </DatePickerProvider>
   )
 })

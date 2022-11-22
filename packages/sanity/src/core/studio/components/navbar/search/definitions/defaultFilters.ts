@@ -99,8 +99,6 @@ export const filterDefinitions: SearchFilterDefinition[] = [
       {name: 'dateTimeAfter', type: 'item'},
       {name: 'dateTimeBefore', type: 'item'},
       {type: 'divider'},
-      // {name: 'dateTimeRange', type: 'item'},
-      // {type: 'divider'},
       {name: 'dateTimeEqual', type: 'item'},
       {name: 'dateTimeNotEqual', type: 'item'},
       {type: 'divider'},

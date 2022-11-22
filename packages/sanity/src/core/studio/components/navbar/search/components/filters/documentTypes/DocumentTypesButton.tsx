@@ -26,7 +26,7 @@ export default function DocumentTypesButton() {
     <Popover
       content={
         <FilterPopoverWrapper anchorElement={buttonElement} onClose={handleClose}>
-          <DocumentTypesPopoverContent onClose={handleClose} />
+          <DocumentTypesPopoverContent />
         </FilterPopoverWrapper>
       }
       open={open}

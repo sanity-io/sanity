@@ -1,6 +1,7 @@
 import {Box, Grid, Text} from '@sanity/ui'
 import {isSameDay, isSameMonth} from 'date-fns'
 import React from 'react'
+import {useDatePicker} from '../contexts/useDatePicker'
 import {CalendarDay} from './CalendarDay'
 import {WEEK_DAY_NAMES} from './constants'
 import {getWeeksOfMonth} from './utils'
@@ -14,12 +15,14 @@ interface CalendarMonthProps {
 }
 
 export function CalendarMonth(props: CalendarMonthProps) {
+  const {fontSize} = useDatePicker()
+
   return (
     <Box aria-hidden={props.hidden || false} data-ui="CalendarMonth">
       <Grid gap={1} style={{gridTemplateColumns: 'repeat(7, minmax(44px, 46px))'}}>
         {WEEK_DAY_NAMES.map((weekday) => (
           <Box key={weekday} paddingY={2}>
-            <Text size={1} weight="medium" style={{textAlign: 'center'}}>
+            <Text size={fontSize} weight="medium" style={{textAlign: 'center'}}>
               {weekday}
             </Text>
           </Box>

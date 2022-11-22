@@ -1,6 +1,7 @@
 import {Stack} from '@sanity/ui'
 import {format, isValid, parse} from 'date-fns'
 import React, {ChangeEvent, KeyboardEvent, useCallback, useEffect, useMemo, useState} from 'react'
+import {useSearchState} from '../../../../contexts/search/useSearchState'
 import type {OperatorInputComponentProps} from '../../../../definitions/operators/operatorTypes'
 import {CustomTextInput} from '../../../common/CustomTextInput'
 import {DatePicker} from './datePicker/DatePicker'
@@ -19,6 +20,10 @@ export function CommonDateInput({
     () => [DEFAULT_DATE_FORMAT, ...(selectTime ? [DEFAULT_TIME_FORMAT] : [])].join(' '),
     [selectTime]
   )
+
+  const {
+    state: {fullscreen},
+  } = useSearchState()
 
   const [customValidity, setCustomValidity] = useState<string | undefined>(undefined)
   const [inputValue, setInputValue] = useState<string>(() =>
@@ -83,7 +88,7 @@ export function CommonDateInput({
       <CustomTextInput
         clearButton={!!inputValue}
         customValidity={customValidity}
-        fontSize={1}
+        fontSize={fullscreen ? 2 : 1}
         onBlur={handleTextInputBlur}
         onChange={handleTextInputChange}
         onClear={handleTextInputClear}

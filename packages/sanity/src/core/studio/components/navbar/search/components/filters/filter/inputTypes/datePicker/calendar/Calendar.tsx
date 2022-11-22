@@ -3,6 +3,7 @@ import {Box, Button, Flex, Select, Text, useForwardedRef} from '@sanity/ui'
 import {addDays, addMonths, setDate, setHours, setMinutes, setMonth, setYear} from 'date-fns'
 import {range} from 'lodash'
 import React, {forwardRef, useCallback, useEffect} from 'react'
+import {useDatePicker} from '../contexts/useDatePicker'
 import {CalendarMonth} from './CalendarMonth'
 import {ARROW_KEYS, HOURS_24, MONTH_NAMES} from './constants'
 import {YearInput} from './YearInput'
@@ -44,6 +45,8 @@ export const Calendar = forwardRef(function Calendar(
     onSelect,
     ...restProps
   } = props
+
+  const {fontSize} = useDatePicker()
 
   const setFocusedDate = useCallback(
     (date: Date) => onFocusedDateChange(date),
@@ -153,6 +156,7 @@ export const Calendar = forwardRef(function Calendar(
         <Flex>
           <Box flex={1}>
             <CalendarMonthSelect
+              fontSize={fontSize}
               moveFocusedDate={moveFocusedDate}
               onChange={handleFocusedMonthChange}
               value={focusedDate?.getMonth()}
@@ -193,7 +197,7 @@ export const Calendar = forwardRef(function Calendar(
               <Box>
                 <Select
                   aria-label="Select hour"
-                  fontSize={1}
+                  fontSize={fontSize}
                   value={selectedDate?.getHours()}
                   onChange={handleHoursChange}
                 >
@@ -212,7 +216,7 @@ export const Calendar = forwardRef(function Calendar(
               <Box>
                 <Select
                   aria-label="Select minutes"
-                  fontSize={1}
+                  fontSize={fontSize}
                   value={selectedDate?.getMinutes()}
                   onChange={handleMinutesChange}
                 >
@@ -226,7 +230,12 @@ export const Calendar = forwardRef(function Calendar(
             </Flex>
 
             <Box marginLeft={2}>
-              <Button fontSize={1} text="Current time" mode="bleed" onClick={handleNowClick} />
+              <Button
+                fontSize={fontSize}
+                text="Current time"
+                mode="bleed"
+                onClick={handleNowClick}
+              />
             </Box>
           </Flex>
         </Box>
@@ -236,11 +245,12 @@ export const Calendar = forwardRef(function Calendar(
 })
 
 function CalendarMonthSelect(props: {
+  fontSize?: number
   moveFocusedDate: (by: number) => void
   onChange: (e: React.FormEvent<HTMLSelectElement>) => void
   value?: number
 }) {
-  const {moveFocusedDate, onChange, value} = props
+  const {fontSize, moveFocusedDate, onChange, value} = props
 
   /*
   const handlePrevMonthClick = useCallback(() => moveFocusedDate(-1), [moveFocusedDate])
@@ -250,7 +260,7 @@ function CalendarMonthSelect(props: {
   return (
     <Flex flex={1}>
       <Box flex={1}>
-        <Select fontSize={1} radius={0} value={value} onChange={onChange}>
+        <Select fontSize={fontSize ?? 1} radius={0} value={value} onChange={onChange}>
           {MONTH_NAMES.map((m, i) => (
             // eslint-disable-next-line react/no-array-index-key
             <option key={i} value={i}>

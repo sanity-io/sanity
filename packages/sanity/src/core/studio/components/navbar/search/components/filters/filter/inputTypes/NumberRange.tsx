@@ -1,5 +1,6 @@
 import {Box, Flex, TextInput} from '@sanity/ui'
 import React, {ChangeEvent, useCallback, useState} from 'react'
+import {useSearchState} from '../../../../contexts/search/useSearchState'
 import {OperatorNumberRangeValue} from '../../../../definitions/operators/common'
 import {OperatorInputComponentProps} from '../../../../definitions/operators/operatorTypes'
 
@@ -9,6 +10,10 @@ export function FieldInputNumberRange({
 }: OperatorInputComponentProps<OperatorNumberRangeValue>) {
   const [max, setMax] = useState(value?.max ?? '')
   const [min, setMin] = useState(value?.min ?? '')
+
+  const {
+    state: {fullscreen},
+  } = useSearchState()
 
   const handleMaxChange = useCallback(
     (event: ChangeEvent<HTMLInputElement>) => {
@@ -37,9 +42,9 @@ export function FieldInputNumberRange({
     <Flex gap={2}>
       <Box flex={1}>
         <TextInput
-          fontSize={1}
+          fontSize={fullscreen ? 2 : 1}
           onChange={handleMinChange}
-          placeholder="Enter value..."
+          placeholder="Min value"
           step="any"
           type="number"
           value={min}
@@ -47,9 +52,9 @@ export function FieldInputNumberRange({
       </Box>
       <Box flex={1}>
         <TextInput
-          fontSize={1}
+          fontSize={fullscreen ? 2 : 1}
           onChange={handleMaxChange}
-          placeholder="Enter value..."
+          placeholder="Max value"
           step="any"
           type="number"
           value={max}

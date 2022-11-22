@@ -18,7 +18,7 @@ interface FilterFormProps {
 export function FilterForm({filter}: FilterFormProps) {
   const {
     dispatch,
-    state: {definitions, documentTypesNarrowed},
+    state: {definitions, documentTypesNarrowed, fullscreen},
   } = useSearchState()
 
   const filterDefinition = getFilterDefinition(definitions.filters, filter.filterType)
@@ -74,7 +74,7 @@ export function FilterForm({filter}: FilterFormProps) {
       <Card borderBottom padding={3}>
         <Stack space={3}>
           <Box marginY={1} paddingRight={2}>
-            <FilterDetails filter={filter} />
+            <FilterDetails filter={filter} small={!fullscreen} />
           </Box>
           {filterDefinition?.description && (
             <Card border padding={3} radius={2} tone="transparent">

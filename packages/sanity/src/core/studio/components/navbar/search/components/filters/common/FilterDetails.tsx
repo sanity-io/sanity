@@ -9,20 +9,21 @@ import {FilterIcon} from './FilterIcon'
 
 interface FilterDetailsProps {
   filter: SearchFilter
+  small?: boolean
 }
 
-export function FilterDetails({filter}: FilterDetailsProps) {
+export function FilterDetails({filter, small = true}: FilterDetailsProps) {
   const {
     state: {definitions},
   } = useSearchState()
   const fieldDefinition = getFieldFromFilter(definitions.fields, filter)
 
   return (
-    <Stack space={2}>
+    <Stack space={small ? 2 : 3}>
       {/* Path */}
       {fieldDefinition?.titlePath && fieldDefinition.titlePath?.length > 1 && (
-        <Flex gap={2} marginLeft={4} paddingLeft={1}>
-          <Text muted size={0}>
+        <Box marginLeft={4}>
+          <Text muted size={small ? 0 : 1}>
             {fieldDefinition.titlePath.slice(0, -1).map((pathTitle, index) => {
               return (
                 <React.Fragment
@@ -45,20 +46,18 @@ export function FilterDetails({filter}: FilterDetailsProps) {
               )
             })}
           </Text>
-        </Flex>
+        </Box>
       )}
 
       <Flex align="flex-start" gap={3}>
-        <Box marginLeft={1}>
+        <Box>
           <Text size={1}>
             <FilterIcon filter={filter} />
           </Text>
         </Box>
-        <Stack space={3}>
-          <Text size={1} weight="medium">
-            <FilterTitle filter={filter} />
-          </Text>
-        </Stack>
+        <Text size={small ? 1 : 2} weight="medium">
+          <FilterTitle filter={filter} />
+        </Text>
       </Flex>
     </Stack>
   )

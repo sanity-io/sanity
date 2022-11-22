@@ -38,6 +38,7 @@ export function DocumentTypesPopoverContent() {
   const {
     dispatch,
     state: {
+      fullscreen,
       terms: {types: selectedTypes},
     },
   } = useSearchState()
@@ -84,7 +85,7 @@ export function DocumentTypesPopoverContent() {
               autoComplete="off"
               border={false}
               clearButton={!!typeFilter}
-              fontSize={1}
+              fontSize={fullscreen ? 2 : 1}
               icon={SearchIcon}
               muted
               onChange={handleFilterChange}

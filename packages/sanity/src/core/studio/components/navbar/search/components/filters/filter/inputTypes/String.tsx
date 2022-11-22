@@ -1,8 +1,13 @@
 import {TextInput} from '@sanity/ui'
 import React, {ChangeEvent, useCallback} from 'react'
+import {useSearchState} from '../../../../contexts/search/useSearchState'
 import {OperatorInputComponentProps} from '../../../../definitions/operators/operatorTypes'
 
 export function FieldInputString({onChange, value}: OperatorInputComponentProps<number | string>) {
+  const {
+    state: {fullscreen},
+  } = useSearchState()
+
   const handleChange = useCallback(
     (event: ChangeEvent<HTMLInputElement>) => onChange(event.currentTarget.value || null),
     [onChange]
@@ -10,9 +15,9 @@ export function FieldInputString({onChange, value}: OperatorInputComponentProps<
 
   return (
     <TextInput
-      fontSize={1}
+      fontSize={fullscreen ? 2 : 1}
       onChange={handleChange}
-      placeholder="Enter value..."
+      placeholder="Value"
       value={value || ''}
     />
   )

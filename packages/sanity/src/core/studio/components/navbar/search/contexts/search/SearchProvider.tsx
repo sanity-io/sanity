@@ -172,7 +172,10 @@ export function SearchProvider({children, fullscreen}: SearchProviderProps) {
       value={{
         dispatch,
         recentSearchesStore,
-        state,
+        state: {
+          ...state,
+          fullscreen,
+        },
       }}
     >
       {children}

@@ -7,6 +7,7 @@ type Operator<TOperators = SearchOperatorType> = OperatorDivider | OperatorItem<
 type OperatorDivider = {
   type: 'divider'
 }
+
 type OperatorItem<TOperators = SearchOperatorType> = {
   name: TOperators
   type: 'item'

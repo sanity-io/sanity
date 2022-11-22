@@ -42,6 +42,7 @@ export function AddFilterPopoverContent({onClose}: AddFilterPopoverContentProps)
     state: {
       documentTypesNarrowed,
       definitions,
+      fullscreen,
       terms: {types},
     },
   } = useSearchState()
@@ -79,7 +80,7 @@ export function AddFilterPopoverContent({onClose}: AddFilterPopoverContentProps)
               autoComplete="off"
               border={false}
               clearButton={!!titleFilter}
-              fontSize={1}
+              fontSize={fullscreen ? 2 : 1}
               icon={SearchIcon}
               muted
               onChange={handleFilterChange}

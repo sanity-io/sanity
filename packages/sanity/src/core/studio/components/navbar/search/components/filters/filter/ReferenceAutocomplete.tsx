@@ -3,6 +3,7 @@ import React, {forwardRef, ReactElement, useCallback, useId, useRef, useState} f
 import {useSchema} from '../../../../../../../hooks'
 import {WeightedHit} from '../../../../../../../search'
 import {useDocumentPreviewStore} from '../../../../../../../store'
+import {useSearchState} from '../../../contexts/search/useSearchState'
 import {useSearch} from '../../../hooks/useSearch'
 import SearchResultItemPreview from '../../searchResults/items/SearchResultItemPreview'
 
@@ -34,6 +35,10 @@ export const ReferenceAutocomplete = forwardRef(function DebugMiniReferenceInput
 
   const schema = useSchema()
   const documentPreviewStore = useDocumentPreviewStore()
+
+  const {
+    state: {fullscreen},
+  } = useSearchState()
 
   const autocompleteId = useId()
 
@@ -140,7 +145,7 @@ export const ReferenceAutocomplete = forwardRef(function DebugMiniReferenceInput
       ) : (
         <Autocomplete
           filterOption={NO_FILTER}
-          fontSize={1}
+          fontSize={fullscreen ? 2 : 1}
           id={autocompleteId}
           // openButton
           options={autocompleteOptions}
