@@ -2,7 +2,7 @@ import {Inline, Text} from '@sanity/ui'
 import React, {useMemo} from 'react'
 import type {SearchableType} from '../../../../../../search'
 
-interface TypePillsProps {
+interface DocumentTypesTruncatedProps {
   availableCharacters?: number
   types: SearchableType[]
 }
@@ -12,7 +12,7 @@ const DEFAULT_AVAILABLE_CHARS = 40 // excluding "+x more" suffix
 export function DocumentTypesTruncated({
   availableCharacters = DEFAULT_AVAILABLE_CHARS,
   types,
-}: TypePillsProps) {
+}: DocumentTypesTruncatedProps) {
   /**
    * Get the total number of visible document types whose titles fit within `availableCharacters` count.
    * The first document is always included, regardless of whether it fits within `availableCharacters` or not.

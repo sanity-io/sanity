@@ -1,4 +1,5 @@
-import {Box, Card, Flex, Stack, Text} from '@sanity/ui'
+import {TrashIcon} from '@sanity/icons'
+import {Box, Button, Card, Flex, Stack, Text} from '@sanity/ui'
 import React, {useCallback, useMemo} from 'react'
 import {useSchema} from '../../../../../../../hooks'
 import {isNonNullable} from '../../../../../../../util'
@@ -26,6 +27,13 @@ export function FilterForm({filter}: FilterFormProps) {
   const fieldDefinition = getFieldFromFilter(definitions.fields, filter)
   const filterKey = getFilterKey(filter)
   const schema = useSchema()
+
+  const handleClose = useCallback(() => {
+    dispatch({
+      filterKey: getFilterKey(filter),
+      type: 'TERMS_FILTERS_REMOVE',
+    })
+  }, [dispatch, filter])
 
   const handleValueChange = useCallback(
     (value: any) => {
@@ -73,9 +81,22 @@ export function FilterForm({filter}: FilterFormProps) {
       {/* Title, description and operator */}
       <Card borderBottom padding={3}>
         <Stack space={3}>
-          <Box marginY={1} paddingRight={2}>
-            <FilterDetails filter={filter} small={!fullscreen} />
-          </Box>
+          <Flex align="flex-start" gap={3} justify="space-between">
+            <Box paddingBottom={1} paddingLeft={1} paddingRight={2} paddingTop={2}>
+              <FilterDetails filter={filter} small={!fullscreen} />
+            </Box>
+
+            {fullscreen && (
+              <Button
+                fontSize={2}
+                icon={TrashIcon}
+                mode="bleed"
+                onClick={handleClose}
+                padding={2}
+                tone="critical"
+              />
+            )}
+          </Flex>
           {filterDefinition?.description && (
             <Card border padding={3} radius={2} tone="transparent">
               <Text muted size={1}>

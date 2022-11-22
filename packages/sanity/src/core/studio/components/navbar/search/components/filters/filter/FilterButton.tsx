@@ -25,7 +25,7 @@ export default function FilterButton({filter, initialOpen}: FilterButtonProps) {
 
   const {
     dispatch,
-    state: {definitions},
+    state: {definitions, fullscreen},
   } = useSearchState()
 
   const handleClose = useCallback(() => setOpen(false), [])
@@ -62,12 +62,11 @@ export default function FilterButton({filter, initialOpen}: FilterButtonProps) {
     >
       <Flex align="center" ref={setButtonElement} style={{position: 'relative'}}>
         <Button
-          fontSize={1}
           onClick={handleOpen}
           onKeyDown={handleKeyDown}
-          paddingLeft={2}
-          paddingRight={5}
-          paddingY={2}
+          paddingLeft={fullscreen ? 3 : 2}
+          paddingRight={fullscreen ? 3 : 5}
+          paddingY={fullscreen ? 3 : 2}
           radius={2}
           style={{maxWidth: '100%'}}
           tone={isComplete ? 'primary' : 'default'}
@@ -75,18 +74,20 @@ export default function FilterButton({filter, initialOpen}: FilterButtonProps) {
           <FilterLabel filter={filter} showContent={isComplete} />
         </Button>
 
-        <CloseButton
-          fontSize={1}
-          icon={CloseIcon}
-          onClick={handleRemove}
-          onKeyDown={handleKeyDown}
-          padding={2}
-          style={{
-            position: 'absolute',
-            right: 0,
-          }}
-          tone={isComplete ? 'primary' : 'default'}
-        />
+        {!fullscreen && (
+          <CloseButton
+            fontSize={1}
+            icon={CloseIcon}
+            onClick={handleRemove}
+            onKeyDown={handleKeyDown}
+            padding={2}
+            style={{
+              position: 'absolute',
+              right: 0,
+            }}
+            tone={isComplete ? 'primary' : 'default'}
+          />
+        )}
       </Flex>
     </Popover>
   )

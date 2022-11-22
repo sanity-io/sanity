@@ -7,10 +7,11 @@ import {FilterTitle} from './FilterTitle'
 
 interface FilterLabelProps {
   filter: SearchFilter
+  fontSize?: number
   showContent?: boolean
 }
 
-export function FilterLabel({filter, showContent = true}: FilterLabelProps) {
+export function FilterLabel({filter, fontSize = 1, showContent = true}: FilterLabelProps) {
   const {
     state: {definitions},
   } = useSearchState()
@@ -29,18 +30,18 @@ export function FilterLabel({filter, showContent = true}: FilterLabelProps) {
       </Box>
       */}
       {/* Title */}
-      <Text size={1} weight="medium">
+      <Text size={fontSize} weight="medium">
         <FilterTitle filter={filter} />
       </Text>
       {/* Operator */}
       {showContent && operator?.buttonLabel && (
-        <Text muted size={1} weight="regular">
+        <Text muted size={fontSize} weight="regular">
           {operator.buttonLabel}
         </Text>
       )}
       {/* Value */}
       {showContent && (
-        <Text size={1} textOverflow="ellipsis" weight="medium">
+        <Text size={fontSize} textOverflow="ellipsis" weight="medium">
           {value}
         </Text>
       )}

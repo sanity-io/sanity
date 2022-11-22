@@ -13,6 +13,7 @@ export default function DocumentTypesButton() {
 
   const {
     state: {
+      fullscreen,
       terms: {types},
     },
   } = useSearchState()
@@ -37,7 +38,7 @@ export default function DocumentTypesButton() {
       <Button
         mode="ghost"
         onClick={handleOpen}
-        padding={2}
+        padding={fullscreen ? 3 : 2}
         ref={setButtonElement}
         style={{maxWidth: '100%'}}
         tone="default"
