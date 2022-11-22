@@ -354,8 +354,6 @@ export function ArrayOfObjectsField(props: {
     member.field.path,
     member.field.validation,
     member.field.presence,
-    handleExpand,
-    handleCollapse,
     handleExpandItem,
     handleCollapseItem,
     handleCloseItem,
