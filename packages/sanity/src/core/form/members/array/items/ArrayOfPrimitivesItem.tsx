@@ -62,6 +62,9 @@ export function ArrayOfPrimitivesItem(props: PrimitiveMemberItemProps) {
       let inputValue: number | string | boolean = event.currentTarget.value
       if (isNumberSchemaType(member.item.schemaType)) {
         inputValue = event.currentTarget.valueAsNumber
+        if (inputValue > Number.MAX_SAFE_INTEGER || inputValue < Number.MIN_SAFE_INTEGER) {
+          return
+        }
       } else if (isBooleanSchemaType(member.item.schemaType)) {
         inputValue = event.currentTarget.checked
       }
