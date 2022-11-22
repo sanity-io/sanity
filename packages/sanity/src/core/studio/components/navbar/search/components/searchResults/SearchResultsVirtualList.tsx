@@ -82,17 +82,30 @@ export function SearchResultsVirtualList({
         {getVirtualItems().map((virtualRow) => {
           const hit = result.hits[virtualRow.index]
           return (
-            <SearchResultItem
-              data={hit}
-              debug={debug}
-              documentId={getPublishedId(hit.hit._id) || ''}
-              index={virtualRow.index}
+            <div
+              data-index={virtualRow.index}
               key={virtualRow.key}
-              onClick={handleResultClick}
-              onMouseDown={onChildMouseDown}
-              onMouseEnter={onChildMouseEnter(virtualRow.index)}
-              virtualRow={virtualRow}
-            />
+              style={{
+                // Kept inline to prevent styled-components from generating loads of classes on virtual list scroll
+                flex: 1,
+                height: `${virtualRow.size}px`,
+                left: 0,
+                position: 'absolute',
+                top: 0,
+                transform: `translateY(${virtualRow.start}px)`,
+                width: '100%',
+              }}
+            >
+              <SearchResultItem
+                data={hit}
+                debug={debug}
+                documentId={getPublishedId(hit.hit._id) || ''}
+                key={virtualRow.key}
+                onClick={handleResultClick}
+                onMouseDown={onChildMouseDown}
+                onMouseEnter={onChildMouseEnter(virtualRow.index)}
+              />
+            </div>
           )
         })}
       </VirtualListChildBox>

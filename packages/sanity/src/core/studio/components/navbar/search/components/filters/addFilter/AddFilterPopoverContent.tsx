@@ -64,6 +64,7 @@ export function AddFilterPopoverContent({onClose}: AddFilterPopoverContentProps)
     <CommandListProvider
       ariaChildrenLabel="Filters"
       ariaHeaderLabel="Filter by title"
+      autoFocus
       childCount={filteredMenuItems.length}
       childContainerElement={childContainerElement}
       containerElement={containerElement}

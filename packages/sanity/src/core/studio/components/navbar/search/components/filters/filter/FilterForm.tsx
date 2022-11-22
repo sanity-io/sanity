@@ -1,6 +1,7 @@
 import {TrashIcon} from '@sanity/icons'
 import {Box, Button, Card, Flex, Stack, Text} from '@sanity/ui'
 import React, {useCallback, useMemo} from 'react'
+import FocusLock from 'react-focus-lock'
 import {useSchema} from '../../../../../../../hooks'
 import {isNonNullable} from '../../../../../../../util'
 import {useSearchState} from '../../../contexts/search/useSearchState'
@@ -9,6 +10,7 @@ import {getOperator} from '../../../definitions/operators'
 import type {SearchFilter} from '../../../types'
 import {getFieldFromFilter, getFilterKey} from '../../../utils/filterUtils'
 import {getSchemaField} from '../../../utils/getSchemaField'
+import {supportsTouch} from '../../../utils/supportsTouch'
 import {FilterDetails} from '../common/FilterDetails'
 import {OperatorsMenuButton} from './OperatorsMenuButton'
 
@@ -64,49 +66,56 @@ export function FilterForm({filter}: FilterFormProps) {
 
   // Flex order is reversed to ensure form inputs are focusable first
   return (
-    <Flex direction="column-reverse">
-      {/* Value */}
-      {Component && (
-        <Card borderTop padding={3}>
-          <Component
-            // re-render on new operators
-            key={filter.operatorType}
-            onChange={handleValueChange}
-            options={options}
-            value={filter.value}
-          />
-        </Card>
-      )}
+    <FocusLock autoFocus={!supportsTouch}>
+      <Flex direction="column-reverse">
+        {/* Value */}
+        {Component && (
+          <Card borderTop padding={3}>
+            <Component
+              // re-render on new operators
+              key={filter.operatorType}
+              onChange={handleValueChange}
+              options={options}
+              value={filter.value}
+            />
+          </Card>
+        )}
 
-      {/* Title, description and operator */}
-      <Card padding={3}>
-        <Stack space={3}>
-          <Flex align="flex-start" gap={3} justify="space-between">
-            <Box paddingBottom={1} paddingLeft={1} paddingRight={2} paddingTop={2}>
-              <FilterDetails filter={filter} small={!fullscreen} />
-            </Box>
+        {/* Title, description and operator */}
+        <Card padding={3}>
+          <Stack space={3}>
+            <Flex align="flex-start" gap={3} justify="space-between">
+              <Box
+                paddingBottom={1}
+                paddingLeft={1}
+                paddingRight={2}
+                paddingTop={fullscreen ? 2 : 1}
+              >
+                <FilterDetails filter={filter} small={!fullscreen} />
+              </Box>
 
-            {fullscreen && (
-              <Button
-                fontSize={2}
-                icon={TrashIcon}
-                mode="bleed"
-                onClick={handleClose}
-                padding={2}
-                tone="critical"
-              />
+              {fullscreen && (
+                <Button
+                  fontSize={2}
+                  icon={TrashIcon}
+                  mode="bleed"
+                  onClick={handleClose}
+                  padding={2}
+                  tone="critical"
+                />
+              )}
+            </Flex>
+            {filterDefinition?.description && (
+              <Card border padding={3} radius={2} tone="transparent">
+                <Text muted size={1}>
+                  {filterDefinition.description}
+                </Text>
+              </Card>
             )}
-          </Flex>
-          {filterDefinition?.description && (
-            <Card border padding={3} radius={2} tone="transparent">
-              <Text muted size={1}>
-                {filterDefinition.description}
-              </Text>
-            </Card>
-          )}
-          <OperatorsMenuButton filter={filter} operator={operator} />
-        </Stack>
-      </Card>
-    </Flex>
+            <OperatorsMenuButton filter={filter} operator={operator} />
+          </Stack>
+        </Card>
+      </Flex>
+    </FocusLock>
   )
 }

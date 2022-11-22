@@ -69,6 +69,7 @@ export function DocumentTypesPopoverContent() {
       ariaChildrenLabel="Document types"
       ariaHeaderLabel="Filter by document type"
       ariaMultiselectable
+      autoFocus
       childContainerElement={childContainerElement}
       childCount={filteredItems.length}
       containerElement={containerElement}

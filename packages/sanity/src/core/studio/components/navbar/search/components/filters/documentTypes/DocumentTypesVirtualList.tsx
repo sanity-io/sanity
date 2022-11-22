@@ -87,7 +87,7 @@ export function DocumentTypesVirtualList({
         paddingBottom={1}
         ref={setChildContainerRef}
       >
-        {getVirtualItems().map((virtualRow, index) => {
+        {getVirtualItems().map((virtualRow) => {
           const virtualItem = filteredItems[virtualRow.index]
 
           return (

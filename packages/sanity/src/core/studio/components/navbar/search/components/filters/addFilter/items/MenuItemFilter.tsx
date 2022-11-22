@@ -1,10 +1,10 @@
 import {Box, Button} from '@sanity/ui'
 import React, {useCallback, useEffect, useRef, useState} from 'react'
-import styled from 'styled-components'
 import {useCommandList} from '../../../../contexts/commandList'
 import {useSearchState} from '../../../../contexts/search/useSearchState'
 import type {FilterMenuItemFilter} from '../../../../types'
 import {getFilterKey} from '../../../../utils/filterUtils'
+import {CommandListItem} from '../../../common/CommandListItem.styled'
 import {FilterDetails} from '../../common/FilterDetails'
 import {FilterTooltip} from './FilterTooltip'
 
@@ -13,17 +13,6 @@ interface FilterMenuItemProps {
   item: FilterMenuItemFilter
   onClose: () => void
 }
-
-const MenuItemFilterButton = styled(Button)`
-  white-space: normal;
-  width: 100%;
-  [data-active='true'] & {
-    // TODO: investigate issue where this background isn't respected after switching studio theme _multiple_ times (at least twice)
-    background: ${({theme}) => theme.sanity.color.button.bleed.default.hovered.bg};
-    // Disable box-shadow to hide the halo effect when we have keyboard focus over a selected <Button>
-    box-shadow: none;
-  }
-`
 
 export const MenuItemFilter = React.memo(function MenuItemFilter({
   index,
@@ -77,7 +66,9 @@ export const MenuItemFilter = React.memo(function MenuItemFilter({
         filterDefinition={item.filterDefinition}
         visible={tooltipEnabled && tooltipVisible}
       >
-        <MenuItemFilterButton
+        <Button
+          as={CommandListItem}
+          data-command-list-item
           disabled={isAlreadyActive}
           fontSize={1}
           justify="flex-start"
@@ -88,7 +79,7 @@ export const MenuItemFilter = React.memo(function MenuItemFilter({
           tone={item?.tone}
         >
           <FilterDetails filter={item.filter} />
-        </MenuItemFilterButton>
+        </Button>
       </FilterTooltip>
     </Box>
   )

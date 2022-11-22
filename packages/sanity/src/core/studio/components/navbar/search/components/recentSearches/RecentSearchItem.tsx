@@ -4,6 +4,7 @@ import React, {MouseEvent, useCallback} from 'react'
 import styled from 'styled-components'
 import {useCommandList} from '../../contexts/commandList'
 import type {RecentSearch} from '../../datastores/recentSearches'
+import {CommandListItem} from '../common/CommandListItem.styled'
 import {DocumentTypesPill} from '../common/DocumentTypesPill'
 import {FilterPill} from '../common/FilterPill'
 
@@ -17,14 +18,7 @@ export interface RecentSearchesProps {
 
 const DEFAULT_COMBINED_TYPE_COUNT = 40
 
-const RecentSearchItemButton = styled(Button)`
-  &[data-active='true'] {
-    // TODO: investigate issue where this background isn't respected after switching studio theme _multiple_ times (at least twice)
-    background: ${({theme}) => theme.sanity.color.button.bleed.default.hovered.bg};
-    // Disable box-shadow to hide the halo effect when we have keyboard focus over a selected <Button>
-    box-shadow: none;
-  }
-`
+const RecentSearchItemButton = styled(Button)``
 
 const SearchItemPillsBox = styled(Box)`
   flex-shrink: 3;
@@ -69,7 +63,8 @@ export function RecentSearchItem(props: RecentSearchesProps) {
 
   return (
     <RecentSearchItemButton
-      data-index={index}
+      as={CommandListItem}
+      data-command-list-item
       mode="bleed"
       onClick={handleRecentSearchClick}
       onMouseDown={onChildMouseDown}
@@ -80,7 +75,7 @@ export function RecentSearchItem(props: RecentSearchesProps) {
     >
       <Flex align="stretch">
         <Box paddingY={2}>
-          <Text size={1}>
+          <Text muted size={1}>
             <ClockIcon />
           </Text>
         </Box>
@@ -88,7 +83,9 @@ export function RecentSearchItem(props: RecentSearchesProps) {
           {/* Text query */}
           {value.query && (
             <SearchItemQueryBox marginLeft={1}>
-              <Text textOverflow="ellipsis">{value.query}</Text>
+              <Text muted textOverflow="ellipsis">
+                {value.query}
+              </Text>
             </SearchItemQueryBox>
           )}
           {/* Document type */}
@@ -99,6 +96,7 @@ export function RecentSearchItem(props: RecentSearchesProps) {
           )}
           {/* Filters */}
           {value?.filters?.map((filter, i) => {
+            // eslint-disable-next-line react/no-array-index-key
             return <FilterPill filter={filter} key={i} />
           })}
         </Flex>

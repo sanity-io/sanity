@@ -101,15 +101,15 @@ export function RecentSearches({
             <PointerOverlay ref={setPointerOverlayRef} />
             <Stack paddingX={1} paddingTop={1} ref={setChildContainerRef} space={1}>
               {recentSearches?.map((recentSearch, index) => (
-                <RecentSearchItem
-                  data-index={index}
-                  index={index}
-                  key={recentSearch.__recent.timestamp}
-                  maxVisibleTypePillChars={maxVisibleTypePillChars}
-                  onClick={handleRecentSearchClick}
-                  onDelete={handleRecentSearchDelete(index)}
-                  value={recentSearch}
-                />
+                <div data-index={index} key={recentSearch.__recent.timestamp}>
+                  <RecentSearchItem
+                    index={index}
+                    maxVisibleTypePillChars={maxVisibleTypePillChars}
+                    onClick={handleRecentSearchClick}
+                    onDelete={handleRecentSearchDelete(index)}
+                    value={recentSearch}
+                  />
+                </div>
               ))}
             </Stack>
           </RecentSearchesInnerBox>

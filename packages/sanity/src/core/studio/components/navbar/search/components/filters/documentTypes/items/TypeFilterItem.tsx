@@ -1,27 +1,16 @@
 import {CheckmarkIcon} from '@sanity/icons'
 import {Box, Button} from '@sanity/ui'
 import React, {useCallback} from 'react'
-import styled from 'styled-components'
 import type {SearchableType} from '../../../../../../../../search'
 import {useCommandList} from '../../../../contexts/commandList'
 import {useSearchState} from '../../../../contexts/search/useSearchState'
+import {CommandListItem} from '../../../common/CommandListItem.styled'
 
 interface TypeFilterItemProps {
   index: number
   selected: boolean
   type: SearchableType
 }
-
-const TypeFilterItemButton = styled(Button)`
-  white-space: normal;
-  width: 100%;
-  [data-active='true'] & {
-    // TODO: investigate issue where this background isn't respected after switching studio theme _multiple_ times (at least twice)
-    background: ${({theme}) => theme.sanity.color.button.bleed.default.hovered.bg};
-    // Disable box-shadow to hide the halo effect when we have keyboard focus over a selected <Button>
-    box-shadow: none;
-  }
-`
 
 export const TypeFilterItem = React.memo(function TypeFilterItem({
   index,
@@ -51,7 +40,9 @@ export const TypeFilterItem = React.memo(function TypeFilterItem({
 
   return (
     <Box paddingX={1} paddingTop={1}>
-      <TypeFilterItemButton
+      <Button
+        as={CommandListItem}
+        data-command-list-item
         fontSize={1}
         iconRight={selected && CheckmarkIcon}
         justify="flex-start"

@@ -122,7 +122,7 @@ export function FilterTooltip({
                 <Text size={0} weight="regular" muted>
                   {fieldDefinitionDocumentTypeTitles.slice(0, MAX_VISIBLE_TYPES).join(', ')}
                   {fieldDefinitionDocumentTypeTitles?.length > MAX_VISIBLE_TYPES
-                    ? `  ${fieldDefinitionDocumentTypeTitles.length - MAX_VISIBLE_TYPES} more`
+                    ? ` +${fieldDefinitionDocumentTypeTitles.length - MAX_VISIBLE_TYPES} more`
                     : ''}
                 </Text>
               </Stack>

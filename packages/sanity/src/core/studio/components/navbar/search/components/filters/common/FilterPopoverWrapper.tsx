@@ -3,7 +3,6 @@ import isHotkey from 'is-hotkey'
 import React, {ReactNode, useCallback, useEffect, useState} from 'react'
 import FocusLock from 'react-focus-lock'
 import styled from 'styled-components'
-import {supportsTouch} from '../../../utils/supportsTouch'
 
 interface FilterPopoverWrapperProps {
   anchorElement: HTMLElement | null
@@ -46,7 +45,7 @@ export function FilterPopoverWrapper({
   return (
     <>
       <HiddenOverlay onClick={onClose} />
-      <FocusLock autoFocus={!supportsTouch} returnFocus>
+      <FocusLock autoFocus={false} returnFocus>
         <Card
           display="flex"
           overflow="hidden"
