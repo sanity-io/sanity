@@ -2,6 +2,8 @@ import {Card, Flex, useGlobalKeyDown} from '@sanity/ui'
 import isHotkey from 'is-hotkey'
 import React, {ReactNode, useCallback, useEffect, useState} from 'react'
 import FocusLock from 'react-focus-lock'
+import styled from 'styled-components'
+import {supportsTouch} from '../../../utils/supportsTouch'
 
 interface FilterPopoverWrapperProps {
   anchorElement: HTMLElement | null
@@ -12,6 +14,16 @@ interface FilterPopoverWrapperProps {
 const isEscape = isHotkey('escape')
 
 const MAX_HEIGHT = 500 // px
+
+const HiddenOverlay = styled.div`
+  background: transparent;
+  height: 100%;
+  left: 0;
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 0;
+`
 
 export function FilterPopoverWrapper({
   anchorElement,
@@ -32,16 +44,22 @@ export function FilterPopoverWrapper({
   const maxHeight = usePopoverOffset(anchorElement)
 
   return (
-    <FocusLock autoFocus returnFocus>
-      <Card
-        display="flex"
-        overflow="hidden"
-        radius={3}
-        style={{maxHeight: `min(calc(100vh - ${maxHeight}px), ${MAX_HEIGHT}px`}}
-      >
-        <Flex>{children}</Flex>
-      </Card>
-    </FocusLock>
+    <>
+      <HiddenOverlay onClick={onClose} />
+      <FocusLock autoFocus={!supportsTouch} returnFocus>
+        <Card
+          display="flex"
+          overflow="hidden"
+          radius={3}
+          style={{
+            maxHeight: `min(calc(100vh - ${maxHeight}px), ${MAX_HEIGHT}px`,
+            zIndex: 1,
+          }}
+        >
+          <Flex>{children}</Flex>
+        </Card>
+      </FocusLock>
+    </>
   )
 }
 
