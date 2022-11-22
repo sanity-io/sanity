@@ -61,11 +61,7 @@ export function PreviewLoader(
     <div ref={setElement} style={style}>
       {createElement(component, {
         ...restProps,
-        title: preview?.value?.title,
-        description: preview?.value?.description,
-        subtitle: preview?.value?.subtitle,
-        imageUrl: preview?.value?.imageUrl,
-        progress: uploadState?.progress,
+        ...(preview?.value || {}),
         media: uploadState?.previewImage ? (
           <img alt="The image currently being uploaded" src={uploadState.previewImage} />
         ) : (
