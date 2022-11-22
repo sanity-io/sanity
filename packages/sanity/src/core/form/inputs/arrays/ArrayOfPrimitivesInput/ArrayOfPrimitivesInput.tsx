@@ -119,6 +119,7 @@ export class ArrayOfPrimitivesInput extends React.PureComponent<ArrayOfPrimitive
       readOnly,
       renderInput,
       onUpload,
+      onItemRemove,
       resolveUploader,
       elementProps,
       arrayFunctions: ArrayFunctions = ArrayOfPrimitivesFunctions,
@@ -156,7 +157,11 @@ export class ArrayOfPrimitivesInput extends React.PureComponent<ArrayOfPrimitive
                           />
                         )}
                         {member.kind === 'error' && (
-                          <ErrorItem sortable={isSortable} member={member} />
+                          <ErrorItem
+                            sortable={isSortable}
+                            member={member}
+                            onRemove={() => onItemRemove(index)}
+                          />
                         )}
                       </Item>
                     )
