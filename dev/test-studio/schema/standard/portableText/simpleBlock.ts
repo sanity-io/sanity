@@ -1,4 +1,4 @@
-import {defineType} from 'sanity'
+import {defineField, defineType} from 'sanity'
 import {toPlainText} from '@portabletext/react'
 import {CalloutPreview} from './components/CalloutPreview'
 
@@ -124,5 +124,51 @@ export default defineType({
         },
       ],
     },
+    defineField({
+      name: 'body2',
+      title: 'Body',
+      type: 'array',
+      of: [
+        {
+          type: 'block',
+        },
+        // Custom blocks
+        defineField({
+          name: 'accordion',
+          type: 'object',
+          fields: [
+            // Groups
+            defineField({
+              name: 'groups',
+              type: 'array',
+              of: [
+                {
+                  type: 'image',
+                },
+                {
+                  name: 'group',
+                  title: 'Group',
+                  type: 'object',
+                  fields: [
+                    defineField({
+                      name: 'title',
+                      title: 'Title',
+                      type: 'string',
+                      validation: (Rule) => Rule.required(),
+                    }),
+                    defineField({
+                      name: 'body',
+                      title: 'Body',
+                      type: 'string',
+                      validation: (Rule) => Rule.required(),
+                    }),
+                  ],
+                },
+              ],
+            }),
+          ],
+        }),
+      ],
+    }),
   ],
 })

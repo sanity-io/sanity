@@ -18,11 +18,12 @@ import {
   usePortal,
 } from '@sanity/ui'
 import {ArrayOfObjectsInputProps, RenderCustomMarkers} from '../../types'
-import {FormInput} from '../../components'
 import {ActivateOnFocus} from '../../components/ActivateOnFocus/ActivateOnFocus'
 import {EMPTY_ARRAY} from '../../../util'
-import {FIXME} from '../../../FIXME'
 import {ChangeIndicator} from '../../../changeIndicators'
+import {ArrayOfObjectsItem} from '../../members'
+import {FormInput} from '../../components'
+import {FIXME} from '../../../FIXME'
 import {BlockObject} from './object/BlockObject'
 import {InlineObject} from './object/InlineObject'
 import {Annotation, TextBlock} from './text'
@@ -85,8 +86,17 @@ export function Compositor(props: InputProps) {
 
   const {element: boundaryElement} = useBoundaryElement()
 
+  // Find the opened item with the highest path
+  const openedMemberItem = useMemo(() => {
+    return portableTextMemberItems
+      .filter((item) => item.member.open)
+      .sort((a, b) => b.member.item.path.length - a.member.item.path.length)
+      .find((mem) => mem.member.open && !_isBlockType(mem.node.schemaType))
+  }, [portableTextMemberItems])
+
   // Scroll to the DOM element of the "opened" portable text member when relevant.
   useScrollToOpenedMember({
+    memberItem: openedMemberItem,
     hasFormFocus: focusPath.length > 0,
     editorRootPath: path,
     scrollElement,
@@ -229,11 +239,6 @@ export function Compositor(props: InputProps) {
 
   const [portalElement, setPortalElement] = useState<HTMLDivElement | null>(null)
 
-  const openMemberItems = useMemo(
-    () => portableTextMemberItems.filter((m) => m.member.open && !_isBlockType(m.node.schemaType)),
-    [portableTextMemberItems]
-  )
-
   const editorNode = useMemo(
     () => (
       <Editor
@@ -286,24 +291,32 @@ export function Compositor(props: InputProps) {
       boundaryElm && (
         <>
           {editorNode}
-          <BoundaryElementProvider element={boundaryElm}>
-            {openMemberItems.map((dMemberItem) => {
-              return (
-                <ObjectEditModal
-                  kind={dMemberItem.kind}
-                  key={dMemberItem.member.key}
-                  memberItem={dMemberItem}
-                  onClose={handleEditModalClose}
-                  scrollElement={boundaryElm}
-                >
-                  <FormInput absolutePath={dMemberItem.node.path} {...(props as FIXME)} />
-                </ObjectEditModal>
-              )
-            })}
-          </BoundaryElementProvider>
+          {openedMemberItem && (
+            <BoundaryElementProvider element={boundaryElm}>
+              <ObjectEditModal
+                kind={openedMemberItem.kind}
+                key={openedMemberItem.member.key}
+                memberItem={openedMemberItem}
+                onClose={handleEditModalClose}
+                scrollElement={boundaryElm}
+              >
+                {openedMemberItem.kind === 'objectBlock' ? (
+                  <ArrayOfObjectsItem
+                    member={openedMemberItem.member}
+                    renderPreview={props.renderPreview}
+                    renderField={props.renderField}
+                    renderInput={props.renderInput}
+                    renderItem={props.renderItem}
+                  />
+                ) : (
+                  <FormInput {...(props as FIXME)} absolutePath={openedMemberItem.node.path} />
+                )}
+              </ObjectEditModal>
+            </BoundaryElementProvider>
+          )}
         </>
       ),
-    [boundaryElm, editorNode, openMemberItems, props, handleEditModalClose]
+    [boundaryElm, editorNode, openedMemberItem, props, handleEditModalClose]
   )
 
   const portal = usePortal()

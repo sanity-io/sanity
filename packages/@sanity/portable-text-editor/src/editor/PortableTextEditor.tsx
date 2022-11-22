@@ -313,20 +313,23 @@ export class PortableTextEditor extends React.Component<
       callbackFn()
       return
     }
+    const isSameLength = (val || []).length === this.slateInstance.children.length
     // Test for diffs between our state value and the incoming value.
-    const isEqualToValue = !(val || []).some((blk, index) => {
-      const compareBlock = toSlateValue(
-        [blk],
-        {portableTextFeatures: this.portableTextFeatures},
-        KEY_TO_SLATE_ELEMENT.get(this.slateInstance)
-      )[0]
-      if (!isEqual(compareBlock, this.slateInstance.children[index])) {
-        return true
-      }
-      return false
-    })
+    const isEqualToValue =
+      isSameLength &&
+      !(val || []).some((blk, index) => {
+        const compareBlock = toSlateValue(
+          [blk],
+          {portableTextFeatures: this.portableTextFeatures},
+          KEY_TO_SLATE_ELEMENT.get(this.slateInstance)
+        )[0]
+        if (!isEqual(compareBlock, this.slateInstance.children[index])) {
+          return true
+        }
+        return false
+      })
     if (isEqualToValue) {
-      debug('Not syncing value (value is equal)')
+      debug('Not syncing value (value is equal)', val, this.slateInstance.children)
       return
     }
     // Value is different - validate it.
@@ -353,8 +356,15 @@ export class PortableTextEditor extends React.Component<
         KEY_TO_SLATE_ELEMENT.get(this.slateInstance)
       )
       this.slateInstance.children = slateValueFromProps
-      if (oldSel) {
+      if (
+        oldSel &&
+        // Test if the selection still can be applied
+        oldSel.anchor.path[0] < this.slateInstance.children.length &&
+        oldSel.focus.path[0] < this.slateInstance.children.length
+      ) {
         Transforms.select(this.slateInstance, oldSel)
+      } else if (oldSel) {
+        PortableTextEditor.focus(this)
       }
     }
     callbackFn()
