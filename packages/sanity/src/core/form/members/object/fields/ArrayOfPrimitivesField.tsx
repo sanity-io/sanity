@@ -245,9 +245,9 @@ export function ArrayOfPrimitivesField(props: {
 
   const handleRemoveItem = useCallback(
     (index: number) => {
-      handleChange(unset(member.field.path.concat(index)))
+      handleChange(unset([index]))
     },
-    [handleChange, member.field.path]
+    [handleChange]
   )
 
   const handleFocusIndex = useCallback(
