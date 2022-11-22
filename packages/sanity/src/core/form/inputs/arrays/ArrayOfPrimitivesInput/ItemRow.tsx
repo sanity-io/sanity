@@ -11,9 +11,6 @@ import {getEmptyValue} from './getEmptyValue'
 
 export type DefaultItemProps = Omit<PrimitiveItemProps, 'renderDefault'> & {
   insertableTypes: SchemaType[]
-  onEnterKey: (item: number) => void
-  onEscapeKey: (item: number) => void
-  index: number
   sortable: boolean
 }
 
@@ -26,16 +23,12 @@ export const ItemRow = React.forwardRef(function ItemRow(
   const {
     sortable,
     value,
-    index,
-    onEscapeKey,
-    onEnterKey,
     insertableTypes,
     onInsert,
     onRemove,
     readOnly,
     inputId,
     validation,
-    onFocus,
     children,
     presence,
     schemaType,
@@ -58,28 +51,6 @@ export const ItemRow = React.forwardRef(function ItemRow(
   const handleDuplicate = useCallback(() => {
     if (value) onInsert({position: 'after', items: [value]})
   }, [onInsert, value])
-
-  const handleKeyPress = useCallback(
-    (event: React.KeyboardEvent) => {
-      if (event.key === 'Enter') {
-        onEnterKey(index)
-      }
-    },
-    [index, onEnterKey]
-  )
-
-  const handleKeyUp = useCallback(
-    (event: React.KeyboardEvent<any>) => {
-      if (event.shiftKey && event.key === 'Backspace' && value === '') {
-        onRemove()
-      }
-
-      if (event.key === 'Escape') {
-        onEscapeKey(index)
-      }
-    },
-    [index, onEscapeKey, onRemove, value]
-  )
 
   const tone = useMemo(() => {
     if (hasError) {
