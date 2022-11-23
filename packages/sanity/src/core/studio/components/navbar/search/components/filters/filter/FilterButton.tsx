@@ -55,7 +55,7 @@ export default function FilterButton({filter, initialOpen}: FilterButtonProps) {
   return (
     <Popover
       content={
-        <FilterPopoverWrapper anchorElement={buttonElement} onClose={handleClose}>
+        <FilterPopoverWrapper onClose={handleClose}>
           <FilterPopoverContent filter={filter} />
         </FilterPopoverWrapper>
       }

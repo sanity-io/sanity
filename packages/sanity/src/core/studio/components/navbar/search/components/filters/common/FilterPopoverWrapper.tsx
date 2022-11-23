@@ -5,7 +5,7 @@ import FocusLock from 'react-focus-lock'
 import styled from 'styled-components'
 
 interface FilterPopoverWrapperProps {
-  anchorElement: HTMLElement | null
+  anchorElement?: HTMLElement | null
   children?: ReactNode
   onClose: () => void
 }
@@ -40,7 +40,7 @@ export function FilterPopoverWrapper({
 
   useGlobalKeyDown(handleGlobalKeyDown)
 
-  const maxHeight = usePopoverOffset(anchorElement)
+  const maxHeight = usePopoverOffset(anchorElement || null)
 
   return (
     <>
