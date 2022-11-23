@@ -99,6 +99,9 @@ export async function getViteConfig(options: ViteOptions): Promise<InlineConfig>
     resolve: {
       alias: getAliases({monorepo}),
     },
+    define: {
+      __SANITY_STAGING__: process.env.SANITY_INTERNAL_ENV === 'staging',
+    },
   }
 
   if (mode === 'production') {
