@@ -12,7 +12,7 @@ import {getOperator, getOperatorInitialValue, SearchOperator} from '../../defini
 import {ORDERINGS} from '../../definitions/orderings'
 import type {SearchFieldDefinition, SearchFilter, SearchOrdering} from '../../types'
 import {debugWithName, isDebugMode} from '../../utils/debug'
-import {getFilterKey, isFilterComplete} from '../../utils/filterUtils'
+import {getFieldFromFilter, getFilterKey, isFilterComplete} from '../../utils/filterUtils'
 import {isRecentSearchTerms} from '../../utils/isRecentSearchTerms'
 import {sortTypes} from '../../utils/selectors'
 
@@ -404,17 +404,33 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
       }
     }
     case 'TERMS_TYPE_ADD': {
-      // Clear all filters
-      const filters: SearchFilter[] = []
-
       const types = [
         ...(state.terms.types || []), //
         action.schemaType,
       ].sort(sortTypes)
 
+      // Get narrowed document types based on selected types only (ignore filters)
+      const documentTypesNarrowed = narrowDocumentTypes(state.definitions.fields, types, [])
+
+      // Remove field filters that don't qualify under the above narrowed document types.
+      // Non field-filters are always included.
+      const filters = state.filters.filter((f) => {
+        const fieldDefinition = getFieldFromFilter(state.definitions.fields, f)
+        if (fieldDefinition) {
+          // An empty documentTypes array denotes support across all fields.
+          if (fieldDefinition.documentTypes.length === 0) {
+            return true
+          }
+          return documentTypesNarrowed.every(
+            (type) => fieldDefinition.documentTypes.findIndex((t) => t === type) > -1
+          )
+        }
+        return true
+      })
+
       return {
         ...state,
-        documentTypesNarrowed: narrowDocumentTypes(state.definitions.fields, types, filters),
+        documentTypesNarrowed,
         filters,
         pageIndex: 0,
         result: {
