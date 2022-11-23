@@ -55,10 +55,16 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
     'layout',
     defaultLayout
   )
+
+  // Ensure that we use the defaultOrdering value from structure builder if any as the default
+  const defaultSortOrder = useMemo(() => {
+    return defaultOrdering?.length > 0 ? {by: defaultOrdering} : DEFAULT_ORDERING
+  }, [])
+
   const [sortOrderRaw, setSortOrder] = useDeskToolSetting<SortOrder>(
     typeName,
     'sortOrder',
-    DEFAULT_ORDERING
+    defaultSortOrder
   )
 
   const sortWithOrderingFn =

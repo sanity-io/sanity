@@ -29,7 +29,7 @@ interface DocumentListState {
  * @internal
  */
 export function useDocumentList(opts: UseDocumentListOpts): DocumentListState {
-  const {apiVersion, defaultOrdering, filter, params, sortOrder} = opts
+  const {apiVersion, filter, params, sortOrder} = opts
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const [fullList, setFullList] = useState(false)
   const fullListRef = useRef(fullList)
@@ -47,7 +47,7 @@ export function useDocumentList(opts: UseDocumentListOpts): DocumentListState {
     const extendedProjection = sortOrder?.extendedProjection
     const projectionFields = ['_id', '_type']
     const finalProjection = projectionFields.join(',')
-    const sortBy = defaultOrdering || sortOrder?.by || []
+    const sortBy = sortOrder?.by || []
     const limit = fullList ? FULL_LIST_LIMIT : PARTIAL_PAGE_LIMIT
     const sort = sortBy.length > 0 ? sortBy : DEFAULT_ORDERING.by
     const order = toOrderClause(sort)
@@ -62,7 +62,7 @@ export function useDocumentList(opts: UseDocumentListOpts): DocumentListState {
     }
 
     return `*[${filter}]|order(${order})[0...${limit}]{${finalProjection}}`
-  }, [defaultOrdering, filter, fullList, sortOrder])
+  }, [filter, fullList, sortOrder])
 
   const handleListChange = useCallback(
     ({toIndex}: VirtualListChangeOpts) => {
