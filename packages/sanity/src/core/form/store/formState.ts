@@ -810,7 +810,8 @@ function prepareArrayOfObjectsMember(props: {
     resolveConditionalProperty(parent.schemaType.readOnly, conditionalPropertyContext)
 
   const fieldGroupState = parent.fieldGroupState?.children?.[key]
-  const collapsedItemPaths = parent.collapsedPaths?.children?.[key]
+  const scopedCollapsedPaths = parent.collapsedPaths?.children?.[key]
+  const scopedCollapsedFieldsets = parent.collapsedFieldSets?.children?.[key]
   const comparisonValue =
     (Array.isArray(parent.comparisonValue) &&
       parent.comparisonValue.find((i) => i._key === arrayItem._key)) ||
@@ -828,7 +829,8 @@ function prepareArrayOfObjectsMember(props: {
       focusPath: parent.focusPath,
       openPath: parent.openPath,
       currentUser: parent.currentUser,
-      collapsedPaths: collapsedItemPaths,
+      collapsedPaths: scopedCollapsedPaths,
+      collapsedFieldSets: scopedCollapsedFieldsets,
       presence: parent.presence,
       validation: parent.validation,
       fieldGroupState,
@@ -838,7 +840,7 @@ function prepareArrayOfObjectsMember(props: {
   ) as ObjectArrayFormNode
 
   const defaultCollapsedState = getCollapsedWithDefaults(itemType.options, itemLevel)
-  const collapsed = collapsedItemPaths?.value ?? defaultCollapsedState.collapsed
+  const collapsed = scopedCollapsedPaths?.value ?? defaultCollapsedState.collapsed
   return {
     kind: 'item',
     key,

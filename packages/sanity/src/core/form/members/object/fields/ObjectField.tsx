@@ -1,7 +1,7 @@
 import React, {useCallback, useMemo, useRef} from 'react'
 import {Path} from '@sanity/types'
-import {useDidUpdate} from '../../hooks/useDidUpdate'
-import {FieldMember, ObjectFormNode} from '../../store'
+import {useDidUpdate} from '../../../hooks/useDidUpdate'
+import {FieldMember, ObjectFormNode} from '../../../store'
 import {
   ArrayOfObjectsInputProps,
   ObjectFieldProps,
@@ -10,10 +10,10 @@ import {
   RenderFieldCallback,
   RenderInputCallback,
   RenderPreviewCallback,
-} from '../../types'
-import {PatchArg, PatchEvent, setIfMissing} from '../../patch'
-import {FormCallbacksProvider, useFormCallbacks} from '../../studio/contexts/FormCallbacks'
-import {createProtoValue} from '../../utils/createProtoValue'
+} from '../../../types'
+import {PatchArg, PatchEvent, setIfMissing} from '../../../patch'
+import {FormCallbacksProvider, useFormCallbacks} from '../../../studio/contexts/FormCallbacks'
+import {createProtoValue} from '../../../utils/createProtoValue'
 
 /**
  * Responsible for creating inputProps and fieldProps to pass to ´renderInput´ and ´renderField´ for an object input

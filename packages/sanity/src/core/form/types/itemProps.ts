@@ -65,7 +65,7 @@ export interface ObjectItemProps<Item extends ObjectItem = ObjectItem> extends B
   schemaType: ObjectSchemaType
   parentSchemaType: ArraySchemaType
   collapsed: boolean | undefined
-  collapsible: boolean
+  collapsible: boolean | undefined
   onCollapse: () => void
   onExpand: () => void
   open: boolean

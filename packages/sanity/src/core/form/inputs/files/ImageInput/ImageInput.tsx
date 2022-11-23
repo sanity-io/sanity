@@ -773,7 +773,8 @@ export class BaseImageInput extends React.PureComponent<BaseImageInputProps, Bas
     )
 
     return (
-      <div data-testid="image-input">
+      // The Stack space should match the space in ObjectInput
+      <Stack space={5} data-testid="image-input">
         <ImperativeToast ref={this.setToast} />
 
         {members.map((member) => {
@@ -813,6 +814,7 @@ export class BaseImageInput extends React.PureComponent<BaseImageInputProps, Bas
           //@ts-expect-error all possible cases should be covered
           return <>Unknown member kind: ${member.kind}</>
         })}
+
         {hotspotField?.open && (
           <FormInput
             {...this.props}
@@ -821,7 +823,7 @@ export class BaseImageInput extends React.PureComponent<BaseImageInputProps, Bas
           />
         )}
         {selectedAssetSource && this.renderAssetSource()}
-      </div>
+      </Stack>
     )
   }
 }

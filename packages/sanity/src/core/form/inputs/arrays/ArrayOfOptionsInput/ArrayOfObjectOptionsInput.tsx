@@ -5,7 +5,7 @@ import {ArraySchemaType, isKeyedObject} from '@sanity/types'
 import {set, unset} from '../../../patch'
 import {ArrayOfObjectsInputProps} from '../../../types'
 import {ChangeIndicator} from '../../../../changeIndicators'
-import {IncompatibleItemType} from '../../../members/views/IncompatibleItemType'
+import {IncompatibleItemType} from '../../../members/array/IncompatibleItemType'
 
 function isEqual(item: any, otherItem: any): boolean {
   if (item === otherItem) {

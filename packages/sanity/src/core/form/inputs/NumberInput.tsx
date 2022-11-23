@@ -12,14 +12,20 @@ export function NumberInput(props: NumberInputProps) {
 
   // Show numpad on mobile if only positive numbers is preferred
   const minRule = getValidationRule(schemaType, 'min')
-  const onlyPositiveNumber = (minRule?.constraint || 0) >= 0
+  const integerRule = getValidationRule(schemaType, 'integer')
+  const precisionRule = getValidationRule(schemaType, 'precision')
+  const onlyPositiveNumber = typeof minRule?.constraint === 'number' && minRule?.constraint >= 0
+  const onlyIntegers = integerRule || precisionRule?.constraint === 0
+
+  // eslint-disable-next-line no-nested-ternary
+  const inputMode = onlyPositiveNumber ? (onlyIntegers ? 'numeric' : 'decimal') : 'text'
 
   return (
     <TextInput
       {...elementProps}
       type="number"
       step="any"
-      inputMode={onlyPositiveNumber ? 'numeric' : 'text'}
+      inputMode={inputMode}
       customValidity={validationError}
       value={value}
       placeholder={schemaType.placeholder}

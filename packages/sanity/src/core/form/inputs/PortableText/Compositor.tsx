@@ -87,7 +87,7 @@ export function Compositor(props: InputProps) {
 
   // Scroll to the DOM element of the "opened" portable text member when relevant.
   useScrollToOpenedMember({
-    hasFocus,
+    hasFormFocus: focusPath.length > 0,
     editorRootPath: path,
     scrollElement,
     onItemClose,

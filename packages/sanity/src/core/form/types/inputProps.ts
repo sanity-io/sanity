@@ -134,15 +134,6 @@ export interface ArrayOfObjectsInputProps<
   onPathFocus: (path: Path) => void
 
   /**
-   * NOTE: not a priority to support collapsible arrays right now
-   * @beta
-   */
-  onCollapse: () => void
-
-  /** @beta */
-  onExpand: () => void
-
-  /**
    * for array inputs using expand/collapse semantics for items
    * @beta
    */

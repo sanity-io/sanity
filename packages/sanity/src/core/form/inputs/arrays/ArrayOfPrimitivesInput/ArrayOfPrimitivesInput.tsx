@@ -18,7 +18,6 @@ import {ArrayOfPrimitivesFunctions} from './ArrayOfPrimitivesFunctions'
 /** @beta */
 export class ArrayOfPrimitivesInput extends React.PureComponent<ArrayOfPrimitivesInputProps> {
   _element: HTMLElement | null = null
-  _lastAddedIndex = -1
 
   handleAppend = (itemValue: PrimitiveValue) => {
     const {value = [], onIndexFocus, onItemAppend} = this.props
@@ -31,26 +30,6 @@ export class ArrayOfPrimitivesInput extends React.PureComponent<ArrayOfPrimitive
     onItemPrepend(itemValue)
     onIndexFocus(value.length)
   }
-  handleItemEnterKey = (index: number) => {
-    const {schemaType, onInsert} = this.props
-    const firstType = schemaType?.of[0]
-    if (firstType) {
-      onInsert({
-        referenceIndex: index,
-        position: 'after',
-        items: [getEmptyValue(firstType)],
-      })
-      this._lastAddedIndex = index + 1
-    }
-  }
-
-  handleItemEscapeKey = (index: number) => {
-    const {value, onItemRemove} = this.props
-    if (index === this._lastAddedIndex && value?.[index] === '') {
-      onItemRemove(index)
-    }
-  }
-
   handleSortEnd = (event: {fromIndex: number; toIndex: number}) => {
     const {onIndexFocus, onMoveItem, value} = this.props
     if (value) onMoveItem(event)
@@ -130,15 +109,7 @@ export class ArrayOfPrimitivesInput extends React.PureComponent<ArrayOfPrimitive
   renderArrayItem = (props: Omit<PrimitiveItemProps, 'renderDefault'>) => {
     const {schemaType} = this.props
     const sortable = schemaType.options?.sortable !== false
-    return (
-      <ItemRow
-        {...props}
-        sortable={sortable}
-        insertableTypes={schemaType.of}
-        onEnterKey={this.handleItemEnterKey}
-        onEscapeKey={this.handleItemEscapeKey}
-      />
-    )
+    return <ItemRow {...props} sortable={sortable} insertableTypes={schemaType.of} />
   }
 
   render() {

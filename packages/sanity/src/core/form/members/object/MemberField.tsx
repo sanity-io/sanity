@@ -1,12 +1,12 @@
 import React, {memo} from 'react'
-import {FIXME} from '../../FIXME'
-import {FieldMember} from '../store'
+import {FIXME} from '../../../FIXME'
+import {FieldMember} from '../../store'
 import {
   RenderFieldCallback,
   RenderInputCallback,
   RenderArrayOfObjectsItemCallback,
   RenderPreviewCallback,
-} from '../types'
+} from '../../types'
 import {ArrayOfObjectsField} from './fields/ArrayOfObjectsField'
 import {PrimitiveField} from './fields/PrimitiveField'
 import {ObjectField} from './fields/ObjectField'

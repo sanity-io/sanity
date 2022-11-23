@@ -7,7 +7,7 @@ import {
   FieldSetMember,
   ObjectFormNode,
 } from '../types'
-import {isMemberArrayOfObjects} from '../../members/fields/asserters'
+import {isMemberArrayOfObjects} from '../../members/object/fields/asserters'
 
 /** @internal */
 export interface ExpandPathOperation {

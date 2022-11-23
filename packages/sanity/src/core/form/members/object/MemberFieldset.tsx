@@ -1,13 +1,14 @@
 import React, {memo, useCallback} from 'react'
-import {FieldSetMember} from '../store'
+import {capitalize} from 'lodash'
+import {FieldSetMember} from '../../store'
 import {
   RenderArrayOfObjectsItemCallback,
   RenderFieldCallback,
   RenderInputCallback,
   RenderPreviewCallback,
-} from '../types'
-import {FormFieldSet} from '../components/formField'
-import {useFormCallbacks} from '../studio/contexts/FormCallbacks'
+} from '../../types'
+import {FormFieldSet} from '../../components/formField'
+import {useFormCallbacks} from '../../studio/contexts/FormCallbacks'
 import {MemberField} from './MemberField'
 import {MemberFieldError} from './MemberFieldError'
 
@@ -33,7 +34,7 @@ export const MemberFieldSet = memo(function MemberFieldSet(props: {
 
   return (
     <FormFieldSet
-      title={member.fieldSet.title}
+      title={member.fieldSet.title || capitalize(member.fieldSet.name)}
       description={member.fieldSet.description}
       level={member.fieldSet.level}
       collapsible={member.fieldSet.collapsible}
