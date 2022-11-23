@@ -1,4 +1,5 @@
 import React from 'react'
+import {useSearchState} from '../../../../../contexts/search/useSearchState'
 import {Calendar} from './calendar/Calendar'
 import {DatePickerProvider} from './contexts/DatePickerProvider'
 
@@ -13,6 +14,9 @@ export const DatePicker = React.forwardRef(function DatePicker(
 ) {
   const {value = new Date(), onChange, ...rest} = props
   const [focusedDate, setFocusedDay] = React.useState<Date>()
+  const {
+    state: {fullscreen},
+  } = useSearchState()
 
   const handleSelect = React.useCallback(
     (nextDate: any) => {
@@ -23,7 +27,7 @@ export const DatePicker = React.forwardRef(function DatePicker(
   )
 
   return (
-    <DatePickerProvider fontSize={2}>
+    <DatePickerProvider fontSize={fullscreen ? 2 : 1}>
       <Calendar
         {...rest}
         ref={ref}
