@@ -60,6 +60,7 @@ const FormInputInner = memo(function FormInputInner(
   props: (ArrayOfObjectsInputProps | ObjectInputProps) & {
     absolutePath: Path
     includeField?: boolean
+    includeItem?: boolean
     destinationRenderInput: RenderInputCallback
     destinationRenderField: RenderFieldCallback
     destinationRenderItem: RenderArrayOfObjectsItemCallback
@@ -123,6 +124,19 @@ const FormInputInner = memo(function FormInputInner(
     [absolutePath, destinationRenderField, props.includeField]
   )
 
+  const renderItem: RenderArrayOfObjectsItemCallback = useCallback(
+    (itemProps) => {
+      // we want to render the item around the input if either of these are true:
+      // 1. we have reached the destination path and the `includeItem`-prop is passed as true
+      // 2. we are currently at a node somewhere below/inside the destination path
+      const shouldRenderField =
+        startsWith(absolutePath, itemProps.path) &&
+        (props.includeItem || !isEqual(absolutePath, itemProps.path))
+      return shouldRenderField ? destinationRenderItem(itemProps) : pass(itemProps)
+    },
+    [absolutePath, destinationRenderItem, props.includeItem]
+  )
+
   if (isArrayInputProps(props)) {
     const childPath = trimLeft(props.path, absolutePath)
 
@@ -148,7 +162,7 @@ const FormInputInner = memo(function FormInputInner(
         member={itemMember}
         renderInput={renderInput}
         renderField={renderField}
-        renderItem={pass}
+        renderItem={renderItem}
         renderPreview={destinationRenderPreview}
       />
     )
@@ -175,7 +189,7 @@ const FormInputInner = memo(function FormInputInner(
         member={fieldMember}
         renderInput={renderInput}
         renderField={renderField}
-        renderItem={pass}
+        renderItem={renderItem}
         renderPreview={destinationRenderPreview}
       />
     )
