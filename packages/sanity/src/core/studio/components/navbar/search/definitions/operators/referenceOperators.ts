@@ -1,11 +1,12 @@
+import {ButtonValueReference} from '../../components/filters/common/ButtonValue'
 import {FieldInputReference} from '../../components/filters/filter/inputTypes/Reference'
-import {toJSON} from './operatorUtils'
 import {defineSearchOperator} from './operatorTypes'
+import {toJSON} from './operatorUtils'
 
 export const referenceOperators = {
   referenceEqual: defineSearchOperator({
     buttonLabel: 'is',
-    buttonValue: (value) => (value?._ref ? value._ref.slice(0, 8) : null),
+    buttonValueComponent: ButtonValueReference,
     fn: ({fieldPath, value}) =>
       value?._ref && fieldPath ? `${fieldPath}._ref == ${toJSON(value._ref)}` : null,
     initialValue: null,
@@ -15,7 +16,7 @@ export const referenceOperators = {
   }),
   referenceNotEqual: defineSearchOperator({
     buttonLabel: 'is not',
-    buttonValue: (value) => (value?._ref ? value._ref.slice(0, 8) : null),
+    buttonValueComponent: ButtonValueReference,
     fn: ({fieldPath, value}) =>
       value?._ref && fieldPath ? `${fieldPath}._ref != ${toJSON(value._ref)}` : null,
     initialValue: null,
@@ -25,7 +26,7 @@ export const referenceOperators = {
   }),
   references: defineSearchOperator({
     buttonLabel: 'to',
-    buttonValue: (value) => (value?._ref ? value._ref.slice(0, 8) : null),
+    buttonValueComponent: ButtonValueReference,
     fn: ({value}) => (value?._ref ? `references(${toJSON(value._ref)})` : null),
     initialValue: null,
     inputComponent: FieldInputReference,

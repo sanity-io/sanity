@@ -1,11 +1,12 @@
+import {ButtonValueString} from '../../components/filters/common/ButtonValue'
 import {FieldInputString} from '../../components/filters/filter/inputTypes/String'
-import {toJSON} from './operatorUtils'
 import {defineSearchOperator} from './operatorTypes'
+import {toJSON} from './operatorUtils'
 
 export const portableTextOperators = {
   portableTextEqual: defineSearchOperator({
     buttonLabel: 'is',
-    buttonValue: (value) => value || null,
+    buttonValueComponent: ButtonValueString,
     fn: ({fieldPath, value}) =>
       value && fieldPath ? `pt::text(${fieldPath}) == ${toJSON(value)}` : null,
     initialValue: null,
@@ -15,7 +16,7 @@ export const portableTextOperators = {
   }),
   portableTextMatches: defineSearchOperator({
     buttonLabel: 'contains',
-    buttonValue: (value) => value || null,
+    buttonValueComponent: ButtonValueString,
     fn: ({fieldPath, value}) =>
       value && fieldPath ? `pt::text(${fieldPath}) match ${toJSON(value)}` : null,
     initialValue: null,
@@ -25,7 +26,7 @@ export const portableTextOperators = {
   }),
   portableTextNotEqual: defineSearchOperator({
     buttonLabel: 'is not',
-    buttonValue: (value) => value || null,
+    buttonValueComponent: ButtonValueString,
     fn: ({fieldPath, value}) =>
       value && fieldPath ? `pt::text(${fieldPath}) != ${toJSON(value)}` : null,
     initialValue: null,
@@ -35,7 +36,7 @@ export const portableTextOperators = {
   }),
   portableTextNotMatches: defineSearchOperator({
     buttonLabel: 'does not contain',
-    buttonValue: (value) => value || null,
+    buttonValueComponent: ButtonValueString,
     fn: ({fieldPath, value}) =>
       value && fieldPath ? `!(pt::text(${fieldPath}) match ${toJSON(value)})` : null,
     initialValue: null,

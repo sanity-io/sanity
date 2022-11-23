@@ -58,7 +58,7 @@ export function FieldInputReference({
   }, [onClose])
 
   return (
-    <Box style={{width: '420px'}}>
+    <Box style={{width: 'min(calc(100vw - 40px), 420px)'}}>
       {value?._ref && value?._type ? (
         <Stack space={3}>
           <Card padding={1} radius={1} shadow={1}>

@@ -1,11 +1,12 @@
+import {ButtonValueBoolean} from '../../components/filters/common/ButtonValue'
 import {FieldInputBoolean} from '../../components/filters/filter/inputTypes/Boolean'
-import {toJSON} from './operatorUtils'
 import {defineSearchOperator, SearchOperatorParams} from './operatorTypes'
+import {toJSON} from './operatorUtils'
 
 export const booleanOperators = {
   booleanEqual: defineSearchOperator({
     buttonLabel: 'is',
-    buttonValue: (value) => (value ? 'True' : 'False'),
+    buttonValueComponent: ButtonValueBoolean,
     fn: ({fieldPath, value}: SearchOperatorParams<boolean>) =>
       value && fieldPath ? `${fieldPath} == ${toJSON(value)}` : null,
     initialValue: true,

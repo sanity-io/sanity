@@ -1,8 +1,9 @@
+import {ComponentType} from 'react'
 import {SearchOperatorBase, SearchOperatorInput, SearchOperatorParams} from './operatorTypes'
 
 /** @internal */
 export interface SearchOperator<TValue = any> extends SearchOperatorBase {
-  buttonValue?: (value: TValue) => string | number | null
+  buttonValueComponent?: ComponentType<{value: TValue}>
   fn: (params: SearchOperatorParams<TValue>) => string | null
   initialValue?: TValue
   inputComponent?: SearchOperatorInput<TValue>

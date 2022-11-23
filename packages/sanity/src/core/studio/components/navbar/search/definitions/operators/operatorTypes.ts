@@ -39,7 +39,7 @@ export type ValuelessSearchOperatorParams = {fieldPath?: string}
  * @alpha
  */
 export interface SearchOperatorBuilder<TType extends string, TValue> extends SearchOperatorBase {
-  buttonValue: (value: TValue) => string | number | null
+  buttonValueComponent: ComponentType<{value: TValue}>
   fn: (params: SearchOperatorParams<TValue>) => string | null
   initialValue: TValue | null
   inputComponent: SearchOperatorInput<TValue>
@@ -50,7 +50,7 @@ export interface SearchOperatorBuilder<TType extends string, TValue> extends Sea
  * @alpha
  */
 export interface ValuelessSearchOperatorBuilder<TType extends string> extends SearchOperatorBase {
-  buttonValue?: never
+  buttonValueComponent?: never
   fn: (params: ValuelessSearchOperatorParams) => string | null
   initialValue?: never
   inputComponent?: never

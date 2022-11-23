@@ -1,3 +1,4 @@
+import {ButtonValueString} from '../../components/filters/common/ButtonValue'
 import {FieldInputString} from '../../components/filters/filter/inputTypes/String'
 import {FieldInputStringList} from '../../components/filters/filter/inputTypes/StringList'
 import {defineSearchOperator} from './operatorTypes'
@@ -6,7 +7,7 @@ import {toJSON} from './operatorUtils'
 export const stringOperators = {
   stringEqual: defineSearchOperator({
     buttonLabel: 'is',
-    buttonValue: (value) => value || null,
+    buttonValueComponent: ButtonValueString,
     fn: ({fieldPath, value}) => (value && fieldPath ? `${fieldPath} == ${toJSON(value)}` : null),
     initialValue: null,
     inputComponent: FieldInputString,
@@ -15,7 +16,7 @@ export const stringOperators = {
   }),
   stringListEqual: defineSearchOperator({
     buttonLabel: 'is',
-    buttonValue: (value) => value || null,
+    buttonValueComponent: ButtonValueString,
     fn: ({fieldPath, value}) => (value && fieldPath ? `${fieldPath} == ${toJSON(value)}` : null),
     initialValue: null,
     inputComponent: FieldInputStringList,
@@ -24,7 +25,7 @@ export const stringOperators = {
   }),
   stringListNotEqual: defineSearchOperator({
     buttonLabel: 'is not',
-    buttonValue: (value) => value || null,
+    buttonValueComponent: ButtonValueString,
     fn: ({fieldPath, value}) => (value && fieldPath ? `${fieldPath} != ${toJSON(value)}` : null),
     initialValue: null,
     inputComponent: FieldInputStringList,
@@ -33,7 +34,7 @@ export const stringOperators = {
   }),
   stringMatches: defineSearchOperator({
     buttonLabel: 'contains',
-    buttonValue: (value) => value || null,
+    buttonValueComponent: ButtonValueString,
     fn: ({fieldPath, value}) => (value && fieldPath ? `${fieldPath} match ${toJSON(value)}` : null),
     initialValue: null,
     inputComponent: FieldInputString,
@@ -42,7 +43,7 @@ export const stringOperators = {
   }),
   stringNotEqual: defineSearchOperator({
     buttonLabel: 'is not',
-    buttonValue: (value) => value || null,
+    buttonValueComponent: ButtonValueString,
     fn: ({fieldPath, value}) => (value && fieldPath ? `${fieldPath} != ${toJSON(value)}` : null),
     initialValue: null,
     inputComponent: FieldInputString,
@@ -51,7 +52,7 @@ export const stringOperators = {
   }),
   stringNotMatches: defineSearchOperator({
     buttonLabel: 'does not contain',
-    buttonValue: (value) => value || null,
+    buttonValueComponent: ButtonValueString,
     fn: ({fieldPath, value}) =>
       value && fieldPath ? `!(${fieldPath} match ${toJSON(value)})` : null,
     initialValue: null,

@@ -34,7 +34,6 @@ export function isFilterComplete(
   operatorDefinitions: SearchOperator[]
 ): boolean {
   const operator = getOperator(operatorDefinitions, filter.operatorType)
-  const value = operator?.buttonValue && operator.buttonValue(filter.value)
-  const hasValue = value !== undefined && value !== null
+  const hasValue = filter.value !== undefined && filter.value !== null
   return operator?.inputComponent ? !!(filter.operatorType && hasValue) : true
 }

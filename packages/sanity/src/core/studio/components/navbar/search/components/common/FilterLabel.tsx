@@ -17,18 +17,11 @@ export function FilterLabel({filter, fontSize = 1, showContent = true}: FilterLa
   } = useSearchState()
 
   const operator = getOperator(definitions.operators, filter.operatorType)
-  const value = operator?.buttonValue && operator.buttonValue(filter.value)
+
+  const ButtonValue = operator?.buttonValueComponent
 
   return (
     <Inline space={1}>
-      {/* Icon */}
-      {/*
-      <Box marginRight={1}>
-        <Text size={1}>
-          <FilterIcon filter={filter} />
-        </Text>
-      </Box>
-      */}
       {/* Title */}
       <Text size={fontSize} weight="medium">
         <FilterTitle filter={filter} />
@@ -40,9 +33,9 @@ export function FilterLabel({filter, fontSize = 1, showContent = true}: FilterLa
         </Text>
       )}
       {/* Value */}
-      {showContent && (
+      {showContent && ButtonValue && (
         <Text size={fontSize} textOverflow="ellipsis" weight="medium">
-          {value}
+          <ButtonValue value={filter.value} />
         </Text>
       )}
     </Inline>
