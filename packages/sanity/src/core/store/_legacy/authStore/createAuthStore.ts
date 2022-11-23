@@ -169,12 +169,17 @@ export function _createAuthStore({
         requestTagPrefix: 'sanity.studio',
         ignoreBrowserTokenWarning: true,
         allowReconfigure: false,
-        apiHost:
-          /* __SANITY_STAGING__ is a global variable set by the vite config */
-          // @ts-expect-error: __SANITY_STAGING__ is a global env variable set by the vite config
-          typeof __SANITY_STAGING__ !== 'undefined' && __SANITY_STAGING__ === true
-            ? 'https://api.sanity.work'
-            : undefined,
+        // @ts-expect-error: __SANITY_STAGING__ is a global env variable set by the vite config
+        ...(typeof __SANITY_STAGING__ !== 'undefined' && __SANITY_STAGING__
+          ? {
+              apiHost:
+                /* __SANITY_STAGING__ is a global variable set by the vite config */
+                // @ts-expect-error: __SANITY_STAGING__ is a global env variable set by the vite config
+                typeof __SANITY_STAGING__ !== 'undefined' && __SANITY_STAGING__ === true
+                  ? 'https://api.sanity.work'
+                  : undefined,
+            }
+          : {}),
       })
     ),
     switchMap((client) =>
