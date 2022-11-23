@@ -6,16 +6,14 @@ import {useMemoObservable} from 'react-rx'
 import styled from 'styled-components'
 import {DocumentPreviewPresence} from '../../../../../../../presence'
 import {
-  DocumentPreviewStore,
   getPreviewStateObservable,
   getPreviewValueWithFallback,
   SanityDefaultPreview,
 } from '../../../../../../../preview'
-import type {DocumentPresence} from '../../../../../../../store'
+import {DocumentPresence, useDocumentPreviewStore} from '../../../../../../../store'
 
 interface SearchResultItemPreviewProps {
   documentId: string
-  documentPreviewStore: DocumentPreviewStore
   presence?: DocumentPresence[]
   schemaType: SchemaType
 }
@@ -38,10 +36,11 @@ const TypeLabel = styled(Label)`
 
 export default function SearchResultItemPreview({
   documentId,
-  documentPreviewStore,
   presence,
   schemaType,
 }: SearchResultItemPreviewProps) {
+  const documentPreviewStore = useDocumentPreviewStore()
+
   // NOTE: this emits sync so can never be null
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const {draft, published, isLoading} = useMemoObservable(

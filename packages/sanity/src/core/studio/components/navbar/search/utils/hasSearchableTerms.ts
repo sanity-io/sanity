@@ -1,8 +1,15 @@
 import type {SearchTerms} from '../../../../../search'
 
-export function hasSearchableTerms(terms: SearchTerms): boolean {
+export function hasSearchableTerms({
+  allowEmptyQueries,
+  terms,
+}: {
+  allowEmptyQueries?: boolean
+  terms: SearchTerms
+}): boolean {
+  const trimmedQuery = terms.query.trim()
   return (
-    terms.query.trim() !== '' ||
+    (allowEmptyQueries ? typeof trimmedQuery !== 'undefined' : trimmedQuery !== '') ||
     (terms.filter && terms.filter?.trim() !== '') ||
     terms.types.length > 0
   )

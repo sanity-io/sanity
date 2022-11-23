@@ -1,4 +1,5 @@
 import {ComponentType} from 'react'
+import {SearchFieldDefinition} from '../../types'
 
 /**
  * @alpha
@@ -19,8 +20,8 @@ export type SearchOperatorInput<TValue> = ComponentType<OperatorInputComponentPr
  * @alpha
  */
 export interface OperatorInputComponentProps<T> {
+  fieldDefinition?: SearchFieldDefinition
   onChange: (value: T | null) => void
-  options?: any
   value: T | null
 }
 

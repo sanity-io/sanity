@@ -1,15 +1,12 @@
 import {TrashIcon} from '@sanity/icons'
 import {Box, Button, Card, Flex, Stack, Text} from '@sanity/ui'
-import React, {useCallback, useMemo} from 'react'
+import React, {useCallback} from 'react'
 import FocusLock from 'react-focus-lock'
-import {useSchema} from '../../../../../../../hooks'
-import {isNonNullable} from '../../../../../../../util'
 import {useSearchState} from '../../../contexts/search/useSearchState'
 import {getFilterDefinition} from '../../../definitions/filters'
 import {getOperator} from '../../../definitions/operators'
 import type {SearchFilter} from '../../../types'
 import {getFieldFromFilter, getFilterKey} from '../../../utils/filterUtils'
-import {getSchemaField} from '../../../utils/getSchemaField'
 import {supportsTouch} from '../../../utils/supportsTouch'
 import {FilterDetails} from '../common/FilterDetails'
 import {OperatorsMenuButton} from './OperatorsMenuButton'
@@ -21,14 +18,13 @@ interface FilterFormProps {
 export function FilterForm({filter}: FilterFormProps) {
   const {
     dispatch,
-    state: {definitions, documentTypesNarrowed, fullscreen},
+    state: {definitions, fullscreen},
   } = useSearchState()
 
   const filterDefinition = getFilterDefinition(definitions.filters, filter.filterType)
   const operator = getOperator(definitions.operators, filter.operatorType)
   const fieldDefinition = getFieldFromFilter(definitions.fields, filter)
   const filterKey = getFilterKey(filter)
-  const schema = useSchema()
 
   const handleClose = useCallback(() => {
     dispatch({
@@ -50,20 +46,6 @@ export function FilterForm({filter}: FilterFormProps) {
 
   const Component = operator?.inputComponent
 
-  const options = useMemo(() => {
-    return fieldDefinition?.documentTypes
-      .filter((d) => documentTypesNarrowed.includes(d))
-      .map((type) => {
-        const schemaType = schema.get(type)
-        if (schemaType) {
-          const field = getSchemaField(schemaType, fieldDefinition.fieldPath)
-          return field?.type.options
-        }
-        return null
-      })
-      .filter(isNonNullable)
-  }, [documentTypesNarrowed, fieldDefinition, schema])
-
   // Flex order is reversed to ensure form inputs are focusable first
   return (
     <FocusLock autoFocus={!supportsTouch}>
@@ -72,10 +54,10 @@ export function FilterForm({filter}: FilterFormProps) {
         {Component && (
           <Card borderTop padding={3}>
             <Component
+              fieldDefinition={fieldDefinition}
               // re-render on new operators
               key={filter.operatorType}
               onChange={handleValueChange}
-              options={options}
               value={filter.value}
             />
           </Card>

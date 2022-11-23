@@ -4,38 +4,34 @@ import {DEBUG_MODE} from '../../../constants'
 import {useSearchState} from '../../../contexts/search/useSearchState'
 import type {SearchFilter} from '../../../types'
 import {getFieldFromFilter} from '../../../utils/filterUtils'
-import {FilterPopoverWrapper} from '../common/FilterPopoverWrapper'
 import {FilterForm} from './FilterForm'
 
 interface FilterPopoverContentProps {
   filter: SearchFilter
-  onClose: () => void
 }
 
-export function FilterPopoverContent({filter, onClose}: FilterPopoverContentProps) {
+export function FilterPopoverContent({filter}: FilterPopoverContentProps) {
   return (
-    <FilterPopoverWrapper onClose={onClose}>
-      <Flex
-        direction="column"
-        style={{
-          maxHeight: '600px',
-          maxWidth: '360px',
-          minWidth: '200px',
-          overflow: 'hidden',
-          width: '100%',
-        }}
-      >
-        <FilterForm filter={filter} />
+    <Flex
+      direction="column"
+      style={{
+        maxHeight: '600px',
+        maxWidth: '480px',
+        minWidth: '200px',
+        overflow: 'hidden',
+        width: '100%',
+      }}
+    >
+      <FilterForm filter={filter} />
 
-        {/* Debug panels */}
-        {DEBUG_MODE && (
-          <>
-            <DebugValues filter={filter} />
-            <DebugDocumentTypes filter={filter} />
-          </>
-        )}
-      </Flex>
-    </FilterPopoverWrapper>
+      {/* Debug panels */}
+      {DEBUG_MODE && (
+        <>
+          <DebugValues filter={filter} />
+          <DebugDocumentTypes filter={filter} />
+        </>
+      )}
+    </Flex>
   )
 }
 

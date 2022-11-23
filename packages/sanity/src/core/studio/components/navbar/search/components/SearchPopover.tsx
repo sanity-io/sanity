@@ -73,10 +73,11 @@ export function SearchPopover({
 
   const {
     dispatch,
+    setOnClose,
     state: {filtersVisible, recentSearches, result, terms},
   } = useSearchState()
 
-  const hasValidTerms = hasSearchableTerms(terms)
+  const hasValidTerms = hasSearchableTerms({terms})
 
   /**
    * Measure top-most visible search result index
@@ -130,6 +131,13 @@ export function SearchPopover({
       dispatch({type: 'ORDERING_RESET'})
     }
   }, [dispatch, hasValidTerms, open])
+
+  /**
+   * Set shared `onClose` in search context
+   */
+  useEffect(() => {
+    setOnClose(onClose)
+  }, [onClose, setOnClose])
 
   /**
    * Store mounted state (must be last)

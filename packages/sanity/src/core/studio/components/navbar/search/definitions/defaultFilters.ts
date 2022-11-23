@@ -195,6 +195,7 @@ export const filterDefinitions: SearchFilterDefinition[] = [
     icon: LinkIcon,
     operators: [
       {name: 'referenceEqual', type: 'item'},
+      {name: 'referenceNotEqual', type: 'item'},
       {type: 'divider'},
       {name: 'defined', type: 'item'},
       {name: 'notDefined', type: 'item'},

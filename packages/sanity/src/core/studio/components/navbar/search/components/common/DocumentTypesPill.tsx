@@ -1,7 +1,7 @@
-import {Card} from '@sanity/ui'
-import React from 'react'
+import {Card, Text} from '@sanity/ui'
+import React, {useMemo} from 'react'
 import type {SearchableType} from '../../../../../../search'
-import {DocumentTypesTruncated} from './DocumentTypesTruncated'
+import {documentTypesTruncated} from '../../utils/documentTypesTruncated'
 
 interface TypePillsProps {
   availableCharacters?: number
@@ -9,9 +9,16 @@ interface TypePillsProps {
 }
 
 export function DocumentTypesPill({availableCharacters, types}: TypePillsProps) {
+  const title = useMemo(
+    () => documentTypesTruncated({availableCharacters, types}),
+    [availableCharacters, types]
+  )
+
   return (
     <Card border padding={2} radius={2}>
-      <DocumentTypesTruncated availableCharacters={availableCharacters} types={types} />
+      <Text muted size={1}>
+        {title}
+      </Text>
     </Card>
   )
 }

@@ -1,52 +1,50 @@
-import {ResponsivePaddingProps} from '@sanity/ui'
+import {ResponsiveMarginProps, ResponsivePaddingProps} from '@sanity/ui'
 import React, {MouseEvent, useCallback} from 'react'
 import {PreviewCard} from '../../../../../../../components/PreviewCard'
 import {useSchema} from '../../../../../../../hooks'
-import type {WeightedHit} from '../../../../../../../search'
-import {useDocumentPresence, useDocumentPreviewStore} from '../../../../../../../store'
-import {getPublishedId} from '../../../../../../../util/draftUtils'
+import {useDocumentPresence} from '../../../../../../../store'
 import {CommandListItem} from '../../common/CommandListItem.styled'
-import {DebugOverlay} from './DebugOverlay'
 import SearchResultItemPreview from './SearchResultItemPreview'
 import {useIntentLink} from 'sanity/router'
 
-interface SearchItemProps extends ResponsivePaddingProps {
-  data: WeightedHit
-  debug?: boolean
+interface SearchItemProps extends ResponsiveMarginProps, ResponsivePaddingProps {
+  disableIntentLink?: boolean
+  documentId: string
+  documentType: string
   onClick?: () => void
   onMouseDown?: (event: MouseEvent) => void
   onMouseEnter?: () => void
-  documentId: string
 }
 
 export function SearchResultItem({
-  data,
-  debug,
+  disableIntentLink,
   documentId,
+  documentType,
   onClick,
   onMouseDown,
   onMouseEnter,
+  ...rest
 }: SearchItemProps) {
-  const {hit} = data
   const schema = useSchema()
-  const type = schema.get(hit?._type)
+  const type = schema.get(documentType)
   const documentPresence = useDocumentPresence(documentId)
-  const documentPreviewStore = useDocumentPreviewStore()
 
   const {onClick: onIntentClick} = useIntentLink({
     intent: 'edit',
     params: {
-      id: getPublishedId(hit._id),
+      id: documentId,
       type: type?.name,
     },
   })
 
   const handleClick = useCallback(
     (e: MouseEvent<HTMLElement>) => {
-      onIntentClick(e)
+      if (!disableIntentLink) {
+        onIntentClick(e)
+      }
       onClick?.()
     },
-    [onClick, onIntentClick]
+    [disableIntentLink, onClick, onIntentClick]
   )
 
   if (!type) return null
@@ -56,22 +54,20 @@ export function SearchResultItem({
       as={CommandListItem}
       data-as="a"
       data-command-list-item
+      flex={1}
       onClick={handleClick}
       onMouseDown={onMouseDown}
       onMouseEnter={onMouseEnter}
-      marginTop={1}
-      marginX={1}
       padding={2}
       radius={2}
       tabIndex={-1}
+      {...rest}
     >
       <SearchResultItemPreview
-        documentId={hit._id}
-        documentPreviewStore={documentPreviewStore}
+        documentId={documentId}
         presence={documentPresence}
         schemaType={type}
       />
-      {debug && <DebugOverlay data={data} />}
     </PreviewCard>
   )
 }

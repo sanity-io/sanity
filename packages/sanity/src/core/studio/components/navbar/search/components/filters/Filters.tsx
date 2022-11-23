@@ -1,5 +1,5 @@
 import {Button, Flex} from '@sanity/ui'
-import React, {useCallback, useEffect, useMemo, useRef} from 'react'
+import React, {useCallback, useEffect, useRef} from 'react'
 import {DEBUG_MODE} from '../../constants'
 import {useSearchState} from '../../contexts/search/useSearchState'
 import {getFilterKey} from '../../utils/filterUtils'

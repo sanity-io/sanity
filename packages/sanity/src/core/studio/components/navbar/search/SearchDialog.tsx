@@ -1,4 +1,4 @@
-import {Box, Card, Dialog, Portal} from '@sanity/ui'
+import {Box, Card, Portal} from '@sanity/ui'
 import React, {useCallback, useEffect, useId, useRef, useState} from 'react'
 import FocusLock from 'react-focus-lock'
 import styled from 'styled-components'
@@ -50,12 +50,13 @@ export function SearchDialog({onClose, onOpen, open}: SearchDialogProps) {
 
   const {
     dispatch,
+    setOnClose,
     state: {filtersVisible, recentSearches, result, terms},
   } = useSearchState()
 
   const {scheme} = useColorScheme()
 
-  const hasValidTerms = hasSearchableTerms(terms)
+  const hasValidTerms = hasSearchableTerms({terms})
 
   /**
    * Measure top-most visible search result index
@@ -94,6 +95,13 @@ export function SearchDialog({onClose, onOpen, open}: SearchDialogProps) {
       dispatch({type: 'ORDERING_RESET'})
     }
   }, [dispatch, hasValidTerms, open])
+
+  /**
+   * Set shared `onClose` in search context
+   */
+  useEffect(() => {
+    setOnClose(onClose)
+  }, [onClose, setOnClose])
 
   /**
    * Store mounted state (must be last)

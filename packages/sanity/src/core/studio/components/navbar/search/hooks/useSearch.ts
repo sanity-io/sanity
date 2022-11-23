@@ -21,6 +21,7 @@ import {hasSearchableTerms} from '../utils/hasSearchableTerms'
 import {getSearchableOmnisearchTypes} from '../utils/selectors'
 
 interface SearchRequest {
+  debounceTime?: number
   options?: SearchOptions
   terms: SearchTerms
 }
@@ -50,12 +51,14 @@ function sanitizeRequest(request: SearchRequest) {
 }
 
 export function useSearch({
+  allowEmptyQueries,
   initialState,
   onComplete,
   onError,
   onStart,
   schema,
 }: {
+  allowEmptyQueries?: boolean
   initialState: SearchState
   onComplete?: (hits: WeightedHit[]) => void
   onError?: (error: Error) => void
@@ -84,7 +87,9 @@ export function useSearch({
         filter(nonNullable),
         map(sanitizeRequest),
         distinctUntilChanged(isEqual),
-        filter((request: SearchRequest) => hasSearchableTerms(request.terms)),
+        filter((request: SearchRequest) =>
+          hasSearchableTerms({allowEmptyQueries, terms: request.terms})
+        ),
         debounceTime(300),
         tap(onStart),
         switchMap((request) =>

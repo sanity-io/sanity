@@ -3,8 +3,11 @@ import {isTitledListValue, StringOptions, TitledListValue} from '@sanity/types'
 import {Box, Button, Code, Flex, Menu, MenuButton, MenuItem, Stack, Text} from '@sanity/ui'
 import {capitalize, uniq} from 'lodash'
 import React, {useCallback, useId, useMemo} from 'react'
+import {useSchema} from '../../../../../../../../hooks'
 import {isNonNullable} from '../../../../../../../../util'
+import {useSearchState} from '../../../../contexts/search/useSearchState'
 import {OperatorInputComponentProps} from '../../../../definitions/operators/operatorTypes'
+import {getSchemaField} from '../../../../utils/getSchemaField'
 
 interface TitledListValueGroup extends Omit<TitledListValue<number | string>, 'title'> {
   title: (number | string)[]
@@ -42,17 +45,37 @@ function CustomMenuItem({
 }
 
 export function FieldInputStringList({
+  fieldDefinition,
   onChange,
-  options,
   value,
 }: OperatorInputComponentProps<number | string>) {
   const menuButtonId = useId()
 
+  const {
+    state: {documentTypesNarrowed},
+  } = useSearchState()
+  const schema = useSchema()
+
   // Build list items
   const items = useMemo(() => {
-    const lists = (options as StringOptions[]).map((o) => o.list)
+    if (!fieldDefinition) {
+      return []
+    }
 
-    const selectOptions = lists
+    const options = fieldDefinition.documentTypes
+      .filter((d) => documentTypesNarrowed.includes(d))
+      .map((type) => {
+        const schemaType = schema.get(type)
+        if (schemaType) {
+          const field = getSchemaField(schemaType, fieldDefinition.fieldPath)
+          return field?.type.options as StringOptions
+        }
+        return null
+      })
+      .filter(isNonNullable)
+
+    const selectOptions = options
+      .map((o) => o.list)
       .flatMap((list) => list?.map((l) => toSelectItem(l)))
       .filter(isNonNullable)
 
@@ -72,7 +95,7 @@ export function FieldInputStringList({
       }
       return acc
     }, [])
-  }, [options])
+  }, [documentTypesNarrowed, fieldDefinition, schema])
 
   const handleClick = useCallback(
     (v: number | string) => {

@@ -1,5 +1,5 @@
 import isEqual from 'lodash/isEqual'
-import React, {ReactNode, useEffect, useMemo, useReducer, useRef} from 'react'
+import React, {ReactNode, useCallback, useEffect, useMemo, useReducer, useRef} from 'react'
 import {useClient, useSchema} from '../../../../../../hooks'
 import type {SearchableType, SearchTerms} from '../../../../../../search'
 import {useCurrentUser} from '../../../../../../store'
@@ -25,6 +25,8 @@ interface SearchProviderProps {
  * @internal
  */
 export function SearchProvider({children, fullscreen}: SearchProviderProps) {
+  const onCloseRef = useRef<(() => void) | null>(null)
+
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const schema = useSchema()
   const currentUser = useCurrentUser()
@@ -84,7 +86,7 @@ export function SearchProvider({children, fullscreen}: SearchProviderProps) {
     schema,
   })
 
-  const hasValidTerms = hasSearchableTerms(terms)
+  const hasValidTerms = hasSearchableTerms({terms})
 
   // Get a narrowed list of document types to search on based on any current active filters.
   const documentTypes = documentTypesNarrowed.map(
@@ -93,6 +95,10 @@ export function SearchProvider({children, fullscreen}: SearchProviderProps) {
 
   // Get a list of 'complete' filters (filters that return valid values)
   const completeFilters = currentFilters.filter((filter) => isFilterComplete(filter, operators))
+
+  const handleSetOnClose = useCallback((onClose: () => void) => {
+    onCloseRef.current = onClose
+  }, [])
 
   /**
    * Trigger search when any terms (query or selected types) OR current pageIndex has changed
@@ -171,7 +177,9 @@ export function SearchProvider({children, fullscreen}: SearchProviderProps) {
     <SearchContext.Provider
       value={{
         dispatch,
+        onClose: onCloseRef?.current,
         recentSearchesStore,
+        setOnClose: handleSetOnClose,
         state: {
           ...state,
           fullscreen,

@@ -6,6 +6,7 @@ import {useSearchState} from '../../../contexts/search/useSearchState'
 import type {SearchFilter} from '../../../types'
 import {getFilterKey, isFilterComplete} from '../../../utils/filterUtils'
 import {FilterLabel} from '../../common/FilterLabel'
+import {FilterPopoverWrapper} from '../common/FilterPopoverWrapper'
 import {FilterPopoverContent} from './FilterPopoverContent'
 
 interface FilterButtonProps {
@@ -53,7 +54,11 @@ export default function FilterButton({filter, initialOpen}: FilterButtonProps) {
 
   return (
     <Popover
-      content={<FilterPopoverContent filter={filter} onClose={handleClose} />}
+      content={
+        <FilterPopoverWrapper anchorElement={buttonElement} onClose={handleClose}>
+          <FilterPopoverContent filter={filter} />
+        </FilterPopoverWrapper>
+      }
       constrainSize
       open={open}
       placement="bottom-start"

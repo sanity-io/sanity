@@ -7,6 +7,7 @@ import {VIRTUAL_LIST_ITEM_HEIGHT, VIRTUAL_LIST_OVERSCAN} from '../../constants'
 import {useCommandList} from '../../contexts/commandList'
 import {useSearchState} from '../../contexts/search/useSearchState'
 import {PointerOverlay} from '../filters/common/PointerOverlay'
+import {DebugOverlay} from './items/DebugOverlay'
 import {SearchResultItem} from './items/SearchResultItem'
 
 interface SearchResultsVirtualListProps {
@@ -97,14 +98,17 @@ export function SearchResultsVirtualList({
               }}
             >
               <SearchResultItem
-                data={hit}
                 debug={debug}
                 documentId={getPublishedId(hit.hit._id) || ''}
+                documentType={hit.hit._type}
                 key={virtualRow.key}
+                marginTop={1}
+                marginX={1}
                 onClick={handleResultClick}
                 onMouseDown={onChildMouseDown}
                 onMouseEnter={onChildMouseEnter(virtualRow.index)}
               />
+              {debug && <DebugOverlay data={hit} />}
             </div>
           )
         })}
