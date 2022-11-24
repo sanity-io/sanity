@@ -3479,6 +3479,11 @@
   resolved "https://registry.yarnpkg.com/@sanity/color/-/color-2.1.19-beta.3.tgz#f4f9a377825f332a9908e3ffb4945dccccc3f73b"
   integrity sha512-421F+o3BbumkPzj93wsM9VXeX4wuhrXp/B/AHVuB0uXWLEGYnrY2mBzRU44fsZGQWW4fgy139B5eV5orFzYJkA==
 
+"@sanity/color@3.0.0-beta.1":
+  version "3.0.0-beta.1"
+  resolved "https://registry.yarnpkg.com/@sanity/color/-/color-3.0.0-beta.1.tgz#2a4fd2bdb1040e946b543013f4259f6853beed6f"
+  integrity sha512-XN6t+6PJj2zu+QE8Ex0WEHBxWEsrFvf+8KeBxQYl2eo/bjfvuOFlyEIZ9/yByfKH7xAihLyYmAFtYb1DeLbxfw==
+
 "@sanity/eslint-config-studio@^2.0.0":
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/@sanity/eslint-config-studio/-/eslint-config-studio-2.0.0.tgz#1c7a0a559ff364c475d951fe882bfdc33c41ca38"
@@ -3536,6 +3541,11 @@
   resolved "https://registry.yarnpkg.com/@sanity/icons/-/icons-1.3.6.tgz#4de4848304bf8487e1c08188decbb0ba5e86a158"
   integrity sha512-/GeFmwHMQVTCBvo4qAQgZJHKB1UzU8u42gnjs6696PWh626G4xbElb3/YJ9sM1PwTc0OaYrvIDes8qUTvrlhrA==
 
+"@sanity/icons@^2.0.0":
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/@sanity/icons/-/icons-2.0.0.tgz#16dc4454e65f0f95bd1a130fb0b06681a017eb54"
+  integrity sha512-TLrJ9YXUzZeb1gijjCkERaie1LipSYfC/7KKIzJxGxPfxq+90HRklo/zzVFk45GctXFhxJRgMA5sbkCDVb9RiA==
+
 "@sanity/image-url@^1.0.1":
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/@sanity/image-url/-/image-url-1.0.1.tgz#960d649b2f4396da0adb31cf94503c929495cea0"
@@ -3549,10 +3559,10 @@
     "@sanity/icons" "^1.3"
     react-copy-to-clipboard "^5.1.0"
 
-"@sanity/logos@1.1.20-beta.3":
-  version "1.1.20-beta.3"
-  resolved "https://registry.yarnpkg.com/@sanity/logos/-/logos-1.1.20-beta.3.tgz#40e24269cfa25b20b6b05ecefa5847ce3350e976"
-  integrity sha512-aMxqGIemeO12BxbpWD+5dQeTK2maYRsLa4f5cdr+ah9uyfooNTmpz9vQlSaukyUIKG+Skzx+aMzj1qWjzB2pig==
+"@sanity/logos@^2.0.1":
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/@sanity/logos/-/logos-2.0.1.tgz#c8a32e1166ed8244b0651ccbdcd5e980f3e5986e"
+  integrity sha512-QmTebRYsXRD2fs6dnh05/q5UdaTFwBBthFYvl8BhGfV9Y3qHHa8fMA5xb+6VRg2NENQFvjAa09OiAARMpGgGyw==
 
 "@sanity/pkg-utils@^1.17.3":
   version "1.17.3"
@@ -3646,6 +3656,18 @@
     "@floating-ui/react-dom" "^1.0.0"
     "@sanity/color" "2.1.19-beta.3"
     "@sanity/icons" "1.3.9-beta.3"
+    framer-motion "^7.5.3"
+    react-refractor "^2.1.7"
+
+"@sanity/ui@1.0.0-beta.34":
+  version "1.0.0-beta.34"
+  resolved "https://registry.yarnpkg.com/@sanity/ui/-/ui-1.0.0-beta.34.tgz#1ffe6b2bc03f64281af3c35692b1a4ae443bcbe7"
+  integrity sha512-WTmrIyqnCHUSTkv40/0KGBEfCGmD8ESQL3bRN+QmGUp+sB5jeXDxKJ6590eUtwodzyfm2K5Vh/CVGOQ3NDAPfA==
+  dependencies:
+    "@floating-ui/react-dom" "^1.0.0"
+    "@sanity/color" "3.0.0-beta.1"
+    "@sanity/icons" "^2.0.0"
+    csstype "^3.1.1"
     framer-motion "^7.5.3"
     react-refractor "^2.1.7"
 
@@ -4357,10 +4379,17 @@
   dependencies:
     "@types/react" "*"
 
-"@types/react-dom@^18.0.0", "@types/react-dom@^18.0.6":
+"@types/react-dom@^18.0.0":
   version "18.0.7"
   resolved "https://registry.yarnpkg.com/@types/react-dom/-/react-dom-18.0.7.tgz#ee7cf8ec4e6977e3f0a7b1d38bd89c75aa2aec28"
   integrity sha512-HaXc+BbqAZE1RdsK3tC8SbkFy6UL2xF76lT9rQs5JkPrJg3rWA3Ou/Lhw3YJQzEDkBpmJ79nBsfnd05WrBd2QQ==
+  dependencies:
+    "@types/react" "*"
+
+"@types/react-dom@^18.0.9":
+  version "18.0.9"
+  resolved "https://registry.yarnpkg.com/@types/react-dom/-/react-dom-18.0.9.tgz#ffee5e4bfc2a2f8774b15496474f8e7fe8d0b504"
+  integrity sha512-qnVvHxASt/H7i+XG1U1xMiY5t+IHcPGUK7TDMDzom08xa7e86eCeKOiLZezwCKVxJn6NEiiy2ekgX8aQssjIKg==
   dependencies:
     "@types/react" "*"
 
@@ -4385,10 +4414,10 @@
   dependencies:
     "@types/react" "*"
 
-"@types/react@*", "@types/react@^18", "@types/react@^18.0.21":
-  version "18.0.24"
-  resolved "https://registry.yarnpkg.com/@types/react/-/react-18.0.24.tgz#2f79ed5b27f08d05107aab45c17919754cc44c20"
-  integrity sha512-wRJWT6ouziGUy+9uX0aW4YOJxAY0bG6/AOk5AW5QSvZqI7dk6VBIbXvcVgIw/W5Jrl24f77df98GEKTJGOLx7Q==
+"@types/react@*", "@types/react@^18.0.25":
+  version "18.0.25"
+  resolved "https://registry.yarnpkg.com/@types/react/-/react-18.0.25.tgz#8b1dcd7e56fe7315535a4af25435e0bb55c8ae44"
+  integrity sha512-xD6c0KDT4m7n9uD4ZHi02lzskaiqcBxf4zi+tXZY98a04wvc0hi/TcCPC2FOESZi51Nd7tlUeOJY8RofL799/g==
   dependencies:
     "@types/prop-types" "*"
     "@types/scheduler" "*"
@@ -7168,7 +7197,7 @@ cssstyle@^2.3.0:
   dependencies:
     cssom "~0.3.6"
 
-csstype@^3.0.2, csstype@^3.0.4:
+csstype@^3.0.2, csstype@^3.0.4, csstype@^3.1.1:
   version "3.1.1"
   resolved "https://registry.yarnpkg.com/csstype/-/csstype-3.1.1.tgz#841b532c45c758ee546a11d5bd7b7b473c8c30b9"
   integrity sha512-DJR/VvkAvSZW9bTouZue2sSxDwdTN92uHjqeKVm+0dAqdfNykRzQ95tay8aXMBAAPpUiq4Qcug2L7neoRh2Egw==

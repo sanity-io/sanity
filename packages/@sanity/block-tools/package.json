@@ -41,7 +41,7 @@
     "@sanity/schema": "3.0.0-rc.2",
     "@sanity/types": "3.0.0-rc.2",
     "@types/jsdom": "^20.0.0",
-    "@types/react": "^18.0.21",
+    "@types/react": "^18.0.25",
     "jsdom": "^20.0.0"
   },
   "repository": {
