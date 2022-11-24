@@ -86,12 +86,14 @@ export function SelectInput(props: StringInputProps) {
       direction={schemaType.options?.direction || 'vertical'}
       customValidity={validationError}
       onChange={handleChange}
+      readOnly={readOnly}
     />
   ) : (
     <Select
       {...elementProps}
       customValidity={validationError}
       value={optionValueFromItem(currentItem)}
+      readOnly={readOnly}
       onChange={handleSelectChange}
     >
       {[EMPTY_ITEM, ...items].map((item, i) => (
