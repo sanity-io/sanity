@@ -24,7 +24,7 @@ interface PopoverContentProps {
 
 interface ReferenceAutocompleteProps {
   onSelect?: (reference: ReferenceValue | null) => void
-  types: SearchableType[]
+  types?: SearchableType[]
   value?: ReferenceValue | null
 }
 
@@ -35,7 +35,7 @@ const StyledText = styled(Text)`
 `
 
 export const ReferenceAutocomplete = forwardRef(function DebugMiniReferenceInput(
-  {onSelect, types, value}: ReferenceAutocompleteProps,
+  {onSelect, types = [], value}: ReferenceAutocompleteProps,
   ref: React.ForwardedRef<HTMLInputElement>
 ) {
   const autocompletePopoverReferenceElementRef = useRef<HTMLDivElement | null>(null)
@@ -154,7 +154,7 @@ export const ReferenceAutocomplete = forwardRef(function DebugMiniReferenceInput
   const placeholderText = useMemo(() => {
     const documentTypes = documentTypesTruncated({types})
 
-    if (documentTypes) {
+    if (types.length > 0) {
       return `Search for ${documentTypes}`
     }
     return `Search all documents`

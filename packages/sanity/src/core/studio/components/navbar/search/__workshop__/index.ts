@@ -6,9 +6,14 @@ export default defineScope({
   title: 'Search',
   stories: [
     {
-      name: 'miniReferenceInput',
-      title: 'MiniReferenceInput',
-      component: lazy(() => import('./MiniReferenceInputStory')),
+      name: 'autocomplete',
+      title: 'Autocomplete',
+      component: lazy(() => import('./AutocompleteStory')),
+    },
+    {
+      name: 'filterButton',
+      title: 'FilterButton',
+      component: lazy(() => import('./FilterButtonStory')),
     },
     {
       name: 'searchPopover',

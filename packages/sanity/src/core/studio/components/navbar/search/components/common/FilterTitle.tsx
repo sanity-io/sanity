@@ -6,9 +6,10 @@ import {getFieldFromFilter} from '../../utils/filterUtils'
 
 interface FilterTitleProps {
   filter: SearchFilter
+  maxLength?: number
 }
 
-export function FilterTitle({filter}: FilterTitleProps) {
+export function FilterTitle({filter, maxLength}: FilterTitleProps) {
   const {
     state: {definitions},
   } = useSearchState()
@@ -21,7 +22,15 @@ export function FilterTitle({filter}: FilterTitleProps) {
     }
     // Otherwise, fallback and display filter definition title.
     return getFilterDefinition(definitions.filters, filter.filterType)?.title
-  }, [filter, definitions])
+  }, [definitions, filter])
 
-  return <span>{title}</span>
+  if (!title) {
+    return null
+  }
+
+  return maxLength && title.length > maxLength ? (
+    <span>{title.slice(0, maxLength)}…</span>
+  ) : (
+    <span>{title}</span>
+  )
 }

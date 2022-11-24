@@ -1,5 +1,5 @@
 import {CloseIcon} from '@sanity/icons'
-import {Button, Flex, Popover, rem, useClickOutside} from '@sanity/ui'
+import {Button, Popover, rem, useClickOutside} from '@sanity/ui'
 import React, {KeyboardEvent, useCallback, useState} from 'react'
 import styled from 'styled-components'
 import {useSearchState} from '../../../contexts/search/useSearchState'
@@ -17,6 +17,17 @@ interface FilterButtonProps {
 const CloseButton = styled(Button)`
   border-radius: ${({theme}) =>
     `0 ${rem(theme.sanity.radius[2])} ${rem(theme.sanity.radius[2])} 0`};
+`
+
+const CustomButton = styled(Button)`
+  width: 100%;
+`
+
+const ContainerDiv = styled.div`
+  align-items: center;
+  display: inline-flex;
+  max-width: 100%;
+  position: relative;
 `
 
 export default function FilterButton({filter, initialOpen}: FilterButtonProps) {
@@ -65,19 +76,18 @@ export default function FilterButton({filter, initialOpen}: FilterButtonProps) {
       portal
       ref={setPopoverElement}
     >
-      <Flex align="center" ref={setButtonElement} style={{position: 'relative'}}>
-        <Button
+      <ContainerDiv ref={setButtonElement}>
+        <CustomButton
           onClick={handleOpen}
           onKeyDown={handleKeyDown}
           paddingLeft={fullscreen ? 3 : 2}
           paddingRight={fullscreen ? 3 : 5}
           paddingY={fullscreen ? 3 : 2}
           radius={2}
-          style={{maxWidth: '100%'}}
           tone={isComplete ? 'primary' : 'default'}
         >
           <FilterLabel filter={filter} showContent={isComplete} />
-        </Button>
+        </CustomButton>
 
         {!fullscreen && (
           <CloseButton
@@ -93,7 +103,7 @@ export default function FilterButton({filter, initialOpen}: FilterButtonProps) {
             tone={isComplete ? 'primary' : 'default'}
           />
         )}
-      </Flex>
+      </ContainerDiv>
     </Popover>
   )
 }

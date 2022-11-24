@@ -1,4 +1,4 @@
-import {Inline, Text} from '@sanity/ui'
+import {Box, Flex, Text} from '@sanity/ui'
 import React from 'react'
 import {useSearchState} from '../../contexts/search/useSearchState'
 import {getOperator} from '../../definitions/operators'
@@ -21,10 +21,10 @@ export function FilterLabel({filter, fontSize = 1, showContent = true}: FilterLa
   const ButtonValue = operator?.buttonValueComponent
 
   return (
-    <Inline space={1}>
+    <Flex align="center" gap={1}>
       {/* Title */}
       <Text size={fontSize} weight="medium">
-        <FilterTitle filter={filter} />
+        <FilterTitle filter={filter} maxLength={40} />
       </Text>
       {/* Operator */}
       {showContent && operator?.buttonLabel && (
@@ -34,10 +34,12 @@ export function FilterLabel({filter, fontSize = 1, showContent = true}: FilterLa
       )}
       {/* Value */}
       {showContent && ButtonValue && (
-        <Text size={fontSize} textOverflow="ellipsis" weight="medium">
-          <ButtonValue value={filter.value} />
-        </Text>
+        <Box>
+          <Text size={fontSize} textOverflow="ellipsis" weight="medium">
+            <ButtonValue value={filter?.value} />
+          </Text>
+        </Box>
       )}
-    </Inline>
+    </Flex>
   )
 }

@@ -7,7 +7,9 @@ export const CommandListItem = styled(Box)`
     [data-focused='true'] &,
     [data-hovered='true'] & {
       @media (pointer: fine) {
-        background: ${({theme}) => theme.sanity.color.button.bleed.default.hovered.bg};
+        // Allow nested cards to inherit the correct background color
+        --card-bg-color: ${({theme}) => theme.sanity.color.button.bleed.default.hovered.bg};
+        background: var(--card-bg-color);
       }
       // Disable box-shadow to hide the halo effect when we have keyboard focus over a selected <Button>
       box-shadow: none;
