@@ -77,7 +77,7 @@ export function createRecentSearchesStore({
 
       // Remove filters in 'incomplete' states prior to writing to local storage.
       const validStoredFilters = storedFilters.filter((filter) =>
-        isFilterComplete(filter, operatorDefinitions)
+        isFilterComplete(filter, fieldDefinitions, operatorDefinitions)
       )
 
       const newSearchItem: StoredSearchItem = {

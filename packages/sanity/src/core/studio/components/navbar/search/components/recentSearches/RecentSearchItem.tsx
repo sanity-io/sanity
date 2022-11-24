@@ -82,7 +82,7 @@ export function RecentSearchItem(props: RecentSearchesProps) {
         <Flex align="center" flex={1} gap={2} justify="flex-start" marginLeft={3} wrap="wrap">
           {/* Text query */}
           {value.query && (
-            <SearchItemQueryBox marginLeft={1}>
+            <SearchItemQueryBox marginLeft={1} paddingY={2}>
               <Text muted textOverflow="ellipsis">
                 {value.query}
               </Text>

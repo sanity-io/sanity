@@ -61,7 +61,7 @@ export function ButtonValueNumberCount({value}: {value: number}) {
 }
 
 export function ButtonValueNumberRange({value}: {value: OperatorNumberRangeValue}) {
-  if (!Number.isFinite(value?.max) && !Number.isFinite(value?.min)) {
+  if (!Number.isFinite(value?.max) || !Number.isFinite(value?.min)) {
     return null
   }
   return (
@@ -72,7 +72,7 @@ export function ButtonValueNumberRange({value}: {value: OperatorNumberRangeValue
 }
 
 export function ButtonValueNumberCountRange({value}: {value: OperatorNumberRangeValue}) {
-  if (Number.isFinite(value?.max) || Number.isFinite(value?.min)) {
+  if (!Number.isFinite(value?.max) || !Number.isFinite(value?.min)) {
     return null
   }
   return (

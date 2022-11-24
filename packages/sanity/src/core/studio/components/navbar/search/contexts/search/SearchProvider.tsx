@@ -8,7 +8,7 @@ import {useSource} from '../../../../../source'
 import {FINDABILITY_MVI, SEARCH_LIMIT} from '../../constants'
 import {createRecentSearchesStore, RecentSearch} from '../../datastores/recentSearches'
 import {useSearch} from '../../hooks/useSearch'
-import type {SearchOrdering} from '../../types'
+import type {SearchFieldDefinition, SearchOrdering} from '../../types'
 import {createFieldDefinitions} from '../../utils/createFieldDefinitions'
 import {isFilterComplete} from '../../utils/filterUtils'
 import {hasSearchableTerms} from '../../utils/hasSearchableTerms'
@@ -17,6 +17,7 @@ import {initialSearchState, searchReducer} from './reducer'
 import {SearchContext} from './SearchContext'
 
 interface SearchProviderProps {
+  __debugFieldDefinitions?: SearchFieldDefinition[]
   children?: ReactNode
   fullscreen?: boolean
 }
@@ -24,7 +25,11 @@ interface SearchProviderProps {
 /**
  * @internal
  */
-export function SearchProvider({children, fullscreen}: SearchProviderProps) {
+export function SearchProvider({
+  __debugFieldDefinitions = [],
+  children,
+  fullscreen,
+}: SearchProviderProps) {
   const onCloseRef = useRef<(() => void) | null>(null)
 
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
@@ -37,7 +42,10 @@ export function SearchProvider({children, fullscreen}: SearchProviderProps) {
   const {dataset, projectId} = client.config()
 
   // Create our field definitions: all applicable fields which we can filter on.
-  const fields = useMemo(() => createFieldDefinitions(schema, filters), [schema, filters])
+  const fields = useMemo(
+    () => [...createFieldDefinitions(schema, filters), ...__debugFieldDefinitions],
+    [__debugFieldDefinitions, schema, filters]
+  )
 
   // Create local storage store
   const recentSearchesStore = useMemo(
@@ -94,7 +102,9 @@ export function SearchProvider({children, fullscreen}: SearchProviderProps) {
   )
 
   // Get a list of 'complete' filters (filters that return valid values)
-  const completeFilters = currentFilters.filter((filter) => isFilterComplete(filter, operators))
+  const completeFilters = currentFilters.filter((filter) =>
+    isFilterComplete(filter, fields, operators)
+  )
 
   const handleSetOnClose = useCallback((onClose: () => void) => {
     onCloseRef.current = onClose

@@ -61,7 +61,7 @@ export default function FilterButton({filter, initialOpen}: FilterButtonProps) {
 
   useClickOutside(handleClose, [buttonElement, popoverElement])
 
-  const isComplete = isFilterComplete(filter, definitions.operators)
+  const isComplete = isFilterComplete(filter, definitions.fields, definitions.operators)
 
   return (
     <Popover

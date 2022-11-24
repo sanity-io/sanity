@@ -31,9 +31,14 @@ export function getFilterKey(filter: SearchFilter): string {
  */
 export function isFilterComplete(
   filter: SearchFilter,
+  fieldDefinitions: SearchFieldDefinition[],
   operatorDefinitions: SearchOperator[]
 ): boolean {
+  const field = getFieldFromFilter(fieldDefinitions, filter)
   const operator = getOperator(operatorDefinitions, filter.operatorType)
-  const hasValue = filter.value !== undefined && filter.value !== null
-  return operator?.inputComponent ? !!(filter.operatorType && hasValue) : true
+  const hasFilterValue = operator?.fn({
+    fieldPath: field?.fieldPath,
+    value: filter.value,
+  })
+  return operator?.inputComponent ? !!(filter.operatorType && hasFilterValue) : true
 }

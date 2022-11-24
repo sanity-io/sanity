@@ -539,7 +539,7 @@ function generateFilterQuery(
   filters: SearchFilter[]
 ) {
   return filters
-    .filter((filter) => isFilterComplete(filter, operators))
+    .filter((filter) => isFilterComplete(filter, fieldDefinitions, operators))
     .map((filter) => {
       const fieldDefinition = fieldDefinitions.find((field) => field.id === filter?.fieldId)
       return getOperator(operators, filter.operatorType)?.fn({
