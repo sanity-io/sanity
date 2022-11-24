@@ -43,7 +43,7 @@
     "@rexxars/react-json-inspector": "^8.0.1",
     "@sanity/color": "^2.1.20",
     "@sanity/icons": "^2.0.0",
-    "@sanity/ui": "1.0.0-beta.35",
+    "@sanity/ui": "^1.0.0",
     "@uiw/react-codemirror": "^4.11.4",
     "hashlru": "^2.3.0",
     "is-hotkey": "^0.1.6",
