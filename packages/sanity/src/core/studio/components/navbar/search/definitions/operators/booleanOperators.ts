@@ -8,7 +8,7 @@ export const booleanOperators = {
     buttonLabel: 'is',
     buttonValueComponent: ButtonValueBoolean,
     fn: ({fieldPath, value}: SearchOperatorParams<boolean>) =>
-      value && fieldPath ? `${fieldPath} == ${toJSON(value)}` : null,
+      typeof value !== 'undefined' && fieldPath ? `${fieldPath} == ${toJSON(value)}` : null,
     initialValue: true,
     inputComponent: FieldInputBoolean,
     label: 'is',
