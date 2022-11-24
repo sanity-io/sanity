@@ -1,4 +1,5 @@
 import type {SanityDocument, SchemaType} from '@sanity/types'
+import {TextSkeleton} from '@sanity/ui'
 import React, {useMemo} from 'react'
 import {useMemoObservable} from 'react-rx'
 import {getPreviewStateObservable, getPreviewValueWithFallback} from '../../../../../../preview'
@@ -34,7 +35,7 @@ export function ReferencePreviewTitle({
   })
 
   if (isLoading) {
-    return <em>loading...</em>
+    return <TextSkeleton animated marginLeft={1} radius={2} style={{width: '10ch'}} />
   }
 
   return <>{previewValue.title || documentId.slice(0, 8)}</>
