@@ -136,6 +136,7 @@ export function ReferencePreview(props: {
           <Inline space={4}>
             <Box>
               <Tooltip
+                portal
                 content={
                   <Box padding={2}>
                     <Text size={1}>
@@ -163,6 +164,7 @@ export function ReferencePreview(props: {
 
             <Box>
               <Tooltip
+                portal
                 content={
                   <Box padding={2}>
                     <Text size={1}>
