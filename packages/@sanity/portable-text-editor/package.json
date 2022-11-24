@@ -58,7 +58,7 @@
     "slate": "0.81.1"
   },
   "devDependencies": {
-    "@sanity/ui": "1.0.0-beta.34",
+    "@sanity/ui": "1.0.0-beta.35",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",
     "@types/debug": "^4.1.5",

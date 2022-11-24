@@ -3479,10 +3479,10 @@
   resolved "https://registry.yarnpkg.com/@sanity/color/-/color-2.1.19-beta.3.tgz#f4f9a377825f332a9908e3ffb4945dccccc3f73b"
   integrity sha512-421F+o3BbumkPzj93wsM9VXeX4wuhrXp/B/AHVuB0uXWLEGYnrY2mBzRU44fsZGQWW4fgy139B5eV5orFzYJkA==
 
-"@sanity/color@3.0.0-beta.1":
-  version "3.0.0-beta.1"
-  resolved "https://registry.yarnpkg.com/@sanity/color/-/color-3.0.0-beta.1.tgz#2a4fd2bdb1040e946b543013f4259f6853beed6f"
-  integrity sha512-XN6t+6PJj2zu+QE8Ex0WEHBxWEsrFvf+8KeBxQYl2eo/bjfvuOFlyEIZ9/yByfKH7xAihLyYmAFtYb1DeLbxfw==
+"@sanity/color@^2.1.20":
+  version "2.1.20"
+  resolved "https://registry.yarnpkg.com/@sanity/color/-/color-2.1.20.tgz#48c6ad3e6333d1da2989acbead1a46b4a8c5347a"
+  integrity sha512-dHPgiCMf+lwvQls5uPzorfiq9YuU41AzvifA+ugVHmXvq7JBoofoOPUOmdHUQF0l0shSy0nD3zn52j2I+T2ekg==
 
 "@sanity/eslint-config-studio@^2.0.0":
   version "2.0.0"
@@ -3559,10 +3559,10 @@
     "@sanity/icons" "^1.3"
     react-copy-to-clipboard "^5.1.0"
 
-"@sanity/logos@^2.0.1":
-  version "2.0.1"
-  resolved "https://registry.yarnpkg.com/@sanity/logos/-/logos-2.0.1.tgz#c8a32e1166ed8244b0651ccbdcd5e980f3e5986e"
-  integrity sha512-QmTebRYsXRD2fs6dnh05/q5UdaTFwBBthFYvl8BhGfV9Y3qHHa8fMA5xb+6VRg2NENQFvjAa09OiAARMpGgGyw==
+"@sanity/logos@^2.0.2":
+  version "2.0.2"
+  resolved "https://registry.yarnpkg.com/@sanity/logos/-/logos-2.0.2.tgz#d1b10a32e51d0c35ecbd32b43991a7c89f77a5f6"
+  integrity sha512-BsBNt4ldWNAuKeHge4nKHnN43BN8BwLJuf+HDhrg/ngnORUjty5WV4KVoQkQ2FSTv5YtpJjSuNGSXwT+Araegw==
 
 "@sanity/pkg-utils@^1.17.3":
   version "1.17.3"
@@ -3659,13 +3659,13 @@
     framer-motion "^7.5.3"
     react-refractor "^2.1.7"
 
-"@sanity/ui@1.0.0-beta.34":
-  version "1.0.0-beta.34"
-  resolved "https://registry.yarnpkg.com/@sanity/ui/-/ui-1.0.0-beta.34.tgz#1ffe6b2bc03f64281af3c35692b1a4ae443bcbe7"
-  integrity sha512-WTmrIyqnCHUSTkv40/0KGBEfCGmD8ESQL3bRN+QmGUp+sB5jeXDxKJ6590eUtwodzyfm2K5Vh/CVGOQ3NDAPfA==
+"@sanity/ui@1.0.0-beta.35":
+  version "1.0.0-beta.35"
+  resolved "https://registry.yarnpkg.com/@sanity/ui/-/ui-1.0.0-beta.35.tgz#9def816c67a9bcc55e377e2868afdc4def696085"
+  integrity sha512-GjzbzU9fM25+0Roehn7GyFy6PnjdK4ZubRlsLT9hyiHrDR7g81Cmt3AKHG4UskF0lfdQM+iDLzu6E+fjFsIfUQ==
   dependencies:
     "@floating-ui/react-dom" "^1.0.0"
-    "@sanity/color" "3.0.0-beta.1"
+    "@sanity/color" "^2.1.20"
     "@sanity/icons" "^2.0.0"
     csstype "^3.1.1"
     framer-motion "^7.5.3"
