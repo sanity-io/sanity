@@ -8,7 +8,7 @@ import {NumberInputProps} from '../types'
  * @beta
  */
 export function NumberInput(props: NumberInputProps) {
-  const {schemaType, validationError, value, elementProps} = props
+  const {schemaType, validationError, elementProps} = props
 
   // Show numpad on mobile if only positive numbers is preferred
   const minRule = getValidationRule(schemaType, 'min')
@@ -27,9 +27,10 @@ export function NumberInput(props: NumberInputProps) {
       step="any"
       inputMode={inputMode}
       customValidity={validationError}
-      value={value}
       placeholder={schemaType.placeholder}
       pattern={onlyPositiveNumber ? '[d]*' : undefined}
+      max={Number.MAX_SAFE_INTEGER}
+      min={Number.MIN_SAFE_INTEGER}
     />
   )
 }

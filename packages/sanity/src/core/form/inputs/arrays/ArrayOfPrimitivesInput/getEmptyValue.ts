@@ -6,7 +6,7 @@ export function getEmptyValue(type: SchemaType): number | string | boolean {
       return ''
     }
     case 'number': {
-      return 0
+      return -0
     }
     case 'boolean': {
       return false

@@ -37,10 +37,6 @@ export const ItemRow = React.forwardRef(function ItemRow(
   const hasError = validation.filter((item) => item.level === 'error').length > 0
   const hasWarning = validation.filter((item) => item.level === 'warning').length > 0
 
-  const handleRemove = useCallback(() => {
-    onRemove()
-  }, [onRemove])
-
   const handleInsert = useCallback(
     (pos: 'before' | 'after', insertType: SchemaType) => {
       onInsert({position: pos, items: [getEmptyValue(insertType)]})
@@ -70,7 +66,7 @@ export const ItemRow = React.forwardRef(function ItemRow(
       popover={MENU_BUTTON_POPOVER_PROPS}
       menu={
         <Menu>
-          <MenuItem text="Remove" tone="critical" icon={TrashIcon} onClick={handleRemove} />
+          <MenuItem text="Remove" tone="critical" icon={TrashIcon} onClick={onRemove} />
 
           <MenuItem text="Duplicate" icon={DuplicateIcon} onClick={handleDuplicate} />
           <InsertMenu types={insertableTypes} onInsert={handleInsert} />

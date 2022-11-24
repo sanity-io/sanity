@@ -81,7 +81,7 @@ export class ImmutableAccessor implements Probe {
       throw new Error('setIndex only applies to arrays')
     }
 
-    if (value === this._value[i]) {
+    if (Object.is(value, this._value[i])) {
       return this
     }
 
@@ -131,7 +131,7 @@ export class ImmutableAccessor implements Probe {
       throw new Error('Unable to set attribute of non-object container')
     }
 
-    if (value === this._value[key]) {
+    if (Object.is(value, this._value[key])) {
       return this
     }
 

@@ -53,23 +53,18 @@ export function ArrayOfPrimitivesItem(props: PrimitiveMemberItemProps) {
 
   const handleChange = useCallback(
     (event: PatchEvent | PatchArg) => {
-      const patches = PatchEvent.from(event).patches.map((patch) =>
-        // Map direct unset patches to empty value instead in order to not *remove* elements as the user clears out the value
-        // note: this creates the rather "weird" case where the input renders ´0´ when you try to clear it
-        patch.path.length === 0 && patch.type === 'unset'
-          ? set(getEmptyValue(member.item.schemaType))
-          : patch
-      )
-      onChange(PatchEvent.from(patches).prefixAll(member.index))
+      onChange(PatchEvent.from(event).prefixAll(member.index))
     },
-    [onChange, member.item.schemaType, member.index]
+    [onChange, member.index]
   )
-
   const handleNativeChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
       let inputValue: number | string | boolean = event.currentTarget.value
       if (isNumberSchemaType(member.item.schemaType)) {
         inputValue = event.currentTarget.valueAsNumber
+        if (inputValue > Number.MAX_SAFE_INTEGER || inputValue < Number.MIN_SAFE_INTEGER) {
+          return
+        }
       } else if (isBooleanSchemaType(member.item.schemaType)) {
         inputValue = event.currentTarget.checked
       }
@@ -78,9 +73,17 @@ export function ArrayOfPrimitivesItem(props: PrimitiveMemberItemProps) {
       const hasEmptyValue =
         inputValue === '' || (typeof inputValue === 'number' && isNaN(inputValue))
 
-      onChange(PatchEvent.from(hasEmptyValue ? unset() : set(inputValue)).prefixAll(member.index))
+      handleChange(
+        set(
+          hasEmptyValue
+            ? // Map direct unset patches to empty value instead in order to not *remove* elements as the user clears out the value
+              // note: this creates the rather curious case where the input renders ´0´ when you try to clear it.
+              getEmptyValue(member.item.schemaType)
+            : inputValue
+        )
+      )
     },
-    [member.index, member.item.schemaType, onChange]
+    [handleChange, member.item.schemaType]
   )
 
   const elementProps = useMemo(
@@ -90,7 +93,11 @@ export function ArrayOfPrimitivesItem(props: PrimitiveMemberItemProps) {
       id: member.item.id,
       ref: focusRef,
       onChange: handleNativeChange,
-      value: String(member.item.value || ''),
+      // this is a trick to retain type information while displaying an "empty" input
+      // if this input is used to edit items in an array of numbers, the value can't really be set to empty without
+      // either removing the item or losing type information (i.e. it can't be an empty string, because that's… a string)
+      // so the array of numbers then use the special value `-0` to represent an empty value
+      value: String(Object.is(member.item.value, -0) ? '' : member.item.value),
       readOnly: Boolean(member.item.readOnly),
       placeholder: member.item.schemaType.placeholder,
     }),

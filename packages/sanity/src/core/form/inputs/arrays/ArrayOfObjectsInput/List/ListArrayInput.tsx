@@ -77,7 +77,13 @@ export function ListArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
                         renderPreview={renderPreview}
                       />
                     )}
-                    {member.kind === 'error' && <ErrorItem sortable={sortable} member={member} />}
+                    {member.kind === 'error' && (
+                      <ErrorItem
+                        sortable={sortable}
+                        member={member}
+                        onRemove={() => props.onItemRemove(member.key)}
+                      />
+                    )}
                   </Item>
                 ))}
               </List>
