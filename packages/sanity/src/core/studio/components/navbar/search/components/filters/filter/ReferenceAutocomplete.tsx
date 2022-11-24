@@ -139,10 +139,11 @@ export const ReferenceAutocomplete = forwardRef(function DebugMiniReferenceInput
               )}
             </div>
           }
+          matchReferenceWidth
           onMouseEnter={onMouseEnter}
           onMouseLeave={onMouseLeave}
           open={!searchState.loading && !hidden}
-          matchReferenceWidth
+          overflow="auto"
           placement="bottom-start"
           referenceElement={autocompletePopoverReferenceElementRef.current}
         />

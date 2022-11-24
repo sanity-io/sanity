@@ -1,5 +1,5 @@
 import {CloseIcon} from '@sanity/icons'
-import {Button, Popover, rem, useClickOutside} from '@sanity/ui'
+import {Box, Button, Card, Popover, rem, Stack, Text, useClickOutside} from '@sanity/ui'
 import React, {KeyboardEvent, useCallback, useState} from 'react'
 import styled from 'styled-components'
 import {useSearchState} from '../../../contexts/search/useSearchState'
@@ -72,6 +72,7 @@ export function FilterButton({filter, initialOpen}: FilterButtonProps) {
       }
       constrainSize
       open={open}
+      overflow="auto"
       placement="bottom-start"
       portal
       ref={setPopoverElement}
