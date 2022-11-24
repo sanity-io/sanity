@@ -4,7 +4,6 @@ import {
   DocumentIcon,
   ImageIcon,
   LinkIcon,
-  PinIcon,
   SelectIcon,
   UlistIcon,
 } from '@sanity/icons'
@@ -60,6 +59,27 @@ export const filterDefinitions: SearchFilterDefinition[] = [
     type: 'arrayList',
   }),
   defineSearchFilter<SearchOperatorType>({
+    fieldType: 'array',
+    icon: UlistIcon,
+    operators: [
+      {name: 'arrayReferenceContains', type: 'item'},
+      {name: 'arrayReferenceNotContains', type: 'item'},
+      {type: 'divider'},
+      {name: 'arrayCountEqual', type: 'item'},
+      {name: 'arrayCountNotEqual', type: 'item'},
+      {type: 'divider'},
+      {name: 'arrayCountGt', type: 'item'},
+      {name: 'arrayCountGte', type: 'item'},
+      {name: 'arrayCountLt', type: 'item'},
+      {name: 'arrayCountLte', type: 'item'},
+      {type: 'divider'},
+      {name: 'defined', type: 'item'},
+      {name: 'notDefined', type: 'item'},
+    ],
+    title: 'Array (references)',
+    type: 'arrayReferences',
+  }),
+  defineSearchFilter<SearchOperatorType>({
     fieldType: 'boolean',
     icon: CheckmarkCircleIcon,
     operators: [
@@ -79,8 +99,6 @@ export const filterDefinitions: SearchFilterDefinition[] = [
       {name: 'dateAfter', type: 'item'},
       {name: 'dateBefore', type: 'item'},
       {type: 'divider'},
-      // {name: 'dateRange', type: 'item'},
-      // {type: 'divider'},
       {name: 'dateEqual', type: 'item'},
       {name: 'dateNotEqual', type: 'item'},
       {type: 'divider'},
@@ -133,16 +151,6 @@ export const filterDefinitions: SearchFilterDefinition[] = [
     ],
     title: 'File',
     type: 'file',
-  }),
-  defineSearchFilter<SearchOperatorType>({
-    fieldType: 'geopoint',
-    icon: PinIcon,
-    operators: [
-      {name: 'defined', type: 'item'},
-      {name: 'notDefined', type: 'item'},
-    ],
-    title: 'Geopoint',
-    type: 'geopoint',
   }),
   defineSearchFilter<SearchOperatorType>({
     fieldType: 'image',

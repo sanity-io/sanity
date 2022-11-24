@@ -38,8 +38,9 @@ export function createFieldDefinitions(
           ...schemaType,
           fields: [...schemaType.fields, ...INTERNAL_FIELDS],
         })
+      } else {
+        objectTypes[schemaType.name] = schemaType as ObjectDefinition
       }
-      objectTypes[schemaType.name] = schemaType as ObjectDefinition
     })
 
   // Get supported filter field types
@@ -196,11 +197,16 @@ function resolveFilterType(schemaType: SchemaTypeDefinition) {
   if (isStringList(schemaType)) {
     return 'stringList'
   }
-  if (isArrayDefinition(schemaType) && schemaType.of.find((item) => item.type === 'block')) {
-    return 'portableText'
-  }
-  if (isArrayOfPrimitives(schemaType)) {
-    return 'arrayList'
+  if (isArrayDefinition(schemaType)) {
+    if (schemaType.of.some((item) => item.type === 'reference')) {
+      return 'arrayReferences'
+    }
+    if (schemaType.of.find((item) => item.type === 'block')) {
+      return 'portableText'
+    }
+    if (isArrayOfPrimitives(schemaType)) {
+      return 'arrayList'
+    }
   }
   return schemaType.type
 }

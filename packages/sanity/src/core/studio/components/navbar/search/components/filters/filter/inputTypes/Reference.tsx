@@ -1,4 +1,4 @@
-import {isReferenceSchemaType, ReferenceValue} from '@sanity/types'
+import {isArraySchemaType, isReferenceSchemaType, ReferenceValue} from '@sanity/types'
 import {Box, Button, Card, Stack} from '@sanity/ui'
 import React, {useCallback, useMemo} from 'react'
 import {useSchema} from '../../../../../../../../hooks'
@@ -37,6 +37,9 @@ export function FieldInputReference({
         const schemaType = schema.get(type)
         if (schemaType) {
           const field = getSchemaField(schemaType, fieldDefinition.fieldPath)
+          if (isArraySchemaType(field?.type)) {
+            return field?.type.of.filter(isReferenceSchemaType).flatMap((i) => i.to)
+          }
           if (isReferenceSchemaType(field?.type)) {
             return field?.type.to
           }

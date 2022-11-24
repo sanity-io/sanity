@@ -2,10 +2,12 @@ import {typed} from '@sanity/types'
 import {
   ButtonValueNumberCount,
   ButtonValueNumberCountRange,
+  ButtonValueReference,
   ButtonValueString,
 } from '../../components/filters/common/ButtonValue'
 import {FieldInputNumber} from '../../components/filters/filter/inputTypes/Number'
 import {FieldInputNumberRange} from '../../components/filters/filter/inputTypes/NumberRange'
+import {FieldInputReference} from '../../components/filters/filter/inputTypes/Reference'
 import {FieldInputStringList} from '../../components/filters/filter/inputTypes/StringList'
 import {GteIcon} from '../../components/filters/icons/GteIcon'
 import {GtIcon} from '../../components/filters/icons/GtIcon'
@@ -111,5 +113,25 @@ export const arrayOperators = {
     inputComponent: FieldInputStringList,
     label: 'does not contain',
     type: 'arrayListNotContains',
+  }),
+  arrayReferenceContains: defineSearchOperator({
+    buttonLabel: 'contains',
+    buttonValueComponent: ButtonValueReference,
+    fn: ({fieldPath, value}) =>
+      value?._ref && fieldPath ? `${toJSON(value._ref)} in ${fieldPath}[]._ref` : null,
+    initialValue: null,
+    inputComponent: FieldInputReference,
+    label: 'contains',
+    type: 'arrayReferenceContains',
+  }),
+  arrayReferenceNotContains: defineSearchOperator({
+    buttonLabel: 'does not contain',
+    buttonValueComponent: ButtonValueReference,
+    fn: ({fieldPath, value}) =>
+      value?._ref && fieldPath ? `!(${toJSON(value._ref)} in ${fieldPath}[]._ref)` : null,
+    initialValue: null,
+    inputComponent: FieldInputReference,
+    label: 'does not contain',
+    type: 'arrayReferenceNotContains',
   }),
 }
