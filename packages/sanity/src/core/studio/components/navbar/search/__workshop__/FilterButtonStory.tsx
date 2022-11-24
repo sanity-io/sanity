@@ -1,7 +1,7 @@
 import {Card} from '@sanity/ui'
 import {useBoolean} from '@sanity/ui-workshop'
 import React, {useId, useMemo} from 'react'
-import FilterButton from '../components/filters/filter/FilterButton'
+import {FilterButton} from '../components/filters/filter/FilterButton'
 import {SearchProvider} from '../contexts/search/SearchProvider'
 import type {SearchFieldDefinition, SearchFilter} from '../types'
 

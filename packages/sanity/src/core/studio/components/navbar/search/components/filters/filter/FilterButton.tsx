@@ -30,7 +30,7 @@ const ContainerDiv = styled.div`
   position: relative;
 `
 
-export default function FilterButton({filter, initialOpen}: FilterButtonProps) {
+export function FilterButton({filter, initialOpen}: FilterButtonProps) {
   const [open, setOpen] = useState(initialOpen)
   const [buttonElement, setButtonElement] = useState<HTMLElement | null>(null)
   const [popoverElement, setPopoverElement] = useState<HTMLElement | null>(null)

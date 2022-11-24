@@ -3,11 +3,11 @@ import React, {useCallback, useEffect, useRef} from 'react'
 import {DEBUG_MODE} from '../../constants'
 import {useSearchState} from '../../contexts/search/useSearchState'
 import {getFilterKey} from '../../utils/filterUtils'
-import AddFilterButton from './addFilter/AddFilterButton'
+import {AddFilterButton} from './addFilter/AddFilterButton'
 import {DebugDocumentTypes} from './debug/_DebugDocumentTypes'
 import {DebugFilterQuery} from './debug/_DebugFilterQuery'
-import DocumentTypesButton from './documentTypes/DocumentTypesButton'
-import FilterButton from './filter/FilterButton'
+import {DocumentTypesButton} from './documentTypes/DocumentTypesButton'
+import {FilterButton} from './filter/FilterButton'
 
 export function Filters() {
   const {
