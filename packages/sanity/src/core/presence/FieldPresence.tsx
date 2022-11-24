@@ -16,48 +16,6 @@ import {useReporter} from './overlay/tracker'
 import {FormNodePresence} from './types'
 
 /** @internal */
-export interface FieldPresenceProps {
-  presence: FormNodePresence[]
-  maxAvatars: number
-}
-
-/** @internal */
-export const FieldPresence = DISABLE_OVERLAY
-  ? FieldPresenceWithoutOverlay
-  : FieldPresenceWithOverlay
-
-/** @internal */
-export function FieldPresenceWithOverlay(props: FieldPresenceProps) {
-  const contextPresence = useContext(FormFieldPresenceContext)
-  const {presence = contextPresence, maxAvatars = DEFAULT_MAX_AVATARS_FIELDS} = props
-  const ref = React.useRef(null)
-
-  useReporter(useId(), () => ({presence, element: ref.current!, maxAvatars: maxAvatars}))
-
-  const minWidth = -AVATAR_DISTANCE + (AVATAR_SIZE + AVATAR_DISTANCE) * props.maxAvatars
-
-  return (
-    <FlexWrapper
-      justify="flex-end"
-      ref={ref}
-      style={{minWidth: minWidth, minHeight: AVATAR_SIZE}}
-    />
-  )
-}
-
-/** @internal */
-export function FieldPresenceWithoutOverlay(props: FieldPresenceProps) {
-  const contextPresence = useContext(FormFieldPresenceContext)
-  const {presence = contextPresence, maxAvatars = DEFAULT_MAX_AVATARS_FIELDS} = props
-
-  if (!presence.length) {
-    return null
-  }
-
-  return <FieldPresenceInner presence={presence} maxAvatars={maxAvatars} />
-}
-
-/** @internal */
 export interface FieldPresenceInnerProps {
   maxAvatars?: number
   presence: FormNodePresence[]
@@ -134,3 +92,45 @@ export const FieldPresenceInner = memo(function FieldPresenceInner({
     </FlexWrapper>
   )
 })
+
+/** @internal */
+export interface FieldPresenceProps {
+  presence: FormNodePresence[]
+  maxAvatars: number
+}
+
+/** @internal */
+export function FieldPresenceWithOverlay(props: FieldPresenceProps) {
+  const contextPresence = useContext(FormFieldPresenceContext)
+  const {presence = contextPresence, maxAvatars = DEFAULT_MAX_AVATARS_FIELDS} = props
+  const ref = React.useRef(null)
+
+  useReporter(useId(), () => ({presence, element: ref.current!, maxAvatars: maxAvatars}))
+
+  const minWidth = -AVATAR_DISTANCE + (AVATAR_SIZE + AVATAR_DISTANCE) * props.maxAvatars
+
+  return (
+    <FlexWrapper
+      justify="flex-end"
+      ref={ref}
+      style={{minWidth: minWidth, minHeight: AVATAR_SIZE}}
+    />
+  )
+}
+
+/** @internal */
+export function FieldPresenceWithoutOverlay(props: FieldPresenceProps) {
+  const contextPresence = useContext(FormFieldPresenceContext)
+  const {presence = contextPresence, maxAvatars = DEFAULT_MAX_AVATARS_FIELDS} = props
+
+  if (!presence.length) {
+    return null
+  }
+
+  return <FieldPresenceInner presence={presence} maxAvatars={maxAvatars} />
+}
+
+/** @internal */
+export const FieldPresence = DISABLE_OVERLAY
+  ? FieldPresenceWithoutOverlay
+  : FieldPresenceWithOverlay
