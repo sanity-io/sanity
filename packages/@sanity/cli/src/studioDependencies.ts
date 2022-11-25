@@ -1,11 +1,8 @@
-// @todo REPLACE ME ONCE WE GO LIVE
-const V3_TAG = 'dev-preview'
-
 export const studioDependencies = {
   // Dependencies for a default Sanity installation
   dependencies: {
     // Official studio dependencies
-    sanity: V3_TAG,
+    sanity: '^3.0.0',
 
     // Non-Sanity dependencies
     react: '^18.2.0',
