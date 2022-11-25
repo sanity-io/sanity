@@ -216,9 +216,15 @@ export const filterDefinitions: SearchFilterDefinition[] = [
   }),
   defineSearchFilter<SearchOperatorType>({
     icon: LinkIcon,
-    operators: [{name: 'references', type: 'item'}],
+    operators: [{name: 'referencesDocument', type: 'item'}],
     title: 'Contains reference',
-    type: 'references',
+    type: 'referencesDocument',
+  }),
+  defineSearchFilter<SearchOperatorType>({
+    icon: ImageIcon,
+    operators: [{name: 'referencesAssetImage', type: 'item'}],
+    title: 'Contains image',
+    type: 'referencesAssetImage',
   }),
   defineSearchFilter<SearchOperatorType>({
     fieldType: 'slug',
