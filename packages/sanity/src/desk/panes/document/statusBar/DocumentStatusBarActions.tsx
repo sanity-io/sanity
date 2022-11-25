@@ -5,7 +5,7 @@ import {HistoryRestoreAction} from '../../../documentActions'
 import {useDocumentPane} from '../useDocumentPane'
 import {ActionMenuButton} from './ActionMenuButton'
 import {ActionStateDialog} from './ActionStateDialog'
-import {DocumentActionDescription, DocumentActionDialogProps} from 'sanity'
+import {DocumentActionDescription} from 'sanity'
 
 interface DocumentStatusBarActionsInnerProps {
   disabled: boolean
@@ -64,11 +64,8 @@ function DocumentStatusBarActionsInner(props: DocumentStatusBarActionsInnerProps
         </Box>
       )}
 
-      {firstActionState && (firstActionState.dialog || firstActionState.modal) && (
-        <ActionStateDialog
-          dialog={(firstActionState.dialog || firstActionState.modal) as DocumentActionDialogProps}
-          referenceElement={buttonElement}
-        />
+      {firstActionState && firstActionState.dialog && (
+        <ActionStateDialog dialog={firstActionState.dialog} referenceElement={buttonElement} />
       )}
     </Flex>
   )
