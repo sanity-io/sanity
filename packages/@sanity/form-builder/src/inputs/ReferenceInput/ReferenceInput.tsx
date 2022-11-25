@@ -261,7 +261,9 @@ export const ReferenceInput = forwardRef(function ReferenceInput(
   const handleQueryChange = useObservableCallback((inputValue$: Observable<string | null>) => {
     return inputValue$.pipe(
       filter(nonNullable),
-      distinctUntilChanged(),
+      //This prevents a filter in a reference from updating when the dependent reference are updated.
+      //Worst case by removing - the function will be called when you enter the same string.
+      //distinctUntilChanged(),
       switchMap((searchString) =>
         concat(
           of({isLoading: true}),
