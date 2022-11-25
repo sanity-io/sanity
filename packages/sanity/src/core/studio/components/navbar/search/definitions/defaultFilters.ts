@@ -156,6 +156,9 @@ export const filterDefinitions: SearchFilterDefinition[] = [
     fieldType: 'image',
     icon: ImageIcon,
     operators: [
+      {name: 'assetImageEqual', type: 'item'},
+      {name: 'assetImageNotEqual', type: 'item'},
+      {type: 'divider'},
       {name: 'defined', type: 'item'},
       {name: 'notDefined', type: 'item'},
     ],

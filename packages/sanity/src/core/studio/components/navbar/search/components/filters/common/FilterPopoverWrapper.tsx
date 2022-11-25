@@ -1,4 +1,4 @@
-import {Card, Flex, useGlobalKeyDown} from '@sanity/ui'
+import {Card, Flex, useGlobalKeyDown, useLayer} from '@sanity/ui'
 import isHotkey from 'is-hotkey'
 import React, {ReactNode, useCallback, useEffect, useState} from 'react'
 import FocusLock from 'react-focus-lock'
@@ -29,13 +29,15 @@ export function FilterPopoverWrapper({
   children,
   onClose,
 }: FilterPopoverWrapperProps) {
+  const {isTopLayer} = useLayer()
+
   const handleGlobalKeyDown = useCallback(
     (event: KeyboardEvent) => {
-      if (isEscape(event)) {
+      if (isEscape(event) && isTopLayer) {
         onClose()
       }
     },
-    [onClose]
+    [isTopLayer, onClose]
   )
 
   useGlobalKeyDown(handleGlobalKeyDown)

@@ -1,17 +1,27 @@
 import {ButtonValueAsset} from '../../components/filters/common/ButtonValue'
-import {FieldInputAsset} from '../../components/filters/filter/inputTypes/Asset'
-import {defineSearchOperator, SearchOperatorParams} from './operatorTypes'
+import {FieldInputAssetImage} from '../../components/filters/filter/inputTypes/AssetImage'
+import {defineSearchOperator} from './operatorTypes'
 import {toJSON} from './operatorUtils'
 
 export const assetOperators = {
-  assetEqual: defineSearchOperator({
+  assetImageEqual: defineSearchOperator({
     buttonLabel: 'is',
     buttonValueComponent: ButtonValueAsset,
-    fn: ({fieldPath, value}: SearchOperatorParams<string>) =>
-      value && fieldPath ? `${fieldPath} == ${toJSON(value)}` : null,
+    fn: ({fieldPath, value}) =>
+      value?._id && fieldPath ? `${fieldPath}.asset._ref == ${toJSON(value._id)}` : null,
     initialValue: null,
-    inputComponent: FieldInputAsset,
+    inputComponent: FieldInputAssetImage,
     label: 'is',
-    type: 'assetEqual',
+    type: 'assetImageEqual',
+  }),
+  assetImageNotEqual: defineSearchOperator({
+    buttonLabel: 'is not',
+    buttonValueComponent: ButtonValueAsset,
+    fn: ({fieldPath, value}) =>
+      value?._id && fieldPath ? `${fieldPath}.asset._ref != ${toJSON(value._id)}` : null,
+    initialValue: null,
+    inputComponent: FieldInputAssetImage,
+    label: 'is not',
+    type: 'assetImageNotEqual',
   }),
 }

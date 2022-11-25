@@ -1,3 +1,4 @@
+import type {SanityAsset} from '@sanity/asset-utils'
 import type {Reference} from '@sanity/types'
 import {format, isValid} from 'date-fns'
 import pluralize from 'pluralize-esm'
@@ -9,8 +10,8 @@ import {ReferencePreviewTitle} from '../../common/ReferencePreviewTitle'
 
 const DEFAULT_DATE_FORMAT = 'yyyy-MM-dd'
 
-export function ButtonValueAsset({value}: {value: string}) {
-  return <>{value.slice(0, 8)}</>
+export function ButtonValueAsset({value}: {value: SanityAsset}) {
+  return <>{value.originalFilename}</>
 }
 
 export function ButtonValueBoolean({value}: {value: boolean}) {

@@ -1,5 +1,5 @@
 import {CloseIcon} from '@sanity/icons'
-import {Box, Button, Card, Popover, rem, Stack, Text, useClickOutside} from '@sanity/ui'
+import {Button, Popover, rem} from '@sanity/ui'
 import React, {KeyboardEvent, useCallback, useState} from 'react'
 import styled from 'styled-components'
 import {useSearchState} from '../../../contexts/search/useSearchState'
@@ -32,8 +32,6 @@ const ContainerDiv = styled.div`
 
 export function FilterButton({filter, initialOpen}: FilterButtonProps) {
   const [open, setOpen] = useState(initialOpen)
-  const [buttonElement, setButtonElement] = useState<HTMLElement | null>(null)
-  const [popoverElement, setPopoverElement] = useState<HTMLElement | null>(null)
 
   const {
     dispatch,
@@ -59,8 +57,6 @@ export function FilterButton({filter, initialOpen}: FilterButtonProps) {
     [handleRemove]
   )
 
-  useClickOutside(handleClose, [buttonElement, popoverElement])
-
   const isComplete = isFilterComplete(filter, definitions.fields, definitions.operators)
 
   return (
@@ -75,9 +71,8 @@ export function FilterButton({filter, initialOpen}: FilterButtonProps) {
       overflow="auto"
       placement="bottom-start"
       portal
-      ref={setPopoverElement}
     >
-      <ContainerDiv ref={setButtonElement}>
+      <ContainerDiv>
         <CustomButton
           onClick={handleOpen}
           onKeyDown={handleKeyDown}

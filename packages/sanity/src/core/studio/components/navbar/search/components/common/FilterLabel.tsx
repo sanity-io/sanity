@@ -35,7 +35,7 @@ export function FilterLabel({filter, fontSize = 1, showContent = true}: FilterLa
       </CustomBox>
       {/* Operator */}
       {showContent && operator?.buttonLabel && (
-        <CustomBox $flexShrink={fullscreen ? 1 : 0}>
+        <CustomBox $flexShrink={0}>
           <Text muted size={fontSize} textOverflow="ellipsis" weight="regular">
             {operator.buttonLabel}
           </Text>
