@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "sanity-strict-studio",
-  "version": "3.0.0-rc.2",
+  "version": "3.0.0-rc.3",
   "scripts": {
     "build": "../.bin/sanity build",
     "clean": "rimraf .sanity dist",
@@ -11,7 +11,7 @@
   "dependencies": {
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "sanity": "3.0.0-rc.2",
+    "sanity": "3.0.0-rc.3",
     "styled-components": "^5.2.0"
   }
 }
