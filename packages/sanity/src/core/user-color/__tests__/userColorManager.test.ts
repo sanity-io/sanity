@@ -32,7 +32,6 @@ const colors: UserColorManagerOptions['colors'] = hues.reduce<UserColorManagerOp
 const options: UserColorManagerOptions = {
   currentUserColor: 'blue',
   colors,
-  scheme: 'light',
 }
 
 describe('user color manager', () => {
