@@ -1,5 +1,5 @@
 import {ButtonValueAsset, ButtonValueReference} from '../../components/filters/common/ButtonValue'
-import {FieldInputAssetImage} from '../../components/filters/filter/inputTypes/AssetImage'
+import {FieldInputAsset} from '../../components/filters/filter/inputTypes/Asset'
 import {FieldInputReference} from '../../components/filters/filter/inputTypes/Reference'
 import {defineSearchOperator} from './operatorTypes'
 import {toJSON} from './operatorUtils'
@@ -25,12 +25,21 @@ export const referenceOperators = {
     label: 'is not',
     type: 'referenceNotEqual',
   }),
+  referencesAssetFile: defineSearchOperator({
+    buttonLabel: 'to',
+    buttonValueComponent: ButtonValueAsset,
+    fn: ({value}) => (value?._id ? `references(${toJSON(value._id)})` : null),
+    initialValue: null,
+    inputComponent: FieldInputAsset('file'),
+    label: 'contains file',
+    type: 'referencesAssetFile',
+  }),
   referencesAssetImage: defineSearchOperator({
     buttonLabel: 'to',
     buttonValueComponent: ButtonValueAsset,
     fn: ({value}) => (value?._id ? `references(${toJSON(value._id)})` : null),
     initialValue: null,
-    inputComponent: FieldInputAssetImage,
+    inputComponent: FieldInputAsset('image'),
     label: 'contains image',
     type: 'referencesAssetImage',
   }),
