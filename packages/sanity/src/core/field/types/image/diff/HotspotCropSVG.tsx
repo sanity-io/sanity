@@ -2,6 +2,7 @@ import {Image, ImageCrop, ImageHotspot} from '@sanity/types'
 import React from 'react'
 import {DiffTooltip, useDiffAnnotationColor} from '../../../diff'
 import {ObjectDiff} from '../../../types'
+import {useDefaultTintKeys} from '../../../utils/useDefaultTintKeys'
 import {hexToRgba} from './helpers'
 
 interface HotspotCropSVGProps {
@@ -19,6 +20,7 @@ export function HotspotCropSVG(
   const {crop, diff, hash, hotspot, width = 100, height = 100, ...restProps} = props
   const cropColor = useDiffAnnotationColor(diff, 'crop')
   const hotspotColor = useDiffAnnotationColor(diff, 'hotspot')
+  const {border} = useDefaultTintKeys()
 
   return (
     <svg
@@ -50,9 +52,9 @@ export function HotspotCropSVG(
           <g>
             <CropSVG
               crop={crop}
-              fill={hexToRgba(cropColor.border, 0.25)}
+              fill={hexToRgba(cropColor.tints[border].hex, 0.25)}
               mask={hotspot ? `url(#mask-hotspot-${hash})` : undefined}
-              stroke={cropColor.border}
+              stroke={cropColor.tints[border].hex}
               strokeWidth={1}
               width={width}
               height={height}
@@ -66,8 +68,8 @@ export function HotspotCropSVG(
           <g>
             <HotspotSVG
               hotspot={hotspot}
-              fill={hexToRgba(hotspotColor.border, 0.25)}
-              stroke={hotspotColor.border}
+              fill={hexToRgba(hotspotColor.tints[border].hex, 0.25)}
+              stroke={hotspotColor.tints[border].hex}
               strokeWidth={1}
               width={width}
               height={height}

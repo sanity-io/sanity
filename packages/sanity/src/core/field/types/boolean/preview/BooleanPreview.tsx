@@ -1,6 +1,7 @@
 import React from 'react'
 import {UserColor} from '../../../../user-color'
 import {FieldPreviewComponent} from '../../../preview'
+import {useDefaultTintKeys} from '../../../utils/useDefaultTintKeys'
 
 type BooleanProps = {
   checked: boolean | undefined | null
@@ -17,27 +18,36 @@ export const BooleanPreview: FieldPreviewComponent<boolean> = function BooleanPr
 }
 
 export function Checkbox({checked, color}: BooleanProps) {
+  const {bg, fg} = useDefaultTintKeys()
+
   return (
     <svg
       width="17"
       height="17"
       viewBox="0 0 17 17"
       xmlns="http://www.w3.org/2000/svg"
-      fill={color?.background}
+      fill={color?.tints[bg].hex}
     >
       <rect x="0" y="0" width="17" height="17" rx="2.5" />
       {typeof checked === 'undefined' && (
-        <path d="M4.07996 8.5H12.92" stroke={color?.text} strokeWidth="2" />
+        <path d="M4.07996 8.5H12.92" stroke={color?.tints[fg].hex} strokeWidth="2" />
       )}
-      {checked && <path d="M3.5 8L7 11.5L13.5 5" stroke={color?.text} strokeWidth="2" />}
+      {checked && <path d="M3.5 8L7 11.5L13.5 5" stroke={color?.tints[fg].hex} strokeWidth="2" />}
     </svg>
   )
 }
 
 export function Switch({checked, color}: BooleanProps) {
+  const {bg, border} = useDefaultTintKeys()
+
   return (
     <svg width="38" height="22" viewBox="0 0 38 22" xmlns="http://www.w3.org/2000/svg">
-      <rect width="38" height="22" rx="11" fill={checked ? color?.border : color?.background} />
+      <rect
+        width="38"
+        height="22"
+        rx="11"
+        fill={checked ? color?.tints[border].hex : color?.tints[bg].hex}
+      />
       {typeof checked === 'undefined' && (
         <rect x="11" y="3" width="16" height="16" rx="8" fill="white" />
       )}

@@ -8,6 +8,7 @@ import {ChangeList, DiffContext, DiffTooltip, useDiffAnnotationColor} from '../.
 import {ObjectDiff} from '../../../../types'
 import {isEmptyObject} from '../helpers'
 import {ConnectorContext, useReportedValues} from '../../../../../changeIndicators'
+import {useDefaultTintKeys} from '../../../../utils/useDefaultTintKeys'
 import {InlineBox, InlineText, PopoverContainer, PreviewContainer} from './styledComponents'
 
 interface AnnotationProps {
@@ -90,9 +91,11 @@ function AnnnotationWithDiff({
   const {path: fullPath} = useContext(DiffContext)
   const [popoverElement, setPopoverElement] = useState<HTMLDivElement | null>(null)
   const color = useDiffAnnotationColor(diff, [])
+  const {bg, fg} = useDefaultTintKeys()
+
   const style = useMemo(
-    () => (color ? {background: color.background, color: color.text} : {}),
-    [color]
+    () => (color ? {backgroundColor: color.tints[bg].hex, color: color.tints[fg].hex} : {}),
+    [bg, color, fg]
   )
   const isRemoved = diff.action === 'removed'
   const [open, setOpen] = useState(false)

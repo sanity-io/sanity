@@ -5,6 +5,7 @@ import {DiffContext, DiffTooltip, useDiffAnnotationColor} from '../../../../diff
 import {isHeader} from '../helpers'
 import {PortableTextDiff} from '../types'
 import {ConnectorContext} from '../../../../../changeIndicators'
+import {useDefaultTintKeys} from '../../../../utils/useDefaultTintKeys'
 import Blockquote from './Blockquote'
 import Header from './Header'
 import Paragraph from './Paragraph'
@@ -18,6 +19,7 @@ export default function Block(props: {
 }): JSX.Element {
   const {diff, block, children} = props
   const color = useDiffAnnotationColor(diff, EMPTY_PATH)
+  const {bg, fg} = useDefaultTintKeys()
   const {path: fullPath} = useContext(DiffContext)
   const {onSetFocus} = useContext(ConnectorContext)
   const isRemoved = diff.action === 'removed'
@@ -52,7 +54,7 @@ export default function Block(props: {
   ) {
     fromStyle = diff?.origin?.fromValue?.style
 
-    const style = color ? {background: color.background, color: color.text} : {}
+    const style = color ? {backgroundColor: color.tints[bg].hex, color: color.tints[fg].hex} : {}
 
     returned = (
       <Card

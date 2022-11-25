@@ -15,6 +15,7 @@ import {ObjectDiff} from '../../../../types'
 import {isEmptyObject} from '../helpers'
 import {ConnectorContext, useReportedValues} from '../../../../../changeIndicators'
 import {Preview} from '../../../../../preview/components/Preview'
+import {useDefaultTintKeys} from '../../../../utils/useDefaultTintKeys'
 import {InlineBox, InlineText, PopoverContainer, PreviewContainer} from './styledComponents'
 
 interface InlineObjectProps {
@@ -80,9 +81,10 @@ function InlineObjectWithDiff({
   const {path: fullPath} = useContext(DiffContext)
   const {onSetFocus} = useContext(ConnectorContext)
   const color = useDiffAnnotationColor(diff, [])
+  const {bg, fg} = useDefaultTintKeys()
   const style = useMemo(
-    () => (color ? {background: color.background, color: color.text} : {}),
-    [color]
+    () => (color ? {backgroundColor: color.tints[bg].hex, color: color.tints[fg].hex} : {}),
+    [bg, color, fg]
   )
   const [open, setOpen] = useState(false)
   const emptyObject = object && isEmptyObject(object)

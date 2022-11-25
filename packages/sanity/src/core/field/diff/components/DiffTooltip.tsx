@@ -5,6 +5,7 @@ import {LegacyLayerProvider, UserAvatar} from '../../../components'
 import {useTimeAgo} from '../../../hooks'
 import {useUser} from '../../../store'
 import {AnnotationDetails, Diff} from '../../types'
+import {useDefaultTintKeys} from '../../utils/useDefaultTintKeys'
 import {getAnnotationAtPath, useAnnotationColor} from '../annotations'
 
 /** @internal */
@@ -72,6 +73,7 @@ function DiffTooltipWithAnnotation(props: DiffTooltipWithAnnotationsProps) {
 function AnnotationItem({annotation}: {annotation: AnnotationDetails}) {
   const {author, timestamp} = annotation
   const [user] = useUser(author)
+  const {bg, fg} = useDefaultTintKeys()
   const color = useAnnotationColor(annotation)
   const timeAgo = useTimeAgo(timestamp, {minimal: true})
 
@@ -81,14 +83,14 @@ function AnnotationItem({annotation}: {annotation: AnnotationDetails}) {
         align="center"
         paddingRight={3}
         style={{
-          backgroundColor: color.background,
-          color: color.text,
+          backgroundColor: color.tints[bg].hex,
+          color: color.tints[fg].hex,
           borderRadius: 'calc(23px / 2)',
         }}
       >
         <UserAvatar user={author} />
         <Inline paddingLeft={2}>
-          <Text muted size={1} style={{color: color.text}}>
+          <Text muted size={1} style={{color: color.tints[fg].hex}}>
             {user ? user.displayName : 'Loading…'}
           </Text>
         </Inline>

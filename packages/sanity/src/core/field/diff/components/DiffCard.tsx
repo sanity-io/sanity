@@ -4,6 +4,7 @@ import {Card, rem} from '@sanity/ui'
 import styled from 'styled-components'
 import {getAnnotationAtPath, useAnnotationColor} from '../annotations'
 import {Annotation, Diff} from '../../types'
+import {useDefaultTintKeys} from '../../utils/useDefaultTintKeys'
 import {DiffTooltip} from './DiffTooltip'
 
 /** @internal */
@@ -91,6 +92,7 @@ export const DiffCard = forwardRef(function DiffCard(
     [annotationProp, diff, path]
   )
 
+  const {bg, fg} = useDefaultTintKeys()
   const color = useAnnotationColor(annotation)
 
   const element = (
@@ -103,8 +105,8 @@ export const DiffCard = forwardRef(function DiffCard(
       radius={1}
       style={{
         ...style,
-        backgroundColor: color.background,
-        color: color.text,
+        backgroundColor: color.tints[bg].hex,
+        color: color.tints[fg].hex,
       }}
     >
       {children}
