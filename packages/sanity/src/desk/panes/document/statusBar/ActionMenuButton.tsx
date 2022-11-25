@@ -22,7 +22,7 @@ import React, {
 } from 'react'
 import {isValidElementType} from 'react-is'
 import {ActionStateDialog} from './ActionStateDialog'
-import {DocumentActionDescription, DocumentActionDialogProps, LegacyLayerProvider} from 'sanity'
+import {DocumentActionDescription, LegacyLayerProvider} from 'sanity'
 
 export interface ActionMenuButtonProps {
   actionStates: DocumentActionDescription[]
@@ -83,12 +83,9 @@ export function ActionMenuButton(props: ActionMenuButtonProps) {
         ref={setReferenceElement}
       />
 
-      {currentAction && (currentAction.dialog || currentAction.modal) && (
+      {currentAction && currentAction.dialog && (
         <LegacyLayerProvider zOffset="paneFooter">
-          <ActionStateDialog
-            dialog={(currentAction.dialog || currentAction.modal) as DocumentActionDialogProps}
-            referenceElement={referenceElement}
-          />
+          <ActionStateDialog dialog={currentAction.dialog} referenceElement={referenceElement} />
         </LegacyLayerProvider>
       )}
     </>

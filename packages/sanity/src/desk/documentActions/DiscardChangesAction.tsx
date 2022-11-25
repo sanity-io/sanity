@@ -4,7 +4,7 @@ import {ResetIcon} from '@sanity/icons'
 import React, {useCallback, useMemo, useState} from 'react'
 import {
   DocumentActionComponent,
-  DocumentActionModalProps,
+  DocumentActionDialogProps,
   InsufficientPermissionsMessage,
   useCurrentUser,
   useDocumentOperation,
@@ -42,7 +42,7 @@ export const DiscardChangesAction: DocumentActionComponent = ({
     setConfirmDialogOpen(true)
   }, [])
 
-  const dialog: DocumentActionModalProps | false = useMemo(
+  const dialog: DocumentActionDialogProps | false = useMemo(
     () =>
       isConfirmDialogOpen && {
         type: 'confirm',
