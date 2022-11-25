@@ -1,6 +1,6 @@
 {
   "name": "@sanity/validation",
-  "version": "3.0.0-rc.3",
+  "version": "3.0.0",
   "description": "Validation and warning infrastructure for Sanity projects",
   "types": "./lib/dts/src/index.d.ts",
   "source": "./src/index.ts",
@@ -43,14 +43,14 @@
     "directory": "packages/@sanity/validation"
   },
   "dependencies": {
-    "@sanity/types": "3.0.0-rc.3",
+    "@sanity/types": "3.0.0",
     "date-fns": "^2.26.1",
     "lodash": "^4.17.21",
     "rxjs": "^6.5.3"
   },
   "devDependencies": {
     "@sanity/client": "^3.4.1",
-    "@sanity/schema": "3.0.0-rc.3"
+    "@sanity/schema": "3.0.0"
   },
   "peerDependencies": {
     "@sanity/client": "^3.4.1"
