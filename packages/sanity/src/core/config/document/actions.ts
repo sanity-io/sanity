@@ -86,9 +86,6 @@ export type DocumentActionDialogProps =
 export interface DocumentActionDescription {
   tone?: ButtonTone
   dialog?: DocumentActionDialogProps | false | null
-  // @todo: remove the following types for v3 GA
-  /** @deprecated Use `dialog` */
-  modal?: never
   disabled?: boolean
   icon?: React.ReactNode | React.ComponentType
   label: string
@@ -96,29 +93,3 @@ export interface DocumentActionDescription {
   shortcut?: string | null
   title?: React.ReactNode
 }
-
-// @todo: remove the following types for v3 GA
-
-/**
- * @beta
- * @deprecated Use `DocumentActionDialogProps` instead
- */
-export type DocumentActionModalProps = DocumentActionDialogProps
-
-/**
- * @beta
- * @deprecated Use `DocumentActionConfirmDialogProps` instead
- */
-export type DocumentActionConfirmModalProps = DocumentActionConfirmDialogProps
-
-/**
- * @beta
- * @deprecated Use `DocumentActionPopoverDialogProps` instead
- */
-export type DocumentActionPopoverModalProps = DocumentActionPopoverDialogProps
-
-/**
- * @beta
- * @deprecated Use `DocumentActionModalDialogProps` instead
- */
-export type DocumentActionDialogModalProps = DocumentActionModalDialogProps
