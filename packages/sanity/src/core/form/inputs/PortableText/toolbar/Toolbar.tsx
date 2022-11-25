@@ -9,7 +9,6 @@ import {ObjectSchemaType, Path, SchemaType} from '@sanity/types'
 import {Box, Button, Flex, Hotkeys, Text, Tooltip, useElementRect, useToast} from '@sanity/ui'
 import {CollapseIcon, ExpandIcon} from '@sanity/icons'
 import styled, {css} from 'styled-components'
-import {FIXME} from '../../../../FIXME'
 import {useRovingFocus} from '../../../../components'
 import {useResolveInitialValueForType} from '../../../../store'
 import {ActionMenu} from './ActionMenu'
@@ -198,7 +197,7 @@ export function Toolbar(props: ToolbarProps) {
   const handleInsertBlock = useCallback(
     async (type: ObjectSchemaType) => {
       const initialValue = await resolveInitialValue(type)
-      const path = PortableTextEditor.insertBlock(editor, type as FIXME, initialValue)
+      const path = PortableTextEditor.insertBlock(editor, type, initialValue)
       if (path) {
         onMemberOpen(path)
       }
@@ -209,7 +208,7 @@ export function Toolbar(props: ToolbarProps) {
   const handleInsertInline = useCallback(
     async (type: ObjectSchemaType) => {
       const initialValue = await resolveInitialValue(type)
-      const path = PortableTextEditor.insertChild(editor, type as FIXME, initialValue)
+      const path = PortableTextEditor.insertChild(editor, type, initialValue)
       if (path) {
         onMemberOpen(path)
       }
