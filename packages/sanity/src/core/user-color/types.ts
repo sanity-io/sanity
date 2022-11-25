@@ -13,9 +13,6 @@ export type UserId = string
 /** @internal */
 export interface UserColor {
   name: ColorHueKey
-  background: HexColor
-  border: HexColor
-  text: HexColor
   tints: ColorTints
 }
 

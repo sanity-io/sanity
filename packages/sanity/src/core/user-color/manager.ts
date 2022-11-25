@@ -1,7 +1,6 @@
 import {Observable} from 'rxjs'
 import {shareReplay} from 'rxjs/operators'
-import {hues, ColorHueKey, COLOR_HUES, ColorTintKey} from '@sanity/color'
-import {ThemeColorSchemeKey} from '@sanity/ui'
+import {hues, ColorHueKey, COLOR_HUES} from '@sanity/color'
 import {UserColorHue, UserColorManager, UserColor, UserId} from './types'
 
 /** @internal */
@@ -10,7 +9,6 @@ export interface UserColorManagerOptions {
   userStore?: {me: Observable<{id: string} | null>}
   colors?: Record<UserColorHue, UserColor>
   currentUserColor?: UserColorHue
-  scheme: ThemeColorSchemeKey
 }
 
 const DEFAULT_CURRENT_USER_HUE: ColorHueKey = 'purple'
@@ -23,55 +21,24 @@ const defaultHues: ColorHueKey[] = COLOR_HUES.filter(
   (hue) => !USER_COLOR_EXCLUDE_HUES.includes(hue)
 )
 
-const getTints = (scheme: ThemeColorSchemeKey): Record<string, ColorTintKey> => {
-  const isDarkScheme = scheme === 'dark'
-
-  return {
-    background: isDarkScheme ? '900' : '100',
-    border: isDarkScheme ? '700' : '300',
-    text: isDarkScheme ? '200' : '700',
+const defaultColors = defaultHues.reduce((colors, hue) => {
+  colors[hue] = {
+    name: hue,
+    tints: hues[hue],
   }
-}
+  return colors
+}, {} as Record<ColorHueKey, UserColor>)
 
-const getDefaultColors = (scheme: ThemeColorSchemeKey): Record<ColorHueKey, UserColor> => {
-  const {background, border, text} = getTints(scheme)
-
-  return defaultHues.reduce((colors, hue) => {
-    colors[hue] = {
-      name: hue,
-      background: hues[hue][background].hex,
-      border: hues[hue][border].hex,
-      text: hues[hue][text].hex,
-      tints: hues[hue],
-    }
-    return colors
-  }, {} as Record<ColorHueKey, UserColor>)
-}
-
-const getAnonymousColor = (scheme: ThemeColorSchemeKey): UserColor => {
-  const {background, border, text} = getTints(scheme)
-
-  return {
-    name: 'gray',
-    background: hues.gray[background].hex,
-    border: hues.gray[border].hex,
-    text: hues.gray[text].hex,
-    tints: hues.gray,
-  }
+const defaultAnonymousColor: UserColor = {
+  name: 'gray',
+  tints: hues.gray,
 }
 
 /** @internal */
-export function createUserColorManager(options: UserColorManagerOptions): UserColorManager {
-  const {
-    anonymousColor: anonymousColorProp,
-    colors,
-    currentUserColor: currentUserColorProp,
-    scheme,
-  } = options
-
-  const userColors = colors || getDefaultColors(scheme)
-  const anonymousColor = anonymousColorProp || getAnonymousColor(scheme)
-  const currentUserColor = currentUserColorProp || DEFAULT_CURRENT_USER_HUE
+export function createUserColorManager(options?: UserColorManagerOptions): UserColorManager {
+  const userColors = (options && options.colors) || defaultColors
+  const anonymousColor = options?.anonymousColor || defaultAnonymousColor
+  const currentUserColor = (options && options.currentUserColor) || DEFAULT_CURRENT_USER_HUE
 
   if (!userColors.hasOwnProperty(currentUserColor)) {
     throw new Error(`'colors' must contain 'currentUserColor' (${currentUserColor})`)
