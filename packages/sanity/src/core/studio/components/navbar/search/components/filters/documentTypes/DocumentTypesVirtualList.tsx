@@ -62,7 +62,7 @@ export function DocumentTypesVirtualList({
     overscan: 20,
   })
 
-  const {setVirtualListScrollToIndex} = useCommandList()
+  const {itemIndices, setVirtualListScrollToIndex} = useCommandList()
 
   // Scroll to top whenever types are cleared
   useEffect(() => {
@@ -119,7 +119,7 @@ export function DocumentTypesVirtualList({
               )}
               {virtualItem.type === 'item' && (
                 <TypeFilterItem
-                  index={virtualRow.index}
+                  index={itemIndices[virtualRow.index]}
                   key={virtualRow.key}
                   selected={virtualItem.selected}
                   type={virtualItem.item}

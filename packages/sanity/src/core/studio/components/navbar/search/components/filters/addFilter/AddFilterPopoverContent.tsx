@@ -60,16 +60,32 @@ export function AddFilterPopoverContent({onClose}: AddFilterPopoverContentProps)
     [documentTypesNarrowed, definitions.fields, definitions.filters, schema, titleFilter, types]
   )
 
+  /**
+   * Create a map of indices for our virtual list, ignoring non-filter items.
+   * This is to ensure navigating via keyboard skips over these non-interactive items.
+   */
+  const itemIndices = useMemo(() => {
+    let i = -1
+    return filteredMenuItems.reduce<(number | null)[]>((acc, val, index) => {
+      const isInteractive = val.type === 'filter'
+      if (isInteractive) {
+        i += 1
+      }
+      acc[index] = isInteractive ? i : null
+      return acc
+    }, [])
+  }, [filteredMenuItems])
+
   return (
     <CommandListProvider
       ariaChildrenLabel="Filters"
       ariaHeaderLabel="Filter by title"
       autoFocus
-      childCount={filteredMenuItems.length}
       childContainerElement={childContainerElement}
       containerElement={containerElement}
       headerInputElement={headerInputElement}
       id={filterListId}
+      itemIndices={itemIndices}
       pointerOverlayElement={pointerOverlayElement}
       virtualList
     >

@@ -38,7 +38,7 @@ export function AddFilterVirtualList({
 }: AddFilterVirtualListProps) {
   const childParentRef = useRef<HTMLDivElement | null>(null)
 
-  const {setVirtualListScrollToIndex} = useCommandList()
+  const {itemIndices, setVirtualListScrollToIndex} = useCommandList()
 
   const {getTotalSize, getVirtualItems, measureElement, scrollToIndex} = useVirtualizer({
     count: menuItems.length,
@@ -101,7 +101,11 @@ export function AddFilterVirtualList({
               }}
             >
               {menuItem.type === 'filter' && (
-                <MenuItemFilter index={virtualRow.index} item={menuItem} onClose={onClose} />
+                <MenuItemFilter
+                  index={itemIndices[virtualRow.index]}
+                  item={menuItem}
+                  onClose={onClose}
+                />
               )}
               {menuItem.type === 'header' && <MenuItemHeader item={menuItem} />}
             </div>

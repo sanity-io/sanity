@@ -64,6 +64,22 @@ export function DocumentTypesPopoverContent() {
 
   const commandListId = useId()
 
+  /**
+   * Create a map of indices for our virtual list, ignoring non-filter items.
+   * This is to ensure navigating via keyboard skips over these non-interactive items.
+   */
+  const itemIndices = useMemo(() => {
+    let i = -1
+    return filteredItems.reduce<(number | null)[]>((acc, val, index) => {
+      const isInteractive = val.type === 'item'
+      if (isInteractive) {
+        i += 1
+      }
+      acc[index] = isInteractive ? i : null
+      return acc
+    }, [])
+  }, [filteredItems])
+
   return (
     <CommandListProvider
       ariaChildrenLabel="Document types"
@@ -71,10 +87,10 @@ export function DocumentTypesPopoverContent() {
       ariaMultiselectable
       autoFocus
       childContainerElement={childContainerElement}
-      childCount={filteredItems.length}
       containerElement={containerElement}
       headerInputElement={headerInputElement}
       id={commandListId}
+      itemIndices={itemIndices}
       pointerOverlayElement={pointerOverlayElement}
       virtualList
     >

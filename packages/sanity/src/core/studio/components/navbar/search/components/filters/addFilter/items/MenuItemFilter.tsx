@@ -9,7 +9,7 @@ import {FilterDetails} from '../../common/FilterDetails'
 import {FilterTooltip} from './FilterTooltip'
 
 interface FilterMenuItemProps {
-  index: number
+  index: number | null
   item: FilterMenuItemFilter
   onClose: () => void
 }
@@ -39,7 +39,9 @@ export const MenuItemFilter = React.memo(function MenuItemFilter({
   const timeoutRef = useRef<ReturnType<typeof setTimeout>>()
 
   const handleMouseEnter = useCallback(() => {
-    onChildMouseEnter(index)()
+    if (index !== null) {
+      onChildMouseEnter(index)()
+    }
     timeoutRef.current = setTimeout(() => setTooltipVisible(true), 500)
   }, [index, onChildMouseEnter])
   const handleMouseLeave = useCallback(() => {

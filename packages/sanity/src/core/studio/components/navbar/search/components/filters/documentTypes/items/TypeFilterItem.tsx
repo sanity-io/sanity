@@ -7,7 +7,7 @@ import {useSearchState} from '../../../../contexts/search/useSearchState'
 import {CommandListItem} from '../../../common/CommandListItem.styled'
 
 interface TypeFilterItemProps {
-  index: number
+  index: number | null
   selected: boolean
   type: SearchableType
 }
@@ -37,6 +37,10 @@ export const TypeFilterItem = React.memo(function TypeFilterItem({
       handleTypeAdd()
     }
   }, [handleTypeAdd, handleTypeRemove, onChildClick, selected])
+
+  if (index === null) {
+    return null
+  }
 
   return (
     <Box paddingX={1} paddingTop={1}>

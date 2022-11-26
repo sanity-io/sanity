@@ -98,7 +98,6 @@ export function SearchResultsVirtualList({
               }}
             >
               <SearchResultItem
-                debug={debug}
                 documentId={getPublishedId(hit.hit._id) || ''}
                 documentType={hit.hit._type}
                 key={virtualRow.key}
