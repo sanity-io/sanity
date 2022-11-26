@@ -24,7 +24,7 @@
     "@sanity/portable-text-editor": "3.0.0",
     "@sanity/types": "3.0.0",
     "@sanity/ui": "^1.0.0",
-    "@sanity/ui-workshop": "1.0.0-beta.11",
+    "@sanity/ui-workshop": "^1.0.0",
     "@sanity/util": "3.0.0",
     "@sanity/uuid": "^3.0.1",
     "@sanity/vision": "3.0.0",

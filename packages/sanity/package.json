@@ -193,7 +193,7 @@
     "yargs": "^17.3.0"
   },
   "devDependencies": {
-    "@sanity/ui-workshop": "1.0.0-beta.11",
+    "@sanity/ui-workshop": "^1.0.0",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.0.16",

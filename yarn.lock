@@ -3754,10 +3754,10 @@
     tmp "^0.2.1"
     yargs "^17.5.1"
 
-"@sanity/ui-workshop@1.0.0-beta.11":
-  version "1.0.0-beta.11"
-  resolved "https://registry.yarnpkg.com/@sanity/ui-workshop/-/ui-workshop-1.0.0-beta.11.tgz#3cbd345a2ea7edabfa85bbae8619be59b422d97c"
-  integrity sha512-eI5SBBz0cr/jw6MdKVRrbb89nNMnkLliF18b44WVP9SGAE1+jJVm9/SClpSsvv41Yf6pPO49TkR62hdkQKpFUA==
+"@sanity/ui-workshop@1.0.0-beta.13":
+  version "1.0.0-beta.13"
+  resolved "https://registry.yarnpkg.com/@sanity/ui-workshop/-/ui-workshop-1.0.0-beta.13.tgz#d72cf733b10ae9c954e347b13cf9337457007472"
+  integrity sha512-d3Qgz2aaoaKt/wD8zR3KtUXaX2QXZA8F7dZZAQHyqA7FKvMkhXLtnc0pMIviO5Pz0HAvBpIkk83LZoByEd2K2Q==
   dependencies:
     "@vitejs/plugin-react" "^2.1.0"
     axe-core "^4.4.3"
