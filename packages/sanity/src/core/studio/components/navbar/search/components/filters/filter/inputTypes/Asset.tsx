@@ -84,6 +84,8 @@ export function FieldInputAsset(type?: AssetType) {
 
     const fontSize = fullscreen ? 2 : 1
 
+    const buttonText = value ? `Replace ${type}` : `Select ${type}`
+
     return (
       <Box style={{width: 'min(calc(100vw - 40px), 320px)'}}>
         <Stack space={3}>
@@ -116,7 +118,7 @@ export function FieldInputAsset(type?: AssetType) {
                         iconRight={ChevronDownIcon}
                         mode="ghost"
                         style={{flex: value ? 1 : 0}}
-                        text={value ? 'Replace' : 'Select'}
+                        text={buttonText}
                       />
                     }
                     id={menuButtonId}
@@ -148,7 +150,7 @@ export function FieldInputAsset(type?: AssetType) {
                     // eslint-disable-next-line react/jsx-no-bind
                     onClick={() => handleSelectAssetSource(assetSources[0])}
                     style={{flex: value ? 1 : 0}}
-                    text={value ? 'Replace' : 'Select'}
+                    text={buttonText}
                   />
                 )}
               </>

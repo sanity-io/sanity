@@ -218,22 +218,14 @@ export const filterDefinitions: SearchFilterDefinition[] = [
     type: 'reference',
   }),
   defineSearchFilter<SearchOperatorType>({
-    icon: DocumentIcon,
-    operators: [{name: 'referencesAssetFile', type: 'item'}],
-    title: 'Contains file',
-    type: 'referencesAssetFile',
-  }),
-  defineSearchFilter<SearchOperatorType>({
-    icon: ImageIcon,
-    operators: [{name: 'referencesAssetImage', type: 'item'}],
-    title: 'Contains image',
-    type: 'referencesAssetImage',
-  }),
-  defineSearchFilter<SearchOperatorType>({
     icon: LinkIcon,
-    operators: [{name: 'referencesDocument', type: 'item'}],
-    title: 'Contains reference',
-    type: 'referencesDocument',
+    operators: [
+      {name: 'referencesDocument', type: 'item'},
+      {name: 'referencesAssetImage', type: 'item'},
+      {name: 'referencesAssetFile', type: 'item'},
+    ],
+    title: 'Contains document, image or file',
+    type: 'references',
   }),
   defineSearchFilter<SearchOperatorType>({
     fieldType: 'slug',
