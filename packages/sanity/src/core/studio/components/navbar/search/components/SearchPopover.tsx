@@ -1,5 +1,5 @@
 import {Card, Flex, Portal, Theme, useClickOutside, useLayer} from '@sanity/ui'
-import React, {useCallback, useEffect, useId, useMemo, useRef, useState} from 'react'
+import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import FocusLock from 'react-focus-lock'
 import styled, {css} from 'styled-components'
 import {useColorScheme} from '../../../../colorScheme'
@@ -148,8 +148,6 @@ export function SearchPopover({
     }
   }, [])
 
-  const commandListId = useId()
-
   /**
    * Create a map of indices for our virtual list, ignoring non-filter items.
    * This is to ensure navigating via keyboard skips over these non-interactive items.
@@ -179,11 +177,9 @@ export function SearchPopover({
           containerElement={containerElement}
           data-testid="search-results-popover"
           headerInputElement={headerInputElement}
-          id={commandListId || ''}
           initialSelectedIndex={hasValidTerms ? lastSearchIndex : 0}
           itemIndices={itemIndices}
           pointerOverlayElement={pointerOverlayElement}
-          virtualList={hasValidTerms}
         >
           <SearchPopoverCard
             $position={position}

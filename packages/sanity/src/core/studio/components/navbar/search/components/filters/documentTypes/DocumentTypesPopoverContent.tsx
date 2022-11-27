@@ -2,7 +2,7 @@ import {SearchIcon} from '@sanity/icons'
 import {Schema} from '@sanity/types'
 import {Box, Button, Flex, Stack, Text} from '@sanity/ui'
 import {partition} from 'lodash'
-import React, {useCallback, useId, useMemo, useState} from 'react'
+import React, {useCallback, useMemo, useState} from 'react'
 import styled from 'styled-components'
 import {useSchema} from '../../../../../../../hooks'
 import type {SearchableType} from '../../../../../../../search'
@@ -62,8 +62,6 @@ export function DocumentTypesPopoverContent() {
   )
   const handleFilterClear = useCallback(() => setTypeFilter(''), [])
 
-  const commandListId = useId()
-
   /**
    * Create a map of indices for our virtual list, ignoring non-filter items.
    * This is to ensure navigating via keyboard skips over these non-interactive items.
@@ -89,10 +87,8 @@ export function DocumentTypesPopoverContent() {
       childContainerElement={childContainerElement}
       containerElement={containerElement}
       headerInputElement={headerInputElement}
-      id={commandListId}
       itemIndices={itemIndices}
       pointerOverlayElement={pointerOverlayElement}
-      virtualList
     >
       <Flex direction="column" ref={setContainerRef} style={{width: '250px'}}>
         {/* Search header */}

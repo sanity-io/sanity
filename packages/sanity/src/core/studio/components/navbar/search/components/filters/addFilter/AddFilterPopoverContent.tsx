@@ -1,6 +1,6 @@
 import {SearchIcon} from '@sanity/icons'
 import {Box, Flex, Text} from '@sanity/ui'
-import React, {useCallback, useId, useMemo, useState} from 'react'
+import React, {useCallback, useMemo, useState} from 'react'
 import styled from 'styled-components'
 import {useSchema} from '../../../../../../../hooks'
 import {CommandListProvider} from '../../../contexts/commandList'
@@ -33,8 +33,6 @@ export function AddFilterPopoverContent({onClose}: AddFilterPopoverContentProps)
     [setTitleFilter]
   )
   const handleFilterClear = useCallback(() => setTitleFilter(''), [])
-
-  const filterListId = useId()
 
   const schema = useSchema()
 
@@ -84,10 +82,8 @@ export function AddFilterPopoverContent({onClose}: AddFilterPopoverContentProps)
       childContainerElement={childContainerElement}
       containerElement={containerElement}
       headerInputElement={headerInputElement}
-      id={filterListId}
       itemIndices={itemIndices}
       pointerOverlayElement={pointerOverlayElement}
-      virtualList
     >
       <Flex direction="column" ref={setContainerRef} style={{width: '300px'}}>
         {/* Filter header */}

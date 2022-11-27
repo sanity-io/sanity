@@ -1,24 +1,26 @@
 import {ClockIcon, CloseIcon} from '@sanity/icons'
-import {Box, Button, Flex, Text} from '@sanity/ui'
+import {Box, Button, Flex, rem, ResponsiveMarginProps, Text} from '@sanity/ui'
 import React, {MouseEvent, useCallback} from 'react'
 import styled from 'styled-components'
-import {useCommandList} from '../../contexts/commandList'
-import type {RecentSearch} from '../../datastores/recentSearches'
-import {CommandListItem} from '../common/CommandListItem.styled'
-import {DocumentTypesPill} from '../common/DocumentTypesPill'
-import {FilterPill} from '../common/FilterPill'
+import {useCommandList} from '../../../contexts/commandList'
+import {useSearchState} from '../../../contexts/search/useSearchState'
+import type {RecentSearch} from '../../../datastores/recentSearches'
+import {CommandListItem} from '../../common/CommandListItem.styled'
+import {DocumentTypesPill} from '../../common/DocumentTypesPill'
+import {FilterPill} from '../../common/FilterPill'
 
-export interface RecentSearchesProps {
+export interface RecentSearchesProps extends ResponsiveMarginProps {
   index: number
   maxVisibleTypePillChars?: number
-  onClick: (value: RecentSearch) => void
-  onDelete: (event: MouseEvent) => void
+  showFiltersOnClick?: boolean
   value: RecentSearch
 }
 
 const DEFAULT_COMBINED_TYPE_COUNT = 40
 
-const RecentSearchItemButton = styled(Button)``
+const RecentSearchItemButton = styled(Button)`
+  border-radius: ${({theme}) => rem(theme.sanity.radius[2])};
+`
 
 const SearchItemPillsBox = styled(Box)`
   flex-shrink: 3;
@@ -42,36 +44,61 @@ const CloseButtonDiv = styled.div`
   }
 `
 
-export function RecentSearchItem(props: RecentSearchesProps) {
-  const {
-    index,
-    maxVisibleTypePillChars = DEFAULT_COMBINED_TYPE_COUNT,
-    onClick,
-    onDelete,
-    value,
-  } = props
+export function RecentSearchItem({
+  index,
+  maxVisibleTypePillChars = DEFAULT_COMBINED_TYPE_COUNT,
+  showFiltersOnClick,
+  value,
+  ...rest
+}: RecentSearchesProps) {
+  const {dispatch, recentSearchesStore} = useSearchState()
 
-  const {onChildClick, onChildMouseDown, onChildMouseEnter} = useCommandList()
-
-  const handleRecentSearchClick = useCallback(() => {
-    onChildClick?.()
-    onClick(value)
-  }, [onChildClick, onClick, value])
+  const {onChildMouseDown, onChildMouseEnter} = useCommandList()
 
   // Determine how many characters are left to render type pills
   const availableCharacters = maxVisibleTypePillChars - value.query.length
+
+  const handleClick = useCallback(() => {
+    const hasFilters = value.filters && value.filters.length
+    const hasTypes = value.types.length
+
+    // Optionally show filters panel if search terms or filters are present
+    if (showFiltersOnClick && (hasFilters || hasTypes)) {
+      dispatch({type: 'FILTERS_VISIBLE_SET', visible: true})
+    }
+    dispatch({type: 'TERMS_SET', filters: value?.filters, terms: value})
+
+    // Add to Local Storage
+    if (recentSearchesStore) {
+      const updatedRecentSearches = recentSearchesStore?.addSearch(value, value?.filters)
+      dispatch({recentSearches: updatedRecentSearches, type: 'RECENT_SEARCHES_SET'})
+    }
+  }, [dispatch, recentSearchesStore, showFiltersOnClick, value])
+
+  const handleDelete = useCallback(
+    (event: MouseEvent) => {
+      event.stopPropagation()
+      // Remove from Local Storage
+      if (recentSearchesStore) {
+        const updatedRecentSearches = recentSearchesStore?.removeSearchAtIndex(index)
+        dispatch({recentSearches: updatedRecentSearches, type: 'RECENT_SEARCHES_SET'})
+      }
+    },
+    [dispatch, index, recentSearchesStore]
+  )
 
   return (
     <RecentSearchItemButton
       as={CommandListItem}
       data-command-list-item
       mode="bleed"
-      onClick={handleRecentSearchClick}
+      onClick={handleClick}
       onMouseDown={onChildMouseDown}
       onMouseEnter={onChildMouseEnter(index)}
       paddingLeft={3}
       paddingRight={1}
       paddingY={1}
+      {...rest}
     >
       <Flex align="stretch">
         <Box paddingY={2}>
@@ -103,7 +130,7 @@ export function RecentSearchItem(props: RecentSearchesProps) {
 
         {/* TODO: this is neither semantic nor accessible, consider revising */}
         <Flex align="center">
-          <CloseButtonDiv onClick={onDelete}>
+          <CloseButtonDiv onClick={handleDelete}>
             <Flex padding={2}>
               <Text size={1}>
                 <CloseIcon />

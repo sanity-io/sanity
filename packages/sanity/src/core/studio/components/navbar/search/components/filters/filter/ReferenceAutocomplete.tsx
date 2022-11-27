@@ -8,7 +8,7 @@ import {getPublishedId} from '../../../../../../../util'
 import {useSearchState} from '../../../contexts/search/useSearchState'
 import {useSearch} from '../../../hooks/useSearch'
 import {documentTypesTruncated} from '../../../utils/documentTypesTruncated'
-import {SearchResultItem} from '../../searchResults/items/SearchResultItem'
+import {SearchResultItem} from '../../searchResults/item/SearchResultItem'
 
 interface SearchHit {
   hit: WeightedHit

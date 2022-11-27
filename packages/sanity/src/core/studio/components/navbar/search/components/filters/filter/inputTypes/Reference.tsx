@@ -6,7 +6,7 @@ import {SearchableType} from '../../../../../../../../search'
 import {useSearchState} from '../../../../contexts/search/useSearchState'
 import {OperatorInputComponentProps} from '../../../../definitions/operators/operatorTypes'
 import {getSchemaField} from '../../../../utils/getSchemaField'
-import {SearchResultItem} from '../../../searchResults/items/SearchResultItem'
+import {SearchResultItem} from '../../../searchResults/item/SearchResultItem'
 import {ReferenceAutocomplete} from '../ReferenceAutocomplete'
 
 export function FieldInputReference({

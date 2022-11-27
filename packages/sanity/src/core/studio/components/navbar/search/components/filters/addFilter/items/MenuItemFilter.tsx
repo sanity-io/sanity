@@ -26,13 +26,12 @@ export const MenuItemFilter = React.memo(function MenuItemFilter({
     state: {filters},
   } = useSearchState()
 
-  const {onChildClick, onChildMouseDown, onChildMouseEnter} = useCommandList()
+  const {onChildMouseDown, onChildMouseEnter} = useCommandList()
 
   const handleClick = useCallback(() => {
     dispatch({filter: item.filter, type: 'TERMS_FILTERS_ADD'})
-    onChildClick?.()
     onClose?.()
-  }, [dispatch, item.filter, onChildClick, onClose])
+  }, [dispatch, item.filter, onClose])
 
   const isAlreadyActive = !!filters.find((f) => getFilterKey(f) === getFilterKey(item.filter))
 
@@ -57,32 +56,33 @@ export const MenuItemFilter = React.memo(function MenuItemFilter({
   const tooltipEnabled = !!(item.fieldDefinition || item.filterDefinition.description)
 
   return (
-    <Box
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
-      paddingTop={1}
-      paddingX={1}
-    >
-      <FilterTooltip
-        fieldDefinition={item.fieldDefinition}
-        filterDefinition={item.filterDefinition}
-        visible={tooltipEnabled && tooltipVisible}
+    <Box paddingTop={1} paddingX={1}>
+      <Button
+        as={CommandListItem}
+        data-command-list-item
+        disabled={isAlreadyActive}
+        fontSize={1}
+        justify="flex-start"
+        mode="bleed"
+        onClick={isAlreadyActive ? undefined : handleClick}
+        onMouseDown={onChildMouseDown}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+        padding={0}
+        style={{position: 'relative'}}
+        tabIndex={-1}
+        tone={item?.tone}
       >
-        <Button
-          as={CommandListItem}
-          data-command-list-item
-          disabled={isAlreadyActive}
-          fontSize={1}
-          justify="flex-start"
-          mode="bleed"
-          onClick={isAlreadyActive ? undefined : handleClick}
-          onMouseDown={onChildMouseDown}
-          tabIndex={-1}
-          tone={item?.tone}
+        <FilterTooltip
+          fieldDefinition={item.fieldDefinition}
+          filterDefinition={item.filterDefinition}
+          visible={tooltipEnabled && tooltipVisible}
         >
-          <FilterDetails filter={item.filter} />
-        </Button>
-      </FilterTooltip>
+          <Box padding={3}>
+            <FilterDetails filter={item.filter} />
+          </Box>
+        </FilterTooltip>
+      </Button>
     </Box>
   )
 })

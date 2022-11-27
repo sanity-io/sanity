@@ -1,14 +1,12 @@
-import {Box} from '@sanity/ui'
 import {useVirtualizer} from '@tanstack/react-virtual'
-import React, {Dispatch, SetStateAction, useCallback, useEffect, useRef} from 'react'
-import styled from 'styled-components'
+import React, {Dispatch, SetStateAction, useCallback, useEffect, useState} from 'react'
 import {getPublishedId} from '../../../../../../util/draftUtils'
 import {VIRTUAL_LIST_ITEM_HEIGHT, VIRTUAL_LIST_OVERSCAN} from '../../constants'
 import {useCommandList} from '../../contexts/commandList'
 import {useSearchState} from '../../contexts/search/useSearchState'
-import {PointerOverlay} from '../filters/common/PointerOverlay'
-import {DebugOverlay} from './items/DebugOverlay'
-import {SearchResultItem} from './items/SearchResultItem'
+import {CommandListItems} from '../common/CommandListItems'
+import {DebugOverlay} from './item/DebugOverlay'
+import {SearchResultItem} from './item/SearchResultItem'
 
 interface SearchResultsVirtualListProps {
   onClose: () => void
@@ -16,26 +14,12 @@ interface SearchResultsVirtualListProps {
   setPointerOverlayRef: Dispatch<SetStateAction<HTMLDivElement | null>>
 }
 
-const VirtualListBox = styled(Box)`
-  height: 100%;
-  outline: none;
-  overflow-x: hidden;
-  overflow-y: auto;
-  width: 100%;
-`
-
-const VirtualListChildBox = styled(Box)<{$height: number}>`
-  height: ${({$height}) => `${$height}px`};
-  position: relative;
-  width: 100%;
-`
-
 export function SearchResultsVirtualList({
   onClose,
   setChildContainerRef,
   setPointerOverlayRef,
 }: SearchResultsVirtualListProps) {
-  const childParentRef = useRef<HTMLDivElement | null>(null)
+  const [virtualList, setVirtualListRef] = useState<HTMLDivElement | null>(null)
 
   const {
     dispatch,
@@ -43,13 +27,12 @@ export function SearchResultsVirtualList({
     state: {debug, filters, terms, result},
   } = useSearchState()
 
-  const {onChildClick, onChildMouseDown, onChildMouseEnter, setVirtualListScrollToIndex} =
-    useCommandList()
+  const {setVirtualListScrollToIndex} = useCommandList()
 
   const {getTotalSize, getVirtualItems, scrollToIndex} = useVirtualizer({
     count: result.hits.length,
     enableSmoothScroll: false,
-    getScrollElement: () => childParentRef.current,
+    getScrollElement: () => virtualList,
     estimateSize: () => VIRTUAL_LIST_ITEM_HEIGHT,
     overscan: VIRTUAL_LIST_OVERSCAN,
   })
@@ -65,9 +48,8 @@ export function SearchResultsVirtualList({
         type: 'RECENT_SEARCHES_SET',
       })
     }
-    onChildClick?.()
     onClose()
-  }, [dispatch, filters, onChildClick, onClose, recentSearchesStore, terms])
+  }, [dispatch, filters, onClose, recentSearchesStore, terms])
 
   /**
    * Send react-virtual's `scrollToIndex` function to shared CommandList context
@@ -77,41 +59,42 @@ export function SearchResultsVirtualList({
   }, [setVirtualListScrollToIndex, scrollToIndex])
 
   return (
-    <VirtualListBox data-overflow ref={childParentRef} tabIndex={-1}>
-      <PointerOverlay ref={setPointerOverlayRef} />
-      <VirtualListChildBox $height={getTotalSize()} paddingBottom={1} ref={setChildContainerRef}>
-        {getVirtualItems().map((virtualRow) => {
-          const hit = result.hits[virtualRow.index]
-          return (
-            <div
-              data-index={virtualRow.index}
+    <CommandListItems
+      setChildContainerRef={setChildContainerRef}
+      setPointerOverlayRef={setPointerOverlayRef}
+      setVirtualListRef={setVirtualListRef}
+      totalHeight={getTotalSize()}
+    >
+      {getVirtualItems().map((virtualRow) => {
+        const hit = result.hits[virtualRow.index]
+        return (
+          <div
+            data-index={virtualRow.index}
+            key={virtualRow.key}
+            style={{
+              // Kept inline to prevent styled-components from generating loads of classes on virtual list scroll
+              flex: 1,
+              height: `${virtualRow.size}px`,
+              left: 0,
+              position: 'absolute',
+              top: 0,
+              transform: `translateY(${virtualRow.start}px)`,
+              width: '100%',
+            }}
+          >
+            <SearchResultItem
+              documentId={getPublishedId(hit.hit._id) || ''}
+              documentType={hit.hit._type}
+              index={virtualRow.index}
               key={virtualRow.key}
-              style={{
-                // Kept inline to prevent styled-components from generating loads of classes on virtual list scroll
-                flex: 1,
-                height: `${virtualRow.size}px`,
-                left: 0,
-                position: 'absolute',
-                top: 0,
-                transform: `translateY(${virtualRow.start}px)`,
-                width: '100%',
-              }}
-            >
-              <SearchResultItem
-                documentId={getPublishedId(hit.hit._id) || ''}
-                documentType={hit.hit._type}
-                key={virtualRow.key}
-                marginTop={1}
-                marginX={1}
-                onClick={handleResultClick}
-                onMouseDown={onChildMouseDown}
-                onMouseEnter={onChildMouseEnter(virtualRow.index)}
-              />
-              {debug && <DebugOverlay data={hit} />}
-            </div>
-          )
-        })}
-      </VirtualListChildBox>
-    </VirtualListBox>
+              marginTop={1}
+              marginX={1}
+              onClick={handleResultClick}
+            />
+            {debug && <DebugOverlay data={hit} />}
+          </div>
+        )
+      })}
+    </CommandListItems>
   )
 }

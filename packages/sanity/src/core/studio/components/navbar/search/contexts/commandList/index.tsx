@@ -6,6 +6,7 @@ import React, {
   useCallback,
   useContext,
   useEffect,
+  useId,
   useMemo,
   useRef,
 } from 'react'
@@ -24,7 +25,7 @@ import {supportsTouch} from '../../utils/supportsTouch'
  * interoperability with virtual lists (whilst preventing costly re-renders)
  * - You have to supply `itemIndices`, an array of (number | null) indicating active indices only.
  * e.g. `[0, null, 1, 2]` indicates a list of 4 items, where the second item is non-interactive (such as a header or divider)
- * - All child items have to use the supplied context functions (`onChildClick` etc) to ensure consistent behaviour
+ * - All child items have to use the supplied context functions (`onChildMouseDown` etc) to ensure consistent behaviour
  * when clicking and hovering over items, as well as preventing unwanted focus.
  * - All elements (including the pointer overlay) must be defined and passed to this Provider.
  */
@@ -36,7 +37,6 @@ import {supportsTouch} from '../../utils/supportsTouch'
 
 interface CommandListContextValue {
   itemIndices: (number | null)[]
-  onChildClick: () => void
   onChildMouseDown: (event: MouseEvent) => void
   onChildMouseEnter: (index: number) => () => void
   setVirtualListScrollToIndex: (scrollToIndex: (index: number, options?: any) => void) => void
@@ -53,11 +53,9 @@ interface CommandListProviderProps {
   childContainerElement: HTMLDivElement | null
   containerElement: HTMLDivElement | null
   headerInputElement: HTMLInputElement | null
-  id: string
   initialSelectedIndex?: number
   itemIndices: (number | null)[]
   pointerOverlayElement: HTMLDivElement | null
-  virtualList?: boolean
 }
 
 /**
@@ -71,16 +69,16 @@ export function CommandListProvider({
   children,
   childContainerElement,
   containerElement,
-  id,
-  initialSelectedIndex = 0,
+  initialSelectedIndex,
   itemIndices,
   headerInputElement,
   pointerOverlayElement,
-  virtualList,
 }: CommandListProviderProps) {
   const selectedIndexRef = useRef<number>(-1)
 
   const activeItemCount = itemIndices.filter(isNonNullable).length
+
+  const commandListId = useId()
 
   const virtualListScrollToIndexRef = useRef<
     ((index: number, options?: Record<string, any>) => void) | null
@@ -97,65 +95,44 @@ export function CommandListProvider({
 
   const getChildDescendantId = useCallback(
     (index: number) => {
-      return `${id}-item-${index}`
+      return `${commandListId}-item-${index}`
     },
-    [id]
+    [commandListId]
   )
 
   /**
    * Assign selected state on all child elements.
    */
-  const handleAssignSelectedState = useCallback(
-    (scrollSelectedIntoView?: boolean) => {
-      const selectedIndex = selectedIndexRef?.current
+  const handleAssignSelectedState = useCallback(() => {
+    const selectedIndex = selectedIndexRef?.current
+    headerInputElement?.setAttribute('aria-activedescendant', getChildDescendantId(selectedIndex))
 
-      headerInputElement?.setAttribute('aria-activedescendant', getChildDescendantId(selectedIndex))
-
-      const childElements = Array.from(childContainerElement?.children || []) as HTMLElement[]
-      childElements?.forEach((child) => {
-        const virtualIndex = Number(child.dataset?.index)
-
-        const childIndex = itemIndices[virtualIndex]
-        if (typeof childIndex === 'number') {
-          child.setAttribute('aria-posinset', (childIndex + 1).toString())
-          child.setAttribute('aria-setsize', activeItemCount.toString())
-          child.setAttribute('data-active', (childIndex === selectedIndex).toString())
-          child.setAttribute('id', getChildDescendantId(childIndex))
-          child.setAttribute('role', 'option')
-          child.setAttribute('tabIndex', '-1')
-        }
-      })
-
-      /**
-       * Scroll into view: delegate to `react-virtual` if a virtual list, otherwise use `scrollIntoView`
-       */
-      if (scrollSelectedIntoView) {
-        if (virtualList) {
-          const virtualListIndex = itemIndices.indexOf(selectedIndex)
-          virtualListScrollToIndexRef?.current?.(virtualListIndex, {align: 'start'})
-        } else {
-          const selectedElement = childElements.find(
-            (element) => Number(element.dataset?.index) === selectedIndex
-          )
-          selectedElement?.scrollIntoView({block: 'nearest'})
-        }
+    const childElements = Array.from(childContainerElement?.children || []) as HTMLElement[]
+    childElements?.forEach((child) => {
+      const virtualIndex = Number(child.dataset?.index)
+      const childIndex = itemIndices[virtualIndex]
+      if (typeof childIndex === 'number') {
+        child.setAttribute('aria-posinset', (childIndex + 1).toString())
+        child.setAttribute('aria-setsize', activeItemCount.toString())
+        child.setAttribute('data-active', (childIndex === selectedIndex).toString())
+        child.setAttribute('id', getChildDescendantId(childIndex))
+        child.setAttribute('role', 'option')
+        child.setAttribute('tabIndex', '-1')
       }
-    },
-    [
-      activeItemCount,
-      childContainerElement,
-      getChildDescendantId,
-      headerInputElement,
-      itemIndices,
-      virtualList,
-    ]
-  )
+    })
+  }, [
+    activeItemCount,
+    childContainerElement,
+    getChildDescendantId,
+    headerInputElement,
+    itemIndices,
+  ])
 
   /**
    * Throttled version of the above, used when DOM mutations are detected in virtual lists
    */
   const handleReassignSelectedStateThrottled = useMemo(
-    () => throttle(handleAssignSelectedState.bind(undefined, false), 200),
+    () => throttle(handleAssignSelectedState, 200),
     [handleAssignSelectedState]
   )
 
@@ -163,28 +140,42 @@ export function CommandListProvider({
    * Mark an index as active, assign aria-selected state on all children and optionally scroll into view
    */
   const setActiveIndex = useCallback(
-    ({index, scrollIntoView = true}: {index: number; scrollIntoView?: boolean}) => {
+    ({
+      index,
+      scrollAlign = false,
+      scrollIntoView = true,
+    }: {
+      index: number
+      scrollAlign?: boolean
+      scrollIntoView?: boolean
+    }) => {
       selectedIndexRef.current = index
-      handleAssignSelectedState(scrollIntoView)
+      handleAssignSelectedState()
+
+      if (scrollIntoView) {
+        const virtualListIndex = itemIndices.indexOf(index)
+        virtualListScrollToIndexRef?.current?.(
+          virtualListIndex,
+          scrollAlign ? {align: 'start'} : {}
+        )
+      }
     },
-    [handleAssignSelectedState]
+    [handleAssignSelectedState, itemIndices]
   )
 
   /**
-   * Prevent child items from receiving focus
+   * Focus header input on child item mouse down (non-touch only)
+   * and prevent nested elements from receiving focus.
    */
-  const handleChildMouseDown = useCallback((event: MouseEvent) => {
-    event.preventDefault()
-  }, [])
-
-  /**
-   * Always focus header input on child item click (non-touch only)
-   */
-  const handleChildClick = useCallback(() => {
-    if (!supportsTouch) {
-      headerInputElement?.focus()
-    }
-  }, [headerInputElement])
+  const handleChildMouseDown = useCallback(
+    (event: MouseEvent) => {
+      if (!supportsTouch) {
+        headerInputElement?.focus()
+      }
+      event.preventDefault()
+    },
+    [headerInputElement]
+  )
 
   /**
    * Mark hovered child item as active
@@ -220,26 +211,19 @@ export function CommandListProvider({
           selectedIndexRef.current > 0 ? selectedIndexRef.current - 1 : activeItemCount - 1
       }
 
-      // Delegate scrolling to virtual list if necessary
-      if (virtualList) {
-        const virtualListIndex = itemIndices.indexOf(nextIndex)
-        virtualListScrollToIndexRef?.current?.(virtualListIndex)
-        setActiveIndex({index: nextIndex, scrollIntoView: false})
-      } else {
-        setActiveIndex({index: nextIndex})
-      }
-
+      // Scroll into view with `react-virtual`
+      setActiveIndex({index: nextIndex, scrollIntoView: true})
       enableChildContainerPointerEvents(false)
     },
-    [activeItemCount, enableChildContainerPointerEvents, itemIndices, setActiveIndex, virtualList]
+    [activeItemCount, enableChildContainerPointerEvents, setActiveIndex]
   )
 
   /**
    * Set active index whenever initial index changes
    */
   useEffect(() => {
-    if (initialSelectedIndex) {
-      setActiveIndex({index: initialSelectedIndex, scrollIntoView: true})
+    if (typeof initialSelectedIndex !== 'undefined') {
+      setActiveIndex({index: initialSelectedIndex, scrollAlign: true, scrollIntoView: true})
     }
   }, [initialSelectedIndex, setActiveIndex])
 
@@ -365,16 +349,12 @@ export function CommandListProvider({
   }, [activeItemCount, enableChildContainerPointerEvents])
 
   /**
-   * If this is a virtual list - re-assign aria-selected state on all child elements on any DOM mutations.
+   * Re-assign aria-selected state on all child elements on any DOM mutations.
    *
    * Useful since virtual lists will constantly mutate the DOM on scroll, and we want to ensure that
    * new elements coming into view are rendered with the correct selected state.
    */
   useEffect(() => {
-    if (!virtualList) {
-      return undefined
-    }
-
     const mutationObserver = new MutationObserver(handleReassignSelectedStateThrottled)
 
     if (childContainerElement) {
@@ -387,7 +367,7 @@ export function CommandListProvider({
     return () => {
       mutationObserver.disconnect()
     }
-  }, [childContainerElement, handleReassignSelectedStateThrottled, virtualList])
+  }, [childContainerElement, handleReassignSelectedStateThrottled])
 
   /**
    * Apply initial attributes
@@ -395,12 +375,12 @@ export function CommandListProvider({
   useEffect(() => {
     childContainerElement?.setAttribute('aria-multiselectable', ariaMultiselectable.toString())
     childContainerElement?.setAttribute('aria-label', ariaChildrenLabel)
-    childContainerElement?.setAttribute('id', `${id}-children`)
+    childContainerElement?.setAttribute('id', `${commandListId}-children`)
     childContainerElement?.setAttribute('role', 'listbox')
 
     headerInputElement?.setAttribute('aria-autocomplete', 'list')
     headerInputElement?.setAttribute('aria-expanded', 'true')
-    headerInputElement?.setAttribute('aria-controls', `${id}-children`)
+    headerInputElement?.setAttribute('aria-controls', `${commandListId}-children`)
     headerInputElement?.setAttribute('aria-label', ariaHeaderLabel)
     headerInputElement?.setAttribute('role', 'combobox')
 
@@ -410,9 +390,9 @@ export function CommandListProvider({
     ariaHeaderLabel,
     ariaMultiselectable,
     childContainerElement,
+    commandListId,
     containerElement,
     headerInputElement,
-    id,
     pointerOverlayElement,
   ])
 
@@ -431,7 +411,6 @@ export function CommandListProvider({
     <CommandListContext.Provider
       value={{
         itemIndices,
-        onChildClick: handleChildClick,
         onChildMouseDown: handleChildMouseDown,
         onChildMouseEnter: handleChildMouseEnter,
         setVirtualListScrollToIndex: handleSetVirtualListScrollToIndex,

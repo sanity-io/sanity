@@ -3,6 +3,7 @@ import React, {MouseEvent, useCallback} from 'react'
 import {PreviewCard} from '../../../../../../../components/PreviewCard'
 import {useSchema} from '../../../../../../../hooks'
 import {useDocumentPresence} from '../../../../../../../store'
+import {useCommandList} from '../../../contexts/commandList'
 import {CommandListItem} from '../../common/CommandListItem.styled'
 import SearchResultItemPreview from './SearchResultItemPreview'
 import {useIntentLink} from 'sanity/router'
@@ -11,23 +12,23 @@ interface SearchItemProps extends ResponsiveMarginProps, ResponsivePaddingProps 
   disableIntentLink?: boolean
   documentId: string
   documentType: string
+  index: number | null
   onClick?: () => void
-  onMouseDown?: (event: MouseEvent) => void
-  onMouseEnter?: () => void
 }
 
 export function SearchResultItem({
   disableIntentLink,
   documentId,
+  index,
   documentType,
   onClick,
-  onMouseDown,
-  onMouseEnter,
   ...rest
 }: SearchItemProps) {
   const schema = useSchema()
   const type = schema.get(documentType)
   const documentPresence = useDocumentPresence(documentId)
+
+  const {onChildMouseDown, onChildMouseEnter} = useCommandList()
 
   const {onClick: onIntentClick} = useIntentLink({
     intent: 'edit',
@@ -47,6 +48,7 @@ export function SearchResultItem({
     [disableIntentLink, onClick, onIntentClick]
   )
 
+  if (index === null) return null
   if (!type) return null
 
   return (
@@ -56,8 +58,8 @@ export function SearchResultItem({
       data-command-list-item
       flex={1}
       onClick={handleClick}
-      onMouseDown={onMouseDown}
-      onMouseEnter={onMouseEnter}
+      onMouseDown={onChildMouseDown}
+      onMouseEnter={onChildMouseEnter(index)}
       padding={2}
       radius={2}
       tabIndex={-1}

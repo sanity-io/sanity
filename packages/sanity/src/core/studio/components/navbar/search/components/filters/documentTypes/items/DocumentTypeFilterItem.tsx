@@ -6,20 +6,20 @@ import {useCommandList} from '../../../../contexts/commandList'
 import {useSearchState} from '../../../../contexts/search/useSearchState'
 import {CommandListItem} from '../../../common/CommandListItem.styled'
 
-interface TypeFilterItemProps {
+interface DocumentTypeFilterItemProps {
   index: number | null
   selected: boolean
   type: SearchableType
 }
 
-export const TypeFilterItem = React.memo(function TypeFilterItem({
+export const DocumentTypeFilterItem = React.memo(function TypeFilterItem({
   index,
   selected,
   type,
-}: TypeFilterItemProps) {
+}: DocumentTypeFilterItemProps) {
   const {dispatch} = useSearchState()
 
-  const {onChildClick, onChildMouseDown, onChildMouseEnter} = useCommandList()
+  const {onChildMouseEnter, onChildMouseDown} = useCommandList()
 
   const handleTypeAdd = useCallback(() => {
     dispatch({type: 'TERMS_TYPE_ADD', schemaType: type})
@@ -30,13 +30,12 @@ export const TypeFilterItem = React.memo(function TypeFilterItem({
   }, [dispatch, type])
 
   const handleClick = useCallback(() => {
-    onChildClick?.()
     if (selected) {
       handleTypeRemove()
     } else {
       handleTypeAdd()
     }
-  }, [handleTypeAdd, handleTypeRemove, onChildClick, selected])
+  }, [handleTypeAdd, handleTypeRemove, selected])
 
   if (index === null) {
     return null

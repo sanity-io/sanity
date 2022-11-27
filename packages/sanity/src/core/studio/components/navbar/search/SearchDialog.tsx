@@ -1,8 +1,9 @@
 import {Box, Card, Portal} from '@sanity/ui'
-import React, {useCallback, useEffect, useId, useMemo, useRef, useState} from 'react'
+import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import FocusLock from 'react-focus-lock'
 import styled from 'styled-components'
 import {useColorScheme} from '../../../colorScheme'
+import {Filters} from './components/filters/Filters'
 import {RecentSearches} from './components/recentSearches/RecentSearches'
 import {SearchHeader} from './components/SearchHeader'
 import {SearchResults} from './components/searchResults/SearchResults'
@@ -11,7 +12,6 @@ import {useSearchState} from './contexts/search/useSearchState'
 import {useMeasureSearchResultsIndex} from './hooks/useMeasureSearchResultsIndex'
 import {useSearchHotkeys} from './hooks/useSearchHotkeys'
 import {hasSearchableTerms} from './utils/hasSearchableTerms'
-import {Filters} from './components/filters/Filters'
 
 interface SearchDialogProps {
   onClose: () => void
@@ -112,8 +112,6 @@ export function SearchDialog({onClose, onOpen, open}: SearchDialogProps) {
     }
   }, [])
 
-  const commandListId = useId()
-
   /**
    * Create a map of indices for our virtual list, ignoring non-filter items.
    * This is to ensure navigating via keyboard skips over these non-interactive items.
@@ -137,13 +135,11 @@ export function SearchDialog({onClose, onOpen, open}: SearchDialogProps) {
       autoFocus
       childContainerElement={childContainerElement}
       containerElement={containerElement}
-      headerInputElement={headerInputElement}
-      id={commandListId || ''}
-      itemIndices={itemIndices}
       data-testid="search-results-dialog"
+      headerInputElement={headerInputElement}
+      itemIndices={itemIndices}
       initialSelectedIndex={hasValidTerms ? lastSearchIndex : 0}
       pointerOverlayElement={pointerOverlayElement}
-      virtualList={hasValidTerms}
     >
       <Portal>
         <FocusLock autoFocus={false} returnFocus>

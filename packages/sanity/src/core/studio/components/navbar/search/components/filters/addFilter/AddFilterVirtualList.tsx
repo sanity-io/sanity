@@ -1,11 +1,9 @@
-import {Box} from '@sanity/ui'
 import {useVirtualizer} from '@tanstack/react-virtual'
-import React, {Dispatch, SetStateAction, useEffect, useRef} from 'react'
-import styled from 'styled-components'
+import React, {Dispatch, SetStateAction, useEffect, useState} from 'react'
 import {useCommandList} from '../../../contexts/commandList'
 import type {FilterMenuItem} from '../../../types'
 import {getFilterKey} from '../../../utils/filterUtils'
-import {PointerOverlay} from '../common/PointerOverlay'
+import {CommandListItems} from '../../common/CommandListItems'
 import {MenuItemFilter} from './items/MenuItemFilter'
 import {MenuItemHeader} from './items/MenuItemHeader'
 
@@ -16,27 +14,13 @@ interface AddFilterVirtualListProps {
   setPointerOverlayRef: Dispatch<SetStateAction<HTMLDivElement | null>>
 }
 
-const VirtualListBox = styled(Box)`
-  height: 100%;
-  outline: none;
-  overflow-x: hidden;
-  overflow-y: auto;
-  width: 100%;
-`
-
-const VirtualListChildBox = styled(Box)<{$height: number}>`
-  height: ${({$height}) => `${$height}px`};
-  position: relative;
-  width: 100%;
-`
-
 export function AddFilterVirtualList({
   menuItems,
   onClose,
   setChildContainerRef,
   setPointerOverlayRef,
 }: AddFilterVirtualListProps) {
-  const childParentRef = useRef<HTMLDivElement | null>(null)
+  const [virtualList, setVirtualListRef] = useState<HTMLDivElement | null>(null)
 
   const {itemIndices, setVirtualListScrollToIndex} = useCommandList()
 
@@ -58,7 +42,7 @@ export function AddFilterVirtualList({
           return index
       }
     },
-    getScrollElement: () => childParentRef.current,
+    getScrollElement: () => virtualList,
     overscan: 20,
   })
 
@@ -75,43 +59,40 @@ export function AddFilterVirtualList({
   }, [setVirtualListScrollToIndex, scrollToIndex])
 
   return (
-    <VirtualListBox data-overflow ref={childParentRef} tabIndex={-1}>
-      <PointerOverlay ref={setPointerOverlayRef} />
-      <VirtualListChildBox
-        $height={getTotalSize()}
-        flex={1}
-        paddingBottom={1}
-        ref={setChildContainerRef}
-      >
-        {getVirtualItems().map((virtualRow) => {
-          const menuItem = menuItems[virtualRow.index]
-          return (
-            <div
-              data-index={virtualRow.index}
-              key={virtualRow.key}
-              ref={measureElement}
-              // Kept inline to prevent styled-components from generating loads of classes on virtual list scroll
-              style={{
-                flex: 1,
-                left: 0,
-                position: 'absolute',
-                top: 0,
-                transform: `translateY(${virtualRow.start}px)`,
-                width: '100%',
-              }}
-            >
-              {menuItem.type === 'filter' && (
-                <MenuItemFilter
-                  index={itemIndices[virtualRow.index]}
-                  item={menuItem}
-                  onClose={onClose}
-                />
-              )}
-              {menuItem.type === 'header' && <MenuItemHeader item={menuItem} />}
-            </div>
-          )
-        })}
-      </VirtualListChildBox>
-    </VirtualListBox>
+    <CommandListItems
+      setChildContainerRef={setChildContainerRef}
+      setPointerOverlayRef={setPointerOverlayRef}
+      setVirtualListRef={setVirtualListRef}
+      totalHeight={getTotalSize()}
+    >
+      {getVirtualItems().map((virtualRow) => {
+        const menuItem = menuItems[virtualRow.index]
+        return (
+          <div
+            data-index={virtualRow.index}
+            key={virtualRow.key}
+            ref={measureElement}
+            // Kept inline to prevent styled-components from generating loads of classes on virtual list scroll
+            style={{
+              flex: 1,
+              left: 0,
+              position: 'absolute',
+              top: 0,
+              transform: `translateY(${virtualRow.start}px)`,
+              width: '100%',
+            }}
+          >
+            {menuItem.type === 'filter' && (
+              <MenuItemFilter
+                index={itemIndices[virtualRow.index]}
+                item={menuItem}
+                onClose={onClose}
+              />
+            )}
+            {menuItem.type === 'header' && <MenuItemHeader item={menuItem} />}
+          </div>
+        )
+      })}
+    </CommandListItems>
   )
 }
