@@ -65,6 +65,7 @@ export function DocumentTypesVirtualList({
 
   return (
     <CommandListItems
+      paddingBottom={1}
       setChildContainerRef={setChildContainerRef}
       setPointerOverlayRef={setPointerOverlayRef}
       setVirtualListRef={setVirtualListRef}
@@ -104,6 +105,8 @@ export function DocumentTypesVirtualList({
               <DocumentTypeFilterItem
                 index={itemIndices[virtualRow.index]}
                 key={virtualRow.key}
+                paddingX={1}
+                paddingTop={1}
                 selected={virtualItem.selected}
                 type={virtualItem.item}
               />

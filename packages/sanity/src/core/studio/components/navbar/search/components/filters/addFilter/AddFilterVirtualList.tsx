@@ -60,6 +60,7 @@ export function AddFilterVirtualList({
 
   return (
     <CommandListItems
+      paddingBottom={1}
       setChildContainerRef={setChildContainerRef}
       setPointerOverlayRef={setPointerOverlayRef}
       setVirtualListRef={setVirtualListRef}
@@ -87,6 +88,8 @@ export function AddFilterVirtualList({
                 index={itemIndices[virtualRow.index]}
                 item={menuItem}
                 onClose={onClose}
+                paddingTop={1}
+                paddingX={1}
               />
             )}
             {menuItem.type === 'header' && <MenuItemHeader item={menuItem} />}

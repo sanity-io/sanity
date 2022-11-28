@@ -110,7 +110,12 @@ export const ReferenceAutocomplete = forwardRef(function DebugMiniReferenceInput
   const renderOption = useCallback((option: any) => {
     const documentType = option.hit.hit._type
     return (
-      <SearchResultItem disableIntentLink documentId={option.value} documentType={documentType} />
+      <SearchResultItem
+        compact
+        disableIntentLink
+        documentId={option.value}
+        documentType={documentType}
+      />
     )
   }, [])
 

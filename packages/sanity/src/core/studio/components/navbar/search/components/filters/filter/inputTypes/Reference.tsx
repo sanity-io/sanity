@@ -66,6 +66,7 @@ export function FieldInputReference({
         <Stack space={3}>
           <Card padding={1} radius={1} shadow={1}>
             <SearchResultItem
+              compact
               documentId={value._ref}
               documentType={value._type}
               onClick={handleClick}

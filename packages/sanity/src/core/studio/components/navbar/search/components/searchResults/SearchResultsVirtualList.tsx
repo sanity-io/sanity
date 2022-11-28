@@ -27,7 +27,7 @@ export function SearchResultsVirtualList({
     state: {debug, filters, terms, result},
   } = useSearchState()
 
-  const {setVirtualListScrollToIndex} = useCommandList()
+  const {onChildMouseDown, onChildMouseEnter, setVirtualListScrollToIndex} = useCommandList()
 
   const {getTotalSize, getVirtualItems, scrollToIndex} = useVirtualizer({
     count: result.hits.length,
@@ -60,6 +60,7 @@ export function SearchResultsVirtualList({
 
   return (
     <CommandListItems
+      paddingBottom={2}
       setChildContainerRef={setChildContainerRef}
       setPointerOverlayRef={setPointerOverlayRef}
       setVirtualListRef={setVirtualListRef}
@@ -71,6 +72,8 @@ export function SearchResultsVirtualList({
           <div
             data-index={virtualRow.index}
             key={virtualRow.key}
+            onMouseDown={onChildMouseDown}
+            onMouseEnter={onChildMouseEnter(virtualRow.index)}
             style={{
               // Kept inline to prevent styled-components from generating loads of classes on virtual list scroll
               flex: 1,
@@ -85,11 +88,10 @@ export function SearchResultsVirtualList({
             <SearchResultItem
               documentId={getPublishedId(hit.hit._id) || ''}
               documentType={hit.hit._type}
-              index={virtualRow.index}
               key={virtualRow.key}
-              marginTop={1}
-              marginX={1}
               onClick={handleResultClick}
+              paddingTop={2}
+              paddingX={2}
             />
             {debug && <DebugOverlay data={hit} />}
           </div>

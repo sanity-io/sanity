@@ -265,7 +265,7 @@ function validateFilter(
   }
 
   if (filterDef.type === 'pinned') {
-    if (!filter.fieldId && !filterDef.fieldPath) {
+    if (filterDef.fieldPath && !filter.fieldId) {
       return false
     }
   }

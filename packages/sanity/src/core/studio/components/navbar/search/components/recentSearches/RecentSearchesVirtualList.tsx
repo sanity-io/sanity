@@ -41,6 +41,7 @@ export function RecentSearchesVirtualList({
 
   return (
     <CommandListItems
+      paddingBottom={1}
       setChildContainerRef={setChildContainerRef}
       setPointerOverlayRef={setPointerOverlayRef}
       setVirtualListRef={setVirtualListRef}
@@ -65,9 +66,9 @@ export function RecentSearchesVirtualList({
           >
             <RecentSearchItem
               index={virtualRow.index}
-              marginTop={1}
-              marginX={1}
               maxVisibleTypePillChars={maxVisibleTypePillChars}
+              paddingTop={1}
+              paddingX={2}
               showFiltersOnClick={showFiltersOnClick}
               value={recentSearch}
             />

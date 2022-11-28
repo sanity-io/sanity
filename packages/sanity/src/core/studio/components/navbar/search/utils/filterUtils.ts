@@ -28,6 +28,7 @@ export function getFilterKey(filter: SearchFilter): string {
 
 /**
  * Check if a filter is 'complete' / has a value that can be used in a GROQ query.
+ * TODO: consider amalgamating with `validateFilter` util?
  */
 export function isFilterComplete(
   filter: SearchFilter,

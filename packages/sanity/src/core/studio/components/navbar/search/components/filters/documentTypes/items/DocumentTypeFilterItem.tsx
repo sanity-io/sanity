@@ -1,12 +1,12 @@
 import {CheckmarkIcon} from '@sanity/icons'
-import {Box, Button} from '@sanity/ui'
+import {Box, Button, ResponsiveMarginProps, ResponsivePaddingProps} from '@sanity/ui'
 import React, {useCallback} from 'react'
 import type {SearchableType} from '../../../../../../../../search'
 import {useCommandList} from '../../../../contexts/commandList'
 import {useSearchState} from '../../../../contexts/search/useSearchState'
 import {CommandListItem} from '../../../common/CommandListItem.styled'
 
-interface DocumentTypeFilterItemProps {
+interface DocumentTypeFilterItemProps extends ResponsiveMarginProps, ResponsivePaddingProps {
   index: number | null
   selected: boolean
   type: SearchableType
@@ -16,6 +16,7 @@ export const DocumentTypeFilterItem = React.memo(function TypeFilterItem({
   index,
   selected,
   type,
+  ...rest
 }: DocumentTypeFilterItemProps) {
   const {dispatch} = useSearchState()
 
@@ -42,7 +43,7 @@ export const DocumentTypeFilterItem = React.memo(function TypeFilterItem({
   }
 
   return (
-    <Box paddingX={1} paddingTop={1}>
+    <Box {...rest}>
       <Button
         as={CommandListItem}
         data-command-list-item

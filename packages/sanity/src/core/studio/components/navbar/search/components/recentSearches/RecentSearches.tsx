@@ -55,14 +55,13 @@ export function RecentSearches({
               showFiltersOnClick={showFiltersOnClick}
             />
           </Box>
-          <Box padding={1}>
+          <Box paddingBottom={2} paddingTop={1} paddingX={2}>
             <Button
               justify="flex-start"
               fontSize={1}
               mode="bleed"
               onClick={handleClearRecentSearchesClick}
-              paddingX={2}
-              paddingY={3}
+              padding={2}
               tone="default"
             >
               <Text muted size={1}>

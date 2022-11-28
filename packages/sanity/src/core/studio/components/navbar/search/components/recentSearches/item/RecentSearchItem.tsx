@@ -1,5 +1,13 @@
 import {ClockIcon, CloseIcon} from '@sanity/icons'
-import {Box, Button, Flex, rem, ResponsiveMarginProps, Text} from '@sanity/ui'
+import {
+  Box,
+  Button,
+  Flex,
+  rem,
+  ResponsiveMarginProps,
+  ResponsivePaddingProps,
+  Text,
+} from '@sanity/ui'
 import React, {MouseEvent, useCallback} from 'react'
 import styled from 'styled-components'
 import {useCommandList} from '../../../contexts/commandList'
@@ -9,7 +17,7 @@ import {CommandListItem} from '../../common/CommandListItem.styled'
 import {DocumentTypesPill} from '../../common/DocumentTypesPill'
 import {FilterPill} from '../../common/FilterPill'
 
-export interface RecentSearchesProps extends ResponsiveMarginProps {
+export interface RecentSearchesProps extends ResponsiveMarginProps, ResponsivePaddingProps {
   index: number
   maxVisibleTypePillChars?: number
   showFiltersOnClick?: boolean
@@ -20,6 +28,7 @@ const DEFAULT_COMBINED_TYPE_COUNT = 40
 
 const RecentSearchItemButton = styled(Button)`
   border-radius: ${({theme}) => rem(theme.sanity.radius[2])};
+  cursor: default;
 `
 
 const SearchItemPillsBox = styled(Box)`
@@ -88,57 +97,58 @@ export function RecentSearchItem({
   )
 
   return (
-    <RecentSearchItemButton
-      as={CommandListItem}
-      data-command-list-item
-      mode="bleed"
-      onClick={handleClick}
-      onMouseDown={onChildMouseDown}
-      onMouseEnter={onChildMouseEnter(index)}
-      paddingLeft={3}
-      paddingRight={1}
-      paddingY={1}
-      {...rest}
-    >
-      <Flex align="stretch">
-        <Box paddingY={2}>
-          <Text muted size={1}>
-            <ClockIcon />
-          </Text>
-        </Box>
-        <Flex align="center" flex={1} gap={2} justify="flex-start" marginLeft={3} wrap="wrap">
-          {/* Text query */}
-          {value.query && (
-            <SearchItemQueryBox marginLeft={1} paddingY={2}>
-              <Text muted textOverflow="ellipsis">
-                {value.query}
-              </Text>
-            </SearchItemQueryBox>
-          )}
-          {/* Document type */}
-          {value.types.length > 0 && (
-            <SearchItemPillsBox>
-              <DocumentTypesPill availableCharacters={availableCharacters} types={value.types} />
-            </SearchItemPillsBox>
-          )}
-          {/* Filters */}
-          {value?.filters?.map((filter, i) => {
-            // eslint-disable-next-line react/no-array-index-key
-            return <FilterPill filter={filter} key={i} />
-          })}
-        </Flex>
+    <Box {...rest}>
+      <RecentSearchItemButton
+        as={CommandListItem}
+        data-command-list-item
+        mode="bleed"
+        onClick={handleClick}
+        onMouseDown={onChildMouseDown}
+        onMouseEnter={onChildMouseEnter(index)}
+        paddingLeft={3}
+        paddingRight={1}
+        paddingY={1}
+      >
+        <Flex align="stretch">
+          <Box paddingY={2}>
+            <Text muted size={1}>
+              <ClockIcon />
+            </Text>
+          </Box>
+          <Flex align="center" flex={1} gap={2} justify="flex-start" marginLeft={3} wrap="wrap">
+            {/* Text query */}
+            {value.query && (
+              <SearchItemQueryBox marginLeft={1} paddingY={2}>
+                <Text muted textOverflow="ellipsis">
+                  {value.query}
+                </Text>
+              </SearchItemQueryBox>
+            )}
+            {/* Document type */}
+            {value.types.length > 0 && (
+              <SearchItemPillsBox>
+                <DocumentTypesPill availableCharacters={availableCharacters} types={value.types} />
+              </SearchItemPillsBox>
+            )}
+            {/* Filters */}
+            {value?.filters?.map((filter, i) => {
+              // eslint-disable-next-line react/no-array-index-key
+              return <FilterPill filter={filter} key={i} />
+            })}
+          </Flex>
 
-        {/* TODO: this is neither semantic nor accessible, consider revising */}
-        <Flex align="center">
-          <CloseButtonDiv onClick={handleDelete}>
-            <Flex padding={2}>
-              <Text size={1}>
-                <CloseIcon />
-              </Text>
-            </Flex>
-          </CloseButtonDiv>
+          {/* TODO: this is neither semantic nor accessible, consider revising */}
+          <Flex align="center">
+            <CloseButtonDiv onClick={handleDelete}>
+              <Flex padding={2}>
+                <Text size={1}>
+                  <CloseIcon />
+                </Text>
+              </Flex>
+            </CloseButtonDiv>
+          </Flex>
         </Flex>
-      </Flex>
-    </RecentSearchItemButton>
+      </RecentSearchItemButton>
+    </Box>
   )
 }

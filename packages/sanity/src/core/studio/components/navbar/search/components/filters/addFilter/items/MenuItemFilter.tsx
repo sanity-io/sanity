@@ -1,4 +1,4 @@
-import {Box, Button} from '@sanity/ui'
+import {Box, Button, ResponsiveMarginProps, ResponsivePaddingProps} from '@sanity/ui'
 import React, {useCallback, useEffect, useRef, useState} from 'react'
 import {useCommandList} from '../../../../contexts/commandList'
 import {useSearchState} from '../../../../contexts/search/useSearchState'
@@ -8,7 +8,7 @@ import {CommandListItem} from '../../../common/CommandListItem.styled'
 import {FilterDetails} from '../../common/FilterDetails'
 import {FilterTooltip} from './FilterTooltip'
 
-interface FilterMenuItemProps {
+interface FilterMenuItemProps extends ResponsiveMarginProps, ResponsivePaddingProps {
   index: number | null
   item: FilterMenuItemFilter
   onClose: () => void
@@ -18,6 +18,7 @@ export const MenuItemFilter = React.memo(function MenuItemFilter({
   index,
   item,
   onClose,
+  ...rest
 }: FilterMenuItemProps) {
   const [tooltipVisible, setTooltipVisible] = useState(false)
 
@@ -56,7 +57,7 @@ export const MenuItemFilter = React.memo(function MenuItemFilter({
   const tooltipEnabled = !!(item.fieldDefinition || item.filterDefinition.description)
 
   return (
-    <Box paddingTop={1} paddingX={1}>
+    <Box {...rest}>
       <Button
         as={CommandListItem}
         data-command-list-item

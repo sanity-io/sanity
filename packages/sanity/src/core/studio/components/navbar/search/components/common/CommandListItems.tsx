@@ -1,14 +1,13 @@
-import {Box} from '@sanity/ui'
+import {Box, ResponsivePaddingProps} from '@sanity/ui'
 import React, {Dispatch, ReactNode, SetStateAction} from 'react'
 import styled from 'styled-components'
 import {PointerOverlay} from '../filters/common/PointerOverlay'
 
-interface CommandListItemsProps {
+interface CommandListItemsProps extends ResponsivePaddingProps {
   children: ReactNode
   setChildContainerRef: Dispatch<SetStateAction<HTMLDivElement | null>>
   setPointerOverlayRef: Dispatch<SetStateAction<HTMLDivElement | null>>
   setVirtualListRef: Dispatch<SetStateAction<HTMLDivElement | null>>
-  // setVirtualScrollElement: Dispatch<SetStateAction<HTMLDivElement | null>>
   totalHeight: number
 }
 
@@ -32,17 +31,12 @@ export function CommandListItems({
   setPointerOverlayRef,
   setVirtualListRef,
   totalHeight,
+  ...rest
 }: CommandListItemsProps) {
   return (
     <VirtualListBox data-overflow ref={setVirtualListRef} tabIndex={-1}>
       <PointerOverlay ref={setPointerOverlayRef} />
-      <VirtualListChildBox
-        // $height={getTotalSize()}
-        $height={totalHeight}
-        flex={1}
-        paddingBottom={1}
-        ref={setChildContainerRef}
-      >
+      <VirtualListChildBox $height={totalHeight} flex={1} ref={setChildContainerRef} {...rest}>
         {children}
       </VirtualListChildBox>
     </VirtualListBox>
