@@ -1,7 +1,7 @@
 import React from 'react'
 import {OperatorInputComponentProps} from '../../../../definitions/operators/operatorTypes'
-import {CommonDateInput} from './CommonDate'
+import {CommonDateInput} from './date/CommonDate'
 
-export function FieldInputDateTime(props: OperatorInputComponentProps<string>) {
+export function SearchFilterDateTimeInput(props: OperatorInputComponentProps<string>) {
   return <CommonDateInput {...props} selectTime />
 }

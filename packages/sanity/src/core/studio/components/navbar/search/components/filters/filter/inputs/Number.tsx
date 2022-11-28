@@ -3,7 +3,7 @@ import React, {ChangeEvent, useCallback, useState} from 'react'
 import {useSearchState} from '../../../../contexts/search/useSearchState'
 import {OperatorInputComponentProps} from '../../../../definitions/operators/operatorTypes'
 
-export function FieldInputNumber({value, onChange}: OperatorInputComponentProps<number>) {
+export function SearchFilterNumberInput({value, onChange}: OperatorInputComponentProps<number>) {
   const [uncontrolledValue, setUncontrolledValue] = useState(value ?? '')
 
   const {

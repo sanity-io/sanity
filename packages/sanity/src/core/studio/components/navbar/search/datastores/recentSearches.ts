@@ -1,10 +1,10 @@
 import type {CurrentUser, ObjectSchemaType, Schema} from '@sanity/types'
 import omit from 'lodash/omit'
 import type {SearchTerms} from '../../../../../search'
-import {getFilterDefinition, SearchFilterDefinition} from '../definitions/filters'
+import {SearchFilterDefinition} from '../definitions/filters'
 import {SearchOperator} from '../definitions/operators'
 import type {SearchFieldDefinition, SearchFilter} from '../types'
-import {isFilterComplete} from '../utils/filterUtils'
+import {isFilterComplete, validateFilter} from '../utils/filterUtils'
 import {getSearchableOmnisearchTypes} from '../utils/selectors'
 
 const RECENT_SEARCHES_KEY = 'search::recent'
@@ -69,13 +69,13 @@ export function createRecentSearchesStore({
       const storedFilters = (filters || []).map(
         (filter): SearchFilter => ({
           fieldId: filter.fieldId,
-          filterType: filter.filterType,
+          filterName: filter.filterName,
           operatorType: filter.operatorType,
           value: filter.value,
         })
       )
 
-      // Remove filters in 'incomplete' states prior to writing to local storage.
+      // Remove any filters in 'incomplete' states prior to writing to local storage.
       const validStoredFilters = storedFilters.filter((filter) =>
         isFilterComplete(filter, filterDefinitions, fieldDefinitions, operatorDefinitions)
       )
@@ -234,49 +234,6 @@ function sanitizeStoredSearch(
   }
 
   return getRecentStoredSearch(lsKey)
-}
-
-/**
- * Validate if the supplied filter:
- * - has a corresponding filter defintion
- * - contains a valid `operatorType` (if present)
- * - has a valid `fieldId` which exists in our current list of field definitions
- */
-function validateFilter(
-  filter: SearchFilter,
-  filterDefinitions: SearchFilterDefinition[],
-  fieldDefinitions: SearchFieldDefinition[]
-): boolean {
-  const filterDef = getFilterDefinition(filterDefinitions, filter.filterType)
-  if (!filterDef) {
-    return false
-  }
-
-  if (filter.operatorType) {
-    if (!filterDef.operators.find((o) => o.type === 'item' && o.name === filter.operatorType)) {
-      return false
-    }
-  }
-
-  if (filterDef.type === 'field') {
-    if (!filter.fieldId) {
-      return false
-    }
-  }
-
-  if (filterDef.type === 'pinned') {
-    if (filterDef.fieldPath && !filter.fieldId) {
-      return false
-    }
-  }
-
-  if (filter.fieldId) {
-    if (!fieldDefinitions.find((f) => f.id === filter.fieldId)) {
-      return false
-    }
-  }
-
-  return true
 }
 
 const supportsLocalStorage = (() => {

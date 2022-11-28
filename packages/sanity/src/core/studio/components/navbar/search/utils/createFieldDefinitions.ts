@@ -103,7 +103,7 @@ function getDocumentFieldDefinitions(
     acc.push({
       documentTypes: documentType && !isInternalField ? [documentType] : [],
       fieldPath,
-      filterType: resolveFilterType(defType),
+      filterName: resolveFilterType(defType),
       id: '',
       name: defType.name,
       titlePath,
@@ -150,7 +150,7 @@ function addFieldDefinitionId(field: SearchFieldDefinition) {
   return {
     ...field,
     id: Md5.hashStr(
-      JSON.stringify([field.documentTypes, field.fieldPath, field.filterType, field.type])
+      JSON.stringify([field.documentTypes, field.fieldPath, field.filterName, field.type])
     ),
   }
 }

@@ -44,7 +44,7 @@ function CustomMenuItem({
   )
 }
 
-export function FieldInputStringList({
+export function SearchFilterStringListInput({
   fieldDefinition,
   onChange,
   value,

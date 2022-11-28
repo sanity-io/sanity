@@ -60,9 +60,9 @@ export function defineSearchFilterOperators<TOperators = SearchOperatorType>(
 
 export function getFilterDefinition(
   definitions: SearchFilterDefinition[],
-  filterType: string
+  filterName: string
 ): SearchFilterDefinition | undefined {
-  return definitions.find((filter) => filter.name === filterType)
+  return definitions.find((filter) => filter.name === filterName)
 }
 
 export function getFilterDefinitionInitialOperatorType(

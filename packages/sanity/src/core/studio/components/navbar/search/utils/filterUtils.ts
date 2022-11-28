@@ -4,14 +4,14 @@ import type {SearchFieldDefinition, SearchFilter} from '../types'
 
 export function createFilterFromDefinition(filterDefinition: SearchFilterDefinition): SearchFilter {
   return {
-    filterType: filterDefinition.name,
+    filterName: filterDefinition.name,
   }
 }
 
 export function createFilterFromField(field: SearchFieldDefinition): SearchFilter {
   return {
     fieldId: field.id,
-    filterType: field.filterType,
+    filterName: field.filterName,
   }
 }
 
@@ -23,12 +23,11 @@ export function getFieldFromFilter(
 }
 
 export function getFilterKey(filter: SearchFilter): string {
-  return [filter.filterType, ...(filter.fieldId ? [filter.fieldId] : [])].join('-')
+  return [filter.filterName, ...(filter.fieldId ? [filter.fieldId] : [])].join('-')
 }
 
 /**
  * Check if a filter is 'complete' / has a value that can be used in a GROQ query.
- * TODO: consider amalgamating with `validateFilter` util?
  */
 export function isFilterComplete(
   filter: SearchFilter,
@@ -36,7 +35,7 @@ export function isFilterComplete(
   fieldDefinitions: SearchFieldDefinition[],
   operatorDefinitions: SearchOperator[]
 ): boolean {
-  const filterDef = getFilterDefinition(filterDefinitions, filter.filterType)
+  const filterDef = getFilterDefinition(filterDefinitions, filter.filterName)
   if (!filterDef) {
     return false
   }
@@ -48,4 +47,53 @@ export function isFilterComplete(
     value: filter.value,
   })
   return operator?.inputComponent ? !!(filter.operatorType && hasFilterValue) : true
+}
+
+/**
+ * Validate if the supplied filter:
+ * - has a valid filter defintion
+ * - has a valid field definition (if it references a fieldId)
+ * - has a valid operator (if present)
+ */
+export function validateFilter(
+  filter: SearchFilter,
+  filterDefinitions: SearchFilterDefinition[],
+  fieldDefinitions: SearchFieldDefinition[]
+): boolean {
+  const filterDef = getFilterDefinition(filterDefinitions, filter.filterName)
+
+  // No matching filter definition
+  if (!filterDef) {
+    return false
+  }
+
+  // No matching field definition
+  if (filter.fieldId) {
+    if (!fieldDefinitions.find((f) => f.id === filter.fieldId)) {
+      return false
+    }
+  }
+
+  // No matching operator
+  if (filter.operatorType) {
+    if (!filterDef.operators.find((o) => o.type === 'item' && o.name === filter.operatorType)) {
+      return false
+    }
+  }
+
+  // Field filter: missing `fieldId`
+  if (filterDef.type === 'field') {
+    if (!filter.fieldId) {
+      return false
+    }
+  }
+
+  // Pinned filter: missing `fieldId`
+  if (filterDef.type === 'pinned') {
+    if (!filter.fieldId && filterDef.fieldPath) {
+      return false
+    }
+  }
+
+  return true
 }

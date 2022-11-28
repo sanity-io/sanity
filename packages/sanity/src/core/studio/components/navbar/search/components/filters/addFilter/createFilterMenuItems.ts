@@ -172,7 +172,7 @@ function filterGroup({
     (filter) =>
       ({
         fieldDefinition: getFieldFromFilter(fieldDefinitions, filter),
-        filterDefinition: getFilterDefinition(filterDefinitions, filter.filterType),
+        filterDefinition: getFilterDefinition(filterDefinitions, filter.filterName),
         filter,
         group: id,
         tone: tone || 'default',

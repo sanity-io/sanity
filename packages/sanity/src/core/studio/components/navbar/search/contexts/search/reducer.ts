@@ -226,7 +226,7 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
     case 'TERMS_FILTERS_ADD': {
       const operatorType = getFilterDefinitionInitialOperatorType(
         state.definitions.filters,
-        action.filter.filterType
+        action.filter.filterName
       )
 
       const newFilter: SearchFilter = {
@@ -575,7 +575,7 @@ function resolveFieldPath({
   filterDefinitions: SearchFilterDefinition[]
 }): string | undefined {
   const fieldDefinition = fieldDefinitions.find((f) => f.id === filter?.fieldId)
-  const filterDefinition = getFilterDefinition(filterDefinitions, filter.filterType)
+  const filterDefinition = getFilterDefinition(filterDefinitions, filter.filterName)
 
   if (!filterDefinition) {
     return undefined

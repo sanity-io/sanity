@@ -14,7 +14,7 @@ export default function FilterButtonStory() {
   const mockFieldDefinition: SearchFieldDefinition = {
     documentTypes: [],
     fieldPath: 'title',
-    filterType: 'string',
+    filterName: 'string',
     id: fieldDefinitionId,
     name: 'title',
     title: 'Title',
@@ -25,7 +25,7 @@ export default function FilterButtonStory() {
   const searchFilter: SearchFilter = useMemo(() => {
     return {
       fieldId: fieldDefinitionId,
-      filterType: 'string',
+      filterName: 'string',
       operatorType: 'stringEqual',
       value: longValue
         ? 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis ante nisi, iaculis efficitur bibendum ut, rhoncus et nunc. Vestibulum non auctor leo. Vestibulum commodo diam imperdiet lacus ultricies, non lacinia nibh ultricies. Integer congue augue a turpis pharetra volutpat. Nullam at vehicula tortor. Ut sodales, ipsum a sodales porta, lorem odio tincidunt sapien, sed gravida dui sem eget tellus. Pellentesque sodales enim ante, fringilla facilisis augue auctor tincidunt. Aenean felis metus, iaculis sed accumsan non, commodo vitae mauris. Quisque sit amet risus nibh. Nam sed quam ut mauris luctus molestie. Quisque sit amet est elit. Nullam luctus sapien lectus, a posuere erat euismod id.'

@@ -1,8 +1,11 @@
 import {sub} from 'date-fns'
-import {ButtonValueDate, ButtonValueLast} from '../../components/filters/common/ButtonValue'
-import {FieldInputDate} from '../../components/filters/filter/inputTypes/Date'
-import {FieldInputDateLast} from '../../components/filters/filter/inputTypes/DateLast'
-import {FieldInputDateTime} from '../../components/filters/filter/inputTypes/DateTime'
+import {
+  SearchButtonValueDate,
+  SearchButtonValueLast,
+} from '../../components/filters/common/ButtonValue'
+import {SearchFilterDateInput} from '../../components/filters/filter/inputs/Date'
+import {SearchFilterDateLastInput} from '../../components/filters/filter/inputs/DateLast'
+import {SearchFilterDateTimeInput} from '../../components/filters/filter/inputs/DateTime'
 import {defineSearchOperator, SearchOperatorParams} from './operatorTypes'
 import {toJSON} from './operatorUtils'
 
@@ -20,19 +23,19 @@ export interface OperatorDateLastValue {
 const COMMON = {
   dateAfter: {
     buttonLabel: 'after',
-    buttonValueComponent: ButtonValueDate,
+    buttonValueComponent: SearchButtonValueDate,
     initialValue: null,
     label: 'is after',
   },
   dateBefore: {
     buttonLabel: 'before',
-    buttonValueComponent: ButtonValueDate,
+    buttonValueComponent: SearchButtonValueDate,
     initialValue: null,
     label: 'is before',
   },
   dateEqual: {
     buttonLabel: 'is',
-    buttonValueComponent: ButtonValueDate,
+    buttonValueComponent: SearchButtonValueDate,
     fn: ({fieldPath, value}: SearchOperatorParams<string>) => {
       return value && fieldPath ? `${fieldPath} == ${toJSON(value)}` : null
     },
@@ -41,12 +44,12 @@ const COMMON = {
   },
   dateLast: {
     buttonLabel: 'last',
-    buttonValueComponent: ButtonValueLast,
+    buttonValueComponent: SearchButtonValueLast,
     label: 'is in the last',
   },
   dateNotEqual: {
     buttonLabel: 'is not',
-    buttonValueComponent: ButtonValueDate,
+    buttonValueComponent: SearchButtonValueDate,
     fn: ({fieldPath, value}: SearchOperatorParams<string>) => {
       return value && fieldPath ? `${fieldPath} != ${toJSON(value)}` : null
     },
@@ -61,7 +64,7 @@ export const dateOperators = {
     fn: ({fieldPath, value}: SearchOperatorParams<string>) => {
       return value && fieldPath ? `${fieldPath} > ${toJSON(value)}` : null
     },
-    inputComponent: FieldInputDate,
+    inputComponent: SearchFilterDateInput,
     type: 'dateAfter',
   }),
   dateBefore: defineSearchOperator({
@@ -69,12 +72,12 @@ export const dateOperators = {
     fn: ({fieldPath, value}: SearchOperatorParams<string>) => {
       return value && fieldPath ? `${fieldPath} < ${toJSON(value)}` : null
     },
-    inputComponent: FieldInputDate,
+    inputComponent: SearchFilterDateInput,
     type: 'dateBefore',
   }),
   dateEqual: defineSearchOperator({
     ...COMMON.dateEqual,
-    inputComponent: FieldInputDate,
+    inputComponent: SearchFilterDateInput,
     type: 'dateEqual',
   }),
   dateLast: defineSearchOperator({
@@ -88,7 +91,7 @@ export const dateOperators = {
       }).toISOString()
       return timestampAgo && fieldPath ? `${fieldPath} > ${toJSON(timestampAgo)}` : null
     },
-    inputComponent: FieldInputDateLast,
+    inputComponent: SearchFilterDateLastInput,
     initialValue: {
       unit: 'days',
       value: 7,
@@ -97,7 +100,7 @@ export const dateOperators = {
   }),
   dateNotEqual: defineSearchOperator({
     ...COMMON.dateNotEqual,
-    inputComponent: FieldInputDate,
+    inputComponent: SearchFilterDateInput,
     type: 'dateNotEqual',
   }),
   dateTimeAfter: defineSearchOperator({
@@ -105,7 +108,7 @@ export const dateOperators = {
     fn: ({fieldPath, value}: SearchOperatorParams<string>) => {
       return value && fieldPath ? `dateTime(${fieldPath}) > dateTime(${toJSON(value)})` : null
     },
-    inputComponent: FieldInputDateTime,
+    inputComponent: SearchFilterDateTimeInput,
     type: 'dateTimeAfter',
   }),
   dateTimeBefore: defineSearchOperator({
@@ -113,12 +116,12 @@ export const dateOperators = {
     fn: ({fieldPath, value}: SearchOperatorParams<string>) => {
       return value && fieldPath ? `dateTime(${fieldPath}) < dateTime(${toJSON(value)})` : null
     },
-    inputComponent: FieldInputDateTime,
+    inputComponent: SearchFilterDateTimeInput,
     type: 'dateTimeBefore',
   }),
   dateTimeEqual: defineSearchOperator({
     ...COMMON.dateEqual,
-    inputComponent: FieldInputDateTime,
+    inputComponent: SearchFilterDateTimeInput,
     type: 'dateTimeEqual',
   }),
   dateTimeLast: defineSearchOperator({
@@ -138,12 +141,12 @@ export const dateOperators = {
       unit: 'days',
       value: 7,
     },
-    inputComponent: FieldInputDateLast,
+    inputComponent: SearchFilterDateLastInput,
     type: 'dateTimeLast',
   }),
   dateTimeNotEqual: defineSearchOperator({
     ...COMMON.dateNotEqual,
-    inputComponent: FieldInputDateTime,
+    inputComponent: SearchFilterDateTimeInput,
     type: 'dateTimeNotEqual',
   }),
 }

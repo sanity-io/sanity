@@ -31,14 +31,14 @@ const mockArticle: ObjectSchemaType = mockSchema.get('article')
 const mockBook: ObjectSchemaType = mockSchema.get('book')
 const mockFilterDefinitions: SearchFilterDefinition[] = [
   defineSearchFilter({
-    fieldType: 'datetime',
+    fieldType: 'string',
     icon: CalendarIcon,
     operators: [
       {name: 'defined', type: 'item'},
       {name: 'notDefined', type: 'item'},
     ],
-    title: 'Datetime',
-    name: 'datetime',
+    name: 'string',
+    type: 'field',
   }),
 ]
 const mockOperatorDefinitions: SearchOperator[] = []
@@ -121,30 +121,28 @@ describe('search-store', () => {
     })
 
     it('should filter out searches that contain invalid filters', () => {
-      const searchTerms1: SearchTerms = {query: 'foo', types: [mockArticle]}
-      const searchTerms2: SearchTerms = {query: 'bar', types: [mockArticle]}
-      const searchTerms3: SearchTerms = {query: 'baz', types: [mockArticle]}
-      const searchTerms4: SearchTerms = {query: 'qux', types: [mockArticle]}
+      const searchTerms: SearchTerms = {query: 'foo', types: [mockArticle]}
       const invalidFilter1: SearchFilter = {
-        filterType: 'datetime',
+        filterName: '_invalidFilterType', // invalid filter name
         operatorType: 'defined',
         value: null,
       }
       const invalidFilter2: SearchFilter = {
-        filterType: '_invalidFilterType',
-        operatorType: 'defined',
+        filterName: 'datetime',
+        operatorType: '_invalidOperatorType', // invalid operator
         value: null,
       }
       const invalidFilter3: SearchFilter = {
-        filterType: 'datetime',
-        operatorType: '_invalidOperatorType',
+        fieldId: '_invalidFieldId', // invalid field Id
+        filterName: 'datetime',
+        operatorType: 'defined',
         value: null,
       }
 
-      recentSearchesStore.addSearch(searchTerms1, [invalidFilter1])
-      recentSearchesStore.addSearch(searchTerms2, [invalidFilter2])
-      recentSearchesStore.addSearch(searchTerms3, [invalidFilter3])
-      recentSearchesStore.addSearch(searchTerms4)
+      recentSearchesStore.addSearch(searchTerms, [invalidFilter1])
+      recentSearchesStore.addSearch(searchTerms, [invalidFilter2])
+      recentSearchesStore.addSearch(searchTerms, [invalidFilter3])
+      recentSearchesStore.addSearch(searchTerms)
       const recentTerms = recentSearchesStore.getRecentSearches()
       expect(recentTerms.length).toEqual(1)
     })
@@ -226,18 +224,19 @@ describe('search-store', () => {
         types: [mockArticle],
       }
       // eslint-disable-next-line max-nested-callbacks
-      const fieldId = mockFieldDefinitions.find((def) => def.filterType === 'datetime')?.id
+      const fieldId = mockFieldDefinitions.find((def) => def.filterName === 'string')?.id
+
       const searchFilter: SearchFilter = {
         fieldId,
-        filterType: 'datetime',
+        filterName: 'string',
         operatorType: 'defined',
         value: null,
       }
       const recentSearches = recentSearchesStore.addSearch(searchTerms, [searchFilter])
-      expect(recentSearches[0].filters).toEqual([
+      expect(recentSearches[0]?.filters).toEqual([
         {
           fieldId,
-          filterType: 'datetime',
+          filterName: 'string',
           operatorType: 'defined',
           value: null,
         },

@@ -9,7 +9,7 @@ import {getSchemaField} from '../../../../utils/getSchemaField'
 import {SearchResultItem} from '../../../searchResults/item/SearchResultItem'
 import {ReferenceAutocomplete} from '../ReferenceAutocomplete'
 
-export function FieldInputReference({
+export function SearchFilterReferenceInput({
   fieldDefinition,
   onChange,
   value,

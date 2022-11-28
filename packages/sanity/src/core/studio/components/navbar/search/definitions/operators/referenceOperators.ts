@@ -1,54 +1,57 @@
-import {ButtonValueAsset, ButtonValueReference} from '../../components/filters/common/ButtonValue'
-import {FieldInputAsset} from '../../components/filters/filter/inputTypes/Asset'
-import {FieldInputReference} from '../../components/filters/filter/inputTypes/Reference'
+import {
+  SearchButtonValueAsset,
+  SearchButtonValueReference,
+} from '../../components/filters/common/ButtonValue'
+import {SearchFilterAssetInput} from '../../components/filters/filter/inputs/Asset'
+import {SearchFilterReferenceInput} from '../../components/filters/filter/inputs/Reference'
 import {defineSearchOperator} from './operatorTypes'
 import {toJSON} from './operatorUtils'
 
 export const referenceOperators = {
   referenceEqual: defineSearchOperator({
     buttonLabel: 'is',
-    buttonValueComponent: ButtonValueReference,
+    buttonValueComponent: SearchButtonValueReference,
     fn: ({fieldPath, value}) =>
       value?._ref && fieldPath ? `${fieldPath}._ref == ${toJSON(value._ref)}` : null,
     initialValue: null,
-    inputComponent: FieldInputReference,
+    inputComponent: SearchFilterReferenceInput,
     label: 'is',
     type: 'referenceEqual',
   }),
   referenceNotEqual: defineSearchOperator({
     buttonLabel: 'is not',
-    buttonValueComponent: ButtonValueReference,
+    buttonValueComponent: SearchButtonValueReference,
     fn: ({fieldPath, value}) =>
       value?._ref && fieldPath ? `${fieldPath}._ref != ${toJSON(value._ref)}` : null,
     initialValue: null,
-    inputComponent: FieldInputReference,
+    inputComponent: SearchFilterReferenceInput,
     label: 'is not',
     type: 'referenceNotEqual',
   }),
   referencesAssetFile: defineSearchOperator({
     buttonLabel: '→',
-    buttonValueComponent: ButtonValueAsset,
+    buttonValueComponent: SearchButtonValueAsset,
     fn: ({value}) => (value?._id ? `references(${toJSON(value._id)})` : null),
     initialValue: null,
-    inputComponent: FieldInputAsset('file'),
+    inputComponent: SearchFilterAssetInput('file'),
     label: 'file',
     type: 'referencesAssetFile',
   }),
   referencesAssetImage: defineSearchOperator({
     buttonLabel: '→',
-    buttonValueComponent: ButtonValueAsset,
+    buttonValueComponent: SearchButtonValueAsset,
     fn: ({value}) => (value?._id ? `references(${toJSON(value._id)})` : null),
     initialValue: null,
-    inputComponent: FieldInputAsset('image'),
+    inputComponent: SearchFilterAssetInput('image'),
     label: 'image',
     type: 'referencesAssetImage',
   }),
   referencesDocument: defineSearchOperator({
     buttonLabel: '→',
-    buttonValueComponent: ButtonValueReference,
+    buttonValueComponent: SearchButtonValueReference,
     fn: ({value}) => (value?._ref ? `references(${toJSON(value._ref)})` : null),
     initialValue: null,
-    inputComponent: FieldInputReference,
+    inputComponent: SearchFilterReferenceInput,
     label: 'document',
     type: 'referencesDocument',
   }),

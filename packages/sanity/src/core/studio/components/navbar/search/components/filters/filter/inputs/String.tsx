@@ -3,7 +3,10 @@ import React, {ChangeEvent, useCallback} from 'react'
 import {useSearchState} from '../../../../contexts/search/useSearchState'
 import {OperatorInputComponentProps} from '../../../../definitions/operators/operatorTypes'
 
-export function FieldInputString({onChange, value}: OperatorInputComponentProps<number | string>) {
+export function SearchFilterStringInput({
+  onChange,
+  value,
+}: OperatorInputComponentProps<number | string>) {
   const {
     state: {fullscreen},
   } = useSearchState()

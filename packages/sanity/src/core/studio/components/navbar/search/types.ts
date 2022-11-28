@@ -49,7 +49,7 @@ export interface FilterMenuItemHeader {
  */
 export interface SearchFilter {
   fieldId?: string
-  filterType: string
+  filterName: string
   operatorType?: string
   value?: any
 }
@@ -80,7 +80,7 @@ export interface SearchState {
 export interface SearchFieldDefinition {
   documentTypes: string[]
   fieldPath: string
-  filterType: string
+  filterName: string
   id: string
   name: string
   title: string

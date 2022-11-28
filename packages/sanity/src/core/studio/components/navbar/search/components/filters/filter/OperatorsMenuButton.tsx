@@ -45,7 +45,7 @@ export function OperatorsMenuButton({filter, operator}: OperatorsMenuButtonProps
   const menuButtonId = useId()
 
   const {dispatch, state} = useSearchState()
-  const operatorItems = getFilterDefinition(state.definitions.filters, filter.filterType)?.operators
+  const operatorItems = getFilterDefinition(state.definitions.filters, filter.filterName)?.operators
 
   const handleClick = useCallback(
     (operatorType: string) => {

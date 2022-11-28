@@ -12,7 +12,7 @@ import {AssetPreview} from './imagePreview/AssetPreview'
 
 type AssetType = keyof Pick<Source['form'], 'file' | 'image'>
 
-export function FieldInputAsset(type?: AssetType) {
+export function SearchFilterAssetInput(type?: AssetType) {
   return function FieldInputAssetWithType({onChange, value}: OperatorInputComponentProps<Asset>) {
     const [selectedAssetSource, setSelectedAssetSource] = useState<AssetSource | null>(null)
     const [selectedAssetFromSource, setSelectedAssetFromSource] = useState<AssetFromSource | null>(

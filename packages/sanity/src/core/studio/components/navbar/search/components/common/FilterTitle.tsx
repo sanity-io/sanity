@@ -21,7 +21,7 @@ export function FilterTitle({filter, maxLength}: FilterTitleProps) {
       return fieldDefinition.titlePath[fieldDefinition.titlePath.length - 1]
     }
     // Otherwise, fallback and display filter definition title.
-    return getFilterDefinition(definitions.filters, filter.filterType)?.title
+    return getFilterDefinition(definitions.filters, filter.filterName)?.title
   }, [definitions, filter])
 
   if (!title) {

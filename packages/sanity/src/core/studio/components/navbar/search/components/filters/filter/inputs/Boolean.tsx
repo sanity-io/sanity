@@ -3,7 +3,7 @@ import React, {ChangeEvent, useCallback} from 'react'
 import {useSearchState} from '../../../../contexts/search/useSearchState'
 import {type OperatorInputComponentProps} from '../../../../definitions/operators/operatorTypes'
 
-export function FieldInputBoolean({onChange, value}: OperatorInputComponentProps<boolean>) {
+export function SearchFilterBooleanInput({onChange, value}: OperatorInputComponentProps<boolean>) {
   const {
     state: {fullscreen},
   } = useSearchState()

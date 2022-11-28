@@ -4,7 +4,7 @@ import {useSearchState} from '../../../../contexts/search/useSearchState'
 import {OperatorNumberRangeValue} from '../../../../definitions/operators/common'
 import {OperatorInputComponentProps} from '../../../../definitions/operators/operatorTypes'
 
-export function FieldInputNumberRange({
+export function SearchFilterNumberRangeInput({
   onChange,
   value,
 }: OperatorInputComponentProps<OperatorNumberRangeValue>) {

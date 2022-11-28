@@ -1,5 +1,5 @@
 import React from 'react'
-import {useSearchState} from '../../../../../contexts/search/useSearchState'
+import {useSearchState} from '../../../../../../contexts/search/useSearchState'
 import {Calendar} from './calendar/Calendar'
 import {DatePickerProvider} from './contexts/DatePickerProvider'
 

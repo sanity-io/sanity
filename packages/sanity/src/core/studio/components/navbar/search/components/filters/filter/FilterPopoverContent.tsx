@@ -72,7 +72,7 @@ function DebugValues({filter}: {filter: SearchFilter}) {
           Field
         </Text>
         {fieldDefinition?.fieldPath && <Code size={0}>fieldPath: {fieldDefinition.fieldPath}</Code>}
-        <Code size={0}>filterType: {filter.filterType}</Code>
+        <Code size={0}>filterName: {filter.filterName}</Code>
         <Code size={0}>operatorType: {filter.operatorType}</Code>
         <Code size={0}>
           value: {typeof filter?.value === 'undefined' ? '' : JSON.stringify(filter.value)}

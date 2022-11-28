@@ -13,7 +13,7 @@ export function FilterIcon({filter}: FilterIconProps) {
     state: {definitions},
   } = useSearchState()
 
-  const icon = getFilterDefinition(definitions.filters, filter.filterType)?.icon
+  const icon = getFilterDefinition(definitions.filters, filter.filterName)?.icon
   if (icon) {
     return createElement(icon)
   }

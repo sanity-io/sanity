@@ -1,9 +1,9 @@
 import {Stack} from '@sanity/ui'
 import {format, isValid, parse} from 'date-fns'
 import React, {ChangeEvent, KeyboardEvent, useCallback, useEffect, useMemo, useState} from 'react'
-import {useSearchState} from '../../../../contexts/search/useSearchState'
-import type {OperatorInputComponentProps} from '../../../../definitions/operators/operatorTypes'
-import {CustomTextInput} from '../../../common/CustomTextInput'
+import {useSearchState} from '../../../../../contexts/search/useSearchState'
+import type {OperatorInputComponentProps} from '../../../../../definitions/operators/operatorTypes'
+import {CustomTextInput} from '../../../../common/CustomTextInput'
 import {DatePicker} from './datePicker/DatePicker'
 
 const DEFAULT_DATE_FORMAT = 'yyyy-MM-dd'

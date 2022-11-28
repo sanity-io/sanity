@@ -1,62 +1,62 @@
-import {ButtonValueString} from '../../components/filters/common/ButtonValue'
-import {FieldInputString} from '../../components/filters/filter/inputTypes/String'
-import {FieldInputStringList} from '../../components/filters/filter/inputTypes/StringList'
+import {SearchButtonValueString} from '../../components/filters/common/ButtonValue'
+import {SearchFilterStringInput} from '../../components/filters/filter/inputs/String'
+import {SearchFilterStringListInput} from '../../components/filters/filter/inputs/StringList'
 import {defineSearchOperator} from './operatorTypes'
 import {toJSON} from './operatorUtils'
 
 export const stringOperators = {
   stringEqual: defineSearchOperator({
     buttonLabel: 'is',
-    buttonValueComponent: ButtonValueString,
+    buttonValueComponent: SearchButtonValueString,
     fn: ({fieldPath, value}) => (value && fieldPath ? `${fieldPath} == ${toJSON(value)}` : null),
     initialValue: null,
-    inputComponent: FieldInputString,
+    inputComponent: SearchFilterStringInput,
     label: 'is',
     type: 'stringEqual',
   }),
   stringListEqual: defineSearchOperator({
     buttonLabel: 'is',
-    buttonValueComponent: ButtonValueString,
+    buttonValueComponent: SearchButtonValueString,
     fn: ({fieldPath, value}) => (value && fieldPath ? `${fieldPath} == ${toJSON(value)}` : null),
     initialValue: null,
-    inputComponent: FieldInputStringList,
+    inputComponent: SearchFilterStringListInput,
     label: 'is',
     type: 'stringListEqual',
   }),
   stringListNotEqual: defineSearchOperator({
     buttonLabel: 'is not',
-    buttonValueComponent: ButtonValueString,
+    buttonValueComponent: SearchButtonValueString,
     fn: ({fieldPath, value}) => (value && fieldPath ? `${fieldPath} != ${toJSON(value)}` : null),
     initialValue: null,
-    inputComponent: FieldInputStringList,
+    inputComponent: SearchFilterStringListInput,
     label: 'is not',
     type: 'stringListNotEqual',
   }),
   stringMatches: defineSearchOperator({
     buttonLabel: 'contains',
-    buttonValueComponent: ButtonValueString,
+    buttonValueComponent: SearchButtonValueString,
     fn: ({fieldPath, value}) => (value && fieldPath ? `${fieldPath} match ${toJSON(value)}` : null),
     initialValue: null,
-    inputComponent: FieldInputString,
+    inputComponent: SearchFilterStringInput,
     label: 'contains',
     type: 'stringMatches',
   }),
   stringNotEqual: defineSearchOperator({
     buttonLabel: 'is not',
-    buttonValueComponent: ButtonValueString,
+    buttonValueComponent: SearchButtonValueString,
     fn: ({fieldPath, value}) => (value && fieldPath ? `${fieldPath} != ${toJSON(value)}` : null),
     initialValue: null,
-    inputComponent: FieldInputString,
+    inputComponent: SearchFilterStringInput,
     label: 'is not',
     type: 'stringNotEqual',
   }),
   stringNotMatches: defineSearchOperator({
     buttonLabel: 'does not contain',
-    buttonValueComponent: ButtonValueString,
+    buttonValueComponent: SearchButtonValueString,
     fn: ({fieldPath, value}) =>
       value && fieldPath ? `!(${fieldPath} match ${toJSON(value)})` : null,
     initialValue: null,
-    inputComponent: FieldInputString,
+    inputComponent: SearchFilterStringInput,
     label: 'does not contain',
     type: 'stringNotMatches',
   }),

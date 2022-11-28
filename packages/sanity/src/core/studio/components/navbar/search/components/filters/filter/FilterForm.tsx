@@ -21,7 +21,7 @@ export function FilterForm({filter}: FilterFormProps) {
     state: {definitions, fullscreen},
   } = useSearchState()
 
-  const filterDefinition = getFilterDefinition(definitions.filters, filter.filterType)
+  const filterDefinition = getFilterDefinition(definitions.filters, filter.filterName)
   const operator = getOperator(definitions.operators, filter.operatorType)
   const fieldDefinition = getFieldFromFilter(definitions.fields, filter)
   const filterKey = getFilterKey(filter)
