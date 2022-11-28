@@ -20,14 +20,7 @@ const regexMapper = {
   '^config:.*$': './test/undefined',
 }
 
-const partPackages = [
-  'base',
-  'form-builder',
-  'desk-tool',
-  'code-input',
-  'default-login',
-  'data-aspects',
-]
+const partPackages = ['base', 'form-builder', 'desk-tool', 'default-login', 'data-aspects']
 
 /**
  * Takes a list of webpack-compatible aliases and converts them into jest module

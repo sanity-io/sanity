@@ -1,7 +1,0 @@
-{
-  "rules": {
-    "react/prop-types": "off",
-    "react/require-default-props": "off",
-    "complexity": ["warn", 15]
-  }
-}
