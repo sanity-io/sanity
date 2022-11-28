@@ -20,13 +20,13 @@ interface SearchFieldBaseDefinition<TOperators> {
   operators: Operator<TOperators>[]
 }
 
-export interface SearchFilterFieldDefinition<TOperators>
+export interface SearchFilterFieldDefinition<TOperators = SearchOperatorType>
   extends SearchFieldBaseDefinition<TOperators> {
   fieldType: IntrinsicTypeName
   type: 'field'
 }
 
-export interface SearchFilterPinnedDefinition<TOperators>
+export interface SearchFilterPinnedDefinition<TOperators = SearchOperatorType>
   extends SearchFieldBaseDefinition<TOperators> {
   fieldPath?: string
   group?: string

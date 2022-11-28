@@ -23,6 +23,10 @@ export function createFieldDefinitions(
 
   // Separate documents and everything else
   originalSchema?.types
+    // Ignore the special 'slug' object, this is to prevent surfacing the 'current'
+    // and (now deprecated) 'Source field' fields.
+    .filter((schemaType) => schemaType.name !== 'slug')
+    // Ignore sanity documents and assets
     .filter((schemaType) => !schemaType.name.startsWith('sanity.'))
     .forEach((schemaType) => {
       if (isDocumentType(schemaType)) {
@@ -74,7 +78,7 @@ function getDocumentFieldDefinitions(
     // defined in our schema, or if it's an inline object
     const existingObject = objectTypes[defType.type]
     if (existingObject || isObject) {
-      const targetObject = existingObject || isObject
+      const targetObject = existingObject || defType
       targetObject?.fields?.forEach((field) =>
         addFieldDefinitionRecursive({
           acc,
@@ -91,12 +95,9 @@ function getDocumentFieldDefinitions(
     // Fail early if the current field type isn't supported
     if (!supportedFieldTypes.includes(defType.type)) return
 
-    // For slugs: append `.current` to field path
-    const updatedFieldPath = defType.type === 'slug' ? `${fieldPath}.current` : fieldPath
-
     acc.push({
       documentTypes: documentType && !isInternalField ? [documentType] : [],
-      fieldPath: updatedFieldPath,
+      fieldPath,
       filterType: resolveFilterType(defType),
       id: '',
       name: defType.name,

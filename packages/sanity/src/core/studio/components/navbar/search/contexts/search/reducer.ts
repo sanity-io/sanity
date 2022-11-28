@@ -555,17 +555,38 @@ function generateFilterQuery({
   return filters
     .filter((filter) => isFilterComplete(filter, filterDefinitions, fieldDefinitions, operators))
     .map((filter) => {
-      const fieldDefinition = fieldDefinitions.find((field) => field.id === filter?.fieldId)
-      const filterDefinition = getFilterDefinition(filterDefinitions, filter.filterType)
       return getOperator(operators, filter.operatorType)?.fn({
-        fieldPath:
-          filterDefinition?.type === 'pinned'
-            ? filterDefinition?.fieldPath
-            : fieldDefinition?.fieldPath,
+        fieldPath: resolveFieldPath({filter, fieldDefinitions, filterDefinitions}),
         value: filter?.value,
       })
     })
     .filter((filter) => !isEmpty(filter))
     .filter(isNonNullable)
     .join(' && ')
+}
+
+function resolveFieldPath({
+  filter,
+  fieldDefinitions,
+  filterDefinitions,
+}: {
+  filter: SearchFilter
+  fieldDefinitions: SearchFieldDefinition[]
+  filterDefinitions: SearchFilterDefinition[]
+}): string | undefined {
+  const fieldDefinition = fieldDefinitions.find((f) => f.id === filter?.fieldId)
+  const filterDefinition = getFilterDefinition(filterDefinitions, filter.filterType)
+
+  if (!filterDefinition) {
+    return undefined
+  }
+
+  switch (filterDefinition.type) {
+    case 'field':
+      return fieldDefinition?.fieldPath
+    case 'pinned':
+      return filterDefinition?.fieldPath
+    default:
+      return undefined
+  }
 }

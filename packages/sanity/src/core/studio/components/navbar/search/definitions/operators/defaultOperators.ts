@@ -6,6 +6,7 @@ import {dateOperators} from './dateOperators'
 import {numberOperators} from './numberOperators'
 import {portableTextOperators} from './portableTextOperators'
 import {referenceOperators} from './referenceOperators'
+import {slugOperators} from './slugOperators'
 import {stringOperators} from './stringOperators'
 
 const searchOperators = {
@@ -17,6 +18,7 @@ const searchOperators = {
   ...numberOperators,
   ...portableTextOperators,
   ...referenceOperators,
+  ...slugOperators,
   ...stringOperators,
 }
 
