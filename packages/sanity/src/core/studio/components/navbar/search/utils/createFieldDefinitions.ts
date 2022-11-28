@@ -9,6 +9,7 @@ import startCase from 'lodash/startCase'
 import {Md5} from 'ts-md5'
 import {getSupportedFieldTypes, SearchFilterDefinition} from '../definitions/filters'
 import type {SearchFieldDefinition} from '../types'
+import {getSearchableOmnisearchTypes} from './selectors'
 
 const MAX_OBJECT_DEPTH = 4
 
@@ -21,8 +22,12 @@ export function createFieldDefinitions(
   const documentTypes: ObjectDefinition[] = []
   const objectTypes: Record<string, ObjectDefinition> = {}
 
+  const searchableDocumentTypeNames = getSearchableOmnisearchTypes(schema).map((s) => s.name)
+
   // Separate documents and everything else
   originalSchema?.types
+    // Ignore document types hidden with `__experimental_omnisearch_visibility: false`
+    .filter((schemaType) => searchableDocumentTypeNames.includes(schemaType.name))
     // Ignore the special 'slug' object, this is to prevent surfacing the 'current'
     // and (now deprecated) 'Source field' fields.
     .filter((schemaType) => schemaType.name !== 'slug')
