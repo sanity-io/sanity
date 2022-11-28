@@ -5,9 +5,7 @@ import {
   usePortableTextEditor,
 } from '@sanity/portable-text-editor'
 import {
-  Box,
   Button,
-  Flex,
   Menu,
   MenuButton,
   MenuButtonProps,
@@ -27,7 +25,6 @@ import React, {
 import {ObjectSchemaType} from '@sanity/types'
 import {RenderPreviewCallback} from '../../../types'
 import {is} from '../../../utils/is'
-import {PreviewProps} from '../../../../components'
 import {FIXME} from '../../../../FIXME'
 import {IntentLink} from 'sanity/router'
 
@@ -65,7 +62,6 @@ export function BlockObjectPreview(props: BlockObjectPreviewProps): ReactElement
   const menuButtonId = useId()
   const menuButton = useRef<HTMLButtonElement | null>(null)
   const isTabbing = useRef<boolean>(false)
-  const isCustomPreviewComponent = Boolean((type.preview as FIXME)?.component)
   const isImageType = is('image', type)
 
   const referenceLink = useMemo(
@@ -85,8 +81,6 @@ export function BlockObjectPreview(props: BlockObjectPreviewProps): ReactElement
           return
         }
         if (event.key === 'Escape' && isTopLayer) {
-          // event.preventDefault()
-          // event.stopPropagation()
           isTabbing.current = false
           PortableTextEditor.focus(editor)
         }
@@ -133,25 +127,6 @@ export function BlockObjectPreview(props: BlockObjectPreviewProps): ReactElement
       popover={POPOVER_PROPS}
     />
   )
-
-  const previewProps = useMemo(
-    () =>
-      ({
-        layout: isImageType ? 'blockImage' : 'block',
-        schemaType: type,
-        value,
-      } as const),
-    [isImageType, type, value]
-  )
-
-  if (isCustomPreviewComponent) {
-    return (
-      <Flex>
-        <Box flex={1}>{renderPreview(previewProps)}</Box>
-        <Box marginLeft={1}>{actions}</Box>
-      </Flex>
-    )
-  }
 
   return (
     <>
