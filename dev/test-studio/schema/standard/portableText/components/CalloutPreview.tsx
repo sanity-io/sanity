@@ -12,7 +12,7 @@ function isString(value: unknown): value is string {
 
 export function CalloutPreview(props: PreviewProps) {
   const {value} = props
-  const tone = isRecord(value) && isString(value.tone) ? value.tone : 'default'
+  const tone = props.tone || 'default'
 
   return (
     <Card tone={tone as CardTone}>
