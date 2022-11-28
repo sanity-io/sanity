@@ -80,7 +80,7 @@ describe('useModuleStatus', () => {
   })
 
   test('has loading state', async () => {
-    const installed = {sanity: '3.0.0'}
+    const installed = {sanity: '3.0.0-rc.3'}
     const mockClient = getMockClient()
 
     function StatusDumper() {
@@ -101,7 +101,7 @@ describe('useModuleStatus', () => {
     )
     await act(nextTick)
     expect(container!.textContent).toMatchInlineSnapshot(
-      `"{\\"isLoading\\":false,\\"value\\":{\\"isSupported\\":true,\\"isUpToDate\\":true,\\"outdated\\":[],\\"installed\\":{\\"sanity\\":\\"3.0.0\\"}},\\"error\\":null}"`
+      `"{\\"isLoading\\":false,\\"value\\":{\\"isSupported\\":true,\\"isUpToDate\\":true,\\"outdated\\":[],\\"installed\\":{\\"sanity\\":\\"3.0.0-rc.3\\"}},\\"error\\":null}"`
     )
   })
 
