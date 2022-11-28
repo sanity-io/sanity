@@ -1,8 +1,12 @@
 import {Schema} from '@sanity/types'
 import {ButtonTone} from '@sanity/ui'
-import {difference, partition, startCase} from 'lodash'
+import {difference, startCase} from 'lodash'
 import {SearchableType} from '../../../../../../../search'
-import {getFilterDefinition, SearchFilterDefinition} from '../../../definitions/filters'
+import {
+  getFilterDefinition,
+  SearchFilterDefinition,
+  SearchFilterPinnedDefinition,
+} from '../../../definitions/filters'
 import {
   FilterMenuItem,
   FilterMenuItemFilter,
@@ -10,7 +14,6 @@ import {
   SearchFieldDefinition,
   SearchFilter,
 } from '../../../types'
-import {INTERNAL_FIELDS} from '../../../utils/createFieldDefinitions'
 import {
   createFilterFromDefinition,
   createFilterFromField,
@@ -35,49 +38,64 @@ export function createFilterMenuItems({
   types: SearchableType[]
   documentTypesNarrowed: string[]
 }): FilterMenuItem[] {
-  // Get all filter definitions without field types
-  const nonFieldFilters = filterDefinitions
-    .filter((filterDefinition) => !filterDefinition.fieldType)
-    .filter((filterDefinition) => includesTitleInFilterDefinition(filterDefinition, titleFilter))
+  // TODO: refactor
+  const ungroupedPinnedFilters = filterDefinitions
+    .filter(
+      (filterDef): filterDef is SearchFilterPinnedDefinition =>
+        filterDef.type === 'pinned' && typeof filterDef?.group === 'undefined'
+    )
+    .filter((filterDef) => includesTitleInPinnedFilterDefinition(filterDef, titleFilter))
     .map(createFilterFromDefinition)
 
-  const allFilters = fieldDefinitions
-    .filter((filter) => includesTitleInFieldDefinition(filter, titleFilter))
-    .sort(sortByInternalFieldName)
-    .map(createFilterFromField)
+  // Extract pinned filters into groups
+  const groupedPinnedFilters = filterDefinitions
+    .filter(
+      (filterDef): filterDef is SearchFilterPinnedDefinition & {group: string} =>
+        filterDef.type === 'pinned' && typeof filterDef?.group !== 'undefined'
+    )
+    .filter((filterDef) => includesTitleInPinnedFilterDefinition(filterDef, titleFilter))
+    .reduce<Record<string, SearchFilter[]>>((acc, val) => {
+      acc[val.group] = acc[val.group] || []
+      acc[val.group].push(createFilterFromDefinition(val))
+      return acc
+    }, {})
 
-  const [internalFieldFilters, otherFieldFilters] = partition(allFilters, (filter) => {
-    const fieldDefinition = getFieldFromFilter(fieldDefinitions, filter)
-    return fieldDefinition?.fieldPath?.startsWith('_')
+  const pinnedGroups = Object.entries(groupedPinnedFilters).flatMap(([groupTitle, filters]) => {
+    return filterGroup({
+      fieldDefinitions,
+      filterDefinitions,
+      filters,
+      headerTitle: groupTitle,
+      id: groupTitle,
+      tone: 'primary',
+    })
   })
+
+  const fieldFilters = fieldDefinitions
+    .filter((filter) => includesTitleInFieldDefinition(filter, titleFilter))
+    .map(createFilterFromField)
 
   if (documentTypesNarrowed.length === 0) {
     return [
       ...filterGroup({
         fieldDefinitions,
         filterDefinitions,
-        filters: internalFieldFilters,
-        id: 'internal',
+        filters: ungroupedPinnedFilters,
+        id: 'pinned',
         tone: 'primary',
       }),
+      ...pinnedGroups,
       ...filterGroup({
         fieldDefinitions,
         filterDefinitions,
-        filters: nonFieldFilters,
-        id: 'non-field',
-        tone: 'primary',
-      }),
-      ...filterGroup({
-        fieldDefinitions,
-        filterDefinitions,
-        filters: otherFieldFilters,
+        filters: fieldFilters,
         headerTitle: 'All fields',
-        id: 'all-fields',
+        id: 'field',
       }),
     ]
   }
 
-  const sharedFilters = otherFieldFilters.filter((filter) => {
+  const sharedFilters = fieldFilters.filter((filter) => {
     const fieldDefinition = getFieldFromFilter(fieldDefinitions, filter)
     return sharesDocumentTypes(documentTypesNarrowed, fieldDefinition)
   })
@@ -93,7 +111,7 @@ export function createFilterMenuItems({
     // Sort groups by title
     .sort((a, b) => a.title.localeCompare(b.title))
     .map(({documentType, title}) => {
-      const groupFilters = otherFieldFilters.filter((filter) => {
+      const groupFilters = fieldFilters.filter((filter) => {
         const fieldDefinition = getFieldFromFilter(fieldDefinitions, filter)
         return includesDocumentTypes([documentType], fieldDefinition)
       })
@@ -111,17 +129,11 @@ export function createFilterMenuItems({
     ...filterGroup({
       fieldDefinitions,
       filterDefinitions,
-      filters: internalFieldFilters,
-      id: 'internal',
+      filters: ungroupedPinnedFilters,
+      id: 'pinned',
       tone: 'primary',
     }),
-    ...filterGroup({
-      fieldDefinitions,
-      filterDefinitions,
-      filters: nonFieldFilters,
-      id: 'non-field',
-      tone: 'primary',
-    }),
+    ...pinnedGroups,
     ...(documentTypesNarrowed.length > 1 && types.length > 1
       ? filterGroup({
           fieldDefinitions,
@@ -185,17 +197,13 @@ function includesTitleInFieldDefinition(field: SearchFieldDefinition, currentTit
   return fieldTitle.toLowerCase().includes(currentTitle.toLowerCase())
 }
 
-function includesTitleInFilterDefinition(filter: SearchFilterDefinition, currentTitle: string) {
+function includesTitleInPinnedFilterDefinition(
+  filter: SearchFilterPinnedDefinition,
+  currentTitle: string
+) {
   return filter.title.toLowerCase().includes(currentTitle.toLowerCase())
 }
 
 function sharesDocumentTypes(documentTypes: string[], fieldDefinition?: SearchFieldDefinition) {
   return difference(documentTypes, fieldDefinition?.documentTypes || []).length === 0
-}
-
-function sortByInternalFieldName(a: SearchFieldDefinition, b: SearchFieldDefinition) {
-  return (
-    INTERNAL_FIELDS.findIndex((f) => f.name === a.fieldPath) -
-    INTERNAL_FIELDS.findIndex((f) => f.name === b.fieldPath)
-  )
 }

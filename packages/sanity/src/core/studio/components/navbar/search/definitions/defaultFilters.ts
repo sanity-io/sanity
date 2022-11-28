@@ -15,9 +15,55 @@ import {defineSearchFilter, SearchFilterDefinition} from './filters'
 import {SearchOperatorType} from './operators/defaultOperators'
 
 export const filterDefinitions: SearchFilterDefinition[] = [
+  // 'Pinned' filters
+  defineSearchFilter<SearchOperatorType>({
+    fieldPath: '_updatedAt',
+    icon: CalendarIcon,
+    operators: [
+      {name: 'dateTimeLast', type: 'item'},
+      {type: 'divider'},
+      {name: 'dateTimeAfter', type: 'item'},
+      {name: 'dateTimeBefore', type: 'item'},
+      {type: 'divider'},
+      {name: 'dateTimeEqual', type: 'item'},
+      {name: 'dateTimeNotEqual', type: 'item'},
+    ],
+    title: 'Updated at',
+    name: 'updatedAt',
+    type: 'pinned',
+  }),
+  defineSearchFilter<SearchOperatorType>({
+    fieldPath: '_createdAt',
+    icon: CalendarIcon,
+    operators: [
+      {name: 'dateTimeLast', type: 'item'},
+      {type: 'divider'},
+      {name: 'dateTimeAfter', type: 'item'},
+      {name: 'dateTimeBefore', type: 'item'},
+      {type: 'divider'},
+      {name: 'dateTimeEqual', type: 'item'},
+      {name: 'dateTimeNotEqual', type: 'item'},
+    ],
+    title: 'Created at',
+    name: 'createdAt',
+    type: 'pinned',
+  }),
+  defineSearchFilter<SearchOperatorType>({
+    icon: LinkIcon,
+    operators: [
+      {name: 'referencesDocument', type: 'item'},
+      {name: 'referencesAssetImage', type: 'item'},
+      {name: 'referencesAssetFile', type: 'item'},
+    ],
+    title: 'Contains document, image or file',
+    name: 'references',
+    type: 'pinned',
+  }),
+  // 'Field' filters
   defineSearchFilter<SearchOperatorType>({
     fieldType: 'array',
     icon: UlistIcon,
+    name: 'array',
     operators: [
       {name: 'arrayCountEqual', type: 'item'},
       {name: 'arrayCountNotEqual', type: 'item'},
@@ -32,12 +78,12 @@ export const filterDefinitions: SearchFilterDefinition[] = [
       {name: 'defined', type: 'item'},
       {name: 'notDefined', type: 'item'},
     ],
-    title: 'Array',
-    type: 'array',
+    type: 'field',
   }),
   defineSearchFilter<SearchOperatorType>({
     fieldType: 'array',
     icon: ArrayListIcon,
+    name: 'arrayList',
     operators: [
       {name: 'arrayListContains', type: 'item'},
       {name: 'arrayListNotContains', type: 'item'},
@@ -55,12 +101,12 @@ export const filterDefinitions: SearchFilterDefinition[] = [
       {name: 'defined', type: 'item'},
       {name: 'notDefined', type: 'item'},
     ],
-    title: 'Array (list)',
-    type: 'arrayList',
+    type: 'field',
   }),
   defineSearchFilter<SearchOperatorType>({
     fieldType: 'array',
     icon: UlistIcon,
+    name: 'arrayReferences',
     operators: [
       {name: 'arrayReferenceContains', type: 'item'},
       {name: 'arrayReferenceNotContains', type: 'item'},
@@ -76,23 +122,23 @@ export const filterDefinitions: SearchFilterDefinition[] = [
       {name: 'defined', type: 'item'},
       {name: 'notDefined', type: 'item'},
     ],
-    title: 'Array (references)',
-    type: 'arrayReferences',
+    type: 'field',
   }),
   defineSearchFilter<SearchOperatorType>({
     fieldType: 'boolean',
     icon: CheckmarkCircleIcon,
+    name: 'boolean',
     operators: [
       {name: 'booleanEqual', type: 'item'},
       {type: 'divider'},
       {name: 'notDefined', type: 'item'},
     ],
-    title: 'Boolean',
-    type: 'boolean',
+    type: 'field',
   }),
   defineSearchFilter<SearchOperatorType>({
     fieldType: 'date',
     icon: CalendarIcon,
+    name: 'date',
     operators: [
       {name: 'dateLast', type: 'item'},
       {type: 'divider'},
@@ -105,12 +151,12 @@ export const filterDefinitions: SearchFilterDefinition[] = [
       {name: 'defined', type: 'item'},
       {name: 'notDefined', type: 'item'},
     ],
-    title: 'Date',
-    type: 'date',
+    type: 'field',
   }),
   defineSearchFilter<SearchOperatorType>({
     fieldType: 'datetime',
     icon: CalendarIcon,
+    name: 'datetime',
     operators: [
       {name: 'dateTimeLast', type: 'item'},
       {type: 'divider'},
@@ -123,12 +169,12 @@ export const filterDefinitions: SearchFilterDefinition[] = [
       {name: 'defined', type: 'item'},
       {name: 'notDefined', type: 'item'},
     ],
-    title: 'Datetime',
-    type: 'datetime',
+    type: 'field',
   }),
   defineSearchFilter<SearchOperatorType>({
     fieldType: 'email',
     icon: StringIcon,
+    name: 'email',
     operators: [
       {name: 'stringMatches', type: 'item'},
       {name: 'stringNotMatches', type: 'item'},
@@ -139,12 +185,12 @@ export const filterDefinitions: SearchFilterDefinition[] = [
       {name: 'defined', type: 'item'},
       {name: 'notDefined', type: 'item'},
     ],
-    title: 'Email',
-    type: 'email',
+    type: 'field',
   }),
   defineSearchFilter<SearchOperatorType>({
     fieldType: 'file',
     icon: DocumentIcon,
+    name: 'file',
     operators: [
       {name: 'assetFileEqual', type: 'item'},
       {name: 'assetFileNotEqual', type: 'item'},
@@ -152,12 +198,12 @@ export const filterDefinitions: SearchFilterDefinition[] = [
       {name: 'defined', type: 'item'},
       {name: 'notDefined', type: 'item'},
     ],
-    title: 'File',
-    type: 'file',
+    type: 'field',
   }),
   defineSearchFilter<SearchOperatorType>({
     fieldType: 'image',
     icon: ImageIcon,
+    name: 'image',
     operators: [
       {name: 'assetImageEqual', type: 'item'},
       {name: 'assetImageNotEqual', type: 'item'},
@@ -165,12 +211,12 @@ export const filterDefinitions: SearchFilterDefinition[] = [
       {name: 'defined', type: 'item'},
       {name: 'notDefined', type: 'item'},
     ],
-    title: 'Image',
-    type: 'image',
+    type: 'field',
   }),
   defineSearchFilter<SearchOperatorType>({
     fieldType: 'number',
     icon: NumberIcon,
+    name: 'number',
     operators: [
       {name: 'numberEqual', type: 'item'},
       {name: 'numberNotEqual', type: 'item'},
@@ -185,12 +231,12 @@ export const filterDefinitions: SearchFilterDefinition[] = [
       {name: 'defined', type: 'item'},
       {name: 'notDefined', type: 'item'},
     ],
-    title: 'Number',
-    type: 'number',
+    type: 'field',
   }),
   defineSearchFilter<SearchOperatorType>({
     fieldType: 'array',
     icon: BlockContentIcon,
+    name: 'portableText',
     operators: [
       {name: 'portableTextMatches', type: 'item'},
       {name: 'portableTextNotMatches', type: 'item'},
@@ -201,12 +247,12 @@ export const filterDefinitions: SearchFilterDefinition[] = [
       {name: 'defined', type: 'item'},
       {name: 'notDefined', type: 'item'},
     ],
-    title: 'Portable Text',
-    type: 'portableText',
+    type: 'field',
   }),
   defineSearchFilter<SearchOperatorType>({
     fieldType: 'reference',
     icon: LinkIcon,
+    name: 'reference',
     operators: [
       {name: 'referenceEqual', type: 'item'},
       {name: 'referenceNotEqual', type: 'item'},
@@ -214,22 +260,12 @@ export const filterDefinitions: SearchFilterDefinition[] = [
       {name: 'defined', type: 'item'},
       {name: 'notDefined', type: 'item'},
     ],
-    title: 'Reference',
-    type: 'reference',
-  }),
-  defineSearchFilter<SearchOperatorType>({
-    icon: LinkIcon,
-    operators: [
-      {name: 'referencesDocument', type: 'item'},
-      {name: 'referencesAssetImage', type: 'item'},
-      {name: 'referencesAssetFile', type: 'item'},
-    ],
-    title: 'Contains document, image or file',
-    type: 'references',
+    type: 'field',
   }),
   defineSearchFilter<SearchOperatorType>({
     fieldType: 'slug',
     icon: StringIcon,
+    name: 'slug',
     operators: [
       {name: 'stringMatches', type: 'item'},
       {name: 'stringNotMatches', type: 'item'},
@@ -240,12 +276,12 @@ export const filterDefinitions: SearchFilterDefinition[] = [
       {name: 'defined', type: 'item'},
       {name: 'notDefined', type: 'item'},
     ],
-    title: 'Slug',
-    type: 'slug',
+    type: 'field',
   }),
   defineSearchFilter<SearchOperatorType>({
     fieldType: 'string',
     icon: StringIcon,
+    name: 'string',
     operators: [
       {name: 'stringMatches', type: 'item'},
       {name: 'stringNotMatches', type: 'item'},
@@ -256,12 +292,12 @@ export const filterDefinitions: SearchFilterDefinition[] = [
       {name: 'defined', type: 'item'},
       {name: 'notDefined', type: 'item'},
     ],
-    title: 'String',
-    type: 'string',
+    type: 'field',
   }),
   defineSearchFilter<SearchOperatorType>({
     fieldType: 'string',
     icon: SelectIcon,
+    name: 'stringList',
     operators: [
       {name: 'stringListEqual', type: 'item'},
       {name: 'stringListNotEqual', type: 'item'},
@@ -272,12 +308,12 @@ export const filterDefinitions: SearchFilterDefinition[] = [
       {name: 'defined', type: 'item'},
       {name: 'notDefined', type: 'item'},
     ],
-    title: 'String (list)',
-    type: 'stringList',
+    type: 'field',
   }),
   defineSearchFilter<SearchOperatorType>({
     fieldType: 'text',
     icon: StringIcon,
+    name: 'text',
     operators: [
       {name: 'stringMatches', type: 'item'},
       {name: 'stringNotMatches', type: 'item'},
@@ -288,12 +324,12 @@ export const filterDefinitions: SearchFilterDefinition[] = [
       {name: 'defined', type: 'item'},
       {name: 'notDefined', type: 'item'},
     ],
-    title: 'Text',
-    type: 'text',
+    type: 'field',
   }),
   defineSearchFilter<SearchOperatorType>({
     fieldType: 'url',
     icon: StringIcon,
+    name: 'url',
     operators: [
       {name: 'stringMatches', type: 'item'},
       {name: 'stringNotMatches', type: 'item'},
@@ -304,7 +340,6 @@ export const filterDefinitions: SearchFilterDefinition[] = [
       {name: 'defined', type: 'item'},
       {name: 'notDefined', type: 'item'},
     ],
-    title: 'URL',
-    type: 'url',
+    type: 'field',
   }),
 ]

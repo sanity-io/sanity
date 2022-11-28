@@ -13,24 +13,39 @@ type OperatorItem<TOperators = SearchOperatorType> = {
   type: 'item'
 }
 
-/**
- * @alpha
- */
-export interface SearchFilterDefinition<TOperators = SearchOperatorType> {
+interface SearchFieldBaseDefinition<TOperators> {
   description?: string
-  fieldType?: IntrinsicTypeName
   icon: ComponentType
+  name: string
   operators: Operator<TOperators>[]
+}
+
+export interface SearchFilterFieldDefinition<TOperators>
+  extends SearchFieldBaseDefinition<TOperators> {
+  fieldType: IntrinsicTypeName
+  type: 'field'
+}
+
+export interface SearchFilterPinnedDefinition<TOperators>
+  extends SearchFieldBaseDefinition<TOperators> {
+  fieldPath?: string
+  group?: string
   title: string
-  type: string
+  type: 'pinned'
 }
 
 /**
  * @alpha
  */
-export function defineSearchFilter<TOperators = SearchOperatorType>(
-  filterDef: SearchFilterDefinition<TOperators>
-): typeof filterDef {
+export type SearchFilterDefinition<TOperators = SearchOperatorType> =
+  | SearchFilterFieldDefinition<TOperators>
+  | SearchFilterPinnedDefinition<TOperators>
+
+/**
+ * @alpha
+ */
+
+export function defineSearchFilter(filterDef: SearchFilterDefinition): typeof filterDef {
   return filterDef
 }
 
@@ -47,7 +62,7 @@ export function getFilterDefinition(
   definitions: SearchFilterDefinition[],
   filterType: string
 ): SearchFilterDefinition | undefined {
-  return definitions.find((filter) => filter.type === filterType)
+  return definitions.find((filter) => filter.name === filterType)
 }
 
 export function getFilterDefinitionInitialOperatorType(
@@ -58,9 +73,11 @@ export function getFilterDefinitionInitialOperatorType(
   return filterDefinition?.operators.find(isOperatorItem)?.name
 }
 
-export function getSupportedFieldTypes(definitions: SearchFilterDefinition[]): string[] {
-  return definitions.reduce<string[]>((acc, val) => {
-    if (val?.fieldType) {
+// TODO: we'll need to add field type to pinned filters, in order to properly infer
+// supported field types in the event all field filters are disabled / override
+export function getSupportedFieldTypes(filterDefs: SearchFilterDefinition[]): string[] {
+  return filterDefs.reduce<string[]>((acc, val) => {
+    if (val.type === 'field') {
       acc.push(val.fieldType)
     }
     return acc

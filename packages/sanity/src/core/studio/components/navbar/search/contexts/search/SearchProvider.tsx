@@ -103,7 +103,7 @@ export function SearchProvider({
 
   // Get a list of 'complete' filters (filters that return valid values)
   const completeFilters = currentFilters.filter((filter) =>
-    isFilterComplete(filter, fields, operators)
+    isFilterComplete(filter, filters, fields, operators)
   )
 
   const handleSetOnClose = useCallback((onClose: () => void) => {

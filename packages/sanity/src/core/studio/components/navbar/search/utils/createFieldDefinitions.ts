@@ -1,6 +1,5 @@
 import {
   ArrayDefinition,
-  FieldDefinition,
   ObjectDefinition,
   Schema,
   SchemaTypeDefinition,
@@ -10,13 +9,6 @@ import startCase from 'lodash/startCase'
 import {Md5} from 'ts-md5'
 import {getSupportedFieldTypes, SearchFilterDefinition} from '../definitions/filters'
 import type {SearchFieldDefinition} from '../types'
-
-// Internal fields to include with every document.
-// These fields always appear at the top of the filters list, in the order specified.
-export const INTERNAL_FIELDS: FieldDefinition[] = [
-  {name: '_updatedAt', title: 'Updated at', type: 'datetime'},
-  {name: '_createdAt', title: 'Created at', type: 'datetime'},
-]
 
 const MAX_OBJECT_DEPTH = 4
 
@@ -34,10 +26,7 @@ export function createFieldDefinitions(
     .filter((schemaType) => !schemaType.name.startsWith('sanity.'))
     .forEach((schemaType) => {
       if (isDocumentType(schemaType)) {
-        documentTypes.push({
-          ...schemaType,
-          fields: [...schemaType.fields, ...INTERNAL_FIELDS],
-        })
+        documentTypes.push(schemaType)
       } else {
         objectTypes[schemaType.name] = schemaType as ObjectDefinition
       }

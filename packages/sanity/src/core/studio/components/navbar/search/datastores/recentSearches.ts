@@ -1,7 +1,7 @@
 import type {CurrentUser, ObjectSchemaType, Schema} from '@sanity/types'
 import omit from 'lodash/omit'
 import type {SearchTerms} from '../../../../../search'
-import type {SearchFilterDefinition} from '../definitions/filters'
+import {getFilterDefinition, SearchFilterDefinition} from '../definitions/filters'
 import {SearchOperator} from '../definitions/operators'
 import type {SearchFieldDefinition, SearchFilter} from '../types'
 import {isFilterComplete} from '../utils/filterUtils'
@@ -77,7 +77,7 @@ export function createRecentSearchesStore({
 
       // Remove filters in 'incomplete' states prior to writing to local storage.
       const validStoredFilters = storedFilters.filter((filter) =>
-        isFilterComplete(filter, fieldDefinitions, operatorDefinitions)
+        isFilterComplete(filter, filterDefinitions, fieldDefinitions, operatorDefinitions)
       )
 
       const newSearchItem: StoredSearchItem = {
@@ -247,15 +247,25 @@ function validateFilter(
   filterDefinitions: SearchFilterDefinition[],
   fieldDefinitions: SearchFieldDefinition[]
 ): boolean {
-  const filterDefinition = filterDefinitions.find((f) => f.type === filter.filterType)
-  if (!filterDefinition) {
+  const filterDef = getFilterDefinition(filterDefinitions, filter.filterType)
+  if (!filterDef) {
     return false
   }
 
   if (filter.operatorType) {
-    if (
-      !filterDefinition.operators.find((o) => o.type === 'item' && o.name === filter.operatorType)
-    ) {
+    if (!filterDef.operators.find((o) => o.type === 'item' && o.name === filter.operatorType)) {
+      return false
+    }
+  }
+
+  if (filterDef.type === 'field') {
+    if (!filter.fieldId) {
+      return false
+    }
+  }
+
+  if (filterDef.type === 'pinned') {
+    if (!filter.fieldId && !filterDef.fieldPath) {
       return false
     }
   }
@@ -264,10 +274,6 @@ function validateFilter(
     if (!fieldDefinitions.find((f) => f.id === filter.fieldId)) {
       return false
     }
-  }
-
-  if (!filter.fieldId && filterDefinition.fieldType) {
-    return false
   }
 
   return true

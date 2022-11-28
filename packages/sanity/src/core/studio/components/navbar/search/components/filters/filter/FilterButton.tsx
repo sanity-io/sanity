@@ -57,7 +57,12 @@ export function FilterButton({filter, initialOpen}: FilterButtonProps) {
     [handleRemove]
   )
 
-  const isComplete = isFilterComplete(filter, definitions.fields, definitions.operators)
+  const isComplete = isFilterComplete(
+    filter,
+    definitions.filters,
+    definitions.fields,
+    definitions.operators
+  )
 
   return (
     <Popover

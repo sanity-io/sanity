@@ -38,7 +38,7 @@ const mockFilterDefinitions: SearchFilterDefinition[] = [
       {name: 'notDefined', type: 'item'},
     ],
     title: 'Datetime',
-    type: 'datetime',
+    name: 'datetime',
   }),
 ]
 const mockOperatorDefinitions: SearchOperator[] = []

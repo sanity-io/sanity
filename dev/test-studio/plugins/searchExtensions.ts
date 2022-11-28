@@ -1,4 +1,4 @@
-import {ClockIcon} from '@sanity/icons'
+import {ClockIcon, InfoOutlineIcon} from '@sanity/icons'
 import {
   definePlugin,
   defineSearchFilter,
@@ -27,11 +27,28 @@ const customOperators = [
 
 const customFilters = [
   defineSearchFilter({
+    fieldPath: '_id',
+    icon: InfoOutlineIcon,
+    group: 'Custom filters',
+    operators: [
+      {name: 'stringMatches', type: 'item'},
+      {name: 'stringNotMatches', type: 'item'},
+      {type: 'divider'},
+      {name: 'stringEqual', type: 'item'},
+      {name: 'stringNotEqual', type: 'item'},
+    ],
+    title: 'ID',
+    name: 'id',
+    type: 'pinned',
+  }),
+  defineSearchFilter({
     description: 'This custom filter returns all documents updated in the last 24 hours',
+    group: 'Custom filters',
     icon: ClockIcon,
+    name: 'customUpdatedLastDay',
     operators: [{name: 'customUpdatedInTheLastDay', type: 'item'}],
-    title: 'Updated in the last day (custom)',
-    type: 'customUpdatedLastDay',
+    title: 'Updated in the last day',
+    type: 'pinned',
   }),
 ]
 

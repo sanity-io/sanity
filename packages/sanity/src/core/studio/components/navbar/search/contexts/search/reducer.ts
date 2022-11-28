@@ -5,6 +5,7 @@ import type {SearchableType, SearchTerms, WeightedHit} from '../../../../../../s
 import {isNonNullable} from '../../../../../../util'
 import type {RecentSearch} from '../../datastores/recentSearches'
 import {
+  getFilterDefinition,
   getFilterDefinitionInitialOperatorType,
   SearchFilterDefinition,
 } from '../../definitions/filters'
@@ -251,11 +252,12 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
         lastAddedFilter: newFilter,
         terms: {
           ...state.terms,
-          filter: generateFilterQuery(
-            state.definitions.fields,
-            state.definitions.operators,
-            filters
-          ),
+          filter: generateFilterQuery({
+            fieldDefinitions: state.definitions.fields,
+            filterDefinitions: state.definitions.filters,
+            filters,
+            operators: state.definitions.operators,
+          }),
         },
       }
     }
@@ -271,11 +273,12 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
         filters,
         terms: {
           ...state.terms,
-          filter: generateFilterQuery(
-            state.definitions.fields,
-            state.definitions.operators,
-            filters
-          ),
+          filter: generateFilterQuery({
+            fieldDefinitions: state.definitions.fields,
+            filterDefinitions: state.definitions.filters,
+            filters,
+            operators: state.definitions.operators,
+          }),
         },
       }
     }
@@ -297,11 +300,12 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
         filters,
         terms: {
           ...state.terms,
-          filter: generateFilterQuery(
-            state.definitions.fields,
-            state.definitions.operators,
-            filters
-          ),
+          filter: generateFilterQuery({
+            fieldDefinitions: state.definitions.fields,
+            filterDefinitions: state.definitions.filters,
+            filters,
+            operators: state.definitions.operators,
+          }),
         },
       }
     }
@@ -332,11 +336,12 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
         filters,
         terms: {
           ...state.terms,
-          filter: generateFilterQuery(
-            state.definitions.fields,
-            state.definitions.operators,
-            filters
-          ),
+          filter: generateFilterQuery({
+            fieldDefinitions: state.definitions.fields,
+            filterDefinitions: state.definitions.filters,
+            filters,
+            operators: state.definitions.operators,
+          }),
         },
       }
     }
@@ -355,11 +360,12 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
         filters,
         terms: {
           ...state.terms,
-          filter: generateFilterQuery(
-            state.definitions.fields,
-            state.definitions.operators,
-            filters
-          ),
+          filter: generateFilterQuery({
+            fieldDefinitions: state.definitions.fields,
+            filterDefinitions: state.definitions.filters,
+            filters,
+            operators: state.definitions.operators,
+          }),
         },
       }
     }
@@ -395,11 +401,12 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
         },
         terms: {
           ...action.terms,
-          filter: generateFilterQuery(
-            state.definitions.fields,
-            state.definitions.operators,
-            filters
-          ),
+          filter: generateFilterQuery({
+            fieldDefinitions: state.definitions.fields,
+            filterDefinitions: state.definitions.filters,
+            filters,
+            operators: state.definitions.operators,
+          }),
         },
       }
     }
@@ -439,11 +446,12 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
         },
         terms: stripRecent({
           ...state.terms,
-          filter: generateFilterQuery(
-            state.definitions.fields,
-            state.definitions.operators,
-            filters
-          ),
+          filter: generateFilterQuery({
+            fieldDefinitions: state.definitions.fields,
+            filterDefinitions: state.definitions.filters,
+            operators: state.definitions.operators,
+            filters,
+          }),
           types,
         }),
       }
@@ -533,17 +541,27 @@ function narrowDocumentTypes(
   return intersection(...documentTypes).sort()
 }
 
-function generateFilterQuery(
-  fieldDefinitions: SearchFieldDefinition[],
-  operators: SearchOperator[],
+function generateFilterQuery({
+  fieldDefinitions,
+  filterDefinitions,
+  filters,
+  operators,
+}: {
+  fieldDefinitions: SearchFieldDefinition[]
+  filterDefinitions: SearchFilterDefinition[]
   filters: SearchFilter[]
-) {
+  operators: SearchOperator[]
+}) {
   return filters
-    .filter((filter) => isFilterComplete(filter, fieldDefinitions, operators))
+    .filter((filter) => isFilterComplete(filter, filterDefinitions, fieldDefinitions, operators))
     .map((filter) => {
       const fieldDefinition = fieldDefinitions.find((field) => field.id === filter?.fieldId)
+      const filterDefinition = getFilterDefinition(filterDefinitions, filter.filterType)
       return getOperator(operators, filter.operatorType)?.fn({
-        fieldPath: fieldDefinition?.fieldPath,
+        fieldPath:
+          filterDefinition?.type === 'pinned'
+            ? filterDefinition?.fieldPath
+            : fieldDefinition?.fieldPath,
         value: filter?.value,
       })
     })
