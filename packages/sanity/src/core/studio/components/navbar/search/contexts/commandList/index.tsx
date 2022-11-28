@@ -262,7 +262,7 @@ export function CommandListProvider({
       if (event.key === 'Enter') {
         event.preventDefault()
         const currentElement = childElements.find(
-          (el) => Number(el.dataset.index) === selectedIndexRef.current
+          (el) => Number(el.dataset.index) === itemIndices.indexOf(selectedIndexRef.current)
         )
 
         if (currentElement) {
@@ -277,7 +277,7 @@ export function CommandListProvider({
     return () => {
       headerInputElement?.removeEventListener('keydown', handleKeyDown)
     }
-  }, [childContainerElement, headerInputElement, scrollToAdjacentItem])
+  }, [childContainerElement, headerInputElement, itemIndices, scrollToAdjacentItem])
 
   /**
    * Listen to keyboard arrow events on the 'closest' parent [data-overflow] element to the child container.
