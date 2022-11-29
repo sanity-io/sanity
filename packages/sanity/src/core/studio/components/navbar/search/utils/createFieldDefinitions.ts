@@ -19,27 +19,33 @@ export function createFieldDefinitions(
 ): SearchFieldDefinition[] {
   // Get document types from current schema
   const originalSchema = schema._original
-  const documentTypes: ObjectDefinition[] = []
-  const objectTypes: Record<string, ObjectDefinition> = {}
 
   const searchableDocumentTypeNames = getSearchableOmnisearchTypes(schema).map((s) => s.name)
 
-  // Separate documents and everything else
-  originalSchema?.types
-    // Ignore document types hidden with `__experimental_omnisearch_visibility: false`
-    .filter((schemaType) => searchableDocumentTypeNames.includes(schemaType.name))
-    // Ignore the special 'slug' object, this is to prevent surfacing the 'current'
+  const {documentTypes, objectTypes} = originalSchema?.types
+    // Ignore the special 'slug' object, this is to prevent surfacing the 'Current'
     // and (now deprecated) 'Source field' fields.
     .filter((schemaType) => schemaType.name !== 'slug')
     // Ignore sanity documents and assets
     .filter((schemaType) => !schemaType.name.startsWith('sanity.'))
-    .forEach((schemaType) => {
-      if (isDocumentType(schemaType)) {
-        documentTypes.push(schemaType)
-      } else {
-        objectTypes[schemaType.name] = schemaType as ObjectDefinition
-      }
-    })
+    // Separate documents and objects
+    .reduce<{
+      documentTypes: Record<string, ObjectDefinition>
+      objectTypes: Record<string, ObjectDefinition>
+    }>(
+      (acc, schemaType) => {
+        if (isDocumentType(schemaType)) {
+          // Ignore document types hidden with `__experimental_omnisearch_visibility: false`
+          if (searchableDocumentTypeNames.includes(schemaType.name)) {
+            acc.documentTypes[schemaType.name] = schemaType
+          }
+        } else {
+          acc.objectTypes[schemaType.name] = schemaType as ObjectDefinition
+        }
+        return acc
+      },
+      {documentTypes: {}, objectTypes: {}}
+    ) || {documentTypes: {}, objectTypes: {}}
 
   // Get supported filter field types
   const supportedFieldTypes = getSupportedFieldTypes(filterDefinitions)
@@ -50,7 +56,7 @@ export function createFieldDefinitions(
 
 function getDocumentFieldDefinitions(
   supportedFieldTypes: string[],
-  documentTypes: ObjectDefinition[],
+  documentTypes: Record<string, ObjectDefinition>,
   objectTypes: Record<string, ObjectDefinition>
 ) {
   function addFieldDefinitionRecursive({
@@ -79,9 +85,8 @@ function getDocumentFieldDefinitions(
       return
     }
 
-    // Check if current field can be mapped to an existing object
-    // defined in our schema, or if it's an inline object
-    const existingObject = objectTypes[defType.type]
+    // Map to an existing object or document if found
+    const existingObject = objectTypes[defType.type] || documentTypes[defType.type]
     if (existingObject || isObject) {
       const targetObject = existingObject || defType
       targetObject?.fields?.forEach((field) =>
@@ -112,7 +117,7 @@ function getDocumentFieldDefinitions(
     })
   }
 
-  const fieldDefinitions = documentTypes
+  const fieldDefinitions = Object.values(documentTypes)
     .reduce<SearchFieldDefinition[]>((acc, documentType) => {
       const documentFields = (documentType.fields as ObjectDefinition[]).reduce<
         SearchFieldDefinition[]
