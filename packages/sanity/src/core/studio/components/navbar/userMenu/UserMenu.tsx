@@ -24,6 +24,8 @@ import {useColorScheme} from '../../../colorScheme'
 import {useWorkspace} from '../../../workspace'
 import {LoginProviderLogo} from './LoginProviderLogo'
 
+const AVATAR_SIZE = 1
+
 const StyledMenu = styled(Menu)`
   min-width: 125px;
   max-width: 350px;
@@ -31,6 +33,8 @@ const StyledMenu = styled(Menu)`
 
 const AvatarBox = styled(Box)`
   position: relative;
+  min-width: ${({theme}) => theme.sanity.avatar.sizes[AVATAR_SIZE].size}px;
+  min-height: ${({theme}) => theme.sanity.avatar.sizes[AVATAR_SIZE].size}px;
 `
 
 export function UserMenu() {
@@ -42,7 +46,7 @@ export function UserMenu() {
 
   const popoverProps: MenuButtonProps['popover'] = useMemo(
     () => ({
-      placement: 'bottom',
+      placement: 'bottom-end',
       portal: true,
       preventOverflow: true,
       scheme: scheme,
@@ -60,7 +64,7 @@ export function UserMenu() {
         <Button mode="bleed" padding={0} paddingX={1}>
           <Flex align="center" gap={1}>
             <UserAvatar user="me" size={1} />
-            <Text size={1} muted>
+            <Text size={AVATAR_SIZE} muted>
               <ChevronDownIcon />
             </Text>
           </Flex>
@@ -89,7 +93,7 @@ export function UserMenu() {
                 }
               >
                 <AvatarBox marginRight={3}>
-                  <UserAvatar size={1} user="me" />
+                  <UserAvatar size={AVATAR_SIZE} user="me" />
                   {currentUser?.provider && <LoginProviderLogo provider={currentUser.provider} />}
                 </AvatarBox>
               </Tooltip>
