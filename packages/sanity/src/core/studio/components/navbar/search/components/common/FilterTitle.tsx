@@ -15,13 +15,20 @@ export function FilterTitle({filter, maxLength}: FilterTitleProps) {
   } = useSearchState()
 
   const title = useMemo(() => {
-    const fieldDefinition = getFieldFromFilter(definitions.fields, filter)
-    // Display field definition title path, if present.
-    if (fieldDefinition?.titlePath) {
-      return fieldDefinition.titlePath[fieldDefinition.titlePath.length - 1]
+    const filterDef = getFilterDefinition(definitions.filters, filter.filterName)
+    switch (filterDef?.type) {
+      case 'field': {
+        const fieldDefinition = getFieldFromFilter(definitions.fields, filter)
+        if (fieldDefinition?.titlePath) {
+          return fieldDefinition.titlePath[fieldDefinition.titlePath.length - 1]
+        }
+        return null
+      }
+      case 'pinned':
+        return filterDef.title
+      default:
+        return null
     }
-    // Otherwise, fallback and display filter definition title.
-    return getFilterDefinition(definitions.filters, filter.filterName)?.title
   }, [definitions, filter])
 
   if (!title) {

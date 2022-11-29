@@ -2,13 +2,13 @@ import {IntrinsicTypeName} from '@sanity/types'
 import {ComponentType} from 'react'
 import {SearchOperatorType} from './operators/defaultOperators'
 
-type Operator<TOperators = SearchOperatorType> = OperatorDivider | OperatorItem<TOperators>
+type Operator<TOperators = string> = OperatorDivider | OperatorItem<TOperators>
 
 type OperatorDivider = {
   type: 'divider'
 }
 
-type OperatorItem<TOperators = SearchOperatorType> = {
+type OperatorItem<TOperators = string> = {
   name: TOperators
   type: 'item'
 }
@@ -20,13 +20,13 @@ interface SearchFieldBaseDefinition<TOperators> {
   operators: Operator<TOperators>[]
 }
 
-export interface SearchFilterFieldDefinition<TOperators = SearchOperatorType>
+export interface SearchFilterFieldDefinition<TOperators = string>
   extends SearchFieldBaseDefinition<TOperators> {
   fieldType: IntrinsicTypeName
   type: 'field'
 }
 
-export interface SearchFilterPinnedDefinition<TOperators = SearchOperatorType>
+export interface SearchFilterPinnedDefinition<TOperators = string>
   extends SearchFieldBaseDefinition<TOperators> {
   fieldPath?: string
   group?: string
@@ -37,15 +37,16 @@ export interface SearchFilterPinnedDefinition<TOperators = SearchOperatorType>
 /**
  * @alpha
  */
-export type SearchFilterDefinition<TOperators = SearchOperatorType> =
+export type SearchFilterDefinition<TOperators = string> =
   | SearchFilterFieldDefinition<TOperators>
   | SearchFilterPinnedDefinition<TOperators>
 
 /**
  * @alpha
  */
-
-export function defineSearchFilter(filterDef: SearchFilterDefinition): typeof filterDef {
+export function defineSearchFilter<TOperators = SearchOperatorType>(
+  filterDef: SearchFilterDefinition<TOperators>
+): typeof filterDef {
   return filterDef
 }
 
@@ -68,7 +69,7 @@ export function getFilterDefinition(
 export function getFilterDefinitionInitialOperatorType(
   definitions: SearchFilterDefinition[],
   filterName: string
-): SearchOperatorType | undefined {
+): string | undefined {
   const filterDefinition = getFilterDefinition(definitions, filterName)
   return filterDefinition?.operators.find(isOperatorItem)?.name
 }
