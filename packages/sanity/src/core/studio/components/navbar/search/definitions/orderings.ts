@@ -14,7 +14,7 @@ export const ORDERINGS: Record<string, SearchOrdering> = {
   relevance: {
     customMeasurementLabel: 'relevance',
     sort: {direction: 'desc', field: '_updatedAt'},
-    title: 'Relevance',
+    title: 'Best match',
   },
   updatedAsc: {
     ignoreScore: true,
