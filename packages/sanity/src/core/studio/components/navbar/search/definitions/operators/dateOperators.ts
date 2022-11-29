@@ -83,12 +83,14 @@ export const dateOperators = {
   dateLast: defineSearchOperator({
     ...COMMON.dateLast,
     fn: ({fieldPath, value}: SearchOperatorParams<OperatorDateLastValue>) => {
-      const flooredValue = Math.floor(value?.value ?? 0)
-      const timestampAgo = sub(new Date(), {
-        days: value?.unit === 'days' ? flooredValue : 0,
-        months: value?.unit === 'months' ? flooredValue : 0,
-        years: value?.unit === 'years' ? flooredValue : 0,
-      }).toISOString()
+      const flooredValue = typeof value?.value === 'number' ? Math.floor(value.value) : undefined
+      const timestampAgo = Number.isFinite(flooredValue)
+        ? sub(new Date(), {
+            days: value?.unit === 'days' ? flooredValue : 0,
+            months: value?.unit === 'months' ? flooredValue : 0,
+            years: value?.unit === 'years' ? flooredValue : 0,
+          }).toISOString()
+        : null
       return timestampAgo && fieldPath ? `${fieldPath} > ${toJSON(timestampAgo)}` : null
     },
     inputComponent: SearchFilterDateLastInput,
@@ -127,12 +129,14 @@ export const dateOperators = {
   dateTimeLast: defineSearchOperator({
     ...COMMON.dateLast,
     fn: ({fieldPath, value}: SearchOperatorParams<OperatorDateLastValue>) => {
-      const flooredValue = Math.floor(value?.value ?? 0)
-      const timestampAgo = sub(new Date(), {
-        days: value?.unit === 'days' ? flooredValue : 0,
-        months: value?.unit === 'months' ? flooredValue : 0,
-        years: value?.unit === 'years' ? flooredValue : 0,
-      }).toISOString()
+      const flooredValue = typeof value?.value === 'number' ? Math.floor(value.value) : undefined
+      const timestampAgo = Number.isFinite(flooredValue)
+        ? sub(new Date(), {
+            days: value?.unit === 'days' ? flooredValue : 0,
+            months: value?.unit === 'months' ? flooredValue : 0,
+            years: value?.unit === 'years' ? flooredValue : 0,
+          }).toISOString()
+        : null
       return timestampAgo && fieldPath
         ? `dateTime(${fieldPath}) > dateTime(${toJSON(timestampAgo)})`
         : null

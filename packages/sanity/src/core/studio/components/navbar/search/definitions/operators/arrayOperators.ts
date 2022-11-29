@@ -22,7 +22,7 @@ export const arrayOperators = {
     buttonLabel: 'has',
     buttonValueComponent: SearchButtonValueNumberCount,
     fn: ({fieldPath, value}) =>
-      value && fieldPath ? `count(${fieldPath}) == ${toJSON(value)}` : null,
+      Number.isFinite(value) && fieldPath ? `count(${fieldPath}) == ${toJSON(value)}` : null,
     initialValue: null,
     inputComponent: SearchFilterNumberInput,
     label: 'quantity is',
@@ -32,7 +32,7 @@ export const arrayOperators = {
     buttonLabel: 'has >',
     buttonValueComponent: SearchButtonValueNumberCount,
     fn: ({fieldPath, value}) =>
-      value && fieldPath ? `count(${fieldPath}) > ${toJSON(value)}` : null,
+      Number.isFinite(value) && fieldPath ? `count(${fieldPath}) > ${toJSON(value)}` : null,
     icon: GtIcon,
     initialValue: null,
     inputComponent: SearchFilterNumberInput,
@@ -43,7 +43,7 @@ export const arrayOperators = {
     buttonLabel: 'has ≥',
     buttonValueComponent: SearchButtonValueNumberCount,
     fn: ({fieldPath, value}) =>
-      value && fieldPath ? `count(${fieldPath}) >= ${toJSON(value)}` : null,
+      Number.isFinite(value) && fieldPath ? `count(${fieldPath}) >= ${toJSON(value)}` : null,
     icon: GteIcon,
     initialValue: null,
     inputComponent: SearchFilterNumberInput,
@@ -54,7 +54,7 @@ export const arrayOperators = {
     buttonLabel: 'has <',
     buttonValueComponent: SearchButtonValueNumberCount,
     fn: ({fieldPath, value}) =>
-      value && fieldPath ? `count(${fieldPath}) < ${toJSON(value)}` : null,
+      Number.isFinite(value) && fieldPath ? `count(${fieldPath}) < ${toJSON(value)}` : null,
     icon: LtIcon,
     initialValue: null,
     inputComponent: SearchFilterNumberInput,
@@ -65,7 +65,7 @@ export const arrayOperators = {
     buttonLabel: 'has ≤',
     buttonValueComponent: SearchButtonValueNumberCount,
     fn: ({fieldPath, value}) =>
-      value && fieldPath ? `count(${fieldPath}) <= ${toJSON(value)}` : null,
+      Number.isFinite(value) && fieldPath ? `count(${fieldPath}) <= ${toJSON(value)}` : null,
     icon: LteIcon,
     initialValue: null,
     inputComponent: SearchFilterNumberInput,
@@ -76,7 +76,7 @@ export const arrayOperators = {
     buttonLabel: 'does not have',
     buttonValueComponent: SearchButtonValueNumberCount,
     fn: ({fieldPath, value}) =>
-      value && fieldPath ? `count(${fieldPath}) != ${toJSON(value)}` : null,
+      Number.isFinite(value) && fieldPath ? `count(${fieldPath}) != ${toJSON(value)}` : null,
     initialValue: null,
     inputComponent: SearchFilterNumberInput,
     label: 'quantity is not',

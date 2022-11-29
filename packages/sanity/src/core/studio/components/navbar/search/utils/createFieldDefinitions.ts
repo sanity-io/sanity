@@ -17,29 +17,32 @@ export function createFieldDefinitions(
   schema: Schema,
   filterDefinitions: SearchFilterDefinition[]
 ): SearchFieldDefinition[] {
-  // Get document types from current schema
-  const originalSchema = schema._original
-
+  // Get allowed document types (`__experimental_omnisearch_visibility !== false`)
   const searchableDocumentTypeNames = getSearchableOmnisearchTypes(schema).map((s) => s.name)
 
-  const {documentTypes, objectTypes} = originalSchema?.types
-    // Ignore the special 'slug' object, this is to prevent surfacing the 'Current'
-    // and (now deprecated) 'Source field' fields.
+  // Get user-defined schema types, partitioned into documents and objects
+  const {documentTypes, objectTypes} = (schema._original?.types || [])
+    // Ignore document types hidden by omnisearch
+    .filter((t) => {
+      if (isDocumentObjectDefinition(t)) {
+        return searchableDocumentTypeNames.includes(t.name)
+      }
+      return true
+    })
+    // Ignore the 'slug' object to prevent surfacing 'current' and (deprecated) 'source field' fields.
     .filter((schemaType) => schemaType.name !== 'slug')
     // Ignore sanity documents and assets
     .filter((schemaType) => !schemaType.name.startsWith('sanity.'))
-    // Separate documents and objects
+    // Partition
     .reduce<{
       documentTypes: Record<string, ObjectDefinition>
       objectTypes: Record<string, ObjectDefinition>
     }>(
       (acc, schemaType) => {
-        if (isDocumentType(schemaType)) {
-          // Ignore document types hidden with `__experimental_omnisearch_visibility: false`
-          if (searchableDocumentTypeNames.includes(schemaType.name)) {
-            acc.documentTypes[schemaType.name] = schemaType
-          }
-        } else {
+        if (isDocumentObjectDefinition(schemaType)) {
+          acc.documentTypes[schemaType.name] = schemaType
+        }
+        if (isObjectDefinition(schemaType)) {
           acc.objectTypes[schemaType.name] = schemaType as ObjectDefinition
         }
         return acc
@@ -47,7 +50,7 @@ export function createFieldDefinitions(
       {documentTypes: {}, objectTypes: {}}
     ) || {documentTypes: {}, objectTypes: {}}
 
-  // Get supported filter field types
+  // Get supported filter field types that have corresponding filters defined
   const supportedFieldTypes = getSupportedFieldTypes(filterDefinitions)
 
   // Recursively iterate through all documents and resolve objects
@@ -74,21 +77,21 @@ function getDocumentFieldDefinitions(
     prevFieldPath?: string
     prevTitlePath?: string[]
   }) {
-    const isObject = isObjectDefinition(defType)
     const continueRecursion = depth < MAX_OBJECT_DEPTH
     const isInternalField = defType.name.startsWith('_')
     const title = defType?.title || startCase(defType.name)
     const fieldPath = prevFieldPath ? `${prevFieldPath}.${defType.name}` : defType.name
     const titlePath = prevTitlePath ? [...prevTitlePath, title] : [title]
 
-    if (!continueRecursion) {
-      return
-    }
+    if (!continueRecursion) return
 
-    // Map to an existing object or document if found
-    const existingObject = objectTypes[defType.type] || documentTypes[defType.type]
-    if (existingObject || isObject) {
-      const targetObject = existingObject || defType
+    // Map to an existing document, object or inline object if found
+    const existingObject = objectTypes[defType.type]
+    const existingDocument = documentTypes[defType.type]
+    const inlineObject = isObjectDefinition(defType) ? defType : null
+    const targetObject = existingDocument || existingObject || inlineObject
+
+    if (targetObject) {
       targetObject?.fields?.forEach((field) =>
         addFieldDefinitionRecursive({
           acc,
@@ -102,7 +105,7 @@ function getDocumentFieldDefinitions(
       return
     }
 
-    // Fail early if the current field type isn't supported
+    // Return if the current field type doesn't have a corresponding filter
     if (!supportedFieldTypes.includes(defType.type)) return
 
     acc.push({
@@ -174,7 +177,9 @@ function isArrayDefinition(schemaType: SchemaTypeDefinition): schemaType is Arra
   return schemaType.type === 'array'
 }
 
-function isDocumentType(schemaType: SchemaTypeDefinition): schemaType is ObjectDefinition {
+function isDocumentObjectDefinition(
+  schemaType: SchemaTypeDefinition
+): schemaType is ObjectDefinition {
   return schemaType.type === 'document'
 }
 
@@ -186,7 +191,7 @@ function isStringDefinition(schemaType: SchemaTypeDefinition): schemaType is Str
   return schemaType.type === 'string'
 }
 
-function isStringList(schemaType: SchemaTypeDefinition): schemaType is StringDefinition {
+function isStringListDefinition(schemaType: SchemaTypeDefinition): schemaType is StringDefinition {
   if (isStringDefinition(schemaType)) {
     return schemaType.options?.list ? schemaType.options.list.length > 0 : false
   }
@@ -194,7 +199,7 @@ function isStringList(schemaType: SchemaTypeDefinition): schemaType is StringDef
 }
 
 function resolveFilterType(schemaType: SchemaTypeDefinition) {
-  if (isStringList(schemaType)) {
+  if (isStringListDefinition(schemaType)) {
     return 'stringList'
   }
   if (isArrayDefinition(schemaType)) {
