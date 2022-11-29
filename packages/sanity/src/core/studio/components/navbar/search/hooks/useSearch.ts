@@ -2,10 +2,10 @@ import type {Schema} from '@sanity/types'
 import isEqual from 'lodash/isEqual'
 import {useCallback, useMemo, useState} from 'react'
 import {useObservableCallback} from 'react-rx'
-import {concat, Observable, of} from 'rxjs'
+import {concat, Observable, of, timer} from 'rxjs'
 import {
   catchError,
-  debounceTime,
+  debounce,
   distinctUntilChanged,
   filter,
   map,
@@ -25,6 +25,8 @@ interface SearchRequest {
   options?: SearchOptions
   terms: SearchTerms
 }
+
+const DEFAULT_DEBOUNCE_TIME = 300 // ms
 
 const INITIAL_SEARCH_STATE: SearchState = {
   error: null,
@@ -90,7 +92,7 @@ export function useSearch({
         filter((request: SearchRequest) =>
           hasSearchableTerms({allowEmptyQueries, terms: request.terms})
         ),
-        debounceTime(300),
+        debounce((request) => timer(request?.debounceTime || DEFAULT_DEBOUNCE_TIME)),
         tap(onStart),
         switchMap((request) =>
           concat(

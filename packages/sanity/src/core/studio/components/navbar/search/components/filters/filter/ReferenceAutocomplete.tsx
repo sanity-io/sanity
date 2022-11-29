@@ -55,10 +55,7 @@ export const ReferenceAutocomplete = forwardRef(function DebugMiniReferenceInput
       hits: [],
       loading: false,
       error: null,
-      terms: {
-        query: '',
-        types,
-      },
+      terms: {query: '', types},
     },
     onComplete: (weightedHits) => {
       setHits(
@@ -68,31 +65,43 @@ export const ReferenceAutocomplete = forwardRef(function DebugMiniReferenceInput
         }))
       )
     },
-    onError: (error) => {
-      setHits([])
-    },
-    onStart: () => {
-      //
-    },
     schema,
   })
 
+  /**
+   * Trigger non-debounced search query when autocomplete is manually opened
+   */
+  const handleAutocompleteOpenButtonClick = useCallback(() => {
+    handleSearch({
+      debounceTime: 0,
+      options: {limit: 100},
+      terms: {query: '', types},
+    })
+  }, [handleSearch, types])
+
+  /**
+   * Trigger debounced search queries on text input.
+   *
+   * When search query has been cleared (either via manual input or by closing autocomplete),
+   * trigger an non-debounecd 'empty' search to clear search state terms and reset hits.
+   */
   const handleQueryChange = useCallback(
     (query: string | null) => {
-      handleSearch({
-        options: {limit: 100},
-        terms: {
-          query: query || '',
-          types,
-        },
-      })
+      if (query) {
+        handleSearch({
+          options: {limit: 100},
+          terms: {query: query || '', types},
+        })
+      } else {
+        handleSearch({
+          debounceTime: 0,
+          options: {limit: 0},
+          terms: {query: '', types},
+        })
+      }
     },
     [handleSearch, types]
   )
-
-  const handleAutocompleteOpenButtonClick = useCallback(() => {
-    handleQueryChange('')
-  }, [handleQueryChange])
 
   const handleSelect = useCallback(
     (val: string) => {
@@ -106,6 +115,13 @@ export const ReferenceAutocomplete = forwardRef(function DebugMiniReferenceInput
     },
     [hits, onSelect]
   )
+  const placeholderText = useMemo(() => {
+    const documentTypes = documentTypesTruncated({types})
+    if (types.length > 0) {
+      return `Search for ${documentTypes}`
+    }
+    return `Search all documents`
+  }, [types])
 
   const renderOption = useCallback((option: any) => {
     const documentType = option.hit.hit._type
@@ -122,26 +138,24 @@ export const ReferenceAutocomplete = forwardRef(function DebugMiniReferenceInput
   const renderPopover = useCallback(
     (props: PopoverContentProps, contentRef: React.ForwardedRef<HTMLDivElement>) => {
       const {content, hidden, onMouseEnter, onMouseLeave} = props
-
       const hasResults = hits && hits.length > 0
-
       return (
         <Popover
           arrow={false}
           constrainSize
           content={
             <div ref={contentRef}>
-              {hasResults ? (
-                content
-              ) : (
-                <Box padding={4}>
-                  <Flex align="center" height="fill" justify="center">
-                    <StyledText align="center" muted>
-                      No results for <strong>“{searchState.terms.query}”</strong>
-                    </StyledText>
-                  </Flex>
-                </Box>
-              )}
+              {hasResults
+                ? content
+                : searchState.terms.query && (
+                    <Box padding={4}>
+                      <Flex align="center" height="fill" justify="center">
+                        <StyledText align="center" muted>
+                          No results for <strong>“{searchState.terms.query}”</strong>
+                        </StyledText>
+                      </Flex>
+                    </Box>
+                  )}
             </div>
           }
           matchReferenceWidth
@@ -156,15 +170,6 @@ export const ReferenceAutocomplete = forwardRef(function DebugMiniReferenceInput
     },
     [hits, searchState.loading, searchState.terms.query]
   )
-
-  const placeholderText = useMemo(() => {
-    const documentTypes = documentTypesTruncated({types})
-
-    if (types.length > 0) {
-      return `Search for ${documentTypes}`
-    }
-    return `Search all documents`
-  }, [types])
 
   return (
     <div ref={autocompletePopoverReferenceElementRef}>
