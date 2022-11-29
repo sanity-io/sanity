@@ -92,6 +92,7 @@ export function FilterButton({filter, initialOpen}: FilterButtonProps) {
 
         {!fullscreen && (
           <CloseButton
+            aria-label="Delete filter"
             fontSize={1}
             icon={CloseIcon}
             onClick={handleRemove}

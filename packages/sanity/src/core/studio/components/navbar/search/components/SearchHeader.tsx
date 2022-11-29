@@ -119,7 +119,7 @@ export function SearchHeader({onClose, setHeaderInputRef}: SearchHeaderProps) {
         <FilterBox>
           <Button
             aria-expanded={filtersVisible}
-            aria-label="Filter"
+            aria-label="Toggle filters"
             height="fill"
             icon={ControlsIcon}
             mode="bleed"

@@ -78,6 +78,10 @@ export function DocumentTypesPopoverContent() {
     }, [])
   }, [filteredItems])
 
+  const itemIndicesSelected = useMemo(() => {
+    return filteredItems.map((f) => f.type === 'item' && f.selected)
+  }, [filteredItems])
+
   return (
     <CommandListProvider
       ariaChildrenLabel="Document types"
@@ -88,6 +92,7 @@ export function DocumentTypesPopoverContent() {
       containerElement={containerElement}
       headerInputElement={headerInputElement}
       itemIndices={itemIndices}
+      itemIndicesSelected={itemIndicesSelected}
       pointerOverlayElement={pointerOverlayElement}
     >
       <Flex direction="column" ref={setContainerRef} style={{width: '250px'}}>

@@ -55,6 +55,7 @@ interface CommandListProviderProps {
   headerInputElement: HTMLInputElement | null
   initialSelectedIndex?: number
   itemIndices: (number | null)[]
+  itemIndicesSelected?: boolean[]
   pointerOverlayElement: HTMLDivElement | null
 }
 
@@ -71,6 +72,7 @@ export function CommandListProvider({
   containerElement,
   initialSelectedIndex,
   itemIndices,
+  itemIndicesSelected,
   headerInputElement,
   pointerOverlayElement,
 }: CommandListProviderProps) {
@@ -113,6 +115,9 @@ export function CommandListProvider({
       const childIndex = itemIndices[virtualIndex]
       if (typeof childIndex === 'number') {
         child.setAttribute('aria-posinset', (childIndex + 1).toString())
+        if (itemIndicesSelected) {
+          child.setAttribute('aria-selected', itemIndicesSelected[virtualIndex].toString())
+        }
         child.setAttribute('aria-setsize', activeItemCount.toString())
         child.setAttribute('data-active', (childIndex === selectedIndex).toString())
         child.setAttribute('id', getChildDescendantId(childIndex))
@@ -126,6 +131,7 @@ export function CommandListProvider({
     getChildDescendantId,
     headerInputElement,
     itemIndices,
+    itemIndicesSelected,
   ])
 
   /**
