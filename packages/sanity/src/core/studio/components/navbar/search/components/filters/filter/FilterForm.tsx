@@ -48,7 +48,7 @@ export function FilterForm({filter}: FilterFormProps) {
 
   // Flex order is reversed to ensure form inputs are focusable first
   return (
-    <FocusLock autoFocus={!supportsTouch}>
+    <FocusLock autoFocus={!supportsTouch} returnFocus>
       <Flex direction="column-reverse">
         {/* Value */}
         {Component && (
