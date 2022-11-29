@@ -3,11 +3,13 @@ import type {Asset, AssetFromSource, AssetSource} from '@sanity/types'
 import {Box, Button, Flex, Menu, MenuButton, MenuItem, Portal, Stack} from '@sanity/ui'
 import React, {useCallback, useEffect, useId, useMemo, useState} from 'react'
 import {Source} from '../../../../../../../../config'
+import {FileSource, ImageSource} from '../../../../../../../../form/studio/assetSource'
 import {useClient} from '../../../../../../../../hooks'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../../../../../studioClient'
 import {useSource} from '../../../../../../../source'
 import {useSearchState} from '../../../../contexts/search/useSearchState'
 import {OperatorInputComponentProps} from '../../../../definitions/operators/operatorTypes'
+import {AssetSourceError} from './asset/AssetSourceError'
 import {AssetPreview} from './imagePreview/AssetPreview'
 
 type AssetType = keyof Pick<Source['form'], 'file' | 'image'>
@@ -25,13 +27,14 @@ export function SearchFilterAssetInput(type?: AssetType) {
 
     const {file, image} = useSource().form
 
+    // Get available asset sources
+    // NOTE: currently only the default studio asset source is supported
     const assetSources = useMemo(() => {
-      // Get available asset sources
       switch (type) {
         case 'file':
-          return file.assetSources
+          return file.assetSources.filter((a) => a.name === FileSource.name)
         case 'image':
-          return image.assetSources
+          return image.assetSources.filter((a) => a.name === ImageSource.name)
         default:
           throw Error('Unknown asset source found')
       }
@@ -71,7 +74,7 @@ export function SearchFilterAssetInput(type?: AssetType) {
           onChange(result)
         }
       }
-      // TODO: add custom resolver to handle other source types
+      // TODO: add custom resolver to handle other source types in future
       if (
         selectedAssetFromSource?.kind === 'assetDocumentId' &&
         typeof selectedAssetFromSource?.value === 'string'
@@ -89,6 +92,7 @@ export function SearchFilterAssetInput(type?: AssetType) {
     return (
       <Box style={{width: 'min(calc(100vw - 40px), 320px)'}}>
         <Stack space={3}>
+          {/* Asset source component */}
           {selectedAssetSource && AssetSourceComponent && (
             <Portal>
               <AssetSourceComponent
@@ -102,12 +106,15 @@ export function SearchFilterAssetInput(type?: AssetType) {
             </Portal>
           )}
 
-          {/* Preview */}
+          {/* Selected asset preview */}
           {value && <AssetPreview asset={value} />}
 
           <Flex gap={2}>
+            {/* No asset sources found */}
+            {assetSources.length === 0 && <AssetSourceError padding={2} />}
+
             {/* Asset source select */}
-            {assetSources && assetSources.length >= 0 && (
+            {assetSources.length > 0 && (
               <>
                 {assetSources.length > 1 ? (
                   <MenuButton

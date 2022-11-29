@@ -23,12 +23,9 @@ export function createFieldDefinitions(
   // Get user-defined schema types, partitioned into documents and objects
   const {documentTypes, objectTypes} = (schema._original?.types || [])
     // Ignore document types hidden by omnisearch
-    .filter((t) => {
-      if (isDocumentObjectDefinition(t)) {
-        return searchableDocumentTypeNames.includes(t.name)
-      }
-      return true
-    })
+    .filter((t) =>
+      isDocumentObjectDefinition(t) ? searchableDocumentTypeNames.includes(t.name) : true
+    )
     // Ignore the 'slug' object to prevent surfacing 'current' and (deprecated) 'source field' fields.
     .filter((schemaType) => schemaType.name !== 'slug')
     // Ignore sanity documents and assets
