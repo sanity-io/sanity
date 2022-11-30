@@ -1,16 +1,16 @@
 import {
+  BlockContentIcon,
   CalendarIcon,
   CheckmarkCircleIcon,
   DocumentIcon,
   ImageIcon,
   LinkIcon,
+  NumberIcon,
   SelectIcon,
+  StringIcon,
   UlistIcon,
 } from '@sanity/icons'
 import {ArrayListIcon} from '../components/filters/icons/ArrayListIcon'
-import {BlockContentIcon} from '../components/filters/icons/BlockContentIcon'
-import {NumberIcon} from '../components/filters/icons/NumberIcon'
-import {StringIcon} from '../components/filters/icons/StringIcon'
 import {defineSearchFilter, SearchFilterDefinition} from './filters'
 import {SearchOperatorType} from './operators/defaultOperators'
 
