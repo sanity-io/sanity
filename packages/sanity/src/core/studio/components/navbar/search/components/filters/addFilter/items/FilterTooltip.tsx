@@ -131,6 +131,7 @@ export function FilterTooltip({
         </Card>
       }
       disabled={!visible}
+      fallbackPlacements={['left']}
       placement="right"
       portal
     >

@@ -87,7 +87,7 @@ export function SearchFilterAssetInput(type?: AssetType) {
 
     const fontSize = fullscreen ? 2 : 1
 
-    const buttonText = value ? `Replace ${type}` : `Select ${type}`
+    const buttonText = value ? `Change ${type}` : `Select ${type}`
 
     return (
       <Box style={{width: 'min(calc(100vw - 40px), 320px)'}}>
