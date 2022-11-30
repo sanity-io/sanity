@@ -1,6 +1,6 @@
 import {Box} from '@sanity/ui'
 import React from 'react'
-import {ReferenceAutocomplete} from '../components/filters/filter/ReferenceAutocomplete'
+import {ReferenceAutocomplete} from '../components/filters/filter/inputs/reference/ReferenceAutocomplete'
 import {SearchProvider} from '../contexts/search/SearchProvider'
 
 export default function ReferenceAutocompleteStory() {

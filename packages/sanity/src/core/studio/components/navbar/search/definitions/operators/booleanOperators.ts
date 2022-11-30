@@ -1,5 +1,5 @@
 import {SearchButtonValueBoolean} from '../../components/filters/common/ButtonValue'
-import {SearchFilterBooleanInput} from '../../components/filters/filter/inputs/Boolean'
+import {SearchFilterBooleanInput} from '../../components/filters/filter/inputs/boolean/Boolean'
 import {defineSearchOperator, SearchOperatorParams} from './operatorTypes'
 import {toJSON} from './operatorUtils'
 

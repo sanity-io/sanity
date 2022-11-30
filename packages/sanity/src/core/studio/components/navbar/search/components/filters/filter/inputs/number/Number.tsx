@@ -1,7 +1,7 @@
 import {TextInput} from '@sanity/ui'
 import React, {ChangeEvent, useCallback, useState} from 'react'
-import {useSearchState} from '../../../../contexts/search/useSearchState'
-import {OperatorInputComponentProps} from '../../../../definitions/operators/operatorTypes'
+import {useSearchState} from '../../../../../contexts/search/useSearchState'
+import {OperatorInputComponentProps} from '../../../../../definitions/operators/operatorTypes'
 
 export function SearchFilterNumberInput({value, onChange}: OperatorInputComponentProps<number>) {
   const [uncontrolledValue, setUncontrolledValue] = useState(value ?? '')

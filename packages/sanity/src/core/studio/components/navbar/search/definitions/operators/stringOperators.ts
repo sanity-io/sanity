@@ -1,6 +1,6 @@
 import {SearchButtonValueString} from '../../components/filters/common/ButtonValue'
-import {SearchFilterStringInput} from '../../components/filters/filter/inputs/String'
-import {SearchFilterStringListInput} from '../../components/filters/filter/inputs/StringList'
+import {SearchFilterStringInput} from '../../components/filters/filter/inputs/string/String'
+import {SearchFilterStringListInput} from '../../components/filters/filter/inputs/string/StringList'
 import {defineSearchOperator} from './operatorTypes'
 import {toJSON} from './operatorUtils'
 

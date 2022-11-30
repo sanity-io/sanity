@@ -3,9 +3,9 @@ import {
   SearchButtonValueDate,
   SearchButtonValueLast,
 } from '../../components/filters/common/ButtonValue'
-import {SearchFilterDateInput} from '../../components/filters/filter/inputs/Date'
-import {SearchFilterDateLastInput} from '../../components/filters/filter/inputs/DateLast'
-import {SearchFilterDateTimeInput} from '../../components/filters/filter/inputs/DateTime'
+import {SearchFilterDateInput} from '../../components/filters/filter/inputs/date/Date'
+import {SearchFilterDateLastInput} from '../../components/filters/filter/inputs/date/DateLast'
+import {SearchFilterDateTimeInput} from '../../components/filters/filter/inputs/date/DateTime'
 import {defineSearchOperator, SearchOperatorParams} from './operatorTypes'
 import {toJSON} from './operatorUtils'
 

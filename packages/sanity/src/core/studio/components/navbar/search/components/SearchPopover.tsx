@@ -26,6 +26,10 @@ export interface SearchPopoverProps {
   position: PopoverPosition
 }
 
+const FiltersCard = styled(Card)`
+  flex-shrink: 0;
+`
+
 const Overlay = styled.div`
   background-color: ${({theme}: {theme: Theme}) => theme.sanity.color.base.shadow.ambient};
   bottom: 0;
@@ -193,13 +197,9 @@ export function SearchPopover({
             <SearchHeader onClose={handleClose} setHeaderInputRef={setHeaderInputRef} />
 
             {filtersVisible && (
-              <Card
-                borderTop
-                // TODO: create styled component
-                style={{flexShrink: 0}}
-              >
+              <FiltersCard borderTop>
                 <Filters />
-              </Card>
+              </FiltersCard>
             )}
 
             <Flex align="stretch" direction="row-reverse">

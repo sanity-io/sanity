@@ -1,13 +1,13 @@
 import {isArraySchemaType, isReferenceSchemaType, ReferenceValue} from '@sanity/types'
 import {Box, Button, Card, Stack} from '@sanity/ui'
 import React, {useCallback, useMemo} from 'react'
-import {useSchema} from '../../../../../../../../hooks'
-import {SearchableType} from '../../../../../../../../search'
-import {useSearchState} from '../../../../contexts/search/useSearchState'
-import {OperatorInputComponentProps} from '../../../../definitions/operators/operatorTypes'
-import {getSchemaField} from '../../../../utils/getSchemaField'
-import {SearchResultItem} from '../../../searchResults/item/SearchResultItem'
-import {ReferenceAutocomplete} from '../ReferenceAutocomplete'
+import {useSchema} from '../../../../../../../../../hooks'
+import {SearchableType} from '../../../../../../../../../search'
+import {useSearchState} from '../../../../../contexts/search/useSearchState'
+import {OperatorInputComponentProps} from '../../../../../definitions/operators/operatorTypes'
+import {getSchemaField} from '../../../../../utils/getSchemaField'
+import {SearchResultItem} from '../../../../searchResults/item/SearchResultItem'
+import {ReferenceAutocomplete} from './ReferenceAutocomplete'
 
 export function SearchFilterReferenceInput({
   fieldDefinition,

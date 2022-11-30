@@ -2,8 +2,8 @@ import {
   SearchButtonValueAsset,
   SearchButtonValueReference,
 } from '../../components/filters/common/ButtonValue'
-import {SearchFilterAssetInput} from '../../components/filters/filter/inputs/Asset'
-import {SearchFilterReferenceInput} from '../../components/filters/filter/inputs/Reference'
+import {SearchFilterAssetInput} from '../../components/filters/filter/inputs/asset/Asset'
+import {SearchFilterReferenceInput} from '../../components/filters/filter/inputs/reference/Reference'
 import {defineSearchOperator} from './operatorTypes'
 import {toJSON} from './operatorUtils'
 

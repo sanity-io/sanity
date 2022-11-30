@@ -5,10 +5,10 @@ import {
   SearchButtonValueReference,
   SearchButtonValueString,
 } from '../../components/filters/common/ButtonValue'
-import {SearchFilterNumberInput} from '../../components/filters/filter/inputs/Number'
-import {SearchFilterNumberRangeInput} from '../../components/filters/filter/inputs/NumberRange'
-import {SearchFilterReferenceInput} from '../../components/filters/filter/inputs/Reference'
-import {SearchFilterStringListInput} from '../../components/filters/filter/inputs/StringList'
+import {SearchFilterNumberInput} from '../../components/filters/filter/inputs/number/Number'
+import {SearchFilterNumberRangeInput} from '../../components/filters/filter/inputs/number/NumberRange'
+import {SearchFilterReferenceInput} from '../../components/filters/filter/inputs/reference/Reference'
+import {SearchFilterStringListInput} from '../../components/filters/filter/inputs/string/StringList'
 import {GteIcon} from '../../components/filters/icons/GteIcon'
 import {GtIcon} from '../../components/filters/icons/GtIcon'
 import {LteIcon} from '../../components/filters/icons/LteIcon'

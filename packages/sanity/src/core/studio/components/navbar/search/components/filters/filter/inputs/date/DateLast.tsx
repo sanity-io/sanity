@@ -1,8 +1,8 @@
 import {Box, Flex, Select, TextInput} from '@sanity/ui'
 import React, {ChangeEvent, useCallback, useRef, useState} from 'react'
-import {useSearchState} from '../../../../contexts/search/useSearchState'
-import {OperatorDateLastValue} from '../../../../definitions/operators/dateOperators'
-import {OperatorInputComponentProps} from '../../../../definitions/operators/operatorTypes'
+import {useSearchState} from '../../../../../contexts/search/useSearchState'
+import {OperatorDateLastValue} from '../../../../../definitions/operators/dateOperators'
+import {OperatorInputComponentProps} from '../../../../../definitions/operators/operatorTypes'
 
 export function SearchFilterDateLastInput({
   onChange,

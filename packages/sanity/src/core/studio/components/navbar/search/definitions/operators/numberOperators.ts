@@ -3,8 +3,8 @@ import {
   SearchButtonValueNumber,
   SearchButtonValueNumberRange,
 } from '../../components/filters/common/ButtonValue'
-import {SearchFilterNumberInput} from '../../components/filters/filter/inputs/Number'
-import {SearchFilterNumberRangeInput} from '../../components/filters/filter/inputs/NumberRange'
+import {SearchFilterNumberInput} from '../../components/filters/filter/inputs/number/Number'
+import {SearchFilterNumberRangeInput} from '../../components/filters/filter/inputs/number/NumberRange'
 import {GteIcon} from '../../components/filters/icons/GteIcon'
 import {GtIcon} from '../../components/filters/icons/GtIcon'
 import {LteIcon} from '../../components/filters/icons/LteIcon'

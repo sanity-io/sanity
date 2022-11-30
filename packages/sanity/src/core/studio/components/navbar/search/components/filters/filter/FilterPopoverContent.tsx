@@ -1,5 +1,6 @@
 import {Card, Code, Flex, Stack, Text} from '@sanity/ui'
 import React from 'react'
+import styled from 'styled-components'
 import {DEBUG_MODE} from '../../../constants'
 import {useSearchState} from '../../../contexts/search/useSearchState'
 import type {SearchFilter} from '../../../types'
@@ -10,18 +11,17 @@ interface FilterPopoverContentProps {
   filter: SearchFilter
 }
 
+const ContainerFlex = styled(Flex)`
+  maxheight: 600px;
+  maxwidth: 480px;
+  minwidth: 200px;
+  overflow: hidden;
+  width: 100%;
+`
+
 export function FilterPopoverContent({filter}: FilterPopoverContentProps) {
   return (
-    <Flex
-      direction="column"
-      style={{
-        maxHeight: '600px',
-        maxWidth: '480px',
-        minWidth: '200px',
-        overflow: 'hidden',
-        width: '100%',
-      }}
-    >
+    <ContainerFlex direction="column">
       <FilterForm filter={filter} />
 
       {/* Debug panels */}
@@ -31,7 +31,7 @@ export function FilterPopoverContent({filter}: FilterPopoverContentProps) {
           <DebugDocumentTypes filter={filter} />
         </>
       )}
-    </Flex>
+    </ContainerFlex>
   )
 }
 
