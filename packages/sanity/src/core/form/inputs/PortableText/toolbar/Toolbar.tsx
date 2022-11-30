@@ -79,6 +79,7 @@ const InnerToolbar = memo(function InnerToolbar({
   const rootElementRect = useElementRect(rootElement)
 
   const collapsed = rootElementRect ? rootElementRect?.width < 400 : false
+  const showBlockStyleSelect = blockStyles.length > 1
 
   useRovingFocus({
     rootElement: rootElement,
@@ -86,11 +87,13 @@ const InnerToolbar = memo(function InnerToolbar({
 
   return (
     <RootFlex align="center" ref={setRootElement}>
-      <StyleSelectFlex flex={collapsed ? 1 : undefined}>
-        <StyleSelectBox padding={isFullscreen ? 2 : 1}>
-          <BlockStyleSelect disabled={disabled} items={blockStyles} />
-        </StyleSelectBox>
-      </StyleSelectFlex>
+      {showBlockStyleSelect && (
+        <StyleSelectFlex flex={collapsed ? 1 : undefined}>
+          <StyleSelectBox padding={isFullscreen ? 2 : 1}>
+            <BlockStyleSelect disabled={disabled} items={blockStyles} />
+          </StyleSelectBox>
+        </StyleSelectFlex>
+      )}
 
       <Flex flex={1}>
         {showActionMenu && (
