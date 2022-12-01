@@ -17,7 +17,7 @@ export const numberOperators = {
   numberEqual: defineSearchOperator({
     buttonLabel: 'is',
     buttonValueComponent: SearchButtonValueNumber,
-    fn: ({fieldPath, value}) =>
+    groqFilter: ({fieldPath, value}) =>
       Number.isFinite(value) && fieldPath ? `${fieldPath} == ${toJSON(value)}` : null,
     initialValue: null,
     inputComponent: SearchFilterNumberInput,
@@ -27,7 +27,7 @@ export const numberOperators = {
   numberGt: defineSearchOperator({
     buttonLabel: '>',
     buttonValueComponent: SearchButtonValueNumber,
-    fn: ({fieldPath, value}) =>
+    groqFilter: ({fieldPath, value}) =>
       Number.isFinite(value) && fieldPath ? `${fieldPath} > ${toJSON(value)}` : null,
     icon: GtIcon,
     initialValue: null,
@@ -38,7 +38,7 @@ export const numberOperators = {
   numberGte: defineSearchOperator({
     buttonLabel: '≥',
     buttonValueComponent: SearchButtonValueNumber,
-    fn: ({fieldPath, value}) =>
+    groqFilter: ({fieldPath, value}) =>
       Number.isFinite(value) && fieldPath ? `${fieldPath} >= ${toJSON(value)}` : null,
     icon: GteIcon,
     initialValue: null,
@@ -49,7 +49,7 @@ export const numberOperators = {
   numberLt: defineSearchOperator({
     buttonLabel: '<',
     buttonValueComponent: SearchButtonValueNumber,
-    fn: ({fieldPath, value}) =>
+    groqFilter: ({fieldPath, value}) =>
       Number.isFinite(value) && fieldPath ? `${fieldPath} < ${toJSON(value)}` : null,
     icon: LtIcon,
     initialValue: null,
@@ -60,7 +60,7 @@ export const numberOperators = {
   numberLte: defineSearchOperator({
     buttonLabel: '≤',
     buttonValueComponent: SearchButtonValueNumber,
-    fn: ({fieldPath, value}) =>
+    groqFilter: ({fieldPath, value}) =>
       Number.isFinite(value) && fieldPath ? `${fieldPath} <= ${toJSON(value)}` : null,
     icon: LteIcon,
     initialValue: null,
@@ -71,7 +71,7 @@ export const numberOperators = {
   numberNotEqual: defineSearchOperator({
     buttonLabel: 'is not',
     buttonValueComponent: SearchButtonValueNumber,
-    fn: ({fieldPath, value}) =>
+    groqFilter: ({fieldPath, value}) =>
       Number.isFinite(value) && fieldPath ? `${fieldPath} != ${toJSON(value)}` : null,
     initialValue: null,
     inputComponent: SearchFilterNumberInput,
@@ -81,7 +81,7 @@ export const numberOperators = {
   numberRange: defineSearchOperator({
     buttonLabel: 'is between',
     buttonValueComponent: SearchButtonValueNumberRange,
-    fn: ({fieldPath, value}) =>
+    groqFilter: ({fieldPath, value}) =>
       Number.isFinite(value?.max) && Number.isFinite(value?.min) && fieldPath
         ? `${fieldPath} > ${toJSON(value?.min)} && ${fieldPath} < ${toJSON(value?.max)}`
         : '',

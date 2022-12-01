@@ -8,7 +8,7 @@ export const referenceOperators = {
   referenceEqual: defineSearchOperator({
     buttonLabel: 'is',
     buttonValueComponent: SearchButtonValueReference,
-    fn: ({fieldPath, value}) =>
+    groqFilter: ({fieldPath, value}) =>
       value?._ref && fieldPath ? `${fieldPath}._ref == ${toJSON(value._ref)}` : null,
     initialValue: null,
     inputComponent: SearchFilterReferenceInput,
@@ -18,7 +18,7 @@ export const referenceOperators = {
   referenceNotEqual: defineSearchOperator({
     buttonLabel: 'is not',
     buttonValueComponent: SearchButtonValueReference,
-    fn: ({fieldPath, value}) =>
+    groqFilter: ({fieldPath, value}) =>
       value?._ref && fieldPath ? `${fieldPath}._ref != ${toJSON(value._ref)}` : null,
     initialValue: null,
     inputComponent: SearchFilterReferenceInput,
@@ -28,7 +28,7 @@ export const referenceOperators = {
   referencesAssetFile: defineSearchOperator({
     buttonLabel: '→',
     buttonValueComponent: SearchButtonValueReference,
-    fn: ({value}) => (value?._ref ? `references(${toJSON(value._ref)})` : null),
+    groqFilter: ({value}) => (value?._ref ? `references(${toJSON(value._ref)})` : null),
     initialValue: null,
     inputComponent: SearchFilterAssetInput('file'),
     label: 'file',
@@ -37,7 +37,7 @@ export const referenceOperators = {
   referencesAssetImage: defineSearchOperator({
     buttonLabel: '→',
     buttonValueComponent: SearchButtonValueReference,
-    fn: ({value}) => (value?._ref ? `references(${toJSON(value._ref)})` : null),
+    groqFilter: ({value}) => (value?._ref ? `references(${toJSON(value._ref)})` : null),
     initialValue: null,
     inputComponent: SearchFilterAssetInput('image'),
     label: 'image',
@@ -46,7 +46,7 @@ export const referenceOperators = {
   referencesDocument: defineSearchOperator({
     buttonLabel: '→',
     buttonValueComponent: SearchButtonValueReference,
-    fn: ({value}) => (value?._ref ? `references(${toJSON(value._ref)})` : null),
+    groqFilter: ({value}) => (value?._ref ? `references(${toJSON(value._ref)})` : null),
     initialValue: null,
     inputComponent: SearchFilterReferenceInput,
     label: 'document',

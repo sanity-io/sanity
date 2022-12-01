@@ -36,7 +36,7 @@ const COMMON = {
   dateEqual: {
     buttonLabel: 'is',
     buttonValueComponent: SearchButtonValueDate,
-    fn: ({fieldPath, value}: SearchOperatorParams<string>) => {
+    groqFilter: ({fieldPath, value}: SearchOperatorParams<string>) => {
       return value && fieldPath ? `${fieldPath} == ${toJSON(value)}` : null
     },
     initialValue: null,
@@ -50,7 +50,7 @@ const COMMON = {
   dateNotEqual: {
     buttonLabel: 'is not',
     buttonValueComponent: SearchButtonValueDate,
-    fn: ({fieldPath, value}: SearchOperatorParams<string>) => {
+    groqFilter: ({fieldPath, value}: SearchOperatorParams<string>) => {
       return value && fieldPath ? `${fieldPath} != ${toJSON(value)}` : null
     },
     initialValue: null,
@@ -61,7 +61,7 @@ const COMMON = {
 export const dateOperators = {
   dateAfter: defineSearchOperator({
     ...COMMON.dateAfter,
-    fn: ({fieldPath, value}: SearchOperatorParams<string>) => {
+    groqFilter: ({fieldPath, value}: SearchOperatorParams<string>) => {
       return value && fieldPath ? `${fieldPath} > ${toJSON(value)}` : null
     },
     inputComponent: SearchFilterDateInput,
@@ -69,7 +69,7 @@ export const dateOperators = {
   }),
   dateBefore: defineSearchOperator({
     ...COMMON.dateBefore,
-    fn: ({fieldPath, value}: SearchOperatorParams<string>) => {
+    groqFilter: ({fieldPath, value}: SearchOperatorParams<string>) => {
       return value && fieldPath ? `${fieldPath} < ${toJSON(value)}` : null
     },
     inputComponent: SearchFilterDateInput,
@@ -82,7 +82,7 @@ export const dateOperators = {
   }),
   dateLast: defineSearchOperator({
     ...COMMON.dateLast,
-    fn: ({fieldPath, value}: SearchOperatorParams<OperatorDateLastValue>) => {
+    groqFilter: ({fieldPath, value}: SearchOperatorParams<OperatorDateLastValue>) => {
       const flooredValue = typeof value?.value === 'number' ? Math.floor(value.value) : undefined
       const timestampAgo = Number.isFinite(flooredValue)
         ? sub(new Date(), {
@@ -107,7 +107,7 @@ export const dateOperators = {
   }),
   dateTimeAfter: defineSearchOperator({
     ...COMMON.dateAfter,
-    fn: ({fieldPath, value}: SearchOperatorParams<string>) => {
+    groqFilter: ({fieldPath, value}: SearchOperatorParams<string>) => {
       return value && fieldPath ? `dateTime(${fieldPath}) > dateTime(${toJSON(value)})` : null
     },
     inputComponent: SearchFilterDateTimeInput,
@@ -115,7 +115,7 @@ export const dateOperators = {
   }),
   dateTimeBefore: defineSearchOperator({
     ...COMMON.dateBefore,
-    fn: ({fieldPath, value}: SearchOperatorParams<string>) => {
+    groqFilter: ({fieldPath, value}: SearchOperatorParams<string>) => {
       return value && fieldPath ? `dateTime(${fieldPath}) < dateTime(${toJSON(value)})` : null
     },
     inputComponent: SearchFilterDateTimeInput,
@@ -128,7 +128,7 @@ export const dateOperators = {
   }),
   dateTimeLast: defineSearchOperator({
     ...COMMON.dateLast,
-    fn: ({fieldPath, value}: SearchOperatorParams<OperatorDateLastValue>) => {
+    groqFilter: ({fieldPath, value}: SearchOperatorParams<OperatorDateLastValue>) => {
       const flooredValue = typeof value?.value === 'number' ? Math.floor(value.value) : undefined
       const timestampAgo = Number.isFinite(flooredValue)
         ? sub(new Date(), {

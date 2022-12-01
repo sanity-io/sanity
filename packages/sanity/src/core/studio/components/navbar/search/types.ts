@@ -50,7 +50,7 @@ export interface FilterMenuItemHeader {
 export interface SearchFilter {
   fieldId?: string
   filterName: string
-  operatorType?: string
+  operatorType: string
   value?: any
 }
 

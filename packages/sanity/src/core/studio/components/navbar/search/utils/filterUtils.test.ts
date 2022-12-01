@@ -106,8 +106,9 @@ describe('narrowDocumentTypes', () => {
 
 describe('validateFilter', () => {
   it('should not allow filters with missing filter definitions', () => {
-    const invalidFilter = {
+    const invalidFilter: SearchFilter = {
       filterName: '_invalid',
+      operatorType: 'defined',
     }
 
     const isValid = validateFilter({
@@ -120,9 +121,10 @@ describe('validateFilter', () => {
   })
 
   it('should not allow filters with missing field definitions', () => {
-    const invalidFilter = {
-      filterId: '_invalid',
+    const invalidFilter: SearchFilter = {
+      fieldId: '_invalid',
       filterName: 'string',
+      operatorType: 'defined',
     }
 
     const isValid = validateFilter({
@@ -135,8 +137,8 @@ describe('validateFilter', () => {
   })
 
   it('should not allow filters with invalid operator definitions', () => {
-    const invalidFilter = {
-      filterId: ageFieldId,
+    const invalidFilter: SearchFilter = {
+      fieldId: ageFieldId,
       filterName: 'number',
       operatorType: '_invalid',
     }
@@ -150,5 +152,19 @@ describe('validateFilter', () => {
     expect(isValid).toEqual(false)
   })
 
-  it.todo(`should not allow filters that don't return a filter value`)
+  it(`should not allow filters that don't return a filter value`, () => {
+    const invalidFilter: SearchFilter = {
+      fieldId: ageFieldId,
+      filterName: 'number',
+      operatorType: 'numberEqual',
+    }
+
+    const isValid = validateFilter({
+      filter: invalidFilter,
+      fieldDefinitions: mockFieldDefinitions,
+      filterDefinitions,
+      operatorDefinitions,
+    })
+    expect(isValid).toEqual(false)
+  })
 })

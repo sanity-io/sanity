@@ -4,7 +4,7 @@ import {SearchOperatorBase, SearchOperatorInput, SearchOperatorParams} from './o
 /** @internal */
 export interface SearchOperatorDefinition<TValue = any> extends SearchOperatorBase {
   buttonValueComponent?: ComponentType<{value: TValue}>
-  fn: (params: SearchOperatorParams<TValue>) => string | null
+  groqFilter: (params: SearchOperatorParams<TValue>) => string | null
   initialValue?: TValue
   inputComponent?: SearchOperatorInput<TValue>
   type: string

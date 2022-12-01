@@ -7,7 +7,7 @@ export const slugOperators = {
   slugEqual: defineSearchOperator({
     buttonLabel: 'is',
     buttonValueComponent: SearchButtonValueString,
-    fn: ({fieldPath, value}) =>
+    groqFilter: ({fieldPath, value}) =>
       value && fieldPath ? `${fieldPath}.current == ${toJSON(value)}` : null,
     initialValue: null,
     inputComponent: SearchFilterStringInput,
@@ -17,7 +17,7 @@ export const slugOperators = {
   slugMatches: defineSearchOperator({
     buttonLabel: 'contains',
     buttonValueComponent: SearchButtonValueString,
-    fn: ({fieldPath, value}) =>
+    groqFilter: ({fieldPath, value}) =>
       value && fieldPath ? `${fieldPath}.current match ${toJSON(value)}` : null,
     initialValue: null,
     inputComponent: SearchFilterStringInput,
@@ -27,7 +27,7 @@ export const slugOperators = {
   slugNotEqual: defineSearchOperator({
     buttonLabel: 'is not',
     buttonValueComponent: SearchButtonValueString,
-    fn: ({fieldPath, value}) =>
+    groqFilter: ({fieldPath, value}) =>
       value && fieldPath ? `${fieldPath}.current != ${toJSON(value)}` : null,
     initialValue: null,
     inputComponent: SearchFilterStringInput,
@@ -37,7 +37,7 @@ export const slugOperators = {
   slugNotMatches: defineSearchOperator({
     buttonLabel: 'does not contain',
     buttonValueComponent: SearchButtonValueString,
-    fn: ({fieldPath, value}) =>
+    groqFilter: ({fieldPath, value}) =>
       value && fieldPath ? `!(${fieldPath}.current match ${toJSON(value)})` : null,
     initialValue: null,
     inputComponent: SearchFilterStringInput,

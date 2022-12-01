@@ -8,7 +8,8 @@ export const stringOperators = {
   stringEqual: defineSearchOperator({
     buttonLabel: 'is',
     buttonValueComponent: SearchButtonValueString,
-    fn: ({fieldPath, value}) => (value && fieldPath ? `${fieldPath} == ${toJSON(value)}` : null),
+    groqFilter: ({fieldPath, value}) =>
+      value && fieldPath ? `${fieldPath} == ${toJSON(value)}` : null,
     initialValue: null,
     inputComponent: SearchFilterStringInput,
     label: 'is',
@@ -17,7 +18,8 @@ export const stringOperators = {
   stringListEqual: defineSearchOperator({
     buttonLabel: 'is',
     buttonValueComponent: SearchButtonValueString,
-    fn: ({fieldPath, value}) => (value && fieldPath ? `${fieldPath} == ${toJSON(value)}` : null),
+    groqFilter: ({fieldPath, value}) =>
+      value && fieldPath ? `${fieldPath} == ${toJSON(value)}` : null,
     initialValue: null,
     inputComponent: SearchFilterStringListInput,
     label: 'is',
@@ -26,7 +28,8 @@ export const stringOperators = {
   stringListNotEqual: defineSearchOperator({
     buttonLabel: 'is not',
     buttonValueComponent: SearchButtonValueString,
-    fn: ({fieldPath, value}) => (value && fieldPath ? `${fieldPath} != ${toJSON(value)}` : null),
+    groqFilter: ({fieldPath, value}) =>
+      value && fieldPath ? `${fieldPath} != ${toJSON(value)}` : null,
     initialValue: null,
     inputComponent: SearchFilterStringListInput,
     label: 'is not',
@@ -35,7 +38,8 @@ export const stringOperators = {
   stringMatches: defineSearchOperator({
     buttonLabel: 'contains',
     buttonValueComponent: SearchButtonValueString,
-    fn: ({fieldPath, value}) => (value && fieldPath ? `${fieldPath} match ${toJSON(value)}` : null),
+    groqFilter: ({fieldPath, value}) =>
+      value && fieldPath ? `${fieldPath} match ${toJSON(value)}` : null,
     initialValue: null,
     inputComponent: SearchFilterStringInput,
     label: 'contains',
@@ -44,7 +48,8 @@ export const stringOperators = {
   stringNotEqual: defineSearchOperator({
     buttonLabel: 'is not',
     buttonValueComponent: SearchButtonValueString,
-    fn: ({fieldPath, value}) => (value && fieldPath ? `${fieldPath} != ${toJSON(value)}` : null),
+    groqFilter: ({fieldPath, value}) =>
+      value && fieldPath ? `${fieldPath} != ${toJSON(value)}` : null,
     initialValue: null,
     inputComponent: SearchFilterStringInput,
     label: 'is not',
@@ -53,7 +58,7 @@ export const stringOperators = {
   stringNotMatches: defineSearchOperator({
     buttonLabel: 'does not contain',
     buttonValueComponent: SearchButtonValueString,
-    fn: ({fieldPath, value}) =>
+    groqFilter: ({fieldPath, value}) =>
       value && fieldPath ? `!(${fieldPath} match ${toJSON(value)})` : null,
     initialValue: null,
     inputComponent: SearchFilterStringInput,

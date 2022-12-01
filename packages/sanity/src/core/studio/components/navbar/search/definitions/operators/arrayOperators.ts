@@ -21,7 +21,7 @@ export const arrayOperators = {
   arrayCountEqual: defineSearchOperator({
     buttonLabel: 'has',
     buttonValueComponent: SearchButtonValueNumberCount,
-    fn: ({fieldPath, value}) =>
+    groqFilter: ({fieldPath, value}) =>
       Number.isFinite(value) && fieldPath ? `count(${fieldPath}) == ${toJSON(value)}` : null,
     initialValue: null,
     inputComponent: SearchFilterNumberInput,
@@ -31,7 +31,7 @@ export const arrayOperators = {
   arrayCountGt: defineSearchOperator({
     buttonLabel: 'has >',
     buttonValueComponent: SearchButtonValueNumberCount,
-    fn: ({fieldPath, value}) =>
+    groqFilter: ({fieldPath, value}) =>
       Number.isFinite(value) && fieldPath ? `count(${fieldPath}) > ${toJSON(value)}` : null,
     icon: GtIcon,
     initialValue: null,
@@ -42,7 +42,7 @@ export const arrayOperators = {
   arrayCountGte: defineSearchOperator({
     buttonLabel: 'has ≥',
     buttonValueComponent: SearchButtonValueNumberCount,
-    fn: ({fieldPath, value}) =>
+    groqFilter: ({fieldPath, value}) =>
       Number.isFinite(value) && fieldPath ? `count(${fieldPath}) >= ${toJSON(value)}` : null,
     icon: GteIcon,
     initialValue: null,
@@ -53,7 +53,7 @@ export const arrayOperators = {
   arrayCountLt: defineSearchOperator({
     buttonLabel: 'has <',
     buttonValueComponent: SearchButtonValueNumberCount,
-    fn: ({fieldPath, value}) =>
+    groqFilter: ({fieldPath, value}) =>
       Number.isFinite(value) && fieldPath ? `count(${fieldPath}) < ${toJSON(value)}` : null,
     icon: LtIcon,
     initialValue: null,
@@ -64,7 +64,7 @@ export const arrayOperators = {
   arrayCountLte: defineSearchOperator({
     buttonLabel: 'has ≤',
     buttonValueComponent: SearchButtonValueNumberCount,
-    fn: ({fieldPath, value}) =>
+    groqFilter: ({fieldPath, value}) =>
       Number.isFinite(value) && fieldPath ? `count(${fieldPath}) <= ${toJSON(value)}` : null,
     icon: LteIcon,
     initialValue: null,
@@ -75,7 +75,7 @@ export const arrayOperators = {
   arrayCountNotEqual: defineSearchOperator({
     buttonLabel: 'does not have',
     buttonValueComponent: SearchButtonValueNumberCount,
-    fn: ({fieldPath, value}) =>
+    groqFilter: ({fieldPath, value}) =>
       Number.isFinite(value) && fieldPath ? `count(${fieldPath}) != ${toJSON(value)}` : null,
     initialValue: null,
     inputComponent: SearchFilterNumberInput,
@@ -87,7 +87,7 @@ export const arrayOperators = {
     buttonValueComponent: SearchButtonValueNumberCountRange,
     inputComponent: SearchFilterNumberRangeInput,
     initialValue: typed<OperatorNumberRangeValue>({max: null, min: null}),
-    fn: ({fieldPath, value}) =>
+    groqFilter: ({fieldPath, value}) =>
       Number.isFinite(value?.max) && Number.isFinite(value?.min) && fieldPath
         ? `count(${fieldPath}) > ${toJSON(value?.min)} && count(${fieldPath}) < ${toJSON(
             value?.max
@@ -99,7 +99,8 @@ export const arrayOperators = {
   arrayListContains: defineSearchOperator({
     buttonLabel: 'contains',
     buttonValueComponent: SearchButtonValueString,
-    fn: ({fieldPath, value}) => (value && fieldPath ? `${toJSON(value)} in ${fieldPath}` : null),
+    groqFilter: ({fieldPath, value}) =>
+      value && fieldPath ? `${toJSON(value)} in ${fieldPath}` : null,
     initialValue: null,
     inputComponent: SearchFilterStringListInput,
     label: 'contains',
@@ -108,7 +109,8 @@ export const arrayOperators = {
   arrayListNotContains: defineSearchOperator({
     buttonLabel: 'does not contain',
     buttonValueComponent: SearchButtonValueString,
-    fn: ({fieldPath, value}) => (value && fieldPath ? `!(${toJSON(value)} in ${fieldPath})` : null),
+    groqFilter: ({fieldPath, value}) =>
+      value && fieldPath ? `!(${toJSON(value)} in ${fieldPath})` : null,
     initialValue: null,
     inputComponent: SearchFilterStringListInput,
     label: 'does not contain',
@@ -117,7 +119,7 @@ export const arrayOperators = {
   arrayReferenceContains: defineSearchOperator({
     buttonLabel: 'contains',
     buttonValueComponent: SearchButtonValueReference,
-    fn: ({fieldPath, value}) =>
+    groqFilter: ({fieldPath, value}) =>
       value?._ref && fieldPath ? `${toJSON(value._ref)} in ${fieldPath}[]._ref` : null,
     initialValue: null,
     inputComponent: SearchFilterReferenceInput,
@@ -127,7 +129,7 @@ export const arrayOperators = {
   arrayReferenceNotContains: defineSearchOperator({
     buttonLabel: 'does not contain',
     buttonValueComponent: SearchButtonValueReference,
-    fn: ({fieldPath, value}) =>
+    groqFilter: ({fieldPath, value}) =>
       value?._ref && fieldPath ? `!(${toJSON(value._ref)} in ${fieldPath}[]._ref)` : null,
     initialValue: null,
     inputComponent: SearchFilterReferenceInput,

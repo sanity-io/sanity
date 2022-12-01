@@ -2,20 +2,21 @@ import intersection from 'lodash/intersection'
 import isEmpty from 'lodash/isEmpty'
 import type {SearchableType} from '../../../../../search'
 import {isNonNullable} from '../../../../../util'
-import {getFilterDefinition, SearchFilterDefinition} from '../definitions/filters'
+import {getFilterDefinition, OperatorItem, SearchFilterDefinition} from '../definitions/filters'
 import {getOperatorDefinition, SearchOperatorDefinition} from '../definitions/operators'
 import type {SearchFieldDefinition, SearchFilter} from '../types'
 
-export function createFilterFromDefinition(filterDefinition: SearchFilterDefinition): SearchFilter {
+export function buildSearchFilter(
+  filterDefinition: SearchFilterDefinition,
+  fieldId?: string
+): SearchFilter {
   return {
+    fieldId,
     filterName: filterDefinition.name,
-  }
-}
-
-export function createFilterFromField(field: SearchFieldDefinition): SearchFilter {
-  return {
-    fieldId: field.id,
-    filterName: field.filterName,
+    operatorType:
+      filterDefinition?.operators.find((operator): operator is OperatorItem => {
+        return operator.type === 'item'
+      })?.name || '',
   }
 }
 
@@ -40,7 +41,7 @@ export function generateFilterQuery({
       })
     )
     .map((filter) => {
-      return getOperatorDefinition(operatorDefinitions, filter.operatorType)?.fn({
+      return getOperatorDefinition(operatorDefinitions, filter.operatorType)?.groqFilter({
         fieldPath: resolveFieldPath({filter, fieldDefinitions, filterDefinitions}),
         value: filter?.value,
       })
@@ -145,6 +146,11 @@ export function validateFilter({
     return false
   }
 
+  // Fail: No matching operator
+  if (!operatorDef) {
+    return false
+  }
+
   // Fail: No matching field definition
   if (filter.fieldId) {
     if (!fieldDef) {
@@ -152,34 +158,40 @@ export function validateFilter({
     }
   }
 
-  // Fail: No matching operator
-  if (filter.operatorType) {
-    if (!operatorDef) {
+  // Field filters:
+  if (filterDef.type === 'field') {
+    // Fail: field definition has invalid path
+    if (!fieldDef?.fieldPath) {
       return false
     }
-  }
-
-  // Fail: Field filter is missing `fieldId`
-  if (filterDef.type === 'field') {
+    // Fail: no field ID
     if (!filter.fieldId) {
       return false
     }
-  }
-
-  // Fail: Pinned filter is missing `fieldId`
-  if (filterDef.type === 'pinned') {
-    if (!filter.fieldId && filterDef.fieldPath) {
+    // Fail: no filter value
+    const hasFilterValue = operatorDef.groqFilter({
+      fieldPath: fieldDef.fieldPath,
+      value: filter.value,
+    })
+    if (!hasFilterValue) {
       return false
     }
   }
 
-  // Fail: Filter query returns null
-  if (operatorDef?.inputComponent) {
-    const hasFilterValue = operatorDef?.fn({
-      fieldPath: filterDef.type === 'pinned' ? filterDef.fieldPath : fieldDef?.fieldPath,
+  // Pinned filters:
+  if (filterDef.type === 'pinned') {
+    // Fail: Missing `fieldId` when `fieldPath` is defined
+    if (!filter.fieldId && filterDef.fieldPath) {
+      return false
+    }
+    // Fail: no filter value
+    const hasFilterValue = operatorDef.groqFilter({
+      fieldPath: filterDef.fieldPath,
       value: filter.value,
     })
-    return !!(filter.operatorType && hasFilterValue)
+    if (!hasFilterValue) {
+      return false
+    }
   }
 
   return true

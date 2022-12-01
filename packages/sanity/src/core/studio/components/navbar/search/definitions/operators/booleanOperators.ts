@@ -7,7 +7,7 @@ export const booleanOperators = {
   booleanEqual: defineSearchOperator({
     buttonLabel: 'is',
     buttonValueComponent: SearchButtonValueBoolean,
-    fn: ({fieldPath, value}: SearchOperatorParams<boolean>) =>
+    groqFilter: ({fieldPath, value}: SearchOperatorParams<boolean>) =>
       typeof value !== 'undefined' && fieldPath ? `${fieldPath} == ${toJSON(value)}` : null,
     initialValue: true,
     inputComponent: SearchFilterBooleanInput,

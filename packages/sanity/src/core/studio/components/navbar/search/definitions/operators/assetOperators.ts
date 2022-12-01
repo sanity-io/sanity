@@ -7,7 +7,7 @@ export const assetOperators = {
   assetFileEqual: defineSearchOperator({
     buttonLabel: 'is',
     buttonValueComponent: SearchButtonValueReference,
-    fn: ({fieldPath, value}) =>
+    groqFilter: ({fieldPath, value}) =>
       value?._ref && fieldPath ? `${fieldPath}.asset._ref == ${toJSON(value._ref)}` : null,
     initialValue: null,
     inputComponent: SearchFilterAssetInput('file'),
@@ -17,7 +17,7 @@ export const assetOperators = {
   assetFileNotEqual: defineSearchOperator({
     buttonLabel: 'is not',
     buttonValueComponent: SearchButtonValueReference,
-    fn: ({fieldPath, value}) =>
+    groqFilter: ({fieldPath, value}) =>
       value?._ref && fieldPath ? `${fieldPath}.asset._ref != ${toJSON(value._ref)}` : null,
     initialValue: null,
     inputComponent: SearchFilterAssetInput('file'),
@@ -27,7 +27,7 @@ export const assetOperators = {
   assetImageEqual: defineSearchOperator({
     buttonLabel: 'is',
     buttonValueComponent: SearchButtonValueReference,
-    fn: ({fieldPath, value}) =>
+    groqFilter: ({fieldPath, value}) =>
       value?._ref && fieldPath ? `${fieldPath}.asset._ref == ${toJSON(value._ref)}` : null,
     initialValue: null,
     inputComponent: SearchFilterAssetInput('image'),
@@ -37,7 +37,7 @@ export const assetOperators = {
   assetImageNotEqual: defineSearchOperator({
     buttonLabel: 'is not',
     buttonValueComponent: SearchButtonValueReference,
-    fn: ({fieldPath, value}) =>
+    groqFilter: ({fieldPath, value}) =>
       value?._ref && fieldPath ? `${fieldPath}.asset._ref != ${toJSON(value._ref)}` : null,
     initialValue: null,
     inputComponent: SearchFilterAssetInput('image'),

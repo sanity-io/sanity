@@ -14,14 +14,14 @@ type Mutable<Type> = {
 const customOperators = [
   defineSearchOperator({
     buttonLabel: 'contains custom',
-    type: 'containsCustom',
+    groqFilter: ({fieldPath}) => `${fieldPath} match 'custom'`,
     label: 'Contains custom',
-    fn: ({fieldPath}) => `${fieldPath} match 'custom'`,
+    type: 'containsCustom',
   }),
   defineSearchOperator({
-    type: 'customUpdatedInTheLastDay',
+    groqFilter: () => `dateTime(_updatedAt) > dateTime(now()) - 60*60*24`,
     label: 'updated in the last day',
-    fn: () => `dateTime(_updatedAt) > dateTime(now()) - 60*60*24`,
+    type: 'customUpdatedInTheLastDay',
   }),
 ] as const
 

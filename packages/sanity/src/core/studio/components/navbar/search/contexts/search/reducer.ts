@@ -1,10 +1,7 @@
 import type {CurrentUser} from '@sanity/types'
 import type {SearchableType, SearchTerms, WeightedHit} from '../../../../../../search'
 import type {RecentSearch} from '../../datastores/recentSearches'
-import {
-  getFilterDefinitionInitialOperatorType,
-  SearchFilterDefinition,
-} from '../../definitions/filters'
+import {SearchFilterDefinition} from '../../definitions/filters'
 import {
   getOperatorDefinition,
   getOperatorInitialValue,
@@ -228,15 +225,9 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
         },
       }
     case 'TERMS_FILTERS_ADD': {
-      const operatorType = getFilterDefinitionInitialOperatorType(
-        state.definitions.filters,
-        action.filter.filterName
-      )
       const newFilter: SearchFilter = {
         ...action.filter,
-        // Set initial value + operator
-        operatorType,
-        value: operatorType && getOperatorInitialValue(state.definitions.operators, operatorType),
+        value: getOperatorInitialValue(state.definitions.operators, action.filter.operatorType),
       }
       const filters = [...state.filters, newFilter]
 

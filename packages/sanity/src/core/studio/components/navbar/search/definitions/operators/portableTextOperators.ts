@@ -7,7 +7,7 @@ export const portableTextOperators = {
   portableTextEqual: defineSearchOperator({
     buttonLabel: 'is',
     buttonValueComponent: SearchButtonValueString,
-    fn: ({fieldPath, value}) =>
+    groqFilter: ({fieldPath, value}) =>
       value && fieldPath ? `pt::text(${fieldPath}) == ${toJSON(value)}` : null,
     initialValue: null,
     inputComponent: SearchFilterStringInput,
@@ -17,7 +17,7 @@ export const portableTextOperators = {
   portableTextMatches: defineSearchOperator({
     buttonLabel: 'contains',
     buttonValueComponent: SearchButtonValueString,
-    fn: ({fieldPath, value}) =>
+    groqFilter: ({fieldPath, value}) =>
       value && fieldPath ? `pt::text(${fieldPath}) match ${toJSON(value)}` : null,
     initialValue: null,
     inputComponent: SearchFilterStringInput,
@@ -27,7 +27,7 @@ export const portableTextOperators = {
   portableTextNotEqual: defineSearchOperator({
     buttonLabel: 'is not',
     buttonValueComponent: SearchButtonValueString,
-    fn: ({fieldPath, value}) =>
+    groqFilter: ({fieldPath, value}) =>
       value && fieldPath ? `pt::text(${fieldPath}) != ${toJSON(value)}` : null,
     initialValue: null,
     inputComponent: SearchFilterStringInput,
@@ -37,7 +37,7 @@ export const portableTextOperators = {
   portableTextNotMatches: defineSearchOperator({
     buttonLabel: 'does not contain',
     buttonValueComponent: SearchButtonValueString,
-    fn: ({fieldPath, value}) =>
+    groqFilter: ({fieldPath, value}) =>
       value && fieldPath ? `!(pt::text(${fieldPath}) match ${toJSON(value)})` : null,
     initialValue: null,
     inputComponent: SearchFilterStringInput,

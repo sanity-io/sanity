@@ -2,6 +2,7 @@ import {Schema} from '@sanity/types'
 import {ButtonTone} from '@sanity/ui'
 import {difference, startCase} from 'lodash'
 import {SearchableType} from '../../../../../../../search'
+import {isNonNullable} from '../../../../../../../util'
 import {
   getFilterDefinition,
   SearchFilterDefinition,
@@ -14,11 +15,7 @@ import {
   SearchFieldDefinition,
   SearchFilter,
 } from '../../../types'
-import {
-  createFilterFromDefinition,
-  createFilterFromField,
-  getFieldFromFilter,
-} from '../../../utils/filterUtils'
+import {buildSearchFilter, getFieldFromFilter} from '../../../utils/filterUtils'
 
 /**
  * Creates a flat list of filter menu items based on the current filter text input.
@@ -45,7 +42,7 @@ export function createFilterMenuItems({
         filterDef.type === 'pinned' && typeof filterDef?.group === 'undefined'
     )
     .filter((filterDef) => includesTitleInPinnedFilterDefinition(filterDef, titleFilter))
-    .map(createFilterFromDefinition)
+    .map((filterDef) => buildSearchFilter(filterDef))
 
   // Extract pinned filters into groups
   const groupedPinnedFilters = filterDefinitions
@@ -56,7 +53,7 @@ export function createFilterMenuItems({
     .filter((filterDef) => includesTitleInPinnedFilterDefinition(filterDef, titleFilter))
     .reduce<Record<string, SearchFilter[]>>((acc, val) => {
       acc[val.group] = acc[val.group] || []
-      acc[val.group].push(createFilterFromDefinition(val))
+      acc[val.group].push(buildSearchFilter(val))
       return acc
     }, {})
 
@@ -72,8 +69,15 @@ export function createFilterMenuItems({
   })
 
   const fieldFilters = fieldDefinitions
-    .filter((filter) => includesTitleInFieldDefinition(filter, titleFilter))
-    .map(createFilterFromField)
+    .filter((fieldDef) => includesTitleInFieldDefinition(fieldDef, titleFilter))
+    .map((fieldDef) => {
+      const filterDef = getFilterDefinition(filterDefinitions, fieldDef.filterName)
+      if (filterDef) {
+        return buildSearchFilter(filterDef, fieldDef.id)
+      }
+      return null
+    })
+    .filter(isNonNullable)
 
   if (documentTypesNarrowed.length === 0) {
     return [

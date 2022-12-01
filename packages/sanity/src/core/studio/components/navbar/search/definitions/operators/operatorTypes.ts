@@ -40,7 +40,7 @@ export type ValuelessSearchOperatorParams = {fieldPath?: string}
  */
 export interface SearchOperatorBuilder<TType extends string, TValue> extends SearchOperatorBase {
   buttonValueComponent: ComponentType<{value: TValue}>
-  fn: (params: SearchOperatorParams<TValue>) => string | null
+  groqFilter: (params: SearchOperatorParams<TValue>) => string | null
   initialValue: TValue | null
   inputComponent: SearchOperatorInput<TValue>
   type: TType
@@ -51,7 +51,7 @@ export interface SearchOperatorBuilder<TType extends string, TValue> extends Sea
  */
 export interface ValuelessSearchOperatorBuilder<TType extends string> extends SearchOperatorBase {
   buttonValueComponent?: never
-  fn: (params: ValuelessSearchOperatorParams) => string | null
+  groqFilter: (params: ValuelessSearchOperatorParams) => string | null
   initialValue?: never
   inputComponent?: never
   type: TType

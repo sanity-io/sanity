@@ -2,18 +2,18 @@ import {IntrinsicTypeName} from '@sanity/types'
 import {ComponentType} from 'react'
 import {SearchOperatorType} from './operators/defaultOperators'
 
-type Operator<TOperators = string> = OperatorDivider | OperatorItem<TOperators>
+export type Operator<TOperators = string> = OperatorDivider | OperatorItem<TOperators>
 
-type OperatorDivider = {
+export type OperatorDivider = {
   type: 'divider'
 }
 
-type OperatorItem<TOperators = string> = {
+export type OperatorItem<TOperators = string> = {
   name: TOperators
   type: 'item'
 }
 
-interface SearchFieldBaseDefinition<TOperators> {
+interface SearchFilterBaseDefinition<TOperators> {
   description?: string
   icon: ComponentType
   name: string
@@ -21,13 +21,13 @@ interface SearchFieldBaseDefinition<TOperators> {
 }
 
 export interface SearchFilterFieldDefinition<TOperators = string>
-  extends SearchFieldBaseDefinition<TOperators> {
+  extends SearchFilterBaseDefinition<TOperators> {
   fieldType: IntrinsicTypeName
   type: 'field'
 }
 
 export interface SearchFilterPinnedDefinition<TOperators = string>
-  extends SearchFieldBaseDefinition<TOperators> {
+  extends SearchFilterBaseDefinition<TOperators> {
   fieldPath?: string
   group?: string
   title: string
@@ -66,14 +66,6 @@ export function getFilterDefinition(
   return definitions.find((filter) => filter.name === filterName)
 }
 
-export function getFilterDefinitionInitialOperatorType(
-  definitions: SearchFilterDefinition[],
-  filterName: string
-): string | undefined {
-  const filterDefinition = getFilterDefinition(definitions, filterName)
-  return filterDefinition?.operators.find(isOperatorItem)?.name
-}
-
 // TODO: we'll need to add field type to pinned filters, in order to properly infer
 // supported field types in the event all field filters are disabled / override
 export function getSupportedFieldTypes(filterDefs: SearchFilterDefinition[]): string[] {
@@ -83,8 +75,4 @@ export function getSupportedFieldTypes(filterDefs: SearchFilterDefinition[]): st
     }
     return acc
   }, [])
-}
-
-function isOperatorItem(operator: Operator): operator is OperatorItem {
-  return operator.type === 'item'
 }
