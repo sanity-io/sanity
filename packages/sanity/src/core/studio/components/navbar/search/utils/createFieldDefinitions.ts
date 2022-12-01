@@ -6,12 +6,12 @@ import {
   StringDefinition,
 } from '@sanity/types'
 import startCase from 'lodash/startCase'
-import {Md5} from 'ts-md5'
 import {getSupportedFieldTypes, SearchFilterDefinition} from '../definitions/filters'
 import type {SearchFieldDefinition} from '../types'
+import {generateFieldId} from './generateFieldId'
 import {getSearchableOmnisearchTypes} from './selectors'
 
-const MAX_OBJECT_DEPTH = 4
+export const MAX_OBJECT_TRAVERSAL_DEPTH = 3
 
 export function createFieldDefinitions(
   schema: Schema,
@@ -74,7 +74,7 @@ function getDocumentFieldDefinitions(
     prevFieldPath?: string
     prevTitlePath?: string[]
   }) {
-    const continueRecursion = depth < MAX_OBJECT_DEPTH
+    const continueRecursion = depth <= MAX_OBJECT_TRAVERSAL_DEPTH
     const isInternalField = defType.name.startsWith('_')
     const title = defType?.title || startCase(defType.name)
     const fieldPath = prevFieldPath ? `${prevFieldPath}.${defType.name}` : defType.name
@@ -108,7 +108,7 @@ function getDocumentFieldDefinitions(
     acc.push({
       documentTypes: documentType && !isInternalField ? [documentType] : [],
       fieldPath,
-      filterName: resolveFilterType(defType),
+      filterName: resolveFilterName(defType),
       id: '',
       name: defType.name,
       titlePath,
@@ -154,9 +154,7 @@ function getDocumentFieldDefinitions(
 function addFieldDefinitionId(field: SearchFieldDefinition) {
   return {
     ...field,
-    id: Md5.hashStr(
-      JSON.stringify([field.documentTypes, field.fieldPath, field.filterName, field.type])
-    ),
+    id: generateFieldId(field),
   }
 }
 
@@ -195,7 +193,7 @@ function isStringListDefinition(schemaType: SchemaTypeDefinition): schemaType is
   return false
 }
 
-function resolveFilterType(schemaType: SchemaTypeDefinition) {
+function resolveFilterName(schemaType: SchemaTypeDefinition) {
   if (isStringListDefinition(schemaType)) {
     return 'stringList'
   }
