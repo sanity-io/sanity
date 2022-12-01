@@ -1,9 +1,8 @@
-import {CalendarIcon} from '@sanity/icons'
 import Schema from '@sanity/schema'
 import type {CurrentUser, ObjectSchemaType} from '@sanity/types'
 import type {SearchTerms} from '../../../../../search'
-import {defineSearchFilter, SearchFilterDefinition} from '../definitions/filters'
-import {SearchOperator} from '../definitions/operators'
+import {filterDefinitions} from '../definitions/defaultFilters'
+import {operatorDefinitions} from '../definitions/operators/defaultOperators'
 import {SearchFilter} from '../types'
 import {createFieldDefinitions} from '../utils/createFieldDefinitions'
 import {createRecentSearchesStore, MAX_RECENT_SEARCHES, RecentSearchesStore} from './recentSearches'
@@ -12,10 +11,23 @@ const mockSchema = Schema.compile({
   name: 'default',
   types: [
     {
+      name: 'author',
+      title: 'Author',
+      type: 'document',
+      fields: [{name: 'name', type: 'string'}],
+    },
+    {
       name: 'article',
       title: 'Article',
       type: 'document',
-      fields: [{name: 'title', type: 'string'}],
+      fields: [
+        {name: 'title', type: 'string'},
+        {
+          name: 'author',
+          type: 'reference',
+          to: [{type: 'author'}],
+        },
+      ],
     },
     {
       // eslint-disable-next-line camelcase
@@ -29,19 +41,6 @@ const mockSchema = Schema.compile({
 })
 const mockArticle: ObjectSchemaType = mockSchema.get('article')
 const mockBook: ObjectSchemaType = mockSchema.get('book')
-const mockFilterDefinitions: SearchFilterDefinition[] = [
-  defineSearchFilter({
-    fieldType: 'string',
-    icon: CalendarIcon,
-    operators: [
-      {name: 'defined', type: 'item'},
-      {name: 'notDefined', type: 'item'},
-    ],
-    name: 'string',
-    type: 'field',
-  }),
-]
-const mockOperatorDefinitions: SearchOperator[] = []
 
 const mockUser: CurrentUser = {
   id: 'mock-user',
@@ -51,13 +50,13 @@ const mockUser: CurrentUser = {
   roles: [],
 }
 
-const mockFieldDefinitions = createFieldDefinitions(mockSchema, mockFilterDefinitions)
+const mockFieldDefinitions = createFieldDefinitions(mockSchema, filterDefinitions)
 
 const recentSearchesStore = createRecentSearchesStore({
   dataset: 'dataset',
   fieldDefinitions: mockFieldDefinitions,
-  filterDefinitions: mockFilterDefinitions,
-  operatorDefinitions: mockOperatorDefinitions,
+  filterDefinitions,
+  operatorDefinitions,
   projectId: ' projectId',
   schema: mockSchema,
   user: mockUser,
@@ -121,6 +120,9 @@ describe('search-store', () => {
     })
 
     it('should filter out searches that contain invalid filters', () => {
+      // eslint-disable-next-line max-nested-callbacks
+      const referenceFieldDef = mockFieldDefinitions.find((def) => def.filterName === 'reference')
+
       const searchTerms: SearchTerms = {query: 'foo', types: [mockArticle]}
       const invalidFilter1: SearchFilter = {
         filterName: '_invalidFilterType', // invalid filter name
@@ -138,13 +140,35 @@ describe('search-store', () => {
         operatorType: 'defined',
         value: null,
       }
+      const invalidFilter4: SearchFilter = {
+        fieldId: referenceFieldDef?.id,
+        filterName: 'reference',
+        operatorType: 'referenceEqual',
+        // invalid value
+        value: {
+          assetName: 'qux',
+          foo: 'bar',
+          id: 123,
+        },
+      }
+      const validFilter1: SearchFilter = {
+        fieldId: referenceFieldDef?.id,
+        filterName: 'reference',
+        operatorType: 'referenceEqual',
+        value: {
+          _ref: 'foo',
+          _type: 'sanity.imageAsset',
+        },
+      }
 
       recentSearchesStore.addSearch(searchTerms, [invalidFilter1])
       recentSearchesStore.addSearch(searchTerms, [invalidFilter2])
       recentSearchesStore.addSearch(searchTerms, [invalidFilter3])
+      recentSearchesStore.addSearch(searchTerms, [invalidFilter4])
+      recentSearchesStore.addSearch(searchTerms, [validFilter1])
       recentSearchesStore.addSearch(searchTerms)
       const recentTerms = recentSearchesStore.getRecentSearches()
-      expect(recentTerms.length).toEqual(1)
+      expect(recentTerms.length).toEqual(2)
     })
 
     it('should return recent terms', () => {
@@ -224,18 +248,19 @@ describe('search-store', () => {
         types: [mockArticle],
       }
       // eslint-disable-next-line max-nested-callbacks
-      const fieldId = mockFieldDefinitions.find((def) => def.filterName === 'string')?.id
+      const stringFieldDef = mockFieldDefinitions.find((def) => def.filterName === 'string')
 
       const searchFilter: SearchFilter = {
-        fieldId,
+        fieldId: stringFieldDef?.id,
         filterName: 'string',
         operatorType: 'defined',
         value: null,
       }
       const recentSearches = recentSearchesStore.addSearch(searchTerms, [searchFilter])
+
       expect(recentSearches[0]?.filters).toEqual([
         {
-          fieldId,
+          fieldId: stringFieldDef?.id,
           filterName: 'string',
           operatorType: 'defined',
           value: null,

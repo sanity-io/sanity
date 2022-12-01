@@ -27,29 +27,6 @@ export function getFilterKey(filter: SearchFilter): string {
 }
 
 /**
- * Check if a filter is 'complete' / has a value that can be used in a GROQ query.
- */
-export function isFilterComplete(
-  filter: SearchFilter,
-  filterDefinitions: SearchFilterDefinition[],
-  fieldDefinitions: SearchFieldDefinition[],
-  operatorDefinitions: SearchOperator[]
-): boolean {
-  const filterDef = getFilterDefinition(filterDefinitions, filter.filterName)
-  if (!filterDef) {
-    return false
-  }
-
-  const field = getFieldFromFilter(fieldDefinitions, filter)
-  const operator = getOperator(operatorDefinitions, filter.operatorType)
-  const hasFilterValue = operator?.fn({
-    fieldPath: filterDef.type === 'pinned' ? filterDef.fieldPath : field?.fieldPath,
-    value: filter.value,
-  })
-  return operator?.inputComponent ? !!(filter.operatorType && hasFilterValue) : true
-}
-
-/**
  * Validate if the supplied filter:
  * - has a valid filter defintion
  * - has a valid field definition (if it references a fieldId)
@@ -58,41 +35,53 @@ export function isFilterComplete(
 export function validateFilter(
   filter: SearchFilter,
   filterDefinitions: SearchFilterDefinition[],
-  fieldDefinitions: SearchFieldDefinition[]
+  fieldDefinitions: SearchFieldDefinition[],
+  operatorDefinitions: SearchOperator[]
 ): boolean {
   const filterDef = getFilterDefinition(filterDefinitions, filter.filterName)
+  const operator = getOperator(operatorDefinitions, filter.operatorType)
+  const fieldDef = getFieldFromFilter(fieldDefinitions, filter)
 
-  // No matching filter definition
+  // Fail: No matching filter definition
   if (!filterDef) {
     return false
   }
 
-  // No matching field definition
+  // Fail: No matching field definition
   if (filter.fieldId) {
-    if (!fieldDefinitions.find((f) => f.id === filter.fieldId)) {
+    if (!fieldDef) {
       return false
     }
   }
 
-  // No matching operator
+  // Fail: No matching operator
   if (filter.operatorType) {
-    if (!filterDef.operators.find((o) => o.type === 'item' && o.name === filter.operatorType)) {
+    if (!operator) {
       return false
     }
   }
 
-  // Field filter: missing `fieldId`
+  // Fail: Field filter is missing `fieldId`
   if (filterDef.type === 'field') {
     if (!filter.fieldId) {
       return false
     }
   }
 
-  // Pinned filter: missing `fieldId`
+  // Fail: Pinned filter is missing `fieldId`
   if (filterDef.type === 'pinned') {
     if (!filter.fieldId && filterDef.fieldPath) {
       return false
     }
+  }
+
+  // Fail: Filter query returns null
+  if (operator?.inputComponent) {
+    const hasFilterValue = operator?.fn({
+      fieldPath: filterDef.type === 'pinned' ? filterDef.fieldPath : fieldDef?.fieldPath,
+      value: filter.value,
+    })
+    return !!(filter.operatorType && hasFilterValue)
   }
 
   return true

@@ -10,7 +10,7 @@ import {createRecentSearchesStore, RecentSearch} from '../../datastores/recentSe
 import {useSearch} from '../../hooks/useSearch'
 import type {SearchFieldDefinition, SearchOrdering} from '../../types'
 import {createFieldDefinitions} from '../../utils/createFieldDefinitions'
-import {isFilterComplete} from '../../utils/filterUtils'
+import {validateFilter} from '../../utils/filterUtils'
 import {hasSearchableTerms} from '../../utils/hasSearchableTerms'
 import {isRecentSearchTerms} from '../../utils/isRecentSearchTerms'
 import {initialSearchState, searchReducer} from './reducer'
@@ -103,7 +103,7 @@ export function SearchProvider({
 
   // Get a list of 'complete' filters (filters that return valid values)
   const completeFilters = currentFilters.filter((filter) =>
-    isFilterComplete(filter, filters, fields, operators)
+    validateFilter(filter, filters, fields, operators)
   )
 
   const handleSetOnClose = useCallback((onClose: () => void) => {

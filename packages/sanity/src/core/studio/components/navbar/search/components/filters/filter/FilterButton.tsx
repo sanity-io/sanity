@@ -4,7 +4,7 @@ import React, {KeyboardEvent, useCallback, useState} from 'react'
 import styled from 'styled-components'
 import {useSearchState} from '../../../contexts/search/useSearchState'
 import type {SearchFilter} from '../../../types'
-import {getFilterKey, isFilterComplete} from '../../../utils/filterUtils'
+import {getFilterKey, validateFilter} from '../../../utils/filterUtils'
 import {FilterLabel} from '../../common/FilterLabel'
 import {FilterPopoverWrapper} from '../common/FilterPopoverWrapper'
 import {FilterPopoverContent} from './FilterPopoverContent'
@@ -57,7 +57,7 @@ export function FilterButton({filter, initialOpen}: FilterButtonProps) {
     [handleRemove]
   )
 
-  const isComplete = isFilterComplete(
+  const isComplete = validateFilter(
     filter,
     definitions.filters,
     definitions.fields,

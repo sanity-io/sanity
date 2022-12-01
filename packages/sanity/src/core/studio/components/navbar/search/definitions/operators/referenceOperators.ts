@@ -1,7 +1,4 @@
-import {
-  SearchButtonValueAsset,
-  SearchButtonValueReference,
-} from '../../components/filters/common/ButtonValue'
+import {SearchButtonValueReference} from '../../components/filters/common/ButtonValue'
 import {SearchFilterAssetInput} from '../../components/filters/filter/inputs/asset/Asset'
 import {SearchFilterReferenceInput} from '../../components/filters/filter/inputs/reference/Reference'
 import {defineSearchOperator} from './operatorTypes'
@@ -30,8 +27,8 @@ export const referenceOperators = {
   }),
   referencesAssetFile: defineSearchOperator({
     buttonLabel: '→',
-    buttonValueComponent: SearchButtonValueAsset,
-    fn: ({value}) => (value?._id ? `references(${toJSON(value._id)})` : null),
+    buttonValueComponent: SearchButtonValueReference,
+    fn: ({value}) => (value?._ref ? `references(${toJSON(value._ref)})` : null),
     initialValue: null,
     inputComponent: SearchFilterAssetInput('file'),
     label: 'file',
@@ -39,8 +36,8 @@ export const referenceOperators = {
   }),
   referencesAssetImage: defineSearchOperator({
     buttonLabel: '→',
-    buttonValueComponent: SearchButtonValueAsset,
-    fn: ({value}) => (value?._id ? `references(${toJSON(value._id)})` : null),
+    buttonValueComponent: SearchButtonValueReference,
+    fn: ({value}) => (value?._ref ? `references(${toJSON(value._ref)})` : null),
     initialValue: null,
     inputComponent: SearchFilterAssetInput('image'),
     label: 'image',

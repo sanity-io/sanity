@@ -1,4 +1,4 @@
-import {SearchButtonValueAsset} from '../../components/filters/common/ButtonValue'
+import {SearchButtonValueReference} from '../../components/filters/common/ButtonValue'
 import {SearchFilterAssetInput} from '../../components/filters/filter/inputs/asset/Asset'
 import {defineSearchOperator} from './operatorTypes'
 import {toJSON} from './operatorUtils'
@@ -6,9 +6,9 @@ import {toJSON} from './operatorUtils'
 export const assetOperators = {
   assetFileEqual: defineSearchOperator({
     buttonLabel: 'is',
-    buttonValueComponent: SearchButtonValueAsset,
+    buttonValueComponent: SearchButtonValueReference,
     fn: ({fieldPath, value}) =>
-      value?._id && fieldPath ? `${fieldPath}.asset._ref == ${toJSON(value._id)}` : null,
+      value?._ref && fieldPath ? `${fieldPath}.asset._ref == ${toJSON(value._ref)}` : null,
     initialValue: null,
     inputComponent: SearchFilterAssetInput('file'),
     label: 'is',
@@ -16,9 +16,9 @@ export const assetOperators = {
   }),
   assetFileNotEqual: defineSearchOperator({
     buttonLabel: 'is not',
-    buttonValueComponent: SearchButtonValueAsset,
+    buttonValueComponent: SearchButtonValueReference,
     fn: ({fieldPath, value}) =>
-      value?._id && fieldPath ? `${fieldPath}.asset._ref != ${toJSON(value._id)}` : null,
+      value?._ref && fieldPath ? `${fieldPath}.asset._ref != ${toJSON(value._ref)}` : null,
     initialValue: null,
     inputComponent: SearchFilterAssetInput('file'),
     label: 'is not',
@@ -26,9 +26,9 @@ export const assetOperators = {
   }),
   assetImageEqual: defineSearchOperator({
     buttonLabel: 'is',
-    buttonValueComponent: SearchButtonValueAsset,
+    buttonValueComponent: SearchButtonValueReference,
     fn: ({fieldPath, value}) =>
-      value?._id && fieldPath ? `${fieldPath}.asset._ref == ${toJSON(value._id)}` : null,
+      value?._ref && fieldPath ? `${fieldPath}.asset._ref == ${toJSON(value._ref)}` : null,
     initialValue: null,
     inputComponent: SearchFilterAssetInput('image'),
     label: 'is',
@@ -36,9 +36,9 @@ export const assetOperators = {
   }),
   assetImageNotEqual: defineSearchOperator({
     buttonLabel: 'is not',
-    buttonValueComponent: SearchButtonValueAsset,
+    buttonValueComponent: SearchButtonValueReference,
     fn: ({fieldPath, value}) =>
-      value?._id && fieldPath ? `${fieldPath}.asset._ref != ${toJSON(value._id)}` : null,
+      value?._ref && fieldPath ? `${fieldPath}.asset._ref != ${toJSON(value._ref)}` : null,
     initialValue: null,
     inputComponent: SearchFilterAssetInput('image'),
     label: 'is not',

@@ -1,5 +1,5 @@
 import {ChevronDownIcon, ImageIcon, SearchIcon, UndoIcon} from '@sanity/icons'
-import type {Asset, AssetFromSource, AssetSource} from '@sanity/types'
+import type {AssetFromSource, AssetSource, ReferenceValue} from '@sanity/types'
 import {Box, Button, Flex, Menu, MenuButton, MenuItem, Portal, Stack} from '@sanity/ui'
 import React, {useCallback, useEffect, useId, useMemo, useState} from 'react'
 import styled from 'styled-components'
@@ -15,12 +15,20 @@ import {AssetPreview} from './preview/AssetPreview'
 
 type AssetType = keyof Pick<Source['form'], 'file' | 'image'>
 
+const ASSET_TYPE: Record<AssetType, string> = {
+  file: 'sanity.fileAsset',
+  image: 'sanity.imageAsset',
+}
+
 const ContainerBox = styled(Box)`
   width: min(calc(100vw - 40px), 320px);
 `
 
 export function SearchFilterAssetInput(type?: AssetType) {
-  return function FieldInputAssetWithType({onChange, value}: OperatorInputComponentProps<Asset>) {
+  return function FieldInputAssetWithType({
+    onChange,
+    value,
+  }: OperatorInputComponentProps<ReferenceValue>) {
     const [selectedAssetSource, setSelectedAssetSource] = useState<AssetSource | null>(null)
     const [selectedAssetFromSource, setSelectedAssetFromSource] = useState<AssetFromSource | null>(
       null
@@ -73,18 +81,17 @@ export function SearchFilterAssetInput(type?: AssetType) {
     )
 
     useEffect(() => {
-      async function fetchAsset(assetId: string) {
-        const result = (await client.fetch(buildAssetQuery(assetId))) as Asset
-        if (result) {
-          onChange(result)
-        }
-      }
       // TODO: add custom resolver to handle other source types in future
       if (
         selectedAssetFromSource?.kind === 'assetDocumentId' &&
         typeof selectedAssetFromSource?.value === 'string'
       ) {
-        fetchAsset(selectedAssetFromSource.value)
+        if (type) {
+          onChange({
+            _ref: selectedAssetFromSource.value,
+            _type: ASSET_TYPE[type],
+          })
+        }
       }
     }, [client, onChange, selectedAssetFromSource])
 
@@ -112,7 +119,7 @@ export function SearchFilterAssetInput(type?: AssetType) {
           )}
 
           {/* Selected asset preview */}
-          {value && <AssetPreview asset={value} />}
+          {value && <AssetPreview reference={value} />}
 
           <Flex gap={2}>
             {/* No asset sources found */}
@@ -184,17 +191,4 @@ export function SearchFilterAssetInput(type?: AssetType) {
       </ContainerBox>
     )
   }
-}
-
-function buildAssetQuery(assetId: string): string {
-  return `*[_id == "${assetId}"] {
-    _id,
-    _type,
-    assetId,
-    extension,
-    originalFilename,
-    path,
-    size,
-    url
-  }[0]`
 }

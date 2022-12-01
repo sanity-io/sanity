@@ -1,4 +1,3 @@
-import type {SanityAsset} from '@sanity/asset-utils'
 import type {Reference} from '@sanity/types'
 import {format, isValid} from 'date-fns'
 import pluralize from 'pluralize-esm'
@@ -6,13 +5,9 @@ import React from 'react'
 import {useSchema} from '../../../../../../../hooks'
 import type {OperatorNumberRangeValue} from '../../../definitions/operators/common'
 import type {OperatorDateLastValue} from '../../../definitions/operators/dateOperators'
-import {ReferencePreviewTitle} from '../../common/ReferencePreviewTitle'
+import {ReferencePreviewTitle} from './ReferencePreviewTitle'
 
 const DEFAULT_DATE_FORMAT = 'yyyy-MM-dd'
-
-export function SearchButtonValueAsset({value}: {value: SanityAsset}) {
-  return <>{value.originalFilename}</>
-}
 
 export function SearchButtonValueBoolean({value}: {value: boolean}) {
   return <>{value ? 'True' : 'False'}</>

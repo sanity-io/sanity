@@ -1,20 +1,20 @@
-import type {Asset} from '@sanity/types'
+import type {ReferenceValue} from '@sanity/types'
 import React from 'react'
-import {FilePreview} from './FilePreview'
-import {ImagePreview} from './ImagePreview'
+import {FileReferencePreview} from './FileReferencePreview'
+import {ImageReferencePreview} from './ImageReferencePreview'
 
 interface AssetPreviewProps {
-  asset: Asset
+  reference: ReferenceValue
 }
-export function AssetPreview({asset}: AssetPreviewProps) {
-  if (!asset) {
+export function AssetPreview({reference}: AssetPreviewProps) {
+  if (!reference) {
     return null
   }
-  if (asset._type.startsWith('sanity.fileAsset')) {
-    return <FilePreview asset={asset} />
+  if (reference._type.startsWith('sanity.fileAsset')) {
+    return <FileReferencePreview reference={reference} />
   }
-  if (asset._type.startsWith('sanity.imageAsset')) {
-    return <ImagePreview asset={asset} />
+  if (reference._type.startsWith('sanity.imageAsset')) {
+    return <ImageReferencePreview reference={reference} />
   }
   return null
 }

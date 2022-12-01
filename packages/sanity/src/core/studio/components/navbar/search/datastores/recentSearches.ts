@@ -4,7 +4,7 @@ import type {SearchTerms} from '../../../../../search'
 import {SearchFilterDefinition} from '../definitions/filters'
 import {SearchOperator} from '../definitions/operators'
 import type {SearchFieldDefinition, SearchFilter} from '../types'
-import {isFilterComplete, validateFilter} from '../utils/filterUtils'
+import {validateFilter} from '../utils/filterUtils'
 import {getSearchableOmnisearchTypes} from '../utils/selectors'
 
 const RECENT_SEARCHES_KEY = 'search::recent'
@@ -77,7 +77,7 @@ export function createRecentSearchesStore({
 
       // Remove any filters in 'incomplete' states prior to writing to local storage.
       const validStoredFilters = storedFilters.filter((filter) =>
-        isFilterComplete(filter, filterDefinitions, fieldDefinitions, operatorDefinitions)
+        validateFilter(filter, filterDefinitions, fieldDefinitions, operatorDefinitions)
       )
 
       const newSearchItem: StoredSearchItem = {
@@ -102,19 +102,20 @@ export function createRecentSearchesStore({
       }
       window.localStorage.setItem(lsKey, JSON.stringify(newRecent))
 
-      return getRecentSearchTerms(lsKey, schema, fieldDefinitions, filterDefinitions)
+      return getRecentSearchTerms(
+        lsKey,
+        schema,
+        fieldDefinitions,
+        filterDefinitions,
+        operatorDefinitions
+      )
     },
     /**
      * Fetch all recent searches from Local Storage.
      * Invalid search terms will be filtered out and terms will be re-written to Local Storage.
      */
-    getRecentSearches: getRecentSearchTerms.bind(
-      undefined,
-      lsKey,
-      schema,
-      fieldDefinitions,
-      filterDefinitions
-    ),
+    getRecentSearches: () =>
+      getRecentSearchTerms(lsKey, schema, fieldDefinitions, filterDefinitions, operatorDefinitions),
     /**
      * Remove all search terms from Local Storage and return updated recent searches.
      */
@@ -128,7 +129,13 @@ export function createRecentSearchesStore({
 
       window.localStorage.setItem(lsKey, JSON.stringify(newRecent))
 
-      return getRecentSearchTerms(lsKey, schema, fieldDefinitions, filterDefinitions)
+      return getRecentSearchTerms(
+        lsKey,
+        schema,
+        fieldDefinitions,
+        filterDefinitions,
+        operatorDefinitions
+      )
     },
     /**
      * Remove a search term from Local Storage and return updated recent searches.
@@ -137,7 +144,13 @@ export function createRecentSearchesStore({
       const searchTerms = getRecentStoredSearch(lsKey)
 
       if (index < 0 || index > searchTerms.recentSearches.length) {
-        return getRecentSearchTerms(lsKey, schema, fieldDefinitions, filterDefinitions)
+        return getRecentSearchTerms(
+          lsKey,
+          schema,
+          fieldDefinitions,
+          filterDefinitions,
+          operatorDefinitions
+        )
       }
 
       const newRecent: StoredSearch = {
@@ -150,7 +163,13 @@ export function createRecentSearchesStore({
 
       window.localStorage.setItem(lsKey, JSON.stringify(newRecent))
 
-      return getRecentSearchTerms(lsKey, schema, fieldDefinitions, filterDefinitions)
+      return getRecentSearchTerms(
+        lsKey,
+        schema,
+        fieldDefinitions,
+        filterDefinitions,
+        operatorDefinitions
+      )
     },
   }
 }
@@ -175,11 +194,19 @@ function getRecentSearchTerms(
   lsKey: string,
   schema: Schema,
   fieldDefinitions: SearchFieldDefinition[],
-  filterDefinitions: SearchFilterDefinition[]
+  filterDefinitions: SearchFilterDefinition[],
+  operatorDefinitions: SearchOperator[]
 ): RecentSearch[] {
   const storedSearchTerms = getRecentStoredSearch(lsKey)
 
-  return sanitizeStoredSearch(schema, storedSearchTerms, lsKey, filterDefinitions, fieldDefinitions)
+  return sanitizeStoredSearch(
+    schema,
+    storedSearchTerms,
+    lsKey,
+    filterDefinitions,
+    fieldDefinitions,
+    operatorDefinitions
+  )
     .recentSearches.filter((r) => !!r.terms)
     .map((r, index) => ({
       __recent: {
@@ -202,12 +229,14 @@ function getRecentSearchTerms(
  *
  * This mutates Local Storage if any invalid terms are found.
  */
+// eslint-disable-next-line max-params
 function sanitizeStoredSearch(
   studioSchema: Schema,
   storedSearch: StoredSearch,
   lsKey: string,
   filterDefinitions: SearchFilterDefinition[],
-  fieldDefinitions: SearchFieldDefinition[]
+  fieldDefinitions: SearchFieldDefinition[],
+  operatorDefinitions: SearchOperator[]
 ): StoredSearch {
   // Obtain all 'searchable' type names – defined as a type that exists in
   // the current schema and also visible to omnisearch.
@@ -217,9 +246,10 @@ function sanitizeStoredSearch(
 
   const filteredSearch = storedSearch.recentSearches.filter((recentSearch) => {
     return (
+      // Has valid searchable types (not hidden by omnisearch)
       recentSearch.terms.typeNames.every((typeName) => searchableTypeNames.includes(typeName)) &&
       recentSearch.filters.every((filter) =>
-        validateFilter(filter, filterDefinitions, fieldDefinitions)
+        validateFilter(filter, filterDefinitions, fieldDefinitions, operatorDefinitions)
       )
     )
   })

@@ -13,7 +13,7 @@ import {getOperator, getOperatorInitialValue, SearchOperator} from '../../defini
 import {ORDERINGS} from '../../definitions/orderings'
 import type {SearchFieldDefinition, SearchFilter, SearchOrdering} from '../../types'
 import {debugWithName, isDebugMode} from '../../utils/debug'
-import {getFieldFromFilter, getFilterKey, isFilterComplete} from '../../utils/filterUtils'
+import {getFieldFromFilter, getFilterKey, validateFilter} from '../../utils/filterUtils'
 import {isRecentSearchTerms} from '../../utils/isRecentSearchTerms'
 import {sortTypes} from '../../utils/selectors'
 
@@ -553,7 +553,7 @@ function generateFilterQuery({
   operators: SearchOperator[]
 }) {
   return filters
-    .filter((filter) => isFilterComplete(filter, filterDefinitions, fieldDefinitions, operators))
+    .filter((filter) => validateFilter(filter, filterDefinitions, fieldDefinitions, operators))
     .map((filter) => {
       return getOperator(operators, filter.operatorType)?.fn({
         fieldPath: resolveFieldPath({filter, fieldDefinitions, filterDefinitions}),
