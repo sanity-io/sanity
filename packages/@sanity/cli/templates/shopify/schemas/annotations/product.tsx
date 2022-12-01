@@ -3,62 +3,52 @@
  *
  * Read more: https://www.sanity.io/docs/customization#f924645007e1
  */
-import {hues} from '@sanity/color'
 import {TagIcon} from '@sanity/icons'
 import React from 'react'
-import {defineType, defineField} from 'sanity'
+import {defineField} from 'sanity'
 
-export default defineType({
-  title: 'Product (inline link)',
+export default defineField({
+  title: 'Product',
   name: 'annotationProduct',
   type: 'object',
+  // @ts-ignore - TODO - fix these TS errors
   blockEditor: {
     icon: () => <TagIcon />,
+    // @ts-ignore
     render: ({children}) => (
-      <span style={{color: hues.blue[500].hex}}>
-        <TagIcon style={{verticalAlign: 'text-bottom'}} />
+      <>
+        <TagIcon
+          style={{
+            marginLeft: '0.05em',
+            marginRight: '0.1em',
+            width: '0.75em',
+          }}
+        />
         {children}
-      </span>
+      </>
     ),
   },
-  initialValue: {
-    action: 'addToCart',
-    quantity: 1,
-  },
-  fieldsets: [
-    {
-      name: 'callToAction',
-      title: 'Call to action',
-      options: {
-        columns: 2,
-      },
-    },
-  ],
   fields: [
     // Product
-    defineField({
+    {
       name: 'productWithVariant',
       title: 'Product + Variant',
       type: 'productWithVariant',
-      description: 'No links will be displayed if the product is not available or sold out',
       validation: (Rule) => Rule.required(),
-    }),
-    // Quantity
+    },
+    // Link action
     defineField({
-      fieldset: 'callToAction',
-      name: 'quantity',
-      title: 'Quantity',
-      type: 'number',
-      validation: (Rule) => Rule.required().min(1).max(10),
-    }),
-    // Action
-    defineField({
-      fieldset: 'callToAction',
-      name: 'action',
-      title: 'Action',
+      name: 'linkAction',
+      title: 'Link action',
       type: 'string',
+      initialValue: 'link',
       options: {
+        layout: 'radio',
         list: [
+          {
+            title: 'Navigate to product',
+            value: 'link',
+          },
           {
             title: 'Add to cart',
             value: 'addToCart',
@@ -70,6 +60,15 @@ export default defineType({
         ],
       },
       validation: (Rule) => Rule.required(),
+    }),
+    // Quantity
+    defineField({
+      name: 'quantity',
+      title: 'Quantity',
+      type: 'number',
+      initialValue: 1,
+      hidden: ({parent}) => parent.linkAction === 'link',
+      validation: (Rule) => Rule.required().min(1).max(10),
     }),
   ],
 })

@@ -1,10 +1,11 @@
-import S from '@sanity/desk-tool/structure-builder'
+import {ListItemBuilder} from 'sanity/desk'
+import defineStructure from '../utils/defineStructure'
+import {DocumentsIcon} from '@sanity/icons'
 
-// prettier-ignore
-export const pages = S.listItem()
-  .title('Pages')
-  .schemaType('page')
-  .child(
-    S.documentTypeList('page')
-      .defaultOrdering([{ field: 'title', direction: 'asc'}])
-  )
+export default defineStructure<ListItemBuilder>((S) =>
+  S.listItem()
+    .title('Pages')
+    .icon(DocumentsIcon)
+    .schemaType('page')
+    .child(S.documentTypeList('page'))
+)

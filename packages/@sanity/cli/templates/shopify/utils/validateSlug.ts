@@ -1,9 +1,10 @@
-const slug = require('slug')
+import {Rule, Slug} from 'sanity'
+import slug from 'slug'
 
 const MAX_LENGTH = 96
 
-export const validateSlug = (Rule) => {
-  return Rule.required().custom(async (value) => {
+export const validateSlug = (Rule: Rule) => {
+  return Rule.required().custom(async (value: Slug) => {
     const currentSlug = value && value.current
     if (!currentSlug) {
       return true

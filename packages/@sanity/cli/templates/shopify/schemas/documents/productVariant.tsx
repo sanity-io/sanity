@@ -1,22 +1,29 @@
 import {CopyIcon} from '@sanity/icons'
-import React from 'react'
 import {defineField, defineType} from 'sanity'
-import ProductMediaPreview from '../../components/media/ProductStatus'
+import ShopifyIcon from '../../components/icons/Shopify'
 import ProductVariantHiddenInput from '../../components/inputs/ProductVariantHidden'
+import ShopifyDocumentStatus from '../../components/media/ShopifyDocumentStatus'
 
 export default defineType({
-  // HACK: Required to hide 'create new' button in desk structure
-  __experimental_actions: [/*'create',*/ 'update', /*'delete',*/ 'publish'],
   name: 'productVariant',
   title: 'Product variant',
   type: 'document',
   icon: CopyIcon,
+  groups: [
+    {
+      name: 'shopifySync',
+      title: 'Shopify sync',
+      icon: ShopifyIcon,
+    },
+  ],
   fields: [
     // Product variant hidden status
     defineField({
       name: 'hidden',
       type: 'string',
-      components: {input: ProductVariantHiddenInput},
+      components: {
+        field: ProductVariantHiddenInput,
+      },
       hidden: ({parent}) => {
         const isDeleted = parent?.store?.isDeleted
 
@@ -36,6 +43,7 @@ export default defineType({
       title: 'Shopify',
       description: 'Variant data from Shopify (read-only)',
       type: 'shopifyProductVariant',
+      group: 'shopifySync',
     }),
   ],
   preview: {
@@ -51,11 +59,12 @@ export default defineType({
 
       return {
         media: (
-          <ProductMediaPreview
+          <ShopifyDocumentStatus
             isActive={status === 'active'}
             isDeleted={isDeleted}
             type="productVariant"
             url={previewImageUrl}
+            title={title}
           />
         ),
         subtitle: sku,

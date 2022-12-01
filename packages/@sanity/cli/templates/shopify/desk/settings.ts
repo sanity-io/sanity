@@ -1,12 +1,9 @@
-import S from '@sanity/desk-tool/structure-builder'
+import {ListItemBuilder} from 'sanity/desk'
+import defineStructure from '../utils/defineStructure'
 
-// prettier-ignore
-export const settings = S.listItem()
-  .title('Settings')
-  .schemaType('settings')
-  .child(
-    S.editor()
-      .title('Settings')
-      .schemaType('settings')
-      .documentId('settings')
-  )
+export default defineStructure<ListItemBuilder>((S) =>
+  S.listItem()
+    .title('Settings')
+    .schemaType('settings')
+    .child(S.editor().title('Settings').schemaType('settings').documentId('settings'))
+)

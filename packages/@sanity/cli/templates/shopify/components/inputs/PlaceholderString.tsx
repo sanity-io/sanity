@@ -1,72 +1,20 @@
-import {FormField} from '@sanity/base/components'
-import PatchEvent, {set, unset} from '@sanity/form-builder/PatchEvent'
-import {Marker, Path} from 'sanity'
-import {TextInput} from '@sanity/ui'
-import {uuid} from '@sanity/uuid'
+import {StringInputProps, useFormValue, SanityDocument, StringSchemaType} from 'sanity'
 import get from 'lodash.get'
-import {withDocument} from 'part:@sanity/form-builder'
-import React, {forwardRef, RefObject, useCallback} from 'react'
 
-// TODO: use correct type
-type Props = {
-  markers: Marker[]
-  onBlur: () => void
-  onChange: (event: any) => void
-  onFocus: (path: Path) => void
-  type: any
-  value: any
+type Props = StringInputProps<StringSchemaType & {options?: {field?: string}}>
+
+const PlaceholderStringInput = (props: Props) => {
+  const {schemaType} = props
+
+  const path = schemaType?.options?.field
+  const doc = useFormValue([]) as SanityDocument
+
+  const proxyValue = path ? (get(doc, path) as string) : ''
+
+  return props.renderDefault({
+    ...props,
+    elementProps: {placeholder: proxyValue, ...props.elementProps},
+  })
 }
 
-const PlaceholderStringInput = forwardRef((props: Props, ref: RefObject<HTMLInputElement>) => {
-  const {
-    compareValue,
-    document,
-    markers,
-    onBlur,
-    onChange,
-    onFocus,
-    presence,
-    readOnly,
-    type,
-    value,
-  } = props
-
-  const handleChange = useCallback(
-    // useCallback will help with performance
-    (event: any) => {
-      const inputValue = event.currentTarget.value // get current value
-
-      // if the value exists, set the data, if not, unset the data
-      onChange(PatchEvent.from(inputValue ? set(inputValue) : unset()))
-    },
-    [onChange]
-  )
-
-  const proxyValue = get(document, type?.options?.field)
-
-  const inputId = uuid()
-
-  return (
-    <FormField
-      compareValue={compareValue}
-      description={type?.description}
-      inputId={inputId}
-      markers={markers}
-      presence={presence}
-      title={type?.title}
-    >
-      <TextInput
-        defaultValue={value}
-        id={inputId}
-        onBlur={onBlur}
-        onChange={handleChange}
-        onFocus={onFocus}
-        placeholder={proxyValue}
-        readOnly={readOnly}
-        ref={ref}
-      />
-    </FormField>
-  )
-})
-
-export default withDocument(PlaceholderStringInput)
+export default PlaceholderStringInput

@@ -1,9 +1,10 @@
-import {defineType} from 'sanity'
 import PlaceholderStringInput from '../../components/inputs/PlaceholderString'
 
-export default defineType({
+export default {
   name: 'placeholderString',
   title: 'Title',
   type: 'string',
-  components: {input: PlaceholderStringInput},
-})
+  components: {
+    input: PlaceholderStringInput,
+  },
+}

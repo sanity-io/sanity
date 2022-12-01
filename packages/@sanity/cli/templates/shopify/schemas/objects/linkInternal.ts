@@ -1,29 +1,29 @@
 import {LinkIcon} from '@sanity/icons'
-import {defineField, defineType} from 'sanity'
+import {defineField} from 'sanity'
 import {PAGE_REFERENCES} from '../../constants'
 import {getPriceRange} from '../../utils/getPriceRange'
 
-export default defineType({
+export default defineField({
   title: 'Internal Link',
   name: 'linkInternal',
   type: 'object',
   icon: LinkIcon,
   fields: [
     // Title
-    defineField({
+    {
       title: 'Title',
       name: 'title',
       type: 'string',
       validation: (Rule) => Rule.required(),
-    }),
+    },
     // Reference
-    defineField({
+    {
       name: 'reference',
       type: 'reference',
       weak: true,
       validation: (Rule) => Rule.required(),
       to: PAGE_REFERENCES,
-    }),
+    },
   ],
   preview: {
     select: {
@@ -44,9 +44,9 @@ export default defineType({
         title,
       } = selection
 
-      let subtitle: string[] = []
+      let subtitle = []
       if (reference) {
-        subtitle.push(`→ ${referenceTitle || referenceProductTitle}`)
+        subtitle.push([`→ ${referenceTitle || referenceProductTitle || reference?._id}`])
         if (referenceType === 'product' && referenceProductPriceRange) {
           subtitle.push(`(${getPriceRange(referenceProductPriceRange)})`)
         }

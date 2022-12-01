@@ -1,15 +1,9 @@
-import {SanityDocument} from '@sanity/client'
 import {WarningOutlineIcon} from '@sanity/icons'
 import {Box, Card, Flex, Stack, Text} from '@sanity/ui'
-import React, {forwardRef} from 'react'
 
-type Props = {
-  document: SanityDocument
-}
-
-const ProductVariantHiddenInput = forwardRef<HTMLDivElement, Props>((props, ref) => {
+export default function ProductVariantHiddenInput() {
   return (
-    <Card padding={4} radius={2} ref={ref} shadow={1} tone="critical">
+    <Card padding={4} radius={2} shadow={1} tone="critical">
       <Flex align="flex-start">
         <Text size={2}>
           <WarningOutlineIcon />
@@ -27,6 +21,4 @@ const ProductVariantHiddenInput = forwardRef<HTMLDivElement, Props>((props, ref)
       </Flex>
     </Card>
   )
-})
-
-export default ProductVariantHiddenInput
+}

@@ -1,152 +1,126 @@
 import {TagIcon} from '@sanity/icons'
-import pluralize from 'pluralize-esm'
-import React from 'react'
-import {defineArrayMember, defineField, defineType} from 'sanity'
+import pluralize from 'pluralize'
+import ShopifyIcon from '../../components/icons/Shopify'
 import ProductHiddenInput from '../../components/inputs/ProductHidden'
-import ProductStatusMedia from '../../components/media/ProductStatus'
+import ShopifyDocumentStatus from '../../components/media/ShopifyDocumentStatus'
+import {defineField, defineType} from 'sanity'
 import {getPriceRange} from '../../utils/getPriceRange'
 
+const GROUPS = [
+  {
+    name: 'editorial',
+    title: 'Editorial',
+  },
+  {
+    name: 'shopifySync',
+    title: 'Shopify sync',
+    icon: ShopifyIcon,
+  },
+  {
+    name: 'seo',
+    title: 'SEO',
+  },
+]
+
 export default defineType({
-  // HACK: Required to hide 'create new' button in desk structure
-  __experimental_actions: [/*'create',*/ 'update', /*'delete',*/ 'publish'],
   name: 'product',
   title: 'Product',
   type: 'document',
   icon: TagIcon,
+  groups: GROUPS,
   fields: [
-    // Product hidden status
     defineField({
       name: 'hidden',
       type: 'string',
-      components: {input: ProductHiddenInput},
+      components: {
+        field: ProductHiddenInput,
+      },
+      group: GROUPS.map((group) => group.name),
       hidden: ({parent}) => {
         const isActive = parent?.store?.status === 'active'
         const isDeleted = parent?.store?.isDeleted
-
-        return isActive && !isDeleted
+        return !parent?.store || (isActive && !isDeleted)
       },
     }),
     // Title (proxy)
     defineField({
-      title: 'Title',
       name: 'titleProxy',
+      title: 'Title',
       type: 'proxyString',
       options: {field: 'store.title'},
     }),
     // Slug (proxy)
     defineField({
-      title: 'Slug',
       name: 'slugProxy',
+      title: 'Slug',
       type: 'proxyString',
       options: {field: 'store.slug.current'},
     }),
-    // Images
+    // Color theme
     defineField({
-      title: 'Images',
-      name: 'images',
-      type: 'array',
-      options: {layout: 'grid'},
-      of: [
-        defineArrayMember({
-          name: 'image',
-          title: 'Image',
-          type: 'image',
-          options: {hotspot: true},
-        }),
-      ],
+      name: 'colorTheme',
+      title: 'Color theme',
+      type: 'reference',
+      to: [{type: 'colorTheme'}],
+      group: 'editorial',
     }),
-    // Sections
-    defineField({
-      name: 'sections',
-      title: 'Sections',
-      type: 'array',
-      of: [
-        defineArrayMember({
-          name: 'section',
-          title: 'Section',
-          type: 'object',
-          fields: [
-            // Title
-            defineField({
-              name: 'title',
-              title: 'Title',
-              type: 'string',
-              validation: (Rule) => Rule.required(),
-            }),
-            // Body
-            defineField({
-              name: 'body',
-              title: 'Body',
-              type: 'array',
-              of: [
-                defineArrayMember({
-                  lists: [],
-                  marks: {decorators: []},
-                  styles: [],
-                  type: 'block',
-                }),
-              ],
-            }),
-          ],
-        }),
-      ],
-      validation: (Rule) => Rule.max(3),
-    }),
-    // Body
     defineField({
       name: 'body',
       title: 'Body',
       type: 'body',
+      group: 'editorial',
     }),
-    // Shopify product
     defineField({
       name: 'store',
       title: 'Shopify',
       type: 'shopifyProduct',
       description: 'Product data from Shopify (read-only)',
+      group: 'shopifySync',
     }),
-    // SEO
     defineField({
       name: 'seo',
       title: 'SEO',
-      type: 'seo.product',
+      type: 'seo.shopify',
+      group: 'seo',
     }),
   ],
   orderings: [
     {
-      title: 'Title (A-Z)',
       name: 'titleAsc',
+      title: 'Title (A-Z)',
       by: [{field: 'store.title', direction: 'asc'}],
     },
     {
+      name: 'titleDesc',
       title: 'Title (Z-A)',
-      name: 'titleAsc',
       by: [{field: 'store.title', direction: 'desc'}],
     },
     {
+      name: 'priceDesc',
       title: 'Price (Highest first)',
-      name: 'titleAsc',
       by: [{field: 'store.priceRange.minVariantPrice', direction: 'desc'}],
     },
     {
+      name: 'priceAsc',
       title: 'Title (Lowest first)',
-      name: 'titleAsc',
       by: [{field: 'store.priceRange.minVariantPrice', direction: 'asc'}],
     },
   ],
   preview: {
     select: {
       isDeleted: 'store.isDeleted',
-      optionCount: 'store.options.length',
+      options: 'store.options',
       previewImageUrl: 'store.previewImageUrl',
       priceRange: 'store.priceRange',
       status: 'store.status',
       title: 'store.title',
-      variantCount: 'store.variants.length',
+      variants: 'store.variants',
     },
     prepare(selection) {
-      const {isDeleted, optionCount, previewImageUrl, priceRange, status, title, variantCount} =
-        selection
+      const {isDeleted, options, previewImageUrl, priceRange, status, title, variants} = selection
+
+      const optionCount = options?.length
+      const variantCount = variants?.length
 
       let description = [
         variantCount ? pluralize('variant', variantCount, true) : 'No variants',
@@ -162,17 +136,18 @@ export default defineType({
       }
 
       return {
+        description: description.join(' / '),
+        subtitle,
+        title,
         media: (
-          <ProductStatusMedia
+          <ShopifyDocumentStatus
             isActive={status === 'active'}
             isDeleted={isDeleted}
             type="product"
             url={previewImageUrl}
+            title={title}
           />
         ),
-        description: description.join(' / '),
-        subtitle,
-        title,
       }
     },
   },

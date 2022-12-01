@@ -5,27 +5,35 @@
  */
 import {EnvelopeIcon} from '@sanity/icons'
 import React from 'react'
-import {defineField, defineType} from 'sanity'
+import {defineField} from 'sanity'
 
-export default defineType({
-  title: 'Email',
+export default defineField({
+  title: 'Email link',
   name: 'annotationLinkEmail',
   type: 'object',
-  portableText: {
+  // @ts-ignore
+  blockEditor: {
     icon: () => <EnvelopeIcon />,
+    // @ts-ignore
     render: ({children}) => (
       <span>
-        <EnvelopeIcon style={{marginRight: '0.2em', verticalAlign: 'text-bottom'}} />
+        <EnvelopeIcon
+          style={{
+            marginLeft: '0.05em',
+            marginRight: '0.1em',
+            width: '0.75em',
+          }}
+        />
         {children}
       </span>
     ),
   },
   fields: [
     // Email
-    defineField({
+    {
       title: 'Email',
       name: 'email',
       type: 'email',
-    }),
+    },
   ],
 })

@@ -1,9 +1,11 @@
-import {defineType} from 'sanity'
+import {defineField} from 'sanity'
 import ProxyStringInput from '../../components/inputs/ProxyString'
 
-export default defineType({
+export default defineField({
   name: 'proxyString',
   title: 'Title',
   type: 'string',
-  components: {input: ProxyStringInput},
+  components: {
+    input: ProxyStringInput,
+  },
 })
