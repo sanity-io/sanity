@@ -3,7 +3,7 @@ import {Box, Button, Flex, Inline, Menu, MenuButton, MenuDivider, MenuItem, Text
 import React, {createElement, useCallback, useId} from 'react'
 import {useSearchState} from '../../../contexts/search/useSearchState'
 import {getFilterDefinition} from '../../../definitions/filters'
-import {getOperator, SearchOperatorDefinition} from '../../../definitions/operators'
+import {getOperatorDefinition, SearchOperatorDefinition} from '../../../definitions/operators'
 import type {SearchFilter} from '../../../types'
 import {getFilterKey} from '../../../utils/filterUtils'
 
@@ -84,7 +84,7 @@ export function OperatorsMenuButton({filter, operator}: OperatorsMenuButtonProps
           <Menu>
             {operatorItems.map((item, index) => {
               if (item.type === 'item') {
-                const menuOperator = getOperator(state.definitions.operators, item.name)
+                const menuOperator = getOperatorDefinition(state.definitions.operators, item.name)
                 if (!menuOperator) {
                   return null
                 }

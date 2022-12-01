@@ -10,7 +10,7 @@ export interface SearchOperatorDefinition<TValue = any> extends SearchOperatorBa
   type: string
 }
 
-export function getOperator(
+export function getOperatorDefinition(
   operators: SearchOperatorDefinition[],
   operatorType?: string
 ): SearchOperatorDefinition | undefined {
@@ -21,5 +21,5 @@ export function getOperatorInitialValue(
   operators: SearchOperatorDefinition[],
   operatorType?: string
 ): SearchOperatorDefinition['initialValue'] | undefined {
-  return getOperator(operators, operatorType)?.initialValue
+  return getOperatorDefinition(operators, operatorType)?.initialValue
 }

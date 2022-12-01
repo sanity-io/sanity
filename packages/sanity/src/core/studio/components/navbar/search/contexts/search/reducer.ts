@@ -1,23 +1,24 @@
 import type {CurrentUser} from '@sanity/types'
-import intersection from 'lodash/intersection'
-import isEmpty from 'lodash/isEmpty'
 import type {SearchableType, SearchTerms, WeightedHit} from '../../../../../../search'
-import {isNonNullable} from '../../../../../../util'
 import type {RecentSearch} from '../../datastores/recentSearches'
 import {
-  getFilterDefinition,
   getFilterDefinitionInitialOperatorType,
   SearchFilterDefinition,
 } from '../../definitions/filters'
 import {
-  getOperator,
+  getOperatorDefinition,
   getOperatorInitialValue,
   SearchOperatorDefinition,
 } from '../../definitions/operators'
 import {ORDERINGS} from '../../definitions/orderings'
 import type {SearchFieldDefinition, SearchFilter, SearchOrdering} from '../../types'
 import {debugWithName, isDebugMode} from '../../utils/debug'
-import {getFieldFromFilter, getFilterKey, validateFilter} from '../../utils/filterUtils'
+import {
+  generateFilterQuery,
+  getFieldFromFilter,
+  getFilterKey,
+  narrowDocumentTypes,
+} from '../../utils/filterUtils'
 import {isRecentSearchTerms} from '../../utils/isRecentSearchTerms'
 import {sortTypes} from '../../utils/selectors'
 
@@ -146,7 +147,6 @@ export type SearchAction =
 
 const debug = debugWithName('reducer')
 
-// TODO: split into multiple reducers and combine. Also consider immer
 export function searchReducer(state: SearchReducerState, action: SearchAction): SearchReducerState {
   let prefix = '🔍'
   if (action.type.startsWith('SEARCH_REQUEST')) {
@@ -232,26 +232,21 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
         state.definitions.filters,
         action.filter.filterName
       )
-
       const newFilter: SearchFilter = {
         ...action.filter,
         // Set initial value + operator
         operatorType,
         value: operatorType && getOperatorInitialValue(state.definitions.operators, operatorType),
       }
-
-      const filters = [
-        ...state.filters, //
-        newFilter,
-      ]
+      const filters = [...state.filters, newFilter]
 
       return {
         ...state,
-        documentTypesNarrowed: narrowDocumentTypes(
-          state.definitions.fields,
-          state.terms.types,
-          filters
-        ),
+        documentTypesNarrowed: narrowDocumentTypes({
+          fieldDefinitions: state.definitions.fields,
+          filters,
+          types: state.terms.types,
+        }),
         filters,
         lastAddedFilter: newFilter,
         terms: {
@@ -260,20 +255,21 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
             fieldDefinitions: state.definitions.fields,
             filterDefinitions: state.definitions.filters,
             filters,
-            operators: state.definitions.operators,
+            operatorDefinitions: state.definitions.operators,
           }),
         },
       }
     }
     case 'TERMS_FILTERS_CLEAR': {
       const filters: SearchFilter[] = []
+
       return {
         ...state,
-        documentTypesNarrowed: narrowDocumentTypes(
-          state.definitions.fields,
-          state.terms.types,
-          filters
-        ),
+        documentTypesNarrowed: narrowDocumentTypes({
+          fieldDefinitions: state.definitions.fields,
+          filters,
+          types: state.terms.types,
+        }),
         filters,
         terms: {
           ...state.terms,
@@ -281,7 +277,7 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
             fieldDefinitions: state.definitions.fields,
             filterDefinitions: state.definitions.filters,
             filters,
-            operators: state.definitions.operators,
+            operatorDefinitions: state.definitions.operators,
           }),
         },
       }
@@ -296,11 +292,11 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
 
       return {
         ...state,
-        documentTypesNarrowed: narrowDocumentTypes(
-          state.definitions.fields,
-          state.terms.types,
-          filters
-        ),
+        documentTypesNarrowed: narrowDocumentTypes({
+          fieldDefinitions: state.definitions.fields,
+          filters,
+          types: state.terms.types,
+        }),
         filters,
         terms: {
           ...state.terms,
@@ -308,7 +304,7 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
             fieldDefinitions: state.definitions.fields,
             filterDefinitions: state.definitions.filters,
             filters,
-            operators: state.definitions.operators,
+            operatorDefinitions: state.definitions.operators,
           }),
         },
       }
@@ -319,8 +315,11 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
       const matchedFilter = state.filters.find(
         (filter) => getFilterKey(filter) === action.filterKey
       )
-      const currentOperator = getOperator(state.definitions.operators, matchedFilter?.operatorType)
-      const nextOperator = getOperator(state.definitions.operators, action.operatorType)
+      const currentOperator = getOperatorDefinition(
+        state.definitions.operators,
+        matchedFilter?.operatorType
+      )
+      const nextOperator = getOperatorDefinition(state.definitions.operators, action.operatorType)
       const nextInitialValue = nextOperator?.initialValue
       const inputComponentChanged = currentOperator?.inputComponent != nextOperator?.inputComponent
 
@@ -344,7 +343,7 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
             fieldDefinitions: state.definitions.fields,
             filterDefinitions: state.definitions.filters,
             filters,
-            operators: state.definitions.operators,
+            operatorDefinitions: state.definitions.operators,
           }),
         },
       }
@@ -359,6 +358,7 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
         }
         return filter
       })
+
       return {
         ...state,
         filters,
@@ -368,7 +368,7 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
             fieldDefinitions: state.definitions.fields,
             filterDefinitions: state.definitions.filters,
             filters,
-            operators: state.definitions.operators,
+            operatorDefinitions: state.definitions.operators,
           }),
         },
       }
@@ -395,7 +395,11 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
 
       return {
         ...state,
-        documentTypesNarrowed: narrowDocumentTypes(state.definitions.fields, types, filters),
+        documentTypesNarrowed: narrowDocumentTypes({
+          fieldDefinitions: state.definitions.fields,
+          filters,
+          types,
+        }),
         filters,
         lastAddedFilter: null,
         pageIndex: 0,
@@ -409,7 +413,7 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
             fieldDefinitions: state.definitions.fields,
             filterDefinitions: state.definitions.filters,
             filters,
-            operators: state.definitions.operators,
+            operatorDefinitions: state.definitions.operators,
           }),
         },
       }
@@ -421,7 +425,11 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
       ].sort(sortTypes)
 
       // Get narrowed document types based on selected types only (ignore filters)
-      const documentTypesNarrowed = narrowDocumentTypes(state.definitions.fields, types, [])
+      const documentTypesNarrowed = narrowDocumentTypes({
+        fieldDefinitions: state.definitions.fields,
+        filters: [],
+        types,
+      })
 
       // Remove field filters that don't qualify under the above narrowed document types.
       // Non field-filters are always included.
@@ -453,7 +461,7 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
           filter: generateFilterQuery({
             fieldDefinitions: state.definitions.fields,
             filterDefinitions: state.definitions.filters,
-            operators: state.definitions.operators,
+            operatorDefinitions: state.definitions.operators,
             filters,
           }),
           types,
@@ -465,7 +473,11 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
 
       return {
         ...state,
-        documentTypesNarrowed: narrowDocumentTypes(state.definitions.fields, types, state.filters),
+        documentTypesNarrowed: narrowDocumentTypes({
+          fieldDefinitions: state.definitions.fields,
+          filters: state.filters,
+          types,
+        }),
         pageIndex: 0,
         result: {
           ...state.result,
@@ -479,9 +491,14 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
     }
     case 'TERMS_TYPES_CLEAR': {
       const types: SearchableType[] = []
+
       return {
         ...state,
-        documentTypesNarrowed: narrowDocumentTypes(state.definitions.fields, types, state.filters),
+        documentTypesNarrowed: narrowDocumentTypes({
+          fieldDefinitions: state.definitions.fields,
+          filters: state.filters,
+          types,
+        }),
         pageIndex: 0,
         result: {
           ...state.result,
@@ -507,7 +524,7 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
  * for purposes of measurement.
  *
  */
-// TODO: remove this (and associated tests) once client-side instrumentation is available
+// @todo: remove this (and associated tests) once client-side instrumentation is available
 function stripRecent(terms: RecentSearch | SearchTerms) {
   if (isRecentSearchTerms(terms)) {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -515,89 +532,4 @@ function stripRecent(terms: RecentSearch | SearchTerms) {
     return rest
   }
   return terms
-}
-
-function narrowDocumentTypes(
-  fieldDefinitions: SearchFieldDefinition[],
-  types: SearchableType[],
-  filters: SearchFilter[]
-): string[] {
-  // Get all 'manually' selected document types
-  const selectedDocumentTypes = types.map((type) => type.name)
-
-  const filteredDocumentTypes = fieldDefinitions
-    .filter((field) => filters.map((filter) => filter?.fieldId).includes(field.id))
-    .filter((field) => field.documentTypes.length > 0)
-    .map((field) => field.documentTypes)
-
-  // Get intersecting document types across all active filters (that have at least one document type).
-  // Filters that have no document types (i.e. `_updatedAt` which is available to all) are ignored.
-  const intersectingDocumentTypes = intersection(...filteredDocumentTypes)
-
-  const documentTypes: string[][] = []
-  if (selectedDocumentTypes.length > 0) {
-    documentTypes.push(selectedDocumentTypes)
-  }
-  if (intersectingDocumentTypes.length > 0) {
-    documentTypes.push(intersectingDocumentTypes)
-  }
-
-  return intersection(...documentTypes).sort()
-}
-
-function generateFilterQuery({
-  fieldDefinitions,
-  filterDefinitions,
-  filters,
-  operators,
-}: {
-  fieldDefinitions: SearchFieldDefinition[]
-  filterDefinitions: SearchFilterDefinition[]
-  filters: SearchFilter[]
-  operators: SearchOperatorDefinition[]
-}) {
-  return filters
-    .filter((filter) =>
-      validateFilter({
-        filter,
-        filterDefinitions,
-        fieldDefinitions,
-        operatorDefinitions: operators,
-      })
-    )
-    .map((filter) => {
-      return getOperator(operators, filter.operatorType)?.fn({
-        fieldPath: resolveFieldPath({filter, fieldDefinitions, filterDefinitions}),
-        value: filter?.value,
-      })
-    })
-    .filter((filter) => !isEmpty(filter))
-    .filter(isNonNullable)
-    .join(' && ')
-}
-
-function resolveFieldPath({
-  filter,
-  fieldDefinitions,
-  filterDefinitions,
-}: {
-  filter: SearchFilter
-  fieldDefinitions: SearchFieldDefinition[]
-  filterDefinitions: SearchFilterDefinition[]
-}): string | undefined {
-  const fieldDefinition = fieldDefinitions.find((f) => f.id === filter?.fieldId)
-  const filterDefinition = getFilterDefinition(filterDefinitions, filter.filterName)
-
-  if (!filterDefinition) {
-    return undefined
-  }
-
-  switch (filterDefinition.type) {
-    case 'field':
-      return fieldDefinition?.fieldPath
-    case 'pinned':
-      return filterDefinition?.fieldPath
-    default:
-      return undefined
-  }
 }

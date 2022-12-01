@@ -4,7 +4,7 @@ import React, {ErrorInfo, useCallback, useState} from 'react'
 import FocusLock from 'react-focus-lock'
 import {useSearchState} from '../../../contexts/search/useSearchState'
 import {getFilterDefinition} from '../../../definitions/filters'
-import {getOperator} from '../../../definitions/operators'
+import {getOperatorDefinition} from '../../../definitions/operators'
 import type {SearchFilter} from '../../../types'
 import {getFieldFromFilter, getFilterKey} from '../../../utils/filterUtils'
 import {supportsTouch} from '../../../utils/supportsTouch'
@@ -29,7 +29,7 @@ export function FilterForm({filter}: FilterFormProps) {
   } = useSearchState()
 
   const filterDefinition = getFilterDefinition(definitions.filters, filter.filterName)
-  const operator = getOperator(definitions.operators, filter.operatorType)
+  const operator = getOperatorDefinition(definitions.operators, filter.operatorType)
   const fieldDefinition = getFieldFromFilter(definitions.fields, filter)
   const filterKey = getFilterKey(filter)
 

@@ -3,7 +3,7 @@ import React from 'react'
 import styled from 'styled-components'
 import {TextWithTone} from '../../../../../../components'
 import {useSearchState} from '../../contexts/search/useSearchState'
-import {getOperator} from '../../definitions/operators'
+import {getOperatorDefinition} from '../../definitions/operators'
 import type {SearchFilter} from '../../types'
 import {FilterTitle} from './FilterTitle'
 
@@ -22,7 +22,7 @@ export function FilterLabel({filter, fontSize = 1, showContent = true}: FilterLa
     state: {definitions, fullscreen},
   } = useSearchState()
 
-  const operator = getOperator(definitions.operators, filter.operatorType)
+  const operator = getOperatorDefinition(definitions.operators, filter.operatorType)
 
   const ButtonValue = operator?.buttonValueComponent
 

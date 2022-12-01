@@ -125,9 +125,8 @@ export function useSearch({
         tap(setSearchState)
       )
     },
-    // TODO: understand why onComplete isn't being triggered when defined in this dependency array, re-enable
-    []
-    // [onComplete, onError, onStart, searchWeighted]
+    // @todo: add onComplete, onError and onStart to the deps list when it's verified that it's safe to do so
+    [allowEmptyQueries, searchWeighted]
   )
 
   const handleClearSearch = useCallback(() => {
