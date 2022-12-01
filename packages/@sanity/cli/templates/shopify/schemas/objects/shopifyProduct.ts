@@ -1,11 +1,11 @@
-import {defineArrayMember, defineField, defineType} from 'sanity'
+import {defineField} from 'sanity'
 
-export default defineType({
+export default defineField({
   name: 'shopifyProduct',
   title: 'Shopify',
   type: 'object',
   options: {
-    collapsed: true,
+    collapsed: false,
     collapsible: true,
   },
   readOnly: true,
@@ -13,9 +13,6 @@ export default defineType({
     {
       name: 'status',
       title: 'Status',
-      options: {
-        columns: 2,
-      },
     },
     {
       name: 'organization',
@@ -45,7 +42,7 @@ export default defineType({
     defineField({
       fieldset: 'status',
       name: 'updatedAt',
-      title: 'Last updated at',
+      title: 'Updated at',
       type: 'string',
     }),
     // Product status
@@ -58,7 +55,6 @@ export default defineType({
         layout: 'dropdown',
         list: ['active', 'archived', 'draft'],
       },
-      validation: (Rule) => Rule.required(),
     }),
     // Deleted
     defineField({
@@ -73,7 +69,6 @@ export default defineType({
       title: 'Title',
       type: 'string',
       description: 'Title displayed in both cart and checkout',
-      validation: (Rule) => Rule.required(),
     }),
     // Product ID
     defineField({
@@ -81,20 +76,40 @@ export default defineType({
       title: 'ID',
       type: 'number',
       description: 'Shopify Product ID',
-      validation: (Rule) => Rule.required(),
+    }),
+    // Product ID
+    defineField({
+      name: 'gid',
+      title: 'GID',
+      type: 'string',
+      description: 'Shopify Product GID',
     }),
     // Slug
     defineField({
-      title: 'Slug',
-      description: 'Shopify Product handle',
       name: 'slug',
+      title: 'Slug',
       type: 'slug',
+      description: 'Shopify Product handle',
+    }),
+    // Description
+    defineField({
+      name: 'descriptionHtml',
+      title: 'HTML Description',
+      type: 'text',
+      rows: 5,
     }),
     // Product Type
     defineField({
       fieldset: 'organization',
       name: 'productType',
       title: 'Product type',
+      type: 'string',
+    }),
+    // Vendor
+    defineField({
+      fieldset: 'organization',
+      name: 'vendor',
+      title: 'Vendor',
       type: 'string',
     }),
     // Tags
@@ -113,18 +128,16 @@ export default defineType({
         columns: 2,
       },
       fields: [
-        defineField({
+        {
           name: 'minVariantPrice',
           title: 'Min variant price',
           type: 'number',
-          validation: (Rule) => Rule.required(),
-        }),
-        defineField({
+        },
+        {
           name: 'maxVariantPrice',
           title: 'Max variant price',
           type: 'number',
-          validation: (Rule) => Rule.required(),
-        }),
+        },
       ],
     }),
     // Preview Image URL
@@ -140,11 +153,11 @@ export default defineType({
       title: 'Options',
       type: 'array',
       of: [
-        defineArrayMember({
+        {
           name: 'option',
           title: 'Option',
           type: 'productOption',
-        }),
+        },
       ],
     }),
     // Variants
@@ -154,12 +167,12 @@ export default defineType({
       title: 'Variants',
       type: 'array',
       of: [
-        defineArrayMember({
+        {
           title: 'Variant',
           type: 'reference',
           weak: true,
           to: [{type: 'productVariant'}],
-        }),
+        },
       ],
     }),
   ],

@@ -1,13 +1,12 @@
 import {TagIcon} from '@sanity/icons'
-import sanityClient from 'part:@sanity/base/client'
-import pluralize from 'pluralize-esm'
+import pluralize from 'pluralize'
 import React from 'react'
-import {defineField, defineType} from 'sanity'
-import ProductStatusMedia from '../../components/media/ProductStatus'
+import {defineField} from 'sanity'
+import ShopifyDocumentStatus from '../../components/media/ShopifyDocumentStatus'
 import {SANITY_API_VERSION} from '../../constants'
 import {getPriceRange} from '../../utils/getPriceRange'
 
-export default defineType({
+export default defineField({
   name: 'productWithVariant',
   title: 'Product with variant',
   type: 'object',
@@ -16,16 +15,18 @@ export default defineType({
     defineField({
       name: 'product',
       type: 'reference',
-      weak: true,
       to: [{type: 'product'}],
+      weak: true,
     }),
     defineField({
       name: 'variant',
       type: 'reference',
       to: [{type: 'productVariant'}],
+      weak: true,
       description: 'First variant will be selected if left empty',
       options: {
         filter: ({parent}) => {
+          // @ts-ignore
           const productId = parent?.product?._ref
           const shopifyProductId = Number(productId?.replace('shopifyProduct-', ''))
 
@@ -48,8 +49,9 @@ export default defineType({
         return !productSelected
       },
       validation: (Rule) =>
-        Rule.custom(async (value, {parent}) => {
+        Rule.custom(async (value, {parent, getClient}) => {
           // Selected product in adjacent `product` field
+          // @ts-ignore
           const productId = parent?.product?._ref
 
           // Selected product variant
@@ -61,12 +63,13 @@ export default defineType({
 
           // If both product + product variant are specified,
           // check to see if `product` references this product variant.
-          const result = await sanityClient
-            .withConfig({apiVersion: SANITY_API_VERSION})
-            .fetch(`*[_id == $productId && references($productVariantId)][0]._id`, {
+          const result = await getClient({apiVersion: SANITY_API_VERSION}).fetch(
+            `*[_id == $productId && references($productVariantId)][0]._id`,
+            {
               productId,
               productVariantId,
-            })
+            }
+          )
 
           return result ? true : 'Invalid product variant'
         }),
@@ -101,7 +104,7 @@ export default defineType({
 
       const productVariantTitle = variantTitle || defaultVariantTitle
 
-      let previewTitle: string[] = [title]
+      let previewTitle = [title]
       if (productVariantTitle) {
         previewTitle.push(`[${productVariantTitle}]`)
       }
@@ -121,11 +124,12 @@ export default defineType({
 
       return {
         media: (
-          <ProductStatusMedia
+          <ShopifyDocumentStatus
             isActive={status === 'active'}
             isDeleted={isDeleted}
             type="product"
             url={variantPreviewImageUrl || previewImageUrl}
+            title={previewTitle.join(' ')}
           />
         ),
         description: description.join(' / '),

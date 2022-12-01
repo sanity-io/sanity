@@ -2,12 +2,12 @@ import type {ProjectTemplate} from '../initProject'
 import blog from './blog'
 import clean from './clean'
 import moviedb from './moviedb'
+import shopify from './shopify'
 
 /*
 // @todo DISABLED UNTIL THEY WORK WITH v3
 import ecommerce from './ecommerce'
 import getStarted from './get-started'
-import shopify from './shopify'
 */
 
 const templates: Record<string, ProjectTemplate | undefined> = {
@@ -15,7 +15,7 @@ const templates: Record<string, ProjectTemplate | undefined> = {
   clean,
   moviedb,
   //ecommerce,
-  //shopify,
+  shopify,
   //'get-started': getStarted,
 }
 

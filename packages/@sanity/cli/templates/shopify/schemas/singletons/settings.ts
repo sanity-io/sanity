@@ -1,19 +1,42 @@
-import {CogIcon, FolderIcon} from '@sanity/icons'
-import {defineArrayMember, defineField, defineType} from 'sanity'
+import {CogIcon, PackageIcon} from '@sanity/icons'
+import {defineType, defineField} from 'sanity'
 
 const TITLE = 'Settings'
+interface ProductOptions {
+  title: string
+}
 
 export default defineType({
   name: 'settings',
   title: TITLE,
   type: 'document',
   icon: CogIcon,
+  groups: [
+    {
+      default: true,
+      name: 'navigation',
+      title: 'Navigation',
+    },
+    {
+      name: 'productOptions',
+      title: 'Product options',
+    },
+    {
+      name: 'notFoundPage',
+      title: '404 page',
+    },
+    {
+      name: 'seo',
+      title: 'SEO',
+    },
+  ],
   fields: [
     // Menu
     defineField({
       name: 'menu',
       title: 'Menu',
       type: 'object',
+      group: 'navigation',
       options: {
         collapsed: false,
         collapsible: true,
@@ -25,31 +48,44 @@ export default defineType({
           title: 'Links',
           type: 'array',
           of: [
-            defineArrayMember({
-              title: 'Group',
-              name: 'linkGroup',
+            {
+              name: 'collectionGroup',
+              title: 'Collection group',
               type: 'object',
-              icon: FolderIcon,
+              icon: PackageIcon,
               fields: [
-                defineField({
-                  title: 'Title',
+                {
                   name: 'title',
+                  title: 'Title',
                   type: 'string',
                   validation: (Rule) => Rule.required(),
-                }),
-                defineField({
-                  title: 'Links',
-                  name: 'links',
+                },
+                {
+                  name: 'collectionLinks',
+                  title: 'Collection links',
                   type: 'array',
+                  validation: (Rule) => Rule.unique().max(4),
                   of: [
-                    defineArrayMember({type: 'linkInternal'}),
-                    defineArrayMember({type: 'linkExternal'}),
+                    {
+                      name: 'collection',
+                      type: 'reference',
+                      weak: true,
+                      to: [{type: 'collection'}],
+                    },
                   ],
-                }),
+                },
+                {
+                  name: 'collectionProducts',
+                  title: 'Collection products',
+                  type: 'reference',
+                  description: 'Products from this collection will be listed',
+                  weak: true,
+                  to: [{type: 'collection'}],
+                },
               ],
-            }),
-            defineArrayMember({type: 'linkInternal'}),
-            defineArrayMember({type: 'linkExternal'}),
+            },
+            {type: 'linkInternal'},
+            {type: 'linkExternal'},
           ],
         }),
       ],
@@ -59,6 +95,7 @@ export default defineType({
       name: 'footer',
       title: 'Footer',
       type: 'object',
+      group: 'navigation',
       options: {
         collapsed: false,
         collapsible: true,
@@ -77,7 +114,7 @@ export default defineType({
           title: 'Text',
           type: 'array',
           of: [
-            defineArrayMember({
+            {
               lists: [],
               marks: {
                 annotations: [
@@ -105,8 +142,77 @@ export default defineType({
               // Block styles
               styles: [{title: 'Normal', value: 'normal'}],
               type: 'block',
-            }),
+            },
           ],
+        }),
+      ],
+    }),
+    // Custom product options
+    defineField({
+      name: 'customProductOptions',
+      title: 'Custom product options',
+      type: 'array',
+      group: 'productOptions',
+      of: [
+        {
+          name: 'customProductOption.color',
+          type: 'customProductOption.color',
+        },
+        {
+          name: 'customProductOption.size',
+          type: 'customProductOption.size',
+        },
+      ],
+      validation: (Rule) =>
+        Rule.custom((options: ProductOptions[] | undefined) => {
+          // Each product option type must have a unique title
+          if (options) {
+            const uniqueTitles = new Set(options.map((option) => option.title))
+            if (options.length > uniqueTitles.size) {
+              return 'Each product option type must have a unique title'
+            }
+          }
+          return true
+        }),
+    }),
+    // Not found page
+    defineField({
+      name: 'notFoundPage',
+      title: '404 page',
+      type: 'object',
+      group: 'notFoundPage',
+      fields: [
+        defineField({
+          name: 'title',
+          title: 'Title',
+          type: 'string',
+          validation: (Rule) => Rule.required(),
+        }),
+        defineField({
+          name: 'body',
+          title: 'Body',
+          type: 'text',
+          rows: 2,
+        }),
+        defineField({
+          name: 'collection',
+          title: 'Collection',
+          type: 'reference',
+          description: 'Collection products displayed on this page',
+          weak: true,
+          to: [
+            {
+              name: 'collection',
+              type: 'collection',
+            },
+          ],
+        }),
+        // Color theme
+        defineField({
+          name: 'colorTheme',
+          title: 'Color theme',
+          type: 'reference',
+          to: [{type: 'colorTheme'}],
         }),
       ],
     }),
@@ -115,6 +221,8 @@ export default defineType({
       name: 'seo',
       title: 'SEO',
       type: 'object',
+      group: 'seo',
+      description: 'Defaults for every page',
       options: {
         collapsed: false,
         collapsible: true,
@@ -124,14 +232,15 @@ export default defineType({
           name: 'title',
           title: 'Site title',
           type: 'string',
-          description: 'Displayed on all pages',
           validation: (Rule) => Rule.required(),
         }),
         defineField({
-          name: 'image',
-          title: 'Image',
-          type: 'image',
-          description: 'Fallback displayed on pages with no SEO image defined',
+          name: 'description',
+          title: 'Description',
+          type: 'text',
+          rows: 2,
+          validation: (Rule) =>
+            Rule.max(150).warning('Longer descriptions may be truncated by search engines'),
         }),
       ],
       validation: (Rule) => Rule.required(),

@@ -1,21 +1,14 @@
-import {defineField, defineType} from 'sanity'
+import {defineField} from 'sanity'
 
-export default defineType({
+export default defineField({
   name: 'shopifyProductVariant',
   title: 'Shopify',
   type: 'object',
   options: {
-    collapsed: true,
+    collapsed: false,
     collapsible: true,
   },
   fieldsets: [
-    {
-      name: 'status',
-      title: 'Status',
-      options: {
-        columns: 2,
-      },
-    },
     {
       name: 'options',
       title: 'Options',
@@ -23,16 +16,12 @@ export default defineType({
         columns: 3,
       },
     },
+    {
+      name: 'status',
+      title: 'Status',
+    },
   ],
   fields: [
-    /*
-    // In stock
-    defineField({
-      name: 'inStock',
-      title: 'In stock',
-      type: 'boolean',
-    }),
-    */
     // Created at
     defineField({
       fieldset: 'status',
@@ -44,7 +33,7 @@ export default defineType({
     defineField({
       fieldset: 'status',
       name: 'updatedAt',
-      title: 'Last updated at',
+      title: 'Updated at',
       type: 'string',
     }),
     // Product status
@@ -83,12 +72,26 @@ export default defineType({
       name: 'id',
       title: 'ID',
       type: 'number',
+      description: 'Shopify Product Variant ID',
+    }),
+    // GID
+    defineField({
+      name: 'gid',
+      title: 'GID',
+      type: 'string',
+      description: 'Shopify Product Variant GID',
     }),
     // Product ID
     defineField({
       name: 'productId',
       title: 'Product ID',
       type: 'number',
+    }),
+    // Product GID
+    defineField({
+      name: 'productGid',
+      title: 'Product GID',
+      type: 'string',
     }),
     // Price
     defineField({
@@ -101,6 +104,35 @@ export default defineType({
       name: 'compareAtPrice',
       title: 'Compare at price',
       type: 'number',
+    }),
+    // Inventory
+    defineField({
+      name: 'inventory',
+      title: 'Inventory',
+      type: 'object',
+      options: {
+        columns: 3,
+      },
+      fields: [
+        // Available
+        {
+          name: 'isAvailable',
+          title: 'Available',
+          type: 'boolean',
+        },
+        // Management
+        {
+          name: 'management',
+          title: 'Management',
+          type: 'string',
+        },
+        // Policy
+        {
+          name: 'policy',
+          title: 'Policy',
+          type: 'string',
+        },
+      ],
     }),
     // Option 1
     defineField({

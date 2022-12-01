@@ -5,18 +5,26 @@
  */
 import {LinkIcon} from '@sanity/icons'
 import React from 'react'
-import {defineType} from 'sanity'
+import {defineField} from 'sanity'
 import {PAGE_REFERENCES} from '../../constants'
 
-export default defineType({
+export default defineField({
   title: 'Internal Link',
   name: 'annotationLinkInternal',
   type: 'object',
+  // @ts-ignore
   blockEditor: {
     icon: () => <LinkIcon />,
+    // @ts-ignore
     render: ({children}) => (
       <span>
-        <LinkIcon style={{marginRight: '0.2em', verticalAlign: 'text-bottom'}} />
+        <LinkIcon
+          style={{
+            marginLeft: '0.05em',
+            marginRight: '0.1em',
+            width: '0.75em',
+          }}
+        />
         {children}
       </span>
     ),

@@ -1,51 +1,69 @@
 import type {ProjectTemplate} from '../initProject'
 
-// @todo asset sources
-// @todo new document structure
-// @todo document actions
 const configTemplate = `
-import {defineConfig} from 'sanity'
+import {AssetSource, defineConfig, isDev} from 'sanity'
+
 import {deskTool} from 'sanity/desk'
-import {dashboard} from '@sanity/dashboard'
-import {media} from 'sanity-plugin-media'
-import {structure} from './deskStructure'
 import {schemaTypes} from './schemas'
+import {structure} from './desk'
+
+import {visionTool} from '@sanity/vision'
+import {colorInput} from '@sanity/color-input'
+import {imageHotspotArrayPlugin} from 'sanity-plugin-hotspot-array'
+import {media, mediaAssetSource} from 'sanity-plugin-media'
+import {customDocumentActions} from './plugins/customDocumentActions'
+
+const devOnlyPlugins = [visionTool()]
 
 export default defineConfig({
+  name: '%sourceName%',
+  title: '%projectName%',
+
+  projectId: '%projectId%',
+  dataset: '%dataset%',
+
   plugins: [
     deskTool({structure}),
+    colorInput(),
+    imageHotspotArrayPlugin(),
+    customDocumentActions(),
     media(),
-    dashboard({
-      widgets: [shopifyWidget()]
-    }),
+    ...(isDev ? devOnlyPlugins : []),
   ],
-  project: {
-    name: '%projectName%'
+
+  schema: {
+    types: schemaTypes,
   },
-  sources: [
-    {
-      name: '%sourceName%',
-      title: '%sourceTitle%',
-      projectId: '%projectId%',
-      dataset: '%dataset%',
-      schemaTypes
+
+  form: {
+    file: {
+      assetSources: (previousAssetSources: AssetSource[]) => {
+        return previousAssetSources.filter((assetSource) => assetSource !== mediaAssetSource)
+      },
     },
-  ],
-})
-`
+    image: {
+      assetSources: (previousAssetSources: AssetSource[]) => {
+        return previousAssetSources.filter((assetSource) => assetSource === mediaAssetSource)
+      },
+    },
+  },
+})`
 
 const shopifyTemplate: ProjectTemplate = {
   configTemplate,
-  importPrompt: 'Add a sampling of sci-fi movies to your dataset on the hosted backend?',
-  datasetUrl: 'https://public.sanity.io/moviesdb-2018-03-06.tar.gz',
   dependencies: {
-    '@sanity/dashboard': '^2.21.7',
+    '@sanity/asset-utils': '^1.3.0',
+    '@sanity/color-input': '^3.0.1',
     'lodash.get': '^4.4.2',
-    'pluralize-esm': '^9.0.2',
-    'react-time-ago': '7.1.3',
-    slug: '^5.1.0',
-    'sanity-plugin-dashboard-widget-shopify': '^0.1.7',
-    'sanity-plugin-media': '^1.4.3',
+    pluralize: '^8.0.0',
+    'sanity-plugin-hotspot-array': '^1.0.0',
+    'sanity-plugin-media': '^2.0.2',
+    slug: '^8.2.2',
+    'styled-components': '^5.2.0',
+    '@types/lodash.get': '^4.4.7',
+    '@types/pluralize': '^0.0.29',
+    '@types/slug': '^5.0.3',
+    '@sanity/vision': '^3.0.0-rc.2',
   },
 }
 export default shopifyTemplate
