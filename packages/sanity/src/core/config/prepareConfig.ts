@@ -16,7 +16,7 @@ import {isNonNullable} from '../util'
 import {validateWorkspaces} from '../studio'
 import {filterDefinitions} from '../studio/components/navbar/search/definitions/defaultFilters'
 import {operatorDefinitions} from '../studio/components/navbar/search/definitions/operators/defaultOperators'
-import {SearchOperator} from '../studio/components/navbar/search/definitions/operators'
+import {SearchOperatorDefinition} from '../studio/components/navbar/search/definitions/operators'
 import {
   Config,
   PreparedConfig,
@@ -500,7 +500,7 @@ function resolveSource({
       operators: resolveConfigProperty({
         config,
         context: context,
-        initialValue: operatorDefinitions as SearchOperator[],
+        initialValue: operatorDefinitions as SearchOperatorDefinition[],
         propertyName: 'search.operators',
         reducer: searchOperatorsReducer,
       }),

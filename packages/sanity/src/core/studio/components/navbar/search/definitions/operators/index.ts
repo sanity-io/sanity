@@ -2,7 +2,7 @@ import {ComponentType} from 'react'
 import {SearchOperatorBase, SearchOperatorInput, SearchOperatorParams} from './operatorTypes'
 
 /** @internal */
-export interface SearchOperator<TValue = any> extends SearchOperatorBase {
+export interface SearchOperatorDefinition<TValue = any> extends SearchOperatorBase {
   buttonValueComponent?: ComponentType<{value: TValue}>
   fn: (params: SearchOperatorParams<TValue>) => string | null
   initialValue?: TValue
@@ -11,15 +11,15 @@ export interface SearchOperator<TValue = any> extends SearchOperatorBase {
 }
 
 export function getOperator(
-  operators: SearchOperator[],
+  operators: SearchOperatorDefinition[],
   operatorType?: string
-): SearchOperator | undefined {
+): SearchOperatorDefinition | undefined {
   return operatorType ? operators.find((f) => f.type === operatorType) : undefined
 }
 
 export function getOperatorInitialValue(
-  operators: SearchOperator[],
+  operators: SearchOperatorDefinition[],
   operatorType?: string
-): SearchOperator['initialValue'] | undefined {
+): SearchOperatorDefinition['initialValue'] | undefined {
   return getOperator(operators, operatorType)?.initialValue
 }

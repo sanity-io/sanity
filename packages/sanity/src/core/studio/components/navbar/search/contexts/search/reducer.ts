@@ -9,7 +9,11 @@ import {
   getFilterDefinitionInitialOperatorType,
   SearchFilterDefinition,
 } from '../../definitions/filters'
-import {getOperator, getOperatorInitialValue, SearchOperator} from '../../definitions/operators'
+import {
+  getOperator,
+  getOperatorInitialValue,
+  SearchOperatorDefinition,
+} from '../../definitions/operators'
 import {ORDERINGS} from '../../definitions/orderings'
 import type {SearchFieldDefinition, SearchFilter, SearchOrdering} from '../../types'
 import {debugWithName, isDebugMode} from '../../utils/debug'
@@ -36,7 +40,7 @@ export interface SearchReducerState {
 export interface SearchDefinitions {
   fields: SearchFieldDefinition[]
   filters: SearchFilterDefinition[]
-  operators: SearchOperator[]
+  operators: SearchOperatorDefinition[]
 }
 
 export interface SearchResult {
@@ -550,10 +554,17 @@ function generateFilterQuery({
   fieldDefinitions: SearchFieldDefinition[]
   filterDefinitions: SearchFilterDefinition[]
   filters: SearchFilter[]
-  operators: SearchOperator[]
+  operators: SearchOperatorDefinition[]
 }) {
   return filters
-    .filter((filter) => validateFilter(filter, filterDefinitions, fieldDefinitions, operators))
+    .filter((filter) =>
+      validateFilter({
+        filter,
+        filterDefinitions,
+        fieldDefinitions,
+        operatorDefinitions: operators,
+      })
+    )
     .map((filter) => {
       return getOperator(operators, filter.operatorType)?.fn({
         fieldPath: resolveFieldPath({filter, fieldDefinitions, filterDefinitions}),

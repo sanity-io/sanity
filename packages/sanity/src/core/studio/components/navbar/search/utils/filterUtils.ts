@@ -1,5 +1,5 @@
 import {getFilterDefinition, SearchFilterDefinition} from '../definitions/filters'
-import {getOperator, SearchOperator} from '../definitions/operators'
+import {getOperator, SearchOperatorDefinition} from '../definitions/operators'
 import type {SearchFieldDefinition, SearchFilter} from '../types'
 
 export function createFilterFromDefinition(filterDefinition: SearchFilterDefinition): SearchFilter {
@@ -32,12 +32,17 @@ export function getFilterKey(filter: SearchFilter): string {
  * - has a valid field definition (if it references a fieldId)
  * - has a valid operator (if present)
  */
-export function validateFilter(
-  filter: SearchFilter,
-  filterDefinitions: SearchFilterDefinition[],
-  fieldDefinitions: SearchFieldDefinition[],
-  operatorDefinitions: SearchOperator[]
-): boolean {
+export function validateFilter({
+  filter,
+  filterDefinitions,
+  fieldDefinitions,
+  operatorDefinitions,
+}: {
+  filter: SearchFilter
+  filterDefinitions: SearchFilterDefinition[]
+  fieldDefinitions: SearchFieldDefinition[]
+  operatorDefinitions: SearchOperatorDefinition[]
+}): boolean {
   const filterDef = getFilterDefinition(filterDefinitions, filter.filterName)
   const operator = getOperator(operatorDefinitions, filter.operatorType)
   const fieldDef = getFieldFromFilter(fieldDefinitions, filter)

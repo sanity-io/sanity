@@ -15,7 +15,7 @@ import type {
   Tool,
 } from './types'
 import {SearchFilterDefinition} from '../studio/components/navbar/search/definitions/filters'
-import {SearchOperator} from '../studio/components/navbar/search/definitions/operators'
+import {SearchOperatorDefinition} from '../studio/components/navbar/search/definitions/operators'
 
 export const initialDocumentBadges: DocumentBadgeComponent[] = []
 
@@ -76,11 +76,10 @@ export const searchFilterReducer: ConfigPropertyReducer<
   )
 }
 
-export const searchOperatorsReducer: ConfigPropertyReducer<SearchOperator[], ConfigContext> = (
-  prev,
-  {search},
-  context
-) => {
+export const searchOperatorsReducer: ConfigPropertyReducer<
+  SearchOperatorDefinition[],
+  ConfigContext
+> = (prev, {search}, context) => {
   const operators = search?.operators
   if (!operators) return prev
   if (typeof operators === 'function') return operators(prev, context)

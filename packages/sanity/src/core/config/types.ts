@@ -23,7 +23,7 @@ import {PreviewProps} from '../components/previews'
 import {AuthStore} from '../store'
 import {StudioTheme} from '../theme'
 import {SearchFilterDefinition} from '../studio/components/navbar/search/definitions/filters'
-import {SearchOperator} from '../studio/components/navbar/search/definitions/operators'
+import {SearchOperatorDefinition} from '../studio/components/navbar/search/definitions/operators'
 import {StudioComponents, StudioComponentsPluginOptions} from './studio'
 import {DocumentActionComponent, DocumentBadgeComponent} from './document'
 import {Router, RouterState} from 'sanity/router'
@@ -219,7 +219,9 @@ export interface PluginOptions {
     filters?:
       | SearchFilterDefinition<string>[]
       | ComposableOption<SearchFilterDefinition<string>[], ConfigContext>
-    operators?: SearchOperator[] | ComposableOption<SearchOperator[], ConfigContext>
+    operators?:
+      | SearchOperatorDefinition[]
+      | ComposableOption<SearchOperatorDefinition[], ConfigContext>
   }
 }
 
@@ -373,7 +375,7 @@ export interface Source {
   /** @alpha */
   search: {
     filters: SearchFilterDefinition[]
-    operators: SearchOperator[]
+    operators: SearchOperatorDefinition[]
   }
 
   /** @internal */

@@ -57,12 +57,12 @@ export function FilterButton({filter, initialOpen}: FilterButtonProps) {
     [handleRemove]
   )
 
-  const isComplete = validateFilter(
+  const isComplete = validateFilter({
+    fieldDefinitions: definitions.fields,
     filter,
-    definitions.filters,
-    definitions.fields,
-    definitions.operators
-  )
+    filterDefinitions: definitions.filters,
+    operatorDefinitions: definitions.operators,
+  })
 
   return (
     <Popover

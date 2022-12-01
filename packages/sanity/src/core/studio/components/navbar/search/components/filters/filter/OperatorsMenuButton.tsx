@@ -3,13 +3,13 @@ import {Box, Button, Flex, Inline, Menu, MenuButton, MenuDivider, MenuItem, Text
 import React, {createElement, useCallback, useId} from 'react'
 import {useSearchState} from '../../../contexts/search/useSearchState'
 import {getFilterDefinition} from '../../../definitions/filters'
-import {getOperator, SearchOperator} from '../../../definitions/operators'
+import {getOperator, SearchOperatorDefinition} from '../../../definitions/operators'
 import type {SearchFilter} from '../../../types'
 import {getFilterKey} from '../../../utils/filterUtils'
 
 interface OperatorsMenuButtonProps {
   filter: SearchFilter
-  operator?: SearchOperator
+  operator?: SearchOperatorDefinition
 }
 
 function CustomMenuItem({
@@ -18,7 +18,7 @@ function CustomMenuItem({
   selected,
 }: {
   onClick: (operatorType: string) => void
-  operator: SearchOperator
+  operator: SearchOperatorDefinition
   selected: boolean
 }) {
   const handleClick = useCallback(() => onClick(operator.type), [onClick, operator.type])
