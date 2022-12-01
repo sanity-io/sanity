@@ -1,6 +1,7 @@
 {
   "ignore": [
     "@babel/parser",
+    "@sanity/asset-utils",
     "@sanity/base",
     "@sanity/color",
     "@sanity/desk-tool",
@@ -13,12 +14,14 @@
     "@sanity/uuid",
     "babylon",
     "lodash.get",
+    "pluralize",
     "pluralize-esm",
     "prop-types",
     "react-barcode",
     "react-icons",
     "react",
     "sanity",
+    "sanity-plugin-hotspot-array",
     "slug",
     "styled-components"
   ]
