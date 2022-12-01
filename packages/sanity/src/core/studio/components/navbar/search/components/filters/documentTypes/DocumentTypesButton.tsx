@@ -46,9 +46,7 @@ export function DocumentTypesButton() {
         tone="default"
       >
         <Flex align="center" justify="space-between" gap={2}>
-          <Text muted size={1}>
-            {title}
-          </Text>
+          <Text size={1}>{title}</Text>
           <Text size={1}>
             <SelectIcon />
           </Text>

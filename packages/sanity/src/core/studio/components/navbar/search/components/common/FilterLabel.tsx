@@ -1,6 +1,7 @@
-import {Box, Flex, Text} from '@sanity/ui'
+import {Box, Flex} from '@sanity/ui'
 import React from 'react'
 import styled from 'styled-components'
+import {TextWithTone} from '../../../../../../components'
 import {useSearchState} from '../../contexts/search/useSearchState'
 import {getOperator} from '../../definitions/operators'
 import type {SearchFilter} from '../../types'
@@ -29,24 +30,30 @@ export function FilterLabel({filter, fontSize = 1, showContent = true}: FilterLa
     <Flex align="center" gap={1}>
       {/* Title */}
       <CustomBox $flexShrink={fullscreen ? 1 : 0}>
-        <Text size={fontSize} textOverflow="ellipsis" weight="medium">
+        <TextWithTone tone="default" size={fontSize} textOverflow="ellipsis" weight="medium">
           <FilterTitle filter={filter} maxLength={fullscreen ? 25 : 40} />
-        </Text>
+        </TextWithTone>
       </CustomBox>
       {/* Operator */}
       {showContent && operator?.buttonLabel && (
         <CustomBox $flexShrink={0}>
-          <Text muted size={fontSize} textOverflow="ellipsis" weight="regular">
+          <TextWithTone
+            tone="default"
+            muted
+            size={fontSize}
+            textOverflow="ellipsis"
+            weight="regular"
+          >
             {operator.buttonLabel}
-          </Text>
+          </TextWithTone>
         </CustomBox>
       )}
       {/* Value */}
       {showContent && ButtonValue && (
         <CustomBox $flexShrink={1}>
-          <Text size={fontSize} textOverflow="ellipsis" weight="medium">
+          <TextWithTone tone="default" size={fontSize} textOverflow="ellipsis" weight="medium">
             <ButtonValue value={filter?.value} />
-          </Text>
+          </TextWithTone>
         </CustomBox>
       )}
     </Flex>

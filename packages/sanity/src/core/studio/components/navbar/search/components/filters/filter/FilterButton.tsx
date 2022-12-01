@@ -1,5 +1,5 @@
 import {CloseIcon} from '@sanity/icons'
-import {Button, Popover, rem} from '@sanity/ui'
+import {Button, Card, Popover, rem} from '@sanity/ui'
 import React, {KeyboardEvent, useCallback, useState} from 'react'
 import styled from 'styled-components'
 import {useSearchState} from '../../../contexts/search/useSearchState'
@@ -19,8 +19,9 @@ const CloseButton = styled(Button)`
     `0 ${rem(theme.sanity.radius[2])} ${rem(theme.sanity.radius[2])} 0`};
 `
 
-const CustomButton = styled(Button)`
-  width: 100%;
+const CloseCard = styled(Card)`
+  position: absolute;
+  right: 0;
 `
 
 const ContainerDiv = styled.div`
@@ -28,6 +29,11 @@ const ContainerDiv = styled.div`
   display: inline-flex;
   max-width: 100%;
   position: relative;
+`
+
+const LabelButton = styled(Button)`
+  border: none;
+  width: 100%;
 `
 
 export function FilterButton({filter, initialOpen}: FilterButtonProps) {
@@ -78,32 +84,42 @@ export function FilterButton({filter, initialOpen}: FilterButtonProps) {
       portal
     >
       <ContainerDiv>
-        <CustomButton
-          onClick={handleOpen}
-          onKeyDown={handleKeyDown}
-          paddingLeft={fullscreen ? 3 : 2}
-          paddingRight={fullscreen ? 3 : 5}
-          paddingY={fullscreen ? 3 : 2}
+        <Card
+          __unstable_focusRing
+          display="flex"
           radius={2}
-          tone={isComplete ? 'primary' : 'default'}
+          tone={isComplete ? 'primary' : 'transparent'}
         >
-          <FilterLabel filter={filter} showContent={isComplete} />
-        </CustomButton>
+          <LabelButton
+            mode="bleed"
+            onClick={handleOpen}
+            onKeyDown={handleKeyDown}
+            paddingLeft={fullscreen ? 3 : 2}
+            paddingRight={fullscreen ? 3 : 5}
+            paddingY={fullscreen ? 3 : 2}
+          >
+            <FilterLabel filter={filter} showContent={isComplete} />
+          </LabelButton>
+        </Card>
 
         {!fullscreen && (
-          <CloseButton
-            aria-label="Delete filter"
-            fontSize={1}
-            icon={CloseIcon}
-            onClick={handleRemove}
-            onKeyDown={handleKeyDown}
-            padding={2}
-            style={{
-              position: 'absolute',
-              right: 0,
-            }}
-            tone={isComplete ? 'primary' : 'default'}
-          />
+          <CloseCard
+            __unstable_focusRing
+            display="flex"
+            radius={2}
+            tone={isComplete ? 'primary' : 'transparent'}
+          >
+            <CloseButton
+              aria-label="Delete filter"
+              fontSize={1}
+              icon={CloseIcon}
+              mode="bleed"
+              onClick={handleRemove}
+              onKeyDown={handleKeyDown}
+              padding={2}
+              radius={2}
+            />
+          </CloseCard>
         )}
       </ContainerDiv>
     </Popover>
