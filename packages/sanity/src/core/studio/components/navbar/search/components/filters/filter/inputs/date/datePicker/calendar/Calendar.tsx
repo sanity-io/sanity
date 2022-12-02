@@ -230,12 +230,7 @@ export const Calendar = forwardRef(function Calendar(
             </Flex>
 
             <Box marginLeft={2}>
-              <Button
-                fontSize={fontSize}
-                text="Current time"
-                mode="bleed"
-                onClick={handleNowClick}
-              />
+              <Button fontSize={fontSize} text="Set to now" mode="bleed" onClick={handleNowClick} />
             </Box>
           </Flex>
         </Box>

@@ -93,7 +93,7 @@ export function CommonDateInput({
         onChange={handleTextInputChange}
         onClear={handleTextInputClear}
         onKeyDown={handleTextInputKeyDown}
-        placeholder={`e.g. ${placeholderDate}`}
+        placeholder={`Example: ${placeholderDate}`}
         value={inputValue}
       />
       <DatePicker

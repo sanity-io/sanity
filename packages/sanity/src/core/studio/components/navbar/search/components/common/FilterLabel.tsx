@@ -30,20 +30,14 @@ export function FilterLabel({filter, fontSize = 1, showContent = true}: FilterLa
     <Flex align="center" gap={1}>
       {/* Title */}
       <CustomBox $flexShrink={fullscreen ? 1 : 0}>
-        <TextWithTone tone="default" size={fontSize} textOverflow="ellipsis" weight="medium">
+        <TextWithTone tone="default" size={fontSize} textOverflow="ellipsis" weight="semibold">
           <FilterTitle filter={filter} maxLength={fullscreen ? 25 : 40} />
         </TextWithTone>
       </CustomBox>
       {/* Operator */}
       {showContent && operator?.buttonLabel && (
         <CustomBox $flexShrink={0}>
-          <TextWithTone
-            tone="default"
-            muted
-            size={fontSize}
-            textOverflow="ellipsis"
-            weight="regular"
-          >
+          <TextWithTone tone="default" size={fontSize} textOverflow="ellipsis" weight="regular">
             {operator.buttonLabel}
           </TextWithTone>
         </CustomBox>
@@ -51,7 +45,7 @@ export function FilterLabel({filter, fontSize = 1, showContent = true}: FilterLa
       {/* Value */}
       {showContent && ButtonValue && (
         <CustomBox $flexShrink={1}>
-          <TextWithTone tone="default" size={fontSize} textOverflow="ellipsis" weight="medium">
+          <TextWithTone tone="default" size={fontSize} textOverflow="ellipsis" weight="semibold">
             <ButtonValue value={filter?.value} />
           </TextWithTone>
         </CustomBox>

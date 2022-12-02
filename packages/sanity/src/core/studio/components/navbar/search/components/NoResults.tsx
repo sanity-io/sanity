@@ -9,7 +9,7 @@ export function NoResults() {
           No results found
         </Text>
         <Text align="center" muted size={1}>
-          Try another keyword or adjust your filters to include more results
+          Try another keyword or adjust your filters
         </Text>
       </Stack>
     </Container>
