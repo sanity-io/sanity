@@ -21,53 +21,21 @@ import {buildSearchFilter, getFieldFromFilter} from '../../../utils/filterUtils'
  * Creates a flat list of filter menu items based on the current filter text input.
  */
 export function createFilterMenuItems({
+  documentTypesNarrowed,
   fieldDefinitions,
   filterDefinitions,
   schema,
   titleFilter,
   types,
-  documentTypesNarrowed,
 }: {
+  documentTypesNarrowed: string[]
   fieldDefinitions: SearchFieldDefinition[]
   filterDefinitions: SearchFilterDefinition[]
   schema: Schema
   titleFilter: string
   types: SearchableType[]
-  documentTypesNarrowed: string[]
 }): FilterMenuItem[] {
-  // TODO: refactor
-  const ungroupedPinnedFilters = filterDefinitions
-    .filter(
-      (filterDef): filterDef is SearchFilterPinnedDefinition =>
-        filterDef.type === 'pinned' && typeof filterDef?.group === 'undefined'
-    )
-    .filter((filterDef) => includesTitleInPinnedFilterDefinition(filterDef, titleFilter))
-    .map((filterDef) => buildSearchFilter(filterDef))
-
-  // Extract pinned filters into groups
-  const groupedPinnedFilters = filterDefinitions
-    .filter(
-      (filterDef): filterDef is SearchFilterPinnedDefinition & {group: string} =>
-        filterDef.type === 'pinned' && typeof filterDef?.group !== 'undefined'
-    )
-    .filter((filterDef) => includesTitleInPinnedFilterDefinition(filterDef, titleFilter))
-    .reduce<Record<string, SearchFilter[]>>((acc, val) => {
-      acc[val.group] = acc[val.group] || []
-      acc[val.group].push(buildSearchFilter(val))
-      return acc
-    }, {})
-
-  const pinnedGroups = Object.entries(groupedPinnedFilters).flatMap(([groupTitle, filters]) => {
-    return filterGroup({
-      fieldDefinitions,
-      filterDefinitions,
-      filters,
-      headerTitle: groupTitle,
-      id: groupTitle,
-      tone: 'primary',
-    })
-  })
-
+  // Construct field filters based on available definitions and current title fitler
   const fieldFilters = fieldDefinitions
     .filter((fieldDef) => includesTitleInFieldDefinition(fieldDef, titleFilter))
     .map((fieldDef) => {
@@ -79,16 +47,16 @@ export function createFilterMenuItems({
     })
     .filter(isNonNullable)
 
+  const pinnedItems = buildPinnedMenuItems({
+    fieldDefinitions,
+    filterDefinitions,
+    titleFilter,
+  })
+
   if (documentTypesNarrowed.length === 0) {
     return [
-      ...filterGroup({
-        fieldDefinitions,
-        filterDefinitions,
-        filters: ungroupedPinnedFilters,
-        id: 'pinned',
-        tone: 'primary',
-      }),
-      ...pinnedGroups,
+      ...pinnedItems,
+      // All fields
       ...filterGroup({
         fieldDefinitions,
         filterDefinitions,
@@ -99,56 +67,17 @@ export function createFilterMenuItems({
     ]
   }
 
-  const sharedFilters = fieldFilters.filter((filter) => {
-    const fieldDefinition = getFieldFromFilter(fieldDefinitions, filter)
-    return sharesDocumentTypes(documentTypesNarrowed, fieldDefinition)
-  })
-
-  const groupedItems = documentTypesNarrowed
-    .map((documentType) => {
-      const docType = schema.get(documentType)
-      return {
-        title: docType?.title || startCase(docType?.name) || '(Unknown type)',
-        documentType,
-      }
-    })
-    // Sort groups by title
-    .sort((a, b) => a.title.localeCompare(b.title))
-    .map(({documentType, title}) => {
-      const groupFilters = fieldFilters.filter((filter) => {
-        const fieldDefinition = getFieldFromFilter(fieldDefinitions, filter)
-        return includesDocumentTypes([documentType], fieldDefinition)
-      })
-      return filterGroup({
-        fieldDefinitions,
-        filterDefinitions,
-        filters: groupFilters,
-        id: title,
-        headerTitle: title,
-      })
-    })
-    .flat()
-
   return [
-    ...filterGroup({
+    ...pinnedItems,
+    // All shared / narrowed items
+    ...buildFieldMenuItemsNarrowed({
+      documentTypesNarrowed,
       fieldDefinitions,
       filterDefinitions,
-      filters: ungroupedPinnedFilters,
-      id: 'pinned',
-      tone: 'primary',
+      filters: fieldFilters,
+      schema,
+      types,
     }),
-    ...pinnedGroups,
-    ...(documentTypesNarrowed.length > 1 && types.length > 1
-      ? filterGroup({
-          fieldDefinitions,
-          filterDefinitions,
-          filters: sharedFilters,
-          headerTitle: 'Shared fields',
-          id: 'shared',
-          tone: 'primary',
-        })
-      : []),
-    ...groupedItems,
   ]
 }
 
@@ -192,6 +121,122 @@ function filterGroup({
     : []
 }
 
+/**
+ * Construct a flat list of narrowed field menu items, including shared fields.
+ * Shared fields should always appear first.
+ */
+function buildFieldMenuItemsNarrowed({
+  documentTypesNarrowed,
+  fieldDefinitions,
+  filterDefinitions,
+  filters,
+  schema,
+  types,
+}: {
+  documentTypesNarrowed: string[]
+  fieldDefinitions: SearchFieldDefinition[]
+  filterDefinitions: SearchFilterDefinition[]
+  filters: SearchFilter[]
+  schema: Schema
+  types: SearchableType[]
+}) {
+  const sharedFilters = filters.filter((filter) => {
+    const fieldDefinition = getFieldFromFilter(fieldDefinitions, filter)
+    return sharesDocumentTypes(documentTypesNarrowed, fieldDefinition)
+  })
+
+  const sharedItems =
+    documentTypesNarrowed.length > 1 && types.length > 1
+      ? filterGroup({
+          fieldDefinitions,
+          filterDefinitions,
+          filters: sharedFilters,
+          headerTitle: 'Shared fields',
+          id: 'shared',
+          tone: 'primary',
+        })
+      : []
+
+  const groupedItems = documentTypesNarrowed
+    .map((documentType) => {
+      const docType = schema.get(documentType)
+      return {
+        title: docType?.title || startCase(docType?.name) || '(Unknown type)',
+        documentType,
+      }
+    })
+    // Sort groups by title
+    .sort((a, b) => a.title.localeCompare(b.title))
+    .map(({documentType, title}) => {
+      const groupFilters = filters.filter((filter) => {
+        const fieldDefinition = getFieldFromFilter(fieldDefinitions, filter)
+        return includesDocumentTypes([documentType], fieldDefinition)
+      })
+      return filterGroup({
+        fieldDefinitions,
+        filterDefinitions,
+        filters: groupFilters,
+        id: title,
+        headerTitle: title,
+      })
+    })
+    .flat()
+
+  return [...sharedItems, ...groupedItems]
+}
+
+/**
+ * Construct a flat list of all pinned filter menu items (both ungrouped and grouped).
+ * Un-grouped items should always appear first.
+ */
+function buildPinnedMenuItems({
+  fieldDefinitions,
+  filterDefinitions,
+  titleFilter,
+}: {
+  fieldDefinitions: SearchFieldDefinition[]
+  filterDefinitions: SearchFilterDefinition[]
+  titleFilter: string
+}) {
+  // Extract all ungrouped pinned filters, these sit above all other items.
+  const ungroupedPinnedFilters = filterDefinitions
+    .filter(isPinnedFilterDefWithoutGroup)
+    .filter((filterDef) => includesTitleInPinnedFilterDefinition(filterDef, titleFilter))
+    .map((filterDef) => buildSearchFilter(filterDef))
+
+  // Extract grouped pinned filters
+  const groupedPinnedFilters = filterDefinitions
+    .filter(isPinnedFilterDefWithGroup)
+    .filter((filterDef) => includesTitleInPinnedFilterDefinition(filterDef, titleFilter))
+    .reduce<Record<string, SearchFilter[]>>((acc, val) => {
+      acc[val.group] = acc[val.group] || []
+      acc[val.group].push(buildSearchFilter(val))
+      return acc
+    }, {})
+
+  return [
+    // Ungrouped
+    ...filterGroup({
+      fieldDefinitions,
+      filterDefinitions,
+      filters: ungroupedPinnedFilters,
+      id: 'pinned-ungrouped',
+      tone: 'primary',
+    }),
+    // Grouped
+    ...Object.entries(groupedPinnedFilters).flatMap(([groupTitle, filters]) =>
+      filterGroup({
+        fieldDefinitions,
+        filterDefinitions,
+        filters,
+        headerTitle: groupTitle,
+        id: groupTitle,
+        tone: 'primary',
+      })
+    ),
+  ]
+}
+
 function includesDocumentTypes(documentTypes: string[], fieldDefinition?: SearchFieldDefinition) {
   return fieldDefinition?.documentTypes.some((type) => documentTypes.includes(type))
 }
@@ -206,6 +251,18 @@ function includesTitleInPinnedFilterDefinition(
   currentTitle: string
 ) {
   return filter.title.toLowerCase().includes(currentTitle.toLowerCase())
+}
+
+function isPinnedFilterDefWithGroup(
+  filterDef: SearchFilterDefinition
+): filterDef is SearchFilterPinnedDefinition & {group: string} {
+  return filterDef.type === 'pinned' && typeof filterDef?.group !== 'undefined'
+}
+
+function isPinnedFilterDefWithoutGroup(
+  filterDef: SearchFilterDefinition
+): filterDef is SearchFilterPinnedDefinition {
+  return filterDef.type === 'pinned' && typeof filterDef?.group === 'undefined'
 }
 
 function sharesDocumentTypes(documentTypes: string[], fieldDefinition?: SearchFieldDefinition) {
