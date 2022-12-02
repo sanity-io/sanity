@@ -42,7 +42,7 @@ const hiddenDocTypes = (listItem: ListItemBuilder) => {
   ].includes(id)
 }
 
-const structure: StructureResolver = (S, context) =>
+export const structure: StructureResolver = (S, context) =>
   S.list()
     .title('Content')
     .items([
@@ -58,5 +58,3 @@ const structure: StructureResolver = (S, context) =>
       S.divider(),
       ...S.documentTypeListItems().filter(hiddenDocTypes),
     ])
-
-export default structure
