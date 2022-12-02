@@ -16,7 +16,6 @@ import {isNonNullable} from '../util'
 import {validateWorkspaces} from '../studio'
 import {filterDefinitions} from '../studio/components/navbar/search/definitions/defaultFilters'
 import {operatorDefinitions} from '../studio/components/navbar/search/definitions/operators/defaultOperators'
-import {SearchOperatorDefinition} from '../studio/components/navbar/search/definitions/operators'
 import {
   Config,
   PreparedConfig,
@@ -40,8 +39,6 @@ import {
   resolveProductionUrlReducer,
   schemaTemplatesReducer,
   schemaTypesReducer,
-  searchFilterReducer,
-  searchOperatorsReducer,
   toolsReducer,
 } from './configPropertyReducers'
 import {resolveConfigProperty} from './resolveConfigProperty'

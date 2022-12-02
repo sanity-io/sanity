@@ -62,7 +62,8 @@ export const toolsReducer: ConfigPropertyReducer<Tool[], ConfigContext> = (
   throw new Error(`Expected \`tools\` to an array or a function but found ${typeof tools} instead.`)
 }
 
-export const searchFilterReducer: ConfigPropertyReducer<
+// we will need this when we ressurect user config for search
+/*export const searchFilterReducer: ConfigPropertyReducer<
   SearchFilterDefinition<string>[],
   ConfigContext
 > = (prev, {search}, context) => {
@@ -88,7 +89,7 @@ export const searchOperatorsReducer: ConfigPropertyReducer<
   throw new Error(
     `Expected \`operators\` to be an array or a function but found ${typeof operators} instead.`
   )
-}
+}*/
 
 export const schemaTemplatesReducer: ConfigPropertyReducer<Template[], ConfigContext> = (
   prev,
