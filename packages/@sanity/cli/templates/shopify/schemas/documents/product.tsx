@@ -1,5 +1,5 @@
 import {TagIcon} from '@sanity/icons'
-import pluralize from 'pluralize'
+import pluralize from 'pluralize-esm'
 import ShopifyIcon from '../../components/icons/Shopify'
 import ProductHiddenInput from '../../components/inputs/ProductHidden'
 import ShopifyDocumentStatus from '../../components/media/ShopifyDocumentStatus'

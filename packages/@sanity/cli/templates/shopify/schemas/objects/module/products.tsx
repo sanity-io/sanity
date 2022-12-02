@@ -1,5 +1,5 @@
 import {TagIcon} from '@sanity/icons'
-import pluralize from 'pluralize'
+import pluralize from 'pluralize-esm'
 import {defineField} from 'sanity'
 
 export default defineField({
