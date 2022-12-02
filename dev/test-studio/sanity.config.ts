@@ -14,8 +14,8 @@ import {defaultDocumentNode, newDocumentOptions, structure} from './structure'
 import {workshopTool} from './workshop'
 import {presenceTool} from './plugins/presence'
 import {
-  CustomLogo,
   CustomLayout,
+  CustomLogo,
   CustomNavbar,
   CustomToolMenu,
   studioComponentsPlugin,
@@ -24,7 +24,6 @@ import {Field, formComponentsPlugin, Input, Item, Preview} from './components/fo
 import {googleTheme} from './themes/google'
 import {vercelTheme} from './themes/vercel'
 import {GoogleLogo, TailwindLogo, VercelLogo} from './components/workspaceLogos'
-import {searchExtensions} from './plugins/searchExtensions'
 
 const sharedSettings = definePlugin({
   name: 'sharedSettings',
@@ -89,7 +88,7 @@ export default defineConfig([
     title: 'Test Studio',
     projectId: 'ppsg7ml5',
     dataset: 'test',
-    plugins: [sharedSettings(), searchExtensions()],
+    plugins: [sharedSettings()],
     basePath: '/test',
   },
   {

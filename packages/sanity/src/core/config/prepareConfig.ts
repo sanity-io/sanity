@@ -490,7 +490,10 @@ function resolveSource({
     },
 
     search: {
-      filters: resolveConfigProperty({
+      filters: filterDefinitions,
+      operators: operatorDefinitions,
+      // we will use this when we add search config to PluginOptions
+      /*filters: resolveConfigProperty({
         config,
         context: context,
         initialValue: filterDefinitions,
@@ -503,7 +506,7 @@ function resolveSource({
         initialValue: operatorDefinitions as SearchOperatorDefinition[],
         propertyName: 'search.operators',
         reducer: searchOperatorsReducer,
-      }),
+      }),*/
     },
 
     __internal: {
