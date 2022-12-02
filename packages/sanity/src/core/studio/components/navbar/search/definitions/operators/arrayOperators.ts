@@ -96,44 +96,44 @@ export const arrayOperators = {
     label: 'quantity is between',
     type: 'arrayCountRange',
   }),
-  arrayListContains: defineSearchOperator({
-    buttonLabel: 'contains',
+  arrayListIncludes: defineSearchOperator({
+    buttonLabel: 'includes',
     buttonValueComponent: SearchButtonValueString,
     groqFilter: ({fieldPath, value}) =>
       value && fieldPath ? `${toJSON(value)} in ${fieldPath}` : null,
     initialValue: null,
     inputComponent: SearchFilterStringListInput,
-    label: 'contains',
-    type: 'arrayListContains',
+    label: 'includes',
+    type: 'arrayListIncludes',
   }),
-  arrayListNotContains: defineSearchOperator({
-    buttonLabel: 'does not contain',
+  arrayListNotIncludes: defineSearchOperator({
+    buttonLabel: 'does not include',
     buttonValueComponent: SearchButtonValueString,
     groqFilter: ({fieldPath, value}) =>
       value && fieldPath ? `!(${toJSON(value)} in ${fieldPath})` : null,
     initialValue: null,
     inputComponent: SearchFilterStringListInput,
-    label: 'does not contain',
-    type: 'arrayListNotContains',
+    label: 'does not include',
+    type: 'arrayListNotIncludes',
   }),
-  arrayReferenceContains: defineSearchOperator({
-    buttonLabel: 'contains',
+  arrayReferenceIncludes: defineSearchOperator({
+    buttonLabel: 'includes',
     buttonValueComponent: SearchButtonValueReference,
     groqFilter: ({fieldPath, value}) =>
       value?._ref && fieldPath ? `${toJSON(value._ref)} in ${fieldPath}[]._ref` : null,
     initialValue: null,
     inputComponent: SearchFilterReferenceInput,
-    label: 'contains',
-    type: 'arrayReferenceContains',
+    label: 'includes',
+    type: 'arrayReferenceIncludes',
   }),
-  arrayReferenceNotContains: defineSearchOperator({
-    buttonLabel: 'does not contain',
+  arrayReferenceNotIncludes: defineSearchOperator({
+    buttonLabel: 'does not include',
     buttonValueComponent: SearchButtonValueReference,
     groqFilter: ({fieldPath, value}) =>
       value?._ref && fieldPath ? `!(${toJSON(value._ref)} in ${fieldPath}[]._ref)` : null,
     initialValue: null,
     inputComponent: SearchFilterReferenceInput,
-    label: 'does not contain',
-    type: 'arrayReferenceNotContains',
+    label: 'does not include',
+    type: 'arrayReferenceNotIncludes',
   }),
 }

@@ -10,7 +10,6 @@ import {
   StringIcon,
   UlistIcon,
 } from '@sanity/icons'
-import {ArrayListIcon} from '../components/filters/icons/ArrayListIcon'
 import {defineSearchFilter, SearchFilterDefinition} from './filters'
 import {SearchOperatorType} from './operators/defaultOperators'
 
@@ -82,11 +81,11 @@ export const filterDefinitions: SearchFilterDefinition[] = [
   }),
   defineSearchFilter<SearchOperatorType>({
     fieldType: 'array',
-    icon: ArrayListIcon,
+    icon: UlistIcon,
     name: 'arrayList',
     operators: [
-      {name: 'arrayListContains', type: 'item'},
-      {name: 'arrayListNotContains', type: 'item'},
+      {name: 'arrayListIncludes', type: 'item'},
+      {name: 'arrayListNotIncludes', type: 'item'},
       {type: 'divider'},
       {name: 'defined', type: 'item'},
       {name: 'notDefined', type: 'item'},
@@ -108,8 +107,8 @@ export const filterDefinitions: SearchFilterDefinition[] = [
     icon: UlistIcon,
     name: 'arrayReferences',
     operators: [
-      {name: 'arrayReferenceContains', type: 'item'},
-      {name: 'arrayReferenceNotContains', type: 'item'},
+      {name: 'arrayReferenceIncludes', type: 'item'},
+      {name: 'arrayReferenceNotIncludes', type: 'item'},
       {type: 'divider'},
       {name: 'defined', type: 'item'},
       {name: 'notDefined', type: 'item'},
