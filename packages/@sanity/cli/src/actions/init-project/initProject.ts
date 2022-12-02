@@ -578,6 +578,10 @@ export default async function initSanity(
           name: 'E-commerce (schema + sample data)',
         },
         {
+          value: 'shopify',
+          name: 'E-commerce (Shopify)',
+        },
+        {
           value: 'blog',
           name: 'Blog (schema)',
         },
