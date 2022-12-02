@@ -105,7 +105,7 @@ describe('narrowDocumentTypes', () => {
 })
 
 describe('validateFilter', () => {
-  it('should not allow filters with missing filter definitions', () => {
+  it('should not allow filters with invalid filter names', () => {
     const invalidFilter: SearchFilter = {
       filterName: '_invalid',
       operatorType: 'defined',
@@ -120,7 +120,7 @@ describe('validateFilter', () => {
     expect(isValid).toEqual(false)
   })
 
-  it('should not allow filters with missing field definitions', () => {
+  it('should not allow filters with invalid field IDs', () => {
     const invalidFilter: SearchFilter = {
       fieldId: '_invalid',
       filterName: 'string',
@@ -152,7 +152,7 @@ describe('validateFilter', () => {
     expect(isValid).toEqual(false)
   })
 
-  it(`should not allow filters that don't return a filter value`, () => {
+  it(`should not allow filters that don't return filter values`, () => {
     const invalidFilter: SearchFilter = {
       fieldId: ageFieldId,
       filterName: 'number',
@@ -166,5 +166,24 @@ describe('validateFilter', () => {
       operatorDefinitions,
     })
     expect(isValid).toEqual(false)
+  })
+
+  it(`should allow pinned filters that dont have fieldIds`, () => {
+    const invalidFilter: SearchFilter = {
+      filterName: 'updatedAt',
+      operatorType: 'dateTimeLast',
+      value: {
+        unit: 'days',
+        value: 10,
+      },
+    }
+
+    const isValid = validateFilter({
+      filter: invalidFilter,
+      fieldDefinitions: mockFieldDefinitions,
+      filterDefinitions,
+      operatorDefinitions,
+    })
+    expect(isValid).toEqual(true)
   })
 })

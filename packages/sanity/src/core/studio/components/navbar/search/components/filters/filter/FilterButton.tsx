@@ -63,7 +63,7 @@ export function FilterButton({filter, initialOpen}: FilterButtonProps) {
     [handleRemove]
   )
 
-  const isComplete = validateFilter({
+  const isValid = validateFilter({
     fieldDefinitions: definitions.fields,
     filter,
     filterDefinitions: definitions.filters,
@@ -88,7 +88,7 @@ export function FilterButton({filter, initialOpen}: FilterButtonProps) {
           __unstable_focusRing
           display="flex"
           radius={2}
-          tone={isComplete ? 'primary' : 'transparent'}
+          tone={isValid ? 'primary' : 'transparent'}
         >
           <LabelButton
             mode="bleed"
@@ -98,7 +98,7 @@ export function FilterButton({filter, initialOpen}: FilterButtonProps) {
             paddingRight={fullscreen ? 3 : 5}
             paddingY={fullscreen ? 3 : 2}
           >
-            <FilterLabel filter={filter} showContent={isComplete} />
+            <FilterLabel filter={filter} showContent={isValid} />
           </LabelButton>
         </Card>
 
@@ -107,7 +107,7 @@ export function FilterButton({filter, initialOpen}: FilterButtonProps) {
             __unstable_focusRing
             display="flex"
             radius={2}
-            tone={isComplete ? 'primary' : 'transparent'}
+            tone={isValid ? 'primary' : 'transparent'}
           >
             <CloseButton
               aria-label="Delete filter"

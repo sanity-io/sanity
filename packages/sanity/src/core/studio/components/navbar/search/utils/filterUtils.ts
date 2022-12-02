@@ -180,10 +180,6 @@ export function validateFilter({
 
   // Pinned filters:
   if (filterDef.type === 'pinned') {
-    // Fail: Missing `fieldId` when `fieldPath` is defined
-    if (!filter.fieldId && filterDef.fieldPath) {
-      return false
-    }
     // Fail: no filter value
     const hasFilterValue = operatorDef.groqFilter({
       fieldPath: filterDef.fieldPath,
