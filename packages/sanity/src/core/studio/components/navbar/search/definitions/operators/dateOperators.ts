@@ -1,4 +1,4 @@
-import {sub} from 'date-fns'
+import {startOfToday, sub} from 'date-fns'
 import {
   SearchButtonValueDate,
   SearchButtonValueLast,
@@ -24,13 +24,13 @@ const COMMON = {
   dateAfter: {
     buttonLabel: 'after',
     buttonValueComponent: SearchButtonValueDate,
-    initialValue: null,
+    initialValue: startOfToday().toISOString(),
     label: 'is after',
   },
   dateBefore: {
     buttonLabel: 'before',
     buttonValueComponent: SearchButtonValueDate,
-    initialValue: null,
+    initialValue: startOfToday().toISOString(),
     label: 'is before',
   },
   dateEqual: {
@@ -39,7 +39,7 @@ const COMMON = {
     groqFilter: ({fieldPath, value}: SearchOperatorParams<string>) => {
       return value && fieldPath ? `${fieldPath} == ${toJSON(value)}` : null
     },
-    initialValue: null,
+    initialValue: startOfToday().toISOString(),
     label: 'is',
   },
   dateLast: {
@@ -53,7 +53,7 @@ const COMMON = {
     groqFilter: ({fieldPath, value}: SearchOperatorParams<string>) => {
       return value && fieldPath ? `${fieldPath} != ${toJSON(value)}` : null
     },
-    initialValue: null,
+    initialValue: startOfToday().toISOString(),
     label: 'is not',
   },
 }
