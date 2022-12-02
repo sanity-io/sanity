@@ -1,14 +1,13 @@
 /**
  * Desk structure overrides
  */
-
 import {ListItemBuilder, StructureResolver} from 'sanity/desk'
-import collections from './collections'
-import colorThemes from './colorThemes'
-import home from './home'
-import pages from './pages'
-import products from './products'
-import settings from './settings'
+import collections from './collectionStructure'
+import colorThemes from './colorThemeStructure'
+import home from './homeStructure'
+import pages from './pageStructure'
+import products from './productStructure'
+import settings from './settingStructure'
 
 /**
  * Desk structure overrides
@@ -23,19 +22,27 @@ import settings from './settings'
  * https://www.sanity.io/docs/overview-structure-builder
  */
 
-// If you add document types to desk structure manually, you can add them to this array to prevent duplicates in the root pane
-const DOCUMENT_TYPES_IN_STRUCTURE = [
-  'collection',
-  'colorTheme',
-  'home',
-  'media.tag',
-  'page',
-  'product',
-  'productVariant',
-  'settings',
-]
+// If you add document types to desk structure manually, you can add them to this function to prevent duplicates in the root pane
+const hiddenDocTypes = (listItem: ListItemBuilder) => {
+  const id = listItem.getId()
 
-export const structure: StructureResolver = (S, context) =>
+  if (!id) {
+    return false
+  }
+
+  return ![
+    'collection',
+    'colorTheme',
+    'home',
+    'media.tag',
+    'page',
+    'product',
+    'productVariant',
+    'settings',
+  ].includes(id)
+}
+
+const structure: StructureResolver = (S, context) =>
   S.list()
     .title('Content')
     .items([
@@ -49,10 +56,7 @@ export const structure: StructureResolver = (S, context) =>
       S.divider(),
       settings(S, context),
       S.divider(),
-      // Automatically add new document types to the root pane
-      ...S.documentTypeListItems().filter(
-        (listItem: ListItemBuilder) =>
-          // @ts-ignore
-          !DOCUMENT_TYPES_IN_STRUCTURE.includes(listItem.getId().toString())
-      ),
+      ...S.documentTypeListItems().filter(hiddenDocTypes),
     ])
+
+export default structure
