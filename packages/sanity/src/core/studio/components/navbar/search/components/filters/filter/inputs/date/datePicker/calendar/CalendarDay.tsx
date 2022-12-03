@@ -41,7 +41,6 @@ export function CalendarDay(props: CalendarDayProps) {
           muted={!selected && !isCurrentMonth}
           size={fontSize}
           style={{textAlign: 'center'}}
-          // weight={isCurrentMonth ? 'medium' : 'regular'}
           weight="regular"
         >
           {date.getDate()}

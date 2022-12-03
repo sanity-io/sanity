@@ -86,6 +86,7 @@ export function CommonDateInput({
   return (
     <Stack space={3}>
       <CustomTextInput
+        aria-label="Date"
         clearButton={!!inputValue}
         customValidity={customValidity}
         fontSize={fullscreen ? 2 : 1}

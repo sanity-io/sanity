@@ -247,15 +247,16 @@ function CalendarMonthSelect(props: {
 }) {
   const {fontSize, moveFocusedDate, onChange, value} = props
 
-  /*
-  const handlePrevMonthClick = useCallback(() => moveFocusedDate(-1), [moveFocusedDate])
-  const handleNextMonthClick = useCallback(() => moveFocusedDate(1), [moveFocusedDate])
-  */
-
   return (
     <Flex flex={1}>
       <Box flex={1}>
-        <Select fontSize={fontSize ?? 1} radius={0} value={value} onChange={onChange}>
+        <Select
+          aria-label="Select month"
+          fontSize={fontSize ?? 1}
+          radius={0}
+          value={value}
+          onChange={onChange}
+        >
           {MONTH_NAMES.map((m, i) => (
             // eslint-disable-next-line react/no-array-index-key
             <option key={i} value={i}>
@@ -264,24 +265,6 @@ function CalendarMonthSelect(props: {
           ))}
         </Select>
       </Box>
-      {/*
-      <Button
-        aria-label="Go to previous month"
-        onClick={handlePrevMonthClick}
-        mode="bleed"
-        icon={ChevronLeftIcon}
-        padding={2}
-        radius={0}
-      />
-      <Button
-        aria-label="Go to next month"
-        mode="bleed"
-        icon={ChevronRightIcon}
-        onClick={handleNextMonthClick}
-        padding={2}
-        radius={0}
-      />
-      */}
     </Flex>
   )
 }
@@ -293,32 +276,15 @@ function CalendarYearSelect(props: {
 }) {
   const {moveFocusedDate, onChange, value} = props
 
-  /*
-  const handlePrevYearClick = useCallback(() => moveFocusedDate(-12), [moveFocusedDate])
-  const handleNextYearClick = useCallback(() => moveFocusedDate(12), [moveFocusedDate])
-  */
-
   return (
     <Flex>
-      <YearInput value={value} onChange={onChange} radius={0} style={{width: 65}} />
-      {/*
-      <Button
-        aria-label="Previous year"
-        onClick={handlePrevYearClick}
-        mode="bleed"
-        icon={ChevronLeftIcon}
-        paddingX={2}
+      <YearInput
+        aria-label="Selected year"
+        value={value}
+        onChange={onChange}
         radius={0}
+        style={{width: 65}}
       />
-      <Button
-        aria-label="Next year"
-        onClick={handleNextYearClick}
-        mode="bleed"
-        icon={ChevronRightIcon}
-        paddingX={2}
-        radius={0}
-      />
-      */}
     </Flex>
   )
 }

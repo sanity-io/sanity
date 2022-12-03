@@ -174,6 +174,7 @@ export const ReferenceAutocomplete = forwardRef(function DebugMiniReferenceInput
   return (
     <div ref={autocompletePopoverReferenceElementRef}>
       <Autocomplete
+        aria-label={placeholderText}
         filterOption={NO_FILTER}
         fontSize={fullscreen ? 2 : 1}
         id={autocompleteId}

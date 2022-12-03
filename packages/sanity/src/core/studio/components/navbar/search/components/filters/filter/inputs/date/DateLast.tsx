@@ -44,6 +44,7 @@ export function SearchFilterDateLastInput({
     <Flex gap={2}>
       <Box flex={1}>
         <TextInput
+          aria-label="Unit value"
           fontSize={fullscreen ? 2 : 1}
           onChange={handleValueChange}
           pattern="\d*"
@@ -53,7 +54,12 @@ export function SearchFilterDateLastInput({
         />
       </Box>
       <Box flex={1}>
-        <Select fontSize={fullscreen ? 2 : 1} onChange={handleUnitChange} value={value?.unit}>
+        <Select
+          aria-label="Select unit"
+          fontSize={fullscreen ? 2 : 1}
+          onChange={handleUnitChange}
+          value={value?.unit}
+        >
           <option value="days">Days</option>
           <option value="months">Months</option>
           <option value="years">Years</option>
