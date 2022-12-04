@@ -34,7 +34,7 @@ export function CommandListItems({
   ...rest
 }: CommandListItemsProps) {
   return (
-    <VirtualListBox data-overflow ref={setVirtualListRef} tabIndex={-1}>
+    <VirtualListBox ref={setVirtualListRef} tabIndex={-1}>
       <PointerOverlay ref={setPointerOverlayRef} />
       <VirtualListChildBox $height={totalHeight} flex={1} ref={setChildContainerRef} {...rest}>
         {children}

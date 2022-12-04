@@ -1,4 +1,4 @@
-import {Box, Card, Portal} from '@sanity/ui'
+import {Box, Card, Flex, Portal} from '@sanity/ui'
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import FocusLock from 'react-focus-lock'
 import styled from 'styled-components'
@@ -129,45 +129,48 @@ export function SearchDialog({onClose, onOpen, open}: SearchDialogProps) {
   }
 
   return (
-    <CommandListProvider
-      ariaChildrenLabel={hasValidTerms ? 'Search results' : 'Recent searches'}
-      ariaHeaderLabel="Search"
-      autoFocus
-      childContainerElement={childContainerElement}
-      containerElement={containerElement}
-      data-testid="search-results-dialog"
-      headerInputElement={headerInputElement}
-      itemIndices={itemIndices}
-      initialSelectedIndex={hasValidTerms ? lastSearchIndex : 0}
-      pointerOverlayElement={pointerOverlayElement}
-    >
-      <Portal>
-        <FocusLock autoFocus={false} returnFocus>
-          <SearchDialogBox ref={setContainerRef}>
+    <Portal>
+      <FocusLock autoFocus={false} returnFocus>
+        <CommandListProvider
+          ariaActiveDescendant={itemIndices.length > 0}
+          ariaChildrenLabel={hasValidTerms ? 'Search results' : 'Recent searches'}
+          ariaHeaderLabel="Search"
+          autoFocus
+          childContainerElement={childContainerElement}
+          containerElement={containerElement}
+          data-testid="search-results-dialog"
+          headerInputElement={headerInputElement}
+          itemIndices={itemIndices}
+          initialSelectedIndex={hasValidTerms ? lastSearchIndex : 0}
+          pointerOverlayElement={pointerOverlayElement}
+        >
+          <SearchDialogBox>
             <InnerCard display="flex" height="fill" scheme={scheme} tone="default">
               <SearchHeader onClose={handleClose} setHeaderInputRef={setHeaderInputRef} />
               {filtersVisible && (
-                <Card borderTop>
+                <Card borderTop style={{flexShrink: 0}}>
                   <Filters />
                 </Card>
               )}
 
-              {hasValidTerms ? (
-                <SearchResults
-                  onClose={handleClose}
-                  setChildContainerRef={setChildContainerRef}
-                  setPointerOverlayRef={setPointerOverlayRef}
-                />
-              ) : (
-                <RecentSearches
-                  setChildContainerRef={setChildContainerRef}
-                  setPointerOverlayRef={setPointerOverlayRef}
-                />
-              )}
+              <Flex align="stretch" ref={setContainerRef}>
+                {hasValidTerms ? (
+                  <SearchResults
+                    onClose={handleClose}
+                    setChildContainerRef={setChildContainerRef}
+                    setPointerOverlayRef={setPointerOverlayRef}
+                  />
+                ) : (
+                  <RecentSearches
+                    setChildContainerRef={setChildContainerRef}
+                    setPointerOverlayRef={setPointerOverlayRef}
+                  />
+                )}
+              </Flex>
             </InnerCard>
           </SearchDialogBox>
-        </FocusLock>
-      </Portal>
-    </CommandListProvider>
+        </CommandListProvider>
+      </FocusLock>
+    </Portal>
   )
 }

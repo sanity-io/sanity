@@ -76,6 +76,7 @@ export function AddFilterPopoverContent({onClose}: AddFilterPopoverContentProps)
 
   return (
     <CommandListProvider
+      ariaActiveDescendant={filteredMenuItems.length > 0}
       ariaChildrenLabel="Filters"
       ariaHeaderLabel="Filter by title"
       autoFocus
@@ -85,7 +86,7 @@ export function AddFilterPopoverContent({onClose}: AddFilterPopoverContentProps)
       itemIndices={itemIndices}
       pointerOverlayElement={pointerOverlayElement}
     >
-      <Flex direction="column" ref={setContainerRef} style={{width: '300px'}}>
+      <Flex direction="column" style={{width: '300px'}}>
         {/* Filter header */}
         <FilterHeaderBox>
           <FilterHeaderContentFlex align="center" flex={1} padding={1}>
@@ -108,7 +109,7 @@ export function AddFilterPopoverContent({onClose}: AddFilterPopoverContentProps)
           </FilterHeaderContentFlex>
         </FilterHeaderBox>
 
-        <Box flex={1}>
+        <Box flex={1} ref={setContainerRef}>
           {filteredMenuItems.length > 0 && (
             <AddFilterVirtualList
               menuItems={filteredMenuItems}

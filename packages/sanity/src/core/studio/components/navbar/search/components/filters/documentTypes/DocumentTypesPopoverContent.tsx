@@ -84,6 +84,7 @@ export function DocumentTypesPopoverContent() {
 
   return (
     <CommandListProvider
+      ariaActiveDescendant={filteredItems.length > 0}
       ariaChildrenLabel="Document types"
       ariaHeaderLabel="Filter by document type"
       ariaMultiselectable
@@ -95,7 +96,7 @@ export function DocumentTypesPopoverContent() {
       itemIndicesSelected={itemIndicesSelected}
       pointerOverlayElement={pointerOverlayElement}
     >
-      <Flex direction="column" ref={setContainerRef} style={{width: '250px'}}>
+      <Flex direction="column" style={{width: '250px'}}>
         {/* Search header */}
         <SearchHeaderBox>
           <SearchHeaderContentFlex align="center" flex={1} padding={1}>
@@ -118,7 +119,7 @@ export function DocumentTypesPopoverContent() {
           </SearchHeaderContentFlex>
         </SearchHeaderBox>
 
-        <Box flex={1}>
+        <Box flex={1} ref={setContainerRef}>
           {filteredItems.length > 0 && (
             <DocumentTypesVirtualList
               filteredItems={filteredItems}

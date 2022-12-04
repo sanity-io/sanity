@@ -45,6 +45,7 @@ interface CommandListContextValue {
 const CommandListContext = createContext<CommandListContextValue | undefined>(undefined)
 
 interface CommandListProviderProps {
+  ariaActiveDescendant?: boolean
   ariaChildrenLabel: string
   ariaHeaderLabel: string
   ariaMultiselectable?: boolean
@@ -63,6 +64,7 @@ interface CommandListProviderProps {
  * @internal
  */
 export function CommandListProvider({
+  ariaActiveDescendant = true,
   ariaChildrenLabel,
   ariaHeaderLabel,
   ariaMultiselectable = false,
@@ -107,7 +109,11 @@ export function CommandListProvider({
    */
   const handleAssignSelectedState = useCallback(() => {
     const selectedIndex = selectedIndexRef?.current
-    headerInputElement?.setAttribute('aria-activedescendant', getChildDescendantId(selectedIndex))
+    if (ariaActiveDescendant) {
+      headerInputElement?.setAttribute('aria-activedescendant', getChildDescendantId(selectedIndex))
+    } else {
+      headerInputElement?.removeAttribute('aria-activedescendant')
+    }
 
     const childElements = Array.from(childContainerElement?.children || []) as HTMLElement[]
     childElements?.forEach((child) => {
@@ -127,6 +133,7 @@ export function CommandListProvider({
     })
   }, [
     activeItemCount,
+    ariaActiveDescendant,
     childContainerElement,
     getChildDescendantId,
     headerInputElement,
@@ -286,7 +293,7 @@ export function CommandListProvider({
   }, [childContainerElement, headerInputElement, itemIndices, scrollToAdjacentItem])
 
   /**
-   * Listen to keyboard arrow events on the 'closest' parent [data-overflow] element to the child container.
+   * Listen to keyboard arrow events on the container element.
    * On arrow press: focus the header input element and then navigate accordingly.
    *
    * Done to account for when users focus a wrapping element with overflow (by dragging its scroll handle)
@@ -306,12 +313,11 @@ export function CommandListProvider({
       }
     }
 
-    const parentOverflowElement = childContainerElement?.closest('[data-overflow]')
-    parentOverflowElement?.addEventListener('keydown', handleKeydown as EventListener)
+    containerElement?.addEventListener('keydown', handleKeydown as EventListener)
     return () => {
-      parentOverflowElement?.removeEventListener('keydown', handleKeydown as EventListener)
+      containerElement?.removeEventListener('keydown', handleKeydown as EventListener)
     }
-  }, [childContainerElement, headerInputElement, scrollToAdjacentItem])
+  }, [childContainerElement, containerElement, headerInputElement, scrollToAdjacentItem])
 
   /**
    * Track focus / blur state on the list's input element and store state in `data-focused` attribute on
@@ -328,7 +334,7 @@ export function CommandListProvider({
       headerInputElement?.removeEventListener('blur', handleMarkContainerAsFocused(false))
       headerInputElement?.removeEventListener('focus', handleMarkContainerAsFocused(true))
     }
-  }, [containerElement, headerInputElement])
+  }, [children, containerElement, headerInputElement])
 
   /**
    * Track mouse enter / leave state on child container and store state in `data-hovered` attribute on
@@ -353,6 +359,14 @@ export function CommandListProvider({
   useEffect(() => {
     enableChildContainerPointerEvents(false)
   }, [activeItemCount, enableChildContainerPointerEvents])
+
+  /**
+   * Refresh selected state when item indices change (as a result of filtering).
+   * This is to ensure that we correctly clear aria-activedescendant attrs if the filtered array is empty.
+   */
+  useEffect(() => {
+    handleAssignSelectedState()
+  }, [handleAssignSelectedState, itemIndices])
 
   /**
    * Re-assign aria-selected state on all child elements on any DOM mutations.
@@ -381,8 +395,9 @@ export function CommandListProvider({
   useEffect(() => {
     childContainerElement?.setAttribute('aria-multiselectable', ariaMultiselectable.toString())
     childContainerElement?.setAttribute('aria-label', ariaChildrenLabel)
-    childContainerElement?.setAttribute('id', `${commandListId}-children`)
     childContainerElement?.setAttribute('role', 'listbox')
+
+    containerElement?.setAttribute('id', `${commandListId}-children`)
 
     headerInputElement?.setAttribute('aria-autocomplete', 'list')
     headerInputElement?.setAttribute('aria-expanded', 'true')

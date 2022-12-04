@@ -69,6 +69,7 @@ export function SearchPopover({
   const [containerElement, setContainerRef] = useState<HTMLDivElement | null>(null)
   const [headerInputElement, setHeaderInputRef] = useState<HTMLInputElement | null>(null)
   const [pointerOverlayElement, setPointerOverlayRef] = useState<HTMLDivElement | null>(null)
+  const [popoverElement, setPopoverElement] = useState<HTMLDivElement | null>(null)
 
   const isMountedRef = useRef(false)
 
@@ -115,7 +116,7 @@ export function SearchPopover({
    */
   useSearchHotkeys({onClose: handleClose, onOpen, open})
 
-  useClickOutside(handleClickOutside, [containerElement])
+  useClickOutside(handleClickOutside, [popoverElement])
 
   /**
    * Reset last search index when new results are loaded, or visiting recent searches
@@ -174,6 +175,7 @@ export function SearchPopover({
         <Overlay style={{zIndex}} />
 
         <CommandListProvider
+          ariaActiveDescendant={itemIndices.length > 0}
           ariaChildrenLabel={hasValidTerms ? 'Search results' : 'Recent searches'}
           ariaHeaderLabel="Search results"
           autoFocus
@@ -189,7 +191,7 @@ export function SearchPopover({
             $position={position}
             overflow="hidden"
             radius={2}
-            ref={setContainerRef}
+            ref={setPopoverElement}
             scheme={scheme}
             shadow={2}
             style={{zIndex}}
@@ -202,7 +204,7 @@ export function SearchPopover({
               </FiltersCard>
             )}
 
-            <Flex align="stretch" direction="row-reverse">
+            <Flex align="stretch" direction="row-reverse" ref={setContainerRef}>
               {hasValidTerms ? (
                 <SearchResults
                   onClose={handleClose}
@@ -211,9 +213,9 @@ export function SearchPopover({
                 />
               ) : (
                 <RecentSearches
+                  onClear={handleClearRecentSearches}
                   setChildContainerRef={setChildContainerRef}
                   setPointerOverlayRef={setPointerOverlayRef}
-                  onClear={handleClearRecentSearches}
                   showFiltersOnClick
                 />
               )}
