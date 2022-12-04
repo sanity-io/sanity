@@ -11,14 +11,12 @@ interface AddFilterVirtualListProps {
   menuItems: FilterMenuItem[]
   onClose: () => void
   setChildContainerRef: Dispatch<SetStateAction<HTMLDivElement | null>>
-  setPointerOverlayRef: Dispatch<SetStateAction<HTMLDivElement | null>>
 }
 
 export function AddFilterVirtualList({
   menuItems,
   onClose,
   setChildContainerRef,
-  setPointerOverlayRef,
 }: AddFilterVirtualListProps) {
   const [virtualList, setVirtualListRef] = useState<HTMLDivElement | null>(null)
 
@@ -62,7 +60,6 @@ export function AddFilterVirtualList({
     <CommandListItems
       paddingBottom={1}
       setChildContainerRef={setChildContainerRef}
-      setPointerOverlayRef={setPointerOverlayRef}
       setVirtualListRef={setVirtualListRef}
       totalHeight={getTotalSize()}
     >

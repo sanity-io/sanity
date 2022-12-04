@@ -8,7 +8,6 @@ import {RecentSearchesVirtualList} from './RecentSearchesVirtualList'
 interface RecentSearchesProps {
   onClear?: () => void
   setChildContainerRef: Dispatch<SetStateAction<HTMLDivElement | null>>
-  setPointerOverlayRef: Dispatch<SetStateAction<HTMLDivElement | null>>
   showFiltersOnClick?: boolean
 }
 
@@ -21,7 +20,6 @@ const RecentSearchesBox = styled(Card)`
 export function RecentSearches({
   onClear,
   setChildContainerRef,
-  setPointerOverlayRef,
   showFiltersOnClick,
 }: RecentSearchesProps) {
   const {
@@ -56,7 +54,6 @@ export function RecentSearches({
           <Box>
             <RecentSearchesVirtualList
               setChildContainerRef={setChildContainerRef}
-              setPointerOverlayRef={setPointerOverlayRef}
               showFiltersOnClick={showFiltersOnClick}
             />
           </Box>

@@ -7,7 +7,6 @@ import {RecentSearchItem} from './item/RecentSearchItem'
 
 interface RecentSearchesVirtualListProps {
   setChildContainerRef: Dispatch<SetStateAction<HTMLDivElement | null>>
-  setPointerOverlayRef: Dispatch<SetStateAction<HTMLDivElement | null>>
   showFiltersOnClick?: boolean
 }
 
@@ -17,7 +16,6 @@ const MAX_COMBINED_TYPE_COUNT_LARGE = 40
 
 export function RecentSearchesVirtualList({
   setChildContainerRef,
-  setPointerOverlayRef,
   showFiltersOnClick,
 }: RecentSearchesVirtualListProps) {
   const [virtualList, setVirtualListRef] = useState<HTMLDivElement | null>(null)
@@ -43,7 +41,6 @@ export function RecentSearchesVirtualList({
     <CommandListItems
       paddingBottom={1}
       setChildContainerRef={setChildContainerRef}
-      setPointerOverlayRef={setPointerOverlayRef}
       setVirtualListRef={setVirtualListRef}
       totalHeight={getTotalSize()}
     >

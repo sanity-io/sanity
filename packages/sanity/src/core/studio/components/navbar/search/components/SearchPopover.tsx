@@ -68,7 +68,6 @@ export function SearchPopover({
   const [childContainerElement, setChildContainerRef] = useState<HTMLDivElement | null>(null)
   const [containerElement, setContainerRef] = useState<HTMLDivElement | null>(null)
   const [headerInputElement, setHeaderInputRef] = useState<HTMLInputElement | null>(null)
-  const [pointerOverlayElement, setPointerOverlayRef] = useState<HTMLDivElement | null>(null)
   const [popoverElement, setPopoverElement] = useState<HTMLDivElement | null>(null)
 
   const isMountedRef = useRef(false)
@@ -185,7 +184,6 @@ export function SearchPopover({
           headerInputElement={headerInputElement}
           initialSelectedIndex={hasValidTerms ? lastSearchIndex : 0}
           itemIndices={itemIndices}
-          pointerOverlayElement={pointerOverlayElement}
         >
           <SearchPopoverCard
             $position={position}
@@ -206,16 +204,11 @@ export function SearchPopover({
 
             <Flex align="stretch" direction="row-reverse" ref={setContainerRef}>
               {hasValidTerms ? (
-                <SearchResults
-                  onClose={handleClose}
-                  setChildContainerRef={setChildContainerRef}
-                  setPointerOverlayRef={setPointerOverlayRef}
-                />
+                <SearchResults onClose={handleClose} setChildContainerRef={setChildContainerRef} />
               ) : (
                 <RecentSearches
                   onClear={handleClearRecentSearches}
                   setChildContainerRef={setChildContainerRef}
-                  setPointerOverlayRef={setPointerOverlayRef}
                   showFiltersOnClick
                 />
               )}

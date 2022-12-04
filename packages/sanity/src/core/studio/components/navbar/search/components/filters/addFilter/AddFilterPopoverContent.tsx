@@ -25,7 +25,6 @@ export function AddFilterPopoverContent({onClose}: AddFilterPopoverContentProps)
   const [childContainerElement, setChildContainerRef] = useState<HTMLDivElement | null>(null)
   const [containerElement, setContainerRef] = useState<HTMLDivElement | null>(null)
   const [headerInputElement, setHeaderInputRef] = useState<HTMLInputElement | null>(null)
-  const [pointerOverlayElement, setPointerOverlayRef] = useState<HTMLDivElement | null>(null)
   const [titleFilter, setTitleFilter] = useState('')
 
   const handleFilterChange = useCallback(
@@ -84,7 +83,6 @@ export function AddFilterPopoverContent({onClose}: AddFilterPopoverContentProps)
       containerElement={containerElement}
       headerInputElement={headerInputElement}
       itemIndices={itemIndices}
-      pointerOverlayElement={pointerOverlayElement}
     >
       <Flex direction="column" style={{width: '300px'}}>
         {/* Filter header */}
@@ -115,7 +113,6 @@ export function AddFilterPopoverContent({onClose}: AddFilterPopoverContentProps)
               menuItems={filteredMenuItems}
               onClose={onClose}
               setChildContainerRef={setChildContainerRef}
-              setPointerOverlayRef={setPointerOverlayRef}
             />
           )}
 

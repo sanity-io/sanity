@@ -1,14 +1,17 @@
 import throttle from 'lodash/throttle'
 import React, {
   createContext,
+  Dispatch,
   MouseEvent,
   ReactNode,
+  SetStateAction,
   useCallback,
   useContext,
   useEffect,
   useId,
   useMemo,
   useRef,
+  useState,
 } from 'react'
 import {isNonNullable} from '../../../../../../util'
 import {supportsTouch} from '../../utils/supportsTouch'
@@ -39,6 +42,7 @@ interface CommandListContextValue {
   itemIndices: (number | null)[]
   onChildMouseDown: (event: MouseEvent) => void
   onChildMouseEnter: (index: number) => () => void
+  setPointerOverlayElement: Dispatch<SetStateAction<HTMLDivElement | null>>
   setVirtualListScrollToIndex: (scrollToIndex: (index: number, options?: any) => void) => void
 }
 
@@ -57,7 +61,6 @@ interface CommandListProviderProps {
   initialSelectedIndex?: number
   itemIndices: (number | null)[]
   itemIndicesSelected?: boolean[]
-  pointerOverlayElement: HTMLDivElement | null
 }
 
 /**
@@ -76,9 +79,9 @@ export function CommandListProvider({
   itemIndices,
   itemIndicesSelected,
   headerInputElement,
-  pointerOverlayElement,
 }: CommandListProviderProps) {
   const selectedIndexRef = useRef<number>(-1)
+  const [pointerOverlayElement, setPointerOverlayElement] = useState<HTMLDivElement | null>(null)
 
   const activeItemCount = itemIndices.filter(isNonNullable).length
 
@@ -434,6 +437,7 @@ export function CommandListProvider({
         itemIndices,
         onChildMouseDown: handleChildMouseDown,
         onChildMouseEnter: handleChildMouseEnter,
+        setPointerOverlayElement,
         setVirtualListScrollToIndex: handleSetVirtualListScrollToIndex,
       }}
     >

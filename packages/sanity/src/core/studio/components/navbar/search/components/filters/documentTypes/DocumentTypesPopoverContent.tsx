@@ -30,7 +30,6 @@ export function DocumentTypesPopoverContent() {
   const [childContainerElement, setChildContainerRef] = useState<HTMLDivElement | null>(null)
   const [containerElement, setContainerRef] = useState<HTMLDivElement | null>(null)
   const [headerInputElement, setHeaderInputRef] = useState<HTMLInputElement | null>(null)
-  const [pointerOverlayElement, setPointerOverlayRef] = useState<HTMLDivElement | null>(null)
   const [typeFilter, setTypeFilter] = useState('')
 
   const schema = useSchema()
@@ -94,7 +93,6 @@ export function DocumentTypesPopoverContent() {
       headerInputElement={headerInputElement}
       itemIndices={itemIndices}
       itemIndicesSelected={itemIndicesSelected}
-      pointerOverlayElement={pointerOverlayElement}
     >
       <Flex direction="column" style={{width: '250px'}}>
         {/* Search header */}
@@ -124,7 +122,6 @@ export function DocumentTypesPopoverContent() {
             <DocumentTypesVirtualList
               filteredItems={filteredItems}
               setChildContainerRef={setChildContainerRef}
-              setPointerOverlayRef={setPointerOverlayRef}
             />
           )}
 

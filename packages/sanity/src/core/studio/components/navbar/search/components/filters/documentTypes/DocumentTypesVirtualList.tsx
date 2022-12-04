@@ -10,13 +10,11 @@ import {DocumentTypeFilterItem} from './items/DocumentTypeFilterItem'
 interface DocumentTypesVirtualListProps {
   filteredItems: DocumentTypeMenuItem[]
   setChildContainerRef: Dispatch<SetStateAction<HTMLDivElement | null>>
-  setPointerOverlayRef: Dispatch<SetStateAction<HTMLDivElement | null>>
 }
 
 export function DocumentTypesVirtualList({
   filteredItems,
   setChildContainerRef,
-  setPointerOverlayRef,
 }: DocumentTypesVirtualListProps) {
   const {
     state: {
@@ -67,7 +65,6 @@ export function DocumentTypesVirtualList({
     <CommandListItems
       paddingBottom={1}
       setChildContainerRef={setChildContainerRef}
-      setPointerOverlayRef={setPointerOverlayRef}
       setVirtualListRef={setVirtualListRef}
       totalHeight={getTotalSize()}
     >

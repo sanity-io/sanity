@@ -11,13 +11,11 @@ import {SearchResultItem} from './item/SearchResultItem'
 interface SearchResultsVirtualListProps {
   onClose: () => void
   setChildContainerRef: Dispatch<SetStateAction<HTMLDivElement | null>>
-  setPointerOverlayRef: Dispatch<SetStateAction<HTMLDivElement | null>>
 }
 
 export function SearchResultsVirtualList({
   onClose,
   setChildContainerRef,
-  setPointerOverlayRef,
 }: SearchResultsVirtualListProps) {
   const [virtualList, setVirtualListRef] = useState<HTMLDivElement | null>(null)
 
@@ -62,7 +60,6 @@ export function SearchResultsVirtualList({
     <CommandListItems
       paddingBottom={2}
       setChildContainerRef={setChildContainerRef}
-      setPointerOverlayRef={setPointerOverlayRef}
       setVirtualListRef={setVirtualListRef}
       totalHeight={getTotalSize()}
     >

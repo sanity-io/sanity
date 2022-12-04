@@ -44,7 +44,6 @@ export function SearchDialog({onClose, onOpen, open}: SearchDialogProps) {
   const [childContainerElement, setChildContainerRef] = useState<HTMLDivElement | null>(null)
   const [containerElement, setContainerRef] = useState<HTMLDivElement | null>(null)
   const [headerInputElement, setHeaderInputRef] = useState<HTMLInputElement | null>(null)
-  const [pointerOverlayElement, setPointerOverlayRef] = useState<HTMLDivElement | null>(null)
 
   const isMountedRef = useRef(false)
 
@@ -142,7 +141,6 @@ export function SearchDialog({onClose, onOpen, open}: SearchDialogProps) {
           headerInputElement={headerInputElement}
           itemIndices={itemIndices}
           initialSelectedIndex={hasValidTerms ? lastSearchIndex : 0}
-          pointerOverlayElement={pointerOverlayElement}
         >
           <SearchDialogBox>
             <InnerCard display="flex" height="fill" scheme={scheme} tone="default">
@@ -158,13 +156,9 @@ export function SearchDialog({onClose, onOpen, open}: SearchDialogProps) {
                   <SearchResults
                     onClose={handleClose}
                     setChildContainerRef={setChildContainerRef}
-                    setPointerOverlayRef={setPointerOverlayRef}
                   />
                 ) : (
-                  <RecentSearches
-                    setChildContainerRef={setChildContainerRef}
-                    setPointerOverlayRef={setPointerOverlayRef}
-                  />
+                  <RecentSearches setChildContainerRef={setChildContainerRef} />
                 )}
               </Flex>
             </InnerCard>
