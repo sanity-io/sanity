@@ -39,9 +39,11 @@ import {supportsTouch} from '../../utils/supportsTouch'
  */
 
 interface CommandListContextValue {
+  focusHeaderInputElement: () => void
   itemIndices: (number | null)[]
   onChildMouseDown: (event: MouseEvent) => void
   onChildMouseEnter: (index: number) => () => void
+  setHeaderInputElement: Dispatch<SetStateAction<HTMLDivElement | null>>
   setPointerOverlayElement: Dispatch<SetStateAction<HTMLDivElement | null>>
   setVirtualListScrollToIndex: (scrollToIndex: (index: number, options?: any) => void) => void
 }
@@ -57,7 +59,6 @@ interface CommandListProviderProps {
   children?: ReactNode
   childContainerElement: HTMLDivElement | null
   containerElement: HTMLDivElement | null
-  headerInputElement: HTMLInputElement | null
   initialSelectedIndex?: number
   itemIndices: (number | null)[]
   itemIndicesSelected?: boolean[]
@@ -78,9 +79,9 @@ export function CommandListProvider({
   initialSelectedIndex,
   itemIndices,
   itemIndicesSelected,
-  headerInputElement,
 }: CommandListProviderProps) {
   const selectedIndexRef = useRef<number>(-1)
+  const [headerInputElement, setHeaderInputElement] = useState<HTMLDivElement | null>(null)
   const [pointerOverlayElement, setPointerOverlayElement] = useState<HTMLDivElement | null>(null)
 
   const activeItemCount = itemIndices.filter(isNonNullable).length
@@ -179,18 +180,22 @@ export function CommandListProvider({
     [handleAssignSelectedState, itemIndices]
   )
 
+  const handleFocusHeaderInputElement = useCallback(() => {
+    if (!supportsTouch) {
+      headerInputElement?.focus()
+    }
+  }, [headerInputElement])
+
   /**
    * Focus header input on child item mouse down (non-touch only)
    * and prevent nested elements from receiving focus.
    */
   const handleChildMouseDown = useCallback(
     (event: MouseEvent) => {
-      if (!supportsTouch) {
-        headerInputElement?.focus()
-      }
+      handleFocusHeaderInputElement()
       event.preventDefault()
     },
-    [headerInputElement]
+    [handleFocusHeaderInputElement]
   )
 
   /**
@@ -306,12 +311,12 @@ export function CommandListProvider({
     function handleKeydown(event: KeyboardEvent) {
       if (event.key === 'ArrowDown') {
         event.preventDefault()
-        headerInputElement?.focus()
+        handleFocusHeaderInputElement()
         scrollToAdjacentItem('next')
       }
       if (event.key === 'ArrowUp') {
         event.preventDefault()
-        headerInputElement?.focus()
+        handleFocusHeaderInputElement()
         scrollToAdjacentItem('previous')
       }
     }
@@ -425,18 +430,18 @@ export function CommandListProvider({
    */
   useEffect(() => {
     if (autoFocus) {
-      if (!supportsTouch) {
-        headerInputElement?.focus()
-      }
+      handleFocusHeaderInputElement()
     }
-  }, [autoFocus, headerInputElement])
+  }, [autoFocus, handleFocusHeaderInputElement])
 
   return (
     <CommandListContext.Provider
       value={{
+        focusHeaderInputElement: handleFocusHeaderInputElement,
         itemIndices,
         onChildMouseDown: handleChildMouseDown,
         onChildMouseEnter: handleChildMouseEnter,
+        setHeaderInputElement,
         setPointerOverlayElement,
         setVirtualListScrollToIndex: handleSetVirtualListScrollToIndex,
       }}

@@ -1,11 +1,9 @@
-import {SearchIcon} from '@sanity/icons'
 import {Box, Flex, Text} from '@sanity/ui'
 import React, {useCallback, useMemo, useState} from 'react'
-import styled from 'styled-components'
 import {useSchema} from '../../../../../../../hooks'
 import {CommandListProvider} from '../../../contexts/commandList'
 import {useSearchState} from '../../../contexts/search/useSearchState'
-import {CustomTextInput} from '../../common/CustomTextInput'
+import {FilterPopoverContentHeader} from '../common/FilterPopoverContentHeader'
 import {AddFilterVirtualList} from './AddFilterVirtualList'
 import {createFilterMenuItems} from './createFilterMenuItems'
 
@@ -13,18 +11,9 @@ interface AddFilterPopoverContentProps {
   onClose: () => void
 }
 
-const FilterHeaderBox = styled(Box)`
-  border-bottom: 1px solid ${({theme}) => theme.sanity.color.base.border};
-`
-
-const FilterHeaderContentFlex = styled(Flex)`
-  box-sizing: border-box;
-`
-
 export function AddFilterPopoverContent({onClose}: AddFilterPopoverContentProps) {
   const [childContainerElement, setChildContainerRef] = useState<HTMLDivElement | null>(null)
   const [containerElement, setContainerRef] = useState<HTMLDivElement | null>(null)
-  const [headerInputElement, setHeaderInputRef] = useState<HTMLInputElement | null>(null)
   const [titleFilter, setTitleFilter] = useState('')
 
   const handleFilterChange = useCallback(
@@ -39,7 +28,6 @@ export function AddFilterPopoverContent({onClose}: AddFilterPopoverContentProps)
     state: {
       documentTypesNarrowed,
       definitions,
-      fullscreen,
       terms: {types},
     },
   } = useSearchState()
@@ -81,31 +69,15 @@ export function AddFilterPopoverContent({onClose}: AddFilterPopoverContentProps)
       autoFocus
       childContainerElement={childContainerElement}
       containerElement={containerElement}
-      headerInputElement={headerInputElement}
       itemIndices={itemIndices}
     >
       <Flex direction="column" style={{width: '300px'}}>
         {/* Filter header */}
-        <FilterHeaderBox>
-          <FilterHeaderContentFlex align="center" flex={1} padding={1}>
-            <CustomTextInput
-              autoComplete="off"
-              border={false}
-              clearButton={!!titleFilter}
-              fontSize={fullscreen ? 2 : 1}
-              icon={SearchIcon}
-              muted
-              onChange={handleFilterChange}
-              onClear={handleFilterClear}
-              placeholder="Filter"
-              ref={setHeaderInputRef}
-              smallClearButton
-              spellCheck={false}
-              radius={2}
-              value={titleFilter}
-            />
-          </FilterHeaderContentFlex>
-        </FilterHeaderBox>
+        <FilterPopoverContentHeader
+          onChange={handleFilterChange}
+          onClear={handleFilterClear}
+          typeFilter={titleFilter}
+        />
 
         <Box flex={1} ref={setContainerRef}>
           {filteredMenuItems.length > 0 && (

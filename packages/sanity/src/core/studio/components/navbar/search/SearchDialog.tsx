@@ -43,7 +43,6 @@ const SearchDialogBox = styled(Box)`
 export function SearchDialog({onClose, onOpen, open}: SearchDialogProps) {
   const [childContainerElement, setChildContainerRef] = useState<HTMLDivElement | null>(null)
   const [containerElement, setContainerRef] = useState<HTMLDivElement | null>(null)
-  const [headerInputElement, setHeaderInputRef] = useState<HTMLInputElement | null>(null)
 
   const isMountedRef = useRef(false)
 
@@ -138,13 +137,12 @@ export function SearchDialog({onClose, onOpen, open}: SearchDialogProps) {
           childContainerElement={childContainerElement}
           containerElement={containerElement}
           data-testid="search-results-dialog"
-          headerInputElement={headerInputElement}
           itemIndices={itemIndices}
           initialSelectedIndex={hasValidTerms ? lastSearchIndex : 0}
         >
           <SearchDialogBox>
             <InnerCard display="flex" height="fill" scheme={scheme} tone="default">
-              <SearchHeader onClose={handleClose} setHeaderInputRef={setHeaderInputRef} />
+              <SearchHeader onClose={handleClose} />
               {filtersVisible && (
                 <Card borderTop style={{flexShrink: 0}}>
                   <Filters />

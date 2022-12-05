@@ -1,13 +1,13 @@
 import {ArrowLeftIcon, ControlsIcon, SearchIcon, SpinnerIcon} from '@sanity/icons'
 import {Box, Button, Card, Flex, Theme} from '@sanity/ui'
-import React, {Dispatch, SetStateAction, useCallback, useEffect, useRef} from 'react'
+import React, {useCallback, useEffect, useRef} from 'react'
 import styled, {keyframes} from 'styled-components'
+import {useCommandList} from '../contexts/commandList'
 import {useSearchState} from '../contexts/search/useSearchState'
 import {CustomTextInput} from './common/CustomTextInput'
 
 interface SearchHeaderProps {
   onClose: () => void
-  setHeaderInputRef: Dispatch<SetStateAction<HTMLInputElement | null>>
 }
 
 const rotate = keyframes`
@@ -41,7 +41,7 @@ const NotificationBadge = styled.div`
   width: 6px;
 `
 
-export function SearchHeader({onClose, setHeaderInputRef}: SearchHeaderProps) {
+export function SearchHeader({onClose}: SearchHeaderProps) {
   const isMountedRef = useRef(false)
 
   const {
@@ -54,6 +54,8 @@ export function SearchHeader({onClose, setHeaderInputRef}: SearchHeaderProps) {
       terms: {types, query},
     },
   } = useSearchState()
+
+  const {setHeaderInputElement} = useCommandList()
 
   const handleFiltersToggle = useCallback(
     () => dispatch({type: 'FILTERS_VISIBLE_SET', visible: !filtersVisible}),
@@ -105,7 +107,7 @@ export function SearchHeader({onClose, setHeaderInputRef}: SearchHeaderProps) {
             onChange={handleQueryChange}
             onClear={handleQueryClear}
             placeholder="Search"
-            ref={setHeaderInputRef}
+            ref={setHeaderInputElement}
             smallClearButton={fullscreen}
             spellCheck={false}
             value={query}

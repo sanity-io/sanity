@@ -67,7 +67,6 @@ export function SearchPopover({
 }: SearchPopoverProps) {
   const [childContainerElement, setChildContainerRef] = useState<HTMLDivElement | null>(null)
   const [containerElement, setContainerRef] = useState<HTMLDivElement | null>(null)
-  const [headerInputElement, setHeaderInputRef] = useState<HTMLInputElement | null>(null)
   const [popoverElement, setPopoverElement] = useState<HTMLDivElement | null>(null)
 
   const isMountedRef = useRef(false)
@@ -96,10 +95,6 @@ export function SearchPopover({
     setLastSearchIndex()
     onClose()
   }, [onClose, setLastSearchIndex])
-
-  const handleClearRecentSearches = useCallback(() => {
-    headerInputElement?.focus()
-  }, [headerInputElement])
 
   /**
    * Check for top-most layer to prevent closing if a portalled element (i.e. menu button) is active
@@ -181,7 +176,6 @@ export function SearchPopover({
           childContainerElement={childContainerElement}
           containerElement={containerElement}
           data-testid="search-results-popover"
-          headerInputElement={headerInputElement}
           initialSelectedIndex={hasValidTerms ? lastSearchIndex : 0}
           itemIndices={itemIndices}
         >
@@ -194,7 +188,7 @@ export function SearchPopover({
             shadow={2}
             style={{zIndex}}
           >
-            <SearchHeader onClose={handleClose} setHeaderInputRef={setHeaderInputRef} />
+            <SearchHeader onClose={handleClose} />
 
             {filtersVisible && (
               <FiltersCard borderTop>
@@ -206,11 +200,7 @@ export function SearchPopover({
               {hasValidTerms ? (
                 <SearchResults onClose={handleClose} setChildContainerRef={setChildContainerRef} />
               ) : (
-                <RecentSearches
-                  onClear={handleClearRecentSearches}
-                  setChildContainerRef={setChildContainerRef}
-                  showFiltersOnClick
-                />
+                <RecentSearches setChildContainerRef={setChildContainerRef} showFiltersOnClick />
               )}
             </Flex>
           </SearchPopoverCard>

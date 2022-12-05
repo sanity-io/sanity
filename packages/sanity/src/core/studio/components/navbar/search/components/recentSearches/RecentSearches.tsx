@@ -1,12 +1,12 @@
 import {Box, Button, Card, Label, Text} from '@sanity/ui'
 import React, {Dispatch, SetStateAction, useCallback} from 'react'
 import styled from 'styled-components'
+import {useCommandList} from '../../contexts/commandList'
 import {useSearchState} from '../../contexts/search/useSearchState'
 import {Instructions} from '../Instructions'
 import {RecentSearchesVirtualList} from './RecentSearchesVirtualList'
 
 interface RecentSearchesProps {
-  onClear?: () => void
   setChildContainerRef: Dispatch<SetStateAction<HTMLDivElement | null>>
   showFiltersOnClick?: boolean
 }
@@ -17,25 +17,26 @@ const RecentSearchesBox = styled(Card)`
   position: relative;
 `
 
-export function RecentSearches({
-  onClear,
-  setChildContainerRef,
-  showFiltersOnClick,
-}: RecentSearchesProps) {
+export function RecentSearches({setChildContainerRef, showFiltersOnClick}: RecentSearchesProps) {
   const {
     dispatch,
     recentSearchesStore,
     state: {filtersVisible, fullscreen, recentSearches},
   } = useSearchState()
 
+  const {focusHeaderInputElement} = useCommandList()
+
+  /**
+   * Remove terms from local storage.
+   * Also re-focus header input (on non-touch devices)
+   */
   const handleClearRecentSearchesClick = useCallback(() => {
-    // Remove terms from Local Storage
     if (recentSearchesStore) {
       const updatedRecentSearches = recentSearchesStore.removeSearch()
       dispatch({recentSearches: updatedRecentSearches, type: 'RECENT_SEARCHES_SET'})
     }
-    onClear?.()
-  }, [dispatch, recentSearchesStore, onClear])
+    focusHeaderInputElement()
+  }, [dispatch, focusHeaderInputElement, recentSearchesStore])
 
   const hasRecentSearches = !!recentSearches.length
 

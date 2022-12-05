@@ -1,4 +1,3 @@
-import {SearchIcon} from '@sanity/icons'
 import {Schema} from '@sanity/types'
 import {Box, Button, Flex, Stack, Text} from '@sanity/ui'
 import {partition} from 'lodash'
@@ -6,30 +5,20 @@ import React, {useCallback, useMemo, useState} from 'react'
 import styled from 'styled-components'
 import {useSchema} from '../../../../../../../hooks'
 import type {SearchableType} from '../../../../../../../search'
-import {CommandListProvider} from '../../../contexts/commandList'
+import {CommandListProvider, useCommandList} from '../../../contexts/commandList'
 import {useSearchState} from '../../../contexts/search/useSearchState'
 import type {DocumentTypeMenuItem} from '../../../types'
 import {getSelectableOmnisearchTypes} from '../../../utils/selectors'
-import {supportsTouch} from '../../../utils/supportsTouch'
-import {CustomTextInput} from '../../common/CustomTextInput'
+import {FilterPopoverContentHeader} from '../common/FilterPopoverContentHeader'
 import {DocumentTypesVirtualList} from './DocumentTypesVirtualList'
 
 const ClearButtonBox = styled(Box)`
   border-top: 1px solid ${({theme}) => theme.sanity.color.base.border};
 `
 
-const SearchHeaderBox = styled(Box)`
-  border-bottom: 1px solid ${({theme}) => theme.sanity.color.base.border};
-`
-
-const SearchHeaderContentFlex = styled(Flex)`
-  box-sizing: border-box;
-`
-
 export function DocumentTypesPopoverContent() {
   const [childContainerElement, setChildContainerRef] = useState<HTMLDivElement | null>(null)
   const [containerElement, setContainerRef] = useState<HTMLDivElement | null>(null)
-  const [headerInputElement, setHeaderInputRef] = useState<HTMLInputElement | null>(null)
   const [typeFilter, setTypeFilter] = useState('')
 
   const schema = useSchema()
@@ -37,7 +26,6 @@ export function DocumentTypesPopoverContent() {
   const {
     dispatch,
     state: {
-      fullscreen,
       terms: {types: selectedTypes},
     },
   } = useSearchState()
@@ -47,19 +35,16 @@ export function DocumentTypesPopoverContent() {
 
   const filteredItems = useGetVirtualItems(schema, selectedTypes, selectedTypesSnapshot, typeFilter)
 
-  const handleClearTypes = useCallback(() => {
-    if (!supportsTouch) {
-      headerInputElement?.focus()
-    }
-    setSelectedTypesSnapshot([])
-    dispatch({type: 'TERMS_TYPES_CLEAR'})
-  }, [dispatch, headerInputElement])
-
   const handleFilterChange = useCallback(
     (e: React.KeyboardEvent<HTMLInputElement>) => setTypeFilter(e.currentTarget.value),
     [setTypeFilter]
   )
   const handleFilterClear = useCallback(() => setTypeFilter(''), [])
+
+  const handleTypesClear = useCallback(() => {
+    setSelectedTypesSnapshot([])
+    dispatch({type: 'TERMS_TYPES_CLEAR'})
+  }, [dispatch])
 
   /**
    * Create a map of indices for our virtual list, ignoring non-filter items.
@@ -90,32 +75,16 @@ export function DocumentTypesPopoverContent() {
       autoFocus
       childContainerElement={childContainerElement}
       containerElement={containerElement}
-      headerInputElement={headerInputElement}
       itemIndices={itemIndices}
       itemIndicesSelected={itemIndicesSelected}
     >
       <Flex direction="column" style={{width: '250px'}}>
         {/* Search header */}
-        <SearchHeaderBox>
-          <SearchHeaderContentFlex align="center" flex={1} padding={1}>
-            <CustomTextInput
-              autoComplete="off"
-              border={false}
-              clearButton={!!typeFilter}
-              fontSize={fullscreen ? 2 : 1}
-              icon={SearchIcon}
-              muted
-              onChange={handleFilterChange}
-              onClear={handleFilterClear}
-              placeholder="Filter"
-              ref={setHeaderInputRef}
-              smallClearButton
-              spellCheck={false}
-              radius={2}
-              value={typeFilter}
-            />
-          </SearchHeaderContentFlex>
-        </SearchHeaderBox>
+        <FilterPopoverContentHeader
+          onChange={handleFilterChange}
+          onClear={handleFilterClear}
+          typeFilter={typeFilter}
+        />
 
         <Box flex={1} ref={setContainerRef}>
           {filteredItems.length > 0 && (
@@ -137,24 +106,43 @@ export function DocumentTypesPopoverContent() {
 
         {/* Clear button */}
         {!typeFilter && selectedTypes.length > 0 && (
-          <ClearButtonBox padding={1}>
-            <Stack>
-              <Button
-                aria-label="Clear checked filters"
-                data-name="type-filter-button"
-                disabled={selectedTypes.length === 0}
-                fontSize={1}
-                mode="bleed"
-                onClick={handleClearTypes}
-                padding={3}
-                text="Clear"
-                tone="primary"
-              />
-            </Stack>
-          </ClearButtonBox>
+          <ClearButton onClick={handleTypesClear} selectedTypes={selectedTypes} />
         )}
       </Flex>
     </CommandListProvider>
+  )
+}
+
+function ClearButton({
+  onClick,
+  selectedTypes,
+}: {
+  onClick: () => void
+  selectedTypes: SearchableType[]
+}) {
+  const {focusHeaderInputElement} = useCommandList()
+
+  const handleClear = useCallback(() => {
+    focusHeaderInputElement()
+    onClick?.()
+  }, [focusHeaderInputElement, onClick])
+
+  return (
+    <ClearButtonBox padding={1}>
+      <Stack>
+        <Button
+          aria-label="Clear checked filters"
+          data-name="type-filter-button"
+          disabled={selectedTypes.length === 0}
+          fontSize={1}
+          mode="bleed"
+          onClick={handleClear}
+          padding={3}
+          text="Clear"
+          tone="primary"
+        />
+      </Stack>
+    </ClearButtonBox>
   )
 }
 
