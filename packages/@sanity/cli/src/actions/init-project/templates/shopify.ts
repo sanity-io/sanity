@@ -59,10 +59,8 @@ const shopifyTemplate: ProjectTemplate = {
     'sanity-plugin-hotspot-array': '^1.0.0',
     'sanity-plugin-media': '^2.0.2',
     slug: '^8.2.2',
-    'styled-components': '^5.2.0',
     '@types/lodash.get': '^4.4.7',
     '@types/slug': '^5.0.3',
-    '@sanity/vision': '^3.0.0',
   },
 }
 export default shopifyTemplate

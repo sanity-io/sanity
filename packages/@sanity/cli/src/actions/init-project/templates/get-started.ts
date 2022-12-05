@@ -3,6 +3,7 @@ import type {ProjectTemplate} from '../initProject'
 const configTemplate = `
 import {defineConfig} from 'sanity'
 import {deskTool} from 'sanity/desk'
+import {visionTool} from '@sanity/vision'
 import {tutorialLayout} from './plugins/tutorial'
 import {schemaTypes} from './schemas'
 
@@ -16,6 +17,7 @@ export default defineConfig({
   plugins: [
     deskTool(),
     tutorialLayout(),
+    visionTool(),
   ],
 
   schema: {
