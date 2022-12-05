@@ -62,7 +62,7 @@ const shopifyTemplate: ProjectTemplate = {
     'styled-components': '^5.2.0',
     '@types/lodash.get': '^4.4.7',
     '@types/slug': '^5.0.3',
-    '@sanity/vision': '^3.0.0-rc.2',
+    '@sanity/vision': '^3.0.0',
   },
 }
 export default shopifyTemplate
