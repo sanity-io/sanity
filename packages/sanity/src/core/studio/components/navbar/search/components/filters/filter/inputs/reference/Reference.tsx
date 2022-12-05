@@ -25,7 +25,7 @@ export function SearchFilterReferenceInput({
     [onChange]
   )
 
-  // Extract all searcahble types
+  // Extract all searchable types
   const searchableTypes = useMemo(() => {
     if (!fieldDefinition) {
       return []

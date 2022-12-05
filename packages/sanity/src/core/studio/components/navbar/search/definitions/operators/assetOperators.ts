@@ -1,12 +1,15 @@
+import type {ReferenceValue} from '@sanity/types'
 import {SearchButtonValueReference} from '../../components/filters/common/ButtonValue'
 import {SearchFilterAssetInput} from '../../components/filters/filter/inputs/asset/Asset'
-import {defineSearchOperator} from './operatorTypes'
+import {defineSearchOperator, SearchOperatorButtonValue} from './operatorTypes'
 import {toJSON} from './operatorUtils'
 
+// @todo: don't manually cast `buttonValueComponent` and `inputComponent` once
+// we understand why `yarn etl` fails with 'Unable to follow symbol' errors
 export const assetOperators = {
   assetFileEqual: defineSearchOperator({
     buttonLabel: 'is',
-    buttonValueComponent: SearchButtonValueReference,
+    buttonValueComponent: SearchButtonValueReference as SearchOperatorButtonValue<ReferenceValue>,
     groqFilter: ({fieldPath, value}) =>
       value?._ref && fieldPath ? `${fieldPath}.asset._ref == ${toJSON(value._ref)}` : null,
     initialValue: null,
@@ -16,7 +19,7 @@ export const assetOperators = {
   }),
   assetFileNotEqual: defineSearchOperator({
     buttonLabel: 'is not',
-    buttonValueComponent: SearchButtonValueReference,
+    buttonValueComponent: SearchButtonValueReference as SearchOperatorButtonValue<ReferenceValue>,
     groqFilter: ({fieldPath, value}) =>
       value?._ref && fieldPath ? `${fieldPath}.asset._ref != ${toJSON(value._ref)}` : null,
     initialValue: null,
@@ -26,7 +29,7 @@ export const assetOperators = {
   }),
   assetImageEqual: defineSearchOperator({
     buttonLabel: 'is',
-    buttonValueComponent: SearchButtonValueReference,
+    buttonValueComponent: SearchButtonValueReference as SearchOperatorButtonValue<ReferenceValue>,
     groqFilter: ({fieldPath, value}) =>
       value?._ref && fieldPath ? `${fieldPath}.asset._ref == ${toJSON(value._ref)}` : null,
     initialValue: null,
@@ -36,7 +39,7 @@ export const assetOperators = {
   }),
   assetImageNotEqual: defineSearchOperator({
     buttonLabel: 'is not',
-    buttonValueComponent: SearchButtonValueReference,
+    buttonValueComponent: SearchButtonValueReference as SearchOperatorButtonValue<ReferenceValue>,
     groqFilter: ({fieldPath, value}) =>
       value?._ref && fieldPath ? `${fieldPath}.asset._ref != ${toJSON(value._ref)}` : null,
     initialValue: null,

@@ -1,12 +1,17 @@
 import {startOfToday, sub} from 'date-fns'
 import {
   SearchButtonValueDate,
-  SearchButtonValueLast,
+  SearchButtonValueDateLast,
 } from '../../components/filters/common/ButtonValue'
 import {SearchFilterDateInput} from '../../components/filters/filter/inputs/date/Date'
 import {SearchFilterDateLastInput} from '../../components/filters/filter/inputs/date/DateLast'
 import {SearchFilterDateTimeInput} from '../../components/filters/filter/inputs/date/DateTime'
-import {defineSearchOperator, SearchOperatorParams} from './operatorTypes'
+import {
+  defineSearchOperator,
+  SearchOperatorButtonValue,
+  SearchOperatorInput,
+  SearchOperatorParams,
+} from './operatorTypes'
 import {toJSON} from './operatorUtils'
 
 export interface OperatorDateRangeValue {
@@ -19,23 +24,26 @@ export interface OperatorDateLastValue {
   value: number | null
 }
 
+// @todo: don't manually cast `buttonValueComponent` and `inputComponent` once
+// we understand why `yarn etl` fails with 'Unable to follow symbol' errors
+
 // Common values shared between date & datetime defs
 const COMMON = {
   dateAfter: {
     buttonLabel: 'after',
-    buttonValueComponent: SearchButtonValueDate,
+    buttonValueComponent: SearchButtonValueDate as SearchOperatorButtonValue<string>,
     initialValue: startOfToday().toISOString(),
     label: 'is after',
   },
   dateBefore: {
     buttonLabel: 'before',
-    buttonValueComponent: SearchButtonValueDate,
+    buttonValueComponent: SearchButtonValueDate as SearchOperatorButtonValue<string>,
     initialValue: startOfToday().toISOString(),
     label: 'is before',
   },
   dateEqual: {
     buttonLabel: 'is',
-    buttonValueComponent: SearchButtonValueDate,
+    buttonValueComponent: SearchButtonValueDate as SearchOperatorButtonValue<string>,
     groqFilter: ({fieldPath, value}: SearchOperatorParams<string>) => {
       return value && fieldPath ? `${fieldPath} == ${toJSON(value)}` : null
     },
@@ -44,12 +52,13 @@ const COMMON = {
   },
   dateLast: {
     buttonLabel: 'last',
-    buttonValueComponent: SearchButtonValueLast,
+    buttonValueComponent:
+      SearchButtonValueDateLast as SearchOperatorButtonValue<OperatorDateLastValue>,
     label: 'is in the last',
   },
   dateNotEqual: {
     buttonLabel: 'is not',
-    buttonValueComponent: SearchButtonValueDate,
+    buttonValueComponent: SearchButtonValueDate as SearchOperatorButtonValue<string>,
     groqFilter: ({fieldPath, value}: SearchOperatorParams<string>) => {
       return value && fieldPath ? `${fieldPath} != ${toJSON(value)}` : null
     },
@@ -64,7 +73,7 @@ export const dateOperators = {
     groqFilter: ({fieldPath, value}: SearchOperatorParams<string>) => {
       return value && fieldPath ? `${fieldPath} > ${toJSON(value)}` : null
     },
-    inputComponent: SearchFilterDateInput,
+    inputComponent: SearchFilterDateInput as SearchOperatorInput<string>,
     type: 'dateAfter',
   }),
   dateBefore: defineSearchOperator({
@@ -72,12 +81,12 @@ export const dateOperators = {
     groqFilter: ({fieldPath, value}: SearchOperatorParams<string>) => {
       return value && fieldPath ? `${fieldPath} < ${toJSON(value)}` : null
     },
-    inputComponent: SearchFilterDateInput,
+    inputComponent: SearchFilterDateInput as SearchOperatorInput<string>,
     type: 'dateBefore',
   }),
   dateEqual: defineSearchOperator({
     ...COMMON.dateEqual,
-    inputComponent: SearchFilterDateInput,
+    inputComponent: SearchFilterDateInput as SearchOperatorInput<string>,
     type: 'dateEqual',
   }),
   dateLast: defineSearchOperator({
@@ -93,7 +102,7 @@ export const dateOperators = {
         : null
       return timestampAgo && fieldPath ? `${fieldPath} > ${toJSON(timestampAgo)}` : null
     },
-    inputComponent: SearchFilterDateLastInput,
+    inputComponent: SearchFilterDateLastInput as SearchOperatorInput<OperatorDateLastValue>,
     initialValue: {
       unit: 'days',
       value: 7,
@@ -102,7 +111,7 @@ export const dateOperators = {
   }),
   dateNotEqual: defineSearchOperator({
     ...COMMON.dateNotEqual,
-    inputComponent: SearchFilterDateInput,
+    inputComponent: SearchFilterDateInput as SearchOperatorInput<string>,
     type: 'dateNotEqual',
   }),
   dateTimeAfter: defineSearchOperator({
@@ -110,7 +119,7 @@ export const dateOperators = {
     groqFilter: ({fieldPath, value}: SearchOperatorParams<string>) => {
       return value && fieldPath ? `dateTime(${fieldPath}) > dateTime(${toJSON(value)})` : null
     },
-    inputComponent: SearchFilterDateTimeInput,
+    inputComponent: SearchFilterDateTimeInput as SearchOperatorInput<string>,
     type: 'dateTimeAfter',
   }),
   dateTimeBefore: defineSearchOperator({
@@ -118,12 +127,12 @@ export const dateOperators = {
     groqFilter: ({fieldPath, value}: SearchOperatorParams<string>) => {
       return value && fieldPath ? `dateTime(${fieldPath}) < dateTime(${toJSON(value)})` : null
     },
-    inputComponent: SearchFilterDateTimeInput,
+    inputComponent: SearchFilterDateTimeInput as SearchOperatorInput<string>,
     type: 'dateTimeBefore',
   }),
   dateTimeEqual: defineSearchOperator({
     ...COMMON.dateEqual,
-    inputComponent: SearchFilterDateTimeInput,
+    inputComponent: SearchFilterDateTimeInput as SearchOperatorInput<string>,
     type: 'dateTimeEqual',
   }),
   dateTimeLast: defineSearchOperator({
@@ -145,12 +154,12 @@ export const dateOperators = {
       unit: 'days',
       value: 7,
     },
-    inputComponent: SearchFilterDateLastInput,
+    inputComponent: SearchFilterDateLastInput as SearchOperatorInput<OperatorDateLastValue>,
     type: 'dateTimeLast',
   }),
   dateTimeNotEqual: defineSearchOperator({
     ...COMMON.dateNotEqual,
-    inputComponent: SearchFilterDateTimeInput,
+    inputComponent: SearchFilterDateTimeInput as SearchOperatorInput<string>,
     type: 'dateTimeNotEqual',
   }),
 }

@@ -19,6 +19,20 @@ export type SearchOperatorInput<TValue> = ComponentType<OperatorInputComponentPr
 /**
  * @alpha
  */
+export type SearchOperatorButtonValue<TValue> = ComponentType<
+  OperatorButtonValueComponentProps<TValue>
+>
+
+/**
+ * @alpha
+ */
+export interface OperatorButtonValueComponentProps<T> {
+  value: T
+}
+
+/**
+ * @alpha
+ */
 export interface OperatorInputComponentProps<T> {
   fieldDefinition?: SearchFieldDefinition
   onChange: (value: T | null) => void
@@ -39,7 +53,7 @@ export type ValuelessSearchOperatorParams = {fieldPath?: string}
  * @alpha
  */
 export interface SearchOperatorBuilder<TType extends string, TValue> extends SearchOperatorBase {
-  buttonValueComponent: ComponentType<{value: TValue}>
+  buttonValueComponent: SearchOperatorButtonValue<TValue>
   groqFilter: (params: SearchOperatorParams<TValue>) => string | null
   initialValue: TValue | null
   inputComponent: SearchOperatorInput<TValue>

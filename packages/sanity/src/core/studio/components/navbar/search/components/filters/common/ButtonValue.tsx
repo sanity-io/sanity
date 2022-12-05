@@ -5,15 +5,16 @@ import React from 'react'
 import {useSchema} from '../../../../../../../hooks'
 import type {OperatorNumberRangeValue} from '../../../definitions/operators/common'
 import type {OperatorDateLastValue} from '../../../definitions/operators/dateOperators'
+import {OperatorButtonValueComponentProps} from '../../../definitions/operators/operatorTypes'
 import {ReferencePreviewTitle} from './ReferencePreviewTitle'
 
 const DEFAULT_DATE_FORMAT = 'yyyy-MM-dd'
 
-export function SearchButtonValueBoolean({value}: {value: boolean}) {
+export function SearchButtonValueBoolean({value}: OperatorButtonValueComponentProps<boolean>) {
   return <>{value ? 'True' : 'False'}</>
 }
 
-export function SearchButtonValueDate({value}: {value: string}) {
+export function SearchButtonValueDate({value}: OperatorButtonValueComponentProps<string>) {
   const date = value ? new Date(value) : null
   if (!date || !isValid(date)) {
     return null
@@ -21,7 +22,9 @@ export function SearchButtonValueDate({value}: {value: string}) {
   return <>{format(date, DEFAULT_DATE_FORMAT)}</>
 }
 
-export function SearchButtonValueLast({value}: {value: OperatorDateLastValue}) {
+export function SearchButtonValueDateLast({
+  value,
+}: OperatorButtonValueComponentProps<OperatorDateLastValue>) {
   return (
     <>
       {Math.floor(value?.value ?? 0)} {value.unit}
@@ -29,11 +32,11 @@ export function SearchButtonValueLast({value}: {value: OperatorDateLastValue}) {
   )
 }
 
-export function SearchButtonValueNumber({value}: {value: number}) {
+export function SearchButtonValueNumber({value}: OperatorButtonValueComponentProps<number>) {
   return <>{value}</>
 }
 
-export function SearchButtonValueNumberCount({value}: {value: number}) {
+export function SearchButtonValueNumberCount({value}: OperatorButtonValueComponentProps<number>) {
   return (
     <>
       {value} {pluralize('item', value)}
@@ -41,7 +44,9 @@ export function SearchButtonValueNumberCount({value}: {value: number}) {
   )
 }
 
-export function SearchButtonValueNumberRange({value}: {value: OperatorNumberRangeValue}) {
+export function SearchButtonValueNumberRange({
+  value,
+}: OperatorButtonValueComponentProps<OperatorNumberRangeValue>) {
   return (
     <>
       {value.min} → {value.max}
@@ -49,7 +54,9 @@ export function SearchButtonValueNumberRange({value}: {value: OperatorNumberRang
   )
 }
 
-export function SearchButtonValueNumberCountRange({value}: {value: OperatorNumberRangeValue}) {
+export function SearchButtonValueNumberCountRange({
+  value,
+}: OperatorButtonValueComponentProps<OperatorNumberRangeValue>) {
   return (
     <>
       {value.min} → {value.max} items
@@ -57,7 +64,7 @@ export function SearchButtonValueNumberCountRange({value}: {value: OperatorNumbe
   )
 }
 
-export function SearchButtonValueReference({value}: {value: Reference}) {
+export function SearchButtonValueReference({value}: OperatorButtonValueComponentProps<Reference>) {
   const schema = useSchema()
   const documentId = value._ref
   const schemaType = schema.get(value._type)
@@ -67,6 +74,8 @@ export function SearchButtonValueReference({value}: {value: Reference}) {
   return <ReferencePreviewTitle documentId={documentId} schemaType={schemaType} />
 }
 
-export function SearchButtonValueString({value}: {value: string | number}) {
+export function SearchButtonValueString({
+  value,
+}: OperatorButtonValueComponentProps<string | number>) {
   return <>{value}</>
 }

@@ -1,4 +1,4 @@
-import {typed} from '@sanity/types'
+import {type ReferenceValue} from '@sanity/types'
 import {
   SearchButtonValueNumberCount,
   SearchButtonValueNumberCountRange,
@@ -14,125 +14,128 @@ import {GtIcon} from '../../components/filters/icons/GtIcon'
 import {LteIcon} from '../../components/filters/icons/LteIcon'
 import {LtIcon} from '../../components/filters/icons/LtIcon'
 import {OperatorNumberRangeValue} from './common'
-import {defineSearchOperator} from './operatorTypes'
+import {defineSearchOperator, SearchOperatorButtonValue, SearchOperatorInput} from './operatorTypes'
 import {toJSON} from './operatorUtils'
 
+// @todo: don't manually cast `buttonValueComponent` and `inputComponent` once
+// we understand why `yarn etl` fails with 'Unable to follow symbol' errors
 export const arrayOperators = {
   arrayCountEqual: defineSearchOperator({
     buttonLabel: 'has',
-    buttonValueComponent: SearchButtonValueNumberCount,
+    buttonValueComponent: SearchButtonValueNumberCount as SearchOperatorButtonValue<number>,
     groqFilter: ({fieldPath, value}) =>
       Number.isFinite(value) && fieldPath ? `count(${fieldPath}) == ${toJSON(value)}` : null,
     initialValue: null,
-    inputComponent: SearchFilterNumberInput,
+    inputComponent: SearchFilterNumberInput as SearchOperatorInput<number>,
     label: 'quantity is',
     type: 'arrayCountEqual',
   }),
   arrayCountGt: defineSearchOperator({
     buttonLabel: 'has >',
-    buttonValueComponent: SearchButtonValueNumberCount,
+    buttonValueComponent: SearchButtonValueNumberCount as SearchOperatorButtonValue<number>,
     groqFilter: ({fieldPath, value}) =>
       Number.isFinite(value) && fieldPath ? `count(${fieldPath}) > ${toJSON(value)}` : null,
     icon: GtIcon,
     initialValue: null,
-    inputComponent: SearchFilterNumberInput,
+    inputComponent: SearchFilterNumberInput as SearchOperatorInput<number>,
     label: 'quantity greater than',
     type: 'arrayCountGt',
   }),
   arrayCountGte: defineSearchOperator({
     buttonLabel: 'has ≥',
-    buttonValueComponent: SearchButtonValueNumberCount,
+    buttonValueComponent: SearchButtonValueNumberCount as SearchOperatorButtonValue<number>,
     groqFilter: ({fieldPath, value}) =>
       Number.isFinite(value) && fieldPath ? `count(${fieldPath}) >= ${toJSON(value)}` : null,
     icon: GteIcon,
     initialValue: null,
-    inputComponent: SearchFilterNumberInput,
+    inputComponent: SearchFilterNumberInput as SearchOperatorInput<number>,
     label: 'quantity greater than or equal to',
     type: 'arrayCountGte',
   }),
   arrayCountLt: defineSearchOperator({
     buttonLabel: 'has <',
-    buttonValueComponent: SearchButtonValueNumberCount,
+    buttonValueComponent: SearchButtonValueNumberCount as SearchOperatorButtonValue<number>,
     groqFilter: ({fieldPath, value}) =>
       Number.isFinite(value) && fieldPath ? `count(${fieldPath}) < ${toJSON(value)}` : null,
     icon: LtIcon,
     initialValue: null,
-    inputComponent: SearchFilterNumberInput,
+    inputComponent: SearchFilterNumberInput as SearchOperatorInput<number>,
     label: 'quantity less than',
     type: 'arrayCountLt',
   }),
   arrayCountLte: defineSearchOperator({
     buttonLabel: 'has ≤',
-    buttonValueComponent: SearchButtonValueNumberCount,
+    buttonValueComponent: SearchButtonValueNumberCount as SearchOperatorButtonValue<number>,
     groqFilter: ({fieldPath, value}) =>
       Number.isFinite(value) && fieldPath ? `count(${fieldPath}) <= ${toJSON(value)}` : null,
     icon: LteIcon,
     initialValue: null,
-    inputComponent: SearchFilterNumberInput,
+    inputComponent: SearchFilterNumberInput as SearchOperatorInput<number>,
     label: 'quantity less than or equal to',
     type: 'arrayCountLte',
   }),
   arrayCountNotEqual: defineSearchOperator({
     buttonLabel: 'does not have',
-    buttonValueComponent: SearchButtonValueNumberCount,
+    buttonValueComponent: SearchButtonValueNumberCount as SearchOperatorButtonValue<number>,
     groqFilter: ({fieldPath, value}) =>
       Number.isFinite(value) && fieldPath ? `count(${fieldPath}) != ${toJSON(value)}` : null,
     initialValue: null,
-    inputComponent: SearchFilterNumberInput,
+    inputComponent: SearchFilterNumberInput as SearchOperatorInput<number>,
     label: 'quantity is not',
     type: 'arrayCountNotEqual',
   }),
   arrayCountRange: defineSearchOperator({
     buttonLabel: 'has between',
-    buttonValueComponent: SearchButtonValueNumberCountRange,
-    inputComponent: SearchFilterNumberRangeInput,
-    initialValue: typed<OperatorNumberRangeValue>({max: null, min: null}),
+    buttonValueComponent:
+      SearchButtonValueNumberCountRange as SearchOperatorButtonValue<OperatorNumberRangeValue>,
     groqFilter: ({fieldPath, value}) =>
       Number.isFinite(value?.max) && Number.isFinite(value?.min) && fieldPath
         ? `count(${fieldPath}) > ${toJSON(value?.min)} && count(${fieldPath}) < ${toJSON(
             value?.max
           )}`
         : '',
+    initialValue: null,
+    inputComponent: SearchFilterNumberRangeInput as SearchOperatorInput<OperatorNumberRangeValue>,
     label: 'quantity is between',
     type: 'arrayCountRange',
   }),
   arrayListIncludes: defineSearchOperator({
     buttonLabel: 'includes',
-    buttonValueComponent: SearchButtonValueString,
+    buttonValueComponent: SearchButtonValueString as SearchOperatorButtonValue<string | number>,
     groqFilter: ({fieldPath, value}) =>
       value && fieldPath ? `${toJSON(value)} in ${fieldPath}` : null,
     initialValue: null,
-    inputComponent: SearchFilterStringListInput,
+    inputComponent: SearchFilterStringListInput as SearchOperatorInput<string | number>,
     label: 'includes',
     type: 'arrayListIncludes',
   }),
   arrayListNotIncludes: defineSearchOperator({
     buttonLabel: 'does not include',
-    buttonValueComponent: SearchButtonValueString,
+    buttonValueComponent: SearchButtonValueString as SearchOperatorButtonValue<string | number>,
     groqFilter: ({fieldPath, value}) =>
       value && fieldPath ? `!(${toJSON(value)} in ${fieldPath})` : null,
     initialValue: null,
-    inputComponent: SearchFilterStringListInput,
+    inputComponent: SearchFilterStringListInput as SearchOperatorInput<string | number>,
     label: 'does not include',
     type: 'arrayListNotIncludes',
   }),
   arrayReferenceIncludes: defineSearchOperator({
     buttonLabel: 'includes',
-    buttonValueComponent: SearchButtonValueReference,
+    buttonValueComponent: SearchButtonValueReference as SearchOperatorButtonValue<ReferenceValue>,
     groqFilter: ({fieldPath, value}) =>
       value?._ref && fieldPath ? `${toJSON(value._ref)} in ${fieldPath}[]._ref` : null,
     initialValue: null,
-    inputComponent: SearchFilterReferenceInput,
+    inputComponent: SearchFilterReferenceInput as SearchOperatorInput<ReferenceValue>,
     label: 'includes',
     type: 'arrayReferenceIncludes',
   }),
   arrayReferenceNotIncludes: defineSearchOperator({
     buttonLabel: 'does not include',
-    buttonValueComponent: SearchButtonValueReference,
+    buttonValueComponent: SearchButtonValueReference as SearchOperatorButtonValue<ReferenceValue>,
     groqFilter: ({fieldPath, value}) =>
       value?._ref && fieldPath ? `!(${toJSON(value._ref)} in ${fieldPath}[]._ref)` : null,
     initialValue: null,
-    inputComponent: SearchFilterReferenceInput,
+    inputComponent: SearchFilterReferenceInput as SearchOperatorInput<ReferenceValue>,
     label: 'does not include',
     type: 'arrayReferenceNotIncludes',
   }),

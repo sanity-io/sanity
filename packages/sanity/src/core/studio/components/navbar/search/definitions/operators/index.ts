@@ -1,9 +1,13 @@
-import {ComponentType} from 'react'
-import {SearchOperatorBase, SearchOperatorInput, SearchOperatorParams} from './operatorTypes'
+import {
+  SearchOperatorBase,
+  SearchOperatorButtonValue,
+  SearchOperatorInput,
+  SearchOperatorParams,
+} from './operatorTypes'
 
 /** @internal */
 export interface SearchOperatorDefinition<TValue = any> extends SearchOperatorBase {
-  buttonValueComponent?: ComponentType<{value: TValue}>
+  buttonValueComponent?: SearchOperatorButtonValue<TValue>
   groqFilter: (params: SearchOperatorParams<TValue>) => string | null
   initialValue?: TValue
   inputComponent?: SearchOperatorInput<TValue>
