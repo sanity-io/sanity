@@ -1,6 +1,7 @@
 import {SelectIcon} from '@sanity/icons'
 import {Button, Flex, Popover, Text, useClickOutside} from '@sanity/ui'
 import React, {useCallback, useMemo, useState} from 'react'
+import {POPOVER_VERTICAL_MARGIN} from '../../../constants'
 import {useSearchState} from '../../../contexts/search/useSearchState'
 import {documentTypesTruncated} from '../../../utils/documentTypesTruncated'
 import {FilterPopoverWrapper} from '../common/FilterPopoverWrapper'
@@ -27,7 +28,7 @@ export function DocumentTypesButton() {
 
   return (
     <Popover
-      __unstable_margins={[5, 0, 0, 0]}
+      __unstable_margins={[POPOVER_VERTICAL_MARGIN, 0, 0, 0]}
       content={
         <FilterPopoverWrapper anchorElement={buttonElement} onClose={handleClose}>
           <DocumentTypesPopoverContent />

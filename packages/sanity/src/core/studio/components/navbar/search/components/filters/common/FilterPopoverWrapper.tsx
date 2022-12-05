@@ -3,6 +3,7 @@ import isHotkey from 'is-hotkey'
 import React, {ReactNode, useCallback, useEffect, useState} from 'react'
 import FocusLock from 'react-focus-lock'
 import styled from 'styled-components'
+import {POPOVER_INPUT_PADDING, POPOVER_VERTICAL_MARGIN} from '../../../constants'
 
 interface FilterPopoverWrapperProps {
   anchorElement?: HTMLElement | null
@@ -42,7 +43,7 @@ export function FilterPopoverWrapper({
 
   useGlobalKeyDown(handleGlobalKeyDown)
 
-  const maxHeight = usePopoverOffset(anchorElement || null)
+  const popoverOffset = usePopoverOffset(anchorElement || null)
 
   return (
     <>
@@ -53,7 +54,7 @@ export function FilterPopoverWrapper({
           overflow="hidden"
           radius={3}
           style={{
-            maxHeight: `min(calc(100vh - ${maxHeight}px), ${MAX_HEIGHT}px`,
+            maxHeight: `min(calc(100vh - ${popoverOffset}px - ${POPOVER_VERTICAL_MARGIN}px - ${POPOVER_INPUT_PADDING}px), ${MAX_HEIGHT}px`,
             zIndex: 1,
           }}
         >
@@ -64,24 +65,24 @@ export function FilterPopoverWrapper({
   )
 }
 
-function calcMaxHeight(element: HTMLElement) {
-  const OFFSET = 10
+function calcPopoverOffset(element: HTMLElement) {
   const rect = element.getBoundingClientRect()
-  return rect.y + rect.height + OFFSET
+  const offset = rect.y + rect.height + POPOVER_VERTICAL_MARGIN
+  return offset
 }
 
 function usePopoverOffset(element: HTMLElement | null) {
-  const [offset, setOffset] = useState<number | null>(element && calcMaxHeight(element))
+  const [offset, setOffset] = useState<number | null>(element && calcPopoverOffset(element))
 
   const handleWindowResize = useCallback(() => {
     if (element) {
-      setOffset(calcMaxHeight(element))
+      setOffset(calcPopoverOffset(element))
     }
   }, [element])
 
   useEffect(() => {
     if (element) {
-      setOffset(calcMaxHeight(element))
+      setOffset(calcPopoverOffset(element))
     }
   }, [element])
 

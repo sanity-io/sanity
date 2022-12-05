@@ -1,6 +1,7 @@
 import {AddIcon} from '@sanity/icons'
 import {Button, Popover} from '@sanity/ui'
 import React, {useCallback, useState} from 'react'
+import {POPOVER_VERTICAL_MARGIN} from '../../../constants'
 import {useSearchState} from '../../../contexts/search/useSearchState'
 import {FilterPopoverWrapper} from '../common/FilterPopoverWrapper'
 import {AddFilterPopoverContent} from './AddFilterPopoverContent'
@@ -18,7 +19,7 @@ export function AddFilterButton() {
 
   return (
     <Popover
-      __unstable_margins={[5, 0, 0, 0]}
+      __unstable_margins={[POPOVER_VERTICAL_MARGIN, 0, 0, 0]}
       content={
         <FilterPopoverWrapper anchorElement={buttonElement} onClose={handleClose}>
           <AddFilterPopoverContent onClose={handleClose} />

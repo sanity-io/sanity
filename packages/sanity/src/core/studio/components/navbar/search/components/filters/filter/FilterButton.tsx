@@ -2,6 +2,7 @@ import {CloseIcon} from '@sanity/icons'
 import {Button, Card, Popover, rem} from '@sanity/ui'
 import React, {KeyboardEvent, useCallback, useState} from 'react'
 import styled from 'styled-components'
+import {POPOVER_VERTICAL_MARGIN} from '../../../constants'
 import {useSearchState} from '../../../contexts/search/useSearchState'
 import type {SearchFilter} from '../../../types'
 import {getFilterKey, validateFilter} from '../../../utils/filterUtils'
@@ -72,6 +73,7 @@ export function FilterButton({filter, initialOpen}: FilterButtonProps) {
 
   return (
     <Popover
+      __unstable_margins={[POPOVER_VERTICAL_MARGIN, 0, 0, 0]}
       content={
         <FilterPopoverWrapper onClose={handleClose}>
           <FilterPopoverContent filter={filter} />
