@@ -25,7 +25,7 @@ export function RecentSearches({
   const {
     dispatch,
     recentSearchesStore,
-    state: {filtersVisible, recentSearches},
+    state: {filtersVisible, fullscreen, recentSearches},
   } = useSearchState()
 
   const handleClearRecentSearchesClick = useCallback(() => {
@@ -41,7 +41,7 @@ export function RecentSearches({
 
   return (
     <RecentSearchesBox
-      borderTop={hasRecentSearches || (!hasRecentSearches && !filtersVisible)}
+      borderTop={hasRecentSearches || (!hasRecentSearches && !filtersVisible && fullscreen)}
       flex={1}
     >
       {recentSearches.length ? (
@@ -73,7 +73,7 @@ export function RecentSearches({
           </Box>
         </>
       ) : (
-        !filtersVisible && <Instructions />
+        !filtersVisible && fullscreen && <Instructions />
       )}
     </RecentSearchesBox>
   )

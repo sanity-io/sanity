@@ -1,9 +1,8 @@
 import {ArrowLeftIcon, ControlsIcon, SearchIcon, SpinnerIcon} from '@sanity/icons'
 import {Box, Button, Card, Flex, Theme} from '@sanity/ui'
-import React, {Dispatch, SetStateAction, useCallback, useEffect, useRef, useState} from 'react'
+import React, {Dispatch, SetStateAction, useCallback, useEffect, useRef} from 'react'
 import styled, {keyframes} from 'styled-components'
 import {useSearchState} from '../contexts/search/useSearchState'
-import {supportsTouch} from '../utils/supportsTouch'
 import {CustomTextInput} from './common/CustomTextInput'
 
 interface SearchHeaderProps {
@@ -43,18 +42,14 @@ const NotificationBadge = styled.div`
 `
 
 export function SearchHeader({onClose, setHeaderInputRef}: SearchHeaderProps) {
-  const [filterButtonElement, setFilterButtonRef] = useState<HTMLButtonElement | null>(null)
   const isMountedRef = useRef(false)
-
-  const {
-    state: {fullscreen},
-  } = useSearchState()
 
   const {
     dispatch,
     state: {
       filters,
       filtersVisible,
+      fullscreen,
       result: {loading},
       terms: {types, query},
     },
@@ -73,12 +68,14 @@ export function SearchHeader({onClose, setHeaderInputRef}: SearchHeaderProps) {
     dispatch({type: 'TERMS_QUERY_SET', query: ''})
   }, [dispatch])
 
-  // Focus filter button (when filters are hidden after initial mount)
+  /**
+   * Always show filters on non-fullscreen mode
+   */
   useEffect(() => {
-    if (isMountedRef?.current && !filtersVisible && !supportsTouch) {
-      filterButtonElement?.focus()
+    if (!fullscreen) {
+      dispatch({type: 'FILTERS_VISIBLE_SET', visible: true})
     }
-  }, [filterButtonElement, filtersVisible])
+  }, [dispatch, fullscreen])
 
   useEffect(() => {
     isMountedRef.current = true
@@ -116,21 +113,22 @@ export function SearchHeader({onClose, setHeaderInputRef}: SearchHeaderProps) {
         </Box>
 
         {/* Filter toggle */}
-        <FilterBox>
-          <Button
-            aria-expanded={filtersVisible}
-            aria-label="Toggle filters"
-            height="fill"
-            icon={ControlsIcon}
-            mode="bleed"
-            onClick={handleFiltersToggle}
-            padding={3}
-            ref={setFilterButtonRef}
-            selected={filtersVisible}
-            tone="default"
-          />
-          {notificationBadgeVisible && <NotificationBadge />}
-        </FilterBox>
+        {fullscreen && (
+          <FilterBox>
+            <Button
+              aria-expanded={filtersVisible}
+              aria-label="Toggle filters"
+              height="fill"
+              icon={ControlsIcon}
+              mode="bleed"
+              onClick={handleFiltersToggle}
+              padding={3}
+              selected={filtersVisible}
+              tone="default"
+            />
+            {notificationBadgeVisible && <NotificationBadge />}
+          </FilterBox>
+        )}
       </Flex>
     </SearchHeaderCard>
   )

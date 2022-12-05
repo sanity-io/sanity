@@ -18,6 +18,7 @@ export function AddFilterButton() {
 
   return (
     <Popover
+      __unstable_margins={[5, 0, 0, 0]}
       content={
         <FilterPopoverWrapper anchorElement={buttonElement} onClose={handleClose}>
           <AddFilterPopoverContent onClose={handleClose} />
