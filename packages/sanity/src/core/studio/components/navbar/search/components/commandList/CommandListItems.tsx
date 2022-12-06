@@ -5,7 +5,6 @@ import {useCommandList} from './useCommandList'
 
 interface CommandListItemsProps extends ResponsivePaddingProps {
   children: ReactNode
-  setChildContainerRef: Dispatch<SetStateAction<HTMLDivElement | null>>
   setVirtualListRef: Dispatch<SetStateAction<HTMLDivElement | null>>
   totalHeight: number
 }
@@ -46,18 +45,17 @@ const VirtualListChildBox = styled(Box)<{$height: number}>`
 
 export function CommandListItems({
   children,
-  setChildContainerRef,
   setVirtualListRef,
   totalHeight,
   ...rest
 }: CommandListItemsProps) {
-  const {setPointerOverlayElement} = useCommandList()
+  const {setChildContainerElement, setPointerOverlayElement} = useCommandList()
 
   return (
     <VirtualListBox ref={setVirtualListRef} tabIndex={-1}>
       <PointerOverlayDiv aria-hidden="true" ref={setPointerOverlayElement} />
 
-      <VirtualListChildBox $height={totalHeight} flex={1} ref={setChildContainerRef} {...rest}>
+      <VirtualListChildBox $height={totalHeight} flex={1} ref={setChildContainerElement} {...rest}>
         {children}
       </VirtualListChildBox>
     </VirtualListBox>

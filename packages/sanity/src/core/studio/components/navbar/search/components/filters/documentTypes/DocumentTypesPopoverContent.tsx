@@ -16,10 +16,10 @@ import {DocumentTypesVirtualList} from './DocumentTypesVirtualList'
 
 const ClearButtonBox = styled(Box)`
   border-top: 1px solid ${({theme}) => theme.sanity.color.base.border};
+  flex-shrink: 0;
 `
 
 export function DocumentTypesPopoverContent() {
-  const [childContainerElement, setChildContainerRef] = useState<HTMLDivElement | null>(null)
   const [typeFilter, setTypeFilter] = useState('')
 
   const schema = useSchema()
@@ -74,7 +74,6 @@ export function DocumentTypesPopoverContent() {
       ariaHeaderLabel="Filter by document type"
       ariaMultiselectable
       autoFocus
-      childContainerElement={childContainerElement}
       itemIndices={itemIndices}
       itemIndicesSelected={itemIndicesSelected}
     >
@@ -87,12 +86,7 @@ export function DocumentTypesPopoverContent() {
         />
 
         <CommandListContainer>
-          {filteredItems.length > 0 && (
-            <DocumentTypesVirtualList
-              filteredItems={filteredItems}
-              setChildContainerRef={setChildContainerRef}
-            />
-          )}
+          {filteredItems.length > 0 && <DocumentTypesVirtualList filteredItems={filteredItems} />}
 
           {/* No results */}
           {!filteredItems.length && (

@@ -1,5 +1,5 @@
 import {useVirtualizer} from '@tanstack/react-virtual'
-import React, {Dispatch, SetStateAction, useEffect, useState} from 'react'
+import React, {useEffect, useState} from 'react'
 import type {FilterMenuItem} from '../../../types'
 import {getFilterKey} from '../../../utils/filterUtils'
 import {CommandListItems} from '../../commandList/CommandListItems'
@@ -10,14 +10,9 @@ import {MenuItemHeader} from './items/MenuItemHeader'
 interface AddFilterVirtualListProps {
   menuItems: FilterMenuItem[]
   onClose: () => void
-  setChildContainerRef: Dispatch<SetStateAction<HTMLDivElement | null>>
 }
 
-export function AddFilterVirtualList({
-  menuItems,
-  onClose,
-  setChildContainerRef,
-}: AddFilterVirtualListProps) {
+export function AddFilterVirtualList({menuItems, onClose}: AddFilterVirtualListProps) {
   const [virtualList, setVirtualListRef] = useState<HTMLDivElement | null>(null)
 
   const {itemIndices, setVirtualListScrollToIndex} = useCommandList()
@@ -59,7 +54,6 @@ export function AddFilterVirtualList({
   return (
     <CommandListItems
       paddingBottom={1}
-      setChildContainerRef={setChildContainerRef}
       setVirtualListRef={setVirtualListRef}
       totalHeight={getTotalSize()}
     >

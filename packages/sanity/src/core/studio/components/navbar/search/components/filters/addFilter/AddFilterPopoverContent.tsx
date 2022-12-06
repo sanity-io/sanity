@@ -13,7 +13,6 @@ interface AddFilterPopoverContentProps {
 }
 
 export function AddFilterPopoverContent({onClose}: AddFilterPopoverContentProps) {
-  const [childContainerElement, setChildContainerRef] = useState<HTMLDivElement | null>(null)
   const [titleFilter, setTitleFilter] = useState('')
 
   const handleFilterChange = useCallback(
@@ -67,7 +66,6 @@ export function AddFilterPopoverContent({onClose}: AddFilterPopoverContentProps)
       ariaChildrenLabel="Filters"
       ariaHeaderLabel="Filter by title"
       autoFocus
-      childContainerElement={childContainerElement}
       itemIndices={itemIndices}
     >
       <Flex direction="column" style={{width: '300px'}}>
@@ -80,11 +78,7 @@ export function AddFilterPopoverContent({onClose}: AddFilterPopoverContentProps)
 
         <CommandListContainer>
           {filteredMenuItems.length > 0 && (
-            <AddFilterVirtualList
-              menuItems={filteredMenuItems}
-              onClose={onClose}
-              setChildContainerRef={setChildContainerRef}
-            />
+            <AddFilterVirtualList menuItems={filteredMenuItems} onClose={onClose} />
           )}
 
           {/* No results */}

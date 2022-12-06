@@ -1,7 +1,7 @@
 import {useVirtualizer} from '@tanstack/react-virtual'
-import React, {Dispatch, SetStateAction, useCallback, useEffect, useState} from 'react'
+import React, {useCallback, useEffect, useState} from 'react'
 import {getPublishedId} from '../../../../../../util/draftUtils'
-import {VIRTUAL_LIST_ITEM_HEIGHT, VIRTUAL_LIST_OVERSCAN} from '../../constants'
+import {VIRTUAL_LIST_SEARCH_ITEM_HEIGHT, VIRTUAL_LIST_SEARCH_OVERSCAN} from '../../constants'
 import {useSearchState} from '../../contexts/search/useSearchState'
 import {CommandListItems} from '../commandList/CommandListItems'
 import {useCommandList} from '../commandList/useCommandList'
@@ -10,13 +10,9 @@ import {SearchResultItem} from './item/SearchResultItem'
 
 interface SearchResultsVirtualListProps {
   onClose: () => void
-  setChildContainerRef: Dispatch<SetStateAction<HTMLDivElement | null>>
 }
 
-export function SearchResultsVirtualList({
-  onClose,
-  setChildContainerRef,
-}: SearchResultsVirtualListProps) {
+export function SearchResultsVirtualList({onClose}: SearchResultsVirtualListProps) {
   const [virtualList, setVirtualListRef] = useState<HTMLDivElement | null>(null)
 
   const {
@@ -31,8 +27,8 @@ export function SearchResultsVirtualList({
     count: result.hits.length,
     enableSmoothScroll: false,
     getScrollElement: () => virtualList,
-    estimateSize: () => VIRTUAL_LIST_ITEM_HEIGHT,
-    overscan: VIRTUAL_LIST_OVERSCAN,
+    estimateSize: () => VIRTUAL_LIST_SEARCH_ITEM_HEIGHT,
+    overscan: VIRTUAL_LIST_SEARCH_OVERSCAN,
   })
 
   /**
@@ -59,7 +55,6 @@ export function SearchResultsVirtualList({
   return (
     <CommandListItems
       paddingBottom={2}
-      setChildContainerRef={setChildContainerRef}
       setVirtualListRef={setVirtualListRef}
       totalHeight={getTotalSize()}
     >

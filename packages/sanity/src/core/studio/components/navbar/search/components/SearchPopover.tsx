@@ -5,11 +5,11 @@ import styled, {css} from 'styled-components'
 import {useColorScheme} from '../../../../colorScheme'
 import {POPOVER_INPUT_PADDING, POPOVER_MAX_HEIGHT, POPOVER_MAX_WIDTH} from '../constants'
 import {useSearchState} from '../contexts/search/useSearchState'
-import {useMeasureSearchResultsIndex} from '../hooks/useMeasureSearchResultsIndex'
 import {useSearchHotkeys} from '../hooks/useSearchHotkeys'
 import {hasSearchableTerms} from '../utils/hasSearchableTerms'
 import {CommandListContainer} from './commandList/CommandListContainer'
 import {CommandListProvider} from './commandList/CommandListProvider'
+import {useCommandList} from './commandList/useCommandList'
 import {Filters} from './filters/Filters'
 import {RecentSearches} from './recentSearches/RecentSearches'
 import {SearchHeader} from './SearchHeader'
@@ -66,13 +66,10 @@ export function SearchPopover({
   open,
   position,
 }: SearchPopoverProps) {
-  const [childContainerElement, setChildContainerRef] = useState<HTMLDivElement | null>(null)
-  const [popoverElement, setPopoverElement] = useState<HTMLDivElement | null>(null)
-
   const isMountedRef = useRef(false)
+  const [lastActiveIndex, setLastActiveIndex] = useState(-1)
 
-  const {isTopLayer, zIndex} = useLayer()
-  const {scheme} = useColorScheme()
+  const {zIndex} = useLayer()
 
   const {
     dispatch,
@@ -83,44 +80,30 @@ export function SearchPopover({
   const hasValidTerms = hasSearchableTerms({terms})
 
   /**
-   * Measure top-most visible search result index
+   * Bind hotkeys to open action
    */
-  const {lastSearchIndex, resetLastSearchIndex, setLastSearchIndex} =
-    useMeasureSearchResultsIndex(childContainerElement)
+  useSearchHotkeys({onOpen, open})
 
   /**
    * Store top-most search result scroll index on close
    */
-  const handleClose = useCallback(() => {
-    setLastSearchIndex()
-    onClose()
-  }, [onClose, setLastSearchIndex])
-
-  /**
-   * Check for top-most layer to prevent closing if a portalled element (i.e. menu button) is active
-   */
-  const handleClickOutside = useCallback(() => {
-    if (open && isTopLayer) {
-      handleClose()
-    }
-  }, [handleClose, isTopLayer, open])
-
-  /**
-   * Bind hotkeys to open / close actions
-   */
-  useSearchHotkeys({onClose: handleClose, onOpen, open})
-
-  useClickOutside(handleClickOutside, [popoverElement])
+  const handleClose = useCallback(
+    (index: number) => {
+      setLastActiveIndex(index)
+      onClose()
+    },
+    [onClose]
+  )
 
   /**
    * Reset last search index when new results are loaded, or visiting recent searches
-   * TODO: Revise if/when we introduce pagination
    */
+  // @todo Revise if/when we introduce pagination
   useEffect(() => {
     if ((!hasValidTerms || result.loaded) && isMountedRef.current) {
-      resetLastSearchIndex()
+      setLastActiveIndex(0)
     }
-  }, [hasValidTerms, resetLastSearchIndex, result.loaded])
+  }, [hasValidTerms, result.loaded])
 
   /**
    * Reset ordering when popover is closed (without valid search terms)
@@ -173,38 +156,89 @@ export function SearchPopover({
           ariaChildrenLabel={hasValidTerms ? 'Search results' : 'Recent searches'}
           ariaHeaderLabel="Search results"
           autoFocus
-          childContainerElement={childContainerElement}
           data-testid="search-results-popover"
-          initialSelectedIndex={hasValidTerms ? lastSearchIndex : 0}
+          initialSelectedIndex={hasValidTerms ? lastActiveIndex : 0}
           itemIndices={itemIndices}
         >
-          <SearchPopoverCard
-            $position={position}
-            overflow="hidden"
-            radius={2}
-            ref={setPopoverElement}
-            scheme={scheme}
-            shadow={2}
-            style={{zIndex}}
-          >
-            <SearchHeader onClose={handleClose} />
-
-            {filtersVisible && (
-              <FiltersCard borderTop>
-                <Filters />
-              </FiltersCard>
-            )}
-
-            <CommandListContainer>
-              {hasValidTerms ? (
-                <SearchResults onClose={handleClose} setChildContainerRef={setChildContainerRef} />
-              ) : (
-                <RecentSearches setChildContainerRef={setChildContainerRef} showFiltersOnClick />
-              )}
-            </CommandListContainer>
-          </SearchPopoverCard>
+          <SearchPopoverContent
+            filtersVisible={filtersVisible}
+            hasValidTerms={hasValidTerms}
+            onClose={handleClose}
+            open={open}
+            position={position}
+          />
         </CommandListProvider>
       </FocusLock>
     </Portal>
+  )
+}
+
+function SearchPopoverContent({
+  filtersVisible,
+  hasValidTerms,
+  onClose,
+  open,
+  position,
+}: {
+  filtersVisible: boolean
+  hasValidTerms: boolean
+  onClose: (lastActiveIndex: number) => void
+  open: boolean
+  position: PopoverPosition
+}) {
+  const [popoverElement, setPopoverElement] = useState<HTMLDivElement | null>(null)
+  const {isTopLayer, zIndex} = useLayer()
+  const {scheme} = useColorScheme()
+  const {getTopIndex} = useCommandList()
+
+  /**
+   * Store top-most search result scroll index on close
+   */
+  const handleClose = useCallback(() => {
+    onClose(getTopIndex())
+  }, [getTopIndex, onClose])
+
+  /**
+   * Check for top-most layer to prevent closing if a portalled element (i.e. menu button) is active
+   */
+  const handleClickOutside = useCallback(() => {
+    if (open && isTopLayer) {
+      handleClose()
+    }
+  }, [handleClose, isTopLayer, open])
+
+  useClickOutside(handleClickOutside, [popoverElement])
+
+  /**
+   * Bind hotkeys to close action
+   */
+  useSearchHotkeys({onClose: handleClose, open})
+
+  return (
+    <SearchPopoverCard
+      $position={position}
+      overflow="hidden"
+      radius={2}
+      ref={setPopoverElement}
+      scheme={scheme}
+      shadow={2}
+      style={{zIndex}}
+    >
+      <SearchHeader onClose={handleClose} />
+
+      {filtersVisible && (
+        <FiltersCard borderTop>
+          <Filters />
+        </FiltersCard>
+      )}
+
+      <CommandListContainer>
+        {hasValidTerms ? (
+          <SearchResults onClose={handleClose} />
+        ) : (
+          <RecentSearches showFiltersOnClick />
+        )}
+      </CommandListContainer>
+    </SearchPopoverCard>
   )
 }

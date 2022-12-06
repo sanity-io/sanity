@@ -1,6 +1,6 @@
 import {Box, Label, MenuDivider} from '@sanity/ui'
 import {useVirtualizer} from '@tanstack/react-virtual'
-import React, {Dispatch, SetStateAction, useEffect, useState} from 'react'
+import React, {useEffect, useState} from 'react'
 import {useSearchState} from '../../../contexts/search/useSearchState'
 import type {DocumentTypeMenuItem} from '../../../types'
 import {CommandListItems} from '../../commandList/CommandListItems'
@@ -9,13 +9,9 @@ import {DocumentTypeFilterItem} from './items/DocumentTypeFilterItem'
 
 interface DocumentTypesVirtualListProps {
   filteredItems: DocumentTypeMenuItem[]
-  setChildContainerRef: Dispatch<SetStateAction<HTMLDivElement | null>>
 }
 
-export function DocumentTypesVirtualList({
-  filteredItems,
-  setChildContainerRef,
-}: DocumentTypesVirtualListProps) {
+export function DocumentTypesVirtualList({filteredItems}: DocumentTypesVirtualListProps) {
   const {
     state: {
       terms: {types},
@@ -64,7 +60,6 @@ export function DocumentTypesVirtualList({
   return (
     <CommandListItems
       paddingBottom={1}
-      setChildContainerRef={setChildContainerRef}
       setVirtualListRef={setVirtualListRef}
       totalHeight={getTotalSize()}
     >

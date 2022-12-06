@@ -9,7 +9,6 @@ import {SearchResultsVirtualList} from './SearchResultsVirtualList'
 
 interface SearchResultsProps {
   onClose: () => void
-  setChildContainerRef: Dispatch<SetStateAction<HTMLDivElement | null>>
 }
 
 const SearchResultsCard = styled(Card)`
@@ -30,7 +29,7 @@ const SearchResultsInnerFlex = styled(Flex)<{$loading: boolean}>`
   width: 100%;
 `
 
-export function SearchResults({onClose, setChildContainerRef}: SearchResultsProps) {
+export function SearchResults({onClose}: SearchResultsProps) {
   const {
     state: {fullscreen, result},
   } = useSearchState()
@@ -54,12 +53,7 @@ export function SearchResults({onClose, setChildContainerRef}: SearchResultsProp
             <SearchError />
           ) : (
             <>
-              {hasSearchResults && (
-                <SearchResultsVirtualList
-                  onClose={onClose}
-                  setChildContainerRef={setChildContainerRef}
-                />
-              )}
+              {hasSearchResults && <SearchResultsVirtualList onClose={onClose} />}
               {hasNoSearchResults && <NoResults />}
             </>
           )}

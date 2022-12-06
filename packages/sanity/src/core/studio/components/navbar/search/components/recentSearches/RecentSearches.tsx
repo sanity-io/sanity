@@ -1,5 +1,5 @@
 import {Box, Button, Card, Label, Text} from '@sanity/ui'
-import React, {Dispatch, SetStateAction, useCallback} from 'react'
+import React, {useCallback} from 'react'
 import styled from 'styled-components'
 import {useSearchState} from '../../contexts/search/useSearchState'
 import {useCommandList} from '../commandList/useCommandList'
@@ -7,7 +7,6 @@ import {Instructions} from '../Instructions'
 import {RecentSearchesVirtualList} from './RecentSearchesVirtualList'
 
 interface RecentSearchesProps {
-  setChildContainerRef: Dispatch<SetStateAction<HTMLDivElement | null>>
   showFiltersOnClick?: boolean
 }
 
@@ -17,7 +16,7 @@ const RecentSearchesBox = styled(Card)`
   position: relative;
 `
 
-export function RecentSearches({setChildContainerRef, showFiltersOnClick}: RecentSearchesProps) {
+export function RecentSearches({showFiltersOnClick}: RecentSearchesProps) {
   const {
     dispatch,
     recentSearchesStore,
@@ -53,10 +52,7 @@ export function RecentSearches({setChildContainerRef, showFiltersOnClick}: Recen
             </Label>
           </Box>
           <Box>
-            <RecentSearchesVirtualList
-              setChildContainerRef={setChildContainerRef}
-              showFiltersOnClick={showFiltersOnClick}
-            />
+            <RecentSearchesVirtualList showFiltersOnClick={showFiltersOnClick} />
           </Box>
           <Box paddingBottom={2} paddingTop={1} paddingX={2}>
             <Button

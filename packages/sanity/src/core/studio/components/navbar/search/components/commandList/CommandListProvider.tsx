@@ -10,6 +10,7 @@ import React, {
   useState,
 } from 'react'
 import {isNonNullable} from '../../../../../../util'
+import {VIRTUAL_LIST_SEARCH_ITEM_HEIGHT} from '../../constants'
 import {supportsTouch} from '../../utils/supportsTouch'
 import {CommandListContext} from './CommandListContext'
 
@@ -27,7 +28,6 @@ import {CommandListContext} from './CommandListContext'
  * e.g. `[0, null, 1, 2]` indicates a list of 4 items, where the second item is non-interactive (such as a header or divider)
  * - All child items have to use the supplied context functions (`onChildMouseDown` etc) to ensure consistent behaviour
  * when clicking and hovering over items, as well as preventing unwanted focus.
- * - All elements (including the pointer overlay) must be defined and passed to this Provider.
  */
 
 interface CommandListProviderProps {
@@ -37,7 +37,6 @@ interface CommandListProviderProps {
   ariaMultiselectable?: boolean
   autoFocus?: boolean
   children?: ReactNode
-  childContainerElement: HTMLDivElement | null
   initialSelectedIndex?: number
   itemIndices: (number | null)[]
   itemIndicesSelected?: boolean[]
@@ -53,12 +52,12 @@ export function CommandListProvider({
   ariaMultiselectable = false,
   autoFocus,
   children,
-  childContainerElement,
   initialSelectedIndex,
   itemIndices,
   itemIndicesSelected,
 }: CommandListProviderProps) {
   const selectedIndexRef = useRef<number>(-1)
+  const [childContainerElement, setChildContainerElement] = useState<HTMLDivElement | null>(null)
   const [containerElement, setContainerElement] = useState<HTMLDivElement | null>(null)
   const [headerInputElement, setHeaderInputElement] = useState<HTMLDivElement | null>(null)
   const [pointerOverlayElement, setPointerOverlayElement] = useState<HTMLDivElement | null>(null)
@@ -127,10 +126,30 @@ export function CommandListProvider({
   /**
    * Throttled version of the above, used when DOM mutations are detected in virtual lists
    */
-  const handleReassignSelectedStateThrottled = useMemo(
+  const handleAssignSelectedStateThrottled = useMemo(
     () => throttle(handleAssignSelectedState, 200),
     [handleAssignSelectedState]
   )
+
+  /**
+   * Query search result children for the 'top most' visible element (factoring in overscan)
+   * and obtain its index.
+   */
+  // @todo This only currently returns accurate values for search results.
+  // Consider initializing virtual list within this provider and remove hard-coded values.
+  const handleGetTopIndex = useCallback(() => {
+    const childContainerParentElement = childContainerElement?.parentElement
+    if (childContainerParentElement && childContainerElement) {
+      const childContainerParentElementTop = childContainerParentElement.getBoundingClientRect().top
+      const childContainerElementTop = childContainerElement.getBoundingClientRect().top
+      const index = Math.floor(
+        (childContainerParentElementTop - childContainerElementTop) /
+          VIRTUAL_LIST_SEARCH_ITEM_HEIGHT
+      )
+      return index
+    }
+    return -1
+  }, [childContainerElement])
 
   /**
    * Mark an index as active, assign aria-selected state on all children and optionally scroll into view
@@ -159,6 +178,9 @@ export function CommandListProvider({
     [handleAssignSelectedState, itemIndices]
   )
 
+  /**
+   * Focus header input element (non-touch only)
+   */
   const handleFocusHeaderInputElement = useCallback(() => {
     if (!supportsTouch) {
       headerInputElement?.focus()
@@ -166,8 +188,7 @@ export function CommandListProvider({
   }, [headerInputElement])
 
   /**
-   * Focus header input on child item mouse down (non-touch only)
-   * and prevent nested elements from receiving focus.
+   * Focus header input on child item mousedown and prevent nested elements from receiving focus.
    */
   const handleChildMouseDown = useCallback(
     (event: MouseEvent) => {
@@ -368,7 +389,7 @@ export function CommandListProvider({
    * new elements coming into view are rendered with the correct selected state.
    */
   useEffect(() => {
-    const mutationObserver = new MutationObserver(handleReassignSelectedStateThrottled)
+    const mutationObserver = new MutationObserver(handleAssignSelectedStateThrottled)
 
     if (childContainerElement) {
       mutationObserver.observe(childContainerElement, {
@@ -380,7 +401,7 @@ export function CommandListProvider({
     return () => {
       mutationObserver.disconnect()
     }
-  }, [childContainerElement, handleReassignSelectedStateThrottled])
+  }, [childContainerElement, handleAssignSelectedStateThrottled])
 
   /**
    * Apply initial attributes
@@ -423,9 +444,11 @@ export function CommandListProvider({
     <CommandListContext.Provider
       value={{
         focusHeaderInputElement: handleFocusHeaderInputElement,
+        getTopIndex: handleGetTopIndex,
         itemIndices,
         onChildMouseDown: handleChildMouseDown,
         onChildMouseEnter: handleChildMouseEnter,
+        setChildContainerElement,
         setContainerElement,
         setHeaderInputElement,
         setPointerOverlayElement,

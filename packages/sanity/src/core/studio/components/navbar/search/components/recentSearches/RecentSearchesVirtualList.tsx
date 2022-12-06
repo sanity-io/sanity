@@ -1,12 +1,11 @@
 import {useMediaIndex} from '@sanity/ui'
 import {useVirtualizer} from '@tanstack/react-virtual'
-import React, {Dispatch, SetStateAction, useMemo, useState} from 'react'
+import React, {useMemo, useState} from 'react'
 import {useSearchState} from '../../contexts/search/useSearchState'
 import {CommandListItems} from '../commandList/CommandListItems'
 import {RecentSearchItem} from './item/RecentSearchItem'
 
 interface RecentSearchesVirtualListProps {
-  setChildContainerRef: Dispatch<SetStateAction<HTMLDivElement | null>>
   showFiltersOnClick?: boolean
 }
 
@@ -14,10 +13,7 @@ interface RecentSearchesVirtualListProps {
 const MAX_COMBINED_TYPE_COUNT_SMALL = 20
 const MAX_COMBINED_TYPE_COUNT_LARGE = 40
 
-export function RecentSearchesVirtualList({
-  setChildContainerRef,
-  showFiltersOnClick,
-}: RecentSearchesVirtualListProps) {
+export function RecentSearchesVirtualList({showFiltersOnClick}: RecentSearchesVirtualListProps) {
   const [virtualList, setVirtualListRef] = useState<HTMLDivElement | null>(null)
 
   const {
@@ -40,7 +36,6 @@ export function RecentSearchesVirtualList({
   return (
     <CommandListItems
       paddingBottom={1}
-      setChildContainerRef={setChildContainerRef}
       setVirtualListRef={setVirtualListRef}
       totalHeight={getTotalSize()}
     >
