@@ -1,4 +1,4 @@
-import {ComponentType} from 'react'
+import {ComponentType, ReactNode} from 'react'
 import {PreviewConfig} from '../preview'
 import {InitialValueProperty, SchemaValidationValue} from '../types'
 import {
@@ -16,7 +16,6 @@ import {
   ObjectDefinition,
   ReferenceDefinition,
   SlugDefinition,
-  SpanDefinition,
   StringDefinition,
   TextDefinition,
   UrlDefinition,
@@ -54,7 +53,6 @@ export interface IntrinsicDefinitions {
   reference: ReferenceDefinition
   crossDatasetReference: CrossDatasetReferenceDefinition
   slug: SlugDefinition
-  span: SpanDefinition
   string: StringDefinition
   text: TextDefinition
   url: UrlDefinition
@@ -92,6 +90,7 @@ export type SchemaTypeDefinition<TType extends IntrinsicTypeName = IntrinsicType
 export interface TypeReference {
   type: string
   name?: string
+  icon?: ComponentType | ReactNode
   options?: {[key: string]: unknown}
 }
 
@@ -115,6 +114,8 @@ export interface TypeAliasDefinition<
   preview?: PreviewConfig
 
   components?: {
+    annotation?: ComponentType<any>
+    block?: ComponentType<any>
     diff?: ComponentType<any>
     field?: ComponentType<any>
     input?: ComponentType<any>

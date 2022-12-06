@@ -35,13 +35,19 @@ describe('block types', () => {
             {
               title: 'Sup',
               value: 'sup',
-              blockEditor: {
-                icon: () => null,
-                render: (props) => props,
-              },
+              icon: () => null,
             },
           ],
-          annotations: [{name: 'author', title: 'Author', type: 'reference', to: {type: 'author'}}],
+          annotations: [
+            {
+              name: 'authorInline',
+              title: 'Author',
+              type: 'reference',
+              to: {type: 'author'},
+            },
+            {type: 'author', initialValue: {}},
+            {type: 'object', fields: [{name: 'title', type: 'string'}]},
+          ],
         },
         of: [{type: 'string'}],
         options: {
@@ -70,10 +76,7 @@ describe('block types', () => {
           {
             title: 'Sup',
             value: 'sup',
-            blockEditor: {
-              icon: () => null,
-              render: (props) => props,
-            },
+            icon: () => null,
           },
         ],
         annotations: [{name: 'author', title: 'Author', type: 'reference', to: {type: 'author'}}],
@@ -96,10 +99,7 @@ describe('block types', () => {
           {
             title: 'Sup',
             value: 'sup',
-            blockEditor: {
-              icon: () => null,
-              render: (props) => props,
-            },
+            icon: () => null,
           },
         ],
         annotations: [{name: 'author', title: 'Author', type: 'reference', to: {type: 'author'}}],
