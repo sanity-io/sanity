@@ -5,6 +5,7 @@ import styled from 'styled-components'
 import {useSchema} from '../../../../../../../../../hooks'
 import type {SearchableType, WeightedHit} from '../../../../../../../../../search'
 import {getPublishedId} from '../../../../../../../../../util'
+import {POPOVER_RADIUS} from '../../../../../constants'
 import {useSearchState} from '../../../../../contexts/search/useSearchState'
 import {useSearch} from '../../../../../hooks/useSearch'
 import {documentTypesTruncated} from '../../../../../utils/documentTypesTruncated'
@@ -34,7 +35,7 @@ const StyledText = styled(Text)`
   word-break: break-word;
 `
 
-export const ReferenceAutocomplete = forwardRef(function DebugMiniReferenceInput(
+export const ReferenceAutocomplete = forwardRef(function ReferenceAutocomplete(
   {onSelect, types = [], value}: ReferenceAutocompleteProps,
   ref: React.ForwardedRef<HTMLInputElement>
 ) {
@@ -164,6 +165,7 @@ export const ReferenceAutocomplete = forwardRef(function DebugMiniReferenceInput
           open={!searchState.loading && !hidden}
           overflow="auto"
           placement="bottom-start"
+          radius={POPOVER_RADIUS}
           referenceElement={autocompletePopoverReferenceElementRef.current}
         />
       )

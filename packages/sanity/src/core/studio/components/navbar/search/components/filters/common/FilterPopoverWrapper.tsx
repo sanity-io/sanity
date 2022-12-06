@@ -3,7 +3,7 @@ import isHotkey from 'is-hotkey'
 import React, {ReactNode, useCallback, useEffect, useState} from 'react'
 import FocusLock from 'react-focus-lock'
 import styled from 'styled-components'
-import {POPOVER_INPUT_PADDING, POPOVER_VERTICAL_MARGIN} from '../../../constants'
+import {POPOVER_INPUT_PADDING, POPOVER_RADIUS, POPOVER_VERTICAL_MARGIN} from '../../../constants'
 
 interface FilterPopoverWrapperProps {
   anchorElement?: HTMLElement | null
@@ -52,7 +52,7 @@ export function FilterPopoverWrapper({
         <Card
           display="flex"
           overflow="hidden"
-          radius={3}
+          radius={POPOVER_RADIUS}
           style={{
             maxHeight: `min(calc(100vh - ${popoverOffset}px - ${POPOVER_VERTICAL_MARGIN}px - ${POPOVER_INPUT_PADDING}px), ${MAX_HEIGHT}px`,
             zIndex: 1,

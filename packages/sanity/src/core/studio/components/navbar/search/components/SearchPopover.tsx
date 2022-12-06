@@ -3,7 +3,12 @@ import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import FocusLock from 'react-focus-lock'
 import styled, {css} from 'styled-components'
 import {useColorScheme} from '../../../../colorScheme'
-import {POPOVER_INPUT_PADDING, POPOVER_MAX_HEIGHT, POPOVER_MAX_WIDTH} from '../constants'
+import {
+  POPOVER_INPUT_PADDING,
+  POPOVER_MAX_HEIGHT,
+  POPOVER_MAX_WIDTH,
+  POPOVER_RADIUS,
+} from '../constants'
 import {useSearchState} from '../contexts/search/useSearchState'
 import {useSearchHotkeys} from '../hooks/useSearchHotkeys'
 import {hasSearchableTerms} from '../utils/hasSearchableTerms'
@@ -218,7 +223,7 @@ function SearchPopoverContent({
     <SearchPopoverCard
       $position={position}
       overflow="hidden"
-      radius={2}
+      radius={POPOVER_RADIUS}
       ref={setPopoverElement}
       scheme={scheme}
       shadow={2}

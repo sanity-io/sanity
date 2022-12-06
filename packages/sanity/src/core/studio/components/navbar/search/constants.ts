@@ -27,5 +27,7 @@ export const POPOVER_MAX_WIDTH = 800 // px
 // Custom space between buttons and popover content
 export const POPOVER_VERTICAL_MARGIN = 5 // px
 
+export const POPOVER_RADIUS = 2
+
 export const VIRTUAL_LIST_SEARCH_ITEM_HEIGHT = 59 // px
 export const VIRTUAL_LIST_SEARCH_OVERSCAN = 4
