@@ -29,7 +29,7 @@ const devCommand: CliCommandDefinition = {
   helpText,
 }
 
-async function getDevAction() {
+export async function getDevAction() {
   // NOTE: in dev-mode we want to include from `src` so we need to use `.ts` extension
   // NOTE: this `if` statement is not included in the output bundle
   if (__DEV__) {

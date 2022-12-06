@@ -1,5 +1,6 @@
 import type {CliCommandArguments, CliCommandContext, CliCommandDefinition} from '@sanity/cli'
 import type {StartPreviewServerCommandFlags} from '../../actions/preview/previewAction'
+import {getDevAction} from '../dev/devCommand'
 
 const helpText = `
 Notes
@@ -23,21 +24,36 @@ const startCommand: CliCommandDefinition = {
     args: CliCommandArguments<StartPreviewServerCommandFlags>,
     context: CliCommandContext
   ) => {
-    const {output, chalk} = context
+    const {output, chalk, prompt} = context
     const previewAction = await getPreviewAction()
 
-    // `sanity dev` used to be `sanity start` in v2. To ease transition for existing users,
-    // hint that they might want to use `sanity dev` instead.
     const warn = (msg: string) => output.warn(chalk.yellow.bgBlack(msg))
-    warn('╔═════════════════════════════════════════╗')
-    warn('║ `sanity start` aliases `sanity preview` ║')
-    warn('║ and is used to preview a static build   ║')
-    warn('║ of the Sanity Studio. Use `sanity dev`  ║')
-    warn('║ to start the development server.        ║')
-    warn('╚═════════════════════════════════════════╝')
-    output.warn('') // Newline to separate from other output
+    const error = (msg: string) => output.warn(chalk.red.bgBlack(msg))
+    warn('╔═══════════════════════════════════════════════════════════════════════════╗')
+    warn("║ \u26A0  IMPORTANT: You're running Sanity Studio v3, and in this version        ║")
+    warn('║    the [start] command is used to preview static builds. To               ║')
+    warn('║    run a development server, use the [npm run dev] command instead.       ║')
+    warn('║                                                                           ║')
+    warn('║    For more information go to https://www.sanity.io/help/studio-v2-vs-v3  ║')
+    warn('╚═══════════════════════════════════════════════════════════════════════════╝')
+    warn('') // Newline to separate from other output
 
-    return previewAction(args, context)
+    return previewAction(args, context).catch(async (err) => {
+      if (err.name === 'BUILD_NOT_FOUND') {
+        error(err.message)
+        error('\n')
+        const runDevServerResponse = await prompt.single({
+          message: 'Did you intend to run [npm run dev] to start a development server instead?',
+          type: 'confirm',
+        })
+        if (runDevServerResponse) {
+          const devAction = await getDevAction()
+          await devAction(args, context)
+        }
+        return
+      }
+      throw err
+    })
   },
   helpText,
 }
