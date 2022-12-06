@@ -1,5 +1,5 @@
 import {Box, Card, ResponsiveMarginProps, ResponsivePaddingProps} from '@sanity/ui'
-import React, {MouseEvent, useCallback} from 'react'
+import React from 'react'
 import styled from 'styled-components'
 import {PreviewCard} from '../../../../../../../components/PreviewCard'
 import {useSchema} from '../../../../../../../hooks'
@@ -31,23 +31,13 @@ export function SearchResultItem({
   const type = schema.get(documentType)
   const documentPresence = useDocumentPresence(documentId)
 
-  const {onClick: onIntentClick, href} = useIntentLink({
+  const {href} = useIntentLink({
     intent: 'edit',
     params: {
       id: documentId,
       type: type?.name,
     },
   })
-
-  const handleClick = useCallback(
-    (e: MouseEvent<HTMLElement>) => {
-      if (!disableIntentLink) {
-        onIntentClick(e)
-      }
-      onClick?.()
-    },
-    [disableIntentLink, onClick, onIntentClick]
-  )
 
   if (!type) return null
 
@@ -58,8 +48,8 @@ export function SearchResultItem({
         data-as="a"
         data-command-list-item
         flex={1}
-        href={href}
-        onClick={handleClick}
+        href={disableIntentLink ? undefined : href}
+        onClick={onClick}
         padding={compact ? 1 : 2}
         radius={2}
         tabIndex={-1}
