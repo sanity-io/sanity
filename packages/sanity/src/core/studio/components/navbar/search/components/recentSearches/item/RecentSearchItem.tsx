@@ -3,6 +3,7 @@ import {
   Box,
   Button,
   Flex,
+  Inline,
   rem,
   ResponsiveMarginProps,
   ResponsivePaddingProps,
@@ -104,15 +105,17 @@ export function RecentSearchItem({
         paddingY={1}
       >
         <Flex align="stretch">
-          <Box paddingY={2}>
+          {/* Combination of <Inline> and a zero-width character to ensure icon is optically aligned with adjacent text */}
+          <Inline paddingY={2}>
             <Text muted size={1}>
               <ClockIcon />
             </Text>
-          </Box>
-          <Flex align="center" flex={1} gap={2} justify="flex-start" marginLeft={3} wrap="wrap">
+            <Text>&#8203;</Text>
+          </Inline>
+          <Flex align="stretch" flex={1} gap={2} justify="flex-start" marginLeft={3} wrap="wrap">
             {/* Text query */}
             {value.query && (
-              <SearchItemQueryBox marginLeft={1} paddingY={2}>
+              <SearchItemQueryBox paddingY={2}>
                 <Text muted textOverflow="ellipsis">
                   {value.query}
                 </Text>
