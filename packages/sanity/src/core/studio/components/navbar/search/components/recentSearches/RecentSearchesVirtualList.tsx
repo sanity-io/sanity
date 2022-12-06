@@ -22,7 +22,6 @@ export function RecentSearchesVirtualList({showFiltersOnClick}: RecentSearchesVi
 
   const {getTotalSize, getVirtualItems, measureElement} = useVirtualizer({
     count: recentSearches.length,
-    enableSmoothScroll: false,
     getScrollElement: () => virtualList,
     estimateSize: () => 36,
   })

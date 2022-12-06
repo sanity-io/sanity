@@ -19,7 +19,6 @@ export function AddFilterVirtualList({menuItems, onClose}: AddFilterVirtualListP
 
   const {getTotalSize, getVirtualItems, measureElement, scrollToIndex} = useVirtualizer({
     count: menuItems.length,
-    enableSmoothScroll: false,
     estimateSize: () => 45,
     getItemKey: (index) => {
       const menuItem = menuItems[index]

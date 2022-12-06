@@ -25,7 +25,6 @@ export function SearchResultsVirtualList({onClose}: SearchResultsVirtualListProp
 
   const {getTotalSize, getVirtualItems, scrollToIndex} = useVirtualizer({
     count: result.hits.length,
-    enableSmoothScroll: false,
     getScrollElement: () => virtualList,
     estimateSize: () => VIRTUAL_LIST_SEARCH_ITEM_HEIGHT,
     overscan: VIRTUAL_LIST_SEARCH_OVERSCAN,

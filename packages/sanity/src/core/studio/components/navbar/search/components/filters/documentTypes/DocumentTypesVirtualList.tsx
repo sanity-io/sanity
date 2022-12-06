@@ -22,7 +22,6 @@ export function DocumentTypesVirtualList({filteredItems}: DocumentTypesVirtualLi
 
   const {getTotalSize, getVirtualItems, measureElement, scrollToIndex} = useVirtualizer({
     count: filteredItems.length,
-    enableSmoothScroll: false,
     estimateSize: () => 37,
     getItemKey: (index) => {
       const virtualItem = filteredItems[index]
