@@ -34,6 +34,7 @@ const VirtualListBox = styled(Box)`
   outline: none;
   overflow-x: hidden;
   overflow-y: auto;
+  overscroll-behavior: contain;
   width: 100%;
 `
 
