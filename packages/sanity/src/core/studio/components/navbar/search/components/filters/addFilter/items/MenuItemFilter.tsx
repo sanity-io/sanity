@@ -1,10 +1,10 @@
 import {Box, Button, ResponsiveMarginProps, ResponsivePaddingProps} from '@sanity/ui'
 import React, {useCallback, useEffect, useRef, useState} from 'react'
-import {useCommandList} from '../../../../contexts/commandList'
 import {useSearchState} from '../../../../contexts/search/useSearchState'
 import type {FilterMenuItemFilter} from '../../../../types'
 import {getFilterKey} from '../../../../utils/filterUtils'
-import {CommandListItem} from '../../../common/CommandListItem.styled'
+import {CommandListItem} from '../../../commandList/CommandListItem.styled'
+import {useCommandList} from '../../../commandList/useCommandList'
 import {FilterDetails} from '../../common/FilterDetails'
 import {FilterTooltip} from './FilterTooltip'
 

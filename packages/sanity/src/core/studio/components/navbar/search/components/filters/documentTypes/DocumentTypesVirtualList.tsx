@@ -1,10 +1,10 @@
 import {Box, Label, MenuDivider} from '@sanity/ui'
 import {useVirtualizer} from '@tanstack/react-virtual'
 import React, {Dispatch, SetStateAction, useEffect, useState} from 'react'
-import {useCommandList} from '../../../contexts/commandList'
 import {useSearchState} from '../../../contexts/search/useSearchState'
 import type {DocumentTypeMenuItem} from '../../../types'
-import {CommandListItems} from '../../common/CommandListItems'
+import {CommandListItems} from '../../commandList/CommandListItems'
+import {useCommandList} from '../../commandList/useCommandList'
 import {DocumentTypeFilterItem} from './items/DocumentTypeFilterItem'
 
 interface DocumentTypesVirtualListProps {

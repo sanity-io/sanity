@@ -1,8 +1,9 @@
 import {Box, Flex, Text} from '@sanity/ui'
 import React, {useCallback, useMemo, useState} from 'react'
 import {useSchema} from '../../../../../../../hooks'
-import {CommandListProvider} from '../../../contexts/commandList'
+import {CommandListProvider} from '../../commandList/CommandListProvider'
 import {useSearchState} from '../../../contexts/search/useSearchState'
+import {CommandListContainer} from '../../commandList/CommandListContainer'
 import {FilterPopoverContentHeader} from '../common/FilterPopoverContentHeader'
 import {AddFilterVirtualList} from './AddFilterVirtualList'
 import {createFilterMenuItems} from './createFilterMenuItems'
@@ -13,7 +14,6 @@ interface AddFilterPopoverContentProps {
 
 export function AddFilterPopoverContent({onClose}: AddFilterPopoverContentProps) {
   const [childContainerElement, setChildContainerRef] = useState<HTMLDivElement | null>(null)
-  const [containerElement, setContainerRef] = useState<HTMLDivElement | null>(null)
   const [titleFilter, setTitleFilter] = useState('')
 
   const handleFilterChange = useCallback(
@@ -68,7 +68,6 @@ export function AddFilterPopoverContent({onClose}: AddFilterPopoverContentProps)
       ariaHeaderLabel="Filter by title"
       autoFocus
       childContainerElement={childContainerElement}
-      containerElement={containerElement}
       itemIndices={itemIndices}
     >
       <Flex direction="column" style={{width: '300px'}}>
@@ -79,7 +78,7 @@ export function AddFilterPopoverContent({onClose}: AddFilterPopoverContentProps)
           typeFilter={titleFilter}
         />
 
-        <Box flex={1} ref={setContainerRef}>
+        <CommandListContainer>
           {filteredMenuItems.length > 0 && (
             <AddFilterVirtualList
               menuItems={filteredMenuItems}
@@ -96,7 +95,7 @@ export function AddFilterPopoverContent({onClose}: AddFilterPopoverContentProps)
               </Text>
             </Box>
           )}
-        </Box>
+        </CommandListContainer>
       </Flex>
     </CommandListProvider>
   )

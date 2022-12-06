@@ -2,9 +2,9 @@ import {CheckmarkIcon} from '@sanity/icons'
 import {Box, Button, ResponsiveMarginProps, ResponsivePaddingProps} from '@sanity/ui'
 import React, {useCallback} from 'react'
 import type {SearchableType} from '../../../../../../../../search'
-import {useCommandList} from '../../../../contexts/commandList'
 import {useSearchState} from '../../../../contexts/search/useSearchState'
-import {CommandListItem} from '../../../common/CommandListItem.styled'
+import {CommandListItem} from '../../../commandList/CommandListItem.styled'
+import {useCommandList} from '../../../commandList/useCommandList'
 
 interface DocumentTypeFilterItemProps extends ResponsiveMarginProps, ResponsivePaddingProps {
   index: number | null

@@ -1,7 +1,7 @@
 import {Box, ResponsivePaddingProps} from '@sanity/ui'
 import React, {Dispatch, ReactNode, SetStateAction} from 'react'
 import styled from 'styled-components'
-import {useCommandList} from '../../contexts/commandList'
+import {useCommandList} from './useCommandList'
 
 interface CommandListItemsProps extends ResponsivePaddingProps {
   children: ReactNode

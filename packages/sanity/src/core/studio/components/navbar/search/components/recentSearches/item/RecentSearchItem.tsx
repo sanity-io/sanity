@@ -10,10 +10,10 @@ import {
 } from '@sanity/ui'
 import React, {MouseEvent, useCallback} from 'react'
 import styled from 'styled-components'
-import {useCommandList} from '../../../contexts/commandList'
 import {useSearchState} from '../../../contexts/search/useSearchState'
 import type {RecentSearch} from '../../../datastores/recentSearches'
-import {CommandListItem} from '../../common/CommandListItem.styled'
+import {CommandListItem} from '../../commandList/CommandListItem.styled'
+import {useCommandList} from '../../commandList/useCommandList'
 import {DocumentTypesPill} from '../../common/DocumentTypesPill'
 import {FilterPill} from '../../common/FilterPill'
 

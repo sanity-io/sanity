@@ -2,8 +2,8 @@ import {ArrowLeftIcon, ControlsIcon, SearchIcon, SpinnerIcon} from '@sanity/icon
 import {Box, Button, Card, Flex, Theme} from '@sanity/ui'
 import React, {useCallback, useEffect, useRef} from 'react'
 import styled, {keyframes} from 'styled-components'
-import {useCommandList} from '../contexts/commandList'
 import {useSearchState} from '../contexts/search/useSearchState'
+import {useCommandList} from './commandList/useCommandList'
 import {CustomTextInput} from './common/CustomTextInput'
 
 interface SearchHeaderProps {

@@ -1,14 +1,15 @@
-import {Card, Flex, Portal, Theme, useClickOutside, useLayer} from '@sanity/ui'
+import {Card, Portal, Theme, useClickOutside, useLayer} from '@sanity/ui'
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import FocusLock from 'react-focus-lock'
 import styled, {css} from 'styled-components'
 import {useColorScheme} from '../../../../colorScheme'
 import {POPOVER_INPUT_PADDING, POPOVER_MAX_HEIGHT, POPOVER_MAX_WIDTH} from '../constants'
-import {CommandListProvider} from '../contexts/commandList'
 import {useSearchState} from '../contexts/search/useSearchState'
 import {useMeasureSearchResultsIndex} from '../hooks/useMeasureSearchResultsIndex'
 import {useSearchHotkeys} from '../hooks/useSearchHotkeys'
 import {hasSearchableTerms} from '../utils/hasSearchableTerms'
+import {CommandListContainer} from './commandList/CommandListContainer'
+import {CommandListProvider} from './commandList/CommandListProvider'
 import {Filters} from './filters/Filters'
 import {RecentSearches} from './recentSearches/RecentSearches'
 import {SearchHeader} from './SearchHeader'
@@ -66,7 +67,6 @@ export function SearchPopover({
   position,
 }: SearchPopoverProps) {
   const [childContainerElement, setChildContainerRef] = useState<HTMLDivElement | null>(null)
-  const [containerElement, setContainerRef] = useState<HTMLDivElement | null>(null)
   const [popoverElement, setPopoverElement] = useState<HTMLDivElement | null>(null)
 
   const isMountedRef = useRef(false)
@@ -174,7 +174,6 @@ export function SearchPopover({
           ariaHeaderLabel="Search results"
           autoFocus
           childContainerElement={childContainerElement}
-          containerElement={containerElement}
           data-testid="search-results-popover"
           initialSelectedIndex={hasValidTerms ? lastSearchIndex : 0}
           itemIndices={itemIndices}
@@ -196,13 +195,13 @@ export function SearchPopover({
               </FiltersCard>
             )}
 
-            <Flex align="stretch" direction="row-reverse" ref={setContainerRef}>
+            <CommandListContainer>
               {hasValidTerms ? (
                 <SearchResults onClose={handleClose} setChildContainerRef={setChildContainerRef} />
               ) : (
                 <RecentSearches setChildContainerRef={setChildContainerRef} showFiltersOnClick />
               )}
-            </Flex>
+            </CommandListContainer>
           </SearchPopoverCard>
         </CommandListProvider>
       </FocusLock>

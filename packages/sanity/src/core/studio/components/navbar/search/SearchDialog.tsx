@@ -1,13 +1,14 @@
-import {Box, Card, Flex, Portal} from '@sanity/ui'
+import {Box, Card, Portal} from '@sanity/ui'
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import FocusLock from 'react-focus-lock'
 import styled from 'styled-components'
 import {useColorScheme} from '../../../colorScheme'
+import {CommandListContainer} from './components/commandList/CommandListContainer'
 import {Filters} from './components/filters/Filters'
 import {RecentSearches} from './components/recentSearches/RecentSearches'
 import {SearchHeader} from './components/SearchHeader'
 import {SearchResults} from './components/searchResults/SearchResults'
-import {CommandListProvider} from './contexts/commandList'
+import {CommandListProvider} from './components/commandList/CommandListProvider'
 import {useSearchState} from './contexts/search/useSearchState'
 import {useMeasureSearchResultsIndex} from './hooks/useMeasureSearchResultsIndex'
 import {useSearchHotkeys} from './hooks/useSearchHotkeys'
@@ -42,7 +43,6 @@ const SearchDialogBox = styled(Box)`
  */
 export function SearchDialog({onClose, onOpen, open}: SearchDialogProps) {
   const [childContainerElement, setChildContainerRef] = useState<HTMLDivElement | null>(null)
-  const [containerElement, setContainerRef] = useState<HTMLDivElement | null>(null)
 
   const isMountedRef = useRef(false)
 
@@ -77,8 +77,8 @@ export function SearchDialog({onClose, onOpen, open}: SearchDialogProps) {
 
   /**
    * Reset last search index when new results are loaded, or visiting recent searches
-   * TODO: Revise if/when we introduce pagination
    */
+  // @todo Revise if/when we introduce pagination
   useEffect(() => {
     if ((!hasValidTerms || result.loaded) && isMountedRef.current) {
       resetLastSearchIndex()
@@ -135,7 +135,6 @@ export function SearchDialog({onClose, onOpen, open}: SearchDialogProps) {
           ariaHeaderLabel="Search"
           autoFocus
           childContainerElement={childContainerElement}
-          containerElement={containerElement}
           data-testid="search-results-dialog"
           itemIndices={itemIndices}
           initialSelectedIndex={hasValidTerms ? lastSearchIndex : 0}
@@ -149,7 +148,7 @@ export function SearchDialog({onClose, onOpen, open}: SearchDialogProps) {
                 </Card>
               )}
 
-              <Flex align="stretch" ref={setContainerRef}>
+              <CommandListContainer>
                 {hasValidTerms ? (
                   <SearchResults
                     onClose={handleClose}
@@ -158,7 +157,7 @@ export function SearchDialog({onClose, onOpen, open}: SearchDialogProps) {
                 ) : (
                   <RecentSearches setChildContainerRef={setChildContainerRef} />
                 )}
-              </Flex>
+              </CommandListContainer>
             </InnerCard>
           </SearchDialogBox>
         </CommandListProvider>

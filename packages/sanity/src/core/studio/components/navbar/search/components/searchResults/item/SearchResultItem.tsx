@@ -3,7 +3,7 @@ import React, {MouseEvent, useCallback} from 'react'
 import {PreviewCard} from '../../../../../../../components/PreviewCard'
 import {useSchema} from '../../../../../../../hooks'
 import {useDocumentPresence} from '../../../../../../../store'
-import {CommandListItem} from '../../common/CommandListItem.styled'
+import {CommandListItem} from '../../commandList/CommandListItem.styled'
 import SearchResultItemPreview from './SearchResultItemPreview'
 import {useIntentLink} from 'sanity/router'
 

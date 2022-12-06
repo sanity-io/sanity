@@ -1,9 +1,9 @@
 import {useVirtualizer} from '@tanstack/react-virtual'
 import React, {Dispatch, SetStateAction, useEffect, useState} from 'react'
-import {useCommandList} from '../../../contexts/commandList'
 import type {FilterMenuItem} from '../../../types'
 import {getFilterKey} from '../../../utils/filterUtils'
-import {CommandListItems} from '../../common/CommandListItems'
+import {CommandListItems} from '../../commandList/CommandListItems'
+import {useCommandList} from '../../commandList/useCommandList'
 import {MenuItemFilter} from './items/MenuItemFilter'
 import {MenuItemHeader} from './items/MenuItemHeader'
 

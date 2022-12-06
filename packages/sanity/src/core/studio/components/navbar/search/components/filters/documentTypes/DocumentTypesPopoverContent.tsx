@@ -5,10 +5,12 @@ import React, {useCallback, useMemo, useState} from 'react'
 import styled from 'styled-components'
 import {useSchema} from '../../../../../../../hooks'
 import type {SearchableType} from '../../../../../../../search'
-import {CommandListProvider, useCommandList} from '../../../contexts/commandList'
 import {useSearchState} from '../../../contexts/search/useSearchState'
 import type {DocumentTypeMenuItem} from '../../../types'
 import {getSelectableOmnisearchTypes} from '../../../utils/selectors'
+import {CommandListContainer} from '../../commandList/CommandListContainer'
+import {CommandListProvider} from '../../commandList/CommandListProvider'
+import {useCommandList} from '../../commandList/useCommandList'
 import {FilterPopoverContentHeader} from '../common/FilterPopoverContentHeader'
 import {DocumentTypesVirtualList} from './DocumentTypesVirtualList'
 
@@ -18,7 +20,6 @@ const ClearButtonBox = styled(Box)`
 
 export function DocumentTypesPopoverContent() {
   const [childContainerElement, setChildContainerRef] = useState<HTMLDivElement | null>(null)
-  const [containerElement, setContainerRef] = useState<HTMLDivElement | null>(null)
   const [typeFilter, setTypeFilter] = useState('')
 
   const schema = useSchema()
@@ -74,7 +75,6 @@ export function DocumentTypesPopoverContent() {
       ariaMultiselectable
       autoFocus
       childContainerElement={childContainerElement}
-      containerElement={containerElement}
       itemIndices={itemIndices}
       itemIndicesSelected={itemIndicesSelected}
     >
@@ -86,7 +86,7 @@ export function DocumentTypesPopoverContent() {
           typeFilter={typeFilter}
         />
 
-        <Box flex={1} ref={setContainerRef}>
+        <CommandListContainer>
           {filteredItems.length > 0 && (
             <DocumentTypesVirtualList
               filteredItems={filteredItems}
@@ -102,7 +102,7 @@ export function DocumentTypesPopoverContent() {
               </Text>
             </Box>
           )}
-        </Box>
+        </CommandListContainer>
 
         {/* Clear button */}
         {!typeFilter && selectedTypes.length > 0 && (

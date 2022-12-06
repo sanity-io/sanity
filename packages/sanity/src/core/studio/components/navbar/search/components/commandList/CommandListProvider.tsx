@@ -1,12 +1,8 @@
 import throttle from 'lodash/throttle'
 import React, {
-  createContext,
-  Dispatch,
   MouseEvent,
   ReactNode,
-  SetStateAction,
   useCallback,
-  useContext,
   useEffect,
   useId,
   useMemo,
@@ -15,6 +11,7 @@ import React, {
 } from 'react'
 import {isNonNullable} from '../../../../../../util'
 import {supportsTouch} from '../../utils/supportsTouch'
+import {CommandListContext} from './CommandListContext'
 
 /**
  * This provider adds the following:
@@ -33,23 +30,6 @@ import {supportsTouch} from '../../utils/supportsTouch'
  * - All elements (including the pointer overlay) must be defined and passed to this Provider.
  */
 
-/**
- * TODO: We should look to either create an dynamic pointer overlay in future, or create a custom list item component
- * with more control over dynamically applying (and removing) hover states.
- */
-
-interface CommandListContextValue {
-  focusHeaderInputElement: () => void
-  itemIndices: (number | null)[]
-  onChildMouseDown: (event: MouseEvent) => void
-  onChildMouseEnter: (index: number) => () => void
-  setHeaderInputElement: Dispatch<SetStateAction<HTMLDivElement | null>>
-  setPointerOverlayElement: Dispatch<SetStateAction<HTMLDivElement | null>>
-  setVirtualListScrollToIndex: (scrollToIndex: (index: number, options?: any) => void) => void
-}
-
-const CommandListContext = createContext<CommandListContextValue | undefined>(undefined)
-
 interface CommandListProviderProps {
   ariaActiveDescendant?: boolean
   ariaChildrenLabel: string
@@ -58,7 +38,6 @@ interface CommandListProviderProps {
   autoFocus?: boolean
   children?: ReactNode
   childContainerElement: HTMLDivElement | null
-  containerElement: HTMLDivElement | null
   initialSelectedIndex?: number
   itemIndices: (number | null)[]
   itemIndicesSelected?: boolean[]
@@ -75,12 +54,12 @@ export function CommandListProvider({
   autoFocus,
   children,
   childContainerElement,
-  containerElement,
   initialSelectedIndex,
   itemIndices,
   itemIndicesSelected,
 }: CommandListProviderProps) {
   const selectedIndexRef = useRef<number>(-1)
+  const [containerElement, setContainerElement] = useState<HTMLDivElement | null>(null)
   const [headerInputElement, setHeaderInputElement] = useState<HTMLDivElement | null>(null)
   const [pointerOverlayElement, setPointerOverlayElement] = useState<HTMLDivElement | null>(null)
 
@@ -325,7 +304,13 @@ export function CommandListProvider({
     return () => {
       containerElement?.removeEventListener('keydown', handleKeydown as EventListener)
     }
-  }, [childContainerElement, containerElement, headerInputElement, scrollToAdjacentItem])
+  }, [
+    childContainerElement,
+    containerElement,
+    handleFocusHeaderInputElement,
+    headerInputElement,
+    scrollToAdjacentItem,
+  ])
 
   /**
    * Track focus / blur state on the list's input element and store state in `data-focused` attribute on
@@ -441,6 +426,7 @@ export function CommandListProvider({
         itemIndices,
         onChildMouseDown: handleChildMouseDown,
         onChildMouseEnter: handleChildMouseEnter,
+        setContainerElement,
         setHeaderInputElement,
         setPointerOverlayElement,
         setVirtualListScrollToIndex: handleSetVirtualListScrollToIndex,
@@ -449,12 +435,4 @@ export function CommandListProvider({
       {children}
     </CommandListContext.Provider>
   )
-}
-
-export function useCommandList() {
-  const context = useContext(CommandListContext)
-  if (context === undefined) {
-    throw new Error('useCommandList must be used within a CommandListProvider')
-  }
-  return context
 }
