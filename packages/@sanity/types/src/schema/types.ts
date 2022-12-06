@@ -7,6 +7,7 @@ import type {PreviewConfig} from './preview'
 import {SchemaTypeDefinition} from './definition/schemaDefinition'
 import {ArrayOptions} from './definition/type/array'
 import {
+  BlockDecoratorDefinition,
   BlockOptions,
   BooleanOptions,
   DateOptions,
@@ -19,7 +20,6 @@ import {
   StringOptions,
   TextOptions,
 } from './definition/type'
-import {TitledListValue} from './definition/type/common'
 
 export {defineType, defineField, defineArrayMember, typed} from './define'
 
@@ -183,6 +183,8 @@ export interface BaseSchemaType {
 
   /** @beta */
   components?: {
+    block?: ComponentType<any>
+    annotation?: ComponentType<any>
     diff?: ComponentType<any>
     field?: ComponentType<any>
     input?: ComponentType<any>
@@ -248,7 +250,9 @@ export type ArraySchemaTypeOf<TSchemaType extends ArraySchemaType['of'][number]>
  *
  * @internal
  */
-export type MarksObjectField = {name: 'marks'} & ObjectField<ArraySchemaTypeOf<StringSchemaType>>
+export type SpanMarksObjectField = {name: 'marks'} & ObjectField<
+  ArraySchemaTypeOf<StringSchemaType>
+>
 
 /**
  * A specific `ObjectField` for `text` in `SpanSchemaType`
@@ -256,7 +260,7 @@ export type MarksObjectField = {name: 'marks'} & ObjectField<ArraySchemaTypeOf<S
  *
  * @internal
  */
-export type TextObjectField = {name: 'text'} & ObjectField<TextSchemaType>
+export type SpanTextObjectField = {name: 'text'} & ObjectField<TextSchemaType>
 
 /**
  * A specific `ObjectField` for `style` in `BlockSchemaType`
@@ -264,7 +268,7 @@ export type TextObjectField = {name: 'text'} & ObjectField<TextSchemaType>
  *
  * @internal
  */
-export type StyleObjectField = {name: 'style'} & ObjectField<StringSchemaType>
+export type BlockStyleObjectField = {name: 'style'} & ObjectField<StringSchemaType>
 
 /**
  * A specific `ObjectField` for `list` in `BlockSchemaType`
@@ -272,7 +276,7 @@ export type StyleObjectField = {name: 'style'} & ObjectField<StringSchemaType>
  *
  * @internal
  */
-export type ListObjectField = {name: 'list'} & ObjectField<StringSchemaType>
+export type BlockListObjectField = {name: 'list'} & ObjectField<StringSchemaType>
 
 /**
  * The specific `children` field of a `block` type (`BlockSchemaType`)
@@ -291,15 +295,15 @@ export type BlockChildrenObjectField = {name: 'children'} & ObjectField<ArraySch
  */
 export interface SpanSchemaType extends Omit<ObjectSchemaType, 'fields'> {
   annotations: (ObjectSchemaType & {
-    blockEditor?: {
-      icon?: string | ComponentType
-      render?: ComponentType
+    icon?: string | ComponentType
+    components?: {
+      item?: ComponentType
     }
   })[]
-  decorators: TitledListValue<string>[]
+  decorators: BlockDecoratorDefinition[]
   // the first field will always be the `marks` field and the second will
   // always be the `text` field
-  fields: [MarksObjectField, TextObjectField]
+  fields: [SpanMarksObjectField, SpanTextObjectField]
 }
 
 /**
@@ -313,8 +317,8 @@ export interface BlockSchemaType extends ObjectSchemaType {
   fields: [
     // the first 3 field are always block children, styles, and lists
     BlockChildrenObjectField,
-    StyleObjectField,
-    ListObjectField,
+    BlockStyleObjectField,
+    BlockListObjectField,
     // then it could be any additional fields the user could add
     ...ObjectField[]
   ]
