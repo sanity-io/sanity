@@ -129,7 +129,7 @@ export default async function initSanity(
   print('Press ctrl + C at any time to quit.\n')
   print('Prefer web interfaces to terminals?')
   print('You can also set up best practice Sanity projects with')
-  print('your favorite frontends on https://sanity.io/create\n')
+  print('your favorite frontends on https://www.sanity.io/templates\n')
 
   // If the user isn't already authenticated, make it so
   const userConfig = getUserConfig()
