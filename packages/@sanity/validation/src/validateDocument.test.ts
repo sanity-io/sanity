@@ -1,5 +1,12 @@
 import type {SanityClient} from '@sanity/client'
-import {Rule, SchemaType, SanityDocument, Schema, ArraySchemaType, Block} from '@sanity/types'
+import {
+  Rule,
+  SchemaType,
+  SanityDocument,
+  Schema,
+  ArraySchemaType,
+  PortableTextTextBlock,
+} from '@sanity/types'
 import {createSchema} from '../test/createSchema'
 import {createMockSanityClient} from '../test/mocks/mockSanityClient'
 import validateDocument, {resolveTypeForArrayItem, validateItem} from './validateDocument'
@@ -346,7 +353,7 @@ describe('validateItem', () => {
 
     expect(schema._validation).toHaveLength(0)
 
-    const nestedBlock: Block = {
+    const nestedBlock: PortableTextTextBlock = {
       _type: 'block',
       _key: 'nested-block-key',
       children: [
@@ -367,7 +374,7 @@ describe('validateItem', () => {
       style: 'normal',
     }
 
-    const block: Block = {
+    const block: PortableTextTextBlock = {
       _key: 'block-key',
       _type: 'block',
       children: [
