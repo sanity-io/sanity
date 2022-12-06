@@ -1,18 +1,18 @@
 import type {CrossDatasetReferenceSchemaType} from '../crossDatasetReference'
 import {TitledListValue} from './definition'
 import type {
-  BlockSchemaType,
   ArraySchemaType,
+  BlockChildrenObjectField,
+  BlockListObjectField,
+  BlockSchemaType,
+  BlockStyleObjectField,
+  BooleanSchemaType,
+  NumberSchemaType,
   ObjectSchemaType,
   ReferenceSchemaType,
-  SpanSchemaType,
-  BlockChildrenObjectField,
-  StyleObjectField,
-  ListObjectField,
-  BooleanSchemaType,
-  StringSchemaType,
-  NumberSchemaType,
   SchemaType,
+  SpanSchemaType,
+  StringSchemaType,
 } from './types'
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -54,6 +54,13 @@ export function isObjectSchemaType(type: unknown): type is ObjectSchemaType {
 export function isArraySchemaType(type: unknown): type is ArraySchemaType {
   if (!isRecord(type)) return false
   return type.jsonType === 'array'
+}
+
+/** @internal */
+export function isArrayOfBlocksSchemaType(
+  type: unknown
+): type is ArraySchemaType<ObjectSchemaType> {
+  return isArraySchemaType(type) && type.of.some((memberType) => isBlockSchemaType(memberType))
 }
 
 /** @internal */
@@ -129,20 +136,20 @@ export function isBlockSchemaType(type: unknown): type is BlockSchemaType {
   const [maybeSpanChildren, maybeStyle, maybeList] = type.fields
   return (
     isBlockChildrenObjectField(maybeSpanChildren) &&
-    isStyleObjectField(maybeStyle) &&
-    isListObjectField(maybeList)
+    isBlockStyleObjectField(maybeStyle) &&
+    isBlockListObjectField(maybeList)
   )
 }
 
 /** @internal */
-export function isStyleObjectField(field: unknown): field is StyleObjectField {
+export function isBlockStyleObjectField(field: unknown): field is BlockStyleObjectField {
   if (!isRecord(field)) return false
   if (field.name !== 'style') return false
   return isRecord(field.type) && field.type.jsonType === 'string'
 }
 
 /** @internal */
-export function isListObjectField(field: unknown): field is ListObjectField {
+export function isBlockListObjectField(field: unknown): field is BlockListObjectField {
   if (!isRecord(field)) return false
   if (field.name !== 'list') return false
   return isRecord(field.type) && field.type.jsonType === 'string'

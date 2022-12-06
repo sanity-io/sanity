@@ -1,9 +1,9 @@
 import {ComponentType, ReactNode} from 'react'
 import {RuleDef, ValidationBuilder} from '../../ruleBuilder'
 import {InitialValueProperty} from '../../types'
-import {SchemaTypeDefinition, TypeReference} from '../schemaDefinition'
 import {ArrayOfType} from './array'
 import {BaseSchemaDefinition} from './common'
+import {ObjectDefinition} from './object'
 
 /** @public */
 export interface BlockOptions {
@@ -15,28 +15,42 @@ export interface BlockOptions {
 export interface BlockRule extends RuleDef<BlockRule, any[]> {}
 
 /** @public */
-export interface DecoratorDefinition {
+export interface BlockDecoratorDefinition {
   title: string
   value: string
-  icon?: ReactNode | ComponentType<any>
-  blockEditor?: {
-    icon?: ReactNode | ComponentType<any>
-    render?: ComponentType<any>
-  }
+  icon?: ReactNode | ComponentType
 }
 
 /** @public */
-export interface MarksDefinition {
-  decorators?: DecoratorDefinition[]
-  annotations?: (SchemaTypeDefinition | TypeReference)[]
+export interface BlockStyleDefinition {
+  title: string
+  value: string
+}
+
+/** @public */
+export interface BlockListDefinition {
+  title: string
+  value: string
+  icon?: ReactNode | ComponentType
+}
+
+/** @public */
+export interface BlockAnnotationDefinition extends ObjectDefinition {
+  icon?: ReactNode | ComponentType
+}
+
+/** @public */
+export interface BlockMarksDefinition {
+  decorators?: BlockDecoratorDefinition[]
+  annotations?: ArrayOfType<'object' | 'reference'>[]
 }
 
 /** @public */
 export interface BlockDefinition extends BaseSchemaDefinition {
   type: 'block'
-  styles?: Array<{title: string; value: string}>
-  lists?: Array<{title: string; value: string}>
-  marks?: MarksDefinition
+  styles?: BlockStyleDefinition[]
+  lists?: BlockListDefinition[]
+  marks?: BlockMarksDefinition
   of?: ArrayOfType[]
   initialValue?: InitialValueProperty<any, any[]>
   options?: BlockOptions
