@@ -10,7 +10,6 @@ import {
   ValidationMarker,
   RuleTypeConstraint,
   Validator,
-  Block,
 } from '@sanity/types'
 import {cloneDeep, get} from 'lodash'
 import ValidationErrorClass from './ValidationError'
@@ -223,13 +222,6 @@ const Rule: RuleClass = class Rule implements IRule {
   }
 
   custom<T = unknown>(fn: CustomValidator<T>): Rule {
-    return this.cloneWithRules([{flag: 'custom', constraint: fn as CustomValidator}])
-  }
-
-  /**
-   * @deprecated use `Rule.custom` instead
-   */
-  block(fn: CustomValidator<Block>): Rule {
     return this.cloneWithRules([{flag: 'custom', constraint: fn as CustomValidator}])
   }
 
