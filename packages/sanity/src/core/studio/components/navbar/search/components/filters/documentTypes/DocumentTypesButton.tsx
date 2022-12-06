@@ -1,11 +1,22 @@
 import {SelectIcon} from '@sanity/icons'
-import {Button, Flex, Popover, Text, useClickOutside} from '@sanity/ui'
+import {Button, Popover, Theme, useClickOutside} from '@sanity/ui'
 import React, {useCallback, useMemo, useState} from 'react'
+import styled, {css} from 'styled-components'
 import {POPOVER_RADIUS, POPOVER_VERTICAL_MARGIN} from '../../../constants'
 import {useSearchState} from '../../../contexts/search/useSearchState'
 import {documentTypesTruncated} from '../../../utils/documentTypesTruncated'
 import {FilterPopoverWrapper} from '../common/FilterPopoverWrapper'
 import {DocumentTypesPopoverContent} from './DocumentTypesPopoverContent'
+
+const StyledButton = styled(Button)(({theme}: {theme: Theme}) => {
+  const {regular} = theme.sanity.fonts.text.weights
+
+  return css`
+    [data-ui='Text'] {
+      font-weight: ${regular};
+    }
+  `
+})
 
 export function DocumentTypesButton() {
   const [open, setOpen] = useState(false)
@@ -40,21 +51,17 @@ export function DocumentTypesButton() {
       radius={POPOVER_RADIUS}
       ref={setPopoverElement}
     >
-      <Button
+      <StyledButton
+        fontSize={1}
+        iconRight={SelectIcon}
         mode="ghost"
         onClick={handleOpen}
         padding={fullscreen ? 3 : 2}
         ref={setButtonElement}
         style={{maxWidth: '100%'}}
+        text={title}
         tone="default"
-      >
-        <Flex align="center" justify="space-between" gap={2}>
-          <Text size={1}>{title}</Text>
-          <Text size={1}>
-            <SelectIcon />
-          </Text>
-        </Flex>
-      </Button>
+      />
     </Popover>
   )
 }
