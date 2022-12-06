@@ -12,8 +12,6 @@ import React, {MouseEvent, useCallback} from 'react'
 import styled from 'styled-components'
 import {useSearchState} from '../../../contexts/search/useSearchState'
 import type {RecentSearch} from '../../../datastores/recentSearches'
-import {CommandListItem} from '../../commandList/CommandListItem.styled'
-import {useCommandList} from '../../commandList/useCommandList'
 import {DocumentTypesPill} from '../../common/DocumentTypesPill'
 import {FilterPill} from '../../common/FilterPill'
 
@@ -29,6 +27,7 @@ const DEFAULT_COMBINED_TYPE_COUNT = 40
 const RecentSearchItemButton = styled(Button)`
   border-radius: ${({theme}) => rem(theme.sanity.radius[2])};
   cursor: default;
+  width: 100%;
 `
 
 const SearchItemPillsBox = styled(Box)`
@@ -61,8 +60,6 @@ export function RecentSearchItem({
   ...rest
 }: RecentSearchesProps) {
   const {dispatch, recentSearchesStore} = useSearchState()
-
-  const {onChildMouseDown, onChildMouseEnter} = useCommandList()
 
   // Determine how many characters are left to render type pills
   const availableCharacters = maxVisibleTypePillChars - value.query.length
@@ -99,12 +96,9 @@ export function RecentSearchItem({
   return (
     <Box {...rest}>
       <RecentSearchItemButton
-        as={CommandListItem}
         data-command-list-item
         mode="bleed"
         onClick={handleClick}
-        onMouseDown={onChildMouseDown}
-        onMouseEnter={onChildMouseEnter(index)}
         paddingLeft={3}
         paddingRight={1}
         paddingY={1}

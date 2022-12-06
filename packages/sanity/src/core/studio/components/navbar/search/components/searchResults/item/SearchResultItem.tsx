@@ -3,7 +3,6 @@ import React, {MouseEvent, useCallback} from 'react'
 import {PreviewCard} from '../../../../../../../components/PreviewCard'
 import {useSchema} from '../../../../../../../hooks'
 import {useDocumentPresence} from '../../../../../../../store'
-import {CommandListItem} from '../../commandList/CommandListItem.styled'
 import SearchResultItemPreview from './SearchResultItemPreview'
 import {useIntentLink} from 'sanity/router'
 
@@ -50,7 +49,6 @@ export function SearchResultItem({
   return (
     <Box {...rest}>
       <PreviewCard
-        as={CommandListItem}
         data-as="a"
         data-command-list-item
         flex={1}

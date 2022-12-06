@@ -3,19 +3,15 @@ import React, {useCallback, useEffect, useRef, useState} from 'react'
 import {useSearchState} from '../../../../contexts/search/useSearchState'
 import type {FilterMenuItemFilter} from '../../../../types'
 import {getFilterKey} from '../../../../utils/filterUtils'
-import {CommandListItem} from '../../../commandList/CommandListItem.styled'
-import {useCommandList} from '../../../commandList/useCommandList'
 import {FilterDetails} from '../../common/FilterDetails'
 import {FilterTooltip} from './FilterTooltip'
 
 interface FilterMenuItemProps extends ResponsiveMarginProps, ResponsivePaddingProps {
-  index: number | null
   item: FilterMenuItemFilter
   onClose: () => void
 }
 
 export const MenuItemFilter = React.memo(function MenuItemFilter({
-  index,
   item,
   onClose,
   ...rest
@@ -27,8 +23,6 @@ export const MenuItemFilter = React.memo(function MenuItemFilter({
     state: {filters},
   } = useSearchState()
 
-  const {onChildMouseDown, onChildMouseEnter} = useCommandList()
-
   const handleClick = useCallback(() => {
     dispatch({filter: item.filter, type: 'TERMS_FILTERS_ADD'})
     onClose?.()
@@ -39,11 +33,8 @@ export const MenuItemFilter = React.memo(function MenuItemFilter({
   const timeoutRef = useRef<ReturnType<typeof setTimeout>>()
 
   const handleMouseEnter = useCallback(() => {
-    if (index !== null) {
-      onChildMouseEnter(index)()
-    }
     timeoutRef.current = setTimeout(() => setTooltipVisible(true), 500)
-  }, [index, onChildMouseEnter])
+  }, [])
   const handleMouseLeave = useCallback(() => {
     setTooltipVisible(false)
     clearTimeout(timeoutRef.current)
@@ -59,18 +50,16 @@ export const MenuItemFilter = React.memo(function MenuItemFilter({
   return (
     <Box {...rest}>
       <Button
-        as={CommandListItem}
         data-command-list-item
         disabled={isAlreadyActive}
         fontSize={1}
         justify="flex-start"
         mode="bleed"
         onClick={isAlreadyActive ? undefined : handleClick}
-        onMouseDown={onChildMouseDown}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
         padding={0}
-        style={{position: 'relative'}}
+        style={{position: 'relative', whiteSpace: 'normal', width: '100%'}}
         tabIndex={-1}
         tone={item?.tone}
       >

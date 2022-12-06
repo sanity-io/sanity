@@ -50,7 +50,7 @@ export function FilterDetails({filter, small = true}: FilterDetailsProps) {
       )}
 
       <Flex align="flex-start" gap={3}>
-        <Box>
+        <Box style={{flexShrink: 0}}>
           <Text size={small ? 1 : 2}>
             <FilterIcon filter={filter} />
           </Text>

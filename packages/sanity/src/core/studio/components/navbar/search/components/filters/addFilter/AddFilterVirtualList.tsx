@@ -2,6 +2,7 @@ import {useVirtualizer} from '@tanstack/react-virtual'
 import React, {useEffect, useState} from 'react'
 import type {FilterMenuItem} from '../../../types'
 import {getFilterKey} from '../../../utils/filterUtils'
+import {CommandListItem} from '../../commandList/CommandListItem'
 import {CommandListItems} from '../../commandList/CommandListItems'
 import {useCommandList} from '../../commandList/useCommandList'
 import {MenuItemFilter} from './items/MenuItemFilter'
@@ -59,31 +60,18 @@ export function AddFilterVirtualList({menuItems, onClose}: AddFilterVirtualListP
       {getVirtualItems().map((virtualRow) => {
         const menuItem = menuItems[virtualRow.index]
         return (
-          <div
+          <CommandListItem
+            activeIndex={menuItem.type === 'filter' ? itemIndices[virtualRow.index] ?? -1 : -1}
             data-index={virtualRow.index}
             key={virtualRow.key}
-            ref={measureElement}
-            // Kept inline to prevent styled-components from generating loads of classes on virtual list scroll
-            style={{
-              flex: 1,
-              left: 0,
-              position: 'absolute',
-              top: 0,
-              transform: `translateY(${virtualRow.start}px)`,
-              width: '100%',
-            }}
+            measure={measureElement}
+            virtualRow={virtualRow}
           >
             {menuItem.type === 'filter' && (
-              <MenuItemFilter
-                index={itemIndices[virtualRow.index]}
-                item={menuItem}
-                onClose={onClose}
-                paddingTop={1}
-                paddingX={1}
-              />
+              <MenuItemFilter item={menuItem} onClose={onClose} paddingTop={1} paddingX={1} />
             )}
             {menuItem.type === 'header' && <MenuItemHeader item={menuItem} />}
-          </div>
+          </CommandListItem>
         )
       })}
     </CommandListItems>

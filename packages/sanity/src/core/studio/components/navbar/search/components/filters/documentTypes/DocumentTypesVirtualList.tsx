@@ -3,6 +3,7 @@ import {useVirtualizer} from '@tanstack/react-virtual'
 import React, {useEffect, useState} from 'react'
 import {useSearchState} from '../../../contexts/search/useSearchState'
 import type {DocumentTypeMenuItem} from '../../../types'
+import {CommandListItem} from '../../commandList/CommandListItem'
 import {CommandListItems} from '../../commandList/CommandListItems'
 import {useCommandList} from '../../commandList/useCommandList'
 import {DocumentTypeFilterItem} from './items/DocumentTypeFilterItem'
@@ -66,19 +67,12 @@ export function DocumentTypesVirtualList({filteredItems}: DocumentTypesVirtualLi
         const virtualItem = filteredItems[virtualRow.index]
 
         return (
-          <div
+          <CommandListItem
+            activeIndex={virtualItem.type === 'item' ? itemIndices[virtualRow.index] ?? -1 : -1}
             data-index={virtualRow.index}
             key={virtualRow.key}
-            ref={measureElement}
-            // Kept inline to prevent styled-components from generating loads of classes on virtual list scroll
-            style={{
-              flex: 1,
-              left: 0,
-              position: 'absolute',
-              top: 0,
-              transform: `translateY(${virtualRow.start}px)`,
-              width: '100%',
-            }}
+            measure={measureElement}
+            virtualRow={virtualRow}
           >
             {virtualItem.type === 'divider' && (
               <Box padding={1}>
@@ -94,7 +88,6 @@ export function DocumentTypesVirtualList({filteredItems}: DocumentTypesVirtualLi
             )}
             {virtualItem.type === 'item' && (
               <DocumentTypeFilterItem
-                index={itemIndices[virtualRow.index]}
                 key={virtualRow.key}
                 paddingX={1}
                 paddingTop={1}
@@ -102,7 +95,7 @@ export function DocumentTypesVirtualList({filteredItems}: DocumentTypesVirtualLi
                 type={virtualItem.item}
               />
             )}
-          </div>
+          </CommandListItem>
         )
       })}
     </CommandListItems>

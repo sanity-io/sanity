@@ -3,6 +3,7 @@ import React, {useCallback, useEffect, useState} from 'react'
 import {getPublishedId} from '../../../../../../util/draftUtils'
 import {VIRTUAL_LIST_SEARCH_ITEM_HEIGHT, VIRTUAL_LIST_SEARCH_OVERSCAN} from '../../constants'
 import {useSearchState} from '../../contexts/search/useSearchState'
+import {CommandListItem} from '../commandList/CommandListItem'
 import {CommandListItems} from '../commandList/CommandListItems'
 import {useCommandList} from '../commandList/useCommandList'
 import {DebugOverlay} from './item/DebugOverlay'
@@ -21,7 +22,7 @@ export function SearchResultsVirtualList({onClose}: SearchResultsVirtualListProp
     state: {debug, filters, terms, result},
   } = useSearchState()
 
-  const {onChildMouseDown, onChildMouseEnter, setVirtualListScrollToIndex} = useCommandList()
+  const {setVirtualListScrollToIndex} = useCommandList()
 
   const {getTotalSize, getVirtualItems, scrollToIndex} = useVirtualizer({
     count: result.hits.length,
@@ -60,21 +61,12 @@ export function SearchResultsVirtualList({onClose}: SearchResultsVirtualListProp
       {getVirtualItems().map((virtualRow) => {
         const hit = result.hits[virtualRow.index]
         return (
-          <div
+          <CommandListItem
+            activeIndex={virtualRow.index}
             data-index={virtualRow.index}
+            fixedHeight
             key={virtualRow.key}
-            onMouseDown={onChildMouseDown}
-            onMouseEnter={onChildMouseEnter(virtualRow.index)}
-            style={{
-              // Kept inline to prevent styled-components from generating loads of classes on virtual list scroll
-              flex: 1,
-              height: `${virtualRow.size}px`,
-              left: 0,
-              position: 'absolute',
-              top: 0,
-              transform: `translateY(${virtualRow.start}px)`,
-              width: '100%',
-            }}
+            virtualRow={virtualRow}
           >
             <SearchResultItem
               documentId={getPublishedId(hit.hit._id) || ''}
@@ -85,7 +77,7 @@ export function SearchResultsVirtualList({onClose}: SearchResultsVirtualListProp
               paddingX={2}
             />
             {debug && <DebugOverlay data={hit} />}
-          </div>
+          </CommandListItem>
         )
       })}
     </CommandListItems>

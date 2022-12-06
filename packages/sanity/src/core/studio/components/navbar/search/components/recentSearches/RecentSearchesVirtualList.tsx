@@ -2,6 +2,7 @@ import {useMediaIndex} from '@sanity/ui'
 import {useVirtualizer} from '@tanstack/react-virtual'
 import React, {useMemo, useState} from 'react'
 import {useSearchState} from '../../contexts/search/useSearchState'
+import {CommandListItem} from '../commandList/CommandListItem'
 import {CommandListItems} from '../commandList/CommandListItems'
 import {RecentSearchItem} from './item/RecentSearchItem'
 
@@ -41,19 +42,12 @@ export function RecentSearchesVirtualList({showFiltersOnClick}: RecentSearchesVi
       {getVirtualItems().map((virtualRow) => {
         const recentSearch = recentSearches[virtualRow.index]
         return (
-          <div
+          <CommandListItem
+            activeIndex={virtualRow.index}
             data-index={virtualRow.index}
             key={virtualRow.key}
-            ref={measureElement}
-            // Kept inline to prevent styled-components from generating loads of classes on virtual list scroll
-            style={{
-              flex: 1,
-              left: 0,
-              position: 'absolute',
-              top: 0,
-              transform: `translateY(${virtualRow.start}px)`,
-              width: '100%',
-            }}
+            measure={measureElement}
+            virtualRow={virtualRow}
           >
             <RecentSearchItem
               index={virtualRow.index}
@@ -63,7 +57,7 @@ export function RecentSearchesVirtualList({showFiltersOnClick}: RecentSearchesVi
               showFiltersOnClick={showFiltersOnClick}
               value={recentSearch}
             />
-          </div>
+          </CommandListItem>
         )
       })}
     </CommandListItems>
