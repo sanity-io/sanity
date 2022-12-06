@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import type {CliCommandArguments, CliCommandContext, CliCommandDefinition} from '@sanity/cli'
 import type {StartPreviewServerCommandFlags} from '../../actions/preview/previewAction'
 import {getDevAction} from '../dev/devCommand'
