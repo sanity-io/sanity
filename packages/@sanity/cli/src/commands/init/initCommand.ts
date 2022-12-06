@@ -72,44 +72,48 @@ export const initCommand: CliCommandDefinition<InitFlags> = {
     const {output, chalk, prompt} = context
     const [type] = args.argsWithoutOptions
     const warn = (msg: string) => output.warn(chalk.yellow.bgBlack(msg))
-
     if (!type) {
-      warn(
-        '╔═══════════════════════════════════════════════════════════════════════════════════════╗'
-      )
-      warn(
-        "║ \u26A0  Welcome to Sanity! Looks like you're following instructions for Sanity Studio v2,  ║"
-      )
-      warn(
-        '║    but the version you have installed is the latest, Sanity Studio v3.                ║'
-      )
-      warn(
-        '║    In Sanity Studio v3, new projects are created with [npm create sanity@latest].     ║'
-      )
-      warn(
-        '║                                                                                       ║'
-      )
-      warn(
-        '║    Learn more about Sanity Studio v3: https://www.sanity.io/help/studio-v2-vs-v3      ║'
-      )
-      warn(
-        '╚═══════════════════════════════════════════════════════════════════════════════════════╝'
-      )
-      warn('') // Newline to separate from other output
-      const runInitResponse = await prompt.single({
-        message: 'Continue creating a Sanity Studio v3 project?',
-        type: 'confirm',
-      })
-      if (runInitResponse) {
-        return initProject(args, context).then((res) => {
-          warn('╔═══════════════════════════════════════════════════════════════════════════╗')
-          warn('║ \u24D8  To learn how commands have changed from Studio v2 to v3, check:        ║')
-          warn('║    https://www.sanity.io/help/studio-v2-vs-v3                             ║')
-          warn('╚═══════════════════════════════════════════════════════════════════════════╝')
-          warn('') // Newline to separate from other output
-          return res
+      if (!args.argv.includes('--from-create')) {
+        warn(
+          '╔═══════════════════════════════════════════════════════════════════════════════════════╗'
+        )
+        warn(
+          "║ \u26A0  Welcome to Sanity! Looks like you're following instructions for Sanity Studio v2,  ║"
+        )
+        warn(
+          '║    but the version you have installed is the latest, Sanity Studio v3.                ║'
+        )
+        warn(
+          '║    In Sanity Studio v3, new projects are created with [npm create sanity@latest].     ║'
+        )
+        warn(
+          '║                                                                                       ║'
+        )
+        warn(
+          '║    Learn more about Sanity Studio v3: https://www.sanity.io/help/studio-v2-vs-v3      ║'
+        )
+        warn(
+          '╚═══════════════════════════════════════════════════════════════════════════════════════╝'
+        )
+        warn('') // Newline to separate from other output
+        const runInitResponse = await prompt.single({
+          message: 'Continue creating a Sanity Studio v3 project?',
+          type: 'confirm',
         })
+        if (runInitResponse) {
+          return initProject(args, context).then((res) => {
+            warn('╔═══════════════════════════════════════════════════════════════════════════╗')
+            warn(
+              '║ \u24D8  To learn how commands have changed from Studio v2 to v3, check:        ║'
+            )
+            warn('║    https://www.sanity.io/help/studio-v2-vs-v3                             ║')
+            warn('╚═══════════════════════════════════════════════════════════════════════════╝')
+            warn('') // Newline to separate from other output
+            return res
+          })
+        }
       }
+      return initProject(args, context)
     }
 
     if (type === 'plugin') {
