@@ -6,9 +6,9 @@ import {
   ValidationMarker,
   isKeyedObject,
   isTypedObject,
-  isBlock,
   isBlockSchemaType,
   isSpanSchemaType,
+  isPortableTextTextBlock,
 } from '@sanity/types'
 import {concat, defer, merge, Observable, of} from 'rxjs'
 import {catchError, map, mergeAll, mergeMap, toArray} from 'rxjs/operators'
@@ -239,7 +239,7 @@ function validateItemObservable({
   // markDefs also do no run nested validation if the parent object is undefined
   // for a similar reason to arrays
   const shouldRunNestedValidationForMarkDefs =
-    isBlock(value) && value.markDefs.length && isBlockSchemaType(type)
+    isPortableTextTextBlock(value) && value.markDefs?.length && isBlockSchemaType(type)
 
   if (shouldRunNestedValidationForMarkDefs) {
     const [spanChildrenField] = type.fields
@@ -254,7 +254,7 @@ function validateItemObservable({
     )
 
     nestedChecks = nestedChecks.concat(
-      value.markDefs.map((markDef) =>
+      (value.markDefs || []).map((markDef) =>
         validateItemObservable({
           ...restOfContext,
           parent: value,
