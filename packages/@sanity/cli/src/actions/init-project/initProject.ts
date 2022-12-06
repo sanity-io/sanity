@@ -574,10 +574,6 @@ export default async function initSanity(
           name: 'Movie project (schema + sample data)',
         },
         {
-          value: 'ecommerce',
-          name: 'E-commerce (schema + sample data)',
-        },
-        {
           value: 'shopify',
           name: 'E-commerce (Shopify)',
         },
