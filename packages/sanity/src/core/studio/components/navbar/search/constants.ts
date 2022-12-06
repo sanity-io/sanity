@@ -7,8 +7,11 @@ const IS_MAC =
 // Must be prefixed with `_debug_`
 export const DEBUG_FRAGMENT = '_debug_search_score'
 
+// Display debug filter information: shared document types and field values
+export const DEBUG_MODE = false
+
 // Findability version, prepended to every search query for future measurement
-export const FINDABILITY_MVI = 2
+export const FINDABILITY_MVI = 3
 
 // Max number of records to fetch per search request - intentionally set high to workaround
 // current limitations with studio search config
@@ -21,8 +24,10 @@ export const POPOVER_INPUT_PADDING = studioTheme.space[1] // px
 export const POPOVER_MAX_HEIGHT = 735 // px
 export const POPOVER_MAX_WIDTH = 800 // px
 
-export const SUBHEADER_HEIGHT_LARGE = 51 // px
-export const SUBHEADER_HEIGHT_SMALL = 43 // px
+// Custom space between buttons and popover content
+export const POPOVER_VERTICAL_MARGIN = 5 // px
 
-export const VIRTUAL_LIST_ITEM_HEIGHT = 55 // px
-export const VIRTUAL_LIST_OVERSCAN = 4
+export const POPOVER_RADIUS = 2
+
+export const VIRTUAL_LIST_SEARCH_ITEM_HEIGHT = 59 // px
+export const VIRTUAL_LIST_SEARCH_OVERSCAN = 4

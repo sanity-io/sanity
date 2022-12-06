@@ -14,6 +14,8 @@ import {FileSource, ImageSource} from '../form/studio/assetSource'
 import {InitialValueTemplateItem, Template, TemplateResponse} from '../templates'
 import {isNonNullable} from '../util'
 import {validateWorkspaces} from '../studio'
+import {filterDefinitions} from '../studio/components/navbar/search/definitions/defaultFilters'
+import {operatorDefinitions} from '../studio/components/navbar/search/definitions/operators/defaultOperators'
 import {
   Config,
   PreparedConfig,
@@ -25,9 +27,9 @@ import {
   WorkspaceSummary,
 } from './types'
 import {
-  documentLanguageFilterReducer,
   documentActionsReducer,
   documentBadgesReducer,
+  documentLanguageFilterReducer,
   fileAssetSourceResolver,
   imageAssetSourceResolver,
   initialDocumentActions,
@@ -482,6 +484,26 @@ function resolveSource({
           // default value for this is `true`
           config.form?.file?.directUploads === undefined ? true : config.form.file.directUploads,
       },
+    },
+
+    search: {
+      filters: filterDefinitions,
+      operators: operatorDefinitions,
+      // we will use this when we add search config to PluginOptions
+      /*filters: resolveConfigProperty({
+        config,
+        context: context,
+        initialValue: filterDefinitions,
+        propertyName: 'search.filters',
+        reducer: searchFilterReducer,
+      }),
+      operators: resolveConfigProperty({
+        config,
+        context: context,
+        initialValue: operatorDefinitions as SearchOperatorDefinition[],
+        propertyName: 'search.operators',
+        reducer: searchOperatorsReducer,
+      }),*/
     },
 
     __internal: {

@@ -1,27 +1,24 @@
-import {Box, Card, Dialog, Portal} from '@sanity/ui'
-import React, {useCallback, useEffect, useId, useRef, useState} from 'react'
+import {Box, Card, Portal} from '@sanity/ui'
+import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import FocusLock from 'react-focus-lock'
 import styled from 'styled-components'
 import {useColorScheme} from '../../../colorScheme'
-import {RecentSearches} from './components/RecentSearches'
+import {CommandListContainer} from './components/commandList/CommandListContainer'
+import {Filters} from './components/filters/Filters'
+import {RecentSearches} from './components/recentSearches/RecentSearches'
 import {SearchHeader} from './components/SearchHeader'
-import {SearchResults} from './components/SearchResults'
-import {TypeFilters} from './components/TypeFilters'
-import {CommandListProvider} from './contexts/commandList'
+import {SearchResults} from './components/searchResults/SearchResults'
+import {CommandListProvider} from './components/commandList/CommandListProvider'
 import {useSearchState} from './contexts/search/useSearchState'
-import {useMeasureSearchResultsIndex} from './hooks/useMeasureSearchResultsIndex'
 import {useSearchHotkeys} from './hooks/useSearchHotkeys'
 import {hasSearchableTerms} from './utils/hasSearchableTerms'
+import {useCommandList} from './components/commandList/useCommandList'
 
 interface SearchDialogProps {
   onClose: () => void
   onOpen: () => void
   open: boolean
 }
-
-const DialogContentCard = styled(Card)`
-  height: 100%;
-`
 
 const InnerCard = styled(Card)`
   flex-direction: column;
@@ -41,79 +38,65 @@ const SearchDialogBox = styled(Box)`
   z-index: 1;
 `
 
-const SearchContentBox = styled(Box)`
-  height: 100%;
-  width: 100%;
-  overflow-x: hidden;
-  overflow-y: auto;
-`
-
-const StyledDialog = styled(Dialog)`
-  [data-ui='DialogCard'] > [data-ui='Card'] {
-    flex: 1;
-  }
-`
-
 /**
  * @internal
  */
 export function SearchDialog({onClose, onOpen, open}: SearchDialogProps) {
-  const [childContainerElement, setChildContainerRef] = useState<HTMLDivElement | null>(null)
-  const [containerElement, setContainerRef] = useState<HTMLDivElement | null>(null)
-  const [headerInputElement, setHeaderInputRef] = useState<HTMLInputElement | null>(null)
-  const [pointerOverlayElement, setPointerOverlayRef] = useState<HTMLDivElement | null>(null)
-
   const isMountedRef = useRef(false)
+  const [lastActiveIndex, setLastActiveIndex] = useState(-1)
 
   const {
     dispatch,
+    setOnClose,
     state: {filtersVisible, recentSearches, result, terms},
   } = useSearchState()
 
-  const {scheme} = useColorScheme()
-
-  const hasValidTerms = hasSearchableTerms(terms)
-
-  /**
-   * Measure top-most visible search result index
-   */
-  const {lastSearchIndex, resetLastSearchIndex, setLastSearchIndex} =
-    useMeasureSearchResultsIndex(childContainerElement)
+  const hasValidTerms = hasSearchableTerms({terms})
 
   /**
    * Store top-most search result scroll index on close
    */
-  const handleClose = useCallback(() => {
-    setLastSearchIndex()
-    onClose()
-  }, [onClose, setLastSearchIndex])
+  const handleClose = useCallback(
+    (index: number) => {
+      setLastActiveIndex(index)
+      onClose()
+    },
+    [onClose]
+  )
 
   /**
-   * Bind hotkeys to open / close actions
+   * Bind hotkeys to open action
    */
-  useSearchHotkeys({onClose: handleClose, onOpen, open})
+  useSearchHotkeys({onOpen, open})
 
   /**
    * Reset last search index when new results are loaded, or visiting recent searches
-   * TODO: Revise if/when we introduce pagination
    */
+  // @todo Revise if/when we introduce pagination
   useEffect(() => {
     if ((!hasValidTerms || result.loaded) && isMountedRef.current) {
-      resetLastSearchIndex()
+      setLastActiveIndex(0)
     }
-  }, [hasValidTerms, resetLastSearchIndex, result.loaded])
+  }, [hasValidTerms, result.loaded])
 
   /**
    * Reset ordering when popover is closed (without valid search terms)
    */
   useEffect(() => {
     if (!hasValidTerms && isMountedRef.current && !open) {
-      dispatch({type: 'SEARCH_ORDERING_RESET'})
+      dispatch({type: 'ORDERING_RESET'})
     }
   }, [dispatch, hasValidTerms, open])
 
   /**
-   * Store mounted state (must be last)
+   * Set shared `onClose` in search context
+   */
+  useEffect(() => {
+    setOnClose(onClose)
+  }, [onClose, setOnClose])
+
+  /**
+   * Store mounted state
    */
   useEffect(() => {
     if (!isMountedRef?.current) {
@@ -121,77 +104,86 @@ export function SearchDialog({onClose, onOpen, open}: SearchDialogProps) {
     }
   }, [])
 
-  const commandListId = useId()
+  /**
+   * Create a map of indices for our virtual list, ignoring non-filter items.
+   * This is to ensure navigating via keyboard skips over these non-interactive items.
+   */
+  const itemIndices = useMemo(() => {
+    if (hasValidTerms) {
+      return Array.from(Array(result.hits.length).keys())
+    }
+
+    return Array.from(Array(recentSearches.length).keys())
+  }, [hasValidTerms, recentSearches.length, result.hits.length])
 
   if (!open) {
     return null
   }
 
   return (
-    <CommandListProvider
-      ariaChildrenLabel={hasValidTerms ? 'Search results' : 'Recent searches'}
-      ariaHeaderLabel="Search"
-      autoFocus
-      childContainerElement={childContainerElement}
-      childCount={hasValidTerms ? result.hits.length : recentSearches.length}
-      containerElement={containerElement}
-      headerInputElement={headerInputElement}
-      id={commandListId || ''}
-      data-testid="search-results-dialog"
-      initialSelectedIndex={hasValidTerms ? lastSearchIndex : 0}
-      level={0}
-      pointerOverlayElement={pointerOverlayElement}
-      virtualList={hasValidTerms}
-    >
-      <Portal>
-        <FocusLock autoFocus={false} returnFocus>
-          <SearchDialogBox ref={setContainerRef}>
-            <InnerCard display="flex" height="fill" scheme={scheme} tone="default">
-              <SearchHeader onClose={handleClose} setHeaderInputRef={setHeaderInputRef} />
-              <SearchContentBox flex={1}>
-                {hasValidTerms ? (
-                  <SearchResults
-                    onClose={handleClose}
-                    setChildContainerRef={setChildContainerRef}
-                    setPointerOverlayRef={setPointerOverlayRef}
-                  />
-                ) : (
-                  <RecentSearches
-                    setChildContainerRef={setChildContainerRef}
-                    setPointerOverlayRef={setPointerOverlayRef}
-                  />
-                )}
-              </SearchContentBox>
-              {filtersVisible && <SearchDialogFilters />}
-            </InnerCard>
-          </SearchDialogBox>
-        </FocusLock>
-      </Portal>
-    </CommandListProvider>
+    <Portal>
+      <FocusLock autoFocus={false} returnFocus>
+        <CommandListProvider
+          ariaActiveDescendant={itemIndices.length > 0}
+          ariaChildrenLabel={hasValidTerms ? 'Search results' : 'Recent searches'}
+          ariaHeaderLabel="Search"
+          autoFocus
+          data-testid="search-results-dialog"
+          itemIndices={itemIndices}
+          initialSelectedIndex={hasValidTerms ? lastActiveIndex : 0}
+        >
+          <SearchDialogContent
+            filtersVisible={filtersVisible}
+            hasValidTerms={hasValidTerms}
+            onClose={handleClose}
+            open={open}
+          />
+        </CommandListProvider>
+      </FocusLock>
+    </Portal>
   )
 }
 
-function SearchDialogFilters() {
-  const {dispatch} = useSearchState()
+function SearchDialogContent({
+  filtersVisible,
+  hasValidTerms,
+  onClose,
+  open,
+}: {
+  filtersVisible: boolean
+  hasValidTerms: boolean
+  onClose: (lastActiveIndex: number) => void
+  open: boolean
+}) {
+  const {scheme} = useColorScheme()
+  const {getTopIndex} = useCommandList()
 
+  /**
+   * Store top-most search result scroll index on close
+   */
   const handleClose = useCallback(() => {
-    dispatch({type: 'FILTERS_HIDE'})
-  }, [dispatch])
+    onClose(getTopIndex())
+  }, [getTopIndex, onClose])
+
+  /**
+   * Bind hotkeys to close action
+   */
+  useSearchHotkeys({onClose: handleClose, open})
 
   return (
-    <FocusLock autoFocus={false}>
-      <StyledDialog
-        cardRadius={1}
-        header="Filter"
-        height="fill"
-        id="search-filter"
-        onClose={handleClose}
-        width={2}
-      >
-        <DialogContentCard tone="default">
-          <TypeFilters />
-        </DialogContentCard>
-      </StyledDialog>
-    </FocusLock>
+    <SearchDialogBox>
+      <InnerCard display="flex" height="fill" scheme={scheme} tone="default">
+        <SearchHeader onClose={handleClose} />
+        {filtersVisible && (
+          <Card borderTop style={{flexShrink: 0}}>
+            <Filters />
+          </Card>
+        )}
+
+        <CommandListContainer>
+          {hasValidTerms ? <SearchResults onClose={handleClose} /> : <RecentSearches />}
+        </CommandListContainer>
+      </InnerCard>
+    </SearchDialogBox>
   )
 }

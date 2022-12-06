@@ -156,6 +156,7 @@ export function createSearchQuery(
     searchOpts.includeDrafts === false && `!(_id in path('drafts.**'))`,
     ...createConstraints(terms, optimizedSpecs),
     filter ? `(${filter})` : '',
+    searchTerms.filter ? `(${searchTerms.filter})` : '',
   ].filter(Boolean)
 
   const selections = exactSearchSpecs.map((spec) => {

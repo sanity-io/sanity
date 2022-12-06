@@ -18,13 +18,13 @@ export function useSearchHotkeys({
   onOpen,
 }: {
   open: boolean
-  onClose: () => void
-  onOpen: () => void
+  onClose?: () => void
+  onOpen?: () => void
 }): void {
   const {isTopLayer} = useLayer()
 
   const handleClose = useCallback(() => {
-    onClose()
+    onClose?.()
   }, [onClose])
 
   const handleGlobalKeyDown = useCallback(
@@ -34,7 +34,7 @@ export function useSearchHotkeys({
         if (open) {
           handleClose()
         } else {
-          onOpen()
+          onOpen?.()
         }
       }
       if (isEscape(event) && open && isTopLayer) {

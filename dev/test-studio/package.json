@@ -19,7 +19,7 @@
     "@react-three/fiber": "^8.8.10",
     "@sanity/block-tools": "3.0.0",
     "@sanity/color": "^2.1.20",
-    "@sanity/icons": "^2.0.0",
+    "@sanity/icons": "^2.1.0",
     "@sanity/image-url": "^1.0.1",
     "@sanity/portable-text-editor": "3.0.0",
     "@sanity/types": "3.0.0",

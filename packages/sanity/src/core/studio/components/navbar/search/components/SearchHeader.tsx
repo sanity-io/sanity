@@ -1,14 +1,13 @@
-import {CloseIcon, ControlsIcon, SearchIcon, SpinnerIcon} from '@sanity/icons'
-import {Box, Button, Card, Flex, studioTheme, Theme} from '@sanity/ui'
-import React, {Dispatch, SetStateAction, useCallback, useEffect, useRef, useState} from 'react'
+import {ArrowLeftIcon, ControlsIcon, SearchIcon, SpinnerIcon} from '@sanity/icons'
+import {Box, Button, Card, Flex, Theme} from '@sanity/ui'
+import React, {useCallback, useEffect, useRef} from 'react'
 import styled, {keyframes} from 'styled-components'
 import {useSearchState} from '../contexts/search/useSearchState'
-import {supportsTouch} from '../utils/supportsTouch'
-import {CustomTextInput} from './CustomTextInput'
+import {useCommandList} from './commandList/useCommandList'
+import {CustomTextInput} from './common/CustomTextInput'
 
 interface SearchHeaderProps {
-  onClose?: () => void
-  setHeaderInputRef: Dispatch<SetStateAction<HTMLInputElement | null>>
+  onClose: () => void
 }
 
 const rotate = keyframes`
@@ -33,37 +32,35 @@ const SearchHeaderCard = styled(Card)`
 `
 
 const NotificationBadge = styled.div`
-  align-items: center;
-  background: ${({theme}: {theme: Theme}) => theme.sanity.color.solid.primary.hovered.bg};
-  color: ${({theme}: {theme: Theme}) => theme.sanity.color.solid.primary.hovered.fg};
+  background: ${({theme}: {theme: Theme}) => theme.sanity.color.selectable?.primary.enabled.fg};
   border-radius: 100%;
-  display: flex;
-  font-family: ${studioTheme.fonts.text.family};
-  font-size: calc(8 / 16 * 1rem);
-  font-weight: ${studioTheme.fonts.text.weights.semibold};
-  height: 14px;
-  justify-content: center;
-  pointer-events: none;
+  height: 6px;
   position: absolute;
-  right: -2px;
-  top: -2px;
-  width: 14px;
+  right: 2px;
+  top: 2px;
+  width: 6px;
 `
 
-export function SearchHeader({onClose, setHeaderInputRef}: SearchHeaderProps) {
-  const [filterButtonElement, setFilterButtonRef] = useState<HTMLButtonElement | null>(null)
+export function SearchHeader({onClose}: SearchHeaderProps) {
   const isMountedRef = useRef(false)
 
   const {
     dispatch,
     state: {
+      filters,
       filtersVisible,
+      fullscreen,
       result: {loading},
-      terms,
+      terms: {types, query},
     },
   } = useSearchState()
 
-  const handleFiltersToggle = useCallback(() => dispatch({type: 'FILTERS_TOGGLE'}), [dispatch])
+  const {setHeaderInputElement} = useCommandList()
+
+  const handleFiltersToggle = useCallback(
+    () => dispatch({type: 'FILTERS_VISIBLE_SET', visible: !filtersVisible}),
+    [dispatch, filtersVisible]
+  )
   const handleQueryChange = useCallback(
     (e: React.KeyboardEvent<HTMLInputElement>) =>
       dispatch({type: 'TERMS_QUERY_SET', query: e.currentTarget.value}),
@@ -73,67 +70,66 @@ export function SearchHeader({onClose, setHeaderInputRef}: SearchHeaderProps) {
     dispatch({type: 'TERMS_QUERY_SET', query: ''})
   }, [dispatch])
 
-  // Focus filter button (when filters are hidden after initial mount)
+  /**
+   * Always show filters on non-fullscreen mode
+   */
   useEffect(() => {
-    if (isMountedRef?.current && !filtersVisible && !supportsTouch) {
-      filterButtonElement?.focus()
+    if (!fullscreen) {
+      dispatch({type: 'FILTERS_VISIBLE_SET', visible: true})
     }
-  }, [filterButtonElement, filtersVisible])
+  }, [dispatch, fullscreen])
 
   useEffect(() => {
     isMountedRef.current = true
   }, [])
 
+  const notificationBadgeVisible = filters.length > 0 || types.length > 0
+
   return (
-    <SearchHeaderCard borderBottom>
-      <Flex align="center" flex={1}>
+    <SearchHeaderCard>
+      <Flex align="center" flex={1} gap={fullscreen ? 2 : 1} padding={fullscreen ? 2 : 1}>
+        {/* (Fullscreen) Close button */}
+        {fullscreen && (
+          <Card>
+            <Button aria-label="Close search" icon={ArrowLeftIcon} mode="bleed" onClick={onClose} />
+          </Card>
+        )}
+
         {/* Search field */}
-        <Box
-          flex={1}
-          paddingLeft={onClose ? 2 : 1}
-          paddingRight={onClose ? 2 : 0}
-          paddingY={onClose ? 2 : 1}
-        >
+        <Box flex={1}>
           <CustomTextInput
             autoComplete="off"
-            // border={false} // TODO: re-enable when flashing border issue is fixed
-            clearButton={!!terms.query}
+            background={fullscreen}
+            border={false}
+            clearButton={!!query}
             fontSize={2}
             icon={loading ? AnimatedSpinnerIcon : SearchIcon}
             onChange={handleQueryChange}
             onClear={handleQueryClear}
             placeholder="Search"
-            ref={setHeaderInputRef}
-            // smallClearButton
+            ref={setHeaderInputElement}
+            smallClearButton={fullscreen}
             spellCheck={false}
-            value={terms.query}
+            value={query}
           />
         </Box>
 
         {/* Filter toggle */}
-        <Card borderLeft={!!onClose} padding={onClose ? 2 : 1}>
+        {fullscreen && (
           <FilterBox>
             <Button
               aria-expanded={filtersVisible}
-              aria-label="Filter"
+              aria-label="Toggle filters"
               height="fill"
               icon={ControlsIcon}
               mode="bleed"
               onClick={handleFiltersToggle}
               padding={3}
-              ref={setFilterButtonRef}
               selected={filtersVisible}
               tone="default"
             />
-            {terms.types.length > 0 && <NotificationBadge>{terms.types.length}</NotificationBadge>}
+            {notificationBadgeVisible && <NotificationBadge />}
           </FilterBox>
-        </Card>
-
-        {/* (Fullscreen) Close button */}
-        {onClose && (
-          <Card borderLeft padding={2}>
-            <Button aria-label="Close search" icon={CloseIcon} mode="bleed" onClick={onClose} />
-          </Card>
         )}
       </Flex>
     </SearchHeaderCard>

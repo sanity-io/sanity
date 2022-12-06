@@ -4,8 +4,10 @@ import {SearchAction, SearchReducerState} from './reducer'
 
 export interface SearchContextValue {
   dispatch: Dispatch<SearchAction>
-  state: SearchReducerState
+  onClose: (() => void) | null
   recentSearchesStore?: RecentSearchesStore
+  setOnClose: (onClose: () => void) => void
+  state: SearchReducerState
 }
 
 export const SearchContext = createContext<SearchContextValue | undefined>(undefined)

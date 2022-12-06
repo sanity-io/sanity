@@ -2,10 +2,10 @@ import type {Schema} from '@sanity/types'
 import isEqual from 'lodash/isEqual'
 import {useCallback, useMemo, useState} from 'react'
 import {useObservableCallback} from 'react-rx'
-import {concat, Observable, of} from 'rxjs'
+import {concat, Observable, of, timer} from 'rxjs'
 import {
   catchError,
-  debounceTime,
+  debounce,
   distinctUntilChanged,
   filter,
   map,
@@ -16,20 +16,22 @@ import {
 import {useClient} from '../../../../../hooks'
 import {createWeightedSearch, SearchOptions, SearchTerms, WeightedHit} from '../../../../../search'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../../studioClient'
-import {SearchState} from '../types'
+import type {SearchState} from '../types'
 import {hasSearchableTerms} from '../utils/hasSearchableTerms'
 import {getSearchableOmnisearchTypes} from '../utils/selectors'
 
 interface SearchRequest {
+  debounceTime?: number
   options?: SearchOptions
   terms: SearchTerms
 }
+
+const DEFAULT_DEBOUNCE_TIME = 300 // ms
 
 const INITIAL_SEARCH_STATE: SearchState = {
   error: null,
   hits: [],
   loading: false,
-  options: {},
   terms: {
     query: '',
     types: [],
@@ -51,12 +53,14 @@ function sanitizeRequest(request: SearchRequest) {
 }
 
 export function useSearch({
+  allowEmptyQueries,
   initialState,
   onComplete,
   onError,
   onStart,
   schema,
 }: {
+  allowEmptyQueries?: boolean
   initialState: SearchState
   onComplete?: (hits: WeightedHit[]) => void
   onError?: (error: Error) => void
@@ -85,8 +89,10 @@ export function useSearch({
         filter(nonNullable),
         map(sanitizeRequest),
         distinctUntilChanged(isEqual),
-        filter((request: SearchRequest) => hasSearchableTerms(request.terms)),
-        debounceTime(300),
+        filter((request: SearchRequest) =>
+          hasSearchableTerms({allowEmptyQueries, terms: request.terms})
+        ),
+        debounce((request) => timer(request?.debounceTime || DEFAULT_DEBOUNCE_TIME)),
         tap(onStart),
         switchMap((request) =>
           concat(
@@ -119,7 +125,8 @@ export function useSearch({
         tap(setSearchState)
       )
     },
-    []
+    // @todo: add onComplete, onError and onStart to the deps list when it's verified that it's safe to do so
+    [allowEmptyQueries, searchWeighted]
   )
 
   const handleClearSearch = useCallback(() => {

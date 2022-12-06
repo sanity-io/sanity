@@ -1,55 +1,90 @@
 import isEqual from 'lodash/isEqual'
-import React, {ReactNode, useEffect, useMemo, useReducer, useRef} from 'react'
+import React, {ReactNode, useCallback, useEffect, useMemo, useReducer, useRef} from 'react'
 import {useClient, useSchema} from '../../../../../../hooks'
-import type {SearchTerms} from '../../../../../../search'
+import type {SearchableType, SearchTerms} from '../../../../../../search'
 import {useCurrentUser} from '../../../../../../store'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../../../studioClient'
+import {useSource} from '../../../../../source'
 import {FINDABILITY_MVI, SEARCH_LIMIT} from '../../constants'
-import {createRecentSearchesStore, RecentSearchTerms} from '../../datastores/recentSearches'
+import {createRecentSearchesStore, RecentSearch} from '../../datastores/recentSearches'
 import {useSearch} from '../../hooks/useSearch'
-import type {SearchOrdering} from '../../types'
+import type {SearchFieldDefinition, SearchOrdering} from '../../types'
+import {createFieldDefinitions} from '../../utils/createFieldDefinitions'
+import {validateFilter} from '../../utils/filterUtils'
 import {hasSearchableTerms} from '../../utils/hasSearchableTerms'
 import {isRecentSearchTerms} from '../../utils/isRecentSearchTerms'
 import {initialSearchState, searchReducer} from './reducer'
 import {SearchContext} from './SearchContext'
 
 interface SearchProviderProps {
+  __debugFieldDefinitions?: SearchFieldDefinition[]
   children?: ReactNode
+  fullscreen?: boolean
 }
 
 /**
  * @internal
  */
-export function SearchProvider({children}: SearchProviderProps) {
+export function SearchProvider({
+  __debugFieldDefinitions = [],
+  children,
+  fullscreen,
+}: SearchProviderProps) {
+  const onCloseRef = useRef<(() => void) | null>(null)
+
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const schema = useSchema()
   const currentUser = useCurrentUser()
+  const {
+    search: {operators, filters},
+  } = useSource()
 
   const {dataset, projectId} = client.config()
 
+  // Create our field definitions: all applicable fields which we can filter on.
+  const fields = useMemo(
+    () => [...createFieldDefinitions(schema, filters), ...__debugFieldDefinitions],
+    [__debugFieldDefinitions, schema, filters]
+  )
+
   // Create local storage store
   const recentSearchesStore = useMemo(
-    () => createRecentSearchesStore({dataset, projectId, schema, user: currentUser}),
-    [currentUser, dataset, projectId, schema]
+    () =>
+      createRecentSearchesStore({
+        dataset,
+        fieldDefinitions: fields,
+        filterDefinitions: filters,
+        operatorDefinitions: operators,
+        projectId,
+        schema,
+        user: currentUser,
+      }),
+    [currentUser, dataset, fields, filters, operators, projectId, schema]
   )
 
   const recentSearches = useMemo(
-    () => recentSearchesStore?.getRecentSearchTerms(),
+    () => recentSearchesStore?.getRecentSearches(),
     [recentSearchesStore]
   )
 
   const initialState = useMemo(
-    () => initialSearchState(currentUser, recentSearches),
-    [currentUser, recentSearches]
+    () =>
+      initialSearchState({
+        currentUser,
+        fullscreen,
+        recentSearches,
+        definitions: {fields, operators, filters},
+      }),
+    [currentUser, fields, filters, fullscreen, operators, recentSearches]
   )
   const [state, dispatch] = useReducer(searchReducer, initialState)
 
-  const {ordering, pageIndex, result, terms} = state
+  const {documentTypesNarrowed, filters: currentFilters, ordering, pageIndex, result, terms} = state
 
   const isMountedRef = useRef(false)
   const previousOrderingRef = useRef<SearchOrdering>(initialState.ordering)
   const previousPageIndexRef = useRef<number>(initialState.pageIndex)
-  const previousTermsRef = useRef<SearchTerms | RecentSearchTerms>(initialState.terms)
+  const previousTermsRef = useRef<SearchTerms | RecentSearch>(initialState.terms)
 
   const {handleSearch, searchState} = useSearch({
     initialState: {...result, terms},
@@ -59,7 +94,26 @@ export function SearchProvider({children}: SearchProviderProps) {
     schema,
   })
 
-  const hasValidTerms = hasSearchableTerms(terms)
+  const hasValidTerms = hasSearchableTerms({terms})
+
+  // Get a narrowed list of document types to search on based on any current active filters.
+  const documentTypes = documentTypesNarrowed.map(
+    (documentType) => schema.get(documentType) as SearchableType
+  )
+
+  // Get a list of 'complete' filters (filters that return valid values)
+  const completeFilters = currentFilters.filter((filter) =>
+    validateFilter({
+      fieldDefinitions: fields,
+      filter,
+      filterDefinitions: filters,
+      operatorDefinitions: operators,
+    })
+  )
+
+  const handleSetOnClose = useCallback((onClose: () => void) => {
+    onCloseRef.current = onClose
+  }, [])
 
   /**
    * Trigger search when any terms (query or selected types) OR current pageIndex has changed
@@ -88,13 +142,18 @@ export function SearchProvider({children}: SearchProviderProps) {
               : []),
             `findability-selected-types:${terms.types.length}`,
             `findability-sort:${sortLabel}`,
+            `findability-filter-count:${completeFilters.length}`,
           ],
           limit: SEARCH_LIMIT,
           offset: pageIndex * SEARCH_LIMIT,
           skipSortByScore: ordering.ignoreScore,
           sort: ordering.sort,
         },
-        terms,
+        terms: {
+          ...terms,
+          // Narrow document type search
+          ...(documentTypes ? {types: documentTypes} : {}),
+        },
       })
 
       // Update pageIndex snapshot only on a valid search request
@@ -104,7 +163,17 @@ export function SearchProvider({children}: SearchProviderProps) {
     // Update snapshots, even if no search request was executed
     previousOrderingRef.current = ordering
     previousTermsRef.current = terms
-  }, [handleSearch, hasValidTerms, ordering, pageIndex, searchState.terms, terms])
+  }, [
+    completeFilters.length,
+    currentFilters,
+    documentTypes,
+    handleSearch,
+    hasValidTerms,
+    ordering,
+    pageIndex,
+    searchState.terms,
+    terms,
+  ])
 
   /**
    * Reset search hits / state when (after initial amount):
@@ -120,7 +189,18 @@ export function SearchProvider({children}: SearchProviderProps) {
   }, [dispatch, hasValidTerms, result.hits, terms.query, terms.types])
 
   return (
-    <SearchContext.Provider value={{dispatch, recentSearchesStore, state}}>
+    <SearchContext.Provider
+      value={{
+        dispatch,
+        onClose: onCloseRef?.current,
+        recentSearchesStore,
+        setOnClose: handleSetOnClose,
+        state: {
+          ...state,
+          fullscreen,
+        },
+      }}
+    >
       {children}
     </SearchContext.Provider>
   )

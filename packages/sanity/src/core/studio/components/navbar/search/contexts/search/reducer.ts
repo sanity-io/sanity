@@ -1,20 +1,44 @@
 import type {CurrentUser} from '@sanity/types'
 import type {SearchableType, SearchTerms, WeightedHit} from '../../../../../../search'
-import type {RecentSearchTerms} from '../../datastores/recentSearches'
-import {ORDER_RELEVANCE, SearchOrdering} from '../../types'
+import type {RecentSearch} from '../../datastores/recentSearches'
+import {SearchFilterDefinition} from '../../definitions/filters'
+import {
+  getOperatorDefinition,
+  getOperatorInitialValue,
+  SearchOperatorDefinition,
+} from '../../definitions/operators'
+import {ORDERINGS} from '../../definitions/orderings'
+import type {SearchFieldDefinition, SearchFilter, SearchOrdering} from '../../types'
 import {debugWithName, isDebugMode} from '../../utils/debug'
+import {
+  generateFilterQuery,
+  getFieldFromFilter,
+  getFilterKey,
+  narrowDocumentTypes,
+} from '../../utils/filterUtils'
 import {isRecentSearchTerms} from '../../utils/isRecentSearchTerms'
 import {sortTypes} from '../../utils/selectors'
 
 export interface SearchReducerState {
   currentUser: CurrentUser | null
   debug: boolean
+  definitions: SearchDefinitions
+  documentTypesNarrowed: string[]
+  filters: SearchFilter[]
   filtersVisible: boolean
+  fullscreen?: boolean
+  lastAddedFilter?: SearchFilter | null
   ordering: SearchOrdering
   pageIndex: number
-  recentSearches: RecentSearchTerms[]
+  recentSearches: RecentSearch[]
   result: SearchResult
-  terms: RecentSearchTerms | SearchTerms
+  terms: RecentSearch | SearchTerms
+}
+
+export interface SearchDefinitions {
+  fields: SearchFieldDefinition[]
+  filters: SearchFilterDefinition[]
+  operators: SearchOperatorDefinition[]
 }
 
 export interface SearchResult {
@@ -25,17 +49,29 @@ export interface SearchResult {
   loading: boolean
 }
 
-export function initialSearchState(
-  currentUser: CurrentUser | null,
-  recentSearches?: RecentSearchTerms[]
-): SearchReducerState {
+export interface InitialSearchState {
+  currentUser: CurrentUser | null
+  fullscreen?: boolean
+  recentSearches?: RecentSearch[]
+  definitions: SearchDefinitions
+}
+
+export function initialSearchState({
+  currentUser,
+  fullscreen,
+  recentSearches = [],
+  definitions,
+}: InitialSearchState): SearchReducerState {
   return {
     currentUser,
     debug: isDebugMode(),
-    filtersVisible: false,
-    ordering: ORDER_RELEVANCE,
+    documentTypesNarrowed: [],
+    filters: [],
+    filtersVisible: true,
+    fullscreen,
+    ordering: ORDERINGS.relevance,
     pageIndex: 0,
-    recentSearches: recentSearches || [],
+    recentSearches,
     result: {
       error: null,
       hasMore: null,
@@ -47,44 +83,59 @@ export function initialSearchState(
       query: '',
       types: [],
     },
+    definitions,
   }
 }
 
-export type FiltersHide = {type: 'FILTERS_HIDE'}
-export type FiltersShow = {type: 'FILTERS_SHOW'}
-export type FiltersToggle = {type: 'FILTERS_TOGGLE'}
+export type FiltersVisibleSet = {type: 'FILTERS_VISIBLE_SET'; visible: boolean}
 export type PageIncrement = {type: 'PAGE_INCREMENT'}
 export type RecentSearchesSet = {
-  recentSearches: RecentSearchTerms[]
+  recentSearches: RecentSearch[]
   type: 'RECENT_SEARCHES_SET'
 }
+export type OrderingReset = {type: 'ORDERING_RESET'}
+export type OrderingSet = {ordering: SearchOrdering; type: 'ORDERING_SET'}
 export type SearchClear = {type: 'SEARCH_CLEAR'}
-export type SearchOrderingReset = {type: 'SEARCH_ORDERING_RESET'}
-export type SearchOrderingSet = {ordering: SearchOrdering; type: 'SEARCH_ORDERING_SET'}
 export type SearchRequestComplete = {
   type: 'SEARCH_REQUEST_COMPLETE'
   hits: WeightedHit[]
 }
 export type SearchRequestError = {type: 'SEARCH_REQUEST_ERROR'; error: Error}
 export type SearchRequestStart = {type: 'SEARCH_REQUEST_START'}
+export type TermsFiltersAdd = {filter: SearchFilter; type: 'TERMS_FILTERS_ADD'}
+export type TermsFiltersClear = {type: 'TERMS_FILTERS_CLEAR'}
+export type TermsFiltersRemove = {filterKey: string; type: 'TERMS_FILTERS_REMOVE'}
+export type TermsFiltersSetOperator = {
+  filterKey: string
+  operatorType: string
+  type: 'TERMS_FILTERS_SET_OPERATOR'
+}
+export type TermsFiltersSetValue = {
+  filterKey: string
+  type: 'TERMS_FILTERS_SET_VALUE'
+  value?: any
+}
 export type TermsQuerySet = {type: 'TERMS_QUERY_SET'; query: string}
-export type TermsSet = {type: 'TERMS_SET'; terms: SearchTerms}
+export type TermsSet = {type: 'TERMS_SET'; filters?: SearchFilter[]; terms: SearchTerms}
 export type TermsTypeAdd = {type: 'TERMS_TYPE_ADD'; schemaType: SearchableType}
 export type TermsTypeRemove = {type: 'TERMS_TYPE_REMOVE'; schemaType: SearchableType}
 export type TermsTypesClear = {type: 'TERMS_TYPES_CLEAR'}
 
 export type SearchAction =
-  | FiltersHide
-  | FiltersShow
-  | FiltersToggle
+  | FiltersVisibleSet
+  | OrderingReset
+  | OrderingSet
   | PageIncrement
   | RecentSearchesSet
   | SearchClear
   | SearchRequestComplete
   | SearchRequestError
   | SearchRequestStart
-  | SearchOrderingReset
-  | SearchOrderingSet
+  | TermsFiltersAdd
+  | TermsFiltersClear
+  | TermsFiltersSetOperator
+  | TermsFiltersRemove
+  | TermsFiltersSetValue
   | TermsQuerySet
   | TermsSet
   | TermsTypeAdd
@@ -104,20 +155,22 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
   debug(prefix, action)
 
   switch (action.type) {
-    case 'FILTERS_HIDE':
+    case 'FILTERS_VISIBLE_SET':
       return {
         ...state,
-        filtersVisible: false,
+        filtersVisible: action.visible,
       }
-    case 'FILTERS_SHOW':
+    case 'ORDERING_RESET':
       return {
         ...state,
-        filtersVisible: true,
+        ordering: ORDERINGS.relevance,
+        terms: stripRecent(state.terms),
       }
-    case 'FILTERS_TOGGLE':
+    case 'ORDERING_SET':
       return {
         ...state,
-        filtersVisible: !state.filtersVisible,
+        ordering: action.ordering,
+        terms: stripRecent(state.terms),
       }
     case 'PAGE_INCREMENT':
       return {
@@ -139,18 +192,6 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
           hasMore: null,
           hits: [],
         },
-      }
-    case 'SEARCH_ORDERING_RESET':
-      return {
-        ...state,
-        ordering: ORDER_RELEVANCE,
-        terms: stripRecent(state.terms),
-      }
-    case 'SEARCH_ORDERING_SET':
-      return {
-        ...state,
-        ordering: action.ordering,
-        terms: stripRecent(state.terms),
       }
     case 'SEARCH_REQUEST_COMPLETE':
       return {
@@ -183,6 +224,146 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
           loading: true,
         },
       }
+    case 'TERMS_FILTERS_ADD': {
+      const newFilter: SearchFilter = {
+        ...action.filter,
+        value: getOperatorInitialValue(state.definitions.operators, action.filter.operatorType),
+      }
+      const filters = [...state.filters, newFilter]
+
+      return {
+        ...state,
+        documentTypesNarrowed: narrowDocumentTypes({
+          fieldDefinitions: state.definitions.fields,
+          filters,
+          types: state.terms.types,
+        }),
+        filters,
+        lastAddedFilter: newFilter,
+        terms: {
+          ...state.terms,
+          filter: generateFilterQuery({
+            fieldDefinitions: state.definitions.fields,
+            filterDefinitions: state.definitions.filters,
+            filters,
+            operatorDefinitions: state.definitions.operators,
+          }),
+        },
+      }
+    }
+    case 'TERMS_FILTERS_CLEAR': {
+      const filters: SearchFilter[] = []
+
+      return {
+        ...state,
+        documentTypesNarrowed: narrowDocumentTypes({
+          fieldDefinitions: state.definitions.fields,
+          filters,
+          types: state.terms.types,
+        }),
+        filters,
+        terms: {
+          ...state.terms,
+          filter: generateFilterQuery({
+            fieldDefinitions: state.definitions.fields,
+            filterDefinitions: state.definitions.filters,
+            filters,
+            operatorDefinitions: state.definitions.operators,
+          }),
+        },
+      }
+    }
+    case 'TERMS_FILTERS_REMOVE': {
+      const index = state.filters.findIndex((filter) => getFilterKey(filter) === action.filterKey)
+
+      const filters = [
+        ...state.filters.slice(0, index), //
+        ...state.filters.slice(index + 1),
+      ]
+
+      return {
+        ...state,
+        documentTypesNarrowed: narrowDocumentTypes({
+          fieldDefinitions: state.definitions.fields,
+          filters,
+          types: state.terms.types,
+        }),
+        filters,
+        terms: {
+          ...state.terms,
+          filter: generateFilterQuery({
+            fieldDefinitions: state.definitions.fields,
+            filterDefinitions: state.definitions.filters,
+            filters,
+            operatorDefinitions: state.definitions.operators,
+          }),
+        },
+      }
+    }
+    case 'TERMS_FILTERS_SET_OPERATOR': {
+      // Compare input components between current and target operators, and update
+      // target filter value if it has changed.
+      const matchedFilter = state.filters.find(
+        (filter) => getFilterKey(filter) === action.filterKey
+      )
+      const currentOperator = getOperatorDefinition(
+        state.definitions.operators,
+        matchedFilter?.operatorType
+      )
+      const nextOperator = getOperatorDefinition(state.definitions.operators, action.operatorType)
+      const nextInitialValue = nextOperator?.initialValue
+      const inputComponentChanged = currentOperator?.inputComponent != nextOperator?.inputComponent
+
+      const filters = state.filters.map((filter) => {
+        if (getFilterKey(filter) === action.filterKey) {
+          return {
+            ...filter,
+            operatorType: action.operatorType,
+            ...(inputComponentChanged ? {value: nextInitialValue} : {}),
+          }
+        }
+        return filter
+      })
+
+      return {
+        ...state,
+        filters,
+        terms: {
+          ...state.terms,
+          filter: generateFilterQuery({
+            fieldDefinitions: state.definitions.fields,
+            filterDefinitions: state.definitions.filters,
+            filters,
+            operatorDefinitions: state.definitions.operators,
+          }),
+        },
+      }
+    }
+    case 'TERMS_FILTERS_SET_VALUE': {
+      const filters = state.filters.map((filter) => {
+        if (getFilterKey(filter) === action.filterKey) {
+          return {
+            ...filter,
+            value: action.value,
+          }
+        }
+        return filter
+      })
+
+      return {
+        ...state,
+        filters,
+        terms: {
+          ...state.terms,
+          filter: generateFilterQuery({
+            fieldDefinitions: state.definitions.fields,
+            filterDefinitions: state.definitions.filters,
+            filters,
+            operatorDefinitions: state.definitions.operators,
+          }),
+        },
+      }
+    }
     case 'TERMS_QUERY_SET':
       return {
         ...state,
@@ -196,19 +377,71 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
           query: action.query,
         }),
       }
-    case 'TERMS_SET':
+    case 'TERMS_SET': {
+      const filters = action.filters || []
+      const types = [
+        ...(state.terms.types || []), //
+        ...action.terms.types,
+      ].sort(sortTypes)
+
       return {
         ...state,
+        documentTypesNarrowed: narrowDocumentTypes({
+          fieldDefinitions: state.definitions.fields,
+          filters,
+          types,
+        }),
+        filters,
+        lastAddedFilter: null,
         pageIndex: 0,
         result: {
           ...state.result,
           loaded: false,
         },
-        terms: action.terms,
+        terms: {
+          ...action.terms,
+          filter: generateFilterQuery({
+            fieldDefinitions: state.definitions.fields,
+            filterDefinitions: state.definitions.filters,
+            filters,
+            operatorDefinitions: state.definitions.operators,
+          }),
+        },
       }
-    case 'TERMS_TYPE_ADD':
+    }
+    case 'TERMS_TYPE_ADD': {
+      const types = [
+        ...(state.terms.types || []), //
+        action.schemaType,
+      ].sort(sortTypes)
+
+      // Get narrowed document types based on selected types only (ignore filters)
+      const documentTypesNarrowed = narrowDocumentTypes({
+        fieldDefinitions: state.definitions.fields,
+        filters: [],
+        types,
+      })
+
+      // Remove field filters that don't qualify under the above narrowed document types.
+      // Non field-filters are always included.
+      const filters = state.filters.filter((f) => {
+        const fieldDefinition = getFieldFromFilter(state.definitions.fields, f)
+        if (fieldDefinition) {
+          // An empty documentTypes array denotes support across all fields.
+          if (fieldDefinition.documentTypes.length === 0) {
+            return true
+          }
+          return documentTypesNarrowed.every(
+            (type) => fieldDefinition.documentTypes.findIndex((t) => t === type) > -1
+          )
+        }
+        return true
+      })
+
       return {
         ...state,
+        documentTypesNarrowed,
+        filters,
         pageIndex: 0,
         result: {
           ...state.result,
@@ -216,12 +449,26 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
         },
         terms: stripRecent({
           ...state.terms,
-          types: [...state.terms.types, action.schemaType].sort(sortTypes),
+          filter: generateFilterQuery({
+            fieldDefinitions: state.definitions.fields,
+            filterDefinitions: state.definitions.filters,
+            operatorDefinitions: state.definitions.operators,
+            filters,
+          }),
+          types,
         }),
       }
-    case 'TERMS_TYPE_REMOVE':
+    }
+    case 'TERMS_TYPE_REMOVE': {
+      const types = (state.terms.types || []).filter((s) => s !== action.schemaType)
+
       return {
         ...state,
+        documentTypesNarrowed: narrowDocumentTypes({
+          fieldDefinitions: state.definitions.fields,
+          filters: state.filters,
+          types,
+        }),
         pageIndex: 0,
         result: {
           ...state.result,
@@ -229,12 +476,20 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
         },
         terms: stripRecent({
           ...state.terms,
-          types: state.terms.types.filter((s) => s !== action.schemaType),
+          types,
         }),
       }
-    case 'TERMS_TYPES_CLEAR':
+    }
+    case 'TERMS_TYPES_CLEAR': {
+      const types: SearchableType[] = []
+
       return {
         ...state,
+        documentTypesNarrowed: narrowDocumentTypes({
+          fieldDefinitions: state.definitions.fields,
+          filters: state.filters,
+          types,
+        }),
         pageIndex: 0,
         result: {
           ...state.result,
@@ -245,6 +500,7 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
           types: [],
         }),
       }
+    }
     default:
       return state
   }
@@ -258,9 +514,9 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
  * This is done so we can better disambiguate between requests sent as a result of clicking a 'recent search'
  * for purposes of measurement.
  *
- * TODO: remove this (and associated tests) once client-side instrumentation is available
  */
-function stripRecent(terms: RecentSearchTerms | SearchTerms) {
+// @todo: remove this (and associated tests) once client-side instrumentation is available
+function stripRecent(terms: RecentSearch | SearchTerms) {
   if (isRecentSearchTerms(terms)) {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const {__recent, ...rest} = terms

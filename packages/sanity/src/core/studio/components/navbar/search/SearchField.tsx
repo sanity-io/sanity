@@ -47,16 +47,16 @@ function calcDialogPosition(element: HTMLElement): PopoverPosition {
 function usePopoverPosition(element: HTMLElement | null) {
   const [popoverPosition, setPopoverPosition] = useState<PopoverPosition | null>(null)
 
-  useEffect(() => {
+  /**
+   * Update popover position on window resize based off current placeholder input
+   */
+  const handleWindowResize = useCallback(() => {
     if (element) {
       setPopoverPosition(calcDialogPosition(element))
     }
   }, [element])
 
-  /**
-   * Update popover position on window resize based off current placeholder input
-   */
-  const handleWindowResize = useCallback(() => {
+  useEffect(() => {
     if (element) {
       setPopoverPosition(calcDialogPosition(element))
     }

@@ -9,12 +9,10 @@ import type {
   SchemaType,
   SchemaTypeDefinition,
 } from '@sanity/types'
-import type React from 'react'
-import type {ComponentType} from 'react'
+import React, {type ComponentType} from 'react'
 import type {Observable} from 'rxjs'
 import type {
   FieldProps,
-  FormBuilderArrayFunctionComponent,
   FormBuilderCustomMarkersComponent,
   FormBuilderMarkersComponent,
   InputProps,
@@ -24,6 +22,8 @@ import type {InitialValueTemplateItem, Template, TemplateResponse} from '../temp
 import {PreviewProps} from '../components/previews'
 import {AuthStore} from '../store'
 import {StudioTheme} from '../theme'
+import {SearchFilterDefinition} from '../studio/components/navbar/search/definitions/filters'
+import {SearchOperatorDefinition} from '../studio/components/navbar/search/definitions/operators'
 import {StudioComponents, StudioComponentsPluginOptions} from './studio'
 import {DocumentActionComponent, DocumentBadgeComponent} from './document'
 import {Router, RouterState} from 'sanity/router'
@@ -358,6 +358,12 @@ export interface Source {
   studio?: {
     /** @beta */
     components?: StudioComponents
+  }
+
+  /** @alpha */
+  search: {
+    filters: SearchFilterDefinition[]
+    operators: SearchOperatorDefinition[]
   }
 
   /** @internal */
