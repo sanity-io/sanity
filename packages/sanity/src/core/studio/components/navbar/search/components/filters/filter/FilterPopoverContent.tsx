@@ -12,9 +12,9 @@ interface FilterPopoverContentProps {
 }
 
 const ContainerFlex = styled(Flex)`
-  maxheight: 600px;
-  maxwidth: 480px;
-  minwidth: 200px;
+  max-height: 600px;
+  max-width: 480px;
+  min-width: 150px;
   overflow: hidden;
   width: 100%;
 `
