@@ -1,8 +1,8 @@
 import type {ComponentType} from 'react'
 import type {
   ArraySchemaType,
-  MarkDefinition,
   ObjectSchemaType,
+  PortableTextObject,
   SpanSchemaType,
   TitledListValue,
 } from '@sanity/types'
@@ -67,7 +67,7 @@ export interface MinimalSpan {
 export interface MinimalBlock extends TypedObject {
   _type: 'block'
   children: TypedObject[]
-  markDefs?: string[]
+  markDefs?: TypedObject[]
   style?: string
   level?: number
   listItem?: string
@@ -81,7 +81,7 @@ export interface PlaceholderDecorator {
 
 export interface PlaceholderAnnotation {
   _type: '__annotation'
-  markDef: MarkDefinition
+  markDef: PortableTextObject
   children: TypedObject[]
 }
 
