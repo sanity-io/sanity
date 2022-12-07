@@ -1,4 +1,4 @@
-import {ArraySchemaType, Block, isBlock} from '@sanity/types'
+import {ArraySchemaType, PortableTextTextBlock, isPortableTextTextBlock} from '@sanity/types'
 import {isEqual} from 'lodash'
 import {DEFAULT_BLOCK} from '../constants'
 import {resolveJsType} from '../util/resolveJsType'
@@ -87,7 +87,7 @@ export function flattenNestedBlocks(blocks: TypedObject[]): TypedObject[] {
       if (depth === 0) {
         flattened.push(node)
       }
-      if (isBlock(node)) {
+      if (isPortableTextTextBlock(node)) {
         if (depth > 0) {
           toRemove.push(node)
           flattened.push(node)
@@ -109,12 +109,12 @@ export function flattenNestedBlocks(blocks: TypedObject[]): TypedObject[] {
   return flattened
 }
 
-function nextSpan(block: Block, index: number) {
+function nextSpan(block: PortableTextTextBlock, index: number) {
   const next = block.children[index + 1]
   return next && next._type === 'span' ? next : null
 }
 
-function prevSpan(block: Block, index: number) {
+function prevSpan(block: PortableTextTextBlock, index: number) {
   const prev = block.children[index - 1]
   return prev && prev._type === 'span' ? prev : null
 }
@@ -131,13 +131,13 @@ function isWhiteSpaceChar(text: string) {
  */
 export function trimWhitespace(blocks: TypedObject[]): TypedObject[] {
   blocks.forEach((block) => {
-    if (!isBlock(block)) {
+    if (!isPortableTextTextBlock(block)) {
       return
     }
 
     // eslint-disable-next-line complexity
     block.children.forEach((child, index) => {
-      if (child._type !== 'span') {
+      if (!isMinimalSpan(child)) {
         return
       }
       const nextChild = nextSpan(block, index)
@@ -151,6 +151,7 @@ export function trimWhitespace(blocks: TypedObject[]): TypedObject[] {
       if (
         /\s/.test(child.text.substring(child.text.length - 1)) &&
         nextChild &&
+        isMinimalSpan(nextChild) &&
         /\s/.test(nextChild.text.substring(0, 1))
       ) {
         child.text = child.text.replace(/[^\S\n]+$/g, '')
@@ -158,6 +159,7 @@ export function trimWhitespace(blocks: TypedObject[]): TypedObject[] {
       if (
         /\s/.test(child.text.substring(0, 1)) &&
         prevChild &&
+        isMinimalSpan(prevChild) &&
         /\s/.test(prevChild.text.substring(prevChild.text.length - 1))
       ) {
         child.text = child.text.replace(/^[^\S\n]+/g, '')
@@ -195,7 +197,11 @@ export function ensureRootIsBlocks(blocks: TypedObject[]): TypedObject[] {
     }
 
     const lastBlock = memo[memo.length - 1]
-    if (i > 0 && !isBlock(original[i - 1]) && isBlock<TypedObject>(lastBlock)) {
+    if (
+      i > 0 &&
+      !isPortableTextTextBlock(original[i - 1]) &&
+      isPortableTextTextBlock<TypedObject>(lastBlock)
+    ) {
       lastBlock.children.push(node)
       return memo
     }

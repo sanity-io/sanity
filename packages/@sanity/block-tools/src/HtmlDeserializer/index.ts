@@ -1,4 +1,9 @@
-import type {ArraySchemaType, Block, MarkDefinition} from '@sanity/types'
+import type {
+  ArraySchemaType,
+  PortableTextBlock,
+  PortableTextObject,
+  PortableTextTextBlock,
+} from '@sanity/types'
 import {flatten} from 'lodash'
 import {findBlockType} from '../util/findBlockType'
 import {resolveJsType} from '../util/resolveJsType'
@@ -34,7 +39,7 @@ export default class HtmlDeserializer {
   blockContentType: ArraySchemaType
   rules: DeserializerRule[]
   parseHtml: (html: string) => HTMLElement
-  _markDefs: MarkDefinition[] = []
+  _markDefs: PortableTextObject[] = []
 
   /**
    * Create a new serializer respecting a Sanity block content type's schema
@@ -75,7 +80,7 @@ export default class HtmlDeserializer {
 
     if (this._markDefs.length > 0) {
       blocks
-        .filter((block): block is Block => block._type === 'block')
+        .filter((block): block is PortableTextTextBlock => block._type === 'block')
         .forEach((block) => {
           block.markDefs = block.markDefs || []
           block.markDefs = block.markDefs.concat(
@@ -216,7 +221,7 @@ export default class HtmlDeserializer {
           // Only apply marks if this is an actual text
           node.marks.unshift(name)
         }
-      } else if ('children' in node && Array.isArray((node as Block).children)) {
+      } else if ('children' in node && Array.isArray((node as PortableTextBlock).children)) {
         const block = node as any
         block.children = block.children.map(applyDecorator)
       }
@@ -251,7 +256,7 @@ export default class HtmlDeserializer {
           // Only apply marks if this is an actual text
           node.marks.unshift(markDef._key)
         }
-      } else if ('children' in node && Array.isArray((node as Block).children)) {
+      } else if ('children' in node && Array.isArray((node as PortableTextBlock).children)) {
         const block = node as any
         block.children = block.children.map(applyAnnotation)
       }
