@@ -1,4 +1,4 @@
-import type {ArraySchemaType, Block, Span} from '@sanity/types'
+import type {ArraySchemaType, PortableTextTextBlock} from '@sanity/types'
 import blockContentTypeFeatures from './util/blockContentTypeFeatures'
 import HtmlDeserializer from './HtmlDeserializer'
 import {normalizeBlock} from './util/normalizeBlock'
@@ -17,7 +17,7 @@ export function htmlToBlocks(
   html: string,
   blockContentType: ArraySchemaType,
   options: HtmlDeserializerOptions = {}
-): (TypedObject | Block<TypedObject | Span>)[] {
+): (TypedObject | PortableTextTextBlock)[] {
   const deserializer = new HtmlDeserializer(blockContentType, options)
   return deserializer.deserialize(html).map((block) => normalizeBlock(block))
 }

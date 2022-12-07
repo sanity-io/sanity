@@ -1,4 +1,4 @@
-import {Block, Span, isSpan} from '@sanity/types'
+import {PortableTextTextBlock, PortableTextSpan, isPortableTextSpan} from '@sanity/types'
 import {isEqual} from 'lodash'
 import {TypedObject} from '../types'
 import {randomKey} from './randomKey'
@@ -38,12 +38,14 @@ export interface BlockNormalizationOptions {
 export function normalizeBlock(
   node: TypedObject,
   options: BlockNormalizationOptions = {}
-): Omit<TypedObject | Block<TypedObject | Span>, '_key'> & {_key: string} {
+): Omit<TypedObject | PortableTextTextBlock<TypedObject | PortableTextSpan>, '_key'> & {
+  _key: string
+} {
   if (node._type !== (options.blockTypeName || 'block')) {
     return '_key' in node ? (node as TypedObject & {_key: string}) : {...node, _key: randomKey(12)}
   }
 
-  const block: Omit<Block<TypedObject | Span>, 'style'> = {
+  const block: Omit<PortableTextTextBlock<TypedObject | PortableTextSpan>, 'style'> = {
     _key: randomKey(12),
     children: [],
     markDefs: [],
@@ -75,8 +77,8 @@ export function normalizeBlock(
       const previousChild = acc[acc.length - 1]
       if (
         previousChild &&
-        isSpan(child) &&
-        isSpan(previousChild) &&
+        isPortableTextSpan(child) &&
+        isPortableTextSpan(previousChild) &&
         isEqual(previousChild.marks, child.marks)
       ) {
         if (lastChild && lastChild === child && child.text === '' && block.children.length > 1) {
@@ -88,20 +90,20 @@ export function normalizeBlock(
       }
       acc.push(child)
       return acc
-    }, [] as (TypedObject | Span)[])
+    }, [] as (TypedObject | PortableTextSpan)[])
     .map((child, index) => {
       if (!child) {
         throw new Error('missing child')
       }
 
       child._key = `${block._key}${index}`
-      if (isSpan(child)) {
+      if (isPortableTextSpan(child)) {
         if (!child.marks) {
           child.marks = []
         } else if (allowedDecorators) {
           child.marks = child.marks.filter((mark) => {
             const isAllowed = allowedDecorators.includes(mark)
-            const isUsed = block.markDefs.some((def) => def._key === mark)
+            const isUsed = block.markDefs?.some((def) => def._key === mark)
             return isAllowed || isUsed
           })
         }
@@ -113,6 +115,6 @@ export function normalizeBlock(
     })
 
   // Remove leftover (unused) markDefs
-  block.markDefs = block.markDefs.filter((markDef) => usedMarkDefs.includes(markDef._key))
+  block.markDefs = (block.markDefs || []).filter((markDef) => usedMarkDefs.includes(markDef._key))
   return block
 }

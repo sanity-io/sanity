@@ -3,10 +3,10 @@ import {
   BlockSchemaType,
   EnumListProps,
   isBlockChildrenObjectField,
+  isBlockListObjectField,
   isBlockSchemaType,
-  isListObjectField,
+  isBlockStyleObjectField,
   isObjectSchemaType,
-  isStyleObjectField,
   isTitledListValue,
   ObjectSchemaType,
   SpanSchemaType,
@@ -63,7 +63,7 @@ export default function blockContentFeatures(
 }
 
 function resolveEnabledStyles(blockType: BlockSchemaType): TitledListValue<string>[] {
-  const styleField = blockType.fields.find(isStyleObjectField)
+  const styleField = blockType.fields.find(isBlockStyleObjectField)
   if (!styleField) {
     throw new Error("A field with name 'style' is not defined in the block type (required).")
   }
@@ -81,7 +81,6 @@ function resolveEnabledStyles(blockType: BlockSchemaType): TitledListValue<strin
 
 function resolveEnabledAnnotationTypes(spanType: SpanSchemaType): ResolvedAnnotationType[] {
   return spanType.annotations.map((annotation) => ({
-    blockEditor: annotation.blockEditor,
     title: annotation.title,
     type: annotation,
     value: annotation.name,
@@ -94,7 +93,7 @@ function resolveEnabledDecorators(spanType: SpanSchemaType): TitledListValue<str
 }
 
 function resolveEnabledListItems(blockType: BlockSchemaType): TitledListValue<string>[] {
-  const listField = blockType.fields.find(isListObjectField)
+  const listField = blockType.fields.find(isBlockListObjectField)
   if (!listField) {
     throw new Error("A field with name 'list' is not defined in the block type (required).")
   }
