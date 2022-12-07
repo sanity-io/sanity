@@ -1,4 +1,5 @@
 import {
+  isArrayOfBlocksSchemaType,
   isArrayOfObjectsSchemaType,
   isArrayOfPrimitivesSchemaType,
   isBooleanSchemaType,
@@ -57,6 +58,13 @@ export function isArrayOfObjectsInputProps(
   inputProps: InputProps | Omit<InputProps, 'renderDefault'>
 ): inputProps is ArrayOfObjectsInputProps {
   return isArrayOfObjectsSchemaType(inputProps.schemaType)
+}
+
+/** @beta */
+export function isArrayOfBlocksInputProps(
+  inputProps: InputProps | Omit<InputProps, 'renderDefault'>
+): inputProps is ArrayOfObjectsInputProps {
+  return isArrayOfBlocksSchemaType(inputProps.schemaType)
 }
 
 /** @beta */
