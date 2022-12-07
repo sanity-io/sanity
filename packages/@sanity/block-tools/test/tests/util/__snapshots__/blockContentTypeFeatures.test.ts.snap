@@ -4,7 +4,6 @@ exports[`blockContentTypeFeatures will give a sane feature set for the default s
 Object {
   "annotations": Array [
     Object {
-      "blockEditor": undefined,
       "icon": undefined,
       "title": "Link",
       "type": Object {
@@ -1069,7 +1068,6 @@ exports[`blockContentTypeFeatures will give spesific features for a custom schem
 Object {
   "annotations": Array [
     Object {
-      "blockEditor": undefined,
       "icon": undefined,
       "title": "Author",
       "type": Object {
