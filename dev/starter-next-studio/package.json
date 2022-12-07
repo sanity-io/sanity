@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "sanity-starter-next-studio",
-  "version": "3.0.1",
+  "version": "3.0.2",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
