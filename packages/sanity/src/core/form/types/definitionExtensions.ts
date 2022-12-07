@@ -26,11 +26,20 @@ import {
   StringInputProps,
 } from './inputProps'
 import {ObjectItem, ObjectItemProps, PrimitiveItemProps} from './itemProps'
+import {
+  BlockAnnotationProps,
+  BlockDecoratorProps,
+  BlockListItemProps,
+  BlockProps,
+  BlockStyleProps,
+} from './blockProps'
 
 /**
  * @beta
  */
 export interface ArrayOfObjectsComponents {
+  annotation?: ComponentType<any>
+  block?: ComponentType<any>
   diff?: ComponentType<any>
   field?: ComponentType<ArrayFieldProps>
   input?: ComponentType<ArrayOfObjectsInputProps>
@@ -46,17 +55,6 @@ export interface ArrayOfPrimitivesComponents {
   field?: ComponentType<ArrayOfPrimitivesFieldProps>
   input?: ComponentType<ArrayOfPrimitivesInputProps>
   item?: ComponentType<PrimitiveItemProps>
-  preview?: ComponentType<PreviewProps>
-}
-
-/**
- * @beta
- */
-export interface BlockComponents {
-  diff?: ComponentType<any>
-  field?: ComponentType<ArrayFieldProps>
-  input?: ComponentType<ArrayOfObjectsInputProps>
-  item?: ComponentType<ObjectItemProps>
   preview?: ComponentType<PreviewProps>
 }
 
@@ -152,6 +150,8 @@ export interface NumberComponents {
  * @beta
  */
 export interface ObjectComponents {
+  annotation?: ComponentType<any>
+  block?: ComponentType<any>
   diff?: ComponentType<any>
   field?: ComponentType<ObjectFieldProps>
   input?: ComponentType<ObjectInputProps>
@@ -163,6 +163,8 @@ export interface ObjectComponents {
  * @beta
  */
 export interface ReferenceComponents {
+  annotation?: ComponentType<any>
+  block?: ComponentType<any>
   diff?: ComponentType<any>
   field?: ComponentType<ObjectFieldProps<ReferenceValue>>
   input?: ComponentType<ReferenceInputProps>
@@ -174,6 +176,8 @@ export interface ReferenceComponents {
  * @beta
  */
 export interface CrossDatasetReferenceComponents {
+  annotation?: ComponentType<any>
+  block?: ComponentType<any>
   diff?: ComponentType<any>
   field?: ComponentType<ObjectFieldProps<CrossDatasetReferenceValue>>
   input?: ComponentType<CrossDatasetReferenceInputProps>
@@ -260,7 +264,44 @@ declare module '@sanity/types' {
     /**
      * @beta
      */
-    components?: BlockComponents
+    components?: {
+      block?: ComponentType<BlockProps>
+    }
+  }
+
+  export interface BlockDecoratorDefinition {
+    /**
+     * @beta
+     */
+    components?: {
+      item?: ComponentType<BlockDecoratorProps>
+    }
+  }
+
+  export interface BlockStyleDefinition {
+    /**
+     * @beta
+     */
+    components?: {
+      item?: ComponentType<BlockStyleProps>
+    }
+  }
+  export interface BlockListDefinition {
+    /**
+     * @beta
+     */
+    components?: {
+      item?: ComponentType<BlockListItemProps>
+    }
+  }
+
+  export interface BlockAnnotationDefinition {
+    /**
+     * @beta
+     */
+    components?: {
+      annotation?: ComponentType<BlockAnnotationProps>
+    }
   }
 
   export interface BooleanDefinition {
