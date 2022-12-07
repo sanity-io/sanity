@@ -13,6 +13,7 @@ import {
 } from '@sanity/types'
 import {defineConfig} from '../../config'
 import {PreviewProps} from '../../components'
+import {CrossDatasetReferenceInputProps, ReferenceInputProps} from '../studio'
 import {
   ArrayOfObjectsInputProps,
   ArrayOfPrimitivesInputProps,
@@ -35,7 +36,6 @@ import {ObjectItem, ObjectItemProps, PrimitiveItemProps} from './itemProps'
 import {
   ArrayOfObjectsComponents,
   ArrayOfPrimitivesComponents,
-  BlockComponents,
   BooleanComponents,
   CrossDatasetReferenceComponents,
   DateComponents,
@@ -54,7 +54,6 @@ import {
   TextComponents,
   UrlComponents,
 } from './definitionExtensions'
-import {CrossDatasetReferenceInputProps, ReferenceInputProps} from '../studio'
 
 describe('definitionExtensions', () => {
   describe('array-like types', () => {
@@ -149,101 +148,6 @@ describe('definitionExtensions', () => {
           },
           //@ts-expect-error string not assignable to props
           preview: (props: string) => null,
-        },
-      })
-    })
-
-    it('should extend components for block', () => {
-      const type = defineType({
-        type: 'block',
-        name: 'test',
-        of: [{type: 'some-object'}],
-        components: {
-          diff: (props) => null,
-          field: (props) => {
-            const obj: ArrayFieldProps = props
-            //@ts-expect-error ensures props is not any
-            const notObj: string = props
-            return null
-          },
-          input: (props) => {
-            const obj: ArrayOfObjectsInputProps = props
-            //@ts-expect-error ensures props is not any
-            const notObj: string = props
-            return null
-          },
-          item: (props) => {
-            const obj: ObjectItemProps = props
-            //@ts-expect-error ensures props is not any
-            const notObj: string = props
-            return null
-          },
-          preview: (props) => {
-            const obj: PreviewProps = props
-            //@ts-expect-error ensures props is not any
-            const notObj: string = props
-            return null
-          },
-        },
-      })
-
-      // this typing is not ideal, but leaving it as this until we decide to narrow array type
-      const components: ArrayOfObjectsComponents | undefined = type.components
-
-      // ensure we can assign this to config.schema.types
-      defineConfig({
-        name: 'test',
-        projectId: 'test',
-        dataset: 'test',
-        schema: {
-          types: [type],
-        },
-      })
-    })
-
-    it('should extend components for block', () => {
-      const type = defineType({
-        type: 'block',
-        name: 'test',
-        of: [{type: 'some-object'}],
-        components: {
-          diff: (props) => null,
-          field: (props) => {
-            const obj: ArrayFieldProps = props
-            //@ts-expect-error ensures props is not any
-            const notObj: string = props
-            return null
-          },
-          input: (props) => {
-            const obj: ArrayOfObjectsInputProps = props
-            //@ts-expect-error ensures props is not any
-            const notObj: string = props
-            return null
-          },
-          item: (props) => {
-            const obj: ObjectItemProps = props
-            //@ts-expect-error ensures props is not any
-            const notObj: string = props
-            return null
-          },
-          preview: (props) => {
-            const obj: PreviewProps = props
-            //@ts-expect-error ensures props is not any
-            const notObj: string = props
-            return null
-          },
-        },
-      })
-
-      const components: BlockComponents | undefined = type.components
-
-      // ensure we can assign this to config.schema.types
-      defineConfig({
-        name: 'test',
-        projectId: 'test',
-        dataset: 'test',
-        schema: {
-          types: [type],
         },
       })
     })
@@ -690,33 +594,6 @@ describe('definitionExtensions', () => {
         },
       })
       const components: SlugComponents | undefined = type.components
-    })
-
-    it('should extend components for span', () => {
-      const type = defineType({
-        type: 'span',
-        name: 'test',
-        components: {
-          diff: (props) => null,
-          field: (props) => {
-            const obj: ObjectFieldProps = props
-            return null
-          },
-          input: (props) => {
-            const obj: ObjectInputProps = props
-            return null
-          },
-          item: (props) => {
-            const obj: ObjectItemProps = props
-            return null
-          },
-          preview: (props) => {
-            const obj: PreviewProps = props
-            return null
-          },
-        },
-      })
-      const components: SpanComponents | undefined = type.components
     })
   })
 
