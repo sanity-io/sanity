@@ -1,6 +1,6 @@
 {
   "name": "starter-cra-studio",
-  "version": "3.0.2",
+  "version": "3.0.4",
   "private": true,
   "dependencies": {
     "react": "^18.2.0",
