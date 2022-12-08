@@ -1,4 +1,4 @@
-import createClient, {SanityClient} from '@sanity/client'
+import {ClientConfig as SanityClientConfig, SanityClient} from '@sanity/client'
 import {defer} from 'rxjs'
 import {map, shareReplay, startWith, switchMap} from 'rxjs/operators'
 import {memoize} from 'lodash'
@@ -19,6 +19,7 @@ export interface AuthProvider {
 
 /** @internal */
 export interface AuthStoreOptions {
+  clientFactory: (options: SanityClientConfig) => SanityClient
   projectId: string
   dataset: string
   /**
@@ -137,6 +138,7 @@ const getCurrentUser = async (
  * @internal
  */
 export function _createAuthStore({
+  clientFactory,
   projectId,
   dataset,
   loginMethod = 'dual',
@@ -159,7 +161,7 @@ export function _createAuthStore({
     // // see above
     // debounce(() => firstMessage),
     map((token) =>
-      createClient({
+      clientFactory({
         projectId,
         dataset,
         apiVersion: '2021-06-07',
@@ -198,7 +200,7 @@ export function _createAuthStore({
 
   async function handleCallbackUrl() {
     if (sessionId && loginMethod === 'dual') {
-      const requestClient = createClient({
+      const requestClient = clientFactory({
         projectId,
         dataset,
         useCdn: true,
@@ -231,7 +233,7 @@ export function _createAuthStore({
   }
 
   async function logout() {
-    const requestClient = createClient({
+    const requestClient = clientFactory({
       projectId,
       dataset,
       useCdn: true,

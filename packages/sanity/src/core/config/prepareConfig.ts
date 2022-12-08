@@ -1,6 +1,6 @@
 /* eslint-disable max-nested-callbacks */
 
-import {SanityClient} from '@sanity/client'
+import createClient, {SanityClient} from '@sanity/client'
 import {map, shareReplay} from 'rxjs/operators'
 import {CurrentUser, Schema} from '@sanity/types'
 import {studioTheme} from '@sanity/ui'
@@ -88,10 +88,12 @@ export function prepareConfig(config: Config): PreparedConfig {
       const sources = [rootSource as SourceOptions, ...nestedSources]
 
       const resolvedSources = sources.map((source): InternalSource => {
+        const clientFactory = source.unstable_clientFactory || createClient
+
         const projectId = source.projectId
         const dataset = source.dataset
 
-        const auth = source.auth || createAuthStore({dataset, projectId})
+        const auth = source.auth || createAuthStore({clientFactory, dataset, projectId})
 
         let schemaTypes
         try {
