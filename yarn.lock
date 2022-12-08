@@ -3789,6 +3789,30 @@
     "@types/uuid" "^8.0.0"
     uuid "^8.0.0"
 
+"@sanity/vision@3.0.1":
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/@sanity/vision/-/vision-3.0.1.tgz#87827d99c03d3a58f3196a70c00e9f5576750d3e"
+  integrity sha512-LdpEHUio4cSq3AW+6XK/FyUhbEWgVLWJC5FeJ4lActxkLn2ftnVwrXhF8uDjgGLOEPjJ3Oq4O7uWfEhPgyjhqA==
+  dependencies:
+    "@codemirror/autocomplete" "^6.1.0"
+    "@codemirror/commands" "^6.0.1"
+    "@codemirror/lang-javascript" "^6.0.2"
+    "@codemirror/language" "^6.2.1"
+    "@codemirror/search" "^6.0.1"
+    "@codemirror/view" "^6.1.1"
+    "@juggle/resize-observer" "^3.3.1"
+    "@lezer/highlight" "^1.0.0"
+    "@rexxars/react-json-inspector" "^8.0.1"
+    "@sanity/color" "^2.1.20"
+    "@sanity/icons" "^2.1.0"
+    "@sanity/ui" "^1.0.0"
+    "@uiw/react-codemirror" "^4.11.4"
+    hashlru "^2.3.0"
+    is-hotkey "^0.1.6"
+    json5 "^1.0.1"
+    lodash "^4.17.21"
+    react-split-pane "^0.1.84"
+
 "@sideway/address@^4.1.3":
   version "4.1.4"
   resolved "https://registry.yarnpkg.com/@sideway/address/-/address-4.1.4.tgz#03dccebc6ea47fdc226f7d3d1ad512955d4783f0"
