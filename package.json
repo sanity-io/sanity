@@ -57,7 +57,7 @@
     "publish-purple-unicorn": "RELEASE_TAG=purple-unicorn yarn publish-tag",
     "publish-rc": "yarn build && lerna publish --force-publish --dist-tag=dev-preview --preid=rc --exact",
     "publish-tag": "RELEASE_TAG=\"${RELEASE_TAG:-canary}\"; yarn build && lerna publish --canary --force-publish --no-git-tag-version --dist-tag=$RELEASE_TAG --preid=$RELEASE_TAG --exact",
-    "publish": "yarn build && lerna publish --exact",
+    "publish": "yarn build && lerna publish --exact --force-publish",
     "publish:tarball": "node -r esbuild-register scripts/publish/tarball",
     "release-notes": "node scripts/printReleaseNotesTemplate.js",
     "start": "yarn dev:test-studio",
