@@ -3,7 +3,7 @@ import {Card, Stack, Button, Text, Code, Box} from '@sanity/ui'
 import React, {useCallback, useState} from 'react'
 import styled from 'styled-components'
 
-const COMMANDS = ['npm i @sanity/cli -g', 'sanity upgrade']
+const COMMANDS = ['npm install sanity@latest']
 
 const Icon = styled(ToggleArrowRightIcon)`
   &[data-rotate='true'] {
@@ -51,7 +51,7 @@ export function ChangelogAccordion(props: ChangelogAccordionProps) {
           <Card tone="transparent" padding={3} radius={2}>
             <Stack space={3}>
               <Code language="bash" size={1}>
-                {[`# Run these commands to upgrade`, ...COMMANDS].join('\n')}
+                {[`# Run this command to upgrade`, ...COMMANDS].join('\n')}
               </Code>
             </Stack>
           </Card>
