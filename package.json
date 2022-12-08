@@ -11,7 +11,7 @@
     "build:cli": "gulp build:cli",
     "build:js": "gulp js",
     "clean": "lerna clean && gulp clean && rimraf node_modules",
-    "publish": "RELEASE_TAG=v2 npm run build && lerna publish --dist-tag=$RELEASE_TAG --exact",
+    "publish": "npm run build && lerna publish --dist-tag=v2 --exact",
     "publish-canary": "RELEASE_TAG=canary npm run publish-tag",
     "publish-current-branch": "RELEASE_TAG=`git rev-parse --abbrev-ref HEAD | sed 's/\\//\\_/g'` npm run publish-tag",
     "publish-tag": "RELEASE_TAG=\"${RELEASE_TAG:-canary}\"; npm run build && lerna publish --canary --force-publish --no-git-tag-version --dist-tag=$RELEASE_TAG --preid=$RELEASE_TAG --exact",
