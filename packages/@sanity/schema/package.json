@@ -1,6 +1,6 @@
 {
   "name": "@sanity/schema",
-  "version": "3.0.5",
+  "version": "3.0.6",
   "description": "",
   "types": "./lib/dts/src/_exports/index.d.ts",
   "source": "./src/_exports/index.ts",
@@ -56,7 +56,7 @@
   "license": "MIT",
   "dependencies": {
     "@sanity/generate-help-url": "^3.0.0",
-    "@sanity/types": "3.0.5",
+    "@sanity/types": "3.0.6",
     "arrify": "^1.0.1",
     "humanize-list": "^1.0.1",
     "leven": "^3.1.0",

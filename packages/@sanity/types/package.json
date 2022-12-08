@@ -1,6 +1,6 @@
 {
   "name": "@sanity/types",
-  "version": "3.0.5",
+  "version": "3.0.6",
   "description": "Type definitions for common Sanity data structures",
   "types": "./lib/dts/src/index.d.ts",
   "source": "./src/index.ts",
