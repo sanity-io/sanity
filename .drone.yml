@@ -9,7 +9,7 @@ pipeline:
     pull: true
     when:
       event: push
-      branch: [next, drone-ci]
+      branch: ['2.x-next', drone-ci]
     secrets: [sanity_auth_token, npm_token]
     commands:
     # Install dependencies
