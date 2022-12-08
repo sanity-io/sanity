@@ -16,26 +16,31 @@
   </a>
 </p>
 
-## Build with Structured Content
+## Build powerful production-ready content workspaces
 
-> **Sanity.io is the platform for structured content. It comes with an open-source editing environment called Sanity Studio that you can customize with JavaScript and a real-time hosted data store. Sanity has generous included quotas – so [getting started](https://www.sanity.io/get-started) is free.**
+> The Sanity Composable Content Cloud lets teams create remarkable digital experiences at scale. Sanity Studio is an open-source, single-page application that is fast to set up and quick to configure. The Studio comes with a complete studio customization framework that lets you tailor the workspace as your needs grow.
+>
+> Sanity hosts your content in a real-time, hosted data store called Content Lake. [Get started](https://www.sanity.io/get-started) with the free plan with generous bandwidth and hosting included and pay-as-you-go for overages.
 
 ## Quickstart
 
-Get started from the command line:
+Initiate a new project by running the following command:
 
 ```bash
-npm i -g @sanity/cli && sanity init
+npm create sanity@latest
+
+# With other package managers:
+yarn create sanity@latest
+pnpm create sanity@latest
 ```
 
-Or go to [sanity.io/get-started](https://www.sanity.io/get-started) to get started from the browser in minutes.
+[Go here](https://www.sanity.io/docs/getting-started-with-sanity) for a step-by-step guide on how to get up and running.
 
-- Watch the [getting started video on YouTube](https://www.youtube.com/watch?v=2ceM_tSus_M&lc=z224vtt5nqq1cbcf2acdp43aylzlb5jhft1kmuafltxw03c010c).
-- Check out our [guides](https://www.sanity.io/guides) and [plugins](https://www.sanity.io/plugins) and start building.
+Check out [the docs](https://www.sanity.io/docs/sanity-studio) and [plugins](https://www.sanity.io/plugins) and start building.
 
 ## Table of contents
 
-- [Build with Structured Content](#build-with-structured-content)
+- [Build powerful production-ready content workspaces](#build-powerful-production-ready-content-workspaces)
 - [Quickstart](#quickstart)
 - [Table of contents](#table-of-contents)
 - [Key Features](#key-features)
@@ -49,18 +54,18 @@ Or go to [sanity.io/get-started](https://www.sanity.io/get-started) to get start
 
 ## Key Features
 
-![Sanity Studio](https://cdn.sanity.io/images/3do82whm/next/f31379d654eabc2feb5c0226510fce1195a0b3bd-2680x1506.png?w=1200&fit=max&auto=format)
+![Sanity Studio](https://cdn.sanity.io/images/3do82whm/next/634bd76e8333f9c824a3f09ff563b5373bcfac3a-7684x4322.png?w=2000&fit=max&auto=format&dpr=2)
 
 ### [Sanity Studio](https://www.sanity.io/studio)
 
-[Sanity Studio](https://www.sanity.io/studio) is an open source headless real-time CMS, that you can customize with JavaScript and React.
+[Sanity Studio](https://www.sanity.io/studio) is an open-source real-time CMS, that you can customize with JavaScript and React.
 
-- Efficient editing, instant UI for complex fields.
-- Responsive, works on small screens.
-- [Plug-in architecture](https://www.sanity.io/plugins) and [custom input components](https://www.sanity.io/guides/how-to-make-a-custom-input-component).
-- [Style with your own branding](https://www.sanity.io/guides/how-to-brand-your-studio).
-- [Advanced block editor for structured content](https://www.sanity.io/docs/block-content).
-- Use JavaScript to add [field validations](https://www.sanity.io/docs/validation), [organize documents](https://www.sanity.io/docs/overview-structure-builder), and set [initial values](https://www.sanity.io/guides/getting-started-with-initial-values-for-new-documents).
+- Efficient editing, instant UI for complex fields
+- Responsive, works on narrow screens
+- [Plug-in architecture](https://www.sanity.io/plugins) and [custom components](https://www.sanity.io/docs/component-api)
+- [Style with your own branding](https://www.sanity.io/docs/theming)
+- [Advanced block editor for structured content](https://www.sanity.io/docs/block-content)
+- Use JavaScript to add [field validations](https://www.sanity.io/docs/validation), [organize documents](https://www.sanity.io/docs/overview-structure-builder), and set [initial values](https://www.sanity.io/docs/theming)
 
 ### [Developer experience](https://www.sanity.io/developer-experience)
 
@@ -80,7 +85,7 @@ Or go to [sanity.io/get-started](https://www.sanity.io/get-started) to get start
 
 ## Stay up to date
 
-- Follow **@sanity_io** on [twitter](https://twitter.com/sanity_io)
+- Follow **@sanity_io** on [Twitter](https://twitter.com/sanity_io)
 - Subscribe to [our blog by RSS](https://www.sanity.io/feed/rss)
 - Subscribe to our [newsletter](http://eepurl.com/b2yaDz)
 - Join the [developer community on Slack](https://slack.sanity.io)
