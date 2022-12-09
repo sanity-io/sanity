@@ -6,6 +6,7 @@ import {
   isObjectSchemaType,
   isStringSchemaType,
 } from '@sanity/types'
+import {DateInputProps, DateTimeInputProps} from '../inputs'
 import {
   ArrayOfObjectsInputProps,
   ArrayOfPrimitivesInputProps,
@@ -35,7 +36,27 @@ export function isObjectInputProps(
 export function isStringInputProps(
   inputProps: InputProps | Omit<InputProps, 'renderDefault'>
 ): inputProps is StringInputProps {
-  return isStringSchemaType(inputProps.schemaType)
+  const {schemaType} = inputProps
+
+  return isStringSchemaType(schemaType) && schemaType.name === 'string'
+}
+
+/** @beta */
+export function isDateInputProps(
+  inputProps: DateInputProps | Omit<DateInputProps, 'renderDefault'>
+): inputProps is DateInputProps {
+  const {schemaType} = inputProps
+
+  return isStringSchemaType(schemaType) && schemaType.name === 'date'
+}
+
+/** @beta */
+export function isDateTimeInputProps(
+  inputProps: DateTimeInputProps | Omit<DateTimeInputProps, 'renderDefault'>
+): inputProps is DateTimeInputProps {
+  const {schemaType} = inputProps
+
+  return isStringSchemaType(schemaType) && schemaType.name === 'datetime'
 }
 
 /** @beta */
