@@ -1,4 +1,5 @@
-import {keyGenerator as createKey, PortableTextBlock} from '@sanity/portable-text-editor'
+import {keyGenerator as createKey} from '@sanity/portable-text-editor'
+import {PortableTextBlock} from '@sanity/types'
 import {words} from './words'
 
 export const valueOptions: Record<string, 'empty' | 'withCustomContent' | 'withLargeContent'> = {

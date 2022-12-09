@@ -1,12 +1,6 @@
 import {hues} from '@sanity/color'
-import {
-  PortableTextChild,
-  PortableTextEditor,
-  RenderAttributes,
-  Type,
-  usePortableTextEditor,
-} from '@sanity/portable-text-editor'
-import {Path} from '@sanity/types'
+import {PortableTextEditor, usePortableTextEditor} from '@sanity/portable-text-editor'
+import {ObjectSchemaType, Path, PortableTextChild} from '@sanity/types'
 import React, {useCallback, useEffect, useMemo, useState} from 'react'
 import styled, {css} from 'styled-components'
 import {Box, Card, Theme, Tooltip} from '@sanity/ui'
@@ -21,13 +15,15 @@ import {FIXME} from '../../../../FIXME'
 import {InlineObjectToolbarPopover} from './InlineObjectToolbarPopover'
 
 interface InlineObjectProps {
-  attributes: RenderAttributes
+  focused: boolean
+  selected: boolean
+  path: Path
   onItemOpen: (path: Path) => void
   readOnly?: boolean
   renderCustomMarkers?: RenderCustomMarkers
   renderPreview: RenderPreviewCallback
   scrollElement: HTMLElement | null
-  type: Type
+  type: ObjectSchemaType
   value: PortableTextChild
 }
 
@@ -114,12 +110,14 @@ export const InlineObject = React.forwardRef(function InlineObject(
   forwardedRef: React.ForwardedRef<PortableTextEditorElement>
 ) {
   const {
-    attributes: {focused, selected, path},
+    focused,
     onItemOpen,
+    path,
     readOnly,
     renderCustomMarkers,
     renderPreview,
     scrollElement,
+    selected,
     type,
     value,
   } = props

@@ -10,6 +10,8 @@ import {
   EditorSelection,
   PortableTextEditor,
   usePortableTextEditor,
+  RenderStyleFunction,
+  RenderListItemFunction,
 } from '@sanity/portable-text-editor'
 import {Path} from '@sanity/types'
 import {BoundaryElementProvider, useBoundaryElement, useGlobalKeyDown, useLayer} from '@sanity/ui'
@@ -26,6 +28,8 @@ import {
 } from './Editor.styles'
 import {useSpellcheck} from './hooks/useSpellCheck'
 import {useScrollSelectionIntoView} from './hooks/useScrollSelectionIntoView'
+import {Style} from './text/Style'
+import {ListItem} from './text/ListItem'
 
 interface EditorProps {
   hotkeys: HotkeyOptions
@@ -46,8 +50,34 @@ interface EditorProps {
   setScrollElement: (scrollElement: HTMLElement | null) => void
 }
 
-const renderDecorator: RenderDecoratorFunction = (mark, mType, attributes, defaultRender) => {
-  return <Decorator mark={mark}>{defaultRender()}</Decorator>
+const renderDecorator: RenderDecoratorFunction = (props) => {
+  const {value, renderDefault, type, focused, selected} = props
+  const CustomComponent = type.components?.item
+  const rendered = renderDefault(props)
+  if (CustomComponent) {
+    // eslint-disable-next-line react/jsx-no-bind
+    return (
+      <CustomComponent
+        focused={focused}
+        selected={selected}
+        title={type.title}
+        value={value}
+        // eslint-disable-next-line react/jsx-no-bind
+        renderDefault={() => <Decorator mark={value}>{rendered}</Decorator>}
+      >
+        {rendered}
+      </CustomComponent>
+    )
+  }
+  return <Decorator mark={value}>{rendered}</Decorator>
+}
+
+const renderStyle: RenderStyleFunction = (props) => {
+  return <Style {...props} />
+}
+
+const renderListItem: RenderListItemFunction = (props) => {
+  return <ListItem {...props} />
 }
 
 export function Editor(props: EditorProps) {
@@ -114,7 +144,9 @@ export function Editor(props: EditorProps) {
         renderBlock={renderBlock}
         renderChild={renderChild}
         renderDecorator={renderDecorator}
+        renderListItem={renderListItem}
         renderPlaceholder={renderPlaceholder}
+        renderStyle={renderStyle}
         scrollSelectionIntoView={scrollSelectionIntoView}
         selection={initialSelection}
         spellCheck={spellcheck}

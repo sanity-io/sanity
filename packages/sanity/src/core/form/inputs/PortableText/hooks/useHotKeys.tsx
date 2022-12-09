@@ -1,9 +1,5 @@
 import {useMemo} from 'react'
-import {
-  HotkeyOptions,
-  PortableTextEditor,
-  usePortableTextEditor,
-} from '@sanity/portable-text-editor'
+import {HotkeyOptions, usePortableTextEditor} from '@sanity/portable-text-editor'
 
 // This hook will create final hotkeys for the editor from on those from props.
 export function useHotkeys(hotkeys: HotkeyOptions): HotkeyOptions {
@@ -19,8 +15,7 @@ export function useHotkeys(hotkeys: HotkeyOptions): HotkeyOptions {
   }
   return useMemo(() => {
     const defaultHotkeys: {marks: Record<string, string>} = {marks: {}}
-    const ptFeatures = PortableTextEditor.getPortableTextFeatures(editor)
-    ptFeatures.decorators.forEach((dec) => {
+    editor.types.decorators.forEach((dec) => {
       switch (dec.value) {
         case 'strong':
           defaultHotkeys.marks['mod+b'] = dec.value
