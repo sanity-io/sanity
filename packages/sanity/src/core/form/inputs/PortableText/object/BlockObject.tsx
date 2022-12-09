@@ -1,15 +1,13 @@
 import {
   PortableTextEditor,
-  PortableTextBlock,
-  RenderAttributes,
   EditorSelection,
   usePortableTextEditor,
 } from '@sanity/portable-text-editor'
-import {ObjectSchemaType, Path} from '@sanity/types'
+import {ObjectSchemaType, Path, PortableTextBlock} from '@sanity/types'
 import {Tooltip, Flex, ResponsivePaddingProps} from '@sanity/ui'
-import React, {useCallback, useMemo, useRef, useState} from 'react'
+import React, {ComponentType, useCallback, useMemo, useRef, useState} from 'react'
 import {PatchArg} from '../../../patch'
-import {RenderCustomMarkers, RenderPreviewCallback} from '../../../types'
+import {BlockProps, RenderCustomMarkers, RenderPreviewCallback} from '../../../types'
 import {RenderBlockActionsCallback} from '../types'
 import {BlockActions} from '../BlockActions'
 import {ReviewChangesHighlightBlock, StyledChangeIndicatorWithProvidedFullPath} from '../_common'
@@ -32,31 +30,38 @@ import {
 } from './BlockObject.styles'
 
 interface BlockObjectProps {
-  attributes: RenderAttributes
   block: PortableTextBlock
+  focused: boolean
   isActive?: boolean
   isFullscreen?: boolean
   onChange: (...patches: PatchArg[]) => void
   onItemOpen: (path: Path) => void
+  onItemClose: () => void
+  onItemRemove: (itemKey: string) => void
+  path: Path
   readOnly?: boolean
   renderBlockActions?: RenderBlockActionsCallback
   renderCustomMarkers?: RenderCustomMarkers
   renderPreview: RenderPreviewCallback
+  selected: boolean
   type: ObjectSchemaType
 }
 
 export function BlockObject(props: BlockObjectProps) {
   const {
-    attributes: {focused, selected, path},
     block,
+    focused,
     isActive,
     isFullscreen,
     onChange,
     onItemOpen,
+    onItemClose,
+    path,
     readOnly,
     renderBlockActions,
     renderCustomMarkers,
     renderPreview,
+    selected,
     type,
   } = props
   const {Markers} = useFormBuilder().__internal.components
@@ -69,7 +74,7 @@ export function BlockObject(props: BlockObjectProps) {
   const handleMouseOver = useCallback(() => setReviewChangesHovered(true), [])
   const handleMouseOut = useCallback(() => setReviewChangesHovered(false), [])
 
-  const handleEdit = useCallback(() => {
+  const openItem = useCallback(() => {
     if (memberItem) {
       onItemOpen(memberItem.node.path)
     }
@@ -80,37 +85,38 @@ export function BlockObject(props: BlockObjectProps) {
       e.preventDefault()
       e.stopPropagation()
       PortableTextEditor.blur(editor)
-      handleEdit()
+      openItem()
     },
-    [editor, handleEdit]
+    [editor, openItem]
   )
 
-  const handleDelete = useCallback(
-    (e: any) => {
-      e.stopPropagation()
-      e.preventDefault()
-      const sel: EditorSelection = {focus: {path, offset: 0}, anchor: {path, offset: 0}}
-      PortableTextEditor.delete(editor, sel, {mode: 'blocks'})
-      // Focus will not stick unless this is done through a timeout when deleted through clicking the menu button.
-      setTimeout(() => PortableTextEditor.focus(editor))
-    },
-    [editor, path]
-  )
+  const onRemove = useCallback(() => {
+    const sel: EditorSelection = {focus: {path, offset: 0}, anchor: {path, offset: 0}}
+    PortableTextEditor.delete(editor, sel, {mode: 'blocks'})
+    // Focus will not stick unless this is done through a timeout when deleted through clicking the menu button.
+    setTimeout(() => PortableTextEditor.focus(editor))
+  }, [editor, path])
 
   const blockPreview = useMemo(() => {
+    const _handleDelete = (e: React.MouseEvent<Element, MouseEvent>) => {
+      e.preventDefault()
+      e.stopPropagation()
+      onRemove()
+    }
     return (
       <BlockObjectPreview
         focused={focused}
         isActive={isActive}
-        onClickingDelete={handleDelete}
-        onClickingEdit={handleEdit}
+        // eslint-disable-next-line react/jsx-no-bind
+        onClickingDelete={_handleDelete}
+        onClickingEdit={openItem}
         readOnly={readOnly}
         renderPreview={renderPreview}
         type={type}
         value={block}
       />
     )
-  }, [focused, isActive, handleDelete, handleEdit, readOnly, renderPreview, type, block])
+  }, [focused, isActive, onRemove, openItem, readOnly, renderPreview, type, block])
 
   const tone = selected || focused ? 'primary' : 'default'
 
@@ -155,7 +161,7 @@ export function BlockObject(props: BlockObjectProps) {
     [Markers, markers, renderCustomMarkers, tooltipEnabled, validation]
   )
 
-  const returned = useMemo(
+  const defaultRendered = useMemo(
     () => (
       <Flex paddingBottom={1} marginY={3} contentEditable={false} style={debugRender()}>
         <InnerFlex flex={1}>
@@ -245,5 +251,27 @@ export function BlockObject(props: BlockObjectProps) {
     ]
   )
 
-  return returned
+  const CustomComponent = type.components?.block as ComponentType<BlockProps>
+
+  const renderDefault = useCallback(() => defaultRendered, [defaultRendered])
+
+  return CustomComponent ? (
+    <CustomComponent
+      focused={focused}
+      open={memberItem?.member.open || false}
+      onOpen={openItem}
+      onClose={onItemClose}
+      onRemove={onRemove}
+      path={memberItem?.node.path || path}
+      selected={selected}
+      value={block}
+      renderDefault={renderDefault}
+    >
+      <BlockPreview ref={memberItem?.elementRef as React.RefObject<HTMLDivElement>}>
+        {blockPreview}
+      </BlockPreview>
+    </CustomComponent>
+  ) : (
+    defaultRendered
+  )
 }

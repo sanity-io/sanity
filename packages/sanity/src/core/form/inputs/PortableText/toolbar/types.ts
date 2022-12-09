@@ -1,6 +1,7 @@
 // import {Type} from '@sanity/portable-text-editor'
 
 import {ObjectSchemaType} from '@sanity/types'
+import {ComponentType, ReactNode} from 'react'
 
 export interface BlockItem {
   handle: () => void
@@ -20,7 +21,7 @@ export interface BlockStyleItem {
 export interface PTEToolbarAction {
   type: 'annotation' | 'format' | 'listStyle'
   disabled: boolean
-  icon?: React.ElementType | string
+  icon?: ReactNode | ComponentType
   handle: (active?: boolean) => void
   hotkeys?: string[]
   key: string
