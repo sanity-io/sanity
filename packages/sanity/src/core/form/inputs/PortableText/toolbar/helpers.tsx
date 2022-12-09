@@ -14,13 +14,11 @@ import {
 import {
   HotkeyOptions,
   PortableTextEditor,
-  PortableTextFeature,
-  PortableTextFeatures,
+  PortableTextMemberTypes,
 } from '@sanity/portable-text-editor'
-import {get} from 'lodash'
+import {capitalize, get} from 'lodash'
 import React from 'react'
 import {ObjectSchemaType} from '@sanity/types'
-import {FIXME} from '../../../../FIXME'
 import {BlockItem, BlockStyleItem, PTEToolbarAction, PTEToolbarActionGroup} from './types'
 import {CustomIcon} from './CustomIcon'
 
@@ -29,8 +27,8 @@ function getPTEFormatActions(
   disabled: boolean,
   hotkeyOpts: HotkeyOptions
 ): PTEToolbarAction[] {
-  const features = PortableTextEditor.getPortableTextFeatures(editor)
-  return features.decorators.map((decorator) => {
+  const types = editor.types
+  return types.decorators.map((decorator) => {
     const shortCutKey = Object.keys(hotkeyOpts.marks || {}).find(
       (key) => hotkeyOpts.marks?.[key] === decorator.value
     )
@@ -43,7 +41,7 @@ function getPTEFormatActions(
     return {
       type: 'format',
       disabled: disabled,
-      icon: decorator.blockEditor?.icon,
+      icon: decorator?.icon,
       key: decorator.value,
       handle: (): void => {
         PortableTextEditor.toggleMark(editor, decorator.value)
@@ -56,13 +54,13 @@ function getPTEFormatActions(
 }
 
 function getPTEListActions(editor: PortableTextEditor, disabled: boolean): PTEToolbarAction[] {
-  const features = PortableTextEditor.getPortableTextFeatures(editor)
-  return features.lists.map((listItem: PortableTextFeature) => {
+  const types = PortableTextEditor.getTypes(editor)
+  return types.lists.map((listItem) => {
     return {
       type: 'listStyle',
       key: listItem.value,
       disabled: disabled,
-      icon: listItem.blockEditor?.icon,
+      icon: listItem?.icon,
       handle: (): void => {
         PortableTextEditor.toggleList(editor, listItem.value)
       },
@@ -71,13 +69,12 @@ function getPTEListActions(editor: PortableTextEditor, disabled: boolean): PTETo
   })
 }
 
-function getAnnotationIcon(item: PortableTextFeature): React.ComponentType | string | undefined {
+function getAnnotationIcon(type: ObjectSchemaType): React.ComponentType | string | undefined {
   return (
-    get(item, 'icon') ||
-    get(item, 'blockEditor.icon') ||
-    get(item, 'type.icon') ||
-    get(item, 'type.to.icon') ||
-    get(item, 'type.to[0].icon')
+    get(type, 'icon') ||
+    get(type, 'type.icon') ||
+    get(type, 'type.to.icon') ||
+    get(type, 'type.to[0].icon')
   )
 }
 
@@ -86,24 +83,24 @@ function getPTEAnnotationActions(
   disabled: boolean,
   onInsert: (type: ObjectSchemaType) => void
 ): PTEToolbarAction[] {
-  const features = PortableTextEditor.getPortableTextFeatures(editor)
+  const types = editor.types
   const focusChild = PortableTextEditor.focusChild(editor)
   const hasText = focusChild && focusChild.text
-  return features.annotations.map((item) => {
+  return types.annotations.map((aType) => {
     return {
       type: 'annotation',
       disabled: !hasText || disabled,
-      icon: getAnnotationIcon(item),
-      key: item.value,
+      icon: getAnnotationIcon(aType),
+      key: aType.name,
       handle: (active?: boolean): void => {
         if (active) {
-          PortableTextEditor.removeAnnotation(editor, item.type)
+          PortableTextEditor.removeAnnotation(editor, aType)
           PortableTextEditor.focus(editor)
         } else {
-          onInsert(item.type as FIXME)
+          onInsert(aType)
         }
       },
-      title: item.title,
+      title: aType.title || capitalize(aType.name),
     }
   })
 }
@@ -121,12 +118,12 @@ export function getPTEToolbarActionGroups(
   ]
 }
 
-export function getBlockStyles(features: PortableTextFeatures): BlockStyleItem[] {
-  return features.styles.map((style: PortableTextFeature) => {
+export function getBlockStyles(types: PortableTextMemberTypes): BlockStyleItem[] {
+  return types.styles.map((style) => {
     return {
       key: `style-${style.value}`,
       style: style.value,
-      styleComponent: style && style.blockEditor && style.blockEditor.render,
+      styleComponent: style && style.components?.item,
       title: style.title,
     }
   })
@@ -142,28 +139,28 @@ function getInsertMenuIcon(
 }
 
 export function getInsertMenuItems(
-  features: PortableTextFeatures,
+  types: PortableTextMemberTypes,
   disabled: boolean,
   onInsertBlock: (type: ObjectSchemaType) => void,
   onInsertInline: (type: ObjectSchemaType) => void
 ): BlockItem[] {
-  const blockItems = features.types.blockObjects.map(
+  const blockItems = types.blockObjects.map(
     (type, index): BlockItem => ({
-      handle: () => onInsertBlock(type as FIXME),
-      icon: getInsertMenuIcon(type as FIXME, BlockElementIcon),
+      handle: () => onInsertBlock(type),
+      icon: getInsertMenuIcon(type, BlockElementIcon),
       inline: false,
       key: `block-${index}`,
-      type: type as FIXME,
+      type,
     })
   )
 
-  const inlineItems = features.types.inlineObjects.map(
+  const inlineItems = types.inlineObjects.map(
     (type, index): BlockItem => ({
-      handle: () => onInsertInline(type as FIXME),
-      icon: getInsertMenuIcon(type as FIXME, InlineElementIcon),
+      handle: () => onInsertInline(type),
+      icon: getInsertMenuIcon(type, InlineElementIcon),
       inline: true,
       key: `inline-${index}`,
-      type: type as FIXME,
+      type,
     })
   )
 

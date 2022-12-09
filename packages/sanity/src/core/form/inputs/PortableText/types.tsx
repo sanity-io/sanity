@@ -1,5 +1,4 @@
-import type {PortableTextBlock} from '@sanity/portable-text-editor'
-import type {Path} from '@sanity/types'
+import type {PortableTextBlock, Path} from '@sanity/types'
 
 /**
  * @internal

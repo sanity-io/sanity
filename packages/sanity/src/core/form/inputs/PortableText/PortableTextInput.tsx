@@ -1,10 +1,9 @@
-import {ArraySchemaType} from '@sanity/types'
+import {ArraySchemaType, PortableTextBlock} from '@sanity/types'
 import {
   EditorChange,
   OnCopyFn,
   OnPasteFn,
   Patch as EditorPatch,
-  PortableTextBlock,
   PortableTextEditor,
   HotkeyOptions,
   InvalidValue,
@@ -29,7 +28,6 @@ import {ArrayOfObjectsItemMember, ObjectFormNode} from '../../store'
 import type {ArrayOfObjectsInputProps, PortableTextMarker, RenderCustomMarkers} from '../../types'
 import {EMPTY_ARRAY} from '../../../util'
 import {pathToString} from '../../../field'
-import {FIXME} from '../../../FIXME'
 import {isMemberArrayOfObjects} from '../../members/object/fields/asserters'
 import {Compositor, PortableTextEditorElement} from './Compositor'
 import {InvalidValue as RespondToInvalidContent} from './InvalidValue'
@@ -40,22 +38,19 @@ import {PortableTextMemberItemsProvider} from './contexts/PortableTextMembers'
 import {_isArrayOfObjectsFieldMember, _isBlockType} from './_helpers'
 
 /** @internal */
-export type PTObjectMember = ArrayOfObjectsItemMember
-
-/** @internal */
 export interface PortableTextMemberItem {
   kind: 'annotation' | 'textBlock' | 'objectBlock' | 'inlineObject'
   key: string
-  member: PTObjectMember
+  member: ArrayOfObjectsItemMember
   node: ObjectFormNode
   elementRef?: React.MutableRefObject<PortableTextEditorElement> | undefined
 }
 
 /**
- * @alpha
+ * @beta
  */
 export interface PortableTextInputProps
-  extends ArrayOfObjectsInputProps<PortableTextBlock, ArraySchemaType> {
+  extends ArrayOfObjectsInputProps<PortableTextBlock, ArraySchemaType<PortableTextBlock>> {
   hotkeys?: HotkeyOptions
   markers?: PortableTextMarker[]
   onCopy?: OnCopyFn
@@ -67,7 +62,7 @@ export interface PortableTextInputProps
 /**
  * The root Portable Text Input component
  *
- * @alpha
+ * @beta
  */
 export function PortableTextInput(props: PortableTextInputProps) {
   const {
@@ -159,7 +154,7 @@ export function PortableTextInput(props: PortableTextInputProps) {
   const portableTextMemberItems: PortableTextMemberItem[] = useMemo(() => {
     const result: {
       kind: PortableTextMemberItem['kind']
-      member: PTObjectMember
+      member: ArrayOfObjectsItemMember
       node: ObjectFormNode
     }[] = []
 
@@ -343,7 +338,7 @@ export function PortableTextInput(props: PortableTextInputProps) {
               onChange={handleEditorChange}
               maxBlocks={undefined} // TODO: from schema?
               readOnly={readOnly}
-              type={type as FIXME}
+              type={type}
               value={value}
             >
               <Compositor

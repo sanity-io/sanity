@@ -3,13 +3,13 @@ import {
   EditorSelection,
   OnCopyFn,
   OnPasteFn,
-  PortableTextBlock,
-  PortableTextEditor,
   usePortableTextEditor,
   HotkeyOptions,
-  RenderAttributes,
+  BlockRenderProps,
+  BlockChildRenderProps,
+  BlockAnnotationRenderProps,
 } from '@sanity/portable-text-editor'
-import {ObjectSchemaType, Path} from '@sanity/types'
+import {BlockSchemaType, Path, PortableTextBlock, PortableTextTextBlock} from '@sanity/types'
 import {
   BoundaryElementProvider,
   Portal,
@@ -53,7 +53,7 @@ interface InputProps extends ArrayOfObjectsInputProps<PortableTextBlock> {
 export type PortableTextEditorElement = HTMLDivElement | HTMLSpanElement | null
 
 /** @internal */
-export function Compositor(props: InputProps) {
+export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunctions'>) {
   const {
     changed,
     focusPath = EMPTY_ARRAY,
@@ -65,8 +65,9 @@ export function Compositor(props: InputProps) {
     onChange,
     onCopy,
     onActivate,
-    onItemOpen,
     onItemClose,
+    onItemOpen,
+    onItemRemove,
     onPaste,
     onToggleFullscreen,
     path,
@@ -111,8 +112,8 @@ export function Compositor(props: InputProps) {
 
   const editorHotkeys = useHotkeys(hotkeysWithFullscreenToggle)
 
-  const ptFeatures = useMemo(() => PortableTextEditor.getPortableTextFeatures(editor), [editor])
-  const hasContent = !!value
+  const _renderBlockActions = !!value && renderBlockActions ? renderBlockActions : undefined
+  const _renderCustomMarkers = !!value && renderCustomMarkers ? renderCustomMarkers : undefined
 
   const initialSelection = useMemo(
     (): EditorSelection =>
@@ -127,104 +128,113 @@ export function Compositor(props: InputProps) {
   )
 
   const renderBlock = useCallback(
-    (
-      block: PortableTextBlock,
-      blockType: ObjectSchemaType,
-      attributes: RenderAttributes,
-      defaultRender: (b: PortableTextBlock) => JSX.Element
-    ) => {
-      const isTextBlock = block._type === ptFeatures.types.block.name
+    (blockProps: BlockRenderProps) => {
+      const {
+        value: block,
+        type: blockType,
+        renderDefault,
+        focused: blockFocused,
+        selected,
+        path: blockPath,
+      } = blockProps
+      const isTextBlock = block._type === editor.types.block.name
       if (isTextBlock) {
         return (
           <TextBlock
-            attributes={attributes}
-            block={block}
+            block={block as PortableTextTextBlock}
+            focused={blockFocused}
             isFullscreen={isFullscreen}
             onChange={onChange}
+            path={blockPath}
             readOnly={readOnly}
-            renderBlockActions={hasContent ? renderBlockActions : undefined}
-            renderCustomMarkers={hasContent ? renderCustomMarkers : undefined}
+            renderBlockActions={_renderBlockActions}
+            renderCustomMarkers={_renderCustomMarkers}
+            selected={selected}
+            type={blockType as BlockSchemaType}
           >
-            {defaultRender(block)}
+            {renderDefault(blockProps)}
           </TextBlock>
         )
       }
-
       return (
         <BlockObject
-          attributes={attributes}
           block={block}
+          focused={blockFocused}
           isFullscreen={isFullscreen}
           onChange={onChange}
           onItemOpen={onItemOpen}
+          onItemClose={onItemClose}
+          onItemRemove={onItemRemove}
+          path={blockPath}
           readOnly={readOnly}
-          renderBlockActions={hasContent ? renderBlockActions : undefined}
-          renderCustomMarkers={hasContent ? renderCustomMarkers : undefined}
+          renderBlockActions={_renderBlockActions}
+          renderCustomMarkers={_renderCustomMarkers}
           renderPreview={renderPreview}
+          selected={selected}
           type={blockType}
         />
       )
     },
     [
-      hasContent,
+      _renderBlockActions,
+      _renderCustomMarkers,
+      editor.types.block.name,
       isFullscreen,
       onChange,
       onItemOpen,
-      ptFeatures.types.block.name,
+      onItemClose,
+      onItemRemove,
       readOnly,
-      renderBlockActions,
-      renderCustomMarkers,
       renderPreview,
     ]
   )
 
   const renderChild = useCallback(
-    (child: any, childType: any, attributes: any, defaultRender: any) => {
-      const isSpan = child._type === ptFeatures.types.span.name
+    (childProps: BlockChildRenderProps) => {
+      const {
+        focused: childFocused,
+        path: childPath,
+        renderDefault,
+        selected,
+        type: childType,
+        value: child,
+      } = childProps
+      const isSpan = child._type === editor.types.span.name
       if (isSpan) {
-        return defaultRender(child)
+        return renderDefault(childProps)
       }
-
       return (
         <InlineObject
-          attributes={attributes}
+          focused={childFocused}
           onItemOpen={onItemOpen}
+          path={childPath}
           readOnly={readOnly}
           renderCustomMarkers={renderCustomMarkers}
+          renderPreview={renderPreview}
           scrollElement={scrollElement}
+          selected={selected}
           type={childType}
           value={child}
-          renderPreview={renderPreview}
         />
       )
     },
-    [
-      onItemOpen,
-      ptFeatures.types.span.name,
-      readOnly,
-      renderCustomMarkers,
-      renderPreview,
-      scrollElement,
-    ]
+    [editor, onItemOpen, readOnly, renderCustomMarkers, renderPreview, scrollElement]
   )
 
   const renderAnnotation = useCallback(
-    (annotation: any, annotationType: any, attributes: any, defaultRender: any) => {
+    (annotationProps: BlockAnnotationRenderProps) => {
       return (
         <Annotation
-          attributes={attributes}
+          renderProps={annotationProps}
           onItemOpen={onItemOpen}
+          onItemClose={onItemClose}
           readOnly={readOnly}
           renderCustomMarkers={renderCustomMarkers}
           scrollElement={scrollElement}
-          value={annotation}
-          type={annotationType}
-        >
-          {defaultRender()}
-        </Annotation>
+        />
       )
     },
-    [onItemOpen, readOnly, renderCustomMarkers, scrollElement]
+    [onItemOpen, onItemClose, readOnly, renderCustomMarkers, scrollElement]
   )
 
   const [portalElement, setPortalElement] = useState<HTMLDivElement | null>(null)
