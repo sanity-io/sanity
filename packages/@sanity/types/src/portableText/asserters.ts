@@ -11,7 +11,7 @@ function isRecord(value: unknown): value is Record<string, unknown> {
  * * The `markDefs` and `style` property of a block is optional.
  * * Block types can be named, so expect anything of the _type property.
  *
- * @internal
+ * @alpha
  */
 export function isPortableTextTextBlock<T = PortableTextSpan | PortableTextObject>(
   value: unknown
@@ -34,7 +34,7 @@ export function isPortableTextTextBlock<T = PortableTextSpan | PortableTextObjec
  * @remarks
  * The `marks` property of a block is optional.
  *
- * @internal
+ * @alpha
  */
 export function isPortableTextSpan(value: unknown): value is PortableTextSpan {
   return (
@@ -55,7 +55,7 @@ export function isPortableTextSpan(value: unknown): value is PortableTextSpan {
  *
  * @see isPortableTextTextBlock
  *
- * @internal
+ * @alpha
  */
 export function isPortableTextListBlock<T = PortableTextSpan | PortableTextObject>(
   value: unknown
