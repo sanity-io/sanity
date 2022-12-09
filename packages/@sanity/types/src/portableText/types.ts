@@ -1,8 +1,8 @@
-/** @internal */
+/** @alpha */
 
 export type PortableTextBlock = PortableTextTextBlock | PortableTextObject
 
-/** @internal */
+/** @alpha */
 export interface PortableTextTextBlock<TChild = PortableTextSpan | PortableTextObject> {
   _type: string
   _key: string
@@ -13,14 +13,14 @@ export interface PortableTextTextBlock<TChild = PortableTextSpan | PortableTextO
   level?: number
 }
 
-/** @internal */
+/** @alpha */
 export interface PortableTextObject {
   _type: string
   _key: string
   [other: string]: unknown
 }
 
-/** @internal */
+/** @alpha */
 export interface PortableTextSpan {
   _key: string
   _type: 'span'
@@ -28,10 +28,10 @@ export interface PortableTextSpan {
   marks?: string[]
 }
 
-/** @internal */
+/** @alpha */
 export type PortableTextChild = PortableTextObject | PortableTextSpan
 
-/** @internal */
+/** @alpha */
 export interface PortableTextListBlock extends PortableTextTextBlock {
   listItem: string
   level: number
