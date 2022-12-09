@@ -1,13 +1,10 @@
 import {
   HotkeyOptions,
-  PortableTextBlock,
-  PortableTextChild,
   PortableTextEditor,
-  PortableTextFeatures,
   usePortableTextEditor,
   usePortableTextEditorSelection,
 } from '@sanity/portable-text-editor'
-import {ObjectSchemaType, Path} from '@sanity/types'
+import {ObjectSchemaType, Path, PortableTextBlock, PortableTextChild} from '@sanity/types'
 import {useCallback, useMemo} from 'react'
 import {FIXME} from '../../../../FIXME'
 import {useUnique} from '../../../../util'
@@ -28,12 +25,6 @@ export function useFocusChild(): PortableTextChild | undefined {
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   return useMemo(() => PortableTextEditor.focusChild(editor), [editor, selection]) // selection must be an additional dep here
-}
-
-export function useFeatures(): PortableTextFeatures {
-  const editor = usePortableTextEditor()
-
-  return useMemo(() => PortableTextEditor.getPortableTextFeatures(editor), [editor])
 }
 
 export function useActionGroups({

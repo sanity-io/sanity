@@ -1,5 +1,5 @@
 import {normalizeBlock} from '@sanity/block-tools'
-import {PortableTextBlock} from '@sanity/portable-text-editor'
+import {PortableTextBlock} from '@sanity/types'
 import {FormPatch, insert} from '../../../patch'
 import {InsertCallback} from './types'
 

@@ -9,14 +9,13 @@ import {ObjectSchemaType, Path, SchemaType} from '@sanity/types'
 import {Box, Button, Flex, Hotkeys, Text, Tooltip, useElementRect, useToast} from '@sanity/ui'
 import {CollapseIcon, ExpandIcon} from '@sanity/icons'
 import styled, {css} from 'styled-components'
-import {FIXME} from '../../../../FIXME'
 import {useRovingFocus} from '../../../../components'
 import {useResolveInitialValueForType} from '../../../../store'
 import {ActionMenu} from './ActionMenu'
 import {BlockStyleSelect} from './BlockStyleSelect'
 import {InsertMenu} from './InsertMenu'
 import {getBlockStyles, getInsertMenuItems} from './helpers'
-import {useActionGroups, useFeatures} from './hooks'
+import {useActionGroups} from './hooks'
 import {BlockItem, BlockStyleItem, PTEToolbarActionGroup} from './types'
 
 interface ToolbarProps {
@@ -151,7 +150,6 @@ const InnerToolbar = memo(function InnerToolbar({
 
 export function Toolbar(props: ToolbarProps) {
   const {hotkeys, isFullscreen, readOnly, onMemberOpen, onToggleFullscreen} = props
-  const features = useFeatures()
   const editor = usePortableTextEditor()
   const selection = usePortableTextEditorSelection()
   const resolveInitialValueForType = useResolveInitialValueForType()
@@ -202,7 +200,7 @@ export function Toolbar(props: ToolbarProps) {
   const handleInsertBlock = useCallback(
     async (type: ObjectSchemaType) => {
       const initialValue = await resolveInitialValue(type)
-      const path = PortableTextEditor.insertBlock(editor, type as FIXME, initialValue)
+      const path = PortableTextEditor.insertBlock(editor, type, initialValue)
       if (path) {
         onMemberOpen(path)
       }
@@ -213,7 +211,7 @@ export function Toolbar(props: ToolbarProps) {
   const handleInsertInline = useCallback(
     async (type: ObjectSchemaType) => {
       const initialValue = await resolveInitialValue(type)
-      const path = PortableTextEditor.insertChild(editor, type as FIXME, initialValue)
+      const path = PortableTextEditor.insertChild(editor, type, initialValue)
       if (path) {
         onMemberOpen(path)
       }
@@ -228,11 +226,11 @@ export function Toolbar(props: ToolbarProps) {
     disabled: true,
   })
 
-  const blockStyles = useMemo(() => getBlockStyles(features), [features])
+  const blockStyles = useMemo(() => getBlockStyles(editor.types), [editor])
 
   const insertMenuItems = useMemo(
-    () => getInsertMenuItems(features, disabled, handleInsertBlock, handleInsertInline),
-    [disabled, features, handleInsertBlock, handleInsertInline]
+    () => getInsertMenuItems(editor.types, disabled, handleInsertBlock, handleInsertInline),
+    [disabled, editor, handleInsertBlock, handleInsertInline]
   )
 
   return (

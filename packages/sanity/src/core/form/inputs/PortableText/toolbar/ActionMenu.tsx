@@ -4,7 +4,7 @@ import {EllipsisVerticalIcon} from '@sanity/icons'
 import {PortableTextEditor, usePortableTextEditor} from '@sanity/portable-text-editor'
 import {CollapseMenu, CollapseMenuButton} from '../../../../components/collapseMenu'
 import {PTEToolbarAction, PTEToolbarActionGroup} from './types'
-import {useActiveActionKeys, useFeatures, useFocusBlock} from './hooks'
+import {useActiveActionKeys, useFocusBlock} from './hooks'
 import {getActionIcon} from './helpers'
 
 const CollapseMenuMemo = memo(CollapseMenu)
@@ -22,12 +22,14 @@ interface ActionMenuProps {
 export const ActionMenu = memo(function ActionMenu(props: ActionMenuProps) {
   const {disabled: disabledProp, groups, isFullscreen, collapsed} = props
   const focusBlock = useFocusBlock()
-  const features = useFeatures()
   const editor = usePortableTextEditor()
 
-  const isVoidBlock = focusBlock?._type !== features.types.block.name
+  const isVoidBlock = focusBlock?._type !== editor.types.block.name
   const isEmptyTextBlock =
-    !isVoidBlock && focusBlock?.children.length === 1 && focusBlock?.children[0].text === ''
+    !isVoidBlock &&
+    Array.isArray(focusBlock.children) &&
+    focusBlock.children.length === 1 &&
+    focusBlock?.children[0].text === ''
 
   const disabled = disabledProp || isVoidBlock
 

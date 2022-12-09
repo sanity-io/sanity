@@ -6,7 +6,7 @@ type TextStyleProps = Omit<React.HTMLProps<HTMLDivElement>, 'as' | 'ref'>
 type BlockQuoteStyleProps = Omit<React.HTMLProps<HTMLQuoteElement>, 'as' | 'ref'>
 
 // Without this container, editing with Android breaks due to how Text is styled via responsiveFont in @sanity/ui
-const TextContainer = styled.div`
+export const TextContainer = styled.div`
   display: block;
 `
 
