@@ -1,17 +1,15 @@
 import {hues} from '@sanity/color'
 import {
-  PortableTextChild,
+  BlockAnnotationRenderProps,
   PortableTextEditor,
-  RenderAttributes,
   usePortableTextEditor,
 } from '@sanity/portable-text-editor'
-import {ObjectSchemaType, Path} from '@sanity/types'
+import {Path} from '@sanity/types'
 import {Box, Theme, ThemeColorToneKey, Tooltip} from '@sanity/ui'
-import React, {SyntheticEvent, useCallback, useMemo, useRef, useState} from 'react'
+import React, {ComponentType, SyntheticEvent, useCallback, useMemo, useRef, useState} from 'react'
 import styled, {css} from 'styled-components'
-import {FIXME} from '../../../../FIXME'
 import {pathToString} from '../../../../field'
-import {RenderCustomMarkers} from '../../../types'
+import {BlockAnnotationProps, RenderCustomMarkers} from '../../../types'
 import {DefaultMarkers} from '../_legacyDefaultParts/Markers'
 import {useFormBuilder} from '../../../useFormBuilder'
 import {useMemberValidation} from '../hooks/useMemberValidation'
@@ -20,14 +18,12 @@ import {usePortableTextMemberItem} from '../hooks/usePortableTextMembers'
 import {AnnotationToolbarPopover} from './AnnotationToolbarPopover'
 
 interface AnnotationProps {
-  attributes: RenderAttributes
-  children: JSX.Element
+  renderProps: BlockAnnotationRenderProps
   onItemOpen: (path: Path) => void
+  onItemClose: () => void
   readOnly?: boolean
   renderCustomMarkers?: RenderCustomMarkers
   scrollElement: HTMLElement | null
-  type: ObjectSchemaType
-  value: PortableTextChild
 }
 
 const Root = styled.span<{$toneKey?: Exclude<ThemeColorToneKey, 'transparent'>}>(
@@ -65,16 +61,8 @@ const TooltipBox = styled(Box).attrs({forwardedAs: 'span'})`
 `
 
 export const Annotation = function Annotation(props: AnnotationProps) {
-  const {
-    attributes: {path},
-    children,
-    onItemOpen,
-    renderCustomMarkers,
-    scrollElement,
-    readOnly,
-    type,
-    value,
-  } = props
+  const {onItemOpen, onItemClose, renderCustomMarkers, scrollElement, renderProps, readOnly} = props
+  const {type, value, path, renderDefault, selected, focused} = renderProps
   const {Markers = DefaultMarkers} = useFormBuilder().__internal.components
   const annotationRef = useRef<HTMLElement>(null)
   const editor = usePortableTextEditor()
@@ -87,14 +75,16 @@ export const Annotation = function Annotation(props: AnnotationProps) {
   const {validation, hasError, hasWarning} = useMemberValidation(memberItem?.node)
   const markers = usePortableTextMarkers(path)
 
+  const CustomComponent = type.components?.annotation as ComponentType<BlockAnnotationProps>
+
   const text = useMemo(
     () => (
       <span ref={setTextElement} data-annotation="">
-        {children}
+        {renderDefault(renderProps)}
       </span>
     ),
 
-    [children]
+    [renderDefault, renderProps]
   )
 
   const openItem = useCallback(() => {
@@ -139,7 +129,7 @@ export const Annotation = function Annotation(props: AnnotationProps) {
     (event: React.MouseEvent<HTMLButtonElement>): void => {
       event.preventDefault()
       event.stopPropagation()
-      PortableTextEditor.removeAnnotation(editor, type as FIXME)
+      PortableTextEditor.removeAnnotation(editor, type)
       PortableTextEditor.focus(editor)
     },
     [editor, type]
@@ -163,7 +153,7 @@ export const Annotation = function Annotation(props: AnnotationProps) {
   }, [isLink, hasError, hasWarning])
 
   const hasCustomMarkers = markers.length > 0
-  return (
+  const defaultRendered = (
     <Root
       $toneKey={toneKey}
       ref={annotationRef}
@@ -185,5 +175,27 @@ export const Annotation = function Annotation(props: AnnotationProps) {
         />
       )}
     </Root>
+  )
+  return CustomComponent && memberItem ? (
+    <CustomComponent
+      focused={focused}
+      open={memberItem.member.open}
+      onOpen={openItem}
+      onClose={onItemClose}
+      // eslint-disable-next-line react/jsx-no-bind
+      onRemove={() => {
+        PortableTextEditor.removeAnnotation(editor, type)
+        PortableTextEditor.focus(editor)
+      }}
+      path={memberItem?.node.path || path}
+      // eslint-disable-next-line react/jsx-no-bind
+      renderDefault={() => defaultRendered}
+      selected={selected}
+      value={value}
+    >
+      <span ref={memberItem?.elementRef}>{text}</span>
+    </CustomComponent>
+  ) : (
+    defaultRendered
   )
 }
