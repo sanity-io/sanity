@@ -74,7 +74,7 @@
   },
   "dependencies": {
     "@sanity/generate-help-url": "^3.0.0",
-    "@vitejs/plugin-react": "^2.0.0",
+    "@vitejs/plugin-react": "^3.0.0",
     "chalk": "^4.1.2",
     "chokidar": "^3.5.3",
     "connect-history-api-fallback": "^1.6.0",
@@ -85,7 +85,7 @@
     "module-alias": "^2.2.2",
     "read-pkg-up": "^7.0.1",
     "resolve-from": "^5.0.0",
-    "vite": "^3.0.0"
+    "vite": "^4.0.1"
   },
   "devDependencies": {
     "get-it": "^5.2.1",
