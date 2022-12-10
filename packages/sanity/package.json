@@ -75,6 +75,7 @@
   },
   "files": [
     "_internal.js",
+    "bin",
     "cli.js",
     "desk.js",
     "lib",
