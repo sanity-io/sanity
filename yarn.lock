@@ -1881,7 +1881,7 @@
     "@jridgewell/gen-mapping" "^0.3.0"
     "@jridgewell/trace-mapping" "^0.3.9"
 
-"@jridgewell/sourcemap-codec@1.4.14", "@jridgewell/sourcemap-codec@^1.4.10":
+"@jridgewell/sourcemap-codec@1.4.14", "@jridgewell/sourcemap-codec@^1.4.10", "@jridgewell/sourcemap-codec@^1.4.13":
   version "1.4.14"
   resolved "https://registry.yarnpkg.com/@jridgewell/sourcemap-codec/-/sourcemap-codec-1.4.14.tgz#add4c98d341472a289190b424efbdb096991bb24"
   integrity sha512-XPSJHWmi394fuUuzDnGz1wiKqWfo1yXecHQMRf2l6hztTO+nPru658AyDngaBe7isIxEkRsPR3FZh+s7iVa4Uw==
@@ -4886,7 +4886,7 @@
     ts-node "8.9.1"
     typescript "4.3.4"
 
-"@vitejs/plugin-react@^2.0.0", "@vitejs/plugin-react@^2.2.0":
+"@vitejs/plugin-react@^2.2.0":
   version "2.2.0"
   resolved "https://registry.yarnpkg.com/@vitejs/plugin-react/-/plugin-react-2.2.0.tgz#1b9f63b8b6bc3f56258d20cd19b33f5cc761ce6e"
   integrity sha512-FFpefhvExd1toVRlokZgxgy2JtnBOdp4ZDsq7ldCWaqGSGn9UhWMAVm/1lxPL14JfNS5yGz+s9yFrQY6shoStA==
@@ -4897,6 +4897,17 @@
     "@babel/plugin-transform-react-jsx-self" "^7.18.6"
     "@babel/plugin-transform-react-jsx-source" "^7.19.6"
     magic-string "^0.26.7"
+    react-refresh "^0.14.0"
+
+"@vitejs/plugin-react@^3.0.0":
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/@vitejs/plugin-react/-/plugin-react-3.0.0.tgz#f36ee1b2ce958dd11ac63fdf746a3b27b0d258ed"
+  integrity sha512-1mvyPc0xYW5G8CHQvJIJXLoMjl5Ct3q2g5Y2s6Ccfgwm45y48LBvsla7az+GkkAtYikWQ4Lxqcsq5RHLcZgtNQ==
+  dependencies:
+    "@babel/core" "^7.20.5"
+    "@babel/plugin-transform-react-jsx-self" "^7.18.6"
+    "@babel/plugin-transform-react-jsx-source" "^7.19.6"
+    magic-string "^0.27.0"
     react-refresh "^0.14.0"
 
 "@vue/compiler-core@3.2.45":
@@ -12917,6 +12928,13 @@ magic-string@^0.26.4, magic-string@^0.26.7:
   dependencies:
     sourcemap-codec "^1.4.8"
 
+magic-string@^0.27.0:
+  version "0.27.0"
+  resolved "https://registry.yarnpkg.com/magic-string/-/magic-string-0.27.0.tgz#e4a3413b4bab6d98d2becffd48b4a257effdbbf3"
+  integrity sha512-8UnnX2PeRAPZuN12svgR9j7M1uWMovg/CEnIwIG0LFkXSJJe4PdfUGiTGl8V9bsBHFUtfVINcSyYxd7q+kx9fA==
+  dependencies:
+    "@jridgewell/sourcemap-codec" "^1.4.13"
+
 make-dir@^1.0.0:
   version "1.3.0"
   resolved "https://registry.yarnpkg.com/make-dir/-/make-dir-1.3.0.tgz#79c1033b80515bd6d24ec9933e860ca75ee27f0c"
@@ -15215,7 +15233,7 @@ postcss@^7.0.35:
     picocolors "^0.2.1"
     source-map "^0.6.1"
 
-postcss@^8.1.10, postcss@^8.3.5, postcss@^8.4.18, postcss@^8.4.4:
+postcss@^8.1.10, postcss@^8.3.5, postcss@^8.4.18, postcss@^8.4.20, postcss@^8.4.4:
   version "8.4.20"
   resolved "https://registry.yarnpkg.com/postcss/-/postcss-8.4.20.tgz#64c52f509644cecad8567e949f4081d98349dc56"
   integrity sha512-6Q04AXR1212bXr5fh03u8aAwbLxAQNGQ/Q1LNa0VfOI06ZAlhPHtQvE4OIdpj4kLThXilalPnmDSOD65DcHt+g==
@@ -16468,7 +16486,7 @@ rollup@^2.43.1, rollup@^2.79.1:
   optionalDependencies:
     fsevents "~2.3.2"
 
-rollup@^3.7.1:
+rollup@^3.7.0, rollup@^3.7.1:
   version "3.7.4"
   resolved "https://registry.yarnpkg.com/rollup/-/rollup-3.7.4.tgz#993c3b30eff1df96f5eafb7c2ef7648960f2fa34"
   integrity sha512-jN9rx3k5pfg9H9al0r0y1EYKSeiRANZRYX32SuNXAnKzh6cVyf4LZVto1KAuDnbHT03E1CpsgqDKaqQ8FZtgxw==
@@ -18703,7 +18721,7 @@ verror@1.10.0:
     core-util-is "1.0.2"
     extsprintf "^1.2.0"
 
-vite@^3.0.0, vite@^3.2.4:
+vite@^3.2.4:
   version "3.2.5"
   resolved "https://registry.yarnpkg.com/vite/-/vite-3.2.5.tgz#dee5678172a8a0ab3e547ad4148c3d547f90e86a"
   integrity sha512-4mVEpXpSOgrssFZAOmGIr85wPHKvaDAcXqxVxVRZhljkJOMZi1ibLibzjLHzJvcok8BMguLc7g1W6W/GqZbLdQ==
@@ -18712,6 +18730,18 @@ vite@^3.0.0, vite@^3.2.4:
     postcss "^8.4.18"
     resolve "^1.22.1"
     rollup "^2.79.1"
+  optionalDependencies:
+    fsevents "~2.3.2"
+
+vite@^4.0.1:
+  version "4.0.1"
+  resolved "https://registry.yarnpkg.com/vite/-/vite-4.0.1.tgz#e0a54d818c28ae47fd27bcac6a4a952c6a658502"
+  integrity sha512-kZQPzbDau35iWOhy3CpkrRC7It+HIHtulAzBhMqzGHKRf/4+vmh8rPDDdv98SWQrFWo6//3ozwsRmwQIPZsK9g==
+  dependencies:
+    esbuild "^0.16.3"
+    postcss "^8.4.20"
+    resolve "^1.22.1"
+    rollup "^3.7.0"
   optionalDependencies:
     fsevents "~2.3.2"
 
