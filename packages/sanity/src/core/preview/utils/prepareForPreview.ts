@@ -9,7 +9,7 @@ import {debounce, flatten, get, isPlainObject, pick, uniqBy} from 'lodash'
 import {INVALID_PREVIEW_FALLBACK} from '../constants'
 import {PreviewableType} from '../types'
 import {isRecord} from '../../util'
-import {isPortableTextArray, extractTextFromBlocks} from './portableText'
+import {extractTextFromBlocks, isPortableTextPreviewValue} from './portableText'
 import {keysOf} from './keysOf'
 
 const PRESERVE_KEYS = ['_id', '_type', '_upload', '_createdAt', '_updatedAt']
@@ -190,7 +190,7 @@ function defaultPrepare(value: SelectedValue) {
     const val = value[fieldName]
     return {
       ...acc,
-      [fieldName]: isPortableTextArray(val) ? extractTextFromBlocks(val) : value[fieldName],
+      [fieldName]: isPortableTextPreviewValue(val) ? extractTextFromBlocks(val) : val,
     }
   }, {})
 }
