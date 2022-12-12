@@ -1,9 +1,9 @@
 import {Box, Card, Stack, Text} from '@sanity/ui'
-import {Path} from '@sanity/types'
+import {Path, PortableTextTextBlock} from '@sanity/types'
 import React, {useCallback, useContext} from 'react'
 import {DiffContext, DiffTooltip, useDiffAnnotationColor} from '../../../../diff'
 import {isHeader} from '../helpers'
-import {PortableTextBlock, PortableTextDiff} from '../types'
+import {PortableTextDiff} from '../types'
 import {ConnectorContext} from '../../../../../changeIndicators'
 import Blockquote from './Blockquote'
 import Header from './Header'
@@ -13,7 +13,7 @@ const EMPTY_PATH: Path = []
 
 export default function Block(props: {
   diff: PortableTextDiff
-  block: PortableTextBlock
+  block: PortableTextTextBlock
   children: JSX.Element
 }): JSX.Element {
   const {diff, block, children} = props

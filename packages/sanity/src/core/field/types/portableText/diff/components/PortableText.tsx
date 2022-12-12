@@ -1,9 +1,15 @@
-import {ObjectSchemaType, SchemaType} from '@sanity/types'
+import {
+  isPortableTextSpan,
+  ObjectSchemaType,
+  PortableTextChild,
+  PortableTextTextBlock,
+  SpanSchemaType,
+} from '@sanity/types'
 import {startCase, uniq, xor} from 'lodash'
 import React, {ReactElement, useCallback, useMemo} from 'react'
 import {DiffCard} from '../../../../diff'
 import {ArrayDiff, ObjectDiff, StringDiff, StringDiffSegment} from '../../../../types'
-import {PortableTextBlock, PortableTextChild, PortableTextDiff, SpanTypeSchema} from '../types'
+import {PortableTextDiff} from '../types'
 
 import * as TextSymbols from '../symbols'
 
@@ -43,7 +49,7 @@ type Props = {
 
 export default function PortableText(props: Props): JSX.Element {
   const {diff, schemaType} = props
-  const block = (diff.origin.toValue || diff.origin.fromValue) as PortableTextBlock
+  const block = (diff.origin.toValue || diff.origin.fromValue) as PortableTextTextBlock
 
   const inlineObjects = useMemo(
     () => (diff.origin.toValue ? getInlineObjects(diff.origin) : []),
@@ -52,7 +58,7 @@ export default function PortableText(props: Props): JSX.Element {
 
   const renderChild = useCallback(
     (ptDiffChild: PortableTextChild) => {
-      const spanSchemaType = getChildSchemaType(schemaType.fields, ptDiffChild) as SpanTypeSchema
+      const spanSchemaType = getChildSchemaType(schemaType.fields, ptDiffChild) as SpanSchemaType
       let decoratorTypes: {title: string; value: string}[] = []
       if (spanSchemaType) {
         decoratorTypes = getDecorators(spanSchemaType)
@@ -243,7 +249,7 @@ function renderTextSegment({
   decoratorTypes: {title: string; value: string}[]
   seg: StringDiffSegment
   segIndex: number
-  spanSchemaType: SpanTypeSchema
+  spanSchemaType: SpanSchemaType
 }): JSX.Element {
   // Newlines
   if (seg.text === '\n') {
@@ -257,7 +263,7 @@ function renderTextSegment({
   )
   const spanDiff = child && findSpanDiffFromChild(diff.origin, child)
   // Render decorator diff info
-  const activeMarks = child.marks || []
+  const activeMarks = isPortableTextSpan(child) ? child.marks || [] : []
   if (spanDiff) {
     children = renderDecorators({
       activeMarks,
@@ -303,7 +309,7 @@ function renderDecorators({
   seg: StringDiffSegment
   segIndex: number
   spanDiff: ObjectDiff
-  spanSchemaType: SchemaType
+  spanSchemaType: SpanSchemaType
 }): JSX.Element {
   let returned = <span key={`text-segment-${segIndex}`}>{children}</span>
   const fromPtDiffText: string =
@@ -375,7 +381,7 @@ function renderDecorators({
   return returned
 }
 
-function isEmptyTextChange(block: PortableTextBlock, diff: PortableTextDiff) {
+function isEmptyTextChange(block: PortableTextTextBlock, diff: PortableTextDiff) {
   return (
     block.children.length === 1 &&
     block.children[0]._type === 'span' &&
