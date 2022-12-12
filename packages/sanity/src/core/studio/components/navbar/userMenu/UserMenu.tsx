@@ -1,4 +1,4 @@
-import {SunIcon, MoonIcon, LeaveIcon, ChevronDownIcon, CogIcon} from '@sanity/icons'
+import {SunIcon, MoonIcon, LeaveIcon, ChevronDownIcon, CogIcon, DesktopIcon} from '@sanity/icons'
 import {
   Box,
   Button,
@@ -15,7 +15,7 @@ import {
   Tooltip,
   useRootTheme,
 } from '@sanity/ui'
-import React, {useCallback, useMemo} from 'react'
+import React, {useMemo} from 'react'
 import styled from 'styled-components'
 import {UserAvatar} from '../../../../components'
 import {getProviderTitle} from '../../../../store'
@@ -40,7 +40,7 @@ const AvatarBox = styled(Box)`
 export function UserMenu() {
   const {currentUser, projectId, auth} = useWorkspace()
   const theme = useRootTheme().theme as StudioTheme
-  const {scheme, setScheme} = useColorScheme()
+  const {scheme, appearance, setAppearance} = useColorScheme()
 
   const providerTitle = getProviderTitle(currentUser?.provider)
 
@@ -53,10 +53,6 @@ export function UserMenu() {
     }),
     [scheme]
   )
-
-  const handleToggleScheme = useCallback(() => {
-    setScheme(scheme === 'dark' ? 'light' : 'dark')
-  }, [scheme, setScheme])
 
   return (
     <MenuButton
@@ -114,10 +110,33 @@ export function UserMenu() {
             <>
               <MenuDivider />
 
+              <Box padding={2}>
+                <Label size={1} muted>
+                  Color scheme
+                </Label>
+              </Box>
+
               <MenuItem
-                icon={scheme === 'dark' ? SunIcon : MoonIcon}
-                onClick={handleToggleScheme}
-                text={scheme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+                icon={DesktopIcon}
+                // eslint-disable-next-line react/jsx-no-bind
+                onClick={() => setAppearance('system')}
+                pressed={appearance === 'system'}
+                text="System"
+              />
+
+              <MenuItem
+                icon={MoonIcon}
+                // eslint-disable-next-line react/jsx-no-bind
+                onClick={() => setAppearance('dark')}
+                pressed={appearance === 'dark'}
+                text="Dark"
+              />
+              <MenuItem
+                icon={SunIcon}
+                // eslint-disable-next-line react/jsx-no-bind
+                onClick={() => setAppearance('light')}
+                pressed={appearance === 'light'}
+                text="Light"
               />
             </>
           )}
