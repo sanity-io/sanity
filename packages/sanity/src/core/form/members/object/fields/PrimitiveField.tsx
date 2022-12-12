@@ -82,7 +82,7 @@ export function PrimitiveField(props: {
       id: member.field.id,
       ref: focusRef,
       onChange: handleNativeChange,
-      value: String(member.field.value || ''),
+      value: String(member.field.value ?? ''),
       readOnly: Boolean(member.field.readOnly),
       placeholder: member.field.schemaType.placeholder,
     }),
