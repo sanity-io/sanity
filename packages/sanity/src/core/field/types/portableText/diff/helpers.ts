@@ -1,5 +1,17 @@
 import {flatten, isEqual, orderBy} from 'lodash'
-import {ArraySchemaType, Block, ObjectField, ObjectSchemaType, SchemaType} from '@sanity/types'
+import {
+  ArraySchemaType,
+  isPortableTextSpan,
+  isPortableTextTextBlock,
+  ObjectField,
+  ObjectSchemaType,
+  PortableTextBlock,
+  PortableTextChild,
+  PortableTextObject,
+  PortableTextTextBlock,
+  SchemaType,
+  SpanSchemaType,
+} from '@sanity/types'
 import {
   diff_match_patch as DiffMatchPatch,
   DIFF_DELETE,
@@ -15,14 +27,7 @@ import {
 } from '../../../types'
 import * as TextSymbols from './symbols'
 
-import {
-  InlineSymbolMap,
-  MarkSymbolMap,
-  PortableTextBlock,
-  PortableTextDiff,
-  PortableTextChild,
-  SpanTypeSchema,
-} from './types'
+import {InlineSymbolMap, MarkSymbolMap, PortableTextDiff} from './types'
 
 const dmp = new DiffMatchPatch()
 
@@ -47,7 +52,9 @@ const symbolRegex = new RegExp(`${allSymbols.join('|')}`, 'g')
 const segmentRegex = new RegExp(`${allSymbols.join('|')}|\n`, 'g')
 
 interface BlockSchemaType extends ObjectSchemaType {
-  diffComponent: DiffComponent<ObjectDiff<Block>> | DiffComponentOptions<ObjectDiff<Block>>
+  diffComponent:
+    | DiffComponent<ObjectDiff<PortableTextBlock>>
+    | DiffComponentOptions<ObjectDiff<PortableTextBlock>>
 }
 
 export function isPTSchemaType(schemaType: SchemaType): schemaType is BlockSchemaType {
@@ -55,7 +62,11 @@ export function isPTSchemaType(schemaType: SchemaType): schemaType is BlockSchem
 }
 
 export function isHeader(node: PortableTextBlock): boolean {
-  return !!node.style && ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'].includes(node.style)
+  return (
+    isPortableTextTextBlock(node) &&
+    !!node.style &&
+    ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'].includes(node.style)
+  )
 }
 
 export function findChildDiff(diff: ObjectDiff, child: PortableTextChild): ObjectDiff {
@@ -83,27 +94,27 @@ export function getChildSchemaType(
   return cSchemaType
 }
 
-export function getDecorators(spanSchemaType: SpanTypeSchema): {title: string; value: string}[] {
+export function getDecorators(spanSchemaType: SpanSchemaType): {title: string; value: string}[] {
   if (spanSchemaType.decorators) {
     return orderBy(spanSchemaType.decorators, ['value'], ['asc'])
   }
   return []
 }
 
-export function getAnnotations(spanSchemaType: SpanTypeSchema): ObjectSchemaType[] {
+export function getAnnotations(spanSchemaType: SpanSchemaType): ObjectSchemaType[] {
   if (spanSchemaType.annotations) {
     return orderBy(spanSchemaType.annotations, ['name'], ['asc'])
   }
   return []
 }
 
-export function isDecorator(name: string, schemaType: SpanTypeSchema): boolean {
+export function isDecorator(name: string, schemaType: SpanSchemaType): boolean {
   return getDecorators(schemaType).some((dec) => dec.value === name)
 }
 
 export function blockToSymbolizedText(
   diff: ObjectDiff,
-  block: PortableTextBlock | undefined,
+  block: PortableTextTextBlock | undefined,
   decoratorMap: MarkSymbolMap,
   annotationMap: MarkSymbolMap,
   inlineMap: InlineSymbolMap
@@ -113,8 +124,8 @@ export function blockToSymbolizedText(
   }
   return block.children
     .map((child) => {
-      let returned = child.text?.replace(symbolRegex, '') || '' // Make sure symbols aren't in the text already
-      if (child._type === 'span') {
+      let returned = isPortableTextSpan(child) ? child.text?.replace(symbolRegex, '') : '' // Make sure symbols aren't in the text already
+      if (isPortableTextSpan(child)) {
         // Attatch stringdiff segments
         const spanDiff = findSpanDiffFromChild(diff, child)
         const textDiff = spanDiff?.fields.text
@@ -125,8 +136,8 @@ export function blockToSymbolizedText(
           textDiff.action !== 'unchanged'
         ) {
           returned = textDiff.segments
-            .filter((seg: any) => seg.action !== 'removed')
-            .map((seg: any) => seg.text.replace(symbolRegex, ''))
+            .filter((seg) => seg.action !== 'removed')
+            .map((seg) => seg.text.replace(symbolRegex, ''))
             .join(TextSymbols.SEGMENT_START_SYMBOL)
         }
         if (child.marks) {
@@ -153,8 +164,8 @@ export function createPortableTextDiff(
 ): PortableTextDiff {
   const displayValue =
     diff.action === 'removed'
-      ? (diff.fromValue as PortableTextBlock)
-      : (diff.toValue as PortableTextBlock)
+      ? (diff.fromValue as PortableTextTextBlock)
+      : (diff.toValue as PortableTextTextBlock)
   const _diff: PortableTextDiff = {
     ...diff,
     origin: diff,
@@ -165,7 +176,10 @@ export function createPortableTextDiff(
     const annotationMap: MarkSymbolMap = {}
     const decoratorMap: MarkSymbolMap = {}
     const inlineMap: InlineSymbolMap = {}
-    const spanSchemaType = getChildSchemaType(schemaType.fields, {_key: 'bogus', _type: 'span'})
+    const spanSchemaType = getChildSchemaType(schemaType.fields, {
+      _key: 'bogus',
+      _type: 'span',
+    }) as SpanSchemaType
     if (spanSchemaType) {
       getDecorators(spanSchemaType).forEach((dec, index) => {
         decoratorMap[dec.value] = TextSymbols.DECORATOR_SYMBOLS[index]
@@ -181,14 +195,14 @@ export function createPortableTextDiff(
     })
     const fromText = blockToSymbolizedText(
       _diff.origin,
-      _diff.fromValue as PortableTextBlock,
+      _diff.fromValue as PortableTextTextBlock,
       decoratorMap,
       annotationMap,
       inlineMap
     )
     const toText = blockToSymbolizedText(
       _diff.origin,
-      _diff.toValue as PortableTextBlock,
+      _diff.toValue as PortableTextTextBlock,
       decoratorMap,
       annotationMap,
       inlineMap
@@ -337,7 +351,7 @@ function buildSegments(fromInput: string, toInput: string): StringDiffSegment[] 
   )
 }
 
-export function getInlineObjects(diff: ObjectDiff): PortableTextChild[] {
+export function getInlineObjects(diff: ObjectDiff): PortableTextObject[] {
   const allChildren = [
     ...(diff.toValue ? diff.toValue.children.filter((cld: any) => cld._type !== 'span') : []),
   ]
@@ -349,7 +363,7 @@ export function getInlineObjects(diff: ObjectDiff): PortableTextChild[] {
       allChildren.push(oCld)
     }
   })
-  return orderBy(allChildren, ['_key'], ['asc']) as PortableTextChild[]
+  return orderBy(allChildren, ['_key'], ['asc']) as PortableTextObject[]
 }
 
 export function findSpanDiffFromChild(
