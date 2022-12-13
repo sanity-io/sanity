@@ -31,14 +31,21 @@ describeCliTest('CLI: `sanity build` / `sanity deploy`', () => {
           expect(builtCss).toContain('Spinner_sanity')
         } else if (version === 'v3') {
           const files = await readdir(path.join(studioPath, 'out', 'static'))
-          const jsPath =
-            files.find((file) => file.startsWith('sanity.') && file.endsWith('.js')) || ''
-          const cssPath = files.find((file) => file.endsWith('.css')) || ''
+          const jsPath = files.find((file) => file.startsWith('sanity-') && file.endsWith('.js'))
+          const cssPath = files.find((file) => file.endsWith('.css'))
+          if (!jsPath) {
+            throw new Error('Could not find Sanity JS entry file (sanity-[hash].js)')
+          }
+
+          if (!cssPath) {
+            throw new Error('Could not find Sanity CSS entry file (-[hash].css)')
+          }
+
           const builtHtml = await readFile(path.join(studioPath, 'out/index.html'), 'utf8')
           const builtJs = await readFile(path.join(studioPath, 'out', 'static', jsPath), 'utf8')
           const builtCss = await readFile(path.join(studioPath, 'out', 'static', cssPath), 'utf8')
           expect(builtHtml).toContain('id="sanity"')
-          expect(builtJs).toContain('Sanity Studio')
+          expect(builtJs).toMatch(/getElementById\(['"]sanity['"]\)/)
           expect(builtCss).toMatch(/background:\s*green/)
         }
       },
