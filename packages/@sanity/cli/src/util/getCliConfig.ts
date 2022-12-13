@@ -16,7 +16,6 @@
 import path from 'path'
 import fs from 'fs'
 import {Worker} from 'worker_threads'
-import {register} from 'esbuild-register/dist/node'
 import type {CliConfig, SanityJson} from '../types'
 import {dynamicRequire} from './dynamicRequire'
 import {getCliWorkerPath} from './cliWorker'
@@ -40,7 +39,9 @@ export async function getCliConfig(
     }
   }
 
-  const {unregister} = register()
+  const {unregister} = __DEV__
+    ? {unregister: () => undefined}
+    : require('esbuild-register/dist/node').register()
 
   try {
     const v3Config = getSanityCliConfig(cwd)
