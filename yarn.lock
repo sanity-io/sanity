@@ -3398,13 +3398,6 @@
     suspend-react "^0.0.8"
     zustand "^3.7.1"
 
-"@rexxars/babel-plugin-inline-json-import@^0.3.4":
-  version "0.3.4"
-  resolved "https://registry.yarnpkg.com/@rexxars/babel-plugin-inline-json-import/-/babel-plugin-inline-json-import-0.3.4.tgz#7aff8f0ee2432e83e1e0f69401474243ad4f0239"
-  integrity sha512-OzvZiOmgVoyMA8DtvhsisizFXkKt9aj3fRzx7gj1/0o96fe6e4Bjsz6Aim2FVCXW4FnsGbiJi8BwiMottTO4MA==
-  dependencies:
-    resolve-from "^5.0.0"
-
 "@rexxars/gitconfiglocal@^3.0.1":
   version "3.0.1"
   resolved "https://registry.yarnpkg.com/@rexxars/gitconfiglocal/-/gitconfiglocal-3.0.1.tgz#a077c81e8e4a46fb0635e2fc0cd9850d142b2c49"
