@@ -31,6 +31,11 @@ export interface Asset extends SanityDocument {
   size: number
   originalFilename?: string
 
+  // Extensions
+  label?: string
+  title?: string
+  description?: string
+
   // External asset source extensions
   creditLine?: string
   source?: AssetSourceSpec
