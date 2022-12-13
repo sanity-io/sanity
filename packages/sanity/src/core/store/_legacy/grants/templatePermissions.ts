@@ -28,7 +28,10 @@ export interface TemplatePermissionsResult<TInitialValue = Record<string, unknow
 type Serializable<T> = {serialize(): T}
 
 function serialize<T>(item: T | Serializable<T>): T {
-  if (item && 'serialize' in item) return serialize(item.serialize())
+  if (typeof item === 'object' && item !== null && 'serialize' in item) {
+    return serialize(item.serialize())
+  }
+
   return item as T
 }
 
