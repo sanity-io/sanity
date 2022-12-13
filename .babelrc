@@ -15,8 +15,5 @@
     "@babel/preset-typescript",
     "@babel/preset-react"
   ],
-  "plugins": [
-    "@babel/plugin-proposal-class-properties",
-    ["@rexxars/inline-json-import", {"match": "/sanity/package.json"}]
-  ]
+  "plugins": ["@babel/plugin-proposal-class-properties"]
 }
