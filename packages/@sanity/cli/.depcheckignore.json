@@ -14,6 +14,7 @@
     "@sanity/ui",
     "@sanity/uuid",
     "babylon",
+    "esbuild",
     "lodash.get",
     "pluralize",
     "pluralize-esm",

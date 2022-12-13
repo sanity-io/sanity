@@ -1,3 +1,3 @@
 {
-  "ignore": ["@optimize-lodash/rollup-plugin", "@sanity/pkg-utils", "styled-components"]
+  "ignore": ["@optimize-lodash/rollup-plugin", "@sanity/pkg-utils", "esbuild", "styled-components"]
 }
