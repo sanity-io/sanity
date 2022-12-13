@@ -5,11 +5,6 @@ import semver, {SemVer} from 'semver'
 import resolveFrom from 'resolve-from'
 import oneline from 'oneline'
 import type {CliCommandContext, PackageJson} from '@sanity/cli'
-
-/**
- * NOTE: This is statically inlined into the compiled file by
- * `babel-plugin-inline-json-import`
- */
 import {peerDependencies} from '../../../../package.json'
 
 const defaultStudioManifestProps: PartialPackageManifest = {
