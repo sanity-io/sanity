@@ -1,5 +1,7 @@
 import {register} from 'esbuild-register/dist/node'
 
-register({
-  target: `node${process.version.slice(1)}`,
-})
+if (!__DEV__) {
+  register({
+    target: `node${process.version.slice(1)}`,
+  })
+}

@@ -56,7 +56,7 @@ export function renderDocument(options: {
     debug('Starting worker thread for %s', __filename)
     const worker = new Worker(__filename, {
       execArgv: __DEV__ ? ['-r', 'esbuild-register'] : undefined,
-      workerData: {...options, shouldWarn: true},
+      workerData: {...options, dev: __DEV__, shouldWarn: true},
     })
 
     worker.on('message', (msg) => {
@@ -120,6 +120,12 @@ function renderDocumentFromWorkerData() {
 
   const {monorepo, studioRootPath, props} = workerData || {}
 
+  if (workerData?.dev) {
+    // Define `__DEV__` in the worker thread as well
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    ;(global as any).__DEV__ = true
+  }
+
   if (typeof studioRootPath !== 'string') {
     parentPort.postMessage({type: 'error', message: 'Missing/invalid `studioRootPath` option'})
     return
@@ -138,19 +144,23 @@ function renderDocumentFromWorkerData() {
   // Require hook #2
   // Use `esbuild` to allow JSX/TypeScript and modern JS features
   debug('Registering esbuild for node %s', process.version)
-  const {unregister} = require('esbuild-register/dist/node').register({
-    target: `node${process.version.slice(1)}`,
-    extensions: ['.jsx', '.ts', '.tsx', '.mjs'],
-  })
+  const {unregister} = __DEV__
+    ? {unregister: () => undefined}
+    : require('esbuild-register/dist/node').register({
+        target: `node${process.version.slice(1)}`,
+        extensions: ['.jsx', '.ts', '.tsx', '.mjs'],
+      })
 
   // Require hook #3
   // Same as above, but we don't want to enforce a .jsx extension for anything with JSX
   debug('Registering esbuild for .js files using jsx loader')
-  const {unregister: unregisterJs} = require('esbuild-register/dist/node').register({
-    target: `node${process.version.slice(1)}`,
-    extensions: ['.js'],
-    loader: 'jsx',
-  })
+  const {unregister: unregisterJs} = __DEV__
+    ? () => undefined
+    : require('esbuild-register/dist/node').register({
+        target: `node${process.version.slice(1)}`,
+        extensions: ['.js'],
+        loader: 'jsx',
+      })
 
   const html = getDocumentHtml(studioRootPath, props)
 
