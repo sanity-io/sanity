@@ -373,6 +373,8 @@ export interface ObjectSchemaType extends BaseSchemaType {
   __experimental_search: {path: (string | number)[]; weight: number; mapWith?: string}[]
   /** @alpha */
   __experimental_omnisearch_visibility?: boolean
+  /** @alpha */
+  __experimental_actions?: string[]
 
   /**
    * @beta
