@@ -8,10 +8,7 @@ const jestConfigFiles = globby.sync(
   pkg.workspaces.map((workspace) => path.join(__dirname, workspace, '/jest.config.cjs'))
 )
 
-const IGNORE_PROJECTS = [
-  // There are jest/esm issues in `@sanity/server` test suite, so ignore for now
-  'packages/@sanity/server',
-]
+const IGNORE_PROJECTS = []
 
 module.exports = {
   projects: jestConfigFiles

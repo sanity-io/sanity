@@ -1,3 +1,0 @@
-export {}
-
-console.warn('frame')

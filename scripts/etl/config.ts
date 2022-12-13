@@ -32,7 +32,6 @@ export const config = {
     '@sanity/mutator',
     '@sanity/portable-text-editor',
     '@sanity/schema',
-    '@sanity/server',
     '@sanity/types',
     '@sanity/util',
     '@sanity/validation',

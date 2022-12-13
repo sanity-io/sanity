@@ -18,6 +18,7 @@ import {filterDefinitions} from '../studio/components/navbar/search/definitions/
 import {operatorDefinitions} from '../studio/components/navbar/search/definitions/operators/defaultOperators'
 import {
   Config,
+  MissingConfigFile,
   PreparedConfig,
   SingleWorkspace,
   Source,
@@ -68,7 +69,15 @@ function normalizeIcon(
  *
  * @internal
  */
-export function prepareConfig(config: Config): PreparedConfig {
+export function prepareConfig(config: Config | MissingConfigFile): PreparedConfig {
+  if (!Array.isArray(config) && 'missingConfigFile' in config) {
+    throw new ConfigResolutionError({
+      name: '',
+      type: 'configuration file',
+      causes: ['No `sanity.config.ts` file found', 'No `sanity.config.js` file found'],
+    })
+  }
+
   const workspaceOptions: WorkspaceOptions[] | [SingleWorkspace] = Array.isArray(config)
     ? config
     : [config]

@@ -2,6 +2,7 @@ import path from 'path'
 import fs from 'fs/promises'
 import {constants as fsConstants} from 'fs'
 import {build, InlineConfig} from 'vite'
+import readPkgUp from 'read-pkg-up'
 import {finalizeViteConfig, getViteConfig} from './getViteConfig'
 import {generateWebManifest} from './webManifest'
 import {writeSanityRuntime} from './runtime'
@@ -149,8 +150,17 @@ function skipIfExistsError(err: Error & {code: string}) {
 }
 
 async function writeFavicons(basePath: string, destDir: string): Promise<void> {
+  const sanityPkgPath = (await readPkgUp({cwd: __dirname}))?.path
+  const faviconsPath = sanityPkgPath
+    ? path.join(path.dirname(sanityPkgPath), 'static', 'favicons')
+    : undefined
+
+  if (!faviconsPath) {
+    throw new Error('Unable to resolve `sanity` module root')
+  }
+
   await fs.mkdir(destDir, {recursive: true})
-  await copyDir(path.resolve(__dirname, '../static/favicons'), destDir, true)
+  await copyDir(faviconsPath, destDir, true)
   await writeWebManifest(basePath, destDir)
 }
 
