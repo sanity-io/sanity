@@ -1,3 +1,10 @@
 {
-  "ignore": ["@optimize-lodash/rollup-plugin", "@sanity/pkg-utils", "globby", "read-pkg-up", "sanity"]
+  "ignore": [
+    "@optimize-lodash/rollup-plugin",
+    "@sanity/pkg-utils",
+    "esbuild",
+    "globby",
+    "read-pkg-up",
+    "sanity"
+  ]
 }
