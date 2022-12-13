@@ -70,16 +70,12 @@ export function WorkspacePreview(props: WorkspacePreviewProps) {
       {(selected || iconRightComponent) && (
         <Flex align="center" gap={4} paddingLeft={3} paddingRight={2}>
           {selected && (
-            <Text size={1} muted>
+            <Text>
               <CheckmarkIcon />
             </Text>
           )}
 
-          {iconRightComponent && (
-            <Text size={1} muted>
-              {iconRightComponent}
-            </Text>
-          )}
+          {iconRightComponent && <Text muted>{iconRightComponent}</Text>}
         </Flex>
       )}
     </Flex>
