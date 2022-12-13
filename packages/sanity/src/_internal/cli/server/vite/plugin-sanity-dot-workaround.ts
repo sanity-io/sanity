@@ -10,7 +10,7 @@ import history from 'connect-history-api-fallback'
  */
 export function sanityDotWorkaroundPlugin(): Plugin {
   return {
-    name: '@sanity/server/dot-workaround',
+    name: 'sanity/server/dot-workaround',
     configureServer(server) {
       const {root} = server.config
 

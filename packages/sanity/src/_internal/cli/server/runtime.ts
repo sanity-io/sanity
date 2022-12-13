@@ -62,7 +62,10 @@ export async function writeSanityRuntime({
 
   debug('Writing app.js to runtime directory')
   const studioConfigPath = await getSanityStudioConfigPath(cwd)
-  const relativeConfigLocation = path.relative(runtimeDir, studioConfigPath)
+  const relativeConfigLocation = studioConfigPath
+    ? path.relative(runtimeDir, studioConfigPath)
+    : null
+
   await fs.writeFile(
     path.join(runtimeDir, 'app.js'),
     getEntryModule({reactStrictMode, relativeConfigLocation})

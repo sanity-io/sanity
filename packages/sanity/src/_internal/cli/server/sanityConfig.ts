@@ -12,7 +12,7 @@ const debug = serverDebug.extend('config')
  *
  * @internal
  */
-export async function getSanityStudioConfigPath(studioRootPath: string): Promise<string> {
+export async function getSanityStudioConfigPath(studioRootPath: string): Promise<string | null> {
   const configPaths = [
     path.join(studioRootPath, 'sanity.config.mjs'),
     path.join(studioRootPath, 'sanity.config.js'),
@@ -35,7 +35,7 @@ export async function getSanityStudioConfigPath(studioRootPath: string): Promise
   // No config file exists?
   if (availableConfigs.length === 0) {
     console.warn('No `sanity.config.js`/`sanity.config.ts` found - using default studio config')
-    return path.resolve(__dirname, './default-config.js')
+    return null
   }
 
   if (availableConfigs.length > 1) {

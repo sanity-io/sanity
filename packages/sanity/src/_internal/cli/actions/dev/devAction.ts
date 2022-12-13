@@ -1,8 +1,6 @@
 import path from 'path'
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore The `@sanity/server` may not be built yet.
-import {DevServerOptions, startDevServer} from '@sanity/server'
 import type {CliConfig, CliCommandArguments, CliCommandContext} from '@sanity/cli'
+import {DevServerOptions, startDevServer} from '../../server/devServer'
 import {getTimer} from '../../util/timing'
 import {checkStudioDependencyVersions} from '../../util/checkStudioDependencyVersions'
 import {checkRequiredDependencies} from '../../util/checkRequiredDependencies'

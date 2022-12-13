@@ -7,3 +7,8 @@ declare module 'get-it/middleware' {
   const promise: any
   export {promise}
 }
+
+declare module 'get-it/lib/middleware/promise' {
+  const promise: () => any
+  export default promise
+}

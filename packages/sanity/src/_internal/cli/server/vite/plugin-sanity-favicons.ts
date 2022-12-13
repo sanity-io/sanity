@@ -28,7 +28,7 @@ export function sanityFaviconsPlugin({
   }
 
   return {
-    name: '@sanity/server/sanity-favicons',
+    name: 'sanity/server/sanity-favicons',
     apply: 'serve',
     configureServer(viteDevServer) {
       const webManifest = JSON.stringify(generateWebManifest(staticUrlPath), null, 2)
