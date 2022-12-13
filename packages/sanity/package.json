@@ -108,7 +108,8 @@
     "desk.js",
     "lib",
     "router.js",
-    "src"
+    "src",
+    "static"
   ],
   "scripts": {
     "prebuild": "run-s clean",
@@ -149,7 +150,6 @@
     "@sanity/mutator": "3.1.4",
     "@sanity/portable-text-editor": "3.1.4",
     "@sanity/schema": "3.1.4",
-    "@sanity/server": "3.1.4",
     "@sanity/types": "3.1.4",
     "@sanity/ui": "^1.0.0",
     "@sanity/util": "3.1.4",
@@ -161,11 +161,13 @@
     "@types/react-is": "^17.0.3",
     "@types/shallow-equals": "^1.0.0",
     "@types/speakingurl": "^13.0.3",
+    "@vitejs/plugin-react": "^3.0.0",
     "chalk": "^4.1.2",
     "chokidar": "^3.5.3",
     "classnames": "^2.2.5",
     "color2k": "^2.0.0",
     "configstore": "^5.0.1",
+    "connect-history-api-fallback": "^1.6.0",
     "console-table-printer": "^2.11.1",
     "dataloader": "^2.1.0",
     "date-fns": "^2.26.1",
@@ -181,6 +183,7 @@
     "groq-js": "^0.2.0",
     "hashlru": "^2.3.0",
     "history": "^4.6.3",
+    "import-fresh": "^3.3.0",
     "is-hotkey": "^0.1.6",
     "jsdom": "^20.0.0",
     "jsdom-global": "^3.0.2",
@@ -190,6 +193,7 @@
     "lodash": "^4.17.21",
     "log-symbols": "^2.2.0",
     "mendoza": "^2.1.1",
+    "module-alias": "^2.2.2",
     "nano-pubsub": "^2.0.1",
     "nanoid": "^3.1.30",
     "observable-callback": "^1.0.1",
@@ -223,6 +227,7 @@
     "ts-md5": "^1.3.1",
     "use-device-pixel-ratio": "^1.1.0",
     "use-hot-module-reload": "^1.0.1",
+    "vite": "^4.0.1",
     "yargs": "^17.3.0"
   },
   "devDependencies": {

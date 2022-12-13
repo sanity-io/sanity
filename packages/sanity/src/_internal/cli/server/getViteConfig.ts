@@ -1,6 +1,7 @@
 import path from 'path'
 import type {InlineConfig} from 'vite'
 import viteReact from '@vitejs/plugin-react'
+import readPkgUp from 'read-pkg-up'
 import {getAliases} from './aliases'
 import {normalizeBasePath} from './helpers'
 import {loadSanityMonorepo} from './sanityMonorepo'
@@ -66,7 +67,13 @@ export async function getViteConfig(options: ViteOptions): Promise<InlineConfig>
 
   const monorepo = await loadSanityMonorepo(cwd)
   const basePath = normalizeBasePath(rawBasePath)
-  const faviconsPath = path.resolve(__dirname, '../static/favicons')
+
+  const sanityPkgPath = (await readPkgUp({cwd: __dirname}))?.path
+  if (!sanityPkgPath) {
+    throw new Error('Unable to resolve `sanity` module root')
+  }
+
+  const faviconsPath = path.join(path.dirname(sanityPkgPath), 'static', 'favicons')
   const staticPath = `${basePath}static`
 
   const viteConfig: InlineConfig = {

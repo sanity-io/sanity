@@ -30,7 +30,7 @@ export function sanityBuildEntries(options: {
   const {cwd, monorepo, basePath} = options
 
   return {
-    name: '@sanity/server/build-entries',
+    name: 'sanity/server/build-entries',
     apply: 'build',
 
     buildStart() {

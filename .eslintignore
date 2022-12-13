@@ -23,7 +23,6 @@
 
 # legacy exports
 /packages/@sanity/schema/_internal.js
-/packages/@sanity/server/default-config.js
 /packages/@sanity/util/content.js
 /packages/@sanity/util/fs.js
 /packages/@sanity/util/legacyDateFormat.js

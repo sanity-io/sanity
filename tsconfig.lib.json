@@ -12,7 +12,6 @@
     {"path": "./packages/@sanity/mutator/tsconfig.lib.json"},
     {"path": "./packages/@sanity/portable-text-editor/tsconfig.lib.json"},
     {"path": "./packages/@sanity/schema/tsconfig.lib.json"},
-    {"path": "./packages/@sanity/server/tsconfig.lib.json"},
     {"path": "./packages/@sanity/types/tsconfig.lib.json"},
     {"path": "./packages/@sanity/util/tsconfig.lib.json"},
     {"path": "./packages/@sanity/validation/tsconfig.lib.json"},

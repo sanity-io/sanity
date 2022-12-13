@@ -429,6 +429,11 @@ export type SingleWorkspace = Omit<WorkspaceOptions, 'name' | 'basePath'> & {
 /** @beta */
 export type Config = SingleWorkspace | WorkspaceOptions[]
 
+/** @beta */
+export interface MissingConfigFile {
+  missingConfigFile: true
+}
+
 /** @internal */
 export interface PreparedConfig {
   type: 'prepared-config'

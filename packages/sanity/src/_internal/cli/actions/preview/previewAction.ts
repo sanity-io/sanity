@@ -1,8 +1,6 @@
 import path from 'path'
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore The `@sanity/server` may not be built yet.
-import {PreviewServerOptions, startPreviewServer} from '@sanity/server'
 import type {CliConfig, CliCommandArguments, CliCommandContext} from '@sanity/cli'
+import {PreviewServerOptions, startPreviewServer} from '../../server'
 import {getSharedServerConfig, gracefulServerDeath} from '../../util/servers'
 
 export interface StartPreviewServerCommandFlags {
