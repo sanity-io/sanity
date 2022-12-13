@@ -1,5 +1,4 @@
 import {AssetFromSource, FileSchemaType} from '@sanity/types'
-import {get} from 'lodash'
 import {FIXME} from '../../../../FIXME'
 import {FormPatch, PatchEvent, set, setIfMissing, unset} from '../../../patch'
 import {Uploader, UploaderResolver, UploadOptions} from '../../../studio/uploads/types'
@@ -33,12 +32,13 @@ export function handleSelectAssetFromSource({
     throw new Error('Returned value must be an array with at least one item (asset)')
   }
   const firstAsset = assetFromSource[0]
-  const originalFilename = get(firstAsset, 'assetDocumentProps.originalFilename')
-  const label = get(firstAsset, 'assetDocumentProps.label')
-  const title = get(firstAsset, 'assetDocumentProps.title')
-  const description = get(firstAsset, 'assetDocumentProps.description')
-  const creditLine = get(firstAsset, 'assetDocumentProps.creditLine')
-  const source = get(firstAsset, 'assetDocumentProps.source')
+  const assetProps = firstAsset.assetDocumentProps
+  const originalFilename = assetProps?.originalFilename
+  const label = assetProps?.label
+  const title = assetProps?.title
+  const description = assetProps?.description
+  const creditLine = assetProps?.creditLine
+  const source = assetProps?.source
   const imagePatches = isImage ? [unset(['hotspot']), unset(['crop'])] : []
   switch (firstAsset.kind) {
     case 'assetDocumentId':
