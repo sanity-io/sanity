@@ -284,7 +284,11 @@ function resolveSource({
     // TODO: validate templates
     // TODO: validate that each one has a unique template ID
   } catch (e) {
-    errors.push(e)
+    throw new ConfigResolutionError({
+      name: config.name,
+      type: 'source',
+      causes: [e],
+    })
   }
 
   let tools!: Source['tools']
@@ -297,7 +301,11 @@ function resolveSource({
       reducer: toolsReducer,
     })
   } catch (e) {
-    errors.push(e)
+    throw new ConfigResolutionError({
+      name: config.name,
+      type: 'source',
+      causes: [e],
+    })
   }
 
   // In this case we want to throw an error because it is not possible to have
@@ -344,7 +352,6 @@ function resolveSource({
     if (templateErrors.length) {
       throw new ConfigResolutionError({
         name: config.name,
-        // TODO: figure out this name
         type: 'source',
         causes: templateErrors,
       })
