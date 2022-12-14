@@ -43,17 +43,21 @@ export function useMiddlewareComponents<T extends {}>(props: {
   const {defaultComponent, pick} = props
 
   return useMemo(() => {
-    // 1. Flatten the config tree into a list of configs
-    const flattened = flattenConfig(options, [])
+    // Flatten the config tree into a list of configs
+    const flattened = [...flattenConfig(options, [])]
 
-    // 2. Pick the middleware components from the configs
+    // Since the middleware chain is executed backwards, we need to reverse the list of configs here.
+    // This is important because we want the order of the Components API to be consistent with the order of the other APIs.
+    flattened.reverse()
+
+    // Pick the middleware components from the configs
     const pickedComponents = flattened.map(({config}) => pick(config))
 
-    // 3: Since we try to pick the components in all configs, some results may be undefined.
+    // Since we try to pick the components in all configs, some results may be undefined.
     // Therefore, we filter these values out before passing the result to the middleware creator.
     const result = pickedComponents.filter(Boolean)
 
-    // 4. Create the middleware component
+    // Create the middleware component
     return _createMiddlewareComponent(defaultComponent, result)
   }, [defaultComponent, options, pick])
 }
