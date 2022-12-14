@@ -5,6 +5,22 @@ import {createMockAuthStore} from '../../store'
 import {resolveConfig, createWorkspaceFromConfig, createSourceFromConfig} from '../resolveConfig'
 
 describe('resolveConfig', () => {
+  it('throws on invalid tools property', async () => {
+    expect.assertions(1)
+    try {
+      await resolveConfig({
+        projectId: 'ppsg7ml5',
+        dataset: 'production',
+        // @ts-expect-error should be an array
+        tools: {},
+      })
+        .pipe(first())
+        .toPromise()
+    } catch (err) {
+      expect(err.message).toMatch('Expected `tools` to an array or a function but found object')
+    }
+  })
+
   it('returns an observable that emits an array of fully resolved workspaces', async () => {
     const projectId = 'ppsg7ml5'
     const dataset = 'production'
