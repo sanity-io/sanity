@@ -7,6 +7,7 @@ import {useSearchState} from '../../../../contexts/search/useSearchState'
 import type {SearchFilterDefinition} from '../../../../definitions/filters'
 import type {SearchFieldDefinition} from '../../../../types'
 import {getSchemaField} from '../../../../utils/getSchemaField'
+import {sanitizeFieldValue} from '../../../../utils/sanitizeField'
 
 interface FilterTooltipProps {
   children: ReactElement
@@ -54,10 +55,12 @@ export function FilterTooltip({
           const defType = schema.get(d)
           if (defType) {
             const field = getSchemaField(defType, fieldDefinition.fieldPath)
-            return field?.type.description
+            // Sanitize schema descriptions (which may either be a string or React element)
+            return field?.type.description && sanitizeFieldValue(field?.type.description)
           }
           return null
         })
+        .filter(isNonNullable)
         .sort()
 
       const uniqueDescriptions = uniq(descriptions)

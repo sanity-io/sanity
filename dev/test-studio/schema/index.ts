@@ -39,6 +39,7 @@ import {collapsibleObjects} from './debug/collapsibleObjects'
 import documentActions from './debug/documentActions'
 import empty from './debug/empty'
 import experiment from './debug/experiment'
+import fieldComponentsTest from './debug/fieldComponentsTest'
 import fieldsets from './debug/fieldsets'
 import {
   fieldValidationInferReproSharedObject,
@@ -159,6 +160,7 @@ export const schemaTypes = [
   emails,
   empty,
   experiment,
+  fieldComponentsTest,
   fieldValidationInferReproDoc,
   fieldValidationInferReproSharedObject,
   fieldsets,

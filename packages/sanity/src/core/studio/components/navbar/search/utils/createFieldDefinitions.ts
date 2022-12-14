@@ -9,6 +9,7 @@ import startCase from 'lodash/startCase'
 import {getSupportedFieldTypes, SearchFilterDefinition} from '../definitions/filters'
 import type {SearchFieldDefinition} from '../types'
 import {generateFieldId} from './generateFieldId'
+import {sanitizeFieldValue} from './sanitizeField'
 import {getSearchableOmnisearchTypes} from './selectors'
 
 export const MAX_OBJECT_TRAVERSAL_DEPTH = 3
@@ -76,7 +77,8 @@ function getDocumentFieldDefinitions(
   }) {
     const continueRecursion = depth <= MAX_OBJECT_TRAVERSAL_DEPTH
     const isInternalField = defType.name.startsWith('_')
-    const title = defType?.title || startCase(defType.name)
+    // Sanitize schema titles (which may either be a string or React element)
+    const title = defType?.title ? sanitizeFieldValue(defType.title) : startCase(defType.name)
     const fieldPath = prevFieldPath ? `${prevFieldPath}.${defType.name}` : defType.name
     const titlePath = prevTitlePath ? [...prevTitlePath, title] : [title]
 
