@@ -106,10 +106,22 @@ export class ArrayOfPrimitivesInput extends React.PureComponent<ArrayOfPrimitive
     }
   }
 
-  renderArrayItem = (props: Omit<PrimitiveItemProps, 'renderDefault'>) => {
+  renderArrayItem = ({key, ...props}: Omit<PrimitiveItemProps, 'renderDefault'>) => {
     const {schemaType} = this.props
     const sortable = schemaType.options?.sortable !== false
-    return <ItemRow {...props} sortable={sortable} insertableTypes={schemaType.of} />
+    return (
+      <ItemRow
+        key={
+          // key needs to be explicitly set here for the jsx runtime transformer to not complain
+          // about a props object containing a "key" prop is being spread into JSX
+          // see https://github.com/sanity-io/sanity/issues/3960
+          key
+        }
+        {...props}
+        sortable={sortable}
+        insertableTypes={schemaType.of}
+      />
+    )
   }
 
   render() {
