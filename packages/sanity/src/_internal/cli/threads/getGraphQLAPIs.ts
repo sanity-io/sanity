@@ -71,7 +71,7 @@ function resolveGraphQLAPIsFromConfig(
 
   for (const apiDef of apiDefs) {
     const {workspace: workspaceName, source: sourceName} = apiDef
-    if (!workspaceName && workspaces.length > 0) {
+    if (!workspaceName && workspaces.length > 1) {
       throw new Error(
         'Must define `workspace` name in GraphQL API config when multiple workspaces are defined'
       )
