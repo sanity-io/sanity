@@ -2597,7 +2597,7 @@
   dependencies:
     "@lezer/common" "^1.0.0"
 
-"@microsoft/api-extractor-model@7.25.3", "@microsoft/api-extractor-model@^7.23.1":
+"@microsoft/api-extractor-model@7.25.3":
   version "7.25.3"
   resolved "https://registry.yarnpkg.com/@microsoft/api-extractor-model/-/api-extractor-model-7.25.3.tgz#1ad0fe161623564e5b36b73d5889066e36097389"
   integrity sha512-WWxBUq77p2iZ+5VF7Nmrm3y/UtqCh5bYV8ii3khwq3w99+fXWpvfsAhgSLsC7k8XDQc6De4ssMxH6He/qe1pzg==
@@ -2606,7 +2606,7 @@
     "@microsoft/tsdoc-config" "~0.16.1"
     "@rushstack/node-core-library" "3.53.3"
 
-"@microsoft/api-extractor@^7.29.3", "@microsoft/api-extractor@^7.33.7":
+"@microsoft/api-extractor@^7.33.7":
   version "7.33.7"
   resolved "https://registry.yarnpkg.com/@microsoft/api-extractor/-/api-extractor-7.33.7.tgz#3579f23469a9e02deb4e7aee705ddd2a221c7b8d"
   integrity sha512-fQT2v/j/55DhvMFiopLtth66E7xTFNhnumMKgKY14SaG6qU/V1W0e4nOAgbA+SmLakQjAd1Evu06ofaVaxBPbA==
@@ -2624,7 +2624,7 @@
     source-map "~0.6.1"
     typescript "~4.8.4"
 
-"@microsoft/tsdoc-config@0.16.2", "@microsoft/tsdoc-config@^0.16.1", "@microsoft/tsdoc-config@^0.16.2", "@microsoft/tsdoc-config@~0.16.1":
+"@microsoft/tsdoc-config@0.16.2", "@microsoft/tsdoc-config@^0.16.2", "@microsoft/tsdoc-config@~0.16.1":
   version "0.16.2"
   resolved "https://registry.yarnpkg.com/@microsoft/tsdoc-config/-/tsdoc-config-0.16.2.tgz#b786bb4ead00d54f53839a458ce626c8548d3adf"
   integrity sha512-OGiIzzoBLgWWR0UdRJX98oYO+XKGf7tiK4Zk6tQ/E4IJqGCe7dvkTvgDZV5cFJUzLGDOjeAXrnZoA6QkVySuxw==
@@ -2634,7 +2634,7 @@
     jju "~1.4.0"
     resolve "~1.19.0"
 
-"@microsoft/tsdoc@0.14.2", "@microsoft/tsdoc@^0.14.1":
+"@microsoft/tsdoc@0.14.2":
   version "0.14.2"
   resolved "https://registry.yarnpkg.com/@microsoft/tsdoc/-/tsdoc-0.14.2.tgz#c3ec604a0b54b9a9b87e9735dfc59e1a5da6a5fb"
   integrity sha512-9b8mPpKrfeGRuhFH5iO1iwCLeIIsV6+H1sRfxbkoGXIyQE2BTsPd9zqSqQJ+pv5sJ/hT5M1zvOFL02MnEezFug==
@@ -3683,23 +3683,24 @@
   resolved "https://registry.yarnpkg.com/@sanity/timed-out/-/timed-out-4.0.2.tgz#c9f61f9a1609baa1eb3e4235a24ea2a775022cdf"
   integrity sha512-NBDKGj14g9Z+bopIvZcQKWCzJq5JSrdmzRR1CS+iyA3Gm8SnIWBfZa7I3mTg2X6Nu8LQXG0EPKXdOGozLS4i3w==
 
-"@sanity/tsdoc-to-portable-text@^0.4.1":
-  version "0.4.1"
-  resolved "https://registry.yarnpkg.com/@sanity/tsdoc-to-portable-text/-/tsdoc-to-portable-text-0.4.1.tgz#665b6f50ea0f124f85cba5d53810e1bc4667fd0e"
-  integrity sha512-Am0l2t3pmWzD5Xqck7eZyNZtVTG87GHkg60S/6IFmbzxw2ZQFZE7qGHxTJbE2BiiijDv4AYnBkp8DyvDCkwD5Q==
+"@sanity/tsdoc-to-portable-text@^0.4.3":
+  version "0.4.3"
+  resolved "https://registry.yarnpkg.com/@sanity/tsdoc-to-portable-text/-/tsdoc-to-portable-text-0.4.3.tgz#9d6132ef77d88c5cf897f51026a8d473f80cefe3"
+  integrity sha512-k6C41o5AwVWZnf5VAvvgUqpgWlfADsXYsdypBrnWe7RMh79PhJ4cb0ct82cU1bxucHeOOVduImZbqFZMvp/MwA==
   dependencies:
-    "@microsoft/api-extractor" "^7.29.3"
-    "@microsoft/api-extractor-model" "^7.23.1"
-    "@microsoft/tsdoc" "^0.14.1"
-    "@microsoft/tsdoc-config" "^0.16.1"
+    "@microsoft/api-extractor" "^7.33.7"
+    "@microsoft/api-extractor-model" "7.25.3"
+    "@microsoft/tsdoc" "0.14.2"
+    "@microsoft/tsdoc-config" "~0.16.1"
     "@types/cpx" "^1.5.2"
     chalk "^4.1.2"
-    jsonc-parser "^3.1.0"
+    cpx "^1.5.0"
+    jsonc-parser "^3.2.0"
     mkdirp "^1.0.4"
     pkg-up "^3.1.0"
     slugify "^1.6.5"
     tmp "^0.2.1"
-    yargs "^17.5.1"
+    yargs "^17.6.2"
 
 "@sanity/ui-workshop@^1.0.0":
   version "1.0.1"
@@ -12238,7 +12239,7 @@ json5@^2.1.2, json5@^2.1.3, json5@^2.2.0, json5@^2.2.1:
   resolved "https://registry.yarnpkg.com/json5/-/json5-2.2.1.tgz#655d50ed1e6f95ad1a3caababd2b0efda10b395c"
   integrity sha512-1hqLFMSrGHRHxav9q9gNjJ5EXznIxGVO09xQRrwplcS8qs28pZ8s8hupZAmqDwZUmVZ2Qb2jnyPOWcDH8m8dlA==
 
-jsonc-parser@^3.1.0, jsonc-parser@^3.2.0:
+jsonc-parser@^3.2.0:
   version "3.2.0"
   resolved "https://registry.yarnpkg.com/jsonc-parser/-/jsonc-parser-3.2.0.tgz#31ff3f4c2b9793f89c67212627c51c6394f88e76"
   integrity sha512-gfFQZrcTc8CnKXp6Y4/CBT3fTc0OVuDofpre4aEeEpSBPV5X5v4+Vmx+8snU7RLPrNHPKSgLxGo9YuQzz20o+w==
@@ -19354,7 +19355,7 @@ yargs@^16.1.0, yargs@^16.2.0:
     y18n "^5.0.5"
     yargs-parser "^20.2.2"
 
-yargs@^17.3.0, yargs@^17.5.1:
+yargs@^17.3.0, yargs@^17.6.2:
   version "17.6.2"
   resolved "https://registry.yarnpkg.com/yargs/-/yargs-17.6.2.tgz#2e23f2944e976339a1ee00f18c77fedee8332541"
   integrity sha512-1/9UrdHjDZc0eOU0HxOHoS78C69UD3JRMvzlJ7S79S2nTaWRA/whGCTV8o9e/N/1Va9YIV7Q4sOxD8VV4pCWOw==
