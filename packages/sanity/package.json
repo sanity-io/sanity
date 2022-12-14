@@ -96,11 +96,14 @@
     "write:version": "node -r esbuild-register scripts/writeVersion.ts"
   },
   "dependencies": {
+    "@dnd-kit/core": "^6.0.5",
+    "@dnd-kit/modifiers": "^6.0.0",
+    "@dnd-kit/sortable": "^7.0.1",
+    "@dnd-kit/utilities": "^3.2.0",
     "@juggle/resize-observer": "^3.3.1",
     "@portabletext/react": "^1.0.6",
     "@portabletext/types": "^1.0.3",
     "@rexxars/react-json-inspector": "^8.0.1",
-    "@rexxars/react-sortable-hoc": "^2.0.0",
     "@sanity/asset-utils": "^1.2.5",
     "@sanity/bifur-client": "^0.3.0",
     "@sanity/block-tools": "3.0.6",
