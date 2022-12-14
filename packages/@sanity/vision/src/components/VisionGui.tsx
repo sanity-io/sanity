@@ -1,6 +1,6 @@
 /* eslint-disable complexity */
 import React, {ChangeEvent, type RefObject} from 'react'
-import SplitPane from 'react-split-pane'
+import SplitPane from '@rexxars/react-split-pane'
 import type {ListenEvent, MutationEvent, SanityClient} from '@sanity/client'
 import {PlayIcon, StopIcon, CopyIcon, ErrorOutlineIcon} from '@sanity/icons'
 import isHotkey from 'is-hotkey'
@@ -18,7 +18,6 @@ import {
   Button,
   ToastContextValue,
 } from '@sanity/ui'
-import type {Subscription} from 'rxjs'
 import {VisionCodeMirror} from '../codemirror/VisionCodeMirror'
 import {getLocalStorage, LocalStorageish} from '../util/localStorage'
 import {parseApiQueryString, ParsedApiQueryString} from '../util/parseApiQueryString'
@@ -83,6 +82,10 @@ function calculatePaneSizeOptions(rootHeight: number): PaneSizeOptions {
     minSize: Math.min(170, Math.max(170, rootHeight / 2)),
     maxSize: rootHeight > 650 ? rootHeight * 0.7 : rootHeight * 0.6,
   }
+}
+
+interface Subscription {
+  unsubscribe: () => void
 }
 
 interface VisionGuiProps extends VisionProps {

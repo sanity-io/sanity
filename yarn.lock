@@ -3461,6 +3461,15 @@
     debounce "1.0.0"
     md5-o-matic "^0.1.1"
 
+"@rexxars/react-split-pane@^0.1.93":
+  version "0.1.93"
+  resolved "https://registry.yarnpkg.com/@rexxars/react-split-pane/-/react-split-pane-0.1.93.tgz#d9e00eb5d91cfb49f3e8ca30f6c8d450bf85d6ff"
+  integrity sha512-Pok8zATwd5ZpWnccJeSA/JM2MPmi3D04duYtrbMNRgzeAU2ANtq3r4w7ldbjpGyfJqggqn0wDNjRqaevXqSxQg==
+  dependencies:
+    prop-types "^15.7.2"
+    react-lifecycles-compat "^3.0.4"
+    react-style-proptype "^3.2.2"
+
 "@rollup/plugin-alias@^3.1.9":
   version "3.1.9"
   resolved "https://registry.yarnpkg.com/@rollup/plugin-alias/-/plugin-alias-3.1.9.tgz#a5d267548fe48441f34be8323fb64d1d4a1b3fdf"
@@ -3834,30 +3843,6 @@
   dependencies:
     "@types/uuid" "^8.0.0"
     uuid "^8.0.0"
-
-"@sanity/vision@3.0.1":
-  version "3.0.1"
-  resolved "https://registry.yarnpkg.com/@sanity/vision/-/vision-3.0.1.tgz#87827d99c03d3a58f3196a70c00e9f5576750d3e"
-  integrity sha512-LdpEHUio4cSq3AW+6XK/FyUhbEWgVLWJC5FeJ4lActxkLn2ftnVwrXhF8uDjgGLOEPjJ3Oq4O7uWfEhPgyjhqA==
-  dependencies:
-    "@codemirror/autocomplete" "^6.1.0"
-    "@codemirror/commands" "^6.0.1"
-    "@codemirror/lang-javascript" "^6.0.2"
-    "@codemirror/language" "^6.2.1"
-    "@codemirror/search" "^6.0.1"
-    "@codemirror/view" "^6.1.1"
-    "@juggle/resize-observer" "^3.3.1"
-    "@lezer/highlight" "^1.0.0"
-    "@rexxars/react-json-inspector" "^8.0.1"
-    "@sanity/color" "^2.1.20"
-    "@sanity/icons" "^2.1.0"
-    "@sanity/ui" "^1.0.0"
-    "@uiw/react-codemirror" "^4.11.4"
-    hashlru "^2.3.0"
-    is-hotkey "^0.1.6"
-    json5 "^1.0.1"
-    lodash "^4.17.21"
-    react-split-pane "^0.1.84"
 
 "@sideway/address@^4.1.3":
   version "4.1.4"
@@ -16015,15 +16000,6 @@ react-scripts@^5.0.0:
     workbox-webpack-plugin "^6.4.1"
   optionalDependencies:
     fsevents "^2.3.2"
-
-react-split-pane@^0.1.84:
-  version "0.1.92"
-  resolved "https://registry.yarnpkg.com/react-split-pane/-/react-split-pane-0.1.92.tgz#68242f72138aed95dd5910eeb9d99822c4fc3a41"
-  integrity sha512-GfXP1xSzLMcLJI5BM36Vh7GgZBpy+U/X0no+VM3fxayv+p1Jly5HpMofZJraeaMl73b3hvlr+N9zJKvLB/uz9w==
-  dependencies:
-    prop-types "^15.7.2"
-    react-lifecycles-compat "^3.0.4"
-    react-style-proptype "^3.2.2"
 
 react-style-proptype@^3.2.2:
   version "3.2.2"
