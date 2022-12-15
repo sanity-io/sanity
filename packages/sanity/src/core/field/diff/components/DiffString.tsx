@@ -1,3 +1,5 @@
+import i18n from 'i18next'
+import k from './../../../../i18n/keys'
 import {Text, Card, rem} from '@sanity/ui'
 import React from 'react'
 import styled from 'styled-components'
@@ -42,7 +44,7 @@ export function DiffStringSegment(props: {segment: StringDiffSegment}): React.Re
       <DiffCard
         annotation={segment.annotation}
         disableHoverEffect
-        tooltip={{description: 'Added'}}
+        tooltip={{description: i18n.t(k.ADDED)}}
         as={RoundedCard}
       >
         <ChangeSegment as="ins" style={{textDecoration: 'none'}}>
@@ -58,7 +60,7 @@ export function DiffStringSegment(props: {segment: StringDiffSegment}): React.Re
         annotation={segment.annotation}
         as={RoundedCard}
         disableHoverEffect
-        tooltip={{description: 'Removed'}}
+        tooltip={{description: i18n.t(k.REMOVED)}}
       >
         <ChangeSegment as="del">{text}</ChangeSegment>
       </DiffCard>

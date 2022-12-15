@@ -28,7 +28,7 @@ export const ConfirmMessage = ({asset, assetType, hasResults = false}: ConfirmMe
   const isImage = assetType === 'image'
   const filenamePlaceholder = asset.originalFilename ? (
     <>
-      The {assetType} <strong>{asset.originalFilename}</strong>
+      {i18n.t(k.THE)} {assetType} <strong>{asset.originalFilename}</strong>
     </>
   ) : (
     `this ${assetType}`
@@ -43,8 +43,8 @@ export const ConfirmMessage = ({asset, assetType, hasResults = false}: ConfirmMe
               <WarningOutlineIcon />
             </Text>
             <Text size={1}>
-              {filenamePlaceholder} cannot be deleted because it's being used. In order to delete
-              the {assetType} you need the remove all uses of it.
+              {filenamePlaceholder} {i18n.t(k.CANNOT_BE_DELETED_BECAUSE_IT_S)}
+              {assetType} {i18n.t(k.YOU_NEED_THE_REMOVE_ALL_USES_O)}
             </Text>
           </Flex>
           {isImage && (
