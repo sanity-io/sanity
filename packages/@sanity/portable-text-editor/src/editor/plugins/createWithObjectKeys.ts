@@ -1,16 +1,12 @@
 import {Element, Transforms, Node, Editor} from 'slate'
-import {PortableTextFeatures} from '../../types/portableText'
-import {PortableTextSlateEditor} from '../../types/editor'
+import {PortableTextMemberTypes, PortableTextSlateEditor} from '../../types/editor'
 import {isPreservingKeys, PRESERVE_KEYS} from '../../utils/withPreserveKeys'
 
 /**
  * This plugin makes sure that every new node in the editor get a new _key prop when created
  *
  */
-export function createWithObjectKeys(
-  portableTextFeatures: PortableTextFeatures,
-  keyGenerator: () => string
-) {
+export function createWithObjectKeys(types: PortableTextMemberTypes, keyGenerator: () => string) {
   return function withKeys(editor: PortableTextSlateEditor): PortableTextSlateEditor {
     PRESERVE_KEYS.set(editor, false)
     const {apply, normalizeNode} = editor
@@ -35,7 +31,7 @@ export function createWithObjectKeys(
     }
     editor.normalizeNode = (entry) => {
       const [node, path] = entry
-      if (Element.isElement(node) && node._type === portableTextFeatures.types.block.name) {
+      if (Element.isElement(node) && node._type === types.block.name) {
         // Set key on block itself
         if (!node._key) {
           Transforms.setNodes(editor, {_key: keyGenerator()}, {at: path})

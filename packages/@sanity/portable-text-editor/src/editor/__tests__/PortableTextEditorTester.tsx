@@ -1,22 +1,22 @@
 import React, {ForwardedRef, forwardRef, useCallback, useEffect} from 'react'
 import Schema from '@sanity/schema'
-import {RawType} from '../../types/schema'
 
+import {defineArrayMember, defineField} from '@sanity/types'
 import {PortableTextEditor, PortableTextEditable} from '../../index'
 import type {PortableTextEditorProps, PortableTextEditableProps} from '../../index'
 
-const imageType: RawType = {
+const imageType = defineField({
   type: 'image',
   name: 'blockImage',
-}
+})
 
-const someObject: RawType = {
+const someObject = defineField({
   type: 'object',
   name: 'someObject',
   fields: [{type: 'string', name: 'color'}],
-}
+})
 
-const blockType: RawType = {
+const blockType = defineField({
   type: 'block',
   name: 'myTestBlockType',
   styles: [
@@ -30,13 +30,13 @@ const blockType: RawType = {
     {title: 'Quote', value: 'blockquote'},
   ],
   of: [someObject, imageType],
-}
+})
 
-const portableTextType: RawType = {
+const portableTextType = defineArrayMember({
   type: 'array',
   name: 'body',
   of: [blockType, someObject],
-}
+})
 
 const schema = Schema.compile({
   name: 'test',

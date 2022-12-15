@@ -1,5 +1,5 @@
 import {isEqual} from 'lodash'
-import {PortableTextBlock} from '../types/portableText'
+import {Path, PortableTextBlock} from '@sanity/types'
 import {EditorSelection, EditorSelectionPoint} from '../types/editor'
 
 export function normalizePoint(
@@ -9,7 +9,7 @@ export function normalizePoint(
   if (!point || !value) {
     return null
   }
-  const newPath: any = []
+  const newPath: Path = []
   let newOffset: number = point.offset || 0
   const blockKey =
     typeof point.path[0] === 'object' && '_key' in point.path[0] && point.path[0]._key
@@ -22,10 +22,11 @@ export function normalizePoint(
     return null
   }
   if (block && point.path[1] === 'children') {
-    if (!block.children || block.children.length === 0) {
+    if (!block.children || (Array.isArray(block.children) && block.children.length === 0)) {
       return null
     }
-    const child = block.children.find((cld: any) => cld._key === childKey)
+    const child =
+      Array.isArray(block.children) && block.children.find((cld) => cld._key === childKey)
     if (child) {
       newPath.push('children')
       newPath.push({_key: child._key})

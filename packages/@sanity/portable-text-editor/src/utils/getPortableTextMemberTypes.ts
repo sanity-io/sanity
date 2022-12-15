@@ -1,14 +1,20 @@
-import {ArraySchemaType, ObjectSchemaType, SchemaType} from '@sanity/types'
-import {PortableTextBlock, PortableTextFeatures} from '../types/portableText'
-import {Type} from '../types/schema'
+import {
+  ArraySchemaType,
+  BlockSchemaType,
+  ObjectSchemaType,
+  PortableTextBlock,
+  SchemaType,
+  SpanSchemaType,
+} from '@sanity/types'
+import {PortableTextMemberTypes} from '../types/editor'
 
-export function getPortableTextFeatures(
-  portabletextType: ArraySchemaType<PortableTextBlock>
-): PortableTextFeatures {
-  if (!portabletextType) {
+export function getPortableTextMemberTypes(
+  portableTextType: ArraySchemaType<PortableTextBlock>
+): PortableTextMemberTypes {
+  if (!portableTextType) {
     throw new Error("Parameter 'portabletextType' missing (required)")
   }
-  const blockType = portabletextType.of?.find(findBlockType) as ObjectSchemaType | undefined
+  const blockType = portableTextType.of?.find(findBlockType) as BlockSchemaType | undefined
   if (!blockType) {
     throw new Error('Block type is not defined in this schema (required)')
   }
@@ -30,22 +36,18 @@ export function getPortableTextFeatures(
   }
   const inlineObjectTypes = (ofType.filter((memberType) => memberType.name !== 'span') ||
     []) as ObjectSchemaType[]
-  const blockObjectTypes = (portabletextType.of?.filter((field) => field.name !== blockType.name) ||
+  const blockObjectTypes = (portableTextType.of?.filter((field) => field.name !== blockType.name) ||
     []) as ObjectSchemaType[]
-  const annotations = resolveEnabledAnnotationTypes(spanType)
   return {
     styles: resolveEnabledStyles(blockType),
     decorators: resolveEnabledDecorators(spanType),
     lists: resolveEnabledListItems(blockType),
-    annotations: annotations,
-    types: {
-      block: blockType,
-      span: spanType,
-      portableText: portabletextType,
-      inlineObjects: inlineObjectTypes,
-      blockObjects: blockObjectTypes,
-      annotations: annotations.map((an: Type) => an.type),
-    },
+    block: blockType,
+    span: spanType,
+    portableText: portableTextType,
+    inlineObjects: inlineObjectTypes,
+    blockObjects: blockObjectTypes,
+    annotations: (spanType as SpanSchemaType).annotations,
   }
 }
 
@@ -66,19 +68,6 @@ function resolveEnabledStyles(blockType: ObjectSchemaType) {
   return textStyles
 }
 
-function resolveEnabledAnnotationTypes(spanType: ObjectSchemaType) {
-  return (spanType as any).annotations.map((annotation: Type) => {
-    return {
-      blockEditor: annotation.blockEditor,
-      portableText: annotation.portableText,
-      title: annotation.title,
-      type: annotation,
-      value: annotation.name,
-      icon: annotation.icon,
-    }
-  })
-}
-
 function resolveEnabledDecorators(spanType: ObjectSchemaType) {
   return (spanType as any).decorators
 }
@@ -97,13 +86,13 @@ function resolveEnabledListItems(blockType: ObjectSchemaType) {
   return listItems
 }
 
-function findBlockType(type: SchemaType): ObjectSchemaType | null {
+function findBlockType(type: SchemaType): BlockSchemaType | null {
   if (type.type) {
     return findBlockType(type.type)
   }
 
   if (type.name === 'block') {
-    return type as ObjectSchemaType
+    return type as BlockSchemaType
   }
 
   return null

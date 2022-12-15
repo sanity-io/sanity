@@ -1,8 +1,8 @@
-import {Node, Element, Transforms, Editor, Descendant, Range, Text} from 'slate'
+import {Node, Transforms, Editor, Descendant, Range} from 'slate'
 import {htmlToBlocks, normalizeBlock} from '@sanity/block-tools'
 import {ReactEditor} from '@sanity/slate-react'
-import {PortableTextFeatures, PortableTextBlock, PortableTextChild} from '../../types/portableText'
-import {EditorChanges, PortableTextSlateEditor} from '../../types/editor'
+import {PortableTextBlock, PortableTextChild} from '@sanity/types'
+import {EditorChanges, PortableTextMemberTypes, PortableTextSlateEditor} from '../../types/editor'
 import {fromSlateValue, toSlateValue} from '../../utils/values'
 import {validateValue} from '../../utils/validateValue'
 import {debugWithName} from '../../utils/debug'
@@ -15,33 +15,29 @@ const debug = debugWithName('plugin:withInsertData')
  */
 export function createWithInsertData(
   change$: EditorChanges,
-  portableTextFeatures: PortableTextFeatures,
+  types: PortableTextMemberTypes,
   keyGenerator: () => string
 ) {
   return function withInsertData(editor: PortableTextSlateEditor): PortableTextSlateEditor {
-    const blockTypeName = portableTextFeatures.types.block.name
-    const spanTypeName = portableTextFeatures.types.span.name
+    const blockTypeName = types.block.name
+    const spanTypeName = types.span.name
 
     const toPlainText = (blocks: PortableTextBlock[]) => {
       return blocks
         .map((block) => {
-          if (block._type === blockTypeName) {
+          if (editor.isTextBlock(block)) {
             return block.children
               .map((child: PortableTextChild) => {
                 if (child._type === spanTypeName) {
                   return child.text
                 }
                 return `[${
-                  portableTextFeatures.types.inlineObjects.find((t) => t.name === child._type)
-                    ?.title || 'Object'
+                  types.inlineObjects.find((t) => t.name === child._type)?.title || 'Object'
                 }]`
               })
               .join('')
           }
-          return `[${
-            portableTextFeatures.types.blockObjects.find((t) => t.name === block._type)?.title ||
-            'Object'
-          }]`
+          return `[${types.blockObjects.find((t) => t.name === block._type)?.title || 'Object'}]`
         })
         .join('\n\n')
     }
@@ -104,7 +100,7 @@ export function createWithInsertData(
       const asHTML = div.innerHTML
       contents.ownerDocument.body.removeChild(div)
       const fragment = editor.getFragment()
-      const portableText = fromSlateValue(fragment as Node[], portableTextFeatures.types.block.name)
+      const portableText = fromSlateValue(fragment, blockTypeName)
 
       const asJSON = JSON.stringify(portableText)
       const asPlainText = toPlainText(portableText)
@@ -130,12 +126,12 @@ export function createWithInsertData(
         if (Array.isArray(parsed) && parsed.length > 0) {
           const slateValue = regenerateKeys(
             editor,
-            toSlateValue(parsed, {portableTextFeatures}),
+            toSlateValue(parsed, {types}),
             keyGenerator,
             spanTypeName
           )
           // Validate the result
-          const validation = validateValue(parsed, portableTextFeatures, keyGenerator)
+          const validation = validateValue(parsed, types, keyGenerator)
           // Bail out if it's not valid
           if (!validation.valid) {
             const errorDescription = `${validation.resolution?.description}`
@@ -173,10 +169,10 @@ export function createWithInsertData(
         let insertedType
 
         if (html) {
-          portableText = htmlToBlocks(html, portableTextFeatures.types.portableText).map((block) =>
+          portableText = htmlToBlocks(html, types.portableText).map((block) =>
             normalizeBlock(block, {blockTypeName})
-          )
-          fragment = toSlateValue(portableText, {portableTextFeatures})
+          ) as PortableTextBlock[]
+          fragment = toSlateValue(portableText, {types})
           insertedType = 'HTML'
         } else {
           // plain text
@@ -187,17 +183,17 @@ export function createWithInsertData(
             )
             .join('')
           const textToHtml = `<html><body>${blocks}</body></html>`
-          portableText = htmlToBlocks(textToHtml, portableTextFeatures.types.portableText).map(
-            (block) => normalizeBlock(block, {blockTypeName})
-          )
+          portableText = htmlToBlocks(textToHtml, types.portableText).map((block) =>
+            normalizeBlock(block, {blockTypeName})
+          ) as PortableTextBlock[]
           fragment = toSlateValue(portableText, {
-            portableTextFeatures,
+            types,
           })
           insertedType = 'text'
         }
 
         // Validate the result
-        const validation = validateValue(portableText, portableTextFeatures, keyGenerator)
+        const validation = validateValue(portableText, types, keyGenerator)
 
         // Bail out if it's not valid
         if (!validation.valid) {
@@ -232,7 +228,7 @@ export function createWithInsertData(
     editor.insertFragmentData = (data: DataTransfer): boolean => {
       const fragment = data.getData('application/x-portable-text')
       if (fragment) {
-        const parsed = JSON.parse(fragment) as Node[]
+        const parsed = JSON.parse(fragment)
         editor.insertFragment(parsed)
         return true
       }
@@ -262,17 +258,17 @@ function regenerateKeys(
   fragment: Descendant[],
   keyGenerator: () => string,
   spanTypeName: string
-) {
+): Descendant[] {
   return fragment.map((node) => {
-    const newNode: Element = {...(node as Element)}
+    const newNode: Descendant = {...node}
     // Ensure the copy has new keys
     if (editor.isTextBlock(newNode)) {
-      newNode.markDefs = newNode.markDefs.map((def) => {
+      newNode.markDefs = (newNode.markDefs || []).map((def) => {
         const oldKey = def._key
         const newKey = keyGenerator()
-        if (Array.isArray(newNode.children)) {
+        if (editor.isTextBlock(newNode)) {
           newNode.children = newNode.children.map((child) =>
-            child._type === spanTypeName && Text.isText(child)
+            child._type === spanTypeName && editor.isTextSpan(child)
               ? {
                   ...child,
                   marks:
@@ -287,14 +283,14 @@ function regenerateKeys(
         return {...def, _key: newKey}
       })
     }
-    const nodeWithNewKeys = {...newNode, _key: keyGenerator()} as Element
+    const nodeWithNewKeys = {...newNode, _key: keyGenerator()}
     if (editor.isTextBlock(nodeWithNewKeys)) {
       nodeWithNewKeys.children = nodeWithNewKeys.children.map((child) => ({
         ...child,
         _key: keyGenerator(),
       }))
     }
-    return nodeWithNewKeys
+    return nodeWithNewKeys as Descendant
   })
 }
 
@@ -310,7 +306,7 @@ function mixMarkDefs(editor: PortableTextSlateEditor, fragment: any) {
     Transforms.setNodes(
       editor,
       {
-        markDefs: [...fragment[0].markDefs, ...markDefs],
+        markDefs: [...(fragment[0].markDefs || []), ...(markDefs || [])],
       },
       {at: focusPath, mode: 'lowest', voids: false}
     )

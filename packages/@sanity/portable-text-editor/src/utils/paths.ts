@@ -1,13 +1,12 @@
 import {isEqual} from 'lodash'
-import {Editor, Point, Path as SlatePath, Element, Node} from 'slate'
-import {isKeySegment, Path} from '@sanity/types'
-import {EditorSelectionPoint} from '../types/editor'
-import {PortableTextBlock, PortableTextFeatures} from '../types/portableText'
+import {Editor, Point, Path as SlatePath, Element} from 'slate'
+import {isKeySegment, Path, PortableTextBlock} from '@sanity/types'
+import {EditorSelectionPoint, PortableTextMemberTypes} from '../types/editor'
 
 export function createKeyedPath(
   point: Point,
   value: PortableTextBlock[] | undefined,
-  portableTextFeatures: PortableTextFeatures
+  types: PortableTextMemberTypes
 ): Path | null {
   const blockPath = [point.path[0]]
   if (!value) {
@@ -18,12 +17,12 @@ export function createKeyedPath(
     return null
   }
   const keyedBlockPath = [{_key: block._key}]
-  if (block._type !== portableTextFeatures.types.block.name) {
+  if (block._type !== types.block.name) {
     return keyedBlockPath as Path
   }
   let keyedChildPath
   const childPath = point.path.slice(0, 2)
-  const child = block.children[childPath[1]]
+  const child = Array.isArray(block.children) && block.children[childPath[1]]
   if (child) {
     keyedChildPath = ['children', {_key: child._key}]
   }
