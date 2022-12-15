@@ -38,10 +38,11 @@ import {
  * @beta
  */
 export interface ArrayOfObjectsComponents {
-  annotation?: ComponentType<any>
-  block?: ComponentType<any>
+  annotation?: ComponentType<BlockAnnotationProps>
+  block?: ComponentType<BlockProps>
   diff?: ComponentType<any>
   field?: ComponentType<ArrayFieldProps>
+  inlineBlock?: ComponentType<BlockProps>
   input?: ComponentType<ArrayOfObjectsInputProps>
   item?: ComponentType<ObjectItemProps>
   preview?: ComponentType<PreviewProps>
@@ -106,8 +107,11 @@ export interface DocumentComponents {
  * @beta
  */
 export interface FileComponents {
+  annotation?: ComponentType<BlockAnnotationProps>
+  block?: ComponentType<BlockProps>
   diff?: ComponentType<any>
   field?: ComponentType<ObjectFieldProps<FileValue>>
+  inlineBlock?: ComponentType<BlockProps>
   input?: ComponentType<ObjectInputProps<FileValue>>
   item?: ComponentType<ObjectItemProps<FileValue & ObjectItem>>
   preview?: ComponentType<PreviewProps>
@@ -117,8 +121,11 @@ export interface FileComponents {
  * @beta
  */
 export interface GeopointComponents {
+  annotation?: ComponentType<BlockAnnotationProps>
+  block?: ComponentType<BlockProps>
   diff?: ComponentType<any>
   field?: ComponentType<ObjectFieldProps<GeopointValue>>
+  inlineBlock?: ComponentType<BlockProps>
   input?: ComponentType<ObjectInputProps<GeopointValue>>
   item?: ComponentType<ObjectItemProps<GeopointValue & ObjectItem>>
   preview?: ComponentType<PreviewProps>
@@ -128,8 +135,11 @@ export interface GeopointComponents {
  * @beta
  */
 export interface ImageComponents {
+  annotation?: ComponentType<BlockAnnotationProps>
+  block?: ComponentType<BlockProps>
   diff?: ComponentType<any>
   field?: ComponentType<ObjectFieldProps<ImageValue>>
+  inlineBlock?: ComponentType<BlockProps>
   input?: ComponentType<ObjectInputProps<ImageValue>>
   item?: ComponentType<ObjectItemProps<ImageValue & ObjectItem>>
   preview?: ComponentType<PreviewProps>
@@ -150,10 +160,11 @@ export interface NumberComponents {
  * @beta
  */
 export interface ObjectComponents {
-  annotation?: ComponentType<any>
-  block?: ComponentType<any>
+  annotation?: ComponentType<BlockAnnotationProps>
+  block?: ComponentType<BlockProps>
   diff?: ComponentType<any>
   field?: ComponentType<ObjectFieldProps>
+  inlineBlock?: ComponentType<BlockProps>
   input?: ComponentType<ObjectInputProps>
   item?: ComponentType<ObjectItemProps>
   preview?: ComponentType<PreviewProps>
@@ -163,10 +174,11 @@ export interface ObjectComponents {
  * @beta
  */
 export interface ReferenceComponents {
-  annotation?: ComponentType<any>
-  block?: ComponentType<any>
+  annotation?: ComponentType<BlockAnnotationProps>
+  block?: ComponentType<BlockProps>
   diff?: ComponentType<any>
   field?: ComponentType<ObjectFieldProps<ReferenceValue>>
+  inlineBlock?: ComponentType<BlockProps>
   input?: ComponentType<ReferenceInputProps>
   item?: ComponentType<ObjectItemProps<ReferenceValue & ObjectItem>>
   preview?: ComponentType<PreviewProps>
@@ -176,10 +188,11 @@ export interface ReferenceComponents {
  * @beta
  */
 export interface CrossDatasetReferenceComponents {
-  annotation?: ComponentType<any>
-  block?: ComponentType<any>
+  annotation?: ComponentType<BlockAnnotationProps>
+  block?: ComponentType<BlockProps>
   diff?: ComponentType<any>
   field?: ComponentType<ObjectFieldProps<CrossDatasetReferenceValue>>
+  inlineBlock?: ComponentType<BlockProps>
   input?: ComponentType<CrossDatasetReferenceInputProps>
   item?: ComponentType<ObjectItemProps<CrossDatasetReferenceValue & ObjectItem>>
   preview?: ComponentType<PreviewProps>
@@ -273,26 +286,20 @@ declare module '@sanity/types' {
     /**
      * @beta
      */
-    components?: {
-      item?: ComponentType<BlockDecoratorProps>
-    }
+    component: ComponentType<BlockDecoratorProps>
   }
 
   export interface BlockStyleDefinition {
     /**
      * @beta
      */
-    components?: {
-      item?: ComponentType<BlockStyleProps>
-    }
+    component: ComponentType<BlockStyleProps>
   }
   export interface BlockListDefinition {
     /**
      * @beta
      */
-    components?: {
-      item?: ComponentType<BlockListItemProps>
-    }
+    component: ComponentType<BlockListItemProps>
   }
 
   export interface BlockAnnotationDefinition {
