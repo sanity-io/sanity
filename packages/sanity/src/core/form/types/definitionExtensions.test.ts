@@ -3,6 +3,7 @@
 
 import {
   CrossDatasetReferenceValue,
+  defineArrayMember,
   defineField,
   defineType,
   FileValue,
@@ -150,6 +151,17 @@ describe('definitionExtensions', () => {
           preview: (props: string) => null,
         },
       })
+    })
+  })
+
+  it('should extend components for block .of and .components', () => {
+    defineArrayMember({
+      type: 'block',
+      name: 'test',
+      of: [{type: 'author', components: {inlineBlock: () => null}}],
+      components: {
+        block: () => null,
+      },
     })
   })
 
