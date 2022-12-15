@@ -97,18 +97,21 @@ export function BlockObject(props: BlockObjectProps) {
     setTimeout(() => PortableTextEditor.focus(editor))
   }, [editor, path])
 
-  const blockPreview = useMemo(() => {
-    const _handleDelete = (e: React.MouseEvent<Element, MouseEvent>) => {
+  const handleDelete = useCallback(
+    (e: React.MouseEvent<Element, MouseEvent>) => {
       e.preventDefault()
       e.stopPropagation()
       onRemove()
-    }
+    },
+    [onRemove]
+  )
+
+  const blockPreview = useMemo(() => {
     return (
       <BlockObjectPreview
         focused={focused}
         isActive={isActive}
-        // eslint-disable-next-line react/jsx-no-bind
-        onClickingDelete={_handleDelete}
+        onClickingDelete={handleDelete}
         onClickingEdit={openItem}
         readOnly={readOnly}
         renderPreview={renderPreview}
