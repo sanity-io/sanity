@@ -2,32 +2,41 @@ import React, {useCallback, useMemo, useRef, useState, useEffect} from 'react'
 import {Text, Box, Card, Code} from '@sanity/ui'
 import styled from 'styled-components'
 import {Subject} from 'rxjs'
+import {PortableTextBlock} from '@sanity/types'
 import {
+  BlockDecoratorRenderProps,
+  BlockRenderProps,
   PortableTextEditor,
   PortableTextEditable,
-  RenderDecoratorFunction,
   EditorChange,
   RenderBlockFunction,
   RenderChildFunction,
-  RenderAttributes,
   EditorSelection,
-  PortableTextBlock,
   Patch,
+  HotkeyOptions,
+  BlockListItemRenderProps,
+  BlockStyleRenderProps,
 } from '../../../src'
 import {createKeyGenerator} from '../keyGenerator'
 import {portableTextType} from '../../schema'
 
-export const HOTKEYS = {
+export const HOTKEYS: HotkeyOptions = {
   marks: {
     'mod+b': 'strong',
     'mod+i': 'em',
   },
+  custom: {
+    'mod+l': (e, editor) => {
+      e.preventDefault()
+      PortableTextEditor.toggleList(editor, 'number')
+    },
+  },
 }
 
 export const BlockObject = styled.div`
-  border: ${(props: RenderAttributes) =>
+  border: ${(props: BlockRenderProps) =>
     props.focused ? '1px solid blue' : '1px solid transparent'};
-  background: ${(props: RenderAttributes) => (props.selected ? '#eeeeff' : 'transparent')};
+  background: ${(props: BlockRenderProps) => (props.selected ? '#eeeeff' : 'transparent')};
   padding: 2em;
 `
 
@@ -63,61 +72,64 @@ export const Editor = ({
   const editor = useRef<PortableTextEditor>(null)
   const keyGenFn = useMemo(() => createKeyGenerator(editorId.substring(0, 1)), [editorId])
 
-  const renderBlock: RenderBlockFunction = useCallback((block, type, attributes, defaultRender) => {
+  const renderBlock: RenderBlockFunction = useCallback((props) => {
+    const {value: block, type, children} = props
     if (editor.current) {
-      const textType = PortableTextEditor.getPortableTextFeatures(editor.current).types.block
+      const textType = editor.current.types.block
       // Text blocks
       if (type.name === textType.name) {
         return (
           <Box marginBottom={4}>
-            <Text style={{color: getRandomColor()}}>{defaultRender(block)}</Text>
+            <Text style={{color: getRandomColor()}}>{children}</Text>
           </Box>
         )
       }
       // Object blocks
       return (
         <Card marginBottom={4}>
-          <BlockObject {...attributes}>{JSON.stringify(block)}</BlockObject>
+          <BlockObject {...props}>
+            <>{JSON.stringify(block)}</>
+          </BlockObject>
         </Card>
       )
     }
-    return defaultRender(block)
+    return children
   }, [])
 
-  const renderChild: RenderChildFunction = useCallback(
-    (child, type, _attributes, defaultRender) => {
-      if (editor.current) {
-        const textType = PortableTextEditor.getPortableTextFeatures(editor.current).types.span
-        // Text spans
-        if (type.name === textType.name) {
-          return defaultRender(child)
-        }
-        // Inline objects
+  const renderChild: RenderChildFunction = useCallback((props) => {
+    const {type, children} = props
+    if (editor.current) {
+      const textType = editor.current.types.span
+      // Text spans
+      if (type.name === textType.name) {
+        return children
       }
-      return defaultRender(child)
-    },
-    []
-  )
+      // Inline objects
+    }
+    return children
+  }, [])
 
-  const renderDecorator: RenderDecoratorFunction = useCallback(
-    (mark, _mType, _attributes, defaultRender) => {
-      switch (mark) {
-        case 'strong':
-          return <strong>{defaultRender()}</strong>
-        case 'em':
-          return <em>{defaultRender()}</em>
-        case 'code':
-          return <code>{defaultRender()}</code>
-        case 'underline':
-          return <u>{defaultRender()}</u>
-        case 'strike-through':
-          return <s>{defaultRender()}</s>
-        default:
-          return defaultRender()
-      }
-    },
-    []
-  )
+  const renderDecorator = useCallback((props: BlockDecoratorRenderProps) => {
+    const {value: mark, children} = props
+    switch (mark) {
+      case 'strong':
+        return <strong>{children}</strong>
+      case 'em':
+        return <em>{children}</em>
+      case 'code':
+        return <code>{children}</code>
+      case 'underline':
+        return <u>{children}</u>
+      case 'strike-through':
+        return <s>{children}</s>
+      default:
+        return children
+    }
+  }, [])
+
+  const renderStyle = useCallback((props: BlockStyleRenderProps) => {
+    return props.children
+  }, [])
 
   const handleChange = useCallback(
     (change: EditorChange): void => {
@@ -144,6 +156,12 @@ export const Editor = ({
     [onMutation]
   )
 
+  const renderListItem = useCallback((props: BlockListItemRenderProps) => {
+    const {level, type, value: listType, children} = props
+    const listStyleType = type.value === 'number' ? 'decimal' : 'inherit'
+    return <li style={{listStyleType, paddingLeft: `${level * 10}pt`}}>{children}</li>
+  }, [])
+
   const [readOnly, setReadOnly] = useState(false)
 
   const editable = useMemo(
@@ -154,11 +172,13 @@ export const Editor = ({
         renderBlock={renderBlock}
         renderDecorator={renderDecorator}
         renderChild={renderChild}
+        renderListItem={renderListItem}
+        renderStyle={renderStyle}
         selection={selection}
         spellCheck
       />
     ),
-    [renderBlock, renderChild, renderDecorator, selection]
+    [renderBlock, renderChild, renderDecorator, renderListItem, renderStyle, selection]
   )
 
   // Make sure that the test editor is focused and out of "readOnly mode".
