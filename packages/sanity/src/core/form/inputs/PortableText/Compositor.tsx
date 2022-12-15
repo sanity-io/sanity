@@ -130,12 +130,12 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
   const renderBlock = useCallback(
     (blockProps: BlockRenderProps) => {
       const {
-        value: block,
-        type: blockType,
-        renderDefault,
+        children,
         focused: blockFocused,
-        selected,
         path: blockPath,
+        selected,
+        type: blockType,
+        value: block,
       } = blockProps
       const isTextBlock = block._type === editor.types.block.name
       if (isTextBlock) {
@@ -152,7 +152,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
             selected={selected}
             type={blockType as BlockSchemaType}
           >
-            {renderDefault(blockProps)}
+            {children}
           </TextBlock>
         )
       }
@@ -192,16 +192,16 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
   const renderChild = useCallback(
     (childProps: BlockChildRenderProps) => {
       const {
+        children,
         focused: childFocused,
         path: childPath,
-        renderDefault,
         selected,
         type: childType,
         value: child,
       } = childProps
       const isSpan = child._type === editor.types.span.name
       if (isSpan) {
-        return renderDefault(childProps)
+        return children
       }
       return (
         <InlineObject

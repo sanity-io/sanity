@@ -62,7 +62,7 @@ const TooltipBox = styled(Box).attrs({forwardedAs: 'span'})`
 
 export const Annotation = function Annotation(props: AnnotationProps) {
   const {onItemOpen, onItemClose, renderCustomMarkers, scrollElement, renderProps, readOnly} = props
-  const {type, value, path, renderDefault, selected, focused} = renderProps
+  const {children, type, value, path, selected, focused} = renderProps
   const {Markers = DefaultMarkers} = useFormBuilder().__internal.components
   const annotationRef = useRef<HTMLElement>(null)
   const editor = usePortableTextEditor()
@@ -80,11 +80,11 @@ export const Annotation = function Annotation(props: AnnotationProps) {
   const text = useMemo(
     () => (
       <span ref={setTextElement} data-annotation="">
-        {renderDefault(renderProps)}
+        {children}
       </span>
     ),
 
-    [renderDefault, renderProps]
+    [children]
   )
 
   const openItem = useCallback(() => {
