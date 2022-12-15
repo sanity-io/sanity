@@ -15,6 +15,29 @@ export type PublishedId = Opaque<string, 'publishedId'>
 export const DRAFTS_FOLDER = 'drafts'
 const DRAFTS_PREFIX = `${DRAFTS_FOLDER}.`
 
+/**
+ * Checks if the document ID `documentId` has the same ID as `equalsDocumentId`,
+ * if you discard the draft status of the given IDs. Examples:
+ *
+ * @example
+ * Draft vs published document ID, but representing the same document:
+ * ```
+ * // Prints "true":
+ * console.log(documentIdEquals('drafts.agot', 'agot'));
+ * ```
+ * @example
+ * Different documents:
+ * ```
+ * // Prints "false":
+ * console.log(documentIdEquals('hp-tcos', 'hp-hbp'));
+ * ```
+ *
+ * @public
+ */
+export function documentIdEquals(documentId: string, equalsDocumentId: string): boolean {
+  return getPublishedId(documentId) === getPublishedId(equalsDocumentId)
+}
+
 /** @internal */
 export function isDraft(document: SanityDocument): boolean {
   return isDraftId(document._id)
