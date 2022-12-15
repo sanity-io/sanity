@@ -7,7 +7,7 @@ import {
   ChevronDownIcon,
 } from '@sanity/icons'
 import {useToast, Text, Box, Button, Flex, Label, Card, Stack} from '@sanity/ui'
-import {CopyToClipboard} from 'react-copy-to-clipboard'
+import CopyToClipboard from 'react-copy-to-clipboard'
 import {ReferencePreviewLink} from './ReferencePreviewLink'
 import {ReferringDocuments} from './useReferringDocuments'
 import {
