@@ -18,12 +18,14 @@ const allowedKeys = [
   'validation',
 ]
 const allowedMarkKeys = ['decorators', 'annotations']
-const allowedStyleKeys = ['title', 'value', 'components']
-const allowedDecoratorKeys = ['title', 'value', 'icon', 'components']
+const allowedStyleKeys = ['title', 'value', 'component']
+const allowedDecoratorKeys = ['title', 'value', 'icon', 'component']
+const allowedListKeys = ['title', 'value', 'icon', 'component']
 
 export default function validateBlockType(typeDef, visitorContext) {
   const problems = []
   let styles = typeDef.styles
+  let lists = typeDef.lists
   let marks = typeDef.marks
   let members = typeDef.of
 
@@ -45,6 +47,10 @@ export default function validateBlockType(typeDef, visitorContext) {
 
   if (styles) {
     styles = validateStyles(styles, visitorContext, problems)
+  }
+
+  if (lists) {
+    lists = validateLists(lists, visitorContext, problems)
   }
 
   if (members) {
@@ -100,6 +106,48 @@ function validateMarks(marks, visitorContext, problems) {
   }
 
   return {...marks, decorators, annotations}
+}
+
+function validateLists(lists, visitorContext, problems) {
+  if (!Array.isArray(lists)) {
+    problems.push(error(`"lists" declaration should be an array, got ${getTypeOf(lists)}`))
+    return problems
+  }
+
+  lists.forEach((list, index) => {
+    if (!isPlainObject(list)) {
+      problems.push(error(`List must be an object, got ${getTypeOf(list)}`))
+      return
+    }
+
+    const name = list.value || `#${index}`
+    const disallowedKeys = Object.keys(list).filter(
+      (key) => !allowedListKeys.includes(key) && !key.startsWith('_')
+    )
+
+    if (disallowedKeys.length > 0) {
+      problems.push(
+        error(
+          `Found unknown properties for list ${name}: ${humanizeList(disallowedKeys.map(quote))}`
+        )
+      )
+    }
+
+    if (!list.value) {
+      problems.push(error(`Style #${index} is missing required "value" property`))
+    } else if (typeof list.value !== 'string') {
+      problems.push(
+        error(
+          `List type #${index} has an invalid "value" property, expected string, got ${getTypeOf(
+            list.value
+          )}`
+        )
+      )
+    } else if (!list.title) {
+      problems.push(warning(`List type ${name} is missing recommended "title" property`))
+    }
+  })
+  return lists
 }
 
 function validateStyles(styles, visitorContext, problems) {
