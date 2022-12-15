@@ -195,6 +195,7 @@
     "yargs": "^17.3.0"
   },
   "devDependencies": {
+    "@optimize-lodash/rollup-plugin": "^4.0.1",
     "@sanity/ui-workshop": "^1.0.0",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",
