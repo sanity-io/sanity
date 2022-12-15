@@ -1,6 +1,10 @@
 import {Subject} from 'rxjs'
-import {EditorChange, EditorSelection, PortableTextSlateEditor} from '../../types/editor'
-import {PortableTextFeatures} from '../../types/portableText'
+import {
+  EditorChange,
+  EditorSelection,
+  PortableTextMemberTypes,
+  PortableTextSlateEditor,
+} from '../../types/editor'
 import {debugWithName} from '../../utils/debug'
 import {toPortableTextRange} from '../../utils/ranges'
 import {fromSlateValue} from '../../utils/values'
@@ -11,7 +15,7 @@ const debug = debugWithName('plugin:withPortableTextSelections')
 // This plugin will make sure that we emit a PT selection whenever the editor has changed.
 export function createWithPortableTextSelections(
   change$: Subject<EditorChange>,
-  portableTextFeatures: PortableTextFeatures
+  types: PortableTextMemberTypes
 ) {
   return function withPortableTextSelections(
     editor: PortableTextSlateEditor
@@ -24,13 +28,9 @@ export function createWithPortableTextSelections(
           ptRange = existing
         } else {
           ptRange = toPortableTextRange(
-            fromSlateValue(
-              editor.children,
-              portableTextFeatures.types.block.name,
-              KEY_TO_VALUE_ELEMENT.get(editor)
-            ),
+            fromSlateValue(editor.children, types.block.name, KEY_TO_VALUE_ELEMENT.get(editor)),
             editor.selection,
-            portableTextFeatures
+            types
           )
           SLATE_TO_PORTABLE_TEXT_RANGE.set(editor.selection, ptRange)
         }

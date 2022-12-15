@@ -1,28 +1,34 @@
-import {ArraySchemaType, ObjectSchemaType, Path} from '@sanity/types'
+import {
+  ArraySchemaType,
+  BlockDecoratorDefinition,
+  BlockListDefinition,
+  BlockSchemaType,
+  BlockStyleDefinition,
+  ObjectSchemaType,
+  Path,
+  PortableTextBlock,
+  PortableTextChild,
+  PortableTextListBlock,
+  PortableTextObject,
+  PortableTextSpan,
+  PortableTextTextBlock,
+  SpanSchemaType,
+} from '@sanity/types'
 import {Subject, Observable} from 'rxjs'
 import {Descendant, Node as SlateNode, Operation as SlateOperation} from 'slate'
 import {ReactEditor} from '@sanity/slate-react'
 import type {Patch} from '../types/patch'
-import {Type} from '../types/schema'
-import {
-  ListItem,
-  PortableTextBlock,
-  PortableTextChild,
-  TextBlock,
-  TextSpan,
-} from '../types/portableText'
 import {PortableTextEditor} from '../editor/PortableTextEditor'
-import {PortableTextFeatures} from '..'
 
 export interface EditableAPIDeleteOptions {
   mode?: 'blocks' | 'children' | 'selected'
 }
 
 export interface EditableAPI {
-  activeAnnotations: () => PortableTextBlock[]
+  activeAnnotations: () => PortableTextObject[]
   addAnnotation: (
-    type: Type,
-    value?: {[prop: string]: any}
+    type: ObjectSchemaType,
+    value?: {[prop: string]: unknown}
   ) => {spanPath: Path; markDefPath: Path} | undefined
   blur: () => void
   delete: (selection: EditorSelection, options?: EditableAPIDeleteOptions) => void
@@ -35,15 +41,15 @@ export interface EditableAPI {
   getValue: () => PortableTextBlock[] | undefined
   hasBlockStyle: (style: string) => boolean
   hasListStyle: (listStyle: string) => boolean
-  insertBlock: (type: Type, value?: {[prop: string]: any}) => Path
-  insertChild: (type: Type, value?: {[prop: string]: any}) => Path
+  insertBlock: (type: BlockSchemaType | ObjectSchemaType, value?: {[prop: string]: unknown}) => Path
+  insertChild: (type: SpanSchemaType | ObjectSchemaType, value?: {[prop: string]: unknown}) => Path
   isCollapsedSelection: () => boolean
   isExpandedSelection: () => boolean
   isMarkActive: (mark: string) => boolean
   isVoid: (element: PortableTextBlock | PortableTextChild) => boolean
   marks: () => string[]
   redo: () => void
-  removeAnnotation: (type: Type) => void
+  removeAnnotation: (type: ObjectSchemaType) => void
   select: (selection: EditorSelection) => void
   toggleBlockStyle: (blockStyle: string) => void
   toggleList: (listStyle: string) => void
@@ -77,9 +83,9 @@ export interface PortableTextSlateEditor extends ReactEditor {
   history: History
   insertPortableTextData: (data: DataTransfer) => boolean
   insertTextOrHTMLData: (data: DataTransfer) => boolean
-  isTextBlock: (value: unknown) => value is TextBlock
-  isTextSpan: (value: unknown) => value is TextSpan
-  isListBlock: (value: unknown) => value is ListItem
+  isTextBlock: (value: unknown) => value is PortableTextTextBlock
+  isTextSpan: (value: unknown) => value is PortableTextSpan
+  isListBlock: (value: unknown) => value is PortableTextListBlock
   readOnly: boolean
   maxBlocks: number | undefined
 
@@ -226,7 +232,7 @@ export type ErrorChange = {
   name: string // short computer readable name
   level: 'warning' | 'error'
   description: string
-  data?: any
+  data?: unknown
 }
 
 export type InvalidValueResolution = {
@@ -282,8 +288,7 @@ export type OnPasteResultOrPromise = OnPasteResult | Promise<OnPasteResult>
 export type OnPasteFn = (arg0: {
   event: React.ClipboardEvent
   path: Path
-  portableTextFeatures: PortableTextFeatures
-  type: ArraySchemaType<PortableTextBlock>
+  types: PortableTextMemberTypes
   value: PortableTextBlock[] | undefined
 }) => OnPasteResultOrPromise
 
@@ -291,56 +296,114 @@ export type OnBeforeInputFn = (event: Event) => void
 
 export type OnCopyFn = (
   event: React.ClipboardEvent<HTMLDivElement | HTMLSpanElement>
-) => undefined | any
+) => undefined | unknown
 
 export type PatchObservable = Observable<{
   patches: Patch[]
   snapshot: PortableTextBlock[] | undefined
 }>
 
-export type RenderAttributes = {
-  annotations?: PortableTextBlock[]
+/** @public */
+export interface BlockRenderProps {
+  children: React.ReactElement
+  editorElementRef: React.RefObject<HTMLElement>
   focused: boolean
   level?: number
   listItem?: string
   path: Path
   selected: boolean
   style?: string
+  type: ObjectSchemaType
+  value: PortableTextBlock
 }
 
-export type RenderBlockFunction = (
-  value: PortableTextBlock,
-  type: ObjectSchemaType,
-  attributes: RenderAttributes,
-  defaultRender: (val: PortableTextBlock) => JSX.Element,
-  ref: React.RefObject<HTMLDivElement>
-) => JSX.Element
+/** @public */
+export interface BlockChildRenderProps {
+  annotations: PortableTextObject[]
+  children: React.ReactElement
+  editorElementRef: React.RefObject<HTMLElement>
+  focused: boolean
+  path: Path
+  selected: boolean
+  type: ObjectSchemaType
+  value: PortableTextChild
+}
 
-export type RenderChildFunction = (
-  value: PortableTextChild,
-  type: ObjectSchemaType,
-  attributes: RenderAttributes,
-  defaultRender: (val: PortableTextChild) => JSX.Element,
-  ref: React.RefObject<HTMLSpanElement>
-) => JSX.Element
+/** @public */
+export interface BlockAnnotationRenderProps {
+  block: PortableTextBlock
+  children: React.ReactElement
+  editorElementRef: React.RefObject<HTMLElement>
+  focused: boolean
+  path: Path
+  selected: boolean
+  type: ObjectSchemaType
+  value: PortableTextObject
+}
+/** @public */
+export interface BlockDecoratorRenderProps {
+  children: React.ReactElement
+  editorElementRef: React.RefObject<HTMLElement>
+  focused: boolean
+  path: Path
+  selected: boolean
+  type: BlockDecoratorDefinition
+  value: string
+}
+/** @public */
 
-export type RenderAnnotationFunction = (
-  value: PortableTextBlock,
-  type: ObjectSchemaType,
-  attributes: RenderAttributes,
-  defaultRender: () => JSX.Element,
-  ref: React.RefObject<HTMLSpanElement>
-) => JSX.Element
+export interface BlockListItemRenderProps {
+  block: PortableTextTextBlock
+  children: React.ReactElement
+  editorElementRef: React.RefObject<HTMLElement>
+  focused: boolean
+  level: number
+  nextItem?: string
+  path: Path
+  previousItem?: string
+  selected: boolean
+  type: BlockListDefinition
+  value: string
+}
 
-export type RenderDecoratorFunction = (
-  value: string,
-  type: {title: string},
-  attributes: RenderAttributes,
-  defaultRender: () => JSX.Element,
-  ref: React.RefObject<HTMLSpanElement>
-) => JSX.Element
+export type RenderBlockFunction = (props: BlockRenderProps) => JSX.Element
+
+export type RenderChildFunction = (props: BlockChildRenderProps) => JSX.Element
+
+export type RenderAnnotationFunction = (props: BlockAnnotationRenderProps) => JSX.Element
+
+export type RenderStyleFunction = (props: BlockStyleRenderProps) => JSX.Element
+
+/** @public */
+
+export interface BlockStyleRenderProps {
+  block: PortableTextTextBlock
+  children: React.ReactElement
+  editorElementRef: React.RefObject<HTMLElement>
+  focused: boolean
+  path: Path
+  selected: boolean
+  type: BlockStyleDefinition
+  value: string
+}
+
+export type RenderListItemFunction = (props: BlockListItemRenderProps) => JSX.Element
+
+export type RenderDecoratorFunction = (props: BlockDecoratorRenderProps) => JSX.Element
 
 export type ScrollSelectionIntoViewFunction = (
   editor: PortableTextEditor,
   domRange: globalThis.Range
 ) => void
+
+export type PortableTextMemberTypes = {
+  annotations: ObjectSchemaType[]
+  block: ObjectSchemaType
+  blockObjects: ObjectSchemaType[]
+  decorators: BlockDecoratorDefinition[]
+  inlineObjects: ObjectSchemaType[]
+  portableText: ArraySchemaType<PortableTextBlock>
+  span: ObjectSchemaType
+  styles: BlockStyleDefinition[]
+  lists: BlockListDefinition[]
+}

@@ -1,12 +1,11 @@
-import {Editor, Transforms, Element, Text} from 'slate'
-import {PortableTextBlock, PortableTextFeatures, TextBlock} from '../../types/portableText'
-import {PortableTextSlateEditor} from '../../types/editor'
+import {Editor, Transforms, Element, Text, Node} from 'slate'
+import {PortableTextMemberTypes, PortableTextSlateEditor} from '../../types/editor'
 import {debugWithName} from '../../utils/debug'
 
 const debug = debugWithName('plugin:withPortableTextLists')
 const MAX_LIST_LEVEL = 10
 
-export function createWithPortableTextLists(portableTextFeatures: PortableTextFeatures) {
+export function createWithPortableTextLists(types: PortableTextMemberTypes) {
   return function withPortableTextLists(editor: PortableTextSlateEditor): PortableTextSlateEditor {
     editor.pteToggleListItem = (listItemStyle: string) => {
       const isActive = editor.pteHasListStyle(listItemStyle)
@@ -26,8 +25,7 @@ export function createWithPortableTextLists(portableTextFeatures: PortableTextFe
       const selectedBlocks = [
         ...Editor.nodes(editor, {
           at: editor.selection,
-          match: (node) =>
-            Element.isElement(node) && node._type === portableTextFeatures.types.block.name,
+          match: (node) => Element.isElement(node) && node._type === types.block.name,
         }),
       ]
       selectedBlocks.forEach(([node, path]) => {
@@ -38,7 +36,7 @@ export function createWithPortableTextLists(portableTextFeatures: PortableTextFe
             ...rest,
             listItem: undefined,
             level: undefined,
-          } as PortableTextBlock
+          } as Partial<Node>
           debug(`Unsetting list '${listItemStyle}'`)
           Transforms.setNodes(editor, newNode, {at: path})
         }
@@ -62,10 +60,8 @@ export function createWithPortableTextLists(portableTextFeatures: PortableTextFe
           {
             ...node,
             level: 1,
-            listItem:
-              listItemStyle ||
-              (portableTextFeatures.lists[0] && portableTextFeatures.lists[0].value),
-          } as PortableTextBlock,
+            listItem: listItemStyle || (types.lists[0] && types.lists[0].value),
+          } as Partial<Node>,
           {at: path}
         )
       })
@@ -94,12 +90,11 @@ export function createWithPortableTextLists(portableTextFeatures: PortableTextFe
           debug('Unset list')
           Transforms.setNodes(
             editor,
-            // @todo: fix typing
             {
               ...node,
               level: undefined,
               listItem: undefined,
-            } as any,
+            },
             {at: path}
           )
         }

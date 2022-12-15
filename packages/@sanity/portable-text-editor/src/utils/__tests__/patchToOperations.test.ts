@@ -1,40 +1,39 @@
 import {createEditor, Descendant} from 'slate'
-import {getPortableTextFeatures} from '../getPortableTextFeatures'
 import {type} from '../../editor/__tests__/PortableTextEditorTester'
 import {createPatchToOperations} from '../patchToOperations'
 import {withPlugins} from '../../editor/plugins'
 import {keyGenerator, Patch, PortableTextEditor, PortableTextEditorProps} from '../..'
 import {fromSlateValue} from '../values'
+import {getPortableTextMemberTypes} from '../getPortableTextMemberTypes'
 
-const portableTextFeatures = getPortableTextFeatures(type)
+const types = getPortableTextMemberTypes(type)
 
-const patchToOperations = createPatchToOperations(portableTextFeatures, keyGenerator)
+const patchToOperations = createPatchToOperations(types, keyGenerator)
 const editor = withPlugins(createEditor(), {
   portableTextEditor: new PortableTextEditor({type} as PortableTextEditorProps),
 })
 
-const createDefaultValue = () =>
-  [
-    {
-      _type: 'image',
-      _key: 'c01739b0d03b',
-      children: [
-        {
-          _key: 'c01739b0d03b-void-child',
-          _type: 'span',
-          text: '',
-          marks: [],
-        },
-      ],
-      __inline: false,
-      value: {
-        asset: {
-          _ref: 'image-f52f71bc1df46e080dabe43a8effe8ccfb5f21de-4032x3024-png',
-          _type: 'reference',
-        },
+const createDefaultValue = (): Descendant[] => [
+  {
+    _type: 'image',
+    _key: 'c01739b0d03b',
+    children: [
+      {
+        _key: 'c01739b0d03b-void-child',
+        _type: 'span',
+        text: '',
+        marks: [],
+      },
+    ],
+    __inline: false,
+    value: {
+      asset: {
+        _ref: 'image-f52f71bc1df46e080dabe43a8effe8ccfb5f21de-4032x3024-png',
+        _type: 'reference',
       },
     },
-  ] as Descendant[]
+  },
+]
 
 describe('operationToPatches', () => {
   beforeEach(() => {
@@ -56,7 +55,7 @@ describe('operationToPatches', () => {
         origin: 'remote',
       },
     ] as Patch[]
-    const snapShot = fromSlateValue(editor.children, portableTextFeatures.types.block.name)
+    const snapShot = fromSlateValue(editor.children, types.block.name)
     patches.forEach((p) => {
       patchToOperations(editor, p, patches, snapShot)
     })

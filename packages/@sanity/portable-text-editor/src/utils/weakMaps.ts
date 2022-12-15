@@ -1,4 +1,4 @@
-import {Editor, Element, Range} from 'slate'
+import {Editor, Element, Range, Text} from 'slate'
 import {EditorSelection} from '..'
 
 /**
@@ -9,7 +9,7 @@ import {EditorSelection} from '..'
 export const IS_DRAGGING: WeakMap<Editor, boolean> = new WeakMap()
 // Is the editor dragging a element?
 export const IS_DRAGGING_BLOCK_ELEMENT: WeakMap<Editor, Element> = new WeakMap()
-export const IS_DRAGGING_CHILD_ELEMENT: WeakMap<Editor, Element> = new WeakMap()
+export const IS_DRAGGING_CHILD_ELEMENT: WeakMap<Editor, Element | Text> = new WeakMap()
 // When dragging elements, this will be the target element
 export const IS_DRAGGING_ELEMENT_TARGET: WeakMap<Editor, Element> = new WeakMap()
 export const IS_DRAGGING_ELEMENT_RANGE: WeakMap<Editor, Range> = new WeakMap()

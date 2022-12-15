@@ -1,6 +1,5 @@
 import {Transforms, Descendant} from 'slate'
-import {PortableTextSlateEditor} from '../../types/editor'
-import {PortableTextFeatures} from '../../types/portableText'
+import {PortableTextMemberTypes, PortableTextSlateEditor} from '../../types/editor'
 import {debugWithName} from '../../utils/debug'
 import {withoutPatching} from '../../utils/withoutPatching'
 import {withoutSaving} from './createWithUndoRedo'
@@ -8,7 +7,7 @@ import {withoutSaving} from './createWithUndoRedo'
 const debug = debugWithName('plugin:withPlaceholderBlock')
 
 interface Options {
-  portableTextFeatures: PortableTextFeatures
+  types: PortableTextMemberTypes
   keyGenerator: () => string
 }
 /**
@@ -16,15 +15,15 @@ interface Options {
  *
  */
 export function createWithPlaceholderBlock({
-  portableTextFeatures,
+  types,
   keyGenerator,
 }: Options): (editor: PortableTextSlateEditor) => PortableTextSlateEditor {
   return function withPlaceholderBlock(editor: PortableTextSlateEditor): PortableTextSlateEditor {
     editor.createPlaceholderBlock = (): Descendant => {
       return {
-        _type: portableTextFeatures.types.block.name,
+        _type: types.block.name,
         _key: keyGenerator(),
-        style: portableTextFeatures.styles[0].value,
+        style: types.styles[0].value,
         markDefs: [],
         children: [
           {

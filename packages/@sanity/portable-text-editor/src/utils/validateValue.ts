@@ -1,23 +1,17 @@
+import {PortableTextBlock, PortableTextSpan, PortableTextTextBlock} from '@sanity/types'
 import {flatten, isObject, uniq} from 'lodash'
 import {set, unset, insert} from '../patch/PatchEvent'
-import {PortableTextBlock, PortableTextChild, PortableTextFeatures} from '../types/portableText'
-import {InvalidValueResolution} from '../types/editor'
+import {InvalidValueResolution, PortableTextMemberTypes} from '../types/editor'
 
 export function validateValue(
   value: PortableTextBlock[] | undefined,
-  portableTextFeatures: PortableTextFeatures,
+  types: PortableTextMemberTypes,
   keyGenerator: () => string
 ): {valid: boolean; resolution: InvalidValueResolution | null} {
   let resolution: InvalidValueResolution | null = null
   let valid = true
-  const validChildTypes = [
-    ...[portableTextFeatures.types.span.name],
-    ...portableTextFeatures.types.inlineObjects.map((t) => t.name),
-  ]
-  const validBlockTypes = [
-    ...[portableTextFeatures.types.block.name],
-    ...portableTextFeatures.types.blockObjects.map((t) => t.name),
-  ]
+  const validChildTypes = [...[types.span.name], ...types.inlineObjects.map((t) => t.name)]
+  const validBlockTypes = [...[types.block.name], ...types.blockObjects.map((t) => t.name)]
 
   // Undefined is allowed
   if (value === undefined) {
@@ -60,7 +54,7 @@ export function validateValue(
       if (!blk._type || !validBlockTypes.includes(blk._type)) {
         // Special case where block type is set to default 'block', but the block type is named something else according to the schema.
         if (blk._type === 'block') {
-          const currentBlockTypeName = portableTextFeatures.types.block.name
+          const currentBlockTypeName = types.block.name
           resolution = {
             patches: [set({...blk, _type: currentBlockTypeName}, [{_key: blk._key}])],
             description: `Block with _key '${blk._key}' has invalid type name '${blk._type}'. According to the schema, the block type name is '${currentBlockTypeName}'`,
@@ -78,31 +72,32 @@ export function validateValue(
         return true
       }
       // Test that every child in text block is valid
-      if (blk._type === portableTextFeatures.types.block.name) {
+      if (blk._type === types.block.name) {
+        const textBlock = blk as PortableTextTextBlock
         // Test that it has children
-        if (!blk.children) {
+        if (!textBlock.children) {
           resolution = {
-            patches: [unset([{_key: blk._key}])],
-            description: `Text block with _key '${blk._key}' is missing required key 'children'.`,
+            patches: [unset([{_key: textBlock._key}])],
+            description: `Text block with _key '${textBlock._key}' is missing required key 'children'.`,
             action: 'Remove the block',
-            item: blk,
+            item: textBlock,
           }
           return true
         }
         // Test that markDefs exists
         if (!blk.markDefs) {
           resolution = {
-            patches: [set({...blk, markDefs: []}, [{_key: blk._key}])],
+            patches: [set({...textBlock, markDefs: []}, [{_key: textBlock._key}])],
             description: `Block is missing required key 'markDefs'.`,
             action: 'Add empty markDefs array',
-            item: blk,
+            item: textBlock,
           }
           return true
         }
 
         // // Test that every span has .marks
         // const spansWithUndefinedMarks = blk.children
-        //   .filter(cld => cld._type === portableTextFeatures.types.span.name)
+        //   .filter(cld => cld._type === types.span.name)
         //   .filter(cld => typeof cld.marks === 'undefined')
 
         // if (spansWithUndefinedMarks.length > 0) {
@@ -117,12 +112,12 @@ export function validateValue(
         //   }
         //   return true
         // }
-        const allUsedMarks: string[] = uniq(
+        const allUsedMarks = uniq(
           flatten(
-            blk.children
-              .filter((cld: any) => cld._type === portableTextFeatures.types.span.name)
-              .map((cld: any) => cld.marks || [])
-          )
+            textBlock.children
+              .filter((cld) => cld._type === types.span.name)
+              .map((cld) => cld.marks || [])
+          ) as string[]
         )
         // // Test that all markDefs are in use
         // if (blk.markDefs && blk.markDefs.length > 0) {
@@ -144,22 +139,23 @@ export function validateValue(
 
         // Test that every annotation mark used has a definition
         const annotationMarks = allUsedMarks.filter(
-          (mark) => !portableTextFeatures.decorators.map((dec) => dec.value).includes(mark)
+          (mark) => !types.decorators.map((dec) => dec.value).includes(mark)
         )
-        const orphanedMarks = annotationMarks.filter(
-          (mark) => !blk.markDefs.find((def: any) => def._key === mark)
+        const orphanedMarks = annotationMarks.filter((mark) =>
+          textBlock.markDefs ? !textBlock.markDefs.find((def) => def._key === mark) : false
         )
         if (orphanedMarks.length > 0) {
-          const children = blk.children.filter(
-            (cld: any) =>
+          const spanChildren = textBlock.children.filter(
+            (cld) =>
+              cld._type === types.span.name &&
               Array.isArray(cld.marks) &&
-              cld.marks.some((mark: any) => orphanedMarks.includes(mark))
-          ) as PortableTextChild[]
-          if (children) {
+              cld.marks.some((mark) => orphanedMarks.includes(mark))
+          ) as PortableTextSpan[]
+          if (spanChildren) {
             resolution = {
-              patches: children.map((child) => {
+              patches: spanChildren.map((child) => {
                 return set(
-                  child.marks.filter((cmrk: any) => !orphanedMarks.includes(cmrk)),
+                  (child.marks || []).filter((cMrk) => !orphanedMarks.includes(cMrk)),
                   [{_key: blk._key}, 'children', {_key: child._key}, 'marks']
                 )
               }),
@@ -174,9 +170,9 @@ export function validateValue(
         }
 
         // Test that children is lengthy
-        if (blk.children && blk.children.length === 0) {
+        if (textBlock.children && textBlock.children.length === 0) {
           const newSpan = {
-            _type: portableTextFeatures.types.span.name,
+            _type: types.span.name,
             _key: keyGenerator(),
             text: '',
           }
@@ -190,18 +186,18 @@ export function validateValue(
         }
         // Test every child
         if (
-          blk.children.some((child: any, cIndex: number) => {
+          textBlock.children.some((child, cIndex: number) => {
             if (!child._key) {
-              const newchild = {...child, _key: keyGenerator()}
+              const newChild = {...child, _key: keyGenerator()}
               resolution = {
-                patches: [set(newchild, [{_key: blk._key}, 'children', cIndex])],
+                patches: [set(newChild, [{_key: blk._key}, 'children', cIndex])],
                 description: `Child at index ${cIndex} is missing required _key in block with _key ${blk._key}.`,
                 action: 'Set a new random _key on the object',
                 item: blk,
               }
               return true
             }
-            // Verify that childs have valid types
+            // Verify that children have valid types
             if (!child._type || validChildTypes.includes(child._type) === false) {
               resolution = {
                 patches: [unset([{_key: blk._key}, 'children', {_key: child._key}])],
@@ -212,7 +208,7 @@ export function validateValue(
               return true
             }
             // Verify that spans have .text
-            if (child._type === portableTextFeatures.types.span.name && child.text === undefined) {
+            if (child._type === types.span.name && child.text === undefined) {
               resolution = {
                 patches: [
                   set({...child, text: ''}, [{_key: blk._key}, 'children', {_key: child._key}]),
