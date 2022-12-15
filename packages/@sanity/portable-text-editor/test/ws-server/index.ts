@@ -3,8 +3,9 @@ import express from 'express'
 import expressWS from 'express-ws'
 import {Subject} from 'rxjs'
 import type {WebSocket} from 'ws'
+import {PortableTextBlock} from '@sanity/types'
 import {applyAll} from '../../src/patch/applyPatch'
-import {Patch, PortableTextBlock} from '../../src'
+import {Patch} from '../../src'
 
 const expressApp = express()
 const {app} = expressWS(expressApp)
@@ -81,21 +82,26 @@ app.ws('/', (s, req) => {
     }
     if (data.type === 'mutation' && testId) {
       const prevValue = valueMap[testId]
-      valueMap[testId] = applyAll(prevValue, data.patches)
-      messages.next(
-        JSON.stringify({
-          type: 'value',
-          value: valueMap[testId],
-          testId,
-          revId: revisionMap[testId],
-        })
-      )
-      messages.next(
-        JSON.stringify({
-          ...data,
-          snapshot: valueMap[testId],
-        })
-      )
+      try {
+        valueMap[testId] = applyAll(prevValue, data.patches)
+        messages.next(
+          JSON.stringify({
+            type: 'value',
+            value: valueMap[testId],
+            testId,
+            revId: revisionMap[testId],
+          })
+        )
+        messages.next(
+          JSON.stringify({
+            ...data,
+            snapshot: valueMap[testId],
+          })
+        )
+      } catch (err) {
+        console.error(err)
+        // Nothing
+      }
     }
   })
 })

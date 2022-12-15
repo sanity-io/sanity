@@ -1,5 +1,6 @@
+import {PortableTextBlock} from '@sanity/types'
 import {KeyInput} from 'puppeteer'
-import {EditorSelection, PortableTextBlock} from '../../src'
+import {EditorSelection} from '../../src'
 
 export {}
 
