@@ -1,6 +1,6 @@
 import {Path, PortableTextBlock, PortableTextObject, PortableTextTextBlock} from '@sanity/types'
 
-/** @alpha */
+/** @beta */
 export interface BlockDecoratorProps {
   children: React.ReactElement
   focused: boolean
@@ -10,7 +10,7 @@ export interface BlockDecoratorProps {
   value: string
 }
 
-/** @alpha */
+/** @beta */
 export interface BlockStyleProps {
   block: PortableTextTextBlock
   children: React.ReactElement
@@ -21,7 +21,7 @@ export interface BlockStyleProps {
   value: string
 }
 
-/** @alpha */
+/** @beta */
 export interface BlockListItemProps {
   block: PortableTextTextBlock
   children: React.ReactElement
@@ -33,7 +33,7 @@ export interface BlockListItemProps {
   value: string
 }
 
-/** @alpha */
+/** @beta */
 export interface BlockAnnotationProps {
   children: React.ReactElement
   focused: boolean
@@ -47,7 +47,7 @@ export interface BlockAnnotationProps {
   value: PortableTextObject
 }
 
-/** @alpha */
+/** @beta */
 export interface BlockProps {
   children: React.ReactElement
   focused: boolean
