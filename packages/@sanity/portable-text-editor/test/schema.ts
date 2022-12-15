@@ -1,17 +1,17 @@
-import {RawType} from '../src/types/schema'
+import {defineType} from '@sanity/types'
 
-export const imageType: RawType = {
+export const imageType = {
   type: 'image',
   name: 'blockImage',
 }
 
-export const someObject: RawType = {
+export const someObject = {
   type: 'object',
   name: 'someObject',
   fields: [{type: 'string', name: 'color'}],
 }
 
-export const blockType: RawType = {
+export const blockType = {
   type: 'block',
   name: 'block',
   styles: [
@@ -27,8 +27,8 @@ export const blockType: RawType = {
   of: [someObject],
 }
 
-export const portableTextType: RawType = {
+export const portableTextType = defineType({
   type: 'array',
   name: 'body',
   of: [blockType, someObject],
-}
+})
