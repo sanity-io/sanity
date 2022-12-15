@@ -1,3 +1,5 @@
+import i18n from 'i18next'
+import k from './../../../../i18n/keys'
 import React, {useCallback} from 'react'
 import {Box} from '@sanity/ui'
 import {FieldError} from '../../store/types/memberErrors'
@@ -19,6 +21,7 @@ export function MemberFieldError(props: {member: FieldError}) {
     },
     [onChange, member.fieldName]
   )
+
   if (member.error.type === 'INCOMPATIBLE_TYPE') {
     return (
       <InvalidValueInput
@@ -38,5 +41,9 @@ export function MemberFieldError(props: {member: FieldError}) {
   if (member.error.type === 'MIXED_ARRAY') {
     return <MixedArrayAlert onChange={handleChange} error={member.error} />
   }
-  return <Box>Unexpected error: {props.member.error.type}</Box>
+  return (
+    <Box>
+      {i18n.t(k.UNEXPECTED_ERROR1)} {props.member.error.type}
+    </Box>
+  )
 }

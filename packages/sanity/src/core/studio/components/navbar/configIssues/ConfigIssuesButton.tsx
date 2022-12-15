@@ -1,3 +1,5 @@
+import i18n from 'i18next'
+import k from './../../../../../i18n/keys'
 import React, {useCallback, useState, useId} from 'react'
 import {Box, Button, Dialog, Heading, Stack, Text, Tooltip} from '@sanity/ui'
 import {WarningOutlineIcon} from '@sanity/icons'
@@ -38,7 +40,7 @@ export function ConfigIssuesButton() {
       <Tooltip
         content={
           <Box padding={2}>
-            <Text size={1}>Found configuration issues</Text>
+            <Text size={1}>{i18n.t(k.FOUND_CONFIGURATION_ISSUES)}</Text>
           </Box>
         }
         placement="bottom"
@@ -61,10 +63,9 @@ export function ConfigIssuesButton() {
         <Dialog
           header={
             <Stack space={3}>
-              <Text weight="semibold">Configuration issues</Text>
+              <Text weight="semibold">{i18n.t(k.CONFIGURATION_ISSUES)}</Text>
               <Text muted size={1}>
-                Configuration checks are only performed during development and will not be visible
-                in production builds
+                {i18n.t(k.CONFIGURATION_CHECKS_ARE_ONLY)}
               </Text>
             </Stack>
           }
@@ -77,7 +78,7 @@ export function ConfigIssuesButton() {
         >
           <Stack space={4} padding={4}>
             <Heading as="h2" size={1}>
-              Found {groupsWithWarnings.length} schema warnings
+              {i18n.t(k.FOUND)} {groupsWithWarnings.length} {i18n.t(k.SCHEMA_WARNINGS)}
             </Heading>
             <SchemaProblemGroups problemGroups={groupsWithWarnings} />
           </Stack>

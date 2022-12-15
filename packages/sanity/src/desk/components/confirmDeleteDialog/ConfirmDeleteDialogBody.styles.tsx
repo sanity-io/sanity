@@ -1,3 +1,5 @@
+import i18n from 'i18next'
+import k from './../../../i18n/keys'
 import React from 'react'
 import styled from 'styled-components'
 import {rem, Flex, Text, Card, Box, Tooltip, Container, Inline} from '@sanity/ui'
@@ -76,7 +78,8 @@ export const OtherReferenceCount = (props: {totalCount: number; references: unkn
   return (
     <Inline space={2}>
       <Text size={1} muted>
-        {difference} other reference{difference === 1 ? '' : 's'} not shown{' '}
+        {difference} {i18n.t(k.OTHER_REFERENCE)}
+        {difference === 1 ? '' : i18n.t(k.S)} {i18n.t(k.NOT_SHOWN)}{' '}
       </Text>
 
       <Tooltip
@@ -85,10 +88,7 @@ export const OtherReferenceCount = (props: {totalCount: number; references: unkn
         content={
           <Container width={0}>
             <Box padding={2}>
-              <Text size={1}>
-                We can't show metadata about these references because no token with access to the
-                datasets they are in was found.
-              </Text>
+              <Text size={1}>{i18n.t(k.WE_CAN_T_SHOW_METADATA_ABOUT_T)}</Text>
             </Box>
           </Container>
         }

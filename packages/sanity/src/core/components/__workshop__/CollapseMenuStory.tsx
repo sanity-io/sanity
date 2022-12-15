@@ -1,3 +1,5 @@
+import i18n from 'i18next'
+import k from './../../../i18n/keys'
 import {EllipsisVerticalIcon, IceCreamIcon} from '@sanity/icons'
 import {Button, Card, Flex} from '@sanity/ui'
 import {useBoolean, useSelect} from '@sanity/ui-workshop'
@@ -27,12 +29,12 @@ export default function CollapseMenuStory() {
               key={num}
               fontSize={1}
               padding={2}
-              text={`Button ${num + 1}`}
+              text={`${i18n.t(k.BUTTON)} ${num + 1}`}
               dividerBefore={Boolean(num % 2)}
               icon={IceCreamIcon}
               mode="bleed"
-              collapsedProps={{tooltipText: 'Collapsed'}}
-              expandedProps={{tooltipText: 'Expanded'}}
+              collapsedProps={{tooltipText: i18n.t(k.COLLAPSED)}}
+              expandedProps={{tooltipText: i18n.t(k.EXPANDED)}}
             />
           ))}
         </CollapseMenu>

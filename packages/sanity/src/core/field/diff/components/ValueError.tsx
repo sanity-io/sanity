@@ -1,3 +1,5 @@
+import i18n from 'i18next'
+import k from './../../../../i18n/keys'
 import {ErrorOutlineIcon} from '@sanity/icons'
 import {Text, Box, Card, Flex} from '@sanity/ui'
 import React from 'react'
@@ -15,7 +17,7 @@ export function ValueError({error}: {error: FieldValueError}) {
         </Box>
         <Box flex={1} paddingLeft={3}>
           <Text size={1} as="p">
-            Value error: {error.message}
+            {i18n.t(k.VALUE_ERROR)} {error.message}
           </Text>
         </Box>
       </Flex>

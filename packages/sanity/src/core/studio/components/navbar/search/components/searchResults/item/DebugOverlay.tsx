@@ -1,3 +1,5 @@
+import i18n from 'i18next'
+import k from './../../../../../../../../i18n/keys'
 import {Box, Card, CardTone, Code, Inline, Stack, Tooltip} from '@sanity/ui'
 import React from 'react'
 import styled from 'styled-components'
@@ -44,7 +46,7 @@ export function DebugOverlay({data}: DebugScoreProps) {
                   ))}
                 </>
               ) : (
-                <Code size={0}>No matches</Code>
+                <Code size={0}>{i18n.t(k.NO_MATCHES)}</Code>
               )}
             </Stack>
           </Box>
@@ -53,7 +55,9 @@ export function DebugOverlay({data}: DebugScoreProps) {
         portal
       >
         <DebugScoreCard padding={1} shadow={1} tone={tone}>
-          <Code size={0}>score: {score}</Code>
+          <Code size={0}>
+            {i18n.t(k.SCORE)} {score}
+          </Code>
         </DebugScoreCard>
       </Tooltip>
     </>

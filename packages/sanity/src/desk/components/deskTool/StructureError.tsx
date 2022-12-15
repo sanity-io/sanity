@@ -1,3 +1,5 @@
+import i18n from 'i18next'
+import k from './../../../i18n/keys'
 import {generateHelpUrl} from '@sanity/generate-help-url'
 import {Box, Button, Card, Code, Container, Heading, Label, Stack, Text} from '@sanity/ui'
 import React, {useCallback} from 'react'
@@ -54,12 +56,12 @@ export function StructureError({error}: StructureErrorProps) {
   return (
     <Card height="fill" overflow="auto" padding={4} sizing="border" tone="critical">
       <Container>
-        <Heading as="h2">Encountered an error while reading structure</Heading>
+        <Heading as="h2">{i18n.t(k.ENCOUNTERED_AN_ERROR_WHILE_REA)}</Heading>
 
         <Card marginTop={4} padding={4} radius={2} overflow="auto" shadow={1} tone="inherit">
           {path.length > 0 && (
             <Stack space={2}>
-              <Label>Structure path</Label>
+              <Label>{i18n.t(k.STRUCTURE_PATH)}</Label>
               <Code>
                 {/* TODO: it seems like the path is off by one and includes */}
                 {/* `root` twice  */}
@@ -72,7 +74,7 @@ export function StructureError({error}: StructureErrorProps) {
           )}
 
           <Stack marginTop={4} space={2}>
-            <Label>Error</Label>
+            <Label>{i18n.t(k.ERROR1)}</Label>
             <Code>{showStack ? formatStack(stack) : error.message}</Code>
           </Stack>
 
@@ -80,7 +82,7 @@ export function StructureError({error}: StructureErrorProps) {
             <Box marginTop={4}>
               <Text>
                 <a href={generateHelpUrl(helpId)} rel="noopener noreferrer" target="_blank">
-                  View documentation
+                  {i18n.t(k.VIEW_DOCUMENTATION1)}
                 </a>
               </Text>
             </Box>

@@ -1,3 +1,5 @@
+import i18n from 'i18next'
+import k from './../../../i18n/keys'
 import {WarningOutlineIcon} from '@sanity/icons'
 import {Box, Card, Container, Flex, Stack, Text} from '@sanity/ui'
 import React from 'react'
@@ -16,13 +18,13 @@ export function NoToolsScreen() {
               </Box>
               <Stack flex={1} marginLeft={3} space={3}>
                 <Text as="h1" size={1} weight="bold">
-                  No configured tools!
+                  {i18n.t(k.NO_CONFIGURED_TOOLS)}
                 </Text>
                 <Text as="p" muted size={1}>
-                  Please configure a tool in your Studio configuration.
+                  {i18n.t(k.PLEASE_CONFIGURE_A_TOOL_IN_YOU)}
                 </Text>
                 <Text as="p" hidden muted size={1}>
-                  <a href="">Learn how to add a tool &rarr;</a>
+                  <a href="">{i18n.t(k.LEARN_HOW_TO_ADD_A_TOOL)}</a>
                 </Text>
               </Stack>
             </Flex>

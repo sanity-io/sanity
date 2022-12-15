@@ -1,3 +1,5 @@
+import i18n from 'i18next'
+import k from './../../../../../../../../i18n/keys'
 import {ErrorOutlineIcon} from '@sanity/icons'
 import {Box, Flex, ResponsivePaddingProps, Stack} from '@sanity/ui'
 import React from 'react'
@@ -12,10 +14,10 @@ export function FilterError(props: ResponsivePaddingProps) {
         </TextWithTone>
         <Stack space={4}>
           <TextWithTone size={1} tone="critical" weight="semibold">
-            An error occurred whilst displaying this filter.
+            {i18n.t(k.AN_ERROR_OCCURRED_WHILST_DISPL)}
           </TextWithTone>
           <TextWithTone size={1} tone="critical">
-            This may indicate invalid options defined in your schema.
+            {i18n.t(k.THIS_MAY_INDICATE_INVALID_OPTI)}
           </TextWithTone>
         </Stack>
       </Flex>

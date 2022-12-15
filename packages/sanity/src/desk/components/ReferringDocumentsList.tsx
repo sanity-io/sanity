@@ -1,3 +1,5 @@
+import i18n from 'i18next'
+import k from './../../i18n/keys'
 import {EditIcon} from '@sanity/icons'
 import {Box, Card, Flex, Stack, Text} from '@sanity/ui'
 import React, {useCallback, useMemo} from 'react'
@@ -34,6 +36,7 @@ function DocumentPreviewLink(props: DocumentPreviewLinkProps) {
     () => ({action: 'edit', params: {id: document._id, type: document._type}}),
     [document]
   )
+
   const href = router.resolveIntentLink(intent.action, intent.params)
   const schemaType = schema.get(document._type)
 
@@ -49,7 +52,7 @@ function DocumentPreviewLink(props: DocumentPreviewLinkProps) {
   if (!schemaType) {
     return (
       <Text muted>
-        A document of the unknown type <em>{document._type}</em>
+        {i18n.t(k.A_DOCUMENT_OF_THE_UNKNOWN_TYPE)} <em>{document._type}</em>
       </Text>
     )
   }

@@ -1,3 +1,5 @@
+import i18n from 'i18next'
+import k from './../../../../../i18n/keys'
 import {ResetIcon, WarningOutlineIcon} from '@sanity/icons'
 import {Card, Flex, Box, Text, Stack, Button} from '@sanity/ui'
 import React from 'react'
@@ -22,12 +24,9 @@ export function InvalidFileWarning({onClearValue}: Props) {
         </Box>
         <Stack space={3}>
           <Text size={1} weight="semibold">
-            Invalid file value
+            {i18n.t(k.INVALID_FILE_VALUE)}
           </Text>
-          <Text size={1}>
-            The value of this field is not a valid file. Resetting this field will let you choose a
-            new file.
-          </Text>
+          <Text size={1}>{i18n.t(k.THE_VALUE_OF_THIS_FIELD_IS_NOT)}</Text>
         </Stack>
       </Flex>
       <ButtonWrapper icon={ResetIcon} text="Reset value" onClick={onClearValue} mode="ghost" />

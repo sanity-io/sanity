@@ -1,3 +1,5 @@
+import i18n from 'i18next'
+import k from './../../../../i18n/keys'
 import {DocumentIcon} from '@sanity/icons'
 import {Card, Container, Flex, Text} from '@sanity/ui'
 import {useBoolean, useSelect, useString, useText} from '@sanity/ui-workshop'
@@ -40,7 +42,9 @@ export default function TemplatePreviewStory() {
   if (!component) {
     return (
       <Flex align="center" height="fill" justify="center" padding={4} sizing="border">
-        <Text>Unknown layout: {layout}</Text>
+        <Text>
+          {i18n.t(k.UNKNOWN_LAYOUT)} {layout}
+        </Text>
       </Flex>
     )
   }

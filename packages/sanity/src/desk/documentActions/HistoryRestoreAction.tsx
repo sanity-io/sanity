@@ -1,3 +1,5 @@
+import i18n from 'i18next'
+import k from './../../i18n/keys'
 import {RestoreIcon} from '@sanity/icons'
 import React, {useCallback, useMemo, useState} from 'react'
 import {DocumentActionComponent, DocumentActionDialogProps, useDocumentOperation} from 'sanity'
@@ -26,7 +28,7 @@ export const HistoryRestoreAction: DocumentActionComponent = ({id, type, revisio
         tone: 'critical',
         onCancel: onComplete,
         onConfirm: handleConfirm,
-        message: <>Are you sure you want to restore this document?</>,
+        message: <>{i18n.t(k.ARE_YOU_SURE_YOU_WANT_TO_RESTO)}</>,
       }
     }
 

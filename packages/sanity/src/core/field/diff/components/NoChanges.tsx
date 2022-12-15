@@ -1,3 +1,5 @@
+import i18n from 'i18next'
+import k from './../../../../i18n/keys'
 import {Stack, Text} from '@sanity/ui'
 import React from 'react'
 
@@ -6,11 +8,10 @@ export function NoChanges() {
   return (
     <Stack space={3}>
       <Text size={1} weight="semibold" as="h3">
-        There are no changes
+        {i18n.t(k.THERE_ARE_NO_CHANGES)}
       </Text>
       <Text as="p" size={1} muted>
-        Edit the document or select an older version in the timeline to see a list of changes appear
-        in this panel.
+        {i18n.t(k.EDIT_THE_DOCUMENT_OR_SELECT_AN)}
       </Text>
     </Stack>
   )

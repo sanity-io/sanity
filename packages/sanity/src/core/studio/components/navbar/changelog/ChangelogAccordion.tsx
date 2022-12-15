@@ -1,3 +1,5 @@
+import i18n from 'i18next'
+import k from './../../../../../i18n/keys'
 import {ToggleArrowRightIcon} from '@sanity/icons'
 import {Card, Stack, Button, Text, Code, Box} from '@sanity/ui'
 import React, {useCallback, useState} from 'react'
@@ -51,16 +53,16 @@ export function ChangelogAccordion(props: ChangelogAccordionProps) {
           <Card tone="transparent" padding={3} radius={2}>
             <Stack space={3}>
               <Code language="bash" size={1}>
-                {[`# Run this command to upgrade`, ...COMMANDS].join('\n')}
+                {[`${i18n.t(k.RUN_THIS_COMMAND_TO_UPGRADE)}`, ...COMMANDS].join('\n')}
               </Code>
             </Stack>
           </Card>
 
           <Box paddingX={2} paddingY={3}>
             <Text size={1} muted>
-              If you have problems upgrading, please get in touch with us in the{' '}
+              {i18n.t(k.IF_YOU_HAVE_PROBLEMS_UPGRADING)}{' '}
               <a href="https://slack.sanity.io/" rel="noopener noreferrer" target="_blank">
-                Sanity Community
+                {i18n.t(k.SANITY_COMMUNITY)}
               </a>
               .
             </Text>

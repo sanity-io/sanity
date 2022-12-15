@@ -1,3 +1,5 @@
+import i18n from 'i18next'
+import k from './../../../../i18n/keys'
 import React, {CSSProperties} from 'react'
 import {WarningOutlineIcon} from '@sanity/icons'
 import {Card, Text, Grid, Flex} from '@sanity/ui'
@@ -67,17 +69,17 @@ export const ConfirmMessage = ({asset, assetType, hasResults = false}: ConfirmMe
       <Grid columns={3} gap={3}>
         <Flex style={{gridColumn: isImage ? 'span 2' : 'span 3'}} align="center">
           <Text>
-            You are about to delete the {assetType}
+            {i18n.t(k.YOU_ARE_ABOUT_TO_DELETE_THE)} {assetType}
             {asset.originalFilename && (
               <>
                 {' '}
                 <strong>{asset.originalFilename}</strong>
               </>
             )}{' '}
-            and its metadata.
+            {i18n.t(k.AND_ITS_METADATA)}
             <br />
             <br />
-            Are you sure?
+            {i18n.t(k.ARE_YOU_SURE)}
           </Text>
         </Flex>
         {isImage && (

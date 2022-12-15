@@ -1,3 +1,5 @@
+import i18n from 'i18next'
+import k from './../../../../../../../../i18n/keys'
 import {Card, Code, Flex, Stack, Text} from '@sanity/ui'
 import React from 'react'
 import styled from 'styled-components'
@@ -47,7 +49,7 @@ function DebugDocumentTypes({filter}: {filter: SearchFilter}) {
     <Card borderTop overflow="hidden" padding={3} tone="transparent">
       <Stack space={2}>
         <Text size={0} weight="semibold">
-          Document types
+          {i18n.t(k.DOCUMENT_TYPES1)}
         </Text>
         <Code muted size={0} style={{whiteSpace: 'normal'}}>
           {fieldDefinition?.documentTypes && fieldDefinition.documentTypes.length > 0
@@ -69,7 +71,7 @@ function DebugValues({filter}: {filter: SearchFilter}) {
     <Card borderTop overflow="hidden" padding={3} tone="transparent">
       <Stack space={2}>
         <Text size={0} weight="semibold">
-          Field
+          {i18n.t(k.FIELD)}
         </Text>
         {fieldDefinition?.fieldPath && <Code size={0}>fieldPath: {fieldDefinition.fieldPath}</Code>}
         <Code size={0}>filterName: {filter.filterName}</Code>

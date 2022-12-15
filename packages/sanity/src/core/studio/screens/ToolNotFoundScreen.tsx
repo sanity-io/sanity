@@ -1,3 +1,5 @@
+import i18n from 'i18next'
+import k from './../../../i18n/keys'
 import {WarningOutlineIcon} from '@sanity/icons'
 import {Box, Card, Container, Flex, Stack, Text} from '@sanity/ui'
 import React from 'react'
@@ -18,7 +20,7 @@ export function ToolNotFoundScreen(props: {toolName: string}) {
               </Box>
               <Stack flex={1} marginLeft={3} space={3}>
                 <Text as="h1" size={1} weight="bold">
-                  Tool not found: <code>{toolName}</code>
+                  {i18n.t(k.TOOL_NOT_FOUND)} <code>{toolName}</code>
                 </Text>
               </Stack>
             </Flex>

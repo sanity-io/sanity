@@ -1,3 +1,5 @@
+import i18n from 'i18next'
+import k from './../../../i18n/keys'
 import {CurrentUser} from '@sanity/types'
 import {Button, Card, Dialog, Stack, Text} from '@sanity/ui'
 import React, {useCallback, useEffect, useState} from 'react'
@@ -45,14 +47,10 @@ export function NotAuthenticatedScreen() {
         }
       >
         <Stack paddingX={4} paddingY={5} space={4}>
-          <Text>
-            You are not authorized to access this studio. Maybe you could ask someone to invite you
-            to collaborate on this project?
-          </Text>
+          <Text>{i18n.t(k.YOU_ARE_NOT_AUTHORIZED_TO_ACCE)}</Text>
 
           <Text>
-            If you think this is an error, verify that you are signed in with the correct account.
-            You are currently signed in as{' '}
+            {i18n.t(k.IF_YOU_THINK_THIS_IS_AN_ERROR)}{' '}
             <strong>
               {currentUser?.name} ({currentUser?.email})
             </strong>

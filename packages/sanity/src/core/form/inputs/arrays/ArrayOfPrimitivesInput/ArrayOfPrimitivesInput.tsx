@@ -1,3 +1,5 @@
+import i18n from 'i18next'
+import k from './../../../../../i18n/keys'
 import React from 'react'
 import {get} from 'lodash'
 import {Card, Stack, Text} from '@sanity/ui'
@@ -140,7 +142,7 @@ export class ArrayOfPrimitivesInput extends React.PureComponent<ArrayOfPrimitive
             {members.length === 0 ? (
               <Card padding={3} border style={{borderStyle: 'dashed'}} radius={2}>
                 <Text align="center" muted size={1}>
-                  {schemaType.placeholder || <>No items</>}
+                  {schemaType.placeholder || <>{i18n.t(k.NO_ITEMS)}</>}
                 </Text>
               </Card>
             ) : (

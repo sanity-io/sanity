@@ -1,3 +1,5 @@
+import i18n from 'i18next'
+import k from './../../../../i18n/keys'
 import {ErrorOutlineIcon, WarningOutlineIcon} from '@sanity/icons'
 import {Box, Breadcrumbs, Card, Flex, Stack, Text, ThemeColorToneKey} from '@sanity/ui'
 import {generateHelpUrl} from '@sanity/generate-help-url'
@@ -111,7 +113,7 @@ export function SchemaProblemGroups(props: {problemGroups: SchemaValidationProbl
                         target="_blank"
                         rel="noopener noreferrer"
                       >
-                        View documentation &rarr;
+                        {i18n.t(k.VIEW_DOCUMENTATION)}
                       </a>
                     </Text>
                   )}

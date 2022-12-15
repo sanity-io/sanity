@@ -1,3 +1,5 @@
+import i18n from 'i18next'
+import k from './../../../i18n/keys'
 import {useToast} from '@sanity/ui'
 import React, {memo, useEffect, useRef} from 'react'
 import {useDocumentPane} from './useDocumentPane'
@@ -50,7 +52,7 @@ export const DocumentOperationResults = memo(function DocumentOperationResults()
         title: getOpErrorTitle(event.op),
         description: (
           <details>
-            <summary>Details</summary>
+            <summary>{i18n.t(k.DETAILS)}</summary>
             {event.error.message}
           </details>
         ),

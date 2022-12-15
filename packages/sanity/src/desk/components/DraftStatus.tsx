@@ -1,3 +1,5 @@
+import i18n from 'i18next'
+import k from './../../i18n/keys'
 import React from 'react'
 import {EditIcon} from '@sanity/icons'
 import {PreviewValue, SanityDocument} from '@sanity/types'
@@ -16,9 +18,11 @@ export function DraftStatus(props: {document?: PreviewValue | Partial<SanityDocu
         <Box padding={2}>
           <Text size={1}>
             {document ? (
-              <>Edited {updatedAt && <TimeAgo time={updatedAt} />}</>
+              <>
+                {i18n.t(k.EDITED)} {updatedAt && <TimeAgo time={updatedAt} />}
+              </>
             ) : (
-              <>No unpublished edits</>
+              <>{i18n.t(k.NO_UNPUBLISHED_EDITS)}</>
             )}
           </Text>
         </Box>

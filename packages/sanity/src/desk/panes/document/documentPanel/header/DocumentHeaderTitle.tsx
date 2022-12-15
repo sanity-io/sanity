@@ -1,3 +1,5 @@
+import i18n from 'i18next'
+import k from './../../../../../i18n/keys'
 import React, {ReactElement} from 'react'
 import {useDocumentPane} from '../../useDocumentPane'
 import {unstable_useValuePreview as useValuePreview} from 'sanity'
@@ -17,16 +19,28 @@ export function DocumentHeaderTitle(): ReactElement {
   }
 
   if (!documentValue) {
-    return <>New {schemaType?.title || schemaType?.name}</>
+    return (
+      <>
+        {i18n.t(k.NEW)} {schemaType?.title || schemaType?.name}
+      </>
+    )
   }
 
   if (subscribed) {
     if (error) {
-      return <>Error: {error.message}</>
+      return (
+        <>
+          {i18n.t(k.ERROR2)} {error.message}
+        </>
+      )
     }
 
     return (
-      <>{value?.title || <span style={{color: 'var(--card-muted-fg-color)'}}>Untitled</span>}</>
+      <>
+        {value?.title || (
+          <span style={{color: 'var(--card-muted-fg-color)'}}>{i18n.t(k.UNTITLED)}</span>
+        )}
+      </>
     )
   }
 

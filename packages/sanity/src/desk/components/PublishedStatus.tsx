@@ -1,3 +1,5 @@
+import i18n from 'i18next'
+import k from './../../i18n/keys'
 import React from 'react'
 import {PublishIcon} from '@sanity/icons'
 import {PreviewValue, SanityDocument} from '@sanity/types'
@@ -16,9 +18,11 @@ export function PublishedStatus(props: {document?: PreviewValue | Partial<Sanity
         <Box padding={2}>
           <Text size={1}>
             {document ? (
-              <>Published {updatedAt && <TimeAgo time={updatedAt} />}</>
+              <>
+                {i18n.t(k.PUBLISHED)} {updatedAt && <TimeAgo time={updatedAt} />}
+              </>
             ) : (
-              <>Not published</>
+              <>{i18n.t(k.NOT_PUBLISHED)}</>
             )}
           </Text>
         </Box>

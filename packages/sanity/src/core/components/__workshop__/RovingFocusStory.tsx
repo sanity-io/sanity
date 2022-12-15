@@ -1,3 +1,5 @@
+import i18n from 'i18next'
+import k from './../../../i18n/keys'
 import {Button, Card, Flex} from '@sanity/ui'
 import {useBoolean, useSelect} from '@sanity/ui-workshop'
 import React, {useState} from 'react'
@@ -44,7 +46,7 @@ export default function RovingFocusStory() {
         >
           {OPTIONS.map((num) => (
             <Button
-              text={`Option ${num + 1}`}
+              text={`${i18n.t(k.OPTION)} ${num + 1}`}
               disabled={Boolean(withDisabled && num % 2)}
               key={num}
               mode="ghost"

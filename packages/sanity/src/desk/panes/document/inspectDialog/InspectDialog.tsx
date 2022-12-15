@@ -1,3 +1,5 @@
+import i18n from 'i18next'
+import k from './../../../../i18n/keys'
 import {SanityDocument} from '@sanity/types'
 import {Card, Code, Dialog, Flex, Tab, TabList, TabPanel} from '@sanity/ui'
 import React, {useCallback} from 'react'
@@ -45,13 +47,13 @@ export function InspectDialog(props: InspectDialogProps) {
       header={
         isDocumentLike(value) ? (
           <>
-            Inspecting{' '}
+            {i18n.t(k.INSPECTING)}{' '}
             <em>
               <DocTitle document={value} />
             </em>
           </>
         ) : (
-          <em>No value</em>
+          <em>{i18n.t(k.NO_VALUE)}</em>
         )
       }
       onClose={onInspectClose}

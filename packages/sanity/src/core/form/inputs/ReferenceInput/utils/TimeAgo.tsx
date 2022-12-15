@@ -1,3 +1,5 @@
+import i18n from 'i18next'
+import k from './../../../../../i18n/keys'
 import React, {useEffect, useReducer} from 'react'
 import formatDistanceToNow from 'date-fns/formatDistanceToNow'
 
@@ -14,5 +16,9 @@ function useInterval(ms: number) {
 export function TimeAgo({time}: {time: string}) {
   useInterval(1000)
   const timeSince = formatDistanceToNow(new Date(time))
-  return <span title={timeSince}>{timeSince} ago</span>
+  return (
+    <span title={timeSince}>
+      {timeSince} {i18n.t(k.AGO)}
+    </span>
+  )
 }

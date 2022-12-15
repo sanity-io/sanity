@@ -1,3 +1,5 @@
+import i18n from 'i18next'
+import k from './../../../i18n/keys'
 import {Box, Text} from '@sanity/ui'
 import React, {useMemo} from 'react'
 import {DiffCard} from '../diff'
@@ -37,10 +39,10 @@ export default function DiffCardStory() {
         diff={diff}
         // disableHoverEffect
         path={[]}
-        tooltip={{description: 'Added'}}
+        tooltip={{description: i18n.t(k.ADDED)}}
       >
         <Box padding={3}>
-          <Text>DiffCard</Text>
+          <Text>{i18n.t(k.DIFFCARD)}</Text>
         </Box>
       </DiffCard>
     </Box>

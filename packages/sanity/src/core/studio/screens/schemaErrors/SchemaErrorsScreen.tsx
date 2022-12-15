@@ -1,3 +1,5 @@
+import i18n from 'i18next'
+import k from './../../../../i18n/keys'
 import {Schema} from '@sanity/types'
 import {Card, Container, Heading, Stack} from '@sanity/ui'
 import React, {useEffect} from 'react'
@@ -20,7 +22,7 @@ export function SchemaErrorsScreen({schema}: SchemaErrorsScreenProps) {
     <Card height="fill" overflow="auto" paddingY={[4, 5, 6, 7]} paddingX={4} sizing="border">
       <Container width={1}>
         <Stack space={5}>
-          <Heading as="h1">Schema errors</Heading>
+          <Heading as="h1">{i18n.t(k.SCHEMA_ERRORS)}</Heading>
           <SchemaProblemGroups problemGroups={groupsWithErrors} />
         </Stack>
       </Container>

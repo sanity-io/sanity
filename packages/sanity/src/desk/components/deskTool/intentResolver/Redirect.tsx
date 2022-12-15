@@ -1,3 +1,5 @@
+import i18n from 'i18next'
+import k from './../../../../i18n/keys'
 import {Box, Card, Flex, Spinner, Text} from '@sanity/ui'
 import React, {useEffect} from 'react'
 import {RouterPanes} from '../../../types'
@@ -23,7 +25,7 @@ export function Redirect({panes}: RedirectProps) {
           <Spinner muted />
           <Box marginTop={3}>
             <Text muted size={1}>
-              Redirecting…
+              {i18n.t(k.REDIRECTING)}
             </Text>
           </Box>
         </Flex>

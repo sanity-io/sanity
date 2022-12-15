@@ -1,3 +1,5 @@
+import i18n from 'i18next'
+import k from './../../../i18n/keys'
 import React from 'react'
 
 // const Root = styled(Card).attrs({height: 'fill', overflow: 'auto'})``
@@ -8,7 +10,7 @@ import React from 'react'
 // `
 
 export function ConfigErrorsScreen() {
-  return <>TODO: implement config errors screen</>
+  return <>{i18n.t(k.TODO_IMPLEMENT_CONFIG_ERRORS)}</>
   // return (
   //   <Root forwardedAs={Flex}>
   //     <Content forwardedAs={Flex} direction="column" gap={4}>

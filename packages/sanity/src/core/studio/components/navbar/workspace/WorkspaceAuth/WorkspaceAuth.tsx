@@ -1,3 +1,5 @@
+import i18n from 'i18next'
+import k from './../../../../../../i18n/keys'
 import {Box, Button, Card, Flex, Stack} from '@sanity/ui'
 import React, {useCallback, useState} from 'react'
 import {omit} from 'lodash'
@@ -17,6 +19,7 @@ export function WorkspaceAuth() {
   const [selectedWorkspaceName, setSelectedWorkspaceName] = useState<string | null>(
     activeWorkspace?.name || null
   )
+
   const selectedWorkspace =
     workspaces.length === 1
       ? workspaces[0]

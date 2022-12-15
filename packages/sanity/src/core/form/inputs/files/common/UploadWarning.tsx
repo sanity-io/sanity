@@ -1,3 +1,5 @@
+import i18n from 'i18next'
+import k from './../../../../../i18n/keys'
 import {ResetIcon, WarningOutlineIcon} from '@sanity/icons'
 import {Card, Flex, Box, Text, Stack, Button} from '@sanity/ui'
 import React from 'react'
@@ -22,12 +24,9 @@ export function UploadWarning({onClearStale}: Props) {
         </Box>
         <Stack space={3}>
           <Text size={1} weight="semibold">
-            Incomplete upload
+            {i18n.t(k.INCOMPLETE_UPLOAD)}
           </Text>
-          <Text size={1}>
-            An upload has made no progress in the last 6m and likely got interrupted. You can safely
-            clear the incomplete upload and try uploading again.
-          </Text>
+          <Text size={1}>{i18n.t(k.AN_UPLOAD_HAS_MADE_NO_PROGRESS)}</Text>
         </Stack>
       </Flex>
       <ButtonWrapper icon={ResetIcon} text="Clear upload" onClick={onClearStale} mode="ghost" />

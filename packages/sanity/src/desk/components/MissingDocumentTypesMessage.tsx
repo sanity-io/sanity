@@ -1,3 +1,5 @@
+import i18n from 'i18next'
+import k from './../../i18n/keys'
 import React from 'react'
 import {Box, Card, Container, Flex, Stack, Text} from '@sanity/ui'
 import {WarningOutlineIcon} from '@sanity/icons'
@@ -19,10 +21,10 @@ export function MissingDocumentTypesMessage() {
               </Box>
               <Stack flex={1} marginLeft={3} space={3}>
                 <Text as="h1" size={1} weight="bold">
-                  No schema types in the <em>{sourceName}</em> source!
+                  {i18n.t(k.NO_SCHEMA_TYPES_IN_THE)} <em>{sourceName}</em> {i18n.t(k.SOURCE)}
                 </Text>
                 <Text as="p" muted size={1}>
-                  Please add schema types in your source configuration.
+                  {i18n.t(k.PLEASE_ADD_SCHEMA_TYPES_IN_YOU)}
                 </Text>
                 <Text as="p" muted size={1}>
                   <a
@@ -30,7 +32,7 @@ export function MissingDocumentTypesMessage() {
                     target="_blank"
                     rel="noreferrer"
                   >
-                    Learn how to add a schema types &rarr;
+                    {i18n.t(k.LEARN_HOW_TO_ADD_A_SCHEMA_TYPE)}
                   </a>
                 </Text>
               </Stack>
@@ -40,24 +42,23 @@ export function MissingDocumentTypesMessage() {
       </Flex>
 
       {/* <Container>
-        <Stack space={5}>
-          <Heading as="h1">Empty schema</Heading>
-
-          <Text as="p">
-            Your schema does not contain any document types. If it did, those types would be listed
-            here.{' '}
-            <a
-              title="Schema documentation"
-              target="_blank"
-              rel="noopener noreferrer"
-              href="https://www.sanity.io/docs/content-studio/the-schema"
-            >
-              Read more about how to add schema types
-            </a>
-            .
-          </Text>
-        </Stack>
-      </Container> */}
+         <Stack space={5}>
+           <Heading as="h1">Empty schema</Heading>
+            <Text as="p">
+             Your schema does not contain any document types. If it did, those types would be listed
+             here.{' '}
+             <a
+               title="Schema documentation"
+               target="_blank"
+               rel="noopener noreferrer"
+               href="https://www.sanity.io/docs/content-studio/the-schema"
+             >
+               Read more about how to add schema types
+             </a>
+             .
+           </Text>
+         </Stack>
+        </Container> */}
     </Card>
   )
 }

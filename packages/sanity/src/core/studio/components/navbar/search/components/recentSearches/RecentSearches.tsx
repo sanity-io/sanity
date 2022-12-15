@@ -1,3 +1,5 @@
+import i18n from 'i18next'
+import k from './../../../../../../../i18n/keys'
 import {Box, Button, Card, Label, Text} from '@sanity/ui'
 import React, {useCallback} from 'react'
 import styled from 'styled-components'
@@ -48,7 +50,7 @@ export function RecentSearches({showFiltersOnClick}: RecentSearchesProps) {
         <>
           <Box paddingBottom={2} paddingTop={4} paddingX={3}>
             <Label muted size={1}>
-              Recent searches
+              {i18n.t(k.RECENT_SEARCHES)}
             </Label>
           </Box>
           <Box>
@@ -64,7 +66,7 @@ export function RecentSearches({showFiltersOnClick}: RecentSearchesProps) {
               tone="default"
             >
               <Text muted size={1}>
-                Clear recent searches
+                {i18n.t(k.CLEAR_RECENT_SEARCHES)}
               </Text>
             </Button>
           </Box>

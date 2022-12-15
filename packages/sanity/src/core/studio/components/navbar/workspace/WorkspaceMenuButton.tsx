@@ -1,3 +1,5 @@
+import i18n from 'i18next'
+import k from './../../../../../i18n/keys'
 import {SelectIcon} from '@sanity/icons'
 import {
   Button,
@@ -43,7 +45,7 @@ export function WorkspaceMenuButton(props: ButtonProps) {
         <StyledMenu>
           <Box paddingX={3} paddingY={3}>
             <Label size={1} muted>
-              Workspaces
+              {i18n.t(k.WORKSPACES)}
             </Label>
           </Box>
 

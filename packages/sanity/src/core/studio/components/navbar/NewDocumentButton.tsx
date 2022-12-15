@@ -1,3 +1,5 @@
+import i18n from 'i18next'
+import k from './../../../../i18n/keys'
 import React, {useCallback, useMemo, useState} from 'react'
 import {Dialog, Grid, Button, Flex, Box, Tooltip, Spinner, Text} from '@sanity/ui'
 import styled from 'styled-components'
@@ -53,11 +55,11 @@ export function NewDocumentButton() {
 
   const tooltipContent = useMemo(() => {
     if (!hasNewDocumentOptions) {
-      return <Text size={1}>No document types</Text>
+      return <Text size={1}>{i18n.t(k.NO_DOCUMENT_TYPES)}</Text>
     }
 
     if (canCreateDocument) {
-      return <Text size={1}>New document...</Text>
+      return <Text size={1}>{i18n.t(k.NEW_DOCUMENT)}</Text>
     }
 
     return (

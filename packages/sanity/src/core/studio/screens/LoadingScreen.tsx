@@ -1,3 +1,5 @@
+import i18n from 'i18next'
+import k from './../../../i18n/keys'
 import React from 'react'
 import {Flex, Spinner, Card, Text} from '@sanity/ui'
 
@@ -15,7 +17,7 @@ export function LoadingScreen() {
       direction="column"
       gap={4}
     >
-      <Text muted>Loading…</Text>
+      <Text muted>{i18n.t(k.LOADING)}</Text>
       <Spinner muted />
     </Flex>
   )

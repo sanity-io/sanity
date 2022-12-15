@@ -1,3 +1,5 @@
+import i18n from 'i18next'
+import k from './../../../../i18n/keys'
 import React from 'react'
 import {ErrorOutlineIcon} from '@sanity/icons'
 import {Box, Card, Flex, Text} from '@sanity/ui'
@@ -46,13 +48,13 @@ export class DiffErrorBoundary extends React.Component<
 
           <Box paddingLeft={3}>
             <Text as="h3" size={1} weight="medium">
-              Rendering the changes to this field caused an error
+              {i18n.t(k.RENDERING_THE_CHANGES_TO_THIS)}
             </Text>
 
             {isDev && (
               <Box marginTop={2}>
                 <Text as="p" size={1}>
-                  Check the developer console for more information
+                  {i18n.t(k.CHECK_THE_DEVELOPER_CONSOLE_FO)}
                 </Text>
               </Box>
             )}

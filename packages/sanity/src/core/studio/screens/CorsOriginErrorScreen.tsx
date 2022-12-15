@@ -1,3 +1,5 @@
+import i18n from 'i18next'
+import k from './../../../i18n/keys'
 import {Card, Dialog, Stack, Button, Text, TextInput, Flex} from '@sanity/ui'
 import React, {useEffect, useMemo} from 'react'
 import {LaunchIcon} from '@sanity/icons'
@@ -45,17 +47,17 @@ export function CorsOriginErrorScreen(props: CorsOriginErrorScreenProps) {
       <Dialog id="cors-error-dialog" header="Before you continue..." width={1}>
         <Stack paddingX={4} paddingY={5} space={4}>
           <Text>
-            To access your content, you need to <b>add the following URL as a CORS origin</b> to
-            your Sanity project.
+            {i18n.t(k.TO_ACCESS_YOUR_CONTENT_YOU_NE)}{' '}
+            <b>{i18n.t(k.ADD_THE_FOLLOWING_URL_AS_A_COR)}</b> {i18n.t(k.TO_YOUR_SANITY_PRO)}
           </Text>
 
           {/* added for accessibility */}
-          <ScreenReaderLabel aria-hidden="true">CORS URL to be added</ScreenReaderLabel>
+          <ScreenReaderLabel aria-hidden="true">{i18n.t(k.CORS_URL_TO_BE_ADDED)}</ScreenReaderLabel>
           <TextInput value={origin} readOnly />
 
           <Button as="a" href={corsUrl} target="_blank" rel="noopener noreferrer" tone="primary">
             <Flex align="center" justify="center" gap={3}>
-              <Text weight="medium">Continue</Text>
+              <Text weight="medium">{i18n.t(k.CONTINUE)}</Text>
               <Text weight="medium">
                 <LaunchIcon />
               </Text>

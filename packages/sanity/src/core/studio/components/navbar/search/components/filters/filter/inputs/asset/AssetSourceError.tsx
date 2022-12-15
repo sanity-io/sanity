@@ -1,3 +1,5 @@
+import i18n from 'i18next'
+import k from './../../../../../../../../../../i18n/keys'
 import {WarningOutlineIcon} from '@sanity/icons'
 import {Box, Flex, ResponsivePaddingProps, Stack} from '@sanity/ui'
 import React from 'react'
@@ -12,13 +14,13 @@ export function AssetSourceError(props: ResponsivePaddingProps) {
         </TextWithTone>
         <Stack space={4}>
           <TextWithTone size={1} tone="caution" weight="semibold">
-            No valid asset sources found.
+            {i18n.t(k.NO_VALID_ASSET_SOURCES_FOUND)}
           </TextWithTone>
           <TextWithTone size={1} tone="caution">
-            Currently, only the default asset source is supported.
+            {i18n.t(k.CURRENTLY_ONLY_THE_DEFAULT_AS)}
           </TextWithTone>
           <TextWithTone size={1} tone="caution">
-            Please ensure it's enabled in your studio configuration file.
+            {i18n.t(k.PLEASE_ENSURE_IT_S_ENABLED_IN)}
           </TextWithTone>
         </Stack>
       </Flex>

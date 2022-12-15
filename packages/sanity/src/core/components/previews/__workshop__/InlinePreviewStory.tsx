@@ -1,3 +1,5 @@
+import i18n from 'i18next'
+import k from './../../../../i18n/keys'
 import {DocumentIcon} from '@sanity/icons'
 import {Card, Container, Flex, Heading, Stack, Text} from '@sanity/ui'
 import {useBoolean, useString} from '@sanity/ui-workshop'
@@ -32,7 +34,7 @@ export default function InlinePreviewStory() {
           <Stack space={4}>
             <Card tone="primary">
               <Heading size={5}>
-                Hello{' '}
+                {i18n.t(k.HELLO)}{' '}
                 <PreviewWrapper>
                   <InlinePreview
                     // eslint-disable-next-line react/jsx-no-bind
@@ -46,13 +48,13 @@ export default function InlinePreviewStory() {
                     title={title}
                   />
                 </PreviewWrapper>{' '}
-                world
+                {i18n.t(k.WORLD)}
               </Heading>
             </Card>
 
             <Card tone="primary">
               <Heading>
-                Hello{' '}
+                {i18n.t(k.HELLO)}{' '}
                 <PreviewWrapper>
                   <InlinePreview
                     // eslint-disable-next-line react/jsx-no-bind
@@ -66,13 +68,13 @@ export default function InlinePreviewStory() {
                     title={title}
                   />
                 </PreviewWrapper>{' '}
-                world
+                {i18n.t(k.WORLD)}
               </Heading>
             </Card>
 
             <Card tone="primary">
               <Text>
-                Hello{' '}
+                {i18n.t(k.HELLO)}{' '}
                 <PreviewWrapper>
                   <InlinePreview
                     // eslint-disable-next-line react/jsx-no-bind
@@ -86,7 +88,7 @@ export default function InlinePreviewStory() {
                     title={title}
                   />
                 </PreviewWrapper>{' '}
-                world
+                {i18n.t(k.WORLD)}
               </Text>
             </Card>
           </Stack>

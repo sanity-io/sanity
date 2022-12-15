@@ -1,3 +1,5 @@
+import i18n from 'i18next'
+import k from './../../../../../../../../i18n/keys'
 import type {Reference} from '@sanity/types'
 import {format, isValid} from 'date-fns'
 import pluralize from 'pluralize-esm'
@@ -59,7 +61,7 @@ export function SearchButtonValueNumberCountRange({
 }: OperatorButtonValueComponentProps<OperatorNumberRangeValue>) {
   return (
     <>
-      {value.min} → {value.max} items
+      {value.min} {i18n.t(k._5)} {value.max} {i18n.t(k.ITEMS)}
     </>
   )
 }

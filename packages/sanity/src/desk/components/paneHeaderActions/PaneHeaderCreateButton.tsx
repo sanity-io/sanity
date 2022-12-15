@@ -1,3 +1,5 @@
+import i18n from 'i18next'
+import k from './../../../i18n/keys'
 import {ComposeIcon} from '@sanity/icons'
 import React, {useMemo, forwardRef} from 'react'
 import {Box, Button, Label, Menu, MenuButton, MenuItem, PopoverProps} from '@sanity/ui'
@@ -124,7 +126,7 @@ export function PaneHeaderCreateButton({templateItems}: PaneHeaderCreateButtonPr
       menu={
         <Menu>
           <Box paddingX={3} paddingTop={3} paddingBottom={2}>
-            <Label muted>Create</Label>
+            <Label muted>{i18n.t(k.CREATE)}</Label>
           </Box>
 
           {templateItems.map((item, itemIndex) => {

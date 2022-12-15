@@ -1,3 +1,5 @@
+import i18n from 'i18next'
+import k from './../../../i18n/keys'
 import {WarningOutlineIcon} from '@sanity/icons'
 import {Box, Card, Container, Flex, Stack, Text} from '@sanity/ui'
 import React from 'react'
@@ -16,10 +18,10 @@ export function NoDocumentTypesScreen() {
               </Box>
               <Stack flex={1} marginLeft={3} space={3}>
                 <Text as="h1" size={1} weight="bold">
-                  No document types
+                  {i18n.t(k.NO_DOCUMENT_TYPES)}
                 </Text>
                 <Text as="p" muted size={1}>
-                  Please define at least one document type in your schema.
+                  {i18n.t(k.PLEASE_DEFINE_AT_LEAST_ONE_DOC)}
                 </Text>
                 <Text as="p" muted size={1}>
                   <a
@@ -27,7 +29,7 @@ export function NoDocumentTypesScreen() {
                     target="_blank"
                     rel="noreferrer"
                   >
-                    Learn how to add a document type &rarr;
+                    {i18n.t(k.LEARN_HOW_TO_ADD_A_DOCUMENT_TY)}
                   </a>
                 </Text>
               </Stack>

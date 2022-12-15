@@ -1,3 +1,5 @@
+import i18n from 'i18next'
+import k from './../../../../../i18n/keys'
 import {Image} from '@sanity/types'
 import React from 'react'
 import {Box, Card, Text} from '@sanity/ui'
@@ -79,7 +81,7 @@ export const ImageFieldDiff: DiffComponent<ObjectDiff<Image>> = ({diff, schemaTy
     return (
       <Card padding={4} radius={2} tone="transparent">
         <Text muted size={1} align="center">
-          Image not set
+          {i18n.t(k.IMAGE_NOT_SET)}
         </Text>
       </Card>
     )

@@ -1,3 +1,5 @@
+import i18n from 'i18next'
+import k from './../../../../../i18n/keys'
 import React from 'react'
 import {Text} from '@sanity/ui'
 
@@ -6,7 +8,8 @@ import {Text} from '@sanity/ui'
 export function DefaultCustomMarkers() {
   return (
     <Text size={1}>
-      This is a example custom marker, please implement <code>renderCustomMarkers</code> function.
+      {i18n.t(k.THIS_IS_A_EXAMPLE_CUSTOM_MARKE)} <code>{i18n.t(k.RENDERCUSTOMMARKERS)}</code>{' '}
+      {i18n.t(k.FUNCTION)}
     </Text>
   )
 }

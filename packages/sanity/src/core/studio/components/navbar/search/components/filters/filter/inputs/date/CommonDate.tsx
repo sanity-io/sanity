@@ -1,3 +1,5 @@
+import i18n from 'i18next'
+import k from './../../../../../../../../../../i18n/keys'
 import {Stack} from '@sanity/ui'
 import {format, isValid, parse} from 'date-fns'
 import React, {ChangeEvent, KeyboardEvent, useCallback, useEffect, useMemo, useState} from 'react'
@@ -94,9 +96,10 @@ export function CommonDateInput({
         onChange={handleTextInputChange}
         onClear={handleTextInputClear}
         onKeyDown={handleTextInputKeyDown}
-        placeholder={`Example: ${placeholderDate}`}
+        placeholder={`${i18n.t(k.EXAMPLE)} ${placeholderDate}`}
         value={inputValue}
       />
+
       <DatePicker
         onChange={handleDatePickerChange}
         selectTime={selectTime}

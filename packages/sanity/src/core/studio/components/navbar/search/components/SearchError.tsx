@@ -1,3 +1,5 @@
+import i18n from 'i18next'
+import k from './../../../../../../i18n/keys'
 import {WarningOutlineIcon} from '@sanity/icons'
 import {Box, Flex} from '@sanity/ui'
 import React from 'react'
@@ -20,10 +22,10 @@ export function SearchError() {
         </TextWithTone>
       </Box>
       <TextWithTone size={2} tone="critical" weight="semibold">
-        Something went wrong while searching
+        {i18n.t(k.SOMETHING_WENT_WRONG_WHILE_SEA)}
       </TextWithTone>
       <TextWithTone size={1} tone="critical">
-        Please try again or check your connection
+        {i18n.t(k.PLEASE_TRY_AGAIN_OR_CHECK_YOUR)}
       </TextWithTone>
     </Flex>
   )
