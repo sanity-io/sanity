@@ -51,9 +51,8 @@ interface EditorProps {
 }
 
 const renderDecorator: RenderDecoratorFunction = (props) => {
-  const {value, renderDefault, type, focused, selected} = props
-  const CustomComponent = type.components?.item
-  const rendered = renderDefault(props)
+  const {children, value, type, focused, selected} = props
+  const CustomComponent = type.component
   if (CustomComponent) {
     // eslint-disable-next-line react/jsx-no-bind
     return (
@@ -63,13 +62,13 @@ const renderDecorator: RenderDecoratorFunction = (props) => {
         title={type.title}
         value={value}
         // eslint-disable-next-line react/jsx-no-bind
-        renderDefault={() => <Decorator mark={value}>{rendered}</Decorator>}
+        renderDefault={() => <Decorator mark={value}>{children}</Decorator>}
       >
-        {rendered}
+        {children}
       </CustomComponent>
     )
   }
-  return <Decorator mark={value}>{rendered}</Decorator>
+  return <Decorator mark={value}>{children}</Decorator>
 }
 
 const renderStyle: RenderStyleFunction = (props) => {
