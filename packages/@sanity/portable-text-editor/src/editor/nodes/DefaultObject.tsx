@@ -1,12 +1,16 @@
+import {PortableTextBlock, PortableTextChild} from '@sanity/types'
 import React from 'react'
-import {PortableTextBlock, PortableTextChild} from '../../types/portableText'
 
 type Props = {
   value: PortableTextBlock | PortableTextChild
 }
 
 const DefaultObject = (props: Props): JSX.Element => {
-  return <pre>{JSON.stringify(props.value, null, 2)}</pre>
+  return (
+    <div>
+      <pre>{JSON.stringify(props.value, null, 2)}</pre>
+    </div>
+  )
 }
 
 export default DefaultObject

@@ -3,8 +3,8 @@
 import {Editor, Transforms, Path, Range} from 'slate'
 import isHotkey from 'is-hotkey'
 import {ReactEditor} from '@sanity/slate-react'
-import {PortableTextFeatures} from '../../types/portableText'
-import {PortableTextSlateEditor} from '../../types/editor'
+import {isPortableTextSpan, isPortableTextTextBlock} from '@sanity/types'
+import {PortableTextMemberTypes, PortableTextSlateEditor} from '../../types/editor'
 import {HotkeyOptions} from '../../types/options'
 import {debugWithName} from '../../utils/debug'
 import {toSlateValue} from '../../utils/values'
@@ -27,7 +27,7 @@ const DEFAULT_HOTKEYS: HotkeyOptions = {
  *
  */
 export function createWithHotkeys(
-  portableTextFeatures: PortableTextFeatures,
+  types: PortableTextMemberTypes,
   keyGenerator: () => string,
   portableTextEditor: PortableTextEditor,
   hotkeysFromOptions?: HotkeyOptions
@@ -38,7 +38,7 @@ export function createWithHotkeys(
     toSlateValue(
       [
         {
-          _type: portableTextFeatures.types.block.name,
+          _type: types.block.name,
           _key: keyGenerator(),
           style: 'normal',
           markDefs: [],
@@ -154,8 +154,29 @@ export function createWithHotkeys(
       }
 
       // Tab for lists
-      if (isTab || isShiftTab) {
-        if (editor.pteIncrementBlockLevels(isShiftTab)) {
+      // Only steal tab when we are on a plain text span or we are at the start of the line (fallback if the whole block is annotated or contains a single inline object)
+      // Otherwise tab is reserved for accessability for buttons etc.
+      if ((isTab || isShiftTab) && editor.selection) {
+        const [focusChild] = Editor.node(editor, editor.selection.focus, {depth: 2})
+        const [focusBlock] = isPortableTextSpan(focusChild)
+          ? Editor.node(editor, editor.selection.focus, {depth: 1})
+          : []
+        const hasAnnotationFocus =
+          focusChild &&
+          isPortableTextTextBlock(focusBlock) &&
+          isPortableTextSpan(focusChild) &&
+          (focusChild.marks || ([] as string[])).filter((m) =>
+            (focusBlock.markDefs || []).map((def) => def._key).includes(m)
+          ).length > 0
+        const [start] = Range.edges(editor.selection)
+        const atStartOfNode = Editor.isStart(editor, start, start.path)
+
+        if (
+          focusChild &&
+          isPortableTextSpan(focusChild) &&
+          (!hasAnnotationFocus || atStartOfNode) &&
+          editor.pteIncrementBlockLevels(isShiftTab)
+        ) {
           event.preventDefault()
         }
       }
@@ -180,7 +201,7 @@ export function createWithHotkeys(
         if (
           editor.isTextBlock(focusBlock) &&
           focusBlock.style &&
-          focusBlock.style !== portableTextFeatures.styles[0].value
+          focusBlock.style !== types.styles[0].value
         ) {
           const [, end] = Range.edges(editor.selection)
           const endAtEndOfNode = Editor.isEnd(editor, end, end.path)
