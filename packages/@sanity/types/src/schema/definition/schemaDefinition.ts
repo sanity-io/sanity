@@ -116,6 +116,7 @@ export interface TypeAliasDefinition<
   components?: {
     annotation?: ComponentType<any>
     block?: ComponentType<any>
+    inlineBlock?: ComponentType<any>
     diff?: ComponentType<any>
     field?: ComponentType<any>
     input?: ComponentType<any>
