@@ -19,7 +19,7 @@ export function LogoButton(props: LogoButtonProps) {
       href={href}
       mode="bleed"
       onClick={onClick}
-      padding={3}
+      padding={0}
     >
       {children}
     </Button>
