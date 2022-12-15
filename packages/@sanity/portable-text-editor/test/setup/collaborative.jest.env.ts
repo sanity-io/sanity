@@ -2,10 +2,11 @@ import childProcess from 'child_process'
 import NodeEnvironment from 'jest-environment-node'
 import {isEqual} from 'lodash'
 import ipc from 'node-ipc'
-import puppeteer, {ElementHandle, KeyInput} from 'puppeteer'
+import {ElementHandle, KeyInput, Browser, Page, launch} from 'puppeteer'
+import {PortableTextBlock} from '@sanity/types'
 import {FLUSH_PATCHES_DEBOUNCE_MS} from '../../src/constants'
 import {normalizeSelection} from '../../src/utils/selection'
-import type {EditorSelection, PortableTextBlock} from '../../src'
+import type {EditorSelection} from '../../src'
 
 ipc.config.id = 'collaborative-jest-environment-ipc-client'
 ipc.config.retry = 1500
@@ -19,10 +20,11 @@ const WEB_SERVER_ROOT_URL = 'http://localhost:3000'
 const DEBUG = process.env.DEBUG || false
 
 // Wait this long for selections and a new doc revision to appear in the clients.
-const SELECTION_TIMEOUT_MS = 1500
+const SELECTION_TIMEOUT_MS = 300
 
 // How long to wait for a new revision to come back to the client(s) when patched through the server.
-const REVISION_TIMEOUT_MS = FLUSH_PATCHES_DEBOUNCE_MS + 1000
+// Wait for patch debounce time and some slack for selection adjustment time for everything to be ready
+const REVISION_TIMEOUT_MS = FLUSH_PATCHES_DEBOUNCE_MS + SELECTION_TIMEOUT_MS
 
 // eslint-disable-next-line no-process-env
 const launchConfig = process.env.CI
@@ -33,10 +35,6 @@ const launchConfig = process.env.CI
     }
   : {}
 
-function generateRandomInteger(min: number, max: number) {
-  return Math.floor(min + Math.random() * (max - min + 1))
-}
-
 export const delay = (time: number): Promise<void> => {
   return new Promise((resolve) => {
     setTimeout(resolve, time)
@@ -44,15 +42,15 @@ export const delay = (time: number): Promise<void> => {
 }
 
 export default class CollaborationEnvironment extends NodeEnvironment {
-  private _browserA?: puppeteer.Browser
-  private _browserB?: puppeteer.Browser
-  private _pageA?: puppeteer.Page
-  private _pageB?: puppeteer.Page
+  private _browserA?: Browser
+  private _browserB?: Browser
+  private _pageA?: Page
+  private _pageB?: Page
 
   public async setup(): Promise<void> {
     await super.setup()
-    this._browserA = await puppeteer.launch(launchConfig)
-    this._browserB = await puppeteer.launch(launchConfig)
+    this._browserA = await launch(launchConfig)
+    this._browserB = await launch(launchConfig)
     this._pageA = await this._browserA.newPage()
     this._pageB = await this._browserB.newPage()
 
@@ -75,9 +73,11 @@ export default class CollaborationEnvironment extends NodeEnvironment {
     }
     this._pageA.on('pageerror', (err) => {
       console.error('Editor A crashed', err)
+      throw err
     })
     this._pageB.on('pageerror', (err) => {
       console.error('Editor B crashed', err)
+      throw err
     })
     await new Promise<void>((resolve) => {
       ipc.connectToNet('socketServer', () => {
@@ -107,6 +107,7 @@ export default class CollaborationEnvironment extends NodeEnvironment {
       value: PortableTextBlock[] | undefined
     ): Promise<void> => {
       ipc.of.socketServer.emit('payload', JSON.stringify({type: 'value', value, testId}))
+      await delay(REVISION_TIMEOUT_MS) // Wait a little here for the payload to reach the clients
       const [valueHandleA, valueHandleB] = await Promise.all([
         this._pageA?.waitForSelector('#pte-value'),
         this._pageB?.waitForSelector('#pte-value'),
@@ -138,15 +139,12 @@ export default class CollaborationEnvironment extends NodeEnvironment {
           const isMac = /Mac|iPod|iPhone|iPad/.test(userAgent)
           const metaKey = isMac ? 'Meta' : 'Control'
           const editorId = `${['A', 'B'][index]}${testId}`
-          const [
-            editableHandle,
-            selectionHandle,
-            valueHandle,
-          ]: (ElementHandle<HTMLDivElement> | null)[] = await Promise.all([
-            page.waitForSelector('div[contentEditable="true"]'),
-            page.waitForSelector('#pte-selection'),
-            page.waitForSelector('#pte-value'),
-          ])
+          const [editableHandle, selectionHandle, valueHandle]: (ElementHandle<Element> | null)[] =
+            await Promise.all([
+              page.waitForSelector('div[contentEditable="true"]'),
+              page.waitForSelector('#pte-selection'),
+              page.waitForSelector('#pte-value'),
+            ])
 
           if (!editableHandle || !selectionHandle || !valueHandle) {
             throw new Error('Failed to find required editor elements')
@@ -164,7 +162,7 @@ export default class CollaborationEnvironment extends NodeEnvironment {
           }
           const getSelection = async (): Promise<EditorSelection | null> => {
             const selection = await selectionHandle.evaluate((node) =>
-              node.innerText ? JSON.parse(node.innerText) : null
+              node instanceof HTMLElement && node.innerText ? JSON.parse(node.innerText) : null
             )
             return selection
           }
@@ -179,7 +177,7 @@ export default class CollaborationEnvironment extends NodeEnvironment {
 
           const waitForSelection = async (selection: EditorSelection) => {
             const value = await valueHandle.evaluate((node): PortableTextBlock[] | undefined =>
-              node.innerText ? JSON.parse(node.innerText) : undefined
+              node instanceof HTMLElement && node.innerText ? JSON.parse(node.innerText) : undefined
             )
             const normalized = normalizeSelection(selection, value)
             const dataVal = JSON.stringify(normalized)
@@ -280,11 +278,14 @@ export default class CollaborationEnvironment extends NodeEnvironment {
                   editorId,
                 })
               )
+              await delay(REVISION_TIMEOUT_MS) // Wait a little here for the payload to reach the client
               await waitForSelection(selection)
             },
             async getValue(): Promise<PortableTextBlock[] | undefined> {
               const value = await valueHandle.evaluate((node): PortableTextBlock[] | undefined =>
-                node.innerText ? JSON.parse(node.innerText) : undefined
+                node instanceof HTMLElement && node.innerText
+                  ? JSON.parse(node.innerText)
+                  : undefined
               )
               return value
             },
