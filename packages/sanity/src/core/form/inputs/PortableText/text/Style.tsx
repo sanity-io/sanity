@@ -4,16 +4,19 @@ import React, {useCallback, useMemo} from 'react'
 import {TEXT_STYLES} from './textStyles'
 
 export const Style = (props: BlockStyleRenderProps) => {
-  const {block, type, selected, focused, value, renderDefault} = props
+  const {block, focused, children, selected, type, value} = props
   const DefaultComponent = useMemo(
     () => (block.style && TEXT_STYLES[block.style] ? TEXT_STYLES[block.style] : TEXT_STYLES[0]),
     [block.style]
   )
 
-  const children = useMemo(() => renderDefault(props), [props, renderDefault])
-  const _renderDefault = useCallback(() => children, [children])
+  const defaultRendered = useMemo(
+    () => <DefaultComponent>{children}</DefaultComponent>,
+    [DefaultComponent, children]
+  )
+  const _renderDefault = useCallback(() => defaultRendered, [defaultRendered])
 
-  const CustomComponent = type.components?.item
+  const CustomComponent = type.component
   if (CustomComponent) {
     return (
       <Text data-testid={`text-style--${value}`}>
@@ -30,5 +33,5 @@ export const Style = (props: BlockStyleRenderProps) => {
       </Text>
     )
   }
-  return <DefaultComponent>{children}</DefaultComponent>
+  return defaultRendered
 }

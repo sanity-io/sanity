@@ -123,7 +123,7 @@ export function getBlockStyles(types: PortableTextMemberTypes): BlockStyleItem[]
     return {
       key: `style-${style.value}`,
       style: style.value,
-      styleComponent: style && style.components?.item,
+      styleComponent: style && style.component,
       title: style.title,
     }
   })
