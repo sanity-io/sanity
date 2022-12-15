@@ -51,7 +51,7 @@ export interface BlockDefinition extends BaseSchemaDefinition {
   styles?: BlockStyleDefinition[]
   lists?: BlockListDefinition[]
   marks?: BlockMarksDefinition
-  of?: ArrayOfType[]
+  of?: ArrayOfType<'object' | 'reference'>[]
   initialValue?: InitialValueProperty<any, any[]>
   options?: BlockOptions
   validation?: ValidationBuilder<BlockRule, any[]>
