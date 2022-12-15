@@ -1,5 +1,5 @@
 import React, {ReactElement, useRef, useMemo, useCallback} from 'react'
-import {Element as SlateElement, Transforms, Editor} from 'slate'
+import {Element as SlateElement, Transforms, Editor, Text} from 'slate'
 import {ReactEditor, useSlateStatic} from '@sanity/slate-react'
 import {debugWithName} from '../utils/debug'
 import {IS_DRAGGING, IS_DRAGGING_ELEMENT_RANGE, IS_DRAGGING_CHILD_ELEMENT} from '../utils/weakMaps'
@@ -12,13 +12,13 @@ declare global {
   }
 }
 
-type ElementProps = {
+export interface DraggableChildProps {
   children: ReactElement
-  element: SlateElement
+  element: Text | SlateElement
   readOnly: boolean
 }
 
-export const DraggableChild = ({children, element, readOnly}: ElementProps) => {
+export const DraggableChild = ({children, element, readOnly}: DraggableChildProps) => {
   const editor = useSlateStatic()
   const dragGhostRef: React.MutableRefObject<undefined | HTMLElement> = useRef()
   const isVoid = useMemo(() => Editor.isVoid(editor, element), [editor, element])

@@ -1,18 +1,17 @@
 import {BaseEditor, Descendant} from 'slate'
 import {ReactEditor} from '@sanity/slate-react'
-import {PortableTextSlateEditor, TextBlock, TextSpan} from '..'
+import {PortableTextSpan, PortableTextTextBlock} from '@sanity/types'
+import {PortableTextSlateEditor} from '..'
 
-interface VoidElement {
+export interface VoidElement {
   _type: string
   _key: string
   children: Descendant[]
   __inline: boolean
-  value: {
-    [other: string]: any
-  }
+  value: Record<string, unknown>
 }
 
-interface SlateTextBlock extends TextBlock {
+export interface SlateTextBlock extends Omit<PortableTextTextBlock, 'children'> {
   children: Descendant[]
 }
 
@@ -20,6 +19,6 @@ declare module 'slate' {
   interface CustomTypes {
     Editor: BaseEditor & ReactEditor & PortableTextSlateEditor
     Element: SlateTextBlock | VoidElement
-    Text: TextSpan
+    Text: PortableTextSpan
   }
 }

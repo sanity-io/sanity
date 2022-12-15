@@ -1,15 +1,15 @@
 import {isEqual} from 'lodash'
 import {Node, Element, Text, Descendant} from 'slate'
-import {PathSegment} from '@sanity/types'
 import {
-  MarkDef,
+  PathSegment,
   PortableTextBlock,
   PortableTextChild,
-  PortableTextFeatures,
-  TextBlock,
-} from '../types/portableText'
+  PortableTextObject,
+  PortableTextTextBlock,
+} from '@sanity/types'
+import {PortableTextMemberTypes} from '../types/editor'
 
-const EMPTY_MARKDEFS: MarkDef[] = []
+const EMPTY_MARKDEFS: PortableTextObject[] = []
 
 type Partial<T> = {
   [P in keyof T]?: T[P]
@@ -29,16 +29,16 @@ function keepObjectEquality(
 
 export function toSlateValue(
   value: PortableTextBlock[] | undefined,
-  {portableTextFeatures}: {portableTextFeatures: PortableTextFeatures},
+  {types}: {types: PortableTextMemberTypes},
   keyMap: Record<string, any> = {}
 ): Descendant[] {
   if (value && Array.isArray(value)) {
     return value.map((block) => {
       const {_type, _key, ...rest} = block
       const voidChildren = [{_key: `${_key}-void-child`, _type: 'span', text: '', marks: []}]
-      const isPortableText = block && block._type === portableTextFeatures.types.block.name
+      const isPortableText = block && block._type === types.block.name
       if (isPortableText) {
-        const textBlock = block as TextBlock
+        const textBlock = block as PortableTextTextBlock
         let hasInlines = false
         const hasMissingStyle = typeof textBlock.style === 'undefined'
         const hasMissingMarkDefs = typeof textBlock.markDefs === 'undefined'
@@ -65,7 +65,7 @@ export function toSlateValue(
           return block
         }
         if (hasMissingStyle) {
-          rest.style = portableTextFeatures.styles[0].value
+          rest.style = types.styles[0].value
         }
         if (hasMissingMarkDefs) {
           rest.markDefs = EMPTY_MARKDEFS
@@ -123,7 +123,7 @@ export function fromSlateValue(
 
 export function isEqualToEmptyEditor(
   children: Descendant[] | PortableTextBlock[],
-  portableTextFeatures: PortableTextFeatures
+  types: PortableTextMemberTypes
 ): boolean {
   return (
     children === undefined ||
@@ -132,9 +132,9 @@ export function isEqualToEmptyEditor(
       Array.isArray(children) &&
       children.length === 1 &&
       Element.isElement(children[0]) &&
-      children[0]._type === portableTextFeatures.types.block.name &&
+      children[0]._type === types.block.name &&
       'style' in children[0] &&
-      children[0].style === portableTextFeatures.styles[0].value &&
+      children[0].style === types.styles[0].value &&
       Array.isArray(children[0].children) &&
       children[0].children.length === 1 &&
       Text.isText(children[0].children[0]) &&

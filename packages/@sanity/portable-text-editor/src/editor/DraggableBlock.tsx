@@ -3,7 +3,6 @@ import {Element as SlateElement, Transforms, Path, Editor} from 'slate'
 import {ReactEditor, useSlateStatic} from '@sanity/slate-react'
 import {debugWithName} from '../utils/debug'
 import {
-  IS_DRAGGING_CHILD_ELEMENT,
   IS_DRAGGING_ELEMENT_TARGET,
   IS_DRAGGING_BLOCK_ELEMENT,
   IS_DRAGGING,
@@ -13,14 +12,14 @@ import {
 const debug = debugWithName('components:DraggableBlock')
 const debugRenders = false
 
-type ElementProps = {
+export interface DraggableBlockProps {
   children: React.ReactNode
   element: SlateElement
   readOnly: boolean
   blockRef: React.MutableRefObject<HTMLDivElement | null>
 }
 
-export const DraggableBlock = ({children, element, readOnly, blockRef}: ElementProps) => {
+export const DraggableBlock = ({children, element, readOnly, blockRef}: DraggableBlockProps) => {
   const editor = useSlateStatic()
   const dragGhostRef: React.MutableRefObject<undefined | HTMLElement> = useRef()
   const [isDragOver, setIsDragOver] = useState(false)

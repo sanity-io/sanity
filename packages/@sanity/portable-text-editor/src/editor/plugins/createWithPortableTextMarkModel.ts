@@ -9,18 +9,16 @@ import {isEqual, flatten, uniq} from 'lodash'
 import {Editor, Range, Transforms, Text, Path, NodeEntry, Element} from 'slate'
 
 import {debugWithName} from '../../utils/debug'
-import {PortableTextSlateEditor} from '../../types/editor'
-import {PortableTextFeatures} from '../../types/portableText'
+import {PortableTextMemberTypes, PortableTextSlateEditor} from '../../types/editor'
 
 const debug = debugWithName('plugin:withPortableTextMarkModel')
 
 export function createWithPortableTextMarkModel(
-  portableTextFeatures: PortableTextFeatures,
-  keyGenerator: () => string
+  types: PortableTextMemberTypes
 ): (editor: PortableTextSlateEditor) => PortableTextSlateEditor {
   return function withPortableTextMarkModel(editor: PortableTextSlateEditor) {
     const {apply, normalizeNode} = editor
-    const decorators = portableTextFeatures.decorators.map((t) => t.value)
+    const decorators = types.decorators.map((t) => t.value)
 
     // Extend Slate's default normalization. Merge spans with same set of .marks when doing merge_node operations, and clean up markDefs / marks
     editor.normalizeNode = (nodeEntry) => {
@@ -40,7 +38,7 @@ export function createWithPortableTextMarkModel(
         mergeSpans(editor)
       }
       const [node, path] = nodeEntry
-      const isSpan = Text.isText(node) && node._type === portableTextFeatures.types.span.name
+      const isSpan = Text.isText(node) && node._type === types.span.name
       const isTextBlock = editor.isTextBlock(node)
       if (isSpan || isTextBlock) {
         if (!isTextBlock && !Array.isArray(node.marks)) {
@@ -54,7 +52,7 @@ export function createWithPortableTextMarkModel(
             op.type === 'merge_node' &&
             op.path.length === 1 &&
             'markDefs' in op.properties &&
-            op.properties._type === portableTextFeatures.types.block.name &&
+            op.properties._type === types.block.name &&
             Array.isArray(op.properties.markDefs) &&
             op.properties.markDefs.length > 0 &&
             op.path[0] - 1 >= 0
@@ -77,7 +75,7 @@ export function createWithPortableTextMarkModel(
             op.type === 'split_node' &&
             op.path.length === 1 &&
             Element.isElementProps(op.properties) &&
-            op.properties._type === portableTextFeatures.types.block.name &&
+            op.properties._type === types.block.name &&
             'markDefs' in op.properties &&
             Array.isArray(op.properties.markDefs) &&
             op.properties.markDefs.length > 0 &&
@@ -99,7 +97,7 @@ export function createWithPortableTextMarkModel(
           if (
             op.type === 'split_node' &&
             op.path.length === 2 &&
-            op.properties._type === portableTextFeatures.types.span.name &&
+            op.properties._type === types.span.name &&
             'marks' in op.properties &&
             Array.isArray(op.properties.marks) &&
             op.properties.marks.length > 0 &&
@@ -120,7 +118,7 @@ export function createWithPortableTextMarkModel(
           if (
             op.type === 'split_node' &&
             op.path.length === 1 &&
-            op.properties._type === portableTextFeatures.types.block.name &&
+            op.properties._type === types.block.name &&
             'markDefs' in op.properties &&
             Array.isArray(op.properties.markDefs) &&
             op.properties.markDefs.length > 0
@@ -129,10 +127,11 @@ export function createWithPortableTextMarkModel(
             if (
               editor.isTextBlock(block) &&
               block.children.length === 1 &&
+              block.markDefs &&
               block.markDefs.length > 0 &&
               Text.isText(block.children[0]) &&
               block.children[0].text === '' &&
-              block.children[0].marks.length === 0
+              (!block.children[0].marks || block.children[0].marks.length === 0)
             ) {
               Transforms.setNodes(editor, {markDefs: []}, {at: blockPath})
               editor.onChange()
@@ -169,7 +168,7 @@ export function createWithPortableTextMarkModel(
             Editor.nodes(editor, {
               mode: 'lowest',
               at: selection.focus,
-              match: (n) => n._type === portableTextFeatures.types.span.name,
+              match: (n) => n._type === types.span.name,
               voids: false,
             })
           )[0] || [undefined]
@@ -360,11 +359,11 @@ export function createWithPortableTextMarkModel(
     if (selection) {
       const blocks = Editor.nodes(editor, {
         at: selection,
-        match: (n) => n._type === portableTextFeatures.types.block.name,
+        match: (n) => n._type === types.block.name,
       })
       for (const [block, path] of blocks) {
         if (editor.isTextBlock(block)) {
-          const newMarkDefs = block.markDefs.filter((def) => {
+          const newMarkDefs = (block.markDefs || []).filter((def) => {
             return block.children.find((child) => {
               return (
                 Text.isText(child) && Array.isArray(child.marks) && child.marks.includes(def._key)

@@ -1,52 +1,40 @@
 import {Element, Operation, InsertNodeOperation, Text as SlateText} from 'slate'
-import {PortableTextFeatures, TextBlock, ListItem, TextSpan} from '../../types/portableText'
+import {
+  isPortableTextTextBlock,
+  PortableTextTextBlock,
+  isPortableTextSpan,
+  PortableTextSpan,
+  PortableTextListBlock,
+  isPortableTextListBlock,
+} from '@sanity/types'
 import {debugWithName} from '../../utils/debug'
-import {PortableTextSlateEditor} from '../../types/editor'
+import {PortableTextMemberTypes, PortableTextSlateEditor} from '../../types/editor'
 
 const debug = debugWithName('plugin:withSchemaTypes')
 /**
- * This plugin makes sure that shema types are recognized properly by Slate as blocks, voids, inlines
+ * This plugin makes sure that schema types are recognized properly by Slate as blocks, voids, inlines
  *
  */
-export function createWithSchemaTypes(portableTextFeatures: PortableTextFeatures) {
+export function createWithSchemaTypes(types: PortableTextMemberTypes) {
   return function withSchemaTypes(editor: PortableTextSlateEditor): PortableTextSlateEditor {
-    editor.isTextBlock = (value: any): value is TextBlock => {
-      return (
-        !editor.isVoid(value) &&
-        'markDefs' in value &&
-        'style' in value &&
-        'children' in value &&
-        '_type' in value &&
-        portableTextFeatures.types.block.name === value._type
-      )
+    editor.isTextBlock = (value: unknown): value is PortableTextTextBlock => {
+      return isPortableTextTextBlock(value) && value._type === types.block.name
     }
-    editor.isTextSpan = (value: any): value is TextSpan => {
-      return (
-        !editor.isVoid(value) &&
-        'text' in value &&
-        'marks' in value &&
-        '_type' in value &&
-        portableTextFeatures.types.span.name === value._type
-      )
+    editor.isTextSpan = (value: unknown): value is PortableTextSpan => {
+      return isPortableTextSpan(value) && value._type == types.span.name
     }
-    editor.isListBlock = (value: any): value is ListItem => {
-      return Boolean(
-        editor.isTextBlock(value) &&
-          'listItem' in value &&
-          'level' in value &&
-          value.listItem &&
-          Number.isInteger(value.level)
-      )
+    editor.isListBlock = (value: unknown): value is PortableTextListBlock => {
+      return isPortableTextListBlock(value) && value._type === types.block.name
     }
     editor.isVoid = (element: Element): boolean => {
       return (
-        portableTextFeatures.types.block.name !== element._type &&
-        (portableTextFeatures.types.blockObjects.map((obj) => obj.name).includes(element._type) ||
-          portableTextFeatures.types.inlineObjects.map((obj) => obj.name).includes(element._type))
+        types.block.name !== element._type &&
+        (types.blockObjects.map((obj) => obj.name).includes(element._type) ||
+          types.inlineObjects.map((obj) => obj.name).includes(element._type))
       )
     }
     editor.isInline = (element: Element): boolean => {
-      const inlineSchemaTypes = portableTextFeatures.types.inlineObjects.map((obj) => obj.name)
+      const inlineSchemaTypes = types.inlineObjects.map((obj) => obj.name)
       return (
         inlineSchemaTypes.includes(element._type) &&
         '__inline' in element &&
