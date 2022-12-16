@@ -56,7 +56,6 @@ export function CommonDateRangeInput({
             aria-label="Start date"
             fontSize={fullscreen ? 2 : 1}
             onChange={handleStartDateChange}
-            placeholder="Start date"
             selectTime={selectTime}
             value={value?.min}
           />
@@ -65,7 +64,6 @@ export function CommonDateRangeInput({
             aria-label="End date"
             fontSize={fullscreen ? 2 : 1}
             onChange={handleEndDateChange}
-            placeholder="End date"
             selectTime={selectTime}
             value={value?.max}
           />

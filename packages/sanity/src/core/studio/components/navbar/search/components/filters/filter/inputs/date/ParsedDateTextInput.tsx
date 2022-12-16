@@ -89,7 +89,7 @@ export function ParsedDateTextInput({
       onChange={handleTextInputChange}
       onClear={handleTextInputClear}
       onKeyDown={handleTextInputKeyDown}
-      placeholder={placeholder || `Example: ${placeholderDate}`}
+      placeholder={placeholder || placeholderDate}
       value={inputValue}
     />
   )

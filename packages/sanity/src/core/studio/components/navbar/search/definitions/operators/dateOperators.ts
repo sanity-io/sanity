@@ -35,13 +35,13 @@ const COMMON = {
   dateAfter: {
     buttonLabel: 'after',
     buttonValueComponent: SearchButtonValueDate as SearchOperatorButtonValue<string>,
-    initialValue: startOfToday().toISOString(),
+    initialValue: null,
     label: 'is after',
   },
   dateBefore: {
     buttonLabel: 'before',
     buttonValueComponent: SearchButtonValueDate as SearchOperatorButtonValue<string>,
-    initialValue: startOfToday().toISOString(),
+    initialValue: null,
     label: 'is before',
   },
   dateEqual: {
@@ -50,7 +50,7 @@ const COMMON = {
     groqFilter: ({fieldPath, value}: SearchOperatorParams<string>) => {
       return value && fieldPath ? `${fieldPath} == ${toJSON(value)}` : null
     },
-    initialValue: startOfToday().toISOString(),
+    initialValue: null,
     label: 'is',
   },
   dateLast: {
@@ -65,7 +65,7 @@ const COMMON = {
     groqFilter: ({fieldPath, value}: SearchOperatorParams<string>) => {
       return value && fieldPath ? `${fieldPath} != ${toJSON(value)}` : null
     },
-    initialValue: startOfToday().toISOString(),
+    initialValue: null,
     label: 'is not',
   },
   dateRange: {
@@ -131,6 +131,10 @@ export const dateOperators = {
         ? `${fieldPath} >= ${toJSON(value.min)} && ${fieldPath} <= ${toJSON(value.max)}`
         : null
     },
+    initialValue: {
+      max: startOfToday().toISOString(),
+      min: null,
+    },
     inputComponent: SearchFilterDateRangeInput as SearchOperatorInput<OperatorDateRangeValue>,
     type: 'dateRange',
   }),
@@ -192,6 +196,10 @@ export const dateOperators = {
             value.min
           )}) && dateTime(${fieldPath}) <= dateTime(${toJSON(value.max)})`
         : null
+    },
+    initialValue: {
+      max: startOfToday().toISOString(),
+      min: null,
     },
     inputComponent: SearchFilterDateTimeRangeInput as SearchOperatorInput<OperatorDateRangeValue>,
     type: 'dateTimeRange',
