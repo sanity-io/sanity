@@ -1,5 +1,6 @@
 import {Flex, Stack} from '@sanity/ui'
-import React, {useCallback} from 'react'
+import {addDays} from 'date-fns'
+import React, {useCallback, useMemo} from 'react'
 import {useSearchState} from '../../../../../contexts/search/useSearchState'
 import type {OperatorDateRangeValue} from '../../../../../definitions/operators/dateOperators'
 import type {OperatorInputComponentProps} from '../../../../../definitions/operators/operatorTypes'
@@ -16,6 +17,9 @@ export function CommonDateRangeInput({
   const {
     state: {fullscreen},
   } = useSearchState()
+
+  const placeholderStartDate = useMemo(() => addDays(new Date(), -7), [])
+  const placeholderEndDate = useMemo(() => new Date(), [])
 
   const handleDatePickerChange = useCallback(
     ({date, endDate}: {date?: Date | null; endDate?: Date | null}) => {
@@ -56,6 +60,7 @@ export function CommonDateRangeInput({
             aria-label="Start date"
             fontSize={fullscreen ? 2 : 1}
             onChange={handleStartDateChange}
+            placeholderDate={placeholderStartDate}
             selectTime={selectTime}
             value={value?.min}
           />
@@ -64,6 +69,7 @@ export function CommonDateRangeInput({
             aria-label="End date"
             fontSize={fullscreen ? 2 : 1}
             onChange={handleEndDateChange}
+            placeholderDate={placeholderEndDate}
             selectTime={selectTime}
             value={value?.max}
           />

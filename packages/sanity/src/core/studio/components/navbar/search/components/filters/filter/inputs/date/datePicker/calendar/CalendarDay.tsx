@@ -32,7 +32,7 @@ const CustomCard = styled(Card)<{
 
 const TodayHighlight = styled(Box)(({theme}) => {
   return css`
-    border: 1px solid ${theme.sanity.color.card.hovered.bg};
+    border: 1px solid ${theme.sanity.color.button.default.default.enabled.border};
     border-radius: ${theme.sanity.radius[2]}px;
     box-sizing: border-box;
     height: 100%;
@@ -96,7 +96,7 @@ export function CalendarDay({date, onSelect}: CalendarDayProps) {
           muted={!isSelected && !isCurrentMonth}
           size={fontSize}
           style={{textAlign: 'center'}}
-          weight={isToday ? 'semibold' : 'regular'}
+          weight={isToday ? 'medium' : 'regular'}
         >
           {date.getDate()}
         </Text>

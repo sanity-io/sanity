@@ -13,16 +13,17 @@ import {CustomTextInput} from '../../../../common/CustomTextInput'
 interface ParsedDateTextInputProps
   extends Omit<ComponentProps<typeof CustomTextInput>, 'onChange' | 'value'> {
   onChange: (val: string | null) => void
+  placeholderDate?: Date
   selectTime?: boolean
   value?: string | null
 }
 
 const DEFAULT_DATE_FORMAT = 'MMM d, yyyy'
-const DEFAULT_TIME_FORMAT = 'HH:mm'
+const DEFAULT_TIME_FORMAT = 'p'
 
 export function ParsedDateTextInput({
   onChange,
-  placeholder,
+  placeholderDate = new Date(),
   selectTime,
   value,
   ...rest
@@ -31,7 +32,10 @@ export function ParsedDateTextInput({
     () => [DEFAULT_DATE_FORMAT, ...(selectTime ? [DEFAULT_TIME_FORMAT] : [])].join(' '),
     [selectTime]
   )
-  const placeholderDate = useMemo(() => format(new Date(), dateFormat), [dateFormat])
+  const formattedPlaceholder = useMemo(
+    () => format(placeholderDate, dateFormat),
+    [dateFormat, placeholderDate]
+  )
 
   const [customValidity, setCustomValidity] = useState<string | undefined>(undefined)
   const [inputValue, setInputValue] = useState<string>(() =>
@@ -89,7 +93,7 @@ export function ParsedDateTextInput({
       onChange={handleTextInputChange}
       onClear={handleTextInputClear}
       onKeyDown={handleTextInputKeyDown}
-      placeholder={placeholder || placeholderDate}
+      placeholder={formattedPlaceholder}
       value={inputValue}
     />
   )
