@@ -66,6 +66,7 @@ export function ListArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
           ) : (
             <Card border radius={1}>
               <List
+                axis="y"
                 gap={1}
                 paddingY={1}
                 items={memberKeys}

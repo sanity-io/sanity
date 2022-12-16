@@ -12,8 +12,14 @@ import {
   useSensor,
   useSensors,
 } from '@dnd-kit/core'
-import {SortableContext, sortableKeyboardCoordinates, useSortable} from '@dnd-kit/sortable'
-import {CSS} from '@dnd-kit/utilities'
+import {
+  horizontalListSortingStrategy,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  useSortable,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable'
+import {CSS, Transition} from '@dnd-kit/utilities'
 import {restrictToHorizontalAxis, restrictToVerticalAxis} from '@dnd-kit/modifiers'
 import {SortableItemIdContext} from './DragHandle'
 import {restrictToParentElementWithMargins} from './dndkit-modifier/restrictToParentElementWithMargins'
@@ -45,12 +51,17 @@ const TRANSITION = {
   easing: 'linear',
 }
 
-function restrictToAxis(axis: 'x' | 'y') {
+type Axis = 'x' | 'y'
+
+function restrictToAxis(axis: Axis) {
   return axis === 'x' ? restrictToHorizontalAxis : restrictToVerticalAxis
+}
+function sortingStrategy(axis: Axis) {
+  return axis === 'x' ? horizontalListSortingStrategy : verticalListSortingStrategy
 }
 
 function SortableList(props: ListProps) {
-  const {items, lockAxis, onItemMove, children, ...rest} = props
+  const {items, axis, onItemMove, children, ...rest} = props
 
   const sensors = useSensors(useSensor(PointerSensor), useSensor(KeyboardSensor, SENSOR_OPTIONS))
 
@@ -68,11 +79,8 @@ function SortableList(props: ListProps) {
     [items, onItemMove]
   )
   const modifiers = useMemo(
-    () => [
-      restrictToParentElementWithMargins({y: 4}),
-      ...(lockAxis ? [restrictToAxis(lockAxis)] : []),
-    ],
-    [lockAxis]
+    () => [restrictToParentElementWithMargins({y: 4}), ...(axis ? [restrictToAxis(axis)] : [])],
+    [axis]
   )
 
   return (
@@ -83,7 +91,7 @@ function SortableList(props: ListProps) {
       collisionDetection={closestCenter}
       onDragEnd={handleDragEnd}
     >
-      <SortableContext items={items}>
+      <SortableContext items={items} strategy={axis ? sortingStrategy(axis) : undefined}>
         <Grid {...rest}>{children}</Grid>
       </SortableContext>
     </DndContext>
@@ -122,7 +130,7 @@ function SortableListItem(props: ItemProps) {
 
 interface ListProps extends ComponentProps<typeof Grid> {
   sortable?: boolean
-  lockAxis?: 'x' | 'y'
+  axis?: Axis
   items: string[]
   onItemMove?: (event: {fromIndex: number; toIndex: number}) => void
   children?: React.ReactNode
