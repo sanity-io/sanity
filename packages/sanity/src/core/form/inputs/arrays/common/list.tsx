@@ -48,7 +48,7 @@ const SENSOR_OPTIONS: SensorOptions = {
 
 const TRANSITION = {
   duration: 200,
-  easing: 'linear',
+  easing: 'ease',
 }
 
 type Axis = 'x' | 'y'
