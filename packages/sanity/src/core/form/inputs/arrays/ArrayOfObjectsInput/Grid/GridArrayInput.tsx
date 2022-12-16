@@ -1,6 +1,6 @@
 /* eslint-disable react/jsx-handler-names */
 import {Card, Stack, Text} from '@sanity/ui'
-import React, {useCallback} from 'react'
+import React, {useCallback, useMemo} from 'react'
 import {Item, List} from '../../common/list'
 import {ArrayOfObjectsInputProps, ObjectItem, ObjectItemProps} from '../../../../types'
 import {ArrayOfObjectsItem} from '../../../../members'
@@ -51,6 +51,8 @@ export function GridArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
     return <GridItem {...itemProps} />
   }, [])
 
+  const memberKeys = useMemo(() => members.map((member) => member.key), [members])
+
   return (
     <Stack space={3}>
       <UploadTargetCard
@@ -71,17 +73,16 @@ export function GridArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
           {members?.length > 0 && (
             <Card border radius={1}>
               <List
-                axis="xy"
-                lockAxis="xy"
                 columns={[2, 3, 4]}
                 gap={3}
                 padding={1}
                 margin={1}
+                items={memberKeys}
                 onItemMove={onItemMove}
                 sortable={sortable}
               >
-                {members.map((member, index) => (
-                  <Item key={member.key} sortable={sortable} index={index} flex={1}>
+                {members.map((member) => (
+                  <Item key={member.key} sortable={sortable} id={member.key} flex={1}>
                     {member.kind === 'item' && (
                       <ArrayOfObjectsItem
                         member={member}

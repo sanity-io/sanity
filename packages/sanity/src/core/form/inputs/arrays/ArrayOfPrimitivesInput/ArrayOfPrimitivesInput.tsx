@@ -127,6 +127,13 @@ export class ArrayOfPrimitivesInput extends React.PureComponent<ArrayOfPrimitive
 
     const isSortable = !readOnly && get(schemaType, 'options.sortable') !== false
 
+    // Note: we need this in order to generate new id's when items are moved around in the list
+    // without it, dndkit will restore focus on the original index of the dragged item
+    const membersWithSortIds = members.map((member) => ({
+      id: `${member.key}-${member.kind === 'item' ? member.item.value : 'error'}`,
+      member: member,
+    }))
+
     return (
       <Stack space={3} data-testid="array-primitives-input">
         <UploadTargetCard
@@ -137,7 +144,7 @@ export class ArrayOfPrimitivesInput extends React.PureComponent<ArrayOfPrimitive
           tabIndex={0}
         >
           <Stack space={1}>
-            {members.length === 0 ? (
+            {membersWithSortIds.length === 0 ? (
               <Card padding={3} border style={{borderStyle: 'dashed'}} radius={2}>
                 <Text align="center" muted size={1}>
                   {schemaType.placeholder || <>No items</>}
@@ -145,10 +152,15 @@ export class ArrayOfPrimitivesInput extends React.PureComponent<ArrayOfPrimitive
               </Card>
             ) : (
               <Card padding={1} border>
-                <List onItemMove={this.handleSortEnd} sortable={isSortable} gap={1}>
-                  {members.map((member, index) => {
+                <List
+                  onItemMove={this.handleSortEnd}
+                  items={membersWithSortIds.map((m) => m.id)}
+                  sortable={isSortable}
+                  gap={1}
+                >
+                  {membersWithSortIds.map(({member, id}, index) => {
                     return (
-                      <Item key={member.key} sortable={isSortable} index={index}>
+                      <Item key={member.key} id={id} sortable={isSortable} disableTransition>
                         {member.kind === 'item' && (
                           <ArrayOfPrimitivesItem
                             member={member}

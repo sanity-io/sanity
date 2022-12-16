@@ -1,42 +1,139 @@
-import {Card, Grid, Theme} from '@sanity/ui'
-import React, {ComponentProps, useCallback} from 'react'
-import styled from 'styled-components'
-import {MOVING_ITEM_CLASS_NAME, sortableItem, sortableList} from './sortable'
+import {Box, Card, Grid} from '@sanity/ui'
+import React, {ComponentProps, useCallback, useMemo} from 'react'
+import styled, {css} from 'styled-components'
+import {
+  AutoScrollOptions,
+  closestCenter,
+  DndContext,
+  DragEndEvent,
+  KeyboardSensor,
+  PointerSensor,
+  SensorOptions,
+  useSensor,
+  useSensors,
+} from '@dnd-kit/core'
+import {
+  horizontalListSortingStrategy,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  useSortable,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable'
+import {CSS, Transition} from '@dnd-kit/utilities'
+import {restrictToHorizontalAxis, restrictToVerticalAxis} from '@dnd-kit/modifiers'
+import {SortableItemIdContext} from './DragHandle'
+import {restrictToParentElementWithMargins} from './dndkit-modifier/restrictToParentElementWithMargins'
 
-const ListItem = styled(Card)`
-  &.${MOVING_ITEM_CLASS_NAME} {
-    z-index: 10000;
-    border-radius: ${({theme}) => theme.sanity.radius[2]}px;
-    box-shadow: 0 0 0 0, 0 8px 17px 2px var(--card-shadow-umbra-color),
-      0 3px 14px 2px var(--card-shadow-penumbra-color),
-      0 5px 5px -3px var(--card-shadow-ambient-color);
+export const MOVING_ITEM_CLASS_NAME = 'moving'
 
-    // Used inside CellItem
-    [data-ui='DragHandleCard'] {
-      opacity: 1;
-    }
-
-    [data-ui='DragHandleButton'] {
-      background-color: ${({theme}: {theme: Theme}) =>
-        theme.sanity.color.button.bleed.primary.pressed.bg};
-      color: ${({theme}: {theme: Theme}) => theme.sanity.color.button.bleed.primary.pressed.fg};
-      [data-ui='Text'] {
-        color: inherit;
-      }
-    }
-  }
+const ListItem = styled(Box)<ComponentProps<typeof Box> & {$moving?: boolean}>`
+  ${(props) =>
+    props.$moving &&
+    css`
+      z-index: 10000;
+      /* prevents hover-effects etc on the dragged element  */
+      pointer-events: none;
+    `}
 `
 
-const SortableList = sortableList(Grid)
-const SortableListItem = sortableItem(ListItem)
+const AUTO_SCROLL_OPTIONS: AutoScrollOptions = {
+  threshold: {
+    x: 0,
+    y: 0.02,
+  },
+}
+const SENSOR_OPTIONS: SensorOptions = {
+  coordinateGetter: sortableKeyboardCoordinates,
+}
+
+const TRANSITION = {
+  duration: 200,
+  easing: 'ease',
+}
+
+type Axis = 'x' | 'y'
+
+function restrictToAxis(axis: Axis) {
+  return axis === 'x' ? restrictToHorizontalAxis : restrictToVerticalAxis
+}
+function sortingStrategy(axis: Axis) {
+  return axis === 'x' ? horizontalListSortingStrategy : verticalListSortingStrategy
+}
+
+function SortableList(props: ListProps) {
+  const {items, axis, onItemMove, children, ...rest} = props
+
+  const sensors = useSensors(useSensor(PointerSensor), useSensor(KeyboardSensor, SENSOR_OPTIONS))
+
+  const handleDragEnd = useCallback(
+    (event: DragEndEvent) => {
+      const {active, over} = event
+
+      if (active.id !== over?.id) {
+        onItemMove?.({
+          fromIndex: items.indexOf(active.id as string),
+          toIndex: items.indexOf(over?.id as string),
+        })
+      }
+    },
+    [items, onItemMove]
+  )
+  const modifiers = useMemo(
+    () => [restrictToParentElementWithMargins({y: 4}), ...(axis ? [restrictToAxis(axis)] : [])],
+    [axis]
+  )
+
+  return (
+    <DndContext
+      sensors={sensors}
+      autoScroll={AUTO_SCROLL_OPTIONS}
+      modifiers={modifiers}
+      collisionDetection={closestCenter}
+      onDragEnd={handleDragEnd}
+    >
+      <SortableContext items={items} strategy={axis ? sortingStrategy(axis) : undefined}>
+        <Grid {...rest}>{children}</Grid>
+      </SortableContext>
+    </DndContext>
+  )
+}
+
+function SortableListItem(props: ItemProps) {
+  const {id, children, disableTransition} = props
+  const {setNodeRef, transform, transition, active} = useSortable({
+    id,
+    transition: disableTransition ? null : TRANSITION,
+  })
+
+  const isActive = id === active?.id
+
+  const style = useMemo(
+    () =>
+      ({
+        transform: CSS.Translate.toString(transform),
+        transition,
+        pointerEvents: active ? 'none' : undefined,
+      } as const),
+    [transform, transition, active]
+  )
+  return (
+    <ListItem
+      ref={setNodeRef}
+      style={style}
+      $moving={isActive}
+      className={isActive ? MOVING_ITEM_CLASS_NAME : ''}
+    >
+      {children}
+    </ListItem>
+  )
+}
 
 interface ListProps extends ComponentProps<typeof Grid> {
   sortable?: boolean
-  lockAxis?: 'x' | 'y' | 'xy'
-  axis?: 'x' | 'y' | 'xy'
+  axis?: Axis
+  items: string[]
   onItemMove?: (event: {fromIndex: number; toIndex: number}) => void
   children?: React.ReactNode
-  tabIndex?: number
 }
 
 export function List(props: ListProps) {
@@ -44,20 +141,28 @@ export function List(props: ListProps) {
 
   // Note: this is here to make SortableList API compatible with onItemMove
   const handleSortEnd = useCallback(
-    (event: {newIndex: number; oldIndex: number}) =>
-      onItemMove?.({
-        fromIndex: event.oldIndex,
-        toIndex: event.newIndex,
-      }),
+    (event: {fromIndex: number; toIndex: number}) => onItemMove?.(event),
     [onItemMove]
   )
 
-  return sortable ? <SortableList onSortEnd={handleSortEnd} {...rest} /> : <Grid {...rest} />
+  return sortable ? <SortableList onItemMove={handleSortEnd} {...rest} /> : <Grid {...rest} />
 }
 
-type ItemProps = {sortable?: boolean; children?: React.ReactNode; index: number}
+interface ItemProps {
+  id: string
+
+  // false positive:
+  // eslint-disable-next-line react/no-unused-prop-types
+  sortable?: boolean
+  disableTransition?: boolean
+  children?: React.ReactNode
+}
 
 export function Item(props: ItemProps & ComponentProps<typeof Card>) {
   const {sortable, ...rest} = props
-  return sortable ? <SortableListItem {...rest} /> : <ListItem {...rest} />
+  return (
+    <SortableItemIdContext.Provider value={props.id}>
+      {sortable ? <SortableListItem {...rest} /> : <ListItem {...rest} />}
+    </SortableItemIdContext.Provider>
+  )
 }

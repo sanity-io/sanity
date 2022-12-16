@@ -1,6 +1,6 @@
 /* eslint-disable react/jsx-handler-names */
 import {Card, Stack, Text} from '@sanity/ui'
-import React, {useCallback} from 'react'
+import React, {useCallback, useMemo} from 'react'
 import {Item, List} from '../../common/list'
 import {ArrayOfObjectsInputProps, ObjectItem} from '../../../../types'
 import {ArrayOfObjectsItem} from '../../../../members'
@@ -46,7 +46,7 @@ export function ListArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
   )
 
   const sortable = schemaType.options?.sortable !== false
-
+  const memberKeys = useMemo(() => members.map((member) => member.key), [members])
   return (
     <Stack space={3}>
       <UploadTargetCard
@@ -65,9 +65,16 @@ export function ListArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
             </Card>
           ) : (
             <Card border radius={1}>
-              <List gap={1} paddingY={1} onItemMove={onItemMove} sortable={sortable}>
-                {members.map((member, index) => (
-                  <Item key={member.key} sortable={sortable} index={index}>
+              <List
+                axis="y"
+                gap={1}
+                paddingY={1}
+                items={memberKeys}
+                onItemMove={onItemMove}
+                sortable={sortable}
+              >
+                {members.map((member) => (
+                  <Item key={member.key} sortable={sortable} id={member.key}>
                     {member.kind === 'item' && (
                       <ArrayOfObjectsItem
                         member={member}
