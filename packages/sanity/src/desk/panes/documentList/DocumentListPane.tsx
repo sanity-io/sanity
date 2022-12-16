@@ -76,7 +76,6 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
   const filterIsSimpleTypeContraint = isSimpleTypeFilter(filter)
 
   const {error, fullList, handleListChange, isLoading, items, onRetry} = useDocumentList({
-    defaultOrdering,
     filter,
     params,
     sortOrder,
