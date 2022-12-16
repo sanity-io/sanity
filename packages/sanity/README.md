@@ -1,15 +1,16 @@
 <p align="center">
   <a href="https://sanity.io">
-    <img src="https://cdn.sanity.io/images/3do82whm/next/51af00784c5addcf63ae7f0c416756acca7e63ac-353x71.svg?w=400&fm=png&fit=max">
+    <img src="https://cdn.sanity.io/images/3do82whm/next/1dfce9dde7a62ccaa8e8377254a1e919f6c07ad3-128x128.svg" />
   </a>
+  <h1 align="center">Sanity</h1>
 </p>
 
 <p align="center">
-  <img alt="" src="https://img.shields.io/npm/v/sanity">
-  <img alt="" src="https://img.shields.io/npm/dm/@sanity/client">
-  <img alt="" src="https://img.shields.io/npm/l/@sanity/client.svg">
+  <img alt="" src="https://img.shields.io/npm/v/sanity?style=flat">
+  <img alt="" src="https://img.shields.io/npm/dm/@sanity/client?style=flat">
+  <img alt="" src="https://img.shields.io/npm/l/@sanity/client.svg?style=flat">
   <a aria-label="Join the community on Slack" href="https://slack.sanity.io">
-    <img alt="" src="https://img.shields.io/badge/Join%20Slack-f03e2f?logo=Slack">
+    <img alt="" src="https://img.shields.io/badge/Join%20Slack-f03e2f?logo=Slack&style=flat">
   </a>
   <a aria-label="Follow Sanity on Twitter" href="https://twitter.com/sanity_io">
     <img alt="" src="https://img.shields.io/twitter/follow/sanity_io?style=flat&color=blue">
@@ -34,7 +35,7 @@ yarn create sanity@latest
 pnpm create sanity@latest
 ```
 
-[Go here](https://www.sanity.io/docs/getting-started-with-sanity) for a step-by-step guide on how to get up and running.
+[Go here for a step-by-step guide](https://www.sanity.io/docs/getting-started-with-sanity) on how to get up and running.
 
 Check out [the docs](https://www.sanity.io/docs/sanity-studio) and [plugins](https://www.sanity.io/plugins) and start building.
 
