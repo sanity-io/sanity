@@ -4,8 +4,13 @@ import {DatePickerContext} from './DatePickerContext'
 interface DatePickerProviderProps {
   children?: ReactNode
   fontSize?: number
+  selectRange?: boolean
 }
 
-export function DatePickerProvider({children, fontSize = 1}: DatePickerProviderProps) {
-  return <DatePickerContext.Provider value={{fontSize}}>{children}</DatePickerContext.Provider>
+export function DatePickerProvider({children, fontSize = 1, selectRange}: DatePickerProviderProps) {
+  return (
+    <DatePickerContext.Provider value={{fontSize, selectRange}}>
+      {children}
+    </DatePickerContext.Provider>
+  )
 }

@@ -1,5 +1,4 @@
 import {Box, Grid, Text} from '@sanity/ui'
-import {isSameDay, isSameMonth} from 'date-fns'
 import React from 'react'
 import {useDatePicker} from '../contexts/useDatePicker'
 import {CalendarDay} from './CalendarDay'
@@ -7,44 +6,32 @@ import {WEEK_DAY_NAMES} from './constants'
 import {getWeeksOfMonth} from './utils'
 
 interface CalendarMonthProps {
-  date: Date
-  focused?: Date
-  selected?: Date
-  onSelect: (date: Date) => void
   hidden?: boolean
+  onSelect: (date: Date) => void
 }
 
-export function CalendarMonth(props: CalendarMonthProps) {
-  const {fontSize} = useDatePicker()
+export function CalendarMonth({hidden, onSelect}: CalendarMonthProps) {
+  const {focusedDate, fontSize} = useDatePicker()
 
   return (
-    <Box aria-hidden={props.hidden || false} data-ui="CalendarMonth">
-      <Grid gap={1} style={{gridTemplateColumns: 'repeat(7, minmax(44px, 46px))'}}>
+    <Box aria-hidden={hidden || false} data-ui="CalendarMonth">
+      <Grid style={{gridTemplateColumns: 'repeat(7, minmax(44px, auto))'}}>
         {WEEK_DAY_NAMES.map((weekday) => (
-          <Box key={weekday} paddingY={2}>
+          <Box key={weekday} paddingBottom={3} paddingTop={2}>
             <Text size={fontSize} weight="medium" style={{textAlign: 'center'}}>
               {weekday}
             </Text>
           </Box>
         ))}
 
-        {getWeeksOfMonth(props.date).map((week, weekIdx) =>
-          week.days.map((date, dayIdx) => {
-            const focused = props.focused && isSameDay(date, props.focused)
-            const selected = props.selected && isSameDay(date, props.selected)
-            const isToday = isSameDay(date, new Date())
-            const isCurrentMonth = props.focused && isSameMonth(date, props.focused)
-
+        {getWeeksOfMonth(focusedDate).map((week, weekIdx) =>
+          week.days.map((weekDayDate, dayIdx) => {
             return (
               <CalendarDay
-                date={date}
-                focused={focused}
-                isCurrentMonth={isCurrentMonth}
-                isToday={isToday}
+                date={weekDayDate}
                 // eslint-disable-next-line react/no-array-index-key
                 key={`${weekIdx}-${dayIdx}`}
-                onSelect={props.onSelect}
-                selected={selected}
+                onSelect={onSelect}
               />
             )
           })

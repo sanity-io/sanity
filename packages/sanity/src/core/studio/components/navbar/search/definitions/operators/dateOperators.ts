@@ -2,10 +2,13 @@ import {startOfToday, sub} from 'date-fns'
 import {
   SearchButtonValueDate,
   SearchButtonValueDateLast,
+  SearchButtonValueDateRange,
 } from '../../components/filters/common/ButtonValue'
 import {SearchFilterDateInput} from '../../components/filters/filter/inputs/date/Date'
 import {SearchFilterDateLastInput} from '../../components/filters/filter/inputs/date/DateLast'
+import {SearchFilterDateRangeInput} from '../../components/filters/filter/inputs/date/DateRange'
 import {SearchFilterDateTimeInput} from '../../components/filters/filter/inputs/date/DateTime'
+import {SearchFilterDateTimeRangeInput} from '../../components/filters/filter/inputs/date/DateTimeRange'
 import {
   defineSearchOperator,
   SearchOperatorButtonValue,
@@ -15,8 +18,8 @@ import {
 import {toJSON} from './operatorUtils'
 
 export interface OperatorDateRangeValue {
-  max: Date | null
-  min: Date | null
+  max: string | null
+  min: string | null
 }
 
 export interface OperatorDateLastValue {
@@ -64,6 +67,11 @@ const COMMON = {
     },
     initialValue: startOfToday().toISOString(),
     label: 'is not',
+  },
+  dateRange: {
+    buttonLabel: 'is between',
+    initialValue: null,
+    label: 'is between',
   },
 }
 
@@ -114,6 +122,18 @@ export const dateOperators = {
     inputComponent: SearchFilterDateInput as SearchOperatorInput<string>,
     type: 'dateNotEqual',
   }),
+  dateRange: defineSearchOperator({
+    ...COMMON.dateRange,
+    buttonValueComponent:
+      SearchButtonValueDateRange as SearchOperatorButtonValue<OperatorDateRangeValue>,
+    groqFilter: ({fieldPath, value}: SearchOperatorParams<OperatorDateRangeValue>) => {
+      return value?.max && value?.min && fieldPath
+        ? `${fieldPath} >= ${toJSON(value.min)} && ${fieldPath} <= ${toJSON(value.max)}`
+        : null
+    },
+    inputComponent: SearchFilterDateRangeInput as SearchOperatorInput<OperatorDateRangeValue>,
+    type: 'dateRange',
+  }),
   dateTimeAfter: defineSearchOperator({
     ...COMMON.dateAfter,
     groqFilter: ({fieldPath, value}: SearchOperatorParams<string>) => {
@@ -161,5 +181,19 @@ export const dateOperators = {
     ...COMMON.dateNotEqual,
     inputComponent: SearchFilterDateTimeInput as SearchOperatorInput<string>,
     type: 'dateTimeNotEqual',
+  }),
+  dateTimeRange: defineSearchOperator({
+    ...COMMON.dateRange,
+    buttonValueComponent:
+      SearchButtonValueDateRange as SearchOperatorButtonValue<OperatorDateRangeValue>,
+    groqFilter: ({fieldPath, value}: SearchOperatorParams<OperatorDateRangeValue>) => {
+      return value?.max && value?.min && fieldPath
+        ? `dateTime(${fieldPath}) >= dateTime(${toJSON(
+            value.min
+          )}) && dateTime(${fieldPath}) <= dateTime(${toJSON(value.max)})`
+        : null
+    },
+    inputComponent: SearchFilterDateTimeRangeInput as SearchOperatorInput<OperatorDateRangeValue>,
+    type: 'dateTimeRange',
   }),
 }

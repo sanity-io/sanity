@@ -4,7 +4,10 @@ import pluralize from 'pluralize-esm'
 import React from 'react'
 import {useSchema} from '../../../../../../../hooks'
 import type {OperatorNumberRangeValue} from '../../../definitions/operators/common'
-import type {OperatorDateLastValue} from '../../../definitions/operators/dateOperators'
+import type {
+  OperatorDateLastValue,
+  OperatorDateRangeValue,
+} from '../../../definitions/operators/dateOperators'
 import {OperatorButtonValueComponentProps} from '../../../definitions/operators/operatorTypes'
 import {ReferencePreviewTitle} from './ReferencePreviewTitle'
 
@@ -28,6 +31,21 @@ export function SearchButtonValueDateLast({
   return (
     <>
       {Math.floor(value?.value ?? 0)} {value.unit}
+    </>
+  )
+}
+
+export function SearchButtonValueDateRange({
+  value,
+}: OperatorButtonValueComponentProps<OperatorDateRangeValue>) {
+  const startDate = value?.min ? new Date(value.min) : null
+  const endDate = value?.max ? new Date(value.max) : null
+  if (!endDate || !startDate || !isValid(endDate) || !isValid(startDate)) {
+    return null
+  }
+  return (
+    <>
+      {format(startDate, DEFAULT_DATE_FORMAT)} → {format(endDate, DEFAULT_DATE_FORMAT)}
     </>
   )
 }
