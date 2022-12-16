@@ -39,20 +39,6 @@ pnpm create sanity@latest
 
 Check out [the docs](https://www.sanity.io/docs/sanity-studio) and [plugins](https://www.sanity.io/plugins) and start building.
 
-## Table of contents
-
-- [Build powerful production-ready content workspaces](#build-powerful-production-ready-content-workspaces)
-- [Quickstart](#quickstart)
-- [Table of contents](#table-of-contents)
-- [Key Features](#key-features)
-  - [Sanity Studio](#sanity-studio)
-  - [Developer experience](#developer-experience)
-  - [Structured Content](#structured-content)
-- [Stay up to date](#stay-up-to-date)
-- [Code of Conduct](#code-of-conduct)
-- [Want to contribute?](#want-to-contribute)
-- [License](#license)
-
 ## Key Features
 
 ![Sanity Studio](https://cdn.sanity.io/images/3do82whm/next/634bd76e8333f9c824a3f09ff563b5373bcfac3a-7684x4322.png?w=2000&fit=max&auto=format&dpr=2)
