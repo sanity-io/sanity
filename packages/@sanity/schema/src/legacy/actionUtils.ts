@@ -20,7 +20,7 @@ const readActions = (schemaType: SchemaType): string[] => {
     hasWarned[schemaType.name] = true
   }
 
-  return ACTIONS_FLAG in schemaType ? schemaType[ACTIONS_FLAG] : DEFAULT_ACTIONS
+  return ACTIONS_FLAG in schemaType ? (schemaType[ACTIONS_FLAG] as string[]) : DEFAULT_ACTIONS
 }
 
 const validateActions = (typeName: string, actions: string[]) => {
