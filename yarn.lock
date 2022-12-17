@@ -3624,10 +3624,10 @@
   resolved "https://registry.yarnpkg.com/@sanity/logos/-/logos-2.0.2.tgz#d1b10a32e51d0c35ecbd32b43991a7c89f77a5f6"
   integrity sha512-BsBNt4ldWNAuKeHge4nKHnN43BN8BwLJuf+HDhrg/ngnORUjty5WV4KVoQkQ2FSTv5YtpJjSuNGSXwT+Araegw==
 
-"@sanity/pkg-utils@^1.20.3":
-  version "1.20.3"
-  resolved "https://registry.yarnpkg.com/@sanity/pkg-utils/-/pkg-utils-1.20.3.tgz#25960d546299d849041d2fba5fd18ca7df3eb12b"
-  integrity sha512-KDkwK0U2mxBZGUjZvXszeybjpqFYPoIsb5RzIzJoj0N8Vb5NhNqmEV1QtbNuuYxXinMoV1ntIDZ/dexCthlVTg==
+"@sanity/pkg-utils@^2.0.0-beta.1":
+  version "2.0.0-beta.1"
+  resolved "https://registry.yarnpkg.com/@sanity/pkg-utils/-/pkg-utils-2.0.0-beta.1.tgz#c60a7991529b15eebe08e53258bf1dea9656ff93"
+  integrity sha512-41FyEIjE02oYVVIFUWnjddSBc4PWHbMQ+kP7VI4q7SJFMrAZvgH5BI8SCYftd7WfssPkE14w+S8qFEEsmn9zDA==
   dependencies:
     "@babel/core" "^7.20.5"
     "@babel/plugin-proposal-object-rest-spread" "^7.20.2"
