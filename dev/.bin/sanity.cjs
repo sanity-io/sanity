@@ -1,6 +1,6 @@
-#!/usr/bin/env node
+#!/usr/bin/env node --experimental-loader esbuild-register/loader
 
-const path = require('path')
+'use strict'
 
 require('esbuild-register/dist/node').register({
   target: `node${process.version.slice(1)}`,
@@ -12,4 +12,5 @@ require('esbuild-register/dist/node').register({
 // - exclude development-only code from the production build
 global.__DEV__ = true
 
+// eslint-disable-next-line import/no-unassigned-import
 require('../../packages/@sanity/cli/src/run')

@@ -82,7 +82,7 @@ jobs:
         run: |
           node -v
           npm -v
-          yarn build:cli # Needed for CLI tests
+          yarn build
           yarn test
         env:
           SANITY_CI_CLI_AUTH_TOKEN: ${{ secrets.SANITY_CI_CLI_AUTH_TOKEN }}

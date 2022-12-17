@@ -1,4 +1,5 @@
-/* eslint-disable no-sync */
+'use strict'
+
 const path = require('path')
 const glob = require('glob')
 const config = require('../../lerna.json')

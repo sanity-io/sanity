@@ -1,5 +1,3 @@
-#!/usr/bin/env node
-/* eslint-disable no-sync, no-console, strict */
 'use strict'
 
 const fs = require('fs')

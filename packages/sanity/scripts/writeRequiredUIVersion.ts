@@ -50,8 +50,8 @@ if (!v) {
 const version = `${v.major}.${v.minor}.${v.patch}`
 
 globby([
+  path.resolve(__dirname, '../lib/**/*.cjs'),
   path.resolve(__dirname, '../lib/**/*.js'),
-  path.resolve(__dirname, '../lib/**/*.mjs'),
 ]).then((files) => {
   for (const file of files) {
     const buf = fs.readFileSync(file, 'utf8')

@@ -1,25 +1,26 @@
 {
+  "type": "module",
   "name": "@sanity/schema",
   "version": "3.0.6",
   "description": "",
   "types": "./lib/dts/src/_exports/index.d.ts",
   "source": "./src/_exports/index.ts",
-  "module": "./lib/_exports/index.esm.js",
-  "main": "./lib/_exports/index.js",
+  "module": "./lib/_exports/index.js",
+  "main": "./lib/_exports/index.cjs",
   "exports": {
     ".": {
       "types": "./lib/dts/src/_exports/index.d.ts",
       "source": "./src/_exports/index.ts",
-      "import": "./lib/_exports/index.esm.js",
-      "require": "./lib/_exports/index.js",
-      "default": "./lib/_exports/index.esm.js"
+      "import": "./lib/_exports/index.js",
+      "require": "./lib/_exports/index.cjs",
+      "default": "./lib/_exports/index.js"
     },
     "./_internal": {
       "types": "./lib/dts/src/_exports/_internal.d.ts",
       "source": "./src/_exports/_internal.ts",
-      "import": "./lib/_exports/_internal.esm.js",
-      "require": "./lib/_exports/_internal.js",
-      "default": "./lib/_exports/_internal.esm.js"
+      "import": "./lib/_exports/_internal.js",
+      "require": "./lib/_exports/_internal.cjs",
+      "default": "./lib/_exports/_internal.js"
     }
   },
   "typesVersions": {

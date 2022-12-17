@@ -1,11 +1,12 @@
 {
+  "type": "module",
   "name": "@sanity/block-tools",
   "version": "3.0.6",
   "description": "Can format HTML, Slate JSON or Sanity block array into any other format.",
   "types": "./lib/dts/src/index.d.ts",
   "source": "./src/index.ts",
-  "module": "./lib/index.esm.js",
-  "main": "./lib/index.js",
+  "module": "./lib/index.js",
+  "main": "./lib/index.cjs",
   "files": [
     "lib",
     "src"

@@ -10,7 +10,7 @@ export default async function globalSetup() {
       launchTimeout: 10000,
     },
     {
-      command: `node -r esbuild-register ${testFolderPath}/ws-server`,
+      command: `node --experimental-loader esbuild-register/loader -r esbuild-register ${testFolderPath}/ws-server`,
       launchTimeout: 10000,
       port: 3001,
       debug: true,

@@ -1,7 +1,8 @@
-/* eslint-disable no-sync */
+'use strict'
+
 const fs = require('fs')
 const path = require('path')
-const {getManifestPaths} = require('./getPackagePaths')
+const {getManifestPaths} = require('./getPackagePaths.cjs')
 
 const rootPath = path.join(__dirname, '..', '..')
 

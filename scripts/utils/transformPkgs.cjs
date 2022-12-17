@@ -1,6 +1,7 @@
-/* eslint-disable no-sync */
+'use strict'
+
 const fs = require('fs')
-const readPackages = require('./readPackages')
+const readPackages = require('./readPackages.cjs')
 
 module.exports = function transformPkgs(mapFn) {
   readPackages().forEach((pkg) => {

@@ -1,12 +1,13 @@
 {
+  "type": "module",
   "name": "groq",
   "private": "true",
   "version": "3.0.6",
   "description": "Tagged template literal for Sanity.io GROQ-queries",
   "types": "./lib/dts/src/groq.d.ts",
   "source": "./src/groq.ts",
-  "module": "./lib/groq.esm.js",
-  "main": "./lib/groq.js",
+  "module": "./lib/groq.js",
+  "main": "./lib/groq.cjs",
   "files": [
     "lib",
     "src"
@@ -20,7 +21,7 @@
     "clean": "rimraf lib",
     "postbuild": "run-s check:package",
     "prebuild": "run-s clean",
-    "test": "node test/groq.test.js",
+    "test": "node test/groq.test.cjs",
     "watch": "pkg-utils watch --tsconfig tsconfig.lib.json"
   },
   "repository": {

@@ -1,3 +1,5 @@
+'use strict'
+
 module.exports = {
   _createdAt: '2018-09-10T14:53:55Z',
   _id: 'drafts.5b559770-af25-4475-981e-376c6847638d',

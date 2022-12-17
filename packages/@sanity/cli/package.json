@@ -1,11 +1,12 @@
 {
+  "type": "module",
   "name": "@sanity/cli",
   "version": "3.0.6",
   "description": "Sanity CLI tool for managing Sanity installations, managing plugins, schemas and datasets",
   "types": "./lib/dts/src/index.d.ts",
   "source": "./src/index.ts",
-  "module": "./lib/index.esm.js",
-  "main": "./lib/index.js",
+  "module": "./lib/index.js",
+  "main": "./lib/index.cjs",
   "files": [
     "bin",
     "codemods",
@@ -34,7 +35,7 @@
   "license": "MIT",
   "author": "Sanity.io <hello@sanity.io>",
   "bin": {
-    "sanity": "./bin/sanity"
+    "sanity": "./bin/sanity.cjs"
   },
   "scripts": {
     "build": "pkg-utils build --tsconfig tsconfig.lib.json",
@@ -43,7 +44,7 @@
     "postbuild": "run-s check:package",
     "prebuild": "run-s clean",
     "watch": "pkg-utils watch --tsconfig tsconfig.lib.json",
-    "ts": "node -r esbuild-register",
+    "ts": "node --experimental-loader esbuild-register/loader -r esbuild-register",
     "test": "jest"
   },
   "dependencies": {

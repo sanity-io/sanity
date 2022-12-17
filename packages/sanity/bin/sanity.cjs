@@ -1,4 +1,7 @@
 #!/usr/bin/env node
+
+'use strict'
+
 /* eslint-disable import/no-dynamic-require, no-sync, no-console, no-process-exit */
 
 const fs = require('fs')

@@ -1,9 +1,14 @@
-/**
- * Copies the ./LICENSE-file to each package folder (warning - will overwrite every license file in all monorepo packages packages)
+'use strict'
+
+/*
+ * This script copies the ./LICENSE-file to each package folder.
+ *
+ * Warning: will overwrite every license file in all monorepo packages packages.
  */
+
 const {promises: fs} = require('fs')
 const path = require('path')
-const readPackages = require('./utils/readPackages')
+const readPackages = require('./utils/readPackages.cjs')
 
 const readLicense = fs.readFile(path.join(process.cwd(), 'LICENSE'), 'utf-8')
 

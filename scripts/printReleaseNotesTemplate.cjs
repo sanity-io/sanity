@@ -1,3 +1,5 @@
+'use strict'
+
 const execa = require('execa')
 const yargs = require('yargs')
 const {hideBin} = require('yargs/helpers')

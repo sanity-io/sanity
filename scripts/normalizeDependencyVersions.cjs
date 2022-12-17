@@ -1,4 +1,5 @@
-/* eslint-disable no-sync, no-console, id-length */
+'use strict'
+
 const fs = require('fs')
 const path = require('path')
 const glob = require('glob')

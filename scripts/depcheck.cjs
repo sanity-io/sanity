@@ -1,5 +1,7 @@
 #!/usr/bin/env node
-/* eslint-disable import/no-dynamic-require, no-process-env */
+
+'use strict'
+
 const path = require('path')
 const fs = require('fs')
 const depcheck = require('depcheck')
@@ -10,7 +12,7 @@ const cwd = path.resolve(process.cwd(), process.argv[2] || '.')
 const MONOREPO_ROOT = process.env.LERNA_ROOT_PATH || path.resolve(__dirname, '..')
 
 const rootPkg = require(`${MONOREPO_ROOT}/package.json`)
-const package = require(`${cwd}/package.json`)
+const pkg = require(`${cwd}/package.json`)
 
 const options = {
   ignoreMatches: [
@@ -44,7 +46,7 @@ const options = {
     sanityJSONParser,
     implicitDepsParser,
   ],
-  package,
+  package: pkg,
 }
 
 async function eslint(filePath, deps, dir) {

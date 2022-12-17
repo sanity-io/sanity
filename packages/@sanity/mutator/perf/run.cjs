@@ -1,3 +1,5 @@
+'use strict'
+
 /* eslint-disable no-console */
 const {BufferedDocument, Mutation} = require('../lib')
 const mutations = require('./fixtures/patches')

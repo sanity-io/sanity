@@ -55,7 +55,9 @@ export function renderDocument(options: {
 
     debug('Starting worker thread for %s', __filename)
     const worker = new Worker(__filename, {
-      execArgv: __DEV__ ? ['-r', 'esbuild-register'] : undefined,
+      execArgv: __DEV__
+        ? ['--experimental-loader', 'esbuild-register/loader', '-r', 'esbuild-register']
+        : undefined,
       workerData: {...options, dev: __DEV__, shouldWarn: true},
     })
 

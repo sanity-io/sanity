@@ -1,3 +1,5 @@
+'use strict'
+
 module.exports = [
   [
     {setIfMissing: {recursiveObject: {_type: 'recursiveObject'}}},

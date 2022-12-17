@@ -1,4 +1,7 @@
 #!/usr/bin/env node
+
+'use strict'
+
 /* eslint-disable no-var, no-console, no-process-exit, prefer-template, import/no-unassigned-import */
 
 var err = '\u001b[31m\u001b[1mERROR:\u001b[22m\u001b[39m '
@@ -17,4 +20,4 @@ process.on('unhandledRejection', (error) => {
 })
 
 // run cli
-require('../lib/run')
+require('../lib/run.cjs')

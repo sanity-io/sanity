@@ -1,4 +1,5 @@
 {
+  "type": "module",
   "name": "sanity",
   "version": "3.0.6",
   "description": "Sanity is a real-time content infrastructure with a scalable, hosted backend featuring a Graph Oriented Query Language (GROQ), asset pipelines and fast edge caches",
@@ -14,47 +15,47 @@
     "content"
   ],
   "bin": {
-    "sanity": "./bin/sanity"
+    "sanity": "./bin/sanity.cjs"
   },
   "types": "./lib/exports/index.d.ts",
   "source": "./exports/index.ts",
-  "module": "./lib/index.esm.js",
-  "main": "./lib/index.js",
+  "module": "./lib/index.js",
+  "main": "./lib/index.cjs",
   "exports": {
     ".": {
       "types": "./lib/exports/index.d.ts",
       "source": "./exports/index.ts",
-      "import": "./lib/index.esm.js",
-      "require": "./lib/index.js",
-      "default": "./lib/index.esm.js"
+      "import": "./lib/index.js",
+      "require": "./lib/index.cjs",
+      "default": "./lib/index.js"
     },
     "./_internal": {
       "types": "./lib/exports/_internal.d.ts",
       "source": "./exports/_internal.ts",
-      "import": "./lib/_internal.esm.js",
-      "require": "./lib/_internal.js",
-      "default": "./lib/_internal.esm.js"
+      "import": "./lib/_internal.js",
+      "require": "./lib/_internal.cjs",
+      "default": "./lib/_internal.js"
     },
     "./cli": {
       "types": "./lib/exports/cli.d.ts",
       "source": "./exports/cli.ts",
-      "import": "./lib/cli.esm.js",
-      "require": "./lib/cli.js",
-      "default": "./lib/cli.esm.js"
+      "import": "./lib/cli.js",
+      "require": "./lib/cli.cjs",
+      "default": "./lib/cli.js"
     },
     "./desk": {
       "types": "./lib/exports/desk.d.ts",
       "source": "./exports/desk.ts",
-      "import": "./lib/desk.esm.js",
-      "require": "./lib/desk.js",
-      "default": "./lib/desk.esm.js"
+      "import": "./lib/desk.js",
+      "require": "./lib/desk.cjs",
+      "default": "./lib/desk.js"
     },
     "./router": {
       "types": "./lib/exports/router.d.ts",
       "source": "./exports/router.ts",
-      "import": "./lib/router.esm.js",
-      "require": "./lib/router.js",
-      "default": "./lib/router.esm.js"
+      "import": "./lib/router.js",
+      "require": "./lib/router.cjs",
+      "default": "./lib/router.js"
     },
     "./package.json": "./package.json"
   },
@@ -94,8 +95,8 @@
     "prepublishOnly": "run-s write:version write:ui-version",
     "test": "pkg-utils --strict && jest",
     "watch": "pkg-utils watch --tsconfig tsconfig.lib.json",
-    "write:ui-version": "node -r esbuild-register scripts/writeRequiredUIVersion.ts",
-    "write:version": "node -r esbuild-register scripts/writeVersion.ts"
+    "write:ui-version": "node --experimental-loader esbuild-register/loader -r esbuild-register scripts/writeRequiredUIVersion.ts",
+    "write:version": "node --experimental-loader esbuild-register/loader -r esbuild-register scripts/writeVersion.ts"
   },
   "dependencies": {
     "@juggle/resize-observer": "^3.3.1",

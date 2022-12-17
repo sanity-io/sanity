@@ -6,11 +6,11 @@
     "build": "run-s workshop:build sanity:build",
     "clean": "rimraf .sanity dist",
     "dev": "run-p workshop:dev sanity:dev",
-    "sanity:build": "../.bin/sanity build",
-    "sanity:dev": "../.bin/sanity dev",
-    "start": "../.bin/sanity start",
-    "workshop:build": "node -r esbuild-register scripts/workshop/build.ts",
-    "workshop:dev": "node -r esbuild-register scripts/workshop/dev.ts"
+    "sanity:build": "../.bin/sanity.cjs build",
+    "sanity:dev": "../.bin/sanity.cjs dev",
+    "start": "../.bin/sanity.cjs start",
+    "workshop:build": "node --experimental-loader esbuild-register/loader -r esbuild-register scripts/workshop/build.ts",
+    "workshop:dev": "node --experimental-loader esbuild-register/loader -r esbuild-register scripts/workshop/dev.ts"
   },
   "dependencies": {
     "@portabletext/react": "^1.0.6",

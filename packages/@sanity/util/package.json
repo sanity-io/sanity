@@ -1,46 +1,47 @@
 {
+  "type": "module",
   "name": "@sanity/util",
   "version": "3.0.6",
   "description": "Utilities shared across projects of Sanity",
   "types": "./lib/exports/index.d.ts",
   "source": "./exports/index.ts",
-  "module": "./lib/index.esm.js",
-  "main": "./lib/index.js",
+  "module": "./lib/index.js",
+  "main": "./lib/index.cjs",
   "exports": {
     ".": {
       "types": "./lib/exports/index.d.ts",
       "source": "./exports/index.ts",
-      "import": "./lib/index.esm.js",
-      "require": "./lib/index.js",
-      "default": "./lib/index.esm.js"
+      "import": "./lib/index.js",
+      "require": "./lib/index.cjs",
+      "default": "./lib/index.js"
     },
     "./fs": {
       "types": "./lib/exports/fs.d.ts",
       "source": "./exports/fs.ts",
-      "import": "./lib/fs.esm.js",
-      "require": "./lib/fs.js",
-      "default": "./lib/fs.esm.js"
+      "import": "./lib/fs.js",
+      "require": "./lib/fs.cjs",
+      "default": "./lib/fs.js"
     },
     "./content": {
       "types": "./lib/exports/content.d.ts",
       "source": "./exports/content.ts",
-      "import": "./lib/content.esm.js",
-      "require": "./lib/content.js",
-      "default": "./lib/content.esm.js"
+      "import": "./lib/content.js",
+      "require": "./lib/content.cjs",
+      "default": "./lib/content.js"
     },
     "./legacyDateFormat": {
       "types": "./lib/exports/legacyDateFormat.d.ts",
       "source": "./exports/legacyDateFormat.ts",
-      "import": "./lib/legacyDateFormat.esm.js",
-      "require": "./lib/legacyDateFormat.js",
-      "default": "./lib/legacyDateFormat.esm.js"
+      "import": "./lib/legacyDateFormat.js",
+      "require": "./lib/legacyDateFormat.cjs",
+      "default": "./lib/legacyDateFormat.js"
     },
     "./paths": {
       "types": "./lib/exports/paths.d.ts",
       "source": "./exports/paths.ts",
-      "import": "./lib/paths.esm.js",
-      "require": "./lib/paths.js",
-      "default": "./lib/paths.esm.js"
+      "import": "./lib/paths.js",
+      "require": "./lib/paths.cjs",
+      "default": "./lib/paths.js"
     }
   },
   "typesVersions": {
