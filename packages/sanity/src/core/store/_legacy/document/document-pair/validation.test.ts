@@ -1,5 +1,15 @@
 import {SanityClient} from '@sanity/client'
-import {concat, ConnectableObservable, timer, Observable, Subject, of, EMPTY} from 'rxjs'
+import {
+  concat,
+  ConnectableObservable,
+  timer,
+  Observable,
+  Subject,
+  of,
+  EMPTY,
+  firstValueFrom,
+  lastValueFrom,
+} from 'rxjs'
 import {buffer, takeWhile, first, publish} from 'rxjs/operators'
 import {DocumentAvailability, DraftsModelDocumentAvailability} from '../../../../preview'
 import {createSchema} from '../../../../schema'
@@ -50,16 +60,16 @@ function createSubscription(
   ;(stream as ConnectableObservable<unknown>).connect()
 
   // Create a subject we can use to notify via `done.next()`
-  const done = new Subject()
+  const done = new Subject<void>()
 
   // Create a subscription that collects all emissions until `done.next()`
-  const subscription = stream.pipe(buffer(done), first()).toPromise()
+  const subscription = firstValueFrom(stream.pipe(buffer(done)))
 
   return {
     subscription,
     closeSubscription: () => done.next(),
     doneValidating: () => {
-      return stream.pipe(takeWhile((e) => e.isValidating, true)).toPromise()
+      return lastValueFrom(stream.pipe(takeWhile((e) => e.isValidating, true)))
     },
   }
 }
@@ -267,18 +277,18 @@ describe('validation', () => {
     const mockEditStateSubject = new Subject<EditStateFor>()
     mockEditState.mockImplementation(() => mockEditStateSubject.asObservable())
 
-    const subscription = validation(
-      {
-        client,
-        schema,
-        getClient: () => client,
-        observeDocumentPairAvailability: jest.fn().mockReturnValue(EMPTY),
-      },
-      {publishedId: 'example-id', draftId: 'drafts.example-id'},
-      'movie'
+    const subscription = lastValueFrom(
+      validation(
+        {
+          client,
+          schema,
+          getClient: () => client,
+          observeDocumentPairAvailability: jest.fn().mockReturnValue(EMPTY),
+        },
+        {publishedId: 'example-id', draftId: 'drafts.example-id'},
+        'movie'
+      ).pipe(buffer(timer(500)))
     )
-      .pipe(buffer(timer(500)))
-      .toPromise()
 
     // simulate first emission from validation listener
     mockEditStateSubject.next({
@@ -317,21 +327,21 @@ describe('validation', () => {
       },
     ])
 
-    const immediatePlayback = await validation(
-      {client, schema} as any,
-      {publishedId: 'example-id', draftId: 'drafts.example-id'},
-      'movie'
+    const immediatePlayback = await firstValueFrom(
+      validation(
+        {client, schema} as any,
+        {publishedId: 'example-id', draftId: 'drafts.example-id'},
+        'movie'
+      )
     )
-      .pipe(first())
-      .toPromise()
 
-    const immediatePlaybackAgain = await validation(
-      {client, schema} as any,
-      {publishedId: 'example-id', draftId: 'drafts.example-id'},
-      'movie'
+    const immediatePlaybackAgain = await firstValueFrom(
+      validation(
+        {client, schema} as any,
+        {publishedId: 'example-id', draftId: 'drafts.example-id'},
+        'movie'
+      )
     )
-      .pipe(first())
-      .toPromise()
 
     expect(result[result.length - 1]).toEqual(immediatePlayback)
     expect(immediatePlayback).toEqual(immediatePlaybackAgain)

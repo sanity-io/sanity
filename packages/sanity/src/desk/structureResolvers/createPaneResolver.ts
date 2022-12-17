@@ -1,5 +1,7 @@
-import {Observable, of as observableOf, from as observableFrom, Subscribable} from 'rxjs'
+import {from, isObservable, Observable, of as observableOf, Subscribable} from 'rxjs'
+
 import {publishReplay, refCount, switchMap} from 'rxjs/operators'
+
 import {PaneNode, RouterPaneSiblingContext, UnresolvedPaneNode} from '../types'
 import {PaneResolutionError} from './PaneResolutionError'
 import {isRecord} from 'sanity'
@@ -8,11 +10,9 @@ interface Serializable {
   serialize: (...args: never[]) => unknown
 }
 
-const isSubscribable = (thing: unknown): thing is Subscribable<unknown> | PromiseLike<unknown> => {
-  if (!isRecord(thing)) return false
-  return typeof thing.subscribe === 'function' || typeof thing.then === 'function'
+const isPromise = (thing: any): thing is PromiseLike<unknown> => {
+  return !!thing && typeof thing?.then === 'function'
 }
-
 const isSerializable = (thing: unknown): thing is Serializable => {
   if (!isRecord(thing)) return false
   return typeof thing.serialize === 'function'
@@ -78,8 +78,8 @@ export function createPaneResolver(middleware: PaneResolverMiddleware): PaneReso
           })
         }
 
-        if (isSubscribable(unresolvedPane)) {
-          return observableFrom(unresolvedPane).pipe(
+        if (isPromise(unresolvedPane) || isObservable(unresolvedPane)) {
+          return from(unresolvedPane).pipe(
             switchMap((result) => resolvePane(result, context, flatIndex))
           )
         }

@@ -1,5 +1,6 @@
 import {SanityClient} from '@sanity/client'
 import {first} from 'rxjs/operators'
+import {firstValueFrom, lastValueFrom} from 'rxjs'
 import {createGrantsStore} from '../grantsStore'
 import {viewer} from '../debug/exampleGrants'
 
@@ -41,16 +42,16 @@ describe('checkDocumentPermission', () => {
     const {checkDocumentPermission} = createGrantsStore({client, currentUser: null})
 
     await expect(
-      checkDocumentPermission('create', {_id: 'example-id', _type: 'book'})
-        .pipe(first())
-        .toPromise()
+      firstValueFrom(checkDocumentPermission('create', {_id: 'example-id', _type: 'book'}))
     ).resolves.toEqual({
       granted: false,
       reason: 'No matching grants found',
     })
 
     await expect(
-      checkDocumentPermission('read', {_id: 'example-id', _type: 'book'}).pipe(first()).toPromise()
+      lastValueFrom(
+        checkDocumentPermission('read', {_id: 'example-id', _type: 'book'}).pipe(first())
+      )
     ).resolves.toEqual({
       granted: true,
       reason: 'Matching grant',

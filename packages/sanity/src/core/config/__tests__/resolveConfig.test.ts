@@ -1,5 +1,5 @@
 import createClient from '@sanity/client'
-import {of} from 'rxjs'
+import {firstValueFrom, lastValueFrom, of} from 'rxjs'
 import {bufferTime, first} from 'rxjs/operators'
 import {createMockAuthStore} from '../../store'
 import {resolveConfig, createWorkspaceFromConfig, createSourceFromConfig} from '../resolveConfig'
@@ -8,14 +8,14 @@ describe('resolveConfig', () => {
   it('throws on invalid tools property', async () => {
     expect.assertions(1)
     try {
-      await resolveConfig({
-        projectId: 'ppsg7ml5',
-        dataset: 'production',
-        // @ts-expect-error should be an array
-        tools: {},
-      })
-        .pipe(first())
-        .toPromise()
+      await firstValueFrom(
+        resolveConfig({
+          projectId: 'ppsg7ml5',
+          dataset: 'production',
+          // @ts-expect-error should be an array
+          tools: {},
+        })
+      )
     } catch (err) {
       expect(err.message).toMatch('Expected `tools` to an array or a function but found object')
     }
@@ -31,14 +31,14 @@ describe('resolveConfig', () => {
       useCdn: false,
     })
 
-    const [workspace] = await resolveConfig({
-      name: 'default',
-      dataset,
-      projectId,
-      auth: createMockAuthStore({client, currentUser: null}),
-    })
-      .pipe(first())
-      .toPromise()
+    const [workspace] = await firstValueFrom(
+      resolveConfig({
+        name: 'default',
+        dataset,
+        projectId,
+        auth: createMockAuthStore({client, currentUser: null}),
+      })
+    )
 
     expect(workspace).toMatchObject({
       type: 'workspace',
@@ -65,30 +65,31 @@ describe('resolveConfig', () => {
       useCdn: false,
     })
 
-    const results = await resolveConfig({
-      name: 'default',
-      dataset,
-      projectId,
-      auth: {
-        state: of(
-          {authenticated: true, client, currentUser: null},
-          {
-            authenticated: true,
-            client,
-            currentUser: {
-              id: 'test',
-              name: 'test',
-              email: 'hello@example.com',
-              role: '',
-              roles: [],
-            },
-          }
-        ),
-      },
-    })
-      // this will buffer the results emitted in the observable into an array
-      .pipe(bufferTime(50))
-      .toPromise()
+    const results = await lastValueFrom(
+      resolveConfig({
+        name: 'default',
+        dataset,
+        projectId,
+        auth: {
+          state: of(
+            {authenticated: true, client, currentUser: null},
+            {
+              authenticated: true,
+              client,
+              currentUser: {
+                id: 'test',
+                name: 'test',
+                email: 'hello@example.com',
+                role: '',
+                roles: [],
+              },
+            }
+          ),
+        },
+      })
+        // this will buffer the results emitted in the observable into an array
+        .pipe(bufferTime(50))
+    )
 
     expect(results).toHaveLength(2)
     const [firstResult, secondResult] = results

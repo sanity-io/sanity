@@ -10,7 +10,7 @@ import {
   isSpanSchemaType,
   isPortableTextTextBlock,
 } from '@sanity/types'
-import {concat, defer, merge, Observable, of} from 'rxjs'
+import {concat, defer, firstValueFrom, lastValueFrom, merge, Observable, of} from 'rxjs'
 import {catchError, map, mergeAll, mergeMap, toArray} from 'rxjs/operators'
 import {flatten, uniqBy} from 'lodash'
 import type {SanityClient} from '@sanity/client'
@@ -57,7 +57,7 @@ export default async function validateDocument(
   schema: Schema,
   context?: Pick<ValidationContext, 'getDocumentExists'>
 ): Promise<ValidationMarker[]> {
-  return validateDocumentObservable(getClient, doc, schema, context).toPromise()
+  return lastValueFrom(validateDocumentObservable(getClient, doc, schema, context))
 }
 
 export function validateDocumentObservable(
@@ -139,7 +139,7 @@ type ValidateItemOptions = {
 } & ExplicitUndefined<ValidationContext>
 
 export function validateItem(opts: ValidateItemOptions): Promise<ValidationMarker[]> {
-  return validateItemObservable(opts).toPromise()
+  return lastValueFrom(validateItemObservable(opts))
 }
 
 function validateItemObservable({

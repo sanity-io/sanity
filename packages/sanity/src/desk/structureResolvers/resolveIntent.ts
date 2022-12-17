@@ -1,5 +1,5 @@
 import {omit} from 'lodash'
-import {Observable} from 'rxjs'
+import {firstValueFrom, Observable} from 'rxjs'
 import {first} from 'rxjs/operators'
 import {PaneNode, RouterPanes, RouterPaneSiblingContext, UnresolvedPaneNode} from '../types'
 import {StructureContext} from '../structureBuilder'
@@ -94,9 +94,7 @@ export async function resolveIntent(options: ResolveIntentOptions): Promise<Rout
       payload: undefined,
       structureContext,
     }
-    const resolvedPane = await resolvePane(unresolvedPane, context, flatIndex)
-      .pipe(first())
-      .toPromise()
+    const resolvedPane = await firstValueFrom(resolvePane(unresolvedPane, context, flatIndex))
 
     // if the resolved pane is a document pane and the pane's ID matches then
     // resolve the intent to the current path
