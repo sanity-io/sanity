@@ -1,5 +1,11 @@
-import {Observable, of as observableOf, from as observableFrom, isObservable} from 'rxjs'
-import {map, mergeAll, combineAll, switchMap, scan} from 'rxjs/operators'
+import {
+  combineLatest,
+  from as observableFrom,
+  isObservable,
+  Observable,
+  of as observableOf,
+} from 'rxjs'
+import {map, mergeAll, scan, switchMap} from 'rxjs/operators'
 import {keysOf} from './keysOf'
 
 function setKey(source: Record<string, unknown>, key: any, value: unknown) {
@@ -25,8 +31,7 @@ export function props<K extends keyof any, T>(options: {wait?: boolean} = {}) {
         })
 
         return options.wait
-          ? observableFrom(keyObservables).pipe(
-              combineAll(),
+          ? combineLatest(keyObservables).pipe(
               map((pairs) => pairs.reduce((acc, [key, value]) => setKey(acc, key, value), {}))
             )
           : observableFrom(keyObservables).pipe(

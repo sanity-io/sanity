@@ -141,14 +141,15 @@ export function prepareConfig(config: Config): PreparedConfig {
           shareReplay(1)
         )
 
-        return Object.assign(source$, {
+        return {
           name: source.name,
           projectId: source.projectId,
           dataset: source.dataset,
           title: source.title || startCase(source.name),
           auth,
           schema,
-        })
+          source: source$,
+        }
       })
 
       const title = rootSource.title || startCase(rootSource.name)

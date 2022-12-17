@@ -42,7 +42,7 @@
     "react-dom": "^18.2.0",
     "react-refractor": "^2.1.6",
     "refractor": "^3.6.0",
-    "rxjs": "^6.5.3",
+    "rxjs": "^7.8.0",
     "sanity": "3.1.1",
     "sanity-plugin-mux-input": "^2.0.2",
     "styled-components": "^5.2.0",

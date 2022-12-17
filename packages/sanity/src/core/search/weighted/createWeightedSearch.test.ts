@@ -1,6 +1,6 @@
 import Schema from '@sanity/schema'
 import {renderHook} from '@testing-library/react'
-import {defer, of} from 'rxjs'
+import {defer, lastValueFrom, of} from 'rxjs'
 import type {SearchTerms} from '..'
 import {useClient} from '../../hooks'
 import {getSearchableTypes} from '../common/utils'
@@ -37,18 +37,18 @@ beforeEach(() => {
 
 describe('createWeightedSearch', () => {
   it('should order hits by score by default', async () => {
-    // @todo: replace `toPromise` with `firstValueFrom` in rxjs 7+
-    const result = await search({query: 'harry', types: []} as SearchTerms).toPromise()
+    const result = await lastValueFrom(search({query: 'harry', types: []} as SearchTerms))
 
     expect(result[0].score).toEqual(10)
     expect(result[1].score).toEqual(2.5)
   })
 
   it('should not order hits by score if skipSortByScore is enabled', async () => {
-    // @todo: replace `toPromise` with `firstValueFrom` in rxjs 7+
-    const result = await search({query: 'harry', types: []} as SearchTerms, {
-      skipSortByScore: true,
-    }).toPromise()
+    const result = await lastValueFrom(
+      search({query: 'harry', types: []} as SearchTerms, {
+        skipSortByScore: true,
+      })
+    )
 
     expect(result[0].score).toEqual(2.5)
     expect(result[1].score).toEqual(10)

@@ -1,5 +1,5 @@
 import type {SanityClient} from '@sanity/client'
-import {of, Observable, asyncScheduler} from 'rxjs'
+import {of, Observable, asyncScheduler, lastValueFrom} from 'rxjs'
 import React from 'react'
 import {createRoot} from 'react-dom/client'
 import {act} from 'react-dom/test-utils'
@@ -14,10 +14,12 @@ describe('module status', () => {
   test('can fetch module status from api', async () => {
     const installed = {sanity: basePkg.version}
     const mockClient = getMockClient()
-    const status = await checkModuleStatus({
-      client: mockClient,
-      moduleVersions: installed,
-    }).toPromise()
+    const status = await lastValueFrom(
+      checkModuleStatus({
+        client: mockClient,
+        moduleVersions: installed,
+      })
+    )
 
     expect(mockClient.observable.request).toHaveBeenCalledTimes(1)
     expect(status).toMatchObject({...defaults, installed})
@@ -37,7 +39,7 @@ describe('module status', () => {
       moduleVersions: installed,
     })
 
-    const [status1, status2] = await Promise.all([call1.toPromise(), call2.toPromise()])
+    const [status1, status2] = await Promise.all([lastValueFrom(call1), lastValueFrom(call2)])
 
     expect(mockClient.observable.request).toHaveBeenCalledTimes(1)
     expect(status1).toMatchObject({...defaults, installed})
@@ -48,15 +50,19 @@ describe('module status', () => {
     const installed = {sanity: '2.1338.0'}
     const mockClient = getMockClient()
 
-    const status1 = await checkModuleStatus({
-      client: mockClient,
-      moduleVersions: installed,
-    }).toPromise()
+    const status1 = await lastValueFrom(
+      checkModuleStatus({
+        client: mockClient,
+        moduleVersions: installed,
+      })
+    )
 
-    const status2 = await checkModuleStatus({
-      client: mockClient,
-      moduleVersions: installed,
-    }).toPromise()
+    const status2 = await lastValueFrom(
+      checkModuleStatus({
+        client: mockClient,
+        moduleVersions: installed,
+      })
+    )
 
     expect(mockClient.observable.request).toHaveBeenCalledTimes(1)
     expect(status1).toMatchObject({...defaults, installed})
@@ -114,7 +120,7 @@ describe('useModuleStatus', () => {
     }
 
     // Prepare in order to cache result
-    await checkModuleStatus(options).toPromise()
+    await lastValueFrom(checkModuleStatus(options))
     await nextTick()
 
     function StatusDumper() {

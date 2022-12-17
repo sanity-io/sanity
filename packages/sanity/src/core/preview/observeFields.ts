@@ -18,6 +18,7 @@ import {
   publishReplay,
   refCount,
   share,
+  shareReplay,
   startWith,
   switchMap,
   tap,
@@ -69,8 +70,7 @@ export function create_preview_observeFields(context: {
       // events that happens in the time period after initial fetch and before the listener is established.
       const welcome$ = allEvents$.pipe(
         filter((event: any) => event.type === 'welcome'),
-        publishReplay(1),
-        refCount()
+        shareReplay({refCount: true, bufferSize: 1})
       )
 
       // This will keep the listener active forever and in turn reduce the number of initial fetches
@@ -174,15 +174,14 @@ export function create_preview_observeFields(context: {
     apiConfig: ApiConfig
   ): CachedFieldObserver {
     let latest: T | null = null
-    const changes$ = merge<T | null>(
+    const changes$ = merge(
       defer(() => (latest === null ? EMPTY : observableOf(latest))),
       (apiConfig
         ? (crossDatasetListenFields(id, fields, apiConfig) as any)
         : currentDatasetListenFields(id, fields)) as Observable<T>
     ).pipe(
       tap((v: T | null) => (latest = v)),
-      publishReplay(1),
-      refCount()
+      shareReplay({refCount: true, bufferSize: 1})
     )
 
     return {id, fields, changes$}

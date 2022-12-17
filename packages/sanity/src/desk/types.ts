@@ -1,5 +1,5 @@
 import {SchemaType} from '@sanity/types'
-import {Subscribable} from 'rxjs'
+import {InteropObservable, Observable, ObservableInput, Subscribable} from 'rxjs'
 import {
   DefaultDocumentNodeResolver,
   StructureBuilder,
@@ -271,6 +271,6 @@ export type PaneNodeResolver = (id: string, context: RouterPaneSiblingContext) =
 export type UnresolvedPaneNode =
   | PaneNodeResolver
   | SerializablePaneNode
-  | Subscribable<UnresolvedPaneNode>
+  | Observable<UnresolvedPaneNode>
   | PromiseLike<UnresolvedPaneNode>
   | PaneNode
