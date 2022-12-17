@@ -9,6 +9,7 @@ import {sanityBuildEntries} from './vite/plugin-sanity-build-entries'
 import {sanityDotWorkaroundPlugin} from './vite/plugin-sanity-dot-workaround'
 import {sanityRuntimeRewritePlugin} from './vite/plugin-sanity-runtime-rewrite'
 import {sanityFaviconsPlugin} from './vite/plugin-sanity-favicons'
+import {sanityIsHotkeyPlugin} from './vite/plugin-is-hotkey'
 
 export interface ViteOptions {
   /**
@@ -96,6 +97,7 @@ export async function getViteConfig(options: ViteOptions): Promise<InlineConfig>
     mode,
     plugins: [
       viteReact(),
+      sanityIsHotkeyPlugin(),
       sanityFaviconsPlugin({faviconsPath, staticUrlPath: staticPath}),
       sanityDotWorkaroundPlugin(),
       sanityRuntimeRewritePlugin(),
@@ -108,6 +110,9 @@ export async function getViteConfig(options: ViteOptions): Promise<InlineConfig>
     },
     define: {
       __SANITY_STAGING__: process.env.SANITY_INTERNAL_ENV === 'staging',
+    },
+    optimizeDeps: {
+      exclude: ['is-hotkey'],
     },
   }
 
