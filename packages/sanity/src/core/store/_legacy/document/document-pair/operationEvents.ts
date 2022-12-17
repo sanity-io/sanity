@@ -1,5 +1,5 @@
 import {SanityClient} from '@sanity/client'
-import {defer, asyncScheduler, merge, Observable, of, Subject, EMPTY} from 'rxjs'
+import {asyncScheduler, defer, EMPTY, merge, Observable, of, Subject} from 'rxjs'
 import {
   catchError,
   filter,
@@ -17,7 +17,7 @@ import {
 import {Schema} from '@sanity/types'
 import {IdPair} from '../types'
 import {HistoryStore} from '../../history'
-import {OperationArgs, OperationImpl, OperationsAPI} from './operations'
+import {OperationArgs, OperationsAPI} from './operations'
 import {operationArgs} from './operationArgs'
 import {del} from './operations/delete'
 import {publish} from './operations/publish'
@@ -40,7 +40,7 @@ function maybeObservable(v: void | Observable<any>) {
   return typeof v === 'undefined' ? of(null) : v
 }
 
-const operationImpls: {[name: string]: OperationImpl<any>} = {
+const operationImpls = {
   del: del,
   delete: del,
   publish,
@@ -50,7 +50,7 @@ const operationImpls: {[name: string]: OperationImpl<any>} = {
   unpublish,
   duplicate,
   restore,
-}
+} as const
 
 const execute = (
   operationName: keyof typeof operationImpls,
@@ -145,10 +145,10 @@ export function getOperationEvents(ctx: {
               const isConsistent$ = consistencyStatus(ctx.client, args.idPair, args.typeName).pipe(
                 filter(Boolean)
               )
-              const ready$ = requiresConsistency ? isConsistent$.pipe(take(1)) : of(null)
+              const ready$ = requiresConsistency ? isConsistent$.pipe(take(1)) : of(true)
               return ready$.pipe(
                 // eslint-disable-next-line max-nested-callbacks
-                mergeMap(() => execute(args.operationName, operationArguments, args.extraArgs))
+                switchMap(() => execute(args.operationName, operationArguments, args.extraArgs))
               )
             }),
             map((): IntermediarySuccess => ({type: 'success', args})),

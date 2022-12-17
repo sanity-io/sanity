@@ -1,5 +1,15 @@
 import type {SanityClient} from '@sanity/client'
-import {asyncScheduler, combineLatest, concat, defer, from, Observable, of, timer} from 'rxjs'
+import {
+  asyncScheduler,
+  combineLatest,
+  concat,
+  defer,
+  from,
+  lastValueFrom,
+  Observable,
+  of,
+  timer,
+} from 'rxjs'
 import {
   distinct,
   distinctUntilChanged,
@@ -134,12 +144,12 @@ export const validation = memoize(
     // Provided to individual validation functions to support using existence of a weakly referenced document
     // as part of the validation rule (used by references in place)
     const getDocumentExists: GetDocumentExists = ({id}) =>
-      referenceExistence$
-        .pipe(
+      lastValueFrom(
+        referenceExistence$.pipe(
           first(),
           map((referenceExistence) => referenceExistence[id])
         )
-        .toPromise()
+      )
 
     const referenceDocumentUpdates$ = referenceExistence$.pipe(
       // we'll skip the first emission since the document already gets an initial validation pass

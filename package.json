@@ -140,7 +140,7 @@
     "prettier-plugin-packagejson": "^2.3.0",
     "puppeteer": "^19.3.0",
     "rimraf": "^3.0.2",
-    "rxjs": "^6.5.3",
+    "rxjs": "^7.8.0",
     "semver": "^7.3.5",
     "start-server-and-test": "^1.14.0",
     "tmp": "^0.2.1",

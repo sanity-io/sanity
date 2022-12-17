@@ -57,7 +57,7 @@
     "@sanity/types": "3.1.4",
     "date-fns": "^2.26.1",
     "lodash": "^4.17.21",
-    "rxjs": "^6.5.3"
+    "rxjs": "^7.8.0"
   },
   "devDependencies": {
     "@sanity/client": "^4.0.1",

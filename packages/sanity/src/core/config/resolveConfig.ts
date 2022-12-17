@@ -1,4 +1,4 @@
-import {combineLatest, Observable} from 'rxjs'
+import {combineLatest, firstValueFrom, Observable} from 'rxjs'
 import {first, map} from 'rxjs/operators'
 import {CurrentUser} from '@sanity/types'
 import {SanityClient} from '@sanity/client'
@@ -57,15 +57,15 @@ export async function createWorkspaceFromConfig(
   options: CreateWorkspaceFromConfigOptions
 ): Promise<Workspace> {
   const client = 'getClient' in options ? options.getClient({apiVersion: '2022-09-09'}) : undefined
-  const [workspace] = await resolveConfig({
-    ...options,
-    ...(client &&
-      'currentUser' in options && {
-        auth: createMockAuthStore({...options, client}),
-      }),
-  })
-    .pipe(first())
-    .toPromise()
+  const [workspace] = await firstValueFrom(
+    resolveConfig({
+      ...options,
+      ...(client &&
+        'currentUser' in options && {
+          auth: createMockAuthStore({...options, client}),
+        }),
+    })
+  )
 
   return workspace
 }

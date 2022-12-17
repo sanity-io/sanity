@@ -3,6 +3,7 @@
 import {first} from 'rxjs/operators'
 import {SanityClient} from '@sanity/client'
 import {InitialValueResolverContext} from '@sanity/types'
+import {firstValueFrom} from 'rxjs'
 import {createMockSanityClient} from '../../../../../../test/mocks/mockSanityClient'
 import {requiresApproval} from '../debug/exampleGrants'
 import {createGrantsStore} from '../grantsStore'
@@ -50,28 +51,28 @@ describe('getTemplatePermissions', () => {
       currentUser: null,
     })
 
-    const permissions = getTemplatePermissions({
-      grantsStore,
-      schema,
-      templates,
-      templateItems: [
-        {
-          id: 'author-developer-locked',
-          templateId: 'author-developer-locked',
-          type: 'initialValueTemplateItem',
-          schemaType: 'author',
-        },
-        {
-          id: 'author-developer-unlocked',
-          templateId: 'author-developer-unlocked',
-          type: 'initialValueTemplateItem',
-          schemaType: 'author',
-        },
-      ],
-      context: {} as InitialValueResolverContext,
-    })
-      .pipe(first())
-      .toPromise()
+    const permissions = firstValueFrom(
+      getTemplatePermissions({
+        grantsStore,
+        schema,
+        templates,
+        templateItems: [
+          {
+            id: 'author-developer-locked',
+            templateId: 'author-developer-locked',
+            type: 'initialValueTemplateItem',
+            schemaType: 'author',
+          },
+          {
+            id: 'author-developer-unlocked',
+            templateId: 'author-developer-unlocked',
+            type: 'initialValueTemplateItem',
+            schemaType: 'author',
+          },
+        ],
+        context: {} as InitialValueResolverContext,
+      })
+    )
 
     await expect(permissions).resolves.toEqual([
       {
