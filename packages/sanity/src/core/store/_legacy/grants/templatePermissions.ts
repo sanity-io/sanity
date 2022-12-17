@@ -1,6 +1,7 @@
 import {InitialValueResolverContext, Schema} from '@sanity/types'
 import {combineLatest, from, Observable, of} from 'rxjs'
 import {map, switchMap} from 'rxjs/operators'
+import {isObject} from 'lodash'
 import {useSchema, useTemplates} from '../../../hooks'
 import {InitialValueTemplateItem, resolveInitialValue, Template} from '../../../templates'
 import {
@@ -28,7 +29,7 @@ export interface TemplatePermissionsResult<TInitialValue = Record<string, unknow
 type Serializable<T> = {serialize(): T}
 
 function serialize<T>(item: T | Serializable<T>): T {
-  if (item && 'serialize' in item) return serialize(item.serialize())
+  if (isObject(item) && 'serialize' in item) return serialize(item.serialize())
   return item as T
 }
 

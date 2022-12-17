@@ -11,7 +11,7 @@ const VALID_ACTIONS = DEFAULT_ACTIONS
 const DEPRECATE_EXPERIMENTAL_ACTIONS = false
 
 const hasWarned = {}
-const readActions = (schemaType: SchemaType) => {
+const readActions = (schemaType: SchemaType): string[] => {
   if (DEPRECATE_EXPERIMENTAL_ACTIONS && !(schemaType.name in hasWarned)) {
     console.warn(`Heads up! Experimental actions is now deprecated and replaced by Document Actions. Read more about how to migrate on ${generateHelpUrl(
       'experimental-actions-replaced-by-document-actions'
@@ -20,7 +20,7 @@ const readActions = (schemaType: SchemaType) => {
     hasWarned[schemaType.name] = true
   }
 
-  return ACTIONS_FLAG in schemaType ? schemaType[ACTIONS_FLAG] : DEFAULT_ACTIONS
+  return ACTIONS_FLAG in schemaType ? (schemaType[ACTIONS_FLAG] as string[]) : DEFAULT_ACTIONS
 }
 
 const validateActions = (typeName: string, actions: string[]) => {

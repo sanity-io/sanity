@@ -25,7 +25,7 @@ describeCliTest('CLI: `sanity graphql`', () => {
       expect(result.stdout).toContain('https://')
       expect(result.code).toBe(0)
 
-      const [graphqlUrl] = result.stdout.match(/(https:\/\/.*(\s|$))/) || []
+      const [graphqlUrl] = result.stdout.match(/(https:\/\/.*(\s|$))/) || ['<missing url>']
       expect(graphqlUrl.startsWith('https://')).toBeTruthy()
 
       const response = await request(graphqlUrl, {
