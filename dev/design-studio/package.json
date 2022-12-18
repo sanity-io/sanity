@@ -21,10 +21,10 @@
     "design-studio"
   ],
   "dependencies": {
-    "@sanity/color": "^2.1.20",
-    "@sanity/icons": "^2.1.0",
-    "@sanity/logos": "^2.0.2",
-    "@sanity/ui": "^1.0.0",
+    "@sanity/color": "2.2.0-alpha.1",
+    "@sanity/icons": "2.2.0-beta.1",
+    "@sanity/logos": "2.1.0-beta.1",
+    "@sanity/ui": "1.1.0-beta.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "sanity": "3.0.6",

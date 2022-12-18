@@ -1541,7 +1541,7 @@
   dependencies:
     "@floating-ui/core" "^1.0.4"
 
-"@floating-ui/react-dom@^1.0.0":
+"@floating-ui/react-dom@^1.0.0", "@floating-ui/react-dom@^1.0.1":
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/@floating-ui/react-dom/-/react-dom-1.0.1.tgz#ee3524eab740b9380a00f4c2629a758093414325"
   integrity sha512-UW0t1Gi8ikbDRr8cQPVcqIDMBwUEENe5V4wlHWdrJ5egFnRQFBV9JirauTBFI6S8sM1qFUC1i+qa3g87E6CLTw==
@@ -3544,6 +3544,11 @@
     object-assign "^4.1.1"
     rxjs "^6.0.0"
 
+"@sanity/color@2.2.0-alpha.1":
+  version "2.2.0-alpha.1"
+  resolved "https://registry.yarnpkg.com/@sanity/color/-/color-2.2.0-alpha.1.tgz#129c2bd03840d85dfd93e85d2e658201006dcb70"
+  integrity sha512-RgnqdTAYdJkJ/yqEpoQW+pPwgF+ctfGIhzcNDVU9UX9b0VzU5EM9ra3C6KxIWYcVQEBlELx9s2Po5PisKDq+GQ==
+
 "@sanity/color@^2.1.20":
   version "2.1.20"
   resolved "https://registry.yarnpkg.com/@sanity/color/-/color-2.1.20.tgz#48c6ad3e6333d1da2989acbead1a46b4a8c5347a"
@@ -3596,6 +3601,11 @@
     lodash "^4.17.21"
     rxjs "^6.6.7"
 
+"@sanity/icons@2.2.0-beta.1":
+  version "2.2.0-beta.1"
+  resolved "https://registry.yarnpkg.com/@sanity/icons/-/icons-2.2.0-beta.1.tgz#1baedc9d59f32f4666873c82edea5cbb6f34244d"
+  integrity sha512-kI46lZJNM0AlLtegAn8IcD8w/ZE8/g8obgc4ky23JW1CxnwBTL0IZ5DNA1oPOx/wZFUaaebnQij9Aq69gzj21g==
+
 "@sanity/icons@^1.3":
   version "1.3.10"
   resolved "https://registry.yarnpkg.com/@sanity/icons/-/icons-1.3.10.tgz#df934a94ae6669fe6b15515d800afb221cba0498"
@@ -3619,10 +3629,10 @@
     "@sanity/icons" "^1.3"
     react-copy-to-clipboard "^5.1.0"
 
-"@sanity/logos@^2.0.2":
-  version "2.0.2"
-  resolved "https://registry.yarnpkg.com/@sanity/logos/-/logos-2.0.2.tgz#d1b10a32e51d0c35ecbd32b43991a7c89f77a5f6"
-  integrity sha512-BsBNt4ldWNAuKeHge4nKHnN43BN8BwLJuf+HDhrg/ngnORUjty5WV4KVoQkQ2FSTv5YtpJjSuNGSXwT+Araegw==
+"@sanity/logos@2.1.0-beta.1":
+  version "2.1.0-beta.1"
+  resolved "https://registry.yarnpkg.com/@sanity/logos/-/logos-2.1.0-beta.1.tgz#1e62df45f2f425dc8ac9741c62973db05685726d"
+  integrity sha512-cO4h2PC/GJPwNodCZzrOzU3kN/+Hqh02ITbsnVOVJ/5JHuOw7oE/NkUt4l85Bd4xLxcOF+aV8YQxOG8BMAlsNg==
 
 "@sanity/pkg-utils@^2.0.0-beta.1":
   version "2.0.0-beta.1"
@@ -3721,6 +3731,18 @@
     pako "^2.1.0"
     segmented-property "^3.0.3"
     vite "^3.2.4"
+
+"@sanity/ui@1.1.0-beta.2":
+  version "1.1.0-beta.2"
+  resolved "https://registry.yarnpkg.com/@sanity/ui/-/ui-1.1.0-beta.2.tgz#cbf4b6ad6367727c37cf060bb5928bd95ffca150"
+  integrity sha512-KTBIs2qhJ2n88HNJVrrdLuvfjmyuLkVtXJL/pBg+F/h31TN6Tmgq0ZhPjtmHNXGuwS9kIWBM5EklcoKAjbEi6g==
+  dependencies:
+    "@floating-ui/react-dom" "^1.0.1"
+    "@sanity/color" "2.2.0-alpha.1"
+    "@sanity/icons" "2.2.0-beta.1"
+    csstype "^3.1.1"
+    framer-motion "^7.10.2"
+    react-refractor "^2.1.7"
 
 "@sanity/ui@^1.0.0":
   version "1.0.1"
@@ -9513,6 +9535,17 @@ framer-motion@^6.3.0:
     popmotion "11.0.3"
     style-value-types "5.0.0"
     tslib "^2.1.0"
+  optionalDependencies:
+    "@emotion/is-prop-valid" "^0.8.2"
+
+framer-motion@^7.10.2:
+  version "7.10.2"
+  resolved "https://registry.yarnpkg.com/framer-motion/-/framer-motion-7.10.2.tgz#e89d17ba98737355b09334c579e2317e0d4c171f"
+  integrity sha512-2OAII9hjpMNz2Nbl2w09uKo7A0bD6xRtGnCZbPzuGGueucWgmSBLjAwzPhXwzCQWMpL3LU8jmXHjxAwIyjslxg==
+  dependencies:
+    "@motionone/dom" "^10.15.3"
+    hey-listen "^1.0.8"
+    tslib "2.4.0"
   optionalDependencies:
     "@emotion/is-prop-valid" "^0.8.2"
 
