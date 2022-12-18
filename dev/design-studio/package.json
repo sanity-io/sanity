@@ -7,10 +7,10 @@
   "author": "Sanity.io <hello@sanity.io>",
   "license": "MIT",
   "scripts": {
-    "build": "../.bin/sanity.cjs build",
+    "build": "node --experimental-loader esbuild-register/loader ../.bin/sanity.cjs build",
     "clean": "rimraf .sanity dist",
-    "dev": "../.bin/sanity.cjs dev --port 4000",
-    "start": "../.bin/sanity.cjs start --port 4000"
+    "dev": "node --experimental-loader esbuild-register/loader ../.bin/sanity.cjs dev --port 4000",
+    "start": "node --experimental-loader esbuild-register/loader ../.bin/sanity.cjs start --port 4000"
   },
   "keywords": [
     "sanity",

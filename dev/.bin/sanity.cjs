@@ -1,4 +1,4 @@
-#!/usr/bin/env node --experimental-loader esbuild-register/loader
+#!/usr/bin/env
 
 'use strict'
 

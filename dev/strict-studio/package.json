@@ -3,10 +3,10 @@
   "name": "sanity-strict-studio",
   "version": "3.0.6",
   "scripts": {
-    "build": "../.bin/sanity.cjs build",
+    "build": "node --experimental-loader esbuild-register/loader ../.bin/sanity.cjs build",
     "clean": "rimraf .sanity dist",
-    "dev": "../.bin/sanity.cjs dev",
-    "start": "../.bin/sanity.cjs start"
+    "dev": "node --experimental-loader esbuild-register/loader ../.bin/sanity.cjs dev",
+    "start": "node --experimental-loader esbuild-register/loader ../.bin/sanity.cjs start"
   },
   "dependencies": {
     "react": "^18.2.0",
