@@ -72,7 +72,8 @@ export const BlockStyleSelect = memo(function BlockStyleSelect(
   const focusBlock = useFocusBlock()
   const [changed, setChanged] = useState(false)
 
-  const _disabled = disabled || (focusBlock ? editor.types.block.name !== focusBlock._type : false)
+  const _disabled =
+    disabled || (focusBlock ? editor.schemaTypes.block.name !== focusBlock._type : false)
 
   // @todo: Explain what this does
   const activeKeys = useActiveStyleKeys({items: itemsProp})

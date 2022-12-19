@@ -14,7 +14,7 @@ import {
 import {
   HotkeyOptions,
   PortableTextEditor,
-  PortableTextMemberTypes,
+  PortableTextMemberSchemaTypes,
 } from '@sanity/portable-text-editor'
 import {capitalize, get} from 'lodash'
 import React from 'react'
@@ -27,7 +27,7 @@ function getPTEFormatActions(
   disabled: boolean,
   hotkeyOpts: HotkeyOptions
 ): PTEToolbarAction[] {
-  const types = editor.types
+  const types = editor.schemaTypes
   return types.decorators.map((decorator) => {
     const shortCutKey = Object.keys(hotkeyOpts.marks || {}).find(
       (key) => hotkeyOpts.marks?.[key] === decorator.value
@@ -54,7 +54,7 @@ function getPTEFormatActions(
 }
 
 function getPTEListActions(editor: PortableTextEditor, disabled: boolean): PTEToolbarAction[] {
-  const types = PortableTextEditor.getTypes(editor)
+  const types = editor.schemaTypes
   return types.lists.map((listItem) => {
     return {
       type: 'listStyle',
@@ -83,7 +83,7 @@ function getPTEAnnotationActions(
   disabled: boolean,
   onInsert: (type: ObjectSchemaType) => void
 ): PTEToolbarAction[] {
-  const types = editor.types
+  const types = editor.schemaTypes
   const focusChild = PortableTextEditor.focusChild(editor)
   const hasText = focusChild && focusChild.text
   return types.annotations.map((aType) => {
@@ -118,7 +118,7 @@ export function getPTEToolbarActionGroups(
   ]
 }
 
-export function getBlockStyles(types: PortableTextMemberTypes): BlockStyleItem[] {
+export function getBlockStyles(types: PortableTextMemberSchemaTypes): BlockStyleItem[] {
   return types.styles.map((style) => {
     return {
       key: `style-${style.value}`,
@@ -139,7 +139,7 @@ function getInsertMenuIcon(
 }
 
 export function getInsertMenuItems(
-  types: PortableTextMemberTypes,
+  types: PortableTextMemberSchemaTypes,
   disabled: boolean,
   onInsertBlock: (type: ObjectSchemaType) => void,
   onInsertInline: (type: ObjectSchemaType) => void
