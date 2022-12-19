@@ -1,11 +1,11 @@
 import {PortableTextBlock, PortableTextSpan, PortableTextTextBlock} from '@sanity/types'
 import {flatten, isObject, uniq} from 'lodash'
 import {set, unset, insert} from '../patch/PatchEvent'
-import {InvalidValueResolution, PortableTextMemberTypes} from '../types/editor'
+import {InvalidValueResolution, PortableTextMemberSchemaTypes} from '../types/editor'
 
 export function validateValue(
   value: PortableTextBlock[] | undefined,
-  types: PortableTextMemberTypes,
+  types: PortableTextMemberSchemaTypes,
   keyGenerator: () => string
 ): {valid: boolean; resolution: InvalidValueResolution | null} {
   let resolution: InvalidValueResolution | null = null

@@ -1,12 +1,12 @@
 import {isEqual} from 'lodash'
 import {Editor, Point, Path as SlatePath, Element} from 'slate'
 import {isKeySegment, Path, PortableTextBlock} from '@sanity/types'
-import {EditorSelectionPoint, PortableTextMemberTypes} from '../types/editor'
+import {EditorSelectionPoint, PortableTextMemberSchemaTypes} from '../types/editor'
 
 export function createKeyedPath(
   point: Point,
   value: PortableTextBlock[] | undefined,
-  types: PortableTextMemberTypes
+  types: PortableTextMemberSchemaTypes
 ): Path | null {
   const blockPath = [point.path[0]]
   if (!value) {

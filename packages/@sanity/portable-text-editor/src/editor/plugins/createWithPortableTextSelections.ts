@@ -2,7 +2,7 @@ import {Subject} from 'rxjs'
 import {
   EditorChange,
   EditorSelection,
-  PortableTextMemberTypes,
+  PortableTextMemberSchemaTypes,
   PortableTextSlateEditor,
 } from '../../types/editor'
 import {debugWithName} from '../../utils/debug'
@@ -15,7 +15,7 @@ const debug = debugWithName('plugin:withPortableTextSelections')
 // This plugin will make sure that we emit a PT selection whenever the editor has changed.
 export function createWithPortableTextSelections(
   change$: Subject<EditorChange>,
-  types: PortableTextMemberTypes
+  types: PortableTextMemberSchemaTypes
 ) {
   return function withPortableTextSelections(
     editor: PortableTextSlateEditor

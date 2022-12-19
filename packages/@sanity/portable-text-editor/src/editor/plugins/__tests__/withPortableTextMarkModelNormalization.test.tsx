@@ -6,9 +6,11 @@ import '@testing-library/jest-dom/extend-expect'
 import {render, waitFor} from '@testing-library/react'
 
 import React from 'react'
-import {ObjectSchemaType} from '@sanity/types'
 import {PortableTextEditor} from '../../PortableTextEditor'
-import {PortableTextEditorTester, type} from '../../../editor/__tests__/PortableTextEditorTester'
+import {
+  PortableTextEditorTester,
+  schemaType,
+} from '../../../editor/__tests__/PortableTextEditorTester'
 import {EditorSelection} from '../../../types/editor'
 
 describe('plugin:withPortableTextMarksModel: normalization', () => {
@@ -81,7 +83,7 @@ describe('plugin:withPortableTextMarksModel: normalization', () => {
       <PortableTextEditorTester
         onChange={onChange}
         ref={editorRef}
-        type={type}
+        schemaType={schemaType}
         value={initialValue}
       />
     )
@@ -93,7 +95,7 @@ describe('plugin:withPortableTextMarksModel: normalization', () => {
           anchor: {path: [{_key: '5fc57af23597'}, 'children', {_key: '11c8c9f783a8'}], offset: 0},
         })
         // eslint-disable-next-line max-nested-callbacks
-        const linkType = editorRef.current.types.annotations.find((a) => a.name === 'link')
+        const linkType = editorRef.current.schemaTypes.annotations.find((a) => a.name === 'link')
         if (!linkType) {
           throw new Error('No link type found')
         }
@@ -184,7 +186,7 @@ describe('plugin:withPortableTextMarksModel: normalization', () => {
       <PortableTextEditorTester
         onChange={onChange}
         ref={editorRef}
-        type={type}
+        schemaType={schemaType}
         value={initialValue}
       />
     )
@@ -264,7 +266,7 @@ describe('plugin:withPortableTextMarksModel: normalization', () => {
       <PortableTextEditorTester
         onChange={onChange}
         ref={editorRef}
-        type={type}
+        schemaType={schemaType}
         value={initialValue}
       />
     )
@@ -407,7 +409,7 @@ describe('plugin:withPortableTextMarksModel: normalization', () => {
       <PortableTextEditorTester
         onChange={onChange}
         ref={editorRef}
-        type={type}
+        schemaType={schemaType}
         value={initialValue}
       />
     )
@@ -523,7 +525,7 @@ describe('plugin:withPortableTextMarksModel: normalization', () => {
       <PortableTextEditorTester
         onChange={onChange}
         ref={editorRef}
-        type={type}
+        schemaType={schemaType}
         value={initialValue}
       />
     )
@@ -633,7 +635,7 @@ describe('plugin:withPortableTextMarksModel: normalization', () => {
       <PortableTextEditorTester
         onChange={onChange}
         ref={editorRef}
-        type={type}
+        schemaType={schemaType}
         value={initialValue}
       />
     )

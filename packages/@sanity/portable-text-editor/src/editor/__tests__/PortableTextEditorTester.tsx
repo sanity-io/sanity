@@ -47,7 +47,7 @@ let key = 0
 
 export const PortableTextEditorTester = forwardRef(function PortableTextEditorTester(
   props: Partial<Omit<PortableTextEditorProps, 'type' | 'onChange' | 'value'>> & {
-    type: PortableTextEditorProps['type']
+    schemaType: PortableTextEditorProps['schemaType']
     value?: PortableTextEditorProps['value']
     onChange?: PortableTextEditorProps['onChange']
     selection?: PortableTextEditableProps['selection']
@@ -64,7 +64,7 @@ export const PortableTextEditorTester = forwardRef(function PortableTextEditorTe
   }, [])
   return (
     <PortableTextEditor
-      type={props.type}
+      schemaType={props.schemaType}
       onChange={props.onChange || jest.fn()}
       value={props.value || undefined}
       keyGenerator={_keyGenerator}
@@ -78,4 +78,4 @@ export const PortableTextEditorTester = forwardRef(function PortableTextEditorTe
   )
 })
 
-export const type = schema.get('body')
+export const schemaType = schema.get('body')

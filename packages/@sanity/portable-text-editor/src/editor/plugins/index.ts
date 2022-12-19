@@ -43,7 +43,8 @@ export const withPlugins = <T extends Editor>(
 ): PortableTextSlateEditor => {
   const e = editor as T & PortableTextSlateEditor
   const {portableTextEditor} = options
-  const {types, keyGenerator, readOnly, change$, syncValue, incomingPatches$} = portableTextEditor
+  const {schemaTypes, keyGenerator, readOnly, change$, syncValue, incomingPatches$} =
+    portableTextEditor
   e.maxBlocks = portableTextEditor.maxBlocks || -1
   e.readOnly = portableTextEditor.readOnly || false
   if (e.destroy) {
@@ -57,34 +58,34 @@ export const withPlugins = <T extends Editor>(
       normalizeNode: e.normalizeNode,
     })
   }
-  const operationToPatches = createOperationToPatches(types)
-  const withObjectKeys = createWithObjectKeys(types, keyGenerator)
-  const withSchemaTypes = createWithSchemaTypes(types)
-  const withEditableAPI = createWithEditableAPI(portableTextEditor, types, keyGenerator)
+  const operationToPatches = createOperationToPatches(schemaTypes)
+  const withObjectKeys = createWithObjectKeys(schemaTypes, keyGenerator)
+  const withSchemaTypes = createWithSchemaTypes(schemaTypes)
+  const withEditableAPI = createWithEditableAPI(portableTextEditor, schemaTypes, keyGenerator)
   const [withPatches, withPatchesCleanupFunction] = readOnly
     ? []
     : createWithPatches({
         patchFunctions: operationToPatches,
         change$,
-        types,
+        schemaTypes,
         syncValue,
         incomingPatches$,
       })
   const withMaxBlocks = createWithMaxBlocks()
-  const withPortableTextLists = createWithPortableTextLists(types)
+  const withPortableTextLists = createWithPortableTextLists(schemaTypes)
   const [withUndoRedo, withUndoRedoCleanupFunction] = readOnly
     ? []
     : createWithUndoRedo(incomingPatches$)
-  const withPortableTextMarkModel = createWithPortableTextMarkModel(types)
-  const withPortableTextBlockStyle = createWithPortableTextBlockStyle(types, change$)
+  const withPortableTextMarkModel = createWithPortableTextMarkModel(schemaTypes)
+  const withPortableTextBlockStyle = createWithPortableTextBlockStyle(schemaTypes, change$)
 
   const withPlaceholderBlock = createWithPlaceholderBlock({
     keyGenerator,
-    types,
+    schemaTypes,
   })
 
-  const withUtils = createWithUtils({keyGenerator, types})
-  const withPortableTextSelections = createWithPortableTextSelections(change$, types)
+  const withUtils = createWithUtils({keyGenerator, schemaTypes})
+  const withPortableTextSelections = createWithPortableTextSelections(change$, schemaTypes)
 
   e.destroy = () => {
     const originalFunctions = originalFnMap.get(e)

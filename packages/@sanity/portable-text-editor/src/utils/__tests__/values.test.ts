@@ -1,17 +1,17 @@
 import {fromSlateValue, toSlateValue} from '../values'
-import {type} from '../../editor/__tests__/PortableTextEditorTester'
-import {getPortableTextMemberTypes} from '../getPortableTextMemberTypes'
+import {schemaType} from '../../editor/__tests__/PortableTextEditorTester'
+import {getPortableTextMemberSchemaTypes} from '../getPortableTextMemberSchemaTypes'
 
-const types = getPortableTextMemberTypes(type)
+const schemaTypes = getPortableTextMemberSchemaTypes(schemaType)
 
 describe('toSlateValue', () => {
   it('checks undefined', () => {
-    const result = toSlateValue(undefined, {types})
+    const result = toSlateValue(undefined, {schemaTypes})
     expect(result).toHaveLength(0)
   })
 
   it('runs given empty array', () => {
-    const result = toSlateValue([], {types})
+    const result = toSlateValue([], {schemaTypes})
     expect(result).toHaveLength(0)
   })
 
@@ -23,7 +23,7 @@ describe('toSlateValue', () => {
           _key: '123',
         },
       ],
-      {types}
+      {schemaTypes}
     )
 
     expect(result).toMatchObject([
@@ -44,7 +44,7 @@ describe('toSlateValue', () => {
     const result = toSlateValue(
       [
         {
-          _type: types.block.name,
+          _type: schemaTypes.block.name,
           _key: '123',
           children: [
             {
@@ -55,7 +55,7 @@ describe('toSlateValue', () => {
           ],
         },
       ],
-      {types}
+      {schemaTypes}
     )
     expect(result).toMatchInlineSnapshot(`
       Array [
@@ -80,7 +80,7 @@ describe('toSlateValue', () => {
     const result = toSlateValue(
       [
         {
-          _type: types.block.name,
+          _type: schemaTypes.block.name,
           _key: '123',
           children: [
             {
@@ -98,7 +98,7 @@ describe('toSlateValue', () => {
           ],
         },
       ],
-      {types}
+      {schemaTypes}
     )
     expect(result).toMatchInlineSnapshot(`
       Array [
@@ -241,8 +241,8 @@ describe('fromSlateValue', () => {
         style: 'normal',
       },
     ]
-    const toSlate1 = toSlateValue(value, {types}, keyMap)
-    const toSlate2 = toSlateValue(value, {types}, keyMap)
+    const toSlate1 = toSlateValue(value, {schemaTypes}, keyMap)
+    const toSlate2 = toSlateValue(value, {schemaTypes}, keyMap)
     expect(toSlate1[0]).toBe(toSlate2[0])
     expect(toSlate1[1]).toBe(toSlate2[1])
     const fromSlate1 = fromSlateValue(toSlate1, 'block', keyMap)
