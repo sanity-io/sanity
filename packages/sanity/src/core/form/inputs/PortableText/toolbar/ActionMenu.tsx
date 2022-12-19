@@ -24,7 +24,7 @@ export const ActionMenu = memo(function ActionMenu(props: ActionMenuProps) {
   const focusBlock = useFocusBlock()
   const editor = usePortableTextEditor()
 
-  const isVoidBlock = focusBlock?._type !== editor.types.block.name
+  const isVoidBlock = focusBlock?._type !== editor.schemaTypes.block.name
   const isEmptyTextBlock =
     !isVoidBlock &&
     Array.isArray(focusBlock.children) &&

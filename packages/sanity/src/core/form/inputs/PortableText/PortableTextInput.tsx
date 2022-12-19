@@ -338,7 +338,7 @@ export function PortableTextInput(props: PortableTextInputProps) {
               onChange={handleEditorChange}
               maxBlocks={undefined} // TODO: from schema?
               readOnly={readOnly}
-              type={schemaType} // TODO: rename to schemaType inside PortableTextEditor?
+              schemaType={schemaType}
               value={value}
             >
               <Compositor

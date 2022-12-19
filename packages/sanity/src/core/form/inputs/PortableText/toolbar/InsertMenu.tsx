@@ -22,7 +22,7 @@ export const InsertMenu = memo(function InsertMenu(props: InsertMenuProps) {
   const focusBlock = useFocusBlock()
   const editor = usePortableTextEditor()
 
-  const isVoidFocus = focusBlock && focusBlock._type !== editor.types.block.name
+  const isVoidFocus = focusBlock && focusBlock._type !== editor.schemaTypes.block.name
 
   const handleMenuClose = useCallback(() => {
     PortableTextEditor.focus(editor)
