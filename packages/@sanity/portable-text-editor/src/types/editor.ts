@@ -20,10 +20,12 @@ import {ReactEditor} from '@sanity/slate-react'
 import type {Patch} from '../types/patch'
 import {PortableTextEditor} from '../editor/PortableTextEditor'
 
+/** @beta */
 export interface EditableAPIDeleteOptions {
   mode?: 'blocks' | 'children' | 'selected'
 }
 
+/** @beta */
 export interface EditableAPI {
   activeAnnotations: () => PortableTextObject[]
   addAnnotation: (
@@ -57,23 +59,27 @@ export interface EditableAPI {
   undo: () => void
 }
 
+/** @internal */
 export type EditorNode = SlateNode & {
   _key: string
   _type: string
 }
-
+/** @internal */
 export type HistoryItem = {
   operations: SlateOperation[]
   timestamp: Date
 }
-
+/** @internal */
 export interface History {
   redos: HistoryItem[]
   undos: HistoryItem[]
 }
 
+/** @beta */
 export type EditorSelectionPoint = {path: Path; offset: number}
+/** @beta */
 export type EditorSelection = {anchor: EditorSelectionPoint; focus: EditorSelectionPoint} | null
+/** @internal */
 export interface PortableTextSlateEditor extends ReactEditor {
   _key: 'editor'
   _type: 'editor'
@@ -184,49 +190,58 @@ export interface PortableTextSlateEditor extends ReactEditor {
   redo: () => void
 }
 
+/** @beta */
 export type MutationChange = {
   type: 'mutation'
   patches: Patch[]
 }
 
+/** @beta */
 export type PatchChange = {
   type: 'patch'
   patch: Patch
 }
 
+/** @beta */
 export type ValueChange = {
   type: 'value'
   value: PortableTextBlock[] | undefined
 }
 
+/** @beta */
 export type SelectionChange = {
   type: 'selection'
   selection: EditorSelection
 }
 
+/** @beta */
 export type FocusChange = {
   type: 'focus'
 }
 
+/** @beta */
 export type UnsetChange = {
   type: 'unset'
   previousValue: PortableTextBlock[]
 }
 
+/** @beta */
 export type BlurChange = {
   type: 'blur'
 }
 
+/** @beta */
 export type LoadingChange = {
   type: 'loading'
   isLoading: boolean
 }
 
+/** @beta */
 export type ReadyChange = {
   type: 'ready'
 }
 
-// Layman error reporting back to the user (recoverable errors and warnings)
+/** @beta */
 export type ErrorChange = {
   type: 'error'
   name: string // short computer readable name
@@ -235,6 +250,7 @@ export type ErrorChange = {
   data?: unknown
 }
 
+/** @beta */
 export type InvalidValueResolution = {
   patches: Patch[]
   description: string
@@ -242,24 +258,28 @@ export type InvalidValueResolution = {
   item: PortableTextBlock[] | PortableTextBlock | PortableTextChild | undefined
 }
 
+/** @beta */
 export type InvalidValue = {
   type: 'invalidValue'
   resolution: InvalidValueResolution | null
   value: PortableTextBlock[]
 }
 
+/** @beta */
 export type UndoChange = {
   type: 'undo'
   patches: Patch[]
   timestamp: Date
 }
 
+/** @beta */
 export type RedoChange = {
   type: 'redo'
   patches: Patch[]
   timestamp: Date
 }
 
+/** @beta */
 export type EditorChange =
   | BlurChange
   | ErrorChange
@@ -277,6 +297,7 @@ export type EditorChange =
 
 export type EditorChanges = Subject<EditorChange>
 
+/** @beta */
 export type OnPasteResult =
   | {
       insert?: PortableTextBlock[]
@@ -285,6 +306,7 @@ export type OnPasteResult =
   | undefined
 export type OnPasteResultOrPromise = OnPasteResult | Promise<OnPasteResult>
 
+/** @beta */
 export type OnPasteFn = (arg0: {
   event: React.ClipboardEvent
   path: Path
@@ -292,18 +314,21 @@ export type OnPasteFn = (arg0: {
   value: PortableTextBlock[] | undefined
 }) => OnPasteResultOrPromise
 
+/** @beta */
 export type OnBeforeInputFn = (event: Event) => void
 
+/** @beta */
 export type OnCopyFn = (
   event: React.ClipboardEvent<HTMLDivElement | HTMLSpanElement>
 ) => undefined | unknown
 
+/** @beta */
 export type PatchObservable = Observable<{
   patches: Patch[]
   snapshot: PortableTextBlock[] | undefined
 }>
 
-/** @public */
+/** @beta */
 export interface BlockRenderProps {
   children: React.ReactElement
   editorElementRef: React.RefObject<HTMLElement>
@@ -317,7 +342,7 @@ export interface BlockRenderProps {
   value: PortableTextBlock
 }
 
-/** @public */
+/** @beta */
 export interface BlockChildRenderProps {
   annotations: PortableTextObject[]
   children: React.ReactElement
@@ -329,7 +354,7 @@ export interface BlockChildRenderProps {
   value: PortableTextChild
 }
 
-/** @public */
+/** @beta */
 export interface BlockAnnotationRenderProps {
   block: PortableTextBlock
   children: React.ReactElement
@@ -340,7 +365,7 @@ export interface BlockAnnotationRenderProps {
   type: ObjectSchemaType
   value: PortableTextObject
 }
-/** @public */
+/** @beta */
 export interface BlockDecoratorRenderProps {
   children: React.ReactElement
   editorElementRef: React.RefObject<HTMLElement>
@@ -350,7 +375,7 @@ export interface BlockDecoratorRenderProps {
   type: BlockDecoratorDefinition
   value: string
 }
-/** @public */
+/** @beta */
 
 export interface BlockListItemRenderProps {
   block: PortableTextTextBlock
@@ -366,15 +391,19 @@ export interface BlockListItemRenderProps {
   value: string
 }
 
+/** @beta */
 export type RenderBlockFunction = (props: BlockRenderProps) => JSX.Element
 
+/** @beta */
 export type RenderChildFunction = (props: BlockChildRenderProps) => JSX.Element
 
+/** @beta */
 export type RenderAnnotationFunction = (props: BlockAnnotationRenderProps) => JSX.Element
 
+/** @beta */
 export type RenderStyleFunction = (props: BlockStyleRenderProps) => JSX.Element
 
-/** @public */
+/** @beta */
 
 export interface BlockStyleRenderProps {
   block: PortableTextTextBlock
@@ -387,15 +416,19 @@ export interface BlockStyleRenderProps {
   value: string
 }
 
+/** @beta */
 export type RenderListItemFunction = (props: BlockListItemRenderProps) => JSX.Element
 
+/** @beta */
 export type RenderDecoratorFunction = (props: BlockDecoratorRenderProps) => JSX.Element
 
+/** @beta */
 export type ScrollSelectionIntoViewFunction = (
   editor: PortableTextEditor,
   domRange: globalThis.Range
 ) => void
 
+/** @internal */
 export type PortableTextMemberTypes = {
   annotations: ObjectSchemaType[]
   block: ObjectSchemaType
