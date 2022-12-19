@@ -137,7 +137,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
         type: blockType,
         value: block,
       } = blockProps
-      const isTextBlock = block._type === editor.types.block.name
+      const isTextBlock = block._type === editor.schemaTypes.block.name
       if (isTextBlock) {
         return (
           <TextBlock
@@ -178,7 +178,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
     [
       _renderBlockActions,
       _renderCustomMarkers,
-      editor.types.block.name,
+      editor.schemaTypes.block.name,
       isFullscreen,
       onChange,
       onItemOpen,
@@ -196,10 +196,10 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
         focused: childFocused,
         path: childPath,
         selected,
-        type: childType,
+        schemaType: childType,
         value: child,
       } = childProps
-      const isSpan = child._type === editor.types.span.name
+      const isSpan = child._type === editor.schemaTypes.span.name
       if (isSpan) {
         return children
       }

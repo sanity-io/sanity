@@ -226,10 +226,10 @@ export function Toolbar(props: ToolbarProps) {
     disabled: true,
   })
 
-  const blockStyles = useMemo(() => getBlockStyles(editor.types), [editor])
+  const blockStyles = useMemo(() => getBlockStyles(editor.schemaTypes), [editor])
 
   const insertMenuItems = useMemo(
-    () => getInsertMenuItems(editor.types, disabled, handleInsertBlock, handleInsertInline),
+    () => getInsertMenuItems(editor.schemaTypes, disabled, handleInsertBlock, handleInsertInline),
     [disabled, editor, handleInsertBlock, handleInsertInline]
   )
 

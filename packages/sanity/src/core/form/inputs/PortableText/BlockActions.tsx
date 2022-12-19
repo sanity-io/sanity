@@ -20,7 +20,7 @@ const Root = styled.div`
 export function BlockActions(props: BlockActionsProps) {
   const editor = usePortableTextEditor()
   const {block, onChange, renderBlockActions} = props
-  const decoratorValues = useMemo(() => editor.types.decorators.map((d) => d.value), [editor])
+  const decoratorValues = useMemo(() => editor.schemaTypes.decorators.map((d) => d.value), [editor])
 
   const blockActions = useMemo(() => {
     if (renderBlockActions) {

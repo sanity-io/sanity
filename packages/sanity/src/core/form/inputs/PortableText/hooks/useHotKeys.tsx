@@ -15,7 +15,7 @@ export function useHotkeys(hotkeys: HotkeyOptions): HotkeyOptions {
   }
   return useMemo(() => {
     const defaultHotkeys: {marks: Record<string, string>} = {marks: {}}
-    editor.types.decorators.forEach((dec) => {
+    editor.schemaTypes.decorators.forEach((dec) => {
       switch (dec.value) {
         case 'strong':
           defaultHotkeys.marks['mod+b'] = dec.value
