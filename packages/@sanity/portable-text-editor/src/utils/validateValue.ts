@@ -10,8 +10,8 @@ export function validateValue(
 ): {valid: boolean; resolution: InvalidValueResolution | null} {
   let resolution: InvalidValueResolution | null = null
   let valid = true
-  const validChildTypes = [...[types.span.name], ...types.inlineObjects.map((t) => t.name)]
-  const validBlockTypes = [...[types.block.name], ...types.blockObjects.map((t) => t.name)]
+  const validChildTypes = [types.span.name, ...types.inlineObjects.map((t) => t.name)]
+  const validBlockTypes = [types.block.name, ...types.blockObjects.map((t) => t.name)]
 
   // Undefined is allowed
   if (value === undefined) {
