@@ -9,7 +9,7 @@ import {render, waitFor} from '@testing-library/react'
 import {PortableTextBlock} from '@sanity/types'
 import {PortableTextEditor} from '../PortableTextEditor'
 import {EditorSelection} from '../..'
-import {PortableTextEditorTester, type} from './PortableTextEditorTester'
+import {PortableTextEditorTester, schemaType} from './PortableTextEditorTester'
 
 const helloBlock: PortableTextBlock = {
   _key: '123',
@@ -27,7 +27,7 @@ describe('initialization', () => {
         onChange={onChange}
         renderPlaceholder={() => 'Jot something down here'}
         ref={editorRef}
-        type={type}
+        schemaType={schemaType}
         value={undefined}
       />
     )
@@ -94,7 +94,9 @@ describe('initialization', () => {
   it('takes value from props', () => {
     const initialValue = [helloBlock]
     const onChange = jest.fn()
-    render(<PortableTextEditorTester onChange={onChange} type={type} value={initialValue} />)
+    render(
+      <PortableTextEditorTester onChange={onChange} schemaType={schemaType} value={initialValue} />
+    )
     expect(onChange).toHaveBeenCalledWith({type: 'value', value: initialValue})
   })
   it('takes initial selection from props', async () => {
@@ -110,7 +112,7 @@ describe('initialization', () => {
         onChange={onChange}
         ref={editorRef}
         selection={initialSelection}
-        type={type}
+        schemaType={schemaType}
         value={initialValue}
       />
     )
@@ -139,7 +141,7 @@ describe('initialization', () => {
         onChange={onChange}
         ref={editorRef}
         selection={initialSelection}
-        type={type}
+        schemaType={schemaType}
         value={initialValue}
       />
     )
@@ -159,7 +161,7 @@ describe('initialization', () => {
         onChange={onChange}
         ref={editorRef}
         selection={newSelection}
-        type={type}
+        schemaType={schemaType}
         value={initialValue}
       />
     )

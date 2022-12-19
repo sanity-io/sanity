@@ -1,11 +1,11 @@
 import {Editor, Transforms, Element, Text, Node} from 'slate'
-import {PortableTextMemberTypes, PortableTextSlateEditor} from '../../types/editor'
+import {PortableTextMemberSchemaTypes, PortableTextSlateEditor} from '../../types/editor'
 import {debugWithName} from '../../utils/debug'
 
 const debug = debugWithName('plugin:withPortableTextLists')
 const MAX_LIST_LEVEL = 10
 
-export function createWithPortableTextLists(types: PortableTextMemberTypes) {
+export function createWithPortableTextLists(types: PortableTextMemberSchemaTypes) {
   return function withPortableTextLists(editor: PortableTextSlateEditor): PortableTextSlateEditor {
     editor.pteToggleListItem = (listItemStyle: string) => {
       const isActive = editor.pteHasListStyle(listItemStyle)

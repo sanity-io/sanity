@@ -6,11 +6,11 @@ import {
   SchemaType,
   SpanSchemaType,
 } from '@sanity/types'
-import {PortableTextMemberTypes} from '../types/editor'
+import {PortableTextMemberSchemaTypes} from '../types/editor'
 
-export function getPortableTextMemberTypes(
+export function getPortableTextMemberSchemaTypes(
   portableTextType: ArraySchemaType<PortableTextBlock>
-): PortableTextMemberTypes {
+): PortableTextMemberSchemaTypes {
   if (!portableTextType) {
     throw new Error("Parameter 'portabletextType' missing (required)")
   }

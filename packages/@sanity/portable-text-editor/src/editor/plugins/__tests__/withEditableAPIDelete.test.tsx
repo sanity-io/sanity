@@ -9,7 +9,7 @@ import {render, waitFor, screen} from '@testing-library/react'
 
 import React from 'react'
 import {PortableTextEditor} from '../../PortableTextEditor'
-import {PortableTextEditorTester, type} from '../../__tests__/PortableTextEditorTester'
+import {PortableTextEditorTester, schemaType} from '../../__tests__/PortableTextEditorTester'
 
 const initialValue = [
   {
@@ -55,7 +55,7 @@ describe('plugin:withEditableAPI: .delete()', () => {
       <PortableTextEditorTester
         onChange={onChange}
         ref={editorRef}
-        type={type}
+        schemaType={schemaType}
         value={initialValue}
       />
     )
@@ -96,7 +96,7 @@ describe('plugin:withEditableAPI: .delete()', () => {
       <PortableTextEditorTester
         onChange={onChange}
         ref={editorRef}
-        type={type}
+        schemaType={schemaType}
         value={initialValue}
       />
     )

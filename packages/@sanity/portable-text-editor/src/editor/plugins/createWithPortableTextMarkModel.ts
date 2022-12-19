@@ -9,12 +9,12 @@ import {isEqual, flatten, uniq} from 'lodash'
 import {Editor, Range, Transforms, Text, Path, NodeEntry, Element} from 'slate'
 
 import {debugWithName} from '../../utils/debug'
-import {PortableTextMemberTypes, PortableTextSlateEditor} from '../../types/editor'
+import {PortableTextMemberSchemaTypes, PortableTextSlateEditor} from '../../types/editor'
 
 const debug = debugWithName('plugin:withPortableTextMarkModel')
 
 export function createWithPortableTextMarkModel(
-  types: PortableTextMemberTypes
+  types: PortableTextMemberSchemaTypes
 ): (editor: PortableTextSlateEditor) => PortableTextSlateEditor {
   return function withPortableTextMarkModel(editor: PortableTextSlateEditor) {
     const {apply, normalizeNode} = editor

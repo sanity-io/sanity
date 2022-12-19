@@ -15,13 +15,13 @@ import {
 import {set, insert, unset, diffMatchPatch, setIfMissing} from '../patch/PatchEvent'
 import type {Patch, InsertPosition} from '../types/patch'
 import {PatchFunctions} from '../editor/plugins/createWithPatches'
-import {PortableTextMemberTypes} from '../types/editor'
+import {PortableTextMemberSchemaTypes} from '../types/editor'
 import {fromSlateValue} from './values'
 import {debugWithName} from './debug'
 
 const debug = debugWithName('operationToPatches')
 
-export function createOperationToPatches(types: PortableTextMemberTypes): PatchFunctions {
+export function createOperationToPatches(types: PortableTextMemberSchemaTypes): PatchFunctions {
   const textBlockName = types.block.name
   function insertTextPatch(
     editor: Editor,

@@ -4,7 +4,7 @@ import {Path, PortableTextChild, PortableTextObject, PortableTextTextBlock} from
 import {useSelected, useSlateStatic, ReactEditor, RenderElementProps} from '@sanity/slate-react'
 import {
   BlockRenderProps,
-  PortableTextMemberTypes,
+  PortableTextMemberSchemaTypes,
   RenderBlockFunction,
   RenderChildFunction,
   RenderListItemFunction,
@@ -25,7 +25,7 @@ interface ElementProps {
   attributes: RenderElementProps['attributes']
   children: ReactElement
   element: SlateElement
-  types: PortableTextMemberTypes
+  schemaTypes: PortableTextMemberSchemaTypes
   readOnly: boolean
   renderBlock?: RenderBlockFunction
   renderChild?: RenderChildFunction
@@ -41,7 +41,7 @@ export const Element: FunctionComponent<ElementProps> = ({
   attributes,
   children,
   element,
-  types,
+  schemaTypes,
   readOnly,
   renderBlock,
   renderChild,
@@ -56,8 +56,8 @@ export const Element: FunctionComponent<ElementProps> = ({
   const focused = (selected && editor.selection && Range.isCollapsed(editor.selection)) || false
 
   const value = useMemo(
-    () => fromSlateValue([element], types.block.name, KEY_TO_VALUE_ELEMENT.get(editor))[0],
-    [editor, element, types.block.name]
+    () => fromSlateValue([element], schemaTypes.block.name, KEY_TO_VALUE_ELEMENT.get(editor))[0],
+    [editor, element, schemaTypes.block.name]
   )
 
   let renderedBlock = children
@@ -78,8 +78,8 @@ export const Element: FunctionComponent<ElementProps> = ({
   if (editor.isInline(element)) {
     const path = ReactEditor.findPath(editor, element)
     const [block] = Editor.node(editor, path, {depth: 1})
-    const type = types.inlineObjects.find((_type) => _type.name === element._type)
-    if (!type) {
+    const schemaType = schemaTypes.inlineObjects.find((_type) => _type.name === element._type)
+    if (!schemaType) {
       throw new Error('Could not find type for inline block element')
     }
     if (SlateElement.isElement(block)) {
@@ -104,7 +104,7 @@ export const Element: FunctionComponent<ElementProps> = ({
                   annotations: EMPTY_ANNOTATIONS, // These inline objects currently doesn't support annotations. This is a limitation of the current PT spec/model.
                   children: <ObjectNode value={value} />,
                   value: value as PortableTextChild,
-                  type,
+                  schemaType,
                   focused,
                   selected,
                   path: elmPath,
@@ -121,7 +121,7 @@ export const Element: FunctionComponent<ElementProps> = ({
 
   // If not inline, it's either a block (text) or a block object (non-text)
   // NOTE: text blocks aren't draggable with DraggableBlock (yet?)
-  if (element._type === types.block.name) {
+  if (element._type === schemaTypes.block.name) {
     className = `pt-block pt-text-block`
     const isListItem = 'listItem' in element
     if (debugRenders) {
@@ -129,7 +129,7 @@ export const Element: FunctionComponent<ElementProps> = ({
     }
     const style = ('style' in element && element.style) || 'normal'
     className = `pt-block pt-text-block pt-text-block-style-${style}`
-    const blockStyleType = types.styles.find((item) => item.value === style)
+    const blockStyleType = schemaTypes.styles.find((item) => item.value === style)
     if (renderStyle && blockStyleType) {
       renderedBlock = renderStyle({
         block: element as PortableTextTextBlock,
@@ -150,7 +150,7 @@ export const Element: FunctionComponent<ElementProps> = ({
       className += ` pt-list-item pt-list-item-${element.listItem} pt-list-item-level-${level || 1}`
     }
     if (editor.isListBlock(value) && isListItem && element.listItem) {
-      const listType = types.lists.find((item) => item.value === element.listItem)
+      const listType = schemaTypes.lists.find((item) => item.value === element.listItem)
       if (renderListItem && listType) {
         renderedBlock = renderListItem({
           block: value,
@@ -166,7 +166,7 @@ export const Element: FunctionComponent<ElementProps> = ({
       } else {
         renderedBlock = (
           <DefaultListItem
-            listStyle={value.listItem || types.lists[0].value}
+            listStyle={value.listItem || schemaTypes.lists[0].value}
             listLevel={value.level || 1}
           >
             <DefaultListItemInner>{renderedBlock}</DefaultListItemInner>
@@ -183,7 +183,7 @@ export const Element: FunctionComponent<ElementProps> = ({
       path: blockPath,
       selected,
       style,
-      type: types.block,
+      type: schemaTypes.block,
       value,
     }
 
@@ -196,7 +196,7 @@ export const Element: FunctionComponent<ElementProps> = ({
       </div>
     )
   }
-  const type = types.blockObjects.find((_type) => _type.name === element._type)
+  const type = schemaTypes.blockObjects.find((_type) => _type.name === element._type)
   if (!type) {
     throw new Error(`Could not find schema type for block element of _type ${element._type}`)
   }
@@ -204,7 +204,11 @@ export const Element: FunctionComponent<ElementProps> = ({
     debug(`Render ${element._key} (object block)`)
   }
   className = 'pt-block pt-object-block'
-  const block = fromSlateValue([element], types.block.name, KEY_TO_VALUE_ELEMENT.get(editor))[0]
+  const block = fromSlateValue(
+    [element],
+    schemaTypes.block.name,
+    KEY_TO_VALUE_ELEMENT.get(editor)
+  )[0]
   const renderedBlockFromProps =
     renderBlock &&
     renderBlock({
