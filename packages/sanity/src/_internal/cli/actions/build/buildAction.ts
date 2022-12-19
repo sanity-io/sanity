@@ -75,6 +75,16 @@ export default async function buildSanityStudio(
     spin.succeed()
   }
 
+  const basePath =
+    // Allow `sanity deploy` to override base path
+    overrides?.basePath ||
+    // Environment variables
+    process.env.SANITY_STUDIO_BASEPATH ||
+    // `sanity.cli.ts`
+    cliConfig?.project?.basePath ||
+    // Fallback
+    '/'
+
   spin = output.spinner('Build Sanity Studio').start()
 
   try {
@@ -82,7 +92,7 @@ export default async function buildSanityStudio(
     const bundle = await buildStaticFiles({
       cwd: workDir,
       outputDir,
-      basePath: overrides?.basePath || cliConfig?.project?.basePath || '/',
+      basePath,
       sourceMap: Boolean(flags['source-maps']),
       minify: Boolean(flags.minify),
       vite: cliConfig && 'vite' in cliConfig ? cliConfig.vite : undefined,

@@ -58,7 +58,9 @@ export function getSharedServerConfig({
     3333
   )
 
-  const basePath = env.SANITY_STUDIO_BASEPATH || cliConfig?.project?.basePath || '/'
+  const basePath = ensureTrailingSlash(
+    env.SANITY_STUDIO_BASEPATH || cliConfig?.project?.basePath || '/'
+  )
 
   return {
     cwd: workDir,
@@ -76,4 +78,8 @@ function toInt(value: string | number | undefined, defaultValue: number): number
 
   const intVal = parseInt(`${value}`, 10)
   return Number.isFinite(intVal) ? intVal : defaultValue
+}
+
+function ensureTrailingSlash(path: string) {
+  return path.endsWith('/') ? path : `${path}/`
 }

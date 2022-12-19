@@ -45,12 +45,12 @@ export async function buildStaticFiles(
   } = options
 
   debug('Writing Sanity runtime files')
-  await writeSanityRuntime({cwd, reactStrictMode: false, watch: false})
+  await writeSanityRuntime({cwd, reactStrictMode: false, watch: false, basePath})
 
   debug('Resolving vite config')
   let viteConfig = await getViteConfig({
     cwd,
-    basePath,
+    basePath: ensureTrailingSlash(basePath || '/'),
     outputDir,
     minify,
     sourceMap,
@@ -169,4 +169,8 @@ async function writeWebManifest(basePath: string, destDir: string): Promise<void
   await fs
     .writeFile(path.join(destDir, 'manifest.webmanifest'), content, 'utf8')
     .catch(skipIfExistsError)
+}
+
+function ensureTrailingSlash(urlPath: string) {
+  return urlPath.endsWith('/') ? urlPath : `${urlPath}/`
 }
