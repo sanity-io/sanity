@@ -1,21 +1,26 @@
+# ⚠️ THIS PACKAGE IS DEPRECATED
+
+> This package is part of Sanity Studio v2, which has been superseded by **Sanity Studio v3**, the current major version released on Dec 7th, 2022. This package is no longer used/needed for Sanity Studio in its current version and will be retired on Dec 7th, 2023. The core packages for Sanity Studio v2 will only receive critical bug fixes until this date.
+>
+> Please head over to [the documentation for Sanity Studio v3](https://www.sanity.io/docs/sanity-studio) to learn more.
+
 ## @sanity/state-router
 
 ## Features
+
 Based on a routing schema:
+
 - A state object can be derived from the current pathname
 - A state object can be used to generate a path name
 
 ## API Usage
 
 Define the routes for your application and how they should map to application state
+
 ```js
 import {route} from '@sanity/state-router'
 
-const router = route('/', [
-  route('/products/:productId'),
-  route('/users/:userId'),
-  route('/:page'),
-])
+const router = route('/', [route('/products/:productId'), route('/users/:userId'), route('/:page')])
 
 router.encode({})
 // => '/'
@@ -39,19 +44,17 @@ router.encode({page: 'about'})
 
 router.decode('/about')
 // => {page: about}
-
 ```
 
 ## React usage
+
 ### Setup routes and provider
 
 ```jsx
 import {route} from '@sanity/state-router'
 import {RouterProvider, withRouter} from '@sanity/state-router/components'
 
-const router = route('/', [
-  route('/bikes/:bikeId')
-])
+const router = route('/', [route('/bikes/:bikeId')])
 
 const history = createHistory()
 
@@ -76,17 +79,18 @@ const App = withRouter(function App({router}) {
 })
 
 function render(location) {
-  ReactDOM.render((
+  ReactDOM.render(
     <RouterProvider
-     router={router}
-     onNavigate={handleNavigate}
-     state={router.decode(location.pathname)}>
+      router={router}
+      onNavigate={handleNavigate}
+      state={router.decode(location.pathname)}
+    >
       <App />
-    </RouterProvider>
-  ), document.getElementById('container'))
+    </RouterProvider>,
+    document.getElementById('container')
+  )
 }
 history.listen(() => render(document.location))
-
 ```
 
 ## API
@@ -94,6 +98,7 @@ history.listen(() => render(document.location))
 - `route(path : string, ?options : Options, ?children : ) : Router`
 - `route.scope(name : string, path : string, ?options : Options, ?children : ) : Router`
 - `Router`:
+
   - `encode(state : object) : string`
   - `decode(path : string) : object`
   - `isRoot(path : string) : boolean`
@@ -106,6 +111,7 @@ history.listen(() => render(document.location))
   Router | [Router] | ((state) => Router | [Router])
   ```
 - `Options`:
+
   ```
   {
     path?: string,
@@ -118,17 +124,17 @@ history.listen(() => render(document.location))
   - `children` can be either another router returned from another `route()-call`, an array of routers or a function that gets passed the matched parameters, and conditionally returns child routes
 
 ## Limitations
-- Parameterized paths *only*. Each route must have at least one unique parameter. If not, there's no way of unambiguously resolve a path from an empty state.
+
+- Parameterized paths _only_. Each route must have at least one unique parameter. If not, there's no way of unambiguously resolve a path from an empty state.
 
 Consider the following routes:
+
 ```js
-const router = route('/', [
-  route('/about'),
-  route('/contact')
-])
+const router = route('/', [route('/about'), route('/contact')])
 ```
 
 What route should be resolved from an empty state? Since both `/about` and `/contact` above resolves to an empty state object, there's no way to encode an empty state unambiguously back to either of them. The solution to this would be to introduce the page name as a parameter instead:
+
 ```js
 const router = route('/', route('/:page'))
 ```
@@ -136,36 +142,45 @@ const router = route('/', route('/:page'))
 Now, `/about` would resolve to the state `{page: 'about'}` which unambiguously can map back to `/page`, and an empty state can map to `/`. To figure out if you are on the index page, you can check for `state.page == null`, (and set the state.page to null to navigate back to the index)
 
 ### No query params
+
 Query parameters doesn't work too well with router scopes as they operate in a global namespace. A possible workaround is to "fake" query params in a path segment using transforms:
+
 ```js
 function decodeParams(pathsegment) {
-  return pathsegment.split(';')
-    .reduce((params, pair) => {
-      const [key, value] = pair.split('=')
-      params[key] = value
-      return params
-    }, {})
+  return pathsegment.split(';').reduce((params, pair) => {
+    const [key, value] = pair.split('=')
+    params[key] = value
+    return params
+  }, {})
 }
 function encodeParams(params) {
   return Object.keys(params)
-    .map(key => `${key}=${params[key]}`)
+    .map((key) => `${key}=${params[key]}`)
     .join(';')
 }
 
-const router = route('/some/:section/:settings', {
-  transform: {
-    settings: {
-      toState: decodeParams,
-      toPath: encodeParams
-    }
-  }
-}, route('/other/:page'))
+const router = route(
+  '/some/:section/:settings',
+  {
+    transform: {
+      settings: {
+        toState: decodeParams,
+        toPath: encodeParams,
+      },
+    },
+  },
+  route('/other/:page')
+)
 ```
+
 This call...
+
 ```js
 router.decode('/some/bar/width=full;view=details')
 ```
-...will return the following state 
+
+...will return the following state
+
 ```js
 {
   section: 'bar',
@@ -175,46 +190,57 @@ router.decode('/some/bar/width=full;view=details')
   }
 }
 ```
+
 Conversely calling
+
 ```js
 router.encode({
   section: 'bar',
   settings: {
     width: 'full',
     view: 'details',
-  }
+  },
 })
 ```
+
 will return
+
 ```
 /some/bar/width=full;view=details
 ```
 
 ## Scopes
+
 A scope is a separate router state space, allowing different parts of an application to be completely agnostic about the overall routing schema is like. Let's illustrate:
 
 ```js
 import {route} from './src'
 function findAppByName(name) {
-  return name === 'pokemon' && {
-    name: 'pokemon',
-    router: route('/:section', route('/:pokemonName'))
-  }
+  return (
+    name === 'pokemon' && {
+      name: 'pokemon',
+      router: route('/:section', route('/:pokemonName')),
+    }
+  )
 }
 
 const router = route('/', [
   route('/users/:username'),
-  route('/apps/:appName', params => {
+  route('/apps/:appName', (params) => {
     const app = findAppByName(params.appName)
     return app && route.scope(app.name, '/', app.router)
-  })
+  }),
 ])
 ```
+
 Decoding the following path...
+
 ```js
 router.decode('/apps/pokemon/stats/bulbasaur')
 ```
+
 ...will give us the state:
+
 ```js
 {
   appName: 'pokemon',
@@ -227,22 +253,28 @@ router.decode('/apps/pokemon/stats/bulbasaur')
 
 ## Intents
 
-An _intent_ is a kind of global route that can be used for dispatching user actions. The intent route can be mounted with 
+An _intent_ is a kind of global route that can be used for dispatching user actions. The intent route can be mounted with
+
 ```js
 route.intents(<basePath>)
 ```
+
 Intent links bypasses scoping, and will always be mapped to the configured `basePath`.
 
 An intent consists of a name, e.g. `open` and a set of parameters, e.g. `{id: 'abc33'}` and the easiest way to make a link to an intent is using the `IntentLink` React component:
 
 ```jsx
-<IntentLink intent="open" params={{id: abc33}}>Open document</IntentLink>
+<IntentLink intent="open" params={{id: abc33}}>
+  Open document
+</IntentLink>
 ```
+
 This will generate an `<a` tag with a href like `/<base path>/open/id=abc33` depending on where the intent handler is mounted
 
 State router comes with a built in intent-route parser that decodes an intent route to route state.
 
 Full example:
+
 ```
 const router = route('/', [
   route('/users/:username'),
@@ -270,18 +302,16 @@ const router = route('/pages/:page')
 
 router.isNotFound('/some/invalid/path')
 // => true
-
 ```
 
 ## Base paths
 
 Using a base path is as simple as adding a toplevel route with no params:
+
 ```js
-const router = route('/some/basepath', [
- route('/:foo'),
- route('/:bar')
-])
+const router = route('/some/basepath', [route('/:foo'), route('/:bar')])
 ```
+
 Any empty router state will resolve to `/some/basepath`. To check if you should redirect to the base path on app init, you can use the `router.isRoot(path)` and `router.getBasePath()` method:
 
 ```js
