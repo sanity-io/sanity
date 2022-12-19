@@ -75,7 +75,7 @@ export const Editor = ({
   const renderBlock: RenderBlockFunction = useCallback((props) => {
     const {value: block, type, children} = props
     if (editor.current) {
-      const textType = editor.current.types.block
+      const textType = editor.current.schemaTypes.block
       // Text blocks
       if (type.name === textType.name) {
         return (
@@ -97,11 +97,11 @@ export const Editor = ({
   }, [])
 
   const renderChild: RenderChildFunction = useCallback((props) => {
-    const {type, children} = props
+    const {schemaType, children} = props
     if (editor.current) {
-      const textType = editor.current.types.span
+      const textType = editor.current.schemaTypes.span
       // Text spans
-      if (type.name === textType.name) {
+      if (schemaType.name === textType.name) {
         return children
       }
       // Inline objects
@@ -199,7 +199,7 @@ export const Editor = ({
   return (
     <PortableTextEditor
       ref={editor}
-      type={portableTextType}
+      schemaType={portableTextType}
       onChange={handleChange}
       incomingPatches$={incomingPatches$}
       value={value}

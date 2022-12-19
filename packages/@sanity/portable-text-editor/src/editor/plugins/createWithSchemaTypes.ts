@@ -8,14 +8,14 @@ import {
   isPortableTextListBlock,
 } from '@sanity/types'
 import {debugWithName} from '../../utils/debug'
-import {PortableTextMemberTypes, PortableTextSlateEditor} from '../../types/editor'
+import {PortableTextMemberSchemaTypes, PortableTextSlateEditor} from '../../types/editor'
 
 const debug = debugWithName('plugin:withSchemaTypes')
 /**
  * This plugin makes sure that schema types are recognized properly by Slate as blocks, voids, inlines
  *
  */
-export function createWithSchemaTypes(types: PortableTextMemberTypes) {
+export function createWithSchemaTypes(types: PortableTextMemberSchemaTypes) {
   return function withSchemaTypes(editor: PortableTextSlateEditor): PortableTextSlateEditor {
     editor.isTextBlock = (value: unknown): value is PortableTextTextBlock => {
       return isPortableTextTextBlock(value) && value._type === types.block.name

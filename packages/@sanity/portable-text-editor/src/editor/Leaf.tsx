@@ -5,7 +5,7 @@ import {uniq} from 'lodash'
 import {PortableTextObject, PortableTextTextBlock} from '@sanity/types'
 import {
   RenderChildFunction,
-  PortableTextMemberTypes,
+  PortableTextMemberSchemaTypes,
   RenderAnnotationFunction,
   RenderDecoratorFunction,
 } from '../types/editor'
@@ -19,7 +19,7 @@ const debugRenders = false
 interface LeafProps extends RenderLeafProps {
   children: ReactElement
   keyGenerator: () => string
-  types: PortableTextMemberTypes
+  schemaTypes: PortableTextMemberSchemaTypes
   renderAnnotation?: RenderAnnotationFunction
   renderChild?: RenderChildFunction
   renderDecorator?: RenderDecoratorFunction
@@ -29,21 +29,21 @@ interface LeafProps extends RenderLeafProps {
 export const Leaf = (props: LeafProps) => {
   const editor = useSlateStatic()
   const selected = useSelected()
-  const {attributes, children, leaf, types, keyGenerator, renderChild, readOnly} = props
+  const {attributes, children, leaf, schemaTypes, keyGenerator, renderChild, readOnly} = props
   const spanRef = React.useRef(null)
   let returnedChildren = children
   const focused = (selected && editor.selection && Range.isCollapsed(editor.selection)) || false
 
   // Render text nodes
-  if (Text.isText(leaf) && leaf._type === types.span.name) {
+  if (Text.isText(leaf) && leaf._type === schemaTypes.span.name) {
     const block = children.props.parent as PortableTextTextBlock | undefined
     const path = block ? [{_key: block._key}, 'children', {_key: leaf._key}] : []
-    const decoratorValues = types.decorators.map((dec) => dec.value)
+    const decoratorValues = schemaTypes.decorators.map((dec) => dec.value)
     const marks: string[] = uniq(
       (Array.isArray(leaf.marks) ? leaf.marks : []).filter((mark) => decoratorValues.includes(mark))
     )
     marks.forEach((mark) => {
-      const type = types.decorators.find((dec) => dec.value === mark)
+      const type = schemaTypes.decorators.find((dec) => dec.value === mark)
       if (type && props.renderDecorator) {
         returnedChildren = props.renderDecorator({
           children: returnedChildren,
@@ -69,7 +69,7 @@ export const Leaf = (props: LeafProps) => {
 
     if (block && annotations.length > 0) {
       annotations.forEach((annotation) => {
-        const type = types.annotations.find((t) => t.name === annotation._type)
+        const type = schemaTypes.annotations.find((t) => t.name === annotation._type)
         if (type) {
           if (props.renderAnnotation) {
             returnedChildren = (
@@ -103,7 +103,7 @@ export const Leaf = (props: LeafProps) => {
         returnedChildren = renderChild({
           children: defaultRendered,
           value: child,
-          type: types.span,
+          schemaType: schemaTypes.span,
           focused,
           selected,
           path,

@@ -1,12 +1,12 @@
 import {PortableTextBlock} from '@sanity/types'
 import {BaseRange, Editor, Range} from 'slate'
-import {EditorSelection, EditorSelectionPoint, PortableTextMemberTypes} from '../types/editor'
+import {EditorSelection, EditorSelectionPoint, PortableTextMemberSchemaTypes} from '../types/editor'
 import {createArrayedPath, createKeyedPath} from './paths'
 
 export function toPortableTextRange(
   value: PortableTextBlock[] | undefined,
   range: BaseRange | Partial<BaseRange> | null,
-  types: PortableTextMemberTypes
+  types: PortableTextMemberSchemaTypes
 ): EditorSelection {
   if (!range) {
     return null

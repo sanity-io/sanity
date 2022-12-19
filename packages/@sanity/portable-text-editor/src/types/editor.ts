@@ -310,7 +310,7 @@ export type OnPasteResultOrPromise = OnPasteResult | Promise<OnPasteResult>
 export type OnPasteFn = (arg0: {
   event: React.ClipboardEvent
   path: Path
-  types: PortableTextMemberTypes
+  schemaTypes: PortableTextMemberSchemaTypes
   value: PortableTextBlock[] | undefined
 }) => OnPasteResultOrPromise
 
@@ -350,7 +350,7 @@ export interface BlockChildRenderProps {
   focused: boolean
   path: Path
   selected: boolean
-  type: ObjectSchemaType
+  schemaType: ObjectSchemaType
   value: PortableTextChild
 }
 
@@ -429,7 +429,7 @@ export type ScrollSelectionIntoViewFunction = (
 ) => void
 
 /** @internal */
-export type PortableTextMemberTypes = {
+export type PortableTextMemberSchemaTypes = {
   annotations: ObjectSchemaType[]
   block: ObjectSchemaType
   blockObjects: ObjectSchemaType[]

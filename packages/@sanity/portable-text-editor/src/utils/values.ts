@@ -7,7 +7,7 @@ import {
   PortableTextObject,
   PortableTextTextBlock,
 } from '@sanity/types'
-import {PortableTextMemberTypes} from '../types/editor'
+import {PortableTextMemberSchemaTypes} from '../types/editor'
 
 const EMPTY_MARKDEFS: PortableTextObject[] = []
 
@@ -29,14 +29,14 @@ function keepObjectEquality(
 
 export function toSlateValue(
   value: PortableTextBlock[] | undefined,
-  {types}: {types: PortableTextMemberTypes},
+  {schemaTypes}: {schemaTypes: PortableTextMemberSchemaTypes},
   keyMap: Record<string, any> = {}
 ): Descendant[] {
   if (value && Array.isArray(value)) {
     return value.map((block) => {
       const {_type, _key, ...rest} = block
       const voidChildren = [{_key: `${_key}-void-child`, _type: 'span', text: '', marks: []}]
-      const isPortableText = block && block._type === types.block.name
+      const isPortableText = block && block._type === schemaTypes.block.name
       if (isPortableText) {
         const textBlock = block as PortableTextTextBlock
         let hasInlines = false
@@ -65,7 +65,7 @@ export function toSlateValue(
           return block
         }
         if (hasMissingStyle) {
-          rest.style = types.styles[0].value
+          rest.style = schemaTypes.styles[0].value
         }
         if (hasMissingMarkDefs) {
           rest.markDefs = EMPTY_MARKDEFS
@@ -123,7 +123,7 @@ export function fromSlateValue(
 
 export function isEqualToEmptyEditor(
   children: Descendant[] | PortableTextBlock[],
-  types: PortableTextMemberTypes
+  types: PortableTextMemberSchemaTypes
 ): boolean {
   return (
     children === undefined ||

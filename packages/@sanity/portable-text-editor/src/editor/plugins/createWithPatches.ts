@@ -19,7 +19,11 @@ import {insert, setIfMissing, unset} from '../../patch/PatchEvent'
 import type {Patch} from '../../types/patch'
 
 import {fromSlateValue, isEqualToEmptyEditor} from '../../utils/values'
-import {EditorChange, PortableTextMemberTypes, PortableTextSlateEditor} from '../../types/editor'
+import {
+  EditorChange,
+  PortableTextMemberSchemaTypes,
+  PortableTextSlateEditor,
+} from '../../types/editor'
 import {debugWithName} from '../../utils/debug'
 import {PATCHING, isPatching, withoutPatching} from '../../utils/withoutPatching'
 import {KEY_TO_VALUE_ELEMENT} from '../../utils/weakMaps'
@@ -76,7 +80,7 @@ export interface PatchFunctions {
 interface Options {
   patchFunctions: PatchFunctions
   change$: Subject<EditorChange>
-  types: PortableTextMemberTypes
+  schemaTypes: PortableTextMemberSchemaTypes
   syncValue: () => void
   incomingPatches$?: Observable<{
     patches: Patch[]
@@ -87,7 +91,7 @@ interface Options {
 export function createWithPatches({
   patchFunctions,
   change$,
-  types,
+  schemaTypes,
   syncValue,
   incomingPatches$,
 }: Options): [
@@ -98,7 +102,7 @@ export function createWithPatches({
   // The editor.children would no longer contain that information if the node is already deleted.
   let previousChildren: Descendant[]
 
-  const patchToOperations = createPatchToOperations(types, defaultKeyGenerator)
+  const patchToOperations = createPatchToOperations(schemaTypes, defaultKeyGenerator)
   let patchSubscription: Subscription
   const cleanupFn = () => {
     if (patchSubscription) {
@@ -160,12 +164,12 @@ export function createWithPatches({
         // Update previous children here before we apply
         previousChildren = editor.children
 
-        const editorWasEmpty = isEqualToEmptyEditor(previousChildren, types)
+        const editorWasEmpty = isEqualToEmptyEditor(previousChildren, schemaTypes)
 
         // Apply the operation
         apply(operation)
 
-        const editorIsEmpty = isEqualToEmptyEditor(editor.children, types)
+        const editorIsEmpty = isEqualToEmptyEditor(editor.children, schemaTypes)
 
         if (!isPatching(editor)) {
           debug(`Editor is not producing patch for operation ${operation.type}`, operation)
@@ -177,7 +181,7 @@ export function createWithPatches({
         if (editorWasEmpty && operation.type !== 'set_selection') {
           patches.push(setIfMissing([], []))
           previousChildren.forEach((c, index) => {
-            patches.push(insert(fromSlateValue([c], types.block.name), 'before', [index]))
+            patches.push(insert(fromSlateValue([c], schemaTypes.block.name), 'before', [index]))
           })
         }
         switch (operation.type) {
@@ -241,7 +245,7 @@ export function createWithPatches({
             type: 'unset',
             previousValue: fromSlateValue(
               previousChildren,
-              types.block.name,
+              schemaTypes.block.name,
               KEY_TO_VALUE_ELEMENT.get(editor)
             ),
           })

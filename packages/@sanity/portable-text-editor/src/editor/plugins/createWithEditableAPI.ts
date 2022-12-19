@@ -12,7 +12,7 @@ import {DOMNode} from '@sanity/slate-react/dist/utils/dom'
 import {
   EditableAPIDeleteOptions,
   EditorSelection,
-  PortableTextMemberTypes,
+  PortableTextMemberSchemaTypes,
   PortableTextSlateEditor,
 } from '../../types/editor'
 import {toSlateValue, fromSlateValue} from '../../utils/values'
@@ -26,7 +26,7 @@ const debug = debugWithName('API:editable')
 
 export function createWithEditableAPI(
   portableTextEditor: PortableTextEditor,
-  types: PortableTextMemberTypes,
+  types: PortableTextMemberSchemaTypes,
   keyGenerator: () => string
 ) {
   return function withEditableAPI(editor: PortableTextSlateEditor): PortableTextSlateEditor {
