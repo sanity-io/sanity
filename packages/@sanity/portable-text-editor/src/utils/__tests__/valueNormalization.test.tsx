@@ -8,7 +8,7 @@ import {render, waitFor} from '@testing-library/react'
 
 import React from 'react'
 import {PortableTextEditor} from '../../editor/PortableTextEditor'
-import {PortableTextEditorTester, type} from '../../editor/__tests__/PortableTextEditorTester'
+import {PortableTextEditorTester, schemaType} from '../../editor/__tests__/PortableTextEditorTester'
 
 describe('values: normalization', () => {
   it("accepts incoming value with blocks without a style or markDefs prop, but doesn't leave them without them when editing them", async () => {
@@ -33,7 +33,7 @@ describe('values: normalization', () => {
       <PortableTextEditorTester
         onChange={onChange}
         ref={editorRef}
-        type={type}
+        schemaType={schemaType}
         value={initialValue}
       />
     )

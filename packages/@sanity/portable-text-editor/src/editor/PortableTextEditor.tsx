@@ -17,7 +17,7 @@ import {createEditor, Descendant, Transforms} from 'slate'
 import {debounce, isEqual, throttle} from 'lodash'
 import {Slate, withReact} from '@sanity/slate-react'
 import {compileType} from '../utils/schema'
-import {getPortableTextMemberTypes} from '../utils/getPortableTextMemberTypes'
+import {getPortableTextMemberSchemaTypes} from '../utils/getPortableTextMemberSchemaTypes'
 import type {Patch} from '../types/patch'
 import {
   EditorSelection,
@@ -28,7 +28,7 @@ import {
   PatchObservable,
   PortableTextSlateEditor,
   EditableAPIDeleteOptions,
-  PortableTextMemberTypes,
+  PortableTextMemberSchemaTypes,
 } from '../types/editor'
 import {validateValue} from '../utils/validateValue'
 import {debugWithName} from '../utils/debug'
@@ -64,7 +64,7 @@ export type PortableTextEditorProps = PropsWithChildren<{
   /**
    * Schema type for the portable text field
    */
-  type: ArraySchemaType<PortableTextBlock> | ArrayDefinition
+  schemaType: ArraySchemaType<PortableTextBlock> | ArrayDefinition
 
   /**
    * Maximum number of blocks to allow within the editor
@@ -109,7 +109,7 @@ export class PortableTextEditor extends React.Component<
   public change$: EditorChanges = new Subject()
   public keyGenerator: () => string
   public maxBlocks: number | undefined
-  public types: PortableTextMemberTypes
+  public schemaTypes: PortableTextMemberSchemaTypes
   public readOnly: boolean
   public slateInstance: PortableTextSlateEditor
   public type: ArraySchemaType<PortableTextBlock>
@@ -124,7 +124,7 @@ export class PortableTextEditor extends React.Component<
   constructor(props: PortableTextEditorProps) {
     super(props)
 
-    if (!props.type) {
+    if (!props.schemaType) {
       throw new Error('PortableTextEditor: missing "type" property')
     }
 
@@ -138,12 +138,14 @@ export class PortableTextEditor extends React.Component<
     }
 
     // Test if we have a compiled schema type, if not, conveniently compile it
-    this.type = props.type.hasOwnProperty('jsonType') ? props.type : compileType(props.type)
+    this.type = props.schemaType.hasOwnProperty('jsonType')
+      ? props.schemaType
+      : compileType(props.schemaType)
     // Indicate that we are loading
     this.change$.next({type: 'loading', isLoading: true})
 
     // Get the block types feature set (lookup table)
-    this.types = getPortableTextMemberTypes(this.type)
+    this.schemaTypes = getPortableTextMemberSchemaTypes(this.type)
 
     // Setup keyGenerator (either from props, or default)
     this.keyGenerator = props.keyGenerator || defaultKeyGenerator
@@ -198,7 +200,7 @@ export class PortableTextEditor extends React.Component<
     this.readOnly = Boolean(props.readOnly) || false
     // Validate the incoming value
     if (props.value) {
-      const validation = validateValue(props.value, this.types, this.keyGenerator)
+      const validation = validateValue(props.value, this.schemaTypes, this.keyGenerator)
       if (props.value && !validation.valid) {
         this.change$.next({type: 'loading', isLoading: false})
         this.change$.next({
@@ -221,7 +223,7 @@ export class PortableTextEditor extends React.Component<
         getValueOrInitialValue(props.value, [
           this.slateInstance.createPlaceholderBlock(),
         ] as PortableTextBlock[]),
-        {types: this.types},
+        {schemaTypes: this.schemaTypes},
         KEY_TO_SLATE_ELEMENT.get(this.slateInstance)
       ),
     }
@@ -304,13 +306,13 @@ export class PortableTextEditor extends React.Component<
       return
     }
     // If the  editor is empty and there is a new value, just set that value directly.
-    if (isEqualToEmptyEditor(this.slateInstance.children, this.types) && this.props.value) {
+    if (isEqualToEmptyEditor(this.slateInstance.children, this.schemaTypes) && this.props.value) {
       const oldSel = this.slateInstance.selection
       Transforms.deselect(this.slateInstance)
       this.slateInstance.children = toSlateValue(
         val,
         {
-          types: this.types,
+          schemaTypes: this.schemaTypes,
         },
         KEY_TO_SLATE_ELEMENT.get(this.slateInstance)
       )
@@ -325,7 +327,7 @@ export class PortableTextEditor extends React.Component<
     const isEqualToValue = !(val || []).some((blk, index) => {
       const compareBlock = toSlateValue(
         [blk],
-        {types: this.types},
+        {schemaTypes: this.schemaTypes},
         KEY_TO_SLATE_ELEMENT.get(this.slateInstance)
       )[0]
       if (!isEqual(compareBlock, this.slateInstance.children[index])) {
@@ -339,7 +341,7 @@ export class PortableTextEditor extends React.Component<
     }
     // Value is different - validate it.
     debug('Validating')
-    const validation = validateValue(val, this.types, this.keyGenerator)
+    const validation = validateValue(val, this.schemaTypes, this.keyGenerator)
     if (val && !validation.valid) {
       this.change$.next({
         type: 'invalidValue',
@@ -356,7 +358,7 @@ export class PortableTextEditor extends React.Component<
       const slateValueFromProps = toSlateValue(
         val,
         {
-          types: this.types,
+          schemaTypes: this.schemaTypes,
         },
         KEY_TO_SLATE_ELEMENT.get(this.slateInstance)
       )
@@ -422,9 +424,6 @@ export class PortableTextEditor extends React.Component<
   }
   static focusChild = (editor: PortableTextEditor): PortableTextChild | undefined => {
     return editor.editable?.focusChild()
-  }
-  static getTypes = (editor: PortableTextEditor) => {
-    return editor.types
   }
   static getSelection = (editor: PortableTextEditor) => {
     return editor.editable ? editor.editable.getSelection() : null

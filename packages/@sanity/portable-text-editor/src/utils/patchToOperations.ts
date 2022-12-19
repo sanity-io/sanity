@@ -5,7 +5,7 @@ import {Path, KeyedSegment, PathSegment, PortableTextBlock, PortableTextChild} f
 import {isEqual} from 'lodash'
 import type {Patch, InsertPatch, UnsetPatch, SetPatch, DiffMatchPatch} from '../types/patch'
 import {applyAll} from '../patch/applyPatch'
-import {PortableTextMemberTypes} from '../types/editor'
+import {PortableTextMemberSchemaTypes} from '../types/editor'
 import {toSlateValue} from './values'
 import {debugWithName} from './debug'
 import {KEY_TO_SLATE_ELEMENT} from './weakMaps'
@@ -16,7 +16,7 @@ const debug = debugWithName('operationToPatches')
 const dmp = new DMP.diff_match_patch()
 
 export function createPatchToOperations(
-  types: PortableTextMemberTypes,
+  schemaTypes: PortableTextMemberSchemaTypes,
   keyGenerator: () => string
 ): (
   editor: Editor,
@@ -86,7 +86,7 @@ export function createPatchToOperations(
       const {items, position} = patch
       const blocksToInsert = toSlateValue(
         items as PortableTextBlock[],
-        {types},
+        {schemaTypes},
         KEY_TO_SLATE_ELEMENT.get(editor)
       ) as Descendant[]
       const posKey = findLastKey(patch.path)
@@ -120,7 +120,7 @@ export function createPatchToOperations(
       block &&
       toSlateValue(
         [{...block, children: items as PortableTextChild[]}],
-        {types},
+        {schemaTypes},
         KEY_TO_SLATE_ELEMENT.get(editor)
       )
 

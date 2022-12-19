@@ -4,7 +4,7 @@ import {Editor, Transforms, Path, Range} from 'slate'
 import isHotkey from 'is-hotkey'
 import {ReactEditor} from '@sanity/slate-react'
 import {isPortableTextSpan, isPortableTextTextBlock} from '@sanity/types'
-import {PortableTextMemberTypes, PortableTextSlateEditor} from '../../types/editor'
+import {PortableTextMemberSchemaTypes, PortableTextSlateEditor} from '../../types/editor'
 import {HotkeyOptions} from '../../types/options'
 import {debugWithName} from '../../utils/debug'
 import {toSlateValue} from '../../utils/values'
@@ -27,7 +27,7 @@ const DEFAULT_HOTKEYS: HotkeyOptions = {
  *
  */
 export function createWithHotkeys(
-  types: PortableTextMemberTypes,
+  types: PortableTextMemberSchemaTypes,
   keyGenerator: () => string,
   portableTextEditor: PortableTextEditor,
   hotkeysFromOptions?: HotkeyOptions

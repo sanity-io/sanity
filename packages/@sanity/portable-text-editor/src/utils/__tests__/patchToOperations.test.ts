@@ -1,16 +1,16 @@
 import {createEditor, Descendant} from 'slate'
-import {type} from '../../editor/__tests__/PortableTextEditorTester'
+import {schemaType} from '../../editor/__tests__/PortableTextEditorTester'
 import {createPatchToOperations} from '../patchToOperations'
 import {withPlugins} from '../../editor/plugins'
 import {keyGenerator, Patch, PortableTextEditor, PortableTextEditorProps} from '../..'
 import {fromSlateValue} from '../values'
-import {getPortableTextMemberTypes} from '../getPortableTextMemberTypes'
+import {getPortableTextMemberSchemaTypes} from '../getPortableTextMemberSchemaTypes'
 
-const types = getPortableTextMemberTypes(type)
+const types = getPortableTextMemberSchemaTypes(schemaType)
 
 const patchToOperations = createPatchToOperations(types, keyGenerator)
 const editor = withPlugins(createEditor(), {
-  portableTextEditor: new PortableTextEditor({type} as PortableTextEditorProps),
+  portableTextEditor: new PortableTextEditor({schemaType} as PortableTextEditorProps),
 })
 
 const createDefaultValue = (): Descendant[] => [

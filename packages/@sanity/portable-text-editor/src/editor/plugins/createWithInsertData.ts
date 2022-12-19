@@ -2,7 +2,11 @@ import {Node, Transforms, Editor, Descendant, Range} from 'slate'
 import {htmlToBlocks, normalizeBlock} from '@sanity/block-tools'
 import {ReactEditor} from '@sanity/slate-react'
 import {PortableTextBlock, PortableTextChild} from '@sanity/types'
-import {EditorChanges, PortableTextMemberTypes, PortableTextSlateEditor} from '../../types/editor'
+import {
+  EditorChanges,
+  PortableTextMemberSchemaTypes,
+  PortableTextSlateEditor,
+} from '../../types/editor'
 import {fromSlateValue, toSlateValue} from '../../utils/values'
 import {validateValue} from '../../utils/validateValue'
 import {debugWithName} from '../../utils/debug'
@@ -15,12 +19,12 @@ const debug = debugWithName('plugin:withInsertData')
  */
 export function createWithInsertData(
   change$: EditorChanges,
-  types: PortableTextMemberTypes,
+  schemaTypes: PortableTextMemberSchemaTypes,
   keyGenerator: () => string
 ) {
   return function withInsertData(editor: PortableTextSlateEditor): PortableTextSlateEditor {
-    const blockTypeName = types.block.name
-    const spanTypeName = types.span.name
+    const blockTypeName = schemaTypes.block.name
+    const spanTypeName = schemaTypes.span.name
 
     const toPlainText = (blocks: PortableTextBlock[]) => {
       return blocks
@@ -32,12 +36,14 @@ export function createWithInsertData(
                   return child.text
                 }
                 return `[${
-                  types.inlineObjects.find((t) => t.name === child._type)?.title || 'Object'
+                  schemaTypes.inlineObjects.find((t) => t.name === child._type)?.title || 'Object'
                 }]`
               })
               .join('')
           }
-          return `[${types.blockObjects.find((t) => t.name === block._type)?.title || 'Object'}]`
+          return `[${
+            schemaTypes.blockObjects.find((t) => t.name === block._type)?.title || 'Object'
+          }]`
         })
         .join('\n\n')
     }
@@ -126,12 +132,12 @@ export function createWithInsertData(
         if (Array.isArray(parsed) && parsed.length > 0) {
           const slateValue = regenerateKeys(
             editor,
-            toSlateValue(parsed, {types}),
+            toSlateValue(parsed, {schemaTypes}),
             keyGenerator,
             spanTypeName
           )
           // Validate the result
-          const validation = validateValue(parsed, types, keyGenerator)
+          const validation = validateValue(parsed, schemaTypes, keyGenerator)
           // Bail out if it's not valid
           if (!validation.valid) {
             const errorDescription = `${validation.resolution?.description}`
@@ -169,10 +175,10 @@ export function createWithInsertData(
         let insertedType
 
         if (html) {
-          portableText = htmlToBlocks(html, types.portableText).map((block) =>
+          portableText = htmlToBlocks(html, schemaTypes.portableText).map((block) =>
             normalizeBlock(block, {blockTypeName})
           ) as PortableTextBlock[]
-          fragment = toSlateValue(portableText, {types})
+          fragment = toSlateValue(portableText, {schemaTypes})
           insertedType = 'HTML'
         } else {
           // plain text
@@ -183,17 +189,17 @@ export function createWithInsertData(
             )
             .join('')
           const textToHtml = `<html><body>${blocks}</body></html>`
-          portableText = htmlToBlocks(textToHtml, types.portableText).map((block) =>
+          portableText = htmlToBlocks(textToHtml, schemaTypes.portableText).map((block) =>
             normalizeBlock(block, {blockTypeName})
           ) as PortableTextBlock[]
           fragment = toSlateValue(portableText, {
-            types,
+            schemaTypes,
           })
           insertedType = 'text'
         }
 
         // Validate the result
-        const validation = validateValue(portableText, types, keyGenerator)
+        const validation = validateValue(portableText, schemaTypes, keyGenerator)
 
         // Bail out if it's not valid
         if (!validation.valid) {

@@ -106,18 +106,18 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
   const readOnly = usePortableTextEditorReadOnlyStatus()
   const ref = useForwardedRef(forwardedRef)
 
-  const {change$, keyGenerator, types, slateInstance: slateEditor} = portableTextEditor
+  const {change$, keyGenerator, schemaTypes, slateInstance: slateEditor} = portableTextEditor
 
-  const blockTypeName = types.block.name
+  const blockTypeName = schemaTypes.block.name
 
   // React/UI-spesific plugins
   const withInsertData = useMemo(
-    () => createWithInsertData(change$, types, keyGenerator),
-    [change$, keyGenerator, types]
+    () => createWithInsertData(change$, schemaTypes, keyGenerator),
+    [change$, keyGenerator, schemaTypes]
   )
   const withHotKeys = useMemo(
-    () => createWithHotkeys(types, keyGenerator, portableTextEditor, hotkeys),
-    [hotkeys, keyGenerator, portableTextEditor, types]
+    () => createWithHotkeys(schemaTypes, keyGenerator, portableTextEditor, hotkeys),
+    [hotkeys, keyGenerator, portableTextEditor, schemaTypes]
   )
 
   // Output a minimal React editor inside Editable when in readOnly mode.
@@ -136,7 +136,7 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
     (eProps: RenderElementProps) => (
       <Element
         {...eProps}
-        types={types}
+        schemaTypes={schemaTypes}
         readOnly={readOnly}
         renderBlock={renderBlock}
         renderChild={renderChild}
@@ -145,7 +145,7 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
         spellCheck={spellCheck}
       />
     ),
-    [types, spellCheck, readOnly, renderBlock, renderChild, renderListItem, renderStyle]
+    [schemaTypes, spellCheck, readOnly, renderBlock, renderChild, renderListItem, renderStyle]
   )
 
   const renderLeaf = useCallback(
@@ -159,7 +159,7 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
             <Leaf
               {...lProps}
               keyGenerator={keyGenerator}
-              types={types}
+              schemaTypes={schemaTypes}
               renderAnnotation={renderAnnotation}
               renderChild={renderChild}
               renderDecorator={renderDecorator}
@@ -172,7 +172,7 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
         <Leaf
           {...lProps}
           keyGenerator={keyGenerator}
-          types={types}
+          schemaTypes={schemaTypes}
           renderAnnotation={renderAnnotation}
           renderChild={renderChild}
           renderDecorator={renderDecorator}
@@ -187,7 +187,7 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
       renderChild,
       renderDecorator,
       renderPlaceholder,
-      types,
+      schemaTypes,
     ]
   )
 
@@ -256,7 +256,7 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
             event,
             value: PortableTextEditor.getValue(portableTextEditor),
             path: slateEditor.selection?.focus.path || [],
-            types,
+            schemaTypes,
           })
         )
       })
@@ -269,7 +269,7 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
             return
           }
           if (result && result.insert) {
-            slateEditor.insertFragment(toSlateValue(result.insert, {types}))
+            slateEditor.insertFragment(toSlateValue(result.insert, {schemaTypes}))
             change$.next({type: 'loading', isLoading: false})
             return
           }
@@ -281,7 +281,7 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
           return error
         })
     },
-    [change$, onPaste, portableTextEditor, types, slateEditor]
+    [change$, onPaste, portableTextEditor, schemaTypes, slateEditor]
   )
 
   const handleOnFocus = useCallback(() => {
@@ -319,7 +319,7 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
   }, [portableTextEditor, scrollSelectionIntoView])
 
   const decorate = useCallback(() => {
-    if (isEqualToEmptyEditor(slateEditor.children, types)) {
+    if (isEqualToEmptyEditor(slateEditor.children, schemaTypes)) {
       return [
         {
           anchor: {
@@ -335,7 +335,7 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
       ]
     }
     return EMPTY_DECORATORS
-  }, [types, slateEditor.children])
+  }, [slateEditor.children])
 
   // The editor
   const slateEditable = useMemo(
