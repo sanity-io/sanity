@@ -7,7 +7,7 @@ import studioConfig from %STUDIO_CONFIG_LOCATION%
 renderStudio(
   document.getElementById("sanity"),
   studioConfig,
-  %STUDIO_REACT_STRICT_MODE%
+  {reactStrictMode: %STUDIO_REACT_STRICT_MODE%, basePath: %STUDIO_BASE_PATH%}
 )
 `
 
@@ -21,18 +21,20 @@ const studioConfig = {missingConfigFile: true}
 renderStudio(
   document.getElementById("sanity"),
   studioConfig,
-  %STUDIO_REACT_STRICT_MODE%
+  {reactStrictMode: %STUDIO_REACT_STRICT_MODE%, basePath: %STUDIO_BASE_PATH%}
 )
 `
 
 export function getEntryModule(options: {
   reactStrictMode: boolean
   relativeConfigLocation: string | null
+  basePath?: string
 }): string {
-  const {reactStrictMode, relativeConfigLocation} = options
+  const {reactStrictMode, relativeConfigLocation, basePath} = options
   const sourceModule = relativeConfigLocation ? entryModule : noConfigEntryModule
 
   return sourceModule
     .replace(/%STUDIO_REACT_STRICT_MODE%/, JSON.stringify(Boolean(reactStrictMode)))
     .replace(/%STUDIO_CONFIG_LOCATION%/, JSON.stringify(relativeConfigLocation))
+    .replace(/%STUDIO_BASE_PATH%/, JSON.stringify(basePath || '/'))
 }

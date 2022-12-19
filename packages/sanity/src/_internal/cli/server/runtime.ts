@@ -17,6 +17,7 @@ export interface RuntimeOptions {
   cwd: string
   reactStrictMode: boolean
   watch: boolean
+  basePath?: string
 }
 
 /**
@@ -30,6 +31,7 @@ export async function writeSanityRuntime({
   cwd,
   reactStrictMode,
   watch,
+  basePath,
 }: RuntimeOptions): Promise<void> {
   debug('Resolving Sanity monorepo information')
   const monorepo = await loadSanityMonorepo(cwd)
@@ -44,7 +46,10 @@ export async function writeSanityRuntime({
       await renderDocument({
         studioRootPath: cwd,
         monorepo,
-        props: {entryPath: `/${path.relative(cwd, path.join(runtimeDir, 'app.js'))}`},
+        props: {
+          entryPath: `/${path.relative(cwd, path.join(runtimeDir, 'app.js'))}`,
+          basePath: basePath || '/',
+        },
       })
     )
 
@@ -68,6 +73,6 @@ export async function writeSanityRuntime({
 
   await fs.writeFile(
     path.join(runtimeDir, 'app.js'),
-    getEntryModule({reactStrictMode, relativeConfigLocation})
+    getEntryModule({reactStrictMode, relativeConfigLocation, basePath})
   )
 }
