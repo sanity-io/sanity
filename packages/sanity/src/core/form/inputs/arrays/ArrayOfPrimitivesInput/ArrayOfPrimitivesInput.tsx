@@ -14,10 +14,24 @@ import {nearestIndexOf} from './utils/nearestIndex'
 import {ItemRow} from './ItemRow'
 import {ArrayOfPrimitivesFunctions} from './ArrayOfPrimitivesFunctions'
 
+interface State {
+  disableTransition: boolean
+}
 // Note: this should be a class component until React provides support for a hook version of getSnapshotBeforeUpdate
 /** @beta */
-export class ArrayOfPrimitivesInput extends React.PureComponent<ArrayOfPrimitivesInputProps> {
+export class ArrayOfPrimitivesInput extends React.PureComponent<
+  ArrayOfPrimitivesInputProps,
+  State
+> {
   _element: HTMLElement | null = null
+
+  constructor(props: ArrayOfPrimitivesInputProps) {
+    super(props)
+
+    this.state = {
+      disableTransition: false,
+    }
+  }
 
   handleAppend = (itemValue: PrimitiveValue) => {
     const {value = [], onIndexFocus, onItemAppend} = this.props
@@ -30,10 +44,24 @@ export class ArrayOfPrimitivesInput extends React.PureComponent<ArrayOfPrimitive
     onItemPrepend(itemValue)
     onIndexFocus(value.length)
   }
+
   handleSortEnd = (event: {fromIndex: number; toIndex: number}) => {
     const {onIndexFocus, onMoveItem, value} = this.props
+
     if (value) onMoveItem(event)
     onIndexFocus(event.toIndex)
+  }
+
+  // Enable transition when the user starts dragging an item
+  handleItemMoveStart = () => {
+    this.setState({disableTransition: false})
+  }
+
+  // Disable transition when the user stops dragging an item.
+  // Note: there's an issue with the transition of items when the sorting is completed, so we disable the
+  // transition effect when the user stops dragging.
+  handleItemMoveEnd = () => {
+    this.setState({disableTransition: true})
   }
 
   focus() {
@@ -154,13 +182,20 @@ export class ArrayOfPrimitivesInput extends React.PureComponent<ArrayOfPrimitive
               <Card padding={1} border>
                 <List
                   onItemMove={this.handleSortEnd}
+                  onItemMoveStart={this.handleItemMoveStart}
+                  onItemMoveEnd={this.handleItemMoveEnd}
                   items={membersWithSortIds.map((m) => m.id)}
                   sortable={isSortable}
                   gap={1}
                 >
                   {membersWithSortIds.map(({member, id}, index) => {
                     return (
-                      <Item key={member.key} id={id} sortable={isSortable} disableTransition>
+                      <Item
+                        key={member.key}
+                        id={id}
+                        sortable={isSortable}
+                        disableTransition={this.state.disableTransition}
+                      >
                         {member.kind === 'item' && (
                           <ArrayOfPrimitivesItem
                             member={member}
