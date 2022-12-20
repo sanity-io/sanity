@@ -18,8 +18,8 @@ const allowedKeys = [
   'validation',
 ]
 const allowedMarkKeys = ['decorators', 'annotations']
-const allowedStyleKeys = ['title', 'value', 'component']
-const allowedDecoratorKeys = ['title', 'value', 'icon', 'component']
+const allowedStyleKeys = ['blockEditor', 'title', 'value', 'component']
+const allowedDecoratorKeys = ['blockEditor', 'title', 'value', 'icon', 'component']
 const allowedListKeys = ['title', 'value', 'icon', 'component']
 
 export default function validateBlockType(typeDef, visitorContext) {
@@ -94,6 +94,12 @@ function validateMarks(marks, visitorContext, problems) {
       error(`"marks.decorators" declaration should be an array, got ${getTypeOf(decorators)}`)
     )
   } else if (decorators) {
+    decorators
+      .filter((dec) => !!dec.blockEditor)
+      .forEach((dec) => {
+        dec.icon = dec.blockEditor.icon
+        dec.component = dec.blockEditor.render
+      })
     decorators = validateDecorators(decorators, visitorContext, problems)
   }
 
@@ -188,6 +194,15 @@ function validateStyles(styles, visitorContext, problems) {
     } else if (!style.title) {
       problems.push(warning(`Style ${name} is missing recommended "title" property`))
     }
+    if (typeof style.blockEditor !== 'undefined') {
+      problems.push(
+        warning(
+          `Style has deprecated key "blockEditor", please refer to the documentation on how to configure the block type for version 3.`
+        )
+      )
+      // TODO remove this backward compatibility at some point.
+      style.component = style.component || style.blockEditor.render
+    }
   })
   return styles
 }
@@ -227,6 +242,16 @@ function validateDecorators(decorators, visitorContext, problems) {
     } else if (!decorator.title) {
       problems.push(warning(`Decorator ${name} is missing recommended "title" property`))
     }
+    if (typeof decorator.blockEditor !== 'undefined') {
+      problems.push(
+        warning(
+          `Decorator "${name}" has deprecated key "blockEditor", please refer to the documentation on how to configure the block type for version 3.`
+        )
+      )
+      // TODO remove this backward compatibility at some point.
+      decorator.icon = decorator.icon || decorator.blockEditor.icon
+      decorator.component = decorator.component || decorator.blockEditor.render
+    }
   })
   return decorators
 }
@@ -248,6 +273,21 @@ function validateAnnotations(annotations, visitorContext, problems) {
           `Annotation cannot have type "${annotation.type}" - annotation types must inherit from object`
         )
       )
+    }
+
+    if (typeof annotation.blockEditor !== 'undefined') {
+      problems.push(
+        warning(
+          `Annotation has deprecated key "blockEditor", please refer to the documentation on how to configure the block type for version 3.`
+        )
+      )
+      // TODO remove this backward compatibility at some point.
+      annotation.icon = annotation.icon || annotation.blockEditor.icon
+      if (annotation.blockEditor?.render && !annotation.components?.annotation) {
+        annotation.components = annotation.components || {}
+        annotation.components.annotation =
+          annotation.components.annotation || annotation.blockEditor.render
+      }
     }
 
     return {...annotation, _problems}
