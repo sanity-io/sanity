@@ -61,7 +61,7 @@ function sortingStrategy(axis: Axis) {
 }
 
 function SortableList(props: ListProps) {
-  const {items, axis, onItemMove, children, ...rest} = props
+  const {items, axis, onItemMove, onItemMoveStart, onItemMoveEnd, children, ...rest} = props
 
   const sensors = useSensors(useSensor(PointerSensor), useSensor(KeyboardSensor, SENSOR_OPTIONS))
 
@@ -75,8 +75,10 @@ function SortableList(props: ListProps) {
           toIndex: items.indexOf(over?.id as string),
         })
       }
+
+      onItemMoveEnd?.()
     },
-    [items, onItemMove]
+    [items, onItemMove, onItemMoveEnd]
   )
   const modifiers = useMemo(
     () => [restrictToParentElementWithMargins({y: 4}), ...(axis ? [restrictToAxis(axis)] : [])],
@@ -90,6 +92,7 @@ function SortableList(props: ListProps) {
       modifiers={modifiers}
       collisionDetection={closestCenter}
       onDragEnd={handleDragEnd}
+      onDragStart={onItemMoveStart}
     >
       <SortableContext items={items} strategy={axis ? sortingStrategy(axis) : undefined}>
         <Grid {...rest}>{children}</Grid>
@@ -133,19 +136,32 @@ interface ListProps extends ComponentProps<typeof Grid> {
   axis?: Axis
   items: string[]
   onItemMove?: (event: {fromIndex: number; toIndex: number}) => void
+  onItemMoveStart?: () => void
+  onItemMoveEnd?: () => void
   children?: React.ReactNode
 }
 
 export function List(props: ListProps) {
-  const {onItemMove, sortable, ...rest} = props
+  const {onItemMove, onItemMoveEnd, onItemMoveStart, sortable, ...rest} = props
 
   // Note: this is here to make SortableList API compatible with onItemMove
   const handleSortEnd = useCallback(
-    (event: {fromIndex: number; toIndex: number}) => onItemMove?.(event),
+    (event: {fromIndex: number; toIndex: number}) => {
+      onItemMove?.(event)
+    },
     [onItemMove]
   )
 
-  return sortable ? <SortableList onItemMove={handleSortEnd} {...rest} /> : <Grid {...rest} />
+  return sortable ? (
+    <SortableList
+      onItemMove={handleSortEnd}
+      onItemMoveStart={onItemMoveStart}
+      onItemMoveEnd={onItemMoveEnd}
+      {...rest}
+    />
+  ) : (
+    <Grid {...rest} />
+  )
 }
 
 interface ItemProps {
