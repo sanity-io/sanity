@@ -1,6 +1,6 @@
 import {omit, isPlainObject} from 'lodash'
 import humanizeList from 'humanize-list'
-import {error, warning} from '../createValidationResult'
+import {error, HELP_IDS, warning} from '../createValidationResult'
 import {isJSONTypeOf} from '../utils/isJSONTypeOf'
 
 const getTypeOf = (thing) => (Array.isArray(thing) ? 'array' : typeof thing)
@@ -197,7 +197,8 @@ function validateStyles(styles, visitorContext, problems) {
     if (typeof style.blockEditor !== 'undefined') {
       problems.push(
         warning(
-          `Style has deprecated key "blockEditor", please refer to the documentation on how to configure the block type for version 3.`
+          `Style has deprecated key "blockEditor", please refer to the documentation on how to configure the block type for version 3.`,
+          HELP_IDS.DEPRECATED_BLOCKEDITOR_KEY
         )
       )
       // TODO remove this backward compatibility at some point.
@@ -245,7 +246,8 @@ function validateDecorators(decorators, visitorContext, problems) {
     if (typeof decorator.blockEditor !== 'undefined') {
       problems.push(
         warning(
-          `Decorator "${name}" has deprecated key "blockEditor", please refer to the documentation on how to configure the block type for version 3.`
+          `Decorator "${name}" has deprecated key "blockEditor", please refer to the documentation on how to configure the block type for version 3.`,
+          HELP_IDS.DEPRECATED_BLOCKEDITOR_KEY
         )
       )
       // TODO remove this backward compatibility at some point.
@@ -278,7 +280,8 @@ function validateAnnotations(annotations, visitorContext, problems) {
     if (typeof annotation.blockEditor !== 'undefined') {
       problems.push(
         warning(
-          `Annotation has deprecated key "blockEditor", please refer to the documentation on how to configure the block type for version 3.`
+          `Annotation has deprecated key "blockEditor", please refer to the documentation on how to configure the block type for version 3.`,
+          HELP_IDS.DEPRECATED_BLOCKEDITOR_KEY
         )
       )
       // TODO remove this backward compatibility at some point.
