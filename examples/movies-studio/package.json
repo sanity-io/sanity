@@ -1,7 +1,7 @@
 {
   "name": "movies-studio",
   "private": true,
-  "version": "3.0.6",
+  "version": "3.1.0",
   "description": "Content studio running with schema from the moviedb init template",
   "main": "package.json",
   "author": "Sanity.io <hello@sanity.io>",
@@ -22,7 +22,7 @@
     "@sanity/google-maps-input": "studio-v3",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "sanity": "3.0.6",
+    "sanity": "3.1.0",
     "styled-components": "^5.2.0"
   },
   "bugs": {
