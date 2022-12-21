@@ -1,4 +1,4 @@
-import {ClientConfig as SanityClientConfig, SanityClient} from '@sanity/client'
+import createSanityClient, {ClientConfig as SanityClientConfig, SanityClient} from '@sanity/client'
 import {defer} from 'rxjs'
 import {map, shareReplay, startWith, switchMap} from 'rxjs/operators'
 import {memoize} from 'lodash'
@@ -19,7 +19,7 @@ export interface AuthProvider {
 
 /** @internal */
 export interface AuthStoreOptions {
-  clientFactory: (options: SanityClientConfig) => SanityClient
+  clientFactory?: (options: SanityClientConfig) => SanityClient
   projectId: string
   dataset: string
   /**
@@ -138,7 +138,7 @@ const getCurrentUser = async (
  * @internal
  */
 export function _createAuthStore({
-  clientFactory,
+  clientFactory: clientFactoryOption,
   projectId,
   dataset,
   loginMethod = 'dual',
@@ -148,6 +148,8 @@ export function _createAuthStore({
   // a new client will be created from it, otherwise, it'll only trigger a retry
   // for cookie-based auth
   const {broadcast, messages} = createBroadcastChannel<string | null>(`dual_mode_auth_${projectId}`)
+
+  const clientFactory = clientFactoryOption ?? createSanityClient
 
   // // TODO: there is currently a bug where the AuthBoundary flashes the
   // // `NotAuthenticatedComponent` on the first load after a login with
