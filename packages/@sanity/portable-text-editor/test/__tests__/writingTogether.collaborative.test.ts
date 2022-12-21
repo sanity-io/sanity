@@ -13,7 +13,8 @@ const initialValue: PortableTextBlock[] = [
   },
 ]
 
-describe('collaborate editing', () => {
+// @todo reenable when flakey tests are resolved
+describe.skip('collaborate editing', () => {
   it('will have the same start value for editor A and B', async () => {
     await setDocumentValue(initialValue)
     const editors = await getEditors()
