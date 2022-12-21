@@ -1,3 +1,4 @@
+import {optimizeLodashImports} from '@optimize-lodash/rollup-plugin'
 import {defineConfig} from '@sanity/pkg-utils'
 
 export default defineConfig({
@@ -16,4 +17,7 @@ export default defineConfig({
   },
   legacyExports: true,
   minify: false,
+  rollup: {
+    plugins: [optimizeLodashImports()],
+  },
 })

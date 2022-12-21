@@ -72,6 +72,7 @@
     "@babel/preset-env": "^7.19.1",
     "@babel/preset-react": "^7.18.6",
     "@babel/preset-typescript": "^7.18.6",
+    "@optimize-lodash/rollup-plugin": "^4.0.1",
     "@rexxars/babel-plugin-inline-json-import": "^0.3.4",
     "@sanity/client": "^3.4.1",
     "@sanity/pkg-utils": "^1.17.3",

@@ -1,6 +1,7 @@
 {
   "ignore": [
     "@babel/parser",
+    "@optimize-lodash/rollup-plugin",
     "@sanity/asset-utils",
     "@sanity/base",
     "@sanity/color",

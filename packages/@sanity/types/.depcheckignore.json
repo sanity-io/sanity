@@ -1,6 +1,7 @@
 {
   "ignore": [
     "@juggle/resize-observer",
+    "@optimize-lodash/rollup-plugin",
     "@popperjs/core",
     "@rexxars/react-sortable-hoc",
     "@sanity/bifur-client",
