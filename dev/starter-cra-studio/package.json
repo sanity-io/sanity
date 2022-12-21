@@ -1,12 +1,12 @@
 {
   "name": "starter-cra-studio",
-  "version": "3.1.0",
+  "version": "3.1.1",
   "private": true,
   "dependencies": {
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-scripts": "^5.0.0",
-    "sanity": "3.1.0",
+    "sanity": "3.1.1",
     "styled-components": "^5.2.0"
   },
   "scripts": {
