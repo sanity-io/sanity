@@ -1,10 +1,8 @@
 import path from 'path'
 import chalk from 'chalk'
 import fse from 'fs-extra'
-import {union, difference} from 'lodash'
 import debug from '../../debug'
 import versionRanges from '../../versionRanges'
-import resolveLatestVersions from '../../util/resolveLatestVersions'
 import {createPackageManifest, createSanityManifest} from './createManifest'
 import templates from './templates'
 
@@ -30,20 +28,7 @@ export default async (opts, context) => {
   spinner.succeed()
 
   // Merge global and template-specific plugins and dependencies
-  const allModules = Object.assign({}, versionRanges.core, template.dependencies || {})
-  const modules = union(Object.keys(versionRanges.core), Object.keys(template.dependencies || {}))
-
-  // Resolve latest versions of Sanity-dependencies
-  spinner = output.spinner('Resolving latest module versions').start()
-  const firstParty = modules.filter(isFirstParty)
-  const thirdParty = difference(modules, firstParty)
-  const firstPartyVersions = await resolveLatestVersions(firstParty, {asRange: true})
-  const thirdPartyVersions = thirdParty.reduce((acc, dep) => {
-    acc[dep] = allModules[dep]
-    return acc
-  }, {})
-  const dependencies = Object.assign({}, firstPartyVersions, thirdPartyVersions)
-  spinner.succeed()
+  const dependencies = Object.assign({}, versionRanges.core, template.dependencies || {})
 
   // Now create a package manifest (`package.json`) with the merged dependencies
   spinner = output.spinner('Creating default project files').start()
@@ -96,8 +81,4 @@ export default async (opts, context) => {
       }
     }
   }
-}
-
-function isFirstParty(pkg) {
-  return pkg.indexOf('@sanity/') === 0
 }

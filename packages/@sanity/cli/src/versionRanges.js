@@ -1,13 +1,13 @@
 export default {
   // Dependencies for a default Sanity installation
   core: {
-    '@sanity/base': 'latest',
-    '@sanity/core': 'latest',
-    '@sanity/default-layout': 'latest',
-    '@sanity/default-login': 'latest',
-    '@sanity/desk-tool': 'latest',
-    '@sanity/eslint-config-studio': 'latest',
-    '@sanity/vision': 'latest',
+    '@sanity/base': '^2.0.0',
+    '@sanity/core': '^2.0.0',
+    '@sanity/default-layout': '^2.0.0',
+    '@sanity/default-login': '^2.0.0',
+    '@sanity/desk-tool': '^2.0.0',
+    '@sanity/eslint-config-studio': '^2.0.0',
+    '@sanity/vision': '^2.0.0',
     eslint: '^8.6.0',
     'prop-types': '^15.7',
     react: '^17.0',
