@@ -491,7 +491,7 @@ function resolveSource({
         directUploads:
           // TODO: consider refactoring this to `noDirectUploads` or similar
           // default value for this is `true`
-          config.form?.file?.directUploads === undefined ? true : config.form.file.directUploads,
+          config.form?.image?.directUploads === undefined ? true : config.form.image.directUploads,
       },
     },
 
