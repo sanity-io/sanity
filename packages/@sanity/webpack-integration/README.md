@@ -1,3 +1,9 @@
+# ⚠️ THIS PACKAGE IS DEPRECATED
+
+> This package is part of Sanity Studio v2, which has been superseded by **Sanity Studio v3**, the current major version released on Dec 7th, 2022. This package is no longer used/needed for Sanity Studio in its current version and will be retired on Dec 7th, 2023. The core packages for Sanity Studio v2 will only receive critical bug fixes until this date.
+>
+> Please head over to [the documentation for Sanity Studio v3](https://www.sanity.io/docs/sanity-studio) to learn more.
+
 # @sanity/webpack-integration
 
 Tools and modules required for making partisan (the part system) work with webpack. Note: currently only works with Webpack 1.
@@ -14,7 +20,7 @@ npm install --save @sanity/webpack-integration
 const sanityWebpack = require('@sanity/webpack-integration/v1')
 const options = {
   basePath: '/path/to/project',
-  env: 'production'
+  env: 'production',
 }
 
 // Get array of plugins required for part loading
@@ -28,8 +34,6 @@ sanityWebpack.getPostcssPlugins(options)
 
 // Get a partial webpack configuration for the Sanity-specific parts. You'll have to merge this with your existing webpack config.
 sanityWebpack.getConfig(options)
-
-
 
 // Less common, but if you need more fine-grained access to internals:
 

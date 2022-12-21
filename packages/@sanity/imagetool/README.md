@@ -1,9 +1,14 @@
+# ⚠️ THIS PACKAGE IS DEPRECATED
+
+> This package is part of Sanity Studio v2, which has been superseded by **Sanity Studio v3**, the current major version released on Dec 7th, 2022. This package is no longer used/needed for Sanity Studio in its current version and will be retired on Dec 7th, 2023. The core packages for Sanity Studio v2 will only receive critical bug fixes until this date.
+>
+> Please head over to [the documentation for Sanity Studio v3](https://www.sanity.io/docs/sanity-studio) to learn more.
+
 # The image tool used in sanity
 
 ## Getting started
 
     npm install --save @sanity/imagetool
-
 
 ## Usage
 
@@ -20,18 +25,18 @@ class MyComponent extends React.Component {
         x: 0.4,
         y: 0.3,
         height: 0.6,
-        width: 0.4
+        width: 0.4,
       },
       crop: {
         left: 0.1,
         right: 0.2,
         top: 0.1,
         bottom: 0.21,
-      }
-    }
+      },
+    },
   }
 
-  handleImageToolchange = newValue => {
+  handleImageToolchange = (newValue) => {
     this.setState({value: newValue})
   }
 
@@ -52,14 +57,14 @@ class MyComponent extends React.Component {
 ### CSS style calculator
 
 ```js
-import calculateStyles from "@sanity/imagetool/calculateStyles";
+import calculateStyles from '@sanity/imagetool/calculateStyles'
 
 const styles = calculateStyles({
   hotspot: {
     x: 0.4,
     y: 0.3,
     height: 0.6,
-    width: 0.4
+    width: 0.4,
   },
   crop: {
     left: 0.1,
@@ -68,12 +73,12 @@ const styles = calculateStyles({
     bottom: 0.21,
   },
   image: {height: 100, width: 125},
-  container: {aspectRatio: 16/10},
+  container: {aspectRatio: 16 / 10},
   align: {
     x: 'left',
-    y: 'center'
-  }
-});
+    y: 'center',
+  },
+})
 ```
 
 returns an object with style objects that can be used with markup
@@ -108,6 +113,7 @@ returns an object with style objects that can be used with markup
 ```
 
 this can then be passed to jsx markup with the following structure:
+
 ```jsx
 <div style={styles.container}>
   <div style={styles.padding} />
