@@ -1,6 +1,6 @@
 {
   "name": "@sanity/initial-value-templates",
-  "version": "2.35.0",
+  "version": "2.35.3",
   "description": "Build templates for initial values",
   "main": "./lib/index.js",
   "types": "./dist/dts",

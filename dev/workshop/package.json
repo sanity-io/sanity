@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "sanity-workshop",
-  "version": "2.35.2",
+  "version": "2.35.3",
   "main": "package.json",
   "license": "MIT",
   "scripts": {
@@ -27,11 +27,11 @@
   },
   "devDependencies": {
     "@originjs/vite-plugin-commonjs": "1.0.0",
-    "@sanity/base": "2.35.2",
-    "@sanity/default-layout": "2.35.2",
-    "@sanity/default-login": "2.35.2",
-    "@sanity/desk-tool": "2.35.2",
-    "@sanity/resolver": "2.35.0",
+    "@sanity/base": "2.35.3",
+    "@sanity/default-layout": "2.35.3",
+    "@sanity/default-login": "2.35.3",
+    "@sanity/desk-tool": "2.35.3",
+    "@sanity/resolver": "2.35.3",
     "@sanity/types": "2.35.0",
     "@types/qs": "^6.9.7",
     "@types/react-dom": "^17.0.14",

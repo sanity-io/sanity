@@ -1,7 +1,7 @@
 {
   "name": "blog-studio",
   "private": true,
-  "version": "2.35.2",
+  "version": "2.35.3",
   "description": "Content studio running with schema from the blog init template",
   "main": "package.json",
   "author": "Sanity.io <hello@sanity.io>",
@@ -18,12 +18,12 @@
     "blog-studio"
   ],
   "dependencies": {
-    "@sanity/base": "2.35.2",
-    "@sanity/cli": "2.35.0",
-    "@sanity/core": "2.35.0",
-    "@sanity/default-layout": "2.35.2",
-    "@sanity/default-login": "2.35.2",
-    "@sanity/desk-tool": "2.35.2",
+    "@sanity/base": "2.35.3",
+    "@sanity/cli": "2.35.3",
+    "@sanity/core": "2.35.3",
+    "@sanity/default-layout": "2.35.3",
+    "@sanity/default-login": "2.35.3",
+    "@sanity/desk-tool": "2.35.3",
     "react": "17.0.1",
     "react-dom": "17.0.1",
     "styled-components": "^5.2.0"
