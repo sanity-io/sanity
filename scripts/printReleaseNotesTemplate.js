@@ -1,12 +1,22 @@
 const CHANGELOG_COMMAND =
-  "git log --pretty=format:'%aN | %s | %h' --abbrev-commit --reverse $(git describe --abbrev=0)..origin/next"
+  "git log --pretty=format:'%aN | %s | %h' --abbrev-commit --reverse $(git describe --abbrev=0)..origin/2.x-next"
 
 const execa = require('execa')
 
 const TEMPLATE = `
-Upgrade the Command Line Interface (CLI) with:
+**⚠️ THIS IS A MAINTENANCE RELEASE OF A PREVIOUS MAJOR VERSION OF SANITY**
 
-    npm install --global @sanity/cli
+We recommend updating to Sanity Studio v3 which provides exceptional flexibility and an unparalleled developer experience. The core packages for Sanity Studio v2 will only receive critical bug fixes until Dec 7th, 2023
+
+Please head over to the documentation for [Sanity Studio v3](https://www.sanity.io/docs/sanity-studio) to learn more.
+
+You can find [migration guides from Studio v2 here](https://www.sanity.io/docs/migrating-from-v2).
+
+## Installation and upgrading
+
+Upgrade the **v2 version** of the Command Line Interface (CLI) with:
+
+    npm install --global @sanity/cli@v2
 
 Upgrade Sanity Studio with:
 
