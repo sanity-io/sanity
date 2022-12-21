@@ -13,13 +13,15 @@ const PREV_RELEASE =
 const CHANGELOG_COMMAND = `git log --pretty=format:'%aN | %s | %h' --abbrev-commit --reverse ${PREV_RELEASE}..origin/${BASE_BRANCH}`
 
 const TEMPLATE = `
-Upgrade the Command Line Interface (CLI) with:
+## Installation and upgrading
 
-    npm install --global @sanity/cli
+**To initiate a new Studio without installing the CLI globally:**
 
-Upgrade Sanity Studio with:
+    npx create-sanity@latest
 
-    sanity upgrade
+**To upgrade a v3 Studio:**
+
+    npm install sanity@latest
 
 # ✨ Highlights
 
