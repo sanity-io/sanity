@@ -140,7 +140,7 @@ function validateLists(lists, visitorContext, problems) {
     }
 
     if (!list.value) {
-      problems.push(error(`Style #${index} is missing required "value" property`))
+      problems.push(error(`List #${index} is missing required "value" property`))
     } else if (typeof list.value !== 'string') {
       problems.push(
         error(
