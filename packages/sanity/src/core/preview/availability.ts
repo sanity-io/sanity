@@ -2,7 +2,7 @@
 
 import type {SanityClient} from '@sanity/client'
 import {combineLatest, defer, from, Observable, of} from 'rxjs'
-import {distinctUntilChanged, map, mergeMap, switchMap} from 'rxjs/operators'
+import {distinctUntilChanged, map, mergeMap, reduce, switchMap} from 'rxjs/operators'
 import shallowEquals from 'shallow-equals'
 import {flatten, keyBy} from 'lodash'
 import {getDraftId, getPublishedId, isRecord} from '../util'
@@ -54,6 +54,16 @@ function chunkDocumentIds(documentIds: string[]): string[][] {
   }
 
   return chunks
+}
+
+/**
+ * Mutative concat
+ * @param array - the array to concat to
+ * @param chunks - the items to concat to the array
+ */
+function mutConcat<T>(array: T[], chunks: T[]) {
+  array.push(...chunks)
+  return array
 }
 
 export function create_preview_availability(
@@ -111,6 +121,7 @@ export function create_preview_availability(
     const uniqueIds = [...new Set(flatten(args))]
     return from(chunkDocumentIds(uniqueIds)).pipe(
       mergeMap(fetchDocumentReadabilityChunked, 10),
+      reduce<DocumentAvailability[], DocumentAvailability[]>(mutConcat, []),
       map((res) => args.map(([id]) => res[uniqueIds.indexOf(id)]))
     )
   },
