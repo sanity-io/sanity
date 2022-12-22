@@ -48,6 +48,7 @@
   },
   "dependencies": {
     "@babel/traverse": "^7.19.0",
+    "chalk": "^4.1.2",
     "esbuild": "^0.14.43",
     "esbuild-register": "^3.3.2",
     "get-it": "^5.2.1",
@@ -74,7 +75,6 @@
     "@types/which": "^2.0.1",
     "babylon": "^6.18.0",
     "boxen": "^4.1.0",
-    "chalk": "^4.1.2",
     "clean-stack": "^3.0.0",
     "configstore": "^5.0.1",
     "cpx": "^1.5.0",
