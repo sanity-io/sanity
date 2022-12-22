@@ -72,7 +72,7 @@ async function deleteDatasets() {
 }
 
 function isTestEntity(entity: string): boolean {
-  return /^test[-_]\d{8}-/.test(entity)
+  return /^test[-_]\d{8}[-_]/.test(entity)
 }
 
 function isTestEntityOlderThanThreshold(entity: string): boolean {
