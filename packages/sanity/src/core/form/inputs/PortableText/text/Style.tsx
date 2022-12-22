@@ -1,12 +1,14 @@
 import {Text} from '@sanity/ui'
 import {BlockStyleRenderProps} from '@sanity/portable-text-editor'
 import React, {useCallback, useMemo} from 'react'
-import {TEXT_STYLES} from './textStyles'
+import {Normal as FallbackComponent, TEXT_STYLES} from './textStyles'
 
 export const Style = (props: BlockStyleRenderProps) => {
   const {block, focused, children, selected, type, value} = props
   const DefaultComponent = useMemo(
-    () => (block.style && TEXT_STYLES[block.style] ? TEXT_STYLES[block.style] : TEXT_STYLES[0]),
+    () =>
+      (block.style && TEXT_STYLES[block.style] ? TEXT_STYLES[block.style] : TEXT_STYLES[0]) ||
+      FallbackComponent,
     [block.style]
   )
 
