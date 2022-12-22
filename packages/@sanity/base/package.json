@@ -1,6 +1,6 @@
 {
   "name": "@sanity/base",
-  "version": "2.35.3",
+  "version": "2.35.4",
   "description": "Sanity plugin containing the base components and roles for a Sanity configuration",
   "main": "./lib/_exports/index.js",
   "types": "index.d.ts",
