@@ -1,6 +1,6 @@
 /* eslint-disable max-nested-callbacks */
 import {combineLatest, defer, from, Observable, of} from 'rxjs'
-import {distinctUntilChanged, map, mergeMap, switchMap} from 'rxjs/operators'
+import {distinctUntilChanged, map, mergeMap, reduce, switchMap} from 'rxjs/operators'
 import shallowEquals from 'shallow-equals'
 import {flatten, keyBy} from 'lodash'
 import {getDraftId, getPublishedId} from '../util/draftUtils'
@@ -99,12 +99,23 @@ function chunkDocumentIds(documentIds: string[]): string[][] {
   return chunks
 }
 
+/**
+ * Mutative concat
+ * @param array
+ * @param chunks
+ */
+function mutConcat<T>(array: T[], chunks: T[]) {
+  array.push(...chunks)
+  return array
+}
+
 const fetchDocumentReadability = debounceCollect(function fetchDocumentReadability(
   args: string[][]
 ): Observable<DocumentAvailability[]> {
   const uniqueIds = [...new Set(flatten(args))]
   return from(chunkDocumentIds(uniqueIds)).pipe(
     mergeMap(fetchDocumentReadabilityChunked, 10),
+    reduce(mutConcat, []),
     map((res) => args.map(([id]) => res[uniqueIds.indexOf(id)]))
   )
 },
