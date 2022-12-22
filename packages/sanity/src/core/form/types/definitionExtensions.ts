@@ -286,20 +286,20 @@ declare module '@sanity/types' {
     /**
      * @beta
      */
-    component: ComponentType<BlockDecoratorProps>
+    component?: ComponentType<BlockDecoratorProps>
   }
 
   export interface BlockStyleDefinition {
     /**
      * @beta
      */
-    component: ComponentType<BlockStyleProps>
+    component?: ComponentType<BlockStyleProps>
   }
   export interface BlockListDefinition {
     /**
      * @beta
      */
-    component: ComponentType<BlockListItemProps>
+    component?: ComponentType<BlockListItemProps>
   }
 
   export interface BlockAnnotationDefinition {
