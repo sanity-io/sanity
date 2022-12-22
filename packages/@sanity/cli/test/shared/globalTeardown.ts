@@ -26,7 +26,7 @@ export default async function globalTeardown(): Promise<void> {
 
   // Very hacky, but good enough for now:
   // Force a cleanup of dangling entities left over from previous test runs every once in a while
-  if (Math.random() < 0.3) {
+  if (Math.random() < 0.7) {
     await cleanupDangling()
   }
 }
