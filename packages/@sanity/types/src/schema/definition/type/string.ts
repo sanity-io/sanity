@@ -1,3 +1,4 @@
+import {FieldReference} from '../../../validation'
 import {RuleDef, ValidationBuilder} from '../../ruleBuilder'
 import {InitialValueProperty} from '../../types'
 import {BaseSchemaDefinition, EnumListProps} from './common'
@@ -8,9 +9,9 @@ export interface StringOptions extends EnumListProps<string> {}
 
 /** @public */
 export interface StringRule extends RuleDef<StringRule, string> {
-  min: (minNumber: number) => StringRule
-  max: (maxNumber: number) => StringRule
-  length: (exactLength: number) => StringRule
+  min: (minNumber: number | FieldReference) => StringRule
+  max: (maxNumber: number | FieldReference) => StringRule
+  length: (exactLength: number | FieldReference) => StringRule
   uppercase: () => StringRule
   lowercase: () => StringRule
   regex(pattern: RegExp, name: string, options: {name?: string; invert?: boolean}): StringRule

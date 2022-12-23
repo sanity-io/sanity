@@ -1,4 +1,3 @@
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
 import {RuleDef, ValidationBuilder} from '../../ruleBuilder'
 import {InitialValueProperty} from '../../types'
 import {BaseSchemaDefinition} from './common'
