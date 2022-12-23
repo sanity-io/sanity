@@ -4,7 +4,7 @@
  * use of ts-expect-error serves the same purpose - TypeScript is the testrunner here
  */
 import {DatetimeDefinition} from '../definition'
-import {defineType} from '../types'
+import {defineField, defineType} from '../types'
 
 describe('datetime types', () => {
   describe('defineType', () => {
@@ -39,6 +39,18 @@ describe('datetime types', () => {
 
       // @ts-expect-error datetime is not assignable to string
       const notAssignableToString: StringDefinition = datetimeDef
+    })
+  })
+
+  it('should support Rule.valueOfField calls inside defineField', () => {
+    const datetimeField: DatetimeDefinition = defineField({
+      type: 'datetime',
+      name: 'defineField-defined',
+      description: 'field defined with defineField, containing validation using Rule.valueOfField',
+      validation: (Rule) => {
+        const fieldRef = Rule.valueOfField('some-other-field')
+        return Rule.min(fieldRef).max(fieldRef)
+      },
     })
   })
 })

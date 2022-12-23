@@ -4,7 +4,7 @@
  * use of ts-expect-error serves the same purpose - TypeScript is the testrunner here
  */
 import {NumberDefinition, StringDefinition} from '../definition'
-import {defineType} from '../types'
+import {defineField, defineType} from '../types'
 
 describe('number types', () => {
   describe('defineType', () => {
@@ -45,6 +45,22 @@ describe('number types', () => {
 
       // @ts-expect-error number is not assignable to string
       const notAssignableToString: StringDefinition = numberDef
+    })
+  })
+
+  it('should support Rule.valueOfField calls inside defineField', () => {
+    const numberField: NumberDefinition = defineField({
+      type: 'number',
+      name: 'defineField-defined',
+      description: 'field defined with defineField, containing validation using Rule.valueOfField',
+      validation: (Rule) => {
+        const fieldRef = Rule.valueOfField('some-other-field')
+        return Rule.min(fieldRef)
+          .max(fieldRef)
+          .lessThan(fieldRef)
+          .greaterThan(fieldRef)
+          .precision(fieldRef)
+      },
     })
   })
 })
