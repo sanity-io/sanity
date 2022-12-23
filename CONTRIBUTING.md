@@ -13,8 +13,8 @@ Then make sure you have _Node.js version 10 or newer_ and _npm version 6 or newe
 ```sh
 git clone git@github.com:sanity-io/sanity.git
 cd sanity
-npm install
-npm start
+yarn install
+yarn start
 ```
 
 # Release/workflow guidelines
@@ -24,7 +24,7 @@ npm start
 - To work on something new, create a descriptively named branch off of `next` (ie: feature/new-oauth2-scopes)
 - Commit to that branch locally and regularly push your work to the same named branch on the server
 - Rebase your feature branch regularly against `next`. Make sure its even with `next` before merging
-- Once its done, open a pull request to merge your feature branch into `next`
+- Once it's done, open a pull request to merge your feature branch into `next`
 - After someone else has reviewed and signed off on the pull request, you can merge it into `next`
 - Everything except minor _trivial_ changes should go through pull-requests. If you're unsure whether it's a trivial change or not, submit a pull request just to be sure
 - Pull requests should be as ready as possible for merge. Unless stated otherwise, it should be safe to assume that:
@@ -67,7 +67,7 @@ Any security issues should be submitted directly to security@sanity.io. In order
 - Can I access something that's not mine, or something I shouldn't have access to?
 - Can I disable something for other people?
 
-If the answer to either of those two questions are "yes", then you're probably dealing with a security issue. Note that even if you answer "no" to both questions, you may still be dealing with a security issue, so if you're unsure, just email us at security@sanity.io.
+If the answer to either of those two questions is "yes", then you're probably dealing with a security issue. Note that even if you answer "no" to both questions, you may still be dealing with a security issue, so if you're unsure, just email us at security@sanity.io.
 
 ## How to report a bug
 
@@ -94,7 +94,7 @@ Some tests are based on compiled files, so you will need to build the repository
 
 ```sh
 yarn build
-npm test
+yarn test
 ```
 
-Note: this runs `npm test` for all the Sanity packages - the output can be quite hard to read. If you encounter an issue, it's usually best to figure out which module is failing, then run `npm test` in that individual module.
+Note: this runs `yarn test` for all the Sanity packages - the output can be quite hard to read. If you encounter an issue, it's usually best to figure out which module is failing, then run `yarn test` in that individual module.
