@@ -6,7 +6,7 @@ import {SearchProvider} from '../contexts/search/SearchProvider'
 import type {OperatorDateRangeValue} from '../definitions/operators/dateOperators'
 
 export default function CommonDateRangeStory() {
-  const selectTime = useBoolean('Show time', true, 'Props')
+  const selectTime = useBoolean('Select time', true, 'Props')
 
   const [value, setValue] = useState<OperatorDateRangeValue | null>(null)
 

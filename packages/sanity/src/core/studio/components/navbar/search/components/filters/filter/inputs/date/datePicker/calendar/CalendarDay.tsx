@@ -1,4 +1,4 @@
-import {Box, Card, Text} from '@sanity/ui'
+import {Card, Text} from '@sanity/ui'
 import {isAfter, isBefore, isSameDay, isSameMonth} from 'date-fns'
 import React, {useCallback} from 'react'
 import styled, {css} from 'styled-components'
@@ -27,21 +27,6 @@ const CustomCard = styled(Card)<{
     border-radius: ${borderRadius.left} ${borderRadius.right} ${borderRadius.right}
       ${borderRadius.left};
     position: relative;
-  `
-})
-
-const TodayHighlight = styled(Box)(({theme}) => {
-  return css`
-    border: 1px solid ${theme.sanity.color.button.default.default.enabled.border};
-    border-radius: ${theme.sanity.radius[2]}px;
-    box-sizing: border-box;
-    height: 100%;
-    left: 0;
-    overflow: hidden;
-    position: absolute;
-    top: 0;
-    width: 100%;
-    z-index: 1;
   `
 })
 
@@ -95,12 +80,15 @@ export function CalendarDay({date, onSelect}: CalendarDayProps) {
         <Text
           muted={!isSelected && !isCurrentMonth}
           size={fontSize}
-          style={{textAlign: 'center'}}
+          style={{
+            textAlign: 'center',
+            textDecoration: isToday ? 'underline' : 'none',
+            textUnderlineOffset: '0.2rem',
+          }}
           weight={isToday ? 'medium' : 'regular'}
         >
           {date.getDate()}
         </Text>
-        {isToday && !isEndDate && !isStartDate && <TodayHighlight />}
       </CustomCard>
     </div>
   )

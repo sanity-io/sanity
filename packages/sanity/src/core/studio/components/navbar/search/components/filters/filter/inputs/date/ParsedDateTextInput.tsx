@@ -18,8 +18,8 @@ interface ParsedDateTextInputProps
   value?: string | null
 }
 
-const DEFAULT_DATE_FORMAT = 'MMM d, yyyy'
-const DEFAULT_TIME_FORMAT = 'p'
+const DEFAULT_DATE_FORMAT = 'MMM d, yyyy' // Jan 1, 2000
+const DEFAULT_TIME_FORMAT = 'p' // 12:00 AM
 
 export function ParsedDateTextInput({
   onChange,

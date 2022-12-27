@@ -18,6 +18,7 @@ import {
 import {toJSON} from './operatorUtils'
 
 export interface OperatorDateRangeValue {
+  includeTime?: boolean
   max: string | null
   min: string | null
 }
@@ -132,6 +133,7 @@ export const dateOperators = {
         : null
     },
     initialValue: {
+      includeTime: false,
       max: startOfToday().toISOString(),
       min: null,
     },
@@ -198,6 +200,7 @@ export const dateOperators = {
         : null
     },
     initialValue: {
+      includeTime: false,
       max: startOfToday().toISOString(),
       min: null,
     },

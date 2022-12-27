@@ -5,7 +5,7 @@ import {CommonDateInput} from '../components/filters/filter/inputs/date/CommonDa
 import {SearchProvider} from '../contexts/search/SearchProvider'
 
 export default function CommonDateStory() {
-  const selectTime = useBoolean('Show time', true, 'Props')
+  const selectTime = useBoolean('Select time', true, 'Props')
 
   const [value, setValue] = useState<string | null>(null)
 

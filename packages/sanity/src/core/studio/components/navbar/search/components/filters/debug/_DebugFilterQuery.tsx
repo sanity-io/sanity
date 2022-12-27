@@ -17,9 +17,13 @@ export function DebugFilterQuery() {
     <Card padding={4} tone="transparent">
       <Stack space={3}>
         <Code size={1} weight="semibold">
-          Filter:
+          Filter
         </Code>
-        {filter && <Code size={1}>{filter}</Code>}
+        {filter && (
+          <Code size={1} style={{whiteSpace: 'normal'}}>
+            {filter}
+          </Code>
+        )}
       </Stack>
     </Card>
   )

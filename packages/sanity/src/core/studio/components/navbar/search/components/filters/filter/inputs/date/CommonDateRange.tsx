@@ -1,11 +1,13 @@
-import {Flex, Stack} from '@sanity/ui'
-import {addDays} from 'date-fns'
+import {Flex, Stack, Switch, Text} from '@sanity/ui'
+import {addDays, endOfDay, startOfDay} from 'date-fns'
 import React, {useCallback, useMemo} from 'react'
 import {useSearchState} from '../../../../../contexts/search/useSearchState'
 import type {OperatorDateRangeValue} from '../../../../../definitions/operators/dateOperators'
 import type {OperatorInputComponentProps} from '../../../../../definitions/operators/operatorTypes'
 import {DatePicker} from './datePicker/DatePicker'
 import {ParsedDateTextInput} from './ParsedDateTextInput'
+
+const INCLUDE_TIME_LABEL = 'Include time'
 
 export function CommonDateRangeInput({
   onChange,
@@ -23,17 +25,27 @@ export function CommonDateRangeInput({
 
   const handleDatePickerChange = useCallback(
     ({date, endDate}: {date?: Date | null; endDate?: Date | null}) => {
-      onChange({
-        max: endDate ? endDate?.toISOString() || null : null,
-        min: date ? date?.toISOString() || null : null,
-      })
+      onChange(getStartAndEndDate({date, endDate, includeTime: value?.includeTime}))
     },
-    [onChange]
+    [onChange, value?.includeTime]
   )
 
-  const handleEndDateChange = useCallback(
+  const handleIncludeTimeChange = useCallback(() => {
+    const includeTime = !value?.includeTime
+    onChange(
+      getStartAndEndDate({
+        date: value?.min ? new Date(value.min) : null,
+        endDate: value?.max ? new Date(value.max) : null,
+        includeTime,
+        resetTime: includeTime,
+      })
+    )
+  }, [onChange, value])
+
+  const handleTextEndDateChange = useCallback(
     (date: string | null) => {
       onChange({
+        includeTime: value?.includeTime,
         max: date || null,
         min: value?.min || null,
       })
@@ -41,9 +53,10 @@ export function CommonDateRangeInput({
     [onChange, value]
   )
 
-  const handleStartDateChange = useCallback(
+  const handleTextStartDateChange = useCallback(
     (date: string | null) => {
       onChange({
+        includeTime: value?.includeTime,
         max: value?.max || null,
         min: date || null,
       })
@@ -59,18 +72,18 @@ export function CommonDateRangeInput({
           <ParsedDateTextInput
             aria-label="Start date"
             fontSize={fullscreen ? 2 : 1}
-            onChange={handleStartDateChange}
+            onChange={handleTextStartDateChange}
             placeholderDate={placeholderStartDate}
-            selectTime={selectTime}
+            selectTime={selectTime && value?.includeTime}
             value={value?.min}
           />
           {/* End date */}
           <ParsedDateTextInput
             aria-label="End date"
             fontSize={fullscreen ? 2 : 1}
-            onChange={handleEndDateChange}
+            onChange={handleTextEndDateChange}
             placeholderDate={placeholderEndDate}
-            selectTime={selectTime}
+            selectTime={selectTime && value?.includeTime}
             value={value?.max}
           />
         </Flex>
@@ -82,7 +95,63 @@ export function CommonDateRangeInput({
           selectRange
           selectTime={selectTime}
         />
+
+        {/* Select time  */}
+        {selectTime && (
+          <Flex align="center" gap={2} justify="flex-end" marginTop={1}>
+            <Stack>
+              <Text
+                muted
+                onClick={handleIncludeTimeChange}
+                size={1}
+                style={{cursor: 'default'}}
+                weight="medium"
+              >
+                {INCLUDE_TIME_LABEL}
+              </Text>
+            </Stack>
+            <Switch
+              checked={!!value?.includeTime}
+              label={INCLUDE_TIME_LABEL}
+              onChange={handleIncludeTimeChange}
+            />
+          </Flex>
+        )}
       </Stack>
     </div>
   )
+}
+
+function getStartAndEndDate({
+  date,
+  endDate,
+  includeTime,
+  resetTime,
+}: {
+  date?: Date | null
+  endDate?: Date | null
+  includeTime?: boolean
+  resetTime?: boolean
+}) {
+  if (includeTime) {
+    return {
+      includeTime,
+      max: getDateString({date: endDate, resetTime}),
+      min: getDateString({date: date, resetTime}),
+    }
+  }
+
+  return {
+    includeTime,
+    max: getDateString({date: endDate ? endOfDay(endDate) : null, resetTime}),
+    min: getDateString({date: date ? startOfDay(date) : null, resetTime}),
+  }
+}
+
+function getDateString({date, resetTime}: {date?: Date | null; resetTime?: boolean}) {
+  if (!date) {
+    return null
+  }
+
+  return resetTime ? startOfDay(date).toISOString() : date.toISOString()
 }

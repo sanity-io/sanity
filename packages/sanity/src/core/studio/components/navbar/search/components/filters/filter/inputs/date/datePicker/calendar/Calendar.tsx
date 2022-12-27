@@ -54,10 +54,11 @@ export function Calendar(props: CalendarProps) {
       })
 
       const dateIsBeforeStartDate = date && isBefore(selectedDate, date)
+      const dateIsAfterEndDate = endDate && isAfter(selectedDate, endDate)
 
       if (selectRange) {
         // Update existing start date and clear end date
-        if (dateIsBeforeStartDate) {
+        if (dateIsBeforeStartDate || dateIsAfterEndDate) {
           onSelect({date: selectedDate, endDate: null})
           return
         }
