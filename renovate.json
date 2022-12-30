@@ -1,4 +1,13 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": ["github>sanity-io/renovate-presets//ecosystem/auto", ":dependencyDashboardApproval"]
+  "extends": ["github>sanity-io/renovate-presets//ecosystem/auto", ":dependencyDashboardApproval"],
+  "packageRules": [
+    {
+      "description": "Dependency updates to examples and the root should always use the chore scope as they aren't published to npm",
+      "matchPaths": ["dev/**/package.json"],
+      "matchFiles": ["package.json"],
+      "extends": [":semanticCommitTypeAll(chore)"],
+      "groupSlug": "dev"
+    }
+  ]
 }
