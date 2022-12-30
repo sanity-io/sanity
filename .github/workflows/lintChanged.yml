@@ -13,11 +13,11 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@755da8c3cf115ac066823e79a1e1788f8940201b # v3
 
       - name: Cache node modules
         id: cache-node-modules
-        uses: actions/cache@v3
+        uses: actions/cache@4723a57e26efda3a62cbde1812113b730952852d # v3
         env:
           cache-name: cache-node-modules
         with:
