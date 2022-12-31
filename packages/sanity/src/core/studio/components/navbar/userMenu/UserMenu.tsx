@@ -21,16 +21,19 @@ import {
   Stack,
   Text,
   Tooltip,
-  useRootTheme,
 } from '@sanity/ui'
 import React, {useMemo} from 'react'
 import styled from 'styled-components'
 import {UserAvatar} from '../../../../components'
 import {getProviderTitle} from '../../../../store'
-import {StudioTheme} from '../../../../theme'
-import {userHasRole} from '../../../../util/userHasRole'
-import {useColorScheme} from '../../../colorScheme'
+import {type StudioThemeColorSchemeKey} from '../../../../theme'
+import {
+  useColorSchemeOptions,
+  useColorSchemeSetValue,
+  useColorSchemeValue,
+} from '../../../colorScheme'
 import {useWorkspace} from '../../../workspace'
+import {userHasRole} from '../../../../util/userHasRole'
 import {LoginProviderLogo} from './LoginProviderLogo'
 
 const AVATAR_SIZE = 1
@@ -46,11 +49,39 @@ const AvatarBox = styled(Box)`
   min-height: ${({theme}) => theme.sanity.avatar.sizes[AVATAR_SIZE].size}px;
 `
 
+function AppearanceMenu({setScheme}: {setScheme: (nextScheme: StudioThemeColorSchemeKey) => void}) {
+  // Subscribe to just what we need, if the menu isn't shown then we're not subscribed to these contexts
+  const options = useColorSchemeOptions(setScheme)
+
+  return (
+    <>
+      <MenuDivider />
+
+      <Box padding={2}>
+        <Label size={1} muted>
+          Appearance
+        </Label>
+      </Box>
+
+      {options.map(({icon, label, name, onSelect, selected, title}) => (
+        <MenuItem
+          key={name}
+          aria-label={label}
+          icon={icon}
+          onClick={onSelect}
+          pressed={selected}
+          text={title}
+          iconRight={selected && <CheckmarkIcon />}
+        />
+      ))}
+    </>
+  )
+}
+
 export function UserMenu() {
-  const {colorSchemeOptions} = useColorScheme()
   const {currentUser, projectId, auth} = useWorkspace()
-  const {scheme} = useColorScheme()
-  const theme = useRootTheme().theme as StudioTheme
+  const scheme = useColorSchemeValue()
+  const setScheme = useColorSchemeSetValue()
 
   const isAdmin = Boolean(currentUser && userHasRole(currentUser, 'administrator'))
   const providerTitle = getProviderTitle(currentUser?.provider)
@@ -117,18 +148,7 @@ export function UserMenu() {
               </Stack>
             </Flex>
           </Card>
-          {!theme.__legacy &&
-            colorSchemeOptions.map((option) => (
-              <MenuItem
-                aria-label={`Use ${option} appearance`}
-                icon={option.icon}
-                iconRight={option.selected && <CheckmarkIcon />}
-                key={option.name}
-                onClick={() => option.onSelect()}
-                pressed={option.selected}
-                text={option.title}
-              />
-            ))}
+          {setScheme && <AppearanceMenu setScheme={setScheme} />}
 
           <MenuDivider />
 
