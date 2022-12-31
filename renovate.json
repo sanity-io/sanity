@@ -4,7 +4,7 @@
   "packageRules": [
     {
       "description": "Dependency updates to examples and the root should always use the chore scope as they aren't published to npm",
-      "matchPaths": ["dev/**/package.json"],
+      "matchPaths": ["dev/**/package.json", "examples/**/package.json"],
       "matchFiles": ["package.json"],
       "extends": [":semanticCommitTypeAll(chore)"],
       "groupSlug": "dev"
