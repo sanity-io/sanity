@@ -34,6 +34,11 @@ export const HistoryRestoreAction: DocumentActionComponent = ({id, type, revisio
   }, [handleConfirm, isConfirmDialogOpen, onComplete])
 
   const isRevisionInitialVersion = revision === '@initial'
+  const isRevisionLatestVersion = revision === undefined // undefined means latest version
+
+  if (isRevisionLatestVersion) {
+    return null
+  }
 
   return {
     label: 'Restore',
