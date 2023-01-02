@@ -1,63 +1,76 @@
-import React from 'react'
+import React, {useState} from 'react'
 import {UploadIcon} from '@sanity/icons'
-import {Flex, Inline} from '@sanity/ui'
+import {Flex, useElementSize} from '@sanity/ui'
 import {FileLike} from '../../../studio/uploads/types'
 import {FileInputButton} from './FileInputButton/FileInputButton'
 import {PlaceholderText} from './PlaceholderText'
 
-type UploadPlaceholderProps = {
-  onUpload?: (files: File[]) => void
-  browse?: React.ReactNode
-  readOnly?: boolean
-  type: string
-  hoveringFiles: FileLike[]
-  acceptedFiles: FileLike[]
-  rejectedFilesCount: number
+interface UploadPlaceholderProps {
   accept: string
+  acceptedFiles: FileLike[]
+  browse?: React.ReactNode
   directUploads?: boolean
+  hoveringFiles: FileLike[]
+  onUpload?: (files: File[]) => void
+  readOnly?: boolean
+  rejectedFilesCount: number
+  type: string
 }
 
-export const UploadPlaceholder = React.memo(function UploadPlaceholder({
-  browse,
-  onUpload,
-  readOnly,
-  type,
-  hoveringFiles,
-  acceptedFiles,
-  rejectedFilesCount,
-  accept,
-  directUploads,
-}: UploadPlaceholderProps) {
+function UploadPlaceholderComponent(props: UploadPlaceholderProps) {
+  const {
+    accept,
+    acceptedFiles,
+    browse,
+    directUploads,
+    hoveringFiles,
+    onUpload,
+    readOnly,
+    rejectedFilesCount,
+    type,
+  } = props
+
+  const [rootElement, setRootElement] = useState<HTMLDivElement | null>(null)
+  const rect = useElementSize(rootElement)
+
+  // Adjust the layout in narrow containers
+  const collapsed = rect?.border && rect.border.width < 440
+
   return (
     <Flex
-      align="center"
-      justify="space-between"
+      align={collapsed ? undefined : 'center'}
+      direction={collapsed ? 'column' : 'row'}
       gap={4}
-      direction={['column', 'column', 'row']}
-      paddingY={[2, 2, 0]}
+      justify="space-between"
+      paddingY={collapsed ? 1 : undefined}
+      ref={setRootElement}
     >
-      <Flex align="center" justify="center" gap={2} flex={1}>
+      <Flex flex={1} justify="center">
         <PlaceholderText
-          readOnly={readOnly}
-          hoveringFiles={hoveringFiles}
           acceptedFiles={acceptedFiles}
+          directUploads={directUploads}
+          hoveringFiles={hoveringFiles}
+          readOnly={readOnly}
           rejectedFilesCount={rejectedFilesCount}
           type={type}
-          directUploads={directUploads}
         />
       </Flex>
-      <Inline space={2}>
+
+      <Flex align="center" gap={2} justify="center" wrap="wrap">
         <FileInputButton
+          accept={accept}
+          data-testid="file-input-upload-button"
+          disabled={readOnly || !directUploads}
           icon={UploadIcon}
           mode="ghost"
           onSelect={onUpload}
-          accept={accept}
           text="Upload"
-          data-testid="file-input-upload-button"
-          disabled={readOnly || !directUploads}
         />
+
         {browse}
-      </Inline>
+      </Flex>
     </Flex>
   )
-})
+}
+
+export const UploadPlaceholder = React.memo(UploadPlaceholderComponent)
