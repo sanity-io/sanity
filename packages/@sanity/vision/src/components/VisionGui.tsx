@@ -750,6 +750,7 @@ export class VisionGui extends React.PureComponent<VisionGuiProps, VisionGuiStat
                         {paramsError && (
                           <Tooltip
                             placement="top-end"
+                            portal
                             content={
                               <Box padding={2}>
                                 <Text>{paramsError}</Text>
