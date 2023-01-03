@@ -2,18 +2,6 @@
   "name": "@sanity/import-cli",
   "version": "3.1.4",
   "description": "CLI tool that imports documents from an ndjson file or URL",
-  "main": "./package.json",
-  "files": [
-    "src"
-  ],
-  "bin": {
-    "sanity-import": "./src/sanity-import.js"
-  },
-  "engines": {
-    "node": ">=14.0.0"
-  },
-  "author": "Sanity.io <hello@sanity.io>",
-  "license": "MIT",
   "keywords": [
     "sanity",
     "cms",
@@ -24,6 +12,24 @@
     "import",
     "ndjson"
   ],
+  "homepage": "https://www.sanity.io/",
+  "bugs": {
+    "url": "https://github.com/sanity-io/sanity/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sanity-io/sanity.git",
+    "directory": "packages/@sanity/import-cli"
+  },
+  "license": "MIT",
+  "author": "Sanity.io <hello@sanity.io>",
+  "main": "./package.json",
+  "bin": {
+    "sanity-import": "./src/sanity-import.js"
+  },
+  "files": [
+    "src"
+  ],
   "dependencies": {
     "@sanity/client": "^3.4.1",
     "@sanity/import": "3.1.4",
@@ -32,13 +38,7 @@
     "ora": "^5.4.1",
     "pretty-ms": "^7.0.1"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/sanity-io/sanity.git",
-    "directory": "packages/@sanity/import-cli"
-  },
-  "bugs": {
-    "url": "https://github.com/sanity-io/sanity/issues"
-  },
-  "homepage": "https://www.sanity.io/"
+  "engines": {
+    "node": ">=14.0.0"
+  }
 }

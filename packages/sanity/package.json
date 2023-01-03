@@ -2,10 +2,6 @@
   "name": "sanity",
   "version": "3.1.4",
   "description": "Sanity is a real-time content infrastructure with a scalable, hosted backend featuring a Graph Oriented Query Language (GROQ), asset pipelines and fast edge caches",
-  "author": "Sanity.io <hello@sanity.io>",
-  "bugs": {
-    "url": "https://github.com/sanity-io/sanity/issues"
-  },
   "keywords": [
     "sanity",
     "cms",
@@ -13,50 +9,79 @@
     "realtime",
     "content"
   ],
-  "bin": {
-    "sanity": "./bin/sanity"
+  "homepage": "https://www.sanity.io/",
+  "bugs": {
+    "url": "https://github.com/sanity-io/sanity/issues"
   },
-  "types": "./lib/exports/index.d.ts",
-  "source": "./exports/index.ts",
-  "module": "./lib/index.esm.js",
-  "main": "./lib/index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sanity-io/sanity.git",
+    "directory": "packages/sanity"
+  },
+  "license": "MIT",
+  "author": "Sanity.io <hello@sanity.io>",
   "exports": {
     ".": {
       "types": "./lib/exports/index.d.ts",
       "source": "./exports/index.ts",
-      "import": "./lib/index.esm.js",
       "require": "./lib/index.js",
+      "node": {
+        "import": "./lib/index.cjs.mjs",
+        "require": "./lib/index.js"
+      },
+      "import": "./lib/index.esm.js",
       "default": "./lib/index.esm.js"
     },
     "./_internal": {
       "types": "./lib/exports/_internal.d.ts",
       "source": "./exports/_internal.ts",
-      "import": "./lib/_internal.esm.js",
       "require": "./lib/_internal.js",
+      "node": {
+        "import": "./lib/_internal.cjs.mjs",
+        "require": "./lib/_internal.js"
+      },
+      "import": "./lib/_internal.esm.js",
       "default": "./lib/_internal.esm.js"
     },
     "./cli": {
       "types": "./lib/exports/cli.d.ts",
       "source": "./exports/cli.ts",
-      "import": "./lib/cli.esm.js",
       "require": "./lib/cli.js",
+      "node": {
+        "import": "./lib/cli.cjs.mjs",
+        "require": "./lib/cli.js"
+      },
+      "import": "./lib/cli.esm.js",
       "default": "./lib/cli.esm.js"
     },
     "./desk": {
       "types": "./lib/exports/desk.d.ts",
       "source": "./exports/desk.ts",
-      "import": "./lib/desk.esm.js",
       "require": "./lib/desk.js",
+      "node": {
+        "import": "./lib/desk.cjs.mjs",
+        "require": "./lib/desk.js"
+      },
+      "import": "./lib/desk.esm.js",
       "default": "./lib/desk.esm.js"
     },
     "./router": {
       "types": "./lib/exports/router.d.ts",
       "source": "./exports/router.ts",
-      "import": "./lib/router.esm.js",
       "require": "./lib/router.js",
+      "node": {
+        "import": "./lib/router.cjs.mjs",
+        "require": "./lib/router.js"
+      },
+      "import": "./lib/router.esm.js",
       "default": "./lib/router.esm.js"
-    }
+    },
+    "./package.json": "./package.json"
   },
+  "main": "./lib/index.js",
+  "module": "./lib/index.esm.js",
+  "source": "./exports/index.ts",
+  "types": "./lib/exports/index.d.ts",
   "typesVersions": {
     "*": {
       "_internal": [
@@ -73,6 +98,9 @@
       ]
     }
   },
+  "bin": {
+    "sanity": "./bin/sanity"
+  },
   "files": [
     "_internal.js",
     "bin",
@@ -83,12 +111,12 @@
     "src"
   ],
   "scripts": {
+    "prebuild": "run-s clean",
     "build": "pkg-utils build --tsconfig tsconfig.lib.json",
+    "postbuild": "run-s check:package",
     "check:package": "pkg-utils --tsconfig tsconfig.lib.json",
     "clean": "rimraf _internal.js cli.js desk.js lib router.js",
     "coverage": "jest --coverage",
-    "postbuild": "run-s check:package",
-    "prebuild": "run-s clean",
     "prepublishOnly": "run-s write:version write:ui-version",
     "test": "pkg-utils --strict && jest",
     "watch": "pkg-utils watch --tsconfig tsconfig.lib.json",
@@ -223,12 +251,5 @@
   },
   "engines": {
     "node": ">=14.0.0"
-  },
-  "homepage": "https://www.sanity.io/",
-  "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/sanity-io/sanity.git",
-    "directory": "packages/sanity"
   }
 }

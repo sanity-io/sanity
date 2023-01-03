@@ -2,17 +2,6 @@
   "name": "@sanity/cli",
   "version": "3.1.4",
   "description": "Sanity CLI tool for managing Sanity installations, managing plugins, schemas and datasets",
-  "types": "./lib/dts/src/index.d.ts",
-  "source": "./src/index.ts",
-  "module": "./lib/index.esm.js",
-  "main": "./lib/index.js",
-  "files": [
-    "bin",
-    "codemods",
-    "lib",
-    "src",
-    "templates"
-  ],
   "keywords": [
     "sanity",
     "cms",
@@ -33,21 +22,47 @@
   },
   "license": "MIT",
   "author": "Sanity.io <hello@sanity.io>",
+  "exports": {
+    ".": {
+      "types": "./lib/dts/src/index.d.ts",
+      "source": "./src/index.ts",
+      "require": "./lib/index.js",
+      "node": {
+        "import": "./lib/index.cjs.mjs",
+        "require": "./lib/index.js"
+      },
+      "import": "./lib/index.esm.js",
+      "default": "./lib/index.esm.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "main": "./lib/index.js",
+  "module": "./lib/index.esm.js",
+  "source": "./src/index.ts",
+  "types": "./lib/dts/src/index.d.ts",
   "bin": {
     "sanity": "./bin/sanity"
   },
+  "files": [
+    "bin",
+    "codemods",
+    "lib",
+    "src",
+    "templates"
+  ],
   "scripts": {
+    "prebuild": "run-s clean",
     "build": "pkg-utils build --tsconfig tsconfig.lib.json",
+    "postbuild": "run-s check:package",
     "check:package": "pkg-utils --strict --tsconfig tsconfig.lib.json",
     "clean": "rimraf lib",
-    "postbuild": "run-s check:package",
-    "prebuild": "run-s clean",
-    "watch": "pkg-utils watch --tsconfig tsconfig.lib.json",
+    "test": "jest",
     "ts": "node -r esbuild-register",
-    "test": "jest"
+    "watch": "pkg-utils watch --tsconfig tsconfig.lib.json"
   },
   "dependencies": {
     "@babel/traverse": "^7.19.0",
+    "chalk": "^4.1.2",
     "esbuild": "^0.14.43",
     "esbuild-register": "^3.3.2",
     "get-it": "^5.2.1",
@@ -74,7 +89,6 @@
     "@types/which": "^2.0.1",
     "babylon": "^6.18.0",
     "boxen": "^4.1.0",
-    "chalk": "^4.1.2",
     "clean-stack": "^3.0.0",
     "configstore": "^5.0.1",
     "cpx": "^1.5.0",

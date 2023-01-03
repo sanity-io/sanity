@@ -2,26 +2,55 @@
   "name": "@sanity/server",
   "version": "3.1.4",
   "description": "Webserver dedicated to serving Sanity, allowing a smooth development experience",
-  "types": "./lib/dts/src/index.d.ts",
-  "source": "./src/index.ts",
-  "module": "./lib/index.esm.js",
-  "main": "./lib/index.js",
+  "keywords": [
+    "sanity",
+    "cms",
+    "headless",
+    "realtime",
+    "content",
+    "server",
+    "webserver"
+  ],
+  "homepage": "https://www.sanity.io/",
+  "bugs": {
+    "url": "https://github.com/sanity-io/sanity/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sanity-io/sanity.git",
+    "directory": "packages/@sanity/server"
+  },
+  "license": "MIT",
+  "author": "Sanity.io <hello@sanity.io>",
   "exports": {
     ".": {
       "types": "./lib/dts/src/index.d.ts",
       "source": "./src/index.ts",
-      "import": "./lib/index.esm.js",
       "require": "./lib/index.js",
+      "node": {
+        "import": "./lib/index.cjs.mjs",
+        "require": "./lib/index.js"
+      },
+      "import": "./lib/index.esm.js",
       "default": "./lib/index.esm.js"
     },
     "./default-config": {
       "types": "./lib/dts/src/default-config.d.ts",
       "source": "./src/defaultStudioConfig.ts",
-      "import": "./lib/default-config.esm.js",
       "require": "./lib/default-config.js",
+      "node": {
+        "import": "./lib/default-config.cjs.mjs",
+        "require": "./lib/default-config.js"
+      },
+      "import": "./lib/default-config.esm.js",
       "default": "./lib/default-config.esm.js"
-    }
+    },
+    "./package.json": "./package.json"
   },
+  "main": "./lib/index.js",
+  "module": "./lib/index.esm.js",
+  "source": "./src/index.ts",
+  "types": "./lib/dts/src/index.d.ts",
   "typesVersions": {
     "*": {
       "default-config": [
@@ -35,37 +64,14 @@
     "static"
   ],
   "scripts": {
+    "prebuild": "run-s clean",
     "build": "pkg-utils build --tsconfig tsconfig.lib.json",
+    "postbuild": "run-s check:package",
     "check:package": "pkg-utils --tsconfig tsconfig.lib.json",
     "clean": "rimraf lib",
-    "postbuild": "run-s check:package",
-    "prebuild": "run-s clean",
     "test": "jest",
     "watch": "pkg-utils watch --tsconfig tsconfig.lib.json"
   },
-  "engines": {
-    "node": ">=14.0.0"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/sanity-io/sanity.git",
-    "directory": "packages/@sanity/server"
-  },
-  "keywords": [
-    "sanity",
-    "cms",
-    "headless",
-    "realtime",
-    "content",
-    "server",
-    "webserver"
-  ],
-  "author": "Sanity.io <hello@sanity.io>",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/sanity-io/sanity/issues"
-  },
-  "homepage": "https://www.sanity.io/",
   "dependencies": {
     "@sanity/generate-help-url": "^3.0.0",
     "@vitejs/plugin-react": "^2.0.0",
@@ -91,5 +97,8 @@
   "peerDependencies": {
     "react": "^18",
     "react-dom": "^18"
+  },
+  "engines": {
+    "node": ">=14.0.0"
   }
 }

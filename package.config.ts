@@ -16,7 +16,6 @@ export default defineConfig({
     },
   },
   legacyExports: true,
-  minify: false,
   rollup: {
     plugins: [optimizeLodashImports()],
   },

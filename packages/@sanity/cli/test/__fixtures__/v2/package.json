@@ -1,17 +1,17 @@
 {
   "name": "v2-studio",
-  "private": true,
   "version": "0.0.1",
+  "private": true,
   "description": "A Sanity v2 studio for CI testing.",
-  "author": "Sanity.io <hello@sanity.io>",
+  "keywords": [
+    "fixture"
+  ],
   "license": "MIT",
+  "author": "Sanity.io <hello@sanity.io>",
   "scripts": {
     "build": "sanity build",
     "start": "sanity start"
   },
-  "keywords": [
-    "fixture"
-  ],
   "dependencies": {
     "@sanity/base": "^2.33.3",
     "@sanity/cli": "^2.33.3",

@@ -1,12 +1,12 @@
 {
-  "private": true,
   "name": "sanity-starter-next-studio",
   "version": "3.1.4",
+  "private": true,
   "scripts": {
-    "dev": "next dev",
     "build": "next build",
-    "start": "next start",
-    "lint": "next lint"
+    "dev": "next dev",
+    "lint": "next lint",
+    "start": "next start"
   },
   "dependencies": {
     "next": "^12.1.0",

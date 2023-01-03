@@ -1,15 +1,8 @@
 {
   "name": "movies-studio",
-  "private": true,
   "version": "3.1.4",
+  "private": true,
   "description": "Content studio running with schema from the moviedb init template",
-  "main": "package.json",
-  "author": "Sanity.io <hello@sanity.io>",
-  "license": "MIT",
-  "scripts": {
-    "start": "sanity dev --port 3334",
-    "clean": "rimraf lib dest"
-  },
   "keywords": [
     "sanity",
     "cms",
@@ -18,20 +11,27 @@
     "content",
     "movies-studio"
   ],
+  "homepage": "https://www.sanity.io/",
+  "bugs": {
+    "url": "https://github.com/sanity-io/sanity/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sanity-io/sanity.git",
+    "directory": "examples/movies-studio"
+  },
+  "license": "MIT",
+  "author": "Sanity.io <hello@sanity.io>",
+  "main": "package.json",
+  "scripts": {
+    "clean": "rimraf lib dest",
+    "start": "sanity dev --port 3334"
+  },
   "dependencies": {
     "@sanity/google-maps-input": "studio-v3",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "sanity": "3.1.4",
     "styled-components": "^5.2.0"
-  },
-  "bugs": {
-    "url": "https://github.com/sanity-io/sanity/issues"
-  },
-  "homepage": "https://www.sanity.io/",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/sanity-io/sanity.git",
-    "directory": "examples/movies-studio"
   }
 }
