@@ -82,7 +82,7 @@
     "@rexxars/babel-plugin-inline-json-import": "^0.3.4",
     "@sanity/client": "^3.4.1",
     "@sanity/pkg-utils": "^2.1.0",
-    "@sanity/tsdoc-to-portable-text": "^0.4.1",
+    "@sanity/tsdoc-to-portable-text": "^0.4.3",
     "@sanity/uuid": "^3.0.1",
     "@types/jest": "^27.0.3",
     "@types/mkdirp": "^1.0.2",
