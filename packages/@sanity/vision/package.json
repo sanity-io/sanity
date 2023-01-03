@@ -48,7 +48,7 @@
     "@uiw/react-codemirror": "^4.11.4",
     "hashlru": "^2.3.0",
     "is-hotkey": "^0.1.6",
-    "json5": "^1.0.1",
+    "json5": "^2.2.3",
     "lodash": "^4.17.21"
   },
   "devDependencies": {
