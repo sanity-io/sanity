@@ -1,6 +1,5 @@
 {
   "name": "groq",
-  "private": "true",
   "version": "3.1.4",
   "description": "Tagged template literal for Sanity.io GROQ-queries",
   "types": "./lib/dts/src/groq.d.ts",
