@@ -31,13 +31,15 @@ const hashObject = (value: unknown) => {
   return JSON.stringify(sortObject(normalize(value)))
 }
 
-interface PaneHeaderActionsProps {
+/** @internal */
+export interface PaneHeaderActionsProps {
   initialValueTemplateItems?: InitialValueTemplateItem[]
   menuItems?: PaneMenuItem[]
   menuItemGroups?: PaneMenuItemGroup[]
   actionHandlers?: Record<string, DeskToolPaneActionHandler>
 }
 
+/** @internal */
 export const PaneHeaderActions = memo(
   ({
     initialValueTemplateItems: initialValueTemplateItemsFromStructure = emptyArray,

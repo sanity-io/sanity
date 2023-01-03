@@ -1,5 +1,6 @@
 import React, {useEffect, useState} from 'react'
 
+/** @internal */
 export function Delay({
   children,
   ms = 0,
