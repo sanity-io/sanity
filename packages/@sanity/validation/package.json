@@ -2,32 +2,6 @@
   "name": "@sanity/validation",
   "version": "3.1.4",
   "description": "Validation and warning infrastructure for Sanity projects",
-  "types": "./lib/dts/src/index.d.ts",
-  "source": "./src/index.ts",
-  "module": "./lib/index.esm.js",
-  "main": "./lib/index.js",
-  "files": [
-    "lib",
-    "src"
-  ],
-  "scripts": {
-    "build": "pkg-utils build --tsconfig tsconfig.lib.json",
-    "check:package": "pkg-utils --strict --tsconfig tsconfig.lib.json",
-    "clean": "rimraf lib",
-    "postbuild": "run-s check:package",
-    "prebuild": "run-s clean",
-    "test": "jest",
-    "test:watch": "jest --watch",
-    "watch": "pkg-utils watch --tsconfig tsconfig.lib.json"
-  },
-  "author": "Sanity.io <hello@sanity.io>",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/sanity-io/sanity/issues"
-  },
-  "publishConfig": {
-    "access": "public"
-  },
   "keywords": [
     "sanity",
     "cms",
@@ -37,10 +11,33 @@
     "validation"
   ],
   "homepage": "https://www.sanity.io/",
+  "bugs": {
+    "url": "https://github.com/sanity-io/sanity/issues"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/sanity-io/sanity.git",
     "directory": "packages/@sanity/validation"
+  },
+  "license": "MIT",
+  "author": "Sanity.io <hello@sanity.io>",
+  "main": "./lib/index.js",
+  "module": "./lib/index.esm.js",
+  "source": "./src/index.ts",
+  "types": "./lib/dts/src/index.d.ts",
+  "files": [
+    "lib",
+    "src"
+  ],
+  "scripts": {
+    "prebuild": "run-s clean",
+    "build": "pkg-utils build --tsconfig tsconfig.lib.json",
+    "postbuild": "run-s check:package",
+    "check:package": "pkg-utils --strict --tsconfig tsconfig.lib.json",
+    "clean": "rimraf lib",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "watch": "pkg-utils watch --tsconfig tsconfig.lib.json"
   },
   "dependencies": {
     "@sanity/types": "3.1.4",
@@ -54,5 +51,8 @@
   },
   "peerDependencies": {
     "@sanity/client": "^3.4.1"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

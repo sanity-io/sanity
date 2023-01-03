@@ -2,10 +2,25 @@
   "name": "@sanity/schema",
   "version": "3.1.4",
   "description": "",
-  "types": "./lib/dts/src/_exports/index.d.ts",
-  "source": "./src/_exports/index.ts",
-  "module": "./lib/_exports/index.esm.js",
-  "main": "./lib/_exports/index.js",
+  "keywords": [
+    "sanity",
+    "cms",
+    "headless",
+    "realtime",
+    "content",
+    "schema"
+  ],
+  "homepage": "https://www.sanity.io/",
+  "bugs": {
+    "url": "https://github.com/sanity-io/sanity/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sanity-io/sanity.git",
+    "directory": "packages/@sanity/schema"
+  },
+  "license": "MIT",
+  "author": "Sanity.io <hello@sanity.io>",
   "exports": {
     ".": {
       "types": "./lib/dts/src/_exports/index.d.ts",
@@ -22,6 +37,10 @@
       "default": "./lib/_exports/_internal.esm.js"
     }
   },
+  "main": "./lib/_exports/index.js",
+  "module": "./lib/_exports/index.esm.js",
+  "source": "./src/_exports/index.ts",
+  "types": "./lib/dts/src/_exports/index.d.ts",
   "typesVersions": {
     "*": {
       "_internal": [
@@ -35,25 +54,15 @@
     "src"
   ],
   "scripts": {
+    "prebuild": "run-s clean",
     "build": "pkg-utils build --tsconfig tsconfig.lib.json",
+    "postbuild": "run-s check:package",
     "check:package": "pkg-utils --tsconfig tsconfig.lib.json",
     "clean": "rimraf _internal.js lib",
-    "postbuild": "run-s check:package",
-    "prebuild": "run-s clean",
     "test": "jest",
     "test:watch": "jest --watchAll",
     "watch": "pkg-utils watch --tsconfig tsconfig.lib.json"
   },
-  "keywords": [
-    "sanity",
-    "cms",
-    "headless",
-    "realtime",
-    "content",
-    "schema"
-  ],
-  "author": "Sanity.io <hello@sanity.io>",
-  "license": "MIT",
   "dependencies": {
     "@sanity/generate-help-url": "^3.0.0",
     "@sanity/types": "3.1.4",
@@ -65,14 +74,5 @@
   },
   "devDependencies": {
     "rimraf": "^3.0.2"
-  },
-  "bugs": {
-    "url": "https://github.com/sanity-io/sanity/issues"
-  },
-  "homepage": "https://www.sanity.io/",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/sanity-io/sanity.git",
-    "directory": "packages/@sanity/schema"
   }
 }

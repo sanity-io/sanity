@@ -2,24 +2,6 @@
   "name": "@sanity/mutator",
   "version": "3.1.4",
   "description": "A set of models to make it easier to utilize the powerful real time collaborative features of Sanity",
-  "types": "./lib/dts/src/index.d.ts",
-  "source": "./src/index.ts",
-  "module": "./lib/index.esm.js",
-  "main": "./lib/index.js",
-  "files": [
-    "lib",
-    "src"
-  ],
-  "scripts": {
-    "build": "pkg-utils build --tsconfig tsconfig.lib.json",
-    "check:package": "pkg-utils --strict --tsconfig tsconfig.lib.json",
-    "clean": "rimraf lib",
-    "perf": "node ./perf/run.js",
-    "postbuild": "run-s check:package",
-    "prebuild": "run-s clean",
-    "test": "jest",
-    "watch": "pkg-utils watch --tsconfig tsconfig.lib.json"
-  },
   "keywords": [
     "sanity",
     "cms",
@@ -28,8 +10,35 @@
     "content",
     "mutator"
   ],
-  "author": "Sanity.io <hello@sanity.io>",
+  "homepage": "https://www.sanity.io/",
+  "bugs": {
+    "url": "https://github.com/sanity-io/sanity/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sanity-io/sanity.git",
+    "directory": "packages/@sanity/mutator"
+  },
   "license": "MIT",
+  "author": "Sanity.io <hello@sanity.io>",
+  "main": "./lib/index.js",
+  "module": "./lib/index.esm.js",
+  "source": "./src/index.ts",
+  "types": "./lib/dts/src/index.d.ts",
+  "files": [
+    "lib",
+    "src"
+  ],
+  "scripts": {
+    "prebuild": "run-s clean",
+    "build": "pkg-utils build --tsconfig tsconfig.lib.json",
+    "postbuild": "run-s check:package",
+    "check:package": "pkg-utils --strict --tsconfig tsconfig.lib.json",
+    "clean": "rimraf lib",
+    "perf": "node ./perf/run.js",
+    "test": "jest",
+    "watch": "pkg-utils watch --tsconfig tsconfig.lib.json"
+  },
   "dependencies": {
     "@sanity/uuid": "^3.0.1",
     "@types/diff-match-patch": "^1.0.32",
@@ -42,14 +51,5 @@
     "@types/debug": "^4.1.5",
     "@types/lodash": "^4.14.149",
     "rimraf": "^3.0.2"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/sanity-io/sanity.git",
-    "directory": "packages/@sanity/mutator"
-  },
-  "bugs": {
-    "url": "https://github.com/sanity-io/sanity/issues"
-  },
-  "homepage": "https://www.sanity.io/"
+  }
 }

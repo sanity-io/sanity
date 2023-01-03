@@ -2,31 +2,6 @@
   "name": "groq",
   "version": "3.1.4",
   "description": "Tagged template literal for Sanity.io GROQ-queries",
-  "types": "./lib/dts/src/groq.d.ts",
-  "source": "./src/groq.ts",
-  "module": "./lib/groq.esm.js",
-  "main": "./lib/groq.js",
-  "files": [
-    "lib",
-    "src"
-  ],
-  "engines": {
-    "node": ">=14"
-  },
-  "scripts": {
-    "build": "pkg-utils build --tsconfig tsconfig.lib.json",
-    "check:package": "pkg-utils --strict --tsconfig tsconfig.lib.json",
-    "clean": "rimraf lib",
-    "postbuild": "run-s check:package",
-    "prebuild": "run-s clean",
-    "test": "node test/groq.test.js",
-    "watch": "pkg-utils watch --tsconfig tsconfig.lib.json"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/sanity-io/sanity.git",
-    "directory": "packages/groq"
-  },
   "keywords": [
     "sanity",
     "cms",
@@ -39,10 +14,35 @@
     "literal",
     "string"
   ],
-  "author": "Sanity.io <hello@sanity.io>",
-  "license": "MIT",
+  "homepage": "https://www.sanity.io/",
   "bugs": {
     "url": "https://github.com/sanity-io/sanity/issues"
   },
-  "homepage": "https://www.sanity.io/"
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sanity-io/sanity.git",
+    "directory": "packages/groq"
+  },
+  "license": "MIT",
+  "author": "Sanity.io <hello@sanity.io>",
+  "main": "./lib/groq.js",
+  "module": "./lib/groq.esm.js",
+  "source": "./src/groq.ts",
+  "types": "./lib/dts/src/groq.d.ts",
+  "files": [
+    "lib",
+    "src"
+  ],
+  "scripts": {
+    "prebuild": "run-s clean",
+    "build": "pkg-utils build --tsconfig tsconfig.lib.json",
+    "postbuild": "run-s check:package",
+    "check:package": "pkg-utils --strict --tsconfig tsconfig.lib.json",
+    "clean": "rimraf lib",
+    "test": "node test/groq.test.js",
+    "watch": "pkg-utils watch --tsconfig tsconfig.lib.json"
+  },
+  "engines": {
+    "node": ">=14"
+  }
 }

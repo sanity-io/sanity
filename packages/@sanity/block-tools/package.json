@@ -2,27 +2,6 @@
   "name": "@sanity/block-tools",
   "version": "3.1.4",
   "description": "Can format HTML, Slate JSON or Sanity block array into any other format.",
-  "types": "./lib/dts/src/index.d.ts",
-  "source": "./src/index.ts",
-  "module": "./lib/index.esm.js",
-  "main": "./lib/index.js",
-  "files": [
-    "lib",
-    "src"
-  ],
-  "scripts": {
-    "build": "pkg-utils build --tsconfig tsconfig.lib.json",
-    "check:package": "pkg-utils --strict --tsconfig tsconfig.lib.json",
-    "clean": "rimraf lib",
-    "coverage": "NODE_ENV=test jest --coverage",
-    "postbuild": "run-s check:package",
-    "prebuild": "run-s clean",
-    "test": "NODE_ENV=test jest",
-    "watch": "pkg-utils watch --tsconfig tsconfig.lib.json"
-  },
-  "publishConfig": {
-    "access": "public"
-  },
   "keywords": [
     "sanity",
     "cms",
@@ -31,8 +10,35 @@
     "content",
     "block-tools"
   ],
-  "author": "Sanity.io <hello@sanity.io>",
+  "homepage": "https://www.sanity.io/",
+  "bugs": {
+    "url": "https://github.com/sanity-io/sanity/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sanity-io/sanity.git",
+    "directory": "packages/@sanity/block-tools"
+  },
   "license": "MIT",
+  "author": "Sanity.io <hello@sanity.io>",
+  "main": "./lib/index.js",
+  "module": "./lib/index.esm.js",
+  "source": "./src/index.ts",
+  "types": "./lib/dts/src/index.d.ts",
+  "files": [
+    "lib",
+    "src"
+  ],
+  "scripts": {
+    "prebuild": "run-s clean",
+    "build": "pkg-utils build --tsconfig tsconfig.lib.json",
+    "postbuild": "run-s check:package",
+    "check:package": "pkg-utils --strict --tsconfig tsconfig.lib.json",
+    "clean": "rimraf lib",
+    "coverage": "NODE_ENV=test jest --coverage",
+    "test": "NODE_ENV=test jest",
+    "watch": "pkg-utils watch --tsconfig tsconfig.lib.json"
+  },
   "dependencies": {
     "get-random-values-esm": "^1.0.0",
     "lodash": "^4.17.21"
@@ -44,13 +50,7 @@
     "@types/react": "^18.0.25",
     "jsdom": "^20.0.0"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/sanity-io/sanity.git",
-    "directory": "packages/@sanity/block-tools"
-  },
-  "bugs": {
-    "url": "https://github.com/sanity-io/sanity/issues"
-  },
-  "homepage": "https://www.sanity.io/"
+  "publishConfig": {
+    "access": "public"
+  }
 }

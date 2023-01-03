@@ -2,33 +2,6 @@
   "name": "@sanity/portable-text-editor",
   "version": "3.1.4",
   "description": "Portable Text Editor made in React",
-  "types": "./lib/dts/src/index.d.ts",
-  "source": "./src/index.ts",
-  "module": "./lib/index.esm.js",
-  "main": "./lib/index.js",
-  "files": [
-    "lib",
-    "src"
-  ],
-  "author": "Sanity.io <hello@sanity.io>",
-  "engines": {
-    "node": ">=14.0.0"
-  },
-  "license": "MIT",
-  "scripts": {
-    "build": "pkg-utils build --tsconfig tsconfig.lib.json",
-    "check:package": "pkg-utils --strict --tsconfig tsconfig.lib.json",
-    "clean": "rimraf lib",
-    "eslint": "eslint 'src/**/*.{ts,js,tsx}'",
-    "gen-doc": "typedoc --out docs src",
-    "postbuild": "run-s check:package",
-    "prebuild": "run-s clean",
-    "prettier": "prettier --write './**/*.{ts,tsx,js,css,html}'",
-    "start": "cd ./test/ && ts-node serve",
-    "test": "jest",
-    "test:watch": "jest --watch",
-    "watch": "pkg-utils watch --tsconfig tsconfig.lib.json"
-  },
   "keywords": [
     "sanity",
     "cms",
@@ -43,8 +16,38 @@
     "text",
     "portable-text"
   ],
-  "publishConfig": {
-    "access": "public"
+  "homepage": "https://www.sanity.io/",
+  "bugs": {
+    "url": "https://github.com/sanity-io/sanity/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sanity-io/sanity.git",
+    "directory": "packages/@sanity/portable-text-editor"
+  },
+  "license": "MIT",
+  "author": "Sanity.io <hello@sanity.io>",
+  "main": "./lib/index.js",
+  "module": "./lib/index.esm.js",
+  "source": "./src/index.ts",
+  "types": "./lib/dts/src/index.d.ts",
+  "files": [
+    "lib",
+    "src"
+  ],
+  "scripts": {
+    "prebuild": "run-s clean",
+    "build": "pkg-utils build --tsconfig tsconfig.lib.json",
+    "postbuild": "run-s check:package",
+    "check:package": "pkg-utils --strict --tsconfig tsconfig.lib.json",
+    "clean": "rimraf lib",
+    "eslint": "eslint 'src/**/*.{ts,js,tsx}'",
+    "gen-doc": "typedoc --out docs src",
+    "prettier": "prettier --write './**/*.{ts,tsx,js,css,html}'",
+    "start": "cd ./test/ && ts-node serve",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "watch": "pkg-utils watch --tsconfig tsconfig.lib.json"
   },
   "dependencies": {
     "@sanity/block-tools": "3.1.4",
@@ -94,13 +97,10 @@
     "rxjs": ">=6.5.3",
     "styled-components": "^5.2"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/sanity-io/sanity.git",
-    "directory": "packages/@sanity/portable-text-editor"
+  "engines": {
+    "node": ">=14.0.0"
   },
-  "bugs": {
-    "url": "https://github.com/sanity-io/sanity/issues"
-  },
-  "homepage": "https://www.sanity.io/"
+  "publishConfig": {
+    "access": "public"
+  }
 }

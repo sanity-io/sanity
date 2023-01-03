@@ -2,10 +2,6 @@
   "name": "sanity",
   "version": "3.1.4",
   "description": "Sanity is a real-time content infrastructure with a scalable, hosted backend featuring a Graph Oriented Query Language (GROQ), asset pipelines and fast edge caches",
-  "author": "Sanity.io <hello@sanity.io>",
-  "bugs": {
-    "url": "https://github.com/sanity-io/sanity/issues"
-  },
   "keywords": [
     "sanity",
     "cms",
@@ -13,13 +9,17 @@
     "realtime",
     "content"
   ],
-  "bin": {
-    "sanity": "./bin/sanity"
+  "homepage": "https://www.sanity.io/",
+  "bugs": {
+    "url": "https://github.com/sanity-io/sanity/issues"
   },
-  "types": "./lib/exports/index.d.ts",
-  "source": "./exports/index.ts",
-  "module": "./lib/index.esm.js",
-  "main": "./lib/index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sanity-io/sanity.git",
+    "directory": "packages/sanity"
+  },
+  "license": "MIT",
+  "author": "Sanity.io <hello@sanity.io>",
   "exports": {
     ".": {
       "types": "./lib/exports/index.d.ts",
@@ -57,6 +57,10 @@
       "default": "./lib/router.esm.js"
     }
   },
+  "main": "./lib/index.js",
+  "module": "./lib/index.esm.js",
+  "source": "./exports/index.ts",
+  "types": "./lib/exports/index.d.ts",
   "typesVersions": {
     "*": {
       "_internal": [
@@ -73,6 +77,9 @@
       ]
     }
   },
+  "bin": {
+    "sanity": "./bin/sanity"
+  },
   "files": [
     "_internal.js",
     "bin",
@@ -83,12 +90,12 @@
     "src"
   ],
   "scripts": {
+    "prebuild": "run-s clean",
     "build": "pkg-utils build --tsconfig tsconfig.lib.json",
+    "postbuild": "run-s check:package",
     "check:package": "pkg-utils --tsconfig tsconfig.lib.json",
     "clean": "rimraf _internal.js cli.js desk.js lib router.js",
     "coverage": "jest --coverage",
-    "postbuild": "run-s check:package",
-    "prebuild": "run-s clean",
     "prepublishOnly": "run-s write:version write:ui-version",
     "test": "pkg-utils --strict && jest",
     "watch": "pkg-utils watch --tsconfig tsconfig.lib.json",
@@ -223,12 +230,5 @@
   },
   "engines": {
     "node": ">=14.0.0"
-  },
-  "homepage": "https://www.sanity.io/",
-  "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/sanity-io/sanity.git",
-    "directory": "packages/sanity"
   }
 }

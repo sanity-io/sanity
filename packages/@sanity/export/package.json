@@ -2,18 +2,6 @@
   "name": "@sanity/export",
   "version": "3.1.4",
   "description": "Export Sanity documents and assets",
-  "main": "./src/export.js",
-  "files": [
-    "src"
-  ],
-  "engines": {
-    "node": ">=14.0.0"
-  },
-  "author": "Sanity.io <hello@sanity.io>",
-  "license": "MIT",
-  "scripts": {
-    "test": "jest"
-  },
   "keywords": [
     "sanity",
     "cms",
@@ -23,6 +11,24 @@
     "export",
     "ndjson"
   ],
+  "homepage": "https://www.sanity.io/",
+  "bugs": {
+    "url": "https://github.com/sanity-io/sanity/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sanity-io/sanity.git",
+    "directory": "packages/@sanity/export"
+  },
+  "license": "MIT",
+  "author": "Sanity.io <hello@sanity.io>",
+  "main": "./src/export.js",
+  "files": [
+    "src"
+  ],
+  "scripts": {
+    "test": "jest"
+  },
   "dependencies": {
     "archiver": "^5.0.0",
     "debug": "^3.2.7",
@@ -36,16 +42,10 @@
   "devDependencies": {
     "string-to-stream": "^1.1.0"
   },
+  "engines": {
+    "node": ">=14.0.0"
+  },
   "publishConfig": {
     "access": "public"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/sanity-io/sanity.git",
-    "directory": "packages/@sanity/export"
-  },
-  "bugs": {
-    "url": "https://github.com/sanity-io/sanity/issues"
-  },
-  "homepage": "https://www.sanity.io/"
+  }
 }

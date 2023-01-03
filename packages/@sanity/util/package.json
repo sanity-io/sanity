@@ -2,10 +2,25 @@
   "name": "@sanity/util",
   "version": "3.1.4",
   "description": "Utilities shared across projects of Sanity",
-  "types": "./lib/exports/index.d.ts",
-  "source": "./exports/index.ts",
-  "module": "./lib/index.esm.js",
-  "main": "./lib/index.js",
+  "keywords": [
+    "sanity",
+    "cms",
+    "headless",
+    "realtime",
+    "content",
+    "util"
+  ],
+  "homepage": "https://www.sanity.io/",
+  "bugs": {
+    "url": "https://github.com/sanity-io/sanity/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sanity-io/sanity.git",
+    "directory": "packages/@sanity/util"
+  },
+  "license": "MIT",
+  "author": "Sanity.io <hello@sanity.io>",
   "exports": {
     ".": {
       "types": "./lib/exports/index.d.ts",
@@ -43,6 +58,10 @@
       "default": "./lib/paths.esm.js"
     }
   },
+  "main": "./lib/index.js",
+  "module": "./lib/index.esm.js",
+  "source": "./exports/index.ts",
+  "types": "./lib/exports/index.d.ts",
   "typesVersions": {
     "*": {
       "fs": [
@@ -68,36 +87,14 @@
     "src"
   ],
   "scripts": {
+    "prebuild": "run-s clean",
     "build": "pkg-utils build --tsconfig tsconfig.lib.json",
+    "postbuild": "run-s check:package",
     "check:package": "pkg-utils --tsconfig tsconfig.lib.json",
     "clean": "rimraf content.js fs.js legacyDateFormat.js lib paths.js",
     "test": "jest",
-    "postbuild": "run-s check:package",
-    "prebuild": "run-s clean",
     "watch": "pkg-utils watch --tsconfig tsconfig.lib.json"
   },
-  "engines": {
-    "node": ">=14.0.0"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/sanity-io/sanity.git",
-    "directory": "packages/@sanity/util"
-  },
-  "keywords": [
-    "sanity",
-    "cms",
-    "headless",
-    "realtime",
-    "content",
-    "util"
-  ],
-  "author": "Sanity.io <hello@sanity.io>",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/sanity-io/sanity/issues"
-  },
-  "homepage": "https://www.sanity.io/",
   "dependencies": {
     "@sanity/types": "3.1.4",
     "get-random-values-esm": "^1.0.0",
@@ -106,5 +103,8 @@
   "devDependencies": {
     "@types/moment": "^2.13.0",
     "rimraf": "^3.0.2"
+  },
+  "engines": {
+    "node": ">=14.0.0"
   }
 }
