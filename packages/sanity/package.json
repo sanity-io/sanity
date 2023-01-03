@@ -158,7 +158,7 @@
     "jsdom-global": "^3.0.2",
     "json-lexer": "^1.2.0",
     "json-reduce": "^3.0.0",
-    "json5": "^1.0.1",
+    "json5": "^2.2.3",
     "lodash": "^4.17.21",
     "log-symbols": "^2.2.0",
     "mendoza": "^2.1.1",
