@@ -25,17 +25,26 @@
     ".": {
       "types": "./lib/dts/src/_exports/index.d.ts",
       "source": "./src/_exports/index.ts",
-      "import": "./lib/_exports/index.esm.js",
       "require": "./lib/_exports/index.js",
+      "node": {
+        "import": "./lib/_exports/index.cjs.mjs",
+        "require": "./lib/_exports/index.js"
+      },
+      "import": "./lib/_exports/index.esm.js",
       "default": "./lib/_exports/index.esm.js"
     },
     "./_internal": {
       "types": "./lib/dts/src/_exports/_internal.d.ts",
       "source": "./src/_exports/_internal.ts",
-      "import": "./lib/_exports/_internal.esm.js",
       "require": "./lib/_exports/_internal.js",
+      "node": {
+        "import": "./lib/_exports/index.cjs.mjs",
+        "require": "./lib/_exports/index.js"
+      },
+      "import": "./lib/_exports/_internal.esm.js",
       "default": "./lib/_exports/_internal.esm.js"
-    }
+    },
+    "./package.json": "./package.json"
   },
   "main": "./lib/_exports/index.js",
   "module": "./lib/_exports/index.esm.js",

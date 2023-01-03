@@ -21,6 +21,20 @@
   },
   "license": "MIT",
   "author": "Sanity.io <hello@sanity.io>",
+  "exports": {
+    ".": {
+      "types": "./lib/dts/src/index.d.ts",
+      "source": "./src/index.ts",
+      "require": "./lib/index.js",
+      "node": {
+        "import": "./lib/index.cjs.mjs",
+        "require": "./lib/index.js"
+      },
+      "import": "./lib/index.esm.js",
+      "default": "./lib/index.esm.js"
+    },
+    "./package.json": "./package.json"
+  },
   "main": "./lib/index.js",
   "module": "./lib/index.esm.js",
   "source": "./src/index.ts",

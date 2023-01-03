@@ -25,6 +25,20 @@
   },
   "license": "MIT",
   "author": "Sanity.io <hello@sanity.io>",
+  "exports": {
+    ".": {
+      "types": "./lib/dts/src/groq.d.ts",
+      "source": "./src/groq.ts",
+      "require": "./lib/groq.js",
+      "node": {
+        "import": "./lib/groq.cjs.mjs",
+        "require": "./lib/groq.js"
+      },
+      "import": "./lib/groq.esm.js",
+      "default": "./lib/groq.esm.js"
+    },
+    "./package.json": "./package.json"
+  },
   "main": "./lib/groq.js",
   "module": "./lib/groq.esm.js",
   "source": "./src/groq.ts",

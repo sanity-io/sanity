@@ -26,17 +26,26 @@
     ".": {
       "types": "./lib/dts/src/index.d.ts",
       "source": "./src/index.ts",
-      "import": "./lib/index.esm.js",
       "require": "./lib/index.js",
+      "node": {
+        "import": "./lib/index.cjs.mjs",
+        "require": "./lib/index.js"
+      },
+      "import": "./lib/index.esm.js",
       "default": "./lib/index.esm.js"
     },
     "./default-config": {
       "types": "./lib/dts/src/default-config.d.ts",
       "source": "./src/defaultStudioConfig.ts",
-      "import": "./lib/default-config.esm.js",
       "require": "./lib/default-config.js",
+      "node": {
+        "import": "./lib/default-config.cjs.mjs",
+        "require": "./lib/default-config.js"
+      },
+      "import": "./lib/default-config.esm.js",
       "default": "./lib/default-config.esm.js"
-    }
+    },
+    "./package.json": "./package.json"
   },
   "main": "./lib/index.js",
   "module": "./lib/index.esm.js",
