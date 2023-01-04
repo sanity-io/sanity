@@ -60,5 +60,9 @@ function isModernCliConfig(config: CliCommandContext): config is CliV3CommandCon
 }
 
 function serialize<T>(obj: T): T {
-  return JSON.parse(JSON.stringify(obj))
+  try {
+    return JSON.parse(JSON.stringify(obj))
+  } catch (cause) {
+    throw new Error(`Failed to serialize CLI configuration`, {cause})
+  }
 }
