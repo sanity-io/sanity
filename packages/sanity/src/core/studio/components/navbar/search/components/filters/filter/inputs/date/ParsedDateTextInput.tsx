@@ -31,86 +31,94 @@ export function ParsedDateTextInput({
   value,
   ...rest
 }: ParsedDateTextInputProps) {
-  const dateFormat = useMemo(() => {
-    return selectTime ? DATETIME_FORMAT : DATE_FORMAT
-  }, [selectTime])
-
-  const formattedPlaceholder = useMemo(() => {
-    const date = placeholderDate || new Date()
-    return formatDate({date, dateFormat, selectTime, useDateFormat})
-  }, [dateFormat, placeholderDate, selectTime, useDateFormat])
-
   const [customValidity, setCustomValidity] = useState<string | undefined>(undefined)
   const [inputValue, setInputValue] = useState<string>(() => {
     if (!value) {
       return ''
     }
     const inputValueDate = new Date(value)
-    return formatDate({date: inputValueDate, dateFormat, selectTime, useDateFormat})
+    return formatDate({date: inputValueDate, selectTime, useDateFormat})
   })
 
-  const parseInputValue = useCallback(() => {
-    if (inputValue) {
+  /**
+   * Conditionally create placeholder text
+   */
+  const formattedPlaceholder = useMemo(() => {
+    const date = placeholderDate || new Date()
+    return formatDate({date, selectTime, useDateFormat})
+  }, [placeholderDate, selectTime, useDateFormat])
+
+  /**
+   * Process current input value:
+   * - If `useDateFormat = true`, parse custom date string format and create date object.
+   * (Otherwise assume ISO-8601 format).
+   * - Validate the parsed date, update `customValidity` state on <TextInput />
+   * - If valid, update local input value and optionally trigger onChange callback.
+   */
+  const processInputString = useCallback(
+    ({dateString, triggerOnChange}: {dateString: string; triggerOnChange?: boolean}) => {
       let dateParsed: Date
       if (useDateFormat) {
-        dateParsed = parse(inputValue, dateFormat, new Date())
+        dateParsed = parse(dateString, getDateFormat({selectTime}), new Date())
       } else {
-        dateParsed = new Date(inputValue)
+        dateParsed = new Date(dateString)
       }
-
       const validDate = isValid(dateParsed)
       if (validDate) {
-        onChange(
-          getDateISOString({
-            date: dateParsed,
-            dateOnly: !selectTime,
-          })
-        )
-        setInputValue(formatDate({date: dateParsed, dateFormat, selectTime, useDateFormat}))
+        if (triggerOnChange) {
+          onChange(getDateISOString({date: dateParsed, dateOnly: !selectTime}))
+        }
+        setInputValue(formatDate({date: dateParsed, selectTime, useDateFormat}))
       }
       setCustomValidity(validDate ? undefined : `Invalid ${selectTime ? 'datetime' : 'date'}`)
-    }
-  }, [dateFormat, inputValue, onChange, selectTime, useDateFormat])
+    },
+    [onChange, selectTime, useDateFormat]
+  )
 
+  /**
+   * Re-process (parse, validate and update) current input value on blur
+   */
   const handleTextInputBlur = useCallback(() => {
-    parseInputValue()
-  }, [parseInputValue])
+    processInputString({dateString: inputValue, triggerOnChange: true})
+  }, [inputValue, processInputString])
 
   const handleTextInputChange = useCallback((event: ChangeEvent<HTMLInputElement>) => {
     setInputValue(event.currentTarget.value)
   }, [])
 
+  /**
+   * Reset state on input clear
+   */
   const handleTextInputClear = useCallback(() => {
     onChange(null)
     setCustomValidity(undefined)
     setInputValue('')
   }, [onChange])
 
+  /**
+   * Re-process (parse, validate and update) current input value on ENTER
+   */
   const handleTextInputKeyDown = useCallback(
     (event: KeyboardEvent<HTMLInputElement>) => {
       if (event.key === 'Enter') {
-        parseInputValue()
+        processInputString({dateString: inputValue, triggerOnChange: true})
       }
     },
-    [parseInputValue]
+    [inputValue, processInputString]
   )
 
+  /**
+   * Re-process input string when props value is updated
+   */
   useEffect(() => {
     const updatedDate = value && new Date(value)
-    if (updatedDate && isValid(updatedDate)) {
-      setInputValue(
-        formatDate({
-          date: updatedDate,
-          dateFormat,
-          selectTime,
-          useDateFormat,
-        })
-      )
-      setCustomValidity(undefined)
-    } else {
-      setInputValue('')
+    if (updatedDate) {
+      processInputString({
+        dateString: formatDate({date: updatedDate, selectTime, useDateFormat}),
+        triggerOnChange: false,
+      })
     }
-  }, [dateFormat, selectTime, useDateFormat, value])
+  }, [processInputString, selectTime, useDateFormat, value])
 
   return (
     <CustomTextInput
@@ -127,16 +135,22 @@ export function ParsedDateTextInput({
   )
 }
 
+/**
+ * Given a supplied date, conditionally return either a custom date string or ISO-8601 string (full or partial)
+ */
 function formatDate({
   date,
-  dateFormat,
   selectTime,
   useDateFormat,
 }: {
   date: Date
-  dateFormat: string
   selectTime?: boolean
   useDateFormat?: boolean
 }) {
+  const dateFormat = getDateFormat({selectTime})
   return useDateFormat ? format(date, dateFormat) : getDateISOString({date, dateOnly: !selectTime})
+}
+
+function getDateFormat({selectTime}: {selectTime?: boolean}) {
+  return selectTime ? DATETIME_FORMAT : DATE_FORMAT
 }
