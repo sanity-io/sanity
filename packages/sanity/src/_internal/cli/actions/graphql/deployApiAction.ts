@@ -67,7 +67,9 @@ export default async function deployGraphQLApiAction(
 
   const client = apiClient({
     requireUser: true,
-    requireProject: true,
+    // Don't throw if we do not have a project ID defined, as we will infer it from the
+    // source/ workspace of each configured API later
+    requireProject: false,
   })
 
   const apiDefs = await getGraphQLAPIs(context)
@@ -149,7 +151,7 @@ export default async function deployGraphQLApiAction(
       throw new Error(`No dataset specified for API at index ${index}`)
     }
 
-    const projectClient = client.clone().config({projectId})
+    const projectClient = client.clone().config({projectId, useProjectHostname: true})
     const {currentGeneration, playgroundEnabled} = await getCurrentSchemaProps(
       projectClient,
       dataset,
@@ -274,7 +276,7 @@ export default async function deployGraphQLApiAction(
     spinner = output.spinner('Deploying GraphQL API').start()
 
     try {
-      const projectClient = client.clone().config({projectId})
+      const projectClient = client.clone().config({projectId, useProjectHostname: true})
       const response = await projectClient.request<DeployResponse>({
         url: `/apis/graphql/${dataset}/${tag}`,
         method: 'PUT',
@@ -356,7 +358,8 @@ async function getCurrentSchemaProps(
   playgroundEnabled?: boolean
 }> {
   try {
-    const res = await getUrlHeaders(client.getUrl(`/apis/graphql/${dataset}/${tag}`), {
+    const apiUrl = client.getUrl(`/apis/graphql/${dataset}/${tag}`)
+    const res = await getUrlHeaders(apiUrl, {
       Authorization: `Bearer ${client.config().token}`,
     })
 
