@@ -1,5 +1,6 @@
 import {SchemaType} from '@sanity/types'
-import {InteropObservable, Observable, ObservableInput, Subscribable} from 'rxjs'
+import {Observable} from 'rxjs'
+import {ComponentType} from 'react'
 import {
   DefaultDocumentNodeResolver,
   StructureBuilder,
@@ -54,7 +55,7 @@ export type DeskToolPaneActionHandler = (params: any, scope?: unknown) => void
 
 /** @beta */
 export interface DeskToolOptions {
-  icon?: React.ComponentType
+  icon?: ComponentType
   name?: string
   source?: string
   structure?: StructureResolver
@@ -190,7 +191,6 @@ export interface BaseResolvedPaneNode<T extends PaneNode['type']> {
 export interface CustomComponentPaneNode extends BaseResolvedPaneNode<'component'> {
   component: UserComponent
   options?: Record<string, unknown>
-  // component: React.ComponentType<Props> | React.ReactNode
 }
 
 /** @internal */
@@ -230,7 +230,7 @@ export interface PaneListItem<TParams = unknown> {
   schemaType?: SchemaType
 
   title: string
-  icon?: React.ComponentType | false
+  icon?: ComponentType | false
   displayOptions?: {showIcon?: boolean}
   action?: (t: TParams) => unknown
   params?: TParams

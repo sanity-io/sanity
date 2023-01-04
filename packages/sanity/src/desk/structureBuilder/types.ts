@@ -1,4 +1,5 @@
 import type {SanityDocument, SchemaType, SortOrdering} from '@sanity/types'
+import {ComponentType} from 'react'
 import type {ComponentBuilder, ComponentInput} from './Component'
 import type {DocumentBuilder, PartialDocumentNode} from './Document'
 import type {DocumentListInput, DocumentListBuilder} from './DocumentList'
@@ -18,7 +19,7 @@ import type {ConfigContext, Source, InitialValueTemplateItem} from 'sanity'
 export type View = FormView | ComponentView
 
 /** @beta */
-export type UserViewComponent<TOptions = Record<string, any>> = React.ComponentType<{
+export type UserViewComponent<TOptions = Record<string, any>> = ComponentType<{
   document: {
     draft: SanityDocument | null
     displayed: Partial<SanityDocument>
@@ -31,8 +32,7 @@ export type UserViewComponent<TOptions = Record<string, any>> = React.ComponentT
 }>
 
 /** @beta */
-export type UserComponent = React.ComponentType<{
-  child?: ComponentBuilder
+export interface UserComponentProps {
   childItemId?: string
   id: string
   isActive?: boolean
@@ -40,8 +40,10 @@ export type UserComponent = React.ComponentType<{
   itemId: string
   options?: Record<string, unknown>
   paneKey: string
-  urlParams: Record<string, string | undefined> | undefined
-}>
+}
+
+/** @beta */
+export type UserComponent = ComponentType<UserComponentProps>
 
 /**
  * @beta
@@ -98,7 +100,7 @@ export interface StructureBuilder {
   view: {
     form: (spec?: Partial<FormView>) => FormViewBuilder
     component: (
-      componentOrSpec?: Partial<ComponentView> | React.ComponentType<any>
+      componentOrSpec?: Partial<ComponentView> | ComponentType<any>
     ) => ComponentViewBuilder
   }
   context: StructureContext

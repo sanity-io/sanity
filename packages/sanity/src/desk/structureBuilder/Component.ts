@@ -11,7 +11,9 @@ import {UserComponent} from './types'
 export interface Component extends StructureNode {
   component: UserComponent
   child?: Child
+  /** @deprecated Use `<PaneHeader />` instead */
   menuItems: MenuItem[]
+  /** @deprecated Use `<PaneHeader />` instead */
   menuItemGroups: MenuItemGroup[]
   options: {[key: string]: unknown}
 }
@@ -21,7 +23,9 @@ export interface ComponentInput extends StructureNode {
   component: UserComponent
   child?: Child
   options?: {[key: string]: unknown}
+  /** @deprecated Use `<PaneHeader />` instead */
   menuItems?: (MenuItem | MenuItemBuilder)[]
+  /** @deprecated Use `<PaneHeader />` instead */
   menuItemGroups?: (MenuItemGroup | MenuItemGroupBuilder)[]
 }
 
@@ -30,7 +34,9 @@ export interface BuildableComponent extends Partial<StructureNode> {
   component?: UserComponent
   child?: Child
   options?: {[key: string]: unknown}
+  /** @deprecated Use `<PaneHeader />` instead */
   menuItems?: (MenuItem | MenuItemBuilder)[]
+  /** @deprecated Use `<PaneHeader />` instead */
   menuItemGroups?: (MenuItemGroup | MenuItemGroupBuilder)[]
 }
 
@@ -58,6 +64,7 @@ export class ComponentBuilder implements Serializable<Component> {
     return this.spec.title
   }
 
+  /** @deprecated Use `<PaneContent />` instead */
   child(child: Child): ComponentBuilder {
     return this.clone({child})
   }
@@ -82,18 +89,22 @@ export class ComponentBuilder implements Serializable<Component> {
     return this.spec.options || {}
   }
 
+  /** @deprecated Use `<PaneHeader />` instead */
   menuItems(menuItems: (MenuItem | MenuItemBuilder)[]): ComponentBuilder {
     return this.clone({menuItems})
   }
 
+  /** @deprecated Use `<PaneHeader />` instead */
   getMenuItems(): BuildableComponent['menuItems'] {
     return this.spec.menuItems
   }
 
+  /** @deprecated Use `<PaneHeader />` instead */
   menuItemGroups(menuItemGroups: (MenuItemGroup | MenuItemGroupBuilder)[]): ComponentBuilder {
     return this.clone({menuItemGroups})
   }
 
+  /** @deprecated Use `<PaneHeader />` instead */
   getMenuItemGroups(): BuildableComponent['menuItemGroups'] {
     return this.spec.menuItemGroups
   }
