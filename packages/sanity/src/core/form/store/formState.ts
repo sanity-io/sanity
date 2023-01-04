@@ -497,11 +497,17 @@ function prepareObjectInputState<T>(
     resolveConditionalProperty(props.schemaType.readOnly, conditionalPropertyContext)
 
   const schemaTypeGroupConfig = props.schemaType.groups || []
-  const defaultGroupName = (schemaTypeGroupConfig.find((g) => g.default) || ALL_FIELDS_GROUP)?.name
+
+  let activeGroupName = ALL_FIELDS_GROUP.name
+  schemaTypeGroupConfig.every((g) => {
+    if (g.name == props.fieldGroupState?.value || g.default) activeGroupName = g.name
+    if (g.name == props.fieldGroupState?.value) return false
+    return true
+  })
 
   const groups = [ALL_FIELDS_GROUP, ...schemaTypeGroupConfig].flatMap((group): FormFieldGroup[] => {
     const groupHidden = resolveConditionalProperty(group.hidden, conditionalPropertyContext)
-    const isSelected = group.name === (props.fieldGroupState?.value || defaultGroupName)
+    const isSelected = group.name === activeGroupName
 
     // Set the "all-fields" group as selected when review changes is open to enable review of all
     // fields and changes together. When review changes is closed - switch back to the selected tab.
