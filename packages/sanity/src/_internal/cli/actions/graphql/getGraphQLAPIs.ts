@@ -45,7 +45,7 @@ function getApisWithSchemaTypes(cliContext: CliCommandContext): Promise<TypeReso
     const rootDir = path.dirname(rootPkgPath)
     const workerPath = path.join(rootDir, 'lib', '_internal', 'cli', 'threads', 'getGraphQLAPIs.js')
     const worker = new Worker(workerPath, {
-      workerData: {cliConfig: serialize(cliConfig), cliConfigPath, workDir},
+      workerData: {cliConfig: serialize(cliConfig || {}), cliConfigPath, workDir},
     })
     worker.on('message', resolve)
     worker.on('error', reject)
