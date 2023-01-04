@@ -8,7 +8,7 @@ const IS_MAC =
 export const DEBUG_FRAGMENT = '_debug_search_score'
 
 // Display debug filter information: shared document types and field values
-export const DEBUG_MODE = true
+export const DEBUG_MODE = false
 
 // Findability version, prepended to every search query for future measurement
 export const FINDABILITY_MVI = 3

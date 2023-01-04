@@ -69,6 +69,7 @@ export function ParsedDateTextInput({
           dateOnly: !selectTime,
         })
         onChange(dateString)
+        setInputValue(dateString)
       }
       setCustomValidity(validDate ? undefined : `Invalid ${selectTime ? 'datetime' : 'date'}`)
     }

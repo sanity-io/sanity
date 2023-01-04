@@ -11,7 +11,7 @@ export function DebugFilterValues({filter}: {filter: SearchFilter}) {
   const fieldDefinition = getFieldFromFilter(definitions.fields, filter)
 
   return (
-    <Card borderTop padding={3} style={{flexShrink: 0}} tone="transparent">
+    <Card borderTop padding={3} tone="transparent">
       <Stack space={2}>
         <Code size={0} weight="semibold">
           Filter
