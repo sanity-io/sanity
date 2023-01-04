@@ -108,7 +108,7 @@
   },
   "peerDependencies": {
     "react": "^16.9 || ^17 || ^18",
-    "rxjs": ">=6.5.3",
+    "rxjs": ">=6.5.3 || ^7.0.0",
     "styled-components": "^5.2"
   },
   "engines": {
