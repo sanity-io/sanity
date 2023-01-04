@@ -11,9 +11,14 @@ export default defineScope({
       component: lazy(() => import('./AutocompleteStory')),
     },
     {
-      name: 'commonDate',
-      title: 'CommonDate',
-      component: lazy(() => import('./CommonDateStory')),
+      name: 'commonDateDirection',
+      title: 'CommonDateDirection',
+      component: lazy(() => import('./CommonDateDirectionStory')),
+    },
+    {
+      name: 'commonDateEqual',
+      title: 'CommonDateEqual',
+      component: lazy(() => import('./CommonDateEqualStory')),
     },
     {
       name: 'commonDateRange',

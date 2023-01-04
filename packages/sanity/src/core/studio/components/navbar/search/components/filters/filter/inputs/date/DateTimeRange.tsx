@@ -6,5 +6,5 @@ import {CommonDateRangeInput} from './CommonDateRange'
 export function SearchFilterDateTimeRangeInput(
   props: OperatorInputComponentProps<OperatorDateRangeValue>
 ) {
-  return <CommonDateRangeInput {...props} selectTime />
+  return <CommonDateRangeInput {...props} isDateTime />
 }

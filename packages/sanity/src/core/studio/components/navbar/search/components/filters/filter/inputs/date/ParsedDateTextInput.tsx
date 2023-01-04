@@ -9,47 +9,74 @@ import React, {
   useState,
 } from 'react'
 import {CustomTextInput} from '../../../../common/CustomTextInput'
+import {getDateISOString} from './utils/getDateISOString'
 
 interface ParsedDateTextInputProps
   extends Omit<ComponentProps<typeof CustomTextInput>, 'onChange' | 'value'> {
   onChange: (val: string | null) => void
   placeholderDate?: Date
   selectTime?: boolean
+  useDateFormat?: boolean
   value?: string | null
 }
 
-const DEFAULT_DATE_FORMAT = 'MMM d, yyyy' // Jan 1, 2000
-const DEFAULT_TIME_FORMAT = 'p' // 12:00 AM
+const FORMAT: Record<
+  'date' | 'datetime',
+  {
+    custom: string
+    iso8601: string
+  }
+> = {
+  date: {
+    custom: 'MMM d, yyyy', // Feb 1, 2000
+    iso8601: 'yyyy-MM-dd', // 2000-02-01
+  },
+  datetime: {
+    custom: 'MMM d, yyyy p', // Feb 1, 2000 12:00 AM
+    iso8601: `yyyy-MM-dd'T'HH:mm:ss'Z'`, // 2000-02-01T12:00:00Z
+  },
+}
 
 export function ParsedDateTextInput({
   onChange,
-  placeholderDate = new Date(),
+  placeholderDate,
   selectTime,
+  useDateFormat = true,
   value,
   ...rest
 }: ParsedDateTextInputProps) {
-  const dateFormat = useMemo(
-    () => [DEFAULT_DATE_FORMAT, ...(selectTime ? [DEFAULT_TIME_FORMAT] : [])].join(' '),
-    [selectTime]
-  )
-  const formattedPlaceholder = useMemo(
-    () => format(placeholderDate, dateFormat),
-    [dateFormat, placeholderDate]
-  )
+  const dateFormat = useMemo(() => {
+    const fmt = useDateFormat ? 'custom' : 'iso8601'
+    return selectTime ? FORMAT.datetime[fmt] : FORMAT.date[fmt]
+  }, [selectTime, useDateFormat])
+
+  const formattedPlaceholder = useMemo(() => {
+    const date = placeholderDate || new Date()
+    return format(date, dateFormat)
+  }, [dateFormat, placeholderDate])
 
   const [customValidity, setCustomValidity] = useState<string | undefined>(undefined)
-  const [inputValue, setInputValue] = useState<string>(() =>
-    value ? format(new Date(value), dateFormat) : ''
-  )
+  const [inputValue, setInputValue] = useState<string>(() => {
+    if (!value) {
+      return ''
+    }
+    return useDateFormat ? format(new Date(value), dateFormat) : value
+  })
 
   const parseInputValue = useCallback(() => {
     if (inputValue) {
-      const parsed = parse(inputValue, dateFormat, new Date())
-      const validDate = isValid(parsed)
-      onChange(validDate ? parsed.toISOString() : null)
-      setCustomValidity(validDate ? undefined : 'Invalid date')
+      const dateParsed = parse(inputValue, dateFormat, new Date())
+      const validDate = isValid(dateParsed)
+      if (validDate) {
+        const dateString = getDateISOString({
+          date: dateParsed,
+          isDateTime: selectTime,
+        })
+        onChange(dateString)
+      }
+      setCustomValidity(validDate ? undefined : `Invalid ${selectTime ? 'datetime' : 'date'}`)
     }
-  }, [dateFormat, inputValue, onChange])
+  }, [dateFormat, inputValue, onChange, selectTime])
 
   const handleTextInputBlur = useCallback(() => {
     parseInputValue()
@@ -82,7 +109,7 @@ export function ParsedDateTextInput({
     } else {
       setInputValue('')
     }
-  }, [dateFormat, value])
+  }, [dateFormat, selectTime, useDateFormat, value])
 
   return (
     <CustomTextInput

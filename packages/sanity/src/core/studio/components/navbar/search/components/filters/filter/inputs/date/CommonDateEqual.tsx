@@ -4,13 +4,14 @@ import {useSearchState} from '../../../../../contexts/search/useSearchState'
 import type {OperatorInputComponentProps} from '../../../../../definitions/operators/operatorTypes'
 import {DatePicker} from './datePicker/DatePicker'
 import {ParsedDateTextInput} from './ParsedDateTextInput'
+import {getDateISOString} from './utils/getDateISOString'
 
-export function CommonDateInput({
+export function CommonDateEqualInput({
+  isDateTime,
   onChange,
-  selectTime,
   value,
 }: OperatorInputComponentProps<string> & {
-  selectTime?: boolean
+  isDateTime?: boolean
 }) {
   const {
     state: {fullscreen},
@@ -18,12 +19,12 @@ export function CommonDateInput({
 
   const handleDatePickerChange = useCallback(
     ({date}: {date?: Date | null}) => {
-      const timestamp = date?.toISOString()
+      const timestamp = getDateISOString({date, isDateTime})
       if (timestamp) {
         onChange(timestamp)
       }
     },
-    [onChange]
+    [isDateTime, onChange]
   )
 
   return (
@@ -32,13 +33,14 @@ export function CommonDateInput({
         aria-label="Date"
         fontSize={fullscreen ? 2 : 1}
         onChange={onChange}
-        selectTime={selectTime}
+        selectTime={isDateTime}
+        useDateFormat={false}
         value={value}
       />
       <DatePicker
         date={value ? new Date(value) : undefined}
         onChange={handleDatePickerChange}
-        selectTime={selectTime}
+        selectTime={isDateTime}
       />
     </Stack>
   )

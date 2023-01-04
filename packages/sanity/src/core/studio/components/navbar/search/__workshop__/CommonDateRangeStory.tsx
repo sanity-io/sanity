@@ -1,4 +1,4 @@
-import {Card} from '@sanity/ui'
+import {Card, Inline, Stack, Text} from '@sanity/ui'
 import {useBoolean} from '@sanity/ui-workshop'
 import React, {useCallback, useState} from 'react'
 import {CommonDateRangeInput} from '../components/filters/filter/inputs/date/CommonDateRange'
@@ -6,7 +6,7 @@ import {SearchProvider} from '../contexts/search/SearchProvider'
 import type {OperatorDateRangeValue} from '../definitions/operators/dateOperators'
 
 export default function CommonDateRangeStory() {
-  const selectTime = useBoolean('Select time', true, 'Props')
+  const isDateTime = useBoolean('Datetime', true, 'Props')
 
   const [value, setValue] = useState<OperatorDateRangeValue | null>(null)
 
@@ -17,7 +17,27 @@ export default function CommonDateRangeStory() {
   return (
     <SearchProvider>
       <Card padding={3} shadow={1}>
-        <CommonDateRangeInput onChange={handleChange} selectTime={selectTime} value={value} />
+        <CommonDateRangeInput isDateTime={isDateTime} onChange={handleChange} value={value} />
+      </Card>
+      <Card margin={3} padding={3} shadow={1} tone="primary">
+        <Stack space={3}>
+          <Inline space={1}>
+            <Text muted size={1} weight="semibold">
+              Start:
+            </Text>
+            <Text muted size={1}>
+              {value?.min ? value.min : <em>Empty</em>}
+            </Text>
+          </Inline>
+          <Inline space={1}>
+            <Text muted size={1} weight="semibold">
+              End:
+            </Text>
+            <Text muted size={1}>
+              {value?.max ? value.max : <em>Empty</em>}
+            </Text>
+          </Inline>
+        </Stack>
       </Card>
     </SearchProvider>
   )
