@@ -317,14 +317,28 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   const isNonExistent = !value?._id
 
   const readOnly = useMemo(() => {
+    const hasNoPermission = !isPermissionsLoading && !permissions?.granted
+    const updateActionDisabled = !isActionEnabled(schemaType!, 'update')
+    const createActionDisabled = isNonExistent && !isActionEnabled(schemaType!, 'create')
+    const reconnecting = connectionState === 'reconnecting'
+
     return (
       !ready ||
       rev !== null ||
-      (!isPermissionsLoading && !permissions?.granted) ||
-      !isActionEnabled(schemaType!, 'update') ||
-      (isNonExistent && !isActionEnabled(schemaType!, 'create'))
+      hasNoPermission ||
+      updateActionDisabled ||
+      createActionDisabled ||
+      reconnecting
     )
-  }, [isNonExistent, isPermissionsLoading, permissions?.granted, ready, rev, schemaType])
+  }, [
+    connectionState,
+    isNonExistent,
+    isPermissionsLoading,
+    permissions?.granted,
+    ready,
+    rev,
+    schemaType,
+  ])
 
   const formState = useFormState(schemaType!, {
     value: displayed,
