@@ -91,6 +91,7 @@ export function useFormState<
     comparisonValue,
     focusPath,
     openPath,
+    readOnly,
     currentUser,
     presence,
     validation,
