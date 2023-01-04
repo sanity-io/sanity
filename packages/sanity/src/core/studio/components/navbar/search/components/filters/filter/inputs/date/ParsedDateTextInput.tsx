@@ -37,9 +37,7 @@ export function ParsedDateTextInput({
 
   const formattedPlaceholder = useMemo(() => {
     const date = placeholderDate || new Date()
-    return useDateFormat
-      ? format(date, dateFormat)
-      : getDateISOString({date, dateOnly: !selectTime})
+    return formatDate({date, dateFormat, selectTime, useDateFormat})
   }, [dateFormat, placeholderDate, selectTime, useDateFormat])
 
   const [customValidity, setCustomValidity] = useState<string | undefined>(undefined)
@@ -48,9 +46,7 @@ export function ParsedDateTextInput({
       return ''
     }
     const inputValueDate = new Date(value)
-    return useDateFormat
-      ? format(inputValueDate, dateFormat)
-      : getDateISOString({date: inputValueDate, dateOnly: !selectTime})
+    return formatDate({date: inputValueDate, dateFormat, selectTime, useDateFormat})
   })
 
   const parseInputValue = useCallback(() => {
@@ -64,12 +60,13 @@ export function ParsedDateTextInput({
 
       const validDate = isValid(dateParsed)
       if (validDate) {
-        const dateString = getDateISOString({
-          date: dateParsed,
-          dateOnly: !selectTime,
-        })
-        onChange(dateString)
-        setInputValue(dateString)
+        onChange(
+          getDateISOString({
+            date: dateParsed,
+            dateOnly: !selectTime,
+          })
+        )
+        setInputValue(formatDate({date: dateParsed, dateFormat, selectTime, useDateFormat}))
       }
       setCustomValidity(validDate ? undefined : `Invalid ${selectTime ? 'datetime' : 'date'}`)
     }
@@ -102,12 +99,12 @@ export function ParsedDateTextInput({
     const updatedDate = value && new Date(value)
     if (updatedDate && isValid(updatedDate)) {
       setInputValue(
-        useDateFormat
-          ? format(updatedDate, dateFormat)
-          : getDateISOString({
-              date: updatedDate,
-              dateOnly: !selectTime,
-            })
+        formatDate({
+          date: updatedDate,
+          dateFormat,
+          selectTime,
+          useDateFormat,
+        })
       )
       setCustomValidity(undefined)
     } else {
@@ -128,4 +125,18 @@ export function ParsedDateTextInput({
       value={inputValue}
     />
   )
+}
+
+function formatDate({
+  date,
+  dateFormat,
+  selectTime,
+  useDateFormat,
+}: {
+  date: Date
+  dateFormat: string
+  selectTime?: boolean
+  useDateFormat?: boolean
+}) {
+  return useDateFormat ? format(date, dateFormat) : getDateISOString({date, dateOnly: !selectTime})
 }

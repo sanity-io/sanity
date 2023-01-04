@@ -22,8 +22,8 @@ export function CommonDateEqualInput({
   const handleDatePickerChange = useCallback(
     ({date}: {date?: Date | null}) => {
       if (date) {
-        const timestamp = getDateISOString({date, dateOnly: !isDateTime})
-        onChange(timestamp)
+        const dateISOString = getDateISOString({date, dateOnly: !isDateTime})
+        onChange(dateISOString)
       } else {
         onChange(null)
       }

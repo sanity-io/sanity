@@ -45,7 +45,6 @@ export function CommonDateRangeInput({
         endDate: value?.max ? new Date(value.max) : null,
         includeTime,
         isDateTime,
-        resetTime: includeTime,
       })
     )
   }, [isDateTime, onChange, value])
@@ -118,27 +117,25 @@ function getStartAndEndDate({
   endDate,
   includeTime,
   isDateTime,
-  resetTime,
 }: {
   date?: Date | null
   endDate?: Date | null
   includeTime?: boolean
   isDateTime?: boolean
-  resetTime?: boolean
 }) {
-  const roundDay = resetTime ? 'start' : undefined
-
   if (includeTime) {
     return {
       includeTime,
-      max: endDate ? getDateISOString({date: endDate, dateOnly: !isDateTime, roundDay}) : null,
-      min: date ? getDateISOString({date: date, dateOnly: !isDateTime, roundDay}) : null,
+      max: endDate
+        ? getDateISOString({date: endDate, dateOnly: !isDateTime, roundDay: 'start'})
+        : null,
+      min: date ? getDateISOString({date: date, dateOnly: !isDateTime, roundDay: 'start'}) : null,
     }
   }
 
   return {
     includeTime,
-    max: endDate ? getDateISOString({date: endDate, dateOnly: !isDateTime, roundDay}) : null,
-    min: date ? getDateISOString({date, dateOnly: !isDateTime, roundDay}) : null,
+    max: endDate ? getDateISOString({date: endDate, dateOnly: !isDateTime, roundDay: 'end'}) : null,
+    min: date ? getDateISOString({date, dateOnly: !isDateTime, roundDay: 'start'}) : null,
   }
 }
