@@ -9,9 +9,11 @@ import {getDateISOString} from './utils/getDateISOString'
 export function CommonDateEqualInput({
   isDateTime,
   onChange,
+  useInputDateFormat,
   value,
 }: OperatorInputComponentProps<string> & {
   isDateTime?: boolean
+  useInputDateFormat?: boolean
 }) {
   const {
     state: {fullscreen},
@@ -19,9 +21,11 @@ export function CommonDateEqualInput({
 
   const handleDatePickerChange = useCallback(
     ({date}: {date?: Date | null}) => {
-      const timestamp = getDateISOString({date, isDateTime})
-      if (timestamp) {
+      if (date) {
+        const timestamp = getDateISOString({date, dateOnly: !isDateTime})
         onChange(timestamp)
+      } else {
+        onChange(null)
       }
     },
     [isDateTime, onChange]
@@ -34,7 +38,7 @@ export function CommonDateEqualInput({
         fontSize={fullscreen ? 2 : 1}
         onChange={onChange}
         selectTime={isDateTime}
-        useDateFormat={false}
+        useDateFormat={useInputDateFormat}
         value={value}
       />
       <DatePicker

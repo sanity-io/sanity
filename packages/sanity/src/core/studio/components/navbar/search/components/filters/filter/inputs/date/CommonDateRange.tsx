@@ -1,5 +1,5 @@
 import {Flex, Stack} from '@sanity/ui'
-import {addDays, endOfDay, startOfDay} from 'date-fns'
+import {addDays} from 'date-fns'
 import React, {useCallback, useMemo} from 'react'
 import {useSearchState} from '../../../../../contexts/search/useSearchState'
 import type {OperatorDateRangeValue} from '../../../../../definitions/operators/dateOperators'
@@ -131,22 +131,14 @@ function getStartAndEndDate({
   if (includeTime) {
     return {
       includeTime,
-      max: getDateISOString({date: endDate, isDateTime, roundDay}),
-      min: getDateISOString({date: date, isDateTime, roundDay}),
+      max: endDate ? getDateISOString({date: endDate, dateOnly: !isDateTime, roundDay}) : null,
+      min: date ? getDateISOString({date: date, dateOnly: !isDateTime, roundDay}) : null,
     }
   }
 
   return {
     includeTime,
-    max: getDateISOString({
-      date: endDate ? endOfDay(endDate) : null,
-      isDateTime,
-      roundDay,
-    }),
-    min: getDateISOString({
-      date: date ? startOfDay(date) : null,
-      isDateTime,
-      roundDay,
-    }),
+    max: endDate ? getDateISOString({date: endDate, dateOnly: !isDateTime, roundDay}) : null,
+    min: date ? getDateISOString({date, dateOnly: !isDateTime, roundDay}) : null,
   }
 }

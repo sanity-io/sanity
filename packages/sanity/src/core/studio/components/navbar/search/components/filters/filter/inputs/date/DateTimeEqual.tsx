@@ -3,5 +3,5 @@ import {OperatorInputComponentProps} from '../../../../../definitions/operators/
 import {CommonDateEqualInput} from './CommonDateEqual'
 
 export function SearchFilterDateTimeEqualInput(props: OperatorInputComponentProps<string>) {
-  return <CommonDateEqualInput {...props} isDateTime />
+  return <CommonDateEqualInput {...props} isDateTime useInputDateFormat={false} />
 }

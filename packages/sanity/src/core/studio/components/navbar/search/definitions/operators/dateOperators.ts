@@ -61,9 +61,6 @@ const COMMON = {
   dateEqual: {
     buttonLabel: 'is',
     buttonValueComponent: SearchButtonValueDate as SearchOperatorButtonValue<string>,
-    groqFilter: ({fieldPath, value}: SearchOperatorParams<string>) => {
-      return value && fieldPath ? `${fieldPath} == ${toJSON(value)}` : null
-    },
     initialValue: null,
     label: 'is',
   },
@@ -76,9 +73,6 @@ const COMMON = {
   dateNotEqual: {
     buttonLabel: 'is not',
     buttonValueComponent: SearchButtonValueDate as SearchOperatorButtonValue<string>,
-    groqFilter: ({fieldPath, value}: SearchOperatorParams<string>) => {
-      return value && fieldPath ? `${fieldPath} != ${toJSON(value)}` : null
-    },
     initialValue: null,
     label: 'is not',
   },
@@ -108,6 +102,9 @@ export const dateOperators = {
   }),
   dateEqual: defineSearchOperator({
     ...COMMON.dateEqual,
+    groqFilter: ({fieldPath, value}: SearchOperatorParams<string>) => {
+      return value && fieldPath ? `${fieldPath} == ${toJSON(value)}` : null
+    },
     inputComponent: SearchFilterDateEqualInput as SearchOperatorInput<string>,
     type: 'dateEqual',
   }),
@@ -133,6 +130,9 @@ export const dateOperators = {
   }),
   dateNotEqual: defineSearchOperator({
     ...COMMON.dateNotEqual,
+    groqFilter: ({fieldPath, value}: SearchOperatorParams<string>) => {
+      return value && fieldPath ? `${fieldPath} != ${toJSON(value)}` : null
+    },
     inputComponent: SearchFilterDateEqualInput as SearchOperatorInput<string>,
     type: 'dateNotEqual',
   }),
@@ -177,6 +177,9 @@ export const dateOperators = {
   }),
   dateTimeEqual: defineSearchOperator({
     ...COMMON.dateEqual,
+    groqFilter: ({fieldPath, value}: SearchOperatorParams<string>) => {
+      return value && fieldPath ? `dateTime(${fieldPath}) == dateTime(${toJSON(value)})` : null
+    },
     inputComponent: SearchFilterDateTimeEqualInput as SearchOperatorInput<string>,
     type: 'dateTimeEqual',
   }),
@@ -204,6 +207,9 @@ export const dateOperators = {
   }),
   dateTimeNotEqual: defineSearchOperator({
     ...COMMON.dateNotEqual,
+    groqFilter: ({fieldPath, value}: SearchOperatorParams<string>) => {
+      return value && fieldPath ? `dateTime(${fieldPath}) != dateTime(${toJSON(value)})` : null
+    },
     inputComponent: SearchFilterDateTimeEqualInput as SearchOperatorInput<string>,
     type: 'dateTimeNotEqual',
   }),

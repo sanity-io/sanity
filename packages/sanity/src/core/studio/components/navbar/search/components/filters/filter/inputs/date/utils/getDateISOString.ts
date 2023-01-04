@@ -5,21 +5,18 @@ export type RoundDayValue = 'end' | 'start'
 /**
  * Get the ISO 8601 string of a provided date.
  *
- * Returns the full string if `datetime=true` (e.g. '2023-01-04T10:00:00.000Z'),
- * otherwise return a partial string containing only the date (e.g. '2023-01-04'),
+ * Returns a full ISO string if `datetime=true` (e.g. '2023-01-04T10:00:00.000Z')
+ * Otherwise, returns a partial string containing only the date (e.g. '2023-01-04'),
  */
 export function getDateISOString({
   date,
-  isDateTime,
+  dateOnly,
   roundDay,
 }: {
-  date?: Date | null
-  isDateTime?: boolean
+  date: Date
+  dateOnly?: boolean
   roundDay?: RoundDayValue
-}): string | null {
-  if (!date) {
-    return null
-  }
+}): string {
   let adjustedDate: Date
   switch (roundDay) {
     case 'end':
@@ -33,5 +30,5 @@ export function getDateISOString({
       break
   }
 
-  return isDateTime ? adjustedDate.toISOString() : adjustedDate.toISOString().split('T')[0]
+  return dateOnly ? adjustedDate.toISOString().split('T')[0] : adjustedDate.toISOString()
 }

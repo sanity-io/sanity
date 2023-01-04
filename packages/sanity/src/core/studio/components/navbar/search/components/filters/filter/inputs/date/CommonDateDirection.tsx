@@ -34,30 +34,34 @@ export function CommonDateDirectionInput({
 
   const handleDatePickerChange = useCallback(
     ({date}: {date?: Date | null}) => {
-      const timestamp = getDateISOString({
-        date,
-        isDateTime,
-        roundDay: value?.includeTime ? undefined : roundDay,
-      })
-
-      if (timestamp) {
-        onChange({
-          includeTime: value?.includeTime,
-          value: timestamp,
+      let timestamp: string | null = null
+      if (date) {
+        timestamp = getDateISOString({
+          date,
+          dateOnly: !isDateTime,
+          roundDay: value?.includeTime ? undefined : roundDay,
         })
       }
+      onChange({
+        includeTime: value?.includeTime,
+        value: timestamp,
+      })
     },
     [isDateTime, onChange, roundDay, value?.includeTime]
   )
 
   const handleIncludeTimeChange = useCallback(() => {
     const includeTime = !value?.includeTime
-    const timestamp = getDateISOString({
-      date: value?.value ? new Date(value.value) : null,
-      isDateTime,
-      roundDay: includeTime ? 'start' : roundDay,
-    })
+    const date = value?.value ? new Date(value.value) : null
 
+    let timestamp: string | null = null
+    if (date) {
+      timestamp = getDateISOString({
+        date,
+        dateOnly: !isDateTime,
+        roundDay: includeTime ? 'start' : roundDay,
+      })
+    }
     onChange({includeTime, value: timestamp})
   }, [isDateTime, onChange, roundDay, value])
 
