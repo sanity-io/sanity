@@ -99,7 +99,6 @@ export type PortableTextEditorProps = PropsWithChildren<{
 
 export interface PortableTextEditorState {
   invalidValueResolution: InvalidValueResolution | null
-  selection: EditorSelection | null
   initialValue: Descendant[]
 }
 export class PortableTextEditor extends React.Component<
@@ -119,7 +118,8 @@ export class PortableTextEditor extends React.Component<
   private editable?: EditableAPI
   private pendingPatches: Patch[] = []
   private returnedPatches: Patch[] = []
-  hasPendingLocalPatches: React.MutableRefObject<boolean | null>
+  private selectionRef: React.MutableRefObject<EditorSelection | null>
+  private hasPendingLocalPatches: React.MutableRefObject<boolean | null>
 
   constructor(props: PortableTextEditorProps) {
     super(props)
@@ -131,9 +131,10 @@ export class PortableTextEditor extends React.Component<
     this.hasPendingLocalPatches = React.createRef()
     this.hasPendingLocalPatches.current = false
 
+    this.selectionRef = React.createRef()
+
     this.state = {
       invalidValueResolution: null,
-      selection: null,
       initialValue: [], // Created in the constructor
     }
 
@@ -185,7 +186,7 @@ export class PortableTextEditor extends React.Component<
           break
         case 'selection':
           onChange(next)
-          this.setState({selection: next.selection})
+          this.selectionRef.current = next.selection
           break
         default:
           onChange(next)
@@ -278,7 +279,7 @@ export class PortableTextEditor extends React.Component<
       <PortableTextEditorContext.Provider value={this}>
         <PortableTextEditorValueContext.Provider value={this.props.value}>
           <PortableTextEditorReadOnlyContext.Provider value={Boolean(this.props.readOnly)}>
-            <PortableTextEditorSelectionContext.Provider value={this.state.selection}>
+            <PortableTextEditorSelectionContext.Provider value={this.selectionRef.current}>
               <Slate onChange={NOOP} editor={this.slateInstance} value={this.state.initialValue}>
                 {this.props.children}
               </Slate>
