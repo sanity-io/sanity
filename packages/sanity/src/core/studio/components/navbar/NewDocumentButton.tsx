@@ -1,7 +1,7 @@
 import React, {useCallback, useMemo, useState} from 'react'
 import {Dialog, Grid, Button, Flex, Box, Tooltip, Spinner, Text} from '@sanity/ui'
 import styled from 'styled-components'
-import {ComposeIcon} from '@sanity/icons'
+import {ComposeIcon, DocumentIcon} from '@sanity/icons'
 import {useSource} from '../../source'
 import {useColorScheme} from '../../colorScheme'
 import {TemplatePermissionsResult, useTemplatePermissions} from '../../../store'
@@ -21,6 +21,8 @@ const DisabledButtonWrapper = styled.div`
     width: 100%;
   }
 `
+
+const DefaultIcon = () => <DocumentIcon />
 
 export function NewDocumentButton() {
   const [newDocumentButtonEl, setNewDocumentButtonEl] = useState<HTMLButtonElement | null>(null)
@@ -135,7 +137,7 @@ export function NewDocumentButton() {
                       params={{template: template.templateId, type: template.schemaType}}
                     >
                       <DefaultPreview
-                        media={template.icon}
+                        media={template.icon || DefaultIcon}
                         subtitle={template.subtitle}
                         title={template.title}
                       />
