@@ -1,6 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
-import {Box, Card, Checkbox, Flex, Switch} from '@sanity/ui'
+import {Box, Card, CardTone, Checkbox, Flex, Switch} from '@sanity/ui'
 import {BooleanInputProps} from '../types'
 import {FormFieldHeaderText} from '../components/formField/FormFieldHeaderText'
 import {FormFieldStatus} from '../components/formField/FormFieldStatus'
@@ -25,17 +25,19 @@ export function BooleanInput(props: BooleanInputProps) {
 
   const LayoutSpecificInput = layout === 'checkbox' ? Checkbox : Switch
 
+  const tone: CardTone | undefined = readOnly ? 'transparent' : undefined
+
   return (
-    <Card border data-testid="boolean-input" radius={1}>
+    <Card border data-testid="boolean-input" radius={1} tone={tone}>
       <Flex>
         <ZeroLineHeightBox padding={3}>
           <LayoutSpecificInput
             label={schemaType.title}
             {...elementProps}
-            indeterminate={indeterminate}
             checked={checked}
-            style={{margin: -4}}
             disabled={readOnly}
+            indeterminate={indeterminate}
+            style={{margin: -4}}
           />
         </ZeroLineHeightBox>
         <Box flex={1} paddingY={3}>
