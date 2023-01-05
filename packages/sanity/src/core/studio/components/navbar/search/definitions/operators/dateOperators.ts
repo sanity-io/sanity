@@ -117,7 +117,9 @@ export const dateOperators = {
             days: value?.unit === 'days' ? flooredValue : 0,
             months: value?.unit === 'months' ? flooredValue : 0,
             years: value?.unit === 'years' ? flooredValue : 0,
-          }).toISOString()
+          })
+            .toISOString()
+            .split('T')[0] // only include date
         : null
       return timestampAgo && fieldPath ? `${fieldPath} > ${toJSON(timestampAgo)}` : null
     },
