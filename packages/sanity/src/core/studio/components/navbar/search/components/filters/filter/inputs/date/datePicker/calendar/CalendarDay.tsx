@@ -1,4 +1,4 @@
-import {Card, Text} from '@sanity/ui'
+import {Card, Text, Theme} from '@sanity/ui'
 import {isAfter, isBefore, isSameDay, isSameMonth} from 'date-fns'
 import React, {useCallback} from 'react'
 import styled, {css} from 'styled-components'
@@ -8,6 +8,19 @@ interface CalendarDayProps {
   date: Date
   onSelect: (date: Date) => void
 }
+
+const TodayCircle = styled.div(({theme}: {theme: Theme}) => {
+  return css`
+    border: 1.5px solid ${theme.sanity.color.card.enabled.border};
+    border-radius: 3.25ch;
+    height: 3.25ch;
+    left: 50%;
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 3.25ch;
+  `
+})
 
 const CustomCard = styled(Card)<{
   $isEndDate?: boolean
@@ -77,14 +90,11 @@ export function CalendarDay({date, onSelect}: CalendarDayProps) {
         tabIndex={-1}
         tone={isWithinRange ? 'primary' : 'default'}
       >
+        {isToday && <TodayCircle />}
         <Text
           muted={!isSelected && !isCurrentMonth}
           size={fontSize}
-          style={{
-            textAlign: 'center',
-            textDecoration: isToday ? 'underline' : 'none',
-            textUnderlineOffset: '0.2rem',
-          }}
+          style={{textAlign: 'center'}}
           weight={isToday ? 'medium' : 'regular'}
         >
           {date.getDate()}
