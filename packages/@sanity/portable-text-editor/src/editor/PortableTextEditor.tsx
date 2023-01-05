@@ -99,7 +99,7 @@ export type PortableTextEditorProps = PropsWithChildren<{
 
 export interface PortableTextEditorState {
   invalidValueResolution: InvalidValueResolution | null
-  initialValue: Descendant[]
+  initialSlateEditorValue: Descendant[]
 }
 export class PortableTextEditor extends React.Component<
   PortableTextEditorProps,
@@ -135,7 +135,7 @@ export class PortableTextEditor extends React.Component<
 
     this.state = {
       invalidValueResolution: null,
-      initialValue: [], // Created in the constructor
+      initialSlateEditorValue: [], // Created in the constructor
     }
 
     // Test if we have a compiled schema type, if not, conveniently compile it
@@ -220,7 +220,7 @@ export class PortableTextEditor extends React.Component<
 
     this.state = {
       ...this.state,
-      initialValue: toSlateValue(
+      initialSlateEditorValue: toSlateValue(
         getValueOrInitialValue(props.value, [
           this.slateInstance.createPlaceholderBlock(),
         ] as PortableTextBlock[]),
@@ -256,9 +256,11 @@ export class PortableTextEditor extends React.Component<
     }
     // Sync value from props, but not when we are responding to incoming patches
     // (if this is the case, we sync the value after the incoming patches has been processed - see createWithPatches plugin)
+    const isPristineEditor =
+      !prevProps.value && this.slateInstance.children === this.state.initialSlateEditorValue
     if (
       this.props.value !== prevProps.value &&
-      (!prevProps.value || this.readOnly || !this.props.incomingPatches$)
+      (isPristineEditor || this.readOnly || !this.props.incomingPatches$)
     ) {
       this.syncValue()
     }
@@ -280,7 +282,11 @@ export class PortableTextEditor extends React.Component<
         <PortableTextEditorValueContext.Provider value={this.props.value}>
           <PortableTextEditorReadOnlyContext.Provider value={Boolean(this.props.readOnly)}>
             <PortableTextEditorSelectionContext.Provider value={this.selectionRef.current}>
-              <Slate onChange={NOOP} editor={this.slateInstance} value={this.state.initialValue}>
+              <Slate
+                onChange={NOOP}
+                editor={this.slateInstance}
+                value={this.state.initialSlateEditorValue}
+              >
                 {this.props.children}
               </Slate>
             </PortableTextEditorSelectionContext.Provider>
