@@ -40,6 +40,7 @@ export function createWithPlaceholderBlock({
     editor.onChange = () => {
       onChange()
       if (editor.children.length === 0) {
+        const hadSelection = !!editor.selection
         withoutPatching(editor, () => {
           withoutSaving(editor, () => {
             debug('Inserting placeholder block')
@@ -47,11 +48,13 @@ export function createWithPlaceholderBlock({
             Transforms.insertNodes(editor, editor.createPlaceholderBlock(), {
               at: [0],
             })
-            Transforms.select(editor, {
-              focus: {path: [0, 0], offset: 0},
-              anchor: {path: [0, 0], offset: 0},
-            })
-            editor.onChange()
+            if (hadSelection) {
+              Transforms.select(editor, {
+                focus: {path: [0, 0], offset: 0},
+                anchor: {path: [0, 0], offset: 0},
+              })
+              editor.onChange()
+            }
           })
         })
       }
