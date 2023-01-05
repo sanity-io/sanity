@@ -131,6 +131,19 @@ describe('string types', () => {
         },
       })
     })
+
+    it('should support Rule.valueOfField calls', () => {
+      const stringField: StringDefinition = defineField({
+        type: 'string',
+        name: 'defineField-defined',
+        description:
+          'field defined with defineField, containing validation using Rule.valueOfField',
+        validation: (Rule) => {
+          const fieldRef = Rule.valueOfField('some-other-field')
+          return Rule.min(fieldRef).max(fieldRef).max(length)
+        },
+      })
+    })
   })
 })
 

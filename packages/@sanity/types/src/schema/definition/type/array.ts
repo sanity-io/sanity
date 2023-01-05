@@ -1,3 +1,4 @@
+import {FieldReference} from '../../../validation'
 import {RuleDef, ValidationBuilder} from '../../ruleBuilder'
 import {InitialValueProperty, SchemaValidationValue} from '../../types'
 import {IntrinsicDefinitions, TypeAliasDefinition, IntrinsicTypeName} from '../schemaDefinition'
@@ -20,9 +21,9 @@ export interface ArrayOptions<V = unknown> {
 
 /** @public */
 export interface ArrayRule<Value> extends RuleDef<ArrayRule<Value>, Value> {
-  min: (length: number) => ArrayRule<Value>
-  max: (length: number) => ArrayRule<Value>
-  length: (length: number) => ArrayRule<Value>
+  min: (length: number | FieldReference) => ArrayRule<Value>
+  max: (length: number | FieldReference) => ArrayRule<Value>
+  length: (length: number | FieldReference) => ArrayRule<Value>
   unique: () => ArrayRule<Value>
 }
 

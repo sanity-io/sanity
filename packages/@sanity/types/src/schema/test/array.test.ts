@@ -178,6 +178,19 @@ describe('array types', () => {
       },
     })
   })
+
+  it('should support Rule.valueOfField calls inside defineField', () => {
+    const arrayField: ArrayDefinition = defineField({
+      type: 'array',
+      name: 'defineField-defined',
+      description: 'field defined with defineField, containing validation using Rule.valueOfField',
+      of: [{type: 'string'}],
+      validation: (Rule) => {
+        const fieldRef = Rule.valueOfField('some-other-field')
+        return Rule.min(fieldRef).max(fieldRef).length(fieldRef)
+      },
+    })
+  })
 })
 
 export {}

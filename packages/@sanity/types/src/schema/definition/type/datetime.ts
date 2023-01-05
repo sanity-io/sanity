@@ -1,3 +1,4 @@
+import {FieldReference} from '../../../validation'
 import {RuleDef, ValidationBuilder} from '../../ruleBuilder'
 import {InitialValueProperty} from '../../types'
 import {BaseSchemaDefinition} from './common'
@@ -10,16 +11,15 @@ export interface DatetimeOptions {
 }
 
 /** @public */
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface DatetimeRule extends RuleDef<DatetimeRule, string> {
   /**
    * @param minDate - Minimum date (inclusive). minDate should be in ISO 8601 format.
    */
-  min: (minDate: string) => DatetimeRule
+  min: (minDate: string | FieldReference) => DatetimeRule
   /**
    * @param maxDate - Maximum date (inclusive). maxDate should be in ISO 8601 format.
    */
-  max: (maxDate: string) => DatetimeRule
+  max: (maxDate: string | FieldReference) => DatetimeRule
 }
 
 /** @public */

@@ -5,7 +5,6 @@ import type {SanityDocument} from '../documents'
 import type {ValidationMarker} from '../markers'
 import {SlugSchemaType} from '../schema'
 import {SlugParent} from '../slug'
-import {PortableTextBlock} from '../portableText'
 
 /** @public */
 export type RuleTypeConstraint = 'Array' | 'Boolean' | 'Date' | 'Number' | 'Object' | 'String'
@@ -141,10 +140,10 @@ export interface Rule {
   custom<T = unknown>(fn: CustomValidator<T>): Rule
   min(len: number | FieldReference): Rule
   max(len: number | FieldReference): Rule
-  length(len: number): Rule
+  length(len: number | FieldReference): Rule
   valid(value: unknown | unknown[]): Rule
   integer(): Rule
-  precision(limit: number): Rule
+  precision(limit: number | FieldReference): Rule
   positive(): Rule
   negative(): Rule
   greaterThan(num: number | FieldReference): Rule

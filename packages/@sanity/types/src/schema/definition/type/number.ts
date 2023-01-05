@@ -1,3 +1,4 @@
+import {FieldReference} from '../../../validation'
 import {RuleDef, ValidationBuilder} from '../../ruleBuilder'
 import {InitialValueProperty} from '../../types'
 import {BaseSchemaDefinition, EnumListProps} from './common'
@@ -8,12 +9,12 @@ export interface NumberOptions extends EnumListProps<number> {}
 
 /** @public */
 export interface NumberRule extends RuleDef<NumberRule, number> {
-  min: (minNumber: number) => NumberRule
-  max: (maxNumber: number) => NumberRule
-  lessThan: (limit: number) => NumberRule
-  greaterThan: (limit: number) => NumberRule
+  min: (minNumber: number | FieldReference) => NumberRule
+  max: (maxNumber: number | FieldReference) => NumberRule
+  lessThan: (limit: number | FieldReference) => NumberRule
+  greaterThan: (limit: number | FieldReference) => NumberRule
   integer: () => NumberRule
-  precision: (limit: number) => NumberRule
+  precision: (limit: number | FieldReference) => NumberRule
   positive: () => NumberRule
   negative: () => NumberRule
 }
