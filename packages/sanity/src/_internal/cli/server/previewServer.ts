@@ -23,7 +23,7 @@ export interface PreviewServerOptions {
 }
 
 export async function startPreviewServer(options: PreviewServerOptions): Promise<PreviewServer> {
-  const {httpPort, httpHost, root} = options
+  const {httpPort, httpHost, root, vite: extendViteConfig} = options
   const startTime = Date.now()
 
   const indexPath = path.join(root, 'index.html')
@@ -43,7 +43,7 @@ export async function startPreviewServer(options: PreviewServerOptions): Promise
     throw error
   }
 
-  const previewConfig: InlineConfig = {
+  let previewConfig: InlineConfig = {
     root,
     base: basePath || '/',
     plugins: [sanityBasePathRedirectPlugin(basePath)],
@@ -57,6 +57,11 @@ export async function startPreviewServer(options: PreviewServerOptions): Promise
     build: {
       outDir: root,
     },
+  }
+
+  if (extendViteConfig) {
+    debug('Extending vite config using user-specified function')
+    previewConfig = extendViteConfig(previewConfig)
   }
 
   debug('Creating vite server')
