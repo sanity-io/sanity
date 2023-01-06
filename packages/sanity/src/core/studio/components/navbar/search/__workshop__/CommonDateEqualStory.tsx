@@ -6,7 +6,6 @@ import {SearchProvider} from '../contexts/search/SearchProvider'
 
 export default function CommonDateEqualStory() {
   const isDateTime = useBoolean('Datetime', true, 'Props')
-  const useInputDateFormat = useBoolean('Use input date format', false, 'Props')
 
   const [value, setValue] = useState<string | null>(null)
 
@@ -17,12 +16,7 @@ export default function CommonDateEqualStory() {
   return (
     <SearchProvider>
       <Card padding={3} shadow={1}>
-        <CommonDateEqualInput
-          isDateTime={isDateTime}
-          onChange={handleChange}
-          useInputDateFormat={useInputDateFormat}
-          value={value}
-        />
+        <CommonDateEqualInput isDateTime={isDateTime} onChange={handleChange} value={value} />
       </Card>
       <Card margin={3} padding={3} shadow={1} tone="primary">
         <Inline space={1}>

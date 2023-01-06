@@ -16,7 +16,6 @@ interface ParsedDateTextInputProps
   onChange: (val: string | null) => void
   placeholderDate?: Date
   selectTime?: boolean
-  useDateFormat?: boolean
   value?: string | null
 }
 
@@ -27,17 +26,18 @@ export function ParsedDateTextInput({
   onChange,
   placeholderDate,
   selectTime,
-  useDateFormat = true,
   value,
   ...rest
 }: ParsedDateTextInputProps) {
+  const dateFormat = useMemo(() => (selectTime ? DATETIME_FORMAT : DATE_FORMAT), [selectTime])
+
   const [customValidity, setCustomValidity] = useState<string | undefined>(undefined)
   const [inputValue, setInputValue] = useState<string>(() => {
     if (!value) {
       return ''
     }
     const inputValueDate = new Date(value)
-    return formatDate({date: inputValueDate, selectTime, useDateFormat})
+    return format(inputValueDate, dateFormat)
   })
 
   /**
@@ -45,8 +45,8 @@ export function ParsedDateTextInput({
    */
   const formattedPlaceholder = useMemo(() => {
     const date = placeholderDate || new Date()
-    return formatDate({date, selectTime, useDateFormat})
-  }, [placeholderDate, selectTime, useDateFormat])
+    return format(date, dateFormat)
+  }, [dateFormat, placeholderDate])
 
   /**
    * Process current input value:
@@ -57,22 +57,17 @@ export function ParsedDateTextInput({
    */
   const processInputString = useCallback(
     ({dateString, triggerOnChange}: {dateString: string; triggerOnChange?: boolean}) => {
-      let dateParsed: Date
-      if (useDateFormat) {
-        dateParsed = parse(dateString, getDateFormat({selectTime}), new Date())
-      } else {
-        dateParsed = new Date(dateString)
-      }
+      const dateParsed = parse(dateString, dateFormat, new Date())
       const validDate = isValid(dateParsed)
       if (validDate) {
         if (triggerOnChange) {
           onChange(getDateISOString({date: dateParsed, dateOnly: !selectTime}))
         }
-        setInputValue(formatDate({date: dateParsed, selectTime, useDateFormat}))
+        setInputValue(format(dateParsed, dateFormat))
       }
       setCustomValidity(validDate ? undefined : `Invalid ${selectTime ? 'datetime' : 'date'}`)
     },
-    [onChange, selectTime, useDateFormat]
+    [dateFormat, onChange, selectTime]
   )
 
   /**
@@ -114,11 +109,11 @@ export function ParsedDateTextInput({
     const updatedDate = value && new Date(value)
     if (updatedDate) {
       processInputString({
-        dateString: formatDate({date: updatedDate, selectTime, useDateFormat}),
+        dateString: format(updatedDate, dateFormat),
         triggerOnChange: false,
       })
     }
-  }, [processInputString, selectTime, useDateFormat, value])
+  }, [dateFormat, processInputString, selectTime, value])
 
   return (
     <CustomTextInput
@@ -133,24 +128,4 @@ export function ParsedDateTextInput({
       value={inputValue}
     />
   )
-}
-
-/**
- * Given a supplied date, conditionally return either a custom date string or ISO-8601 string (full or partial)
- */
-function formatDate({
-  date,
-  selectTime,
-  useDateFormat,
-}: {
-  date: Date
-  selectTime?: boolean
-  useDateFormat?: boolean
-}) {
-  const dateFormat = getDateFormat({selectTime})
-  return useDateFormat ? format(date, dateFormat) : getDateISOString({date, dateOnly: !selectTime})
-}
-
-function getDateFormat({selectTime}: {selectTime?: boolean}) {
-  return selectTime ? DATETIME_FORMAT : DATE_FORMAT
 }

@@ -72,7 +72,7 @@ export function CommonDateDirectionInput({
         value: date || null,
       })
     },
-    [onChange, value]
+    [onChange, value?.includeTime]
   )
 
   return (

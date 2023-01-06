@@ -6,6 +6,7 @@ import {useSchema} from '../../../../../../../hooks'
 import type {OperatorNumberRangeValue} from '../../../definitions/operators/common'
 import type {
   OperatorDateDirectionValue,
+  OperatorDateEqualValue,
   OperatorDateLastValue,
   OperatorDateRangeValue,
 } from '../../../definitions/operators/dateOperators'
@@ -18,8 +19,10 @@ export function SearchButtonValueBoolean({value}: OperatorButtonValueComponentPr
   return <>{value ? 'True' : 'False'}</>
 }
 
-export function SearchButtonValueDate({value}: OperatorButtonValueComponentProps<string>) {
-  const date = value ? new Date(value) : null
+export function SearchButtonValueDate({
+  value,
+}: OperatorButtonValueComponentProps<OperatorDateEqualValue>) {
+  const date = value?.value ? new Date(value.value) : null
   if (!date || !isValid(date)) {
     return null
   }

@@ -1,7 +1,9 @@
 import {Stack} from '@sanity/ui'
 import React, {useCallback} from 'react'
 import {useSearchState} from '../../../../../contexts/search/useSearchState'
+import type {OperatorDateEqualValue} from '../../../../../definitions/operators/dateOperators'
 import type {OperatorInputComponentProps} from '../../../../../definitions/operators/operatorTypes'
+import {DateIncludeTimeFooter} from './dateIncludeTimeFooter/DateIncludeTimeFooter'
 import {DatePicker} from './datePicker/DatePicker'
 import {ParsedDateTextInput} from './ParsedDateTextInput'
 import {getDateISOString} from './utils/getDateISOString'
@@ -9,11 +11,9 @@ import {getDateISOString} from './utils/getDateISOString'
 export function CommonDateEqualInput({
   isDateTime,
   onChange,
-  useInputDateFormat,
   value,
-}: OperatorInputComponentProps<string> & {
+}: OperatorInputComponentProps<OperatorDateEqualValue> & {
   isDateTime?: boolean
-  useInputDateFormat?: boolean
 }) {
   const {
     state: {fullscreen},
@@ -23,12 +23,39 @@ export function CommonDateEqualInput({
     ({date}: {date?: Date | null}) => {
       if (date) {
         const dateISOString = getDateISOString({date, dateOnly: !isDateTime})
-        onChange(dateISOString)
+        onChange({
+          includeTime: value?.includeTime,
+          value: dateISOString,
+        })
       } else {
         onChange(null)
       }
     },
-    [isDateTime, onChange]
+    [isDateTime, onChange, value?.includeTime]
+  )
+
+  const handleIncludeTimeChange = useCallback(() => {
+    const includeTime = !value?.includeTime
+    const date = value?.value ? new Date(value.value) : null
+
+    let dateISOString: string | null = null
+    if (date) {
+      dateISOString = getDateISOString({
+        date,
+        dateOnly: !isDateTime,
+      })
+    }
+    onChange({includeTime, value: dateISOString})
+  }, [isDateTime, onChange, value])
+
+  const handleTextDateChange = useCallback(
+    (date: string | null) => {
+      onChange({
+        includeTime: value?.includeTime,
+        value: date || null,
+      })
+    },
+    [onChange, value?.includeTime]
   )
 
   return (
@@ -36,16 +63,19 @@ export function CommonDateEqualInput({
       <ParsedDateTextInput
         aria-label="Date"
         fontSize={fullscreen ? 2 : 1}
-        onChange={onChange}
-        selectTime={isDateTime}
-        useDateFormat={useInputDateFormat}
-        value={value}
+        onChange={handleTextDateChange}
+        selectTime={isDateTime && value?.includeTime}
+        value={value?.value}
       />
       <DatePicker
-        date={value ? new Date(value) : undefined}
+        date={value?.value ? new Date(value.value) : undefined}
         onChange={handleDatePickerChange}
         selectTime={isDateTime}
       />
+      {/* Include time footer */}
+      {isDateTime && (
+        <DateIncludeTimeFooter onChange={handleIncludeTimeChange} value={!!value?.includeTime} />
+      )}
     </Stack>
   )
 }

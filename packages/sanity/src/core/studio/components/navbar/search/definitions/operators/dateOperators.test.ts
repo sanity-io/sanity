@@ -1,8 +1,9 @@
 /* eslint-disable max-nested-callbacks */
-import {sub} from 'date-fns'
+import {endOfDay, endOfMinute, startOfDay, startOfMinute, sub} from 'date-fns'
 import {
   dateOperators,
   OperatorDateDirectionValue,
+  OperatorDateEqualValue,
   OperatorDateLastValue,
   OperatorDateRangeValue,
 } from './dateOperators'
@@ -24,9 +25,9 @@ describe('dateOperators', () => {
     })
 
     it('should create a valid filter for dateEqual', () => {
-      const value = '2000-01-20'
+      const value: OperatorDateEqualValue & {value: string} = {value: '2000-01-20'}
       const filter = dateOperators.dateEqual.groqFilter({fieldPath, value})
-      expect(filter).toEqual(`${fieldPath} == "${value}"`)
+      expect(filter).toEqual(`${fieldPath} == "${value.value}"`)
     })
 
     describe('dateLast', () => {
@@ -53,9 +54,9 @@ describe('dateOperators', () => {
     })
 
     it('should create a valid filter for dateNotEqual', () => {
-      const value = '2000-01-20'
+      const value: OperatorDateEqualValue & {value: string} = {value: '2000-01-20'}
       const filter = dateOperators.dateNotEqual.groqFilter({fieldPath, value})
-      expect(filter).toEqual(`${fieldPath} != "${value}"`)
+      expect(filter).toEqual(`${fieldPath} != "${value.value}"`)
     })
 
     it('should create a valid filter for dateRange', () => {
@@ -81,10 +82,32 @@ describe('dateOperators', () => {
       expect(filter).toEqual(`dateTime(${fieldPath}) < dateTime("${value.value}")`)
     })
 
-    it('should create a valid filter for dateTimeEqual', () => {
-      const value = new Date().toISOString()
+    it('should create a valid filter for dateTimeEqual (with time)', () => {
+      const value: OperatorDateEqualValue & {value: string} = {
+        includeTime: true,
+        value: new Date().toISOString(),
+      }
+      const date = new Date(value.value)
+      const dateStart = startOfMinute(date).toISOString()
+      const dateEnd = endOfMinute(date).toISOString()
       const filter = dateOperators.dateTimeEqual.groqFilter({fieldPath, value})
-      expect(filter).toEqual(`dateTime(${fieldPath}) == dateTime("${value}")`)
+      expect(filter).toEqual(
+        `dateTime(${fieldPath}) > dateTime("${dateStart}") && dateTime(${fieldPath}) < dateTime("${dateEnd}")`
+      )
+    })
+
+    it('should create a valid filter for dateTimeEqual (without time)', () => {
+      const value: OperatorDateEqualValue & {value: string} = {
+        includeTime: false,
+        value: new Date().toISOString(),
+      }
+      const date = new Date(value.value)
+      const dateStart = startOfDay(date).toISOString()
+      const dateEnd = endOfDay(date).toISOString()
+      const filter = dateOperators.dateTimeEqual.groqFilter({fieldPath, value})
+      expect(filter).toEqual(
+        `dateTime(${fieldPath}) > dateTime("${dateStart}") && dateTime(${fieldPath}) < dateTime("${dateEnd}")`
+      )
     })
 
     describe('dateTimeLast', () => {
@@ -110,10 +133,32 @@ describe('dateOperators', () => {
       })
     })
 
-    it('should create a valid filter for dateTimeNotEqual', () => {
-      const value = new Date().toISOString()
+    it('should create a valid filter for dateTimeNotEqual (with time)', () => {
+      const value: OperatorDateEqualValue & {value: string} = {
+        includeTime: true,
+        value: new Date().toISOString(),
+      }
+      const date = new Date(value.value)
+      const dateStart = startOfMinute(date).toISOString()
+      const dateEnd = endOfMinute(date).toISOString()
       const filter = dateOperators.dateTimeNotEqual.groqFilter({fieldPath, value})
-      expect(filter).toEqual(`dateTime(${fieldPath}) != dateTime("${value}")`)
+      expect(filter).toEqual(
+        `dateTime(${fieldPath}) < dateTime("${dateStart}") || dateTime(${fieldPath}) > dateTime("${dateEnd}")`
+      )
+    })
+
+    it('should create a valid filter for dateTimeNotEqual (without time)', () => {
+      const value: OperatorDateEqualValue & {value: string} = {
+        includeTime: false,
+        value: new Date().toISOString(),
+      }
+      const date = new Date(value.value)
+      const dateStart = startOfDay(date).toISOString()
+      const dateEnd = endOfDay(date).toISOString()
+      const filter = dateOperators.dateTimeNotEqual.groqFilter({fieldPath, value})
+      expect(filter).toEqual(
+        `dateTime(${fieldPath}) < dateTime("${dateStart}") || dateTime(${fieldPath}) > dateTime("${dateEnd}")`
+      )
     })
 
     it('should create a valid filter for dateTimeRange', () => {

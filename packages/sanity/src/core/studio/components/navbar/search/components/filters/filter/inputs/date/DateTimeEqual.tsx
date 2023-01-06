@@ -1,7 +1,10 @@
 import React from 'react'
-import {OperatorInputComponentProps} from '../../../../../definitions/operators/operatorTypes'
+import type {OperatorDateEqualValue} from '../../../../../definitions/operators/dateOperators'
+import type {OperatorInputComponentProps} from '../../../../../definitions/operators/operatorTypes'
 import {CommonDateEqualInput} from './CommonDateEqual'
 
-export function SearchFilterDateTimeEqualInput(props: OperatorInputComponentProps<string>) {
-  return <CommonDateEqualInput {...props} isDateTime useInputDateFormat={false} />
+export function SearchFilterDateTimeEqualInput(
+  props: OperatorInputComponentProps<OperatorDateEqualValue>
+) {
+  return <CommonDateEqualInput {...props} isDateTime />
 }
