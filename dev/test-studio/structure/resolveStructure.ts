@@ -219,7 +219,16 @@ export const structure: StructureResolver = (S, {schema, documentStore}) => {
 
               // A "singleton" which should use a default preview
               S.documentListItem().id('jrr-tolkien').schemaType('author'),
-
+              S.listItem()
+                .id('field-groups-test-1')
+                .title('Field groups test 1')
+                .child(S.document().documentId('field-groups-test-1').schemaType('fieldGroups')),
+              S.listItem()
+                .id('field-groups-test-2')
+                .title('Field groups test 2')
+                .child(
+                  S.document().documentId('field-groups-test-2').schemaType('fieldGroupsMany')
+                ),
               S.listItem()
                 .title('Deep')
                 .child(
