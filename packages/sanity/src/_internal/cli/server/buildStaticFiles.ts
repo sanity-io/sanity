@@ -4,7 +4,7 @@ import {constants as fsConstants} from 'fs'
 import {build, InlineConfig} from 'vite'
 import readPkgUp from 'read-pkg-up'
 import {ensureTrailingSlash} from '../util/ensureTrailingSlash'
-import {finalizeViteConfig, getViteConfig} from './getViteConfig'
+import {extendViteConfigWithUserConfig, finalizeViteConfig, getViteConfig} from './getViteConfig'
 import {generateWebManifest} from './webManifest'
 import {writeSanityRuntime} from './runtime'
 import {debug as serverDebug} from './debug'
@@ -30,7 +30,7 @@ export interface StaticBuildOptions {
   profile?: boolean
   sourceMap?: boolean
 
-  vite?: (config: InlineConfig) => InlineConfig
+  vite?: InlineConfig | ((config: InlineConfig) => InlineConfig)
 }
 
 export async function buildStaticFiles(
@@ -58,9 +58,10 @@ export async function buildStaticFiles(
     mode: 'production',
   })
 
+  // Extend Vite configuration with user-provided config
   if (extendViteConfig) {
-    debug('Extending vite config with user-specified config')
-    viteConfig = finalizeViteConfig(extendViteConfig(viteConfig))
+    viteConfig = extendViteConfigWithUserConfig(viteConfig, extendViteConfig)
+    viteConfig = finalizeViteConfig(viteConfig)
   }
 
   // Copy files placed in /static to the built /static
