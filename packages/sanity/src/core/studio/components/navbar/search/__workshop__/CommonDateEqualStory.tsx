@@ -3,13 +3,14 @@ import {useBoolean} from '@sanity/ui-workshop'
 import React, {useCallback, useState} from 'react'
 import {CommonDateEqualInput} from '../components/filters/filter/inputs/date/CommonDateEqual'
 import {SearchProvider} from '../contexts/search/SearchProvider'
+import {OperatorDateEqualValue} from '../definitions/operators/dateOperators'
 
 export default function CommonDateEqualStory() {
   const isDateTime = useBoolean('Datetime', true, 'Props')
 
-  const [value, setValue] = useState<string | null>(null)
+  const [value, setValue] = useState<OperatorDateEqualValue | null>(null)
 
-  const handleChange = useCallback((val: string | null) => {
+  const handleChange = useCallback((val: OperatorDateEqualValue | null) => {
     setValue(val)
   }, [])
 
@@ -24,7 +25,7 @@ export default function CommonDateEqualStory() {
             Value:
           </Text>
           <Text muted size={1}>
-            {value ? value : <em>Empty</em>}
+            {value?.value ? value.value : <em>Empty</em>}
           </Text>
         </Inline>
       </Card>
