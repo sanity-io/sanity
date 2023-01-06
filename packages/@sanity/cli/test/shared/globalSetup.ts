@@ -50,19 +50,24 @@ export default async function globalSetup(): Promise<void> {
   await Promise.all([
     packCli().then((packedFilePath) => installAndVerifyPackedCli({packedFilePath})),
     prepareCliInstall(),
-    prepareStaticFixture(),
+    prepareStaticFixtures(),
     prepareStudios(),
     prepareCliAuth(cliConfigPath),
     prepareDatasets(),
   ])
 }
 
-async function prepareStaticFixture() {
-  const sourcePath = path.join(fixturesPath, 'static')
-  const destinationPath = path.join(baseTestPath, 'static')
+async function prepareStaticFixtures() {
+  const dirs = ['static', 'static-basepath', 'static-root-basepath']
+  const jobs = dirs.map((dir) => ({
+    sourcePath: path.join(fixturesPath, dir),
+    destinationPath: path.join(baseTestPath, dir),
+  }))
 
-  await mkdir(destinationPath, {recursive: true})
-  await copy(`${sourcePath}/**`, destinationPath, {dereference: true})
+  for (const {sourcePath, destinationPath} of jobs) {
+    await mkdir(destinationPath, {recursive: true})
+    await copy(`${sourcePath}/**`, destinationPath, {dereference: true})
+  }
 }
 
 function prepareStudios() {

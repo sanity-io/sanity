@@ -14,7 +14,7 @@ export function testServerCommand({
   cwd: string
   expectedTitle: string
   args?: string[]
-}): Promise<string> {
+}): Promise<{html: string; stdout: string; stderr: string}> {
   return new Promise(async (resolve, reject) => {
     const maxWaitForServer = 120000
     const startedAt = Date.now()
@@ -40,8 +40,8 @@ export function testServerCommand({
 
     proc.on('close', (code) => {
       if (!hasSucceeded && code && code > 0) {
-        const stderrStr = Buffer.concat(stderr).toString('utf8')
-        const stdoutStr = Buffer.concat(stdout).toString('utf8')
+        const stderrStr = buffersToString(stderr)
+        const stdoutStr = buffersToString(stdout)
         reject(
           new Error(`'sanity ${command}' failed with code ${code}:\n${stderrStr}\n${stdoutStr}`)
         )
@@ -79,7 +79,7 @@ export function testServerCommand({
 
       if (res.statusCode !== 200) {
         proc.kill()
-        reject(new Error(`Dev server responded with HTTP ${res.statusCode}`))
+        reject(new Error(`HTTP server responded with HTTP ${res.statusCode}`))
         return
       }
 
@@ -97,7 +97,15 @@ export function testServerCommand({
       hasSucceeded = true
       clearTimeout(timer)
       proc.kill()
-      resolve(html)
+      resolve({
+        html,
+        stdout: buffersToString(stdout),
+        stderr: buffersToString(stderr),
+      })
     }
   })
+}
+
+function buffersToString(buffers: Buffer[]): string {
+  return Buffer.concat(buffers).toString('utf8')
 }

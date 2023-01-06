@@ -68,7 +68,6 @@ export const testClient = new SanityClient({
 export const getTestRunArgs = (version: string) => {
   const testId = getTestId()
   return {
-    sourceStudioPath: path.join(__dirname, '..', '__fixtures__', `${version}-studio`),
     corsOrigin: `https://${testId}-${version}.sanity.build`,
     sourceDataset: 'production',
     dataset: `${testId}-${version}`,
