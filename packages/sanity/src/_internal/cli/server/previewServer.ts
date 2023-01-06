@@ -3,6 +3,7 @@ import path from 'path'
 import chalk from 'chalk'
 import {InlineConfig, preview} from 'vite'
 import {debug as serverDebug} from './debug'
+import {sanityBasePathRedirectPlugin} from './vite/plugin-sanity-basepath-redirect'
 
 const debug = serverDebug.extend('preview')
 
@@ -45,6 +46,7 @@ export async function startPreviewServer(options: PreviewServerOptions): Promise
   const previewConfig: InlineConfig = {
     root,
     base: basePath || '/',
+    plugins: [sanityBasePathRedirectPlugin(basePath)],
     configFile: false,
     preview: {
       port: httpPort,
