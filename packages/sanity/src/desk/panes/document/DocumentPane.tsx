@@ -138,7 +138,12 @@ function DocumentPaneInner(props: DocumentPaneProviderProps) {
   }
 
   return (
-    <DocumentPaneProvider {...providerProps}>
+    <DocumentPaneProvider
+      // this needs to be here to avoid formState from being re-used across (incompatible) document types
+      // see https://github.com/sanity-io/sanity/discussions/3794 for a description of the problem
+      key={documentType}
+      {...providerProps}
+    >
       {/* NOTE: this is a temporary location for this provider until we */}
       {/* stabilize the reference input options formally in the form builder */}
       {/* eslint-disable-next-line react/jsx-pascal-case */}
