@@ -22,7 +22,7 @@ export interface DevServer {
 }
 
 export async function startDevServer(options: DevServerOptions): Promise<DevServer> {
-  const {cwd, httpPort, httpHost, basePath = '/', reactStrictMode, vite: extendViteConfig} = options
+  const {cwd, httpPort, httpHost, basePath, reactStrictMode, vite: extendViteConfig} = options
 
   const startTime = Date.now()
   debug('Writing Sanity runtime files')

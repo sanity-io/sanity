@@ -38,7 +38,7 @@ ${generateHelpUrl('custom-document-component')}
 `.trim()
 
 interface DocumentProps {
-  basePath?: string
+  basePath: string
   entryPath?: string
   css?: string[]
 }

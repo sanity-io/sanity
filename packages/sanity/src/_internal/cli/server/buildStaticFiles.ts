@@ -51,7 +51,7 @@ export async function buildStaticFiles(
   debug('Resolving vite config')
   let viteConfig = await getViteConfig({
     cwd,
-    basePath: ensureTrailingSlash(basePath || '/'),
+    basePath,
     outputDir,
     minify,
     sourceMap,
