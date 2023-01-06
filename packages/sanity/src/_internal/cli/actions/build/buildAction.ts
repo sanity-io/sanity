@@ -1,9 +1,9 @@
 import path from 'path'
 import {promisify} from 'util'
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore This may not yet be built.
 import chalk from 'chalk'
 import rimrafCallback from 'rimraf'
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore This may not yet be built.
 import type {CliCommandArguments, CliCommandContext} from '@sanity/cli'
 import {buildStaticFiles, ChunkModule, ChunkStats} from '../../server'
 import {checkStudioDependencyVersions} from '../../util/checkStudioDependencyVersions'
@@ -75,15 +75,15 @@ export default async function buildSanityStudio(
     spin.succeed()
   }
 
-  const basePath =
+  const specifiedBasePath =
     // Allow `sanity deploy` to override base path
-    overrides?.basePath ||
+    overrides?.basePath ??
     // Environment variables
-    process.env.SANITY_STUDIO_BASEPATH ||
+    process.env.SANITY_STUDIO_BASEPATH ??
     // `sanity.cli.ts`
-    cliConfig?.project?.basePath ||
-    // Fallback
-    '/'
+    cliConfig?.project?.basePath
+
+  const basePath = specifiedBasePath || '/'
 
   spin = output.spinner('Build Sanity Studio').start()
 
