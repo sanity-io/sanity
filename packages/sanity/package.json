@@ -134,7 +134,7 @@
     "@portabletext/types": "^1.0.3",
     "@rexxars/react-json-inspector": "^8.0.1",
     "@sanity/asset-utils": "^1.2.5",
-    "@sanity/bifur-client": "^0.3.0",
+    "@sanity/bifur-client": "^0.3.1",
     "@sanity/block-tools": "3.1.4",
     "@sanity/cli": "3.1.4",
     "@sanity/client": "^4.0.1",
