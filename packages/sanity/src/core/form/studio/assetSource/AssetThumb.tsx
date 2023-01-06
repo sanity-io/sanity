@@ -45,17 +45,25 @@ const Root = styled.div`
   position: relative;
   display: inherit;
 `
-
 const MenuContainer = styled.div`
   box-sizing: border-box;
   position: absolute;
   z-index: 2;
-  display: none;
   top: 3px;
   right: 3px;
 
-  ${Root}:hover & {
+  & button {
+    display: none;
+  }
+
+  & button[data-selected] {
     display: block;
+  }
+
+  ${Root}:hover & {
+    button {
+      display: block;
+    }
   }
 `
 
