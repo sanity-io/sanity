@@ -29,31 +29,38 @@ const startCommand: CliCommandDefinition = {
 
     const warn = (msg: string) => output.warn(chalk.yellow.bgBlack(msg))
     const error = (msg: string) => output.warn(chalk.red.bgBlack(msg))
-    warn('╔═══════════════════════════════════════════════════════════════════════════╗')
-    warn("║ \u26A0  IMPORTANT: You're running Sanity Studio v3, and in this version        ║")
-    warn('║    the [start] command is used to preview static builds. To               ║')
-    warn('║    run a development server, use the [npm run dev] command instead.       ║')
-    warn('║                                                                           ║')
-    warn('║    For more information go to https://www.sanity.io/help/studio-v2-vs-v3  ║')
-    warn('╚═══════════════════════════════════════════════════════════════════════════╝')
+    warn('╭───────────────────────────────────────────────────────────╮')
+    warn('│                                                           │')
+    warn("│  You're running Sanity Studio v3. In this version the     │")
+    warn('│  [start] command is used to preview static builds.        |')
+    warn('│                                                           │')
+    warn('│  To run a development server, use the [npm run dev] or    |')
+    warn('│  [npx sanity dev] command instead. For more information,  │')
+    warn('│  see https://www.sanity.io/help/studio-v2-vs-v3           │')
+    warn('│                                                           │')
+    warn('╰───────────────────────────────────────────────────────────╯')
     warn('') // Newline to separate from other output
 
-    return previewAction(args, context).catch(async (err) => {
-      if (err.name === 'BUILD_NOT_FOUND') {
-        error(err.message)
-        error('\n')
-        const runDevServerResponse = await prompt.single({
-          message: 'Did you intend to run [npm run dev] to start a development server instead?',
-          type: 'confirm',
-        })
-        if (runDevServerResponse) {
-          const devAction = await getDevAction()
-          await devAction(args, context)
-        }
-        return
+    try {
+      await previewAction(args, context)
+    } catch (err) {
+      if (err.name !== 'BUILD_NOT_FOUND') {
+        throw err
       }
-      throw err
-    })
+
+      error(err.message)
+      error('\n')
+
+      const shouldRunDevServer = await prompt.single({
+        message: 'Do you want to start a development server instead?',
+        type: 'confirm',
+      })
+
+      if (shouldRunDevServer) {
+        const devAction = await getDevAction()
+        await devAction(args, context)
+      }
+    }
   },
   helpText,
 }
