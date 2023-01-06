@@ -32,7 +32,7 @@ import {
 } from '../types/editor'
 import {validateValue} from '../utils/validateValue'
 import {debugWithName} from '../utils/debug'
-import {getValueOrInitialValue, isEqualToEmptyEditor, toSlateValue} from '../utils/values'
+import {getValueOrInitialValue, toSlateValue} from '../utils/values'
 import {KEY_TO_SLATE_ELEMENT, KEY_TO_VALUE_ELEMENT} from '../utils/weakMaps'
 import {FLUSH_PATCHES_DEBOUNCE_MS} from '../constants'
 import {PortableTextEditorContext} from './hooks/usePortableTextEditor'
@@ -306,42 +306,26 @@ export class PortableTextEditor extends React.Component<
         userCallbackFn()
       }
     }
-
+    // Don't sync the value if we haven't submitted all the local patches yet.
     if (this.hasPendingLocalPatches.current && !this.readOnly) {
       debug('Not syncing value (has pending local patches)')
       retrySync(() => this.syncValue(), callbackFn)
       return
     }
-    // If the  editor is empty and there is a new value, just set that value directly.
-    if (isEqualToEmptyEditor(this.slateInstance.children, this.schemaTypes) && this.props.value) {
-      const oldSel = this.slateInstance.selection
-      Transforms.deselect(this.slateInstance)
-      this.slateInstance.children = toSlateValue(
-        val,
-        {
-          schemaTypes: this.schemaTypes,
-        },
-        KEY_TO_SLATE_ELEMENT.get(this.slateInstance)
-      )
-      if (oldSel) {
-        Transforms.select(this.slateInstance, oldSel)
-      }
-      debug('Setting props.value directly to empty editor')
-      callbackFn()
-      return
-    }
     // Test for diffs between our state value and the incoming value.
-    const isEqualToValue = !(val || []).some((blk, index) => {
-      const compareBlock = toSlateValue(
-        [blk],
-        {schemaTypes: this.schemaTypes},
-        KEY_TO_SLATE_ELEMENT.get(this.slateInstance)
-      )[0]
-      if (!isEqual(compareBlock, this.slateInstance.children[index])) {
-        return true
-      }
-      return false
-    })
+    const isEqualToValue =
+      this.slateInstance.children.length === (val || []).length &&
+      !(val || []).some((blk, index) => {
+        const compareBlock = toSlateValue(
+          [blk],
+          {schemaTypes: this.schemaTypes},
+          KEY_TO_SLATE_ELEMENT.get(this.slateInstance)
+        )[0]
+        if (!isEqual(compareBlock, this.slateInstance.children[index])) {
+          return true
+        }
+        return false
+      })
     if (isEqualToValue) {
       debug('Not syncing value (value is equal)')
       return
