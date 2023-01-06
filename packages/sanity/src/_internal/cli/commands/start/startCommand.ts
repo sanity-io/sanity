@@ -1,5 +1,6 @@
 import type {CliCommandArguments, CliCommandContext, CliCommandDefinition} from '@sanity/cli'
 import type {StartPreviewServerCommandFlags} from '../../actions/preview/previewAction'
+import {isInteractive} from '../../util/isInteractive'
 import {getDevAction} from '../dev/devCommand'
 
 const helpText = `
@@ -51,14 +52,20 @@ const startCommand: CliCommandDefinition = {
       error(err.message)
       error('\n')
 
-      const shouldRunDevServer = await prompt.single({
-        message: 'Do you want to start a development server instead?',
-        type: 'confirm',
-      })
+      const shouldRunDevServer =
+        isInteractive &&
+        (await prompt.single({
+          message: 'Do you want to start a development server instead?',
+          type: 'confirm',
+        }))
 
       if (shouldRunDevServer) {
         const devAction = await getDevAction()
         await devAction(args, context)
+      } else {
+        // Indicate that this isn't an expected exit
+        // eslint-disable-next-line no-process-exit
+        process.exit(1)
       }
     }
   },

@@ -27,12 +27,11 @@ describeCliTest('CLI: `sanity preview`', () => {
       expect(previewHtml).toContain('<h1>This is static.</h1>')
     })
 
-    // Disable this for now as this has become a prompt now.
-    // testConcurrent('start (hint for new `dev` command)', async () => {
-    //   const result = await runSanityCmdCommand('v3', ['start'])
-    //   const error = result.stderr.trim()
-    //   expect(error).toContain('`sanity start` aliases `sanity preview`')
-    //   expect(error).toContain('to start the development server')
-    // })
+    testConcurrent('start (hint for new `dev` command)', async () => {
+      const result = await runSanityCmdCommand('v3', ['start'])
+      const error = result.stderr.trim()
+      expect(error).toContain('command is used to preview static builds')
+      expect(error).toContain('sanity dev')
+    })
   })
 })
