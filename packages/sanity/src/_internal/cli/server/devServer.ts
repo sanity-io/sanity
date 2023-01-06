@@ -1,6 +1,6 @@
 import chalk from 'chalk'
 import {createServer, InlineConfig} from 'vite'
-import {getViteConfig} from './getViteConfig'
+import {extendViteConfigWithUserConfig, getViteConfig} from './getViteConfig'
 import {debug} from './debug'
 import {writeSanityRuntime} from './runtime'
 
@@ -14,7 +14,7 @@ export interface DevServerOptions {
   projectName?: string
 
   reactStrictMode: boolean
-  vite?: (config: InlineConfig) => InlineConfig
+  vite?: InlineConfig | ((config: InlineConfig) => InlineConfig)
 }
 
 export interface DevServer {
@@ -36,9 +36,9 @@ export async function startDevServer(options: DevServerOptions): Promise<DevServ
     cwd,
   })
 
+  // Extend Vite configuration with user-provided config
   if (extendViteConfig) {
-    debug('Extending vite config using user-specified function')
-    viteConfig = extendViteConfig(viteConfig)
+    viteConfig = extendViteConfigWithUserConfig(viteConfig, extendViteConfig)
   }
 
   debug('Creating vite server')

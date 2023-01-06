@@ -4,6 +4,7 @@ import chalk from 'chalk'
 import {InlineConfig, preview} from 'vite'
 import {debug as serverDebug} from './debug'
 import {sanityBasePathRedirectPlugin} from './vite/plugin-sanity-basepath-redirect'
+import {extendViteConfigWithUserConfig} from './getViteConfig'
 
 const debug = serverDebug.extend('preview')
 
@@ -19,7 +20,7 @@ export interface PreviewServerOptions {
   httpPort: number
   httpHost?: string
 
-  vite?: (config: InlineConfig) => InlineConfig
+  vite?: InlineConfig | ((config: InlineConfig) => InlineConfig)
 }
 
 export async function startPreviewServer(options: PreviewServerOptions): Promise<PreviewServer> {
@@ -59,9 +60,9 @@ export async function startPreviewServer(options: PreviewServerOptions): Promise
     },
   }
 
+  // Extend Vite configuration with user-provided config
   if (extendViteConfig) {
-    debug('Extending vite config using user-specified function')
-    previewConfig = extendViteConfig(previewConfig)
+    previewConfig = extendViteConfigWithUserConfig(previewConfig, extendViteConfig)
   }
 
   debug('Creating vite server')
