@@ -3,6 +3,7 @@ import fs from 'fs/promises'
 import {constants as fsConstants} from 'fs'
 import {build, InlineConfig} from 'vite'
 import readPkgUp from 'read-pkg-up'
+import {ensureTrailingSlash} from '../util/ensureTrailingSlash'
 import {finalizeViteConfig, getViteConfig} from './getViteConfig'
 import {generateWebManifest} from './webManifest'
 import {writeSanityRuntime} from './runtime'
@@ -169,8 +170,4 @@ async function writeWebManifest(basePath: string, destDir: string): Promise<void
   await fs
     .writeFile(path.join(destDir, 'manifest.webmanifest'), content, 'utf8')
     .catch(skipIfExistsError)
-}
-
-function ensureTrailingSlash(urlPath: string) {
-  return urlPath.endsWith('/') ? urlPath : `${urlPath}/`
 }
