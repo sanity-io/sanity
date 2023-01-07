@@ -1,7 +1,8 @@
 import fs from 'fs/promises'
 import path from 'path'
 import chalk from 'chalk'
-import {InlineConfig, preview} from 'vite'
+import {type InlineConfig, preview} from 'vite'
+import type {UserViteConfig} from '@sanity/cli'
 import {debug as serverDebug} from './debug'
 import {sanityBasePathRedirectPlugin} from './vite/plugin-sanity-basepath-redirect'
 import {extendViteConfigWithUserConfig} from './getViteConfig'
@@ -20,7 +21,7 @@ export interface PreviewServerOptions {
   httpPort: number
   httpHost?: string
 
-  vite?: InlineConfig | ((config: InlineConfig) => InlineConfig)
+  vite?: UserViteConfig
 }
 
 export async function startPreviewServer(options: PreviewServerOptions): Promise<PreviewServer> {
@@ -44,6 +45,7 @@ export async function startPreviewServer(options: PreviewServerOptions): Promise
     throw error
   }
 
+  const mode = 'production'
   let previewConfig: InlineConfig = {
     root,
     base: basePath || '/',
@@ -58,11 +60,16 @@ export async function startPreviewServer(options: PreviewServerOptions): Promise
     build: {
       outDir: root,
     },
+    mode,
   }
 
   // Extend Vite configuration with user-provided config
   if (extendViteConfig) {
-    previewConfig = extendViteConfigWithUserConfig(previewConfig, extendViteConfig)
+    previewConfig = await extendViteConfigWithUserConfig(
+      {command: 'serve', mode},
+      previewConfig,
+      extendViteConfig
+    )
   }
 
   debug('Creating vite server')
