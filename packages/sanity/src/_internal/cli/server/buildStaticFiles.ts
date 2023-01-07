@@ -1,8 +1,9 @@
 import path from 'path'
 import fs from 'fs/promises'
 import {constants as fsConstants} from 'fs'
-import {build, InlineConfig} from 'vite'
+import {build} from 'vite'
 import readPkgUp from 'read-pkg-up'
+import type {UserViteConfig} from '@sanity/cli'
 import {ensureTrailingSlash} from '../util/ensureTrailingSlash'
 import {extendViteConfigWithUserConfig, finalizeViteConfig, getViteConfig} from './getViteConfig'
 import {generateWebManifest} from './webManifest'
@@ -30,7 +31,7 @@ export interface StaticBuildOptions {
   profile?: boolean
   sourceMap?: boolean
 
-  vite?: InlineConfig | ((config: InlineConfig) => InlineConfig)
+  vite?: UserViteConfig
 }
 
 export async function buildStaticFiles(
@@ -49,18 +50,23 @@ export async function buildStaticFiles(
   await writeSanityRuntime({cwd, reactStrictMode: false, watch: false, basePath})
 
   debug('Resolving vite config')
+  const mode = 'production'
   let viteConfig = await getViteConfig({
     cwd,
     basePath,
     outputDir,
     minify,
     sourceMap,
-    mode: 'production',
+    mode,
   })
 
   // Extend Vite configuration with user-provided config
   if (extendViteConfig) {
-    viteConfig = extendViteConfigWithUserConfig(viteConfig, extendViteConfig)
+    viteConfig = await extendViteConfigWithUserConfig(
+      {command: 'build', mode},
+      viteConfig,
+      extendViteConfig
+    )
     viteConfig = finalizeViteConfig(viteConfig)
   }
 

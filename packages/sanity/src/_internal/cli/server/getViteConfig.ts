@@ -1,8 +1,9 @@
 import path from 'path'
-import {InlineConfig, mergeConfig} from 'vite'
+import {ConfigEnv, InlineConfig, mergeConfig} from 'vite'
 import viteReact from '@vitejs/plugin-react'
 import readPkgUp from 'read-pkg-up'
 import debug from 'debug'
+import {UserViteConfig} from '@sanity/cli'
 import {getAliases} from './aliases'
 import {normalizeBasePath} from './helpers'
 import {loadSanityMonorepo} from './sanityMonorepo'
@@ -174,16 +175,16 @@ export function finalizeViteConfig(config: InlineConfig): InlineConfig {
  * @returns Merged configuration
  * @internal
  */
-export function extendViteConfigWithUserConfig(
+export async function extendViteConfigWithUserConfig(
+  env: ConfigEnv,
   defaultConfig: InlineConfig,
-  userConfig: InlineConfig | ((config: InlineConfig) => InlineConfig)
-): InlineConfig {
-  // Create deep clone to avoid directly mutating
-  let config = mergeConfig(defaultConfig, {})
+  userConfig: UserViteConfig
+): Promise<InlineConfig> {
+  let config = defaultConfig
 
   if (typeof userConfig === 'function') {
     debug('Extending vite config using user-specified function')
-    config = userConfig(defaultConfig)
+    config = await userConfig(config, env)
   } else if (typeof userConfig === 'object') {
     debug('Merging vite config using user-specified object')
     config = mergeConfig(config, userConfig)
