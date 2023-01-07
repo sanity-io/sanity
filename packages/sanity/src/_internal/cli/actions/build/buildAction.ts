@@ -64,6 +64,28 @@ export default async function buildSanityStudio(
     })
   }
 
+  // Determine base path for built studio
+  let basePath = '/'
+  const envBasePath = process.env.SANITY_STUDIO_BASEPATH
+  const configBasePath = cliConfig?.project?.basePath
+
+  // Allow `sanity deploy` to override base path
+  if (overrides?.basePath) {
+    basePath = overrides.basePath
+  } else if (envBasePath) {
+    // Environment variable (SANITY_STUDIO_BASEPATH)
+    basePath = envBasePath
+  } else if (configBasePath) {
+    // `sanity.cli.ts`
+    basePath = configBasePath
+  }
+
+  if (envBasePath && configBasePath) {
+    output.warn(
+      `Overriding configured base path (${configBasePath}) with value from environment variable (${envBasePath})`
+    )
+  }
+
   let spin
 
   if (shouldClean) {
@@ -74,16 +96,6 @@ export default async function buildSanityStudio(
     spin.text = `Clean output folder (${cleanDuration.toFixed()}ms)`
     spin.succeed()
   }
-
-  const specifiedBasePath =
-    // Allow `sanity deploy` to override base path
-    overrides?.basePath ??
-    // Environment variables
-    process.env.SANITY_STUDIO_BASEPATH ??
-    // `sanity.cli.ts`
-    cliConfig?.project?.basePath
-
-  const basePath = specifiedBasePath || '/'
 
   spin = output.spinner('Build Sanity Studio').start()
 

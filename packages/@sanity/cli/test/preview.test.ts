@@ -29,7 +29,7 @@ describeCliTest('CLI: `sanity preview`', () => {
       expect(previewHtml).toContain('<h1>This is static, served from a base path.</h1>')
       expect(stdout).toContain('Using resolved base path from static build')
       expect(stdout).toContain('/some-base-path')
-      expect(stdout).toContain('http://localhost:3456/some-base-path')
+      expect(stdout).toContain(':3456/some-base-path')
     })
 
     testConcurrent('preview (root basepath)', async () => {

@@ -86,7 +86,7 @@ export const getTestRunArgs = (version: string) => {
 export function runSanityCmdCommand(
   version: string,
   args: string[],
-  options = {}
+  options: {env?: Record<string, string | undefined>} = {}
 ): Promise<{
   code: number | null
   stdout: string
@@ -94,8 +94,8 @@ export function runSanityCmdCommand(
 }> {
   return exec(process.argv[0], [cliBinPath, ...args], {
     cwd: path.join(studiosPath, version),
-    env: sanityEnv,
     ...options,
+    env: {...sanityEnv, ...options.env},
   })
 }
 
