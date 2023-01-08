@@ -57,6 +57,9 @@ export function ParsedDateTextInput({
    */
   const processInputString = useCallback(
     ({dateString, triggerOnChange}: {dateString: string; triggerOnChange?: boolean}) => {
+      if (!dateString) {
+        return
+      }
       const dateParsed = parse(dateString, dateFormat, new Date())
       const validDate = isValid(dateParsed)
       if (validDate) {
