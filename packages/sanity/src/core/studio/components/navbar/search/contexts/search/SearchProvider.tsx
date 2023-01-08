@@ -6,7 +6,11 @@ import {useCurrentUser} from '../../../../../../store'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../../../studioClient'
 import {useSource} from '../../../../../source'
 import {FINDABILITY_MVI, SEARCH_LIMIT} from '../../constants'
-import {createRecentSearchesStore, RecentSearch} from '../../datastores/recentSearches'
+import {
+  createRecentSearchesStore,
+  RecentSearch,
+  RECENT_SEARCH_VERSION,
+} from '../../datastores/recentSearches'
 import {useSearch} from '../../hooks/useSearch'
 import type {SearchFieldDefinition, SearchOrdering} from '../../types'
 import {createFieldDefinitions} from '../../utils/createFieldDefinitions'
@@ -58,6 +62,7 @@ export function SearchProvider({
         projectId,
         schema,
         user: currentUser,
+        version: RECENT_SEARCH_VERSION,
       }),
     [currentUser, dataset, fields, filters, operators, projectId, schema]
   )

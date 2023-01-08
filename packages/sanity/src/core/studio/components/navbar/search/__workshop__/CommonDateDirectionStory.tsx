@@ -40,7 +40,7 @@ export default function CommonDateDirectionStory() {
             Value:
           </Text>
           <Text muted size={1}>
-            {value?.value ? value.value : <em>Empty</em>}
+            {value?.date ? value.date : <em>Empty</em>}
           </Text>
         </Inline>
       </Card>

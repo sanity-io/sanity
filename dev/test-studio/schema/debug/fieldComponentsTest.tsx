@@ -11,7 +11,6 @@ const CustomBox = styled.div`
   &:hover {
     background: red;
   }
-
   @keyframes spin {
     from {
       transform: rotate(0);
@@ -26,7 +25,6 @@ export default {
   name: 'fieldComponentsTest',
   type: 'document',
   title: 'Fields with React components',
-  // icon,
   preview: {
     select: {
       title: 'title',
@@ -61,7 +59,6 @@ export default {
         </div>
       ),
       type: 'image',
-      options: {hotspot: true}, // tweaking the hotspot should be reflected in the preview
     },
     {
       name: 'subtitle',
@@ -79,12 +76,6 @@ export default {
         </span>
       ),
       type: 'string',
-    },
-    {
-      name: 'byline',
-      title: '<span>Byline</span>',
-      type: 'string',
-      description: `Let's intentionally nest HTML within a string`,
     },
   ],
 }

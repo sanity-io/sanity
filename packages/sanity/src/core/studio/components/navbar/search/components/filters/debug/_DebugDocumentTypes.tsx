@@ -4,7 +4,11 @@ import {useSearchState} from '../../../contexts/search/useSearchState'
 import type {SearchFilter} from '../../../types'
 import {getFieldFromFilter} from '../../../utils/filterUtils'
 
-export function DebugDocumentTypes({filter}: {filter: SearchFilter}) {
+interface DebugDocumentTypesProps {
+  filter: SearchFilter
+}
+
+export function DebugDocumentTypes({filter}: DebugDocumentTypesProps) {
   const {
     state: {
       definitions: {fields},

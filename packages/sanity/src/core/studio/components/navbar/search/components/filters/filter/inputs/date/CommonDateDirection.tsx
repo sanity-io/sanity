@@ -44,7 +44,7 @@ export function CommonDateDirectionInput({
       }
       onChange({
         includeTime: value?.includeTime,
-        value: dateISOString,
+        date: dateISOString,
       })
     },
     [isDateTime, onChange, roundDay, value?.includeTime]
@@ -52,7 +52,7 @@ export function CommonDateDirectionInput({
 
   const handleIncludeTimeChange = useCallback(() => {
     const includeTime = !value?.includeTime
-    const date = value?.value ? new Date(value.value) : null
+    const date = value?.date ? new Date(value.date) : null
 
     let dateISOString: string | null = null
     if (date) {
@@ -62,14 +62,14 @@ export function CommonDateDirectionInput({
         roundDay: includeTime ? 'start' : roundDay,
       })
     }
-    onChange({includeTime, value: dateISOString})
+    onChange({includeTime, date: dateISOString})
   }, [isDateTime, onChange, roundDay, value])
 
   const handleTextDateChange = useCallback(
     (date: string | null) => {
       onChange({
         includeTime: value?.includeTime,
-        value: date || null,
+        date: date || null,
       })
     },
     [onChange, value?.includeTime]
@@ -82,10 +82,10 @@ export function CommonDateDirectionInput({
         fontSize={fullscreen ? 2 : 1}
         onChange={handleTextDateChange}
         selectTime={isDateTime && value?.includeTime}
-        value={value?.value}
+        value={value?.date}
       />
       <DatePicker
-        date={value?.value ? new Date(value.value) : undefined}
+        date={value?.date ? new Date(value.date) : undefined}
         onChange={handleDatePickerChange}
         selectTime={isDateTime}
       />

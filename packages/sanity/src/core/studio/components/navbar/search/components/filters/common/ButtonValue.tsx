@@ -22,7 +22,7 @@ export function SearchButtonValueBoolean({value}: OperatorButtonValueComponentPr
 export function SearchButtonValueDate({
   value,
 }: OperatorButtonValueComponentProps<OperatorDateEqualValue>) {
-  const date = value?.value ? new Date(value.value) : null
+  const date = value?.date ? new Date(value.date) : null
   if (!date || !isValid(date)) {
     return null
   }
@@ -32,7 +32,7 @@ export function SearchButtonValueDate({
 export function SearchButtonValueDateDirection({
   value,
 }: OperatorButtonValueComponentProps<OperatorDateDirectionValue>) {
-  const date = value?.value ? new Date(value.value) : null
+  const date = value?.date ? new Date(value.date) : null
   if (!date || !isValid(date)) {
     return null
   }
@@ -44,7 +44,7 @@ export function SearchButtonValueDateLast({
 }: OperatorButtonValueComponentProps<OperatorDateLastValue>) {
   return (
     <>
-      {Math.floor(value?.value ?? 0)} {value.unit}
+      {Math.floor(value?.unitValue ?? 0)} {value.unit}
     </>
   )
 }
@@ -52,8 +52,8 @@ export function SearchButtonValueDateLast({
 export function SearchButtonValueDateRange({
   value,
 }: OperatorButtonValueComponentProps<OperatorDateRangeValue>) {
-  const startDate = value?.min ? new Date(value.min) : null
-  const endDate = value?.max ? new Date(value.max) : null
+  const startDate = value?.dateMin ? new Date(value.dateMin) : null
+  const endDate = value?.dateMax ? new Date(value.dateMax) : null
   if (!endDate || !startDate || !isValid(endDate) || !isValid(startDate)) {
     return null
   }
