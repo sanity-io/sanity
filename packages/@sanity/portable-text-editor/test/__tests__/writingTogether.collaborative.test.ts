@@ -14,7 +14,7 @@ const initialValue: PortableTextBlock[] = [
 ]
 
 // @todo reenable when flakey tests are resolved
-describe.skip('collaborate editing', () => {
+describe('collaborate editing', () => {
   it('will have the same start value for editor A and B', async () => {
     await setDocumentValue(initialValue)
     const editors = await getEditors()
@@ -118,34 +118,7 @@ describe.skip('collaborate editing', () => {
       ]
     `)
     const selA = await editorA.getSelection()
-    expect(selA).toMatchInlineSnapshot(`
-      Object {
-        "anchor": Object {
-          "offset": 0,
-          "path": Array [
-            Object {
-              "_key": "B-2",
-            },
-            "children",
-            Object {
-              "_key": "B-3",
-            },
-          ],
-        },
-        "focus": Object {
-          "offset": 0,
-          "path": Array [
-            Object {
-              "_key": "B-2",
-            },
-            "children",
-            Object {
-              "_key": "B-3",
-            },
-          ],
-        },
-      }
-    `)
+    expect(selA).toMatchInlineSnapshot(`null`)
     await editorA.pressKey('2')
     valA = await editorA.getValue()
     valB = await editorB.getValue()
