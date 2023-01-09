@@ -9,6 +9,10 @@ export default (typeDef, visitorContext) => {
     problems.push(...validateFields(fields, {allowEmpty: true}))
   }
 
+  const invalidFieldNames = Array.isArray(fields)
+    ? fields?.filter((field) => field.name === 'asset')
+    : []
+
   if (
     typeDef.options &&
     typeof typeDef.options.metadata !== 'undefined' &&
@@ -20,6 +24,8 @@ export default (typeDef, visitorContext) => {
         HELP_IDS.ASSET_METADATA_FIELD_INVALID
       )
     )
+  } else if (invalidFieldNames.length > 0) {
+    problems.push(error('The name `asset` is not a valid field name for type `file`.'))
   }
 
   return {
