@@ -335,7 +335,7 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
       ]
     }
     return EMPTY_DECORATORS
-  }, [slateEditor.children])
+  }, [schemaTypes, slateEditor.children])
 
   // The editor
   const slateEditable = useMemo(
