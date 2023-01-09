@@ -1,6 +1,6 @@
 import {Box, Grid, Text} from '@sanity/ui'
 import React from 'react'
-import {useDatePicker} from '../contexts/useDatePicker'
+import {useCalendar} from './contexts/useDatePicker'
 import {CalendarDay} from './CalendarDay'
 import {WEEK_DAY_NAMES} from './constants'
 import {getWeeksOfMonth} from './utils'
@@ -11,7 +11,7 @@ interface CalendarMonthProps {
 }
 
 export function CalendarMonth({hidden, onSelect}: CalendarMonthProps) {
-  const {focusedDate, fontSize} = useDatePicker()
+  const {focusedDate, fontSize} = useCalendar()
 
   return (
     <Box aria-hidden={hidden || false} data-ui="CalendarMonth">

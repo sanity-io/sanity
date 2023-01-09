@@ -1,7 +1,7 @@
 import {ChevronLeftIcon, ChevronRightIcon} from '@sanity/icons'
 import {Box, Button, Flex, Inline, Text} from '@sanity/ui'
 import React, {useCallback} from 'react'
-import {useDatePicker} from '../contexts/useDatePicker'
+import {useCalendar} from './contexts/useDatePicker'
 import {MONTH_NAMES} from './constants'
 
 export function CalendarHeader(props: {
@@ -9,7 +9,7 @@ export function CalendarHeader(props: {
   moveFocusedDate: (by: number) => void
   onNowClick: () => void
 }) {
-  const {focusedDate} = useDatePicker()
+  const {focusedDate} = useCalendar()
 
   const {fontSize, moveFocusedDate, onNowClick} = props
 

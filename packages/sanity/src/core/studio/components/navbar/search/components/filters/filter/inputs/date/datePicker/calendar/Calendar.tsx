@@ -1,7 +1,7 @@
 import {Box, Flex} from '@sanity/ui'
 import {addDays, addMonths, isAfter, isBefore, set} from 'date-fns'
 import React, {KeyboardEvent, useCallback, useEffect, useRef, useState} from 'react'
-import {DatePickerContext} from '../contexts/DatePickerContext'
+import {CalendarContext} from './contexts/CalendarContext'
 import {CalendarHeader} from './CalendarHeader'
 import {CalendarMonth} from './CalendarMonth'
 import {ARROW_KEYS} from './constants'
@@ -174,7 +174,7 @@ export function Calendar(props: CalendarProps) {
   }, [date, endDate, onSelect])
 
   return (
-    <DatePickerContext.Provider
+    <CalendarContext.Provider
       value={{
         date,
         endDate,
@@ -208,6 +208,6 @@ export function Calendar(props: CalendarProps) {
           {PRESERVE_FOCUS_ELEMENT}
         </Box>
       </Box>
-    </DatePickerContext.Provider>
+    </CalendarContext.Provider>
   )
 }

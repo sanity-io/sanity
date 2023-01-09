@@ -2,23 +2,26 @@ import {Card, Text, Theme} from '@sanity/ui'
 import {isAfter, isBefore, isSameDay, isSameMonth} from 'date-fns'
 import React, {useCallback} from 'react'
 import styled, {css} from 'styled-components'
-import {useDatePicker} from '../contexts/useDatePicker'
+import {useCalendar} from './contexts/useDatePicker'
 
 interface CalendarDayProps {
   date: Date
   onSelect: (date: Date) => void
 }
 
-const TodayCircle = styled.div(({theme}: {theme: Theme}) => {
+const CircleSvg = styled.svg(({theme}: {theme: Theme}) => {
   return css`
-    border: 1.5px solid ${theme.sanity.color.card.enabled.border};
-    border-radius: 3.25ch;
-    height: 3.25ch;
-    left: 50%;
+    bottom: 0;
+    left: 0;
     position: absolute;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    width: 3.25ch;
+    right: 0;
+    top: 0;
+
+    circle {
+      stroke: ${theme.sanity.color.card.enabled.border};
+      stroke-width: 3;
+      fill: none;
+    }
   `
 })
 
@@ -54,7 +57,7 @@ export function CalendarDay({date, onSelect}: CalendarDayProps) {
     focusedDate,
     fontSize,
     selectRange,
-  } = useDatePicker()
+  } = useCalendar()
 
   const isSelected = selectedDate && isSameDay(date, selectedDate)
   const isStartDate = selectRange && selectedDate && isSameDay(date, selectedDate)
@@ -90,7 +93,17 @@ export function CalendarDay({date, onSelect}: CalendarDayProps) {
         tabIndex={-1}
         tone={isWithinRange ? 'primary' : 'default'}
       >
-        {isToday && <TodayCircle />}
+        {isToday && (
+          <CircleSvg
+            height="100%"
+            preserveAspectRatio="xMidYMid meet"
+            vectorEffect="non-scaling-stroke"
+            viewBox="0 0 100 100"
+            width="100%"
+          >
+            <circle cx="50" cy="50" r="40%" />
+          </CircleSvg>
+        )}
         <Text
           muted={!isSelected && !isCurrentMonth}
           size={fontSize}

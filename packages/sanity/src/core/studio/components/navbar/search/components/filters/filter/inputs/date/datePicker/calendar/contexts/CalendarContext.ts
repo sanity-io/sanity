@@ -1,6 +1,6 @@
 import {createContext} from 'react'
 
-export interface DatePickerContextValue {
+export interface CalendarContextValue {
   date?: Date
   endDate?: Date
   focusedDate: Date
@@ -9,4 +9,4 @@ export interface DatePickerContextValue {
   selectTime?: boolean
 }
 
-export const DatePickerContext = createContext<DatePickerContextValue | undefined>(undefined)
+export const CalendarContext = createContext<CalendarContextValue | undefined>(undefined)
