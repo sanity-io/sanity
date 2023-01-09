@@ -13,9 +13,18 @@ import {getDateISOString} from './utils/getDateISOString'
 
 interface ParsedDateTextInputProps
   extends Omit<ComponentProps<typeof CustomTextInput>, 'onChange' | 'value'> {
+  /**
+   * Determines whether `onChange` returns a full or partial ISO-8601 string.
+   * e.g. '2023-01-04T10:00:00.000Z' or '2023-01-04'
+   */
+  isDateTime: boolean
+  /**
+   * Determines whether dates are formatted with full or partial date format
+   * e.g. 'Feb 1, 2000 12:00 AM' vs 'Feb 1, 2000'
+   */
+  isDateTimeFormat?: boolean
   onChange: (val: string | null) => void
   placeholderDate?: Date
-  selectTime?: boolean
   value?: string | null
 }
 
@@ -23,13 +32,17 @@ const DATE_FORMAT = 'MMM d, yyyy' // Feb 1, 2000
 const DATETIME_FORMAT = 'MMM d, yyyy p' // Feb 1, 2000 12:00 AM
 
 export function ParsedDateTextInput({
+  isDateTime,
   onChange,
   placeholderDate,
-  selectTime,
+  isDateTimeFormat,
   value,
   ...rest
 }: ParsedDateTextInputProps) {
-  const dateFormat = useMemo(() => (selectTime ? DATETIME_FORMAT : DATE_FORMAT), [selectTime])
+  const dateFormat = useMemo(
+    () => (isDateTimeFormat ? DATETIME_FORMAT : DATE_FORMAT),
+    [isDateTimeFormat]
+  )
 
   const [customValidity, setCustomValidity] = useState<string | undefined>(undefined)
   const [inputValue, setInputValue] = useState<string>(() => {
@@ -64,13 +77,13 @@ export function ParsedDateTextInput({
       const validDate = isValid(dateParsed)
       if (validDate) {
         if (triggerOnChange) {
-          onChange(getDateISOString({date: dateParsed, dateOnly: !selectTime}))
+          onChange(getDateISOString({date: dateParsed, dateOnly: !isDateTime}))
         }
         setInputValue(format(dateParsed, dateFormat))
       }
-      setCustomValidity(validDate ? undefined : `Invalid ${selectTime ? 'datetime' : 'date'}`)
+      setCustomValidity(validDate ? undefined : `Invalid ${isDateTime ? 'datetime' : 'date'}`)
     },
-    [dateFormat, onChange, selectTime]
+    [dateFormat, isDateTime, onChange]
   )
 
   /**
@@ -116,7 +129,7 @@ export function ParsedDateTextInput({
         triggerOnChange: false,
       })
     }
-  }, [dateFormat, processInputString, selectTime, value])
+  }, [dateFormat, processInputString, isDateTimeFormat, value])
 
   return (
     <CustomTextInput

@@ -6,5 +6,5 @@ import {CommonDateDirectionInput} from './CommonDateDirection'
 export function SearchFilterDateAfterInput(
   props: OperatorInputComponentProps<OperatorDateDirectionValue>
 ) {
-  return <CommonDateDirectionInput {...props} direction="after" />
+  return <CommonDateDirectionInput {...props} direction="after" isDateTime={false} />
 }

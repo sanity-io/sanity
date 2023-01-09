@@ -17,7 +17,7 @@ export default function CommonDateRangeStory() {
   return (
     <SearchProvider>
       <Card padding={3} shadow={1}>
-        <CommonDateRangeInput isDateTime={isDateTime} onChange={handleChange} value={value} />
+        <CommonDateRangeInput isDateTime={!!isDateTime} onChange={handleChange} value={value} />
       </Card>
       <Card margin={3} padding={3} shadow={1} tone="primary">
         <Stack space={3}>

@@ -13,7 +13,7 @@ export function CommonDateEqualInput({
   onChange,
   value,
 }: OperatorInputComponentProps<OperatorDateEqualValue> & {
-  isDateTime?: boolean
+  isDateTime: boolean
 }) {
   const {
     state: {fullscreen},
@@ -63,8 +63,9 @@ export function CommonDateEqualInput({
       <ParsedDateTextInput
         aria-label="Date"
         fontSize={fullscreen ? 2 : 1}
+        isDateTime={isDateTime}
+        isDateTimeFormat={isDateTime && value?.includeTime}
         onChange={handleTextDateChange}
-        selectTime={isDateTime && value?.includeTime}
         value={value?.date}
       />
       <DatePicker

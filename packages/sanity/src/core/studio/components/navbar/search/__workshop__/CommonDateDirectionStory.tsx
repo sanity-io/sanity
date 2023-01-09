@@ -29,7 +29,7 @@ export default function CommonDateDirectionStory() {
       <Card padding={3} shadow={1}>
         <CommonDateDirectionInput
           direction={direction}
-          isDateTime={isDateTime}
+          isDateTime={!!isDateTime}
           onChange={handleChange}
           value={value}
         />

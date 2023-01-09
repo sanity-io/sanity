@@ -14,7 +14,7 @@ export function CommonDateRangeInput({
   onChange,
   value,
 }: OperatorInputComponentProps<OperatorDateRangeValue> & {
-  isDateTime?: boolean
+  isDateTime: boolean
 }) {
   const {
     state: {fullscreen},
@@ -79,18 +79,20 @@ export function CommonDateRangeInput({
           <ParsedDateTextInput
             aria-label="Start date"
             fontSize={fullscreen ? 2 : 1}
+            isDateTime={isDateTime}
+            isDateTimeFormat={isDateTime && value?.includeTime}
             onChange={handleTextStartDateChange}
             placeholderDate={placeholderStartDate}
-            selectTime={isDateTime && value?.includeTime}
             value={value?.dateMin}
           />
           {/* End date */}
           <ParsedDateTextInput
             aria-label="End date"
             fontSize={fullscreen ? 2 : 1}
+            isDateTime={isDateTime}
+            isDateTimeFormat={isDateTime && value?.includeTime}
             onChange={handleTextEndDateChange}
             placeholderDate={placeholderEndDate}
-            selectTime={isDateTime && value?.includeTime}
             value={value?.dateMax}
           />
         </Flex>

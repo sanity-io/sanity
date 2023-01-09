@@ -6,5 +6,5 @@ import {CommonDateEqualInput} from './CommonDateEqual'
 export function SearchFilterDateEqualInput(
   props: OperatorInputComponentProps<OperatorDateEqualValue>
 ) {
-  return <CommonDateEqualInput {...props} />
+  return <CommonDateEqualInput {...props} isDateTime={false} />
 }

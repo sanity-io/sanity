@@ -17,7 +17,7 @@ export default function CommonDateEqualStory() {
   return (
     <SearchProvider>
       <Card padding={3} shadow={1}>
-        <CommonDateEqualInput isDateTime={isDateTime} onChange={handleChange} value={value} />
+        <CommonDateEqualInput isDateTime={!!isDateTime} onChange={handleChange} value={value} />
       </Card>
       <Card margin={3} padding={3} shadow={1} tone="primary">
         <Inline space={1}>
