@@ -18,20 +18,19 @@ import React, {
   useRef,
   useId,
 } from 'react'
-import {ObjectSchemaType, PortableTextBlock} from '@sanity/types'
 import {RenderPreviewCallback} from '../../../types'
 import {is} from '../../../utils/is'
+import {PortableTextMemberItem} from '../PortableTextInput'
 import {IntentLink} from 'sanity/router'
 
 interface BlockObjectPreviewProps {
   focused: boolean
   isActive?: boolean
+  memberItem: PortableTextMemberItem
   onClickingDelete: (event: MouseEvent) => void
   onClickingEdit: () => void
   readOnly?: boolean
   renderPreview: RenderPreviewCallback
-  type: ObjectSchemaType
-  value: PortableTextBlock
 }
 
 const POPOVER_PROPS: MenuButtonProps['popover'] = {
@@ -42,26 +41,18 @@ const POPOVER_PROPS: MenuButtonProps['popover'] = {
 }
 
 export function BlockObjectPreview(props: BlockObjectPreviewProps): ReactElement {
-  const {
-    focused,
-    isActive,
-    onClickingDelete,
-    onClickingEdit,
-    readOnly,
-    renderPreview,
-    type,
-    value,
-  } = props
+  const {focused, isActive, memberItem, onClickingDelete, onClickingEdit, readOnly, renderPreview} =
+    props
   const {isTopLayer} = useLayer()
   const editor = usePortableTextEditor()
   const menuButtonId = useId()
   const menuButton = useRef<HTMLButtonElement | null>(null)
-  const isTabbing = useRef<boolean>(false)
-  const isImageType = is('image', type)
+  const {schemaType, value} = memberItem.node
+  const isImageType = is('image', schemaType)
 
   const referenceLink = useMemo(
     () =>
-      '_ref' in value && value._ref
+      value && '_ref' in value && value._ref
         ? forwardRef(function ReferenceLink(
             linkProps,
             ref: React.Ref<HTMLAnchorElement> | undefined
@@ -81,19 +72,17 @@ export function BlockObjectPreview(props: BlockObjectPreviewProps): ReactElement
           return
         }
         if (event.key === 'Escape' && isTopLayer) {
-          isTabbing.current = false
           PortableTextEditor.focus(editor)
         }
         if (event.key === 'Tab') {
-          if (menuButton.current && !isTabbing.current) {
+          if (menuButton.current && focused && !memberItem.member.open) {
             event.preventDefault()
             event.stopPropagation()
             menuButton.current.focus()
-            isTabbing.current = true
           }
         }
       },
-      [focused, isTopLayer, editor]
+      [focused, isTopLayer, editor, memberItem.member.open]
     )
   )
 
@@ -114,7 +103,7 @@ export function BlockObjectPreview(props: BlockObjectPreviewProps): ReactElement
       menu={
         <Menu>
           <>
-            {'_ref' in value && value._ref && (
+            {value && '_ref' in value && value._ref && (
               <MenuItem as={referenceLink} data-as="a" icon={LinkIcon} text="Open reference" />
             )}
 
@@ -135,7 +124,7 @@ export function BlockObjectPreview(props: BlockObjectPreviewProps): ReactElement
       {renderPreview({
         actions,
         layout: isImageType ? 'blockImage' : 'block',
-        schemaType: type,
+        schemaType,
         value,
       })}
     </>
