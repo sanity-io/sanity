@@ -115,6 +115,7 @@ export function BlockObject(props: BlockObjectProps) {
         onClickingEdit={openItem}
         readOnly={readOnly}
         renderPreview={renderPreview}
+        isOpen={memberItem?.member.open}
         type={type}
         value={block}
       />

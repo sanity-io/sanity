@@ -32,6 +32,7 @@ interface BlockObjectPreviewProps {
   renderPreview: RenderPreviewCallback
   type: ObjectSchemaType
   value: PortableTextBlock
+  isOpen?: boolean
 }
 
 const POPOVER_PROPS: MenuButtonProps['popover'] = {
@@ -51,6 +52,7 @@ export function BlockObjectPreview(props: BlockObjectPreviewProps): ReactElement
     renderPreview,
     type,
     value,
+    isOpen,
   } = props
   const {isTopLayer} = useLayer()
   const editor = usePortableTextEditor()
@@ -85,7 +87,7 @@ export function BlockObjectPreview(props: BlockObjectPreviewProps): ReactElement
           PortableTextEditor.focus(editor)
         }
         if (event.key === 'Tab') {
-          if (menuButton.current && !isTabbing.current) {
+          if (menuButton.current && !isTabbing.current && !isOpen) {
             event.preventDefault()
             event.stopPropagation()
             menuButton.current.focus()
