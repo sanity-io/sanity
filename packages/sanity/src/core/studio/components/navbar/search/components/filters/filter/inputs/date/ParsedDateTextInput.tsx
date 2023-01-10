@@ -1,3 +1,6 @@
+import {hues} from '@sanity/color'
+import {ErrorOutlineIcon} from '@sanity/icons'
+import {Flex, Text, Theme, Tooltip} from '@sanity/ui'
 import {format, isValid, parse} from 'date-fns'
 import React, {
   ChangeEvent,
@@ -8,6 +11,7 @@ import React, {
   useMemo,
   useState,
 } from 'react'
+import styled, {css} from 'styled-components'
 import {CustomTextInput} from '../../../../common/CustomTextInput'
 import {getDateISOString} from './utils/getDateISOString'
 
@@ -28,8 +32,33 @@ interface ParsedDateTextInputProps
   value?: string | null
 }
 
-const DATE_FORMAT = 'MMM d, yyyy' // Feb 1, 2000
-const DATETIME_FORMAT = 'MMM d, yyyy p' // Feb 1, 2000 12:00 AM
+const FORMAT: Record<
+  'date' | 'datetime',
+  {
+    /** Displayed in validation errors */
+    exampleDate: string
+    pattern: string
+  }
+> = {
+  date: {
+    exampleDate: 'Jan 1, 2000',
+    pattern: 'MMM d, yyyy',
+  },
+  datetime: {
+    exampleDate: 'Jan 1, 2000 12:00 AM',
+    pattern: 'MMM d, yyyy p',
+  },
+}
+
+const Emphasis = styled.span(({theme}: {theme: Theme}) => {
+  return css`
+    font-weight: ${theme.sanity.fonts.text.weights.medium};
+  `
+})
+
+const IconTextCritical = styled(Text)`
+  color: ${hues.red[500].hex};
+`
 
 export function ParsedDateTextInput({
   isDateTime,
@@ -40,7 +69,7 @@ export function ParsedDateTextInput({
   ...rest
 }: ParsedDateTextInputProps) {
   const dateFormat = useMemo(
-    () => (isDateTimeFormat ? DATETIME_FORMAT : DATE_FORMAT),
+    () => (isDateTimeFormat ? FORMAT.datetime.pattern : FORMAT.date.pattern),
     [isDateTimeFormat]
   )
 
@@ -132,16 +161,38 @@ export function ParsedDateTextInput({
   }, [dateFormat, processInputString, isDateTimeFormat, value])
 
   return (
-    <CustomTextInput
-      {...rest}
-      clearButton={!!inputValue}
-      customValidity={customValidity}
-      onBlur={handleTextInputBlur}
-      onChange={handleTextInputChange}
-      onClear={handleTextInputClear}
-      onKeyDown={handleTextInputKeyDown}
-      placeholder={formattedPlaceholder}
-      value={inputValue}
-    />
+    <Tooltip
+      content={
+        <Flex gap={2}>
+          <IconTextCritical size={1}>
+            <ErrorOutlineIcon />
+          </IconTextCritical>
+          <Text muted size={1}>
+            Must be in the format{' '}
+            <Emphasis>
+              {isDateTimeFormat ? FORMAT.datetime.exampleDate : FORMAT.date.exampleDate}
+            </Emphasis>
+          </Text>
+        </Flex>
+      }
+      disabled={!customValidity}
+      padding={3}
+      portal
+    >
+      {/* HACK: Wrapping element required for <Tooltip> to function */}
+      <div>
+        <CustomTextInput
+          {...rest}
+          clearButton={!!inputValue}
+          customValidity={customValidity}
+          onBlur={handleTextInputBlur}
+          onChange={handleTextInputChange}
+          onClear={handleTextInputClear}
+          onKeyDown={handleTextInputKeyDown}
+          placeholder={formattedPlaceholder}
+          value={inputValue}
+        />
+      </div>
+    </Tooltip>
   )
 }
