@@ -1,4 +1,4 @@
-import {Flex, Stack} from '@sanity/ui'
+import {Box, Flex, Stack} from '@sanity/ui'
 import {addDays} from 'date-fns'
 import React, {useCallback, useMemo} from 'react'
 import {useSearchState} from '../../../../../contexts/search/useSearchState'
@@ -78,10 +78,10 @@ export function CommonDateRangeInput({
   )
 
   return (
-    <div>
-      <Stack space={3}>
-        <Flex direction="column" gap={3}>
-          {/* Start date */}
+    <Stack space={3}>
+      <Flex direction={value?.includeTime ? 'column' : 'row'} gap={3}>
+        {/* Start date */}
+        <Box flex={1}>
           <ParsedDateTextInput
             aria-label="Start date"
             fontSize={fullscreen ? 2 : 1}
@@ -91,7 +91,9 @@ export function CommonDateRangeInput({
             placeholderDate={placeholderStartDate}
             value={value?.dateMin}
           />
-          {/* End date */}
+        </Box>
+        {/* End date */}
+        <Box flex={1}>
           <ParsedDateTextInput
             aria-label="End date"
             fontSize={fullscreen ? 2 : 1}
@@ -101,20 +103,20 @@ export function CommonDateRangeInput({
             placeholderDate={placeholderEndDate}
             value={value?.dateMax}
           />
-        </Flex>
-        <DatePicker
-          date={value?.dateMin ? new Date(value.dateMin) : undefined}
-          endDate={value?.dateMax ? new Date(value.dateMax) : undefined}
-          onChange={handleDatePickerChange}
-          selectRange
-          selectTime={isDateTime}
-        />
-        {/* Include time footer */}
-        {isDateTime && (
-          <DateIncludeTimeFooter onChange={handleIncludeTimeChange} value={!!value?.includeTime} />
-        )}
-      </Stack>
-    </div>
+        </Box>
+      </Flex>
+      <DatePicker
+        date={value?.dateMin ? new Date(value.dateMin) : undefined}
+        endDate={value?.dateMax ? new Date(value.dateMax) : undefined}
+        onChange={handleDatePickerChange}
+        selectRange
+        selectTime={isDateTime}
+      />
+      {/* Include time footer */}
+      {isDateTime && (
+        <DateIncludeTimeFooter onChange={handleIncludeTimeChange} value={!!value?.includeTime} />
+      )}
+    </Stack>
   )
 }
 

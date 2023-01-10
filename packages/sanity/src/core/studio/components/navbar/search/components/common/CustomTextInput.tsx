@@ -7,6 +7,11 @@ interface CustomTextInputProps extends ComponentProps<typeof TextInput> {
   smallClearButton?: boolean
 }
 
+const TextInputWithoutDefaultWidth = styled(TextInput)`
+  min-width: 100%;
+  width: 0;
+`
+
 const CustomTextInputBox = styled(Box)(
   ({background, smallClearButton}: {background?: boolean; smallClearButton?: boolean}) => {
     return css`
@@ -36,7 +41,7 @@ export const CustomTextInput = forwardRef<HTMLInputElement, CustomTextInputProps
 
     return (
       <CustomTextInputBox background={background} smallClearButton={smallClearButton}>
-        <TextInput {...rest} radius={background ? 2 : 1} ref={ref} />
+        <TextInputWithoutDefaultWidth {...rest} radius={background ? 2 : 1} ref={ref} />
       </CustomTextInputBox>
     )
   }
