@@ -17,6 +17,7 @@ import React, {
   useMemo,
   useRef,
   useId,
+  useEffect,
 } from 'react'
 import {ObjectSchemaType, PortableTextBlock} from '@sanity/types'
 import {RenderPreviewCallback} from '../../../types'
@@ -74,6 +75,12 @@ export function BlockObjectPreview(props: BlockObjectPreviewProps): ReactElement
     [value]
   )
 
+  useEffect(() => {
+    if (isOpen) {
+      isTabbing.current = false
+    }
+  }, [isOpen])
+
   // Go to menu when tabbed to
   // Focus block on escape
   useGlobalKeyDown(
@@ -81,10 +88,6 @@ export function BlockObjectPreview(props: BlockObjectPreviewProps): ReactElement
       (event) => {
         if (!focused) {
           return
-        }
-        if (event.key === 'Escape' && isTopLayer) {
-          isTabbing.current = false
-          PortableTextEditor.focus(editor)
         }
         if (event.key === 'Tab') {
           if (menuButton.current && !isTabbing.current && !isOpen) {
