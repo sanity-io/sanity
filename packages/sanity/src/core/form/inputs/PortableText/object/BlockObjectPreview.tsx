@@ -95,7 +95,7 @@ export function BlockObjectPreview(props: BlockObjectPreviewProps): ReactElement
           }
         }
       },
-      [focused, isTopLayer, editor]
+      [focused, isTopLayer, editor, isOpen]
     )
   )
 
