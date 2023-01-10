@@ -17,6 +17,12 @@ export default (typeDef, visitorContext) => {
     ? metadata.filter((meta) => autoMeta.includes(meta))
     : []
 
+  const invalidFieldNames = ['asset', 'hotspot', 'crop']
+
+  const fieldsWithInvalidName = Array.isArray(fields)
+    ? fields?.filter((field) => invalidFieldNames.includes(field.name))
+    : []
+
   if (typeof metadata !== 'undefined' && !Array.isArray(metadata)) {
     problems.push(
       error(
@@ -33,6 +39,14 @@ export default (typeDef, visitorContext) => {
       )
     )
     options = {...options, metadata: metadata.filter((meta) => !autoMeta.includes(meta))}
+  } else if (fieldsWithInvalidName.length > 0) {
+    problems.push(
+      error(
+        `The names \`${invalidFieldNames.join(
+          '`, `'
+        )}\` are invalid field names for type \`image\`.`
+      )
+    )
   }
 
   return {
