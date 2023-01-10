@@ -65,7 +65,7 @@
     "chalk": "^4.1.2",
     "esbuild": "^0.16.5",
     "esbuild-register": "^3.4.1",
-    "get-it": "^5.2.1",
+    "get-it": "^7.0.0",
     "pkg-dir": "^5.0.0"
   },
   "devDependencies": {
