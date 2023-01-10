@@ -20,12 +20,8 @@ export function CalendarHeader(props: {
   return (
     <Flex align="center" flex={1} justify="space-between">
       <Inline paddingLeft={2} space={1}>
-        <Text size={2} weight="medium">
-          {MONTH_NAMES[focusedDate.getMonth()]}
-        </Text>
-        <Text size={2} weight="medium">
-          {focusedDate.getFullYear()}
-        </Text>
+        <Text weight="medium">{MONTH_NAMES[focusedDate.getMonth()]}</Text>
+        <Text weight="medium">{focusedDate.getFullYear()}</Text>
       </Inline>
       <Box>
         <Button fontSize={fontSize} text="Today" mode="bleed" onClick={onNowClick} />
@@ -34,16 +30,12 @@ export function CalendarHeader(props: {
           onClick={handlePrevMonthClick}
           mode="bleed"
           icon={ChevronLeftIcon}
-          padding={3}
-          radius={2}
         />
         <Button
           aria-label="Go to next month"
           mode="bleed"
           icon={ChevronRightIcon}
           onClick={handleNextMonthClick}
-          padding={3}
-          radius={2}
         />
       </Box>
     </Flex>

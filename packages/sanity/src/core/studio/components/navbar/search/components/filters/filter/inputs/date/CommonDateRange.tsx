@@ -9,6 +9,8 @@ import {DatePicker} from './datePicker/DatePicker'
 import {ParsedDateTextInput} from './ParsedDateTextInput'
 import {getDateISOString} from './utils/getDateISOString'
 
+const PLACEHOLDER_START_DATE_OFFSET = -7 // days
+
 export function CommonDateRangeInput({
   isDateTime,
   onChange,
@@ -20,14 +22,18 @@ export function CommonDateRangeInput({
     state: {fullscreen},
   } = useSearchState()
 
-  const placeholderStartDate = useMemo(() => addDays(new Date(), -7), [])
+  /**
+   * For placeholder values: Use the current date for the end date input, and an arbitrary date
+   * in the past (e.g. -7 days from now) for the start date input.
+   */
+  const placeholderStartDate = useMemo(() => addDays(new Date(), PLACEHOLDER_START_DATE_OFFSET), [])
   const placeholderEndDate = useMemo(() => new Date(), [])
 
   const handleDatePickerChange = useCallback(
     ({date, endDate}: {date?: Date | null; endDate?: Date | null}) => {
       onChange(
         getStartAndEndDate({
-          date, //
+          date,
           endDate,
           includeTime: value?.includeTime,
           isDateTime,

@@ -1,8 +1,9 @@
 import {Box, Grid, Text} from '@sanity/ui'
 import React from 'react'
-import {useCalendar} from './contexts/useDatePicker'
+import styled from 'styled-components'
 import {CalendarDay} from './CalendarDay'
 import {WEEK_DAY_NAMES} from './constants'
+import {useCalendar} from './contexts/useDatePicker'
 import {getWeeksOfMonth} from './utils'
 
 interface CalendarMonthProps {
@@ -10,15 +11,19 @@ interface CalendarMonthProps {
   onSelect: (date: Date) => void
 }
 
+const CustomGrid = styled(Grid)`
+  grid-template-columns: repeat(7, minmax(44px, auto));
+`
+
 export function CalendarMonth({hidden, onSelect}: CalendarMonthProps) {
   const {focusedDate, fontSize} = useCalendar()
 
   return (
     <Box aria-hidden={hidden || false} data-ui="CalendarMonth">
-      <Grid style={{gridTemplateColumns: 'repeat(7, minmax(44px, auto))'}}>
+      <CustomGrid>
         {WEEK_DAY_NAMES.map((weekday) => (
           <Box key={weekday} paddingBottom={3} paddingTop={2}>
-            <Text size={fontSize} weight="medium" style={{textAlign: 'center'}}>
+            <Text align="center" size={fontSize} weight="medium">
               {weekday}
             </Text>
           </Box>
@@ -36,7 +41,7 @@ export function CalendarMonth({hidden, onSelect}: CalendarMonthProps) {
             )
           })
         )}
-      </Grid>
+      </CustomGrid>
     </Box>
   )
 }

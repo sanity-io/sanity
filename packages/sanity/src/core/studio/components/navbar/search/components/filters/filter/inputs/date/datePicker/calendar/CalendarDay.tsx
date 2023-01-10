@@ -25,26 +25,27 @@ const CircleSvg = styled.svg(({theme}: {theme: Theme}) => {
   `
 })
 
-const CustomCard = styled(Card)<{
-  $isEndDate?: boolean
-  $isStartDate?: boolean
-  $isWithinRange?: boolean
-}>(({$isEndDate, $isStartDate, $isWithinRange, theme}) => {
-  const borderRadius = $isWithinRange
-    ? {left: 0, right: 0}
-    : {
-        left: $isEndDate && !$isStartDate ? 0 : `${theme.sanity.radius[2]}px`,
-        right: $isStartDate && !$isEndDate ? 0 : `${theme.sanity.radius[2]}px`,
-      }
-  return css`
-    &[data-focused='true'] {
-      z-index: 1;
-    }
-    border-radius: ${borderRadius.left} ${borderRadius.right} ${borderRadius.right}
-      ${borderRadius.left};
-    position: relative;
-  `
-})
+const CustomCard = styled(Card)`
+  position: relative;
+
+  &[data-focused='true'] {
+    z-index: 1;
+  }
+
+  &[data-start-date='true'] {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+  }
+
+  &[data-end-date='true'] {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+  }
+
+  &[data-within-range='true'] {
+    border-radius: 0;
+  }
+`
 
 export function CalendarDay({date, onSelect}: CalendarDayProps) {
   const handleClick = useCallback(() => {
@@ -76,43 +77,44 @@ export function CalendarDay({date, onSelect}: CalendarDayProps) {
     isBefore(date, selectedEndDate)
 
   return (
-    <div aria-selected={isSelected} data-ui="CalendarDay">
-      <CustomCard
-        __unstable_focusRing
-        $isEndDate={isEndDate}
-        $isStartDate={isStartDate}
-        $isWithinRange={isWithinRange}
-        aria-label={date.toDateString()}
-        aria-pressed={isSelected}
-        data-focused={isFocused ? 'true' : ''}
-        forwardedAs="button"
-        onClick={handleClick}
-        padding={3}
-        role="button"
-        selected={isSelected || isStartDate || isEndDate}
-        tabIndex={-1}
-        tone={isWithinRange ? 'primary' : 'default'}
-      >
-        {isToday && (
-          <CircleSvg
-            height="100%"
-            preserveAspectRatio="xMidYMid meet"
-            vectorEffect="non-scaling-stroke"
-            viewBox="0 0 100 100"
-            width="100%"
-          >
-            <circle cx="50" cy="50" r="40%" />
-          </CircleSvg>
-        )}
-        <Text
-          muted={!isSelected && !isCurrentMonth}
-          size={fontSize}
-          style={{textAlign: 'center'}}
-          weight={isToday ? 'medium' : 'regular'}
+    <CustomCard
+      __unstable_focusRing
+      aria-label={date.toDateString()}
+      aria-pressed={isSelected}
+      data-end-date={isEndDate ? true : undefined}
+      data-focused={isFocused ? 'true' : ''}
+      data-ui="CalendarDay"
+      aria-selected={isSelected}
+      data-start-date={isStartDate ? true : undefined}
+      data-within-range={isWithinRange ? true : undefined}
+      forwardedAs="button"
+      onClick={handleClick}
+      padding={3}
+      radius={2}
+      role="button"
+      selected={isSelected || isStartDate || isEndDate}
+      tabIndex={-1}
+      tone={isWithinRange ? 'primary' : 'default'}
+    >
+      {isToday && (
+        <CircleSvg
+          height="100%"
+          preserveAspectRatio="xMidYMid meet"
+          vectorEffect="non-scaling-stroke"
+          viewBox="0 0 100 100"
+          width="100%"
         >
-          {date.getDate()}
-        </Text>
-      </CustomCard>
-    </div>
+          <circle cx="50" cy="50" r="40%" />
+        </CircleSvg>
+      )}
+      <Text
+        align="center"
+        muted={!isSelected && !isCurrentMonth}
+        size={fontSize}
+        weight={isToday ? 'medium' : 'regular'}
+      >
+        {date.getDate()}
+      </Text>
+    </CustomCard>
   )
 }
