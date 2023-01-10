@@ -37,24 +37,25 @@ export const DocumentSparkline = memo(function DocumentSparkline() {
 
   // eslint-disable-next-line consistent-return
   useEffect(() => {
-    if (status === 'syncing') {
-      // status changed to 'syncing', schedule an update to set it to 'saved'
+    // Schedule an update to set the status to 'saved' when status changed to 'syncing.
+    // We use `syncState.isSyncing` here to avoid the status being set to 'saved' when the document is syncing.
+    if (status === 'syncing' && !syncState.isSyncing) {
       const timerId = setTimeout(() => setStatus('saved'), SYNCING_TIMEOUT)
       return () => clearTimeout(timerId)
     }
+    // Schedule an update to clear the status when status changed to 'saved'
     if (status === 'saved') {
-      // status changed to 'saved', schedule an update to clear it
       const timerId = setTimeout(() => setStatus(null), SAVED_TIMEOUT)
       return () => clearTimeout(timerId)
     }
-  }, [status, lastUpdated])
+  }, [status, lastUpdated, syncState.isSyncing])
 
+  // Clear the status when documentId changes to make sure we don't show the wrong status when opening a new document
   useLayoutEffect(() => {
-    // clear sync status when documentId changes
     setStatus(null)
   }, [documentId])
 
-  // set status to 'syncing' when lastUpdated changes and we go from not syncing to syncing
+  // Set status to 'syncing' when lastUpdated changes and we go from not syncing to syncing
   useLayoutEffect(() => {
     if (syncState.isSyncing) {
       setStatus('syncing')
