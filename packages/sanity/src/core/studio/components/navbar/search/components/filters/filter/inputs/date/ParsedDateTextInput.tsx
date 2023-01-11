@@ -177,6 +177,7 @@ export function ParsedDateTextInput({
       }
       disabled={!customValidity}
       padding={3}
+      placement="top"
       portal
     >
       {/* HACK: Wrapping element required for <Tooltip> to function */}
