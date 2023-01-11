@@ -1,10 +1,9 @@
 import React, {useEffect, useState} from 'react'
 import {TrashIcon} from '@sanity/icons'
-import {Box, Dialog, Grid, Button, Stack} from '@sanity/ui'
+import {Box, Button, Dialog, Grid, Stack} from '@sanity/ui'
 import {Asset as AssetType, SanityDocument} from '@sanity/types'
-import {useDocumentStore} from '../../../store'
-import {WithReferringDocuments} from '../../../components'
 import {SpinnerWithText} from '../../components/SpinnerWithText'
+import {useReferringDocuments} from '../../../hooks/useReferringDocuments'
 import {DocumentList} from './DocumentList'
 import {ConfirmMessage} from './ConfirmMessage'
 
@@ -13,8 +12,6 @@ export interface UsageDialogProps {
   mode?: 'listUsage' | 'confirmDelete'
   asset: AssetType
   isDeleting?: boolean
-  assetIsLoading?: boolean
-  referringDocuments?: SanityDocument[]
   onClose: () => void
   onDelete: () => void
 }
@@ -22,32 +19,16 @@ export interface UsageDialogProps {
 const MODE_CONFIRM_DELETE = 'confirmDelete'
 const MODE_LIST_USAGE = 'listUsage'
 
-export function AssetUsageDialog(props: UsageDialogProps) {
-  const documentStore = useDocumentStore()
-
-  return (
-    <WithReferringDocuments documentStore={documentStore} id={props.asset._id}>
-      {({isLoading, referringDocuments}) => (
-        <InnerAssetUsageDialog
-          {...props}
-          assetIsLoading={isLoading}
-          referringDocuments={referringDocuments}
-        />
-      )}
-    </WithReferringDocuments>
-  )
-}
-
-const InnerAssetUsageDialog = ({
+export function AssetUsageDialog({
   asset,
   assetType = 'image',
   mode = MODE_LIST_USAGE,
   isDeleting = false,
-  assetIsLoading = false,
-  referringDocuments = [],
   onClose,
   onDelete,
-}: UsageDialogProps) => {
+}: UsageDialogProps) {
+  const {isLoading: assetIsLoading, referringDocuments} = useReferringDocuments(asset._id)
+
   const isListMode = mode === MODE_LIST_USAGE
   const defaultHeaderTitle = isListMode ? `Documents using ${assetType}` : `Delete ${assetType}`
   const [canDelete, setCanDelete] = useState(false)
