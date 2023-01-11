@@ -17,6 +17,7 @@ import React, {
   useMemo,
   useRef,
   useId,
+  useEffect,
 } from 'react'
 import {ObjectSchemaType, PortableTextBlock} from '@sanity/types'
 import {RenderPreviewCallback} from '../../../types'
@@ -32,6 +33,7 @@ interface BlockObjectPreviewProps {
   renderPreview: RenderPreviewCallback
   type: ObjectSchemaType
   value: PortableTextBlock
+  isOpen?: boolean
 }
 
 const POPOVER_PROPS: MenuButtonProps['popover'] = {
@@ -51,6 +53,7 @@ export function BlockObjectPreview(props: BlockObjectPreviewProps): ReactElement
     renderPreview,
     type,
     value,
+    isOpen,
   } = props
   const {isTopLayer} = useLayer()
   const editor = usePortableTextEditor()
@@ -72,6 +75,12 @@ export function BlockObjectPreview(props: BlockObjectPreviewProps): ReactElement
     [value]
   )
 
+  useEffect(() => {
+    if (isOpen) {
+      isTabbing.current = false
+    }
+  }, [isOpen])
+
   // Go to menu when tabbed to
   // Focus block on escape
   useGlobalKeyDown(
@@ -80,12 +89,8 @@ export function BlockObjectPreview(props: BlockObjectPreviewProps): ReactElement
         if (!focused) {
           return
         }
-        if (event.key === 'Escape' && isTopLayer) {
-          isTabbing.current = false
-          PortableTextEditor.focus(editor)
-        }
         if (event.key === 'Tab') {
-          if (menuButton.current && !isTabbing.current) {
+          if (menuButton.current && !isTabbing.current && !isOpen) {
             event.preventDefault()
             event.stopPropagation()
             menuButton.current.focus()
@@ -93,7 +98,7 @@ export function BlockObjectPreview(props: BlockObjectPreviewProps): ReactElement
           }
         }
       },
-      [focused, isTopLayer, editor]
+      [focused, isTopLayer, editor, isOpen]
     )
   )
 

@@ -106,6 +106,8 @@ export function BlockObject(props: BlockObjectProps) {
     [onRemove]
   )
 
+  const isOpen = !!memberItem?.member.open
+
   const blockPreview = useMemo(() => {
     return (
       <BlockObjectPreview
@@ -115,11 +117,12 @@ export function BlockObject(props: BlockObjectProps) {
         onClickingEdit={openItem}
         readOnly={readOnly}
         renderPreview={renderPreview}
+        isOpen={isOpen}
         type={type}
         value={block}
       />
     )
-  }, [focused, isActive, onRemove, openItem, readOnly, renderPreview, type, block])
+  }, [focused, isActive, onRemove, openItem, readOnly, renderPreview, type, block, isOpen])
 
   const tone = selected || focused ? 'primary' : 'default'
 
