@@ -114,7 +114,7 @@ export function createWithPatches({
 
       // Sync the with props.value in PortableTextEditor after we have processed batches of incoming patches.
       // This is only for consistency checking against the props.value, so it can be debounced without problems.
-      const syncValueAfterIncomingPatches = debounce(() => syncValue(), 100, {
+      const syncValueAfterIncomingPatches = debounce(() => syncValue(), 0, {
         trailing: true,
         leading: false,
       })
