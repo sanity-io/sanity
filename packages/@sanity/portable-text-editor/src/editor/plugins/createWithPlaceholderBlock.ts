@@ -39,22 +39,20 @@ export function createWithPlaceholderBlock({
     const {onChange} = editor
     // Make sure there's a placeholder block present if the editor's children become empty
     editor.onChange = () => {
+      const hadSelection = !!editor.selection
       onChange()
       if (editor.children.length === 0) {
-        withoutPatching(editor, () => {
-          withoutSaving(editor, () => {
-            debug('Inserting placeholder block')
-            Transforms.deselect(editor)
-            Transforms.insertNodes(editor, editor.createPlaceholderBlock(), {
-              at: [0],
-            })
-            Transforms.select(editor, {
-              focus: {path: [0, 0], offset: 0},
-              anchor: {path: [0, 0], offset: 0},
-            })
-            editor.onChange()
+        debug('Inserting placeholder block')
+        Transforms.deselect(editor)
+        // Set the value directly without using transforms as we don't want this to be producing any patches
+        editor.children = [editor.createPlaceholderBlock()]
+        if (hadSelection) {
+          Transforms.select(editor, {
+            focus: {path: [0, 0], offset: 0},
+            anchor: {path: [0, 0], offset: 0},
           })
-        })
+        }
+        editor.onChange()
       }
     }
     return editor

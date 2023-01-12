@@ -23,7 +23,7 @@ import {
 } from '../types/editor'
 import {validateValue} from '../utils/validateValue'
 import {debugWithName} from '../utils/debug'
-import {getValueOrInitialValue, isEqualToEmptyEditor, toSlateValue} from '../utils/values'
+import {getValueOrInitialValue, toSlateValue} from '../utils/values'
 import {KEY_TO_SLATE_ELEMENT, KEY_TO_VALUE_ELEMENT} from '../utils/weakMaps'
 import {PortableTextEditorContext} from './hooks/usePortableTextEditor'
 import {PortableTextEditorSelectionContext} from './hooks/usePortableTextEditorSelection'
@@ -93,8 +93,7 @@ export interface PortableTextEditorProps {
 
 export interface PortableTextEditorState {
   invalidValueResolution: InvalidValueResolution | null
-  selection: EditorSelection | null
-  initialValue: Descendant[]
+  initialSlateEditorValue: Descendant[]
 }
 export class PortableTextEditor extends React.Component<
   PortableTextEditorProps,
@@ -113,6 +112,7 @@ export class PortableTextEditor extends React.Component<
   private editable?: EditableAPI
   private pendingPatches: Patch[] = []
   private returnedPatches: Patch[] = []
+  private selectionRef: React.MutableRefObject<EditorSelection | null>
   hasPendingLocalPatches: React.MutableRefObject<boolean | null>
 
   constructor(props: PortableTextEditorProps) {
@@ -125,10 +125,11 @@ export class PortableTextEditor extends React.Component<
     this.hasPendingLocalPatches = React.createRef()
     this.hasPendingLocalPatches.current = false
 
+    this.selectionRef = React.createRef()
+
     this.state = {
       invalidValueResolution: null,
-      selection: null,
-      initialValue: [], // Created in the constructor
+      initialSlateEditorValue: [], // Created in the constructor
     }
 
     // Test if we have a compiled schema type, if not, conveniently compile it
@@ -177,7 +178,7 @@ export class PortableTextEditor extends React.Component<
           break
         case 'selection':
           onChange(next)
-          this.setState({selection: next.selection})
+          this.selectionRef.current = next.selection
           break
         default:
           onChange(next)
@@ -211,7 +212,7 @@ export class PortableTextEditor extends React.Component<
 
     this.state = {
       ...this.state,
-      initialValue: toSlateValue(
+      initialSlateEditorValue: toSlateValue(
         getValueOrInitialValue(props.value, [this.slateInstance.createPlaceholderBlock()]),
         {portableTextFeatures: this.portableTextFeatures},
         KEY_TO_SLATE_ELEMENT.get(this.slateInstance)
@@ -243,11 +244,13 @@ export class PortableTextEditor extends React.Component<
           : parseInt(this.props.maxBlocks.toString(), 10) || undefined
       this.slateInstance.maxBlocks = this.maxBlocks
     }
+    const isPristineEditor =
+      !prevProps.value && this.slateInstance.children === this.state.initialSlateEditorValue
     // Sync value from props, but not when we are responding to incoming patches
     // (if this is the case, we sync the value after the incoming patches has been processed - see createWithPatches plugin)
     if (
       this.props.value !== prevProps.value &&
-      (!prevProps.value || this.readOnly || !this.props.incomingPatches$)
+      (isPristineEditor || this.readOnly || !this.props.incomingPatches$)
     ) {
       this.syncValue()
     }
@@ -268,8 +271,12 @@ export class PortableTextEditor extends React.Component<
       <PortableTextEditorContext.Provider value={this}>
         <PortableTextEditorValueContext.Provider value={this.props.value}>
           <PortableTextEditorReadOnlyContext.Provider value={Boolean(this.props.readOnly)}>
-            <PortableTextEditorSelectionContext.Provider value={this.state.selection}>
-              <Slate onChange={NOOP} editor={this.slateInstance} value={this.state.initialValue}>
+            <PortableTextEditorSelectionContext.Provider value={this.selectionRef.current}>
+              <Slate
+                onChange={NOOP}
+                editor={this.slateInstance}
+                value={this.state.initialSlateEditorValue}
+              >
                 {this.props.children}
               </Slate>
             </PortableTextEditorSelectionContext.Provider>
@@ -289,45 +296,27 @@ export class PortableTextEditor extends React.Component<
         userCallbackFn()
       }
     }
-
+    // Don't sync the value if we haven't submitted all the local patches yet.
     if (this.hasPendingLocalPatches.current && !this.readOnly) {
       debug('Not syncing value (has pending local patches)')
       retrySync(() => this.syncValue(), callbackFn)
       return
     }
-    // If the  editor is empty and there is a new value, just set that value directly.
-    if (
-      isEqualToEmptyEditor(this.slateInstance.children, this.portableTextFeatures) &&
-      this.props.value
-    ) {
-      const oldSel = this.slateInstance.selection
-      Transforms.deselect(this.slateInstance)
-      this.slateInstance.children = toSlateValue(
-        val,
-        {
-          portableTextFeatures: this.portableTextFeatures,
-        },
-        KEY_TO_SLATE_ELEMENT.get(this.slateInstance)
-      )
-      if (oldSel) {
-        Transforms.select(this.slateInstance, oldSel)
-      }
-      debug('Setting props.value directly to empty editor')
-      callbackFn()
-      return
-    }
+
     // Test for diffs between our state value and the incoming value.
-    const isEqualToValue = !(val || []).some((blk, index) => {
-      const compareBlock = toSlateValue(
-        [blk],
-        {portableTextFeatures: this.portableTextFeatures},
-        KEY_TO_SLATE_ELEMENT.get(this.slateInstance)
-      )[0]
-      if (!isEqual(compareBlock, this.slateInstance.children[index])) {
-        return true
-      }
-      return false
-    })
+    const isEqualToValue =
+      this.slateInstance.children.length === (val || []).length &&
+      !(val || []).some((blk, index) => {
+        const compareBlock = toSlateValue(
+          [blk],
+          {portableTextFeatures: this.portableTextFeatures},
+          KEY_TO_SLATE_ELEMENT.get(this.slateInstance)
+        )[0]
+        if (!isEqual(compareBlock, this.slateInstance.children[index])) {
+          return true
+        }
+        return false
+      })
     if (isEqualToValue) {
       debug('Not syncing value (value is equal)')
       return
