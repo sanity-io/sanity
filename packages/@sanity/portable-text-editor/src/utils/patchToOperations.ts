@@ -90,9 +90,12 @@ export function createPatchToOperations(
         KEY_TO_SLATE_ELEMENT.get(editor)
       ) as Descendant[]
       const posKey = findLastKey(patch.path)
-      const index = editor.children.findIndex((node, indx) => {
-        return posKey ? node._key === posKey : indx === patch.path[0]
-      })
+      const index = Math.max(
+        0,
+        editor.children.findIndex((node, indx) => {
+          return posKey ? node._key === posKey : indx === patch.path[0]
+        })
+      )
       const normalizedIdx = position === 'after' ? index + 1 : index
       debug(`Inserting blocks at path [${normalizedIdx}]`)
       debugState(editor, 'before')
