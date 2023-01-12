@@ -377,7 +377,7 @@ function isKeyedSegment(segment: PathSegment): segment is KeyedSegment {
 }
 
 // Helper function to find the last part of a patch path that has a known key
-function findLastKey(path: Path) {
+function findLastKey(path: Path): string | null {
   let key: string | null = null
 
   path
