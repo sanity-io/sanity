@@ -31,7 +31,7 @@
       "source": "./src/groq.ts",
       "require": "./lib/groq.js",
       "node": {
-        "import": "./lib/groq.cjs.mjs",
+        "import": "./node/groq.mjs",
         "require": "./lib/groq.js"
       },
       "import": "./lib/groq.esm.js",
