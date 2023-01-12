@@ -5,7 +5,7 @@ import styled, {css} from 'styled-components'
 import type {CSSObject} from 'styled-components'
 import {focusRingBorderStyle, focusRingStyle} from './styles'
 
-const Root = styled(Box)((props: {theme: Theme}): CSSObject => {
+const Root = styled(Card)((props: {theme: Theme}): CSSObject => {
   const {theme} = props
   const {focusRing, input, radius} = theme.sanity
   const color = theme.sanity.color.input
@@ -15,7 +15,6 @@ const Root = styled(Box)((props: {theme: Theme}): CSSObject => {
     position: 'relative',
     borderRadius: `${radius[1]}px`,
     color: color.default.enabled.fg,
-    backgroundColor: color.default.enabled.bg,
     boxShadow: focusRingBorderStyle({
       color: color.default.enabled.border,
       width: input.border.width,
@@ -120,6 +119,11 @@ const Placeholder = styled(Box)((props: {theme: Theme}) => {
     --card-fg-color: ${color.default.enabled.placeholder};
   `
 })
+
+const TagBox = styled(Box)`
+  // This is needed to make textOverflow="ellipsis" work properly for the Text primitive
+  max-width: 100%;
+`
 
 export const TagInput = forwardRef(
   (
@@ -232,6 +236,7 @@ export const TagInput = forwardRef(
         data-read-only={readOnly ? '' : undefined}
         data-ui="TagInput"
         onPointerDown={handleRootPointerDown}
+        overflow="auto"
         padding={1}
         ref={rootRef}
       >
@@ -244,15 +249,15 @@ export const TagInput = forwardRef(
         <div className="content">
           {value.map((tag, tagIndex) => (
             // eslint-disable-next-line react/no-array-index-key
-            <div key={`tag-${tagIndex}`}>
+            <TagBox key={`tag-${tagIndex}`}>
               <Tag
                 enabled={enabled}
                 index={tagIndex}
-                muted={disabled}
+                muted={!enabled}
                 onRemove={handleTagRemove}
                 tag={tag}
               />
-            </div>
+            </TagBox>
           ))}
 
           <div key="tag-input">
@@ -293,7 +298,9 @@ function Tag(props: {
     <Card data-ui="Tag" padding={1} radius={2} tone="transparent">
       <Flex align="center">
         <Box flex={1} padding={1}>
-          <Text muted={muted}>{tag.value}</Text>
+          <Text muted={muted} textOverflow="ellipsis">
+            {tag.value}
+          </Text>
         </Box>
 
         {enabled && (
