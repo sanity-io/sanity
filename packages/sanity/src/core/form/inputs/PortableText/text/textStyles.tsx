@@ -10,6 +10,12 @@ export const TextContainer = styled.div`
   display: block;
 `
 
+/**
+ * Component for wrapping children inside a user's custom style component.
+ * This ensures that we have a TextContainer there (see comment above).
+ */
+export const Custom = ({children}: TextStyleProps) => <TextContainer>{children}</TextContainer>
+
 export const Normal = ({children, ...rest}: TextStyleProps) => (
   <Text data-testid="text-style--normal" {...rest}>
     <TextContainer>{children}</TextContainer>
