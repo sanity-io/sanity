@@ -58,7 +58,7 @@
     "rimraf": "^3.0.2"
   },
   "engines": {
-    "node": ">=14.0.0"
+    "node": ">=14.18.0"
   },
   "publishConfig": {
     "access": "public"
