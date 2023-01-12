@@ -45,6 +45,7 @@
   "types": "./lib/dts/src/groq.d.ts",
   "files": [
     "lib",
+    "node",
     "src"
   ],
   "scripts": {
