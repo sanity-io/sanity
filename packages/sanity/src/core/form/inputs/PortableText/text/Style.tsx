@@ -1,6 +1,6 @@
-import {BlockStyleRenderProps} from '@sanity/portable-text-editor'
 import React, {useCallback, useMemo} from 'react'
-import {Custom as CustomStyle, Normal as FallbackComponent, TEXT_STYLES} from './textStyles'
+import {BlockStyleRenderProps} from '@sanity/portable-text-editor'
+import {Normal as FallbackComponent, TEXT_STYLES, TextContainer} from './textStyles'
 
 export const Style = (props: BlockStyleRenderProps) => {
   const {block, focused, children, selected, type} = props
@@ -29,7 +29,7 @@ export const Style = (props: BlockStyleRenderProps) => {
         focused={focused}
         renderDefault={renderDefault}
       >
-        <CustomStyle data-testid={`text-style--${block.style}`}>{children}</CustomStyle>
+        <TextContainer data-testid={`text-style--${block.style}`}>{children}</TextContainer>
       </CustomComponent>
     )
   }
