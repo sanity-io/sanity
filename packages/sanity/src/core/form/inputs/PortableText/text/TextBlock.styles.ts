@@ -34,6 +34,8 @@ function textBlockStyle(props: TextBlockStyleProps & {theme: Theme}) {
       right: -${space[1]}px;
       border-radius: ${radius[2]}px;
       background-color: var(--marker-bg-color);
+      // This is to make sure the marker is always behind the text
+      z-index: -1;
     }
 
     &[data-markers] {
