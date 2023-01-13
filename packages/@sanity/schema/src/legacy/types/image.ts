@@ -20,32 +20,37 @@ export const ImageType = {
   get() {
     return IMAGE_CORE
   },
-  extend(subTypeDef, extendMember) {
-    const options = {...(subTypeDef.options || DEFAULT_OPTIONS)}
+  extend(rawSubTypeDef, createMemberType) {
+    const options = {...(rawSubTypeDef.options || DEFAULT_OPTIONS)}
 
     let hotspotFields = [HOTSPOT_FIELD, CROP_FIELD]
     if (!options.hotspot) {
       hotspotFields = hotspotFields.map((field) => ({...field, hidden: true}))
     }
 
-    const fields = [ASSET_FIELD, ...hotspotFields, ...(subTypeDef.fields || [])]
+    const fields = [ASSET_FIELD, ...hotspotFields, ...(rawSubTypeDef.fields || [])]
+    const subTypeDef = {...rawSubTypeDef, fields}
 
-    const parsed = Object.assign(pick(IMAGE_CORE, OVERRIDABLE_FIELDS), subTypeDef, {
+    const parsed = Object.assign(pick(this.get(), OVERRIDABLE_FIELDS), subTypeDef, {
       type: IMAGE_CORE,
-      title: subTypeDef.title || startCase(subTypeDef.name || subTypeDef.type || ''),
+      title: subTypeDef.title || (subTypeDef.name ? startCase(subTypeDef.name) : ''),
       options: options,
-      isCustomized: Boolean(subTypeDef.fields),
-    })
+      fields: subTypeDef.fields.map((fieldDef) => {
+        const {name, fieldset, ...rest} = fieldDef
 
-    lazyGetter(parsed, 'fields', () => {
-      return fields.map((fieldDef) => {
-        const {name, fieldset, ...type} = fieldDef
-        return {
-          name: name,
+        const compiledField = {
+          name,
           fieldset,
-          type: extendMember(type),
+          isCustomized: Boolean(rawSubTypeDef.fields),
         }
-      })
+
+        return lazyGetter(compiledField, 'type', () => {
+          return createMemberType({
+            ...rest,
+            title: fieldDef.title || startCase(name),
+          })
+        })
+      }),
     })
 
     lazyGetter(parsed, 'fieldsets', () => {
