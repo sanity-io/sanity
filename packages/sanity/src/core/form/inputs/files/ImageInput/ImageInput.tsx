@@ -1,4 +1,5 @@
-/* eslint-disable import/no-unresolved,react/jsx-handler-names */
+/* eslint-disable react/jsx-no-bind */
+/* eslint-disable import/no-unresolved,react/jsx-handler-names, react/display-name, react/no-this-in-sfc */
 
 import {
   Box,
@@ -82,8 +83,8 @@ type FileInfo = {
   type: string // mime type
   kind: string // 'file' or 'string'
 }
-
-type BaseImageInputState = {
+/** @internal */
+export interface BaseImageInputState {
   isUploading: boolean
   selectedAssetSource: AssetSource | null
   // Metadata about files currently over the drop area
@@ -91,6 +92,7 @@ type BaseImageInputState = {
   isStale: boolean
   hotspotButtonElement: HTMLButtonElement | null
   menuButtonElement: HTMLButtonElement | null
+  isMenuOpen: boolean
 }
 
 type Focusable = {
@@ -119,6 +121,7 @@ export class BaseImageInput extends React.PureComponent<BaseImageInputProps, Bas
     isStale: false,
     hotspotButtonElement: null,
     menuButtonElement: null,
+    isMenuOpen: false,
   }
 
   constructor(props: BaseImageInputProps) {
@@ -169,7 +172,7 @@ export class BaseImageInput extends React.PureComponent<BaseImageInputProps, Bas
     return uploader ? [{type: schemaType, uploader}] : []
   }
 
-  uploadFirstAccepted(files: File[]) {
+  uploadFirstAccepted(files: globalThis.File[]) {
     const {schemaType, resolveUploader} = this.props
 
     const match = files
@@ -179,6 +182,8 @@ export class BaseImageInput extends React.PureComponent<BaseImageInputProps, Bas
     if (match) {
       this.uploadWith(match.uploader!, match.file)
     }
+
+    this.setState({isMenuOpen: false})
   }
 
   uploadWith = (uploader: Uploader, file: File, assetDocumentProps: UploadOptions = {}) => {
@@ -363,7 +368,6 @@ export class BaseImageInput extends React.PureComponent<BaseImageInputProps, Bas
   handleSelectFiles = (files: File[]) => {
     const {directUploads, readOnly} = this.props
     const {hoveringFiles} = this.state
-
     if (directUploads && !readOnly) {
       this.uploadFirstAccepted(files)
     } else if (hoveringFiles.length > 0) {
@@ -471,6 +475,7 @@ export class BaseImageInput extends React.PureComponent<BaseImageInputProps, Bas
           icon={SearchIcon}
           text="Select"
           onClick={() => {
+            this.setState({isMenuOpen: false})
             this.handleSelectImageFromAssetSource(assetSources[0])
           }}
           disabled={readOnly}
@@ -485,6 +490,7 @@ export class BaseImageInput extends React.PureComponent<BaseImageInputProps, Bas
             key={assetSource.name}
             text={assetSource.title}
             onClick={() => {
+              this.setState({isMenuOpen: false})
               this.handleSelectImageFromAssetSource(assetSource)
             }}
             icon={assetSource.icon || ImageIcon}
@@ -513,6 +519,8 @@ export class BaseImageInput extends React.PureComponent<BaseImageInputProps, Bas
               showEdit={showAdvancedEditButton}
               setHotspotButtonElement={this.setHotspotButtonElement}
               setMenuButtonElement={this.setMenuButtonElement}
+              onMenuOpen={(isOpen) => this.setState({isMenuOpen: isOpen})}
+              isMenuOpen={this.state.isMenuOpen}
             >
               <ActionsMenu
                 onUpload={this.handleSelectFiles}
@@ -557,6 +565,7 @@ export class BaseImageInput extends React.PureComponent<BaseImageInputProps, Bas
                     key={assetSource.name}
                     text={assetSource.title}
                     onClick={() => {
+                      this.setState({isMenuOpen: false})
                       this.handleSelectImageFromAssetSource(assetSource)
                     }}
                     icon={assetSource.icon || ImageIcon}
@@ -579,6 +588,7 @@ export class BaseImageInput extends React.PureComponent<BaseImageInputProps, Bas
         icon={SearchIcon}
         mode="ghost"
         onClick={() => {
+          this.setState({isMenuOpen: false})
           this.handleSelectImageFromAssetSource(assetSources[0])
         }}
         data-testid="file-input-browse-button"
@@ -716,6 +726,8 @@ export class BaseImageInput extends React.PureComponent<BaseImageInputProps, Bas
 
     // todo: convert this to a functional component and use this with useCallback
     //  it currently has to return a new function on every render in order to pick up state from this component
+    // eslint-disable react/display-name
+    // eslint-disable react/no-this-in-sfc
     return (inputProps: Omit<InputProps, 'renderDefault'>) => (
       <>
         {isStale && (
