@@ -1,4 +1,4 @@
-import {pick} from 'lodash'
+import {pick, startCase} from 'lodash'
 import createPreviewGetter from '../preview/createPreviewGetter'
 import {lazyGetter} from './utils'
 import {DEFAULT_OVERRIDEABLE_FIELDS} from './constants'
@@ -27,26 +27,33 @@ export const FileType = {
   get() {
     return FILE_CORE
   },
-  extend(subTypeDef, extendMember) {
-    const options = {...(subTypeDef.options || DEFAULT_OPTIONS)}
+  extend(rawSubTypeDef, createMemberType) {
+    const options = {...(rawSubTypeDef.options || DEFAULT_OPTIONS)}
 
-    const fields = [ASSET_FIELD, ...(subTypeDef.fields || [])]
+    const fields = [ASSET_FIELD, ...(rawSubTypeDef.fields || [])]
+
+    const subTypeDef = {...rawSubTypeDef, fields}
 
     const parsed = Object.assign(pick(FILE_CORE, OVERRIDABLE_FIELDS), subTypeDef, {
       type: FILE_CORE,
+      title: subTypeDef.title || (subTypeDef.name ? startCase(subTypeDef.name) : ''),
       options: options,
-      isCustomized: Boolean(subTypeDef.fields),
-    })
+      fields: subTypeDef.fields.map((fieldDef) => {
+        const {name, fieldset, ...rest} = fieldDef
 
-    lazyGetter(parsed, 'fields', () => {
-      return fields.map((fieldDef) => {
-        const {name, fieldset, ...type} = fieldDef
-        return {
-          name: name,
+        const compiledField = {
+          name,
           fieldset,
-          type: extendMember(type),
+          isCustomized: Boolean(rawSubTypeDef.fields),
         }
-      })
+
+        return lazyGetter(compiledField, 'type', () => {
+          return createMemberType({
+            ...rest,
+            title: fieldDef.title || startCase(name),
+          })
+        })
+      }),
     })
 
     lazyGetter(parsed, 'fieldsets', () => {
