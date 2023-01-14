@@ -1,5 +1,5 @@
 import path from 'path'
-import type {CliConfig, CliCommandArguments, CliCommandContext} from '@sanity/cli'
+import type {CliConfig, CliCommandArguments, CliCommandContext, CliOutputter} from '@sanity/cli'
 import {DevServerOptions, startDevServer} from '../../server/devServer'
 import {getTimer} from '../../util/timing'
 import {checkStudioDependencyVersions} from '../../util/checkStudioDependencyVersions'
@@ -30,9 +30,7 @@ export default async function startSanityDevServer(
   }
 
   // Try to load CLI configuration from sanity.cli.(js|ts)
-  const configSpinner = output.spinner('Checking configuration files...')
-  const config = getDevServerConfig({flags, workDir, cliConfig})
-  configSpinner.succeed()
+  const config = getDevServerConfig({flags, workDir, cliConfig, output})
 
   try {
     await startDevServer(config)
@@ -45,16 +43,27 @@ function getDevServerConfig({
   flags,
   workDir,
   cliConfig,
+  output,
 }: {
   flags: StartDevServerCommandFlags
   workDir: string
   cliConfig?: CliConfig
+  output: CliOutputter
 }): DevServerOptions {
+  const configSpinner = output.spinner('Checking configuration files...')
   const baseConfig = getSharedServerConfig({flags, workDir, cliConfig})
+  configSpinner.succeed()
+
   const env = process.env // eslint-disable-line no-process-env
   const reactStrictMode = env.SANITY_STUDIO_REACT_STRICT_MODE
     ? env.SANITY_STUDIO_REACT_STRICT_MODE === 'true'
     : Boolean(cliConfig?.reactStrictMode)
+
+  if (env.SANITY_STUDIO_BASEPATH && cliConfig?.project?.basePath) {
+    output.warn(
+      `Overriding configured base path (${cliConfig.project.basePath}) with value from environment variable (${env.SANITY_STUDIO_BASEPATH})`
+    )
+  }
 
   return {
     ...baseConfig,

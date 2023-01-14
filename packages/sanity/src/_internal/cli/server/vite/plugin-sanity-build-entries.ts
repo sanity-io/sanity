@@ -86,6 +86,7 @@ export function sanityBuildEntries(options: {
           monorepo,
           studioRootPath: cwd,
           props: {
+            basePath,
             entryPath,
             css,
           },

@@ -29,7 +29,12 @@ const devCommand: CliCommandDefinition = {
   helpText,
 }
 
-export async function getDevAction() {
+export async function getDevAction(): Promise<
+  (
+    args: CliCommandArguments<StartDevServerCommandFlags>,
+    context: CliCommandContext
+  ) => Promise<void>
+> {
   // NOTE: in dev-mode we want to include from `src` so we need to use `.ts` extension
   // NOTE: this `if` statement is not included in the output bundle
   if (__DEV__) {

@@ -3,6 +3,7 @@ import fs from 'fs/promises'
 import {constants as fsConstants} from 'fs'
 import {build, InlineConfig} from 'vite'
 import readPkgUp from 'read-pkg-up'
+import {ensureTrailingSlash} from '../util/ensureTrailingSlash'
 import {finalizeViteConfig, getViteConfig} from './getViteConfig'
 import {generateWebManifest} from './webManifest'
 import {writeSanityRuntime} from './runtime'
@@ -45,7 +46,7 @@ export async function buildStaticFiles(
   } = options
 
   debug('Writing Sanity runtime files')
-  await writeSanityRuntime({cwd, reactStrictMode: false, watch: false})
+  await writeSanityRuntime({cwd, reactStrictMode: false, watch: false, basePath})
 
   debug('Resolving vite config')
   let viteConfig = await getViteConfig({

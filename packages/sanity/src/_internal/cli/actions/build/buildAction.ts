@@ -1,9 +1,9 @@
 import path from 'path'
 import {promisify} from 'util'
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore This may not yet be built.
 import chalk from 'chalk'
 import rimrafCallback from 'rimraf'
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore This may not yet be built.
 import type {CliCommandArguments, CliCommandContext} from '@sanity/cli'
 import {buildStaticFiles, ChunkModule, ChunkStats} from '../../server'
 import {checkStudioDependencyVersions} from '../../util/checkStudioDependencyVersions'
@@ -64,6 +64,28 @@ export default async function buildSanityStudio(
     })
   }
 
+  // Determine base path for built studio
+  let basePath = '/'
+  const envBasePath = process.env.SANITY_STUDIO_BASEPATH
+  const configBasePath = cliConfig?.project?.basePath
+
+  // Allow `sanity deploy` to override base path
+  if (overrides?.basePath) {
+    basePath = overrides.basePath
+  } else if (envBasePath) {
+    // Environment variable (SANITY_STUDIO_BASEPATH)
+    basePath = envBasePath
+  } else if (configBasePath) {
+    // `sanity.cli.ts`
+    basePath = configBasePath
+  }
+
+  if (envBasePath && configBasePath) {
+    output.warn(
+      `Overriding configured base path (${configBasePath}) with value from environment variable (${envBasePath})`
+    )
+  }
+
   let spin
 
   if (shouldClean) {
@@ -82,7 +104,7 @@ export default async function buildSanityStudio(
     const bundle = await buildStaticFiles({
       cwd: workDir,
       outputDir,
-      basePath: overrides?.basePath || cliConfig?.project?.basePath || '/',
+      basePath,
       sourceMap: Boolean(flags['source-maps']),
       minify: Boolean(flags.minify),
       vite: cliConfig && 'vite' in cliConfig ? cliConfig.vite : undefined,

@@ -9,6 +9,7 @@ import {StudioProvider} from './StudioProvider'
 /** @beta */
 export interface StudioProps {
   config: Config
+  basePath?: string
   onSchemeChange?: (nextScheme: ThemeColorSchemeKey) => void
   scheme?: ThemeColorSchemeKey
   /** @beta */

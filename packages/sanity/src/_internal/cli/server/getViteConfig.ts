@@ -18,7 +18,7 @@ export interface ViteOptions {
 
   /**
    * Base path (eg under where to serve the app - `/studio` or similar)
-   * Will be normalized by `getViteConfig` to ensure it starts and end with a `/`
+   * Will be normalized to ensure it starts and ends with a `/`
    */
   basePath?: string
 

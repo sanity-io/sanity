@@ -41,6 +41,7 @@ export interface StudioProviderProps extends StudioProps {
 export function StudioProvider({
   children,
   config,
+  basePath,
   onSchemeChange,
   scheme,
   unstable_history: history,
@@ -56,7 +57,7 @@ export function StudioProvider({
       <ToastProvider paddingY={7} zOffset={Z_OFFSET.toast}>
         <ErrorLogger />
         <StudioErrorBoundary>
-          <WorkspacesProvider config={config}>
+          <WorkspacesProvider config={config} basePath={basePath}>
             <ActiveWorkspaceMatcher
               unstable_history={history}
               NotFoundComponent={NotFoundScreen}

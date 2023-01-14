@@ -1,4 +1,5 @@
 import type {CliConfig} from '@sanity/cli'
+import {ensureTrailingSlash} from './ensureTrailingSlash'
 
 export function gracefulServerDeath(
   command: 'start' | 'dev' | 'preview',
@@ -58,7 +59,9 @@ export function getSharedServerConfig({
     3333
   )
 
-  const basePath = env.SANITY_STUDIO_BASEPATH || cliConfig?.project?.basePath || '/'
+  const basePath = ensureTrailingSlash(
+    env.SANITY_STUDIO_BASEPATH ?? (cliConfig?.project?.basePath || '/')
+  )
 
   return {
     cwd: workDir,

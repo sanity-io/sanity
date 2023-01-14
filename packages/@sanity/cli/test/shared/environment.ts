@@ -68,7 +68,6 @@ export const testClient = new SanityClient({
 export const getTestRunArgs = (version: string) => {
   const testId = getTestId()
   return {
-    sourceStudioPath: path.join(__dirname, '..', '__fixtures__', `${version}-studio`),
     corsOrigin: `https://${testId}-${version}.sanity.build`,
     sourceDataset: 'production',
     dataset: `${testId}-${version}`,
@@ -87,7 +86,7 @@ export const getTestRunArgs = (version: string) => {
 export function runSanityCmdCommand(
   version: string,
   args: string[],
-  options = {}
+  options: {env?: Record<string, string | undefined>} = {}
 ): Promise<{
   code: number | null
   stdout: string
@@ -95,8 +94,8 @@ export function runSanityCmdCommand(
 }> {
   return exec(process.argv[0], [cliBinPath, ...args], {
     cwd: path.join(studiosPath, version),
-    env: sanityEnv,
     ...options,
+    env: {...sanityEnv, ...options.env},
   })
 }
 

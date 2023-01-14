@@ -22,15 +22,15 @@ export interface DevServer {
 }
 
 export async function startDevServer(options: DevServerOptions): Promise<DevServer> {
-  const {cwd, httpPort, httpHost, basePath: base, reactStrictMode, vite: extendViteConfig} = options
+  const {cwd, httpPort, httpHost, basePath, reactStrictMode, vite: extendViteConfig} = options
 
   const startTime = Date.now()
   debug('Writing Sanity runtime files')
-  await writeSanityRuntime({cwd, reactStrictMode, watch: true})
+  await writeSanityRuntime({cwd, reactStrictMode, watch: true, basePath})
 
   debug('Resolving vite config')
   let viteConfig = await getViteConfig({
-    basePath: base || '/',
+    basePath,
     mode: 'development',
     server: {port: httpPort, host: httpHost},
     cwd,
@@ -49,7 +49,7 @@ export async function startDevServer(options: DevServerOptions): Promise<DevServ
   await server.listen()
 
   const startupDuration = Date.now() - startTime
-  const url = `http://${httpHost || 'localhost'}:${httpPort || '3333'}`
+  const url = `http://${httpHost || 'localhost'}:${httpPort || '3333'}${basePath}`
   info(
     `Sanity Studio ` +
       `using ${chalk.cyan(`vite@${require('vite/package.json').version}`)} ` +

@@ -7,7 +7,7 @@ describeCliTest('CLI: `sanity dev`', () => {
   describe.each(studioVersions)('%s', (version) => {
     test('start', async () => {
       const testRunArgs = getTestRunArgs(version)
-      const startHtml = await testServerCommand({
+      const {html: startHtml} = await testServerCommand({
         command: version === 'v2' ? 'start' : 'dev',
         port: testRunArgs.port,
         cwd: path.join(studiosPath, version),

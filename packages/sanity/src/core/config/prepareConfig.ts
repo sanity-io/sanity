@@ -69,7 +69,10 @@ function normalizeIcon(
  *
  * @internal
  */
-export function prepareConfig(config: Config | MissingConfigFile): PreparedConfig {
+export function prepareConfig(
+  config: Config | MissingConfigFile,
+  options?: {basePath?: string}
+): PreparedConfig {
   if (!Array.isArray(config) && 'missingConfigFile' in config) {
     throw new ConfigResolutionError({
       name: '',
@@ -78,6 +81,7 @@ export function prepareConfig(config: Config | MissingConfigFile): PreparedConfi
     })
   }
 
+  const rootPath = getRootPath(options?.basePath)
   const workspaceOptions: WorkspaceOptions[] | [SingleWorkspace] = Array.isArray(config)
     ? config
     : [config]
@@ -166,7 +170,7 @@ export function prepareConfig(config: Config | MissingConfigFile): PreparedConfi
       const workspaceSummary: WorkspaceSummary = {
         type: 'workspace-summary',
         auth: resolvedSources[0].auth,
-        basePath: rootSource.basePath || '/',
+        basePath: joinBasePath(rootPath, rootSource.basePath),
         dataset: rootSource.dataset,
         schema: resolvedSources[0].schema,
         icon: normalizeIcon(
@@ -533,4 +537,48 @@ function resolveSource({
   }
 
   return source
+}
+
+/**
+ * Validate and normalize the `basePath` option.
+ * The root path will be used to prepend workspace-specific base paths.
+ * For instance, a `/studio` root path is joined with `/design` to become `/studio/design`.
+ *
+ * @param basePath - The base path to validate. If not set, an empty string will be returned.
+ * @returns A normalized string
+ * @throws ConfigResolutionError if the basePath is invalid
+ * @internal
+ */
+function getRootPath(basePath?: string) {
+  const rootPath = basePath || ''
+  if (typeof rootPath !== 'string' || (rootPath.length > 0 && !rootPath.startsWith('/'))) {
+    throw new ConfigResolutionError({
+      name: '',
+      type: 'options',
+      causes: ['basePath must be a string, and must start with a slash'],
+    })
+  }
+
+  // Since we'll be appending other base paths, we don't want to end up with double slashes
+  return rootPath === '/' ? '' : rootPath
+}
+
+/**
+ * Join the root path of the studio with a workspace base path
+ *
+ * @param rootPath - The root path to prepend to the base path
+ * @param basePath - The base path of the workspace (can be empty)
+ * @returns A normalized and joined, complete base path for a workspace
+ * @internal
+ */
+function joinBasePath(rootPath: string, basePath?: string) {
+  const joined = [rootPath, basePath || '']
+    // Remove leading/trailing slashes
+    .map((path) => path.replace(/^\/+/g, '').replace(/\/+$/g, ''))
+    // Remove empty segments
+    .filter(Boolean)
+    // Join the segments
+    .join('/')
+
+  return `/${joined}`
 }
