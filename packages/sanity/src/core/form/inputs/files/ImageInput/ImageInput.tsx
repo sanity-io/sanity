@@ -83,8 +83,8 @@ type FileInfo = {
   type: string // mime type
   kind: string // 'file' or 'string'
 }
-/** @internal */
-export interface BaseImageInputState {
+
+interface BaseImageInputState {
   isUploading: boolean
   selectedAssetSource: AssetSource | null
   // Metadata about files currently over the drop area
@@ -172,7 +172,7 @@ export class BaseImageInput extends React.PureComponent<BaseImageInputProps, Bas
     return uploader ? [{type: schemaType, uploader}] : []
   }
 
-  uploadFirstAccepted(files: globalThis.File[]) {
+  uploadFirstAccepted(files: File[]) {
     const {schemaType, resolveUploader} = this.props
 
     const match = files
@@ -726,8 +726,6 @@ export class BaseImageInput extends React.PureComponent<BaseImageInputProps, Bas
 
     // todo: convert this to a functional component and use this with useCallback
     //  it currently has to return a new function on every render in order to pick up state from this component
-    // eslint-disable react/display-name
-    // eslint-disable react/no-this-in-sfc
     return (inputProps: Omit<InputProps, 'renderDefault'>) => (
       <>
         {isStale && (

@@ -15,7 +15,7 @@ type Props = {
   onMenuOpen: (flag: boolean) => void
 }
 
-export function FileDetails(props: Props) {
+export function FileActionsMenu(props: Props) {
   const {originalFilename, size, children, muted, disabled, onClick, isMenuOpen, onMenuOpen} = props
 
   const [menuElement, setMenuRef] = useState<HTMLDivElement | null>(null)
