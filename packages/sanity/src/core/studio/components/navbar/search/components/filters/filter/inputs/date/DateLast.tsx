@@ -1,16 +1,16 @@
 import {Box, Flex, Select, TextInput} from '@sanity/ui'
 import React, {ChangeEvent, useCallback, useRef, useState} from 'react'
 import {useSearchState} from '../../../../../contexts/search/useSearchState'
-import {OperatorDateLastValue} from '../../../../../definitions/operators/dateOperators'
-import {OperatorInputComponentProps} from '../../../../../definitions/operators/operatorTypes'
+import type {OperatorDateLastValue} from '../../../../../definitions/operators/dateOperators'
+import type {OperatorInputComponentProps} from '../../../../../definitions/operators/operatorTypes'
 
 export function SearchFilterDateLastInput({
   onChange,
   value,
 }: OperatorInputComponentProps<OperatorDateLastValue>) {
-  const [uncontrolledValue, setUncontrolledValue] = useState(value?.value || '')
+  const [uncontrolledValue, setUncontrolledValue] = useState(value?.unitValue || '')
   const dateUnit = useRef<OperatorDateLastValue['unit']>('days')
-  const dateValue = useRef<OperatorDateLastValue['value']>(value?.value || null)
+  const dateValue = useRef<OperatorDateLastValue['unitValue']>(value?.unitValue || null)
 
   const {
     state: {fullscreen},
@@ -19,7 +19,7 @@ export function SearchFilterDateLastInput({
   const handleChange = useCallback(() => {
     onChange({
       unit: dateUnit?.current,
-      value: dateValue?.current,
+      unitValue: dateValue?.current,
     })
   }, [onChange])
 
@@ -48,6 +48,7 @@ export function SearchFilterDateLastInput({
           fontSize={fullscreen ? 2 : 1}
           onChange={handleValueChange}
           pattern="\d*"
+          radius={2}
           step="1"
           type="number"
           value={uncontrolledValue}
@@ -58,6 +59,7 @@ export function SearchFilterDateLastInput({
           aria-label="Select unit"
           fontSize={fullscreen ? 2 : 1}
           onChange={handleUnitChange}
+          radius={2}
           value={value?.unit}
         >
           <option value="days">Days</option>

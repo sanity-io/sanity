@@ -45,6 +45,7 @@ export function SearchFilterNumberRangeInput({
           fontSize={fullscreen ? 2 : 1}
           onChange={handleMinChange}
           placeholder="Min value"
+          radius={2}
           step="any"
           type="number"
           value={min}
@@ -55,6 +56,7 @@ export function SearchFilterNumberRangeInput({
           fontSize={fullscreen ? 2 : 1}
           onChange={handleMaxChange}
           placeholder="Max value"
+          radius={2}
           step="any"
           type="number"
           value={max}

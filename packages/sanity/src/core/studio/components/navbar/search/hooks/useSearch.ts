@@ -2,7 +2,7 @@ import type {Schema} from '@sanity/types'
 import isEqual from 'lodash/isEqual'
 import {useCallback, useMemo, useState} from 'react'
 import {useObservableCallback} from 'react-rx'
-import {concat, Observable, of, timer} from 'rxjs'
+import {concat, EMPTY, iif, Observable, of, timer} from 'rxjs'
 import {
   catchError,
   debounce,
@@ -47,6 +47,7 @@ function sanitizeRequest(request: SearchRequest) {
     ...request,
     terms: {
       ...request.terms,
+      filter: request.terms.filter?.trim(),
       query: request.terms.query.trim(),
     },
   }
@@ -68,7 +69,6 @@ export function useSearch({
   schema: Schema
 }): {
   handleSearch: (request: SearchRequest) => void
-  handleClearSearch: () => void
   searchState: SearchState
 } {
   const [searchState, setSearchState] = useState(initialState)
@@ -86,42 +86,57 @@ export function useSearch({
   const handleQueryChange = useObservableCallback(
     (inputValue$: Observable<SearchRequest | null>) => {
       return inputValue$.pipe(
+        // Ignore null values
         filter(nonNullable),
+        // Sanitize request (trim query and filter)
         map(sanitizeRequest),
+        // Only emit when values have changed
         distinctUntilChanged(isEqual),
-        filter((request: SearchRequest) =>
-          hasSearchableTerms({allowEmptyQueries, terms: request.terms})
-        ),
+        // Debounce requests
         debounce((request) => timer(request?.debounceTime || DEFAULT_DEBOUNCE_TIME)),
+        // Trigger `onStart` callback
         tap(onStart),
-        switchMap((request) =>
-          concat(
+        switchMap((request) => {
+          return concat(
+            // Emit loading start
             of({
               ...INITIAL_SEARCH_STATE,
               loading: true,
               options: request.options,
               terms: request.terms,
             }),
-            (searchWeighted(request.terms, request.options) as Observable<WeightedHit[]>).pipe(
-              map((hits) => ({hits})),
-              tap(({hits}) => onComplete?.(hits)),
-              catchError((error) => {
-                onError?.(error)
-                return of({
-                  ...INITIAL_SEARCH_STATE,
-                  error,
-                  loading: false,
-                  options: request.options,
-                  terms: request.terms,
+            // Conditionally trigger search ONLY if we have valid searchable terms.
+            // Typically, search terms are valid if either query, filter or selected types is non-empty.
+            // There are exceptions (e.g. searching within <AutoComplete> components) where empty queries are permitted,
+            // which is what `allowEmptyQueries` is used for.
+            iif(
+              () => hasSearchableTerms({allowEmptyQueries, terms: request.terms}),
+              // If we have a valid search, run async fetch, map results and trigger `onComplete` / `onError` callbacks
+              (searchWeighted(request.terms, request.options) as Observable<WeightedHit[]>).pipe(
+                map((hits) => ({hits})),
+                tap(({hits}) => onComplete?.(hits)),
+                catchError((error) => {
+                  onError?.(error)
+                  return of({
+                    ...INITIAL_SEARCH_STATE,
+                    error,
+                    loading: false,
+                    options: request.options,
+                    terms: request.terms,
+                  })
                 })
-              })
+              ),
+              // If there is no valid search, emit an empty observable and trigger `onComplete` event
+              of(EMPTY).pipe(tap(() => onComplete?.([])))
             ),
+            // Emit loading completed
             of({loading: false})
           )
-        ),
+        }),
         scan((prevState, nextState): SearchState => {
           return {...prevState, ...nextState}
         }, INITIAL_SEARCH_STATE),
+        // Update local search state
         tap(setSearchState)
       )
     },
@@ -129,15 +144,10 @@ export function useSearch({
     [allowEmptyQueries, searchWeighted]
   )
 
-  const handleClearSearch = useCallback(() => {
-    setSearchState(INITIAL_SEARCH_STATE)
-    handleQueryChange({terms: INITIAL_SEARCH_STATE.terms}) // cancel current request
-  }, [handleQueryChange])
-
   const handleSearch = useCallback(
     (searchRequest: SearchRequest) => handleQueryChange(searchRequest),
     [handleQueryChange]
   )
 
-  return {handleSearch, handleClearSearch, searchState}
+  return {handleSearch, searchState}
 }

@@ -1,6 +1,6 @@
 import React from 'react'
 import {TextInput} from '@sanity/ui'
-import {useDatePicker} from './contexts/useDatePicker'
+import {useCalendar} from './calendar/contexts/useDatePicker'
 
 type TextInputProps = React.ComponentProps<typeof TextInput>
 
@@ -21,7 +21,7 @@ export const LazyTextInput = React.forwardRef(function LazyTextInput(
 ) {
   const [inputValue, setInputValue] = React.useState<string>()
 
-  const {fontSize} = useDatePicker()
+  const {fontSize} = useCalendar()
 
   const handleChange = React.useCallback((event: any) => {
     setInputValue(event.currentTarget.value)

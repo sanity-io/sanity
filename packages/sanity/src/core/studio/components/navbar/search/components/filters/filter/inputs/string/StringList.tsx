@@ -135,9 +135,9 @@ export function SearchFilterStringListInput({
           ))}
         </Menu>
       }
-      placement="bottom-start"
       popover={{
         constrainSize: true,
+        placement: 'bottom-start',
         portal: false,
         radius: 2,
       }}

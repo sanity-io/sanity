@@ -4,7 +4,12 @@ import pluralize from 'pluralize-esm'
 import React from 'react'
 import {useSchema} from '../../../../../../../hooks'
 import type {OperatorNumberRangeValue} from '../../../definitions/operators/common'
-import type {OperatorDateLastValue} from '../../../definitions/operators/dateOperators'
+import type {
+  OperatorDateDirectionValue,
+  OperatorDateEqualValue,
+  OperatorDateLastValue,
+  OperatorDateRangeValue,
+} from '../../../definitions/operators/dateOperators'
 import {OperatorButtonValueComponentProps} from '../../../definitions/operators/operatorTypes'
 import {ReferencePreviewTitle} from './ReferencePreviewTitle'
 
@@ -14,8 +19,20 @@ export function SearchButtonValueBoolean({value}: OperatorButtonValueComponentPr
   return <>{value ? 'True' : 'False'}</>
 }
 
-export function SearchButtonValueDate({value}: OperatorButtonValueComponentProps<string>) {
-  const date = value ? new Date(value) : null
+export function SearchButtonValueDate({
+  value,
+}: OperatorButtonValueComponentProps<OperatorDateEqualValue>) {
+  const date = value?.date ? new Date(value.date) : null
+  if (!date || !isValid(date)) {
+    return null
+  }
+  return <>{format(date, DEFAULT_DATE_FORMAT)}</>
+}
+
+export function SearchButtonValueDateDirection({
+  value,
+}: OperatorButtonValueComponentProps<OperatorDateDirectionValue>) {
+  const date = value?.date ? new Date(value.date) : null
   if (!date || !isValid(date)) {
     return null
   }
@@ -27,7 +44,22 @@ export function SearchButtonValueDateLast({
 }: OperatorButtonValueComponentProps<OperatorDateLastValue>) {
   return (
     <>
-      {Math.floor(value?.value ?? 0)} {value.unit}
+      {Math.floor(value?.unitValue ?? 0)} {value.unit}
+    </>
+  )
+}
+
+export function SearchButtonValueDateRange({
+  value,
+}: OperatorButtonValueComponentProps<OperatorDateRangeValue>) {
+  const startDate = value?.dateMin ? new Date(value.dateMin) : null
+  const endDate = value?.dateMax ? new Date(value.dateMax) : null
+  if (!endDate || !startDate || !isValid(endDate) || !isValid(startDate)) {
+    return null
+  }
+  return (
+    <>
+      {format(startDate, DEFAULT_DATE_FORMAT)} → {format(endDate, DEFAULT_DATE_FORMAT)}
     </>
   )
 }

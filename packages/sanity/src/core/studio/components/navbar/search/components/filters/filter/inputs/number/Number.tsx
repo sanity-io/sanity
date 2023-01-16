@@ -24,6 +24,7 @@ export function SearchFilterNumberInput({value, onChange}: OperatorInputComponen
       fontSize={fullscreen ? 2 : 1}
       onChange={handleChange}
       placeholder="Value"
+      radius={2}
       step="any"
       type="number"
       value={uncontrolledValue}

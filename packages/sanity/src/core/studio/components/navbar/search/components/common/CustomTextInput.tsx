@@ -36,7 +36,7 @@ export const CustomTextInput = forwardRef<HTMLInputElement, CustomTextInputProps
 
     return (
       <CustomTextInputBox background={background} smallClearButton={smallClearButton}>
-        <TextInput {...rest} radius={background ? 2 : 1} ref={ref} />
+        <TextInput {...rest} ref={ref} />
       </CustomTextInputBox>
     )
   }

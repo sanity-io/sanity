@@ -5,7 +5,12 @@ import {filterDefinitions} from '../definitions/defaultFilters'
 import {operatorDefinitions} from '../definitions/operators/defaultOperators'
 import {SearchFilter} from '../types'
 import {createFieldDefinitions} from '../utils/createFieldDefinitions'
-import {createRecentSearchesStore, MAX_RECENT_SEARCHES, RecentSearchesStore} from './recentSearches'
+import {
+  createRecentSearchesStore,
+  MAX_RECENT_SEARCHES,
+  RecentSearchesStore,
+  RECENT_SEARCH_VERSION,
+} from './recentSearches'
 
 const mockSchema = Schema.compile({
   name: 'default',
@@ -51,8 +56,7 @@ const mockUser: CurrentUser = {
 }
 
 const mockFieldDefinitions = createFieldDefinitions(mockSchema, filterDefinitions)
-
-const recentSearchesStore = createRecentSearchesStore({
+const recentSearchesStoreDefinition = {
   dataset: 'dataset',
   fieldDefinitions: mockFieldDefinitions,
   filterDefinitions,
@@ -60,7 +64,11 @@ const recentSearchesStore = createRecentSearchesStore({
   projectId: ' projectId',
   schema: mockSchema,
   user: mockUser,
-}) as RecentSearchesStore
+  version: RECENT_SEARCH_VERSION,
+}
+const recentSearchesStore = createRecentSearchesStore(
+  recentSearchesStoreDefinition
+) as RecentSearchesStore
 
 afterEach(() => {
   window.localStorage.clear()
@@ -68,6 +76,18 @@ afterEach(() => {
 
 describe('search-store', () => {
   describe('getRecentSearchTerms', () => {
+    it('should return empty array if there is a recent search version mismatch', () => {
+      const outdatedRecentSearchesStore = createRecentSearchesStore({
+        ...recentSearchesStoreDefinition,
+        version: RECENT_SEARCH_VERSION - 1,
+      }) as RecentSearchesStore
+
+      const searchTerms: SearchTerms = {query: 'foo', types: [mockArticle]}
+      outdatedRecentSearchesStore.addSearch(searchTerms)
+      const recentSearches = outdatedRecentSearchesStore.getRecentSearches()
+      expect(recentSearches).toEqual([])
+    })
+
     it('should return empty array for empty storage', () => {
       const recentSearches = recentSearchesStore.getRecentSearches()
       expect(recentSearches).toEqual([])

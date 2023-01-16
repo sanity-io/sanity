@@ -1,5 +1,11 @@
 import type {SearchTerms} from '../../../../../search'
 
+/**
+ * Check if current search terms are valid.
+ *
+ * By default, completely empty search terms (no search query, types or filter) are considered invalid,
+ * unless `allowEmptyQueries` is true.
+ */
 export function hasSearchableTerms({
   allowEmptyQueries,
   terms,
@@ -7,10 +13,9 @@ export function hasSearchableTerms({
   allowEmptyQueries?: boolean
   terms: SearchTerms
 }): boolean {
-  const trimmedQuery = terms.query.trim()
-  return (
-    (allowEmptyQueries ? typeof trimmedQuery !== 'undefined' : trimmedQuery !== '') ||
-    (terms.filter && terms.filter?.trim() !== '') ||
-    terms.types.length > 0
-  )
+  const hasQuery = allowEmptyQueries ? true : terms.query.length > 0
+  const hasFilter = !!terms.filter
+  const hasSelectedTypes = terms.types.length > 0
+
+  return hasQuery || hasFilter || hasSelectedTypes
 }

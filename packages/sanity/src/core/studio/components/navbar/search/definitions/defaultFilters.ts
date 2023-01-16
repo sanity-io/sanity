@@ -21,6 +21,7 @@ export const filterDefinitions: SearchFilterDefinition[] = [
     operators: [
       {name: 'dateTimeLast', type: 'item'},
       {type: 'divider'},
+      {name: 'dateTimeRange', type: 'item'},
       {name: 'dateTimeAfter', type: 'item'},
       {name: 'dateTimeBefore', type: 'item'},
       {type: 'divider'},
@@ -37,6 +38,7 @@ export const filterDefinitions: SearchFilterDefinition[] = [
     operators: [
       {name: 'dateTimeLast', type: 'item'},
       {type: 'divider'},
+      {name: 'dateTimeRange', type: 'item'},
       {name: 'dateTimeAfter', type: 'item'},
       {name: 'dateTimeBefore', type: 'item'},
       {type: 'divider'},
@@ -143,6 +145,7 @@ export const filterDefinitions: SearchFilterDefinition[] = [
     operators: [
       {name: 'dateLast', type: 'item'},
       {type: 'divider'},
+      {name: 'dateRange', type: 'item'},
       {name: 'dateAfter', type: 'item'},
       {name: 'dateBefore', type: 'item'},
       {type: 'divider'},
@@ -161,6 +164,7 @@ export const filterDefinitions: SearchFilterDefinition[] = [
     operators: [
       {name: 'dateTimeLast', type: 'item'},
       {type: 'divider'},
+      {name: 'dateTimeRange', type: 'item'},
       {name: 'dateTimeAfter', type: 'item'},
       {name: 'dateTimeBefore', type: 'item'},
       {type: 'divider'},

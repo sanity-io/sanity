@@ -1,4 +1,5 @@
 import Schema from '@sanity/schema'
+import React from 'react'
 import {filterDefinitions} from '../definitions/defaultFilters'
 import {createFieldDefinitions, MAX_OBJECT_TRAVERSAL_DEPTH} from './createFieldDefinitions'
 import {generateFieldId} from './generateFieldId'
@@ -211,6 +212,36 @@ describe('createFieldDefinitions', () => {
 
     const fieldDefs = createFieldDefinitions(mockSchema, filterDefinitions)
     expect(fieldDefs[0].filterName).toEqual('arrayList')
+  })
+
+  it('should correctly sanitize titles containing React components', () => {
+    const mockSchema = Schema.compile({
+      name: 'default',
+      types: [
+        {
+          name: 'author',
+          title: 'Author',
+          type: 'document',
+          fields: [
+            {
+              name: 'Title',
+              title: (
+                <div>
+                  <a href="#">
+                    <img src="./example.jpg" />
+                  </a>
+                  <span style={{color: 'red'}}>A title wrapped in a component</span>
+                </div>
+              ),
+              type: 'string',
+            },
+          ],
+        },
+      ],
+    })
+
+    const fieldDefs = createFieldDefinitions(mockSchema, filterDefinitions)
+    expect(fieldDefs[0].title).toEqual('A title wrapped in a component')
   })
 })
 

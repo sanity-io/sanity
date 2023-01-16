@@ -174,7 +174,7 @@ describe('validateFilter', () => {
       operatorType: 'dateTimeLast',
       value: {
         unit: 'days',
-        value: 10,
+        unitValue: 10,
       },
     }
 
