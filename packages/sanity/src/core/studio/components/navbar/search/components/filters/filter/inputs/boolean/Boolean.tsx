@@ -16,7 +16,12 @@ export function SearchFilterBooleanInput({onChange, value}: OperatorInputCompone
   )
 
   return (
-    <Select fontSize={fullscreen ? 2 : 1} onChange={handleChange} value={String(value ?? true)}>
+    <Select
+      fontSize={fullscreen ? 2 : 1}
+      onChange={handleChange}
+      radius={2}
+      value={String(value ?? true)}
+    >
       <option value="true">True</option>
       <option value="false">False</option>
     </Select>

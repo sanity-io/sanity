@@ -21,6 +21,7 @@ export function SearchFilterStringInput({
       fontSize={fullscreen ? 2 : 1}
       onChange={handleChange}
       placeholder="Value"
+      radius={2}
       value={value || ''}
     />
   )

@@ -48,6 +48,7 @@ export function SearchFilterDateLastInput({
           fontSize={fullscreen ? 2 : 1}
           onChange={handleValueChange}
           pattern="\d*"
+          radius={2}
           step="1"
           type="number"
           value={uncontrolledValue}
@@ -58,6 +59,7 @@ export function SearchFilterDateLastInput({
           aria-label="Select unit"
           fontSize={fullscreen ? 2 : 1}
           onChange={handleUnitChange}
+          radius={2}
           value={value?.unit}
         >
           <option value="days">Days</option>

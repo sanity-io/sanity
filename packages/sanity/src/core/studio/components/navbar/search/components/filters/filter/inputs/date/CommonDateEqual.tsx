@@ -66,6 +66,7 @@ export function CommonDateEqualInput({
         isDateTime={isDateTime}
         isDateTimeFormat={isDateTime && value?.includeTime}
         onChange={handleTextDateChange}
+        radius={2}
         value={value?.date}
       />
       <DatePicker

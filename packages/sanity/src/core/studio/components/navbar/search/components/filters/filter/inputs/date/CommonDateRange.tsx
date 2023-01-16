@@ -89,6 +89,7 @@ export function CommonDateRangeInput({
             isDateTimeFormat={isDateTime && value?.includeTime}
             onChange={handleTextStartDateChange}
             placeholderDate={placeholderStartDate}
+            radius={2}
             value={value?.dateMin}
           />
           {/* End date */}
@@ -99,6 +100,7 @@ export function CommonDateRangeInput({
             isDateTimeFormat={isDateTime && value?.includeTime}
             onChange={handleTextEndDateChange}
             placeholderDate={placeholderEndDate}
+            radius={2}
             value={value?.dateMax}
           />
         </Flex>

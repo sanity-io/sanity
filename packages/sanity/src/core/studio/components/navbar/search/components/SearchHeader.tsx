@@ -107,6 +107,7 @@ export function SearchHeader({onClose}: SearchHeaderProps) {
             onChange={handleQueryChange}
             onClear={handleQueryClear}
             placeholder="Search"
+            radius={fullscreen ? 2 : 1}
             ref={setHeaderInputElement}
             smallClearButton={fullscreen}
             spellCheck={false}
