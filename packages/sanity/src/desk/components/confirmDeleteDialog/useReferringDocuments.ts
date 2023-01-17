@@ -95,7 +95,7 @@ function getDocumentExistence(
   const draftId = getDraftId(documentId)
   const publishedId = getPublishedId(documentId)
   const requestOptions = {
-    uri: versionedClient.getDataUrl('doc', `${draftId},${publishedId}`),
+    uri: `/data/doc/${draftId},${publishedId}`,
     json: true,
     query: {excludeContent: 'true'},
     tag: 'use-referring-documents.document-existence',

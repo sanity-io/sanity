@@ -5,7 +5,7 @@ import Hashids from 'hashids'
 import {omit} from 'lodash'
 import {nanoid} from 'nanoid'
 import {uuid} from '@sanity/uuid'
-import createClient from '@sanity/client'
+import {createClient} from '@sanity/client'
 import {testTypingSpeed} from './typingSpeed'
 
 const hashIds = new Hashids()

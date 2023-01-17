@@ -54,7 +54,7 @@ const getHistory = (
     throw new Error(`getHistory can't handle both time and revision parameters`)
   }
 
-  const dataset = client.clientConfig.dataset
+  const dataset = client.config().dataset
   let url = `/data/history/${dataset}/documents/${ids.join(',')}`
 
   if (revision) {
@@ -81,7 +81,7 @@ const getDocumentAtRevision = (
     return cached
   }
 
-  const dataset = client.clientConfig.dataset
+  const dataset = client.config().dataset
   const url = `/data/history/${dataset}/documents/${publishedId},${draftId}?revision=${revision}`
 
   const entry = client.request<{documents?: SanityDocument[]}>({url}).then((result) => {
@@ -100,7 +100,7 @@ const getTransactions = async (
   documentIds: string | string[]
 ): Promise<TransactionLogEventWithMutations[]> => {
   const ids = Array.isArray(documentIds) ? documentIds : [documentIds]
-  const dataset = client.clientConfig.dataset
+  const dataset = client.config().dataset
   const query = {excludeContent: 'true', includeIdentifiedDocumentsOnly: 'true'}
   const url = `/data/history/${dataset}/transactions/${ids.join(',')}`
   const result = await client.request({url, query})

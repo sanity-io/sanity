@@ -1,14 +1,7 @@
 declare module 'get-it' {
-  const getIt: any
-  export default getIt
+  export const getIt: any
 }
 
 declare module 'get-it/middleware' {
-  const promise: any
-  export {promise}
-}
-
-declare module 'get-it/lib/middleware/promise' {
-  const promise: () => any
-  export default promise
+  export const promise: any
 }

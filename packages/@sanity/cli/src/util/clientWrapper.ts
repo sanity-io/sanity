@@ -1,6 +1,12 @@
 import path from 'path'
 import chalk from 'chalk'
-import client, {ClientError, SanityClient, ServerError} from '@sanity/client'
+import {
+  createClient,
+  requester as defaultRequester,
+  type ClientError,
+  type SanityClient,
+  type ServerError,
+} from '@sanity/client'
 import {generateHelpUrl} from '@sanity/generate-help-url'
 import type {CliApiConfig} from '../types'
 import {getUserConfig} from './getUserConfig'
@@ -60,7 +66,7 @@ export function getClientWrapper(
   cliApiConfig: CliApiConfig | null,
   configPath: string
 ): (options?: ClientRequirements) => SanityClient {
-  const requester = client.requester.clone()
+  const requester = defaultRequester.clone()
   requester.use(authErrors())
 
   return function (opts?: ClientRequirements) {
@@ -94,7 +100,7 @@ export function getClientWrapper(
       )
     }
 
-    return client({
+    return createClient({
       ...apiConfig,
       apiVersion: '1',
       dataset: apiConfig.dataset || '~dummy-placeholder-dataset-',

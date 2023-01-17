@@ -18,6 +18,7 @@ import {
   AVAILABILITY_READABLE,
 } from './constants'
 import {ObservePathsFn} from './types'
+import {getDataApiUrl} from '../util/apiUrl'
 
 const MAX_DOCUMENT_ID_CHUNK_SIZE = 11164
 
@@ -130,7 +131,7 @@ export function create_preview_availability(
   function fetchDocumentReadabilityChunked(ids: string[]): Observable<DocumentAvailability[]> {
     return defer(() => {
       const requestOptions = {
-        uri: versionedClient.getDataUrl('doc', ids.join(',')),
+        uri: getDataApiUrl(versionedClient, 'doc', ids.join(',')),
         json: true,
         query: {excludeContent: 'true'},
         tag: 'preview.documents-availability',

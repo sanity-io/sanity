@@ -232,10 +232,6 @@ export type RuleSpecConstraint<T extends RuleSpec['flag']> = ConditionalIndexAcc
  * @public
  */
 export type ValidationContext = {
-  /**
-   * @deprecated Will be removed in the next version! Use `getClient({apiVersion: '2021-06-07'})` instead
-   */
-  client: SanityClient
   getClient: (options: {apiVersion: string}) => SanityClient
   schema: Schema
   parent?: unknown

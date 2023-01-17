@@ -1,4 +1,4 @@
-import getIt from 'get-it'
+import {getIt} from 'get-it'
 import {promise} from 'get-it/middleware'
 
 const request = getIt([promise()])

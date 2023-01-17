@@ -65,13 +65,13 @@
     "chalk": "^4.1.2",
     "esbuild": "^0.16.5",
     "esbuild-register": "^3.4.1",
-    "get-it": "^5.2.1",
+    "get-it": "^8.0.9",
     "pkg-dir": "^5.0.0"
   },
   "devDependencies": {
     "@rexxars/gitconfiglocal": "^3.0.1",
     "@rollup/plugin-node-resolve": "^15.0.0",
-    "@sanity/client": "^4.0.1",
+    "@sanity/client": "^5.2.0",
     "@sanity/eslint-config-studio": "^2.0.0",
     "@sanity/generate-help-url": "^3.0.0",
     "@sanity/types": "3.2.6",

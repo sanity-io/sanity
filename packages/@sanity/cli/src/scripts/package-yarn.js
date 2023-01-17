@@ -2,7 +2,7 @@
 import path from 'path'
 import {createWriteStream} from 'fs'
 import fs from 'fs/promises'
-import getIt from 'get-it'
+import {getIt} from 'get-it'
 import {promise} from 'get-it/middleware'
 
 const version = '1.22.17'

@@ -3,7 +3,7 @@ import path from 'path'
 import {existsSync, readFileSync} from 'fs'
 import {spawn, SpawnOptions} from 'child_process'
 import {platform, tmpdir} from 'os'
-import SanityClient from '@sanity/client'
+import {createClient} from '@sanity/client'
 import which from 'which'
 
 export const cliUserEmail = 'developers+cli-ci@sanity.io'
@@ -57,7 +57,7 @@ const getTestId = () => {
   return cachedTestId
 }
 
-export const testClient = new SanityClient({
+export const testClient = createClient({
   apiVersion: '2022-09-09',
   projectId: cliProjectId,
   dataset: 'production',
