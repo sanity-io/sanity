@@ -55,39 +55,39 @@ export function TimelineItem(props: {
   )
 
   return (
-    <Tooltip
-      portal
-      placement="left"
-      fallbackPlacements={['bottom']}
-      content={
-        <Stack padding={3} space={3}>
-          <Text size={1}>{formattedTimestamp}</Text>
-        </Stack>
+    <Root
+      data-ui="timelineItem"
+      radius={2}
+      data-chunk-id={chunk.id}
+      padding={0}
+      tone={
+        isHovered || isSelected || isWithinSelection ? 'default' : TIMELINE_ITEM_EVENT_TONE[type]
       }
+      pressed={isWithinSelection}
+      state={state}
+      selected={isSelected}
+      isHovered={isHovered}
+      disabled={state === 'disabled'}
+      data-selection-bottom={isSelectionBottom}
+      data-selection-top={isSelectionTop}
+      onClick={handleClick}
     >
-      <Root
-        data-ui="timelineItem"
-        radius={2}
-        data-chunk-id={chunk.id}
-        paddingY={0}
-        paddingX={2}
-        tone={
-          isHovered || isSelected || isWithinSelection ? 'default' : TIMELINE_ITEM_EVENT_TONE[type]
+      <Tooltip
+        portal
+        placement="left"
+        fallbackPlacements={['bottom']}
+        content={
+          <Stack padding={3} space={3}>
+            <Text size={1}>{formattedTimestamp}</Text>
+          </Stack>
         }
-        pressed={isWithinSelection}
-        state={state}
-        selected={isSelected}
-        isHovered={isHovered}
-        disabled={state === 'disabled'}
-        data-selection-bottom={isSelectionBottom}
-        data-selection-top={isSelectionTop}
-        onClick={handleClick}
       >
-        <div
+        <Box
           // eslint-disable-next-line react/jsx-no-bind
           onMouseEnter={() => setHovered(true)}
           // eslint-disable-next-line react/jsx-no-bind
           onMouseLeave={() => setHovered(false)}
+          paddingX={2}
         >
           <Flex align="stretch">
             <IconWrapper align="center">
@@ -112,8 +112,8 @@ export function TimelineItem(props: {
               <UserAvatarStack maxLength={3} userIds={authorUserIds} />
             </Flex>
           </Flex>
-        </div>
-      </Root>
-    </Tooltip>
+        </Box>
+      </Tooltip>
+    </Root>
   )
 }

@@ -1,5 +1,6 @@
 import {SelectIcon} from '@sanity/icons'
-import {useClickOutside, Button, Popover, Placement} from '@sanity/ui'
+import {useClickOutside, Button, Popover, Placement, useGlobalKeyDown} from '@sanity/ui'
+import isHotkey from 'is-hotkey'
 import {upperFirst} from 'lodash'
 import React, {useCallback, useState} from 'react'
 import styled from 'styled-components'
@@ -13,6 +14,8 @@ interface TimelineMenuProps {
   mode: 'rev' | 'since'
   placement?: Placement
 }
+
+const isEscape = isHotkey('escape')
 
 const Root = styled(Popover)`
   & > div {
@@ -54,7 +57,17 @@ export function TimelineMenu({chunk, mode, placement}: TimelineMenuProps) {
     handleClose()
   }, [handleClose])
 
+  const handleGlobalKeyDown = useCallback(
+    (event: KeyboardEvent) => {
+      if (isEscape(event)) {
+        handleClose()
+      }
+    },
+    [handleClose]
+  )
+
   useClickOutside(handleClickOutside, [menuContent, button])
+  useGlobalKeyDown(handleGlobalKeyDown)
 
   const selectRev = useCallback(
     (revChunk: Chunk) => {
