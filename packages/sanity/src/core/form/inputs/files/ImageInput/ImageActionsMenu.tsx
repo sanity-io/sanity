@@ -1,6 +1,6 @@
-import React, {MouseEventHandler, ReactNode, useState} from 'react'
+import React, {MouseEventHandler, ReactNode, useCallback, useState} from 'react'
 import {EllipsisVerticalIcon, CropIcon} from '@sanity/icons'
-import {Button, Inline, Menu, Popover, useClickOutside} from '@sanity/ui'
+import {Button, Inline, Menu, Popover, useClickOutside, useGlobalKeyDown} from '@sanity/ui'
 import styled from 'styled-components'
 
 export const MenuActionsWrapper = styled(Inline)`
@@ -21,12 +21,34 @@ interface ImageActionsMenuProps {
 export function ImageActionsMenu(props: ImageActionsMenuProps) {
   const {onEdit, children, showEdit, setHotspotButtonElement, onMenuOpen, isMenuOpen} = props
 
-  const [menuElement, setMenuRef] = useState<HTMLDivElement | null>(null)
+  const [menuElement, setMenuElement] = useState<HTMLDivElement | null>(null)
+  const [buttonElement, setButtonElement] = useState<HTMLButtonElement | null>(null)
 
-  const handleClick = React.useCallback(() => onMenuOpen(true), [onMenuOpen])
+  const handleClick = useCallback(() => onMenuOpen(!isMenuOpen), [onMenuOpen, isMenuOpen])
 
+  useGlobalKeyDown(
+    useCallback(
+      (event) => {
+        if (isMenuOpen && (event.key === 'Escape' || event.key === 'Tab')) {
+          onMenuOpen(false)
+          buttonElement?.focus()
+        }
+      },
+      [isMenuOpen, onMenuOpen, buttonElement]
+    )
+  )
+
+  // Close menu when clicking outside of it
+  // Not when clicking on the button
   useClickOutside(
-    React.useCallback(() => onMenuOpen(false), [onMenuOpen]),
+    useCallback(
+      (event) => {
+        if (!buttonElement?.contains(event.target as Node)) {
+          onMenuOpen(false)
+        }
+      },
+      [buttonElement, onMenuOpen]
+    ),
     [menuElement]
   )
 
@@ -45,7 +67,11 @@ export function ImageActionsMenu(props: ImageActionsMenuProps) {
 
       <Popover
         id="image-actions-menu"
-        content={<Menu ref={setMenuRef}>{children}</Menu>}
+        content={
+          <Menu ref={setMenuElement} shouldFocus="first">
+            {children}
+          </Menu>
+        }
         portal
         open={isMenuOpen}
         constrainSize
@@ -56,6 +82,7 @@ export function ImageActionsMenu(props: ImageActionsMenuProps) {
           icon={EllipsisVerticalIcon}
           mode="ghost"
           onClick={handleClick}
+          ref={setButtonElement}
         />
       </Popover>
     </MenuActionsWrapper>
