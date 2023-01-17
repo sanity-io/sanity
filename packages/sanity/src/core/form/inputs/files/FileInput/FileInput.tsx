@@ -1,4 +1,4 @@
-/* eslint-disable no-undef, import/no-unresolved */
+/* eslint-disable import/no-unresolved,react/jsx-handler-names, react/display-name, react/no-this-in-sfc */
 
 import React, {ReactNode} from 'react'
 import {Observable, Subscription} from 'rxjs'
@@ -41,7 +41,7 @@ import {ImperativeToast} from '../../../../components'
 import {ChangeIndicator} from '../../../../changeIndicators'
 import {FIXME} from '../../../../FIXME'
 import {CardOverlay, FlexContainer} from './styles'
-import {FileDetails} from './FileDetails'
+import {FileActionsMenu} from './FileActionsMenu'
 import {FileSkeleton} from './FileSkeleton'
 import {InvalidFileWarning} from './InvalidFileWarning'
 
@@ -430,7 +430,7 @@ export class BaseFileInput extends React.PureComponent<BaseFileInputProps, BaseF
           }
 
           return (
-            <FileDetails
+            <FileActionsMenu
               size={size}
               originalFilename={filename}
               muted={!readOnly}
@@ -447,7 +447,7 @@ export class BaseFileInput extends React.PureComponent<BaseFileInputProps, BaseF
                 accept={accept}
                 directUploads={directUploads}
               />
-            </FileDetails>
+            </FileActionsMenu>
           )
         }}
       </WithReferencedAsset>

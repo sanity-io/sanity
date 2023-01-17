@@ -1,4 +1,5 @@
-/* eslint-disable import/no-unresolved,react/jsx-handler-names */
+/* eslint-disable react/jsx-no-bind */
+/* eslint-disable import/no-unresolved,react/jsx-handler-names, react/display-name, react/no-this-in-sfc */
 
 import {
   Box,
@@ -83,7 +84,7 @@ type FileInfo = {
   kind: string // 'file' or 'string'
 }
 
-type BaseImageInputState = {
+interface BaseImageInputState {
   isUploading: boolean
   selectedAssetSource: AssetSource | null
   // Metadata about files currently over the drop area
@@ -91,6 +92,7 @@ type BaseImageInputState = {
   isStale: boolean
   hotspotButtonElement: HTMLButtonElement | null
   menuButtonElement: HTMLButtonElement | null
+  isMenuOpen: boolean
 }
 
 type Focusable = {
@@ -119,6 +121,7 @@ export class BaseImageInput extends React.PureComponent<BaseImageInputProps, Bas
     isStale: false,
     hotspotButtonElement: null,
     menuButtonElement: null,
+    isMenuOpen: false,
   }
 
   constructor(props: BaseImageInputProps) {
@@ -136,10 +139,6 @@ export class BaseImageInput extends React.PureComponent<BaseImageInputProps, Bas
 
   setFocusElement = (el: HTMLElement | null) => {
     this._assetElementRef = el
-  }
-
-  setMenuButtonElement = (el: HTMLButtonElement | null) => {
-    this.setState({menuButtonElement: el})
   }
 
   setHotspotButtonElement = (el: HTMLButtonElement | null) => {
@@ -179,6 +178,8 @@ export class BaseImageInput extends React.PureComponent<BaseImageInputProps, Bas
     if (match) {
       this.uploadWith(match.uploader!, match.file)
     }
+
+    this.setState({isMenuOpen: false})
   }
 
   uploadWith = (uploader: Uploader, file: File, assetDocumentProps: UploadOptions = {}) => {
@@ -363,7 +364,6 @@ export class BaseImageInput extends React.PureComponent<BaseImageInputProps, Bas
   handleSelectFiles = (files: File[]) => {
     const {directUploads, readOnly} = this.props
     const {hoveringFiles} = this.state
-
     if (directUploads && !readOnly) {
       this.uploadFirstAccepted(files)
     } else if (hoveringFiles.length > 0) {
@@ -471,6 +471,7 @@ export class BaseImageInput extends React.PureComponent<BaseImageInputProps, Bas
           icon={SearchIcon}
           text="Select"
           onClick={() => {
+            this.setState({isMenuOpen: false})
             this.handleSelectImageFromAssetSource(assetSources[0])
           }}
           disabled={readOnly}
@@ -485,6 +486,7 @@ export class BaseImageInput extends React.PureComponent<BaseImageInputProps, Bas
             key={assetSource.name}
             text={assetSource.title}
             onClick={() => {
+              this.setState({isMenuOpen: false})
               this.handleSelectImageFromAssetSource(assetSource)
             }}
             icon={assetSource.icon || ImageIcon}
@@ -512,7 +514,8 @@ export class BaseImageInput extends React.PureComponent<BaseImageInputProps, Bas
               onEdit={this.handleOpenDialog}
               showEdit={showAdvancedEditButton}
               setHotspotButtonElement={this.setHotspotButtonElement}
-              setMenuButtonElement={this.setMenuButtonElement}
+              onMenuOpen={(isOpen) => this.setState({isMenuOpen: isOpen})}
+              isMenuOpen={this.state.isMenuOpen}
             >
               <ActionsMenu
                 onUpload={this.handleSelectFiles}
@@ -557,6 +560,7 @@ export class BaseImageInput extends React.PureComponent<BaseImageInputProps, Bas
                     key={assetSource.name}
                     text={assetSource.title}
                     onClick={() => {
+                      this.setState({isMenuOpen: false})
                       this.handleSelectImageFromAssetSource(assetSource)
                     }}
                     icon={assetSource.icon || ImageIcon}
@@ -579,6 +583,7 @@ export class BaseImageInput extends React.PureComponent<BaseImageInputProps, Bas
         icon={SearchIcon}
         mode="ghost"
         onClick={() => {
+          this.setState({isMenuOpen: false})
           this.handleSelectImageFromAssetSource(assetSources[0])
         }}
         data-testid="file-input-browse-button"
