@@ -141,10 +141,6 @@ export class BaseImageInput extends React.PureComponent<BaseImageInputProps, Bas
     this._assetElementRef = el
   }
 
-  setMenuButtonElement = (el: HTMLButtonElement | null) => {
-    this.setState({menuButtonElement: el})
-  }
-
   setHotspotButtonElement = (el: HTMLButtonElement | null) => {
     this.setState({hotspotButtonElement: el})
   }
@@ -518,7 +514,6 @@ export class BaseImageInput extends React.PureComponent<BaseImageInputProps, Bas
               onEdit={this.handleOpenDialog}
               showEdit={showAdvancedEditButton}
               setHotspotButtonElement={this.setHotspotButtonElement}
-              setMenuButtonElement={this.setMenuButtonElement}
               onMenuOpen={(isOpen) => this.setState({isMenuOpen: isOpen})}
               isMenuOpen={this.state.isMenuOpen}
             >

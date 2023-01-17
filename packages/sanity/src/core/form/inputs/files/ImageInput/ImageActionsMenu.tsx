@@ -1,6 +1,6 @@
 import React, {MouseEventHandler, ReactNode, useState} from 'react'
 import {EllipsisVerticalIcon, CropIcon} from '@sanity/icons'
-import {Button, Inline, Menu, MenuButton, Popover, useClickOutside} from '@sanity/ui'
+import {Button, Inline, Menu, Popover, useClickOutside} from '@sanity/ui'
 import styled from 'styled-components'
 
 export const MenuActionsWrapper = styled(Inline)`
@@ -13,22 +13,13 @@ interface ImageActionsMenuProps {
   children: ReactNode
   onEdit: MouseEventHandler<HTMLButtonElement>
   setHotspotButtonElement: (element: HTMLButtonElement | null) => void
-  setMenuButtonElement: (element: HTMLButtonElement | null) => void
   showEdit: boolean
   isMenuOpen: boolean
   onMenuOpen: (flag: boolean) => void
 }
 
 export function ImageActionsMenu(props: ImageActionsMenuProps) {
-  const {
-    onEdit,
-    children,
-    showEdit,
-    setHotspotButtonElement,
-    setMenuButtonElement,
-    onMenuOpen,
-    isMenuOpen,
-  } = props
+  const {onEdit, children, showEdit, setHotspotButtonElement, onMenuOpen, isMenuOpen} = props
 
   const [menuElement, setMenuRef] = useState<HTMLDivElement | null>(null)
 
@@ -52,21 +43,21 @@ export function ImageActionsMenu(props: ImageActionsMenuProps) {
         />
       )}
 
-      <MenuButton
-        button={
-          <Popover content={<Menu ref={setMenuRef}>{children}</Menu>} portal open={isMenuOpen}>
-            <Button
-              aria-label="Open image options menu"
-              data-testid="options-menu-button"
-              icon={EllipsisVerticalIcon}
-              mode="ghost"
-              onClick={handleClick}
-            />
-          </Popover>
-        }
+      <Popover
         id="image-actions-menu"
-        ref={setMenuButtonElement}
-      />
+        content={<Menu ref={setMenuRef}>{children}</Menu>}
+        portal
+        open={isMenuOpen}
+        constrainSize
+      >
+        <Button
+          aria-label="Open image options menu"
+          data-testid="options-menu-button"
+          icon={EllipsisVerticalIcon}
+          mode="ghost"
+          onClick={handleClick}
+        />
+      </Popover>
     </MenuActionsWrapper>
   )
 }
