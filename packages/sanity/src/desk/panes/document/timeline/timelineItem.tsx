@@ -1,10 +1,11 @@
-import React, {useCallback, createElement, useState} from 'react'
-import {Box, Flex, Stack, Text, ButtonTone} from '@sanity/ui'
+import React, {useCallback, createElement, useMemo, useState} from 'react'
+import {Box, ButtonTone, Flex, Stack, Text, Tooltip} from '@sanity/ui'
+import {format} from 'date-fns'
 import {formatTimelineEventLabel, getTimelineEventIconComponent} from './helpers'
 import {TimelineItemState} from './types'
 import {UserAvatarStack} from './userAvatarStack'
 
-import {EventLabel, IconBox, IconWrapper, Root} from './timelineItem.styled'
+import {EventLabel, IconBox, IconWrapper, Root, TimestampBox} from './timelineItem.styled'
 import {ChunkType, Chunk, useTimeAgo} from 'sanity'
 
 const TIMELINE_ITEM_EVENT_TONE: Record<ChunkType | 'withinSelection', ButtonTone> = {
@@ -32,6 +33,12 @@ export function TimelineItem(props: {
   const iconComponent = getTimelineEventIconComponent(type)
   const authorUserIds = Array.from(chunk.authors)
   const timeAgo = useTimeAgo(timestamp, {minimal: true})
+  const formattedTimestamp = useMemo(() => {
+    const parsedDate = new Date(timestamp)
+    const formattedDate = format(parsedDate, 'MMM d, yyyy, hh:mm a')
+
+    return formattedDate
+  }, [timestamp])
 
   const isSelected = state === 'selected'
   const isWithinSelection = state === 'withinSelection'
@@ -48,52 +55,65 @@ export function TimelineItem(props: {
   )
 
   return (
-    <Root
-      data-ui="timelineItem"
-      radius={2}
-      data-chunk-id={chunk.id}
-      paddingY={0}
-      paddingX={2}
-      tone={
-        isHovered || isSelected || isWithinSelection ? 'default' : TIMELINE_ITEM_EVENT_TONE[type]
+    <Tooltip
+      portal
+      placement="left"
+      fallbackPlacements={['bottom']}
+      content={
+        <Stack padding={3} space={3}>
+          <Text size={1}>{formattedTimestamp}</Text>
+        </Stack>
       }
-      pressed={isWithinSelection}
-      state={state}
-      selected={isSelected}
-      isHovered={isHovered}
-      disabled={state === 'disabled'}
-      data-selection-bottom={isSelectionBottom}
-      data-selection-top={isSelectionTop}
-      onClick={handleClick}
     >
-      <div
-        // eslint-disable-next-line react/jsx-no-bind
-        onMouseEnter={() => setHovered(true)}
-        // eslint-disable-next-line react/jsx-no-bind
-        onMouseLeave={() => setHovered(false)}
+      <Root
+        data-ui="timelineItem"
+        radius={2}
+        data-chunk-id={chunk.id}
+        paddingY={0}
+        paddingX={2}
+        tone={
+          isHovered || isSelected || isWithinSelection ? 'default' : TIMELINE_ITEM_EVENT_TONE[type]
+        }
+        pressed={isWithinSelection}
+        state={state}
+        selected={isSelected}
+        isHovered={isHovered}
+        disabled={state === 'disabled'}
+        data-selection-bottom={isSelectionBottom}
+        data-selection-top={isSelectionTop}
+        onClick={handleClick}
       >
-        <Flex align="stretch">
-          <IconWrapper align="center">
-            <IconBox padding={2}>
-              <Text size={2}>{iconComponent && createElement(iconComponent)}</Text>
-            </IconBox>
-          </IconWrapper>
+        <div
+          // eslint-disable-next-line react/jsx-no-bind
+          onMouseEnter={() => setHovered(true)}
+          // eslint-disable-next-line react/jsx-no-bind
+          onMouseLeave={() => setHovered(false)}
+        >
+          <Flex align="stretch">
+            <IconWrapper align="center">
+              <IconBox padding={2}>
+                <Text size={2}>{iconComponent && createElement(iconComponent)}</Text>
+              </IconBox>
+            </IconWrapper>
 
-          <Stack space={2} margin={2}>
-            <Box>
-              <EventLabel size={1} weight="medium">
-                {formatTimelineEventLabel(type) || <code>{type}</code>}
-              </EventLabel>
-            </Box>
-            <Text size={0} muted>
-              {timeAgo}
-            </Text>
-          </Stack>
-          <Flex flex={1} justify="flex-end" align="center">
-            <UserAvatarStack maxLength={3} userIds={authorUserIds} />
+            <Stack space={2} margin={2}>
+              <Box>
+                <EventLabel size={1} weight="medium">
+                  {formatTimelineEventLabel(type) || <code>{type}</code>}
+                </EventLabel>
+              </Box>
+              <TimestampBox paddingX={1}>
+                <Text size={0} muted>
+                  {timeAgo}
+                </Text>
+              </TimestampBox>
+            </Stack>
+            <Flex flex={1} justify="flex-end" align="center">
+              <UserAvatarStack maxLength={3} userIds={authorUserIds} />
+            </Flex>
           </Flex>
-        </Flex>
-      </div>
-    </Root>
+        </div>
+      </Root>
+    </Tooltip>
   )
 }
