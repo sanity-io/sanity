@@ -1,4 +1,5 @@
 import type {CliCommandArguments, CliCommandContext} from '@sanity/cli'
+import {getClientUrl} from '../../util/getClientUrl'
 
 type ListApisResponse = {
   projectId: string
@@ -37,7 +38,7 @@ export default async function listGraphQLApis(
   output.print('Here are the GraphQL endpoints deployed for this project:')
   endpoints.forEach((endpoint, index) => {
     const {dataset, tag} = endpoint
-    const url = client.getUrl(`graphql/${dataset}/${tag}`)
+    const url = getClientUrl(client, `graphql/${dataset}/${tag}`)
 
     output.print(`${index + 1}.  ${chalk.bold('Dataset:')}     ${dataset}`)
     output.print(`    ${chalk.bold('Tag:')}         ${tag}`)

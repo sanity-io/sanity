@@ -1,5 +1,5 @@
 const noop = require('lodash/noop')
-const sanityClient = require('@sanity/client')
+const {createClient, requester: defaultRequester} = require('@sanity/client')
 const {injectResponse} = require('get-it/middleware')
 
 process.on('unhandledRejection', (reason) => {
@@ -16,10 +16,10 @@ const defaultClientOptions = {
 }
 
 const getSanityClient = (inject = noop, opts = {}) => {
-  const requester = sanityClient.requester.clone()
+  const requester = defaultRequester.clone()
   requester.use(injectResponse({inject}))
   const req = {requester: requester}
-  const client = sanityClient(Object.assign(defaultClientOptions, req, opts))
+  const client = createClient(Object.assign(defaultClientOptions, req, opts))
   return client
 }
 

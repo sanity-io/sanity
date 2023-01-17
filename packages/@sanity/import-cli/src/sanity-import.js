@@ -4,11 +4,11 @@
 const fs = require('fs')
 const path = require('path')
 const ora = require('ora')
-const getIt = require('get-it')
+const {getIt} = require('get-it')
 const {promise} = require('get-it/middleware')
 const meow = require('meow')
 const prettyMs = require('pretty-ms')
-const sanityClient = require('@sanity/client')
+const {createClient} = require('@sanity/client')
 const sanityImport = require('@sanity/import')
 
 const red = (str) => `\u001b[31m${str}\u001b[39m`
@@ -138,7 +138,7 @@ let currentProgress
 let stepStart
 let spinInterval
 
-const client = sanityClient({
+const client = createClient({
   apiVersion: '1',
   projectId,
   dataset,

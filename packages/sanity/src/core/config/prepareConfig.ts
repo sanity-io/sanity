@@ -1,8 +1,6 @@
-/* eslint-disable max-nested-callbacks */
-
-import createClient, {SanityClient} from '@sanity/client'
+import {createClient, SanityClient} from '@sanity/client'
 import {map, shareReplay} from 'rxjs/operators'
-import {CurrentUser, Schema} from '@sanity/types'
+import {CurrentUser, Schema, SchemaValidationProblem} from '@sanity/types'
 import {studioTheme} from '@sanity/ui'
 import {startCase} from 'lodash'
 import {fromUrl} from '@sanity/bifur-client'
@@ -48,6 +46,8 @@ import {SchemaError} from './SchemaError'
 import {createDefaultIcon} from './createDefaultIcon'
 
 type InternalSource = WorkspaceSummary['__internal']['sources'][number]
+
+const isError = (p: SchemaValidationProblem) => p.severity === 'error'
 
 function normalizeIcon(
   icon: React.ComponentType | React.ElementType | undefined,
@@ -131,7 +131,7 @@ export function prepareConfig(
 
         const schemaValidationProblemGroups = schema._validation
         const schemaErrors = schemaValidationProblemGroups?.filter((msg) =>
-          msg.problems.some((p) => p.severity === 'error')
+          msg.problems.some(isError)
         )
 
         if (schemaValidationProblemGroups && schemaErrors?.length) {
@@ -205,9 +205,8 @@ interface ResolveSourceOptions {
 
 function getBifurClient(client: SanityClient, auth: AuthStore) {
   const bifurVersionedClient = client.withConfig({apiVersion: '2022-06-30'})
-  const dataset = bifurVersionedClient.config().dataset
-
-  const url = bifurVersionedClient.getUrl(`/socket/${dataset}`).replace(/^http/, 'ws')
+  const {dataset, url: baseUrl} = bifurVersionedClient.config()
+  const url = `${baseUrl.replace(/\/+$/, '')}/socket/${dataset}`.replace(/^http/, 'ws')
 
   const options = auth.token ? {token$: auth.token} : {}
   return fromUrl(url, options)

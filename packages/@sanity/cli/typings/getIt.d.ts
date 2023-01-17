@@ -1,9 +1,7 @@
 declare module 'get-it' {
-  const getIt: any
-  export default getIt
+  export const getIt: any
 }
 
-declare module 'get-it/lib-node/middleware/promise' {
-  const middleware: any
-  export default middleware
+declare module 'get-it/middleware' {
+  export const promise: any
 }
