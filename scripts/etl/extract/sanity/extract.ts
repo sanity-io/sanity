@@ -1,4 +1,4 @@
-import createSanityClient, {SanityDocument} from '@sanity/client'
+import {createClient as createSanityClient, SanityDocument} from '@sanity/client'
 import chalk from 'chalk'
 import {_encodePackageName} from '../../_helpers'
 import {config} from '../../config'

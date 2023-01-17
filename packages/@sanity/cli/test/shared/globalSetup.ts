@@ -5,7 +5,7 @@ import {execFileSync, spawnSync} from 'child_process'
 import {mkdir, stat, readFile, rename, writeFile} from 'fs/promises'
 import {copy as copyCb} from 'cpx'
 import Configstore from 'configstore'
-import SanityClient from '@sanity/client'
+import {createClient} from '@sanity/client'
 
 import {
   baseTestPath,
@@ -98,7 +98,7 @@ async function prepareCliAuth(configPath: string) {
     throw new Error('SANITY_CI_CLI_AUTH_TOKEN not set')
   }
 
-  const client = new SanityClient({
+  const client = createClient({
     projectId: cliProjectId,
     apiVersion: '1',
     useCdn: false,
@@ -116,7 +116,7 @@ async function prepareCliAuth(configPath: string) {
 }
 
 async function prepareDatasets() {
-  const client = new SanityClient({
+  const client = createClient({
     projectId: cliProjectId,
     apiVersion: '2022-06-03',
     useCdn: false,

@@ -2,7 +2,7 @@ const crypto = require('crypto')
 const {URL} = require('url')
 const miss = require('mississippi')
 const getUri = require('get-uri')
-const getIt = require('get-it')
+const {getIt} = require('get-it')
 const {promise} = require('get-it/middleware')
 
 const retryOnFailure = require('./retryOnFailure')

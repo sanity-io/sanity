@@ -1,4 +1,4 @@
-import createSanityClient, {SanityDocument} from '@sanity/client'
+import {createClient as createSanityClient, SanityDocument} from '@sanity/client'
 import {TransformResult} from '@sanity/tsdoc-to-portable-text'
 import chalk from 'chalk'
 import {config} from '../../config'

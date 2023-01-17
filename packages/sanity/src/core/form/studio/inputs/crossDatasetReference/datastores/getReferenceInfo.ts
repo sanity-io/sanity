@@ -13,6 +13,7 @@ import {
 } from '../../../../../preview'
 import {FIXME} from '../../../../../FIXME'
 import {isRecord} from '../../../../../util'
+import {getDataApiUrl} from '../../../../../util/apiUrl'
 
 const REQUEST_TAG_BASE = 'cross-dataset-refs'
 
@@ -108,7 +109,7 @@ function fetchDocumentAvailability(
   id: string
 ): Observable<DocumentAvailability | null> {
   const requestOptions = {
-    uri: client.getDataUrl('doc', id),
+    uri: getDataApiUrl(client, 'doc', id),
     json: true,
     query: {excludeContent: 'true'},
     tag: `${REQUEST_TAG_BASE}.availability`,

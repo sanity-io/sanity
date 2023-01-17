@@ -1,4 +1,4 @@
-const getIt = require('get-it')
+const {getIt} = require('get-it')
 const {keepAlive, promise} = require('get-it/middleware')
 const debug = require('./debug')
 
