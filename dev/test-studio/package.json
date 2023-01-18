@@ -21,7 +21,7 @@
     "@sanity/color": "^2.1.20",
     "@sanity/google-maps-input": "^3.0.1",
     "@sanity/icons": "^2.1.0",
-    "@sanity/image-url": "^1.0.1",
+    "@sanity/image-url": "^1.0.2",
     "@sanity/portable-text-editor": "3.2.4",
     "@sanity/types": "3.2.4",
     "@sanity/ui": "^1.0.0",

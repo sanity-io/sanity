@@ -144,7 +144,7 @@
     "@sanity/export": "3.2.4",
     "@sanity/generate-help-url": "^3.0.0",
     "@sanity/icons": "^2.1.0",
-    "@sanity/image-url": "^1.0.1",
+    "@sanity/image-url": "^1.0.2",
     "@sanity/import": "3.2.4",
     "@sanity/logos": "^2.0.2",
     "@sanity/mutator": "3.2.4",
