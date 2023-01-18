@@ -1,5 +1,5 @@
-import React, {useMemo} from 'react'
 import {Box, Card, Inline, Stack, Text} from '@sanity/ui'
+import React from 'react'
 import {DeskToolProvider} from '../../../../DeskToolProvider'
 import type {DocumentPaneNode} from '../../../../types'
 import {DocumentPaneProvider} from '../../DocumentPaneProvider'
@@ -7,24 +7,20 @@ import {TimelineMenu} from '../timelineMenu'
 
 const DOCUMENT_ID = 'test'
 const DOCUMENT_TYPE = 'author'
+const PANE: DocumentPaneNode = {
+  id: DOCUMENT_ID,
+  options: {
+    id: DOCUMENT_ID,
+    type: DOCUMENT_TYPE,
+  },
+  type: 'document',
+  title: 'Workshop',
+}
 
 export default function DefaultStory() {
-  const pane: DocumentPaneNode = useMemo(
-    () => ({
-      id: DOCUMENT_ID,
-      options: {
-        id: DOCUMENT_ID,
-        type: DOCUMENT_TYPE,
-      },
-      type: 'document',
-      title: 'Workshop',
-    }),
-    []
-  )
-
   return (
     <DeskToolProvider>
-      <DocumentPaneProvider index={0} itemId={DOCUMENT_ID} pane={pane} paneKey={DOCUMENT_ID}>
+      <DocumentPaneProvider index={0} itemId={DOCUMENT_ID} pane={PANE} paneKey={DOCUMENT_ID}>
         <Box padding={2}>
           <Stack space={2}>
             <Card padding={3} shadow={1} tone="primary">
