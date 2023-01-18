@@ -20,7 +20,7 @@ jobs:
         with:
           github-token: ${{ github.token }}
           exclude-issue-created-before: '2022-11-01T00:00:00Z' 
-          issue-inactive-days: 60
+          issue-inactive-days: 90
           process-only: 'issues'
           issue-comment: >
             This thread has been automatically locked because it has not had recent activity. 
