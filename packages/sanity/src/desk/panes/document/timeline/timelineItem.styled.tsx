@@ -1,4 +1,4 @@
-import {Text, Box, MenuItem, Theme, Flex} from '@sanity/ui'
+import {Text, Box, MenuItem, Theme, Flex, rem} from '@sanity/ui'
 import styled, {css} from 'styled-components'
 import {TimelineItemState} from './types'
 
@@ -112,4 +112,9 @@ export const IconBox = styled(Box)`
 
 export const EventLabel = styled(Text)`
   text-transform: capitalize;
+`
+
+export const TimestampBox = styled(Box)`
+  min-width: 1rem;
+  margin-left: ${({theme}) => `-${rem(theme.sanity.space[1])}`};
 `

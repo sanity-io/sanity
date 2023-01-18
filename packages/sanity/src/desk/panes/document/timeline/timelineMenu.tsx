@@ -1,5 +1,5 @@
 import {SelectIcon} from '@sanity/icons'
-import {useClickOutside, Button, Popover, Placement} from '@sanity/ui'
+import {useClickOutside, Button, Popover, Placement, useGlobalKeyDown} from '@sanity/ui'
 import {upperFirst} from 'lodash'
 import React, {useCallback, useState} from 'react'
 import styled from 'styled-components'
@@ -54,7 +54,18 @@ export function TimelineMenu({chunk, mode, placement}: TimelineMenuProps) {
     handleClose()
   }, [handleClose])
 
+  const handleGlobalKeyDown = useCallback(
+    (event: KeyboardEvent) => {
+      if (open && (event.key === 'Escape' || event.key === 'Tab')) {
+        handleClose()
+        button?.focus()
+      }
+    },
+    [button, handleClose, open]
+  )
+
   useClickOutside(handleClickOutside, [menuContent, button])
+  useGlobalKeyDown(handleGlobalKeyDown)
 
   const selectRev = useCallback(
     (revChunk: Chunk) => {
