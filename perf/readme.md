@@ -7,4 +7,3 @@ Run the perf tests like so:
 ```
 $ yarn test-perf
 ```
-

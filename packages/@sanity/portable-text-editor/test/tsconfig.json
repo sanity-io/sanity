@@ -7,6 +7,6 @@
     }
   },
   "compilerOptions": {
-    "target": "ESNext",
+    "target": "ESNext"
   }
 }

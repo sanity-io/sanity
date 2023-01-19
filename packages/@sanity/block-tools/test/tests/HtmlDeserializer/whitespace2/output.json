@@ -40,9 +40,7 @@
       },
       {
         "_type": "span",
-        "marks": [
-          "em"
-        ],
+        "marks": ["em"],
         "text": " I have one in the beginning but none in the end",
         "_key": "randomKey61"
       }
@@ -68,9 +66,7 @@
       },
       {
         "_type": "span",
-        "marks": [
-          "randomKey0"
-        ],
+        "marks": ["randomKey0"],
         "text": "I have none in the beginning and none in the end",
         "_key": "randomKey71"
       },
@@ -102,9 +98,7 @@
       },
       {
         "_type": "span",
-        "marks": [
-          "randomKey1"
-        ],
+        "marks": ["randomKey1"],
         "text": "But none here",
         "_key": "randomKey81"
       },
@@ -141,9 +135,7 @@
       },
       {
         "_type": "span",
-        "marks": [
-          "randomKey2"
-        ],
+        "marks": ["randomKey2"],
         "text": "these",
         "_key": "randomKey91"
       },
@@ -155,9 +147,7 @@
       },
       {
         "_type": "span",
-        "marks": [
-          "randomKey3"
-        ],
+        "marks": ["randomKey3"],
         "text": "two",
         "_key": "randomKey93"
       },
@@ -183,9 +173,7 @@
       },
       {
         "_type": "span",
-        "marks": [
-          "em"
-        ],
+        "marks": ["em"],
         "text": "these",
         "_key": "randomKey101"
       },
@@ -197,9 +185,7 @@
       },
       {
         "_type": "span",
-        "marks": [
-          "em"
-        ],
+        "marks": ["em"],
         "text": "two",
         "_key": "randomKey103"
       },
