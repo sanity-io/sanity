@@ -335,7 +335,7 @@ export class BaseImageInput extends React.PureComponent<BaseImageInputProps, Bas
 
   handleFilesOver = (hoveringFiles: FileInfo[]) => {
     this.setState({
-      hoveringFiles,
+      hoveringFiles: hoveringFiles.filter((file) => file.kind !== 'string'),
     })
   }
   handleFilesOut = () => {
@@ -425,6 +425,7 @@ export class BaseImageInput extends React.PureComponent<BaseImageInputProps, Bas
     const {hoveringFiles} = this.state
 
     const acceptedFiles = hoveringFiles.filter((file) => resolveUploader(schemaType, file))
+
     const rejectedFilesCount = hoveringFiles.length - acceptedFiles.length
     const imageUrl = imageUrlBuilder
       .width(2000)
