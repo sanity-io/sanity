@@ -16,6 +16,7 @@ function PrimitiveField(field: FieldProps) {
   return (
     <FormField
       data-testid={`field-${field.inputId}`}
+      inputId={field.inputId}
       level={field.level}
       title={field.title}
       description={field.description}
