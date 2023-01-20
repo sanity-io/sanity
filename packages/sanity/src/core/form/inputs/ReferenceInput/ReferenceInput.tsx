@@ -273,38 +273,40 @@ export function ReferenceInput(props: ReferenceInputProps) {
             </Text>
           </Alert>
         ) : null}
-        <AutocompleteContainer ref={autocompletePopoverReferenceElementRef}>
-          <ReferenceAutocomplete
-            {...elementProps}
-            onFocus={handleFocus}
-            onBlur={handleBlur}
-            data-testid="autocomplete"
-            loading={searchState.isLoading}
-            referenceElement={autocompletePopoverReferenceElementRef.current}
-            options={hits}
-            radius={1}
-            placeholder="Type to search"
-            onKeyDown={handleAutocompleteKeyDown}
-            readOnly={loadableReferenceInfo.isLoading}
-            onQueryChange={handleQueryChange}
-            searchString={searchState.searchString}
-            onChange={handleChange}
-            filterOption={NO_FILTER}
-            renderOption={renderOption as any}
-            renderValue={renderValue}
-            value={value?._ref}
-            openButton={{onClick: handleAutocompleteOpenButtonClick}}
-          />
-
-          {!readOnly && createOptions.length > 0 && (
-            <CreateButton
-              id={`${id}-selectTypeMenuButton`}
-              createOptions={createOptions}
-              onCreate={handleCreateNew}
-              onKeyDown={handleCreateButtonKeyDown}
+        {!readOnly && (
+          <AutocompleteContainer ref={autocompletePopoverReferenceElementRef}>
+            <ReferenceAutocomplete
+              {...elementProps}
+              onFocus={handleFocus}
+              onBlur={handleBlur}
+              data-testid="autocomplete"
+              loading={searchState.isLoading}
+              referenceElement={autocompletePopoverReferenceElementRef.current}
+              options={hits}
+              radius={1}
+              placeholder="Type to search"
+              onKeyDown={handleAutocompleteKeyDown}
+              readOnly={loadableReferenceInfo.isLoading}
+              onQueryChange={handleQueryChange}
+              searchString={searchState.searchString}
+              onChange={handleChange}
+              filterOption={NO_FILTER}
+              renderOption={renderOption as any}
+              renderValue={renderValue}
+              value={value?._ref}
+              openButton={{onClick: handleAutocompleteOpenButtonClick}}
             />
-          )}
-        </AutocompleteContainer>
+
+            {!readOnly && createOptions.length > 0 && (
+              <CreateButton
+                id={`${id}-selectTypeMenuButton`}
+                createOptions={createOptions}
+                onCreate={handleCreateNew}
+                onKeyDown={handleCreateButtonKeyDown}
+              />
+            )}
+          </AutocompleteContainer>
+        )}
       </Stack>
     </Stack>
   )
