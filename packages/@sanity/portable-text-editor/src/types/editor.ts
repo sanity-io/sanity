@@ -93,7 +93,8 @@ export interface PortableTextSlateEditor extends ReactEditor {
   isTextSpan: (value: unknown) => value is PortableTextSpan
   isListBlock: (value: unknown) => value is PortableTextListBlock
   readOnly: boolean
-  maxBlocks: number | undefined
+  maxBlocks?: number
+  patches$?: PatchObservable
 
   /**
    * Increments selected list items levels, or decrements them if `reverse` is true.

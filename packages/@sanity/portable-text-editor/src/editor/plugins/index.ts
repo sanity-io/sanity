@@ -43,10 +43,9 @@ export const withPlugins = <T extends Editor>(
 ): PortableTextSlateEditor => {
   const e = editor as T & PortableTextSlateEditor
   const {portableTextEditor} = options
-  const {schemaTypes, keyGenerator, readOnly, change$, syncValue, incomingPatches$} =
-    portableTextEditor
-  e.maxBlocks = portableTextEditor.maxBlocks || -1
-  e.readOnly = portableTextEditor.readOnly || false
+  const {schemaTypes, keyGenerator, change$} = portableTextEditor
+  e.maxBlocks = editor.maxBlocks || -1
+  e.readOnly = editor.readOnly || false
   if (e.destroy) {
     e.destroy()
   } else {
@@ -58,22 +57,22 @@ export const withPlugins = <T extends Editor>(
       normalizeNode: e.normalizeNode,
     })
   }
+  const incomingPatches$ = e.patches$
   const operationToPatches = createOperationToPatches(schemaTypes)
   const withObjectKeys = createWithObjectKeys(schemaTypes, keyGenerator)
   const withSchemaTypes = createWithSchemaTypes(schemaTypes)
   const withEditableAPI = createWithEditableAPI(portableTextEditor, schemaTypes, keyGenerator)
-  const [withPatches, withPatchesCleanupFunction] = readOnly
+  const [withPatches, withPatchesCleanupFunction] = e.readOnly
     ? []
     : createWithPatches({
         patchFunctions: operationToPatches,
         change$,
         schemaTypes,
-        syncValue,
         incomingPatches$,
       })
   const withMaxBlocks = createWithMaxBlocks()
   const withPortableTextLists = createWithPortableTextLists(schemaTypes)
-  const [withUndoRedo, withUndoRedoCleanupFunction] = readOnly
+  const [withUndoRedo, withUndoRedoCleanupFunction] = e.readOnly
     ? []
     : createWithUndoRedo(incomingPatches$)
   const withPortableTextMarkModel = createWithPortableTextMarkModel(schemaTypes)
@@ -102,7 +101,7 @@ export const withPlugins = <T extends Editor>(
       withUndoRedoCleanupFunction()
     }
   }
-  if (readOnly) {
+  if (e.readOnly) {
     return withSchemaTypes(
       withObjectKeys(
         withPortableTextMarkModel(
@@ -118,7 +117,7 @@ export const withPlugins = <T extends Editor>(
     )
   }
 
-  // The 'if' here is only to satisfy Typscript
+  // The 'if' here is only to satisfy Typescript
   if (withUndoRedo && withPatches) {
     // Ordering is important here, selection dealing last, data manipulation in the middle and core model stuff first.
     return withSchemaTypes(

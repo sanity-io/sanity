@@ -5,7 +5,9 @@ import {
   ReactEditor,
   RenderElementProps,
   RenderLeafProps,
+  useSlate,
 } from '@sanity/slate-react'
+import {noop} from 'lodash'
 import {
   EditorSelection,
   OnBeforeInputFn,
@@ -42,9 +44,6 @@ const PLACEHOLDER_STYLE: React.CSSProperties = {
   pointerEvents: 'none',
 }
 
-const NOOP = () => {
-  // Nope
-}
 type DOMNode = globalThis.Node
 
 const isDOMNode = (value: unknown): value is DOMNode => {
@@ -106,7 +105,8 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
   const readOnly = usePortableTextEditorReadOnlyStatus()
   const ref = useForwardedRef(forwardedRef)
 
-  const {change$, keyGenerator, schemaTypes, slateInstance: slateEditor} = portableTextEditor
+  const {change$, keyGenerator, schemaTypes} = portableTextEditor
+  const slateEditor = useSlate()
 
   const blockTypeName = schemaTypes.block.name
 
@@ -310,7 +310,7 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
     }
     // Disable scroll into view totally
     if (scrollSelectionIntoView === null) {
-      return NOOP
+      return noop
     }
     // Translate PortableTextEditor prop fn to Slate plugin fn
     return (editor: ReactEditor, domRange: Range) => {
@@ -335,7 +335,7 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
       ]
     }
     return EMPTY_DECORATORS
-  }, [schemaTypes, slateEditor.children])
+  }, [schemaTypes, slateEditor])
 
   // The editor
   const slateEditable = useMemo(

@@ -81,7 +81,6 @@ interface Options {
   patchFunctions: PatchFunctions
   change$: Subject<EditorChange>
   schemaTypes: PortableTextMemberSchemaTypes
-  syncValue: () => void
   incomingPatches$?: Observable<{
     patches: Patch[]
     snapshot: PortableTextBlock[] | undefined
@@ -92,7 +91,6 @@ export function createWithPatches({
   patchFunctions,
   change$,
   schemaTypes,
-  syncValue,
   incomingPatches$,
 }: Options): [
   editor: (editor: PortableTextSlateEditor) => PortableTextSlateEditor,
@@ -118,18 +116,25 @@ export function createWithPatches({
 
       // Sync the with props.value in PortableTextEditor after we have processed batches of incoming patches.
       // This is only for consistency checking against the props.value, so it can be debounced without problems.
-      const syncValueAfterIncomingPatches = debounce(() => syncValue(), 0, {
-        trailing: true,
-        leading: false,
-      })
+      const syncValueAfterIncomingPatches = debounce(
+        (snapshot: PortableTextBlock[] | undefined) => {
+          debug('Emitting new value from snapshot')
+          change$.next({type: 'value', value: snapshot})
+        },
+        0,
+        {
+          trailing: true,
+          leading: false,
+        }
+      )
 
       // Subscribe and deal with incoming patches
       if (incomingPatches$) {
         debug('Subscribing to patches')
         patchSubscription = incomingPatches$.subscribe(({patches, snapshot}) => {
-          debug('Incoming patches', patches)
           const remotePatches = patches.filter((p) => p.origin !== 'local')
           if (remotePatches.length !== 0) {
+            debug('Remove patches', patches)
             Editor.withoutNormalizing(editor, () => {
               remotePatches.forEach((patch) => {
                 debug(`Handling remote patch ${JSON.stringify(patch)}`)
@@ -149,7 +154,7 @@ export function createWithPatches({
             })
           }
           if (patches.length > 0) {
-            syncValueAfterIncomingPatches()
+            syncValueAfterIncomingPatches(snapshot)
           }
         })
       }
