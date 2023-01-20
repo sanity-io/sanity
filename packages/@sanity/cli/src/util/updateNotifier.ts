@@ -125,13 +125,18 @@ export function runUpdateCheck(options: UpdateCheckOptions): {notify: () => Prom
       return userConfig.get('cliHasUpdate') || false
     }
 
-    let latestRemote
+    let latestRemote: string | undefined
     try {
       debug('Checking for latest remote version')
       latestRemote = await latestVersion(name)
       debug('Latest remote version is %s', latestRemote)
     } catch (err) {
       debug(`Failed to fetch latest version of ${name} from npm:\n${err.stack}`)
+      return false
+    }
+
+    if (!latestRemote) {
+      debug(`Failed to fetch latest version of ${name} from npm`)
       return false
     }
 
