@@ -283,9 +283,10 @@ export function ReferenceInput(props: ReferenceInputProps) {
             referenceElement={autocompletePopoverReferenceElementRef.current}
             options={hits}
             radius={1}
-            placeholder="Type to search"
+            // eslint-disable-next-line no-negated-condition
+            placeholder={!readOnly ? 'Type to search' : ''}
             onKeyDown={handleAutocompleteKeyDown}
-            readOnly={loadableReferenceInfo.isLoading}
+            readOnly={loadableReferenceInfo.isLoading || readOnly}
             onQueryChange={handleQueryChange}
             searchString={searchState.searchString}
             onChange={handleChange}
