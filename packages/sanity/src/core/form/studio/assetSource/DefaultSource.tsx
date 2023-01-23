@@ -14,7 +14,12 @@ const PER_PAGE = 200
 const ASSET_TYPE_IMAGE = 'sanity.imageAsset'
 const ASSET_TYPE_FILE = 'sanity.fileAsset'
 
-const buildQuery = (start = 0, end = PER_PAGE, assetType = ASSET_TYPE_IMAGE) => `
+const buildQuery = (
+  start = 0,
+  end = PER_PAGE,
+  assetType = ASSET_TYPE_IMAGE,
+  acceptParam: string
+) => `
   *[_type == "${assetType}"] | order(_updatedAt desc) [${start}...${end}] {
     _id,
     _updatedAt,
@@ -24,8 +29,9 @@ const buildQuery = (start = 0, end = PER_PAGE, assetType = ASSET_TYPE_IMAGE) => 
     mimeType,
     extension,
     size,
-    metadata {dimensions}
-  }
+    metadata {dimensions},
+    "acceptedType": ${acceptParam.length <= 0 ? 'true' : `mimeType == "${acceptParam}"`}
+  } 
 `
 
 const ThumbGrid = styled(Grid)`
@@ -58,6 +64,7 @@ const DefaultAssetSource = function DefaultAssetSource(
     dialogHeaderTitle = 'Select image',
     onClose,
     onSelect,
+    accept,
   } = props
 
   const fetchPage = useCallback(
@@ -67,11 +74,10 @@ const DefaultAssetSource = function DefaultAssetSource(
       const isImageAssetType = assetType === 'image'
       const tag = isImageAssetType ? 'asset.image-list' : 'asset.file-list'
       const assetTypeParam = isImageAssetType ? ASSET_TYPE_IMAGE : ASSET_TYPE_FILE
-
-      setIsLoading(true)
+      const acceptParam = accept === 'image/*' ? '' : accept // match the "default" for file types too
 
       fetch$.current = versionedClient.observable
-        .fetch(buildQuery(start, end, assetTypeParam), {}, {tag})
+        .fetch(buildQuery(start, end, assetTypeParam, acceptParam), {}, {tag})
         .subscribe((result) => {
           setIsLastPage(result.length < PER_PAGE)
           // eslint-disable-next-line max-nested-callbacks
