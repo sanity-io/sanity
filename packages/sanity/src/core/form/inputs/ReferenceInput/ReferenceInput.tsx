@@ -283,8 +283,7 @@ export function ReferenceInput(props: ReferenceInputProps) {
             referenceElement={autocompletePopoverReferenceElementRef.current}
             options={hits}
             radius={1}
-            // eslint-disable-next-line no-negated-condition
-            placeholder={!readOnly ? 'Type to search' : ''}
+            placeholder="Type to search"
             onKeyDown={handleAutocompleteKeyDown}
             readOnly={loadableReferenceInfo.isLoading || readOnly}
             onQueryChange={handleQueryChange}
@@ -297,9 +296,10 @@ export function ReferenceInput(props: ReferenceInputProps) {
             openButton={{onClick: handleAutocompleteOpenButtonClick}}
           />
 
-          {!readOnly && createOptions.length > 0 && (
+          {createOptions.length > 0 && (
             <CreateButton
               id={`${id}-selectTypeMenuButton`}
+              readOnly={readOnly}
               createOptions={createOptions}
               onCreate={handleCreateNew}
               onKeyDown={handleCreateButtonKeyDown}

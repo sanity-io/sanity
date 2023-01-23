@@ -12,6 +12,7 @@ interface Props extends ComponentProps<typeof Button> {
   createOptions: CreateReferenceOption[]
   menuRef?: React.RefObject<HTMLDivElement>
   onCreate: (option: CreateReferenceOption) => void
+  readOnly?: boolean
 }
 
 function ConditionalTooltip(
@@ -47,7 +48,15 @@ export function CreateButton(props: Props) {
 
   return createOptions.length > 1 ? (
     <MenuButton
-      button={<Button {...rest} text="Create new…" mode="ghost" icon={AddIcon} />}
+      button={
+        <Button
+          {...rest}
+          disabled={props.readOnly}
+          text="Create new…"
+          mode="ghost"
+          icon={AddIcon}
+        />
+      }
       id={id}
       menu={
         <Menu ref={props.menuRef}>
@@ -83,7 +92,7 @@ export function CreateButton(props: Props) {
       {...rest}
       text="Create new"
       mode="ghost"
-      disabled={!createOptions[0].permission.granted}
+      disabled={!createOptions[0].permission.granted || props.readOnly}
       onClick={() => onCreate(createOptions[0])}
       icon={AddIcon}
     />
