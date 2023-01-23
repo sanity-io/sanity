@@ -15,6 +15,15 @@ interface OperatorDateEqualValueWithDate extends OperatorDateEqualValue {
 const fieldPath = 'dateField'
 
 describe('dateOperators', () => {
+  beforeAll(() => {
+    jest.useFakeTimers()
+    jest.setSystemTime(new Date('2023-01-01T00:00:00.000Z'))
+  })
+
+  afterAll(() => {
+    jest.useRealTimers()
+  })
+
   describe('(date)', () => {
     it('should create a valid filter for dateAfter', () => {
       const value: OperatorDateDirectionValue = {date: '2000-01-20'}
