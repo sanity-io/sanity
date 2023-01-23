@@ -18,6 +18,7 @@ export const ReferenceAutocomplete = forwardRef(function ReferenceAutocomplete(
     referenceElement: HTMLDivElement | null
     searchString?: string
     portalRef?: React.RefObject<HTMLDivElement>
+    readOnly?: boolean
   },
   ref: React.ForwardedRef<HTMLInputElement>
 ) {

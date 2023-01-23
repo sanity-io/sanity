@@ -23,6 +23,7 @@ export default defineType({
       type: 'reference',
       description: 'Some description',
       to: {type: 'referenceTest'},
+      readOnly: () => true,
     },
     {
       name: 'selfOrEmpty',

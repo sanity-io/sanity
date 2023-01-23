@@ -253,6 +253,7 @@ export function ReferenceInput(props: ReferenceInputProps) {
       })),
     [searchState.hits]
   )
+
   return (
     <Stack space={1} data-testid="reference-input">
       <Stack space={2}>
@@ -273,20 +274,20 @@ export function ReferenceInput(props: ReferenceInputProps) {
             </Text>
           </Alert>
         ) : null}
-        {!readOnly && (
+        {
           <AutocompleteContainer ref={autocompletePopoverReferenceElementRef}>
             <ReferenceAutocomplete
               {...elementProps}
-              onFocus={handleFocus}
               onBlur={handleBlur}
               data-testid="autocomplete"
               loading={searchState.isLoading}
               referenceElement={autocompletePopoverReferenceElementRef.current}
               options={hits}
               radius={1}
-              placeholder="Type to search"
+              // eslint-disable-next-line no-negated-condition
+              placeholder={!readOnly ? 'Type to search' : ''}
               onKeyDown={handleAutocompleteKeyDown}
-              readOnly={loadableReferenceInfo.isLoading}
+              readOnly={loadableReferenceInfo.isLoading || readOnly}
               onQueryChange={handleQueryChange}
               searchString={searchState.searchString}
               onChange={handleChange}
@@ -306,7 +307,7 @@ export function ReferenceInput(props: ReferenceInputProps) {
               />
             )}
           </AutocompleteContainer>
-        )}
+        }
       </Stack>
     </Stack>
   )
