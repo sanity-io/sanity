@@ -25,6 +25,7 @@ import {Field, formComponentsPlugin, Input, Item, Preview} from './components/fo
 import {googleTheme} from './themes/google'
 import {vercelTheme} from './themes/vercel'
 import {GoogleLogo, TailwindLogo, VercelLogo} from './components/workspaceLogos'
+import bulk from './plugins/bulk'
 
 const sharedSettings = definePlugin({
   name: 'sharedSettings',
@@ -88,6 +89,7 @@ const sharedSettings = definePlugin({
     // eslint-disable-next-line camelcase
     muxInput({mp4_support: 'standard'}),
     presenceTool(),
+    bulk(),
   ],
 })
 

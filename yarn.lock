@@ -3660,10 +3660,10 @@
   resolved "https://registry.yarnpkg.com/@sanity/icons/-/icons-2.2.1.tgz#9f11ba724db89204230daf10ad89db42f2063e32"
   integrity sha512-/RjvrNnYEhpPb4ijYz8LC2cWilwfN/ahyBfi9LA24CCuAc0fjyVkTIQwtG+LRZ9anHn7Z3zc+V/6hzgYQO6DPQ==
 
-"@sanity/image-url@^1.0.1":
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/@sanity/image-url/-/image-url-1.0.1.tgz#960d649b2f4396da0adb31cf94503c929495cea0"
-  integrity sha512-AdKQ3zMk7WdoNwoJPrAvQhW+kUtBldBX0nHtnGy+rwmgsCQ0rAXasrgH43Fhmsp/yB6piiq+F2d5qEuBFsdQVg==
+"@sanity/image-url@^1.0.2":
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/@sanity/image-url/-/image-url-1.0.2.tgz#1ff7259e9bad6bfca4169f21c53a4123f6ac78c3"
+  integrity sha512-C4+jb2ny3ZbMgEkLd7Z3C75DsxcTEoE+axXQJsQ75ou0AKWGdVsP351hqK6mJUUxn5HCSlu3vznoh7Yljye4cQ==
 
 "@sanity/incompatible-plugin@^1.0.4":
   version "1.0.4"
