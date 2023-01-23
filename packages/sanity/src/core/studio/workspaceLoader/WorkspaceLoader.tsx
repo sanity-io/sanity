@@ -158,7 +158,7 @@ function WorkspaceLoaderBoundary({ConfigErrorsComponent, ...props}: WorkspaceLoa
   // TODO: implement this
   // const errors = useMemo(() => flattenErrors(error, []), [error])
 
-  //TODO: implement config error screen
+  //TODO: implement config error screen - a story has been created for this
   // if (error instanceof ConfigResolutionError) return <ConfigErrorsComponent />
 
   // otherwise hand off to other boundaries
