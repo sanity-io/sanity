@@ -172,6 +172,7 @@ const DefaultAssetSource = function DefaultAssetSource(
               onClick={handleItemClick}
               onKeyPress={handleItemKeyPress}
               onDeleteFinished={handleDeleteFinished}
+              disabled={!asset.acceptedType}
             />
           ))}
         </ThumbGrid>
