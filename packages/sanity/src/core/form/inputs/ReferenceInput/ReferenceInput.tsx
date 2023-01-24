@@ -292,7 +292,6 @@ export function ReferenceInput(props: ReferenceInputProps) {
             filterOption={NO_FILTER}
             renderOption={renderOption as any}
             renderValue={renderValue}
-            value={value?._ref}
             openButton={{onClick: handleAutocompleteOpenButtonClick}}
           />
 

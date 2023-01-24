@@ -1,4 +1,4 @@
-import React, {useCallback, useMemo, useRef} from 'react'
+import React, {ComponentProps, ForwardedRef, forwardRef, useCallback, useMemo, useRef} from 'react'
 import {Reference, ReferenceSchemaType} from '@sanity/types'
 import {
   Box,
@@ -14,7 +14,6 @@ import {
   Text,
 } from '@sanity/ui'
 import {
-  CloseIcon,
   EllipsisVerticalIcon,
   LaunchIcon as OpenInNewTabIcon,
   SyncIcon as ReplaceIcon,
@@ -30,6 +29,7 @@ import {ReferencePreviewCard} from './ReferenceItem'
 import {useReferenceInput} from './useReferenceInput'
 import {useReferenceInfo} from './useReferenceInfo'
 import {PreviewReferenceValue} from './PreviewReferenceValue'
+import {IntentLink} from 'sanity/router'
 
 interface ReferenceFieldProps extends Omit<ObjectFieldProps, 'renderDefault'> {
   schemaType: ReferenceSchemaType
@@ -106,6 +106,10 @@ export function ReferenceField(props: ReferenceFieldProps) {
   const handleFixStrengthMismatch = useCallback(() => {
     onChange(schemaType.weak === true ? set(true, ['_weak']) : unset(['_weak']))
   }, [onChange, schemaType])
+
+  const handleReplace = useCallback(() => {
+    inputProps.onPathFocus(['_ref'])
+  }, [inputProps])
 
   const weakIs = value?._weak ? 'weak' : 'strong'
   const weakShouldBe = schemaType.weak === true ? 'weak' : 'strong'
@@ -199,6 +203,27 @@ export function ReferenceField(props: ReferenceFieldProps) {
     </>
   )
 
+  const OpenLink = useMemo(
+    () =>
+      // eslint-disable-next-line @typescript-eslint/no-shadow
+      forwardRef(function OpenLink(
+        restProps: ComponentProps<typeof IntentLink>,
+        _ref: ForwardedRef<HTMLAnchorElement>
+      ) {
+        return (
+          <IntentLink
+            {...restProps}
+            intent="edit"
+            params={{id: value?._ref, type: refType?.name}}
+            target="_blank"
+            rel="noopener noreferrer"
+            ref={_ref}
+          />
+        )
+      }),
+    [refType?.name, value?._ref]
+  )
+
   const menu = useMemo(
     () =>
       readOnly ? null : (
@@ -211,22 +236,14 @@ export function ReferenceField(props: ReferenceFieldProps) {
                 {!readOnly && (
                   <>
                     <MenuItem text="Clear" tone="critical" icon={TrashIcon} onClick={handleClear} />
-                    <MenuItem
-                      text={value?._ref && isEditing ? 'Cancel replace' : 'Replace'}
-                      icon={value?._ref && isEditing ? CloseIcon : ReplaceIcon}
-                      onClick={
-                        value?._ref && isEditing
-                          ? () => inputProps.onPathFocus([])
-                          : () => inputProps.onPathFocus(['_ref'])
-                      }
-                    />
+                    <MenuItem text="Replace" icon={ReplaceIcon} onClick={handleReplace} />
                   </>
                 )}
 
-                {!readOnly && !isEditing && value._ref && <MenuDivider />}
-                {!isEditing && value._ref && (
+                {!readOnly && value?._ref && <MenuDivider />}
+                {value?._ref && (
                   <MenuItem
-                    as={EditReferenceLink}
+                    as={OpenLink}
                     data-as="a"
                     text="Open in new tab"
                     icon={OpenInNewTabIcon}
@@ -238,7 +255,7 @@ export function ReferenceField(props: ReferenceFieldProps) {
           />
         </Box>
       ),
-    [readOnly, inputId, handleClear, value?._ref, isEditing, EditReferenceLink, inputProps]
+    [handleClear, handleReplace, inputId, OpenLink, readOnly, value?._ref]
   )
   return (
     <FormField
