@@ -80,7 +80,7 @@ export default defineType({
       type: 'file',
       description: 'Should not accept other files types than pdf',
       options: {
-        accept: '.pdf',
+        accept: 'application/pdf',
       },
     },
   ],
