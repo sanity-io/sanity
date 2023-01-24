@@ -8,6 +8,7 @@ import React from 'react'
 // `
 
 export function ConfigErrorsScreen() {
+  /* This screen is not currently being used anywhere. We're keeping it as a basis for future work */
   return <>TODO: implement config errors screen</>
   // return (
   //   <Root forwardedAs={Flex}>
