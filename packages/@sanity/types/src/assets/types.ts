@@ -139,7 +139,7 @@ export type AssetFromSource = {
 /** @public */
 export interface AssetSourceComponentProps {
   assetType?: 'file' | 'image'
-  accept: string
+  accept?: string
   selectionType: 'single'
   dialogHeaderTitle?: React.ReactNode
   selectedAssets: Asset[]
