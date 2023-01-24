@@ -74,5 +74,14 @@ export default defineType({
         storeOriginalFilename: false,
       },
     },
+    {
+      name: 'filepdf',
+      title: 'File only accepts pdf',
+      type: 'file',
+      description: 'Should not accept other files types than pdf',
+      options: {
+        accept: '.pdf',
+      },
+    },
   ],
 })
