@@ -93,6 +93,13 @@ export function PreviewItem<Item extends ObjectItem = ObjectItem>(props: Preview
     }
   })
 
+  // Set focus back on the preview card when closing the dialog
+  useDidUpdate(open, (wasOpen) => {
+    if (wasOpen) {
+      previewCardRef.current?.focus()
+    }
+  })
+
   const resolvingInitialValue = (value as any)._resolvingInitialValue
 
   const handleDuplicate = useCallback(() => {

@@ -145,6 +145,12 @@ export class BaseImageInput extends React.PureComponent<BaseImageInputProps, Bas
     this.setState({hotspotButtonElement: el})
   }
 
+  // Get the menu button element in `ImageActionsMenu` so that focus can be restored to
+  // it when closing the dialog (see `handleAssetSourceClosed`)
+  setMenuButtonElement = (el: HTMLButtonElement | null) => {
+    this.setState({menuButtonElement: el})
+  }
+
   isImageToolEnabled() {
     return get(this.props.schemaType, 'options.hotspot') === true
   }
@@ -512,11 +518,12 @@ export class BaseImageInput extends React.PureComponent<BaseImageInputProps, Bas
 
           return (
             <ImageActionsMenu
-              onEdit={this.handleOpenDialog}
-              showEdit={showAdvancedEditButton}
-              setHotspotButtonElement={this.setHotspotButtonElement}
-              onMenuOpen={(isOpen) => this.setState({isMenuOpen: isOpen})}
               isMenuOpen={this.state.isMenuOpen}
+              onEdit={this.handleOpenDialog}
+              onMenuOpen={(isOpen) => this.setState({isMenuOpen: isOpen})}
+              setHotspotButtonElement={this.setHotspotButtonElement}
+              setMenuButtonElement={this.setMenuButtonElement}
+              showEdit={showAdvancedEditButton}
             >
               <ActionsMenu
                 onUpload={this.handleSelectFiles}
@@ -782,7 +789,6 @@ export class BaseImageInput extends React.PureComponent<BaseImageInputProps, Bas
       // The Stack space should match the space in ObjectInput
       <Stack space={5} data-testid="image-input">
         <ImperativeToast ref={this.setToast} />
-
         {members.map((member) => {
           if (member.kind === 'field' && (member.name === 'crop' || member.name === 'hotspot')) {
             // we're rendering these separately
@@ -820,7 +826,6 @@ export class BaseImageInput extends React.PureComponent<BaseImageInputProps, Bas
           //@ts-expect-error all possible cases should be covered
           return <>Unknown member kind: ${member.kind}</>
         })}
-
         {hotspotField?.open && (
           <FormInput
             {...this.props}

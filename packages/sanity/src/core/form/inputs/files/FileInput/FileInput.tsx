@@ -83,6 +83,7 @@ export class BaseFileInput extends React.PureComponent<BaseFileInputProps, BaseF
   _focusRef: Focusable | null = null
   _assetFieldPath: Path
   uploadSubscription: Subscription | null = null
+  browseButtonElement: HTMLButtonElement | null = null
 
   state: BaseFileInputState = {
     isUploading: false,
@@ -174,6 +175,13 @@ export class BaseFileInput extends React.PureComponent<BaseFileInputProps, BaseF
 
   handleAssetSourceClosed = () => {
     this.setState({selectedAssetSource: null})
+
+    // Restore focus to browse button when closing the dialog
+    this.browseButtonElement?.focus()
+  }
+
+  setBrowseButtonElement = (el: HTMLButtonElement | null) => {
+    this.browseButtonElement = el
   }
 
   uploadFirstAccepted(files: globalThis.File[]) {
@@ -486,6 +494,7 @@ export class BaseFileInput extends React.PureComponent<BaseFileInputProps, BaseF
       return (
         <MenuButton
           id={`${id}_assetFileButton`}
+          ref={this.setBrowseButtonElement}
           button={
             <Button
               mode="ghost"
@@ -530,6 +539,7 @@ export class BaseFileInput extends React.PureComponent<BaseFileInputProps, BaseF
         }}
         data-testid="file-input-browse-button"
         disabled={readOnly}
+        ref={this.setBrowseButtonElement}
       />
     )
   }

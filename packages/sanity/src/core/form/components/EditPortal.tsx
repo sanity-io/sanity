@@ -18,13 +18,13 @@ interface Props {
 
 export function EditPortal(props: Props): React.ReactElement {
   const {
-    type,
-    id,
-    width,
-    onClose,
     children,
-    legacy_referenceElement: referenceElement,
     header,
+    id,
+    legacy_referenceElement: referenceElement,
+    onClose,
+    type,
+    width,
   } = props
 
   const contents = (
