@@ -285,7 +285,7 @@ export function ReferenceInput(props: ReferenceInputProps) {
             radius={1}
             placeholder="Type to search"
             onKeyDown={handleAutocompleteKeyDown}
-            readOnly={loadableReferenceInfo.isLoading}
+            readOnly={loadableReferenceInfo.isLoading || readOnly}
             onQueryChange={handleQueryChange}
             searchString={searchState.searchString}
             onChange={handleChange}
@@ -296,9 +296,10 @@ export function ReferenceInput(props: ReferenceInputProps) {
             openButton={{onClick: handleAutocompleteOpenButtonClick}}
           />
 
-          {!readOnly && createOptions.length > 0 && (
+          {createOptions.length > 0 && (
             <CreateButton
               id={`${id}-selectTypeMenuButton`}
+              readOnly={readOnly}
               createOptions={createOptions}
               onCreate={handleCreateNew}
               onKeyDown={handleCreateButtonKeyDown}
