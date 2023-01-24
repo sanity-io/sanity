@@ -42,12 +42,18 @@ const CustomCard = styled(Card)<RowProps>`
       --card-muted-fg-color: var(--card-bg-color);
       --card-fg-color: var(--card-bg-color);
     `}
+
+  ${({disabled}) =>
+    disabled &&
+    css`
+      --card-muted-fg-color: var(--card-border-color);
+    `}
 `
 
 const RowButton = styled(Button)<RowProps>`
   box-shadow: none;
   min-width: 0;
-  cursor: pointer;
+  cursor: ${({disabled}) => (disabled ? `default` : `pointer`)};
   position: initial;
 
   &:before,
@@ -124,11 +130,12 @@ export const AssetRow = (props: RowProps) => {
   const [isDeleting, setIsDeleting] = useState(false)
   const [isOpen, setIsOpen] = useState(false)
   const {asset, onClick, onKeyPress, onDeleteFinished, isSelected, isMobile} = props
-  const {originalFilename, _id, mimeType, size, _createdAt} = asset
+  const {originalFilename, _id, mimeType, size, _createdAt, acceptedType} = asset
   const formattedTime = useTimeAgo(_createdAt, {agoSuffix: true})
   const formattedMimeType = formatMimeType(mimeType)
   const formattedSize = prettyBytes(size)
   const showTooltip = (originalFilename || '').length > 37
+  const disabled = !acceptedType
 
   const handleConfirmDelete = () => {
     setShowDeleteDialog(true)
@@ -308,6 +315,7 @@ export const AssetRow = (props: RowProps) => {
       overflow={'hidden'}
       isSelected={isSelected}
       aria-selected="true"
+      disabled={disabled}
     >
       <Grid
         columns={4}
@@ -329,6 +337,7 @@ export const AssetRow = (props: RowProps) => {
           onKeyPress={onKeyPress}
           title={`Select the file ${originalFilename}`}
           isSelected={isSelected}
+          disabled={disabled}
         >
           <CustomFlex
             gap={2}
