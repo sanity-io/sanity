@@ -1,7 +1,7 @@
 import createSanityClient, {ClientConfig as SanityClientConfig, SanityClient} from '@sanity/client'
 import {defer} from 'rxjs'
-import {map, shareReplay, startWith, switchMap} from 'rxjs/operators'
-import {memoize} from 'lodash'
+import {distinctUntilChanged, map, shareReplay, startWith, switchMap} from 'rxjs/operators'
+import {isEqual, memoize} from 'lodash'
 import {CorsOriginError} from '../cors'
 import {AuthState, AuthStore} from './types'
 import {createBroadcastChannel} from './createBroadcastChannel'
@@ -198,6 +198,11 @@ export function _createAuthStore({
           authenticated: !!currentUser,
         }
       })
+    ),
+    distinctUntilChanged((prev, next) =>
+      // Only notify subscribers if the the currentUser object has changed.
+      // Using isEqual is OK since the currentUser object being a small data structure.
+      isEqual(prev.currentUser, next.currentUser)
     ),
     shareReplay(1)
   )
