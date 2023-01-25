@@ -61,11 +61,13 @@ export function createMockSanityClient(
     ...data.requests,
   }
 
+  const apiVersion = (options.apiVersion || '1').replace(/^v/, '')
   const mockConfig = {
     useCdn: false,
     projectId: 'mock-project-id',
     dataset: 'mock-data-set',
-    apiVersion: '1',
+    apiVersion,
+    url: `https://mock-project-id.api.sanity.io/v${apiVersion}`,
     ...options,
   }
 

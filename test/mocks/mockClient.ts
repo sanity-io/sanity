@@ -12,11 +12,12 @@
 import {NEVER} from 'rxjs'
 import type {ClientConfig} from '@sanity/client'
 
-const mockConfig: ClientConfig = {
+const mockConfig: ClientConfig & {url: string} = {
   useCdn: false,
   projectId: 'mock-project-id',
   dataset: 'mock-data-set',
   apiVersion: '1',
+  url: 'https://mock-project-id.api.sanity.io/v1',
 }
 
 const mockClient = {
