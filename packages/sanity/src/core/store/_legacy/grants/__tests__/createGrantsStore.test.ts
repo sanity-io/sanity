@@ -10,6 +10,7 @@ function createMockClient(data: {requests?: Record<string, any>} = {}): SanityCl
     projectId: 'mock-project-id',
     dataset: 'mock-data-set',
     apiVersion: '1',
+    url: 'https://mock-project-id.api.sanity.io/v1',
   }
 
   const requestUriPrefix = `/projects/${mockConfig.projectId}/datasets/${mockConfig.dataset}`
