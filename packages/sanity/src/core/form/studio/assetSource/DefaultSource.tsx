@@ -19,7 +19,13 @@ const buildQuery = (
   end = PER_PAGE,
   assetType = ASSET_TYPE_IMAGE,
   acceptParam: string
-) => `
+) => {
+  const acceptTypeCondition = acceptParam
+    .split(',')
+    .map((param) => `mimeType == "${param.trim()}"`)
+    .join(' || ')
+
+  return `
   *[_type == "${assetType}"] | order(_updatedAt desc) [${start}...${end}] {
     _id,
     _updatedAt,
@@ -30,9 +36,10 @@ const buildQuery = (
     extension,
     size,
     metadata {dimensions},
-    "acceptedType": ${acceptParam.length <= 0 ? 'true' : `mimeType == "${acceptParam}"`}
+    "acceptedType": ${acceptParam.length <= 0 ? 'true' : acceptTypeCondition}
   } 
 `
+}
 
 const ThumbGrid = styled(Grid)`
   grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
