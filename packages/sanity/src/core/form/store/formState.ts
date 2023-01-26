@@ -492,7 +492,7 @@ function prepareObjectInputState<T>(
     return null
   }
 
-  const readOnly =
+  const objectIsReadOnly =
     props.readOnly ||
     resolveConditionalProperty(props.schemaType.readOnly, conditionalPropertyContext)
 
@@ -524,7 +524,7 @@ function prepareObjectInputState<T>(
   const parentProps: RawState<ObjectSchemaType, unknown> = {
     ...props,
     hidden,
-    readOnly,
+    readOnly: objectIsReadOnly,
   }
 
   // note: this is needed because not all object types gets a ´fieldsets´ property during schema parsing.
@@ -576,9 +576,12 @@ function prepareObjectInputState<T>(
         field,
         parent: parentProps,
         index,
-
         // the explicit type cast here is ok - we know that a fieldset can not have fieldsets
       }) as FieldMember | FieldError | null
+
+      if (fieldState?.kind === 'error') {
+        return [fieldState]
+      }
       if (fieldState === null || !isFieldEnabledByGroupFilter(groups, field, selectedGroup)) {
         return []
       }
@@ -586,8 +589,8 @@ function prepareObjectInputState<T>(
       const fieldStateWithReadOnly = {
         ...fieldState,
         field: {
-          ...(fieldState as FieldMember)?.field,
-          readOnly: readOnly || fieldsetReadOnly,
+          ...fieldState.field,
+          readOnly: objectIsReadOnly || fieldState.field.readOnly || fieldsetReadOnly,
         },
       }
 
@@ -648,7 +651,7 @@ function prepareObjectInputState<T>(
     value: props.value as Record<string, unknown> | undefined,
     changed: isChangedValue(props.value, props.comparisonValue),
     schemaType: props.schemaType,
-    readOnly: props.readOnly || readOnly,
+    readOnly: props.readOnly || objectIsReadOnly,
     path: props.path,
     id: toString(props.path),
     level: props.level,
