@@ -1,6 +1,6 @@
-import React, {useMemo} from 'react'
+import React, {useMemo, useRef} from 'react'
 import {PortableTextBlock} from '@sanity/types'
-import {debounce, isEqual, throttle} from 'lodash'
+import {isEqual, throttle} from 'lodash'
 import {PortableTextEditor} from '../PortableTextEditor'
 import {PortableTextSlateEditor} from '../../types/editor'
 import {debugWithName} from '../../utils/debug'
@@ -13,18 +13,27 @@ const retrySync = throttle((syncFn, callbackFn) => syncFn(callbackFn), 100)
 
 export interface UseSyncValueProps {
   editor: PortableTextEditor
-  slateEditor: PortableTextSlateEditor
+  isPending: React.MutableRefObject<boolean | null>
+  keyGenerator: () => string
   readOnly: boolean
-  isPending: React.MutableRefObject<boolean>
+  slateEditor: PortableTextSlateEditor
 }
 
 export function useSyncValue(
   props: UseSyncValueProps
 ): (value: PortableTextBlock[] | undefined, userCallbackFn?: () => void) => void {
-  const {editor, slateEditor, isPending, readOnly} = props
+  const {editor, slateEditor, isPending, readOnly, keyGenerator} = props
+  const previousValue = useRef<PortableTextBlock[] | undefined>()
   const syncFn = useMemo(
     () => (value: PortableTextBlock[] | undefined, userCallbackFn?: () => void) => {
-      const val = value
+      // Don't sync the value if there are pending local changes.
+      // The value will be synced again after the local changes are submitted.
+      if (isPending.current && !readOnly) {
+        // debug('Not syncing value (has pending local patches)')
+        // retrySync(() => syncFn(value, userCallbackFn), callbackFn)
+        return
+      }
+
       const callbackFn = () => {
         debug('Updating slate instance')
         slateEditor.onChange()
@@ -32,17 +41,23 @@ export function useSyncValue(
           userCallbackFn()
         }
       }
-      // Don't sync the value if we haven't submitted all the local patches yet.
-      if (isPending.current && !readOnly) {
-        debug('Not syncing value (has pending local patches)')
-        retrySync(() => syncFn(value, userCallbackFn), callbackFn)
+
+      if (previousValue.current === value) {
+        debug('Value is the same object')
+        return
+      }
+      previousValue.current = value
+
+      // If empty value, create a placeholder block
+      if (!value || value.length === 0) {
+        debug('Value is empty')
+        callbackFn()
         return
       }
       // Test for diffs between our state value and the incoming value.)
       const isEqualToValue =
-        slateEditor &&
-        slateEditor.children.length === (val || []).length &&
-        !(val || []).some((blk, index) => {
+        slateEditor.children.length === (value || []).length &&
+        !(value || []).some((blk, index) => {
           const compareBlock = toSlateValue(
             [blk],
             {schemaTypes: editor.schemaTypes},
@@ -59,22 +74,22 @@ export function useSyncValue(
       }
       // Value is different - validate it.
       debug('Validating')
-      const validation = validateValue(val, editor.schemaTypes, editor.keyGenerator)
-      if (val && !validation.valid) {
+      const validation = validateValue(value, editor.schemaTypes, keyGenerator)
+      if (value && !validation.valid) {
         editor.change$.next({
           type: 'invalidValue',
           resolution: validation.resolution,
-          value: val,
+          value: value,
         })
         editor.setState({invalidValueResolution: validation.resolution})
       }
       // Set the new value
       debug('Replacing changed nodes')
-      if (val && val.length > 0 && slateEditor) {
+      if (value && value.length > 0) {
         const oldSel = PortableTextEditor.getSelection(editor)
         PortableTextEditor.select(editor, null)
         const slateValueFromProps = toSlateValue(
-          val,
+          value,
           {
             schemaTypes: editor.schemaTypes,
           },
@@ -87,7 +102,7 @@ export function useSyncValue(
       }
       callbackFn()
     },
-    [editor, slateEditor]
+    [editor, isPending, keyGenerator, readOnly, slateEditor]
   )
   return syncFn
 }

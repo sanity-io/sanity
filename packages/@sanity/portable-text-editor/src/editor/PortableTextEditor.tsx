@@ -1,4 +1,4 @@
-import React, {PropsWithChildren} from 'react'
+import React, {PropsWithChildren, createRef} from 'react'
 import {
   ArrayDefinition,
   ArraySchemaType,
@@ -10,8 +10,7 @@ import {
   PortableTextObject,
   SpanSchemaType,
 } from '@sanity/types'
-import {Subject} from 'rxjs'
-import {randomKey} from '@sanity/util/content'
+import {Subject, concatMap, share} from 'rxjs'
 import {compileType} from '../utils/schema'
 import {getPortableTextMemberSchemaTypes} from '../utils/getPortableTextMemberSchemaTypes'
 import {
@@ -26,10 +25,10 @@ import {
 } from '../types/editor'
 import {validateValue} from '../utils/validateValue'
 import {debugWithName} from '../utils/debug'
+import {bufferUntil} from '../utils/bufferUntil'
 import {SlateContainer} from './SlateContainer'
 import {Synchronizer} from './Synchronizer'
-
-export const defaultKeyGenerator = () => randomKey(12)
+import {defaultKeyGenerator} from './hooks/usePortableTextEditorKeyGenerator'
 
 const debug = debugWithName('component:PortableTextEditor')
 
@@ -92,12 +91,11 @@ export class PortableTextEditor extends React.Component<
   PortableTextEditorState
 > {
   public change$: EditorChanges = new Subject()
-  public keyGenerator: () => string
-  public maxBlocks: number | undefined
   public schemaTypes: PortableTextMemberSchemaTypes
-  public type: ArraySchemaType<PortableTextBlock>
 
+  private bufferedPatches$?: PatchObservable
   private editable?: EditableAPI
+  private isPending: React.MutableRefObject<boolean | null>
 
   constructor(props: PortableTextEditorProps) {
     super(props)
@@ -106,26 +104,33 @@ export class PortableTextEditor extends React.Component<
       throw new Error('PortableTextEditor: missing "type" property')
     }
 
-    // Test if we have a compiled schema type, if not, conveniently compile it
-    this.type = props.schemaType.hasOwnProperty('jsonType')
-      ? props.schemaType
-      : compileType(props.schemaType)
     // Indicate that we are loading
     this.change$.next({type: 'loading', isLoading: true})
 
-    // Get the block types feature set (lookup table)
-    this.schemaTypes = getPortableTextMemberSchemaTypes(this.type)
+    // Tracks if we have unhandled local changes
+    this.isPending = createRef()
+    this.isPending.current = false
 
-    // Setup keyGenerator (either from props, or default)
-    this.keyGenerator = props.keyGenerator || defaultKeyGenerator
+    // An lookup table of the different schema types that makes up this portable text.
+    this.schemaTypes = getPortableTextMemberSchemaTypes(
+      props.schemaType.hasOwnProperty('jsonType') ? props.schemaType : compileType(props.schemaType)
+    )
 
     this.state = {
       invalidValueResolution: null,
     }
 
-    // Validate the incoming value
+    if (props.patches$) {
+      this.createBufferedPatches()
+    }
+
+    // Validate initial value
     if (props.value) {
-      const validation = validateValue(props.value, this.schemaTypes, this.keyGenerator)
+      const validation = validateValue(
+        props.value,
+        this.schemaTypes,
+        this.props.keyGenerator || defaultKeyGenerator
+      )
       if (props.value && !validation.valid) {
         this.change$.next({type: 'loading', isLoading: false})
         this.change$.next({
@@ -138,8 +143,40 @@ export class PortableTextEditor extends React.Component<
     }
   }
 
+  componentDidUpdate(prevProps: PortableTextEditorProps) {
+    // Set up the buffered patch observable again if the source observable changes
+    if (this.props.patches$ !== prevProps.patches$) {
+      this.createBufferedPatches()
+    }
+    // Set up the schema type lookup table again if the source schema type changes
+    if (this.props.schemaType !== prevProps.schemaType) {
+      this.schemaTypes = getPortableTextMemberSchemaTypes(
+        this.props.schemaType.hasOwnProperty('jsonType')
+          ? this.props.schemaType
+          : compileType(this.props.schemaType)
+      )
+    }
+  }
+
+  // A version of props.patches$ observable that will buffer up patches when the editor is producing local changes.
+  private createBufferedPatches() {
+    if (!this.props.patches$) {
+      this.bufferedPatches$ = undefined
+      return
+    }
+    this.bufferedPatches$ = this.props.patches$
+      .pipe(
+        bufferUntil(() => !this.isPending.current),
+        concatMap((item) => {
+          return item
+        })
+      )
+      .pipe(share())
+  }
+
   public setEditable = (editable: EditableAPI) => {
     this.editable = {...this.editable, ...editable}
+    this.change$.next({type: 'loading', isLoading: false})
     this.change$.next({type: 'ready'})
   }
 
@@ -148,28 +185,36 @@ export class PortableTextEditor extends React.Component<
       return this.state.invalidValueResolution.description
     }
 
+    const {onChange, value, children} = this.props
+    const {bufferedPatches$, change$, isPending} = this
+
     const maxBlocks =
       typeof this.props.maxBlocks === 'undefined'
         ? undefined
         : parseInt(this.props.maxBlocks.toString(), 10) || undefined
 
     const readOnly = Boolean(this.props.readOnly)
+    const keyGenerator = this.props.keyGenerator || defaultKeyGenerator
     return (
       <SlateContainer
-        editor={this}
+        keyGenerator={keyGenerator}
         maxBlocks={maxBlocks}
+        patches$={bufferedPatches$}
+        portableTextEditor={this}
         readOnly={readOnly}
-        value={this.props.value}
+        value={value}
       >
         <Synchronizer
-          change$={this.change$}
+          change$={change$}
           editor={this}
-          patches$={this.props.patches$}
-          onChange={this.props.onChange}
+          keyGenerator={keyGenerator}
+          isPending={isPending}
+          onChange={onChange}
+          patches$={bufferedPatches$}
           readOnly={readOnly}
-          value={this.props.value}
+          value={value}
         >
-          {this.props.children}
+          {children}
         </Synchronizer>
       </SlateContainer>
     )

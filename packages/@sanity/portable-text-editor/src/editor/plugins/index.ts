@@ -1,4 +1,5 @@
 import {BaseOperation, Editor, NodeEntry, Node} from 'slate'
+import {noop} from 'lodash'
 import {PortableTextSlateEditor} from '../../types/editor'
 import {createEditorOptions} from '../../types/options'
 import {createOperationToPatches} from '../../utils/operationToPatches'
@@ -40,12 +41,11 @@ const originalFnMap = new WeakMap<PortableTextSlateEditor, OriginalEditorFunctio
 export const withPlugins = <T extends Editor>(
   editor: T,
   options: createEditorOptions
-): PortableTextSlateEditor => {
+): {editor: PortableTextSlateEditor; subscribe: () => () => void} => {
   const e = editor as T & PortableTextSlateEditor
-  const {portableTextEditor} = options
-  const {schemaTypes, keyGenerator, change$} = portableTextEditor
-  e.maxBlocks = editor.maxBlocks || -1
-  e.readOnly = editor.readOnly || false
+  const {keyGenerator, portableTextEditor, patches$, readOnly, maxBlocks} = options
+  const {schemaTypes, change$} = portableTextEditor
+  e.subscriptions = []
   if (e.destroy) {
     e.destroy()
   } else {
@@ -57,24 +57,24 @@ export const withPlugins = <T extends Editor>(
       normalizeNode: e.normalizeNode,
     })
   }
-  const incomingPatches$ = e.patches$
   const operationToPatches = createOperationToPatches(schemaTypes)
   const withObjectKeys = createWithObjectKeys(schemaTypes, keyGenerator)
   const withSchemaTypes = createWithSchemaTypes(schemaTypes)
   const withEditableAPI = createWithEditableAPI(portableTextEditor, schemaTypes, keyGenerator)
-  const [withPatches, withPatchesCleanupFunction] = e.readOnly
-    ? []
-    : createWithPatches({
-        patchFunctions: operationToPatches,
-        change$,
-        schemaTypes,
-        incomingPatches$,
-      })
-  const withMaxBlocks = createWithMaxBlocks()
+  const withPatches = createWithPatches({
+    change$,
+    keyGenerator,
+    patches$,
+    patchFunctions: operationToPatches,
+    readOnly,
+    schemaTypes,
+    slateEditor: e,
+  })
+  const withMaxBlocks = createWithMaxBlocks(maxBlocks || -1)
   const withPortableTextLists = createWithPortableTextLists(schemaTypes)
-  const [withUndoRedo, withUndoRedoCleanupFunction] = e.readOnly
+  const [withUndoRedo, withUndoRedoCleanupFunction] = readOnly
     ? []
-    : createWithUndoRedo(incomingPatches$)
+    : createWithUndoRedo({readOnly, patches$})
   const withPortableTextMarkModel = createWithPortableTextMarkModel(schemaTypes)
   const withPortableTextBlockStyle = createWithPortableTextBlockStyle(schemaTypes, change$)
 
@@ -94,49 +94,59 @@ export const withPlugins = <T extends Editor>(
     e.onChange = originalFunctions.onChange
     e.apply = originalFunctions.apply
     e.normalizeNode = originalFunctions.normalizeNode
-    if (withPatchesCleanupFunction) {
-      withPatchesCleanupFunction()
-    }
-    if (withUndoRedoCleanupFunction) {
-      withUndoRedoCleanupFunction()
-    }
   }
-  if (e.readOnly) {
-    return withSchemaTypes(
-      withObjectKeys(
-        withPortableTextMarkModel(
-          withPortableTextBlockStyle(
-            withUtils(
-              withPlaceholderBlock(
-                withPortableTextLists(withPortableTextSelections(withEditableAPI(e)))
+  if (readOnly) {
+    return {
+      editor: withSchemaTypes(
+        withObjectKeys(
+          withPortableTextMarkModel(
+            withPortableTextBlockStyle(
+              withUtils(
+                withPlaceholderBlock(
+                  withPortableTextLists(withPortableTextSelections(withEditableAPI(e)))
+                )
               )
             )
           )
         )
-      )
-    )
+      ),
+      subscribe: () => noop,
+    }
   }
 
   // The 'if' here is only to satisfy Typescript
   if (withUndoRedo && withPatches) {
     // Ordering is important here, selection dealing last, data manipulation in the middle and core model stuff first.
-    return withSchemaTypes(
-      withObjectKeys(
-        withPortableTextMarkModel(
-          withPortableTextBlockStyle(
-            withPortableTextLists(
-              withPlaceholderBlock(
-                withUtils(
-                  withMaxBlocks(
-                    withUndoRedo(withPatches(withPortableTextSelections(withEditableAPI(e))))
+    return {
+      editor: withSchemaTypes(
+        withObjectKeys(
+          withPortableTextMarkModel(
+            withPortableTextBlockStyle(
+              withPortableTextLists(
+                withPlaceholderBlock(
+                  withUtils(
+                    withMaxBlocks(
+                      withUndoRedo(withPatches(withPortableTextSelections(withEditableAPI(e))))
+                    )
                   )
                 )
               )
             )
           )
         )
-      )
-    )
+      ),
+      subscribe: () => {
+        const unsubscribes: (() => void)[] = []
+        editor.subscriptions.forEach((subscribeFn) => {
+          unsubscribes.push(subscribeFn())
+        })
+        return () => {
+          unsubscribes.forEach((unsubscribeFn) => {
+            unsubscribeFn()
+          })
+        }
+      },
+    }
   }
-  return e
+  return {editor: e, subscribe: () => () => noop}
 }

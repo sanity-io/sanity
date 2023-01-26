@@ -5,12 +5,15 @@ import {schemaType} from '../../editor/__tests__/PortableTextEditorTester'
 import {createOperationToPatches} from '../operationToPatches'
 import {withPlugins} from '../../editor/plugins'
 import {PortableTextEditor, PortableTextEditorProps} from '../..'
+import {defaultKeyGenerator} from '../../editor/hooks/usePortableTextEditorKeyGenerator'
 
 const portableTextFeatures = getPortableTextMemberSchemaTypes(schemaType)
 
 const operationToPatches = createOperationToPatches(portableTextFeatures)
-const editor = withPlugins(createEditor(), {
+const {editor} = withPlugins(createEditor(), {
   portableTextEditor: new PortableTextEditor({schemaType} as PortableTextEditorProps),
+  keyGenerator: defaultKeyGenerator,
+  readOnly: false,
 })
 
 const createDefaultValue = () =>

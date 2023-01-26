@@ -34,6 +34,7 @@ import {PortableTextEditor} from './PortableTextEditor'
 import {createWithInsertData, createWithHotkeys} from './plugins'
 import {useForwardedRef} from './hooks/useForwardedRef'
 import {usePortableTextEditorReadOnlyStatus} from './hooks/usePortableTextReadOnly'
+import {usePortableTextEditorKeyGenerator} from './hooks/usePortableTextEditorKeyGenerator'
 
 const debug = debugWithName('component:Editable')
 
@@ -103,9 +104,10 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
 
   const portableTextEditor = usePortableTextEditor()
   const readOnly = usePortableTextEditorReadOnlyStatus()
+  const keyGenerator = usePortableTextEditorKeyGenerator()
   const ref = useForwardedRef(forwardedRef)
 
-  const {change$, keyGenerator, schemaTypes} = portableTextEditor
+  const {change$, schemaTypes} = portableTextEditor
   const slateEditor = useSlate()
 
   const blockTypeName = schemaTypes.block.name
@@ -136,12 +138,12 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
     (eProps: RenderElementProps) => (
       <Element
         {...eProps}
-        schemaTypes={schemaTypes}
         readOnly={readOnly}
         renderBlock={renderBlock}
         renderChild={renderChild}
         renderListItem={renderListItem}
         renderStyle={renderStyle}
+        schemaTypes={schemaTypes}
         spellCheck={spellCheck}
       />
     ),

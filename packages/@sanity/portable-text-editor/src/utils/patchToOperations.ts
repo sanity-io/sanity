@@ -262,6 +262,10 @@ export function createPatchToOperations(
       const index = editor.children.findIndex((node, indx) =>
         lastKey ? node._key === lastKey : indx === patch.path[0]
       )
+      if (index === -1) {
+        debug(`Could not find block to remove at path ${JSON.stringify(patch.path)}`)
+        return false
+      }
       debug(`Removing block at path [${index}]`)
       debugState(editor, 'before')
       if (

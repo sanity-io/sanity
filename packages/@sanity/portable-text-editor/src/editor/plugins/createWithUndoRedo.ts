@@ -42,19 +42,24 @@ const isSaving = (editor: Editor): boolean | undefined => {
   return SAVING.get(editor)
 }
 
+export interface Options {
+  readOnly: boolean
+  patches$?: PatchObservable
+}
+
 export function createWithUndoRedo(
-  incomingPatches$?: PatchObservable
+  options: Options
 ): [editor: (editor: PortableTextSlateEditor) => PortableTextSlateEditor, cleanupFn: () => void] {
-  // TODO: unsubscribe to this
+  const {readOnly, patches$} = options
   // Subscribe to incoming patches
   let cleanupFn: () => void = () => undefined
-  const incomingPatches: {patch: Patch; time: Date}[] = []
-  if (incomingPatches$) {
+  const remotePatches: {patch: Patch; time: Date}[] = []
+  if (patches$) {
     debug('Subscribing to patches')
-    const sub = incomingPatches$.subscribe(({patches}) => {
+    const sub = patches$.subscribe(({patches}) => {
       patches.forEach((patch) => {
         if (patch.origin !== 'local') {
-          incomingPatches.push({patch: patch, time: new Date()})
+          remotePatches.push({patch: patch, time: new Date()})
         }
       })
     })
@@ -70,7 +75,7 @@ export function createWithUndoRedo(
       const {apply} = editor
       // Apply function for merging and saving local history inspired from 'slate-history' by Ian Storm Taylor
       editor.apply = (op: Operation) => {
-        if (editor.readOnly) {
+        if (readOnly) {
           apply(op)
           return
         }
@@ -127,7 +132,7 @@ export function createWithUndoRedo(
       }
 
       editor.undo = () => {
-        if (editor.readOnly) {
+        if (readOnly) {
           return
         }
         const {undos} = editor.history
@@ -135,7 +140,7 @@ export function createWithUndoRedo(
           const step = undos[undos.length - 1]
           debug('Undoing', step)
           if (step.operations.length > 0) {
-            const otherPatches = [...incomingPatches.filter((item) => item.time >= step.timestamp)]
+            const otherPatches = [...remotePatches.filter((item) => item.time >= step.timestamp)]
             let transformedOperations = step.operations
             otherPatches.forEach((item) => {
               transformedOperations = flatten(
@@ -168,7 +173,7 @@ export function createWithUndoRedo(
       }
 
       editor.redo = () => {
-        if (editor.readOnly) {
+        if (readOnly) {
           return
         }
         const {redos} = editor.history
@@ -176,7 +181,7 @@ export function createWithUndoRedo(
           const step = redos[redos.length - 1]
           debug('Redoing', step)
           if (step.operations.length > 0) {
-            const otherPatches = incomingPatches.filter((item) => item.time > step.timestamp)
+            const otherPatches = remotePatches.filter((item) => item.time > step.timestamp)
             let transformedOperations = step.operations
             otherPatches.forEach((item) => {
               transformedOperations = flatten(
