@@ -76,7 +76,7 @@ const DefaultAssetSource = function DefaultAssetSource(
       const assetTypeParam = isImageAssetType ? ASSET_TYPE_IMAGE : ASSET_TYPE_FILE
       const acceptParam = accept === 'image/*' ? '' : accept // match the "default" for file types too
 
-      if (acceptParam) {
+      if (typeof acceptParam !== 'undefined') {
         fetch$.current = versionedClient.observable
           .fetch(buildQuery(start, end, assetTypeParam, acceptParam), {}, {tag})
           .subscribe((result) => {
