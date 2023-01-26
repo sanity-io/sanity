@@ -102,9 +102,12 @@ export function Synchronizer(props: SynchronizerProps) {
           onFlushPendingPatchesDebounced()
           break
         case 'selection':
-          debug('Setting selection')
-          startTransition(() => setSelection(next.selection))
-          onChange(next)
+          // Set the selection state in a transition, we don't need it immediately.
+          startTransition(() => {
+            debug('Setting selection')
+            setSelection(next.selection)
+          })
+          onChange(next) // Keep this out of the startTransition!
           break
         case 'value':
           debug('Syncing value')
@@ -120,8 +123,6 @@ export function Synchronizer(props: SynchronizerProps) {
       sub.unsubscribe()
     }
   }, [change$, onFlushPendingPatchesDebounced, onChange, syncValue, isPending])
-
-  // Assign context values
   return (
     <PortableTextEditorKeyGeneratorContext.Provider value={keyGenerator}>
       <PortableTextEditorContext.Provider value={editor}>

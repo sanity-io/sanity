@@ -1,15 +1,13 @@
 import React, {useMemo, useRef} from 'react'
 import {PortableTextBlock} from '@sanity/types'
-import {isEqual, throttle} from 'lodash'
+import {isEqual} from 'lodash'
 import {PortableTextEditor} from '../PortableTextEditor'
 import {PortableTextSlateEditor} from '../../types/editor'
 import {debugWithName} from '../../utils/debug'
 import {toSlateValue} from '../../utils/values'
 import {KEY_TO_SLATE_ELEMENT} from '../../utils/weakMaps'
-import {validateValue} from '../../utils/validateValue'
 
 const debug = debugWithName('hook:useSyncValue')
-const retrySync = throttle((syncFn, callbackFn) => syncFn(callbackFn), 100)
 
 export interface UseSyncValueProps {
   editor: PortableTextEditor
@@ -22,9 +20,9 @@ export interface UseSyncValueProps {
 export function useSyncValue(
   props: UseSyncValueProps
 ): (value: PortableTextBlock[] | undefined, userCallbackFn?: () => void) => void {
-  const {editor, slateEditor, isPending, readOnly, keyGenerator} = props
+  const {editor, slateEditor, isPending, readOnly} = props
   const previousValue = useRef<PortableTextBlock[] | undefined>()
-  const syncFn = useMemo(
+  return useMemo(
     () => (value: PortableTextBlock[] | undefined, userCallbackFn?: () => void) => {
       const callbackFn = () => {
         debug('Updating slate instance')
@@ -43,8 +41,6 @@ export function useSyncValue(
       // Don't sync the value if there are pending local changes.
       // The value will be synced again after the local changes are submitted.
       if (isPending.current && !readOnly) {
-        // debug('Not syncing value (has pending local patches)')
-        // retrySync(() => syncFn(value, userCallbackFn), callbackFn)
         return
       }
 
@@ -72,17 +68,6 @@ export function useSyncValue(
         debug('Value is equal')
         return
       }
-      // Value is different - validate it.
-      debug('Validating')
-      const validation = validateValue(value, editor.schemaTypes, keyGenerator)
-      if (value && !validation.valid) {
-        editor.change$.next({
-          type: 'invalidValue',
-          resolution: validation.resolution,
-          value: value,
-        })
-        editor.setState({invalidValueResolution: validation.resolution})
-      }
       // Set the new value
       debug('Replacing changed nodes')
       if (value && value.length > 0) {
@@ -102,7 +87,6 @@ export function useSyncValue(
       }
       callbackFn()
     },
-    [editor, isPending, keyGenerator, readOnly, slateEditor]
+    [editor, isPending, readOnly, slateEditor]
   )
-  return syncFn
 }
