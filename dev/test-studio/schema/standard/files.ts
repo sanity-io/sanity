@@ -83,5 +83,14 @@ export default defineType({
         accept: 'application/pdf',
       },
     },
+    {
+      name: 'FileWithTwoAccept',
+      title: 'JPEG & PNG image type file',
+      type: 'file',
+      description: 'Both!',
+      options: {
+        accept: 'image/png, image/jpeg',
+      },
+    },
   ],
 })

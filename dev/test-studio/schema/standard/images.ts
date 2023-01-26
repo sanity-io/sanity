@@ -132,6 +132,15 @@ export default defineType({
       },
     },
     {
+      name: 'ImageWithTwoAccept',
+      title: 'JPEG & PNG image',
+      type: 'image',
+      description: 'Both!',
+      options: {
+        accept: 'image/png, image/jpeg',
+      },
+    },
+    {
       name: 'imageWithImage',
       title: 'Image with image',
       type: 'image',
