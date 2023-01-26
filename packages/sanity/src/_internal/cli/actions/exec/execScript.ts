@@ -11,16 +11,15 @@ interface ExecFlags {
   'mock-browser-env'?: boolean
 }
 
-function parseCliFlags(args: CliCommandArguments<ExecFlags>) {
-  return yargs(hideBin(args.argv || process.argv)).command(
-    'exec [script]',
-    'executes given script',
-    (cmd) =>
-      cmd
-        .positional('script', {type: 'string', demandOption: true})
-        .option('with-user-token', {type: 'boolean', default: false})
-        .option('mock-browser-env', {type: 'boolean', default: false})
-  ).argv
+async function parseCliFlags(args: CliCommandArguments<ExecFlags>) {
+  const flags = await yargs(hideBin(args.argv || process.argv).slice(2))
+    .option('with-user-token', {type: 'boolean', default: false})
+    .option('mock-browser-env', {type: 'boolean', default: false}).argv
+
+  return {
+    ...flags,
+    script: args.argsWithoutOptions[0],
+  }
 }
 
 const execScript: CliCommandAction<ExecFlags> = async function execScript(args, context) {
