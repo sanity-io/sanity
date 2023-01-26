@@ -10,7 +10,7 @@ import {
   PortableTextObject,
   SpanSchemaType,
 } from '@sanity/types'
-import {Subject, concatMap, share} from 'rxjs'
+import {Subject, concatMap, share, tap} from 'rxjs'
 import {compileType} from '../utils/schema'
 import {getPortableTextMemberSchemaTypes} from '../utils/getPortableTextMemberSchemaTypes'
 import {
@@ -25,6 +25,7 @@ import {
 } from '../types/editor'
 import {validateValue} from '../utils/validateValue'
 import {debugWithName} from '../utils/debug'
+import {Patch} from '../types/patch'
 import {bufferUntil} from '../utils/bufferUntil'
 import {SlateContainer} from './SlateContainer'
 import {Synchronizer} from './Synchronizer'
@@ -124,7 +125,7 @@ export class PortableTextEditor extends React.Component<
       this.createBufferedPatches()
     }
 
-    // Validate initial value
+    // Validate initial  value
     if (props.value) {
       const validation = validateValue(
         props.value,
@@ -165,12 +166,20 @@ export class PortableTextEditor extends React.Component<
       return
     }
     this.bufferedPatches$ = this.props.patches$
-      .pipe(
-        bufferUntil(() => !this.isPending.current),
-        concatMap((item) => {
-          return item
-        })
-      )
+      // .pipe(
+      //   tap(({patches}: {patches: Patch[]; snapshot: PortableTextBlock[] | undefined}) => {
+      //     // set isPending to false when local patches are returned
+      //     if (patches.some((p) => p.origin === 'local')) {
+      //       this.isPending.current = false
+      //     }
+      //   })
+      // )
+      // .pipe(
+      //   bufferUntil(() => !this.isPending.current),
+      //   concatMap((patches) => {
+      //     return patches
+      //   })
+      // )
       .pipe(share())
   }
 

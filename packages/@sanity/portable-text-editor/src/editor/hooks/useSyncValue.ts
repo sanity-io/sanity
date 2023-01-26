@@ -26,14 +26,6 @@ export function useSyncValue(
   const previousValue = useRef<PortableTextBlock[] | undefined>()
   const syncFn = useMemo(
     () => (value: PortableTextBlock[] | undefined, userCallbackFn?: () => void) => {
-      // Don't sync the value if there are pending local changes.
-      // The value will be synced again after the local changes are submitted.
-      if (isPending.current && !readOnly) {
-        // debug('Not syncing value (has pending local patches)')
-        // retrySync(() => syncFn(value, userCallbackFn), callbackFn)
-        return
-      }
-
       const callbackFn = () => {
         debug('Updating slate instance')
         slateEditor.onChange()
@@ -47,6 +39,14 @@ export function useSyncValue(
         return
       }
       previousValue.current = value
+
+      // Don't sync the value if there are pending local changes.
+      // The value will be synced again after the local changes are submitted.
+      if (isPending.current && !readOnly) {
+        // debug('Not syncing value (has pending local patches)')
+        // retrySync(() => syncFn(value, userCallbackFn), callbackFn)
+        return
+      }
 
       // If empty value, create a placeholder block
       if (!value || value.length === 0) {

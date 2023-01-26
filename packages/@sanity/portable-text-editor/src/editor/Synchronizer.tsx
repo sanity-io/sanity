@@ -52,12 +52,12 @@ export function Synchronizer(props: SynchronizerProps) {
 
   // On mount
   useEffect(() => {
-    // Set initial value from props
+    // Sync initial value from props
     debug('Syncing value from props initially')
     change$.next({type: 'value', value})
     // Unmount
     return () => {
-      onFlushPatches()
+      onFlushPendingPatches()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []) // No deps, only initially
@@ -67,24 +67,27 @@ export function Synchronizer(props: SynchronizerProps) {
     change$.next({type: 'value', value})
   }, [change$, isPending, isControlledComponent, syncValue, value])
 
-  // Flush pending patches
-  const onFlushPatches = useCallback(() => {
+  const onFlushPendingPatches = useCallback(() => {
     debug('Flushing pending patches')
-    if (pendingPatches.current.length > 0) {
+    const finalPatches = [...pendingPatches.current]
+    if (finalPatches.length > 0) {
       onChange({type: 'mutation', patches: pendingPatches.current})
-      pendingPatches.current = []
+      pendingPatches.current = pendingPatches.current.splice(
+        finalPatches.length,
+        pendingPatches.current.length
+      )
       isPending.current = false
     }
   }, [onChange, isPending])
 
   // Debounced version of flush pending patches
-  const onFlushPatchesDebounced = useMemo(
+  const onFlushPendingPatchesDebounced = useMemo(
     () =>
-      debounce(onFlushPatches, FLUSH_PATCHES_DEBOUNCE_MS, {
+      debounce(onFlushPendingPatches, FLUSH_PATCHES_DEBOUNCE_MS, {
         leading: false,
         trailing: true,
       }),
-    [onFlushPatches]
+    [onFlushPendingPatches]
   )
 
   // Subscribe to, and handle changes from the editor
@@ -96,14 +99,11 @@ export function Synchronizer(props: SynchronizerProps) {
           isPending.current = true
           pendingPatches.current.push(next.patch)
           onChange(next)
-          onFlushPatchesDebounced()
+          onFlushPendingPatchesDebounced()
           break
         case 'selection':
           debug('Setting selection')
-          // Doesn't need to be prioritized, use startTransition
-          startTransition(() => {
-            setSelection(next.selection)
-          })
+          startTransition(() => setSelection(next.selection))
           onChange(next)
           break
         case 'value':
@@ -119,7 +119,7 @@ export function Synchronizer(props: SynchronizerProps) {
       debug('Unsubscribing to changes$')
       sub.unsubscribe()
     }
-  }, [change$, onFlushPatchesDebounced, onChange, syncValue, isPending])
+  }, [change$, onFlushPendingPatchesDebounced, onChange, syncValue, isPending])
 
   // Assign context values
   return (

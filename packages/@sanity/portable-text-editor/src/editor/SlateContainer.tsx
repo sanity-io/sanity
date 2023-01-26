@@ -1,4 +1,4 @@
-import React, {PropsWithChildren, useEffect, useMemo, useRef} from 'react'
+import React, {PropsWithChildren, useEffect, useMemo} from 'react'
 import {Slate, withReact} from '@sanity/slate-react'
 import {createEditor} from 'slate'
 import {PortableTextBlock} from '@sanity/types'
