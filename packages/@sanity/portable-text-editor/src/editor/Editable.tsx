@@ -27,14 +27,14 @@ import {fromSlateValue, isEqualToEmptyEditor, toSlateValue} from '../utils/value
 import {normalizeSelection} from '../utils/selection'
 import {toSlateRange} from '../utils/ranges'
 import {debugWithName} from '../utils/debug'
+import {usePortableTextEditorReadOnlyStatus} from './hooks/usePortableTextReadOnly'
+import {usePortableTextEditorKeyGenerator} from './hooks/usePortableTextEditorKeyGenerator'
 import {Leaf} from './components/Leaf'
 import {Element} from './components/Element'
 import {usePortableTextEditor} from './hooks/usePortableTextEditor'
 import {PortableTextEditor} from './PortableTextEditor'
 import {createWithInsertData, createWithHotkeys} from './plugins'
 import {useForwardedRef} from './hooks/useForwardedRef'
-import {usePortableTextEditorReadOnlyStatus} from './hooks/usePortableTextReadOnly'
-import {usePortableTextEditorKeyGenerator} from './hooks/usePortableTextEditorKeyGenerator'
 
 const debug = debugWithName('component:Editable')
 
