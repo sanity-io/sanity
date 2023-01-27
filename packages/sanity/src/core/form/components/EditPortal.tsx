@@ -26,23 +26,29 @@ export function EditPortal(props: Props): React.ReactElement {
     legacy_referenceElement: referenceElement,
     header,
   } = props
+
   const contents = (
     <PresenceOverlay margins={PRESENCE_MARGINS}>
       <Box padding={4}>{children}</Box>
     </PresenceOverlay>
   )
-  return type === 'dialog' ? (
-    <Layer>
-      <Dialog width={width} id={id || ''} onClose={onClose} header={header}>
-        {contents}
-      </Dialog>
-    </Layer>
-  ) : (
+
+  if (type === 'dialog') {
+    return (
+      <Layer>
+        <Dialog header={header} onClose={onClose} id={id || ''} width={width}>
+          {contents}
+        </Dialog>
+      </Layer>
+    )
+  }
+
+  return (
     <PopoverDialog
-      width={width}
+      header={header}
       onClose={onClose}
       referenceElement={referenceElement}
-      header={header}
+      width={width}
     >
       {contents}
     </PopoverDialog>
