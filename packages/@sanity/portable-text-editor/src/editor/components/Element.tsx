@@ -9,12 +9,12 @@ import {
   RenderChildFunction,
   RenderListItemFunction,
   RenderStyleFunction,
-} from '../types/editor'
-import {fromSlateValue} from '../utils/values'
-import {debugWithName} from '../utils/debug'
-import {KEY_TO_VALUE_ELEMENT} from '../utils/weakMaps'
-import ObjectNode from './nodes/DefaultObject'
-import {DefaultBlockObject, DefaultListItem, DefaultListItemInner} from './nodes/index'
+} from '../../types/editor'
+import {fromSlateValue} from '../../utils/values'
+import {debugWithName} from '../../utils/debug'
+import {KEY_TO_VALUE_ELEMENT} from '../../utils/weakMaps'
+import ObjectNode from '../nodes/DefaultObject'
+import {DefaultBlockObject, DefaultListItem, DefaultListItemInner} from '../nodes/index'
 import {DraggableBlock} from './DraggableBlock'
 import {DraggableChild} from './DraggableChild'
 

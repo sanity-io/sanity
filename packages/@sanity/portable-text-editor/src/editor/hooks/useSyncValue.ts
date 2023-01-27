@@ -1,6 +1,7 @@
-import React, {useMemo, useRef} from 'react'
+import React, {startTransition, useMemo, useRef} from 'react'
 import {PortableTextBlock} from '@sanity/types'
 import {isEqual} from 'lodash'
+import {Transforms} from 'slate'
 import {PortableTextEditor} from '../PortableTextEditor'
 import {PortableTextSlateEditor} from '../../types/editor'
 import {debugWithName} from '../../utils/debug'
@@ -68,24 +69,26 @@ export function useSyncValue(
         debug('Value is equal')
         return
       }
-      // Set the new value
-      debug('Replacing changed nodes')
-      if (value && value.length > 0) {
-        const oldSel = PortableTextEditor.getSelection(editor)
-        PortableTextEditor.select(editor, null)
-        const slateValueFromProps = toSlateValue(
-          value,
-          {
-            schemaTypes: editor.schemaTypes,
-          },
-          KEY_TO_SLATE_ELEMENT.get(slateEditor)
-        )
-        slateEditor.children = slateValueFromProps
-        if (oldSel) {
-          PortableTextEditor.select(editor, oldSel)
+      startTransition(() => {
+        // Set the new value
+        debug('Replacing changed nodes')
+        if (value && value.length > 0) {
+          const oldSel = slateEditor.selection
+          Transforms.deselect(slateEditor)
+          const slateValueFromProps = toSlateValue(
+            value,
+            {
+              schemaTypes: editor.schemaTypes,
+            },
+            KEY_TO_SLATE_ELEMENT.get(slateEditor)
+          )
+          slateEditor.children = slateValueFromProps
+          if (oldSel) {
+            Transforms.select(slateEditor, oldSel)
+          }
         }
-      }
-      callbackFn()
+        callbackFn()
+      })
     },
     [editor, isPending, readOnly, slateEditor]
   )

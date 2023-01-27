@@ -1,9 +1,9 @@
 import React, {PropsWithChildren, useEffect, useRef, useState} from 'react'
 import {PortableTextBlock} from '@sanity/types'
-import {debugWithName} from '../utils/debug'
-import {InvalidValueResolution} from '../types/editor'
-import {validateValue} from '../utils/validateValue'
-import {PortableTextEditor} from './PortableTextEditor'
+import {debugWithName} from '../../utils/debug'
+import {InvalidValueResolution} from '../../types/editor'
+import {validateValue} from '../../utils/validateValue'
+import {PortableTextEditor} from '../PortableTextEditor'
 
 const debug = debugWithName('component:PortableTextEditor:Validator')
 

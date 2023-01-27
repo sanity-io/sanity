@@ -25,9 +25,9 @@ import {
 } from '../types/editor'
 import {debugWithName} from '../utils/debug'
 import {defaultKeyGenerator} from './hooks/usePortableTextEditorKeyGenerator'
-import {SlateContainer} from './SlateContainer'
-import {Synchronizer} from './Synchronizer'
-import {Validator} from './Validator'
+import {SlateContainer} from './components/SlateContainer'
+import {Synchronizer} from './components/Synchronizer'
+import {Validator} from './components/Validator'
 
 const debug = debugWithName('component:PortableTextEditor')
 
@@ -76,6 +76,11 @@ export type PortableTextEditorProps = PropsWithChildren<{
    * Observable of local and remote patches for the edited value.
    */
   patches$?: PatchObservable
+
+  /**
+   * Backward compatibility (renamed to patches$).
+   */
+  incomingPatches$?: PatchObservable
 }>
 
 /**
@@ -101,6 +106,10 @@ export class PortableTextEditor extends React.Component<
 
     if (!props.schemaType) {
       throw new Error('PortableTextEditor: missing "type" property')
+    }
+
+    if (props.incomingPatches$) {
+      console.warn(`The prop 'incomingPatches$' is deprecated and renamed to 'patches$'`)
     }
 
     // Indicate that we are loading
@@ -131,11 +140,13 @@ export class PortableTextEditor extends React.Component<
     this.editable = {...this.editable, ...editable}
     this.change$.next({type: 'loading', isLoading: false})
     this.change$.next({type: 'ready'})
+    this.change$.next({type: 'value', value: this.props.value})
   }
 
   render() {
-    const {onChange, value, children, patches$} = this.props
+    const {onChange, value, children, patches$, incomingPatches$} = this.props
     const {change$, isPending} = this
+    const _patches$ = incomingPatches$ || patches$
 
     const maxBlocks =
       typeof this.props.maxBlocks === 'undefined'
@@ -149,7 +160,7 @@ export class PortableTextEditor extends React.Component<
         <SlateContainer
           keyGenerator={keyGenerator}
           maxBlocks={maxBlocks}
-          patches$={patches$}
+          patches$={_patches$}
           portableTextEditor={this}
           readOnly={readOnly}
           value={value}
@@ -160,7 +171,7 @@ export class PortableTextEditor extends React.Component<
             isPending={isPending}
             keyGenerator={keyGenerator}
             onChange={onChange}
-            patches$={patches$}
+            patches$={_patches$}
             readOnly={readOnly}
             value={value}
           >
@@ -241,6 +252,9 @@ export class PortableTextEditor extends React.Component<
     value?: {[prop: string]: unknown}
   ): Path | undefined => {
     return editor.editable?.insertBlock(type, value)
+  }
+  static insertBreak = (editor: PortableTextEditor): void => {
+    return editor.editable?.insertBreak()
   }
   static isVoid = (editor: PortableTextEditor, element: PortableTextBlock | PortableTextChild) => {
     return editor.editable?.isVoid(element)

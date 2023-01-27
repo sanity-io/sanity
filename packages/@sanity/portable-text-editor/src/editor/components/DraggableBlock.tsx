@@ -1,13 +1,13 @@
 import React, {useState, useRef, useMemo, useCallback, DragEvent, useEffect} from 'react'
 import {Element as SlateElement, Transforms, Path, Editor} from 'slate'
 import {ReactEditor, useSlateStatic} from '@sanity/slate-react'
-import {debugWithName} from '../utils/debug'
+import {debugWithName} from '../../utils/debug'
 import {
   IS_DRAGGING_ELEMENT_TARGET,
   IS_DRAGGING_BLOCK_ELEMENT,
   IS_DRAGGING,
   IS_DRAGGING_BLOCK_TARGET_POSITION,
-} from '../utils/weakMaps'
+} from '../../utils/weakMaps'
 
 const debug = debugWithName('components:DraggableBlock')
 const debugRenders = false

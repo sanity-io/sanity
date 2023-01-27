@@ -2,12 +2,12 @@ import React, {PropsWithChildren, useEffect, useMemo} from 'react'
 import {Slate, withReact} from '@sanity/slate-react'
 import {createEditor} from 'slate'
 import {PortableTextBlock} from '@sanity/types'
-import {KEY_TO_SLATE_ELEMENT, KEY_TO_VALUE_ELEMENT} from '../utils/weakMaps'
-import {debugWithName} from '../utils/debug'
-import {PatchObservable} from '../types/editor'
-import {toSlateValue} from '../utils/values'
-import {PortableTextEditor} from './PortableTextEditor'
-import {withPlugins} from './plugins'
+import {KEY_TO_SLATE_ELEMENT, KEY_TO_VALUE_ELEMENT} from '../../utils/weakMaps'
+import {debugWithName} from '../../utils/debug'
+import {PatchObservable} from '../../types/editor'
+import {toSlateValue} from '../../utils/values'
+import {PortableTextEditor} from '../PortableTextEditor'
+import {withPlugins} from '../plugins'
 
 const debug = debugWithName('component:PortableTextEditor:SlateContainer')
 

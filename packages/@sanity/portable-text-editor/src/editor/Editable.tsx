@@ -27,8 +27,8 @@ import {fromSlateValue, isEqualToEmptyEditor, toSlateValue} from '../utils/value
 import {normalizeSelection} from '../utils/selection'
 import {toSlateRange} from '../utils/ranges'
 import {debugWithName} from '../utils/debug'
-import {Leaf} from './Leaf'
-import {Element} from './Element'
+import {Leaf} from './components/Leaf'
+import {Element} from './components/Element'
 import {usePortableTextEditor} from './hooks/usePortableTextEditor'
 import {PortableTextEditor} from './PortableTextEditor'
 import {createWithInsertData, createWithHotkeys} from './plugins'
@@ -152,25 +152,7 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
 
   const renderLeaf = useCallback(
     (lProps: RenderLeafProps & {leaf: Text & {placeholder?: boolean}}) => {
-      if (renderPlaceholder && lProps.leaf.placeholder && lProps.text.text === '') {
-        return (
-          <>
-            <div style={PLACEHOLDER_STYLE} contentEditable={false}>
-              {renderPlaceholder()}
-            </div>
-            <Leaf
-              {...lProps}
-              keyGenerator={keyGenerator}
-              schemaTypes={schemaTypes}
-              renderAnnotation={renderAnnotation}
-              renderChild={renderChild}
-              renderDecorator={renderDecorator}
-              readOnly={readOnly}
-            />
-          </>
-        )
-      }
-      return (
+      const rendered = (
         <Leaf
           {...lProps}
           keyGenerator={keyGenerator}
@@ -181,6 +163,17 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
           readOnly={readOnly}
         />
       )
+      if (renderPlaceholder && lProps.leaf.placeholder && lProps.text.text === '') {
+        return (
+          <>
+            <div style={PLACEHOLDER_STYLE} contentEditable={false}>
+              {renderPlaceholder()}
+            </div>
+            {rendered}
+          </>
+        )
+      }
+      return rendered
     },
     [
       keyGenerator,

@@ -643,7 +643,7 @@ describe('plugin:withPortableTextMarksModel: normalization', () => {
       if (editorRef.current) {
         PortableTextEditor.select(editorRef.current, sel)
         PortableTextEditor.focus(editorRef.current)
-        // editorRef.current.slateInstance.insertBreak()
+        PortableTextEditor.insertBreak(editorRef.current)
         expect(PortableTextEditor.getValue(editorRef.current)).toMatchInlineSnapshot(`
         Array [
           Object {
