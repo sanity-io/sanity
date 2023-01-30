@@ -50,6 +50,7 @@ function provideFakeGlobals(basePath) {
 }
 
 function mockBrowserEnvironment(basePath) {
+  const originalUrl = typeof URL === 'undefined' ? undefined : URL
   const domCleanup = jsdomGlobal(jsdomDefaultHtml, {url: 'http://localhost:3333/'})
   const windowCleanup = () => global.window.close()
   const globalCleanup = provideFakeGlobals(basePath)
@@ -69,6 +70,13 @@ function mockBrowserEnvironment(basePath) {
     globalCleanup()
     windowCleanup()
     domCleanup()
+
+    // Restore original URL implementation if it was present earlier.
+    // This is caused by jsdom-global replacing the global URL implementation,
+    // and then removing it when cleaning up.
+    if (originalUrl && typeof URL === 'undefined') {
+      global.URL = originalUrl
+    }
   }
 }
 
