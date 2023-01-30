@@ -29,6 +29,13 @@ import {
 const SYMLINK_SCRIPT = path.resolve(__dirname, '../../../../../scripts/symlinkDependencies.js')
 
 export default async function globalSetup(): Promise<void> {
+  // Write a file with the test id, so it can be shared across workers
+  const localHost = hostname().toLowerCase().split('.')[0]
+  const testId = `${localHost}-${process.ppid || process.pid}`
+
+  await mkdir(baseTestPath, {recursive: true})
+  await writeFile(testIdPath, testId, 'utf8')
+
   if (!cliUserToken) {
     console.warn('\nNo SANITY_CI_CLI_AUTH_TOKEN set, skipping CLI tests')
     return
@@ -39,12 +46,6 @@ export default async function globalSetup(): Promise<void> {
     console.warn('Must have built the CLI with `npm run build` before running integration tests')
     return
   }
-
-  // Write a file with the test id, so it can be shared across workers
-  const localHost = hostname().toLowerCase().split('.')[0]
-  const testId = `${localHost}-${process.ppid || process.pid}`
-  await mkdir(baseTestPath, {recursive: true})
-  await writeFile(testIdPath, testId, 'utf8')
 
   // Do these things in parallel to save time
   await Promise.all([
