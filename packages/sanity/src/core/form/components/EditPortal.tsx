@@ -36,7 +36,14 @@ export function EditPortal(props: Props): React.ReactElement {
   if (type === 'dialog') {
     return (
       <Layer>
-        <Dialog header={header} onClose={onClose} id={id || ''} width={width}>
+        <Dialog
+          header={header}
+          id={id || ''}
+          onClickOutside={onClose}
+          onClose={onClose}
+          width={width}
+          onActivate={({activeElement}) => activeElement?.focus()}
+        >
           {contents}
         </Dialog>
       </Layer>

@@ -1574,7 +1574,7 @@
   dependencies:
     "@floating-ui/core" "^1.0.5"
 
-"@floating-ui/react-dom@^1.1.0":
+"@floating-ui/react-dom@1.1.1", "@floating-ui/react-dom@^1.1.0":
   version "1.1.1"
   resolved "https://registry.npmjs.org/@floating-ui/react-dom/-/react-dom-1.1.1.tgz"
   integrity sha512-F27E+7SLB5NZvwF9Egqx/PlvxOhMnA6k/yNMQUqaQ9BPZdr4fQgSW6J6AKNIrBQElBT8IRDtv9j6h7FDkgp3dA==
@@ -3592,7 +3592,7 @@
     make-error "^1.3.6"
     rxjs "^7.0.0"
 
-"@sanity/color@^2.1.20", "@sanity/color@^2.2.1":
+"@sanity/color@^2.1.20", "@sanity/color@^2.2.1", "@sanity/color@^2.2.2":
   version "2.2.2"
   resolved "https://registry.npmjs.org/@sanity/color/-/color-2.2.2.tgz"
   integrity sha512-ksIqx1pCH5HTfLTykj1HT1P2wfgYxwyoOnBRssJYLV0YZe3YP+WWe483JKTDPfOVM4qyz/lUZ3If3L7x/BNyew==
@@ -3650,7 +3650,7 @@
   resolved "https://registry.npmjs.org/@sanity/icons/-/icons-1.3.10.tgz"
   integrity sha512-5wVG/vIiGuGrSmq+Bl3PY7XDgQrGv0fyHdJI64FSulnr2wH3NMqZ6C59UFxnrZ93sr7kOt0zQFoNv2lkPBi0Cg==
 
-"@sanity/icons@^2.0.0":
+"@sanity/icons@^2.0.0", "@sanity/icons@^2.2.2":
   version "2.2.2"
   resolved "https://registry.npmjs.org/@sanity/icons/-/icons-2.2.2.tgz"
   integrity sha512-+Ks6LeYe44kjZSfcWFWj0zQRP48N3JisrZ9ia44QwG11y6bO9Wk8bfhu5o23FkyYrREu9CzQ0U+slSV7YsvcuQ==
@@ -3785,6 +3785,18 @@
     "@sanity/icons" "^2.2.1"
     csstype "^3.1.1"
     framer-motion "^8.1.4"
+    react-refractor "^2.1.7"
+
+"@sanity/ui@^1.2.0":
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/@sanity/ui/-/ui-1.2.0.tgz#4ec8e1f9e69466b061a610b6f8b81ccb77b5ca75"
+  integrity sha512-X5j6b4lfXFuPvGT+ML5cLv+c6d9RLdKmwhQ+iZdfTcSldU8sN1qoZYe3LL8iO2dorIpXvkqanq1x4JOGlboGJg==
+  dependencies:
+    "@floating-ui/react-dom" "1.1.1"
+    "@sanity/color" "^2.2.2"
+    "@sanity/icons" "^2.2.2"
+    csstype "^3.1.1"
+    framer-motion "^8.5.2"
     react-refractor "^2.1.7"
 
 "@sanity/uuid@^3.0.1":
@@ -9422,6 +9434,17 @@ framer-motion@^8.1.4:
   version "8.1.7"
   resolved "https://registry.npmjs.org/framer-motion/-/framer-motion-8.1.7.tgz"
   integrity sha512-9ODjhOG1/XEDckJlva+5Ya2dvpBsz1ieX9DhAVGp1/IyrLuO3LSUIhj0vMX3Hr3Ujju0ebsMqFoedy84cz+9LQ==
+  dependencies:
+    "@motionone/dom" "^10.15.3"
+    hey-listen "^1.0.8"
+    tslib "^2.4.0"
+  optionalDependencies:
+    "@emotion/is-prop-valid" "^0.8.2"
+
+framer-motion@^8.5.2:
+  version "8.5.4"
+  resolved "https://registry.yarnpkg.com/framer-motion/-/framer-motion-8.5.4.tgz#aa6d88f2af8d7aa1b58ca8e53b7ccce0d8c4089b"
+  integrity sha512-xBVovXUIdpKvRvIPsrSTiyXZUYyct9zarzdVeyzv+V6DFsDpHIuppyOjDO8VM1fBspDn+rUU4ZFZ5yJxLmzebQ==
   dependencies:
     "@motionone/dom" "^10.15.3"
     hey-listen "^1.0.8"

@@ -66,12 +66,13 @@ export function AssetUsageDialog({
 
   return (
     <Dialog
-      id="asset-dialog"
-      header={defaultHeaderTitle}
-      width={1}
-      onClose={onClose}
-      footer={footer}
       __unstable_autoFocus={!isLoadingParent}
+      footer={footer}
+      header={defaultHeaderTitle}
+      id="asset-dialog"
+      onClickOutside={onClose}
+      onClose={onClose}
+      width={1}
     >
       {isLoadingParent && (
         <Box padding={4}>

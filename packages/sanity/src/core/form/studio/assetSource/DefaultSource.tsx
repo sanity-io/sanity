@@ -205,6 +205,8 @@ const DefaultAssetSource = function DefaultAssetSource(
       header={dialogHeaderTitle}
       width={2}
       onClose={handleClose}
+      onClickOutside={handleClose}
+      onActivate={({activeElement}) => activeElement?.focus()}
       __unstable_autoFocus={hasResetAutoFocus}
     >
       {assetType === 'image' && renderedThumbView}

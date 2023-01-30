@@ -395,11 +395,12 @@ export class BaseImageInput extends React.PureComponent<BaseImageInputProps, Bas
 
     return (
       <Dialog
+        __unstable_autoFocus={false}
         header="Edit hotspot and crop"
         id={`${id}_dialog`}
+        onClickOutside={this.handleCloseDialog}
         onClose={this.handleCloseDialog}
         width={1}
-        __unstable_autoFocus={false}
       >
         <PresenceOverlay>
           <Box padding={4}>
@@ -551,13 +552,14 @@ export class BaseImageInput extends React.PureComponent<BaseImageInputProps, Bas
       return (
         <MenuButton
           id={`${id}_assetImageButton`}
+          ref={this.setMenuButtonElement}
           button={
             <Button
-              mode="ghost"
-              text="Select"
               data-testid="file-input-multi-browse-button"
               icon={SearchIcon}
               iconRight={ChevronDownIcon}
+              mode="ghost"
+              text="Select"
             />
           }
           menu={
