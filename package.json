@@ -15,6 +15,7 @@
     "publish-canary": "RELEASE_TAG=canary npm run publish-tag",
     "publish-current-branch": "RELEASE_TAG=`git rev-parse --abbrev-ref HEAD | sed 's/\\//\\_/g'` npm run publish-tag",
     "publish-tag": "RELEASE_TAG=\"${RELEASE_TAG:-canary}\"; npm run build && lerna publish --canary --force-publish --no-git-tag-version --dist-tag=$RELEASE_TAG --preid=$RELEASE_TAG --exact",
+    "postpublish": "node scripts/setLatestForV2OnlyModules.js",
     "package": "npm run package-yarn && npm run package-cli",
     "package-cli": "(cd packages/@sanity/cli && npm run pack)",
     "package-yarn": "(cd packages/@sanity/cli && npm run package-yarn)",
