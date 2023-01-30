@@ -52,17 +52,27 @@ const MenuContainer = styled.div`
   top: 3px;
   right: 3px;
 
-  & button {
-    display: none;
-  }
-
   & button[data-selected] {
     display: block;
   }
 
-  ${Root}:hover & {
-    button {
-      display: block;
+  @media (hover: hover) {
+    // If hover is supported, hide the buttons until the user hovers or focuses the asset
+    // Use opacity to enable the buttons to still be focusable
+    & button {
+      opacity: 0;
+    }
+
+    ${Root}:hover & {
+      button {
+        opacity: 1;
+      }
+    }
+
+    ${Root}:focus-within & {
+      button {
+        opacity: 1;
+      }
     }
   }
 `
