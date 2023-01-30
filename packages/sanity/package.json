@@ -151,7 +151,7 @@
     "@sanity/portable-text-editor": "3.5.0",
     "@sanity/schema": "3.5.0",
     "@sanity/types": "3.5.0",
-    "@sanity/ui": "^1.0.0",
+    "@sanity/ui": "^1.2.0",
     "@sanity/util": "3.5.0",
     "@sanity/uuid": "^3.0.1",
     "@sanity/validation": "3.5.0",
