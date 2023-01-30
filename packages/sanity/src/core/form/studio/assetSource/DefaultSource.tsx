@@ -259,12 +259,13 @@ const DefaultAssetSource = function DefaultAssetSource(
 
   return (
     <Dialog
-      ref={ref}
-      id={_elementId.current}
-      header={dialogHeaderTitle}
-      width={2}
-      onClose={handleClose}
       __unstable_autoFocus={hasResetAutoFocus}
+      header={dialogHeaderTitle}
+      id={_elementId.current}
+      onClickOutside={handleClose}
+      onClose={handleClose}
+      ref={ref}
+      width={2}
     >
       {showAcceptMessage && !isImageOnlyWildCard && (
         <Card tone="primary" marginTop={4} marginX={4} padding={[3, 3, 4]} border radius={2}>

@@ -1,4 +1,4 @@
-import React, {ReactNode} from 'react'
+import React, {ReactNode, useCallback} from 'react'
 import {Box, Dialog, Layer, ResponsiveWidthProps} from '@sanity/ui'
 import {PresenceOverlay} from '../../presence'
 import {PopoverDialog} from '../../components'
@@ -18,13 +18,13 @@ interface Props {
 
 export function EditPortal(props: Props): React.ReactElement {
   const {
-    type,
-    id,
-    width,
-    onClose,
     children,
-    legacy_referenceElement: referenceElement,
     header,
+    id,
+    legacy_referenceElement: referenceElement,
+    onClose,
+    type,
+    width,
   } = props
 
   const contents = (
@@ -35,11 +35,15 @@ export function EditPortal(props: Props): React.ReactElement {
 
   if (type === 'dialog') {
     return (
-      <Layer>
-        <Dialog header={header} onClose={onClose} id={id || ''} width={width}>
-          {contents}
-        </Dialog>
-      </Layer>
+      <Dialog
+        header={header}
+        id={id || ''}
+        onClickOutside={onClose}
+        onClose={onClose}
+        width={width}
+      >
+        {contents}
+      </Dialog>
     )
   }
 
