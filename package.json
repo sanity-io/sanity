@@ -128,6 +128,9 @@
     "stylelint-prettier": "^1.1.2",
     "typescript": "4.5.5"
   },
+  "resolutions": {
+    "**/@types/react": "^17.0.42"
+  },
   "optionalDependencies": {
     "node-notifier": "^10.0.0"
   },
