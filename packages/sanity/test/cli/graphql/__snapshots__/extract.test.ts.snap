@@ -252,6 +252,45 @@ Object {
       "description": undefined,
       "fields": Array [
         Object {
+          "description": undefined,
+          "fieldName": "_dataset",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "_key",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "_projectId",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "_ref",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "_type",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "_weak",
+          "type": "Boolean",
+        },
+      ],
+      "kind": "Type",
+      "name": "CrossDatasetReference",
+      "originalName": "crossDatasetReference",
+      "type": "Object",
+    },
+    Object {
+      "description": undefined,
+      "fields": Array [
+        Object {
           "description": "Date the document was created",
           "fieldName": "_createdAt",
           "isNullable": true,

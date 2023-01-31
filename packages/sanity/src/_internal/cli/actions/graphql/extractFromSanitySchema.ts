@@ -22,13 +22,26 @@ import type {
   ConvertedUnion,
 } from './types'
 
-const skipTypes = ['document', 'reference', 'crossDatasetReference']
+const skipTypes = ['document', 'reference']
 const allowedJsonTypes = ['object', 'array']
 const disallowedCustomizedMembers = ['object', 'array', 'image', 'file', 'block']
 const disabledBlockFields = ['markDefs']
 const scalars = ['string', 'number', 'boolean']
 
 function getBaseType(baseSchema: CompiledSchema, typeName: IntrinsicTypeName): SchemaType {
+  if (typeName === 'crossDatasetReference') {
+    return Schema.compile({
+      types: (baseSchema._original?.types || []).concat([
+        {
+          name: `__placeholder__`,
+          type: 'crossDatasetReference',
+          // Just needs _something_ to refer to, doesn't matter what
+          to: [{type: 'sanity.imageAsset'}],
+        },
+      ]),
+    }).get('__placeholder__')
+  }
+
   return Schema.compile({
     types: (baseSchema._original?.types || []).concat([
       {name: `__placeholder__`, type: typeName, options: {hotspot: true}},
@@ -46,8 +59,7 @@ function isBaseType(type: SchemaType): boolean {
     type.name !== type.jsonType &&
     allowedJsonTypes.includes(type.jsonType) &&
     !skipTypes.includes(type.name) &&
-    !isReference(type) &&
-    !isCrossDatasetReference(type)
+    !isReference(type)
   )
 }
 

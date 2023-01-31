@@ -16,7 +16,19 @@ export const WEAK_FIELD = {
   type: 'boolean',
 }
 
-const REFERENCE_FIELDS = [REF_FIELD, WEAK_FIELD]
+const DATASET_FIELD = {
+  name: '_dataset',
+  title: 'Target dataset',
+  type: 'string',
+}
+
+const PROJECT_ID_FIELD = {
+  name: '_projectId',
+  title: 'Target project ID',
+  type: 'string',
+}
+
+const REFERENCE_FIELDS = [REF_FIELD, WEAK_FIELD, DATASET_FIELD, PROJECT_ID_FIELD]
 
 const OVERRIDABLE_FIELDS = [...DEFAULT_OVERRIDEABLE_FIELDS]
 
