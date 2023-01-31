@@ -103,10 +103,9 @@ export function prepareConfig(
       const resolvedSources = sources.map((source): InternalSource => {
         const clientFactory = source.unstable_clientFactory || createClient
 
-        const projectId = source.projectId
-        const dataset = source.dataset
+        const {projectId, dataset, apiHost} = source
 
-        const auth = source.auth || createAuthStore({clientFactory, dataset, projectId})
+        const auth = source.auth || createAuthStore({clientFactory, dataset, projectId, apiHost})
 
         let schemaTypes
         try {
