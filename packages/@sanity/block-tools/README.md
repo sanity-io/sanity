@@ -13,7 +13,7 @@ sanity exec path/to/script.js
 Let's start with a complete example:
 
 ```js
-import Schema from '@sanity/schema'
+import {Schema} from '@sanity/schema'
 import {htmlToBlocks} from '@sanity/block-tools'
 
 // Start with compiling a schema we can work against

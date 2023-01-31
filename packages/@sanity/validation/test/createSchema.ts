@@ -1,4 +1,4 @@
-import SchemaBuilder from '@sanity/schema'
+import {Schema as SchemaBuilder} from '@sanity/schema'
 import {validateSchema, groupProblems} from '@sanity/schema/_internal'
 import {Schema} from '@sanity/types'
 

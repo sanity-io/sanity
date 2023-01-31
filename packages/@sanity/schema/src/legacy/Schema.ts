@@ -41,7 +41,7 @@ function compileRegistry(schemaDef) {
 /**
  * @beta
  */
-export default class Schema {
+export class Schema {
   _original: {name: string; types: any[]}
   _registry: {[typeName: string]: any}
 
@@ -68,5 +68,25 @@ export default class Schema {
 
   getTypeNames(): string[] {
     return Object.keys(this._registry)
+  }
+}
+
+/**
+ * @deprecated Use `import {Schema} from "@sanity/schema"` instead
+ */
+export class DeprecatedDefaultSchema extends Schema {
+  static compile(schemaDef: any): Schema {
+    return new DeprecatedDefaultSchema(schemaDef)
+  }
+
+  constructor(schemaDef: any) {
+    super(schemaDef)
+
+    const stack = new Error(
+      'The default export of `@sanity/schema` is deprecated. Use `import {Schema} from "@sanity/schema"` instead.'
+    ).stack.replace(/^Error/, 'Warning')
+
+    // eslint-disable-next-line no-console
+    console.warn(stack)
   }
 }

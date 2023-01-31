@@ -1,4 +1,4 @@
-import Schema from '@sanity/schema'
+import {Schema} from '@sanity/schema'
 
 export function compileType(rawType: any) {
   return Schema.compile({

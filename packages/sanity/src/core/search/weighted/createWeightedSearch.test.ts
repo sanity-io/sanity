@@ -1,4 +1,4 @@
-import Schema from '@sanity/schema'
+import {Schema} from '@sanity/schema'
 import {renderHook} from '@testing-library/react'
 import {defer, lastValueFrom, of} from 'rxjs'
 import type {SearchTerms} from '..'

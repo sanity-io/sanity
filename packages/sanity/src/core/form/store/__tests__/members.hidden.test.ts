@@ -1,4 +1,4 @@
-import Schema from '@sanity/schema'
+import {Schema} from '@sanity/schema'
 import {ConditionalProperty, ObjectSchemaType} from '@sanity/types'
 import {prepareFormState} from '../formState'
 import {DEFAULT_PROPS} from './shared'

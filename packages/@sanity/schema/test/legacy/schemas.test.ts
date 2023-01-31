@@ -1,4 +1,4 @@
-import Schema from '../../src/legacy/Schema'
+import {Schema} from '../../src/legacy/Schema'
 
 import rawSchemas from './fixtures/schemas'
 

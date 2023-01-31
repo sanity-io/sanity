@@ -1,4 +1,4 @@
-import Schema from '@sanity/schema'
+import {Schema} from '@sanity/schema'
 import {SearchableType} from '../../../../../search'
 import {filterDefinitions} from '../definitions/defaultFilters'
 import {operatorDefinitions} from '../definitions/operators/defaultOperators'

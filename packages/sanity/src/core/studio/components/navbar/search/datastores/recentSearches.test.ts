@@ -1,4 +1,4 @@
-import Schema from '@sanity/schema'
+import {Schema} from '@sanity/schema'
 import type {CurrentUser, ObjectSchemaType} from '@sanity/types'
 import type {SearchTerms} from '../../../../../search'
 import {filterDefinitions} from '../definitions/defaultFilters'

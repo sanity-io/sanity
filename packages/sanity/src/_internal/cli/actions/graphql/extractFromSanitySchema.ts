@@ -10,7 +10,7 @@ import type {
   IntrinsicTypeName,
 } from '@sanity/types'
 import {generateHelpUrl} from '@sanity/generate-help-url'
-import Schema from '@sanity/schema'
+import {Schema} from '@sanity/schema'
 import oneline from 'oneline'
 import * as helpUrls from './helpUrls'
 import {SchemaError} from './SchemaError'
