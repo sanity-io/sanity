@@ -72,7 +72,7 @@ function DocumentStatusBarActionsInner(props: DocumentStatusBarActionsInnerProps
 }
 
 export const DocumentStatusBarActions = memo(function DocumentStatusBarActions() {
-  const {actions, connectionState, editState} = useDocumentPane()
+  const {actions, connectionState, documentId, editState} = useDocumentPane()
   // const [isMenuOpen, setMenuOpen] = useState(false)
   // const handleMenuOpen = useCallback(() => setMenuOpen(true), [])
   // const handleMenuClose = useCallback(() => setMenuOpen(false), [])
@@ -98,6 +98,8 @@ export const DocumentStatusBarActions = memo(function DocumentStatusBarActions()
           // onMenuClose={handleMenuClose}
           showMenu={actions.length > 1}
           states={states}
+          // Use document ID as key to make sure that the actions state is reset when the document changes
+          key={documentId}
         />
       )}
     </RenderActionCollectionState>
