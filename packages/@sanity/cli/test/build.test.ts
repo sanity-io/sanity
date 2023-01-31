@@ -8,7 +8,7 @@ describeCliTest('CLI: `sanity build` / `sanity deploy`', () => {
     const testConcurrentV3 = version === 'v3' ? testConcurrent : test.skip
 
     // Builds can take a bit of time with lots of concurrent tasks and slow CIs
-    jest.setTimeout(120 * 1000)
+    jest.setTimeout(240 * 1000)
 
     const studioPath = path.join(studiosPath, version)
 
@@ -51,7 +51,7 @@ describeCliTest('CLI: `sanity build` / `sanity deploy`', () => {
           expect(builtCss).toMatch(/background:\s*green/)
         }
       },
-      120 * 1000
+      version === 'v3' ? 120 * 1000 : 240 * 1000
     )
 
     testConcurrentV3(
