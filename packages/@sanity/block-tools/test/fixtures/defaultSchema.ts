@@ -1,4 +1,4 @@
-import Schema from '@sanity/schema'
+import {Schema} from '@sanity/schema'
 
 export default Schema.compile({
   name: 'withDefaultBlockType',

@@ -1,5 +1,5 @@
 import {SanityClient} from '@sanity/client'
-import SchemaBuilder from '@sanity/schema'
+import {Schema as SchemaBuilder} from '@sanity/schema'
 import {ObjectSchemaType, Rule, SanityDocument} from '@sanity/types'
 import inferFromSchema from '../src/inferFromSchema'
 import validateDocument from '../src/validateDocument'

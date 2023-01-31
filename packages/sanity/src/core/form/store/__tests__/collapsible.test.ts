@@ -1,4 +1,4 @@
-import Schema from '@sanity/schema'
+import {Schema} from '@sanity/schema'
 import {ObjectSchemaType, Path} from '@sanity/types'
 import {pathToString} from '../../../field'
 import {prepareFormState} from '../formState'

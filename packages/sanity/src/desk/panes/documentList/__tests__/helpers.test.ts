@@ -1,4 +1,4 @@
-import Schema from '@sanity/schema'
+import {Schema} from '@sanity/schema'
 import {ObjectSchemaType} from '@sanity/types'
 import {applyOrderingFunctions, fieldExtendsType} from '../helpers'
 

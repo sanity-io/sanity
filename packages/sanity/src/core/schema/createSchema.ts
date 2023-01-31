@@ -1,4 +1,4 @@
-import SchemaBuilder, {type SchemaValidationResult} from '@sanity/schema'
+import {Schema as SchemaBuilder, type SchemaValidationResult} from '@sanity/schema'
 import {validateSchema, groupProblems} from '@sanity/schema/_internal'
 import {Schema} from '@sanity/types'
 import {inferFromSchema as inferValidation} from '@sanity/validation'
