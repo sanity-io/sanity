@@ -2,11 +2,7 @@
 
 Various tools for processing Sanity block content. Mostly used internally in the Studio code, but it got some nice functions (especially `htmlToBlocks`) which is handy when you are importing data from HTML into your dataset as block text.
 
-**NOTE:** If you want to use `@sanity/block-tools` in a Node.js script, make sure to run it with `sanity exec` (see [docs](https://www.sanity.io/docs/cli/exec)):
-
-```sh
-sanity exec path/to/script.js
-```
+**NOTE:** To use `@sanity/block-tools` in a Node.js script, you will need to provide a `parseHtml` method - generally using `JSDOM`. [Read more](#jsdom-example).
 
 ## Example
 
@@ -14,7 +10,7 @@ Let's start with a complete example:
 
 ```js
 import {Schema} from '@sanity/schema'
-import {htmlToBlocks} from '@sanity/block-tools'
+import {htmlToBlocks, getBlockContentFeatures} from '@sanity/block-tools'
 
 // Start with compiling a schema we can work against
 const defaultSchema = Schema.compile({
@@ -61,7 +57,7 @@ const blocks = htmlToBlocks('<html><body><h1>Hello world!</h1><body></html>', bl
 //  }
 
 // Get the feature-set of a blockContentType
-const features = blockTools.getBlockContentFeatures(blockContentType)
+const features = getBlockContentFeatures(blockContentType)
 ```
 
 ## Methods
@@ -89,16 +85,12 @@ that parses the html into a DOMParser compatible model / API.
 ###### JSDOM example
 
 ```js
-const jsdom = require('jsdom')
-const {JSDOM} = jsdom
+const {JSDOM} = require('jsdom')
+const {htmlToBlocks} = require('@sanity/block-tools')
 
-const blocks = blockTools.htmlToBlocks(
-  '<html><body><h1>Hello world!</h1><body></html>',
-  blockContentType,
-  {
-    parseHtml: (html) => new JSDOM(html).window.document,
-  }
-)
+const blocks = htmlToBlocks('<html><body><h1>Hello world!</h1><body></html>', blockContentType, {
+  parseHtml: (html) => new JSDOM(html).window.document,
+})
 ```
 
 ##### `rules`
@@ -106,7 +98,7 @@ const blocks = blockTools.htmlToBlocks(
 You may add your own rules to deal with special HTML cases.
 
 ```js
-blockTools.htmlToBlocks(
+htmlToBlocks(
   '<html><body><pre><code>const foo = "bar"</code></pre></body></html>',
   blockContentType,
   {
