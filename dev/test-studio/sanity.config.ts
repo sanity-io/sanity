@@ -110,6 +110,16 @@ export default defineConfig([
     basePath: '/playground',
   },
   {
+    name: 'staging',
+    title: 'Staging',
+    subtitle: 'Staging dataset',
+    projectId: 'exx11uqh',
+    dataset: 'playground',
+    plugins: [sharedSettings()],
+    basePath: '/staging',
+    apiHost: 'https://api.sanity.work',
+  },
+  {
     name: 'custom-components',
     title: 'Test Studio',
     subtitle: 'Components API playground',

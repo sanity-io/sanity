@@ -247,8 +247,26 @@ export interface WorkspaceOptions extends SourceOptions {
 /** @beta */
 export interface SourceOptions extends PluginOptions {
   title?: string
+
+  /**
+   * Project ID for this source
+   */
   projectId: string
+
+  /**
+   * Dataset name for this source
+   */
   dataset: string
+
+  /**
+   * API hostname used for requests. Generally used for custom CNAMEs, allowing businesses to use
+   * their own domain for API requests. Must include protocol:
+   * eg `https://sanityapi.mycompany.com`
+   *
+   * Note that (currently) the project ID will be prepended to the passed URL, so the above
+   * example would end up as: `https://<projectId>.sanityapi.mycompany.com`
+   */
+  apiHost?: string
 
   /** @internal */
   auth?: AuthStore

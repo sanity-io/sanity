@@ -22,6 +22,7 @@ export interface AuthStoreOptions {
   clientFactory?: (options: SanityClientConfig) => SanityClient
   projectId: string
   dataset: string
+  apiHost?: string
   /**
    * Login method to use for the studio the studio. Can be one of:
    * - `dual` (default) - attempt to use cookies where possible, falling back to
@@ -141,6 +142,7 @@ export function _createAuthStore({
   clientFactory: clientFactoryOption,
   projectId,
   dataset,
+  apiHost,
   loginMethod = 'dual',
   ...providerOptions
 }: AuthStoreOptions): AuthStore {
@@ -159,6 +161,16 @@ export function _createAuthStore({
 
   const token$ = messages.pipe(startWith(loginMethod === 'dual' ? getToken(projectId) : null))
 
+  // Allow configuration of `apiHost` through source configuration
+  const hostOptions: {apiHost?: string} = {}
+  if (apiHost) {
+    hostOptions.apiHost = apiHost
+    // @ts-expect-error: __SANITY_STAGING__ is a global env variable set by the vite config
+  } else if (typeof __SANITY_STAGING__ !== 'undefined' && __SANITY_STAGING__ === true) {
+    /* __SANITY_STAGING__ is a global variable set by the vite config */
+    hostOptions.apiHost = 'https://api.sanity.work'
+  }
+
   const state$ = token$.pipe(
     // // see above
     // debounce(() => firstMessage),
@@ -173,17 +185,7 @@ export function _createAuthStore({
         requestTagPrefix: 'sanity.studio',
         ignoreBrowserTokenWarning: true,
         allowReconfigure: false,
-        // @ts-expect-error: __SANITY_STAGING__ is a global env variable set by the vite config
-        ...(typeof __SANITY_STAGING__ !== 'undefined' && __SANITY_STAGING__
-          ? {
-              apiHost:
-                /* __SANITY_STAGING__ is a global variable set by the vite config */
-                // @ts-expect-error: __SANITY_STAGING__ is a global env variable set by the vite config
-                typeof __SANITY_STAGING__ !== 'undefined' && __SANITY_STAGING__ === true
-                  ? 'https://api.sanity.work'
-                  : undefined,
-            }
-          : {}),
+        ...hostOptions,
       })
     ),
     switchMap((client) =>
