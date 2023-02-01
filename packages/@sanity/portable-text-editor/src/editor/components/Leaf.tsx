@@ -8,15 +8,18 @@ import {
   PortableTextMemberSchemaTypes,
   RenderAnnotationFunction,
   RenderDecoratorFunction,
-} from '../types/editor'
-import {debugWithName} from '../utils/debug'
-import {DefaultAnnotation} from './nodes/DefaultAnnotation'
+} from '../../types/editor'
+import {debugWithName} from '../../utils/debug'
+import {DefaultAnnotation} from '../nodes/DefaultAnnotation'
 import {DraggableChild} from './DraggableChild'
 
 const debug = debugWithName('components:Leaf')
 const debugRenders = false
 
-interface LeafProps extends RenderLeafProps {
+/**
+ * @internal
+ */
+export interface LeafProps extends RenderLeafProps {
   children: ReactElement
   keyGenerator: () => string
   schemaTypes: PortableTextMemberSchemaTypes
@@ -26,6 +29,10 @@ interface LeafProps extends RenderLeafProps {
   readOnly: boolean
 }
 
+/**
+ * Renders Portable Text span nodes in Slate
+ * @internal
+ */
 export const Leaf = (props: LeafProps) => {
   const editor = useSlateStatic()
   const selected = useSelected()
@@ -101,14 +108,14 @@ export const Leaf = (props: LeafProps) => {
       if (child) {
         const defaultRendered = <>{returnedChildren}</>
         returnedChildren = renderChild({
-          children: defaultRendered,
-          value: child,
-          schemaType: schemaTypes.span,
-          focused,
-          selected,
-          path,
           annotations,
+          children: defaultRendered,
           editorElementRef: spanRef,
+          focused,
+          path,
+          schemaType: schemaTypes.span,
+          selected,
+          value: child,
         })
       }
     }

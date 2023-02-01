@@ -1,8 +1,12 @@
 import React, {ReactElement, useRef, useMemo, useCallback} from 'react'
 import {Element as SlateElement, Transforms, Editor, Text} from 'slate'
 import {ReactEditor, useSlateStatic} from '@sanity/slate-react'
-import {debugWithName} from '../utils/debug'
-import {IS_DRAGGING, IS_DRAGGING_ELEMENT_RANGE, IS_DRAGGING_CHILD_ELEMENT} from '../utils/weakMaps'
+import {debugWithName} from '../../utils/debug'
+import {
+  IS_DRAGGING,
+  IS_DRAGGING_ELEMENT_RANGE,
+  IS_DRAGGING_CHILD_ELEMENT,
+} from '../../utils/weakMaps'
 
 const debug = debugWithName('components:DraggableChild')
 declare global {
@@ -12,12 +16,19 @@ declare global {
   }
 }
 
+/**
+ * @internal
+ */
 export interface DraggableChildProps {
   children: ReactElement
   element: Text | SlateElement
   readOnly: boolean
 }
 
+/**
+ * Implements drag and drop functionality on editor child nodes
+ * @internal
+ */
 export const DraggableChild = ({children, element, readOnly}: DraggableChildProps) => {
   const editor = useSlateStatic()
   const dragGhostRef: React.MutableRefObject<undefined | HTMLElement> = useRef()
