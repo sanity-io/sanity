@@ -39,7 +39,8 @@ const sub = messages.subscribe((next) => {
 })
 
 ipc.config.id = 'socketServer'
-ipc.config.retry = 1500
+ipc.config.retry = 5000
+ipc.config.networkPort = 3002
 ipc.config.silent = true
 
 ipc.serveNet(() => {
