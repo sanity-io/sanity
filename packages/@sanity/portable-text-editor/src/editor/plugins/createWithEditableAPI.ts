@@ -509,6 +509,10 @@ export function createWithEditableAPI(
       isExpandedSelection: () => {
         return !!editor.selection && Range.isExpanded(editor.selection)
       },
+      insertBreak: () => {
+        editor.insertBreak()
+        editor.onChange()
+      },
     })
     return editor
   }
