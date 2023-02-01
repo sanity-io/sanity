@@ -1,3 +1,5 @@
+/* eslint-disable complexity */
+/* eslint-disable max-statements */
 import React, {ReactElement, FunctionComponent, useRef, useMemo} from 'react'
 import {Element as SlateElement, Editor, Range} from 'slate'
 import {Path, PortableTextChild, PortableTextObject, PortableTextTextBlock} from '@sanity/types'
@@ -9,19 +11,23 @@ import {
   RenderChildFunction,
   RenderListItemFunction,
   RenderStyleFunction,
-} from '../types/editor'
-import {fromSlateValue} from '../utils/values'
-import {debugWithName} from '../utils/debug'
-import {KEY_TO_VALUE_ELEMENT} from '../utils/weakMaps'
-import ObjectNode from './nodes/DefaultObject'
-import {DefaultBlockObject, DefaultListItem, DefaultListItemInner} from './nodes/index'
+} from '../../types/editor'
+import {fromSlateValue} from '../../utils/values'
+import {debugWithName} from '../../utils/debug'
+import {KEY_TO_VALUE_ELEMENT} from '../../utils/weakMaps'
+import ObjectNode from '../nodes/DefaultObject'
+import {DefaultBlockObject, DefaultListItem, DefaultListItemInner} from '../nodes/index'
 import {DraggableBlock} from './DraggableBlock'
 import {DraggableChild} from './DraggableChild'
 
 const debug = debugWithName('components:Element')
 const debugRenders = false
 const EMPTY_ANNOTATIONS: PortableTextObject[] = []
-interface ElementProps {
+
+/**
+ * @internal
+ */
+export interface ElementProps {
   attributes: RenderElementProps['attributes']
   children: ReactElement
   element: SlateElement
@@ -36,7 +42,10 @@ interface ElementProps {
 
 const inlineBlockStyle = {display: 'inline-block'}
 
-// eslint-disable-next-line max-statements, complexity
+/**
+ * Renders Portable Text block and inline object nodes in Slate
+ * @internal
+ */
 export const Element: FunctionComponent<ElementProps> = ({
   attributes,
   children,
