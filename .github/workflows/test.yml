@@ -57,6 +57,9 @@ jobs:
       - name: Check formatting
         run: yarn check:format
 
+      - name: Install Playwright
+        run: npx playwright install --with-deps
+
       - name: Check type system
         # If TypeScript project references is set up properly, `tsc --build` should work right after dependencies
         # has been installed, no extra build/compile step required
@@ -70,12 +73,6 @@ jobs:
         run: yarn depcheck
         env:
           NODE_OPTIONS: --max_old_space_size=8192
-
-      # (for puppeteer tests)
-      - name: Install Chrome
-        uses: browser-actions/setup-chrome@latest
-        with:
-          chrome-version: stable
 
       - name: Test
         id: test
