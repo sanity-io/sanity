@@ -1,15 +1,20 @@
-import childProcess from 'child_process'
 import NodeEnvironment from 'jest-environment-node'
 import {isEqual} from 'lodash'
 import ipc from 'node-ipc'
-import {ElementHandle, KeyInput, Browser, Page, launch} from 'puppeteer'
+import {chromium, Browser, Page, ElementHandle} from 'playwright'
 import {PortableTextBlock} from '@sanity/types'
-import {FLUSH_PATCHES_DEBOUNCE_MS} from '../../src/constants'
 import {normalizeSelection} from '../../src/utils/selection'
 import type {EditorSelection} from '../../src'
 
+export const delay = (time: number): Promise<void> => {
+  return new Promise((resolve) => {
+    setTimeout(resolve, time)
+  })
+}
+
 ipc.config.id = 'collaborative-jest-environment-ipc-client'
-ipc.config.retry = 1500
+ipc.config.retry = 5000
+ipc.config.networkPort = 3002
 ipc.config.silent = true
 
 const WEB_SERVER_ROOT_URL = 'http://localhost:3000'
@@ -20,26 +25,11 @@ const WEB_SERVER_ROOT_URL = 'http://localhost:3000'
 const DEBUG = process.env.DEBUG || false
 
 // Wait this long for selections and a new doc revision to appear in the clients.
-const SELECTION_TIMEOUT_MS = 300
+const SELECTION_TIMEOUT_MS = 1000
 
 // How long to wait for a new revision to come back to the client(s) when patched through the server.
 // Wait for patch debounce time and some slack for selection adjustment time for everything to be ready
-const REVISION_TIMEOUT_MS = FLUSH_PATCHES_DEBOUNCE_MS + SELECTION_TIMEOUT_MS
-
-// eslint-disable-next-line no-process-env
-const launchConfig = process.env.CI
-  ? {
-      headless: true,
-      // eslint-disable-next-line no-sync
-      executablePath: childProcess.execSync('which chrome', {encoding: 'utf8'}).trim(),
-    }
-  : {}
-
-export const delay = (time: number): Promise<void> => {
-  return new Promise((resolve) => {
-    setTimeout(resolve, time)
-  })
-}
+const REVISION_TIMEOUT_MS = 2000
 
 export default class CollaborationEnvironment extends NodeEnvironment {
   private _browserA?: Browser
@@ -49,17 +39,17 @@ export default class CollaborationEnvironment extends NodeEnvironment {
 
   public async setup(): Promise<void> {
     await super.setup()
-    this._browserA = await launch(launchConfig)
-    this._browserB = await launch(launchConfig)
+    this._browserA = await chromium.launch()
+    this._browserB = await chromium.launch()
     this._pageA = await this._browserA.newPage()
     this._pageB = await this._browserB.newPage()
 
     // Hook up page console and npm debug in the PTE
     if (DEBUG) {
-      await this._pageA.evaluateOnNewDocument((filter: string) => {
+      await this._pageA.addInitScript((filter: string) => {
         window.localStorage.debug = filter
       }, DEBUG)
-      await this._pageB.evaluateOnNewDocument((filter: string) => {
+      await this._pageB.addInitScript((filter: string) => {
         window.localStorage.debug = filter
       }, DEBUG)
       this._pageA.on('console', (message) =>
@@ -107,10 +97,9 @@ export default class CollaborationEnvironment extends NodeEnvironment {
       value: PortableTextBlock[] | undefined
     ): Promise<void> => {
       ipc.of.socketServer.emit('payload', JSON.stringify({type: 'value', value, testId}))
-      await delay(REVISION_TIMEOUT_MS) // Wait a little here for the payload to reach the clients
       const [valueHandleA, valueHandleB] = await Promise.all([
-        this._pageA?.waitForSelector('#pte-value'),
-        this._pageB?.waitForSelector('#pte-value'),
+        this._pageA?.waitForSelector('#pte-value', {timeout: REVISION_TIMEOUT_MS}),
+        this._pageB?.waitForSelector('#pte-value', {timeout: REVISION_TIMEOUT_MS}),
       ])
 
       if (!valueHandleA || !valueHandleB) {
@@ -141,9 +130,9 @@ export default class CollaborationEnvironment extends NodeEnvironment {
           const editorId = `${['A', 'B'][index]}${testId}`
           const [editableHandle, selectionHandle, valueHandle]: (ElementHandle<Element> | null)[] =
             await Promise.all([
-              page.waitForSelector('div[contentEditable="true"]'),
-              page.waitForSelector('#pte-selection'),
-              page.waitForSelector('#pte-value'),
+              page.waitForSelector('div[contentEditable="true"]', {timeout: REVISION_TIMEOUT_MS}),
+              page.waitForSelector('#pte-selection', {timeout: REVISION_TIMEOUT_MS}),
+              page.waitForSelector('#pte-value', {timeout: REVISION_TIMEOUT_MS}),
             ])
 
           if (!editableHandle || !selectionHandle || !valueHandle) {
@@ -189,7 +178,6 @@ export default class CollaborationEnvironment extends NodeEnvironment {
             testId,
             editorId,
             insertText: async (text: string) => {
-              // await delay(generateRandomInteger(0, 100))
               await Promise.all([
                 waitForRevision(),
                 waitForNewSelection(async () => {
@@ -221,8 +209,7 @@ export default class CollaborationEnvironment extends NodeEnvironment {
               await page.keyboard.up(metaKey)
               await waitForRevision()
             },
-            pressKey: async (keyName: KeyInput, times?: number) => {
-              // await delay(generateRandomInteger(0, 100))
+            pressKey: async (keyName: string, times?: number) => {
               const pressKey = async () => {
                 await editableHandle.press(keyName)
               }
@@ -278,7 +265,6 @@ export default class CollaborationEnvironment extends NodeEnvironment {
                   editorId,
                 })
               )
-              await delay(REVISION_TIMEOUT_MS) // Wait a little here for the payload to reach the client
               await waitForSelection(selection)
             },
             async getValue(): Promise<PortableTextBlock[] | undefined> {
