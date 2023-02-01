@@ -68,3 +68,8 @@ tsconfig.tsbuildinfo
 
 # Output of `etl` actions
 etc
+
+# Automated testing files
+playwright-report
+playwright/results
+storageState.json
