@@ -26,7 +26,7 @@
     "classnames": "^2.2.5",
     "codemirror": "^5.47.0",
     "is-hotkey": "^0.1.6",
-    "json5": "^1.0.1",
+    "json5": "^2.2.3",
     "lodash": "^4.17.15",
     "query-string": "^4.3.2",
     "react-codemirror2": "^6.0.0",
