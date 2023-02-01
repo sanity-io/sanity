@@ -1,17 +1,20 @@
 import React, {useState, useRef, useMemo, useCallback, DragEvent, useEffect} from 'react'
 import {Element as SlateElement, Transforms, Path, Editor} from 'slate'
 import {ReactEditor, useSlateStatic} from '@sanity/slate-react'
-import {debugWithName} from '../utils/debug'
+import {debugWithName} from '../../utils/debug'
 import {
   IS_DRAGGING_ELEMENT_TARGET,
   IS_DRAGGING_BLOCK_ELEMENT,
   IS_DRAGGING,
   IS_DRAGGING_BLOCK_TARGET_POSITION,
-} from '../utils/weakMaps'
+} from '../../utils/weakMaps'
 
 const debug = debugWithName('components:DraggableBlock')
 const debugRenders = false
 
+/**
+ * @internal
+ */
 export interface DraggableBlockProps {
   children: React.ReactNode
   element: SlateElement
@@ -19,6 +22,10 @@ export interface DraggableBlockProps {
   blockRef: React.MutableRefObject<HTMLDivElement | null>
 }
 
+/**
+ * Implements drag and drop functionality on editor block nodes
+ * @internal
+ */
 export const DraggableBlock = ({children, element, readOnly, blockRef}: DraggableBlockProps) => {
   const editor = useSlateStatic()
   const dragGhostRef: React.MutableRefObject<undefined | HTMLElement> = useRef()
