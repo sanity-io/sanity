@@ -1,9 +1,9 @@
-import {PlaywrightTestConfig, devices} from '@playwright/test'
+import {defineConfig, devices} from '@playwright/test'
 
 /**
  * See https://playwright.dev/docs/test-configuration.
  */
-const config: PlaywrightTestConfig = {
+export default defineConfig({
   globalSetup: require.resolve('./playwright/global-setup'),
   testDir: './playwright/tests',
   /* Maximum time one test can run for. */
@@ -24,9 +24,9 @@ const config: PlaywrightTestConfig = {
   use: {
     /* Maximum time each action such as `click()` can take. Defaults to 0 (no limit). */
     actionTimeout: 0,
+    baseURL: process.env.BRANCH_DEPLOYMENT_URL || 'http://localhost:3333',
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
-    baseURL: 'http://localhost:3333/',
     browserName: 'chromium',
     headless: false,
     storageState: 'storageState.json',
@@ -66,5 +66,4 @@ const config: PlaywrightTestConfig = {
     command: 'npm run dev',
     port: 3333,
   },
-}
-export default config
+})
