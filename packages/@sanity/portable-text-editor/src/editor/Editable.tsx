@@ -5,7 +5,9 @@ import {
   ReactEditor,
   RenderElementProps,
   RenderLeafProps,
+  useSlate,
 } from '@sanity/slate-react'
+import {noop} from 'lodash'
 import {
   EditorSelection,
   OnBeforeInputFn,
@@ -25,13 +27,14 @@ import {fromSlateValue, isEqualToEmptyEditor, toSlateValue} from '../utils/value
 import {normalizeSelection} from '../utils/selection'
 import {toSlateRange} from '../utils/ranges'
 import {debugWithName} from '../utils/debug'
-import {Leaf} from './Leaf'
-import {Element} from './Element'
+import {usePortableTextEditorReadOnlyStatus} from './hooks/usePortableTextReadOnly'
+import {usePortableTextEditorKeyGenerator} from './hooks/usePortableTextEditorKeyGenerator'
+import {Leaf} from './components/Leaf'
+import {Element} from './components/Element'
 import {usePortableTextEditor} from './hooks/usePortableTextEditor'
 import {PortableTextEditor} from './PortableTextEditor'
 import {createWithInsertData, createWithHotkeys} from './plugins'
 import {useForwardedRef} from './hooks/useForwardedRef'
-import {usePortableTextEditorReadOnlyStatus} from './hooks/usePortableTextReadOnly'
 
 const debug = debugWithName('component:Editable')
 
@@ -42,25 +45,11 @@ const PLACEHOLDER_STYLE: React.CSSProperties = {
   pointerEvents: 'none',
 }
 
-const NOOP = () => {
-  // Nope
-}
-type DOMNode = globalThis.Node
-
-const isDOMNode = (value: unknown): value is DOMNode => {
-  return value instanceof Node
-}
+const EMPTY_DECORATORS: BaseRange[] = []
 
 /**
- * Check if the target is editable and in the editor.
+ * @public
  */
-export const hasEditableTarget = (
-  editor: ReactEditor,
-  target: EventTarget | null
-): target is DOMNode => {
-  return isDOMNode(target) && ReactEditor.hasDOMNode(editor, target, {editable: true})
-}
-
 export type PortableTextEditableProps = {
   hotkeys?: HotkeyOptions
   onBeforeInput?: OnBeforeInputFn
@@ -78,8 +67,9 @@ export type PortableTextEditableProps = {
   spellCheck?: boolean
 }
 
-const EMPTY_DECORATORS: BaseRange[] = []
-
+/**
+ * @public
+ */
 export const PortableTextEditable = forwardRef(function PortableTextEditable(
   props: PortableTextEditableProps & Omit<React.HTMLProps<HTMLDivElement>, 'as' | 'onPaste'>,
   forwardedRef: React.ForwardedRef<HTMLDivElement>
@@ -104,13 +94,15 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
 
   const portableTextEditor = usePortableTextEditor()
   const readOnly = usePortableTextEditorReadOnlyStatus()
+  const keyGenerator = usePortableTextEditorKeyGenerator()
   const ref = useForwardedRef(forwardedRef)
 
-  const {change$, keyGenerator, schemaTypes, slateInstance: slateEditor} = portableTextEditor
+  const {change$, schemaTypes} = portableTextEditor
+  const slateEditor = useSlate()
 
   const blockTypeName = schemaTypes.block.name
 
-  // React/UI-spesific plugins
+  // React/UI-specific plugins
   const withInsertData = useMemo(
     () => createWithInsertData(change$, schemaTypes, keyGenerator),
     [change$, keyGenerator, schemaTypes]
@@ -136,12 +128,12 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
     (eProps: RenderElementProps) => (
       <Element
         {...eProps}
-        schemaTypes={schemaTypes}
         readOnly={readOnly}
         renderBlock={renderBlock}
         renderChild={renderChild}
         renderListItem={renderListItem}
         renderStyle={renderStyle}
+        schemaTypes={schemaTypes}
         spellCheck={spellCheck}
       />
     ),
@@ -150,25 +142,7 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
 
   const renderLeaf = useCallback(
     (lProps: RenderLeafProps & {leaf: Text & {placeholder?: boolean}}) => {
-      if (renderPlaceholder && lProps.leaf.placeholder && lProps.text.text === '') {
-        return (
-          <>
-            <div style={PLACEHOLDER_STYLE} contentEditable={false}>
-              {renderPlaceholder()}
-            </div>
-            <Leaf
-              {...lProps}
-              keyGenerator={keyGenerator}
-              schemaTypes={schemaTypes}
-              renderAnnotation={renderAnnotation}
-              renderChild={renderChild}
-              renderDecorator={renderDecorator}
-              readOnly={readOnly}
-            />
-          </>
-        )
-      }
-      return (
+      const rendered = (
         <Leaf
           {...lProps}
           keyGenerator={keyGenerator}
@@ -179,6 +153,17 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
           readOnly={readOnly}
         />
       )
+      if (renderPlaceholder && lProps.leaf.placeholder && lProps.text.text === '') {
+        return (
+          <>
+            <div style={PLACEHOLDER_STYLE} contentEditable={false}>
+              {renderPlaceholder()}
+            </div>
+            {rendered}
+          </>
+        )
+      }
+      return rendered
     },
     [
       keyGenerator,
@@ -310,7 +295,7 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
     }
     // Disable scroll into view totally
     if (scrollSelectionIntoView === null) {
-      return NOOP
+      return noop
     }
     // Translate PortableTextEditor prop fn to Slate plugin fn
     return (editor: ReactEditor, domRange: Range) => {
@@ -335,7 +320,7 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
       ]
     }
     return EMPTY_DECORATORS
-  }, [schemaTypes, slateEditor.children])
+  }, [schemaTypes, slateEditor])
 
   // The editor
   const slateEditable = useMemo(
