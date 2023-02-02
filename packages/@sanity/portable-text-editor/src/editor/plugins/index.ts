@@ -1,4 +1,5 @@
 import {BaseOperation, Editor, NodeEntry, Node} from 'slate'
+import {noop} from 'lodash'
 import {PortableTextSlateEditor} from '../../types/editor'
 import {createEditorOptions} from '../../types/options'
 import {createOperationToPatches} from '../../utils/operationToPatches'
@@ -40,13 +41,11 @@ const originalFnMap = new WeakMap<PortableTextSlateEditor, OriginalEditorFunctio
 export const withPlugins = <T extends Editor>(
   editor: T,
   options: createEditorOptions
-): PortableTextSlateEditor => {
+): {editor: PortableTextSlateEditor; subscribe: () => () => void} => {
   const e = editor as T & PortableTextSlateEditor
-  const {portableTextEditor} = options
-  const {schemaTypes, keyGenerator, readOnly, change$, syncValue, incomingPatches$} =
-    portableTextEditor
-  e.maxBlocks = portableTextEditor.maxBlocks || -1
-  e.readOnly = portableTextEditor.readOnly || false
+  const {keyGenerator, portableTextEditor, patches$, readOnly, maxBlocks, isPending} = options
+  const {schemaTypes, change$} = portableTextEditor
+  e.subscriptions = []
   if (e.destroy) {
     e.destroy()
   } else {
@@ -62,20 +61,18 @@ export const withPlugins = <T extends Editor>(
   const withObjectKeys = createWithObjectKeys(schemaTypes, keyGenerator)
   const withSchemaTypes = createWithSchemaTypes(schemaTypes)
   const withEditableAPI = createWithEditableAPI(portableTextEditor, schemaTypes, keyGenerator)
-  const [withPatches, withPatchesCleanupFunction] = readOnly
-    ? []
-    : createWithPatches({
-        patchFunctions: operationToPatches,
-        change$,
-        schemaTypes,
-        syncValue,
-        incomingPatches$,
-      })
-  const withMaxBlocks = createWithMaxBlocks()
+  const withPatches = createWithPatches({
+    change$,
+    isPending,
+    keyGenerator,
+    patches$,
+    patchFunctions: operationToPatches,
+    readOnly,
+    schemaTypes,
+  })
+  const withMaxBlocks = createWithMaxBlocks(maxBlocks || -1)
   const withPortableTextLists = createWithPortableTextLists(schemaTypes)
-  const [withUndoRedo, withUndoRedoCleanupFunction] = readOnly
-    ? []
-    : createWithUndoRedo(incomingPatches$)
+  const withUndoRedo = createWithUndoRedo({readOnly, patches$})
   const withPortableTextMarkModel = createWithPortableTextMarkModel(schemaTypes)
   const withPortableTextBlockStyle = createWithPortableTextBlockStyle(schemaTypes, change$)
 
@@ -95,33 +92,29 @@ export const withPlugins = <T extends Editor>(
     e.onChange = originalFunctions.onChange
     e.apply = originalFunctions.apply
     e.normalizeNode = originalFunctions.normalizeNode
-    if (withPatchesCleanupFunction) {
-      withPatchesCleanupFunction()
-    }
-    if (withUndoRedoCleanupFunction) {
-      withUndoRedoCleanupFunction()
-    }
   }
   if (readOnly) {
-    return withSchemaTypes(
-      withObjectKeys(
-        withPortableTextMarkModel(
-          withPortableTextBlockStyle(
-            withUtils(
-              withPlaceholderBlock(
-                withPortableTextLists(withPortableTextSelections(withEditableAPI(e)))
+    return {
+      editor: withSchemaTypes(
+        withObjectKeys(
+          withPortableTextMarkModel(
+            withPortableTextBlockStyle(
+              withUtils(
+                withPlaceholderBlock(
+                  withPortableTextLists(withPortableTextSelections(withEditableAPI(e)))
+                )
               )
             )
           )
         )
-      )
-    )
+      ),
+      subscribe: () => noop,
+    }
   }
 
-  // The 'if' here is only to satisfy Typscript
-  if (withUndoRedo && withPatches) {
-    // Ordering is important here, selection dealing last, data manipulation in the middle and core model stuff first.
-    return withSchemaTypes(
+  // Ordering is important here, selection dealing last, data manipulation in the middle and core model stuff first.
+  return {
+    editor: withSchemaTypes(
       withObjectKeys(
         withPortableTextMarkModel(
           withPortableTextBlockStyle(
@@ -137,7 +130,17 @@ export const withPlugins = <T extends Editor>(
           )
         )
       )
-    )
+    ),
+    subscribe: () => {
+      const unsubscribes: (() => void)[] = []
+      editor.subscriptions.forEach((subscribeFn) => {
+        unsubscribes.push(subscribeFn())
+      })
+      return () => {
+        unsubscribes.forEach((unsubscribeFn) => {
+          unsubscribeFn()
+        })
+      }
+    },
   }
-  return e
 }
