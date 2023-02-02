@@ -28,7 +28,7 @@ export default defineConfig({
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
     browserName: 'chromium',
-    headless: false,
+    // headless: false,
     storageState: 'storageState.json',
     viewport: {width: 2000, height: 3500},
   },
