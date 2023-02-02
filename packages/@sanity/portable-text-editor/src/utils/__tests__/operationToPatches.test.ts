@@ -1,16 +1,24 @@
 import {createEditor, Descendant} from 'slate'
 import {PortableTextTextBlock} from '@sanity/types'
+import {createRef} from 'react'
 import {getPortableTextMemberSchemaTypes} from '../getPortableTextMemberSchemaTypes'
 import {schemaType} from '../../editor/__tests__/PortableTextEditorTester'
 import {createOperationToPatches} from '../operationToPatches'
 import {withPlugins} from '../../editor/plugins'
 import {PortableTextEditor, PortableTextEditorProps} from '../..'
+import {defaultKeyGenerator} from '../../editor/hooks/usePortableTextEditorKeyGenerator'
 
 const portableTextFeatures = getPortableTextMemberSchemaTypes(schemaType)
 
 const operationToPatches = createOperationToPatches(portableTextFeatures)
-const editor = withPlugins(createEditor(), {
+const isPending: React.MutableRefObject<boolean | null> = createRef()
+isPending.current = false
+
+const {editor} = withPlugins(createEditor(), {
   portableTextEditor: new PortableTextEditor({schemaType} as PortableTextEditorProps),
+  keyGenerator: defaultKeyGenerator,
+  readOnly: false,
+  isPending,
 })
 
 const createDefaultValue = () =>
