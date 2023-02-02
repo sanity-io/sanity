@@ -117,7 +117,7 @@ export function PortableTextInput(props: PortableTextInputProps) {
     patches: EditorPatch[]
     snapshot: PortableTextBlock[] | undefined
   }> = useMemo(() => new Subject(), [])
-  const remotePatch$ = useMemo(() => patchSubject.asObservable(), [patchSubject])
+  const patches$ = useMemo(() => patchSubject.asObservable(), [patchSubject])
 
   const innerElementRef = useRef<HTMLDivElement | null>(null)
 
@@ -334,7 +334,7 @@ export function PortableTextInput(props: PortableTextInputProps) {
           <PortableTextMemberItemsProvider memberItems={portableTextMemberItems}>
             <PortableTextEditor
               ref={editorRef}
-              incomingPatches$={remotePatch$}
+              patches$={patches$}
               onChange={handleEditorChange}
               maxBlocks={undefined} // TODO: from schema?
               readOnly={readOnly}
