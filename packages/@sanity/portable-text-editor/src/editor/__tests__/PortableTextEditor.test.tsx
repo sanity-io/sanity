@@ -18,6 +18,8 @@ const helloBlock: PortableTextBlock = {
   children: [{_key: '567', _type: 'span', text: 'Hello', marks: []}],
 }
 
+const renderPlaceholder = () => 'Jot something down here'
+
 describe('initialization', () => {
   it('receives initial onChange events and has custom placeholder', () => {
     const editorRef: React.RefObject<PortableTextEditor> = React.createRef()
@@ -25,7 +27,7 @@ describe('initialization', () => {
     const {container} = render(
       <PortableTextEditorTester
         onChange={onChange}
-        renderPlaceholder={() => 'Jot something down here'}
+        renderPlaceholder={renderPlaceholder}
         ref={editorRef}
         schemaType={schemaType}
         value={undefined}

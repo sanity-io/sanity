@@ -55,13 +55,13 @@ export const Editor = ({
   value,
   onMutation,
   editorId,
-  incomingPatches$,
+  patches$,
   selection,
 }: {
   value: PortableTextBlock[] | undefined
   onMutation: (mutatingPatches: Patch[]) => void
   editorId: string
-  incomingPatches$: Subject<{
+  patches$: Subject<{
     patches: Patch[]
     snapshot: PortableTextBlock[] | undefined
   }>
@@ -201,7 +201,7 @@ export const Editor = ({
       ref={editor}
       schemaType={portableTextType}
       onChange={handleChange}
-      incomingPatches$={incomingPatches$}
+      patches$={patches$}
       value={value}
       keyGenerator={keyGenFn}
       readOnly={readOnly}
@@ -220,19 +220,6 @@ export const Editor = ({
           {selectionString}
         </Code>
       </Box>
-      {editor.current && (
-        <Box padding={4} style={{outline: '1px solid #999'}}>
-          <Code
-            as="code"
-            size={0}
-            language="json"
-            id="pte-slate-children"
-            data-children={JSON.stringify(editor.current.slateInstance.children)}
-          >
-            {JSON.stringify(editor.current.slateInstance.children)}
-          </Code>
-        </Box>
-      )}
       <Box paddingTop={2}>
         <button type="button" onClick={handleToggleReadOnly}>
           Toggle readonly ({JSON.stringify(readOnly)})
