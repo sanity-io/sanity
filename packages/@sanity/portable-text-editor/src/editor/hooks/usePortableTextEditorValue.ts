@@ -4,7 +4,6 @@ import {createContext, useContext} from 'react'
 /**
  * A React context for sharing the editor value.
  */
-
 export const PortableTextEditorValueContext = createContext<PortableTextBlock[] | undefined>(
   undefined
 )
@@ -12,7 +11,6 @@ export const PortableTextEditorValueContext = createContext<PortableTextBlock[] 
 /**
  * Get the current editor value from the React context.
  */
-
 export const usePortableTextEditorValue = () => {
   return useContext(PortableTextEditorValueContext)
 }
