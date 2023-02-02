@@ -1,0 +1,22 @@
+name: Performance Tests
+on:
+  deployment_status:
+jobs:
+  test:
+    timeout-minutes: 60
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+      - name: Install Playwright Browsers
+        run: npx playwright install --with-deps
+      - name: Run Playwright tests
+        if: github.event_name == 'deployment_status' && github.event.deployment_status.state == 'success'
+        env:
+          BRANCH_DEPLOYMENT_URL: ${{ github.event.deployment_status.target_url }}
+          PLAYWRIGHT_SANITY_SESSION_TOKEN: ${{ secrets.PLAYWRIGHT_SANITY_SESSION_TOKEN }}
+        run: npx playwright test performance
