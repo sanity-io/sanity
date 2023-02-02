@@ -7,7 +7,7 @@ interface TypingSpeedProps {
 export const typingSpeed = async (options: TypingSpeedProps): Promise<number> => {
   const {page} = options
 
-  const typingValue = 'Hello World, this is a test of typing speed'
+  const typingValue = 'Hello World, this is a test of typing speed!'
 
   const start = performance.now()
   const input = page.locator('[data-testid="string-input"]').first()
