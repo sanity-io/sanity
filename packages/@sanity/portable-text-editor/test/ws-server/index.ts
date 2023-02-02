@@ -87,16 +87,16 @@ app.ws('/', (s, req) => {
         valueMap[testId] = applyAll(prevValue, data.patches)
         messages.next(
           JSON.stringify({
-            type: 'value',
-            value: valueMap[testId],
-            testId,
-            revId: revisionMap[testId],
+            ...data,
+            snapshot: valueMap[testId],
           })
         )
         messages.next(
           JSON.stringify({
-            ...data,
-            snapshot: valueMap[testId],
+            type: 'value',
+            value: valueMap[testId],
+            testId,
+            revId: revisionMap[testId],
           })
         )
       } catch (err) {
