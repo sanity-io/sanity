@@ -1,5 +1,5 @@
 export {PortableTextEditor} from './editor/PortableTextEditor'
-export type {PortableTextEditorProps, PortableTextEditorState} from './editor/PortableTextEditor'
+export type {PortableTextEditorProps} from './editor/PortableTextEditor'
 export * from './types/editor'
 export * from './types/patch'
 export * from './types/options'
