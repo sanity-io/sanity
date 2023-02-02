@@ -179,10 +179,15 @@ export function createWithPatches({
 
       // If the editor was empty and now got a value, create the PT-array and insert the placeholder into it.
       if (editorWasEmpty && !editorIsEmpty) {
+        patches.push(unset([])) // Clear the value first or we may risk dupes from the below insert.
         patches.push(setIfMissing([], []))
         previousChildren.forEach((c, index) => {
           patches.push(insert(fromSlateValue([c], schemaTypes.block.name), 'before', [index]))
         })
+      }
+      // Unset the value if something was setting a node in a way that emptied the editor.
+      if (editorIsEmpty && ['set_node'].includes(operation.type)) {
+        patches.push(unset([]))
       }
       switch (operation.type) {
         case 'insert_text':
