@@ -42,172 +42,170 @@ const isSaving = (editor: Editor): boolean | undefined => {
   return SAVING.get(editor)
 }
 
+export interface Options {
+  patches$?: PatchObservable
+  readOnly: boolean
+}
+
 export function createWithUndoRedo(
-  incomingPatches$?: PatchObservable
-): [editor: (editor: PortableTextSlateEditor) => PortableTextSlateEditor, cleanupFn: () => void] {
-  // TODO: unsubscribe to this
-  // Subscribe to incoming patches
-  let cleanupFn: () => void = () => undefined
-  const incomingPatches: {patch: Patch; time: Date}[] = []
-  if (incomingPatches$) {
-    debug('Subscribing to patches')
-    const sub = incomingPatches$.subscribe(({patches}) => {
-      patches.forEach((patch) => {
-        if (patch.origin !== 'local') {
-          incomingPatches.push({patch: patch, time: new Date()})
+  options: Options
+): (editor: PortableTextSlateEditor) => PortableTextSlateEditor {
+  const {readOnly, patches$} = options
+  const remotePatches: {patch: Patch; time: Date}[] = []
+  return (editor: PortableTextSlateEditor) => {
+    if (patches$) {
+      editor.subscriptions.push(() => {
+        debug('Subscribing to patches')
+        const sub = patches$.subscribe(({patches}) => {
+          patches.forEach((patch) => {
+            if (patch.origin !== 'local') {
+              remotePatches.push({patch: patch, time: new Date()})
+            }
+          })
+        })
+        return () => {
+          debug('Unsubscribing to patches')
+          sub.unsubscribe()
         }
       })
-    })
-    cleanupFn = () => {
-      debug('Unsubscribing to patches')
-      sub.unsubscribe()
     }
-  }
-
-  return [
-    (editor: PortableTextSlateEditor) => {
-      editor.history = {undos: [], redos: []}
-      const {apply} = editor
-      // Apply function for merging and saving local history inspired from 'slate-history' by Ian Storm Taylor
-      editor.apply = (op: Operation) => {
-        if (editor.readOnly) {
-          apply(op)
-          return
-        }
-        const {operations, history} = editor
-        const {undos} = history
-        const step = undos[undos.length - 1]
-        const lastOp = step && step.operations && step.operations[step.operations.length - 1]
-        const overwrite = shouldOverwrite(op, lastOp)
-        let save = isSaving(editor)
-        let merge = isMerging(editor)
-
-        if (save == null) {
-          save = shouldSave(op, lastOp)
-        }
-
-        if (save) {
-          if (merge == null) {
-            if (step == null) {
-              merge = false
-              // eslint-disable-next-line no-negated-condition
-            } else if (operations.length !== 0) {
-              merge = true
-            } else {
-              merge = shouldMerge(op, lastOp) || overwrite
-            }
-          }
-
-          if (step && merge) {
-            if (overwrite) {
-              step.operations.pop()
-            }
-            step.operations.push(op)
-          } else {
-            const stp = {
-              operations: [
-                ...(editor.selection === null ? [] : [createSelectOperation(editor)]),
-                op,
-              ],
-              timestamp: new Date(),
-            }
-            undos.push(stp)
-            debug('Created new undo step', step)
-          }
-
-          while (undos.length > UNDO_STEP_LIMIT) {
-            undos.shift()
-          }
-
-          if (shouldClear(op)) {
-            history.redos = []
-          }
-        }
+    editor.history = {undos: [], redos: []}
+    const {apply} = editor
+    // Apply function for merging and saving local history inspired from 'slate-history' by Ian Storm Taylor
+    editor.apply = (op: Operation) => {
+      if (readOnly) {
         apply(op)
+        return
+      }
+      const {operations, history} = editor
+      const {undos} = history
+      const step = undos[undos.length - 1]
+      const lastOp = step && step.operations && step.operations[step.operations.length - 1]
+      const overwrite = shouldOverwrite(op, lastOp)
+      let save = isSaving(editor)
+      let merge = isMerging(editor)
+
+      if (save == null) {
+        save = shouldSave(op, lastOp)
       }
 
-      editor.undo = () => {
-        if (editor.readOnly) {
-          return
-        }
-        const {undos} = editor.history
-        if (undos.length > 0) {
-          const step = undos[undos.length - 1]
-          debug('Undoing', step)
-          if (step.operations.length > 0) {
-            const otherPatches = [...incomingPatches.filter((item) => item.time >= step.timestamp)]
-            let transformedOperations = step.operations
-            otherPatches.forEach((item) => {
-              transformedOperations = flatten(
-                transformedOperations.map((op) => transformOperation(editor, item.patch, op))
-              )
-            })
-            withoutSaving(editor, () => {
-              Editor.withoutNormalizing(editor, () => {
-                transformedOperations
-                  .map(Operation.inverse)
-                  .reverse()
-                  .forEach((op) => {
-                    // Try this as the document could be changed from the outside,
-                    // and sometimes we can't perform the undo operation on the current doc.
-                    try {
-                      editor.apply(op)
-                    } catch (err) {
-                      debug('Could not perform undo step', err)
-                      editor.history.redos.push(step)
-                      editor.history.undos.pop()
-                    }
-                  })
-              })
-            })
+      if (save) {
+        if (merge == null) {
+          if (step == null) {
+            merge = false
+            // eslint-disable-next-line no-negated-condition
+          } else if (operations.length !== 0) {
+            merge = true
+          } else {
+            merge = shouldMerge(op, lastOp) || overwrite
           }
-          editor.history.redos.push(step)
-          editor.history.undos.pop()
-          editor.onChange()
+        }
+
+        if (step && merge) {
+          if (overwrite) {
+            step.operations.pop()
+          }
+          step.operations.push(op)
+        } else {
+          const stp = {
+            operations: [...(editor.selection === null ? [] : [createSelectOperation(editor)]), op],
+            timestamp: new Date(),
+          }
+          undos.push(stp)
+          debug('Created new undo step', step)
+        }
+
+        while (undos.length > UNDO_STEP_LIMIT) {
+          undos.shift()
+        }
+
+        if (shouldClear(op)) {
+          history.redos = []
         }
       }
+      apply(op)
+    }
 
-      editor.redo = () => {
-        if (editor.readOnly) {
-          return
-        }
-        const {redos} = editor.history
-        if (redos.length > 0) {
-          const step = redos[redos.length - 1]
-          debug('Redoing', step)
-          if (step.operations.length > 0) {
-            const otherPatches = incomingPatches.filter((item) => item.time > step.timestamp)
-            let transformedOperations = step.operations
-            otherPatches.forEach((item) => {
-              transformedOperations = flatten(
-                transformedOperations.map((op) => transformOperation(editor, item.patch, op))
-              )
-            })
-            withoutSaving(editor, () => {
-              Editor.withoutNormalizing(editor, () => {
-                transformedOperations.forEach((op) => {
+    editor.undo = () => {
+      if (readOnly) {
+        return
+      }
+      const {undos} = editor.history
+      if (undos.length > 0) {
+        const step = undos[undos.length - 1]
+        debug('Undoing', step)
+        if (step.operations.length > 0) {
+          const otherPatches = [...remotePatches.filter((item) => item.time >= step.timestamp)]
+          let transformedOperations = step.operations
+          otherPatches.forEach((item) => {
+            transformedOperations = flatten(
+              transformedOperations.map((op) => transformOperation(editor, item.patch, op))
+            )
+          })
+          withoutSaving(editor, () => {
+            Editor.withoutNormalizing(editor, () => {
+              transformedOperations
+                .map(Operation.inverse)
+                .reverse()
+                .forEach((op) => {
+                  // Try this as the document could be changed from the outside,
+                  // and sometimes we can't perform the undo operation on the current doc.
                   try {
                     editor.apply(op)
                   } catch (err) {
-                    debug('Could not perform redo step', err)
-                    editor.history.undos.push(step)
-                    editor.history.redos.pop()
+                    debug('Could not perform undo step', err)
+                    editor.history.redos.push(step)
+                    editor.history.undos.pop()
                   }
                 })
+            })
+          })
+        }
+        editor.history.redos.push(step)
+        editor.history.undos.pop()
+        editor.onChange()
+      }
+    }
+
+    editor.redo = () => {
+      if (readOnly) {
+        return
+      }
+      const {redos} = editor.history
+      if (redos.length > 0) {
+        const step = redos[redos.length - 1]
+        debug('Redoing', step)
+        if (step.operations.length > 0) {
+          const otherPatches = remotePatches.filter((item) => item.time > step.timestamp)
+          let transformedOperations = step.operations
+          otherPatches.forEach((item) => {
+            transformedOperations = flatten(
+              transformedOperations.map((op) => transformOperation(editor, item.patch, op))
+            )
+          })
+          withoutSaving(editor, () => {
+            Editor.withoutNormalizing(editor, () => {
+              transformedOperations.forEach((op) => {
+                try {
+                  editor.apply(op)
+                } catch (err) {
+                  debug('Could not perform redo step', err)
+                  editor.history.undos.push(step)
+                  editor.history.redos.pop()
+                }
               })
             })
-          }
-          editor.history.undos.push(step)
-          editor.history.redos.pop()
-          editor.onChange()
+          })
         }
+        editor.history.undos.push(step)
+        editor.history.redos.pop()
+        editor.onChange()
       }
+    }
 
-      // Plugin return
-      return editor
-    },
-    cleanupFn,
-  ]
+    // Plugin return
+    return editor
+  }
 }
 
 // This will adjust the user selection according to patcehes done by others.
