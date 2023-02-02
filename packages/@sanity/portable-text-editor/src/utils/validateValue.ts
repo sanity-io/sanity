@@ -17,7 +17,7 @@ export function validateValue(
   if (value === undefined) {
     return {valid: true, resolution: null}
   }
-  // Only lengthy arrays are allowed "inside" the editor.
+  // Only lengthy arrays are allowed in the editor.
   if (!Array.isArray(value) || value.length === 0) {
     return {
       valid: false,
@@ -31,6 +31,7 @@ export function validateValue(
   }
   if (
     value.some((blk: PortableTextBlock, index: number): boolean => {
+      // Is the block an object?
       if (!isObject(blk)) {
         resolution = {
           patches: [unset([index])],
@@ -40,7 +41,7 @@ export function validateValue(
         }
         return true
       }
-      // Test that every block has a _key
+      // Test that every block has a _key prop
       if (!blk._key) {
         resolution = {
           patches: [set({...blk, _key: keyGenerator()}, [index])],
@@ -94,8 +95,7 @@ export function validateValue(
           }
           return true
         }
-
-        // // Test that every span has .marks
+        // NOTE: this is commented out as we want to allow the saved data to have optional .marks for spans (as specified by the schema)
         // const spansWithUndefinedMarks = blk.children
         //   .filter(cld => cld._type === types.span.name)
         //   .filter(cld => typeof cld.marks === 'undefined')
@@ -119,19 +119,22 @@ export function validateValue(
               .map((cld) => cld.marks || [])
           ) as string[]
         )
+        // Note: this is commented out as it may be a bit too strict:
         // // Test that all markDefs are in use
-        // if (blk.markDefs && blk.markDefs.length > 0) {
+        // if (Array.isArray(blk.markDefs) && blk.markDefs.length > 0) {
         //   const unusedMarkDefs: string[] = uniq(
-        //     blk.markDefs.map(def => def._key).filter(key => !allUsedMarks.includes(key))
+        //     blk.markDefs.map((def) => def._key).filter((key) => !allUsedMarks.includes(key))
         //   )
         //   if (unusedMarkDefs.length > 0) {
         //     resolution = {
-        //       patches: unusedMarkDefs.map(key =>
+        //       patches: unusedMarkDefs.map((key) =>
         //         unset([{_key: blk._key}, 'markDefs', {_key: key}])
         //       ),
-        //       description: `Block has unused mark definitions: ${unusedMarkDefs.join(', ')}.`,
-        //       action: 'Remove unused markDefs',
-        //       item: blk
+        //       description: `Block contains orphaned data (unused mark definitions): ${unusedMarkDefs.join(
+        //         ', '
+        //       )}.`,
+        //       action: 'Remove unused mark definition item',
+        //       item: blk,
         //     }
         //     return true
         //   }
