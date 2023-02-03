@@ -6,6 +6,7 @@ import {BrowserContext} from '@playwright/test'
 import globby from 'globby'
 import {PerformanceTestProps} from './types'
 import {getEnv} from './utils/env'
+import {STUDIO_DATASET, STUDIO_PROJECT_ID} from './config'
 
 const BASE_BRANCH_URL = 'https://performance-studio.sanity.build'
 const CURRENT_BRANCH_URL = process.env.BRANCH_DEPLOYMENT_URL || 'http://localhost:3333'
@@ -75,8 +76,8 @@ async function runCompare(
 }
 
 const client = createClient({
-  projectId: 'qk0wb6qx',
-  dataset: 'test',
+  projectId: STUDIO_PROJECT_ID,
+  dataset: STUDIO_DATASET,
   token: getEnv('PERF_TEST_SANITY_TOKEN'),
   apiVersion: '2023-02-03',
   useCdn: false,
