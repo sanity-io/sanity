@@ -656,4 +656,54 @@ describe('collaborate editing', () => {
       focus: {path: [{_key: '26901064a3c9'}, 'children', {_key: 'ef4627c1c11b'}], offset: 16},
     })
   })
+
+  it('does not error when A press Enter in the midst of the content B is typing on', async () => {
+    const [editorA, editorB] = await getEditors()
+    await editorB.pressKey('H')
+    await editorB.pressKey('e')
+    await editorB.pressKey('l')
+    await editorB.pressKey('l')
+    await editorB.pressKey('o')
+    await editorB.pressKey(' ')
+    await editorA.pressKey('Enter')
+    await editorB.pressKey('b')
+    await editorB.pressKey('a')
+    await editorB.pressKey('b')
+    await editorB.pressKey('y')
+    await editorA.pressKey('H')
+    await editorA.pressKey('i')
+    const valueA = await editorA.getValue()
+    expect(valueA).toMatchInlineSnapshot(`
+      Array [
+        Object {
+          "_key": "B-0",
+          "_type": "block",
+          "children": Array [
+            Object {
+              "_key": "B-1",
+              "_type": "span",
+              "marks": Array [],
+              "text": "baby",
+            },
+          ],
+          "markDefs": Array [],
+          "style": "normal",
+        },
+        Object {
+          "_key": "A-3",
+          "_type": "block",
+          "children": Array [
+            Object {
+              "_key": "A-2",
+              "_type": "span",
+              "marks": Array [],
+              "text": "HiHello ",
+            },
+          ],
+          "markDefs": Array [],
+          "style": "normal",
+        },
+      ]
+    `)
+  })
 })
