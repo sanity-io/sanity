@@ -1,4 +1,4 @@
-import {defineConfig, devices} from '@playwright/test'
+import {devices, defineConfig} from '@playwright/test'
 
 /**
  * See https://playwright.dev/docs/test-configuration.
@@ -24,11 +24,11 @@ export default defineConfig({
   use: {
     /* Maximum time each action such as `click()` can take. Defaults to 0 (no limit). */
     actionTimeout: 0,
-    baseURL: process.env.BRANCH_DEPLOYMENT_URL || 'http://localhost:3333',
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
+    baseURL: 'http://localhost:3333/',
     browserName: 'chromium',
-    // headless: false,
+    headless: false,
     storageState: 'storageState.json',
     viewport: {width: 2000, height: 3500},
   },
