@@ -89,7 +89,6 @@ interface Options {
 export function createWithPatches({
   change$,
   isPending,
-  keyGenerator,
   patches$,
   patchFunctions,
   readOnly,
@@ -99,7 +98,7 @@ export function createWithPatches({
   // The editor.children would no longer contain that information if the node is already deleted.
   let previousChildren: Descendant[]
 
-  const patchToOperations = createPatchToOperations(schemaTypes, keyGenerator)
+  const patchToOperations = createPatchToOperations(schemaTypes)
   return function withPatches(editor: PortableTextSlateEditor) {
     PATCHING.set(editor, true)
     previousChildren = [...editor.children]

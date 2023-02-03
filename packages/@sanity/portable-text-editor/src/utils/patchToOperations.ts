@@ -16,8 +16,7 @@ const debug = debugWithName('operationToPatches')
 const dmp = new DMP.diff_match_patch()
 
 export function createPatchToOperations(
-  schemaTypes: PortableTextMemberSchemaTypes,
-  keyGenerator: () => string
+  schemaTypes: PortableTextMemberSchemaTypes
 ): (
   editor: Editor,
   patch: Patch,
@@ -352,8 +351,8 @@ export function createPatchToOperations(
 
   return function (editor: Editor, patch: Patch): boolean {
     let changed = false
-    // debug('\n\nNEW PATCH =============================================================')
-    // debug(JSON.stringify(patch, null, 2))
+    debug('\n\nNEW PATCH =============================================================')
+    debug(JSON.stringify(patch, null, 2))
     try {
       switch (patch.type) {
         case 'insert':
@@ -400,6 +399,6 @@ function findLastKey(path: Path): string | null {
 }
 
 function debugState(editor: Editor, stateName: string) {
-  // debug(`Children ${stateName}:`, JSON.stringify(editor.children, null, 2))
-  // debug(`Selection ${stateName}: `, JSON.stringify(editor.selection, null, 2))
+  debug(`Children ${stateName}:`, JSON.stringify(editor.children, null, 2))
+  debug(`Selection ${stateName}: `, JSON.stringify(editor.selection, null, 2))
 }

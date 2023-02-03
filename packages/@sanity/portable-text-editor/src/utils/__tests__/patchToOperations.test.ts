@@ -8,9 +8,9 @@ import {keyGenerator, Patch, PortableTextEditor} from '../..'
 import {fromSlateValue} from '../values'
 import {getPortableTextMemberSchemaTypes} from '../getPortableTextMemberSchemaTypes'
 
-const types = getPortableTextMemberSchemaTypes(schemaType)
+const schemaTypes = getPortableTextMemberSchemaTypes(schemaType)
 
-const patchToOperations = createPatchToOperations(types, keyGenerator)
+const patchToOperations = createPatchToOperations(schemaTypes)
 const portableTextEditor = new PortableTextEditor({schemaType, onChange: noop})
 const isPending: React.MutableRefObject<boolean | null> = createRef()
 isPending.current = false
@@ -64,7 +64,7 @@ describe('operationToPatches', () => {
         origin: 'remote',
       },
     ] as Patch[]
-    const snapShot = fromSlateValue(editor.children, types.block.name)
+    const snapShot = fromSlateValue(editor.children, schemaTypes.block.name)
     patches.forEach((p) => {
       patchToOperations(editor, p, patches, snapShot)
     })
