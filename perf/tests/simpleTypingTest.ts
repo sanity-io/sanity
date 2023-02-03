@@ -1,8 +1,9 @@
+import {uuid} from '@sanity/uuid'
 import {PerformanceTestContext, PerformanceTestProps} from '../types'
 
 async function test({page, client, url}: PerformanceTestContext) {
-  const document = await client.create({_type: 'simplePerfTest'})
-  await page.goto(`${url}/test/content/input-standard;stringsTest;${document._id}`, {
+  const documentId = uuid()
+  await page.goto(`${url}/test/content/input-standard;stringsTest;${documentId}`, {
     // This is needed on CI servers with restricted resources because it takes a long time to compile the studio js
     timeout: 1000 * 60 * 5,
   })
@@ -15,11 +16,11 @@ async function test({page, client, url}: PerformanceTestContext) {
   })
 
   const startTime = new Date().getTime()
-  await input.type('abcdefghijklmnopqrstuvwxyz')
+  await input.type(`${new Date().toISOString()}- abcdefghijklmnopqrstuvwxyz`)
 
   const elapsedTime = new Date().getTime() - startTime
 
-  await client.delete(document._id)
+  await client.delete(`drafts.${documentId}`)
 
   return {result: elapsedTime}
 }
