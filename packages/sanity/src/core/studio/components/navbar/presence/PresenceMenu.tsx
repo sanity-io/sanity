@@ -4,6 +4,7 @@ import {
   Box,
   Button,
   Card,
+  Label,
   Menu,
   MenuButton,
   MenuDivider,
@@ -99,10 +100,10 @@ export function PresenceMenu(props: PresenceMenuProps) {
         <StyledMenu padding={1}>
           {hasPresence && (
             <>
-              <Box margin={2}>
-                <Text muted size={1} weight="semibold">
+              <Box paddingX={2} paddingY={3}>
+                <Label muted size={1}>
                   SEE WHERE THEY ARE
-                </Text>
+                </Label>
               </Box>
               <Stack space={2}>
                 {presence.map((item) => (
