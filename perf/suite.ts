@@ -86,7 +86,9 @@ const client = createClient({
 async function runSuite() {
   const tests = await globby(`${__dirname}/tests/*.test.ts`)
 
-  const browser = await chromium.launch({headless: true})
+  const browser = await chromium.launch({
+    headless: Boolean(getEnv('PERF_TEST_HEADLESS', true)) === false,
+  })
   const context = await browser.newContext()
   const page = await context.newPage()
 
