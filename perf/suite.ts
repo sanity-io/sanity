@@ -7,9 +7,6 @@ import * as tests from './tests'
 import {PerformanceTestProps} from './types'
 import {getEnv} from './utils/env'
 
-// eslint-disable-next-line import/no-unassigned-import
-require('dotenv/config')
-
 const BASE_BRANCH_URL = 'https://test-studio.sanity.build'
 const CURRENT_BRANCH_URL = process.env.BRANCH_DEPLOYMENT_URL || 'http://localhost:3333'
 
@@ -85,7 +82,7 @@ const client = createClient({
   useCdn: false,
 })
 async function runSuite() {
-  const browser = await chromium.launch({headless: false})
+  const browser = await chromium.launch({headless: true})
   const context = await browser.newContext()
   const page = await context.newPage()
 
@@ -101,6 +98,7 @@ async function runSuite() {
           context,
         })
       }, 1),
+      // eslint-disable-next-line no-console
       tap(console.log)
     )
   )
