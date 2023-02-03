@@ -16,11 +16,11 @@ async function test({page, client, url}: PerformanceTestContext) {
   })
 
   const startTime = new Date().getTime()
-  await input.type(`${new Date().toISOString()}- abcdefghijklmnopqrstuvwxyz`)
+  await input.type(`abcdefghijklmnopqrstuvwxyz`)
 
   const elapsedTime = new Date().getTime() - startTime
 
-  await client.delete(`drafts.${documentId}`)
+  await Promise.all([client.delete(`drafts.${documentId}`), client.delete(documentId)])
 
   return {result: elapsedTime}
 }
