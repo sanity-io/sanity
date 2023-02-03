@@ -14,6 +14,7 @@ export interface UserAvatarProps {
   tone?: 'navbar'
   user: User | string
   withTooltip?: boolean
+  blur?: boolean
 }
 
 const symbols = /[^\p{Alpha}\p{White_Space}]/gu
@@ -76,7 +77,7 @@ const StaticUserAvatar = forwardRef(function StaticUserAvatar(
   props: Omit<UserAvatarProps, 'user'> & {user: User},
   ref: React.ForwardedRef<HTMLDivElement>
 ) {
-  const {user, animateArrowFrom, position, size, status, tone} = props
+  const {user, animateArrowFrom, position, size, status, tone, blur} = props
   const [imageLoadError, setImageLoadError] = useState<null | Error>(null)
   const userColor = useUserColor(user.id)
   const imageUrl = imageLoadError ? undefined : user?.imageUrl
@@ -89,6 +90,7 @@ const StaticUserAvatar = forwardRef(function StaticUserAvatar(
       data-legacy-tone={tone}
       initials={user?.displayName && nameToInitials(user.displayName)}
       src={imageUrl}
+      style={{opacity: blur ? '0.5' : '1'}}
       onImageLoadError={setImageLoadError}
       ref={ref}
       size={typeof size === 'string' ? LEGACY_TO_UI_AVATAR_SIZES[size] : size}
