@@ -3,7 +3,7 @@ import {from, lastValueFrom} from 'rxjs'
 import {mergeMap, tap} from 'rxjs/operators'
 import createClient, {SanityClient} from '@sanity/client'
 import {BrowserContext} from '@playwright/test'
-import * as tests from './tests'
+import globby from 'globby'
 import {PerformanceTestProps} from './types'
 import {getEnv} from './utils/env'
 
@@ -81,14 +81,18 @@ const client = createClient({
   apiVersion: '2023-02-03',
   useCdn: false,
 })
+
 async function runSuite() {
-  const browser = await chromium.launch({headless: true})
+  const tests = await globby(`${__dirname}/tests/*.test.ts`)
+
+  const browser = await chromium.launch({headless: false})
   const context = await browser.newContext()
   const page = await context.newPage()
 
   await lastValueFrom(
-    from(Object.entries(tests)).pipe(
-      mergeMap(([name, test]) => {
+    from(tests).pipe(
+      mergeMap(async (testModule) => {
+        const test = (await import(testModule)).default
         return runCompare({
           baseBranchUrl: BASE_BRANCH_URL,
           currentBranchUrl: CURRENT_BRANCH_URL,
