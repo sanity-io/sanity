@@ -7,7 +7,7 @@ import globby from 'globby'
 import {PerformanceTestProps} from './types'
 import {getEnv} from './utils/env'
 
-const BASE_BRANCH_URL = 'https://test-studio.sanity.build'
+const BASE_BRANCH_URL = 'https://performance-studio.sanity.build'
 const CURRENT_BRANCH_URL = process.env.BRANCH_DEPLOYMENT_URL || 'http://localhost:3333'
 
 interface RunCompareOptions {
@@ -75,7 +75,7 @@ async function runCompare(
 }
 
 const client = createClient({
-  projectId: 'ppsg7ml5',
+  projectId: 'qk0wb6qx',
   dataset: 'test',
   token: getEnv('PERF_TEST_SANITY_TOKEN'),
   apiVersion: '2023-02-03',
