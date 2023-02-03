@@ -23,17 +23,10 @@ interface RunCompareOptions {
 }
 
 async function runAgainstUrl(options: RunCompareOptions & {url: string}) {
-  const {url, context, test, page} = options
-  const [response] = await Promise.all([
-    page.waitForResponse('*/**/users/me*'),
-    // This action triggers the request
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    page.goto(url!),
-  ])
+  const {url, context, test, client, page} = options
 
   // Add the cookie to our context
-
-  const domain = new URL(response.url()).hostname
+  const domain = new URL(client.getUrl('/')).hostname
   await context.addCookies([
     {
       name: 'sanitySession',
@@ -51,7 +44,7 @@ async function runAgainstUrl(options: RunCompareOptions & {url: string}) {
 async function runCompare(
   options: RunCompareOptions
 ): Promise<{base: number; current: number; diff: number}> {
-  const {page, test, baseBranchUrl, currentBranchUrl} = options
+  const {baseBranchUrl, currentBranchUrl} = options
 
   const baseBranchResultIteration1 = await runAgainstUrl({
     ...options,
