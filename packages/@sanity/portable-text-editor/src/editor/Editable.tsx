@@ -1,4 +1,4 @@
-import {BaseRange, Transforms, Text} from 'slate'
+import {BaseRange, Transforms, Text, BaseSelection} from 'slate'
 import React, {useCallback, useMemo, useEffect, forwardRef} from 'react'
 import {
   Editable as SlateEditable,
@@ -35,8 +35,11 @@ import {usePortableTextEditor} from './hooks/usePortableTextEditor'
 import {PortableTextEditor} from './PortableTextEditor'
 import {createWithInsertData, createWithHotkeys} from './plugins'
 import {useForwardedRef} from './hooks/useForwardedRef'
+import {usePortableTextEditorValue} from './hooks/usePortableTextEditorValue'
 
 const debug = debugWithName('component:Editable')
+
+type DOMPoint = [Node, number]
 
 const PLACEHOLDER_STYLE: React.CSSProperties = {
   opacity: 0.5,
@@ -101,6 +104,36 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
   const slateEditor = useSlate()
 
   const blockTypeName = schemaTypes.block.name
+
+  const value = usePortableTextEditorValue()
+
+  // This effect will ensure that we nullify the slateEditor selection
+  // if it becomes invalid at the time we get a new editor value.
+  // There are some issues where we are unable to catch errors from ReactEditor
+  // if the selection becomes invalid, as discussed in this GH-issue:
+  // https://github.com/ianstormtaylor/slate/issues/3641
+  // Note that we don't permanently change it via a transform op,
+  // we temporarily nullify it so that the RectEditor's 'selectionchange'
+  // hook will not freak out and throw at this point.
+  useEffect(() => {
+    const selection = slateEditor.selection
+    if (!selection) {
+      return
+    }
+    let domPointAnchor: DOMPoint | null = null
+    let domPointFocus: DOMPoint | null = null
+    // Test the selection like ReactEditor will.
+    try {
+      domPointFocus = ReactEditor.toDOMPoint(slateEditor, selection.focus)
+      domPointAnchor = ReactEditor.toDOMPoint(slateEditor, selection.anchor)
+    } catch (e) {
+      // Nothing
+    }
+    if (!domPointFocus || !domPointAnchor) {
+      debug('Invalid selection at new value, temporarily nullifying')
+      slateEditor.selection = null
+    }
+  }, [slateEditor, value])
 
   // React/UI-specific plugins
   const withInsertData = useMemo(
