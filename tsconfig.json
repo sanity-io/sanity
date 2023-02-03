@@ -3,8 +3,6 @@
   "include": ["**/*/package.config.ts", "./dev/aliases.cjs", "./scripts", "./test"],
   "compilerOptions": {
     "emitDeclarationOnly": true,
-    "esModuleInterop": true,
-    "module": "CommonJS",
     "outDir": "./node_modules/.sanity-monorepo/dts",
     "allowJs": true
   },
