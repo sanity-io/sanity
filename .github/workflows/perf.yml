@@ -18,5 +18,5 @@ jobs:
         if: github.event_name == 'deployment_status' && github.event.deployment_status.state == 'success'
         env:
           BRANCH_DEPLOYMENT_URL: ${{ github.event.deployment_status.target_url }}
-          PLAYWRIGHT_SANITY_SESSION_TOKEN: ${{ secrets.PLAYWRIGHT_SANITY_SESSION_TOKEN }}
-        run: npx playwright test performance
+          PERF_TEST_SANITY_TOKEN: ${{ secrets.PERF_TEST_SANITY_TOKEN }}
+        run: yarn perf:test
