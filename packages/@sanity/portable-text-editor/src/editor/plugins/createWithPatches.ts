@@ -1,5 +1,5 @@
 /* eslint-disable max-nested-callbacks */
-import {Subject, concatMap, share, tap} from 'rxjs'
+import {Subject, concatMap, tap} from 'rxjs'
 import {
   Descendant,
   Editor,
@@ -12,7 +12,6 @@ import {
   RemoveTextOperation,
   SetNodeOperation,
   SplitNodeOperation,
-  Transforms,
 } from 'slate'
 import {insert, setIfMissing, unset} from '../../patch/PatchEvent'
 import type {Patch} from '../../types/patch'
@@ -144,10 +143,6 @@ export function createWithPatches({
                 })
               })
             }
-            // if (patches.length > 0) {
-            //   debug('Emitting new value from snapshot')
-            //   change$.next({type: 'value', value: snapshot})
-            // }
           })
         return () => {
           debug('Unsubscribing to patches$')
