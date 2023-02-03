@@ -78,7 +78,12 @@ export const PresenceMenuItem = memo(function PresenceMenuItem(props: PresenceLi
     >
       <Flex align="center">
         <AvatarCard>
-          <UserAvatar size={1} key={presence.user.id} user={presence.user} blur={!hasLink} />
+          <UserAvatar
+            size={1}
+            key={presence.user.id}
+            user={presence.user}
+            status={hasLink ? 'editing' : 'inactive'}
+          />
         </AvatarCard>
 
         <Box flex={1} marginLeft={4}>
