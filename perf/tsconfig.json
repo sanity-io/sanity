@@ -1,5 +1,6 @@
 {
   "extends": "../tsconfig.settings.json",
+  "include": ["perf-studio.d.ts","./**/*"],
   "compilerOptions": {
     "esModuleInterop": true,
     "module": "CommonJS"
