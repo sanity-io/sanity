@@ -11,19 +11,17 @@ export default {
     })
 
     const input = page.locator('[data-testid="field-simple"] [data-testid="string-input"]')
-
     // clear the input value first
     await input.evaluate((el: HTMLInputElement) => {
       el.value = ''
     })
 
-    const startTime = new Date().getTime()
-    await input.type(`abcdefghijklmnopqrstuvwxyz`)
-
-    const elapsedTime = new Date().getTime() - startTime
+    const samples = await input.evaluate((el: HTMLInputElement) =>
+      window.perf.typingTest(el, {iterations: 1})
+    )
 
     await Promise.all([client.delete(`drafts.${documentId}`), client.delete(documentId)])
 
-    return {result: elapsedTime}
+    return {result: samples.reduce((lag, sample) => lag + sample.lag, 0)}
   },
 } satisfies PerformanceTestProps
