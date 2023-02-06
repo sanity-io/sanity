@@ -20,10 +20,14 @@ const buildQuery = (
   assetType = ASSET_TYPE_IMAGE,
   acceptParam: string
 ) => {
-  const acceptTypeCondition = acceptParam
-    .split(',')
-    .map((param) => `mimeType == "${param.trim()}"`)
-    .join(' || ')
+  // if empty then returns all, otherwise return only the mimeTypes that match the accept param
+  const acceptTypeCondition =
+    acceptParam.length <= 0
+      ? ''
+      : acceptParam
+          .split(',')
+          .map((param) => `mimeType == "${param.trim()}"`)
+          .join(' || ')
 
   return `
   *[_type == "${assetType}"] | order(_updatedAt desc) [${start}...${end}] {
@@ -36,8 +40,7 @@ const buildQuery = (
     extension,
     size,
     metadata {dimensions},
-    "acceptedType": ${acceptParam.length <= 0 ? 'true' : acceptTypeCondition}
-  } 
+  }[${acceptTypeCondition}]
 `
 }
 
