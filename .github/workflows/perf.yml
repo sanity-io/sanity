@@ -5,6 +5,7 @@ jobs:
   test:
     timeout-minutes: 60
     runs-on: ubuntu-latest
+    if: github.event_name == 'deployment_status' && github.event.deployment_status.state == 'success' && startsWith(github.event.deployment_status.target_url, 'https://performance-studio')
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
@@ -15,7 +16,6 @@ jobs:
       - name: Install Playwright Browsers
         run: npx playwright install chrome
       - name: Run Playwright tests
-        if: github.event_name == 'deployment_status' && github.event.deployment_status.state == 'success' && startsWith(github.event.deployment_status.target_url, "https://performance-studio")
         env:
           BRANCH_DEPLOYMENT_URL: ${{ github.event.deployment_status.target_url }}
           PERF_TEST_SANITY_TOKEN: ${{ secrets.PERF_TEST_SANITY_TOKEN }}
