@@ -6,10 +6,12 @@ import {BrowserContext} from '@playwright/test'
 import globby from 'globby'
 import {PerformanceTestProps} from './types'
 import {getEnv} from './utils/env'
+import {createSanitySessionCookie} from './utils/createSanitySessionCookie'
 import {STUDIO_DATASET, STUDIO_PROJECT_ID} from './config'
+import {bundle} from './utils/bundlePerfHelpers'
 
 const BASE_BRANCH_URL = 'https://performance-studio.sanity.build'
-const CURRENT_BRANCH_URL = process.env.BRANCH_DEPLOYMENT_URL || 'http://localhost:3333'
+const CURRENT_BRANCH_URL = process.env.BRANCH_DEPLOYMENT_URL || 'http://localhost:3300'
 
 interface RunCompareOptions {
   baseBranchUrl: string
@@ -24,17 +26,8 @@ async function runAgainstUrl(options: RunCompareOptions & {url: string}) {
   const {url, context, test, client, page} = options
 
   // Add the cookie to our context
-  const domain = new URL(client.getUrl('/')).hostname
   await context.addCookies([
-    {
-      name: 'sanitySession',
-      value: getEnv('PERF_TEST_SANITY_TOKEN'),
-      sameSite: 'None',
-      secure: true,
-      httpOnly: true,
-      domain: `.${domain}`,
-      path: '/',
-    },
+    createSanitySessionCookie(client.config().projectId!, getEnv('PERF_TEST_SANITY_TOKEN')),
   ])
   return test.run({url: url, page, client})
 }
@@ -75,7 +68,7 @@ async function runCompare(
   }
 }
 
-const client = createClient({
+export const sanityClient = createClient({
   projectId: STUDIO_PROJECT_ID,
   dataset: STUDIO_DATASET,
   token: getEnv('PERF_TEST_SANITY_TOKEN'),
@@ -84,13 +77,15 @@ const client = createClient({
 })
 
 async function runSuite() {
-  const tests = await globby(`${__dirname}/tests/*.test.ts`)
+  const tests = await globby(`${__dirname}/tests/**/*.test.ts`)
 
   const browser = await chromium.launch({
     headless: Boolean(getEnv('PERF_TEST_HEADLESS', true)) === false,
   })
   const context = await browser.newContext()
+  const bundleHelpers = await bundle(require.resolve(`${__dirname}/helpers/register.ts`))
   const page = await context.newPage()
+  await page.addInitScript({content: bundleHelpers})
 
   await lastValueFrom(
     from(tests).pipe(
@@ -101,7 +96,7 @@ async function runSuite() {
           currentBranchUrl: CURRENT_BRANCH_URL,
           test,
           page,
-          client,
+          client: sanityClient,
           context,
         })
       }, 1),
