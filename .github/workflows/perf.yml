@@ -13,7 +13,7 @@ jobs:
       - name: Install dependencies
         run: yarn install --frozen-lockfile
       - name: Install Playwright Browsers
-        run: npx playwright install --with-deps
+        run: npx playwright install chrome
       - name: Run Playwright tests
         if: github.event_name == 'deployment_status' && github.event.deployment_status.state == 'success'
         env:
