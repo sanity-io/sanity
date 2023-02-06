@@ -99,23 +99,16 @@ export function PresenceMenu(props: PresenceMenuProps) {
       menu={
         <StyledMenu padding={1}>
           {hasPresence && (
-            <>
-              <Box paddingX={2} paddingY={3}>
-                <Label muted size={1}>
-                  SEE WHERE THEY ARE
-                </Label>
-              </Box>
-              <Stack space={2}>
-                {presence.map((item) => (
-                  <PresenceMenuItem
-                    focused={focusedId === item.user.id}
-                    key={item.user.id}
-                    onFocus={handleItemFocus}
-                    presence={item}
-                  />
-                ))}
-              </Stack>
-            </>
+            <Stack>
+              {presence.map((item) => (
+                <PresenceMenuItem
+                  focused={focusedId === item.user.id}
+                  key={item.user.id}
+                  onFocus={handleItemFocus}
+                  presence={item}
+                />
+              ))}
+            </Stack>
           )}
 
           {!hasPresence && (
