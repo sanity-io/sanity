@@ -107,7 +107,7 @@ const DefaultAssetSource = function DefaultAssetSource(
           })
       }
     },
-    [assetType, acceptParam, versionedClient.observable]
+    [assetType, acceptParam, versionedClient]
   )
 
   const handleDeleteFinished = useCallback(
