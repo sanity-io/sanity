@@ -7,13 +7,13 @@ Run the perf tests locally:
 First, make sure you have the perf studio running:
 
 ```
-$ yarn dev:perf-studio
+$ yarn perf:studio
 ```
 
 Once the perf studio is running, you can run the perf tests against it and see how it compares to the current studio. Note: when running on localhost in dev mode, things will naturally be slower than when running against a production build of the studio. Therefore, stats from running perf tests locally will not be submitted to the data store
 
 ```
-$ yarn test:perf
+$ yarn perf:test
 ```
 
 ## How to add a new perf test
@@ -36,6 +36,30 @@ Now you have the basic structure of a perf test. The `run` function will be call
 - `page`: Page object from playwright
 - `url`: The url to the perf studio instance
 
-### Be a good citizen
+### Performance tests best practices
 
-- Make sure to delete any documents created during the test
+- Be a good citizen and make sure to delete any documents created during the test
+- Rely on test helpers for measurements: The test runner is running in a different process/execution context than the browser instance that playwright is running.
+
+  **Don't:**
+
+  ```ts
+  const start = performance.now()
+  await input.evaluate((el: HTMLInputElement) => {
+    // do something
+  })
+  const end = performance.now()
+  const duration = end - start
+  ```
+
+  **Do:**
+  ```ts
+  const duration = await input.evaluate((element: HTMLInputElement) => {
+
+    const start = performance.now()
+    // do something with the element
+    const end = performance.now()
+    return end - start
+  })
+  
+  ```
