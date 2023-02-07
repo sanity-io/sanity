@@ -113,7 +113,7 @@ export function ReferenceItem<Item extends ReferenceItemValue = ReferenceItemVal
     inputProps: {onChange, focusPath, onPathFocus, renderPreview, elementProps},
   } = props
 
-  const sortable = parentSchemaType.options?.sortable !== false
+  const sortable = !readOnly && parentSchemaType.options?.sortable !== false
   const insertableTypes = parentSchemaType.of
 
   const elementRef = useRef<HTMLDivElement | null>(null)
