@@ -1,8 +1,7 @@
 import React, {forwardRef, memo, useCallback, useEffect, useMemo, useState} from 'react'
 import {orderBy} from 'lodash'
 import * as PathUtils from '@sanity/util/paths'
-import {Box, Card, Flex, MenuItem, Text} from '@sanity/ui'
-import {LinkIcon} from '@sanity/icons'
+import {Card, Flex, MenuItem, Stack, Text} from '@sanity/ui'
 import styled from 'styled-components'
 import {GlobalPresence} from '../../../../store'
 import {UserAvatar} from '../../../../components'
@@ -73,26 +72,29 @@ export const PresenceMenuItem = memo(function PresenceMenuItem(props: PresenceLi
       as={lastActiveLocation ? LinkComponent : 'div'}
       data-as={lastActiveLocation ? 'a' : 'div'}
       onFocus={handleFocus}
-      padding={4}
+      paddingY={hasLink ? 4 : 3}
+      paddingLeft={4}
       paddingRight={3}
       ref={setMenuItemElement}
     >
       <Flex align="center">
         <AvatarCard>
-          <UserAvatar size={1} key={presence.user.id} user={presence.user} />
+          <UserAvatar
+            size={1}
+            key={presence.user.id}
+            user={presence.user}
+            status={hasLink ? 'editing' : 'inactive'}
+          />
         </AvatarCard>
 
-        <Box flex={1} marginLeft={4}>
+        <Stack space={2} marginLeft={4}>
           <Text textOverflow="ellipsis">{presence.user.displayName}</Text>
-        </Box>
-
-        {hasLink && (
-          <Box marginLeft={3}>
-            <Text>
-              <LinkIcon />
+          {!hasLink && (
+            <Text size={0} muted textOverflow="ellipsis">
+              Not in a document
             </Text>
-          </Box>
-        )}
+          )}
+        </Stack>
       </Flex>
     </MenuItem>
   )
