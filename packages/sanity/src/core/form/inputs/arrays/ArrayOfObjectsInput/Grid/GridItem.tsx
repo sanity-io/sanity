@@ -94,7 +94,7 @@ export function GridItem<Item extends ObjectItem = ObjectItem>(props: GridItemPr
     inputProps: {renderPreview},
   } = props
 
-  const sortable = parentSchemaType.options?.sortable !== false
+  const sortable = !readOnly && parentSchemaType.options?.sortable !== false
   const insertableTypes = parentSchemaType.of
 
   const previewCardRef = useRef<FIXME | null>(null)
