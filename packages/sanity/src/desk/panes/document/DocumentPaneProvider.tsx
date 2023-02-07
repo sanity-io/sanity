@@ -442,7 +442,8 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   useEffect(() => {
     // Reset focus path
     setFocusPath(params.path ? pathFromString(params.path) : [])
-  }, [documentId, params.path])
+    onSetOpenPath([])
+  }, [params.path, documentId])
 
   return (
     <DocumentPaneContext.Provider value={documentPane}>{children}</DocumentPaneContext.Provider>
