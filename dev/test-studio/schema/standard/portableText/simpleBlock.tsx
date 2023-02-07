@@ -1,8 +1,8 @@
-import {defineType} from 'sanity'
+import {defineArrayMember, defineType} from 'sanity'
 import {toPlainText} from '@portabletext/react'
 import {CalloutPreview} from './components/CalloutPreview'
 
-const linkType = defineType({
+const linkType = defineArrayMember({
   type: 'object',
   name: 'link',
   fields: [
@@ -15,12 +15,12 @@ const linkType = defineType({
   options: {
     modal: {
       type: 'popover',
-      width: 'medium',
+      width: 2,
     },
   },
 })
 
-const myStringType = defineType({
+const myStringType = defineArrayMember({
   type: 'object',
   name: 'test',
   fields: [{type: 'string', name: 'mystring', validation: (Rule) => Rule.required()}],
@@ -41,7 +41,7 @@ export default defineType({
       title: 'Body',
       type: 'array',
       of: [
-        {
+        defineArrayMember({
           type: 'block',
           marks: {
             annotations: [linkType, myStringType],
@@ -64,7 +64,7 @@ export default defineType({
           options: {
             spellCheck: true,
           },
-        },
+        }),
         {
           type: 'image',
           name: 'image',
