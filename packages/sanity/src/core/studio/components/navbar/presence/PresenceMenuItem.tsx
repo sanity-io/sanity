@@ -1,7 +1,7 @@
 import React, {forwardRef, memo, useCallback, useEffect, useMemo, useState} from 'react'
 import {orderBy} from 'lodash'
 import * as PathUtils from '@sanity/util/paths'
-import {Box, Card, Flex, MenuItem, Stack, Text} from '@sanity/ui'
+import {Card, Flex, MenuItem, Stack, Text} from '@sanity/ui'
 import styled from 'styled-components'
 import {GlobalPresence} from '../../../../store'
 import {UserAvatar} from '../../../../components'
@@ -87,16 +87,14 @@ export const PresenceMenuItem = memo(function PresenceMenuItem(props: PresenceLi
           />
         </AvatarCard>
 
-        <Box flex={1} marginLeft={4}>
+        <Stack space={2} marginLeft={4}>
           <Text textOverflow="ellipsis">{presence.user.displayName}</Text>
           {!hasLink && (
-            <Stack paddingTop={2}>
-              <Text size={0} muted textOverflow="ellipsis">
-                Not in a document
-              </Text>
-            </Stack>
+            <Text size={0} muted textOverflow="ellipsis">
+              Not in a document
+            </Text>
           )}
-        </Box>
+        </Stack>
       </Flex>
     </MenuItem>
   )

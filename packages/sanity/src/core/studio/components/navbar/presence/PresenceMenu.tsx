@@ -4,7 +4,6 @@ import {
   Box,
   Button,
   Card,
-  Label,
   Menu,
   MenuButton,
   MenuDivider,
