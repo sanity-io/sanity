@@ -83,20 +83,25 @@ export const getTestRunArgs = (version: string) => {
   }
 }
 
-export function runSanityCmdCommand(
+export async function runSanityCmdCommand(
   version: string,
   args: string[],
-  options: {env?: Record<string, string | undefined>} = {}
+  options: {env?: Record<string, string | undefined>; expectFailure?: boolean} = {}
 ): Promise<{
   code: number | null
   stdout: string
   stderr: string
 }> {
-  return exec(process.argv[0], [cliBinPath, ...args], {
+  const result = await exec(process.argv[0], [cliBinPath, ...args], {
     cwd: path.join(studiosPath, version),
-    ...options,
     env: {...sanityEnv, ...options.env},
   })
+
+  if (result.code !== 0 && !options.expectFailure) {
+    throw new Error(`Command failed with code ${result.code}. stderr: ${result.stderr}`)
+  }
+
+  return result
 }
 
 export function exec(
