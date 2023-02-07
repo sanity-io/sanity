@@ -35,11 +35,7 @@ const Image = styled.img`
   object-fit: contain;
 `
 
-interface ContainerProps {
-  __unstable_checkered?: boolean
-}
-
-const Container = styled(Card)<ContainerProps>`
+const Container = styled(Card)`
   position: relative;
   z-index: 1;
   padding-bottom: 100%;
