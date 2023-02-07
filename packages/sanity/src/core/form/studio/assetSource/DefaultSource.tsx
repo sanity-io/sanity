@@ -1,6 +1,6 @@
 import type {Subscription} from 'rxjs'
 import React, {useState, useRef, useCallback, useMemo, useEffect} from 'react'
-import {DownloadIcon} from '@sanity/icons'
+import {DownloadIcon, InfoOutlineIcon} from '@sanity/icons'
 import {Box, Button, Card, Dialog, Flex, Grid, Spinner, Text} from '@sanity/ui'
 import {Asset as AssetType, AssetFromSource, AssetSourceComponentProps} from '@sanity/types'
 import {uniqueId} from 'lodash'
@@ -76,6 +76,17 @@ const DefaultAssetSource = function DefaultAssetSource(
     onSelect,
     accept,
   } = props
+  // makes sure to match the "default" for file types so that it can return all assets
+  // not using a wildcard condition since there are inputs that could accept "video/*" and
+  // we don't want to deal with those cases here
+  const acceptParam = accept === 'image/*' ? '' : accept
+  const acceptTypes = acceptParam
+    ? acceptParam
+        .split(',')
+        .map((ap) => ap.trim())
+        .join(', ')
+    : ''
+  const showAcceptMessage = !isLoading && acceptParam && acceptParam.length > 0
 
   const fetchPage = useCallback(
     (pageNumber: number) => {
@@ -84,7 +95,6 @@ const DefaultAssetSource = function DefaultAssetSource(
       const isImageAssetType = assetType === 'image'
       const tag = isImageAssetType ? 'asset.image-list' : 'asset.file-list'
       const assetTypeParam = isImageAssetType ? ASSET_TYPE_IMAGE : ASSET_TYPE_FILE
-      const acceptParam = accept === 'image/*' ? '' : accept // match the "default" for file types too
 
       if (typeof acceptParam !== 'undefined') {
         fetch$.current = versionedClient.observable
@@ -97,7 +107,7 @@ const DefaultAssetSource = function DefaultAssetSource(
           })
       }
     },
-    [assetType, setIsLoading, setAssets, setIsLastPage, versionedClient, accept]
+    [assetType, acceptParam, versionedClient.observable]
   )
 
   const handleDeleteFinished = useCallback(
@@ -184,17 +194,14 @@ const DefaultAssetSource = function DefaultAssetSource(
               onClick={handleItemClick}
               onKeyPress={handleItemKeyPress}
               onDeleteFinished={handleDeleteFinished}
-              disabled={!asset.acceptedType}
             />
           ))}
         </ThumbGrid>
-
         {isLoading && assets.length === 0 && (
           <Flex justify="center">
             <Spinner muted />
           </Flex>
         )}
-
         {!isLoading && assets.length === 0 && (
           <Text align="center" muted>
             No images
@@ -226,6 +233,18 @@ const DefaultAssetSource = function DefaultAssetSource(
       onClose={handleClose}
       __unstable_autoFocus={hasResetAutoFocus}
     >
+      {showAcceptMessage && (
+        <Card tone="primary" marginTop={4} marginX={4} padding={[3, 3, 4]} border radius={2}>
+          <Flex gap={[3, 4]} align="center">
+            <Text>
+              <InfoOutlineIcon />
+            </Text>
+            <Text size={1}>
+              Only showing assets of accepted types: <b>{acceptTypes}</b>
+            </Text>
+          </Flex>
+        </Card>
+      )}
       {assetType === 'image' && renderedThumbView}
       {assetType === 'file' && renderedTableView}
       {assets.length > 0 && !isLastPage && (

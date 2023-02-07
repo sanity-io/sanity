@@ -16,7 +16,6 @@ interface AssetProps {
   onClick?: (...args: any[]) => any
   onKeyPress?: (...args: any[]) => any
   onDeleteFinished: (...args: any[]) => any
-  disabled: boolean | undefined
 }
 
 // Get pixel density of the current device
@@ -38,18 +37,12 @@ const Image = styled.img`
 
 interface ContainerProps {
   __unstable_checkered?: boolean
-  disabled?: boolean
 }
 
 const Container = styled(Card)<ContainerProps>`
   position: relative;
   z-index: 1;
   padding-bottom: 100%;
-
-  ${({disabled}) =>
-    disabled &&
-    `pointer-events: none;
-    opacity: 0.5;`}
 `
 
 const Root = styled.div`
@@ -82,7 +75,7 @@ export const AssetThumb = React.memo(function AssetThumb(props: AssetProps) {
   const versionedClient = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const toast = useToast()
   const deleteRef$ = useRef<Subscription>()
-  const {asset, onClick, onKeyPress, onDeleteFinished, isSelected, disabled} = props
+  const {asset, onClick, onKeyPress, onDeleteFinished, isSelected} = props
   const [showUsageDialog, setShowUsageDialog] = useState(false)
   const [showDeleteDialog, setShowDeleteDialog] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
@@ -180,9 +173,8 @@ export const AssetThumb = React.memo(function AssetThumb(props: AssetProps) {
         onKeyPress={onKeyPress}
         padding={0}
         style={{padding: 2}}
-        disabled={disabled}
       >
-        <Container __unstable_checkered disabled={disabled}>
+        <Container __unstable_checkered>
           <Image alt={originalFilename} src={imageUrl} onClick={onClick} data-id={_id} />
           {isDeleting && <FullscreenSpinner />}
         </Container>
