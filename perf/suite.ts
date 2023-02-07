@@ -1,6 +1,6 @@
 import {chromium, Page} from 'playwright'
 import {from, lastValueFrom} from 'rxjs'
-import {mergeMap, tap} from 'rxjs/operators'
+import {mergeMap, tap, toArray} from 'rxjs/operators'
 import createClient, {SanityClient} from '@sanity/client'
 import {BrowserContext} from '@playwright/test'
 import globby from 'globby'
@@ -21,6 +21,13 @@ interface RunCompareOptions {
   context: BrowserContext
   client: SanityClient
 }
+
+const studioMetricsClient = createClient({
+  projectId: 'c1zuxvqn',
+  dataset: 'production',
+  token: getEnv('PERF_TEST_METRICS_TOKEN'),
+  apiVersion: '2023-02-03',
+})
 
 async function runAgainstUrl(options: RunCompareOptions & {url: string}) {
   const {url, context, test, client, page} = options
@@ -87,11 +94,12 @@ async function runSuite() {
   const page = await context.newPage()
   await page.addInitScript({content: bundleHelpers})
 
-  await lastValueFrom(
+  const results = await lastValueFrom(
     from(tests).pipe(
-      mergeMap(async (testModule) => {
+      mergeMap(async (testModule, index) => {
         const test = (await import(testModule)).default
-        return runCompare({
+
+        const result = await runCompare({
           baseBranchUrl: BASE_BRANCH_URL,
           currentBranchUrl: CURRENT_BRANCH_URL,
           test,
@@ -99,11 +107,21 @@ async function runSuite() {
           client: sanityClient,
           context,
         })
+
+        return {name: test.name, ...result, _key: `${index}`}
       }, 1),
+      toArray(),
       // eslint-disable-next-line no-console
       tap(console.log)
     )
   )
+
+  await studioMetricsClient.create({
+    _type: 'performanceTest',
+    commitHash: getEnv('GITHUB_SHA', true) || 'local',
+    branchName: getEnv('GITHUB_REF_NAME', true) || 'local',
+    results,
+  })
 
   await context.close()
   await browser.close()
