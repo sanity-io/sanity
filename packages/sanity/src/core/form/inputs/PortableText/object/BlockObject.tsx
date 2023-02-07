@@ -81,7 +81,7 @@ export function BlockObject(props: BlockObjectProps) {
   }, [onItemOpen, memberItem])
 
   const handleDoubleClickToOpen = useCallback(
-    (e: any) => {
+    (e: React.MouseEvent<Element, MouseEvent>) => {
       e.preventDefault()
       e.stopPropagation()
       PortableTextEditor.blur(editor)
@@ -122,7 +122,7 @@ export function BlockObject(props: BlockObjectProps) {
         value={block}
       />
     )
-  }, [focused, isActive, onRemove, openItem, readOnly, renderPreview, type, block, isOpen])
+  }, [focused, isActive, handleDelete, openItem, readOnly, renderPreview, isOpen, type, block])
 
   const tone = selected || focused ? 'primary' : 'default'
 
