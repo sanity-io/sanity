@@ -4,6 +4,7 @@ import {mergeMap, tap, toArray} from 'rxjs/operators'
 import {createClient, SanityClient} from '@sanity/client'
 import {BrowserContext} from '@playwright/test'
 import globby from 'globby'
+import getRepoInfo from 'git-repo-info'
 import {PerformanceTestProps} from './types'
 import {getEnv} from './utils/env'
 import {createSanitySessionCookie} from './utils/createSanitySessionCookie'
@@ -21,13 +22,6 @@ interface RunCompareOptions {
   context: BrowserContext
   client: SanityClient
 }
-
-const studioMetricsClient = createClient({
-  projectId: 'c1zuxvqn',
-  dataset: 'production',
-  token: getEnv('PERF_TEST_METRICS_TOKEN'),
-  apiVersion: '2023-02-03',
-})
 
 async function runAgainstUrl(options: RunCompareOptions & {url: string}) {
   const {url, context, test, client, page} = options
@@ -83,6 +77,13 @@ export const sanityClient = createClient({
   useCdn: false,
 })
 
+const studioMetricsClient = createClient({
+  projectId: 'c1zuxvqn',
+  dataset: 'production',
+  token: getEnv('PERF_TEST_METRICS_TOKEN'),
+  apiVersion: '2023-02-03',
+})
+
 async function runSuite() {
   const tests = await globby(`${__dirname}/tests/**/*.test.ts`)
 
@@ -116,10 +117,26 @@ async function runSuite() {
     )
   )
 
+  const repoInfo = getRepoInfo()
+
+  const gitInfo = {
+    abbreviatedSha: repoInfo.abbreviatedSha,
+    author: repoInfo.author,
+    authorDate: repoInfo.authorDate,
+    branch: repoInfo.branch,
+    commitMessage: repoInfo.commitMessage,
+    commitsSinceLastTag: repoInfo.commitsSinceLastTag,
+    committer: repoInfo.committer,
+    committerDate: repoInfo.committerDate,
+    lastTag: repoInfo.lastTag,
+    sha: repoInfo.sha,
+    tag: repoInfo.tag,
+  }
+
+  // Save the results in metrics studio
   await studioMetricsClient.create({
     _type: 'performanceTest',
-    commitHash: getEnv('GITHUB_SHA', true) || 'local',
-    branchName: getEnv('GITHUB_REF_NAME', true) || 'local',
+    git: gitInfo,
     results,
   })
 
