@@ -197,8 +197,9 @@ export function ArrayOfObjectsItem(props: MemberItemProps) {
 
   const handleOpen = useCallback(() => {
     onPathOpen(member.item.path)
+    console.log('open!')
   }, [onPathOpen, member.item.path])
-
+  console.log(member.item.groups)
   const isEmptyValue = !member.item.value || isEmptyItem(member.item.value)
   const handleClose = useCallback(() => {
     if (isEmptyValue) {
@@ -225,6 +226,7 @@ export function ArrayOfObjectsItem(props: MemberItemProps) {
     [handleBlur, handleFocus, member.item.id]
   )
 
+  debugger
   const inputProps = useMemo((): Omit<ObjectInputProps, 'renderDefault'> => {
     return {
       changed: member.item.changed,

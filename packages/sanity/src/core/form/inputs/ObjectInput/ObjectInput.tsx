@@ -63,6 +63,9 @@ export const ObjectInput = memo(function ObjectInput(props: ObjectInputProps) {
     <Stack space={5}>
       {groups.length > 0 ? (
         <FieldGroupTabsWrapper $level={level} data-testid="field-groups">
+          <div style={{backgroundColor: 'red'}}>
+            <pre>{JSON.stringify(groups, null, 2)}</pre>
+          </div>
           <FieldGroupTabs
             groups={groups}
             inputId={id}
