@@ -69,23 +69,42 @@ export default defineType({
       type: 'array',
       of: [
         {
+          name: 'item',
+          title: 'Item',
           type: 'object',
-          fields: [
+          groups: [
             {
-              name: 'stringOptions',
-              title: 'String options',
-              type: 'string',
-              options: {
-                list: [
-                  {title: 'Cats', value: 'cats4ever'},
-                  {title: 'Sweden', value: 'swe'},
-                ],
-              },
+              name: 'a',
+              title: 'A (default)',
+              default: true,
             },
             {
-              title: 'test',
-              name: 'testImage',
-              type: 'image',
+              name: 'b',
+              title: 'B',
+            },
+            {
+              name: 'c',
+              title: 'C',
+            },
+          ],
+          fields: [
+            {
+              name: 'fieldA',
+              title: 'field A',
+              type: 'string',
+              group: ['a'],
+            },
+            {
+              name: 'fieldB',
+              title: 'field B',
+              type: 'string',
+              group: ['b'],
+            },
+            {
+              name: 'fieldC',
+              title: 'field C',
+              type: 'string',
+              group: ['c'],
             },
           ],
         },
