@@ -5,14 +5,16 @@ jobs:
   test:
     timeout-minutes: 60
     runs-on: ubuntu-latest
-    if: github.event_name == 'deployment_status' && github.event.deployment_status.state == 'success' && startsWith(github.event.deployment_status.target_url, 'https://performance-studio')
+#    if: github.event_name == 'deployment_status' && github.event.deployment_status.state == 'success' && startsWith(github.event.deployment_status.target_url, 'https://performance-studio')
     steps:
+      - name: Echo target URL
+        run: echo "Target URL is ${{github.event.deployment_status.target_url}}"
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
           node-version: 16
       - name: Install dependencies
-        run: yarn install --frozen-lockfile
+        run: yarn install --immutable --immutable-cache --check-cache
       - name: Install Playwright Browsers
         run: npx playwright install chrome
       - name: Run Playwright tests
