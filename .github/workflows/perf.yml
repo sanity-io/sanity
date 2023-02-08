@@ -23,4 +23,5 @@ jobs:
         env:
           BRANCH_DEPLOYMENT_URL: ${{ github.event.deployment_status.target_url }}
           PERF_TEST_SANITY_TOKEN: ${{ secrets.PERF_TEST_SANITY_TOKEN }}
+          PERF_TEST_METRICS_TOKEN: ${{ secrets.PERF_TEST_METRICS_TOKEN }}
         run: yarn perf:test
