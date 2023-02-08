@@ -1,7 +1,7 @@
 import {chromium, Page} from 'playwright'
 import {from, lastValueFrom} from 'rxjs'
 import {mergeMap, tap, toArray} from 'rxjs/operators'
-import createClient, {SanityClient} from '@sanity/client'
+import {createClient, SanityClient} from '@sanity/client'
 import {BrowserContext} from '@playwright/test'
 import globby from 'globby'
 import {PerformanceTestProps} from './types'
