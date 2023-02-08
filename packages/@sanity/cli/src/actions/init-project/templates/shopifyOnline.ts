@@ -36,6 +36,7 @@ export default defineConfig({
 
 const shopifyTemplate: ProjectTemplate = {
   configTemplate,
+  typescriptOnly: true,
   dependencies: {
     '@sanity/icons': '^2.2.2',
     '@sanity/ui': '^1.2.2',
