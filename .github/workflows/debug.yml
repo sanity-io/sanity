@@ -1,11 +1,10 @@
-name: Performance Tests
+name: Debug
 on:
-  deployment_status:
+  push:
 jobs:
   test:
-    timeout-minutes: 60
+    timeout-minutes: 10
     runs-on: ubuntu-latest
-    if: github.event_name == 'deployment_status' && github.event.deployment_status.state == 'success' && startsWith(github.event.deployment_status.target_url, 'https://performance-studio')
     steps:
       - name: Echo target URL
         run: echo "Target URL is ${{github.event.deployment_status.target_url}}"
