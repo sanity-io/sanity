@@ -367,9 +367,10 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
         if (op.type === 'expandFieldSet') {
           onSetCollapsedFieldSets((prevState) => setAtPath(prevState, op.path, false))
         }
-        if (op.type === 'setSelectedGroup') {
-          onSetFieldGroupState((prevState) => setAtPath(prevState, op.path, op.groupName))
-        }
+        //By removing these lines, the correct default fieldgroup is set in an array of objects
+        // if (op.type === 'setSelectedGroup') {
+        //   onSetFieldGroupState((prevState) => setAtPath(prevState, op.path, op.groupName))
+        // }
       })
       onSetOpenPath(path)
     },
