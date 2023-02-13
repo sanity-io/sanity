@@ -1,5 +1,6 @@
 /* eslint-disable no-console, no-process-exit, no-sync */
 import path from 'path'
+import {existsSync} from 'fs'
 import chalk from 'chalk'
 import dotenv from 'dotenv'
 import resolveFrom from 'resolve-from'
@@ -9,6 +10,7 @@ import {mergeCommands} from './util/mergeCommands'
 import {getCliRunner} from './CommandRunner'
 import {baseCommands} from './commands'
 import {neatStack} from './util/neatStack'
+import {loadEnv} from './util/loadEnv'
 import {resolveRootDir} from './util/resolveRootDir'
 import {CliConfigResult, getCliConfig} from './util/getCliConfig'
 import {getInstallCommand} from './packageManager'
@@ -33,10 +35,7 @@ export async function runCli(cliRoot: string, {cliVersion}: {cliVersion: string}
     process.exit(1)
   }
 
-  // Try to load .env files from the sanity studio directory
-  // eslint-disable-next-line no-process-env
-  const env = process.env.SANITY_ACTIVE_ENV || process.env.NODE_ENV || 'development'
-  dotenv.config({path: path.join(workDir, `.env.${env}`)})
+  loadAndSetEnvFromDotEnvFiles({workDir, cmd: args.groupOrCommand})
 
   // Check if there are updates available for the CLI, and notify if there is
   await runUpdateCheck({pkg, cwd, workDir}).notify()
@@ -200,4 +199,44 @@ function warnOnNonProductionEnvironment(): void {
         : `[WARN] Running in ${chalk.red('UNKNOWN')} "${sanityEnv}" environment mode\n`
     )
   )
+}
+
+function loadAndSetEnvFromDotEnvFiles({workDir, cmd}: {workDir: string; cmd: string}) {
+  /* eslint-disable no-process-env */
+
+  // Do a cheap lookup for a sanity.json file. If there is one, assume it is a v2 project,
+  // and apply the old behavior for environment variables. Otherwise, use the Vite-style
+  // behavior. We need to do this "cheap" lookup because when loading the v3 config, env vars
+  // may be used in the configuration file, meaning we'd have to load the config twice.
+  if (existsSync(path.join(workDir, 'sanity.json'))) {
+    // v2
+    debug('sanity.json exists, assuming v2 project and loading .env files using old behavior')
+    const env = process.env.SANITY_ACTIVE_ENV || process.env.NODE_ENV || 'development'
+    debug('Loading environment files using %s mode', env)
+    dotenv.config({path: path.join(workDir, `.env.${env}`)})
+    return
+  }
+
+  // v3+
+  debug('No sanity.json exists, assuming v3 project and loading .env files using new behavior')
+
+  // Use `production` for `sanity build` / `sanity deploy`,
+  // but default to `development` for everything else unless `SANITY_ACTIVE_ENV` is set
+  const isProdCmd = ['build', 'deploy'].includes(cmd)
+  let mode = process.env.SANITY_ACTIVE_ENV
+  if (!mode && (isProdCmd || process.env.NODE_ENV === 'production')) {
+    mode = 'production'
+  } else if (!mode) {
+    mode = 'development'
+  }
+
+  if (mode === 'production' && !isProdCmd) {
+    console.warn(chalk.yellow(`[WARN] Running in ${sanityEnv} environment mode\n`))
+  }
+
+  debug('Loading environment files using %s mode', mode)
+
+  const studioEnv = loadEnv(mode, workDir, ['SANITY_STUDIO_'])
+  process.env = {...process.env, ...studioEnv}
+  /* eslint-disable no-process-env */
 }

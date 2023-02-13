@@ -9,7 +9,7 @@ import {sanityBuildEntries} from './vite/plugin-sanity-build-entries'
 import {sanityDotWorkaroundPlugin} from './vite/plugin-sanity-dot-workaround'
 import {sanityRuntimeRewritePlugin} from './vite/plugin-sanity-runtime-rewrite'
 import {sanityFaviconsPlugin} from './vite/plugin-sanity-favicons'
-import {getStudioEnvVars} from './getStudioEnvVars'
+import {getStudioEnvironmentVariables} from './getStudioEnvironmentVariables'
 
 export interface ViteOptions {
   /**
@@ -110,7 +110,7 @@ export async function getViteConfig(options: ViteOptions): Promise<InlineConfig>
     define: {
       // eslint-disable-next-line no-process-env
       __SANITY_STAGING__: process.env.SANITY_INTERNAL_ENV === 'staging',
-      ...getStudioEnvVars('process.env.'),
+      ...getStudioEnvironmentVariables({prefix: 'process.env.', jsonEncode: true}),
     },
   }
 
