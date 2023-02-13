@@ -44,7 +44,7 @@ function createFormat(fields: (keyof typeof placeholders)[]) {
   return fields.map((fieldName) => placeholders[fieldName]).join(DELIMITER)
 }
 function getGitArgs(format: string) {
-  return [`log`, `--pretty=format:'${format}'`, '-1']
+  return [`log`, `--pretty=format:${format}`, '-1']
 }
 
 export function getGitInfo<Field extends GitField>(
