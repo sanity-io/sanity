@@ -12,8 +12,8 @@ jobs:
         run: echo "Run the performance studio against ${{github.event.deployment_status.target_url}}"
       - uses: actions/checkout@v3
         with:
-          fetch-depth: 200
-          run: git checkout HEAD^
+          fetch-depth: 1
+        run: git checkout HEAD^
       - uses: actions/setup-node@v3
         with:
           node-version: 16
