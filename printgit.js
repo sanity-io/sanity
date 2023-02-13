@@ -1,3 +1,3 @@
-import getRepoInfo from 'git-repo-info'
+const getRepoInfo = require('git-repo-info')
 
-console.log(JSON.stringify(getRepoInfo()))
+console.log(JSON.stringify(getRepoInfo(), null, 2))
