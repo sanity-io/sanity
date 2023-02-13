@@ -1,3 +1,4 @@
+import os from 'os'
 import {chromium, Page} from 'playwright'
 import {from, lastValueFrom} from 'rxjs'
 import {mergeMap, tap, toArray} from 'rxjs/operators'
@@ -119,6 +120,20 @@ async function runSuite() {
 
   const repoInfo = getRepoInfo()
 
+  function getMachineInfo() {
+    const [avg1m, avg5m, avg10m] = os.loadavg()
+    return {
+      type: os.type(),
+      platform: os.platform(),
+      version: os.version(),
+      hostname: os.hostname(),
+      arch: os.arch(),
+      memory: {total: os.totalmem(), free: os.freemem()},
+      uptime: os.uptime(),
+      loadavg: {avg1m, avg5m, avg10m},
+    }
+  }
+
   const gitInfo = {
     abbreviatedSha: repoInfo.abbreviatedSha,
     author: repoInfo.author,
@@ -136,7 +151,11 @@ async function runSuite() {
   // Save the results in metrics studio
   await studioMetricsClient.create({
     _type: 'performanceTest',
+    baseBranchUrl: BASE_BRANCH_URL,
+    workingBranchUrl: CURRENT_BRANCH_URL,
+    ci: Boolean(process.env.CI),
     git: gitInfo,
+    machine: getMachineInfo(),
     results,
   })
 
