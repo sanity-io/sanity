@@ -1,7 +1,6 @@
 import type {SanityClient} from '@sanity/client'
 import {Diff, ObjectDiff} from '@sanity/diff'
 import {Observable} from 'rxjs'
-import {getApiUrl} from '../../../../util/apiUrl'
 import {Annotation, Chunk} from '../../../../field'
 import {RemoteSnapshotVersionEvent} from '../../document/document-pair/checkoutPair'
 import {remoteSnapshots} from '../../document/document-pair/remoteSnapshots'
@@ -272,8 +271,7 @@ export class TimelineController {
       queryParams += `&toTransaction=${tid}`
     }
 
-    const transactionsUrl = getApiUrl(
-      this.client,
+    const transactionsUrl = this.client.getUrl(
       `/data/history/${clientConfig.dataset}/transactions/${publishedId},${draftId}?${queryParams}`
     )
     const stream = await getJsonStream(transactionsUrl, clientConfig.token)
