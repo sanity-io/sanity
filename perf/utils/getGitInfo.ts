@@ -66,5 +66,5 @@ export function getCurrentBranch() {
 }
 
 export function getCurrentBranchSync() {
-  return execa.sync('git', ['rev-parse', '--abbrev-ref HEAD']).stdout
+  return execa.sync('git', ['rev-parse', '--abbrev-ref', 'HEAD']).stdout
 }
