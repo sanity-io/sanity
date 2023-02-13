@@ -82,7 +82,6 @@
     "@optimize-lodash/rollup-plugin": "^4.0.1",
     "@playwright/test": "^1.30.0",
     "@sanity/client": "^5.2.0",
-    "playwright": "^1.30.0",
     "@sanity/pkg-utils": "^2.1.0",
     "@sanity/tsdoc-to-portable-text": "^0.4.3",
     "@sanity/uuid": "^3.0.1",
