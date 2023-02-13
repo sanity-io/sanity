@@ -5,12 +5,12 @@ import {mergeMap, tap, toArray} from 'rxjs/operators'
 import {createClient, SanityClient} from '@sanity/client'
 import {BrowserContext} from '@playwright/test'
 import globby from 'globby'
-import getRepoInfo from 'git-repo-info'
 import {PerformanceTestProps} from './types'
 import {getEnv} from './utils/env'
 import {createSanitySessionCookie} from './utils/createSanitySessionCookie'
 import {STUDIO_DATASET, STUDIO_PROJECT_ID} from './config'
 import {bundle} from './utils/bundlePerfHelpers'
+import {getCurrentBranchSync, getGitInfo} from './utils/getGitInfo'
 
 const BASE_BRANCH_URL = 'https://performance-studio.sanity.build'
 const CURRENT_BRANCH_URL = process.env.BRANCH_DEPLOYMENT_URL || 'http://localhost:3300'
@@ -118,8 +118,6 @@ async function runSuite() {
     )
   )
 
-  const repoInfo = getRepoInfo()
-
   function getMachineInfo() {
     const [avg1m, avg5m, avg10m] = os.loadavg()
     return {
@@ -133,19 +131,32 @@ async function runSuite() {
       loadavg: {avg1m, avg5m, avg10m},
     }
   }
-
+  const repoInfo = await getGitInfo([
+    'commit',
+    'abbreviatedCommit',
+    'authorName',
+    'authorEmail',
+    'authorDate',
+    'subject',
+    'committerName',
+    'committerEmail',
+    'committerDate',
+  ])
+  const branchName = getCurrentBranchSync()
   const gitInfo = {
-    abbreviatedSha: repoInfo.abbreviatedSha,
-    author: repoInfo.author,
+    sha: repoInfo.commit,
+    abbreviatedSha: repoInfo.abbreviatedCommit,
+    author: {name: repoInfo.authorName, email: repoInfo.authorEmail, repoInfo: repoInfo.authorDate},
     authorDate: repoInfo.authorDate,
-    branch: repoInfo.branch,
-    commitMessage: repoInfo.commitMessage,
-    commitsSinceLastTag: repoInfo.commitsSinceLastTag,
-    committer: repoInfo.committer,
-    committerDate: repoInfo.committerDate,
-    lastTag: repoInfo.lastTag,
-    sha: repoInfo.sha,
-    tag: repoInfo.tag,
+    branch: branchName,
+    commitMessage: repoInfo.subject,
+    committer: {
+      name: repoInfo.committerName,
+      email: repoInfo.committerEmail,
+      date: repoInfo.committerDate,
+    },
+    // lastTag: repoInfo.lastTag,
+    // tag: repoInfo.tag,
   }
 
   // Save the results in metrics studio

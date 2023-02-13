@@ -19,4 +19,4 @@ jobs:
       - name: Install dependencies
         run: yarn install --immutable --immutable-cache --check-cache
       - name: Debug
-        run: node printgit.js
+        run: npx ts-node --files --project perf/tsconfig.json perf/printgit.ts
