@@ -18,10 +18,10 @@ const placeholders = {
   signerKey: '%GK',
   authorName: '%aN',
   authorEmail: '%aE',
-  authorDate: '%aD',
+  authorDate: '%aI',
   committerName: '%cN',
   committerEmail: '%cE',
-  committerDate: '%cD',
+  committerDate: '%cI',
   latestOfficialTag: '%(describe:tags,abbrev=0)',
   tag: '%(describe:tags)',
 }
