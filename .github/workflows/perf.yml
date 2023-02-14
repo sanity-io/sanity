@@ -21,6 +21,8 @@ jobs:
         run: yarn install --immutable --immutable-cache --check-cache
       - name: Install Playwright Browsers
         run: npx playwright install chrome
+      - name: Echo current branch
+        run: npx ts-node --files --project perf/tsconfig.json perf/git-debug.ts
       - name: Run Playwright tests
         env:
           BRANCH_DEPLOYMENT_URL: ${{ github.event.deployment_status.target_url }}
