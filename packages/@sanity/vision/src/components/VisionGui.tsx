@@ -61,19 +61,6 @@ function nodeContains(node: Node, other: EventTarget | Node | null): boolean {
   return node === other || !!(node.compareDocumentPosition(other as Node) & 16)
 }
 
-const getUrl = (client: SanityClient, uri: string, useCdn = false) => {
-  const config = client.config()
-  const base = useCdn ? config.cdnUrl : config.url
-  return `${base}/${uri.replace(/^\//, '')}`
-}
-
-const getDataUrl = (client: SanityClient, operation: string, path?: string) => {
-  const {dataset} = client.config()
-  const baseUri = `/${operation}/${dataset}`
-  const uri = path ? `${baseUri}/${path}` : baseUri
-  return getUrl(client, `/data${uri}`.replace(/\/($|\?)/, '$1'))
-}
-
 const sanityUrl =
   /\.(?:api|apicdn)\.sanity\.io\/(vx|v1|v\d{4}-\d\d-\d\d)\/.*?(?:query|listen)\/(.*?)\?(.*)/
 const isRunHotkey = (event: KeyboardEvent) =>
@@ -463,7 +450,7 @@ export class VisionGui extends React.PureComponent<VisionGuiProps, VisionGuiStat
 
     const paramsError = params instanceof Error ? params : undefined
     const encodeParams = params instanceof Error ? {} : params || {}
-    const url = getDataUrl(this._client, 'listen', encodeQueryString(query, encodeParams))
+    const url = this._client.getDataUrl('listen', encodeQueryString(query, encodeParams))
 
     const shouldExecute = !paramsError && query.trim().length > 0
 
@@ -531,7 +518,9 @@ export class VisionGui extends React.PureComponent<VisionGuiProps, VisionGuiStat
     }
 
     this.ensureSelectedApiVersion()
-    const url = getDataUrl(this._client, 'query', encodeQueryString(query, params))
+    const url = this._client.getUrl(
+      this._client.getDataUrl('query', encodeQueryString(query, params))
+    )
     this.setState({url})
 
     const queryStart = Date.now()
