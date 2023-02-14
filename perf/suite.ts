@@ -142,6 +142,9 @@ async function runSuite() {
     }
   }
   const repoInfo = await getRepoInfo()
+
+  console.log('repoInfo', repoInfo)
+
   const gitInfo = {
     sha: repoInfo.commit,
     abbreviatedSha: repoInfo.abbreviatedCommit,
