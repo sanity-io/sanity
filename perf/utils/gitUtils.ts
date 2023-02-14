@@ -59,10 +59,12 @@ export function getGitInfoSync(fields: GitField[]) {
   return parseOutput(fields, res.stdout)
 }
 
+const CURRENT_BRANCH_ARGS = ['rev-parse', '--abbrev-ref', 'HEAD']
+
 export function getCurrentBranch() {
-  return execa('git', ['rev-parse', '--abbrev-ref HEAD']).then((res) => res.stdout)
+  return execa('git', CURRENT_BRANCH_ARGS).then((res) => res.stdout)
 }
 
 export function getCurrentBranchSync() {
-  return execa.sync('git', ['rev-parse', '--abbrev-ref', 'HEAD']).stdout
+  return execa.sync('git', CURRENT_BRANCH_ARGS).stdout
 }
