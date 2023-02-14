@@ -14,23 +14,51 @@ const PER_PAGE = 200
 const ASSET_TYPE_IMAGE = 'sanity.imageAsset'
 const ASSET_TYPE_FILE = 'sanity.fileAsset'
 
+const buildFilterQuery = (acceptParam: string) => {
+  const WILDCARD_ACCEPT = ['image/*', 'audio/*', 'video/*']
+  const acceptItems = acceptParam.split(',').map((accept) => accept.trim())
+
+  const typesForFilter: {[key: string]: string} = acceptItems.reduce(
+    (acceptTypes: {[key: string]: string}, acceptR: string) => {
+      // builds the wildcard part of the groq query
+      if (WILDCARD_ACCEPT.includes(acceptR)) {
+        const wild = `mimeType match '${acceptR}' || ${acceptTypes.wildcards}`
+        return {...acceptTypes, ...{wildcards: wild}}
+      }
+
+      // builds the extension part of the groq query (and removes the .)
+      if (acceptR.indexOf('.') === 0) {
+        const exte = `'${acceptR.replace('.', '')}', ${acceptTypes.mimes}`
+        return {...acceptTypes, ...{extensions: exte}}
+      }
+
+      // all that remains is then the mime types, so we build that part
+      const mime = `'${acceptR}', ${acceptTypes.mimes}`
+      return {...acceptTypes, ...{mimes: mime}}
+    },
+    {mimes: '', extensions: '', wildcards: ''}
+  )
+
+  // when no accept filter is set, we don't need to add the filter condition
+  return `&&
+  (
+    ${typesForFilter.wildcards} 
+    extension in [${typesForFilter.extensions}] ||
+    mimeType in [${typesForFilter.mimes}]
+  )`
+}
+
 const buildQuery = (
   start = 0,
   end = PER_PAGE,
   assetType = ASSET_TYPE_IMAGE,
   acceptParam: string
 ) => {
-  // if empty then returns all, otherwise return only the mimeTypes that match the accept param
-  const acceptTypeCondition =
-    acceptParam.length <= 0
-      ? ''
-      : acceptParam
-          .split(',')
-          .map((param) => `mimeType == "${param.trim()}"`)
-          .join(' || ')
+  const hasAccept = acceptParam.length > 0
+  const filterCondition = hasAccept ? buildFilterQuery(acceptParam) : ''
 
   return `
-  *[_type == "${assetType}"] | order(_updatedAt desc) [${start}...${end}] {
+  *[_type == "${assetType}" ${filterCondition}] | order(_updatedAt desc) [${start}...${end}] {
     _id,
     _updatedAt,
     _createdAt,
@@ -40,7 +68,7 @@ const buildQuery = (
     extension,
     size,
     metadata {dimensions},
-  }[${acceptTypeCondition}]
+  }
 `
 }
 
@@ -60,7 +88,7 @@ const DefaultAssetSource = function DefaultAssetSource(
   ref: React.ForwardedRef<HTMLDivElement>
 ) {
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
-  const versionedClient = useMemo(() => client.withConfig({apiVersion: '1'}), [client])
+  const versionedClient = useMemo(() => client.withConfig({apiVersion: '2023-02-14'}), [client])
   const _elementId = useRef(`default-asset-source-${uniqueId()}`)
   const currentPageNumber = useRef(0)
   const fetch$ = useRef<Subscription>()
@@ -76,17 +104,14 @@ const DefaultAssetSource = function DefaultAssetSource(
     onSelect,
     accept,
   } = props
-  // makes sure to match the "default" for file types so that it can return all assets
-  // not using a wildcard condition since there are inputs that could accept "video/*" and
-  // we don't want to deal with those cases here
-  const acceptParam = accept === 'image/*' ? '' : accept
-  const acceptTypes = acceptParam
-    ? acceptParam
+  const acceptTypes = accept
+    ? accept
         .split(',')
-        .map((ap) => ap.trim())
+        .map((a) => a.trim())
         .join(', ')
     : ''
-  const showAcceptMessage = !isLoading && acceptParam && acceptParam.length > 0
+  const showAcceptMessage = !isLoading && accept && accept.length > 0
+  const isImageOnlyWildCard = accept && accept === 'image/*' && assetType === 'image'
 
   const fetchPage = useCallback(
     (pageNumber: number) => {
@@ -96,9 +121,9 @@ const DefaultAssetSource = function DefaultAssetSource(
       const tag = isImageAssetType ? 'asset.image-list' : 'asset.file-list'
       const assetTypeParam = isImageAssetType ? ASSET_TYPE_IMAGE : ASSET_TYPE_FILE
 
-      if (typeof acceptParam !== 'undefined') {
+      if (typeof accept !== 'undefined') {
         fetch$.current = versionedClient.observable
-          .fetch(buildQuery(start, end, assetTypeParam, acceptParam), {}, {tag})
+          .fetch(buildQuery(start, end, assetTypeParam, accept), {}, {tag})
           .subscribe((result) => {
             setIsLastPage(result.length < PER_PAGE)
             // eslint-disable-next-line max-nested-callbacks
@@ -107,7 +132,7 @@ const DefaultAssetSource = function DefaultAssetSource(
           })
       }
     },
-    [assetType, acceptParam, versionedClient]
+    [assetType, accept, versionedClient]
   )
 
   const handleDeleteFinished = useCallback(
@@ -233,7 +258,7 @@ const DefaultAssetSource = function DefaultAssetSource(
       onClose={handleClose}
       __unstable_autoFocus={hasResetAutoFocus}
     >
-      {showAcceptMessage && (
+      {showAcceptMessage && !isImageOnlyWildCard && (
         <Card tone="primary" marginTop={4} marginX={4} padding={[3, 3, 4]} border radius={2}>
           <Flex gap={[3, 4]} align="center">
             <Text>
