@@ -1,3 +1,3 @@
-import {getCurrentBranchSync} from './utils/gitUtils'
+import {getCurrentBranch} from './utils/gitUtils'
 
-console.log(getCurrentBranchSync())
+getCurrentBranch().then(console.log)
