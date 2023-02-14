@@ -15,8 +15,12 @@ jobs:
         with:
           fetch-depth: 0
           ref: ${{ github.ref }}
+      - name: Checkout branch
+        run: git reset --hard ${{ github.ref }}
       - name: Echo current branch
         run: echo "$(git rev-parse --abbrev-ref HEAD)"
+      - name: Echo github ref
+        run: echo ${{ github.ref }}
       - uses: actions/setup-node@v3
         with:
           node-version: 16
