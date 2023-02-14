@@ -67,7 +67,7 @@ const buildQuery = (
     mimeType,
     extension,
     size,
-    metadata {dimensions},
+    metadata {dimensions}
   }
 `
 }
@@ -120,6 +120,8 @@ const DefaultAssetSource = function DefaultAssetSource(
       const isImageAssetType = assetType === 'image'
       const tag = isImageAssetType ? 'asset.image-list' : 'asset.file-list'
       const assetTypeParam = isImageAssetType ? ASSET_TYPE_IMAGE : ASSET_TYPE_FILE
+
+      setIsLoading(true)
 
       if (typeof accept !== 'undefined') {
         fetch$.current = versionedClient.observable
