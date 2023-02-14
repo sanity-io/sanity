@@ -89,7 +89,7 @@ export default defineType({
       type: 'file',
       description: 'Should not accept other files types than audio/*, video/*, .png, image/jpeg',
       options: {
-        accept: 'audio/*, video/*, .png, image/jpeg',
+        accept: 'audio/*, video/*, .zip, image/jpeg, image/png',
       },
     },
     {
