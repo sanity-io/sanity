@@ -121,7 +121,6 @@
     "eslint-plugin-react-hooks": "^4.3.0",
     "eslint-plugin-tsdoc": "^0.2.14",
     "execa": "^2.0.0",
-    "git-repo-info": "^2.1.1",
     "glob": "^7.2.0",
     "globby": "^10.0.0",
     "hard-rejection": "^2.1.0",
