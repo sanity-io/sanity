@@ -104,6 +104,10 @@ const RowButton = styled(Button)<RowProps>`
     `}
 `
 
+const TypeText = styled(Text)`
+  overflow-wrap: anywhere;
+`
+
 const STYLES_ROW_CARD = {position: 'relative' as FIXME}
 const STYLES_ICON_CARD = {flexShrink: 0}
 const STYLES_BUTTON_TEXT = {minWidth: 0}
@@ -381,9 +385,9 @@ export const AssetRow = (props: RowProps) => {
           </Text>
         </CustomFlex>
         <CustomFlex align="center">
-          <Text size={1} muted>
+          <TypeText size={1} muted>
             {formattedMimeType}
-          </Text>
+          </TypeText>
         </CustomFlex>
         <CustomFlex align="center">
           <Text as="time" size={1} muted dateTime={_createdAt}>
