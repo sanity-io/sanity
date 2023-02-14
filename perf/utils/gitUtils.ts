@@ -22,43 +22,41 @@ const placeholders = {
   committerName: '%cN',
   committerEmail: '%cE',
   committerDate: '%cD',
+  latestOfficialTag: '%(describe:tags,abbrev=0)',
+  tag: '%(describe:tags)',
 }
 
 type GitField = keyof typeof placeholders
 
 export const ALL = Object.keys(placeholders) as GitField[]
 
-const DELIMITER = '%x00'
-const DELIMITER_CHAR = '\x00'
+const DELIMITER_PLACEHOLDER = '%x00'
+const DELIMITER_OUTPUT = '\x00'
 
-function createOutputParser<Field extends GitField>(fields: Field[]) {
-  return (output: string) => {
-    const parts = output.split(DELIMITER_CHAR)
-    return Object.fromEntries(fields.map((fieldName, i) => [fieldName, parts[i]])) as {
-      [K in Field]: string
-    }
+function parseOutput<Field extends GitField>(fields: Field[], output: string) {
+  const parts = output.split(DELIMITER_OUTPUT)
+  return Object.fromEntries(fields.map((fieldName, i) => [fieldName, parts[i]])) as {
+    [K in Field]: string
   }
 }
 
-function createFormat(fields: (keyof typeof placeholders)[]) {
-  return fields.map((fieldName) => placeholders[fieldName]).join(DELIMITER)
+function createFormat(fields: GitField[]) {
+  return fields.map((fieldName) => placeholders[fieldName]).join(DELIMITER_PLACEHOLDER)
 }
 function getGitArgs(format: string) {
   return [`log`, `--pretty=format:${format}`, '-1']
 }
 
-export function getGitInfo<Field extends GitField>(
+export async function getGitInfo<Field extends GitField>(
   fields: Field[]
 ): Promise<{[K in Field]: string}> {
-  return execa('git', getGitArgs(createFormat(fields)))
-    .then((res) => res.stdout)
-    .then(createOutputParser(fields))
+  const output = execa('git', getGitArgs(createFormat(fields)))
+  return parseOutput(fields, (await output).stdout)
 }
 
-export function getGitInfoSync(fields: (keyof typeof placeholders)[]) {
-  const parseOutput = createOutputParser(fields)
-  console.log(getGitArgs(createFormat(fields)))
-  return parseOutput(execa.sync('git', getGitArgs(createFormat(fields))).stdout)
+export function getGitInfoSync(fields: GitField[]) {
+  const res = execa.sync('git', getGitArgs(createFormat(fields)))
+  return parseOutput(fields, res.stdout)
 }
 
 export function getCurrentBranch() {

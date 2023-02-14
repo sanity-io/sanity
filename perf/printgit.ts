@@ -1,4 +1,4 @@
-import {ALL, getCurrentBranchSync, getGitInfoSync} from './utils/getGitInfo'
+import {ALL, getCurrentBranchSync, getGitInfoSync} from './utils/gitUtils'
 
 console.log(getGitInfoSync(ALL))
 console.log(getCurrentBranchSync())
