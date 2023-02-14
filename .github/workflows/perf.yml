@@ -7,6 +7,8 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event_name == 'deployment_status' && github.event.deployment_status.state == 'success' && startsWith(github.event.deployment_status.target_url, 'https://performance-studio')
     steps:
+      - name: Dump GitHub context
+        run: echo '${{ toJSON(github) }}'
       - name: Echo target URL
         run: echo "Target URL is ${{github.event.deployment_status.target_url}}"
       - name: Test?
