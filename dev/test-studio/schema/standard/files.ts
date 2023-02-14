@@ -85,9 +85,10 @@ export default defineType({
     },
     {
       name: 'fileWithMultipleAccept',
-      title: 'File for audio/*, video/*, .png, image/jpeg',
+      title: 'File for audio/*, video/*, .zip, image/jpeg, image/png',
       type: 'file',
-      description: 'Should not accept other files types than audio/*, video/*, .png, image/jpeg',
+      description:
+        'Should not accept other files types than audio/*, video/*, .zip, image/jpeg, image/png',
       options: {
         accept: 'audio/*, video/*, .zip, image/jpeg, image/png',
       },
