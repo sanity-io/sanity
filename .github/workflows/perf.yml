@@ -14,24 +14,23 @@ jobs:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
+      - name: Echo current branch
+        run: echo "$(git rev-parse --abbrev-ref HEAD)"
       - uses: actions/setup-node@v3
         with:
           node-version: 16
+      - name: Echo current branch
+        run: echo "$(git rev-parse --abbrev-ref HEAD)"
       - name: Install dependencies
         run: yarn install --immutable --immutable-cache --check-cache
       - name: Echo current branch
-        run: npx ts-node --files --project perf/tsconfig.json perf/git-debug.ts
+        run: echo "$(git rev-parse --abbrev-ref HEAD)"
       - name: Install Playwright Browsers
         run: npx playwright install chrome
       - name: Echo current branch
-        run: npx ts-node --files --project perf/tsconfig.json perf/git-debug.ts
-      - name: Echo current branch with env var
-        env:
-          CURRENT_BRANCH: ${{ github.ref_name }}
-        run: npx ts-node --files --project perf/tsconfig.json perf/git-debug.ts
+        run: echo "$(git rev-parse --abbrev-ref HEAD)"
       - name: Run Playwright tests
         env:
-          CURRENT_BRANCH: ${{ github.ref_name }}
           BRANCH_DEPLOYMENT_URL: ${{ github.event.deployment_status.target_url }}
           PERF_TEST_SANITY_TOKEN: ${{ secrets.PERF_TEST_SANITY_TOKEN }}
           PERF_TEST_METRICS_TOKEN: ${{ secrets.PERF_TEST_METRICS_TOKEN }}

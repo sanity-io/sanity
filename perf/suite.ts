@@ -16,7 +16,7 @@ const BASE_BRANCH_URL = 'https://performance-studio.sanity.build'
 const CURRENT_BRANCH_URL = process.env.BRANCH_DEPLOYMENT_URL || 'http://localhost:3300'
 
 function getRepoInfo() {
-  const currentBranchPromise = getEnv('CURRENT_BRANCH', true) || getCurrentBranch()
+  const currentBranchPromise = getEnv('GITHUB_REF', true) || getCurrentBranch()
   return Promise.all([getGitInfo(ALL_FIELDS), currentBranchPromise]).then(
     ([gitInfo, currentBranch]) => ({
       ...gitInfo,
