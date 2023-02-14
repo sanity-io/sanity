@@ -22,6 +22,8 @@ jobs:
       - name: Install Playwright Browsers
         run: npx playwright install chrome
       - name: Echo current branch
+        env:
+          CURRENT_BRANCH: ${{ github.ref_name }}
         run: npx ts-node --files --project perf/tsconfig.json perf/git-debug.ts
       - name: Run Playwright tests
         env:
