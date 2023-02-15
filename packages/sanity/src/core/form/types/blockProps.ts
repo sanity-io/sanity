@@ -1,10 +1,20 @@
-import {Path, PortableTextBlock, PortableTextObject, PortableTextTextBlock} from '@sanity/types'
+import {
+  BlockDecoratorDefinition,
+  BlockListDefinition,
+  BlockStyleDefinition,
+  Path,
+  PortableTextBlock,
+  PortableTextObject,
+  PortableTextTextBlock,
+  SchemaType,
+} from '@sanity/types'
 
 /** @beta */
 export interface BlockDecoratorProps {
   children: React.ReactElement
   focused: boolean
   renderDefault: (props: BlockDecoratorProps) => React.ReactElement
+  schemaType: BlockDecoratorDefinition
   selected: boolean
   title: string
   value: string
@@ -16,6 +26,7 @@ export interface BlockStyleProps {
   children: React.ReactElement
   focused: boolean
   renderDefault: (props: BlockStyleProps) => React.ReactElement
+  schemaType: BlockStyleDefinition
   selected: boolean
   title: string
   value: string
@@ -28,6 +39,7 @@ export interface BlockListItemProps {
   focused: boolean
   level: number
   renderDefault: (props: BlockListItemProps) => React.ReactElement
+  schemaType: BlockListDefinition
   selected: boolean
   title: string
   value: string
@@ -43,6 +55,7 @@ export interface BlockAnnotationProps {
   open: boolean
   path: Path
   renderDefault: (props: BlockAnnotationProps) => React.ReactElement
+  schemaType: SchemaType
   selected: boolean
   value: PortableTextObject
 }
@@ -57,6 +70,7 @@ export interface BlockProps {
   open: boolean
   path: Path
   renderDefault: (props: BlockProps) => React.ReactElement
+  schemaType: SchemaType
   selected: boolean
   value: PortableTextBlock
 }

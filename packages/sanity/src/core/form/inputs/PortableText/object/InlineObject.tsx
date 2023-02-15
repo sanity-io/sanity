@@ -1,29 +1,33 @@
 import {hues} from '@sanity/color'
-import {PortableTextEditor, usePortableTextEditor} from '@sanity/portable-text-editor'
-import {ObjectSchemaType, Path, PortableTextChild} from '@sanity/types'
+import {
+  EditorSelection,
+  PortableTextEditor,
+  usePortableTextEditor,
+} from '@sanity/portable-text-editor'
+import {ObjectSchemaType, Path, PortableTextBlock, PortableTextChild} from '@sanity/types'
 import React, {useCallback, useEffect, useMemo, useState} from 'react'
 import styled, {css} from 'styled-components'
 import {Box, Card, Theme, Tooltip} from '@sanity/ui'
-import {RenderCustomMarkers, RenderPreviewCallback} from '../../../types'
+import {BlockProps, RenderCustomMarkers, RenderPreviewCallback} from '../../../types'
 import {useFormBuilder} from '../../../useFormBuilder'
 import {PortableTextEditorElement} from '../Compositor'
 import {usePortableTextMarkers} from '../hooks/usePortableTextMarkers'
 import {useMemberValidation} from '../hooks/useMemberValidation'
 import {usePortableTextMemberItem} from '../hooks/usePortableTextMembers'
 import {pathToString} from '../../../../field/paths'
-import {FIXME} from '../../../../FIXME'
 import {InlineObjectToolbarPopover} from './InlineObjectToolbarPopover'
 
 interface InlineObjectProps {
   focused: boolean
   selected: boolean
   path: Path
+  onItemClose: () => void
   onItemOpen: (path: Path) => void
   readOnly?: boolean
   renderCustomMarkers?: RenderCustomMarkers
   renderPreview: RenderPreviewCallback
   scrollElement: HTMLElement | null
-  type: ObjectSchemaType
+  schemaType: ObjectSchemaType
   value: PortableTextChild
 }
 
@@ -111,6 +115,7 @@ export const InlineObject = React.forwardRef(function InlineObject(
 ) {
   const {
     focused,
+    onItemClose,
     onItemOpen,
     path,
     readOnly,
@@ -118,7 +123,7 @@ export const InlineObject = React.forwardRef(function InlineObject(
     renderPreview,
     scrollElement,
     selected,
-    type,
+    schemaType,
     value,
   } = props
   const {Markers} = useFormBuilder().__internal.components
@@ -150,12 +155,12 @@ export const InlineObject = React.forwardRef(function InlineObject(
         {renderPreview({
           fallbackTitle: 'Click to edit',
           layout: 'inline',
-          schemaType: type as FIXME,
+          schemaType,
           value,
         })}
       </PreviewSpan>
     )
-  }, [renderPreview, type, value])
+  }, [renderPreview, schemaType, value])
 
   const markersToolTip = useMemo(
     () =>
@@ -216,35 +221,97 @@ export const InlineObject = React.forwardRef(function InlineObject(
     }
   }, [editor, focused, memberItem?.member.open, selected])
 
-  return (
-    <>
-      <Root
-        data-focused={focused || undefined}
-        data-invalid={hasError || undefined}
-        data-warning={hasWarning || undefined}
-        data-selected={selected || undefined}
-        data-read-only={readOnly || undefined}
-        data-markers={hasValidationMarkers || undefined}
-        tone={tone}
-        forwardedAs="span"
-        contentEditable={false}
-        ref={memberItem?.elementRef as React.RefObject<HTMLDivElement>}
-        onClick={readOnly ? openItem : undefined}
-        onDoubleClick={openItem}
-      >
-        <span ref={forwardedRef}>{markersToolTip || preview}</span>
-      </Root>
-      {focused && !readOnly && (
-        <InlineObjectToolbarPopover
-          open={popoverOpen}
-          onDelete={handleRemoveClick}
-          onEdit={openItem}
-          onClose={handlePopoverClose}
-          referenceElement={memberItem?.elementRef?.current || null}
-          scrollElement={scrollElement}
-          title={type?.title || type.name}
-        />
-      )}
-    </>
+  const Default = useCallback(
+    (dProps: BlockProps) => (
+      <>
+        <Root
+          contentEditable={false}
+          data-focused={focused || undefined}
+          data-invalid={hasError || undefined}
+          data-markers={hasValidationMarkers || undefined}
+          data-read-only={readOnly || undefined}
+          data-selected={selected || undefined}
+          data-warning={hasWarning || undefined}
+          forwardedAs="span"
+          onClick={readOnly ? openItem : undefined}
+          onDoubleClick={openItem}
+          ref={memberItem?.elementRef as React.RefObject<HTMLDivElement>}
+          tone={tone}
+        >
+          <span ref={forwardedRef}>{dProps.children}</span>
+        </Root>
+        {focused && !readOnly && (
+          <InlineObjectToolbarPopover
+            onClose={handlePopoverClose}
+            onDelete={handleRemoveClick}
+            onEdit={openItem}
+            open={popoverOpen}
+            referenceElement={memberItem?.elementRef?.current || null}
+            scrollElement={scrollElement}
+            title={schemaType?.title || schemaType.name}
+          />
+        )}
+      </>
+    ),
+    [
+      focused,
+      forwardedRef,
+      handlePopoverClose,
+      handleRemoveClick,
+      hasError,
+      hasValidationMarkers,
+      hasWarning,
+      memberItem?.elementRef,
+      openItem,
+      popoverOpen,
+      readOnly,
+      schemaType.name,
+      schemaType?.title,
+      scrollElement,
+      selected,
+      tone,
+    ]
   )
+  const onRemove = useCallback(() => {
+    const sel: EditorSelection = {focus: {path, offset: 0}, anchor: {path, offset: 0}}
+    PortableTextEditor.delete(editor, sel, {mode: 'blocks'})
+    // Focus will not stick unless this is done through a timeout when deleted through clicking the menu button.
+    setTimeout(() => PortableTextEditor.focus(editor))
+  }, [editor, path])
+
+  return useMemo(() => {
+    const CustomComponent = schemaType.components?.inlineBlock
+    const _props = {
+      focused,
+      onClose: onItemClose,
+      onOpen: openItem,
+      onRemove,
+      open: memberItem?.member.open || false,
+      path: memberItem?.node.path || path,
+      renderDefault: Default,
+      schemaType,
+      selected,
+      value: value as PortableTextBlock,
+    }
+    const children = markersToolTip || preview
+    return CustomComponent ? (
+      <CustomComponent {..._props}>{children}</CustomComponent>
+    ) : (
+      <Default {..._props}>{children}</Default>
+    )
+  }, [
+    Default,
+    focused,
+    markersToolTip,
+    memberItem?.member.open,
+    memberItem?.node.path,
+    onItemClose,
+    onRemove,
+    openItem,
+    path,
+    preview,
+    schemaType,
+    selected,
+    value,
+  ])
 })

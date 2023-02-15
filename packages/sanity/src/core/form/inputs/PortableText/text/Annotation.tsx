@@ -6,7 +6,7 @@ import {
 } from '@sanity/portable-text-editor'
 import {Path} from '@sanity/types'
 import {Box, Theme, ThemeColorToneKey, Tooltip} from '@sanity/ui'
-import React, {ComponentType, SyntheticEvent, useCallback, useMemo, useRef, useState} from 'react'
+import React, {ComponentType, SyntheticEvent, useCallback, useMemo, useRef} from 'react'
 import styled, {css} from 'styled-components'
 import {pathToString} from '../../../../field'
 import {BlockAnnotationProps, RenderCustomMarkers} from '../../../types'
@@ -62,7 +62,7 @@ const TooltipBox = styled(Box).attrs({forwardedAs: 'span'})`
 
 export const Annotation = function Annotation(props: AnnotationProps) {
   const {onItemOpen, onItemClose, renderCustomMarkers, scrollElement, renderProps, readOnly} = props
-  const {children, type, value, path, selected, focused} = renderProps
+  const {children, schemaType, value, path, selected, focused} = renderProps
   const {Markers = DefaultMarkers} = useFormBuilder().__internal.components
   const annotationRef = useRef<HTMLElement>(null)
   const editor = usePortableTextEditor()
@@ -70,16 +70,15 @@ export const Annotation = function Annotation(props: AnnotationProps) {
     () => [path[0]].concat(['markDefs', {_key: value._key}]),
     [path, value._key]
   )
-  const [textElement, setTextElement] = useState<HTMLSpanElement | null>(null)
   const memberItem = usePortableTextMemberItem(pathToString(markDefPath))
   const {validation, hasError, hasWarning} = useMemberValidation(memberItem?.node)
   const markers = usePortableTextMarkers(path)
-
-  const CustomComponent = type.components?.annotation as ComponentType<BlockAnnotationProps>
+  const textElement = useRef<HTMLSpanElement | null>(null)
+  const hasCustomMarkers = markers.length > 0
 
   const text = useMemo(
     () => (
-      <span ref={setTextElement} data-annotation="">
+      <span ref={textElement} data-annotation="">
         {children}
       </span>
     ),
@@ -129,13 +128,13 @@ export const Annotation = function Annotation(props: AnnotationProps) {
     (event: React.MouseEvent<HTMLButtonElement>): void => {
       event.preventDefault()
       event.stopPropagation()
-      PortableTextEditor.removeAnnotation(editor, type)
+      PortableTextEditor.removeAnnotation(editor, schemaType)
       PortableTextEditor.focus(editor)
     },
-    [editor, type]
+    [editor, schemaType]
   )
 
-  const isLink = type.name === 'link'
+  const isLink = schemaType.name === 'link'
 
   const toneKey = useMemo(() => {
     if (hasError) {
@@ -152,50 +151,85 @@ export const Annotation = function Annotation(props: AnnotationProps) {
     return 'default'
   }, [isLink, hasError, hasWarning])
 
-  const hasCustomMarkers = markers.length > 0
-  const defaultRendered = (
-    <Root
-      $toneKey={toneKey}
-      ref={annotationRef}
-      data-link={isLink ? '' : undefined}
-      data-error={hasError ? '' : undefined}
-      data-warning={hasWarning ? '' : undefined}
-      data-custom-markers={hasCustomMarkers ? '' : undefined}
-      onClick={readOnly ? openItem : undefined}
-    >
-      <span ref={memberItem?.elementRef}>{markersToolTip || text}</span>
-      {!readOnly && (
-        <AnnotationToolbarPopover
-          textElement={textElement || undefined}
-          annotationElement={annotationRef.current || undefined}
-          scrollElement={scrollElement || undefined}
-          onEdit={handleEditClick}
-          onDelete={handleRemoveClick}
-          title={type?.title || type.name}
-        />
-      )}
-    </Root>
+  const DefaultComponent = useCallback(
+    (dProps: BlockAnnotationProps) => (
+      <Root
+        $toneKey={toneKey}
+        ref={annotationRef}
+        data-link={isLink ? '' : undefined}
+        data-error={hasError ? '' : undefined}
+        data-warning={hasWarning ? '' : undefined}
+        data-custom-markers={hasCustomMarkers ? '' : undefined}
+        onClick={readOnly ? openItem : undefined}
+      >
+        <span ref={memberItem?.elementRef}>{dProps.children}</span>
+        {!readOnly && (
+          <AnnotationToolbarPopover
+            textElement={textElement.current || undefined}
+            annotationElement={annotationRef.current || undefined}
+            scrollElement={scrollElement || undefined}
+            onEdit={handleEditClick}
+            onDelete={handleRemoveClick}
+            title={schemaType.title || schemaType.name}
+          />
+        )}
+      </Root>
+    ),
+    [
+      handleEditClick,
+      handleRemoveClick,
+      hasCustomMarkers,
+      hasError,
+      hasWarning,
+      isLink,
+      memberItem?.elementRef,
+      openItem,
+      readOnly,
+      schemaType.title,
+      schemaType.name,
+      scrollElement,
+      toneKey,
+    ]
   )
-  return CustomComponent && memberItem ? (
-    <CustomComponent
-      focused={focused}
-      open={memberItem.member.open}
-      onOpen={openItem}
-      onClose={onItemClose}
-      // eslint-disable-next-line react/jsx-no-bind
-      onRemove={() => {
-        PortableTextEditor.removeAnnotation(editor, type)
-        PortableTextEditor.focus(editor)
-      }}
-      path={memberItem?.node.path || path}
-      // eslint-disable-next-line react/jsx-no-bind
-      renderDefault={() => defaultRendered}
-      selected={selected}
-      value={value}
-    >
-      <span ref={memberItem?.elementRef}>{text}</span>
-    </CustomComponent>
-  ) : (
-    defaultRendered
-  )
+  const onRemove = useCallback(() => {
+    PortableTextEditor.removeAnnotation(editor, schemaType)
+    PortableTextEditor.focus(editor)
+  }, [editor, schemaType])
+
+  return useMemo(() => {
+    const _props = {
+      focused,
+      onClose: onItemClose,
+      onOpen: openItem,
+      onRemove,
+      open: memberItem?.member.open || false,
+      path: memberItem?.node.path || path,
+      renderDefault: DefaultComponent,
+      schemaType,
+      selected,
+      value,
+    }
+    const CustomComponent = schemaType.components?.annotation as ComponentType<BlockAnnotationProps>
+    const content = <span ref={memberItem?.elementRef}>{markersToolTip || text}</span>
+    return CustomComponent ? (
+      <CustomComponent {..._props}>{content}</CustomComponent>
+    ) : (
+      <DefaultComponent {..._props}>{content}</DefaultComponent>
+    )
+  }, [
+    DefaultComponent,
+    focused,
+    markersToolTip,
+    memberItem?.elementRef,
+    memberItem?.member.open,
+    memberItem?.node.path,
+    onItemClose,
+    onRemove,
+    openItem,
+    path,
+    schemaType,
+    selected,
+    text,
+    value,
+  ])
 }

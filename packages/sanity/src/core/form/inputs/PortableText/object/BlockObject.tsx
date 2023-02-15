@@ -5,7 +5,7 @@ import {
 } from '@sanity/portable-text-editor'
 import {ObjectSchemaType, Path, PortableTextBlock} from '@sanity/types'
 import {Tooltip, Flex, ResponsivePaddingProps} from '@sanity/ui'
-import React, {ComponentType, useCallback, useMemo, useRef, useState} from 'react'
+import React, {ComponentType, useCallback, useMemo, useState} from 'react'
 import {PatchArg} from '../../../patch'
 import {BlockProps, RenderCustomMarkers, RenderPreviewCallback} from '../../../types'
 import {RenderBlockActionsCallback} from '../types'
@@ -17,7 +17,8 @@ import {usePortableTextMarkers} from '../hooks/usePortableTextMarkers'
 import {usePortableTextMemberItem} from '../hooks/usePortableTextMembers'
 import {pathToString} from '../../../../field'
 import {debugRender} from '../debugRender'
-import {BlockObjectPreview} from './BlockObjectPreview'
+import {is} from '../../../utils/is'
+import {BlockObjectActionsMenu} from './BlockObjectActionsMenu'
 import {
   Root,
   PreviewContainer,
@@ -26,7 +27,6 @@ import {
   BlockActionsOuter,
   BlockActionsInner,
   TooltipBox,
-  BlockPreview,
 } from './BlockObject.styles'
 
 interface BlockObjectProps {
@@ -43,8 +43,8 @@ interface BlockObjectProps {
   renderBlockActions?: RenderBlockActionsCallback
   renderCustomMarkers?: RenderCustomMarkers
   renderPreview: RenderPreviewCallback
+  schemaType: ObjectSchemaType
   selected: boolean
-  type: ObjectSchemaType
 }
 
 export function BlockObject(props: BlockObjectProps) {
@@ -62,10 +62,9 @@ export function BlockObject(props: BlockObjectProps) {
     renderCustomMarkers,
     renderPreview,
     selected,
-    type,
+    schemaType,
   } = props
   const {Markers} = useFormBuilder().__internal.components
-  const elementRef = useRef<HTMLDivElement | null>(null)
   const [reviewChangesHovered, setReviewChangesHovered] = useState<boolean>(false)
   const markers = usePortableTextMarkers(path)
   const editor = usePortableTextEditor()
@@ -107,22 +106,6 @@ export function BlockObject(props: BlockObjectProps) {
   )
 
   const isOpen = !!memberItem?.member.open
-
-  const blockPreview = useMemo(() => {
-    return (
-      <BlockObjectPreview
-        focused={focused}
-        isActive={isActive}
-        onClickingDelete={handleDelete}
-        onClickingEdit={openItem}
-        readOnly={readOnly}
-        renderPreview={renderPreview}
-        isOpen={isOpen}
-        type={type}
-        value={block}
-      />
-    )
-  }, [focused, isActive, handleDelete, openItem, readOnly, renderPreview, isOpen, type, block])
 
   const tone = selected || focused ? 'primary' : 'default'
 
@@ -167,8 +150,8 @@ export function BlockObject(props: BlockObjectProps) {
     [Markers, markers, renderCustomMarkers, tooltipEnabled, validation]
   )
 
-  const defaultRendered = useMemo(
-    () => (
+  const Default = useCallback(
+    (dProps: BlockProps) => (
       <Flex paddingBottom={1} marginY={3} contentEditable={false} style={debugRender()}>
         <InnerFlex flex={1}>
           <PreviewContainer flex={1} {...innerPaddingProps}>
@@ -190,12 +173,20 @@ export function BlockObject(props: BlockObjectProps) {
                 flex={1}
                 onDoubleClick={handleDoubleClickToOpen}
                 padding={isImagePreview ? 0 : 1}
-                ref={elementRef}
+                ref={memberItem?.elementRef as React.RefObject<HTMLDivElement>}
                 tone={tone}
               >
-                <BlockPreview ref={memberItem?.elementRef as React.RefObject<HTMLDivElement>}>
-                  {blockPreview}
-                </BlockPreview>
+                <BlockObjectActionsMenu
+                  focused={focused}
+                  isActive={isActive}
+                  onClickingDelete={handleDelete}
+                  onClickingEdit={openItem}
+                  readOnly={readOnly}
+                  isOpen={isOpen}
+                  value={block}
+                >
+                  {dProps.children}
+                </BlockObjectActionsMenu>
               </Root>
             </Tooltip>
           </PreviewContainer>
@@ -233,8 +224,8 @@ export function BlockObject(props: BlockObjectProps) {
     ),
     [
       block,
-      blockPreview,
       focused,
+      handleDelete,
       handleDoubleClickToOpen,
       handleMouseOut,
       handleMouseOver,
@@ -242,10 +233,13 @@ export function BlockObject(props: BlockObjectProps) {
       hasMarkers,
       hasWarning,
       innerPaddingProps,
+      isActive,
       isFullscreen,
       isImagePreview,
+      isOpen,
       memberItem,
       onChange,
+      openItem,
       readOnly,
       renderBlockActions,
       renderCustomMarkers,
@@ -257,27 +251,48 @@ export function BlockObject(props: BlockObjectProps) {
     ]
   )
 
-  const CustomComponent = type.components?.block as ComponentType<BlockProps>
-
-  const renderDefault = useCallback(() => defaultRendered, [defaultRendered])
-
-  return CustomComponent ? (
-    <CustomComponent
-      focused={focused}
-      open={memberItem?.member.open || false}
-      onOpen={openItem}
-      onClose={onItemClose}
-      onRemove={onRemove}
-      path={memberItem?.node.path || path}
-      selected={selected}
-      value={block}
-      renderDefault={renderDefault}
-    >
-      <BlockPreview ref={memberItem?.elementRef as React.RefObject<HTMLDivElement>}>
-        {blockPreview}
-      </BlockPreview>
-    </CustomComponent>
-  ) : (
-    defaultRendered
-  )
+  return useMemo(() => {
+    const CustomComponent = schemaType.components?.block as ComponentType<BlockProps>
+    const _props = {
+      focused,
+      onClose: onItemClose,
+      onOpen: openItem,
+      onRemove,
+      open: memberItem?.member.open || false,
+      path: memberItem?.node.path || path,
+      renderDefault: Default,
+      schemaType,
+      selected,
+      value: block,
+    }
+    const isImageType = is('image', schemaType)
+    const preview = (
+      <>
+        {renderPreview({
+          actions: undefined,
+          layout: isImageType ? 'blockImage' : 'block',
+          schemaType,
+          value: block,
+        })}
+      </>
+    )
+    return CustomComponent ? (
+      <CustomComponent {..._props}>{preview}</CustomComponent>
+    ) : (
+      <Default {..._props}>{preview}</Default>
+    )
+  }, [
+    Default,
+    block,
+    focused,
+    memberItem?.member.open,
+    memberItem?.node.path,
+    onItemClose,
+    onRemove,
+    openItem,
+    path,
+    renderPreview,
+    schemaType,
+    selected,
+  ])
 }
