@@ -1,4 +1,4 @@
-import {PortalProvider, useToast, useMediaIndex} from '@sanity/ui'
+import {PortalProvider, useToast, useMediaIndex, Card} from '@sanity/ui'
 import React, {memo, Fragment, useState, useEffect, useCallback} from 'react'
 import styled from 'styled-components'
 import isHotkey from 'is-hotkey'
@@ -19,6 +19,19 @@ interface DeskToolProps {
 const StyledPaneLayout = styled(PaneLayout)`
   min-height: 100%;
   min-width: 280px;
+`
+
+const RubberBand = styled.div`
+  min-width: 200px;
+  height: 100%;
+  background: var(--card-border-color);
+`
+
+const EmptyState = styled(Card)`
+  height: 100%;
+  min-width: calc(100vw - 960px - 280px);
+  background: var(--card-bg-color);
+  scroll-snap-align: start;
 `
 
 const isSaveHotkey = isHotkey('mod+s')
@@ -95,6 +108,13 @@ export const DeskTool = memo(function DeskTool({onPaneChange}: DeskToolProps) {
         onCollapse={handleRootCollapse}
         onExpand={handleRootExpand}
       >
+        {paneDataItems.some(
+          (item) => item.pane.type === 'document' || item.pane.type === 'documentList'
+        ) ? (
+          <RubberBand />
+        ) : (
+          ' '
+        )}
         {paneDataItems.map(
           ({
             active,
@@ -130,6 +150,12 @@ export const DeskTool = memo(function DeskTool({onPaneChange}: DeskToolProps) {
               )}
             </Fragment>
           )
+        )}
+        {paneDataItems.length > 1 &&
+        paneDataItems[paneDataItems.length - 1].pane.type === 'documentList' ? (
+          <EmptyState border />
+        ) : (
+          ' '
         )}
       </StyledPaneLayout>
       <div data-portal="" ref={setPortalElement} />

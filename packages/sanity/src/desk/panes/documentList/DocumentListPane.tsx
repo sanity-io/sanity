@@ -84,7 +84,13 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
 
   return (
     <SourceProvider name={sourceName || parentSourceName}>
-      <Pane currentMaxWidth={720} id={paneKey} maxWidth={640} minWidth={280} selected={isSelected}>
+      <Pane
+        currentMaxWidth={960}
+        id={paneKey}
+        maxWidth={960}
+        minWidth={isSelected ? 960 : 280}
+        selected={isSelected}
+      >
         {_DEBUG && (
           <Card padding={4} tone="transparent">
             <Code>{pane.source || '(none)'}</Code>

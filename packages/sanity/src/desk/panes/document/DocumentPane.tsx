@@ -363,7 +363,7 @@ function InnerDocumentPane() {
       data-testid="document-pane"
       flex={2.5}
       id={paneKey}
-      minWidth="calc(100vw - 300px)"
+      minWidth="calc(100vw - 320px)"
       onKeyUp={onKeyUp}
       rootRef={setRootElement}
     >
