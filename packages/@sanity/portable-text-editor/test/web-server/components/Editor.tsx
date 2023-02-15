@@ -73,11 +73,11 @@ export const Editor = ({
   const keyGenFn = useMemo(() => createKeyGenerator(editorId.substring(0, 1)), [editorId])
 
   const renderBlock: RenderBlockFunction = useCallback((props) => {
-    const {value: block, type, children} = props
+    const {value: block, schemaType, children} = props
     if (editor.current) {
       const textType = editor.current.schemaTypes.block
       // Text blocks
-      if (type.name === textType.name) {
+      if (schemaType.name === textType.name) {
         return (
           <Box marginBottom={4}>
             <Text style={{color: getRandomColor()}}>{children}</Text>
@@ -157,8 +157,8 @@ export const Editor = ({
   )
 
   const renderListItem = useCallback((props: BlockListItemRenderProps) => {
-    const {level, type, value: listType, children} = props
-    const listStyleType = type.value === 'number' ? 'decimal' : 'inherit'
+    const {level, schemaType, value: listType, children} = props
+    const listStyleType = schemaType.value === 'number' ? 'decimal' : 'inherit'
     return <li style={{listStyleType, paddingLeft: `${level * 10}pt`}}>{children}</li>
   }, [])
 
