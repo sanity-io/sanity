@@ -8,6 +8,7 @@ import {
   ObjectFormNode,
 } from '../types'
 import {isMemberArrayOfObjects} from '../../members/object/fields/asserters'
+import {ALL_FIELDS_GROUP} from '../constants'
 
 /** @internal */
 export interface ExpandPathOperation {

@@ -26,7 +26,7 @@ import {FIXME} from '../../FIXME'
 import {FormNodePresence} from '../../presence'
 import {ObjectArrayFormNode, PrimitiveFormNode, StateTree} from './types'
 import {resolveConditionalProperty} from './conditional-property'
-import {MAX_FIELD_DEPTH} from './constants'
+import {ALL_FIELDS_GROUP, MAX_FIELD_DEPTH} from './constants'
 import {getItemType, getPrimitiveItemType} from './utils/getItemType'
 import {
   ArrayOfObjectsMember,
@@ -40,12 +40,6 @@ import {getCollapsedWithDefaults} from './utils/getCollapsibleOptions'
 import {FieldError} from './types/memberErrors'
 
 type PrimitiveSchemaType = BooleanSchemaType | NumberSchemaType | StringSchemaType
-
-const ALL_FIELDS_GROUP: FieldGroup = {
-  name: 'all-fields',
-  title: 'All fields',
-  hidden: false,
-}
 
 function isFieldEnabledByGroupFilter(
   // the groups config for the "enclosing object" type
