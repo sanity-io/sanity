@@ -50,15 +50,15 @@ export const Leaf = (props: LeafProps) => {
       (Array.isArray(leaf.marks) ? leaf.marks : []).filter((mark) => decoratorValues.includes(mark))
     )
     marks.forEach((mark) => {
-      const type = schemaTypes.decorators.find((dec) => dec.value === mark)
-      if (type && props.renderDecorator) {
+      const schemaType = schemaTypes.decorators.find((dec) => dec.value === mark)
+      if (schemaType && props.renderDecorator) {
         returnedChildren = props.renderDecorator({
           children: returnedChildren,
           editorElementRef: spanRef,
           focused,
           path,
           selected,
-          type,
+          schemaType,
           value: mark,
         })
       }
@@ -76,8 +76,8 @@ export const Leaf = (props: LeafProps) => {
 
     if (block && annotations.length > 0) {
       annotations.forEach((annotation) => {
-        const type = schemaTypes.annotations.find((t) => t.name === annotation._type)
-        if (type) {
+        const schemaType = schemaTypes.annotations.find((t) => t.name === annotation._type)
+        if (schemaType) {
           if (props.renderAnnotation) {
             returnedChildren = (
               <span ref={spanRef}>
@@ -88,7 +88,7 @@ export const Leaf = (props: LeafProps) => {
                   focused,
                   path,
                   selected,
-                  type,
+                  schemaType,
                   value: annotation,
                 })}
               </span>
