@@ -74,7 +74,7 @@ async function runCompare(
     (currentBranchResultIteration1.result + currentBranchResultIteration2.result) / 2
 
   return {
-    diff: currentBranchResult - baseBranchResult,
+    diff: baseBranchResult - currentBranchResult,
     base: baseBranchResult,
     current: currentBranchResult,
   }
