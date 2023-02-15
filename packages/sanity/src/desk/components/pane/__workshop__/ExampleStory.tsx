@@ -60,7 +60,7 @@ export default function ExampleStory() {
 
   return (
     <PaneLayout height={layoutCollapsed ? undefined : 'fill'} style={{minHeight: '100%'}}>
-      <Pane id="example-pane" minWidth={320} tone={tone}>
+      <Pane id="example-pane" minWidth={280} tone={tone}>
         <PaneHeader
           actions={actions}
           subActions={

@@ -22,7 +22,7 @@ export function ListPane(props: {
   }, [index, setPath])
 
   return (
-    <Pane currentMaxWidth={350} flex={1} id={String(index)} minWidth={320} maxWidth={640}>
+    <Pane currentMaxWidth={280} flex={1} id={String(index)} minWidth={280} maxWidth={640}>
       <PaneHeader
         actions={<Button icon={EllipsisVerticalIcon} mode="bleed" />}
         backButton={

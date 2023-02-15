@@ -64,24 +64,24 @@ export default function ResizeStory() {
           // currentMaxWidth={320}
           flex={1}
           minWidth={160}
-          maxWidth={320}
+          maxWidth={280}
         />
         <Pane
           currentMinWidth={undefined}
           // currentMaxWidth={320}
           flex={1}
           minWidth={160}
-          maxWidth={320}
+          maxWidth={280}
         />
         <Pane
           currentMinWidth={undefined}
           // currentMaxWidth={320}
           flex={1}
           minWidth={160}
-          maxWidth={320}
+          maxWidth={280}
         />
         <Pane
-          currentMinWidth={320}
+          currentMinWidth={280}
           currentMaxWidth={undefined}
           flex={2}
           minWidth={160}

@@ -29,7 +29,7 @@ export function OptionPreview(props: {
   if (isLoading) {
     return (
       <Stack space={2} padding={1}>
-        <TextSkeleton style={{maxWidth: 320}} radius={1} animated />
+        <TextSkeleton style={{maxWidth: 280}} radius={1} animated />
         <TextSkeleton style={{maxWidth: 200}} radius={1} size={1} animated />
       </Stack>
     )

@@ -18,7 +18,7 @@ interface DeskToolProps {
 
 const StyledPaneLayout = styled(PaneLayout)`
   min-height: 100%;
-  min-width: 320px;
+  min-width: 280px;
 `
 
 const isSaveHotkey = isHotkey('mod+s')

@@ -21,7 +21,7 @@ const ASSET_TYPE: Record<AssetType, string> = {
 }
 
 const ContainerBox = styled(Box)`
-  width: min(calc(100vw - 40px), 320px);
+  width: min(calc(100vw - 40px), 280px);
 `
 
 export function SearchFilterAssetInput(type?: AssetType) {

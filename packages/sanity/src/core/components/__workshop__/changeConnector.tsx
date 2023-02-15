@@ -11,7 +11,7 @@ const TestContainer = styled(Container).attrs({
   height: 'fill',
   width: 1,
 })`
-  max-height: 320px;
+  max-height: 280px;
 `
 
 const Root = styled(ChangeConnectorRoot)`

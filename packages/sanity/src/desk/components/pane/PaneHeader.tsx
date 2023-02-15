@@ -43,9 +43,9 @@ export const PaneHeader = forwardRef(function PaneHeader(
 
   return (
     <LayerProvider zOffset={100}>
-      <Root data-collapsed={collapsed ? '' : undefined} data-testid="pane-header" ref={ref}>
+      <Root data-collapsed={undefined} data-testid="pane-header" ref={ref}>
         <LegacyLayerProvider zOffset="paneHeader">
-          <Card data-collapsed={collapsed ? '' : undefined} tone="inherit">
+          <Card data-collapsed={undefined} tone="inherit">
             <Layout
               onClick={handleLayoutClick}
               padding={2}

@@ -49,11 +49,11 @@ export function ListPane(props: ListPaneProps) {
 
   return (
     <Pane
-      currentMaxWidth={350}
+      currentMaxWidth={280}
       data-testid="desk-tool-list-pane"
       id={paneKey}
       maxWidth={640}
-      minWidth={320}
+      minWidth={280}
       selected={isSelected}
     >
       {_DEBUG && (
@@ -71,7 +71,7 @@ export function ListPane(props: ListPaneProps) {
         title={title}
       />
 
-      <PaneContent overflow={layoutCollapsed ? undefined : 'auto'}>
+      <PaneContent overflow={'auto'}>
         <Stack padding={2} space={1}>
           {items &&
             items.map((item, itemIndex) => {

@@ -27,10 +27,10 @@ export function DocumentPane(props: {
 
   return (
     <Pane
-      currentMinWidth={reviewChanges ? 600 + 320 : 600}
+      currentMinWidth={reviewChanges ? 600 + 280 : 600}
       flex={2.5}
       id={String(index)}
-      minWidth={reviewChanges ? 320 + 320 : 320}
+      minWidth={reviewChanges ? 280 + 280 : 280}
     >
       <Flex flex={1} height="fill">
         <DocumentViewPanel

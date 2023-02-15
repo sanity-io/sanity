@@ -24,6 +24,7 @@ const Root = styled(Card)`
   // NOTE: This will render a border to the right side of each pane
   // without taking up physical space.
   box-shadow: 1px 0 0 var(--card-border-color);
+  scroll-snap-align: end;
 `
 
 /**
@@ -61,7 +62,7 @@ export const Pane = forwardRef(function Pane(
   const nextPane = typeof paneIndex === 'number' ? panes[paneIndex + 1] : undefined
   const isLast = paneIndex === panes.length - 1
   const expanded = expandedElement === rootElement
-  const collapsed = layoutCollapsed ? false : pane?.collapsed || false
+  const collapsed = false
   const nextCollapsed = nextPane?.collapsed || false
   const forwardedRef = useForwardedRef(ref)
   const flex = pane?.flex ?? flexProp
@@ -188,7 +189,7 @@ export const Pane = forwardRef(function Pane(
             id={id}
             overflow={layoutCollapsed ? undefined : 'hidden'}
             {...restProps}
-            data-pane-collapsed={collapsed ? '' : undefined}
+            data-pane-collapsed={undefined}
             data-pane-index={paneIndex}
             data-pane-selected={selected ? '' : undefined}
             ref={setRef}

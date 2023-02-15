@@ -64,7 +64,7 @@ export function ChangesPanel(): React.ReactElement | null {
       style={{
         borderLeft: '1px dashed var(--card-border-color)',
         overflow: 'hidden',
-        minWidth: 320,
+        minWidth: 280,
       }}
       data-testid="review-changes-pane"
     >

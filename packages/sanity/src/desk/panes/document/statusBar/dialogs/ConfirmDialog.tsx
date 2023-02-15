@@ -63,7 +63,7 @@ function ConfirmDialogContent(props: {dialog: DocumentActionConfirmDialogProps})
   useGlobalKeyDown(handleGlobalKeyDown)
 
   return (
-    <Flex direction="column" ref={setElement} style={{minWidth: 320 - 16, maxWidth: 400}}>
+    <Flex direction="column" ref={setElement} style={{minWidth: 280 - 16, maxWidth: 400}}>
       <Box flex={1} overflow="auto" padding={4}>
         <Text>{message}</Text>
       </Box>

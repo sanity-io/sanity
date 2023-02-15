@@ -70,7 +70,7 @@ export function PaneLayout(
       <Root
         data-ui="PaneLayout"
         {...restProps}
-        data-collapsed={collapsed ? '' : undefined}
+        data-collapsed={undefined}
         // The `data-resizing` attribute is used to improve cursor behavior
         data-resizing={state.resizing ? '' : undefined}
         // The `data-mounted` attribute is used to fade in the layout and prevent flash of

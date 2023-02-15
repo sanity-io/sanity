@@ -15,6 +15,8 @@ export const Root = styled(Card)`
 
   &:not([data-collapsed]) {
     overflow: auto;
+    scroll-snap-type: x mandatory;
+    scroll-padding: 0;
   }
 
   &[data-mounted] {

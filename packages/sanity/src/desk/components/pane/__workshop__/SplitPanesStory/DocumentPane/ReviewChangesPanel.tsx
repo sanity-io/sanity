@@ -15,7 +15,7 @@ export function ReviewChangesPanel(props: {onClose: () => void}) {
       style={{
         borderLeft: '1px dashed var(--card-border-color)',
         overflow: 'hidden',
-        minWidth: 320,
+        minWidth: 280,
       }}
     >
       <PaneHeader

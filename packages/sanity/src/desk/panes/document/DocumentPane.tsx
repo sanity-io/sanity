@@ -43,9 +43,9 @@ import {
 
 type DocumentPaneOptions = DocumentPaneNode['options']
 
-const DOCUMENT_PANEL_MIN_WIDTH = 320
+const DOCUMENT_PANEL_MIN_WIDTH = 280
 const DOCUMENT_PANEL_INITIAL_MIN_WIDTH = 600
-const CHANGES_PANEL_MIN_WIDTH = 320
+const CHANGES_PANEL_MIN_WIDTH = 280
 
 const DIALOG_PROVIDER_POSITION: DialogProviderProps['position'] = [
   // We use the `position: fixed` for dialogs on narrow screens (< 512px).
@@ -116,14 +116,14 @@ function DocumentPaneInner(props: DocumentPaneProviderProps) {
   }, [parentRefPath, groupIndex, routerPanesStateLength])
 
   if (options.type === '*' && !isLoaded) {
-    return <LoadingPane flex={2.5} minWidth={320} paneKey={paneKey} title="Loading document…" />
+    return <LoadingPane flex={2.5} minWidth={280} paneKey={paneKey} title="Loading document…" />
   }
 
   if (!documentType) {
     return (
       <ErrorPane
         flex={2.5}
-        minWidth={320}
+        minWidth={280}
         paneKey={paneKey}
         title={<>The document was not found</>}
       >
@@ -276,7 +276,7 @@ function InnerDocumentPane() {
       return (
         <ErrorPane
           flex={2.5}
-          minWidth={320}
+          minWidth={280}
           paneKey={paneKey}
           title={
             <>
@@ -363,7 +363,7 @@ function InnerDocumentPane() {
       data-testid="document-pane"
       flex={2.5}
       id={paneKey}
-      minWidth={minWidth}
+      minWidth="calc(100vw - 300px)"
       onKeyUp={onKeyUp}
       rootRef={setRootElement}
     >

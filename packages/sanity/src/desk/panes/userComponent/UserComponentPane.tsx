@@ -28,7 +28,7 @@ export function UserComponentPane(props: UserComponentPaneProps) {
   } | null>(null)
 
   return (
-    <Pane id={paneKey} minWidth={320} selected={restProps.isSelected}>
+    <Pane id={paneKey} minWidth={280} selected={restProps.isSelected}>
       <UserComponentPaneHeader
         actionHandlers={ref?.actionHandlers}
         index={index}
