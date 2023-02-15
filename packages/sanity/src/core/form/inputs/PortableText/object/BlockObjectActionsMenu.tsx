@@ -11,7 +11,6 @@ import {
 } from '@sanity/ui'
 import React, {
   forwardRef,
-  MouseEvent,
   ReactElement,
   useCallback,
   useMemo,
@@ -27,8 +26,8 @@ interface BlockObjectActionsMenuProps extends PropsWithChildren {
   focused: boolean
   isActive?: boolean
   isOpen?: boolean
-  onClickingDelete: (event: MouseEvent) => void
-  onClickingEdit: () => void
+  onOpen: () => void
+  onRemove: () => void
   readOnly?: boolean
   value: PortableTextBlock
 }
@@ -41,11 +40,19 @@ const POPOVER_PROPS: MenuButtonProps['popover'] = {
 }
 
 export function BlockObjectActionsMenu(props: BlockObjectActionsMenuProps): ReactElement {
-  const {children, focused, isActive, isOpen, onClickingDelete, onClickingEdit, readOnly, value} =
-    props
+  const {children, focused, isActive, isOpen, onOpen, onRemove, readOnly, value} = props
   const menuButtonId = useId()
   const menuButton = useRef<HTMLButtonElement | null>(null)
   const isTabbing = useRef<boolean>(false)
+
+  const handleDelete = useCallback(
+    (e: {preventDefault: () => void; stopPropagation: () => void}) => {
+      e.preventDefault()
+      e.stopPropagation()
+      onRemove()
+    },
+    [onRemove]
+  )
 
   const referenceLink = useMemo(
     () =>
@@ -110,15 +117,10 @@ export function BlockObjectActionsMenu(props: BlockObjectActionsMenuProps): Reac
                   <MenuItem as={referenceLink} data-as="a" icon={LinkIcon} text="Open reference" />
                 )}
 
-                {readOnly && <MenuItem icon={EyeOpenIcon} onClick={onClickingEdit} text="View" />}
-                {!readOnly && <MenuItem icon={EditIcon} onClick={onClickingEdit} text="Edit" />}
+                {readOnly && <MenuItem icon={EyeOpenIcon} onClick={onOpen} text="View" />}
+                {!readOnly && <MenuItem icon={EditIcon} onClick={onOpen} text="Edit" />}
                 {!readOnly && (
-                  <MenuItem
-                    icon={TrashIcon}
-                    onClick={onClickingDelete}
-                    text="Delete"
-                    tone="critical"
-                  />
+                  <MenuItem icon={TrashIcon} onClick={handleDelete} text="Delete" tone="critical" />
                 )}
               </>
             </Menu>
