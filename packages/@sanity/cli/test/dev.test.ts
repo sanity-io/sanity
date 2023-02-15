@@ -15,5 +15,46 @@ describeCliTest('CLI: `sanity dev`', () => {
       })
       expect(startHtml).toContain(version === 'v2' ? 'id="sanityBody"' : 'id="sanity"')
     })
+
+    test('start with custom document component', async () => {
+      if (version === 'v2') {
+        return
+      }
+
+      const testRunArgs = getTestRunArgs(version)
+      const {html: startHtml} = await testServerCommand({
+        command: 'dev',
+        port: testRunArgs.port - 1,
+        args: ['--port', `${testRunArgs.port - 1}`],
+        cwd: path.join(studiosPath, `${version}-custom-document`),
+        expectedTitle: 'Sanity Studio w/ custom document',
+      })
+      expect(startHtml).toContain('id="sanity"')
+
+      // Check the use of environment variables from dotfiles
+      expect(startHtml).toContain('data-studio-mode="development"')
+      expect(startHtml).toContain('data-studio-dataset="ds-development"')
+    })
+
+    test('start with custom document component, in prod mode', async () => {
+      if (version === 'v2') {
+        return
+      }
+
+      const testRunArgs = getTestRunArgs(version)
+      const {html: startHtml} = await testServerCommand({
+        command: 'dev',
+        port: testRunArgs.port - 2,
+        args: ['--port', `${testRunArgs.port - 2}`],
+        env: {SANITY_ACTIVE_ENV: 'production'},
+        cwd: path.join(studiosPath, `${version}-custom-document`),
+        expectedTitle: 'Sanity Studio w/ custom document',
+      })
+      expect(startHtml).toContain('id="sanity"')
+
+      // Check the use of environment variables from dotfiles
+      expect(startHtml).toContain('data-studio-mode="production"')
+      expect(startHtml).toContain('data-studio-dataset="ds-production"')
+    })
   })
 })

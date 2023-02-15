@@ -6,6 +6,7 @@ export function testServerCommand({
   command,
   port,
   cwd,
+  env,
   expectedTitle,
   args,
 }: {
@@ -13,6 +14,7 @@ export function testServerCommand({
   port: number
   cwd: string
   expectedTitle: string
+  env?: Record<string, string>
   args?: string[]
 }): Promise<{html: string; stdout: string; stderr: string}> {
   return new Promise(async (resolve, reject) => {
@@ -29,7 +31,7 @@ export function testServerCommand({
 
     const proc = spawn(process.argv[0], [cliBinPath, command, ...(args || [])], {
       cwd,
-      env: sanityEnv,
+      env: {...sanityEnv, ...env},
       stdio: 'pipe',
     })
 

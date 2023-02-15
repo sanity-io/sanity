@@ -1,7 +1,14 @@
+/**
+ * This is an "inlined" version of Vite's `loadEnv` function,
+ * simplified somewhat to only support our use case.
+ *
+ * Ideally we'd just use `loadEnv` from Vite, but importing it
+ * causes bundling issues due to node APIs and downstream dependencies.
+ *
+ * Vite is MIT licensed, copyright (c) Yuxi (Evan) You and Vite contributors.
+ */
+
 /* eslint-disable no-process-env */
-// This is an "inlined" version ofVite's loadEnv function.
-// Ideally we'd just use `loadEnv` from Vite, but importing it causes the
-// bundler to crash in very weird ways.
 import fs from 'node:fs'
 import path from 'node:path'
 import {parse} from 'dotenv'
@@ -88,6 +95,7 @@ function lookupFile(
 ): string | undefined {
   for (const format of formats) {
     const fullPath = path.join(dir, format)
+    // eslint-disable-next-line no-sync
     if (fs.existsSync(fullPath) && fs.statSync(fullPath).isFile()) {
       return fullPath
     }

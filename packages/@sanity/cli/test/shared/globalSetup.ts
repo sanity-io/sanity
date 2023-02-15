@@ -2,7 +2,7 @@
 import path from 'path'
 import {hostname} from 'os'
 import {execFileSync, spawnSync} from 'child_process'
-import {mkdir, stat, readFile, rename, writeFile} from 'fs/promises'
+import {mkdir, stat, readFile, rename, writeFile, copyFile} from 'fs/promises'
 import {copy as copyCb} from 'cpx'
 import Configstore from 'configstore'
 import {createClient} from '@sanity/client'
@@ -77,17 +77,29 @@ function prepareStudios() {
     studioVersions.map(async (version) => {
       const sourceStudioPath = path.join(fixturesPath, version)
       const destinationPath = path.join(studiosPath, version)
+      const customDocStudioPath = path.join(studiosPath, `${version}-custom-document`)
 
       await mkdir(destinationPath, {recursive: true})
-      await copy(`${sourceStudioPath}/**`, destinationPath, {dereference: true})
+      await copy(`${sourceStudioPath}/**/{*,.*}`, destinationPath, {dereference: true})
 
       const flags = version === 'v2' ? ['--legacy-peer-deps'] : []
       await exec(npmPath, ['install', '--no-package-lock', ...flags], {cwd: destinationPath})
 
-      // We'll want to test the actual integration with the `sanity` module,
-      // instead of the version that is available on npm
       if (version === 'v3') {
+        // We'll want to test the actual integration with the `sanity` module,
+        // instead of the version that is available on npm
         await exec(nodePath, [SYMLINK_SCRIPT, destinationPath], {cwd: destinationPath})
+
+        // Make a copy of the studio and include a custom document component, in order to see
+        // that it resolves. We "cannot" use the same studio as it would _always_ use the
+        // custom document component, thus not testing the path of the _default_ component
+        await copy(`${sourceStudioPath}/**/{*,.*}`, customDocStudioPath, {dereference: true})
+        await copyFile(
+          `${customDocStudioPath}/components/EnvDocument.tsx`,
+          `${customDocStudioPath}/_document.tsx`
+        )
+        await exec(npmPath, ['install', '--no-package-lock'], {cwd: customDocStudioPath})
+        await exec(nodePath, [SYMLINK_SCRIPT, customDocStudioPath], {cwd: customDocStudioPath})
       }
     })
   )
