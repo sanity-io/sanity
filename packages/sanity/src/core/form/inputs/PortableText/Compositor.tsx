@@ -9,7 +9,7 @@ import {
   BlockChildRenderProps,
   BlockAnnotationRenderProps,
 } from '@sanity/portable-text-editor'
-import {BlockSchemaType, Path, PortableTextBlock, PortableTextTextBlock} from '@sanity/types'
+import {Path, PortableTextBlock, PortableTextTextBlock} from '@sanity/types'
 import {
   BoundaryElementProvider,
   Portal,
@@ -134,7 +134,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
         focused: blockFocused,
         path: blockPath,
         selected,
-        type: blockType,
+        schemaType: blockSchemaType,
         value: block,
       } = blockProps
       const isTextBlock = block._type === editor.schemaTypes.block.name
@@ -150,7 +150,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
             renderBlockActions={_renderBlockActions}
             renderCustomMarkers={_renderCustomMarkers}
             selected={selected}
-            type={blockType as BlockSchemaType}
+            schemaType={blockSchemaType}
           >
             {children}
           </TextBlock>
@@ -171,7 +171,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
           renderCustomMarkers={_renderCustomMarkers}
           renderPreview={renderPreview}
           selected={selected}
-          type={blockType}
+          schemaType={blockSchemaType}
         />
       )
     },
@@ -196,7 +196,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
         focused: childFocused,
         path: childPath,
         selected,
-        schemaType: childType,
+        schemaType: childSchemaType,
         value: child,
       } = childProps
       const isSpan = child._type === editor.schemaTypes.span.name
@@ -206,6 +206,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
       return (
         <InlineObject
           focused={childFocused}
+          onItemClose={onItemClose}
           onItemOpen={onItemOpen}
           path={childPath}
           readOnly={readOnly}
@@ -213,12 +214,20 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
           renderPreview={renderPreview}
           scrollElement={scrollElement}
           selected={selected}
-          type={childType}
+          schemaType={childSchemaType}
           value={child}
         />
       )
     },
-    [editor, onItemOpen, readOnly, renderCustomMarkers, renderPreview, scrollElement]
+    [
+      editor.schemaTypes.span.name,
+      onItemClose,
+      onItemOpen,
+      readOnly,
+      renderCustomMarkers,
+      renderPreview,
+      scrollElement,
+    ]
   )
 
   const renderAnnotation = useCallback(

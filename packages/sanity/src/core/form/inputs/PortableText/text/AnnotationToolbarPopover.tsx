@@ -1,4 +1,4 @@
-import React, {useState, useRef, useMemo, useEffect, useCallback} from 'react'
+import React, {useState, useRef, useMemo, useEffect, useCallback, startTransition} from 'react'
 import {
   Box,
   Button,
@@ -69,11 +69,12 @@ export function AnnotationToolbarPopover(props: AnnotationToolbarPopoverProps) {
     }
 
     const handleScroll = () => {
-      if (rangeRef.current) {
-        setCursorRect(rangeRef.current.getBoundingClientRect())
-      }
+      startTransition(() => {
+        if (rangeRef.current) {
+          setCursorRect(rangeRef.current.getBoundingClientRect())
+        }
+      })
     }
-
     scrollElement.addEventListener('scroll', handleScroll, {passive: true})
 
     return () => {
@@ -91,7 +92,7 @@ export function AnnotationToolbarPopover(props: AnnotationToolbarPopoverProps) {
         if (event.key === 'Escape') {
           event.preventDefault()
           event.stopPropagation()
-          setOpen(false)
+          startTransition(() => setOpen(false))
           isTabbing.current = false
         }
         if (event.key === 'Tab') {
@@ -116,13 +117,14 @@ export function AnnotationToolbarPopover(props: AnnotationToolbarPopoverProps) {
         return
       }
       const {anchorNode, anchorOffset, focusNode, focusOffset} = winSelection
-
-      setSelection({
-        anchorNode,
-        anchorOffset,
-        focusNode,
-        focusOffset,
-      })
+      startTransition(() =>
+        setSelection({
+          anchorNode,
+          anchorOffset,
+          focusNode,
+          focusOffset,
+        })
+      )
     }
 
     document.addEventListener('selectionchange', handleSelectionChange, {passive: true})
@@ -151,10 +153,12 @@ export function AnnotationToolbarPopover(props: AnnotationToolbarPopoverProps) {
       if (rect) {
         setCursorRect(rect)
       }
-      setOpen(true)
+      startTransition(() => setOpen(true))
     } else {
-      setOpen(false)
-      setCursorRect(null)
+      startTransition(() => {
+        setOpen(false)
+        setCursorRect(null)
+      })
       rangeRef.current = null
     }
   }, [selection, annotationElement])
@@ -164,40 +168,44 @@ export function AnnotationToolbarPopover(props: AnnotationToolbarPopoverProps) {
   }
 
   return (
-    <ToolbarPopover
-      content={
-        <Box padding={1}>
-          <Inline space={1}>
-            <Box padding={2}>
-              <Text weight="semibold" size={1}>
-                {title}
-              </Text>
-            </Box>
-            <Button
-              ref={editButtonRef}
-              icon={EditIcon}
-              mode="bleed"
-              onClick={onEdit}
-              padding={2}
-              alt="Edit annotation"
-            />
-            <Button
-              icon={TrashIcon}
-              mode="bleed"
-              padding={2}
-              onClick={onDelete}
-              tone="critical"
-              alt="Remove annotation"
-            />
-          </Inline>
-        </Box>
-      }
-      fallbackPlacements={POPOVER_FALLBACK_PLACEMENTS}
-      open={open}
-      placement="top"
-      portal="default"
-      referenceElement={cursorElement}
-      scheme={popoverScheme}
-    />
+    <span contentEditable={false}>
+      <ToolbarPopover
+        boundaryElement={scrollElement}
+        constrainSize
+        content={
+          <Box padding={1}>
+            <Inline space={1}>
+              <Box padding={2}>
+                <Text weight="semibold" size={1}>
+                  {title}
+                </Text>
+              </Box>
+              <Button
+                ref={editButtonRef}
+                icon={EditIcon}
+                mode="bleed"
+                onClick={onEdit}
+                padding={2}
+                alt="Edit annotation"
+              />
+              <Button
+                icon={TrashIcon}
+                mode="bleed"
+                padding={2}
+                onClick={onDelete}
+                tone="critical"
+                alt="Remove annotation"
+              />
+            </Inline>
+          </Box>
+        }
+        fallbackPlacements={POPOVER_FALLBACK_PLACEMENTS}
+        open={open}
+        placement="top"
+        portal="default"
+        referenceElement={cursorElement}
+        scheme={popoverScheme}
+      />
+    </span>
   )
 }
