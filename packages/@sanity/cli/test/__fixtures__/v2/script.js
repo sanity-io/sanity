@@ -6,6 +6,6 @@ client
   .withConfig({apiVersion: '2022-09-09'})
   .users.getById('me')
   .then(
-    (user) => console.log(JSON.stringify(user, null, 2)),
+    (user) => console.log(JSON.stringify({user, env: process.env}, null, 2)),
     (err) => console.error(err)
   )
