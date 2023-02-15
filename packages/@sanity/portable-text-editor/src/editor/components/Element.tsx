@@ -147,7 +147,7 @@ export const Element: FunctionComponent<ElementProps> = ({
         selected,
         value: style,
         path: blockPath,
-        type: blockStyleType,
+        schemaType: blockStyleType,
         editorElementRef: blockRef,
       })
     }
@@ -168,7 +168,7 @@ export const Element: FunctionComponent<ElementProps> = ({
           selected,
           value: element.listItem,
           path: blockPath,
-          type: listType,
+          schemaType: listType,
           level: value.level || 1,
           editorElementRef: blockRef,
         })
@@ -192,7 +192,7 @@ export const Element: FunctionComponent<ElementProps> = ({
       path: blockPath,
       selected,
       style,
-      type: schemaTypes.block,
+      schemaType: schemaTypes.block,
       value,
     }
 
@@ -205,8 +205,8 @@ export const Element: FunctionComponent<ElementProps> = ({
       </div>
     )
   }
-  const type = schemaTypes.blockObjects.find((_type) => _type.name === element._type)
-  if (!type) {
+  const schemaType = schemaTypes.blockObjects.find((_type) => _type.name === element._type)
+  if (!schemaType) {
     throw new Error(`Could not find schema type for block element of _type ${element._type}`)
   }
   if (debugRenders) {
@@ -223,7 +223,7 @@ export const Element: FunctionComponent<ElementProps> = ({
     renderBlock({
       children: <ObjectNode value={value} />,
       value: block,
-      type,
+      schemaType,
       selected,
       focused,
       path: blockPath,
