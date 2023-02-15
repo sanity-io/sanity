@@ -1,6 +1,6 @@
 import {Box, Flex, ResponsivePaddingProps, Tooltip, Text} from '@sanity/ui'
 import React, {ComponentType, RefObject, useCallback, useMemo, useState} from 'react'
-import {BlockSchemaType, Path, PortableTextTextBlock} from '@sanity/types'
+import {Path, PortableTextTextBlock, SchemaType} from '@sanity/types'
 import {
   EditorSelection,
   PortableTextEditor,
@@ -43,7 +43,7 @@ export interface TextBlockProps {
   renderCustomMarkers?: RenderCustomMarkers
   selected: boolean
   spellCheck?: boolean
-  type: BlockSchemaType
+  schemaType: SchemaType
 }
 
 export function TextBlock(props: TextBlockProps) {
@@ -59,7 +59,7 @@ export function TextBlock(props: TextBlockProps) {
     renderCustomMarkers,
     selected,
     spellCheck,
-    type,
+    schemaType,
   } = props
   const {Markers} = useFormBuilder().__internal.components
   const [reviewChangesHovered, setReviewChangesHovered] = useState<boolean>(false)
@@ -227,7 +227,7 @@ export function TextBlock(props: TextBlockProps) {
     setTimeout(() => PortableTextEditor.focus(editor))
   }, [editor, path])
 
-  const CustomComponent = type.components?.block as ComponentType<BlockProps>
+  const CustomComponent = schemaType.components?.block as ComponentType<BlockProps>
 
   const renderDefault = useCallback(() => defaultRendered, [defaultRendered])
   const notImplementedWarning = useCallback(() => {
@@ -243,6 +243,7 @@ export function TextBlock(props: TextBlockProps) {
       open={memberItem?.member.open || false}
       path={memberItem?.node.path || path}
       renderDefault={renderDefault}
+      schemaType={schemaType}
       selected={selected}
       value={block}
     >

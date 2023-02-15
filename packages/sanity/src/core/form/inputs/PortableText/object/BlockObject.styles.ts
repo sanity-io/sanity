@@ -128,4 +128,3 @@ export const BlockActionsInner = styled(Flex)`
 export const TooltipBox = styled(Box)`
   max-width: 250px;
 `
-export const BlockPreview = styled(Box)``
