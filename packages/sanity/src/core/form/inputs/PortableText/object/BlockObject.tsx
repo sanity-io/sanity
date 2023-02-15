@@ -17,7 +17,6 @@ import {usePortableTextMarkers} from '../hooks/usePortableTextMarkers'
 import {usePortableTextMemberItem} from '../hooks/usePortableTextMembers'
 import {pathToString} from '../../../../field'
 import {debugRender} from '../debugRender'
-import {is} from '../../../utils/is'
 import {BlockObjectActionsMenu} from './BlockObjectActionsMenu'
 import {
   Root,
@@ -96,15 +95,6 @@ export function BlockObject(props: BlockObjectProps) {
     setTimeout(() => PortableTextEditor.focus(editor))
   }, [editor, path])
 
-  const handleDelete = useCallback(
-    (e: React.MouseEvent<Element, MouseEvent>) => {
-      e.preventDefault()
-      e.stopPropagation()
-      onRemove()
-    },
-    [onRemove]
-  )
-
   const isOpen = !!memberItem?.member.open
 
   const tone = selected || focused ? 'primary' : 'default'
@@ -150,7 +140,7 @@ export function BlockObject(props: BlockObjectProps) {
     [Markers, markers, renderCustomMarkers, tooltipEnabled, validation]
   )
 
-  const Default = useCallback(
+  const DefaultComponent = useCallback(
     (dProps: BlockProps) => (
       <Flex paddingBottom={1} marginY={3} contentEditable={false} style={debugRender()}>
         <InnerFlex flex={1}>
@@ -179,10 +169,10 @@ export function BlockObject(props: BlockObjectProps) {
                 <BlockObjectActionsMenu
                   focused={focused}
                   isActive={isActive}
-                  onClickingDelete={handleDelete}
-                  onClickingEdit={openItem}
-                  readOnly={readOnly}
                   isOpen={isOpen}
+                  onOpen={openItem}
+                  onRemove={onRemove}
+                  readOnly={readOnly}
                   value={block}
                 >
                   {dProps.children}
@@ -205,15 +195,15 @@ export function BlockObject(props: BlockObjectProps) {
 
           {isFullscreen && memberItem && (
             <ChangeIndicatorWrapper
-              onMouseOver={handleMouseOver}
-              onMouseOut={handleMouseOut}
               $hasChanges={memberItem.member.item.changed}
+              onMouseOut={handleMouseOut}
+              onMouseOver={handleMouseOver}
             >
               <StyledChangeIndicatorWithProvidedFullPath
-                withHoverEffect={false}
                 hasFocus={focused}
-                path={memberItem.member.item.path}
                 isChanged={memberItem.member.item.changed}
+                path={memberItem.member.item.path}
+                withHoverEffect={false}
               />
             </ChangeIndicatorWrapper>
           )}
@@ -225,7 +215,6 @@ export function BlockObject(props: BlockObjectProps) {
     [
       block,
       focused,
-      handleDelete,
       handleDoubleClickToOpen,
       handleMouseOut,
       handleMouseOver,
@@ -239,6 +228,7 @@ export function BlockObject(props: BlockObjectProps) {
       isOpen,
       memberItem,
       onChange,
+      onRemove,
       openItem,
       readOnly,
       renderBlockActions,
@@ -260,17 +250,16 @@ export function BlockObject(props: BlockObjectProps) {
       onRemove,
       open: memberItem?.member.open || false,
       path: memberItem?.node.path || path,
-      renderDefault: Default,
+      renderDefault: DefaultComponent,
       schemaType,
       selected,
       value: block,
     }
-    const isImageType = is('image', schemaType)
     const preview = (
       <>
         {renderPreview({
           actions: undefined,
-          layout: isImageType ? 'blockImage' : 'block',
+          layout: isImagePreview ? 'blockImage' : 'block',
           schemaType,
           value: block,
         })}
@@ -279,12 +268,13 @@ export function BlockObject(props: BlockObjectProps) {
     return CustomComponent ? (
       <CustomComponent {..._props}>{preview}</CustomComponent>
     ) : (
-      <Default {..._props}>{preview}</Default>
+      <DefaultComponent {..._props}>{preview}</DefaultComponent>
     )
   }, [
-    Default,
+    DefaultComponent,
     block,
     focused,
+    isImagePreview,
     memberItem?.member.open,
     memberItem?.node.path,
     onItemClose,
