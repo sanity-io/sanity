@@ -383,9 +383,7 @@ export interface BlockListItemRenderProps {
   editorElementRef: React.RefObject<HTMLElement>
   focused: boolean
   level: number
-  nextItem?: string
   path: Path
-  previousItem?: string
   selected: boolean
   type: BlockListDefinition
   value: string
