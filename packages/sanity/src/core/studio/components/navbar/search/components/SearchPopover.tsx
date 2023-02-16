@@ -2,6 +2,7 @@ import {Card, Portal, Theme, useClickOutside, useLayer} from '@sanity/ui'
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import FocusLock from 'react-focus-lock'
 import styled, {css} from 'styled-components'
+import {CommandListContainer, CommandListProvider, useCommandList} from '../../../../../components'
 import {useColorScheme} from '../../../../colorScheme'
 import {
   POPOVER_INPUT_PADDING,
@@ -12,9 +13,6 @@ import {
 import {useSearchState} from '../contexts/search/useSearchState'
 import {useSearchHotkeys} from '../hooks/useSearchHotkeys'
 import {hasSearchableTerms} from '../utils/hasSearchableTerms'
-import {CommandListContainer} from './commandList/CommandListContainer'
-import {CommandListProvider} from './commandList/CommandListProvider'
-import {useCommandList} from './commandList/useCommandList'
 import {Filters} from './filters/Filters'
 import {RecentSearches} from './recentSearches/RecentSearches'
 import {SearchHeader} from './SearchHeader'

@@ -1,6 +1,9 @@
 import {useContext} from 'react'
 import {CommandListContext, CommandListContextValue} from './CommandListContext'
 
+/**
+ * @internal
+ */
 export function useCommandList(): CommandListContextValue {
   const context = useContext(CommandListContext)
   if (context === undefined) {

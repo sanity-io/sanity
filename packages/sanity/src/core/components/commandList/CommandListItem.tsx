@@ -11,6 +11,9 @@ interface CommandListItemProps {
   virtualRow: VirtualItem
 }
 
+/**
+ * @internal
+ */
 export function CommandListItem({
   activeIndex = -1,
   children,

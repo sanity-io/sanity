@@ -1,7 +1,7 @@
 import React, {memo, useContext, useId} from 'react'
 import {sortBy, uniqBy} from 'lodash'
 import {AvatarCounter, AvatarPosition} from '@sanity/ui'
-import {UserAvatar} from '../components/UserAvatar'
+import {UserAvatar} from '../components/userAvatar'
 import {
   AVATAR_DISTANCE,
   AVATAR_SIZE,

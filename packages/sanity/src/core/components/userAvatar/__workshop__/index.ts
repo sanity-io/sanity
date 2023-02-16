@@ -2,13 +2,13 @@ import {defineScope} from '@sanity/ui-workshop'
 import {lazy} from 'react'
 
 export default defineScope({
-  name: 'desk/panes/documentTimelineMenu',
-  title: 'Document Timeline Menu',
+  name: 'core/components/user-avatar',
+  title: 'UserAvatar',
   stories: [
     {
-      name: 'default',
+      name: 'user-avatar',
       title: 'Default',
-      component: lazy(() => import('./DefaultStory')),
+      component: lazy(() => import('./UserAvatarStory')),
     },
   ],
 })

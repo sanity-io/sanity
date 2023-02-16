@@ -2,17 +2,15 @@ import {Box, Card, Portal} from '@sanity/ui'
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import FocusLock from 'react-focus-lock'
 import styled from 'styled-components'
+import {CommandListContainer, CommandListProvider, useCommandList} from '../../../../components'
 import {useColorScheme} from '../../../colorScheme'
-import {CommandListContainer} from './components/commandList/CommandListContainer'
 import {Filters} from './components/filters/Filters'
 import {RecentSearches} from './components/recentSearches/RecentSearches'
 import {SearchHeader} from './components/SearchHeader'
 import {SearchResults} from './components/searchResults/SearchResults'
-import {CommandListProvider} from './components/commandList/CommandListProvider'
 import {useSearchState} from './contexts/search/useSearchState'
 import {useSearchHotkeys} from './hooks/useSearchHotkeys'
 import {hasSearchableTerms} from './utils/hasSearchableTerms'
-import {useCommandList} from './components/commandList/useCommandList'
 
 interface SearchDialogProps {
   onClose: () => void

@@ -1,8 +1,8 @@
 import {Box, Button, Card, Label, Text} from '@sanity/ui'
 import React, {useCallback} from 'react'
 import styled from 'styled-components'
+import {useCommandList} from '../../../../../../components'
 import {useSearchState} from '../../contexts/search/useSearchState'
-import {useCommandList} from '../commandList/useCommandList'
 import {Instructions} from '../Instructions'
 import {RecentSearchesVirtualList} from './RecentSearchesVirtualList'
 

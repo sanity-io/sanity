@@ -2,7 +2,7 @@ import {defineScope} from '@sanity/ui-workshop'
 import {lazy} from 'react'
 
 export default defineScope({
-  name: 'sanity/form/core',
+  name: 'core/form/core',
   title: 'Core',
   stories: [
     {

@@ -1,11 +1,9 @@
 import {useVirtualizer} from '@tanstack/react-virtual'
 import React, {useCallback, useEffect, useState} from 'react'
+import {CommandListItem, CommandListItems, useCommandList} from '../../../../../../components'
 import {getPublishedId} from '../../../../../../util/draftUtils'
 import {VIRTUAL_LIST_SEARCH_ITEM_HEIGHT, VIRTUAL_LIST_SEARCH_OVERSCAN} from '../../constants'
 import {useSearchState} from '../../contexts/search/useSearchState'
-import {CommandListItem} from '../commandList/CommandListItem'
-import {CommandListItems} from '../commandList/CommandListItems'
-import {useCommandList} from '../commandList/useCommandList'
 import {DebugOverlay} from './item/DebugOverlay'
 import {SearchResultItem} from './item/SearchResultItem'
 

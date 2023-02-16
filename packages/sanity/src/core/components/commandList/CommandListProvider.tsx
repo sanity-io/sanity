@@ -9,9 +9,9 @@ import React, {
   useRef,
   useState,
 } from 'react'
-import {isNonNullable} from '../../../../../../util'
-import {VIRTUAL_LIST_SEARCH_ITEM_HEIGHT} from '../../constants'
-import {supportsTouch} from '../../utils/supportsTouch'
+import {isNonNullable} from '../../util'
+import {VIRTUAL_LIST_SEARCH_ITEM_HEIGHT} from '../../studio/components/navbar/search/constants'
+import {supportsTouch} from '../../studio/components/navbar/search/utils/supportsTouch'
 import {CommandListContext} from './CommandListContext'
 
 /**

@@ -2,8 +2,8 @@ import {SearchIcon} from '@sanity/icons'
 import {Box, Flex} from '@sanity/ui'
 import React from 'react'
 import styled from 'styled-components'
+import {useCommandList} from '../../../../../../../components'
 import {useSearchState} from '../../../contexts/search/useSearchState'
-import {useCommandList} from '../../commandList/useCommandList'
 import {CustomTextInput} from '../../common/CustomTextInput'
 
 interface FilterPopoverContentHeaderProps {

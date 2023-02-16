@@ -3,14 +3,16 @@ import {Box, Button, Flex, Stack, Text} from '@sanity/ui'
 import {partition} from 'lodash'
 import React, {useCallback, useMemo, useState} from 'react'
 import styled from 'styled-components'
+import {
+  CommandListContainer,
+  CommandListProvider,
+  useCommandList,
+} from '../../../../../../../components'
 import {useSchema} from '../../../../../../../hooks'
 import type {SearchableType} from '../../../../../../../search'
 import {useSearchState} from '../../../contexts/search/useSearchState'
 import type {DocumentTypeMenuItem} from '../../../types'
 import {getSelectableOmnisearchTypes} from '../../../utils/selectors'
-import {CommandListContainer} from '../../commandList/CommandListContainer'
-import {CommandListProvider} from '../../commandList/CommandListProvider'
-import {useCommandList} from '../../commandList/useCommandList'
 import {FilterPopoverContentHeader} from '../common/FilterPopoverContentHeader'
 import {DocumentTypesVirtualList} from './DocumentTypesVirtualList'
 

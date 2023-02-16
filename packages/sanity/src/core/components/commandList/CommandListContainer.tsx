@@ -20,6 +20,9 @@ const ContainerFlex = styled(Flex)`
   }
 `
 
+/**
+ * @internal
+ */
 export function CommandListContainer({children}: CommandListContainerProps) {
   const {setContainerElement} = useCommandList()
 

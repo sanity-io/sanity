@@ -44,6 +44,9 @@ const VirtualListChildBox = styled(Box)<{$height: number}>`
   width: 100%;
 `
 
+/**
+ * @internal
+ */
 export function CommandListItems({
   children,
   setVirtualListRef,

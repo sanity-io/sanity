@@ -1,9 +1,8 @@
 import {useMediaIndex} from '@sanity/ui'
 import {useVirtualizer} from '@tanstack/react-virtual'
 import React, {useMemo, useState} from 'react'
+import {CommandListItem, CommandListItems} from '../../../../../../components'
 import {useSearchState} from '../../contexts/search/useSearchState'
-import {CommandListItem} from '../commandList/CommandListItem'
-import {CommandListItems} from '../commandList/CommandListItems'
 import {RecentSearchItem} from './item/RecentSearchItem'
 
 interface RecentSearchesVirtualListProps {

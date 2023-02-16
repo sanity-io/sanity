@@ -1,9 +1,9 @@
 import {Avatar, AvatarPosition, AvatarSize, AvatarStatus, Box, Text, Tooltip} from '@sanity/ui'
 import React, {forwardRef, useState} from 'react'
 import type {User} from '@sanity/types'
-import {useUser} from '../store'
-import {isRecord} from '../util'
-import {useUserColor} from '../user-color'
+import {useUser} from '../../store'
+import {isRecord} from '../../util'
+import {useUserColor} from '../../user-color'
 
 /** @beta */
 export interface UserAvatarProps {
