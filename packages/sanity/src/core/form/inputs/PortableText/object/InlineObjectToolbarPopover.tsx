@@ -68,44 +68,42 @@ export function InlineObjectToolbarPopover(props: InlineObjectToolbarPopoverProp
   }, [])
 
   return (
-    <div contentEditable={false}>
-      <ToolbarPopover
-        boundaryElement={scrollElement}
-        constrainSize
-        content={
-          <Box padding={1}>
-            <Inline space={1}>
-              <Box padding={2}>
-                <Text weight="semibold" size={1}>
-                  {title}
-                </Text>
-              </Box>
-              <Button
-                icon={EditIcon}
-                mode="bleed"
-                onClick={onEdit}
-                padding={2}
-                ref={editButtonRef}
-                alt="Edit object"
-              />
-              <Button
-                icon={TrashIcon}
-                mode="bleed"
-                padding={2}
-                onClick={onDelete}
-                tone="critical"
-                alt="Remove object"
-              />
-            </Inline>
-          </Box>
-        }
-        fallbackPlacements={POPOVER_FALLBACK_PLACEMENTS}
-        open={open}
-        placement="top"
-        portal="editor"
-        referenceElement={referenceElement}
-        scheme={popoverScheme}
-      />
-    </div>
+    <ToolbarPopover
+      boundaryElement={scrollElement}
+      constrainSize
+      content={
+        <Box padding={1}>
+          <Inline space={1}>
+            <Box padding={2}>
+              <Text weight="semibold" size={1}>
+                {title}
+              </Text>
+            </Box>
+            <Button
+              icon={EditIcon}
+              mode="bleed"
+              onClick={onEdit}
+              padding={2}
+              ref={editButtonRef}
+              alt="Edit object"
+            />
+            <Button
+              icon={TrashIcon}
+              mode="bleed"
+              padding={2}
+              onClick={onDelete}
+              tone="critical"
+              alt="Remove object"
+            />
+          </Inline>
+        </Box>
+      }
+      fallbackPlacements={POPOVER_FALLBACK_PLACEMENTS}
+      open={open}
+      placement="top"
+      portal="editor"
+      referenceElement={referenceElement}
+      scheme={popoverScheme}
+    />
   )
 }
