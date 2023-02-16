@@ -58,6 +58,8 @@ export function renderDocument(options: {
     const worker = new Worker(__filename, {
       execArgv: __DEV__ ? ['-r', 'esbuild-register'] : undefined,
       workerData: {...options, dev: __DEV__, shouldWarn: true},
+      // eslint-disable-next-line no-process-env
+      env: process.env,
     })
 
     worker.on('message', (msg) => {
