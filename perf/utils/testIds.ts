@@ -1,11 +1,13 @@
 type TestId<T extends string> = T & {__brand: 'test-id'}
 
+const VALID_ID = /^[a-z0-9_-]+$/
+
 function isValidSanityId(id: string) {
-  return /^[a-z0-9_-]+$/.test(id)
+  return VALID_ID.test(id)
 }
 
 function defineId<T extends string>(testId: T) {
-  if (isValidSanityId(testId)) {
+  if (!isValidSanityId(testId)) {
     throw new Error(
       `"${testId}" is not a valid test ID. A test ID must be all lowercase and a valid Sanity document ID`
     )
