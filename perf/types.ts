@@ -13,6 +13,8 @@ export interface PerformanceTestContext {
 export interface PerformanceTestProps {
   id: ValidTestId
   name: string
+  version: number
+  unit: '%'
   description: string
   setup?: () => () => void
   run: (context: PerformanceTestContext) => Promise<PerformanceSummary>
