@@ -1,5 +1,5 @@
 import execa from 'execa'
-import {partition} from 'lodash'
+import {partition, uniq} from 'lodash'
 
 const placeholders = {
   commit: '%H',
@@ -61,8 +61,8 @@ export function parseDecoratedRefs(refs: string) {
     )
   const [branches, tags] = partition(parsedRefs, (ref) => ref.type === 'branch')
   return {
-    branches: branches.map((b) => b.name),
-    tags: tags.map((t) => t.name),
+    branches: uniq(branches.map((b) => b.name)),
+    tags: uniq(tags.map((t) => t.name)),
   }
 }
 
