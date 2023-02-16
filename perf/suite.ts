@@ -10,7 +10,7 @@ import {getEnv} from './utils/env'
 import {createSanitySessionCookie} from './utils/createSanitySessionCookie'
 import {STUDIO_DATASET, STUDIO_PROJECT_ID} from './config'
 import {bundle} from './utils/bundlePerfHelpers'
-import {ALL_FIELDS, getCurrentBranch, getGitInfo} from './utils/gitUtils'
+import {ALL_FIELDS, getCurrentBranch, getGitInfo, parseDecoratedRefs} from './utils/gitUtils'
 
 const BASE_BRANCH_URL = 'https://performance-studio.sanity.build'
 const CURRENT_BRANCH_URL = process.env.BRANCH_DEPLOYMENT_URL || 'http://localhost:3300'
@@ -143,12 +143,10 @@ async function runSuite() {
   }
   const repoInfo = await getRepoInfo()
 
-  console.log('repoInfo', repoInfo)
-
   const gitInfo = {
     sha: repoInfo.commit,
     abbreviatedSha: repoInfo.abbreviatedCommit,
-    branch: repoInfo.currentBranch,
+    branches: parseDecoratedRefs(repoInfo.refs),
     author: repoInfo.authorName,
     authorEmail: repoInfo.authorEmail,
     authorDate: repoInfo.authorDate,
