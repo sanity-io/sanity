@@ -1,7 +1,6 @@
 import {Page} from '@playwright/test'
 import {SanityClient} from '@sanity/client'
-
-type TODO = any
+import {ValidTestId} from './utils/testIds'
 
 // type Metric = 'memory' | 'fps' | 's'
 type PerformanceSummary = {result: number}
@@ -12,7 +11,9 @@ export interface PerformanceTestContext {
   client: SanityClient
 }
 export interface PerformanceTestProps {
+  id: ValidTestId
   name: string
+  description: string
   setup?: () => () => void
   run: (context: PerformanceTestContext) => Promise<PerformanceSummary>
 }
