@@ -10,7 +10,6 @@ import styled, {css} from 'styled-components'
 import {Box, Card, Theme, Tooltip} from '@sanity/ui'
 import {BlockProps, RenderCustomMarkers, RenderPreviewCallback} from '../../../types'
 import {useFormBuilder} from '../../../useFormBuilder'
-import {PortableTextEditorElement} from '../Compositor'
 import {usePortableTextMarkers} from '../hooks/usePortableTextMarkers'
 import {useMemberValidation} from '../hooks/useMemberValidation'
 import {usePortableTextMemberItem} from '../hooks/usePortableTextMembers'
@@ -109,10 +108,7 @@ const TooltipBox = styled(Box)`
   max-width: 250px;
 `
 
-export const InlineObject = React.forwardRef(function InlineObject(
-  props: InlineObjectProps,
-  forwardedRef: React.ForwardedRef<PortableTextEditorElement>
-) {
+export const InlineObject = (props: InlineObjectProps) => {
   const {
     focused,
     onItemClose,
@@ -220,42 +216,42 @@ export const InlineObject = React.forwardRef(function InlineObject(
       setPopoverOpen(false)
     }
   }, [editor, focused, memberItem?.member.open, selected])
-
-  const Default = useCallback(
-    (dProps: BlockProps) => (
-      <>
-        <Root
-          contentEditable={false}
-          data-focused={focused || undefined}
-          data-invalid={hasError || undefined}
-          data-markers={hasValidationMarkers || undefined}
-          data-read-only={readOnly || undefined}
-          data-selected={selected || undefined}
-          data-warning={hasWarning || undefined}
-          forwardedAs="span"
-          onClick={readOnly ? openItem : undefined}
-          onDoubleClick={openItem}
-          ref={memberItem?.elementRef as React.RefObject<HTMLDivElement>}
-          tone={tone}
-        >
-          <span ref={forwardedRef}>{dProps.children}</span>
-        </Root>
-        {focused && !readOnly && (
-          <InlineObjectToolbarPopover
-            onClose={handlePopoverClose}
-            onDelete={handleRemoveClick}
-            onEdit={openItem}
-            open={popoverOpen}
-            referenceElement={memberItem?.elementRef?.current || null}
-            scrollElement={scrollElement}
-            title={schemaType?.title || schemaType.name}
-          />
-        )}
-      </>
-    ),
+  const DefaultComponent = useCallback(
+    (dProps: BlockProps) => {
+      const popoverTitle = schemaType?.title || schemaType.name
+      return (
+        <>
+          <Root
+            contentEditable={false}
+            data-focused={focused || undefined}
+            data-invalid={hasError || undefined}
+            data-markers={hasValidationMarkers || undefined}
+            data-read-only={readOnly || undefined}
+            data-selected={selected || undefined}
+            data-warning={hasWarning || undefined}
+            forwardedAs="span"
+            onClick={readOnly ? openItem : undefined}
+            onDoubleClick={openItem}
+            tone={tone}
+          >
+            {dProps.children}
+          </Root>
+          {focused && !readOnly && (
+            <InlineObjectToolbarPopover
+              onClose={handlePopoverClose}
+              onDelete={handleRemoveClick}
+              onEdit={openItem}
+              open={popoverOpen}
+              referenceElement={memberItem?.elementRef?.current || null}
+              scrollElement={scrollElement}
+              title={popoverTitle}
+            />
+          )}
+        </>
+      )
+    },
     [
       focused,
-      forwardedRef,
       handlePopoverClose,
       handleRemoveClick,
       hasError,
@@ -279,7 +275,7 @@ export const InlineObject = React.forwardRef(function InlineObject(
     setTimeout(() => PortableTextEditor.focus(editor))
   }, [editor, path])
 
-  return useMemo(() => {
+  const content = useMemo(() => {
     const CustomComponent = schemaType.components?.inlineBlock
     const _props = {
       focused,
@@ -288,7 +284,7 @@ export const InlineObject = React.forwardRef(function InlineObject(
       onRemove,
       open: memberItem?.member.open || false,
       path: memberItem?.node.path || path,
-      renderDefault: Default,
+      renderDefault: DefaultComponent,
       schemaType,
       selected,
       value: value as PortableTextBlock,
@@ -297,10 +293,10 @@ export const InlineObject = React.forwardRef(function InlineObject(
     return CustomComponent ? (
       <CustomComponent {..._props}>{children}</CustomComponent>
     ) : (
-      <Default {..._props}>{children}</Default>
+      <DefaultComponent {..._props}>{children}</DefaultComponent>
     )
   }, [
-    Default,
+    DefaultComponent,
     focused,
     markersToolTip,
     memberItem?.member.open,
@@ -314,4 +310,6 @@ export const InlineObject = React.forwardRef(function InlineObject(
     selected,
     value,
   ])
-})
+  // Ensure that the memberItem?.elementRef is not set through useMemo or hooks. It needs to be the current.
+  return <span ref={memberItem?.elementRef}>{content}</span>
+}
