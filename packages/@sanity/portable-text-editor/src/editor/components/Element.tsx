@@ -18,7 +18,6 @@ import {KEY_TO_VALUE_ELEMENT} from '../../utils/weakMaps'
 import ObjectNode from '../nodes/DefaultObject'
 import {DefaultBlockObject, DefaultListItem, DefaultListItemInner} from '../nodes/index'
 import {DraggableBlock} from './DraggableBlock'
-import {DraggableChild} from './DraggableChild'
 
 const debug = debugWithName('components:Element')
 const debugRenders = false
@@ -100,28 +99,27 @@ export const Element: FunctionComponent<ElementProps> = ({
         <span {...attributes}>
           {/* Note that children must follow immediately or cut and selections will not work properly in Chrome. */}
           {children}
-          <DraggableChild element={element} readOnly={readOnly}>
-            <span
-              className="pt-inline-object"
-              ref={inlineBlockObjectRef}
-              key={element._key}
-              style={inlineBlockStyle}
-              contentEditable={false}
-            >
-              {renderChild &&
-                renderChild({
-                  annotations: EMPTY_ANNOTATIONS, // These inline objects currently doesn't support annotations. This is a limitation of the current PT spec/model.
-                  children: <ObjectNode value={value} />,
-                  value: value as PortableTextChild,
-                  schemaType,
-                  focused,
-                  selected,
-                  path: elmPath,
-                  editorElementRef: inlineBlockObjectRef,
-                })}
-              {!renderChild && <ObjectNode value={value} />}
-            </span>
-          </DraggableChild>
+          <span
+            draggable={!readOnly}
+            className="pt-inline-object"
+            ref={inlineBlockObjectRef}
+            key={element._key}
+            style={inlineBlockStyle}
+            contentEditable={false}
+          >
+            {renderChild &&
+              renderChild({
+                annotations: EMPTY_ANNOTATIONS, // These inline objects currently doesn't support annotations. This is a limitation of the current PT spec/model.
+                children: <ObjectNode value={value} />,
+                value: value as PortableTextChild,
+                schemaType,
+                focused,
+                selected,
+                path: elmPath,
+                editorElementRef: inlineBlockObjectRef,
+              })}
+            {!renderChild && <ObjectNode value={value} />}
+          </span>
         </span>
       )
     }
