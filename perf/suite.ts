@@ -10,19 +10,25 @@ import {getEnv} from './utils/env'
 import {createSanitySessionCookie} from './utils/createSanitySessionCookie'
 import {STUDIO_DATASET, STUDIO_PROJECT_ID} from './config'
 import {bundle} from './utils/bundlePerfHelpers'
-import {ALL_FIELDS, getCurrentBranch, getGitInfo, parseDecoratedRefs} from './utils/gitUtils'
+import {
+  ALL_FIELDS,
+  getCurrentBranch,
+  getGitInfo,
+  getGitInfoSync,
+  parseDecoratedRefs,
+} from './utils/gitUtils'
 
 const BASE_BRANCH_URL = 'https://performance-studio.sanity.build'
 const CURRENT_BRANCH_URL = process.env.BRANCH_DEPLOYMENT_URL || 'http://localhost:3300'
 
-function getRepoInfo() {
-  const currentBranchPromise = getEnv('GITHUB_REF', true) || getCurrentBranch()
-  return Promise.all([getGitInfo(ALL_FIELDS), currentBranchPromise]).then(
-    ([gitInfo, currentBranch]) => ({
-      ...gitInfo,
-      currentBranch,
-    })
-  )
+async function getRepoInfo() {
+  const gitInfo = await getGitInfo(ALL_FIELDS)
+  const [branches, tags] = parseDecoratedRefs(gitInfo.refs)
+  return {
+    ...gitInfo,
+    branches,
+    tags,
+  }
 }
 
 interface RunCompareOptions {
@@ -146,7 +152,8 @@ async function runSuite() {
   const gitInfo = {
     sha: repoInfo.commit,
     abbreviatedSha: repoInfo.abbreviatedCommit,
-    branches: parseDecoratedRefs(repoInfo.refs),
+    branches: repoInfo.branches,
+    tags: repoInfo.tags,
     author: repoInfo.authorName,
     authorEmail: repoInfo.authorEmail,
     authorDate: repoInfo.authorDate,
