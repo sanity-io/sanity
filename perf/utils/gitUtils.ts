@@ -42,6 +42,13 @@ const TAG_PREFIX = 'tag: '
 function stripHead(refs: string) {
   return refs.replace(/HEAD,?\s?(->)?\s+/, '')
 }
+
+const ORIGIN_PREFIX = 'origin/'
+function stripOrigin(branchName: string) {
+  return branchName.startsWith(ORIGIN_PREFIX)
+    ? branchName.substring(ORIGIN_PREFIX.length)
+    : branchName
+}
 export function parseDecoratedRefs(refs: string) {
   const parsedRefs = stripHead(refs)
     .split(/,\s+/)
@@ -50,7 +57,7 @@ export function parseDecoratedRefs(refs: string) {
     .map((s) =>
       s.startsWith(TAG_PREFIX)
         ? {type: 'tag', name: s.substring(TAG_PREFIX.length)}
-        : {type: 'branch', name: s}
+        : {type: 'branch', name: stripOrigin(s)}
     )
   const [branches, tags] = partition(parsedRefs, (ref) => ref.type === 'branch')
   return {
