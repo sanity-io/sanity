@@ -141,7 +141,7 @@ async function runSuite() {
         return {
           _key: test.id,
           diff: result.diff,
-          test: {_type: 'reference', _ref: `test-${test.id}`},
+          test: {_type: 'reference', _ref: `test-${test.id}-${test.version}`},
         }
       }),
       toArray(),
