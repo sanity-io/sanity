@@ -128,7 +128,7 @@ export const InlineObject = (props: InlineObjectProps) => {
   const memberItem = usePortableTextMemberItem(pathToString(path))
   const {validation, hasError, hasWarning} = useMemberValidation(memberItem?.node)
   const hasValidationMarkers = validation.length > 0
-  const [popoverOpen, setPopoverOpen] = useState<boolean>(true)
+  const [popoverOpen, setPopoverOpen] = useState<boolean>(false)
 
   const tone = useMemo(() => {
     if (hasError) {
@@ -193,12 +193,11 @@ export const InlineObject = (props: InlineObjectProps) => {
   )
 
   const openItem = useCallback((): void => {
-    PortableTextEditor.blur(editor)
     if (memberItem) {
       onItemOpen(memberItem.node.path)
       setPopoverOpen(false)
     }
-  }, [editor, memberItem, onItemOpen])
+  }, [memberItem, onItemOpen])
 
   const handlePopoverClose = useCallback(() => {
     if (memberItem?.member.open) {
@@ -236,7 +235,7 @@ export const InlineObject = (props: InlineObjectProps) => {
           >
             {defaultComponentProps.children}
           </Root>
-          {focused && !readOnly && (
+          {focused && !readOnly && memberItem?.elementRef?.current && (
             <InlineObjectToolbarPopover
               onClose={handlePopoverClose}
               onDelete={handleRemoveClick}
