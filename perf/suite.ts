@@ -23,7 +23,7 @@ const CURRENT_BRANCH_URL = process.env.BRANCH_DEPLOYMENT_URL || 'http://localhos
 
 async function getRepoInfo() {
   const gitInfo = await getGitInfo(ALL_FIELDS)
-  const [branches, tags] = parseDecoratedRefs(gitInfo.refs)
+  const {branches, tags} = parseDecoratedRefs(gitInfo.refs)
   return {
     ...gitInfo,
     branches,
