@@ -11,7 +11,7 @@ const jestConfigFiles = globby.sync(
 const IGNORE_PROJECTS = []
 
 module.exports = {
-  projects: jestConfigFiles
+  projects: ['perf', ...jestConfigFiles]
     .map((file) => path.relative(__dirname, path.dirname(file)))
     .filter((projectPath) => !IGNORE_PROJECTS.includes(projectPath))
     .map((projectPath) => `<rootDir>/${projectPath}`),

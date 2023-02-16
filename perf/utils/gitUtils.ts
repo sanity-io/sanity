@@ -40,16 +40,20 @@ const DELIMITER_OUTPUT = '\x00'
  */
 const TAG_PREFIX = 'tag: '
 export function parseDecoratedRefs(refs: string) {
-  const parsedRefs = refs
-    .split(/->\s+/)[1]
+  const parsedRefs = (refs.split(/->\s+/)?.[1] || '')
     .split(/,\s+/)
     .map((s) => s.trim())
+    .filter((s) => s)
     .map((s) =>
       s.startsWith(TAG_PREFIX)
         ? {type: 'tag', name: s.substring(TAG_PREFIX.length)}
         : {type: 'branch', name: s}
     )
-  return partition(parsedRefs, (ref) => ref.type === 'branch')
+  const [branches, tags] = partition(parsedRefs, (ref) => ref.type === 'branch')
+  return {
+    branches: branches.map((b) => b.name),
+    tags: tags.map((t) => t.name),
+  }
 }
 
 function parseOutput<Field extends GitField>(fields: Field[], output: string) {
