@@ -1,4 +1,5 @@
 import execa from 'execa'
+import {partition} from 'lodash'
 
 const placeholders = {
   commit: '%H',
@@ -37,8 +38,18 @@ const DELIMITER_OUTPUT = '\x00'
  * Parse ref names (i.e. the output of the %D placeholder)
  * @see https://git-scm.com/docs/pretty-formats#Documentation/pretty-formats.txt-emDem
  */
-export function parseDecoratedRefs(refs) {
-  return refs.split('->').map((s) => s.trim())
+const TAG_PREFIX = 'tag: '
+export function parseDecoratedRefs(refs: string) {
+  const parsedRefs = refs
+    .split(/->\s+/)[1]
+    .split(/,\s+/)
+    .map((s) => s.trim())
+    .map((s) =>
+      s.startsWith(TAG_PREFIX)
+        ? {type: 'tag', name: s.substring(TAG_PREFIX.length)}
+        : {type: 'branch', name: s}
+    )
+  return partition(parsedRefs, (ref) => ref.type === 'branch')
 }
 
 function parseOutput<Field extends GitField>(fields: Field[], output: string) {
