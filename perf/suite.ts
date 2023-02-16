@@ -163,7 +163,7 @@ async function runSuite() {
     committerEmail: repoInfo.committerEmail,
     committerDate: repoInfo.committerDate,
     tag: repoInfo.tag,
-    lastTag: repoInfo.latestOfficialTag,
+    currentTag: repoInfo.currentTag,
   }
 
   // Save the results in metrics studio
