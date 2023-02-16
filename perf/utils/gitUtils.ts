@@ -39,8 +39,11 @@ const DELIMITER_OUTPUT = '\x00'
  * @see https://git-scm.com/docs/pretty-formats#Documentation/pretty-formats.txt-emDem
  */
 const TAG_PREFIX = 'tag: '
+function stripHead(refs: string) {
+  return refs.replace(/HEAD,?\s?(->)?\s+/, '')
+}
 export function parseDecoratedRefs(refs: string) {
-  const parsedRefs = (refs.split(/->\s+/)?.[1] || '')
+  const parsedRefs = stripHead(refs)
     .split(/,\s+/)
     .map((s) => s.trim())
     .filter((s) => s)
