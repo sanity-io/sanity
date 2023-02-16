@@ -46,6 +46,8 @@ function getApisWithSchemaTypes(cliContext: CliCommandContext): Promise<TypeReso
     const workerPath = path.join(rootDir, 'lib', '_internal', 'cli', 'threads', 'getGraphQLAPIs.js')
     const worker = new Worker(workerPath, {
       workerData: {cliConfig: serialize(cliConfig || {}), cliConfigPath, workDir},
+      // eslint-disable-next-line no-process-env
+      env: process.env,
     })
     worker.on('message', resolve)
     worker.on('error', reject)
