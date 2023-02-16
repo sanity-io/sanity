@@ -11,7 +11,6 @@ import {
 } from '../../types/editor'
 import {debugWithName} from '../../utils/debug'
 import {DefaultAnnotation} from '../nodes/DefaultAnnotation'
-import {DraggableChild} from './DraggableChild'
 
 const debug = debugWithName('components:Leaf')
 const debugRenders = false
@@ -36,7 +35,7 @@ export interface LeafProps extends RenderLeafProps {
 export const Leaf = (props: LeafProps) => {
   const editor = useSlateStatic()
   const selected = useSelected()
-  const {attributes, children, leaf, schemaTypes, keyGenerator, renderChild, readOnly} = props
+  const {attributes, children, leaf, schemaTypes, keyGenerator, renderChild} = props
   const spanRef = React.useRef(null)
   let returnedChildren = children
   const focused = (selected && editor.selection && Range.isCollapsed(editor.selection)) || false
@@ -127,9 +126,7 @@ export const Leaf = (props: LeafProps) => {
 
   return (
     <span key={key} {...attributes} ref={spanRef}>
-      <DraggableChild element={leaf} readOnly={readOnly}>
-        {returnedChildren}
-      </DraggableChild>
+      {returnedChildren}
     </span>
   )
 }
