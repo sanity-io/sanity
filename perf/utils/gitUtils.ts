@@ -33,6 +33,14 @@ export const ALL_FIELDS = Object.keys(placeholders) as GitField[]
 const DELIMITER_PLACEHOLDER = '%x00'
 const DELIMITER_OUTPUT = '\x00'
 
+/**
+ * Parse ref names (i.e. the output of the %D placeholder)
+ * @see https://git-scm.com/docs/pretty-formats#Documentation/pretty-formats.txt-emDem
+ */
+export function parseDecoratedRefs(refs) {
+  return refs.split('->').map((s) => s.trim())
+}
+
 function parseOutput<Field extends GitField>(fields: Field[], output: string) {
   const parts = output.split(DELIMITER_OUTPUT)
   return Object.fromEntries(fields.map((fieldName, i) => [fieldName, parts[i]])) as {

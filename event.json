@@ -1,0 +1,7 @@
+{
+  "event_name": "deployment_status",
+  "deployment_status": {
+    "state": "success",
+    "target_url": "https://performance-studio.sanity.build"
+  }
+}
