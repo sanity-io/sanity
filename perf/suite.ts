@@ -50,9 +50,7 @@ async function runAgainstUrl(options: RunCompareOptions & {url: string}) {
   return test.run({url: url, page, client})
 }
 
-async function runCompare(
-  options: RunCompareOptions
-): Promise<{base: number; current: number; diff: number}> {
+async function runCompare(options: RunCompareOptions): Promise<{diff: number}> {
   const {baseBranchUrl, currentBranchUrl} = options
 
   const baseBranchResultIteration1 = await runAgainstUrl({
@@ -81,8 +79,6 @@ async function runCompare(
 
   return {
     diff: currentBranchResult / baseBranchResult,
-    base: baseBranchResult,
-    current: currentBranchResult,
   }
 }
 
@@ -142,7 +138,11 @@ async function runSuite() {
           context,
         })
 
-        return {...result, test: {_type: 'reference', _ref: `test-${test.id}`}, _key: test.id}
+        return {
+          _key: test.id,
+          diff: result.diff,
+          test: {_type: 'reference', _ref: `test-${test.id}`},
+        }
       }),
       toArray(),
       // eslint-disable-next-line no-console
