@@ -23,7 +23,7 @@ const placeholders = {
   committerName: '%cN',
   committerEmail: '%cE',
   committerDate: '%cI',
-  latestOfficialTag: '%(describe:tags,abbrev=0)',
+  currentTag: '%(describe:tags,abbrev=0)',
   tag: '%(describe:tags)',
 }
 
