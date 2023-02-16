@@ -1,4 +1,5 @@
 import {uuid} from '@sanity/uuid'
+import {number} from 'yargs'
 import {PerformanceTestContext, PerformanceTestProps} from '../types'
 import {KNOWN_TEST_IDS} from '../utils/testIds'
 
@@ -8,6 +9,8 @@ export default {
   description: `
   This test measures the typing speed of a simple text field. It's collecting results as a regression in percentage between the base branch and the current branch. A negative value means that the current branch is faster than the base branch.
   `,
+  version: 1,
+  unit: '%',
   async run({page, client, url}: PerformanceTestContext) {
     const documentId = uuid()
     await page.goto(`${url}/desk/simple;${documentId}`, {

@@ -1,6 +1,6 @@
 import os from 'os'
 import {chromium, Page} from 'playwright'
-import {from, lastValueFrom} from 'rxjs'
+import {concatMap, from, lastValueFrom} from 'rxjs'
 import {mergeMap, tap, toArray} from 'rxjs/operators'
 import {createClient, SanityClient} from '@sanity/client'
 import {BrowserContext} from '@playwright/test'
@@ -102,8 +102,26 @@ const studioMetricsClient = createClient({
 })
 
 async function runSuite() {
-  const tests = await globby(`${__dirname}/tests/**/*.test.ts`)
+  const testFiles = await globby(`${__dirname}/tests/**/*.test.ts`)
 
+  const testModules = await Promise.all(
+    testFiles.map((testModule) =>
+      import(testModule).then((module) => module.default as PerformanceTestProps)
+    )
+  )
+  // Start by creating or updating test documents
+  await Promise.all(
+    testModules.map((test) =>
+      studioMetricsClient.createOrReplace({
+        _id: `test-${test.id}-${test.version}`,
+        _type: 'test',
+        name: test.name,
+        unit: test.unit,
+        version: test.version,
+        description: test.description,
+      })
+    )
+  )
   const browser = await chromium.launch({
     headless: Boolean(getEnv('PERF_TEST_HEADLESS', true)) === false,
   })
@@ -113,10 +131,8 @@ async function runSuite() {
   await page.addInitScript({content: bundleHelpers})
 
   const results = await lastValueFrom(
-    from(tests).pipe(
-      mergeMap(async (testModule, index) => {
-        const test = (await import(testModule)).default
-
+    from(testModules).pipe(
+      concatMap(async (test) => {
         const result = await runCompare({
           baseBranchUrl: BASE_BRANCH_URL,
           currentBranchUrl: CURRENT_BRANCH_URL,
@@ -126,8 +142,8 @@ async function runSuite() {
           context,
         })
 
-        return {name: test.name, ...result, _key: `${index}`}
-      }, 1),
+        return {...result, test: {_type: 'reference', _ref: `test-${test.id}`}, _key: test.id}
+      }),
       toArray(),
       // eslint-disable-next-line no-console
       tap(console.log)
@@ -154,6 +170,8 @@ async function runSuite() {
     abbreviatedSha: repoInfo.abbreviatedCommit,
     branches: repoInfo.branches,
     tags: repoInfo.tags,
+    parent: repoInfo.parent,
+    abbreviatedParent: repoInfo.abbreviatedParent,
     author: repoInfo.authorName,
     authorEmail: repoInfo.authorEmail,
     authorDate: repoInfo.authorDate,
