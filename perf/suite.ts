@@ -1,7 +1,7 @@
 import os from 'os'
 import {chromium, Page} from 'playwright'
 import {concatMap, from, lastValueFrom} from 'rxjs'
-import {mergeMap, tap, toArray} from 'rxjs/operators'
+import {tap, toArray} from 'rxjs/operators'
 import {createClient, SanityClient} from '@sanity/client'
 import {BrowserContext} from '@playwright/test'
 import globby from 'globby'
@@ -10,13 +10,7 @@ import {getEnv} from './utils/env'
 import {createSanitySessionCookie} from './utils/createSanitySessionCookie'
 import {STUDIO_DATASET, STUDIO_PROJECT_ID} from './config'
 import {bundle} from './utils/bundlePerfHelpers'
-import {
-  ALL_FIELDS,
-  getCurrentBranch,
-  getGitInfo,
-  getGitInfoSync,
-  parseDecoratedRefs,
-} from './utils/gitUtils'
+import {ALL_FIELDS, getGitInfo, parseDecoratedRefs} from './utils/gitUtils'
 
 const BASE_BRANCH_URL = 'https://performance-studio.sanity.build'
 const CURRENT_BRANCH_URL = process.env.BRANCH_DEPLOYMENT_URL || 'http://localhost:3300'
@@ -40,8 +34,8 @@ interface RunCompareOptions {
   client: SanityClient
 }
 
-async function runAgainstUrl(options: RunCompareOptions & {url: string}) {
-  const {url, context, test, client, page} = options
+async function runAgainstUrl(url: string, options: RunCompareOptions) {
+  const {context, test, client, page} = options
 
   // Add the cookie to our context
   await context.addCookies([
@@ -50,36 +44,35 @@ async function runAgainstUrl(options: RunCompareOptions & {url: string}) {
   return test.run({url: url, page, client})
 }
 
-async function runCompare(options: RunCompareOptions): Promise<{diff: number}> {
-  const {baseBranchUrl, currentBranchUrl} = options
+interface Measurement {
+  _key: string
+  diff: number
+  metric: string
+}
+async function runCompare(options: RunCompareOptions): Promise<Measurement[]> {
+  const {baseBranchUrl, currentBranchUrl, test} = options
 
-  const baseBranchResultIteration1 = await runAgainstUrl({
-    ...options,
-    url: baseBranchUrl,
+  const baseBranchResultIteration1 = await runAgainstUrl(baseBranchUrl, options)
+  const currentBranchResultIteration1 = await runAgainstUrl(currentBranchUrl, options)
+
+  const baseBranchResultIteration2 = await runAgainstUrl(baseBranchUrl, options)
+  const currentBranchResultIteration2 = await runAgainstUrl(currentBranchUrl, options)
+
+  const results = Object.entries(test.metrics).map(([metricName, metric]) => {
+    const baseBranchResult =
+      (baseBranchResultIteration1[metricName] + baseBranchResultIteration2[metricName]) / 2
+
+    const currentBranchResult =
+      (currentBranchResultIteration1[metricName] + currentBranchResultIteration2[metricName]) / 2
+
+    return {
+      _key: metricName,
+      metric: metric.name,
+      diff: currentBranchResult / baseBranchResult,
+    }
   })
-  const currentBranchResultIteration1 = await runAgainstUrl({
-    ...options,
-    url: currentBranchUrl,
-  })
 
-  const baseBranchResultIteration2 = await runAgainstUrl({
-    ...options,
-    url: baseBranchUrl,
-  })
-  const currentBranchResultIteration2 = await runAgainstUrl({
-    ...options,
-    url: currentBranchUrl,
-  })
-
-  const baseBranchResult =
-    (baseBranchResultIteration1.result + baseBranchResultIteration2.result) / 2
-
-  const currentBranchResult =
-    (currentBranchResultIteration1.result + currentBranchResultIteration2.result) / 2
-
-  return {
-    diff: currentBranchResult / baseBranchResult,
-  }
+  return results
 }
 
 export const sanityClient = createClient({
@@ -112,7 +105,7 @@ async function runSuite() {
         _id: `test-${test.id}-${test.version}`,
         _type: 'test',
         name: test.name,
-        unit: test.unit,
+        metrics: test.metrics,
         version: test.version,
         description: test.description,
       })
@@ -126,10 +119,10 @@ async function runSuite() {
   const page = await context.newPage()
   await page.addInitScript({content: bundleHelpers})
 
-  const results = await lastValueFrom(
-    from(testModules).pipe(
+  const testResults = await lastValueFrom(
+    from(Object.values(testModules)).pipe(
       concatMap(async (test) => {
-        const result = await runCompare({
+        const measurements = await runCompare({
           baseBranchUrl: BASE_BRANCH_URL,
           currentBranchUrl: CURRENT_BRANCH_URL,
           test,
@@ -140,7 +133,7 @@ async function runSuite() {
 
         return {
           _key: test.id,
-          diff: result.diff,
+          measurements,
           test: {_type: 'reference', _ref: `test-${test.id}-${test.version}`},
         }
       }),
@@ -192,7 +185,7 @@ async function runSuite() {
     ci: Boolean(process.env.CI),
     git: gitInfo,
     machine: getMachineInfo(),
-    results,
+    testResults,
   })
 
   await context.close()

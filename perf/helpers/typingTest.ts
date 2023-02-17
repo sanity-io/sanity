@@ -3,7 +3,7 @@ import {triggerEditEvent} from './utils/triggerEdit'
 const LAG_CHECK_MS = 16 // ~60fps
 interface Sample {
   lag: number
-  duration: number
+  timePerKeyStroke: number
 }
 export async function typingTest(
   inputElement: HTMLElement,
@@ -42,5 +42,5 @@ async function sample(
   }
   clearInterval(lagInterval)
 
-  return {duration: totalDuration, lag: totalLag}
+  return {timePerKeyStroke: totalDuration / chars.length, lag: totalLag}
 }
