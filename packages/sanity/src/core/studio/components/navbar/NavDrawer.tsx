@@ -1,5 +1,5 @@
 import {Layer, Card, Flex, Text, Box, Button, Stack, useGlobalKeyDown} from '@sanity/ui'
-import {CloseIcon, LeaveIcon} from '@sanity/icons'
+import {CloseIcon, CogIcon, LeaveIcon} from '@sanity/icons'
 import React, {memo, useEffect, useState} from 'react'
 import styled from 'styled-components'
 import {useWorkspace} from '../../workspace'
@@ -8,6 +8,7 @@ import {useToolMenuComponent} from '../../studio-components-hooks'
 import {UserAvatar, useRovingFocus} from '../../../components'
 import {useWorkspaces} from '../../workspaces'
 import {WorkspaceMenuButton} from './workspace'
+import {Appearance} from './appearance/appearance'
 
 const Root = styled(Layer)`
   position: fixed;
@@ -61,7 +62,7 @@ export const NavDrawer = memo(function NavDrawer(props: NavDrawerProps) {
   const [closeButtonElement, setCloseButtonElement] = useState<HTMLButtonElement | null>(null)
   const [innerCardElement, setInnerCardElement] = useState<HTMLDivElement | null>(null)
   const tabIndex = isOpen ? 0 : -1
-  const {auth, currentUser} = useWorkspace()
+  const {auth, currentUser, projectId} = useWorkspace()
   const workspaces = useWorkspaces()
 
   useRovingFocus({
@@ -83,6 +84,8 @@ export const NavDrawer = memo(function NavDrawer(props: NavDrawerProps) {
 
   const ToolMenu = useToolMenuComponent()
 
+  const PADDING = [3, 3, 4]
+
   return (
     <Root>
       <Backdrop data-open={isOpen} onClick={onClose} />
@@ -95,7 +98,7 @@ export const NavDrawer = memo(function NavDrawer(props: NavDrawerProps) {
         ref={setInnerCardElement}
       >
         <Card borderBottom>
-          <Stack space={3} padding={[3, 3, 4]}>
+          <Stack space={3} padding={PADDING}>
             <Flex align="center">
               <Flex flex={1} align="center" paddingRight={2}>
                 <Flex flex={1} align="center">
@@ -127,18 +130,43 @@ export const NavDrawer = memo(function NavDrawer(props: NavDrawerProps) {
           </Stack>
         </Card>
 
-        <Box flex="auto" overflow="auto" padding={[3, 3, 4]}>
-          <ToolMenu
-            activeToolName={activeToolName}
-            closeSidebar={onClose}
-            context="sidebar"
-            isSidebarOpen={isOpen}
-            tools={tools}
-          />
-        </Box>
+        <Flex direction="column" flex={1} justify="space-between" overflow="auto">
+          {/* Tools */}
+          <Card padding={PADDING}>
+            <ToolMenu
+              activeToolName={activeToolName}
+              closeSidebar={onClose}
+              context="sidebar"
+              isSidebarOpen={isOpen}
+              tools={tools}
+            />
+          </Card>
+
+          {/* Theme picker and Manage */}
+          <Flex direction="column">
+            <Card borderTop padding={PADDING}>
+              <Appearance />
+            </Card>
+            <Card borderTop padding={PADDING}>
+              <Stack as="li">
+                <Button
+                  as="a"
+                  aria-label="Manage project"
+                  justify="flex-start"
+                  mode="bleed"
+                  tabIndex={tabIndex}
+                  href={`https://sanity.io/manage/project/${projectId}`}
+                  target="_blank"
+                  text="Manage project"
+                  icon={CogIcon}
+                />
+              </Stack>
+            </Card>
+          </Flex>
+        </Flex>
 
         {auth.logout && (
-          <Card flex="none" padding={[3, 3, 4]} borderTop>
+          <Card flex="none" padding={PADDING} borderTop>
             <Stack>
               <Button
                 iconRight={LeaveIcon}
