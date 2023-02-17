@@ -9,9 +9,9 @@ export default {
   This test measures the typing speed of a simple text field. It's collecting results as a regression in percentage between the base branch and the current branch. A negative value means that the current branch is faster than the base branch.
   `,
   metrics: {
-    lag: {name: 'Lag', description: 'The lag measured while running the tests'},
+    lag: {title: 'Lag', description: 'The lag measured while running the tests'},
     timePerKeyStroke: {
-      name: 'Time per keystroke',
+      title: 'Time per keystroke',
       description: 'The measured time per keystroke',
     },
   },

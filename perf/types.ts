@@ -23,6 +23,6 @@ export interface PerformanceTestProps<
 }
 
 type MetricInfo = {
-  name: string
+  title: string
   description: string
 }

@@ -103,9 +103,14 @@ async function runSuite() {
     testModules.map((test) =>
       studioMetricsClient.createOrReplace({
         _id: `test-${test.id}-${test.version}`,
-        _type: 'test',
+        _type: 'performanceTest',
         name: test.name,
-        metrics: test.metrics,
+        metrics: Object.entries(test.metrics).map(([name, metric]) => ({
+          _key: name,
+          id: name,
+          title: metric.title,
+          description: metric.description,
+        })),
         version: test.version,
         description: test.description,
       })
@@ -179,7 +184,7 @@ async function runSuite() {
 
   // Save the results in metrics studio
   await studioMetricsClient.create({
-    _type: 'performanceTest',
+    _type: 'performanceTestRun',
     baseBranchUrl: BASE_BRANCH_URL,
     workingBranchUrl: CURRENT_BRANCH_URL,
     ci: Boolean(process.env.CI),
