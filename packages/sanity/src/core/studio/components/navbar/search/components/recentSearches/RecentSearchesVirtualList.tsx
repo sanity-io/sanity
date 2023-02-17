@@ -1,7 +1,7 @@
 import {useMediaIndex} from '@sanity/ui'
 import {useVirtualizer} from '@tanstack/react-virtual'
 import React, {useMemo, useState} from 'react'
-import {CommandListItem, CommandListItems} from '../../../../../../components'
+import {CommandListItem, CommandListItems, useCommandList} from '../../../../../../components'
 import {useSearchState} from '../../contexts/search/useSearchState'
 import {RecentSearchItem} from './item/RecentSearchItem'
 
@@ -15,6 +15,8 @@ const MAX_COMBINED_TYPE_COUNT_LARGE = 40
 
 export function RecentSearchesVirtualList({showFiltersOnClick}: RecentSearchesVirtualListProps) {
   const [virtualList, setVirtualListRef] = useState<HTMLDivElement | null>(null)
+
+  const {itemIndices} = useCommandList()
 
   const {
     state: {recentSearches},
@@ -42,7 +44,7 @@ export function RecentSearchesVirtualList({showFiltersOnClick}: RecentSearchesVi
         const recentSearch = recentSearches[virtualRow.index]
         return (
           <CommandListItem
-            activeIndex={virtualRow.index}
+            activeIndex={itemIndices[virtualRow.index] ?? -1}
             data-index={virtualRow.index}
             key={virtualRow.key}
             measure={measureElement}

@@ -66,7 +66,7 @@ export function DocumentTypesVirtualList({filteredItems}: DocumentTypesVirtualLi
 
         return (
           <CommandListItem
-            activeIndex={virtualItem.type === 'item' ? itemIndices[virtualRow.index] ?? -1 : -1}
+            activeIndex={itemIndices[virtualRow.index] ?? -1}
             data-index={virtualRow.index}
             key={virtualRow.key}
             measure={measureElement}

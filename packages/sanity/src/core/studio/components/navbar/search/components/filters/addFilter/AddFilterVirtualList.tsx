@@ -59,7 +59,7 @@ export function AddFilterVirtualList({menuItems, onClose}: AddFilterVirtualListP
         const menuItem = menuItems[virtualRow.index]
         return (
           <CommandListItem
-            activeIndex={menuItem.type === 'filter' ? itemIndices[virtualRow.index] ?? -1 : -1}
+            activeIndex={itemIndices[virtualRow.index] ?? -1}
             data-index={virtualRow.index}
             key={virtualRow.key}
             measure={measureElement}

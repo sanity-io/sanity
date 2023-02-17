@@ -20,7 +20,7 @@ export function SearchResultsVirtualList({onClose}: SearchResultsVirtualListProp
     state: {debug, filters, terms, result},
   } = useSearchState()
 
-  const {setVirtualListScrollToIndex} = useCommandList()
+  const {itemIndices, setVirtualListScrollToIndex} = useCommandList()
 
   const {getTotalSize, getVirtualItems, scrollToIndex} = useVirtualizer({
     count: result.hits.length,
@@ -60,7 +60,7 @@ export function SearchResultsVirtualList({onClose}: SearchResultsVirtualListProp
         const hit = result.hits[virtualRow.index]
         return (
           <CommandListItem
-            activeIndex={virtualRow.index}
+            activeIndex={itemIndices[virtualRow.index] ?? -1}
             data-index={virtualRow.index}
             fixedHeight
             key={virtualRow.key}
