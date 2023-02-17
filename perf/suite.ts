@@ -67,7 +67,7 @@ async function runCompare(options: RunCompareOptions): Promise<Measurement[]> {
 
     return {
       _key: metricName,
-      metric: metric.name,
+      metric: metricName,
       diff: currentBranchResult / baseBranchResult,
     }
   })
