@@ -8,8 +8,14 @@ export default {
   description: `
   This test measures the typing speed of a simple text field. It's collecting results as a regression in percentage between the base branch and the current branch. A negative value means that the current branch is faster than the base branch.
   `,
+  metrics: {
+    lag: {name: 'Lag', description: 'The lag measured while running the tests'},
+    timePerKeyStroke: {
+      name: 'Time per keystroke',
+      description: 'The measured time per keystroke',
+    },
+  },
   version: 1,
-  unit: '%',
   async run({page, client, url}: PerformanceTestContext) {
     const documentId = uuid()
     await page.goto(`${url}/desk/simple;${documentId}`, {
@@ -18,10 +24,6 @@ export default {
     })
 
     const input = page.locator('[data-testid="field-simple"] [data-testid="string-input"]')
-    // clear the input value first
-    await input.evaluate((el: HTMLInputElement) => {
-      el.value = ''
-    })
 
     const samples = await input.evaluate((el: HTMLInputElement) =>
       window.perf.typingTest(el, {iterations: 1})
@@ -29,6 +31,9 @@ export default {
 
     await Promise.all([client.delete(`drafts.${documentId}`), client.delete(documentId)])
 
-    return {result: samples.reduce((lag, sample) => lag + sample.lag, 0)}
+    return {
+      lag: samples.reduce((lag, sample) => lag + sample.lag, 0),
+      timePerKeyStroke: samples.reduce((lag, sample) => lag + sample.timePerKeyStroke, 0),
+    }
   },
-} satisfies PerformanceTestProps
+} satisfies PerformanceTestProps<{lag: number; timePerKeyStroke: number}>
