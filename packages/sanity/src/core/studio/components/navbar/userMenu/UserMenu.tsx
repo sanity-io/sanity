@@ -1,12 +1,4 @@
-import {
-  SunIcon,
-  MoonIcon,
-  LeaveIcon,
-  ChevronDownIcon,
-  CogIcon,
-  DesktopIcon,
-  CheckmarkIcon,
-} from '@sanity/icons'
+import {LeaveIcon, ChevronDownIcon, CogIcon} from '@sanity/icons'
 import {
   Box,
   Button,
@@ -21,15 +13,14 @@ import {
   Stack,
   Text,
   Tooltip,
-  useRootTheme,
 } from '@sanity/ui'
 import React, {useMemo} from 'react'
 import styled from 'styled-components'
 import {UserAvatar} from '../../../../components'
 import {getProviderTitle} from '../../../../store'
-import {StudioTheme} from '../../../../theme'
 import {useColorScheme} from '../../../colorScheme'
 import {useWorkspace} from '../../../workspace'
+import {Appearance} from '../appearance/appearance'
 import {LoginProviderLogo} from './LoginProviderLogo'
 
 const AVATAR_SIZE = 1
@@ -47,8 +38,7 @@ const AvatarBox = styled(Box)`
 
 export function UserMenu() {
   const {currentUser, projectId, auth} = useWorkspace()
-  const theme = useRootTheme().theme as StudioTheme
-  const {scheme, setScheme, clearStoredScheme, usingSystemScheme} = useColorScheme()
+  const {scheme} = useColorScheme()
 
   const providerTitle = getProviderTitle(currentUser?.provider)
 
@@ -114,44 +104,7 @@ export function UserMenu() {
             </Flex>
           </Card>
 
-          {!theme?.__legacy && (
-            <>
-              <MenuDivider />
-
-              <Box padding={2}>
-                <Label size={1} muted>
-                  Appearance
-                </Label>
-              </Box>
-
-              <MenuItem
-                aria-label="Use system appearance"
-                icon={DesktopIcon}
-                onClick={clearStoredScheme}
-                pressed={usingSystemScheme}
-                text="System"
-                iconRight={usingSystemScheme && <CheckmarkIcon />}
-              />
-
-              <MenuItem
-                aria-label="Use dark appearance"
-                icon={MoonIcon}
-                onClick={() => setScheme('dark')}
-                pressed={scheme === 'dark' && !usingSystemScheme}
-                iconRight={scheme === 'dark' && !usingSystemScheme && <CheckmarkIcon />}
-                text="Dark"
-              />
-
-              <MenuItem
-                aria-label="Use light appearance"
-                icon={SunIcon}
-                onClick={() => setScheme('light')}
-                pressed={scheme === 'light' && !usingSystemScheme}
-                iconRight={scheme === 'light' && !usingSystemScheme && <CheckmarkIcon />}
-                text="Light"
-              />
-            </>
-          )}
+          <Appearance />
 
           <MenuDivider />
 
