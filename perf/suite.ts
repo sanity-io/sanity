@@ -1,6 +1,6 @@
 import os from 'os'
 import {chromium, Page} from 'playwright'
-import {concatMap, from, lastValueFrom} from 'rxjs'
+import {concatMap, from, lastValueFrom, map, range} from 'rxjs'
 import {tap, toArray} from 'rxjs/operators'
 import {createClient, SanityClient} from '@sanity/client'
 import {BrowserContext} from '@playwright/test'
@@ -49,30 +49,36 @@ interface Measurement {
   diff: number
   metric: string
 }
-async function runCompare(options: RunCompareOptions): Promise<Measurement[]> {
+function runCompare(options: RunCompareOptions): Promise<Measurement[]> {
   const {baseBranchUrl, currentBranchUrl, test} = options
+  const iterations = 6
+  return lastValueFrom(
+    range(iterations).pipe(
+      concatMap(async (iteration) => {
+        const baseBranchResult = await runAgainstUrl(baseBranchUrl, options)
+        const currentBranchResult = await runAgainstUrl(currentBranchUrl, options)
 
-  const baseBranchResultIteration1 = await runAgainstUrl(baseBranchUrl, options)
-  const currentBranchResultIteration1 = await runAgainstUrl(currentBranchUrl, options)
+        return {base: baseBranchResult, current: currentBranchResult}
+      }),
+      toArray(),
+      map((iterationResults) => {
+        return Object.entries(test.metrics).map(([metricName, metric]) => {
+          // sum of all iterative measurements for this metric
+          const metricSumDiff = iterationResults.reduce(
+            (diff, iteration) => diff + iteration.current[metricName] / iteration.base[metricName],
+            0
+          )
 
-  const baseBranchResultIteration2 = await runAgainstUrl(baseBranchUrl, options)
-  const currentBranchResultIteration2 = await runAgainstUrl(currentBranchUrl, options)
-
-  const results = Object.entries(test.metrics).map(([metricName, metric]) => {
-    const baseBranchResult =
-      (baseBranchResultIteration1[metricName] + baseBranchResultIteration2[metricName]) / 2
-
-    const currentBranchResult =
-      (currentBranchResultIteration1[metricName] + currentBranchResultIteration2[metricName]) / 2
-
-    return {
-      _key: metricName,
-      metric: metricName,
-      diff: currentBranchResult / baseBranchResult,
-    }
-  })
-
-  return results
+          return {
+            _key: metricName,
+            metric: metricName,
+            iterations,
+            diff: metricSumDiff / iterations,
+          }
+        })
+      })
+    )
+  )
 }
 
 export const sanityClient = createClient({
