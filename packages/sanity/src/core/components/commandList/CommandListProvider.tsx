@@ -18,21 +18,21 @@ import {CommandListContext} from './CommandListContext'
  * - Keyboard navigation + events (↑ / ↓ / ENTER) to children with a specified container (`childContainerRef`)
  * - Focus redirection when clicking child elements
  * - Pointer blocking when navigating with arrow keys (to ensure that only one active state is visible at any given time)
- * - ARIA attributes to define a `combobox` header input that controls a separate `listbox`
+ * - ARIA attributes to define a `combobox` input that controls a separate `listbox`
  *
  * Requirements:
  * - All child items must have `data-index` attributes defined with their index in the list. This is to help with
  * interoperability with virtual lists (whilst preventing costly re-renders)
  * - You have to supply `itemIndices`, an array of (number | null) indicating active indices only.
- * e.g. `[0, null, 1, 2]` indicates a list of 4 items, where the second item is non-interactive (such as a header or divider)
+ * e.g. `[0, null, 1, 2]` indicates a list of 4 items, where the second item is non-interactive (such as a heading or divider)
  * - All child items have to use the supplied context functions (`onChildMouseDown` etc) to ensure consistent behaviour
  * when clicking and hovering over items, as well as preventing unwanted focus.
  */
 
 interface CommandListProviderProps {
   ariaActiveDescendant?: boolean
-  ariaChildrenLabel: string
-  ariaHeaderLabel: string
+  ariaChildrenLabel?: string
+  ariaInputLabel?: string
   ariaMultiselectable?: boolean
   autoFocus?: boolean
   children?: ReactNode
@@ -47,7 +47,7 @@ interface CommandListProviderProps {
 export function CommandListProvider({
   ariaActiveDescendant = true,
   ariaChildrenLabel,
-  ariaHeaderLabel,
+  ariaInputLabel,
   ariaMultiselectable = false,
   autoFocus,
   children,
@@ -58,7 +58,7 @@ export function CommandListProvider({
   const selectedIndexRef = useRef<number>(-1)
   const [childContainerElement, setChildContainerElement] = useState<HTMLDivElement | null>(null)
   const [containerElement, setContainerElement] = useState<HTMLDivElement | null>(null)
-  const [headerInputElement, setHeaderInputElement] = useState<HTMLDivElement | null>(null)
+  const [inputElement, setInputElement] = useState<HTMLDivElement | null>(null)
   const [pointerOverlayElement, setPointerOverlayElement] = useState<HTMLDivElement | null>(null)
 
   const activeItemCount = itemIndices.filter(isNonNullable).length
@@ -89,9 +89,9 @@ export function CommandListProvider({
   const handleAssignSelectedState = useCallback(() => {
     const selectedIndex = selectedIndexRef?.current
     if (ariaActiveDescendant) {
-      headerInputElement?.setAttribute('aria-activedescendant', getChildDescendantId(selectedIndex))
+      inputElement?.setAttribute('aria-activedescendant', getChildDescendantId(selectedIndex))
     } else {
-      headerInputElement?.removeAttribute('aria-activedescendant')
+      inputElement?.removeAttribute('aria-activedescendant')
     }
 
     const childElements = Array.from(childContainerElement?.children || []) as HTMLElement[]
@@ -115,7 +115,7 @@ export function CommandListProvider({
     ariaActiveDescendant,
     childContainerElement,
     getChildDescendantId,
-    headerInputElement,
+    inputElement,
     itemIndices,
     itemIndicesSelected,
   ])
@@ -170,23 +170,23 @@ export function CommandListProvider({
   )
 
   /**
-   * Focus header input element (non-touch only)
+   * Focus input element (non-touch only)
    */
-  const handleFocusHeaderInputElement = useCallback(() => {
+  const handleFocusInputElement = useCallback(() => {
     if (!supportsTouch) {
-      headerInputElement?.focus()
+      inputElement?.focus()
     }
-  }, [headerInputElement])
+  }, [inputElement])
 
   /**
-   * Focus header input on child item mousedown and prevent nested elements from receiving focus.
+   * Focus input on child item mousedown and prevent nested elements from receiving focus.
    */
   const handleChildMouseDown = useCallback(
     (event: MouseEvent) => {
-      handleFocusHeaderInputElement()
+      handleFocusInputElement()
       event.preventDefault()
     },
-    [handleFocusHeaderInputElement]
+    [handleFocusInputElement]
   )
 
   /**
@@ -250,7 +250,7 @@ export function CommandListProvider({
   }, [enableChildContainerPointerEvents])
 
   /**
-   * Listen to keyboard events on header input element
+   * Listen to keyboard events on input element
    */
   useEffect(() => {
     function handleKeyDown(event: KeyboardEvent) {
@@ -282,15 +282,15 @@ export function CommandListProvider({
         }
       }
     }
-    headerInputElement?.addEventListener('keydown', handleKeyDown)
+    inputElement?.addEventListener('keydown', handleKeyDown)
     return () => {
-      headerInputElement?.removeEventListener('keydown', handleKeyDown)
+      inputElement?.removeEventListener('keydown', handleKeyDown)
     }
-  }, [childContainerElement, headerInputElement, itemIndices, scrollToAdjacentItem])
+  }, [childContainerElement, inputElement, itemIndices, scrollToAdjacentItem])
 
   /**
    * Listen to keyboard arrow events on the container element.
-   * On arrow press: focus the header input element and then navigate accordingly.
+   * On arrow press: focus the input element and then navigate accordingly.
    *
    * Done to account for when users focus a wrapping element with overflow (by dragging its scroll handle)
    * and then try navigate with the keyboard.
@@ -299,12 +299,12 @@ export function CommandListProvider({
     function handleKeydown(event: KeyboardEvent) {
       if (event.key === 'ArrowDown') {
         event.preventDefault()
-        handleFocusHeaderInputElement()
+        handleFocusInputElement()
         scrollToAdjacentItem('next')
       }
       if (event.key === 'ArrowUp') {
         event.preventDefault()
-        handleFocusHeaderInputElement()
+        handleFocusInputElement()
         scrollToAdjacentItem('previous')
       }
     }
@@ -316,8 +316,8 @@ export function CommandListProvider({
   }, [
     childContainerElement,
     containerElement,
-    handleFocusHeaderInputElement,
-    headerInputElement,
+    handleFocusInputElement,
+    inputElement,
     scrollToAdjacentItem,
   ])
 
@@ -330,13 +330,13 @@ export function CommandListProvider({
       return () => containerElement?.setAttribute('data-focused', focused.toString())
     }
 
-    headerInputElement?.addEventListener('blur', handleMarkContainerAsFocused(false))
-    headerInputElement?.addEventListener('focus', handleMarkContainerAsFocused(true))
+    inputElement?.addEventListener('blur', handleMarkContainerAsFocused(false))
+    inputElement?.addEventListener('focus', handleMarkContainerAsFocused(true))
     return () => {
-      headerInputElement?.removeEventListener('blur', handleMarkContainerAsFocused(false))
-      headerInputElement?.removeEventListener('focus', handleMarkContainerAsFocused(true))
+      inputElement?.removeEventListener('blur', handleMarkContainerAsFocused(false))
+      inputElement?.removeEventListener('focus', handleMarkContainerAsFocused(true))
     }
-  }, [children, containerElement, headerInputElement])
+  }, [children, containerElement, inputElement])
 
   /**
    * Track mouse enter / leave state on child container and store state in `data-hovered` attribute on
@@ -395,50 +395,54 @@ export function CommandListProvider({
    * Apply initial attributes
    */
   useEffect(() => {
+    if (ariaChildrenLabel) {
+      childContainerElement?.setAttribute('aria-label', ariaChildrenLabel)
+    }
     childContainerElement?.setAttribute('aria-multiselectable', ariaMultiselectable.toString())
-    childContainerElement?.setAttribute('aria-label', ariaChildrenLabel)
     childContainerElement?.setAttribute('role', 'listbox')
 
     containerElement?.setAttribute('id', `${commandListId}-children`)
 
-    headerInputElement?.setAttribute('aria-autocomplete', 'list')
-    headerInputElement?.setAttribute('aria-expanded', 'true')
-    headerInputElement?.setAttribute('aria-controls', `${commandListId}-children`)
-    headerInputElement?.setAttribute('aria-label', ariaHeaderLabel)
-    headerInputElement?.setAttribute('role', 'combobox')
+    if (ariaInputLabel) {
+      inputElement?.setAttribute('aria-label', ariaInputLabel)
+    }
+    inputElement?.setAttribute('aria-autocomplete', 'list')
+    inputElement?.setAttribute('aria-expanded', 'true')
+    inputElement?.setAttribute('aria-controls', `${commandListId}-children`)
+    inputElement?.setAttribute('role', 'combobox')
 
     pointerOverlayElement?.setAttribute('data-enabled', 'true')
   }, [
     ariaChildrenLabel,
-    ariaHeaderLabel,
+    ariaInputLabel,
     ariaMultiselectable,
     childContainerElement,
     commandListId,
     containerElement,
-    headerInputElement,
+    inputElement,
     pointerOverlayElement,
   ])
 
   /**
-   * Focus header input on mount (non-touch only)
+   * Focus input on mount (non-touch only)
    */
   useEffect(() => {
     if (autoFocus) {
-      handleFocusHeaderInputElement()
+      handleFocusInputElement()
     }
-  }, [autoFocus, handleFocusHeaderInputElement])
+  }, [autoFocus, handleFocusInputElement])
 
   return (
     <CommandListContext.Provider
       value={{
-        focusHeaderInputElement: handleFocusHeaderInputElement,
+        focusInputElement: handleFocusInputElement,
         getTopIndex: handleGetTopIndex,
         itemIndices,
         onChildMouseDown: handleChildMouseDown,
         onChildMouseEnter: handleChildMouseEnter,
         setChildContainerElement,
         setContainerElement,
-        setHeaderInputElement,
+        setInputElement: setInputElement,
         setPointerOverlayElement,
         setVirtualizer: handleSetVirtualizer,
         virtualizer: virtualizerRef.current,

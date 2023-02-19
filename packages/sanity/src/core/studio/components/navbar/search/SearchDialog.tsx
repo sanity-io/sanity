@@ -124,7 +124,7 @@ export function SearchDialog({onClose, onOpen, open}: SearchDialogProps) {
         <CommandListProvider
           ariaActiveDescendant={itemIndices.length > 0}
           ariaChildrenLabel={hasValidTerms ? 'Search results' : 'Recent searches'}
-          ariaHeaderLabel="Search"
+          ariaInputLabel="Search"
           autoFocus
           data-testid="search-results-dialog"
           itemIndices={itemIndices}

@@ -23,19 +23,19 @@ export function RecentSearches({showFiltersOnClick}: RecentSearchesProps) {
     state: {filtersVisible, fullscreen, recentSearches},
   } = useSearchState()
 
-  const {focusHeaderInputElement} = useCommandList()
+  const {focusInputElement} = useCommandList()
 
   /**
    * Remove terms from local storage.
-   * Also re-focus header input (on non-touch devices)
+   * Also re-focus input (on non-touch devices)
    */
   const handleClearRecentSearchesClick = useCallback(() => {
     if (recentSearchesStore) {
       const updatedRecentSearches = recentSearchesStore.removeSearch()
       dispatch({recentSearches: updatedRecentSearches, type: 'RECENT_SEARCHES_SET'})
     }
-    focusHeaderInputElement()
-  }, [dispatch, focusHeaderInputElement, recentSearchesStore])
+    focusInputElement()
+  }, [dispatch, focusInputElement, recentSearchesStore])
 
   const hasRecentSearches = !!recentSearches.length
 

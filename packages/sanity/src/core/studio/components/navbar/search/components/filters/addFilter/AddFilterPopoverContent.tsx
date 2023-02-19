@@ -63,7 +63,7 @@ export function AddFilterPopoverContent({onClose}: AddFilterPopoverContentProps)
     <CommandListProvider
       ariaActiveDescendant={filteredMenuItems.length > 0}
       ariaChildrenLabel="Filters"
-      ariaHeaderLabel="Filter by title"
+      ariaInputLabel="Filter by title"
       autoFocus
       itemIndices={itemIndices}
     >

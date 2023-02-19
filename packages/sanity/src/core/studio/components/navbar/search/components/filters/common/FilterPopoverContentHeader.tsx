@@ -30,7 +30,7 @@ export function FilterPopoverContentHeader({
     state: {fullscreen},
   } = useSearchState()
 
-  const {setHeaderInputElement} = useCommandList()
+  const {setInputElement} = useCommandList()
 
   return (
     <SearchHeaderBox>
@@ -45,7 +45,7 @@ export function FilterPopoverContentHeader({
           onChange={onChange}
           onClear={onClear}
           placeholder="Filter"
-          ref={setHeaderInputElement}
+          ref={setInputElement}
           smallClearButton
           spellCheck={false}
           radius={2}

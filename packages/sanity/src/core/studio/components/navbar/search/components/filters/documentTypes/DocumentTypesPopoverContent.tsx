@@ -73,7 +73,7 @@ export function DocumentTypesPopoverContent() {
     <CommandListProvider
       ariaActiveDescendant={filteredItems.length > 0}
       ariaChildrenLabel="Document types"
-      ariaHeaderLabel="Filter by document type"
+      ariaInputLabel="Filter by document type"
       ariaMultiselectable
       autoFocus
       itemIndices={itemIndices}
@@ -116,12 +116,12 @@ function ClearButton({
   onClick: () => void
   selectedTypes: SearchableType[]
 }) {
-  const {focusHeaderInputElement} = useCommandList()
+  const {focusInputElement} = useCommandList()
 
   const handleClear = useCallback(() => {
-    focusHeaderInputElement()
+    focusInputElement()
     onClick?.()
-  }, [focusHeaderInputElement, onClick])
+  }, [focusInputElement, onClick])
 
   return (
     <ClearButtonBox padding={1}>

@@ -55,7 +55,7 @@ export function SearchHeader({onClose}: SearchHeaderProps) {
     },
   } = useSearchState()
 
-  const {setHeaderInputElement} = useCommandList()
+  const {setInputElement} = useCommandList()
 
   const handleFiltersToggle = useCallback(
     () => dispatch({type: 'FILTERS_VISIBLE_SET', visible: !filtersVisible}),
@@ -108,7 +108,7 @@ export function SearchHeader({onClose}: SearchHeaderProps) {
             onClear={handleQueryClear}
             placeholder="Search"
             radius={fullscreen ? 2 : 1}
-            ref={setHeaderInputElement}
+            ref={setInputElement}
             smallClearButton={fullscreen}
             spellCheck={false}
             value={query}

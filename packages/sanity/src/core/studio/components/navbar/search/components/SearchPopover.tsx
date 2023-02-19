@@ -157,7 +157,7 @@ export function SearchPopover({
         <CommandListProvider
           ariaActiveDescendant={itemIndices.length > 0}
           ariaChildrenLabel={hasValidTerms ? 'Search results' : 'Recent searches'}
-          ariaHeaderLabel="Search results"
+          ariaInputLabel="Search results"
           autoFocus
           data-testid="search-results-popover"
           initialSelectedIndex={hasValidTerms ? lastActiveIndex : 0}

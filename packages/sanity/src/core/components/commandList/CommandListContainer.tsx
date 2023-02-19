@@ -8,6 +8,7 @@ interface CommandListContainerProps {
 }
 
 const ContainerFlex = styled(Flex)`
+  height: 100%;
   &[data-focused='true'],
   &[data-hovered='true'] {
     [data-active='true'] {
