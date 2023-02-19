@@ -56,8 +56,8 @@ export function RecentSearches({showFiltersOnClick}: RecentSearchesProps) {
           </Box>
           <Box paddingBottom={2} paddingTop={1} paddingX={2}>
             <Button
-              justify="flex-start"
               fontSize={1}
+              justify="flex-start"
               mode="bleed"
               onClick={handleClearRecentSearchesClick}
               padding={2}

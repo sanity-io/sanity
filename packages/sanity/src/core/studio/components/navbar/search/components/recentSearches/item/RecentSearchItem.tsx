@@ -103,6 +103,7 @@ export function RecentSearchItem({
         paddingLeft={3}
         paddingRight={1}
         paddingY={1}
+        tabIndex={-1}
       >
         <Flex align="stretch">
           {/* Combination of <Inline> and a zero-width character to ensure icon is optically aligned with adjacent text */}
