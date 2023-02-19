@@ -1,3 +1,4 @@
+import type {Virtualizer} from '@tanstack/react-virtual'
 import throttle from 'lodash/throttle'
 import React, {
   MouseEvent,
@@ -9,9 +10,7 @@ import React, {
   useRef,
   useState,
 } from 'react'
-import {isNonNullable} from '../../util'
-import {VIRTUAL_LIST_SEARCH_ITEM_HEIGHT} from '../../studio/components/navbar/search/constants'
-import {supportsTouch} from '../../studio/components/navbar/search/utils/supportsTouch'
+import {isNonNullable, supportsTouch} from '../../util'
 import {CommandListContext} from './CommandListContext'
 
 /**
@@ -66,9 +65,7 @@ export function CommandListProvider({
 
   const commandListId = useId()
 
-  const virtualListScrollToIndexRef = useRef<
-    ((index: number, options?: Record<string, any>) => void) | null
-  >(null)
+  const virtualizerRef = useRef<Virtualizer<HTMLDivElement, Element> | null>(null)
 
   /**
    * Toggle pointer overlay element which will kill existing hover states
@@ -132,21 +129,15 @@ export function CommandListProvider({
   )
 
   /**
-   * Query search result children for the 'top most' visible element (factoring in overscan)
-   * and obtain its index.
+   * Obtain index of the top most visible element
    */
-  // @todo This only currently returns accurate values for search results.
-  // Consider initializing virtual list within this provider and remove hard-coded values.
   const handleGetTopIndex = useCallback(() => {
     const childContainerParentElement = childContainerElement?.parentElement
-    if (childContainerParentElement && childContainerElement) {
-      const childContainerParentElementTop = childContainerParentElement.getBoundingClientRect().top
-      const childContainerElementTop = childContainerElement.getBoundingClientRect().top
-      const index = Math.floor(
-        (childContainerParentElementTop - childContainerElementTop) /
-          VIRTUAL_LIST_SEARCH_ITEM_HEIGHT
-      )
-      return index
+    if (childContainerElement && childContainerParentElement) {
+      const offset =
+        childContainerParentElement.getBoundingClientRect().top -
+        childContainerElement.getBoundingClientRect().top
+      return virtualizerRef?.current?.getVirtualItemForOffset(offset)?.index ?? -1
     }
     return -1
   }, [childContainerElement])
@@ -169,7 +160,7 @@ export function CommandListProvider({
 
       if (scrollIntoView) {
         const virtualListIndex = itemIndices.indexOf(index)
-        virtualListScrollToIndexRef?.current?.(
+        virtualizerRef?.current?.scrollToIndex(
           virtualListIndex,
           scrollAlign ? {align: 'start'} : {}
         )
@@ -211,14 +202,11 @@ export function CommandListProvider({
   )
 
   /**
-   * Store virtual list's scrollToIndex function
+   * Store virtualizer instance
    */
-  const handleSetVirtualListScrollToIndex = useCallback(
-    (scrollToIndex: (index: number, options?: Record<string, any>) => void) => {
-      virtualListScrollToIndexRef.current = scrollToIndex
-    },
-    []
-  )
+  const handleSetVirtualizer = useCallback((virtualizer: Virtualizer<HTMLDivElement, Element>) => {
+    virtualizerRef.current = virtualizer
+  }, [])
 
   const scrollToAdjacentItem = useCallback(
     (direction: 'previous' | 'next') => {
@@ -452,7 +440,8 @@ export function CommandListProvider({
         setContainerElement,
         setHeaderInputElement,
         setPointerOverlayElement,
-        setVirtualListScrollToIndex: handleSetVirtualListScrollToIndex,
+        setVirtualizer: handleSetVirtualizer,
+        virtualizer: virtualizerRef.current,
       }}
     >
       {children}

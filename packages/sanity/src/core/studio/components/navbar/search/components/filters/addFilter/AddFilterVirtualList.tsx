@@ -1,6 +1,5 @@
-import {useVirtualizer} from '@tanstack/react-virtual'
-import React, {useEffect, useState} from 'react'
-import {CommandListItem, CommandListItems, useCommandList} from '../../../../../../../components'
+import React, {useMemo} from 'react'
+import {CommandListItems} from '../../../../../../../components'
 import type {FilterMenuItem} from '../../../types'
 import {getFilterKey} from '../../../utils/filterUtils'
 import {MenuItemFilter} from './items/MenuItemFilter'
@@ -12,66 +11,41 @@ interface AddFilterVirtualListProps {
 }
 
 export function AddFilterVirtualList({menuItems, onClose}: AddFilterVirtualListProps) {
-  const [virtualList, setVirtualListRef] = useState<HTMLDivElement | null>(null)
-
-  const {itemIndices, setVirtualListScrollToIndex} = useCommandList()
-
-  const {getTotalSize, getVirtualItems, measureElement, scrollToIndex} = useVirtualizer({
-    count: menuItems.length,
-    estimateSize: () => 45,
-    getItemKey: (index) => {
+  const VirtualListItem = useMemo(() => {
+    return function VirtualListItemComponent({index}: {index: number}) {
       const menuItem = menuItems[index]
-      switch (menuItem.type) {
-        case 'filter':
-          return [
-            ...(menuItem.group ? [menuItem.group] : []), //
-            getFilterKey(menuItem.filter),
-          ].join('-')
-        case 'header':
-          return `${menuItem.type}-${menuItem.title}`
-        default:
-          return index
+      if (menuItem.type === 'filter') {
+        return <MenuItemFilter item={menuItem} onClose={onClose} paddingTop={1} paddingX={1} />
       }
-    },
-    getScrollElement: () => virtualList,
-    overscan: 20,
-  })
-
-  // Scroll to top whenever filters change
-  useEffect(() => {
-    scrollToIndex(0)
-  }, [menuItems.length, scrollToIndex])
-
-  /**
-   * Send react-virtual's `scrollToIndex` function to shared CommandList context
-   */
-  useEffect(() => {
-    setVirtualListScrollToIndex(scrollToIndex)
-  }, [setVirtualListScrollToIndex, scrollToIndex])
+      if (menuItem.type === 'header') {
+        return <MenuItemHeader item={menuItem} />
+      }
+      return null
+    }
+  }, [menuItems, onClose])
 
   return (
     <CommandListItems
+      item={VirtualListItem}
       paddingBottom={1}
-      setVirtualListRef={setVirtualListRef}
-      totalHeight={getTotalSize()}
-    >
-      {getVirtualItems().map((virtualRow) => {
-        const menuItem = menuItems[virtualRow.index]
-        return (
-          <CommandListItem
-            activeIndex={itemIndices[virtualRow.index] ?? -1}
-            data-index={virtualRow.index}
-            key={virtualRow.key}
-            measure={measureElement}
-            virtualRow={virtualRow}
-          >
-            {menuItem.type === 'filter' && (
-              <MenuItemFilter item={menuItem} onClose={onClose} paddingTop={1} paddingX={1} />
-            )}
-            {menuItem.type === 'header' && <MenuItemHeader item={menuItem} />}
-          </CommandListItem>
-        )
-      })}
-    </CommandListItems>
+      virtualizerOptions={{
+        estimateSize: () => 45,
+        getItemKey: (index) => {
+          const menuItem = menuItems[index]
+          switch (menuItem.type) {
+            case 'filter':
+              return [
+                ...(menuItem.group ? [menuItem.group] : []), //
+                getFilterKey(menuItem.filter),
+              ].join('-')
+            case 'header':
+              return `${menuItem.type}-${menuItem.title}`
+            default:
+              return index
+          }
+        },
+        overscan: 20,
+      }}
+    />
   )
 }

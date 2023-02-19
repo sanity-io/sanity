@@ -1,12 +1,17 @@
 import {Box, ResponsivePaddingProps} from '@sanity/ui'
-import React, {Dispatch, ReactNode, SetStateAction} from 'react'
+import {useVirtualizer, VirtualizerOptions} from '@tanstack/react-virtual'
+import React, {ReactElement, useEffect, useState} from 'react'
 import styled from 'styled-components'
+import {CommandListItem} from './CommandListItem'
 import {useCommandList} from './useCommandList'
 
 interface CommandListItemsProps extends ResponsivePaddingProps {
-  children: ReactNode
-  setVirtualListRef: Dispatch<SetStateAction<HTMLDivElement | null>>
-  totalHeight: number
+  fixedHeight?: boolean
+  item: (props: {index: number}) => ReactElement | null
+  virtualizerOptions: Pick<
+    VirtualizerOptions<HTMLDivElement, Element>,
+    'estimateSize' | 'getItemKey' | 'overscan'
+  >
 }
 
 /*
@@ -38,8 +43,13 @@ const VirtualListBox = styled(Box)`
   width: 100%;
 `
 
-const VirtualListChildBox = styled(Box)<{$height: number}>`
-  height: ${({$height}) => `${$height}px`};
+type VirtualListChildBoxProps = {
+  $height: number
+}
+const VirtualListChildBox = styled(Box) //
+  .attrs<VirtualListChildBoxProps>(({$height}) => ({
+    style: {height: `${$height}px`},
+  }))<VirtualListChildBoxProps>`
   position: relative;
   width: 100%;
 `
@@ -48,19 +58,53 @@ const VirtualListChildBox = styled(Box)<{$height: number}>`
  * @internal
  */
 export function CommandListItems({
-  children,
-  setVirtualListRef,
-  totalHeight,
+  fixedHeight,
+  item: Item,
+  virtualizerOptions,
   ...rest
 }: CommandListItemsProps) {
-  const {setChildContainerElement, setPointerOverlayElement} = useCommandList()
+  const [virtualList, setVirtualListRef] = useState<HTMLDivElement | null>(null)
+
+  const {itemIndices, setChildContainerElement, setPointerOverlayElement, setVirtualizer} =
+    useCommandList()
+
+  const virtualizer = useVirtualizer({
+    ...virtualizerOptions,
+    count: itemIndices.length,
+    getScrollElement: () => virtualList,
+  })
+
+  /**
+   * Store react-virtual's `virtualizer` instance to shared CommandList context
+   */
+  useEffect(() => {
+    setVirtualizer(virtualizer)
+  }, [setVirtualizer, virtualizer])
 
   return (
     <VirtualListBox ref={setVirtualListRef} tabIndex={-1}>
       <PointerOverlayDiv aria-hidden="true" ref={setPointerOverlayElement} />
 
-      <VirtualListChildBox $height={totalHeight} flex={1} ref={setChildContainerElement} {...rest}>
-        {children}
+      <VirtualListChildBox
+        $height={virtualizer.getTotalSize()}
+        flex={1}
+        ref={setChildContainerElement}
+        {...rest}
+      >
+        {virtualizer.getVirtualItems().map((virtualRow) => {
+          return (
+            <CommandListItem
+              activeIndex={itemIndices[virtualRow.index] ?? -1}
+              data-index={virtualRow.index}
+              fixedHeight={fixedHeight}
+              key={virtualRow.key}
+              measure={fixedHeight ? undefined : virtualizer.measureElement}
+              virtualRow={virtualRow}
+            >
+              {Item && <Item index={virtualRow.index} />}
+            </CommandListItem>
+          )
+        })}
       </VirtualListChildBox>
     </VirtualListBox>
   )

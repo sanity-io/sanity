@@ -1,7 +1,6 @@
 import {useMediaIndex} from '@sanity/ui'
-import {useVirtualizer} from '@tanstack/react-virtual'
-import React, {useMemo, useState} from 'react'
-import {CommandListItem, CommandListItems, useCommandList} from '../../../../../../components'
+import React, {useMemo} from 'react'
+import {CommandListItems} from '../../../../../../components'
 import {useSearchState} from '../../contexts/search/useSearchState'
 import {RecentSearchItem} from './item/RecentSearchItem'
 
@@ -14,19 +13,9 @@ const MAX_COMBINED_TYPE_COUNT_SMALL = 20
 const MAX_COMBINED_TYPE_COUNT_LARGE = 40
 
 export function RecentSearchesVirtualList({showFiltersOnClick}: RecentSearchesVirtualListProps) {
-  const [virtualList, setVirtualListRef] = useState<HTMLDivElement | null>(null)
-
-  const {itemIndices} = useCommandList()
-
   const {
     state: {recentSearches},
   } = useSearchState()
-
-  const {getTotalSize, getVirtualItems, measureElement} = useVirtualizer({
-    count: recentSearches.length,
-    getScrollElement: () => virtualList,
-    estimateSize: () => 36,
-  })
 
   const mediaIndex = useMediaIndex()
 
@@ -34,33 +23,30 @@ export function RecentSearchesVirtualList({showFiltersOnClick}: RecentSearchesVi
     return mediaIndex < 2 ? MAX_COMBINED_TYPE_COUNT_SMALL : MAX_COMBINED_TYPE_COUNT_LARGE
   }, [mediaIndex])
 
+  const VirtualListItem = useMemo(() => {
+    return function VirtualListItemComponent({index}: {index: number}) {
+      const recentSearch = recentSearches[index]
+      return (
+        <RecentSearchItem
+          index={index}
+          maxVisibleTypePillChars={maxVisibleTypePillChars}
+          paddingTop={1}
+          paddingX={2}
+          showFiltersOnClick={showFiltersOnClick}
+          value={recentSearch}
+        />
+      )
+    }
+  }, [maxVisibleTypePillChars, recentSearches, showFiltersOnClick])
+
   return (
     <CommandListItems
+      fixedHeight
+      item={VirtualListItem}
       paddingBottom={1}
-      setVirtualListRef={setVirtualListRef}
-      totalHeight={getTotalSize()}
-    >
-      {getVirtualItems().map((virtualRow) => {
-        const recentSearch = recentSearches[virtualRow.index]
-        return (
-          <CommandListItem
-            activeIndex={itemIndices[virtualRow.index] ?? -1}
-            data-index={virtualRow.index}
-            key={virtualRow.key}
-            measure={measureElement}
-            virtualRow={virtualRow}
-          >
-            <RecentSearchItem
-              index={virtualRow.index}
-              maxVisibleTypePillChars={maxVisibleTypePillChars}
-              paddingTop={1}
-              paddingX={2}
-              showFiltersOnClick={showFiltersOnClick}
-              value={recentSearch}
-            />
-          </CommandListItem>
-        )
-      })}
-    </CommandListItems>
+      virtualizerOptions={{
+        estimateSize: () => 36,
+      }}
+    />
   )
 }
