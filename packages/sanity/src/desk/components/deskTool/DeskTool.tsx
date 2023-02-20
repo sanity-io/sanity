@@ -49,7 +49,7 @@ const StyledPaneLayout = styled(PaneLayout)`
 `
 
 const Breadcrumbs = styled(Flex)`
-  border-bottom: solid 1px var(--card-border-color);
+  // border-bottom: solid 1px var(--card-border-color);
 `
 
 const isSaveHotkey = isHotkey('mod+s')
