@@ -1,8 +1,34 @@
-import {PortalProvider, useToast, useMediaIndex, Flex, Text, Box, Button} from '@sanity/ui'
+import {
+  PortalProvider,
+  useToast,
+  useMediaIndex,
+  Flex,
+  Text,
+  Box,
+  Button,
+  Menu,
+  MenuButton,
+  MenuItem,
+  MenuDivider,
+} from '@sanity/ui'
 import React, {memo, Fragment, useState, useEffect, useCallback} from 'react'
 import styled from 'styled-components'
 import isHotkey from 'is-hotkey'
-import {AddIcon, ChevronRightIcon, SearchIcon} from '@sanity/icons'
+import {
+  AddIcon,
+  BinaryDocumentIcon,
+  ChevronRightIcon,
+  CloseIcon,
+  CopyIcon,
+  EllipsisVerticalIcon,
+  PublishIcon,
+  ResetIcon,
+  RevertIcon,
+  SearchIcon,
+  TransferIcon,
+  TrashIcon,
+  UnpublishIcon,
+} from '@sanity/icons'
 import {LOADING_PANE} from '../../constants'
 import {LoadingPane, DeskToolPane} from '../../panes'
 import {useResolvedPanes} from '../../structureResolvers'
@@ -91,13 +117,19 @@ export const DeskTool = memo(function DeskTool({onPaneChange}: DeskToolProps) {
     return <NoDocumentTypesScreen />
   }
 
-  const breadcrumbDataItems = paneDataItems.filter((item) => item.pane.type != 'document')
+  // const breadcrumbDataItems = paneDataItems.filter((item) => item.pane.type != 'document')
+
+  const collapsedPaneDataItems = paneDataItems.some(
+    (item) => item.pane.type && item.pane.type === 'document'
+  )
+    ? paneDataItems.slice(-2)
+    : paneDataItems
 
   return (
     <PortalProvider element={portalElement || null}>
       <Breadcrumbs align="center" justify="space-between">
-        <Flex gap={2} padding={4}>
-          {breadcrumbDataItems.map(
+        <Flex gap={1} padding={3} align="center">
+          {paneDataItems.map(
             (
               {
                 active,
@@ -115,11 +147,15 @@ export const DeskTool = memo(function DeskTool({onPaneChange}: DeskToolProps) {
               },
               index
             ) => (
-              <Flex gap={2} key={`${pane.type}-${paneIndex}`}>
-                <Text weight="medium">
-                  <Link href={path}>{pane.title}</Link>
-                </Text>
-                {index === breadcrumbDataItems.length - 1 ? (
+              <Flex gap={2} key={`${pane.type}-${paneIndex}`} align="center">
+                <Button
+                  as={Link}
+                  href={path.replace('root;', '')}
+                  text={pane.title || 'Document title'}
+                  padding={2}
+                  mode="bleed"
+                />
+                {index === paneDataItems.length - 1 ? (
                   ' '
                 ) : (
                   <Text muted>
@@ -130,10 +166,45 @@ export const DeskTool = memo(function DeskTool({onPaneChange}: DeskToolProps) {
             )
           )}
         </Flex>
-        <Flex gap={2} padding={2}>
-          <Button padding={3} icon={SearchIcon} mode="bleed" />
-          <Button padding={3} icon={AddIcon} text="Create new" mode="ghost" />
-        </Flex>
+        {paneDataItems &&
+          paneDataItems.length > 0 &&
+          paneDataItems[paneDataItems.length - 1].pane.type === 'documentList' && (
+            <Flex gap={2} padding={2}>
+              <Button padding={3} icon={SearchIcon} mode="bleed" />
+              <Button padding={3} icon={AddIcon} text="Create new" mode="ghost" />
+            </Flex>
+          )}
+        {paneDataItems &&
+          paneDataItems.length > 0 &&
+          paneDataItems[paneDataItems.length - 1].pane.type === 'document' && (
+            <Flex gap={2} padding={2}>
+              <Button padding={3} icon={PublishIcon} text="Publish" tone="primary" />
+              <MenuButton
+                button={<Button padding={3} icon={EllipsisVerticalIcon} mode="bleed" />}
+                id="menu-button-example"
+                menu={
+                  <Menu>
+                    <MenuItem icon={TransferIcon} text="Review changes" />
+                    <MenuItem icon={BinaryDocumentIcon} text="Inspect output data" />
+                    <MenuDivider />
+                    <MenuItem icon={UnpublishIcon} tone="critical" text="Unpublish" />
+                    <MenuItem icon={ResetIcon} tone="critical" text="Discard changes" />
+                    <MenuItem icon={CopyIcon} text="Duplicate" />
+                    <MenuItem icon={TrashIcon} tone="critical" text="Delete" />
+                  </Menu>
+                }
+                popover={{portal: true, placement: 'bottom'}}
+              />
+
+              <Button
+                as={Link}
+                padding={3}
+                icon={CloseIcon}
+                mode="bleed"
+                href={paneDataItems[paneDataItems.length - 2].path.replace('root;', '')}
+              />
+            </Flex>
+          )}
       </Breadcrumbs>
       <StyledPaneLayout
         flex={1}
@@ -142,26 +213,32 @@ export const DeskTool = memo(function DeskTool({onPaneChange}: DeskToolProps) {
         onCollapse={handleRootCollapse}
         onExpand={handleRootExpand}
       >
-        {paneDataItems.map(
-          ({
-            active,
-            childItemId,
-            groupIndex,
-            itemId,
-            key: paneKey,
-            pane,
-            index: paneIndex,
-            params: paneParams,
-            path,
-            payload,
-            siblingIndex,
-            selected,
-          }) => (
+        {collapsedPaneDataItems.map(
+          (
+            {
+              active,
+              childItemId,
+              groupIndex,
+              itemId,
+              key: paneKey,
+              pane,
+              index: paneIndex,
+              params: paneParams,
+              path,
+              payload,
+              siblingIndex,
+              selected,
+            },
+            index
+          ) => (
             <Fragment key={`${pane === LOADING_PANE ? 'loading' : pane.type}-${paneIndex}`}>
               {pane === LOADING_PANE ? (
                 <LoadingPane paneKey={paneKey} path={path} selected={selected} />
               ) : (
                 <DeskToolPane
+                  fullWidth={
+                    index === collapsedPaneDataItems.length - 1 && pane.type === 'document'
+                  }
                   active={active}
                   groupIndex={groupIndex}
                   index={paneIndex}

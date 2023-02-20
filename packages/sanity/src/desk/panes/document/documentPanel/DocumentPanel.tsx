@@ -1,6 +1,17 @@
-import {BoundaryElementProvider, Flex, PortalProvider, usePortal, useElementRect} from '@sanity/ui'
+import {
+  BoundaryElementProvider,
+  Flex,
+  PortalProvider,
+  usePortal,
+  useElementRect,
+  Heading,
+  Text,
+  Box,
+  Button,
+} from '@sanity/ui'
 import React, {createElement, useEffect, useMemo, useRef, useState} from 'react'
 import styled, {css} from 'styled-components'
+import {DotIcon, SelectIcon} from '@sanity/icons'
 import {PaneContent, usePaneLayout} from '../../../components'
 import {useDocumentPane} from '../useDocumentPane'
 import {InspectDialog} from '../inspectDialog'
@@ -9,6 +20,7 @@ import {ReferenceChangedBanner} from './ReferenceChangedBanner'
 import {PermissionCheckBanner} from './PermissionCheckBanner'
 import {FormView} from './documentViews'
 import {DocumentPanelHeader} from './header'
+import {DocumentHeaderTitle} from './header/DocumentHeaderTitle'
 import {ScrollContainer} from 'sanity'
 
 interface DocumentPanelProps {
@@ -112,9 +124,15 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
     return isInspectOpen ? <InspectDialog value={displayed || value} /> : null
   }, [isInspectOpen, displayed, value])
 
+  const DocumentHeader = styled(Flex)`
+    max-width: 40rem;
+    margin: 0 auto;
+    box-sizing: border-box;
+  `
+
   return (
     <Flex direction="column" flex={2} overflow={layoutCollapsed ? undefined : 'hidden'}>
-      <DocumentPanelHeader rootElement={rootElement} ref={setHeaderElement} />
+      {/* <DocumentPanelHeader rootElement={rootElement} ref={setHeaderElement} /> */}
 
       <PaneContent>
         <PortalProvider
@@ -137,6 +155,32 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
               data-testid="document-panel-scroller"
               ref={setDocumentScrollElement}
             >
+              <DocumentHeader direction="column" gap={4} padding={4}>
+                <Box paddingTop={5}>
+                  <Heading size={5}>
+                    <DocumentHeaderTitle />
+                  </Heading>
+                </Box>
+                <Flex align="center">
+                  <Text size={2} weight="medium" muted>
+                    <Flex paddingRight={2} gap={2} align="center">
+                      <>Published 2 days ago</>
+                      <DotIcon />
+                    </Flex>
+                  </Text>
+                  <Button mode="bleed" size={1} padding={2} text="Last edited 2h ago" />
+                  <Text size={2} weight="medium" muted>
+                    <DotIcon />
+                  </Text>
+                  <Button
+                    mode="bleed"
+                    size={1}
+                    padding={2}
+                    text="Browse history"
+                    iconRight={SelectIcon}
+                  />
+                </Flex>
+              </DocumentHeader>
               <FormView
                 hidden={formViewHidden}
                 key={documentId + (ready ? '_ready' : '_pending')}

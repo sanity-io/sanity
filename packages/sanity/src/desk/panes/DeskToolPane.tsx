@@ -1,5 +1,7 @@
 import React, {memo, lazy, Suspense} from 'react'
 import {isEqual} from 'lodash'
+import styled from 'styled-components'
+import {Flex} from '@sanity/ui'
 import {PaneNode} from '../types'
 import {PaneRouterProvider} from '../components/paneRouter'
 import {UnknownPane} from './unknown'
@@ -17,6 +19,7 @@ interface DeskToolPaneProps {
   payload: unknown
   selected: boolean
   siblingIndex: number
+  fullWidth: boolean
 }
 
 // TODO: audit this creates separate chunks
@@ -26,6 +29,10 @@ const paneMap = {
   documentList: lazy(() => import('./documentList')),
   list: lazy(() => import('./list')),
 }
+
+const ActiveDocumentPane = styled(Flex)`
+  min-width: calc(100vw - 320px);
+`
 
 /**
  * NOTE: The same pane might appear multiple times (split pane), so use index as tiebreaker
@@ -46,6 +53,7 @@ export const DeskToolPane = memo(
       payload,
       selected,
       siblingIndex,
+      fullWidth,
     } = props
 
     const PaneComponent = paneMap[pane.type] || UnknownPane
@@ -59,16 +67,31 @@ export const DeskToolPane = memo(
         siblingIndex={siblingIndex}
       >
         <Suspense fallback={<LoadingPane paneKey={paneKey} />}>
-          <PaneComponent
-            childItemId={childItemId || ''}
-            index={index}
-            itemId={itemId}
-            isActive={active}
-            isSelected={selected}
-            paneKey={paneKey}
-            // @ts-expect-error TS doesn't know how to handle this intersection
-            pane={pane}
-          />
+          {fullWidth ? (
+            <ActiveDocumentPane>
+              <PaneComponent
+                childItemId={childItemId || ''}
+                index={index}
+                itemId={itemId}
+                isActive={active}
+                isSelected={selected}
+                paneKey={paneKey}
+                // @ts-expect-error TS doesn't know how to handle this intersection
+                pane={pane}
+              />
+            </ActiveDocumentPane>
+          ) : (
+            <PaneComponent
+              childItemId={childItemId || ''}
+              index={index}
+              itemId={itemId}
+              isActive={active}
+              isSelected={selected}
+              paneKey={paneKey}
+              // @ts-expect-error TS doesn't know how to handle this intersection
+              pane={pane}
+            />
+          )}
         </Suspense>
       </PaneRouterProvider>
     )

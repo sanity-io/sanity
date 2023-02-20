@@ -44,7 +44,7 @@ import {
 type DocumentPaneOptions = DocumentPaneNode['options']
 
 const DOCUMENT_PANEL_MIN_WIDTH = 320
-const DOCUMENT_PANEL_INITIAL_MIN_WIDTH = 600
+const DOCUMENT_PANEL_INITIAL_MIN_WIDTH = 320
 const CHANGES_PANEL_MIN_WIDTH = 320
 
 const DIALOG_PROVIDER_POSITION: DialogProviderProps['position'] = [
@@ -243,9 +243,9 @@ function InnerDocumentPane() {
     () => (
       <PortalProvider __unstable_elements={{documentPanelPortalElement}}>
         <DialogProvider position={DIALOG_PROVIDER_POSITION} zOffset={zOffsets.portal}>
-          <PaneFooter ref={setFooterElement}>
+          {/* <PaneFooter ref={setFooterElement}>
             <DocumentStatusBar actionsBoxRef={setActionsBoxElement} />
-          </PaneFooter>
+          </PaneFooter> */}
         </DialogProvider>
       </PortalProvider>
     ),
