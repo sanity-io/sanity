@@ -49,7 +49,7 @@ export function ListPane(props: ListPaneProps) {
 
   return (
     <Pane
-      currentMaxWidth={350}
+      currentMaxWidth={320}
       data-testid="desk-tool-list-pane"
       id={paneKey}
       maxWidth={640}
@@ -62,14 +62,14 @@ export function ListPane(props: ListPaneProps) {
         </Card>
       )}
 
-      <PaneHeader
+      {/* <PaneHeader
         actions={<PaneHeaderActions menuItems={menuItems} menuItemGroups={menuItemGroups} />}
         backButton={
           features.backButton &&
           index > 0 && <Button as={BackLink} data-as="a" icon={ArrowLeftIcon} mode="bleed" />
         }
         title={title}
-      />
+      /> */}
 
       <PaneContent overflow={layoutCollapsed ? undefined : 'auto'}>
         <Stack padding={2} space={1}>

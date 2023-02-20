@@ -84,14 +84,14 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
 
   return (
     <SourceProvider name={sourceName || parentSourceName}>
-      <Pane currentMaxWidth={350} id={paneKey} maxWidth={640} minWidth={320} selected={isSelected}>
+      <Pane id={paneKey} minWidth={320} selected={isSelected}>
         {_DEBUG && (
           <Card padding={4} tone="transparent">
             <Code>{pane.source || '(none)'}</Code>
           </Card>
         )}
 
-        <DocumentListPaneHeader
+        {/* <DocumentListPaneHeader
           index={index}
           initialValueTemplates={initialValueTemplates}
           menuItems={menuItems}
@@ -99,7 +99,7 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
           setLayout={setLayout}
           setSortOrder={setSortOrder}
           title={title}
-        />
+        /> */}
 
         <DocumentListPaneContent
           childItemId={childItemId}

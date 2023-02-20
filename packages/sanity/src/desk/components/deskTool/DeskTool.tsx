@@ -1,8 +1,8 @@
-import {PortalProvider, useToast, useMediaIndex, Flex, Text, Box} from '@sanity/ui'
+import {PortalProvider, useToast, useMediaIndex, Flex, Text, Box, Button} from '@sanity/ui'
 import React, {memo, Fragment, useState, useEffect, useCallback} from 'react'
 import styled from 'styled-components'
 import isHotkey from 'is-hotkey'
-import {ChevronRightIcon} from '@sanity/icons'
+import {AddIcon, ChevronRightIcon, SearchIcon} from '@sanity/icons'
 import {LOADING_PANE} from '../../constants'
 import {LoadingPane, DeskToolPane} from '../../panes'
 import {useResolvedPanes} from '../../structureResolvers'
@@ -18,8 +18,12 @@ interface DeskToolProps {
 }
 
 const StyledPaneLayout = styled(PaneLayout)`
-  min-height: 100%;
+  height: calc(100% - 52px);
   min-width: 320px;
+`
+
+const Breadcrumbs = styled(Flex)`
+  border-bottom: solid 1px var(--card-border-color);
 `
 
 const isSaveHotkey = isHotkey('mod+s')
@@ -91,40 +95,46 @@ export const DeskTool = memo(function DeskTool({onPaneChange}: DeskToolProps) {
 
   return (
     <PortalProvider element={portalElement || null}>
-      <Flex gap={2} padding={4}>
-        {breadcrumbDataItems.map(
-          (
-            {
-              active,
-              childItemId,
-              groupIndex,
-              itemId,
-              key: paneKey,
-              pane,
-              index: paneIndex,
-              params: paneParams,
-              path,
-              payload,
-              siblingIndex,
-              selected,
-            },
-            index
-          ) => (
-            <Flex gap={2} key={`${pane.type}-${paneIndex}`}>
-              <Text>
-                <Link href={path}>{pane.title}</Link>
-              </Text>
-              {index === breadcrumbDataItems.length - 1 ? (
-                ' '
-              ) : (
-                <Text muted>
-                  <ChevronRightIcon />
+      <Breadcrumbs align="center" justify="space-between">
+        <Flex gap={2} padding={4}>
+          {breadcrumbDataItems.map(
+            (
+              {
+                active,
+                childItemId,
+                groupIndex,
+                itemId,
+                key: paneKey,
+                pane,
+                index: paneIndex,
+                params: paneParams,
+                path,
+                payload,
+                siblingIndex,
+                selected,
+              },
+              index
+            ) => (
+              <Flex gap={2} key={`${pane.type}-${paneIndex}`}>
+                <Text weight="medium">
+                  <Link href={path}>{pane.title}</Link>
                 </Text>
-              )}
-            </Flex>
-          )
-        )}
-      </Flex>
+                {index === breadcrumbDataItems.length - 1 ? (
+                  ' '
+                ) : (
+                  <Text muted>
+                    <ChevronRightIcon />
+                  </Text>
+                )}
+              </Flex>
+            )
+          )}
+        </Flex>
+        <Flex gap={2} padding={2}>
+          <Button padding={3} icon={SearchIcon} mode="bleed" />
+          <Button padding={3} icon={AddIcon} text="Create new" mode="ghost" />
+        </Flex>
+      </Breadcrumbs>
       <StyledPaneLayout
         flex={1}
         height={layoutCollapsed ? undefined : 'fill'}
