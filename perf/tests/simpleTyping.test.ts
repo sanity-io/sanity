@@ -12,9 +12,11 @@ export default {
     lag: {
       title: 'Lag',
       description: 'The lag measured while running the tests',
+      unit: 'ms',
     },
     timePerKeyStroke: {
       title: 'Time per keystroke',
+      unit: 'ms',
       description: 'The measured time per keystroke',
     },
   },
