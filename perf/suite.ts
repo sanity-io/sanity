@@ -11,6 +11,7 @@ import {createSanitySessionCookie} from './utils/createSanitySessionCookie'
 import {STUDIO_DATASET, STUDIO_PROJECT_ID} from './config'
 import {bundle} from './utils/bundlePerfHelpers'
 import {ALL_FIELDS, getGitInfo, parseDecoratedRefs} from './utils/gitUtils'
+import {studioMetricsClient} from './config/studioMetricsClient'
 
 const BASE_BRANCH_URL = 'https://performance-studio.sanity.build'
 const CURRENT_BRANCH_URL = process.env.BRANCH_DEPLOYMENT_URL || 'http://localhost:3300'
@@ -87,13 +88,6 @@ export const sanityClient = createClient({
   token: getEnv('PERF_TEST_SANITY_TOKEN'),
   apiVersion: '2023-02-03',
   useCdn: false,
-})
-
-const studioMetricsClient = createClient({
-  projectId: 'c1zuxvqn',
-  dataset: 'production',
-  token: getEnv('PERF_TEST_METRICS_TOKEN'),
-  apiVersion: '2023-02-03',
 })
 
 async function runSuite() {
