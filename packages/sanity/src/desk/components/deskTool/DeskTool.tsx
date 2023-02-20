@@ -1,7 +1,8 @@
-import {PortalProvider, useToast, useMediaIndex} from '@sanity/ui'
+import {PortalProvider, useToast, useMediaIndex, Flex, Text, Box} from '@sanity/ui'
 import React, {memo, Fragment, useState, useEffect, useCallback} from 'react'
 import styled from 'styled-components'
 import isHotkey from 'is-hotkey'
+import {ChevronRightIcon} from '@sanity/icons'
 import {LOADING_PANE} from '../../constants'
 import {LoadingPane, DeskToolPane} from '../../panes'
 import {useResolvedPanes} from '../../structureResolvers'
@@ -9,7 +10,7 @@ import {PaneNode} from '../../types'
 import {PaneLayout} from '../pane'
 import {useDeskTool} from '../../useDeskTool'
 import {NoDocumentTypesScreen} from './NoDocumentTypesScreen'
-import {useRouter} from 'sanity/router'
+import {Link, useRouter} from 'sanity/router'
 import {useSchema, _isCustomDocumentTypeDefinition} from 'sanity'
 
 interface DeskToolProps {
@@ -86,8 +87,44 @@ export const DeskTool = memo(function DeskTool({onPaneChange}: DeskToolProps) {
     return <NoDocumentTypesScreen />
   }
 
+  const breadcrumbDataItems = paneDataItems.filter((item) => item.pane.type != 'document')
+
   return (
     <PortalProvider element={portalElement || null}>
+      <Flex gap={2} padding={4}>
+        {breadcrumbDataItems.map(
+          (
+            {
+              active,
+              childItemId,
+              groupIndex,
+              itemId,
+              key: paneKey,
+              pane,
+              index: paneIndex,
+              params: paneParams,
+              path,
+              payload,
+              siblingIndex,
+              selected,
+            },
+            index
+          ) => (
+            <Flex gap={2} key={`${pane.type}-${paneIndex}`}>
+              <Text>
+                <Link href={path}>{pane.title}</Link>
+              </Text>
+              {index === breadcrumbDataItems.length - 1 ? (
+                ' '
+              ) : (
+                <Text muted>
+                  <ChevronRightIcon />
+                </Text>
+              )}
+            </Flex>
+          )
+        )}
+      </Flex>
       <StyledPaneLayout
         flex={1}
         height={layoutCollapsed ? undefined : 'fill'}
