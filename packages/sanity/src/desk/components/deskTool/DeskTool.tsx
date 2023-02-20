@@ -178,7 +178,7 @@ export const DeskTool = memo(function DeskTool({onPaneChange}: DeskToolProps) {
           paneDataItems.length > 0 &&
           paneDataItems[paneDataItems.length - 1].pane.type === 'document' && (
             <Flex gap={2} padding={2}>
-              <Button padding={3} icon={PublishIcon} text="Publish" tone="primary" />
+              <Button padding={3} icon={PublishIcon} text="Publish" tone="positive" />
               <MenuButton
                 button={<Button padding={3} icon={EllipsisVerticalIcon} mode="bleed" />}
                 id="menu-button-example"

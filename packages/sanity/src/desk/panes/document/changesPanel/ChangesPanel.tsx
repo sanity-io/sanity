@@ -62,9 +62,11 @@ export function ChangesPanel(): React.ReactElement | null {
       direction="column"
       flex={1}
       style={{
-        borderLeft: '1px dashed var(--card-border-color)',
+        border: '1px solid var(--card-border-color)',
         overflow: 'hidden',
         minWidth: 320,
+        margin: 10,
+        borderRadius: 5,
       }}
       data-testid="review-changes-pane"
     >

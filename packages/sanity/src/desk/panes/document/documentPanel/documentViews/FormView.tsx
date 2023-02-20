@@ -1,11 +1,13 @@
 /* eslint-disable no-nested-ternary */
 
 import {isActionEnabled} from '@sanity/schema/_internal'
-import {Box, Container, Flex, Spinner, Text} from '@sanity/ui'
+import {Box, Button, Container, Flex, Heading, Spinner, Text} from '@sanity/ui'
 import React, {useCallback, useEffect, useMemo} from 'react'
 import {tap} from 'rxjs/operators'
+import {DotIcon, SelectIcon} from '@sanity/icons'
 import {useDocumentPane} from '../../useDocumentPane'
 import {Delay} from '../../../../components/Delay'
+import {DocumentHeaderTitle} from '../header/DocumentHeaderTitle'
 import {useConditionalToast} from './useConditionalToast'
 import {
   DocumentMutationEvent,
@@ -124,6 +126,26 @@ export function FormView(props: FormViewProps) {
       sizing="border"
       width={1}
     >
+      <Flex direction="column" gap={4} paddingBottom={4}>
+        <Box paddingTop={5}>
+          <Heading size={5}>
+            <DocumentHeaderTitle />
+          </Heading>
+        </Box>
+        <Flex align="center" wrap="wrap">
+          <Text size={2} weight="medium" muted>
+            <Flex paddingRight={2} gap={2} align="center">
+              <>Published 2 days ago</>
+              <DotIcon />
+            </Flex>
+          </Text>
+          <Button mode="bleed" size={1} padding={2} text="Last edited 2h ago" />
+          <Text size={2} weight="medium" muted>
+            <DotIcon />
+          </Text>
+          <Button mode="bleed" size={1} padding={2} text="Browse history" iconRight={SelectIcon} />
+        </Flex>
+      </Flex>
       <PresenceOverlay margins={margins}>
         <Box as="form" onSubmit={preventDefault}>
           {ready ? (

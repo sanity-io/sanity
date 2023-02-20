@@ -11,6 +11,7 @@ interface PaneHeaderProps {
   subActions?: React.ReactNode
   tabs?: React.ReactNode
   title: React.ReactNode
+  hideTitle: boolean
 }
 
 /**
@@ -20,7 +21,7 @@ export const PaneHeader = forwardRef(function PaneHeader(
   props: PaneHeaderProps,
   ref: React.ForwardedRef<HTMLDivElement>
 ) {
-  const {actions, backButton, loading, subActions, tabs, title} = props
+  const {actions, backButton, loading, subActions, tabs, title, hideTitle} = props
   const {collapse, collapsed, expand, rootElement: paneElement} = usePane()
   const paneRect = useElementRect(paneElement || null)
 
@@ -46,35 +47,39 @@ export const PaneHeader = forwardRef(function PaneHeader(
       <Root data-collapsed={collapsed ? '' : undefined} data-testid="pane-header" ref={ref}>
         <LegacyLayerProvider zOffset="paneHeader">
           <Card data-collapsed={collapsed ? '' : undefined} tone="inherit">
-            <Layout
-              onClick={handleLayoutClick}
-              padding={2}
-              paddingBottom={tabs || subActions ? 0 : 2}
-              sizing="border"
-              style={layoutStyle}
-            >
-              {backButton}
-
-              <TitleBox
-                flex={1}
-                onClick={handleTitleClick}
-                paddingY={3}
-                paddingLeft={backButton ? 1 : 3}
+            {hideTitle ? (
+              ' '
+            ) : (
+              <Layout
+                onClick={handleLayoutClick}
+                padding={2}
+                paddingBottom={tabs || subActions ? 0 : 2}
+                sizing="border"
+                style={layoutStyle}
               >
-                {loading && <TitleTextSkeleton animated radius={1} />}
-                {!loading && (
-                  <TitleText tabIndex={0} textOverflow="ellipsis" weight="semibold">
-                    {title}
-                  </TitleText>
-                )}
-              </TitleBox>
+                {backButton}
 
-              {actions && (
-                <Box hidden={collapsed} paddingLeft={1}>
-                  <LegacyLayerProvider zOffset="paneHeader">{actions}</LegacyLayerProvider>
-                </Box>
-              )}
-            </Layout>
+                <TitleBox
+                  flex={1}
+                  onClick={handleTitleClick}
+                  paddingY={3}
+                  paddingLeft={backButton ? 1 : 3}
+                >
+                  {loading && <TitleTextSkeleton animated radius={1} />}
+                  {!loading && (
+                    <TitleText tabIndex={0} textOverflow="ellipsis" weight="semibold">
+                      {title}
+                    </TitleText>
+                  )}
+                </TitleBox>
+
+                {actions && (
+                  <Box hidden={collapsed} paddingLeft={1}>
+                    <LegacyLayerProvider zOffset="paneHeader">{actions}</LegacyLayerProvider>
+                  </Box>
+                )}
+              </Layout>
+            )}
 
             {(tabs || subActions) && (
               <Flex

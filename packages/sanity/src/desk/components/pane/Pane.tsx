@@ -23,7 +23,7 @@ const Root = styled(Card)`
 
   // NOTE: This will render a border to the right side of each pane
   // without taking up physical space.
-  // box-shadow: 1px 0 0 var(--card-border-color);
+  box-shadow: 1px 0 0 var(--card-border-color);
 `
 
 /**
@@ -221,7 +221,7 @@ export const Pane = forwardRef(function Pane(
         </PaneContext.Provider>
       </LegacyLayerProvider>
 
-      {/* {divider} */}
+      {divider}
     </>
   )
 })

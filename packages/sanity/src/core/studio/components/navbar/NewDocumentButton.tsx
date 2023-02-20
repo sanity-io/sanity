@@ -1,7 +1,7 @@
 import React, {useCallback, useMemo, useState} from 'react'
 import {Dialog, Grid, Button, Flex, Box, Tooltip, Spinner, Text} from '@sanity/ui'
 import styled from 'styled-components'
-import {ComposeIcon, DocumentIcon} from '@sanity/icons'
+import {AddIcon, DocumentIcon} from '@sanity/icons'
 import {useSource} from '../../source'
 import {useColorScheme} from '../../colorScheme'
 import {TemplatePermissionsResult, useTemplatePermissions} from '../../../store'
@@ -96,8 +96,9 @@ export function NewDocumentButton() {
           <Button
             aria-label="New document…"
             disabled={!canCreateDocument || !hasNewDocumentOptions || loading}
-            icon={ComposeIcon}
-            mode="bleed"
+            icon={AddIcon}
+            mode="ghost"
+            text="Create new"
             onClick={handleOpen}
             ref={setNewDocumentButtonEl}
             style={{

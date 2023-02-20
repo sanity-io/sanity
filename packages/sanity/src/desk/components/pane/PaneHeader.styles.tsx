@@ -13,7 +13,7 @@ export const Root = styled(Layer)`
     left: 0;
     right: 0;
     bottom: -1px;
-    border-bottom: 1px solid var(--card-shadow-outline-color);
+    // border-bottom: 1px solid var(--card-shadow-outline-color);
   }
 `
 

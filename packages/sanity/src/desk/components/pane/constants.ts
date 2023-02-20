@@ -6,7 +6,7 @@ export const PANE_DEBUG = false
 /**
  * @internal
  */
-export const PANE_COLLAPSED_WIDTH = 0
+export const PANE_COLLAPSED_WIDTH = 15
 
 /**
  * @internal

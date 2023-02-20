@@ -132,7 +132,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
 
   return (
     <Flex direction="column" flex={2} overflow={layoutCollapsed ? undefined : 'hidden'}>
-      {/* <DocumentPanelHeader rootElement={rootElement} ref={setHeaderElement} /> */}
+      <DocumentPanelHeader rootElement={rootElement} ref={setHeaderElement} />
 
       <PaneContent>
         <PortalProvider
@@ -155,32 +155,6 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
               data-testid="document-panel-scroller"
               ref={setDocumentScrollElement}
             >
-              <DocumentHeader direction="column" gap={4} padding={4}>
-                <Box paddingTop={5}>
-                  <Heading size={5}>
-                    <DocumentHeaderTitle />
-                  </Heading>
-                </Box>
-                <Flex align="center">
-                  <Text size={2} weight="medium" muted>
-                    <Flex paddingRight={2} gap={2} align="center">
-                      <>Published 2 days ago</>
-                      <DotIcon />
-                    </Flex>
-                  </Text>
-                  <Button mode="bleed" size={1} padding={2} text="Last edited 2h ago" />
-                  <Text size={2} weight="medium" muted>
-                    <DotIcon />
-                  </Text>
-                  <Button
-                    mode="bleed"
-                    size={1}
-                    padding={2}
-                    text="Browse history"
-                    iconRight={SelectIcon}
-                  />
-                </Flex>
-              </DocumentHeader>
               <FormView
                 hidden={formViewHidden}
                 key={documentId + (ready ? '_ready' : '_pending')}

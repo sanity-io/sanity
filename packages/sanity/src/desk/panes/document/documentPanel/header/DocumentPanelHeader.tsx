@@ -68,13 +68,22 @@ export const DocumentPanelHeader = memo(
         ref={ref}
         loading={!ready}
         title={<DocumentHeaderTitle />}
+        hideTitle
         tabs={showTabs && <DocumentHeaderTabs />}
         backButton={
           features.backButton &&
           index > 0 && <Button as={BackLink} data-as="a" icon={ArrowLeftIcon} mode="bleed" />
         }
         subActions={
-          showVersionMenu && <TimelineMenu chunk={rev} mode="rev" placement="bottom-end" />
+          showSplitPaneButton && (
+            <Button
+              icon={SplitVerticalIcon}
+              key="split-pane-button"
+              mode="bleed"
+              onClick={onPaneSplit}
+              title="Split pane right"
+            />
+          )
         }
         actions={
           <Inline space={1}>
