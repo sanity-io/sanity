@@ -22,7 +22,10 @@ export interface PerformanceTestProps<
   run: (context: PerformanceTestContext) => Promise<Metrics>
 }
 
+type Unit = 'ms'
+
 type MetricInfo = {
   title: string
   description: string
+  unit: Unit
 }
