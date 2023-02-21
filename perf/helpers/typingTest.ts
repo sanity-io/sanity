@@ -25,11 +25,13 @@ async function sample(
   let totalLag = 0
   let totalDuration = 0
 
-  const lastLagCheck = performance.now()
+  let lastLagCheck = performance.now()
   const lagInterval = setInterval(function checkLag() {
+    const now = performance.now()
     // In case we fire before the timer is supposed to run, this is fine
-    const delay = Math.floor(Math.max(0, performance.now() - lastLagCheck - LAG_CHECK_MS))
-    totalLag += delay
+    const lag = Math.max(0, now - lastLagCheck - LAG_CHECK_MS)
+    totalLag += lag
+    lastLagCheck = now
   }, LAG_CHECK_MS)
 
   for (let i = 0; i < chars.length; i++) {
