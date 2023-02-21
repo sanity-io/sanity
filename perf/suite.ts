@@ -75,7 +75,7 @@ function runCompare(options: RunCompareOptions): Promise<Measurement[]> {
           return {
             _key: metricName,
             metric: metricName,
-            iterations: iterationResults,
+            iterations: current.map((c, i) => ({current: c, base: base[i], _key: `${i}`})),
             stdDev: standardDeviation(base.concat(current)),
             median: {base: baseMedian, current: currentMedian},
             diff: currentMedian / baseMedian,
