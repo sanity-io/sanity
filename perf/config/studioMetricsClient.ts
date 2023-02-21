@@ -6,4 +6,5 @@ export const studioMetricsClient = createClient({
   dataset: 'production',
   token: getEnv('PERF_TEST_METRICS_TOKEN'),
   apiVersion: '2023-02-03',
+  useCdn: false,
 })
