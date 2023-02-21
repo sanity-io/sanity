@@ -1,5 +1,6 @@
 import React, {createContext, useCallback, useContext, useEffect, useMemo, useState} from 'react'
 import {studioTheme, ThemeColorSchemeKey, ThemeProvider, usePrefersDark} from '@sanity/ui'
+import {DesktopIcon, MoonIcon, SunIcon} from '@sanity/icons'
 
 const LOCAL_STORAGE_KEY = 'sanityStudio:ui:colorScheme'
 
@@ -31,6 +32,8 @@ export const ColorSchemeContext = createContext<{
   usingSystemScheme: boolean
   /** Clear the stored color scheme from local storage and use the system color scheme */
   clearStoredScheme: () => void
+  /** The color scheme options */
+  colorSchemeOptions: ColorSchemeOption[]
 } | null>(null)
 
 /** @internal */
@@ -38,6 +41,14 @@ export interface ColorSchemeProviderProps {
   children: React.ReactNode
   onSchemeChange?: (nextScheme: ThemeColorSchemeKey) => void
   scheme?: ThemeColorSchemeKey
+}
+
+interface ColorSchemeOption {
+  icon: React.ComponentType
+  name: 'light' | 'dark' | 'system'
+  onSelect: () => void
+  selected: boolean
+  title: string
 }
 
 /** @internal */
@@ -93,11 +104,44 @@ export function ColorSchemeProvider({
     }
   }, [onSchemeChange, storedScheme, systemScheme])
 
-  const colorScheme = useMemo(
-    () => ({scheme, setScheme: handleSetScheme, usingSystemScheme, clearStoredScheme}),
-    [clearStoredScheme, handleSetScheme, scheme, usingSystemScheme]
-  )
+  const colorSchemeOptions = useMemo(() => {
+    const options: ColorSchemeOption[] = [
+      {
+        title: 'System',
+        name: 'system',
+        selected: usingSystemScheme,
+        onSelect: clearStoredScheme,
+        icon: DesktopIcon,
+      },
+      {
+        title: 'Dark',
+        name: 'dark',
+        selected: scheme === 'dark' && !usingSystemScheme,
+        onSelect: () => handleSetScheme('dark'),
+        icon: MoonIcon,
+      },
+      {
+        title: 'Light',
+        name: 'light',
+        selected: scheme === 'light' && !usingSystemScheme,
+        onSelect: () => handleSetScheme('light'),
+        icon: SunIcon,
+      },
+    ]
 
+    return options
+  }, [clearStoredScheme, handleSetScheme, scheme, usingSystemScheme])
+
+  const colorScheme = useMemo(
+    () => ({
+      scheme,
+      setScheme: handleSetScheme,
+      usingSystemScheme,
+      clearStoredScheme,
+      colorSchemeOptions,
+    }),
+    [clearStoredScheme, colorSchemeOptions, handleSetScheme, scheme, usingSystemScheme]
+  )
   return (
     <ColorSchemeContext.Provider value={colorScheme}>
       {/* Note: this is a fallback ThemeProvider that is for any components */}

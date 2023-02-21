@@ -1,4 +1,4 @@
-import {LeaveIcon, ChevronDownIcon, CogIcon} from '@sanity/icons'
+import {LeaveIcon, ChevronDownIcon, CogIcon, CheckmarkIcon} from '@sanity/icons'
 import {
   Box,
   Button,
@@ -13,14 +13,15 @@ import {
   Stack,
   Text,
   Tooltip,
+  useRootTheme,
 } from '@sanity/ui'
 import React, {useMemo} from 'react'
 import styled from 'styled-components'
 import {UserAvatar} from '../../../../components'
 import {getProviderTitle} from '../../../../store'
+import {StudioTheme} from '../../../../theme'
 import {useColorScheme} from '../../../colorScheme'
 import {useWorkspace} from '../../../workspace'
-import {Appearance} from '../appearance/appearance'
 import {LoginProviderLogo} from './LoginProviderLogo'
 
 const AVATAR_SIZE = 1
@@ -37,8 +38,10 @@ const AvatarBox = styled(Box)`
 `
 
 export function UserMenu() {
+  const {colorSchemeOptions} = useColorScheme()
   const {currentUser, projectId, auth} = useWorkspace()
   const {scheme} = useColorScheme()
+  const theme = useRootTheme().theme as StudioTheme
 
   const providerTitle = getProviderTitle(currentUser?.provider)
 
@@ -103,8 +106,18 @@ export function UserMenu() {
               </Stack>
             </Flex>
           </Card>
-
-          <Appearance />
+          {!theme.__legacy &&
+            colorSchemeOptions.map((option) => (
+              <MenuItem
+                aria-label={`Use ${option} appearance`}
+                icon={option.icon}
+                iconRight={option.selected && <CheckmarkIcon />}
+                key={option.name}
+                onClick={() => option.onSelect()}
+                pressed={option.selected}
+                text={option.title}
+              />
+            ))}
 
           <MenuDivider />
 

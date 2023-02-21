@@ -1,5 +1,16 @@
-import {Layer, Card, Flex, Text, Box, Button, Stack, useGlobalKeyDown} from '@sanity/ui'
-import {CloseIcon, CogIcon, LeaveIcon} from '@sanity/icons'
+import {
+  Layer,
+  Card,
+  Flex,
+  Text,
+  Box,
+  Button,
+  Stack,
+  useGlobalKeyDown,
+  Label,
+  useRootTheme,
+} from '@sanity/ui'
+import {CheckmarkIcon, CloseIcon, CogIcon, LeaveIcon} from '@sanity/icons'
 import React, {memo, useEffect, useState} from 'react'
 import styled from 'styled-components'
 import {useWorkspace} from '../../workspace'
@@ -7,8 +18,9 @@ import {Tool} from '../../../config'
 import {useToolMenuComponent} from '../../studio-components-hooks'
 import {UserAvatar, useRovingFocus} from '../../../components'
 import {useWorkspaces} from '../../workspaces'
+import {useColorScheme} from '../../colorScheme'
+import {StudioTheme} from '../../../theme'
 import {WorkspaceMenuButton} from './workspace'
-import {Appearance} from './appearance/appearance'
 
 const Root = styled(Layer)`
   position: fixed;
@@ -60,12 +72,14 @@ interface NavDrawerProps {
 const PADDING = [3, 3, 4]
 
 export const NavDrawer = memo(function NavDrawer(props: NavDrawerProps) {
+  const {colorSchemeOptions} = useColorScheme()
   const {activeToolName, isOpen, onClose, tools} = props
   const [closeButtonElement, setCloseButtonElement] = useState<HTMLButtonElement | null>(null)
   const [innerCardElement, setInnerCardElement] = useState<HTMLDivElement | null>(null)
   const tabIndex = isOpen ? 0 : -1
   const {auth, currentUser, projectId} = useWorkspace()
   const workspaces = useWorkspaces()
+  const theme = useRootTheme().theme as StudioTheme
 
   useRovingFocus({
     rootElement: innerCardElement,
@@ -145,7 +159,32 @@ export const NavDrawer = memo(function NavDrawer(props: NavDrawerProps) {
           {/* Theme picker and Manage */}
           <Flex direction="column">
             <Card borderTop padding={PADDING} overflow="auto">
-              <Appearance />
+              <Stack as="ul" space={1}>
+                <Box padding={2}>
+                  <Label size={1} muted>
+                    Appearance
+                  </Label>
+                </Box>
+
+                {!theme.__legacy &&
+                  colorSchemeOptions.map((option, key) => (
+                    <Stack as="li" key={key}>
+                      <Button
+                        as="a"
+                        aria-label={`Use ${option} appearance`}
+                        icon={option.icon}
+                        iconRight={option.selected && <CheckmarkIcon />}
+                        key={option.name}
+                        mode="bleed"
+                        justify="flex-start"
+                        tabIndex={0}
+                        onClick={() => option.onSelect()}
+                        selected={option.selected}
+                        text={option.title}
+                      />
+                    </Stack>
+                  ))}
+              </Stack>
             </Card>
             <Card borderTop padding={PADDING}>
               <Stack as="li">
