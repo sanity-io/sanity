@@ -53,7 +53,7 @@ interface Measurement {
 }
 function runCompare(options: RunCompareOptions): Promise<Measurement[]> {
   const {baseBranchUrl, currentBranchUrl, test} = options
-  const iterations = 4
+  const iterations = 6
   return lastValueFrom(
     range(iterations).pipe(
       concatMap(async (iteration) => {
