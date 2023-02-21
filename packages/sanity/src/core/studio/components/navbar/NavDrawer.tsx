@@ -57,6 +57,8 @@ interface NavDrawerProps {
   tools: Tool[]
 }
 
+const PADDING = [3, 3, 4]
+
 export const NavDrawer = memo(function NavDrawer(props: NavDrawerProps) {
   const {activeToolName, isOpen, onClose, tools} = props
   const [closeButtonElement, setCloseButtonElement] = useState<HTMLButtonElement | null>(null)
@@ -83,8 +85,6 @@ export const NavDrawer = memo(function NavDrawer(props: NavDrawerProps) {
   }, [closeButtonElement, isOpen])
 
   const ToolMenu = useToolMenuComponent()
-
-  const PADDING = [3, 3, 4]
 
   return (
     <Root>
@@ -132,7 +132,7 @@ export const NavDrawer = memo(function NavDrawer(props: NavDrawerProps) {
 
         <Flex direction="column" flex={1} justify="space-between" overflow="auto">
           {/* Tools */}
-          <Card padding={PADDING}>
+          <Card padding={PADDING} overflow="auto">
             <ToolMenu
               activeToolName={activeToolName}
               closeSidebar={onClose}
@@ -144,7 +144,7 @@ export const NavDrawer = memo(function NavDrawer(props: NavDrawerProps) {
 
           {/* Theme picker and Manage */}
           <Flex direction="column">
-            <Card borderTop padding={PADDING}>
+            <Card borderTop padding={PADDING} overflow="auto">
               <Appearance />
             </Card>
             <Card borderTop padding={PADDING}>

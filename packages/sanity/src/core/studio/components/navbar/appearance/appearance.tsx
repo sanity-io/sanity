@@ -1,13 +1,8 @@
 import React from 'react'
 import {Box, Button, Label, Stack, useRootTheme} from '@sanity/ui'
 import {CheckmarkIcon, DesktopIcon, MoonIcon, SunIcon} from '@sanity/icons'
-import styled from 'styled-components'
 import {useColorScheme} from '../../../colorScheme'
 import {StudioTheme} from '../../../../theme'
-
-const StyledButton = styled(Button)`
-  cursor: pointer;
-`
 
 export function Appearance() {
   const {scheme, setScheme, clearStoredScheme, usingSystemScheme} = useColorScheme()
@@ -15,15 +10,15 @@ export function Appearance() {
 
   if (!theme?.__legacy)
     return (
-      <Stack as="ul" space={[1, 2]}>
+      <Stack as="ul" space={1}>
         <Box padding={2}>
           <Label size={1} muted>
             Appearance
           </Label>
         </Box>
 
-        <Stack as="li" key="System">
-          <StyledButton
+        <Stack as="li">
+          <Button
             aria-label="Use system appearance"
             icon={DesktopIcon}
             iconRight={usingSystemScheme && <CheckmarkIcon />}
@@ -35,8 +30,8 @@ export function Appearance() {
             text="System"
           />
         </Stack>
-        <Stack as="li" key="Dark">
-          <StyledButton
+        <Stack as="li">
+          <Button
             aria-label="Use dark appearance"
             icon={MoonIcon}
             iconRight={scheme === 'dark' && !usingSystemScheme && <CheckmarkIcon />}
@@ -49,8 +44,8 @@ export function Appearance() {
           />
         </Stack>
 
-        <Stack as="li" key="Light">
-          <StyledButton
+        <Stack as="li">
+          <Button
             aria-label="Use light appearance"
             icon={SunIcon}
             mode="bleed"
