@@ -5,6 +5,7 @@ import {tap, toArray} from 'rxjs/operators'
 import {createClient, SanityClient} from '@sanity/client'
 import {BrowserContext} from '@playwright/test'
 import globby from 'globby'
+import {mean, average, standardDeviation, harmonicMean, mode, median} from 'simple-statistics'
 import {PerformanceTestProps} from './types'
 import {getEnv} from './utils/env'
 import {createSanitySessionCookie} from './utils/createSanitySessionCookie'
@@ -65,16 +66,19 @@ function runCompare(options: RunCompareOptions): Promise<Measurement[]> {
       map((iterationResults) => {
         return Object.entries(test.metrics).map(([metricName, metric]) => {
           // sum of all iterative measurements for this metric
-          const metricSumDiff = iterationResults.reduce(
-            (diff, iteration) => diff + iteration.current[metricName] / iteration.base[metricName],
-            0
-          )
+          const current = iterationResults.map((iteration) => iteration.current[metricName])
+          const base = iterationResults.map((iteration) => iteration.base[metricName])
+
+          const baseMedian = median(base)
+          const currentMedian = median(current)
 
           return {
             _key: metricName,
             metric: metricName,
-            iterations,
-            diff: metricSumDiff / iterations,
+            iterations: iterationResults,
+            stdDev: standardDeviation(base.concat(current)),
+            median: {base: baseMedian, current: currentMedian},
+            diff: currentMedian / baseMedian,
           }
         })
       })

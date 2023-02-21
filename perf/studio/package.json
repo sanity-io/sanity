@@ -7,7 +7,7 @@
     "build": "sanity build",
     "clean": "rimraf .sanity dist",
     "dev": "sanity dev --port 3300",
-    "start": "sanity start"
+    "start": "sanity start --port 3300"
   },
   "dependencies": {
     "@sanity/client": "^4.0.1",
