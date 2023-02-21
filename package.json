@@ -59,7 +59,7 @@
     "start": "yarn dev:test-studio",
     "test": "jest",
     "test-e2e": "start-server-and-test build-and-serve http://localhost:3333 'yarn cypress:run'",
-    "perf:test": "ts-node --files --project perf/tsconfig.json -r dotenv/config perf/suite",
+    "perf:test": "yarn perf:studio && ts-node --files --project perf/tsconfig.json -r dotenv/config perf/suite",
     "perf:studio": "yarn --cwd perf/studio build && yarn --cwd perf/studio start",
     "type-check": "tsc --build",
     "updated": "lerna updated",
