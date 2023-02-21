@@ -7,9 +7,6 @@ import {StringInputProps} from '../types'
  */
 export function StringInput(props: StringInputProps) {
   const {validationError, elementProps} = props
-  let i = 10000
-  while (i--) {
-    console.log('lag lag lag')
-  }
+  document.body.style.height += 0.001
   return <TextInput {...elementProps} customValidity={validationError} data-testid="string-input" />
 }
