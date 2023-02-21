@@ -158,7 +158,7 @@ function renderDocumentFromWorkerData() {
   // Same as above, but we don't want to enforce a .jsx extension for anything with JSX
   debug('Registering esbuild for .js files using jsx loader')
   const {unregister: unregisterJs} = __DEV__
-    ? () => undefined
+    ? () => ({unregister: () => undefined})
     : require('esbuild-register/dist/node').register({
         target: `node${process.version.slice(1)}`,
         extensions: ['.js'],
