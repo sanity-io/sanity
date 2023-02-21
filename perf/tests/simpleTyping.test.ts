@@ -9,7 +9,7 @@ export default {
   This test measures the typing speed of a simple text field. It's collecting results as a regression in percentage between the base branch and the current branch. A negative value means that the current branch is faster than the base branch.
   `,
   metrics: {
-    lag: {
+    lagPerKeystroke: {
       title: 'Lag',
       description: 'The lag measured while running the tests',
       unit: 'ms',
@@ -37,8 +37,8 @@ export default {
     await Promise.all([client.delete(`drafts.${documentId}`), client.delete(documentId)])
 
     return {
-      lag: samples.reduce((lag, sample) => lag + sample.lag, 0),
+      lagPerKeystroke: samples.reduce((lag, sample) => lag + sample.lagPerKeystroke, 0),
       timePerKeyStroke: samples.reduce((lag, sample) => lag + sample.timePerKeyStroke, 0),
     }
   },
-} satisfies PerformanceTestProps<{lag: number; timePerKeyStroke: number}>
+} satisfies PerformanceTestProps<{lagPerKeystroke: number; timePerKeyStroke: number}>

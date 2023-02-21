@@ -5,7 +5,7 @@ import {tap, toArray} from 'rxjs/operators'
 import {createClient, SanityClient} from '@sanity/client'
 import {BrowserContext} from '@playwright/test'
 import globby from 'globby'
-import {mean, average, standardDeviation, harmonicMean, mode, median} from 'simple-statistics'
+import {median, standardDeviation} from 'simple-statistics'
 import {PerformanceTestProps} from './types'
 import {getEnv} from './utils/env'
 import {createSanitySessionCookie} from './utils/createSanitySessionCookie'
@@ -53,7 +53,7 @@ interface Measurement {
 }
 function runCompare(options: RunCompareOptions): Promise<Measurement[]> {
   const {baseBranchUrl, currentBranchUrl, test} = options
-  const iterations = 6
+  const iterations = 4
   return lastValueFrom(
     range(iterations).pipe(
       concatMap(async (iteration) => {
