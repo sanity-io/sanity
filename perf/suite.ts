@@ -17,16 +17,6 @@ import {studioMetricsClient} from './config/studioMetricsClient'
 const BASE_BRANCH_URL = 'https://performance-studio.sanity.build'
 const CURRENT_BRANCH_URL = process.env.BRANCH_DEPLOYMENT_URL || 'http://localhost:3300'
 
-async function getRepoInfo() {
-  const gitInfo = await getGitInfo(ALL_FIELDS)
-  const {branches, tags} = parseDecoratedRefs(gitInfo.refs)
-  return {
-    ...gitInfo,
-    branches,
-    tags,
-  }
-}
-
 interface RunCompareOptions {
   baseBranchUrl: string
   currentBranchUrl: string
@@ -120,8 +110,10 @@ async function runSuite() {
       })
     )
   )
+  const headless = (getEnv('PERF_TEST_HEADLESS', true) || 'true') === 'true'
+
   const browser = await chromium.launch({
-    headless: Boolean(getEnv('PERF_TEST_HEADLESS', true)) === false,
+    headless,
   })
   const context = await browser.newContext()
   const bundleHelpers = await bundle(require.resolve(`${__dirname}/helpers/register.ts`))
@@ -152,19 +144,6 @@ async function runSuite() {
     )
   )
 
-  function getMachineInfo() {
-    const [avg1m, avg5m, avg10m] = os.loadavg()
-    return {
-      type: os.type(),
-      platform: os.platform(),
-      version: os.version(),
-      hostname: os.hostname(),
-      arch: os.arch(),
-      memory: {total: os.totalmem(), free: os.freemem()},
-      uptime: os.uptime(),
-      loadavg: {avg1m, avg5m, avg10m},
-    }
-  }
   const repoInfo = await getRepoInfo()
 
   const gitInfo = {
@@ -212,3 +191,28 @@ runSuite().then(
     process.exit(1)
   }
 )
+
+async function getRepoInfo() {
+  const gitInfo = await getGitInfo(ALL_FIELDS)
+  const {branches, tags} = parseDecoratedRefs(gitInfo.refs)
+  return {
+    ...gitInfo,
+    branches,
+    tags,
+  }
+}
+
+function getMachineInfo() {
+  const [avg1m, avg5m, avg10m] = os.loadavg()
+  return {
+    type: os.type(),
+    platform: os.platform(),
+    version: os.version(),
+    release: os.release(),
+    hostname: os.hostname(),
+    arch: os.arch(),
+    memory: {total: os.totalmem(), free: os.freemem()},
+    uptime: os.uptime(),
+    loadavg: {avg1m, avg5m, avg10m},
+  }
+}
