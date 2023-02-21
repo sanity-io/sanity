@@ -21,15 +21,14 @@ const envPrefix = 'SANITY_STUDIO_'
  * @returns Object of studio environment variables
  * @public
  */
-export function getStudioEnvironmentVariables({
-  prefix = '',
-  envFile = false,
-  jsonEncode = false,
-}: {
-  prefix?: string
-  envFile?: {mode: string; envDir?: string} | false
-  jsonEncode?: boolean
-}): Record<string, string> {
+export function getStudioEnvironmentVariables(
+  options: {
+    prefix?: string
+    envFile?: {mode: string; envDir?: string} | false
+    jsonEncode?: boolean
+  } = {}
+): Record<string, string> {
+  const {prefix = '', envFile = false, jsonEncode = false} = options
   const fullEnv = envFile
     ? {...process.env, ...loadEnv(envFile.mode, envFile.envDir || process.cwd(), [envPrefix])}
     : process.env
