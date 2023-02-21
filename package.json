@@ -59,7 +59,8 @@
     "start": "yarn dev:test-studio",
     "test": "jest",
     "test-e2e": "start-server-and-test build-and-serve http://localhost:3333 'yarn cypress:run'",
-    "perf:test": "yarn perf:studio && ts-node --files --project perf/tsconfig.json -r dotenv/config perf/suite",
+    "perf:test:ci": "ts-node --files --project perf/tsconfig.json -r dotenv/config perf/suite",
+    "perf:test": "start-server-and-test perf:studio 3300 'ts-node --files --project perf/tsconfig.json -r dotenv/config perf/suite'",
     "perf:studio": "yarn --cwd perf/studio build && yarn --cwd perf/studio start",
     "type-check": "tsc --build",
     "updated": "lerna updated",
@@ -146,7 +147,7 @@
     "rxjs": "^7.8.0",
     "semver": "^7.3.5",
     "simple-statistics": "^7.8.3",
-    "start-server-and-test": "^1.14.0",
+    "start-server-and-test": "^1.15.4",
     "tmp": "^0.2.1",
     "typescript": "^4.9.4",
     "yargs": "^17.3.0"
