@@ -84,7 +84,7 @@ export const sanityClient = createClient({
   useCdn: false,
 })
 
-async function runSuite() {
+async function run() {
   const testFiles = await globby(`${__dirname}/tests/**/*.test.ts`)
 
   const testModules = await Promise.all(
@@ -180,7 +180,7 @@ async function runSuite() {
   await browser.close()
 }
 
-runSuite().then(
+run().then(
   () => {
     // eslint-disable-next-line no-console
     console.log('Ran performance test suite')
