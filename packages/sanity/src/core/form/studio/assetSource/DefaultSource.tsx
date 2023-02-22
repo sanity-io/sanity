@@ -42,7 +42,10 @@ const buildFilterQuery = (acceptParam: string) => {
     {mimes: '', extensions: '', wildcards: ''}
   )
 
-  // when no accept filter is set, we don't need to add the filter condition
+  /* when no accept filter is set, we don't need to add the filter condition
+  wildcards conditions do not work with arrays so the whole query is built at the top on the condition connected
+  with ORs. So when they are empty it means that we can keep the whole first section clean.
+  The extension and mimeType work when the arrays are empty returning the right values so they are kept in the query */
   return `&&
   (
     ${typesForFilter.wildcards} 
