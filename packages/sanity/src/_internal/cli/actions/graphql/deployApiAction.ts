@@ -7,6 +7,7 @@ import {hideBin} from 'yargs/helpers'
 import oneline from 'oneline'
 
 import {debug} from '../../debug'
+import {getClientUrl} from '../../util/getClientUrl'
 import {getUrlHeaders} from '../../util/getUrlHeaders'
 import {extractFromSanitySchema} from './extractFromSanitySchema'
 import {SchemaError} from './SchemaError'
@@ -295,7 +296,8 @@ export default async function deployGraphQLApiAction(
       })
 
       spinner.stop()
-      const apiUrl = projectClient.getUrl(
+      const apiUrl = getClientUrl(
+        projectClient,
         response.location.replace(/^\/(v1|v\d{4}-\d{2}-\d{2})\//, '/')
       )
       output.print(`URL:     ${apiUrl}`)
@@ -375,7 +377,7 @@ async function getCurrentSchemaProps(
   playgroundEnabled?: boolean
 }> {
   try {
-    const apiUrl = client.getUrl(`/apis/graphql/${dataset}/${tag}`)
+    const apiUrl = getClientUrl(client, `/apis/graphql/${dataset}/${tag}`)
     const res = await getUrlHeaders(apiUrl, {
       Authorization: `Bearer ${client.config().token}`,
     })

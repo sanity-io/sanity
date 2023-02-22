@@ -1,16 +1,25 @@
 import {createEditor, Descendant} from 'slate'
+import {noop} from 'lodash'
+import {createRef} from 'react'
 import {schemaType} from '../../editor/__tests__/PortableTextEditorTester'
 import {createPatchToOperations} from '../patchToOperations'
 import {withPlugins} from '../../editor/plugins'
-import {keyGenerator, Patch, PortableTextEditor, PortableTextEditorProps} from '../..'
+import {keyGenerator, Patch, PortableTextEditor} from '../..'
 import {fromSlateValue} from '../values'
 import {getPortableTextMemberSchemaTypes} from '../getPortableTextMemberSchemaTypes'
 
-const types = getPortableTextMemberSchemaTypes(schemaType)
+const schemaTypes = getPortableTextMemberSchemaTypes(schemaType)
 
-const patchToOperations = createPatchToOperations(types, keyGenerator)
-const editor = withPlugins(createEditor(), {
-  portableTextEditor: new PortableTextEditor({schemaType} as PortableTextEditorProps),
+const patchToOperations = createPatchToOperations(schemaTypes)
+const portableTextEditor = new PortableTextEditor({schemaType, onChange: noop})
+const isPending: React.MutableRefObject<boolean | null> = createRef()
+isPending.current = false
+
+const {editor} = withPlugins(createEditor(), {
+  portableTextEditor,
+  keyGenerator,
+  readOnly: false,
+  isPending,
 })
 
 const createDefaultValue = (): Descendant[] => [
@@ -55,7 +64,7 @@ describe('operationToPatches', () => {
         origin: 'remote',
       },
     ] as Patch[]
-    const snapShot = fromSlateValue(editor.children, types.block.name)
+    const snapShot = fromSlateValue(editor.children, schemaTypes.block.name)
     patches.forEach((p) => {
       patchToOperations(editor, p, patches, snapShot)
     })

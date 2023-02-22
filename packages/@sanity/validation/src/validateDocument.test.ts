@@ -1,11 +1,11 @@
-import type {SanityClient} from '@sanity/client'
 import {
-  Rule,
-  SchemaType,
-  SanityDocument,
-  Schema,
   ArraySchemaType,
   PortableTextTextBlock,
+  Rule,
+  SanityDocument,
+  Schema,
+  SchemaType,
+  ValidationContext,
 } from '@sanity/types'
 import {createSchema} from '../test/createSchema'
 import {createMockSanityClient} from '../test/mocks/mockSanityClient'
@@ -25,7 +25,7 @@ beforeEach(() => {
 })
 
 // mock client
-const client = createMockSanityClient() as any as SanityClient
+const client = createMockSanityClient() as any as ReturnType<ValidationContext['getClient']>
 const getClient = (options: {apiVersion: string}) => client
 
 describe('resolveTypeForArrayItem', () => {
@@ -176,7 +176,6 @@ describe('validateItem', () => {
 
     await expect(
       validateItem({
-        client,
         getClient,
         schema,
         value: {},
@@ -247,7 +246,6 @@ describe('validateItem', () => {
 
     await expect(
       validateItem({
-        client,
         getClient,
         schema,
         document: undefined,
@@ -415,7 +413,6 @@ describe('validateItem', () => {
     }
 
     const result = await validateItem({
-      client,
       getClient,
       schema,
       document: document,
@@ -519,7 +516,6 @@ describe('validateItem', () => {
 
     await expect(
       validateItem({
-        client,
         getClient,
         schema,
         document: undefined,
@@ -619,7 +615,6 @@ describe('validateItem', () => {
 
     await expect(
       validateItem({
-        client,
         getClient,
         schema,
         value,

@@ -61,6 +61,7 @@ export interface ProjectTemplate {
   devDependencies?: Record<string, string>
   importPrompt?: string
   configTemplate?: string | ((variables: GenerateConfigOptions['variables']) => string)
+  typescriptOnly?: boolean
 }
 
 export interface ProjectOrganization {
@@ -186,10 +187,11 @@ export default async function initSanity(
   }
 
   // Use typescript?
+  const typescriptOnly = template.typescriptOnly === true
   let useTypeScript = true
-  if (typeof cliFlags.typescript === 'boolean') {
+  if (!typescriptOnly && typeof cliFlags.typescript === 'boolean') {
     useTypeScript = cliFlags.typescript
-  } else if (!unattended) {
+  } else if (!typescriptOnly && !unattended) {
     useTypeScript = await promptForTypeScript(prompt)
   }
 

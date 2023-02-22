@@ -1,4 +1,4 @@
-import createClient from '@sanity/client'
+import {createClient} from '@sanity/client'
 import {firstValueFrom, lastValueFrom, of} from 'rxjs'
 import {bufferTime, first} from 'rxjs/operators'
 import {createMockAuthStore} from '../../store'

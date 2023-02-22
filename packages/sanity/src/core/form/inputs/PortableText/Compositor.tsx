@@ -287,10 +287,6 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
 
   const boundaryElm = isFullscreen ? scrollElement : boundaryElement
 
-  const handleEditModalClose = useCallback(() => {
-    onItemClose()
-  }, [onItemClose])
-
   const children = useMemo(
     () =>
       boundaryElm && (
@@ -303,7 +299,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
                   kind={dMemberItem.kind}
                   key={dMemberItem.member.key}
                   memberItem={dMemberItem}
-                  onClose={handleEditModalClose}
+                  onClose={onItemClose}
                   scrollElement={boundaryElm}
                 >
                   <FormInput absolutePath={dMemberItem.node.path} {...(props as FIXME)} />
@@ -313,7 +309,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
           </BoundaryElementProvider>
         </>
       ),
-    [boundaryElm, editorNode, openMemberItems, props, handleEditModalClose]
+    [boundaryElm, editorNode, openMemberItems, props, onItemClose]
   )
 
   const portal = usePortal()

@@ -1,6 +1,6 @@
-import sanityClient from '@sanity/client'
+import {createClient} from '@sanity/client'
 
-const testSanityClient = sanityClient({
+const testSanityClient = createClient({
   projectId: 'ppsg7ml5',
   dataset: 'test',
   token: Cypress.env('SANITY_SESSION_TOKEN'),

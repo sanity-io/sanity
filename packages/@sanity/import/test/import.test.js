@@ -1,11 +1,11 @@
 /* eslint-disable no-sync */
 const fs = require('fs')
 const path = require('path')
-const sanityClient = require('@sanity/client')
+const {createClient} = require('@sanity/client')
 const importer = require('../src/import')
 const {getSanityClient} = require('./helpers')
 
-const defaultClient = sanityClient({
+const defaultClient = createClient({
   apiVersion: '1',
   projectId: 'foo',
   dataset: 'bar',

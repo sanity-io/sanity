@@ -1,5 +1,5 @@
-import getIt from 'get-it'
-import promise from 'get-it/lib-node/middleware/promise'
+import {getIt} from 'get-it'
+import {promise} from 'get-it/middleware'
 
 const requester = getIt([promise()])
 

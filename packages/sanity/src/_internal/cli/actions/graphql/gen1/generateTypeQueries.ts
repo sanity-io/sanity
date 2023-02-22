@@ -6,7 +6,9 @@ import {isNonUnion} from '../helpers'
 function pluralizeTypeName(name: string): string {
   const words = startCase(name).split(' ')
   const last = words[words.length - 1]
-  const plural = pluralize(last.toLowerCase())
+  // `pluralize` previously incorrectly cased the S to uppercase after numbers,
+  // which we need to maintain for backwards compatibility
+  const plural = pluralize(last.toLowerCase()).replace(/(\d)s$/g, '$1S')
   words[words.length - 1] = upperFirst(plural)
   return words.join('')
 }

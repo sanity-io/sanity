@@ -5,14 +5,12 @@ import {PortableTextEditor} from '../PortableTextEditor'
 /**
  * A React context for sharing the editor object.
  */
-
 export const PortableTextEditorContext = createContext<PortableTextEditor | null>(null)
 
 /**
  * Get the current editor object from the React context.
  */
-
-export const usePortableTextEditor = () => {
+export const usePortableTextEditor = (): PortableTextEditor => {
   const editor = useContext(PortableTextEditorContext)
 
   if (!editor) {

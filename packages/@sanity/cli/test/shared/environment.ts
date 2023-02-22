@@ -3,7 +3,7 @@ import path from 'path'
 import {existsSync, readFileSync} from 'fs'
 import {spawn, SpawnOptions} from 'child_process'
 import {platform, tmpdir} from 'os'
-import SanityClient from '@sanity/client'
+import {createClient} from '@sanity/client'
 import which from 'which'
 
 export const cliUserEmail = 'developers+cli-ci@sanity.io'
@@ -20,7 +20,8 @@ export const studiosPath = path.join(baseTestPath, 'studios')
 export const packPath = path.join(baseTestPath, 'packs')
 export const cliInstallPath = path.join(baseTestPath, 'install')
 export const cliBinPath = path.join(cliInstallPath, 'node_modules', '.bin', 'sanity')
-export const sanityEnv = {...process.env, XDG_CONFIG_HOME: path.join(baseTestPath, 'config')}
+export const {NODE_ENV, ...envLessEnv} = process.env
+export const sanityEnv = {...envLessEnv, XDG_CONFIG_HOME: path.join(baseTestPath, 'config')}
 export const cliConfigPath = path.join(sanityEnv.XDG_CONFIG_HOME, 'sanity', 'config.json')
 export const nodeMajorVersion = process.version.split('.')[0]
 export const npmPath = which.sync('npm')
@@ -40,8 +41,8 @@ let cachedTestId: string | undefined
  * multiple studio versions without conflicts.
  *
  * Examples:
- *   - Local : test-20220929-darwin-v16-wode-11664
- *   - GitHub: test-20220929-linux-v14-github-1234
+ *   - Local : test-20220929-dar-v16-wode-11664
+ *   - GitHub: test-20220929-lin-v14-gh-1234
  */
 const getTestId = () => {
   if (cachedTestId) {
@@ -50,14 +51,15 @@ const getTestId = () => {
 
   const localId = readFileSync(testIdPath, 'utf8').trim()
   const ghId = `${process.env.GITHUB_RUN_ID}-${process.env.GITHUB_RUN_NUMBER}-${process.env.GITHUB_RUN_ATTEMPT}`
-  const githubId = process.env.GITHUB_RUN_ID ? `github-${ghId}` : ''
+  const githubId = process.env.GITHUB_RUN_ID ? `gh-${ghId}` : ''
   const runId = `${githubId || localId}`.replace(/\W/g, '-').replace(/(^-+|-+$)/g, '')
   const timestamp = new Date().toISOString().slice(0, 10).replace(/-/g, '')
-  cachedTestId = `test-${timestamp}-${platform()}-${nodeMajorVersion}-${runId}`
+  const osPlatform = platform().slice(0, 3)
+  cachedTestId = `test-${timestamp}-${osPlatform}-${nodeMajorVersion}-${runId}`
   return cachedTestId
 }
 
-export const testClient = new SanityClient({
+export const testClient = createClient({
   apiVersion: '2022-09-09',
   projectId: cliProjectId,
   dataset: 'production',
@@ -75,7 +77,7 @@ export const getTestRunArgs = (version: string) => {
     datasetCopy: `${testId}-copy-${version}`,
     documentsDataset: `${testId}-docs-${version}`,
     graphqlDataset: `${testId}-graphql-${version}`.replace(/-/g, '_'),
-    alias: `${testId}-${version}-alias`,
+    alias: `${testId}-${version}-a`,
     graphqlTag: testId,
     exportTarball: 'production.tar.gz',
     importTarballPath: path.join(__dirname, '..', '__fixtures__', 'production.tar.gz'),
@@ -83,20 +85,25 @@ export const getTestRunArgs = (version: string) => {
   }
 }
 
-export function runSanityCmdCommand(
+export async function runSanityCmdCommand(
   version: string,
   args: string[],
-  options: {env?: Record<string, string | undefined>} = {}
+  options: {env?: Record<string, string | undefined>; expectFailure?: boolean} = {}
 ): Promise<{
   code: number | null
   stdout: string
   stderr: string
 }> {
-  return exec(process.argv[0], [cliBinPath, ...args], {
+  const result = await exec(process.argv[0], [cliBinPath, ...args], {
     cwd: path.join(studiosPath, version),
-    ...options,
     env: {...sanityEnv, ...options.env},
   })
+
+  if (result.code !== 0 && !options.expectFailure) {
+    throw new Error(`Command failed with code ${result.code}. stderr: ${result.stderr}`)
+  }
+
+  return result
 }
 
 export function exec(

@@ -1,4 +1,4 @@
-import sanityClient, {SanityClient} from '@sanity/client'
+import {createClient, SanityClient} from '@sanity/client'
 import {getCliConfigSync} from './util/getCliConfig'
 import {resolveRootDir} from './util/resolveRootDir'
 
@@ -28,7 +28,7 @@ export function getCliClient(options: CliClientOptions = {}): SanityClient {
   } = options
 
   if (projectId && dataset) {
-    return sanityClient({projectId, dataset, apiVersion, useCdn, token})
+    return createClient({projectId, dataset, apiVersion, useCdn, token})
   }
 
   const rootDir = resolveRootDir(cwd)
@@ -42,7 +42,7 @@ export function getCliClient(options: CliClientOptions = {}): SanityClient {
     throw new Error('Unable to resolve project ID/dataset from CLI configuration')
   }
 
-  return sanityClient({
+  return createClient({
     projectId: apiConfig.projectId,
     dataset: apiConfig.dataset,
     apiVersion,

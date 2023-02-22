@@ -55,7 +55,7 @@ describeCliTest('CLI: `sanity preview`', () => {
     })
 
     testConcurrent('start (hint for new `dev` command)', async () => {
-      const result = await runSanityCmdCommand('v3', ['start'])
+      const result = await runSanityCmdCommand('v3', ['start'], {expectFailure: true})
       const error = result.stderr.trim()
       expect(error).toContain('command is used to preview static builds')
       expect(error).toContain('sanity dev')

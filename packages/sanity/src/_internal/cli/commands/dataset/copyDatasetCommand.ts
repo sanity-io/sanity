@@ -8,6 +8,7 @@ import {promptForDatasetName} from '../../actions/dataset/datasetNamePrompt'
 import {validateDatasetName} from '../../actions/dataset/validateDatasetName'
 import {debug} from '../../debug'
 import {listDatasetCopyJobs} from '../../actions/dataset/listDatasetCopyJobs'
+import {getClientUrl} from '../../util/getClientUrl'
 
 const helpText = `
 Options
@@ -120,7 +121,7 @@ const followProgress = (
   let currentProgress = 0
 
   const spinner = output.spinner({}).start()
-  const listenUrl = client.getUrl(`jobs/${jobId}/listen`)
+  const listenUrl = getClientUrl(client, `jobs/${jobId}/listen`)
 
   debug(`Listening to ${listenUrl}`)
 

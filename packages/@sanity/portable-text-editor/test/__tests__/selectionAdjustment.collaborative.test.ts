@@ -149,6 +149,7 @@ describe('selection adjustment', () => {
       await editorB.pressKey('Backspace')
       await editorB.pressKey('Backspace')
       await editorB.pressKey('Backspace')
+      const valueA = await editorA.getValue()
       const valueB = await editorB.getValue()
       expect(valueB).toMatchInlineSnapshot(`
         Array [
@@ -182,6 +183,7 @@ describe('selection adjustment', () => {
           },
         ]
       `)
+      expect(valueA).toEqual(valueB)
       expect(await editorA.getSelection()).toEqual(expectedSelection)
     })
     it('will keep A on same line if B inserts a line above', async () => {

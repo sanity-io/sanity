@@ -10,10 +10,9 @@ import {
   isSpanSchemaType,
   isPortableTextTextBlock,
 } from '@sanity/types'
-import {concat, defer, firstValueFrom, lastValueFrom, merge, Observable, of} from 'rxjs'
+import {concat, defer, lastValueFrom, merge, Observable, of} from 'rxjs'
 import {catchError, map, mergeAll, mergeMap, toArray} from 'rxjs/operators'
 import {flatten, uniqBy} from 'lodash'
-import type {SanityClient} from '@sanity/client'
 import typeString from './util/typeString'
 import {cancelIdleCallback, requestIdleCallback} from './util/requestIdleCallback'
 import ValidationErrorClass from './ValidationError'
@@ -52,7 +51,7 @@ export function resolveTypeForArrayItem(
 const EMPTY_MARKERS: ValidationMarker[] = []
 
 export default async function validateDocument(
-  getClient: (options: {apiVersion: string}) => SanityClient,
+  getClient: ValidateItemOptions['getClient'],
   doc: SanityDocument,
   schema: Schema,
   context?: Pick<ValidationContext, 'getDocumentExists'>
@@ -61,7 +60,7 @@ export default async function validateDocument(
 }
 
 export function validateDocumentObservable(
-  getClient: (options: {apiVersion: string}) => SanityClient,
+  getClient: ValidateItemOptions['getClient'],
   doc: SanityDocument,
   schema: Schema,
   context?: Pick<ValidationContext, 'getDocumentExists'>
@@ -72,9 +71,7 @@ export function validateDocumentObservable(
     return of(EMPTY_MARKERS)
   }
 
-  const client = getClient({apiVersion: '2021-06-07'})
   const validationOptions: ValidateItemOptions = {
-    client,
     getClient,
     schema,
     parent: undefined,
@@ -84,29 +81,6 @@ export function validateDocumentObservable(
     type: documentType,
     getDocumentExists: context?.getDocumentExists,
   }
-
-  // <TEMPORARY UGLY HACK TO PRINT DEPRECATION WARNINGS ON USE>
-  /* eslint-disable no-proto */
-  const wrappedClient = client as any
-  validationOptions.client = [
-    ...Object.keys(client),
-    ...Object.keys(wrappedClient.__proto__),
-  ].reduce((acc, key) => {
-    const original = Object.hasOwnProperty.call(client, key)
-      ? wrappedClient[key]
-      : wrappedClient.__proto__[key]
-
-    return Object.defineProperty(acc, key, {
-      get() {
-        console.warn(
-          '`configContext.client` is deprecated and will be removed in the next release! Use `context.getClient({apiVersion: "2021-06-07"})` instead'
-        )
-        return original
-      },
-    })
-  }, {}) as any as SanityClient
-  /* eslint-enable no-proto */
-  // </TEMPORARY UGLY HACK TO PRINT DEPRECATION WARNINGS ON USE>
 
   return validateItemObservable(validationOptions).pipe(
     catchError((err) => {

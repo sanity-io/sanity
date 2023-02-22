@@ -3,6 +3,7 @@ import {
   isValidationInfoMarker,
   isValidationWarningMarker,
   isValidationErrorMarker,
+  Path,
 } from '@sanity/types'
 import {Button, ButtonProps, Menu, MenuButton} from '@sanity/ui'
 import React, {useCallback, useMemo, useId} from 'react'
@@ -46,6 +47,14 @@ export function ValidationMenu(props: ValidationMenuProps) {
     return undefined
   }, [hasErrorMarkers, hasInfoMarkers, hasWarningMarkers])
 
+  const handleOpen = useCallback(
+    (path: Path) => {
+      onPathOpen(path)
+      onFocus(path)
+    },
+    [onFocus, onPathOpen]
+  )
+
   const handleClose = useCallback(() => setOpen(false), [setOpen])
 
   if (!hasValidationMarkers) return null
@@ -67,7 +76,7 @@ export function ValidationMenu(props: ValidationMenuProps) {
             documentType={schemaType}
             validation={validation}
             onClose={handleClose}
-            onFocus={onPathOpen}
+            onFocus={handleOpen}
           />
         </Menu>
       }

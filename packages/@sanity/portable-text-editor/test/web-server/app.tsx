@@ -7,7 +7,7 @@ import {Editor} from './components/Editor'
 import {Value} from './components/Value'
 
 export function App() {
-  const incomingPatches$ = useMemo(
+  const patches$ = useMemo(
     () =>
       new Subject<{
         patches: Patch[]
@@ -48,7 +48,7 @@ export function App() {
               break
             case 'mutation':
               if (data.testId === testId) {
-                incomingPatches$.next({
+                patches$.next({
                   patches: data.patches,
                   snapshot: data.snapshot,
                 })
@@ -61,7 +61,7 @@ export function App() {
       }
     })
     return socket
-  }, [editorId, incomingPatches$, testId])
+  }, [editorId, patches$, testId])
 
   const handleMutation = useCallback(
     (patches: Patch[]) => {
@@ -85,7 +85,7 @@ export function App() {
               value={value || undefined}
               selection={selection}
               onMutation={handleMutation}
-              incomingPatches$={incomingPatches$}
+              patches$={patches$}
             />
           </Box>
         </Card>

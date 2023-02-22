@@ -58,6 +58,8 @@ export function renderDocument(options: {
     const worker = new Worker(__filename, {
       execArgv: __DEV__ ? ['-r', 'esbuild-register'] : undefined,
       workerData: {...options, dev: __DEV__, shouldWarn: true},
+      // eslint-disable-next-line no-process-env
+      env: process.env,
     })
 
     worker.on('message', (msg) => {
@@ -110,7 +112,7 @@ export function getPossibleDocumentComponentLocations(studioRootPath: string): s
   return [path.join(studioRootPath, '_document.js'), path.join(studioRootPath, '_document.tsx')]
 }
 
-if (!isMainThread) {
+if (!isMainThread && parentPort) {
   renderDocumentFromWorkerData()
 }
 
@@ -206,7 +208,7 @@ function getDocumentComponent(studioRootPath: string) {
 
   debug('Found user defined document component at %s', userDefined.path)
 
-  const DocumentComp = userDefined.component.default
+  const DocumentComp = userDefined.component.default || userDefined.component // CommonJS
   if (typeof DocumentComp === 'function') {
     debug('User defined document component is a function, assuming valid')
     return DocumentComp
@@ -226,7 +228,7 @@ function getDocumentComponent(studioRootPath: string) {
     type: 'warning',
     message: [
       `${relativePath} did not have a default export that is a React component${typeHint}`,
-      `Found named exports/properties: ${userExports}`.trim(),
+      `Named exports/properties found: ${userExports}`.trim(),
       `Using default document component from "sanity".`,
     ],
     warnKey,

@@ -19,6 +19,6 @@ export function resolveLatestVersions(
   return promiseProps(lookups)
 }
 
-function caretify(version: string) {
-  return `^${version}`
+function caretify(version: string | undefined) {
+  return version ? `^${version}` : 'latest'
 }

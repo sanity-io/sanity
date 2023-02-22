@@ -184,6 +184,7 @@ export interface BaseSchemaType {
   /** @beta */
   components?: {
     block?: ComponentType<any>
+    inlineBlock?: ComponentType<any>
     annotation?: ComponentType<any>
     diff?: ComponentType<any>
     field?: ComponentType<any>

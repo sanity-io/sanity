@@ -16,8 +16,7 @@ const debug = debugWithName('operationToPatches')
 const dmp = new DMP.diff_match_patch()
 
 export function createPatchToOperations(
-  schemaTypes: PortableTextMemberSchemaTypes,
-  keyGenerator: () => string
+  schemaTypes: PortableTextMemberSchemaTypes
 ): (
   editor: Editor,
   patch: Patch,
@@ -45,11 +44,11 @@ export function createPatchToOperations(
             ? (parsed.start1 || 0) + parsed.diffs[0][1].length
             : (parsed.start2 || 0) + parsed.length2 - distance,
       }
-      debug(
-        `DiffMatchPatch (${distance < 0 ? 'remove' : 'insert'}) at ${JSON.stringify(slatePath)}}: `,
-        JSON.stringify(point, null, 2),
-        JSON.stringify(parsed, null, 2)
-      )
+      // debug(
+      //   `DiffMatchPatch (${distance < 0 ? 'remove' : 'insert'}) at ${JSON.stringify(slatePath)}}: `,
+      //   JSON.stringify(point, null, 2),
+      //   JSON.stringify(parsed, null, 2)
+      // )
       debugState(editor, 'before')
 
       let text
@@ -262,6 +261,10 @@ export function createPatchToOperations(
       const index = editor.children.findIndex((node, indx) =>
         lastKey ? node._key === lastKey : indx === patch.path[0]
       )
+      if (index === -1) {
+        debug(`Could not find block to unset at path ${JSON.stringify(patch.path)}`)
+        return false
+      }
       debug(`Removing block at path [${index}]`)
       debugState(editor, 'before')
       if (
@@ -296,8 +299,11 @@ export function createPatchToOperations(
       const targetPath = [blockIndex, childIndex]
       const prevSel = editor.selection && {...editor.selection}
       const onSamePath = isEqual(editor.selection?.focus.path, targetPath)
-
-      debug(`Removing child at path ${JSON.stringify(targetPath)}`)
+      if (childIndex === -1) {
+        debug(`Could not find child to unset at path ${JSON.stringify(targetPath)}`)
+        return false
+      }
+      debug(`Unsetting child at path ${JSON.stringify(targetPath)}`)
       debugState(editor, 'before')
       if (prevSel && onSamePath && editor.isTextBlock(block)) {
         const needToAdjust = childIndex >= prevSel.focus.path[1]

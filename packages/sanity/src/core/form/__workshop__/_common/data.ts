@@ -12,7 +12,7 @@ interface SchemaMapType {
   schema: (props: WorkshopSchemaProps) => unknown
 }
 
-type SchemaKey = typeof schemaMap[number]['name']
+type SchemaKey = Readonly<SchemaMapType[]>[number]['name']
 
 export interface WorkshopSchemaProps {
   schemaKey?: SchemaKey

@@ -39,7 +39,8 @@ const sub = messages.subscribe((next) => {
 })
 
 ipc.config.id = 'socketServer'
-ipc.config.retry = 1500
+ipc.config.retry = 5000
+ipc.config.networkPort = 3002
 ipc.config.silent = true
 
 ipc.serveNet(() => {
@@ -86,16 +87,16 @@ app.ws('/', (s, req) => {
         valueMap[testId] = applyAll(prevValue, data.patches)
         messages.next(
           JSON.stringify({
-            type: 'value',
-            value: valueMap[testId],
-            testId,
-            revId: revisionMap[testId],
+            ...data,
+            snapshot: valueMap[testId],
           })
         )
         messages.next(
           JSON.stringify({
-            ...data,
-            snapshot: valueMap[testId],
+            type: 'value',
+            value: valueMap[testId],
+            testId,
+            revId: revisionMap[testId],
           })
         )
       } catch (err) {
