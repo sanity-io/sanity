@@ -117,6 +117,20 @@ export function validateFields(fields: any, options = {allowEmpty: false}) {
     problems.push(error('Object should have at least one field', HELP_IDS.OBJECT_FIELDS_INVALID))
   }
 
+  const standaloneBlockFields = fields
+    .filter((field) => field.type === 'block')
+    .map((field) => `"${field.name}"`)
+
+  if (standaloneBlockFields.length > 0) {
+    const fmtFields = standaloneBlockFields.join(', ')
+    problems.push(
+      error(
+        `Invalid standalone block field(s) ${fmtFields}. Block content must be defined as an array of blocks`,
+        HELP_IDS.STANDALONE_BLOCK_TYPE
+      )
+    )
+  }
+
   return problems
 }
 
