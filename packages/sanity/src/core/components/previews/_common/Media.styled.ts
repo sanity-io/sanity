@@ -37,7 +37,7 @@ export const MediaWrapper = styled.span<{
     }
 
     & svg {
-      display: block;
+      flex: 1;
       font-size: calc(21 / 16 * 1em);
     }
 
