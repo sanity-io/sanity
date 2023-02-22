@@ -1,6 +1,7 @@
 import {ChevronDownIcon, ImageIcon, SearchIcon, UndoIcon} from '@sanity/icons'
 import type {AssetFromSource, AssetSource, ReferenceValue} from '@sanity/types'
 import {Box, Button, Flex, Menu, MenuButton, MenuItem, Portal, Stack} from '@sanity/ui'
+import {get} from 'lodash'
 import React, {useCallback, useEffect, useId, useMemo, useState} from 'react'
 import styled from 'styled-components'
 import {Source} from '../../../../../../../../../config'
@@ -101,6 +102,8 @@ export function SearchFilterAssetInput(type?: AssetType) {
 
     const buttonText = value ? `Change ${type}` : `Select ${type}`
 
+    const accept = get(type, 'options.accept', type === 'image' ? 'image/*' : '')
+
     return (
       <ContainerBox>
         <Stack space={3}>
@@ -114,6 +117,7 @@ export function SearchFilterAssetInput(type?: AssetType) {
                 onSelect={handleSelectAssetFromSource}
                 selectedAssets={[]}
                 selectionType="single"
+                accept={accept}
               />
             </Portal>
           )}
