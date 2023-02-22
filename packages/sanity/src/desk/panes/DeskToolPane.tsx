@@ -31,7 +31,7 @@ const paneMap = {
 }
 
 const ActiveDocumentPane = styled(Flex)`
-  min-width: calc(100vw - 320px);
+  max-width: 320px;
 `
 
 /**

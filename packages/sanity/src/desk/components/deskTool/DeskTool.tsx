@@ -237,7 +237,7 @@ export const DeskTool = memo(function DeskTool({onPaneChange}: DeskToolProps) {
               ) : (
                 <DeskToolPane
                   fullWidth={
-                    index === collapsedPaneDataItems.length - 1 && pane.type === 'document'
+                    index === collapsedPaneDataItems.length - 2 && pane.type === 'documentList'
                   }
                   active={active}
                   groupIndex={groupIndex}
