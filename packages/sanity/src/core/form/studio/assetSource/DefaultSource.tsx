@@ -19,22 +19,25 @@ const buildFilterQuery = (acceptParam: string) => {
   const acceptItems = acceptParam.split(',').map((accept) => accept.trim())
 
   const typesForFilter: {[key: string]: string} = acceptItems.reduce(
-    (acceptTypes: {[key: string]: string}, acceptR: string) => {
+    (acceptTypes: {[key: string]: string}, acceptValue: string) => {
       // builds the wildcard part of the groq query
-      if (WILDCARD_ACCEPT.includes(acceptR)) {
-        const wild = `mimeType match '${acceptR}' || ${acceptTypes.wildcards}`
-        return {...acceptTypes, ...{wildcards: wild}}
+      if (WILDCARD_ACCEPT.includes(acceptValue)) {
+        return {
+          ...acceptTypes,
+          wildcards: `mimeType match '${acceptValue}' || ${acceptTypes.wildcards}`,
+        }
       }
 
       // builds the extension part of the groq query (and removes the .)
-      if (acceptR.indexOf('.') === 0) {
-        const exte = `'${acceptR.replace('.', '')}', ${acceptTypes.mimes}`
-        return {...acceptTypes, ...{extensions: exte}}
+      if (acceptValue.indexOf('.') === 0) {
+        return {
+          ...acceptTypes,
+          extensions: `'${acceptValue.replace('.', '')}', ${acceptTypes.mimes}`,
+        }
       }
 
       // all that remains is then the mime types, so we build that part
-      const mime = `'${acceptR}', ${acceptTypes.mimes}`
-      return {...acceptTypes, ...{mimes: mime}}
+      return {...acceptTypes, mimes: `'${acceptValue}', ${acceptTypes.mimes}`}
     },
     {mimes: '', extensions: '', wildcards: ''}
   )
