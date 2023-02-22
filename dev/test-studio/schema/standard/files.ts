@@ -74,5 +74,33 @@ export default defineType({
         storeOriginalFilename: false,
       },
     },
+    {
+      name: 'filepdf',
+      title: 'File only accepts pdf',
+      type: 'file',
+      description: 'Should not accept other files types than pdf',
+      options: {
+        accept: 'application/pdf',
+      },
+    },
+    {
+      name: 'fileWithMultipleAccept',
+      title: 'File for audio/*, video/*, .zip, image/jpeg, image/png',
+      type: 'file',
+      description:
+        'Should not accept other files types than audio/*, video/*, .zip, image/jpeg, image/png',
+      options: {
+        accept: 'audio/*, video/*, .zip, image/jpeg, image/png',
+      },
+    },
+    {
+      name: 'FileWithTwoAccept',
+      title: 'JPEG & PNG image type file',
+      type: 'file',
+      description: 'Both!',
+      options: {
+        accept: 'image/png, image/jpeg',
+      },
+    },
   ],
 })

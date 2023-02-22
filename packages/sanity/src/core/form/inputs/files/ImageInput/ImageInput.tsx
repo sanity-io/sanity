@@ -648,7 +648,9 @@ export class BaseImageInput extends React.PureComponent<BaseImageInputProps, Bas
 
   renderAssetSource() {
     const {selectedAssetSource} = this.state
-    const {value, observeAsset} = this.props
+    const {value, schemaType, observeAsset} = this.props
+    const accept = get(schemaType, 'options.accept', 'image/*')
+
     if (!selectedAssetSource) {
       return null
     }
@@ -661,6 +663,7 @@ export class BaseImageInput extends React.PureComponent<BaseImageInputProps, Bas
             <Component
               selectedAssets={[imageAsset]}
               assetType="image"
+              accept={accept}
               selectionType="single"
               onClose={this.handleAssetSourceClosed}
               onSelect={this.handleSelectAssetFromSource}
@@ -674,6 +677,7 @@ export class BaseImageInput extends React.PureComponent<BaseImageInputProps, Bas
         selectedAssets={[]}
         selectionType="single"
         assetType="image"
+        accept={accept}
         onClose={this.handleAssetSourceClosed}
         onSelect={this.handleSelectAssetFromSource}
       />

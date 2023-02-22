@@ -1,6 +1,6 @@
 import type {Subscription} from 'rxjs'
 import React, {useState, useRef, useCallback, useMemo, useEffect} from 'react'
-import {DownloadIcon} from '@sanity/icons'
+import {DownloadIcon, InfoOutlineIcon} from '@sanity/icons'
 import {Box, Button, Card, Dialog, Flex, Grid, Spinner, Text} from '@sanity/ui'
 import {Asset as AssetType, AssetFromSource, AssetSourceComponentProps} from '@sanity/types'
 import {uniqueId} from 'lodash'
@@ -14,8 +14,57 @@ const PER_PAGE = 200
 const ASSET_TYPE_IMAGE = 'sanity.imageAsset'
 const ASSET_TYPE_FILE = 'sanity.fileAsset'
 
-const buildQuery = (start = 0, end = PER_PAGE, assetType = ASSET_TYPE_IMAGE) => `
-  *[_type == "${assetType}"] | order(_updatedAt desc) [${start}...${end}] {
+const buildFilterQuery = (acceptParam: string) => {
+  const WILDCARD_ACCEPT = ['image/*', 'audio/*', 'video/*']
+  const acceptItems = acceptParam.split(',').map((accept) => accept.trim())
+
+  const typesForFilter: {[key: string]: string} = acceptItems.reduce(
+    (acceptTypes: {[key: string]: string}, acceptValue: string) => {
+      // builds the wildcard part of the groq query
+      if (WILDCARD_ACCEPT.includes(acceptValue)) {
+        return {
+          ...acceptTypes,
+          wildcards: `mimeType match '${acceptValue}' || ${acceptTypes.wildcards}`,
+        }
+      }
+
+      // builds the extension part of the groq query (and removes the .)
+      if (acceptValue.indexOf('.') === 0) {
+        return {
+          ...acceptTypes,
+          extensions: `'${acceptValue.replace('.', '')}', ${acceptTypes.extensions}`,
+        }
+      }
+
+      // all that remains is then the mime types, so we build that part
+      return {...acceptTypes, mimes: `'${acceptValue}', ${acceptTypes.mimes}`}
+    },
+    {mimes: '', extensions: '', wildcards: ''}
+  )
+
+  /* when no accept filter is set, we don't need to add the filter condition
+  wildcards conditions do not work with arrays so the whole query is built at the top on the condition connected
+  with ORs. So when they are empty it means that we can keep the whole first section clean.
+  The extension and mimeType work when the arrays are empty returning the right values so they are kept in the query */
+  return `&&
+  (
+    ${typesForFilter.wildcards} 
+    extension in [${typesForFilter.extensions}] ||
+    mimeType in [${typesForFilter.mimes}]
+  )`
+}
+
+const buildQuery = (
+  start = 0,
+  end = PER_PAGE,
+  assetType = ASSET_TYPE_IMAGE,
+  acceptParam: string
+) => {
+  const hasAccept = acceptParam.length > 0
+  const filterCondition = hasAccept ? buildFilterQuery(acceptParam) : ''
+
+  return `
+  *[_type == "${assetType}" ${filterCondition}] | order(_updatedAt desc) [${start}...${end}] {
     _id,
     _updatedAt,
     _createdAt,
@@ -27,6 +76,7 @@ const buildQuery = (start = 0, end = PER_PAGE, assetType = ASSET_TYPE_IMAGE) => 
     metadata {dimensions}
   }
 `
+}
 
 const ThumbGrid = styled(Grid)`
   grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
@@ -44,7 +94,7 @@ const DefaultAssetSource = function DefaultAssetSource(
   ref: React.ForwardedRef<HTMLDivElement>
 ) {
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
-  const versionedClient = useMemo(() => client.withConfig({apiVersion: '1'}), [client])
+  const versionedClient = useMemo(() => client.withConfig({apiVersion: '2023-02-14'}), [client])
   const _elementId = useRef(`default-asset-source-${uniqueId()}`)
   const currentPageNumber = useRef(0)
   const fetch$ = useRef<Subscription>()
@@ -58,7 +108,16 @@ const DefaultAssetSource = function DefaultAssetSource(
     dialogHeaderTitle = 'Select image',
     onClose,
     onSelect,
+    accept,
   } = props
+  const acceptTypes = accept
+    ? accept
+        .split(',')
+        .map((a) => a.trim())
+        .join(', ')
+    : ''
+  const showAcceptMessage = !isLoading && accept && accept.length > 0
+  const isImageOnlyWildCard = accept && accept === 'image/*' && assetType === 'image'
 
   const fetchPage = useCallback(
     (pageNumber: number) => {
@@ -70,16 +129,18 @@ const DefaultAssetSource = function DefaultAssetSource(
 
       setIsLoading(true)
 
-      fetch$.current = versionedClient.observable
-        .fetch(buildQuery(start, end, assetTypeParam), {}, {tag})
-        .subscribe((result) => {
-          setIsLastPage(result.length < PER_PAGE)
-          // eslint-disable-next-line max-nested-callbacks
-          setAssets((prevState) => prevState.concat(result))
-          setIsLoading(false)
-        })
+      if (typeof accept !== 'undefined') {
+        fetch$.current = versionedClient.observable
+          .fetch(buildQuery(start, end, assetTypeParam, accept), {}, {tag})
+          .subscribe((result) => {
+            setIsLastPage(result.length < PER_PAGE)
+            // eslint-disable-next-line max-nested-callbacks
+            setAssets((prevState) => prevState.concat(result))
+            setIsLoading(false)
+          })
+      }
     },
-    [assetType, setIsLoading, setAssets, setIsLastPage, versionedClient]
+    [assetType, accept, versionedClient]
   )
 
   const handleDeleteFinished = useCallback(
@@ -169,13 +230,11 @@ const DefaultAssetSource = function DefaultAssetSource(
             />
           ))}
         </ThumbGrid>
-
         {isLoading && assets.length === 0 && (
           <Flex justify="center">
             <Spinner muted />
           </Flex>
         )}
-
         {!isLoading && assets.length === 0 && (
           <Text align="center" muted>
             No images
@@ -207,6 +266,18 @@ const DefaultAssetSource = function DefaultAssetSource(
       onClose={handleClose}
       __unstable_autoFocus={hasResetAutoFocus}
     >
+      {showAcceptMessage && !isImageOnlyWildCard && (
+        <Card tone="primary" marginTop={4} marginX={4} padding={[3, 3, 4]} border radius={2}>
+          <Flex gap={[3, 4]} align="center">
+            <Text>
+              <InfoOutlineIcon />
+            </Text>
+            <Text size={1}>
+              Only showing assets of accepted types: <b>{acceptTypes}</b>
+            </Text>
+          </Flex>
+        </Card>
+      )}
       {assetType === 'image' && renderedThumbView}
       {assetType === 'file' && renderedTableView}
       {assets.length > 0 && !isLastPage && (

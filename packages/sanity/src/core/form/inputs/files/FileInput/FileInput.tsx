@@ -241,10 +241,13 @@ export class BaseFileInput extends React.PureComponent<BaseFileInputProps, BaseF
 
   renderAssetSource() {
     const {selectedAssetSource} = this.state
-    const {value, observeAsset} = this.props
+    const {value, schemaType, observeAsset} = this.props
     if (!selectedAssetSource) {
       return null
     }
+
+    const accept = get(schemaType, 'options.accept', '')
+
     const Component = selectedAssetSource.component
     if (value && value.asset) {
       return (
@@ -258,6 +261,7 @@ export class BaseFileInput extends React.PureComponent<BaseFileInputProps, BaseF
               selectedAssets={[fileAsset]}
               selectionType="single"
               assetType="file"
+              accept={accept}
               dialogHeaderTitle="Select file"
               onClose={this.handleAssetSourceClosed}
               onSelect={this.handleSelectAssetFromSource}
@@ -271,6 +275,7 @@ export class BaseFileInput extends React.PureComponent<BaseFileInputProps, BaseF
         selectedAssets={[]}
         selectionType="single"
         assetType="file"
+        accept={accept}
         dialogHeaderTitle="Select file"
         onClose={this.handleAssetSourceClosed}
         onSelect={this.handleSelectAssetFromSource}
