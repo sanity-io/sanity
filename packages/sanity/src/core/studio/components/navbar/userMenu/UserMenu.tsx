@@ -6,6 +6,9 @@ import {
   CogIcon,
   DesktopIcon,
   CheckmarkIcon,
+  UsersIcon,
+  HelpCircleIcon,
+  CommentIcon,
 } from '@sanity/icons'
 import {
   Box,
@@ -28,6 +31,7 @@ import styled from 'styled-components'
 import {UserAvatar} from '../../../../components'
 import {getProviderTitle} from '../../../../store'
 import {StudioTheme} from '../../../../theme'
+import {userHasRole} from '../../../../util/userHasRole'
 import {useColorScheme} from '../../../colorScheme'
 import {useWorkspace} from '../../../workspace'
 import {LoginProviderLogo} from './LoginProviderLogo'
@@ -50,6 +54,7 @@ export function UserMenu() {
   const theme = useRootTheme().theme as StudioTheme
   const {scheme, setScheme, clearStoredScheme, usingSystemScheme} = useColorScheme()
 
+  const isAdmin = currentUser && userHasRole(currentUser, 'administrator')
   const providerTitle = getProviderTitle(currentUser?.provider)
 
   const popoverProps: MenuButtonProps['popover'] = useMemo(
@@ -58,6 +63,7 @@ export function UserMenu() {
       portal: true,
       preventOverflow: true,
       scheme: scheme,
+      constrainSize: true,
     }),
     [scheme]
   )
@@ -114,6 +120,41 @@ export function UserMenu() {
             </Flex>
           </Card>
 
+          <MenuDivider />
+
+          <MenuItem
+            as="a"
+            href={`https://sanity.io/manage/project/${projectId}`}
+            target="_blank"
+            text="Manage project"
+            icon={CogIcon}
+          />
+          {isAdmin && (
+            <MenuItem
+              as="a"
+              href={`https://sanity.io/manage/project/${projectId}/members`}
+              target="_blank"
+              text="Invite members"
+              icon={UsersIcon}
+            />
+          )}
+          <MenuItem
+            as="a"
+            href={`https://www.sanity.io/contact/support`}
+            target="_blank"
+            text="Help & support"
+            icon={HelpCircleIcon}
+          />
+          {isAdmin && (
+            <MenuItem
+              as="a"
+              href={`https://www.sanity.io/contact/sales?ref=studio`}
+              target="_blank"
+              text="Contact sales"
+              icon={CommentIcon}
+            />
+          )}
+
           {!theme?.__legacy && (
             <>
               <MenuDivider />
@@ -152,16 +193,6 @@ export function UserMenu() {
               />
             </>
           )}
-
-          <MenuDivider />
-
-          <MenuItem
-            as="a"
-            href={`https://sanity.io/manage/project/${projectId}`}
-            target="_blank"
-            text="Manage project"
-            icon={CogIcon}
-          />
 
           {auth.logout && (
             <>
