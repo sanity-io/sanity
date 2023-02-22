@@ -16,7 +16,7 @@ const Root = styled(Layer)`
     left: 0;
     bottom: 0;
     width: 1px;
-    background-color: var(--card-border-color);
+    background-color: transparent;
   }
 
   &:not([data-disabled]) {

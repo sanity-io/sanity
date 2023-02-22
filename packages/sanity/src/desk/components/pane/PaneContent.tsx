@@ -32,6 +32,7 @@ export const PaneContent = forwardRef(function PaneContent(
       padding={padding}
       ref={ref}
       tone="inherit"
+      radius={5}
     >
       {children}
     </Root>

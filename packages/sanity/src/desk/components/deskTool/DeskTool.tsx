@@ -44,7 +44,7 @@ interface DeskToolProps {
 }
 
 const StyledPaneLayout = styled(PaneLayout)`
-  height: calc(100% - 52px);
+  height: calc(100% - 60px);
   min-width: 320px;
 `
 
@@ -237,7 +237,10 @@ export const DeskTool = memo(function DeskTool({onPaneChange}: DeskToolProps) {
               ) : (
                 <DeskToolPane
                   fullWidth={
-                    index === collapsedPaneDataItems.length - 2 && pane.type === 'documentList'
+                    (index <= collapsedPaneDataItems.length - 2 && pane.type === 'documentList') ||
+                    (index <= collapsedPaneDataItems.length - 2 &&
+                      collapsedPaneDataItems[collapsedPaneDataItems.length - 2].itemId !=
+                        collapsedPaneDataItems[collapsedPaneDataItems.length - 1].itemId)
                   }
                   active={active}
                   groupIndex={groupIndex}

@@ -5,9 +5,9 @@ export const Root = styled(Card)`
   transition: opacity 200ms;
   position: relative;
   z-index: 1;
-  padding-left: env(safe-area-inset-left);
-  padding-right: env(safe-area-inset-right);
+  padding: 0 8px 8px 8px;
   opacity: 0;
+  gap: 8px;
 
   &:not([hidden]) {
     display: flex;

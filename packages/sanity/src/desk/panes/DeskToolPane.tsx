@@ -1,7 +1,7 @@
 import React, {memo, lazy, Suspense} from 'react'
 import {isEqual} from 'lodash'
 import styled from 'styled-components'
-import {Flex} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import {PaneNode} from '../types'
 import {PaneRouterProvider} from '../components/paneRouter'
 import {UnknownPane} from './unknown'
@@ -30,8 +30,10 @@ const paneMap = {
   list: lazy(() => import('./list')),
 }
 
-const ActiveDocumentPane = styled(Flex)`
+const ActiveDocumentPane = styled(Card)`
   max-width: 320px;
+  max-height: calc(100vh - 80px);
+  overflow: auto;
 `
 
 /**
@@ -68,7 +70,7 @@ export const DeskToolPane = memo(
       >
         <Suspense fallback={<LoadingPane paneKey={paneKey} />}>
           {fullWidth ? (
-            <ActiveDocumentPane>
+            <ActiveDocumentPane tone="transparent" radius={4}>
               <PaneComponent
                 childItemId={childItemId || ''}
                 index={index}
