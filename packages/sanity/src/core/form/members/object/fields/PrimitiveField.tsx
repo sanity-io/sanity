@@ -1,5 +1,5 @@
-import React, {useCallback, useEffect, useMemo, useRef} from 'react'
-import {isBooleanSchemaType, isNumberSchemaType} from '@sanity/types'
+import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import {isBooleanSchemaType, isNumberSchemaType, SchemaType} from '@sanity/types'
 import {FieldMember} from '../../../store'
 import {
   PrimitiveFieldProps,
@@ -10,6 +10,21 @@ import {
 import {FormPatch, PatchEvent, set, unset} from '../../../patch'
 import {useFormCallbacks} from '../../../studio/contexts/FormCallbacks'
 
+function getLocalValue(
+  schemaType: SchemaType,
+  valueAsString: string | undefined,
+  storedValue: unknown
+): string {
+  if (valueAsString === undefined) {
+    return storedValue ? String(storedValue) : ''
+  }
+  if (isNumberSchemaType(schemaType)) {
+    if (Number(valueAsString) === storedValue) {
+      return valueAsString
+    }
+  }
+  return storedValue ? String(storedValue) : ''
+}
 /**
  * Responsible for creating inputProps and fieldProps to pass to ´renderInput´ and ´renderField´ for a primitive field/input
  * @param props - Component props
@@ -34,6 +49,7 @@ export function PrimitiveField(props: {
 
   const handleBlur = useCallback(() => {
     onPathBlur(member.field.path)
+    setValueAsString(undefined)
   }, [member.field.path, onPathBlur])
 
   const handleFocus = useCallback(() => {
@@ -46,10 +62,12 @@ export function PrimitiveField(props: {
     },
     [onChange, member.name]
   )
+  const [valueAsString, setValueAsString] = useState<string>()
 
   const handleNativeChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
       let inputValue: number | string | boolean = event.currentTarget.value
+      setValueAsString(event.currentTarget.value)
       if (isNumberSchemaType(member.field.schemaType)) {
         inputValue = event.currentTarget.valueAsNumber
       } else if (isBooleanSchemaType(member.field.schemaType)) {
@@ -62,7 +80,7 @@ export function PrimitiveField(props: {
 
       onChange(PatchEvent.from(hasEmptyValue ? unset() : set(inputValue)).prefixAll(member.name))
     },
-    [member.name, member.field.schemaType, onChange]
+    [member.field.schemaType, member.name, onChange]
   )
 
   const validationError =
@@ -75,6 +93,7 @@ export function PrimitiveField(props: {
       [member.field.validation]
     ) || undefined
 
+  const localValue = getLocalValue(member.field.schemaType, valueAsString, member.field.value)
   const elementProps = useMemo(
     (): PrimitiveInputProps['elementProps'] => ({
       onBlur: handleBlur,
@@ -82,7 +101,7 @@ export function PrimitiveField(props: {
       id: member.field.id,
       ref: focusRef,
       onChange: handleNativeChange,
-      value: String(member.field.value ?? ''),
+      value: localValue,
       readOnly: Boolean(member.field.readOnly),
       placeholder: member.field.schemaType.placeholder,
     }),
@@ -90,10 +109,10 @@ export function PrimitiveField(props: {
       handleBlur,
       handleFocus,
       handleNativeChange,
+      localValue,
       member.field.id,
       member.field.readOnly,
       member.field.schemaType.placeholder,
-      member.field.value,
     ]
   )
 
