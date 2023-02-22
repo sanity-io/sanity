@@ -113,8 +113,8 @@ const DefaultAssetSource = function DefaultAssetSource(
         .map((a) => a.trim())
         .join(', ')
     : ''
-  const showAcceptMessage = !isLoading && accept && accept.length > 0
-  const isImageOnlyWildCard = accept && accept === 'image/*' && assetType === 'image'
+  const showAcceptMessage = !isLoading && accept.length > 0
+  const isImageOnlyWildCard = accept === 'image/*' && assetType === 'image'
 
   const fetchPage = useCallback(
     (pageNumber: number) => {
@@ -126,16 +126,14 @@ const DefaultAssetSource = function DefaultAssetSource(
 
       setIsLoading(true)
 
-      if (typeof accept !== 'undefined') {
-        fetch$.current = versionedClient.observable
-          .fetch(buildQuery(start, end, assetTypeParam, accept), {}, {tag})
-          .subscribe((result) => {
-            setIsLastPage(result.length < PER_PAGE)
-            // eslint-disable-next-line max-nested-callbacks
-            setAssets((prevState) => prevState.concat(result))
-            setIsLoading(false)
-          })
-      }
+      fetch$.current = versionedClient.observable
+        .fetch(buildQuery(start, end, assetTypeParam, accept), {}, {tag})
+        .subscribe((result) => {
+          setIsLastPage(result.length < PER_PAGE)
+          // eslint-disable-next-line max-nested-callbacks
+          setAssets((prevState) => prevState.concat(result))
+          setIsLoading(false)
+        })
     },
     [assetType, accept, versionedClient]
   )
