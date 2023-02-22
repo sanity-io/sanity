@@ -15,7 +15,6 @@ export const MediaWrapper = styled.span<{
   const iconSize = PREVIEW_ICON_SIZE[$layout]
 
   return css`
-    position: relative;
     width: ${$responsive ? '100%' : rem(width)};
     height: ${$responsive ? '100%' : rem(height)};
     min-width: ${$responsive ? undefined : rem(width)};
@@ -27,9 +26,6 @@ export const MediaWrapper = styled.span<{
     justify-content: center;
 
     & img {
-      position: absolute;
-      left: 0;
-      top: 0;
       width: 100%;
       height: 100%;
       object-fit: contain;
