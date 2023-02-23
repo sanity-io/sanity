@@ -1,5 +1,5 @@
-import {isBooleanSchemaType, isNumberSchemaType} from '@sanity/types'
-import React, {useCallback, useMemo, useRef} from 'react'
+import {isBooleanSchemaType, isNumberSchemaType, isStringSchemaType} from '@sanity/types'
+import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {FIXME} from '../../../../FIXME'
 import {ArrayOfPrimitivesItemMember} from '../../../store'
 import {useDidUpdate} from '../../../hooks/useDidUpdate'
@@ -28,6 +28,18 @@ export interface PrimitiveMemberItemProps {
 export function ArrayOfPrimitivesItem(props: PrimitiveMemberItemProps) {
   const focusRef = useRef<{focus: () => void}>()
   const {member, renderItem, renderInput} = props
+
+  const [nativeValue, setNativeValue] = useState(() =>
+    toNativeInputValue(
+      member.item.schemaType,
+      member.item.value,
+      isBooleanSchemaType(member.item.schemaType) ? false : ''
+    )
+  )
+
+  useEffect(() => {
+    setNativeValue(toNativeInputValue(member.item.schemaType, member.item.value, nativeValue))
+  }, [member.item.schemaType, member.item.value, nativeValue])
 
   const {onPathBlur, onPathFocus, onChange} = useFormCallbacks()
 
@@ -82,6 +94,12 @@ export function ArrayOfPrimitivesItem(props: PrimitiveMemberItemProps) {
             : inputValue
         )
       )
+
+      if (isBooleanSchemaType(member.item.schemaType)) {
+        setNativeValue(event.currentTarget.checked)
+      } else {
+        setNativeValue(hasEmptyValue ? '' : event.currentTarget.value)
+      }
     },
     [handleChange, member.item.schemaType]
   )
@@ -93,11 +111,7 @@ export function ArrayOfPrimitivesItem(props: PrimitiveMemberItemProps) {
       id: member.item.id,
       ref: focusRef,
       onChange: handleNativeChange,
-      // this is a trick to retain type information while displaying an "empty" input
-      // if this input is used to edit items in an array of numbers, the value can't really be set to empty without
-      // either removing the item or losing type information (i.e. it can't be an empty string, because that's… a string)
-      // so the array of numbers then use the special value `-0` to represent an empty value
-      value: String(Object.is(member.item.value, -0) ? '' : member.item.value),
+      value: typeof nativeValue === 'string' ? nativeValue : undefined,
       readOnly: Boolean(member.item.readOnly),
       placeholder: member.item.schemaType.placeholder,
     }),
@@ -108,14 +122,14 @@ export function ArrayOfPrimitivesItem(props: PrimitiveMemberItemProps) {
       member.item.id,
       member.item.readOnly,
       member.item.schemaType.placeholder,
-      member.item.value,
+      nativeValue,
     ]
   )
   const inputProps = useMemo((): Omit<PrimitiveInputProps, 'renderDefault'> => {
     return {
       changed: member.item.changed,
       level: member.item.level,
-      value: member.item.value as FIXME,
+      value: nativeValue,
       readOnly: member.item.readOnly,
       schemaType: member.item.schemaType as FIXME,
       id: member.item.id,
@@ -129,7 +143,6 @@ export function ArrayOfPrimitivesItem(props: PrimitiveMemberItemProps) {
   }, [
     member.item.changed,
     member.item.level,
-    member.item.value,
     member.item.readOnly,
     member.item.schemaType,
     member.item.id,
@@ -137,6 +150,7 @@ export function ArrayOfPrimitivesItem(props: PrimitiveMemberItemProps) {
     member.item.focused,
     member.item.validation,
     member.item.presence,
+    nativeValue,
     handleChange,
     elementProps,
   ])
@@ -159,7 +173,7 @@ export function ArrayOfPrimitivesItem(props: PrimitiveMemberItemProps) {
       key: member.key,
       index: member.index,
       level: member.item.level,
-      value: member.item.value as FIXME,
+      value: nativeValue,
       title: member.item.schemaType.title,
       description: member.item.schemaType.description,
       schemaType: member.item.schemaType as FIXME,
@@ -180,7 +194,6 @@ export function ArrayOfPrimitivesItem(props: PrimitiveMemberItemProps) {
     member.key,
     member.index,
     member.item.level,
-    member.item.value,
     member.item.schemaType,
     member.item.presence,
     member.item.validation,
@@ -189,6 +202,7 @@ export function ArrayOfPrimitivesItem(props: PrimitiveMemberItemProps) {
     member.item.id,
     member.item.path,
     member.parentSchemaType,
+    nativeValue,
     onInsert,
     onRemove,
     handleFocus,
@@ -197,4 +211,31 @@ export function ArrayOfPrimitivesItem(props: PrimitiveMemberItemProps) {
   ])
 
   return <>{useMemo(() => renderItem(itemProps as PrimitiveItemProps), [itemProps, renderItem])}</>
+}
+
+function toNativeInputValue(
+  type: unknown,
+  value: unknown,
+  nativeValue: string | boolean
+): string | boolean {
+  if (isStringSchemaType(type)) {
+    return value ? String(value) : ''
+  } else if (isBooleanSchemaType(type)) {
+    return Boolean(value)
+  }
+
+  // this is a trick to retain type information while displaying an "empty" input
+  // if this input is used to edit items in an array of numbers, the value can't really be set to empty without
+  // either removing the item or losing type information (i.e. it can't be an empty string, because that's… a string)
+  // so the array of numbers then use the special value `-0` to represent an empty value
+  if (Object.is(value, -0)) {
+    return ''
+  }
+
+  const currValue = parseFloat(nativeValue as string)
+  if (value === currValue) {
+    return nativeValue
+  }
+
+  return value ? String(value) : ''
 }
