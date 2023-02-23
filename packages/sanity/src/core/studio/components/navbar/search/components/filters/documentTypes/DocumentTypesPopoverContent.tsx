@@ -3,11 +3,7 @@ import {Box, Button, Flex, Stack, Text} from '@sanity/ui'
 import {partition} from 'lodash'
 import React, {useCallback, useMemo, useState} from 'react'
 import styled from 'styled-components'
-import {
-  CommandListContainer,
-  CommandListProvider,
-  useCommandList,
-} from '../../../../../../../components'
+import {CommandListProvider, useCommandList} from '../../../../../../../components'
 import {useSchema} from '../../../../../../../hooks'
 import type {SearchableType} from '../../../../../../../search'
 import {useSearchState} from '../../../contexts/search/useSearchState'
@@ -71,6 +67,7 @@ export function DocumentTypesPopoverContent() {
 
   return (
     <CommandListProvider
+      activeItemDataAttr="data-hovered"
       ariaActiveDescendant={filteredItems.length > 0}
       ariaChildrenLabel="Document types"
       ariaInputLabel="Filter by document type"
@@ -87,7 +84,7 @@ export function DocumentTypesPopoverContent() {
           typeFilter={typeFilter}
         />
 
-        <CommandListContainer>
+        <Flex>
           {filteredItems.length > 0 && <DocumentTypesVirtualList filteredItems={filteredItems} />}
 
           {/* No results */}
@@ -98,7 +95,7 @@ export function DocumentTypesPopoverContent() {
               </Text>
             </Box>
           )}
-        </CommandListContainer>
+        </Flex>
 
         {/* Clear button */}
         {!typeFilter && selectedTypes.length > 0 && (

@@ -11,6 +11,7 @@ import {
 } from '@sanity/ui'
 import React, {MouseEvent, useCallback} from 'react'
 import styled from 'styled-components'
+import {useCommandList} from '../../../../../../../components'
 import {useSearchState} from '../../../contexts/search/useSearchState'
 import type {RecentSearch} from '../../../datastores/recentSearches'
 import {DocumentTypesPill} from '../../common/DocumentTypesPill'
@@ -62,6 +63,8 @@ export function RecentSearchItem({
 }: RecentSearchesProps) {
   const {dispatch, recentSearchesStore} = useSearchState()
 
+  const {virtualItemDataAttr} = useCommandList()
+
   // Determine how many characters are left to render type pills
   const availableCharacters = maxVisibleTypePillChars - value.query.length
 
@@ -97,7 +100,7 @@ export function RecentSearchItem({
   return (
     <Box {...rest}>
       <RecentSearchItemButton
-        data-command-list-item
+        {...virtualItemDataAttr}
         mode="bleed"
         onClick={handleClick}
         paddingLeft={3}

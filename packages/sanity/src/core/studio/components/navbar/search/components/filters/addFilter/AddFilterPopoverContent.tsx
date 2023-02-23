@@ -1,6 +1,6 @@
 import {Box, Flex, Text} from '@sanity/ui'
 import React, {useCallback, useMemo, useState} from 'react'
-import {CommandListContainer, CommandListProvider} from '../../../../../../../components'
+import {CommandListProvider} from '../../../../../../../components'
 import {useSchema} from '../../../../../../../hooks'
 import {useSearchState} from '../../../contexts/search/useSearchState'
 import {FilterPopoverContentHeader} from '../common/FilterPopoverContentHeader'
@@ -61,6 +61,7 @@ export function AddFilterPopoverContent({onClose}: AddFilterPopoverContentProps)
 
   return (
     <CommandListProvider
+      activeItemDataAttr="data-hovered"
       ariaActiveDescendant={filteredMenuItems.length > 0}
       ariaChildrenLabel="Filters"
       ariaInputLabel="Filter by title"
@@ -75,7 +76,7 @@ export function AddFilterPopoverContent({onClose}: AddFilterPopoverContentProps)
           typeFilter={titleFilter}
         />
 
-        <CommandListContainer>
+        <Flex>
           {filteredMenuItems.length > 0 && (
             <AddFilterVirtualList menuItems={filteredMenuItems} onClose={onClose} />
           )}
@@ -88,7 +89,7 @@ export function AddFilterPopoverContent({onClose}: AddFilterPopoverContentProps)
               </Text>
             </Box>
           )}
-        </CommandListContainer>
+        </Flex>
       </Flex>
     </CommandListProvider>
   )

@@ -6,9 +6,19 @@ export default defineScope({
   title: 'CommandList',
   stories: [
     {
-      name: 'command-list',
+      name: 'default',
       title: 'Default',
-      component: lazy(() => import('./CommandListStory')),
+      component: lazy(() => import('./DefaultStory')),
+    },
+    {
+      name: 'button',
+      title: 'Button',
+      component: lazy(() => import('./ButtonStory')),
+    },
+    {
+      name: 'popover',
+      title: 'Popover',
+      component: lazy(() => import('./PopoverStory')),
     },
   ],
 })

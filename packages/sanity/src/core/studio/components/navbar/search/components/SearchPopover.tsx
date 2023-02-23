@@ -1,8 +1,8 @@
-import {Card, Portal, Theme, useClickOutside, useLayer} from '@sanity/ui'
+import {Card, Flex, Portal, Theme, useClickOutside, useLayer} from '@sanity/ui'
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import FocusLock from 'react-focus-lock'
 import styled, {css} from 'styled-components'
-import {CommandListContainer, CommandListProvider, useCommandList} from '../../../../../components'
+import {CommandListProvider, useCommandList} from '../../../../../components'
 import {useColorScheme} from '../../../../colorScheme'
 import {
   POPOVER_INPUT_PADDING,
@@ -155,6 +155,7 @@ export function SearchPopover({
         <Overlay style={{zIndex}} />
 
         <CommandListProvider
+          activeItemDataAttr="data-hovered"
           ariaActiveDescendant={itemIndices.length > 0}
           ariaChildrenLabel={hasValidTerms ? 'Search results' : 'Recent searches'}
           ariaInputLabel="Search results"
@@ -235,13 +236,13 @@ function SearchPopoverContent({
         </FiltersCard>
       )}
 
-      <CommandListContainer>
+      <Flex>
         {hasValidTerms ? (
           <SearchResults onClose={handleClose} />
         ) : (
           <RecentSearches showFiltersOnClick />
         )}
-      </CommandListContainer>
+      </Flex>
     </SearchPopoverCard>
   )
 }

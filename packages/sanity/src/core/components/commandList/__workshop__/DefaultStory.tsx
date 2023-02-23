@@ -9,7 +9,6 @@ import React, {
   useState,
 } from 'react'
 import styled from 'styled-components'
-import {CommandListContainer} from '../CommandListContainer'
 import {CommandListItems} from '../CommandListItems'
 import {CommandListProvider} from '../CommandListProvider'
 import {useCommandList} from '../useCommandList'
@@ -24,9 +23,13 @@ const CardContainer = styled(Card)`
 
 const StyledBox = styled(Box)<{$index: number}>`
   background: ${({$index}) => ($index % 2 === 0 ? '#1a1a1a' : '#1f1f1f')};
+  &[data-active] {
+    background: blue;
+    color: white;
+  }
 `
 
-export default function CommandListStory() {
+export default function DefaultStory() {
   const [filter, setFilter] = useState<string>('')
   const showInput = useBoolean('Show input', true, 'Props')
 
@@ -48,6 +51,7 @@ export default function CommandListStory() {
   return (
     <CardContainer padding={4}>
       <CommandListProvider
+        activeItemDataAttr="data-active"
         ariaActiveDescendant={filteredItems.length > 0}
         ariaChildrenLabel="Children"
         ariaInputLabel="Header"
@@ -80,22 +84,22 @@ const CommandListContent = ({
   onClear,
   showInput,
 }: CommandListContentProps) => {
-  const {setInputElement, virtualizer} = useCommandList()
+  const {virtualItemDataAttr, setInputElement, virtualizer} = useCommandList()
 
   const VirtualListItem = useMemo(() => {
     return function VirtualListItemComponent({index}: {index: number}) {
       const item = items[index]
       return (
         <StyledBox
+          {...virtualItemDataAttr}
           $index={index} //
-          data-command-list-item
           padding={2}
         >
           <Text>{item}</Text>
         </StyledBox>
       )
     }
-  }, [items])
+  }, [items, virtualItemDataAttr])
 
   const handleChange = useCallback(
     (e: KeyboardEvent<HTMLInputElement>) => {
@@ -140,7 +144,7 @@ const CommandListContent = ({
       )}
 
       <Card flex={1} shadow={1}>
-        <CommandListContainer>
+        <Flex height="fill">
           <CommandListItems
             fixedHeight
             item={VirtualListItem}
@@ -148,7 +152,7 @@ const CommandListContent = ({
               estimateSize: () => 25,
             }}
           />
-        </CommandListContainer>
+        </Flex>
       </Card>
     </Flex>
   )

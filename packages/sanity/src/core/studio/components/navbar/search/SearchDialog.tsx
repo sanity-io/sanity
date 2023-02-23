@@ -1,8 +1,8 @@
-import {Box, Card, Portal} from '@sanity/ui'
+import {Box, Card, Flex, Portal} from '@sanity/ui'
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import FocusLock from 'react-focus-lock'
 import styled from 'styled-components'
-import {CommandListContainer, CommandListProvider, useCommandList} from '../../../../components'
+import {CommandListProvider, useCommandList} from '../../../../components'
 import {useColorScheme} from '../../../colorScheme'
 import {Filters} from './components/filters/Filters'
 import {RecentSearches} from './components/recentSearches/RecentSearches'
@@ -122,6 +122,7 @@ export function SearchDialog({onClose, onOpen, open}: SearchDialogProps) {
     <Portal>
       <FocusLock autoFocus={false} returnFocus>
         <CommandListProvider
+          activeItemDataAttr="data-hovered"
           ariaActiveDescendant={itemIndices.length > 0}
           ariaChildrenLabel={hasValidTerms ? 'Search results' : 'Recent searches'}
           ariaInputLabel="Search"
@@ -178,9 +179,7 @@ function SearchDialogContent({
           </Card>
         )}
 
-        <CommandListContainer>
-          {hasValidTerms ? <SearchResults onClose={handleClose} /> : <RecentSearches />}
-        </CommandListContainer>
+        <Flex>{hasValidTerms ? <SearchResults onClose={handleClose} /> : <RecentSearches />}</Flex>
       </InnerCard>
     </SearchDialogBox>
   )

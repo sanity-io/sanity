@@ -1,6 +1,6 @@
 import {Box, ResponsivePaddingProps} from '@sanity/ui'
 import {useVirtualizer, VirtualizerOptions} from '@tanstack/react-virtual'
-import React, {ReactElement, useEffect, useState} from 'react'
+import React, {ReactElement, useEffect} from 'react'
 import styled from 'styled-components'
 import {CommandListItem} from './CommandListItem'
 import {useCommandList} from './useCommandList'
@@ -63,15 +63,19 @@ export function CommandListItems({
   virtualizerOptions,
   ...rest
 }: CommandListItemsProps) {
-  const [virtualList, setVirtualListRef] = useState<HTMLDivElement | null>(null)
-
-  const {itemIndices, setChildContainerElement, setPointerOverlayElement, setVirtualizer} =
-    useCommandList()
+  const {
+    itemIndices,
+    setChildContainerElement,
+    setPointerOverlayElement,
+    setVirtualizer,
+    setVirtualListElement,
+    virtualListElement,
+  } = useCommandList()
 
   const virtualizer = useVirtualizer({
     ...virtualizerOptions,
     count: itemIndices.length,
-    getScrollElement: () => virtualList,
+    getScrollElement: () => virtualListElement,
   })
 
   /**
@@ -82,7 +86,7 @@ export function CommandListItems({
   }, [setVirtualizer, virtualizer])
 
   return (
-    <VirtualListBox ref={setVirtualListRef} tabIndex={-1}>
+    <VirtualListBox ref={setVirtualListElement} tabIndex={-1}>
       <PointerOverlayDiv aria-hidden="true" ref={setPointerOverlayElement} />
 
       <VirtualListChildBox

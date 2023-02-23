@@ -1,5 +1,6 @@
 import {Box, Button, ResponsiveMarginProps, ResponsivePaddingProps} from '@sanity/ui'
 import React, {useCallback, useEffect, useRef, useState} from 'react'
+import {useCommandList} from '../../../../../../../../components'
 import {useSearchState} from '../../../../contexts/search/useSearchState'
 import type {FilterMenuItemFilter} from '../../../../types'
 import {getFilterKey} from '../../../../utils/filterUtils'
@@ -22,6 +23,8 @@ export const MenuItemFilter = React.memo(function MenuItemFilter({
     dispatch,
     state: {filters},
   } = useSearchState()
+
+  const {virtualItemDataAttr} = useCommandList()
 
   const handleClick = useCallback(() => {
     dispatch({filter: item.filter, type: 'TERMS_FILTERS_ADD'})
@@ -50,7 +53,7 @@ export const MenuItemFilter = React.memo(function MenuItemFilter({
   return (
     <Box {...rest}>
       <Button
-        data-command-list-item
+        {...virtualItemDataAttr}
         disabled={isAlreadyActive}
         fontSize={1}
         justify="flex-start"

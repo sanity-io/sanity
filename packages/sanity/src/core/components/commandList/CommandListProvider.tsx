@@ -19,32 +19,36 @@ import {CommandListContext} from './CommandListContext'
  * - Focus redirection when clicking child elements
  * - Pointer blocking when navigating with arrow keys (to ensure that only one active state is visible at any given time)
  * - ARIA attributes to define a `combobox` input that controls a separate `listbox`
- *
- * Requirements:
- * - All child items must have `data-index` attributes defined with their index in the list. This is to help with
- * interoperability with virtual lists (whilst preventing costly re-renders)
- * - You have to supply `itemIndices`, an array of (number | null) indicating active indices only.
- * e.g. `[0, null, 1, 2]` indicates a list of 4 items, where the second item is non-interactive (such as a heading or divider)
- * - All child items have to use the supplied context functions (`onChildMouseDown` etc) to ensure consistent behaviour
- * when clicking and hovering over items, as well as preventing unwanted focus.
  */
-
 interface CommandListProviderProps {
+  /** The data attribute to apply to any active virtual list items */
+  activeItemDataAttr?: string
   ariaActiveDescendant?: boolean
   ariaChildrenLabel?: string
   ariaInputLabel?: string
   ariaMultiselectable?: boolean
+  /** Automatically focus the input (if applicable) or virtual list */
   autoFocus?: boolean
   children?: ReactNode
   initialSelectedIndex?: number
+  /**
+   * An array of (number | null) indicating active indices only.
+   * e.g. `[0, null, 1, 2]` indicates a list of 4 items, where the second item is non-interactive (such as a heading or divider)
+   */
   itemIndices: (number | null)[]
   itemIndicesSelected?: boolean[]
 }
+
+// Default data attribute set on interactive elements within virtual list items
+const LIST_ITEM_DATA_ATTR = 'data-command-list-item'
+// Data attribute to assign to the current active virtual list element
+const LIST_ITEM_DATA_ATTR_ACTIVE = 'data-active'
 
 /**
  * @internal
  */
 export function CommandListProvider({
+  activeItemDataAttr = LIST_ITEM_DATA_ATTR_ACTIVE,
   ariaActiveDescendant = true,
   ariaChildrenLabel,
   ariaInputLabel,
@@ -57,9 +61,9 @@ export function CommandListProvider({
 }: CommandListProviderProps) {
   const selectedIndexRef = useRef<number>(-1)
   const [childContainerElement, setChildContainerElement] = useState<HTMLDivElement | null>(null)
-  const [containerElement, setContainerElement] = useState<HTMLDivElement | null>(null)
   const [inputElement, setInputElement] = useState<HTMLDivElement | null>(null)
   const [pointerOverlayElement, setPointerOverlayElement] = useState<HTMLDivElement | null>(null)
+  const [virtualListElement, setVirtualListElement] = useState<HTMLDivElement | null>(null)
 
   const activeItemCount = itemIndices.filter(isNonNullable).length
 
@@ -84,6 +88,23 @@ export function CommandListProvider({
   )
 
   /**
+   * Iterate through all virtual list children and apply the active data-attribute on the selected index.
+   */
+  const toggleChildrenActiveState = useCallback(
+    (selectedIndex: number | null) => {
+      const childElements = Array.from(childContainerElement?.children || []) as HTMLElement[]
+      childElements?.forEach((child) => {
+        const virtualIndex = Number(child.dataset?.index)
+        const childIndex = itemIndices[virtualIndex]
+        child
+          .querySelector(`[${LIST_ITEM_DATA_ATTR}]`)
+          ?.toggleAttribute(activeItemDataAttr, childIndex === selectedIndex)
+      })
+    },
+    [activeItemDataAttr, childContainerElement, itemIndices]
+  )
+
+  /**
    * Assign selected state on all child elements.
    */
   const handleAssignSelectedState = useCallback(() => {
@@ -104,12 +125,12 @@ export function CommandListProvider({
           child.setAttribute('aria-selected', itemIndicesSelected[virtualIndex].toString())
         }
         child.setAttribute('aria-setsize', activeItemCount.toString())
-        child.setAttribute('data-active', (childIndex === selectedIndex).toString())
         child.setAttribute('id', getChildDescendantId(childIndex))
         child.setAttribute('role', 'option')
         child.setAttribute('tabIndex', '-1')
       }
     })
+    toggleChildrenActiveState(selectedIndex)
   }, [
     activeItemCount,
     ariaActiveDescendant,
@@ -118,6 +139,7 @@ export function CommandListProvider({
     inputElement,
     itemIndices,
     itemIndicesSelected,
+    toggleChildrenActiveState,
   ])
 
   /**
@@ -170,23 +192,27 @@ export function CommandListProvider({
   )
 
   /**
-   * Focus input element (non-touch only)
+   * Focus input / virtual list element (non-touch only)
    */
-  const handleFocusInputElement = useCallback(() => {
+  const handleFocusElement = useCallback(() => {
     if (!supportsTouch) {
-      inputElement?.focus()
+      if (inputElement) {
+        inputElement?.focus()
+      } else if (virtualListElement) {
+        virtualListElement?.focus()
+      }
     }
-  }, [inputElement])
+  }, [inputElement, virtualListElement])
 
   /**
-   * Focus input on child item mousedown and prevent nested elements from receiving focus.
+   * Focus input / virtual list element on child item mousedown and prevent nested elements from receiving focus.
    */
   const handleChildMouseDown = useCallback(
     (event: MouseEvent) => {
-      handleFocusInputElement()
+      handleFocusElement()
       event.preventDefault()
     },
-    [handleFocusInputElement]
+    [handleFocusElement]
   )
 
   /**
@@ -275,9 +301,9 @@ export function CommandListProvider({
         )
 
         if (currentElement) {
-          const clickableElement = currentElement?.querySelector(
-            '[data-command-list-item]'
-          ) as HTMLElement
+          const clickableElement = currentElement?.querySelector<HTMLElement>(
+            `[${LIST_ITEM_DATA_ATTR}]`
+          )
           clickableElement?.click()
         }
       }
@@ -290,7 +316,7 @@ export function CommandListProvider({
 
   /**
    * Listen to keyboard arrow events on the container element.
-   * On arrow press: focus the input element and then navigate accordingly.
+   * On arrow press: focus the input / virtual list element and then navigate accordingly.
    *
    * Done to account for when users focus a wrapping element with overflow (by dragging its scroll handle)
    * and then try navigate with the keyboard.
@@ -299,26 +325,26 @@ export function CommandListProvider({
     function handleKeydown(event: KeyboardEvent) {
       if (event.key === 'ArrowDown') {
         event.preventDefault()
-        handleFocusInputElement()
+        handleFocusElement()
         scrollToAdjacentItem('next')
       }
       if (event.key === 'ArrowUp') {
         event.preventDefault()
-        handleFocusInputElement()
+        handleFocusElement()
         scrollToAdjacentItem('previous')
       }
     }
 
-    containerElement?.addEventListener('keydown', handleKeydown as EventListener)
+    virtualListElement?.addEventListener('keydown', handleKeydown as EventListener)
     return () => {
-      containerElement?.removeEventListener('keydown', handleKeydown as EventListener)
+      virtualListElement?.removeEventListener('keydown', handleKeydown as EventListener)
     }
   }, [
     childContainerElement,
-    containerElement,
-    handleFocusInputElement,
+    handleFocusElement,
     inputElement,
     scrollToAdjacentItem,
+    virtualListElement,
   ])
 
   /**
@@ -327,7 +353,7 @@ export function CommandListProvider({
    */
   useEffect(() => {
     function handleMarkContainerAsFocused(focused: boolean) {
-      return () => containerElement?.setAttribute('data-focused', focused.toString())
+      return () => toggleChildrenActiveState(focused ? selectedIndexRef.current : null)
     }
 
     inputElement?.addEventListener('blur', handleMarkContainerAsFocused(false))
@@ -336,24 +362,7 @@ export function CommandListProvider({
       inputElement?.removeEventListener('blur', handleMarkContainerAsFocused(false))
       inputElement?.removeEventListener('focus', handleMarkContainerAsFocused(true))
     }
-  }, [children, containerElement, inputElement])
-
-  /**
-   * Track mouse enter / leave state on child container and store state in `data-hovered` attribute on
-   * a separate container element.
-   */
-  useEffect(() => {
-    function handleMarkChildrenAsHovered(hovered: boolean) {
-      return () => containerElement?.setAttribute('data-hovered', hovered.toString())
-    }
-
-    childContainerElement?.addEventListener('mouseenter', handleMarkChildrenAsHovered(true))
-    childContainerElement?.addEventListener('mouseleave', handleMarkChildrenAsHovered(false))
-    return () => {
-      childContainerElement?.removeEventListener('mouseenter', handleMarkChildrenAsHovered(true))
-      childContainerElement?.removeEventListener('mouseleave', handleMarkChildrenAsHovered(false))
-    }
-  }, [childContainerElement, containerElement])
+  }, [handleAssignSelectedState, inputElement, toggleChildrenActiveState])
 
   /**
    * Temporarily disable pointer events (or 'flush' existing hover states) on child count changes.
@@ -401,8 +410,6 @@ export function CommandListProvider({
     childContainerElement?.setAttribute('aria-multiselectable', ariaMultiselectable.toString())
     childContainerElement?.setAttribute('role', 'listbox')
 
-    containerElement?.setAttribute('id', `${commandListId}-children`)
-
     if (ariaInputLabel) {
       inputElement?.setAttribute('aria-label', ariaInputLabel)
     }
@@ -410,42 +417,44 @@ export function CommandListProvider({
     inputElement?.setAttribute('aria-expanded', 'true')
     inputElement?.setAttribute('aria-controls', `${commandListId}-children`)
     inputElement?.setAttribute('role', 'combobox')
-
     pointerOverlayElement?.setAttribute('data-enabled', 'true')
+    virtualListElement?.setAttribute('id', `${commandListId}-children`)
   }, [
     ariaChildrenLabel,
     ariaInputLabel,
     ariaMultiselectable,
     childContainerElement,
     commandListId,
-    containerElement,
     inputElement,
     pointerOverlayElement,
+    virtualListElement,
   ])
 
   /**
-   * Focus input on mount (non-touch only)
+   * Focus input / virtual list element on mount (non-touch only)
    */
   useEffect(() => {
     if (autoFocus) {
-      handleFocusInputElement()
+      handleFocusElement()
     }
-  }, [autoFocus, handleFocusInputElement])
+  }, [autoFocus, handleFocusElement])
 
   return (
     <CommandListContext.Provider
       value={{
-        focusInputElement: handleFocusInputElement,
+        focusInputElement: handleFocusElement,
         getTopIndex: handleGetTopIndex,
         itemIndices,
         onChildMouseDown: handleChildMouseDown,
         onChildMouseEnter: handleChildMouseEnter,
         setChildContainerElement,
-        setContainerElement,
         setInputElement: setInputElement,
         setPointerOverlayElement,
         setVirtualizer: handleSetVirtualizer,
+        setVirtualListElement,
         virtualizer: virtualizerRef.current,
+        virtualItemDataAttr: {[LIST_ITEM_DATA_ATTR]: ''},
+        virtualListElement,
       }}
     >
       {children}
