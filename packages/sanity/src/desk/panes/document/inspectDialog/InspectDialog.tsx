@@ -55,6 +55,7 @@ export function InspectDialog(props: InspectDialogProps) {
         )
       }
       onClose={onInspectClose}
+      onClickOutside={onInspectClose}
       width={3}
     >
       <Flex direction="column" height="fill">

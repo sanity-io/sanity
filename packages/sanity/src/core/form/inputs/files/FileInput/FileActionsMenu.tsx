@@ -1,7 +1,17 @@
 import {BinaryDocumentIcon, EllipsisVerticalIcon} from '@sanity/icons'
-import React, {ReactNode, useState} from 'react'
-
-import {Box, Button, Card, Flex, Menu, Popover, Stack, Text, useClickOutside} from '@sanity/ui'
+import React, {ReactNode, useCallback, useState} from 'react'
+import {
+  Box,
+  Button,
+  Card,
+  Flex,
+  Menu,
+  Popover,
+  Stack,
+  Text,
+  useClickOutside,
+  useGlobalKeyDown,
+} from '@sanity/ui'
 import {formatBytes} from '../../common/helper'
 
 type Props = {
@@ -13,17 +23,52 @@ type Props = {
   disabled?: boolean
   isMenuOpen: boolean
   onMenuOpen: (flag: boolean) => void
+  setMenuButtonElement: (element: HTMLButtonElement | null) => void
 }
 
 export function FileActionsMenu(props: Props) {
-  const {originalFilename, size, children, muted, disabled, onClick, isMenuOpen, onMenuOpen} = props
+  const {
+    originalFilename,
+    size,
+    children,
+    muted,
+    disabled,
+    onClick,
+    isMenuOpen,
+    onMenuOpen,
+    setMenuButtonElement,
+  } = props
+  const [menuElement, setMenuElement] = useState<HTMLDivElement | null>(null)
+  const [buttonElement, setButtonElement] = useState<HTMLButtonElement | null>(null)
 
-  const [menuElement, setMenuRef] = useState<HTMLDivElement | null>(null)
+  const handleClick = useCallback(() => onMenuOpen(true), [onMenuOpen])
 
-  const handleClick = React.useCallback(() => onMenuOpen(true), [onMenuOpen])
+  const setOptionsButtonRef = useCallback(
+    (el: HTMLButtonElement | null) => {
+      // Pass the button element to the parent component so that it can focus it when e.g. closing dialogs
+      setMenuButtonElement(el)
 
+      // Set focus back on the button when closing the menu
+      setButtonElement(el)
+    },
+    [setMenuButtonElement]
+  )
+
+  useGlobalKeyDown(
+    useCallback(
+      (event) => {
+        if (isMenuOpen && (event.key === 'Escape' || event.key === 'Tab')) {
+          onMenuOpen(false)
+          buttonElement?.focus()
+        }
+      },
+      [isMenuOpen, onMenuOpen, buttonElement]
+    )
+  )
+
+  // Close menu when clicking outside of it
   useClickOutside(
-    React.useCallback(() => onMenuOpen(false), [onMenuOpen]),
+    useCallback(() => onMenuOpen(false), [onMenuOpen]),
     [menuElement]
   )
 
@@ -37,6 +82,7 @@ export function FileActionsMenu(props: Props) {
         padding={2}
         tone="inherit"
         onClick={onClick}
+        flex={1}
       >
         <Flex wrap="nowrap" align="center">
           <Card padding={3} tone="transparent" shadow={1} radius={1}>
@@ -54,14 +100,24 @@ export function FileActionsMenu(props: Props) {
           </Stack>
         </Flex>
       </Card>
+
       <Box padding={2}>
         <Flex justify="center">
-          <Popover content={<Menu ref={setMenuRef}>{children}</Menu>} portal open={isMenuOpen}>
+          <Popover
+            content={
+              <Menu ref={setMenuElement} shouldFocus="first">
+                {children}
+              </Menu>
+            }
+            portal
+            open={isMenuOpen}
+          >
             <Button
+              data-testid="options-menu-button"
               icon={EllipsisVerticalIcon}
               mode="bleed"
-              data-testid="options-menu-button"
               onClick={handleClick}
+              ref={setOptionsButtonRef}
             />
           </Popover>
         </Flex>
