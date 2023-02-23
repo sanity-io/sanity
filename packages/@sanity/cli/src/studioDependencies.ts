@@ -17,6 +17,8 @@ export const studioDependencies = {
   devDependencies: {
     // Linting/tooling
     '@sanity/eslint-config-studio': 'latest',
+    // When using typescript, we'll want the these types too, so might as well install them
+    '@types/styled-components': '^5.1.26',
     eslint: '^8.6.0',
     prettier: 'latest',
     typescript: '^4.0.0', // Peer dependency of eslint-config-studio (implicitly)
