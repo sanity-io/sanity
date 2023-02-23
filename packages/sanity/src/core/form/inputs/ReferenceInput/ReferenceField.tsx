@@ -25,10 +25,10 @@ import {useScrollIntoViewOnFocusWithin} from '../../hooks/useScrollIntoViewOnFoc
 import {useDidUpdate} from '../../hooks/useDidUpdate'
 import {set, unset} from '../../patch'
 import {AlertStrip} from '../../components/AlertStrip'
-import {ReferencePreviewCard} from './ReferenceItem'
 import {useReferenceInput} from './useReferenceInput'
 import {useReferenceInfo} from './useReferenceInfo'
 import {PreviewReferenceValue} from './PreviewReferenceValue'
+import {ReferenceLinkCard} from './ReferenceLinkCard'
 import {IntentLink} from 'sanity/router'
 
 interface ReferenceFieldProps extends Omit<ObjectFieldProps, 'renderDefault'> {
@@ -257,6 +257,7 @@ export function ReferenceField(props: ReferenceFieldProps) {
       ),
     [handleClear, handleReplace, inputId, OpenLink, readOnly, value?._ref]
   )
+
   return (
     <FormField
       level={props.level}
@@ -271,19 +272,17 @@ export function ReferenceField(props: ReferenceFieldProps) {
         <Card shadow={1} radius={1} padding={1} tone={tone}>
           <Stack space={1}>
             <Flex gap={1} align="center">
-              <ReferencePreviewCard
+              <ReferenceLinkCard
                 flex={1}
-                forwardedAs={EditReferenceLink as any}
+                as={EditReferenceLink}
                 tone="inherit"
                 radius={2}
-                data-as="a"
                 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                 documentId={value?._ref}
                 documentType={refType?.name}
                 paddingX={2}
                 paddingY={1}
                 __unstable_focusRing
-                style={{position: 'relative'}}
                 selected={selected}
                 pressed={pressed}
                 data-selected={selected ? true : undefined}
@@ -295,7 +294,7 @@ export function ReferenceField(props: ReferenceFieldProps) {
                   renderPreview={renderPreview}
                   type={schemaType}
                 />
-              </ReferencePreviewCard>
+              </ReferenceLinkCard>
               <Box>{menu}</Box>
             </Flex>
             {footer}
