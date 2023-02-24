@@ -23,7 +23,7 @@ export function NoDocumentTypesScreen() {
                 </Text>
                 <Text as="p" muted size={1}>
                   <a
-                    href="https://beta.sanity.io/docs/platform/studio/config"
+                    href="https://www.sanity.io/docs/create-a-schema-and-configure-sanity-studio"
                     target="_blank"
                     rel="noreferrer"
                   >

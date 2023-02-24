@@ -16,13 +16,19 @@ export function NoToolsScreen() {
               </Box>
               <Stack flex={1} marginLeft={3} space={3}>
                 <Text as="h1" size={1} weight="bold">
-                  No configured tools!
+                  No configured tools
                 </Text>
                 <Text as="p" muted size={1}>
                   Please configure a tool in your Studio configuration.
                 </Text>
-                <Text as="p" hidden muted size={1}>
-                  <a href="">Learn how to add a tool &rarr;</a>
+                <Text as="p" muted size={1}>
+                  <a
+                    href="https://www.sanity.io/docs/studio-tools"
+                    rel="noreferrer"
+                    target="_blank"
+                  >
+                    Learn how to add a tool &rarr;
+                  </a>
                 </Text>
               </Stack>
             </Flex>
