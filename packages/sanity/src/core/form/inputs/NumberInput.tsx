@@ -31,6 +31,7 @@ export function NumberInput(props: NumberInputProps) {
       pattern={onlyPositiveNumber ? '[d]*' : undefined}
       max={Number.MAX_SAFE_INTEGER}
       min={Number.MIN_SAFE_INTEGER}
+      data-testid="number-input"
     />
   )
 }

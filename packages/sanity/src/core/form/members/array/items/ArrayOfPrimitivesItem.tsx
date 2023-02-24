@@ -1,5 +1,5 @@
-import {isBooleanSchemaType, isNumberSchemaType} from '@sanity/types'
-import React, {useCallback, useMemo, useRef} from 'react'
+import {isBooleanSchemaType, isNumberSchemaType, SchemaType} from '@sanity/types'
+import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {FIXME} from '../../../../FIXME'
 import {ArrayOfPrimitivesItemMember} from '../../../store'
 import {useDidUpdate} from '../../../hooks/useDidUpdate'
@@ -12,6 +12,7 @@ import {
 } from '../../../types'
 import {insert, PatchArg, PatchEvent, set, unset} from '../../../patch'
 import {useFormCallbacks} from '../../../studio/contexts/FormCallbacks'
+import {resolveNativeNumberInputValue} from '../../common/resolveNativeNumberInputValue'
 
 /**
  * @beta
@@ -28,6 +29,8 @@ export interface PrimitiveMemberItemProps {
 export function ArrayOfPrimitivesItem(props: PrimitiveMemberItemProps) {
   const focusRef = useRef<{focus: () => void}>()
   const {member, renderItem, renderInput} = props
+
+  const [localValue, setLocalValue] = useState<undefined | string>()
 
   const {onPathBlur, onPathFocus, onChange} = useFormCallbacks()
 
@@ -73,6 +76,14 @@ export function ArrayOfPrimitivesItem(props: PrimitiveMemberItemProps) {
       const hasEmptyValue =
         inputValue === '' || (typeof inputValue === 'number' && isNaN(inputValue))
 
+      if (isNumberSchemaType(member.item.schemaType)) {
+        // Store the local value for number inputs in order to support intermediate values
+        // that includes more information than the numeric value
+        // E.g. if typing `0.0` the numeric value will be 0, but we still want to show `0.0` in the input to allow typing
+        // more digits
+        setLocalValue(hasEmptyValue ? undefined : event.currentTarget.value)
+      }
+
       handleChange(
         set(
           hasEmptyValue
@@ -93,11 +104,7 @@ export function ArrayOfPrimitivesItem(props: PrimitiveMemberItemProps) {
       id: member.item.id,
       ref: focusRef,
       onChange: handleNativeChange,
-      // this is a trick to retain type information while displaying an "empty" input
-      // if this input is used to edit items in an array of numbers, the value can't really be set to empty without
-      // either removing the item or losing type information (i.e. it can't be an empty string, because that's… a string)
-      // so the array of numbers then use the special value `-0` to represent an empty value
-      value: String(Object.is(member.item.value, -0) ? '' : member.item.value),
+      value: resolveNativeInputValue(member.item.schemaType, member.item.value, localValue),
       readOnly: Boolean(member.item.readOnly),
       placeholder: member.item.schemaType.placeholder,
     }),
@@ -107,8 +114,9 @@ export function ArrayOfPrimitivesItem(props: PrimitiveMemberItemProps) {
       handleNativeChange,
       member.item.id,
       member.item.readOnly,
-      member.item.schemaType.placeholder,
+      member.item.schemaType,
       member.item.value,
+      localValue,
     ]
   )
   const inputProps = useMemo((): Omit<PrimitiveInputProps, 'renderDefault'> => {
@@ -197,4 +205,19 @@ export function ArrayOfPrimitivesItem(props: PrimitiveMemberItemProps) {
   ])
 
   return <>{useMemo(() => renderItem(itemProps as PrimitiveItemProps), [itemProps, renderItem])}</>
+}
+
+function resolveNativeInputValue(
+  schemaType: SchemaType,
+  value: unknown,
+  localValue: string | undefined
+): string {
+  // this is a trick to retain type information while displaying an "empty" input
+  // if this input is used to edit items in an array of numbers, the value can't really be set to empty without
+  // either removing the item or losing type information (i.e. it can't be an empty string, because that's… a string)
+  // so the array of numbers then use the special value `-0` to represent an empty value
+  if (Object.is(value, -0)) {
+    return ''
+  }
+  return resolveNativeNumberInputValue(schemaType, value, localValue)
 }

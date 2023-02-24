@@ -1,5 +1,5 @@
-import React, {useCallback, useEffect, useMemo, useRef} from 'react'
-import {isBooleanSchemaType, isNumberSchemaType} from '@sanity/types'
+import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import {isBooleanSchemaType, isNumberSchemaType, SchemaType} from '@sanity/types'
 import {FieldMember} from '../../../store'
 import {
   PrimitiveFieldProps,
@@ -9,6 +9,7 @@ import {
 } from '../../../types'
 import {FormPatch, PatchEvent, set, unset} from '../../../patch'
 import {useFormCallbacks} from '../../../studio/contexts/FormCallbacks'
+import {resolveNativeNumberInputValue} from '../../common/resolveNativeNumberInputValue'
 
 /**
  * Responsible for creating inputProps and fieldProps to pass to ´renderInput´ and ´renderField´ for a primitive field/input
@@ -23,6 +24,8 @@ export function PrimitiveField(props: {
 }) {
   const {member, renderInput, renderField} = props
   const focusRef = useRef<{focus: () => void}>()
+
+  const [localValue, setLocalValue] = useState<string | undefined>()
 
   const {onPathBlur, onPathFocus, onChange} = useFormCallbacks()
 
@@ -60,6 +63,14 @@ export function PrimitiveField(props: {
       const hasEmptyValue =
         inputValue === '' || (typeof inputValue === 'number' && isNaN(inputValue))
 
+      if (isNumberSchemaType(member.field.schemaType)) {
+        // Store the local value for number inputs in order to support intermediate values
+        // that includes more information than the numeric value
+        // E.g. if typing `0.0` the numeric value will be 0, but we still want to show `0.0` in the input to allow typing
+        // more digits
+        setLocalValue(hasEmptyValue ? undefined : event.currentTarget.value)
+      }
+
       onChange(PatchEvent.from(hasEmptyValue ? unset() : set(inputValue)).prefixAll(member.name))
     },
     [member.name, member.field.schemaType, onChange]
@@ -82,7 +93,7 @@ export function PrimitiveField(props: {
       id: member.field.id,
       ref: focusRef,
       onChange: handleNativeChange,
-      value: String(member.field.value ?? ''),
+      value: resolveNativeNumberInputValue(member.field.schemaType, member.field.value, localValue),
       readOnly: Boolean(member.field.readOnly),
       placeholder: member.field.schemaType.placeholder,
     }),
@@ -92,8 +103,9 @@ export function PrimitiveField(props: {
       handleNativeChange,
       member.field.id,
       member.field.readOnly,
-      member.field.schemaType.placeholder,
+      member.field.schemaType,
       member.field.value,
+      localValue,
     ]
   )
 
