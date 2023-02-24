@@ -8,6 +8,7 @@ import {
   ObjectFormNode,
 } from '../types'
 import {isMemberArrayOfObjects} from '../../members/object/fields/asserters'
+import {ALL_FIELDS_GROUP} from '../constants'
 
 /** @internal */
 export interface ExpandPathOperation {
@@ -64,13 +65,18 @@ export function getExpandOperations(state: ObjectFormNode, path: Path): ExpandOp
 
   const schemaField = state.schemaType.fields.find((field) => field.name === fieldName)
   const selectedGroupName = state.groups.find((group) => group.selected)?.name
+  const defaultGroupName = (state.schemaType.groups || []).find((group) => group.default)?.name
   const inSelectedGroup =
     selectedGroupName &&
-    (selectedGroupName === 'all-fields' ||
+    (selectedGroupName === ALL_FIELDS_GROUP.name ||
       (schemaField && castArray(schemaField.group).includes(selectedGroupName)))
 
   if (!inSelectedGroup) {
-    ops.push({type: 'setSelectedGroup', path: state.path, groupName: 'all-fields'})
+    ops.push({
+      type: 'setSelectedGroup',
+      path: state.path,
+      groupName: defaultGroupName || ALL_FIELDS_GROUP.name,
+    })
   }
 
   if (fieldMember) {
