@@ -163,6 +163,7 @@ export interface PaneMenuItem extends DeskToolMenuItem {
   // currently, they are only used in the `DocumentPaneProvider`
   isDisabled?: boolean
   shortcut?: string
+  selected?: boolean
 }
 
 /** @internal */

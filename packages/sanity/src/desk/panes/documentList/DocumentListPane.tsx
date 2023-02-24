@@ -1,10 +1,12 @@
 import React, {memo, useMemo, useRef} from 'react'
 import {Card, Code} from '@sanity/ui'
 import shallowEquals from 'shallow-equals'
+import {isEqual} from 'lodash'
 import {Pane} from '../../components/pane'
 import {_DEBUG} from '../../constants'
 import {useDeskToolSetting} from '../../useDeskToolSetting'
 import {BaseDeskToolPaneProps} from '../types'
+import {PaneMenuItem} from '../../types'
 import {DEFAULT_ORDERING, EMPTY_RECORD} from './constants'
 import {
   applyOrderingFunctions,
@@ -19,7 +21,7 @@ import {GeneralPreviewLayoutKey, SourceProvider, useSchema, useSource, useUnique
 
 type DocumentListPaneProps = BaseDeskToolPaneProps<'documentList'>
 
-const emptyArray: never[] = []
+const EMPTY_ARRAY: never[] = []
 
 function useShallowUnique<ValueType>(value: ValueType): ValueType {
   const valueRef = useRef<ValueType>(value)
@@ -27,6 +29,39 @@ function useShallowUnique<ValueType>(value: ValueType): ValueType {
     valueRef.current = value
   }
   return valueRef.current
+}
+
+const addSelectedStateToMenuItems = (options: {
+  menuItems?: PaneMenuItem[]
+  sortOrder?: SortOrder
+  layout?: GeneralPreviewLayoutKey
+}) => {
+  const {menuItems, sortOrder, layout} = options
+
+  return menuItems?.map((item) => {
+    if (item.params?.layout) {
+      return {
+        ...item,
+        selected: layout === item.params?.layout,
+      }
+    }
+
+    if (item?.params?.extendedProjection) {
+      return {
+        ...item,
+        selected: sortOrder?.extendedProjection === item?.params?.extendedProjection,
+      }
+    }
+
+    if (item?.params?.by) {
+      return {
+        ...item,
+        selected: isEqual(sortOrder?.by, item?.params?.by || EMPTY_ARRAY),
+      }
+    }
+
+    return {...item, selected: false}
+  })
 }
 
 /**
@@ -39,13 +74,13 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
   const {
     defaultLayout = 'default',
     displayOptions,
-    initialValueTemplates = emptyArray,
+    initialValueTemplates = EMPTY_ARRAY,
     menuItems,
     menuItemGroups,
     options,
     title,
   } = pane
-  const {apiVersion, defaultOrdering = emptyArray, filter} = options
+  const {apiVersion, defaultOrdering = EMPTY_ARRAY, filter} = options
   const params = useShallowUnique(options.params || EMPTY_RECORD)
   const sourceName = pane.source
   const typeName = useMemo(() => getTypeNameFromSingleTypeFilter(filter, params), [filter, params])
@@ -82,6 +117,16 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
     apiVersion,
   })
 
+  const menuItemsWithSelectedState = useMemo(
+    () =>
+      addSelectedStateToMenuItems({
+        menuItems,
+        sortOrder,
+        layout,
+      }),
+    [layout, menuItems, sortOrder]
+  )
+
   return (
     <SourceProvider name={sourceName || parentSourceName}>
       <Pane currentMaxWidth={350} id={paneKey} maxWidth={640} minWidth={320} selected={isSelected}>
@@ -94,7 +139,7 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
         <DocumentListPaneHeader
           index={index}
           initialValueTemplates={initialValueTemplates}
-          menuItems={menuItems}
+          menuItems={menuItemsWithSelectedState}
           menuItemGroups={menuItemGroups}
           setLayout={setLayout}
           setSortOrder={setSortOrder}
