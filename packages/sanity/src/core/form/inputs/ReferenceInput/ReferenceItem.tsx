@@ -1,3 +1,4 @@
+/* eslint-disable complexity */
 import {
   Box,
   Button,
@@ -22,7 +23,6 @@ import {
   SyncIcon as ReplaceIcon,
   TrashIcon,
 } from '@sanity/icons'
-import styled from 'styled-components'
 import {ObjectItem, ObjectItemProps} from '../../types'
 import {useScrollIntoViewOnFocusWithin} from '../../hooks/useScrollIntoViewOnFocusWithin'
 import {useDidUpdate} from '../../hooks/useDidUpdate'
@@ -39,6 +39,7 @@ import {InsertMenu} from '../arrays/ArrayOfObjectsInput/InsertMenu'
 import {useReferenceInfo} from './useReferenceInfo'
 import {PreviewReferenceValue} from './PreviewReferenceValue'
 import {useReferenceInput} from './useReferenceInput'
+import {ReferenceLinkCard} from './ReferenceLinkCard'
 
 export interface ReferenceItemValue extends Omit<ObjectItem, '_type'>, Omit<Reference, '_key'> {}
 
@@ -74,22 +75,6 @@ const INITIAL_VALUE_CARD_STYLE = {
   height: '100%',
   opacity: 0.6,
 } as const
-
-export const ReferencePreviewCard = styled(Card)`
-  /* this is a hack to avoid layout jumps while previews are loading
-     there's probably better ways of solving this */
-  min-height: 35px;
-
-  /* TextWithTone uses its own logic to set color, and we therefore need */
-  /* to override this logic in order to set the correct color in different states */
-  &[data-selected],
-  &[data-pressed],
-  &:active {
-    [data-ui='TextWithTone'] {
-      color: inherit;
-    }
-  }
-`
 
 export function ReferenceItem<Item extends ReferenceItemValue = ReferenceItemValue>(
   props: ReferenceItemProps<Item>
@@ -350,18 +335,16 @@ export function ReferenceItem<Item extends ReferenceItemValue = ReferenceItemVal
           </FormFieldSet>
         </Box>
       ) : (
-        <ReferencePreviewCard
-          forwardedAs={EditReferenceLink as any}
+        <ReferenceLinkCard
+          as={EditReferenceLink}
           tone="inherit"
           radius={2}
-          data-as="a"
           documentId={value?._ref}
           documentType={refType?.name}
           disabled={resolvingInitialValue}
           paddingX={2}
           paddingY={1}
           __unstable_focusRing
-          style={{position: 'relative'}}
           selected={selected}
           pressed={pressed}
           data-selected={selected ? true : undefined}
@@ -391,7 +374,7 @@ export function ReferenceItem<Item extends ReferenceItemValue = ReferenceItemVal
               </Flex>
             </Card>
           )}
-        </ReferencePreviewCard>
+        </ReferenceLinkCard>
       )}
     </RowLayout>
   )
