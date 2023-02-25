@@ -30,7 +30,7 @@ interface SearchProviderProps {
  * @internal
  */
 export function SearchProvider({
-  __debugFieldDefinitions = [],
+  __debugFieldDefinitions,
   children,
   fullscreen,
 }: SearchProviderProps) {
@@ -47,7 +47,7 @@ export function SearchProvider({
 
   // Create our field definitions: all applicable fields which we can filter on.
   const fields = useMemo(
-    () => [...createFieldDefinitions(schema, filters), ...__debugFieldDefinitions],
+    () => [...createFieldDefinitions(schema, filters), ...(__debugFieldDefinitions || [])],
     [__debugFieldDefinitions, schema, filters]
   )
 
