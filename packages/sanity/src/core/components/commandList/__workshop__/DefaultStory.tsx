@@ -1,4 +1,4 @@
-import {Box, Card, Flex, Text, TextInput} from '@sanity/ui'
+import {Box, Card, Flex, Stack, Text, TextInput} from '@sanity/ui'
 import {useBoolean} from '@sanity/ui-workshop'
 import React, {
   ComponentProps,
@@ -31,6 +31,7 @@ const StyledBox = styled(Box)<{$index: number}>`
 
 export default function DefaultStory() {
   const [filter, setFilter] = useState<string>('')
+  const [message, setMessage] = useState('')
   const showInput = useBoolean('Show input', true, 'Props')
 
   const filteredItems = useMemo(() => {
@@ -40,32 +41,44 @@ export default function DefaultStory() {
     return ITEMS.filter((i) => i.toString().includes(filter))
   }, [filter])
 
-  const handleClear = useCallback(() => {
-    setFilter('')
-  }, [])
-
   const handleChange = useCallback((e: KeyboardEvent<HTMLInputElement>) => {
     setFilter(e.currentTarget.value)
   }, [])
 
+  const handleChildClick = useCallback((msg: string) => {
+    setMessage(msg)
+  }, [])
+
+  const handleClear = useCallback(() => {
+    setFilter('')
+  }, [])
+
   return (
     <CardContainer padding={4}>
-      <CommandListProvider
-        activeItemDataAttr="data-active"
-        ariaActiveDescendant={filteredItems.length > 0}
-        ariaChildrenLabel="Children"
-        ariaInputLabel="Header"
-        autoFocus
-        itemIndices={[...filteredItems.keys()]}
-      >
-        <CommandListContent
-          filter={filter}
-          items={filteredItems}
-          onClear={handleClear}
-          onChange={handleChange}
-          showInput={showInput}
-        />
-      </CommandListProvider>
+      <Stack space={3}>
+        <CommandListProvider
+          activeItemDataAttr="data-active"
+          ariaActiveDescendant={filteredItems.length > 0}
+          ariaChildrenLabel="Children"
+          ariaInputLabel="Header"
+          autoFocus
+          itemIndices={[...filteredItems.keys()]}
+        >
+          <CommandListContent
+            filter={filter}
+            items={filteredItems}
+            onChange={handleChange}
+            onChildClick={handleChildClick}
+            onClear={handleClear}
+            showInput={showInput}
+          />
+        </CommandListProvider>
+        <Box>
+          <Text muted size={1}>
+            {message}
+          </Text>
+        </Box>
+      </Stack>
     </CardContainer>
   )
 }
@@ -74,6 +87,7 @@ interface CommandListContentProps
   extends Pick<ComponentProps<typeof TextInput>, 'onChange' | 'onClear'> {
   filter?: string
   items: number[]
+  onChildClick: (message: string) => void
   showInput?: boolean
 }
 
@@ -81,25 +95,11 @@ const CommandListContent = ({
   filter,
   items,
   onChange,
+  onChildClick,
   onClear,
   showInput,
 }: CommandListContentProps) => {
-  const {virtualItemDataAttr, setInputElement, virtualizer} = useCommandList()
-
-  const VirtualListItem = useMemo(() => {
-    return function VirtualListItemComponent({index}: {index: number}) {
-      const item = items[index]
-      return (
-        <StyledBox
-          {...virtualItemDataAttr}
-          $index={index} //
-          padding={2}
-        >
-          <Text>{item}</Text>
-        </StyledBox>
-      )
-    }
-  }, [items, virtualItemDataAttr])
+  const {setInputElement, virtualizer, virtualItemDataAttr} = useCommandList()
 
   const handleChange = useCallback(
     (e: KeyboardEvent<HTMLInputElement>) => {
@@ -127,6 +127,22 @@ const CommandListContent = ({
       setInputElement(null)
     }
   }, [setInputElement, showInput])
+
+  const VirtualListItem = useMemo(() => {
+    return function VirtualListItemComponent({index}: {index: number}) {
+      const item = items[index]
+      return (
+        <StyledBox
+          {...virtualItemDataAttr}
+          $index={index} //
+          onClick={() => onChildClick(`Button ${item.toString()} clicked`)}
+          padding={2}
+        >
+          <Text>{item}</Text>
+        </StyledBox>
+      )
+    }
+  }, [items, virtualItemDataAttr])
 
   return (
     <Flex direction="column" style={{height: '400px'}}>

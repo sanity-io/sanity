@@ -1,4 +1,4 @@
-import {Box, Button, Card, Flex, TextInput} from '@sanity/ui'
+import {Box, Button, Card, Flex, Stack, Text, TextInput} from '@sanity/ui'
 import {useBoolean} from '@sanity/ui-workshop'
 import React, {
   ComponentProps,
@@ -23,7 +23,8 @@ const CardContainer = styled(Card)`
 
 export default function ButtonStory() {
   const [filter, setFilter] = useState<string>('')
-  const showInput = useBoolean('Show input', true, 'Props')
+  const [message, setMessage] = useState('')
+  const showInput = useBoolean('Show input', false, 'Props')
 
   const filteredItems = useMemo(() => {
     if (!filter) {
@@ -32,32 +33,39 @@ export default function ButtonStory() {
     return ITEMS.filter((i) => i.toString().includes(filter))
   }, [filter])
 
-  const handleClear = useCallback(() => {
-    setFilter('')
-  }, [])
-
-  const handleChange = useCallback((e: KeyboardEvent<HTMLInputElement>) => {
-    setFilter(e.currentTarget.value)
-  }, [])
+  const handleChange = useCallback(
+    (e: KeyboardEvent<HTMLInputElement>) => setFilter(e.currentTarget.value),
+    []
+  )
+  const handleChildClick = useCallback((msg: string) => setMessage(msg), [])
+  const handleClear = useCallback(() => setFilter(''), [])
 
   return (
     <CardContainer padding={4}>
-      <CommandListProvider
-        activeItemDataAttr="data-selected"
-        ariaActiveDescendant={filteredItems.length > 0}
-        ariaChildrenLabel="Children"
-        ariaInputLabel="Header"
-        autoFocus
-        itemIndices={[...filteredItems.keys()]}
-      >
-        <CommandListContent
-          filter={filter}
-          items={filteredItems}
-          onClear={handleClear}
-          onChange={handleChange}
-          showInput={showInput}
-        />
-      </CommandListProvider>
+      <Stack space={3}>
+        <CommandListProvider
+          activeItemDataAttr="data-selected"
+          ariaActiveDescendant={filteredItems.length > 0}
+          ariaChildrenLabel="Children"
+          ariaInputLabel="Header"
+          autoFocus
+          itemIndices={[...filteredItems.keys()]}
+        >
+          <CommandListContent
+            filter={filter}
+            items={filteredItems}
+            onChildClick={handleChildClick}
+            onClear={handleClear}
+            onChange={handleChange}
+            showInput={showInput}
+          />
+        </CommandListProvider>
+        <Box>
+          <Text muted size={1}>
+            {message}
+          </Text>
+        </Box>
+      </Stack>
     </CardContainer>
   )
 }
@@ -66,6 +74,7 @@ interface CommandListContentProps
   extends Pick<ComponentProps<typeof TextInput>, 'onChange' | 'onClear'> {
   filter?: string
   items: number[]
+  onChildClick: (message: string) => void
   showInput?: boolean
 }
 
@@ -73,25 +82,11 @@ const CommandListContent = ({
   filter,
   items,
   onChange,
+  onChildClick,
   onClear,
   showInput,
 }: CommandListContentProps) => {
-  const {virtualItemDataAttr, setInputElement, virtualizer} = useCommandList()
-
-  const VirtualListItem = useMemo(() => {
-    return function VirtualListItemComponent({index}: {index: number}) {
-      const item = items[index]
-      return (
-        <Button
-          {...virtualItemDataAttr}
-          mode="bleed"
-          style={{borderRadius: 0, width: '100%'}}
-          text={`Button ${item.toString()}`}
-          tone="primary"
-        />
-      )
-    }
-  }, [items, virtualItemDataAttr])
+  const {setInputElement, virtualizer, virtualItemDataAttr} = useCommandList()
 
   const handleChange = useCallback(
     (e: KeyboardEvent<HTMLInputElement>) => {
@@ -119,6 +114,22 @@ const CommandListContent = ({
       setInputElement(null)
     }
   }, [setInputElement, showInput])
+
+  const VirtualListItem = useMemo(() => {
+    return function VirtualListItemComponent({index}: {index: number}) {
+      const item = items[index]
+      return (
+        <Button
+          {...virtualItemDataAttr}
+          mode="bleed"
+          onClick={() => onChildClick(`Button ${item.toString()} clicked`)}
+          style={{borderRadius: 0, width: '100%'}}
+          text={`Button ${item.toString()}`}
+          tone="primary"
+        />
+      )
+    }
+  }, [items, onChildClick, virtualItemDataAttr])
 
   return (
     <Flex direction="column" style={{height: '400px'}}>
