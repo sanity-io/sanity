@@ -106,7 +106,13 @@ function observePaths(
   const next = Object.keys(leads).reduce((res: Record<string, unknown>, head) => {
     const tails = leads[head].filter((tail) => tail.length > 0)
     if (tails.length === 0) {
-      res[head] = isRecord(value) ? (value as Record<string, unknown>)[head] : undefined
+      if (isRecord(value)) {
+        res[head] = (value as Record<string, unknown>)[head]
+      } else if (Array.isArray(value)) {
+        res[head] = (value as any)[head]
+      } else {
+        res[head] = undefined
+      }
     } else {
       res[head] = observePaths((value as any)[head], tails, observeFields, apiConfig)
     }
