@@ -41,7 +41,6 @@ export function RecentSearchesVirtualList({showFiltersOnClick}: RecentSearchesVi
 
   return (
     <CommandListItems
-      fixedHeight
       item={VirtualListItem}
       paddingBottom={1}
       virtualizerOptions={{

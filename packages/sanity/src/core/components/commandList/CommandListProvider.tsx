@@ -81,16 +81,14 @@ export function CommandListProvider({
   )
 
   const getChildDescendantId = useCallback(
-    (index: number) => {
-      return `${commandListId}-item-${index}`
-    },
+    (index: number) => `${commandListId}-item-${index}`,
     [commandListId]
   )
 
   /**
    * Iterate through all virtual list children and apply the active data-attribute on the selected index.
    */
-  const toggleChildrenActiveState = useCallback(
+  const showChildrenActiveState = useCallback(
     (selectedIndex: number | null) => {
       const childElements = Array.from(childContainerElement?.children || []) as HTMLElement[]
       childElements?.forEach((child) => {
@@ -130,7 +128,7 @@ export function CommandListProvider({
         child.setAttribute('tabIndex', '-1')
       }
     })
-    toggleChildrenActiveState(selectedIndex)
+    showChildrenActiveState(selectedIndex)
   }, [
     activeItemCount,
     ariaActiveDescendant,
@@ -139,7 +137,7 @@ export function CommandListProvider({
     inputElement,
     itemIndices,
     itemIndicesSelected,
-    toggleChildrenActiveState,
+    showChildrenActiveState,
   ])
 
   /**
@@ -192,6 +190,26 @@ export function CommandListProvider({
   )
 
   /**
+   * Select adjacent virtual item index and scroll into view with `react-virtual`
+   */
+  const selectAdjacentItemIndex = useCallback(
+    (direction: 'previous' | 'next') => {
+      let nextIndex = -1
+      if (direction === 'next') {
+        nextIndex =
+          selectedIndexRef.current < activeItemCount - 1 ? selectedIndexRef.current + 1 : 0
+      }
+      if (direction === 'previous') {
+        nextIndex =
+          selectedIndexRef.current > 0 ? selectedIndexRef.current - 1 : activeItemCount - 1
+      }
+      setActiveIndex({index: nextIndex, scrollIntoView: true})
+      enableChildContainerPointerEvents(false)
+    },
+    [activeItemCount, enableChildContainerPointerEvents, setActiveIndex]
+  )
+
+  /**
    * Focus input / virtual list element (non-touch only)
    */
   const handleFocusElement = useCallback(() => {
@@ -219,12 +237,47 @@ export function CommandListProvider({
    * Mark hovered child item as active
    */
   const handleChildMouseEnter = useCallback(
-    (index: number) => {
-      return function () {
-        setActiveIndex({index, scrollIntoView: false})
-      }
+    (index: number) => () => {
+      setActiveIndex({index, scrollIntoView: false})
     },
     [setActiveIndex]
+  )
+
+  /**
+   * Handle keyboard events:
+   * - Up/down arrow: scroll to adjacent items
+   * - Enter: trigger click events on the current active element
+   */
+  const handleKeyDown = useCallback(
+    (event: KeyboardEvent) => {
+      const childElements = Array.from(childContainerElement?.children || []) as HTMLElement[]
+      if (!childElements.length) {
+        return
+      }
+
+      if (event.key === 'ArrowDown') {
+        event.preventDefault()
+        selectAdjacentItemIndex('next')
+      }
+      if (event.key === 'ArrowUp') {
+        event.preventDefault()
+        selectAdjacentItemIndex('previous')
+      }
+      if (event.key === 'Enter') {
+        event.preventDefault()
+        const currentElement = childElements.find(
+          (el) => Number(el.dataset.index) === itemIndices.indexOf(selectedIndexRef.current)
+        )
+
+        if (currentElement) {
+          const clickableElement = currentElement?.querySelector<HTMLElement>(
+            `[${LIST_ITEM_DATA_ATTR}]`
+          )
+          clickableElement?.click()
+        }
+      }
+    },
+    [childContainerElement?.children, itemIndices, selectAdjacentItemIndex]
   )
 
   /**
@@ -233,25 +286,6 @@ export function CommandListProvider({
   const handleSetVirtualizer = useCallback((virtualizer: Virtualizer<HTMLDivElement, Element>) => {
     virtualizerRef.current = virtualizer
   }, [])
-
-  const scrollToAdjacentItem = useCallback(
-    (direction: 'previous' | 'next') => {
-      let nextIndex = -1
-      if (direction === 'next') {
-        nextIndex =
-          selectedIndexRef.current < activeItemCount - 1 ? selectedIndexRef.current + 1 : 0
-      }
-      if (direction === 'previous') {
-        nextIndex =
-          selectedIndexRef.current > 0 ? selectedIndexRef.current - 1 : activeItemCount - 1
-      }
-
-      // Scroll into view with `react-virtual`
-      setActiveIndex({index: nextIndex, scrollIntoView: true})
-      enableChildContainerPointerEvents(false)
-    },
-    [activeItemCount, enableChildContainerPointerEvents, setActiveIndex]
-  )
 
   /**
    * Set active index whenever initial index changes
@@ -276,93 +310,33 @@ export function CommandListProvider({
   }, [enableChildContainerPointerEvents])
 
   /**
-   * Listen to keyboard events on input element
-   */
-  useEffect(() => {
-    function handleKeyDown(event: KeyboardEvent) {
-      const childElements = Array.from(childContainerElement?.children || []) as HTMLElement[]
-
-      if (!childElements.length) {
-        return
-      }
-
-      if (event.key === 'ArrowDown') {
-        event.preventDefault()
-        scrollToAdjacentItem('next')
-      }
-      if (event.key === 'ArrowUp') {
-        event.preventDefault()
-        scrollToAdjacentItem('previous')
-      }
-      if (event.key === 'Enter') {
-        event.preventDefault()
-        const currentElement = childElements.find(
-          (el) => Number(el.dataset.index) === itemIndices.indexOf(selectedIndexRef.current)
-        )
-
-        if (currentElement) {
-          const clickableElement = currentElement?.querySelector<HTMLElement>(
-            `[${LIST_ITEM_DATA_ATTR}]`
-          )
-          clickableElement?.click()
-        }
-      }
-    }
-    inputElement?.addEventListener('keydown', handleKeyDown)
-    return () => {
-      inputElement?.removeEventListener('keydown', handleKeyDown)
-    }
-  }, [childContainerElement, inputElement, itemIndices, scrollToAdjacentItem])
-
-  /**
-   * Listen to keyboard arrow events on the container element.
-   * On arrow press: focus the input / virtual list element and then navigate accordingly.
+   * Listen to keyboard / blur / focus events on both input element (if present) and the virtual list element.
    *
-   * Done to account for when users focus a wrapping element with overflow (by dragging its scroll handle)
-   * and then try navigate with the keyboard.
+   * We still listen to events on the container to handle scenarios where the input element is not present
+   * or when users focus via dragging the overflow scroll handle.
    */
   useEffect(() => {
-    function handleKeydown(event: KeyboardEvent) {
-      if (event.key === 'ArrowDown') {
-        event.preventDefault()
-        handleFocusElement()
-        scrollToAdjacentItem('next')
-      }
-      if (event.key === 'ArrowUp') {
-        event.preventDefault()
-        handleFocusElement()
-        scrollToAdjacentItem('previous')
-      }
+    function handleHideChildrenActiveState() {
+      showChildrenActiveState(null)
+    }
+    function handleShowChildrenActiveState() {
+      showChildrenActiveState(selectedIndexRef.current)
     }
 
-    virtualListElement?.addEventListener('keydown', handleKeydown as EventListener)
+    const elements = [inputElement, virtualListElement]
+    elements.forEach((el) => {
+      el?.addEventListener('blur', handleHideChildrenActiveState)
+      el?.addEventListener('focus', handleShowChildrenActiveState)
+      el?.addEventListener('keydown', handleKeyDown)
+    })
     return () => {
-      virtualListElement?.removeEventListener('keydown', handleKeydown as EventListener)
+      elements.forEach((el) => {
+        el?.removeEventListener('blur', handleHideChildrenActiveState)
+        el?.removeEventListener('focus', handleShowChildrenActiveState)
+        el?.removeEventListener('keydown', handleKeyDown)
+      })
     }
-  }, [
-    childContainerElement,
-    handleFocusElement,
-    inputElement,
-    scrollToAdjacentItem,
-    virtualListElement,
-  ])
-
-  /**
-   * Track focus / blur state on the list's input element and store state in `data-focused` attribute on
-   * a separate container element.
-   */
-  useEffect(() => {
-    function handleMarkContainerAsFocused(focused: boolean) {
-      return () => toggleChildrenActiveState(focused ? selectedIndexRef.current : null)
-    }
-
-    inputElement?.addEventListener('blur', handleMarkContainerAsFocused(false))
-    inputElement?.addEventListener('focus', handleMarkContainerAsFocused(true))
-    return () => {
-      inputElement?.removeEventListener('blur', handleMarkContainerAsFocused(false))
-      inputElement?.removeEventListener('focus', handleMarkContainerAsFocused(true))
-    }
-  }, [handleAssignSelectedState, inputElement, toggleChildrenActiveState])
+  }, [handleKeyDown, inputElement, showChildrenActiveState, virtualListElement])
 
   /**
    * Temporarily disable pointer events (or 'flush' existing hover states) on child count changes.
@@ -442,7 +416,7 @@ export function CommandListProvider({
   return (
     <CommandListContext.Provider
       value={{
-        focusInputElement: handleFocusElement,
+        focusElement: handleFocusElement,
         getTopIndex: handleGetTopIndex,
         itemIndices,
         onChildMouseDown: handleChildMouseDown,

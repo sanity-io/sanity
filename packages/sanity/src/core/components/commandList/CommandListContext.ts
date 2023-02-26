@@ -2,7 +2,7 @@ import {Virtualizer} from '@tanstack/react-virtual'
 import {createContext, Dispatch, MouseEvent, SetStateAction} from 'react'
 
 export interface CommandListContextValue {
-  focusInputElement: () => void
+  focusElement: () => void
   getTopIndex: () => number
   itemIndices: (number | null)[]
   onChildMouseDown: (event: MouseEvent) => void

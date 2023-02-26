@@ -113,12 +113,12 @@ function ClearButton({
   onClick: () => void
   selectedTypes: SearchableType[]
 }) {
-  const {focusInputElement} = useCommandList()
+  const {focusElement} = useCommandList()
 
   const handleClear = useCallback(() => {
-    focusInputElement()
+    focusElement()
     onClick?.()
-  }, [focusInputElement, onClick])
+  }, [focusElement, onClick])
 
   return (
     <ClearButtonBox padding={1}>

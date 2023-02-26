@@ -23,7 +23,7 @@ export function RecentSearches({showFiltersOnClick}: RecentSearchesProps) {
     state: {filtersVisible, fullscreen, recentSearches},
   } = useSearchState()
 
-  const {focusInputElement} = useCommandList()
+  const {focusElement} = useCommandList()
 
   /**
    * Remove terms from local storage.
@@ -34,8 +34,8 @@ export function RecentSearches({showFiltersOnClick}: RecentSearchesProps) {
       const updatedRecentSearches = recentSearchesStore.removeSearch()
       dispatch({recentSearches: updatedRecentSearches, type: 'RECENT_SEARCHES_SET'})
     }
-    focusInputElement()
-  }, [dispatch, focusInputElement, recentSearchesStore])
+    focusElement()
+  }, [dispatch, focusElement, recentSearchesStore])
 
   const hasRecentSearches = !!recentSearches.length
 

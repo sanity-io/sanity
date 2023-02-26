@@ -59,7 +59,6 @@ export function DocumentTypesVirtualList({filteredItems}: DocumentTypesVirtualLi
 
   return (
     <CommandListItems
-      fixedHeight
       item={VirtualListItem}
       paddingBottom={1}
       virtualizerOptions={{
