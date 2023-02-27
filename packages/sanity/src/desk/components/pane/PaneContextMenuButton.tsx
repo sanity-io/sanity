@@ -110,7 +110,7 @@ function PaneContextMenuItem(props: {
         ref={linkRef}
       />
     ) : (
-      <button type="button" {...linkProps} />
+      <MenuItem {...linkProps} pressed={item.selected} />
     )
   )
 
@@ -123,6 +123,7 @@ function PaneContextMenuItem(props: {
       hotkeys={hotkeys}
       icon={item.icon}
       onClick={handleClick}
+      padding={0}
       text={item.title}
     />
   )
