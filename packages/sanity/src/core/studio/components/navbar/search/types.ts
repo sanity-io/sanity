@@ -87,3 +87,11 @@ export interface SearchFieldDefinition {
   titlePath: string[]
   type: string
 }
+
+/**
+ * @internal
+ */
+export type SearchFieldDefinitionDictionary = Record<
+  SearchFieldDefinition['id'],
+  SearchFieldDefinition
+>

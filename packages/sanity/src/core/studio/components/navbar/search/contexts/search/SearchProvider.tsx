@@ -13,7 +13,10 @@ import {
 } from '../../datastores/recentSearches'
 import {useSearch} from '../../hooks/useSearch'
 import type {SearchOrdering} from '../../types'
+import {createFieldDefinitionDictionary} from '../../utils/createFieldDefinitionDictionary'
 import {createFieldDefinitions} from '../../utils/createFieldDefinitions'
+import {createFilterDefinitionDictionary} from '../../utils/createFilterDefinitionDictionary'
+import {createOperatorDefinitionDictionary} from '../../utils/createOperatorDefinitionDictionary'
 import {validateFilter} from '../../utils/filterUtils'
 import {hasSearchableTerms} from '../../utils/hasSearchableTerms'
 import {isRecentSearchTerms} from '../../utils/isRecentSearchTerms'
@@ -40,23 +43,37 @@ export function SearchProvider({children, fullscreen}: SearchProviderProps) {
 
   const {dataset, projectId} = client.config()
 
-  // Create our field definitions: all applicable fields which we can filter on.
-  const fields = useMemo(() => createFieldDefinitions(schema, filters), [schema, filters])
+  // Create field, filter and operator dictionaries
+  const {fieldDefinitions, filterDefinitions, operatorDefinitions} = useMemo(() => {
+    return {
+      fieldDefinitions: createFieldDefinitionDictionary(createFieldDefinitions(schema, filters)),
+      filterDefinitions: createFilterDefinitionDictionary(filters),
+      operatorDefinitions: createOperatorDefinitionDictionary(operators),
+    }
+  }, [filters, operators, schema])
 
   // Create local storage store
   const recentSearchesStore = useMemo(
     () =>
       createRecentSearchesStore({
         dataset,
-        fieldDefinitions: fields,
-        filterDefinitions: filters,
-        operatorDefinitions: operators,
+        fieldDefinitions,
+        filterDefinitions,
+        operatorDefinitions,
         projectId,
         schema,
         user: currentUser,
         version: RECENT_SEARCH_VERSION,
       }),
-    [currentUser, dataset, fields, filters, operators, projectId, schema]
+    [
+      currentUser,
+      dataset,
+      fieldDefinitions,
+      filterDefinitions,
+      operatorDefinitions,
+      projectId,
+      schema,
+    ]
   )
 
   const recentSearches = useMemo(
@@ -70,9 +87,20 @@ export function SearchProvider({children, fullscreen}: SearchProviderProps) {
         currentUser,
         fullscreen,
         recentSearches,
-        definitions: {fields, operators, filters},
+        definitions: {
+          fields: fieldDefinitions,
+          operators: operatorDefinitions,
+          filters: filterDefinitions,
+        },
       }),
-    [currentUser, fields, filters, fullscreen, operators, recentSearches]
+    [
+      currentUser,
+      fieldDefinitions,
+      filterDefinitions,
+      fullscreen,
+      operatorDefinitions,
+      recentSearches,
+    ]
   )
   const [state, dispatch] = useReducer(searchReducer, initialState)
 
@@ -101,10 +129,10 @@ export function SearchProvider({children, fullscreen}: SearchProviderProps) {
   // Get a list of 'complete' filters (filters that return valid values)
   const completeFilters = currentFilters.filter((filter) =>
     validateFilter({
-      fieldDefinitions: fields,
+      fieldDefinitions,
       filter,
-      filterDefinitions: filters,
-      operatorDefinitions: operators,
+      filterDefinitions,
+      operatorDefinitions,
     })
   )
 

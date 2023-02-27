@@ -51,7 +51,6 @@ export function createFieldDefinitions(
   // Get supported filter field types that have corresponding filters defined
   const supportedFieldTypes = getSupportedFieldTypes(filterDefinitions)
 
-  // Recursively iterate through all documents and resolve objects
   return getDocumentFieldDefinitions(supportedFieldTypes, documentTypes, objectTypes)
 }
 
@@ -60,6 +59,7 @@ function getDocumentFieldDefinitions(
   documentTypes: Record<string, ObjectDefinition>,
   objectTypes: Record<string, ObjectDefinition>
 ) {
+  // Recursively iterate through all documents and resolve objects
   function addFieldDefinitionRecursive({
     acc,
     defType,

@@ -4,7 +4,10 @@ import type {SearchTerms} from '../../../../../search'
 import {filterDefinitions} from '../definitions/defaultFilters'
 import {operatorDefinitions} from '../definitions/operators/defaultOperators'
 import {SearchFilter} from '../types'
+import {createFieldDefinitionDictionary} from '../utils/createFieldDefinitionDictionary'
 import {createFieldDefinitions} from '../utils/createFieldDefinitions'
+import {createFilterDefinitionDictionary} from '../utils/createFilterDefinitionDictionary'
+import {createOperatorDefinitionDictionary} from '../utils/createOperatorDefinitionDictionary'
 import {
   createRecentSearchesStore,
   MAX_RECENT_SEARCHES,
@@ -56,12 +59,17 @@ const mockUser: CurrentUser = {
 }
 
 const mockFieldDefinitions = createFieldDefinitions(mockSchema, filterDefinitions)
+
+const fieldDefinitionDictionary = createFieldDefinitionDictionary(mockFieldDefinitions)
+const filterDefinitionDictionary = createFilterDefinitionDictionary(filterDefinitions)
+const operatorDefinitionDictionary = createOperatorDefinitionDictionary(operatorDefinitions)
+
 const recentSearchesStoreDefinition = {
   dataset: 'dataset',
-  fieldDefinitions: mockFieldDefinitions,
-  filterDefinitions,
-  operatorDefinitions,
-  projectId: ' projectId',
+  fieldDefinitions: fieldDefinitionDictionary,
+  filterDefinitions: filterDefinitionDictionary,
+  operatorDefinitions: operatorDefinitionDictionary,
+  projectId: 'projectId',
   schema: mockSchema,
   user: mockUser,
   version: RECENT_SEARCH_VERSION,

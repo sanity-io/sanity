@@ -3,7 +3,10 @@ import {SearchableType} from '../../../../../search'
 import {filterDefinitions} from '../definitions/defaultFilters'
 import {operatorDefinitions} from '../definitions/operators/defaultOperators'
 import {SearchFilter} from '../types'
+import {createFieldDefinitionDictionary} from './createFieldDefinitionDictionary'
 import {createFieldDefinitions} from './createFieldDefinitions'
+import {createFilterDefinitionDictionary} from './createFilterDefinitionDictionary'
+import {createOperatorDefinitionDictionary} from './createOperatorDefinitionDictionary'
 import {generateFilterQuery, narrowDocumentTypes, validateFilter} from './filterUtils'
 
 const mockSchema = Schema.compile({
@@ -56,13 +59,17 @@ const numberFilter: SearchFilter = {
 
 const mockFilters = [numberFilter, stringFilter]
 
+const fieldDefinitionDictionary = createFieldDefinitionDictionary(mockFieldDefinitions)
+const filterDefinitionDictionary = createFilterDefinitionDictionary(filterDefinitions)
+const operatorDefinitionDictionary = createOperatorDefinitionDictionary(operatorDefinitions)
+
 describe('generateFilterQuery', () => {
   it('should generate a filter query', () => {
     const filter = generateFilterQuery({
       filters: mockFilters,
-      fieldDefinitions: mockFieldDefinitions,
-      filterDefinitions,
-      operatorDefinitions,
+      fieldDefinitions: fieldDefinitionDictionary,
+      filterDefinitions: filterDefinitionDictionary,
+      operatorDefinitions: operatorDefinitionDictionary,
     })
 
     expect(filter).toEqual('age == 42 && name == "foo"')
@@ -72,7 +79,7 @@ describe('generateFilterQuery', () => {
 describe('narrowDocumentTypes', () => {
   it('should create a list of narrowed document types based on selected filters', () => {
     const narrowedDocumentTypes = narrowDocumentTypes({
-      fieldDefinitions: mockFieldDefinitions,
+      fieldDefinitions: fieldDefinitionDictionary,
       filters: mockFilters,
       types: [],
     })
@@ -96,7 +103,7 @@ describe('narrowDocumentTypes', () => {
     ]
 
     const narrowedDocumentTypes = narrowDocumentTypes({
-      fieldDefinitions: mockFieldDefinitions,
+      fieldDefinitions: fieldDefinitionDictionary,
       filters: [],
       types: selectedTypes,
     })
@@ -113,9 +120,9 @@ describe('validateFilter', () => {
 
     const isValid = validateFilter({
       filter: invalidFilter,
-      fieldDefinitions: mockFieldDefinitions,
-      filterDefinitions,
-      operatorDefinitions,
+      fieldDefinitions: fieldDefinitionDictionary,
+      filterDefinitions: filterDefinitionDictionary,
+      operatorDefinitions: operatorDefinitionDictionary,
     })
     expect(isValid).toEqual(false)
   })
@@ -129,9 +136,9 @@ describe('validateFilter', () => {
 
     const isValid = validateFilter({
       filter: invalidFilter,
-      fieldDefinitions: mockFieldDefinitions,
-      filterDefinitions,
-      operatorDefinitions,
+      fieldDefinitions: fieldDefinitionDictionary,
+      filterDefinitions: filterDefinitionDictionary,
+      operatorDefinitions: operatorDefinitionDictionary,
     })
     expect(isValid).toEqual(false)
   })
@@ -145,9 +152,9 @@ describe('validateFilter', () => {
 
     const isValid = validateFilter({
       filter: invalidFilter,
-      fieldDefinitions: mockFieldDefinitions,
-      filterDefinitions,
-      operatorDefinitions,
+      fieldDefinitions: fieldDefinitionDictionary,
+      filterDefinitions: filterDefinitionDictionary,
+      operatorDefinitions: operatorDefinitionDictionary,
     })
     expect(isValid).toEqual(false)
   })
@@ -161,9 +168,9 @@ describe('validateFilter', () => {
 
     const isValid = validateFilter({
       filter: invalidFilter,
-      fieldDefinitions: mockFieldDefinitions,
-      filterDefinitions,
-      operatorDefinitions,
+      fieldDefinitions: fieldDefinitionDictionary,
+      filterDefinitions: filterDefinitionDictionary,
+      operatorDefinitions: operatorDefinitionDictionary,
     })
     expect(isValid).toEqual(false)
   })
@@ -180,9 +187,9 @@ describe('validateFilter', () => {
 
     const isValid = validateFilter({
       filter: invalidFilter,
-      fieldDefinitions: mockFieldDefinitions,
-      filterDefinitions,
-      operatorDefinitions,
+      fieldDefinitions: fieldDefinitionDictionary,
+      filterDefinitions: filterDefinitionDictionary,
+      operatorDefinitions: operatorDefinitionDictionary,
     })
     expect(isValid).toEqual(true)
   })

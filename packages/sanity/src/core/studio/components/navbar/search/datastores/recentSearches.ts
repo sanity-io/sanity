@@ -1,9 +1,9 @@
 import type {CurrentUser, ObjectSchemaType, Schema} from '@sanity/types'
 import omit from 'lodash/omit'
 import type {SearchTerms} from '../../../../../search'
-import {SearchFilterDefinition} from '../definitions/filters'
-import {SearchOperatorDefinition} from '../definitions/operators'
-import type {SearchFieldDefinition, SearchFilter} from '../types'
+import {SearchFilterDefinitionDictionary} from '../definitions/filters'
+import type {SearchOperatorDefinitionDictionary} from '../definitions/operators'
+import type {SearchFieldDefinitionDictionary, SearchFilter} from '../types'
 import {validateFilter} from '../utils/filterUtils'
 import {getSearchableOmnisearchTypes} from '../utils/selectors'
 
@@ -58,9 +58,9 @@ export function createRecentSearchesStore({
   version = RECENT_SEARCH_VERSION,
 }: {
   dataset?: string
-  fieldDefinitions: SearchFieldDefinition[]
-  filterDefinitions: SearchFilterDefinition[]
-  operatorDefinitions: SearchOperatorDefinition[]
+  fieldDefinitions: SearchFieldDefinitionDictionary
+  filterDefinitions: SearchFilterDefinitionDictionary
+  operatorDefinitions: SearchOperatorDefinitionDictionary
   projectId?: string
   schema: Schema
   user: CurrentUser | null
@@ -225,9 +225,9 @@ function getRecentSearchTerms({
 }: {
   lsKey: string
   schema: Schema
-  fieldDefinitions: SearchFieldDefinition[]
-  filterDefinitions: SearchFilterDefinition[]
-  operatorDefinitions: SearchOperatorDefinition[]
+  fieldDefinitions: SearchFieldDefinitionDictionary
+  filterDefinitions: SearchFilterDefinitionDictionary
+  operatorDefinitions: SearchOperatorDefinitionDictionary
   version: number
 }): RecentSearch[] {
   const storedSearchTerms = verifySearchVersionNumber({
@@ -305,10 +305,10 @@ function sanitizeStoredSearch({
   studioSchema,
   version,
 }: {
-  fieldDefinitions: SearchFieldDefinition[]
-  filterDefinitions: SearchFilterDefinition[]
+  fieldDefinitions: SearchFieldDefinitionDictionary
+  filterDefinitions: SearchFilterDefinitionDictionary
   lsKey: string
-  operatorDefinitions: SearchOperatorDefinition[]
+  operatorDefinitions: SearchOperatorDefinitionDictionary
   storedSearch: StoredSearch
   studioSchema: Schema
   version: number
