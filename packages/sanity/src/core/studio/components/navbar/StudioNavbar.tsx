@@ -21,10 +21,13 @@ import {useWorkspace} from '../../workspace'
 import {useColorScheme} from '../../colorScheme'
 import {useWorkspaces} from '../../workspaces'
 import {NavbarContext} from '../../StudioLayout'
-import {useLogoComponent, useToolMenuComponent} from '../../studio-components-hooks'
+import {
+  useLogoComponent,
+  useNewDocumentComponent,
+  useToolMenuComponent,
+} from '../../studio-components-hooks'
 import {StudioTheme} from '../../../theme'
 import {UserMenu} from './userMenu'
-import {NewDocumentButton} from './NewDocumentButton'
 import {PresenceMenu} from './presence'
 import {NavDrawer} from './NavDrawer'
 import {ChangelogButton} from './changelog'
@@ -33,6 +36,7 @@ import {ConfigIssuesButton} from './configIssues/ConfigIssuesButton'
 import {LogoButton} from './LogoButton'
 import {SearchDialog, SearchField} from './search'
 import {SearchProvider} from './search/contexts/search/SearchProvider'
+import {useNewDocumentOptions} from './new-document'
 import {RouterState, useRouterState, useStateLink} from 'sanity/router'
 
 const RootLayer = styled(Layer)`
@@ -67,8 +71,11 @@ export function StudioNavbar() {
   const {onSearchFullscreenOpenChange, searchFullscreenOpen, searchFullscreenPortalEl} =
     useContext(NavbarContext)
 
+  const newDocumentOptions = useNewDocumentOptions()
+
   const Logo = useLogoComponent()
   const ToolMenu = useToolMenuComponent()
+  const NewDocumentComponent = useNewDocumentComponent()
 
   const [drawerOpen, setDrawerOpen] = useState<boolean>(false)
 
@@ -184,7 +191,11 @@ export function StudioNavbar() {
             )}
 
             <Box marginRight={shouldRender.brandingCenter ? undefined : 2}>
-              <NewDocumentButton />
+              <NewDocumentComponent
+                canCreateDocument={newDocumentOptions.canCreateDocument}
+                loading={newDocumentOptions.loading}
+                options={newDocumentOptions.options}
+              />
             </Box>
 
             {/* Search */}

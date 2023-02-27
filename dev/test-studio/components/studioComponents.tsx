@@ -1,6 +1,16 @@
-import React, {createContext, useContext} from 'react'
-import {Box, Card, Flex, Stack, Text} from '@sanity/ui'
-import {LogoProps, NavbarProps, LayoutProps, definePlugin, ToolMenuProps} from 'sanity'
+import React, {createContext, useCallback, useContext, useEffect, useState} from 'react'
+import {Box, Button, Card, Dialog, Flex, Stack, Text, TextInput} from '@sanity/ui'
+import {
+  LogoProps,
+  NavbarProps,
+  LayoutProps,
+  definePlugin,
+  ToolMenuProps,
+  NewDocumentProps,
+  DefaultPreview,
+} from 'sanity'
+import {AddIcon, SearchIcon} from '@sanity/icons'
+import {IntentLink} from 'sanity/router'
 
 export const studioComponentsPlugin = definePlugin({
   name: 'studio-components-plugin',
@@ -75,5 +85,85 @@ export function CustomToolMenu(props: ToolMenuProps) {
     >
       {props.renderDefault(props)}
     </Card>
+  )
+}
+
+export function CustomNewDocument(props: NewDocumentProps) {
+  const {options, loading} = props
+
+  const [open, setOpen] = useState(false)
+  const [query, setQuery] = useState<string>('')
+
+  const toggleOpen = useCallback(() => setOpen((v) => !v), [])
+
+  const handleSearchChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setQuery(e.target.value)
+  }, [])
+
+  const filteredOptions = options.filter((option) => {
+    return (option.title || option.id).toLowerCase().includes(query.toLowerCase())
+  })
+
+  useEffect(() => {
+    return () => {
+      setQuery('')
+    }
+  }, [])
+
+  return (
+    <>
+      <Button
+        icon={AddIcon}
+        loading={loading}
+        mode="bleed"
+        onClick={toggleOpen}
+        text="Create new document"
+      />
+
+      {open && (
+        <Dialog
+          header="Custom create new document"
+          id="create-new-document"
+          onClickOutside={toggleOpen}
+          onClose={toggleOpen}
+          width={1}
+          scheme="light"
+        >
+          <Card padding={2} borderBottom>
+            <TextInput icon={SearchIcon} placeholder="Search" onChange={handleSearchChange} />
+          </Card>
+
+          {filteredOptions.length === 0 && (
+            <Flex align="center" justify="center" paddingY={6}>
+              <Text align="center" muted>
+                No results for <code>{query}</code>
+              </Text>
+            </Flex>
+          )}
+
+          <Stack space={3} padding={filteredOptions.length > 0 ? 3 : 0}>
+            {filteredOptions.map((option) => (
+              <Stack key={option.id}>
+                <Card
+                  as={IntentLink}
+                  data-as="a"
+                  intent="create"
+                  radius={3}
+                  padding={2}
+                  params={{template: option.templateId, type: option.schemaType}}
+                  onClick={toggleOpen}
+                >
+                  <DefaultPreview
+                    media={option.icon}
+                    title={option.title}
+                    description={option.description}
+                  />
+                </Card>
+              </Stack>
+            ))}
+          </Stack>
+        </Dialog>
+      )}
+    </>
   )
 }

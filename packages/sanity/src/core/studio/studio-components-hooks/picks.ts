@@ -1,5 +1,12 @@
 import {ComponentType} from 'react'
-import {LayoutProps, LogoProps, NavbarProps, PluginOptions, ToolMenuProps} from '../../config'
+import {
+  LayoutProps,
+  LogoProps,
+  NavbarProps,
+  NewDocumentProps,
+  PluginOptions,
+  ToolMenuProps,
+} from '../../config'
 
 export function pickToolMenuComponent(
   plugin: PluginOptions
@@ -23,4 +30,12 @@ export function pickLogoComponent(
   plugin: PluginOptions
 ): ComponentType<Omit<LogoProps, 'renderDefault'>> {
   return plugin.studio?.components?.logo as ComponentType<Omit<LogoProps, 'renderDefault'>>
+}
+
+export function pickNewDocumentComponent(
+  plugin: PluginOptions
+): ComponentType<Omit<NewDocumentProps, 'renderDefault'>> {
+  return plugin.studio?.components?.newDocument as ComponentType<
+    Omit<NewDocumentProps, 'renderDefault'>
+  >
 }

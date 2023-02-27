@@ -1,13 +1,21 @@
 import {ComponentType} from 'react'
-import {LayoutProps, LogoProps, NavbarProps, ToolMenuProps} from '../../config/studio'
-import {useMiddlewareComponents} from '../../config'
+import {
+  LayoutProps,
+  LogoProps,
+  NavbarProps,
+  NewDocumentProps,
+  ToolMenuProps,
+} from '../../config/studio'
+import {PluginOptions, useMiddlewareComponents} from '../../config'
 import {StudioLogo, StudioNavbar, StudioToolMenu} from '../components'
 import {StudioLayout} from '../StudioLayout'
+import {NewDocumentButton} from '../components/navbar'
 import {
   pickToolMenuComponent,
   pickNavbarComponent,
   pickLogoComponent,
   pickLayoutComponent,
+  pickNewDocumentComponent,
 } from './picks'
 
 /**
@@ -47,5 +55,15 @@ export function useLayoutComponent(): ComponentType<Omit<LayoutProps, 'renderDef
   return useMiddlewareComponents({
     defaultComponent: StudioLayout as ComponentType<Omit<LayoutProps, 'renderDefault'>>,
     pick: pickLayoutComponent,
+  })
+}
+
+/**
+ * @internal
+ */
+export function useNewDocumentComponent(): ComponentType<Omit<NewDocumentProps, 'renderDefault'>> {
+  return useMiddlewareComponents({
+    defaultComponent: NewDocumentButton as ComponentType<Omit<NewDocumentProps, 'renderDefault'>>,
+    pick: pickNewDocumentComponent,
   })
 }

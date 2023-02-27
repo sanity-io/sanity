@@ -19,6 +19,7 @@ import {
   CustomLogo,
   CustomNavbar,
   CustomToolMenu,
+  CustomNewDocument,
   studioComponentsPlugin,
 } from './components/studioComponents'
 import {Field, formComponentsPlugin, Input, Item, Preview} from './components/formComponents'
@@ -40,6 +41,7 @@ const sharedSettings = definePlugin({
   studio: {
     components: {
       logo: Branding,
+      newDocument: CustomNewDocument,
     },
   },
   document: {
@@ -141,6 +143,7 @@ export default defineConfig([
         logo: CustomLogo,
         navbar: CustomNavbar,
         toolMenu: CustomToolMenu,
+        // newDocument: CustomNewDocument,
       },
     },
   },

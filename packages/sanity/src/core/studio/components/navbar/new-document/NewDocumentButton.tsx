@@ -2,10 +2,10 @@ import React, {useCallback, useMemo, useState} from 'react'
 import {Dialog, Grid, Button, Flex, Box, Tooltip, Spinner, Text} from '@sanity/ui'
 import styled from 'styled-components'
 import {ComposeIcon, DocumentIcon} from '@sanity/icons'
-import {useSource} from '../../source'
-import {useColorScheme} from '../../colorScheme'
-import {TemplatePermissionsResult, useTemplatePermissions} from '../../../store'
-import {DefaultPreview, InsufficientPermissionsMessage} from '../../../components'
+import {useColorScheme} from '../../../colorScheme'
+import {useCurrentUser} from '../../../../store'
+import {DefaultPreview, InsufficientPermissionsMessage} from '../../../../components'
+import {NewDocumentProps} from '../../../../config'
 import {IntentLink} from 'sanity/router'
 
 const DocumentButton = styled(Button)`
@@ -24,34 +24,13 @@ const DisabledButtonWrapper = styled.div`
 
 const DefaultIcon = () => <DocumentIcon />
 
-export function NewDocumentButton() {
+export function NewDocumentButton(props: NewDocumentProps) {
+  const {canCreateDocument, loading, options} = props
   const [newDocumentButtonEl, setNewDocumentButtonEl] = useState<HTMLButtonElement | null>(null)
   const [open, setOpen] = useState<boolean>(false)
-
   const {scheme} = useColorScheme()
-
-  const {
-    __internal: {staticInitialValueTemplateItems},
-    currentUser,
-  } = useSource()
-
-  const [permissions, loading] = useTemplatePermissions({
-    templateItems: staticInitialValueTemplateItems,
-  })
-
-  const keyedPermissions = useMemo(() => {
-    if (!permissions) return {}
-    return permissions.reduce<Record<string, TemplatePermissionsResult>>((acc, next) => {
-      acc[next.id] = next
-      return acc
-    }, {})
-  }, [permissions])
-
-  const hasNewDocumentOptions = staticInitialValueTemplateItems.length > 0
-
-  const canCreateDocument = staticInitialValueTemplateItems.some(
-    (t) => keyedPermissions[t.id]?.granted
-  )
+  const currentUser = useCurrentUser()
+  const hasNewDocumentOptions = options.length > 0
 
   const tooltipContent = useMemo(() => {
     if (!hasNewDocumentOptions) {
@@ -124,22 +103,22 @@ export function NewDocumentButton() {
 
           {!loading && (
             <Grid padding={4} columns={[1, 1, 2, 3]} gap={3}>
-              {staticInitialValueTemplateItems.map((template) => {
-                if (keyedPermissions[template.id]?.granted) {
+              {options.map((option) => {
+                if (option?.hasPermission) {
                   return (
                     <DocumentButton
                       forwardedAs={IntentLink}
                       intent="create"
-                      key={template.id}
+                      key={option.id}
                       mode="ghost"
                       onClick={handleLinkClick}
                       padding={2}
-                      params={{template: template.templateId, type: template.schemaType}}
+                      params={{template: option.templateId, type: option.schemaType}}
                     >
                       <DefaultPreview
-                        media={template.icon || DefaultIcon}
-                        subtitle={template.subtitle}
-                        title={template.title}
+                        media={option.icon || DefaultIcon}
+                        subtitle={option.subtitle}
+                        title={option.title}
                       />
                     </DocumentButton>
                   )
@@ -147,7 +126,7 @@ export function NewDocumentButton() {
 
                 return (
                   <Tooltip
-                    key={template.id}
+                    key={option.id}
                     content={
                       <TooltipContentBox padding={2}>
                         <InsufficientPermissionsMessage
@@ -159,11 +138,11 @@ export function NewDocumentButton() {
                   >
                     {/* this wrapper is required for the tooltip to show up */}
                     <DisabledButtonWrapper>
-                      <DocumentButton key={template.id} mode="ghost" padding={2} disabled>
+                      <DocumentButton key={option.id} mode="ghost" padding={2} disabled>
                         <DefaultPreview
-                          media={template.icon}
-                          subtitle={template.subtitle}
-                          title={template.title}
+                          media={option.icon}
+                          subtitle={option.subtitle}
+                          title={option.title}
                         />
                       </DocumentButton>
                     </DisabledButtonWrapper>
