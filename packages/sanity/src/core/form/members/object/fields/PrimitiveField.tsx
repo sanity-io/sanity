@@ -24,13 +24,7 @@ export function PrimitiveField(props: {
   const {member, renderInput, renderField} = props
   const focusRef = useRef<{focus: () => void}>()
 
-  const [nativeValue, setNativeValue] = useState(() =>
-    toNativeInputValue(member.field.schemaType, member.field.value, '')
-  )
-
-  useEffect(() => {
-    setNativeValue(toNativeInputValue(member.field.schemaType, member.field.value, nativeValue))
-  }, [member.field.schemaType, member.field.value, nativeValue])
+  const [nativeValue, setNativeValue] = useState(String(member.field.value ?? ''))
 
   const {onPathBlur, onPathFocus, onChange} = useFormCallbacks()
 
@@ -91,7 +85,7 @@ export function PrimitiveField(props: {
       id: member.field.id,
       ref: focusRef,
       onChange: handleNativeChange,
-      value: nativeValue,
+      value: getValue(member.field.schemaType, member.field.value, nativeValue),
       readOnly: Boolean(member.field.readOnly),
       placeholder: member.field.schemaType.placeholder,
     }),
@@ -101,7 +95,8 @@ export function PrimitiveField(props: {
       handleNativeChange,
       member.field.id,
       member.field.readOnly,
-      member.field.schemaType.placeholder,
+      member.field.schemaType,
+      member.field.value,
       nativeValue,
     ]
   )
@@ -175,9 +170,9 @@ export function PrimitiveField(props: {
   return <>{renderField(fieldProps)}</>
 }
 
-function toNativeInputValue(type: unknown, value: unknown, nativeValue: string): string {
+function getValue(type: unknown, value: unknown, nativeValue: string): string {
   if (!isNumberSchemaType(type)) {
-    return value ? String(value) : ''
+    return String(value ?? '')
   }
 
   const currValue = parseFloat(nativeValue as string)

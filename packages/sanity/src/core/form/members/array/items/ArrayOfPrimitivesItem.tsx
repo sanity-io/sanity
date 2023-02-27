@@ -29,13 +29,7 @@ export function ArrayOfPrimitivesItem(props: PrimitiveMemberItemProps) {
   const focusRef = useRef<{focus: () => void}>()
   const {member, renderItem, renderInput} = props
 
-  const [nativeValue, setNativeValue] = useState(() =>
-    toNativeInputValue(member.item.schemaType, member.item.value, '')
-  )
-
-  useEffect(() => {
-    setNativeValue(toNativeInputValue(member.item.schemaType, member.item.value, nativeValue))
-  }, [member.item.schemaType, member.item.value, nativeValue])
+  const [nativeValue, setNativeValue] = useState(String(member.item.value ?? ''))
 
   const {onPathBlur, onPathFocus, onChange} = useFormCallbacks()
 
@@ -103,7 +97,7 @@ export function ArrayOfPrimitivesItem(props: PrimitiveMemberItemProps) {
       id: member.item.id,
       ref: focusRef,
       onChange: handleNativeChange,
-      value: nativeValue,
+      value: getValue(member.item.schemaType, member.item.value, nativeValue),
       readOnly: Boolean(member.item.readOnly),
       placeholder: member.item.schemaType.placeholder,
     }),
@@ -113,7 +107,8 @@ export function ArrayOfPrimitivesItem(props: PrimitiveMemberItemProps) {
       handleNativeChange,
       member.item.id,
       member.item.readOnly,
-      member.item.schemaType.placeholder,
+      member.item.schemaType,
+      member.item.value,
       nativeValue,
     ]
   )
@@ -205,9 +200,9 @@ export function ArrayOfPrimitivesItem(props: PrimitiveMemberItemProps) {
   return <>{useMemo(() => renderItem(itemProps as PrimitiveItemProps), [itemProps, renderItem])}</>
 }
 
-function toNativeInputValue(type: unknown, value: unknown, nativeValue: string): string {
+function getValue(type: unknown, value: unknown, nativeValue: string): string {
   if (!isNumberSchemaType(type)) {
-    return value ? String(value) : ''
+    return String(value ?? '')
   }
 
   // this is a trick to retain type information while displaying an "empty" input
