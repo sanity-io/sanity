@@ -1,5 +1,5 @@
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
-import {isBooleanSchemaType, isNumberSchemaType, isStringSchemaType} from '@sanity/types'
+import {isBooleanSchemaType, isNumberSchemaType} from '@sanity/types'
 import {FieldMember} from '../../../store'
 import {
   PrimitiveFieldProps,
@@ -25,11 +25,7 @@ export function PrimitiveField(props: {
   const focusRef = useRef<{focus: () => void}>()
 
   const [nativeValue, setNativeValue] = useState(() =>
-    toNativeInputValue(
-      member.field.schemaType,
-      member.field.value,
-      isBooleanSchemaType(member.field.schemaType) ? false : ''
-    )
+    toNativeInputValue(member.field.schemaType, member.field.value, '')
   )
 
   useEffect(() => {
@@ -73,12 +69,7 @@ export function PrimitiveField(props: {
         inputValue === '' || (typeof inputValue === 'number' && isNaN(inputValue))
 
       onChange(PatchEvent.from(hasEmptyValue ? unset() : set(inputValue)).prefixAll(member.name))
-
-      if (isBooleanSchemaType(member.field.schemaType)) {
-        setNativeValue(event.currentTarget.checked)
-      } else {
-        setNativeValue(hasEmptyValue ? '' : event.currentTarget.value)
-      }
+      setNativeValue(hasEmptyValue ? '' : event.currentTarget.value)
     },
     [member.name, member.field.schemaType, onChange]
   )
@@ -100,7 +91,7 @@ export function PrimitiveField(props: {
       id: member.field.id,
       ref: focusRef,
       onChange: handleNativeChange,
-      value: typeof nativeValue === 'string' ? nativeValue : undefined,
+      value: nativeValue,
       readOnly: Boolean(member.field.readOnly),
       placeholder: member.field.schemaType.placeholder,
     }),
@@ -117,7 +108,7 @@ export function PrimitiveField(props: {
 
   const inputProps = useMemo((): Omit<PrimitiveInputProps, 'renderDefault'> => {
     return {
-      value: nativeValue,
+      value: member.field.value as any,
       readOnly: member.field.readOnly,
       schemaType: member.field.schemaType as any,
       changed: member.field.changed,
@@ -132,6 +123,7 @@ export function PrimitiveField(props: {
       elementProps,
     }
   }, [
+    member.field.value,
     member.field.readOnly,
     member.field.schemaType,
     member.field.changed,
@@ -141,7 +133,6 @@ export function PrimitiveField(props: {
     member.field.level,
     member.field.validation,
     member.field.presence,
-    nativeValue,
     handleChange,
     validationError,
     elementProps,
@@ -154,7 +145,7 @@ export function PrimitiveField(props: {
       name: member.name,
       index: member.index,
       level: member.field.level,
-      value: nativeValue,
+      value: member.field.value as any,
       schemaType: member.field.schemaType as any,
       title: member.field.schemaType.title,
       description: member.field.schemaType.description,
@@ -170,7 +161,7 @@ export function PrimitiveField(props: {
     member.name,
     member.index,
     member.field.level,
-    nativeValue,
+    member.field.value,
     member.field.schemaType,
     member.field.id,
     member.field.path,
@@ -184,15 +175,9 @@ export function PrimitiveField(props: {
   return <>{renderField(fieldProps)}</>
 }
 
-function toNativeInputValue(
-  type: unknown,
-  value: unknown,
-  nativeValue: string | boolean
-): string | boolean {
-  if (isStringSchemaType(type)) {
+function toNativeInputValue(type: unknown, value: unknown, nativeValue: string): string {
+  if (!isNumberSchemaType(type)) {
     return value ? String(value) : ''
-  } else if (isBooleanSchemaType(type)) {
-    return Boolean(value)
   }
 
   const currValue = parseFloat(nativeValue as string)
@@ -200,5 +185,5 @@ function toNativeInputValue(
     return nativeValue
   }
 
-  return value ? String(value) : ''
+  return typeof value === 'number' ? String(value) : ''
 }

@@ -1,4 +1,4 @@
-import {isBooleanSchemaType, isNumberSchemaType, isStringSchemaType} from '@sanity/types'
+import {isBooleanSchemaType, isNumberSchemaType} from '@sanity/types'
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {FIXME} from '../../../../FIXME'
 import {ArrayOfPrimitivesItemMember} from '../../../store'
@@ -30,11 +30,7 @@ export function ArrayOfPrimitivesItem(props: PrimitiveMemberItemProps) {
   const {member, renderItem, renderInput} = props
 
   const [nativeValue, setNativeValue] = useState(() =>
-    toNativeInputValue(
-      member.item.schemaType,
-      member.item.value,
-      isBooleanSchemaType(member.item.schemaType) ? false : ''
-    )
+    toNativeInputValue(member.item.schemaType, member.item.value, '')
   )
 
   useEffect(() => {
@@ -95,11 +91,7 @@ export function ArrayOfPrimitivesItem(props: PrimitiveMemberItemProps) {
         )
       )
 
-      if (isBooleanSchemaType(member.item.schemaType)) {
-        setNativeValue(event.currentTarget.checked)
-      } else {
-        setNativeValue(hasEmptyValue ? '' : event.currentTarget.value)
-      }
+      setNativeValue(hasEmptyValue ? '' : event.currentTarget.value)
     },
     [handleChange, member.item.schemaType]
   )
@@ -111,7 +103,7 @@ export function ArrayOfPrimitivesItem(props: PrimitiveMemberItemProps) {
       id: member.item.id,
       ref: focusRef,
       onChange: handleNativeChange,
-      value: typeof nativeValue === 'string' ? nativeValue : undefined,
+      value: nativeValue,
       readOnly: Boolean(member.item.readOnly),
       placeholder: member.item.schemaType.placeholder,
     }),
@@ -129,7 +121,7 @@ export function ArrayOfPrimitivesItem(props: PrimitiveMemberItemProps) {
     return {
       changed: member.item.changed,
       level: member.item.level,
-      value: nativeValue,
+      value: member.item.value as FIXME,
       readOnly: member.item.readOnly,
       schemaType: member.item.schemaType as FIXME,
       id: member.item.id,
@@ -143,6 +135,7 @@ export function ArrayOfPrimitivesItem(props: PrimitiveMemberItemProps) {
   }, [
     member.item.changed,
     member.item.level,
+    member.item.value,
     member.item.readOnly,
     member.item.schemaType,
     member.item.id,
@@ -150,7 +143,6 @@ export function ArrayOfPrimitivesItem(props: PrimitiveMemberItemProps) {
     member.item.focused,
     member.item.validation,
     member.item.presence,
-    nativeValue,
     handleChange,
     elementProps,
   ])
@@ -173,7 +165,7 @@ export function ArrayOfPrimitivesItem(props: PrimitiveMemberItemProps) {
       key: member.key,
       index: member.index,
       level: member.item.level,
-      value: nativeValue,
+      value: member.item.value as any,
       title: member.item.schemaType.title,
       description: member.item.schemaType.description,
       schemaType: member.item.schemaType as FIXME,
@@ -194,6 +186,7 @@ export function ArrayOfPrimitivesItem(props: PrimitiveMemberItemProps) {
     member.key,
     member.index,
     member.item.level,
+    member.item.value,
     member.item.schemaType,
     member.item.presence,
     member.item.validation,
@@ -202,7 +195,6 @@ export function ArrayOfPrimitivesItem(props: PrimitiveMemberItemProps) {
     member.item.id,
     member.item.path,
     member.parentSchemaType,
-    nativeValue,
     onInsert,
     onRemove,
     handleFocus,
@@ -213,15 +205,9 @@ export function ArrayOfPrimitivesItem(props: PrimitiveMemberItemProps) {
   return <>{useMemo(() => renderItem(itemProps as PrimitiveItemProps), [itemProps, renderItem])}</>
 }
 
-function toNativeInputValue(
-  type: unknown,
-  value: unknown,
-  nativeValue: string | boolean
-): string | boolean {
-  if (isStringSchemaType(type)) {
+function toNativeInputValue(type: unknown, value: unknown, nativeValue: string): string {
+  if (!isNumberSchemaType(type)) {
     return value ? String(value) : ''
-  } else if (isBooleanSchemaType(type)) {
-    return Boolean(value)
   }
 
   // this is a trick to retain type information while displaying an "empty" input
@@ -237,5 +223,5 @@ function toNativeInputValue(
     return nativeValue
   }
 
-  return value ? String(value) : ''
+  return typeof value === 'number' ? String(value) : ''
 }
