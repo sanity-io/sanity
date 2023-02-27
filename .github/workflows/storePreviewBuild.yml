@@ -1,9 +1,9 @@
-name: Store preview build
-on:
-  deployment_status:
+name: Store branch
+on: [push, deployment_status]
+
 jobs:
-  test:
-    timeout-minutes: 60
+  run:
+    timeout-minutes: 10
     runs-on: ubuntu-latest
     if: github.event_name == 'deployment_status' && github.event.deployment_status.state == 'success' && startsWith(github.event.deployment_status.target_url, 'https://performance-studio')
     steps:
