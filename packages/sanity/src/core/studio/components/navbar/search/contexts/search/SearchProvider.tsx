@@ -12,7 +12,7 @@ import {
   RECENT_SEARCH_VERSION,
 } from '../../datastores/recentSearches'
 import {useSearch} from '../../hooks/useSearch'
-import type {SearchFieldDefinition, SearchOrdering} from '../../types'
+import type {SearchOrdering} from '../../types'
 import {createFieldDefinitions} from '../../utils/createFieldDefinitions'
 import {validateFilter} from '../../utils/filterUtils'
 import {hasSearchableTerms} from '../../utils/hasSearchableTerms'
@@ -21,7 +21,6 @@ import {initialSearchState, searchReducer} from './reducer'
 import {SearchContext} from './SearchContext'
 
 interface SearchProviderProps {
-  __debugFieldDefinitions?: SearchFieldDefinition[]
   children?: ReactNode
   fullscreen?: boolean
 }
@@ -29,11 +28,7 @@ interface SearchProviderProps {
 /**
  * @internal
  */
-export function SearchProvider({
-  __debugFieldDefinitions,
-  children,
-  fullscreen,
-}: SearchProviderProps) {
+export function SearchProvider({children, fullscreen}: SearchProviderProps) {
   const onCloseRef = useRef<(() => void) | null>(null)
 
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
@@ -46,10 +41,7 @@ export function SearchProvider({
   const {dataset, projectId} = client.config()
 
   // Create our field definitions: all applicable fields which we can filter on.
-  const fields = useMemo(
-    () => [...createFieldDefinitions(schema, filters), ...(__debugFieldDefinitions || [])],
-    [__debugFieldDefinitions, schema, filters]
-  )
+  const fields = useMemo(() => createFieldDefinitions(schema, filters), [schema, filters])
 
   // Create local storage store
   const recentSearchesStore = useMemo(
