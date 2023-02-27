@@ -1,9 +1,10 @@
 import type {CurrentUser, ObjectSchemaType, Schema} from '@sanity/types'
 import omit from 'lodash/omit'
 import type {SearchTerms} from '../../../../../search'
-import {SearchFilterDefinitionDictionary} from '../definitions/filters'
+import type {SearchFieldDefinitionDictionary} from '../definitions/fields'
+import type {SearchFilterDefinitionDictionary} from '../definitions/filters'
 import type {SearchOperatorDefinitionDictionary} from '../definitions/operators'
-import type {SearchFieldDefinitionDictionary, SearchFilter} from '../types'
+import type {SearchFilter} from '../types'
 import {validateFilter} from '../utils/filterUtils'
 import {getSearchableOmnisearchTypes} from '../utils/selectors'
 

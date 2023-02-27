@@ -1,12 +1,11 @@
 import {Schema} from '@sanity/schema'
 import {SearchableType} from '../../../../../search'
 import {filterDefinitions} from '../definitions/defaultFilters'
+import {createFieldDefinitionDictionary, createFieldDefinitions} from '../definitions/fields'
+import {createFilterDefinitionDictionary} from '../definitions/filters'
+import {createOperatorDefinitionDictionary} from '../definitions/operators'
 import {operatorDefinitions} from '../definitions/operators/defaultOperators'
 import {SearchFilter} from '../types'
-import {createFieldDefinitionDictionary} from './createFieldDefinitionDictionary'
-import {createFieldDefinitions} from './createFieldDefinitions'
-import {createFilterDefinitionDictionary} from './createFilterDefinitionDictionary'
-import {createOperatorDefinitionDictionary} from './createOperatorDefinitionDictionary'
 import {generateFilterQuery, narrowDocumentTypes, validateFilter} from './filterUtils'
 
 const mockSchema = Schema.compile({

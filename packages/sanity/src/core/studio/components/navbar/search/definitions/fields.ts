@@ -6,13 +6,34 @@ import {
   StringDefinition,
 } from '@sanity/types'
 import startCase from 'lodash/startCase'
-import {getSupportedFieldTypes, SearchFilterDefinition} from '../definitions/filters'
-import type {SearchFieldDefinition} from '../types'
-import {generateFieldId} from './generateFieldId'
-import {sanitizeFieldValue} from './sanitizeField'
-import {getSearchableOmnisearchTypes} from './selectors'
+import {Md5} from 'ts-md5'
+import {sanitizeFieldValue} from '../utils/sanitizeField'
+import {getSearchableOmnisearchTypes} from '../utils/selectors'
+import {getSupportedFieldTypes, SearchFilterDefinition} from './filters'
 
 export const MAX_OBJECT_TRAVERSAL_DEPTH = 3
+
+/**
+ * @internal
+ */
+export interface SearchFieldDefinition {
+  documentTypes: string[]
+  fieldPath: string
+  filterName: string
+  id: string
+  name: string
+  title: string
+  titlePath: string[]
+  type: string
+}
+
+/**
+ * @internal
+ */
+export type SearchFieldDefinitionDictionary = Record<
+  SearchFieldDefinition['id'],
+  SearchFieldDefinition
+>
 
 export function createFieldDefinitions(
   schema: Schema,
@@ -52,6 +73,21 @@ export function createFieldDefinitions(
   const supportedFieldTypes = getSupportedFieldTypes(filterDefinitions)
 
   return getDocumentFieldDefinitions(supportedFieldTypes, documentTypes, objectTypes)
+}
+
+export function createFieldDefinitionDictionary(
+  fieldDefinitions: SearchFieldDefinition[]
+): SearchFieldDefinitionDictionary {
+  return fieldDefinitions.reduce<SearchFieldDefinitionDictionary>((acc, val) => {
+    acc[val.id] = val
+    return acc
+  }, {})
+}
+
+export function generateFieldId(field: SearchFieldDefinition): string {
+  return Md5.hashStr(
+    JSON.stringify([field.documentTypes, field.fieldPath, field.filterName, field.type])
+  )
 }
 
 function getDocumentFieldDefinitions(

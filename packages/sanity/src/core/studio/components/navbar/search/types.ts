@@ -6,6 +6,7 @@ import type {
   SearchTerms,
   WeightedHit,
 } from '../../../../search'
+import type {SearchFieldDefinition} from './definitions/fields'
 import type {SearchFilterDefinition} from './definitions/filters'
 
 export type DocumentTypeMenuItem =
@@ -73,25 +74,3 @@ export interface SearchState {
   options?: SearchOptions
   terms: SearchTerms
 }
-
-/**
- * @internal
- */
-export interface SearchFieldDefinition {
-  documentTypes: string[]
-  fieldPath: string
-  filterName: string
-  id: string
-  name: string
-  title: string
-  titlePath: string[]
-  type: string
-}
-
-/**
- * @internal
- */
-export type SearchFieldDefinitionDictionary = Record<
-  SearchFieldDefinition['id'],
-  SearchFieldDefinition
->

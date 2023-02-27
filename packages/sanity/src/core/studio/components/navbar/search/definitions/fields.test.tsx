@@ -1,8 +1,7 @@
 import {Schema} from '@sanity/schema'
 import React from 'react'
-import {filterDefinitions} from '../definitions/defaultFilters'
-import {createFieldDefinitions, MAX_OBJECT_TRAVERSAL_DEPTH} from './createFieldDefinitions'
-import {generateFieldId} from './generateFieldId'
+import {filterDefinitions} from './defaultFilters'
+import {createFieldDefinitions, generateFieldId, MAX_OBJECT_TRAVERSAL_DEPTH} from './fields'
 
 describe('createFieldDefinitions', () => {
   it('should create a flattened list of all available fields', () => {

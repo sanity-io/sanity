@@ -1,5 +1,5 @@
 import {ComponentType} from 'react'
-import {SearchFieldDefinition} from '../../types'
+import type {SearchFieldDefinition} from '../fields'
 
 /**
  * @alpha

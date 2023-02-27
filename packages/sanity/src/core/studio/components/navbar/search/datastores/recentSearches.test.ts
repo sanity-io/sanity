@@ -2,12 +2,11 @@ import {Schema} from '@sanity/schema'
 import type {CurrentUser, ObjectSchemaType} from '@sanity/types'
 import type {SearchTerms} from '../../../../../search'
 import {filterDefinitions} from '../definitions/defaultFilters'
+import {createFieldDefinitionDictionary, createFieldDefinitions} from '../definitions/fields'
+import {createFilterDefinitionDictionary} from '../definitions/filters'
+import {createOperatorDefinitionDictionary} from '../definitions/operators'
 import {operatorDefinitions} from '../definitions/operators/defaultOperators'
 import {SearchFilter} from '../types'
-import {createFieldDefinitionDictionary} from '../utils/createFieldDefinitionDictionary'
-import {createFieldDefinitions} from '../utils/createFieldDefinitions'
-import {createFilterDefinitionDictionary} from '../utils/createFilterDefinitionDictionary'
-import {createOperatorDefinitionDictionary} from '../utils/createOperatorDefinitionDictionary'
 import {
   createRecentSearchesStore,
   MAX_RECENT_SEARCHES,

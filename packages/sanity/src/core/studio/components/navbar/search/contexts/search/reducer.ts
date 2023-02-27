@@ -1,6 +1,7 @@
 import type {CurrentUser} from '@sanity/types'
 import type {SearchableType, SearchTerms, WeightedHit} from '../../../../../../search'
 import type {RecentSearch} from '../../datastores/recentSearches'
+import type {SearchFieldDefinitionDictionary} from '../../definitions/fields'
 import type {SearchFilterDefinitionDictionary} from '../../definitions/filters'
 import {
   getOperatorDefinition,
@@ -8,7 +9,7 @@ import {
   type SearchOperatorDefinitionDictionary,
 } from '../../definitions/operators'
 import {ORDERINGS} from '../../definitions/orderings'
-import type {SearchFieldDefinitionDictionary, SearchFilter, SearchOrdering} from '../../types'
+import type {SearchFilter, SearchOrdering} from '../../types'
 import {debugWithName, isDebugMode} from '../../utils/debug'
 import {
   generateFilterQuery,

@@ -42,6 +42,18 @@ export type SearchFilterDefinition<TOperators = string> =
   | SearchFilterPinnedDefinition<TOperators>
 
 /**
+ * @internal
+ */
+export function createFilterDefinitionDictionary(
+  filterDefinitions: SearchFilterDefinition[]
+): SearchFilterDefinitionDictionary {
+  return filterDefinitions.reduce<SearchFilterDefinitionDictionary>((acc, val) => {
+    acc[val.name] = val
+    return acc
+  }, {})
+}
+
+/**
  * @alpha
  */
 export function defineSearchFilter<TOperators = SearchOperatorType>(

@@ -11,12 +11,11 @@ import {
   RecentSearch,
   RECENT_SEARCH_VERSION,
 } from '../../datastores/recentSearches'
+import {createFieldDefinitionDictionary, createFieldDefinitions} from '../../definitions/fields'
+import {createFilterDefinitionDictionary} from '../../definitions/filters'
+import {createOperatorDefinitionDictionary} from '../../definitions/operators'
 import {useSearch} from '../../hooks/useSearch'
 import type {SearchOrdering} from '../../types'
-import {createFieldDefinitionDictionary} from '../../utils/createFieldDefinitionDictionary'
-import {createFieldDefinitions} from '../../utils/createFieldDefinitions'
-import {createFilterDefinitionDictionary} from '../../utils/createFilterDefinitionDictionary'
-import {createOperatorDefinitionDictionary} from '../../utils/createOperatorDefinitionDictionary'
 import {validateFilter} from '../../utils/filterUtils'
 import {hasSearchableTerms} from '../../utils/hasSearchableTerms'
 import {isRecentSearchTerms} from '../../utils/isRecentSearchTerms'

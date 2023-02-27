@@ -14,6 +14,15 @@ export interface SearchOperatorDefinition<TValue = any> extends SearchOperatorBa
   type: string
 }
 
+export function createOperatorDefinitionDictionary(
+  operatorDefinitions: SearchOperatorDefinition[]
+): SearchOperatorDefinitionDictionary {
+  return operatorDefinitions.reduce<SearchOperatorDefinitionDictionary>((acc, val) => {
+    acc[val.type] = val
+    return acc
+  }, {})
+}
+
 export function getOperatorDefinition(
   operators: SearchOperatorDefinitionDictionary,
   operatorType?: string

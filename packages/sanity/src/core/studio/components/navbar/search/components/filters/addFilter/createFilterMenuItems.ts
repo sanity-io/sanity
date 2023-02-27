@@ -3,6 +3,10 @@ import {ButtonTone} from '@sanity/ui'
 import {difference, startCase} from 'lodash'
 import {SearchableType} from '../../../../../../../search'
 import {isNonNullable} from '../../../../../../../util'
+import type {
+  SearchFieldDefinition,
+  SearchFieldDefinitionDictionary,
+} from '../../../definitions/fields'
 import {
   getFilterDefinition,
   type SearchFilterDefinition,
@@ -13,8 +17,6 @@ import type {
   FilterMenuItem,
   FilterMenuItemFilter,
   FilterMenuItemHeader,
-  SearchFieldDefinition,
-  SearchFieldDefinitionDictionary,
   SearchFilter,
 } from '../../../types'
 import {buildSearchFilter, getFieldFromFilter} from '../../../utils/filterUtils'
