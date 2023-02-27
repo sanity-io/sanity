@@ -1,0 +1,3 @@
+{
+  "ignore": ["@sanity/uuid", "dotenv", "sanity", "typescript", "styled-components", "react"]
+}
