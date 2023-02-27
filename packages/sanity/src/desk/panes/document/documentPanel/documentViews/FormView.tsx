@@ -1,8 +1,7 @@
 /* eslint-disable no-nested-ternary */
 
-import {isActionEnabled} from '@sanity/schema/_internal'
-import {Box, Container, Flex, Spinner, Text} from '@sanity/ui'
-import React, {useCallback, useEffect, useMemo} from 'react'
+import {Box, Container, Flex, Spinner, Text, focusFirstDescendant} from '@sanity/ui'
+import React, {useEffect, useMemo, useRef} from 'react'
 import {tap} from 'rxjs/operators'
 import {useDocumentPane} from '../../useDocumentPane'
 import {Delay} from '../../../../components/Delay'
@@ -11,7 +10,6 @@ import {
   DocumentMutationEvent,
   DocumentRebaseEvent,
   FormBuilder,
-  PatchEvent,
   PatchMsg,
   PresenceOverlay,
   createPatchChannel,
@@ -105,6 +103,12 @@ export function FormView(props: FormViewProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [hasRev])
 
+  const formRef = useRef<null | HTMLDivElement>(null)
+
+  useEffect(() => {
+    focusFirstDescendant(formRef.current!)
+  }, [])
+
   // const after = useMemo(
   //   () =>
   //     Array.isArray(afterEditorComponents) &&
@@ -125,7 +129,7 @@ export function FormView(props: FormViewProps) {
       width={1}
     >
       <PresenceOverlay margins={margins}>
-        <Box as="form" onSubmit={preventDefault}>
+        <Box as="form" onSubmit={preventDefault} ref={formRef}>
           {ready ? (
             formState === null ? (
               <Box padding={2}>
