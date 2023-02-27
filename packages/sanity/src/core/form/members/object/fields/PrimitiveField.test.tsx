@@ -17,7 +17,7 @@ import {PrimitiveField} from './PrimitiveField'
 
 describe('PrimitiveField', () => {
   describe('number', () => {
-    it('render empty input when given no valud', () => {
+    it('renders empty input when given no value', () => {
       // Given
       const {member, formCallbacks} = setupTest('number', undefined)
 
@@ -42,7 +42,7 @@ describe('PrimitiveField', () => {
       expect(input.value).toEqual('')
     })
 
-    it('render given initial number when mounted', () => {
+    it('renders non-zero number when mounted', () => {
       // Given
       const {member, TestWrapper} = setupTest('number', 42)
 
@@ -60,6 +60,26 @@ describe('PrimitiveField', () => {
       const input = getByTestId('number-input') as HTMLInputElement
       expect(input).toBeInstanceOf(HTMLInputElement)
       expect(input.value).toEqual('42')
+    })
+
+    it('renders 0 number when mounted', () => {
+      // Given
+      const {member, TestWrapper} = setupTest('number', 0)
+
+      // When
+      const {getByTestId} = render(
+        <PrimitiveField
+          member={member}
+          renderInput={defaultRenderInput}
+          renderField={defaultRenderField}
+        />,
+        {wrapper: TestWrapper}
+      )
+
+      // Then
+      const input = getByTestId('number-input') as HTMLInputElement
+      expect(input).toBeInstanceOf(HTMLInputElement)
+      expect(input.value).toEqual('0')
     })
 
     it('calls `onChange` callback when the input changes', () => {
