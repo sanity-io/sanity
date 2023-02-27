@@ -1,6 +1,7 @@
 import {DiffComponent, DiffComponentOptions} from '../../types'
 
 import {BooleanFieldDiff} from '../../types/boolean/diff'
+import {DatetimeFieldDiff} from '../../types/datetime/diff'
 import {FileFieldDiff} from '../../types/file/diff'
 import {ImageFieldDiff} from '../../types/image/diff'
 import {NumberFieldDiff} from '../../types/number/diff'
@@ -14,6 +15,8 @@ export const defaultComponents: Record<
 > = {
   block: PTDiff,
   boolean: {component: BooleanFieldDiff, showHeader: false},
+  date: DatetimeFieldDiff,
+  datetime: DatetimeFieldDiff,
   file: FileFieldDiff,
   image: ImageFieldDiff,
   number: NumberFieldDiff,
