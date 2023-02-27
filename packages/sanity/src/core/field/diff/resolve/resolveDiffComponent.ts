@@ -24,7 +24,14 @@ export function resolveDiffComponent<D extends Diff = any>(
     itType = itType.type
   }
 
-  return defaultComponents[type.jsonType]
+  const isDateType = ['date', 'datetime'].includes(type.name)
+
+  // The date and datetime has the same jsonType as string, but we want to use
+  // a different default component for them. Therefore, we use the name of the
+  // type instead of the jsonType for these types.
+  const defaultComponentKey = isDateType ? type.name : type.jsonType
+
+  return defaultComponents[defaultComponentKey]
 }
 
 function tryResolve(

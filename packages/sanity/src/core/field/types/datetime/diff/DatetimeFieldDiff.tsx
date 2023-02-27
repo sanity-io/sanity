@@ -8,8 +8,9 @@ export const DatetimeFieldDiff: DiffComponent<StringDiff> = ({diff, schemaType})
     <DiffFromTo
       align="center"
       diff={diff}
-      schemaType={schemaType}
+      layout="grid"
       previewComponent={DatetimePreview}
+      schemaType={schemaType}
     />
   )
 }
