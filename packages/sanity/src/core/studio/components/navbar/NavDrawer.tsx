@@ -10,7 +10,15 @@ import {
   Label,
   useRootTheme,
 } from '@sanity/ui'
-import {CheckmarkIcon, CloseIcon, CogIcon, LeaveIcon} from '@sanity/icons'
+import {
+  CheckmarkIcon,
+  CloseIcon,
+  CogIcon,
+  LeaveIcon,
+  UsersIcon,
+  HelpCircleIcon,
+  CommentIcon,
+} from '@sanity/icons'
 import React, {memo, useEffect, useState} from 'react'
 import styled from 'styled-components'
 import {useWorkspace} from '../../workspace'
@@ -20,6 +28,7 @@ import {UserAvatar, useRovingFocus} from '../../../components'
 import {useWorkspaces} from '../../workspaces'
 import {useColorScheme} from '../../colorScheme'
 import {StudioTheme} from '../../../theme'
+import {userHasRole} from '../../../util/userHasRole'
 import {WorkspaceMenuButton} from './workspace'
 
 const Root = styled(Layer)`
@@ -80,6 +89,8 @@ export const NavDrawer = memo(function NavDrawer(props: NavDrawerProps) {
   const {auth, currentUser, projectId} = useWorkspace()
   const workspaces = useWorkspaces()
   const theme = useRootTheme().theme as StudioTheme
+
+  const isAdmin = Boolean(currentUser && userHasRole(currentUser, 'administrator'))
 
   useRovingFocus({
     rootElement: innerCardElement,
@@ -200,6 +211,49 @@ export const NavDrawer = memo(function NavDrawer(props: NavDrawerProps) {
                   icon={CogIcon}
                 />
               </Stack>
+              {isAdmin && (
+                <Stack as="li">
+                  <Button
+                    as="a"
+                    aria-label="Invite members"
+                    justify="flex-start"
+                    mode="bleed"
+                    tabIndex={tabIndex}
+                    href={`https://sanity.io/manage/project/${projectId}/members`}
+                    target="_blank"
+                    text="Invite members"
+                    icon={UsersIcon}
+                  />
+                </Stack>
+              )}
+              <Stack as="li">
+                <Button
+                  as="a"
+                  aria-label="Help and support"
+                  justify="flex-start"
+                  mode="bleed"
+                  tabIndex={tabIndex}
+                  href={`https://www.sanity.io/contact/support`}
+                  target="_blank"
+                  text="Help & support"
+                  icon={HelpCircleIcon}
+                />
+              </Stack>
+              {isAdmin && (
+                <Stack as="li">
+                  <Button
+                    as="a"
+                    aria-label="Contact sales"
+                    justify="flex-start"
+                    mode="bleed"
+                    tabIndex={tabIndex}
+                    href={`https://www.sanity.io/contact/sales?ref=studio`}
+                    target="_blank"
+                    text="Contact sales"
+                    icon={CommentIcon}
+                  />
+                </Stack>
+              )}
             </Card>
           </Flex>
         </Flex>

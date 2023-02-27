@@ -1,4 +1,12 @@
-import {LeaveIcon, ChevronDownIcon, CogIcon, CheckmarkIcon} from '@sanity/icons'
+import {
+  LeaveIcon,
+  ChevronDownIcon,
+  CogIcon,
+  CheckmarkIcon,
+  UsersIcon,
+  HelpCircleIcon,
+  CommentIcon,
+} from '@sanity/icons'
 import {
   Box,
   Button,
@@ -20,6 +28,7 @@ import styled from 'styled-components'
 import {UserAvatar} from '../../../../components'
 import {getProviderTitle} from '../../../../store'
 import {StudioTheme} from '../../../../theme'
+import {userHasRole} from '../../../../util/userHasRole'
 import {useColorScheme} from '../../../colorScheme'
 import {useWorkspace} from '../../../workspace'
 import {LoginProviderLogo} from './LoginProviderLogo'
@@ -43,6 +52,7 @@ export function UserMenu() {
   const {scheme} = useColorScheme()
   const theme = useRootTheme().theme as StudioTheme
 
+  const isAdmin = Boolean(currentUser && userHasRole(currentUser, 'administrator'))
   const providerTitle = getProviderTitle(currentUser?.provider)
 
   const popoverProps: MenuButtonProps['popover'] = useMemo(
@@ -51,6 +61,7 @@ export function UserMenu() {
       portal: true,
       preventOverflow: true,
       scheme: scheme,
+      constrainSize: true,
     }),
     [scheme]
   )
@@ -123,11 +134,40 @@ export function UserMenu() {
 
           <MenuItem
             as="a"
+            aria-label="Manage project"
             href={`https://sanity.io/manage/project/${projectId}`}
             target="_blank"
             text="Manage project"
             icon={CogIcon}
           />
+          {isAdmin && (
+            <MenuItem
+              as="a"
+              aria-label="Invite members"
+              href={`https://sanity.io/manage/project/${projectId}/members`}
+              target="_blank"
+              text="Invite members"
+              icon={UsersIcon}
+            />
+          )}
+          <MenuItem
+            as="a"
+            aria-label="Help & support"
+            href={`https://www.sanity.io/contact/support`}
+            target="_blank"
+            text="Help & support"
+            icon={HelpCircleIcon}
+          />
+          {isAdmin && (
+            <MenuItem
+              as="a"
+              aria-label="Contact sales"
+              href={`https://www.sanity.io/contact/sales?ref=studio`}
+              target="_blank"
+              text="Contact sales"
+              icon={CommentIcon}
+            />
+          )}
 
           {auth.logout && (
             <>
