@@ -65,10 +65,15 @@ const InnerCard = styled(Card)`
   max-width: 280px;
   transition: 200ms transform ease-in-out;
   transform: translate3d(calc(-100% - 1px), 0, 0);
+  overflow: auto;
 
   &[data-open='true'] {
     transform: translate3d(0, 0, 0);
   }
+`
+
+const StyledCard = styled(Card)`
+  flex-shrink: 0;
 `
 
 interface NavDrawerProps {
@@ -77,8 +82,6 @@ interface NavDrawerProps {
   onClose: () => void
   tools: Tool[]
 }
-
-const PADDING = [3, 3, 4]
 
 export const NavDrawer = memo(function NavDrawer(props: NavDrawerProps) {
   const {colorSchemeOptions} = useColorScheme()
@@ -123,7 +126,7 @@ export const NavDrawer = memo(function NavDrawer(props: NavDrawerProps) {
         ref={setInnerCardElement}
       >
         <Card borderBottom>
-          <Stack space={3} padding={PADDING}>
+          <Stack space={3} padding={3}>
             <Flex align="center">
               <Flex flex={1} align="center" paddingRight={2}>
                 <Flex flex={1} align="center">
@@ -157,7 +160,7 @@ export const NavDrawer = memo(function NavDrawer(props: NavDrawerProps) {
 
         <Flex direction="column" flex={1} justify="space-between" overflow="auto">
           {/* Tools */}
-          <Card padding={PADDING} overflow="auto">
+          <StyledCard padding={3}>
             <ToolMenu
               activeToolName={activeToolName}
               closeSidebar={onClose}
@@ -165,21 +168,20 @@ export const NavDrawer = memo(function NavDrawer(props: NavDrawerProps) {
               isSidebarOpen={isOpen}
               tools={tools}
             />
-          </Card>
+          </StyledCard>
 
           {/* Theme picker and Manage */}
           <Flex direction="column">
-            <Card borderTop padding={PADDING} overflow="auto">
+            <StyledCard borderTop padding={3} overflow="auto">
               <Stack as="ul" space={1}>
                 <Box padding={2}>
                   <Label size={1} muted>
                     Appearance
                   </Label>
                 </Box>
-
                 {!theme.__legacy &&
-                  colorSchemeOptions.map((option, key) => (
-                    <Stack as="li" key={key}>
+                  colorSchemeOptions.map((option) => (
+                    <Stack as="li" key={option.name}>
                       <Button
                         as="a"
                         aria-label={`Use ${option} appearance`}
@@ -196,70 +198,72 @@ export const NavDrawer = memo(function NavDrawer(props: NavDrawerProps) {
                     </Stack>
                   ))}
               </Stack>
-            </Card>
-            <Card borderTop padding={PADDING}>
-              <Stack as="li">
-                <Button
-                  as="a"
-                  aria-label="Manage project"
-                  justify="flex-start"
-                  mode="bleed"
-                  tabIndex={tabIndex}
-                  href={`https://sanity.io/manage/project/${projectId}`}
-                  target="_blank"
-                  text="Manage project"
-                  icon={CogIcon}
-                />
-              </Stack>
-              {isAdmin && (
+            </StyledCard>
+            <StyledCard borderTop padding={3}>
+              <Stack as="ul" space={1}>
                 <Stack as="li">
                   <Button
                     as="a"
-                    aria-label="Invite members"
+                    aria-label="Manage project"
                     justify="flex-start"
                     mode="bleed"
                     tabIndex={tabIndex}
-                    href={`https://sanity.io/manage/project/${projectId}/members`}
+                    href={`https://sanity.io/manage/project/${projectId}`}
                     target="_blank"
-                    text="Invite members"
-                    icon={UsersIcon}
+                    text="Manage project"
+                    icon={CogIcon}
                   />
                 </Stack>
-              )}
-              <Stack as="li">
-                <Button
-                  as="a"
-                  aria-label="Help and support"
-                  justify="flex-start"
-                  mode="bleed"
-                  tabIndex={tabIndex}
-                  href={`https://www.sanity.io/contact/support`}
-                  target="_blank"
-                  text="Help & support"
-                  icon={HelpCircleIcon}
-                />
-              </Stack>
-              {isAdmin && (
+                {isAdmin && (
+                  <Stack as="li">
+                    <Button
+                      as="a"
+                      aria-label="Invite members"
+                      justify="flex-start"
+                      mode="bleed"
+                      tabIndex={tabIndex}
+                      href={`https://sanity.io/manage/project/${projectId}/members`}
+                      target="_blank"
+                      text="Invite members"
+                      icon={UsersIcon}
+                    />
+                  </Stack>
+                )}
                 <Stack as="li">
                   <Button
                     as="a"
-                    aria-label="Contact sales"
+                    aria-label="Help and support"
                     justify="flex-start"
                     mode="bleed"
                     tabIndex={tabIndex}
-                    href={`https://www.sanity.io/contact/sales?ref=studio`}
+                    href={`https://www.sanity.io/contact/support`}
                     target="_blank"
-                    text="Contact sales"
-                    icon={CommentIcon}
+                    text="Help & support"
+                    icon={HelpCircleIcon}
                   />
                 </Stack>
-              )}
-            </Card>
+                {isAdmin && (
+                  <Stack as="li">
+                    <Button
+                      as="a"
+                      aria-label="Contact sales"
+                      justify="flex-start"
+                      mode="bleed"
+                      tabIndex={tabIndex}
+                      href={`https://www.sanity.io/contact/sales?ref=studio`}
+                      target="_blank"
+                      text="Contact sales"
+                      icon={CommentIcon}
+                    />
+                  </Stack>
+                )}
+              </Stack>
+            </StyledCard>
           </Flex>
         </Flex>
 
         {auth.logout && (
-          <Card flex="none" padding={PADDING} borderTop>
+          <Card flex="none" padding={3} borderTop>
             <Stack>
               <Button
                 iconRight={LeaveIcon}
